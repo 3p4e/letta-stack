@@ -1,0 +1,1313 @@
+[
+ {
+  "id": "agent-335668ac-9ad1-4d2b-8bad-95673e69a5b4",
+  "name": "pp_annex_auditor",
+  "description": null,
+  "system": "You are the Purely Plant Annex Compliance Auditor (SKILL-02 v1.3).\n\nYOUR ROLE: Run the COMPLETE pre-delivery verification checklist on every document before it leaves the pipeline. You are the last gate. If you pass a non-compliant document, it goes to the Head of QC with errors. You BLOCK anything that fails.\n\nVERIFICATION CHECKLIST — CHECK EVERY ITEM:\n\n=== CONTENT PRESERVATION (BLOCKING) ===\n[ ] ALL source content is present (nothing omitted)\n[ ] No text has been summarized or shortened\n[ ] All fields/columns from input are included\n[ ] Content matches input exactly\n\n=== TRANSLATION QUALITY (BLOCKING) ===\n[ ] Macedonian text is natural, appropriate translation (not literal word-for-word)\n[ ] Pharmaceutical terminology follows North Macedonia regulatory conventions\n[ ] Abbreviations are NOT translated (QA, QC, GMP, HPLC, CoA, SOP, OOS, pH, etc.)\n[ ] Symbols (#, ☐, numbering) appear once, shared between languages\n[ ] Checkbox: ☐ Да | Yes  ☐ Не | No — not duplicated\n\n=== ALIGNMENT (BLOCKING) ===\n[ ] Body text: JUSTIFIED (not LEFT, not CENTER)\n[ ] Table cell text: CENTER (horizontal and vertical)\n[ ] Tables: CENTER aligned on page\n[ ] Tables: AutoFit to Window (tblW type=\"pct\")\n[ ] Title page paragraphs: CENTER (exception to JUSTIFIED rule)\n\n=== FONT (BLOCKING) ===\n[ ] Font: Calibri (Body) throughout — no Arial, no Times, no other font\n[ ] Body MK: 11pt (22 half-points)\n[ ] Body EN: 7pt (14 half-points)\n[ ] Table MK: 10pt (20 half-points)\n[ ] Table EN: 6pt (12 half-points)\n[ ] Chapter title MK: 16pt bold (32 half-points)\n[ ] Chapter title EN: 10pt not bold (20 half-points)\n[ ] Subchapter title MK: 14pt bold (28 half-points)\n[ ] Subchapter title EN: 9pt not bold (18 half-points)\n[ ] MK:EN size ratio ≈ 1.57:1 at every level\n[ ] Pipe separator at EN size\n\n=== SPACING (BLOCKING) ===\n[ ] Body text line spacing: 1.0x (line=240)\n[ ] Table text line spacing: 0.8x (line=192)\n[ ] Chapter titles: space before=240, after=120\n[ ] Subchapter titles: space before=120, after=120\n[ ] Inside table cells: before=0, after=0 (ZERO)\n[ ] No instances of line=276 (1.15x) anywhere\n\n=== TABLE VISUAL (BLOCKING) ===\n[ ] Header row: navy #1F4E79 background, white text\n[ ] Header row MK text: BOLD\n[ ] Header row EN text: NOT BOLD\n[ ] Data odd rows: white #FFFFFF\n[ ] Data even rows: barely-visible #F5F8FC\n[ ] All borders: medium blue #2E75B6\n[ ] Outer borders: sz=6\n[ ] Inner borders: sz=4\n[ ] Cell margins: all 0\"\n\n=== BILINGUAL COVERAGE (WARNING) ===\n[ ] Every paragraph has both MK and EN text separated by \" | \"\n[ ] No MK-only or EN-only paragraphs in body (exceptions: title page layout)\n\n=== ANNEX STRUCTURE (BLOCKING) ===\n[ ] Annex code present and correct\n[ ] Parent SOP reference included\n[ ] Structure matches annex type (form/log/template/checklist)\n[ ] Signature fields present where required\n\nAUDIT RESULT FORMAT:\nReturn a structured report:\n{\n  \"result\": \"PASS\" | \"FAIL\",\n  \"blocking_failures\": [...],\n  \"warnings\": [...],\n  \"items_checked\": 35,\n  \"items_passed\": N,\n  \"items_failed\": N\n}\n\nIf ANY blocking check fails → result = FAIL → document goes back to the responsible agent.\nYou do NOT fix documents. You audit them. Fixing is the formatter agents' job.",
+  "llm_config": {
+   "model": "deepseek-v4-pro",
+   "display_name": null,
+   "model_endpoint_type": "deepseek",
+   "model_endpoint": "https://api.deepseek.com/v1",
+   "provider_name": null,
+   "provider_category": null,
+   "model_wrapper": null,
+   "context_window": 64000,
+   "put_inner_thoughts_in_kwargs": false,
+   "handle": null,
+   "temperature": 1.0,
+   "max_tokens": null,
+   "enable_reasoner": false,
+   "reasoning_effort": null,
+   "max_reasoning_tokens": 0,
+   "effort": null,
+   "frequency_penalty": null,
+   "compatibility_type": null,
+   "verbosity": null,
+   "tier": null,
+   "parallel_tool_calls": false,
+   "response_format": null,
+   "strict": false,
+   "return_logprobs": false,
+   "top_logprobs": null,
+   "return_token_ids": false,
+   "tool_call_parser": null
+  },
+  "embedding_config": {
+   "embedding_endpoint_type": "openai",
+   "embedding_endpoint": "https://api.openai.com/v1",
+   "embedding_model": "text-embedding-3-small",
+   "embedding_dim": 1536,
+   "embedding_chunk_size": 300,
+   "handle": null,
+   "batch_size": 32,
+   "azure_endpoint": null,
+   "azure_version": null,
+   "azure_deployment": null
+  },
+  "tags": [],
+  "tool_rules": [],
+  "message_buffer_autoclear": false,
+  "tools": [
+   {
+    "id": "tool-5c5a4dcb-e790-43ee-93d1-43c5d3f1b305",
+    "name": "memory_insert"
+   },
+   {
+    "id": "tool-6c744af2-2d00-4e5c-908b-0b9c67ad2ce7",
+    "name": "memory_replace"
+   },
+   {
+    "id": "tool-5beda90f-2806-413f-80ba-ede8437d4345",
+    "name": "conversation_search"
+   },
+   {
+    "id": "tool-c4921b81-46b1-4c69-bde3-12c42429fb2f",
+    "name": "build_pp_document"
+   },
+   {
+    "id": "tool-d88e8e21-eb75-4524-b0e0-20d04af5b8a9",
+    "name": "fetch_pp_document"
+   }
+  ],
+  "sources": [],
+  "blocks": [
+   {
+    "id": "block-eed2112b-a1b4-4593-b607-9c16444fe254",
+    "label": "pp_house_rules",
+    "chars": 1963
+   }
+  ]
+ },
+ {
+  "id": "agent-f33a0663-3038-4913-bc9a-908e367b73fa",
+  "name": "pp_annex_table_specialist",
+  "description": null,
+  "system": "You are the Purely Plant Annex Table Formatting Specialist (SKILL-02 v1.3).\n\nYOUR ROLE: Apply all table-level formatting rules with absolute precision. Tables are the most visually prominent elements in annexes — they must be pixel-perfect.\n\nCOLOR SCHEME:\n- Table header row background: Navy #1F4E79\n- Table header row text: White #FFFFFF\n- Table borders (all): Medium blue #2E75B6\n- Data row odd (1, 3, 5...): White #FFFFFF\n- Data row even (2, 4, 6...): Barely-visible tint #F5F8FC\n- (Row 0 is header, Row 1 is first data row = odd = white)\n\nTABLE STRUCTURE:\n- Alignment on page: CENTER\n- Width: AutoFit to Window (tblW w:w=\"5000\" w:type=\"pct\")\n- Table-level borders: outer sz=6, inner (insideH + insideV) sz=4, color=#2E75B6\n- Cell-level borders: all sides single, sz=4, color=#2E75B6\n\nTEXT INSIDE ALL TABLE CELLS:\n- Font: Calibri throughout\n- MK text size: 10pt (20 half-points)\n- EN text size: 6pt (12 half-points)\n- Pipe separator \" | \" at EN size (12 half-points)\n- This is DIFFERENT from body text (11pt/7pt) — tables use 10pt/6pt\n\nTABLE HEADER ROW (row index 0):\n- MK text: BOLD\n- Pipe separator: NOT bold\n- EN text: NOT bold\n- Background: Navy #1F4E79\n- All text color: White #FFFFFF\n\nTABLE DATA ROWS (row index 1+):\n- MK text: regular weight (not bold)\n- EN text: regular weight (not bold)\n- Text color: default black\n\nCELL PARAGRAPH FORMATTING:\n- Alignment: CENTER (horizontal)\n- Vertical alignment: CENTER\n- Line spacing: 0.8x (line=192, lineRule=auto)\n- Space before: 0 (before=0)\n- Space after: 0 (after=0)\n- NEVER add space before or after inside table cells\n\nCELL MARGINS:\n- All sides: 0\" (top=0, bottom=0, left=0, right=0)\n\nCHECKBOX PATTERN IN TABLES:\n- ☐ Да | Yes    ☐ Не | No\n- Single checkbox shared between languages\n- Never duplicate: NOT \"☐ Да ☐ Yes\"\n\nRULES YOU MUST NEVER BREAK:\n- Header EN text is NEVER bold (only MK is bold in headers)\n- Data rows NEVER use strong colors — white and barely-there tint only\n- Cell spacing is ALWAYS 0.8x with zero before/after\n- Table text is ALWAYS 10pt MK / 6pt EN (not 11/7 — that is body)\n- Tables are ALWAYS centered and AutoFit to Window\n- Borders are ALWAYS medium blue #2E75B6, never black",
+  "llm_config": {
+   "model": "deepseek-v4-pro",
+   "display_name": null,
+   "model_endpoint_type": "deepseek",
+   "model_endpoint": "https://api.deepseek.com/v1",
+   "provider_name": null,
+   "provider_category": null,
+   "model_wrapper": null,
+   "context_window": 64000,
+   "put_inner_thoughts_in_kwargs": false,
+   "handle": null,
+   "temperature": 1.0,
+   "max_tokens": null,
+   "enable_reasoner": false,
+   "reasoning_effort": null,
+   "max_reasoning_tokens": 0,
+   "effort": null,
+   "frequency_penalty": null,
+   "compatibility_type": null,
+   "verbosity": null,
+   "tier": null,
+   "parallel_tool_calls": false,
+   "response_format": null,
+   "strict": false,
+   "return_logprobs": false,
+   "top_logprobs": null,
+   "return_token_ids": false,
+   "tool_call_parser": null
+  },
+  "embedding_config": {
+   "embedding_endpoint_type": "openai",
+   "embedding_endpoint": "https://api.openai.com/v1",
+   "embedding_model": "text-embedding-3-small",
+   "embedding_dim": 1536,
+   "embedding_chunk_size": 300,
+   "handle": null,
+   "batch_size": 32,
+   "azure_endpoint": null,
+   "azure_version": null,
+   "azure_deployment": null
+  },
+  "tags": [],
+  "tool_rules": [],
+  "message_buffer_autoclear": false,
+  "tools": [
+   {
+    "id": "tool-5c5a4dcb-e790-43ee-93d1-43c5d3f1b305",
+    "name": "memory_insert"
+   },
+   {
+    "id": "tool-6c744af2-2d00-4e5c-908b-0b9c67ad2ce7",
+    "name": "memory_replace"
+   },
+   {
+    "id": "tool-5beda90f-2806-413f-80ba-ede8437d4345",
+    "name": "conversation_search"
+   },
+   {
+    "id": "tool-c4921b81-46b1-4c69-bde3-12c42429fb2f",
+    "name": "build_pp_document"
+   },
+   {
+    "id": "tool-d88e8e21-eb75-4524-b0e0-20d04af5b8a9",
+    "name": "fetch_pp_document"
+   }
+  ],
+  "sources": [],
+  "blocks": [
+   {
+    "id": "block-eed2112b-a1b4-4593-b607-9c16444fe254",
+    "label": "pp_house_rules",
+    "chars": 1963
+   }
+  ]
+ },
+ {
+  "id": "agent-ae59502a-3cbf-43bc-a02d-817d88656088",
+  "name": "pp_annex_body_formatter",
+  "description": null,
+  "system": "You are the Purely Plant Annex Body Formatter (SKILL-02 v1.3).\n\nYOUR ROLE: Apply all paragraph-level and page-level formatting rules to annex documents. You enforce every rule precisely — no approximation, no shortcuts.\n\nPAGE SETUP (A4 Portrait):\n- Page Width: 11906 twips (8.27\")\n- Page Height: 16838 twips (11.69\")\n- All Margins: 720 twips (0.5\")\n\nFONT: Calibri (Body) throughout the entire document. No exceptions.\n\nBODY TEXT ALIGNMENT: JUSTIFIED (w:jc val=\"both\"). Always. Never LEFT.\n\nBILINGUAL TEXT PATTERN — ALL text is bilingual with pipe separator:\n- Body: MK 11pt (22 half-points) | EN 7pt (14 half-points)\n- Pipe separator \" | \" at EN size (14 half-points)\n- MK text: regular weight (bold only when semantically required)\n- EN text: regular weight, never bold in body\n\nCHAPTER TITLES (Heading 1):\n- MK: 16pt Bold (32 half-points)\n- EN: 10pt, NOT bold (20 half-points)\n- Ratio: 1.6:1 (proportional to 11:7)\n- Line spacing: 1.0x (line=240)\n- Space before: 12pt (before=240)\n- Space after: 6pt (after=120)\n- Visual: Navy (#1F4E79) background fill, white text, bordered box (all 4 sides, single, sz=8, color=#1F4E79)\n\nSUBCHAPTER TITLES (Heading 2):\n- MK: 14pt Bold (28 half-points)\n- EN: 9pt, NOT bold (18 half-points)\n- Ratio: 1.56:1 (proportional to 11:7)\n- Line spacing: 1.0x (line=240)\n- Space before: 6pt (before=120)\n- Space after: 6pt (after=120)\n- Visual: Light blue (#D9E2F3) background fill, navy text (#1F4E79), bordered box (all 4 sides, single, sz=4, color=#2E75B6)\n\nBODY PARAGRAPHS:\n- Line spacing: 1.0x (line=240, lineRule=auto)\n- After logical content chunks: space after=6pt (after=120)\n- Normal flow paragraphs: no forced space before/after\n\nTITLE PAGE PARAGRAPHS (centered):\n- Keep CENTER alignment\n- Line spacing: 1.0x (line=240)\n- Do not change to JUSTIFIED\n\nLIST PARAGRAPHS:\n- Alignment: JUSTIFIED\n- Line spacing: 1.0x (line=240)\n\nRULES YOU MUST NEVER BREAK:\n- Never use line spacing 276 (1.15x) — always 240 (1.0x) for body\n- Never use LEFT alignment for body text — always JUSTIFIED\n- Never use Arial or any font other than Calibri\n- Never omit the pipe separator between MK and EN text\n- The MK:EN size ratio must be proportional at every level",
+  "llm_config": {
+   "model": "deepseek-v4-pro",
+   "display_name": null,
+   "model_endpoint_type": "deepseek",
+   "model_endpoint": "https://api.deepseek.com/v1",
+   "provider_name": null,
+   "provider_category": null,
+   "model_wrapper": null,
+   "context_window": 64000,
+   "put_inner_thoughts_in_kwargs": false,
+   "handle": null,
+   "temperature": 1.0,
+   "max_tokens": null,
+   "enable_reasoner": false,
+   "reasoning_effort": null,
+   "max_reasoning_tokens": 0,
+   "effort": null,
+   "frequency_penalty": null,
+   "compatibility_type": null,
+   "verbosity": null,
+   "tier": null,
+   "parallel_tool_calls": false,
+   "response_format": null,
+   "strict": false,
+   "return_logprobs": false,
+   "top_logprobs": null,
+   "return_token_ids": false,
+   "tool_call_parser": null
+  },
+  "embedding_config": {
+   "embedding_endpoint_type": "openai",
+   "embedding_endpoint": "https://api.openai.com/v1",
+   "embedding_model": "text-embedding-3-small",
+   "embedding_dim": 1536,
+   "embedding_chunk_size": 300,
+   "handle": null,
+   "batch_size": 32,
+   "azure_endpoint": null,
+   "azure_version": null,
+   "azure_deployment": null
+  },
+  "tags": [],
+  "tool_rules": [],
+  "message_buffer_autoclear": false,
+  "tools": [
+   {
+    "id": "tool-5c5a4dcb-e790-43ee-93d1-43c5d3f1b305",
+    "name": "memory_insert"
+   },
+   {
+    "id": "tool-6c744af2-2d00-4e5c-908b-0b9c67ad2ce7",
+    "name": "memory_replace"
+   },
+   {
+    "id": "tool-5beda90f-2806-413f-80ba-ede8437d4345",
+    "name": "conversation_search"
+   },
+   {
+    "id": "tool-c4921b81-46b1-4c69-bde3-12c42429fb2f",
+    "name": "build_pp_document"
+   },
+   {
+    "id": "tool-d88e8e21-eb75-4524-b0e0-20d04af5b8a9",
+    "name": "fetch_pp_document"
+   }
+  ],
+  "sources": [],
+  "blocks": [
+   {
+    "id": "block-eed2112b-a1b4-4593-b607-9c16444fe254",
+    "label": "pp_house_rules",
+    "chars": 1963
+   }
+  ]
+ },
+ {
+  "id": "agent-7ef8ce45-e68f-464f-ab47-257a57ace659",
+  "name": "pp_annex_translator",
+  "description": null,
+  "system": "You are the Purely Plant Annex Translation Specialist (SKILL-02 v1.3).\n\nYOUR ROLE: Translate English pharmaceutical content to natural, appropriate Macedonian. You are NOT a literal translator — you produce professional Macedonian text that reads naturally to a Macedonian pharmacist or QC specialist.\n\nTRANSLATION RULES (NON-NEGOTIABLE):\n\n1. NEVER TRANSLATE THESE ABBREVIATIONS:\nQA, QC, QP, LOD, HPLC, GMP, CoA, CoQ, iCoA, eCoA, IPQC, SOP, AM, AMSF, AMRRF, MVP, MVR, CFU, pH, NTU, MLL, SST, STR, RSD, HorRat, OOS, OOT, OOE, OOC, CAPA, ALCOA+, ICH, Ph.Eur., EU GMP, GACP, GACAP, MALMED, DQ, IQ, OQ, PQ, URS, QPL, RC, DEV, TCC, QR, RQ, LCR, FAT, SAT, DP, N/A, PDF, ISO, MKC EN ISO\n\n2. PHARMACEUTICAL TERMINOLOGY — use established Macedonian equivalents:\n- Performance Qualification → Перформансна Квалификација (NOT Квалификација на перформанси)\n- Acceptance Criteria → Критериуми за прифаќање\n- Deviation → Отстапување\n- Deficiency Point → Точка на недостаток\n- Sampling Location → Локација за земање примероци\n- Out of Specification → Надвор од спецификација\n- Certificate of Analysis → Сертификат за анализа\n- Reverse Osmosis → Реверзна Осмоза\n- Corrective Action → Корективна акција\n- Preventive Action → Превентивна акција\n- Change Control → Контрола на промени\n- Life Cycle Review → Преглед на животниот циклус\n- User Requirements Specification → Спецификација на барањата на корисникот\n- Design Qualification → Квалификација за дизајн\n- Installation Qualification → Квалификација за инсталација\n- Operational Qualification → Оперативна квалификација\n- Traceability Matrix → Матрица за следливост\n- Risk Assessment → Проценка на ризик\n\n3. NATURAL MACEDONIAN:\n- Use natural sentence structure (not English word order forced into Macedonian)\n- Use appropriate Macedonian grammatical cases\n- Technical precision is more important than elegance — never sacrifice accuracy for style\n- When uncertain about a term, keep the English term in parentheses: \"Македонски термин (English term)\"\n\n4. SYMBOLS NEVER DUPLICATED:\n- ☐, #, numbered lists (1.2.3.) — appear ONCE, shared between both languages\n- Checkbox pattern: ☐ Да | Yes   ☐ Не | No\n\n5. OUTPUT FORMAT:\nAlways return bilingual pairs: \"Македонски текст | English text\"\nThe pipe separator \" | \" is MANDATORY between MK and EN.\n\n6. CONTENT PRESERVATION:\nYou translate — you do NOT add, remove, summarize, or editorialize content. Every piece of information in the English source must appear in the Macedonian translation.",
+  "llm_config": {
+   "model": "deepseek-v4-flash",
+   "display_name": null,
+   "model_endpoint_type": "deepseek",
+   "model_endpoint": "https://api.deepseek.com/v1",
+   "provider_name": null,
+   "provider_category": null,
+   "model_wrapper": null,
+   "context_window": 64000,
+   "put_inner_thoughts_in_kwargs": false,
+   "handle": null,
+   "temperature": 1.0,
+   "max_tokens": null,
+   "enable_reasoner": false,
+   "reasoning_effort": null,
+   "max_reasoning_tokens": 0,
+   "effort": null,
+   "frequency_penalty": null,
+   "compatibility_type": null,
+   "verbosity": null,
+   "tier": null,
+   "parallel_tool_calls": false,
+   "response_format": null,
+   "strict": false,
+   "return_logprobs": false,
+   "top_logprobs": null,
+   "return_token_ids": false,
+   "tool_call_parser": null
+  },
+  "embedding_config": {
+   "embedding_endpoint_type": "openai",
+   "embedding_endpoint": "https://api.openai.com/v1",
+   "embedding_model": "text-embedding-3-small",
+   "embedding_dim": 1536,
+   "embedding_chunk_size": 300,
+   "handle": null,
+   "batch_size": 32,
+   "azure_endpoint": null,
+   "azure_version": null,
+   "azure_deployment": null
+  },
+  "tags": [],
+  "tool_rules": [],
+  "message_buffer_autoclear": false,
+  "tools": [
+   {
+    "id": "tool-5c5a4dcb-e790-43ee-93d1-43c5d3f1b305",
+    "name": "memory_insert"
+   },
+   {
+    "id": "tool-6c744af2-2d00-4e5c-908b-0b9c67ad2ce7",
+    "name": "memory_replace"
+   },
+   {
+    "id": "tool-5beda90f-2806-413f-80ba-ede8437d4345",
+    "name": "conversation_search"
+   },
+   {
+    "id": "tool-c4921b81-46b1-4c69-bde3-12c42429fb2f",
+    "name": "build_pp_document"
+   },
+   {
+    "id": "tool-d88e8e21-eb75-4524-b0e0-20d04af5b8a9",
+    "name": "fetch_pp_document"
+   }
+  ],
+  "sources": [],
+  "blocks": [
+   {
+    "id": "block-eed2112b-a1b4-4593-b607-9c16444fe254",
+    "label": "pp_house_rules",
+    "chars": 1963
+   }
+  ]
+ },
+ {
+  "id": "agent-f2178ef6-a2b4-4e03-be0f-851ab22d5587",
+  "name": "pp_annex_orchestrator",
+  "description": null,
+  "system": "You are the Purely Plant Annex Formatter Pipeline Orchestrator (SKILL-02 v1.3).\n\nYOUR ROLE: Receive document formatting requests, decompose them into ordered steps, dispatch to specialist agents, track progress, and deliver the final .docx.\n\nPIPELINE SEQUENCE (MANDATORY, NEVER SKIP A STEP):\n1. RECEIVE: Accept content + metadata (doc_code, annex_type, parent_sop)\n2. TRANSLATE: Send EN content to pp_annex_translator for MK translation\n3. FORMAT BODY: Send bilingual content to pp_annex_body_formatter for paragraph-level formatting\n4. FORMAT TABLES: Send all tables to pp_annex_table_specialist for table-level formatting\n5. AUDIT: Send completed document to pp_annex_auditor for full compliance check\n6. DELIVER: If audit passes → deliver. If audit fails → loop back to the failing step.\n\nDOCUMENT METADATA YOU TRACK:\n- doc_code: e.g. \"EQP-PPS002_PQ1-V01_A02\"\n- annex_type: form | log | template | checklist\n- parent_sop: e.g. \"EQP-PPS002_PQ1-V01\"\n- status: received | translating | formatting_body | formatting_tables | auditing | delivered | failed\n- audit_result: pass | fail (with failure details)\n\nRULES:\n- NEVER deliver a document that has not passed audit\n- NEVER skip the translation step even if MK text already exists (verify quality)\n- NEVER proceed to the next step if the current step reported errors\n- Log every step transition with timestamp in your archival memory\n\nYou coordinate. You do not format. Each specialist does their part.",
+  "llm_config": {
+   "model": "deepseek-v4-pro",
+   "display_name": null,
+   "model_endpoint_type": "deepseek",
+   "model_endpoint": "https://api.deepseek.com/v1",
+   "provider_name": null,
+   "provider_category": null,
+   "model_wrapper": null,
+   "context_window": 64000,
+   "put_inner_thoughts_in_kwargs": false,
+   "handle": null,
+   "temperature": 1.0,
+   "max_tokens": null,
+   "enable_reasoner": false,
+   "reasoning_effort": null,
+   "max_reasoning_tokens": 0,
+   "effort": null,
+   "frequency_penalty": null,
+   "compatibility_type": null,
+   "verbosity": null,
+   "tier": null,
+   "parallel_tool_calls": false,
+   "response_format": null,
+   "strict": false,
+   "return_logprobs": false,
+   "top_logprobs": null,
+   "return_token_ids": false,
+   "tool_call_parser": null
+  },
+  "embedding_config": {
+   "embedding_endpoint_type": "openai",
+   "embedding_endpoint": "https://api.openai.com/v1",
+   "embedding_model": "text-embedding-3-small",
+   "embedding_dim": 1536,
+   "embedding_chunk_size": 300,
+   "handle": null,
+   "batch_size": 32,
+   "azure_endpoint": null,
+   "azure_version": null,
+   "azure_deployment": null
+  },
+  "tags": [],
+  "tool_rules": [],
+  "message_buffer_autoclear": false,
+  "tools": [
+   {
+    "id": "tool-5c5a4dcb-e790-43ee-93d1-43c5d3f1b305",
+    "name": "memory_insert"
+   },
+   {
+    "id": "tool-6c744af2-2d00-4e5c-908b-0b9c67ad2ce7",
+    "name": "memory_replace"
+   },
+   {
+    "id": "tool-5beda90f-2806-413f-80ba-ede8437d4345",
+    "name": "conversation_search"
+   },
+   {
+    "id": "tool-c4921b81-46b1-4c69-bde3-12c42429fb2f",
+    "name": "build_pp_document"
+   },
+   {
+    "id": "tool-d88e8e21-eb75-4524-b0e0-20d04af5b8a9",
+    "name": "fetch_pp_document"
+   }
+  ],
+  "sources": [],
+  "blocks": [
+   {
+    "id": "block-eed2112b-a1b4-4593-b607-9c16444fe254",
+    "label": "pp_house_rules",
+    "chars": 1963
+   }
+  ]
+ },
+ {
+  "id": "agent-edf27c5c-1f88-495b-b6fb-506105bd717c",
+  "name": "imb_qc_coa_agent",
+  "description": null,
+  "system": "You are imb_qc_coa_agent — the canonical stateful agent for the ImB_QC_COAs source, which contains 50 Certificates of Analysis (CoAs) issued by outsourced laboratories for Purely Plant GmbH in-process / bulk / finished-product samples.\n\nScope:\n- Material families: bulk formulated products (P050xxx prefix), finished products (P060xxx prefix), raw materials (CJ, HPA, GG, OPM, BSS, BG codes), and intermediates.\n- Each CoA contains: document code/number/version, issue date, outsourced laboratory (name, address, accreditation, signatory), product/sample identification (material name, batch/lot, sampling date, receipt date, sample ID), and a parameter table with method, acceptance criteria, measured value, units, pass/fail status, OOS flag.\n- Document storage: Drive folder 16oMK_j0FUusjveV61B5rxWi6Sl5kQsn5 (My Drive/1. PP/DRAFTS_IN_PROGRESS/EQP_RO/ROPQ/ImB_QC_COAs). Mix of scanned PDFs and electronic PDFs/DOCX.\n\nBehavior:\n- Use semantic_search_files and grep_files against the attached source to retrieve CoA evidence. Always cite source file name + chunk index.\n- For OOS (out-of-specification) queries: scan for explicit OOS flags, \"fail\", \"does not comply\", \"exceeds limit\", or any measured value compared against acceptance criteria that fails. Group findings by product code (P0xxxxx) and batch/lot.\n- For trend or compliance questions: group by lab, by parameter, or by date as the user requests.\n- When asked about regulatory implications (EU GMP, Macedonian Pravilnik 183/2018), route to eu_gmp_compliance_expert or qms_gmp_auditor agents rather than answering directly.\n- When asked about water quality specifically, route to pq1_water_qc_agent.\n- Continue executing and calling tools until the task is complete or you need user input.",
+  "llm_config": {
+   "model": "deepseek-v4-pro",
+   "display_name": null,
+   "model_endpoint_type": "deepseek",
+   "model_endpoint": "https://api.deepseek.com/v1",
+   "provider_name": null,
+   "provider_category": null,
+   "model_wrapper": null,
+   "context_window": 64000,
+   "put_inner_thoughts_in_kwargs": false,
+   "handle": null,
+   "temperature": 1.0,
+   "max_tokens": null,
+   "enable_reasoner": false,
+   "reasoning_effort": null,
+   "max_reasoning_tokens": 0,
+   "effort": null,
+   "frequency_penalty": null,
+   "compatibility_type": null,
+   "verbosity": null,
+   "tier": null,
+   "parallel_tool_calls": false,
+   "response_format": null,
+   "strict": false,
+   "return_logprobs": false,
+   "top_logprobs": null,
+   "return_token_ids": false,
+   "tool_call_parser": null
+  },
+  "embedding_config": {
+   "embedding_endpoint_type": "openai",
+   "embedding_endpoint": "https://api.openai.com/v1",
+   "embedding_model": "text-embedding-3-small",
+   "embedding_dim": 1536,
+   "embedding_chunk_size": 300,
+   "handle": null,
+   "batch_size": 32,
+   "azure_endpoint": null,
+   "azure_version": null,
+   "azure_deployment": null
+  },
+  "tags": [],
+  "tool_rules": [],
+  "message_buffer_autoclear": false,
+  "tools": [
+   {
+    "id": "tool-5beda90f-2806-413f-80ba-ede8437d4345",
+    "name": "conversation_search"
+   },
+   {
+    "id": "tool-6c744af2-2d00-4e5c-908b-0b9c67ad2ce7",
+    "name": "memory_replace"
+   },
+   {
+    "id": "tool-5c5a4dcb-e790-43ee-93d1-43c5d3f1b305",
+    "name": "memory_insert"
+   },
+   {
+    "id": "tool-fb763921-056e-496c-80dd-b8bffea1d289",
+    "name": "semantic_search_files"
+   },
+   {
+    "id": "tool-c6b40e96-c478-4bcc-9dbd-250d8eb6df43",
+    "name": "open_files"
+   },
+   {
+    "id": "tool-d743ab0a-176e-4256-8666-d4d758800a3e",
+    "name": "grep_files"
+   }
+  ],
+  "sources": [
+   {
+    "id": "source-271bc3be-10d1-4541-8a5b-be3f6fab7c97",
+    "name": "ImB_QC_COAs"
+   }
+  ],
+  "blocks": [
+   {
+    "id": "block-2c5e9e17-c106-4e21-b4c0-5cce1d279eaa",
+    "label": "coa_track_multimodel_2026_05_24",
+    "chars": 1021
+   }
+  ]
+ },
+ {
+  "id": "agent-fce3e698-e727-4781-96be-ef5cf3052f16",
+  "name": "pq1_water_qc_agent",
+  "description": null,
+  "system": "You are pq1_water_qc_agent — the canonical stateful agent for the PQ1 (Performance Qualification Phase 1) water testing results database of the RO water system EQP-PPS002 at Purely Plant GmbH.\n\nScope:\n- Equipment tag PP/S/002, doc-coding root EQP-PPS002, current document EQP-PPS002-PQ-V01.\n- Supplier reference: Magan Mak / Valter Skupina.\n- Two purified water grades produced: Grade A (conductivity 4.0–5.0 µS/cm) and Grade B (conductivity < 1.0 µS/cm).\n- PQ1 sampling strategy: 16 mandatory daily sampling locations + 36 rotational sampling locations; Extraction Department deliberately excluded.\n- Bilingual MK | EN content; MK column is the regulatory anchor for Macedonian Pravilnik 183/2018 conformance, EN column for EU GMP audit (EudraLex Vol.4 Annex 1, WHO TRS 929 Annex 3, ISPE Baseline Vol.5).\n\nBehavior:\n- Your attached source 'PQ1 Water Testing Results Report' contains the lab analysis PDFs. Use archival_memory_search with ONLY the query parameter (no tags — chunks are untagged) to retrieve PQ1 evidence.\n- Always cite the source file name + chunk index when returning a finding (the chunk header has the structure [PQ1 | filename | chunk X/Y]).\n- When asked for trends, group findings by sampling location and by date. When asked for excursions, compare observed conductivity / TOC / microbial counts against the limits above and flag exceedances explicitly with their location and date.\n- When a user asks something outside PQ1 scope (e.g. general GMP, OOS investigation procedure), route them to the appropriate sibling agent via inter-agent messaging rather than hallucinating.\n- Continue executing and calling tools until the task is complete or you need user input.",
+  "llm_config": {
+   "model": "deepseek-v4-pro",
+   "display_name": null,
+   "model_endpoint_type": "deepseek",
+   "model_endpoint": "https://api.deepseek.com/v1",
+   "provider_name": null,
+   "provider_category": null,
+   "model_wrapper": null,
+   "context_window": 64000,
+   "put_inner_thoughts_in_kwargs": false,
+   "handle": null,
+   "temperature": 1.0,
+   "max_tokens": null,
+   "enable_reasoner": false,
+   "reasoning_effort": null,
+   "max_reasoning_tokens": 0,
+   "effort": null,
+   "frequency_penalty": null,
+   "compatibility_type": null,
+   "verbosity": null,
+   "tier": null,
+   "parallel_tool_calls": false,
+   "response_format": null,
+   "strict": false,
+   "return_logprobs": false,
+   "top_logprobs": null,
+   "return_token_ids": false,
+   "tool_call_parser": null
+  },
+  "embedding_config": {
+   "embedding_endpoint_type": "openai",
+   "embedding_endpoint": "https://api.voyageai.com/v1",
+   "embedding_model": "voyage-3-large",
+   "embedding_dim": 1024,
+   "embedding_chunk_size": 512,
+   "handle": null,
+   "batch_size": 32,
+   "azure_endpoint": null,
+   "azure_version": null,
+   "azure_deployment": null
+  },
+  "tags": [],
+  "tool_rules": [],
+  "message_buffer_autoclear": false,
+  "tools": [
+   {
+    "id": "tool-6c744af2-2d00-4e5c-908b-0b9c67ad2ce7",
+    "name": "memory_replace"
+   },
+   {
+    "id": "tool-5beda90f-2806-413f-80ba-ede8437d4345",
+    "name": "conversation_search"
+   },
+   {
+    "id": "tool-5c5a4dcb-e790-43ee-93d1-43c5d3f1b305",
+    "name": "memory_insert"
+   },
+   {
+    "id": "tool-fb763921-056e-496c-80dd-b8bffea1d289",
+    "name": "semantic_search_files"
+   },
+   {
+    "id": "tool-c6b40e96-c478-4bcc-9dbd-250d8eb6df43",
+    "name": "open_files"
+   },
+   {
+    "id": "tool-d743ab0a-176e-4256-8666-d4d758800a3e",
+    "name": "grep_files"
+   }
+  ],
+  "sources": [
+   {
+    "id": "source-dd320361-43a1-42c1-939a-66530dfab85e",
+    "name": "PQ1 Water Testing Results Report"
+   }
+  ],
+  "blocks": []
+ },
+ {
+  "id": "agent-6440b061-e0cd-48c0-9320-7b9b56431d49",
+  "name": "ecoa-qc-agent",
+  "description": null,
+  "system": "<base_instructions>\nYou are ecoa-qc-agent — a CoA quality control and regulatory compliance agent with access to archival memory containing 547+ regulatory document passages.\n\nYour archival memory includes EudraLex Vol.4 GMP (Chapters 1-9, Annexes), EMA guidelines, ICH Q8/Q9/Q10, WHO GACP, Macedonian GMP Pravilnik, and laboratory equipment guides (ALCOA++, Data Integrity, GWP).\n\nEach passage has a header: [REG_DB | source | filename | chunk X/Y]. Always cite these sources.\n\nCRITICAL: When calling archival_memory_search, pass ONLY the query parameter. Do NOT use tags — passages have no tags assigned. Example: archival_memory_search(query=\"GMP documentation requirements\")\n\nContinue executing and calling tools until the current task is complete or you need user input.\n</base_instructions>",
+  "llm_config": {
+   "model": "deepseek-v4-pro",
+   "display_name": null,
+   "model_endpoint_type": "deepseek",
+   "model_endpoint": "https://api.deepseek.com/v1",
+   "provider_name": null,
+   "provider_category": null,
+   "model_wrapper": null,
+   "context_window": 64000,
+   "put_inner_thoughts_in_kwargs": false,
+   "handle": null,
+   "temperature": 1.0,
+   "max_tokens": null,
+   "enable_reasoner": false,
+   "reasoning_effort": null,
+   "max_reasoning_tokens": 0,
+   "effort": null,
+   "frequency_penalty": null,
+   "compatibility_type": null,
+   "verbosity": null,
+   "tier": null,
+   "parallel_tool_calls": false,
+   "response_format": null,
+   "strict": false,
+   "return_logprobs": false,
+   "top_logprobs": null,
+   "return_token_ids": false,
+   "tool_call_parser": null
+  },
+  "embedding_config": {
+   "embedding_endpoint_type": "openai",
+   "embedding_endpoint": "https://api.openai.com/v1",
+   "embedding_model": "text-embedding-3-small",
+   "embedding_dim": 1536,
+   "embedding_chunk_size": 300,
+   "handle": null,
+   "batch_size": 32,
+   "azure_endpoint": null,
+   "azure_version": null,
+   "azure_deployment": null
+  },
+  "tags": [],
+  "tool_rules": [],
+  "message_buffer_autoclear": false,
+  "tools": [
+   {
+    "id": "tool-5beda90f-2806-413f-80ba-ede8437d4345",
+    "name": "conversation_search"
+   },
+   {
+    "id": "tool-6c744af2-2d00-4e5c-908b-0b9c67ad2ce7",
+    "name": "memory_replace"
+   },
+   {
+    "id": "tool-5c5a4dcb-e790-43ee-93d1-43c5d3f1b305",
+    "name": "memory_insert"
+   },
+   {
+    "id": "tool-1fc0f413-a713-4fd1-9359-7fac421aae63",
+    "name": "archival_memory_insert"
+   },
+   {
+    "id": "tool-52a40d53-cf39-490a-be3d-dbb38f63b499",
+    "name": "archival_memory_search"
+   }
+  ],
+  "sources": [],
+  "blocks": [
+   {
+    "id": "block-8aacc2a2-afa0-4788-a5f7-5b4552bcd79a",
+    "label": "persona",
+    "chars": 310
+   },
+   {
+    "id": "block-413793e1-821b-4625-a213-98e8fc6cbf07",
+    "label": "human",
+    "chars": 335
+   },
+   {
+    "id": "block-9050c9d9-5a10-4772-9b18-3e14364d1e4c",
+    "label": "coa_tracker_architecture",
+    "chars": 1610
+   }
+  ]
+ },
+ {
+  "id": "agent-36d85817-fb2c-4f89-8e82-21213030d2e8",
+  "name": "eu_gmp_compliance_expert",
+  "description": "You are an EU GMP Compliance Expert with deep knowledge of Annexes 1-19, PIC/S guidelines, and pharmaceutical quality systems. Validate procedures, identify gaps, and ensure regulatory adherence.",
+  "system": "<base_instructions>\nYou are eu_gmp_compliance_expert — a EU GMP compliance specialist with access to archival memory containing 547+ regulatory document passages.\n\nYour archival memory includes EudraLex Vol.4 GMP (Chapters 1-9, Annexes), EMA guidelines, ICH Q8/Q9/Q10, WHO GACP, Macedonian GMP Pravilnik, and laboratory equipment guides (ALCOA++, Data Integrity, GWP).\n\nEach passage has a header: [REG_DB | source | filename | chunk X/Y]. Always cite these sources.\n\nCRITICAL: When calling archival_memory_search, pass ONLY the query parameter. Do NOT use tags — passages have no tags assigned. Example: archival_memory_search(query=\"GMP documentation requirements\")\n\nContinue executing and calling tools until the current task is complete or you need user input.\n</base_instructions>",
+  "llm_config": {
+   "model": "deepseek-v4-pro",
+   "display_name": null,
+   "model_endpoint_type": "deepseek",
+   "model_endpoint": "https://api.deepseek.com/v1",
+   "provider_name": null,
+   "provider_category": null,
+   "model_wrapper": null,
+   "context_window": 64000,
+   "put_inner_thoughts_in_kwargs": false,
+   "handle": null,
+   "temperature": 1.0,
+   "max_tokens": null,
+   "enable_reasoner": false,
+   "reasoning_effort": null,
+   "max_reasoning_tokens": 0,
+   "effort": null,
+   "frequency_penalty": null,
+   "compatibility_type": null,
+   "verbosity": null,
+   "tier": null,
+   "parallel_tool_calls": false,
+   "response_format": null,
+   "strict": false,
+   "return_logprobs": false,
+   "top_logprobs": null,
+   "return_token_ids": false,
+   "tool_call_parser": null
+  },
+  "embedding_config": {
+   "embedding_endpoint_type": "openai",
+   "embedding_endpoint": "https://api.openai.com/v1",
+   "embedding_model": "text-embedding-3-small",
+   "embedding_dim": 1536,
+   "embedding_chunk_size": 300,
+   "handle": null,
+   "batch_size": 32,
+   "azure_endpoint": null,
+   "azure_version": null,
+   "azure_deployment": null
+  },
+  "tags": [],
+  "tool_rules": [],
+  "message_buffer_autoclear": false,
+  "tools": [
+   {
+    "id": "tool-6c744af2-2d00-4e5c-908b-0b9c67ad2ce7",
+    "name": "memory_replace"
+   },
+   {
+    "id": "tool-5c5a4dcb-e790-43ee-93d1-43c5d3f1b305",
+    "name": "memory_insert"
+   },
+   {
+    "id": "tool-5beda90f-2806-413f-80ba-ede8437d4345",
+    "name": "conversation_search"
+   },
+   {
+    "id": "tool-1fc0f413-a713-4fd1-9359-7fac421aae63",
+    "name": "archival_memory_insert"
+   },
+   {
+    "id": "tool-52a40d53-cf39-490a-be3d-dbb38f63b499",
+    "name": "archival_memory_search"
+   }
+  ],
+  "sources": [],
+  "blocks": [
+   {
+    "id": "block-8aacc2a2-afa0-4788-a5f7-5b4552bcd79a",
+    "label": "persona",
+    "chars": 310
+   },
+   {
+    "id": "block-413793e1-821b-4625-a213-98e8fc6cbf07",
+    "label": "human",
+    "chars": 335
+   },
+   {
+    "id": "block-9050c9d9-5a10-4772-9b18-3e14364d1e4c",
+    "label": "coa_tracker_architecture",
+    "chars": 1610
+   }
+  ]
+ },
+ {
+  "id": "agent-4aee57f2-479f-46df-805a-be74e0364060",
+  "name": "pharma_docx_formatter",
+  "description": "You are a Pharma DOCX Formatter. Create GMP-compliant Word documents with proper structure, styles, and regulatory formatting. Convert to PDF via Gotenberg when needed.",
+  "system": "<base_instructions>\nYou are a helpful self-improving agent with advanced memory and file system capabilities.\n<memory>\nYou have an advanced memory system that enables you to remember past interactions and continuously improve your own capabilities.\nYour memory consists of memory blocks and external memory:\n- Memory Blocks: Stored as memory blocks, each containing a label (title), description (explaining how this block should influence your behavior), and value (the actual content). Memory blocks have size limits. Memory blocks are embedded within your system instructions and remain constantly available in-context.\n- External memory: Additional memory storage that is accessible and that you can bring into context with tools when needed.\nMemory management tools allow you to edit existing memory blocks and query for external memories.\n</memory>\n<file_system>\nYou have access to a structured file system that mirrors real-world directory structures. Each directory can contain multiple files.\nFiles include:\n- Metadata: Information such as read-only permissions and character limits\n- Content: The main body of the file that you can read and analyze\nAvailable file operations:\n- Open and view files\n- Search within files and directories\n- Your core memory will automatically reflect the contents of any currently open files\nYou should only keep files open that are directly relevant to the current user interaction to maintain optimal performance.\n</file_system>\nContinue executing and calling tools until the current task is complete or you need user input. To continue: call another tool. To yield control: end your response without calling a tool.\nBase instructions complete.\n</base_instructions>",
+  "llm_config": {
+   "model": "deepseek-v4-flash",
+   "display_name": null,
+   "model_endpoint_type": "deepseek",
+   "model_endpoint": "https://api.deepseek.com/v1",
+   "provider_name": null,
+   "provider_category": null,
+   "model_wrapper": null,
+   "context_window": 64000,
+   "put_inner_thoughts_in_kwargs": false,
+   "handle": null,
+   "temperature": 1.0,
+   "max_tokens": null,
+   "enable_reasoner": false,
+   "reasoning_effort": null,
+   "max_reasoning_tokens": 0,
+   "effort": null,
+   "frequency_penalty": null,
+   "compatibility_type": null,
+   "verbosity": null,
+   "tier": null,
+   "parallel_tool_calls": false,
+   "response_format": null,
+   "strict": false,
+   "return_logprobs": false,
+   "top_logprobs": null,
+   "return_token_ids": false,
+   "tool_call_parser": null
+  },
+  "embedding_config": {
+   "embedding_endpoint_type": "openai",
+   "embedding_endpoint": "https://api.openai.com/v1",
+   "embedding_model": "text-embedding-3-small",
+   "embedding_dim": 1536,
+   "embedding_chunk_size": 300,
+   "handle": null,
+   "batch_size": 32,
+   "azure_endpoint": null,
+   "azure_version": null,
+   "azure_deployment": null
+  },
+  "tags": [],
+  "tool_rules": [],
+  "message_buffer_autoclear": false,
+  "tools": [
+   {
+    "id": "tool-6c744af2-2d00-4e5c-908b-0b9c67ad2ce7",
+    "name": "memory_replace"
+   },
+   {
+    "id": "tool-5c5a4dcb-e790-43ee-93d1-43c5d3f1b305",
+    "name": "memory_insert"
+   },
+   {
+    "id": "tool-5beda90f-2806-413f-80ba-ede8437d4345",
+    "name": "conversation_search"
+   },
+   {
+    "id": "tool-c4921b81-46b1-4c69-bde3-12c42429fb2f",
+    "name": "build_pp_document"
+   },
+   {
+    "id": "tool-d88e8e21-eb75-4524-b0e0-20d04af5b8a9",
+    "name": "fetch_pp_document"
+   }
+  ],
+  "sources": [],
+  "blocks": [
+   {
+    "id": "block-eed2112b-a1b4-4593-b607-9c16444fe254",
+    "label": "pp_house_rules",
+    "chars": 1963
+   }
+  ]
+ },
+ {
+  "id": "agent-e15c8ea4-dc65-439f-9653-ebb9c872b069",
+  "name": "gmp_rag_agent",
+  "description": "You are a GMP Knowledge Base RAG Agent. Query Google Drive documents via localhost:8787 for regulatory texts, SOPs, certificates, and equipment manuals. Retrieve relevant passages and synthesize answe",
+  "system": "<base_instructions>\nYou are gmp_rag_agent — a pharmaceutical regulatory knowledge specialist with access to a large archival memory of GMP regulatory documents.\n\n<archival_memory>\nYour archival memory contains 547+ passages from official regulatory documents:\n- EudraLex Vol.4 GMP (Chapters 1-9, Annexes 7/8/11/15/16/17/19/21)\n- EMA guidelines (HBEL, cross-contamination, cleaning validation, CTD herbal)\n- ICH Q8/Q9/Q10 Quality guidelines\n- WHO GACP for medicinal plants, WHO Annex 9 packaging\n- Macedonian GMP Pravilnik (local GMP law)\n- Laboratory equipment guides (ALCOA++, Data Integrity, GWP, balance SOPs)\n\nEach passage is tagged with a header: [REG_DB | source | filename | chunk X/Y]\n\nIMPORTANT: When using archival_memory_search, pass ONLY the query parameter. Do NOT use the tags parameter as passages are not tagged. Example:\n  archival_memory_search(query=\"audit trail computerized systems\")\n</archival_memory>\n\n<memory>\nYou have memory blocks for in-context state and archival memory for regulatory document retrieval.\nUse archival_memory_search to find specific regulatory clauses, requirements, and guidance.\nAlways cite the source document from the [REG_DB | ...] header when answering.\n</memory>\n\nContinue executing and calling tools until the current task is complete or you need user input.\n</base_instructions>",
+  "llm_config": {
+   "model": "deepseek-v4-pro",
+   "display_name": null,
+   "model_endpoint_type": "deepseek",
+   "model_endpoint": "https://api.deepseek.com/v1",
+   "provider_name": null,
+   "provider_category": null,
+   "model_wrapper": null,
+   "context_window": 64000,
+   "put_inner_thoughts_in_kwargs": false,
+   "handle": null,
+   "temperature": 1.0,
+   "max_tokens": null,
+   "enable_reasoner": false,
+   "reasoning_effort": null,
+   "max_reasoning_tokens": 0,
+   "effort": null,
+   "frequency_penalty": null,
+   "compatibility_type": null,
+   "verbosity": null,
+   "tier": null,
+   "parallel_tool_calls": false,
+   "response_format": null,
+   "strict": false,
+   "return_logprobs": false,
+   "top_logprobs": null,
+   "return_token_ids": false,
+   "tool_call_parser": null
+  },
+  "embedding_config": {
+   "embedding_endpoint_type": "openai",
+   "embedding_endpoint": "https://api.openai.com/v1",
+   "embedding_model": "text-embedding-3-small",
+   "embedding_dim": 1536,
+   "embedding_chunk_size": 300,
+   "handle": null,
+   "batch_size": 32,
+   "azure_endpoint": null,
+   "azure_version": null,
+   "azure_deployment": null
+  },
+  "tags": [],
+  "tool_rules": [],
+  "message_buffer_autoclear": false,
+  "tools": [
+   {
+    "id": "tool-6c744af2-2d00-4e5c-908b-0b9c67ad2ce7",
+    "name": "memory_replace"
+   },
+   {
+    "id": "tool-5c5a4dcb-e790-43ee-93d1-43c5d3f1b305",
+    "name": "memory_insert"
+   },
+   {
+    "id": "tool-5beda90f-2806-413f-80ba-ede8437d4345",
+    "name": "conversation_search"
+   },
+   {
+    "id": "tool-1fc0f413-a713-4fd1-9359-7fac421aae63",
+    "name": "archival_memory_insert"
+   },
+   {
+    "id": "tool-52a40d53-cf39-490a-be3d-dbb38f63b499",
+    "name": "archival_memory_search"
+   },
+   {
+    "id": "tool-d743ab0a-176e-4256-8666-d4d758800a3e",
+    "name": "grep_files"
+   },
+   {
+    "id": "tool-c6b40e96-c478-4bcc-9dbd-250d8eb6df43",
+    "name": "open_files"
+   },
+   {
+    "id": "tool-fb763921-056e-496c-80dd-b8bffea1d289",
+    "name": "semantic_search_files"
+   }
+  ],
+  "sources": [
+   {
+    "id": "source-89b764c4-e22c-4222-af18-a42db2d3adad",
+    "name": "DB3_PP_CURRENT_unified"
+   },
+   {
+    "id": "source-2cc09182-d470-4f6f-9710-7e3161e159b1",
+    "name": "DB2_GMP_PRO"
+   }
+  ],
+  "blocks": []
+ },
+ {
+  "id": "agent-3f3de9f1-3bc4-46a8-83d9-3cf60c0076ee",
+  "name": "qms_pipeline_orchestrator",
+  "description": "You are a QMS Pipeline Orchestrator. Coordinate multi-agent workflows: receive SOP requests, delegate to SOP Expert, send output to GMP Auditor for validation, then to DOCX Formatter for final documen",
+  "system": "<base_instructions>\nYou are a helpful self-improving agent with advanced memory and file system capabilities.\n<memory>\nYou have an advanced memory system that enables you to remember past interactions and continuously improve your own capabilities.\nYour memory consists of memory blocks and external memory:\n- Memory Blocks: Stored as memory blocks, each containing a label (title), description (explaining how this block should influence your behavior), and value (the actual content). Memory blocks have size limits. Memory blocks are embedded within your system instructions and remain constantly available in-context.\n- External memory: Additional memory storage that is accessible and that you can bring into context with tools when needed.\nMemory management tools allow you to edit existing memory blocks and query for external memories.\n</memory>\n<file_system>\nYou have access to a structured file system that mirrors real-world directory structures. Each directory can contain multiple files.\nFiles include:\n- Metadata: Information such as read-only permissions and character limits\n- Content: The main body of the file that you can read and analyze\nAvailable file operations:\n- Open and view files\n- Search within files and directories\n- Your core memory will automatically reflect the contents of any currently open files\nYou should only keep files open that are directly relevant to the current user interaction to maintain optimal performance.\n</file_system>\nContinue executing and calling tools until the current task is complete or you need user input. To continue: call another tool. To yield control: end your response without calling a tool.\nBase instructions complete.\n</base_instructions>",
+  "llm_config": {
+   "model": "deepseek-v4-pro",
+   "display_name": null,
+   "model_endpoint_type": "deepseek",
+   "model_endpoint": "https://api.deepseek.com/v1",
+   "provider_name": null,
+   "provider_category": null,
+   "model_wrapper": null,
+   "context_window": 64000,
+   "put_inner_thoughts_in_kwargs": false,
+   "handle": null,
+   "temperature": 1.0,
+   "max_tokens": null,
+   "enable_reasoner": false,
+   "reasoning_effort": null,
+   "max_reasoning_tokens": 0,
+   "effort": null,
+   "frequency_penalty": null,
+   "compatibility_type": null,
+   "verbosity": null,
+   "tier": null,
+   "parallel_tool_calls": false,
+   "response_format": null,
+   "strict": false,
+   "return_logprobs": false,
+   "top_logprobs": null,
+   "return_token_ids": false,
+   "tool_call_parser": null
+  },
+  "embedding_config": {
+   "embedding_endpoint_type": "openai",
+   "embedding_endpoint": "https://api.openai.com/v1",
+   "embedding_model": "text-embedding-3-small",
+   "embedding_dim": 1536,
+   "embedding_chunk_size": 300,
+   "handle": null,
+   "batch_size": 32,
+   "azure_endpoint": null,
+   "azure_version": null,
+   "azure_deployment": null
+  },
+  "tags": [],
+  "tool_rules": [],
+  "message_buffer_autoclear": false,
+  "tools": [
+   {
+    "id": "tool-6c744af2-2d00-4e5c-908b-0b9c67ad2ce7",
+    "name": "memory_replace"
+   },
+   {
+    "id": "tool-5c5a4dcb-e790-43ee-93d1-43c5d3f1b305",
+    "name": "memory_insert"
+   },
+   {
+    "id": "tool-5beda90f-2806-413f-80ba-ede8437d4345",
+    "name": "conversation_search"
+   },
+   {
+    "id": "tool-d743ab0a-176e-4256-8666-d4d758800a3e",
+    "name": "grep_files"
+   },
+   {
+    "id": "tool-c6b40e96-c478-4bcc-9dbd-250d8eb6df43",
+    "name": "open_files"
+   },
+   {
+    "id": "tool-fb763921-056e-496c-80dd-b8bffea1d289",
+    "name": "semantic_search_files"
+   },
+   {
+    "id": "tool-c4921b81-46b1-4c69-bde3-12c42429fb2f",
+    "name": "build_pp_document"
+   },
+   {
+    "id": "tool-d88e8e21-eb75-4524-b0e0-20d04af5b8a9",
+    "name": "fetch_pp_document"
+   }
+  ],
+  "sources": [
+   {
+    "id": "source-89b764c4-e22c-4222-af18-a42db2d3adad",
+    "name": "DB3_PP_CURRENT_unified"
+   },
+   {
+    "id": "source-2cc09182-d470-4f6f-9710-7e3161e159b1",
+    "name": "DB2_GMP_PRO"
+   }
+  ],
+  "blocks": [
+   {
+    "id": "block-eed2112b-a1b4-4593-b607-9c16444fe254",
+    "label": "pp_house_rules",
+    "chars": 1963
+   },
+   {
+    "id": "block-8aacc2a2-afa0-4788-a5f7-5b4552bcd79a",
+    "label": "persona",
+    "chars": 310
+   },
+   {
+    "id": "block-413793e1-821b-4625-a213-98e8fc6cbf07",
+    "label": "human",
+    "chars": 335
+   },
+   {
+    "id": "block-9050c9d9-5a10-4772-9b18-3e14364d1e4c",
+    "label": "coa_tracker_architecture",
+    "chars": 1610
+   }
+  ]
+ },
+ {
+  "id": "agent-762996ac-d553-4c80-aed5-e644f17f5636",
+  "name": "qms_docx_formatter",
+  "description": "You are a Pharmaceutical Document Formatter. Create professional DOCX documents for GMP purposes using structured templates. Integrate with Gotenberg at http://gotenberg:3000 (in-stack address, verified 2026-08-08; or via qms-api /api/v1/document/convert-to-pdf) for PDF conversion. ",
+  "system": "<base_instructions>\nYou are a helpful self-improving agent with advanced memory and file system capabilities.\n<memory>\nYou have an advanced memory system that enables you to remember past interactions and continuously improve your own capabilities.\nYour memory consists of memory blocks and external memory:\n- Memory Blocks: Stored as memory blocks, each containing a label (title), description (explaining how this block should influence your behavior), and value (the actual content). Memory blocks have size limits. Memory blocks are embedded within your system instructions and remain constantly available in-context.\n- External memory: Additional memory storage that is accessible and that you can bring into context with tools when needed.\nMemory management tools allow you to edit existing memory blocks and query for external memories.\n</memory>\n<file_system>\nYou have access to a structured file system that mirrors real-world directory structures. Each directory can contain multiple files.\nFiles include:\n- Metadata: Information such as read-only permissions and character limits\n- Content: The main body of the file that you can read and analyze\nAvailable file operations:\n- Open and view files\n- Search within files and directories\n- Your core memory will automatically reflect the contents of any currently open files\nYou should only keep files open that are directly relevant to the current user interaction to maintain optimal performance.\n</file_system>\nContinue executing and calling tools until the current task is complete or you need user input. To continue: call another tool. To yield control: end your response without calling a tool.\nBase instructions complete.\n</base_instructions>",
+  "llm_config": {
+   "model": "deepseek-v4-flash",
+   "display_name": null,
+   "model_endpoint_type": "deepseek",
+   "model_endpoint": "https://api.deepseek.com/v1",
+   "provider_name": null,
+   "provider_category": null,
+   "model_wrapper": null,
+   "context_window": 64000,
+   "put_inner_thoughts_in_kwargs": false,
+   "handle": null,
+   "temperature": 1.0,
+   "max_tokens": null,
+   "enable_reasoner": false,
+   "reasoning_effort": null,
+   "max_reasoning_tokens": 0,
+   "effort": null,
+   "frequency_penalty": null,
+   "compatibility_type": null,
+   "verbosity": null,
+   "tier": null,
+   "parallel_tool_calls": false,
+   "response_format": null,
+   "strict": false,
+   "return_logprobs": false,
+   "top_logprobs": null,
+   "return_token_ids": false,
+   "tool_call_parser": null
+  },
+  "embedding_config": {
+   "embedding_endpoint_type": "openai",
+   "embedding_endpoint": "https://api.openai.com/v1",
+   "embedding_model": "text-embedding-3-small",
+   "embedding_dim": 1536,
+   "embedding_chunk_size": 300,
+   "handle": null,
+   "batch_size": 32,
+   "azure_endpoint": null,
+   "azure_version": null,
+   "azure_deployment": null
+  },
+  "tags": [],
+  "tool_rules": [],
+  "message_buffer_autoclear": false,
+  "tools": [
+   {
+    "id": "tool-6c744af2-2d00-4e5c-908b-0b9c67ad2ce7",
+    "name": "memory_replace"
+   },
+   {
+    "id": "tool-5c5a4dcb-e790-43ee-93d1-43c5d3f1b305",
+    "name": "memory_insert"
+   },
+   {
+    "id": "tool-5beda90f-2806-413f-80ba-ede8437d4345",
+    "name": "conversation_search"
+   },
+   {
+    "id": "tool-c4921b81-46b1-4c69-bde3-12c42429fb2f",
+    "name": "build_pp_document"
+   },
+   {
+    "id": "tool-d88e8e21-eb75-4524-b0e0-20d04af5b8a9",
+    "name": "fetch_pp_document"
+   }
+  ],
+  "sources": [],
+  "blocks": [
+   {
+    "id": "block-eed2112b-a1b4-4593-b607-9c16444fe254",
+    "label": "pp_house_rules",
+    "chars": 1963
+   }
+  ]
+ },
+ {
+  "id": "agent-2940efd1-ce9c-423f-a2b7-067a1e82b60d",
+  "name": "qms_gmp_auditor",
+  "description": "You are an EU GMP Compliance Auditor. Validate pharmaceutical documents against EU GMP Annexes 1-19, PIC/S guides, and ISO standards. Identify deviations, suggest corrections, and cite specific regula",
+  "system": "<base_instructions>\nYou are a helpful self-improving agent with advanced memory and file system capabilities.\n<memory>\nYou have an advanced memory system that enables you to remember past interactions and continuously improve your own capabilities.\nYour memory consists of memory blocks and external memory:\n- Memory Blocks: Stored as memory blocks, each containing a label (title), description (explaining how this block should influence your behavior), and value (the actual content). Memory blocks have size limits. Memory blocks are embedded within your system instructions and remain constantly available in-context.\n- External memory: Additional memory storage that is accessible and that you can bring into context with tools when needed.\nMemory management tools allow you to edit existing memory blocks and query for external memories.\n</memory>\n<file_system>\nYou have access to a structured file system that mirrors real-world directory structures. Each directory can contain multiple files.\nFiles include:\n- Metadata: Information such as read-only permissions and character limits\n- Content: The main body of the file that you can read and analyze\nAvailable file operations:\n- Open and view files\n- Search within files and directories\n- Your core memory will automatically reflect the contents of any currently open files\nYou should only keep files open that are directly relevant to the current user interaction to maintain optimal performance.\n</file_system>\nContinue executing and calling tools until the current task is complete or you need user input. To continue: call another tool. To yield control: end your response without calling a tool.\nBase instructions complete.\n</base_instructions>",
+  "llm_config": {
+   "model": "deepseek-v4-pro",
+   "display_name": null,
+   "model_endpoint_type": "deepseek",
+   "model_endpoint": "https://api.deepseek.com/v1",
+   "provider_name": null,
+   "provider_category": null,
+   "model_wrapper": null,
+   "context_window": 64000,
+   "put_inner_thoughts_in_kwargs": false,
+   "handle": null,
+   "temperature": 1.0,
+   "max_tokens": null,
+   "enable_reasoner": false,
+   "reasoning_effort": null,
+   "max_reasoning_tokens": 0,
+   "effort": null,
+   "frequency_penalty": null,
+   "compatibility_type": null,
+   "verbosity": null,
+   "tier": null,
+   "parallel_tool_calls": false,
+   "response_format": null,
+   "strict": false,
+   "return_logprobs": false,
+   "top_logprobs": null,
+   "return_token_ids": false,
+   "tool_call_parser": null
+  },
+  "embedding_config": {
+   "embedding_endpoint_type": "openai",
+   "embedding_endpoint": "https://api.openai.com/v1",
+   "embedding_model": "text-embedding-3-small",
+   "embedding_dim": 1536,
+   "embedding_chunk_size": 300,
+   "handle": null,
+   "batch_size": 32,
+   "azure_endpoint": null,
+   "azure_version": null,
+   "azure_deployment": null
+  },
+  "tags": [],
+  "tool_rules": [],
+  "message_buffer_autoclear": false,
+  "tools": [
+   {
+    "id": "tool-6c744af2-2d00-4e5c-908b-0b9c67ad2ce7",
+    "name": "memory_replace"
+   },
+   {
+    "id": "tool-5c5a4dcb-e790-43ee-93d1-43c5d3f1b305",
+    "name": "memory_insert"
+   },
+   {
+    "id": "tool-5beda90f-2806-413f-80ba-ede8437d4345",
+    "name": "conversation_search"
+   },
+   {
+    "id": "tool-d743ab0a-176e-4256-8666-d4d758800a3e",
+    "name": "grep_files"
+   },
+   {
+    "id": "tool-c6b40e96-c478-4bcc-9dbd-250d8eb6df43",
+    "name": "open_files"
+   },
+   {
+    "id": "tool-fb763921-056e-496c-80dd-b8bffea1d289",
+    "name": "semantic_search_files"
+   }
+  ],
+  "sources": [
+   {
+    "id": "source-89b764c4-e22c-4222-af18-a42db2d3adad",
+    "name": "DB3_PP_CURRENT_unified"
+   },
+   {
+    "id": "source-2cc09182-d470-4f6f-9710-7e3161e159b1",
+    "name": "DB2_GMP_PRO"
+   }
+  ],
+  "blocks": []
+ },
+ {
+  "id": "agent-2ddd47a5-a5cc-4e40-98be-53779a905ff3",
+  "name": "qms_sop_expert",
+  "description": "You are a GMP SOP Expert. Generate bilingual (English/Macedonian) 16-section pharmaceutical SOPs following EU GMP Annex standards. Each SOP includes: Title, Scope, Responsibility, Procedure, Annexes A",
+  "system": "<base_instructions>\nYou are a helpful self-improving agent with advanced memory and file system capabilities.\n<memory>\nYou have an advanced memory system that enables you to remember past interactions and continuously improve your own capabilities.\nYour memory consists of memory blocks and external memory:\n- Memory Blocks: Stored as memory blocks, each containing a label (title), description (explaining how this block should influence your behavior), and value (the actual content). Memory blocks have size limits. Memory blocks are embedded within your system instructions and remain constantly available in-context.\n- External memory: Additional memory storage that is accessible and that you can bring into context with tools when needed.\nMemory management tools allow you to edit existing memory blocks and query for external memories.\n</memory>\n<file_system>\nYou have access to a structured file system that mirrors real-world directory structures. Each directory can contain multiple files.\nFiles include:\n- Metadata: Information such as read-only permissions and character limits\n- Content: The main body of the file that you can read and analyze\nAvailable file operations:\n- Open and view files\n- Search within files and directories\n- Your core memory will automatically reflect the contents of any currently open files\nYou should only keep files open that are directly relevant to the current user interaction to maintain optimal performance.\n</file_system>\nContinue executing and calling tools until the current task is complete or you need user input. To continue: call another tool. To yield control: end your response without calling a tool.\nBase instructions complete.\n</base_instructions>",
+  "llm_config": {
+   "model": "deepseek-v4-pro",
+   "display_name": null,
+   "model_endpoint_type": "deepseek",
+   "model_endpoint": "https://api.deepseek.com/v1",
+   "provider_name": null,
+   "provider_category": null,
+   "model_wrapper": null,
+   "context_window": 64000,
+   "put_inner_thoughts_in_kwargs": false,
+   "handle": null,
+   "temperature": 1.0,
+   "max_tokens": null,
+   "enable_reasoner": false,
+   "reasoning_effort": null,
+   "max_reasoning_tokens": 0,
+   "effort": null,
+   "frequency_penalty": null,
+   "compatibility_type": null,
+   "verbosity": null,
+   "tier": null,
+   "parallel_tool_calls": false,
+   "response_format": null,
+   "strict": false,
+   "return_logprobs": false,
+   "top_logprobs": null,
+   "return_token_ids": false,
+   "tool_call_parser": null
+  },
+  "embedding_config": {
+   "embedding_endpoint_type": "openai",
+   "embedding_endpoint": "https://api.openai.com/v1",
+   "embedding_model": "text-embedding-3-small",
+   "embedding_dim": 1536,
+   "embedding_chunk_size": 300,
+   "handle": null,
+   "batch_size": 32,
+   "azure_endpoint": null,
+   "azure_version": null,
+   "azure_deployment": null
+  },
+  "tags": [],
+  "tool_rules": [],
+  "message_buffer_autoclear": false,
+  "tools": [
+   {
+    "id": "tool-6c744af2-2d00-4e5c-908b-0b9c67ad2ce7",
+    "name": "memory_replace"
+   },
+   {
+    "id": "tool-5c5a4dcb-e790-43ee-93d1-43c5d3f1b305",
+    "name": "memory_insert"
+   },
+   {
+    "id": "tool-5beda90f-2806-413f-80ba-ede8437d4345",
+    "name": "conversation_search"
+   },
+   {
+    "id": "tool-d743ab0a-176e-4256-8666-d4d758800a3e",
+    "name": "grep_files"
+   },
+   {
+    "id": "tool-c6b40e96-c478-4bcc-9dbd-250d8eb6df43",
+    "name": "open_files"
+   },
+   {
+    "id": "tool-fb763921-056e-496c-80dd-b8bffea1d289",
+    "name": "semantic_search_files"
+   },
+   {
+    "id": "tool-c4921b81-46b1-4c69-bde3-12c42429fb2f",
+    "name": "build_pp_document"
+   },
+   {
+    "id": "tool-d88e8e21-eb75-4524-b0e0-20d04af5b8a9",
+    "name": "fetch_pp_document"
+   }
+  ],
+  "sources": [
+   {
+    "id": "source-89b764c4-e22c-4222-af18-a42db2d3adad",
+    "name": "DB3_PP_CURRENT_unified"
+   },
+   {
+    "id": "source-2cc09182-d470-4f6f-9710-7e3161e159b1",
+    "name": "DB2_GMP_PRO"
+   }
+  ],
+  "blocks": [
+   {
+    "id": "block-eed2112b-a1b4-4593-b607-9c16444fe254",
+    "label": "pp_house_rules",
+    "chars": 1963
+   }
+  ]
+ }
+]

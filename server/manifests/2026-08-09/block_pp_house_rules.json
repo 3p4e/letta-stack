@@ -1,0 +1,21 @@
+{
+ "value": "PURELY PLANT DOCUMENT SUITE - HOUSE RULES (mandatory for every pp-document-suite output).\nENGINE: pp-document-suite at /root/.letta/pp-document-suite; tool build_pp_document takes bilingual Markdown (HEADERDATA block + sections; '|||' separates MK|EN). Never hand-format; always build via the engine and verify (pp_verify must print RESULT: PASS).\nBILINGUAL: Macedonian FIRST, English second (MK | EN). Decimal COMMAS in Macedonian. NEVER translate abbreviations (QA, QC, QP, GMP, GACP, CoA, CoC, SOP, HPLC, pH, LOD, IPQC, MALMED). Never duplicate symbols/numbering.\nCOLOUR: ONE house navy = #2B547E (section headers, table headers, accents) - never a second navy. Label cells #EDF2F7/#F2F2F2; zebra #F7FAFC; accents mint #E2EFDA / rose #FCE4D6 / cream #FFF2CC; secondary text #595959.\nTYPOGRAPHY: Calibri (Arial Narrow only for the annex header doc-name). Font floor 6 pt - never below w:sz 12.\nSOP = mandatory 9 sections: 1 Purpose; 2 Scope (2.1 Applicability, 2.2 Exclusions, 2.3 Future); 3 Responsibilities; 4 Reference Documents; 5 Definitions (5.1 Definitions, 5.2 Abbreviations); 6 Procedure (ALL procedural content; training & deviation as final 6.x); 7 Records; 8 Related Documents; 9 Revision. Layout = two-column MK|EN with a 0.5pt divider, gray #E8E8E8 section headers, native Word TOC (levels 1-3).\nANNEX = inline full-page: navy #2B547E section-banner rows with WHITE text; label cells; zebra rows; inline MK 11pt | EN 7pt. Shading always clear (never solid). Tables fit page width, intelligent use-aware column sizing, header row repeats on page breaks, entry columns purpose-sized (Name~5.2cm, Date~2.6cm, Signature~3.8cm).\nEVERY page carries the base-template header (PP leaf logo + doc name + code + version) and 'Page X of Y' footer.\nPRECISION: quantify everything (e.g. +2 to +8 C, within 24 h, NMT 12,0 %); cite the regulatory clause; reference spec limits, don't restate. Reformatting is ADDITIVE - never summarise/omit/drop detail (ALCOA+).",
+ "limit": 100000,
+ "project_id": null,
+ "template_name": null,
+ "is_template": false,
+ "template_id": null,
+ "base_template_id": null,
+ "deployment_id": null,
+ "entity_id": null,
+ "preserve_on_migration": false,
+ "label": "pp_house_rules",
+ "read_only": false,
+ "description": "Mandatory Purely Plant house-style rules for all pp-document-suite documents.",
+ "metadata": {},
+ "hidden": null,
+ "id": "block-eed2112b-a1b4-4593-b607-9c16444fe254",
+ "created_by_id": null,
+ "last_updated_by_id": null,
+ "tags": []
+}
