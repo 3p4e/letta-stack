@@ -1,0 +1,53 @@
+name: weekly_suma_iso17
+services:
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+    - 8080:80
+    labels:
+    - traefik.enable=true
+    - traefik.http.routers.suma.rule=Host(`srv1231216.hstgr.cloud`)
+    - traefik.http.routers.suma.entrypoints=websecure
+    - traefik.http.routers.suma.tls.certresolver=letsencrypt
+    - traefik.http.services.suma.loadbalancer.server.port=80
+    volumes:
+    - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+    - frontend
+    - api
+    restart: unless-stopped
+    networks:
+    - shared
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../docker/frontend.Dockerfile
+    environment:
+    - VITE_SUPABASE_URL=${SUPABASE_URL}
+    - VITE_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+    - VITE_API_URL=/api
+    restart: unless-stopped
+    networks:
+    - shared
+  api:
+    build:
+      context: ./api
+      dockerfile: ../docker/api.Dockerfile
+    environment:
+    - PORT=4000
+    - SUPABASE_URL=${SUPABASE_URL}
+    - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+    - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+    - GOTENBERG_URL=${GOTENBERG_URL}
+    - LETTA_URL=${LETTA_URL}
+    - LETTA_API_KEY=${LETTA_API_KEY}
+    - QDRANT_URL=${QDRANT_URL}
+    - SUMA_API_URL=${SUMA_API_URL:-http://72.60.35.12:8501}
+    - SUMA_API_KEY=${SUMA_API_KEY:-${SUMA_API_KEY}}
+    - CORS_ORIGIN=*
+    restart: unless-stopped
+    networks:
+    - shared
+networks:
+  shared:
+    external: true

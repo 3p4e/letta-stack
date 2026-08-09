@@ -1,0 +1,22 @@
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant
+    restart: unless-stopped
+    ports:
+    - 6333:6333
+    - 6334:6334
+    volumes:
+    - qdrant_data:/qdrant/storage
+    environment:
+    - QDRANT__SERVICE__HTTP_PORT=6333
+    - QDRANT__SERVICE__GRPC_PORT=6334
+    labels:
+    - traefik.enable=false
+    networks:
+    - shared
+volumes:
+  qdrant_data: null
+networks:
+  shared:
+    external: true

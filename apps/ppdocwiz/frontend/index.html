@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PP Doc Wiz — Purely Plant Document Wizard</title>
+<style>
+  :root{ --navy:#2B547E; --label:#EDF2F7; --zebra:#F7FAFC; --line:#B0BEC5; --ink:#1a2733; --grey:#595959; }
+  *{ box-sizing:border-box; } body{ margin:0; font-family:Calibri,"Segoe UI",system-ui,sans-serif; color:var(--ink); background:#f4f6f8; }
+  header{ background:var(--navy); color:#fff; padding:14px 20px; display:flex; align-items:center; gap:12px; }
+  header .leaf{ font-size:22px } header h1{ font-size:18px; margin:0; font-weight:700; letter-spacing:.3px }
+  header small{ opacity:.8; margin-left:auto; font-size:12px }
+  .tabs{ display:flex; gap:4px; background:#fff; border-bottom:1px solid #e2e8f0; padding:0 16px }
+  .tabs button{ border:0; background:none; padding:12px 18px; font-size:15px; cursor:pointer; color:var(--grey); border-bottom:3px solid transparent }
+  .tabs button.active{ color:var(--navy); border-bottom-color:var(--navy); font-weight:700 }
+  main{ max-width:960px; margin:0 auto; padding:18px }
+  .card{ background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:16px; margin-bottom:14px }
+  .row{ display:flex; gap:10px; flex-wrap:wrap } .row>*{ flex:1; min-width:160px }
+  label{ display:block; font-size:12px; color:var(--grey); margin:8px 0 3px }
+  input,select,textarea{ width:100%; padding:8px; border:1px solid var(--line); border-radius:5px; font:inherit; background:#fff }
+  textarea{ min-height:64px; resize:vertical; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:13px }
+  .btn{ background:var(--navy); color:#fff; border:0; border-radius:6px; padding:9px 16px; font-size:14px; cursor:pointer }
+  .btn.sec{ background:#fff; color:var(--navy); border:1px solid var(--navy) }
+  .btn.ghost{ background:none; color:var(--grey); border:1px dashed var(--line) }
+  .sec-hd{ display:flex; align-items:center; gap:8px; margin-bottom:8px } .sec-hd b{ color:var(--navy) }
+  .block{ border-left:3px solid var(--navy); background:var(--zebra); padding:10px; margin:8px 0; border-radius:0 6px 6px 0 }
+  .pill{ display:inline-block; background:var(--label); color:var(--navy); font-size:11px; padding:2px 8px; border-radius:10px; margin-right:6px }
+  .muted{ color:var(--grey); font-size:12px } .ok{ color:#1E8449; font-weight:700 } .bad{ color:#C0392B; font-weight:700 }
+  pre{ background:#0f1a26; color:#d6e2f0; padding:12px; border-radius:6px; overflow:auto; font-size:12px; max-height:320px }
+  .msg{ padding:10px 12px; border-radius:8px; margin:8px 0; max-width:85% }
+  .msg.u{ background:var(--navy); color:#fff; margin-left:auto } .msg.a{ background:#fff; border:1px solid #e2e8f0 }
+  .right{ text-align:right } .sp{ height:8px }
+  a.dl{ display:inline-block; margin-right:10px; color:var(--navy); font-weight:700; text-decoration:none }
+</style>
+</head>
+<body>
+<header><span class="leaf">🌿</span><h1>PP Doc Wiz</h1><small id="hstat">Purely Plant · pp-document-suite</small></header>
+<div class="tabs">
+  <button id="tabW" class="active" onclick="tab('W')">🧩 Wizard</button>
+  <button id="tabC" onclick="tab('C')">💬 Chat</button>
+</div>
+<main>
+  <!-- ===================== WIZARD ===================== -->
+  <div id="paneW">
+    <div class="card">
+      <div class="row">
+        <div><label>Document type</label><select id="doctype"></select></div>
+        <div><label>Code</label><input id="code" placeholder="WHSOP_002_A02"></div>
+        <div style="max-width:100px"><label>Version</label><input id="version" value="01"></div>
+        <div><label>Parent SOP</label><input id="parent" placeholder="WHSOP 002"></div>
+        <div style="max-width:140px"><label>Orientation</label><select id="orient"><option>portrait</option><option>landscape</option></select></div>
+      </div>
+      <div class="row">
+        <div><label>Title — Macedonian (МК)</label><input id="mk_title" placeholder="Наслов на македонски"></div>
+        <div><label>Title — English (EN)</label><input id="en_title" placeholder="Title in English"></div>
+      </div>
+    </div>
+
+    <div id="sections"></div>
+    <button class="btn ghost" onclick="addSection()">＋ Add section</button>
+
+    <div class="card" style="margin-top:14px">
+      <button class="btn sec" onclick="loadExample()">Load example</button>
+      <button class="btn sec" onclick="preview()">Preview Markdown</button>
+      <button class="btn" onclick="build()">Generate .docx →</button>
+      <div class="sp"></div>
+      <div id="result"></div>
+      <pre id="md" style="display:none"></pre>
+    </div>
+  </div>
+
+  <!-- ===================== CHAT ===================== -->
+  <div id="paneC" style="display:none">
+    <div class="card">
+      <div class="muted">Talk to a Letta document agent (default <b>qms_docx_formatter</b>). It composes the bilingual Markdown and builds the .docx via the pp-document-suite tool. Requires the backend to have <code>LETTA_BASE_URL</code> set.</div>
+      <label>Agent</label><input id="agent" value="qms_docx_formatter">
+    </div>
+    <div id="chat" class="card" style="min-height:220px"></div>
+    <div class="card"><div class="row">
+      <textarea id="cmsg" style="min-height:70px" placeholder="e.g. Build a bilingual Annex 'Stability schedule' for Cannabis flos, condition 25C/60%RH, 24 months..."></textarea>
+    </div><div class="right sp"></div><div class="right"><button class="btn" onclick="send()">Send</button></div></div>
+  </div>
+</main>
+
+<script>
+const $=id=>document.getElementById(id); let DOCTYPES=[];
+function tab(t){ paneW.style.display=t=='W'?'':'none'; paneC.style.display=t=='C'?'':'none';
+  tabW.classList.toggle('active',t=='W'); tabC.classList.toggle('active',t=='C'); }
+
+async function init(){
+  try{ const h=await (await fetch('/api/health')).json();
+    hstat.textContent='Purely Plant · '+(h.letta?'Letta ✓':'Letta ✗')+' · '+(h.pdf?'PDF ✓':'DOCX only'); }catch(e){}
+  const d=await (await fetch('/api/doctypes')).json(); DOCTYPES=d.doctypes;
+  doctype.innerHTML=DOCTYPES.map(x=>`<option value="${x.key}">${x.mk} | ${x.en}</option>`).join('');
+  addSection();
+}
+let SEC=0;
+function addSection(pre){
+  const id='s'+(SEC++); const wrap=document.createElement('div'); wrap.className='card'; wrap.id=id;
+  wrap.innerHTML=`<div class="sec-hd"><span class="pill">Section</span>
+    <input style="max-width:70px" placeholder="№" value="${pre?pre.num:''}">
+    <input placeholder="Наслов (МК)" value="${pre?(pre.mk||''):''}">
+    <input placeholder="Title (EN)" value="${pre?(pre.en||''):''}">
+    <select style="max-width:90px"><option value="1">Banner</option><option value="2">Sub-bar</option></select>
+    <button class="btn ghost" onclick="this.closest('.card').remove()">✕</button></div>
+    <div class="blocks"></div>
+    <button class="btn ghost" onclick="addBlock('${id}','text')">＋Text</button>
+    <button class="btn ghost" onclick="addBlock('${id}','form')">＋Form</button>
+    <button class="btn ghost" onclick="addBlock('${id}','table')">＋Table</button>`;
+  $('sections').appendChild(wrap);
+  if(pre){ if(pre.level==2) wrap.querySelector('select').value='2';
+    (pre.blocks||[]).forEach(b=>addBlock(id,b.type,b)); }
+  return id;
+}
+function addBlock(sid,type,pre){
+  const host=$(sid).querySelector('.blocks'); const b=document.createElement('div'); b.className='block'; b.dataset.type=type;
+  let inner=`<span class="pill">${type}</span><button class="btn ghost" style="float:right" onclick="this.closest('.block').remove()">✕</button>`;
+  if(type=='text'){ const v=pre?(pre.paras||[]).map(p=>p.mk+(p.en?' ||| '+p.en:'')).join('\n'):'';
+    inner+=`<label>Paragraphs — one per line, "МК ||| EN"</label><textarea>${v}</textarea>`; }
+  if(type=='form'){ const v=pre?(pre.rows||[]).map(r=>[r.label_mk,r.label_en,r.value||''].join(' ~ ')).join('\n'):'';
+    inner+=`<label>Rows — one per line, "label_МК ~ label_EN ~ value"</label><textarea>${v}</textarea>`; }
+  if(type=='table'){ const cols=pre?(pre.cols||[]).map(c=>c.mk+(c.en?'~'+c.en:'')).join(', '):'№, Параметар~Parameter, Метод~Method, Критериум~Acceptance';
+    const rows=pre?(pre.rows||[]).map(r=>r.map(c=>c.mk+(c.en?'~'+c.en:'')).join(' | ')).join('\n'):'';
+    inner+=`<label>Columns — comma-separated "МК~EN"</label><input class="tcols" value="${cols}">
+      <label>Rows — one per line; cells "МК~EN" separated by " | "</label><textarea class="trows">${rows}</textarea>`; }
+  b.innerHTML=inner; host.appendChild(b);
+}
+function collect(){
+  const p={ doctype:doctype.value, code:code.value, version:version.value, parent:parent.value,
+    orient:orient.value, mk_title:mk_title.value, en_title:en_title.value, sections:[] };
+  document.querySelectorAll('#sections>.card').forEach(sc=>{
+    const ins=sc.querySelectorAll('.sec-hd input'), lvl=sc.querySelector('.sec-hd select').value;
+    const sec={ num:ins[0].value, mk:ins[1].value, en:ins[2].value, level:+lvl, blocks:[] };
+    sc.querySelectorAll('.block').forEach(b=>{
+      const t=b.dataset.type;
+      if(t=='text'){ const paras=b.querySelector('textarea').value.split('\n').filter(x=>x.trim())
+          .map(l=>{const [mk,en]=l.split('|||'); return {mk:(mk||'').trim(),en:(en||'').trim()};});
+        sec.blocks.push({type:'text',paras}); }
+      if(t=='form'){ const rows=b.querySelector('textarea').value.split('\n').filter(x=>x.trim())
+          .map(l=>{const a=l.split('~'); return {label_mk:(a[0]||'').trim(),label_en:(a[1]||'').trim(),value:(a[2]||'').trim()};});
+        sec.blocks.push({type:'form',rows}); }
+      if(t=='table'){ const cols=b.querySelector('.tcols').value.split(',').map(c=>{const[m,e]=c.split('~');return{mk:(m||'').trim(),en:(e||'').trim()};});
+        const rows=b.querySelector('.trows').value.split('\n').filter(x=>x.trim())
+          .map(l=>l.split('|').map(c=>{const[m,e]=c.split('~');return{mk:(m||'').trim(),en:(e||'').trim()};}));
+        sec.blocks.push({type:'table',cols,rows}); }
+    });
+    p.sections.push(sec);
+  });
+  return p;
+}
+async function preview(){ const r=await (await fetch('/api/wizard/preview',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({payload:collect()})})).json(); md.style.display=''; md.textContent=r.markdown; }
+async function build(){
+  result.innerHTML='<span class="muted">Building…</span>';
+  const r=await (await fetch('/api/wizard/build',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({payload:collect()})})).json();
+  if(r.ok){ result.innerHTML=`<span class="ok">✓ RESULT: PASS</span> &nbsp;
+      <a class="dl" href="${r.download_docx}">⬇ .docx</a><a class="dl" href="${r.download_pdf}">⬇ .pdf</a>
+      <div class="muted">${(r.verify||'').split('\n').slice(1).join(' · ')}</div>`; }
+  else{ result.innerHTML=`<span class="bad">✗ build failed</span><pre>${(r.error||'').slice(-800)}</pre>`; }
+  md.style.display=''; md.textContent=r.markdown||'';
+}
+async function loadExample(){ const e=await (await fetch('/api/example')).json(); const p=e.payload;
+  doctype.value=p.doctype; code.value=p.code; version.value=p.version; parent.value=p.parent||'';
+  orient.value=p.orient; mk_title.value=p.mk_title; en_title.value=p.en_title;
+  $('sections').innerHTML=''; SEC=0; (p.sections||[]).forEach(s=>addSection(s)); }
+
+// ---- chat ----
+function bubble(t,cls){ const d=document.createElement('div'); d.className='msg '+cls; d.innerHTML=t; chat.appendChild(d); chat.scrollTop=chat.scrollHeight; }
+async function send(){ const m=cmsg.value.trim(); if(!m)return; cmsg.value=''; bubble(m,'u'); bubble('<span class="muted">thinking…</span>','a');
+  try{ const r=await (await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:m,agent:agent.value})})).json(); chat.lastChild.remove();
+    if(r.ok){ let h=(r.reply||'').replace(/</g,'&lt;'); if(r.built) h+=`<div class="muted">✓ built: ${r.built.path} (${r.built.bytes} bytes)</div>`; bubble(h,'a'); }
+    else bubble('<span class="bad">'+(r.error||'error')+'</span>','a');
+  }catch(e){ chat.lastChild.remove(); bubble('<span class="bad">'+e+'</span>','a'); } }
+init();
+</script>
+</body>
+</html>

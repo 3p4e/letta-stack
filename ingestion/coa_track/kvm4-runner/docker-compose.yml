@@ -1,0 +1,52 @@
+# kvm4-runner — minimal command runner exposed via Traefik at
+# https://runner.srv1231216.hstgr.cloud
+#
+# This file is the canonical source.  The first deployment is bootstrapped
+# via the Hostinger API by inlining runner.py into the `command:` heredoc
+# (see scripts/kvm4-runner/deploy.py), because the cloud session has no
+# filesystem access to /opt on KVM4.  Once kvm4-runner is up, subsequent
+# updates can flow through it directly:
+#
+#   curl -X POST -H "Authorization: Bearer $RUNNER_TOKEN" \
+#        https://runner.srv1231216.hstgr.cloud/shell \
+#        -d '{"cmd":"cd /opt/CoA_TRACK && git pull"}'
+#
+# then `docker compose -f /opt/stacks/kvm4-runner/docker-compose.yml up -d`.
+services:
+  kvm4-runner:
+    image: python:3.12-slim
+    container_name: kvm4-runner
+    restart: unless-stopped
+    environment:
+      RUNNER_TOKEN: ${RUNNER_TOKEN}
+    volumes:
+      # Bind to host docker socket so we can `docker exec` into siblings
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Full /opt access (CoA_TRACK lives here)
+      - /opt:/opt
+      # /config is the gdrive-sync mount (read-only is enough)
+      - /config:/config:ro
+      # The runner source itself, mounted read-only.  Compose deployment
+      # writes runner.py to /opt/stacks/kvm4-runner/runner.py.
+      - /opt/stacks/kvm4-runner/runner.py:/app/runner.py:ro
+    working_dir: /app
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        pip install -q --no-cache-dir 'fastapi>=0.110' 'uvicorn[standard]' \
+            'pydantic>=2' 'docker>=7'
+        exec uvicorn runner:app --host 0.0.0.0 --port 8000
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.kvm4-runner.rule=Host(`runner.srv1231216.hstgr.cloud`)
+      - traefik.http.routers.kvm4-runner.tls.certresolver=letsencrypt
+      - traefik.http.routers.kvm4-runner.entrypoints=websecure
+      - traefik.http.services.kvm4-runner.loadbalancer.server.port=8000
+    networks:
+      - shared
+
+networks:
+  shared:
+    external: true

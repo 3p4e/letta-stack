@@ -1,0 +1,115 @@
+# CoA Tracker — Production Stack (KVM4)
+# Stack name: coa_tracker_app
+# Usage: docker compose -p coa_tracker_app -f docker-compose.prod.yml up -d --build
+# HTTPS via Traefik (host-network mode, reads Docker socket — no shared network needed)
+# App URL: https://coa.srv1231216.hstgr.cloud
+
+services:
+  # ── PostgreSQL with pgvector ──
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: coa_tracker_app_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: coa_tracker
+      POSTGRES_USER: ${POSTGRES_USER:-coa_app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-CHANGE_ME}
+    volumes:
+      - coa_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-coa_app}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - coa_internal
+
+  # ── FastAPI Backend ──
+  backend:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: coa_tracker_app_backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-coa_app}:${POSTGRES_PASSWORD:-CHANGE_ME}@postgres:5432/coa_tracker
+      - SYNC_DATABASE_URL=postgresql+psycopg2://${POSTGRES_USER:-coa_app}:${POSTGRES_PASSWORD:-CHANGE_ME}@postgres:5432/coa_tracker
+      - LETTA_BASE_URL=${LETTA_BASE_URL:-http://host.docker.internal:8283}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}
+      - JWT_SECRET=${JWT_SECRET}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - CORS_ORIGINS=${CORS_ORIGINS:-https://coa.srv1231216.hstgr.cloud}
+      - HOST=0.0.0.0
+      - PORT=8000
+    volumes:
+      - coa_uploads:/app/uploads
+      - ${QC_ECOA_PATH:-./QC_eCoA}:/data/qc_ecoa:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
+    networks:
+      - coa_internal
+
+  # ── React Frontend (Vite build → Nginx) ──
+  # Traefik (host-network mode) discovers this container via Docker socket
+  # and routes coa.srv1231216.hstgr.cloud → port 80 on this container
+  frontend:
+    build:
+      context: ./app/frontend
+      dockerfile: Dockerfile.prod
+      args:
+        - VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID:-}
+    container_name: coa_tracker_app_frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.coa-tracker.rule=Host(`coa.srv1231216.hstgr.cloud`)"
+      - "traefik.http.routers.coa-tracker.entrypoints=websecure"
+      - "traefik.http.routers.coa-tracker.tls.certresolver=letsencrypt"
+      - "traefik.http.services.coa-tracker.loadbalancer.server.port=80"
+    networks:
+      - coa_internal
+
+  # ── Background Worker ──
+  worker:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: coa_tracker_app_worker
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: python worker.py
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-coa_app}:${POSTGRES_PASSWORD:-CHANGE_ME}@postgres:5432/coa_tracker
+      - SYNC_DATABASE_URL=postgresql+psycopg2://${POSTGRES_USER:-coa_app}:${POSTGRES_PASSWORD:-CHANGE_ME}@postgres:5432/coa_tracker
+      - LETTA_BASE_URL=${LETTA_BASE_URL:-http://host.docker.internal:8283}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}
+    volumes:
+      - coa_uploads:/app/uploads
+      - ${QC_ECOA_PATH:-./QC_eCoA}:/data/qc_ecoa:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - coa_internal
+
+volumes:
+  coa_pgdata:
+  coa_uploads:
+
+networks:
+  coa_internal:
+    driver: bridge
+

@@ -1,0 +1,23 @@
+# Purely Plant Document Suite — Python dependencies
+#
+# REQUIRED (core build — SOPs, annexes, reports, forms, verify gate):
+python-docx>=1.1        # .docx generation (the whole engine)
+lxml>=4.9               # XML plumbing used by python-docx + OMML equation insertion
+
+# OPTIONAL — native Word equations (eqn/calc_step render as editable OMML instead of text):
+#   Needs latex2mathml AND the Office stylesheet MML2OMML.XSL (ships with Microsoft Office, Windows only).
+#   Without it, formulas gracefully fall back to monospace text — the build still succeeds.
+latex2mathml>=3.77      # LaTeX -> MathML (first half of the equation pipeline)
+
+# OPTIONAL — statistical charts (pp_charts.py: regression, Bland-Altman, HorRat, guardband ...):
+#   Only needed for data/validation reports that embed figures. Omit for SOPs/annexes/forms.
+matplotlib>=3.6         # figure rendering (PNG embedded as image)
+numpy>=1.23             # numerics behind the charts
+
+# ---------------------------------------------------------------------------
+# NON-PIP (system) dependencies for PDF rendering — install via OS package mgr, not pip:
+#   Linux/macOS : LibreOffice  ->  `soffice --headless --convert-to pdf <docx>`
+#                 poppler-utils ->  `pdftoppm -png <pdf>`  (to eyeball pages)
+#   Windows     : Microsoft Word (COM) -> scripts/render_pdf.ps1  (also enables OMML equations)
+# The .docx itself is produced with pure Python and needs none of these; they are for the
+# render-and-eyeball QC step only.

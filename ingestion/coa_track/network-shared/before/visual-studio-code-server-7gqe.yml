@@ -1,0 +1,62 @@
+services:
+  code-server:
+    image: lscr.io/linuxserver/code-server:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+      - PASSWORD=${CODE_PASSWORD}
+      - SUDO_PASSWORD=${SUDO_PASSWORD}
+      - DEFAULT_WORKSPACE=/config/workspace
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME}.rule=Host(`${COMPOSE_PROJECT_NAME}.${TRAEFIK_HOST}`)
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME}.entrypoints=websecure
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME}.tls.certresolver=letsencrypt
+      - traefik.http.services.${COMPOSE_PROJECT_NAME}.loadbalancer.server.port=8443
+    restart: unless-stopped
+    ports:
+      - 8443
+    volumes:
+      - code-server-config:/config
+    networks:
+      - weekly_suma_iso17_default
+      - letta_default
+      - qdrant_default
+      - visual-studio-code-server-7gqe_default
+      - n8n-qwge_default
+      - gotenberg_default
+      - agent-zero-ugsd_default
+      - letta_letta_stack
+      - supabase_network_open-brain-mcp
+      - zed_default
+networks:
+    devices:
+      - /dev/fuse
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - apparmor:unconfined
+  weekly_suma_iso17_default:
+    external: true
+  letta_default:
+    external: true
+  qdrant_default:
+    external: true
+  visual-studio-code-server-7gqe_default:
+    external: true
+  n8n-qwge_default:
+    external: true
+  gotenberg_default:
+    external: true
+  agent-zero-ugsd_default:
+    external: true
+  letta_letta_stack:
+    external: true
+  supabase_network_open-brain-mcp:
+    external: true
+  zed_default:
+    external: true
+volumes:
+  code-server-config:
+

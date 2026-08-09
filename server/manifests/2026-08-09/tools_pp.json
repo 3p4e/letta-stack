@@ -1,0 +1,96 @@
+[
+ {
+  "id": "tool-c4921b81-46b1-4c69-bde3-12c42429fb2f",
+  "tool_type": "custom",
+  "description": "Generate a Purely Plant bilingual Macedonian|English controlled .docx from bilingual Markdown.",
+  "source_type": "python",
+  "name": "build_pp_document",
+  "tags": [
+   "purely-plant",
+   "docx",
+   "pp-document-suite"
+  ],
+  "source_code": "\ndef build_pp_document(markdown: str, out_name: str = \"document\") -> str:\n    \"\"\"Generate a Purely Plant bilingual Macedonian|English controlled .docx (SOP / Annex / form / report) from bilingual Markdown, in the house style. Saves to /root/.letta/pp-out; returns JSON {ok, verify, path, bytes}.\n\n    Args:\n        markdown (str): bilingual Markdown - a <!--HEADERDATA ...--> block (mk_title,en_title,code,version,doctype,parent,orient) then sections; '|||' separates the Macedonian and English halves; '[[TABLE]]'/'[[FORM]]' blocks with '~~' inside cells.\n        out_name (str): output base file name without extension. Optional; defaults to 'document'.\n    \"\"\"\n    import os, sys, io, json, tempfile, contextlib, traceback, zipfile\n    LIBS=\"/root/.letta/pp-libs\"\n    if LIBS not in sys.path: sys.path.insert(0, LIBS)\n    SUITE=os.environ.get(\"PP_SUITE_DIR\",\"/root/.letta/pp-document-suite\"); S=os.path.join(SUITE,\"scripts\")\n    if S not in sys.path: sys.path.insert(0,S)\n    OUT=\"/root/.letta/pp-out\"; os.makedirs(OUT,exist_ok=True)\n    out=os.path.join(OUT,(out_name or \"document\")+\".docx\")\n    with tempfile.NamedTemporaryFile(\"w\",suffix=\".md\",delete=False,encoding=\"utf-8\") as f:\n        f.write(markdown); src=f.name\n    try:\n        import importlib, build_from_md; importlib.reload(build_from_md); build_from_md.main(src,out)\n    except Exception:\n        os.unlink(src); return json.dumps({\"ok\":False,\"err\":traceback.format_exc()[-800:]})\n    os.unlink(src)\n    verify=\"\"\n    try:\n        import pp_verify, importlib; importlib.reload(pp_verify)\n        buf=io.StringIO(); oa=sys.argv; sys.argv=[\"pp_verify\",out]\n        try:\n            with contextlib.redirect_stdout(buf): pp_verify.main()\n        except SystemExit: pass\n        finally: sys.argv=oa\n        verify=buf.getvalue().strip()\n    except Exception as e: verify=\"verify-error: \"+str(e)[:150]\n    ok=os.path.exists(out) and zipfile.is_zipfile(out) and \"RESULT: PASS\" in verify\n    return json.dumps({\"ok\":ok,\"verify\":verify,\"path\":out,\"bytes\":(os.path.getsize(out) if os.path.exists(out) else 0)})\n",
+  "json_schema": {
+   "name": "build_pp_document",
+   "description": "Generate a Purely Plant bilingual Macedonian|English controlled .docx (SOP/Annex/form/report) from bilingual Markdown; applies house style; runs the QC gate; returns JSON {ok,verify,path,bytes}.",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "markdown": {
+      "type": "string",
+      "description": "Bilingual Markdown: a <!--HEADERDATA ...--> block then sections; '|||' separates the Macedonian|English halves; [[TABLE]]/[[FORM]] blocks with '~~' inside cells."
+     },
+     "out_name": {
+      "type": "string",
+      "description": "Output base file name without extension (optional; default 'document')."
+     }
+    },
+    "required": [
+     "markdown"
+    ]
+   }
+  },
+  "args_json_schema": {},
+  "return_char_limit": 50000,
+  "pip_requirements": [
+   {
+    "name": "python-docx",
+    "version": null
+   },
+   {
+    "name": "lxml",
+    "version": null
+   }
+  ],
+  "npm_requirements": null,
+  "default_requires_approval": null,
+  "enable_parallel_execution": false,
+  "created_by_id": "user-00000000-0000-4000-8000-000000000000",
+  "last_updated_by_id": "user-00000000-0000-4000-8000-000000000000",
+  "metadata_": {
+   "tool_hash": "25431587e199"
+  },
+  "project_id": null
+ },
+ {
+  "id": "tool-d88e8e21-eb75-4524-b0e0-20d04af5b8a9",
+  "tool_type": "custom",
+  "description": "Return a generated .docx (from /opt/pp-out) as base64 so it can be downloaded/attached.",
+  "source_type": "python",
+  "name": "fetch_pp_document",
+  "tags": [
+   "purely-plant",
+   "docx"
+  ],
+  "source_code": "\ndef fetch_pp_document(path: str) -> str:\n    \"\"\"Return a generated .docx as base64 so it can be downloaded/attached.\n\n    Args:\n        path (str): absolute path of a .docx produced by build_pp_document (under /root/.letta/pp-out).\n    \"\"\"\n    import os, base64, json\n    if not os.path.exists(path): return json.dumps({\"ok\":False,\"err\":\"not found: \"+path})\n    return json.dumps({\"ok\":True,\"name\":os.path.basename(path),\"bytes\":os.path.getsize(path),\n                       \"base64\":base64.b64encode(open(path,\"rb\").read()).decode()})\n",
+  "json_schema": {
+   "name": "fetch_pp_document",
+   "description": "Return a generated .docx (from /opt/pp-out) as base64 so it can be downloaded/attached.",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "path": {
+      "type": "string",
+      "description": "absolute path of the .docx previously produced by build_pp_document."
+     }
+    },
+    "required": [
+     "path"
+    ]
+   }
+  },
+  "args_json_schema": {},
+  "return_char_limit": 50000,
+  "pip_requirements": null,
+  "npm_requirements": null,
+  "default_requires_approval": null,
+  "enable_parallel_execution": false,
+  "created_by_id": "user-00000000-0000-4000-8000-000000000000",
+  "last_updated_by_id": "user-00000000-0000-4000-8000-000000000000",
+  "metadata_": {
+   "tool_hash": "7c76b4e20683"
+  },
+  "project_id": null
+ }
+]

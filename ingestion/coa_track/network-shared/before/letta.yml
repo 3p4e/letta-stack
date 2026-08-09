@@ -1,0 +1,186 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg15
+    container_name: letta-postgres
+    environment:
+      POSTGRES_USER: letta
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: letta
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - pg_isready -U letta
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    volumes:
+    - postgres_data:/var/lib/postgresql/data
+    networks:
+    - letta_stack
+
+  letta:
+    image: letta/letta:latest
+    container_name: letta
+    environment:
+    - LETTA_PG_URI=postgresql://letta:${POSTGRES_PASSWORD}@letta-postgres:5432/letta
+    - OPENAI_API_KEY=${OPENAI_API_KEY}
+    - VOYAGE_API_KEY=${VOYAGE_API_KEY}
+    - LETTA_LLM_MODEL=gpt-4o
+    - LETTA_LLM_PROVIDER=openai
+    - LETTA_EMBEDDING_PROVIDER=voyageai
+    - LETTA_EMBEDDING_MODEL=voyage-3
+    - LETTA_ENVIRONMENT=PROD
+    - LETTA_SERVER_PASS=${LETTA_SERVER_PASS}
+    restart: unless-stopped
+    ports:
+    - 8283:8283
+    volumes:
+    - letta_data:/root/.letta
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+    - letta_stack
+    - agent-zero-ugsd_default
+
+  letta-oss-ui:
+    image: letta-oss-ui:local
+    container_name: letta-oss-ui
+    labels:
+    - traefik.enable=true
+    - traefik.http.routers.letta-ui.rule=Host(`ui.srv1231216.hstgr.cloud`)
+    - traefik.http.routers.letta-ui.tls.certresolver=letsencrypt
+    - traefik.http.routers.letta-ui.entrypoints=websecure
+    - traefik.http.services.letta-ui.loadbalancer.server.port=3000
+    environment:
+    - LETTA_API_KEY=${LETTA_SERVER_PASS}
+    - LETTA_BASE_URL=http://letta:8283
+    restart: unless-stopped
+    ports:
+    - 3001:3000
+    depends_on:
+    - letta
+    networks:
+    - letta_stack
+    - agent-zero-ugsd_default
+
+  letta-daemon:
+    image: letta-daemon:local
+    container_name: letta-daemon
+    environment:
+    - DAEMON_PORT=8420
+    - LETT_BASE_URL=http://letta:8283
+    - LETT_API_KEY=${LETTA_SERVER_PASS}
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - curl -sf http://localhost:8420/health || exit 1
+      interval: 30s
+      timeout: 10s
+      start_period: 10s
+      retries: 3
+    restart: unless-stopped
+    ports:
+    - 8420:8420
+    depends_on:
+    - letta
+    networks:
+    - letta_stack
+    - agent-zero-ugsd_default
+
+  qms-api:
+    image: qms-api:latest
+    container_name: qms-api
+    build:
+      context: /opt/stacks/qms-api
+      dockerfile: Dockerfile
+    ports:
+    - 8500:8500
+    environment:
+    - LETTA_DAEMON_URL=http://letta-daemon:8420
+    - GOTENBERG_URL=http://72.60.35.12:3000
+    - QMS_API_KEY=${QMS_API_KEY}
+    - QMS_API_PORT=8500
+    networks:
+    - letta_stack
+    restart: unless-stopped
+    depends_on:
+    - letta-daemon
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8500/health
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  suma-api:
+    image: suma-api:latest
+    container_name: suma-api
+    build:
+      context: /opt/stacks/suma-api
+      dockerfile: Dockerfile
+    ports:
+    - 8501:8501
+    environment:
+    - LETTA_URL=http://letta:8283
+    - LETTA_API_KEY=${LETTA_SERVER_PASS}
+    - SUMA_API_KEY=${SUMA_API_KEY}
+    - SUMA_API_PORT=8501
+    networks:
+    - letta_stack
+    restart: unless-stopped
+    depends_on:
+    - letta
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8501/health
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  letta-mcp-rust:
+    image: ghcr.io/oculairmedia/letta-mcp-server-rust:rust-latest
+    container_name: letta-mcp-rust
+    restart: unless-stopped
+    ports:
+    - "6507:6507"
+    environment:
+    - LETTA_BASE_URL=http://letta:8283
+    - LETTA_PASSWORD=${LETTA_SERVER_PASS}
+    - TRANSPORT=http
+    - PORT=6507
+    - RUST_LOG=info
+    labels:
+    - traefik.enable=true
+    - traefik.http.routers.letta-mcp.rule=Host(`mcp-letta.srv1231216.hstgr.cloud`)
+    - traefik.http.routers.letta-mcp.tls.certresolver=letsencrypt
+    - traefik.http.routers.letta-mcp.entrypoints=websecure
+    - traefik.http.services.letta-mcp.loadbalancer.server.port=6507
+    depends_on:
+    - letta
+    networks:
+    - letta_stack
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - timeout 1 bash -c '</dev/tcp/localhost/6507' || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  letta_stack: null
+  agent-zero-ugsd_default:
+    external: true
+
+volumes:
+  letta_data: null
+  postgres_data: null
+

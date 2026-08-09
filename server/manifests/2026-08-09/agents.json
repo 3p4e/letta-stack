@@ -1,0 +1,530 @@
+[
+ {
+  "id": "agent-1f775469-96e0-4d8f-94fc-8b2f7728ec16",
+  "name": "ecoa_retrieval_gpt4o",
+  "model": "gpt-4o",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-07-28T11:47:10.266536Z",
+  "description": "Standing retrieval interface over the Purely Plant eCoA/CoA corpus (Letta source ImB_QC_COAs). gpt-4o, temp 0. Use grep_files to locate values, then quote verbatim. Created 2026-07-28 as a working replacement for the deepseek imb_qc_coa_agent whose chat path returns empty streams."
+ },
+ {
+  "id": "agent-e37068f9-ae00-46bc-ae94-3bd6d3aaade1",
+  "name": "gf_reg_checker",
+  "model": "deepseek-chat",
+  "embedding": "letta-free",
+  "created": "2026-07-19T14:56:54.107511Z",
+  "description": "Verifies drafted sections against the regulatory corpus; cites real passages."
+ },
+ {
+  "id": "agent-e443b44f-387e-46d8-ba74-0c00facd8032",
+  "name": "sentinel_journal",
+  "model": "deepseek-chat",
+  "embedding": null,
+  "created": "2026-07-18T23:41:53.298884Z",
+  "description": null
+ },
+ {
+  "id": "agent-bfc7fe8c-9fc6-47f8-a134-fb8e8bddc500",
+  "name": "sentinel_risk_officer",
+  "model": "deepseek-chat",
+  "embedding": null,
+  "created": "2026-07-18T23:41:53.109762Z",
+  "description": null
+ },
+ {
+  "id": "agent-95772c37-1d9f-4874-b3e8-4e97dd286657",
+  "name": "sentinel_analyst",
+  "model": "deepseek-chat",
+  "embedding": null,
+  "created": "2026-07-18T23:41:52.928946Z",
+  "description": null
+ },
+ {
+  "id": "agent-232c3298-432d-4d36-ab50-7b29949433bf",
+  "name": "gf_app_assistant",
+  "model": "deepseek-reasoner",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-07-16T02:11:20.467999Z",
+  "description": "General GrowFlow in-app assistant (non-document AI features)."
+ },
+ {
+  "id": "agent-3db7c72c-eba8-4296-89e6-81d1c99ca432",
+  "name": "gf_qa_auditor",
+  "model": "deepseek-reasoner",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-07-16T02:11:20.186642Z",
+  "description": "Runs the §6A post-generation review on assembled Markdown before formatting."
+ },
+ {
+  "id": "agent-1e84a0d1-2d9d-42f2-b8f1-ecc1784fa448",
+  "name": "gf_raci_specialist",
+  "model": "deepseek-reasoner",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-07-16T02:11:19.456956Z",
+  "description": "Builds §3 responsibilities / RACI content."
+ },
+ {
+  "id": "agent-a6d5a73d-da0e-4ba9-a0cf-69fe5edce7ec",
+  "name": "gf_translator_mk_en",
+  "model": "deepseek-reasoner",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-07-16T02:11:18.073735Z",
+  "description": "Ensures MK⇄EN parity of drafted content."
+ },
+ {
+  "id": "agent-91bca25b-40ba-410e-bb52-c06c41617389",
+  "name": "gf_annex_author",
+  "model": "deepseek-reasoner",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-07-16T02:11:17.295228Z",
+  "description": "Drafts annex/form/log/checklist content as bilingual Markdown with [[FORM]]/[[TABLE]] blocks."
+ },
+ {
+  "id": "agent-34c864a9-90a3-4365-a255-16d7ec8d0f61",
+  "name": "gf_sop_author",
+  "model": "deepseek-reasoner",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-07-16T02:11:16.291923Z",
+  "description": "Drafts SOP sections (9-section structure) as bilingual Markdown."
+ },
+ {
+  "id": "agent-0b8fb692-b75d-44d4-9470-779d69d4ccb5",
+  "name": "gf_doc_orchestrator",
+  "model": "deepseek-reasoner",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-07-16T02:11:15.944283Z",
+  "description": "Routes document requests (TYPE+MODE per SKILL §0) and sequences the pipeline."
+ },
+ {
+  "id": "agent-3c832fac-1c6a-4444-a6da-22573bb3afd1",
+  "name": "planner-template-narrative",
+  "model": "deepseek-v4-flash",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-07-11T17:27:26.928775Z",
+  "description": null
+ },
+ {
+  "id": "agent-f5c8f15a-7437-477d-a2e3-0e3d184c98d2",
+  "name": "wwf-bilingual-translator",
+  "model": "deepseek-v4-flash",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-07-08T10:35:02.466299Z",
+  "description": null
+ },
+ {
+  "id": "agent-f8e93334-5ade-40a5-92a2-21fdd10ca4fc",
+  "name": "wwf_schema_advisor",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-06-28T11:25:13.586183Z",
+  "description": null
+ },
+ {
+  "id": "agent-4eacb33a-721b-41ca-aa1d-c0389d4a7593",
+  "name": "wwf_qms_architect",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-06-28T10:57:07.917572Z",
+  "description": null
+ },
+ {
+  "id": "agent-9a3642a3-f03c-4452-9462-6212eabfed4d",
+  "name": "wwf_weekly_coordinator",
+  "model": "deepseek-v4-flash",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-06-28T09:39:35.808828Z",
+  "description": null
+ },
+ {
+  "id": "agent-e72faed9-38f8-4808-9dde-2fac12038f22",
+  "name": "planner-executive-analytics",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-06-14T02:56:16.720340Z",
+  "description": null
+ },
+ {
+  "id": "agent-815929b3-8ffb-4671-992b-ee7d55273f24",
+  "name": "planner-next-week-plan",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-06-14T02:56:10.939396Z",
+  "description": null
+ },
+ {
+  "id": "agent-c783d24a-9d85-4b0b-8882-e210f504504a",
+  "name": "planner-weekly-report",
+  "model": "deepseek-v4-flash",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-06-14T02:56:06.749956Z",
+  "description": null
+ },
+ {
+  "id": "agent-e8518fbc-29a2-4585-8ba8-7cb45a936a18",
+  "name": "planner-task-rewrite",
+  "model": "deepseek-v4-flash",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-06-14T02:55:54.638447Z",
+  "description": null
+ },
+ {
+  "id": "agent-07da2bbc-9549-49d9-a444-d22a210f4830",
+  "name": "VariationF-Compliance-Sentinel",
+  "model": "gpt-4o",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-06-09T02:28:20.041842Z",
+  "description": null
+ },
+ {
+  "id": "agent-c5f66dd6-1918-4adf-a377-1aa92bd3e44c",
+  "name": "VariationF-Spec-Author",
+  "model": "gpt-4o",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-06-09T02:27:42.122020Z",
+  "description": null
+ },
+ {
+  "id": "agent-b461fe9b-dfde-48ae-96c4-7ec92bcd0717",
+  "name": "VariationF-CoQ-Aggregator",
+  "model": "gpt-4o",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-06-09T02:27:04.034905Z",
+  "description": null
+ },
+ {
+  "id": "agent-1effa4f0-2806-46e0-8ba6-03601995a05d",
+  "name": "VariationF-iCoA-Author",
+  "model": "gpt-4o",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-06-09T02:26:17.374792Z",
+  "description": null
+ },
+ {
+  "id": "agent-6904727a-299f-4907-b206-36a383bf8c21",
+  "name": "VariationF",
+  "model": "gpt-4o",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-06-05T02:58:59.290266Z",
+  "description": "Keeper of the Purely Plant \"Variation F\" (Navy & Gold) regulated-document design system. Playbook stored in 3 core-memory blocks (design_system, business_rules, repo_facts) + archival passages. NOTE: this server's send_message path for \"Other\"-type agents does not inject core memory into the chat prompt — read the playbook via get_core_memory / search_archival, or re-home the blocks onto a memgpt/react-type agent for reliable live chat."
+ },
+ {
+  "id": "agent-733e50b0-9cde-4c3b-a333-6bd3e971b59b",
+  "name": "warehouse_quarantine_ocr_agent",
+  "model": "gpt-4o",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-05-25T22:14:23.800438Z",
+  "description": null
+ },
+ {
+  "id": "agent-335668ac-9ad1-4d2b-8bad-95673e69a5b4",
+  "name": "pp_annex_auditor",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-05-25T06:56:01.255417Z",
+  "description": null
+ },
+ {
+  "id": "agent-f33a0663-3038-4913-bc9a-908e367b73fa",
+  "name": "pp_annex_table_specialist",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-05-25T06:55:31.673597Z",
+  "description": null
+ },
+ {
+  "id": "agent-ae59502a-3cbf-43bc-a02d-817d88656088",
+  "name": "pp_annex_body_formatter",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-05-25T06:55:08.242036Z",
+  "description": null
+ },
+ {
+  "id": "agent-7ef8ce45-e68f-464f-ab47-257a57ace659",
+  "name": "pp_annex_translator",
+  "model": "deepseek-v4-flash",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-05-25T06:54:42.465818Z",
+  "description": null
+ },
+ {
+  "id": "agent-f2178ef6-a2b4-4e03-be0f-851ab22d5587",
+  "name": "pp_annex_orchestrator",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-05-25T06:54:13.287863Z",
+  "description": null
+ },
+ {
+  "id": "agent-2eace634-159b-4615-bb6a-adeb3ed4c76d",
+  "name": "Report Generation Agent",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-05-24T02:23:29.830937Z",
+  "description": null
+ },
+ {
+  "id": "agent-0e00f03f-f18e-47a4-b002-be95523e1fad",
+  "name": "Search Assistant Agent",
+  "model": "deepseek-v4-flash",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-05-24T02:23:28.629321Z",
+  "description": null
+ },
+ {
+  "id": "agent-cba66d7c-1153-4d23-b623-d06696a2b850",
+  "name": "Compliance Analysis Agent",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-05-24T02:23:27.819688Z",
+  "description": null
+ },
+ {
+  "id": "agent-4497fa65-9514-4ebd-a94a-e136a583521a",
+  "name": "Parameter Extraction Agent",
+  "model": "deepseek-v4-flash",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-05-24T02:23:27.036233Z",
+  "description": null
+ },
+ {
+  "id": "agent-ff02e492-3ada-4632-80d0-4168995c98ff",
+  "name": "CoA Ingestion Agent",
+  "model": "deepseek-v4-flash",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-05-24T02:23:25.758164Z",
+  "description": null
+ },
+ {
+  "id": "agent-58fdfb99-f59c-4d1a-856f-00818994c544",
+  "name": "Specification Advisor Agent",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-05-24T02:21:33.299977Z",
+  "description": null
+ },
+ {
+  "id": "agent-0b5ea789-9194-42ce-b297-b4f47e0f76fa",
+  "name": "CoQ Assembly Agent",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-05-24T02:21:32.491744Z",
+  "description": null
+ },
+ {
+  "id": "agent-057e01d6-e1aa-43d1-ac98-6dd3f31cf149",
+  "name": "equipment_manuals_agent",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-05-23T15:51:32.329861Z",
+  "description": null
+ },
+ {
+  "id": "agent-edf27c5c-1f88-495b-b6fb-506105bd717c",
+  "name": "imb_qc_coa_agent",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-05-22T19:32:55.022511Z",
+  "description": null
+ },
+ {
+  "id": "agent-fce3e698-e727-4781-96be-ef5cf3052f16",
+  "name": "pq1_water_qc_agent",
+  "model": "deepseek-v4-pro",
+  "embedding": "voyage-3-large",
+  "created": "2026-05-20T17:01:30.106729Z",
+  "description": null
+ },
+ {
+  "id": "agent-6440b061-e0cd-48c0-9320-7b9b56431d49",
+  "name": "ecoa-qc-agent",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-05-06T15:35:39.781264Z",
+  "description": null
+ },
+ {
+  "id": "agent-944f0920-d919-4d06-a92e-56843cbe7fad",
+  "name": "trend_detector",
+  "model": "deepseek-v4-flash",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-04-27T04:52:22.813241Z",
+  "description": null
+ },
+ {
+  "id": "agent-2ee229d7-0f19-430e-b670-1fe500d7bf93",
+  "name": "executive_summarizer",
+  "model": "deepseek-v4-flash",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-04-27T04:52:09.859310Z",
+  "description": null
+ },
+ {
+  "id": "agent-f8163f9e-ce0b-46c1-ac1b-393618c7761c",
+  "name": "weekly_report_analyst",
+  "model": "deepseek-v4-flash",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-04-27T04:50:18.130272Z",
+  "description": "You are a helpful assistant."
+ },
+ {
+  "id": "agent-8458e1f2-e5d5-473f-8dec-a6dc7ecc97da",
+  "name": "ars_pipeline_orchestrator",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-04-27T03:26:09.220489Z",
+  "description": "You are a specialist AI agent for the 'ars_pipeline_orchestrator' skill.\n\nDescription: Orchestrates 10-stage QMS pipeline with integrity gates\n\nYour Expertise:\nYou are the Pipeline Orchestrator — the "
+ },
+ {
+  "id": "agent-531c5cad-39d6-4d95-b1df-ba4f26aad6b9",
+  "name": "ars_collaboration_depth",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-04-27T03:26:09.077554Z",
+  "description": "You are a specialist AI agent for the 'ars_collaboration_depth' skill.\n\nDescription: Advisory observer monitoring collaboration quality across SOP pipeline\n\nYour Expertise:\nYou are the Collaboration D"
+ },
+ {
+  "id": "agent-b6aa7c8a-e060-4e1c-a5c8-bceb7e918533",
+  "name": "ars_field_analyst",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-04-27T03:26:08.943768Z",
+  "description": "You are a specialist AI agent for the 'ars_field_analyst' skill.\n\nDescription: Auto-detects pharmaceutical domain and configures reviewer team\n\nYour Expertise:\nYou are the Field Analyst — a domain det"
+ },
+ {
+  "id": "agent-704304ad-88cd-4cb8-ad25-8d9da58bce63",
+  "name": "ars_devils_advocate",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-04-27T03:26:08.810517Z",
+  "description": "You are a specialist AI agent for the 'ars_devils_advocate' skill.\n\nDescription: Challenges SOP assumptions and tests for sycophancy\n\nYour Expertise:\nYou are the Devil's Advocate — a mandatory perspec"
+ },
+ {
+  "id": "agent-065dc375-e8b9-4e00-b425-a40b4e983db7",
+  "name": "ars_integrity_verifier",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-04-27T03:26:08.663481Z",
+  "description": "You are a specialist AI agent for the 'ars_integrity_verifier' skill.\n\nDescription: 7-mode failure checklist for SOP content integrity\n\nYour Expertise:\nYou are an integrity verification specialist for"
+ },
+ {
+  "id": "agent-2498cec4-c907-43b2-9b90-90a50e859ade",
+  "name": "code_reviewer",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-04-26T18:16:26.463154Z",
+  "description": "You are a Senior Code Reviewer. Review code for correctness, maintainability, performance, and adherence to best practices. Provide constructive feedback with examples."
+ },
+ {
+  "id": "agent-ed14e62c-de90-4574-af00-2cbb28e3106b",
+  "name": "security_auditor",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-04-26T18:16:25.823328Z",
+  "description": "You are a Security Auditor specializing in OWASP Top 10, secure coding practices, and vulnerability assessment. Review code and systems for security flaws."
+ },
+ {
+  "id": "agent-a4714256-828c-4c85-a780-a3e47680d0d0",
+  "name": "penpot_uiux_design",
+  "model": "deepseek-v4-flash",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-04-26T18:16:25.176455Z",
+  "description": "You are a Penpot UI/UX Designer. Create design systems, component libraries, and interface mockups following accessibility standards and modern design principles."
+ },
+ {
+  "id": "agent-0611916f-4227-46cf-9ee1-c446d6f6f339",
+  "name": "excalidraw_diagram_generator",
+  "model": "deepseek-v4-flash",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-04-26T18:16:24.534126Z",
+  "description": "You are an Excalidraw Diagram Generator. Create architecture diagrams, flowcharts, system diagrams, and process maps in Excalidraw format for documentation and presentations."
+ },
+ {
+  "id": "agent-f7352bb3-7b28-4485-8bbb-b906c29d6c9b",
+  "name": "fastapi_letta_qms_patterns",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-04-26T18:16:23.858728Z",
+  "description": "You are a FastAPI + Letta QMS Patterns Expert. Design API endpoints, integration patterns, and system architectures for pharmaceutical quality management systems using modern Python frameworks."
+ },
+ {
+  "id": "agent-36d85817-fb2c-4f89-8e82-21213030d2e8",
+  "name": "eu_gmp_compliance_expert",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-04-26T18:16:23.219335Z",
+  "description": "You are an EU GMP Compliance Expert with deep knowledge of Annexes 1-19, PIC/S guidelines, and pharmaceutical quality systems. Validate procedures, identify gaps, and ensure regulatory adherence."
+ },
+ {
+  "id": "agent-4aee57f2-479f-46df-805a-be74e0364060",
+  "name": "pharma_docx_formatter",
+  "model": "deepseek-v4-flash",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-04-26T18:16:22.574296Z",
+  "description": "You are a Pharma DOCX Formatter. Create GMP-compliant Word documents with proper structure, styles, and regulatory formatting. Convert to PDF via Gotenberg when needed."
+ },
+ {
+  "id": "agent-7f9b14e1-66a6-4b14-8cdc-647ade7a832a",
+  "name": "web_design_reviewer",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-04-26T18:16:21.917632Z",
+  "description": "You are a Web Design Reviewer specializing in accessibility (WCAG 2.1 AA), responsive design, and UX heuristics. Review web interfaces for compliance, usability, and visual hierarchy."
+ },
+ {
+  "id": "agent-e15c8ea4-dc65-439f-9653-ebb9c872b069",
+  "name": "gmp_rag_agent",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-04-26T18:16:21.251221Z",
+  "description": "You are a GMP Knowledge Base RAG Agent. Query Google Drive documents via localhost:8787 for regulatory texts, SOPs, certificates, and equipment manuals. Retrieve relevant passages and synthesize answe"
+ },
+ {
+  "id": "agent-3f3de9f1-3bc4-46a8-83d9-3cf60c0076ee",
+  "name": "qms_pipeline_orchestrator",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-04-26T18:16:20.607147Z",
+  "description": "You are a QMS Pipeline Orchestrator. Coordinate multi-agent workflows: receive SOP requests, delegate to SOP Expert, send output to GMP Auditor for validation, then to DOCX Formatter for final documen"
+ },
+ {
+  "id": "agent-762996ac-d553-4c80-aed5-e644f17f5636",
+  "name": "qms_docx_formatter",
+  "model": "deepseek-v4-flash",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-04-26T18:16:19.968346Z",
+  "description": "You are a Pharmaceutical Document Formatter. Create professional DOCX documents for GMP purposes using structured templates. Integrate with Gotenberg at http://gotenberg:3000 (in-stack address, verified 2026-08-08; or via qms-api /api/v1/document/convert-to-pdf) for PDF conversion. "
+ },
+ {
+  "id": "agent-2940efd1-ce9c-423f-a2b7-067a1e82b60d",
+  "name": "qms_gmp_auditor",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-04-26T18:16:19.334369Z",
+  "description": "You are an EU GMP Compliance Auditor. Validate pharmaceutical documents against EU GMP Annexes 1-19, PIC/S guides, and ISO standards. Identify deviations, suggest corrections, and cite specific regula"
+ },
+ {
+  "id": "agent-2ddd47a5-a5cc-4e40-98be-53779a905ff3",
+  "name": "qms_sop_expert",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-04-26T18:16:18.684178Z",
+  "description": "You are a GMP SOP Expert. Generate bilingual (English/Macedonian) 16-section pharmaceutical SOPs following EU GMP Annex standards. Each SOP includes: Title, Scope, Responsibility, Procedure, Annexes A"
+ },
+ {
+  "id": "agent-5a2a0add-b5c7-428e-83e2-dcc04952c3da",
+  "name": "letta_chat_interface",
+  "model": "deepseek-v4-flash",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-04-26T16:31:46.411235Z",
+  "description": "You are the Letta Chat Interface — a routing agent that connects users to the right specialist agent. Your responsibilities:\n- Understand user requests and determine which specialist agent can best ha"
+ },
+ {
+  "id": "agent-254f59bc-3848-4277-9035-840f159d3be3",
+  "name": "letta_manager",
+  "model": "deepseek-v4-pro",
+  "embedding": "text-embedding-3-small",
+  "created": "2026-04-26T16:31:45.871881Z",
+  "description": "You are the Letta Ecosystem Manager. Your responsibilities:\n- List and monitor all active Letta agents and their status\n- List and monitor all data sources\n- Check system health and connectivity\n- Pro"
+ }
+]
