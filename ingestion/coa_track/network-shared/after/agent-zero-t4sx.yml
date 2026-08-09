@@ -1,0 +1,28 @@
+services:
+  agent-zero:
+    image: agent0ai/agent-zero:latest
+    restart: unless-stopped
+    environment:
+      AUTH_LOGIN: ${AUTH_LOGIN}
+      AUTH_PASSWORD: ${AUTH_PASSWORD}
+    ports:
+    - '80'
+    labels:
+    - traefik.enable=true
+    - traefik.http.routers.${COMPOSE_PROJECT_NAME}.rule=Host(`${COMPOSE_PROJECT_NAME}.${TRAEFIK_HOST}`)
+    - traefik.http.routers.${COMPOSE_PROJECT_NAME}.entrypoints=websecure
+    - traefik.http.routers.${COMPOSE_PROJECT_NAME}.tls.certresolver=letsencrypt
+    - traefik.http.services.${COMPOSE_PROJECT_NAME}.loadbalancer.server.port=80
+    volumes:
+    - agent-zero-data:/a0/usr
+    networks:
+    - letta_stack
+    - shared
+volumes:
+  agent-zero-data: null
+networks:
+  letta_stack:
+    external: true
+    name: letta_letta_stack
+  shared:
+    external: true

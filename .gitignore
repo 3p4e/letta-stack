@@ -1,0 +1,9 @@
+# Standing rule: no secrets, ever (env-var names only)
+secrets.env
+cookies.txt
+*.env
+!*.env.example
+# local build junk
+__pycache__/
+*.pyc
+.DS_Store

@@ -1,0 +1,45 @@
+# PP Doc Wiz — standalone app on the Letta stack network.
+# Run from the REPO ROOT (build context must see pp-document-suite/ and ppdocwiz/):
+#   LETTA_BASE_URL=https://ui.srv1231216.hstgr.cloud \
+#   LETTA_NETWORK=$(docker network ls --format '{{.Name}}' | grep -i letta | head -1) \
+#   docker compose -f ppdocwiz/docker-compose.yml up -d --build
+# Then open http://<host>:8770  (or wire the Traefik labels below for HTTPS).
+services:
+  ppdocwiz:
+    build:
+      context: ..
+      dockerfile: ppdocwiz/Dockerfile
+    image: ppdocwiz:1.0
+    container_name: ppdocwiz
+    restart: unless-stopped
+    environment:
+      - PP_SUITE_DIR=/opt/pp-document-suite
+      - PP_OUT_DIR=/data
+      - LETTA_BASE_URL=${LETTA_BASE_URL:-}     # set to enable the Chat tab (e.g. https://ui.srv1231216.hstgr.cloud)
+      - LETTA_TOKEN=${LETTA_TOKEN:-}           # only if the Letta server requires auth
+      - LETTA_AGENT=${LETTA_AGENT:-qms_docx_formatter}
+    volumes:
+      - ppdocwiz_out:/data
+    ports:
+      - "8770:8770"
+    networks: [letta]
+    healthcheck:
+      test: ["CMD", "python3", "-c",
+             "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8770/api/health',timeout=5).status==200 else 1)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    # HTTPS via Traefik instead of the raw port (uncomment + set host):
+    # labels:
+    #   - traefik.enable=true
+    #   - traefik.http.routers.ppdocwiz.rule=Host(`docwiz.srv1231216.hstgr.cloud`)
+    #   - traefik.http.routers.ppdocwiz.tls=true
+    #   - traefik.http.services.ppdocwiz.loadbalancer.server.port=8770
+
+networks:
+  letta:
+    external: true
+    name: ${LETTA_NETWORK:-letta_default}
+
+volumes:
+  ppdocwiz_out:

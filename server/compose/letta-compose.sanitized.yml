@@ -1,0 +1,105 @@
+# letta stack — SANITIZED compose reconstruction (letta-stack repo, 2026-08-09)
+#
+# PROVENANCE: rewritten from the ORIGINAL deploy compose committed (with live plaintext
+# secrets — see review/LETTA_TECH_REVIEW_2026-08-09.md §4) in
+# suma-platform ISO17verSUMA/infrastructure/letta-stack/docker-compose.yml.
+# ALL secret values replaced with env-var references. NO value in this file is live.
+#
+# KNOWN DRIFT vs the VPS (open item #3 in START_HERE.md — recover the authoritative
+# compose from /opt/stacks/ via dockge):
+#   - live 2026-08-09 (dockge snapshot, server/LIVE_CONTAINERS_2026-08-09.md): letta,
+#     letta-mcp-rust :6507, letta-postgres, qms-api :8500, suma-api :8501. The
+#     letta-oss-ui and letta-daemon services of the original compose are NOT in that
+#     container list; letta-mcp-rust is NOT in the original compose (service stub added
+#     below, config unverified).
+#   - qms-api still references a letta-daemon URL — reconcile when recovering the live file.
+services:
+  postgres:
+    image: pgvector/pgvector:pg15
+    container_name: letta-postgres
+    environment:
+      POSTGRES_USER: letta
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: letta
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U letta"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - letta_stack
+
+  letta:
+    image: letta/letta:latest
+    container_name: letta
+    environment:
+      - LETTA_PG_URI=postgresql://letta:${POSTGRES_PASSWORD}@letta-postgres:5432/letta
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - VOYAGE_API_KEY=${VOYAGE_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - LETTA_LLM_MODEL=deepseek-chat
+      - LETTA_LLM_PROVIDER=deepseek
+      - LETTA_EMBEDDING_PROVIDER=voyageai
+      - LETTA_EMBEDDING_MODEL=voyage-3
+      - LETTA_ENVIRONMENT=PROD
+      - LETTA_SERVER_PASS=${LETTA_SERVER_PASS}
+    restart: unless-stopped
+    ports:
+      - 8283:8283
+    volumes:
+      - letta_data:/root/.letta          # engine Mode A lives here (pp-document-suite/, pp-libs/, pp-out/)
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - letta_stack
+
+  # Present live (:6507, MCP bridge) but absent from the original compose — stub only;
+  # recover real config from the VPS.
+  letta-mcp-rust:
+    image: letta-mcp-rust:local
+    container_name: letta-mcp-rust
+    ports:
+      - 6507:6507
+    restart: unless-stopped
+    networks:
+      - letta_stack
+
+  qms-api:
+    image: qms-api:latest
+    container_name: qms-api
+    ports:
+      - 8500:8500
+    environment:
+      - LETTA_DAEMON_URL=http://letta-daemon:8420   # letta-daemon not in live container list — reconcile
+      - GOTENBERG_URL=http://gotenberg:3000          # in-stack DNS; the only address reachable from the sandbox
+      - QMS_API_KEY=${QMS_API_KEY}
+      - QMS_API_PORT=8500
+    networks:
+      - letta_stack
+    restart: unless-stopped
+
+  suma-api:
+    image: suma-api:latest
+    container_name: suma-api
+    ports:
+      - 8501:8501
+    environment:
+      - LETTA_URL=http://letta:8283
+      - LETTA_API_KEY=${LETTA_API_KEY}
+      - SUMA_API_KEY=${SUMA_API_KEY}
+      - SUMA_API_PORT=8501
+    networks:
+      - letta_stack
+    restart: unless-stopped
+    depends_on:
+      - letta
+
+networks:
+  letta_stack: null
+volumes:
+  letta_data: null
+  postgres_data: null

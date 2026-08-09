@@ -1,0 +1,39 @@
+# Add the Purely Plant Document Suite as a dedicated container inside the Letta stack.
+#
+#   LETTA_NETWORK=<your letta compose network>  docker compose -f docker-compose.letta.yml up -d --build
+#
+# `docker network ls` shows the Letta stack's network name (often "<project>_default").
+# Once up, Letta agents reach the service at http://pp-document-suite:8600 — register the REST tool
+# (integrations/letta_register.py, LETTA_MODE=rest, QMS_API_BASE=http://pp-document-suite:8600).
+services:
+  pp-document-suite:
+    build: .
+    image: pp-document-suite:1.6.2
+    container_name: pp-document-suite
+    restart: unless-stopped
+    environment:
+      - PP_SUITE_DIR=/opt/pp-document-suite
+      - PP_OUT_DIR=/data
+    volumes:
+      - pp_suite_out:/data           # generated .docx/.pdf persist here
+    networks: [letta]
+    healthcheck:
+      test: ["CMD", "python3", "-c",
+             "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8600/health',timeout=5).status==200 else 1)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    # Optional external HTTPS route via Traefik (uncomment + set your host):
+    # labels:
+    #   - traefik.enable=true
+    #   - traefik.http.routers.ppsuite.rule=Host(`ppsuite.srv1231216.hstgr.cloud`)
+    #   - traefik.http.routers.ppsuite.tls=true
+    #   - traefik.http.services.ppsuite.loadbalancer.server.port=8600
+
+networks:
+  letta:
+    external: true
+    name: ${LETTA_NETWORK:-letta_default}
+
+volumes:
+  pp_suite_out:
