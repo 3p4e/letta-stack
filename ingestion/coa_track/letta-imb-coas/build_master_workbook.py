@@ -289,6 +289,93 @@ def main():
         r += 1
     ws.auto_filter.ref = "A4:%s%d" % (get_column_letter(len(heads)), r - 1)
 
+
+    # =================================================== 2b. Batch Dossier
+    ws = wb.create_sheet("Batch Dossier")
+    sheet_title(ws, "Batch Dossier",
+                "Every batch in full: one block per batch, one row per parameter, grouped by "
+                "analytical panel.", S,
+                "The issuing laboratory for any certificate code is on the Certificates sheet.")
+    dh = ["", "Parameter", "Acceptance criterion", "Result", "Certificate code",
+          "Date of issue", "Certificate"]
+    dw = [3, 52, 34, 40, 22, 15, 12]
+    header_row(ws, 4, dh, dw, S)
+    ws.freeze_panes = "A5"
+
+    r = 5
+    for b in batches:
+        brows = by_seq[b["seq"]]
+        fill, fnt = S.status(b["status"])
+
+        # batch header band
+        ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=4)
+        h = ws.cell(row=r, column=1,
+                    value="%02d   %s%s   ·   %s" % (
+                        b["seq"], b["batch"],
+                        ("   (%s)" % b["p_number"]) if b["p_number"] else "",
+                        b["strain"] or "strain not stated"))
+        h.font = Font(name=FONT, size=12, bold=True, color="FFFFFF")
+        h.fill = PatternFill("solid", fgColor=INK)
+        h.alignment = Alignment(vertical="center", indent=1)
+        ws.merge_cells(start_row=r, start_column=5, end_row=r, end_column=7)
+        st = ws.cell(row=r, column=5, value="%s   ·   %d records" % (
+            STATUS_TEXT[b["status"]], len(brows)))
+        st.fill, st.font = fill, fnt
+        st.alignment = Alignment(horizontal="right", vertical="center", indent=1)
+        ws.row_dimensions[r].height = 22
+        r += 1
+
+        if b["notes"]:
+            ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=7)
+            n = ws.cell(row=r, column=1, value="   " + b["notes"])
+            nfill, nfont = (S.crit if b["status"] == "open" else S.warn)
+            n.fill = nfill
+            n.font = Font(name=FONT, size=9, bold=(b["status"] == "open"),
+                          color=(CRIT_FG if b["status"] == "open" else WARN_FG))
+            n.alignment = Alignment(vertical="center", wrap_text=False)
+            r += 1
+
+        buckets = defaultdict(list)
+        for rec in brows:
+            buckets[cp.classify(rec["Parameter"])].append(rec)
+
+        ordered = list(PANELS.items()) + [
+            ("Notes, conclusions & stability", ["gap", "overall", "stability", None])]
+        for pname, keys in ordered:
+            prows = []
+            for k in keys:
+                prows.extend(buckets.get(k, []))
+            if not prows:
+                continue
+            ws.merge_cells(start_row=r, start_column=2, end_row=r, end_column=7)
+            p = ws.cell(row=r, column=2, value=pname.upper())
+            p.font = Font(name=FONT, size=8, bold=True, color=ACCENT)
+            p.alignment = Alignment(vertical="center")
+            ws.row_dimensions[r].height = 15
+            r += 1
+            for rec in prows:
+                pc = ws.cell(row=r, column=2, value=rec["Parameter"])
+                pc.font = S.base
+                pc.alignment = Alignment(vertical="top", wrap_text=True, indent=1)
+                ac = ws.cell(row=r, column=3, value=rec["Acceptance Criterion"] or "—")
+                ac.font = S.small
+                ac.alignment = Alignment(vertical="top", wrap_text=True)
+                rc = ws.cell(row=r, column=4, value=rec["Result"] or "—")
+                rc.alignment = Alignment(vertical="top", wrap_text=True)
+                sev = cp.severity(rec["Result"])
+                if sev == "crit":
+                    rc.fill, rc.font = S.crit
+                elif sev == "warn":
+                    rc.fill, rc.font = S.warn
+                else:
+                    rc.font = S.base
+                ws.cell(row=r, column=5, value=rec["Certificate Code"]).font = S.base
+                ws.cell(row=r, column=6, value=cp.issue_date(rec["Issue Date"])).font = S.base
+                put_link(ws, r, 7, cp.clean_link(rec["Drive File Link"]), "Open", S)
+                r += 1
+        r += 1  # spacer between batches
+    dossier_rows = r - 5
+
     # =================================================== 3. Release Panel
     ws = wb.create_sheet("Release Panel")
     sheet_title(ws, "Release Panel", "Release-critical parameters, one row per batch. "
@@ -359,8 +446,8 @@ def main():
                 "Nothing here is a judgement made by this workbook.", S)
     heads = ["Type", "Seq", "Batch", "P-number", "Strain", "Parameter",
              "Acceptance criterion", "Result", "Certificate code", "Date of issue",
-             "Issuing laboratory", "Certificate"]
-    widths = [20, 6, 18, 12, 18, 40, 28, 46, 18, 14, 34, 12]
+             "Certificate"]
+    widths = [20, 6, 18, 12, 18, 44, 32, 50, 20, 15, 12]
     header_row(ws, 4, heads, widths, S)
     ws.freeze_panes = "A5"
     r = 5
@@ -396,8 +483,7 @@ def main():
             rc.alignment = Alignment(wrap_text=True, vertical="top")
             ws.cell(row=r, column=9, value=rec["Certificate Code"]).font = S.base
             ws.cell(row=r, column=10, value=cp.issue_date(rec["Issue Date"])).font = S.base
-            ws.cell(row=r, column=11, value=rec["Issuing Institution"]).font = S.small
-            put_link(ws, r, 12, cp.clean_link(rec["Drive File Link"]), "Open", S)
+            put_link(ws, r, 11, cp.clean_link(rec["Drive File Link"]), "Open", S)
             r += 1
             exc += 1
     ws.auto_filter.ref = "A4:%s%d" % (get_column_letter(len(heads)), max(r - 1, 5))
@@ -545,13 +631,13 @@ def main():
                 "Batches re-tested after storage (month 3 / 6 / 9 at 25 °C/60 % RH and 40 °C/75 % RH).",
                 S, "These are not release results and must never be substituted for release values.")
     detail_heads = ["Seq", "Batch", "P-number", "Strain", "Parameter", "Acceptance criterion",
-                    "Result", "Certificate code", "Date of issue", "Issuing laboratory", "Certificate"]
-    detail_widths = [6, 18, 11, 18, 48, 28, 34, 18, 14, 36, 12]
+                    "Result", "Certificate code", "Date of issue", "Certificate"]
+    detail_widths = [6, 18, 11, 18, 50, 32, 38, 20, 15, 12]
     header_row(ws, 5, detail_heads, detail_widths, S)
     ws.freeze_panes = "A6"
     write_detail(ws, 6, stab, S)
     if stab:
-        ws.auto_filter.ref = "A5:K%d" % (len(stab) + 5)
+        ws.auto_filter.ref = "A5:J%d" % (len(stab) + 5)
 
     # =================================================== 10. Full Data
     ws = wb.create_sheet("Full Data")
@@ -559,13 +645,13 @@ def main():
     header_row(ws, 4, detail_heads, detail_widths, S)
     ws.freeze_panes = "E5"
     write_detail(ws, 5, rows, S)
-    ws.auto_filter.ref = "A4:K%d" % (len(rows) + 4)
+    ws.auto_filter.ref = "A4:J%d" % (len(rows) + 4)
 
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     wb.save(out_path)
     print("Wrote %s" % out_path)
-    print("sheets=%d batches=%d records=%d certificates=%d exceptions=%d stability=%d"
-          % (len(wb.sheetnames), len(batches), len(rows), n_certs, exc, len(stab)))
+    print("sheets=%d batches=%d records=%d certificates=%d exceptions=%d stability=%d dossier_rows=%d"
+          % (len(wb.sheetnames), len(batches), len(rows), n_certs, exc, len(stab), dossier_rows))
 
 
 def write_detail(ws, start, records, S):
@@ -592,10 +678,7 @@ def write_detail(ws, start, records, S):
             rc.font = S.base
         ws.cell(row=r, column=8, value=rec["Certificate Code"]).font = S.base
         ws.cell(row=r, column=9, value=cp.issue_date(rec["Issue Date"])).font = S.base
-        ic = ws.cell(row=r, column=10, value=rec["Issuing Institution"])
-        ic.font = S.small
-        ic.alignment = Alignment(wrap_text=True, vertical="top")
-        put_link(ws, r, 11, cp.clean_link(rec["Drive File Link"]), "Open", S)
+        put_link(ws, r, 10, cp.clean_link(rec["Drive File Link"]), "Open", S)
         r += 1
     return r
 
