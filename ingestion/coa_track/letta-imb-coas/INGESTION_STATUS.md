@@ -99,6 +99,49 @@ On **every** future ingestion of outsourced certificates:
 > leaves the original in the parent folder, which a human must delete. Always report
 > the parent-level duplicates that need manual deletion.
 
+## Master eCoA table — 2026-08-10
+
+Built from this source plus the per-batch Drive folders. Outputs in `exports/`:
+
+| File | What it is |
+|---|---|
+| `master_coa_table.tsv` | 2,339 rows, one per tested parameter — the canonical extract |
+| `PP_eCoA_Master_Database.xlsx` | 3 sheets: Batch Summary (row-per-batch), Audit Trail, Stability Studies |
+| `coa_register.html` | Self-contained browser view, no Office required |
+
+Regenerate with `build_master_workbook.py` / `build_master_register_html.py`.
+
+**Columns:** `Seq · Cultivation Batch · P-Number · Strain · Parameter · Acceptance Criterion ·
+Result · Certificate Code · Issue Date · Issuing Institution · Drive File Link`.
+
+**Coverage across the 80 batches:** 45 full-panel · 34 partial (a parameter category has no
+certificate on file) · 1 open QC issue (`FB032601` / `ППК26127`).
+
+**Stability results are held separate.** Month 3/6/9 at 25 °C/60 % RH and 40 °C/75 % RH
+(batches `P050022`, `P050072`, `P050202`) live on their own sheet. Merging them into the
+release columns produced nonsense like `Total CBD: 0.17% | 0.05% | 22.83%`, mixing release
+values with storage timepoints — they must never be read as release results.
+
+## De-duplication — verified by content, not filename
+
+A filename sweep flagged ~20 candidate duplicates. Reconstructing and hashing each record's
+full text found **zero true duplicates**, so nothing was deleted:
+
+- **` (1)` / ` (2)` suffixed OCR files are independent OCR passes of the same PDF.** Every
+  SHA-1 differs — one reads `ilac-MRA` where another omits it, `JT-083` vs `ЛТ-083`. They are
+  cross-checks against OCR error.
+- **`<batch>_CoA.txt` is a ~300-character digest; `<batch> CoA.txt` is the ~4,000-character
+  full transcription.** Different granularity, both useful for retrieval.
+- **`CJ072501 (P050252) 3.txt` is 107k characters** against 18k for its supposed duplicates —
+  a multi-report bundle, not a copy.
+- Bundle summaries, raw OCR, structured extracts and PP in-house CoAs are distinct document
+  layers for the same batch, never duplicates of one another.
+
+Rule going forward: delete only when two records are byte-identical after whitespace
+normalisation. Governance records `SOP_RAG_INGESTION_per_batch_folder_rule_v1.2.txt` and
+`DRIVE_INDEX_ImB_QC_COAs_batch_folders_v2.txt` carry this in the RAG; their v1.1/v1.0
+predecessors were retired.
+
 ## Ph.Eur. 11.5 Cannabis Flower Monograph (3028) — parameter coverage
 
 | Ph.Eur. parameter | Method | Lab | Coverage |
