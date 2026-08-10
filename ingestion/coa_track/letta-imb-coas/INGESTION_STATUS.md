@@ -13,9 +13,14 @@ _Last updated: 2026-08-10 by cloud Claude session._
 
 | Metric | Value |
 |--------|-------|
-| Total files in source | **261** |
-| `completed` | **261** |
+| Total files in source | **263** |
+| `completed` | **263** |
 | `error` | **0** |
+
+_263 = 261 CoA/QC records + 2 governance records added 2026-08-10:_
+_`SOP_RAG_INGESTION_per_batch_folder_rule_v1.1.txt` and `DRIVE_INDEX_001_COAs_batch_folders_v1.txt`_
+_(filename retained for history; the folder it indexes has since been merged into the_
+_Drive source-of-truth folder itself — see Standing rule below)._
 
 The 2026-06-01 embedding blocker is **resolved**. Root cause was an OpenAI
 `429 credit_balance_exhausted` on the server key — Letta accepted each upload and
@@ -63,24 +68,36 @@ A neutral query to CNP asks them to either **(A) substantiate** — supply the r
 Ph.Eur. 2.8.2 observation evidencing seed, or **(B) correct** — reissue with foreign
 matter 0.08 % conforming. Batch disposition is held pending their written reply.
 
-## Standing rule — one Drive folder per tested batch
+## Standing rule — one Drive folder per tested batch (v1.1)
 
-Also stored in the RAG as `SOP_RAG_INGESTION_per_batch_folder_rule_v1.0.txt`.
+Stored in the RAG as `SOP_RAG_INGESTION_per_batch_folder_rule_v1.1.txt`. Supersedes
+v1.0, which prescribed a zero-padded `NN. <batch>` numeric prefix; **that prefix is
+retired** (a human corrected this call — inserting a batch out of order would have
+forced a full renumber, and the Drive tools cannot rename).
+
+**Location history:** the batch folders were first built under a staging folder
+named `001 COAs`; a human then cleared the ImB_QC_COAs Drive folder itself of its old
+loose files/folders and moved all 80 batch folders directly into it. `001 COAs` no
+longer exists. **The batch folders now live directly under the Drive source-of-truth
+folder**, `16oMK_j0FUusjveV61B5rxWi6Sl5kQsn5`.
 
 On **every** future ingestion of outsourced certificates:
 1. Determine the tested batch; name the folder by **batch number, P-number preferred**
-   (e.g. `P060402`), else the strain/lot code (e.g. `FB032601`, `BG1024`).
-2. Prefix with a **zero-padded chronological number** — `NN. <batch>`, e.g.
-   `07. P050022`, `21. P060402`. Zero-padding keeps Drive's alphabetical sort in true
-   chronological order (unpadded, `10` sorts before `2`).
-3. **Reuse** an existing folder for that batch; **create** one only for a new batch,
-   continuing the numbering from the highest existing value.
-4. Place the certificates for that batch in that folder.
+   with the cultivation code in parentheses (e.g. `P060402 (GorillaGlue)`), else the
+   strain/lot code alone (e.g. `FB032601`, `BG1024`). **No numeric prefix** — the
+   folder title is the batch name only.
+2. **Reuse** an existing folder for that batch; **create** one only for a batch that
+   has none yet — directly under the ImB_QC_COAs Drive folder.
+3. Place every outsourced certificate for that batch (matched by P-number and/or
+   cultivation code) into its folder; de-duplicate exact byte-duplicates.
+4. Chronological order is **not** encoded in the folder name (Drive sorts un-prefixed
+   names alphabetically). It is recorded separately by the `seq` + issue-date columns
+   of the Drive index / master table kept in the RAG.
 
 > **Tooling constraint:** the Drive MCP tools can create folders and copy files but
-> **cannot move or delete**. Copying a certificate into its batch folder leaves the
-> original in the parent folder, which a human must delete. Always report the
-> parent-level duplicates that need manual deletion.
+> **cannot move, rename, or delete**. Copying a certificate into its batch folder
+> leaves the original in the parent folder, which a human must delete. Always report
+> the parent-level duplicates that need manual deletion.
 
 ## Ph.Eur. 11.5 Cannabis Flower Monograph (3028) — parameter coverage
 
