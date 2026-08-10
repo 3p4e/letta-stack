@@ -122,12 +122,19 @@ FLAG_RE = re.compile(r"DATA INTEGRITY FLAG|" + CRIT_RE.pattern, re.I)
 URL_RE = re.compile(r"^https?://", re.I)
 
 # Accredited external laboratories, normalised. Purely Plant is the sponsor, never an issuer.
+# Accreditation numbers are not printed in the Issuing Institution field; they were read from
+# the certificate texts in the knowledgebase by scanning every passage for an ISO/IEC 17025
+# number and recording which laboratory it appears with. Each mapping below is the dominant
+# co-occurrence by a wide margin (hit counts in brackets); the stray cross-hits come from
+# multi-report bundle PDFs that name several laboratories on one page.
 LAB_PATTERNS = [
-    ("Farmahem", re.compile(r"farmahem", re.I)),
-    ("UKIM Faculty of Pharmacy — Center for Natural Products", re.compile(r"ukim|faculty of pharmacy|природни производи", re.I)),
-    ("IPH — Institute of Public Health", re.compile(r"institute of public health|јавно здравје|\biph\b", re.I)),
-    ("State Phytosanitary Laboratory", re.compile(r"phytosanitary|фитосанитар", re.I)),
-    ("New Garden Pharma", re.compile(r"new garden pharma", re.I)),
+    ("Farmahem", re.compile(r"farmahem|фармахем", re.I), "LT-017"),                        # [31]
+    ("UKIM Faculty of Pharmacy — Center for Natural Products",
+     re.compile(r"ukim|faculty of pharmacy|природни производи", re.I), "LT-083"),          # [67]
+    ("IPH — Institute of Public Health",
+     re.compile(r"institute of public health|јавно здравје|\biph\b", re.I), "LT-005"),     # [111]
+    ("State Phytosanitary Laboratory", re.compile(r"phytosanitary|фитосанитар", re.I), "LT-036"),  # [4]
+    ("New Garden Pharma", re.compile(r"new garden pharma", re.I), ""),
 ]
 
 
@@ -236,7 +243,7 @@ def count_labs(rows):
     found = set()
     for r in rows:
         inst = r.get("Issuing Institution", "")
-        for name, rx in LAB_PATTERNS:
+        for name, rx, _accred in LAB_PATTERNS:
             if rx.search(inst):
                 found.add(name)
     return len(found)

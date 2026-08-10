@@ -1,20 +1,26 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Build the master eCoA workbook.
+"""Build the Purely Plant eCoA master workbook.
 
-Sheets
-  Batch Summary     one row per batch, release-critical reads, colour-coded status
-  Audit Trail       every parameter record, one row each, with its certificate
-  Stability Studies ICH storage results, kept away from release disposition
+Ten sheets, every fact drawn from the ImB_QC_COAs knowledgebase:
 
-A previous version put a second "sources" row under every batch across 24 columns; the
-citations made those rows fifteen lines tall and every column too narrow to read. Provenance
-now lives on the Audit Trail sheet, where each parameter has a full row to itself.
+  Read Me            conventions, legend and the data-integrity rules this file follows
+  Batch Register     one row per tested batch: identity, disposition, coverage, labs
+  Release Panel      one row per batch across the release-critical parameters
+  Coverage Matrix    batch x analytical panel, so a missing panel is visible at a glance
+  QC Exceptions      every declared non-conformance, laboratory finding and data flag
+  Certificates       one row per certificate: code, date of issue, lab, what it covers
+  Laboratories       the accredited laboratories, their scope and volume
+  Strain Summary     potency range and batch count per strain
+  Stability Studies  ICH storage results, kept apart from release disposition
+  Full Data          all parameter records, one row each
 
 Usage:  python3 build_master_workbook.py [input.tsv] [output.xlsx]
 """
 import os
+import re
 import sys
+from collections import Counter, OrderedDict, defaultdict
 
 import openpyxl
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
@@ -26,261 +32,572 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_OUT = os.path.join(HERE, "exports", "PP_eCoA_Master_Database.xlsx")
 FONT = "Arial"
 
-# Release-critical reads for the summary sheet. The full parameter set is on Audit Trail;
-# a summary that repeats all 24 buckets is unreadable at any column width.
-SUMMARY_COLS = [
-    ("identification", "Identification", 18),
-    ("foreign_matter", "Foreign matter", 18),
+INK = "16232B"
+PASS_BG, PASS_FG = "E3F3E9", "1B7F4B"
+WARN_BG, WARN_FG = "FAEDD4", "9A6300"
+CRIT_BG, CRIT_FG = "F9DEDB", "AE2318"
+BAND = "F4F6F5"
+ACCENT = "0E6E6E"
+
+# Release-critical reads for the Release Panel sheet.
+RELEASE = [
+    ("identification", "Identification", 17),
+    ("foreign_matter", "Foreign matter", 17),
     ("loss_on_drying", "Loss on drying", 15),
-    ("thc", "Total Δ9-THC", 22),
-    ("cbd", "Total CBD", 18),
-    ("cbn", "Total CBN", 16),
-    ("aflatoxins", "Aflatoxins", 20),
-    ("ochratoxin", "Ochratoxin A", 15),
+    ("thc", "Total Δ9-THC", 24),
+    ("cbd", "Total CBD", 19),
+    ("cbn", "Total CBN", 17),
+    ("aflatoxins", "Aflatoxins", 21),
+    ("ochratoxin", "Ochratoxin A", 22),
     ("pb", "Lead", 13), ("cd", "Cadmium", 13), ("as_", "Arsenic", 13), ("hg", "Mercury", 13),
-    ("pesticides", "Pesticide screen", 26),
-    ("tamc", "TAMC", 15), ("tymc", "TYMC", 15), ("bile", "Bile-tol. GNB", 15),
-    ("ecoli", "E. coli", 14), ("salmonella", "Salmonella", 14),
+    ("pesticides", "Pesticide screen", 30),
+    ("tamc", "TAMC", 15), ("tymc", "TYMC", 15), ("bile", "Bile-tol. GNB", 16),
+    ("ecoli", "E. coli", 15), ("salmonella", "Salmonella", 15),
 ]
+
+# Analytical panels for the coverage matrix.
+PANELS = OrderedDict([
+    ("Identity & physical", ["appearance", "identification", "foreign_matter", "loss_on_drying"]),
+    ("Potency", ["thc", "cbd", "cbn", "cannabinoid_profile"]),
+    ("Mycotoxins", ["aflatoxins", "ochratoxin"]),
+    ("Heavy metals", ["pb", "cd", "as_", "hg", "cu", "metals_panel"]),
+    ("Pesticides", ["pesticides"]),
+    ("Microbiology", ["tamc", "tymc", "bile", "ecoli", "salmonella", "micro_other"]),
+    ("Packaging", ["packaging"]),
+])
 
 STATUS_TEXT = {"complete": "Complete", "flag": "Complete (flag)",
                "partial": "Partial", "open": "OPEN QC ISSUE"}
+
+ACCRED_RE = re.compile(r"\b(?:LT|ЛТ|JT)\s*-\s*(\d{3})\b", re.I)
+NUM_RE = re.compile(r"(\d+(?:[.,]\d+)?)\s*%")
+
+
+class Style(object):
+    """Fonts and fills built once and reused across sheets."""
+
+    def __init__(self):
+        self.hdr = Font(name=FONT, size=10, bold=True, color="FFFFFF")
+        self.hdr_fill = PatternFill("solid", fgColor=INK)
+        self.base = Font(name=FONT, size=10)
+        self.bold = Font(name=FONT, size=10, bold=True)
+        self.mono = Font(name="Consolas", size=10)
+        self.small = Font(name=FONT, size=9, color="5A6E75")
+        self.faint = Font(name=FONT, size=10, color="8B9EA3")
+        self.link = Font(name=FONT, size=9, color=ACCENT, underline="single")
+        self.title = Font(name=FONT, size=16, bold=True, color=INK)
+        self.sub = Font(name=FONT, size=10, color="5A6E75", italic=True)
+        self.section = Font(name=FONT, size=11, bold=True, color=ACCENT)
+        self.pass_ = (PatternFill("solid", fgColor=PASS_BG), Font(name=FONT, size=10, color=PASS_FG, bold=True))
+        self.warn = (PatternFill("solid", fgColor=WARN_BG), Font(name=FONT, size=10, color=WARN_FG, bold=True))
+        self.crit = (PatternFill("solid", fgColor=CRIT_BG), Font(name=FONT, size=10, color=CRIT_FG, bold=True))
+        self.band = PatternFill("solid", fgColor=BAND)
+        thin = Side(style="thin", color="DBE3E1")
+        self.box = Border(left=thin, right=thin, top=thin, bottom=thin)
+
+    def status(self, key):
+        return {"complete": self.pass_, "flag": self.pass_,
+                "partial": self.warn, "open": self.crit}[key]
+
+
+def header_row(ws, row, headers, widths, S, height=26):
+    for ci, h in enumerate(headers, start=1):
+        c = ws.cell(row=row, column=ci, value=h)
+        c.font = S.hdr
+        c.fill = S.hdr_fill
+        c.alignment = Alignment(horizontal="left", vertical="center", wrap_text=True)
+    ws.row_dimensions[row].height = height
+    for i, w in enumerate(widths, start=1):
+        ws.column_dimensions[get_column_letter(i)].width = w
+
+
+def sheet_title(ws, title, subtitle, S, width_note=None):
+    ws.sheet_view.showGridLines = False
+    ws["A1"] = title
+    ws["A1"].font = S.title
+    ws["A2"] = subtitle
+    ws["A2"].font = S.sub
+    if width_note:
+        ws["A3"] = width_note
+        ws["A3"].font = Font(name=FONT, size=9, color="8B9EA3")
+
+
+def put_link(ws, row, col, url, label, S):
+    c = ws.cell(row=row, column=col, value=label if url else "")
+    if url:
+        c.hyperlink = url
+        c.font = S.link
+    return c
+
+
+def parse_pct(text):
+    """Leading percentage as a float, for sorting and ranges only.
+
+    Returns None when the value is not a plain percentage (BLQ, <LOQ, a range, prose),
+    so nothing is ever coerced into a number it does not state.
+    """
+    if not text:
+        return None
+    head = text.split("|")[0].strip()
+    if head.startswith("<") or head.startswith("≤") or "loq" in head.lower():
+        return None
+    m = NUM_RE.search(head)
+    if not m:
+        return None
+    try:
+        return float(m.group(1).replace(",", "."))
+    except ValueError:
+        return None
 
 
 def main():
     src = sys.argv[1] if len(sys.argv) > 1 else None
     out_path = sys.argv[2] if len(sys.argv) > 2 else DEFAULT_OUT
     rows, batches = cp.build(src)
-
+    by_seq = cp.group_by_seq(rows)
+    S = Style()
     wb = openpyxl.Workbook()
 
-    hdr_font = Font(name=FONT, size=10, bold=True, color="FFFFFF")
-    hdr_fill = PatternFill("solid", fgColor="16232B")
-    base = Font(name=FONT, size=10)
-    bold = Font(name=FONT, size=10, bold=True)
-    small = Font(name=FONT, size=9, color="5A6E75")
-    link_font = Font(name=FONT, size=9, color="0E6E6E", underline="single")
-    title_font = Font(name=FONT, size=15, bold=True, color="16232B")
-
-    GREEN, GREEN_T = PatternFill("solid", fgColor="E3F3E9"), Font(name=FONT, size=10, color="1B7F4B", bold=True)
-    AMBER, AMBER_T = PatternFill("solid", fgColor="FAEDD4"), Font(name=FONT, size=10, color="9A6300", bold=True)
-    RED, RED_T = PatternFill("solid", fgColor="F9DEDB"), Font(name=FONT, size=10, color="AE2318", bold=True)
-    GREY_T = Font(name=FONT, size=10, color="8B9EA3")
-
-    thin = Side(style="thin", color="DBE3E1")
-    box = Border(left=thin, right=thin, top=thin, bottom=thin)
-
-    status_style = {"complete": (GREEN, GREEN_T), "flag": (GREEN, AMBER_T),
-                    "partial": (AMBER, AMBER_T), "open": (RED, RED_T)}
-
-    # ------------------------------------------------ Sheet 1: Batch Summary
+    # =================================================== 1. Read Me
     ws = wb.active
-    ws.title = "Batch Summary"
-    ws.sheet_view.showGridLines = False
+    ws.title = "Read Me"
+    sheet_title(ws, "Purely Plant GmbH — eCoA Master Database",
+                "Outsourced laboratory certificates for every tested batch, compiled from the "
+                "ImB_QC_COAs knowledgebase.", S)
+    ws.column_dimensions["A"].width = 24
+    ws.column_dimensions["B"].width = 104
+    r = 4
+    facts = [("Batches", len(batches)), ("Parameter records", len(rows)),
+             ("Accredited laboratories", cp.count_labs(rows)),
+             ("Certificates referenced", len({(x["Certificate Code"].strip(),
+                                               x["Issuing Institution"].strip())
+                                              for x in rows if x["Certificate Code"].strip()})),
+             ("Drive folder", "16oMK_j0FUusjveV61B5rxWi6Sl5kQsn5")]
+    for k, v in facts:
+        ws.cell(row=r, column=1, value=k).font = S.bold
+        ws.cell(row=r, column=2, value=v).font = S.base
+        r += 1
 
-    ws["A1"] = "Purely Plant GmbH — eCoA Master Database"
-    ws["A1"].font = title_font
-    ws["A2"] = ("One row per tested batch, release-critical parameters. "
-                "Full parameter detail and certificate links on the Audit Trail sheet.")
-    ws["A2"].font = small
-    ws["A3"] = ("%d batches · %d parameter records · %d accredited laboratories · "
-                "values transcribed verbatim, pass/fail never derived from a value"
-                % (len(batches), len(rows), cp.count_labs(rows)))
-    ws["A3"].font = Font(name=FONT, size=9, color="8B9EA3")
+    r += 1
+    ws.cell(row=r, column=1, value="SHEETS").font = S.section
+    r += 1
+    for name, desc in [
+        ("Batch Register", "One row per tested batch: identity, disposition, panel coverage, laboratories."),
+        ("Release Panel", "One row per batch across the release-critical parameters."),
+        ("Coverage Matrix", "Batch against analytical panel — a missing panel is visible immediately."),
+        ("QC Exceptions", "Every declared non-conformance, laboratory finding and data-integrity flag."),
+        ("Certificates", "One row per certificate: code, date of issue, issuing laboratory, coverage."),
+        ("Laboratories", "The accredited laboratories, their accreditation number and volume of work."),
+        ("Strain Summary", "Batches and potency range per strain."),
+        ("Stability Studies", "ICH storage results. Never a substitute for release values."),
+        ("Full Data", "Every parameter record, one row each, with its certificate."),
+    ]:
+        ws.cell(row=r, column=1, value=name).font = S.bold
+        c = ws.cell(row=r, column=2, value=desc)
+        c.font = S.base
+        c.alignment = Alignment(wrap_text=True, vertical="top")
+        r += 1
 
-    HDR = 5
-    headers = ["Seq", "Status", "Cultivation batch", "P-number", "Strain"] + \
-              [lbl for _, lbl, _ in SUMMARY_COLS] + ["Notes"]
-    for ci, h in enumerate(headers, start=1):
-        c = ws.cell(row=HDR, column=ci, value=h)
-        c.font = hdr_font
-        c.fill = hdr_fill
-        c.alignment = Alignment(horizontal="left", vertical="center", wrap_text=True)
-        c.border = box
-    ws.row_dimensions[HDR].height = 28
-    ws.freeze_panes = ws.cell(row=HDR + 1, column=6).coordinate
+    r += 1
+    ws.cell(row=r, column=1, value="DISPOSITION").font = S.section
+    r += 1
+    for label, desc in [
+        ("Complete", "All core Ph. Eur. 3028 panels are on file for the batch."),
+        ("Complete (flag)", "All panels on file; a certificate carries a data-integrity flag."),
+        ("Partial", "One or more analytical panels have no certificate on file."),
+        ("OPEN QC ISSUE", "The issuing laboratory declared a non-conformance that is unresolved."),
+    ]:
+        c = ws.cell(row=r, column=1, value=label)
+        key = {"Complete": "complete", "Complete (flag)": "flag",
+               "Partial": "partial", "OPEN QC ISSUE": "open"}[label]
+        fill, fnt = S.status(key)
+        c.fill, c.font = fill, fnt
+        d = ws.cell(row=r, column=2, value=desc)
+        d.font = S.base
+        d.alignment = Alignment(wrap_text=True, vertical="top")
+        r += 1
 
-    for i, w in enumerate([6, 16, 22, 12, 20], start=1):
-        ws.column_dimensions[get_column_letter(i)].width = w
-    for j, (_k, _lbl, width) in enumerate(SUMMARY_COLS):
-        ws.column_dimensions[get_column_letter(6 + j)].width = width
-    ws.column_dimensions[get_column_letter(len(headers))].width = 52
+    r += 1
+    ws.cell(row=r, column=1, value="DATA INTEGRITY").font = S.section
+    r += 1
+    for line in [
+        "Values appear exactly as printed on the certificate. N.D., <LOQ, BLQ and the Macedonian "
+        "Одговара / Не одговара verdicts are preserved verbatim.",
+        "A pass or fail is never derived from a value. A result is called a failure only where the "
+        "issuing laboratory declared one, and highlighted as a finding only where the laboratory "
+        "itself wrote that something was detected.",
+        "Where a laboratory prints results without a limit column, the acceptance criterion is drawn "
+        "from the Purely Plant release specification / Ph. Eur. 3028 and marked as added for review.",
+        "Where a certificate contradicts itself, the row carries a data-integrity flag rather than a "
+        "silent correction, and the discrepancy is raised with the issuing laboratory.",
+        "Date of issue only. Analysis and receipt dates printed alongside it are not reproduced.",
+    ]:
+        c = ws.cell(row=r, column=2, value="• " + line)
+        c.font = S.base
+        c.alignment = Alignment(wrap_text=True, vertical="top")
+        ws.row_dimensions[r].height = 30
+        r += 1
 
-    r = HDR + 1
+    # =================================================== 2. Batch Register
+    ws = wb.create_sheet("Batch Register")
+    sheet_title(ws, "Batch Register", "Every tested batch, in chronological sequence.", S)
+    heads = ["Seq", "Cultivation batch", "P-number", "Strain", "Disposition",
+             "Panels on file", "Parameter records", "Certificates", "Laboratories",
+             "Notes", "Batch folder"]
+    widths = [6, 20, 12, 20, 17, 14, 12, 12, 40, 62, 12]
+    header_row(ws, 4, heads, widths, S)
+    ws.freeze_panes = "A5"
+
+    batch_folder = {}
     for b in batches:
-        fill, fnt = status_style[b["status"]]
-        ws.cell(row=r, column=1, value=b["seq"]).font = base
-        sc = ws.cell(row=r, column=2, value=STATUS_TEXT[b["status"]])
+        for rec in by_seq[b["seq"]]:
+            raw = rec["Drive File Link"] or ""
+            if "/folders/" in raw:
+                batch_folder[b["seq"]] = cp.clean_link(raw)
+                break
+
+    r = 5
+    for b in batches:
+        brows = by_seq[b["seq"]]
+        panels_present = sum(1 for _n, keys in PANELS.items()
+                             if any(cp.classify(x["Parameter"]) in keys for x in brows))
+        certs = {x["Certificate Code"].strip() for x in brows if x["Certificate Code"].strip()
+                 and x["Certificate Code"].strip().lower() not in ("n/a", "na")}
+        labs = set()
+        for x in brows:
+            for name, rx, _acc in cp.LAB_PATTERNS:
+                if rx.search(x["Issuing Institution"] or ""):
+                    labs.add(name.split("—")[0].strip())
+        ws.cell(row=r, column=1, value=b["seq"]).font = S.base
+        ws.cell(row=r, column=2, value=b["batch"]).font = S.bold
+        ws.cell(row=r, column=3, value=b["p_number"]).font = S.base
+        ws.cell(row=r, column=4, value=b["strain"]).font = S.base
+        sc = ws.cell(row=r, column=5, value=STATUS_TEXT[b["status"]])
+        fill, fnt = S.status(b["status"])
         sc.fill, sc.font = fill, fnt
-        ws.cell(row=r, column=3, value=b["batch"]).font = bold
-        ws.cell(row=r, column=4, value=b["p_number"]).font = base
-        ws.cell(row=r, column=5, value=b["strain"]).font = base
-        for j, (key, _lbl, _w) in enumerate(SUMMARY_COLS):
+        ws.cell(row=r, column=6, value="%d of %d" % (panels_present, len(PANELS))).font = S.base
+        ws.cell(row=r, column=7, value=len(brows)).font = S.base
+        ws.cell(row=r, column=8, value=len(certs)).font = S.base
+        ws.cell(row=r, column=9, value=", ".join(sorted(labs))).font = S.small
+        nc = ws.cell(row=r, column=10, value=b["notes"])
+        nc.font = Font(name=FONT, size=9, color=CRIT_FG if b["status"] == "open" else "5A6E75")
+        put_link(ws, r, 11, batch_folder.get(b["seq"], ""), "Folder", S)
+        if b["seq"] % 2 == 0:
+            for c in range(1, len(heads) + 1):
+                if c != 5:
+                    ws.cell(row=r, column=c).fill = S.band
+        r += 1
+    ws.auto_filter.ref = "A4:%s%d" % (get_column_letter(len(heads)), r - 1)
+
+    # =================================================== 3. Release Panel
+    ws = wb.create_sheet("Release Panel")
+    sheet_title(ws, "Release Panel", "Release-critical parameters, one row per batch. "
+                                     "Full detail and certificate links on Full Data.", S)
+    heads = ["Seq", "Batch", "P-number", "Strain"] + [l for _k, l, _w in RELEASE]
+    widths = [6, 20, 12, 18] + [w for _k, _l, w in RELEASE]
+    header_row(ws, 4, heads, widths, S)
+    ws.freeze_panes = "E5"
+    r = 5
+    for b in batches:
+        ws.cell(row=r, column=1, value=b["seq"]).font = S.base
+        ws.cell(row=r, column=2, value=b["batch"]).font = S.bold
+        ws.cell(row=r, column=3, value=b["p_number"]).font = S.base
+        ws.cell(row=r, column=4, value=b["strain"]).font = S.base
+        for j, (key, _l, _w) in enumerate(RELEASE):
             v = b["vals"][key]["value"]
-            cell = ws.cell(row=r, column=6 + j, value=v)
-            cell.alignment = Alignment(vertical="top", wrap_text=False)
+            c = ws.cell(row=r, column=5 + j, value=v)
             sev = cp.severity(v)
             if sev == "crit":
-                cell.fill, cell.font = RED, RED_T
+                c.fill, c.font = S.crit
             elif sev == "warn":
-                cell.fill, cell.font = AMBER, AMBER_T
+                c.fill, c.font = S.warn
             elif sev == "na":
-                cell.font = GREY_T
+                c.font = S.faint
             else:
-                cell.font = base
-        nc = ws.cell(row=r, column=len(headers), value=b["notes"])
-        nc.font = Font(name=FONT, size=9, color="AE2318" if b["status"] == "open" else "5A6E75")
-        nc.alignment = Alignment(vertical="top", wrap_text=False)
-        for c in range(1, len(headers) + 1):
-            ws.cell(row=r, column=c).border = box
+                c.font = S.base
+            c.alignment = Alignment(vertical="center")
         r += 1
-    LAST = r - 1
-    ws.auto_filter.ref = "A%d:%s%d" % (HDR, get_column_letter(len(headers)), LAST)
+    ws.auto_filter.ref = "A4:%s%d" % (get_column_letter(len(heads)), r - 1)
 
-    # ------------------------------------------------ Sheet 2: Audit Trail
-    ws2 = wb.create_sheet("Audit Trail")
-    ws2.sheet_view.showGridLines = False
-    head2 = ["Seq", "Cultivation batch", "P-number", "Strain", "Parameter",
-             "Acceptance criterion", "Result", "Certificate code", "Issue date",
-             "Issuing institution", "Certificate"]
-    widths2 = [6, 18, 11, 18, 46, 30, 34, 20, 24, 38, 12]
-    for ci, h in enumerate(head2, start=1):
-        c = ws2.cell(row=1, column=ci, value=h)
-        c.font = hdr_font
-        c.fill = hdr_fill
-        c.alignment = Alignment(vertical="center", wrap_text=True)
-    ws2.row_dimensions[1].height = 26
-    ws2.freeze_panes = "E2"
-    for i, w in enumerate(widths2, start=1):
-        ws2.column_dimensions[get_column_letter(i)].width = w
+    # =================================================== 4. Coverage Matrix
+    ws = wb.create_sheet("Coverage Matrix")
+    sheet_title(ws, "Coverage Matrix",
+                "Records held per analytical panel. An empty cell means no certificate on file "
+                "for that panel — not a failing result.", S)
+    heads = ["Seq", "Batch", "P-number", "Strain"] + list(PANELS.keys()) + ["Panels on file"]
+    widths = [6, 20, 12, 18] + [19] * len(PANELS) + [14]
+    header_row(ws, 4, heads, widths, S, height=34)
+    ws.freeze_panes = "E5"
+    r = 5
+    for b in batches:
+        brows = by_seq[b["seq"]]
+        counts = Counter(cp.classify(x["Parameter"]) for x in brows)
+        ws.cell(row=r, column=1, value=b["seq"]).font = S.base
+        ws.cell(row=r, column=2, value=b["batch"]).font = S.bold
+        ws.cell(row=r, column=3, value=b["p_number"]).font = S.base
+        ws.cell(row=r, column=4, value=b["strain"]).font = S.base
+        present = 0
+        for j, (_name, keys) in enumerate(PANELS.items()):
+            n = sum(counts.get(k, 0) for k in keys)
+            c = ws.cell(row=r, column=5 + j, value=n if n else "—")
+            c.alignment = Alignment(horizontal="center")
+            if n:
+                present += 1
+                c.fill, c.font = S.pass_
+            else:
+                c.font = S.faint
+        tot = ws.cell(row=r, column=5 + len(PANELS), value="%d of %d" % (present, len(PANELS)))
+        tot.font = S.bold if present == len(PANELS) else S.base
+        tot.alignment = Alignment(horizontal="center")
+        r += 1
+    ws.auto_filter.ref = "A4:%s%d" % (get_column_letter(len(heads)), r - 1)
 
-    for ri, rec in enumerate(rows, start=2):
-        ws2.cell(row=ri, column=1, value=rec["Seq"]).font = base
-        ws2.cell(row=ri, column=2, value=rec["Cultivation Batch"]).font = base
-        ws2.cell(row=ri, column=3, value=rec["P-Number"]).font = base
-        ws2.cell(row=ri, column=4, value=rec["Strain"]).font = base
-        pc = ws2.cell(row=ri, column=5, value=rec["Parameter"])
-        pc.font = base
-        pc.alignment = Alignment(vertical="top", wrap_text=True)
-        ac = ws2.cell(row=ri, column=6, value=rec["Acceptance Criterion"])
-        ac.font = small
-        ac.alignment = Alignment(vertical="top", wrap_text=True)
-        rc = ws2.cell(row=ri, column=7, value=rec["Result"])
-        rc.alignment = Alignment(vertical="top", wrap_text=True)
-        sev = cp.severity(rec["Result"])
-        if sev == "crit":
-            rc.fill, rc.font = RED, RED_T
-        elif sev == "warn":
-            rc.fill, rc.font = AMBER, AMBER_T
-        else:
-            rc.font = base
-        ws2.cell(row=ri, column=8, value=rec["Certificate Code"]).font = base
-        ws2.cell(row=ri, column=9, value=cp.issue_date(rec["Issue Date"])).font = base
-        ws2.cell(row=ri, column=10, value=rec["Issuing Institution"]).font = small
-        link = cp.clean_link(rec["Drive File Link"])
-        lc = ws2.cell(row=ri, column=11, value="Open PDF" if link else "")
-        if link:
-            lc.hyperlink = link
-            lc.font = link_font
-    ws2.auto_filter.ref = "A1:K%d" % (len(rows) + 1)
+    # =================================================== 5. QC Exceptions
+    ws = wb.create_sheet("QC Exceptions")
+    sheet_title(ws, "QC Exceptions",
+                "Declared non-conformances, laboratory findings and data-integrity flags. "
+                "Nothing here is a judgement made by this workbook.", S)
+    heads = ["Type", "Seq", "Batch", "P-number", "Strain", "Parameter",
+             "Acceptance criterion", "Result", "Certificate code", "Date of issue",
+             "Issuing laboratory", "Certificate"]
+    widths = [20, 6, 18, 12, 18, 40, 28, 46, 18, 14, 34, 12]
+    header_row(ws, 4, heads, widths, S)
+    ws.freeze_panes = "A5"
+    r = 5
+    exc = 0
+    for b in batches:
+        for rec in by_seq[b["seq"]]:
+            sev = cp.severity(rec["Result"])
+            gap = cp.GAP_RE.match(rec["Parameter"])
+            if not sev and not gap:
+                continue
+            if gap:
+                kind, style = "Coverage gap", S.warn
+            elif sev == "crit":
+                kind, style = "Non-conformance", S.crit
+            elif "data integrity flag" in rec["Result"].lower():
+                kind, style = "Data-integrity flag", S.warn
+            else:
+                kind, style = "Laboratory finding", S.warn
+            tc = ws.cell(row=r, column=1, value=kind)
+            tc.fill, tc.font = style
+            ws.cell(row=r, column=2, value=b["seq"]).font = S.base
+            ws.cell(row=r, column=3, value=b["batch"]).font = S.bold
+            ws.cell(row=r, column=4, value=b["p_number"]).font = S.base
+            ws.cell(row=r, column=5, value=b["strain"]).font = S.base
+            pc = ws.cell(row=r, column=6, value=rec["Parameter"])
+            pc.font = S.base
+            pc.alignment = Alignment(wrap_text=True, vertical="top")
+            ac = ws.cell(row=r, column=7, value=rec["Acceptance Criterion"])
+            ac.font = S.small
+            ac.alignment = Alignment(wrap_text=True, vertical="top")
+            rc = ws.cell(row=r, column=8, value=rec["Result"])
+            rc.font = S.base
+            rc.alignment = Alignment(wrap_text=True, vertical="top")
+            ws.cell(row=r, column=9, value=rec["Certificate Code"]).font = S.base
+            ws.cell(row=r, column=10, value=cp.issue_date(rec["Issue Date"])).font = S.base
+            ws.cell(row=r, column=11, value=rec["Issuing Institution"]).font = S.small
+            put_link(ws, r, 12, cp.clean_link(rec["Drive File Link"]), "Open", S)
+            r += 1
+            exc += 1
+    ws.auto_filter.ref = "A4:%s%d" % (get_column_letter(len(heads)), max(r - 1, 5))
 
-    # ------------------------------------------------ Sheet 3: Stability
-    stab = [x for x in rows if cp.STABILITY_RE.search(x["Parameter"])]
-    ws3 = wb.create_sheet("Stability Studies")
-    ws3.sheet_view.showGridLines = False
-    ws3["A1"] = "ICH stability results — not release disposition"
-    ws3["A1"].font = title_font
-    ws3["A2"] = ("Same batches re-tested after storage (month 3 / 6 / 9 at 25 °C/60 % RH and "
-                 "40 °C/75 % RH). These must never be substituted for release values.")
-    ws3["A2"].font = Font(name=FONT, size=9, color="9A6300")
-    for ci, h in enumerate(head2, start=1):
-        c = ws3.cell(row=4, column=ci, value=h)
-        c.font = hdr_font
-        c.fill = hdr_fill
-        c.alignment = Alignment(vertical="center", wrap_text=True)
-    ws3.freeze_panes = "A5"
-    for i, w in enumerate(widths2, start=1):
-        ws3.column_dimensions[get_column_letter(i)].width = w
-    for ri, rec in enumerate(stab, start=5):
-        ws3.cell(row=ri, column=1, value=rec["Seq"]).font = base
-        ws3.cell(row=ri, column=2, value=rec["Cultivation Batch"]).font = base
-        ws3.cell(row=ri, column=3, value=rec["P-Number"]).font = base
-        ws3.cell(row=ri, column=4, value=rec["Strain"]).font = base
-        pc = ws3.cell(row=ri, column=5, value=rec["Parameter"])
-        pc.font = base
-        pc.alignment = Alignment(vertical="top", wrap_text=True)
-        ac = ws3.cell(row=ri, column=6, value=rec["Acceptance Criterion"])
-        ac.font = small
-        ac.alignment = Alignment(vertical="top", wrap_text=True)
-        rc = ws3.cell(row=ri, column=7, value=rec["Result"])
-        rc.alignment = Alignment(vertical="top", wrap_text=True)
-        sev = cp.severity(rec["Result"])
-        if sev == "crit":
-            rc.fill, rc.font = RED, RED_T
-        elif sev == "warn":
-            rc.fill, rc.font = AMBER, AMBER_T
-        else:
-            rc.font = base
-        ws3.cell(row=ri, column=8, value=rec["Certificate Code"]).font = base
-        ws3.cell(row=ri, column=9, value=cp.issue_date(rec["Issue Date"])).font = base
-        ws3.cell(row=ri, column=10, value=rec["Issuing Institution"]).font = small
-        link = cp.clean_link(rec["Drive File Link"])
-        lc = ws3.cell(row=ri, column=11, value="Open PDF" if link else "")
-        if link:
-            lc.hyperlink = link
-            lc.font = link_font
-    if stab:
-        ws3.auto_filter.ref = "A4:K%d" % (len(stab) + 4)
+    # =================================================== 6. Certificates
+    ws = wb.create_sheet("Certificates")
+    sheet_title(ws, "Certificates",
+                "One row per certificate referenced by the register.", S)
+    heads = ["Certificate code", "Date of issue", "Issuing laboratory", "Accreditation",
+             "Batches covered", "Parameters", "Panels", "Certificate"]
+    widths = [24, 14, 44, 14, 34, 12, 40, 12]
+    header_row(ws, 4, heads, widths, S)
+    ws.freeze_panes = "A5"
 
-    # ------------------------------------------------ Sheet 4: Legend
-    ws4 = wb.create_sheet("Legend")
-    ws4.sheet_view.showGridLines = False
-    ws4["A1"] = "How to read this workbook"
-    ws4["A1"].font = title_font
-    ws4.column_dimensions["A"].width = 26
-    ws4.column_dimensions["B"].width = 96
-    guide = [
-        ("Batch Summary", "One row per batch. Release-critical parameters only, so every column stays readable."),
-        ("Audit Trail", "Every parameter record with its acceptance criterion, result, certificate and link."),
-        ("Stability Studies", "Storage-condition results. Never a substitute for release values."),
-        ("", ""),
-        ("Complete", "All core Ph. Eur. 3028 parameters on file and within specification."),
-        ("Complete (flag)", "Within specification, but a certificate carries a data-integrity flag."),
-        ("Partial", "A parameter category has no certificate on file for this batch."),
-        ("OPEN QC ISSUE", "Unresolved non-conformance declared by the issuing laboratory."),
-        ("Empty cell / —", "No result recorded for that parameter."),
-        ("", ""),
-        ("Verbatim values", "N.D., <LOQ, BLQ and Одговара / Не одговара appear exactly as printed."),
-        ("No derived verdicts", "A result is marked a finding only where the issuing laboratory says so."),
-        ("Added criteria", "Where a lab prints no limit column, the PP release spec / Ph. Eur. 3028 limit "
-                           "is shown and marked as added for review."),
-    ]
-    rr = 3
-    for k, v in guide:
-        ws4.cell(row=rr, column=1, value=k).font = bold if k else base
-        c = ws4.cell(row=rr, column=2, value=v)
-        c.font = base
+    certs = OrderedDict()
+    for rec in rows:
+        code = rec["Certificate Code"].strip()
+        if not code or code.lower() in ("n/a", "na"):
+            continue
+        inst = rec["Issuing Institution"].strip()
+        key = (code, inst)
+        e = certs.setdefault(key, {"date": cp.issue_date(rec["Issue Date"]),
+                                   "batches": set(), "params": 0, "panels": set(), "link": ""})
+        e["batches"].add(rec["Cultivation Batch"])
+        e["params"] += 1
+        k = cp.classify(rec["Parameter"])
+        for pname, keys in PANELS.items():
+            if k in keys:
+                e["panels"].add(pname)
+        if not e["link"]:
+            e["link"] = cp.clean_link(rec["Drive File Link"])
+    r = 5
+    for (code, inst), e in sorted(certs.items(), key=lambda kv: (kv[0][1], kv[0][0])):
+        ws.cell(row=r, column=1, value=code).font = S.bold
+        ws.cell(row=r, column=2, value=e["date"]).font = S.base
+        ws.cell(row=r, column=3, value=inst).font = S.base
+        accred = ""
+        for _n, _rx, _a in cp.LAB_PATTERNS:
+            if _rx.search(inst) and _a:
+                accred = _a
+                break
+        if not accred:
+            m = ACCRED_RE.search(inst)
+            accred = ("LT-%s" % m.group(1)) if m else ""
+        ws.cell(row=r, column=4, value=accred).font = S.small
+        ws.cell(row=r, column=5, value=", ".join(sorted(e["batches"]))).font = S.small
+        ws.cell(row=r, column=6, value=e["params"]).font = S.base
+        ws.cell(row=r, column=7, value=", ".join(sorted(e["panels"]))).font = S.small
+        put_link(ws, r, 8, e["link"], "Open", S)
+        r += 1
+    ws.auto_filter.ref = "A4:%s%d" % (get_column_letter(len(heads)), max(r - 1, 5))
+    n_certs = len(certs)
+
+    # =================================================== 7. Laboratories
+    ws = wb.create_sheet("Laboratories")
+    sheet_title(ws, "Laboratories", "Accredited laboratories issuing the certificates in this register.", S)
+    heads = ["Laboratory", "Accreditation", "Certificates", "Parameter records",
+             "Batches served", "Panels performed"]
+    widths = [52, 14, 14, 18, 16, 46]
+    header_row(ws, 4, heads, widths, S)
+    ws.freeze_panes = "A5"
+    labstat = OrderedDict()
+    lab_accred = {}
+    for name, rx, accred in cp.LAB_PATTERNS:
+        lab_accred[name] = accred
+        labstat[name] = {"accred": set(), "certs": set(), "params": 0,
+                         "batches": set(), "panels": set()}
+    for rec in rows:
+        inst = rec["Issuing Institution"] or ""
+        for name, rx, accred in cp.LAB_PATTERNS:
+            if rx.search(inst):
+                e = labstat[name]
+                if accred:
+                    e["accred"].add(accred)
+                e["params"] += 1
+                e["batches"].add(rec["Cultivation Batch"])
+                code = rec["Certificate Code"].strip()
+                if code and code.lower() not in ("n/a", "na"):
+                    e["certs"].add(code)
+                m = ACCRED_RE.search(inst)
+                if m:
+                    e["accred"].add("LT-%s" % m.group(1))
+                k = cp.classify(rec["Parameter"])
+                for pname, keys in PANELS.items():
+                    if k in keys:
+                        e["panels"].add(pname)
+                break
+    r = 5
+    for name, e in labstat.items():
+        if not e["params"]:
+            continue
+        ws.cell(row=r, column=1, value=name).font = S.bold
+        ws.cell(row=r, column=2, value=", ".join(sorted(e["accred"]))).font = S.base
+        ws.cell(row=r, column=3, value=len(e["certs"])).font = S.base
+        ws.cell(row=r, column=4, value=e["params"]).font = S.base
+        ws.cell(row=r, column=5, value=len(e["batches"])).font = S.base
+        c = ws.cell(row=r, column=6, value=", ".join(sorted(e["panels"])))
+        c.font = S.small
         c.alignment = Alignment(wrap_text=True, vertical="top")
-        if k in status_style_keys():
-            f, t = status_style[status_key(k)]
-            ws4.cell(row=rr, column=1).fill = f
-            ws4.cell(row=rr, column=1).font = t
-        rr += 1
+        r += 1
+
+    # =================================================== 8. Strain Summary
+    ws = wb.create_sheet("Strain Summary")
+    sheet_title(ws, "Strain Summary",
+                "Per strain. Potency figures are parsed from the Total Δ9-THC result for ranking "
+                "only; values that are not a plain percentage (BLQ, <LOQ) are excluded from the range.", S)
+    heads = ["Strain", "Batches", "Batch codes", "Total Δ9-THC lowest",
+             "Total Δ9-THC highest", "Batches with an open issue", "Batches with partial coverage"]
+    widths = [24, 10, 56, 20, 20, 22, 24]
+    header_row(ws, 4, heads, widths, S)
+    ws.freeze_panes = "A5"
+    strains = defaultdict(lambda: {"b": [], "thc": [], "open": 0, "partial": 0})
+    for b in batches:
+        e = strains[b["strain"] or "(not stated)"]
+        e["b"].append(b["batch"])
+        v = parse_pct(b["vals"]["thc"]["value"])
+        if v is not None:
+            e["thc"].append(v)
+        if b["status"] == "open":
+            e["open"] += 1
+        if b["status"] == "partial":
+            e["partial"] += 1
+    r = 5
+    for name in sorted(strains):
+        e = strains[name]
+        ws.cell(row=r, column=1, value=name).font = S.bold
+        ws.cell(row=r, column=2, value=len(e["b"])).font = S.base
+        c = ws.cell(row=r, column=3, value=", ".join(e["b"]))
+        c.font = S.small
+        ws.cell(row=r, column=4, value=("%.2f %%" % min(e["thc"])) if e["thc"] else "—").font = S.base
+        ws.cell(row=r, column=5, value=("%.2f %%" % max(e["thc"])) if e["thc"] else "—").font = S.base
+        oc = ws.cell(row=r, column=6, value=e["open"] or "")
+        if e["open"]:
+            oc.fill, oc.font = S.crit
+        pc = ws.cell(row=r, column=7, value=e["partial"] or "")
+        if e["partial"]:
+            pc.fill, pc.font = S.warn
+        r += 1
+    ws.auto_filter.ref = "A4:%s%d" % (get_column_letter(len(heads)), max(r - 1, 5))
+
+    # =================================================== 9. Stability Studies
+    stab = [x for x in rows if cp.STABILITY_RE.search(x["Parameter"])]
+    ws = wb.create_sheet("Stability Studies")
+    sheet_title(ws, "Stability Studies",
+                "Batches re-tested after storage (month 3 / 6 / 9 at 25 °C/60 % RH and 40 °C/75 % RH).",
+                S, "These are not release results and must never be substituted for release values.")
+    detail_heads = ["Seq", "Batch", "P-number", "Strain", "Parameter", "Acceptance criterion",
+                    "Result", "Certificate code", "Date of issue", "Issuing laboratory", "Certificate"]
+    detail_widths = [6, 18, 11, 18, 48, 28, 34, 18, 14, 36, 12]
+    header_row(ws, 5, detail_heads, detail_widths, S)
+    ws.freeze_panes = "A6"
+    write_detail(ws, 6, stab, S)
+    if stab:
+        ws.auto_filter.ref = "A5:K%d" % (len(stab) + 5)
+
+    # =================================================== 10. Full Data
+    ws = wb.create_sheet("Full Data")
+    sheet_title(ws, "Full Data", "Every parameter record held for every batch.", S)
+    header_row(ws, 4, detail_heads, detail_widths, S)
+    ws.freeze_panes = "E5"
+    write_detail(ws, 5, rows, S)
+    ws.auto_filter.ref = "A4:K%d" % (len(rows) + 4)
 
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     wb.save(out_path)
     print("Wrote %s" % out_path)
-    print("Batch Summary rows: %d | Audit Trail rows: %d | Stability rows: %d"
-          % (len(batches), len(rows), len(stab)))
+    print("sheets=%d batches=%d records=%d certificates=%d exceptions=%d stability=%d"
+          % (len(wb.sheetnames), len(batches), len(rows), n_certs, exc, len(stab)))
 
 
-def status_style_keys():
-    return {"Complete", "Complete (flag)", "Partial", "OPEN QC ISSUE"}
-
-
-def status_key(label):
-    return {"Complete": "complete", "Complete (flag)": "flag",
-            "Partial": "partial", "OPEN QC ISSUE": "open"}[label]
+def write_detail(ws, start, records, S):
+    r = start
+    for rec in records:
+        ws.cell(row=r, column=1, value=rec["Seq"]).font = S.base
+        ws.cell(row=r, column=2, value=rec["Cultivation Batch"]).font = S.base
+        ws.cell(row=r, column=3, value=rec["P-Number"]).font = S.base
+        ws.cell(row=r, column=4, value=rec["Strain"]).font = S.base
+        pc = ws.cell(row=r, column=5, value=rec["Parameter"])
+        pc.font = S.base
+        pc.alignment = Alignment(wrap_text=True, vertical="top")
+        ac = ws.cell(row=r, column=6, value=rec["Acceptance Criterion"])
+        ac.font = S.small
+        ac.alignment = Alignment(wrap_text=True, vertical="top")
+        rc = ws.cell(row=r, column=7, value=rec["Result"])
+        rc.alignment = Alignment(wrap_text=True, vertical="top")
+        sev = cp.severity(rec["Result"])
+        if sev == "crit":
+            rc.fill, rc.font = S.crit
+        elif sev == "warn":
+            rc.fill, rc.font = S.warn
+        else:
+            rc.font = S.base
+        ws.cell(row=r, column=8, value=rec["Certificate Code"]).font = S.base
+        ws.cell(row=r, column=9, value=cp.issue_date(rec["Issue Date"])).font = S.base
+        ic = ws.cell(row=r, column=10, value=rec["Issuing Institution"])
+        ic.font = S.small
+        ic.alignment = Alignment(wrap_text=True, vertical="top")
+        put_link(ws, r, 11, cp.clean_link(rec["Drive File Link"]), "Open", S)
+        r += 1
+    return r
 
 
 if __name__ == "__main__":
