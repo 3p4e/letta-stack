@@ -175,7 +175,7 @@ def main():
         else:
             rc.font = base
         ws2.cell(row=ri, column=8, value=rec["Certificate Code"]).font = base
-        ws2.cell(row=ri, column=9, value=rec["Issue Date"]).font = base
+        ws2.cell(row=ri, column=9, value=cp.issue_date(rec["Issue Date"])).font = base
         ws2.cell(row=ri, column=10, value=rec["Issuing Institution"]).font = small
         link = cp.clean_link(rec["Drive File Link"])
         lc = ws2.cell(row=ri, column=11, value="Open PDF" if link else "")
@@ -222,7 +222,7 @@ def main():
         else:
             rc.font = base
         ws3.cell(row=ri, column=8, value=rec["Certificate Code"]).font = base
-        ws3.cell(row=ri, column=9, value=rec["Issue Date"]).font = base
+        ws3.cell(row=ri, column=9, value=cp.issue_date(rec["Issue Date"])).font = base
         ws3.cell(row=ri, column=10, value=rec["Issuing Institution"]).font = small
         link = cp.clean_link(rec["Drive File Link"])
         lc = ws3.cell(row=ri, column=11, value="Open PDF" if link else "")

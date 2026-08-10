@@ -95,19 +95,28 @@ STABILITY_RE = re.compile(r"stabilit|стабилн|month\s*\d|месец|\d+\s*
 GAP_RE = re.compile(r"^\[COVERAGE GAP\]$")
 OVERALL_RE = re.compile(r"overall result|заклучок|^\[NOTE\]", re.I)
 
-# A result is only ever treated as a *finding* when nothing in it says otherwise.
-# Anything asserting conformity, non-detection or a below-limit reading is compliant;
-# inferring a detection from unmatched prose once turned a passing pesticide screen
-# ("Not found any pesticide above LOQ — COMPLIES") into a red non-conformance.
-COMPLIANT_RE = re.compile(
-    r"^(н\.?д\.?|n\.?d\.?|nd)\b"
-    r"|not\s+found|not\s+detect|non[- ]?detect|undetect"
-    r"|complies|conform(?!ance)|одговара(?<!не одговара)"
-    r"|<\s*loq|≤\s*loq|below\s+loq|blq|<\s*lod|absent|отсутна"
-    r"|^\s*<", re.I)
+# Deliberately absent: any rule that decides whether a result "passes".
+#
+# Two earlier attempts failed in the same way. A rule of "not starting with N.D. means
+# detected" turned "Not found any pesticide above LOQ — COMPLIES" into a red
+# non-conformance. Widening it to a compliance vocabulary still mis-read "Confirms" (the
+# standard pass wording on every Purely Plant CoA) and could not interpret the "/", "–"
+# or blank notations different laboratories use for the same idea.
+#
+# No vocabulary covers every convention across four laboratories and two languages, and a
+# wrong guess fabricates or hides a pharmaceutical finding. Summaries therefore report the
+# distribution of the verbatim values themselves, and a result is called a failure only
+# where the issuing laboratory says so (CRIT_RE below).
 
 # Explicit failure language. Single source of truth for status *and* cell colouring.
 CRIT_RE = re.compile(r"does not conform|non[- ]?conform|не одговара|нe одговара", re.I)
+
+# A positive finding the laboratory itself put in words — e.g. Farmahem reporting
+# ochratoxin A as "2.06 µg/kg (U 11.80%) — DETECTED, >LOQ". Matching the lab's own
+# wording is reading, not judging; "not detected" is explicitly excluded.
+# Only the explicit word, never a phrase like "above LOQ" — that appears inside
+# "Not found any pesticide above LOQ", which is a pass.
+LAB_FINDING_RE = re.compile(r"(?<!not )(?<!non-)(?<!non )\bdetected\b", re.I)
 FLAG_RE = re.compile(r"DATA INTEGRITY FLAG|" + CRIT_RE.pattern, re.I)
 
 URL_RE = re.compile(r"^https?://", re.I)
@@ -130,6 +139,32 @@ def clean_link(raw):
     return candidate if URL_RE.match(candidate) else ""
 
 
+def summarise_values(values):
+    """Describe a set of results by the values themselves, never by a verdict.
+
+    One value repeated is reported as "N × «value»"; a mixed set lists each distinct
+    value with its count. An unfamiliar notation ("/", "–", a blank) is carried through
+    verbatim instead of being guessed at.
+    """
+    values = [v for v in values]
+    if not values:
+        return "—"
+    if len(values) == 1:
+        return values[0] or "—"
+    counts = OrderedDict()
+    for v in values:
+        label = v if v else "(blank)"
+        counts[label] = counts.get(label, 0) + 1
+    if len(counts) == 1:
+        only = next(iter(counts))
+        return "%d × %s" % (len(values), only)
+    parts = ["%d × %s" % (c, v) for v, c in counts.items()]
+    head = "; ".join(parts[:3])
+    if len(parts) > 3:
+        head += "; +%d more" % (len(parts) - 3)
+    return "%d results — %s" % (len(values), head)
+
+
 def classify(param_text):
     if GAP_RE.match(param_text):
         return "gap"
@@ -145,8 +180,32 @@ def classify(param_text):
     return None
 
 
+DATE_RE = re.compile(r"(\d{1,2}[./]\d{1,2}[./]\d{4})")
+ISSUED_DATE_RE = re.compile(r"issued\s*:?\s*(\d{1,2}[./]\d{1,2}[./]\d{4})", re.I)
+DATE_DOUBT_RE = re.compile(r"as printed|likely|typo|DATA INTEGRITY|predates", re.I)
+
+
+def issue_date(raw):
+    """The date of issue, and nothing else.
+
+    Source rows carry things like "Issued 02.03.2026 (analyzed 26-27.02.2026; received
+    23.02.2026)". Only the issue date was asked for, so the analysis and receipt dates are
+    dropped. A qualifier is kept only where the date itself is in doubt.
+    """
+    if not raw:
+        return ""
+    raw = raw.strip()
+    m = ISSUED_DATE_RE.search(raw) or DATE_RE.search(raw)
+    if not m:
+        return raw
+    date = m.group(1)
+    if DATE_DOUBT_RE.search(raw):
+        return "%s [see source]" % date
+    return date
+
+
 def cite(row):
-    parts = [p for p in (row["Certificate Code"].strip(), row["Issue Date"].strip(),
+    parts = [p for p in (row["Certificate Code"].strip(), issue_date(row["Issue Date"]),
                          row["Issuing Institution"].strip())
              if p and p.lower() not in ("n/a", "na")]
     return " · ".join(parts)
@@ -190,7 +249,7 @@ def pivot_batch(brows):
     """
     hits = defaultdict(list)
     gap_notes, overall_notes, flags = [], [], []
-    pest_rows, pest_findings, stability_count = [], [], 0
+    pest_rows, stability_count = [], 0
 
     for r in brows:
         kind = classify(r["Parameter"])
@@ -210,8 +269,6 @@ def pivot_batch(brows):
             continue
         if kind == "pesticides":
             pest_rows.append(r)
-            if not COMPLIANT_RE.search(r["Result"].strip()):
-                pest_findings.append("%s: %s" % (r["Parameter"], r["Result"]))
             continue
         if kind:
             hits[kind].append(r)
@@ -228,15 +285,7 @@ def pivot_batch(brows):
                     if c and c not in srcs:
                         srcs.append(c)
                         links.append(l)
-                if pest_findings:
-                    value = "Above LOQ — %s" % "; ".join(pest_findings)
-                elif len(pest_rows) == 1:
-                    # A single row is a screen-level statement (one report can cover
-                    # hundreds of residues). Counting rows as "compounds" understated a
-                    # 471-residue screen as "1 compound", so quote the laboratory instead.
-                    value = pest_rows[0]["Result"].strip()
-                else:
-                    value = "All not detected · %d compounds" % len(pest_rows)
+                value = summarise_values([h["Result"].strip() for h in pest_rows])
                 out[key] = {"value": value, "sources": srcs, "links": links}
             continue
 
@@ -299,12 +348,17 @@ def pivot_batch(brows):
 
 
 def severity(value):
-    """'crit' | 'warn' | 'na' | '' for a rendered cell value."""
+    """'crit' | 'warn' | 'na' | '' for a rendered cell value.
+
+    'crit' is reserved for a non-conformity the issuing laboratory declared in the text.
+    Nothing here judges a measurement against a limit — that call belongs to the
+    laboratory and to a qualified reviewer, not to this renderer.
+    """
     if value == "—":
         return "na"
-    if CRIT_RE.search(value) or value.startswith("Above LOQ —"):
+    if CRIT_RE.search(value):
         return "crit"
-    if "data integrity flag" in value.lower():
+    if "data integrity flag" in value.lower() or LAB_FINDING_RE.search(value):
         return "warn"
     return ""
 

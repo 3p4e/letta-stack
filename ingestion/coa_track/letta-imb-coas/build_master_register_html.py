@@ -301,7 +301,7 @@ code{font-family:var(--mono);font-size:11.5px;background:var(--surface-2);paddin
                 P.append('<td class="result %s">%s</td>' % (rcls, esc(res or "—")))
                 link = cp.clean_link(r["Drive File Link"])
                 code = r["Certificate Code"].strip()
-                date = r["Issue Date"].strip()
+                date = cp.issue_date(r["Issue Date"])
                 lab = r["Issuing Institution"].strip()
                 label = " · ".join([x for x in (code, date) if x and x.lower() not in ("n/a", "na")])
                 cell = ('<a href="%s" target="_blank" rel="noopener">%s</a>' % (esc(link), esc(label or "open"))) \
@@ -328,7 +328,7 @@ code{font-family:var(--mono);font-size:11.5px;background:var(--surface-2);paddin
                 rcls = "bad" if sev == "crit" else ("flagged" if sev == "warn" else "")
                 link = cp.clean_link(r["Drive File Link"])
                 code = r["Certificate Code"].strip()
-                date = r["Issue Date"].strip()
+                date = cp.issue_date(r["Issue Date"])
                 label = " · ".join([x for x in (code, date) if x and x.lower() not in ("n/a", "na")])
                 cell = ('<a href="%s" target="_blank" rel="noopener">%s</a>' % (esc(link), esc(label or "open"))) \
                     if link else esc(label or "—")
