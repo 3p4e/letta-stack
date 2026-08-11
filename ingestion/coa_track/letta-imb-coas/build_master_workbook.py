@@ -326,35 +326,50 @@ def main():
                 g["link"] = cp.clean_link(rec["Drive File Link"])
             k = cp.classify(rec["Parameter"])
             if k in cp.COLS:
-                g["vals"][k].append(rec["Result"].strip())
+                g["vals"][k].append((cp.short_label(rec["Parameter"]), rec["Result"].strip()))
         if not groups:
             groups[("(none)", "")] = {"link": "", "vals": defaultdict(list)}
 
         block_start = r
         for (code, date), g in groups.items():
-            ws.cell(row=r, column=6, value=code).font = S.base
-            ws.cell(row=r, column=7, value=date).font = S.base
-            put_link(ws, r, 8, g["link"], "Open", S)
-            for j, (key, _lbl) in enumerate(param_cols):
-                vals = g["vals"].get(key)
-                if not vals:
-                    continue
-                text = vals[0] if len(vals) == 1 else cp.summarise_values(vals)
-                c = ws.cell(row=r, column=len(ident) + 1 + j, value=text)
-                sev = cp.severity(text)
-                if sev == "crit":
-                    c.fill, c.font = S.crit
-                elif sev == "warn":
-                    c.fill, c.font = S.warn
-                else:
-                    c.font = S.base
-                c.alignment = Alignment(vertical="top", wrap_text=True)
-            if b["seq"] % 2 == 0:
-                for ci in range(1, len(heads) + 1):
-                    if ws.cell(row=r, column=ci).fill.fgColor.rgb in (None, "00000000"):
-                        ws.cell(row=r, column=ci).fill = S.band
-            r += 1
-            detail_rows += 1
+            # A certificate that reports several analytes into the same column - a pesticide
+            # screen of 24 compounds, packaging's three checks - gets one row per analyte.
+            # No cell ever holds two measurements.
+            span = max([len(v) for v in g["vals"].values()] or [1])
+            cert_start = r
+            for i in range(span):
+                for j, (key, _lbl) in enumerate(param_cols):
+                    vals = g["vals"].get(key) or []
+                    if i >= len(vals):
+                        continue
+                    label, text = vals[i]
+                    shown = ("%s — %s" % (label, text)) if len(vals) > 1 else text
+                    c = ws.cell(row=r, column=len(ident) + 1 + j, value=shown)
+                    sev = cp.severity(text)
+                    if sev == "crit":
+                        c.fill, c.font = S.crit
+                    elif sev == "warn":
+                        c.fill, c.font = S.warn
+                    else:
+                        c.font = S.base
+                    c.alignment = Alignment(vertical="top", wrap_text=True)
+                if b["seq"] % 2 == 0:
+                    for ci in range(1, len(heads) + 1):
+                        if ws.cell(row=r, column=ci).fill.fgColor.rgb in (None, "00000000"):
+                            ws.cell(row=r, column=ci).fill = S.band
+                r += 1
+                detail_rows += 1
+            for col, val, font in ((6, code, S.base), (7, date, S.base)):
+                if r - 1 > cert_start:
+                    ws.merge_cells(start_row=cert_start, start_column=col,
+                                   end_row=r - 1, end_column=col)
+                cc = ws.cell(row=cert_start, column=col, value=val)
+                cc.font = font
+                cc.alignment = Alignment(vertical="center", wrap_text=True)
+            if r - 1 > cert_start:
+                ws.merge_cells(start_row=cert_start, start_column=8,
+                               end_row=r - 1, end_column=8)
+            put_link(ws, cert_start, 8, g["link"], "Open", S)
         block_end = r - 1
 
         # batch identity merged down the block
@@ -379,36 +394,6 @@ def main():
             cell = ws.cell(row=block_end, column=ci)
             cell.border = Border(bottom=Side(style="thin", color="8B9EA3"))
 
-    ws.auto_filter.ref = "A4:%s%d" % (get_column_letter(len(heads)), r - 1)
-
-    # =================================================== 3. Release Panel
-    ws = wb.create_sheet("Release Panel")
-    sheet_title(ws, "Release Panel", "Release-critical parameters, one row per batch. "
-                                     "Full detail and certificate links on Full Data.", S)
-    heads = ["Seq", "Batch", "P-number", "Strain"] + [l for _k, l, _w in RELEASE]
-    widths = [6, 20, 12, 18] + [w for _k, _l, w in RELEASE]
-    header_row(ws, 4, heads, widths, S)
-    ws.freeze_panes = "E5"
-    r = 5
-    for b in batches:
-        ws.cell(row=r, column=1, value=b["seq"]).font = S.base
-        ws.cell(row=r, column=2, value=b["batch"]).font = S.bold
-        ws.cell(row=r, column=3, value=b["p_number"]).font = S.base
-        ws.cell(row=r, column=4, value=b["strain"]).font = S.base
-        for j, (key, _l, _w) in enumerate(RELEASE):
-            v = b["vals"][key]["value"]
-            c = ws.cell(row=r, column=5 + j, value=v)
-            sev = cp.severity(v)
-            if sev == "crit":
-                c.fill, c.font = S.crit
-            elif sev == "warn":
-                c.fill, c.font = S.warn
-            elif sev == "na":
-                c.font = S.faint
-            else:
-                c.font = S.base
-            c.alignment = Alignment(vertical="center")
-        r += 1
     ws.auto_filter.ref = "A4:%s%d" % (get_column_letter(len(heads)), r - 1)
 
     # =================================================== 4. Coverage Matrix

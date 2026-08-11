@@ -147,6 +147,21 @@ LAB_PATTERNS = [
 ]
 
 
+def short_label(param):
+    """The analyte's own name, without the screen heading or method reference.
+
+    "Pesticide/insecticide screen (Ph.Eur. 2.8.13, MKC EN 15662:2020) - Deltamethrin"
+    becomes "Deltamethrin", so a value can name what it measures without repeating the
+    panel heading in every cell.
+    """
+    t = (param or "").strip()
+    for sep in ("\u2014", " - "):
+        if sep in t:
+            t = t.split(sep)[-1].strip()
+    t = re.sub(r"\s*\((?:Ph\.?\s*Eur|MKC|ИР)[^)]*\)\s*$", "", t, flags=re.I).strip()
+    return t or (param or "").strip()
+
+
 def clean_link(raw):
     """Return a usable URL, or '' when the field holds prose (e.g. a coverage-gap note)."""
     if not raw:
