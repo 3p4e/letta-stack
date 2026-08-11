@@ -22,7 +22,7 @@ DEFAULT_OUT = os.path.join(HERE, "exports", "coa_register.html")
 PANELS = OrderedDict([
     ("Identity & physical", ["appearance", "identification", "foreign_matter",
                              "loss_on_drying", "packaging"]),
-    ("Potency", ["thc", "cbd", "cbn", "cannabinoid_profile"]),
+    ("Potency", ["thc", "cbd", "cbn", "cbda", "cbd_n", "cbn_n", "thc_n", "thca"]),
     ("Contaminants", ["aflatoxins", "ochratoxin", "pb", "cd", "as_", "hg", "cu",
                       "metals_panel", "pesticides"]),
     ("Microbiology", ["tamc", "tymc", "bile", "ecoli", "salmonella", "micro_other"]),

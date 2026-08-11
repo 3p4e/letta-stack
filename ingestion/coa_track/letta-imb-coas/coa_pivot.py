@@ -38,6 +38,10 @@ BUCKETS = [
         r"|hexachlorbenz|hexachlorobenz|\bddt\b|\bdde\b|\bddd\b|heptachlor|endrin"
         r"|chlordane|meto?xychlor|methoxychlor|пестицид", re.I)),
 
+    ("afla_b1", re.compile(r"aflatoxin\s*[- ]?\s*b\s*1|афлатоксин\s*b\s*1", re.I)),
+    ("afla_b2", re.compile(r"aflatoxin\s*[- ]?\s*b\s*2|афлатоксин\s*b\s*2", re.I)),
+    ("afla_g1", re.compile(r"aflatoxin\s*[- ]?\s*g\s*1|афлатоксин\s*g\s*1", re.I)),
+    ("afla_g2", re.compile(r"aflatoxin\s*[- ]?\s*g\s*2|афлатоксин\s*g\s*2", re.I)),
     ("aflatoxins", re.compile(r"aflatoxin|афлатоксин", re.I)),
     ("ochratoxin", re.compile(r"ochratoxin|охратоксин", re.I)),
 
@@ -61,12 +65,14 @@ BUCKETS = [
     ("cbd", re.compile(r"(total|вкупен)[^|]*?(\bcbd\b|cannabidiol(?!ic))", re.I)),
     ("cbn", re.compile(r"(total|вкупен)[^|]*?(\bcbn\b|cannabinol)", re.I)),
 
-    # Individual cannabinoid readings (acid and neutral forms) reported alongside the
-    # totals. Kept in their own column so they can never overwrite a release assay value.
-    ("cannabinoid_profile", re.compile(
-        r"\bcbda\b|cannabidiolic|\bthca\b|tetrahydrocannabinolic"
-        r"|\bcbd\b|cannabidiol(?!ic)|\bcbn\b|cannabinol"
-        r"|\bthc\b|δ9|delta.?9|cannabinoid profile|related substances", re.I)),
+    # Individual cannabinoid readings reported alongside the totals, each in its own column
+    # so a component can never be mistaken for a release assay value. Acid forms are tested
+    # before their neutral counterparts.
+    ("cbda", re.compile(r"\bcbda\b|cannabidiolic", re.I)),
+    ("thca", re.compile(r"\bthca\b|tetrahydrocannabinolic|δ9-thca|delta.?9.?thca", re.I)),
+    ("cbd_n", re.compile(r"\bcbd\b|cannabidiol(?!ic)", re.I)),
+    ("cbn_n", re.compile(r"\bcbn\b|cannabinol", re.I)),
+    ("thc_n", re.compile(r"\bthc\b|δ9|delta.?9|tetrahydrocannabinol", re.I)),
 ]
 
 COLS = OrderedDict([
@@ -77,8 +83,11 @@ COLS = OrderedDict([
     ("thc", "Total Δ9-THC"),
     ("cbd", "Total CBD"),
     ("cbn", "Total CBN"),
-    ("cannabinoid_profile", "Cannabinoid profile (components)"),
-    ("aflatoxins", "Aflatoxins"),
+    ("cbda", "CBDA"), ("cbd_n", "CBD"), ("cbn_n", "CBN"),
+    ("thc_n", "Δ9-THC"), ("thca", "Δ9-THCA"),
+    ("afla_b1", "Aflatoxin B1"), ("afla_b2", "Aflatoxin B2"),
+    ("afla_g1", "Aflatoxin G1"), ("afla_g2", "Aflatoxin G2"),
+    ("aflatoxins", "Aflatoxins Σ"),
     ("ochratoxin", "Ochratoxin A"),
     ("pb", "Lead"), ("cd", "Cadmium"), ("as_", "Arsenic"), ("hg", "Mercury"),
     ("cu", "Copper (informational)"),
