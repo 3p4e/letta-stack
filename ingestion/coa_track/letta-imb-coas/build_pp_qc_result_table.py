@@ -132,7 +132,7 @@ def main():
             if cp.STABILITY_RE.search(rec["Parameter"] or ""):
                 continue
             k = cp.classify(rec["Parameter"])
-            if k not in PARAM_KEYS:
+            if k not in PARAM_KEYS and k != "cbn_n":
                 continue
             code = rec["Certificate Code"].strip() or "(not numbered)"
             gkey = (code, cp.issue_date(rec["Issue Date"]))
@@ -154,6 +154,11 @@ def main():
             for key in PARAM_KEYS:
                 ci = COL_OF[key]
                 vals = g["vals"].get(key)
+                # A PP/UKIM certificate prints "Cannabinol" / "CBN content" without the word
+                # "Total"; that reading classifies to the profile bucket. The CBN % column
+                # takes it when no Total-CBN value exists on that certificate.
+                if key == "cbn" and not vals:
+                    vals = g["vals"].get("cbn_n")
                 if not vals:
                     txt = "not tested" if (key in MYCO_KEYS and myco_present) else "/"
                     cc = ws.cell(row=r, column=ci, value=txt)
