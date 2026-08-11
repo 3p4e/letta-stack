@@ -90,7 +90,7 @@ def main():
                 "from the numeric range.")
     ws["A2"].font = Font(name=FONT, size=10, italic=True, color="5A6E75")
 
-    heads = ["Seq", "Batch number", "P-number", "Total Δ⁹-THC", "Batch THC spec",
+    heads = ["Seq", "Batch number", "P-number", "Total Δ⁹-THC % w/w", "Batch THC spec",
              "CoA code", "Date of issue", "Issuing institution", "Certificate"]
     widths = [6, 22, 12, 20, 22, 20, 14, 34, 12]
     for ci, h in enumerate(heads, start=1):
@@ -132,7 +132,7 @@ def main():
                     nc = ws.cell(row=r, column=4, value="no THC result on file")
                     nc.font = faint
                 else:
-                    vc = ws.cell(row=r, column=4, value=t["result"])
+                    vc = ws.cell(row=r, column=4, value=cp.clean_value(t["result"]))
                     vc.font = base
                     vc.alignment = Alignment(wrap_text=True, vertical="center")
                     ws.cell(row=r, column=5, value=t["spec"] or "").font = small

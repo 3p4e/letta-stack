@@ -465,3 +465,29 @@ def build(path=None):
                          % (len(seqs), len(seqs), sorted(set(expected) - set(seqs))))
     batches = [pivot_batch(by_seq[s]) for s in seqs]
     return rows, batches
+
+# Units and measurement uncertainty are carried in the column header, never in the value
+# cell: the register must hold the bare result so a reader (and a CoQ builder) gets the
+# number alone. This strips the expanded-uncertainty parenthetical "(U 1.14 %w/w, k=2)",
+# the "(all four not detected)" gloss, any "[DATA INTEGRITY FLAG ...]" note (its meaning is
+# carried by the cell colour instead), and the trailing unit. It never touches the value
+# itself - "<LOQ", "BLQ", "ND", "Одговара", "<10² and >10", ranges and "<"/"≤" are preserved.
+_UNC_RE = re.compile(r"\s*\((?:[^()]*\b[Uu]\b[^()]*|[^()]*\u00b1[^()]*|[^()]*k\s*=\s*2[^()]*)\)")
+_GLOSS_RE = re.compile(r"\s*\(all four[^)]*\)", re.I)
+_FLAG_RE = re.compile(r"\s*\[[^\]]*\]")
+_UNIT_RE = re.compile(
+    r"\s*(?:%\s*w\s*/\s*w|%w/w|%|\u00b5g/kg|\u03bcg/kg|mg/kg(?:\([^)]*\))?|CFU\s*/?\s*g|ppm)",
+    re.I)
+
+
+def clean_value(v):
+    """Bare result for a value-only cell; unit and uncertainty live in the header."""
+    if not v:
+        return v
+    t = _UNC_RE.sub("", v.strip())
+    t = _GLOSS_RE.sub("", t)
+    t = _FLAG_RE.sub("", t)
+    t = _UNIT_RE.sub("", t)
+    t = re.sub(r"\s{2,}", " ", t).strip()
+    return t or v.strip()
+
