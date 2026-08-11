@@ -309,16 +309,27 @@ def pivot_batch(brows):
         if not hs:
             out[key] = {"value": "—", "sources": [], "links": []}
         else:
-            vals, srcs, links = [], [], []
+            # A parameter can be measured more than once — a release assay and a later
+            # retest by a different laboratory. Reading "14.83% | 15.70% w/w" gives no way
+            # to tell whether that is two tests or one badly formatted value, so each value
+            # carries the code of the certificate it came from as soon as there is
+            # more than one. Batch Detail keeps them on separate rows entirely.
+            pairs, srcs, links = [], [], []
             for h in hs:
                 v = h["Result"].strip()
-                if v not in vals:
-                    vals.append(v)
+                code = h["Certificate Code"].strip()
+                if not any(v == pv for pv, _pc in pairs):
+                    pairs.append((v, code))
                 c, l = cite(h), clean_link(h["Drive File Link"])
                 if c and c not in srcs:
                     srcs.append(c)
                     links.append(l)
-            out[key] = {"value": " | ".join(vals), "sources": srcs, "links": links}
+            if len(pairs) == 1:
+                value = pairs[0][0]
+            else:
+                value = "   ·   ".join(
+                    ("%s  [%s]" % (v, c)) if c else v for v, c in pairs)
+            out[key] = {"value": value, "sources": srcs, "links": links}
 
     meta = brows[0]
     is_open = any(CRIT_RE.search(n) for n in overall_notes + gap_notes)
