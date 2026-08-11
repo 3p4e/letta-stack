@@ -256,10 +256,10 @@ def main():
                     "a sub-buffer low-side margin (flagged inline). All ladders "
                     "contiguous; top of Spec I = 30.00%% throughout. Companion to "
                     "PP-QC-SPEC-001 v5.5, which carries the other 13 strains. "
-                    "Two strain names need settling before release: v5.5 says "
-                    "&ldquo;Cap Junkie&rdquo; where the register now says Cap Junky, and "
-                    "the register says &ldquo;Permanent Market&rdquo; where v5.5 and the "
-                    "control sheet say Permanent Marker.</div></body></html>"
+                    "Strain names are settled: Cap Junky and Permanent Marker, both "
+                    "consistent across the register and these documents. v5.5 in Drive "
+                    "still carries the old &ldquo;Cap Junkie&rdquo; heading and needs the "
+                    "same edit.</div></body></html>"
                     % (checked, checked - failures, failures, tights))
 
     with open(HTML, "w", encoding="utf-8") as fh:
@@ -385,10 +385,10 @@ def build_pdf(per):
         st.append(KeepTogether(block))
 
     st += [Spacer(1, 6), Paragraph(
-        "Companion to PP-QC-SPEC-001 v5.5, which carries the other 13 strains. Two strain "
-        "names need settling before release: v5.5 says “Cap Junkie” where the register now "
-        "says Cap Junky, and the register says “Permanent Market” where v5.5 and the "
-        "control sheet say Permanent Marker.", small)]
+        "Companion to PP-QC-SPEC-001 v5.5, which carries the other 13 strains. Strain "
+        "names are settled: Cap Junky and Permanent Marker, both consistent across the "
+        "register and these documents. v5.5 in Drive still carries the old “Cap Junkie” "
+        "heading and needs the same edit.", small)]
 
     SimpleDocTemplate(PDF, pagesize=A4, title="PP ImB Specifications — remaining strains",
                       author="Purely Plant QC", leftMargin=15 * mm, rightMargin=15 * mm,

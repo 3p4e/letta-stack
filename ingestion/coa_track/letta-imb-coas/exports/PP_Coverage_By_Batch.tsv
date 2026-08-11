@@ -16,11 +16,11 @@ Tranche	Seq	Batch	P-Number	Strain	Covered	Of	Missing parameters
 1	15	OPM1024_02	P050062	Orange Punch Mimosa	17	17	—
 1	17	GG1024_01	P050092	Gorilla Glue	17	17	—
 1	20	GP052501	P050152	Grape Pie	17	17	—
-1	21	CJ052501/1	P050162	Cup Junky	17	17	—
-1	26	CJ062501/2	P050212	Cap Junkie	17	17	—
+1	21	CJ052501/1	P050162	Cap Junky	17	17	—
+1	26	CJ062501/2	P050212	Cap Junky	17	17	—
 1	35	GP082501/2	P050322	Grape Pie	17	17	—
 1	38	CJ082501/2	P060032	Cap Junky	17	17	—
-1	41	PM092501	P060062	Permanent Market	17	17	—
+1	41	PM092501	P060062	Permanent Marker	17	17	—
 1	45	J31102501	P060152	Jokerz 31	7	17	Lead, Cadmium, Arsenic, Mercury, Pesticide screen, TAMC, TYMC, Bile-tolerant, E. coli, Salmonella
 1	51	JD112501	P060212	Jelly Donutz	7	17	Lead, Cadmium, Arsenic, Mercury, Pesticide screen, TAMC, TYMC, Bile-tolerant, E. coli, Salmonella
 1	58	OPM122501	P060242	Orange Punch Mimosa	17	17	—
@@ -35,7 +35,7 @@ Tranche	Seq	Batch	P-Number	Strain	Covered	Of	Missing parameters
 2	16	OPM1024_03	P050082	Orange Punch Mimosa	14	17	Total CBN, Aflatoxin B1, Ochratoxin A
 2	23	HPA052501	P050182	High Pro Amnesia	14	17	Total CBN, Aflatoxin B1, Ochratoxin A
 2	24	BSS052501	P050192	Blue Sunset Sherbet	15	17	Total CBN, Aflatoxins Σ
-2	27	CJ062501/1	P050222	Cap Junkie	14	17	Total CBN, Aflatoxin B1, Ochratoxin A
+2	27	CJ062501/1	P050222	Cap Junky	14	17	Total CBN, Aflatoxin B1, Ochratoxin A
 2	31	CLE072501	P050282	Clemosa a bud	14	17	Total CBN, Aflatoxin B1, Ochratoxin A
 2	33	GP072501/2	P050302	Grape Pie	14	17	Total CBN, Aflatoxin B1, Ochratoxin A
 2	34	GP082501/1	P050312	Grape Pie	14	17	Total CBN, Aflatoxin B1, Ochratoxin A
@@ -47,20 +47,20 @@ Tranche	Seq	Batch	P-Number	Strain	Covered	Of	Missing parameters
 2	44	GP092501	P060092	Grape Pie	14	17	Total CBN, Aflatoxin B1, Ochratoxin A
 2	47	KC102501	P060172	Kush Crasher	4	17	Aflatoxin B1, Aflatoxins Σ, Ochratoxin A, Lead, Cadmium, Arsenic, Mercury, Pesticide screen, TAMC, TYMC, Bile-tolerant, E. coli, Salmonella
 2	48	GRC102501/2	P060182	Graps & Creme	4	17	Aflatoxin B1, Aflatoxins Σ, Ochratoxin A, Lead, Cadmium, Arsenic, Mercury, Pesticide screen, TAMC, TYMC, Bile-tolerant, E. coli, Salmonella
-2	53	PM112501	P060232	Permanent Market	3	17	Total CBN, Aflatoxin B1, Aflatoxins Σ, Ochratoxin A, Lead, Cadmium, Arsenic, Mercury, Pesticide screen, TAMC, TYMC, Bile-tolerant, E. coli, Salmonella
+2	53	PM112501	P060232	Permanent Marker	3	17	Total CBN, Aflatoxin B1, Aflatoxins Σ, Ochratoxin A, Lead, Cadmium, Arsenic, Mercury, Pesticide screen, TAMC, TYMC, Bile-tolerant, E. coli, Salmonella
 2	56	SCR112501	P060282	Scrambler	3	17	Total CBN, Aflatoxin B1, Aflatoxins Σ, Ochratoxin A, Lead, Cadmium, Arsenic, Mercury, Pesticide screen, TAMC, TYMC, Bile-tolerant, E. coli, Salmonella
 2	63	FB012601/1	P060322	Fat Bastard	3	17	Total CBN, Aflatoxin B1, Aflatoxins Σ, Ochratoxin A, Lead, Cadmium, Arsenic, Mercury, Pesticide screen, TAMC, TYMC, Bile-tolerant, E. coli, Salmonella
 2	69	JD012603/2	P060412	Jelly Donutz	4	17	Aflatoxin B1, Aflatoxins Σ, Ochratoxin A, Lead, Cadmium, Arsenic, Mercury, Pesticide screen, TAMC, TYMC, Bile-tolerant, E. coli, Salmonella
 2	70	JD012603/2V	P060422	Jelly Donutz	4	17	Aflatoxin B1, Aflatoxins Σ, Ochratoxin A, Lead, Cadmium, Arsenic, Mercury, Pesticide screen, TAMC, TYMC, Bile-tolerant, E. coli, Salmonella
 3	2	MB0824_04	P050032	Motor Breath	14	17	Total CBN, Aflatoxin B1, Ochratoxin A
-3	8	CJ1024		Cup Junky	14	17	Total CBN, Aflatoxin B1, Ochratoxin A
+3	8	CJ1024		Cap Junky	14	17	Total CBN, Aflatoxin B1, Ochratoxin A
 3	12	GG1024_02	P050012	Gorilla Glue	14	17	Total CBN, Aflatoxin B1, Ochratoxin A
 3	19	OPM052501	P050132	Orange Punch Mimosa	14	17	Total CBN, Aflatoxin B1, Ochratoxin A
-3	22	CJ052501/2	P050172	Cup Junky	14	17	Total CBN, Aflatoxin B1, Ochratoxin A
+3	22	CJ052501/2	P050172	Cap Junky	14	17	Total CBN, Aflatoxin B1, Ochratoxin A
 3	25	GP062501	P050202	Grape Pie	14	17	Total CBN, Aflatoxin B1, Ochratoxin A
-3	28	CJ072501	P050252	Cup Junky	14	17	Total CBN, Aflatoxin B1, Ochratoxin A
+3	28	CJ072501	P050252	Cap Junky	14	17	Total CBN, Aflatoxin B1, Ochratoxin A
 3	29	WC072501	P050262	Wedding Crasher	14	17	Total CBN, Aflatoxin B1, Ochratoxin A
-3	30	PM072501	P050272	Permanent Market	14	17	Total CBN, Aflatoxin B1, Ochratoxin A
+3	30	PM072501	P050272	Permanent Marker	14	17	Total CBN, Aflatoxin B1, Ochratoxin A
 3	32	GP072501/1	P050292	Grape Pie	14	17	Total CBN, Aflatoxin B1, Ochratoxin A
 3	40	AB092501	P060052	Apple and Banana	14	17	Total CBN, Aflatoxin B1, Ochratoxin A
 3	46	SJ102501	P060162	Sleepy Joy	4	17	Aflatoxin B1, Aflatoxins Σ, Ochratoxin A, Lead, Cadmium, Arsenic, Mercury, Pesticide screen, TAMC, TYMC, Bile-tolerant, E. coli, Salmonella

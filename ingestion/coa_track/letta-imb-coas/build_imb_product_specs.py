@@ -84,7 +84,7 @@ LADDERS = {
     "Jokerz 31": ("J31", False, [("I", 27.00, 23.50, 30.00), ("II", 20.00, 16.50, 23.50)], "v5.5"),
     "Orange Punch Mimosa": ("OPM", False, [("I", 28.00, 25.00, 30.00), ("II", 22.00, 19.00, 25.00),
                                            ("III", 16.00, 13.00, 19.00), ("IV", 10.00, 7.09, 13.00)], "v5.5"),
-    "Permanent Market": ("PM", False, [("I", 26.50, 24.00, 30.00), ("II", 21.50, 19.00, 24.00),
+    "Permanent Marker": ("PM", False, [("I", 26.50, 24.00, 30.00), ("II", 21.50, 19.00, 24.00),
                                        ("III", 16.50, 14.00, 19.00), ("IV", 11.50, 9.01, 14.00)], "v5.5"),
     "Scrambler": ("SCR", True, [("I", 27.50, 25.25, 30.00), ("II", 23.00, 20.75, 25.25),
                                 ("III", 18.50, 16.13, 20.75)], "v5.5"),
@@ -310,10 +310,11 @@ def main():
     h.append("<div class='foot'>%d strain specifications. Potency ladders carried "
              "unchanged from PP-QC-SPEC-001 v5.5 (13 strains) and v5.6 (7 strains); the "
              "quality panel is common to all strains and reflects the limits already "
-             "applied, against %s. Two strain names need settling before release: v5.5 "
-             "says &ldquo;Cap Junkie&rdquo; where the register says Cap Junky, and the "
-             "register says &ldquo;Permanent Market&rdquo; where v5.5 and the control "
-             "sheet say Permanent Marker.</div></body></html>" % (len(LADDERS), MONOGRAPH))
+             "applied, against %s. Strain names are settled: Cap Junky (Capulator × Seed "
+             "Junky Genetics) and Permanent Marker, both consistent across the register "
+             "and these documents. PP-QC-SPEC-001 v5.5 in Drive still carries the old "
+             "&ldquo;Cap Junkie&rdquo; heading and needs the same edit."
+             "</div></body></html>" % (len(LADDERS), MONOGRAPH))
 
     with open(HTML, "w", encoding="utf-8") as fh:
         fh.write("\n".join(h))
@@ -447,9 +448,10 @@ def build_pdf(per):
     st += [Spacer(1, 6), Paragraph(
         "Potency ladders carried unchanged from PP-QC-SPEC-001 v5.5 and v5.6; the quality "
         "panel is common to all strains and reflects the limits already applied, against "
-        "%s. Two strain names need settling before release: v5.5 says “Cap Junkie” where "
-        "the register says Cap Junky, and the register says “Permanent Market” where v5.5 "
-        "and the control sheet say Permanent Marker." % MONOGRAPH, small)]
+        "%s. Strain names are settled: Cap Junky (Capulator × Seed Junky Genetics) and "
+        "Permanent Marker, both consistent across the register and these documents. "
+        "PP-QC-SPEC-001 v5.5 in Drive still carries the old “Cap Junkie” heading and needs "
+        "the same edit." % MONOGRAPH, small)]
 
     SimpleDocTemplate(PDF, pagesize=A4,
                       title="PP ImB Dry Cannabis Flower — Product Specifications",
