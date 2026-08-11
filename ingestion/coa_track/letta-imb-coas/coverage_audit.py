@@ -35,10 +35,18 @@ import crosscheck_sources as cc
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "exports", "PP_Coverage_By_Batch.tsv")
 
+# Appearance, Identification and Foreign matter are determined by Purely Plant on its own
+# in-house CoA and never appear on an outsourced-laboratory certificate. The owner has
+# ruled the in-house CoAs out of the knowledgebase entirely — they are not ingested and not
+# filed — so those three are out of scope here. Measuring against them made 62, 49 and 50
+# batches look deficient for holding exactly what they were supposed to hold.
+OUT_OF_SCOPE = OrderedDict([
+    ("appearance", "Appearance"),
+    ("identification", "Identification"),
+    ("foreign_matter", "Foreign matter"),
+])
+
 PANEL = OrderedDict([
-    ("appearance", ("identity", "Appearance")),
-    ("identification", ("identity", "Identification")),
-    ("foreign_matter", ("identity", "Foreign matter")),
     ("loss_on_drying", ("identity", "Loss on drying")),
     ("thc", ("assay", "Total Δ9-THC")),
     ("cbd", ("assay", "Total CBD")),
