@@ -305,22 +305,23 @@ def main():
     GROUPS = [
         ("", ["Seq", "Batch number", "P-number", "Strain",
               "CoA code", "Date of issue", "Laboratory", "PDF"]),
-        ("POTENCY", ["THC spec (labelled ±10%)", "THC %", "vs spec", "CBD %", "CBN %"]),
-        ("IDENTITY & PHYSICAL", ["Loss on drying %", "Identification", "Foreign matter"]),
+        ("POTENCY", ["Total THC spec", "THC %", "vs spec", "CBD %", "CBN %"]),
+        ("IDENTITY & PHYSICAL", ["Loss on drying %", "LoD vs 3028", "Identification", "Foreign matter"]),
         ("MICROBIOLOGY", ["TAMC CFU/g", "TYMC CFU/g", "Bile-tolerant GNB /1 g",
                           "Salmonella /25 g", "E. coli /1 g"]),
         ("MYCOTOXINS", ["Aflatoxins Σ", "Aflatoxin B1", "Ochratoxin A"]),
         ("HEAVY METALS", ["Pb", "Hg", "Cd", "As"]),
         ("PESTICIDES", ["Pesticide screen"]),
     ]
-    FIELDS = ["thc_spec", "thc", "thc_check", "cbd", "cbn", "loss_on_drying", "identification", "foreign_matter",
+    FIELDS = ["thc_spec", "thc", "thc_check", "cbd", "cbn", "loss_on_drying", "lod_check", "identification", "foreign_matter",
               "tamc", "tymc", "bile", "salmonella", "ecoli",
               "aflatoxins", "afla_b1", "ochratoxin", "pb", "hg", "cd", "as_", "pesticides"]
     SPEC = {
-        "thc_spec": "per batch — labelled amount ±10%",
+        "thc_spec": "per batch, % w/w (Ph. Eur. 3028 assay vs label claim)",
         "thc_check": "computed here, not printed",
         "thc": "≥ 5.00 % where no labelled range", "cbd": "< 1.00 %", "cbn": "< 1.00 %",
-        "loss_on_drying": "≤ 10.00 % (PP)   ≤ 12.00 % (Ph. Eur. 3028)",
+        "loss_on_drying": "≤ 12.00 % (Ph. Eur. 07/2024:3028)",
+        "lod_check": "computed vs current 3028 spec, not printed",
         "identification": "Conforms (Ph. Eur. 2.8.23)",
         "foreign_matter": "≤ 2.00 %, no seed, no leaves > 1 cm (2.8.2)",
         "tamc": "≤ 10⁵ CFU/g   (max 500 000)", "tymc": "≤ 10⁴ CFU/g   (max 50 000)",
@@ -331,7 +332,7 @@ def main():
         "pesticides": "≤ LOQ  (0.01 mg/kg)",
     }
     ID_N = len(GROUPS[0][1])
-    widths = [5, 21, 11, 17, 19, 13, 15, 7] + [21, 17, 11, 12, 12] + [22, 15, 22] + \
+    widths = [5, 21, 11, 17, 19, 13, 15, 7] + [21, 17, 11, 12, 12] + [15, 11, 15, 22] + \
              [15, 15, 17, 14, 13] + [17, 13, 14] + [12, 12, 12, 12] + [34]
     heads = [h for _g, hs in GROUPS for h in hs]
 
@@ -413,7 +414,7 @@ def main():
                     c.font = S.faint
                     c.alignment = Alignment(horizontal="center")
                     continue
-                if key == "thc_check":
+                if key in ("thc_check", "lod_check"):
                     continue
                 if key == "pesticides":
                     hits = [(lb, v) for lb, v in vals if not ND_RE.match(v)]
@@ -421,6 +422,8 @@ def main():
                         text = "; ".join("%s %s" % (lb, v) for lb, v in hits)
                     else:
                         text = "≤ LOQ"
+                elif key == "thc_spec":
+                    text = cp.clean_thc_spec(vals[0][1])
                 elif len(vals) == 1:
                     text = vals[0][1]
                 else:
@@ -456,6 +459,18 @@ def main():
             else:
                 cc.font = S.faint
             cc.alignment = Alignment(horizontal="center")
+            lod_vals = g["vals"].get("loss_on_drying") or []
+            lv = parse_pct(lod_vals[0][1]) if lod_vals else None
+            lverdict = ("within" if lv <= 12.0 else "OUTSIDE") if lv is not None else ""
+            lc2 = ws.cell(row=r, column=ID_N + 1 + FIELDS.index("lod_check"),
+                          value=lverdict or "/")
+            if lverdict == "within":
+                lc2.fill, lc2.font = S.pass_
+            elif lverdict == "OUTSIDE":
+                lc2.fill, lc2.font = S.crit
+            else:
+                lc2.font = S.faint
+            lc2.alignment = Alignment(horizontal="center")
             first = False
             r += 1
             qc_rows += 1

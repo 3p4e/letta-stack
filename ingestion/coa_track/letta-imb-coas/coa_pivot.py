@@ -179,6 +179,24 @@ def spec_minimum(text):
         return None
 
 
+def clean_thc_spec(text):
+    """The absolute Total THC range as printed, dropping the "of the labelled amount" gloss.
+
+    A certificate prints "19.8 - 24.2% of the labelled amount". The phrase is Ph. Eur. assay
+    wording - the assayed content expressed against the product's label claim - but the two
+    numbers are the absolute % w/w release range the measured value is checked against. It is
+    not "19.8-24.2% OF" anything. So the spec is shown as the range itself, "19.8 - 24.2 %".
+    """
+    t = (text or "").strip()
+    m = SPEC_RANGE_RE.search(t)
+    if m:
+        return "%s \u2013 %s %%" % (m.group(1).replace(",", "."), m.group(2).replace(",", "."))
+    mn = SPEC_MIN_RE.search(t)
+    if mn:
+        return "\u2265 %s %%" % mn.group(1).replace(",", ".")
+    return t
+
+
 def short_label(param):
     """The analyte's own name, without the screen heading or method reference.
 
