@@ -1,10 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""QCAR 001 — bilingual QC department activity and time report.
+"""Bilingual QC department activity and time report (informal).
 
 Built with the Purely Plant document suite (pp_report / pp_charts / pp_data): cover page,
 table of contents, bilingual Macedonian | English throughout, house navy, native Word
-tables, charts, and the standard running header and footer from PP_BASE_TEMPLATE.docx.
+tables, charts, and the running header and logo from PP_BASE_TEMPLATE.docx.
+
+It is deliberately NOT a controlled document. The template's document-number and version
+cells are cleared, the Prepared/Reviewed/Approved cascade the suite's cover_page would
+otherwise render is omitted, and so is the closing execution sign-off. A signature block on
+a report carrying no document number invites it to be filed as though it were a QMS record,
+which is a worse outcome than the unassigned code it replaced. The cover says plainly what
+the document is.
 
 Everything numeric is computed from the bound dataset (reports/qc_activity_dataset.json,
 produced by bind_activity_dataset.py from the session transcript) and injected — under the
@@ -43,11 +50,10 @@ from docx import Document                                 # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATASET = os.path.join(HERE, "qc_activity_dataset.json")
-DOCX = os.path.join(HERE, "QCAR_001_QC_Activity_Report.docx")
+DOCX = os.path.join(HERE, "QC_Activity_Report_10-11_Aug_2026.docx")
 TEMPLATE = os.path.join(SKILL, "assets", "PP_BASE_TEMPLATE.docx")
 
 ROWALT = "F7FAFC"   # zebra fill — a pp_theme token pp_report does not re-export
-CODE, VERSION = "QCAR 001", "1.0"
 BUCKET = 5          # minutes; the activity quantum
 IDLE_GAP = 45       # minutes; longer than this and the Manager had stopped
 
@@ -281,6 +287,79 @@ TASKS = {
 }
 
 
+def strip_code_block(d, note_mk="Неформален документ", note_en="Informal document"):
+    """Clear the controlled-document number and version from the running header.
+
+    The template's right-hand header cells carry "Документ бр. | Code of document" and
+    "Верзија | Ver". Those belong to a numbered QMS record. This report is not one, so they
+    are replaced with a plain marking rather than left holding a code that would imply a
+    control status the document does not have.
+    """
+    t = d.sections[0].header.tables[0]
+    for r, c in ((0, 2), (1, 2)):
+        cell = t.cell(r, c)
+        for para in list(cell.paragraphs)[1:]:
+            para._p.getparent().remove(para._p)
+        first = cell.paragraphs[0]
+        for run in list(first.runs):
+            run._r.getparent().remove(run._r)
+        if (r, c) == (0, 2):
+            pr.rin(first, note_mk, 9, pr.GREY, ital=True)
+            pr.rin(first, "  |  ", 8, pr.GREY)
+            pr.rin(first, note_en, 8, pr.GREY, ital=True)
+    return d
+
+
+def set_header_title(d, mk_title, en_title):
+    """Write the document name into the header without the template's separator runs.
+
+    swap_header() fills three specific runs of the template paragraph and leaves the rest,
+    including a " | " separator that sits on its own line between the Macedonian and
+    English titles. With a document code that separator has something to sit beside; with
+    the code removed it renders as an orphan pipe on a line of its own. Rewriting the
+    paragraph outright avoids inheriting layout that assumed a field this document does
+    not have.
+    """
+    cell = d.sections[0].header.tables[0].cell(0, 1)
+    para = cell.paragraphs[1]
+    for run in list(para.runs):
+        run._r.getparent().remove(run._r)
+    pr.rin(para, mk_title, 11, pr.BLACK, bold=True)
+    pr.rin(para, "\n", 11, pr.BLACK)
+    pr.rin(para, en_title, 9, pr.GREY)
+    return d
+
+
+def informal_cover(d, title_mk, title_en, info_rows, kind_mk, kind_en, study_mk, study_en):
+    """Cover page without the approval cascade or controlled-document marking.
+
+    pp_report.cover_page always renders a Prepared / Reviewed / Approved table with date
+    and signature columns and closes with "Controlled document". On an unnumbered informal
+    report that furniture is worse than the code it replaced: a signature block on a
+    document with no number invites it to be filed as though it were controlled.
+    """
+    pr._cover_header_footer(d.sections[0])
+    p = d.add_paragraph(); p.alignment = pr.WD_ALIGN_PARAGRAPH.CENTER; pr.sp(p, 40, 2)
+    pr.rin(p, kind_mk, 13, pr.GREY, bold=True)
+    pr.rin(p, "  |  ", 11, pr.GREY); pr.rin(p, kind_en, 11, pr.GREY)
+    p = d.add_paragraph(); p.alignment = pr.WD_ALIGN_PARAGRAPH.CENTER; pr.sp(p, 10, 2)
+    pr.rin(p, title_mk, 22, pr.NAVY, bold=True)
+    p = d.add_paragraph(); p.alignment = pr.WD_ALIGN_PARAGRAPH.CENTER; pr.sp(p, 0, 2)
+    pr.rin(p, title_en, 13, pr.NAVY)
+    p = d.add_paragraph(); p.alignment = pr.WD_ALIGN_PARAGRAPH.CENTER; pr.sp(p, 4, 16)
+    pr.rin(p, study_mk, 12, pr.GREY, bold=True)
+    pr.rin(p, "  |  ", 10, pr.GREY); pr.rin(p, study_en, 10, pr.GREY, ital=True)
+    pr.minilabel(d, "Информации за документот | Document information", None)
+    pr._info_table(d, info_rows)
+    pr.databox(d, [
+        ("Неформален документ. Не е дел од системот за квалитет, не носи број на "
+         "контролиран документ и не бара одобрување.",
+         "Informal document. It is not part of the quality system, carries no controlled "
+         "document number, and requires no approval.", 9, False)], pr.AMBERF, pr.BLACK)
+    d.add_page_break()
+    return d
+
+
 def no_split(tbl):
     """Keep every row whole across a page break.
 
@@ -435,18 +514,16 @@ def main():
     fig2 = chart_blocks(blocks, os.path.join(HERE, "_fig_blocks.png"))
 
     d = Document(TEMPLATE)
-    pr.swap_header(d, "ИЗВЕШТАЈ — ", CODE,
-                   "Report — QC Activity & Time", "QCAR ", "001/202", "6")
+    set_header_title(d, "ИЗВЕШТАЈ ЗА АКТИВНОСТ — ОДДЕЛ ЗА КОНТРОЛА НА КВАЛИТЕТ",
+                     "Activity Report — Quality Control Department")
+    strip_code_block(d)
     pr.wipe_body(d)
 
-    pr.cover_page(
+    informal_cover(
         d,
         "Извештај за активност и утрошено време — Оддел за контрола на квалитет",
         "Activity and Time Report — Quality Control Department",
-        [("Код на документ | Document code", "%s (привремен, до доделување од QA | "
-                                             "provisional, pending QA assignment)" % CODE),
-         ("Верзија | Version", VERSION),
-         ("Период | Reporting period", "10–11.08.2026, до 12:56 | to 12:56"),
+        [("Период | Reporting period", "10–11.08.2026, до 12:56 | to 12:56"),
          ("Временска зона | Timezone", meta["timezone"]),
          ("Оддел | Department", "Контрола на квалитет | Quality Control"),
          ("Извор на податоци | Data source", "Транскрипт на сесија (JSONL) | "
@@ -455,12 +532,9 @@ def main():
          ("Вкупно активно | Total active", "%s min (%s h)"
           % (mk(S["active_total"], 0), mk(S["active_total"] / 60.0))),
          ],
-        kind_mk="ЗАПИС ЗА АКТИВНОСТ", kind_en="ACTIVITY RECORD",
+        kind_mk="ПРЕГЛЕД НА АКТИВНОСТ", kind_en="ACTIVITY OVERVIEW",
         study_mk="16 работни блока · %d промпти · %d настани" % (S["prompts"], S["events"]),
-        study_en="16 task blocks · %d prompts · %d events" % (S["prompts"], S["events"]),
-        approval_rows=[("Изготвил | Prepared (QC)", "B. Nikolov, M.Pharm."),
-                       ("Прегледал | Reviewed (QA)", "J. Romevska Cvetkovski"),
-                       ("Одобрил | Approved (QC Manager)", "B. Nikolov, M.Pharm.")])
+        study_en="16 task blocks · %d prompts · %d events" % (S["prompts"], S["events"]))
     pr.toc_page(d)
 
     # ---- 1. Executive summary ------------------------------------------------
@@ -710,7 +784,6 @@ def main():
     ]:
         pr.bullet(d, m_, e_)
 
-    pr.execution_signoff(d)
     d.save(DOCX)
 
     # ---- self-check (§6B.3/§6B.5) -------------------------------------------
