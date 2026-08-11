@@ -304,36 +304,62 @@ def main():
 
     GROUPS = [
         ("", ["Seq", "Batch number", "P-number", "Strain",
-              "CoA code", "Date of issue", "Laboratory", "PDF"]),
-        ("POTENCY", ["Total THC spec", "THC %", "vs spec", "CBD %", "CBN %"]),
-        ("IDENTITY & PHYSICAL", ["Loss on drying %", "LoD vs 3028", "Identification", "Foreign matter"]),
-        ("MICROBIOLOGY", ["TAMC CFU/g", "TYMC CFU/g", "Bile-tolerant GNB /1 g",
-                          "Salmonella /25 g", "E. coli /1 g"]),
-        ("MYCOTOXINS", ["Aflatoxins Σ", "Aflatoxin B1", "Ochratoxin A"]),
-        ("HEAVY METALS", ["Pb", "Hg", "Cd", "As"]),
+              "CoA code", "Date of issue", "Issuing institution", "PDF"]),
+        ("IDENTITY & PHYSICAL", ["Appearance", "Identification", "Foreign matter",
+                                 "Loss on drying %", "LoD vs 3028"]),
+        ("POTENCY (release)", ["Total THC spec", "Total THC %", "vs spec",
+                               "Total CBD %", "Total CBN %"]),
+        ("CANNABINOID PROFILE", ["CBDA", "Δ⁹-THCA", "CBD", "CBN", "Δ⁹-THC"]),
+        ("MYCOTOXINS", ["Aflatoxin B1", "Aflatoxins Σ", "Ochratoxin A"]),
+        ("HEAVY METALS", ["Pb", "Cd", "As", "Hg", "Cu"]),
         ("PESTICIDES", ["Pesticide screen"]),
+        ("MICROBIOLOGY", ["TAMC CFU/g", "TYMC CFU/g", "Bile-tolerant GNB /1 g",
+                          "E. coli /1 g", "Salmonella /25 g"]),
+        ("PACKAGING", ["Packaging"]),
     ]
-    FIELDS = ["thc_spec", "thc", "thc_check", "cbd", "cbn", "loss_on_drying", "lod_check", "identification", "foreign_matter",
-              "tamc", "tymc", "bile", "salmonella", "ecoli",
-              "aflatoxins", "afla_b1", "ochratoxin", "pb", "hg", "cd", "as_", "pesticides"]
+    FIELDS = ["appearance", "identification", "foreign_matter", "loss_on_drying", "lod_check",
+              "thc_spec", "thc", "thc_check", "cbd", "cbn",
+              "cbda", "thca", "cbd_n", "cbn_n", "thc_n",
+              "afla_b1", "aflatoxins", "ochratoxin",
+              "pb", "cd", "as_", "hg", "cu",
+              "pesticides",
+              "tamc", "tymc", "bile", "ecoli", "salmonella",
+              "packaging"]
+    MYCO_KEYS = ("afla_b1", "aflatoxins", "ochratoxin")
     SPEC = {
-        "thc_spec": "per batch, % w/w (Ph. Eur. 3028 assay vs label claim)",
-        "thc_check": "computed here, not printed",
-        "thc": "≥ 5.00 % where no labelled range", "cbd": "< 1.00 %", "cbn": "< 1.00 %",
-        "loss_on_drying": "≤ 12.00 % (Ph. Eur. 07/2024:3028)",
-        "lod_check": "computed vs current 3028 spec, not printed",
+        "appearance": "Characteristic flower & odour",
         "identification": "Conforms (Ph. Eur. 2.8.23)",
         "foreign_matter": "≤ 2.00 %, no seed, no leaves > 1 cm (2.8.2)",
-        "tamc": "≤ 10⁵ CFU/g   (max 500 000)", "tymc": "≤ 10⁴ CFU/g   (max 50 000)",
-        "bile": "≤ 10⁴ CFU/g", "salmonella": "Absent", "ecoli": "Absent",
-        "aflatoxins": "< 4 µg/kg total (B1+B2+G1+G2)", "afla_b1": "< 2 µg/kg",
+        "loss_on_drying": "≤ 12.00 % (Ph. Eur. 07/2024:3028)",
+        "lod_check": "computed vs 3028",
+        "thc_spec": "per batch, % w/w (label claim)",
+        "thc": "per batch (see Total THC spec)",
+        "thc_check": "computed",
+        "cbd": "< 1.00 %", "cbn": "< 1.00 %",
+        "cbda": "profile", "thca": "profile", "cbd_n": "profile",
+        "cbn_n": "profile", "thc_n": "profile",
+        "afla_b1": "≤ 2 µg/kg",
+        "aflatoxins": "≤ 4 µg/kg (Σ B1+B2+G1+G2)",
         "ochratoxin": "per PP release spec",
-        "pb": "≤ 0.5 mg/kg", "hg": "≤ 0.1 mg/kg", "cd": "≤ 0.3 mg/kg", "as_": "≤ 0.2 mg/kg",
-        "pesticides": "≤ LOQ  (0.01 mg/kg)",
+        "pb": "≤ 0.5 mg/kg", "cd": "≤ 0.3 mg/kg",
+        "as_": "≤ 0.2 mg/kg", "hg": "≤ 0.1 mg/kg",
+        "cu": "informational (no limit)",
+        "pesticides": "≤ LOQ 0.01 mg/kg (Ph. Eur. 2.8.13)",
+        "tamc": "≤ 10⁵ CFU/g   (max 500 000)",
+        "tymc": "≤ 10⁴ CFU/g   (max 50 000)",
+        "bile": "≤ 10⁴ CFU/g", "ecoli": "Absent", "salmonella": "Absent",
+        "packaging": "Conforms",
     }
     ID_N = len(GROUPS[0][1])
-    widths = [5, 21, 11, 17, 19, 13, 15, 7] + [21, 17, 11, 12, 12] + [15, 11, 15, 22] + \
-             [15, 15, 17, 14, 13] + [17, 13, 14] + [12, 12, 12, 12] + [34]
+    widths = ([5, 20, 11, 16, 18, 13, 20, 7]
+              + [16, 15, 15, 15, 11]
+              + [20, 16, 10, 12, 12]
+              + [11, 11, 11, 11, 11]
+              + [13, 14, 14]
+              + [14, 14, 14, 14, 14]
+              + [34]
+              + [15, 15, 20, 14, 14]
+              + [22])
     heads = [h for _g, hs in GROUPS for h in hs]
 
     # group band
@@ -364,7 +390,7 @@ def main():
         c.fill = PatternFill("solid", fgColor="E7ECEA")
         c.alignment = Alignment(vertical="center", wrap_text=True)
     ws.row_dimensions[6].height = 30
-    ws.freeze_panes = "E7"
+    ws.freeze_panes = "I7"
 
     ND_RE = re.compile(r"^(n\.?\s?d\.?|н\.?\s?д\.?|not detected|≤\s*loq|<\s*loq|nd)\b", re.I)
 
@@ -397,6 +423,7 @@ def main():
         first = True
         block_start = r
         for (code, date), g in groups.items():
+            myco_present = any(g["vals"].get(k) for k in MYCO_KEYS)
             idf = S.base if first else S.faint
             ws.cell(row=r, column=1, value=b["seq"]).font = idf
             ws.cell(row=r, column=2, value=b["batch"]).font = S.bold if first else S.faint
@@ -410,9 +437,11 @@ def main():
             for j, key in enumerate(FIELDS):
                 vals = g["vals"].get(key) or []
                 if not vals:
-                    c = ws.cell(row=r, column=ID_N + 1 + j, value="/")
+                    blank = ("not tested" if (key in MYCO_KEYS and myco_present) else "/")
+                    c = ws.cell(row=r, column=ID_N + 1 + j, value=blank)
                     c.font = S.faint
-                    c.alignment = Alignment(horizontal="center")
+                    c.alignment = Alignment(
+                        horizontal="left" if blank == "not tested" else "center")
                     continue
                 if key in ("thc_check", "lod_check"):
                     continue
@@ -421,7 +450,7 @@ def main():
                     if hits:
                         text = "; ".join("%s %s" % (lb, v) for lb, v in hits)
                     else:
-                        text = "≤ LOQ"
+                        text = Counter(v for _, v in vals).most_common(1)[0][0]
                 elif key == "thc_spec":
                     text = cp.clean_thc_spec(vals[0][1])
                 elif len(vals) == 1:
@@ -725,13 +754,14 @@ def main():
                 "Batches re-tested after storage (month 3 / 6 / 9 at 25 °C/60 % RH and 40 °C/75 % RH).",
                 S, "These are not release results and must never be substituted for release values.")
     detail_heads = ["Seq", "Batch", "P-number", "Strain", "Parameter", "Acceptance criterion",
-                    "Result", "Certificate code", "Date of issue", "Certificate"]
-    detail_widths = [6, 18, 11, 18, 50, 32, 38, 20, 15, 12]
+                    "Result", "Certificate code", "Date of issue", "Issuing institution",
+                    "Certificate"]
+    detail_widths = [6, 18, 11, 18, 50, 32, 38, 20, 15, 34, 12]
     header_row(ws, 5, detail_heads, detail_widths, S)
     ws.freeze_panes = "A6"
     write_detail(ws, 6, stab, S)
     if stab:
-        ws.auto_filter.ref = "A5:J%d" % (len(stab) + 5)
+        ws.auto_filter.ref = "A5:K%d" % (len(stab) + 5)
 
     # =================================================== 10. Full Data
     ws = wb.create_sheet("Full Data")
@@ -739,7 +769,7 @@ def main():
     header_row(ws, 4, detail_heads, detail_widths, S)
     ws.freeze_panes = "E5"
     write_detail(ws, 5, rows, S)
-    ws.auto_filter.ref = "A4:J%d" % (len(rows) + 4)
+    ws.auto_filter.ref = "A4:K%d" % (len(rows) + 4)
 
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     wb.save(out_path)
@@ -772,7 +802,10 @@ def write_detail(ws, start, records, S):
             rc.font = S.base
         ws.cell(row=r, column=8, value=rec["Certificate Code"]).font = S.base
         ws.cell(row=r, column=9, value=cp.issue_date(rec["Issue Date"])).font = S.base
-        put_link(ws, r, 10, cp.clean_link(rec["Drive File Link"]), "Open", S)
+        ic = ws.cell(row=r, column=10, value=rec["Issuing Institution"])
+        ic.font = S.small
+        ic.alignment = Alignment(wrap_text=True, vertical="top")
+        put_link(ws, r, 11, cp.clean_link(rec["Drive File Link"]), "Open", S)
         r += 1
     return r
 
