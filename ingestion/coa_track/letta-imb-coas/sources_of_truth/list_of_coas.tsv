@@ -1,0 +1,94 @@
+sheet	idx	customer	strain	batch	quantity_kg	thc_pct	p_number	coa_on_file	micro_category
+1	1	E	Cap Junkie	CJ1024 - R&D	20	23	CJ1024	YES
+1	2	E	Gorilla Glue	GG1024- R&D	39.1	13.34	GG1024	YES
+1	3	E	Orange Punch Mimosa	OPM1024- R&D	43.8	19.96	OPM1024	YES
+1	4	E	Blue Gelato	BG1024- R&D	37.2	21.80	BG1024	YES
+1	5	E	Blue Sunset Sherbet	BSS1024- R&D	46.4	21.03	BSS1024	YES
+1	6	E	High Pro Amnesia	HPA1024- R&D	39.8	14.97	HPA1024	YES
+1	7	B	Grape pie	GP0824_01	223.31	20	P050102	YES
+1	8	E	Gorilla Glue	GG1024_01	223.73	17	P050092	YES
+1	9	E	Orange Punch Mimosa	OMP1024_01	209.95	15.38	P050042	YES
+1	10	B	Motor Breath	MB0824_04	169.29	18.67	P050032	YES
+1	11	E	Gorilla Glue	GG1024_02	182.14	15.95	P050012	YES
+1	12	B	Grape pie	GP0824_02	200	23.79	P050022	YES
+1	13	B	High Pro Amnesia	HPA1024_01	130.3	22.43	P050052	YES
+1	14	B	Orange Punch Mimosa	OPM1024_02	148.5	18.27	P050062	YES
+1	15	B	Blue Sunset Sherbet	BSS1024_01/1	213.77	23.42	P050122	YES
+1	16	B	Grape pie	GP0824_03	218.75	25.45	P050072	YES
+1	17	E	Orange Punch Mimosa	OPM1024_03	254.54	16.55	P050082	YES
+1	18	E	Motor Breath	MB0824_05	239.68	16.82	P050112	YES
+1	19	E	Orange Punch Mimosa	OPM052501	289.08	14.16	P050132	YES
+1	20		Grape pie	GP052501	148.8	18.98	P050152
+1	21	B	Cap Junkie	CJ052501/01	63.6	20.29	P050162	YES
+1	22	E	Cap Junkie	CJ052501/02	43.2	14.49	P050172	YES
+1	23	B	High Pro Amnesia	HPA052501	247.2	20.39	P050182	YES
+1	24	B	Blue Sunset Sherbet	BSS052501	342.54	20.47	P050192	YES
+1	25	B	Grape pie	GP062501	299.76	22.89	P050202	YES
+1	26	E	Cap Junkie*	CJ062501/1	77.37	21.51	P050222
+1	27	E	Cap Junkie	CJ062501/2	146.47	16.56	P050212	YES
+1	28		Cap Junkie	CJ072501	39.48	23.7	P050252
+1	29	E	Permanent Market	PM072501	26.79	10.01	P050272	YES
+1	30		Wedding crusher	WC072501	30.62	22.11	P050262
+1	31	E	Clemosa	CLE072501	27.85	8.02	P050282	YES
+1	32	A	Grape Pie	GP072501/1	228.87	21.36	P050292	YES
+1	33		Grape Pie	GP072501/2	13.6	19.81	P050302	YES
+1	34	A	Grape Pie	GP082501/1	199.83	21.29	P050312	YES
+1	35	E	Grape Pie	GP082501/2	22.8	14.83	P050322	YES
+1	36		Wedding crusher	WC082501	82.38		P060012
+1	37		Cap Junkie	CJ082501/1
+1	38		Cap Junkie	CJ082501/2
+1	39		Permanent Market	PM092501
+1	40		Apples&Bannas	AB092501
+1	41		Sleepy Joe	SJ092501
+1	42		Cap Junkie	CJ092501
+1	43		Orange Punch Mimosa	OPM092501
+1	44		Grape pie	GP092501
+2	1		Cap Junkie	CJ1024 - R&D		23	CJ1024		Category B
+2	2		Gorilla Glue	GG1024- R&D		13.34	GG1024		Category B
+2	3		Orange Punch Mimosa	OPM1024- R&D		19.96	OPM1024		Category C
+2	4		Blue Gelato	BG1024- R&D		21.80	BG1024		Category C
+2	5		Blue Sunset Sherbet	BSS1024- R&D		21.03	BSS1024		Category C
+2	6		High Pro Amnesia	HPA1024- R&D		14.97	HPA1024		Category C
+2	7		Grape pie	GP0824_01		20	P050102		Category C
+2	8		Gorilla Glue	GG1024_01		17	P050092		Category C
+2	9		Orange Punch Mimosa	OMP1024_01		15.38	P050042		Category B
+2	10		Motor Breath	MB0824_04		18.67	P050032		Category B
+2	11		Gorilla Glue	GG1024_02		15.95	P050012		Category C
+2	12		Grape pie	GP0824_02		23.79	P050022		Category B
+2	13		High Pro Amnesia	HPA1024_01		22.43	P050052		Category B
+2	14		Orange Punch Mimosa	OPM1024_02		18.27	P050062		Category C
+2	15		Blue Sunset Sherbet	BSS1024_01/1		23.42	P050122		Category B
+2	16		Grape pie	GP0824_03		25.45	P050072		Category C
+2	17		Orange Punch Mimosa	OPM1024_03		16.55	P050082		Category B
+2	18		Motor Breath	MB0824_05		16.82	P050112		Category C
+2	19		Orange Punch Mimosa	OPM052501		14.16	P050132		Category C
+2	20		Grape pie	GP052501		18.98	P050152		Category C
+2	21		Cap Junkie	CJ052501/01		20.29	P050162		Category C
+2	22		Cap Junkie	CJ052501/02		14.49	P050172		Category C
+2	23		High Pro Amnesia	HPA052501		20.39	P050182		Category C
+2	24		Blue Sunset Sherbet	BSS052501		20.47	P050192		Category B
+2	25		Grape pie	GP062501		22.89	P050202		Category B
+2	26		Cap Junkie*	CJ062501/1		21.51	P050222		Category C
+2	27		Cap Junkie	CJ062501/2		16.56	P050212		Category C
+2	28		Cap Junkie	CJ072501		23.7	P050252		Category C
+2	29		Permanent Marker	PM072501		10.01	P050272		Category B
+2	30		Wedding crusher	WC072501		22.11	P050262		Category B
+2	31		Clemosa	CLE072501		8.02	P050282		Category B
+2	32		Grape Pie	GP072501/1		21.36	P050292		Category C
+2	33		Grape Pie	GP072501/2		19.81	P050302		Category B
+2	34		Grape Pie	GP082501/1		21.29	P050312		Category C
+2	35		Grape Pie	GP082501/2		14.83	P050322		Category C
+2	36		Wedding crusher	WC082501		21.67	P060012		Category B
+2	37		Cap Junkie	CJ082501/1		24.96	P060022		Category B
+2	38		Cap Junkie	CJ082501/2		20.84	P060032		Category C
+2	39		Permanent Marker	PM092501		14.06	P060062		Category C
+2	40		Appels&Bannas	AB092501		16.93	P060052		Category B
+2	41		Sleepy Joe	SJ092501		10.96	P060082		Category B
+2	42		Cap Junkie	CJ092501		22.3	P060072		Category B
+2	43		Orange Punch Mimosa	OPM092501		9.43	P060042		Category B
+2	44		Grape pie	GP092501		25.73	P060092		Category B
+2	45		Amnesia Core Cut	ACC102501		12.91	P060122
+2	46		Pure Michigen	PUM102501		15.63	P060112
+2	47		Grapes and Cream	GRC102501/1		7.05
+2	48		Wedding cake	WED102501		22.05	P060102
+2	49		Chem Flyer	CF102501		9.83	P060132
