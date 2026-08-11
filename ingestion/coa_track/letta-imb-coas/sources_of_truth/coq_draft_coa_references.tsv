@@ -1,0 +1,60 @@
+# Certificate references recovered from the discontinued, never-approved CoQ drafts in
+# Drive folder 18Z1BawFOzTr2yW608F5ibQoLmCiXxNes.
+#
+# PROVENANCE AND LIMITS — read before using any of this.
+#
+# These drafts were never approved and are not evidence of a result. Only three fields are
+# taken from them: the external CoA identifier, its date, and the issuing laboratory. Every
+# analytical value in those drafts is deliberately left behind — an unapproved document
+# cannot supply a result to a quality register, and the register's rule is that a value
+# comes off the certificate itself or it does not exist.
+#
+# What this file is for: it proves the safety-panel testing was performed for batches the
+# register shows as untested, and it names the exact documents to retrieve. It is a
+# retrieval list, not a data source.
+#
+# Every reference below is transcribed as printed in the draft, including the malformed
+# ones. Suspected errors are recorded in the `note` column and are NOT corrected here.
+#
+# batch                cultivation batch as printed in the draft's BATCHNUMBER field
+# scope                which parameters that laboratory covered, per the draft
+# institution          laboratory as named in the draft
+# accreditation        accreditation number as printed
+# coa_code             external CoA identifier(s) as printed
+# coa_date             date(s) as printed
+# in_register          whether the register already holds that code
+# note                 transcription concerns; never a correction
+#
+batch	scope	institution	accreditation	coa_code	coa_date	in_register	note
+ACC102501	Potency (THC, CBD, CBN), Loss on Drying	Farmahem Laboratory for Environmental Sciences, Skopje	ISO 17025 (IT-017 as printed)	031-5-GS/26, 031-5-K/26	10/12.02.2026	NO	031-series absent from the register entirely
+ACC102501	Microbiology, Heavy Metals, Pesticides, Mycotoxins	IJZ Institute for Public Health, Skopje	ISO 17025 (LT-005)	326/26, 77/0132/26	09/11.02.2026	NO
+CF102501	Potency (THC, CBD, CBN), Loss on Drying	Farmahem Laboratory for Environmental Sciences, Skopje	ISO 17025 (IT-017 as printed)	031-4-GS/26, 031-4-K/26	10/12.02.2026	NO
+CF102501	Microbiology, Heavy Metals, Pesticides, Mycotoxins	IJZ Institute for Public Health, Skopje	ISO 17025 (LT-005)	330/26, 73/0116/26	09/11.02.2026	NO
+PUM102501	Potency (THC, CBD, CBN), Loss on Drying	Farmahem Laboratory for Environmental Sciences, Skopje	ISO 17025 (IT-017 as printed)	031-2-GS/26, 031-2-K/26	10/12.02.2026	NO
+PUM102501	Microbiology, Heavy Metals, Pesticides, Mycotoxins	IJZ Institute for Public Health, Skopje	ISO 17025 (LT-005)	327/26, 74/0117/26	09/11.02.2026	NO
+WED102501	Potency (THC, CBD, CBN), Loss on Drying	Farmahem Laboratory for Environmental Sciences, Skopje	ISO 17025 (IT-017 as printed)	031-3-GS/26, 031-3-K/26	10/12.02.2026	NO
+WED102501	Microbiology, Heavy Metals, Pesticides, Mycotoxins	IJZ Institute for Public Health, Skopje	ISO 17025 (LT-005)	329/26, 75/0118/26	09/11.02.2026	NO
+GRC102501	Potency (THC, CBD, CBN), Loss on Drying	Farmahem Laboratory for Environmental Sciences, Skopje	ISO 17025 (IT-017 as printed)	031-1-GS/26, 031-1-K/26	10/12.02.2026	NO
+GRC102501	Microbiology, Heavy Metals, Pesticides, Mycotoxins	IJZ Institute for Public Health, Skopje	ISO 17025 (LT-005)	328/26, 76/0119/26	09/11.02.2026	NO
+J31102501	Potency (THC, CBD, CBN), Loss on Drying	Farmahem Laboratory for Environmental Sciences, Skopje	ISO 17025 (IT-017 as printed)	051-1-GS/26, 051-1-K/26	02/04.03.2026	YES	CONFLICT: J31112501's draft cites the same two reports
+J31102501	Microbiology, Heavy Metals, Pesticides, Mycotoxins	IJZ Institute for Public Health, Skopje	ISO 17025 (LT-005)	1056/26, 133/0232/26	09.03.2026	NO
+J31112501	Potency (THC, CBD, CBN), Loss on Drying	Farmahem Laboratory for Environmental Sciences, Skopje	ISO 17025 (IT-017 as printed)	051-1-GS/26, 051-1-K/26	02/04.03.2026	YES	CONFLICT: J31102501's draft cites the same two reports
+J31112501	Microbiology, Heavy Metals, Pesticides, Mycotoxins	IJZ Institute for Public Health, Skopje	ISO 17025 (LT-005)	1057/26, 131/0232/26	06/09.03.2026	NO
+SJ102501	Potency (THC, CBD, CBN), Loss on Drying	Farmahem Laboratory for Environmental Sciences, Skopje	ISO 17025 (IT-017 as printed)	051-3-GS/26, 051-3-K/26	02/04.03.2026	YES
+SJ102501	Microbiology, Heavy Metals, Pesticides, Mycotoxins	IJZ Institute for Public Health, Skopje	ISO 17025 (LT-005)	1065/26, 132/0232/26	06/09.03.2026	NO
+SJ112501	Potency (THC, CBD, CBN), Loss on Drying	Farmahem Laboratory for Environmental Sciences, Skopje	ISO 17025 (IT-017 as printed)	051-2-GS/26, 051-2-K/26	02/04.03.2026	YES
+SJ112501	Microbiology, Heavy Metals, Pesticides, Mycotoxins	IJZ Institute for Public Health, Skopje	ISO 17025 (LT-005)	1061/26, 130/0232/26	06/09.03.2026	NO
+KC102501	Potency (THC, CBD, CBN), Loss on Drying	Farmahem Laboratory for Environmental Sciences, Skopje	ISO 17025 (IT-017 as printed)	051-4-GS/26, 051-4-K/26	02/04.03.2026	YES
+KC102501	Microbiology, Heavy Metals, Pesticides, Mycotoxins	IJZ Institute for Public Health, Skopje	ISO 17025 (LT-005)	1058/26, 1129/0232/26	06/09.03.2026	NO	1129/0232/26 breaks the NNN/NNNN/YY shape of its siblings
+GRC102501/2	Potency (THC, CBD, CBN), Loss on Drying	Farmahem Laboratory for Environmental Sciences, Skopje	ISO 17025 (IT-017 as printed)	051-6-GS/26, 051-5-K/26	02.03.2026	YES	MISMATCHED PAIR: GS is -6 while K is -5
+GRC102501/2	Microbiology, Heavy Metals, Pesticides, Mycotoxins	IJZ Institute for Public Health, Skopje	ISO 17025 (LT-005)	1060/26, 136/0232/26	09.03.2026	NO
+PM112501	Potency (THC, CBD, CBN), Loss on Drying	Pharmaceutical Faculty, Skopje	ISO 17025 (IT-017 as printed)	PPK260130	04.03.2026	NO	MALFORMED: six digits; register holds ППК26030 for this batch
+PM112501	Microbiology, Heavy Metals, Pesticides, Mycotoxins	IJZ Institute for Public Health, Skopje	ISO 17025 (LT-005)	1059/26, 135/0232/26	09.03.2026	NO
+OPM112501	Potency (THC, CBD, CBN), Loss on Drying	Pharmaceutical Faculty, Skopje	ISO 17025 (IT-017 as printed)	100-4-K/26, 100-4-ГС/26	04.03.2026	YES	CONFLICT: 100-4 is registered against OPM122501; laboratory named as Faculty but the code is Farmahem's format
+OPM112501	Microbiology, Heavy Metals, Pesticides, Mycotoxins	IJZ Institute for Public Health, Skopje	ISO 17025 (LT-005)	229/0392/26, 1627/2026	11.03.2026	YES	CONFLICT: same two reports cited by OPM122501 at a different date
+OPM122501	Potency (THC, CBD, CBN), Loss on Drying	Farmahem Laboratory for Environmental Sciences, Skopje	ISO 17025 (IT-017 as printed)	100-4-K/26, 100-4-ГС/26	09.04.2026	YES	CONFLICT: same pair cited by OPM112501 at 04.03.2026
+OPM122501	Microbiology, Heavy Metals, Pesticides, Mycotoxins	IJZ Institute for Public Health, Skopje	ISO 17025 (LT-005)	229/0392/26, 1627/2026	23.04.2026	YES	CONFLICT: same pair cited by OPM112501 at 11.03.2026
+J31122501	Potency (THC, CBD, CBN), Loss on Drying	Farmahem Laboratory for Environmental Sciences, Skopje	ISO 17025 (IT-017 as printed)	100-2-GS/26, 100-2-K/26	09.04.2026	YES
+J31122501	Microbiology, Heavy Metals, Pesticides, Mycotoxins	IJZ Institute for Public Health, Skopje	ISO 17025 (LT-005)	1628/2026; 231/0394/27	70.04.2026 23.04.2026	PARTLY	MALFORMED: register holds 231/0394/26 not /27; "70.04.2026" is not a date
+J31122501 (trim.)	Potency (THC, CBD, CBN), Loss on Drying	Farmahem Laboratory for Environmental Sciences, Skopje	ISO 17025 (IT-017 as printed)	100-3-GS/26, 100-3-K/26	09.04.2026	YES
+J31122501 (trim.)	Microbiology, Heavy Metals, Pesticides, Mycotoxins	IJZ Institute for Public Health, Skopje	ISO 17025 (LT-005)	230/0393/26, 1626/2026	23.04.2026	YES
