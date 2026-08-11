@@ -305,7 +305,7 @@ def main():
     GROUPS = [
         ("", ["Seq", "Batch number", "P-number", "Strain",
               "CoA code", "Date of issue", "Laboratory", "PDF"]),
-        ("POTENCY", ["THC %", "CBD %", "CBN %"]),
+        ("POTENCY", ["THC spec (labelled ±10%)", "THC %", "vs spec", "CBD %", "CBN %"]),
         ("IDENTITY & PHYSICAL", ["Loss on drying %", "Identification", "Foreign matter"]),
         ("MICROBIOLOGY", ["TAMC CFU/g", "TYMC CFU/g", "Bile-tolerant GNB /1 g",
                           "Salmonella /25 g", "E. coli /1 g"]),
@@ -313,12 +313,14 @@ def main():
         ("HEAVY METALS", ["Pb", "Hg", "Cd", "As"]),
         ("PESTICIDES", ["Pesticide screen"]),
     ]
-    FIELDS = ["thc", "cbd", "cbn", "loss_on_drying", "identification", "foreign_matter",
+    FIELDS = ["thc_spec", "thc", "thc_check", "cbd", "cbn", "loss_on_drying", "identification", "foreign_matter",
               "tamc", "tymc", "bile", "salmonella", "ecoli",
               "aflatoxins", "afla_b1", "ochratoxin", "pb", "hg", "cd", "as_", "pesticides"]
     SPEC = {
-        "thc": "≥ 5.00 %", "cbd": "< 1.00 %", "cbn": "< 1.00 %",
-        "loss_on_drying": "≤ 10.00 %",
+        "thc_spec": "per batch — labelled amount ±10%",
+        "thc_check": "computed here, not printed",
+        "thc": "≥ 5.00 % where no labelled range", "cbd": "< 1.00 %", "cbn": "< 1.00 %",
+        "loss_on_drying": "≤ 10.00 % (PP)   ≤ 12.00 % (Ph. Eur. 3028)",
         "identification": "Conforms (Ph. Eur. 2.8.23)",
         "foreign_matter": "≤ 2.00 %, no seed, no leaves > 1 cm (2.8.2)",
         "tamc": "≤ 10⁵ CFU/g   (max 500 000)", "tymc": "≤ 10⁴ CFU/g   (max 50 000)",
@@ -329,7 +331,7 @@ def main():
         "pesticides": "≤ LOQ  (0.01 mg/kg)",
     }
     ID_N = len(GROUPS[0][1])
-    widths = [5, 21, 11, 17, 19, 13, 15, 7] + [15, 12, 12] + [14, 15, 22] + \
+    widths = [5, 21, 11, 17, 19, 13, 15, 7] + [21, 17, 11, 12, 12] + [22, 15, 22] + \
              [15, 15, 17, 14, 13] + [17, 13, 14] + [12, 12, 12, 12] + [34]
     heads = [h for _g, hs in GROUPS for h in hs]
 
@@ -384,6 +386,10 @@ def main():
             k = cp.classify(rec["Parameter"])
             if k in FIELDS:
                 g["vals"][k].append((cp.short_label(rec["Parameter"]), rec["Result"].strip()))
+                if k == "thc":
+                    ac = (rec["Acceptance Criterion"] or "").strip()
+                    if ac and ac not in ("/", "—"):
+                        g["vals"]["thc_spec"].append(("", ac))
         if not groups:
             groups[("(none)", "")] = {"link": "", "lab": "", "vals": defaultdict(list)}
 
@@ -407,6 +413,8 @@ def main():
                     c.font = S.faint
                     c.alignment = Alignment(horizontal="center")
                     continue
+                if key == "thc_check":
+                    continue
                 if key == "pesticides":
                     hits = [(lb, v) for lb, v in vals if not ND_RE.match(v)]
                     if hits:
@@ -426,6 +434,28 @@ def main():
                 else:
                     c.font = S.base
                 c.alignment = Alignment(vertical="center", wrap_text=True)
+            thc_vals = g["vals"].get("thc") or []
+            spec_vals = g["vals"].get("thc_spec") or []
+            verdict, ok = "", None
+            if thc_vals and spec_vals:
+                got = parse_pct(thc_vals[0][1])
+                lo, hi = cp.spec_range(spec_vals[0][1])
+                if got is not None and lo is not None:
+                    ok = lo <= got <= hi
+                    verdict = "within" if ok else "OUTSIDE"
+                elif got is not None and cp.spec_minimum(spec_vals[0][1]) is not None:
+                    mn = cp.spec_minimum(spec_vals[0][1])
+                    ok = got >= mn
+                    verdict = "within" if ok else "OUTSIDE"
+            cc = ws.cell(row=r, column=ID_N + 1 + FIELDS.index("thc_check"),
+                         value=verdict or "/")
+            if verdict == "within":
+                cc.fill, cc.font = S.pass_
+            elif verdict == "OUTSIDE":
+                cc.fill, cc.font = S.crit
+            else:
+                cc.font = S.faint
+            cc.alignment = Alignment(horizontal="center")
             first = False
             r += 1
             qc_rows += 1

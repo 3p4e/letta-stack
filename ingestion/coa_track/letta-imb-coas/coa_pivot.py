@@ -147,6 +147,38 @@ LAB_PATTERNS = [
 ]
 
 
+SPEC_RANGE_RE = re.compile(r"(\d+(?:[.,]\d+)?)\s*[–—-]\s*(\d+(?:[.,]\d+)?)\s*%")
+SPEC_MIN_RE = re.compile(r"(?:min|≥|>=)\s*(\d+(?:[.,]\d+)?)\s*%", re.I)
+
+
+def spec_range(text):
+    """Low and high bounds of a printed range such as "13.3-16.3% of labelled amount".
+
+    Purely Plant labels each product with a potency and accepts the labelled amount
+    plus or minus ten per cent, so the criterion is a property of the batch rather than
+    a house-wide limit. Returns (None, None) when the criterion is not a range.
+    """
+    m = SPEC_RANGE_RE.search(text or "")
+    if not m:
+        return None, None
+    try:
+        return (float(m.group(1).replace(",", ".")),
+                float(m.group(2).replace(",", ".")))
+    except ValueError:
+        return None, None
+
+
+def spec_minimum(text):
+    """The lower bound of a one-sided criterion such as "min 5.00%"."""
+    m = SPEC_MIN_RE.search(text or "")
+    if not m:
+        return None
+    try:
+        return float(m.group(1).replace(",", "."))
+    except ValueError:
+        return None
+
+
 def short_label(param):
     """The analyte's own name, without the screen heading or method reference.
 
