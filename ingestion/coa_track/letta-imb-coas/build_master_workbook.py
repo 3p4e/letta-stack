@@ -290,111 +290,170 @@ def main():
     ws.auto_filter.ref = "A4:%s%d" % (get_column_letter(len(heads)), r - 1)
 
 
-    # =================================================== 2b. Batch Detail
-    # Parameters run left to right as columns; each batch occupies as many rows as it has
-    # certificates, so every value sits in its own cell under its own parameter and stays
-    # traceable to the report that issued it. Batch identity is merged down its block.
-    ws = wb.create_sheet("Batch Detail")
-    sheet_title(ws, "Batch Detail",
-                "Every batch across every parameter. One row per certificate, so a value is "
-                "never merged with another report's.", S,
-                "The issuing laboratory for any certificate code is on the Certificates sheet.")
+    # =================================================== 2b. QC Results
+    # Modelled on the Purely Plant "Production Batches QC Result Table": acceptance criteria
+    # stated once in a reference row under the header, parameters as columns with their units,
+    # one row per batch, and a further row per additional laboratory. "/" marks a parameter
+    # that report did not cover. A pesticide screen collapses to the house notation - the
+    # limit when nothing was found, the named compounds when something was.
+    ws = wb.create_sheet("QC Results")
+    sheet_title(ws, "Production Batches — QC Results",
+                "Every tested batch in chronological order. Acceptance criteria are stated once "
+                "in the reference row; where a certificate prints a different criterion, Full "
+                "Data holds it verbatim.", S)
 
-    ident = [("Seq", 6), ("Cultivation batch", 20), ("P-number", 12), ("Strain", 18),
-             ("Disposition", 16), ("Certificate code", 20), ("Date of issue", 14), ("PDF", 8)]
-    param_cols = [(k, lbl) for k, lbl in cp.COLS.items()]
-    widths = [w for _n, w in ident] + [20] * len(param_cols)
-    heads = [n for n, _w in ident] + [lbl for _k, lbl in param_cols]
-    header_row(ws, 4, heads, widths, S, height=44)
+    GROUPS = [
+        ("", ["Seq", "Batch number", "P-number", "Strain",
+              "CoA code", "Date of issue", "Laboratory", "PDF"]),
+        ("POTENCY", ["THC %", "CBD %", "CBN %"]),
+        ("IDENTITY & PHYSICAL", ["Loss on drying %", "Identification", "Foreign matter"]),
+        ("MICROBIOLOGY", ["TAMC CFU/g", "TYMC CFU/g", "Bile-tolerant GNB /1 g",
+                          "Salmonella /25 g", "E. coli /1 g"]),
+        ("MYCOTOXINS", ["Aflatoxins Σ", "Aflatoxin B1", "Ochratoxin A"]),
+        ("HEAVY METALS", ["Pb", "Hg", "Cd", "As"]),
+        ("PESTICIDES", ["Pesticide screen"]),
+    ]
+    FIELDS = ["thc", "cbd", "cbn", "loss_on_drying", "identification", "foreign_matter",
+              "tamc", "tymc", "bile", "salmonella", "ecoli",
+              "aflatoxins", "afla_b1", "ochratoxin", "pb", "hg", "cd", "as_", "pesticides"]
+    SPEC = {
+        "thc": "≥ 5.00 %", "cbd": "< 1.00 %", "cbn": "< 1.00 %",
+        "loss_on_drying": "≤ 10.00 %",
+        "identification": "Conforms (Ph. Eur. 2.8.23)",
+        "foreign_matter": "≤ 2.00 %, no seed, no leaves > 1 cm (2.8.2)",
+        "tamc": "≤ 10⁵ CFU/g   (max 500 000)", "tymc": "≤ 10⁴ CFU/g   (max 50 000)",
+        "bile": "≤ 10⁴ CFU/g", "salmonella": "Absent", "ecoli": "Absent",
+        "aflatoxins": "< 4 µg/kg total (B1+B2+G1+G2)", "afla_b1": "< 2 µg/kg",
+        "ochratoxin": "per PP release spec",
+        "pb": "≤ 0.5 mg/kg", "hg": "≤ 0.1 mg/kg", "cd": "≤ 0.3 mg/kg", "as_": "≤ 0.2 mg/kg",
+        "pesticides": "≤ LOQ  (0.01 mg/kg)",
+    }
+    ID_N = len(GROUPS[0][1])
+    widths = [5, 21, 11, 17, 19, 13, 15, 7] + [15, 12, 12] + [14, 15, 22] + \
+             [15, 15, 17, 14, 13] + [17, 13, 14] + [12, 12, 12, 12] + [34]
+    heads = [h for _g, hs in GROUPS for h in hs]
+
+    # group band
+    col = 1
+    for gname, hs in GROUPS:
+        if gname:
+            ws.merge_cells(start_row=4, start_column=col, end_row=4, end_column=col + len(hs) - 1)
+            gc = ws.cell(row=4, column=col, value=gname)
+            gc.font = Font(name=FONT, size=8, bold=True, color="FFFFFF")
+            gc.fill = PatternFill("solid", fgColor=ACCENT)
+            gc.alignment = Alignment(horizontal="center", vertical="center")
+        col += len(hs)
+    ws.row_dimensions[4].height = 14
+    header_row(ws, 5, heads, widths, S, height=42)
     for ci in range(1, len(heads) + 1):
-        ws.cell(row=4, column=ci).alignment = Alignment(
+        ws.cell(row=5, column=ci).alignment = Alignment(
             horizontal="left", vertical="bottom", wrap_text=True)
-    ws.freeze_panes = "F5"
 
-    r = 5
-    detail_rows = 0
+    # reference-values row
+    rv = ws.cell(row=6, column=1, value="Laboratory reference values")
+    ws.merge_cells(start_row=6, start_column=1, end_row=6, end_column=ID_N)
+    rv.font = Font(name=FONT, size=9, bold=True, color=INK)
+    rv.fill = PatternFill("solid", fgColor="E7ECEA")
+    rv.alignment = Alignment(horizontal="right", vertical="center", indent=1)
+    for j, key in enumerate(FIELDS):
+        c = ws.cell(row=6, column=ID_N + 1 + j, value=SPEC.get(key, "/"))
+        c.font = Font(name=FONT, size=8, bold=True, color=INK)
+        c.fill = PatternFill("solid", fgColor="E7ECEA")
+        c.alignment = Alignment(vertical="center", wrap_text=True)
+    ws.row_dimensions[6].height = 30
+    ws.freeze_panes = "E7"
+
+    ND_RE = re.compile(r"^(n\.?\s?d\.?|н\.?\s?д\.?|not detected|≤\s*loq|<\s*loq|nd)\b", re.I)
+
+    r = 7
+    qc_rows = 0
     for b in batches:
-        brows = by_seq[b["seq"]]
-        # group this batch's records by the certificate that issued them
         groups = OrderedDict()
-        for rec in brows:
-            code = rec["Certificate Code"].strip() or "(no certificate number)"
-            date = cp.issue_date(rec["Issue Date"])
-            key = (code, date)
-            g = groups.setdefault(key, {"link": "", "vals": defaultdict(list)})
+        for rec in by_seq[b["seq"]]:
+            code = rec["Certificate Code"].strip() or "(not numbered)"
+            key = (code, cp.issue_date(rec["Issue Date"]))
+            g = groups.setdefault(key, {"link": "", "lab": "", "vals": defaultdict(list)})
             if not g["link"]:
                 g["link"] = cp.clean_link(rec["Drive File Link"])
+            if not g["lab"]:
+                inst = rec["Issuing Institution"] or ""
+                for name, rx, _acc in cp.LAB_PATTERNS:
+                    if rx.search(inst):
+                        g["lab"] = name.split("—")[0].strip()
+                        break
             k = cp.classify(rec["Parameter"])
-            if k in cp.COLS:
+            if k in FIELDS:
                 g["vals"][k].append((cp.short_label(rec["Parameter"]), rec["Result"].strip()))
         if not groups:
-            groups[("(none)", "")] = {"link": "", "vals": defaultdict(list)}
+            groups[("(none)", "")] = {"link": "", "lab": "", "vals": defaultdict(list)}
 
+        first = True
         block_start = r
         for (code, date), g in groups.items():
-            # A certificate that reports several analytes into the same column - a pesticide
-            # screen of 24 compounds, packaging's three checks - gets one row per analyte.
-            # No cell ever holds two measurements.
-            span = max([len(v) for v in g["vals"].values()] or [1])
-            cert_start = r
-            for i in range(span):
-                for j, (key, _lbl) in enumerate(param_cols):
-                    vals = g["vals"].get(key) or []
-                    if i >= len(vals):
-                        continue
-                    label, text = vals[i]
-                    shown = ("%s — %s" % (label, text)) if len(vals) > 1 else text
-                    c = ws.cell(row=r, column=len(ident) + 1 + j, value=shown)
-                    sev = cp.severity(text)
-                    if sev == "crit":
-                        c.fill, c.font = S.crit
-                    elif sev == "warn":
-                        c.fill, c.font = S.warn
+            idf = S.base if first else S.faint
+            ws.cell(row=r, column=1, value=b["seq"]).font = idf
+            ws.cell(row=r, column=2, value=b["batch"]).font = S.bold if first else S.faint
+            ws.cell(row=r, column=3, value=b["p_number"]).font = idf
+            ws.cell(row=r, column=4, value=b["strain"]).font = idf
+            ws.cell(row=r, column=5, value=code).font = S.base
+            ws.cell(row=r, column=6, value=date).font = S.base
+            ws.cell(row=r, column=7, value=g["lab"]).font = S.small
+            put_link(ws, r, 8, g["link"], "Open", S)
+
+            for j, key in enumerate(FIELDS):
+                vals = g["vals"].get(key) or []
+                if not vals:
+                    c = ws.cell(row=r, column=ID_N + 1 + j, value="/")
+                    c.font = S.faint
+                    c.alignment = Alignment(horizontal="center")
+                    continue
+                if key == "pesticides":
+                    hits = [(lb, v) for lb, v in vals if not ND_RE.match(v)]
+                    if hits:
+                        text = "; ".join("%s %s" % (lb, v) for lb, v in hits)
                     else:
-                        c.font = S.base
-                    c.alignment = Alignment(vertical="top", wrap_text=True)
-                if b["seq"] % 2 == 0:
-                    for ci in range(1, len(heads) + 1):
-                        if ws.cell(row=r, column=ci).fill.fgColor.rgb in (None, "00000000"):
-                            ws.cell(row=r, column=ci).fill = S.band
-                r += 1
-                detail_rows += 1
-            for col, val, font in ((6, code, S.base), (7, date, S.base)):
-                if r - 1 > cert_start:
-                    ws.merge_cells(start_row=cert_start, start_column=col,
-                                   end_row=r - 1, end_column=col)
-                cc = ws.cell(row=cert_start, column=col, value=val)
-                cc.font = font
-                cc.alignment = Alignment(vertical="center", wrap_text=True)
-            if r - 1 > cert_start:
-                ws.merge_cells(start_row=cert_start, start_column=8,
-                               end_row=r - 1, end_column=8)
-            put_link(ws, cert_start, 8, g["link"], "Open", S)
-        block_end = r - 1
-
-        # batch identity merged down the block
-        for col, val, font in ((1, b["seq"], S.base), (2, b["batch"], S.bold),
-                               (3, b["p_number"], S.base), (4, b["strain"], S.base)):
-            if block_end > block_start:
-                ws.merge_cells(start_row=block_start, start_column=col,
-                               end_row=block_end, end_column=col)
-            c = ws.cell(row=block_start, column=col, value=val)
-            c.font = font
-            c.alignment = Alignment(vertical="center", wrap_text=True)
-        if block_end > block_start:
-            ws.merge_cells(start_row=block_start, start_column=5,
-                           end_row=block_end, end_column=5)
-        sc = ws.cell(row=block_start, column=5, value=STATUS_TEXT[b["status"]])
-        fill, fnt = S.status(b["status"])
-        sc.fill, sc.font = fill, fnt
-        sc.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
-
-        # rule under the batch block
+                        text = "≤ LOQ"
+                elif len(vals) == 1:
+                    text = vals[0][1]
+                else:
+                    text = "; ".join("%s %s" % (lb, v) for lb, v in vals)
+                c = ws.cell(row=r, column=ID_N + 1 + j, value=text)
+                sev = cp.severity(text)
+                if sev == "crit":
+                    c.fill, c.font = S.crit
+                elif sev == "warn":
+                    c.fill, c.font = S.warn
+                else:
+                    c.font = S.base
+                c.alignment = Alignment(vertical="center", wrap_text=True)
+            first = False
+            r += 1
+            qc_rows += 1
         for ci in range(1, len(heads) + 1):
-            cell = ws.cell(row=block_end, column=ci)
-            cell.border = Border(bottom=Side(style="thin", color="8B9EA3"))
+            ws.cell(row=r - 1, column=ci).border = Border(
+                bottom=Side(style="thin", color="C6D0CD"))
 
-    ws.auto_filter.ref = "A4:%s%d" % (get_column_letter(len(heads)), r - 1)
+    ws.auto_filter.ref = "A5:%s%d" % (get_column_letter(len(heads)), r - 1)
+
+    # legend, in the house style of the source table
+    r += 1
+    ws.cell(row=r, column=1, value="LEGEND").font = S.section
+    r += 1
+    for txt, fill in [
+        ("n.d — not detected;   BLQ — below limit of quantification;   "
+         "LOQ — limit of quantification;   \"/\" — parameter not covered by that report", None),
+        ("Red — the issuing laboratory declared a deviation from specification", CRIT_BG),
+        ("Amber — a laboratory finding or a data-integrity flag on the certificate", WARN_BG),
+        ("A batch tested by more than one laboratory has one row per certificate; "
+         "identity is repeated in grey on the continuation rows.", None),
+    ]:
+        c = ws.cell(row=r, column=1, value=txt)
+        ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=10)
+        c.font = Font(name=FONT, size=9)
+        if fill:
+            c.fill = PatternFill("solid", fgColor=fill)
+        c.alignment = Alignment(vertical="center", indent=1)
+        r += 1
 
     # =================================================== 4. Coverage Matrix
     ws = wb.create_sheet("Coverage Matrix")
@@ -640,8 +699,8 @@ def main():
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     wb.save(out_path)
     print("Wrote %s" % out_path)
-    print("sheets=%d batches=%d records=%d certificates=%d exceptions=%d stability=%d detail_rows=%d"
-          % (len(wb.sheetnames), len(batches), len(rows), n_certs, exc, len(stab), detail_rows))
+    print("sheets=%d batches=%d records=%d certificates=%d exceptions=%d stability=%d qc_rows=%d"
+          % (len(wb.sheetnames), len(batches), len(rows), n_certs, exc, len(stab), qc_rows))
 
 
 def write_detail(ws, start, records, S):
