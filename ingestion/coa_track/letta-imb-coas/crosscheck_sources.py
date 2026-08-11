@@ -60,6 +60,13 @@ def norm_strain(raw):
                  ("appelsandbananas", "applesandbananas"),
                  ("appelsandbannas", "applesandbananas"),
                  ("permanentmarket", "permanentmarker"),
+                 # Capulator x Seed Junky Genetics. The sheets say "Cap Junkie" and the
+                 # older certificates said "Cup Junky"; both are misspellings of the one
+                 # cultivar, so they fold together rather than reporting nine batches as
+                 # nine disagreements while the sheets await correction.
+                 ("capjunkie", "capjunky"),
+                 ("cupjunky", "capjunky"),
+                 ("cupjunkie", "capjunky"),
                  ("gg4", "gorillaglue4"),
                  ("puremichigen", "puremichigan"),
                  ("cashcow", "cashcow")):
