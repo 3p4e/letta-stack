@@ -1,110 +1,193 @@
 # ImB_QC_COAs — Ingestion & Ph.Eur. 3028 Coverage Status
 
-_Last updated: 2026-06-01 19:25 UTC by cloud Claude session._
+_Last updated: 2026-08-10 by cloud Claude session._
 
 ## Source of truth
-- **Drive folder:** `1. PP/DATA_B/QC_eCoA/ImB_QC_COAs` (Drive ID `16oMK_j0FUusjveV61B5rxWi6Sl5kQsn5`) — **125 PDFs**
+- **Drive folder:** `1. PP/DATA_B/QC_eCoA/ImB_QC_COAs` (Drive ID `16oMK_j0FUusjveV61B5rxWi6Sl5kQsn5`)
 - **Letta source:** `source-271bc3be-10d1-4541-8a5b-be3f6fab7c97` (ImB_QC_COAs)
 - **Agent attached:** `imb_qc_coa_agent` (`agent-edf27c5c-1f88-495b-b6fb-506105bd717c`)
+- **Embedding:** OpenAI `text-embedding-3-small`, 1536 dim, chunk 300.
+  (An older README claiming `voyage-3-large` is **wrong** — the server holds no Voyage key.)
 
-## BLOCKER — Letta embedding endpoint still down (confirmed 2026-06-01 19:20 UTC)
-Re-tested today with two fresh uploads (a 25-byte ASCII ping and a 617-byte
-Farmahem CoA). Both moved through `Embedding -> Error` within ~30s of upload.
-21 UKIM_PPK files uploaded earlier on 06-01 are likewise stuck in `Error`.
+## Current state — CLEAN
 
-**Diagnosis:** Letta's OpenAI `text-embedding-3-small` endpoint is failing —
-expired/over-quota API key, suspended billing, or upstream outage. Letta
-itself accepts the file and writes the row; it's the embedding call that
-flips the row to Error.
+| Metric | Value |
+|--------|-------|
+| Total files in source | **263** |
+| `completed` | **263** |
+| `error` | **0** |
 
-Fix on KVM4 (no other path — cloud cannot reach the embedding endpoint):
-```bash
-docker exec letta env | grep -i openai
-curl https://api.openai.com/v1/embeddings \
-  -H "Authorization: Bearer $OPENAI_API_KEY" -H "Content-Type: application/json" \
-  -d '{"model":"text-embedding-3-small","input":"ping"}'   # must be 200
-docker compose -f /opt/letta/docker-compose.yml restart letta
-```
+_263 = 261 CoA/QC records + 2 governance records:_
+_`SOP_RAG_INGESTION_per_batch_folder_rule_v1.2.txt` and_
+_`DRIVE_INDEX_ImB_QC_COAs_batch_folders_v2.txt`. Their predecessors (`…rule_v1.1.txt`,_
+_`DRIVE_INDEX_001_COAs_batch_folders_v1.txt`) were deleted when v1.2/v2 replaced them, so_
+_the count is unchanged._
 
-After the key is good, run on KVM4:
-```bash
-cd /path/to/CoA_TRACK/scripts/letta-imb-coas
-python3 ingest_imb_coas_v2.py a   # purges 21+ Error files, uploads 47 staged
-python3 ingest_imb_coas_v2.py b   # GPT-4o Vision OCR for CamScanner thumbnails
-```
-The updated `stage_a()` purges every Error-state file before uploading, so the
-21 UKIM_PPK rows currently in Error get a clean re-ingest.
+The 2026-06-01 embedding blocker is **resolved**. Root cause was an OpenAI
+`429 credit_balance_exhausted` on the server key — Letta accepted each upload and
+wrote the row, then the embedding call flipped it to `error`. After the account
+balance was refreshed, every errored row was purged and re-uploaded cleanly.
 
-## Letta source state right now (68 -> 66 after cleanup of two test uploads)
-| Bucket | Count | Status |
-|--------|-------|--------|
-| `P05xxx2.txt` + `P06xxx2_CoA.txt` (Drive-OCR bundles) | 21 | Completed |
-| CamScanner thumbnails (BG/BSS/CJ/HPA/GG/OPM 1024, GP0824_02_bulk) | 7 | Completed |
-| `P060012_CoA..P060092_CoA` + `List_of_COAs` | 10 | Completed |
-| `J31122501_*` + `OPM122501_eCoA` (full-panel batches) | 3 | Completed |
-| `P050162/182/192/202` (stability bundle CoAs) | 4 | Completed |
-| `UKIM_PPK260xx` | 21 | **Error** (awaiting endpoint fix → re-upload) |
-| **Total Completed** | **45** | |
-| **Total Errored** | **21** | |
+## 2026-08-10 ingestion run
 
-## Staged & ready (`staged_coas/`, 56 files)
-- **17 Farmahem** native-text CoAs (cannabinoids HPLC/DAD + Loss on Drying):
-  J31102501, J31112501, J31122501, SJ102501, SJ112501, KC102501, GRC102501/2,
-  OPM122501 (reports `051-1..6` and `100-1..4` series)
-- **21 UKIM ППК** native-text CoAs (DAB cannabinoids + LoD incl. stability):
-  PM112501, OPM112501, GG112501, GG012601, JD112501, JD012601, FB112501,
-  FB012601, CC112501, SCR112501, plus Grape Pie stability at months 3/6/9
-  for batches P050022 / P050072 / P050202 at 25°C/60% RH and 40°C/75% RH
-- **18 Bundle full-panel** summaries (Ph.Eur. 3028 panel per production batch,
-  each citing lab + doc-code + date per parameter — drives the CoQ Builder):
-  - Strain thumbnails: BG1024, BSS1024, CJ1024
-  - Batched bundles: AB092501 (P060052), BSS052501 (P050192),
-    BSS10240_01 (P050122), CJ052501-1 (P050162), CJ072501 (P050252),
-    CJ082501-1 (P060022), CJ082501-2 (P060032), CJ092501 (P060072),
-    GP052501 (P050152), GP062501 (P050202), GP092501 (P060092),
-    OPM092501 (P060042), PM092501 (P060062), SJ092501 (P060082),
-    WC082501 (P060012)
+**12 UKIM ППК certificates** (`ППК26110`–`26119`, `26127`, `26128`) — full
+six-parameter Ph.Eur. records (identification macro + micro, foreign matter,
+loss on drying, total CBN / CBD / Δ9-THC), each with acceptance criteria and results.
 
-Once the endpoint is fixed: `stage_a()` runs in seconds. The script's new
-`purge_errored()` step will delete the 21 UKIM Error rows first, then upload
-all 56 staged files cleanly.
+**42 Farmahem 197-series certificates** (`197-1` … `197-21`, each K + M) — every
+record carries `Parameter | Acceptance criterion | Result | Expanded uncertainty U`:
+- **K panel** — cannabinoids by HPLC/DAD, method `ИР 7.2.1-47К (в.1)`, Ph.Eur.
+  Cannabis flos (3028). Reports print results only (no limit column), so the PP
+  release-spec limits are added and **labelled as added-for-review**.
+- **M panel** — aflatoxins B1/B2/G1/G2 + ochratoxin A, methods `ИР 7.2.1-43М` /
+  `ИР 7.2.1-44М`.
 
-## Still needs OCR — STAGE B
-The remaining ~30 scanner-bundle PDFs (the rest of the scans, plain `P0xxxx`
-files in subfolders, and `MB0824_*`, `OPM092501`, etc.) carry the
-**pesticide / heavy-metal / mycotoxin / microbiology** panels. STAGE B uses
-GPT-4o Vision at 200 DPI for any PDF whose embedded-text layer is empty.
+**8 legacy error-state files re-driven** (5 `Bundle_*`, 2 `QC_ERRATA`, 1
+`UKIM_PPK26037`) — stored content was re-read server-side, deleted, re-uploaded.
+
+### QC findings raised by this run
+- **197-14-M** (High Pro Amnesia, `HPA1024_01`): **Ochratoxin A 2.06 µg/kg**
+  (U 11.80 %) — the only mycotoxin above LOQ in the series. Flagged
+  *verify against the PP registered mycotoxin limit before release*.
+- **197-13-M** (`HPA1024`): Ochratoxin A `<LOQ`. All other mycotoxin results across
+  all 21 samples are `ND`.
+- **197-19-K** (`P060242`): Δ9-THC 7.91 % — lowest in the series, still ≥ 5.00 % minimum.
+- **ППК26127** (Fat Bastard `FB032601`): foreign-matter discrepancy — see below.
+
+## Open QC item — ППК26127 foreign matter
+
+Logged in the source as `QC_QUERY_PPK26127_FatBastard_FB032601_foreign_matter_seed_v1.txt`.
+
+The certificate records foreign matter as `0.08% (Не одговара)` against the limit
+`макс. 2.00 % (без присуство на семе и листови подолги од 1 cm)`. The recorded
+result is **within** the 2.00 % mass limit and the results section records **no seed
+observation**; seed presence is asserted only in the free-text conclusion. Since the
+`Одговара / Не одговара` verdict is the standard per-parameter tag on this form, the
+fail flag is inconsistent with the recorded result.
+
+A neutral query to CNP asks them to either **(A) substantiate** — supply the recorded
+Ph.Eur. 2.8.2 observation evidencing seed, or **(B) correct** — reissue with foreign
+matter 0.08 % conforming. Batch disposition is held pending their written reply.
+
+## Standing rule — one Drive folder per tested batch (v1.2)
+
+Stored in the RAG as `SOP_RAG_INGESTION_per_batch_folder_rule_v1.2.txt`. Supersedes
+v1.0, which prescribed a zero-padded `NN. <batch>` numeric prefix; **that prefix is
+retired** (a human corrected this call — inserting a batch out of order would have
+forced a full renumber, and the Drive tools cannot rename).
+
+**Location history:** the batch folders were first built under a staging folder
+named `001 COAs`; a human then cleared the ImB_QC_COAs Drive folder itself of its old
+loose files/folders and moved all 80 batch folders directly into it. `001 COAs` no
+longer exists. **The batch folders now live directly under the Drive source-of-truth
+folder**, `16oMK_j0FUusjveV61B5rxWi6Sl5kQsn5`.
+
+On **every** future ingestion of outsourced certificates:
+1. Determine the tested batch; name the folder by **batch number, P-number preferred**
+   with the cultivation code in parentheses (e.g. `P060402 (GorillaGlue)`), else the
+   strain/lot code alone (e.g. `FB032601`, `BG1024`). **No numeric prefix** — the
+   folder title is the batch name only.
+2. **Reuse** an existing folder for that batch; **create** one only for a batch that
+   has none yet — directly under the ImB_QC_COAs Drive folder.
+3. Place every outsourced certificate for that batch (matched by P-number and/or
+   cultivation code) into its folder; de-duplicate exact byte-duplicates.
+4. Chronological order is **not** encoded in the folder name (Drive sorts un-prefixed
+   names alphabetically). It is recorded separately by the `seq` + issue-date columns
+   of the Drive index / master table kept in the RAG.
+
+> **Tooling constraint:** the Drive MCP tools can create folders and copy files but
+> **cannot move, rename, or delete**. Copying a certificate into its batch folder
+> leaves the original in the parent folder, which a human must delete. Always report
+> the parent-level duplicates that need manual deletion.
+
+## Master eCoA table — 2026-08-10
+
+Built from this source plus the per-batch Drive folders. Outputs in `exports/`:
+
+| File | What it is |
+|---|---|
+| `master_coa_table.tsv` | 2,339 rows, one per tested parameter — the canonical extract |
+| `PP_eCoA_Master_Database.xlsx` | 3 sheets: Batch Summary (row-per-batch), Audit Trail, Stability Studies |
+| `coa_register.html` | Self-contained browser view, no Office required |
+
+Regenerate with `build_master_workbook.py` / `build_master_register_html.py`.
+
+**Columns:** `Seq · Cultivation Batch · P-Number · Strain · Parameter · Acceptance Criterion ·
+Result · Certificate Code · Issue Date · Issuing Institution · Drive File Link`.
+
+**Coverage across the 80 batches:** 45 full-panel · 34 partial (a parameter category has no
+certificate on file) · 1 open QC issue (`FB032601` / `ППК26127`).
+
+**Stability results are held separate.** Month 3/6/9 at 25 °C/60 % RH and 40 °C/75 % RH
+(batches `P050022`, `P050072`, `P050202`) live on their own sheet. Merging them into the
+release columns produced nonsense like `Total CBD: 0.17% | 0.05% | 22.83%`, mixing release
+values with storage timepoints — they must never be read as release results.
+
+## De-duplication — verified by content, not filename
+
+A filename sweep flagged ~20 candidate duplicates. Reconstructing and hashing each record's
+full text found **zero true duplicates**, so nothing was deleted:
+
+- **` (1)` / ` (2)` suffixed OCR files are independent OCR passes of the same PDF.** Every
+  SHA-1 differs — one reads `ilac-MRA` where another omits it, `JT-083` vs `ЛТ-083`. They are
+  cross-checks against OCR error.
+- **`<batch>_CoA.txt` is a ~300-character digest; `<batch> CoA.txt` is the ~4,000-character
+  full transcription.** Different granularity, both useful for retrieval.
+- **`CJ072501 (P050252) 3.txt` is 107k characters** against 18k for its supposed duplicates —
+  a multi-report bundle, not a copy.
+- Bundle summaries, raw OCR, structured extracts and PP in-house CoAs are distinct document
+  layers for the same batch, never duplicates of one another.
+
+Rule going forward: delete only when two records are byte-identical after whitespace
+normalisation. Governance records `SOP_RAG_INGESTION_per_batch_folder_rule_v1.2.txt` and
+`DRIVE_INDEX_ImB_QC_COAs_batch_folders_v2.txt` carry this in the RAG; their v1.1/v1.0
+predecessors were retired.
 
 ## Ph.Eur. 11.5 Cannabis Flower Monograph (3028) — parameter coverage
-| Ph.Eur. parameter | Method | Lab | Coverage when STAGE A re-runs |
-|-------------------|--------|-----|-------------------------------|
-| Identification (cannabinoids) | HPLC/DAD 2.2.29 | Farmahem / UKIM | ✅ broad |
-| Assay Total THC / CBD / CBN | HPLC/DAD | Farmahem / UKIM | ✅ broad |
+
+| Ph.Eur. parameter | Method | Lab | Coverage |
+|-------------------|--------|-----|----------|
+| Identification (macro + micro) | 2.8.23 | UKIM | ✅ explicit per-sub-result on UKIM records |
+| Assay Total THC / CBD / CBN | 2.2.29 HPLC/DAD | Farmahem / UKIM | ✅ broad, with U |
 | Loss on drying | 2.2.32 | Farmahem / UKIM | ✅ broad |
-| Foreign matter | 2.8.2 | UKIM (DAB Beobachtung) | ⚠ in raw OCR — needs CoQ assembly |
+| Foreign matter | 2.8.2 | UKIM | ✅ on UKIM records (full compound criterion preserved) |
+| Mycotoxins (aflatoxins + OTA) | 2.8.18 | Farmahem / IPH | ✅ 197-series M panel + Bundle summaries |
 | Pesticides | 2.8.13 | IPH + State Phytosanitary | ⚠ raw OCR + Bundle summaries |
 | Heavy metals Cd/Pb/As/Hg | 2.4.27 | IPH | ⚠ raw OCR + Bundle summaries |
-| Mycotoxins (aflatoxins) | 2.8.18 | Farmahem / IPH | ⚠ raw OCR + Bundle summaries |
 | Microbial enumeration | 2.6.12 / 5.1.8 | IPH | ⚠ raw OCR + Bundle summaries |
 
-## CoQ assembly (after endpoint fix)
-Per production batch the CoQ gathers one result per Ph.Eur. 3028 parameter,
-each cited as **issuing lab + report doc-code + issue date**:
-- Cannabinoids/LoD → Farmahem `051-*-K/GS-26`, `100-*-K/GS-26`, or UKIM `ППК260xx`
-- Pesticides → State Phytosanitary `DFL` report or IPH report
-- Heavy metals → IPH report
-- Mycotoxins → Farmahem `*-M/25` or IPH report
-- Microbiology → IPH Microbiology `xxxx/xxxx/25`
-- Foreign matter → UKIM `ППК260xx` (DAB "Beobachtung" line)
+Where an external certificate prints results but no limit column, the applicable
+acceptance criterion is added from PP-QC-SPEC-IB-001 / Ph.Eur. 3028 and **labelled as
+added-for-review**, never presented as printed on the certificate.
 
-The Bundle_*.txt files in `staged_coas/` already carry a structured header
-that names lab + doc-code + date for each parameter — ready for a CoQ
-Builder agent to extract.
+## Pipeline gotchas (hard-won — read before scripting against Letta)
 
-## Run order (KVM4)
-```bash
-cd scripts/letta-imb-coas
-python3 ingest_imb_coas_v2.py a    # purge Errors + upload 47 staged (~2 min)
-python3 ingest_imb_coas_v2.py b    # GPT-4o Vision OCR for scans (~30-60 min)
-# verify: every file processing_status == Completed
+- **`run_from_source` schema derivation is recursive.** Letta derives a JSON schema
+  from submitted code and requires docstrings + type annotations on **nested**
+  functions too. Write **one top-level function with no nested `def`s**, or the call
+  is rejected before it runs. For repeat use, register the uploader once as a real
+  Letta tool (`operation=create`) and call it by name.
+- **Long multi-upload calls can return a transport error while still executing
+  server-side.** Always re-query file state before retrying, or you create duplicates.
+- **`error` state usually means the embedding key/quota, not the file.** Check the
+  OpenAI key first; a 429 flips every file to `error`.
+- **Redrive** = `DELETE {BASE}/v1/sources/{SID}/{file_id}` then re-upload.
+- Reading Drive PDFs: `get_file_metadata` returns the extracted text in
+  `contentSnippet` — cheaper than `read_file_content`, and far cheaper than
+  `download_file_content` (base64 blows up context).
+
+## Data integrity — absolute
+
+Transcribe only values actually printed. Never invent, infer, round or back-calculate
+a pharmaceutical result. Preserve `ND`, `<LOQ` and any printed `<value` verbatim. Leave
+absent fields blank. Where OCR is ambiguous, transcribe the best reading and attach a
+`Data-integrity note (OCR)` line — never silently normalise. Where a certificate is
+internally inconsistent, do not quietly "fix" it and do not assert an error without
+evidence: raise a QC discrepancy note and query the issuing laboratory.
+
+## File naming convention in this source
+```
+UKIM_PPK<no>_<Strain>_<batch>.txt
+Farmahem_<series>-<n>-<K|M|GS>_<Strain>_<batch>_<panel>.txt
+Bundle_<batchcode>_<Strain>_<Pnumber>_full_panel.txt
 ```

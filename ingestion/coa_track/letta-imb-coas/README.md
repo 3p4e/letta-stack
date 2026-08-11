@@ -12,8 +12,15 @@ C:\Users\Agent Zero\My Drive\1. PP\DRAFTS_IN_PROGRESS\EQP_RO\ROPQ\ImB_QC_COAs
 
 Letta resources created:
 
-- **Source:** `ImB_QC_COAs` (voyage-3-large, 1024d)
-- **Agent:** `imb_qc_coa_agent` (gpt-4o + voyage-3-large)
+- **Source:** `ImB_QC_COAs` — embeddings **OpenAI `text-embedding-3-small`, 1536d, chunk 300**
+- **Agent:** `imb_qc_coa_agent`
+
+> **Correction (verified against the live server, 2026-08-10):** `deploy.sh` provisions
+> the source with `voyage-3-large` (1024d), but the **live** `ImB_QC_COAs` source runs
+> **OpenAI `text-embedding-3-small` (1536d)** and the server holds **no Voyage key**.
+> Do not provision a Voyage key on the strength of this repo — check the live source
+> config first. Re-creating the source with a different embedding model would orphan
+> the existing 261 embedded files.
 
 ## Two ingestion modes
 
