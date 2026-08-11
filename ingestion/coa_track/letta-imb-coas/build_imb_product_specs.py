@@ -60,8 +60,20 @@ HTML = os.path.join(HERE, "exports", "PP_ImB_Product_Specifications.html")
 PDF = os.path.join(HERE, "exports", "PP_ImB_Product_Specifications.pdf")
 FONTS = "/usr/share/fonts/truetype/dejavu"
 
-DOC, ISSUED = "PP-QC-SPEC-002 v1.0 (proposed)", "11.08.2026"
+DOC, ISSUED = "PP-QC-SPEC-001 v5.7 (proposed, consolidated)", "11.08.2026"
 MONOGRAPH = "Ph. Eur. 11.5 Cannabis flos 07/2024:3028"
+
+# Ladder spacing notes, carried over from v5.6 where the spacing was not an even ladder.
+WHY = {
+    "Clemosa a bud":
+        "Five bands are needed to reach 8.02 %. A four-band ladder floored at 7.00 % "
+        "would leave only 1.02 % under the result, short of the quarter-range buffer.",
+    "Sleepy Joy":
+        "Spaced 6.00 / 6.00 / 5.00 / 5.25 rather than an even 5.00 ladder. An even ladder "
+        "breaking at 10.00 % would split 9.20 % into one band and 10.96 / 11.20 % into the "
+        "next, leaving margins of 0.96 % and 1.20 % — both under the buffer. This ladder "
+        "holds all three results in Spec IV with 1.45 % clear.",
+}
 
 # strain -> (abbr, provisional, ladder top-first, source document)
 LADDERS = {
@@ -209,8 +221,12 @@ def collect():
             if cp.STABILITY_RE.search(r["Parameter"] or ""):
                 continue
             v = cc.num(r["Result"].split("(")[0])
-            if v is not None:
-                vals.append(v)
+            if v is None:
+                continue
+            code = (r["Certificate Code"] or "").strip()
+            if code.lower().startswith("n/a"):
+                code = "PP in-house CoA"
+            vals.append((v, code, cp.issue_date(r["Issue Date"])))
         sh = tr.get(cc.norm_batch(b["batch"])) or {}
         per[st].append({"batch": b["batch"], "p": (b["p_number"] or "").strip(),
                         "tranche": (sh.get("tranche") or "—").strip(),
@@ -227,6 +243,7 @@ def band_of(ladder, v):
 
 def main():
     per = collect()
+    checked = [0, 0, 0]        # results seen, outside ladder, sub-buffer margin
     h = ["<!DOCTYPE html><html><head><meta charset='utf-8'>"
          "<title>PP ImB Dry Cannabis Flower — Product Specifications</title>"
          "<style>%s</style></head><body>" % CSS]
@@ -246,7 +263,7 @@ def main():
         entries = sorted(per.get(strain, []), key=lambda e: e["batch"])
         counts = defaultdict(int)
         for e in entries:
-            for v in e["vals"]:
+            for v, _c, _d in e["vals"]:
                 r = band_of(ladder, v)
                 if r:
                     counts[r] += 1
@@ -265,6 +282,8 @@ def main():
 
         h.append("<h3>2 · Potency specification (Total Δ⁹-THC, %% w/w) — source %s</h3>"
                  % src)
+        if strain in WHY:
+            h.append("<p class='small'><b>Ladder spacing.</b> %s</p>" % WHY[strain])
         h.append("<table><thead><tr><th>Specification</th><th>Product code</th>"
                  "<th>Nominal</th><th>Tolerance</th><th>Range</th>"
                  "<th>Batches</th></tr></thead><tbody>")
@@ -290,31 +309,60 @@ def main():
             last = grp
         h.append("</tbody></table>")
 
-        h.append("<h3>4 · Batch history</h3>")
+        h.append("<h3>4 · Batch history and specification verification</h3>")
         if entries:
-            h.append("<table><thead><tr><th>Batch</th><th>P-Number</th><th>Tranche</th>"
-                     "<th>Released % w/w</th><th>Certificate results</th>"
-                     "<th>Band(s)</th></tr></thead><tbody>")
+            h.append("<table><thead><tr><th>Batch</th><th>P-No.</th><th>Tr.</th>"
+                     "<th>Released</th><th>Result</th><th>Certificate № · issued</th>"
+                     "<th>Falls in</th><th>Margin lo / hi</th></tr></thead><tbody>")
             for e in entries:
-                bands = sorted({band_of(ladder, v) or "—" for v in e["vals"]})
-                h.append("<tr><td>%s</td><td>%s</td><td>T%s</td><td class='r'>%s</td>"
-                         "<td class='r'>%s</td><td>%s</td></tr>"
-                         % (e["batch"], e["p"] or "—", e["tranche"], e["released"] or "—",
-                            " · ".join("%.2f" % v for v in e["vals"]) or "—",
-                            ", ".join("Spec %s" % b for b in bands) if e["vals"] else "—"))
+                vals = e["vals"] or [(None, "no Total Δ⁹-THC result on file", "")]
+                span = len(vals)
+                for j, (v, code, date) in enumerate(vals):
+                    h.append("<tr>")
+                    if j == 0:
+                        h.append("<td rowspan='%d'>%s</td><td rowspan='%d'>%s</td>"
+                                 "<td rowspan='%d'>T%s</td>"
+                                 "<td rowspan='%d' class='r'>%s</td>"
+                                 % (span, e["batch"], span, e["p"] or "—", span,
+                                    e["tranche"], span, e["released"] or "—"))
+                    if v is None:
+                        h.append("<td class='r'>—</td><td colspan='3'>%s</td></tr>" % code)
+                        continue
+                    roman = band_of(ladder, v)
+                    checked[0] += 1
+                    if roman is None:
+                        checked[1] += 1
+                        h.append("<td class='r'>%.2f</td><td>%s · %s</td>"
+                                 "<td class='tight'>OUTSIDE LADDER</td>"
+                                 "<td class='r'>—</td></tr>" % (v, code, date))
+                        continue
+                    lo, hi = next((l, hh) for r2, _n, l, hh in ladder if r2 == roman)
+                    mlo, mhi, buf = v - lo, hi - v, (hi - lo) / 4.0
+                    flag = ""
+                    if mlo < buf:
+                        checked[2] += 1
+                        flag = ("<span class='tight'>▲ tight: %.2f%% above the Spec %s "
+                                "lower limit</span>" % (mlo, roman))
+                    h.append("<td class='r'>%.2f</td><td>%s · %s</td><td>Spec %s</td>"
+                             "<td class='r'>%.2f / %.2f %s</td></tr>"
+                             % (v, code, date, roman, mlo, mhi, flag))
             h.append("</tbody></table>")
         else:
             h.append("<p class='small'>No batches on the register for this strain.</p>")
         h.append("</div>")
 
-    h.append("<div class='foot'>%d strain specifications. Potency ladders carried "
+    h.append("<div class='foot'>%d strain specifications. Verification: %d certificate "
+             "results checked against the ladders — %d inside band, %d outside, %d with a "
+             "sub-buffer low-side margin (flagged inline). Potency ladders carried "
              "unchanged from PP-QC-SPEC-001 v5.5 (13 strains) and v5.6 (7 strains); the "
              "quality panel is common to all strains and reflects the limits already "
              "applied, against %s. Strain names are settled: Cap Junky (Capulator × Seed "
              "Junky Genetics) and Permanent Marker, both consistent across the register "
              "and these documents. PP-QC-SPEC-001 v5.5 in Drive still carries the old "
              "&ldquo;Cap Junkie&rdquo; heading and needs the same edit."
-             "</div></body></html>" % (len(LADDERS), MONOGRAPH))
+             "</div></body></html>"
+             % (len(LADDERS), checked[0], checked[0] - checked[1], checked[1], checked[2],
+                MONOGRAPH))
 
     with open(HTML, "w", encoding="utf-8") as fh:
         fh.write("\n".join(h))
@@ -324,6 +372,8 @@ def main():
     print("Wrote %s (%d bytes)" % (PDF, os.path.getsize(PDF)))
     print("strains: %d   panel parameters: %d   batches covered: %d"
           % (len(LADDERS), len(PANEL), sum(len(per.get(s, [])) for s in LADDERS)))
+    print("verification: %d results checked, %d outside band, %d sub-buffer margin"
+          % (checked[0], checked[1], checked[2]))
     return 0
 
 
@@ -375,7 +425,7 @@ def build_pdf(per):
         entries = sorted(per.get(strain, []), key=lambda e: e["batch"])
         counts = defaultdict(int)
         for e in entries:
-            for v in e["vals"]:
+            for v, _c, _d in e["vals"]:
                 r = band_of(ladder, v)
                 if r:
                     counts[r] += 1
@@ -411,6 +461,8 @@ def build_pdf(per):
         t = Table(d, colWidths=[22 * mm, 38 * mm, 22 * mm, 34 * mm, 40 * mm, 24 * mm])
         t.setStyle(TableStyle(grid + [("BACKGROUND", (0, 0), (-1, 0), HEADBG),
                                       ("ALIGN", (2, 1), (-1, -1), "RIGHT")] + hls))
+        if strain in WHY:
+            blk.append(Paragraph("<i>Ladder spacing.</i> %s" % WHY[strain], small))
         blk += [t, Paragraph("3 · Quality specification", h3)]
 
         d = [[Paragraph(x, hd) for x in ("Group", "Parameter", "Acceptance criterion",
@@ -423,23 +475,39 @@ def build_pdf(per):
         t = Table(d, colWidths=[27 * mm, 42 * mm, 62 * mm, 49 * mm], repeatRows=1)
         t.setStyle(TableStyle(grid + [("BACKGROUND", (0, 0), (-1, 0), HEADBG),
                                       ("BACKGROUND", (0, 1), (0, -1), GRPBG)]))
-        blk += [t, Paragraph("4 · Batch history", h3)]
+        blk += [t, Paragraph("4 · Batch history and specification verification", h3)]
 
         if entries:
-            d = [[Paragraph(x, hd) for x in ("Batch", "P-Number", "Tranche", "Released",
-                                             "Certificate results", "Band(s)")]]
+            d = [[Paragraph(x, hd) for x in ("Batch", "P-No.", "Tr.", "Released",
+                                             "Result", "Certificate № · issued",
+                                             "Falls in", "Margin lo / hi")]]
+            spans, rr = [], 1
             for e in entries:
-                bands = sorted({band_of(ladder, v) or "—" for v in e["vals"]})
-                d.append([Paragraph(e["batch"], body), Paragraph(e["p"] or "—", body),
-                          Paragraph("T%s" % e["tranche"], body),
-                          Paragraph(e["released"] or "—", body),
-                          Paragraph(" · ".join("%.2f" % v for v in e["vals"]) or "—", body),
-                          Paragraph(", ".join("Spec %s" % b for b in bands)
-                                    if e["vals"] else "—", body)])
-            t = Table(d, colWidths=[30 * mm, 24 * mm, 18 * mm, 22 * mm, 48 * mm, 38 * mm],
-                      repeatRows=1)
+                vals = e["vals"] or [(None, "no result on file", "")]
+                for j, (v, code, date) in enumerate(vals):
+                    roman = band_of(ladder, v) if v is not None else None
+                    marg = "—"
+                    if roman:
+                        lo, hi = next((l, hh) for r2, _n, l, hh in ladder if r2 == roman)
+                        marg = "%.2f / %.2f" % (v - lo, hi - v)
+                    d.append([
+                        Paragraph(e["batch"], body) if j == 0 else "",
+                        Paragraph(e["p"] or "—", body) if j == 0 else "",
+                        Paragraph("T%s" % e["tranche"], body) if j == 0 else "",
+                        Paragraph(e["released"] or "—", body) if j == 0 else "",
+                        Paragraph("%.2f" % v if v is not None else "—", body),
+                        Paragraph("%s · %s" % (code, date), small),
+                        Paragraph("Spec %s" % roman if roman else "—", body),
+                        Paragraph(marg, body)])
+                if len(vals) > 1:
+                    spans += [("SPAN", (c, rr), (c, rr + len(vals) - 1))
+                              for c in (0, 1, 2, 3)]
+                rr += len(vals)
+            t = Table(d, colWidths=[26 * mm, 20 * mm, 11 * mm, 18 * mm, 15 * mm,
+                                    48 * mm, 18 * mm, 24 * mm], repeatRows=1)
             t.setStyle(TableStyle(grid + [("BACKGROUND", (0, 0), (-1, 0), HEADBG),
-                                          ("ALIGN", (3, 1), (4, -1), "RIGHT")]))
+                                          ("ALIGN", (3, 1), (4, -1), "RIGHT"),
+                                          ("ALIGN", (7, 1), (7, -1), "RIGHT")] + spans))
             blk.append(t)
         else:
             blk.append(Paragraph("No batches on the register for this strain.", small))
