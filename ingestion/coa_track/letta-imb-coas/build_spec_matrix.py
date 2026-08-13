@@ -370,7 +370,8 @@ def write_readme(wb, rows, index_rows, n_lines, n_missing):
         line(r, "•  " + t); ws.row_dimensions[r].height = 24; r += 1
 
     if EXTRA_COVER:
-        heading, headers, widths, data = EXTRA_COVER
+        heading, headers, widths, data = EXTRA_COVER[:4]
+        cover_note = EXTRA_COVER[4] if len(EXTRA_COVER) > 4 else None
         r += 1
         line(r, heading, 9, bold=True, color=NAVY); r += 1
         for ci, (h, wd) in enumerate(zip(headers, widths), start=1):
@@ -391,6 +392,10 @@ def write_readme(wb, rows, index_rows, n_lines, n_missing):
                     horizontal="right" if isinstance(v, (int, float)) else "left",
                     vertical="top")
                 c.border = border
+            r += 1
+        if cover_note:
+            line(r, cover_note, italic=True, color="8A6D1C")
+            ws.row_dimensions[r].height = 24
             r += 1
 
     r += 1
