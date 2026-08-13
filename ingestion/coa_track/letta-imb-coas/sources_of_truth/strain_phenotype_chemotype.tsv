@@ -1,0 +1,28 @@
+# Phenotype / Chemotype evidence for the QCSP 001 cultivars, extracted 13.08.2026 from
+# Drive folder 1DVr0AYtH35cuzKgqvopSRkqFo46fbkaf (14 files) on QC Manager instruction.
+# Phenotype = as printed by the breeder/datasheet named in "source"; nothing inferred.
+# Chemotype I (THC-dominant) marked "assay" is additionally supported by our own eCoA
+# potency data in ImB_QC_COAs (THC >> CBD, CBD <= 1%) for every cultivar.
+# status: FULL = phenotype + chemotype found; CHEMO-ONLY = chemotype evidence only;
+# MISSING = no file in the folder covers the cultivar; CONFLICT = sources disagree.
+abbr	strain	phenotype_printed	chemotype	status	source
+BG	Blue Gelato	Indica-dominant hybrid (ratio not printed)	I - THC (up to 27%)	FULL	Strains, specs. EN.pdf
+OPM	Orange Punch Mimosa	65% Indica : 35% Sativa (Barney's Farm, Mimosa x Orange Punch)	I - THC (up to 30%)	FULL	Strains, specs. EN.pdf
+GG	Gorilla Glue	CONFLICT: indica-dominant (Strains specs; Superstrains "Mostly Indica") vs Maverick's "65% Sativa : 35% Indica"; also Critical Gorilla 90% Indica : 10% Sativa in same file	I - THC (24-28%; CBD ~1%)	CONFLICT	Strains, specs. EN.pdf + Critical Gorilla Glue.docx
+BSS	Blue Sunset Sherbet	65% Indica : 35% Sativa (Sunset Sherbet x Purple Punch)	I - THC (up to 28%)	FULL	Strains, specs. EN.pdf
+HPA	High Pro Amnesia	80% Sativa : 20% Indica (Amnesia x Neville's Haze)	I - THC (up to 30%)	FULL	Strains, specs. EN.pdf
+CC	Cash Cow	Mostly Indica, 70% Indica : 30% Sativa (Anesia, Big Bazooka x Lost Tribe)	I - THC (32%)	FULL	Cash Cow.docx
+FB	Fat Bastard	Hybrid, ratio not printed (Sensible Seeds, Goldmember x Monkey Spunk)	I - THC (up to 38%)	FULL	Fat Bastard.docx
+GP	Grape Pie	Indica-dominant Hybrid (Segra/Cannarado, Grape Stomper x Cherry Pie)	I - THC (25%, CBD <1%)	FULL	Grape PIE.docx
+JD	Jelly Donutz	Mostly Sativa, 60% Sativa : 40% Indica (Humboldt Seed Co)	I - THC (30-35%)	FULL	Jelly Donutz.docx
+MB	Motor Breath	Indica-dominant Hybrid (Segra/Pisces, Chemdog x SFV OG)	I - THC (25%, CBD <1%)	FULL	Motor Bretah.docx
+SCR	Scrambler	Mostly Sativa (Sensible Seeds "Scrambler Haze", Cafe Racer x Santa Muerte)	I - THC (up to 36%)	FULL	Scrambler.docx
+WC	Wedding Crasher	NOT IN FILES (US R&D CoA holds no phenotype)	I - THC (24.26%, CBD <LOQ; PREE CoA + assay)	CHEMO-ONLY	18474 R&D Wedding Crasher.pdf
+CLE	Clemosa a bud	NOT IN FILES (US CoA holds no phenotype)	I - THC (28.16%, CBD <LOQ; PREE CoA + assay)	CHEMO-ONLY	20173 (20710) CLM A Bud.pdf
+CJ	Cap Junky	NOT IN FILES (US CoA holds no phenotype)	I - THC (27.91%, CBD <LOQ; PREE CoA + assay)	CHEMO-ONLY	Cap_Junky.pdf
+AB	Apple and Banana	NOT IN FILES	I - THC (assay)	MISSING	—
+GRC	Graps & Creme	NOT IN FILES	I - THC (assay)	MISSING	—
+J31	Jokerz 31	NOT IN FILES	I - THC (assay)	MISSING	—
+KC	Kush Crasher	NOT IN FILES (folder holds "Kandy Kush" — indica-leaning hybrid, OG Kush x Train Wreck — possible match, NEEDS QC CONFIRMATION)	I - THC (assay)	MISSING	Kandy Kush.docx?
+PM	Permanent Marker	NOT IN FILES	I - THC (assay)	MISSING	—
+SJ	Sleepy Joy	NOT IN FILES (folder holds "RS11"/Rainbow Sherbert #11 — balanced Indica/Sativa hybrid — possible match, NEEDS QC CONFIRMATION)	I - THC (assay)	MISSING	RS11.docx?
