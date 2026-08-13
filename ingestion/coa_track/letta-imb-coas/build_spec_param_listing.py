@@ -91,7 +91,8 @@ LAB_ABBR = [
     ("purely plant", "PP"), ("in-house", "PP"),
 ]
 
-UNC_RE = re.compile(r"\(\s*[Uu]\s*[:=]?\s*[\d.,]+\s*(?:%?\s*w/w)?\s*\)")
+UNC_RE = re.compile(r"\(\s*[Uu]\s*[:=]?\s*±?\s*[\d.,]+\s*%?\s*(?:w/w)?"
+                    r"\s*(?:,\s*k\s*=\s*\d+)?\s*\)")
 NUM_RE = re.compile(r"^\s*([<≤>≥]?\s*\d+(?:[.,]\d+)?)\s*"
                     r"(%\s*w/w|%|µg/kg|ug/kg|mg/kg|CFU/g|cfu/g)?\s*$")
 # batch codes embed MMYY; J31 is the one prefix that itself contains digits

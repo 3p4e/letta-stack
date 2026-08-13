@@ -60,7 +60,9 @@ OUT_TSV = os.path.join(HERE, "exports", "PP_Spec_Parameter_Matrix.tsv")
 REF_LAB = {"UKIM": "CNP"}
 
 COQ_YEAR = 2026          # calendar year the CoQs would be created in
-ROUND_GAP_DAYS = 90      # a longer gap between certificate dates opens a new round
+ROUND_GAP_DAYS = 60      # a longer gap between certificate dates opens a new round
+                         # (observed campaigns span <=50 days internally; the nearest
+                         # distinct re-test campaign sits 88 days out)
 
 # (item №, short column title, unit shown in the header, acceptance criterion)
 MATRIX_PANEL = [
@@ -164,17 +166,22 @@ def ladder_for(strain):
 
 
 def grade_line(strain, value):
-    """'Grade III, 15.00 – 20.00' for a numeric assay; '—' for qualifiers/no ladder."""
+    """'Grade III, 15.00 – 20.00' for a numeric assay; '—' for qualifiers/no ladder.
+
+    Tolerance mirrors build_spec_param_listing.batch_grade exactly — qualified values
+    (<, ≤, LOQ, BLQ) carry no grade; otherwise the first number in the string is the
+    assay — so the per-assay grades here always union to the listing's batch grade.
+    """
     ladder = ladder_for(strain)
     if ladder is None:
         return "—"
     v = value.strip()
-    if v.startswith(("<", "≤")) or not v:
+    if not v or any(t in v.lower() for t in ("<", "≤", "loq", "blq")):
         return "—"
-    m = re.match(r"^\d+(?:\.\d+)?$", v)
+    m = re.search(r"\d+(?:\.\d+)?", v)
     if not m:
         return "—"
-    g = hs.grade_of(ladder, float(v))
+    g = hs.grade_of(ladder, float(m.group(0)))
     if g is None:
         return "outside every grade"
     for label, _nominal, floor, cap in ladder:
