@@ -72,6 +72,13 @@ def main(tranche="1"):
     rows = bm.pivot(subset, icoa=icoa_map) + \
         [stub_batch(want[k]) for k in missing_keys]
     rows.sort(key=lambda b: bl.prod_key(b["batch"]))
+
+    # CoQ plan is computed on the MASTER rows (one issuance event per testing
+    # round, results-complete chronology), so this workbook cites identical codes
+    coq_events, cmap = bm.coq_plan(bm.pivot(listing, icoa=icoa_map))
+    bm.apply_coq(rows, cmap)
+    in_tranche = {b["batch"] for b in rows}
+    tranche_events = [e for e in coq_events if e["batch"] in in_tranche]
     n_declared = sum(1 for b in rows for rnd in b["rounds"]
                      for no, _t, _u, _ac in bm.MATRIX_PANEL
                      if rnd[no].get("declared"))
@@ -125,7 +132,8 @@ def main(tranche="1"):
             ["Batch", "Strain", "THC bracket", "Declared THC %", "Volume (kg)"],
             [13, 22, 12, 14, 12],
             overview, note)
-        bm.write_xlsx(rows, index_rows, n_results, n_missing)
+        bm.write_xlsx(rows, index_rows, n_results, n_missing,
+                      coq_events=tranche_events)
         bm.write_tsv(rows)
     finally:
         for k, v in saved.items():

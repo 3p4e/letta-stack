@@ -23,11 +23,17 @@ The specification-document and grade identity columns are gone: the grade sits i
 cell immediately right of each THC assay, as classification of that assay against the
 cultivar's QCSP 001 v.02 ladder — "Grade III, 15.00 – 20.00" — never a disposition.
 
-Column C carries the CoQ document code each batch would need. QCSOP 012 v.03 §6.4.2 sets
-the convention — CoQ-PP-[YYYY]-[NNNN], the next sequential number for the certificate
-type within the calendar year, drawn from the Certificate Issuance Register (QCLB 020) —
-so the codes here are proposed sequential assignments in chronological batch order,
-pending the register entries the QC Manager makes at final approval.
+Column C carries the proposed CoQ document code of each TESTING ROUND — one issuance
+event per sub-row. The initial round's CoQ issues on completion of the initial QC
+sampling; a resampling round produces a superseding CoQ with a new issue date that
+carries the resampled parameters' new results and reuses the non-resampled results from
+the earlier sampling's eCoAs (time-invariant parameters such as heavy metals and
+pesticides). QCSOP 012 v.03 §6.4.2 sets the convention — CoQ-PP-[YYYY]-[NNNN], the next
+sequential number for the certificate type within the calendar year, drawn from the
+Certificate Issuance Register (QCLB 020) — so codes are proposed in results-complete
+chronology across all events, pending the register entries the QC Manager makes at
+final approval. The 'CoQ issuance plan' sheet spells out each event's basis date,
+resampled vs carried-forward parameters and the supersession chain (§6.7).
 
 Workbook layout: a "Read me" cover sheet carries the reading guide, laboratory legend,
 house-rule notes and a per-parameter coverage table, so the matrix itself stays clean; the
@@ -364,8 +370,6 @@ def pivot(listing, icoa=None):
             if spans[ri]:
                 tag += " · " + month_span(min(spans[ri]), max(spans[ri]))
             b["round_labels"].append(tag)
-        b["coq"] = "CoQ-PP-%d-%04d" % (COQ_YEAR, b["chrono"])
-
         # declared in-house determinations, entered as Conforms citing the proposed
         # iCoA: Foreign Matter (per SOP prior to final QC sampling and packaging) and
         # macroscopic + microscopic ID (per specification after final QC sampling —
@@ -380,6 +384,65 @@ def pivot(listing, icoa=None):
                 cell["links"].append("")
                 cell["declared"] = True
     return list(batches.values())
+
+
+def coq_plan(master_rows):
+    """One CoQ issuance event per testing round of every batch, in true chronology.
+
+    Per the QC Manager's instruction (13.08.2026, BSS1024 example): a CoQ is issued
+    on completion of the initial QC sampling round; where resampling (R) was later
+    requested and performed for certain parameters, a second CoQ is issued with a
+    new issue date — it carries the resampled parameters' new results and REUSES the
+    non-resampled parameters' results from the earlier sampling's eCoAs (heavy
+    metals, pesticides and the like do not change with time) — and supersedes the
+    earlier CoQ per QCSOP 012 v.03 §6.7.
+
+    Events are ordered by the date each round's results became complete (the latest
+    certificate issue date within the round, declared/proposed iCoAs excluded) and
+    numbered CoQ-PP-YYYY-NNNN in that order — one sequential series, proposed
+    pending the Certificate Issuance Register (QCLB 020). Always compute this on
+    the MASTER rows so every subset workbook cites identical codes.
+
+    Returns (events, map) with map keyed by (batch, round_index).
+    """
+    panel = [no for no, _t, _u, _ac in MATRIX_PANEL]
+    events = []
+    for b in master_rows:
+        for ri, rnd in enumerate(b["rounds"]):
+            dates = [parse_date(ref.split(", ")[-2])
+                     for no in panel for ref in rnd[no]["refs"]
+                     if "(proposed)" not in ref]
+            dates = [d for d in dates if d]
+            new_items = [no for no in panel if rnd[no]["values"]]
+            prior = {no for rj in range(ri) for no in panel
+                     if b["rounds"][rj][no]["values"]}
+            carried = [no for no in panel if no in prior and no not in new_items]
+            covered = set(new_items) | prior
+            events.append({
+                "batch": b["batch"], "prod": b["prod"], "strain": b["strain"],
+                "chrono": b["chrono"], "ri": ri,
+                "round_label": b["round_labels"][ri],
+                "ready": max(dates) if dates else None,
+                "new": new_items, "carried": carried,
+                "missing": [no for no in panel if no not in covered],
+            })
+    far = datetime.date(9999, 12, 31)
+    events.sort(key=lambda e: (e["ready"] or far, e["chrono"], e["ri"]))
+    for i, e in enumerate(events, start=1):
+        e["code"] = "CoQ-PP-%d-%04d" % (COQ_YEAR, i)
+    cmap = {(e["batch"], e["ri"]): e for e in events}
+    for e in events:
+        e["supersedes"] = cmap[(e["batch"], e["ri"] - 1)]["code"] if e["ri"] else ""
+    return events, cmap
+
+
+def apply_coq(rows, cmap):
+    """Attach each sub-row's proposed CoQ code; batches outside the plan get '—'."""
+    for b in rows:
+        b["coq_codes"] = [
+            cmap.get((b["batch"], ri), {}).get("code", "—")
+            for ri in range(len(b["rounds"]))
+        ]
 
 
 def cert_index(listing):
@@ -539,11 +602,19 @@ def write_readme(wb, rows, index_rows, n_lines, n_missing):
         "'Missing / not tested' spans all sub-rows when the knowledgebase holds no "
         "result for that parameter; '—' marks a parameter tested in another round of "
         "the same batch, but not this one.",
-        "Column C proposes the CoQ document code per QCSOP 012 v.03 §6.4.2 "
-        "(CoQ-PP-[YYYY]-[NNNN], sequential per calendar year). Final numbers are "
-        "assigned from the Certificate Issuance Register (QCLB 020) at approval — if "
-        "any 2026 CoQ numbers are already consumed there, the sequence starts after "
-        "the last used one.",
+        "Column C proposes the CoQ document code of each TESTING ROUND — one CoQ "
+        "issuance event per sub-row, per QCSOP 012 v.03 §6.4.2 (CoQ-PP-[YYYY]-"
+        "[NNNN], one sequential series per calendar year). The initial round's CoQ "
+        "issues on completion of the initial QC sampling; a resampling (R) round "
+        "produces a superseding CoQ with a new issue date that carries the "
+        "resampled parameters' new results and reuses the non-resampled results "
+        "from the earlier sampling's eCoAs (time-invariant parameters such as "
+        "heavy metals and pesticides). Codes run in results-complete chronology — "
+        "see the 'CoQ issuance plan' sheet for each event's basis date, resampled "
+        "vs carried-forward parameters and supersession chain. Final numbers are "
+        "assigned from the Certificate Issuance Register (QCLB 020) at approval — "
+        "if any %d CoQ numbers are already consumed there, the sequence starts "
+        "after the last used one." % COQ_YEAR,
     ]:
         line(r, "•  " + t); ws.row_dimensions[r].height = 32; r += 1
 
@@ -592,7 +663,7 @@ def write_readme(wb, rows, index_rows, n_lines, n_missing):
     return ws
 
 
-def write_xlsx(rows, index_rows, n_lines, n_missing):
+def write_xlsx(rows, index_rows, n_lines, n_missing, coq_events=None):
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "Spec matrix"
@@ -662,9 +733,19 @@ def write_xlsx(rows, index_rows, n_lines, n_missing):
         fill = BAND if band else None
         r_top, r_bot = r, r + n_r - 1
 
-        ident = [b["chrono"], b["prod"], b["coq"], b["batch"], b["p"], b["strain"],
+        ident = [b["chrono"], b["prod"], None, b["batch"], b["p"], b["strain"],
                  b["code"]]
         for cidx, v in enumerate(ident, start=1):
+            if cidx == 3:
+                # the CoQ code belongs to the testing round, not the batch — one
+                # issuance event per sub-row, so no vertical merge here
+                for ri in range(n_r):
+                    c = put(r_top + ri, cidx,
+                            b.get("coq_codes", ["—"] * n_r)[ri], color=INK)
+                    c.alignment = Alignment(vertical="top", wrap_text=True)
+                if fill:
+                    fill_range(r_top, cidx, r_bot, cidx, fill)
+                continue
             if n_r > 1:
                 ws.merge_cells(start_row=r_top, start_column=cidx,
                                end_row=r_bot, end_column=cidx)
@@ -771,7 +852,69 @@ def write_xlsx(rows, index_rows, n_lines, n_missing):
     ws.oddFooter.center.text = "data as transcribed from the eCoA scans"
     ws.oddFooter.right.text = "Page &P of &N"
 
-    # sheet 3 — the proposed iCoA issuance plan, chronological
+    # sheet 3 — the proposed CoQ issuance plan: one event per testing round
+    if coq_events:
+        wsq = wb.create_sheet("CoQ issuance plan")
+        wsq.sheet_properties.tabColor = NAVY
+        wsq.sheet_view.showGridLines = False
+        wsq.merge_cells(start_row=1, start_column=1, end_row=1, end_column=11)
+        c = wsq.cell(1, 1, (
+            "Proposed CoQ issuance plan — one Certificate of Quality per testing "
+            "round of each batch, in results-complete chronology (the latest "
+            "certificate issue date within the round; declared iCoAs excluded from "
+            "the basis date). The initial round's CoQ issues on completion of the "
+            "initial QC sampling; a resampling (R) round produces a superseding CoQ "
+            "with a new issue date carrying the resampled parameters' new results "
+            "and reusing the non-resampled results from the earlier sampling's "
+            "eCoAs (time-invariant parameters such as heavy metals and pesticides "
+            "— 'Carried forward' below). Supersession per QCSOP 012 v.03 §6.7 "
+            "('Supersedes [original] — reason: resampling'). Codes are proposed "
+            "pending the Certificate Issuance Register (QCLB 020)."))
+        c.font = Font(italic=True, color="555555", **ARIAL)
+        c.alignment = Alignment(wrap_text=True, vertical="top")
+        wsq.row_dimensions[1].height = 50
+        heads = [("№", 5), ("CoQ code (proposed)", 19), ("Results complete", 13),
+                 ("Production", 10), ("Batch", 13), ("Strain", 17), ("Round", 13),
+                 ("Newly tested / resampled (items)", 26),
+                 ("Carried forward (items)", 22), ("Not covered (items)", 20),
+                 ("Supersedes", 19)]
+        for cidx, (h, w) in enumerate(heads, start=1):
+            c = wsq.cell(2, cidx, h)
+            c.font = Font(bold=True, color="FFFFFF", **ARIAL)
+            c.fill = PatternFill("solid", start_color=NAVY)
+            c.alignment = Alignment(horizontal="center", vertical="center",
+                                    wrap_text=True)
+            c.border = border
+            wsq.column_dimensions[get_column_letter(cidx)].width = w
+        for i, e in enumerate(coq_events, start=1):
+            ready = (e["ready"].strftime("%d.%m.%Y") if e["ready"]
+                     else "date not printed")
+            resample = e["ri"] > 0
+            vals = [int(e["code"][-4:]), e["code"], ready, e["prod"], e["batch"],
+                    e["strain"], e["round_label"], ", ".join(e["new"]) or "—",
+                    ", ".join(e["carried"]) or ("—" if not resample else "—"),
+                    ", ".join(e["missing"]) or "—", e["supersedes"] or "—"]
+            for cidx, v in enumerate(vals, start=1):
+                c = wsq.cell(2 + i, cidx, v)
+                c.font = Font(color=INK, bold=(cidx == 2 and resample), **ARIAL)
+                c.alignment = Alignment(
+                    vertical="top", wrap_text=(cidx in (8, 9, 10)),
+                    horizontal="center" if cidx in (1, 3, 4, 7) else "left")
+                c.border = border
+            if resample:
+                for cidx in range(1, len(heads) + 1):
+                    wsq.cell(2 + i, cidx).fill = PatternFill(
+                        "solid", start_color=GOLD_TINT)
+        wsq.freeze_panes = "A3"
+        wsq.auto_filter.ref = "A2:K%d" % (len(coq_events) + 2)
+        wsq.page_setup.orientation = "landscape"
+        wsq.page_setup.paperSize = wsq.PAPERSIZE_A4
+        wsq.page_setup.fitToWidth = 1
+        wsq.page_setup.fitToHeight = 0
+        wsq.sheet_properties.pageSetUpPr = PageSetupProperties(fitToPage=True)
+        wsq.print_title_rows = "2:2"
+
+    # sheet 4 — the proposed iCoA issuance plan, chronological
     icoa_rows = proposed_icoa_rows(rows)
     if icoa_rows:
         wsi = wb.create_sheet("iCoA issuance list")
@@ -895,11 +1038,12 @@ def write_tsv(rows):
         for b in rows:
             n_r = len(b["rounds"])
             for ri in range(n_r):
+                coq = b.get("coq_codes", ["—"] * n_r)[ri]
                 if ri == 0:
-                    line = [b["chrono"], b["prod"], b["coq"], b["batch"], b["p"],
+                    line = [b["chrono"], b["prod"], coq, b["batch"], b["p"],
                             b["strain"], b["code"]]
                 else:
-                    line = [""] * N_ID
+                    line = ["", "", coq, "", "", "", ""]
                 line.append(b["round_labels"][ri])
                 for no, _t, _u, _ac in MATRIX_PANEL:
                     cell = b["rounds"][ri][no]
@@ -922,6 +1066,8 @@ def write_tsv(rows):
 def main():
     listing, stats, n_batches = bl.build_rows()
     rows = pivot(listing)
+    coq_events, cmap = coq_plan(rows)
+    apply_coq(rows, cmap)
     index_rows = cert_index(listing) + proposed_icoa_rows(rows)
 
     # the matrix must hold exactly the fact-checked totals — nothing lost, nothing
@@ -942,14 +1088,15 @@ def main():
     n_rounds = sum(len(b["rounds"]) for b in rows)
     multi = [(b["batch"], len(b["rounds"])) for b in rows if len(b["rounds"]) > 1]
 
-    write_xlsx(rows, index_rows, n_lines, n_missing)
+    write_xlsx(rows, index_rows, n_lines, n_missing, coq_events=coq_events)
     write_tsv(rows)
 
     print("batches: %d   sub-rows: %d   multi-round batches: %d   "
           "result lines: %d (%d transcribed + %d declared in-house)   "
-          "missing cells: %d   certs: %d"
+          "missing cells: %d   certs: %d   CoQ events: %d (%d superseding)"
           % (len(rows), n_rounds, len(multi), n_lines, n_lines - n_declared,
-             n_declared, n_missing, len(index_rows)))
+             n_declared, n_missing, len(index_rows), len(coq_events),
+             sum(1 for e in coq_events if e["supersedes"])))
     for name, k in multi:
         print("  %s: %d rounds" % (name, k))
     print("wrote %s (%d KB)" % (os.path.relpath(OUT_XLSX, HERE),
