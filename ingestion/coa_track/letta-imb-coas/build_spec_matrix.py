@@ -80,6 +80,9 @@ LAB_LEGEND = [
 ]
 
 COQ_YEAR = 2026          # calendar year the CoQs would be created in
+ICOA_YEAR = 2026         # calendar year the Foreign-Matter iCoAs would be issued in
+ICOA_DATE = BUILD_DATE   # proposed issue date for those iCoAs
+FM_ITEM = "7"            # Foreign Matter — the spec item covered by declared iCoAs
 ROUND_GAP_DAYS = 60      # a longer gap between certificate dates opens a new round
 
 # (item №, short column title, unit shown in the header, acceptance criterion)
@@ -215,8 +218,103 @@ def grade_line(strain, value):
     return "Grade %s" % g
 
 
-def pivot(listing):
-    """listing rows -> ordered batches, each with testing rounds of per-item cells."""
+ID_ITEMS = ("1", "2")    # macroscopic + microscopic ID — one combined iCoA per batch
+FM_SCOPE = "Foreign Matter (prior to final QC sampling)"
+ID_SCOPE = "Macroscopic + Microscopic ID (after final QC sampling)"
+
+
+def icoa_assignments(full_listing):
+    """batch -> {'fm': code|None, 'id': code|None} — the proposed iCoA issuance plan.
+
+    Per the QC Manager's instructions of 13.08.2026: Foreign Matter was determined
+    in-house for every batch per SOP prior to final QC sampling and packaging, and
+    macroscopic + microscopic identification per specification was performed in-house
+    after final QC sampling — all with passing results. Those determinations are to
+    be issued as iCoAs so the CoQ can cite a source certificate: one FM iCoA where no
+    Foreign Matter is on file, and one combined ID iCoA covering both identification
+    tests wherever either is not already on file.
+
+    QCSOP 012 v.03 gives the iCoA type ONE sequential series per calendar year (from
+    the Certificate Issuance Register, QCLB 020), so both kinds share a single
+    proposed sequence, chronological by batch, FM (pre-sampling) before ID
+    (post-sampling) within a batch. Pass the FULL listing here even when building a
+    subset workbook, so a batch keeps the same iCoA numbers everywhere.
+    """
+    per = OrderedDict()
+    for rec in full_listing:
+        f = per.setdefault(rec["batch"], {"fm": False, "macro": False, "micro": False})
+        if not rec["value"].startswith("Missing"):
+            if rec["no"] == FM_ITEM:
+                f["fm"] = True
+            elif rec["no"] == "1":
+                f["macro"] = True
+            elif rec["no"] == "2":
+                f["micro"] = True
+    out = OrderedDict()
+    seq = 0
+    for batch, f in per.items():
+        codes = {"fm": None, "id": None}
+        if not f["fm"]:
+            seq += 1
+            codes["fm"] = "iCoA-PP-%d-%04d" % (ICOA_YEAR, seq)
+        if not (f["macro"] and f["micro"]):
+            seq += 1
+            codes["id"] = "iCoA-PP-%d-%04d" % (ICOA_YEAR, seq)
+        out[batch] = codes
+    return out
+
+
+def declared_ref(code):
+    return "%s (proposed), %s, PP" % (code, ICOA_DATE)
+
+
+def proposed_icoa_rows(rows):
+    """The proposed-iCoA issuance list for the batches in `rows`, in sequence order.
+
+    One entry per proposed iCoA: the FM certificate covers spec item 7; the combined
+    ID certificate covers the identification cells it was injected into (both items
+    for most batches; only the microscopic cell where a macroscopic record is already
+    on file).
+    """
+    by_code = OrderedDict()
+    for b in rows:
+        for rnd in b["rounds"]:
+            for no, _t, _u, _ac in MATRIX_PANEL:
+                cell = rnd[no]
+                if not cell.get("declared"):
+                    continue
+                for v, ref in zip(cell["values"], cell["refs"]):
+                    if "(proposed)" not in ref:
+                        continue
+                    code = ref.split(" (proposed)")[0]
+                    e = by_code.setdefault(code, {
+                        "cert": code, "date": ICOA_DATE, "lab": "PP", "n": 0,
+                        "batches": b["batch"], "items": [], "link": "",
+                        "proposed": True, "p": b["p"], "strain": b["strain"],
+                        "prod": b["prod"],
+                        "scope": FM_SCOPE if no == FM_ITEM else ID_SCOPE,
+                    })
+                    e["n"] += 1
+                    if no not in e["items"]:
+                        e["items"].append(no)
+    out = []
+    for e in by_code.values():
+        e["items"] = ", ".join(e["items"])
+        out.append(e)
+    out.sort(key=lambda e: e["cert"])
+    return out
+
+
+def pivot(listing, icoa=None):
+    """listing rows -> ordered batches, each with testing rounds of per-item cells.
+
+    icoa: batch -> {'fm': code, 'id': code} proposed-iCoA plan for the declared
+    in-house entries. When None it is derived from `listing` itself — correct for
+    the master build; subset builds must pass icoa_assignments(full_listing) to
+    keep master numbering.
+    """
+    if icoa is None:
+        icoa = icoa_assignments(listing)
     batches = OrderedDict()
     for rec in listing:
         b = batches.setdefault(rec["batch"], {
@@ -267,6 +365,20 @@ def pivot(listing):
                 tag += " · " + month_span(min(spans[ri]), max(spans[ri]))
             b["round_labels"].append(tag)
         b["coq"] = "CoQ-PP-%d-%04d" % (COQ_YEAR, b["chrono"])
+
+        # declared in-house determinations, entered as Conforms citing the proposed
+        # iCoA: Foreign Matter (per SOP prior to final QC sampling and packaging) and
+        # macroscopic + microscopic ID (per specification after final QC sampling —
+        # one combined iCoA backs both identification cells)
+        codes = icoa.get(b["batch"], {})
+        plan = [(FM_ITEM, codes.get("fm"))] + [(i, codes.get("id")) for i in ID_ITEMS]
+        for item, code in plan:
+            if code and not any(rnd[item]["values"] for rnd in rounds):
+                cell = rounds[0][item]
+                cell["values"].append("Conforms")
+                cell["refs"].append(declared_ref(code))
+                cell["links"].append("")
+                cell["declared"] = True
     return list(batches.values())
 
 
@@ -350,18 +462,33 @@ def write_readme(wb, rows, index_rows, n_lines, n_missing):
     line(1, READ_TITLE, 15, bold=True, color=NAVY)
     line(2, READ_SUBTITLE, 9, italic=True, color="555555")
 
+    n_declared = sum(1 for b in rows for rnd in b["rounds"]
+                     for no, _t, _u, _ac in MATRIX_PANEL
+                     if rnd[no].get("declared"))
     r = 4
     line(r, "SOURCE AND SCOPE", 9, bold=True, color=NAVY); r += 1
     for t in [
         "Source: %s." % bl.SOURCE_NOTE,
-        "%d batches · %d sub-rows (testing rounds) · %d transcribed result lines · "
+        "%d batches · %d sub-rows (testing rounds) · %d result lines "
+        "(%d transcribed + %d declared in-house Conforms: FM and macro/micro ID) · "
         "%d parameter cells Missing / not tested · %d certificates indexed."
-        % (len(rows), sum(len(b["rounds"]) for b in rows), n_lines, n_missing,
-           len(index_rows)),
+        % (len(rows), sum(len(b["rounds"]) for b in rows), n_lines,
+           n_lines - n_declared, n_declared, n_missing, len(index_rows)),
         "Values are transcribed from the certificates verbatim; measurement "
         "uncertainty is excluded from result cells; units live in the column header, "
         "not the cells. Clean numeric results are stored as numbers whose format "
         "preserves the certificate's printed decimals.",
+        "'Conforms' entries whose reference reads '(proposed)' are declared by the "
+        "QC Manager (13.08.2026): Foreign Matter was determined in-house per SOP "
+        "prior to final QC sampling and packaging, and macroscopic + microscopic "
+        "identification per specification was performed in-house after final QC "
+        "sampling — all results pass. Each cites the iCoA proposed for issuance "
+        "(iCoA-PP-[YYYY]-[NNNN] per QCSOP 012 v.03, one sequential series for the "
+        "iCoA type per calendar year; codes and issue dates pending the Certificate "
+        "Issuance Register, QCLB 020). One combined ID iCoA backs both "
+        "identification cells of a batch. The full chronological plan is on the "
+        "'iCoA issuance list' sheet; batches whose Foreign Matter or macroscopic ID "
+        "was tested at CNP or already recorded in-house keep that reference.",
         "Grade cells classify each THC assay against the cultivar's QCSP 001 v.02 "
         "ladder. Classification is not a disposition: no conformity is derived or "
         "colour-coded anywhere in this workbook — a failure exists only where the "
@@ -405,10 +532,10 @@ def write_readme(wb, rows, index_rows, n_lines, n_missing):
         "into sub-rows, one per testing round (certificate issue dates more than %d "
         "days apart open a new round); the Round column labels each sub-row with its "
         "month span." % ROUND_GAP_DAYS,
-        "Per parameter: Result cell, then the eCoA reference 'code, date, lab', "
-        "hyperlinked to the certificate scan on Drive. Same-day paired certificates "
-        "stack one line each inside a sub-row; the cell's hyperlink opens the first "
-        "listed scan, and the eCoA index sheet carries every certificate's own link.",
+        "Per parameter: Result cell, then the certificate reference 'code, date, "
+        "lab', hyperlinked to the scan on Drive. Same-day paired certificates stack "
+        "one line each inside a sub-row; the cell's hyperlink opens the first listed "
+        "scan, and the Certificate index sheet carries every certificate's own link.",
         "'Missing / not tested' spans all sub-rows when the knowledgebase holds no "
         "result for that parameter; '—' marks a parameter tested in another round of "
         "the same batch, but not this one.",
@@ -603,8 +730,12 @@ def write_xlsx(rows, index_rows, n_lines, n_missing):
                     c = put(rr, col + 1, "\n".join(cell["grades"]), color=INK)
                     c.alignment = Alignment(vertical="top", wrap_text=True)
                     off = 2
-                c = put(rr, col + off, "\n".join(cell["refs"]), color=LINK,
-                        underline="single")
+                if cell.get("declared"):
+                    c = put(rr, col + off, "\n".join(cell["refs"]),
+                            color="8A6D1C", italic=True)
+                else:
+                    c = put(rr, col + off, "\n".join(cell["refs"]), color=LINK,
+                            underline="single")
                 c.alignment = Alignment(vertical="top", wrap_text=True)
                 first_link = next((l for l in cell["links"] if l), None)
                 if first_link:
@@ -640,13 +771,64 @@ def write_xlsx(rows, index_rows, n_lines, n_missing):
     ws.oddFooter.center.text = "data as transcribed from the eCoA scans"
     ws.oddFooter.right.text = "Page &P of &N"
 
-    # sheet 3 — every certificate's own link
-    wsx = wb.create_sheet("eCoA index")
+    # sheet 3 — the proposed iCoA issuance plan, chronological
+    icoa_rows = proposed_icoa_rows(rows)
+    if icoa_rows:
+        wsi = wb.create_sheet("iCoA issuance list")
+        wsi.sheet_properties.tabColor = GOLD
+        wsi.sheet_view.showGridLines = False
+        wsi.merge_cells(start_row=1, start_column=1, end_row=1, end_column=9)
+        c = wsi.cell(1, 1, (
+            "Proposed iCoA issuance list — internal Certificates of Analysis to be "
+            "issued for in-house determinations performed per SOP: Foreign Matter "
+            "prior to final QC sampling and packaging; macroscopic + microscopic "
+            "identification (one combined iCoA) after final QC sampling — all "
+            "results pass, declared by the QC Manager %s. Numbering per QCSOP 012 "
+            "v.03: one sequential series for the iCoA type per calendar year; codes "
+            "and issue dates are proposed pending assignment from the Certificate "
+            "Issuance Register (QCLB 020). Chronological by the production date "
+            "encoded in the batch number." % ICOA_DATE))
+        c.font = Font(italic=True, color="555555", **ARIAL)
+        c.alignment = Alignment(wrap_text=True, vertical="top")
+        wsi.row_dimensions[1].height = 44
+        heads = [("№", 5), ("iCoA code (proposed)", 20), ("Scope", 44),
+                 ("Spec items", 10), ("Production", 10), ("Batch", 13),
+                 ("P-Number", 10), ("Strain", 18), ("Proposed issue date", 16)]
+        for cidx, (h, w) in enumerate(heads, start=1):
+            c = wsi.cell(2, cidx, h)
+            c.font = Font(bold=True, color="FFFFFF", **ARIAL)
+            c.fill = PatternFill("solid", start_color=NAVY)
+            c.alignment = Alignment(horizontal="center", vertical="center",
+                                    wrap_text=True)
+            c.border = border
+            wsi.column_dimensions[get_column_letter(cidx)].width = w
+        for i, e in enumerate(icoa_rows, start=1):
+            vals = [i, e["cert"], e["scope"], e["items"], e["prod"], e["batches"],
+                    e["p"], e["strain"], e["date"]]
+            for cidx, v in enumerate(vals, start=1):
+                c = wsi.cell(2 + i, cidx, v)
+                c.font = Font(color=INK, **ARIAL)
+                c.alignment = Alignment(
+                    vertical="top", wrap_text=(cidx == 3),
+                    horizontal="center" if cidx in (1, 4, 5, 9) else "left")
+                c.border = border
+        wsi.freeze_panes = "A3"
+        wsi.auto_filter.ref = "A2:I%d" % (len(icoa_rows) + 2)
+        wsi.page_setup.orientation = "landscape"
+        wsi.page_setup.paperSize = wsi.PAPERSIZE_A4
+        wsi.page_setup.fitToWidth = 1
+        wsi.page_setup.fitToHeight = 0
+        wsi.sheet_properties.pageSetUpPr = PageSetupProperties(fitToPage=True)
+        wsi.print_title_rows = "2:2"
+
+    # sheet 4 — every certificate, on file or proposed, with its own link
+    wsx = wb.create_sheet("Certificate index")
     wsx.sheet_properties.tabColor = SUB_GREY
     wsx.sheet_view.showGridLines = False
-    for cidx, (h, w) in enumerate([("eCoA code", 20), ("Issued", 11), ("Lab", 6),
-                                   ("Results", 8), ("Batches", 34),
-                                   ("Spec items", 22), ("Scan", 8)], start=1):
+    for cidx, (h, w) in enumerate([("Certificate code", 22), ("Type", 14),
+                                   ("Issued", 11), ("Lab", 6), ("Results", 8),
+                                   ("Batches", 34), ("Spec items", 22),
+                                   ("Scan", 8)], start=1):
         c = wsx.cell(1, cidx, h)
         c.font = Font(bold=True, color="FFFFFF", **ARIAL)
         c.fill = PatternFill("solid", start_color=NAVY)
@@ -654,26 +836,35 @@ def write_xlsx(rows, index_rows, n_lines, n_missing):
         c.border = border
         wsx.column_dimensions[get_column_letter(cidx)].width = w
     for i, e in enumerate(index_rows, start=2):
-        vals = [e["cert"], e["date"], e["lab"], e["n"], e["batches"], e["items"]]
+        proposed = e.get("proposed", False)
+        ctype = ("iCoA (proposed)" if proposed
+                 else "iCoA / in-house" if e["lab"] == "PP" else "eCoA")
+        vals = [e["cert"], ctype, e["date"], e["lab"], e["n"], e["batches"],
+                e["items"]]
         for cidx, v in enumerate(vals, start=1):
             c = wsx.cell(i, cidx, v)
-            c.font = Font(color=INK, **ARIAL)
+            c.font = Font(color="8A6D1C" if proposed else INK,
+                          italic=proposed, **ARIAL)
             c.alignment = Alignment(vertical="top",
-                                    wrap_text=(cidx in (5, 6)),
-                                    horizontal="center" if cidx in (2, 3, 4) else "left")
+                                    wrap_text=(cidx in (6, 7)),
+                                    horizontal="center" if cidx in (2, 3, 4, 5)
+                                    else "left")
             c.border = border
-        c = wsx.cell(i, 7)
+        c = wsx.cell(i, 8)
         if e["link"]:
             c.value = "open"
             c.hyperlink = e["link"]
             c.font = Font(color=LINK, underline="single", **ARIAL)
+        elif proposed:
+            c.value = "pending"
+            c.font = Font(color="8A6D1C", italic=True, **ARIAL)
         else:
             c.value = "—"
             c.font = Font(color=MISS, **ARIAL)
         c.alignment = Alignment(horizontal="center", vertical="top")
         c.border = border
     wsx.freeze_panes = "A2"
-    wsx.auto_filter.ref = "A1:G%d" % (len(index_rows) + 1)
+    wsx.auto_filter.ref = "A1:H%d" % (len(index_rows) + 1)
     wsx.page_setup.orientation = "landscape"
     wsx.page_setup.paperSize = wsx.PAPERSIZE_A4
     wsx.page_setup.fitToWidth = 1
@@ -731,17 +922,23 @@ def write_tsv(rows):
 def main():
     listing, stats, n_batches = bl.build_rows()
     rows = pivot(listing)
-    index_rows = cert_index(listing)
+    index_rows = cert_index(listing) + proposed_icoa_rows(rows)
 
-    # the matrix must hold exactly the fact-checked totals — nothing lost, nothing added
+    # the matrix must hold exactly the fact-checked totals — nothing lost, nothing
+    # added beyond the declared Foreign-Matter entries, which are counted explicitly
     assert len(rows) == n_batches, (len(rows), n_batches)
+    n_declared = sum(1 for b in rows for rnd in b["rounds"]
+                     for no, _t, _u, _ac in MATRIX_PANEL
+                     if rnd[no].get("declared"))
     n_lines = sum(len(rnd[no]["values"])
                   for b in rows for rnd in b["rounds"]
                   for no, _t, _u, _ac in MATRIX_PANEL)
     n_missing = sum(1 for b in rows for no, _t, _u, _ac in MATRIX_PANEL
                     if not any(rnd[no]["values"] for rnd in b["rounds"]))
-    assert n_lines == stats["results"], (n_lines, stats["results"])
-    assert n_missing == stats["missing"], (n_missing, stats["missing"])
+    assert n_lines == stats["results"] + n_declared, \
+        (n_lines, stats["results"], n_declared)
+    assert n_missing == stats["missing"] - n_declared, \
+        (n_missing, stats["missing"], n_declared)
     n_rounds = sum(len(b["rounds"]) for b in rows)
     multi = [(b["batch"], len(b["rounds"])) for b in rows if len(b["rounds"]) > 1]
 
@@ -749,8 +946,10 @@ def main():
     write_tsv(rows)
 
     print("batches: %d   sub-rows: %d   multi-round batches: %d   "
-          "result lines: %d   missing cells: %d   certs: %d"
-          % (len(rows), n_rounds, len(multi), n_lines, n_missing, len(index_rows)))
+          "result lines: %d (%d transcribed + %d declared in-house)   "
+          "missing cells: %d   certs: %d"
+          % (len(rows), n_rounds, len(multi), n_lines, n_lines - n_declared,
+             n_declared, n_missing, len(index_rows)))
     for name, k in multi:
         print("  %s: %d rounds" % (name, k))
     print("wrote %s (%d KB)" % (os.path.relpath(OUT_XLSX, HERE),

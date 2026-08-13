@@ -66,10 +66,19 @@ def main(tranche="1"):
     n_results = sum(1 for r in subset if not r["value"].startswith("Missing"))
     n_missing = sum(1 for r in subset if r["value"].startswith("Missing"))
 
-    rows = bm.pivot(subset) + [stub_batch(want[k]) for k in missing_keys]
+    # declared in-house iCoA numbers (FM + macro/micro ID) come from the FULL master
+    # listing, so a batch cites the same iCoA-PP-YYYY-NNNN here and in the master
+    icoa_map = bm.icoa_assignments(listing)
+    rows = bm.pivot(subset, icoa=icoa_map) + \
+        [stub_batch(want[k]) for k in missing_keys]
     rows.sort(key=lambda b: bl.prod_key(b["batch"]))
+    n_declared = sum(1 for b in rows for rnd in b["rounds"]
+                     for no, _t, _u, _ac in bm.MATRIX_PANEL
+                     if rnd[no].get("declared"))
+    n_results += n_declared
+    n_missing -= n_declared
     n_missing += len(missing_keys) * len(bm.MATRIX_PANEL)
-    index_rows = bm.cert_index(subset)
+    index_rows = bm.cert_index(subset) + bm.proposed_icoa_rows(rows)
     assert len(rows) == len(t_rows), (len(rows), len(t_rows))
 
     overview = []
