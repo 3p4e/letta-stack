@@ -130,6 +130,13 @@ LINK = "0563C1"
 MATRIX_TITLE = ("Purely Plant — QCSP 001 specification matrix · one row-block per "
                 "batch, sub-rows = testing rounds · reading guide, legend and coverage "
                 "on the 'Read me' sheet · informal working export, %s" % BUILD_DATE)
+READ_TITLE = "Purely Plant — QCSP 001 Specification Matrix"
+READ_SUBTITLE = ("eCoA results per specification parameter · all batches, "
+                 "chronological · informal working export, not a controlled "
+                 "document · built %s" % BUILD_DATE)
+# Optional extra cover-sheet table: (heading, headers, column widths, data rows).
+# A derived workbook (e.g. a tranche subset) injects its overview here.
+EXTRA_COVER = None
 
 DATE_RE = re.compile(r"^(\d{2})\.(\d{2})\.(\d{4})$")
 NUM_CELL_RE = re.compile(r"^\d+(?:\.\d+)?$")
@@ -340,10 +347,8 @@ def write_readme(wb, rows, index_rows, n_lines, n_missing):
     for col in "BCDEFG":
         ws.column_dimensions[col].width = 13
 
-    line(1, "Purely Plant — QCSP 001 Specification Matrix", 15, bold=True, color=NAVY)
-    line(2, "eCoA results per specification parameter · all batches, chronological · "
-            "informal working export, not a controlled document · built %s"
-            % BUILD_DATE, 9, italic=True, color="555555")
+    line(1, READ_TITLE, 15, bold=True, color=NAVY)
+    line(2, READ_SUBTITLE, 9, italic=True, color="555555")
 
     r = 4
     line(r, "SOURCE AND SCOPE", 9, bold=True, color=NAVY); r += 1
@@ -363,6 +368,30 @@ def write_readme(wb, rows, index_rows, n_lines, n_missing):
         "laboratory declared one.",
     ]:
         line(r, "•  " + t); ws.row_dimensions[r].height = 24; r += 1
+
+    if EXTRA_COVER:
+        heading, headers, widths, data = EXTRA_COVER
+        r += 1
+        line(r, heading, 9, bold=True, color=NAVY); r += 1
+        for ci, (h, wd) in enumerate(zip(headers, widths), start=1):
+            c = ws.cell(r, ci, h)
+            c.font = Font(name="Arial", size=8, bold=True, color="FFFFFF")
+            c.fill = PatternFill("solid", start_color=NAVY)
+            c.alignment = Alignment(horizontal="center", vertical="center")
+            c.border = border
+            if ci > 1:
+                ws.column_dimensions[get_column_letter(ci)].width = wd
+        r += 1
+        for row_vals in data:
+            for ci, v in enumerate(row_vals, start=1):
+                c = ws.cell(r, ci, v)
+                c.font = Font(name="Arial", size=8,
+                              bold=(row_vals[0] or "").startswith("TOTAL"), color=INK)
+                c.alignment = Alignment(
+                    horizontal="right" if isinstance(v, (int, float)) else "left",
+                    vertical="top")
+                c.border = border
+            r += 1
 
     r += 1
     line(r, "HOW TO READ THE MATRIX", 9, bold=True, color=NAVY); r += 1
