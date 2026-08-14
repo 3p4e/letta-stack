@@ -250,6 +250,29 @@ summary{cursor:pointer;font-weight:600;color:var(--navy);padding:10px 0}
 .vchip.mut{background:#F4F6F9;color:var(--mut);border:1px solid var(--line)}
 @media (max-width:760px){.flowrow{grid-template-columns:1fr}
  .flowname{border-right:none;border-bottom:2px solid var(--gold);padding:0 0 8px;min-height:0}}
+#final{scroll-margin-top:64px}
+.fsum{font-size:13px;color:var(--mut);margin-bottom:16px;max-width:88ch}
+.fboard{background:linear-gradient(160deg,#132B45 0%,var(--navy) 60%,#234B74 100%);
+ border-bottom:4px solid var(--gold);padding:8px 22px 18px}
+.frow{display:grid;grid-template-columns:250px 1fr;gap:16px;align-items:center;
+ padding:13px 0;border-bottom:1px solid rgba(255,255,255,.12)}
+.frow:last-child{border-bottom:none}
+.fname h3{font-family:'Orbitron';font-weight:400;font-size:17px;letter-spacing:.05em;
+ color:#EAF1F8;margin-bottom:2px}
+.fstat{font-size:10.5px;color:#9FB4C9;display:block;font-variant-numeric:tabular-nums}
+.fbadge{display:inline-block;margin-top:5px;font-size:8.5px;font-weight:700;
+ letter-spacing:.09em;color:var(--gold);border:1px solid var(--gold);
+ padding:1.5px 7px;border-radius:2px}
+.fbadge.prov{color:#E8A6A0;border-color:#E8A6A0}
+.fpills{display:flex;flex-wrap:wrap;gap:9px}
+.fpill{font-family:var(--mono);font-size:14px;font-weight:600;color:#D9F2E2;
+ background:rgba(30,132,73,.30);border:1.5px solid #37B36A;border-radius:3px;
+ padding:7px 13px;line-height:1.2}
+.fpill small{display:block;font-family:'Montserrat';font-weight:400;font-size:9px;
+ color:#9FC9AD;margin-top:2px}
+.fpill.prov{background:rgba(201,162,39,.16);border-color:var(--gold);color:#F2E3B3}
+.fpill.prov small{color:#CBB77D}
+@media (max-width:760px){.frow{grid-template-columns:1fr}}
 .decl td{background:#FFF8E7 !important}
 tr.rej td{color:#9AA7B4;text-decoration:line-through}
 tr.rej td.keep{text-decoration:none;color:var(--rose);font-size:11px;white-space:normal}
@@ -560,6 +583,56 @@ def renames_section():
     return summary + cards
 
 
+def final_ranges():
+    """Closing verdict: the definitive grade ranges per strain, from everything
+    measured, verified and computed in this study. Tiers whose batches have no
+    tested result are provisional (declared basis) and say so."""
+    basis = {}
+    for b in d["stock"]:
+        basis[norm_b(b["batch"])] = b["anchor"] is not None
+    rows = ""
+    n_def = n_prov = 0
+    for strain in sorted(d["merged_ranges"]):
+        tiers = d["merged_ranges"][strain]
+        if not tiers:
+            continue
+        st = d["stats"].get(strain)
+        pills = ""
+        strain_prov = True
+        for i, t in enumerate(tiers):
+            tested = [b for b in t["batches"] if basis.get(norm_b(b), False)]
+            prov = len(tested) == 0
+            if not prov:
+                strain_prov = False
+            pills += ('<span class="fpill%s" title="%s">W-%d&nbsp;&nbsp;%.1f – %.1f'
+                      '<small>%d %s</small></span>'
+                      % (" prov" if prov else "", esc(", ".join(t["batches"])), i + 1,
+                         t["range"][0], t["range"][1], len(t["batches"]),
+                         "серии | batches" if len(t["batches"]) != 1 else "серија | batch"))
+        if strain_prov:
+            n_prov += 1
+        else:
+            n_def += 1
+        stat = ("n=%d · x\u0304 %.2f" % (st["n"], st["mean"])) if st else "без тестирања | no assays"
+        badge = ('<span class="fbadge prov">ПРОВИЗОРНО — тестирај пред декларирање | '
+                 "PROVISIONAL — test before declaring</span>") if strain_prov else \
+                '<span class="fbadge">ДЕФИНИТИВНО | DEFINITIVE</span>'
+        rows += ('<div class="frow"><div class="fname"><h3>%s</h3>'
+                 '<span class="fstat">%s</span>%s</div><div class="fpills">%s</div></div>'
+                 % (esc(strain), stat, badge, pills))
+    head = ('<div class="fsum">Врз основа на %d верификувани резултати, студијата на '
+            "стабилност, повторените мерења и мерната неодреденост од сертификатите — "
+            "ова се финалните опсези по класи за секоја сорта: %d сорти дефинитивно, "
+            "%d провизорно (само декларирана основа). Формалното усвојување останува "
+            "во спецификациите QCSP по редовна процедура. | Based on %d verified "
+            "results, the stability program, the repeat measurements and the stated "
+            "certificate uncertainty — the final grade ranges per strain: %d strains "
+            "definitive, %d provisional (declared basis only). Formal adoption remains "
+            "with the QCSP specifications through the regular procedure.</div>"
+            % (d["n_results"], n_def, n_prov, d["n_results"], n_def, n_prov))
+    return head + '<div class="fboard">' + rows + "</div>"
+
+
 def stab_table():
     rows = ""
     for r in d["stability"]:
@@ -602,7 +675,7 @@ def stock_table():
 
 nav = "".join('<a href="#s-%s">%s</a>'
               % ("".join(c if c.isalnum() else "-" for c in s.lower()), esc(s))
-              for s in sorted(d["stats"]))
+              for s in sorted(d["stats"])) + '<a href="#final" style="border-color:var(--gold);color:#8A6D14;font-weight:700">★ Финални опсези | Final ranges</a>'
 
 n_stab_usable = sum(1 for r in d["stability"] if r["usable"])
 
@@ -697,6 +770,9 @@ whether that bracket would survive a remeasure after one more year of storage.</
 сертификат — основа е декларираната вредност; тестирајте пред формално декларирање класа. |
 Yellow rows: no certificate on file — declared value used; test before declaring a grade.</p>
 </section>
+
+<section id="final"><h2>Финални опсези на потенција по сорта <span>| Final Potency Grade Ranges per Strain</span></h2>
+%s</section>
 </div>
 
 <footer><div class="wrap">
@@ -714,7 +790,7 @@ The laboratory certificates in the QMS remain authoritative.</span>
 </div></footer>
 </body></html>
 """ % (CSS, d["n_results"] + n_stab_usable, d["n_strains"], d["n_batches"], n_stab_usable,
-       nav, stab_table(), strain_cards(), renames_section(), stock_table(),
+       nav, stab_table(), strain_cards(), renames_section(), stock_table(), final_ranges(),
        d["n_results"], d["n_strains"], n_stab_usable, d["n_results"], n_stab_usable)
 
 out = os.path.join(HERE, "Potency_Atlas.html")
