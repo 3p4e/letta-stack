@@ -273,6 +273,67 @@ summary{cursor:pointer;font-weight:600;color:var(--navy);padding:10px 0}
 .fpill.prov{background:rgba(201,162,39,.16);border-color:var(--gold);color:#F2E3B3}
 .fpill.prov small{color:#CBB77D}
 @media (max-width:760px){.frow{grid-template-columns:1fr}}
+#themeBtn{position:fixed;right:14px;bottom:14px;z-index:99;font:600 11px 'Montserrat';
+ color:var(--navy);background:var(--card);border:1px solid var(--navy2);
+ border-radius:16px;padding:7px 13px;cursor:pointer;box-shadow:0 2px 8px rgba(27,58,92,.18)}
+#themeBtn:hover{background:#EDF3F9}
+@page{size:A4;margin:11mm 10mm}
+@media print{
+ *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ body{font-size:11.5px}
+ .nav,#themeBtn{display:none !important}
+ section{padding:14px 0 2px}
+ section h2{break-after:avoid}
+ .strain,.rencard,.kcard,.rs{break-inside:avoid}
+ .frow{break-inside:avoid}
+ .axiswrap,.tblwrap{overflow:visible;padding-left:10px;padding-right:10px}
+ .axis,.scale,.miniaxis{min-width:0}
+ table{font-size:9px}
+ td{white-space:normal}
+ .hero{padding:26px 0 22px}
+ .renlist{line-height:1.8}
+
+.hero{background:linear-gradient(160deg,#EDF3F9 0%,#F7FAFD 60%,#E9F0F7 100%);
+ color:var(--ink);border-bottom:4px solid var(--gold)}
+.hero .sub{color:#4A5B6C}
+.brand{color:var(--navy)} .brand small{color:#7B8FA3}
+.chip{background:#FFFFFF;border:1px solid var(--line);color:var(--ink)}
+.chip b{color:#8A6D14}
+.informal{color:#7B8FA3}
+.rule{background:#EDF3F9;color:var(--ink);border:1px solid var(--line)}
+.rule code{color:#8A6D14}
+.fboard{background:#F4F8FB;border:1px solid var(--line);border-bottom:4px solid var(--gold)}
+.frow{border-bottom:1px solid var(--line)}
+.fname h3{color:var(--navy)}
+.fstat{color:var(--mut)}
+.fbadge{color:#8A6D14;border-color:var(--gold)}
+.fbadge.prov{color:var(--rose);border-color:var(--rose)}
+.fpill{color:#14532B;background:rgba(30,132,73,.12);border-color:var(--green)}
+.fpill small{color:#4E7A5C}
+.fpill.prov{color:#7A5E10;background:rgba(201,162,39,.14);border-color:var(--gold)}
+.fpill.prov small{color:#8A7434}
+}
+
+body.lite .hero{background:linear-gradient(160deg,#EDF3F9 0%,#F7FAFD 60%,#E9F0F7 100%);
+ color:var(--ink);border-bottom:4px solid var(--gold)}
+body.lite .hero .sub{color:#4A5B6C}
+body.lite .brand{color:var(--navy)} body.lite .brand small{color:#7B8FA3}
+body.lite .chip{background:#FFFFFF;border:1px solid var(--line);color:var(--ink)}
+body.lite .chip b{color:#8A6D14}
+body.lite .informal{color:#7B8FA3}
+body.lite .rule{background:#EDF3F9;color:var(--ink);border:1px solid var(--line)}
+body.lite .rule code{color:#8A6D14}
+body.lite .fboard{background:#F4F8FB;border:1px solid var(--line);border-bottom:4px solid var(--gold)}
+body.lite .frow{border-bottom:1px solid var(--line)}
+body.lite .fname h3{color:var(--navy)}
+body.lite .fstat{color:var(--mut)}
+body.lite .fbadge{color:#8A6D14;border-color:var(--gold)}
+body.lite .fbadge.prov{color:var(--rose);border-color:var(--rose)}
+body.lite .fpill{color:#14532B;background:rgba(30,132,73,.12);border-color:var(--green)}
+body.lite .fpill small{color:#4E7A5C}
+body.lite .fpill.prov{color:#7A5E10;background:rgba(201,162,39,.14);border-color:var(--gold)}
+body.lite .fpill.prov small{color:#8A7434}
+
 .decl td{background:#FFF8E7 !important}
 tr.rej td{color:#9AA7B4;text-decoration:line-through}
 tr.rej td.keep{text-decoration:none;color:var(--rose);font-size:11px;white-space:normal}
@@ -788,6 +849,14 @@ ecoa_retrieval_gpt4o). | Study summary logged to the host's shared memory.</span
 <span>Меродавни остануваат лабораториските сертификати во СМК. |
 The laboratory certificates in the QMS remain authoritative.</span>
 </div></footer>
+<button id="themeBtn" type="button">◐ Посветла тема | Lighter theme</button>
+<script>
+var b=document.getElementById('themeBtn');
+b.addEventListener('click',function(){
+ document.body.classList.toggle('lite');
+ b.textContent=document.body.classList.contains('lite')?
+   '◐ Темна тема | Dark theme':'◐ Посветла тема | Lighter theme';});
+</script>
 </body></html>
 """ % (CSS, d["n_results"] + n_stab_usable, d["n_strains"], d["n_batches"], n_stab_usable,
        nav, stab_table(), strain_cards(), renames_section(), stock_table(), final_ranges(),
