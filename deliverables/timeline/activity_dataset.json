@@ -4,7 +4,7 @@
   "end": "2026-08-14T08:00:00+02:00",
   "span_hours": 64.0,
   "tz": "Europe/Skopje (UTC+02:00)",
-  "measure": "engaged working time (request → deliverable, idle gaps >20 min excluded)"
+  "measure": "active working time (event activity ≤20 min apart), one chunk per task request positioned at its clock time"
  },
  "families": [
   {
@@ -41,7 +41,7 @@
   },
   {
    "name": "Potency data extraction (Letta host RAG)",
-   "active_min": 8
+   "active_min": 10
   },
   {
    "name": "ImB spec HANDOFF + HTML→PDF conversion",
@@ -49,338 +49,175 @@
   },
   {
    "name": "GitHub commits, reviews & merges",
-   "active_min": 24
+   "active_min": 25
   },
   {
    "name": "Communications (email + activity timeline)",
-   "active_min": 6
+   "active_min": 31
   }
  ],
- "segments": [
+ "chunks": [
   {
    "fam": "GitHub commits, reviews & merges",
-   "start": "2026-08-12T01:13:44.254000+02:00",
-   "end": "2026-08-12T01:14:05.854000+02:00",
-   "min": 0.4
-  },
-  {
-   "fam": "GitHub commits, reviews & merges",
-   "start": "2026-08-12T10:50:49.870000+02:00",
-   "end": "2026-08-12T10:50:49.881000+02:00",
-   "min": 0.0
+   "anchor": "2026-08-12T01:13:44.254000+02:00",
+   "min": 1.5
   },
   {
    "fam": "GitHub commits, reviews & merges",
-   "start": "2026-08-12T10:50:50.144000+02:00",
-   "end": "2026-08-12T10:51:50.699000+02:00",
-   "min": 1.0
-  },
-  {
-   "fam": "GitHub commits, reviews & merges",
-   "start": "2026-08-12T13:13:43.342000+02:00",
-   "end": "2026-08-12T13:13:43.786000+02:00",
-   "min": 0.0
+   "anchor": "2026-08-12T10:50:50.144000+02:00",
+   "min": 1.5
   },
   {
    "fam": "Letta host live audit & docs research",
-   "start": "2026-08-12T13:13:43.789000+02:00",
-   "end": "2026-08-12T13:25:14.117000+02:00",
-   "min": 11.5
-  },
-  {
-   "fam": "Letta host live audit & docs research",
-   "start": "2026-08-12T14:31:30.241000+02:00",
-   "end": "2026-08-12T14:32:03.075000+02:00",
-   "min": 0.5
-  },
-  {
-   "fam": "Letta host live audit & docs research",
-   "start": "2026-08-12T15:38:09.658000+02:00",
-   "end": "2026-08-12T15:38:46.948000+02:00",
-   "min": 0.6
-  },
-  {
-   "fam": "Letta host live audit & docs research",
-   "start": "2026-08-12T16:41:27.521000+02:00",
-   "end": "2026-08-12T16:41:57.244000+02:00",
-   "min": 0.5
-  },
-  {
-   "fam": "Letta host live audit & docs research",
-   "start": "2026-08-12T17:43:07.448000+02:00",
-   "end": "2026-08-12T17:43:35.105000+02:00",
-   "min": 0.5
-  },
-  {
-   "fam": "Letta host live audit & docs research",
-   "start": "2026-08-12T18:44:46.583000+02:00",
-   "end": "2026-08-12T18:45:18.274000+02:00",
-   "min": 0.5
-  },
-  {
-   "fam": "Letta host live audit & docs research",
-   "start": "2026-08-12T20:16:55.703000+02:00",
-   "end": "2026-08-12T20:17:27.940000+02:00",
-   "min": 0.5
-  },
-  {
-   "fam": "Letta host live audit & docs research",
-   "start": "2026-08-12T22:19:20.542000+02:00",
-   "end": "2026-08-12T22:19:49.154000+02:00",
-   "min": 0.5
-  },
-  {
-   "fam": "Letta host live audit & docs research",
-   "start": "2026-08-13T01:20:52.055000+02:00",
-   "end": "2026-08-13T01:21:22.249000+02:00",
-   "min": 0.5
-  },
-  {
-   "fam": "Letta host live audit & docs research",
-   "start": "2026-08-13T05:22:43.874000+02:00",
-   "end": "2026-08-13T05:23:15.480000+02:00",
-   "min": 0.5
-  },
-  {
-   "fam": "Letta host live audit & docs research",
-   "start": "2026-08-13T11:24:37.451000+02:00",
-   "end": "2026-08-13T11:25:11.951000+02:00",
-   "min": 0.6
-  },
-  {
-   "fam": "Letta host live audit & docs research",
-   "start": "2026-08-13T13:02:04.174000+02:00",
-   "end": "2026-08-13T13:02:09.493000+02:00",
-   "min": 0.1
+   "anchor": "2026-08-12T13:13:43.789000+02:00",
+   "min": 16.9
   },
   {
    "fam": "Chronological listing + fact check",
-   "start": "2026-08-13T13:02:09.494000+02:00",
-   "end": "2026-08-13T13:19:29.373000+02:00",
+   "anchor": "2026-08-13T13:02:09.494000+02:00",
    "min": 17.3
   },
   {
    "fam": "Chronological listing + fact check",
-   "start": "2026-08-13T13:19:29.374000+02:00",
-   "end": "2026-08-13T13:23:00.195000+02:00",
+   "anchor": "2026-08-13T13:19:29.374000+02:00",
    "min": 3.5
   },
   {
-   "fam": "Chronological listing + fact check",
-   "start": "2026-08-13T13:56:46.261000+02:00",
-   "end": "2026-08-13T13:56:46.677000+02:00",
-   "min": 0.0
-  },
-  {
    "fam": "Wide-format specification matrix",
-   "start": "2026-08-13T13:56:46.679000+02:00",
-   "end": "2026-08-13T14:08:14.027000+02:00",
+   "anchor": "2026-08-13T13:56:46.679000+02:00",
    "min": 11.5
   },
   {
    "fam": "Wide-format specification matrix",
-   "start": "2026-08-13T14:29:31.732000+02:00",
-   "end": "2026-08-13T14:29:31.911000+02:00",
-   "min": 0.0
-  },
-  {
-   "fam": "Wide-format specification matrix",
-   "start": "2026-08-13T14:29:31.912000+02:00",
-   "end": "2026-08-13T14:38:10.515000+02:00",
+   "anchor": "2026-08-13T14:29:31.912000+02:00",
    "min": 8.6
   },
   {
    "fam": "Wide-format specification matrix",
-   "start": "2026-08-13T14:38:10.686000+02:00",
-   "end": "2026-08-13T14:57:35.891000+02:00",
+   "anchor": "2026-08-13T14:38:10.686000+02:00",
    "min": 19.4
   },
   {
    "fam": "Wide-format specification matrix",
-   "start": "2026-08-13T14:57:36.047000+02:00",
-   "end": "2026-08-13T15:06:02.779000+02:00",
+   "anchor": "2026-08-13T14:57:36.047000+02:00",
    "min": 8.4
   },
   {
    "fam": "Wide-format specification matrix",
-   "start": "2026-08-13T15:06:02.924000+02:00",
-   "end": "2026-08-13T15:06:57.903000+02:00",
-   "min": 0.9
-  },
-  {
-   "fam": "Wide-format specification matrix",
-   "start": "2026-08-13T15:54:28.685000+02:00",
-   "end": "2026-08-13T15:54:28.862000+02:00",
-   "min": 0.0
+   "anchor": "2026-08-13T15:06:02.924000+02:00",
+   "min": 1.5
   },
   {
    "fam": "Workbook usability overhaul",
-   "start": "2026-08-13T15:54:28.863000+02:00",
-   "end": "2026-08-13T16:19:24.485000+02:00",
+   "anchor": "2026-08-13T15:54:28.863000+02:00",
    "min": 24.9
   },
   {
    "fam": "Tranche 1 & 2 workbooks",
-   "start": "2026-08-13T16:19:24.486000+02:00",
-   "end": "2026-08-13T16:28:37.604000+02:00",
+   "anchor": "2026-08-13T16:19:24.486000+02:00",
    "min": 9.2
   },
   {
    "fam": "Tranche 1 & 2 workbooks",
-   "start": "2026-08-13T16:28:37.681000+02:00",
-   "end": "2026-08-13T16:47:00.120000+02:00",
+   "anchor": "2026-08-13T16:28:37.681000+02:00",
    "min": 18.4
   },
   {
    "fam": "Declared in-house iCoAs + RAG truth-check",
-   "start": "2026-08-13T16:47:00.212000+02:00",
-   "end": "2026-08-13T16:58:10.497000+02:00",
+   "anchor": "2026-08-13T16:47:00.212000+02:00",
    "min": 11.2
   },
   {
    "fam": "Declared in-house iCoAs + RAG truth-check",
-   "start": "2026-08-13T16:58:10.563000+02:00",
-   "end": "2026-08-13T17:01:39.748000+02:00",
+   "anchor": "2026-08-13T16:58:10.563000+02:00",
    "min": 3.5
   },
   {
    "fam": "Declared in-house iCoAs + RAG truth-check",
-   "start": "2026-08-13T17:01:39.805000+02:00",
-   "end": "2026-08-13T17:08:19.647000+02:00",
+   "anchor": "2026-08-13T17:01:39.805000+02:00",
    "min": 6.7
   },
   {
    "fam": "Declared in-house iCoAs + RAG truth-check",
-   "start": "2026-08-13T17:08:20.064000+02:00",
-   "end": "2026-08-13T17:20:09.365000+02:00",
+   "anchor": "2026-08-13T17:08:20.064000+02:00",
    "min": 11.8
   },
   {
    "fam": "Per-round CoQ issuance model",
-   "start": "2026-08-13T17:20:09.479000+02:00",
-   "end": "2026-08-13T17:41:35.934000+02:00",
+   "anchor": "2026-08-13T17:20:09.479000+02:00",
    "min": 21.4
   },
   {
-   "fam": "Per-round CoQ issuance model",
-   "start": "2026-08-13T18:38:19.294000+02:00",
-   "end": "2026-08-13T18:38:19.413000+02:00",
-   "min": 0.0
-  },
-  {
    "fam": "Phenotype / Chemotype strain analysis",
-   "start": "2026-08-13T18:38:19.414000+02:00",
-   "end": "2026-08-13T18:41:55.866000+02:00",
+   "anchor": "2026-08-13T18:38:19.414000+02:00",
    "min": 3.6
   },
   {
-   "fam": "Phenotype / Chemotype strain analysis",
-   "start": "2026-08-13T22:55:40.506000+02:00",
-   "end": "2026-08-13T22:55:40.521000+02:00",
-   "min": 0.0
-  },
-  {
    "fam": "GitHub commits, reviews & merges",
-   "start": "2026-08-13T22:55:40.685000+02:00",
-   "end": "2026-08-13T23:00:16.886000+02:00",
-   "min": 4.6
-  },
-  {
-   "fam": "GitHub commits, reviews & merges",
-   "start": "2026-08-13T23:43:12.462000+02:00",
-   "end": "2026-08-13T23:44:01.132000+02:00",
-   "min": 0.8
-  },
-  {
-   "fam": "GitHub commits, reviews & merges",
-   "start": "2026-08-14T04:04:46.246000+02:00",
-   "end": "2026-08-14T04:04:46.346000+02:00",
-   "min": 0.0
+   "anchor": "2026-08-13T22:55:40.685000+02:00",
+   "min": 5.4
   },
   {
    "fam": "Potency data extraction (Letta host RAG)",
-   "start": "2026-08-14T04:04:46.347000+02:00",
-   "end": "2026-08-14T04:05:17.174000+02:00",
-   "min": 0.5
+   "anchor": "2026-08-14T04:04:46.347000+02:00",
+   "min": 1.5
   },
   {
    "fam": "Potency data extraction (Letta host RAG)",
-   "start": "2026-08-14T04:05:17.185000+02:00",
-   "end": "2026-08-14T04:09:05.322000+02:00",
+   "anchor": "2026-08-14T04:05:17.185000+02:00",
    "min": 3.8
   },
   {
    "fam": "Potency data extraction (Letta host RAG)",
-   "start": "2026-08-14T04:09:05.460000+02:00",
-   "end": "2026-08-14T04:09:16.428000+02:00",
-   "min": 0.2
+   "anchor": "2026-08-14T04:09:05.460000+02:00",
+   "min": 1.5
   },
   {
    "fam": "Potency data extraction (Letta host RAG)",
-   "start": "2026-08-14T04:58:39.499000+02:00",
-   "end": "2026-08-14T04:58:39.514000+02:00",
-   "min": 0.0
-  },
-  {
-   "fam": "Potency data extraction (Letta host RAG)",
-   "start": "2026-08-14T04:58:39.608000+02:00",
-   "end": "2026-08-14T05:02:10.887000+02:00",
+   "anchor": "2026-08-14T04:58:39.608000+02:00",
    "min": 3.5
   },
   {
-   "fam": "Potency data extraction (Letta host RAG)",
-   "start": "2026-08-14T06:07:21.844000+02:00",
-   "end": "2026-08-14T06:07:21.879000+02:00",
-   "min": 0.0
-  },
-  {
    "fam": "ImB spec HANDOFF + HTML→PDF conversion",
-   "start": "2026-08-14T06:07:21.880000+02:00",
-   "end": "2026-08-14T06:18:49.929000+02:00",
+   "anchor": "2026-08-14T06:07:21.880000+02:00",
    "min": 11.5
   },
   {
    "fam": "ImB spec HANDOFF + HTML→PDF conversion",
-   "start": "2026-08-14T06:18:50.155000+02:00",
-   "end": "2026-08-14T06:33:47.271000+02:00",
+   "anchor": "2026-08-14T06:18:50.155000+02:00",
    "min": 15.0
   },
   {
    "fam": "ImB spec HANDOFF + HTML→PDF conversion",
-   "start": "2026-08-14T06:33:47.344000+02:00",
-   "end": "2026-08-14T06:34:55.856000+02:00",
-   "min": 1.1
-  },
-  {
-   "fam": "ImB spec HANDOFF + HTML→PDF conversion",
-   "start": "2026-08-14T07:05:18.156000+02:00",
-   "end": "2026-08-14T07:05:18.351000+02:00",
-   "min": 0.0
+   "anchor": "2026-08-14T06:33:47.344000+02:00",
+   "min": 1.5
   },
   {
    "fam": "GitHub commits, reviews & merges",
-   "start": "2026-08-14T07:05:18.352000+02:00",
-   "end": "2026-08-14T07:22:09.645000+02:00",
+   "anchor": "2026-08-14T07:05:18.352000+02:00",
    "min": 16.9
   },
   {
    "fam": "Communications (email + activity timeline)",
-   "start": "2026-08-14T07:22:09.726000+02:00",
-   "end": "2026-08-14T07:23:07.025000+02:00",
-   "min": 1.0
+   "anchor": "2026-08-14T07:22:09.726000+02:00",
+   "min": 1.5
   },
   {
    "fam": "Communications (email + activity timeline)",
-   "start": "2026-08-14T07:23:07.039000+02:00",
-   "end": "2026-08-14T07:27:59.573000+02:00",
-   "min": 4.9
+   "anchor": "2026-08-14T07:23:07.039000+02:00",
+   "min": 28.4
+  },
+  {
+   "fam": "Communications (email + activity timeline)",
+   "anchor": "2026-08-14T07:51:29.030000+02:00",
+   "min": 1.5
   }
  ],
- "active_total_min": 262,
- "active_total_h": 4.4,
- "prompts_in_window": 30,
+ "active_total_min": 293,
+ "active_total_h": 4.9,
+ "task_requests": 31,
  "meta": {
   "source": "/root/.claude/projects/-home-user-letta-stack/4877ce6e-ae82-551e-bf35-5698c379c3be.jsonl",
-  "sha256": "857d2d876f29ff90e17405837b4798654a5133c59cb36e2f923e6a8b74e9cb44"
+  "sha256": "9c35bfad93f16b6d4e7fa2d2798907b4b8eb1b32bbbe0700c6d8ccdfa543b3dc"
  }
 }
