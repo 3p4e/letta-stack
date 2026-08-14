@@ -1,0 +1,40 @@
+{
+ "sources": [
+  {
+   "key": "QC",
+   "label": "QC data session (this chat)",
+   "method": "transcript-witnessed",
+   "total_h": 4.9,
+   "style": "solid"
+  },
+  {
+   "key": "OPS-W",
+   "label": "Letta ops session \u2014 witnessed",
+   "method": "tool/file timestamps",
+   "total_h": 5.3,
+   "style": "solid"
+  },
+  {
+   "key": "OPS-C",
+   "label": "Letta ops session \u2014 checkpoint spans",
+   "method": "PR open\u2192merge (not hands-on)",
+   "total_h": 52.8,
+   "style": "hatch"
+  },
+  {
+   "key": "WWF",
+   "label": "WWF platform session",
+   "method": "git commits + deploys",
+   "total_h": 2.25,
+   "style": "solid"
+  },
+  {
+   "key": "ImB",
+   "label": "ImB spec design session",
+   "method": "estimated from session activity",
+   "total_h": 35.0,
+   "style": "hatch"
+  }
+ ],
+ "clip_note": false
+}

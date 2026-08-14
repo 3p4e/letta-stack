@@ -1,0 +1,378 @@
+{
+ "week": {
+  "report_start": "2026-08-10",
+  "report_end": "2026-08-14",
+  "plan_start": "2026-08-17",
+  "plan_end": "2026-08-21",
+  "tz": "Europe/Skopje"
+ },
+ "corpus": {
+  "batches": 77,
+  "results_transcribed": 1038,
+  "declared_inhouse": 189,
+  "certs_on_file": 236
+ },
+ "E2": {
+  "retest_potency_assays": 21,
+  "retest_cert_count": 42,
+  "retest_range": "7.91 – 26.14 %w/w",
+  "retest_lab": "Farmahem (FARM)",
+  "retest_dates": "07–10.08.2026",
+  "oos_in_campaign": 0
+ },
+ "B5_cleared_full_panel": [
+  "CJ062501/2",
+  "CJ082501/2",
+  "PM092501"
+ ],
+ "B4_queue": {
+  "partial": [
+   {
+    "batch": "CC112501",
+    "missing_items": 15
+   },
+   {
+    "batch": "FB112501",
+    "missing_items": 15
+   },
+   {
+    "batch": "GG112501",
+    "missing_items": 15
+   },
+   {
+    "batch": "OPM112501",
+    "missing_items": 15
+   },
+   {
+    "batch": "PM112501",
+    "missing_items": 15
+   },
+   {
+    "batch": "SCR112501",
+    "missing_items": 15
+   },
+   {
+    "batch": "FB012601/1",
+    "missing_items": 15
+   },
+   {
+    "batch": "GG012601",
+    "missing_items": 15
+   },
+   {
+    "batch": "JD012601",
+    "missing_items": 15
+   },
+   {
+    "batch": "GRC102501/2",
+    "missing_items": 14
+   },
+   {
+    "batch": "KC102501",
+    "missing_items": 14
+   },
+   {
+    "batch": "SJ102501",
+    "missing_items": 14
+   },
+   {
+    "batch": "J31112501",
+    "missing_items": 14
+   },
+   {
+    "batch": "SJ112501",
+    "missing_items": 14
+   },
+   {
+    "batch": "FB012603",
+    "missing_items": 13
+   },
+   {
+    "batch": "FB012603V",
+    "missing_items": 13
+   },
+   {
+    "batch": "JD012603/2",
+    "missing_items": 13
+   },
+   {
+    "batch": "JD012603/2V",
+    "missing_items": 13
+   },
+   {
+    "batch": "JD022601",
+    "missing_items": 13
+   },
+   {
+    "batch": "SCR022601",
+    "missing_items": 13
+   },
+   {
+    "batch": "FB032601",
+    "missing_items": 13
+   },
+   {
+    "batch": "GG032601",
+    "missing_items": 13
+   },
+   {
+    "batch": "P160012",
+    "missing_items": 13
+   },
+   {
+    "batch": "P160022",
+    "missing_items": 13
+   },
+   {
+    "batch": "P160032",
+    "missing_items": 13
+   },
+   {
+    "batch": "CC012601/1",
+    "missing_items": 12
+   },
+   {
+    "batch": "FB012602",
+    "missing_items": 12
+   },
+   {
+    "batch": "SCR012603",
+    "missing_items": 12
+   },
+   {
+    "batch": "J31102501",
+    "missing_items": 11
+   },
+   {
+    "batch": "JD112501",
+    "missing_items": 11
+   },
+   {
+    "batch": "GG012603",
+    "missing_items": 10
+   },
+   {
+    "batch": "GP0824_01",
+    "missing_items": 4
+   },
+   {
+    "batch": "GP0824_03",
+    "missing_items": 4
+   },
+   {
+    "batch": "MB0824_04",
+    "missing_items": 4
+   },
+   {
+    "batch": "MB0824_05",
+    "missing_items": 4
+   },
+   {
+    "batch": "BSS1024_01",
+    "missing_items": 4
+   },
+   {
+    "batch": "CJ1024",
+    "missing_items": 4
+   },
+   {
+    "batch": "GG1024",
+    "missing_items": 4
+   },
+   {
+    "batch": "GG1024_02",
+    "missing_items": 4
+   },
+   {
+    "batch": "OPM1024_01",
+    "missing_items": 4
+   },
+   {
+    "batch": "OPM1024_03",
+    "missing_items": 4
+   },
+   {
+    "batch": "CJ052501/2",
+    "missing_items": 4
+   },
+   {
+    "batch": "HPA052501",
+    "missing_items": 4
+   },
+   {
+    "batch": "OPM052501",
+    "missing_items": 4
+   },
+   {
+    "batch": "CJ072501",
+    "missing_items": 4
+   },
+   {
+    "batch": "CLE072501",
+    "missing_items": 4
+   },
+   {
+    "batch": "GP072501/1",
+    "missing_items": 4
+   },
+   {
+    "batch": "GP072501/2",
+    "missing_items": 4
+   },
+   {
+    "batch": "WC072501",
+    "missing_items": 4
+   },
+   {
+    "batch": "GP082501/1",
+    "missing_items": 4
+   },
+   {
+    "batch": "AB092501",
+    "missing_items": 4
+   },
+   {
+    "batch": "CJ062501/1",
+    "missing_items": 3
+   },
+   {
+    "batch": "GP062501",
+    "missing_items": 3
+   },
+   {
+    "batch": "PM072501",
+    "missing_items": 3
+   },
+   {
+    "batch": "CJ082501/1",
+    "missing_items": 3
+   },
+   {
+    "batch": "WC082501",
+    "missing_items": 3
+   },
+   {
+    "batch": "CJ092501",
+    "missing_items": 3
+   },
+   {
+    "batch": "GP092501",
+    "missing_items": 3
+   },
+   {
+    "batch": "OPM092501",
+    "missing_items": 3
+   },
+   {
+    "batch": "SJ092501",
+    "missing_items": 3
+   },
+   {
+    "batch": "J31122501",
+    "missing_items": 3
+   },
+   {
+    "batch": "BSS052501",
+    "missing_items": 2
+   },
+   {
+    "batch": "GP0824_02",
+    "missing_items": 1
+   },
+   {
+    "batch": "BG1024",
+    "missing_items": 1
+   },
+   {
+    "batch": "BSS1024",
+    "missing_items": 1
+   },
+   {
+    "batch": "GG1024_01",
+    "missing_items": 1
+   },
+   {
+    "batch": "HPA1024",
+    "missing_items": 1
+   },
+   {
+    "batch": "HPA1024_01",
+    "missing_items": 1
+   },
+   {
+    "batch": "OPM1024",
+    "missing_items": 1
+   },
+   {
+    "batch": "OPM1024_02",
+    "missing_items": 1
+   },
+   {
+    "batch": "CJ052501/1",
+    "missing_items": 1
+   },
+   {
+    "batch": "GP052501",
+    "missing_items": 1
+   },
+   {
+    "batch": "GP082501/2",
+    "missing_items": 1
+   },
+   {
+    "batch": "OPM122501",
+    "missing_items": 1
+   }
+  ],
+  "no_ecoa": [
+   "ACC102501",
+   "BSS1024_01/1",
+   "CC012603",
+   "CF102501",
+   "GRC102501/1",
+   "JD012603/01",
+   "PUM102501",
+   "SCR012601",
+   "WED102501"
+  ]
+ },
+ "E4_oos": [
+  {
+   "batch": "FB032601",
+   "param": "Foreign Matter (item 7)",
+   "lab": "CNP",
+   "finding": "0.08% — Не одговара / NON-CONFORM (cannabis seed present); data-integrity flag in source"
+  }
+ ],
+ "E1_declared": {
+  "fm_batches": 50,
+  "id_batches": 77,
+  "icoa_total": 127
+ },
+ "E7_gmp": [
+  [
+   "eCoA register + specification matrix",
+   "1 038 verified results · 77 batches · 4-layer fact-check + live-host verification"
+  ],
+  [
+   "CoQ issuance plan",
+   "95 events (77 initial + 18 superseding), results-complete chronology, QCSOP 012 §6.7"
+  ],
+  [
+   "iCoA issuance list",
+   "127 proposed codes (50 FM + 77 macro/micro ID), one sequential series"
+  ],
+  [
+   "ImB Product Specification catalogue",
+   "351 A4 PDF renders (BASE 125 · NEWs 48 · RENs 84 · T1/T2/T3+T1_rename 82 · root 12)"
+  ],
+  [
+   "Letta host live audit",
+   "9 findings incl. auth gap + sandbox exposure; read-only, fixes pending owner"
+  ],
+  [
+   "Phenotype/Chemotype evidence table",
+   "11 strains full, 3 chemo-only, 6 uncovered, 1 conflict (GG)"
+  ]
+ ]
+}
