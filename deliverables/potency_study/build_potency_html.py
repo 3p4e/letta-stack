@@ -20,6 +20,7 @@ surface painted explicitly.
 import html
 import json
 import os
+import re
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 d = json.load(open(os.path.join(HERE, "potency_dataset.json"), encoding="utf-8"))
@@ -209,6 +210,46 @@ summary{cursor:pointer;font-weight:600;color:var(--navy);padding:10px 0}
 .bchip.steady{background:#EDF3F9;color:var(--navy2);border:1px solid var(--navy2)}
 .bchip.cayn{background:#F5EEF9;color:#7B4F8C;border:1px solid #7B4F8C}
 .keepname{font-size:9.5px;color:var(--mut);font-weight:400;margin-left:5px}
+.rencard{background:var(--card);border:1px solid var(--line);margin-bottom:22px}
+.rensum{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;
+ margin-bottom:20px}
+.rs{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--navy2);
+ padding:12px 14px;font-size:11.5px;color:var(--mut);line-height:1.45}
+.rs b{display:block;font-family:'Orbitron';font-size:21px;color:var(--navy);margin-bottom:3px}
+.rs.bad{border-top-color:var(--rose)} .rs.bad b{color:var(--rose)}
+.rs.ok{border-top-color:var(--green)} .rs.ok b{color:var(--green)}
+.flowrow{display:grid;grid-template-columns:240px 1fr;gap:16px;align-items:start;
+ padding:14px 18px;border-top:1px solid var(--line)}
+.flowrow:first-of-type{border-top:none}
+.flowname{font-size:14px;font-weight:600;color:var(--navy);
+ border-right:2px solid var(--gold);padding-right:14px;min-height:70px}
+.flowname b{font-weight:700}
+.flowbatches{font-size:10.5px;font-weight:400;color:var(--mut);margin-top:6px;
+ font-family:var(--mono);line-height:1.7}
+.flowaxis{min-width:0}
+.miniaxis{position:relative;height:46px;background:linear-gradient(180deg,#FBFCFE,#F4F7FB);
+ border:1px solid var(--line);overflow:hidden}
+.miniaxis i{position:absolute;top:0;bottom:0;border-left:1px solid #EDF1F5}
+.mspan{position:absolute;top:8%;height:38%;background:rgba(201,162,39,.24);
+ border:1.5px solid var(--gold)}
+.wspan{position:absolute;top:54%;height:38%;background:rgba(30,132,73,.18);
+ border:1.5px solid var(--green)}
+.mdot{position:absolute;top:50%;width:9px;height:9px;border-radius:50%;margin-top:-4.5px;
+ background:var(--navy2);border:2px solid #fff;box-shadow:0 0 0 1px var(--navy2);
+ transform:translateX(-50%);z-index:3}
+.mdot.decl{background:#fff;box-shadow:0 0 0 1px var(--gold)}
+.cmpline{display:flex;gap:20px;font-size:10.5px;color:var(--mut);margin-top:5px}
+.cmp b{font-family:var(--mono)}
+.cmp.m b{color:#8A6D14}
+.cmp.w b{color:var(--green)}
+.verdicts{margin-top:6px;display:flex;flex-wrap:wrap;gap:6px}
+.vchip{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px}
+.vchip.ok{background:#E8F5EC;color:var(--green);border:1px solid var(--green)}
+.vchip.bad{background:#FDECEA;color:var(--rose);border:1px solid var(--rose)}
+.vchip.ours{background:#EDF3F9;color:var(--navy2);border:1px solid var(--navy2)}
+.vchip.mut{background:#F4F6F9;color:var(--mut);border:1px solid var(--line)}
+@media (max-width:760px){.flowrow{grid-template-columns:1fr}
+ .flowname{border-right:none;border-bottom:2px solid var(--gold);padding:0 0 8px;min-height:0}}
 .decl td{background:#FFF8E7 !important}
 tr.rej td{color:#9AA7B4;text-decoration:line-through}
 tr.rej td.keep{text-decoration:none;color:var(--rose);font-size:11px;white-space:normal}
@@ -366,58 +407,157 @@ def strain_cards():
     return out
 
 
-def renames_overview():
-    """Per original strain: batches + test values, how many distinct new names they were
-    renamed into, and the THC bracket the Portfolio Master itself states per batch."""
+def parse_bracket(b):
+    """Master bracket string -> (lo, hi, label). '≥ 25%' is open-ended (drawn to 30)."""
+    b = (b or "").strip()
+    if not b:
+        return None
+    m = re.match(r"[≥>]=?\s*(\d+(?:[.,]\d+)?)", b)
+    if m:
+        lo = float(m.group(1).replace(",", "."))
+        return (lo, 30.0, "≥ %g%%" % lo)
+    m = re.match(r"(\d+(?:[.,]\d+)?)\s*[–—-]\s*(\d+(?:[.,]\d+)?)", b)
+    if m:
+        lo = float(m.group(1).replace(",", "."))
+        hi = float(m.group(2).replace(",", "."))
+        return (lo, hi, "%g–%g%%" % (lo, hi))
+    return None
+
+
+D_YEAR = 1.5
+U_RATIO = 0.062
+
+
+def renames_section():
+    """REDESIGNED rename layer: per original strain, the mapping into new names, and —
+    for every new-name group — OUR statistically derived W-tier vs the bracket the
+    Portfolio Master itself suggests, on one comparison axis with verdicts."""
     from collections import OrderedDict
-    # register anchors by norm batch for test values
+
     anch = {}
     for r in d["register_results"]:
         k = norm_b(r["batch"])
         if k not in anch or dkey(r["date"]) > dkey(anch[k]["date"]):
             anch[k] = r
+    # our tier range per batch, from the stock table
+    ours = {}
+    for b in d["stock"]:
+        if b.get("proposed") and b.get("tier"):
+            tiers = d["merged_ranges"].get(b["strain"], [])
+            if 0 < b["tier"] <= len(tiers):
+                ours[norm_b(b["batch"])] = tuple(tiers[b["tier"] - 1]["range"])
+
     groups = OrderedDict()
     for rec in PM:
         orig = CANON.get(rec["original"], rec["original"])
-        groups.setdefault(orig, []).append(rec)
-    out = ""
+        groups.setdefault(orig, OrderedDict()).setdefault(rec["neu"], []).append(rec)
+
+    # global verdict counters (renamed batches with a tested anchor)
+    g_total = g_out_today = g_fail_win = g_ok_ours = g_have_ours = 0
+
+    cards = ""
     for orig in sorted(groups):
-        recs = groups[orig]
-        news = OrderedDict()
-        for rec in sorted(recs, key=lambda r: r["neu"]):
-            news.setdefault(rec["neu"], []).append(rec)
-        n_new = len(news)
-        renamed = sum(1 for rec in recs if rec["original"].strip().lower() != rec["neu"].strip().lower())
-        rows = ""
+        news = groups[orig]
+        n_batches = sum(len(v) for v in news.values())
+        n_renamed = sum(1 for rs in news.values() for rec in rs
+                        if rec["original"].strip().lower() != rec["neu"].strip().lower())
+        rows_html = ""
         for neu, rs in news.items():
-            batches = []
-            brackets = []
-            for rec in rs:
-                a = anch.get(norm_b(rec["batch"]))
-                val = ("%.2f" % a["value"]) if a else ("%.1f (декл.)" % (rec["thc"] * 100)
-                                                       if isinstance(rec["thc"], (int, float)) else "—")
-                batches.append("%s (%s)" % (rec["batch"], val))
-                if rec["bracket"] and rec["bracket"] not in brackets:
-                    brackets.append(rec["bracket"])
             is_same = rs[0]["original"].strip().lower() == neu.strip().lower()
             brand = rs[0]["brand"]
-            rows += ("<tr><td>%s</td><td class=num>%d</td><td>%s</td><td class=v>%s</td></tr>"
-                     % ((esc(neu) if is_same else "<b>%s</b>" % esc(neu)) +
-                        ' <span class="bchip %s">%s</span>' % (esc(brand.lower()), esc(brand)) +
-                        ("" if not is_same else ' <span class="keepname">без промена | unchanged</span>'),
-                        len(rs), ", ".join(esc(b) for b in batches),
-                        " · ".join(esc(b) for b in brackets) or "—"))
-        out += ('<article class="strain"><div class="shead"><h3>%s</h3>'
-                '<span class="stat">серии во мастерот | batches in master <b>%d</b></span>'
-                '<span class="stat">преименувани | renamed <b>%d</b></span>'
-                '<span class="stat">различни нови имиња | distinct new names <b>%d</b></span></div>'
-                '<div class="tblwrap" style="padding-top:12px"><table><thead><tr>'
-                "<th>Ново име | New name</th><th>Серии | Batches</th>"
-                "<th>Серии (тест-вредност %%) | Batches (test value %%)</th>"
-                "<th>Опсег од мастерот | Master bracket</th>"
-                "</tr></thead><tbody>%s</tbody></table></div></article>"
-                % (esc(orig), len(recs), renamed, n_new, rows))
-    return out
+            # collect per-batch data
+            items = []
+            for rec in rs:
+                k = norm_b(rec["batch"])
+                a = anch.get(k)
+                val = a["value"] if a else (rec["thc"] * 100 if isinstance(rec["thc"], (int, float)) else None)
+                items.append(dict(batch=rec["batch"], val=val, declared=a is None,
+                                  mb=parse_bracket(rec["bracket"]), ours=ours.get(k)))
+            # axis spans
+            spans = ""
+            mset, wset = [], []
+            for it in items:
+                if it["mb"] and it["mb"][:2] not in mset:
+                    mset.append(it["mb"][:2])
+                    lo, hi = it["mb"][:2]
+                    spans += ('<div class="mspan" style="left:%.3f%%;width:%.3f%%" '
+                              'title="мастер | master: %s"></div>' % (pct(lo), pct(hi - lo), esc(it["mb"][2])))
+                if it["ours"] and it["ours"] not in wset:
+                    wset.append(it["ours"])
+                    lo, hi = it["ours"]
+                    spans += ('<div class="wspan" style="left:%.3f%%;width:%.3f%%" '
+                              'title="наш опсег | our tier: %.1f–%.1f"></div>' % (pct(lo), pct(hi - lo), lo, hi))
+            dots = ""
+            for it in items:
+                if it["val"] is None:
+                    continue
+                cls = "mdot decl" if it["declared"] else "mdot"
+                dots += ('<div class="%s" style="left:%.3f%%" title="%s · %.2f%%%s"></div>'
+                         % (cls, pct(it["val"]), esc(it["batch"]), it["val"],
+                            " · декларирана | declared" if it["declared"] else ""))
+            gridt = "".join('<i style="left:%.3f%%"></i>' % pct(x) for x in range(5, 35, 5))
+            # verdicts (tested batches only)
+            tested = [it for it in items if it["val"] is not None and not it["declared"]]
+            out_today = [it for it in tested if it["mb"] and not (it["mb"][0] <= it["val"] <= it["mb"][1])]
+            fail_win = []
+            for it in tested:
+                if not it["mb"]:
+                    continue
+                u = U_RATIO * it["val"]
+                if not (it["mb"][0] <= it["val"] - D_YEAR - u and it["val"] + u <= it["mb"][1]):
+                    fail_win.append(it)
+            ok_ours = [it for it in tested if it["ours"] and
+                       it["ours"][0] <= it["val"] - D_YEAR - U_RATIO * it["val"] + 0.51 and
+                       it["val"] + U_RATIO * it["val"] <= it["ours"][1] + 0.01]
+            g_total += len(tested)
+            g_out_today += len(out_today)
+            g_fail_win += len(fail_win)
+            g_have_ours += sum(1 for it in tested if it["ours"])
+            g_ok_ours += len(ok_ours)
+            v1 = ('<span class="vchip bad">%d/%d надвор од мастер-опсегот ДЕНЕС | outside master bracket TODAY</span>'
+                  % (len(out_today), len(tested))) if out_today else                  ('<span class="vchip ok">сите внатре во мастер-опсегот денес | all inside master today</span>'
+                  if tested else '<span class="vchip mut">нема тестирани | none tested</span>')
+            v2 = ""
+            if tested:
+                if fail_win:
+                    v2 = ('<span class="vchip bad">мастер-опсегот НЕ издржува 1 година за %d/%d | '
+                          "master bracket fails the 1-year window for %d/%d</span>"
+                          % (len(fail_win), len(tested), len(fail_win), len(tested)))
+                else:
+                    v2 = ('<span class="vchip ok">мастер-опсегот издржува 1 година | master holds 1 year</span>')
+            v3 = ('<span class="vchip ours">нашиот опсег ги држи сите %d | our tier holds all %d</span>'
+                  % (len(ok_ours), len(ok_ours))) if ok_ours else ""
+            blist = ", ".join("%s (%s)" % (esc(it["batch"]),
+                                           ("%.2f" % it["val"]) if it["val"] is not None and not it["declared"]
+                                           else ("%.1f декл." % it["val"] if it["val"] is not None else "—"))
+                              for it in items)
+            mb_lbl = " · ".join(sorted({it["mb"][2] for it in items if it["mb"]})) or "—"
+            ours_lbl = " · ".join("%.1f–%.1f" % w for w in wset) or "—"
+            rows_html += (
+                '<div class="flowrow">'
+                '<div class="flowname">%s<span class="bchip %s">%s</span>%s'
+                '<div class="flowbatches">%s</div></div>'
+                '<div class="flowaxis"><div class="miniaxis">%s%s%s</div>'
+                '<div class="cmpline"><span class="cmp m">мастер | master: <b>%s</b></span>'
+                '<span class="cmp w">наш | ours: <b>%s</b></span></div>'
+                '<div class="verdicts">%s %s %s</div></div></div>'
+                % ((esc(neu) if is_same else "<b>%s</b>" % esc(neu)),
+                   esc(brand.lower()), esc(brand),
+                   ' <span class="keepname">без промена | unchanged</span>' if is_same else "",
+                   blist, gridt, spans, dots, esc(mb_lbl), ours_lbl, v1, v2, v3))
+        cards += ('<article class="rencard"><div class="shead"><h3>%s</h3>'
+                  '<span class="stat">серии | batches <b>%d</b></span>'
+                  '<span class="stat">преименувани | renamed <b>%d</b></span>'
+                  '<span class="stat">нови имиња | new names <b>%d</b></span></div>%s</article>'
+                  % (esc(orig), n_batches, n_renamed, len(news), rows_html))
+    summary = (
+        '<div class="rensum">'
+        '<div class="rs"><b>%d</b>тестирани серии од мастерот | tested batches from the master</div>'
+        '<div class="rs bad"><b>%d</b>веќе НАДВОР од мастер-опсегот денес | already OUTSIDE the master bracket today</div>'
+        '<div class="rs bad"><b>%d</b>мастер-опсегот не издржува 1 година (D+U прозорец) | master fails the 1-year D+U window</div>'
+        '<div class="rs ok"><b>%d/%d</b>во нашите опсези: гарантирано и по 1 година | in our tiers: guaranteed even after 1 year</div>'
+        "</div>" % (g_total, g_out_today, g_fail_win, g_ok_ours, g_have_ours))
+    return summary + cards
 
 
 def stab_table():
@@ -534,14 +674,20 @@ each result (percentage points). Δ to next = distance to the next higher result
 percentage points and as a relative %% of the lower value.</p>
 %s</section>
 
-<section><h2>Преименувања по сорта <span>| Renames per strain — корелација со новите имиња и опсезите од Portfolio Master</span></h2>
+<section><h2>Преименувања: наши опсези наспроти мастерот <span>| Renames: our ranges vs the Portfolio Master</span></h2>
 <p style="font-size:12.5px;color:var(--mut);margin-bottom:14px">
-За секоја изворна сорта: сите серии со нивните тест-вредности, во колку различни нови имиња
-се преименувани, и кој опсег на потенција го наведува самиот документ каде што се
-дефинирани новите имиња (BCP_PRODUCT_MASTER_FINAL.xlsx, лист 01_Portfolio_Master). |
-For every original strain: all batches with their test values, how many distinct new names
-they were renamed into, and the potency bracket stated by the very document that defines
-the renames.</p>
+За секоја изворна сорта — во колку нови имиња се преименувани сериите, и за секое ново име:
+тестираните вредности (точки), <b style="color:#8A6D14">опсегот што го предлага мастер-документот</b>
+(жолто, BCP_PRODUCT_MASTER_FINAL.xlsx · 01_Portfolio_Master) наспроти
+<b style="color:#1E8449">нашиот статистички изведен опсег</b> (зелено: сидро − D − U до сидро + U;
+D = 1,5 пп/год деградациска резерва, U ≈ 6,2%% мерна неодреденост, k=2) — на иста оска 0–35%%.
+Пресудите покажуваат дали серијата ВЕЌЕ денес тестира надвор од мастер-опсегот и дали
+мастер-опсегот би издржал повторно мерење по една година складирање. | For every original
+strain — how many new names its batches were renamed into, and per new name: the tested
+values (dots), <b style="color:#8A6D14">the bracket the master document suggests</b> (amber)
+versus <b style="color:#1E8449">our statistically derived range</b> (green), on one 0–35%%
+axis. The verdicts show whether a batch ALREADY tests outside the master bracket today, and
+whether that bracket would survive a remeasure after one more year of storage.</p>
 %s</section>
 
 <section><h2>Залиха Т1/Т2/Т3 <span>| Stock — предложени класи по серија</span></h2>
@@ -568,7 +714,7 @@ The laboratory certificates in the QMS remain authoritative.</span>
 </div></footer>
 </body></html>
 """ % (CSS, d["n_results"] + n_stab_usable, d["n_strains"], d["n_batches"], n_stab_usable,
-       nav, stab_table(), strain_cards(), renames_overview(), stock_table(),
+       nav, stab_table(), strain_cards(), renames_section(), stock_table(),
        d["n_results"], d["n_strains"], n_stab_usable, d["n_results"], n_stab_usable)
 
 out = os.path.join(HERE, "Potency_Atlas.html")
