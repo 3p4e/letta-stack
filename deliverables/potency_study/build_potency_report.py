@@ -28,12 +28,12 @@ NAVY = "2B547E"; INK = "16232B"; ROSE = "FDECEA"; MINT = "E2EFDA"
 
 doc = Document(pp_assets.TEMPLATE)
 pr.wipe_body(doc)
-pr.informal_header(doc, "СТУДИЈА НА ПОТЕНЦА ПО СОРТИ", "Strain Potency Study",
+pr.informal_header(doc, "СТУДИЈА НА ПОТЕНЦИЈА ПО СОРТИ", "Strain Potency Study",
                     "Неформален работен документ", "Informal working document")
 
 n_stab_usable = sum(1 for r in d["stability"] if r["usable"])
 pr.cover_page(
-    doc, "Студија на потенца по сорти", "Strain Potency Study",
+    doc, "Студија на потенција по сорти", "Strain Potency Study",
     [("Опфат | Scope",
       "Сите некогаш тестирани резултати за Вкупен Δ⁹-THC, за сите серии, по сорта + "
       "предлог за нови опсези по класи за залихата од Транша 1/2/3 | Every Total Δ⁹-THC "

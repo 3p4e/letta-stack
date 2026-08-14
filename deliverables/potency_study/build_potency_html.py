@@ -24,6 +24,30 @@ import os
 HERE = os.path.dirname(os.path.abspath(__file__))
 d = json.load(open(os.path.join(HERE, "potency_dataset.json"), encoding="utf-8"))
 F = json.load(open(os.path.join(HERE, "webfonts", "fonts_b64.json"), encoding="utf-8"))
+PM = json.load(open(os.path.join(HERE, "portfolio_master.json"), encoding="utf-8"))
+
+# canonical register spellings for the master's Original column
+CANON = {"Cap Junkie": "Cap Junky", "CashCow": "Cash Cow", "GG4": "Gorilla Glue",
+         "Grapes and Cream": "Graps & Creme", "Jelly Donuts": "Jelly Donutz",
+         "Sleepy Joe": "Sleepy Joy", "Clemosa": "Clemosa a bud",
+         "Wedding Crusher": "Wedding Crasher", "Appels & Bananas": "Apple and Banana",
+         "Apples and Bananas": "Apple and Banana"}
+
+
+def norm_b(b):
+    b = (b or "").strip().upper().replace("OMP", "OPM")
+    import re as _re
+    return _re.sub(r"/0(\d)", r"/\1", b)
+
+
+REN = {norm_b(r["batch"]): r for r in PM}
+
+
+def ren_of(batch):
+    r = REN.get(norm_b(batch))
+    if r and r["original"].strip().lower() != r["neu"].strip().lower():
+        return r
+    return None
 
 OLD_TIERS = [5.00, 15.90, 22.90, 26.90, 30.00]
 AX = 35.0
@@ -176,6 +200,15 @@ td.dev{color:var(--mut)}
 .stabnote{color:var(--rose);font-size:11.5px}
 details{margin-top:8px}
 summary{cursor:pointer;font-weight:600;color:var(--navy);padding:10px 0}
+.dot.ren{box-shadow:0 0 0 1px var(--navy2),0 0 0 4px rgba(201,162,39,.55)}
+.renlist{padding:4px 18px 10px;font-size:11.5px;color:var(--mut);line-height:2.1}
+.renlist .renitem{white-space:nowrap;margin-right:16px}
+.renlist b{color:var(--navy)}
+.bchip{display:inline-block;font-size:8.5px;font-weight:700;letter-spacing:.08em;
+ padding:1px 6px;border-radius:2px;margin-left:5px;vertical-align:1px}
+.bchip.steady{background:#EDF3F9;color:var(--navy2);border:1px solid var(--navy2)}
+.bchip.cayn{background:#F5EEF9;color:#7B4F8C;border:1px solid #7B4F8C}
+.keepname{font-size:9.5px;color:var(--mut);font-weight:400;margin-left:5px}
 .decl td{background:#FFF8E7 !important}
 tr.rej td{color:#9AA7B4;text-decoration:line-through}
 tr.rej td.keep{text-decoration:none;color:var(--rose);font-size:11px;white-space:normal}
@@ -201,10 +234,13 @@ def axis_html(s, st, tiers, stab):
         ci = '<div class="ci" style="left:%.3f%%;width:%.3f%%"></div>' % (
             pct(st["ci95"][0]), pct(st["ci95"][1] - st["ci95"][0]))
     mean = '<div class="mean" style="left:calc(%.3f%% - 1px)"></div>' % pct(st["mean"])
-    dots = "".join(
-        '<div class="dot" style="left:%.3f%%" title="%s · %s · %s · %.2f%%"></div>'
-        % (pct(r["value"]), esc(r["batch"]), esc(r["date"]), esc(r["lab"]), r["value"])
-        for r in per[s])
+    dots = ""
+    for r in per[s]:
+        rn = ren_of(r["batch"])
+        extra = (" · %s → %s (%s)" % (rn["original"], rn["neu"], rn["brand"])) if rn else ""
+        dots += ('<div class="dot%s" style="left:%.3f%%" title="%s · %s · %s · %.2f%%%s"></div>'
+                 % (" ren" if rn else "", pct(r["value"]), esc(r["batch"]), esc(r["date"]),
+                    esc(r["lab"]), r["value"], esc(extra)))
     tt = ""
     for i, t in enumerate(tiers):
         lo, hi = t["range"]
@@ -219,9 +255,19 @@ def axis_html(s, st, tiers, stab):
                % (cls, pct(r["total_thc"]), esc(r["batch"]), r["month"], esc(r["arm"]),
                   r["total_thc"], r["cbn"]))
     scale = "".join("<span>%d</span>" % x for x in range(0, 36, 5))
+    ren_items = []
+    for r in per[s]:
+        rn = ren_of(r["batch"])
+        if rn:
+            ren_items.append('<span class="renitem"><b>%.2f%%</b> %s: %s → <b>%s</b>'
+                             '<span class="bchip %s">%s</span></span>'
+                             % (r["value"], esc(r["batch"]), esc(rn["original"]),
+                                esc(rn["neu"]), esc(rn["brand"].lower()), esc(rn["brand"])))
+    renlist = ('<div class="renlist">Преименувани серии на лентата | Renamed batches on the '
+               'band: %s</div>' % " ".join(ren_items)) if ren_items else ""
     return ('<div class="axiswrap"><div class="axis">%s%s%s%s%s%s%s</div>'
-            '<div class="scale">%s</div></div>'
-            % (zones, olds, ci, mean, tt, dots, sb, scale))
+            '<div class="scale">%s</div></div>%s'
+            % (zones, olds, ci, mean, tt, dots, sb, scale, renlist))
 
 
 def results_table(s, st):
@@ -242,13 +288,18 @@ def results_table(s, st):
             gap = "—"
         badge = '<span class="badge" title="серијата е мерена повеќе пати | batch measured more than once">↺</span>' \
             if bc[r["batch"]] > 1 else ""
+        rn = ren_of(r["batch"])
+        newname = ('%s <span class="bchip %s">%s</span>'
+                   % (esc(rn["neu"]), esc(rn["brand"].lower()), esc(rn["brand"]))) if rn else "—"
         rows += ("<tr><td>%d</td><td class=num>%s%s</td><td>%s</td><td>%s</td>"
-                 "<td class=v>%.2f</td><td class=dev>%.2f</td><td class=gap>%s</td></tr>"
+                 "<td class=v>%.2f</td><td class=dev>%.2f</td><td class=gap>%s</td>"
+                 "<td>%s</td></tr>"
                  % (i + 1, esc(r["batch"]), badge, esc(r["date"]), esc(r["lab"]),
-                    r["value"], dev, gap))
+                    r["value"], dev, gap, newname))
     return ('<div class="tblwrap"><table><thead><tr>'
             "<th>№</th><th>Серија | Batch</th><th>Датум | Date</th><th>Лаб | Lab</th>"
             "<th>Вкупен THC %%</th><th>‖x̄−v‖ (пп)</th><th>Δ до следен | to next</th>"
+            "<th>Ново име | New name</th>"
             "</tr></thead><tbody>%s</tbody></table></div>" % rows)
 
 
@@ -315,6 +366,60 @@ def strain_cards():
     return out
 
 
+def renames_overview():
+    """Per original strain: batches + test values, how many distinct new names they were
+    renamed into, and the THC bracket the Portfolio Master itself states per batch."""
+    from collections import OrderedDict
+    # register anchors by norm batch for test values
+    anch = {}
+    for r in d["register_results"]:
+        k = norm_b(r["batch"])
+        if k not in anch or dkey(r["date"]) > dkey(anch[k]["date"]):
+            anch[k] = r
+    groups = OrderedDict()
+    for rec in PM:
+        orig = CANON.get(rec["original"], rec["original"])
+        groups.setdefault(orig, []).append(rec)
+    out = ""
+    for orig in sorted(groups):
+        recs = groups[orig]
+        news = OrderedDict()
+        for rec in sorted(recs, key=lambda r: r["neu"]):
+            news.setdefault(rec["neu"], []).append(rec)
+        n_new = len(news)
+        renamed = sum(1 for rec in recs if rec["original"].strip().lower() != rec["neu"].strip().lower())
+        rows = ""
+        for neu, rs in news.items():
+            batches = []
+            brackets = []
+            for rec in rs:
+                a = anch.get(norm_b(rec["batch"]))
+                val = ("%.2f" % a["value"]) if a else ("%.1f (декл.)" % (rec["thc"] * 100)
+                                                       if isinstance(rec["thc"], (int, float)) else "—")
+                batches.append("%s (%s)" % (rec["batch"], val))
+                if rec["bracket"] and rec["bracket"] not in brackets:
+                    brackets.append(rec["bracket"])
+            is_same = rs[0]["original"].strip().lower() == neu.strip().lower()
+            brand = rs[0]["brand"]
+            rows += ("<tr><td>%s</td><td class=num>%d</td><td>%s</td><td class=v>%s</td></tr>"
+                     % ((esc(neu) if is_same else "<b>%s</b>" % esc(neu)) +
+                        ' <span class="bchip %s">%s</span>' % (esc(brand.lower()), esc(brand)) +
+                        ("" if not is_same else ' <span class="keepname">без промена | unchanged</span>'),
+                        len(rs), ", ".join(esc(b) for b in batches),
+                        " · ".join(esc(b) for b in brackets) or "—"))
+        out += ('<article class="strain"><div class="shead"><h3>%s</h3>'
+                '<span class="stat">серии во мастерот | batches in master <b>%d</b></span>'
+                '<span class="stat">преименувани | renamed <b>%d</b></span>'
+                '<span class="stat">различни нови имиња | distinct new names <b>%d</b></span></div>'
+                '<div class="tblwrap" style="padding-top:12px"><table><thead><tr>'
+                "<th>Ново име | New name</th><th>Серии | Batches</th>"
+                "<th>Серии (тест-вредност %%) | Batches (test value %%)</th>"
+                "<th>Опсег од мастерот | Master bracket</th>"
+                "</tr></thead><tbody>%s</tbody></table></div></article>"
+                % (esc(orig), len(recs), renamed, n_new, rows))
+    return out
+
+
 def stab_table():
     rows = ""
     for r in d["stability"]:
@@ -369,7 +474,7 @@ HTML = """<!doctype html>
 <body>
 <header class="hero"><div class="wrap">
  <div class="brand">PURELY<em>PLANT</em> <small>THE FUTURE OF CANNABIS</small></div>
- <h1>Атлас на потенца</h1>
+ <h1>Атлас на потенција</h1>
  <div class="en">Potency Atlas</div>
  <div class="sub">Сите некогаш тестирани резултати за Вкупен Δ⁹-THC, по сорта,
  со растојанија меѓу резултатите и предлог за нови опсези по класи за залихата од Транша 1/2/3.
@@ -429,6 +534,16 @@ each result (percentage points). Δ to next = distance to the next higher result
 percentage points and as a relative %% of the lower value.</p>
 %s</section>
 
+<section><h2>Преименувања по сорта <span>| Renames per strain — корелација со новите имиња и опсезите од Portfolio Master</span></h2>
+<p style="font-size:12.5px;color:var(--mut);margin-bottom:14px">
+За секоја изворна сорта: сите серии со нивните тест-вредности, во колку различни нови имиња
+се преименувани, и кој опсег на потенција го наведува самиот документ каде што се
+дефинирани новите имиња (BCP_PRODUCT_MASTER_FINAL.xlsx, лист 01_Portfolio_Master). |
+For every original strain: all batches with their test values, how many distinct new names
+they were renamed into, and the potency bracket stated by the very document that defines
+the renames.</p>
+%s</section>
+
 <section><h2>Залиха Т1/Т2/Т3 <span>| Stock — предложени класи по серија</span></h2>
 <details open><summary>78 серии | batches — сидро, стара класа, нова класа, простор надолу
 | anchor, old grade, new tier, downward headroom</summary>%s</details>
@@ -453,7 +568,7 @@ The laboratory certificates in the QMS remain authoritative.</span>
 </div></footer>
 </body></html>
 """ % (CSS, d["n_results"] + n_stab_usable, d["n_strains"], d["n_batches"], n_stab_usable,
-       nav, stab_table(), strain_cards(), stock_table(),
+       nav, stab_table(), strain_cards(), renames_overview(), stock_table(),
        d["n_results"], d["n_strains"], n_stab_usable, d["n_results"], n_stab_usable)
 
 out = os.path.join(HERE, "Potency_Atlas.html")

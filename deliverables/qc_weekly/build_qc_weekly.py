@@ -187,9 +187,9 @@ pr.subsec(doc, "2.2", "Лабораториско тестирање", "Laborato
 table(["Ставка | Item", "Вредност | Value"],
       [["Ретест-кампања (лабораторија Farmahem), обработена и потврдена во живо | "
         "Retest campaign (Farmahem laboratory), processed and live-verified",
-        "42 сертификати (21 за потенца + 21 за микотоксини), 07–10.08.2026 | "
+        "42 сертификати (21 за потенција + 21 за микотоксини), 07–10.08.2026 | "
         "42 certificates (21 potency + 21 mycotoxin), 07–10.08.2026"],
-       ["Опсег на резултати за потенца | Potency result range",
+       ["Опсег на резултати за потенција | Potency result range",
         "%s (0 резултати надвор од спецификација во кампањата) | %s "
         "(0 out-of-specification results in the campaign)"
         % (d["E2"]["retest_range"], d["E2"]["retest_range"])],
