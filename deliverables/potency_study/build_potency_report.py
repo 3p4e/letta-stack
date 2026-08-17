@@ -190,10 +190,10 @@ for s in sorted(d["stats"]):
                 glo, ghi = t["range"][1], tiers[i + 1]["range"][0]
                 para("НЕМА КЛАСА | NO GRADE — Нема воспоставена класа %.2f%%–%.2f%%: ниту еден тестиран резултат на "
                      "оваа сорта не паѓа во оваа зона, и ниту еден цел број не може да ги "
-                     "премости соседните класи во рамки на 10%%-ограничувањето — резултат тука "
+                     "премости соседните класи во рамки на 10,00%%-ограничувањето — резултат тука "
                      "би побарал индивидуална ОК проценка. | No established grade %.2f%%–%.2f%%: "
                      "no tested result of this strain falls in this zone, and no whole number "
-                     "can bridge the neighbouring tiers within the 10%% cap — a result here would "
+                     "can bridge the neighbouring tiers within the 10.00%% cap — a result here would "
                      "require individual QC assessment." % (glo, ghi, glo, ghi),
                      8, "8A2E2E", italic=True)
     else:
