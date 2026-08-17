@@ -139,32 +139,30 @@ table(["Слој | Layer", "Резултати | Results", "Забелешка |
 # ---------- 3. Per-strain statistics ----------
 pr.chapter(doc, "3", "СТАТИСТИКА ПО СОРТИ", "Per-Strain Statistics")
 rows = []
-for s in sorted(d["stats"], key=lambda x: -d["stats"][x]["mean"]):
+for s in sorted(d["stats"], key=lambda x: -d["stats"][x]["max"]):
     st = d["stats"][s]
-    ci = "%.2f – %.2f" % tuple(st["ci95"]) if st["ci95"] else "—"
-    sd = "%.2f" % st["sd"] if st["sd"] is not None else "—"
-    rows.append([s, st["n"], "%.2f" % st["mean"], sd,
-                 "%.2f – %.2f" % (st["min"], st["max"]), ci])
-table(["Сорта | Strain", "n", "Средна | Mean", "SD", "Опсег | Range", "95% CI (средна | mean)"],
-      rows, [5.4, 1.2, 2.4, 1.8, 3.4, 3.4])
-para("CI е интервал на доверба за средната вредност (t-распределба), прикажан само за n≥3 — "
-     "за n=1 нема дистрибуција, а за n=2 интервалот е математички валиден но бескорисно "
-     "широк. Резултатите вклучуваат и повторени мерења на исти серии: статистиката ја "
-     "опишува популацијата на ТЕСТИРАНИ РЕЗУЛТАТИ, не независни серии. | CI is the "
-     "confidence interval of the mean (t-distribution), shown only for n≥3 — n=1 is no "
-     "distribution and n=2 gives a mathematically valid but uselessly wide interval. "
-     "Results include repeat measurements of the same batches: the statistics describe the "
-     "population of TESTED RESULTS, not independent batches.", 8, "4A5B6C", italic=True)
+    rows.append([s, st["n"], "%.2f%% – %.2f%%" % (st["min"], st["max"])])
+table(["Сорта | Strain", "Бр. тестирани резултати | Number of results tested",
+       "Опсег на тестираните резултати | Range of tested results"],
+      rows, [7.0, 5.0, 5.0])
+para("Ова е опсегот на СИТЕ некогаш тестирани резултати за сортата — не е предложениот "
+     "опсег на потенција по класа (тој е даден подолу, во Поглавје 4, по Pot.- класи). "
+     "Резултатите вклучуваат и повторени мерења на исти серии: бројката ја опишува "
+     "популацијата на ТЕСТИРАНИ РЕЗУЛТАТИ, не независни серии. | This is the range of ALL "
+     "results ever tested for the strain — not the proposed potency grade range (given "
+     "below, in Chapter 4, per Pot.- tier). Results include repeat measurements of the same "
+     "batches: the count describes the population of TESTED RESULTS, not independent "
+     "batches.", 8, "4A5B6C", italic=True)
 
 # ---------- 4. Per-strain distributions ----------
 pr.chapter(doc, "4", "ДИСТРИБУЦИИ ПО СОРТИ", "Per-Strain Distributions")
-para("Оска 0,0–30,0 % Вкупен Δ⁹-THC; секој резултат носи зона од ±1,5% (сините појаси — "
-     "натрупувањето е визуелна густина); крива на дистрибуција за n≥3; средна вредност "
-     "(златна линија) и 95% CI (златна зона); предложени класи W-x (зелено); старите "
-     "стандардни граници (испрекинато). | 0.0–30.0 % axis; each result carries a ±1.5% zone "
-     "(blue bands — stacking is visual density); distribution curve for n≥3; mean (gold "
-     "line) and 95% CI (gold zone); proposed W-x tiers (green); old standard boundaries "
-     "(dashed).", 8.6, "37474F", italic=True)
+para("Оска 0,00%–30,00% Вкупен Δ⁹-THC; секој резултат носи зона од ±1,50% (сините појаси — "
+     "натрупувањето е визуелна густина); крива на дистрибуција за n≥3 (само облик — без "
+     "збирни статистики); предложени класи Pot.-x (зелено, целосна висина); "
+     "старите стандардни граници (испрекинато). | 0.00%–30.00% axis; each result carries a "
+     "±1.50% zone (blue bands — stacking is visual density); distribution curve for n≥3 "
+     "(shape only — no summary statistics); proposed Pot.-x tiers (green, full height); old "
+     "standard boundaries (dashed).", 8.6, "37474F", italic=True)
 for s in sorted(d["stats"]):
     st = d["stats"][s]
     pr.subsec(doc, "4.%d" % (sorted(d["stats"]).index(s) + 1), s, "")
@@ -172,13 +170,21 @@ for s in sorted(d["stats"]):
     tiers = d["merged_ranges"].get(s, [])
     if tiers:
         trs = [["Pot.-%d" % (i + 1), "%.2f%% ± %.2f%%" % (t["nominal"], t["tol"]),
-                "%.2f – %.2f" % tuple(t["range"]),
+                "%.2f%% – %.2f%%" % tuple(t["range"]),
                 ", ".join(t["batches"]),
-                ", ".join("%.2f" % a for a in t["anchors"])]
+                ", ".join("%.2f%%" % a for a in t["anchors"])]
                for i, t in enumerate(tiers)]
-        table(["Класа | Tier", "Номинала ± толер. | Nominal ± tol.", "= Опсег | = Range (%)",
-               "Серии | Batches", "Сидра | Anchors (%)"],
+        table(["Класа | Tier", "Номинала ± толер. | Nominal ± tol.", "= Опсег | = Range",
+               "Серии | Batches", "Сидра | Anchors"],
               trs, [1.5, 3.0, 2.6, 6.4, 4.0])
+        para("Толеранцијата е поставена најшироко што правилата дозволуваат — до 10,00% од "
+             "номиналата — но никогаш толку широко што би ја допрела соседната класа: затоа "
+             "две класи од иста сорта може да носат различен ± процент, по дизајн. Класите "
+             "никогаш не се преклопуваат. | The tolerance is set as wide as the rules allow "
+             "— up to 10.00% of the nominal — but never so wide that it would touch the "
+             "neighbouring tier: that is why two tiers of the same strain can carry a "
+             "different ± percentage, by design. Tiers never overlap.",
+             8, "4A5B6C", italic=True)
     else:
         para("Нема серии на залиха за оваа сорта во Т1/Т2/Т3. | No T1/T2/T3 stock batches "
              "for this strain.", 8.5, "6B7785", italic=True)
@@ -216,8 +222,8 @@ para("Жолти редови: без ниту еден сертификат н�
 # ---------- 6. Overview annex ----------
 pr.chapter(doc, "6", "АНЕКС — ПРЕГЛЕД НА СИТЕ СОРТИ", "Annex — All-Strain Overview")
 pr.figure(doc, os.path.join(D, "figures", "overview.png"),
-          "Сите сорти на една оска 0,0–30,0 %: резултати, средни вредности, предложени класи",
-          "All strains on one 0.0–30.0 % axis: results, means, proposed tiers")
+          "Сите сорти на една оска 0,00%–30,00%: резултати и предложени класи",
+          "All strains on one 0.00%–30.00% axis: results and proposed tiers")
 
 out = os.path.join(D, "Strain_Potency_Study_14Aug2026.docx")
 pr.save(doc, out) if hasattr(pr, "save") else doc.save(out)

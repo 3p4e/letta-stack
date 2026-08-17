@@ -7,7 +7,8 @@
    "printed": "20.79",
    "date": "17.04.2025",
    "lab": "UKIM",
-   "cert": "ППК25105"
+   "cert": "ППК25105",
+   "p_code": "P050102"
   },
   {
    "batch": "GP0824_02",
@@ -16,7 +17,8 @@
    "printed": "22.61",
    "date": "07.08.2026",
    "lab": "FARM",
-   "cert": "197-11-К/26"
+   "cert": "197-11-К/26",
+   "p_code": "P050022"
   },
   {
    "batch": "GP0824_02",
@@ -25,7 +27,8 @@
    "printed": "23.19",
    "date": "10.07.2025",
    "lab": "UKIM",
-   "cert": "ППК25174"
+   "cert": "ППК25174",
+   "p_code": "P050022"
   },
   {
    "batch": "GP0824_02",
@@ -34,7 +37,8 @@
    "printed": "23.79",
    "date": "22.05.2025",
    "lab": "UKIM",
-   "cert": "ППК25139"
+   "cert": "ППК25139",
+   "p_code": "P050022"
   },
   {
    "batch": "GP0824_03",
@@ -43,7 +47,8 @@
    "printed": "25.45",
    "date": "10.07.2025",
    "lab": "UKIM",
-   "cert": "ППК25175"
+   "cert": "ППК25175",
+   "p_code": "P050072"
   },
   {
    "batch": "MB0824_04",
@@ -52,7 +57,8 @@
    "printed": "18.67",
    "date": "06.05.2025",
    "lab": "UKIM",
-   "cert": "ППК25118"
+   "cert": "ППК25118",
+   "p_code": "P050032"
   },
   {
    "batch": "MB0824_05",
@@ -61,7 +67,8 @@
    "printed": "16.82",
    "date": "28.07.2025",
    "lab": "UKIM",
-   "cert": "ППК52211"
+   "cert": "ППК52211",
+   "p_code": "P050112"
   },
   {
    "batch": "BG1024",
@@ -70,7 +77,8 @@
    "printed": "26.14",
    "date": "07.08.2026",
    "lab": "FARM",
-   "cert": "197-1-К/26"
+   "cert": "197-1-К/26",
+   "p_code": null
   },
   {
    "batch": "BG1024",
@@ -79,7 +87,8 @@
    "printed": "21.80",
    "date": "26.02.2025",
    "lab": "UKIM",
-   "cert": "ППК25050"
+   "cert": "ППК25050",
+   "p_code": null
   },
   {
    "batch": "BSS1024",
@@ -88,7 +97,8 @@
    "printed": "25.01",
    "date": "07.08.2026",
    "lab": "FARM",
-   "cert": "197-2-К/26"
+   "cert": "197-2-К/26",
+   "p_code": null
   },
   {
    "batch": "BSS1024",
@@ -97,7 +107,8 @@
    "printed": "21.03",
    "date": "26.02.2025",
    "lab": "UKIM",
-   "cert": "ППК25051"
+   "cert": "ППК25051",
+   "p_code": null
   },
   {
    "batch": "BSS1024_01",
@@ -106,7 +117,8 @@
    "printed": "23.42",
    "date": "10.07.2025",
    "lab": "UKIM",
-   "cert": "ППК25176"
+   "cert": "ППК25176",
+   "p_code": null
   },
   {
    "batch": "CJ1024",
@@ -115,7 +127,8 @@
    "printed": "23.00",
    "date": "26.02.2025",
    "lab": "UKIM",
-   "cert": "ППК25052"
+   "cert": "ППК25052",
+   "p_code": null
   },
   {
    "batch": "GG1024",
@@ -124,7 +137,8 @@
    "printed": "13.34",
    "date": "23.04.2025",
    "lab": "UKIM",
-   "cert": "n/a — Purely Plant in-house CoA (Batch GG1024, no certificate/report number printed)"
+   "cert": "n/a — Purely Plant in-house CoA (Batch GG1024, no certificate/report number printed)",
+   "p_code": null
   },
   {
    "batch": "GG1024_01",
@@ -133,7 +147,8 @@
    "printed": "18.67",
    "date": "07.08.2026",
    "lab": "FARM",
-   "cert": "197-9-К/26"
+   "cert": "197-9-К/26",
+   "p_code": "P050092"
   },
   {
    "batch": "GG1024_01",
@@ -142,7 +157,8 @@
    "printed": "17.22",
    "date": "17.04.2025",
    "lab": "UKIM",
-   "cert": "ППК25104"
+   "cert": "ППК25104",
+   "p_code": "P050092"
   },
   {
    "batch": "GG1024_02",
@@ -151,7 +167,8 @@
    "printed": "15.95",
    "date": "22.05.2025",
    "lab": "UKIM",
-   "cert": "ППК25140"
+   "cert": "ППК25140",
+   "p_code": "P050012"
   },
   {
    "batch": "HPA1024",
@@ -160,7 +177,8 @@
    "printed": "17.31",
    "date": "07.08.2026",
    "lab": "FARM",
-   "cert": "197-13-К/26"
+   "cert": "197-13-К/26",
+   "p_code": null
   },
   {
    "batch": "HPA1024",
@@ -169,7 +187,8 @@
    "printed": "14.97",
    "date": "23.01.2025",
    "lab": "UKIM",
-   "cert": "n/a — Purely Plant in-house CoA (Batch HPA1024, no certificate/report number printed)"
+   "cert": "n/a — Purely Plant in-house CoA (Batch HPA1024, no certificate/report number printed)",
+   "p_code": null
   },
   {
    "batch": "HPA1024_01",
@@ -178,7 +197,8 @@
    "printed": "21.61",
    "date": "07.08.2026",
    "lab": "FARM",
-   "cert": "197-14-К/26"
+   "cert": "197-14-К/26",
+   "p_code": "P050052"
   },
   {
    "batch": "HPA1024_01",
@@ -187,7 +207,8 @@
    "printed": "22.43",
    "date": "24.06.2025",
    "lab": "UKIM",
-   "cert": "НИК22155"
+   "cert": "НИК22155",
+   "p_code": "P050052"
   },
   {
    "batch": "OPM1024",
@@ -196,7 +217,8 @@
    "printed": "20.03",
    "date": "07.08.2026",
    "lab": "FARM",
-   "cert": "197-17-К/26"
+   "cert": "197-17-К/26",
+   "p_code": null
   },
   {
    "batch": "OPM1024",
@@ -205,7 +227,8 @@
    "printed": "19.96",
    "date": "23.04.2025",
    "lab": "UKIM",
-   "cert": "n/a — Purely Plant in-house CoA (Batch OPM1024, no certificate/report number printed)"
+   "cert": "n/a — Purely Plant in-house CoA (Batch OPM1024, no certificate/report number printed)",
+   "p_code": null
   },
   {
    "batch": "OPM1024_01",
@@ -214,7 +237,8 @@
    "printed": "15.38",
    "date": "06.05.2025",
    "lab": "UKIM",
-   "cert": "ППК25117"
+   "cert": "ППК25117",
+   "p_code": "P050042"
   },
   {
    "batch": "OPM1024_02",
@@ -223,7 +247,8 @@
    "printed": "18.04",
    "date": "07.08.2026",
    "lab": "FARM",
-   "cert": "197-18-К/26"
+   "cert": "197-18-К/26",
+   "p_code": "P050062"
   },
   {
    "batch": "OPM1024_02",
@@ -232,7 +257,8 @@
    "printed": "18.27",
    "date": "24.06.2025",
    "lab": "UKIM",
-   "cert": "ППК21554"
+   "cert": "ППК21554",
+   "p_code": "P050062"
   },
   {
    "batch": "OPM1024_03",
@@ -241,7 +267,8 @@
    "printed": "16.55",
    "date": "28.07.2025",
    "lab": "UKIM",
-   "cert": "ППК25210"
+   "cert": "ППК25210",
+   "p_code": "P050082"
   },
   {
    "batch": "BSS052501",
@@ -250,7 +277,8 @@
    "printed": "20.39",
    "date": "28.11.2025",
    "lab": "PP",
-   "cert": "In-house GC cross-check NGP/QCG/SOP-024"
+   "cert": "In-house GC cross-check NGP/QCG/SOP-024",
+   "p_code": "P050192"
   },
   {
    "batch": "CJ052501/1",
@@ -259,7 +287,8 @@
    "printed": "24.05",
    "date": "07.08.2026",
    "lab": "FARM",
-   "cert": "197-3-К/26"
+   "cert": "197-3-К/26",
+   "p_code": "P050162"
   },
   {
    "batch": "CJ052501/1",
@@ -268,7 +297,8 @@
    "printed": "20.29",
    "date": "17.09.2025",
    "lab": "UKIM",
-   "cert": "ППК25280"
+   "cert": "ППК25280",
+   "p_code": "P050162"
   },
   {
    "batch": "CJ052501/2",
@@ -277,7 +307,8 @@
    "printed": "14.93",
    "date": "17.09.2025",
    "lab": "UKIM",
-   "cert": "ППК25281"
+   "cert": "ППК25281",
+   "p_code": "P050172"
   },
   {
    "batch": "GP052501",
@@ -286,7 +317,8 @@
    "printed": "18.52",
    "date": "07.08.2026",
    "lab": "FARM",
-   "cert": "197-10-К/26"
+   "cert": "197-10-К/26",
+   "p_code": "P050152"
   },
   {
    "batch": "GP052501",
@@ -295,7 +327,8 @@
    "printed": "18.98",
    "date": "19.09.2025",
    "lab": "UKIM",
-   "cert": "ППК25279"
+   "cert": "ППК25279",
+   "p_code": "P050152"
   },
   {
    "batch": "HPA052501",
@@ -304,7 +337,8 @@
    "printed": "20.39",
    "date": "19.09.2025",
    "lab": "UKIM",
-   "cert": "ППК25278"
+   "cert": "ППК25278",
+   "p_code": "P050182"
   },
   {
    "batch": "OPM052501",
@@ -313,7 +347,8 @@
    "printed": "14.16",
    "date": "05.09.2025",
    "lab": "UKIM",
-   "cert": "ППК52557"
+   "cert": "ППК52557",
+   "p_code": "P050132"
   },
   {
    "batch": "CJ062501/1",
@@ -322,7 +357,8 @@
    "printed": "21.51",
    "date": "23.10.2025",
    "lab": "UKIM",
-   "cert": "ППК25321"
+   "cert": "ППК25321",
+   "p_code": "P050222"
   },
   {
    "batch": "CJ062501/2",
@@ -331,7 +367,8 @@
    "printed": "18.91",
    "date": "07.08.2026",
    "lab": "FARM",
-   "cert": "197-4-К/26"
+   "cert": "197-4-К/26",
+   "p_code": "P050212"
   },
   {
    "batch": "CJ062501/2",
@@ -340,7 +377,8 @@
    "printed": "16.56",
    "date": "23.10.2025",
    "lab": "UKIM",
-   "cert": "ППК25322"
+   "cert": "ППК25322",
+   "p_code": "P050212"
   },
   {
    "batch": "GP062501",
@@ -349,7 +387,8 @@
    "printed": "24.89",
    "date": "28.11.2025",
    "lab": "PP",
-   "cert": "In-house HPLC cross-check NPCCC/SCP-02, NGP/QCG/SOP-024"
+   "cert": "In-house HPLC cross-check NPCCC/SCP-02, NGP/QCG/SOP-024",
+   "p_code": "P050202"
   },
   {
    "batch": "CJ072501",
@@ -358,7 +397,8 @@
    "printed": "23.70",
    "date": "28.11.2025",
    "lab": "UKIM",
-   "cert": "ППК25367"
+   "cert": "ППК25367",
+   "p_code": "P050252"
   },
   {
    "batch": "CLE072501",
@@ -367,7 +407,8 @@
    "printed": "8.02",
    "date": "21.01.2026",
    "lab": "UKIM",
-   "cert": "PP CoA #027 / ППК25370"
+   "cert": "PP CoA #027 / ППК25370",
+   "p_code": "P050282"
   },
   {
    "batch": "GP072501/1",
@@ -376,7 +417,8 @@
    "printed": "21.36",
    "date": "21.01.2026",
    "lab": "UKIM",
-   "cert": "PP CoA #018 / ППК25378"
+   "cert": "PP CoA #018 / ППК25378",
+   "p_code": "P050292"
   },
   {
    "batch": "GP072501/2",
@@ -385,7 +427,8 @@
    "printed": "19.81",
    "date": "21.01.2026",
    "lab": "UKIM",
-   "cert": "PP CoA #019 / ППК25379"
+   "cert": "PP CoA #019 / ППК25379",
+   "p_code": "P050302"
   },
   {
    "batch": "PM072501",
@@ -394,7 +437,8 @@
    "printed": "10.01",
    "date": "28.11.2025",
    "lab": "UKIM",
-   "cert": "ППК25368"
+   "cert": "ППК25368",
+   "p_code": "P050272"
   },
   {
    "batch": "WC072501",
@@ -403,7 +447,8 @@
    "printed": "22.11",
    "date": "28.11.2025",
    "lab": "UKIM",
-   "cert": "ППК25369"
+   "cert": "ППК25369",
+   "p_code": "P050262"
   },
   {
    "batch": "CJ082501/1",
@@ -412,7 +457,8 @@
    "printed": "24.96",
    "date": "21.01.2026",
    "lab": "UKIM",
-   "cert": "ППК26002"
+   "cert": "ППК26002",
+   "p_code": "P060022"
   },
   {
    "batch": "CJ082501/2",
@@ -421,7 +467,8 @@
    "printed": "18.29",
    "date": "07.08.2026",
    "lab": "FARM",
-   "cert": "197-5-К/26"
+   "cert": "197-5-К/26",
+   "p_code": "P060032"
   },
   {
    "batch": "CJ082501/2",
@@ -430,7 +477,8 @@
    "printed": "20.84",
    "date": "21.01.2026",
    "lab": "UKIM",
-   "cert": "ППК26003"
+   "cert": "ППК26003",
+   "p_code": "P060032"
   },
   {
    "batch": "GP082501/1",
@@ -439,7 +487,8 @@
    "printed": "21.29",
    "date": "21.01.2026",
    "lab": "UKIM",
-   "cert": "PP CoA #020 / ППК25380"
+   "cert": "PP CoA #020 / ППК25380",
+   "p_code": "P050312"
   },
   {
    "batch": "GP082501/2",
@@ -448,7 +497,8 @@
    "printed": "15.70",
    "date": "07.08.2026",
    "lab": "FARM",
-   "cert": "197-12-К/26"
+   "cert": "197-12-К/26",
+   "p_code": "P050322"
   },
   {
    "batch": "GP082501/2",
@@ -457,7 +507,8 @@
    "printed": "14.83",
    "date": "21.01.2026",
    "lab": "UKIM",
-   "cert": "PP CoA #021 / ППК25381"
+   "cert": "PP CoA #021 / ППК25381",
+   "p_code": "P050322"
   },
   {
    "batch": "WC082501",
@@ -466,7 +517,8 @@
    "printed": "21.67",
    "date": "21.01.2026",
    "lab": "UKIM",
-   "cert": "ППК26001"
+   "cert": "ППК26001",
+   "p_code": "P060012"
   },
   {
    "batch": "AB092501",
@@ -475,7 +527,8 @@
    "printed": "16.93",
    "date": "21.01.2026",
    "lab": "UKIM",
-   "cert": "PP CoA #037 / ППК26005"
+   "cert": "PP CoA #037 / ППК26005",
+   "p_code": "P060052"
   },
   {
    "batch": "CJ092501",
@@ -484,7 +537,8 @@
    "printed": "22.30",
    "date": "21.01.2026",
    "lab": "UKIM",
-   "cert": "ППК26007"
+   "cert": "ППК26007",
+   "p_code": "P060072"
   },
   {
    "batch": "GP092501",
@@ -493,7 +547,8 @@
    "printed": "25.73",
    "date": "21.01.2026",
    "lab": "UKIM",
-   "cert": "ППК26009"
+   "cert": "ППК26009",
+   "p_code": "P060092"
   },
   {
    "batch": "OPM092501",
@@ -502,7 +557,8 @@
    "printed": "9.43",
    "date": "21.01.2026",
    "lab": "UKIM",
-   "cert": "ППК26008"
+   "cert": "ППК26008",
+   "p_code": "P060042"
   },
   {
    "batch": "PM092501",
@@ -511,7 +567,8 @@
    "printed": "12.25",
    "date": "07.08.2026",
    "lab": "FARM",
-   "cert": "197-20-К/26"
+   "cert": "197-20-К/26",
+   "p_code": "P060062"
   },
   {
    "batch": "PM092501",
@@ -520,7 +577,8 @@
    "printed": "14.06",
    "date": "21.01.2026",
    "lab": "UKIM",
-   "cert": "ППК26004"
+   "cert": "ППК26004",
+   "p_code": "P060062"
   },
   {
    "batch": "SJ092501",
@@ -529,7 +587,8 @@
    "printed": "10.96",
    "date": "21.01.2026",
    "lab": "UKIM",
-   "cert": "ППК26006"
+   "cert": "ППК26006",
+   "p_code": "P060082"
   },
   {
    "batch": "GRC102501/2",
@@ -538,7 +597,8 @@
    "printed": "11.53",
    "date": "04.03.2026",
    "lab": "FARM",
-   "cert": "051-6-K/26"
+   "cert": "051-6-K/26",
+   "p_code": null
   },
   {
    "batch": "J31102501",
@@ -547,7 +607,8 @@
    "printed": "19.14",
    "date": "04.03.2026",
    "lab": "FARM",
-   "cert": "051-1-K/26"
+   "cert": "051-1-K/26",
+   "p_code": null
   },
   {
    "batch": "J31102501",
@@ -556,7 +617,8 @@
    "printed": "17.32",
    "date": "07.08.2026",
    "lab": "FARM",
-   "cert": "197-16-К/26"
+   "cert": "197-16-К/26",
+   "p_code": null
   },
   {
    "batch": "KC102501",
@@ -565,7 +627,8 @@
    "printed": "17.04",
    "date": "04.03.2026",
    "lab": "FARM",
-   "cert": "051-4-K/26"
+   "cert": "051-4-K/26",
+   "p_code": null
   },
   {
    "batch": "SJ102501",
@@ -574,7 +637,8 @@
    "printed": "11.20",
    "date": "04.03.2026",
    "lab": "FARM",
-   "cert": "051-3-K/26"
+   "cert": "051-3-K/26",
+   "p_code": null
   },
   {
    "batch": "CC112501",
@@ -583,7 +647,8 @@
    "printed": "13.35",
    "date": "11.05.2026",
    "lab": "UKIM",
-   "cert": "ППК26068"
+   "cert": "ППК26068",
+   "p_code": null
   },
   {
    "batch": "FB112501",
@@ -592,7 +657,8 @@
    "printed": "16.69",
    "date": "11.05.2026",
    "lab": "UKIM",
-   "cert": "ППК26066"
+   "cert": "ППК26066",
+   "p_code": null
   },
   {
    "batch": "GG112501",
@@ -601,7 +667,8 @@
    "printed": "17.94",
    "date": "11.05.2026",
    "lab": "UKIM",
-   "cert": "ППК26061"
+   "cert": "ППК26061",
+   "p_code": null
   },
   {
    "batch": "J31112501",
@@ -610,7 +677,8 @@
    "printed": "25.27",
    "date": "04.03.2026",
    "lab": "FARM",
-   "cert": "051-5-K/26"
+   "cert": "051-5-K/26",
+   "p_code": null
   },
   {
    "batch": "J31112501",
@@ -619,7 +687,8 @@
    "printed": "20.21",
    "date": "09.04.2026",
    "lab": "FARM",
-   "cert": "100-1-K/26"
+   "cert": "100-1-K/26",
+   "p_code": null
   },
   {
    "batch": "JD112501",
@@ -628,7 +697,8 @@
    "printed": "20.32",
    "date": "07.08.2026",
    "lab": "FARM",
-   "cert": "197-15-К/26"
+   "cert": "197-15-К/26",
+   "p_code": null
   },
   {
    "batch": "JD112501",
@@ -637,7 +707,8 @@
    "printed": "19.64",
    "date": "11.05.2026",
    "lab": "UKIM",
-   "cert": "ППК26063"
+   "cert": "ППК26063",
+   "p_code": null
   },
   {
    "batch": "JD112501",
@@ -646,7 +717,8 @@
    "printed": "13.93",
    "date": "11.05.2026",
    "lab": "UKIM",
-   "cert": "ППК26065"
+   "cert": "ППК26065",
+   "p_code": null
   },
   {
    "batch": "OPM112501",
@@ -655,7 +727,8 @@
    "printed": "8.00",
    "date": "05.03.2026",
    "lab": "UKIM",
-   "cert": "ППК26031"
+   "cert": "ППК26031",
+   "p_code": null
   },
   {
    "batch": "PM112501",
@@ -664,7 +737,8 @@
    "printed": "13.33",
    "date": "05.03.2026",
    "lab": "UKIM",
-   "cert": "ППК26030"
+   "cert": "ППК26030",
+   "p_code": null
   },
   {
    "batch": "SCR112501",
@@ -673,7 +747,8 @@
    "printed": "17.13",
    "date": "11.05.2026",
    "lab": "UKIM",
-   "cert": "ППК26069"
+   "cert": "ППК26069",
+   "p_code": null
   },
   {
    "batch": "SJ112501",
@@ -682,7 +757,8 @@
    "printed": "9.20",
    "date": "04.03.2026",
    "lab": "FARM",
-   "cert": "051-2-K/26"
+   "cert": "051-2-K/26",
+   "p_code": null
   },
   {
    "batch": "J31122501",
@@ -691,7 +767,8 @@
    "printed": "19.84",
    "date": "09.04.2026",
    "lab": "FARM",
-   "cert": "100-2-К/26"
+   "cert": "100-2-К/26",
+   "p_code": null
   },
   {
    "batch": "J31122501",
@@ -700,7 +777,8 @@
    "printed": "21.84",
    "date": "09.04.2026",
    "lab": "FARM",
-   "cert": "100-3-К/26"
+   "cert": "100-3-К/26",
+   "p_code": null
   },
   {
    "batch": "OPM122501",
@@ -709,7 +787,8 @@
    "printed": "7.91",
    "date": "07.08.2026",
    "lab": "FARM",
-   "cert": "197-19-К/26"
+   "cert": "197-19-К/26",
+   "p_code": null
   },
   {
    "batch": "OPM122501",
@@ -718,7 +797,8 @@
    "printed": "8.09",
    "date": "09.04.2026",
    "lab": "FARM",
-   "cert": "100-4-К/26"
+   "cert": "100-4-К/26",
+   "p_code": null
   },
   {
    "batch": "CC012601/1",
@@ -727,7 +807,8 @@
    "printed": "17.67",
    "date": "07.08.2026",
    "lab": "FARM",
-   "cert": "197-6-К/26"
+   "cert": "197-6-К/26",
+   "p_code": null
   },
   {
    "batch": "FB012601/1",
@@ -736,7 +817,8 @@
    "printed": "14.68",
    "date": "11.05.2026",
    "lab": "UKIM",
-   "cert": "ППК26067"
+   "cert": "ППК26067",
+   "p_code": null
   },
   {
    "batch": "GG012601",
@@ -745,7 +827,8 @@
    "printed": "15.35",
    "date": "11.05.2026",
    "lab": "UKIM",
-   "cert": "ППК26062"
+   "cert": "ППК26062",
+   "p_code": null
   },
   {
    "batch": "JD012601",
@@ -754,7 +837,8 @@
    "printed": "18.16",
    "date": "11.05.2026",
    "lab": "UKIM",
-   "cert": "ППК26064"
+   "cert": "ППК26064",
+   "p_code": null
   },
   {
    "batch": "FB012602",
@@ -763,7 +847,8 @@
    "printed": "18.86",
    "date": "07.08.2026",
    "lab": "FARM",
-   "cert": "197-7-К/26"
+   "cert": "197-7-К/26",
+   "p_code": null
   },
   {
    "batch": "FB012603",
@@ -772,7 +857,8 @@
    "printed": "20.83",
    "date": "30.06.2026",
    "lab": "UKIM",
-   "cert": "ППК26112"
+   "cert": "ППК26112",
+   "p_code": null
   },
   {
    "batch": "FB012603V",
@@ -781,7 +867,8 @@
    "printed": "18.29",
    "date": "30.06.2026",
    "lab": "UKIM",
-   "cert": "ППК26110"
+   "cert": "ППК26110",
+   "p_code": null
   },
   {
    "batch": "GG012603",
@@ -790,7 +877,8 @@
    "printed": "16.70",
    "date": "07.08.2026",
    "lab": "FARM",
-   "cert": "197-8-К/26"
+   "cert": "197-8-К/26",
+   "p_code": null
   },
   {
    "batch": "GG012603",
@@ -799,7 +887,8 @@
    "printed": "17.59",
    "date": "30.06.2026",
    "lab": "UKIM",
-   "cert": "ППК26114"
+   "cert": "ППК26114",
+   "p_code": null
   },
   {
    "batch": "JD012603/2",
@@ -808,7 +897,8 @@
    "printed": "20.54",
    "date": "30.06.2026",
    "lab": "UKIM",
-   "cert": "ППК26113"
+   "cert": "ППК26113",
+   "p_code": null
   },
   {
    "batch": "JD012603/2V",
@@ -817,7 +907,8 @@
    "printed": "15.16",
    "date": "30.06.2026",
    "lab": "UKIM",
-   "cert": "ППК26111"
+   "cert": "ППК26111",
+   "p_code": null
   },
   {
    "batch": "SCR012603",
@@ -826,7 +917,8 @@
    "printed": "17.84",
    "date": "07.08.2026",
    "lab": "FARM",
-   "cert": "197-21-К/26"
+   "cert": "197-21-К/26",
+   "p_code": null
   },
   {
    "batch": "JD022601",
@@ -835,7 +927,8 @@
    "printed": "18.58",
    "date": "30.06.2026",
    "lab": "UKIM",
-   "cert": "ППК26115"
+   "cert": "ППК26115",
+   "p_code": null
   },
   {
    "batch": "SCR022601",
@@ -844,7 +937,8 @@
    "printed": "21.92",
    "date": "06.07.2026",
    "lab": "UKIM",
-   "cert": "ППК26116"
+   "cert": "ППК26116",
+   "p_code": null
   },
   {
    "batch": "FB032601",
@@ -853,7 +947,8 @@
    "printed": "12.39",
    "date": "21.07.2026",
    "lab": "UKIM",
-   "cert": "ППК26127"
+   "cert": "ППК26127",
+   "p_code": null
   },
   {
    "batch": "GG032601",
@@ -862,7 +957,8 @@
    "printed": "18.98",
    "date": "21.07.2026",
    "lab": "UKIM",
-   "cert": "ППК26128"
+   "cert": "ППК26128",
+   "p_code": null
   },
   {
    "batch": "P160012",
@@ -871,7 +967,8 @@
    "printed": "26.32",
    "date": "06.07.2026",
    "lab": "UKIM",
-   "cert": "ППК26117"
+   "cert": "ППК26117",
+   "p_code": null
   },
   {
    "batch": "P160022",
@@ -880,7 +977,8 @@
    "printed": "25.72",
    "date": "06.07.2026",
    "lab": "UKIM",
-   "cert": "ППК26118"
+   "cert": "ППК26118",
+   "p_code": null
   },
   {
    "batch": "P160032",
@@ -889,7 +987,8 @@
    "printed": "24.78",
    "date": "06.07.2026",
    "lab": "UKIM",
-   "cert": "ППК26119"
+   "cert": "ППК26119",
+   "p_code": null
   }
  ],
  "n_results": 99,
@@ -1050,22 +1149,16 @@
  "stats": {
   "Apple and Banana": {
    "n": 1,
-   "mean": 16.93,
-   "sd": null,
    "min": 16.93,
    "max": 16.93,
-   "ci95": null,
    "values": [
     16.93
    ]
   },
   "Blue Gelato": {
    "n": 2,
-   "mean": 23.97,
-   "sd": 3.07,
    "min": 21.8,
    "max": 26.14,
-   "ci95": null,
    "values": [
     21.8,
     26.14
@@ -1073,14 +1166,8 @@
   },
   "Blue Sunset Sherbet": {
    "n": 4,
-   "mean": 22.46,
-   "sd": 2.14,
    "min": 20.39,
    "max": 25.01,
-   "ci95": [
-    19.06,
-    25.87
-   ],
    "values": [
     20.39,
     21.03,
@@ -1090,14 +1177,8 @@
   },
   "Cap Junky": {
    "n": 12,
-   "mean": 20.78,
-   "sd": 3.11,
    "min": 14.93,
    "max": 24.96,
-   "ci95": [
-    18.8,
-    22.75
-   ],
    "values": [
     14.93,
     16.56,
@@ -1115,11 +1196,8 @@
   },
   "Cash Cow": {
    "n": 2,
-   "mean": 15.51,
-   "sd": 3.05,
    "min": 13.35,
    "max": 17.67,
-   "ci95": null,
    "values": [
     13.35,
     17.67
@@ -1127,25 +1205,16 @@
   },
   "Clemosa a bud": {
    "n": 1,
-   "mean": 8.02,
-   "sd": null,
    "min": 8.02,
    "max": 8.02,
-   "ci95": null,
    "values": [
     8.02
    ]
   },
   "Fat Bastard": {
    "n": 6,
-   "mean": 16.96,
-   "sd": 3.05,
    "min": 12.39,
    "max": 20.83,
-   "ci95": [
-    13.76,
-    20.16
-   ],
    "values": [
     12.39,
     14.68,
@@ -1157,14 +1226,8 @@
   },
   "Gorilla Glue": {
    "n": 9,
-   "mean": 16.86,
-   "sd": 1.77,
    "min": 13.34,
    "max": 18.98,
-   "ci95": [
-    15.5,
-    18.22
-   ],
    "values": [
     13.34,
     15.35,
@@ -1179,14 +1242,8 @@
   },
   "Grape Pie": {
    "n": 17,
-   "mean": 21.99,
-   "sd": 3.53,
    "min": 14.83,
    "max": 26.32,
-   "ci95": [
-    20.17,
-    23.8
-   ],
    "values": [
     14.83,
     15.7,
@@ -1209,25 +1266,16 @@
   },
   "Graps & Creme": {
    "n": 1,
-   "mean": 11.53,
-   "sd": null,
    "min": 11.53,
    "max": 11.53,
-   "ci95": null,
    "values": [
     11.53
    ]
   },
   "High Pro Amnesia": {
    "n": 5,
-   "mean": 19.34,
-   "sd": 3.12,
    "min": 14.97,
    "max": 22.43,
-   "ci95": [
-    15.46,
-    23.22
-   ],
    "values": [
     14.97,
     17.31,
@@ -1238,14 +1286,8 @@
   },
   "Jelly Donutz": {
    "n": 7,
-   "mean": 18.05,
-   "sd": 2.57,
    "min": 13.93,
    "max": 20.54,
-   "ci95": [
-    15.67,
-    20.42
-   ],
    "values": [
     13.93,
     15.16,
@@ -1258,14 +1300,8 @@
   },
   "Jokerz 31": {
    "n": 6,
-   "mean": 20.6,
-   "sd": 2.72,
    "min": 17.32,
    "max": 25.27,
-   "ci95": [
-    17.75,
-    23.46
-   ],
    "values": [
     17.32,
     19.14,
@@ -1277,22 +1313,16 @@
   },
   "Kush Crasher": {
    "n": 1,
-   "mean": 17.04,
-   "sd": null,
    "min": 17.04,
    "max": 17.04,
-   "ci95": null,
    "values": [
     17.04
    ]
   },
   "Motor Breath": {
    "n": 2,
-   "mean": 17.75,
-   "sd": 1.31,
    "min": 16.82,
    "max": 18.67,
-   "ci95": null,
    "values": [
     16.82,
     18.67
@@ -1300,14 +1330,8 @@
   },
   "Orange Punch Mimosa": {
    "n": 11,
-   "mean": 14.17,
-   "sd": 4.93,
    "min": 7.91,
    "max": 20.03,
-   "ci95": [
-    10.85,
-    17.48
-   ],
    "values": [
     7.91,
     8.0,
@@ -1324,14 +1348,8 @@
   },
   "Permanent Marker": {
    "n": 4,
-   "mean": 12.41,
-   "sd": 1.77,
    "min": 10.01,
    "max": 14.06,
-   "ci95": [
-    9.6,
-    15.22
-   ],
    "values": [
     10.01,
     12.25,
@@ -1341,14 +1359,8 @@
   },
   "Scrambler": {
    "n": 3,
-   "mean": 18.96,
-   "sd": 2.59,
    "min": 17.13,
    "max": 21.92,
-   "ci95": [
-    12.54,
-    25.39
-   ],
    "values": [
     17.13,
     17.84,
@@ -1357,14 +1369,8 @@
   },
   "Sleepy Joy": {
    "n": 3,
-   "mean": 10.45,
-   "sd": 1.09,
    "min": 9.2,
    "max": 11.2,
-   "ci95": [
-    7.74,
-    13.17
-   ],
    "values": [
     9.2,
     10.96,
@@ -1373,11 +1379,8 @@
   },
   "Wedding Crasher": {
    "n": 2,
-   "mean": 21.89,
-   "sd": 0.31,
    "min": 21.67,
    "max": 22.11,
-   "ci95": null,
    "values": [
     21.67,
     22.11
@@ -1402,8 +1405,6 @@
    "tier": 1,
    "nominal": 26.0,
    "tol": 2.6,
-   "single_batch": true,
-   "capped": true,
    "headroom_down": 2.74
   },
   {
@@ -1416,16 +1417,14 @@
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    22.5,
-    27.5
+    24.21,
+    25.79
    ],
    "basis": "anchor",
    "tier": 2,
    "nominal": 25.0,
-   "tol": 2.5,
-   "single_batch": true,
-   "capped": true,
-   "headroom_down": 2.51
+   "tol": 0.7900000000000007,
+   "headroom_down": 0.8
   },
   {
    "tranche": "1",
@@ -1437,16 +1436,14 @@
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    20.7,
-    25.3
+    22.01,
+    25.99
    ],
    "basis": "anchor",
    "tier": 3,
-   "nominal": 23.0,
-   "tol": 2.3,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 3.35
+   "nominal": 24.0,
+   "tol": 1.99,
+   "headroom_down": 2.04
   },
   {
    "tranche": "1",
@@ -1463,10 +1460,8 @@
    ],
    "basis": "anchor",
    "tier": 2,
-   "nominal": 20,
+   "nominal": 20.0,
    "tol": 2.0,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 0.91
   },
   {
@@ -1484,10 +1479,8 @@
    ],
    "basis": "anchor",
    "tier": 2,
-   "nominal": 20,
+   "nominal": 20.0,
    "tol": 2.0,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 0.29
   },
   {
@@ -1507,8 +1500,6 @@
    "tier": 2,
    "nominal": 18.0,
    "tol": 1.8,
-   "single_batch": true,
-   "capped": true,
    "headroom_down": 1.47
   },
   {
@@ -1521,16 +1512,14 @@
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    17.1,
-    20.9
+    18.0,
+    22.0
    ],
    "basis": "anchor",
    "tier": 2,
-   "nominal": 19.0,
-   "tol": 1.9,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 1.76
+   "nominal": 20.0,
+   "tol": 2.0,
+   "headroom_down": 0.86
   },
   {
    "tranche": "1",
@@ -1542,16 +1531,14 @@
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    15.3,
-    18.7
+    15.41,
+    18.59
    ],
    "basis": "anchor",
    "tier": 2,
    "nominal": 17.0,
-   "tol": 1.7,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 1.4
+   "tol": 1.5899999999999996,
+   "headroom_down": 1.29
   },
   {
    "tranche": "1",
@@ -1563,16 +1550,14 @@
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    15.3,
-    18.7
+    18.6,
+    19.4
    ],
    "basis": "anchor",
-   "tier": 2,
-   "nominal": 17.0,
-   "tol": 1.7,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 3.37
+   "tier": 3,
+   "nominal": 19.0,
+   "tol": 0.40000000000000013,
+   "headroom_down": 0.07
   },
   {
    "tranche": "1",
@@ -1589,10 +1574,8 @@
    ],
    "basis": "anchor",
    "tier": 1,
-   "nominal": 17,
+   "nominal": 17.0,
    "tol": 1.7,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 3.22
   },
   {
@@ -1612,8 +1595,6 @@
    "tier": 2,
    "nominal": 21.0,
    "tol": 2.1,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 3.71
   },
   {
@@ -1631,10 +1612,8 @@
    ],
    "basis": "anchor",
    "tier": 1,
-   "nominal": 17,
+   "nominal": 17.0,
    "tol": 1.7,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 0.4
   },
   {
@@ -1652,10 +1631,8 @@
    ],
    "basis": "anchor",
    "tier": 1,
-   "nominal": 19,
+   "nominal": 19.0,
    "tol": 1.9,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 0.21
   },
   {
@@ -1668,16 +1645,14 @@
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    19.8,
-    24.2
+    20.91,
+    23.09
    ],
    "basis": "anchor",
    "tier": 2,
    "nominal": 22.0,
-   "tol": 2.2,
-   "single_batch": true,
-   "capped": true,
-   "headroom_down": 1.81
+   "tol": 1.0900000000000014,
+   "headroom_down": 0.7
   },
   {
    "tranche": "1",
@@ -1689,16 +1664,14 @@
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    17.1,
-    20.9
+    18.0,
+    22.0
    ],
    "basis": "anchor",
    "tier": 2,
-   "nominal": 19.0,
-   "tol": 1.9,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 3.22
+   "nominal": 20.0,
+   "tol": 2.0,
+   "headroom_down": 2.32
   },
   {
    "tranche": "1",
@@ -1715,10 +1688,8 @@
    ],
    "basis": "anchor",
    "tier": 1,
-   "nominal": 19,
+   "nominal": 19.0,
    "tol": 1.9,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 0.22
   },
   {
@@ -1731,16 +1702,14 @@
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    18.0,
-    22.0
+    19.5,
+    20.5
    ],
    "basis": "anchor",
    "tier": 5,
    "nominal": 20.0,
-   "tol": 2.0,
-   "single_batch": true,
-   "capped": true,
-   "headroom_down": 2.03
+   "tol": 0.5000000000000016,
+   "headroom_down": 0.53
   },
   {
    "tranche": "1",
@@ -1752,16 +1721,14 @@
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    15.3,
-    18.7
+    16.51,
+    19.49
    ],
    "basis": "anchor",
    "tier": 4,
-   "nominal": 17.0,
-   "tol": 1.7,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 2.74
+   "nominal": 18.0,
+   "tol": 1.49,
+   "headroom_down": 1.53
   },
   {
    "tranche": "1",
@@ -1778,10 +1745,8 @@
    ],
    "basis": "anchor",
    "tier": 1,
-   "nominal": 8,
+   "nominal": 8.0,
    "tol": 0.8,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 0.71
   },
   {
@@ -1799,10 +1764,8 @@
    ],
    "basis": "anchor",
    "tier": 2,
-   "nominal": 13,
+   "nominal": 13.0,
    "tol": 1.3,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 0.55
   },
   {
@@ -1815,16 +1778,14 @@
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    15.3,
-    18.7
+    16.2,
+    19.8
    ],
    "basis": "anchor",
    "tier": 1,
-   "nominal": 17.0,
-   "tol": 1.7,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 2.54
+   "nominal": 18.0,
+   "tol": 1.8,
+   "headroom_down": 1.64
   },
   {
    "tranche": "2",
@@ -1843,8 +1804,6 @@
    "tier": 1,
    "nominal": 13.0,
    "tol": 1.3,
-   "single_batch": true,
-   "capped": true,
    "headroom_down": 1.21
   },
   {
@@ -1862,10 +1821,8 @@
    ],
    "basis": "anchor",
    "tier": 1,
-   "nominal": 22,
+   "nominal": 22.0,
    "tol": 2.2,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 0.59
   },
   {
@@ -1883,10 +1840,8 @@
    ],
    "basis": "anchor",
    "tier": 2,
-   "nominal": 20,
+   "nominal": 20.0,
    "tol": 2.0,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 3.51
   },
   {
@@ -1899,16 +1854,14 @@
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    20.7,
-    25.3
+    22.01,
+    25.99
    ],
    "basis": "anchor",
    "tier": 3,
-   "nominal": 23.0,
-   "tol": 2.3,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 4.26
+   "nominal": 24.0,
+   "tol": 1.99,
+   "headroom_down": 2.95
   },
   {
    "tranche": "2",
@@ -1920,16 +1873,14 @@
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    20.7,
-    25.3
+    22.01,
+    25.99
    ],
    "basis": "anchor",
    "tier": 3,
-   "nominal": 23.0,
-   "tol": 2.3,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 1.6
+   "nominal": 24.0,
+   "tol": 1.99,
+   "headroom_down": 0.29
   },
   {
    "tranche": "2",
@@ -1946,10 +1897,8 @@
    ],
    "basis": "declared (no assay on file)",
    "tier": 1,
-   "nominal": 13,
+   "nominal": 13.0,
    "tol": 1.3,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 0.62
   },
   {
@@ -1969,8 +1918,6 @@
    "tier": 1,
    "nominal": 10.0,
    "tol": 1.0,
-   "single_batch": true,
-   "capped": true,
    "headroom_down": 0.83
   },
   {
@@ -1990,8 +1937,6 @@
    "tier": 1,
    "nominal": 8.0,
    "tol": 0.8,
-   "single_batch": true,
-   "capped": true,
    "headroom_down": 0.82
   },
   {
@@ -2009,10 +1954,8 @@
    ],
    "basis": "anchor",
    "tier": 1,
-   "nominal": 16,
+   "nominal": 16.0,
    "tol": 1.6,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 0.28
   },
   {
@@ -2032,8 +1975,6 @@
    "tier": 1,
    "nominal": 14.0,
    "tol": 1.4,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 0.74
   },
   {
@@ -2053,8 +1994,6 @@
    "tier": 2,
    "nominal": 21.0,
    "tol": 2.1,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 0.91
   },
   {
@@ -2067,16 +2006,14 @@
    "anchor_date": "10.07.2025",
    "anchor_lab": "UKIM",
    "proposed": [
-    22.5,
-    27.5
+    23.11,
+    26.89
    ],
    "basis": "anchor",
    "tier": 3,
    "nominal": 25.0,
-   "tol": 2.5,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 2.95
+   "tol": 1.8899999999999986,
+   "headroom_down": 2.34
   },
   {
    "tranche": "2",
@@ -2095,8 +2032,6 @@
    "tier": 2,
    "nominal": 21.0,
    "tol": 2.1,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 2.39
   },
   {
@@ -2109,16 +2044,14 @@
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    22.5,
-    27.5
+    23.11,
+    26.89
    ],
    "basis": "anchor",
    "tier": 3,
    "nominal": 25.0,
-   "tol": 2.5,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 3.23
+   "tol": 1.8899999999999986,
+   "headroom_down": 2.62
   },
   {
    "tranche": "2",
@@ -2137,8 +2070,6 @@
    "tier": 2,
    "nominal": 12.0,
    "tol": 1.2,
-   "single_batch": true,
-   "capped": true,
    "headroom_down": 0.73
   },
   {
@@ -2156,10 +2087,8 @@
    ],
    "basis": "anchor",
    "tier": 1,
-   "nominal": 19,
+   "nominal": 19.0,
    "tol": 1.9,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 3.29
   },
   {
@@ -2177,10 +2106,8 @@
    ],
    "basis": "declared (no assay on file)",
    "tier": 1,
-   "nominal": 16,
+   "nominal": 16.0,
    "tol": 1.6,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 2.31
   },
   {
@@ -2193,16 +2120,14 @@
    "anchor_date": "30.06.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    17.1,
-    20.9
+    18.0,
+    22.0
    ],
    "basis": "anchor",
    "tier": 2,
-   "nominal": 19.0,
-   "tol": 1.9,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 3.44
+   "nominal": 20.0,
+   "tol": 2.0,
+   "headroom_down": 2.54
   },
   {
    "tranche": "2",
@@ -2219,10 +2144,8 @@
    ],
    "basis": "anchor",
    "tier": 1,
-   "nominal": 16,
+   "nominal": 16.0,
    "tol": 1.6,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 0.76
   },
   {
@@ -2242,8 +2165,6 @@
    "tier": 1,
    "nominal": 17.0,
    "tol": 1.7,
-   "single_batch": true,
-   "capped": true,
    "headroom_down": 1.74
   },
   {
@@ -2256,16 +2177,14 @@
    "anchor_date": "28.07.2025",
    "anchor_lab": "UKIM",
    "proposed": [
-    15.3,
-    18.7
+    16.2,
+    19.8
    ],
    "basis": "anchor",
    "tier": 1,
-   "nominal": 17.0,
-   "tol": 1.7,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 1.52
+   "nominal": 18.0,
+   "tol": 1.8,
+   "headroom_down": 0.62
   },
   {
    "tranche": "2",
@@ -2277,16 +2196,14 @@
    "anchor_date": "06.05.2025",
    "anchor_lab": "UKIM",
    "proposed": [
-    12.6,
-    15.4
+    13.5,
+    16.5
    ],
    "basis": "anchor",
    "tier": 3,
-   "nominal": 14.0,
-   "tol": 1.4,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 2.78
+   "nominal": 15.0,
+   "tol": 1.5,
+   "headroom_down": 1.88
   },
   {
    "tranche": "2",
@@ -2298,16 +2215,14 @@
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    8.1,
-    9.9
+    9.0,
+    11.0
    ],
    "basis": "anchor",
    "tier": 2,
-   "nominal": 9.0,
-   "tol": 0.9,
-   "single_batch": true,
-   "capped": true,
-   "headroom_down": 1.33
+   "nominal": 10.0,
+   "tol": 1.0,
+   "headroom_down": 0.43
   },
   {
    "tranche": "2",
@@ -2319,16 +2234,14 @@
    "anchor_date": "28.07.2025",
    "anchor_lab": "UKIM",
    "proposed": [
-    15.3,
-    18.7
+    16.51,
+    19.49
    ],
    "basis": "anchor",
    "tier": 4,
-   "nominal": 17.0,
-   "tol": 1.7,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 1.25
+   "nominal": 18.0,
+   "tol": 1.49,
+   "headroom_down": 0.04
   },
   {
    "tranche": "2",
@@ -2345,10 +2258,8 @@
    ],
    "basis": "anchor",
    "tier": 2,
-   "nominal": 13,
+   "nominal": 13.0,
    "tol": 1.3,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 1.63
   },
   {
@@ -2368,8 +2279,6 @@
    "tier": 1,
    "nominal": 16.0,
    "tol": 1.6,
-   "single_batch": true,
-   "capped": true,
    "headroom_down": 1.23
   },
   {
@@ -2382,16 +2291,14 @@
    "anchor_date": "11.05.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    15.3,
-    18.7
+    16.2,
+    19.8
    ],
    "basis": "anchor",
    "tier": 1,
-   "nominal": 17.0,
-   "tol": 1.7,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 1.83
+   "nominal": 18.0,
+   "tol": 1.8,
+   "headroom_down": 0.93
   },
   {
    "tranche": "2",
@@ -2410,8 +2317,6 @@
    "tier": 1,
    "nominal": 10.0,
    "tol": 1.0,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 1.96
   },
   {
@@ -2424,16 +2329,14 @@
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    18.9,
-    23.1
+    19.8,
+    24.2
    ],
    "basis": "anchor",
    "tier": 1,
-   "nominal": 21.0,
-   "tol": 2.1,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 2.77
+   "nominal": 22.0,
+   "tol": 2.2,
+   "headroom_down": 1.87
   },
   {
    "tranche": "3",
@@ -2452,8 +2355,6 @@
    "tier": 1,
    "nominal": 17.0,
    "tol": 1.7,
-   "single_batch": true,
-   "capped": true,
    "headroom_down": 1.63
   },
   {
@@ -2471,10 +2372,8 @@
    ],
    "basis": "declared (no assay on file)",
    "tier": 1,
-   "nominal": 22,
+   "nominal": 22.0,
    "tol": 2.2,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 3.62
   },
   {
@@ -2494,8 +2393,6 @@
    "tier": 1,
    "nominal": 15.0,
    "tol": 1.5,
-   "single_batch": true,
-   "capped": true,
    "headroom_down": 1.43
   },
   {
@@ -2508,16 +2405,14 @@
    "anchor_date": "28.11.2025",
    "anchor_lab": "UKIM",
    "proposed": [
-    20.7,
-    25.3
+    22.01,
+    25.99
    ],
    "basis": "anchor",
    "tier": 3,
-   "nominal": 23.0,
-   "tol": 2.3,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 3.0
+   "nominal": 24.0,
+   "tol": 1.99,
+   "headroom_down": 1.69
   },
   {
    "tranche": "3",
@@ -2529,16 +2424,14 @@
    "anchor_date": "26.02.2025",
    "anchor_lab": "UKIM",
    "proposed": [
-    20.7,
-    25.3
+    22.01,
+    25.99
    ],
    "basis": "anchor",
    "tier": 3,
-   "nominal": 23.0,
-   "tol": 2.3,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 2.3
+   "nominal": 24.0,
+   "tol": 1.99,
+   "headroom_down": 0.99
   },
   {
    "tranche": "3",
@@ -2555,10 +2448,8 @@
    ],
    "basis": "anchor",
    "tier": 1,
-   "nominal": 13,
+   "nominal": 13.0,
    "tol": 1.3,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 1.65
   },
   {
@@ -2571,16 +2462,14 @@
    "anchor_date": "30.06.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    17.1,
-    20.9
+    18.0,
+    22.0
    ],
    "basis": "anchor",
    "tier": 2,
-   "nominal": 19.0,
-   "tol": 1.9,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 3.73
+   "nominal": 20.0,
+   "tol": 2.0,
+   "headroom_down": 2.83
   },
   {
    "tranche": "3",
@@ -2592,16 +2481,14 @@
    "anchor_date": "30.06.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    17.1,
-    20.9
+    18.0,
+    22.0
    ],
    "basis": "anchor",
    "tier": 2,
-   "nominal": 19.0,
-   "tol": 1.9,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 1.19
+   "nominal": 20.0,
+   "tol": 2.0,
+   "headroom_down": 0.29
   },
   {
    "tranche": "3",
@@ -2618,10 +2505,8 @@
    ],
    "basis": "anchor",
    "tier": 1,
-   "nominal": 16,
+   "nominal": 16.0,
    "tol": 1.6,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 2.29
   },
   {
@@ -2641,8 +2526,6 @@
    "tier": 1,
    "nominal": 14.0,
    "tol": 1.4,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 2.75
   },
   {
@@ -2655,16 +2538,14 @@
    "anchor_date": "11.05.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    15.3,
-    18.7
+    15.41,
+    18.59
    ],
    "basis": "anchor",
    "tier": 2,
    "nominal": 17.0,
-   "tol": 1.7,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 2.64
+   "tol": 1.5899999999999996,
+   "headroom_down": 2.53
   },
   {
    "tranche": "3",
@@ -2676,16 +2557,14 @@
    "anchor_date": "22.05.2025",
    "anchor_lab": "UKIM",
    "proposed": [
-    15.3,
-    18.7
+    15.41,
+    18.59
    ],
    "basis": "anchor",
    "tier": 2,
    "nominal": 17.0,
-   "tol": 1.7,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 0.65
+   "tol": 1.5899999999999996,
+   "headroom_down": 0.54
   },
   {
    "tranche": "3",
@@ -2697,16 +2576,14 @@
    "anchor_date": "28.11.2025",
    "anchor_lab": "PP",
    "proposed": [
-    22.5,
-    27.5
+    23.11,
+    26.89
    ],
    "basis": "anchor",
    "tier": 3,
    "nominal": 25.0,
-   "tol": 2.5,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 2.39
+   "tol": 1.8899999999999986,
+   "headroom_down": 1.78
   },
   {
    "tranche": "3",
@@ -2725,8 +2602,6 @@
    "tier": 2,
    "nominal": 21.0,
    "tol": 2.1,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 2.46
   },
   {
@@ -2746,8 +2621,6 @@
    "tier": 1,
    "nominal": 7.0,
    "tol": 0.7,
-   "single_batch": true,
-   "capped": true,
    "headroom_down": 0.75
   },
   {
@@ -2760,16 +2633,14 @@
    "anchor_date": "11.05.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    17.1,
-    20.9
+    18.0,
+    22.0
    ],
    "basis": "anchor",
    "tier": 2,
-   "nominal": 19.0,
-   "tol": 1.9,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 1.06
+   "nominal": 20.0,
+   "tol": 2.0,
+   "headroom_down": 0.16
   },
   {
    "tranche": "3",
@@ -2786,10 +2657,8 @@
    ],
    "basis": "anchor",
    "tier": 1,
-   "nominal": 19,
+   "nominal": 19.0,
    "tol": 1.9,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 3.11
   },
   {
@@ -2802,16 +2671,14 @@
    "anchor_date": "09.04.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    19.8,
-    24.2
+    20.91,
+    23.09
    ],
    "basis": "anchor",
    "tier": 2,
    "nominal": 22.0,
-   "tol": 2.2,
-   "single_batch": true,
-   "capped": true,
-   "headroom_down": 2.04
+   "tol": 1.0900000000000014,
+   "headroom_down": 0.93
   },
   {
    "tranche": "3",
@@ -2823,16 +2690,14 @@
    "anchor_date": "06.05.2025",
    "anchor_lab": "UKIM",
    "proposed": [
-    15.3,
-    18.7
+    16.2,
+    19.8
    ],
    "basis": "anchor",
    "tier": 1,
-   "nominal": 17.0,
-   "tol": 1.7,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 3.37
+   "nominal": 18.0,
+   "tol": 1.8,
+   "headroom_down": 2.47
   },
   {
    "tranche": "3",
@@ -2844,16 +2709,14 @@
    "anchor_date": "05.09.2025",
    "anchor_lab": "UKIM",
    "proposed": [
-    12.6,
-    15.4
+    13.5,
+    16.5
    ],
    "basis": "anchor",
    "tier": 3,
-   "nominal": 14.0,
-   "tol": 1.4,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 1.56
+   "nominal": 15.0,
+   "tol": 1.5,
+   "headroom_down": 0.66
   },
   {
    "tranche": "3",
@@ -2870,10 +2733,8 @@
    ],
    "basis": "anchor",
    "tier": 1,
-   "nominal": 8,
+   "nominal": 8.0,
    "tol": 0.8,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 0.8
   },
   {
@@ -2893,8 +2754,6 @@
    "tier": 1,
    "nominal": 10.0,
    "tol": 1.0,
-   "single_batch": true,
-   "capped": true,
    "headroom_down": 1.01
   },
   {
@@ -2907,16 +2766,14 @@
    "anchor_date": null,
    "anchor_lab": null,
    "proposed": [
-    15.3,
-    18.7
+    16.2,
+    19.8
    ],
    "basis": "declared (no assay on file)",
    "tier": 1,
-   "nominal": 17.0,
-   "tol": 1.7,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 2.77
+   "nominal": 18.0,
+   "tol": 1.8,
+   "headroom_down": 1.87
   },
   {
    "tranche": "3",
@@ -2928,16 +2785,14 @@
    "anchor_date": "06.07.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    19.8,
-    24.2
+    19.81,
+    24.19
    ],
    "basis": "anchor",
    "tier": 2,
    "nominal": 22.0,
-   "tol": 2.2,
-   "single_batch": true,
-   "capped": true,
-   "headroom_down": 2.12
+   "tol": 2.1899999999999995,
+   "headroom_down": 2.11
   },
   {
    "tranche": "3",
@@ -2949,16 +2804,14 @@
    "anchor_date": "04.03.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    9.9,
-    12.1
+    11.01,
+    12.99
    ],
    "basis": "anchor",
    "tier": 2,
-   "nominal": 11.0,
-   "tol": 1.1,
-   "single_batch": true,
-   "capped": true,
-   "headroom_down": 1.3
+   "nominal": 12.0,
+   "tol": 0.99,
+   "headroom_down": 0.19
   },
   {
    "tranche": "3",
@@ -2977,8 +2830,6 @@
    "tier": 1,
    "nominal": 10.0,
    "tol": 1.0,
-   "single_batch": false,
-   "capped": true,
    "headroom_down": 0.2
   },
   {
@@ -2998,8 +2849,6 @@
    "tier": 1,
    "nominal": 22.0,
    "tol": 2.2,
-   "single_batch": true,
-   "capped": true,
    "headroom_down": 2.25
   },
   {
@@ -3012,16 +2861,14 @@
    "anchor_date": "28.11.2025",
    "anchor_lab": "UKIM",
    "proposed": [
-    18.9,
-    23.1
+    19.8,
+    24.2
    ],
    "basis": "anchor",
    "tier": 1,
-   "nominal": 21.0,
-   "tol": 2.1,
-   "single_batch": false,
-   "capped": true,
-   "headroom_down": 3.21
+   "nominal": 22.0,
+   "tol": 2.2,
+   "headroom_down": 2.31
   }
  ],
  "merged_ranges": {
@@ -3033,8 +2880,6 @@
     ],
     "nominal": 13.0,
     "tol": 1.3,
-    "single_batch": true,
-    "capped": true,
     "batches": [
      "ACC102501"
     ],
@@ -3051,8 +2896,6 @@
     ],
     "nominal": 17.0,
     "tol": 1.7,
-    "single_batch": true,
-    "capped": true,
     "batches": [
      "AB092501"
     ],
@@ -3069,8 +2912,6 @@
     ],
     "nominal": 26.0,
     "tol": 2.6,
-    "single_batch": true,
-    "capped": true,
     "batches": [
      "BG1024"
     ],
@@ -3085,10 +2926,8 @@
      19.8,
      24.2
     ],
-    "nominal": 22,
+    "nominal": 22.0,
     "tol": 2.2,
-    "single_batch": false,
-    "capped": true,
     "batches": [
      "BSS052501",
      "BSS1024_01/1"
@@ -3100,13 +2939,11 @@
    },
    {
     "range": [
-     22.5,
-     27.5
+     24.21,
+     25.79
     ],
     "nominal": 25.0,
-    "tol": 2.5,
-    "single_batch": true,
-    "capped": true,
+    "tol": 0.7900000000000007,
     "batches": [
      "BSS1024"
     ],
@@ -3123,8 +2960,6 @@
     ],
     "nominal": 15.0,
     "tol": 1.5,
-    "single_batch": true,
-    "capped": true,
     "batches": [
      "CJ052501/02"
     ],
@@ -3137,10 +2972,8 @@
      18.0,
      22.0
     ],
-    "nominal": 20,
+    "nominal": 20.0,
     "tol": 2.0,
-    "single_batch": false,
-    "capped": true,
     "batches": [
      "CJ082501/2",
      "CJ062501/2",
@@ -3154,13 +2987,11 @@
    },
    {
     "range": [
-     20.7,
-     25.3
+     22.01,
+     25.99
     ],
-    "nominal": 23.0,
-    "tol": 2.3,
-    "single_batch": false,
-    "capped": true,
+    "nominal": 24.0,
+    "tol": 1.99,
     "batches": [
      "CJ092501",
      "CJ1024",
@@ -3183,10 +3014,8 @@
      11.7,
      14.3
     ],
-    "nominal": 13,
+    "nominal": 13.0,
     "tol": 1.3,
-    "single_batch": false,
-    "capped": true,
     "batches": [
      "CC012603",
      "CC112501"
@@ -3203,8 +3032,6 @@
     ],
     "nominal": 18.0,
     "tol": 1.8,
-    "single_batch": true,
-    "capped": true,
     "batches": [
      "CC012601/1"
     ],
@@ -3221,8 +3048,6 @@
     ],
     "nominal": 10.0,
     "tol": 1.0,
-    "single_batch": true,
-    "capped": true,
     "batches": [
      "CF102501"
     ],
@@ -3239,8 +3064,6 @@
     ],
     "nominal": 8.0,
     "tol": 0.8,
-    "single_batch": true,
-    "capped": true,
     "batches": [
      "CLE072501"
     ],
@@ -3255,10 +3078,8 @@
      14.4,
      17.6
     ],
-    "nominal": 16,
+    "nominal": 16.0,
     "tol": 1.6,
-    "single_batch": false,
-    "capped": true,
     "batches": [
      "FB012601/1",
      "FB112501"
@@ -3270,13 +3091,11 @@
    },
    {
     "range": [
-     17.1,
-     20.9
+     18.0,
+     22.0
     ],
-    "nominal": 19.0,
-    "tol": 1.9,
-    "single_batch": false,
-    "capped": true,
+    "nominal": 20.0,
+    "tol": 2.0,
     "batches": [
      "FB012603V",
      "FB012602",
@@ -3297,8 +3116,6 @@
     ],
     "nominal": 14.0,
     "tol": 1.4,
-    "single_batch": false,
-    "capped": true,
     "batches": [
      "GG1024",
      "GG012601"
@@ -3310,23 +3127,33 @@
    },
    {
     "range": [
-     15.3,
-     18.7
+     15.41,
+     18.59
     ],
     "nominal": 17.0,
-    "tol": 1.7,
-    "single_batch": false,
-    "capped": true,
+    "tol": 1.5899999999999996,
     "batches": [
      "GG1024_02",
      "GG012603",
-     "GG112501",
-     "GG1024_01"
+     "GG112501"
     ],
     "anchors": [
      15.95,
      16.7,
-     17.94,
+     17.94
+    ]
+   },
+   {
+    "range": [
+     18.6,
+     19.4
+    ],
+    "nominal": 19.0,
+    "tol": 0.40000000000000013,
+    "batches": [
+     "GG1024_01"
+    ],
+    "anchors": [
      18.67
     ]
    }
@@ -3337,10 +3164,8 @@
      15.3,
      18.7
     ],
-    "nominal": 17,
+    "nominal": 17.0,
     "tol": 1.7,
-    "single_batch": false,
-    "capped": true,
     "batches": [
      "GP082501/2",
      "GP052501"
@@ -3357,8 +3182,6 @@
     ],
     "nominal": 21.0,
     "tol": 2.1,
-    "single_batch": false,
-    "capped": true,
     "batches": [
      "GP072501/2",
      "GP082501/1",
@@ -3374,13 +3197,11 @@
    },
    {
     "range": [
-     22.5,
-     27.5
+     23.11,
+     26.89
     ],
     "nominal": 25.0,
-    "tol": 2.5,
-    "single_batch": false,
-    "capped": true,
+    "tol": 1.8899999999999986,
     "batches": [
      "GP062501",
      "GP0824_03",
@@ -3401,8 +3222,6 @@
     ],
     "nominal": 7.0,
     "tol": 0.7,
-    "single_batch": true,
-    "capped": true,
     "batches": [
      "GRC102501/1"
     ],
@@ -3417,8 +3236,6 @@
     ],
     "nominal": 12.0,
     "tol": 1.2,
-    "single_batch": true,
-    "capped": true,
     "batches": [
      "GRC102501/2"
     ],
@@ -3433,10 +3250,8 @@
      17.1,
      20.9
     ],
-    "nominal": 19,
+    "nominal": 19.0,
     "tol": 1.9,
-    "single_batch": false,
-    "capped": true,
     "batches": [
      "HPA1024",
      "HPA052501"
@@ -3448,13 +3263,11 @@
    },
    {
     "range": [
-     19.8,
-     24.2
+     20.91,
+     23.09
     ],
     "nominal": 22.0,
-    "tol": 2.2,
-    "single_batch": true,
-    "capped": true,
+    "tol": 1.0900000000000014,
     "batches": [
      "HPA1024_01"
     ],
@@ -3469,10 +3282,8 @@
      14.4,
      17.6
     ],
-    "nominal": 16,
+    "nominal": 16.0,
     "tol": 1.6,
-    "single_batch": false,
-    "capped": true,
     "batches": [
      "JD012603/02V",
      "JD012603/01"
@@ -3484,13 +3295,11 @@
    },
    {
     "range": [
-     17.1,
-     20.9
+     18.0,
+     22.0
     ],
-    "nominal": 19.0,
-    "tol": 1.9,
-    "single_batch": false,
-    "capped": true,
+    "nominal": 20.0,
+    "tol": 2.0,
     "batches": [
      "JD012601",
      "JD112501",
@@ -3509,10 +3318,8 @@
      17.1,
      20.9
     ],
-    "nominal": 19,
+    "nominal": 19.0,
     "tol": 1.9,
-    "single_batch": false,
-    "capped": true,
     "batches": [
      "J31102501",
      "J31112501"
@@ -3524,13 +3331,11 @@
    },
    {
     "range": [
-     19.8,
-     24.2
+     20.91,
+     23.09
     ],
     "nominal": 22.0,
-    "tol": 2.2,
-    "single_batch": true,
-    "capped": true,
+    "tol": 1.0900000000000014,
     "batches": [
      "J31122501"
     ],
@@ -3547,8 +3352,6 @@
     ],
     "nominal": 17.0,
     "tol": 1.7,
-    "single_batch": true,
-    "capped": true,
     "batches": [
      "KC102501"
     ],
@@ -3560,13 +3363,11 @@
   "Motor Breath": [
    {
     "range": [
-     15.3,
-     18.7
+     16.2,
+     19.8
     ],
-    "nominal": 17.0,
-    "tol": 1.7,
-    "single_batch": false,
-    "capped": true,
+    "nominal": 18.0,
+    "tol": 1.8,
     "batches": [
      "MB0824_05",
      "MB0824_04"
@@ -3583,10 +3384,8 @@
      7.2,
      8.8
     ],
-    "nominal": 8,
+    "nominal": 8.0,
     "tol": 0.8,
-    "single_batch": false,
-    "capped": true,
     "batches": [
      "OPM122501",
      "OPM112501"
@@ -3598,13 +3397,11 @@
    },
    {
     "range": [
-     8.1,
-     9.9
+     9.0,
+     11.0
     ],
-    "nominal": 9.0,
-    "tol": 0.9,
-    "single_batch": true,
-    "capped": true,
+    "nominal": 10.0,
+    "tol": 1.0,
     "batches": [
      "OPM092501"
     ],
@@ -3614,13 +3411,11 @@
    },
    {
     "range": [
-     12.6,
-     15.4
+     13.5,
+     16.5
     ],
-    "nominal": 14.0,
-    "tol": 1.4,
-    "single_batch": false,
-    "capped": true,
+    "nominal": 15.0,
+    "tol": 1.5,
     "batches": [
      "OPM052501",
      "OMP1024_01"
@@ -3632,13 +3427,11 @@
    },
    {
     "range": [
-     15.3,
-     18.7
+     16.51,
+     19.49
     ],
-    "nominal": 17.0,
-    "tol": 1.7,
-    "single_batch": false,
-    "capped": true,
+    "nominal": 18.0,
+    "tol": 1.49,
     "batches": [
      "OPM1024_03",
      "OPM1024_02"
@@ -3650,13 +3443,11 @@
    },
    {
     "range": [
-     18.0,
-     22.0
+     19.5,
+     20.5
     ],
     "nominal": 20.0,
-    "tol": 2.0,
-    "single_batch": true,
-    "capped": true,
+    "tol": 0.5000000000000016,
     "batches": [
      "OPM1024"
     ],
@@ -3673,8 +3464,6 @@
     ],
     "nominal": 10.0,
     "tol": 1.0,
-    "single_batch": true,
-    "capped": true,
     "batches": [
      "PM072501"
     ],
@@ -3687,10 +3476,8 @@
      11.7,
      14.3
     ],
-    "nominal": 13,
+    "nominal": 13.0,
     "tol": 1.3,
-    "single_batch": false,
-    "capped": true,
     "batches": [
      "PM092501",
      "PM112501"
@@ -3709,8 +3496,6 @@
     ],
     "nominal": 16.0,
     "tol": 1.6,
-    "single_batch": true,
-    "capped": true,
     "batches": [
      "PUM102501"
     ],
@@ -3722,13 +3507,11 @@
   "Scrambler": [
    {
     "range": [
-     15.3,
-     18.7
+     16.2,
+     19.8
     ],
-    "nominal": 17.0,
-    "tol": 1.7,
-    "single_batch": false,
-    "capped": true,
+    "nominal": 18.0,
+    "tol": 1.8,
     "batches": [
      "SCR112501",
      "SCR012603",
@@ -3742,13 +3525,11 @@
    },
    {
     "range": [
-     19.8,
-     24.2
+     19.81,
+     24.19
     ],
     "nominal": 22.0,
-    "tol": 2.2,
-    "single_batch": true,
-    "capped": true,
+    "tol": 2.1899999999999995,
     "batches": [
      "SCR022601"
     ],
@@ -3765,8 +3546,6 @@
     ],
     "nominal": 10.0,
     "tol": 1.0,
-    "single_batch": false,
-    "capped": true,
     "batches": [
      "SJ112501",
      "SJ092501"
@@ -3778,13 +3557,11 @@
    },
    {
     "range": [
-     9.9,
-     12.1
+     11.01,
+     12.99
     ],
-    "nominal": 11.0,
-    "tol": 1.1,
-    "single_batch": true,
-    "capped": true,
+    "nominal": 12.0,
+    "tol": 0.99,
     "batches": [
      "SJ102501"
     ],
@@ -3801,8 +3578,6 @@
     ],
     "nominal": 22.0,
     "tol": 2.2,
-    "single_batch": true,
-    "capped": true,
     "batches": [
      "WED102501"
     ],
@@ -3814,13 +3589,11 @@
   "Wedding Crasher": [
    {
     "range": [
-     18.9,
-     23.1
+     19.8,
+     24.2
     ],
-    "nominal": 21.0,
-    "tol": 2.1,
-    "single_batch": false,
-    "capped": true,
+    "nominal": 22.0,
+    "tol": 2.2,
     "batches": [
      "WC082501",
      "WC072501"
@@ -3832,10 +3605,54 @@
    }
   ]
  },
+ "p_codes": {
+  "GP0824_01": "P050102",
+  "GG1024_01": "P050092",
+  "OPM1024_01": "P050042",
+  "MB0824_04": "P050032",
+  "GG1024_02": "P050012",
+  "GP0824_02": "P050022",
+  "HPA1024_01": "P050052",
+  "OPM1024_02": "P050062",
+  "BSS1024_01/1": "P050122",
+  "GP0824_03": "P050072",
+  "OPM1024_03": "P050082",
+  "MB0824_05": "P050112",
+  "OPM052501": "P050132",
+  "GP052501": "P050152",
+  "CJ052501/1": "P050162",
+  "CJ052501/2": "P050172",
+  "HPA052501": "P050182",
+  "BSS052501": "P050192",
+  "GP062501": "P050202",
+  "CJ062501/1": "P050222",
+  "CJ062501/2": "P050212",
+  "CJ072501": "P050252",
+  "PM072501": "P050272",
+  "WC072501": "P050262",
+  "CLE072501": "P050282",
+  "GP072501/1": "P050292",
+  "GP072501/2": "P050302",
+  "GP082501/1": "P050312",
+  "GP082501/2": "P050322",
+  "WC082501": "P060012",
+  "CJ082501/1": "P060022",
+  "CJ082501/2": "P060032",
+  "PM092501": "P060062",
+  "AB092501": "P060052",
+  "SJ092501": "P060082",
+  "CJ092501": "P060072",
+  "OPM092501": "P060042",
+  "GP092501": "P060092",
+  "ACC102501": "P060122",
+  "PUM102501": "P060112",
+  "WED102501": "P060102",
+  "CF102501": "P060132"
+ },
  "design": {
-  "D_year": 1.5,
-  "U_ratio": 0.062,
-  "rule": "Required window: lower = anchor − D − U(anchor), floored at 5.00 (release A.C.); upper = anchor + max(1.0, U(anchor)). Clustering: batches share a tier only while a whole-number nominal exists that keeps every anchor in the tier within ±10% of it (cap_feasible — integer feasibility of [max(a)/1.1, min(a)/0.9]); the old ≤6.5-point window rule is superseded by this cap-driven test. The window is then DECLARED as NOMINAL ± TOLERANCE, in the same nominal-±-tolerance FORM the issued QCSP 001 specifications already use — but here the nominal is fixed to a whole number (18.00 %, never 18.50 % or 18.45 %, unlike the issued specs' bracket-midpoint nominals). OWNER CEILING: the tolerance may never exceed 10% of the nominal, for ANY batch or strain — this binds every declaration in the study. Where the window's own required tolerance is ≤ 10% of the nominal, that required tolerance is used exactly (rounded UP to the next 0.01, so rounding can only widen a declaration, never lose coverage), and the tier fully covers the one-year D+U window (capped=false). Where the required tolerance would exceed 10%, the ceiling wins instead (capped=true): the declared grade is narrower than the one-year guarantee would need, and the only thing guaranteed for that tier is that TODAY's tested anchor(s) sit inside it — not a remeasure a year from now. In THIS study every multi-batch tier is capped (their natural D+U windows all exceed 10% of nominal), so capped=true everywhere except where noted. A batch's declaration is always its tier's declaration — the same nominal ± tolerance is printed everywhere that batch appears; there is no separate per-batch figure. This is a PROPOSED revision of the grade bands, evidenced from the data in this study; it does not itself amend any issued QCSP 001 specification, whose nominal and range remain authoritative until changed through the regular procedure. SINGLE-BATCH TIERS (marked single_batch=true): with only one tested result there is no population to justify the D+U window at all, so the grade is nominal ± 10% of the nominal directly (declare_single()) — the same 10% ceiling, just with nothing narrower ever computed to be capped down from. capped is always true for these too."
+  "max_tol_ratio": 0.1,
+  "min_gap": 0.01,
+  "rule": "Every strain's tested batches are sorted ascending by anchor (their most recent verified result) and walked left to right, one tier at a time. CLUSTERING: a batch joins the tier being built only while a whole-number nominal still exists that keeps every anchor already in it within ±10% of that nominal (cap_feasible) — the widest run of consecutive batches for which this holds becomes one tier. NOMINAL: always a whole number (18.00 %, never 18.50 %) — the cap-feasible integer closest to the tier's own anchor midpoint, i.e. the round figure that actually represents where its tested results sit. TOLERANCE: made as generous as the rules allow — up to 10% of the nominal — but never enough to reach the previous tier's own ceiling (the hard non-overlap rule: this tier's floor must clear the prior tier's ceiling by at least 0.01, the finest resolution two decimal places allow), and never less than what is needed to cover every anchor actually assigned to the tier. A tier's ceiling is fixed once declared, so no later tier can ever start at or below it — non-overlap holds by construction, not by a check applied afterward. RELEASE FLOOR: a tier's lower edge may never sit below 5.00% Total THC. A batch's declaration is always its tier's declaration — the same nominal ± tolerance is printed everywhere that batch appears; there is no separate per-batch figure. This is a PROPOSED revision of the grade bands, evidenced from the data in this study; it does not itself amend any issued QCSP 001 specification, whose nominal and range remain authoritative until changed through the regular procedure."
  },
  "old_methodology": "QCSP 001 standard 4-tier fixed brackets: I 27.00–30.00 · II 23.00–26.90 · III 16.00–22.90 · IV 5.00–15.90 (nominal = midpoint); custom narrower sets for several renamed strains; T1 files graded from the Aug-2026 retest values, T1_rename graded from Portfolio-Master intake values (intentionally different, per owner). Weakness for ageing stock: brackets are fixed and grade-boundary batches can flip out of grade on any remeasure or with modest degradation — the bracket encodes no downward headroom for a specific batch.",
  "verification": {

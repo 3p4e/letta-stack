@@ -97,6 +97,25 @@ def zebra(ws, row, ncols, alt):
             cell.fill = fill
 
 
+# House numeric rule: every potency value displays with exactly two decimals
+# and its % sign hard against the digit. The cells hold real numbers (so they
+# stay sortable/filterable and usable in formulas); the format string is what
+# renders "20.00%". NOTE the quoted "%" — an Excel "0.00%" format would
+# multiply the stored value by 100, which is wrong here because these are
+# already percentage-point numbers, not fractions.
+PCT_FMT = '0.00"%"'
+
+
+def pctcols(ws, first_row, last_row, cols):
+    """Apply the two-decimal percent display format to the given 1-based
+    column numbers, over the data rows only (never the header)."""
+    for r in range(first_row, last_row + 1):
+        for c in cols:
+            cell = ws.cell(row=r, column=c)
+            if isinstance(cell.value, (int, float)):
+                cell.number_format = PCT_FMT
+
+
 def autosize(ws, widths):
     for i, w in enumerate(widths, 1):
         ws.column_dimensions[get_column_letter(i)].width = w
@@ -302,93 +321,77 @@ for b in d["stock"]:
     stock_by_strain.setdefault(b["strain"], []).append(b)
 stock_by_batch = {norm_b(b["batch"]): b for b in d["stock"]}
 
-U_RATIO = d["design"]["U_ratio"]
-D_YEAR = d["design"]["D_year"]
-MAX_TOL_RATIO = 0.10   # owner ceiling: declared ± tolerance may never exceed
-                        # 10.0% of the nominal, for ANY batch or strain.
+MAX_TOL_RATIO = d["design"]["max_tol_ratio"]
+MIN_GAP = d["design"]["min_gap"]
+
+
+def cap_feasible_range(anchors, max_ratio=MAX_TOL_RATIO):
+    """Mirror of build_potency_dataset.cap_feasible_range."""
+    lo_n = max(a / (1 + max_ratio) for a in anchors)
+    hi_n = min(a / (1 - max_ratio) for a in anchors)
+    return math.ceil(lo_n - 1e-9), math.floor(hi_n + 1e-9)
 
 
 def cap_feasible(anchors, max_ratio=MAX_TOL_RATIO):
-    """True iff a WHOLE-NUMBER nominal exists that keeps every anchor within
-    ±max_ratio of it. Mirror of build_potency_dataset.cap_feasible."""
-    lo_n = max(a / (1 + max_ratio) for a in anchors)
-    hi_n = min(a / (1 - max_ratio) for a in anchors)
-    lo_i, hi_i = math.ceil(lo_n - 1e-9), math.floor(hi_n + 1e-9)
+    lo_i, hi_i = cap_feasible_range(anchors, max_ratio)
     return lo_i <= hi_i
 
 
-def declare_group(anchors, lo_req, hi_req, floor=5.0, max_ratio=MAX_TOL_RATIO):
-    """Mirror of build_potency_dataset.declare_group / build_potency_html's
-    copy — a multi-batch tier's nominal is clamped into the integer range
-    that keeps every anchor within ±max_ratio of it. Returns
-    (nominal, tolerance, capped)."""
-    lo_n = max(a / (1 + max_ratio) for a in anchors)
-    hi_n = min(a / (1 - max_ratio) for a in anchors)
-    lo_i, hi_i = math.ceil(lo_n - 1e-9), math.floor(hi_n + 1e-9)
-    assert lo_i <= hi_i, ("declare_group called on a cap-infeasible anchor set", anchors)
-    ideal = float(math.floor((lo_req + hi_req) / 2.0 + 0.5))
-    nom = min(max(ideal, lo_i), hi_i)
-
-    def tol_needed(n):
-        return math.ceil(max(n - lo_req, hi_req - n) * 100 - 1e-9) / 100.0
-
-    def tol_capped(n):
-        return min(tol_needed(n), round(n * max_ratio, 2))
-
-    tol = tol_capped(nom)
-    while nom - tol < floor - 1e-9 and nom < hi_i:
-        nom += 1.0
-        tol = tol_capped(nom)
-    capped = tol_needed(nom) > round(nom * max_ratio, 2) + 1e-9
-    return nom, tol, capped
-
-
-def declare_single(anchor, floor=5.0, max_ratio=MAX_TOL_RATIO):
-    """Mirror of build_potency_dataset.declare_single / build_potency_html's
-    copy — a tier backed by exactly one tested batch is declared nominal ±
-    10% of nominal (flat policy tolerance, not D+U-derived)."""
-    nom = float(math.floor(anchor + 0.5))
-
-    def tol_for(n):
-        return math.ceil(n * max_ratio * 100 - 1e-9) / 100.0
-
-    tol = tol_for(nom)
-    for _ in range(64):
-        if nom - tol >= floor - 1e-9:
-            break
-        nom += 1.0
-        tol = tol_for(nom)
-    return nom, tol
+def declare_tier(anchors, prev_hi, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_GAP):
+    """Mirror of build_potency_dataset.declare_tier / build_potency_html's
+    copy — see either docstring for the full rule."""
+    lo_i, hi_i = cap_feasible_range(anchors, max_ratio)
+    if lo_i > hi_i:
+        return None
+    amin, amax = min(anchors), max(anchors)
+    ideal = float(math.floor((amin + amax) / 2.0 + 0.5))
+    start = min(max(int(ideal), lo_i), hi_i)
+    for nominal in range(start, hi_i + 1):
+        nominal = float(nominal)
+        tol_needed = math.ceil(max(nominal - amin, amax - nominal) * 100 - 1e-9) / 100.0
+        tol_cap = round(nominal * max_ratio, 2)
+        room = (nominal - prev_hi - gap) if prev_hi is not None else tol_cap
+        tol = min(tol_cap, room)
+        if tol < tol_needed - 1e-9:
+            continue
+        lo = round(nominal - tol, 2)
+        hi = round(nominal + tol, 2)
+        if lo < floor - 1e-9:
+            continue
+        return dict(nominal=nominal, tol=tol, lo=lo, hi=hi)
+    return None
 
 
 def tiers_from_anchors(items):
-    """items = [(batch, anchor, tested_bool)] — clustering driven by the SAME
-    10% cap the declaration itself must respect (cap_feasible), not the wider
-    D+U window; a tier with exactly one batch is declared via declare_single
-    (flat ±10%). Mirror of build_potency_html.tiers_from_anchors."""
+    """items = [(batch, anchor, tested_bool)] — mirror of
+    build_potency_dataset.build_strain_tiers / build_potency_html's copy.
+    Tiers are built strictly left to right on ascending anchors so no two
+    can ever overlap."""
+    items = sorted(items, key=lambda x: x[1])
     tiers = []
-    cur = None
-    for batch, a, tested in sorted(items, key=lambda x: x[1]):
-        ok = cur is not None and cap_feasible(cur["anchors"] + [a])
-        if cur is None or not ok:
-            cur = dict(batches=[batch], tested=[tested], anchors=[a])
-            tiers.append(cur)
-        else:
-            cur["batches"].append(batch)
-            cur["tested"].append(tested)
-            cur["anchors"].append(a)
-    for g in tiers:
-        g["single_batch"] = len(g["batches"]) == 1
-        if g["single_batch"]:
-            g["nominal"], g["tol"] = declare_single(g["anchors"][0])
-            g["capped"] = True
-        else:
-            u_all = [U_RATIO * a for a in g["anchors"]]
-            lo_req = min(max(5.0, a - D_YEAR - u) for a, u in zip(g["anchors"], u_all))
-            hi_req = max(a + max(1.0, u) for a, u in zip(g["anchors"], u_all))
-            g["nominal"], g["tol"], g["capped"] = declare_group(g["anchors"], lo_req, hi_req)
-        g["lo"] = round(g["nominal"] - g["tol"], 2)
-        g["hi"] = round(g["nominal"] + g["tol"], 2)
+    prev_hi = None
+    idx, n = 0, len(items)
+    while idx < n:
+        cur = [idx]
+        best = declare_tier([items[idx][1]], prev_hi)
+        j = idx + 1
+        while j < n:
+            trial_anchors = [items[k][1] for k in cur + [j]]
+            if not cap_feasible(trial_anchors):
+                break
+            trial = declare_tier(trial_anchors, prev_hi)
+            if trial is None:
+                break
+            cur.append(j)
+            best = trial
+            j += 1
+        assert best is not None, ("no non-overlapping tier fits this anchor set",
+                                  [items[k][1] for k in cur], prev_hi)
+        tiers.append(dict(nominal=best["nominal"], tol=best["tol"], lo=best["lo"], hi=best["hi"],
+                          batches=[items[k][0] for k in cur], tested=[items[k][2] for k in cur],
+                          anchors=[items[k][1] for k in cur]))
+        prev_hi = best["hi"]
+        idx = cur[-1] + 1
     return tiers
 
 
@@ -454,6 +457,7 @@ for i, rec in enumerate(base_rows):
     zebra(ws, row, ncols, i % 2 == 0)
     row += 1
 ws.freeze_panes = ws.cell(row=r0 + 1, column=1)
+pctcols(ws, r0 + 1, row - 1, [6, 7, 9, 10])
 autosize(ws, [7, 22, 9, 20, 15, 9, 9, 20, 12, 10, 12])
 print("Original Strain Specs: %d rows" % len(base_rows))
 
@@ -490,6 +494,7 @@ for i, rec in enumerate(ren_rows):
     zebra(ws, row, ncols, i % 2 == 0)
     row += 1
 ws.freeze_panes = ws.cell(row=r0 + 1, column=1)
+pctcols(ws, r0 + 1, row - 1, [6, 7, 9, 10])
 autosize(ws, [7, 22, 9, 20, 15, 9, 9, 20, 12, 10, 12, 26])
 print("Renamed Strain Specs: %d rows" % len(ren_rows))
 
@@ -563,6 +568,7 @@ for s in sorted(d["merged_ranges"]):
         i += 1
         row += 1
 ws.freeze_panes = ws.cell(row=r0 + 1, column=1)
+pctcols(ws, r0 + 1, row - 1, [3, 4, 5, 6])
 autosize(ws, [20, 8, 12, 14, 13, 13, 11, 40, 22])
 print("Atlas Grades — Original: %d rows" % (row - r0 - 1))
 
@@ -611,6 +617,7 @@ for neu in sorted(renamed_tiers):
         i += 1
         row += 1
 ws.freeze_panes = ws.cell(row=r0 + 1, column=1)
+pctcols(ws, r0 + 1, row - 1, [3, 4, 5, 6])
 autosize(ws, [22, 8, 12, 14, 13, 13, 11, 40, 22, 26])
 print("Atlas Grades — Renamed: %d rows" % (row - r0 - 1))
 
@@ -714,6 +721,7 @@ for i, res in enumerate(sorted(d["register_results"], key=lambda x: (x["strain"]
     zebra(ws, row, ncols, i % 2 == 0)
     row += 1
 ws.freeze_panes = ws.cell(row=r0 + 1, column=3)
+pctcols(ws, r0 + 1, row - 1, [3, 9, 10, 11, 12, 15, 16, 20, 21, 22])
 autosize(ws, [15, 18, 10, 11, 12, 20, 12, 15, 11, 11, 10, 10, 12,
               22, 10, 10, 12, 16, 13, 11, 10, 10])
 print("Potency Test Results: %d rows" % (row - r0 - 1))

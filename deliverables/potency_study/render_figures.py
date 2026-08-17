@@ -2,18 +2,18 @@
 # -*- coding: utf-8 -*-
 """Potency study — per-strain distribution figures.
 
-One figure per strain on a fixed 0–30 % Total Δ⁹-THC horizontal axis:
+One figure per strain on a fixed 0.0–30.0 % Total Δ⁹-THC horizontal axis:
 
   • every result ever tested: marker on the axis + a translucent ±1.5 % band
     (the user's requested zone) — overlapping bands stack into a visual
     density of where the strain's results live;
-  • a smooth distribution curve (Gaussian KDE, bandwidth 1.5) where n ≥ 3;
-  • arithmetic mean (line) and 95 % CI of the mean (shaded), where n ≥ 2;
-  • the PROPOSED warehouse grade tiers (green spans, labelled W-1, W-2 …)
-    and the old QCSP standard 4-tier boundaries (faint dashed) for contrast;
-  • for Grape Pie: the stability program points — 25 °C arms (squares) and
-    40 °C arms (triangles, red) — drawn on a separate strip so degradation
-    evidence is visible next to the release results.
+  • a smooth distribution curve (Gaussian KDE, bandwidth 1.5) where n ≥ 3 —
+    shape only, no summary statistics (mean/SD/CI) are shown or computed
+    into the grade, per owner instruction;
+  • the PROPOSED, non-overlapping potency tiers (green spans, labelled
+    Pot.-1, Pot.-2 …, each with a full-height shaded zone so the range is
+    unmistakable) and the old QCSP standard 4-tier boundaries (faint
+    dashed) for contrast.
 
 Also renders an all-strains overview band (one row per strain).
 """
@@ -51,24 +51,28 @@ def strain_fig(name, st, tiers, stability, fname):
     fig, ax = plt.subplots(figsize=(15.5 / 2.54 * 2.4, 4.6 / 2.54 * 2.4))
     vals = st["values"]
 
+    # full-height shaded zone per proposed tier, drawn first (behind
+    # everything) so the potency-grade zone is unmistakable across the
+    # whole strip, not just a thin strip near the top
+    for t in tiers:
+        lo, hi = t["range"]
+        ax.axvspan(lo, hi, ymin=0.0, ymax=1.0, color=GREEN, alpha=0.09, lw=0, zorder=0)
+        ax.axvline(lo, color=GREEN, lw=1.0, alpha=0.45, zorder=1)
+        ax.axvline(hi, color=GREEN, lw=1.0, alpha=0.45, zorder=1)
+
     # ±1.5% zone bands, stacking into a density
     for v in vals:
         ax.axvspan(v - BAND, v + BAND, ymin=0.30, ymax=0.88,
-                   color=NAVY, alpha=min(0.14, 0.5 / max(1, len(vals)) + 0.06), lw=0)
-    # KDE curve
+                   color=NAVY, alpha=min(0.14, 0.5 / max(1, len(vals)) + 0.06), lw=0, zorder=2)
+    # KDE curve — distribution SHAPE only; no mean/SD/CI is computed or shown
     if len(vals) >= 3:
         xs = [x / 10 for x in range(0, 301)]
         ys = kde(vals, xs)
         top = max(ys)
         ax.plot(xs, [0.30 + 0.56 * y / top for y in ys], color=NAVY, lw=1.6, zorder=5)
-    # mean + CI
-    ax.vlines(st["mean"], 0.30, 0.88, color=GOLD, lw=1.8, zorder=6)
-    if st["ci95"]:
-        ax.axvspan(st["ci95"][0], st["ci95"][1], ymin=0.30, ymax=0.88,
-                   color=GOLD, alpha=0.18, lw=0)
-    # result markers
-    ax.scatter(vals, [0.26] * len(vals), marker="o", s=42, color=NAVY,
-               edgecolors="white", linewidths=0.6, zorder=7)
+    # result markers — enlarged for readability
+    ax.scatter(vals, [0.26] * len(vals), marker="o", s=90, color=NAVY,
+               edgecolors="white", linewidths=1.1, zorder=7)
     # stability strip (Grape Pie)
     for row in stability:
         y = 0.13
@@ -80,15 +84,17 @@ def strain_fig(name, st, tiers, stability, fname):
                        edgecolors="white", linewidths=0.6, zorder=7)
         ax.annotate("M%d" % row["month"], (row["total_thc"], y), textcoords="offset points",
                     xytext=(0, -13), ha="center", fontsize=6.5, color=GREY)
-    # proposed tiers — staggered on two rows so overlapping tiers stay legible
+    # proposed tiers — the nominal +/- tolerance label badge, staggered on
+    # two rows so neighbouring tiers stay legible
     for i, t in enumerate(tiers):
         lo, hi = t["range"]
         y0 = 0.90 if i % 2 == 0 else 1.00
-        ax.add_patch(Rectangle((lo, y0), hi - lo, 0.075, facecolor=GREEN, alpha=0.28,
-                               edgecolor=GREEN, lw=1.8))
+        ax.add_patch(Rectangle((lo, y0), hi - lo, 0.075, facecolor=GREEN, alpha=0.30,
+                               edgecolor=GREEN, lw=1.8, zorder=6))
         ax.text((lo + hi) / 2, y0 + 0.037,
                 "Pot.-%d: %.2f%% ±%.2f%%" % (i + 1, t["nominal"], t["tol"]),
-                ha="center", va="center", fontsize=8.5, color="#0F3D22", fontweight="bold")
+                ha="center", va="center", fontsize=8.5, color="#0F3D22", fontweight="bold",
+                zorder=8)
     # old tier boundaries
     for x in OLD_TIERS:
         ax.axvline(x, color="#B9C4D0", lw=0.8, ls=(0, (3, 3)), zorder=1)
@@ -97,16 +103,13 @@ def strain_fig(name, st, tiers, stability, fname):
     ax.set_ylim(0, 1.12)
     ax.set_yticks([])
     ax.set_xticks(range(0, 31, 5))
-    ax.set_xticklabels(["%.1f" % x for x in range(0, 31, 5)])
+    ax.set_xticklabels(["%.1f%%" % x for x in range(0, 31, 5)])
     ax.set_xticks(range(0, 31), minor=True)
     ax.set_xlabel("Вкупен Δ⁹-THC (%w/w)  |  Total Δ⁹-THC (%w/w)", fontsize=9)
     ax.grid(axis="x", which="minor", color="#F0F3F6", linewidth=0.4)
-    sub = "n=%d · средна вредност | mean %.2f" % (st["n"], st["mean"])
-    if st["sd"] is not None:
-        sub += " · SD %.2f" % st["sd"]
-    if st["ci95"]:
-        sub += " · 95%% CI %.2f–%.2f" % (st["ci95"][0], st["ci95"][1])
-    sub += " · опсег | range %.2f–%.2f" % (st["min"], st["max"])
+    sub = ("%d резултати · опсег на тестираните резултати %.2f%%–%.2f%% | "
+          "%d results · range of tested results %.2f%%–%.2f%%"
+          % (st["n"], st["min"], st["max"], st["n"], st["min"], st["max"]))
     ax.set_title("%s   —   %s" % (name, sub), fontsize=10.5, color=INK, loc="left", pad=8)
     for s in ("top", "right", "left"):
         ax.spines[s].set_visible(False)
@@ -116,7 +119,7 @@ def strain_fig(name, st, tiers, stability, fname):
 
 
 def overview():
-    names = sorted(d["stats"], key=lambda s: -d["stats"][s]["mean"])
+    names = sorted(d["stats"], key=lambda s: -d["stats"][s]["max"])
     fig, ax = plt.subplots(figsize=(15.5 / 2.54 * 2.4, 0.55 * len(names) / 2.54 * 2.4 + 1.2))
     for i, s in enumerate(names):
         st = d["stats"][s]
@@ -124,10 +127,8 @@ def overview():
         for v in st["values"]:
             ax.plot([v - BAND, v + BAND], [y, y], color=NAVY, alpha=0.16, lw=7,
                     solid_capstyle="butt")
-        ax.scatter(st["values"], [y] * st["n"], s=26, color=NAVY,
-                   edgecolors="white", linewidths=0.5, zorder=6)
-        ax.scatter([st["mean"]], [y], marker="D", s=42, color=GOLD, zorder=7,
-                   edgecolors="white", linewidths=0.6)
+        ax.scatter(st["values"], [y] * st["n"], s=42, color=NAVY,
+                   edgecolors="white", linewidths=0.8, zorder=6)
         for t in d["merged_ranges"].get(s, []):
             lo, hi = t["range"]
             ax.plot([lo, hi], [y - 0.34, y - 0.34], color=GREEN, lw=2.4,
@@ -142,9 +143,8 @@ def overview():
     ax.set_xticklabels(["%.1f" % x for x in range(0, 31, 5)])
     ax.set_xticks(range(0, 31), minor=True)
     ax.grid(axis="x", which="minor", color="#F0F3F6", linewidth=0.4)
-    ax.set_xlabel("Вкупен Δ⁹-THC (%w/w) — сите резултати (точки), средна (ромб), "
-                  "предложени опсези (зелено) | all results (dots), mean (diamond), "
-                  "proposed tiers (green)", fontsize=8.5)
+    ax.set_xlabel("Вкупен Δ⁹-THC (%w/w) — сите резултати (точки), предложени опсези "
+                  "(зелено) | all results (dots), proposed tiers (green)", fontsize=8.5)
     ax.set_title("Преглед по сорти — 0,0–30,0 % оска  |  All-strain overview — 0.0–30.0 % axis",
                  fontsize=11, color=INK, loc="left", pad=8)
     for s in ("top", "right", "left"):

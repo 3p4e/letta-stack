@@ -3,15 +3,16 @@
 """Potency Atlas — creative single-file HTML edition of the Strain Potency Study.
 
 Same bound dataset (potency_dataset.json), richer per-result detail:
-  • every actual Total Δ⁹-THC value, per strain, sorted ascending;
-  • ‖x̄−v‖ — the absolute deviation of each result from the strain mean;
+  • every actual Total Δ⁹-THC value, per strain, sorted ascending, batch
+    number shown with its P-code where known;
   • the distance between successive results, in percentage points AND as a
     relative % of the lower value;
   • same-batch repeat pairs called out separately (the truest "distance
     between two results obtained by all means so far");
-  • the CSS-built 0–30 % axis per strain: ±1,5 % zone per result, mean line,
-    95 % CI band (n≥3), proposed Pot.-tiers, old standard grade boundaries;
-  • degradation evidence (stability program) and the full T1/T2/T3 stock table.
+  • the CSS-built 0–30 % axis per strain: ±1.5 % zone per result, a
+    full-height shaded zone per proposed Pot.- tier, old standard grade
+    boundaries — no summary statistics (mean/SD/CI), per owner instruction;
+  • the full T1/T2/T3 stock table.
 
 Self-contained: subset Montserrat + Orbitron inlined as data-URI woff2, no
 external requests. Single-theme by design (a laboratory document), every
@@ -109,22 +110,23 @@ body{background:var(--paper);color:var(--ink);
  font:400 16.5px/1.58 'Montserrat',system-ui,sans-serif}
 .wrap{max-width:1060px;margin:0 auto;padding:0 20px}
 a{color:var(--navy2)}
-.hero{background:linear-gradient(160deg,#132B45 0%,var(--navy) 55%,#234B74 100%);
- color:#EAF1F8;padding:46px 0 38px;border-bottom:4px solid var(--gold)}
+.hero{background:linear-gradient(160deg,#EDF3F9 0%,#F7FAFD 60%,#E9F0F7 100%);
+ color:var(--ink);padding:46px 0 38px;border-bottom:4px solid var(--gold)}
 .brand{display:flex;align-items:baseline;gap:10px;letter-spacing:.24em;
  font-size:13px;font-weight:700}
 .brand em{font-style:italic;font-weight:400;color:var(--gold)}
-.brand small{letter-spacing:.18em;font-weight:400;font-size:9.5px;color:#9FB4C9}
+.brand{color:var(--navy)}
+.brand small{letter-spacing:.18em;font-weight:400;font-size:9.5px;color:#7B8FA3}
 .hero h1{font-family:'Montserrat';font-weight:700;font-size:clamp(28px,5vw,44px);
  letter-spacing:.01em;margin:18px 0 2px;text-wrap:balance}
 .hero .en{font-family:'Orbitron';font-weight:400;font-size:clamp(13px,2vw,19px);
  letter-spacing:.34em;color:var(--gold);margin:0 0 10px;text-transform:uppercase}
-.hero .sub{color:#B9CBDD;font-size:15.5px;max-width:62ch}
+.hero .sub{color:#4A5B6C;font-size:15.5px;max-width:62ch}
 .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
-.chip{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);
+.chip{background:#FFFFFF;border:1px solid var(--line);color:var(--ink);
  border-radius:4px;padding:7px 13px;font-size:12.5px}
-.chip b{font-family:'Orbitron';font-size:16px;color:var(--gold);margin-right:6px}
-.informal{margin-top:18px;font-size:11px;letter-spacing:.14em;color:#9FB4C9;
+.chip b{font-family:'Orbitron';font-size:16px;color:#8A6D14;margin-right:6px}
+.informal{margin-top:18px;font-size:11px;letter-spacing:.14em;color:#7B8FA3;
  text-transform:uppercase}
 section{padding:34px 0 6px}
 h2{font-size:23px;font-weight:700;color:var(--navy);letter-spacing:.01em;
@@ -138,11 +140,11 @@ h2 span{font-weight:400;color:var(--mut);font-size:16.5px}
 .kcard.green{border-left-color:var(--green)}
 .kcard b{display:block;margin-bottom:4px;color:var(--navy)}
 .kcard i{color:var(--mut);font-size:12px}
-.rule{background:var(--navy);color:#EAF1F8;padding:14px 20px;margin-top:14px;
+.rule{background:#EDF3F9;color:var(--ink);border:1px solid var(--line);padding:14px 20px;margin-top:14px;
  font-size:13px;border-radius:2px;display:flex;flex-wrap:wrap;gap:6px 22px;
  align-items:baseline}
 .rule b{width:100%;letter-spacing:.05em}
-.rule code{font-family:var(--mono);color:var(--gold);font-size:13.5px}
+.rule code{font-family:var(--mono);color:#8A6D14;font-size:13.5px}
 .nav{position:sticky;top:0;z-index:9;background:rgba(247,249,252,.96);
  backdrop-filter:blur(4px);border-bottom:1px solid var(--line);padding:9px 0}
 .nav .wrap{display:flex;flex-wrap:wrap;gap:6px}
@@ -161,34 +163,39 @@ h2 span{font-weight:400;color:var(--mut);font-size:16.5px}
 .axiswrap{padding:18px 18px 6px;overflow-x:auto}
 .axis{position:relative;height:148px;min-width:640px;
  background:linear-gradient(180deg,#FBFCFE, #F4F7FB);border:1px solid var(--line)}
-.zone{position:absolute;top:14%;height:56%;background:var(--zone)}
-.old{position:absolute;top:0;bottom:0;border-left:1px dashed #B9C7D6}
-.ci{position:absolute;top:14%;height:56%;background:rgba(201,162,39,.20)}
-.mean{position:absolute;top:10%;height:64%;width:3px;background:var(--gold)}
-.dot{position:absolute;top:64%;width:11px;height:11px;border-radius:50%;
- background:var(--navy2);border:2px solid #fff;box-shadow:0 0 0 1px var(--navy2);
- transform:translateX(-50%)}
+.axis>i{position:absolute;top:0;bottom:0;width:0;border-left:1px solid #EBF0F5;z-index:0}
+.tierzone{position:absolute;top:0;bottom:0;background:rgba(30,132,73,.09);
+ border-left:1px solid rgba(30,132,73,.35);border-right:1px solid rgba(30,132,73,.35);
+ z-index:1}
+.zone{position:absolute;top:14%;height:56%;background:var(--zone);z-index:2}
+.old{position:absolute;top:0;bottom:0;border-left:1px dashed #B9C7D6;z-index:2}
+.dot{position:absolute;top:64%;width:15px;height:15px;border-radius:50%;
+ background:var(--navy2);border:2.5px solid #fff;box-shadow:0 0 0 1.5px var(--navy2);
+ transform:translateX(-50%);cursor:pointer;z-index:5;
+ transition:transform 70ms ease-out,box-shadow 70ms ease-out}
+.dot:hover{transform:translateX(-50%) scale(1.55);z-index:8;
+ box-shadow:0 0 0 2px var(--navy2),0 2px 8px rgba(20,40,60,.35)}
 .tier{position:absolute;height:22px;background:rgba(30,132,73,.20);
  border:2.5px solid var(--green);font-size:13.5px;font-weight:700;color:#0F3D22;
  display:flex;align-items:center;justify-content:center;white-space:nowrap;
  letter-spacing:.01em;border-radius:3px;z-index:4;font-variant-numeric:tabular-nums}
 .stab25{position:absolute;top:84%;width:10px;height:10px;background:var(--green);
- border:2px solid #fff;box-shadow:0 0 0 1px var(--green);transform:translateX(-50%)}
+ border:2px solid #fff;box-shadow:0 0 0 1px var(--green);transform:translateX(-50%);z-index:5}
 .stab40{position:absolute;top:84%;width:0;height:0;transform:translateX(-50%);
  border-left:6px solid transparent;border-right:6px solid transparent;
- border-top:10px solid var(--rose)}
+ border-top:10px solid var(--rose);z-index:5}
 .scale{display:flex;justify-content:space-between;min-width:640px;
  font:600 12px var(--mono);color:var(--mut);font-variant-numeric:tabular-nums;margin-top:4px}
-.legend{padding:2px 18px 8px;font-size:12.5px;color:var(--mut)}
-.legend i{font-style:normal;margin-right:14px}
-.dotk{display:inline-block;width:9px;height:9px;border-radius:50%;
- background:var(--navy2);vertical-align:-1px;margin-right:4px}
-.meank{display:inline-block;width:10px;height:3px;background:var(--gold);
- vertical-align:2px;margin-right:4px}
-.zonek{display:inline-block;width:12px;height:9px;background:var(--zone);
- vertical-align:-1px;margin-right:4px}
-.tierk{display:inline-block;width:12px;height:8px;background:rgba(30,132,73,.16);
- border:1px solid var(--green);vertical-align:-1px;margin-right:4px}
+.legend{padding:6px 18px 12px;font-size:14px;color:var(--mut);display:flex;
+ flex-wrap:wrap;gap:6px 22px}
+.legend i{font-style:normal;display:inline-flex;align-items:center}
+.dotk{display:inline-block;width:13px;height:13px;border-radius:50%;
+ background:var(--navy2);border:2px solid #fff;box-shadow:0 0 0 1px var(--navy2);
+ margin-right:6px}
+.zonek{display:inline-block;width:16px;height:12px;background:var(--zone);
+ margin-right:6px}
+.tierk{display:inline-block;width:18px;height:12px;background:rgba(30,132,73,.20);
+ border:2px solid var(--green);border-radius:2px;margin-right:6px}
 table{border-collapse:collapse;width:100%;font-size:13.5px}
 .tblwrap{overflow-x:auto;padding:0 18px 16px}
 th{background:var(--navy);color:#fff;font-weight:600;padding:7px 10px;font-size:12px;
@@ -200,7 +207,6 @@ td.v{font-family:var(--mono);font-weight:600;color:var(--navy)}
 .mismatch{color:var(--rose);font-weight:700;text-decoration:underline dotted}
 td.num{font-family:var(--mono)}
 td.gap{color:var(--navy2)}
-td.dev{color:var(--mut)}
 .badge{display:inline-block;background:#EDF3F9;border:1px solid var(--navy2);
  color:var(--navy2);font-size:9.5px;font-weight:700;border-radius:9px;
  padding:0 6px;margin-left:6px;vertical-align:1px}
@@ -212,13 +218,25 @@ td.dev{color:var(--mut)}
 .tiers .tr-range{font-family:var(--mono);font-weight:700;color:#14532B;min-width:230px;
  font-size:16px}
 .tiers .tr-span{font-family:var(--mono);color:var(--mut);font-size:13px;margin-right:4px}
+.tiernote{margin-top:8px;font-size:12px;line-height:1.5;color:var(--mut);
+ border-left:3px solid var(--green);padding:4px 0 4px 10px;max-width:96ch}
 .stabnote{color:var(--rose);font-size:11.5px}
 details{margin-top:8px}
 summary{cursor:pointer;font-weight:600;color:var(--navy);padding:10px 0}
-.dot.ren{box-shadow:0 0 0 1px var(--navy2),0 0 0 4px rgba(201,162,39,.55)}
-.renlist{padding:4px 18px 10px;font-size:13px;color:var(--mut);line-height:2.0}
-.renlist .renitem{white-space:nowrap;margin-right:16px}
+.dot.ren{box-shadow:0 0 0 1.5px var(--navy2),0 0 0 5px rgba(201,162,39,.55)}
+.renlist{padding:8px 18px 14px;font-size:13.5px;color:var(--mut)}
+.renlist>b{display:block;color:var(--navy);margin-bottom:6px;font-size:13px}
+.renlist .renitem{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+ padding:6px 4px;border-top:1px solid var(--line)}
+.renlist .renitem:first-of-type{border-top:none}
+.renbatch{font-family:var(--mono);font-weight:700;font-size:13.5px;color:var(--ink);
+ background:#EDF3F9;border:1px solid var(--navy2);border-radius:3px;
+ padding:2px 8px;font-variant-numeric:tabular-nums}
+.renarrow{color:var(--mut)}
 .renlist b{color:var(--navy)}
+.renval{margin-left:auto;font-family:var(--mono);font-weight:700;font-size:14.5px;
+ color:var(--ink);background:#F4F7FB;border-radius:3px;padding:2px 8px;
+ font-variant-numeric:tabular-nums}
 .bchip{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.08em;
  padding:1px 6px;border-radius:2px;margin-left:5px;vertical-align:1px}
 .bchip.steady{background:#EDF3F9;color:var(--navy2);border:1px solid var(--navy2)}
@@ -268,37 +286,32 @@ summary{cursor:pointer;font-weight:600;color:var(--navy);padding:10px 0}
  border-top:2px solid var(--gold);padding-top:14px}
 .fsubh span{font-weight:400;color:var(--mut);font-size:15px}
 .fboard.ren .fname h3{font-size:15.5px}
-.fboard{background:linear-gradient(160deg,#132B45 0%,var(--navy) 60%,#234B74 100%);
+.fboard{background:#F4F8FB;border:1px solid var(--line);
  border-bottom:4px solid var(--gold);padding:8px 22px 18px}
 .frow{display:grid;grid-template-columns:250px 1fr;gap:16px;align-items:center;
- padding:13px 0;border-bottom:1px solid rgba(255,255,255,.12)}
+ padding:13px 0;border-bottom:1px solid var(--line)}
 .frow:last-child{border-bottom:none}
 .fname h3{font-family:'Orbitron';font-weight:400;font-size:17px;letter-spacing:.05em;
- color:#EAF1F8;margin-bottom:2px}
-.fstat{font-size:12.5px;color:#9FB4C9;display:block;font-variant-numeric:tabular-nums}
+ color:var(--navy);margin-bottom:2px}
+.fstat{font-size:12.5px;color:var(--mut);display:block;font-variant-numeric:tabular-nums}
 .fbadge{display:inline-block;margin-top:5px;font-size:10px;font-weight:700;
- letter-spacing:.09em;color:var(--gold);border:1px solid var(--gold);
+ letter-spacing:.09em;color:#8A6D14;border:1px solid var(--gold);
  padding:1.5px 7px;border-radius:2px}
-.fbadge.prov{color:#E8A6A0;border-color:#E8A6A0}
+.fbadge.prov{color:var(--rose);border-color:var(--rose)}
 .fpills{display:flex;flex-wrap:wrap;gap:9px}
-.fpill{font-family:var(--mono);font-size:16.5px;font-weight:700;color:#D9F2E2;
- background:rgba(30,132,73,.30);border:1.5px solid #37B36A;border-radius:3px;
+.fpill{font-family:var(--mono);font-size:16.5px;font-weight:700;color:#14532B;
+ background:rgba(30,132,73,.12);border:1.5px solid var(--green);border-radius:3px;
  padding:7px 13px;line-height:1.2}
 .fpill small{display:block;font-family:'Montserrat';font-weight:400;font-size:11px;
- color:#9FC9AD;margin-top:2px}
-.fpill.prov{background:rgba(201,162,39,.16);border-color:var(--gold);color:#F2E3B3}
-.fpill.prov small{color:#CBB77D}
+ color:#3A6247;margin-top:2px}
+.fpill.prov{background:rgba(201,162,39,.14);border-color:var(--gold);color:#7A5E10}
+.fpill.prov small{color:#6B5A20}
 @media (max-width:760px){.frow{grid-template-columns:1fr}}
-#themeBtn{position:fixed;right:14px;bottom:14px;z-index:99;font:600 11px 'Montserrat';
- color:var(--navy);background:var(--card);border:1px solid var(--navy2);
- border-radius:16px;padding:7px 13px;cursor:pointer;box-shadow:0 2px 8px rgba(27,58,92,.18)}
-#themeBtn:hover{background:#EDF3F9}
 @page{size:A4;margin:11mm 10mm}
 @media print{
  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
  body{font-size:11.5px}
- .nav,#themeBtn{display:none !important}
- section{padding:14px 0 2px}
+ .nav, section{padding:14px 0 2px}
  section h2{break-after:avoid}
  .strain,.rencard,.kcard,.rs{break-inside:avoid}
  .frow{break-inside:avoid}
@@ -309,46 +322,8 @@ summary{cursor:pointer;font-weight:600;color:var(--navy);padding:10px 0}
  .hero{padding:26px 0 22px}
  .renlist{line-height:1.8}
 
-.hero{background:linear-gradient(160deg,#EDF3F9 0%,#F7FAFD 60%,#E9F0F7 100%);
- color:var(--ink);border-bottom:4px solid var(--gold)}
-.hero .sub{color:#4A5B6C}
-.brand{color:var(--navy)} .brand small{color:#7B8FA3}
-.chip{background:#FFFFFF;border:1px solid var(--line);color:var(--ink)}
-.chip b{color:#8A6D14}
-.informal{color:#7B8FA3}
-.rule{background:#EDF3F9;color:var(--ink);border:1px solid var(--line)}
-.rule code{color:#8A6D14}
-.fboard{background:#F4F8FB;border:1px solid var(--line);border-bottom:4px solid var(--gold)}
-.frow{border-bottom:1px solid var(--line)}
-.fname h3{color:var(--navy)}
-.fstat{color:var(--mut)}
-.fbadge{color:#8A6D14;border-color:var(--gold)}
-.fbadge.prov{color:var(--rose);border-color:var(--rose)}
-.fpill{color:#14532B;background:rgba(30,132,73,.12);border-color:var(--green)}
-.fpill small{color:#3A6247}
-.fpill.prov{color:#7A5E10;background:rgba(201,162,39,.14);border-color:var(--gold)}
-.fpill.prov small{color:#6B5A20}
 }
 
-body.lite .hero{background:linear-gradient(160deg,#EDF3F9 0%,#F7FAFD 60%,#E9F0F7 100%);
- color:var(--ink);border-bottom:4px solid var(--gold)}
-body.lite .hero .sub{color:#4A5B6C}
-body.lite .brand{color:var(--navy)} body.lite .brand small{color:#7B8FA3}
-body.lite .chip{background:#FFFFFF;border:1px solid var(--line);color:var(--ink)}
-body.lite .chip b{color:#8A6D14}
-body.lite .informal{color:#7B8FA3}
-body.lite .rule{background:#EDF3F9;color:var(--ink);border:1px solid var(--line)}
-body.lite .rule code{color:#8A6D14}
-body.lite .fboard{background:#F4F8FB;border:1px solid var(--line);border-bottom:4px solid var(--gold)}
-body.lite .frow{border-bottom:1px solid var(--line)}
-body.lite .fname h3{color:var(--navy)}
-body.lite .fstat{color:var(--mut)}
-body.lite .fbadge{color:#8A6D14;border-color:var(--gold)}
-body.lite .fbadge.prov{color:var(--rose);border-color:var(--rose)}
-body.lite .fpill{color:#14532B;background:rgba(30,132,73,.12);border-color:var(--green)}
-body.lite .fpill small{color:#4E7A5C}
-body.lite .fpill.prov{color:#7A5E10;background:rgba(201,162,39,.14);border-color:var(--gold)}
-body.lite .fpill.prov small{color:#8A7434}
 
 .decl td{background:#FFF8E7 !important}
 tr.rej td{color:#9AA7B4;text-decoration:line-through}
@@ -370,11 +345,7 @@ def axis_html(s, st, tiers, stab):
         % (pct(max(0, r["value"] - 1.5)), pct(min(AX, r["value"] + 1.5) - max(0, r["value"] - 1.5)))
         for r in per[s])
     olds = "".join('<div class="old" style="left:%.3f%%"></div>' % pct(x) for x in OLD_TIERS)
-    ci = ""
-    if st["ci95"]:
-        ci = '<div class="ci" style="left:%.3f%%;width:%.3f%%"></div>' % (
-            pct(st["ci95"][0]), pct(st["ci95"][1] - st["ci95"][0]))
-    mean = '<div class="mean" style="left:calc(%.3f%% - 1px)"></div>' % pct(st["mean"])
+    minor = "".join('<i style="left:%.3f%%"></i>' % pct(x) for x in range(1, 30))
     dots = ""
     for r in per[s]:
         rn = ren_of(r["batch"])
@@ -382,9 +353,12 @@ def axis_html(s, st, tiers, stab):
         dots += ('<div class="dot%s" style="left:%.3f%%" title="%s · %s · %s · %.2f%%%s"></div>'
                  % (" ren" if rn else "", pct(r["value"]), esc(r["batch"]), esc(r["date"]),
                     esc(r["lab"]), r["value"], esc(extra)))
-    tt = ""
+    tz = ""    # full-height zone band per tier, behind everything else
+    tt = ""    # the nominal ± tolerance label badge on top
     for i, t in enumerate(tiers):
         lo, hi = t["range"]
+        tz += ('<div class="tierzone" style="left:%.3f%%;width:%.3f%%"></div>'
+               % (pct(lo), pct(hi - lo)))
         top = 6 if i % 2 == 0 else 34
         tt += ('<div class="tier" style="left:%.3f%%;width:%.3f%%;top:%dpx" '
                'title="%.2f%% ± %.2f%% (%.2f%%–%.2f%%) · серии | batches: %s">%s</div>'
@@ -402,15 +376,19 @@ def axis_html(s, st, tiers, stab):
     for r in per[s]:
         rn = ren_of(r["batch"])
         if rn:
-            ren_items.append('<span class="renitem"><b>%.2f%%</b> %s: %s → <b>%s</b>'
-                             '<span class="bchip %s">%s</span></span>'
-                             % (r["value"], esc(r["batch"]), esc(rn["original"]),
-                                esc(rn["neu"]), esc(rn["brand"].lower()), esc(rn["brand"])))
-    renlist = ('<div class="renlist">Преименувани серии на лентата | Renamed batches on the '
-               'band: %s</div>' % " ".join(ren_items)) if ren_items else ""
-    return ('<div class="axiswrap"><div class="axis">%s%s%s%s%s%s%s</div>'
+            pc = r.get("p_code")
+            bid = "%s (%s)" % (esc(r["batch"]), esc(pc)) if pc else esc(r["batch"])
+            ren_items.append(
+                '<div class="renitem"><span class="renbatch">%s</span>'
+                '<span class="renarrow">→</span><b>%s</b>'
+                '<span class="bchip %s">%s</span>'
+                '<span class="renval">%.2f%%</span></div>'
+                % (bid, esc(rn["neu"]), esc(rn["brand"].lower()), esc(rn["brand"]), r["value"]))
+    renlist = ('<div class="renlist"><b>Преименувани серии на лентата | Renamed batches on the '
+               'band:</b>%s</div>' % "".join(ren_items)) if ren_items else ""
+    return ('<div class="axiswrap"><div class="axis">%s%s%s%s%s%s</div>'
             '<div class="scale">%s</div></div>%s'
-            % (zones, olds, ci, mean, tt, dots, sb, scale, renlist))
+            % (tz, zones, olds, minor, tt, dots + sb, scale, renlist))
 
 
 def results_table(s, st):
@@ -421,27 +399,30 @@ def results_table(s, st):
     bc = Counter(r["batch"] for r in rs)
     rows = ""
     for i, r in enumerate(rs):
-        dev = abs(st["mean"] - r["value"])
         if i < n - 1:
             nxt = rs[i + 1]["value"]
             gpp = nxt - r["value"]
             grel = 100.0 * gpp / r["value"] if r["value"] else 0
-            gap = "+%.2f пп · +%.1f%%" % (gpp, grel)
+            gap = "+%.2f пп · +%.2f%%" % (gpp, grel)
         else:
             gap = "—"
         badge = '<span class="badge" title="серијата е мерена повеќе пати | batch measured more than once">↺</span>' \
             if bc[r["batch"]] > 1 else ""
+        pc = r.get("p_code")
+        bid = ('<span class="renbatch">%s (%s)</span>' % (esc(r["batch"]), esc(pc))
+               if pc else '<span class="renbatch">%s</span>' % esc(r["batch"]))
         rn = ren_of(r["batch"])
         newname = ('%s <span class="bchip %s">%s</span>'
                    % (esc(rn["neu"]), esc(rn["brand"].lower()), esc(rn["brand"]))) if rn else "—"
         rows += ("<tr><td>%d</td><td class=num>%s%s</td><td>%s</td><td>%s</td>"
-                 "<td class=v>%.2f</td><td class=dev>%.2f</td><td class=gap>%s</td>"
+                 "<td class=v>%.2f%%</td><td class=gap>%s</td>"
                  "<td>%s</td></tr>"
-                 % (i + 1, esc(r["batch"]), badge, esc(r["date"]), esc(r["lab"]),
-                    r["value"], dev, gap, newname))
+                 % (i + 1, bid, badge, esc(r["date"]), esc(r["lab"]),
+                    r["value"], gap, newname))
     return ('<div class="tblwrap"><table><thead><tr>'
-            "<th>№</th><th>Серија | Batch</th><th>Датум | Date</th><th>Лаб | Lab</th>"
-            "<th>Вкупен THC %%</th><th>‖x̄−v‖ (пп)</th><th>Δ до следен | to next</th>"
+            "<th>№</th><th>Серија (P-серија) | Batch (P-batch)</th><th>Датум | Date</th>"
+            "<th>Лаб | Lab</th><th>Вкупен THC %%</th>"
+            "<th>Δ до следен | to next (пп · %%)</th>"
             "<th>Ново име | New name</th>"
             "</tr></thead><tbody>%s</tbody></table></div>" % rows)
 
@@ -459,7 +440,7 @@ def repeats_callout(s):
         for a, z in zip(rs, rs[1:]):
             dpp = z["value"] - a["value"]
             rel = 100.0 * dpp / a["value"]
-            items.append("<b>%s</b>: %.2f (%s) → %.2f (%s) — Δ %+.2f пп · %+.1f%%"
+            items.append("<b>%s</b>: %.2f%% (%s) → %.2f%% (%s) — Δ %+.2f пп · %+.2f%%"
                          % (esc(b), a["value"], esc(a["date"]), z["value"], esc(z["date"]),
                             dpp, rel))
     if not items:
@@ -478,7 +459,16 @@ def tiers_block(s):
         '<span class="tr-span">(%.2f%% – %.2f%%)</span><span>%s</span></div>'
         % (potlabel(i + 1, t), t["range"][0], t["range"][1], esc(", ".join(t["batches"])))
         for i, t in enumerate(tiers))
-    return ('<div class="tiers"><b>Предложени класи | Proposed tiers:</b>%s</div>' % rows)
+    note = ('<div class="tiernote">Толеранцијата е поставена најшироко што правилата '
+            'дозволуваат — до 10,00% од номиналата — но никогаш толку широко што би ја '
+            'допрела соседната класа: затоа две класи од иста сорта може да носат различен '
+            '± процент, по дизајн, не по случајност. Класите никогаш не се преклопуваат. | '
+            'The tolerance is set as wide as the rules allow — up to 10.00% of the nominal '
+            '— but never so wide that it would touch the neighbouring tier: that is why two '
+            'tiers of the same strain can carry a different ± percentage, by design, not by '
+            'accident. Tiers never overlap.</div>')
+    return ('<div class="tiers"><b>Предложени класи | Proposed tiers:</b>%s%s</div>'
+            % (rows, note))
 
 
 def strain_cards():
@@ -486,15 +476,12 @@ def strain_cards():
     for s in sorted(d["stats"]):
         st = d["stats"][s]
         sid = "s-" + "".join(c if c.isalnum() else "-" for c in s.lower())
-        chips = "<span class=stat>n <b>%d</b></span><span class=stat>x̄ <b>%.2f</b></span>" % (st["n"], st["mean"])
-        if st["sd"] is not None:
-            chips += "<span class=stat>SD <b>%.2f</b></span>" % st["sd"]
-        if st["ci95"]:
-            chips += "<span class=stat>95%% CI <b>%.2f–%.2f</b></span>" % tuple(st["ci95"])
-        chips += "<span class=stat>опсег | range <b>%.2f–%.2f</b></span>" % (st["min"], st["max"])
+        chips = ("<span class=stat>Бр. тестирани резултати | Number of results tested "
+                 "<b>%d</b></span>" % st["n"])
+        chips += ("<span class=stat>опсег на тестираните резултати | range of tested "
+                  "results <b>%.2f%% – %.2f%%</b></span>" % (st["min"], st["max"]))
         legend = ('<div class="legend"><i><span class="dotk"></span>резултат | result</i>'
-                  '<i><span class="zonek"></span>±1,5%% зона | zone</i>'
-                  '<i><span class="meank"></span>средна | mean</i>'
+                  '<i><span class="zonek"></span>±1,50% зона | zone</i>'
                   '<i><span class="tierk"></span>Pot.-класи | tiers</i></div>')
         out += ('<article class="strain" id="%s"><div class="shead"><h3>%s</h3>%s</div>'
                 "%s%s%s%s%s</article>"
@@ -511,17 +498,21 @@ def parse_bracket(b):
     m = re.match(r"[≥>]=?\s*(\d+(?:[.,]\d+)?)", b)
     if m:
         lo = float(m.group(1).replace(",", "."))
-        return (lo, 30.0, "≥ %g%%" % lo)
+        return (lo, 30.0, "≥%.2f%%" % lo)
     m = re.match(r"(\d+(?:[.,]\d+)?)\s*[–—-]\s*(\d+(?:[.,]\d+)?)", b)
     if m:
         lo = float(m.group(1).replace(",", "."))
         hi = float(m.group(2).replace(",", "."))
-        return (lo, hi, "%g–%g%%" % (lo, hi))
+        return (lo, hi, "%.2f%%–%.2f%%" % (lo, hi))
     return None
 
 
-D_YEAR = 1.5
-U_RATIO = 0.062
+def fmt_bracket(b):
+    """The old master bracket, re-printed to the house numeric rule
+    (two decimals, % on both bounds). Falls back to the raw string when it
+    does not parse — a bracket is transcribed source data, never invented."""
+    p = parse_bracket(b)
+    return p[2] if p else (b or "—")
 
 
 def renames_section():
@@ -653,7 +644,8 @@ def final_ranges():
             n_prov += 1
         else:
             n_def += 1
-        stat = ("n=%d · x\u0304 %.2f" % (st["n"], st["mean"])) if st else "без тестирања | no assays"
+        stat = (("Бр. тестирани резултати | Number of results tested: %d" % st["n"])
+                if st else "без тестирања | no assays")
         badge = ('<span class="fbadge prov">ПРОВИЗОРНО — само декларирана основа | '
                  "PROVISIONAL — declared basis only</span>") if strain_prov else \
                 '<span class="fbadge">ДЕФИНИТИВНО | DEFINITIVE</span>'
@@ -673,98 +665,82 @@ def final_ranges():
 
 MAX_TOL_RATIO = 0.10   # owner ceiling: declared ± tolerance may never exceed
                         # 10.0% of the nominal, for ANY batch or strain.
+MIN_GAP = 0.01          # adjacent tiers must never touch, let alone overlap.
+
+
+def cap_feasible_range(anchors, max_ratio=MAX_TOL_RATIO):
+    """Mirror of build_potency_dataset.cap_feasible_range — the inclusive
+    whole-number nominal range keeping every anchor within ±max_ratio."""
+    lo_n = max(a / (1 + max_ratio) for a in anchors)
+    hi_n = min(a / (1 - max_ratio) for a in anchors)
+    return math.ceil(lo_n - 1e-9), math.floor(hi_n + 1e-9)
 
 
 def cap_feasible(anchors, max_ratio=MAX_TOL_RATIO):
-    """True iff a WHOLE-NUMBER nominal exists that keeps every anchor within
-    ±max_ratio of it. Mirror of build_potency_dataset.cap_feasible — the
-    real-valued interval [lo_n, hi_n] can be non-empty yet contain no
-    integer (often under 0.1 wide for a tight anchor cluster)."""
-    lo_n = max(a / (1 + max_ratio) for a in anchors)
-    hi_n = min(a / (1 - max_ratio) for a in anchors)
-    lo_i, hi_i = math.ceil(lo_n - 1e-9), math.floor(hi_n + 1e-9)
+    lo_i, hi_i = cap_feasible_range(anchors, max_ratio)
     return lo_i <= hi_i
 
 
-def declare_group(anchors, lo_req, hi_req, floor=5.0, max_ratio=MAX_TOL_RATIO):
-    """Mirror of build_potency_dataset.declare_group — a multi-batch tier's
-    nominal is clamped into the integer range that keeps EVERY anchor within
-    ±max_ratio of it (never picked from the wider D+U window alone, which
-    could leave an anchor outside its own capped declaration). Returns
-    (nominal, tolerance, capped)."""
-    lo_n = max(a / (1 + max_ratio) for a in anchors)
-    hi_n = min(a / (1 - max_ratio) for a in anchors)
-    lo_i, hi_i = math.ceil(lo_n - 1e-9), math.floor(hi_n + 1e-9)
-    assert lo_i <= hi_i, ("declare_group called on a cap-infeasible anchor set", anchors)
-    ideal = float(math.floor((lo_req + hi_req) / 2.0 + 0.5))
-    nom = min(max(ideal, lo_i), hi_i)
-
-    def tol_needed(n):
-        return math.ceil(max(n - lo_req, hi_req - n) * 100 - 1e-9) / 100.0
-
-    def tol_capped(n):
-        return min(tol_needed(n), round(n * max_ratio, 2))
-
-    tol = tol_capped(nom)
-    while nom - tol < floor - 1e-9 and nom < hi_i:
-        nom += 1.0
-        tol = tol_capped(nom)
-    capped = tol_needed(nom) > round(nom * max_ratio, 2) + 1e-9
-    return nom, tol, capped
-
-
-def declare_single(anchor, floor=5.0, max_ratio=MAX_TOL_RATIO):
-    """Mirror of build_potency_dataset.declare_single — a tier backed by
-    exactly one tested batch is declared nominal ± 10% of nominal (a flat
-    policy tolerance, not a D+U statistical one), nominal = anchor rounded
-    half-up to a whole number, tolerance rounded UP to 0.01, nominal
-    escalated upward if needed to keep the declared floor ≥ 5.00 %."""
-    nom = float(math.floor(anchor + 0.5))
-
-    def tol_for(n):
-        return math.ceil(n * max_ratio * 100 - 1e-9) / 100.0
-
-    tol = tol_for(nom)
-    for _ in range(64):
-        if nom - tol >= floor - 1e-9:
-            break
-        nom += 1.0
-        tol = tol_for(nom)
-    return nom, tol
+def declare_tier(anchors, prev_hi, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_GAP):
+    """Mirror of build_potency_dataset.declare_tier — see its docstring for
+    the full rule. Nominal = the cap-feasible integer closest to this
+    anchor set's own midpoint; tolerance = as generous as allowed (up to
+    10% of nominal) without reaching at or below `prev_hi`."""
+    lo_i, hi_i = cap_feasible_range(anchors, max_ratio)
+    if lo_i > hi_i:
+        return None
+    amin, amax = min(anchors), max(anchors)
+    ideal = float(math.floor((amin + amax) / 2.0 + 0.5))
+    start = min(max(int(ideal), lo_i), hi_i)
+    for nominal in range(start, hi_i + 1):
+        nominal = float(nominal)
+        tol_needed = math.ceil(max(nominal - amin, amax - nominal) * 100 - 1e-9) / 100.0
+        tol_cap = round(nominal * max_ratio, 2)
+        room = (nominal - prev_hi - gap) if prev_hi is not None else tol_cap
+        tol = min(tol_cap, room)
+        if tol < tol_needed - 1e-9:
+            continue
+        lo = round(nominal - tol, 2)
+        hi = round(nominal + tol, 2)
+        if lo < floor - 1e-9:
+            continue
+        return dict(nominal=nominal, tol=tol, lo=lo, hi=hi)
+    return None
 
 
 def tiers_from_anchors(items):
-    """Clustering driven by the SAME 10% cap the declaration itself must
-    respect: a batch joins the running tier only while a whole-number nominal
-    still exists that keeps every anchor in the tier within ±10% of it
-    (cap_feasible) — not the old wider D+U-window rule, which could form a
-    tier that a ±10% tolerance can no longer fully cover once capped. A tier
-    with exactly one batch is declared via declare_single (flat ±10% policy)
-    instead of declare_group.
-    items = [(batch, anchor, tested_bool)] ascending by anchor."""
+    """Mirror of build_potency_dataset.build_strain_tiers, adapted to carry
+    each batch's `tested` flag through. Tiers are built strictly left to
+    right on ascending anchors so no two can ever overlap: a batch joins
+    the tier being formed only while a whole-number nominal still exists
+    that keeps every anchor in it within ±10%; once a tier is declared, its
+    ceiling becomes the floor the next tier must clear.
+    items = [(batch, anchor, tested_bool)] — any order in, sorted here."""
+    items = sorted(items, key=lambda x: x[1])
     tiers = []
-    cur = None
-    for batch, a, tested in sorted(items, key=lambda x: x[1]):
-        ok = cur is not None and cap_feasible(cur["anchors"] + [a])
-        if cur is None or not ok:
-            cur = dict(batches=[batch], tested=[tested], anchors=[a])
-            tiers.append(cur)
-        else:
-            cur["batches"].append(batch)
-            cur["tested"].append(tested)
-            cur["anchors"].append(a)
-    for g in tiers:
-        g["single_batch"] = len(g["batches"]) == 1
-        if g["single_batch"]:
-            g["nominal"], g["tol"] = declare_single(g["anchors"][0])
-            g["capped"] = True
-        else:
-            u_all = [U_RATIO * a for a in g["anchors"]]
-            lo_req = min(max(5.0, a - D_YEAR - u) for a, u in zip(g["anchors"], u_all))
-            hi_req = max(a + max(1.0, u) for a, u in zip(g["anchors"], u_all))
-            g["nominal"], g["tol"], g["capped"] = declare_group(g["anchors"], lo_req, hi_req)
-        g["lo"] = round(g["nominal"] - g["tol"], 2)
-        g["hi"] = round(g["nominal"] + g["tol"], 2)
+    prev_hi = None
+    idx, n = 0, len(items)
+    while idx < n:
+        cur = [idx]
+        best = declare_tier([items[idx][1]], prev_hi)
+        j = idx + 1
+        while j < n:
+            trial_anchors = [items[k][1] for k in cur + [j]]
+            if not cap_feasible(trial_anchors):
+                break
+            trial = declare_tier(trial_anchors, prev_hi)
+            if trial is None:
+                break
+            cur.append(j)
+            best = trial
+            j += 1
+        assert best is not None, ("no non-overlapping tier fits this anchor set",
+                                  [items[k][1] for k in cur], prev_hi)
+        tiers.append(dict(nominal=best["nominal"], tol=best["tol"], lo=best["lo"], hi=best["hi"],
+                          batches=[items[k][0] for k in cur], tested=[items[k][2] for k in cur],
+                          anchors=[items[k][1] for k in cur]))
+        prev_hi = best["hi"]
+        idx = cur[-1] + 1
     return tiers
 
 
@@ -891,7 +867,7 @@ def stock_table():
                  "<td>%s</td><td class=num>%s</td><td>%s</td><td class=v>%.2f%% ± %.2f%%</td>"
                  "<td class=num>%.2f – %.2f</td><td class=num>%.2f</td></tr>"
                  % (' class="decl"' if decl else "", esc(b["tranche"]), esc(b["batch"]),
-                    esc(b["strain"]), anc, esc(b["bracket_old"] or "—"), cur,
+                    esc(b["strain"]), anc, esc(fmt_bracket(b["bracket_old"])), cur,
                     "Pot.-%s" % b.get("tier", "—"), b["nominal"], b["tol"],
                     b["proposed"][0], b["proposed"][1], b["headroom_down"]))
     return ('<div class="tblwrap" style="padding:0"><table><thead><tr>'
@@ -909,26 +885,12 @@ nav = "".join('<a href="#s-%s">%s</a>'
 
 n_stab_usable = sum(1 for r in d["stability"] if r["usable"])
 
-_all_tiers = [t for ts in d["merged_ranges"].values() for t in ts]
-_n_tier_total = len(_all_tiers)
-_n_tier_single = sum(1 for t in _all_tiers if t.get("single_batch"))
-single_batch_note = (
-    "Со само еден тестиран резултат нема популација што би ја оправдала D+U "
-    "статистиката, па по налог на сопственикот таквата класа наместо тоа се декларира "
-    "со фиксна политика: номинала ± 10%% од самата номинала (пр. 20,00%% ± 2,00%%), "
-    "заокружено нагоре на 0,01. Ова се однесува на %d од %d-те класи во оваа студија. | "
-    "With only one tested result there is no population to justify the D+U statistics, "
-    "so per owner instruction that tier is declared instead by a flat policy: nominal ± "
-    "10%% of the nominal itself (e.g. 20.00%% ± 2.00%%), rounded up to 0.01. This applies "
-    "to %d of the %d tiers in this study."
-) % (_n_tier_single, _n_tier_total, _n_tier_single, _n_tier_total)
-
 HTML = """<!doctype html>
 <html lang="mk"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Potency Atlas</title>
 <style>%s</style></head>
-<body class="lite">
+<body>
 <header class="hero"><div class="wrap">
  <div class="brand">PURELY<em>PLANT</em> <small>THE FUTURE OF CANNABIS</small></div>
  <h1>Атлас на потенција</h1>
@@ -952,11 +914,13 @@ HTML = """<!doctype html>
 <div class="wrap">
 <section><h2>Сорти <span>| Strains — дистрибуции, растојанија и класи</span></h2>
 <p style="font-size:12.5px;color:var(--mut);margin-bottom:14px">
-‖x̄−v‖ = апсолутна разлика меѓу средната вредност на сортата и секој резултат (процентни
-поени). Δ до следен = растојание до следниот повисок резултат, во процентни поени и како
-релативен %% од помалата вредност. | ‖x̄−v‖ = absolute difference between the strain mean and
-each result (percentage points). Δ to next = distance to the next higher result, in
-percentage points and as a relative %% of the lower value.</p>
+Δ до следен = растојание до следниот повисок резултат, во процентни поени и како
+релативен %% од помалата вредност. Опсегот прикажан за секоја сорта е опсегот на
+ТЕСТИРАНИТЕ резултати — не е предложениот опсег на потенција по класа (тој е прикажан
+подолу, во Pot.- класите). | Δ to next = distance to the next higher result, in
+percentage points and as a relative %% of the lower value. The range shown for each strain
+is the range of TESTED results — not the proposed potency grade range (that is shown below,
+in the Pot.- tiers).</p>
 %s</section>
 
 <section><h2>Преименувања: наши опсези наспроти мастерот <span>| Renames: our ranges vs the Portfolio Master</span></h2>
@@ -965,10 +929,10 @@ percentage points and as a relative %% of the lower value.</p>
 тестираните вредности (точки), <b style="color:#8A6D14">опсегот што го предлага мастер-документот</b>
 (жолто, BCP_PRODUCT_MASTER_FINAL.xlsx · 01_Portfolio_Master) наспроти
 <b style="color:#1E8449">нашата предложена класа</b> (зелено, номинала ± толеранција) — на
-иста оска 0,0–30,0 %%. | For every original strain — how many new names its batches were renamed
+иста оска 0,00%%–30,00%%. | For every original strain — how many new names its batches were renamed
 into, and per new name: the tested values (dots), <b style="color:#8A6D14">the bracket the
 master document suggests</b> (amber) versus <b style="color:#1E8449">our proposed grade</b>
-(green, nominal ± tolerance), on one 0.0–30.0 %% axis.</p>
+(green, nominal ± tolerance), on one 0.00%%–30.00%% axis.</p>
 %s</section>
 
 <section><h2>Залиха Т1/Т2/Т3 <span>| Stock — предложени класи по серија</span></h2>
@@ -995,14 +959,6 @@ ecoa_retrieval_gpt4o). | Study summary logged to the host's shared memory.</span
 <span>Меродавни остануваат лабораториските сертификати во СМК. |
 The laboratory certificates in the QMS remain authoritative.</span>
 </div></footer>
-<button id="themeBtn" type="button">◐ Темна тема | Dark theme</button>
-<script>
-var b=document.getElementById('themeBtn');
-b.addEventListener('click',function(){
- document.body.classList.toggle('lite');
- b.textContent=document.body.classList.contains('lite')?
-   '◐ Темна тема | Dark theme':'◐ Посветла тема | Lighter theme';});
-</script>
 </body></html>
 """ % (CSS, d["n_results"], d["n_strains"], d["n_batches"],
        nav, strain_cards(), renames_section(), stock_table(), final_ranges(),
