@@ -194,6 +194,7 @@ td{border-bottom:1px solid var(--line);padding:5.5px 9px;white-space:nowrap;
  font-variant-numeric:tabular-nums}
 tr:nth-child(even) td{background:#F6F9FC}
 td.v{font-family:var(--mono);font-weight:600;color:var(--navy)}
+.mismatch{color:var(--rose);font-weight:700;text-decoration:underline dotted}
 td.num{font-family:var(--mono)}
 td.gap{color:var(--navy2)}
 td.dev{color:var(--mut)}
@@ -205,7 +206,8 @@ td.dev{color:var(--mut)}
 .callout b{color:#8A6D14}
 .tiers{margin:0 18px 16px;font-size:12.5px}
 .tiers .trow{display:flex;gap:10px;align-items:baseline;padding:3px 0}
-.tiers .tr-range{font-family:var(--mono);font-weight:600;color:var(--green);min-width:110px}
+.tiers .tr-range{font-family:var(--mono);font-weight:600;color:var(--green);min-width:190px}
+.tiers .tr-span{font-family:var(--mono);color:var(--mut);font-size:11.5px;margin-right:4px}
 .stabnote{color:var(--rose);font-size:11.5px}
 details{margin-top:8px}
 summary{cursor:pointer;font-weight:600;color:var(--navy);padding:10px 0}
@@ -322,9 +324,9 @@ summary{cursor:pointer;font-weight:600;color:var(--navy);padding:10px 0}
 .fbadge{color:#8A6D14;border-color:var(--gold)}
 .fbadge.prov{color:var(--rose);border-color:var(--rose)}
 .fpill{color:#14532B;background:rgba(30,132,73,.12);border-color:var(--green)}
-.fpill small{color:#4E7A5C}
+.fpill small{color:#3A6247}
 .fpill.prov{color:#7A5E10;background:rgba(201,162,39,.14);border-color:var(--gold)}
-.fpill.prov small{color:#8A7434}
+.fpill.prov small{color:#6B5A20}
 }
 
 body.lite .hero{background:linear-gradient(160deg,#EDF3F9 0%,#F7FAFD 60%,#E9F0F7 100%);
@@ -634,7 +636,8 @@ def renames_section():
                                            else ("%.1f декл." % it["val"] if it["val"] is not None else "—"))
                               for it in items)
             mb_lbl = " · ".join(sorted({it["mb"][2] for it in items if it["mb"]})) or "—"
-            ours_lbl = " · ".join("%.2f %% ± %.2f %%" % (w[2], w[3]) for w in wset) or "—"
+            ours_lbl = " · ".join("%.2f %% ± %.2f %% (%.2f–%.2f)" % (w[2], w[3], w[0], w[1])
+                                  for w in wset) or "—"
             rows_html += (
                 '<div class="flowrow">'
                 '<div class="flowname">%s<span class="bchip %s">%s</span>%s'
@@ -693,8 +696,8 @@ def final_ranges():
         else:
             n_def += 1
         stat = ("n=%d · x\u0304 %.2f" % (st["n"], st["mean"])) if st else "без тестирања | no assays"
-        badge = ('<span class="fbadge prov">ПРОВИЗОРНО — тестирај пред декларирање | '
-                 "PROVISIONAL — test before declaring</span>") if strain_prov else \
+        badge = ('<span class="fbadge prov">ПРОВИЗОРНО — само декларирана основа | '
+                 "PROVISIONAL — declared basis only</span>") if strain_prov else \
                 '<span class="fbadge">ДЕФИНИТИВНО | DEFINITIVE</span>'
         rows += ('<div class="frow"><div class="fname"><h3>%s</h3>'
                  '<span class="fstat">%s</span>%s</div><div class="fpills">%s</div></div>'
@@ -739,7 +742,7 @@ def tiers_from_anchors(items, w_max=6.5):
     for batch, a, tested in sorted(items, key=lambda x: x[1]):
         u = U_RATIO * a
         flo = max(5.0, a - D_YEAR - u)
-        cei = a + u
+        cei = a + max(1.0, u)
         if cur is None or cei - cur["lo"] > w_max:
             cur = dict(lo=flo, hi=cei, batches=[batch], tested=[tested])
             tiers.append(cur)
@@ -787,9 +790,9 @@ def final_ranges_renamed():
         brands = sorted({(r.get("brand") or "").strip() for r in recs if r.get("brand")})
         if not items:
             n_nodata += 1
-            pills = ('<span class="fpill prov">нема анкер | no anchor'
+            pills = ('<span class="fpill prov">нема сидро | no anchor'
                      "<small>%d серии | batches</small></span>" % len(recs))
-            badge = ('<span class="fbadge prov">БЕЗ ПОДАТОЦИ | NO DATA</span>')
+            badge = ('<span class="fbadge prov">БЕЗ СИДРО | NO ANCHOR</span>')
         else:
             tiers = tiers_from_anchors(items)
             any_tested = any(any(t["tested"]) for t in tiers)
@@ -811,25 +814,26 @@ def final_ranges_renamed():
                     '<span class="fbadge">ДЕФИНИТИВНО | DEFINITIVE</span>'
         sub = "од | from %s" % esc(", ".join(origins) or "—")
         if renamed:
-            sub += " · %d преименувани | renamed" % len(renamed)
+            sub += (" · %d преименувана серија | renamed" % len(renamed) if len(renamed) == 1
+                     else " · %d преименувани серии | renamed" % len(renamed))
         if brands:
             sub += " · " + esc("/".join(brands))
         rows += ('<div class="frow"><div class="fname"><h3>%s</h3>'
                  '<span class="fstat">%s</span>%s</div><div class="fpills">%s</div></div>'
                  % (esc(neu), sub, badge, pills))
 
-    head = ('<h3 class="fsubh">Истите опсези, по НОВИТЕ имиња на спецификации '
-            '<span>| The same ranges, keyed to the NEW specification names</span></h3>'
+    head = ('<h3 class="fsubh">Истите опсези, по новите спецификациски имиња '
+            '<span>| The same ranges, keyed to the new specification names</span></h3>'
             '<div class="fsum">Спецификациските имиња од листот <code>01_Portfolio_Master</code> '
-            "(%d серии, %d преименувања, %d различни нови имиња) се она што стои на iCoA, "
-            "на CoQ и на етикетата. Табелата подолу ги дава истите докажани опсези, но "
-            "групирани по новото име — за да може магацинот да се сертифицира без рачно "
-            "барање кое старо име одговара на кое ново: %d дефинитивно, %d провизорно, "
-            "%d без анкер. | The specification names in the <code>01_Portfolio_Master</code> "
-            "sheet (%d batches, %d renames, %d distinct new names) are what appears on the "
-            "iCoA, the CoQ and the label. The board below carries the same evidenced ranges "
-            "grouped by the new name, so the warehouse can be certified without a manual "
-            "old-to-new lookup: %d definitive, %d provisional, %d without an anchor.</div>"
+            "(%d серии, %d преименувања, %d нови имиња) се токму тие што стојат на iCoA, "
+            "на CoQ и на етикетата. Оваа табела ги дава истите докажани опсези, но "
+            "групирани по новото име — за да може залихата да се сертифицира без рачно "
+            "барање кое старо име одговара на кое ново: %d име дефинитивно, %d провизорно, "
+            "%d без сидро. | The specification names in the <code>01_Portfolio_Master</code> "
+            "sheet (%d batches, %d renames, %d new names) are the names that appear on the "
+            "iCoA, the CoQ and the label. This table carries the same evidenced ranges "
+            "grouped by the new name, so the stock can be certified without a manual "
+            "old-to-new lookup: %d name definitive, %d provisional, %d without an anchor.</div>"
             % (len(PM), sum(1 for r in PM if (r.get("original") or "").strip()
                             != (r.get("neu") or "").strip()), len(groups),
                n_def, n_prov, n_nodata,
@@ -867,16 +871,23 @@ def stock_table():
         decl = b["anchor"] is None
         anc = ("%.2f (декл. | decl.)" % b["declared"]) if decl \
             else "%.2f (%s)" % (b["anchor"], b["anchor_date"])
+        if b.get("declared") is not None:
+            out_of_grade = not (b["proposed"][0] - 1e-6 <= b["declared"] <= b["proposed"][1] + 1e-6)
+            cur = ('<span class="mismatch" title="надвор од новата класа | outside the new '
+                   'grade">%.2f %%</span>' % b["declared"]) if out_of_grade else "%.2f %%" % b["declared"]
+        else:
+            cur = "—"
         rows += ('<tr%s><td>Т%s</td><td class=num>%s</td><td>%s</td><td class=num>%s</td>'
-                 "<td>%s</td><td>W-%s</td><td class=v>%.2f %% ± %.2f %%</td>"
+                 "<td>%s</td><td class=num>%s</td><td>%s</td><td class=v>%.2f %% ± %.2f %%</td>"
                  "<td class=num>%.2f – %.2f</td><td class=num>%.2f</td></tr>"
                  % (' class="decl"' if decl else "", esc(b["tranche"]), esc(b["batch"]),
-                    esc(b["strain"]), anc, esc(b["bracket_old"] or "—"),
-                    b.get("tier", "—"), b["nominal"], b["tol"],
+                    esc(b["strain"]), anc, esc(b["bracket_old"] or "—"), cur,
+                    "W-%s" % b.get("tier", "—"), b["nominal"], b["tol"],
                     b["proposed"][0], b["proposed"][1], b["headroom_down"]))
     return ('<div class="tblwrap" style="padding:0"><table><thead><tr>'
             "<th>Т</th><th>Серија | Batch</th><th>Сорта | Strain</th>"
-            "<th>Сидро | Anchor (%%)</th><th>Стара | Old</th><th>Класа | Tier</th>"
+            "<th>Сидро | Anchor (%%)</th><th>Стара | Old</th>"
+            "<th>Тековна декл. | Currently declared</th><th>Класа | Tier</th>"
             "<th>Номинала ± толеранција | Nominal ± tolerance</th>"
             "<th>= опсег | = span (%%)</th><th>Простор ↓ | Headroom</th>"
             "</tr></thead><tbody>%s</tbody></table></div>" % rows)
@@ -939,16 +950,23 @@ HTML = """<!doctype html>
 <span>класи ≤ 6,5 пп широки, никогаш под 5,00%% | tiers ≤ 6.5 pp wide, never below the
 5.00%% release criterion</span>
 <span><code>деклар. | declared = НОМИНАЛА ± ТОЛЕРАНЦИЈА</code></span>
-<span>Номиналата е <b>цел број</b> (18,00%%, никогаш 18,50%%) — тоа е бројот што оди
-во спецификацијата, на iCoA и на етикетата. Толеранцијата потоа е онолкава колку што
-мора за <code>номинала ± толеранција</code> да го покрие целиот бараен прозорец,
-заокружена <b>нагоре</b> на 0,01. Заокружувањето е секогаш нанадвор: може само да ја
-прошири декларацијата, никогаш да изгуби покриеност. |
-The nominal is a <b>whole number</b> (18.00%%, never 18.50%%) — the figure that goes on
-the specification, the iCoA and the label. The tolerance is then whatever it must be for
-<code>nominal ± tolerance</code> to cover the entire required window, rounded <b>up</b>
-to 0.01. Rounding is always outward: it can only widen a declaration, never lose
-coverage.</span></div>
+<span>Номиналната вредност е секогаш <b>цел број</b> (18.00%%, никогаш 18.50%%), во истата
+форма во која важечките QCSP 001 спецификации веќе ја запишуваат потенцијата — ова е
+предложена ревизија на класите, а не измена на важечка спецификација. Толеранцијата се
+определува на минимумот потребен за <code>номинала ± толеранција</code> да го покрие
+целиот потребен опсег, заокружена <b>нагоре</b> на следните 0,01 — заокружувањето е
+секогаш нанадвор: може само да ја прошири декларацијата, никогаш да ја намали
+покриеноста. Оттаму, декларираниот опсег понекогаш е и до ~1 пп поширок од класата
+добиена со групирање (≤ 6,5 пп) — тој лимит го врзува доказниот опсег, а не конечната
+декларација. |
+The nominal value is always a <b>whole number</b> (18.00%%, never 18.50%%), in the same
+form the issued QCSP 001 specifications already use to record potency — this is a
+proposed revision of the grade bands, not an amendment to any issued specification. The
+tolerance is set to the minimum needed for <code>nominal ± tolerance</code> to cover the
+entire required window, rounded <b>up</b> to the next 0.01 — always outward, so it can
+only widen a declaration, never reduce its coverage. As a result the declared span is
+sometimes up to ~1 pp wider than the clustered tier (≤ 6.5 pp) — that cap bounds the
+evidence window, not the final declaration.</span></div>
 </section>
 
 <section><h2>Докази за деградација <span>| Degradation Evidence — Grape Pie стабилносна

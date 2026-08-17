@@ -174,36 +174,35 @@ def build():
                           anchor_date=a["date"] if a else None,
                           anchor_lab=a["lab"] if a else None))
 
-    # per-batch proposed grade: anchor near the TOP of the bracket, with
-    # downward headroom ≥ D_YEAR + measurement U at the lower edge. Declared
-    # as NOMINAL ± TOLERANCE, nominal a whole number (see declare()).
+    # A batch's declaration is always its TIER's declaration — never computed
+    # separately per batch. Two numbers for one batch (one in the stock table,
+    # a different one on the strain board) is not an option: it is either the
+    # same figure everywhere, or the document is not trustworthy. So this pass
+    # only marks which batches have an anchor to build a grade from; the
+    # NOMINAL ± TOLERANCE itself is assigned below, once per tier, and copied
+    # onto every batch the tier covers.
     for b in stock:
         a = b["anchor"] if b["anchor"] is not None else b["declared"]
-        if a is None:
-            b["proposed"] = None
-            continue
-        u = U_RATIO * a
-        lo_req = max(5.0, a - D_YEAR - u)      # release A.C. floor: min 5.00%
-        hi_req = a + max(1.0, u)
-        nom, tol = declare(lo_req, hi_req)
-        b["nominal"] = nom
-        b["tol"] = tol
-        b["proposed"] = [round(nom - tol, 2), round(nom + tol, 2)]
-        b["headroom_down"] = round(a - (nom - tol), 2)
-        b["basis"] = "anchor" if b["anchor"] is not None else "declared (no assay on file)"
+        b["proposed"] = None if a is None else True   # placeholder; set for real below
+        b["basis"] = ("anchor" if b["anchor"] is not None
+                       else ("declared (no assay on file)" if a is not None else None))
 
     # Per-strain warehouse GRADE TIERS (stock batches only). Greedy clustering
     # on ascending anchors over the TRUE required window: a tier opens at the
-    # lowest batch's safe floor (anchor − D − U) and accepts further batches
-    # while the window stays ≤ W_MAX wide once it also covers their safe
-    # ceiling (anchor + U). The tier is only rounded at the end, into
-    # NOMINAL ± TOLERANCE. Every batch's tier therefore contains its whole
-    # one-year-ahead measurement window — a remeasure now, or after a further
-    # year of storage, still reads inside the declared grade.
+    # lowest batch's safe floor (anchor − D − U, floored at the 5.00% release
+    # A.C.) and accepts further batches while the window stays ≤ W_MAX wide
+    # once it also covers their safe ceiling (anchor + max(1.0, U) — the SAME
+    # ceiling rule used everywhere else in this study, so a tier can never be
+    # narrower than what an individual batch in it would need on its own).
+    # The tier is only rounded at the end, into NOMINAL ± TOLERANCE, and that
+    # single declaration is then the batch's declaration too. Every batch's
+    # tier therefore contains its whole one-year-ahead measurement window — a
+    # remeasure now, or after a further year of storage, still reads inside
+    # the declared grade.
     W_MAX = 6.5
     merged = {}
     for s in sorted({b["strain"] for b in stock}):
-        bs = sorted([b for b in stock if b["strain"] == s and b["proposed"]],
+        bs = sorted([b for b in stock if b["proposed"] and b["strain"] == s],
                     key=lambda b: (b["anchor"] if b["anchor"] is not None else b["declared"]))
         if not bs:
             continue
@@ -213,13 +212,14 @@ def build():
             a = b["anchor"] if b["anchor"] is not None else b["declared"]
             u = U_RATIO * a
             flo = max(5.0, a - D_YEAR - u)
-            cei = a + u
+            cei = a + max(1.0, u)
             if cur is None or cei - cur["lo"] > W_MAX:
-                cur = dict(lo=flo, hi=cei, batches=[b["batch"]], anchors=[a])
+                cur = dict(lo=flo, hi=cei, batches=[b["batch"]], anchors=[a], rows=[b])
                 tiers.append(cur)
             else:
                 cur["hi"] = max(cur["hi"], cei)
                 cur["batches"].append(b["batch"])
+                cur["rows"].append(b)
                 cur["anchors"].append(a)
             b["tier"] = len(tiers)
         for g in tiers:                       # declare, then re-verify per batch
@@ -235,6 +235,15 @@ def build():
         merged[s] = [dict(range=[g["lo"], g["hi"]], nominal=g["nominal"], tol=g["tol"],
                           batches=g["batches"],
                           anchors=[round(a, 2) for a in g["anchors"]]) for g in tiers]
+
+        # every batch's declaration IS its tier's declaration — one number,
+        # never two — and headroom is measured from that same declared floor.
+        for g in tiers:
+            for b in g["rows"]:
+                a = b["anchor"] if b["anchor"] is not None else b["declared"]
+                b["nominal"], b["tol"] = g["nominal"], g["tol"]
+                b["proposed"] = [g["lo"], g["hi"]]
+                b["headroom_down"] = round(a - g["lo"], 2)
 
     # paired evidence (repeat same-lab measurements + stability arms)
     repeats = [dict(batch="J31102501", strain="Jokerz 31", first=19.14, first_date="04.03.2026",
@@ -256,13 +265,26 @@ def build():
         design=dict(D_year=D_YEAR, U_ratio=U_RATIO,
                     rule="Required window: lower = anchor − D − U(anchor), floored at 5.00 "
                          "(release A.C.); upper = anchor + max(1.0, U(anchor)); merged per "
-                         "strain while the window stays ≤ 6.5 points wide. The window is then "
-                         "DECLARED as NOMINAL ± TOLERANCE: the nominal is a whole number "
-                         "(18.00 %, never 18.50 %) — the figure printed on the specification, "
-                         "the iCoA and the label — and the tolerance is whatever it must be "
-                         "for nominal ± tolerance to still cover the entire window, rounded "
-                         "UP to 0.01. Rounding is therefore always outward: it can only widen "
-                         "a declaration, never lose coverage."),
+                         "strain while the window stays ≤ 6.5 points wide. Forcing the nominal "
+                         "to a whole number then costs real width: a symmetric ± tolerance "
+                         "around the nearest integer to the window's centre must still reach "
+                         "the window's farther edge, so the declared span can end up close to "
+                         "a full percentage point wider than the 6.5-point clustering cap — the "
+                         "cap bounds the EVIDENCE window, not the final declaration. "
+                         "The window is then DECLARED as NOMINAL ± TOLERANCE, in the same "
+                         "nominal-±-tolerance FORM the issued QCSP 001 specifications already "
+                         "use — but here the nominal is fixed to a whole number (18.00 %, "
+                         "never 18.50 % or 18.45 %, unlike the issued specs' bracket-midpoint "
+                         "nominals) and the tolerance is whatever it must be for nominal ± "
+                         "tolerance to still cover the entire window, rounded UP to the next "
+                         "0.01. Rounding is therefore always outward: it can only widen a "
+                         "declaration, never lose coverage. A batch's declaration is always "
+                         "its tier's declaration — the same nominal ± tolerance is printed "
+                         "everywhere that batch appears; there is no separate per-batch figure. "
+                         "This is a PROPOSED revision of the grade bands, evidenced from the "
+                         "data in this study; it does not itself amend any issued QCSP 001 "
+                         "specification, whose nominal and range remain authoritative until "
+                         "changed through the regular procedure."),
         old_methodology=(
             "QCSP 001 standard 4-tier fixed brackets: I 27.00–30.00 · II 23.00–26.90 · "
             "III 16.00–22.90 · IV 5.00–15.90 (nominal = midpoint); custom narrower sets for "

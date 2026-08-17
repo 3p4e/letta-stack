@@ -226,23 +226,33 @@ para("Нова методологија (оваа студија) | New methodol
 for mk, en in [
     ("Сидро по серија = најновиот верификуван резултат (ретест каде постои).",
      "Per-batch anchor = the most recent verified result (retest where one exists)."),
-    ("Долна граница на класата = сидро − D − U(сидро), заокружено на 0,5 надолу; никогаш "
-     "под 5,00% (критериум за прифатливост при ослободување).",
-     "Grade floor = anchor − D − U(anchor), rounded down to 0.5; never below 5.00% "
-     "(the release acceptance floor)."),
-    ("Горна граница = сидро + U(сидро) (заокружено нагоре) — и повисоко повторно мерење "
-     "останува внатре.", "Grade ceiling = anchor + U(anchor) (rounded up) — a higher "
-     "remeasure also stays inside."),
+    ("Потребен опсег: долна граница = сидро − D − U(сидро), никогаш под 5,00% (критериум за "
+     "прифатливост при ослободување); горна граница = сидро + max(1,0, U(сидро)).",
+     "Required window: lower = anchor − D − U(anchor), never below 5.00% (the release "
+     "acceptance floor); upper = anchor + max(1.0, U(anchor))."),
+    ("Класите по сорта се групираат лакомо по растечки сидра врз основа на потребниот опсег, "
+     "со максимална ширина 6,5 процентни поени; класите СМЕЕ да се преклопуваат — серијата се "
+     "класира поединечно, а дисјунктни класи би го вратиле стариот проблем со прелевање на "
+     "границите.",
+     "Per-strain tiers are greedily clustered on ascending anchors over the required window, "
+     "max width 6.5 points; tiers MAY overlap — batches are graded individually, and forcing "
+     "disjoint tiers would recreate the old boundary-flip problem."),
+    ("Потребниот опсег потоа се ДЕКЛАРИРА како НОМИНАЛА ± ТОЛЕРАНЦИЈА: номиналата е секогаш "
+     "цел број (18,00%, никогаш 18,50%) — истата форма во која важечките QCSP 001 "
+     "спецификации веќе ја запишуваат потенцијата, но со цел-број номинала. Толеранцијата е "
+     "минимумот потребен за номинала ± толеранција да го покрие целиот потребен опсег, "
+     "заокружена нагоре на следните 0,01 — заокружувањето е секогаш нанадвор. Секоја серија ја "
+     "носи декларацијата на својата класа — никогаш посебна бројка.",
+     "The required window is then DECLARED as NOMINAL ± TOLERANCE: the nominal is always a "
+     "whole number (18.00%, never 18.50%) — the same form the issued QCSP 001 specifications "
+     "already use to record potency, but with a whole-number nominal. The tolerance is the "
+     "minimum needed for nominal ± tolerance to cover the entire required window, rounded up "
+     "to the next 0.01 — always outward. Every batch carries its tier's declaration — never a "
+     "separate figure."),
     ("U = мерна неодреденост ≈ 6,2% од вредноста (k=2, како на самите сертификати); "
      "D = 1,5 %апс./година (Поглавје 4).",
      "U = measurement uncertainty ≈ 6.2% of value (k=2, as stated on the certificates); "
-     "D = 1.5 %abs/year (Chapter 4)."),
-    ("Класите по сорта се групираат лакомо по растечки сидра, со максимална ширина 6,5 "
-     "процентни поени; класите СМЕАТ да се преклопуваат — серијата се класира поединечно, "
-     "а дисјунктни класи би го вратиле старот проблем со прелевање на границите.",
-     "Per-strain tiers are greedily clustered on ascending anchors, max width 6.5 points; "
-     "tiers MAY overlap — batches are graded individually, and forcing disjoint tiers "
-     "would recreate the old boundary-flip problem.")]:
+     "D = 1.5 %abs/year (Chapter 4).")]:
     para("• %s | %s" % (mk, en), 9.3, "37474F", after=1)
 
 # ---------- 6. Per-strain distributions ----------
@@ -261,12 +271,14 @@ for s in sorted(d["stats"]):
     pr.figure(doc, os.path.join(D, "figures", figidx[s]), None, None, width_cm=17.2)
     tiers = d["merged_ranges"].get(s, [])
     if tiers:
-        trs = [["W-%d" % (i + 1), "%.1f – %.1f" % tuple(t["range"]),
+        trs = [["W-%d" % (i + 1), "%.2f%% ± %.2f%%" % (t["nominal"], t["tol"]),
+                "%.2f – %.2f" % tuple(t["range"]),
                 ", ".join(t["batches"]),
                 ", ".join("%.2f" % a for a in t["anchors"])]
                for i, t in enumerate(tiers)]
-        table(["Класа | Tier", "Опсег | Range (%)", "Серии | Batches", "Сидра | Anchors (%)"],
-              trs, [1.8, 3.0, 7.6, 5.0])
+        table(["Класа | Tier", "Номинала ± толер. | Nominal ± tol.", "= Опсег | = Range (%)",
+               "Серии | Batches", "Сидра | Anchors (%)"],
+              trs, [1.5, 3.0, 2.6, 6.4, 4.0])
     else:
         para("Нема серии на залиха за оваа сорта во Т1/Т2/Т3. | No T1/T2/T3 stock batches "
              "for this strain.", 8.5, "6B7785", italic=True)
@@ -288,12 +300,12 @@ for b in sorted(d["stock"], key=lambda x: (x["tranche"], x["strain"], x["batch"]
     tier = "W-%d" % b["tier"] if b.get("tier") else "—"
     stock_rows.append(["Т%s" % b["tranche"], b["batch"], b["strain"], anc,
                        b["bracket_old"] or "—", tier,
-                       "%.1f – %.1f" % tuple(b["proposed"]),
+                       "%.2f%% ± %.2f%%" % (b["nominal"], b["tol"]),
                        "%.2f" % b["headroom_down"]])
     stock_fills.append("FFF8E7" if b["anchor"] is None
                        else ("FFFFFF" if len(stock_rows) % 2 else "F4F7FB"))
 table(["Т", "Серија | Batch", "Сорта | Strain", "Сидро | Anchor (%)",
-       "Стара класа | Old", "Класа | Tier", "Предлог опсег | Proposed (%)",
+       "Стара класа | Old", "Класа | Tier", "Номинала ± толер. | Nominal ± tol.",
        "Простор надолу | Headroom (%)"],
       stock_rows, [0.9, 2.7, 3.3, 3.1, 1.9, 1.5, 2.6, 2.4])
 para("Жолти редови: без ниту еден сертификат на датотека — основа е декларираната вредност; "
