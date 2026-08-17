@@ -30,16 +30,22 @@ this study is a proposed revision, not an amendment to any issued spec.
 
 **Grade rule.** Each tier is a nominal on a 0.50% grid (`nn.00%` or `nn.50%`,
 never a finer fraction) ± a tolerance that never exceeds 10.00% of that
-nominal (`Pot.-1: 20.00% ±2.00%`, i.e. 18.00%–22.00%). A strain's whole
-ladder is planned together — fewest tiers first, then closest fit to the
-tested results — so that **adjacent tiers of the same strain carry no blind
-gap**: one tier's ceiling sits exactly 0.01 below the next tier's floor,
-always, so a result between two established grades still falls into one of
-them. Within a contiguous segment, the LAST (highest-nominal) tier always
-gets its own full 10.00% cap — nothing constrains its top edge from above —
-and earlier tiers absorb only the squeeze that contiguity with that fixed
-top edge actually forces. A tier's floor never sits below the 5.00% release
-acceptance criterion.
+nominal. Tiers are declared **top-down**: the strongest (highest) tier of a
+segment gets priority and takes its **full ±10.00%** — nothing constrains it
+from above, so the strongest grade is never squeezed. Each lower tier then
+**extends downward** from the one above it — its ceiling sits exactly 0.01
+below the tier-above's floor (**no blind gap**), and it grabs as much of its
+own ±10.00% as it can while reaching up to that ceiling, so its nominal is
+the smallest 0.50% grid value that keeps the fit within the cap. This makes
+the next lower nominal and its ± predictable by hand from the tier above. A
+lower tier is narrower than its own full ±10% only when meeting the tier
+above exactly leaves no more room — never for any other reason. A tier's
+floor never sits below the 5.00% release acceptance criterion.
+
+Worked example — Blue Sunset Sherbet (anchors 20.39 / 23.42 / 25.01):
+`Pot.-2: 24.50% ±2.45%` (22.05%–26.95%, at its own full cap) and
+`Pot.-1: 20.50% ±1.54%` (18.96%–22.04%, as wide as it can be while its
+ceiling meets Pot.-2's floor at 22.04/22.05).
 
 **Genuine gaps.** 2 of 24 strains (Graps & Creme; Orange Punch Mimosa) — and
 their equivalents on the independently-clustered renamed-name board — contain

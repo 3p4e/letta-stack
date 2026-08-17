@@ -489,28 +489,29 @@ def tiers_block(s):
                      '<span>Нема воспоставена класа — резултат тука бара индивидуална ОК '
                      'проценка | No established grade — a result here requires individual QC '
                      'assessment</span></div>' % (glo, ghi))
-    note = ('<div class="tiernote">Секоја класа е нè номинала ± толеранција, номинала секогаш '
-            'во чекори од 0,50% (nn,00% или nn,50%, никогаш пофина дропка), толеранција никогаш '
-            'повеќе од 10,00% од номиналата. Соседните класи на '
-            'иста сорта немаат празен простор меѓу себе — горната граница на една класа е точно '
-            '0,01 под долната граница на следната, секогаш, така што и резултат меѓу две '
-            'воспоставени класи сепак паѓа во некоја од нив; толеранцијата затоа е на целосните '
-            '10,00% секогаш кога тоа е возможно, а се намалува само толку колку што е потребно за '
-            'точно да се допре соседната класа. Само кога два тестирани резултати се толку '
-            'далеку што ниту еден кандидат за номинала не може да ги премости во рамки на 10,00% '
-            'ограничувањето '
-            '(нема тука соодветна серија), останува вистински, означен јаз — не измислена '
-            'преодна класа. | Every tier is nominal ± tolerance, nominal always on a 0.50% step '
-            '(nn.00% or nn.50%, never a finer fraction), '
-            'tolerance never more than 10.00% of the nominal. Adjacent tiers of the same strain '
-            'carry no blind gap between them — one tier\'s ceiling sits exactly 0.01 below the '
-            'next tier\'s floor, always, so a result between two established grades still falls '
-            'into one of them; tolerance is therefore at the full 10.00% whenever the data allows '
-            'it, and shrinks only as far as needed to meet the neighbour exactly. Only where two '
-            'tested results are too far apart for any candidate nominal to bridge within the '
-            '10.00% cap '
-            '(no batch exists there) does a genuine, flagged gap remain — never a fabricated '
-            'bridge tier.</div>')
+    note = ('<div class="tiernote">Класите се декларираат одозгора надолу. Најсилната '
+            '(највисоката) класа има приоритет и ја зема својата полна ширина ±10,00% од '
+            'номиналата; над неа ништо не ја ограничува, па најсилната класа никогаш не се '
+            'стеснува. Секоја пониска класа потоа се протега надолу од таа над неа: нејзината '
+            'горна граница е точно 0,01 под долната граница на класата над неа (без празен '
+            'простор), а зема онолку од своите ±10,00% колку што може додека допира до таа '
+            'граница — затоа номиналата е секогаш на чекор од 0,50% (nn,00% или nn,50%), а '
+            'толеранцијата е најголемата што ограничувањето од 10% ја дозволува. Пониска класа е '
+            'потесна од своите полни ±10% само кога точното допирање со класата над неа не остава '
+            'повеќе простор — никогаш поради друга причина. Само кога два тестирани резултати се '
+            'толку далеку што ниту еден кандидат за номинала не може да ги премости во рамки на '
+            '10,00% (нема тука соодветна серија) останува вистински, означен јаз — не измислена '
+            'преодна класа. | Tiers are declared top-down. The strongest (highest) tier gets '
+            'priority and takes its full ±10.00% of the nominal; nothing constrains it from '
+            'above, so the strongest grade is never squeezed. Each lower tier then extends '
+            'downward from the one above it: its ceiling sits exactly 0.01 below the floor of the '
+            'tier above (no blind gap), and it takes as much of its own ±10.00% as it can while '
+            'reaching up to that ceiling — so its nominal lands on a 0.50% step (nn.00% or '
+            'nn.50%) and its tolerance is the widest the 10% cap allows. A lower tier is narrower '
+            'than its own full ±10% only when meeting the tier above exactly leaves no more room '
+            '— never for any other reason. Only where two tested results are too far apart for '
+            'any candidate nominal to bridge within the 10.00% cap (no batch exists there) does a '
+            'genuine, flagged gap remain — never a fabricated bridge tier.</div>')
     return ('<div class="tiers"><b>Предложени класи | Proposed tiers:</b>%s%s</div>'
             % (rows, note))
 
@@ -730,39 +731,45 @@ def feasible_nominals(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO, step=NOM_STEP
     return [round(k * step, 2) for k in range(lo_i, hi_i + 1)]
 
 
-def pairwise_bridgeable(prev_n, prev_max_anchor, nominal, run_min_anchor,
-                         gap=MIN_GAP, max_ratio=MAX_TOL_RATIO):
-    """Mirror of build_potency_dataset.pairwise_bridgeable."""
-    b_lo = max(prev_max_anchor, (1 - max_ratio) * nominal - gap)
-    b_hi = min((1 + max_ratio) * prev_n, run_min_anchor - gap)
-    return b_lo <= b_hi + 1e-9
-
-
-def solve_chain(nominals, needs, caps, gap=MIN_GAP):
-    """Mirror of build_potency_dataset.solve_chain."""
-    k = len(nominals)
-    if k == 1:
-        return [caps[0]] if needs[0] <= caps[0] + 1e-9 else None
-    D = [round(nominals[i + 1] - nominals[i] - gap, 2) for i in range(k - 1)]
-    A = [0.0] * k
-    for i in range(1, k):
-        A[i] = D[i - 1] - A[i - 1]
-    lo_t0, hi_t0 = needs[0], caps[0]
-    for i in range(k):
-        if i % 2 == 0:
-            lo_i, hi_i = needs[i] - A[i], caps[i] - A[i]
-        else:
-            lo_i, hi_i = A[i] - caps[i], A[i] - needs[i]
-        lo_t0, hi_t0 = max(lo_t0, lo_i), min(hi_t0, hi_i)
-    if lo_t0 > hi_t0 + 1e-9:
+def build_top_down(groups, floor=5.0, max_ratio=MAX_TOL_RATIO, step=NOM_STEP, gap=MIN_GAP):
+    """Mirror of build_potency_dataset.build_top_down."""
+    top = groups[-1]
+    tmin, tmax = min(top), max(top)
+    lo_i = math.ceil((tmax / (1 + max_ratio)) / step - 1e-9)
+    hi_i = math.floor((tmin / (1 - max_ratio)) / step + 1e-9)
+    lo_i = max(lo_i, math.ceil((floor / (1 - max_ratio)) / step - 1e-9))
+    top_cands = [round(k * step, 2) for k in range(lo_i, hi_i + 1)]
+    if not top_cands:
         return None
-    last = k - 1
-    target = (caps[last] - A[last]) if last % 2 == 0 else (A[last] - caps[last])
-    tol0 = min(max(round(target, 2), lo_t0), hi_t0)
-    tols = [tol0]
-    for i in range(1, k):
-        tols.append(round(D[i - 1] - tols[-1], 2))
-    return tols
+    best = None
+    for n_top in top_cands:
+        tol = round(n_top * max_ratio, 2)
+        tiers = [dict(nominal=n_top, tol=tol, lo=round(n_top - tol, 2),
+                      hi=round(n_top + tol, 2), anchors=top)]
+        ok = True
+        ceiling = round(tiers[-1]["lo"] - gap, 2)
+        for g in reversed(groups[:-1]):
+            gmin, gmax = min(g), max(g)
+            n_i = math.ceil((ceiling / (1 + max_ratio)) / step - 1e-9)
+            n_i = max(n_i, math.ceil((floor / (1 - max_ratio)) / step - 1e-9))
+            nom = round(n_i * step, 2)
+            tol = round(ceiling - nom, 2)
+            if tol < 0 or tol > round(nom * max_ratio, 2) + 1e-9:
+                ok = False
+                break
+            lo, hi = round(nom - tol, 2), round(nom + tol, 2)
+            if lo < floor - 1e-6 or not (lo - 1e-6 <= gmin and gmax <= hi + 1e-6):
+                ok = False
+                break
+            tiers.append(dict(nominal=nom, tol=tol, lo=lo, hi=hi, anchors=g))
+            ceiling = round(lo - gap, 2)
+        if not ok:
+            continue
+        tiers.reverse()
+        cost = sum(abs(t["nominal"] - a) for t in tiers for a in t["anchors"])
+        if best is None or cost < best[0] - 1e-9:
+            best = (cost, tiers)
+    return best[1] if best else None
 
 
 def _tiers_for_k(anchors, k, floor, max_ratio, gap):
@@ -775,35 +782,14 @@ def _tiers_for_k(anchors, k, floor, max_ratio, gap):
     def eval_cuts(bounds):
         nonlocal best
         groups = [anchors[bounds[i]:bounds[i + 1]] for i in range(k)]
-        cand_lists = []
-        for g in groups:
-            c = list(feasible_nominals(g, floor, max_ratio))
-            if not c:
-                return
-            cand_lists.append(c)
-
-        def choose(idx, chosen):
-            nonlocal best
-            if idx == k:
-                needs = [max(nom - min(g), max(g) - nom) for nom, g in zip(chosen, groups)]
-                caps = [round(nom * max_ratio, 2) for nom in chosen]
-                tols = solve_chain(chosen, needs, caps, gap)
-                if tols is None:
-                    return
-                cost = sum(abs(nom - a) for nom, g in zip(chosen, groups) for a in g)
-                if best is None or cost < best[0] - 1e-9:
-                    tiers = [dict(nominal=nom, tol=tol, lo=round(nom - tol, 2), hi=round(nom + tol, 2),
-                                  anchors=g, start=bounds[gi], end=bounds[gi + 1])
-                             for gi, (nom, tol, g) in enumerate(zip(chosen, tols, groups))]
-                    best = (cost, tiers)
-                return
-            for nom in cand_lists[idx]:
-                if chosen and not pairwise_bridgeable(chosen[-1], groups[idx - 1][-1], nom,
-                                                        groups[idx][0], gap, max_ratio):
-                    continue
-                choose(idx + 1, chosen + [nom])
-
-        choose(0, [])
+        tiers = build_top_down(groups, floor, max_ratio, NOM_STEP, gap)
+        if tiers is None:
+            return
+        for gi, t in enumerate(tiers):
+            t["start"], t["end"] = bounds[gi], bounds[gi + 1]
+        cost = sum(abs(t["nominal"] - a) for t in tiers for a in t["anchors"])
+        if best is None or cost < best[0] - 1e-9:
+            best = (cost, tiers)
 
     def cuts(start, groups_left, acc):
         if groups_left == 1:

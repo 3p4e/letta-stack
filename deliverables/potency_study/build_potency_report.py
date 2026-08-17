@@ -177,14 +177,17 @@ for s in sorted(d["stats"]):
         table(["Класа | Tier", "Номинала ± толер. | Nominal ± tol.", "= Опсег | = Range",
                "Серии | Batches", "Сидра | Anchors"],
               trs, [1.5, 3.0, 2.6, 6.4, 4.0])
-        para("Толеранцијата е на целосните 10,00% од номиналата секогаш кога тоа е возможно, а "
-             "се намалува само толку колку што е потребно за точно да ја допре соседната класа "
-             "(без празен простор меѓу нив) — затоа две класи од иста сорта може да носат "
-             "различен ± процент, по дизајн. Класите никогаш не се преклопуваат. | Tolerance is "
-             "at the full 10.00% of the nominal whenever the data allows it, and shrinks only as "
-             "far as needed to meet the neighbouring tier exactly (no blind gap between them) — "
-             "that is why two tiers of the same strain can carry a different ± percentage, by "
-             "design. Tiers never overlap.", 8, "4A5B6C", italic=True)
+        para("Класите се декларираат одозгора надолу: најсилната (највисоката) класа има "
+             "приоритет и ја зема својата полна ±10,00%, а секоја пониска се протега надолу од "
+             "неа — горната ѝ граница е точно 0,01 под долната граница на класата над неа, и зема "
+             "онолку од своите ±10,00% колку што може додека допира до таа граница. Затоа пониска "
+             "класа е потесна само кога точното допирање не остава повеќе простор. Класите "
+             "никогаш не се преклопуваат. | Tiers are declared top-down: the strongest (highest) "
+             "tier gets priority and takes its full ±10.00%, and each lower tier extends downward "
+             "from it — its ceiling sits exactly 0.01 below the floor of the tier above, taking "
+             "as much of its own ±10.00% as it can while reaching that ceiling. A lower tier is "
+             "narrower only when meeting the tier above leaves no more room. Tiers never overlap.",
+             8, "4A5B6C", italic=True)
         for i, t in enumerate(tiers):
             if t.get("gap_after") and i + 1 < len(tiers):
                 glo, ghi = t["range"][1], tiers[i + 1]["range"][0]

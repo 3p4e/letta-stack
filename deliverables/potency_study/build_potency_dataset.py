@@ -123,85 +123,80 @@ def feasible_nominals(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO, step=NOM_STEP
     return [round(k * step, 2) for k in range(lo_i, hi_i + 1)]
 
 
-def pairwise_bridgeable(prev_n, prev_max_anchor, nominal, run_min_anchor,
-                         gap=MIN_GAP, max_ratio=MAX_TOL_RATIO):
-    """Does SOME shared boundary exist between a tier declared at prev_n
-    (whose own worst-case anchor is prev_max_anchor) and a new tier at
-    `nominal` (whose own worst-case anchor is run_min_anchor), once each
-    side's tolerance is free to be anything from "just enough to cover its
-    own anchors" up to the 10% cap? Necessary for any valid transition;
-    combined with solve_chain() below it is also sufficient once a full
-    nominal sequence is fixed."""
-    b_lo = max(prev_max_anchor, (1 - max_ratio) * nominal - gap)
-    b_hi = min((1 + max_ratio) * prev_n, run_min_anchor - gap)
-    return b_lo <= b_hi + 1e-9
+def build_top_down(groups, floor=5.0, max_ratio=MAX_TOL_RATIO, step=NOM_STEP, gap=MIN_GAP):
+    """Build one contiguous ladder from a fixed segmentation, TOP-DOWN, the
+    way the owner declares grades by hand:
 
+      1. The HIGHEST tier gets PRIORITY — it takes its FULL ±max_ratio width
+         (nothing constrains a segment's top edge from above, so the strongest
+         grade is never squeezed). Its nominal is a grid point that keeps that
+         full band over the tier's own anchors.
+      2. Each LOWER tier then EXTENDS DOWNWARD from the tier above: its ceiling
+         is pinned exactly `gap` below the tier-above's floor (no blind gap),
+         and it takes AS MUCH of its own ±max_ratio as it can while reaching up
+         to that ceiling. Concretely its nominal is the SMALLEST grid value N
+         with 1.1·N ≥ ceiling — i.e. N = ceil((ceiling/(1+max_ratio))/step)·step
+         — so tol = ceiling − N is as large as possible yet still ≤ max_ratio·N
+         (equality N ≥ ceiling/(1+max_ratio) guarantees tol ≤ cap). This is the
+         "predict the next lower nominal and its ±" rule: given the tier above,
+         the next one down is determined, not searched.
 
-def solve_chain(nominals, needs, caps, gap=MIN_GAP):
-    """Given k candidate nominals (each a multiple of NOM_STEP) already known
-    to be pairwise-bridgeable,
-    solve for ONE symmetric tolerance per tier (nominal ± tol, same both
-    ways — the declared format is always a single ± figure) such that the
-    whole ladder is EXACTLY contiguous end to end: tier i's ceiling is
-    always exactly `gap` below tier i+1's floor, never more, never less.
-
-    tol_i + tol_{i+1} = nominal_{i+1} - nominal_i - gap  for every adjacent
-    pair is a linear chain with one degree of freedom (the ladder can
-    "slide"); every tol_i is expressed in terms of tol_0 via the alternating
-    recurrence, and each tier's own [need, cap] bound is intersected back
-    into a feasible range for tol_0.
-
-    Within that range, tol_0 is chosen so the LAST tier of the segment gets
-    its own full 10% cap whenever that is reachable — nothing constrains a
-    segment's top edge from above, so it should never be squeezed just to
-    "share" a slack that only the interior tiers actually need. Earlier
-    tiers then absorb exactly as much squeeze as contiguity with that fixed
-    top edge forces, never more. (Picking the midpoint of the feasible range
-    instead — the previous approach — needlessly narrowed BOTH edges of a
-    segment even though only an interior tier, if any, is ever structurally
-    forced to give up width; confirmed by hand and by the owner against two
-    real cases: Cash Cow's Pot.-3 and High Pro Amnesia's Pot.-2 both reach
-    their full cap under this rule, not the previous 1.64%/1.64% squeeze.)
-    If the full-cap target for the last tier falls outside what the rest of
-    the chain can support, it clamps to the nearest feasible tol_0 instead —
-    still the most generous top edge the chain allows.
-
-    Returns [tol_1..tol_k] or None if no fully-symmetric solution exists for
-    this exact nominal sequence (the caller then tries a different sequence
-    — see build_strain_tiers)."""
-    k = len(nominals)
-    if k == 1:
-        return [caps[0]] if needs[0] <= caps[0] + 1e-9 else None
-    D = [round(nominals[i + 1] - nominals[i] - gap, 2) for i in range(k - 1)]
-    A = [0.0] * k
-    for i in range(1, k):
-        A[i] = D[i - 1] - A[i - 1]
-    lo_t0, hi_t0 = needs[0], caps[0]
-    for i in range(k):
-        if i % 2 == 0:
-            lo_i, hi_i = needs[i] - A[i], caps[i] - A[i]
-        else:
-            lo_i, hi_i = A[i] - caps[i], A[i] - needs[i]
-        lo_t0, hi_t0 = max(lo_t0, lo_i), min(hi_t0, hi_i)
-    if lo_t0 > hi_t0 + 1e-9:
+    `groups`: anchor lists, ascending, one per tier. Returns the tier dicts
+    ascending (nominal/tol/lo/hi/anchors) or None if this segmentation cannot
+    be realised without a gap, an over-cap tolerance, a floor below the release
+    criterion, or a tier that fails to cover its own anchors — in which case
+    the caller tries a finer segmentation (more tiers) or, failing all, a real
+    disclosed gap. Among the feasible full-width top nominals it keeps the one
+    giving the least total |nominal − anchor| across the whole ladder, so the
+    declared nominals stay honest to the results and never drift up to overstate
+    the product."""
+    top = groups[-1]
+    tmin, tmax = min(top), max(top)
+    # grid nominals whose FULL band covers the top group and clears the floor
+    lo_i = math.ceil((tmax / (1 + max_ratio)) / step - 1e-9)
+    hi_i = math.floor((tmin / (1 - max_ratio)) / step + 1e-9)
+    lo_i = max(lo_i, math.ceil((floor / (1 - max_ratio)) / step - 1e-9))
+    top_cands = [round(k * step, 2) for k in range(lo_i, hi_i + 1)]
+    if not top_cands:
         return None
-    last = k - 1
-    # tol_last = A[last] + sign*tol_0; solve for the tol_0 that makes
-    # tol_last equal caps[last] exactly, then clamp into the feasible range.
-    target = (caps[last] - A[last]) if last % 2 == 0 else (A[last] - caps[last])
-    tol0 = min(max(round(target, 2), lo_t0), hi_t0)
-    tols = [tol0]
-    for i in range(1, k):
-        tols.append(round(D[i - 1] - tols[-1], 2))
-    return tols
+
+    best = None  # (cost, tiers ascending)
+    for n_top in top_cands:
+        tol = round(n_top * max_ratio, 2)
+        tiers = [dict(nominal=n_top, tol=tol, lo=round(n_top - tol, 2),
+                      hi=round(n_top + tol, 2), anchors=top)]
+        ok = True
+        ceiling = round(tiers[-1]["lo"] - gap, 2)
+        for g in reversed(groups[:-1]):
+            gmin, gmax = min(g), max(g)
+            n_i = math.ceil((ceiling / (1 + max_ratio)) / step - 1e-9)
+            n_i = max(n_i, math.ceil((floor / (1 - max_ratio)) / step - 1e-9))
+            nom = round(n_i * step, 2)
+            tol = round(ceiling - nom, 2)
+            if tol < 0 or tol > round(nom * max_ratio, 2) + 1e-9:
+                ok = False
+                break
+            lo, hi = round(nom - tol, 2), round(nom + tol, 2)
+            if lo < floor - 1e-6 or not (lo - 1e-6 <= gmin and gmax <= hi + 1e-6):
+                ok = False
+                break
+            tiers.append(dict(nominal=nom, tol=tol, lo=lo, hi=hi, anchors=g))
+            ceiling = round(lo - gap, 2)
+        if not ok:
+            continue
+        tiers.reverse()  # ascending
+        cost = sum(abs(t["nominal"] - a) for t in tiers for a in t["anchors"])
+        if best is None or cost < best[0] - 1e-9:
+            best = (cost, tiers)
+    return best[1] if best else None
 
 
 def _tiers_for_k(anchors, k, floor, max_ratio, gap):
-    """Best (lowest Σ|nominal-anchor|) fully-contiguous, fully-symmetric
-    ladder using EXACTLY k tiers over `anchors`, or None if none exists at
-    this tier count. Exhaustive over the C(n-1, k-1) ways to cut `anchors`
-    into k contiguous, non-empty runs — always small in practice (a single
-    strain's tested-result count), so exhaustive is both simple and exact."""
+    """Best top-down ladder (build_top_down) using EXACTLY k tiers over
+    `anchors`, or None if none exists at this tier count. Exhaustive over the
+    C(n-1, k-1) ways to cut `anchors` into k contiguous, non-empty runs —
+    always small in practice (a single strain's tested-result count), so
+    exhaustive is both simple and exact. "Best" = least total |nominal-anchor|."""
     n = len(anchors)
     if k > n:
         return None
@@ -210,35 +205,14 @@ def _tiers_for_k(anchors, k, floor, max_ratio, gap):
     def eval_cuts(bounds):
         nonlocal best
         groups = [anchors[bounds[i]:bounds[i + 1]] for i in range(k)]
-        cand_lists = []
-        for g in groups:
-            c = list(feasible_nominals(g, floor, max_ratio))
-            if not c:
-                return
-            cand_lists.append(c)
-
-        def choose(idx, chosen):
-            nonlocal best
-            if idx == k:
-                needs = [max(nom - min(g), max(g) - nom) for nom, g in zip(chosen, groups)]
-                caps = [round(nom * max_ratio, 2) for nom in chosen]
-                tols = solve_chain(chosen, needs, caps, gap)
-                if tols is None:
-                    return
-                cost = sum(abs(nom - a) for nom, g in zip(chosen, groups) for a in g)
-                if best is None or cost < best[0] - 1e-9:
-                    tiers = [dict(nominal=nom, tol=tol, lo=round(nom - tol, 2), hi=round(nom + tol, 2),
-                                  anchors=g, start=bounds[gi], end=bounds[gi + 1])
-                             for gi, (nom, tol, g) in enumerate(zip(chosen, tols, groups))]
-                    best = (cost, tiers)
-                return
-            for nom in cand_lists[idx]:
-                if chosen and not pairwise_bridgeable(chosen[-1], groups[idx - 1][-1], nom,
-                                                        groups[idx][0], gap, max_ratio):
-                    continue
-                choose(idx + 1, chosen + [nom])
-
-        choose(0, [])
+        tiers = build_top_down(groups, floor, max_ratio, NOM_STEP, gap)
+        if tiers is None:
+            return
+        for gi, t in enumerate(tiers):
+            t["start"], t["end"] = bounds[gi], bounds[gi + 1]
+        cost = sum(abs(t["nominal"] - a) for t in tiers for a in t["anchors"])
+        if best is None or cost < best[0] - 1e-9:
+            best = (cost, tiers)
 
     def cuts(start, groups_left, acc):
         if groups_left == 1:
@@ -466,26 +440,28 @@ def build():
                  "still has an applicable declaration; the same discipline the company's own "
                  "Portfolio-Master bracket system already uses (7/10/13/16/19/22/25% ladder — "
                  "fixed 3-point-wide bands, each boundary shared exactly with the next, zero "
-                 "gaps end to end; see portfolio_master_brackets below). Tolerance is therefore "
-                 "at the FULL 10% cap whenever the data allows it, and shrinks below that ONLY "
-                 "as far as needed to meet the neighbouring tier exactly — never to leave a gap, "
-                 "never past what still covers every anchor assigned to the tier. The two goals "
-                 "(generous ±10% width, and zero gaps) are not always simultaneously reachable "
-                 "for a given pair of candidate nominals: full ±10% on both sides can itself "
-                 "leave a gap if the nominals end up too far apart. Where that happens the "
-                 "nominal choice itself changes, or (within one segment) the LAST tier keeps its "
-                 "own full cap and earlier tiers absorb exactly the squeeze that forces (Blue "
-                 "Sunset Sherbet, anchors 20.39/23.42/25.01: Pot.-2 sits at its own full cap, "
-                 "23.50% ±2.35% [21.15%-25.85%]; Pot.-1 is squeezed to 20.50% ±0.64% "
-                 "[19.86%-21.14%] — not because it needs to be that narrow to cover its own "
-                 "anchor, but because Pot.-2's full-width claim leaves it no more room, and the "
-                 "half-percent grid picks 20.50 over 20.00/21.00 as the closest fit); "
-                 "solve_chain() finds the tolerance split, and the whole "
-                 "ladder is planned by tier COUNT first (fewest tiers that fit the data — a grade "
-                 "ladder should not fragment into one tier per batch just because that shaves a "
-                 "few hundredths off the fit) and total |nominal-anchor| distance second, over "
-                 "every candidate nominal sequence (a half-percent grid) that is provably "
-                 "bridgeable end to end (plan_contiguous). "
+                 "gaps end to end; see portfolio_master_brackets below). "
+                 "TOP-DOWN, HIGHEST TIER FIRST (build_top_down): the ladder is declared from "
+                 "the top down, the way it is done by hand. The HIGHEST (strongest) tier of a "
+                 "segment gets PRIORITY — it takes its FULL ±10% width; nothing constrains a "
+                 "segment's top edge from above, so the strongest grade is never squeezed. Each "
+                 "LOWER tier then EXTENDS DOWNWARD from the one above: its ceiling is pinned "
+                 "exactly 0.01 below the tier-above's floor, and it grabs AS MUCH of its own "
+                 "±10% as it can while still reaching up to that ceiling — its nominal is the "
+                 "SMALLEST half-percent grid value N with 1.1·N ≥ ceiling, so its tolerance "
+                 "(ceiling − N) is as large as the cap allows. This makes the next lower nominal "
+                 "and its ± fully PREDICTABLE from the tier above — not searched. There is no "
+                 "'available width' box that crams an edge tier: a lower tier is only ever "
+                 "narrower than its own full 10% because meeting the tier above exactly leaves "
+                 "no more room, never for any other reason. "
+                 "(Blue Sunset Sherbet, anchors 20.39/23.42/25.01 → Pot.-2 24.50% ±2.45% "
+                 "[22.05%-26.95%] at its own full cap; Pot.-1 20.50% ±1.54% [18.96%-22.04%] — "
+                 "as wide as it can be while its ceiling meets Pot.-2's floor at 22.04/22.05.) "
+                 "The segmentation (how many tiers and where the cuts fall) is chosen by tier "
+                 "COUNT first (fewest tiers that fit the data — a grade ladder should not "
+                 "fragment into one tier per batch) and total |nominal-anchor| distance second, "
+                 "so declared nominals stay honest to the results and never drift up merely to "
+                 "buy width and overstate the product (plan_contiguous). "
                  "GENUINE GAPS: 2 of 24 strains (Graps & Creme; Orange Punch Mimosa) contain "
                  "two neighbouring tested results so far apart that NO candidate nominal "
                  "pair can bridge them within the ≤10% cap, even as bare single-anchor tiers "
