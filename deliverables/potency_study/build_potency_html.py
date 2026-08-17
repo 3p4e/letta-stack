@@ -745,7 +745,7 @@ HTML = """<!doctype html>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Potency Atlas</title>
 <style>%s</style></head>
-<body>
+<body class="lite">
 <header class="hero"><div class="wrap">
  <div class="brand">PURELY<em>PLANT</em> <small>THE FUTURE OF CANNABIS</small></div>
  <h1>Атлас на потенција</h1>
@@ -849,7 +849,7 @@ ecoa_retrieval_gpt4o). | Study summary logged to the host's shared memory.</span
 <span>Меродавни остануваат лабораториските сертификати во СМК. |
 The laboratory certificates in the QMS remain authoritative.</span>
 </div></footer>
-<button id="themeBtn" type="button">◐ Посветла тема | Lighter theme</button>
+<button id="themeBtn" type="button">◐ Темна тема | Dark theme</button>
 <script>
 var b=document.getElementById('themeBtn');
 b.addEventListener('click',function(){
