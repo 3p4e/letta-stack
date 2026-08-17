@@ -610,9 +610,11 @@ def renames_section():
                 u = U_RATIO * it["val"]
                 if not (it["mb"][0] <= it["val"] - D_YEAR - u and it["val"] + u <= it["mb"][1]):
                     fail_win.append(it)
+            # under the ±10% ceiling the tier's guarantee is that the batch's
+            # TESTED value sits inside the declared grade today (the one-year
+            # D+U window is deliberately not promised — see the range rule).
             ok_ours = [it for it in tested if it["ours"] and
-                       it["ours"][0] <= max(5.0, it["val"] - D_YEAR - U_RATIO * it["val"]) + 1e-6 and
-                       it["val"] + U_RATIO * it["val"] <= it["ours"][1] + 1e-6]
+                       it["ours"][0] - 1e-6 <= it["val"] <= it["ours"][1] + 1e-6]
             g_total += len(tested)
             g_out_today += len(out_today)
             g_fail_win += len(fail_win)
@@ -629,7 +631,7 @@ def renames_section():
                           % (len(fail_win), len(tested), len(fail_win), len(tested)))
                 else:
                     v2 = ('<span class="vchip ok">мастер-опсегот издржува 1 година | master holds 1 year</span>')
-            v3 = ('<span class="vchip ours">нашиот опсег ги држи сите %d | our tier holds all %d</span>'
+            v3 = ('<span class="vchip ours">нашата класа ги држи сите %d денес | our tier holds all %d today</span>'
                   % (len(ok_ours), len(ok_ours))) if ok_ours else ""
             blist = ", ".join("%s (%s)" % (esc(it["batch"]),
                                            ("%.2f" % it["val"]) if it["val"] is not None and not it["declared"]
@@ -660,7 +662,7 @@ def renames_section():
         '<div class="rs"><b>%d</b>тестирани серии од мастерот | tested batches from the master</div>'
         '<div class="rs bad"><b>%d</b>веќе НАДВОР од мастер-опсегот денес | already OUTSIDE the master bracket today</div>'
         '<div class="rs bad"><b>%d</b>мастер-опсегот не издржува 1 година (D+U прозорец) | master fails the 1-year D+U window</div>'
-        '<div class="rs ok"><b>%d/%d</b>во нашите опсези: гарантирано и по 1 година | in our tiers: guaranteed even after 1 year</div>'
+        '<div class="rs ok"><b>%d/%d</b>внатре во нашата декларирана класа денес (± ≤ 10%%) | inside our declared tier today (± ≤ 10%%)</div>'
         "</div>" % (g_total, g_out_today, g_fail_win, g_ok_ours, g_have_ours))
     return summary + cards
 
@@ -715,14 +717,59 @@ def final_ranges():
     return head + '<div class="fboard">' + rows + "</div>" + final_ranges_renamed()
 
 
-def declare(lo_req, hi_req, floor=5.0):
-    """Mirror of build_potency_dataset.declare — window -> nominal ± tolerance,
-    nominal a whole number, tolerance rounded outward, declared minimum never
-    below the release acceptance criterion."""
-    def tol_for(n):
+MAX_TOL_RATIO = 0.10   # owner ceiling: declared ± tolerance may never exceed
+                        # 10.0% of the nominal, for ANY batch or strain.
+
+
+def cap_feasible(anchors, max_ratio=MAX_TOL_RATIO):
+    """True iff a WHOLE-NUMBER nominal exists that keeps every anchor within
+    ±max_ratio of it. Mirror of build_potency_dataset.cap_feasible — the
+    real-valued interval [lo_n, hi_n] can be non-empty yet contain no
+    integer (often under 0.1 wide for a tight anchor cluster)."""
+    lo_n = max(a / (1 + max_ratio) for a in anchors)
+    hi_n = min(a / (1 - max_ratio) for a in anchors)
+    lo_i, hi_i = math.ceil(lo_n - 1e-9), math.floor(hi_n + 1e-9)
+    return lo_i <= hi_i
+
+
+def declare_group(anchors, lo_req, hi_req, floor=5.0, max_ratio=MAX_TOL_RATIO):
+    """Mirror of build_potency_dataset.declare_group — a multi-batch tier's
+    nominal is clamped into the integer range that keeps EVERY anchor within
+    ±max_ratio of it (never picked from the wider D+U window alone, which
+    could leave an anchor outside its own capped declaration). Returns
+    (nominal, tolerance, capped)."""
+    lo_n = max(a / (1 + max_ratio) for a in anchors)
+    hi_n = min(a / (1 - max_ratio) for a in anchors)
+    lo_i, hi_i = math.ceil(lo_n - 1e-9), math.floor(hi_n + 1e-9)
+    assert lo_i <= hi_i, ("declare_group called on a cap-infeasible anchor set", anchors)
+    ideal = float(math.floor((lo_req + hi_req) / 2.0 + 0.5))
+    nom = min(max(ideal, lo_i), hi_i)
+
+    def tol_needed(n):
         return math.ceil(max(n - lo_req, hi_req - n) * 100 - 1e-9) / 100.0
 
-    nom = float(math.floor((lo_req + hi_req) / 2.0 + 0.5))
+    def tol_capped(n):
+        return min(tol_needed(n), round(n * max_ratio, 2))
+
+    tol = tol_capped(nom)
+    while nom - tol < floor - 1e-9 and nom < hi_i:
+        nom += 1.0
+        tol = tol_capped(nom)
+    capped = tol_needed(nom) > round(nom * max_ratio, 2) + 1e-9
+    return nom, tol, capped
+
+
+def declare_single(anchor, floor=5.0, max_ratio=MAX_TOL_RATIO):
+    """Mirror of build_potency_dataset.declare_single — a tier backed by
+    exactly one tested batch is declared nominal ± 10% of nominal (a flat
+    policy tolerance, not a D+U statistical one), nominal = anchor rounded
+    half-up to a whole number, tolerance rounded UP to 0.01, nominal
+    escalated upward if needed to keep the declared floor ≥ 5.00 %."""
+    nom = float(math.floor(anchor + 0.5))
+
+    def tol_for(n):
+        return math.ceil(n * max_ratio * 100 - 1e-9) / 100.0
+
     tol = tol_for(nom)
     for _ in range(64):
         if nom - tol >= floor - 1e-9:
@@ -732,26 +779,36 @@ def declare(lo_req, hi_req, floor=5.0):
     return nom, tol
 
 
-def tiers_from_anchors(items, w_max=6.5):
-    """Same greedy clustering over the true required window as the dataset
-    builder, applied to an arbitrary batch set (here: one renamed spec strain),
-    then declared as nominal ± tolerance.
+def tiers_from_anchors(items):
+    """Clustering driven by the SAME 10% cap the declaration itself must
+    respect: a batch joins the running tier only while a whole-number nominal
+    still exists that keeps every anchor in the tier within ±10% of it
+    (cap_feasible) — not the old wider D+U-window rule, which could form a
+    tier that a ±10% tolerance can no longer fully cover once capped. A tier
+    with exactly one batch is declared via declare_single (flat ±10% policy)
+    instead of declare_group.
     items = [(batch, anchor, tested_bool)] ascending by anchor."""
     tiers = []
     cur = None
     for batch, a, tested in sorted(items, key=lambda x: x[1]):
-        u = U_RATIO * a
-        flo = max(5.0, a - D_YEAR - u)
-        cei = a + max(1.0, u)
-        if cur is None or cei - cur["lo"] > w_max:
-            cur = dict(lo=flo, hi=cei, batches=[batch], tested=[tested])
+        ok = cur is not None and cap_feasible(cur["anchors"] + [a])
+        if cur is None or not ok:
+            cur = dict(batches=[batch], tested=[tested], anchors=[a])
             tiers.append(cur)
         else:
-            cur["hi"] = max(cur["hi"], cei)
             cur["batches"].append(batch)
             cur["tested"].append(tested)
+            cur["anchors"].append(a)
     for g in tiers:
-        g["nominal"], g["tol"] = declare(g["lo"], g["hi"])
+        g["single_batch"] = len(g["batches"]) == 1
+        if g["single_batch"]:
+            g["nominal"], g["tol"] = declare_single(g["anchors"][0])
+            g["capped"] = True
+        else:
+            u_all = [U_RATIO * a for a in g["anchors"]]
+            lo_req = min(max(5.0, a - D_YEAR - u) for a, u in zip(g["anchors"], u_all))
+            hi_req = max(a + max(1.0, u) for a, u in zip(g["anchors"], u_all))
+            g["nominal"], g["tol"], g["capped"] = declare_group(g["anchors"], lo_req, hi_req)
         g["lo"] = round(g["nominal"] - g["tol"], 2)
         g["hi"] = round(g["nominal"] + g["tol"], 2)
     return tiers
@@ -899,6 +956,20 @@ nav = "".join('<a href="#s-%s">%s</a>'
 
 n_stab_usable = sum(1 for r in d["stability"] if r["usable"])
 
+_all_tiers = [t for ts in d["merged_ranges"].values() for t in ts]
+_n_tier_total = len(_all_tiers)
+_n_tier_single = sum(1 for t in _all_tiers if t.get("single_batch"))
+single_batch_note = (
+    "Со само еден тестиран резултат нема популација што би ја оправдала D+U "
+    "статистиката, па по налог на сопственикот таквата класа наместо тоа се декларира "
+    "со фиксна политика: номинала ± 10%% од самата номинала (пр. 20,00%% ± 2,00%%), "
+    "заокружено нагоре на 0,01. Ова се однесува на %d од %d-те класи во оваа студија. | "
+    "With only one tested result there is no population to justify the D+U statistics, "
+    "so per owner instruction that tier is declared instead by a flat policy: nominal ± "
+    "10%% of the nominal itself (e.g. 20.00%% ± 2.00%%), rounded up to 0.01. This applies "
+    "to %d of the %d tiers in this study."
+) % (_n_tier_single, _n_tier_total, _n_tier_single, _n_tier_total)
+
 HTML = """<!doctype html>
 <html lang="mk"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -938,35 +1009,40 @@ HTML = """<!doctype html>
  <div class="kcard"><b>Варијансата доминира | Variance dominates</b>
   Разликите меѓу мерења од ±1,5–2,5%% се поголем ризик за „испаѓање“ од класа отколку
   стареењето. <i>Between-measurement variance outweighs ageing.</i></div>
- <div class="kcard gold"><b>Гаранција на новите класи | The tier guarantee</b>
-  Повторно мерење денес или по уште една година складирање останува во декларираната класа.
-  <i>A remeasure now or in a year still reads in grade.</i></div>
+ <div class="kcard gold"><b>Плафон од ±10%% | The ±10%% ceiling</b>
+  Ниту една декларирана класа не носи толеранција поголема од 10%% од номиналата — за
+  сите серии и сите сорти. <i>No declared grade carries a tolerance above 10%% of its
+  nominal — for all batches and all strains.</i></div>
 </div>
 <div class="rule"><b>Правило за опсег | Range rule</b>
-<span><code>долна | floor = сидро − D − U</code></span>
-<span><code>горна | ceiling = сидро + U</code></span>
+<span><code>деклар. | declared = НОМИНАЛА ± ТОЛЕРАНЦИЈА</code></span>
+<span><code>толеранција ≤ 10%% од номиналата | tolerance ≤ 10%% of nominal — секогаш |
+always</code></span>
 <span><code>D = 1,5 пп/год | pp/yr</code></span>
 <span><code>U ≈ 6,2%% од вредноста | of value (k=2)</code></span>
-<span>класи ≤ 6,5 пп широки, никогаш под 5,00%% | tiers ≤ 6.5 pp wide, never below the
-5.00%% release criterion</span>
-<span><code>деклар. | declared = НОМИНАЛА ± ТОЛЕРАНЦИЈА</code></span>
+<span>никогаш под 5,00%% | never below the 5.00%% release criterion</span>
 <span>Номиналната вредност е секогаш <b>цел број</b> (18.00%%, никогаш 18.50%%), во истата
 форма во која важечките QCSP 001 спецификации веќе ја запишуваат потенцијата — ова е
-предложена ревизија на класите, а не измена на важечка спецификација. Толеранцијата се
-определува на минимумот потребен за <code>номинала ± толеранција</code> да го покрие
-целиот потребен опсег, заокружена <b>нагоре</b> на следните 0,01 — заокружувањето е
-секогаш нанадвор: може само да ја прошири декларацијата, никогаш да ја намали
-покриеноста. Оттаму, декларираниот опсег понекогаш е и до ~1 пп поширок од класата
-добиена со групирање (≤ 6,5 пп) — тој лимит го врзува доказниот опсег, а не конечната
-декларација. |
+предложена ревизија на класите, а не измена на важечка спецификација. Серии се групираат
+во иста класа само додека постои целоброjна номинала што ги држи сите нивни сидра внатре
+во ±10%% — така секоја серија е <b>денес</b> внатре во својата декларирана класа.
+Статистичкиот прозорец D+U (деградација + мерна несигурност, едногодишен хоризонт) се
+користи како водилка за изборот на номиналата, но онаму каде што тој прозорец бара
+толеранција поголема од 10%%, важи плафонот: декларацијата останува ≤ ±10%%, а тоа значи
+дека за тие класи повторно мерење по една година складирање <b>не е гарантирано</b> дека
+ќе остане внатре — гаранцијата е за денешното тестирано сидро. |
 The nominal value is always a <b>whole number</b> (18.00%%, never 18.50%%), in the same
 form the issued QCSP 001 specifications already use to record potency — this is a
-proposed revision of the grade bands, not an amendment to any issued specification. The
-tolerance is set to the minimum needed for <code>nominal ± tolerance</code> to cover the
-entire required window, rounded <b>up</b> to the next 0.01 — always outward, so it can
-only widen a declaration, never reduce its coverage. As a result the declared span is
-sometimes up to ~1 pp wider than the clustered tier (≤ 6.5 pp) — that cap bounds the
-evidence window, not the final declaration.</span></div>
+proposed revision of the grade bands, not an amendment to any issued specification.
+Batches share a tier only while a whole-number nominal exists that keeps all their
+anchors within ±10%% — so every batch reads inside its own declared grade <b>today</b>.
+The D+U statistical window (degradation + measurement uncertainty, one-year horizon)
+guides the choice of nominal, but wherever that window would need a tolerance above
+10%%, the ceiling wins: the declaration stays ≤ ±10%%, which means for those tiers a
+remeasure after a further year of storage is <b>not guaranteed</b> to read inside — the
+guarantee covers today's tested anchor.</span>
+<span><code>класа со 1 серија | tier with 1 batch = НОМИНАЛА ± 10%% од номиналата</code></span>
+<span>%s</span></div>
 </section>
 
 <section><h2>Докази за деградација <span>| Degradation Evidence — Grape Pie стабилносна
@@ -1036,7 +1112,8 @@ b.addEventListener('click',function(){
 </script>
 </body></html>
 """ % (CSS, d["n_results"] + n_stab_usable, d["n_strains"], d["n_batches"], n_stab_usable,
-       nav, stab_table(), strain_cards(), renames_section(), stock_table(), final_ranges(),
+       nav, single_batch_note, stab_table(), strain_cards(), renames_section(), stock_table(),
+       final_ranges(),
        d["n_results"], d["n_strains"], n_stab_usable, d["n_results"], n_stab_usable)
 
 out = os.path.join(HERE, "Potency_Atlas.html")

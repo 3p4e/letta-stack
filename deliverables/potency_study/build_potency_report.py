@@ -239,16 +239,23 @@ for mk, en in [
      "disjoint tiers would recreate the old boundary-flip problem."),
     ("Потребниот опсег потоа се ДЕКЛАРИРА како НОМИНАЛА ± ТОЛЕРАНЦИЈА: номиналата е секогаш "
      "цел број (18,00%, никогаш 18,50%) — истата форма во која важечките QCSP 001 "
-     "спецификации веќе ја запишуваат потенцијата, но со цел-број номинала. Толеранцијата е "
-     "минимумот потребен за номинала ± толеранција да го покрие целиот потребен опсег, "
-     "заокружена нагоре на следните 0,01 — заокружувањето е секогаш нанадвор. Секоја серија ја "
-     "носи декларацијата на својата класа — никогаш посебна бројка.",
+     "спецификации веќе ја запишуваат потенцијата, но со цел-број номинала. ПЛАФОН: "
+     "толеранцијата никогаш не надминува 10% од номиналата, за сите серии и сите сорти. "
+     "Серии се групираат во иста класа само додека постои целоброjна номинала што ги држи "
+     "сите нивни сидра внатре во ±10% — секоја серија денес е внатре во својата декларирана "
+     "класа. Онаму каде што D+U прозорецот бара толеранција над 10%, важи плафонот и "
+     "едногодишната гаранција НЕ важи за таа класа. Класа со само 1 тестирана серија се "
+     "декларира директно номинала ± 10%. Секоја серија ја носи декларацијата на својата "
+     "класа — никогаш посебна бројка.",
      "The required window is then DECLARED as NOMINAL ± TOLERANCE: the nominal is always a "
      "whole number (18.00%, never 18.50%) — the same form the issued QCSP 001 specifications "
-     "already use to record potency, but with a whole-number nominal. The tolerance is the "
-     "minimum needed for nominal ± tolerance to cover the entire required window, rounded up "
-     "to the next 0.01 — always outward. Every batch carries its tier's declaration — never a "
-     "separate figure."),
+     "already use to record potency, but with a whole-number nominal. CEILING: the tolerance "
+     "never exceeds 10% of the nominal, for all batches and all strains. Batches share a tier "
+     "only while a whole-number nominal exists that keeps all their anchors within ±10% — "
+     "every batch reads inside its own declared grade today. Wherever the D+U window would "
+     "need a tolerance above 10%, the ceiling wins and the one-year guarantee does NOT hold "
+     "for that tier. A tier with only 1 tested batch is declared directly as nominal ± 10%. "
+     "Every batch carries its tier's declaration — never a separate figure."),
     ("U = мерна неодреденост ≈ 6,2% од вредноста (k=2, како на самите сертификати); "
      "D = 1,5 %апс./година (Поглавје 4).",
      "U = measurement uncertainty ≈ 6.2% of value (k=2, as stated on the certificates); "

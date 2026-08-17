@@ -304,18 +304,54 @@ stock_by_batch = {norm_b(b["batch"]): b for b in d["stock"]}
 
 U_RATIO = d["design"]["U_ratio"]
 D_YEAR = d["design"]["D_year"]
-W_MAX = 6.5
+MAX_TOL_RATIO = 0.10   # owner ceiling: declared ± tolerance may never exceed
+                        # 10.0% of the nominal, for ANY batch or strain.
 
 
-def declare(lo_req, hi_req, floor=5.0):
-    """Mirror of build_potency_dataset.declare() / build_potency_html.declare() —
-    same function, three independent copies, byte-identical logic. Kept in
-    sync manually; the workbook's numbers are cross-checked against
-    potency_dataset.json's own tiers below before any sheet is written."""
-    def tol_for(n):
+def cap_feasible(anchors, max_ratio=MAX_TOL_RATIO):
+    """True iff a WHOLE-NUMBER nominal exists that keeps every anchor within
+    ±max_ratio of it. Mirror of build_potency_dataset.cap_feasible."""
+    lo_n = max(a / (1 + max_ratio) for a in anchors)
+    hi_n = min(a / (1 - max_ratio) for a in anchors)
+    lo_i, hi_i = math.ceil(lo_n - 1e-9), math.floor(hi_n + 1e-9)
+    return lo_i <= hi_i
+
+
+def declare_group(anchors, lo_req, hi_req, floor=5.0, max_ratio=MAX_TOL_RATIO):
+    """Mirror of build_potency_dataset.declare_group / build_potency_html's
+    copy — a multi-batch tier's nominal is clamped into the integer range
+    that keeps every anchor within ±max_ratio of it. Returns
+    (nominal, tolerance, capped)."""
+    lo_n = max(a / (1 + max_ratio) for a in anchors)
+    hi_n = min(a / (1 - max_ratio) for a in anchors)
+    lo_i, hi_i = math.ceil(lo_n - 1e-9), math.floor(hi_n + 1e-9)
+    assert lo_i <= hi_i, ("declare_group called on a cap-infeasible anchor set", anchors)
+    ideal = float(math.floor((lo_req + hi_req) / 2.0 + 0.5))
+    nom = min(max(ideal, lo_i), hi_i)
+
+    def tol_needed(n):
         return math.ceil(max(n - lo_req, hi_req - n) * 100 - 1e-9) / 100.0
 
-    nom = float(math.floor((lo_req + hi_req) / 2.0 + 0.5))
+    def tol_capped(n):
+        return min(tol_needed(n), round(n * max_ratio, 2))
+
+    tol = tol_capped(nom)
+    while nom - tol < floor - 1e-9 and nom < hi_i:
+        nom += 1.0
+        tol = tol_capped(nom)
+    capped = tol_needed(nom) > round(nom * max_ratio, 2) + 1e-9
+    return nom, tol, capped
+
+
+def declare_single(anchor, floor=5.0, max_ratio=MAX_TOL_RATIO):
+    """Mirror of build_potency_dataset.declare_single / build_potency_html's
+    copy — a tier backed by exactly one tested batch is declared nominal ±
+    10% of nominal (flat policy tolerance, not D+U-derived)."""
+    nom = float(math.floor(anchor + 0.5))
+
+    def tol_for(n):
+        return math.ceil(n * max_ratio * 100 - 1e-9) / 100.0
+
     tol = tol_for(nom)
     for _ in range(64):
         if nom - tol >= floor - 1e-9:
@@ -325,23 +361,32 @@ def declare(lo_req, hi_req, floor=5.0):
     return nom, tol
 
 
-def tiers_from_anchors(items, w_max=W_MAX):
-    """items = [(batch, anchor, tested_bool)] — same clustering as the Atlas."""
+def tiers_from_anchors(items):
+    """items = [(batch, anchor, tested_bool)] — clustering driven by the SAME
+    10% cap the declaration itself must respect (cap_feasible), not the wider
+    D+U window; a tier with exactly one batch is declared via declare_single
+    (flat ±10%). Mirror of build_potency_html.tiers_from_anchors."""
     tiers = []
     cur = None
     for batch, a, tested in sorted(items, key=lambda x: x[1]):
-        u = U_RATIO * a
-        flo = max(5.0, a - D_YEAR - u)
-        cei = a + max(1.0, u)
-        if cur is None or cei - cur["lo"] > w_max:
-            cur = dict(lo=flo, hi=cei, batches=[batch], tested=[tested])
+        ok = cur is not None and cap_feasible(cur["anchors"] + [a])
+        if cur is None or not ok:
+            cur = dict(batches=[batch], tested=[tested], anchors=[a])
             tiers.append(cur)
         else:
-            cur["hi"] = max(cur["hi"], cei)
             cur["batches"].append(batch)
             cur["tested"].append(tested)
+            cur["anchors"].append(a)
     for g in tiers:
-        g["nominal"], g["tol"] = declare(g["lo"], g["hi"])
+        g["single_batch"] = len(g["batches"]) == 1
+        if g["single_batch"]:
+            g["nominal"], g["tol"] = declare_single(g["anchors"][0])
+            g["capped"] = True
+        else:
+            u_all = [U_RATIO * a for a in g["anchors"]]
+            lo_req = min(max(5.0, a - D_YEAR - u) for a, u in zip(g["anchors"], u_all))
+            hi_req = max(a + max(1.0, u) for a, u in zip(g["anchors"], u_all))
+            g["nominal"], g["tol"], g["capped"] = declare_group(g["anchors"], lo_req, hi_req)
         g["lo"] = round(g["nominal"] - g["tol"], 2)
         g["hi"] = round(g["nominal"] + g["tol"], 2)
     return tiers
@@ -486,16 +531,22 @@ print("Portfolio Master rows: %d" % len(pm))
 # ===================================================== Atlas Grades — Original
 ws = wb.create_sheet("Atlas Grades — Original")
 ws.sheet_view.showGridLines = False
-ncols = 9
+ncols = 10
 r0 = title_block(ws, "Атлас — предложени класи по оригинално име",
                   "Atlas — Proposed Grades by Original Name",
                   "Класите на Атласот на потенција (номинала ± толеранција), директно од "
-                  "potency_dataset.json. Секоја серија ја носи декларацијата на својата класа.",
+                  "potency_dataset.json. Секоја серија ја носи декларацијата на својата класа. "
+                  "Класа со само 1 тестирана серија нема статистичка основа за D+U прозорецот, "
+                  "па наместо тоа се декларира со фиксна политика: номинала ± 10% од номиналата.",
                   "The Potency Atlas's grades (nominal ± tolerance), straight from "
-                  "potency_dataset.json. Every batch carries its tier's declaration.", ncols)
+                  "potency_dataset.json. Every batch carries its tier's declaration. A tier "
+                  "backed by only 1 tested batch has no statistical basis for the D+U window, "
+                  "so it is declared instead by a flat policy: nominal ± 10% of the nominal.",
+                  ncols)
 headers = ["Сорта | Strain", "Класа | Tier", "Номинала % | Nominal %", "Толеранција % | Tolerance %",
            "Опсег — долно | Range — low", "Опсег — горно | Range — high",
-           "Бр. серии | # Batches", "Серии | Batches", "Основа | Basis"]
+           "Бр. серии | # Batches", "Серии | Batches", "Основа | Basis",
+           "Основа на толеранцијата | Tolerance basis"]
 for i, h in enumerate(headers, 1):
     ws.cell(row=r0, column=i, value=h)
 style_header(ws, r0, ncols)
@@ -509,35 +560,40 @@ for s in sorted(d["merged_ranges"]):
         basis = ("ДЕФИНИТИВНО | DEFINITIVE"
                  if any(norm_b(bt) in tested_batches for bt in t["batches"])
                  else "ПРОВИЗОРНО | PROVISIONAL")
+        tol_basis = ("±10% политика (n=1) | ±10% policy (n=1)" if t.get("single_batch")
+                     else ("D+U, ограничено на ±10% | D+U, capped at ±10%"
+                           if t.get("capped") else "D+U статистика | D+U statistical"))
         vals = [s, "W-%d" % ti, t["nominal"], t["tol"], t["range"][0], t["range"][1],
-                len(t["batches"]), ", ".join(t["batches"]), basis]
+                len(t["batches"]), ", ".join(t["batches"]), basis, tol_basis]
         for c, v in enumerate(vals, 1):
             ws.cell(row=row, column=c, value=v)
         zebra(ws, row, ncols, i % 2 == 0)
         i += 1
         row += 1
 ws.freeze_panes = ws.cell(row=r0 + 1, column=1)
-autosize(ws, [20, 8, 12, 14, 13, 13, 11, 40, 22])
+autosize(ws, [20, 8, 12, 14, 13, 13, 11, 40, 22, 26])
 print("Atlas Grades — Original: %d rows" % (row - r0 - 1))
 
 # ====================================================== Atlas Grades — Renamed
 ws = wb.create_sheet("Atlas Grades — Renamed")
 ws.sheet_view.showGridLines = False
-ncols = 10
+ncols = 11
 r0 = title_block(ws, "Атлас — предложени класи по ново име",
                   "Atlas — Proposed Grades by New Name",
                   "Истите докажани опсези, преклучирани по НОВОТО спецификациско име "
                   "(01_Portfolio_Master). Пресметката е идентична со finalRangesRenamed() "
                   "во build_potency_html.py — вкрстено проверена: 36 имиња, 31 дефинитивно, "
-                  "5 провизорно, 0 без сидро.",
+                  "5 провизорно, 0 без сидро. Класа со само 1 тестирана серија: номинала ± 10%.",
                   "The same evidenced ranges, re-keyed to the NEW specification name "
                   "(01_Portfolio_Master). Computation is identical to finalRangesRenamed() in "
                   "build_potency_html.py — cross-checked: 36 names, 31 definitive, 5 "
-                  "provisional, 0 without an anchor.", ncols)
+                  "provisional, 0 without an anchor. A tier with only 1 tested batch: "
+                  "nominal ± 10%.", ncols)
 headers = ["Ново име | New Strain Name", "Класа | Tier", "Номинала % | Nominal %",
            "Толеранција % | Tolerance %", "Опсег — долно | Range — low",
            "Опсег — горно | Range — high", "Бр. серии | # Batches", "Серии | Batches",
-           "Основа | Basis", "Оригинално(и) име(иња) | Original name(s)"]
+           "Основа | Basis", "Основа на толеранцијата | Tolerance basis",
+           "Оригинално(и) име(иња) | Original name(s)"]
 for i, h in enumerate(headers, 1):
     ws.cell(row=r0, column=i, value=h)
 style_header(ws, r0, ncols)
@@ -549,7 +605,7 @@ for neu in sorted(renamed_tiers):
                               if (rw.get("neu") or "").strip() == neu})) or "—"
     tiers = renamed_tiers[neu]
     if not tiers:
-        vals = [neu, "—", None, None, None, None, 0, "—", "БЕЗ СИДРО | NO ANCHOR", origs]
+        vals = [neu, "—", None, None, None, None, 0, "—", "БЕЗ СИДРО | NO ANCHOR", "—", origs]
         for c, v in enumerate(vals, 1):
             ws.cell(row=row, column=c, value=v)
         zebra(ws, row, ncols, i % 2 == 0)
@@ -559,15 +615,18 @@ for neu in sorted(renamed_tiers):
     for ti, t in enumerate(tiers, 1):
         basis = ("ДЕФИНИТИВНО | DEFINITIVE" if any(t["tested"])
                  else "ПРОВИЗОРНО | PROVISIONAL")
+        tol_basis = ("±10% политика (n=1) | ±10% policy (n=1)" if t.get("single_batch")
+                     else ("D+U, ограничено на ±10% | D+U, capped at ±10%"
+                           if t.get("capped") else "D+U статистика | D+U statistical"))
         vals = [neu, "W-%d" % ti, t["nominal"], t["tol"], t["lo"], t["hi"],
-                len(t["batches"]), ", ".join(t["batches"]), basis, origs]
+                len(t["batches"]), ", ".join(t["batches"]), basis, tol_basis, origs]
         for c, v in enumerate(vals, 1):
             ws.cell(row=row, column=c, value=v)
         zebra(ws, row, ncols, i % 2 == 0)
         i += 1
         row += 1
 ws.freeze_panes = ws.cell(row=r0 + 1, column=1)
-autosize(ws, [22, 8, 12, 14, 13, 13, 11, 40, 22, 26])
+autosize(ws, [22, 8, 12, 14, 13, 13, 11, 40, 22, 26, 26])
 print("Atlas Grades — Renamed: %d rows" % (row - r0 - 1))
 
 # ======================================================= Potency Test Results

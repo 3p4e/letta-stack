@@ -95,28 +95,117 @@ def dkey(d):
     return (p[2], p[1], p[0]) if len(p) == 3 else ("0", "0", "0")
 
 
-def declare(lo_req, hi_req, floor=5.0):
+MAX_TOL_RATIO = 0.10   # owner ceiling: declared ± tolerance may never exceed
+                        # 10.0% of the nominal, for ANY batch or strain.
+
+
+def declare(lo_req, hi_req, floor=5.0, max_ratio=MAX_TOL_RATIO):
     """Express a required coverage window as NOMINAL ± TOLERANCE.
 
     The nominal is a whole number (18.00 %, never 18.50 %) — it is the figure
-    printed on the specification, the iCoA and the label. The tolerance is then
-    whatever it has to be for nominal ± tolerance to still cover the entire
-    required window, rounded UP to 0.01 so rounding can only ever widen the
-    declaration, never lose coverage. Returns (nominal, tolerance).
+    printed on the specification, the iCoA and the label. The tolerance is
+    whatever it has to be for nominal ± tolerance to cover the entire required
+    window, rounded UP to 0.01 — EXCEPT that per owner instruction it is
+    capped at `max_ratio` (10%) of the nominal: no declared grade may carry a
+    tolerance wider than ±10% of its own nominal, full stop. Returns
+    (nominal, tolerance, capped) — `capped` is True when the 10% ceiling bit
+    before the window's own required width did, i.e. the declared grade does
+    NOT fully cover the one-year D+U window for this tier.
 
-        e.g. window 15.69 – 20.31  ->  18.00 % ± 2.31 %
+        e.g. window 15.69 – 20.31  ->  required tol 2.31 (< 10% of 18) -> 18.00 % ± 2.31 %, not capped
+             window  9.7  – 22.9   ->  required tol 6.60 (> 10% of 16) -> 16.00 % ± 1.60 %, capped
 
     `floor` is the release acceptance criterion (≥ 5.00 % Total THC). A
     symmetric tolerance around a rounded-down nominal can reach below it, which
     would declare a grade whose own lower edge fails release — so the nominal is
-    raised to the next whole number until the declared minimum clears the floor.
+    raised to the next whole number until the declared minimum clears the floor
+    (the 10% cap rises together with the nominal, so this still terminates).
     """
-    def tol_for(n):
+    def tol_needed(n):
         return math.ceil(max(n - lo_req, hi_req - n) * 100 - 1e-9) / 100.0
 
+    def tol_capped(n):
+        return min(tol_needed(n), round(n * max_ratio, 2))
+
     nom = float(math.floor((lo_req + hi_req) / 2.0 + 0.5))   # half-up, not banker's
-    tol = tol_for(nom)
+    tol = tol_capped(nom)
     for _ in range(64):                       # terminates once nom ≥ the midpoint
+        if nom - tol >= floor - 1e-9:
+            break
+        nom += 1.0
+        tol = tol_capped(nom)
+    capped = tol_needed(nom) > round(nom * max_ratio, 2) + 1e-9
+    return nom, tol, capped
+
+
+def declare_group(anchors, lo_req, hi_req, floor=5.0, max_ratio=MAX_TOL_RATIO):
+    """declare() for a MULTI-batch tier, made safe under the 10% ceiling.
+
+    declare() alone picks its nominal from the D+U window's midpoint — fine
+    when the window fits inside ±10%, but if capping is going to bite, that
+    midpoint can sit outside the narrower band a ±10% tolerance can actually
+    hold, which would leave one of the tier's OWN anchors outside its own
+    declared range (not just failing the future guarantee — wrong today).
+
+    So the nominal is instead clamped into the integer range that keeps EVERY
+    anchor in the group within ±max_ratio of it — [max(a)/(1+r), min(a)/(1-r)]
+    — which the caller must already have confirmed is non-empty (see
+    cap_feasible(), used while clustering). Within that safe range, the
+    integer closest to the D+U window's own midpoint is chosen, so the
+    declaration still tracks the statistical ideal as closely as the ceiling
+    allows. Returns (nominal, tolerance, capped).
+    """
+    lo_n = max(a / (1 + max_ratio) for a in anchors)
+    hi_n = min(a / (1 - max_ratio) for a in anchors)
+    lo_i, hi_i = math.ceil(lo_n - 1e-9), math.floor(hi_n + 1e-9)
+    assert lo_i <= hi_i, ("declare_group called on a cap-infeasible anchor set — "
+                          "clustering should never produce this", anchors)
+    ideal = float(math.floor((lo_req + hi_req) / 2.0 + 0.5))
+    nom = min(max(ideal, lo_i), hi_i)
+
+    def tol_needed(n):
+        return math.ceil(max(n - lo_req, hi_req - n) * 100 - 1e-9) / 100.0
+
+    def tol_capped(n):
+        return min(tol_needed(n), round(n * max_ratio, 2))
+
+    tol = tol_capped(nom)
+    while nom - tol < floor - 1e-9 and nom < hi_i:   # escalate without leaving the safe range
+        nom += 1.0
+        tol = tol_capped(nom)
+    capped = tol_needed(nom) > round(nom * max_ratio, 2) + 1e-9
+    return nom, tol, capped
+
+
+def declare_single(anchor, floor=5.0, max_ratio=MAX_TOL_RATIO):
+    """Grade declaration for a tier backed by exactly ONE tested batch.
+
+    A single result gives no population to justify the normal degradation
+    (D) + measurement-uncertainty (U) statistical window, so a flat POLICY
+    tolerance is declared instead, per owner instruction: nominal ± 10% of
+    the nominal itself — the SAME 10% ceiling that caps every other tier's
+    tolerance too (declare()'s max_ratio), just applied directly since a
+    single point has no window to measure a "required" tolerance from in the
+    first place. The nominal is the batch's own anchor, rounded half-up to
+    the nearest whole number; the tolerance is exactly max_ratio of that
+    nominal, rounded UP to 0.01 (never truncated below the true 10%; for an
+    integer nominal this rounding is a no-op — 10% of a whole number always
+    lands on an exact cent).
+
+        e.g. anchor 20.3x  ->  nominal 20.00  ->  tolerance 2.00
+             20.00 % ± 2.00 %  (18.00 – 22.00 %)
+
+    If a symmetric ±10% would put the declared floor under the 5.00 %
+    release A.C., the nominal is escalated upward in whole-number steps
+    (the same escalation rule as declare()) until it clears the floor.
+    """
+    nom = float(math.floor(anchor + 0.5))
+
+    def tol_for(n):
+        return math.ceil(n * max_ratio * 100 - 1e-9) / 100.0
+
+    tol = tol_for(nom)
+    for _ in range(64):
         if nom - tol >= floor - 1e-9:
             break
         nom += 1.0
@@ -194,12 +283,30 @@ def build():
     # once it also covers their safe ceiling (anchor + max(1.0, U) — the SAME
     # ceiling rule used everywhere else in this study, so a tier can never be
     # narrower than what an individual batch in it would need on its own).
-    # The tier is only rounded at the end, into NOMINAL ± TOLERANCE, and that
-    # single declaration is then the batch's declaration too. Every batch's
-    # tier therefore contains its whole one-year-ahead measurement window — a
-    # remeasure now, or after a further year of storage, still reads inside
-    # the declared grade.
-    W_MAX = 6.5
+    #
+    # BUT: the owner's 10% ceiling on every tolerance (MAX_TOL_RATIO) makes
+    # the OLD W_MAX=6.5 clustering unsafe on its own — a tier could be formed
+    # whose anchors are up to 6.5 points apart, then get its tolerance capped
+    # down to 10% of nominal, which for these values is only ~2-3 points wide.
+    # A batch's OWN today-anchor could then fall outside its own tier's
+    # capped range — not just fail the one-year guarantee, but be wrong today.
+    # So clustering is instead done directly against what the 10% cap can
+    # actually hold: a group of anchors can share one whole-number nominal N
+    # with tolerance ≤ 10% of N iff 0.9·N ≤ a ≤ 1.1·N for every anchor a in
+    # the group, i.e. N ∈ [max(a)/1.1, min(a)/0.9] is non-empty — equivalent
+    # to max(a)/min(a) ≤ 1.1/0.9 ≈ 1.2222. A batch joins the running tier only
+    # while that stays true; otherwise a new tier opens. This guarantees every
+    # batch's own anchor sits inside its own tier's final declared range.
+    def cap_feasible(anchors, max_ratio=MAX_TOL_RATIO):
+        """True iff a WHOLE-NUMBER nominal exists that keeps every anchor
+        within ±max_ratio of it. The real-valued interval [lo_n, hi_n] can be
+        non-empty yet contain no integer (it is often under 0.1 wide for a
+        tight anchor cluster) — checking only lo_n ≤ hi_n is not enough."""
+        lo_n = max(a / (1 + max_ratio) for a in anchors)
+        hi_n = min(a / (1 - max_ratio) for a in anchors)
+        lo_i, hi_i = math.ceil(lo_n - 1e-9), math.floor(hi_n + 1e-9)
+        return lo_i <= hi_i
+
     merged = {}
     for s in sorted({b["strain"] for b in stock}):
         bs = sorted([b for b in stock if b["proposed"] and b["strain"] == s],
@@ -210,29 +317,54 @@ def build():
         cur = None
         for b in bs:
             a = b["anchor"] if b["anchor"] is not None else b["declared"]
-            u = U_RATIO * a
-            flo = max(5.0, a - D_YEAR - u)
-            cei = a + max(1.0, u)
-            if cur is None or cei - cur["lo"] > W_MAX:
-                cur = dict(lo=flo, hi=cei, batches=[b["batch"]], anchors=[a], rows=[b])
+            if cur is not None:
+                ok = cap_feasible(cur["anchors"] + [a])
+            if cur is None or not ok:
+                cur = dict(batches=[b["batch"]], anchors=[a], rows=[b])
                 tiers.append(cur)
             else:
-                cur["hi"] = max(cur["hi"], cei)
                 cur["batches"].append(b["batch"])
                 cur["rows"].append(b)
                 cur["anchors"].append(a)
             b["tier"] = len(tiers)
         for g in tiers:                       # declare, then re-verify per batch
-            g["nominal"], g["tol"] = declare(g["lo"], g["hi"])
+            g["single_batch"] = len(g["batches"]) == 1
+            if g["single_batch"]:
+                g["nominal"], g["tol"] = declare_single(g["anchors"][0])
+                g["capped"] = True            # ±10% policy IS the cap, always
+            else:
+                u_all = [U_RATIO * a for a in g["anchors"]]
+                lo_req = min(max(5.0, a - D_YEAR - u) for a, u in zip(g["anchors"], u_all))
+                hi_req = max(a + max(1.0, u) for a, u in zip(g["anchors"], u_all))
+                g["nominal"], g["tol"], g["capped"] = declare_group(g["anchors"], lo_req, hi_req)
             g["lo"] = round(g["nominal"] - g["tol"], 2)
             g["hi"] = round(g["nominal"] + g["tol"], 2)
             for a in g["anchors"]:
-                u = U_RATIO * a
-                # exact now: the declaration is derived from the window itself,
-                # and the tolerance only ever rounds outward.
-                assert g["lo"] <= max(5.0, a - D_YEAR - u) + 1e-6, (s, g, a, "floor")
-                assert a + u <= g["hi"] + 1e-6, (s, g, a, "ceiling")
+                assert g["lo"] >= 5.0 - 1e-6, (s, g, a, "release floor")
+                assert g["tol"] <= round(g["nominal"] * MAX_TOL_RATIO, 2) + 1e-6, \
+                    (s, g, a, "10% ceiling")
+                if g["single_batch"]:
+                    # policy override: the only guarantee required is that the
+                    # batch's own tested anchor sits inside its declared grade
+                    # and the grade clears the release floor — the normal
+                    # one-year D+U coverage guarantee does not apply (see
+                    # declare_single's docstring).
+                    assert g["lo"] <= a <= g["hi"] + 1e-6, (s, g, a, "single-batch anchor")
+                elif not g["capped"]:
+                    u = U_RATIO * a
+                    # exact now: the declaration is derived from the window itself,
+                    # and the tolerance only ever rounds outward.
+                    assert g["lo"] <= max(5.0, a - D_YEAR - u) + 1e-6, (s, g, a, "floor")
+                    assert a + u <= g["hi"] + 1e-6, (s, g, a, "ceiling")
+                else:
+                    # the 10% ceiling bit before the D+U window's own required
+                    # width did — the declaration is intentionally narrower
+                    # than the one-year guarantee would need. The only
+                    # guarantee left is that TODAY's tested anchor sits inside
+                    # the declared grade.
+                    assert g["lo"] <= a <= g["hi"] + 1e-6, (s, g, a, "capped: anchor in range")
         merged[s] = [dict(range=[g["lo"], g["hi"]], nominal=g["nominal"], tol=g["tol"],
+                          single_batch=g["single_batch"], capped=g["capped"],
                           batches=g["batches"],
                           anchors=[round(a, 2) for a in g["anchors"]]) for g in tiers]
 
@@ -242,6 +374,8 @@ def build():
             for b in g["rows"]:
                 a = b["anchor"] if b["anchor"] is not None else b["declared"]
                 b["nominal"], b["tol"] = g["nominal"], g["tol"]
+                b["single_batch"] = g["single_batch"]
+                b["capped"] = g["capped"]
                 b["proposed"] = [g["lo"], g["hi"]]
                 b["headroom_down"] = round(a - g["lo"], 2)
 
@@ -265,26 +399,37 @@ def build():
         design=dict(D_year=D_YEAR, U_ratio=U_RATIO,
                     rule="Required window: lower = anchor − D − U(anchor), floored at 5.00 "
                          "(release A.C.); upper = anchor + max(1.0, U(anchor)); merged per "
-                         "strain while the window stays ≤ 6.5 points wide. Forcing the nominal "
-                         "to a whole number then costs real width: a symmetric ± tolerance "
-                         "around the nearest integer to the window's centre must still reach "
-                         "the window's farther edge, so the declared span can end up close to "
-                         "a full percentage point wider than the 6.5-point clustering cap — the "
-                         "cap bounds the EVIDENCE window, not the final declaration. "
+                         "strain while the window stays ≤ 6.5 points wide. "
                          "The window is then DECLARED as NOMINAL ± TOLERANCE, in the same "
                          "nominal-±-tolerance FORM the issued QCSP 001 specifications already "
                          "use — but here the nominal is fixed to a whole number (18.00 %, "
                          "never 18.50 % or 18.45 %, unlike the issued specs' bracket-midpoint "
-                         "nominals) and the tolerance is whatever it must be for nominal ± "
-                         "tolerance to still cover the entire window, rounded UP to the next "
-                         "0.01. Rounding is therefore always outward: it can only widen a "
-                         "declaration, never lose coverage. A batch's declaration is always "
-                         "its tier's declaration — the same nominal ± tolerance is printed "
-                         "everywhere that batch appears; there is no separate per-batch figure. "
-                         "This is a PROPOSED revision of the grade bands, evidenced from the "
-                         "data in this study; it does not itself amend any issued QCSP 001 "
-                         "specification, whose nominal and range remain authoritative until "
-                         "changed through the regular procedure."),
+                         "nominals). "
+                         "OWNER CEILING: the tolerance may never exceed 10% of the nominal, for "
+                         "ANY batch or strain — this binds every declaration in the study. "
+                         "Where the window's own required tolerance is ≤ 10% of the nominal, "
+                         "that required tolerance is used exactly (rounded UP to the next 0.01, "
+                         "so rounding can only widen a declaration, never lose coverage), and "
+                         "the tier fully covers the one-year D+U window (capped=false). Where "
+                         "the required tolerance would exceed 10%, the ceiling wins instead "
+                         "(capped=true): the declared grade is narrower than the one-year "
+                         "guarantee would need, and the only thing guaranteed for that tier is "
+                         "that TODAY's tested anchor(s) sit inside it — not a remeasure a year "
+                         "from now. In THIS study every multi-batch tier is capped (their "
+                         "natural D+U windows all exceed 10% of nominal), so capped=true "
+                         "everywhere except where noted. "
+                         "A batch's declaration is always its tier's declaration — the same "
+                         "nominal ± tolerance is printed everywhere that batch appears; there "
+                         "is no separate per-batch figure. This is a PROPOSED revision of the "
+                         "grade bands, evidenced from the data in this study; it does not "
+                         "itself amend any issued QCSP 001 specification, whose nominal and "
+                         "range remain authoritative until changed through the regular "
+                         "procedure. "
+                         "SINGLE-BATCH TIERS (marked single_batch=true): with only one tested "
+                         "result there is no population to justify the D+U window at all, so "
+                         "the grade is nominal ± 10% of the nominal directly (declare_single()) "
+                         "— the same 10% ceiling, just with nothing narrower ever computed to "
+                         "be capped down from. capped is always true for these too."),
         old_methodology=(
             "QCSP 001 standard 4-tier fixed brackets: I 27.00–30.00 · II 23.00–26.90 · "
             "III 16.00–22.90 · IV 5.00–15.90 (nominal = midpoint); custom narrower sets for "
