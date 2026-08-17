@@ -751,8 +751,8 @@ def tiers_from_anchors(items):
 
 def final_ranges_renamed():
     """The same definitive ranges, re-keyed to the NEW specification strain
-    names of 01_Portfolio_Master — the names that go on the iCoA/CoQ and the
-    label, so the warehouse can be certified without a manual name lookup."""
+    names taken from 01_Portfolio_Master, so no manual old-to-new name
+    lookup is needed."""
     anchors = {}
     for b in d["stock"]:
         k = norm_b(b["batch"])
@@ -816,16 +816,15 @@ def final_ranges_renamed():
 
     head = ('<h3 class="fsubh">Истите опсези, по новите спецификациски имиња '
             '<span>| The same ranges, keyed to the new specification names</span></h3>'
-            '<div class="fsum">Спецификациските имиња од листот <code>01_Portfolio_Master</code> '
-            "(%d серии, %d преименувања, %d нови имиња) се токму тие што стојат на iCoA, "
-            "на CoQ и на етикетата. Оваа табела ги дава истите докажани опсези, но "
-            "групирани по новото име — за да може залихата да се сертифицира без рачно "
-            "барање кое старо име одговара на кое ново: %d име дефинитивно, %d провизорно, "
-            "%d без сидро. | The specification names in the <code>01_Portfolio_Master</code> "
-            "sheet (%d batches, %d renames, %d new names) are the names that appear on the "
-            "iCoA, the CoQ and the label. This table carries the same evidenced ranges "
-            "grouped by the new name, so the stock can be certified without a manual "
-            "old-to-new lookup: %d name definitive, %d provisional, %d without an anchor.</div>"
+            '<div class="fsum">Новите имиња на сортите се преземени од листот '
+            "<code>01_Portfolio_Master</code> (%d серии, %d преименувања, %d нови имиња). "
+            "Оваа табела ги дава истите докажани опсези, но групирани по новото име — за "
+            "преглед без рачно барање кое старо име одговара на кое ново: %d име "
+            "дефинитивно, %d провизорно, %d без сидро. | The new strain names are taken "
+            "from the <code>01_Portfolio_Master</code> sheet (%d batches, %d renames, "
+            "%d new names). This table carries the same evidenced ranges grouped by the "
+            "new name, so no manual old-to-new lookup is needed: %d name definitive, "
+            "%d provisional, %d without an anchor.</div>"
             % (len(PM), sum(1 for r in PM if (r.get("original") or "").strip()
                             != (r.get("neu") or "").strip()), len(groups),
                n_def, n_prov, n_nodata,
