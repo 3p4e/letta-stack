@@ -21,12 +21,13 @@ setting a potency grade and appear in no document, so they are not computed.
 Grade design: per-batch anchor = most recent verified result. A strain's
 whole tier ladder is planned together (fewest tiers first, then closest fit)
 so that adjacent tiers are CONTIGUOUS — no blind gap — see plan_contiguous()
-/ build_strain_tiers() for the full rule (whole-number nominal, tolerance up
-to 10% of the nominal, shrunk only as far as needed to meet the neighbouring
-tier exactly, floored at the 5.00% release acceptance criterion). Two of 24
-strains contain a genuine, disclosed gap where no whole-number nominal pair
-can bridge them within the 10% cap — a real discontinuity in that strain's
-own tested history, not an artefact of the algorithm.
+/ build_strain_tiers() for the full rule (nominal on a half-percent grid —
+nn.00 % or nn.50 %, never a finer fraction — tolerance up to 10% of the
+nominal, shrunk only as far as needed to meet the neighbouring tier exactly,
+floored at the 5.00% release acceptance criterion). Two of 24 strains
+contain a genuine, disclosed gap where no candidate nominal pair can bridge
+them within the 10% cap — a real discontinuity in that strain's own tested
+history, not an artefact of the algorithm.
 """
 import json
 import math
@@ -102,15 +103,24 @@ MIN_GAP = 0.01          # adjacent tiers must never overlap, and the normal
                         # data itself leaves a genuine, disclosed gap.
 
 
-def feasible_nominals(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO):
-    """Every whole-number nominal whose FULL ±max_ratio band both covers
-    all of `anchors` and keeps its floor at or above the release criterion.
-    Returned as a range(); the real-valued interval can be non-empty yet
-    contain no integer, so the integer bounds are what matter."""
-    lo_i = math.ceil(max(anchors) / (1 + max_ratio) - 1e-9)
-    hi_i = math.floor(min(anchors) / (1 - max_ratio) + 1e-9)
-    lo_i = max(lo_i, math.ceil(floor / (1 - max_ratio) - 1e-9))
-    return range(lo_i, hi_i + 1)
+NOM_STEP = 0.5   # nominals are declared in half-percent steps (20.00 %,
+                  # 20.50 %, 21.00 %, ...) rather than whole numbers only —
+                  # the finer grid gives the planner more candidates to fit
+                  # a segment's anchors and neighbours without squeezing.
+
+
+def feasible_nominals(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO, step=NOM_STEP):
+    """Every candidate nominal (a multiple of `step`) whose FULL ±max_ratio
+    band both covers all of `anchors` and keeps its floor at or above the
+    release criterion. Returned as a list of floats; the real-valued
+    interval can be non-empty yet contain no valid grid point, so the
+    step-aligned bounds are what matter."""
+    lo_n = max(anchors) / (1 + max_ratio)
+    hi_n = min(anchors) / (1 - max_ratio)
+    lo_i = math.ceil(lo_n / step - 1e-9)
+    hi_i = math.floor(hi_n / step + 1e-9)
+    lo_i = max(lo_i, math.ceil((floor / (1 - max_ratio)) / step - 1e-9))
+    return [round(k * step, 2) for k in range(lo_i, hi_i + 1)]
 
 
 def pairwise_bridgeable(prev_n, prev_max_anchor, nominal, run_min_anchor,
@@ -128,7 +138,8 @@ def pairwise_bridgeable(prev_n, prev_max_anchor, nominal, run_min_anchor,
 
 
 def solve_chain(nominals, needs, caps, gap=MIN_GAP):
-    """Given k whole-number nominals already known to be pairwise-bridgeable,
+    """Given k candidate nominals (each a multiple of NOM_STEP) already known
+    to be pairwise-bridgeable,
     solve for ONE symmetric tolerance per tier (nominal ± tol, same both
     ways — the declared format is always a single ± figure) such that the
     whole ladder is EXACTLY contiguous end to end: tier i's ceiling is
@@ -266,7 +277,7 @@ def build_strain_tiers(items, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_GAP):
     """items: [(anchor, payload), ...] ascending by anchor, all for one
     strain. Plans the whole ladder contiguous end to end via
     plan_contiguous(). If (rare) two neighbouring results are so far apart
-    that no whole-number nominal pair can bridge them within the ≤10% cap —
+    that no candidate nominal pair can bridge them within the ≤10% cap —
     even as bare single-anchor tiers either side — that is a genuine,
     evidenced discontinuity in the strain's OWN tested history, not
     something to force-close by fabricating an unsupported bridge tier or by
@@ -376,12 +387,12 @@ def build():
                        else ("declared (no assay on file)" if a is not None else None))
 
     # Per-strain warehouse GRADE TIERS (stock batches only) — build_strain_tiers
-    # / plan_contiguous (see their docstrings): whole-number nominal, ≤10% of
-    # nominal, and NO blind gap between adjacent tiers of the same strain —
-    # tier i's ceiling sits exactly MIN_GAP below tier i+1's floor, always,
-    # UNLESS the data itself contains a discontinuity no whole-number nominal
-    # pair can bridge within the cap (gap_after=True; verified genuine below,
-    # never just narrowed-and-hoped).
+    # / plan_contiguous (see their docstrings): nominal on a half-percent
+    # grid (NOM_STEP), ≤10% of nominal, and NO blind gap between adjacent
+    # tiers of the same strain — tier i's ceiling sits exactly MIN_GAP below
+    # tier i+1's floor, always, UNLESS the data itself contains a
+    # discontinuity no candidate nominal pair can bridge within the cap
+    # (gap_after=True; verified genuine below, never just narrowed-and-hoped).
     merged = {}
     n_tiers = n_gaps = 0
     for s in sorted({b["strain"] for b in stock}):
@@ -445,9 +456,10 @@ def build():
         repeats=repeats, stats=stats, stock=stock, merged_ranges=merged,
         p_codes=p_codes,
         design=dict(
-            max_tol_ratio=MAX_TOL_RATIO, min_gap=MIN_GAP,
-            rule="Each tier is nominal ± tolerance, nominal always a whole number (20.00 %, "
-                 "never 20.50 %), tolerance never more than 10% of the nominal. "
+            max_tol_ratio=MAX_TOL_RATIO, min_gap=MIN_GAP, nom_step=NOM_STEP,
+            rule=("Each tier is nominal ± tolerance, nominal always a multiple of %.2f%% "
+                  "(20.00%%, 20.50%%, 21.00%% ... — never a finer fraction). " % NOM_STEP) +
+                 "Tolerance never more than 10% of the nominal. "
                  "CONTIGUITY (the point of this design): adjacent tiers of the SAME strain "
                  "carry NO blind gap — tier i's ceiling sits exactly 0.01 below tier i+1's "
                  "floor, always, so a batch testing anywhere between two established grades "
@@ -459,20 +471,23 @@ def build():
                  "as far as needed to meet the neighbouring tier exactly — never to leave a gap, "
                  "never past what still covers every anchor assigned to the tier. The two goals "
                  "(generous ±10% width, and zero gaps) are not always simultaneously reachable "
-                 "for a given pair of whole-number nominals: full ±10% on both sides can itself "
-                 "leave a gap if the nominals end up too far apart (Blue Sunset Sherbet, anchors "
-                 "20.39/23.42/25.01: 20% ±2.00% and 25% ±2.50% are each individually at the "
-                 "10% cap, yet 22.00–22.50 is still a 0.50-point dead zone — neither side can "
-                 "stretch further without breaking the cap). Where that happens the nominal "
-                 "choice itself changes (24% ±2.19% instead of 25%, still ≤10% of 24) so the "
-                 "two tiers meet exactly; solve_chain() finds the unique symmetric split, and "
-                 "the whole ladder is planned by tier COUNT first (fewest tiers that fit the "
-                 "data — a grade ladder should not fragment into one tier per batch just "
-                 "because that shaves a few hundredths off the fit) and total |nominal-anchor| "
-                 "distance second, over every whole-number nominal sequence that is provably "
+                 "for a given pair of candidate nominals: full ±10% on both sides can itself "
+                 "leave a gap if the nominals end up too far apart. Where that happens the "
+                 "nominal choice itself changes, or (within one segment) the LAST tier keeps its "
+                 "own full cap and earlier tiers absorb exactly the squeeze that forces (Blue "
+                 "Sunset Sherbet, anchors 20.39/23.42/25.01: Pot.-2 sits at its own full cap, "
+                 "23.50% ±2.35% [21.15%-25.85%]; Pot.-1 is squeezed to 20.50% ±0.64% "
+                 "[19.86%-21.14%] — not because it needs to be that narrow to cover its own "
+                 "anchor, but because Pot.-2's full-width claim leaves it no more room, and the "
+                 "half-percent grid picks 20.50 over 20.00/21.00 as the closest fit); "
+                 "solve_chain() finds the tolerance split, and the whole "
+                 "ladder is planned by tier COUNT first (fewest tiers that fit the data — a grade "
+                 "ladder should not fragment into one tier per batch just because that shaves a "
+                 "few hundredths off the fit) and total |nominal-anchor| distance second, over "
+                 "every candidate nominal sequence (a half-percent grid) that is provably "
                  "bridgeable end to end (plan_contiguous). "
                  "GENUINE GAPS: 2 of 24 strains (Graps & Creme; Orange Punch Mimosa) contain "
-                 "two neighbouring tested results so far apart that NO whole-number nominal "
+                 "two neighbouring tested results so far apart that NO candidate nominal "
                  "pair can bridge them within the ≤10% cap, even as bare single-anchor tiers "
                  "either side — the data itself has no batch anywhere near that band, not an "
                  "algorithm limitation. These are left as real, disclosed gaps (gap_after=true "

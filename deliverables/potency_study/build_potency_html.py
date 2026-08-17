@@ -490,21 +490,25 @@ def tiers_block(s):
                      'проценка | No established grade — a result here requires individual QC '
                      'assessment</span></div>' % (glo, ghi))
     note = ('<div class="tiernote">Секоја класа е нè номинала ± толеранција, номинала секогаш '
-            'цел број, толеранција никогаш повеќе од 10,00% од номиналата. Соседните класи на '
+            'во чекори од 0,50% (nn,00% или nn,50%, никогаш пофина дропка), толеранција никогаш '
+            'повеќе од 10,00% од номиналата. Соседните класи на '
             'иста сорта немаат празен простор меѓу себе — горната граница на една класа е точно '
             '0,01 под долната граница на следната, секогаш, така што и резултат меѓу две '
             'воспоставени класи сепак паѓа во некоја од нив; толеранцијата затоа е на целосните '
             '10,00% секогаш кога тоа е возможно, а се намалува само толку колку што е потребно за '
             'точно да се допре соседната класа. Само кога два тестирани резултати се толку '
-            'далеку што ниту еден цел број не може да ги премости во рамки на 10,00% ограничувањето '
+            'далеку што ниту еден кандидат за номинала не може да ги премости во рамки на 10,00% '
+            'ограничувањето '
             '(нема тука соодветна серија), останува вистински, означен јаз — не измислена '
-            'преодна класа. | Every tier is nominal ± tolerance, nominal always a whole number, '
+            'преодна класа. | Every tier is nominal ± tolerance, nominal always on a 0.50% step '
+            '(nn.00% or nn.50%, never a finer fraction), '
             'tolerance never more than 10.00% of the nominal. Adjacent tiers of the same strain '
             'carry no blind gap between them — one tier\'s ceiling sits exactly 0.01 below the '
             'next tier\'s floor, always, so a result between two established grades still falls '
             'into one of them; tolerance is therefore at the full 10.00% whenever the data allows '
             'it, and shrinks only as far as needed to meet the neighbour exactly. Only where two '
-            'tested results are too far apart for any whole number to bridge within the 10.00% cap '
+            'tested results are too far apart for any candidate nominal to bridge within the '
+            '10.00% cap '
             '(no batch exists there) does a genuine, flagged gap remain — never a fabricated '
             'bridge tier.</div>')
     return ('<div class="tiers"><b>Предложени класи | Proposed tiers:</b>%s%s</div>'
@@ -713,14 +717,17 @@ def final_ranges():
 
 MAX_TOL_RATIO = d["design"]["max_tol_ratio"]
 MIN_GAP = d["design"]["min_gap"]
+NOM_STEP = d["design"]["nom_step"]
 
 
-def feasible_nominals(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO):
+def feasible_nominals(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO, step=NOM_STEP):
     """Mirror of build_potency_dataset.feasible_nominals."""
-    lo_i = math.ceil(max(anchors) / (1 + max_ratio) - 1e-9)
-    hi_i = math.floor(min(anchors) / (1 - max_ratio) + 1e-9)
-    lo_i = max(lo_i, math.ceil(floor / (1 - max_ratio) - 1e-9))
-    return range(lo_i, hi_i + 1)
+    lo_n = max(anchors) / (1 + max_ratio)
+    hi_n = min(anchors) / (1 - max_ratio)
+    lo_i = math.ceil(lo_n / step - 1e-9)
+    hi_i = math.floor(hi_n / step + 1e-9)
+    lo_i = max(lo_i, math.ceil((floor / (1 - max_ratio)) / step - 1e-9))
+    return [round(k * step, 2) for k in range(lo_i, hi_i + 1)]
 
 
 def pairwise_bridgeable(prev_n, prev_max_anchor, nominal, run_min_anchor,

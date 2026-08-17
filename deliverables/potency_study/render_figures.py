@@ -59,7 +59,7 @@ def strain_fig(name, st, tiers, stability, fname):
         ax.axvspan(lo, hi, ymin=0.0, ymax=1.0, color=GREEN, alpha=0.09, lw=0, zorder=0)
         ax.axvline(lo, color=GREEN, lw=1.0, alpha=0.45, zorder=1)
         ax.axvline(hi, color=GREEN, lw=1.0, alpha=0.45, zorder=1)
-        # a genuine, unbridgeable gap: no whole-number nominal exists that
+        # a genuine, unbridgeable gap: no candidate nominal exists that
         # could reach this far — hatched red, not a fabricated bridge tier
         if t.get("gap_after") and i + 1 < len(tiers):
             glo, ghi = hi, tiers[i + 1]["range"][0]

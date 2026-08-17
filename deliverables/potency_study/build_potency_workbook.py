@@ -323,14 +323,17 @@ stock_by_batch = {norm_b(b["batch"]): b for b in d["stock"]}
 
 MAX_TOL_RATIO = d["design"]["max_tol_ratio"]
 MIN_GAP = d["design"]["min_gap"]
+NOM_STEP = d["design"]["nom_step"]
 
 
-def feasible_nominals(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO):
+def feasible_nominals(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO, step=NOM_STEP):
     """Mirror of build_potency_dataset.feasible_nominals."""
-    lo_i = math.ceil(max(anchors) / (1 + max_ratio) - 1e-9)
-    hi_i = math.floor(min(anchors) / (1 - max_ratio) + 1e-9)
-    lo_i = max(lo_i, math.ceil(floor / (1 - max_ratio) - 1e-9))
-    return range(lo_i, hi_i + 1)
+    lo_n = max(anchors) / (1 + max_ratio)
+    hi_n = min(anchors) / (1 - max_ratio)
+    lo_i = math.ceil(lo_n / step - 1e-9)
+    hi_i = math.floor(hi_n / step + 1e-9)
+    lo_i = max(lo_i, math.ceil((floor / (1 - max_ratio)) / step - 1e-9))
+    return [round(k * step, 2) for k in range(lo_i, hi_i + 1)]
 
 
 def pairwise_bridgeable(prev_n, prev_max_anchor, nominal, run_min_anchor,
