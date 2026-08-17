@@ -720,6 +720,20 @@ MAX_TOL_RATIO = d["design"]["max_tol_ratio"]
 MIN_GAP = d["design"]["min_gap"]
 NOM_STEP = d["design"]["nom_step"]
 
+# Owner top-nominal overrides (keyed by original strain). The renamed board
+# re-clusters batches by NEW name, so we apply an override to a new-name group
+# only when it OWNS an overridden original strain's top anchor — matched by
+# that anchor's value, which is unique enough here. The original board reads
+# the overrides straight from merged_ranges (already baked into the dataset).
+_TOP_OVERRIDE = d["design"].get("top_nominal_override", {})
+_strain_top_anchor = {}
+for _b in d["stock"]:
+    _a = _b["anchor"] if _b["anchor"] is not None else _b["declared"]
+    if _a is not None:
+        _strain_top_anchor[_b["strain"]] = max(_strain_top_anchor.get(_b["strain"], -1.0), _a)
+OVERRIDE_BY_TOP_ANCHOR = {round(_strain_top_anchor[s], 2): v
+                          for s, v in _TOP_OVERRIDE.items() if s in _strain_top_anchor}
+
 
 def feasible_nominals(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO, step=NOM_STEP):
     """Mirror of build_potency_dataset.feasible_nominals."""
@@ -731,7 +745,8 @@ def feasible_nominals(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO, step=NOM_STEP
     return [round(k * step, 2) for k in range(lo_i, hi_i + 1)]
 
 
-def build_top_down(groups, floor=5.0, max_ratio=MAX_TOL_RATIO, step=NOM_STEP, gap=MIN_GAP):
+def build_top_down(groups, floor=5.0, max_ratio=MAX_TOL_RATIO, step=NOM_STEP, gap=MIN_GAP,
+                   top_override=None, strain_max=None):
     """Mirror of build_potency_dataset.build_top_down."""
     top = groups[-1]
     tmin, tmax = min(top), max(top)
@@ -741,6 +756,12 @@ def build_top_down(groups, floor=5.0, max_ratio=MAX_TOL_RATIO, step=NOM_STEP, ga
     top_cands = [round(k * step, 2) for k in range(lo_i, hi_i + 1)]
     if not top_cands:
         return None
+    if top_override is not None and strain_max is not None \
+            and abs(tmax - strain_max) < 1e-9:
+        if any(abs(c - top_override) < 1e-9 for c in top_cands):
+            top_cands = [round(top_override, 2)]
+        else:
+            return None
     best = None
     for n_top in top_cands:
         tol = round(n_top * max_ratio, 2)
@@ -772,7 +793,7 @@ def build_top_down(groups, floor=5.0, max_ratio=MAX_TOL_RATIO, step=NOM_STEP, ga
     return best[1] if best else None
 
 
-def _tiers_for_k(anchors, k, floor, max_ratio, gap):
+def _tiers_for_k(anchors, k, floor, max_ratio, gap, top_override=None, strain_max=None):
     """Mirror of build_potency_dataset._tiers_for_k."""
     n = len(anchors)
     if k > n:
@@ -782,7 +803,8 @@ def _tiers_for_k(anchors, k, floor, max_ratio, gap):
     def eval_cuts(bounds):
         nonlocal best
         groups = [anchors[bounds[i]:bounds[i + 1]] for i in range(k)]
-        tiers = build_top_down(groups, floor, max_ratio, NOM_STEP, gap)
+        tiers = build_top_down(groups, floor, max_ratio, NOM_STEP, gap,
+                               top_override=top_override, strain_max=strain_max)
         if tiers is None:
             return
         for gi, t in enumerate(tiers):
@@ -802,27 +824,32 @@ def _tiers_for_k(anchors, k, floor, max_ratio, gap):
     return best
 
 
-def plan_contiguous(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_GAP):
+def plan_contiguous(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_GAP,
+                    top_override=None, strain_max=None):
     """Mirror of build_potency_dataset.plan_contiguous."""
     n = len(anchors)
     if n == 0:
         return []
     for k in range(1, n + 1):
-        res = _tiers_for_k(anchors, k, floor, max_ratio, gap)
+        res = _tiers_for_k(anchors, k, floor, max_ratio, gap,
+                           top_override=top_override, strain_max=strain_max)
         if res is not None:
             return res[1]
     return None
 
 
-def tiers_from_anchors(items):
+def tiers_from_anchors(items, top_override=None):
     """Mirror of build_potency_dataset.build_strain_tiers, adapted to carry
     each batch's `tested` flag through instead of an opaque payload.
-    items = [(batch, anchor, tested_bool)] — any order in, sorted here."""
+    items = [(batch, anchor, tested_bool)] — any order in, sorted here.
+    top_override: owner-set nominal for the group's highest tier (see the
+    source); applied only to the tier holding this cluster's top anchor."""
     items = sorted(items, key=lambda x: x[1])
+    strain_max = max(x[1] for x in items) if items else None
 
     def resolve(sub_items):
         sub_anchors = [x[1] for x in sub_items]
-        plan = plan_contiguous(sub_anchors)
+        plan = plan_contiguous(sub_anchors, top_override=top_override, strain_max=strain_max)
         if plan is not None:
             for t in plan:
                 t["gap_after"] = False
@@ -833,10 +860,12 @@ def tiers_from_anchors(items):
         assert n > 1, ("single anchor infeasible — below release floor?", sub_anchors)
         best_m = 1
         for m in range(n, 0, -1):
-            if plan_contiguous(sub_anchors[:m]) is not None:
+            if plan_contiguous(sub_anchors[:m], top_override=top_override,
+                               strain_max=strain_max) is not None:
                 best_m = m
                 break
-        left = plan_contiguous(sub_anchors[:best_m])
+        left = plan_contiguous(sub_anchors[:best_m], top_override=top_override,
+                               strain_max=strain_max)
         for t in left:
             t["gap_after"] = False
             t["batches"] = [x[0] for x in sub_items[t["start"]:t["end"]]]
@@ -884,7 +913,8 @@ def final_ranges_renamed():
                      "<small>%d серии | batches</small></span>" % len(recs))
             badge = ('<span class="fbadge prov">БЕЗ СИДРО | NO ANCHOR</span>')
         else:
-            tiers = tiers_from_anchors(items)
+            _ov = OVERRIDE_BY_TOP_ANCHOR.get(round(max(a for _b, a, _t in items), 2))
+            tiers = tiers_from_anchors(items, top_override=_ov)
             any_tested = any(any(t["tested"]) for t in tiers)
             if any_tested:
                 n_def += 1

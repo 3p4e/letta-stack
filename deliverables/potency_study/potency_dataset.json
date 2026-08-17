@@ -1569,14 +1569,14 @@
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    18.51,
-    22.49
+    18.41,
+    21.59
    ],
    "basis": "anchor",
    "tier": 2,
-   "nominal": 20.5,
-   "tol": 1.99,
-   "headroom_down": 0.01
+   "nominal": 20.0,
+   "tol": 1.59,
+   "headroom_down": 0.11
   },
   {
    "tranche": "1",
@@ -1588,14 +1588,14 @@
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    22.5,
-    27.5
+    21.6,
+    26.4
    ],
    "basis": "anchor",
    "tier": 3,
-   "nominal": 25.0,
-   "tol": 2.5,
-   "headroom_down": 0.11
+   "nominal": 24.0,
+   "tol": 2.4,
+   "headroom_down": 1.01
   },
   {
    "tranche": "1",
@@ -1607,14 +1607,14 @@
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    15.5,
-    18.5
+    15.6,
+    18.4
    ],
    "basis": "anchor",
    "tier": 1,
    "nominal": 17.0,
-   "tol": 1.5,
-   "headroom_down": 0.2
+   "tol": 1.4,
+   "headroom_down": 0.1
   },
   {
    "tranche": "1",
@@ -1987,14 +1987,14 @@
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    18.51,
-    22.49
+    18.41,
+    21.59
    ],
    "basis": "anchor",
    "tier": 2,
-   "nominal": 20.5,
-   "tol": 1.99,
-   "headroom_down": 1.3
+   "nominal": 20.0,
+   "tol": 1.59,
+   "headroom_down": 1.4
   },
   {
    "tranche": "2",
@@ -2006,14 +2006,14 @@
    "anchor_date": "10.07.2025",
    "anchor_lab": "UKIM",
    "proposed": [
-    22.5,
-    27.5
+    21.6,
+    26.4
    ],
    "basis": "anchor",
    "tier": 3,
-   "nominal": 25.0,
-   "tol": 2.5,
-   "headroom_down": 2.95
+   "nominal": 24.0,
+   "tol": 2.4,
+   "headroom_down": 3.85
   },
   {
    "tranche": "2",
@@ -2025,14 +2025,14 @@
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    18.51,
-    22.49
+    18.41,
+    21.59
    ],
    "basis": "anchor",
    "tier": 2,
-   "nominal": 20.5,
-   "tol": 1.99,
-   "headroom_down": 2.78
+   "nominal": 20.0,
+   "tol": 1.59,
+   "headroom_down": 2.88
   },
   {
    "tranche": "2",
@@ -2044,14 +2044,14 @@
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    22.5,
-    27.5
+    21.6,
+    26.4
    ],
    "basis": "anchor",
    "tier": 3,
-   "nominal": 25.0,
-   "tol": 2.5,
-   "headroom_down": 3.23
+   "nominal": 24.0,
+   "tol": 2.4,
+   "headroom_down": 4.13
   },
   {
    "tranche": "2",
@@ -2177,14 +2177,14 @@
    "anchor_date": "28.07.2025",
    "anchor_lab": "UKIM",
    "proposed": [
-    15.3,
-    18.7
+    16.2,
+    19.8
    ],
    "basis": "anchor",
    "tier": 1,
-   "nominal": 17.0,
-   "tol": 1.7,
-   "headroom_down": 1.52
+   "nominal": 18.0,
+   "tol": 1.8,
+   "headroom_down": 0.62
   },
   {
    "tranche": "2",
@@ -2576,14 +2576,14 @@
    "anchor_date": "28.11.2025",
    "anchor_lab": "PP",
    "proposed": [
-    22.5,
-    27.5
+    21.6,
+    26.4
    ],
    "basis": "anchor",
    "tier": 3,
-   "nominal": 25.0,
-   "tol": 2.5,
-   "headroom_down": 2.39
+   "nominal": 24.0,
+   "tol": 2.4,
+   "headroom_down": 3.29
   },
   {
    "tranche": "3",
@@ -2595,14 +2595,14 @@
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    18.51,
-    22.49
+    18.41,
+    21.59
    ],
    "basis": "anchor",
    "tier": 2,
-   "nominal": 20.5,
-   "tol": 1.99,
-   "headroom_down": 2.85
+   "nominal": 20.0,
+   "tol": 1.59,
+   "headroom_down": 2.95
   },
   {
    "tranche": "3",
@@ -2690,14 +2690,14 @@
    "anchor_date": "06.05.2025",
    "anchor_lab": "UKIM",
    "proposed": [
-    15.3,
-    18.7
+    16.2,
+    19.8
    ],
    "basis": "anchor",
    "tier": 1,
-   "nominal": 17.0,
-   "tol": 1.7,
-   "headroom_down": 3.37
+   "nominal": 18.0,
+   "tol": 1.8,
+   "headroom_down": 2.47
   },
   {
    "tranche": "3",
@@ -3165,11 +3165,11 @@
   "Grape Pie": [
    {
     "range": [
-     15.5,
-     18.5
+     15.6,
+     18.4
     ],
     "nominal": 17.0,
-    "tol": 1.5,
+    "tol": 1.4,
     "gap_after": false,
     "batches": [
      "GP082501/2"
@@ -3180,11 +3180,11 @@
    },
    {
     "range": [
-     18.51,
-     22.49
+     18.41,
+     21.59
     ],
-    "nominal": 20.5,
-    "tol": 1.99,
+    "nominal": 20.0,
+    "tol": 1.59,
     "gap_after": false,
     "batches": [
      "GP052501",
@@ -3201,11 +3201,11 @@
    },
    {
     "range": [
-     22.5,
-     27.5
+     21.6,
+     26.4
     ],
-    "nominal": 25.0,
-    "tol": 2.5,
+    "nominal": 24.0,
+    "tol": 2.4,
     "gap_after": false,
     "batches": [
      "GP0824_02",
@@ -3379,11 +3379,11 @@
   "Motor Breath": [
    {
     "range": [
-     15.3,
-     18.7
+     16.2,
+     19.8
     ],
-    "nominal": 17.0,
-    "tol": 1.7,
+    "nominal": 18.0,
+    "tol": 1.8,
     "gap_after": false,
     "batches": [
      "MB0824_05",
@@ -3684,6 +3684,10 @@
   "max_tol_ratio": 0.1,
   "min_gap": 0.01,
   "nom_step": 0.5,
+  "top_nominal_override": {
+   "Grape Pie": 24.0,
+   "Motor Breath": 18.0
+  },
   "rule": "Each tier is nominal ± tolerance, nominal always a multiple of 0.50% (20.00%, 20.50%, 21.00% ... — never a finer fraction). Tolerance never more than 10% of the nominal. CONTIGUITY (the point of this design): adjacent tiers of the SAME strain carry NO blind gap — tier i's ceiling sits exactly 0.01 below tier i+1's floor, always, so a batch testing anywhere between two established grades still has an applicable declaration; the same discipline the company's own Portfolio-Master bracket system already uses (7/10/13/16/19/22/25% ladder — fixed 3-point-wide bands, each boundary shared exactly with the next, zero gaps end to end; see portfolio_master_brackets below). TOP-DOWN, HIGHEST TIER FIRST (build_top_down): the ladder is declared from the top down, the way it is done by hand. The HIGHEST (strongest) tier of a segment gets PRIORITY — it takes its FULL ±10% width; nothing constrains a segment's top edge from above, so the strongest grade is never squeezed. Each LOWER tier then EXTENDS DOWNWARD from the one above: its ceiling is pinned exactly 0.01 below the tier-above's floor, and it grabs AS MUCH of its own ±10% as it can while still reaching up to that ceiling — its nominal is the SMALLEST half-percent grid value N with 1.1·N ≥ ceiling, so its tolerance (ceiling − N) is as large as the cap allows. This makes the next lower nominal and its ± fully PREDICTABLE from the tier above — not searched. There is no 'available width' box that crams an edge tier: a lower tier is only ever narrower than its own full 10% because meeting the tier above exactly leaves no more room, never for any other reason. (Blue Sunset Sherbet, anchors 20.39/23.42/25.01 → Pot.-2 24.50% ±2.45% [22.05%-26.95%] at its own full cap; Pot.-1 20.50% ±1.54% [18.96%-22.04%] — as wide as it can be while its ceiling meets Pot.-2's floor at 22.04/22.05.) The segmentation (how many tiers and where the cuts fall) is chosen by tier COUNT first (fewest tiers that fit the data — a grade ladder should not fragment into one tier per batch) and total |nominal-anchor| distance second, so declared nominals stay honest to the results and never drift up merely to buy width and overstate the product (plan_contiguous). GENUINE GAPS: 2 of 24 strains (Graps & Creme; Orange Punch Mimosa) contain two neighbouring tested results so far apart that NO candidate nominal pair can bridge them within the ≤10% cap, even as bare single-anchor tiers either side — the data itself has no batch anywhere near that band, not an algorithm limitation. These are left as real, disclosed gaps (gap_after=true on the tier below) rather than force-closed by fabricating an unsupported 'bridge' tier with zero evidence behind it, or by exceeding the 10% cap. A future batch testing in one of these zones has no precedent in this strain's history and should be assessed individually, exactly as any out-of-established-range result would be. RELEASE FLOOR: a tier's lower edge may never sit below 5.00 % Total THC. A batch's declaration is always its tier's declaration — the same nominal ± tolerance is printed everywhere that batch appears; there is no separate per-batch figure. This is a PROPOSED revision of the grade bands, evidenced from the data in this study; it does not itself amend any issued QCSP 001 specification, whose nominal and range remain authoritative until changed through the regular procedure."
  },
  "portfolio_master_brackets": "The company's own Portfolio-Master batch labels (portfolio_master.json, 78 batches, the source behind the renamed-strain board) already use a completely different, simpler system worth recording alongside the strain-specific ladder above: SEVEN fixed, strain-agnostic, contiguous 3-percentage-point brackets covering the whole practical range — 7–10 / 10–13 / 13–16 / 16–19 / 19–22 / 22–25 / ≥25% — every boundary shared exactly with the next (10% ends one bracket and starts the next; no gap, no strain-by-strain customisation). A batch is simply assigned whichever fixed bracket contains its raw result — there is no per-strain 'nominal' concept at all in this system, and no evidence in that data of results being deliberately placed toward the top of their bracket (mean fractional position across 75 dated batches ≈ 0.50, i.e. centred, not skewed high).",

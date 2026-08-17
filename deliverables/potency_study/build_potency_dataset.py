@@ -108,6 +108,18 @@ NOM_STEP = 0.5   # nominals are declared in half-percent steps (20.00 %,
                   # the finer grid gives the planner more candidates to fit
                   # a segment's anchors and neighbours without squeezing.
 
+# Owner-set nominal for a strain's HIGHEST (strongest) tier, overriding the
+# automatic closest-to-cluster choice. Everything below cascades down from it
+# by the standard top-down rule (build_top_down). The value must still be a
+# valid full-width top nominal (its ±10% band must cover that top tier's own
+# anchors and clear the release floor) or the build asserts — an override
+# cannot silently drop a result out of grade. Add a strain here only when the
+# owner has explicitly dictated its top nominal.
+TOP_NOMINAL_OVERRIDE = {
+    "Grape Pie": 24.0,
+    "Motor Breath": 18.0,
+}
+
 
 def feasible_nominals(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO, step=NOM_STEP):
     """Every candidate nominal (a multiple of `step`) whose FULL ±max_ratio
@@ -123,7 +135,8 @@ def feasible_nominals(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO, step=NOM_STEP
     return [round(k * step, 2) for k in range(lo_i, hi_i + 1)]
 
 
-def build_top_down(groups, floor=5.0, max_ratio=MAX_TOL_RATIO, step=NOM_STEP, gap=MIN_GAP):
+def build_top_down(groups, floor=5.0, max_ratio=MAX_TOL_RATIO, step=NOM_STEP, gap=MIN_GAP,
+                   top_override=None, strain_max=None):
     """Build one contiguous ladder from a fixed segmentation, TOP-DOWN, the
     way the owner declares grades by hand:
 
@@ -159,6 +172,16 @@ def build_top_down(groups, floor=5.0, max_ratio=MAX_TOL_RATIO, step=NOM_STEP, ga
     top_cands = [round(k * step, 2) for k in range(lo_i, hi_i + 1)]
     if not top_cands:
         return None
+    # Owner override for this strain's strongest tier: only applies to the
+    # group that actually holds the strain's top anchor, and only if that
+    # override is itself a valid full-width top nominal here. Otherwise this
+    # segmentation cannot honour it, so it is not a candidate.
+    if top_override is not None and strain_max is not None \
+            and abs(tmax - strain_max) < 1e-9:
+        if any(abs(c - top_override) < 1e-9 for c in top_cands):
+            top_cands = [round(top_override, 2)]
+        else:
+            return None
 
     best = None  # (cost, tiers ascending)
     for n_top in top_cands:
@@ -191,7 +214,7 @@ def build_top_down(groups, floor=5.0, max_ratio=MAX_TOL_RATIO, step=NOM_STEP, ga
     return best[1] if best else None
 
 
-def _tiers_for_k(anchors, k, floor, max_ratio, gap):
+def _tiers_for_k(anchors, k, floor, max_ratio, gap, top_override=None, strain_max=None):
     """Best top-down ladder (build_top_down) using EXACTLY k tiers over
     `anchors`, or None if none exists at this tier count. Exhaustive over the
     C(n-1, k-1) ways to cut `anchors` into k contiguous, non-empty runs —
@@ -205,7 +228,8 @@ def _tiers_for_k(anchors, k, floor, max_ratio, gap):
     def eval_cuts(bounds):
         nonlocal best
         groups = [anchors[bounds[i]:bounds[i + 1]] for i in range(k)]
-        tiers = build_top_down(groups, floor, max_ratio, NOM_STEP, gap)
+        tiers = build_top_down(groups, floor, max_ratio, NOM_STEP, gap,
+                               top_override=top_override, strain_max=strain_max)
         if tiers is None:
             return
         for gi, t in enumerate(tiers):
@@ -225,7 +249,8 @@ def _tiers_for_k(anchors, k, floor, max_ratio, gap):
     return best
 
 
-def plan_contiguous(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_GAP):
+def plan_contiguous(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_GAP,
+                    top_override=None, strain_max=None):
     """Plan one strain's tier ladder with NO blind gap anywhere in it: the
     only separation between adjacent tiers is the minimal 2-decimal buffer
     (…nn.49% | nn.50%… style), never more. Fewest tiers wins first — a grade
@@ -241,13 +266,15 @@ def plan_contiguous(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_GAP):
     if n == 0:
         return []
     for k in range(1, n + 1):
-        res = _tiers_for_k(anchors, k, floor, max_ratio, gap)
+        res = _tiers_for_k(anchors, k, floor, max_ratio, gap,
+                           top_override=top_override, strain_max=strain_max)
         if res is not None:
             return res[1]
     return None
 
 
-def build_strain_tiers(items, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_GAP):
+def build_strain_tiers(items, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_GAP,
+                       top_override=None):
     """items: [(anchor, payload), ...] ascending by anchor, all for one
     strain. Plans the whole ladder contiguous end to end via
     plan_contiguous(). If (rare) two neighbouring results are so far apart
@@ -260,12 +287,20 @@ def build_strain_tiers(items, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_GAP):
     the specific seam the data itself cannot bridge (gap_after=True on the
     tier just below it).
 
+    top_override (optional): an owner-set nominal for the strain's HIGHEST
+    tier — the one holding the strain's top anchor. It only steers that one
+    tier; every tier below still cascades from it by the standard top-down
+    rule.
+
     Returns a list of dicts: nominal, tol, lo, hi, gap_after (bool),
     payloads (the payload objects for every batch the tier covers), and
     anchors (their raw values)."""
+    strain_max = max(a for a, _ in items) if items else None
+
     def resolve(sub_items):
         sub_anchors = [a for a, _ in sub_items]
-        plan = plan_contiguous(sub_anchors, floor, max_ratio, gap)
+        plan = plan_contiguous(sub_anchors, floor, max_ratio, gap,
+                               top_override=top_override, strain_max=strain_max)
         if plan is not None:
             for t in plan:
                 t["gap_after"] = False
@@ -275,10 +310,12 @@ def build_strain_tiers(items, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_GAP):
         assert n > 1, ("single anchor infeasible — below release floor?", sub_anchors)
         best_m = 1
         for m in range(n, 0, -1):
-            if plan_contiguous(sub_anchors[:m], floor, max_ratio, gap) is not None:
+            if plan_contiguous(sub_anchors[:m], floor, max_ratio, gap,
+                               top_override=top_override, strain_max=strain_max) is not None:
                 best_m = m
                 break
-        left = plan_contiguous(sub_anchors[:best_m], floor, max_ratio, gap)
+        left = plan_contiguous(sub_anchors[:best_m], floor, max_ratio, gap,
+                               top_override=top_override, strain_max=strain_max)
         for t in left:
             t["gap_after"] = False
             t["payloads"] = [p for _a, p in sub_items[t["start"]:t["end"]]]
@@ -375,7 +412,12 @@ def build():
         if not bs:
             continue
         items = [((b["anchor"] if b["anchor"] is not None else b["declared"]), b) for b in bs]
-        tiers = build_strain_tiers(items)
+        override = TOP_NOMINAL_OVERRIDE.get(s)
+        tiers = build_strain_tiers(items, top_override=override)
+        if override is not None:
+            assert abs(tiers[-1]["nominal"] - override) < 1e-9, \
+                (s, "top-nominal override not honoured — its ±10% band cannot cover the "
+                 "strain's top tier at this grid; check the anchors", override, tiers[-1]["nominal"])
         n_tiers += len(tiers)
         for i, g in enumerate(tiers, 1):
             for b in g["payloads"]:
@@ -431,6 +473,7 @@ def build():
         p_codes=p_codes,
         design=dict(
             max_tol_ratio=MAX_TOL_RATIO, min_gap=MIN_GAP, nom_step=NOM_STEP,
+            top_nominal_override=dict(TOP_NOMINAL_OVERRIDE),
             rule=("Each tier is nominal ± tolerance, nominal always a multiple of %.2f%% "
                   "(20.00%%, 20.50%%, 21.00%% ... — never a finer fraction). " % NOM_STEP) +
                  "Tolerance never more than 10% of the nominal. "
