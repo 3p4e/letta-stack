@@ -221,13 +221,6 @@ summary{cursor:pointer;font-weight:600;color:var(--navy);padding:10px 0}
 .bchip.cayn{background:#F5EEF9;color:#7B4F8C;border:1px solid #7B4F8C}
 .keepname{font-size:9.5px;color:var(--mut);font-weight:400;margin-left:5px}
 .rencard{background:var(--card);border:1px solid var(--line);margin-bottom:22px}
-.rensum{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;
- margin-bottom:20px}
-.rs{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--navy2);
- padding:12px 14px;font-size:11.5px;color:var(--mut);line-height:1.45}
-.rs b{display:block;font-family:'Orbitron';font-size:21px;color:var(--navy);margin-bottom:3px}
-.rs.bad{border-top-color:var(--rose)} .rs.bad b{color:var(--rose)}
-.rs.ok{border-top-color:var(--green)} .rs.ok b{color:var(--green)}
 .flowrow{display:grid;grid-template-columns:240px 1fr;gap:16px;align-items:start;
  padding:14px 18px;border-top:1px solid var(--line)}
 .flowrow:first-of-type{border-top:none}
@@ -252,12 +245,6 @@ summary{cursor:pointer;font-weight:600;color:var(--navy);padding:10px 0}
 .cmp b{font-family:var(--mono)}
 .cmp.m b{color:#8A6D14}
 .cmp.w b{color:var(--green)}
-.verdicts{margin-top:6px;display:flex;flex-wrap:wrap;gap:6px}
-.vchip{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px}
-.vchip.ok{background:#E8F5EC;color:var(--green);border:1px solid var(--green)}
-.vchip.bad{background:#FDECEA;color:var(--rose);border:1px solid var(--rose)}
-.vchip.ours{background:#EDF3F9;color:var(--navy2);border:1px solid var(--navy2)}
-.vchip.mut{background:#F4F6F9;color:var(--mut);border:1px solid var(--line)}
 @media (max-width:760px){.flowrow{grid-template-columns:1fr}
  .flowname{border-right:none;border-bottom:2px solid var(--gold);padding:0 0 8px;min-height:0}}
 #final{scroll-margin-top:64px}
@@ -484,7 +471,6 @@ def strain_cards():
     out = ""
     for s in sorted(d["stats"]):
         st = d["stats"][s]
-        stab = [r for r in d["stability"] if r["strain"] == s and r["usable"]]
         sid = "s-" + "".join(c if c.isalnum() else "-" for c in s.lower())
         chips = "<span class=stat>n <b>%d</b></span><span class=stat>x̄ <b>%.2f</b></span>" % (st["n"], st["mean"])
         if st["sd"] is not None:
@@ -492,18 +478,13 @@ def strain_cards():
         if st["ci95"]:
             chips += "<span class=stat>95%% CI <b>%.2f–%.2f</b></span>" % tuple(st["ci95"])
         chips += "<span class=stat>опсег | range <b>%.2f–%.2f</b></span>" % (st["min"], st["max"])
-        stabnote = ""
-        if stab:
-            stabnote = ('<i><span class="dotk" style="background:var(--green);border-radius:1px"></span>'
-                        "стабилност 25°C | stability 25°C</i>"
-                        '<i><span style="color:var(--rose)">▼</span> стабилност 40°C | 40°C</i>')
         legend = ('<div class="legend"><i><span class="dotk"></span>резултат | result</i>'
                   '<i><span class="zonek"></span>±1,5%% зона | zone</i>'
                   '<i><span class="meank"></span>средна | mean</i>'
-                  '<i><span class="tierk"></span>W-класи | tiers</i>%s</div>' % stabnote)
+                  '<i><span class="tierk"></span>W-класи | tiers</i></div>')
         out += ('<article class="strain" id="%s"><div class="shead"><h3>%s</h3>%s</div>'
                 "%s%s%s%s%s</article>"
-                % (sid, esc(s), chips, axis_html(s, st, d["merged_ranges"].get(s, []), stab),
+                % (sid, esc(s), chips, axis_html(s, st, d["merged_ranges"].get(s, []), []),
                    legend, tiers_block(s), results_table(s, st), repeats_callout(s)))
     return out
 
@@ -555,9 +536,6 @@ def renames_section():
         orig = CANON.get(rec["original"], rec["original"])
         groups.setdefault(orig, OrderedDict()).setdefault(rec["neu"], []).append(rec)
 
-    # global verdict counters (renamed batches with a tested anchor)
-    g_total = g_out_today = g_fail_win = g_ok_ours = g_have_ours = 0
-
     cards = ""
     for orig in sorted(groups):
         news = groups[orig]
@@ -600,39 +578,6 @@ def renames_section():
                          % (cls, pct(it["val"]), esc(it["batch"]), it["val"],
                             " · декларирана | declared" if it["declared"] else ""))
             gridt = "".join('<i style="left:%.3f%%"></i>' % pct(x) for x in range(5, 35, 5))
-            # verdicts (tested batches only)
-            tested = [it for it in items if it["val"] is not None and not it["declared"]]
-            out_today = [it for it in tested if it["mb"] and not (it["mb"][0] <= it["val"] <= it["mb"][1])]
-            fail_win = []
-            for it in tested:
-                if not it["mb"]:
-                    continue
-                u = U_RATIO * it["val"]
-                if not (it["mb"][0] <= it["val"] - D_YEAR - u and it["val"] + u <= it["mb"][1]):
-                    fail_win.append(it)
-            # under the ±10% ceiling the tier's guarantee is that the batch's
-            # TESTED value sits inside the declared grade today (the one-year
-            # D+U window is deliberately not promised — see the range rule).
-            ok_ours = [it for it in tested if it["ours"] and
-                       it["ours"][0] - 1e-6 <= it["val"] <= it["ours"][1] + 1e-6]
-            g_total += len(tested)
-            g_out_today += len(out_today)
-            g_fail_win += len(fail_win)
-            g_have_ours += sum(1 for it in tested if it["ours"])
-            g_ok_ours += len(ok_ours)
-            v1 = ('<span class="vchip bad">%d/%d надвор од мастер-опсегот ДЕНЕС | outside master bracket TODAY</span>'
-                  % (len(out_today), len(tested))) if out_today else                  ('<span class="vchip ok">сите внатре во мастер-опсегот денес | all inside master today</span>'
-                  if tested else '<span class="vchip mut">нема тестирани | none tested</span>')
-            v2 = ""
-            if tested:
-                if fail_win:
-                    v2 = ('<span class="vchip bad">мастер-опсегот НЕ издржува 1 година за %d/%d | '
-                          "master bracket fails the 1-year window for %d/%d</span>"
-                          % (len(fail_win), len(tested), len(fail_win), len(tested)))
-                else:
-                    v2 = ('<span class="vchip ok">мастер-опсегот издржува 1 година | master holds 1 year</span>')
-            v3 = ('<span class="vchip ours">нашата класа ги држи сите %d денес | our tier holds all %d today</span>'
-                  % (len(ok_ours), len(ok_ours))) if ok_ours else ""
             blist = ", ".join("%s (%s)" % (esc(it["batch"]),
                                            ("%.2f" % it["val"]) if it["val"] is not None and not it["declared"]
                                            else ("%.1f декл." % it["val"] if it["val"] is not None else "—"))
@@ -646,25 +591,17 @@ def renames_section():
                 '<div class="flowbatches">%s</div></div>'
                 '<div class="flowaxis"><div class="miniaxis">%s%s%s</div>'
                 '<div class="cmpline"><span class="cmp m">мастер | master: <b>%s</b></span>'
-                '<span class="cmp w">наш | ours: <b>%s</b></span></div>'
-                '<div class="verdicts">%s %s %s</div></div></div>'
+                '<span class="cmp w">наш | ours: <b>%s</b></span></div></div></div>'
                 % ((esc(neu) if is_same else "<b>%s</b>" % esc(neu)),
                    esc(brand.lower()), esc(brand),
                    ' <span class="keepname">без промена | unchanged</span>' if is_same else "",
-                   blist, gridt, spans, dots, esc(mb_lbl), ours_lbl, v1, v2, v3))
+                   blist, gridt, spans, dots, esc(mb_lbl), ours_lbl))
         cards += ('<article class="rencard"><div class="shead"><h3>%s</h3>'
                   '<span class="stat">серии | batches <b>%d</b></span>'
                   '<span class="stat">преименувани | renamed <b>%d</b></span>'
                   '<span class="stat">нови имиња | new names <b>%d</b></span></div>%s</article>'
                   % (esc(orig), n_batches, n_renamed, len(news), rows_html))
-    summary = (
-        '<div class="rensum">'
-        '<div class="rs"><b>%d</b>тестирани серии од мастерот | tested batches from the master</div>'
-        '<div class="rs bad"><b>%d</b>веќе НАДВОР од мастер-опсегот денес | already OUTSIDE the master bracket today</div>'
-        '<div class="rs bad"><b>%d</b>мастер-опсегот не издржува 1 година (D+U прозорец) | master fails the 1-year D+U window</div>'
-        '<div class="rs ok"><b>%d/%d</b>внатре во нашата декларирана класа денес (± ≤ 10%%) | inside our declared tier today (± ≤ 10%%)</div>'
-        "</div>" % (g_total, g_out_today, g_fail_win, g_ok_ours, g_have_ours))
-    return summary + cards
+    return cards
 
 
 def final_ranges():
@@ -704,15 +641,13 @@ def final_ranges():
         rows += ('<div class="frow"><div class="fname"><h3>%s</h3>'
                  '<span class="fstat">%s</span>%s</div><div class="fpills">%s</div></div>'
                  % (esc(strain), stat, badge, pills))
-    head = ('<div class="fsum">Врз основа на %d верификувани резултати, студијата на '
-            "стабилност, повторените мерења и мерната неодреденост од сертификатите — "
-            "ова се финалните опсези по класи за секоја сорта: %d сорти дефинитивно, "
-            "%d провизорно (само декларирана основа). Формалното усвојување останува "
-            "во спецификациите QCSP по редовна процедура. | Based on %d verified "
-            "results, the stability program, the repeat measurements and the stated "
-            "certificate uncertainty — the final grade ranges per strain: %d strains "
-            "definitive, %d provisional (declared basis only). Formal adoption remains "
-            "with the QCSP specifications through the regular procedure.</div>"
+    head = ('<div class="fsum">Врз основа на %d верификувани резултати — ова се финалните '
+            "опсези по класи за секоја сорта: %d сорти дефинитивно, %d провизорно (само "
+            "декларирана основа). Формалното усвојување останува во спецификациите QCSP "
+            "по редовна процедура. | Based on %d verified results — the final grade ranges "
+            "per strain: %d strains definitive, %d provisional (declared basis only). "
+            "Formal adoption remains with the QCSP specifications through the regular "
+            "procedure.</div>"
             % (d["n_results"], n_def, n_prov, d["n_results"], n_def, n_prov))
     return head + '<div class="fboard">' + rows + "</div>" + final_ranges_renamed()
 
@@ -988,7 +923,6 @@ HTML = """<!doctype html>
   <span class="chip"><b>%d</b>резултати | results</span>
   <span class="chip"><b>%d</b>сорти | strains</span>
   <span class="chip"><b>%d</b>серии | batches</span>
-  <span class="chip"><b>%d</b>стабилносни | stability</span>
   <span class="chip"><b>4 134</b>пасуси проверени | passages swept</span>
  </div>
  <div class="informal">Неформален работен документ · не е контролиран запис · 14.08.2026 |
@@ -998,60 +932,6 @@ HTML = """<!doctype html>
 <nav class="nav"><div class="wrap">%s</div></nav>
 
 <div class="wrap">
-<section><h2>Клучни наоди <span>| Key Findings</span></h2>
-<div class="cards">
- <div class="kcard green"><b>25°C: нема опаѓање | no decline</b>
-  Стабилносните краци на 25°C/60%%RH не покажуваат пад на Вкупен Δ⁹-THC низ 3–9 месеци
-  (22,83→24,51 · 21,31→23,08). <i>25°C/60%%RH arms show no decline over 3–9 months.</i></div>
- <div class="kcard warm"><b>Топлината е ризикот | Heat is the risk</b>
-  Краците на 40°C/75%%RH паѓаат на 13,16–17,05%% со CBN 2,05–2,35%%.
-  <i>40°C/75%%RH arms collapse with CBN above 2%%.</i></div>
- <div class="kcard"><b>Варијансата доминира | Variance dominates</b>
-  Разликите меѓу мерења од ±1,5–2,5%% се поголем ризик за „испаѓање“ од класа отколку
-  стареењето. <i>Between-measurement variance outweighs ageing.</i></div>
- <div class="kcard gold"><b>Плафон од ±10%% | The ±10%% ceiling</b>
-  Ниту една декларирана класа не носи толеранција поголема од 10%% од номиналата — за
-  сите серии и сите сорти. <i>No declared grade carries a tolerance above 10%% of its
-  nominal — for all batches and all strains.</i></div>
-</div>
-<div class="rule"><b>Правило за опсег | Range rule</b>
-<span><code>деклар. | declared = НОМИНАЛА ± ТОЛЕРАНЦИЈА</code></span>
-<span><code>толеранција ≤ 10%% од номиналата | tolerance ≤ 10%% of nominal — секогаш |
-always</code></span>
-<span><code>D = 1,5 пп/год | pp/yr</code></span>
-<span><code>U ≈ 6,2%% од вредноста | of value (k=2)</code></span>
-<span>никогаш под 5,00%% | never below the 5.00%% release criterion</span>
-<span>Номиналната вредност е секогаш <b>цел број</b> (18.00%%, никогаш 18.50%%), во истата
-форма во која важечките QCSP 001 спецификации веќе ја запишуваат потенцијата — ова е
-предложена ревизија на класите, а не измена на важечка спецификација. Серии се групираат
-во иста класа само додека постои целоброjна номинала што ги држи сите нивни сидра внатре
-во ±10%% — така секоја серија е <b>денес</b> внатре во својата декларирана класа.
-Статистичкиот прозорец D+U (деградација + мерна несигурност, едногодишен хоризонт) се
-користи како водилка за изборот на номиналата, но онаму каде што тој прозорец бара
-толеранција поголема од 10%%, важи плафонот: декларацијата останува ≤ ±10%%, а тоа значи
-дека за тие класи повторно мерење по една година складирање <b>не е гарантирано</b> дека
-ќе остане внатре — гаранцијата е за денешното тестирано сидро. |
-The nominal value is always a <b>whole number</b> (18.00%%, never 18.50%%), in the same
-form the issued QCSP 001 specifications already use to record potency — this is a
-proposed revision of the grade bands, not an amendment to any issued specification.
-Batches share a tier only while a whole-number nominal exists that keeps all their
-anchors within ±10%% — so every batch reads inside its own declared grade <b>today</b>.
-The D+U statistical window (degradation + measurement uncertainty, one-year horizon)
-guides the choice of nominal, but wherever that window would need a tolerance above
-10%%, the ceiling wins: the declaration stays ≤ ±10%%, which means for those tiers a
-remeasure after a further year of storage is <b>not guaranteed</b> to read inside — the
-guarantee covers today's tested anchor.</span>
-<span><code>класа со 1 серија | tier with 1 batch = НОМИНАЛА ± 10%% од номиналата</code></span>
-<span>%s</span></div>
-</section>
-
-<section><h2>Докази за деградација <span>| Degradation Evidence — Grape Pie стабилносна
-програма (UKIM-CNP)</span></h2>%s
-<p style="font-size:12px;color:var(--mut);margin-top:8px">P050022 = GP0824_02 ·
-P050072 = GP0824_03 · P050202 = GP062501. Редот на ППК26037 е задржан во податоците,
-но исклучен од сите статистики. | The ППК26037 row is retained in the data but excluded
-from all statistics.</p></section>
-
 <section><h2>Сорти <span>| Strains — дистрибуции, растојанија и класи</span></h2>
 <p style="font-size:12.5px;color:var(--mut);margin-bottom:14px">
 ‖x̄−v‖ = апсолутна разлика меѓу средната вредност на сортата и секој резултат (процентни
@@ -1066,15 +946,11 @@ percentage points and as a relative %% of the lower value.</p>
 За секоја изворна сорта — во колку нови имиња се преименувани сериите, и за секое ново име:
 тестираните вредности (точки), <b style="color:#8A6D14">опсегот што го предлага мастер-документот</b>
 (жолто, BCP_PRODUCT_MASTER_FINAL.xlsx · 01_Portfolio_Master) наспроти
-<b style="color:#1E8449">нашиот статистички изведен опсег</b> (зелено: сидро − D − U до сидро + U;
-D = 1,5 пп/год деградациска резерва, U ≈ 6,2%% мерна неодреденост, k=2) — на иста оска 0–35%%.
-Пресудите покажуваат дали серијата ВЕЌЕ денес тестира надвор од мастер-опсегот и дали
-мастер-опсегот би издржал повторно мерење по една година складирање. | For every original
-strain — how many new names its batches were renamed into, and per new name: the tested
-values (dots), <b style="color:#8A6D14">the bracket the master document suggests</b> (amber)
-versus <b style="color:#1E8449">our statistically derived range</b> (green), on one 0–35%%
-axis. The verdicts show whether a batch ALREADY tests outside the master bracket today, and
-whether that bracket would survive a remeasure after one more year of storage.</p>
+<b style="color:#1E8449">нашата предложена класа</b> (зелено, номинала ± толеранција) — на
+иста оска 0–35%%. | For every original strain — how many new names its batches were renamed
+into, and per new name: the tested values (dots), <b style="color:#8A6D14">the bracket the
+master document suggests</b> (amber) versus <b style="color:#1E8449">our proposed grade</b>
+(green, nominal ± tolerance), on one 0–35%% axis.</p>
 %s</section>
 
 <section><h2>Залиха Т1/Т2/Т3 <span>| Stock — предложени класи по серија</span></h2>
@@ -1091,10 +967,9 @@ Yellow rows: no certificate on file — declared value used; test before declari
 
 <footer><div class="wrap">
 <b>Потекло | Provenance</b>
-<span>Корпус: %d резултати од регистарот на eCoA (77 серии, %d сорти) + %d употребливи
-стабилносни резултати; сите вредности проверени во живо на изворот ImB_QC_COAs
-(4 134 пасуси). | Corpus: %d register results + %d usable stability results; all values
-live-verified against the ImB_QC_COAs source (4,134 passages).</span>
+<span>Корпус: %d резултати од регистарот на eCoA (77 серии, %d сорти); сите вредности
+проверени во живо на изворот ImB_QC_COAs (4 134 пасуси). | Corpus: %d register results;
+all values live-verified against the ImB_QC_COAs source (4,134 passages).</span>
 <span>Датасет и обработка | Dataset &amp; build: deliverables/potency_study/
 (potency_dataset.json · build_potency_dataset.py · build_potency_html.py) —
 летта-stack. Резиме запишано во споделената меморија на хостот (агент
@@ -1111,10 +986,9 @@ b.addEventListener('click',function(){
    '◐ Темна тема | Dark theme':'◐ Посветла тема | Lighter theme';});
 </script>
 </body></html>
-""" % (CSS, d["n_results"] + n_stab_usable, d["n_strains"], d["n_batches"], n_stab_usable,
-       nav, single_batch_note, stab_table(), strain_cards(), renames_section(), stock_table(),
-       final_ranges(),
-       d["n_results"], d["n_strains"], n_stab_usable, d["n_results"], n_stab_usable)
+""" % (CSS, d["n_results"], d["n_strains"], d["n_batches"],
+       nav, strain_cards(), renames_section(), stock_table(), final_ranges(),
+       d["n_results"], d["n_strains"], d["n_results"])
 
 out = os.path.join(HERE, "Potency_Atlas.html")
 open(out, "w", encoding="utf-8").write(HTML)

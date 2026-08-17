@@ -531,22 +531,17 @@ print("Portfolio Master rows: %d" % len(pm))
 # ===================================================== Atlas Grades — Original
 ws = wb.create_sheet("Atlas Grades — Original")
 ws.sheet_view.showGridLines = False
-ncols = 10
+ncols = 9
 r0 = title_block(ws, "Атлас — предложени класи по оригинално име",
                   "Atlas — Proposed Grades by Original Name",
                   "Класите на Атласот на потенција (номинала ± толеранција), директно од "
-                  "potency_dataset.json. Секоја серија ја носи декларацијата на својата класа. "
-                  "Класа со само 1 тестирана серија нема статистичка основа за D+U прозорецот, "
-                  "па наместо тоа се декларира со фиксна политика: номинала ± 10% од номиналата.",
+                  "potency_dataset.json. Секоја серија ја носи декларацијата на својата класа.",
                   "The Potency Atlas's grades (nominal ± tolerance), straight from "
-                  "potency_dataset.json. Every batch carries its tier's declaration. A tier "
-                  "backed by only 1 tested batch has no statistical basis for the D+U window, "
-                  "so it is declared instead by a flat policy: nominal ± 10% of the nominal.",
+                  "potency_dataset.json. Every batch carries its tier's declaration.",
                   ncols)
 headers = ["Сорта | Strain", "Класа | Tier", "Номинала % | Nominal %", "Толеранција % | Tolerance %",
            "Опсег — долно | Range — low", "Опсег — горно | Range — high",
-           "Бр. серии | # Batches", "Серии | Batches", "Основа | Basis",
-           "Основа на толеранцијата | Tolerance basis"]
+           "Бр. серии | # Batches", "Серии | Batches", "Основа | Basis"]
 for i, h in enumerate(headers, 1):
     ws.cell(row=r0, column=i, value=h)
 style_header(ws, r0, ncols)
@@ -560,40 +555,33 @@ for s in sorted(d["merged_ranges"]):
         basis = ("ДЕФИНИТИВНО | DEFINITIVE"
                  if any(norm_b(bt) in tested_batches for bt in t["batches"])
                  else "ПРОВИЗОРНО | PROVISIONAL")
-        tol_basis = ("±10% политика (n=1) | ±10% policy (n=1)" if t.get("single_batch")
-                     else ("D+U, ограничено на ±10% | D+U, capped at ±10%"
-                           if t.get("capped") else "D+U статистика | D+U statistical"))
         vals = [s, "W-%d" % ti, t["nominal"], t["tol"], t["range"][0], t["range"][1],
-                len(t["batches"]), ", ".join(t["batches"]), basis, tol_basis]
+                len(t["batches"]), ", ".join(t["batches"]), basis]
         for c, v in enumerate(vals, 1):
             ws.cell(row=row, column=c, value=v)
         zebra(ws, row, ncols, i % 2 == 0)
         i += 1
         row += 1
 ws.freeze_panes = ws.cell(row=r0 + 1, column=1)
-autosize(ws, [20, 8, 12, 14, 13, 13, 11, 40, 22, 26])
+autosize(ws, [20, 8, 12, 14, 13, 13, 11, 40, 22])
 print("Atlas Grades — Original: %d rows" % (row - r0 - 1))
 
 # ====================================================== Atlas Grades — Renamed
 ws = wb.create_sheet("Atlas Grades — Renamed")
 ws.sheet_view.showGridLines = False
-ncols = 11
+ncols = 10
 r0 = title_block(ws, "Атлас — предложени класи по ново име",
                   "Atlas — Proposed Grades by New Name",
                   "Истите докажани опсези, преклучирани по НОВОТО спецификациско име "
-                  "(01_Portfolio_Master). Пресметката е идентична со finalRangesRenamed() "
-                  "во build_potency_html.py — вкрстено проверена: 36 имиња, 31 дефинитивно, "
-                  "5 провизорно, 0 без сидро. Класа со само 1 тестирана серија: номинала ± 10%.",
+                  "(01_Portfolio_Master). Пресметката е идентична со финалната табела на "
+                  "Атласот.",
                   "The same evidenced ranges, re-keyed to the NEW specification name "
-                  "(01_Portfolio_Master). Computation is identical to finalRangesRenamed() in "
-                  "build_potency_html.py — cross-checked: 36 names, 31 definitive, 5 "
-                  "provisional, 0 without an anchor. A tier with only 1 tested batch: "
-                  "nominal ± 10%.", ncols)
+                  "(01_Portfolio_Master). Computation is identical to the Atlas's final "
+                  "board.", ncols)
 headers = ["Ново име | New Strain Name", "Класа | Tier", "Номинала % | Nominal %",
            "Толеранција % | Tolerance %", "Опсег — долно | Range — low",
            "Опсег — горно | Range — high", "Бр. серии | # Batches", "Серии | Batches",
-           "Основа | Basis", "Основа на толеранцијата | Tolerance basis",
-           "Оригинално(и) име(иња) | Original name(s)"]
+           "Основа | Basis", "Оригинално(и) име(иња) | Original name(s)"]
 for i, h in enumerate(headers, 1):
     ws.cell(row=r0, column=i, value=h)
 style_header(ws, r0, ncols)
@@ -605,7 +593,7 @@ for neu in sorted(renamed_tiers):
                               if (rw.get("neu") or "").strip() == neu})) or "—"
     tiers = renamed_tiers[neu]
     if not tiers:
-        vals = [neu, "—", None, None, None, None, 0, "—", "БЕЗ СИДРО | NO ANCHOR", "—", origs]
+        vals = [neu, "—", None, None, None, None, 0, "—", "БЕЗ СИДРО | NO ANCHOR", origs]
         for c, v in enumerate(vals, 1):
             ws.cell(row=row, column=c, value=v)
         zebra(ws, row, ncols, i % 2 == 0)
@@ -615,18 +603,15 @@ for neu in sorted(renamed_tiers):
     for ti, t in enumerate(tiers, 1):
         basis = ("ДЕФИНИТИВНО | DEFINITIVE" if any(t["tested"])
                  else "ПРОВИЗОРНО | PROVISIONAL")
-        tol_basis = ("±10% политика (n=1) | ±10% policy (n=1)" if t.get("single_batch")
-                     else ("D+U, ограничено на ±10% | D+U, capped at ±10%"
-                           if t.get("capped") else "D+U статистика | D+U statistical"))
         vals = [neu, "W-%d" % ti, t["nominal"], t["tol"], t["lo"], t["hi"],
-                len(t["batches"]), ", ".join(t["batches"]), basis, tol_basis, origs]
+                len(t["batches"]), ", ".join(t["batches"]), basis, origs]
         for c, v in enumerate(vals, 1):
             ws.cell(row=row, column=c, value=v)
         zebra(ws, row, ncols, i % 2 == 0)
         i += 1
         row += 1
 ws.freeze_panes = ws.cell(row=r0 + 1, column=1)
-autosize(ws, [22, 8, 12, 14, 13, 13, 11, 40, 22, 26, 26])
+autosize(ws, [22, 8, 12, 14, 13, 13, 11, 40, 22, 26])
 print("Atlas Grades — Renamed: %d rows" % (row - r0 - 1))
 
 # ======================================================= Potency Test Results

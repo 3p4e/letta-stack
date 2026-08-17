@@ -156,8 +156,9 @@ def main():
     slug = {}
     for i, (s, st) in enumerate(sorted(d["stats"].items()), 1):
         fn = "strain_%02d.png" % i
-        stab = [r for r in d["stability"] if r["strain"] == s and r["usable"]]
-        strain_fig(s, st, d["merged_ranges"].get(s, []), stab, fn)
+        # stability points removed from the delivered figures per owner
+        # instruction (degradation-evidence section dropped from the documents)
+        strain_fig(s, st, d["merged_ranges"].get(s, []), [], fn)
         slug[s] = fn
     overview()
     json.dump(slug, open(os.path.join(FIGDIR, "index.json"), "w", encoding="utf-8"),

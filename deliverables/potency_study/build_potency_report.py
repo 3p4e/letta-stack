@@ -40,11 +40,9 @@ pr.cover_page(
       "result ever tested, all batches, per strain + proposed new grade ranges for the "
       "T1/T2/T3 stock"),
      ("Корпус | Corpus",
-      "%d резултати од регистарот (77 серии, %d сорти) + %d употребливи резултати од "
-      "студијата на стабилност (1 ред одбиен како дефектен) | %d register results "
-      "(77 batches, %d strains) + %d usable stability results (1 row rejected as defective)"
-      % (d["n_results"], d["n_strains"], n_stab_usable,
-         d["n_results"], d["n_strains"], n_stab_usable)),
+      "%d резултати од регистарот на сертификати (77 серии, %d сорти) | "
+      "%d certificate-register results (77 batches, %d strains)"
+      % (d["n_results"], d["n_strains"], d["n_results"], d["n_strains"])),
      ("Верификација | Verification",
       "Жива проверка на Letta-базата: 4.134 пасуси скенирани, сите вредности потврдени "
       "на изворниот систем | Live Letta knowledgebase sweep: 4,134 passages scanned, "
@@ -120,54 +118,22 @@ def table(headers, rows, widths, fills=None, hdr_repeat=True):
 pr.chapter(doc, "1", "РЕЗИМЕ", "Executive Summary")
 para("Оваа студија ги собира на едно место сите резултати за Вкупен Δ⁹-THC што некогаш се "
      "тестирани за нашите серии — %d резултати од регистарот на сертификати (77 серии, %d "
-     "сорти) и %d употребливи резултати од студијата на стабилност за Grape Pie — и врз нив "
-     "предлага нови опсези по класи за залихата од Траншите 1, 2 и 3. | This study brings "
-     "every Total Δ⁹-THC result ever tested into one place — %d certificate-register results "
-     "(77 batches, %d strains) plus %d usable Grape Pie stability results — and proposes new "
-     "grade ranges for the Tranche 1/2/3 stock on top of them."
-     % (d["n_results"], d["n_strains"], n_stab_usable,
-        d["n_results"], d["n_strains"], n_stab_usable), 10.5)
-para("Клучни наоди | Key findings:", 10, bold=True, before=6)
-for mk, en in [
-    ("На складишни услови (25°C/60%RH) стабилносните резултати НЕ покажуваат опаѓање на "
-     "Вкупен Δ⁹-THC во текот на 3–9 месеци — движењата се во рамки на варијансата од "
-     "земање мостри и мерење.",
-     "At warehouse conditions (25°C/60%RH) the stability results show NO Total Δ⁹-THC "
-     "decline over 3–9 months — movements sit inside sampling/measurement variance."),
-    ("Топлината, а не времето, е вистинскиот двигател на загубата: забрзаните краци на "
-     "40°C/75%RH паѓаат на 13,16–17,05% со CBN од 2,05–2,35%.",
-     "Heat, not time, drives the loss: the 40°C/75%RH accelerated arms collapse to "
-     "13.16–17.05% with CBN at 2.05–2.35%."),
-    ("Најголемиот ризик серијата да „испадне“ од класата не е деградацијата, туку "
-     "варијансата меѓу мерења (±1,5–2,5%) — новите опсези мора да ја впијат и неа.",
-     "The biggest risk of a batch falling out of grade is not degradation but "
-     "between-measurement variance (±1.5–2.5%) — the new ranges must absorb it too."),
-    ("Предложените опсези гарантираат: и денешно повторно мерење, и мерење по уште една "
-     "година складирање, остануваат внатре во декларираната класа и внатре во "
-     "критериумите за прифатливост.",
-     "The proposed ranges guarantee: a remeasure today, or after a further year of "
-     "storage, still reads inside the declared grade and inside the acceptance criteria.")]:
-    para("• %s | %s" % (mk, en), 9.3, "37474F", after=1)
+     "сорти) — и врз нив предлага нови опсези по класи (номинала ± толеранција) за залихата "
+     "од Траншите 1, 2 и 3. | This study brings every Total Δ⁹-THC result ever tested into "
+     "one place — %d certificate-register results (77 batches, %d strains) — and proposes "
+     "new grade ranges (nominal ± tolerance) for the Tranche 1/2/3 stock on top of them."
+     % (d["n_results"], d["n_strains"], d["n_results"], d["n_strains"]), 10.5)
 
 # ---------- 2. Data & verification ----------
 pr.chapter(doc, "2", "ПОДАТОЦИ И ВЕРИФИКАЦИЈА", "Data & Verification")
+_sweep = d["verification"]["host_sweep"].split("; 9 stability")[0]
 para("Корпусот е компајлиран од регистарот на eCoA сертификати и потоа проверен во живо на "
-     "Letta-базата на знаење (ImB_QC_COAs): %s. Дефектниот ред од ППК26037 (18,62 — "
-     "неуспешна масена рамнотежа, обележан во изворот како PP-QC-ERR-002) е задржан во "
-     "податоците, но исклучен од секоја статистика. | Corpus compiled from the eCoA register "
-     "and live-verified against the Letta knowledgebase: %s. The defective ППК26037 row "
-     "(18.62 — failed mass balance, flagged PP-QC-ERR-002 in the source) is retained in the "
-     "data but excluded from all statistics."
-     % (d["verification"]["host_sweep"], d["verification"]["host_sweep"]), 9)
+     "Letta-базата на знаење (ImB_QC_COAs): %s. | Corpus compiled from the eCoA register "
+     "and live-verified against the Letta knowledgebase: %s." % (_sweep, _sweep), 9)
 table(["Слој | Layer", "Резултати | Results", "Забелешка | Note"],
       [["Регистар на сертификати | Certificate register", str(d["n_results"]),
         "77 серии, %d сорти; секоја вредност препишана дословно | 77 batches, %d strains; "
-        "every value transcribed verbatim" % (d["n_strains"], d["n_strains"])],
-       ["Студија на стабилност (Grape Pie) | Stability study", "9",
-        "ППК26032–26037 + ППК26057–26059; 8 употребливи + 1 дефектен | 8 usable + 1 defective"],
-       ["Вкупно во студијата | Total in study", str(d["n_results"] + 8),
-        "стабилносните 40°C краци се доказ за деградација, не состојба на залиха | "
-        "40°C arms are degradation evidence, not inventory state"]],
+        "every value transcribed verbatim" % (d["n_strains"], d["n_strains"])]],
       [6.0, 3.0, 8.6])
 
 # ---------- 3. Per-strain statistics ----------
@@ -190,91 +156,18 @@ para("CI е интервал на доверба за средната вред�
      "Results include repeat measurements of the same batches: the statistics describe the "
      "population of TESTED RESULTS, not independent batches.", 8, "4A5B6C", italic=True)
 
-# ---------- 4. Degradation evidence ----------
-pr.chapter(doc, "4", "ДОКАЗИ ЗА ДЕГРАДАЦИЈА", "Degradation Evidence")
-para("Студија на стабилност (Grape Pie, UKIM-CNP; серии P050022=GP0824_02, "
-     "P050072=GP0824_03, P050202=GP062501): | Stability study (Grape Pie, UKIM-CNP):", 9.5, bold=True)
-stab_rows = []
-stab_fills = []
-for r in d["stability"]:
-    note = r.get("note", "")
-    stab_rows.append([r["report"], r["batch"], r["arm"], "M%d" % r["month"],
-                      "%.2f" % r["total_thc"], "%.2f" % r["cbn"],
-                      ("ОДБИЕН | REJECTED: " + note) if not r["usable"] else "употреблив | usable"])
-    stab_fills.append(ROSE if not r["usable"] else ("FFFFFF" if len(stab_rows) % 2 else "F4F7FB"))
-table(["Сертификат | Report", "Серија | Batch", "Крак | Arm", "Месец | Month",
-       "Вкупен THC %", "CBN %", "Статус | Status"],
-      stab_rows, [2.4, 2.6, 2.4, 1.6, 2.2, 1.6, 4.8], fills=stab_fills)
-para("Повторени мерења на исти серии (иста лабораторија): | Repeat same-lab measurements:", 9.5,
-     bold=True, before=8)
-rep_rows = [[r["batch"], r["strain"],
-             "%.2f (%s)" % (r["first"], r["first_date"]),
-             "%.2f (%s)" % (r["second"], r["second_date"]),
-             "%+.2f" % r["delta"], r.get("note", "")] for r in d["repeats"]]
-table(["Серија | Batch", "Сорта | Strain", "Прво | First", "Второ | Second", "Δ", "Забелешка | Note"],
-      rep_rows, [2.6, 3.4, 3.2, 3.2, 1.4, 3.8])
-para(d["degradation_note"], 8.6, "37474F", italic=True, before=6)
-para("Заклучок: усвојуваме конзервативен додаток за деградација D = 1,5 %апс./година — "
-     "поголем од секое докажано 12-месечно опаѓање на складишни услови. | Conclusion: we "
-     "adopt a conservative degradation allowance D = 1.5 %abs/year — larger than any "
-     "evidenced 12-month decline at warehouse conditions.", 9.5, bold=True, before=4)
-
-# ---------- 5. Range methodology ----------
-pr.chapter(doc, "5", "МЕТОДОЛОГИЈА НА ОПСЕЗИТЕ", "Range Methodology")
-para("Досегашна методологија | Methodology to date: " + d["old_methodology"], 9, "37474F")
-para("Нова методологија (оваа студија) | New methodology (this study):", 9.5, bold=True, before=6)
-for mk, en in [
-    ("Сидро по серија = најновиот верификуван резултат (ретест каде постои).",
-     "Per-batch anchor = the most recent verified result (retest where one exists)."),
-    ("Потребен опсег: долна граница = сидро − D − U(сидро), никогаш под 5,00% (критериум за "
-     "прифатливост при ослободување); горна граница = сидро + max(1,0, U(сидро)).",
-     "Required window: lower = anchor − D − U(anchor), never below 5.00% (the release "
-     "acceptance floor); upper = anchor + max(1.0, U(anchor))."),
-    ("Класите по сорта се групираат лакомо по растечки сидра врз основа на потребниот опсег, "
-     "со максимална ширина 6,5 процентни поени; класите СМЕЕ да се преклопуваат — серијата се "
-     "класира поединечно, а дисјунктни класи би го вратиле стариот проблем со прелевање на "
-     "границите.",
-     "Per-strain tiers are greedily clustered on ascending anchors over the required window, "
-     "max width 6.5 points; tiers MAY overlap — batches are graded individually, and forcing "
-     "disjoint tiers would recreate the old boundary-flip problem."),
-    ("Потребниот опсег потоа се ДЕКЛАРИРА како НОМИНАЛА ± ТОЛЕРАНЦИЈА: номиналата е секогаш "
-     "цел број (18,00%, никогаш 18,50%) — истата форма во која важечките QCSP 001 "
-     "спецификации веќе ја запишуваат потенцијата, но со цел-број номинала. ПЛАФОН: "
-     "толеранцијата никогаш не надминува 10% од номиналата, за сите серии и сите сорти. "
-     "Серии се групираат во иста класа само додека постои целоброjна номинала што ги држи "
-     "сите нивни сидра внатре во ±10% — секоја серија денес е внатре во својата декларирана "
-     "класа. Онаму каде што D+U прозорецот бара толеранција над 10%, важи плафонот и "
-     "едногодишната гаранција НЕ важи за таа класа. Класа со само 1 тестирана серија се "
-     "декларира директно номинала ± 10%. Секоја серија ја носи декларацијата на својата "
-     "класа — никогаш посебна бројка.",
-     "The required window is then DECLARED as NOMINAL ± TOLERANCE: the nominal is always a "
-     "whole number (18.00%, never 18.50%) — the same form the issued QCSP 001 specifications "
-     "already use to record potency, but with a whole-number nominal. CEILING: the tolerance "
-     "never exceeds 10% of the nominal, for all batches and all strains. Batches share a tier "
-     "only while a whole-number nominal exists that keeps all their anchors within ±10% — "
-     "every batch reads inside its own declared grade today. Wherever the D+U window would "
-     "need a tolerance above 10%, the ceiling wins and the one-year guarantee does NOT hold "
-     "for that tier. A tier with only 1 tested batch is declared directly as nominal ± 10%. "
-     "Every batch carries its tier's declaration — never a separate figure."),
-    ("U = мерна неодреденост ≈ 6,2% од вредноста (k=2, како на самите сертификати); "
-     "D = 1,5 %апс./година (Поглавје 4).",
-     "U = measurement uncertainty ≈ 6.2% of value (k=2, as stated on the certificates); "
-     "D = 1.5 %abs/year (Chapter 4).")]:
-    para("• %s | %s" % (mk, en), 9.3, "37474F", after=1)
-
-# ---------- 6. Per-strain distributions ----------
-pr.chapter(doc, "6", "ДИСТРИБУЦИИ ПО СОРТИ", "Per-Strain Distributions")
+# ---------- 4. Per-strain distributions ----------
+pr.chapter(doc, "4", "ДИСТРИБУЦИИ ПО СОРТИ", "Per-Strain Distributions")
 para("Оска 0–35% Вкупен Δ⁹-THC; секој резултат носи зона од ±1,5% (сините појаси — "
      "натрупувањето е визуелна густина); крива на дистрибуција за n≥3; средна вредност "
      "(златна линија) и 95% CI (златна зона); предложени класи W-x (зелено); старите "
-     "стандардни граници (испрекинато). За Grape Pie: стабилносни точки — квадрати 25°C, "
-     "триаголници 40°C. | 0–35% axis; each result carries a ±1.5% zone (blue bands — "
-     "stacking is visual density); distribution curve for n≥3; mean (gold line) and 95% CI "
-     "(gold zone); proposed W-x tiers (green); old standard boundaries (dashed). Grape Pie "
-     "also shows the stability points — squares 25°C, triangles 40°C.", 8.6, "4A5B6C", italic=True)
+     "стандардни граници (испрекинато). | 0–35% axis; each result carries a ±1.5% zone "
+     "(blue bands — stacking is visual density); distribution curve for n≥3; mean (gold "
+     "line) and 95% CI (gold zone); proposed W-x tiers (green); old standard boundaries "
+     "(dashed).", 8.6, "4A5B6C", italic=True)
 for s in sorted(d["stats"]):
     st = d["stats"][s]
-    pr.subsec(doc, "6.%d" % (sorted(d["stats"]).index(s) + 1), s, "")
+    pr.subsec(doc, "4.%d" % (sorted(d["stats"]).index(s) + 1), s, "")
     pr.figure(doc, os.path.join(D, "figures", figidx[s]), None, None, width_cm=17.2)
     tiers = d["merged_ranges"].get(s, [])
     if tiers:
@@ -290,13 +183,13 @@ for s in sorted(d["stats"]):
         para("Нема серии на залиха за оваа сорта во Т1/Т2/Т3. | No T1/T2/T3 stock batches "
              "for this strain.", 8.5, "6B7785", italic=True)
 
-# ---------- 7. Stock table ----------
-pr.chapter(doc, "7", "ПРЕДЛОГ-КЛАСИ ЗА ЗАЛИХАТА Т1/Т2/Т3", "Proposed Grades for the T1/T2/T3 Stock")
+# ---------- 5. Stock table ----------
+pr.chapter(doc, "5", "ПРЕДЛОГ-КЛАСИ ЗА ЗАЛИХАТА Т1/Т2/Т3", "Proposed Grades for the T1/T2/T3 Stock")
 para("Сидро = најнов верификуван резултат; каде нема ниту еден сертификат, основата е "
-     "декларираната вредност (означено). Просторот надолу е гаранцијата против деградација "
-     "и мерна варијанса. | Anchor = latest verified result; where no certificate exists the "
-     "declared value is the basis (flagged). The downward headroom is the guarantee against "
-     "degradation and measurement variance.", 8.6, "4A5B6C", italic=True)
+     "декларираната вредност (означено). Простор надолу = растојание од сидрото до долната "
+     "граница на класата. | Anchor = latest verified result; where no certificate exists the "
+     "declared value is the basis (flagged). Downward headroom = distance from the anchor to "
+     "the grade floor.", 8.6, "4A5B6C", italic=True)
 stock_rows = []
 stock_fills = []
 for b in sorted(d["stock"], key=lambda x: (x["tranche"], x["strain"], x["batch"])):
@@ -320,8 +213,8 @@ para("Жолти редови: без ниту еден сертификат н�
      "certificate on file — declared value used as basis; test these batches before formally "
      "declaring a grade.", 8, "4A5B6C", italic=True)
 
-# ---------- 8. Overview annex ----------
-pr.chapter(doc, "8", "АНЕКС — ПРЕГЛЕД НА СИТЕ СОРТИ", "Annex — All-Strain Overview")
+# ---------- 6. Overview annex ----------
+pr.chapter(doc, "6", "АНЕКС — ПРЕГЛЕД НА СИТЕ СОРТИ", "Annex — All-Strain Overview")
 pr.figure(doc, os.path.join(D, "figures", "overview.png"),
           "Сите сорти на една оска 0–35%: резултати, средни вредности, предложени класи",
           "All strains on one 0–35% axis: results, means, proposed tiers")

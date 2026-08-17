@@ -398,8 +398,11 @@ def build():
         repeats=repeats, stats=stats, stock=stock, merged_ranges=merged,
         design=dict(D_year=D_YEAR, U_ratio=U_RATIO,
                     rule="Required window: lower = anchor − D − U(anchor), floored at 5.00 "
-                         "(release A.C.); upper = anchor + max(1.0, U(anchor)); merged per "
-                         "strain while the window stays ≤ 6.5 points wide. "
+                         "(release A.C.); upper = anchor + max(1.0, U(anchor)). Clustering: "
+                         "batches share a tier only while a whole-number nominal exists that "
+                         "keeps every anchor in the tier within ±10% of it (cap_feasible — "
+                         "integer feasibility of [max(a)/1.1, min(a)/0.9]); the old ≤6.5-point "
+                         "window rule is superseded by this cap-driven test. "
                          "The window is then DECLARED as NOMINAL ± TOLERANCE, in the same "
                          "nominal-±-tolerance FORM the issued QCSP 001 specifications already "
                          "use — but here the nominal is fixed to a whole number (18.00 %, "
