@@ -136,12 +136,28 @@ def solve_chain(nominals, needs, caps, gap=MIN_GAP):
 
     tol_i + tol_{i+1} = nominal_{i+1} - nominal_i - gap  for every adjacent
     pair is a linear chain with one degree of freedom (the ladder can
-    "slide"); solved by expressing every tol_i in terms of tol_0 via the
-    alternating recurrence, intersecting each tier's own [need, cap] bound
-    back into a feasible range for tol_0, then picking its midpoint so no
-    single tier is arbitrarily favoured. Returns [tol_1..tol_k] or None if
-    no fully-symmetric solution exists for this exact nominal sequence
-    (the caller then tries a different sequence — see build_strain_tiers)."""
+    "slide"); every tol_i is expressed in terms of tol_0 via the alternating
+    recurrence, and each tier's own [need, cap] bound is intersected back
+    into a feasible range for tol_0.
+
+    Within that range, tol_0 is chosen so the LAST tier of the segment gets
+    its own full 10% cap whenever that is reachable — nothing constrains a
+    segment's top edge from above, so it should never be squeezed just to
+    "share" a slack that only the interior tiers actually need. Earlier
+    tiers then absorb exactly as much squeeze as contiguity with that fixed
+    top edge forces, never more. (Picking the midpoint of the feasible range
+    instead — the previous approach — needlessly narrowed BOTH edges of a
+    segment even though only an interior tier, if any, is ever structurally
+    forced to give up width; confirmed by hand and by the owner against two
+    real cases: Cash Cow's Pot.-3 and High Pro Amnesia's Pot.-2 both reach
+    their full cap under this rule, not the previous 1.64%/1.64% squeeze.)
+    If the full-cap target for the last tier falls outside what the rest of
+    the chain can support, it clamps to the nearest feasible tol_0 instead —
+    still the most generous top edge the chain allows.
+
+    Returns [tol_1..tol_k] or None if no fully-symmetric solution exists for
+    this exact nominal sequence (the caller then tries a different sequence
+    — see build_strain_tiers)."""
     k = len(nominals)
     if k == 1:
         return [caps[0]] if needs[0] <= caps[0] + 1e-9 else None
@@ -158,7 +174,11 @@ def solve_chain(nominals, needs, caps, gap=MIN_GAP):
         lo_t0, hi_t0 = max(lo_t0, lo_i), min(hi_t0, hi_i)
     if lo_t0 > hi_t0 + 1e-9:
         return None
-    tol0 = min(max(round((lo_t0 + hi_t0) / 2.0, 2), lo_t0), hi_t0)
+    last = k - 1
+    # tol_last = A[last] + sign*tol_0; solve for the tol_0 that makes
+    # tol_last equal caps[last] exactly, then clamp into the feasible range.
+    target = (caps[last] - A[last]) if last % 2 == 0 else (A[last] - caps[last])
+    tol0 = min(max(round(target, 2), lo_t0), hi_t0)
     tols = [tol0]
     for i in range(1, k):
         tols.append(round(D[i - 1] - tols[-1], 2))

@@ -359,7 +359,9 @@ def solve_chain(nominals, needs, caps, gap=MIN_GAP):
         lo_t0, hi_t0 = max(lo_t0, lo_i), min(hi_t0, hi_i)
     if lo_t0 > hi_t0 + 1e-9:
         return None
-    tol0 = min(max(round((lo_t0 + hi_t0) / 2.0, 2), lo_t0), hi_t0)
+    last = k - 1
+    target = (caps[last] - A[last]) if last % 2 == 0 else (A[last] - caps[last])
+    tol0 = min(max(round(target, 2), lo_t0), hi_t0)
     tols = [tol0]
     for i in range(1, k):
         tols.append(round(D[i - 1] - tols[-1], 2))
