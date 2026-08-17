@@ -19,6 +19,7 @@ surface painted explicitly.
 """
 import html
 import json
+import math
 import os
 import re
 
@@ -252,6 +253,11 @@ summary{cursor:pointer;font-weight:600;color:var(--navy);padding:10px 0}
  .flowname{border-right:none;border-bottom:2px solid var(--gold);padding:0 0 8px;min-height:0}}
 #final{scroll-margin-top:64px}
 .fsum{font-size:13px;color:var(--mut);margin-bottom:16px;max-width:88ch}
+.fsum code{font:600 12px var(--mono);color:var(--navy2)}
+.fsubh{margin:30px 0 10px;font-size:16px;font-weight:700;color:var(--navy);
+ border-top:2px solid var(--gold);padding-top:14px}
+.fsubh span{font-weight:400;color:var(--mut);font-size:13.5px}
+.fboard.ren .fname h3{font-size:14px}
 .fboard{background:linear-gradient(160deg,#132B45 0%,var(--navy) 60%,#234B74 100%);
  border-bottom:4px solid var(--gold);padding:8px 22px 18px}
 .frow{display:grid;grid-template-columns:250px 1fr;gap:16px;align-items:center;
@@ -691,7 +697,111 @@ def final_ranges():
             "definitive, %d provisional (declared basis only). Formal adoption remains "
             "with the QCSP specifications through the regular procedure.</div>"
             % (d["n_results"], n_def, n_prov, d["n_results"], n_def, n_prov))
-    return head + '<div class="fboard">' + rows + "</div>"
+    return head + '<div class="fboard">' + rows + "</div>" + final_ranges_renamed()
+
+
+def tiers_from_anchors(items, w_max=6.5):
+    """Same greedy clustering + outward whole-number rounding as the dataset
+    builder, applied to an arbitrary batch set (here: one renamed spec strain).
+    items = [(batch, anchor, tested_bool)] ascending by anchor."""
+    tiers = []
+    cur = None
+    for batch, a, tested in sorted(items, key=lambda x: x[1]):
+        u = U_RATIO * a
+        flo = max(5.0, math.floor(a - D_YEAR - u + 1e-9))
+        cei = math.ceil(a + u - 1e-9)
+        if cur is None or cei - cur["lo"] > w_max:
+            cur = dict(lo=flo, hi=cei, batches=[batch], tested=[tested])
+            tiers.append(cur)
+        else:
+            cur["hi"] = max(cur["hi"], cei)
+            cur["batches"].append(batch)
+            cur["tested"].append(tested)
+    return tiers
+
+
+def final_ranges_renamed():
+    """The same definitive ranges, re-keyed to the NEW specification strain
+    names of 01_Portfolio_Master — the names that go on the iCoA/CoQ and the
+    label, so the warehouse can be certified without a manual name lookup."""
+    anchors = {}
+    for b in d["stock"]:
+        k = norm_b(b["batch"])
+        a = b["anchor"] if b["anchor"] is not None else b["declared"]
+        if a is not None:
+            anchors[k] = (a, b["anchor"] is not None)
+
+    groups = {}
+    for r in PM:
+        neu = (r.get("neu") or "").strip()
+        if not neu:
+            continue
+        groups.setdefault(neu, []).append(r)
+
+    rows = ""
+    n_def = n_prov = n_nodata = 0
+    for neu in sorted(groups):
+        recs = groups[neu]
+        items = []
+        for r in recs:
+            got = anchors.get(norm_b(r["batch"]))
+            if got:
+                items.append((r["batch"], got[0], got[1]))
+        origins = sorted({(r.get("original") or "").strip() for r in recs
+                          if (r.get("original") or "").strip()})
+        renamed = [r for r in recs if (r.get("original") or "").strip() != neu]
+        brands = sorted({(r.get("brand") or "").strip() for r in recs if r.get("brand")})
+        if not items:
+            n_nodata += 1
+            pills = ('<span class="fpill prov">нема анкер | no anchor'
+                     "<small>%d серии | batches</small></span>" % len(recs))
+            badge = ('<span class="fbadge prov">БЕЗ ПОДАТОЦИ | NO DATA</span>')
+        else:
+            tiers = tiers_from_anchors(items)
+            any_tested = any(any(t["tested"]) for t in tiers)
+            if any_tested:
+                n_def += 1
+            else:
+                n_prov += 1
+            pills = ""
+            for i, t in enumerate(tiers):
+                prov = not any(t["tested"])
+                pills += ('<span class="fpill%s" title="%s">W-%d&nbsp;&nbsp;%.1f – %.1f'
+                          '<small>%d %s</small></span>'
+                          % (" prov" if prov else "", esc(", ".join(t["batches"])), i + 1,
+                             t["lo"], t["hi"], len(t["batches"]),
+                             "серии | batches" if len(t["batches"]) != 1 else "серија | batch"))
+            badge = ('<span class="fbadge prov">ПРОВИЗОРНО — само декларирана основа | '
+                     "PROVISIONAL — declared basis only</span>") if not any_tested else \
+                    '<span class="fbadge">ДЕФИНИТИВНО | DEFINITIVE</span>'
+        sub = "од | from %s" % esc(", ".join(origins) or "—")
+        if renamed:
+            sub += " · %d преименувани | renamed" % len(renamed)
+        if brands:
+            sub += " · " + esc("/".join(brands))
+        rows += ('<div class="frow"><div class="fname"><h3>%s</h3>'
+                 '<span class="fstat">%s</span>%s</div><div class="fpills">%s</div></div>'
+                 % (esc(neu), sub, badge, pills))
+
+    head = ('<h3 class="fsubh">Истите опсези, по НОВИТЕ имиња на спецификации '
+            '<span>| The same ranges, keyed to the NEW specification names</span></h3>'
+            '<div class="fsum">Спецификациските имиња од листот <code>01_Portfolio_Master</code> '
+            "(%d серии, %d преименувања, %d различни нови имиња) се она што стои на iCoA, "
+            "на CoQ и на етикетата. Табелата подолу ги дава истите докажани опсези, но "
+            "групирани по новото име — за да може магацинот да се сертифицира без рачно "
+            "барање кое старо име одговара на кое ново: %d дефинитивно, %d провизорно, "
+            "%d без анкер. | The specification names in the <code>01_Portfolio_Master</code> "
+            "sheet (%d batches, %d renames, %d distinct new names) are what appears on the "
+            "iCoA, the CoQ and the label. The board below carries the same evidenced ranges "
+            "grouped by the new name, so the warehouse can be certified without a manual "
+            "old-to-new lookup: %d definitive, %d provisional, %d without an anchor.</div>"
+            % (len(PM), sum(1 for r in PM if (r.get("original") or "").strip()
+                            != (r.get("neu") or "").strip()), len(groups),
+               n_def, n_prov, n_nodata,
+               len(PM), sum(1 for r in PM if (r.get("original") or "").strip()
+                            != (r.get("neu") or "").strip()), len(groups),
+               n_def, n_prov, n_nodata))
+    return head + '<div class="fboard ren">' + rows + "</div>"
 
 
 def stab_table():

@@ -1412,10 +1412,10 @@
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    22.0,
-    26.5
+    21.0,
+    27.0
    ],
-   "headroom_down": 3.01,
+   "headroom_down": 4.01,
    "basis": "anchor",
    "tier": 3
   },
@@ -1430,7 +1430,7 @@
    "anchor_lab": "FARM",
    "proposed": [
     21.0,
-    25.5
+    26.0
    ],
    "headroom_down": 3.05,
    "basis": "anchor",
@@ -1447,7 +1447,7 @@
    "anchor_lab": "FARM",
    "proposed": [
     16.0,
-    20.0
+    21.0
    ],
    "headroom_down": 2.91,
    "basis": "anchor",
@@ -1463,10 +1463,10 @@
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    15.5,
-    19.5
+    15.0,
+    20.0
    ],
-   "headroom_down": 2.79,
+   "headroom_down": 3.29,
    "basis": "anchor",
    "tier": 2
   },
@@ -1498,7 +1498,7 @@
    "anchor_lab": "FARM",
    "proposed": [
     16.0,
-    20.0
+    21.0
    ],
    "headroom_down": 2.86,
    "basis": "anchor",
@@ -1515,7 +1515,7 @@
    "anchor_lab": "FARM",
    "proposed": [
     14.0,
-    17.5
+    18.0
    ],
    "headroom_down": 2.7,
    "basis": "anchor",
@@ -1548,10 +1548,10 @@
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    16.0,
-    19.5
+    15.0,
+    20.0
    ],
-   "headroom_down": 2.52,
+   "headroom_down": 3.52,
    "basis": "anchor",
    "tier": 2
   },
@@ -1565,12 +1565,12 @@
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    19.5,
-    24.0
+    19.0,
+    25.0
    ],
-   "headroom_down": 3.11,
+   "headroom_down": 3.61,
    "basis": "anchor",
-   "tier": 3
+   "tier": 4
   },
   {
    "tranche": "1",
@@ -1583,7 +1583,7 @@
    "anchor_lab": "FARM",
    "proposed": [
     13.0,
-    16.5
+    17.0
    ],
    "headroom_down": 2.7,
    "basis": "anchor",
@@ -1599,10 +1599,10 @@
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    14.5,
-    18.5
+    14.0,
+    19.0
    ],
-   "headroom_down": 2.81,
+   "headroom_down": 3.31,
    "basis": "anchor",
    "tier": 1
   },
@@ -1616,10 +1616,10 @@
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    19.0,
+    18.0,
     23.0
    ],
-   "headroom_down": 2.61,
+   "headroom_down": 3.61,
    "basis": "anchor",
    "tier": 2
   },
@@ -1633,12 +1633,12 @@
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    17.5,
-    21.5
+    17.0,
+    22.0
    ],
-   "headroom_down": 2.82,
+   "headroom_down": 3.32,
    "basis": "anchor",
-   "tier": 2
+   "tier": 3
   },
   {
    "tranche": "1",
@@ -1650,10 +1650,10 @@
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    14.5,
-    18.5
+    14.0,
+    19.0
    ],
-   "headroom_down": 2.82,
+   "headroom_down": 3.32,
    "basis": "anchor",
    "tier": 1
   },
@@ -1667,12 +1667,12 @@
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    17.5,
-    21.5
+    17.0,
+    22.0
    ],
-   "headroom_down": 2.53,
+   "headroom_down": 3.03,
    "basis": "anchor",
-   "tier": 3
+   "tier": 4
   },
   {
    "tranche": "1",
@@ -1684,10 +1684,10 @@
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    15.5,
-    19.0
+    15.0,
+    20.0
    ],
-   "headroom_down": 2.54,
+   "headroom_down": 3.04,
    "basis": "anchor",
    "tier": 3
   },
@@ -1701,10 +1701,10 @@
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    6.0,
+    5.0,
     9.0
    ],
-   "headroom_down": 1.91,
+   "headroom_down": 2.91,
    "basis": "anchor",
    "tier": 1
   },
@@ -1718,12 +1718,12 @@
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    10.0,
-    13.0
+    9.0,
+    14.0
    ],
-   "headroom_down": 2.25,
+   "headroom_down": 3.25,
    "basis": "anchor",
-   "tier": 1
+   "tier": 2
   },
   {
    "tranche": "1",
@@ -1752,10 +1752,10 @@
    "anchor_date": null,
    "anchor_lab": null,
    "proposed": [
-    10.5,
+    10.0,
     14.0
    ],
-   "headroom_down": 2.41,
+   "headroom_down": 2.91,
    "basis": "declared (no assay on file)",
    "tier": 1
   },
@@ -1769,10 +1769,10 @@
    "anchor_date": "28.11.2025",
    "anchor_lab": "PP",
    "proposed": [
-    17.5,
-    21.5
+    17.0,
+    22.0
    ],
-   "headroom_down": 2.89,
+   "headroom_down": 3.39,
    "basis": "anchor",
    "tier": 1
   },
@@ -1786,10 +1786,10 @@
    "anchor_date": "23.10.2025",
    "anchor_lab": "UKIM",
    "proposed": [
-    18.5,
+    18.0,
     23.0
    ],
-   "headroom_down": 3.01,
+   "headroom_down": 3.51,
    "basis": "anchor",
    "tier": 3
   },
@@ -1803,12 +1803,12 @@
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    22.0,
-    26.5
+    21.0,
+    27.0
    ],
-   "headroom_down": 2.96,
+   "headroom_down": 3.96,
    "basis": "anchor",
-   "tier": 4
+   "tier": 5
   },
   {
    "tranche": "2",
@@ -1820,10 +1820,10 @@
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    19.5,
-    23.5
+    19.0,
+    24.0
    ],
-   "headroom_down": 2.8,
+   "headroom_down": 3.3,
    "basis": "anchor",
    "tier": 3
   },
@@ -1838,7 +1838,7 @@
    "anchor_lab": null,
    "proposed": [
     10.0,
-    13.5
+    14.0
    ],
    "headroom_down": 2.32,
    "basis": "declared (no assay on file)",
@@ -1854,10 +1854,10 @@
    "anchor_date": null,
    "anchor_lab": null,
    "proposed": [
-    7.5,
+    7.0,
     11.0
    ],
-   "headroom_down": 2.33,
+   "headroom_down": 2.83,
    "basis": "declared (no assay on file)",
    "tier": 1
   },
@@ -1872,7 +1872,7 @@
    "anchor_lab": "UKIM",
    "proposed": [
     6.0,
-    9.0
+    10.0
    ],
    "headroom_down": 2.02,
    "basis": "anchor",
@@ -1888,10 +1888,10 @@
    "anchor_date": "11.05.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    12.5,
-    15.5
+    12.0,
+    16.0
    ],
-   "headroom_down": 2.18,
+   "headroom_down": 2.68,
    "basis": "anchor",
    "tier": 1
   },
@@ -1906,7 +1906,7 @@
    "anchor_lab": "UKIM",
    "proposed": [
     11.0,
-    14.5
+    15.0
    ],
    "headroom_down": 2.34,
    "basis": "anchor",
@@ -1923,11 +1923,11 @@
    "anchor_lab": "UKIM",
    "proposed": [
     17.0,
-    21.0
+    22.0
    ],
    "headroom_down": 2.81,
    "basis": "anchor",
-   "tier": 2
+   "tier": 3
   },
   {
    "tranche": "2",
@@ -1939,12 +1939,12 @@
    "anchor_date": "10.07.2025",
    "anchor_lab": "UKIM",
    "proposed": [
-    22.5,
-    27.0
+    22.0,
+    28.0
    ],
-   "headroom_down": 2.95,
+   "headroom_down": 3.45,
    "basis": "anchor",
-   "tier": 4
+   "tier": 6
   },
   {
    "tranche": "2",
@@ -1956,10 +1956,10 @@
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    18.5,
-    22.5
+    18.0,
+    23.0
    ],
-   "headroom_down": 2.79,
+   "headroom_down": 3.29,
    "basis": "anchor",
    "tier": 3
   },
@@ -1973,12 +1973,12 @@
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    22.5,
-    27.5
+    22.0,
+    28.0
    ],
-   "headroom_down": 3.23,
+   "headroom_down": 3.73,
    "basis": "anchor",
-   "tier": 4
+   "tier": 6
   },
   {
    "tranche": "2",
@@ -1990,10 +1990,10 @@
    "anchor_date": "04.03.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    9.5,
-    12.5
+    9.0,
+    13.0
    ],
-   "headroom_down": 2.03,
+   "headroom_down": 2.53,
    "basis": "anchor",
    "tier": 2
   },
@@ -2007,10 +2007,10 @@
    "anchor_date": "19.09.2025",
    "anchor_lab": "UKIM",
    "proposed": [
-    17.5,
-    21.5
+    17.0,
+    22.0
    ],
-   "headroom_down": 2.89,
+   "headroom_down": 3.39,
    "basis": "anchor",
    "tier": 2
   },
@@ -2025,7 +2025,7 @@
    "anchor_lab": null,
    "proposed": [
     14.0,
-    17.5
+    18.0
    ],
    "headroom_down": 2.71,
    "basis": "declared (no assay on file)",
@@ -2041,12 +2041,12 @@
    "anchor_date": "30.06.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    18.0,
+    17.0,
     22.0
    ],
-   "headroom_down": 2.54,
+   "headroom_down": 3.54,
    "basis": "anchor",
-   "tier": 2
+   "tier": 3
   },
   {
    "tranche": "2",
@@ -2058,10 +2058,10 @@
    "anchor_date": "30.06.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    12.5,
-    16.0
+    12.0,
+    17.0
    ],
-   "headroom_down": 2.66,
+   "headroom_down": 3.16,
    "basis": "anchor",
    "tier": 1
   },
@@ -2075,10 +2075,10 @@
    "anchor_date": "04.03.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    14.5,
-    18.0
+    14.0,
+    19.0
    ],
-   "headroom_down": 2.54,
+   "headroom_down": 3.04,
    "basis": "anchor",
    "tier": 1
   },
@@ -2092,10 +2092,10 @@
    "anchor_date": "28.07.2025",
    "anchor_lab": "UKIM",
    "proposed": [
-    14.5,
+    14.0,
     18.0
    ],
-   "headroom_down": 2.32,
+   "headroom_down": 2.82,
    "basis": "anchor",
    "tier": 1
   },
@@ -2109,10 +2109,10 @@
    "anchor_date": "06.05.2025",
    "anchor_lab": "UKIM",
    "proposed": [
-    13.0,
-    16.5
+    12.0,
+    17.0
    ],
-   "headroom_down": 2.38,
+   "headroom_down": 3.38,
    "basis": "anchor",
    "tier": 2
   },
@@ -2126,10 +2126,10 @@
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    7.5,
-    10.5
+    7.0,
+    11.0
    ],
-   "headroom_down": 1.93,
+   "headroom_down": 2.43,
    "basis": "anchor",
    "tier": 1
   },
@@ -2144,11 +2144,11 @@
    "anchor_lab": "UKIM",
    "proposed": [
     14.0,
-    17.5
+    18.0
    ],
    "headroom_down": 2.55,
    "basis": "anchor",
-   "tier": 2
+   "tier": 3
   },
   {
    "tranche": "2",
@@ -2161,7 +2161,7 @@
    "anchor_lab": "UKIM",
    "proposed": [
     11.0,
-    14.5
+    15.0
    ],
    "headroom_down": 2.33,
    "basis": "anchor",
@@ -2178,7 +2178,7 @@
    "anchor_lab": null,
    "proposed": [
     13.0,
-    16.5
+    17.0
    ],
    "headroom_down": 2.63,
    "basis": "declared (no assay on file)",
@@ -2194,10 +2194,10 @@
    "anchor_date": "11.05.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    14.5,
-    18.0
+    14.0,
+    19.0
    ],
-   "headroom_down": 2.63,
+   "headroom_down": 3.13,
    "basis": "anchor",
    "tier": 1
   },
@@ -2211,10 +2211,10 @@
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    9.0,
+    8.0,
     12.0
    ],
-   "headroom_down": 1.96,
+   "headroom_down": 2.96,
    "basis": "anchor",
    "tier": 1
   },
@@ -2228,10 +2228,10 @@
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    19.0,
-    23.0
+    18.0,
+    24.0
    ],
-   "headroom_down": 2.67,
+   "headroom_down": 3.67,
    "basis": "anchor",
    "tier": 1
   },
@@ -2245,10 +2245,10 @@
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    14.5,
+    14.0,
     18.0
    ],
-   "headroom_down": 2.43,
+   "headroom_down": 2.93,
    "basis": "anchor",
    "tier": 1
   },
@@ -2262,10 +2262,10 @@
    "anchor_date": null,
    "anchor_lab": null,
    "proposed": [
-    20.5,
+    20.0,
     25.0
    ],
-   "headroom_down": 2.92,
+   "headroom_down": 3.42,
    "basis": "declared (no assay on file)",
    "tier": 2
   },
@@ -2279,10 +2279,10 @@
    "anchor_date": "17.09.2025",
    "anchor_lab": "UKIM",
    "proposed": [
-    12.5,
+    12.0,
     16.0
    ],
-   "headroom_down": 2.43,
+   "headroom_down": 2.93,
    "basis": "anchor",
    "tier": 1
   },
@@ -2296,10 +2296,10 @@
    "anchor_date": "28.11.2025",
    "anchor_lab": "UKIM",
    "proposed": [
-    20.5,
-    25.0
+    20.0,
+    26.0
    ],
-   "headroom_down": 3.2,
+   "headroom_down": 3.7,
    "basis": "anchor",
    "tier": 4
   },
@@ -2314,11 +2314,11 @@
    "anchor_lab": "UKIM",
    "proposed": [
     20.0,
-    24.5
+    25.0
    ],
    "headroom_down": 3.0,
    "basis": "anchor",
-   "tier": 3
+   "tier": 4
   },
   {
    "tranche": "3",
@@ -2331,7 +2331,7 @@
    "anchor_lab": "UKIM",
    "proposed": [
     11.0,
-    14.5
+    15.0
    ],
    "headroom_down": 2.35,
    "basis": "anchor",
@@ -2348,7 +2348,7 @@
    "anchor_lab": "UKIM",
    "proposed": [
     18.0,
-    22.0
+    23.0
    ],
    "headroom_down": 2.83,
    "basis": "anchor",
@@ -2364,10 +2364,10 @@
    "anchor_date": "30.06.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    15.5,
-    19.5
+    15.0,
+    20.0
    ],
-   "headroom_down": 2.79,
+   "headroom_down": 3.29,
    "basis": "anchor",
    "tier": 2
   },
@@ -2382,7 +2382,7 @@
    "anchor_lab": "UKIM",
    "proposed": [
     14.0,
-    17.5
+    18.0
    ],
    "headroom_down": 2.69,
    "basis": "anchor",
@@ -2398,10 +2398,10 @@
    "anchor_date": "11.05.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    13.0,
-    16.5
+    12.0,
+    17.0
    ],
-   "headroom_down": 2.35,
+   "headroom_down": 3.35,
    "basis": "anchor",
    "tier": 1
   },
@@ -2415,10 +2415,10 @@
    "anchor_date": "11.05.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    15.5,
-    19.0
+    15.0,
+    20.0
    ],
-   "headroom_down": 2.44,
+   "headroom_down": 2.94,
    "basis": "anchor",
    "tier": 2
   },
@@ -2432,10 +2432,10 @@
    "anchor_date": "22.05.2025",
    "anchor_lab": "UKIM",
    "proposed": [
-    13.5,
+    13.0,
     17.0
    ],
-   "headroom_down": 2.45,
+   "headroom_down": 2.95,
    "basis": "anchor",
    "tier": 1
   },
@@ -2449,12 +2449,12 @@
    "anchor_date": "28.11.2025",
    "anchor_lab": "PP",
    "proposed": [
-    22.0,
-    26.5
+    21.0,
+    27.0
    ],
-   "headroom_down": 2.89,
+   "headroom_down": 3.89,
    "basis": "anchor",
-   "tier": 4
+   "tier": 5
   },
   {
    "tranche": "3",
@@ -2466,10 +2466,10 @@
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    18.5,
-    22.5
+    18.0,
+    23.0
    ],
-   "headroom_down": 2.86,
+   "headroom_down": 3.36,
    "basis": "anchor",
    "tier": 3
   },
@@ -2484,7 +2484,7 @@
    "anchor_lab": null,
    "proposed": [
     5.0,
-    8.0
+    9.0
    ],
    "headroom_down": 2.05,
    "basis": "declared (no assay on file)",
@@ -2500,10 +2500,10 @@
    "anchor_date": "11.05.2026",
    "anchor_lab": "UKIM",
    "proposed": [
-    15.5,
-    19.5
+    15.0,
+    20.0
    ],
-   "headroom_down": 2.66,
+   "headroom_down": 3.16,
    "basis": "anchor",
    "tier": 2
   },
@@ -2517,10 +2517,10 @@
    "anchor_date": "09.04.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    17.5,
-    21.5
+    17.0,
+    22.0
    ],
-   "headroom_down": 2.71,
+   "headroom_down": 3.21,
    "basis": "anchor",
    "tier": 2
   },
@@ -2534,12 +2534,12 @@
    "anchor_date": "09.04.2026",
    "anchor_lab": "FARM",
    "proposed": [
-    19.0,
-    23.0
+    18.0,
+    24.0
    ],
-   "headroom_down": 2.84,
+   "headroom_down": 3.84,
    "basis": "anchor",
-   "tier": 2
+   "tier": 3
   },
   {
    "tranche": "3",
@@ -2568,10 +2568,10 @@
    "anchor_date": "05.09.2025",
    "anchor_lab": "UKIM",
    "proposed": [
-    12.0,
-    15.0
+    11.0,
+    16.0
    ],
-   "headroom_down": 2.16,
+   "headroom_down": 3.16,
    "basis": "anchor",
    "tier": 2
   },
@@ -2602,10 +2602,10 @@
    "anchor_date": "28.11.2025",
    "anchor_lab": "UKIM",
    "proposed": [
-    8.0,
-    11.0
+    7.0,
+    12.0
    ],
-   "headroom_down": 2.01,
+   "headroom_down": 3.01,
    "basis": "anchor",
    "tier": 1
   },
@@ -2619,10 +2619,10 @@
    "anchor_date": null,
    "anchor_lab": null,
    "proposed": [
-    15.5,
-    19.0
+    15.0,
+    20.0
    ],
-   "headroom_down": 2.57,
+   "headroom_down": 3.07,
    "basis": "declared (no assay on file)",
    "tier": 1
   },
@@ -2637,7 +2637,7 @@
    "anchor_lab": "UKIM",
    "proposed": [
     19.0,
-    23.5
+    24.0
    ],
    "headroom_down": 2.92,
    "basis": "anchor",
@@ -2654,7 +2654,7 @@
    "anchor_lab": "FARM",
    "proposed": [
     9.0,
-    12.0
+    13.0
    ],
    "headroom_down": 2.2,
    "basis": "anchor",
@@ -2671,7 +2671,7 @@
    "anchor_lab": "FARM",
    "proposed": [
     7.0,
-    10.0
+    11.0
    ],
    "headroom_down": 2.2,
    "basis": "anchor",
@@ -2688,7 +2688,7 @@
    "anchor_lab": null,
    "proposed": [
     19.0,
-    23.5
+    24.0
    ],
    "headroom_down": 3.05,
    "basis": "declared (no assay on file)",
@@ -2705,7 +2705,7 @@
    "anchor_lab": "UKIM",
    "proposed": [
     19.0,
-    23.5
+    24.0
    ],
    "headroom_down": 3.11,
    "basis": "anchor",
@@ -2716,7 +2716,7 @@
   "Amnesia Core Cut": [
    {
     "range": [
-     10.5,
+     10.0,
      14.0
     ],
     "batches": [
@@ -2758,7 +2758,7 @@
   "Blue Sunset Sherbet": [
    {
     "range": [
-     17.5,
+     17.0,
      22.0
     ],
     "batches": [
@@ -2782,7 +2782,7 @@
    },
    {
     "range": [
-     21.5,
+     21.0,
      27.0
     ],
     "batches": [
@@ -2796,7 +2796,7 @@
   "Cap Junky": [
    {
     "range": [
-     12.5,
+     12.0,
      16.0
     ],
     "batches": [
@@ -2808,8 +2808,8 @@
    },
    {
     "range": [
-     15.5,
-     20.5
+     15.0,
+     21.0
     ],
     "batches": [
      "CJ082501/2",
@@ -2822,33 +2822,43 @@
    },
    {
     "range": [
-     18.5,
-     24.5
+     18.0,
+     24.0
     ],
     "batches": [
      "CJ062501/1",
-     "CJ092501",
-     "CJ1024"
+     "CJ092501"
     ],
     "anchors": [
      21.51,
-     22.3,
-     23.0
+     22.3
     ]
    },
    {
     "range": [
-     20.5,
+     20.0,
+     26.0
+    ],
+    "batches": [
+     "CJ1024",
+     "CJ072501",
+     "CJ052501/01"
+    ],
+    "anchors": [
+     23.0,
+     23.7,
+     24.05
+    ]
+   },
+   {
+    "range": [
+     21.0,
      27.0
     ],
     "batches": [
-     "CJ072501",
-     "CJ052501/01",
      "CJ082501/1"
     ],
     "anchors": [
-     23.7,
-     24.05,
      24.96
     ]
    }
@@ -2857,7 +2867,7 @@
    {
     "range": [
      10.0,
-     14.5
+     15.0
     ],
     "batches": [
      "CC012603",
@@ -2884,8 +2894,8 @@
   "Chem Flyer": [
    {
     "range": [
-     7.5,
-     10.5
+     7.0,
+     11.0
     ],
     "batches": [
      "CF102501"
@@ -2926,8 +2936,8 @@
    },
    {
     "range": [
-     15.5,
-     20.5
+     15.0,
+     21.0
     ],
     "batches": [
      "FB012603V",
@@ -2941,7 +2951,7 @@
    {
     "range": [
      18.0,
-     22.5
+     23.0
     ],
     "batches": [
      "FB012603"
@@ -3000,46 +3010,66 @@
    },
    {
     "range": [
-     15.5,
-     21.5
+     15.0,
+     20.0
     ],
     "batches": [
-     "GP052501",
-     "GP072501/2"
+     "GP052501"
     ],
     "anchors": [
-     18.52,
-     19.81
+     18.52
     ]
    },
    {
     "range": [
-     18.0,
-     24.5
+     17.0,
+     23.0
     ],
     "batches": [
+     "GP072501/2",
      "GP082501/1",
-     "GP072501/1",
+     "GP072501/1"
+    ],
+    "anchors": [
+     19.81,
+     21.29,
+     21.36
+    ]
+   },
+   {
+    "range": [
+     19.0,
+     25.0
+    ],
+    "batches": [
      "GP0824_02"
     ],
     "anchors": [
-     21.29,
-     21.36,
      22.61
     ]
    },
    {
     "range": [
-     21.5,
-     27.5
+     21.0,
+     27.0
     ],
     "batches": [
-     "GP062501",
+     "GP062501"
+    ],
+    "anchors": [
+     24.89
+    ]
+   },
+   {
+    "range": [
+     22.0,
+     28.0
+    ],
+    "batches": [
      "GP0824_03",
      "GP092501"
     ],
     "anchors": [
-     24.89,
      25.45,
      25.73
     ]
@@ -3049,7 +3079,7 @@
    {
     "range": [
      5.0,
-     7.5
+     8.0
     ],
     "batches": [
      "GRC102501/1"
@@ -3061,7 +3091,7 @@
    {
     "range": [
      9.0,
-     12.5
+     13.0
     ],
     "batches": [
      "GRC102501/2"
@@ -3074,8 +3104,8 @@
   "High Pro Amnesia": [
    {
     "range": [
-     14.5,
-     18.5
+     14.0,
+     19.0
     ],
     "batches": [
      "HPA1024"
@@ -3086,7 +3116,7 @@
    },
    {
     "range": [
-     17.5,
+     17.0,
      23.0
     ],
     "batches": [
@@ -3102,7 +3132,7 @@
   "Jelly Donutz": [
    {
     "range": [
-     12.5,
+     12.0,
      18.0
     ],
     "batches": [
@@ -3116,16 +3146,26 @@
    },
    {
     "range": [
-     15.5,
+     15.0,
+     20.0
+    ],
+    "batches": [
+     "JD012601"
+    ],
+    "anchors": [
+     18.16
+    ]
+   },
+   {
+    "range": [
+     17.0,
      22.0
     ],
     "batches": [
-     "JD012601",
      "JD112501",
      "JD012603/02"
     ],
     "anchors": [
-     18.16,
      20.32,
      20.54
     ]
@@ -3134,8 +3174,8 @@
   "Jokerz 31": [
    {
     "range": [
-     14.5,
-     18.5
+     14.0,
+     19.0
     ],
     "batches": [
      "J31102501"
@@ -3147,14 +3187,24 @@
    {
     "range": [
      17.0,
-     23.5
+     22.0
     ],
     "batches": [
-     "J31112501",
+     "J31112501"
+    ],
+    "anchors": [
+     20.21
+    ]
+   },
+   {
+    "range": [
+     18.0,
+     24.0
+    ],
+    "batches": [
      "J31122501"
     ],
     "anchors": [
-     20.21,
      21.84
     ]
    }
@@ -3163,7 +3213,7 @@
    {
     "range": [
      14.0,
-     18.5
+     19.0
     ],
     "batches": [
      "KC102501"
@@ -3192,8 +3242,8 @@
   "Orange Punch Mimosa": [
    {
     "range": [
-     5.5,
-     10.5
+     5.0,
+     11.0
     ],
     "batches": [
      "OPM122501",
@@ -3208,31 +3258,41 @@
    },
    {
     "range": [
-     11.5,
-     18.0
+     11.0,
+     17.0
     ],
     "batches": [
      "OPM052501",
-     "OMP1024_01",
-     "OPM1024_03"
+     "OMP1024_01"
     ],
     "anchors": [
      14.16,
-     15.38,
-     16.55
+     15.38
     ]
    },
    {
     "range": [
-     15.0,
-     21.5
+     14.0,
+     20.0
     ],
     "batches": [
-     "OPM1024_02",
+     "OPM1024_03",
+     "OPM1024_02"
+    ],
+    "anchors": [
+     16.55,
+     18.04
+    ]
+   },
+   {
+    "range": [
+     17.0,
+     22.0
+    ],
+    "batches": [
      "OPM1024"
     ],
     "anchors": [
-     18.04,
      20.03
     ]
    }
@@ -3240,27 +3300,27 @@
   "Permanent Marker": [
    {
     "range": [
-     7.5,
-     13.5
+     7.0,
+     11.0
     ],
     "batches": [
-     "PM072501",
-     "PM092501"
+     "PM072501"
     ],
     "anchors": [
-     10.01,
-     12.25
+     10.01
     ]
    },
    {
     "range": [
-     11.0,
-     14.5
+     9.0,
+     15.0
     ],
     "batches": [
+     "PM092501",
      "PM112501"
     ],
     "anchors": [
+     12.25,
      13.33
     ]
    }
@@ -3282,8 +3342,8 @@
   "Scrambler": [
    {
     "range": [
-     14.5,
-     19.5
+     14.0,
+     20.0
     ],
     "batches": [
      "SCR112501",
@@ -3299,7 +3359,7 @@
    {
     "range": [
      19.0,
-     23.5
+     24.0
     ],
     "batches": [
      "SCR022601"
@@ -3331,7 +3391,7 @@
    {
     "range": [
      19.0,
-     23.5
+     24.0
     ],
     "batches": [
      "WED102501"
@@ -3344,8 +3404,8 @@
   "Wedding Crasher": [
    {
     "range": [
-     18.5,
-     23.5
+     18.0,
+     24.0
     ],
     "batches": [
      "WC082501",
@@ -3361,7 +3421,7 @@
  "design": {
   "D_year": 1.5,
   "U_ratio": 0.062,
-  "rule": "lower = anchor − D − U(anchor) rounded to 0.5, floored at 5.00 (release A.C.); upper = anchor + max(1.0, U(anchor)); merged per strain where batch ranges overlap"
+  "rule": "lower = anchor − D − U(anchor) rounded DOWN to a whole number, floored at 5.00 (release A.C.); upper = anchor + max(1.0, U(anchor)) rounded UP to a whole number; merged per strain where batch ranges overlap. Nominal grade values are declared as whole numbers (nn.0 %) — rounding is always outward, so it can only widen a tier, never narrow the guaranteed window."
  },
  "old_methodology": "QCSP 001 standard 4-tier fixed brackets: I 27.00–30.00 · II 23.00–26.90 · III 16.00–22.90 · IV 5.00–15.90 (nominal = midpoint); custom narrower sets for several renamed strains; T1 files graded from the Aug-2026 retest values, T1_rename graded from Portfolio-Master intake values (intentionally different, per owner). Weakness for ageing stock: brackets are fixed and grade-boundary batches can flip out of grade on any remeasure or with modest degradation — the bracket encodes no downward headroom for a specific batch.",
  "verification": {

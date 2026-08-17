@@ -95,8 +95,15 @@ def dkey(d):
     return (p[2], p[1], p[0]) if len(p) == 3 else ("0", "0", "0")
 
 
-def r05(x):
-    return round(x * 2) / 2
+def rlo(x):
+    """Nominal grade values are declared as whole numbers (nn.0 %). Round a
+    lower edge DOWN so rounding never eats into the batch's headroom."""
+    return float(math.floor(x + 1e-9))
+
+
+def rhi(x):
+    """…and an upper edge UP, for the same reason."""
+    return float(math.ceil(x - 1e-9))
 
 
 def build():
@@ -157,8 +164,8 @@ def build():
             b["proposed"] = None
             continue
         u = U_RATIO * a
-        lo = r05(a - D_YEAR - u)
-        hi = r05(a + max(1.0, u))
+        lo = rlo(a - D_YEAR - u)
+        hi = rhi(a + max(1.0, u))
         lo = max(lo, 5.0)                      # release A.C. floor: min 5.00%
         b["proposed"] = [lo, hi]
         b["headroom_down"] = round(a - lo, 2)
@@ -183,8 +190,8 @@ def build():
         for b in bs:
             a = b["anchor"] if b["anchor"] is not None else b["declared"]
             u = U_RATIO * a
-            flo = max(5.0, math.floor((a - D_YEAR - u) * 2) / 2)
-            cei = math.ceil((a + u) * 2) / 2
+            flo = max(5.0, rlo(a - D_YEAR - u))
+            cei = rhi(a + u)
             if cur is None or cei - cur["lo"] > W_MAX:
                 cur = dict(lo=flo, hi=cei, batches=[b["batch"]], anchors=[a])
                 tiers.append(cur)
@@ -218,9 +225,12 @@ def build():
         stability=STABILITY, degradation_note=DEGRADATION_NOTE,
         repeats=repeats, stats=stats, stock=stock, merged_ranges=merged,
         design=dict(D_year=D_YEAR, U_ratio=U_RATIO,
-                    rule="lower = anchor − D − U(anchor) rounded to 0.5, floored at 5.00 "
-                         "(release A.C.); upper = anchor + max(1.0, U(anchor)); merged per "
-                         "strain where batch ranges overlap"),
+                    rule="lower = anchor − D − U(anchor) rounded DOWN to a whole number, "
+                         "floored at 5.00 (release A.C.); upper = anchor + max(1.0, U(anchor)) "
+                         "rounded UP to a whole number; merged per strain where batch ranges "
+                         "overlap. Nominal grade values are declared as whole numbers (nn.0 %) "
+                         "— rounding is always outward, so it can only widen a tier, never "
+                         "narrow the guaranteed window."),
         old_methodology=(
             "QCSP 001 standard 4-tier fixed brackets: I 27.00–30.00 · II 23.00–26.90 · "
             "III 16.00–22.90 · IV 5.00–15.90 (nominal = midpoint); custom narrower sets for "
