@@ -158,13 +158,13 @@ para("CI е интервал на доверба за средната вред�
 
 # ---------- 4. Per-strain distributions ----------
 pr.chapter(doc, "4", "ДИСТРИБУЦИИ ПО СОРТИ", "Per-Strain Distributions")
-para("Оска 0–35% Вкупен Δ⁹-THC; секој резултат носи зона од ±1,5% (сините појаси — "
+para("Оска 0,0–30,0 % Вкупен Δ⁹-THC; секој резултат носи зона од ±1,5% (сините појаси — "
      "натрупувањето е визуелна густина); крива на дистрибуција за n≥3; средна вредност "
      "(златна линија) и 95% CI (златна зона); предложени класи W-x (зелено); старите "
-     "стандардни граници (испрекинато). | 0–35% axis; each result carries a ±1.5% zone "
+     "стандардни граници (испрекинато). | 0.0–30.0 % axis; each result carries a ±1.5% zone "
      "(blue bands — stacking is visual density); distribution curve for n≥3; mean (gold "
      "line) and 95% CI (gold zone); proposed W-x tiers (green); old standard boundaries "
-     "(dashed).", 8.6, "4A5B6C", italic=True)
+     "(dashed).", 8.6, "37474F", italic=True)
 for s in sorted(d["stats"]):
     st = d["stats"][s]
     pr.subsec(doc, "4.%d" % (sorted(d["stats"]).index(s) + 1), s, "")
@@ -216,8 +216,8 @@ para("Жолти редови: без ниту еден сертификат н�
 # ---------- 6. Overview annex ----------
 pr.chapter(doc, "6", "АНЕКС — ПРЕГЛЕД НА СИТЕ СОРТИ", "Annex — All-Strain Overview")
 pr.figure(doc, os.path.join(D, "figures", "overview.png"),
-          "Сите сорти на една оска 0–35%: резултати, средни вредности, предложени класи",
-          "All strains on one 0–35% axis: results, means, proposed tiers")
+          "Сите сорти на една оска 0,0–30,0 %: резултати, средни вредности, предложени класи",
+          "All strains on one 0.0–30.0 % axis: results, means, proposed tiers")
 
 out = os.path.join(D, "Strain_Potency_Study_14Aug2026.docx")
 pr.save(doc, out) if hasattr(pr, "save") else doc.save(out)

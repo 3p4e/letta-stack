@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """Potency study — per-strain distribution figures.
 
-One figure per strain on a fixed 0–35 % Total Δ⁹-THC horizontal axis:
+One figure per strain on a fixed 0–30 % Total Δ⁹-THC horizontal axis:
 
   • every result ever tested: marker on the axis + a translucent ±1.5 % band
     (the user's requested zone) — overlapping bands stack into a visual
@@ -57,7 +57,7 @@ def strain_fig(name, st, tiers, stability, fname):
                    color=NAVY, alpha=min(0.14, 0.5 / max(1, len(vals)) + 0.06), lw=0)
     # KDE curve
     if len(vals) >= 3:
-        xs = [x / 10 for x in range(0, 351)]
+        xs = [x / 10 for x in range(0, 301)]
         ys = kde(vals, xs)
         top = max(ys)
         ax.plot(xs, [0.30 + 0.56 * y / top for y in ys], color=NAVY, lw=1.6, zorder=5)
@@ -93,11 +93,12 @@ def strain_fig(name, st, tiers, stability, fname):
     for x in OLD_TIERS:
         ax.axvline(x, color="#B9C4D0", lw=0.8, ls=(0, (3, 3)), zorder=1)
 
-    ax.set_xlim(0, 35)
+    ax.set_xlim(0, 30)
     ax.set_ylim(0, 1.12)
     ax.set_yticks([])
-    ax.set_xticks(range(0, 36, 5))
-    ax.set_xticks(range(0, 36), minor=True)
+    ax.set_xticks(range(0, 31, 5))
+    ax.set_xticklabels(["%.1f" % x for x in range(0, 31, 5)])
+    ax.set_xticks(range(0, 31), minor=True)
     ax.set_xlabel("Вкупен Δ⁹-THC (%w/w)  |  Total Δ⁹-THC (%w/w)", fontsize=9)
     ax.grid(axis="x", which="minor", color="#F0F3F6", linewidth=0.4)
     sub = "n=%d · средна вредност | mean %.2f" % (st["n"], st["mean"])
@@ -135,15 +136,16 @@ def overview():
         ax.axvline(x, color="#B9C4D0", lw=0.8, ls=(0, (3, 3)), zorder=1)
     ax.set_yticks(range(len(names)))
     ax.set_yticklabels(reversed(names), fontsize=8)
-    ax.set_xlim(0, 35)
+    ax.set_xlim(0, 30)
     ax.set_ylim(-0.9, len(names) - 0.1)
-    ax.set_xticks(range(0, 36, 5))
-    ax.set_xticks(range(0, 36), minor=True)
+    ax.set_xticks(range(0, 31, 5))
+    ax.set_xticklabels(["%.1f" % x for x in range(0, 31, 5)])
+    ax.set_xticks(range(0, 31), minor=True)
     ax.grid(axis="x", which="minor", color="#F0F3F6", linewidth=0.4)
     ax.set_xlabel("Вкупен Δ⁹-THC (%w/w) — сите резултати (точки), средна (ромб), "
                   "предложени опсези (зелено) | all results (dots), mean (diamond), "
                   "proposed tiers (green)", fontsize=8.5)
-    ax.set_title("Преглед по сорти — 0–35 % оска  |  All-strain overview — 0–35 % axis",
+    ax.set_title("Преглед по сорти — 0,0–30,0 % оска  |  All-strain overview — 0.0–30.0 % axis",
                  fontsize=11, color=INK, loc="left", pad=8)
     for s in ("top", "right", "left"):
         ax.spines[s].set_visible(False)

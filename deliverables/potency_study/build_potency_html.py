@@ -9,7 +9,7 @@ Same bound dataset (potency_dataset.json), richer per-result detail:
     relative % of the lower value;
   • same-batch repeat pairs called out separately (the truest "distance
     between two results obtained by all means so far");
-  • the CSS-built 0–35 % axis per strain: ±1,5 % zone per result, mean line,
+  • the CSS-built 0–30 % axis per strain: ±1,5 % zone per result, mean line,
     95 % CI band (n≥3), proposed W-tiers, old standard grade boundaries;
   • degradation evidence (stability program) and the full T1/T2/T3 stock table.
 
@@ -52,7 +52,7 @@ def ren_of(batch):
     return None
 
 OLD_TIERS = [5.00, 15.90, 22.90, 26.90, 30.00]
-AX = 35.0
+AX = 30.0
 
 
 def esc(s):
@@ -97,13 +97,13 @@ CSS = css_fonts + """
 :root{
  --navy:#1B3A5C; --navy2:#2B547E; --gold:#C9A227; --green:#1E8449;
  --rose:#C0392B; --paper:#F7F9FC; --card:#FFFFFF; --ink:#16232B;
- --mut:#5A6B7C; --line:#D8E2EC; --zone:rgba(43,84,126,.10);
+ --mut:#3E4B57; --line:#D8E2EC; --zone:rgba(43,84,126,.10);
  --mono:ui-monospace,'Cascadia Mono','Roboto Mono',Menlo,monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{background:var(--paper);color:var(--ink);
- font:400 15px/1.55 'Montserrat',system-ui,sans-serif}
+ font:400 16.5px/1.58 'Montserrat',system-ui,sans-serif}
 .wrap{max-width:1060px;margin:0 auto;padding:0 20px}
 a{color:var(--navy2)}
 .hero{background:linear-gradient(160deg,#132B45 0%,var(--navy) 55%,#234B74 100%);
@@ -116,7 +116,7 @@ a{color:var(--navy2)}
  letter-spacing:.01em;margin:18px 0 2px;text-wrap:balance}
 .hero .en{font-family:'Orbitron';font-weight:400;font-size:clamp(13px,2vw,19px);
  letter-spacing:.34em;color:var(--gold);margin:0 0 10px;text-transform:uppercase}
-.hero .sub{color:#B9CBDD;font-size:14px;max-width:62ch}
+.hero .sub{color:#B9CBDD;font-size:15.5px;max-width:62ch}
 .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
 .chip{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);
  border-radius:4px;padding:7px 13px;font-size:12.5px}
@@ -124,9 +124,9 @@ a{color:var(--navy2)}
 .informal{margin-top:18px;font-size:11px;letter-spacing:.14em;color:#9FB4C9;
  text-transform:uppercase}
 section{padding:34px 0 6px}
-h2{font-size:21px;font-weight:700;color:var(--navy);letter-spacing:.01em;
+h2{font-size:23px;font-weight:700;color:var(--navy);letter-spacing:.01em;
  border-bottom:2px solid var(--navy2);padding-bottom:6px;margin-bottom:16px}
-h2 span{font-weight:400;color:var(--mut);font-size:15px}
+h2 span{font-weight:400;color:var(--mut);font-size:16.5px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
 .kcard{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--navy2);
  padding:14px 16px;font-size:13.5px}
@@ -143,7 +143,7 @@ h2 span{font-weight:400;color:var(--mut);font-size:15px}
 .nav{position:sticky;top:0;z-index:9;background:rgba(247,249,252,.96);
  backdrop-filter:blur(4px);border-bottom:1px solid var(--line);padding:9px 0}
 .nav .wrap{display:flex;flex-wrap:wrap;gap:6px}
-.nav a{font-size:11.5px;text-decoration:none;border:1px solid var(--line);
+.nav a{font-size:12.5px;text-decoration:none;border:1px solid var(--line);
  background:var(--card);padding:3px 9px;border-radius:12px;color:var(--navy)}
 .nav a:hover{border-color:var(--navy2);background:#EDF3F9}
 .strain{background:var(--card);border:1px solid var(--line);margin-bottom:26px;
@@ -153,8 +153,8 @@ h2 span{font-weight:400;color:var(--mut);font-size:15px}
  background:linear-gradient(90deg,#F2F6FA,#FFFFFF)}
 .shead h3{font-family:'Orbitron';font-weight:400;font-size:22px;letter-spacing:.05em;
  color:var(--navy)}
-.stat{font-size:12px;color:var(--mut)}
-.stat b{color:var(--ink);font-size:13.5px;font-variant-numeric:tabular-nums}
+.stat{font-size:13.5px;color:var(--mut)}
+.stat b{color:var(--ink);font-size:15px;font-variant-numeric:tabular-nums}
 .axiswrap{padding:18px 18px 6px;overflow-x:auto}
 .axis{position:relative;height:118px;min-width:640px;
  background:linear-gradient(180deg,#FBFCFE, #F4F7FB);border:1px solid var(--line)}
@@ -175,8 +175,8 @@ h2 span{font-weight:400;color:var(--mut);font-size:15px}
  border-left:6px solid transparent;border-right:6px solid transparent;
  border-top:10px solid var(--rose)}
 .scale{display:flex;justify-content:space-between;min-width:640px;
- font-size:10px;color:var(--mut);font-variant-numeric:tabular-nums;margin-top:3px}
-.legend{padding:2px 18px 8px;font-size:11px;color:var(--mut)}
+ font:600 12px var(--mono);color:var(--mut);font-variant-numeric:tabular-nums;margin-top:4px}
+.legend{padding:2px 18px 8px;font-size:12.5px;color:var(--mut)}
 .legend i{font-style:normal;margin-right:14px}
 .dotk{display:inline-block;width:9px;height:9px;border-radius:50%;
  background:var(--navy2);vertical-align:-1px;margin-right:4px}
@@ -186,9 +186,9 @@ h2 span{font-weight:400;color:var(--mut);font-size:15px}
  vertical-align:-1px;margin-right:4px}
 .tierk{display:inline-block;width:12px;height:8px;background:rgba(30,132,73,.16);
  border:1px solid var(--green);vertical-align:-1px;margin-right:4px}
-table{border-collapse:collapse;width:100%;font-size:12.5px}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
 .tblwrap{overflow-x:auto;padding:0 18px 16px}
-th{background:var(--navy);color:#fff;font-weight:600;padding:6px 9px;font-size:11px;
+th{background:var(--navy);color:#fff;font-weight:600;padding:7px 10px;font-size:12px;
  letter-spacing:.05em;text-align:left;white-space:nowrap}
 td{border-bottom:1px solid var(--line);padding:5.5px 9px;white-space:nowrap;
  font-variant-numeric:tabular-nums}
@@ -204,30 +204,30 @@ td.dev{color:var(--mut)}
 .callout{margin:0 18px 16px;background:#FBF6E9;border:1px solid var(--gold);
  padding:10px 14px;font-size:12.5px}
 .callout b{color:#8A6D14}
-.tiers{margin:0 18px 16px;font-size:12.5px}
+.tiers{margin:0 18px 16px;font-size:14.5px}
 .tiers .trow{display:flex;gap:10px;align-items:baseline;padding:3px 0}
 .tiers .tr-range{font-family:var(--mono);font-weight:600;color:var(--green);min-width:190px}
-.tiers .tr-span{font-family:var(--mono);color:var(--mut);font-size:11.5px;margin-right:4px}
+.tiers .tr-span{font-family:var(--mono);color:var(--mut);font-size:13px;margin-right:4px}
 .stabnote{color:var(--rose);font-size:11.5px}
 details{margin-top:8px}
 summary{cursor:pointer;font-weight:600;color:var(--navy);padding:10px 0}
 .dot.ren{box-shadow:0 0 0 1px var(--navy2),0 0 0 4px rgba(201,162,39,.55)}
-.renlist{padding:4px 18px 10px;font-size:11.5px;color:var(--mut);line-height:2.1}
+.renlist{padding:4px 18px 10px;font-size:13px;color:var(--mut);line-height:2.0}
 .renlist .renitem{white-space:nowrap;margin-right:16px}
 .renlist b{color:var(--navy)}
-.bchip{display:inline-block;font-size:8.5px;font-weight:700;letter-spacing:.08em;
+.bchip{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.08em;
  padding:1px 6px;border-radius:2px;margin-left:5px;vertical-align:1px}
 .bchip.steady{background:#EDF3F9;color:var(--navy2);border:1px solid var(--navy2)}
 .bchip.cayn{background:#F5EEF9;color:#7B4F8C;border:1px solid #7B4F8C}
-.keepname{font-size:9.5px;color:var(--mut);font-weight:400;margin-left:5px}
+.keepname{font-size:11px;color:var(--mut);font-weight:400;margin-left:5px}
 .rencard{background:var(--card);border:1px solid var(--line);margin-bottom:22px}
 .flowrow{display:grid;grid-template-columns:240px 1fr;gap:16px;align-items:start;
  padding:14px 18px;border-top:1px solid var(--line)}
 .flowrow:first-of-type{border-top:none}
-.flowname{font-size:14px;font-weight:600;color:var(--navy);
+.flowname{font-size:16px;font-weight:600;color:var(--navy);
  border-right:2px solid var(--gold);padding-right:14px;min-height:70px}
 .flowname b{font-weight:700}
-.flowbatches{font-size:10.5px;font-weight:400;color:var(--mut);margin-top:6px;
+.flowbatches{font-size:12.5px;font-weight:400;color:var(--mut);margin-top:6px;
  font-family:var(--mono);line-height:1.7}
 .flowaxis{min-width:0}
 .miniaxis{position:relative;height:46px;background:linear-gradient(180deg,#FBFCFE,#F4F7FB);
@@ -241,19 +241,29 @@ summary{cursor:pointer;font-weight:600;color:var(--navy);padding:10px 0}
  background:var(--navy2);border:2px solid #fff;box-shadow:0 0 0 1px var(--navy2);
  transform:translateX(-50%);z-index:3}
 .mdot.decl{background:#fff;box-shadow:0 0 0 1px var(--gold)}
-.cmpline{display:flex;gap:20px;font-size:10.5px;color:var(--mut);margin-top:5px}
-.cmp b{font-family:var(--mono)}
-.cmp.m b{color:#8A6D14}
-.cmp.w b{color:var(--green)}
+.cmpline{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.cmp{flex:1 1 240px;padding:8px 12px;border-radius:3px;line-height:1.35}
+.cmp small{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;
+ text-transform:uppercase;margin-bottom:2px}
+.cmp b{font-family:var(--mono);font-size:16.5px;font-weight:700;
+ font-variant-numeric:tabular-nums}
+.cmp.m{background:rgba(201,162,39,.12);border-left:4px solid var(--gold)}
+.cmp.m small{color:#7A5E10}
+.cmp.m b{color:#6B520E}
+.cmp.w{background:rgba(30,132,73,.10);border-left:4px solid var(--green)}
+.cmp.w small{color:#14532B}
+.cmp.w b{color:#14532B}
+.miniscale{display:flex;justify-content:space-between;margin-top:2px;
+ font:600 11.5px var(--mono);color:var(--mut);font-variant-numeric:tabular-nums}
 @media (max-width:760px){.flowrow{grid-template-columns:1fr}
  .flowname{border-right:none;border-bottom:2px solid var(--gold);padding:0 0 8px;min-height:0}}
 #final{scroll-margin-top:64px}
-.fsum{font-size:13px;color:var(--mut);margin-bottom:16px;max-width:88ch}
-.fsum code{font:600 12px var(--mono);color:var(--navy2)}
-.fsubh{margin:30px 0 10px;font-size:16px;font-weight:700;color:var(--navy);
+.fsum{font-size:14.5px;color:var(--mut);margin-bottom:16px;max-width:88ch}
+.fsum code{font:600 13.5px var(--mono);color:var(--navy2)}
+.fsubh{margin:30px 0 10px;font-size:18px;font-weight:700;color:var(--navy);
  border-top:2px solid var(--gold);padding-top:14px}
-.fsubh span{font-weight:400;color:var(--mut);font-size:13.5px}
-.fboard.ren .fname h3{font-size:14px}
+.fsubh span{font-weight:400;color:var(--mut);font-size:15px}
+.fboard.ren .fname h3{font-size:15.5px}
 .fboard{background:linear-gradient(160deg,#132B45 0%,var(--navy) 60%,#234B74 100%);
  border-bottom:4px solid var(--gold);padding:8px 22px 18px}
 .frow{display:grid;grid-template-columns:250px 1fr;gap:16px;align-items:center;
@@ -261,16 +271,16 @@ summary{cursor:pointer;font-weight:600;color:var(--navy);padding:10px 0}
 .frow:last-child{border-bottom:none}
 .fname h3{font-family:'Orbitron';font-weight:400;font-size:17px;letter-spacing:.05em;
  color:#EAF1F8;margin-bottom:2px}
-.fstat{font-size:10.5px;color:#9FB4C9;display:block;font-variant-numeric:tabular-nums}
-.fbadge{display:inline-block;margin-top:5px;font-size:8.5px;font-weight:700;
+.fstat{font-size:12.5px;color:#9FB4C9;display:block;font-variant-numeric:tabular-nums}
+.fbadge{display:inline-block;margin-top:5px;font-size:10px;font-weight:700;
  letter-spacing:.09em;color:var(--gold);border:1px solid var(--gold);
  padding:1.5px 7px;border-radius:2px}
 .fbadge.prov{color:#E8A6A0;border-color:#E8A6A0}
 .fpills{display:flex;flex-wrap:wrap;gap:9px}
-.fpill{font-family:var(--mono);font-size:14px;font-weight:600;color:#D9F2E2;
+.fpill{font-family:var(--mono);font-size:16.5px;font-weight:700;color:#D9F2E2;
  background:rgba(30,132,73,.30);border:1.5px solid #37B36A;border-radius:3px;
  padding:7px 13px;line-height:1.2}
-.fpill small{display:block;font-family:'Montserrat';font-weight:400;font-size:9px;
+.fpill small{display:block;font-family:'Montserrat';font-weight:400;font-size:11px;
  color:#9FC9AD;margin-top:2px}
 .fpill.prov{background:rgba(201,162,39,.16);border-color:var(--gold);color:#F2E3B3}
 .fpill.prov small{color:#CBB77D}
@@ -383,7 +393,8 @@ def axis_html(s, st, tiers, stab):
         sb += ('<div class="%s" style="left:%.3f%%" title="%s M%d %s — %.2f%% (CBN %.2f%%)"></div>'
                % (cls, pct(r["total_thc"]), esc(r["batch"]), r["month"], esc(r["arm"]),
                   r["total_thc"], r["cbn"]))
-    scale = "".join("<span>%d</span>" % x for x in range(0, 36, 5))
+    scale = "".join("<span>%s</span>" % ("%.1f %%" % x if x == 30 else "%.1f" % x)
+                    for x in range(0, 31, 5))
     ren_items = []
     for r in per[s]:
         rn = ren_of(r["batch"])
@@ -577,7 +588,9 @@ def renames_section():
                 dots += ('<div class="%s" style="left:%.3f%%" title="%s · %.2f%%%s"></div>'
                          % (cls, pct(it["val"]), esc(it["batch"]), it["val"],
                             " · декларирана | declared" if it["declared"] else ""))
-            gridt = "".join('<i style="left:%.3f%%"></i>' % pct(x) for x in range(5, 35, 5))
+            gridt = "".join('<i style="left:%.3f%%"></i>' % pct(x) for x in range(5, 30, 5))
+            mscale = "".join("<span>%s</span>" % ("%.1f %%" % x if x == 30 else "%.1f" % x)
+                             for x in range(0, 31, 5))
             blist = ", ".join("%s (%s)" % (esc(it["batch"]),
                                            ("%.2f" % it["val"]) if it["val"] is not None and not it["declared"]
                                            else ("%.1f декл." % it["val"] if it["val"] is not None else "—"))
@@ -590,12 +603,15 @@ def renames_section():
                 '<div class="flowname">%s<span class="bchip %s">%s</span>%s'
                 '<div class="flowbatches">%s</div></div>'
                 '<div class="flowaxis"><div class="miniaxis">%s%s%s</div>'
-                '<div class="cmpline"><span class="cmp m">мастер | master: <b>%s</b></span>'
-                '<span class="cmp w">наш | ours: <b>%s</b></span></div></div></div>'
+                '<div class="miniscale">%s</div>'
+                '<div class="cmpline">'
+                '<span class="cmp m"><small>мастер | master</small><b>%s</b></span>'
+                '<span class="cmp w"><small>наш предлог | our proposal</small><b>%s</b></span>'
+                "</div></div></div>"
                 % ((esc(neu) if is_same else "<b>%s</b>" % esc(neu)),
                    esc(brand.lower()), esc(brand),
                    ' <span class="keepname">без промена | unchanged</span>' if is_same else "",
-                   blist, gridt, spans, dots, esc(mb_lbl), ours_lbl))
+                   blist, gridt, spans, dots, mscale, esc(mb_lbl), ours_lbl))
         cards += ('<article class="rencard"><div class="shead"><h3>%s</h3>'
                   '<span class="stat">серии | batches <b>%d</b></span>'
                   '<span class="stat">преименувани | renamed <b>%d</b></span>'
@@ -946,10 +962,10 @@ percentage points and as a relative %% of the lower value.</p>
 тестираните вредности (точки), <b style="color:#8A6D14">опсегот што го предлага мастер-документот</b>
 (жолто, BCP_PRODUCT_MASTER_FINAL.xlsx · 01_Portfolio_Master) наспроти
 <b style="color:#1E8449">нашата предложена класа</b> (зелено, номинала ± толеранција) — на
-иста оска 0–35%%. | For every original strain — how many new names its batches were renamed
+иста оска 0,0–30,0 %%. | For every original strain — how many new names its batches were renamed
 into, and per new name: the tested values (dots), <b style="color:#8A6D14">the bracket the
 master document suggests</b> (amber) versus <b style="color:#1E8449">our proposed grade</b>
-(green, nominal ± tolerance), on one 0–35%% axis.</p>
+(green, nominal ± tolerance), on one 0.0–30.0 %% axis.</p>
 %s</section>
 
 <section><h2>Залиха Т1/Т2/Т3 <span>| Stock — предложени класи по серија</span></h2>
