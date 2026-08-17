@@ -83,12 +83,12 @@ def strain_fig(name, st, tiers, stability, fname):
     # proposed tiers — staggered on two rows so overlapping tiers stay legible
     for i, t in enumerate(tiers):
         lo, hi = t["range"]
-        y0 = 0.91 if i % 2 == 0 else 0.99
-        ax.add_patch(Rectangle((lo, y0), hi - lo, 0.065, facecolor=GREEN, alpha=0.25,
-                               edgecolor=GREEN, lw=1.2))
-        ax.text((lo + hi) / 2, y0 + 0.032,
-                "W-%d  %.0f ± %.2f" % (i + 1, t["nominal"], t["tol"]),
-                ha="center", va="center", fontsize=7.5, color=GREEN, fontweight="bold")
+        y0 = 0.90 if i % 2 == 0 else 1.00
+        ax.add_patch(Rectangle((lo, y0), hi - lo, 0.075, facecolor=GREEN, alpha=0.28,
+                               edgecolor=GREEN, lw=1.8))
+        ax.text((lo + hi) / 2, y0 + 0.037,
+                "Pot.-%d: %.2f%% ±%.2f%%" % (i + 1, t["nominal"], t["tol"]),
+                ha="center", va="center", fontsize=8.5, color="#0F3D22", fontweight="bold")
     # old tier boundaries
     for x in OLD_TIERS:
         ax.axvline(x, color="#B9C4D0", lw=0.8, ls=(0, (3, 3)), zorder=1)

@@ -10,7 +10,7 @@ Same bound dataset (potency_dataset.json), richer per-result detail:
   • same-batch repeat pairs called out separately (the truest "distance
     between two results obtained by all means so far");
   • the CSS-built 0–30 % axis per strain: ±1,5 % zone per result, mean line,
-    95 % CI band (n≥3), proposed W-tiers, old standard grade boundaries;
+    95 % CI band (n≥3), proposed Pot.-tiers, old standard grade boundaries;
   • degradation evidence (stability program) and the full T1/T2/T3 stock table.
 
 Self-contained: subset Montserrat + Orbitron inlined as data-URI woff2, no
@@ -68,11 +68,14 @@ def dkey(s):
     return (p[2], p[1], p[0]) if len(p) == 3 else ("0", "0", "0")
 
 
-def nomtol(t):
-    """The declared form: whole-number nominal ± its fitted tolerance.
-    Accepts a merged_ranges tier dict or a (nominal, tol) pair."""
+def potlabel(i, t, html_ent=True):
+    """Full potency-class label: 'Pot.-1: 22.00% ±2.20%'. Accepts a
+    merged_ranges tier dict or a (nominal, tol) pair. html_ent=False for
+    plain-text targets (matplotlib figures, docx, xlsx cells)."""
     nom, tol = (t["nominal"], t["tol"]) if isinstance(t, dict) else t
-    return "%.2f&nbsp;%%&nbsp;±&nbsp;%.2f&nbsp;%%" % (nom, tol)
+    if html_ent:
+        return "Pot.-%d:&nbsp;%.2f%%&nbsp;±%.2f%%" % (i, nom, tol)
+    return "Pot.-%d: %.2f%% ±%.2f%%" % (i, nom, tol)
 
 
 # group register results per strain
@@ -156,7 +159,7 @@ h2 span{font-weight:400;color:var(--mut);font-size:16.5px}
 .stat{font-size:13.5px;color:var(--mut)}
 .stat b{color:var(--ink);font-size:15px;font-variant-numeric:tabular-nums}
 .axiswrap{padding:18px 18px 6px;overflow-x:auto}
-.axis{position:relative;height:118px;min-width:640px;
+.axis{position:relative;height:148px;min-width:640px;
  background:linear-gradient(180deg,#FBFCFE, #F4F7FB);border:1px solid var(--line)}
 .zone{position:absolute;top:14%;height:56%;background:var(--zone)}
 .old{position:absolute;top:0;bottom:0;border-left:1px dashed #B9C7D6}
@@ -165,10 +168,10 @@ h2 span{font-weight:400;color:var(--mut);font-size:16.5px}
 .dot{position:absolute;top:64%;width:11px;height:11px;border-radius:50%;
  background:var(--navy2);border:2px solid #fff;box-shadow:0 0 0 1px var(--navy2);
  transform:translateX(-50%)}
-.tier{position:absolute;height:13px;background:rgba(30,132,73,.16);
- border:1.5px solid var(--green);font-size:9.5px;font-weight:700;color:var(--green);
+.tier{position:absolute;height:22px;background:rgba(30,132,73,.20);
+ border:2.5px solid var(--green);font-size:13.5px;font-weight:700;color:#0F3D22;
  display:flex;align-items:center;justify-content:center;white-space:nowrap;
- letter-spacing:.03em}
+ letter-spacing:.01em;border-radius:3px;z-index:4;font-variant-numeric:tabular-nums}
 .stab25{position:absolute;top:84%;width:10px;height:10px;background:var(--green);
  border:2px solid #fff;box-shadow:0 0 0 1px var(--green);transform:translateX(-50%)}
 .stab40{position:absolute;top:84%;width:0;height:0;transform:translateX(-50%);
@@ -204,9 +207,10 @@ td.dev{color:var(--mut)}
 .callout{margin:0 18px 16px;background:#FBF6E9;border:1px solid var(--gold);
  padding:10px 14px;font-size:12.5px}
 .callout b{color:#8A6D14}
-.tiers{margin:0 18px 16px;font-size:14.5px}
+.tiers{margin:0 18px 16px;font-size:15.5px}
 .tiers .trow{display:flex;gap:10px;align-items:baseline;padding:3px 0}
-.tiers .tr-range{font-family:var(--mono);font-weight:600;color:var(--green);min-width:190px}
+.tiers .tr-range{font-family:var(--mono);font-weight:700;color:#14532B;min-width:230px;
+ font-size:16px}
 .tiers .tr-span{font-family:var(--mono);color:var(--mut);font-size:13px;margin-right:4px}
 .stabnote{color:var(--rose);font-size:11.5px}
 details{margin-top:8px}
@@ -381,19 +385,18 @@ def axis_html(s, st, tiers, stab):
     tt = ""
     for i, t in enumerate(tiers):
         lo, hi = t["range"]
-        top = 4 if i % 2 == 0 else 22
+        top = 6 if i % 2 == 0 else 34
         tt += ('<div class="tier" style="left:%.3f%%;width:%.3f%%;top:%dpx" '
-               'title="%.2f %% ± %.2f %% (%.2f–%.2f) · серии | batches: %s">'
-               "W-%d %.0f±%.2f</div>"
+               'title="%.2f%% ± %.2f%% (%.2f%%–%.2f%%) · серии | batches: %s">%s</div>'
                % (pct(lo), pct(hi - lo), top, t["nominal"], t["tol"], lo, hi,
-                  esc(", ".join(t["batches"])), i + 1, t["nominal"], t["tol"]))
+                  esc(", ".join(t["batches"])), potlabel(i + 1, t)))
     sb = ""
     for r in stab:
         cls = "stab25" if r["arm"].startswith("25") else "stab40"
         sb += ('<div class="%s" style="left:%.3f%%" title="%s M%d %s — %.2f%% (CBN %.2f%%)"></div>'
                % (cls, pct(r["total_thc"]), esc(r["batch"]), r["month"], esc(r["arm"]),
                   r["total_thc"], r["cbn"]))
-    scale = "".join("<span>%s</span>" % ("%.1f %%" % x if x == 30 else "%.1f" % x)
+    scale = "".join("<span>%s</span>" % ("%.1f%%" % x if x == 30 else "%.1f" % x)
                     for x in range(0, 31, 5))
     ren_items = []
     for r in per[s]:
@@ -471,9 +474,9 @@ def tiers_block(s):
         return ('<div class="tiers"><i>Нема серии на залиха во Т1/Т2/Т3 | '
                 "No T1/T2/T3 stock batches.</i></div>")
     rows = "".join(
-        '<div class="trow"><span class="tr-range">W-%d %s</span>'
-        '<span class="tr-span">(%.2f – %.2f %%)</span><span>%s</span></div>'
-        % (i + 1, nomtol(t), t["range"][0], t["range"][1], esc(", ".join(t["batches"])))
+        '<div class="trow"><span class="tr-range">%s</span>'
+        '<span class="tr-span">(%.2f%% – %.2f%%)</span><span>%s</span></div>'
+        % (potlabel(i + 1, t), t["range"][0], t["range"][1], esc(", ".join(t["batches"])))
         for i, t in enumerate(tiers))
     return ('<div class="tiers"><b>Предложени класи | Proposed tiers:</b>%s</div>' % rows)
 
@@ -492,7 +495,7 @@ def strain_cards():
         legend = ('<div class="legend"><i><span class="dotk"></span>резултат | result</i>'
                   '<i><span class="zonek"></span>±1,5%% зона | zone</i>'
                   '<i><span class="meank"></span>средна | mean</i>'
-                  '<i><span class="tierk"></span>W-класи | tiers</i></div>')
+                  '<i><span class="tierk"></span>Pot.-класи | tiers</i></div>')
         out += ('<article class="strain" id="%s"><div class="shead"><h3>%s</h3>%s</div>'
                 "%s%s%s%s%s</article>"
                 % (sid, esc(s), chips, axis_html(s, st, d["merged_ranges"].get(s, []), []),
@@ -523,7 +526,7 @@ U_RATIO = 0.062
 
 def renames_section():
     """REDESIGNED rename layer: per original strain, the mapping into new names, and —
-    for every new-name group — OUR statistically derived W-tier vs the bracket the
+    for every new-name group — OUR statistically derived Pot.-tier vs the bracket the
     Portfolio Master itself suggests, on one comparison axis with verdicts."""
     from collections import OrderedDict
 
@@ -578,7 +581,7 @@ def renames_section():
                     wset.append(it["ours"])
                     lo, hi = it["ours"][:2]
                     spans += ('<div class="wspan" style="left:%.3f%%;width:%.3f%%" '
-                              'title="наш опсег | our tier: %.2f – %.2f %%"></div>'
+                              'title="наш опсег | our tier: %.2f%% – %.2f%%"></div>'
                               % (pct(lo), pct(hi - lo), lo, hi))
             dots = ""
             for it in items:
@@ -589,14 +592,14 @@ def renames_section():
                          % (cls, pct(it["val"]), esc(it["batch"]), it["val"],
                             " · декларирана | declared" if it["declared"] else ""))
             gridt = "".join('<i style="left:%.3f%%"></i>' % pct(x) for x in range(5, 30, 5))
-            mscale = "".join("<span>%s</span>" % ("%.1f %%" % x if x == 30 else "%.1f" % x)
+            mscale = "".join("<span>%s</span>" % ("%.1f%%" % x if x == 30 else "%.1f" % x)
                              for x in range(0, 31, 5))
             blist = ", ".join("%s (%s)" % (esc(it["batch"]),
                                            ("%.2f" % it["val"]) if it["val"] is not None and not it["declared"]
                                            else ("%.1f декл." % it["val"] if it["val"] is not None else "—"))
                               for it in items)
             mb_lbl = " · ".join(sorted({it["mb"][2] for it in items if it["mb"]})) or "—"
-            ours_lbl = " · ".join("%.2f %% ± %.2f %% (%.2f–%.2f)" % (w[2], w[3], w[0], w[1])
+            ours_lbl = " · ".join("%.2f%% ± %.2f%% (%.2f%%–%.2f%%)" % (w[2], w[3], w[0], w[1])
                                   for w in wset) or "—"
             rows_html += (
                 '<div class="flowrow">'
@@ -641,10 +644,10 @@ def final_ranges():
             prov = len(tested) == 0
             if not prov:
                 strain_prov = False
-            pills += ('<span class="fpill%s" title="%s">W-%d&nbsp;&nbsp;%s'
-                      "<small>%.2f – %.2f %% · %d %s</small></span>"
-                      % (" prov" if prov else "", esc(", ".join(t["batches"])), i + 1,
-                         nomtol(t), t["range"][0], t["range"][1], len(t["batches"]),
+            pills += ('<span class="fpill%s" title="%s">%s'
+                      "<small>%.2f%% – %.2f%% · %d %s</small></span>"
+                      % (" prov" if prov else "", esc(", ".join(t["batches"])),
+                         potlabel(i + 1, t), t["range"][0], t["range"][1], len(t["batches"]),
                          "серии | batches" if len(t["batches"]) != 1 else "серија | batch"))
         if strain_prov:
             n_prov += 1
@@ -811,10 +814,10 @@ def final_ranges_renamed():
             pills = ""
             for i, t in enumerate(tiers):
                 prov = not any(t["tested"])
-                pills += ('<span class="fpill%s" title="%s">W-%d&nbsp;&nbsp;%s'
-                          "<small>%.2f – %.2f %% · %d %s</small></span>"
-                          % (" prov" if prov else "", esc(", ".join(t["batches"])), i + 1,
-                             nomtol((t["nominal"], t["tol"])), t["lo"], t["hi"],
+                pills += ('<span class="fpill%s" title="%s">%s'
+                          "<small>%.2f%% – %.2f%% · %d %s</small></span>"
+                          % (" prov" if prov else "", esc(", ".join(t["batches"])),
+                             potlabel(i + 1, (t["nominal"], t["tol"])), t["lo"], t["hi"],
                              len(t["batches"]),
                              "серии | batches" if len(t["batches"]) != 1 else "серија | batch"))
             badge = ('<span class="fbadge prov">ПРОВИЗОРНО — само декларирана основа | '
@@ -881,15 +884,15 @@ def stock_table():
         if b.get("declared") is not None:
             out_of_grade = not (b["proposed"][0] - 1e-6 <= b["declared"] <= b["proposed"][1] + 1e-6)
             cur = ('<span class="mismatch" title="надвор од новата класа | outside the new '
-                   'grade">%.2f %%</span>' % b["declared"]) if out_of_grade else "%.2f %%" % b["declared"]
+                   'grade">%.2f%%</span>' % b["declared"]) if out_of_grade else "%.2f%%" % b["declared"]
         else:
             cur = "—"
         rows += ('<tr%s><td>Т%s</td><td class=num>%s</td><td>%s</td><td class=num>%s</td>'
-                 "<td>%s</td><td class=num>%s</td><td>%s</td><td class=v>%.2f %% ± %.2f %%</td>"
+                 "<td>%s</td><td class=num>%s</td><td>%s</td><td class=v>%.2f%% ± %.2f%%</td>"
                  "<td class=num>%.2f – %.2f</td><td class=num>%.2f</td></tr>"
                  % (' class="decl"' if decl else "", esc(b["tranche"]), esc(b["batch"]),
                     esc(b["strain"]), anc, esc(b["bracket_old"] or "—"), cur,
-                    "W-%s" % b.get("tier", "—"), b["nominal"], b["tol"],
+                    "Pot.-%s" % b.get("tier", "—"), b["nominal"], b["tol"],
                     b["proposed"][0], b["proposed"][1], b["headroom_down"]))
     return ('<div class="tblwrap" style="padding:0"><table><thead><tr>'
             "<th>Т</th><th>Серија | Batch</th><th>Сорта | Strain</th>"

@@ -171,7 +171,7 @@ for s in sorted(d["stats"]):
     pr.figure(doc, os.path.join(D, "figures", figidx[s]), None, None, width_cm=17.2)
     tiers = d["merged_ranges"].get(s, [])
     if tiers:
-        trs = [["W-%d" % (i + 1), "%.2f%% ± %.2f%%" % (t["nominal"], t["tol"]),
+        trs = [["Pot.-%d" % (i + 1), "%.2f%% ± %.2f%%" % (t["nominal"], t["tol"]),
                 "%.2f – %.2f" % tuple(t["range"]),
                 ", ".join(t["batches"]),
                 ", ".join("%.2f" % a for a in t["anchors"])]
@@ -197,7 +197,7 @@ for b in sorted(d["stock"], key=lambda x: (x["tranche"], x["strain"], x["batch"]
         continue
     anc = "%.2f (%s)" % (b["anchor"], b["anchor_date"]) if b["anchor"] is not None \
         else "%.2f (декл. | decl.)" % b["declared"]
-    tier = "W-%d" % b["tier"] if b.get("tier") else "—"
+    tier = "Pot.-%d" % b["tier"] if b.get("tier") else "—"
     stock_rows.append(["Т%s" % b["tranche"], b["batch"], b["strain"], anc,
                        b["bracket_old"] or "—", tier,
                        "%.2f%% ± %.2f%%" % (b["nominal"], b["tol"]),

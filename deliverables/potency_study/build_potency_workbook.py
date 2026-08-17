@@ -555,7 +555,7 @@ for s in sorted(d["merged_ranges"]):
         basis = ("ДЕФИНИТИВНО | DEFINITIVE"
                  if any(norm_b(bt) in tested_batches for bt in t["batches"])
                  else "ПРОВИЗОРНО | PROVISIONAL")
-        vals = [s, "W-%d" % ti, t["nominal"], t["tol"], t["range"][0], t["range"][1],
+        vals = [s, "Pot.-%d" % ti, t["nominal"], t["tol"], t["range"][0], t["range"][1],
                 len(t["batches"]), ", ".join(t["batches"]), basis]
         for c, v in enumerate(vals, 1):
             ws.cell(row=row, column=c, value=v)
@@ -603,7 +603,7 @@ for neu in sorted(renamed_tiers):
     for ti, t in enumerate(tiers, 1):
         basis = ("ДЕФИНИТИВНО | DEFINITIVE" if any(t["tested"])
                  else "ПРОВИЗОРНО | PROVISIONAL")
-        vals = [neu, "W-%d" % ti, t["nominal"], t["tol"], t["lo"], t["hi"],
+        vals = [neu, "Pot.-%d" % ti, t["nominal"], t["tol"], t["lo"], t["hi"],
                 len(t["batches"]), ", ".join(t["batches"]), basis, origs]
         for c, v in enumerate(vals, 1):
             ws.cell(row=row, column=c, value=v)
@@ -658,7 +658,7 @@ for i, res in enumerate(sorted(d["register_results"], key=lambda x: (x["strain"]
     in_stock = "Да | Yes" if stk else "Не | No"
 
     if stk and stk.get("proposed") and stk.get("tier"):
-        a_tier = "W-%s" % stk["tier"]
+        a_tier = "Pot.-%s" % stk["tier"]
         a_nom, a_tol = stk["nominal"], stk["tol"]
         a_lo, a_hi = stk["proposed"]
     else:
@@ -683,7 +683,7 @@ for i, res in enumerate(sorted(d["register_results"], key=lambda x: (x["strain"]
         r_tier = r_nom = r_lo = r_hi = None
         for ti, t in enumerate(renamed_tiers.get(neu, []), 1):
             if res["batch"] in t["batches"] or pmrow["batch"] in t["batches"]:
-                r_tier, r_nom, r_lo, r_hi = "W-%d" % ti, t["nominal"], t["lo"], t["hi"]
+                r_tier, r_nom, r_lo, r_hi = "Pot.-%d" % ti, t["nominal"], t["lo"], t["hi"]
                 break
         if r_tier is None:
             r_tier = "n/a"
