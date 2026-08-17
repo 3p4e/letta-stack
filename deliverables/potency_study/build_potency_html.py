@@ -459,14 +459,18 @@ def tiers_block(s):
         '<span class="tr-span">(%.2f%% – %.2f%%)</span><span>%s</span></div>'
         % (potlabel(i + 1, t), t["range"][0], t["range"][1], esc(", ".join(t["batches"])))
         for i, t in enumerate(tiers))
-    note = ('<div class="tiernote">Толеранцијата е поставена најшироко што правилата '
-            'дозволуваат — до 10,00% од номиналата — но никогаш толку широко што би ја '
-            'допрела соседната класа: затоа две класи од иста сорта може да носат различен '
-            '± процент, по дизајн, не по случајност. Класите никогаш не се преклопуваат. | '
-            'The tolerance is set as wide as the rules allow — up to 10.00% of the nominal '
-            '— but never so wide that it would touch the neighbouring tier: that is why two '
-            'tiers of the same strain can carry a different ± percentage, by design, not by '
-            'accident. Tiers never overlap.</div>')
+    note = ('<div class="tiernote">Секоја класа е декларирана на полна ширина: '
+            'номинала ± 10,00% од самата номинала, со номинала секогаш цел број. '
+            'Затоа класата е целосно определена со еден цел број — 25 значи '
+            '25,00% ± 2,50%, односно 22,50%–27,50%. Поделбата на класи и нивните '
+            'номинали се одредуваат заедно, за целата сорта одеднаш, така што ниту '
+            'една класа не останува стесната; соседните класи никогаш не се '
+            'преклопуваат ниту се допираат. | Every tier is declared at its full '
+            'width: nominal ± 10.00% of that nominal, the nominal always a whole '
+            'number. A tier is therefore fully described by one integer — 25 means '
+            '25.00% ± 2.50%, i.e. 22.50%–27.50%. The splits and the nominals are '
+            'chosen together for the whole strain at once, so no tier is left '
+            'narrowed; adjacent tiers never overlap or even touch.</div>')
     return ('<div class="tiers"><b>Предложени класи | Proposed tiers:</b>%s%s</div>'
             % (rows, note))
 
@@ -681,11 +685,59 @@ def cap_feasible(anchors, max_ratio=MAX_TOL_RATIO):
     return lo_i <= hi_i
 
 
+def full_band(nominal, max_ratio=MAX_TOL_RATIO):
+    """Mirror of build_potency_dataset.full_band."""
+    tol = round(nominal * max_ratio, 2)
+    return round(nominal - tol, 2), round(nominal + tol, 2), tol
+
+
+def feasible_nominals(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO):
+    """Mirror of build_potency_dataset.feasible_nominals."""
+    lo_i = math.ceil(max(anchors) / (1 + max_ratio) - 1e-9)
+    hi_i = math.floor(min(anchors) / (1 - max_ratio) + 1e-9)
+    lo_i = max(lo_i, math.ceil(floor / (1 - max_ratio) - 1e-9))
+    return range(lo_i, hi_i + 1)
+
+
+def plan_full_width(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_GAP):
+    """Mirror of build_potency_dataset.plan_full_width — plans a strain's
+    whole tier ladder at once, every tier at the full ±max_ratio width.
+    Returns [(start, end, nominal), ...] or None."""
+    n = len(anchors)
+    if n == 0:
+        return []
+    dp = [dict() for _ in range(n + 1)]
+    dp[0][None] = (0.0, 0, None, None)
+    for i in range(1, n + 1):
+        for j in range(i):
+            run = anchors[j:i]
+            for nominal in feasible_nominals(run, floor, max_ratio):
+                lo, _hi, _tol = full_band(nominal, max_ratio)
+                add = sum(abs(nominal - a) for a in run)
+                for prev_n, (cost, count, _pj, _pn) in dp[j].items():
+                    if prev_n is not None:
+                        _plo, prev_hi, _pt = full_band(prev_n, max_ratio)
+                        if lo < prev_hi + gap - 1e-9:
+                            continue
+                    cand = (cost + add, count + 1)
+                    cur = dp[i].get(nominal)
+                    if cur is None or cand < (cur[0], cur[1]):
+                        dp[i][nominal] = (cand[0], cand[1], j, prev_n)
+    if not dp[n]:
+        return None
+    best = min(dp[n], key=lambda N: (dp[n][N][0], dp[n][N][1]))
+    out = []
+    i, nominal = n, best
+    while nominal is not None:
+        _c, _k, j, prev_n = dp[i][nominal]
+        out.append((j, i, float(nominal)))
+        i, nominal = j, prev_n
+    out.reverse()
+    return out
+
+
 def declare_tier(anchors, prev_hi, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_GAP):
-    """Mirror of build_potency_dataset.declare_tier — see its docstring for
-    the full rule. Nominal = the cap-feasible integer closest to this
-    anchor set's own midpoint; tolerance = as generous as allowed (up to
-    10% of nominal) without reaching at or below `prev_hi`."""
+    """FALLBACK ONLY — mirror of build_potency_dataset.declare_tier."""
     lo_i, hi_i = cap_feasible_range(anchors, max_ratio)
     if lo_i > hi_i:
         return None
@@ -710,13 +762,23 @@ def declare_tier(anchors, prev_hi, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_G
 
 def tiers_from_anchors(items):
     """Mirror of build_potency_dataset.build_strain_tiers, adapted to carry
-    each batch's `tested` flag through. Tiers are built strictly left to
-    right on ascending anchors so no two can ever overlap: a batch joins
-    the tier being formed only while a whole-number nominal still exists
-    that keeps every anchor in it within ±10%; once a tier is declared, its
-    ceiling becomes the floor the next tier must clear.
+    each batch's `tested` flag through. The whole ladder is planned at once
+    so every tier gets its full ±10% (plan_full_width); only if no such
+    ladder exists does it fall back to the left-to-right pass.
     items = [(batch, anchor, tested_bool)] — any order in, sorted here."""
     items = sorted(items, key=lambda x: x[1])
+    anchors = [x[1] for x in items]
+    plan = plan_full_width(anchors)
+    if plan is not None:
+        tiers = []
+        for j, i, nominal in plan:
+            lo, hi, tol = full_band(nominal)
+            tiers.append(dict(nominal=nominal, tol=tol, lo=lo, hi=hi, full_width=True,
+                              batches=[x[0] for x in items[j:i]],
+                              tested=[x[2] for x in items[j:i]],
+                              anchors=anchors[j:i]))
+        return tiers
+
     tiers = []
     prev_hi = None
     idx, n = 0, len(items)
@@ -737,6 +799,7 @@ def tiers_from_anchors(items):
         assert best is not None, ("no non-overlapping tier fits this anchor set",
                                   [items[k][1] for k in cur], prev_hi)
         tiers.append(dict(nominal=best["nominal"], tol=best["tol"], lo=best["lo"], hi=best["hi"],
+                          full_width=abs(best["tol"] - round(best["nominal"] * MAX_TOL_RATIO, 2)) < 1e-9,
                           batches=[items[k][0] for k in cur], tested=[items[k][2] for k in cur],
                           anchors=[items[k][1] for k in cur]))
         prev_hi = best["hi"]

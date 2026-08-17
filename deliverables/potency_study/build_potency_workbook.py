@@ -337,9 +337,57 @@ def cap_feasible(anchors, max_ratio=MAX_TOL_RATIO):
     return lo_i <= hi_i
 
 
+def full_band(nominal, max_ratio=MAX_TOL_RATIO):
+    """Mirror of build_potency_dataset.full_band."""
+    tol = round(nominal * max_ratio, 2)
+    return round(nominal - tol, 2), round(nominal + tol, 2), tol
+
+
+def feasible_nominals(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO):
+    """Mirror of build_potency_dataset.feasible_nominals."""
+    lo_i = math.ceil(max(anchors) / (1 + max_ratio) - 1e-9)
+    hi_i = math.floor(min(anchors) / (1 - max_ratio) + 1e-9)
+    lo_i = max(lo_i, math.ceil(floor / (1 - max_ratio) - 1e-9))
+    return range(lo_i, hi_i + 1)
+
+
+def plan_full_width(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_GAP):
+    """Mirror of build_potency_dataset.plan_full_width."""
+    n = len(anchors)
+    if n == 0:
+        return []
+    dp = [dict() for _ in range(n + 1)]
+    dp[0][None] = (0.0, 0, None, None)
+    for i in range(1, n + 1):
+        for j in range(i):
+            run = anchors[j:i]
+            for nominal in feasible_nominals(run, floor, max_ratio):
+                lo, _hi, _tol = full_band(nominal, max_ratio)
+                add = sum(abs(nominal - a) for a in run)
+                for prev_n, (cost, count, _pj, _pn) in dp[j].items():
+                    if prev_n is not None:
+                        _plo, prev_hi, _pt = full_band(prev_n, max_ratio)
+                        if lo < prev_hi + gap - 1e-9:
+                            continue
+                    cand = (cost + add, count + 1)
+                    cur = dp[i].get(nominal)
+                    if cur is None or cand < (cur[0], cur[1]):
+                        dp[i][nominal] = (cand[0], cand[1], j, prev_n)
+    if not dp[n]:
+        return None
+    best = min(dp[n], key=lambda N: (dp[n][N][0], dp[n][N][1]))
+    out = []
+    i, nominal = n, best
+    while nominal is not None:
+        _c, _k, j, prev_n = dp[i][nominal]
+        out.append((j, i, float(nominal)))
+        i, nominal = j, prev_n
+    out.reverse()
+    return out
+
+
 def declare_tier(anchors, prev_hi, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_GAP):
-    """Mirror of build_potency_dataset.declare_tier / build_potency_html's
-    copy — see either docstring for the full rule."""
+    """FALLBACK ONLY — mirror of build_potency_dataset.declare_tier."""
     lo_i, hi_i = cap_feasible_range(anchors, max_ratio)
     if lo_i > hi_i:
         return None
@@ -365,9 +413,22 @@ def declare_tier(anchors, prev_hi, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_G
 def tiers_from_anchors(items):
     """items = [(batch, anchor, tested_bool)] — mirror of
     build_potency_dataset.build_strain_tiers / build_potency_html's copy.
-    Tiers are built strictly left to right on ascending anchors so no two
-    can ever overlap."""
+    The whole ladder is planned at once so every tier gets its full ±10%;
+    only if no such ladder exists does it fall back to the left-to-right
+    pass."""
     items = sorted(items, key=lambda x: x[1])
+    anchors = [x[1] for x in items]
+    plan = plan_full_width(anchors)
+    if plan is not None:
+        tiers = []
+        for j, i, nominal in plan:
+            lo, hi, tol = full_band(nominal)
+            tiers.append(dict(nominal=nominal, tol=tol, lo=lo, hi=hi, full_width=True,
+                              batches=[x[0] for x in items[j:i]],
+                              tested=[x[2] for x in items[j:i]],
+                              anchors=anchors[j:i]))
+        return tiers
+
     tiers = []
     prev_hi = None
     idx, n = 0, len(items)
@@ -388,6 +449,7 @@ def tiers_from_anchors(items):
         assert best is not None, ("no non-overlapping tier fits this anchor set",
                                   [items[k][1] for k in cur], prev_hi)
         tiers.append(dict(nominal=best["nominal"], tol=best["tol"], lo=best["lo"], hi=best["hi"],
+                          full_width=abs(best["tol"] - round(best["nominal"] * MAX_TOL_RATIO, 2)) < 1e-9,
                           batches=[items[k][0] for k in cur], tested=[items[k][2] for k in cur],
                           anchors=[items[k][1] for k in cur]))
         prev_hi = best["hi"]
