@@ -1016,7 +1016,6 @@ HTML = """<!doctype html>
   <span class="chip"><b>%d</b>резултати | results</span>
   <span class="chip"><b>%d</b>сорти | strains</span>
   <span class="chip"><b>%d</b>серии | batches</span>
-  <span class="chip"><b>4 134</b>пасуси проверени | passages swept</span>
  </div>
  <div class="informal">Неформален работен документ · не е контролиран запис · 14.08.2026 |
  Informal working document · not a controlled record</div>
