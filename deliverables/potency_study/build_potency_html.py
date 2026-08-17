@@ -167,6 +167,10 @@ h2 span{font-weight:400;color:var(--mut);font-size:16.5px}
 .tierzone{position:absolute;top:0;bottom:0;background:rgba(30,132,73,.09);
  border-left:1px solid rgba(30,132,73,.35);border-right:1px solid rgba(30,132,73,.35);
  z-index:1}
+.gapzone{position:absolute;top:0;bottom:0;z-index:1;cursor:help;
+ background:repeating-linear-gradient(135deg,rgba(193,58,58,.14) 0 6px,
+ rgba(193,58,58,.02) 6px 12px);border-left:1px dashed var(--rose);
+ border-right:1px dashed var(--rose)}
 .zone{position:absolute;top:14%;height:56%;background:var(--zone);z-index:2}
 .old{position:absolute;top:0;bottom:0;border-left:1px dashed #B9C7D6;z-index:2}
 .dot{position:absolute;top:64%;width:15px;height:15px;border-radius:50%;
@@ -196,6 +200,9 @@ h2 span{font-weight:400;color:var(--mut);font-size:16.5px}
  margin-right:6px}
 .tierk{display:inline-block;width:18px;height:12px;background:rgba(30,132,73,.20);
  border:2px solid var(--green);border-radius:2px;margin-right:6px}
+.gapk{display:inline-block;width:18px;height:12px;border-radius:2px;margin-right:6px;
+ border:1px dashed var(--rose);background:repeating-linear-gradient(135deg,
+ rgba(193,58,58,.16) 0 5px,rgba(193,58,58,.03) 5px 10px)}
 table{border-collapse:collapse;width:100%;font-size:13.5px}
 .tblwrap{overflow-x:auto;padding:0 18px 16px}
 th{background:var(--navy);color:#fff;font-weight:600;padding:7px 10px;font-size:12px;
@@ -218,6 +225,9 @@ td.gap{color:var(--navy2)}
 .tiers .tr-range{font-family:var(--mono);font-weight:700;color:#14532B;min-width:230px;
  font-size:16px}
 .tiers .tr-span{font-family:var(--mono);color:var(--mut);font-size:13px;margin-right:4px}
+.tiers .gaprow{color:#8A2E2E;font-size:13.5px;background:rgba(193,58,58,.06);
+ border-left:3px solid var(--rose);padding:3px 0 3px 8px;margin:2px 0}
+.tiers .gaprow .tr-span{color:#8A2E2E;font-weight:700}
 .tiernote{margin-top:8px;font-size:12px;line-height:1.5;color:var(--mut);
  border-left:3px solid var(--green);padding:4px 0 4px 10px;max-width:96ch}
 .stabnote{color:var(--rose);font-size:11.5px}
@@ -306,6 +316,9 @@ summary{cursor:pointer;font-weight:600;color:var(--navy);padding:10px 0}
  color:#3A6247;margin-top:2px}
 .fpill.prov{background:rgba(201,162,39,.14);border-color:var(--gold);color:#7A5E10}
 .fpill.prov small{color:#6B5A20}
+.fgap{font-family:var(--mono);font-size:12.5px;font-weight:600;color:#8A2E2E;
+ background:rgba(193,58,58,.08);border:1px dashed var(--rose);border-radius:3px;
+ padding:6px 10px;line-height:1.2;align-self:center;cursor:help}
 @media (max-width:760px){.frow{grid-template-columns:1fr}}
 @page{size:A4;margin:11mm 10mm}
 @media print{
@@ -355,10 +368,21 @@ def axis_html(s, st, tiers, stab):
                     esc(r["lab"]), r["value"], esc(extra)))
     tz = ""    # full-height zone band per tier, behind everything else
     tt = ""    # the nominal ± tolerance label badge on top
+    gz = ""    # hatched "no established grade" band, only where the data
+               # itself leaves an unbridgeable gap between two tiers
     for i, t in enumerate(tiers):
         lo, hi = t["range"]
         tz += ('<div class="tierzone" style="left:%.3f%%;width:%.3f%%"></div>'
                % (pct(lo), pct(hi - lo)))
+        if t.get("gap_after") and i + 1 < len(tiers):
+            glo, ghi = hi, tiers[i + 1]["range"][0]
+            gz += ('<div class="gapzone" style="left:%.3f%%;width:%.3f%%" '
+                   'title="Нема воспоставена класа %.2f%%–%.2f%% — ниту една тестирана серија '
+                   'на оваа сорта не паѓа тука; резултат во оваа зона бара индивидуална ОК '
+                   'проценка. | No established grade %.2f%%–%.2f%% — no tested batch of this '
+                   'strain falls here; a result in this zone requires individual QC '
+                   'assessment."></div>'
+                   % (pct(glo), pct(ghi - glo), glo, ghi, glo, ghi))
         top = 6 if i % 2 == 0 else 34
         tt += ('<div class="tier" style="left:%.3f%%;width:%.3f%%;top:%dpx" '
                'title="%.2f%% ± %.2f%% (%.2f%%–%.2f%%) · серии | batches: %s">%s</div>'
@@ -386,9 +410,9 @@ def axis_html(s, st, tiers, stab):
                 % (bid, esc(rn["neu"]), esc(rn["brand"].lower()), esc(rn["brand"]), r["value"]))
     renlist = ('<div class="renlist"><b>Преименувани серии на лентата | Renamed batches on the '
                'band:</b>%s</div>' % "".join(ren_items)) if ren_items else ""
-    return ('<div class="axiswrap"><div class="axis">%s%s%s%s%s%s</div>'
+    return ('<div class="axiswrap"><div class="axis">%s%s%s%s%s%s%s</div>'
             '<div class="scale">%s</div></div>%s'
-            % (tz, zones, olds, minor, tt, dots + sb, scale, renlist))
+            % (tz, gz, zones, olds, minor, tt, dots + sb, scale, renlist))
 
 
 def results_table(s, st):
@@ -454,23 +478,35 @@ def tiers_block(s):
     if not tiers:
         return ('<div class="tiers"><i>Нема серии на залиха во Т1/Т2/Т3 | '
                 "No T1/T2/T3 stock batches.</i></div>")
-    rows = "".join(
-        '<div class="trow"><span class="tr-range">%s</span>'
-        '<span class="tr-span">(%.2f%% – %.2f%%)</span><span>%s</span></div>'
-        % (potlabel(i + 1, t), t["range"][0], t["range"][1], esc(", ".join(t["batches"])))
-        for i, t in enumerate(tiers))
-    note = ('<div class="tiernote">Секоја класа е декларирана на полна ширина: '
-            'номинала ± 10,00% од самата номинала, со номинала секогаш цел број. '
-            'Затоа класата е целосно определена со еден цел број — 25 значи '
-            '25,00% ± 2,50%, односно 22,50%–27,50%. Поделбата на класи и нивните '
-            'номинали се одредуваат заедно, за целата сорта одеднаш, така што ниту '
-            'една класа не останува стесната; соседните класи никогаш не се '
-            'преклопуваат ниту се допираат. | Every tier is declared at its full '
-            'width: nominal ± 10.00% of that nominal, the nominal always a whole '
-            'number. A tier is therefore fully described by one integer — 25 means '
-            '25.00% ± 2.50%, i.e. 22.50%–27.50%. The splits and the nominals are '
-            'chosen together for the whole strain at once, so no tier is left '
-            'narrowed; adjacent tiers never overlap or even touch.</div>')
+    rows = ""
+    for i, t in enumerate(tiers):
+        rows += ('<div class="trow"><span class="tr-range">%s</span>'
+                 '<span class="tr-span">(%.2f%% – %.2f%%)</span><span>%s</span></div>'
+                 % (potlabel(i + 1, t), t["range"][0], t["range"][1], esc(", ".join(t["batches"]))))
+        if t.get("gap_after") and i + 1 < len(tiers):
+            glo, ghi = t["range"][1], tiers[i + 1]["range"][0]
+            rows += ('<div class="trow gaprow">⚠ <span class="tr-span">(%.2f%% – %.2f%%)</span>'
+                     '<span>Нема воспоставена класа — резултат тука бара индивидуална ОК '
+                     'проценка | No established grade — a result here requires individual QC '
+                     'assessment</span></div>' % (glo, ghi))
+    note = ('<div class="tiernote">Секоја класа е нè номинала ± толеранција, номинала секогаш '
+            'цел број, толеранција никогаш повеќе од 10,00% од номиналата. Соседните класи на '
+            'иста сорта немаат празен простор меѓу себе — горната граница на една класа е точно '
+            '0,01 под долната граница на следната, секогаш, така што и резултат меѓу две '
+            'воспоставени класи сепак паѓа во некоја од нив; толеранцијата затоа е на целосните '
+            '10% секогаш кога тоа е возможно, а се намалува само толку колку што е потребно за '
+            'точно да се допре соседната класа. Само кога два тестирани резултати се толку '
+            'далеку што ниту еден цел број не може да ги премости во рамки на 10% ограничувањето '
+            '(нема тука соодветна серија), останува вистински, означен јаз — не измислена '
+            'преодна класа. | Every tier is nominal ± tolerance, nominal always a whole number, '
+            'tolerance never more than 10.00% of the nominal. Adjacent tiers of the same strain '
+            'carry no blind gap between them — one tier\'s ceiling sits exactly 0.01 below the '
+            'next tier\'s floor, always, so a result between two established grades still falls '
+            'into one of them; tolerance is therefore at the full 10% whenever the data allows '
+            'it, and shrinks only as far as needed to meet the neighbour exactly. Only where two '
+            'tested results are too far apart for any whole number to bridge within the 10% cap '
+            '(no batch exists there) does a genuine, flagged gap remain — never a fabricated '
+            'bridge tier.</div>')
     return ('<div class="tiers"><b>Предложени класи | Proposed tiers:</b>%s%s</div>'
             % (rows, note))
 
@@ -484,9 +520,12 @@ def strain_cards():
                  "<b>%d</b></span>" % st["n"])
         chips += ("<span class=stat>опсег на тестираните резултати | range of tested "
                   "results <b>%.2f%% – %.2f%%</b></span>" % (st["min"], st["max"]))
+        has_gap = any(t.get("gap_after") for t in d["merged_ranges"].get(s, []))
         legend = ('<div class="legend"><i><span class="dotk"></span>резултат | result</i>'
                   '<i><span class="zonek"></span>±1,50% зона | zone</i>'
-                  '<i><span class="tierk"></span>Pot.-класи | tiers</i></div>')
+                  '<i><span class="tierk"></span>Pot.-класи | tiers</i>'
+                  + ('<i><span class="gapk"></span>нема класа | no established grade</i>'
+                     if has_gap else "") + '</div>')
         out += ('<article class="strain" id="%s"><div class="shead"><h3>%s</h3>%s</div>'
                 "%s%s%s%s%s</article>"
                 % (sid, esc(s), chips, axis_html(s, st, d["merged_ranges"].get(s, []), []),
@@ -644,6 +683,11 @@ def final_ranges():
                       % (" prov" if prov else "", esc(", ".join(t["batches"])),
                          potlabel(i + 1, t), t["range"][0], t["range"][1], len(t["batches"]),
                          "серии | batches" if len(t["batches"]) != 1 else "серија | batch"))
+            if t.get("gap_after") and i + 1 < len(tiers):
+                glo, ghi = t["range"][1], tiers[i + 1]["range"][0]
+                pills += ('<span class="fgap" title="Нема воспоставена класа %.2f%%–%.2f%% | '
+                          'No established grade %.2f%%–%.2f%%">⚠ %.2f%%–%.2f%%</span>'
+                          % (glo, ghi, glo, ghi, glo, ghi))
         if strain_prov:
             n_prov += 1
         else:
@@ -667,28 +711,8 @@ def final_ranges():
     return head + '<div class="fboard">' + rows + "</div>" + final_ranges_renamed()
 
 
-MAX_TOL_RATIO = 0.10   # owner ceiling: declared ± tolerance may never exceed
-                        # 10.0% of the nominal, for ANY batch or strain.
-MIN_GAP = 0.01          # adjacent tiers must never touch, let alone overlap.
-
-
-def cap_feasible_range(anchors, max_ratio=MAX_TOL_RATIO):
-    """Mirror of build_potency_dataset.cap_feasible_range — the inclusive
-    whole-number nominal range keeping every anchor within ±max_ratio."""
-    lo_n = max(a / (1 + max_ratio) for a in anchors)
-    hi_n = min(a / (1 - max_ratio) for a in anchors)
-    return math.ceil(lo_n - 1e-9), math.floor(hi_n + 1e-9)
-
-
-def cap_feasible(anchors, max_ratio=MAX_TOL_RATIO):
-    lo_i, hi_i = cap_feasible_range(anchors, max_ratio)
-    return lo_i <= hi_i
-
-
-def full_band(nominal, max_ratio=MAX_TOL_RATIO):
-    """Mirror of build_potency_dataset.full_band."""
-    tol = round(nominal * max_ratio, 2)
-    return round(nominal - tol, 2), round(nominal + tol, 2), tol
+MAX_TOL_RATIO = d["design"]["max_tol_ratio"]
+MIN_GAP = d["design"]["min_gap"]
 
 
 def feasible_nominals(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO):
@@ -699,112 +723,133 @@ def feasible_nominals(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO):
     return range(lo_i, hi_i + 1)
 
 
-def plan_full_width(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_GAP):
-    """Mirror of build_potency_dataset.plan_full_width — plans a strain's
-    whole tier ladder at once, every tier at the full ±max_ratio width.
-    Returns [(start, end, nominal), ...] or None."""
+def pairwise_bridgeable(prev_n, prev_max_anchor, nominal, run_min_anchor,
+                         gap=MIN_GAP, max_ratio=MAX_TOL_RATIO):
+    """Mirror of build_potency_dataset.pairwise_bridgeable."""
+    b_lo = max(prev_max_anchor, (1 - max_ratio) * nominal - gap)
+    b_hi = min((1 + max_ratio) * prev_n, run_min_anchor - gap)
+    return b_lo <= b_hi + 1e-9
+
+
+def solve_chain(nominals, needs, caps, gap=MIN_GAP):
+    """Mirror of build_potency_dataset.solve_chain."""
+    k = len(nominals)
+    if k == 1:
+        return [caps[0]] if needs[0] <= caps[0] + 1e-9 else None
+    D = [round(nominals[i + 1] - nominals[i] - gap, 2) for i in range(k - 1)]
+    A = [0.0] * k
+    for i in range(1, k):
+        A[i] = D[i - 1] - A[i - 1]
+    lo_t0, hi_t0 = needs[0], caps[0]
+    for i in range(k):
+        if i % 2 == 0:
+            lo_i, hi_i = needs[i] - A[i], caps[i] - A[i]
+        else:
+            lo_i, hi_i = A[i] - caps[i], A[i] - needs[i]
+        lo_t0, hi_t0 = max(lo_t0, lo_i), min(hi_t0, hi_i)
+    if lo_t0 > hi_t0 + 1e-9:
+        return None
+    tol0 = min(max(round((lo_t0 + hi_t0) / 2.0, 2), lo_t0), hi_t0)
+    tols = [tol0]
+    for i in range(1, k):
+        tols.append(round(D[i - 1] - tols[-1], 2))
+    return tols
+
+
+def _tiers_for_k(anchors, k, floor, max_ratio, gap):
+    """Mirror of build_potency_dataset._tiers_for_k."""
+    n = len(anchors)
+    if k > n:
+        return None
+    best = None
+
+    def eval_cuts(bounds):
+        nonlocal best
+        groups = [anchors[bounds[i]:bounds[i + 1]] for i in range(k)]
+        cand_lists = []
+        for g in groups:
+            c = list(feasible_nominals(g, floor, max_ratio))
+            if not c:
+                return
+            cand_lists.append(c)
+
+        def choose(idx, chosen):
+            nonlocal best
+            if idx == k:
+                needs = [max(nom - min(g), max(g) - nom) for nom, g in zip(chosen, groups)]
+                caps = [round(nom * max_ratio, 2) for nom in chosen]
+                tols = solve_chain(chosen, needs, caps, gap)
+                if tols is None:
+                    return
+                cost = sum(abs(nom - a) for nom, g in zip(chosen, groups) for a in g)
+                if best is None or cost < best[0] - 1e-9:
+                    tiers = [dict(nominal=nom, tol=tol, lo=round(nom - tol, 2), hi=round(nom + tol, 2),
+                                  anchors=g, start=bounds[gi], end=bounds[gi + 1])
+                             for gi, (nom, tol, g) in enumerate(zip(chosen, tols, groups))]
+                    best = (cost, tiers)
+                return
+            for nom in cand_lists[idx]:
+                if chosen and not pairwise_bridgeable(chosen[-1], groups[idx - 1][-1], nom,
+                                                        groups[idx][0], gap, max_ratio):
+                    continue
+                choose(idx + 1, chosen + [nom])
+
+        choose(0, [])
+
+    def cuts(start, groups_left, acc):
+        if groups_left == 1:
+            eval_cuts([0] + acc + [n])
+            return
+        for c in range(start + 1, n - (groups_left - 1) + 1):
+            cuts(c, groups_left - 1, acc + [c])
+
+    cuts(0, k, [])
+    return best
+
+
+def plan_contiguous(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_GAP):
+    """Mirror of build_potency_dataset.plan_contiguous."""
     n = len(anchors)
     if n == 0:
         return []
-    dp = [dict() for _ in range(n + 1)]
-    dp[0][None] = (0.0, 0, None, None)
-    for i in range(1, n + 1):
-        for j in range(i):
-            run = anchors[j:i]
-            for nominal in feasible_nominals(run, floor, max_ratio):
-                lo, _hi, _tol = full_band(nominal, max_ratio)
-                add = sum(abs(nominal - a) for a in run)
-                for prev_n, (cost, count, _pj, _pn) in dp[j].items():
-                    if prev_n is not None:
-                        _plo, prev_hi, _pt = full_band(prev_n, max_ratio)
-                        if lo < prev_hi + gap - 1e-9:
-                            continue
-                    cand = (cost + add, count + 1)
-                    cur = dp[i].get(nominal)
-                    if cur is None or cand < (cur[0], cur[1]):
-                        dp[i][nominal] = (cand[0], cand[1], j, prev_n)
-    if not dp[n]:
-        return None
-    best = min(dp[n], key=lambda N: (dp[n][N][0], dp[n][N][1]))
-    out = []
-    i, nominal = n, best
-    while nominal is not None:
-        _c, _k, j, prev_n = dp[i][nominal]
-        out.append((j, i, float(nominal)))
-        i, nominal = j, prev_n
-    out.reverse()
-    return out
-
-
-def declare_tier(anchors, prev_hi, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_GAP):
-    """FALLBACK ONLY — mirror of build_potency_dataset.declare_tier."""
-    lo_i, hi_i = cap_feasible_range(anchors, max_ratio)
-    if lo_i > hi_i:
-        return None
-    amin, amax = min(anchors), max(anchors)
-    ideal = float(math.floor((amin + amax) / 2.0 + 0.5))
-    start = min(max(int(ideal), lo_i), hi_i)
-    for nominal in range(start, hi_i + 1):
-        nominal = float(nominal)
-        tol_needed = math.ceil(max(nominal - amin, amax - nominal) * 100 - 1e-9) / 100.0
-        tol_cap = round(nominal * max_ratio, 2)
-        room = (nominal - prev_hi - gap) if prev_hi is not None else tol_cap
-        tol = min(tol_cap, room)
-        if tol < tol_needed - 1e-9:
-            continue
-        lo = round(nominal - tol, 2)
-        hi = round(nominal + tol, 2)
-        if lo < floor - 1e-9:
-            continue
-        return dict(nominal=nominal, tol=tol, lo=lo, hi=hi)
+    for k in range(1, n + 1):
+        res = _tiers_for_k(anchors, k, floor, max_ratio, gap)
+        if res is not None:
+            return res[1]
     return None
 
 
 def tiers_from_anchors(items):
     """Mirror of build_potency_dataset.build_strain_tiers, adapted to carry
-    each batch's `tested` flag through. The whole ladder is planned at once
-    so every tier gets its full ±10% (plan_full_width); only if no such
-    ladder exists does it fall back to the left-to-right pass.
+    each batch's `tested` flag through instead of an opaque payload.
     items = [(batch, anchor, tested_bool)] — any order in, sorted here."""
     items = sorted(items, key=lambda x: x[1])
-    anchors = [x[1] for x in items]
-    plan = plan_full_width(anchors)
-    if plan is not None:
-        tiers = []
-        for j, i, nominal in plan:
-            lo, hi, tol = full_band(nominal)
-            tiers.append(dict(nominal=nominal, tol=tol, lo=lo, hi=hi, full_width=True,
-                              batches=[x[0] for x in items[j:i]],
-                              tested=[x[2] for x in items[j:i]],
-                              anchors=anchors[j:i]))
-        return tiers
 
-    tiers = []
-    prev_hi = None
-    idx, n = 0, len(items)
-    while idx < n:
-        cur = [idx]
-        best = declare_tier([items[idx][1]], prev_hi)
-        j = idx + 1
-        while j < n:
-            trial_anchors = [items[k][1] for k in cur + [j]]
-            if not cap_feasible(trial_anchors):
+    def resolve(sub_items):
+        sub_anchors = [x[1] for x in sub_items]
+        plan = plan_contiguous(sub_anchors)
+        if plan is not None:
+            for t in plan:
+                t["gap_after"] = False
+                t["batches"] = [x[0] for x in sub_items[t["start"]:t["end"]]]
+                t["tested"] = [x[2] for x in sub_items[t["start"]:t["end"]]]
+            return plan
+        n = len(sub_items)
+        assert n > 1, ("single anchor infeasible — below release floor?", sub_anchors)
+        best_m = 1
+        for m in range(n, 0, -1):
+            if plan_contiguous(sub_anchors[:m]) is not None:
+                best_m = m
                 break
-            trial = declare_tier(trial_anchors, prev_hi)
-            if trial is None:
-                break
-            cur.append(j)
-            best = trial
-            j += 1
-        assert best is not None, ("no non-overlapping tier fits this anchor set",
-                                  [items[k][1] for k in cur], prev_hi)
-        tiers.append(dict(nominal=best["nominal"], tol=best["tol"], lo=best["lo"], hi=best["hi"],
-                          full_width=abs(best["tol"] - round(best["nominal"] * MAX_TOL_RATIO, 2)) < 1e-9,
-                          batches=[items[k][0] for k in cur], tested=[items[k][2] for k in cur],
-                          anchors=[items[k][1] for k in cur]))
-        prev_hi = best["hi"]
-        idx = cur[-1] + 1
-    return tiers
+        left = plan_contiguous(sub_anchors[:best_m])
+        for t in left:
+            t["gap_after"] = False
+            t["batches"] = [x[0] for x in sub_items[t["start"]:t["end"]]]
+            t["tested"] = [x[2] for x in sub_items[t["start"]:t["end"]]]
+        left[-1]["gap_after"] = True
+        return left + resolve(sub_items[best_m:])
+
+    return resolve(items)
 
 
 def final_ranges_renamed():
@@ -859,6 +904,11 @@ def final_ranges_renamed():
                              potlabel(i + 1, (t["nominal"], t["tol"])), t["lo"], t["hi"],
                              len(t["batches"]),
                              "серии | batches" if len(t["batches"]) != 1 else "серија | batch"))
+                if t.get("gap_after") and i + 1 < len(tiers):
+                    glo, ghi = t["hi"], tiers[i + 1]["lo"]
+                    pills += ('<span class="fgap" title="Нема воспоставена класа %.2f%%–%.2f%% '
+                              '| No established grade %.2f%%–%.2f%%">⚠ %.2f%%–%.2f%%</span>'
+                              % (glo, ghi, glo, ghi, glo, ghi))
             badge = ('<span class="fbadge prov">ПРОВИЗОРНО — само декларирана основа | '
                      "PROVISIONAL — declared basis only</span>") if not any_tested else \
                     '<span class="fbadge">ДЕФИНИТИВНО | DEFINITIVE</span>'

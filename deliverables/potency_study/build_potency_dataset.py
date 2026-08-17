@@ -18,12 +18,15 @@ number of tested results, the min–max span they occupy, and the sorted values
 themselves. No mean/SD/95% CI — per owner instruction those play no part in
 setting a potency grade and appear in no document, so they are not computed.
 
-Grade design: per-batch anchor = most recent verified result. Tiers are then
-built strictly left to right per strain so that they can never overlap — see
-declare_tier() / build_strain_tiers() for the full rule (whole-number nominal,
-tolerance as generous as allowed up to 10% of the nominal but always clearing
-the previous tier's ceiling by at least 0.01, floored at the 5.00% release
-acceptance criterion).
+Grade design: per-batch anchor = most recent verified result. A strain's
+whole tier ladder is planned together (fewest tiers first, then closest fit)
+so that adjacent tiers are CONTIGUOUS — no blind gap — see plan_contiguous()
+/ build_strain_tiers() for the full rule (whole-number nominal, tolerance up
+to 10% of the nominal, shrunk only as far as needed to meet the neighbouring
+tier exactly, floored at the 5.00% release acceptance criterion). Two of 24
+strains contain a genuine, disclosed gap where no whole-number nominal pair
+can bridge them within the 10% cap — a real discontinuity in that strain's
+own tested history, not an artefact of the algorithm.
 """
 import json
 import math
@@ -92,190 +95,195 @@ def dkey(d):
 
 MAX_TOL_RATIO = 0.10   # owner ceiling: declared ± tolerance may never exceed
                         # 10.0% of the nominal, for ANY batch or strain.
-MIN_GAP = 0.01          # adjacent tiers must never touch, let alone overlap —
-                        # at 2-decimal resolution this is the smallest
-                        # possible separation (…nn.49% | nn.50%… style).
-
-
-def cap_feasible_range(anchors, max_ratio=MAX_TOL_RATIO):
-    """(lo_i, hi_i): the inclusive whole-number nominal range that keeps
-    EVERY anchor within ±max_ratio of it. Empty (lo_i > hi_i) if no whole
-    number works for the whole group — checking only that the real-valued
-    interval [max(a)/(1+r), min(a)/(1-r)] is non-empty is not enough, since
-    it can still contain no integer (often under 0.1 wide for a tight
-    cluster)."""
-    lo_n = max(a / (1 + max_ratio) for a in anchors)
-    hi_n = min(a / (1 - max_ratio) for a in anchors)
-    return math.ceil(lo_n - 1e-9), math.floor(hi_n + 1e-9)
-
-
-def cap_feasible(anchors, max_ratio=MAX_TOL_RATIO):
-    lo_i, hi_i = cap_feasible_range(anchors, max_ratio)
-    return lo_i <= hi_i
-
-
-def full_band(nominal, max_ratio=MAX_TOL_RATIO):
-    """The FULL-WIDTH band for a whole-number nominal: nominal ± max_ratio
-    of itself. Returns (lo, hi, tol). For an integer nominal the tolerance
-    lands on an exact cent (10% of a whole number always does), so these
-    are clean 2-decimal figures: 27 -> (24.30, 29.70, 2.70)."""
-    tol = round(nominal * max_ratio, 2)
-    return round(nominal - tol, 2), round(nominal + tol, 2), tol
+MIN_GAP = 0.01          # adjacent tiers must never overlap, and the normal
+                        # (contiguous) case sits EXACTLY this far apart — the
+                        # smallest possible separation at 2-decimal resolution
+                        # (…nn.49% | nn.50%… style) — never more, unless the
+                        # data itself leaves a genuine, disclosed gap.
 
 
 def feasible_nominals(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO):
     """Every whole-number nominal whose FULL ±max_ratio band both covers
     all of `anchors` and keeps its floor at or above the release criterion.
-
-        0.9·N ≤ min(anchors)  and  1.1·N ≥ max(anchors)  and  0.9·N ≥ floor
-
-    Returned as a range(); empty when no whole number satisfies all three —
-    note the real-valued interval can be non-empty yet contain no integer,
-    so the integer bounds are what matter."""
+    Returned as a range(); the real-valued interval can be non-empty yet
+    contain no integer, so the integer bounds are what matter."""
     lo_i = math.ceil(max(anchors) / (1 + max_ratio) - 1e-9)
     hi_i = math.floor(min(anchors) / (1 - max_ratio) + 1e-9)
     lo_i = max(lo_i, math.ceil(floor / (1 - max_ratio) - 1e-9))
     return range(lo_i, hi_i + 1)
 
 
-def plan_full_width(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_GAP):
-    """Lay out a strain's whole tier ladder at once, every tier carrying its
-    FULL ±max_ratio width. Returns [(start, end, nominal), ...] over the
-    ascending `anchors`, or None when no such ladder exists.
+def pairwise_bridgeable(prev_n, prev_max_anchor, nominal, run_min_anchor,
+                         gap=MIN_GAP, max_ratio=MAX_TOL_RATIO):
+    """Does SOME shared boundary exist between a tier declared at prev_n
+    (whose own worst-case anchor is prev_max_anchor) and a new tier at
+    `nominal` (whose own worst-case anchor is run_min_anchor), once each
+    side's tolerance is free to be anything from "just enough to cover its
+    own anchors" up to the 10% cap? Necessary for any valid transition;
+    combined with solve_chain() below it is also sufficient once a full
+    nominal sequence is fixed."""
+    b_lo = max(prev_max_anchor, (1 - max_ratio) * nominal - gap)
+    b_hi = min((1 + max_ratio) * prev_n, run_min_anchor - gap)
+    return b_lo <= b_hi + 1e-9
 
-    Why this is a global search and not a left-to-right greedy: with every
-    band fixed at ±10% of a whole-number nominal, "where do the splits go"
-    and "which nominal does each group get" are one joint decision. A greedy
-    pass lets the FIRST tier take its widest legal band, which can leave the
-    next group no room and force its tolerance down to a few percent — the
-    tier gets squeezed for no reason other than the order it was built in.
-    Choosing the whole ladder together avoids that: the split simply moves.
 
-        Blue Sunset Sherbet, anchors 20.39 / 23.42 / 25.01
-          greedy : {20.39, 23.42} -> 22.00 % ± 2.20 %   (19.80–24.20 %)
-                   {25.01}        -> 25.00 % ± 0.79 %   (24.21–25.79 %)  ← squeezed
-          this   : {20.39}        -> 20.00 % ± 2.00 %   (18.00–22.00 %)
-                   {23.42, 25.01} -> 25.00 % ± 2.50 %   (22.50–27.50 %)  ← both full
+def solve_chain(nominals, needs, caps, gap=MIN_GAP):
+    """Given k whole-number nominals already known to be pairwise-bridgeable,
+    solve for ONE symmetric tolerance per tier (nominal ± tol, same both
+    ways — the declared format is always a single ± figure) such that the
+    whole ladder is EXACTLY contiguous end to end: tier i's ceiling is
+    always exactly `gap` below tier i+1's floor, never more, never less.
 
-    Objective: minimise Σ|nominal − anchor| over every batch, so each tier's
-    declared nominal stays as close as possible to the results it actually
-    represents (a nominal is a claim about the product — it should not drift
-    above or below its own batches just to buy width). Ties break toward
-    fewer tiers. Splits are otherwise free, so the ladder is as granular as
-    the ±10% spacing allows: two tiers can only coexist when 1.1·N₁ + gap ≤
-    0.9·N₂, i.e. N₂ ≳ 1.222·N₁.
-    """
+    tol_i + tol_{i+1} = nominal_{i+1} - nominal_i - gap  for every adjacent
+    pair is a linear chain with one degree of freedom (the ladder can
+    "slide"); solved by expressing every tol_i in terms of tol_0 via the
+    alternating recurrence, intersecting each tier's own [need, cap] bound
+    back into a feasible range for tol_0, then picking its midpoint so no
+    single tier is arbitrarily favoured. Returns [tol_1..tol_k] or None if
+    no fully-symmetric solution exists for this exact nominal sequence
+    (the caller then tries a different sequence — see build_strain_tiers)."""
+    k = len(nominals)
+    if k == 1:
+        return [caps[0]] if needs[0] <= caps[0] + 1e-9 else None
+    D = [round(nominals[i + 1] - nominals[i] - gap, 2) for i in range(k - 1)]
+    A = [0.0] * k
+    for i in range(1, k):
+        A[i] = D[i - 1] - A[i - 1]
+    lo_t0, hi_t0 = needs[0], caps[0]
+    for i in range(k):
+        if i % 2 == 0:
+            lo_i, hi_i = needs[i] - A[i], caps[i] - A[i]
+        else:
+            lo_i, hi_i = A[i] - caps[i], A[i] - needs[i]
+        lo_t0, hi_t0 = max(lo_t0, lo_i), min(hi_t0, hi_i)
+    if lo_t0 > hi_t0 + 1e-9:
+        return None
+    tol0 = min(max(round((lo_t0 + hi_t0) / 2.0, 2), lo_t0), hi_t0)
+    tols = [tol0]
+    for i in range(1, k):
+        tols.append(round(D[i - 1] - tols[-1], 2))
+    return tols
+
+
+def _tiers_for_k(anchors, k, floor, max_ratio, gap):
+    """Best (lowest Σ|nominal-anchor|) fully-contiguous, fully-symmetric
+    ladder using EXACTLY k tiers over `anchors`, or None if none exists at
+    this tier count. Exhaustive over the C(n-1, k-1) ways to cut `anchors`
+    into k contiguous, non-empty runs — always small in practice (a single
+    strain's tested-result count), so exhaustive is both simple and exact."""
+    n = len(anchors)
+    if k > n:
+        return None
+    best = None  # (cost, tiers)
+
+    def eval_cuts(bounds):
+        nonlocal best
+        groups = [anchors[bounds[i]:bounds[i + 1]] for i in range(k)]
+        cand_lists = []
+        for g in groups:
+            c = list(feasible_nominals(g, floor, max_ratio))
+            if not c:
+                return
+            cand_lists.append(c)
+
+        def choose(idx, chosen):
+            nonlocal best
+            if idx == k:
+                needs = [max(nom - min(g), max(g) - nom) for nom, g in zip(chosen, groups)]
+                caps = [round(nom * max_ratio, 2) for nom in chosen]
+                tols = solve_chain(chosen, needs, caps, gap)
+                if tols is None:
+                    return
+                cost = sum(abs(nom - a) for nom, g in zip(chosen, groups) for a in g)
+                if best is None or cost < best[0] - 1e-9:
+                    tiers = [dict(nominal=nom, tol=tol, lo=round(nom - tol, 2), hi=round(nom + tol, 2),
+                                  anchors=g, start=bounds[gi], end=bounds[gi + 1])
+                             for gi, (nom, tol, g) in enumerate(zip(chosen, tols, groups))]
+                    best = (cost, tiers)
+                return
+            for nom in cand_lists[idx]:
+                if chosen and not pairwise_bridgeable(chosen[-1], groups[idx - 1][-1], nom,
+                                                        groups[idx][0], gap, max_ratio):
+                    continue
+                choose(idx + 1, chosen + [nom])
+
+        choose(0, [])
+
+    def cuts(start, groups_left, acc):
+        if groups_left == 1:
+            eval_cuts([0] + acc + [n])
+            return
+        for c in range(start + 1, n - (groups_left - 1) + 1):
+            cuts(c, groups_left - 1, acc + [c])
+
+    cuts(0, k, [])
+    return best
+
+
+def plan_contiguous(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_GAP):
+    """Plan one strain's tier ladder with NO blind gap anywhere in it: the
+    only separation between adjacent tiers is the minimal 2-decimal buffer
+    (…nn.49% | nn.50%… style), never more. Fewest tiers wins first — a grade
+    ladder should not fragment into one tier per batch just because that
+    minimises distance-to-nominal — then, among ladders at that minimal tier
+    count, the one with least total |nominal − anchor|.
+
+    Returns the resolved tier list (nominal/tol/lo/hi/anchors, full ± width
+    already computed by solve_chain) or None if NO tier count admits a fully
+    contiguous, fully symmetric ladder at all (see build_strain_tiers for
+    what happens then — a real, evidenced gap, not a bug)."""
     n = len(anchors)
     if n == 0:
         return []
-    # dp[i][N] = (cost, tier_count, split_index, previous_nominal) for the
-    # best ladder covering anchors[:i] whose last tier has nominal N.
-    dp = [dict() for _ in range(n + 1)]
-    dp[0][None] = (0.0, 0, None, None)
-    for i in range(1, n + 1):
-        for j in range(i):
-            run = anchors[j:i]
-            for nominal in feasible_nominals(run, floor, max_ratio):
-                lo, _hi, _tol = full_band(nominal, max_ratio)
-                add = sum(abs(nominal - a) for a in run)
-                for prev_n, (cost, count, _pj, _pn) in dp[j].items():
-                    if prev_n is not None:
-                        _plo, prev_hi, _ptol = full_band(prev_n, max_ratio)
-                        if lo < prev_hi + gap - 1e-9:
-                            continue          # would overlap or touch the tier below
-                    cand = (cost + add, count + 1)
-                    cur = dp[i].get(nominal)
-                    if cur is None or cand < (cur[0], cur[1]):
-                        dp[i][nominal] = (cand[0], cand[1], j, prev_n)
-    if not dp[n]:
-        return None
-    best = min(dp[n], key=lambda N: (dp[n][N][0], dp[n][N][1]))
-    out = []
-    i, nominal = n, best
-    while nominal is not None:
-        _cost, _count, j, prev_n = dp[i][nominal]
-        out.append((j, i, float(nominal)))
-        i, nominal = j, prev_n
-    out.reverse()
-    return out
-
-
-def declare_tier(anchors, prev_hi, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_GAP):
-    """FALLBACK ONLY — one tier, narrowed if it has to be.
-
-    Used solely when plan_full_width finds no all-full-width ladder for a
-    strain (does not occur in the current data: all 24 strains / 44 tiers
-    plan at the full ±10%). Keeps the tolerance as generous as the room
-    before `prev_hi` allows, down to whatever still covers the anchors."""
-    lo_i, hi_i = cap_feasible_range(anchors, max_ratio)
-    if lo_i > hi_i:
-        return None
-    amin, amax = min(anchors), max(anchors)
-    ideal = float(math.floor((amin + amax) / 2.0 + 0.5))     # half-up, not banker's
-    start = min(max(int(ideal), lo_i), hi_i)
-    for nominal in range(start, hi_i + 1):                    # only ever gains room
-        nominal = float(nominal)
-        tol_needed = math.ceil(max(nominal - amin, amax - nominal) * 100 - 1e-9) / 100.0
-        tol_cap = round(nominal * max_ratio, 2)
-        room = (nominal - prev_hi - gap) if prev_hi is not None else tol_cap
-        tol = min(tol_cap, room)
-        if tol < tol_needed - 1e-9:
-            continue                          # not enough room at this nominal — try the next
-        lo = round(nominal - tol, 2)
-        hi = round(nominal + tol, 2)
-        if lo < floor - 1e-9:
-            continue
-        return dict(nominal=nominal, tol=tol, lo=lo, hi=hi)
+    for k in range(1, n + 1):
+        res = _tiers_for_k(anchors, k, floor, max_ratio, gap)
+        if res is not None:
+            return res[1]
     return None
 
 
 def build_strain_tiers(items, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_GAP):
     """items: [(anchor, payload), ...] ascending by anchor, all for one
-    strain. Plans the whole ladder at full ±max_ratio width via
-    plan_full_width; only if no such ladder exists does it fall back to the
-    left-to-right greedy, which may narrow a tier.
+    strain. Plans the whole ladder contiguous end to end via
+    plan_contiguous(). If (rare) two neighbouring results are so far apart
+    that no whole-number nominal pair can bridge them within the ≤10% cap —
+    even as bare single-anchor tiers either side — that is a genuine,
+    evidenced discontinuity in the strain's OWN tested history, not
+    something to force-close by fabricating an unsupported bridge tier or by
+    exceeding the cap. The ladder then splits into independent segments,
+    each internally fully contiguous, with an honest, flagged gap only at
+    the specific seam the data itself cannot bridge (gap_after=True on the
+    tier just below it).
 
-    Returns a list of dicts: nominal, tol, lo, hi, full_width (bool),
+    Returns a list of dicts: nominal, tol, lo, hi, gap_after (bool),
     payloads (the payload objects for every batch the tier covers), and
-    anchors (their raw values).
-    """
-    anchors = [a for a, _ in items]
-    plan = plan_full_width(anchors, floor, max_ratio, gap)
-    if plan is not None:
-        tiers = []
-        for j, i, nominal in plan:
-            lo, hi, tol = full_band(nominal, max_ratio)
-            tiers.append(dict(nominal=nominal, tol=tol, lo=lo, hi=hi, full_width=True,
-                              payloads=[p for _a, p in items[j:i]], anchors=anchors[j:i]))
-        return tiers
+    anchors (their raw values)."""
+    def resolve(sub_items):
+        sub_anchors = [a for a, _ in sub_items]
+        plan = plan_contiguous(sub_anchors, floor, max_ratio, gap)
+        if plan is not None:
+            for t in plan:
+                t["gap_after"] = False
+                t["payloads"] = [p for _a, p in sub_items[t["start"]:t["end"]]]
+            return plan
+        n = len(sub_items)
+        assert n > 1, ("single anchor infeasible — below release floor?", sub_anchors)
+        best_m = 1
+        for m in range(n, 0, -1):
+            if plan_contiguous(sub_anchors[:m], floor, max_ratio, gap) is not None:
+                best_m = m
+                break
+        left = plan_contiguous(sub_anchors[:best_m], floor, max_ratio, gap)
+        for t in left:
+            t["gap_after"] = False
+            t["payloads"] = [p for _a, p in sub_items[t["start"]:t["end"]]]
+        left[-1]["gap_after"] = True
+        return left + resolve(sub_items[best_m:])
 
-    tiers = []
-    prev_hi = None
-    idx, n = 0, len(items)
-    while idx < n:
-        cur = [idx]
-        best = declare_tier([items[idx][0]], prev_hi, floor, max_ratio, gap)
-        j = idx + 1
-        while j < n:
-            trial_anchors = [items[k][0] for k in cur + [j]]
-            if not cap_feasible(trial_anchors, max_ratio):
-                break
-            trial = declare_tier(trial_anchors, prev_hi, floor, max_ratio, gap)
-            if trial is None:
-                break
-            cur.append(j)
-            best = trial
-            j += 1
-        assert best is not None, ("no non-overlapping tier fits this anchor set",
-                                  [items[k][0] for k in cur], prev_hi)
-        tiers.append(dict(nominal=best["nominal"], tol=best["tol"], lo=best["lo"],
-                          hi=best["hi"],
-                          full_width=abs(best["tol"] - round(best["nominal"] * max_ratio, 2)) < 1e-9,
-                          payloads=[items[k][1] for k in cur],
-                          anchors=[items[k][0] for k in cur]))
-        prev_hi = best["hi"]
-        idx = cur[-1] + 1
-    return tiers
+    plan = resolve(items)
+    return [dict(nominal=t["nominal"], tol=t["tol"], lo=t["lo"], hi=t["hi"],
+                gap_after=t["gap_after"], payloads=t["payloads"], anchors=t["anchors"])
+            for t in plan]
 
 
 def build():
@@ -347,14 +355,15 @@ def build():
         b["basis"] = ("anchor" if b["anchor"] is not None
                        else ("declared (no assay on file)" if a is not None else None))
 
-    # Per-strain warehouse GRADE TIERS (stock batches only), built strictly
-    # left-to-right on ascending anchors so that no two tiers can ever
-    # overlap (build_strain_tiers / plan_full_width — see their docstrings
-    # for the full rule: whole-number nominal, every tier declared at the
-    # full ±10% of its own nominal, the whole ladder planned at once so no
-    # tier is squeezed by the order it happened to be built in).
+    # Per-strain warehouse GRADE TIERS (stock batches only) — build_strain_tiers
+    # / plan_contiguous (see their docstrings): whole-number nominal, ≤10% of
+    # nominal, and NO blind gap between adjacent tiers of the same strain —
+    # tier i's ceiling sits exactly MIN_GAP below tier i+1's floor, always,
+    # UNLESS the data itself contains a discontinuity no whole-number nominal
+    # pair can bridge within the cap (gap_after=True; verified genuine below,
+    # never just narrowed-and-hoped).
     merged = {}
-    n_full = n_narrow = 0
+    n_tiers = n_gaps = 0
     for s in sorted({b["strain"] for b in stock}):
         bs = sorted([b for b in stock if b["proposed"] and b["strain"] == s],
                     key=lambda b: (b["anchor"] if b["anchor"] is not None else b["declared"]))
@@ -362,9 +371,8 @@ def build():
             continue
         items = [((b["anchor"] if b["anchor"] is not None else b["declared"]), b) for b in bs]
         tiers = build_strain_tiers(items)
+        n_tiers += len(tiers)
         for i, g in enumerate(tiers, 1):
-            n_full += 1 if g["full_width"] else 0
-            n_narrow += 0 if g["full_width"] else 1
             for b in g["payloads"]:
                 b["tier"] = i
             for a in g["anchors"]:
@@ -373,10 +381,19 @@ def build():
                     (s, g, a, "10% ceiling")
                 assert g["lo"] <= a <= g["hi"] + 1e-6, (s, g, a, "anchor must sit in its own tier")
             if i > 1:
-                assert g["lo"] > tiers[i - 2]["hi"] + MIN_GAP - 1e-6, \
-                    (s, "tier", i, "overlaps or touches the previous tier")
+                prev = tiers[i - 2]
+                sep = round(g["lo"] - prev["hi"], 2)
+                if prev["gap_after"]:
+                    n_gaps += 1
+                    assert sep > MIN_GAP + 1e-6, (s, "tier", i, "flagged gap_after but not actually wider than the minimum")
+                    span = prev["anchors"] + g["anchors"]
+                    assert plan_contiguous(span, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_GAP) is None, \
+                        (s, "tier", i, "gap_after flagged but a contiguous ladder actually exists — bug")
+                else:
+                    assert abs(sep - MIN_GAP) < 1e-6, \
+                        (s, "tier", i, "not flagged as a genuine gap but isn't exactly contiguous", sep)
         merged[s] = [dict(range=[g["lo"], g["hi"]], nominal=g["nominal"], tol=g["tol"],
-                          full_width=g["full_width"],
+                          gap_after=g["gap_after"],
                           batches=[b["batch"] for b in g["payloads"]],
                           anchors=[round(a, 2) for a in g["anchors"]]) for g in tiers]
 
@@ -409,41 +426,61 @@ def build():
         p_codes=p_codes,
         design=dict(
             max_tol_ratio=MAX_TOL_RATIO, min_gap=MIN_GAP,
-            rule="EVERY tier is declared at its FULL width: nominal ± 10% of that nominal, "
-                 "with the nominal always a whole number (20.00 %, never 20.50 %). So a tier "
-                 "is completely described by one integer — 25 means 25.00 % ± 2.50 %, i.e. "
-                 "22.50 %–27.50 %. No tier is ever narrower than this unless the data leaves "
-                 "no alternative (see FALLBACK). "
-                 "LADDER: a strain's tiers are planned ALL AT ONCE, not one after another "
-                 "(plan_full_width). Two full-width tiers fit side by side only when "
-                 "1.1·N₁ + 0.01 ≤ 0.9·N₂ — roughly N₂ ≥ 1.222·N₁ — which is what keeps them "
-                 "from overlapping or even touching. Planning the whole ladder together is "
-                 "the point: a left-to-right greedy lets the FIRST tier take its widest legal "
-                 "band, which can leave the next group almost no room and squeeze its "
-                 "tolerance down to a few percent for no better reason than build order. "
-                 "Choosing the splits and the nominals jointly moves the split instead. "
-                 "(Blue Sunset Sherbet, anchors 20.39/23.42/25.01: greedy gave 22.00 % ± "
-                 "2.20 % then a squeezed 25.00 % ± 0.79 %; planned together it is 20.00 % ± "
-                 "2.00 % and 25.00 % ± 2.50 %, both full width.) "
-                 "OBJECTIVE: minimise Σ|nominal − anchor| across every batch, so each tier's "
-                 "nominal stays as close as it can to the results it represents — a nominal "
-                 "is a claim about the product and should not drift above or below its own "
-                 "batches merely to buy width. Ties break toward fewer tiers; otherwise the "
-                 "ladder is as granular as the ±10% spacing allows. "
-                 "COVERAGE: a tier's band always contains every anchor assigned to it "
-                 "(0.9·N ≤ min anchor and max anchor ≤ 1.1·N is exactly the feasibility test "
-                 "used when choosing N). RELEASE FLOOR: a tier's lower edge may never sit "
-                 "below 5.00 % Total THC, so N ≥ 6. "
-                 "FALLBACK: if some strain admits no all-full-width ladder at all, that "
-                 "strain alone falls back to a left-to-right pass that may narrow a tier; "
-                 "such tiers are flagged full_width=false. This does not occur in the "
-                 "current data — all 44 tiers across 24 strains plan at the full ±10%. "
+            rule="Each tier is nominal ± tolerance, nominal always a whole number (20.00 %, "
+                 "never 20.50 %), tolerance never more than 10% of the nominal. "
+                 "CONTIGUITY (the point of this design): adjacent tiers of the SAME strain "
+                 "carry NO blind gap — tier i's ceiling sits exactly 0.01 below tier i+1's "
+                 "floor, always, so a batch testing anywhere between two established grades "
+                 "still has an applicable declaration; the same discipline the company's own "
+                 "Portfolio-Master bracket system already uses (7/10/13/16/19/22/25% ladder — "
+                 "fixed 3-point-wide bands, each boundary shared exactly with the next, zero "
+                 "gaps end to end; see portfolio_master_brackets below). Tolerance is therefore "
+                 "at the FULL 10% cap whenever the data allows it, and shrinks below that ONLY "
+                 "as far as needed to meet the neighbouring tier exactly — never to leave a gap, "
+                 "never past what still covers every anchor assigned to the tier. The two goals "
+                 "(generous ±10% width, and zero gaps) are not always simultaneously reachable "
+                 "for a given pair of whole-number nominals: full ±10% on both sides can itself "
+                 "leave a gap if the nominals end up too far apart (Blue Sunset Sherbet, anchors "
+                 "20.39/23.42/25.01: 20% ±2.00% and 25% ±2.50% are each individually at the "
+                 "10% cap, yet 22.00–22.50 is still a 0.50-point dead zone — neither side can "
+                 "stretch further without breaking the cap). Where that happens the nominal "
+                 "choice itself changes (24% ±2.19% instead of 25%, still ≤10% of 24) so the "
+                 "two tiers meet exactly; solve_chain() finds the unique symmetric split, and "
+                 "the whole ladder is planned by tier COUNT first (fewest tiers that fit the "
+                 "data — a grade ladder should not fragment into one tier per batch just "
+                 "because that shaves a few hundredths off the fit) and total |nominal-anchor| "
+                 "distance second, over every whole-number nominal sequence that is provably "
+                 "bridgeable end to end (plan_contiguous). "
+                 "GENUINE GAPS: 2 of 24 strains (Graps & Creme; Orange Punch Mimosa) contain "
+                 "two neighbouring tested results so far apart that NO whole-number nominal "
+                 "pair can bridge them within the ≤10% cap, even as bare single-anchor tiers "
+                 "either side — the data itself has no batch anywhere near that band, not an "
+                 "algorithm limitation. These are left as real, disclosed gaps (gap_after=true "
+                 "on the tier below) rather than force-closed by fabricating an unsupported "
+                 "'bridge' tier with zero evidence behind it, or by exceeding the 10% cap. A "
+                 "future batch testing in one of these zones has no precedent in this strain's "
+                 "history and should be assessed individually, exactly as any out-of-established-"
+                 "range result would be. "
+                 "RELEASE FLOOR: a tier's lower edge may never sit below 5.00 % Total THC. "
                  "A batch's declaration is always its tier's declaration — the same nominal ± "
                  "tolerance is printed everywhere that batch appears; there is no separate "
                  "per-batch figure. This is a PROPOSED revision of the grade bands, evidenced "
                  "from the data in this study; it does not itself amend any issued QCSP 001 "
                  "specification, whose nominal and range remain authoritative until changed "
                  "through the regular procedure."),
+            portfolio_master_brackets=(
+                "The company's own Portfolio-Master batch labels (portfolio_master.json, 78 "
+                "batches, the source behind the renamed-strain board) already use a completely "
+                "different, simpler system worth recording alongside the strain-specific ladder "
+                "above: SEVEN fixed, strain-agnostic, contiguous 3-percentage-point brackets "
+                "covering the whole practical range — 7–10 / 10–13 / 13–16 / 16–19 / 19–22 / "
+                "22–25 / ≥25% — every boundary shared exactly with the next (10% ends one "
+                "bracket and starts the next; no gap, no strain-by-strain customisation). A "
+                "batch is simply assigned whichever fixed bracket contains its raw result — "
+                "there is no per-strain 'nominal' concept at all in this system, and no evidence "
+                "in that data of results being deliberately placed toward the top of their "
+                "bracket (mean fractional position across 75 dated batches ≈ 0.50, i.e. "
+                "centred, not skewed high)."),
         old_methodology=(
             "QCSP 001 standard 4-tier fixed brackets: I 27.00–30.00 · II 23.00–26.90 · "
             "III 16.00–22.90 · IV 5.00–15.90 (nominal = midpoint); custom narrower sets for "
@@ -462,12 +499,13 @@ def build():
     json.dump(data, open(out, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     print("strains:", len(stats), " stock batches:", len(stock),
           " with anchor:", sum(1 for b in stock if b["anchor"] is not None))
-    print("tiers: %d at full ±%.0f%% · %d narrowed"
-          % (n_full, MAX_TOL_RATIO * 100, n_narrow))
+    print("tiers: %d across %d strains · %d genuine (unbridgeable) gaps"
+          % (n_tiers, len(merged), n_gaps))
     for s, g in merged.items():
-        print("%-22s" % s, " + ".join("%.2f±%.2f [%.2f–%.2f] (%d)"
+        print("%-22s" % s, " + ".join("%.2f±%.2f [%.2f–%.2f]%s (%d)"
                                       % (x["nominal"], x["tol"], x["range"][0], x["range"][1],
-                                         len(x["batches"])) for x in g))
+                                         " |GAP|" if x["gap_after"] else "", len(x["batches"]))
+                                      for x in g))
     return data
 
 

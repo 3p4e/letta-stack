@@ -325,24 +325,6 @@ MAX_TOL_RATIO = d["design"]["max_tol_ratio"]
 MIN_GAP = d["design"]["min_gap"]
 
 
-def cap_feasible_range(anchors, max_ratio=MAX_TOL_RATIO):
-    """Mirror of build_potency_dataset.cap_feasible_range."""
-    lo_n = max(a / (1 + max_ratio) for a in anchors)
-    hi_n = min(a / (1 - max_ratio) for a in anchors)
-    return math.ceil(lo_n - 1e-9), math.floor(hi_n + 1e-9)
-
-
-def cap_feasible(anchors, max_ratio=MAX_TOL_RATIO):
-    lo_i, hi_i = cap_feasible_range(anchors, max_ratio)
-    return lo_i <= hi_i
-
-
-def full_band(nominal, max_ratio=MAX_TOL_RATIO):
-    """Mirror of build_potency_dataset.full_band."""
-    tol = round(nominal * max_ratio, 2)
-    return round(nominal - tol, 2), round(nominal + tol, 2), tol
-
-
 def feasible_nominals(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO):
     """Mirror of build_potency_dataset.feasible_nominals."""
     lo_i = math.ceil(max(anchors) / (1 + max_ratio) - 1e-9)
@@ -351,110 +333,132 @@ def feasible_nominals(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO):
     return range(lo_i, hi_i + 1)
 
 
-def plan_full_width(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_GAP):
-    """Mirror of build_potency_dataset.plan_full_width."""
+def pairwise_bridgeable(prev_n, prev_max_anchor, nominal, run_min_anchor,
+                         gap=MIN_GAP, max_ratio=MAX_TOL_RATIO):
+    """Mirror of build_potency_dataset.pairwise_bridgeable."""
+    b_lo = max(prev_max_anchor, (1 - max_ratio) * nominal - gap)
+    b_hi = min((1 + max_ratio) * prev_n, run_min_anchor - gap)
+    return b_lo <= b_hi + 1e-9
+
+
+def solve_chain(nominals, needs, caps, gap=MIN_GAP):
+    """Mirror of build_potency_dataset.solve_chain."""
+    k = len(nominals)
+    if k == 1:
+        return [caps[0]] if needs[0] <= caps[0] + 1e-9 else None
+    D = [round(nominals[i + 1] - nominals[i] - gap, 2) for i in range(k - 1)]
+    A = [0.0] * k
+    for i in range(1, k):
+        A[i] = D[i - 1] - A[i - 1]
+    lo_t0, hi_t0 = needs[0], caps[0]
+    for i in range(k):
+        if i % 2 == 0:
+            lo_i, hi_i = needs[i] - A[i], caps[i] - A[i]
+        else:
+            lo_i, hi_i = A[i] - caps[i], A[i] - needs[i]
+        lo_t0, hi_t0 = max(lo_t0, lo_i), min(hi_t0, hi_i)
+    if lo_t0 > hi_t0 + 1e-9:
+        return None
+    tol0 = min(max(round((lo_t0 + hi_t0) / 2.0, 2), lo_t0), hi_t0)
+    tols = [tol0]
+    for i in range(1, k):
+        tols.append(round(D[i - 1] - tols[-1], 2))
+    return tols
+
+
+def _tiers_for_k(anchors, k, floor, max_ratio, gap):
+    """Mirror of build_potency_dataset._tiers_for_k."""
+    n = len(anchors)
+    if k > n:
+        return None
+    best = None
+
+    def eval_cuts(bounds):
+        nonlocal best
+        groups = [anchors[bounds[i]:bounds[i + 1]] for i in range(k)]
+        cand_lists = []
+        for g in groups:
+            c = list(feasible_nominals(g, floor, max_ratio))
+            if not c:
+                return
+            cand_lists.append(c)
+
+        def choose(idx, chosen):
+            nonlocal best
+            if idx == k:
+                needs = [max(nom - min(g), max(g) - nom) for nom, g in zip(chosen, groups)]
+                caps = [round(nom * max_ratio, 2) for nom in chosen]
+                tols = solve_chain(chosen, needs, caps, gap)
+                if tols is None:
+                    return
+                cost = sum(abs(nom - a) for nom, g in zip(chosen, groups) for a in g)
+                if best is None or cost < best[0] - 1e-9:
+                    tiers = [dict(nominal=nom, tol=tol, lo=round(nom - tol, 2), hi=round(nom + tol, 2),
+                                  anchors=g, start=bounds[gi], end=bounds[gi + 1])
+                             for gi, (nom, tol, g) in enumerate(zip(chosen, tols, groups))]
+                    best = (cost, tiers)
+                return
+            for nom in cand_lists[idx]:
+                if chosen and not pairwise_bridgeable(chosen[-1], groups[idx - 1][-1], nom,
+                                                        groups[idx][0], gap, max_ratio):
+                    continue
+                choose(idx + 1, chosen + [nom])
+
+        choose(0, [])
+
+    def cuts(start, groups_left, acc):
+        if groups_left == 1:
+            eval_cuts([0] + acc + [n])
+            return
+        for c in range(start + 1, n - (groups_left - 1) + 1):
+            cuts(c, groups_left - 1, acc + [c])
+
+    cuts(0, k, [])
+    return best
+
+
+def plan_contiguous(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_GAP):
+    """Mirror of build_potency_dataset.plan_contiguous."""
     n = len(anchors)
     if n == 0:
         return []
-    dp = [dict() for _ in range(n + 1)]
-    dp[0][None] = (0.0, 0, None, None)
-    for i in range(1, n + 1):
-        for j in range(i):
-            run = anchors[j:i]
-            for nominal in feasible_nominals(run, floor, max_ratio):
-                lo, _hi, _tol = full_band(nominal, max_ratio)
-                add = sum(abs(nominal - a) for a in run)
-                for prev_n, (cost, count, _pj, _pn) in dp[j].items():
-                    if prev_n is not None:
-                        _plo, prev_hi, _pt = full_band(prev_n, max_ratio)
-                        if lo < prev_hi + gap - 1e-9:
-                            continue
-                    cand = (cost + add, count + 1)
-                    cur = dp[i].get(nominal)
-                    if cur is None or cand < (cur[0], cur[1]):
-                        dp[i][nominal] = (cand[0], cand[1], j, prev_n)
-    if not dp[n]:
-        return None
-    best = min(dp[n], key=lambda N: (dp[n][N][0], dp[n][N][1]))
-    out = []
-    i, nominal = n, best
-    while nominal is not None:
-        _c, _k, j, prev_n = dp[i][nominal]
-        out.append((j, i, float(nominal)))
-        i, nominal = j, prev_n
-    out.reverse()
-    return out
-
-
-def declare_tier(anchors, prev_hi, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_GAP):
-    """FALLBACK ONLY — mirror of build_potency_dataset.declare_tier."""
-    lo_i, hi_i = cap_feasible_range(anchors, max_ratio)
-    if lo_i > hi_i:
-        return None
-    amin, amax = min(anchors), max(anchors)
-    ideal = float(math.floor((amin + amax) / 2.0 + 0.5))
-    start = min(max(int(ideal), lo_i), hi_i)
-    for nominal in range(start, hi_i + 1):
-        nominal = float(nominal)
-        tol_needed = math.ceil(max(nominal - amin, amax - nominal) * 100 - 1e-9) / 100.0
-        tol_cap = round(nominal * max_ratio, 2)
-        room = (nominal - prev_hi - gap) if prev_hi is not None else tol_cap
-        tol = min(tol_cap, room)
-        if tol < tol_needed - 1e-9:
-            continue
-        lo = round(nominal - tol, 2)
-        hi = round(nominal + tol, 2)
-        if lo < floor - 1e-9:
-            continue
-        return dict(nominal=nominal, tol=tol, lo=lo, hi=hi)
+    for k in range(1, n + 1):
+        res = _tiers_for_k(anchors, k, floor, max_ratio, gap)
+        if res is not None:
+            return res[1]
     return None
 
 
 def tiers_from_anchors(items):
     """items = [(batch, anchor, tested_bool)] — mirror of
-    build_potency_dataset.build_strain_tiers / build_potency_html's copy.
-    The whole ladder is planned at once so every tier gets its full ±10%;
-    only if no such ladder exists does it fall back to the left-to-right
-    pass."""
+    build_potency_dataset.build_strain_tiers / build_potency_html's copy."""
     items = sorted(items, key=lambda x: x[1])
-    anchors = [x[1] for x in items]
-    plan = plan_full_width(anchors)
-    if plan is not None:
-        tiers = []
-        for j, i, nominal in plan:
-            lo, hi, tol = full_band(nominal)
-            tiers.append(dict(nominal=nominal, tol=tol, lo=lo, hi=hi, full_width=True,
-                              batches=[x[0] for x in items[j:i]],
-                              tested=[x[2] for x in items[j:i]],
-                              anchors=anchors[j:i]))
-        return tiers
 
-    tiers = []
-    prev_hi = None
-    idx, n = 0, len(items)
-    while idx < n:
-        cur = [idx]
-        best = declare_tier([items[idx][1]], prev_hi)
-        j = idx + 1
-        while j < n:
-            trial_anchors = [items[k][1] for k in cur + [j]]
-            if not cap_feasible(trial_anchors):
+    def resolve(sub_items):
+        sub_anchors = [x[1] for x in sub_items]
+        plan = plan_contiguous(sub_anchors)
+        if plan is not None:
+            for t in plan:
+                t["gap_after"] = False
+                t["batches"] = [x[0] for x in sub_items[t["start"]:t["end"]]]
+                t["tested"] = [x[2] for x in sub_items[t["start"]:t["end"]]]
+            return plan
+        n = len(sub_items)
+        assert n > 1, ("single anchor infeasible — below release floor?", sub_anchors)
+        best_m = 1
+        for m in range(n, 0, -1):
+            if plan_contiguous(sub_anchors[:m]) is not None:
+                best_m = m
                 break
-            trial = declare_tier(trial_anchors, prev_hi)
-            if trial is None:
-                break
-            cur.append(j)
-            best = trial
-            j += 1
-        assert best is not None, ("no non-overlapping tier fits this anchor set",
-                                  [items[k][1] for k in cur], prev_hi)
-        tiers.append(dict(nominal=best["nominal"], tol=best["tol"], lo=best["lo"], hi=best["hi"],
-                          full_width=abs(best["tol"] - round(best["nominal"] * MAX_TOL_RATIO, 2)) < 1e-9,
-                          batches=[items[k][0] for k in cur], tested=[items[k][2] for k in cur],
-                          anchors=[items[k][1] for k in cur]))
-        prev_hi = best["hi"]
-        idx = cur[-1] + 1
-    return tiers
+        left = plan_contiguous(sub_anchors[:best_m])
+        for t in left:
+            t["gap_after"] = False
+            t["batches"] = [x[0] for x in sub_items[t["start"]:t["end"]]]
+            t["tested"] = [x[2] for x in sub_items[t["start"]:t["end"]]]
+        left[-1]["gap_after"] = True
+        return left + resolve(sub_items[best_m:])
+
+    return resolve(items)
 
 
 # anchors per batch (for the renamed-tier recomputation)
@@ -598,17 +602,22 @@ print("Portfolio Master rows: %d" % len(pm))
 # ===================================================== Atlas Grades — Original
 ws = wb.create_sheet("Atlas Grades — Original")
 ws.sheet_view.showGridLines = False
-ncols = 9
+ncols = 10
 r0 = title_block(ws, "Атлас — предложени класи по оригинално име",
                   "Atlas — Proposed Grades by Original Name",
                   "Класите на Атласот на потенција (номинала ± толеранција), директно од "
-                  "potency_dataset.json. Секоја серија ја носи декларацијата на својата класа.",
+                  "potency_dataset.json. Секоја серија ја носи декларацијата на својата класа. "
+                  "Соседните класи на иста сорта немаат празен простор меѓу себе, освен кога тоа "
+                  "е означено во „Забелешка“.",
                   "The Potency Atlas's grades (nominal ± tolerance), straight from "
-                  "potency_dataset.json. Every batch carries its tier's declaration.",
+                  "potency_dataset.json. Every batch carries its tier's declaration. Adjacent "
+                  "tiers of the same strain carry no blind gap between them, except where "
+                  "flagged in \"Note\".",
                   ncols)
 headers = ["Сорта | Strain", "Класа | Tier", "Номинала % | Nominal %", "Толеранција % | Tolerance %",
            "Опсег — долно | Range — low", "Опсег — горно | Range — high",
-           "Бр. серии | # Batches", "Серии | Batches", "Основа | Basis"]
+           "Бр. серии | # Batches", "Серии | Batches", "Основа | Basis",
+           "Забелешка | Note"]
 for i, h in enumerate(headers, 1):
     ws.cell(row=r0, column=i, value=h)
 style_header(ws, r0, ncols)
@@ -618,12 +627,16 @@ tested_batches = {norm_b(b["batch"]) for b in d["stock"] if b["anchor"] is not N
 row = r0 + 1
 i = 0
 for s in sorted(d["merged_ranges"]):
-    for ti, t in enumerate(d["merged_ranges"][s], 1):
+    tiers = d["merged_ranges"][s]
+    for ti, t in enumerate(tiers, 1):
         basis = ("ДЕФИНИТИВНО | DEFINITIVE"
                  if any(norm_b(bt) in tested_batches for bt in t["batches"])
                  else "ПРОВИЗОРНО | PROVISIONAL")
+        note = ("" if not t.get("gap_after") or ti >= len(tiers) else
+                "НЕМА КЛАСА %.2f%%–%.2f%% | NO GRADE %.2f%%–%.2f%%"
+                % (t["range"][1], tiers[ti]["range"][0], t["range"][1], tiers[ti]["range"][0]))
         vals = [s, "Pot.-%d" % ti, t["nominal"], t["tol"], t["range"][0], t["range"][1],
-                len(t["batches"]), ", ".join(t["batches"]), basis]
+                len(t["batches"]), ", ".join(t["batches"]), basis, note]
         for c, v in enumerate(vals, 1):
             ws.cell(row=row, column=c, value=v)
         zebra(ws, row, ncols, i % 2 == 0)
@@ -631,13 +644,13 @@ for s in sorted(d["merged_ranges"]):
         row += 1
 ws.freeze_panes = ws.cell(row=r0 + 1, column=1)
 pctcols(ws, r0 + 1, row - 1, [3, 4, 5, 6])
-autosize(ws, [20, 8, 12, 14, 13, 13, 11, 40, 22])
+autosize(ws, [20, 8, 12, 14, 13, 13, 11, 40, 22, 46])
 print("Atlas Grades — Original: %d rows" % (row - r0 - 1))
 
 # ====================================================== Atlas Grades — Renamed
 ws = wb.create_sheet("Atlas Grades — Renamed")
 ws.sheet_view.showGridLines = False
-ncols = 10
+ncols = 11
 r0 = title_block(ws, "Атлас — предложени класи по ново име",
                   "Atlas — Proposed Grades by New Name",
                   "Истите докажани опсези, преклучирани по НОВОТО спецификациско име "
@@ -649,7 +662,8 @@ r0 = title_block(ws, "Атлас — предложени класи по нов
 headers = ["Ново име | New Strain Name", "Класа | Tier", "Номинала % | Nominal %",
            "Толеранција % | Tolerance %", "Опсег — долно | Range — low",
            "Опсег — горно | Range — high", "Бр. серии | # Batches", "Серии | Batches",
-           "Основа | Basis", "Оригинално(и) име(иња) | Original name(s)"]
+           "Основа | Basis", "Оригинално(и) име(иња) | Original name(s)",
+           "Забелешка | Note"]
 for i, h in enumerate(headers, 1):
     ws.cell(row=r0, column=i, value=h)
 style_header(ws, r0, ncols)
@@ -661,7 +675,7 @@ for neu in sorted(renamed_tiers):
                               if (rw.get("neu") or "").strip() == neu})) or "—"
     tiers = renamed_tiers[neu]
     if not tiers:
-        vals = [neu, "—", None, None, None, None, 0, "—", "БЕЗ СИДРО | NO ANCHOR", origs]
+        vals = [neu, "—", None, None, None, None, 0, "—", "БЕЗ СИДРО | NO ANCHOR", origs, ""]
         for c, v in enumerate(vals, 1):
             ws.cell(row=row, column=c, value=v)
         zebra(ws, row, ncols, i % 2 == 0)
@@ -671,8 +685,11 @@ for neu in sorted(renamed_tiers):
     for ti, t in enumerate(tiers, 1):
         basis = ("ДЕФИНИТИВНО | DEFINITIVE" if any(t["tested"])
                  else "ПРОВИЗОРНО | PROVISIONAL")
+        note = ("" if not t.get("gap_after") or ti >= len(tiers) else
+                "НЕМА КЛАСА %.2f%%–%.2f%% | NO GRADE %.2f%%–%.2f%%"
+                % (t["hi"], tiers[ti]["lo"], t["hi"], tiers[ti]["lo"]))
         vals = [neu, "Pot.-%d" % ti, t["nominal"], t["tol"], t["lo"], t["hi"],
-                len(t["batches"]), ", ".join(t["batches"]), basis, origs]
+                len(t["batches"]), ", ".join(t["batches"]), basis, origs, note]
         for c, v in enumerate(vals, 1):
             ws.cell(row=row, column=c, value=v)
         zebra(ws, row, ncols, i % 2 == 0)
@@ -680,7 +697,7 @@ for neu in sorted(renamed_tiers):
         row += 1
 ws.freeze_panes = ws.cell(row=r0 + 1, column=1)
 pctcols(ws, r0 + 1, row - 1, [3, 4, 5, 6])
-autosize(ws, [22, 8, 12, 14, 13, 13, 11, 40, 22, 26])
+autosize(ws, [22, 8, 12, 14, 13, 13, 11, 40, 22, 26, 46])
 print("Atlas Grades — Renamed: %d rows" % (row - r0 - 1))
 
 # ======================================================= Potency Test Results

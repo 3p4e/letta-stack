@@ -177,14 +177,25 @@ for s in sorted(d["stats"]):
         table(["Класа | Tier", "Номинала ± толер. | Nominal ± tol.", "= Опсег | = Range",
                "Серии | Batches", "Сидра | Anchors"],
               trs, [1.5, 3.0, 2.6, 6.4, 4.0])
-        para("Толеранцијата е поставена најшироко што правилата дозволуваат — до 10,00% од "
-             "номиналата — но никогаш толку широко што би ја допрела соседната класа: затоа "
-             "две класи од иста сорта може да носат различен ± процент, по дизајн. Класите "
-             "никогаш не се преклопуваат. | The tolerance is set as wide as the rules allow "
-             "— up to 10.00% of the nominal — but never so wide that it would touch the "
-             "neighbouring tier: that is why two tiers of the same strain can carry a "
-             "different ± percentage, by design. Tiers never overlap.",
-             8, "4A5B6C", italic=True)
+        para("Толеранцијата е на целосните 10,00% од номиналата секогаш кога тоа е возможно, а "
+             "се намалува само толку колку што е потребно за точно да ја допре соседната класа "
+             "(без празен простор меѓу нив) — затоа две класи од иста сорта може да носат "
+             "различен ± процент, по дизајн. Класите никогаш не се преклопуваат. | Tolerance is "
+             "at the full 10.00% of the nominal whenever the data allows it, and shrinks only as "
+             "far as needed to meet the neighbouring tier exactly (no blind gap between them) — "
+             "that is why two tiers of the same strain can carry a different ± percentage, by "
+             "design. Tiers never overlap.", 8, "4A5B6C", italic=True)
+        for i, t in enumerate(tiers):
+            if t.get("gap_after") and i + 1 < len(tiers):
+                glo, ghi = t["range"][1], tiers[i + 1]["range"][0]
+                para("НЕМА КЛАСА | NO GRADE — Нема воспоставена класа %.2f%%–%.2f%%: ниту еден тестиран резултат на "
+                     "оваа сорта не паѓа во оваа зона, и ниту еден цел број не може да ги "
+                     "премости соседните класи во рамки на 10%%-ограничувањето — резултат тука "
+                     "би побарал индивидуална ОК проценка. | No established grade %.2f%%–%.2f%%: "
+                     "no tested result of this strain falls in this zone, and no whole number "
+                     "can bridge the neighbouring tiers within the 10%% cap — a result here would "
+                     "require individual QC assessment." % (glo, ghi, glo, ghi),
+                     8, "8A2E2E", italic=True)
     else:
         para("Нема серии на залиха за оваа сорта во Т1/Т2/Т3. | No T1/T2/T3 stock batches "
              "for this strain.", 8.5, "6B7785", italic=True)

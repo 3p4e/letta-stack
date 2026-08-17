@@ -54,11 +54,19 @@ def strain_fig(name, st, tiers, stability, fname):
     # full-height shaded zone per proposed tier, drawn first (behind
     # everything) so the potency-grade zone is unmistakable across the
     # whole strip, not just a thin strip near the top
-    for t in tiers:
+    for i, t in enumerate(tiers):
         lo, hi = t["range"]
         ax.axvspan(lo, hi, ymin=0.0, ymax=1.0, color=GREEN, alpha=0.09, lw=0, zorder=0)
         ax.axvline(lo, color=GREEN, lw=1.0, alpha=0.45, zorder=1)
         ax.axvline(hi, color=GREEN, lw=1.0, alpha=0.45, zorder=1)
+        # a genuine, unbridgeable gap: no whole-number nominal exists that
+        # could reach this far — hatched red, not a fabricated bridge tier
+        if t.get("gap_after") and i + 1 < len(tiers):
+            glo, ghi = hi, tiers[i + 1]["range"][0]
+            ax.axvspan(glo, ghi, ymin=0.0, ymax=1.0, facecolor=RED, alpha=0.10,
+                       hatch="////", edgecolor=RED, lw=0, zorder=0)
+            ax.axvline(glo, color=RED, lw=0.9, alpha=0.5, ls=(0, (2, 2)), zorder=1)
+            ax.axvline(ghi, color=RED, lw=0.9, alpha=0.5, ls=(0, (2, 2)), zorder=1)
 
     # ±1.5% zone bands, stacking into a density
     for v in vals:
