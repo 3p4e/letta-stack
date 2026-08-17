@@ -86,7 +86,8 @@ def strain_fig(name, st, tiers, stability, fname):
         y0 = 0.91 if i % 2 == 0 else 0.99
         ax.add_patch(Rectangle((lo, y0), hi - lo, 0.065, facecolor=GREEN, alpha=0.25,
                                edgecolor=GREEN, lw=1.2))
-        ax.text((lo + hi) / 2, y0 + 0.032, "W-%d  %.1f–%.1f" % (i + 1, lo, hi),
+        ax.text((lo + hi) / 2, y0 + 0.032,
+                "W-%d  %.0f ± %.2f" % (i + 1, t["nominal"], t["tol"]),
                 ha="center", va="center", fontsize=7.5, color=GREEN, fontweight="bold")
     # old tier boundaries
     for x in OLD_TIERS:

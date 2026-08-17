@@ -1394,11 +1394,13 @@
    "anchor": 26.14,
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
+   "nominal": 25.0,
+   "tol": 2.77,
    "proposed": [
-    23.0,
-    28.0
+    22.23,
+    27.77
    ],
-   "headroom_down": 3.14,
+   "headroom_down": 3.91,
    "basis": "anchor",
    "tier": 1
   },
@@ -1411,13 +1413,15 @@
    "anchor": 25.01,
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
+   "nominal": 24.0,
+   "tol": 2.57,
    "proposed": [
-    21.0,
-    27.0
+    21.43,
+    26.57
    ],
-   "headroom_down": 4.01,
+   "headroom_down": 3.58,
    "basis": "anchor",
-   "tier": 3
+   "tier": 2
   },
   {
    "tranche": "1",
@@ -1428,11 +1432,13 @@
    "anchor": 24.05,
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
+   "nominal": 23.0,
+   "tol": 2.55,
    "proposed": [
-    21.0,
-    26.0
+    20.45,
+    25.55
    ],
-   "headroom_down": 3.05,
+   "headroom_down": 3.6,
    "basis": "anchor",
    "tier": 4
   },
@@ -1445,11 +1451,13 @@
    "anchor": 18.91,
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
+   "nominal": 18.0,
+   "tol": 2.09,
    "proposed": [
-    16.0,
-    21.0
+    15.91,
+    20.09
    ],
-   "headroom_down": 2.91,
+   "headroom_down": 3.0,
    "basis": "anchor",
    "tier": 2
   },
@@ -1462,11 +1470,13 @@
    "anchor": 18.29,
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
+   "nominal": 18.0,
+   "tol": 2.35,
    "proposed": [
-    15.0,
-    20.0
+    15.65,
+    20.35
    ],
-   "headroom_down": 3.29,
+   "headroom_down": 2.64,
    "basis": "anchor",
    "tier": 2
   },
@@ -1479,11 +1489,13 @@
    "anchor": 17.67,
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
+   "nominal": 17.0,
+   "tol": 1.93,
    "proposed": [
-    15.0,
-    19.0
+    15.07,
+    18.93
    ],
-   "headroom_down": 2.67,
+   "headroom_down": 2.6,
    "basis": "anchor",
    "tier": 2
   },
@@ -1496,11 +1508,13 @@
    "anchor": 18.86,
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
+   "nominal": 18.0,
+   "tol": 2.03,
    "proposed": [
-    16.0,
-    21.0
+    15.97,
+    20.03
    ],
-   "headroom_down": 2.86,
+   "headroom_down": 2.89,
    "basis": "anchor",
    "tier": 2
   },
@@ -1513,11 +1527,13 @@
    "anchor": 16.7,
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
+   "nominal": 16.0,
+   "tol": 1.84,
    "proposed": [
-    14.0,
-    18.0
+    14.16,
+    17.84
    ],
-   "headroom_down": 2.7,
+   "headroom_down": 2.54,
    "basis": "anchor",
    "tier": 2
   },
@@ -1530,11 +1546,13 @@
    "anchor": 18.67,
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
+   "nominal": 18.0,
+   "tol": 1.99,
    "proposed": [
-    16.0,
-    20.0
+    16.01,
+    19.99
    ],
-   "headroom_down": 2.67,
+   "headroom_down": 2.66,
    "basis": "anchor",
    "tier": 2
   },
@@ -1547,13 +1565,15 @@
    "anchor": 18.52,
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
+   "nominal": 18.0,
+   "tol": 2.13,
    "proposed": [
-    15.0,
-    20.0
+    15.87,
+    20.13
    ],
-   "headroom_down": 3.52,
+   "headroom_down": 2.65,
    "basis": "anchor",
-   "tier": 2
+   "tier": 1
   },
   {
    "tranche": "1",
@@ -1564,13 +1584,15 @@
    "anchor": 22.61,
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
+   "nominal": 22.0,
+   "tol": 2.3,
    "proposed": [
-    19.0,
-    25.0
+    19.7,
+    24.3
    ],
-   "headroom_down": 3.61,
+   "headroom_down": 2.91,
    "basis": "anchor",
-   "tier": 4
+   "tier": 3
   },
   {
    "tranche": "1",
@@ -1581,11 +1603,13 @@
    "anchor": 15.7,
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
+   "nominal": 15.0,
+   "tol": 1.78,
    "proposed": [
-    13.0,
-    17.0
+    13.22,
+    16.78
    ],
-   "headroom_down": 2.7,
+   "headroom_down": 2.48,
    "basis": "anchor",
    "tier": 1
   },
@@ -1598,11 +1622,13 @@
    "anchor": 17.31,
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
+   "nominal": 17.0,
+   "tol": 2.27,
    "proposed": [
-    14.0,
-    19.0
+    14.73,
+    19.27
    ],
-   "headroom_down": 3.31,
+   "headroom_down": 2.58,
    "basis": "anchor",
    "tier": 1
   },
@@ -1615,11 +1641,13 @@
    "anchor": 21.61,
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
+   "nominal": 21.0,
+   "tol": 2.23,
    "proposed": [
-    18.0,
-    23.0
+    18.77,
+    23.23
    ],
-   "headroom_down": 3.61,
+   "headroom_down": 2.84,
    "basis": "anchor",
    "tier": 2
   },
@@ -1632,13 +1660,15 @@
    "anchor": 20.32,
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
+   "nominal": 20.0,
+   "tol": 2.44,
    "proposed": [
-    17.0,
-    22.0
+    17.56,
+    22.44
    ],
-   "headroom_down": 3.32,
+   "headroom_down": 2.76,
    "basis": "anchor",
-   "tier": 3
+   "tier": 2
   },
   {
    "tranche": "1",
@@ -1649,11 +1679,13 @@
    "anchor": 17.32,
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
+   "nominal": 17.0,
+   "tol": 2.26,
    "proposed": [
-    14.0,
-    19.0
+    14.74,
+    19.26
    ],
-   "headroom_down": 3.32,
+   "headroom_down": 2.58,
    "basis": "anchor",
    "tier": 1
   },
@@ -1666,13 +1698,15 @@
    "anchor": 20.03,
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
+   "nominal": 19.0,
+   "tol": 2.28,
    "proposed": [
-    17.0,
-    22.0
+    16.72,
+    21.28
    ],
-   "headroom_down": 3.03,
+   "headroom_down": 3.31,
    "basis": "anchor",
-   "tier": 4
+   "tier": 3
   },
   {
    "tranche": "1",
@@ -1683,11 +1717,13 @@
    "anchor": 18.04,
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
+   "nominal": 17.0,
+   "tol": 2.16,
    "proposed": [
-    15.0,
-    20.0
+    14.84,
+    19.16
    ],
-   "headroom_down": 3.04,
+   "headroom_down": 3.2,
    "basis": "anchor",
    "tier": 3
   },
@@ -1700,11 +1736,13 @@
    "anchor": 7.91,
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
+   "nominal": 7.0,
+   "tol": 1.91,
    "proposed": [
-    5.0,
-    9.0
+    5.09,
+    8.91
    ],
-   "headroom_down": 2.91,
+   "headroom_down": 2.82,
    "basis": "anchor",
    "tier": 1
   },
@@ -1717,13 +1755,15 @@
    "anchor": 12.25,
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
+   "nominal": 12.0,
+   "tol": 2.01,
    "proposed": [
-    9.0,
-    14.0
+    9.99,
+    14.01
    ],
-   "headroom_down": 3.25,
+   "headroom_down": 2.26,
    "basis": "anchor",
-   "tier": 2
+   "tier": 1
   },
   {
    "tranche": "1",
@@ -1734,11 +1774,13 @@
    "anchor": 17.84,
    "anchor_date": "07.08.2026",
    "anchor_lab": "FARM",
+   "nominal": 17.0,
+   "tol": 1.95,
    "proposed": [
-    15.0,
-    19.0
+    15.05,
+    18.95
    ],
-   "headroom_down": 2.84,
+   "headroom_down": 2.79,
    "basis": "anchor",
    "tier": 1
   },
@@ -1751,11 +1793,13 @@
    "anchor": null,
    "anchor_date": null,
    "anchor_lab": null,
+   "nominal": 12.0,
+   "tol": 1.91,
    "proposed": [
-    10.0,
-    14.0
+    10.09,
+    13.91
    ],
-   "headroom_down": 2.91,
+   "headroom_down": 2.82,
    "basis": "declared (no assay on file)",
    "tier": 1
   },
@@ -1768,11 +1812,13 @@
    "anchor": 20.39,
    "anchor_date": "28.11.2025",
    "anchor_lab": "PP",
+   "nominal": 20.0,
+   "tol": 2.38,
    "proposed": [
-    17.0,
-    22.0
+    17.62,
+    22.38
    ],
-   "headroom_down": 3.39,
+   "headroom_down": 2.77,
    "basis": "anchor",
    "tier": 1
   },
@@ -1785,11 +1831,13 @@
    "anchor": 21.51,
    "anchor_date": "23.10.2025",
    "anchor_lab": "UKIM",
+   "nominal": 21.0,
+   "tol": 2.33,
    "proposed": [
-    18.0,
-    23.0
+    18.67,
+    23.33
    ],
-   "headroom_down": 3.51,
+   "headroom_down": 2.84,
    "basis": "anchor",
    "tier": 3
   },
@@ -1802,13 +1850,15 @@
    "anchor": 24.96,
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
+   "nominal": 24.0,
+   "tol": 2.51,
    "proposed": [
-    21.0,
-    27.0
+    21.49,
+    26.51
    ],
-   "headroom_down": 3.96,
+   "headroom_down": 3.47,
    "basis": "anchor",
-   "tier": 5
+   "tier": 4
   },
   {
    "tranche": "2",
@@ -1819,11 +1869,13 @@
    "anchor": 22.3,
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
+   "nominal": 22.0,
+   "tol": 2.59,
    "proposed": [
-    19.0,
-    24.0
+    19.41,
+    24.59
    ],
-   "headroom_down": 3.3,
+   "headroom_down": 2.89,
    "basis": "anchor",
    "tier": 3
   },
@@ -1836,11 +1888,13 @@
    "anchor": null,
    "anchor_date": null,
    "anchor_lab": null,
+   "nominal": 12.0,
+   "tol": 1.95,
    "proposed": [
-    10.0,
-    14.0
+    10.05,
+    13.95
    ],
-   "headroom_down": 2.32,
+   "headroom_down": 2.27,
    "basis": "declared (no assay on file)",
    "tier": 1
   },
@@ -1853,11 +1907,13 @@
    "anchor": null,
    "anchor_date": null,
    "anchor_lab": null,
+   "nominal": 9.0,
+   "tol": 1.83,
    "proposed": [
-    7.0,
-    11.0
+    7.17,
+    10.83
    ],
-   "headroom_down": 2.83,
+   "headroom_down": 2.66,
    "basis": "declared (no assay on file)",
    "tier": 1
   },
@@ -1870,11 +1926,13 @@
    "anchor": 8.02,
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
+   "nominal": 8.0,
+   "tol": 1.98,
    "proposed": [
-    6.0,
-    10.0
+    6.02,
+    9.98
    ],
-   "headroom_down": 2.02,
+   "headroom_down": 2.0,
    "basis": "anchor",
    "tier": 1
   },
@@ -1887,11 +1945,13 @@
    "anchor": 14.68,
    "anchor_date": "11.05.2026",
    "anchor_lab": "UKIM",
+   "nominal": 14.0,
+   "tol": 1.74,
    "proposed": [
-    12.0,
-    16.0
+    12.26,
+    15.74
    ],
-   "headroom_down": 2.68,
+   "headroom_down": 2.42,
    "basis": "anchor",
    "tier": 1
   },
@@ -1904,11 +1964,13 @@
    "anchor": 13.34,
    "anchor_date": "23.04.2025",
    "anchor_lab": "UKIM",
+   "nominal": 13.0,
+   "tol": 1.99,
    "proposed": [
-    11.0,
-    15.0
+    11.01,
+    14.99
    ],
-   "headroom_down": 2.34,
+   "headroom_down": 2.33,
    "basis": "anchor",
    "tier": 1
   },
@@ -1921,13 +1983,15 @@
    "anchor": 19.81,
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
+   "nominal": 19.0,
+   "tol": 2.04,
    "proposed": [
-    17.0,
-    22.0
+    16.96,
+    21.04
    ],
-   "headroom_down": 2.81,
+   "headroom_down": 2.85,
    "basis": "anchor",
-   "tier": 3
+   "tier": 2
   },
   {
    "tranche": "2",
@@ -1938,13 +2002,15 @@
    "anchor": 25.45,
    "anchor_date": "10.07.2025",
    "anchor_lab": "UKIM",
+   "nominal": 25.0,
+   "tol": 2.63,
    "proposed": [
-    22.0,
-    28.0
+    22.37,
+    27.63
    ],
-   "headroom_down": 3.45,
+   "headroom_down": 3.08,
    "basis": "anchor",
-   "tier": 6
+   "tier": 4
   },
   {
    "tranche": "2",
@@ -1955,13 +2021,15 @@
    "anchor": 21.29,
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
+   "nominal": 21.0,
+   "tol": 2.53,
    "proposed": [
-    18.0,
-    23.0
+    18.47,
+    23.53
    ],
-   "headroom_down": 3.29,
+   "headroom_down": 2.82,
    "basis": "anchor",
-   "tier": 3
+   "tier": 2
   },
   {
    "tranche": "2",
@@ -1972,13 +2040,15 @@
    "anchor": 25.73,
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
+   "nominal": 25.0,
+   "tol": 2.37,
    "proposed": [
-    22.0,
-    28.0
+    22.63,
+    27.37
    ],
-   "headroom_down": 3.73,
+   "headroom_down": 3.1,
    "basis": "anchor",
-   "tier": 6
+   "tier": 4
   },
   {
    "tranche": "2",
@@ -1989,11 +2059,13 @@
    "anchor": 11.53,
    "anchor_date": "04.03.2026",
    "anchor_lab": "FARM",
+   "nominal": 11.0,
+   "tol": 1.69,
    "proposed": [
-    9.0,
-    13.0
+    9.31,
+    12.69
    ],
-   "headroom_down": 2.53,
+   "headroom_down": 2.22,
    "basis": "anchor",
    "tier": 2
   },
@@ -2006,11 +2078,13 @@
    "anchor": 20.39,
    "anchor_date": "19.09.2025",
    "anchor_lab": "UKIM",
+   "nominal": 20.0,
+   "tol": 2.38,
    "proposed": [
-    17.0,
-    22.0
+    17.62,
+    22.38
    ],
-   "headroom_down": 3.39,
+   "headroom_down": 2.77,
    "basis": "anchor",
    "tier": 2
   },
@@ -2023,11 +2097,13 @@
    "anchor": null,
    "anchor_date": null,
    "anchor_lab": null,
+   "nominal": 16.0,
+   "tol": 1.83,
    "proposed": [
-    14.0,
-    18.0
+    14.17,
+    17.83
    ],
-   "headroom_down": 2.71,
+   "headroom_down": 2.54,
    "basis": "declared (no assay on file)",
    "tier": 1
   },
@@ -2040,13 +2116,15 @@
    "anchor": 20.54,
    "anchor_date": "30.06.2026",
    "anchor_lab": "UKIM",
+   "nominal": 20.0,
+   "tol": 2.24,
    "proposed": [
-    17.0,
-    22.0
+    17.76,
+    22.24
    ],
-   "headroom_down": 3.54,
+   "headroom_down": 2.78,
    "basis": "anchor",
-   "tier": 3
+   "tier": 2
   },
   {
    "tranche": "2",
@@ -2057,11 +2135,13 @@
    "anchor": 15.16,
    "anchor_date": "30.06.2026",
    "anchor_lab": "UKIM",
+   "nominal": 14.0,
+   "tol": 2.16,
    "proposed": [
-    12.0,
-    17.0
+    11.84,
+    16.16
    ],
-   "headroom_down": 3.16,
+   "headroom_down": 3.32,
    "basis": "anchor",
    "tier": 1
   },
@@ -2074,11 +2154,13 @@
    "anchor": 17.04,
    "anchor_date": "04.03.2026",
    "anchor_lab": "FARM",
+   "nominal": 16.0,
+   "tol": 2.1,
    "proposed": [
-    14.0,
-    19.0
+    13.9,
+    18.1
    ],
-   "headroom_down": 3.04,
+   "headroom_down": 3.14,
    "basis": "anchor",
    "tier": 1
   },
@@ -2091,11 +2173,13 @@
    "anchor": 16.82,
    "anchor_date": "28.07.2025",
    "anchor_lab": "UKIM",
+   "nominal": 16.0,
+   "tol": 1.87,
    "proposed": [
-    14.0,
-    18.0
+    14.13,
+    17.87
    ],
-   "headroom_down": 2.82,
+   "headroom_down": 2.69,
    "basis": "anchor",
    "tier": 1
   },
@@ -2108,11 +2192,13 @@
    "anchor": 15.38,
    "anchor_date": "06.05.2025",
    "anchor_lab": "UKIM",
+   "nominal": 15.0,
+   "tol": 2.08,
    "proposed": [
-    12.0,
-    17.0
+    12.92,
+    17.08
    ],
-   "headroom_down": 3.38,
+   "headroom_down": 2.46,
    "basis": "anchor",
    "tier": 2
   },
@@ -2125,11 +2211,13 @@
    "anchor": 9.43,
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
+   "nominal": 9.0,
+   "tol": 1.66,
    "proposed": [
-    7.0,
-    11.0
+    7.34,
+    10.66
    ],
-   "headroom_down": 2.43,
+   "headroom_down": 2.09,
    "basis": "anchor",
    "tier": 1
   },
@@ -2142,13 +2230,15 @@
    "anchor": 16.55,
    "anchor_date": "28.07.2025",
    "anchor_lab": "UKIM",
+   "nominal": 16.0,
+   "tol": 1.98,
    "proposed": [
-    14.0,
-    18.0
+    14.02,
+    17.98
    ],
-   "headroom_down": 2.55,
+   "headroom_down": 2.53,
    "basis": "anchor",
-   "tier": 3
+   "tier": 2
   },
   {
    "tranche": "2",
@@ -2159,13 +2249,15 @@
    "anchor": 13.33,
    "anchor_date": "05.03.2026",
    "anchor_lab": "UKIM",
+   "nominal": 13.0,
+   "tol": 2.0,
    "proposed": [
     11.0,
     15.0
    ],
    "headroom_down": 2.33,
    "basis": "anchor",
-   "tier": 2
+   "tier": 1
   },
   {
    "tranche": "2",
@@ -2176,11 +2268,13 @@
    "anchor": null,
    "anchor_date": null,
    "anchor_lab": null,
+   "nominal": 15.0,
+   "tol": 1.84,
    "proposed": [
-    13.0,
-    17.0
+    13.16,
+    16.84
    ],
-   "headroom_down": 2.63,
+   "headroom_down": 2.47,
    "basis": "declared (no assay on file)",
    "tier": 1
   },
@@ -2193,11 +2287,13 @@
    "anchor": 17.13,
    "anchor_date": "11.05.2026",
    "anchor_lab": "UKIM",
+   "nominal": 16.0,
+   "tol": 2.2,
    "proposed": [
-    14.0,
-    19.0
+    13.8,
+    18.2
    ],
-   "headroom_down": 3.13,
+   "headroom_down": 3.33,
    "basis": "anchor",
    "tier": 1
   },
@@ -2210,11 +2306,13 @@
    "anchor": 10.96,
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
+   "nominal": 10.0,
+   "tol": 1.96,
    "proposed": [
-    8.0,
-    12.0
+    8.04,
+    11.96
    ],
-   "headroom_down": 2.96,
+   "headroom_down": 2.92,
    "basis": "anchor",
    "tier": 1
   },
@@ -2227,11 +2325,13 @@
    "anchor": 21.67,
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
+   "nominal": 21.0,
+   "tol": 2.18,
    "proposed": [
-    18.0,
-    24.0
+    18.82,
+    23.18
    ],
-   "headroom_down": 3.67,
+   "headroom_down": 2.85,
    "basis": "anchor",
    "tier": 1
   },
@@ -2244,11 +2344,13 @@
    "anchor": 16.93,
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
+   "nominal": 16.0,
+   "tol": 1.98,
    "proposed": [
-    14.0,
-    18.0
+    14.02,
+    17.98
    ],
-   "headroom_down": 2.93,
+   "headroom_down": 2.91,
    "basis": "anchor",
    "tier": 1
   },
@@ -2261,11 +2363,13 @@
    "anchor": null,
    "anchor_date": null,
    "anchor_lab": null,
+   "nominal": 23.0,
+   "tol": 2.54,
    "proposed": [
-    20.0,
-    25.0
+    20.46,
+    25.54
    ],
-   "headroom_down": 3.42,
+   "headroom_down": 2.96,
    "basis": "declared (no assay on file)",
    "tier": 2
   },
@@ -2278,11 +2382,13 @@
    "anchor": 14.93,
    "anchor_date": "17.09.2025",
    "anchor_lab": "UKIM",
+   "nominal": 14.0,
+   "tol": 1.93,
    "proposed": [
-    12.0,
-    16.0
+    12.07,
+    15.93
    ],
-   "headroom_down": 2.93,
+   "headroom_down": 2.86,
    "basis": "anchor",
    "tier": 1
   },
@@ -2295,13 +2401,15 @@
    "anchor": 23.7,
    "anchor_date": "28.11.2025",
    "anchor_lab": "UKIM",
+   "nominal": 23.0,
+   "tol": 2.27,
    "proposed": [
-    20.0,
-    26.0
+    20.73,
+    25.27
    ],
-   "headroom_down": 3.7,
+   "headroom_down": 2.97,
    "basis": "anchor",
-   "tier": 4
+   "tier": 3
   },
   {
    "tranche": "3",
@@ -2312,13 +2420,15 @@
    "anchor": 23.0,
    "anchor_date": "26.02.2025",
    "anchor_lab": "UKIM",
+   "nominal": 22.0,
+   "tol": 2.43,
    "proposed": [
-    20.0,
-    25.0
+    19.57,
+    24.43
    ],
-   "headroom_down": 3.0,
+   "headroom_down": 3.43,
    "basis": "anchor",
-   "tier": 4
+   "tier": 3
   },
   {
    "tranche": "3",
@@ -2329,11 +2439,13 @@
    "anchor": 13.35,
    "anchor_date": "11.05.2026",
    "anchor_lab": "UKIM",
+   "nominal": 13.0,
+   "tol": 1.98,
    "proposed": [
-    11.0,
-    15.0
+    11.02,
+    14.98
    ],
-   "headroom_down": 2.35,
+   "headroom_down": 2.33,
    "basis": "anchor",
    "tier": 1
   },
@@ -2346,13 +2458,15 @@
    "anchor": 20.83,
    "anchor_date": "30.06.2026",
    "anchor_lab": "UKIM",
+   "nominal": 20.0,
+   "tol": 2.13,
    "proposed": [
-    18.0,
-    23.0
+    17.87,
+    22.13
    ],
-   "headroom_down": 2.83,
+   "headroom_down": 2.96,
    "basis": "anchor",
-   "tier": 3
+   "tier": 2
   },
   {
    "tranche": "3",
@@ -2363,11 +2477,13 @@
    "anchor": 18.29,
    "anchor_date": "30.06.2026",
    "anchor_lab": "UKIM",
+   "nominal": 18.0,
+   "tol": 2.35,
    "proposed": [
-    15.0,
-    20.0
+    15.65,
+    20.35
    ],
-   "headroom_down": 3.29,
+   "headroom_down": 2.64,
    "basis": "anchor",
    "tier": 2
   },
@@ -2380,11 +2496,13 @@
    "anchor": 16.69,
    "anchor_date": "11.05.2026",
    "anchor_lab": "UKIM",
+   "nominal": 16.0,
+   "tol": 1.85,
    "proposed": [
-    14.0,
-    18.0
+    14.15,
+    17.85
    ],
-   "headroom_down": 2.69,
+   "headroom_down": 2.54,
    "basis": "anchor",
    "tier": 1
   },
@@ -2397,11 +2515,13 @@
    "anchor": 15.35,
    "anchor_date": "11.05.2026",
    "anchor_lab": "UKIM",
+   "nominal": 15.0,
+   "tol": 2.11,
    "proposed": [
-    12.0,
-    17.0
+    12.89,
+    17.11
    ],
-   "headroom_down": 3.35,
+   "headroom_down": 2.46,
    "basis": "anchor",
    "tier": 1
   },
@@ -2414,11 +2534,13 @@
    "anchor": 17.94,
    "anchor_date": "11.05.2026",
    "anchor_lab": "UKIM",
+   "nominal": 17.0,
+   "tol": 2.06,
    "proposed": [
-    15.0,
-    20.0
+    14.94,
+    19.06
    ],
-   "headroom_down": 2.94,
+   "headroom_down": 3.0,
    "basis": "anchor",
    "tier": 2
   },
@@ -2431,11 +2553,13 @@
    "anchor": 15.95,
    "anchor_date": "22.05.2025",
    "anchor_lab": "UKIM",
+   "nominal": 15.0,
+   "tol": 1.95,
    "proposed": [
-    13.0,
-    17.0
+    13.05,
+    16.95
    ],
-   "headroom_down": 2.95,
+   "headroom_down": 2.9,
    "basis": "anchor",
    "tier": 1
   },
@@ -2448,13 +2572,15 @@
    "anchor": 24.89,
    "anchor_date": "28.11.2025",
    "anchor_lab": "PP",
+   "nominal": 24.0,
+   "tol": 2.44,
    "proposed": [
-    21.0,
-    27.0
+    21.56,
+    26.44
    ],
-   "headroom_down": 3.89,
+   "headroom_down": 3.33,
    "basis": "anchor",
-   "tier": 5
+   "tier": 4
   },
   {
    "tranche": "3",
@@ -2465,13 +2591,15 @@
    "anchor": 21.36,
    "anchor_date": "21.01.2026",
    "anchor_lab": "UKIM",
+   "nominal": 21.0,
+   "tol": 2.47,
    "proposed": [
-    18.0,
-    23.0
+    18.53,
+    23.47
    ],
-   "headroom_down": 3.36,
+   "headroom_down": 2.83,
    "basis": "anchor",
-   "tier": 3
+   "tier": 2
   },
   {
    "tranche": "3",
@@ -2482,11 +2610,13 @@
    "anchor": null,
    "anchor_date": null,
    "anchor_lab": null,
+   "nominal": 7.0,
+   "tol": 1.89,
    "proposed": [
-    5.0,
-    9.0
+    5.11,
+    8.89
    ],
-   "headroom_down": 2.05,
+   "headroom_down": 1.94,
    "basis": "declared (no assay on file)",
    "tier": 1
   },
@@ -2499,11 +2629,13 @@
    "anchor": 18.16,
    "anchor_date": "11.05.2026",
    "anchor_lab": "UKIM",
+   "nominal": 17.0,
+   "tol": 2.29,
    "proposed": [
-    15.0,
-    20.0
+    14.71,
+    19.29
    ],
-   "headroom_down": 3.16,
+   "headroom_down": 3.45,
    "basis": "anchor",
    "tier": 2
   },
@@ -2516,11 +2648,13 @@
    "anchor": 20.21,
    "anchor_date": "09.04.2026",
    "anchor_lab": "FARM",
+   "nominal": 19.0,
+   "tol": 2.47,
    "proposed": [
-    17.0,
-    22.0
+    16.53,
+    21.47
    ],
-   "headroom_down": 3.21,
+   "headroom_down": 3.68,
    "basis": "anchor",
    "tier": 2
   },
@@ -2533,13 +2667,15 @@
    "anchor": 21.84,
    "anchor_date": "09.04.2026",
    "anchor_lab": "FARM",
+   "nominal": 21.0,
+   "tol": 2.2,
    "proposed": [
-    18.0,
-    24.0
+    18.8,
+    23.2
    ],
-   "headroom_down": 3.84,
+   "headroom_down": 3.04,
    "basis": "anchor",
-   "tier": 3
+   "tier": 2
   },
   {
    "tranche": "3",
@@ -2550,11 +2686,13 @@
    "anchor": 18.67,
    "anchor_date": "06.05.2025",
    "anchor_lab": "UKIM",
+   "nominal": 18.0,
+   "tol": 1.99,
    "proposed": [
-    16.0,
-    20.0
+    16.01,
+    19.99
    ],
-   "headroom_down": 2.67,
+   "headroom_down": 2.66,
    "basis": "anchor",
    "tier": 1
   },
@@ -2567,11 +2705,13 @@
    "anchor": 14.16,
    "anchor_date": "05.09.2025",
    "anchor_lab": "UKIM",
+   "nominal": 13.0,
+   "tol": 2.16,
    "proposed": [
-    11.0,
-    16.0
+    10.84,
+    15.16
    ],
-   "headroom_down": 3.16,
+   "headroom_down": 3.32,
    "basis": "anchor",
    "tier": 2
   },
@@ -2584,9 +2724,11 @@
    "anchor": 8.0,
    "anchor_date": "05.03.2026",
    "anchor_lab": "UKIM",
+   "nominal": 8.0,
+   "tol": 2.0,
    "proposed": [
     6.0,
-    9.0
+    10.0
    ],
    "headroom_down": 2.0,
    "basis": "anchor",
@@ -2601,11 +2743,13 @@
    "anchor": 10.01,
    "anchor_date": "28.11.2025",
    "anchor_lab": "UKIM",
+   "nominal": 9.0,
+   "tol": 2.01,
    "proposed": [
-    7.0,
-    12.0
+    6.99,
+    11.01
    ],
-   "headroom_down": 3.01,
+   "headroom_down": 3.02,
    "basis": "anchor",
    "tier": 1
   },
@@ -2618,11 +2762,13 @@
    "anchor": null,
    "anchor_date": null,
    "anchor_lab": null,
+   "nominal": 17.0,
+   "tol": 2.2,
    "proposed": [
-    15.0,
-    20.0
+    14.8,
+    19.2
    ],
-   "headroom_down": 3.07,
+   "headroom_down": 3.27,
    "basis": "declared (no assay on file)",
    "tier": 1
   },
@@ -2635,11 +2781,13 @@
    "anchor": 21.92,
    "anchor_date": "06.07.2026",
    "anchor_lab": "UKIM",
+   "nominal": 21.0,
+   "tol": 2.28,
    "proposed": [
-    19.0,
-    24.0
+    18.72,
+    23.28
    ],
-   "headroom_down": 2.92,
+   "headroom_down": 3.2,
    "basis": "anchor",
    "tier": 2
   },
@@ -2652,6 +2800,8 @@
    "anchor": 11.2,
    "anchor_date": "04.03.2026",
    "anchor_lab": "FARM",
+   "nominal": 11.0,
+   "tol": 2.0,
    "proposed": [
     9.0,
     13.0
@@ -2669,11 +2819,13 @@
    "anchor": 9.2,
    "anchor_date": "04.03.2026",
    "anchor_lab": "FARM",
+   "nominal": 9.0,
+   "tol": 1.88,
    "proposed": [
-    7.0,
-    11.0
+    7.12,
+    10.88
    ],
-   "headroom_down": 2.2,
+   "headroom_down": 2.08,
    "basis": "anchor",
    "tier": 1
   },
@@ -2686,11 +2838,13 @@
    "anchor": null,
    "anchor_date": null,
    "anchor_lab": null,
+   "nominal": 21.0,
+   "tol": 2.42,
    "proposed": [
-    19.0,
-    24.0
+    18.58,
+    23.42
    ],
-   "headroom_down": 3.05,
+   "headroom_down": 3.47,
    "basis": "declared (no assay on file)",
    "tier": 1
   },
@@ -2703,11 +2857,13 @@
    "anchor": 22.11,
    "anchor_date": "28.11.2025",
    "anchor_lab": "UKIM",
+   "nominal": 21.0,
+   "tol": 2.49,
    "proposed": [
-    19.0,
-    24.0
+    18.51,
+    23.49
    ],
-   "headroom_down": 3.11,
+   "headroom_down": 3.6,
    "basis": "anchor",
    "tier": 1
   }
@@ -2716,9 +2872,11 @@
   "Amnesia Core Cut": [
    {
     "range": [
-     10.0,
-     14.0
+     10.28,
+     13.72
     ],
+    "nominal": 12.0,
+    "tol": 1.72,
     "batches": [
      "ACC102501"
     ],
@@ -2730,9 +2888,11 @@
   "Apple and Banana": [
    {
     "range": [
-     14.0,
-     18.0
+     14.02,
+     17.98
     ],
+    "nominal": 16.0,
+    "tol": 1.98,
     "batches": [
      "AB092501"
     ],
@@ -2744,9 +2904,11 @@
   "Blue Gelato": [
    {
     "range": [
-     23.0,
-     28.0
+     22.23,
+     27.77
     ],
+    "nominal": 25.0,
+    "tol": 2.77,
     "batches": [
      "BG1024"
     ],
@@ -2758,9 +2920,11 @@
   "Blue Sunset Sherbet": [
    {
     "range": [
-     17.0,
-     22.0
+     17.62,
+     22.38
     ],
+    "nominal": 20.0,
+    "tol": 2.38,
     "batches": [
      "BSS052501"
     ],
@@ -2770,25 +2934,17 @@
    },
    {
     "range": [
-     20.0,
-     25.0
+     20.46,
+     27.54
     ],
+    "nominal": 24.0,
+    "tol": 3.54,
     "batches": [
-     "BSS1024_01/1"
-    ],
-    "anchors": [
-     23.42
-    ]
-   },
-   {
-    "range": [
-     21.0,
-     27.0
-    ],
-    "batches": [
+     "BSS1024_01/1",
      "BSS1024"
     ],
     "anchors": [
+     23.42,
      25.01
     ]
    }
@@ -2796,9 +2952,11 @@
   "Cap Junky": [
    {
     "range": [
-     12.0,
-     16.0
+     12.14,
+     15.86
     ],
+    "nominal": 14.0,
+    "tol": 1.86,
     "batches": [
      "CJ052501/02"
     ],
@@ -2808,9 +2966,11 @@
    },
    {
     "range": [
-     15.0,
-     21.0
+     15.65,
+     20.35
     ],
+    "nominal": 18.0,
+    "tol": 2.35,
     "batches": [
      "CJ082501/2",
      "CJ062501/2"
@@ -2822,43 +2982,37 @@
    },
    {
     "range": [
-     18.0,
-     24.0
+     18.67,
+     25.33
     ],
+    "nominal": 22.0,
+    "tol": 3.33,
     "batches": [
      "CJ062501/1",
-     "CJ092501"
+     "CJ092501",
+     "CJ1024",
+     "CJ072501"
     ],
     "anchors": [
      21.51,
-     22.3
-    ]
-   },
-   {
-    "range": [
-     20.0,
-     26.0
-    ],
-    "batches": [
-     "CJ1024",
-     "CJ072501",
-     "CJ052501/01"
-    ],
-    "anchors": [
+     22.3,
      23.0,
-     23.7,
-     24.05
+     23.7
     ]
    },
    {
     "range": [
-     21.0,
-     27.0
+     21.05,
+     26.95
     ],
+    "nominal": 24.0,
+    "tol": 2.95,
     "batches": [
+     "CJ052501/01",
      "CJ082501/1"
     ],
     "anchors": [
+     24.05,
      24.96
     ]
    }
@@ -2866,9 +3020,11 @@
   "Cash Cow": [
    {
     "range": [
-     10.0,
-     15.0
+     9.82,
+     14.18
     ],
+    "nominal": 12.0,
+    "tol": 2.18,
     "batches": [
      "CC012603",
      "CC112501"
@@ -2880,9 +3036,11 @@
    },
    {
     "range": [
-     15.0,
-     19.0
+     15.07,
+     18.93
     ],
+    "nominal": 17.0,
+    "tol": 1.93,
     "batches": [
      "CC012601/1"
     ],
@@ -2894,9 +3052,11 @@
   "Chem Flyer": [
    {
     "range": [
-     7.0,
-     11.0
+     7.56,
+     10.44
     ],
+    "nominal": 9.0,
+    "tol": 1.44,
     "batches": [
      "CF102501"
     ],
@@ -2908,9 +3068,11 @@
   "Clemosa a bud": [
    {
     "range": [
-     6.0,
-     9.0
+     5.48,
+     8.52
     ],
+    "nominal": 7.0,
+    "tol": 1.52,
     "batches": [
      "CLE072501"
     ],
@@ -2922,9 +3084,11 @@
   "Fat Bastard": [
    {
     "range": [
-     12.0,
-     18.0
+     12.26,
+     17.74
     ],
+    "nominal": 15.0,
+    "tol": 2.74,
     "batches": [
      "FB012601/1",
      "FB112501"
@@ -2936,27 +3100,19 @@
    },
    {
     "range": [
-     15.0,
-     21.0
+     15.65,
+     22.35
     ],
+    "nominal": 19.0,
+    "tol": 3.35,
     "batches": [
      "FB012603V",
-     "FB012602"
-    ],
-    "anchors": [
-     18.29,
-     18.86
-    ]
-   },
-   {
-    "range": [
-     18.0,
-     23.0
-    ],
-    "batches": [
+     "FB012602",
      "FB012603"
     ],
     "anchors": [
+     18.29,
+     18.86,
      20.83
     ]
    }
@@ -2964,9 +3120,11 @@
   "Gorilla Glue": [
    {
     "range": [
-     11.0,
-     17.0
+     11.01,
+     16.99
     ],
+    "nominal": 14.0,
+    "tol": 2.99,
     "batches": [
      "GG1024",
      "GG012601",
@@ -2980,9 +3138,11 @@
    },
    {
     "range": [
-     14.0,
-     20.0
+     14.16,
+     19.84
     ],
+    "nominal": 17.0,
+    "tol": 2.84,
     "batches": [
      "GG012603",
      "GG112501",
@@ -2998,33 +3158,27 @@
   "Grape Pie": [
    {
     "range": [
-     13.0,
-     17.0
+     12.33,
+     19.67
     ],
+    "nominal": 16.0,
+    "tol": 3.67,
     "batches": [
-     "GP082501/2"
-    ],
-    "anchors": [
-     15.7
-    ]
-   },
-   {
-    "range": [
-     15.0,
-     20.0
-    ],
-    "batches": [
+     "GP082501/2",
      "GP052501"
     ],
     "anchors": [
+     15.7,
      18.52
     ]
    },
    {
     "range": [
-     17.0,
-     23.0
+     17.08,
+     22.92
     ],
+    "nominal": 20.0,
+    "tol": 2.92,
     "batches": [
      "GP072501/2",
      "GP082501/1",
@@ -3038,9 +3192,11 @@
    },
    {
     "range": [
-     19.0,
-     25.0
+     19.7,
+     24.3
     ],
+    "nominal": 22.0,
+    "tol": 2.3,
     "batches": [
      "GP0824_02"
     ],
@@ -3050,26 +3206,18 @@
    },
    {
     "range": [
-     21.0,
-     27.0
+     21.84,
+     28.16
     ],
+    "nominal": 25.0,
+    "tol": 3.16,
     "batches": [
-     "GP062501"
-    ],
-    "anchors": [
-     24.89
-    ]
-   },
-   {
-    "range": [
-     22.0,
-     28.0
-    ],
-    "batches": [
+     "GP062501",
      "GP0824_03",
      "GP092501"
     ],
     "anchors": [
+     24.89,
      25.45,
      25.73
     ]
@@ -3078,9 +3226,11 @@
   "Graps & Creme": [
    {
     "range": [
-     5.0,
-     8.0
+     5.11,
+     8.89
     ],
+    "nominal": 7.0,
+    "tol": 1.89,
     "batches": [
      "GRC102501/1"
     ],
@@ -3090,9 +3240,11 @@
    },
    {
     "range": [
-     9.0,
-     13.0
+     9.31,
+     12.69
     ],
+    "nominal": 11.0,
+    "tol": 1.69,
     "batches": [
      "GRC102501/2"
     ],
@@ -3104,9 +3256,11 @@
   "High Pro Amnesia": [
    {
     "range": [
-     14.0,
-     19.0
+     14.73,
+     19.27
     ],
+    "nominal": 17.0,
+    "tol": 2.27,
     "batches": [
      "HPA1024"
     ],
@@ -3116,9 +3270,11 @@
    },
    {
     "range": [
-     17.0,
-     23.0
+     17.05,
+     22.95
     ],
+    "nominal": 20.0,
+    "tol": 2.95,
     "batches": [
      "HPA052501",
      "HPA1024_01"
@@ -3132,9 +3288,11 @@
   "Jelly Donutz": [
    {
     "range": [
-     12.0,
-     18.0
+     12.25,
+     17.75
     ],
+    "nominal": 15.0,
+    "tol": 2.75,
     "batches": [
      "JD012603/02V",
      "JD012603/01"
@@ -3146,26 +3304,18 @@
    },
    {
     "range": [
-     15.0,
-     20.0
+     15.53,
+     22.47
     ],
+    "nominal": 19.0,
+    "tol": 3.47,
     "batches": [
-     "JD012601"
-    ],
-    "anchors": [
-     18.16
-    ]
-   },
-   {
-    "range": [
-     17.0,
-     22.0
-    ],
-    "batches": [
+     "JD012601",
      "JD112501",
      "JD012603/02"
     ],
     "anchors": [
+     18.16,
      20.32,
      20.54
     ]
@@ -3174,9 +3324,11 @@
   "Jokerz 31": [
    {
     "range": [
-     14.0,
-     19.0
+     14.74,
+     19.26
     ],
+    "nominal": 17.0,
+    "tol": 2.26,
     "batches": [
      "J31102501"
     ],
@@ -3186,25 +3338,17 @@
    },
    {
     "range": [
-     17.0,
-     22.0
+     16.8,
+     23.2
     ],
+    "nominal": 20.0,
+    "tol": 3.2,
     "batches": [
-     "J31112501"
-    ],
-    "anchors": [
-     20.21
-    ]
-   },
-   {
-    "range": [
-     18.0,
-     24.0
-    ],
-    "batches": [
+     "J31112501",
      "J31122501"
     ],
     "anchors": [
+     20.21,
      21.84
     ]
    }
@@ -3212,9 +3356,11 @@
   "Kush Crasher": [
    {
     "range": [
-     14.0,
-     19.0
+     13.9,
+     18.1
     ],
+    "nominal": 16.0,
+    "tol": 2.1,
     "batches": [
      "KC102501"
     ],
@@ -3226,9 +3372,11 @@
   "Motor Breath": [
    {
     "range": [
-     14.0,
-     20.0
+     14.17,
+     19.83
     ],
+    "nominal": 17.0,
+    "tol": 2.83,
     "batches": [
      "MB0824_05",
      "MB0824_04"
@@ -3242,9 +3390,11 @@
   "Orange Punch Mimosa": [
    {
     "range": [
-     5.0,
-     11.0
+     5.91,
+     10.09
     ],
+    "nominal": 8.0,
+    "tol": 2.09,
     "batches": [
      "OPM122501",
      "OPM112501",
@@ -3258,41 +3408,35 @@
    },
    {
     "range": [
-     11.0,
-     17.0
+     11.78,
+     18.22
     ],
+    "nominal": 15.0,
+    "tol": 3.22,
     "batches": [
      "OPM052501",
-     "OMP1024_01"
+     "OMP1024_01",
+     "OPM1024_03"
     ],
     "anchors": [
      14.16,
-     15.38
+     15.38,
+     16.55
     ]
    },
    {
     "range": [
-     14.0,
-     20.0
+     14.72,
+     21.28
     ],
+    "nominal": 18.0,
+    "tol": 3.28,
     "batches": [
-     "OPM1024_03",
-     "OPM1024_02"
-    ],
-    "anchors": [
-     16.55,
-     18.04
-    ]
-   },
-   {
-    "range": [
-     17.0,
-     22.0
-    ],
-    "batches": [
+     "OPM1024_02",
      "OPM1024"
     ],
     "anchors": [
+     18.04,
      20.03
     ]
    }
@@ -3300,26 +3444,18 @@
   "Permanent Marker": [
    {
     "range": [
-     7.0,
-     11.0
+     7.84,
+     14.16
     ],
+    "nominal": 11.0,
+    "tol": 3.16,
     "batches": [
-     "PM072501"
-    ],
-    "anchors": [
-     10.01
-    ]
-   },
-   {
-    "range": [
-     9.0,
-     15.0
-    ],
-    "batches": [
+     "PM072501",
      "PM092501",
      "PM112501"
     ],
     "anchors": [
+     10.01,
      12.25,
      13.33
     ]
@@ -3328,9 +3464,11 @@
   "Pure Michigen": [
    {
     "range": [
-     13.0,
-     17.0
+     13.16,
+     16.84
     ],
+    "nominal": 15.0,
+    "tol": 1.84,
     "batches": [
      "PUM102501"
     ],
@@ -3342,9 +3480,11 @@
   "Scrambler": [
    {
     "range": [
-     14.0,
-     20.0
+     14.56,
+     19.44
     ],
+    "nominal": 17.0,
+    "tol": 2.44,
     "batches": [
      "SCR112501",
      "SCR012603",
@@ -3358,9 +3498,11 @@
    },
    {
     "range": [
-     19.0,
-     24.0
+     18.72,
+     23.28
     ],
+    "nominal": 21.0,
+    "tol": 2.28,
     "batches": [
      "SCR022601"
     ],
@@ -3372,9 +3514,11 @@
   "Sleepy Joy": [
    {
     "range": [
-     7.0,
-     12.0
+     7.12,
+     12.88
     ],
+    "nominal": 10.0,
+    "tol": 2.88,
     "batches": [
      "SJ112501",
      "SJ092501",
@@ -3390,9 +3534,11 @@
   "Wedding Cake": [
    {
     "range": [
-     19.0,
-     24.0
+     18.58,
+     23.42
     ],
+    "nominal": 21.0,
+    "tol": 2.42,
     "batches": [
      "WED102501"
     ],
@@ -3404,9 +3550,11 @@
   "Wedding Crasher": [
    {
     "range": [
-     18.0,
-     24.0
+     18.51,
+     23.49
     ],
+    "nominal": 21.0,
+    "tol": 2.49,
     "batches": [
      "WC082501",
      "WC072501"
@@ -3421,7 +3569,7 @@
  "design": {
   "D_year": 1.5,
   "U_ratio": 0.062,
-  "rule": "lower = anchor − D − U(anchor) rounded DOWN to a whole number, floored at 5.00 (release A.C.); upper = anchor + max(1.0, U(anchor)) rounded UP to a whole number; merged per strain where batch ranges overlap. Nominal grade values are declared as whole numbers (nn.0 %) — rounding is always outward, so it can only widen a tier, never narrow the guaranteed window."
+  "rule": "Required window: lower = anchor − D − U(anchor), floored at 5.00 (release A.C.); upper = anchor + max(1.0, U(anchor)); merged per strain while the window stays ≤ 6.5 points wide. The window is then DECLARED as NOMINAL ± TOLERANCE: the nominal is a whole number (18.00 %, never 18.50 %) — the figure printed on the specification, the iCoA and the label — and the tolerance is whatever it must be for nominal ± tolerance to still cover the entire window, rounded UP to 0.01. Rounding is therefore always outward: it can only widen a declaration, never lose coverage."
  },
  "old_methodology": "QCSP 001 standard 4-tier fixed brackets: I 27.00–30.00 · II 23.00–26.90 · III 16.00–22.90 · IV 5.00–15.90 (nominal = midpoint); custom narrower sets for several renamed strains; T1 files graded from the Aug-2026 retest values, T1_rename graded from Portfolio-Master intake values (intentionally different, per owner). Weakness for ageing stock: brackets are fixed and grade-boundary batches can flip out of grade on any remeasure or with modest degradation — the bracket encodes no downward headroom for a specific batch.",
  "verification": {

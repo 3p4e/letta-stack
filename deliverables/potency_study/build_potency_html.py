@@ -68,6 +68,13 @@ def dkey(s):
     return (p[2], p[1], p[0]) if len(p) == 3 else ("0", "0", "0")
 
 
+def nomtol(t):
+    """The declared form: whole-number nominal ± its fitted tolerance.
+    Accepts a merged_ranges tier dict or a (nominal, tol) pair."""
+    nom, tol = (t["nominal"], t["tol"]) if isinstance(t, dict) else t
+    return "%.2f&nbsp;%%&nbsp;±&nbsp;%.2f&nbsp;%%" % (nom, tol)
+
+
 # group register results per strain
 per = {}
 for r in d["register_results"]:
@@ -377,8 +384,10 @@ def axis_html(s, st, tiers, stab):
         lo, hi = t["range"]
         top = 4 if i % 2 == 0 else 22
         tt += ('<div class="tier" style="left:%.3f%%;width:%.3f%%;top:%dpx" '
-               'title="серии | batches: %s">W-%d %.1f–%.1f</div>'
-               % (pct(lo), pct(hi - lo), top, esc(", ".join(t["batches"])), i + 1, lo, hi))
+               'title="%.2f %% ± %.2f %% (%.2f–%.2f) · серии | batches: %s">'
+               "W-%d %.0f±%.2f</div>"
+               % (pct(lo), pct(hi - lo), top, t["nominal"], t["tol"], lo, hi,
+                  esc(", ".join(t["batches"])), i + 1, t["nominal"], t["tol"]))
     sb = ""
     for r in stab:
         cls = "stab25" if r["arm"].startswith("25") else "stab40"
@@ -462,9 +471,9 @@ def tiers_block(s):
         return ('<div class="tiers"><i>Нема серии на залиха во Т1/Т2/Т3 | '
                 "No T1/T2/T3 stock batches.</i></div>")
     rows = "".join(
-        '<div class="trow"><span class="tr-range">W-%d %.1f – %.1f</span>'
-        "<span>%s</span></div>"
-        % (i + 1, t["range"][0], t["range"][1], esc(", ".join(t["batches"])))
+        '<div class="trow"><span class="tr-range">W-%d %s</span>'
+        '<span class="tr-span">(%.2f – %.2f %%)</span><span>%s</span></div>'
+        % (i + 1, nomtol(t), t["range"][0], t["range"][1], esc(", ".join(t["batches"])))
         for i, t in enumerate(tiers))
     return ('<div class="tiers"><b>Предложени класи | Proposed tiers:</b>%s</div>' % rows)
 
@@ -535,7 +544,9 @@ def renames_section():
         if b.get("proposed") and b.get("tier"):
             tiers = d["merged_ranges"].get(b["strain"], [])
             if 0 < b["tier"] <= len(tiers):
-                ours[norm_b(b["batch"])] = tuple(tiers[b["tier"] - 1]["range"])
+                t = tiers[b["tier"] - 1]
+                ours[norm_b(b["batch"])] = (t["range"][0], t["range"][1],
+                                            t["nominal"], t["tol"])
 
     groups = OrderedDict()
     for rec in PM:
@@ -574,9 +585,10 @@ def renames_section():
                               'title="мастер | master: %s"></div>' % (pct(lo), pct(hi - lo), esc(it["mb"][2])))
                 if it["ours"] and it["ours"] not in wset:
                     wset.append(it["ours"])
-                    lo, hi = it["ours"]
+                    lo, hi = it["ours"][:2]
                     spans += ('<div class="wspan" style="left:%.3f%%;width:%.3f%%" '
-                              'title="наш опсег | our tier: %.1f–%.1f"></div>' % (pct(lo), pct(hi - lo), lo, hi))
+                              'title="наш опсег | our tier: %.2f – %.2f %%"></div>'
+                              % (pct(lo), pct(hi - lo), lo, hi))
             dots = ""
             for it in items:
                 if it["val"] is None:
@@ -597,8 +609,8 @@ def renames_section():
                 if not (it["mb"][0] <= it["val"] - D_YEAR - u and it["val"] + u <= it["mb"][1]):
                     fail_win.append(it)
             ok_ours = [it for it in tested if it["ours"] and
-                       it["ours"][0] <= it["val"] - D_YEAR - U_RATIO * it["val"] + 0.51 and
-                       it["val"] + U_RATIO * it["val"] <= it["ours"][1] + 0.01]
+                       it["ours"][0] <= max(5.0, it["val"] - D_YEAR - U_RATIO * it["val"]) + 1e-6 and
+                       it["val"] + U_RATIO * it["val"] <= it["ours"][1] + 1e-6]
             g_total += len(tested)
             g_out_today += len(out_today)
             g_fail_win += len(fail_win)
@@ -622,7 +634,7 @@ def renames_section():
                                            else ("%.1f декл." % it["val"] if it["val"] is not None else "—"))
                               for it in items)
             mb_lbl = " · ".join(sorted({it["mb"][2] for it in items if it["mb"]})) or "—"
-            ours_lbl = " · ".join("%.1f–%.1f" % w for w in wset) or "—"
+            ours_lbl = " · ".join("%.2f %% ± %.2f %%" % (w[2], w[3]) for w in wset) or "—"
             rows_html += (
                 '<div class="flowrow">'
                 '<div class="flowname">%s<span class="bchip %s">%s</span>%s'
@@ -671,10 +683,10 @@ def final_ranges():
             prov = len(tested) == 0
             if not prov:
                 strain_prov = False
-            pills += ('<span class="fpill%s" title="%s">W-%d&nbsp;&nbsp;%.1f – %.1f'
-                      '<small>%d %s</small></span>'
+            pills += ('<span class="fpill%s" title="%s">W-%d&nbsp;&nbsp;%s'
+                      "<small>%.2f – %.2f %% · %d %s</small></span>"
                       % (" prov" if prov else "", esc(", ".join(t["batches"])), i + 1,
-                         t["range"][0], t["range"][1], len(t["batches"]),
+                         nomtol(t), t["range"][0], t["range"][1], len(t["batches"]),
                          "серии | batches" if len(t["batches"]) != 1 else "серија | batch"))
         if strain_prov:
             n_prov += 1
@@ -700,16 +712,34 @@ def final_ranges():
     return head + '<div class="fboard">' + rows + "</div>" + final_ranges_renamed()
 
 
+def declare(lo_req, hi_req, floor=5.0):
+    """Mirror of build_potency_dataset.declare — window -> nominal ± tolerance,
+    nominal a whole number, tolerance rounded outward, declared minimum never
+    below the release acceptance criterion."""
+    def tol_for(n):
+        return math.ceil(max(n - lo_req, hi_req - n) * 100 - 1e-9) / 100.0
+
+    nom = float(math.floor((lo_req + hi_req) / 2.0 + 0.5))
+    tol = tol_for(nom)
+    for _ in range(64):
+        if nom - tol >= floor - 1e-9:
+            break
+        nom += 1.0
+        tol = tol_for(nom)
+    return nom, tol
+
+
 def tiers_from_anchors(items, w_max=6.5):
-    """Same greedy clustering + outward whole-number rounding as the dataset
-    builder, applied to an arbitrary batch set (here: one renamed spec strain).
+    """Same greedy clustering over the true required window as the dataset
+    builder, applied to an arbitrary batch set (here: one renamed spec strain),
+    then declared as nominal ± tolerance.
     items = [(batch, anchor, tested_bool)] ascending by anchor."""
     tiers = []
     cur = None
     for batch, a, tested in sorted(items, key=lambda x: x[1]):
         u = U_RATIO * a
-        flo = max(5.0, math.floor(a - D_YEAR - u + 1e-9))
-        cei = math.ceil(a + u - 1e-9)
+        flo = max(5.0, a - D_YEAR - u)
+        cei = a + u
         if cur is None or cei - cur["lo"] > w_max:
             cur = dict(lo=flo, hi=cei, batches=[batch], tested=[tested])
             tiers.append(cur)
@@ -717,6 +747,10 @@ def tiers_from_anchors(items, w_max=6.5):
             cur["hi"] = max(cur["hi"], cei)
             cur["batches"].append(batch)
             cur["tested"].append(tested)
+    for g in tiers:
+        g["nominal"], g["tol"] = declare(g["lo"], g["hi"])
+        g["lo"] = round(g["nominal"] - g["tol"], 2)
+        g["hi"] = round(g["nominal"] + g["tol"], 2)
     return tiers
 
 
@@ -766,10 +800,11 @@ def final_ranges_renamed():
             pills = ""
             for i, t in enumerate(tiers):
                 prov = not any(t["tested"])
-                pills += ('<span class="fpill%s" title="%s">W-%d&nbsp;&nbsp;%.1f – %.1f'
-                          '<small>%d %s</small></span>'
+                pills += ('<span class="fpill%s" title="%s">W-%d&nbsp;&nbsp;%s'
+                          "<small>%.2f – %.2f %% · %d %s</small></span>"
                           % (" prov" if prov else "", esc(", ".join(t["batches"])), i + 1,
-                             t["lo"], t["hi"], len(t["batches"]),
+                             nomtol((t["nominal"], t["tol"])), t["lo"], t["hi"],
+                             len(t["batches"]),
                              "серии | batches" if len(t["batches"]) != 1 else "серија | batch"))
             badge = ('<span class="fbadge prov">ПРОВИЗОРНО — само декларирана основа | '
                      "PROVISIONAL — declared basis only</span>") if not any_tested else \
@@ -833,14 +868,17 @@ def stock_table():
         anc = ("%.2f (декл. | decl.)" % b["declared"]) if decl \
             else "%.2f (%s)" % (b["anchor"], b["anchor_date"])
         rows += ('<tr%s><td>Т%s</td><td class=num>%s</td><td>%s</td><td class=num>%s</td>'
-                 "<td>%s</td><td>W-%s</td><td class=v>%.1f – %.1f</td><td class=num>%.2f</td></tr>"
+                 "<td>%s</td><td>W-%s</td><td class=v>%.2f %% ± %.2f %%</td>"
+                 "<td class=num>%.2f – %.2f</td><td class=num>%.2f</td></tr>"
                  % (' class="decl"' if decl else "", esc(b["tranche"]), esc(b["batch"]),
                     esc(b["strain"]), anc, esc(b["bracket_old"] or "—"),
-                    b.get("tier", "—"), b["proposed"][0], b["proposed"][1], b["headroom_down"]))
+                    b.get("tier", "—"), b["nominal"], b["tol"],
+                    b["proposed"][0], b["proposed"][1], b["headroom_down"]))
     return ('<div class="tblwrap" style="padding:0"><table><thead><tr>'
             "<th>Т</th><th>Серија | Batch</th><th>Сорта | Strain</th>"
             "<th>Сидро | Anchor (%%)</th><th>Стара | Old</th><th>Класа | Tier</th>"
-            "<th>Предлог | Proposed (%%)</th><th>Простор ↓ | Headroom</th>"
+            "<th>Номинала ± толеранција | Nominal ± tolerance</th>"
+            "<th>= опсег | = span (%%)</th><th>Простор ↓ | Headroom</th>"
             "</tr></thead><tbody>%s</tbody></table></div>" % rows)
 
 
@@ -899,7 +937,18 @@ HTML = """<!doctype html>
 <span><code>D = 1,5 пп/год | pp/yr</code></span>
 <span><code>U ≈ 6,2%% од вредноста | of value (k=2)</code></span>
 <span>класи ≤ 6,5 пп широки, никогаш под 5,00%% | tiers ≤ 6.5 pp wide, never below the
-5.00%% release criterion</span></div>
+5.00%% release criterion</span>
+<span><code>деклар. | declared = НОМИНАЛА ± ТОЛЕРАНЦИЈА</code></span>
+<span>Номиналата е <b>цел број</b> (18,00%%, никогаш 18,50%%) — тоа е бројот што оди
+во спецификацијата, на iCoA и на етикетата. Толеранцијата потоа е онолкава колку што
+мора за <code>номинала ± толеранција</code> да го покрие целиот бараен прозорец,
+заокружена <b>нагоре</b> на 0,01. Заокружувањето е секогаш нанадвор: може само да ја
+прошири декларацијата, никогаш да изгуби покриеност. |
+The nominal is a <b>whole number</b> (18.00%%, never 18.50%%) — the figure that goes on
+the specification, the iCoA and the label. The tolerance is then whatever it must be for
+<code>nominal ± tolerance</code> to cover the entire required window, rounded <b>up</b>
+to 0.01. Rounding is always outward: it can only widen a declaration, never lose
+coverage.</span></div>
 </section>
 
 <section><h2>Докази за деградација <span>| Degradation Evidence — Grape Pie стабилносна

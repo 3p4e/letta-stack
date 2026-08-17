@@ -95,15 +95,33 @@ def dkey(d):
     return (p[2], p[1], p[0]) if len(p) == 3 else ("0", "0", "0")
 
 
-def rlo(x):
-    """Nominal grade values are declared as whole numbers (nn.0 %). Round a
-    lower edge DOWN so rounding never eats into the batch's headroom."""
-    return float(math.floor(x + 1e-9))
+def declare(lo_req, hi_req, floor=5.0):
+    """Express a required coverage window as NOMINAL ± TOLERANCE.
 
+    The nominal is a whole number (18.00 %, never 18.50 %) — it is the figure
+    printed on the specification, the iCoA and the label. The tolerance is then
+    whatever it has to be for nominal ± tolerance to still cover the entire
+    required window, rounded UP to 0.01 so rounding can only ever widen the
+    declaration, never lose coverage. Returns (nominal, tolerance).
 
-def rhi(x):
-    """…and an upper edge UP, for the same reason."""
-    return float(math.ceil(x - 1e-9))
+        e.g. window 15.69 – 20.31  ->  18.00 % ± 2.31 %
+
+    `floor` is the release acceptance criterion (≥ 5.00 % Total THC). A
+    symmetric tolerance around a rounded-down nominal can reach below it, which
+    would declare a grade whose own lower edge fails release — so the nominal is
+    raised to the next whole number until the declared minimum clears the floor.
+    """
+    def tol_for(n):
+        return math.ceil(max(n - lo_req, hi_req - n) * 100 - 1e-9) / 100.0
+
+    nom = float(math.floor((lo_req + hi_req) / 2.0 + 0.5))   # half-up, not banker's
+    tol = tol_for(nom)
+    for _ in range(64):                       # terminates once nom ≥ the midpoint
+        if nom - tol >= floor - 1e-9:
+            break
+        nom += 1.0
+        tol = tol_for(nom)
+    return nom, tol
 
 
 def build():
@@ -156,28 +174,32 @@ def build():
                           anchor_date=a["date"] if a else None,
                           anchor_lab=a["lab"] if a else None))
 
-    # per-batch proposed range: anchor near the TOP of the bracket, with
-    # downward headroom ≥ D_YEAR + measurement U at the lower edge.
+    # per-batch proposed grade: anchor near the TOP of the bracket, with
+    # downward headroom ≥ D_YEAR + measurement U at the lower edge. Declared
+    # as NOMINAL ± TOLERANCE, nominal a whole number (see declare()).
     for b in stock:
         a = b["anchor"] if b["anchor"] is not None else b["declared"]
         if a is None:
             b["proposed"] = None
             continue
         u = U_RATIO * a
-        lo = rlo(a - D_YEAR - u)
-        hi = rhi(a + max(1.0, u))
-        lo = max(lo, 5.0)                      # release A.C. floor: min 5.00%
-        b["proposed"] = [lo, hi]
-        b["headroom_down"] = round(a - lo, 2)
+        lo_req = max(5.0, a - D_YEAR - u)      # release A.C. floor: min 5.00%
+        hi_req = a + max(1.0, u)
+        nom, tol = declare(lo_req, hi_req)
+        b["nominal"] = nom
+        b["tol"] = tol
+        b["proposed"] = [round(nom - tol, 2), round(nom + tol, 2)]
+        b["headroom_down"] = round(a - (nom - tol), 2)
         b["basis"] = "anchor" if b["anchor"] is not None else "declared (no assay on file)"
 
     # Per-strain warehouse GRADE TIERS (stock batches only). Greedy clustering
-    # on ascending anchors: a tier opens at the lowest batch's safe floor
-    # (anchor − D − U, rounded down to 0.5) and accepts further batches while
-    # the tier stays ≤ W_MAX wide once it also covers their safe ceiling
-    # (anchor + U, rounded up to 0.5). Every batch's tier therefore contains
-    # its whole one-year-ahead measurement window — a remeasure now, or after a
-    # further year of storage, still reads inside the declared grade.
+    # on ascending anchors over the TRUE required window: a tier opens at the
+    # lowest batch's safe floor (anchor − D − U) and accepts further batches
+    # while the window stays ≤ W_MAX wide once it also covers their safe
+    # ceiling (anchor + U). The tier is only rounded at the end, into
+    # NOMINAL ± TOLERANCE. Every batch's tier therefore contains its whole
+    # one-year-ahead measurement window — a remeasure now, or after a further
+    # year of storage, still reads inside the declared grade.
     W_MAX = 6.5
     merged = {}
     for s in sorted({b["strain"] for b in stock}):
@@ -190,8 +212,8 @@ def build():
         for b in bs:
             a = b["anchor"] if b["anchor"] is not None else b["declared"]
             u = U_RATIO * a
-            flo = max(5.0, rlo(a - D_YEAR - u))
-            cei = rhi(a + u)
+            flo = max(5.0, a - D_YEAR - u)
+            cei = a + u
             if cur is None or cei - cur["lo"] > W_MAX:
                 cur = dict(lo=flo, hi=cei, batches=[b["batch"]], anchors=[a])
                 tiers.append(cur)
@@ -200,11 +222,18 @@ def build():
                 cur["batches"].append(b["batch"])
                 cur["anchors"].append(a)
             b["tier"] = len(tiers)
-        for g in tiers:                       # verify the guarantee for every batch
+        for g in tiers:                       # declare, then re-verify per batch
+            g["nominal"], g["tol"] = declare(g["lo"], g["hi"])
+            g["lo"] = round(g["nominal"] - g["tol"], 2)
+            g["hi"] = round(g["nominal"] + g["tol"], 2)
             for a in g["anchors"]:
                 u = U_RATIO * a
-                assert g["lo"] <= a - D_YEAR - u + 0.51 and a + u <= g["hi"] + 0.01, (s, g, a)
-        merged[s] = [dict(range=[g["lo"], g["hi"]], batches=g["batches"],
+                # exact now: the declaration is derived from the window itself,
+                # and the tolerance only ever rounds outward.
+                assert g["lo"] <= max(5.0, a - D_YEAR - u) + 1e-6, (s, g, a, "floor")
+                assert a + u <= g["hi"] + 1e-6, (s, g, a, "ceiling")
+        merged[s] = [dict(range=[g["lo"], g["hi"]], nominal=g["nominal"], tol=g["tol"],
+                          batches=g["batches"],
                           anchors=[round(a, 2) for a in g["anchors"]]) for g in tiers]
 
     # paired evidence (repeat same-lab measurements + stability arms)
@@ -225,12 +254,15 @@ def build():
         stability=STABILITY, degradation_note=DEGRADATION_NOTE,
         repeats=repeats, stats=stats, stock=stock, merged_ranges=merged,
         design=dict(D_year=D_YEAR, U_ratio=U_RATIO,
-                    rule="lower = anchor − D − U(anchor) rounded DOWN to a whole number, "
-                         "floored at 5.00 (release A.C.); upper = anchor + max(1.0, U(anchor)) "
-                         "rounded UP to a whole number; merged per strain where batch ranges "
-                         "overlap. Nominal grade values are declared as whole numbers (nn.0 %) "
-                         "— rounding is always outward, so it can only widen a tier, never "
-                         "narrow the guaranteed window."),
+                    rule="Required window: lower = anchor − D − U(anchor), floored at 5.00 "
+                         "(release A.C.); upper = anchor + max(1.0, U(anchor)); merged per "
+                         "strain while the window stays ≤ 6.5 points wide. The window is then "
+                         "DECLARED as NOMINAL ± TOLERANCE: the nominal is a whole number "
+                         "(18.00 %, never 18.50 %) — the figure printed on the specification, "
+                         "the iCoA and the label — and the tolerance is whatever it must be "
+                         "for nominal ± tolerance to still cover the entire window, rounded "
+                         "UP to 0.01. Rounding is therefore always outward: it can only widen "
+                         "a declaration, never lose coverage."),
         old_methodology=(
             "QCSP 001 standard 4-tier fixed brackets: I 27.00–30.00 · II 23.00–26.90 · "
             "III 16.00–22.90 · IV 5.00–15.90 (nominal = midpoint); custom narrower sets for "
