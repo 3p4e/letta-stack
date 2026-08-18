@@ -26,12 +26,16 @@ this study is a proposed revision, not an amendment to any issued spec.
   final board (original spec | proposed ranges | names after renaming),
   the stock table, and the sign-off block. Renamed-group ladders are read
   from the verified workbook, not recomputed.
-- `build_potency_workbook.py` → `Potency_Specs_and_Results.xlsx` — the
-  9-sheet spec/grade/result workbook, incl. the two "Specs × Batches"
-  sheets: per strain, every issued QCSP 001 specification (nominal,
+- `build_potency_workbook.py` → `QCSP001_Spec_Inventory_and_Results.xlsx` —
+  the 9-sheet **issued-specification** workbook, incl. the two "Specs ×
+  Batches" sheets: per strain, every issued QCSP 001 specification (nominal,
   tolerance, range) with the batches whose anchor falls within that
-  specification's limits (batches outside every issued grade flagged).
-- `build_potency_by_strain.py` → `Potency_by_Strain.xlsx` — the declared
+  specification's limits (batches outside every issued grade flagged). These
+  are the OLD issued brackets (nominal = bracket midpoint), which predate and
+  do **not** follow the ±10% rule — 49 of 77 exceed it, up to 52.2% of
+  nominal on the 5.00%–15.90% Grade IV. Keep it for the before/after
+  comparison; it is not the declared-grade deliverable.
+- `build_potency_by_strain.py` → `Potency_Specs_and_Results.xlsx` — the declared
   grades set against the **corrected release register**, sourced from
   exactly two places: `PP_Batch_Release_QC_Register_CORRECTED.xlsx` (every
   Total Δ⁹-THC result per batch, its eCoA code + issue date, and the link to

@@ -941,6 +941,9 @@ autosize(ws, [15, 18, 10, 11, 12, 20, 12, 15, 11, 11, 10, 10, 12,
 print("Potency Test Results: %d rows" % (row - r0 - 1))
 
 # =========================================================================
-OUT = os.path.join(HERE, "Potency_Specs_and_Results.xlsx")
+# NOT "Potency_Specs_and_Results.xlsx" — that name belongs to the
+# register+Atlas workbook (build_potency_by_strain.py). This one is the
+# separate QCSP 001 issued-spec inventory comparison.
+OUT = os.path.join(HERE, "QCSP001_Spec_Inventory_and_Results.xlsx")
 wb.save(OUT)
 print("wrote", OUT)

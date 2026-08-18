@@ -34,7 +34,7 @@ from openpyxl.comments import Comment
 HERE = os.path.dirname(os.path.abspath(__file__))
 REGISTER = os.path.join(HERE, "incoming",
                         "PP_Batch_Release_QC_Register_CORRECTED.xlsx")
-OUT = os.path.join(HERE, "Potency_by_Strain.xlsx")
+OUT = os.path.join(HERE, "Potency_Specs_and_Results.xlsx")
 
 FONT = "Arial"
 INK = "16232B"
