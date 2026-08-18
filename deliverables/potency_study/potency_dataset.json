@@ -1,0 +1,3699 @@
+{
+ "register_results": [
+  {
+   "batch": "GP0824_01",
+   "strain": "Grape Pie",
+   "value": 20.79,
+   "printed": "20.79",
+   "date": "17.04.2025",
+   "lab": "UKIM",
+   "cert": "ППК25105",
+   "p_code": "P050102"
+  },
+  {
+   "batch": "GP0824_02",
+   "strain": "Grape Pie",
+   "value": 22.61,
+   "printed": "22.61",
+   "date": "07.08.2026",
+   "lab": "FARM",
+   "cert": "197-11-К/26",
+   "p_code": "P050022"
+  },
+  {
+   "batch": "GP0824_02",
+   "strain": "Grape Pie",
+   "value": 23.19,
+   "printed": "23.19",
+   "date": "10.07.2025",
+   "lab": "UKIM",
+   "cert": "ППК25174",
+   "p_code": "P050022"
+  },
+  {
+   "batch": "GP0824_02",
+   "strain": "Grape Pie",
+   "value": 23.79,
+   "printed": "23.79",
+   "date": "22.05.2025",
+   "lab": "UKIM",
+   "cert": "ППК25139",
+   "p_code": "P050022"
+  },
+  {
+   "batch": "GP0824_03",
+   "strain": "Grape Pie",
+   "value": 25.45,
+   "printed": "25.45",
+   "date": "10.07.2025",
+   "lab": "UKIM",
+   "cert": "ППК25175",
+   "p_code": "P050072"
+  },
+  {
+   "batch": "MB0824_04",
+   "strain": "Motor Breath",
+   "value": 18.67,
+   "printed": "18.67",
+   "date": "06.05.2025",
+   "lab": "UKIM",
+   "cert": "ППК25118",
+   "p_code": "P050032"
+  },
+  {
+   "batch": "MB0824_05",
+   "strain": "Motor Breath",
+   "value": 16.82,
+   "printed": "16.82",
+   "date": "28.07.2025",
+   "lab": "UKIM",
+   "cert": "ППК52211",
+   "p_code": "P050112"
+  },
+  {
+   "batch": "BG1024",
+   "strain": "Blue Gelato",
+   "value": 26.14,
+   "printed": "26.14",
+   "date": "07.08.2026",
+   "lab": "FARM",
+   "cert": "197-1-К/26",
+   "p_code": null
+  },
+  {
+   "batch": "BG1024",
+   "strain": "Blue Gelato",
+   "value": 21.8,
+   "printed": "21.80",
+   "date": "26.02.2025",
+   "lab": "UKIM",
+   "cert": "ППК25050",
+   "p_code": null
+  },
+  {
+   "batch": "BSS1024",
+   "strain": "Blue Sunset Sherbet",
+   "value": 25.01,
+   "printed": "25.01",
+   "date": "07.08.2026",
+   "lab": "FARM",
+   "cert": "197-2-К/26",
+   "p_code": null
+  },
+  {
+   "batch": "BSS1024",
+   "strain": "Blue Sunset Sherbet",
+   "value": 21.03,
+   "printed": "21.03",
+   "date": "26.02.2025",
+   "lab": "UKIM",
+   "cert": "ППК25051",
+   "p_code": null
+  },
+  {
+   "batch": "BSS1024_01",
+   "strain": "Blue Sunset Sherbet",
+   "value": 23.42,
+   "printed": "23.42",
+   "date": "10.07.2025",
+   "lab": "UKIM",
+   "cert": "ППК25176",
+   "p_code": null
+  },
+  {
+   "batch": "CJ1024",
+   "strain": "Cap Junky",
+   "value": 23.0,
+   "printed": "23.00",
+   "date": "26.02.2025",
+   "lab": "UKIM",
+   "cert": "ППК25052",
+   "p_code": null
+  },
+  {
+   "batch": "GG1024",
+   "strain": "Gorilla Glue",
+   "value": 13.34,
+   "printed": "13.34",
+   "date": "23.04.2025",
+   "lab": "UKIM",
+   "cert": "n/a — Purely Plant in-house CoA (Batch GG1024, no certificate/report number printed)",
+   "p_code": null
+  },
+  {
+   "batch": "GG1024_01",
+   "strain": "Gorilla Glue",
+   "value": 18.67,
+   "printed": "18.67",
+   "date": "07.08.2026",
+   "lab": "FARM",
+   "cert": "197-9-К/26",
+   "p_code": "P050092"
+  },
+  {
+   "batch": "GG1024_01",
+   "strain": "Gorilla Glue",
+   "value": 17.22,
+   "printed": "17.22",
+   "date": "17.04.2025",
+   "lab": "UKIM",
+   "cert": "ППК25104",
+   "p_code": "P050092"
+  },
+  {
+   "batch": "GG1024_02",
+   "strain": "Gorilla Glue",
+   "value": 15.95,
+   "printed": "15.95",
+   "date": "22.05.2025",
+   "lab": "UKIM",
+   "cert": "ППК25140",
+   "p_code": "P050012"
+  },
+  {
+   "batch": "HPA1024",
+   "strain": "High Pro Amnesia",
+   "value": 17.31,
+   "printed": "17.31",
+   "date": "07.08.2026",
+   "lab": "FARM",
+   "cert": "197-13-К/26",
+   "p_code": null
+  },
+  {
+   "batch": "HPA1024",
+   "strain": "High Pro Amnesia",
+   "value": 14.97,
+   "printed": "14.97",
+   "date": "23.01.2025",
+   "lab": "UKIM",
+   "cert": "n/a — Purely Plant in-house CoA (Batch HPA1024, no certificate/report number printed)",
+   "p_code": null
+  },
+  {
+   "batch": "HPA1024_01",
+   "strain": "High Pro Amnesia",
+   "value": 21.61,
+   "printed": "21.61",
+   "date": "07.08.2026",
+   "lab": "FARM",
+   "cert": "197-14-К/26",
+   "p_code": "P050052"
+  },
+  {
+   "batch": "HPA1024_01",
+   "strain": "High Pro Amnesia",
+   "value": 22.43,
+   "printed": "22.43",
+   "date": "24.06.2025",
+   "lab": "UKIM",
+   "cert": "НИК22155",
+   "p_code": "P050052"
+  },
+  {
+   "batch": "OPM1024",
+   "strain": "Orange Punch Mimosa",
+   "value": 20.03,
+   "printed": "20.03",
+   "date": "07.08.2026",
+   "lab": "FARM",
+   "cert": "197-17-К/26",
+   "p_code": null
+  },
+  {
+   "batch": "OPM1024",
+   "strain": "Orange Punch Mimosa",
+   "value": 19.96,
+   "printed": "19.96",
+   "date": "23.04.2025",
+   "lab": "UKIM",
+   "cert": "n/a — Purely Plant in-house CoA (Batch OPM1024, no certificate/report number printed)",
+   "p_code": null
+  },
+  {
+   "batch": "OPM1024_01",
+   "strain": "Orange Punch Mimosa",
+   "value": 15.38,
+   "printed": "15.38",
+   "date": "06.05.2025",
+   "lab": "UKIM",
+   "cert": "ППК25117",
+   "p_code": "P050042"
+  },
+  {
+   "batch": "OPM1024_02",
+   "strain": "Orange Punch Mimosa",
+   "value": 18.04,
+   "printed": "18.04",
+   "date": "07.08.2026",
+   "lab": "FARM",
+   "cert": "197-18-К/26",
+   "p_code": "P050062"
+  },
+  {
+   "batch": "OPM1024_02",
+   "strain": "Orange Punch Mimosa",
+   "value": 18.27,
+   "printed": "18.27",
+   "date": "24.06.2025",
+   "lab": "UKIM",
+   "cert": "ППК21554",
+   "p_code": "P050062"
+  },
+  {
+   "batch": "OPM1024_03",
+   "strain": "Orange Punch Mimosa",
+   "value": 16.55,
+   "printed": "16.55",
+   "date": "28.07.2025",
+   "lab": "UKIM",
+   "cert": "ППК25210",
+   "p_code": "P050082"
+  },
+  {
+   "batch": "BSS052501",
+   "strain": "Blue Sunset Sherbet",
+   "value": 20.39,
+   "printed": "20.39",
+   "date": "28.11.2025",
+   "lab": "PP",
+   "cert": "In-house GC cross-check NGP/QCG/SOP-024",
+   "p_code": "P050192"
+  },
+  {
+   "batch": "CJ052501/1",
+   "strain": "Cap Junky",
+   "value": 24.05,
+   "printed": "24.05",
+   "date": "07.08.2026",
+   "lab": "FARM",
+   "cert": "197-3-К/26",
+   "p_code": "P050162"
+  },
+  {
+   "batch": "CJ052501/1",
+   "strain": "Cap Junky",
+   "value": 20.29,
+   "printed": "20.29",
+   "date": "17.09.2025",
+   "lab": "UKIM",
+   "cert": "ППК25280",
+   "p_code": "P050162"
+  },
+  {
+   "batch": "CJ052501/2",
+   "strain": "Cap Junky",
+   "value": 14.93,
+   "printed": "14.93",
+   "date": "17.09.2025",
+   "lab": "UKIM",
+   "cert": "ППК25281",
+   "p_code": "P050172"
+  },
+  {
+   "batch": "GP052501",
+   "strain": "Grape Pie",
+   "value": 18.52,
+   "printed": "18.52",
+   "date": "07.08.2026",
+   "lab": "FARM",
+   "cert": "197-10-К/26",
+   "p_code": "P050152"
+  },
+  {
+   "batch": "GP052501",
+   "strain": "Grape Pie",
+   "value": 18.98,
+   "printed": "18.98",
+   "date": "19.09.2025",
+   "lab": "UKIM",
+   "cert": "ППК25279",
+   "p_code": "P050152"
+  },
+  {
+   "batch": "HPA052501",
+   "strain": "High Pro Amnesia",
+   "value": 20.39,
+   "printed": "20.39",
+   "date": "19.09.2025",
+   "lab": "UKIM",
+   "cert": "ППК25278",
+   "p_code": "P050182"
+  },
+  {
+   "batch": "OPM052501",
+   "strain": "Orange Punch Mimosa",
+   "value": 14.16,
+   "printed": "14.16",
+   "date": "05.09.2025",
+   "lab": "UKIM",
+   "cert": "ППК52557",
+   "p_code": "P050132"
+  },
+  {
+   "batch": "CJ062501/1",
+   "strain": "Cap Junky",
+   "value": 21.51,
+   "printed": "21.51",
+   "date": "23.10.2025",
+   "lab": "UKIM",
+   "cert": "ППК25321",
+   "p_code": "P050222"
+  },
+  {
+   "batch": "CJ062501/2",
+   "strain": "Cap Junky",
+   "value": 18.91,
+   "printed": "18.91",
+   "date": "07.08.2026",
+   "lab": "FARM",
+   "cert": "197-4-К/26",
+   "p_code": "P050212"
+  },
+  {
+   "batch": "CJ062501/2",
+   "strain": "Cap Junky",
+   "value": 16.56,
+   "printed": "16.56",
+   "date": "23.10.2025",
+   "lab": "UKIM",
+   "cert": "ППК25322",
+   "p_code": "P050212"
+  },
+  {
+   "batch": "GP062501",
+   "strain": "Grape Pie",
+   "value": 24.89,
+   "printed": "24.89",
+   "date": "28.11.2025",
+   "lab": "PP",
+   "cert": "In-house HPLC cross-check NPCCC/SCP-02, NGP/QCG/SOP-024",
+   "p_code": "P050202"
+  },
+  {
+   "batch": "CJ072501",
+   "strain": "Cap Junky",
+   "value": 23.7,
+   "printed": "23.70",
+   "date": "28.11.2025",
+   "lab": "UKIM",
+   "cert": "ППК25367",
+   "p_code": "P050252"
+  },
+  {
+   "batch": "CLE072501",
+   "strain": "Clemosa a bud",
+   "value": 8.02,
+   "printed": "8.02",
+   "date": "21.01.2026",
+   "lab": "UKIM",
+   "cert": "PP CoA #027 / ППК25370",
+   "p_code": "P050282"
+  },
+  {
+   "batch": "GP072501/1",
+   "strain": "Grape Pie",
+   "value": 21.36,
+   "printed": "21.36",
+   "date": "21.01.2026",
+   "lab": "UKIM",
+   "cert": "PP CoA #018 / ППК25378",
+   "p_code": "P050292"
+  },
+  {
+   "batch": "GP072501/2",
+   "strain": "Grape Pie",
+   "value": 19.81,
+   "printed": "19.81",
+   "date": "21.01.2026",
+   "lab": "UKIM",
+   "cert": "PP CoA #019 / ППК25379",
+   "p_code": "P050302"
+  },
+  {
+   "batch": "PM072501",
+   "strain": "Permanent Marker",
+   "value": 10.01,
+   "printed": "10.01",
+   "date": "28.11.2025",
+   "lab": "UKIM",
+   "cert": "ППК25368",
+   "p_code": "P050272"
+  },
+  {
+   "batch": "WC072501",
+   "strain": "Wedding Crasher",
+   "value": 22.11,
+   "printed": "22.11",
+   "date": "28.11.2025",
+   "lab": "UKIM",
+   "cert": "ППК25369",
+   "p_code": "P050262"
+  },
+  {
+   "batch": "CJ082501/1",
+   "strain": "Cap Junky",
+   "value": 24.96,
+   "printed": "24.96",
+   "date": "21.01.2026",
+   "lab": "UKIM",
+   "cert": "ППК26002",
+   "p_code": "P060022"
+  },
+  {
+   "batch": "CJ082501/2",
+   "strain": "Cap Junky",
+   "value": 18.29,
+   "printed": "18.29",
+   "date": "07.08.2026",
+   "lab": "FARM",
+   "cert": "197-5-К/26",
+   "p_code": "P060032"
+  },
+  {
+   "batch": "CJ082501/2",
+   "strain": "Cap Junky",
+   "value": 20.84,
+   "printed": "20.84",
+   "date": "21.01.2026",
+   "lab": "UKIM",
+   "cert": "ППК26003",
+   "p_code": "P060032"
+  },
+  {
+   "batch": "GP082501/1",
+   "strain": "Grape Pie",
+   "value": 21.29,
+   "printed": "21.29",
+   "date": "21.01.2026",
+   "lab": "UKIM",
+   "cert": "PP CoA #020 / ППК25380",
+   "p_code": "P050312"
+  },
+  {
+   "batch": "GP082501/2",
+   "strain": "Grape Pie",
+   "value": 15.7,
+   "printed": "15.70",
+   "date": "07.08.2026",
+   "lab": "FARM",
+   "cert": "197-12-К/26",
+   "p_code": "P050322"
+  },
+  {
+   "batch": "GP082501/2",
+   "strain": "Grape Pie",
+   "value": 14.83,
+   "printed": "14.83",
+   "date": "21.01.2026",
+   "lab": "UKIM",
+   "cert": "PP CoA #021 / ППК25381",
+   "p_code": "P050322"
+  },
+  {
+   "batch": "WC082501",
+   "strain": "Wedding Crasher",
+   "value": 21.67,
+   "printed": "21.67",
+   "date": "21.01.2026",
+   "lab": "UKIM",
+   "cert": "ППК26001",
+   "p_code": "P060012"
+  },
+  {
+   "batch": "AB092501",
+   "strain": "Apple and Banana",
+   "value": 16.93,
+   "printed": "16.93",
+   "date": "21.01.2026",
+   "lab": "UKIM",
+   "cert": "PP CoA #037 / ППК26005",
+   "p_code": "P060052"
+  },
+  {
+   "batch": "CJ092501",
+   "strain": "Cap Junky",
+   "value": 22.3,
+   "printed": "22.30",
+   "date": "21.01.2026",
+   "lab": "UKIM",
+   "cert": "ППК26007",
+   "p_code": "P060072"
+  },
+  {
+   "batch": "GP092501",
+   "strain": "Grape Pie",
+   "value": 25.73,
+   "printed": "25.73",
+   "date": "21.01.2026",
+   "lab": "UKIM",
+   "cert": "ППК26009",
+   "p_code": "P060092"
+  },
+  {
+   "batch": "OPM092501",
+   "strain": "Orange Punch Mimosa",
+   "value": 9.43,
+   "printed": "9.43",
+   "date": "21.01.2026",
+   "lab": "UKIM",
+   "cert": "ППК26008",
+   "p_code": "P060042"
+  },
+  {
+   "batch": "PM092501",
+   "strain": "Permanent Marker",
+   "value": 12.25,
+   "printed": "12.25",
+   "date": "07.08.2026",
+   "lab": "FARM",
+   "cert": "197-20-К/26",
+   "p_code": "P060062"
+  },
+  {
+   "batch": "PM092501",
+   "strain": "Permanent Marker",
+   "value": 14.06,
+   "printed": "14.06",
+   "date": "21.01.2026",
+   "lab": "UKIM",
+   "cert": "ППК26004",
+   "p_code": "P060062"
+  },
+  {
+   "batch": "SJ092501",
+   "strain": "Sleepy Joy",
+   "value": 10.96,
+   "printed": "10.96",
+   "date": "21.01.2026",
+   "lab": "UKIM",
+   "cert": "ППК26006",
+   "p_code": "P060082"
+  },
+  {
+   "batch": "GRC102501/2",
+   "strain": "Graps & Creme",
+   "value": 11.53,
+   "printed": "11.53",
+   "date": "04.03.2026",
+   "lab": "FARM",
+   "cert": "051-6-K/26",
+   "p_code": null
+  },
+  {
+   "batch": "J31102501",
+   "strain": "Jokerz 31",
+   "value": 19.14,
+   "printed": "19.14",
+   "date": "04.03.2026",
+   "lab": "FARM",
+   "cert": "051-1-K/26",
+   "p_code": null
+  },
+  {
+   "batch": "J31102501",
+   "strain": "Jokerz 31",
+   "value": 17.32,
+   "printed": "17.32",
+   "date": "07.08.2026",
+   "lab": "FARM",
+   "cert": "197-16-К/26",
+   "p_code": null
+  },
+  {
+   "batch": "KC102501",
+   "strain": "Kush Crasher",
+   "value": 17.04,
+   "printed": "17.04",
+   "date": "04.03.2026",
+   "lab": "FARM",
+   "cert": "051-4-K/26",
+   "p_code": null
+  },
+  {
+   "batch": "SJ102501",
+   "strain": "Sleepy Joy",
+   "value": 11.2,
+   "printed": "11.20",
+   "date": "04.03.2026",
+   "lab": "FARM",
+   "cert": "051-3-K/26",
+   "p_code": null
+  },
+  {
+   "batch": "CC112501",
+   "strain": "Cash Cow",
+   "value": 13.35,
+   "printed": "13.35",
+   "date": "11.05.2026",
+   "lab": "UKIM",
+   "cert": "ППК26068",
+   "p_code": null
+  },
+  {
+   "batch": "FB112501",
+   "strain": "Fat Bastard",
+   "value": 16.69,
+   "printed": "16.69",
+   "date": "11.05.2026",
+   "lab": "UKIM",
+   "cert": "ППК26066",
+   "p_code": null
+  },
+  {
+   "batch": "GG112501",
+   "strain": "Gorilla Glue",
+   "value": 17.94,
+   "printed": "17.94",
+   "date": "11.05.2026",
+   "lab": "UKIM",
+   "cert": "ППК26061",
+   "p_code": null
+  },
+  {
+   "batch": "J31112501",
+   "strain": "Jokerz 31",
+   "value": 25.27,
+   "printed": "25.27",
+   "date": "04.03.2026",
+   "lab": "FARM",
+   "cert": "051-5-K/26",
+   "p_code": null
+  },
+  {
+   "batch": "J31112501",
+   "strain": "Jokerz 31",
+   "value": 20.21,
+   "printed": "20.21",
+   "date": "09.04.2026",
+   "lab": "FARM",
+   "cert": "100-1-K/26",
+   "p_code": null
+  },
+  {
+   "batch": "JD112501",
+   "strain": "Jelly Donutz",
+   "value": 20.32,
+   "printed": "20.32",
+   "date": "07.08.2026",
+   "lab": "FARM",
+   "cert": "197-15-К/26",
+   "p_code": null
+  },
+  {
+   "batch": "JD112501",
+   "strain": "Jelly Donutz",
+   "value": 19.64,
+   "printed": "19.64",
+   "date": "11.05.2026",
+   "lab": "UKIM",
+   "cert": "ППК26063",
+   "p_code": null
+  },
+  {
+   "batch": "JD112501",
+   "strain": "Jelly Donutz",
+   "value": 13.93,
+   "printed": "13.93",
+   "date": "11.05.2026",
+   "lab": "UKIM",
+   "cert": "ППК26065",
+   "p_code": null
+  },
+  {
+   "batch": "OPM112501",
+   "strain": "Orange Punch Mimosa",
+   "value": 8.0,
+   "printed": "8.00",
+   "date": "05.03.2026",
+   "lab": "UKIM",
+   "cert": "ППК26031",
+   "p_code": null
+  },
+  {
+   "batch": "PM112501",
+   "strain": "Permanent Marker",
+   "value": 13.33,
+   "printed": "13.33",
+   "date": "05.03.2026",
+   "lab": "UKIM",
+   "cert": "ППК26030",
+   "p_code": null
+  },
+  {
+   "batch": "SCR112501",
+   "strain": "Scrambler",
+   "value": 17.13,
+   "printed": "17.13",
+   "date": "11.05.2026",
+   "lab": "UKIM",
+   "cert": "ППК26069",
+   "p_code": null
+  },
+  {
+   "batch": "SJ112501",
+   "strain": "Sleepy Joy",
+   "value": 9.2,
+   "printed": "9.20",
+   "date": "04.03.2026",
+   "lab": "FARM",
+   "cert": "051-2-K/26",
+   "p_code": null
+  },
+  {
+   "batch": "J31122501",
+   "strain": "Jokerz 31",
+   "value": 19.84,
+   "printed": "19.84",
+   "date": "09.04.2026",
+   "lab": "FARM",
+   "cert": "100-2-К/26",
+   "p_code": null
+  },
+  {
+   "batch": "J31122501",
+   "strain": "Jokerz 31",
+   "value": 21.84,
+   "printed": "21.84",
+   "date": "09.04.2026",
+   "lab": "FARM",
+   "cert": "100-3-К/26",
+   "p_code": null
+  },
+  {
+   "batch": "OPM122501",
+   "strain": "Orange Punch Mimosa",
+   "value": 7.91,
+   "printed": "7.91",
+   "date": "07.08.2026",
+   "lab": "FARM",
+   "cert": "197-19-К/26",
+   "p_code": null
+  },
+  {
+   "batch": "OPM122501",
+   "strain": "Orange Punch Mimosa",
+   "value": 8.09,
+   "printed": "8.09",
+   "date": "09.04.2026",
+   "lab": "FARM",
+   "cert": "100-4-К/26",
+   "p_code": null
+  },
+  {
+   "batch": "CC012601/1",
+   "strain": "Cash Cow",
+   "value": 17.67,
+   "printed": "17.67",
+   "date": "07.08.2026",
+   "lab": "FARM",
+   "cert": "197-6-К/26",
+   "p_code": null
+  },
+  {
+   "batch": "FB012601/1",
+   "strain": "Fat Bastard",
+   "value": 14.68,
+   "printed": "14.68",
+   "date": "11.05.2026",
+   "lab": "UKIM",
+   "cert": "ППК26067",
+   "p_code": null
+  },
+  {
+   "batch": "GG012601",
+   "strain": "Gorilla Glue",
+   "value": 15.35,
+   "printed": "15.35",
+   "date": "11.05.2026",
+   "lab": "UKIM",
+   "cert": "ППК26062",
+   "p_code": null
+  },
+  {
+   "batch": "JD012601",
+   "strain": "Jelly Donutz",
+   "value": 18.16,
+   "printed": "18.16",
+   "date": "11.05.2026",
+   "lab": "UKIM",
+   "cert": "ППК26064",
+   "p_code": null
+  },
+  {
+   "batch": "FB012602",
+   "strain": "Fat Bastard",
+   "value": 18.86,
+   "printed": "18.86",
+   "date": "07.08.2026",
+   "lab": "FARM",
+   "cert": "197-7-К/26",
+   "p_code": null
+  },
+  {
+   "batch": "FB012603",
+   "strain": "Fat Bastard",
+   "value": 20.83,
+   "printed": "20.83",
+   "date": "30.06.2026",
+   "lab": "UKIM",
+   "cert": "ППК26112",
+   "p_code": null
+  },
+  {
+   "batch": "FB012603V",
+   "strain": "Fat Bastard",
+   "value": 18.29,
+   "printed": "18.29",
+   "date": "30.06.2026",
+   "lab": "UKIM",
+   "cert": "ППК26110",
+   "p_code": null
+  },
+  {
+   "batch": "GG012603",
+   "strain": "Gorilla Glue",
+   "value": 16.7,
+   "printed": "16.70",
+   "date": "07.08.2026",
+   "lab": "FARM",
+   "cert": "197-8-К/26",
+   "p_code": null
+  },
+  {
+   "batch": "GG012603",
+   "strain": "Gorilla Glue",
+   "value": 17.59,
+   "printed": "17.59",
+   "date": "30.06.2026",
+   "lab": "UKIM",
+   "cert": "ППК26114",
+   "p_code": null
+  },
+  {
+   "batch": "JD012603/2",
+   "strain": "Jelly Donutz",
+   "value": 20.54,
+   "printed": "20.54",
+   "date": "30.06.2026",
+   "lab": "UKIM",
+   "cert": "ППК26113",
+   "p_code": null
+  },
+  {
+   "batch": "JD012603/2V",
+   "strain": "Jelly Donutz",
+   "value": 15.16,
+   "printed": "15.16",
+   "date": "30.06.2026",
+   "lab": "UKIM",
+   "cert": "ППК26111",
+   "p_code": null
+  },
+  {
+   "batch": "SCR012603",
+   "strain": "Scrambler",
+   "value": 17.84,
+   "printed": "17.84",
+   "date": "07.08.2026",
+   "lab": "FARM",
+   "cert": "197-21-К/26",
+   "p_code": null
+  },
+  {
+   "batch": "JD022601",
+   "strain": "Jelly Donutz",
+   "value": 18.58,
+   "printed": "18.58",
+   "date": "30.06.2026",
+   "lab": "UKIM",
+   "cert": "ППК26115",
+   "p_code": null
+  },
+  {
+   "batch": "SCR022601",
+   "strain": "Scrambler",
+   "value": 21.92,
+   "printed": "21.92",
+   "date": "06.07.2026",
+   "lab": "UKIM",
+   "cert": "ППК26116",
+   "p_code": null
+  },
+  {
+   "batch": "FB032601",
+   "strain": "Fat Bastard",
+   "value": 12.39,
+   "printed": "12.39",
+   "date": "21.07.2026",
+   "lab": "UKIM",
+   "cert": "ППК26127",
+   "p_code": null
+  },
+  {
+   "batch": "GG032601",
+   "strain": "Gorilla Glue",
+   "value": 18.98,
+   "printed": "18.98",
+   "date": "21.07.2026",
+   "lab": "UKIM",
+   "cert": "ППК26128",
+   "p_code": null
+  },
+  {
+   "batch": "P160012",
+   "strain": "Grape Pie",
+   "value": 26.32,
+   "printed": "26.32",
+   "date": "06.07.2026",
+   "lab": "UKIM",
+   "cert": "ППК26117",
+   "p_code": null
+  },
+  {
+   "batch": "P160022",
+   "strain": "Grape Pie",
+   "value": 25.72,
+   "printed": "25.72",
+   "date": "06.07.2026",
+   "lab": "UKIM",
+   "cert": "ППК26118",
+   "p_code": null
+  },
+  {
+   "batch": "P160032",
+   "strain": "Grape Pie",
+   "value": 24.78,
+   "printed": "24.78",
+   "date": "06.07.2026",
+   "lab": "UKIM",
+   "cert": "ППК26119",
+   "p_code": null
+  }
+ ],
+ "n_results": 99,
+ "n_batches": 77,
+ "n_strains": 20,
+ "stability": [
+  {
+   "report": "ППК26032",
+   "issued": "05.03.2026",
+   "p": "P050022",
+   "batch": "GP0824_02",
+   "strain": "Grape Pie",
+   "arm": "25°C/60%RH",
+   "month": 6,
+   "total_thc": 21.31,
+   "cbn": 0.23,
+   "usable": true
+  },
+  {
+   "report": "ППК26033",
+   "issued": "05.03.2026",
+   "p": "P050022",
+   "batch": "GP0824_02",
+   "strain": "Grape Pie",
+   "arm": "40°C/75%RH",
+   "month": 6,
+   "total_thc": 13.16,
+   "cbn": 2.35,
+   "usable": true
+  },
+  {
+   "report": "ППК26034",
+   "issued": "05.03.2026",
+   "p": "P050072",
+   "batch": "GP0824_03",
+   "strain": "Grape Pie",
+   "arm": "25°C/60%RH",
+   "month": 6,
+   "total_thc": 24.62,
+   "cbn": 0.05,
+   "usable": true
+  },
+  {
+   "report": "ППК26035",
+   "issued": "05.03.2026",
+   "p": "P050072",
+   "batch": "GP0824_03",
+   "strain": "Grape Pie",
+   "arm": "40°C/75%RH",
+   "month": 6,
+   "total_thc": 14.99,
+   "cbn": 2.15,
+   "usable": true
+  },
+  {
+   "report": "ППК26036",
+   "issued": "05.03.2026",
+   "p": "P050202",
+   "batch": "GP062501",
+   "strain": "Grape Pie",
+   "arm": "25°C/60%RH",
+   "month": 3,
+   "total_thc": 22.83,
+   "cbn": 0.05,
+   "usable": true
+  },
+  {
+   "report": "ППК26037",
+   "issued": "05.03.2026",
+   "p": "P050202",
+   "batch": "GP062501",
+   "strain": "Grape Pie",
+   "arm": "40°C/75%RH",
+   "month": 3,
+   "total_thc": 18.62,
+   "cbn": 1.0,
+   "usable": false,
+   "note": "PP-QC-ERR-002: mass balance fails (1.09 + 0.877×18.47 = 17.29 ≠ 18.62) — source says DO NOT USE"
+  },
+  {
+   "report": "ППК26057",
+   "issued": "11.05.2026",
+   "p": "P050202",
+   "batch": "GP062501",
+   "strain": "Grape Pie",
+   "arm": "25°C/60%RH",
+   "month": 6,
+   "total_thc": 24.51,
+   "cbn": 0.04,
+   "usable": true
+  },
+  {
+   "report": "ППК26058",
+   "issued": "11.05.2026",
+   "p": "P050202",
+   "batch": "GP062501",
+   "strain": "Grape Pie",
+   "arm": "40°C/75%RH",
+   "month": 6,
+   "total_thc": 17.05,
+   "cbn": 2.05,
+   "usable": true
+  },
+  {
+   "report": "ППК26059",
+   "issued": "11.05.2026",
+   "p": "P050022",
+   "batch": "GP0824_02",
+   "strain": "Grape Pie",
+   "arm": "25°C/60%RH",
+   "month": 9,
+   "total_thc": 23.08,
+   "cbn": 0.3,
+   "usable": true
+  }
+ ],
+ "degradation_note": "Empirical basis: 25°C/60%RH stability arms show NO monotonic Total-THC decline over 3–9 months (22.83→24.51; 21.31→23.08 — movement within sampling/measurement variance); 40°C/75%RH arms collapse to 13.16–17.05% with CBN 2.05–2.35% (heat, not time, drives loss). Same-lab repeat pairs: J31102501 19.14→17.32 over 5 months (−1.82, ≤ combined U of the two measurements); OPM122501 8.09→7.91 over 4 months (−0.18). Cross-lab intake-vs-retest deltas scatter −3.1…+4.3 around ≈0 — inter-lab/sampling variance dominates any age effect. D = 1.5 %abs/year is therefore a CONSERVATIVE allowance, larger than any evidenced 12-month decline at warehouse conditions.",
+ "repeats": [
+  {
+   "batch": "J31102501",
+   "strain": "Jokerz 31",
+   "first": 19.14,
+   "first_date": "04.03.2026",
+   "second": 17.32,
+   "second_date": "07.08.2026",
+   "delta": -1.82
+  },
+  {
+   "batch": "OPM122501",
+   "strain": "Orange Punch Mimosa",
+   "first": 8.09,
+   "first_date": "09.04.2026",
+   "second": 7.91,
+   "second_date": "07.08.2026",
+   "delta": -0.18
+  },
+  {
+   "batch": "J31112501",
+   "strain": "Jokerz 31",
+   "first": 25.27,
+   "first_date": "04.03.2026",
+   "second": 20.21,
+   "second_date": "09.04.2026",
+   "delta": -5.06,
+   "note": "1-month interval — sampling heterogeneity, not degradation"
+  },
+  {
+   "batch": "J31122501",
+   "strain": "Jokerz 31",
+   "first": 19.84,
+   "first_date": "09.04.2026",
+   "second": 21.84,
+   "second_date": "09.04.2026",
+   "delta": 2.0,
+   "note": "same-day duplicate certificates — pure sampling spread"
+  }
+ ],
+ "stats": {
+  "Apple and Banana": {
+   "n": 1,
+   "min": 16.93,
+   "max": 16.93,
+   "values": [
+    16.93
+   ]
+  },
+  "Blue Gelato": {
+   "n": 2,
+   "min": 21.8,
+   "max": 26.14,
+   "values": [
+    21.8,
+    26.14
+   ]
+  },
+  "Blue Sunset Sherbet": {
+   "n": 4,
+   "min": 20.39,
+   "max": 25.01,
+   "values": [
+    20.39,
+    21.03,
+    23.42,
+    25.01
+   ]
+  },
+  "Cap Junky": {
+   "n": 12,
+   "min": 14.93,
+   "max": 24.96,
+   "values": [
+    14.93,
+    16.56,
+    18.29,
+    18.91,
+    20.29,
+    20.84,
+    21.51,
+    22.3,
+    23.0,
+    23.7,
+    24.05,
+    24.96
+   ]
+  },
+  "Cash Cow": {
+   "n": 2,
+   "min": 13.35,
+   "max": 17.67,
+   "values": [
+    13.35,
+    17.67
+   ]
+  },
+  "Clemosa a bud": {
+   "n": 1,
+   "min": 8.02,
+   "max": 8.02,
+   "values": [
+    8.02
+   ]
+  },
+  "Fat Bastard": {
+   "n": 6,
+   "min": 12.39,
+   "max": 20.83,
+   "values": [
+    12.39,
+    14.68,
+    16.69,
+    18.29,
+    18.86,
+    20.83
+   ]
+  },
+  "Gorilla Glue": {
+   "n": 9,
+   "min": 13.34,
+   "max": 18.98,
+   "values": [
+    13.34,
+    15.35,
+    15.95,
+    16.7,
+    17.22,
+    17.59,
+    17.94,
+    18.67,
+    18.98
+   ]
+  },
+  "Grape Pie": {
+   "n": 17,
+   "min": 14.83,
+   "max": 26.32,
+   "values": [
+    14.83,
+    15.7,
+    18.52,
+    18.98,
+    19.81,
+    20.79,
+    21.29,
+    21.36,
+    22.61,
+    23.19,
+    23.79,
+    24.78,
+    24.89,
+    25.45,
+    25.72,
+    25.73,
+    26.32
+   ]
+  },
+  "Graps & Creme": {
+   "n": 1,
+   "min": 11.53,
+   "max": 11.53,
+   "values": [
+    11.53
+   ]
+  },
+  "High Pro Amnesia": {
+   "n": 5,
+   "min": 14.97,
+   "max": 22.43,
+   "values": [
+    14.97,
+    17.31,
+    20.39,
+    21.61,
+    22.43
+   ]
+  },
+  "Jelly Donutz": {
+   "n": 7,
+   "min": 13.93,
+   "max": 20.54,
+   "values": [
+    13.93,
+    15.16,
+    18.16,
+    18.58,
+    19.64,
+    20.32,
+    20.54
+   ]
+  },
+  "Jokerz 31": {
+   "n": 6,
+   "min": 17.32,
+   "max": 25.27,
+   "values": [
+    17.32,
+    19.14,
+    19.84,
+    20.21,
+    21.84,
+    25.27
+   ]
+  },
+  "Kush Crasher": {
+   "n": 1,
+   "min": 17.04,
+   "max": 17.04,
+   "values": [
+    17.04
+   ]
+  },
+  "Motor Breath": {
+   "n": 2,
+   "min": 16.82,
+   "max": 18.67,
+   "values": [
+    16.82,
+    18.67
+   ]
+  },
+  "Orange Punch Mimosa": {
+   "n": 11,
+   "min": 7.91,
+   "max": 20.03,
+   "values": [
+    7.91,
+    8.0,
+    8.09,
+    9.43,
+    14.16,
+    15.38,
+    16.55,
+    18.04,
+    18.27,
+    19.96,
+    20.03
+   ]
+  },
+  "Permanent Marker": {
+   "n": 4,
+   "min": 10.01,
+   "max": 14.06,
+   "values": [
+    10.01,
+    12.25,
+    13.33,
+    14.06
+   ]
+  },
+  "Scrambler": {
+   "n": 3,
+   "min": 17.13,
+   "max": 21.92,
+   "values": [
+    17.13,
+    17.84,
+    21.92
+   ]
+  },
+  "Sleepy Joy": {
+   "n": 3,
+   "min": 9.2,
+   "max": 11.2,
+   "values": [
+    9.2,
+    10.96,
+    11.2
+   ]
+  },
+  "Wedding Crasher": {
+   "n": 2,
+   "min": 21.67,
+   "max": 22.11,
+   "values": [
+    21.67,
+    22.11
+   ]
+  }
+ },
+ "stock": [
+  {
+   "tranche": "1",
+   "batch": "BG1024",
+   "strain": "Blue Gelato",
+   "declared": 21.8,
+   "bracket_old": "19-22%",
+   "anchor": 26.14,
+   "anchor_date": "07.08.2026",
+   "anchor_lab": "FARM",
+   "proposed": [
+    23.4,
+    28.6
+   ],
+   "basis": "anchor",
+   "tier": 1,
+   "nominal": 26.0,
+   "tol": 2.6,
+   "headroom_down": 2.74
+  },
+  {
+   "tranche": "1",
+   "batch": "BSS1024",
+   "strain": "Blue Sunset Sherbet",
+   "declared": 21.0,
+   "bracket_old": "19-22%",
+   "anchor": 25.01,
+   "anchor_date": "07.08.2026",
+   "anchor_lab": "FARM",
+   "proposed": [
+    22.05,
+    26.95
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 24.5,
+   "tol": 2.45,
+   "headroom_down": 2.96
+  },
+  {
+   "tranche": "1",
+   "batch": "CJ052501/01",
+   "strain": "Cap Junky",
+   "declared": 20.29,
+   "bracket_old": "19-22%",
+   "anchor": 24.05,
+   "anchor_date": "07.08.2026",
+   "anchor_lab": "FARM",
+   "proposed": [
+    20.7,
+    25.3
+   ],
+   "basis": "anchor",
+   "tier": 3,
+   "nominal": 23.0,
+   "tol": 2.3,
+   "headroom_down": 3.35
+  },
+  {
+   "tranche": "1",
+   "batch": "CJ062501/2",
+   "strain": "Cap Junky",
+   "declared": 16.56,
+   "bracket_old": "16-19%",
+   "anchor": 18.91,
+   "anchor_date": "07.08.2026",
+   "anchor_lab": "FARM",
+   "proposed": [
+    17.31,
+    20.69
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 19.0,
+   "tol": 1.69,
+   "headroom_down": 1.6
+  },
+  {
+   "tranche": "1",
+   "batch": "CJ082501/2",
+   "strain": "Cap Junky",
+   "declared": 20.84,
+   "bracket_old": "19-22%",
+   "anchor": 18.29,
+   "anchor_date": "07.08.2026",
+   "anchor_lab": "FARM",
+   "proposed": [
+    17.31,
+    20.69
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 19.0,
+   "tol": 1.69,
+   "headroom_down": 0.98
+  },
+  {
+   "tranche": "1",
+   "batch": "CC012601/1",
+   "strain": "Cash Cow",
+   "declared": 15.63,
+   "bracket_old": "13-16%",
+   "anchor": 17.67,
+   "anchor_date": "07.08.2026",
+   "anchor_lab": "FARM",
+   "proposed": [
+    14.85,
+    18.15
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 16.5,
+   "tol": 1.65,
+   "headroom_down": 2.82
+  },
+  {
+   "tranche": "1",
+   "batch": "FB012602",
+   "strain": "Fat Bastard",
+   "declared": 19.77,
+   "bracket_old": "19-22%",
+   "anchor": 18.86,
+   "anchor_date": "07.08.2026",
+   "anchor_lab": "FARM",
+   "proposed": [
+    17.55,
+    21.45
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 19.5,
+   "tol": 1.95,
+   "headroom_down": 1.31
+  },
+  {
+   "tranche": "1",
+   "batch": "GG012603",
+   "strain": "Gorilla Glue",
+   "declared": 15.59,
+   "bracket_old": "13-16%",
+   "anchor": 16.7,
+   "anchor_date": "07.08.2026",
+   "anchor_lab": "FARM",
+   "proposed": [
+    15.75,
+    19.25
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 17.5,
+   "tol": 1.75,
+   "headroom_down": 0.95
+  },
+  {
+   "tranche": "1",
+   "batch": "GG1024_01",
+   "strain": "Gorilla Glue",
+   "declared": 17.0,
+   "bracket_old": "16-19%",
+   "anchor": 18.67,
+   "anchor_date": "07.08.2026",
+   "anchor_lab": "FARM",
+   "proposed": [
+    15.75,
+    19.25
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 17.5,
+   "tol": 1.75,
+   "headroom_down": 2.92
+  },
+  {
+   "tranche": "1",
+   "batch": "GP052501",
+   "strain": "Grape Pie",
+   "declared": 18.98,
+   "bracket_old": "16-19%",
+   "anchor": 18.52,
+   "anchor_date": "07.08.2026",
+   "anchor_lab": "FARM",
+   "proposed": [
+    18.41,
+    21.59
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 20.0,
+   "tol": 1.59,
+   "headroom_down": 0.11
+  },
+  {
+   "tranche": "1",
+   "batch": "GP0824_02",
+   "strain": "Grape Pie",
+   "declared": 23.79,
+   "bracket_old": "22-25%",
+   "anchor": 22.61,
+   "anchor_date": "07.08.2026",
+   "anchor_lab": "FARM",
+   "proposed": [
+    21.6,
+    26.4
+   ],
+   "basis": "anchor",
+   "tier": 3,
+   "nominal": 24.0,
+   "tol": 2.4,
+   "headroom_down": 1.01
+  },
+  {
+   "tranche": "1",
+   "batch": "GP082501/2",
+   "strain": "Grape Pie",
+   "declared": 14.83,
+   "bracket_old": "13-16%",
+   "anchor": 15.7,
+   "anchor_date": "07.08.2026",
+   "anchor_lab": "FARM",
+   "proposed": [
+    15.6,
+    18.4
+   ],
+   "basis": "anchor",
+   "tier": 1,
+   "nominal": 17.0,
+   "tol": 1.4,
+   "headroom_down": 0.1
+  },
+  {
+   "tranche": "1",
+   "batch": "HPA1024",
+   "strain": "High Pro Amnesia",
+   "declared": 14.97,
+   "bracket_old": "13-16%",
+   "anchor": 17.31,
+   "anchor_date": "07.08.2026",
+   "anchor_lab": "FARM",
+   "proposed": [
+    16.11,
+    18.89
+   ],
+   "basis": "anchor",
+   "tier": 1,
+   "nominal": 17.5,
+   "tol": 1.39,
+   "headroom_down": 1.2
+  },
+  {
+   "tranche": "1",
+   "batch": "HPA1024_01",
+   "strain": "High Pro Amnesia",
+   "declared": 22.43,
+   "bracket_old": "22-25%",
+   "anchor": 21.61,
+   "anchor_date": "07.08.2026",
+   "anchor_lab": "FARM",
+   "proposed": [
+    18.9,
+    23.1
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 21.0,
+   "tol": 2.1,
+   "headroom_down": 2.71
+  },
+  {
+   "tranche": "1",
+   "batch": "JD112501",
+   "strain": "Jelly Donutz",
+   "declared": 19.64,
+   "bracket_old": "19-22%",
+   "anchor": 20.32,
+   "anchor_date": "07.08.2026",
+   "anchor_lab": "FARM",
+   "proposed": [
+    18.0,
+    22.0
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 20.0,
+   "tol": 2.0,
+   "headroom_down": 2.32
+  },
+  {
+   "tranche": "1",
+   "batch": "J31102501",
+   "strain": "Jokerz 31",
+   "declared": 19.14,
+   "bracket_old": "19-22%",
+   "anchor": 17.32,
+   "anchor_date": "07.08.2026",
+   "anchor_lab": "FARM",
+   "proposed": [
+    16.11,
+    18.89
+   ],
+   "basis": "anchor",
+   "tier": 1,
+   "nominal": 17.5,
+   "tol": 1.39,
+   "headroom_down": 1.21
+  },
+  {
+   "tranche": "1",
+   "batch": "OPM1024",
+   "strain": "Orange Punch Mimosa",
+   "declared": 19.96,
+   "bracket_old": "19-22%",
+   "anchor": 20.03,
+   "anchor_date": "07.08.2026",
+   "anchor_lab": "FARM",
+   "proposed": [
+    18.45,
+    22.55
+   ],
+   "basis": "anchor",
+   "tier": 5,
+   "nominal": 20.5,
+   "tol": 2.05,
+   "headroom_down": 1.58
+  },
+  {
+   "tranche": "1",
+   "batch": "OPM1024_02",
+   "strain": "Orange Punch Mimosa",
+   "declared": 18.27,
+   "bracket_old": "16-19%",
+   "anchor": 18.04,
+   "anchor_date": "07.08.2026",
+   "anchor_lab": "FARM",
+   "proposed": [
+    15.56,
+    18.44
+   ],
+   "basis": "anchor",
+   "tier": 4,
+   "nominal": 17.0,
+   "tol": 1.44,
+   "headroom_down": 2.48
+  },
+  {
+   "tranche": "1",
+   "batch": "OPM122501",
+   "strain": "Orange Punch Mimosa",
+   "declared": 11.0,
+   "bracket_old": "10-13%",
+   "anchor": 7.91,
+   "anchor_date": "07.08.2026",
+   "anchor_lab": "FARM",
+   "proposed": [
+    7.46,
+    8.54
+   ],
+   "basis": "anchor",
+   "tier": 1,
+   "nominal": 8.0,
+   "tol": 0.54,
+   "headroom_down": 0.45
+  },
+  {
+   "tranche": "1",
+   "batch": "PM092501",
+   "strain": "Permanent Marker",
+   "declared": 14.06,
+   "bracket_old": "13-16%",
+   "anchor": 12.25,
+   "anchor_date": "07.08.2026",
+   "anchor_lab": "FARM",
+   "proposed": [
+    11.25,
+    13.75
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 12.5,
+   "tol": 1.25,
+   "headroom_down": 1.0
+  },
+  {
+   "tranche": "1",
+   "batch": "SCR012603",
+   "strain": "Scrambler",
+   "declared": 17.0,
+   "bracket_old": "16-19%",
+   "anchor": 17.84,
+   "anchor_date": "07.08.2026",
+   "anchor_lab": "FARM",
+   "proposed": [
+    16.21,
+    19.79
+   ],
+   "basis": "anchor",
+   "tier": 1,
+   "nominal": 18.0,
+   "tol": 1.79,
+   "headroom_down": 1.63
+  },
+  {
+   "tranche": "2",
+   "batch": "ACC102501",
+   "strain": "Amnesia Core Cut",
+   "declared": 12.91,
+   "bracket_old": "10-13%",
+   "anchor": null,
+   "anchor_date": null,
+   "anchor_lab": null,
+   "proposed": [
+    11.7,
+    14.3
+   ],
+   "basis": "declared (no assay on file)",
+   "tier": 1,
+   "nominal": 13.0,
+   "tol": 1.3,
+   "headroom_down": 1.21
+  },
+  {
+   "tranche": "2",
+   "batch": "BSS052501",
+   "strain": "Blue Sunset Sherbet",
+   "declared": 20.47,
+   "bracket_old": "19-22%",
+   "anchor": 20.39,
+   "anchor_date": "28.11.2025",
+   "anchor_lab": "PP",
+   "proposed": [
+    18.96,
+    22.04
+   ],
+   "basis": "anchor",
+   "tier": 1,
+   "nominal": 20.5,
+   "tol": 1.54,
+   "headroom_down": 1.43
+  },
+  {
+   "tranche": "2",
+   "batch": "CJ062501/1",
+   "strain": "Cap Junky",
+   "declared": 21.51,
+   "bracket_old": "19-22%",
+   "anchor": 21.51,
+   "anchor_date": "23.10.2025",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    20.7,
+    25.3
+   ],
+   "basis": "anchor",
+   "tier": 3,
+   "nominal": 23.0,
+   "tol": 2.3,
+   "headroom_down": 0.81
+  },
+  {
+   "tranche": "2",
+   "batch": "CJ082501/1",
+   "strain": "Cap Junky",
+   "declared": 24.96,
+   "bracket_old": "22-25%",
+   "anchor": 24.96,
+   "anchor_date": "21.01.2026",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    20.7,
+    25.3
+   ],
+   "basis": "anchor",
+   "tier": 3,
+   "nominal": 23.0,
+   "tol": 2.3,
+   "headroom_down": 4.26
+  },
+  {
+   "tranche": "2",
+   "batch": "CJ092501",
+   "strain": "Cap Junky",
+   "declared": 22.3,
+   "bracket_old": "22-25%",
+   "anchor": 22.3,
+   "anchor_date": "21.01.2026",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    20.7,
+    25.3
+   ],
+   "basis": "anchor",
+   "tier": 3,
+   "nominal": 23.0,
+   "tol": 2.3,
+   "headroom_down": 1.6
+  },
+  {
+   "tranche": "2",
+   "batch": "CC012603",
+   "strain": "Cash Cow",
+   "declared": 12.32,
+   "bracket_old": "10-13%",
+   "anchor": null,
+   "anchor_date": null,
+   "anchor_lab": null,
+   "proposed": [
+    12.16,
+    14.84
+   ],
+   "basis": "declared (no assay on file)",
+   "tier": 1,
+   "nominal": 13.5,
+   "tol": 1.34,
+   "headroom_down": 0.16
+  },
+  {
+   "tranche": "2",
+   "batch": "CF102501",
+   "strain": "Chem Flyer",
+   "declared": 9.83,
+   "bracket_old": "7-10%",
+   "anchor": null,
+   "anchor_date": null,
+   "anchor_lab": null,
+   "proposed": [
+    9.0,
+    11.0
+   ],
+   "basis": "declared (no assay on file)",
+   "tier": 1,
+   "nominal": 10.0,
+   "tol": 1.0,
+   "headroom_down": 0.83
+  },
+  {
+   "tranche": "2",
+   "batch": "CLE072501",
+   "strain": "Clemosa a bud",
+   "declared": 8.02,
+   "bracket_old": "7-10%",
+   "anchor": 8.02,
+   "anchor_date": "21.01.2026",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    7.2,
+    8.8
+   ],
+   "basis": "anchor",
+   "tier": 1,
+   "nominal": 8.0,
+   "tol": 0.8,
+   "headroom_down": 0.82
+  },
+  {
+   "tranche": "2",
+   "batch": "FB012601/1",
+   "strain": "Fat Bastard",
+   "declared": 14.68,
+   "bracket_old": "13-16%",
+   "anchor": 14.68,
+   "anchor_date": "11.05.2026",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    14.46,
+    17.54
+   ],
+   "basis": "anchor",
+   "tier": 1,
+   "nominal": 16.0,
+   "tol": 1.54,
+   "headroom_down": 0.22
+  },
+  {
+   "tranche": "2",
+   "batch": "GG1024",
+   "strain": "Gorilla Glue",
+   "declared": 13.34,
+   "bracket_old": "13-16%",
+   "anchor": 13.34,
+   "anchor_date": "23.04.2025",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    13.26,
+    15.74
+   ],
+   "basis": "anchor",
+   "tier": 1,
+   "nominal": 14.5,
+   "tol": 1.24,
+   "headroom_down": 0.08
+  },
+  {
+   "tranche": "2",
+   "batch": "GP072501/2",
+   "strain": "Grape Pie",
+   "declared": 19.81,
+   "bracket_old": "19-22%",
+   "anchor": 19.81,
+   "anchor_date": "21.01.2026",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    18.41,
+    21.59
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 20.0,
+   "tol": 1.59,
+   "headroom_down": 1.4
+  },
+  {
+   "tranche": "2",
+   "batch": "GP0824_03",
+   "strain": "Grape Pie",
+   "declared": 25.45,
+   "bracket_old": ">=25%",
+   "anchor": 25.45,
+   "anchor_date": "10.07.2025",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    21.6,
+    26.4
+   ],
+   "basis": "anchor",
+   "tier": 3,
+   "nominal": 24.0,
+   "tol": 2.4,
+   "headroom_down": 3.85
+  },
+  {
+   "tranche": "2",
+   "batch": "GP082501/1",
+   "strain": "Grape Pie",
+   "declared": 21.29,
+   "bracket_old": "19-22%",
+   "anchor": 21.29,
+   "anchor_date": "21.01.2026",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    18.41,
+    21.59
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 20.0,
+   "tol": 1.59,
+   "headroom_down": 2.88
+  },
+  {
+   "tranche": "2",
+   "batch": "GP092501",
+   "strain": "Grape Pie",
+   "declared": 25.73,
+   "bracket_old": ">=25%",
+   "anchor": 25.73,
+   "anchor_date": "21.01.2026",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    21.6,
+    26.4
+   ],
+   "basis": "anchor",
+   "tier": 3,
+   "nominal": 24.0,
+   "tol": 2.4,
+   "headroom_down": 4.13
+  },
+  {
+   "tranche": "2",
+   "batch": "GRC102501/2",
+   "strain": "Graps & Creme",
+   "declared": 11.53,
+   "bracket_old": "10-13%",
+   "anchor": 11.53,
+   "anchor_date": "04.03.2026",
+   "anchor_lab": "FARM",
+   "proposed": [
+    10.35,
+    12.65
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 11.5,
+   "tol": 1.15,
+   "headroom_down": 1.18
+  },
+  {
+   "tranche": "2",
+   "batch": "HPA052501",
+   "strain": "High Pro Amnesia",
+   "declared": 20.39,
+   "bracket_old": "19-22%",
+   "anchor": 20.39,
+   "anchor_date": "19.09.2025",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    18.9,
+    23.1
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 21.0,
+   "tol": 2.1,
+   "headroom_down": 1.49
+  },
+  {
+   "tranche": "2",
+   "batch": "JD012603/01",
+   "strain": "Jelly Donutz",
+   "declared": 16.71,
+   "bracket_old": "16-19%",
+   "anchor": null,
+   "anchor_date": null,
+   "anchor_lab": null,
+   "proposed": [
+    15.01,
+    17.99
+   ],
+   "basis": "declared (no assay on file)",
+   "tier": 1,
+   "nominal": 16.5,
+   "tol": 1.49,
+   "headroom_down": 1.7
+  },
+  {
+   "tranche": "2",
+   "batch": "JD012603/02",
+   "strain": "Jelly Donutz",
+   "declared": 13.3,
+   "bracket_old": "13-16%",
+   "anchor": 20.54,
+   "anchor_date": "30.06.2026",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    18.0,
+    22.0
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 20.0,
+   "tol": 2.0,
+   "headroom_down": 2.54
+  },
+  {
+   "tranche": "2",
+   "batch": "JD012603/02V",
+   "strain": "Jelly Donutz",
+   "declared": 14.97,
+   "bracket_old": "13-16%",
+   "anchor": 15.16,
+   "anchor_date": "30.06.2026",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    15.01,
+    17.99
+   ],
+   "basis": "anchor",
+   "tier": 1,
+   "nominal": 16.5,
+   "tol": 1.49,
+   "headroom_down": 0.15
+  },
+  {
+   "tranche": "2",
+   "batch": "KC102501",
+   "strain": "Kush Crasher",
+   "declared": 17.4,
+   "bracket_old": "16-19%",
+   "anchor": 17.04,
+   "anchor_date": "04.03.2026",
+   "anchor_lab": "FARM",
+   "proposed": [
+    15.3,
+    18.7
+   ],
+   "basis": "anchor",
+   "tier": 1,
+   "nominal": 17.0,
+   "tol": 1.7,
+   "headroom_down": 1.74
+  },
+  {
+   "tranche": "2",
+   "batch": "MB0824_05",
+   "strain": "Motor Breath",
+   "declared": 16.82,
+   "bracket_old": "16-19%",
+   "anchor": 16.82,
+   "anchor_date": "28.07.2025",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    16.2,
+    19.8
+   ],
+   "basis": "anchor",
+   "tier": 1,
+   "nominal": 18.0,
+   "tol": 1.8,
+   "headroom_down": 0.62
+  },
+  {
+   "tranche": "2",
+   "batch": "OMP1024_01",
+   "strain": "Orange Punch Mimosa",
+   "declared": 15.38,
+   "bracket_old": "13-16%",
+   "anchor": 15.38,
+   "anchor_date": "06.05.2025",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    13.45,
+    15.55
+   ],
+   "basis": "anchor",
+   "tier": 3,
+   "nominal": 14.5,
+   "tol": 1.05,
+   "headroom_down": 1.93
+  },
+  {
+   "tranche": "2",
+   "batch": "OPM092501",
+   "strain": "Orange Punch Mimosa",
+   "declared": 9.43,
+   "bracket_old": "7-10%",
+   "anchor": 9.43,
+   "anchor_date": "21.01.2026",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    8.55,
+    10.45
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 9.5,
+   "tol": 0.95,
+   "headroom_down": 0.88
+  },
+  {
+   "tranche": "2",
+   "batch": "OPM1024_03",
+   "strain": "Orange Punch Mimosa",
+   "declared": 16.55,
+   "bracket_old": "16-19%",
+   "anchor": 16.55,
+   "anchor_date": "28.07.2025",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    15.56,
+    18.44
+   ],
+   "basis": "anchor",
+   "tier": 4,
+   "nominal": 17.0,
+   "tol": 1.44,
+   "headroom_down": 0.99
+  },
+  {
+   "tranche": "2",
+   "batch": "PM112501",
+   "strain": "Permanent Marker",
+   "declared": 13.0,
+   "bracket_old": "13-16%",
+   "anchor": 13.33,
+   "anchor_date": "05.03.2026",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    11.25,
+    13.75
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 12.5,
+   "tol": 1.25,
+   "headroom_down": 2.08
+  },
+  {
+   "tranche": "2",
+   "batch": "PUM102501",
+   "strain": "Pure Michigen",
+   "declared": 15.63,
+   "bracket_old": "13-16%",
+   "anchor": null,
+   "anchor_date": null,
+   "anchor_lab": null,
+   "proposed": [
+    13.95,
+    17.05
+   ],
+   "basis": "declared (no assay on file)",
+   "tier": 1,
+   "nominal": 15.5,
+   "tol": 1.55,
+   "headroom_down": 1.68
+  },
+  {
+   "tranche": "2",
+   "batch": "SCR112501",
+   "strain": "Scrambler",
+   "declared": 17.13,
+   "bracket_old": "16-19%",
+   "anchor": 17.13,
+   "anchor_date": "11.05.2026",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    16.21,
+    19.79
+   ],
+   "basis": "anchor",
+   "tier": 1,
+   "nominal": 18.0,
+   "tol": 1.79,
+   "headroom_down": 0.92
+  },
+  {
+   "tranche": "2",
+   "batch": "SJ092501",
+   "strain": "Sleepy Joy",
+   "declared": 10.96,
+   "bracket_old": "10-13%",
+   "anchor": 10.96,
+   "anchor_date": "21.01.2026",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    9.9,
+    12.1
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 11.0,
+   "tol": 1.1,
+   "headroom_down": 1.06
+  },
+  {
+   "tranche": "2",
+   "batch": "WC082501",
+   "strain": "Wedding Crasher",
+   "declared": 21.67,
+   "bracket_old": "19-22%",
+   "anchor": 21.67,
+   "anchor_date": "21.01.2026",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    19.8,
+    24.2
+   ],
+   "basis": "anchor",
+   "tier": 1,
+   "nominal": 22.0,
+   "tol": 2.2,
+   "headroom_down": 1.87
+  },
+  {
+   "tranche": "3",
+   "batch": "AB092501",
+   "strain": "Apple and Banana",
+   "declared": 16.93,
+   "bracket_old": "16-19%",
+   "anchor": 16.93,
+   "anchor_date": "21.01.2026",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    15.3,
+    18.7
+   ],
+   "basis": "anchor",
+   "tier": 1,
+   "nominal": 17.0,
+   "tol": 1.7,
+   "headroom_down": 1.63
+  },
+  {
+   "tranche": "3",
+   "batch": "BSS1024_01/1",
+   "strain": "Blue Sunset Sherbet",
+   "declared": 23.42,
+   "bracket_old": "22-25%",
+   "anchor": null,
+   "anchor_date": null,
+   "anchor_lab": null,
+   "proposed": [
+    22.05,
+    26.95
+   ],
+   "basis": "declared (no assay on file)",
+   "tier": 2,
+   "nominal": 24.5,
+   "tol": 2.45,
+   "headroom_down": 1.37
+  },
+  {
+   "tranche": "3",
+   "batch": "CJ052501/02",
+   "strain": "Cap Junky",
+   "declared": 14.49,
+   "bracket_old": "13-16%",
+   "anchor": 14.93,
+   "anchor_date": "17.09.2025",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    14.7,
+    17.3
+   ],
+   "basis": "anchor",
+   "tier": 1,
+   "nominal": 16.0,
+   "tol": 1.3,
+   "headroom_down": 0.23
+  },
+  {
+   "tranche": "3",
+   "batch": "CJ072501",
+   "strain": "Cap Junky",
+   "declared": 23.7,
+   "bracket_old": "22-25%",
+   "anchor": 23.7,
+   "anchor_date": "28.11.2025",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    20.7,
+    25.3
+   ],
+   "basis": "anchor",
+   "tier": 3,
+   "nominal": 23.0,
+   "tol": 2.3,
+   "headroom_down": 3.0
+  },
+  {
+   "tranche": "3",
+   "batch": "CJ1024",
+   "strain": "Cap Junky",
+   "declared": 23.0,
+   "bracket_old": "22-25%",
+   "anchor": 23.0,
+   "anchor_date": "26.02.2025",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    20.7,
+    25.3
+   ],
+   "basis": "anchor",
+   "tier": 3,
+   "nominal": 23.0,
+   "tol": 2.3,
+   "headroom_down": 2.3
+  },
+  {
+   "tranche": "3",
+   "batch": "CC112501",
+   "strain": "Cash Cow",
+   "declared": 13.35,
+   "bracket_old": "13-16%",
+   "anchor": 13.35,
+   "anchor_date": "11.05.2026",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    12.16,
+    14.84
+   ],
+   "basis": "anchor",
+   "tier": 1,
+   "nominal": 13.5,
+   "tol": 1.34,
+   "headroom_down": 1.19
+  },
+  {
+   "tranche": "3",
+   "batch": "FB012603",
+   "strain": "Fat Bastard",
+   "declared": 14.65,
+   "bracket_old": "13-16%",
+   "anchor": 20.83,
+   "anchor_date": "30.06.2026",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    17.55,
+    21.45
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 19.5,
+   "tol": 1.95,
+   "headroom_down": 3.28
+  },
+  {
+   "tranche": "3",
+   "batch": "FB012603V",
+   "strain": "Fat Bastard",
+   "declared": 15.6,
+   "bracket_old": "13-16%",
+   "anchor": 18.29,
+   "anchor_date": "30.06.2026",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    17.55,
+    21.45
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 19.5,
+   "tol": 1.95,
+   "headroom_down": 0.74
+  },
+  {
+   "tranche": "3",
+   "batch": "FB112501",
+   "strain": "Fat Bastard",
+   "declared": 16.69,
+   "bracket_old": "16-19%",
+   "anchor": 16.69,
+   "anchor_date": "11.05.2026",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    14.46,
+    17.54
+   ],
+   "basis": "anchor",
+   "tier": 1,
+   "nominal": 16.0,
+   "tol": 1.54,
+   "headroom_down": 2.23
+  },
+  {
+   "tranche": "3",
+   "batch": "GG012601",
+   "strain": "Gorilla Glue",
+   "declared": 15.35,
+   "bracket_old": "13-16%",
+   "anchor": 15.35,
+   "anchor_date": "11.05.2026",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    13.26,
+    15.74
+   ],
+   "basis": "anchor",
+   "tier": 1,
+   "nominal": 14.5,
+   "tol": 1.24,
+   "headroom_down": 2.09
+  },
+  {
+   "tranche": "3",
+   "batch": "GG112501",
+   "strain": "Gorilla Glue",
+   "declared": 17.94,
+   "bracket_old": "16-19%",
+   "anchor": 17.94,
+   "anchor_date": "11.05.2026",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    15.75,
+    19.25
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 17.5,
+   "tol": 1.75,
+   "headroom_down": 2.19
+  },
+  {
+   "tranche": "3",
+   "batch": "GG1024_02",
+   "strain": "Gorilla Glue",
+   "declared": 15.95,
+   "bracket_old": "13-16%",
+   "anchor": 15.95,
+   "anchor_date": "22.05.2025",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    15.75,
+    19.25
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 17.5,
+   "tol": 1.75,
+   "headroom_down": 0.2
+  },
+  {
+   "tranche": "3",
+   "batch": "GP062501",
+   "strain": "Grape Pie",
+   "declared": 22.89,
+   "bracket_old": "22-25%",
+   "anchor": 24.89,
+   "anchor_date": "28.11.2025",
+   "anchor_lab": "PP",
+   "proposed": [
+    21.6,
+    26.4
+   ],
+   "basis": "anchor",
+   "tier": 3,
+   "nominal": 24.0,
+   "tol": 2.4,
+   "headroom_down": 3.29
+  },
+  {
+   "tranche": "3",
+   "batch": "GP072501/1",
+   "strain": "Grape Pie",
+   "declared": 21.36,
+   "bracket_old": "19-22%",
+   "anchor": 21.36,
+   "anchor_date": "21.01.2026",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    18.41,
+    21.59
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 20.0,
+   "tol": 1.59,
+   "headroom_down": 2.95
+  },
+  {
+   "tranche": "3",
+   "batch": "GRC102501/1",
+   "strain": "Graps & Creme",
+   "declared": 7.05,
+   "bracket_old": "7-10%",
+   "anchor": null,
+   "anchor_date": null,
+   "anchor_lab": null,
+   "proposed": [
+    6.3,
+    7.7
+   ],
+   "basis": "declared (no assay on file)",
+   "tier": 1,
+   "nominal": 7.0,
+   "tol": 0.7,
+   "headroom_down": 0.75
+  },
+  {
+   "tranche": "3",
+   "batch": "JD012601",
+   "strain": "Jelly Donutz",
+   "declared": 18.16,
+   "bracket_old": "16-19%",
+   "anchor": 18.16,
+   "anchor_date": "11.05.2026",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    18.0,
+    22.0
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 20.0,
+   "tol": 2.0,
+   "headroom_down": 0.16
+  },
+  {
+   "tranche": "3",
+   "batch": "J31112501",
+   "strain": "Jokerz 31",
+   "declared": 25.0,
+   "bracket_old": ">=25%",
+   "anchor": 20.21,
+   "anchor_date": "09.04.2026",
+   "anchor_lab": "FARM",
+   "proposed": [
+    18.9,
+    23.1
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 21.0,
+   "tol": 2.1,
+   "headroom_down": 1.31
+  },
+  {
+   "tranche": "3",
+   "batch": "J31122501",
+   "strain": "Jokerz 31",
+   "declared": 21.77,
+   "bracket_old": "19-22%",
+   "anchor": 21.84,
+   "anchor_date": "09.04.2026",
+   "anchor_lab": "FARM",
+   "proposed": [
+    18.9,
+    23.1
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 21.0,
+   "tol": 2.1,
+   "headroom_down": 2.94
+  },
+  {
+   "tranche": "3",
+   "batch": "MB0824_04",
+   "strain": "Motor Breath",
+   "declared": 18.67,
+   "bracket_old": "16-19%",
+   "anchor": 18.67,
+   "anchor_date": "06.05.2025",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    16.2,
+    19.8
+   ],
+   "basis": "anchor",
+   "tier": 1,
+   "nominal": 18.0,
+   "tol": 1.8,
+   "headroom_down": 2.47
+  },
+  {
+   "tranche": "3",
+   "batch": "OPM052501",
+   "strain": "Orange Punch Mimosa",
+   "declared": 14.16,
+   "bracket_old": "13-16%",
+   "anchor": 14.16,
+   "anchor_date": "05.09.2025",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    13.45,
+    15.55
+   ],
+   "basis": "anchor",
+   "tier": 3,
+   "nominal": 14.5,
+   "tol": 1.05,
+   "headroom_down": 0.71
+  },
+  {
+   "tranche": "3",
+   "batch": "OPM112501",
+   "strain": "Orange Punch Mimosa",
+   "declared": 8.0,
+   "bracket_old": "7-10%",
+   "anchor": 8.0,
+   "anchor_date": "05.03.2026",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    7.46,
+    8.54
+   ],
+   "basis": "anchor",
+   "tier": 1,
+   "nominal": 8.0,
+   "tol": 0.54,
+   "headroom_down": 0.54
+  },
+  {
+   "tranche": "3",
+   "batch": "PM072501",
+   "strain": "Permanent Marker",
+   "declared": 10.01,
+   "bracket_old": "10-13%",
+   "anchor": 10.01,
+   "anchor_date": "28.11.2025",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    9.76,
+    11.24
+   ],
+   "basis": "anchor",
+   "tier": 1,
+   "nominal": 10.5,
+   "tol": 0.74,
+   "headroom_down": 0.25
+  },
+  {
+   "tranche": "3",
+   "batch": "SCR012601",
+   "strain": "Scrambler",
+   "declared": 18.07,
+   "bracket_old": "16-19%",
+   "anchor": null,
+   "anchor_date": null,
+   "anchor_lab": null,
+   "proposed": [
+    16.21,
+    19.79
+   ],
+   "basis": "declared (no assay on file)",
+   "tier": 1,
+   "nominal": 18.0,
+   "tol": 1.79,
+   "headroom_down": 1.86
+  },
+  {
+   "tranche": "3",
+   "batch": "SCR022601",
+   "strain": "Scrambler",
+   "declared": 16.0,
+   "bracket_old": "16-19%",
+   "anchor": 21.92,
+   "anchor_date": "06.07.2026",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    19.8,
+    24.2
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 22.0,
+   "tol": 2.2,
+   "headroom_down": 2.12
+  },
+  {
+   "tranche": "3",
+   "batch": "SJ102501",
+   "strain": "Sleepy Joy",
+   "declared": 11.2,
+   "bracket_old": "10-13%",
+   "anchor": 11.2,
+   "anchor_date": "04.03.2026",
+   "anchor_lab": "FARM",
+   "proposed": [
+    9.9,
+    12.1
+   ],
+   "basis": "anchor",
+   "tier": 2,
+   "nominal": 11.0,
+   "tol": 1.1,
+   "headroom_down": 1.3
+  },
+  {
+   "tranche": "3",
+   "batch": "SJ112501",
+   "strain": "Sleepy Joy",
+   "declared": 9.0,
+   "bracket_old": "7-10%",
+   "anchor": 9.2,
+   "anchor_date": "04.03.2026",
+   "anchor_lab": "FARM",
+   "proposed": [
+    8.11,
+    9.89
+   ],
+   "basis": "anchor",
+   "tier": 1,
+   "nominal": 9.0,
+   "tol": 0.89,
+   "headroom_down": 1.09
+  },
+  {
+   "tranche": "3",
+   "batch": "WED102501",
+   "strain": "Wedding Cake",
+   "declared": 22.05,
+   "bracket_old": "22-25%",
+   "anchor": null,
+   "anchor_date": null,
+   "anchor_lab": null,
+   "proposed": [
+    19.8,
+    24.2
+   ],
+   "basis": "declared (no assay on file)",
+   "tier": 1,
+   "nominal": 22.0,
+   "tol": 2.2,
+   "headroom_down": 2.25
+  },
+  {
+   "tranche": "3",
+   "batch": "WC072501",
+   "strain": "Wedding Crasher",
+   "declared": 22.11,
+   "bracket_old": "22-25%",
+   "anchor": 22.11,
+   "anchor_date": "28.11.2025",
+   "anchor_lab": "UKIM",
+   "proposed": [
+    19.8,
+    24.2
+   ],
+   "basis": "anchor",
+   "tier": 1,
+   "nominal": 22.0,
+   "tol": 2.2,
+   "headroom_down": 2.31
+  }
+ ],
+ "merged_ranges": {
+  "Amnesia Core Cut": [
+   {
+    "range": [
+     11.7,
+     14.3
+    ],
+    "nominal": 13.0,
+    "tol": 1.3,
+    "gap_after": false,
+    "batches": [
+     "ACC102501"
+    ],
+    "anchors": [
+     12.91
+    ]
+   }
+  ],
+  "Apple and Banana": [
+   {
+    "range": [
+     15.3,
+     18.7
+    ],
+    "nominal": 17.0,
+    "tol": 1.7,
+    "gap_after": false,
+    "batches": [
+     "AB092501"
+    ],
+    "anchors": [
+     16.93
+    ]
+   }
+  ],
+  "Blue Gelato": [
+   {
+    "range": [
+     23.4,
+     28.6
+    ],
+    "nominal": 26.0,
+    "tol": 2.6,
+    "gap_after": false,
+    "batches": [
+     "BG1024"
+    ],
+    "anchors": [
+     26.14
+    ]
+   }
+  ],
+  "Blue Sunset Sherbet": [
+   {
+    "range": [
+     18.96,
+     22.04
+    ],
+    "nominal": 20.5,
+    "tol": 1.54,
+    "gap_after": false,
+    "batches": [
+     "BSS052501"
+    ],
+    "anchors": [
+     20.39
+    ]
+   },
+   {
+    "range": [
+     22.05,
+     26.95
+    ],
+    "nominal": 24.5,
+    "tol": 2.45,
+    "gap_after": false,
+    "batches": [
+     "BSS1024_01/1",
+     "BSS1024"
+    ],
+    "anchors": [
+     23.42,
+     25.01
+    ]
+   }
+  ],
+  "Cap Junky": [
+   {
+    "range": [
+     14.7,
+     17.3
+    ],
+    "nominal": 16.0,
+    "tol": 1.3,
+    "gap_after": false,
+    "batches": [
+     "CJ052501/02"
+    ],
+    "anchors": [
+     14.93
+    ]
+   },
+   {
+    "range": [
+     17.31,
+     20.69
+    ],
+    "nominal": 19.0,
+    "tol": 1.69,
+    "gap_after": false,
+    "batches": [
+     "CJ082501/2",
+     "CJ062501/2"
+    ],
+    "anchors": [
+     18.29,
+     18.91
+    ]
+   },
+   {
+    "range": [
+     20.7,
+     25.3
+    ],
+    "nominal": 23.0,
+    "tol": 2.3,
+    "gap_after": false,
+    "batches": [
+     "CJ062501/1",
+     "CJ092501",
+     "CJ1024",
+     "CJ072501",
+     "CJ052501/01",
+     "CJ082501/1"
+    ],
+    "anchors": [
+     21.51,
+     22.3,
+     23.0,
+     23.7,
+     24.05,
+     24.96
+    ]
+   }
+  ],
+  "Cash Cow": [
+   {
+    "range": [
+     12.16,
+     14.84
+    ],
+    "nominal": 13.5,
+    "tol": 1.34,
+    "gap_after": false,
+    "batches": [
+     "CC012603",
+     "CC112501"
+    ],
+    "anchors": [
+     12.32,
+     13.35
+    ]
+   },
+   {
+    "range": [
+     14.85,
+     18.15
+    ],
+    "nominal": 16.5,
+    "tol": 1.65,
+    "gap_after": false,
+    "batches": [
+     "CC012601/1"
+    ],
+    "anchors": [
+     17.67
+    ]
+   }
+  ],
+  "Chem Flyer": [
+   {
+    "range": [
+     9.0,
+     11.0
+    ],
+    "nominal": 10.0,
+    "tol": 1.0,
+    "gap_after": false,
+    "batches": [
+     "CF102501"
+    ],
+    "anchors": [
+     9.83
+    ]
+   }
+  ],
+  "Clemosa a bud": [
+   {
+    "range": [
+     7.2,
+     8.8
+    ],
+    "nominal": 8.0,
+    "tol": 0.8,
+    "gap_after": false,
+    "batches": [
+     "CLE072501"
+    ],
+    "anchors": [
+     8.02
+    ]
+   }
+  ],
+  "Fat Bastard": [
+   {
+    "range": [
+     14.46,
+     17.54
+    ],
+    "nominal": 16.0,
+    "tol": 1.54,
+    "gap_after": false,
+    "batches": [
+     "FB012601/1",
+     "FB112501"
+    ],
+    "anchors": [
+     14.68,
+     16.69
+    ]
+   },
+   {
+    "range": [
+     17.55,
+     21.45
+    ],
+    "nominal": 19.5,
+    "tol": 1.95,
+    "gap_after": false,
+    "batches": [
+     "FB012603V",
+     "FB012602",
+     "FB012603"
+    ],
+    "anchors": [
+     18.29,
+     18.86,
+     20.83
+    ]
+   }
+  ],
+  "Gorilla Glue": [
+   {
+    "range": [
+     13.26,
+     15.74
+    ],
+    "nominal": 14.5,
+    "tol": 1.24,
+    "gap_after": false,
+    "batches": [
+     "GG1024",
+     "GG012601"
+    ],
+    "anchors": [
+     13.34,
+     15.35
+    ]
+   },
+   {
+    "range": [
+     15.75,
+     19.25
+    ],
+    "nominal": 17.5,
+    "tol": 1.75,
+    "gap_after": false,
+    "batches": [
+     "GG1024_02",
+     "GG012603",
+     "GG112501",
+     "GG1024_01"
+    ],
+    "anchors": [
+     15.95,
+     16.7,
+     17.94,
+     18.67
+    ]
+   }
+  ],
+  "Grape Pie": [
+   {
+    "range": [
+     15.6,
+     18.4
+    ],
+    "nominal": 17.0,
+    "tol": 1.4,
+    "gap_after": false,
+    "batches": [
+     "GP082501/2"
+    ],
+    "anchors": [
+     15.7
+    ]
+   },
+   {
+    "range": [
+     18.41,
+     21.59
+    ],
+    "nominal": 20.0,
+    "tol": 1.59,
+    "gap_after": false,
+    "batches": [
+     "GP052501",
+     "GP072501/2",
+     "GP082501/1",
+     "GP072501/1"
+    ],
+    "anchors": [
+     18.52,
+     19.81,
+     21.29,
+     21.36
+    ]
+   },
+   {
+    "range": [
+     21.6,
+     26.4
+    ],
+    "nominal": 24.0,
+    "tol": 2.4,
+    "gap_after": false,
+    "batches": [
+     "GP0824_02",
+     "GP062501",
+     "GP0824_03",
+     "GP092501"
+    ],
+    "anchors": [
+     22.61,
+     24.89,
+     25.45,
+     25.73
+    ]
+   }
+  ],
+  "Graps & Creme": [
+   {
+    "range": [
+     6.3,
+     7.7
+    ],
+    "nominal": 7.0,
+    "tol": 0.7,
+    "gap_after": true,
+    "batches": [
+     "GRC102501/1"
+    ],
+    "anchors": [
+     7.05
+    ]
+   },
+   {
+    "range": [
+     10.35,
+     12.65
+    ],
+    "nominal": 11.5,
+    "tol": 1.15,
+    "gap_after": false,
+    "batches": [
+     "GRC102501/2"
+    ],
+    "anchors": [
+     11.53
+    ]
+   }
+  ],
+  "High Pro Amnesia": [
+   {
+    "range": [
+     16.11,
+     18.89
+    ],
+    "nominal": 17.5,
+    "tol": 1.39,
+    "gap_after": false,
+    "batches": [
+     "HPA1024"
+    ],
+    "anchors": [
+     17.31
+    ]
+   },
+   {
+    "range": [
+     18.9,
+     23.1
+    ],
+    "nominal": 21.0,
+    "tol": 2.1,
+    "gap_after": false,
+    "batches": [
+     "HPA052501",
+     "HPA1024_01"
+    ],
+    "anchors": [
+     20.39,
+     21.61
+    ]
+   }
+  ],
+  "Jelly Donutz": [
+   {
+    "range": [
+     15.01,
+     17.99
+    ],
+    "nominal": 16.5,
+    "tol": 1.49,
+    "gap_after": false,
+    "batches": [
+     "JD012603/02V",
+     "JD012603/01"
+    ],
+    "anchors": [
+     15.16,
+     16.71
+    ]
+   },
+   {
+    "range": [
+     18.0,
+     22.0
+    ],
+    "nominal": 20.0,
+    "tol": 2.0,
+    "gap_after": false,
+    "batches": [
+     "JD012601",
+     "JD112501",
+     "JD012603/02"
+    ],
+    "anchors": [
+     18.16,
+     20.32,
+     20.54
+    ]
+   }
+  ],
+  "Jokerz 31": [
+   {
+    "range": [
+     16.11,
+     18.89
+    ],
+    "nominal": 17.5,
+    "tol": 1.39,
+    "gap_after": false,
+    "batches": [
+     "J31102501"
+    ],
+    "anchors": [
+     17.32
+    ]
+   },
+   {
+    "range": [
+     18.9,
+     23.1
+    ],
+    "nominal": 21.0,
+    "tol": 2.1,
+    "gap_after": false,
+    "batches": [
+     "J31112501",
+     "J31122501"
+    ],
+    "anchors": [
+     20.21,
+     21.84
+    ]
+   }
+  ],
+  "Kush Crasher": [
+   {
+    "range": [
+     15.3,
+     18.7
+    ],
+    "nominal": 17.0,
+    "tol": 1.7,
+    "gap_after": false,
+    "batches": [
+     "KC102501"
+    ],
+    "anchors": [
+     17.04
+    ]
+   }
+  ],
+  "Motor Breath": [
+   {
+    "range": [
+     16.2,
+     19.8
+    ],
+    "nominal": 18.0,
+    "tol": 1.8,
+    "gap_after": false,
+    "batches": [
+     "MB0824_05",
+     "MB0824_04"
+    ],
+    "anchors": [
+     16.82,
+     18.67
+    ]
+   }
+  ],
+  "Orange Punch Mimosa": [
+   {
+    "range": [
+     7.46,
+     8.54
+    ],
+    "nominal": 8.0,
+    "tol": 0.54,
+    "gap_after": false,
+    "batches": [
+     "OPM122501",
+     "OPM112501"
+    ],
+    "anchors": [
+     7.91,
+     8.0
+    ]
+   },
+   {
+    "range": [
+     8.55,
+     10.45
+    ],
+    "nominal": 9.5,
+    "tol": 0.95,
+    "gap_after": true,
+    "batches": [
+     "OPM092501"
+    ],
+    "anchors": [
+     9.43
+    ]
+   },
+   {
+    "range": [
+     13.45,
+     15.55
+    ],
+    "nominal": 14.5,
+    "tol": 1.05,
+    "gap_after": false,
+    "batches": [
+     "OPM052501",
+     "OMP1024_01"
+    ],
+    "anchors": [
+     14.16,
+     15.38
+    ]
+   },
+   {
+    "range": [
+     15.56,
+     18.44
+    ],
+    "nominal": 17.0,
+    "tol": 1.44,
+    "gap_after": false,
+    "batches": [
+     "OPM1024_03",
+     "OPM1024_02"
+    ],
+    "anchors": [
+     16.55,
+     18.04
+    ]
+   },
+   {
+    "range": [
+     18.45,
+     22.55
+    ],
+    "nominal": 20.5,
+    "tol": 2.05,
+    "gap_after": false,
+    "batches": [
+     "OPM1024"
+    ],
+    "anchors": [
+     20.03
+    ]
+   }
+  ],
+  "Permanent Marker": [
+   {
+    "range": [
+     9.76,
+     11.24
+    ],
+    "nominal": 10.5,
+    "tol": 0.74,
+    "gap_after": false,
+    "batches": [
+     "PM072501"
+    ],
+    "anchors": [
+     10.01
+    ]
+   },
+   {
+    "range": [
+     11.25,
+     13.75
+    ],
+    "nominal": 12.5,
+    "tol": 1.25,
+    "gap_after": false,
+    "batches": [
+     "PM092501",
+     "PM112501"
+    ],
+    "anchors": [
+     12.25,
+     13.33
+    ]
+   }
+  ],
+  "Pure Michigen": [
+   {
+    "range": [
+     13.95,
+     17.05
+    ],
+    "nominal": 15.5,
+    "tol": 1.55,
+    "gap_after": false,
+    "batches": [
+     "PUM102501"
+    ],
+    "anchors": [
+     15.63
+    ]
+   }
+  ],
+  "Scrambler": [
+   {
+    "range": [
+     16.21,
+     19.79
+    ],
+    "nominal": 18.0,
+    "tol": 1.79,
+    "gap_after": false,
+    "batches": [
+     "SCR112501",
+     "SCR012603",
+     "SCR012601"
+    ],
+    "anchors": [
+     17.13,
+     17.84,
+     18.07
+    ]
+   },
+   {
+    "range": [
+     19.8,
+     24.2
+    ],
+    "nominal": 22.0,
+    "tol": 2.2,
+    "gap_after": false,
+    "batches": [
+     "SCR022601"
+    ],
+    "anchors": [
+     21.92
+    ]
+   }
+  ],
+  "Sleepy Joy": [
+   {
+    "range": [
+     8.11,
+     9.89
+    ],
+    "nominal": 9.0,
+    "tol": 0.89,
+    "gap_after": false,
+    "batches": [
+     "SJ112501"
+    ],
+    "anchors": [
+     9.2
+    ]
+   },
+   {
+    "range": [
+     9.9,
+     12.1
+    ],
+    "nominal": 11.0,
+    "tol": 1.1,
+    "gap_after": false,
+    "batches": [
+     "SJ092501",
+     "SJ102501"
+    ],
+    "anchors": [
+     10.96,
+     11.2
+    ]
+   }
+  ],
+  "Wedding Cake": [
+   {
+    "range": [
+     19.8,
+     24.2
+    ],
+    "nominal": 22.0,
+    "tol": 2.2,
+    "gap_after": false,
+    "batches": [
+     "WED102501"
+    ],
+    "anchors": [
+     22.05
+    ]
+   }
+  ],
+  "Wedding Crasher": [
+   {
+    "range": [
+     19.8,
+     24.2
+    ],
+    "nominal": 22.0,
+    "tol": 2.2,
+    "gap_after": false,
+    "batches": [
+     "WC082501",
+     "WC072501"
+    ],
+    "anchors": [
+     21.67,
+     22.11
+    ]
+   }
+  ]
+ },
+ "p_codes": {
+  "GP0824_01": "P050102",
+  "GG1024_01": "P050092",
+  "OPM1024_01": "P050042",
+  "MB0824_04": "P050032",
+  "GG1024_02": "P050012",
+  "GP0824_02": "P050022",
+  "HPA1024_01": "P050052",
+  "OPM1024_02": "P050062",
+  "BSS1024_01/1": "P050122",
+  "GP0824_03": "P050072",
+  "OPM1024_03": "P050082",
+  "MB0824_05": "P050112",
+  "OPM052501": "P050132",
+  "GP052501": "P050152",
+  "CJ052501/1": "P050162",
+  "CJ052501/2": "P050172",
+  "HPA052501": "P050182",
+  "BSS052501": "P050192",
+  "GP062501": "P050202",
+  "CJ062501/1": "P050222",
+  "CJ062501/2": "P050212",
+  "CJ072501": "P050252",
+  "PM072501": "P050272",
+  "WC072501": "P050262",
+  "CLE072501": "P050282",
+  "GP072501/1": "P050292",
+  "GP072501/2": "P050302",
+  "GP082501/1": "P050312",
+  "GP082501/2": "P050322",
+  "WC082501": "P060012",
+  "CJ082501/1": "P060022",
+  "CJ082501/2": "P060032",
+  "PM092501": "P060062",
+  "AB092501": "P060052",
+  "SJ092501": "P060082",
+  "CJ092501": "P060072",
+  "OPM092501": "P060042",
+  "GP092501": "P060092",
+  "ACC102501": "P060122",
+  "PUM102501": "P060112",
+  "WED102501": "P060102",
+  "CF102501": "P060132"
+ },
+ "design": {
+  "max_tol_ratio": 0.1,
+  "min_gap": 0.01,
+  "nom_step": 0.5,
+  "top_nominal_override": {
+   "Grape Pie": 24.0,
+   "Motor Breath": 18.0
+  },
+  "rule": "Each tier is nominal ± tolerance, nominal always a multiple of 0.50% (20.00%, 20.50%, 21.00% ... — never a finer fraction). Tolerance never more than 10% of the nominal. CONTIGUITY (the point of this design): adjacent tiers of the SAME strain carry NO blind gap — tier i's ceiling sits exactly 0.01 below tier i+1's floor, always, so a batch testing anywhere between two established grades still has an applicable declaration; the same discipline the company's own Portfolio-Master bracket system already uses (7/10/13/16/19/22/25% ladder — fixed 3-point-wide bands, each boundary shared exactly with the next, zero gaps end to end; see portfolio_master_brackets below). TOP-DOWN, HIGHEST TIER FIRST (build_top_down): the ladder is declared from the top down, the way it is done by hand. The HIGHEST (strongest) tier of a segment gets PRIORITY — it takes its FULL ±10% width; nothing constrains a segment's top edge from above, so the strongest grade is never squeezed. Each LOWER tier then EXTENDS DOWNWARD from the one above: its ceiling is pinned exactly 0.01 below the tier-above's floor, and it grabs AS MUCH of its own ±10% as it can while still reaching up to that ceiling — its nominal is the SMALLEST half-percent grid value N with 1.1·N ≥ ceiling, so its tolerance (ceiling − N) is as large as the cap allows. This makes the next lower nominal and its ± fully PREDICTABLE from the tier above — not searched. There is no 'available width' box that crams an edge tier: a lower tier is only ever narrower than its own full 10% because meeting the tier above exactly leaves no more room, never for any other reason. (Blue Sunset Sherbet, anchors 20.39/23.42/25.01 → Pot.-2 24.50% ±2.45% [22.05%-26.95%] at its own full cap; Pot.-1 20.50% ±1.54% [18.96%-22.04%] — as wide as it can be while its ceiling meets Pot.-2's floor at 22.04/22.05.) The segmentation (how many tiers and where the cuts fall) is chosen by tier COUNT first (fewest tiers that fit the data — a grade ladder should not fragment into one tier per batch) and total |nominal-anchor| distance second, so declared nominals stay honest to the results and never drift up merely to buy width and overstate the product (plan_contiguous). GENUINE GAPS: 2 of 24 strains (Graps & Creme; Orange Punch Mimosa) contain two neighbouring tested results so far apart that NO candidate nominal pair can bridge them within the ≤10% cap, even as bare single-anchor tiers either side — the data itself has no batch anywhere near that band, not an algorithm limitation. These are left as real, disclosed gaps (gap_after=true on the tier below) rather than force-closed by fabricating an unsupported 'bridge' tier with zero evidence behind it, or by exceeding the 10% cap. A future batch testing in one of these zones has no precedent in this strain's history and should be assessed individually, exactly as any out-of-established-range result would be. RELEASE FLOOR: a tier's lower edge may never sit below 5.00 % Total THC. A batch's declaration is always its tier's declaration — the same nominal ± tolerance is printed everywhere that batch appears; there is no separate per-batch figure. This is a PROPOSED revision of the grade bands, evidenced from the data in this study; it does not itself amend any issued QCSP 001 specification, whose nominal and range remain authoritative until changed through the regular procedure."
+ },
+ "portfolio_master_brackets": "The company's own Portfolio-Master batch labels (portfolio_master.json, 78 batches, the source behind the renamed-strain board) already use a completely different, simpler system worth recording alongside the strain-specific ladder above: SEVEN fixed, strain-agnostic, contiguous 3-percentage-point brackets covering the whole practical range — 7–10 / 10–13 / 13–16 / 16–19 / 19–22 / 22–25 / ≥25% — every boundary shared exactly with the next (10% ends one bracket and starts the next; no gap, no strain-by-strain customisation). A batch is simply assigned whichever fixed bracket contains its raw result — there is no per-strain 'nominal' concept at all in this system, and no evidence in that data of results being deliberately placed toward the top of their bracket (mean fractional position across 75 dated batches ≈ 0.50, i.e. centred, not skewed high).",
+ "old_methodology": "QCSP 001 standard 4-tier fixed brackets: I 27.00–30.00 · II 23.00–26.90 · III 16.00–22.90 · IV 5.00–15.90 (nominal = midpoint); custom narrower sets for several renamed strains; T1 files graded from the Aug-2026 retest values, T1_rename graded from Portfolio-Master intake values (intentionally different, per owner). Weakness for ageing stock: brackets are fixed and grade-boundary batches can flip out of grade on any remeasure or with modest degradation — the bracket encodes no downward headroom for a specific batch.",
+ "verification": {
+  "host_sweep": "4,134 passages scanned live (ImB_QC_COAs); 176 unique Total-THC lines; all 99 register values present; 9 stability rows recovered and attributed (3 P-codes → GP batches via the eCoA register)",
+  "source_id": "source-271bc3be-10d1-4541-8a5b-be3f6fab7c97"
+ }
+}

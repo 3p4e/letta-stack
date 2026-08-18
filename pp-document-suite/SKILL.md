@@ -18,11 +18,18 @@ One skill for the whole Purely Plant document lifecycle. It merges four legacy s
 
 Plus a third capability: **format any already-drafted text/document** into the Purely Plant house style (auto-detecting SOP vs Annex).
 
-> **Engine note.** The legacy skills generated .docx with Node `docx-js`. This unified skill standardizes on **python-docx** + Microsoft Word COM (or `soffice`) for rendering — the toolchain already proven in this environment. Scripts: `scripts/pp_format.py` (SOP/annex shells), `scripts/pp_report.py` (reports/records: native equations, worked calcs, forms — §3.7), `scripts/pp_charts.py` (figures — §3.6), `scripts/pp_theme.py` (canonical colour/type tokens — one house navy `#2B547E`), `scripts/pp_verify.py` (pre-delivery QC gate — §6), `scripts/render_pdf.ps1` (Word-COM PDF).
+> **Engine note.** The legacy skills generated .docx with Node `docx-js`. This unified skill standardizes on **python-docx** + Microsoft Word COM (or `soffice`) for rendering — the toolchain already proven in this environment. Scripts: `scripts/pp_format.py` (SOP/annex shells), `scripts/pp_report.py` (reports/records: native equations, worked calcs, forms — §3.7), `scripts/pp_charts.py` (figures — §3.6), `scripts/pp_theme.py` (canonical colour/type tokens — one house navy `#2B547E`), `scripts/pp_assets.py` (brand asset registry + glyph guard — logos, bundled verified fonts, `chart_style()`, `missing_glyphs()`/`audit_docx()`/`check_environment()`; see §6D), `scripts/pp_verify.py` (pre-delivery QC gate — §6, now glyph-audited via `pp_assets`), `scripts/render_pdf.ps1` (Word-COM PDF). Brand assets live in `assets/brand/` (wordmark) and `assets/fonts/` (bundled Carlito + Montserrat, full Cyrillic coverage — see §6D for why these are bundled rather than trusting the OS font cache).
 
 ---
 
 ## 0. MASTER ROUTER — decide before doing anything
+
+> **First time in a fresh container/session:** run `bash scripts/pp_setup_fonts.sh` once
+> before building anything. It installs the full Carlito/Montserrat font packages and
+> quarantines any subset webfont copies that would otherwise silently scramble Macedonian
+> text (see §6D). `pp_verify.py` re-checks this on every build regardless, so a stale
+> environment fails the gate instead of reaching the reader — but running the setup script
+> up front avoids the failure entirely.
 
 Resolve two axes, then act:
 
@@ -233,7 +240,51 @@ Content in = content out. The formatter changes **appearance only**. Zero tolera
 - [ ] **Equations:** every formula is a **native Word equation** (`eqn`/`calc_step`), not typed text or an image (reports/records).
 - [ ] **Render:** PDF generated and visually checked.
 - [ ] **References chapter** present with full citations (DOI / clause / page where applicable).
-- [ ] **Automated gate:** `python scripts/pp_verify.py <doc.docx> [--source <src.docx>]` → PASS (font floor ≥ 6 pt, bilingual MK+EN, and — with `--source` — fidelity word/char counts ≥ source per §5A).
+- [ ] **Automated gate:** `python scripts/pp_verify.py <doc.docx> [--source <src.docx>]` → PASS (font floor ≥ 6 pt, glyph coverage — every run's declared font can render its own text, render environment free of subset-font shadowing, bilingual MK+EN, and — with `--source` — fidelity word/char counts ≥ source per §5A).
+
+---
+
+## 6D. Brand assets, the glyph guard, and informal (non-QMS) documents — `scripts/pp_assets.py`
+
+**What broke once.** A delivered report rendered with Macedonian text scrambled into
+tofu boxes and wrong characters. Root cause: `~/.fonts` held *subset* webfont copies of
+Carlito (as few as 106 glyphs, no Cyrillic) alongside the full 2 117-glyph system Carlito,
+and fontconfig's substitution picked the subset for `Calibri`/`Carlito` runs — every
+Macedonian character in the document was asked of a font that did not have it. The
+document was correct; the render environment was not, and nothing checked for it.
+
+**The fix, structurally.** `pp_assets.py` is now the single place that knows which font
+file backs each house typeface, and it can prove — before delivery, not after — that a
+font covers the text it's asked to render:
+
+- `missing_glyphs(face, text)` — resolves `face` to the actual file the renderer will use
+  and returns the characters it cannot render (`""` = clean).
+- `audit_docx(path)` — walks every run in a built `.docx` (body + header + footer) and
+  checks its declared font against its own text.
+- `check_environment()` — detects the subset-webfont trap directly: any font under
+  `~/.fonts` or `~/.local/share/fonts` with a suspiciously small glyph count that could
+  shadow a full system face.
+- `logo()`, `font_file()`, `chart_style()` — the asset registry half: wordmark path,
+  bundled font file path, and matplotlib rcParams matching the house style, so a builder
+  never hard-codes a path.
+
+`pp_verify.py` calls all three glyph checks on every run — a font/script mismatch is now
+a **FAIL** on the pre-delivery gate, not something a reader discovers in the PDF. If you
+add a new bundled face to `assets/fonts/`, register it in `pp_assets.FACES` with its
+`aliases` (the names that appear in `.docx` runs) so the guard resolves it correctly.
+
+**Informal / non-QMS documents.** Not everything this engine builds is a controlled QMS
+record — working exports, informal management submissions (e.g. a weekly plan/report),
+and drafts-for-review carry no document code and no version, and must say so rather than
+borrow SOP/Annex document-control furniture they don't have:
+
+- `informal_header(d, title_mk, title_en, tag_mk=…, tag_en=…)` — header variant that
+  replaces the doc-code/version box with a plain bilingual tag (e.g. "Неформален работен
+  документ | Informal working document"). Use instead of `swap_header()` whenever the
+  document has no `QCxxx`/`PP-xxx` code.
+- `cover_page(..., controlled=False)` — swaps the "Контролиран документ | Controlled
+  document" footer line for an explicit "Informal working document — not a controlled
+  record" line. Pair with `informal_header()`, not `swap_header()`.
 
 ---
 

@@ -4,7 +4,6 @@
 # House rules: body text JUSTIFIED; table text CENTERED (h+v); every table FITS the page;
 # per-step two-role sign-off (Operator + QC Department Manager) for protocol record steps.
 # Canonical tokens (pp_theme.py): one house navy #2B547E; 6 pt font floor.
-import re
 from docx import Document
 from docx.shared import Pt, RGBColor, Cm
 from docx.enum.text import WD_ALIGN_PARAGRAPH
@@ -66,33 +65,20 @@ def fixed(tbl, weights=None, min_cm=0.9, cap=34, mode=None, header_repeat=True):
     CHCM=0.176; PAD=0.42                              # ≈ cm per char (10 pt Calibri) + cell padding
     hdr=[_tctext(rows[0].tc_lst[j]).lower().strip() if rows else "" for j in range(ncol)]
     ent={}; forced=bool(weights and len(weights)==ncol)
-    # Per-column content measures (for use-aware sizing of compressed data tables):
-    #   data_cm = widest DATA cell — data must NEVER wrap, so this is a hard floor;
-    #   hdr_cm  = header's full inline width — its demand for space;
-    #   word_cm = header's longest single token — a header may wrap, but not below its longest word.
-    data_cm=[0.8]*ncol; hdr_cm=[0.8]*ncol; word_cm=[0.6]*ncol
     if forced:
         ideal=[float(w) for w in weights]
     else:
         ideal=[0.8]*ncol
-        for ri,tr in enumerate(rows):
+        for tr in rows:
             for j,tc in enumerate(tr.tc_lst):
                 t=_tctext(tc).replace("\n"," ").strip()
                 if not t: continue
                 ps=t.split(" | ")
                 L=(len(ps[0])+3+0.8*len(ps[1])) if len(ps)==2 else len(t)   # TRUE inline bilingual width (MK + sep + smaller EN)
-                w=min(L,cap)*CHCM+PAD
-                ideal[j]=max(ideal[j], w)
-                if ri==0:
-                    hdr_cm[j]=w
-                    toks=t.replace(" | "," ").split()
-                    word_cm[j]=(max((len(x) for x in toks), default=1))*CHCM+PAD
-                else:
-                    data_cm[j]=max(data_cm[j], w)
+                ideal[j]=max(ideal[j], min(L,cap)*CHCM+PAD)
         for j,h in enumerate(hdr):                    # purpose-size hand-written entry columns
-            for kws,cm in _ENTRY_TARGETS:             # match at a WORD boundary (prefix ok) so e.g. the
-                if any(re.search(r'\b'+re.escape(k), h) for k in kws):  # 'име' in 'примерок' is NOT a hit
-                    ent[j]=cm; break
+            for kws,cm in _ENTRY_TARGETS:
+                if any(k in h for k in kws): ent[j]=cm; break
         for j,cm in ent.items(): ideal[j]=cm
     ideal_sum=sum(ideal) or 1.0
     if   mode=="full":    compact=False
@@ -112,14 +98,6 @@ def fixed(tbl, weights=None, min_cm=0.9, cap=34, mode=None, header_repeat=True):
             if ncol>=4 and all(ideal[j]<=even+1e-6 for j in range(1,ncol)):  # labeled grid: data cols uniform & fit
                 c0=max(ideal[0],min_cm); rest=(PAGE_W-c0)/(ncol-1)            # col0 sized to its labels (single-line header),
                 widths=[c0]+[rest]*(ncol-1)                                   # columns 2..N split the remainder EVENLY
-            elif (not forced) and ideal_sum>PAGE_W:                           # table would OVERFLOW → intelligent compression:
-                base=[max(data_cm[j], word_cm[j]) for j in range(ncol)]       #   each column floored to its DATA (never wraps)
-                sb=sum(base)                                                  #   and its header's longest word (headers may wrap);
-                if sb>=PAGE_W:                                                #   if even the floors overflow, share proportionally,
-                    widths=[b/sb*PAGE_W for b in base]
-                else:                                                         #   else give the spare width to the LONGEST headers
-                    slack=PAGE_W-sb; hw=sum(hdr_cm) or 1.0                    #   so headers wrap least where they are longest.
-                    widths=[base[j]+slack*hdr_cm[j]/hw for j in range(ncol)]
             else:
                 widths=[w/ideal_sum*PAGE_W for w in ideal]                    # else content-proportional
         for _ in range(6):                            # enforce a minimum, redistribute the rest
@@ -315,6 +293,24 @@ def swap_header(d,title_mk_prefix,title_code,title_en,code_prefix,code_suffix_a,
     c1[0].text=title_mk_prefix; c1[2].text=title_code; c1[5].text=title_en
     c2=h.cell(0,2).paragraphs[2].runs
     c2[0].text=code_prefix; c2[2].text=code_suffix_a; c2[3].text=code_suffix_b
+
+def informal_header(d,title_mk,title_en,tag_mk="Неформален документ",tag_en="Informal document"):
+    """Header variant for documents that are NOT under document control: the doc-code /
+       version box (right column) is replaced by a plain MK|EN tag instead of a code, and
+       the title column carries no code between the MK and EN title lines. Use this instead
+       of swap_header() whenever the document has no QCxxx/PP-xxx doc code and no version —
+       an informal management submission, a working export, a draft for review, etc."""
+    h=d.sections[0].header.tables[0]
+    c1=h.cell(0,1).paragraphs[1].runs
+    c1[0].text=title_mk; c1[2].text=""; c1[5].text=title_en
+    c2p=h.cell(0,2).paragraphs
+    for p in c2p[:3]:
+        for r in p.runs: r.text=""
+    r0=c2p[0].runs
+    if r0: r0[0].text=tag_mk
+    r1=c2p[1].runs
+    if r1: r1[0].text=tag_en
+    for r in h.cell(1,2).paragraphs[0].runs: r.text=""   # clear the "Верзија | Ver : x.x" row too
 
 def wipe_body(d):
     bodyel=d.element.body; sectPr=bodyel.find(qn('w:sectPr'))
@@ -517,10 +513,12 @@ def _cover_header_footer(sec):
 
 def cover_page(d, title_mk, title_en, info_rows, kind_mk="", kind_en="", study_mk=None, study_en=None,
                approval_rows=None, approval_qp="Одобрил (Раководител КК) | Approved (QC Manager)",
-               approval_qp_name="B. Nikolov, M.Pharm."):
+               approval_qp_name="B. Nikolov, M.Pharm.", controlled=True):
     """Distinct, UNNUMBERED cover page (different-first-page): wordmark + big bilingual title +
        method INFORMATION block + APPROVAL block. Followed by a page break (TOC goes on page 2).
-       Cover title is centered (NOT justified). Use once, first thing, in every report/protocol."""
+       Cover title is centered (NOT justified). Use once, first thing, in every report/protocol.
+       controlled=False drops the "Controlled document" footer line — use for informal
+       submissions that carry no doc code/version (pair with informal_header(), not swap_header())."""
     _cover_header_footer(d.sections[0])   # cover keeps the standard running header (logo+name+code); page 1 unnumbered, footer resumes p.2
     if kind_mk:
         p=d.add_paragraph(); p.alignment=WD_ALIGN_PARAGRAPH.CENTER; sp(p,40,2); rin(p,kind_mk,13,GREY,bold=True)
@@ -545,7 +543,11 @@ def cover_page(d, title_mk, title_en, info_rows, kind_mk="", kind_en="", study_m
         cellfmt(t.cell(i,0),a,None,10,BLACK); cellfmt(t.cell(i,1),n,None,10,BLACK)
         cellfmt(t.cell(i,2),"",None,10,BLACK); cellfmt(t.cell(i,3),"",None,10,BLACK)
     fixed(t,[5.0,5.46,3.5,4.5]); borders(t)
-    p=d.add_paragraph(); p.alignment=WD_ALIGN_PARAGRAPH.CENTER; sp(p,10,0); rin(p,"Контролиран документ | Controlled document",8,GREY,ital=True)
+    if controlled:
+        p=d.add_paragraph(); p.alignment=WD_ALIGN_PARAGRAPH.CENTER; sp(p,10,0); rin(p,"Контролиран документ | Controlled document",8,GREY,ital=True)
+    else:
+        p=d.add_paragraph(); p.alignment=WD_ALIGN_PARAGRAPH.CENTER; sp(p,10,0)
+        rin(p,"Неформален работен документ — не е контролиран запис | Informal working document — not a controlled record",8,GREY,ital=True)
     d.add_page_break()
 
 def _toc_field(d, placeholder="Десен-клик → Ажурирај поле (Update Field) | Right-click → Update Field"):
