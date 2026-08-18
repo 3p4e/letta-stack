@@ -295,13 +295,12 @@ summary{cursor:pointer;font-weight:600;color:var(--navy);padding:10px 0}
 #final{scroll-margin-top:64px}
 .fsum{font-size:14.5px;color:var(--mut);margin-bottom:16px;max-width:88ch}
 .fsum code{font:600 13.5px var(--mono);color:var(--navy2)}
-.fsubh{margin:30px 0 10px;font-size:18px;font-weight:700;color:var(--navy);
- border-top:2px solid var(--gold);padding-top:14px}
-.fsubh span{font-weight:400;color:var(--mut);font-size:15px}
-.fboard.ren .fname h3{font-size:15.5px}
 .fboard{background:#F4F8FB;border:1px solid var(--line);
  border-bottom:4px solid var(--gold);padding:8px 22px 18px}
-.frow{display:grid;grid-template-columns:250px 1fr;gap:16px;align-items:center;
+.fhead{display:grid;grid-template-columns:230px 1fr 250px;gap:16px;
+ padding:11px 0 7px;border-bottom:2px solid var(--navy2);font-size:11px;
+ font-weight:700;letter-spacing:.06em;color:var(--navy);text-transform:uppercase}
+.frow{display:grid;grid-template-columns:230px 1fr 250px;gap:16px;align-items:center;
  padding:13px 0;border-bottom:1px solid var(--line)}
 .frow:last-child{border-bottom:none}
 .fname h3{font-family:'Orbitron';font-weight:400;font-size:17px;letter-spacing:.05em;
@@ -322,7 +321,26 @@ summary{cursor:pointer;font-weight:600;color:var(--navy);padding:10px 0}
 .fgap{font-family:var(--mono);font-size:12.5px;font-weight:600;color:#8A2E2E;
  background:rgba(193,58,58,.08);border:1px dashed var(--rose);border-radius:3px;
  padding:6px 10px;line-height:1.2;align-self:center;cursor:help}
-@media (max-width:760px){.frow{grid-template-columns:1fr}}
+.fren{display:flex;flex-direction:column;gap:9px;font-size:13px}
+.fren .renentry{display:flex;flex-direction:column;gap:2px}
+.fren .rname{color:var(--ink);font-weight:400}
+.fren .rname b{font-weight:700;color:var(--navy)}
+.fren .renentry>small{color:var(--mut);font-size:11.5px;
+ font-variant-numeric:tabular-nums}
+.minilbl{display:block;color:var(--mut);font-size:10.5px;margin-top:3px}
+.minipills{display:flex;flex-wrap:wrap;gap:5px;margin-top:3px}
+.fpill.mini{font-size:11.5px;padding:3px 8px;border-width:1px}
+.fpill.mini small{font-size:9.5px}
+.sigs{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:6px}
+.sig{background:var(--card);border:1px solid var(--line);padding:16px 18px 20px}
+.sig>b{display:block;color:var(--navy);font-size:14px;letter-spacing:.02em}
+.sigrole{display:block;color:var(--mut);font-size:12.5px;margin-top:2px}
+.sigline{margin-top:38px;border-top:1px solid var(--ink);padding-top:3px}
+.sigline small{color:var(--mut);font-size:10px;letter-spacing:.07em;
+ text-transform:uppercase}
+.signote{font-size:11.5px;color:var(--mut);margin-top:12px;max-width:96ch}
+@media (max-width:760px){.frow{grid-template-columns:1fr}.fhead{display:none}
+ .sigs{grid-template-columns:1fr}}
 @page{size:A4;margin:11mm 10mm}
 @media print{
  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -331,6 +349,7 @@ summary{cursor:pointer;font-weight:600;color:var(--navy);padding:10px 0}
  section h2{break-after:avoid}
  .strain,.rencard,.kcard,.rs{break-inside:avoid}
  .frow{break-inside:avoid}
+ .sig,.sigs{break-inside:avoid}
  .axiswrap,.tblwrap{overflow:visible;padding-left:10px;padding-right:10px}
  .axis,.scale,.miniaxis{min-width:0}
  table{font-size:9px}
@@ -668,12 +687,47 @@ def renames_section():
 
 
 def final_ranges():
-    """Closing verdict: the definitive grade ranges per strain, from everything
-    measured, verified and computed in this study. Tiers whose batches have no
-    tested result are provisional (declared basis) and say so."""
-    basis = {}
+    """Closing verdict as ONE three-column board: the ORIGINAL specification
+    strain, the proposed grade ranges, and the names the strain's batches
+    carry AFTER RENAMING (01_Portfolio_Master) — so the whole old-name ->
+    range -> new-name picture reads left to right on a single row. The former
+    separate renamed-name board is folded into column 3; where a new-name
+    group's own recomputed ladder differs from the origin strain's (its
+    batches cluster differently under the new name), those tiers are shown
+    compactly under that name so no information from the old board is lost."""
+    from collections import OrderedDict
+    basis = {norm_b(b["batch"]): b["anchor"] is not None for b in d["stock"]}
+    anchors = {}
     for b in d["stock"]:
-        basis[norm_b(b["batch"])] = b["anchor"] is not None
+        a = b["anchor"] if b["anchor"] is not None else b["declared"]
+        if a is not None:
+            anchors[norm_b(b["batch"])] = (a, b["anchor"] is not None)
+
+    # rename layer: origin strain (register spelling) -> {new name: [records]}
+    by_origin = OrderedDict()
+    groups = {}
+    for r in PM:
+        neu = (r.get("neu") or "").strip()
+        if not neu:
+            continue
+        raw = (r.get("original") or "").strip()
+        orig = CANON.get(raw, raw)
+        by_origin.setdefault(orig, OrderedDict()).setdefault(neu, []).append(r)
+        groups.setdefault(neu, []).append(r)
+
+    # per-new-name ladder (same computation the old renamed board used),
+    # shown in column 3 only where it DIFFERS from the origin's own ladder
+    neu_tiers = {}
+    for neu, recs in groups.items():
+        items = [(r["batch"],) + anchors[norm_b(r["batch"])]
+                 for r in recs if norm_b(r["batch"]) in anchors]
+        if items:
+            _ov = OVERRIDE_BY_TOP_ANCHOR.get(round(max(a for _b, a, _t in items), 2))
+            neu_tiers[neu] = tiers_from_anchors(items, top_override=_ov)
+    neu_origins = {neu: sorted({CANON.get((r.get("original") or "").strip(),
+                                          (r.get("original") or "").strip())
+                                for r in recs}) for neu, recs in groups.items()}
+
     rows = ""
     n_def = n_prov = 0
     for strain in sorted(d["merged_ranges"]):
@@ -681,6 +735,7 @@ def final_ranges():
         if not tiers:
             continue
         st = d["stats"].get(strain)
+        sig_orig = tuple((t["nominal"], t["tol"]) for t in tiers)
         pills = ""
         strain_prov = True
         for i, t in enumerate(tiers):
@@ -707,18 +762,69 @@ def final_ranges():
         badge = ('<span class="fbadge prov">ПРОВИЗОРНО — само декларирана основа | '
                  "PROVISIONAL — declared basis only</span>") if strain_prov else \
                 '<span class="fbadge">ДЕФИНИТИВНО | DEFINITIVE</span>'
+
+        # column 3: the names this strain's batches carry after renaming
+        ren_entries = []
+        for neu, recs in (by_origin.get(strain) or {}).items():
+            is_same = neu.strip().lower() == strain.strip().lower()
+            brand = (recs[0].get("brand") or "").strip()
+            n = len(recs)
+            name_html = esc(neu) if is_same else "<b>%s</b>" % esc(neu)
+            chip = ('<span class="bchip %s">%s</span>'
+                    % (esc(brand.lower()), esc(brand))) if brand else ""
+            extra = (' <span class="keepname">без промена | unchanged</span>'
+                     if is_same else "")
+            others = [o for o in neu_origins.get(neu, []) if o != strain]
+            share = ('<small class="minilbl">заедно со | together with: %s</small>'
+                     % esc(", ".join(others))) if others else ""
+            mini = ""
+            nt = neu_tiers.get(neu)
+            if nt is not None:
+                sig_neu = tuple((t["nominal"], t["tol"]) for t in nt)
+                if others or sig_neu != sig_orig:
+                    mp = "".join('<span class="fpill mini%s" title="%s">%s'
+                                 "<small>%.2f%% – %.2f%%</small></span>"
+                                 % (" prov" if not any(t["tested"]) else "",
+                                    esc(", ".join(t["batches"])),
+                                    potlabel(i + 1, (t["nominal"], t["tol"])),
+                                    t["lo"], t["hi"])
+                                 for i, t in enumerate(nt))
+                    mini = ('<small class="minilbl">класи под новото име | tiers under '
+                            "the new name:</small><span class=\"minipills\">%s</span>" % mp)
+            ren_entries.append(
+                '<div class="renentry"><span class="rname">%s%s</span>'
+                "<small>%d %s</small>%s%s</div>"
+                % (name_html, chip + extra, n,
+                   "серии | batches" if n != 1 else "серија | batch", share, mini))
+        col3 = ('<div class="fren">%s</div>' % "".join(ren_entries)) if ren_entries else \
+               ('<div class="fren"><span class="fstat">— нема запис во мастерот | '
+                "not in the Portfolio Master</span></div>")
+
         rows += ('<div class="frow"><div class="fname"><h3>%s</h3>'
-                 '<span class="fstat">%s</span>%s</div><div class="fpills">%s</div></div>'
-                 % (esc(strain), stat, badge, pills))
+                 '<span class="fstat">%s</span>%s</div><div class="fpills">%s</div>%s</div>'
+                 % (esc(strain), stat, badge, pills, col3))
+
+    n_renames = sum(1 for r in PM if (r.get("original") or "").strip()
+                    != (r.get("neu") or "").strip())
     head = ('<div class="fsum">Врз основа на %d верификувани резултати — ова се финалните '
             "опсези по класи за секоја сорта: %d сорти дефинитивно, %d провизорно (само "
-            "декларирана основа). Формалното усвојување останува во спецификациите QCSP "
-            "по редовна процедура. | Based on %d verified results — the final grade ranges "
-            "per strain: %d strains definitive, %d provisional (declared basis only). "
-            "Formal adoption remains with the QCSP specifications through the regular "
-            "procedure.</div>"
-            % (d["n_results"], n_def, n_prov, d["n_results"], n_def, n_prov))
-    return head + '<div class="fboard">' + rows + "</div>" + final_ranges_renamed()
+            "декларирана основа). Третата колона ги дава имињата по преименувањето од "
+            "листот <code>01_Portfolio_Master</code> (%d серии, %d преименувања, %d нови "
+            "имиња); каде што сериите под новото име се групираат поинаку, неговите "
+            "сопствени класи се прикажани под името. Формалното усвојување останува во "
+            "спецификациите QCSP по редовна процедура. | Based on %d verified results — "
+            "the final grade ranges per strain: %d strains definitive, %d provisional "
+            "(declared basis only). The third column carries the names after renaming from "
+            "the <code>01_Portfolio_Master</code> sheet (%d batches, %d renames, %d new "
+            "names); where a new name's batches cluster differently, its own tiers are "
+            "shown under that name. Formal adoption remains with the QCSP specifications "
+            "through the regular procedure.</div>"
+            % (d["n_results"], n_def, n_prov, len(PM), n_renames, len(groups),
+               d["n_results"], n_def, n_prov, len(PM), n_renames, len(groups)))
+    fhead = ('<div class="fhead"><span>Оригинална спецификација | Original specification'
+             "</span><span>Предложени опсези по класи | Proposed grade ranges</span>"
+             "<span>Имиња по преименување | Names after renaming</span></div>")
+    return head + '<div class="fboard">' + fhead + rows + "</div>"
 
 
 MAX_TOL_RATIO = d["design"]["max_tol_ratio"]
@@ -871,97 +977,6 @@ def tiers_from_anchors(items, top_override=None):
     return resolve(items)
 
 
-def final_ranges_renamed():
-    """The same definitive ranges, re-keyed to the NEW specification strain
-    names taken from 01_Portfolio_Master, so no manual old-to-new name
-    lookup is needed."""
-    anchors = {}
-    for b in d["stock"]:
-        k = norm_b(b["batch"])
-        a = b["anchor"] if b["anchor"] is not None else b["declared"]
-        if a is not None:
-            anchors[k] = (a, b["anchor"] is not None)
-
-    groups = {}
-    for r in PM:
-        neu = (r.get("neu") or "").strip()
-        if not neu:
-            continue
-        groups.setdefault(neu, []).append(r)
-
-    rows = ""
-    n_def = n_prov = n_nodata = 0
-    for neu in sorted(groups):
-        recs = groups[neu]
-        items = []
-        for r in recs:
-            got = anchors.get(norm_b(r["batch"]))
-            if got:
-                items.append((r["batch"], got[0], got[1]))
-        origins = sorted({(r.get("original") or "").strip() for r in recs
-                          if (r.get("original") or "").strip()})
-        renamed = [r for r in recs if (r.get("original") or "").strip() != neu]
-        brands = sorted({(r.get("brand") or "").strip() for r in recs if r.get("brand")})
-        if not items:
-            n_nodata += 1
-            pills = ('<span class="fpill prov">нема сидро | no anchor'
-                     "<small>%d серии | batches</small></span>" % len(recs))
-            badge = ('<span class="fbadge prov">БЕЗ СИДРО | NO ANCHOR</span>')
-        else:
-            _ov = OVERRIDE_BY_TOP_ANCHOR.get(round(max(a for _b, a, _t in items), 2))
-            tiers = tiers_from_anchors(items, top_override=_ov)
-            any_tested = any(any(t["tested"]) for t in tiers)
-            if any_tested:
-                n_def += 1
-            else:
-                n_prov += 1
-            pills = ""
-            for i, t in enumerate(tiers):
-                prov = not any(t["tested"])
-                pills += ('<span class="fpill%s" title="%s">%s'
-                          "<small>%.2f%% – %.2f%% · %d %s</small></span>"
-                          % (" prov" if prov else "", esc(", ".join(t["batches"])),
-                             potlabel(i + 1, (t["nominal"], t["tol"])), t["lo"], t["hi"],
-                             len(t["batches"]),
-                             "серии | batches" if len(t["batches"]) != 1 else "серија | batch"))
-                if t.get("gap_after") and i + 1 < len(tiers):
-                    glo, ghi = t["hi"], tiers[i + 1]["lo"]
-                    pills += ('<span class="fgap" title="Нема воспоставена класа %.2f%%–%.2f%% '
-                              '| No established grade %.2f%%–%.2f%%">⚠ %.2f%%–%.2f%%</span>'
-                              % (glo, ghi, glo, ghi, glo, ghi))
-            badge = ('<span class="fbadge prov">ПРОВИЗОРНО — само декларирана основа | '
-                     "PROVISIONAL — declared basis only</span>") if not any_tested else \
-                    '<span class="fbadge">ДЕФИНИТИВНО | DEFINITIVE</span>'
-        sub = "од | from %s" % esc(", ".join(origins) or "—")
-        if renamed:
-            sub += (" · %d преименувана серија | renamed" % len(renamed) if len(renamed) == 1
-                     else " · %d преименувани серии | renamed" % len(renamed))
-        if brands:
-            sub += " · " + esc("/".join(brands))
-        rows += ('<div class="frow"><div class="fname"><h3>%s</h3>'
-                 '<span class="fstat">%s</span>%s</div><div class="fpills">%s</div></div>'
-                 % (esc(neu), sub, badge, pills))
-
-    head = ('<h3 class="fsubh">Истите опсези, по новите спецификациски имиња '
-            '<span>| The same ranges, keyed to the new specification names</span></h3>'
-            '<div class="fsum">Новите имиња на сортите се преземени од листот '
-            "<code>01_Portfolio_Master</code> (%d серии, %d преименувања, %d нови имиња). "
-            "Оваа табела ги дава истите докажани опсези, но групирани по новото име — за "
-            "преглед без рачно барање кое старо име одговара на кое ново: %d име "
-            "дефинитивно, %d провизорно, %d без сидро. | The new strain names are taken "
-            "from the <code>01_Portfolio_Master</code> sheet (%d batches, %d renames, "
-            "%d new names). This table carries the same evidenced ranges grouped by the "
-            "new name, so no manual old-to-new lookup is needed: %d name definitive, "
-            "%d provisional, %d without an anchor.</div>"
-            % (len(PM), sum(1 for r in PM if (r.get("original") or "").strip()
-                            != (r.get("neu") or "").strip()), len(groups),
-               n_def, n_prov, n_nodata,
-               len(PM), sum(1 for r in PM if (r.get("original") or "").strip()
-                            != (r.get("neu") or "").strip()), len(groups),
-               n_def, n_prov, n_nodata))
-    return head + '<div class="fboard ren">' + rows + "</div>"
-
-
 def stab_table():
     rows = ""
     for r in d["stability"]:
@@ -1077,6 +1092,26 @@ Yellow rows: no certificate on file — declared value used; test before declari
 
 <section id="final"><h2>Финални опсези на потенција по сорта <span>| Final Potency Grade Ranges per Strain</span></h2>
 %s</section>
+
+<section id="signoff"><h2>Потписи | Signatures</h2>
+<div class="sigs">
+ <div class="sig"><b>Изготвил и одобрил | Prepared and approved</b>
+  <span class="sigrole">Менаџер за контрола на квалитет | Quality Control Manager</span>
+  <div class="sigline"><small>Име и презиме | Name</small></div>
+  <div class="sigline"><small>Потпис | Signature</small></div>
+  <div class="sigline"><small>Датум | Date</small></div></div>
+ <div class="sig"><b>Прегледал | Reviewed</b>
+  <span class="sigrole">Менаџер за обезбедување квалитет | Quality Assurance Manager</span>
+  <div class="sigline"><small>Име и презиме | Name</small></div>
+  <div class="sigline"><small>Потпис | Signature</small></div>
+  <div class="sigline"><small>Датум | Date</small></div></div>
+</div>
+<p class="signote">Неформален работен документ — потписите потврдуваат изработка,
+преглед и одобрување на предлогот; формалното усвојување останува во
+спецификациите QCSP по редовна процедура. | Informal working document — the
+signatures confirm preparation, review and approval of the proposal; formal
+adoption remains with the QCSP specifications through the regular procedure.</p>
+</section>
 </div>
 
 <footer><div class="wrap">
