@@ -479,5 +479,16 @@ print("  register batches not in Atlas stock:", sorted(reg_batches - atlas_batch
 print("  Atlas stock batches not in register:", sorted(atlas_batches - reg_batches))
 assert n_rows == len(records), (n_rows, len(records))
 
+# --------------------------------------------- sheets 3-4: export classes --
+# The owner's export grid (8, 10, 12 ... 28, each +/-10%) set against the same
+# two sources, plus the tranche quantities from the export list itself.
+import export_classes
+export_classes.add_sheets(wb, dict(
+    records=records, stock=stock, anchors=anchors,
+    tiers_by_strain=tiers_by_strain, neu_of=neu_of,
+    neu_tier_of_batch=neu_tier_of_batch, normb=normb,
+    p_codes=d["p_codes"], register_results=d["register_results"],
+    stock_rows=d["stock"]))
+
 wb.save(OUT)
 print("wrote", OUT, os.path.getsize(OUT), "bytes")

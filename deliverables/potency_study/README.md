@@ -44,6 +44,24 @@ this study is a proposed revision, not an amendment to any issued spec.
   document code and date of issue are carried over. Batch identity is joined
   on the certificate code, never on the batch string. Sheet 2 lists the stock
   batches with no register result so none is silently dropped.
+- `export_classes.py` — adds two sheets to that same workbook:
+  **"Export Classes"** (every tranche batch: the export list's strain, new
+  name, batch no., THC and quantity, set against our register result, our
+  declared Atlas grade, its export class and that class's ±10% limits, plus
+  the class our own result would put it in) and **"Export Class Totals"**
+  (the per-class quantity roll-up per tranche, our recomputation against the
+  list's own figures). The class rule is not assumed — the export windows
+  overlap (18 → 16.20–19.80, 20 → 18.00–22.00, 22 → 19.80–24.20), so it was
+  recovered by reconciling the list's own quantity tables: **a batch is booked
+  into the highest class whose ±10% window contains its THC value**. Under it
+  all 44 per-tranche and all-tranche class quantities reproduce exactly (≤0.05
+  kg, from the list's own 2-decimal quantities), with one documented exception
+  — P060142 at 7.05% is counted in class 8 although 7.05 sits 0.15 pp below
+  that class's 7.20% floor.
+- `incoming/export_list_2026-08-18.json` — the export list ("THC level,qty by
+  batch.xlsx", Drive `1fTUlr110qQM7_aABdhIr5EAxugRiOAby`) read verbatim: 77
+  batches over three tranches, the four class-quantity tables, and the list's
+  own footnote that tranche 2/3 levels are provisional pending reanalysis.
 - `incoming/` — source workbooks + comparison notes used to cross-check the
   dataset against the live `PP_THC_by_Strain.xlsx` register.
 - `portfolio_master.json` — the company's own per-batch bracket labels (78
