@@ -163,6 +163,45 @@ para("Оска 0,00%–30,00% Вкупен Δ⁹-THC; секој резулта�
      "±1.50% zone (blue bands — stacking is visual density); distribution curve for n≥3 "
      "(shape only — no summary statistics); proposed Pot.-x tiers (green, full height); old "
      "standard boundaries (dashed).", 8.6, "37474F", italic=True)
+
+# ---- the declaration rule, stated ONCE for the whole chapter ----
+pr.databox(doc, [
+    ("Како се одредени класите — важи за секоја сорта подолу, наведено само овде",
+     "How the grades were set — governs every strain below, stated here only", 10, True)],
+    MINT, pr.GREEN)
+table(["", "Правило | Rule", "Зошто | Why"],
+      [["1", "Најсилната класа прва: највисоката класа ја зема својата полна ±10,00% | "
+             "Strongest tier first: the highest tier takes its full ±10.00%",
+        "Над неа ништо не ја ограничува — најсилната класа никогаш не се стеснува | "
+        "Nothing constrains it from above — the strongest grade is never squeezed"],
+       ["2", "Надолу до допир: горната граница на секоја пониска класа е точно 0,01 под "
+             "долната граница на класата над неа | Extend downward: each lower tier's ceiling "
+             "sits exactly 0.01 below the floor of the tier above",
+        "Без празен простор меѓу класите, и зема онолку од своите ±10,00% колку што стигнува "
+        "| No blind gap, taking as much of its own ±10.00% as reaches that ceiling"],
+       ["3", "Потесна само ако мора | Narrower only if forced",
+        "Пониска класа е потесна од полните ±10% само кога допирањето не остава простор — "
+        "никогаш поради друга причина | Only when meeting the tier above leaves no more "
+        "room — never for any other reason"]],
+      [0.8, 8.6, 7.6])
+para("Параметри | Parameters: толеранција ≤ 10,00% од номиналата; номинала на чекор 0,50% "
+     "(nn,00% или nn,50%); допир на класи на 0,01; под 5,00% Вкупен THC; сидро = најнов "
+     "верификуван резултат. | Tolerance ≤ 10.00% of nominal; nominal on a 0.50% grid; tiers "
+     "meet at 0.01; floor 5.00% Total THC; anchor = most recent verified result.",
+     8.2, "4A5B6C", italic=True)
+para("Пример | Worked example — Blue Sunset Sherbet (сидра | anchors 20,39 / 23,42 / 25,01): "
+     "Pot.-2 24,50% ± 2,45% (22,05%–26,95%) ја зема полната ширина; нејзиниот под 22,05 ја "
+     "дава горната граница 22,04 за Pot.-1 20,50% ± 1,54% (18,96%–22,04%). | Pot.-2 takes the "
+     "full cap; its floor 22.05 sets the ceiling 22.04 for Pot.-1.", 8.2, INK)
+para("Накратко | In short: највисоката класа зема полни ±10%, секоја следна се протега надолу "
+     "до допир на 0,01, и ниту една не е потесна освен ако мора. Вистински јаз останува само "
+     "таму каде ниту еден пар номинали не може да премости два тестирани резултати во рамки на "
+     "10% — означен, никогаш измислена преодна класа. | The highest tier takes its full ±10%, "
+     "each next extends down to touch it at 0.01, and none is narrower unless forced. A genuine "
+     "gap remains only where no nominal pair can bridge two tested results within the 10% cap — "
+     "flagged, never a fabricated bridge tier.", 8.6, INK, bold=False)
+pr.gap(doc, 6)
+
 for s in sorted(d["stats"]):
     st = d["stats"][s]
     pr.subsec(doc, "4.%d" % (sorted(d["stats"]).index(s) + 1), s, "")
@@ -177,17 +216,8 @@ for s in sorted(d["stats"]):
         table(["Класа | Tier", "Номинала ± толер. | Nominal ± tol.", "= Опсег | = Range",
                "Серии | Batches", "Сидра | Anchors"],
               trs, [1.5, 3.0, 2.6, 6.4, 4.0])
-        para("Класите се декларираат одозгора надолу: најсилната (највисоката) класа има "
-             "приоритет и ја зема својата полна ±10,00%, а секоја пониска се протега надолу од "
-             "неа — горната ѝ граница е точно 0,01 под долната граница на класата над неа, и зема "
-             "онолку од своите ±10,00% колку што може додека допира до таа граница. Затоа пониска "
-             "класа е потесна само кога точното допирање не остава повеќе простор. Класите "
-             "никогаш не се преклопуваат. | Tiers are declared top-down: the strongest (highest) "
-             "tier gets priority and takes its full ±10.00%, and each lower tier extends downward "
-             "from it — its ceiling sits exactly 0.01 below the floor of the tier above, taking "
-             "as much of its own ±10.00% as it can while reaching that ceiling. A lower tier is "
-             "narrower only when meeting the tier above leaves no more room. Tiers never overlap.",
-             8, "4A5B6C", italic=True)
+        # The declaration rule is stated ONCE, in §4's opening methodology
+        # block — never repeated under every strain.
         for i, t in enumerate(tiers):
             if t.get("gap_after") and i + 1 < len(tiers):
                 glo, ghi = t["range"][1], tiers[i + 1]["range"][0]

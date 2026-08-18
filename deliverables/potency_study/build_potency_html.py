@@ -231,8 +231,36 @@ td.gap{color:var(--navy2)}
 .tiers .gaprow{color:#8A2E2E;font-size:13.5px;background:rgba(193,58,58,.06);
  border-left:3px solid var(--rose);padding:3px 0 3px 8px;margin:2px 0}
 .tiers .gaprow .tr-span{color:#8A2E2E;font-weight:700}
-.tiernote{margin-top:8px;font-size:12px;line-height:1.5;color:var(--mut);
- border-left:3px solid var(--green);padding:4px 0 4px 10px}
+.method{background:var(--card);border:1px solid var(--line);
+ border-left:4px solid var(--green);padding:18px 22px 20px;margin-bottom:22px}
+.method h3{font-size:15px;font-weight:700;color:var(--navy);letter-spacing:.01em;
+ margin-bottom:3px}
+.method h3 span{font-weight:400;color:var(--mut);font-size:13.5px}
+.method .lede{font-size:13px;color:var(--mut);margin-bottom:14px;max-width:104ch}
+.mrules{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+ gap:12px;margin-bottom:14px}
+.mrule{background:#F6FAF7;border:1px solid rgba(30,132,73,.28);border-radius:3px;
+ padding:10px 13px;font-size:12.5px;line-height:1.5;color:var(--ink)}
+.mrule b{display:block;color:#14532B;font-size:12px;letter-spacing:.03em;
+ text-transform:uppercase;margin-bottom:4px}
+.mrule b i{font-family:var(--mono);font-style:normal;font-size:13px;
+ margin-right:6px;opacity:.65}
+.mrule em{font-style:normal;color:var(--mut);font-size:11.5px;display:block;
+ margin-top:4px}
+.mparams{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.mparam{background:#EDF3F9;border:1px solid var(--line);border-radius:3px;
+ padding:5px 11px;font-size:12px;color:var(--mut)}
+.mparam b{font-family:var(--mono);color:var(--navy);font-weight:700;
+ font-variant-numeric:tabular-nums}
+.mwork{background:#F7FAFC;border:1px solid var(--line);border-radius:3px;
+ padding:11px 14px;font-size:12.5px;color:var(--ink);line-height:1.65}
+.mwork b{color:var(--navy)}
+.mwork code{font-family:var(--mono);font-weight:700;color:#14532B;
+ font-variant-numeric:tabular-nums}
+.mwork .arrow{color:var(--mut);margin:0 5px}
+.msum{margin-top:13px;padding-top:11px;border-top:1px dashed var(--line);
+ font-size:12.5px;color:var(--ink)}
+.msum b{color:var(--navy)}
 .stabnote{color:var(--rose);font-size:11.5px}
 details{margin-top:8px}
 summary{cursor:pointer;font-weight:600;color:var(--navy);padding:10px 0}
@@ -517,31 +545,9 @@ def tiers_block(s):
                      '<span>Нема воспоставена класа — резултат тука бара индивидуална КК '
                      'проценка | No established grade — a result here requires individual QC '
                      'assessment</span></div>' % (glo, ghi))
-    note = ('<div class="tiernote">Класите се декларираат одозгора надолу. Најсилната '
-            '(највисоката) класа има приоритет и ја зема својата полна ширина ±10,00% од '
-            'номиналата; над неа ништо не ја ограничува, па најсилната класа никогаш не се '
-            'стеснува. Секоја пониска класа потоа се протега надолу од таа над неа: нејзината '
-            'горна граница е точно 0,01 под долната граница на класата над неа (без празен '
-            'простор), а зема онолку од своите ±10,00% колку што може додека допира до таа '
-            'граница — затоа номиналата е секогаш на чекор од 0,50% (nn,00% или nn,50%), а '
-            'толеранцијата е најголемата што ограничувањето од 10% ја дозволува. Пониска класа е '
-            'потесна од своите полни ±10% само кога точното допирање со класата над неа не остава '
-            'повеќе простор — никогаш поради друга причина. Само кога два тестирани резултати се '
-            'толку далеку што ниту еден кандидат за номинала не може да ги премости во рамки на '
-            '10,00% (нема тука соодветна серија) останува вистински, означен јаз — не измислена '
-            'преодна класа. | Tiers are declared top-down. The strongest (highest) tier gets '
-            'priority and takes its full ±10.00% of the nominal; nothing constrains it from '
-            'above, so the strongest grade is never squeezed. Each lower tier then extends '
-            'downward from the one above it: its ceiling sits exactly 0.01 below the floor of the '
-            'tier above (no blind gap), and it takes as much of its own ±10.00% as it can while '
-            'reaching up to that ceiling — so its nominal lands on a 0.50% step (nn.00% or '
-            'nn.50%) and its tolerance is the widest the 10% cap allows. A lower tier is narrower '
-            'than its own full ±10% only when meeting the tier above exactly leaves no more room '
-            '— never for any other reason. Only where two tested results are too far apart for '
-            'any candidate nominal to bridge within the 10.00% cap (no batch exists there) does a '
-            'genuine, flagged gap remain — never a fabricated bridge tier.</div>')
-    return ('<div class="tiers"><b>Предложени класи | Proposed tiers:</b>%s%s</div>'
-            % (rows, note))
+    # The declaration rule is stated ONCE, in the methodology panel at the top
+    # of this section — never repeated per strain.
+    return ('<div class="tiers"><b>Предложени класи | Proposed tiers:</b>%s</div>' % rows)
 
 
 def strain_cards():
@@ -1072,6 +1078,59 @@ HTML = """<!doctype html>
 percentage points and as a relative %% of the lower value. The range shown for each strain
 is the range of TESTED results — not the proposed potency grade range (that is shown below,
 in the Pot.- tiers).</p>
+
+<div class="method">
+ <h3>Како се одредени класите <span>| How the grades were set</span></h3>
+ <div class="lede">Правилото важи за секоја сорта во овој документ и е наведено
+ само овде — не се повторува подолу. | The rule below governs every strain in this
+ document and is stated here only; it is not repeated further down.</div>
+
+ <div class="mrules">
+  <div class="mrule"><b><i>1</i>Најсилната класа прва | Strongest tier first</b>
+   Најсилната (највисоката) класа ја зема својата <b style="display:inline;text-transform:none;font-size:12.5px">полна ±10,00%%</b>.
+   Над неа ништо не ја ограничува, па најсилната класа никогаш не се стеснува.
+   <em>The highest tier takes its full ±10.00%% — nothing constrains it from above,
+   so the strongest grade is never squeezed.</em></div>
+
+  <div class="mrule"><b><i>2</i>Надолу до допир | Extend downward to touch</b>
+   Секоја пониска класа се протега надолу: горната граница е точно <b style="display:inline;text-transform:none;font-size:12.5px">0,01</b>
+   под долната граница на класата над неа (без празен простор), и зема онолку од
+   своите ±10,00%% колку што стигнува до таа граница.
+   <em>Each lower tier's ceiling sits exactly 0.01 below the floor of the tier above
+   — no blind gap — taking as much of its own ±10.00%% as reaches that ceiling.</em></div>
+
+  <div class="mrule"><b><i>3</i>Потесна само ако мора | Narrower only if forced</b>
+   Пониска класа е потесна од своите полни ±10%% <b style="display:inline;text-transform:none;font-size:12.5px">само</b>
+   кога допирањето со класата над неа не остава повеќе простор — никогаш поради
+   друга причина.
+   <em>A lower tier is narrower than its full ±10%% only when meeting the tier above
+   leaves no more room — never for any other reason.</em></div>
+ </div>
+
+ <div class="mparams">
+  <span class="mparam">Толеранција | Tolerance <b>≤ 10,00%%</b> од номиналата | of nominal</span>
+  <span class="mparam">Номинала | Nominal на чекор | on a <b>0,50%%</b> grid</span>
+  <span class="mparam">Допир на класи | Tiers meet at <b>0,01</b></span>
+  <span class="mparam">Под | Floor <b>5,00%%</b> Вкупен THC | Total THC</span>
+  <span class="mparam">Сидро | Anchor = <b>најнов резултат | most recent result</b></span>
+ </div>
+
+ <div class="mwork"><b>Пример | Worked example</b> — Blue Sunset Sherbet
+ (сидра | anchors 20,39 / 23,42 / 25,01):
+ <code>Pot.-2 24.50%% ±2.45%%</code> (22.05%%–26.95%%) ја зема полната ширина | takes the
+ full cap<span class="arrow">→</span>подот 22,05 | its floor 22.05 ја дава горната
+ граница | sets the ceiling 22,04 за | for
+ <code>Pot.-1 20.50%% ±1.54%%</code> (18.96%%–22.04%%).</div>
+
+ <div class="msum"><b>Накратко | In short:</b> највисоката класа зема полни ±10%%, секоја
+ следна се протега надолу до допир на 0,01, и ниту една не е потесна освен ако мора.
+ Вистински јаз останува само таму каде што ниту еден пар номинали не може да премости
+ два тестирани резултати во рамки на 10%% — означен, никогаш измислена преодна класа.
+ | <b>The highest tier takes its full ±10%%, each next one extends down to touch it at
+ 0.01, and none is narrower unless forced.</b> A genuine gap remains only where no
+ nominal pair can bridge two tested results within the 10%% cap — flagged, never a
+ fabricated bridge tier.</div>
+</div>
 %s</section>
 
 <section><h2>Преименувања: наши опсези наспроти мастерот <span>| Renames: our ranges vs the Portfolio Master</span></h2>
