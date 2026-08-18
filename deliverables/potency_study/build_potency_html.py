@@ -179,10 +179,11 @@ h2 span{font-weight:400;color:var(--mut);font-size:16.5px}
  transition:transform 70ms ease-out,box-shadow 70ms ease-out}
 .dot:hover{transform:translateX(-50%) scale(1.55);z-index:8;
  box-shadow:0 0 0 2px var(--navy2),0 2px 8px rgba(20,40,60,.35)}
-.tier{position:absolute;height:22px;background:rgba(30,132,73,.20);
- border:2.5px solid var(--green);font-size:13.5px;font-weight:700;color:#0F3D22;
+.tier{position:absolute;height:22px;background:#F2FAF5;
+ border:2.5px solid var(--green);font-size:12.5px;font-weight:700;color:#0F3D22;
  display:flex;align-items:center;justify-content:center;white-space:nowrap;
- letter-spacing:.01em;border-radius:3px;z-index:4;font-variant-numeric:tabular-nums}
+ letter-spacing:.01em;border-radius:3px;z-index:4;font-variant-numeric:tabular-nums;
+ padding:0 7px;transform:translateX(-50%)}
 .stab25{position:absolute;top:84%;width:10px;height:10px;background:var(--green);
  border:2px solid #fff;box-shadow:0 0 0 1px var(--green);transform:translateX(-50%);z-index:5}
 .stab40{position:absolute;top:84%;width:0;height:0;transform:translateX(-50%);
@@ -203,6 +204,8 @@ h2 span{font-weight:400;color:var(--mut);font-size:16.5px}
 .gapk{display:inline-block;width:18px;height:12px;border-radius:2px;margin-right:6px;
  border:1px dashed var(--rose);background:repeating-linear-gradient(135deg,
  rgba(193,58,58,.16) 0 5px,rgba(193,58,58,.03) 5px 10px)}
+.oldk{display:inline-block;width:0;height:13px;border-left:1px dashed #B9C7D6;
+ margin-right:6px}
 table{border-collapse:collapse;width:100%;font-size:13.5px}
 .tblwrap{overflow-x:auto;padding:0 18px 16px}
 th{background:var(--navy);color:#fff;font-weight:600;padding:7px 10px;font-size:12px;
@@ -229,7 +232,7 @@ td.gap{color:var(--navy2)}
  border-left:3px solid var(--rose);padding:3px 0 3px 8px;margin:2px 0}
 .tiers .gaprow .tr-span{color:#8A2E2E;font-weight:700}
 .tiernote{margin-top:8px;font-size:12px;line-height:1.5;color:var(--mut);
- border-left:3px solid var(--green);padding:4px 0 4px 10px;max-width:96ch}
+ border-left:3px solid var(--green);padding:4px 0 4px 10px}
 .stabnote{color:var(--rose);font-size:11.5px}
 details{margin-top:8px}
 summary{cursor:pointer;font-weight:600;color:var(--navy);padding:10px 0}
@@ -378,15 +381,18 @@ def axis_html(s, st, tiers, stab):
             glo, ghi = hi, tiers[i + 1]["range"][0]
             gz += ('<div class="gapzone" style="left:%.3f%%;width:%.3f%%" '
                    'title="Нема воспоставена класа %.2f%%–%.2f%% — ниту една тестирана серија '
-                   'на оваа сорта не паѓа тука; резултат во оваа зона бара индивидуална ОК '
+                   'на оваа сорта не паѓа тука; резултат во оваа зона бара индивидуална КК '
                    'проценка. | No established grade %.2f%%–%.2f%% — no tested batch of this '
                    'strain falls here; a result in this zone requires individual QC '
                    'assessment."></div>'
                    % (pct(glo), pct(ghi - glo), glo, ghi, glo, ghi))
-        top = 6 if i % 2 == 0 else 34
-        tt += ('<div class="tier" style="left:%.3f%%;width:%.3f%%;top:%dpx" '
+        # label plate centred on the tier's midpoint (translateX(-50%) in CSS)
+        # so a label wider than a narrow tier never clips at the band edges;
+        # three stagger rows keep neighbouring labels off each other's row.
+        top = (6, 34, 62)[i % 3]
+        tt += ('<div class="tier" style="left:%.3f%%;top:%dpx" '
                'title="%.2f%% ± %.2f%% (%.2f%%–%.2f%%) · серии | batches: %s">%s</div>'
-               % (pct(lo), pct(hi - lo), top, t["nominal"], t["tol"], lo, hi,
+               % (pct((lo + hi) / 2), top, t["nominal"], t["tol"], lo, hi,
                   esc(", ".join(t["batches"])), potlabel(i + 1, t)))
     sb = ""
     for r in stab:
@@ -394,8 +400,7 @@ def axis_html(s, st, tiers, stab):
         sb += ('<div class="%s" style="left:%.3f%%" title="%s M%d %s — %.2f%% (CBN %.2f%%)"></div>'
                % (cls, pct(r["total_thc"]), esc(r["batch"]), r["month"], esc(r["arm"]),
                   r["total_thc"], r["cbn"]))
-    scale = "".join("<span>%s</span>" % ("%.1f%%" % x if x == 30 else "%.1f" % x)
-                    for x in range(0, 31, 5))
+    scale = "".join("<span>%.2f%%</span>" % x for x in range(0, 31, 5))
     ren_items = []
     for r in per[s]:
         rn = ren_of(r["batch"])
@@ -486,7 +491,7 @@ def tiers_block(s):
         if t.get("gap_after") and i + 1 < len(tiers):
             glo, ghi = t["range"][1], tiers[i + 1]["range"][0]
             rows += ('<div class="trow gaprow">⚠ <span class="tr-span">(%.2f%% – %.2f%%)</span>'
-                     '<span>Нема воспоставена класа — резултат тука бара индивидуална ОК '
+                     '<span>Нема воспоставена класа — резултат тука бара индивидуална КК '
                      'проценка | No established grade — a result here requires individual QC '
                      'assessment</span></div>' % (glo, ghi))
     note = ('<div class="tiernote">Класите се декларираат одозгора надолу. Најсилната '
@@ -529,6 +534,7 @@ def strain_cards():
         legend = ('<div class="legend"><i><span class="dotk"></span>резултат | result</i>'
                   '<i><span class="zonek"></span>±1,50% зона | zone</i>'
                   '<i><span class="tierk"></span>Pot.-класи | tiers</i>'
+                  '<i><span class="oldk"></span>стари граници на класи | old grade boundaries</i>'
                   + ('<i><span class="gapk"></span>нема класа | no established grade</i>'
                      if has_gap else "") + '</div>')
         out += ('<article class="strain" id="%s"><div class="shead"><h3>%s</h3>%s</div>'
@@ -631,11 +637,10 @@ def renames_section():
                          % (cls, pct(it["val"]), esc(it["batch"]), it["val"],
                             " · декларирана | declared" if it["declared"] else ""))
             gridt = "".join('<i style="left:%.3f%%"></i>' % pct(x) for x in range(5, 30, 5))
-            mscale = "".join("<span>%s</span>" % ("%.1f%%" % x if x == 30 else "%.1f" % x)
-                             for x in range(0, 31, 5))
+            mscale = "".join("<span>%.2f%%</span>" % x for x in range(0, 31, 5))
             blist = ", ".join("%s (%s)" % (esc(it["batch"]),
-                                           ("%.2f" % it["val"]) if it["val"] is not None and not it["declared"]
-                                           else ("%.1f декл." % it["val"] if it["val"] is not None else "—"))
+                                           ("%.2f%%" % it["val"]) if it["val"] is not None and not it["declared"]
+                                           else ("%.2f%% декл." % it["val"] if it["val"] is not None else "—"))
                               for it in items)
             mb_lbl = " · ".join(sorted({it["mb"][2] for it in items if it["mb"]})) or "—"
             ours_lbl = " · ".join("%.2f%% ± %.2f%% (%.2f%%–%.2f%%)" % (w[2], w[3], w[0], w[1])
@@ -983,8 +988,8 @@ def stock_table():
         if not b.get("proposed"):
             continue
         decl = b["anchor"] is None
-        anc = ("%.2f (декл. | decl.)" % b["declared"]) if decl \
-            else "%.2f (%s)" % (b["anchor"], b["anchor_date"])
+        anc = ("%.2f%% (декл. | decl.)" % b["declared"]) if decl \
+            else "%.2f%% (%s)" % (b["anchor"], b["anchor_date"])
         if b.get("declared") is not None:
             out_of_grade = not (b["proposed"][0] - 1e-6 <= b["declared"] <= b["proposed"][1] + 1e-6)
             cur = ('<span class="mismatch" title="надвор од новата класа | outside the new '
@@ -993,17 +998,17 @@ def stock_table():
             cur = "—"
         rows += ('<tr%s><td>Т%s</td><td class=num>%s</td><td>%s</td><td class=num>%s</td>'
                  "<td>%s</td><td class=num>%s</td><td>%s</td><td class=v>%.2f%% ± %.2f%%</td>"
-                 "<td class=num>%.2f – %.2f</td><td class=num>%.2f</td></tr>"
+                 "<td class=num>%.2f%% – %.2f%%</td><td class=num>%.2f</td></tr>"
                  % (' class="decl"' if decl else "", esc(b["tranche"]), esc(b["batch"]),
                     esc(b["strain"]), anc, esc(fmt_bracket(b["bracket_old"])), cur,
                     "Pot.-%s" % b.get("tier", "—"), b["nominal"], b["tol"],
                     b["proposed"][0], b["proposed"][1], b["headroom_down"]))
     return ('<div class="tblwrap" style="padding:0"><table><thead><tr>'
             "<th>Т</th><th>Серија | Batch</th><th>Сорта | Strain</th>"
-            "<th>Сидро | Anchor (%%)</th><th>Стара | Old</th>"
+            "<th>Сидро | Anchor</th><th>Стара | Old</th>"
             "<th>Тековна декл. | Currently declared</th><th>Класа | Tier</th>"
             "<th>Номинала ± толеранција | Nominal ± tolerance</th>"
-            "<th>= опсег | = span (%%)</th><th>Простор ↓ | Headroom</th>"
+            "<th>= опсег | = span</th><th>Простор ↓ (пп) | Headroom (pp)</th>"
             "</tr></thead><tbody>%s</tbody></table></div>" % rows)
 
 
@@ -1081,7 +1086,7 @@ Yellow rows: no certificate on file — declared value used; test before declari
 all values live-verified against the ImB_QC_COAs source (4,134 passages).</span>
 <span>Датасет и обработка | Dataset &amp; build: deliverables/potency_study/
 (potency_dataset.json · build_potency_dataset.py · build_potency_html.py) —
-летта-stack. Резиме запишано во споделената меморија на хостот (агент
+letta-stack. Резиме запишано во споделената меморија на хостот (агент
 ecoa_retrieval_gpt4o). | Study summary logged to the host's shared memory.</span>
 <span>Меродавни остануваат лабораториските сертификати во СМК. |
 The laboratory certificates in the QMS remain authoritative.</span>
