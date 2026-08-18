@@ -8,11 +8,8 @@ this study is a proposed revision, not an amendment to any issued spec.
 
 - `Strain_Potency_Study_14Aug2026.docx` / `.pdf` — the Word document.
 - `Potency_Atlas.html` / `.pdf` — the same data as a self-contained,
-  bilingual single-file artifact in the "surveyor's atlas" visual identity
-  (chart-paper ground, plate-framed masthead, graticule axes, engraved tier
-  plates; Vollkorn / Source Sans 3 / JetBrains Mono inlined as data-URI
-  woff2 with latin+cyrillic+greek coverage), with the renamed-specification
-  cross-reference board.
+  bilingual "creative" single-file artifact (light theme by default; dark
+  toggle), with the renamed-specification cross-reference board.
 - `build_potency_dataset.py` → `potency_dataset.json` — §6B bound dataset:
   99 register assays (77 batches, 20 strains) + the Grape Pie stability
   program (9 rows, 1 excluded as defective per PP-QC-ERR-002), per-strain
