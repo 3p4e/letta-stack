@@ -121,20 +121,6 @@ TOP_NOMINAL_OVERRIDE = {
 }
 
 
-def feasible_nominals(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO, step=NOM_STEP):
-    """Every candidate nominal (a multiple of `step`) whose FULL ±max_ratio
-    band both covers all of `anchors` and keeps its floor at or above the
-    release criterion. Returned as a list of floats; the real-valued
-    interval can be non-empty yet contain no valid grid point, so the
-    step-aligned bounds are what matter."""
-    lo_n = max(anchors) / (1 + max_ratio)
-    hi_n = min(anchors) / (1 - max_ratio)
-    lo_i = math.ceil(lo_n / step - 1e-9)
-    hi_i = math.floor(hi_n / step + 1e-9)
-    lo_i = max(lo_i, math.ceil((floor / (1 - max_ratio)) / step - 1e-9))
-    return [round(k * step, 2) for k in range(lo_i, hi_i + 1)]
-
-
 def build_top_down(groups, floor=5.0, max_ratio=MAX_TOL_RATIO, step=NOM_STEP, gap=MIN_GAP,
                    top_override=None, strain_max=None):
     """Build one contiguous ladder from a fixed segmentation, TOP-DOWN, the
@@ -259,9 +245,9 @@ def plan_contiguous(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO, gap=MIN_GAP,
     count, the one with least total |nominal − anchor|.
 
     Returns the resolved tier list (nominal/tol/lo/hi/anchors, full ± width
-    already computed by solve_chain) or None if NO tier count admits a fully
-    contiguous, fully symmetric ladder at all (see build_strain_tiers for
-    what happens then — a real, evidenced gap, not a bug)."""
+    already computed by build_top_down) or None if NO tier count admits a
+    fully contiguous ladder at all (see build_strain_tiers for what happens
+    then — a real, evidenced gap, not a bug)."""
     n = len(anchors)
     if n == 0:
         return []

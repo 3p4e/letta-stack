@@ -735,16 +735,6 @@ OVERRIDE_BY_TOP_ANCHOR = {round(_strain_top_anchor[s], 2): v
                           for s, v in _TOP_OVERRIDE.items() if s in _strain_top_anchor}
 
 
-def feasible_nominals(anchors, floor=5.0, max_ratio=MAX_TOL_RATIO, step=NOM_STEP):
-    """Mirror of build_potency_dataset.feasible_nominals."""
-    lo_n = max(anchors) / (1 + max_ratio)
-    hi_n = min(anchors) / (1 - max_ratio)
-    lo_i = math.ceil(lo_n / step - 1e-9)
-    hi_i = math.floor(hi_n / step + 1e-9)
-    lo_i = max(lo_i, math.ceil((floor / (1 - max_ratio)) / step - 1e-9))
-    return [round(k * step, 2) for k in range(lo_i, hi_i + 1)]
-
-
 def build_top_down(groups, floor=5.0, max_ratio=MAX_TOL_RATIO, step=NOM_STEP, gap=MIN_GAP,
                    top_override=None, strain_max=None):
     """Mirror of build_potency_dataset.build_top_down."""
