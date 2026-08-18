@@ -21,6 +21,11 @@ this study is a proposed revision, not an amendment to any issued spec.
   all-strain overview.
 - `build_potency_report.py` — the Word document builder (PP engine).
 - `build_potency_html.py` — the Potency Atlas builder.
+- `build_potency_atlas_docx.py` → `Potency_Atlas.docx` — shareable Word
+  edition of the Atlas (PP engine, informal): grade rule, the three-column
+  final board (original spec | proposed ranges | names after renaming),
+  the stock table, and the sign-off block. Renamed-group ladders are read
+  from the verified workbook, not recomputed.
 - `build_potency_workbook.py` → `Potency_Specs_and_Results.xlsx` — the
   7-sheet spec/grade/result workbook.
 - `incoming/` — source workbooks + comparison notes used to cross-check the
