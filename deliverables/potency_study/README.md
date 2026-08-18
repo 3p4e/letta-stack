@@ -27,7 +27,10 @@ this study is a proposed revision, not an amendment to any issued spec.
   the stock table, and the sign-off block. Renamed-group ladders are read
   from the verified workbook, not recomputed.
 - `build_potency_workbook.py` → `Potency_Specs_and_Results.xlsx` — the
-  7-sheet spec/grade/result workbook.
+  9-sheet spec/grade/result workbook, incl. the two "Specs × Batches"
+  sheets: per strain, every issued QCSP 001 specification (nominal,
+  tolerance, range) with the batches whose anchor falls within that
+  specification's limits (batches outside every issued grade flagged).
 - `incoming/` — source workbooks + comparison notes used to cross-check the
   dataset against the live `PP_THC_by_Strain.xlsx` register.
 - `portfolio_master.json` — the company's own per-batch bracket labels (78

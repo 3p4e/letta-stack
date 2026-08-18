@@ -15,12 +15,18 @@ Ties together three independently-verified sources:
                               and the nominal-±-tolerance grade declarations
                               (built by build_potency_dataset.py).
 
-Six sheets:
+Nine sheets:
   1. README                       — legend, sources, what "match" means.
   2. Original Strain Specs        — one row per issued BASE_SPCs grade.
   3. Renamed Strain Specs         — one row per issued RENs/NEWs grade,
                                      with the original strain(s) it maps
                                      from (via Portfolio Master).
+  3a. Specs × Batches — Original  — per strain, every issued spec grade
+                                     (nominal, tolerance, range) with the
+                                     batches whose anchor falls within that
+                                     specification's limits; batches outside
+                                     every issued grade flagged in rose.
+  3b. Specs × Batches — Renamed   — the same, keyed to the NEW name.
   4. Portfolio Master — Renames   — the 78 batch-level rename rows verbatim.
   5. Atlas Grades — Original      — the Atlas's proposed nominal ± tolerance
                                      tiers, keyed to the ORIGINAL strain name.
@@ -566,6 +572,132 @@ ws.freeze_panes = ws.cell(row=r0 + 1, column=1)
 pctcols(ws, r0 + 1, row - 1, [6, 7, 9, 10])
 autosize(ws, [7, 22, 9, 20, 15, 9, 9, 20, 12, 10, 12, 26])
 print("Renamed Strain Specs: %d rows" % len(ren_rows))
+
+
+# ============================== Specs × Batches (per strain, spec limits) ==
+def anchor_of(b):
+    """The batch's governing value: anchor (most recent verified result) or,
+    where no assay exists, the declared value — flagged."""
+    if b["anchor"] is not None:
+        return b["anchor"], False
+    return b["declared"], True
+
+
+def batch_lbl(b, decl):
+    v, _ = anchor_of(b)
+    return "%s (%.2f%%%s)" % (b["batch"], v, " декл. | decl." if decl else "")
+
+
+def specs_x_batches_sheet(title, mk_t, en_t, groups, subtrees, extra_col=None):
+    """groups: {display_name: (batch_rows, original_names_or_None)} — one
+    block per strain/new name; one row per issued spec grade with the
+    batches whose anchor sits inside that spec's [min, max]."""
+    ws = wb.create_sheet(title)
+    ws.sheet_view.showGridLines = False
+    ncols = 9 + (1 if extra_col else 0)
+    r0 = title_block(ws, mk_t, en_t,
+                      "За секоја сорта: сите издадени QCSP 001 спецификации (номинала, толеранција, "
+                      "опсег) и сериите чие сидро (најнов верификуван резултат; декларирана вредност "
+                      "каде нема сертификат — означено) паѓа во лимитите на таа спецификација.",
+                      "Per strain: every issued QCSP 001 specification (nominal, tolerance, range) and "
+                      "the batches whose anchor (most recent verified result; declared value where no "
+                      "certificate — flagged) falls within that specification's limits.", ncols)
+    headers = ["Сорта | Strain", "Класа | Grade", "Код на документ | Doc Code",
+               "Номинала (печатена) | Nominal (as printed)",
+               "Номинала THC | Nominal THC", "Толеранција | Tolerance",
+               "THC-опсег | THC Range",
+               "Серии во лимитите (сидро) | Batches within limits (anchor)",
+               "Бр. | #"]
+    if extra_col:
+        headers.append(extra_col)
+    for i, h in enumerate(headers, 1):
+        ws.cell(row=r0, column=i, value=h)
+    style_header(ws, r0, ncols)
+
+    row = r0 + 1
+    n_rows = n_unmatched = 0
+    for name in sorted(groups):
+        batches, origs = groups[name]
+        recs = sorted({r["doc_code"]: r for r in specs_for(name, subtrees)}.values(),
+                      key=lambda r: grade_key(r["grade"]))
+        matched = set()
+        if not recs:
+            vals = [name, "—", "нема издадена спецификација | no issued specification",
+                    "—", None, None, "—",
+                    ", ".join(batch_lbl(b, anchor_of(b)[1]) for b in batches) or "—",
+                    len(batches)]
+            if extra_col:
+                vals.append(", ".join(origs) if origs else "—")
+            for c, v in enumerate(vals, 1):
+                ws.cell(row=row, column=c, value=v)
+            zebra(ws, row, ncols, n_rows % 2 == 0)
+            row += 1
+            n_rows += 1
+            continue
+        for rec in recs:
+            hits = []
+            if rec["thc_min"] is not None:
+                for b in batches:
+                    v, decl = anchor_of(b)
+                    if v is not None and rec["thc_min"] <= v <= rec["thc_max"]:
+                        hits.append(batch_lbl(b, decl))
+                        matched.add(b["batch"])
+            vals = [name, rec["grade"], rec["doc_code"], rec["nominal"],
+                    rec["nominal_thc"], rec["nominal_tolerance"],
+                    ("%.2f%% – %.2f%%" % (rec["thc_min"], rec["thc_max"]))
+                    if rec["thc_min"] is not None else (rec["thc_range"] or "—"),
+                    ", ".join(hits) or "—", len(hits)]
+            if extra_col:
+                vals.append(", ".join(origs) if origs else "—")
+            for c, v in enumerate(vals, 1):
+                ws.cell(row=row, column=c, value=v)
+            zebra(ws, row, ncols, n_rows % 2 == 0)
+            row += 1
+            n_rows += 1
+        out = [batch_lbl(b, anchor_of(b)[1]) for b in batches
+               if b["batch"] not in matched]
+        if out:
+            n_unmatched += len(out)
+            vals = [name, "—", "надвор од сите класи | outside all grades", "—",
+                    None, None, "—", ", ".join(out), len(out)]
+            if extra_col:
+                vals.append(", ".join(origs) if origs else "—")
+            for c, v in enumerate(vals, 1):
+                cell = ws.cell(row=row, column=c, value=v)
+                cell.fill = PatternFill("solid", fgColor="FDECEA")
+            row += 1
+            n_rows += 1
+    ws.freeze_panes = ws.cell(row=r0 + 1, column=1)
+    pctcols(ws, r0 + 1, row - 1, [5, 6])
+    autosize(ws, [20, 9, 24, 18, 12, 11, 16, 60, 6] + ([24] if extra_col else []))
+    print("%s: %d rows (%d batches outside all grades)" % (title, n_rows, n_unmatched))
+
+
+# original names: stock batches grouped by register strain
+orig_groups = {}
+for b in d["stock"]:
+    if anchor_of(b)[0] is not None:
+        orig_groups.setdefault(b["strain"], ([], None))[0].append(b)
+specs_x_batches_sheet("Specs × Batches — Original",
+                      "Спецификации и серии во лимитите — оригинални имиња",
+                      "Specifications & Batches Within Limits — Original Names",
+                      orig_groups, BASE_SUBTREES)
+
+# renamed: stock batches grouped by NEW name (Portfolio Master)
+ren_groups = {}
+for row_pm in pm:
+    neu = (row_pm.get("neu") or "").strip()
+    b = stock_by_batch.get(norm_b(row_pm["batch"]))
+    if not neu or b is None or anchor_of(b)[0] is None:
+        continue
+    if neu not in ren_groups:
+        ren_groups[neu] = ([], sorted(neu_to_originals.get(norm_name(neu), set())))
+    ren_groups[neu][0].append(b)
+specs_x_batches_sheet("Specs × Batches — Renamed",
+                      "Спецификации и серии во лимитите — нови имиња",
+                      "Specifications & Batches Within Limits — New Names",
+                      ren_groups, REN_SUBTREES,
+                      extra_col="Оригинално(и) име(иња) | Original name(s)")
 
 # =================================================== Portfolio Master rows
 ws = wb.create_sheet("Portfolio Master — Renames")
