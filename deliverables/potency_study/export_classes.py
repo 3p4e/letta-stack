@@ -106,10 +106,15 @@ def add_sheets(wb, ctx):
         by_val.setdefault((rr["strain"], round(rr["value"], 2)),
                           set()).add(normb(rr["batch"]))
     for b in ctx["stock_rows"]:
-        a = b["anchor"] if b["anchor"] is not None else b["declared"]
-        if a is not None:
-            by_val.setdefault((b["strain"], round(a, 2)),
-                              set()).add(normb(b["batch"]))
+        # BOTH the anchor and the DECLARED value are valid evidence: the export
+        # list quotes the value that was declared on the tranche sheet, which
+        # for a re-tested batch is not the same as our latest verified result.
+        # Pairing on the anchor alone made re-tested batches look like they had
+        # no certificate at all, when in fact they have a newer one.
+        for a in (b["anchor"], b["declared"]):
+            if a is not None:
+                by_val.setdefault((b["strain"], round(a, 2)),
+                                  set()).add(normb(b["batch"]))
 
     def resolve(code, strain=None, thc=None):
         c = str(code).strip().upper()
