@@ -31,6 +31,15 @@ this study is a proposed revision, not an amendment to any issued spec.
   sheets: per strain, every issued QCSP 001 specification (nominal,
   tolerance, range) with the batches whose anchor falls within that
   specification's limits (batches outside every issued grade flagged).
+- `build_potency_by_strain.py` → `Potency_by_Strain.xlsx` — the declared
+  grades set against the **corrected release register**, sourced from
+  exactly two places: `PP_Batch_Release_QC_Register_CORRECTED.xlsx` (every
+  Total Δ⁹-THC result per batch, its eCoA code + issue date, and the link to
+  the ingested document) and the Atlas (`potency_dataset.json`, the declared
+  nominal ± tolerance ladders). Of the certificate credentials **only** the
+  document code and date of issue are carried over. Batch identity is joined
+  on the certificate code, never on the batch string. Sheet 2 lists the stock
+  batches with no register result so none is silently dropped.
 - `incoming/` — source workbooks + comparison notes used to cross-check the
   dataset against the live `PP_THC_by_Strain.xlsx` register.
 - `portfolio_master.json` — the company's own per-batch bracket labels (78
