@@ -41,7 +41,11 @@ this study is a proposed revision, not an amendment to any issued spec.
   Total Δ⁹-THC result per batch, its eCoA code + issue date, and the link to
   the ingested document) and the Atlas (`potency_dataset.json`, the declared
   nominal ± tolerance ladders). Of the certificate credentials **only** the
-  document code and date of issue are carried over. Batch identity is joined
+  document code and date of issue are carried over. **PP specifications are
+  keyed to the ORIGINAL strain name.** A renaming is the buyer's label, not a
+  PP strain, so no grade is ever declared under a renamed name and nothing
+  from the Portfolio-Master rename map is turned into a specification
+  parameter — the new name is carried as a label column only. Batch identity is joined
   on the certificate code, never on the batch string. Sheet 2 lists the stock
   batches with no register result so none is silently dropped.
 - `export_classes.py` — adds two sheets to that same workbook:

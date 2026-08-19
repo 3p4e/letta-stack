@@ -186,29 +186,10 @@ for rec in PM:
                                     (rec.get("original") or "").strip()))
     groups.setdefault(neu, []).append(k)
 
-override_by_top_anchor = {}
-_top = {}
-for b in d["stock"]:
-    a = b["anchor"] if b["anchor"] is not None else b["declared"]
-    if a is not None:
-        _top[b["strain"]] = max(_top.get(b["strain"], -1.0), a)
-for s, v in d["design"].get("top_nominal_override", {}).items():
-    if s in _top:
-        override_by_top_anchor[round(_top[s], 2)] = v
-
-neu_tiers = {}          # new name -> list of tier dicts
-neu_tier_of_batch = {}  # batch -> (new name, tier index 1-based, tier dict)
-for neu, keys in groups.items():
-    items = [(anchors[k][0], k) for k in keys if k in anchors]
-    if not items:
-        continue
-    items.sort(key=lambda x: x[0])
-    ov = override_by_top_anchor.get(round(max(a for a, _k in items), 2))
-    tl = bpd.build_strain_tiers(items, top_override=ov)
-    neu_tiers[neu] = tl
-    for i, t in enumerate(tl, 1):
-        for k in t["payloads"]:
-            neu_tier_of_batch[k] = (neu, i, t)
+# NOTE: no ladder is computed for the renamed names. PP specifications are
+# keyed to the ORIGINAL strain name — a rename is the buyer's label, not a PP
+# strain — so nothing from the Portfolio-Master rename map is turned into a
+# declared grade here. Only the new name itself is carried, as a label.
 
 # ------------------------------------------------------------------ layout --
 wb = openpyxl.Workbook()
@@ -236,7 +217,7 @@ def put(row, col, value, *, size=10, color=INK, bold=False, italic=False,
     return c
 
 
-NCOL = 18
+NCOL = 13
 ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=NCOL)
 put(1, 1, "Purely Plant GmbH — Потенција по сорта: декларирани класи наспроти "
           "резултатите од регистарот | Potency by Strain: declared grades vs the "
@@ -254,18 +235,17 @@ put(2, 1, "Извори: PP_Batch_Release_QC_Register_CORRECTED.xlsx (сите �
 ws.row_dimensions[2].height = 42
 
 ws.merge_cells(start_row=4, start_column=1, end_row=4, end_column=11)
-put(4, 1, "ОРИГИНАЛНА СОРТА | ORIGINAL STRAIN", size=10, bold=True,
-    color="FFFFFF", fill=NAVY)
+put(4, 1, "ОРИГИНАЛНА СОРТА — PP СПЕЦИФИКАЦИЈА | ORIGINAL STRAIN — PP SPECIFICATION",
+    size=10, bold=True, color="FFFFFF", fill=NAVY)
 ws.merge_cells(start_row=4, start_column=12, end_row=4, end_column=NCOL)
-put(4, 12, "ПО ПРЕИМЕНУВАЊЕ | AFTER RENAMING", size=10, bold=True,
+put(4, 12, "САМО ОЗНАКА | LABEL ONLY", size=10, bold=True,
     color="FFFFFF", fill=GOLD)
 
 HEAD = ["№", "Серија | Batch", "P-серија | P-number", "Вкупен Δ⁹-THC | Result",
         "Сидро | Anchor", "Шифра на eCoA | eCoA code", "Датум | Date of issue",
         "Класа | Tier", "Номинала | Nominal", "Толеранција | Tolerance",
         "Опсег | Range",
-        "Ново име | New name", "Бренд | Brand", "Класа | Tier",
-        "Номинала | Nominal", "Толеранција | Tolerance", "Опсег | Range",
+        "Ново име кај купувачот | Buyer's new name",
         "Во опсег? | In range?"]
 for i, h in enumerate(HEAD, 1):
     put(5, i, h, size=8.5, bold=True, color="FFFFFF",
@@ -309,7 +289,6 @@ for strain in sorted(by_strain):
         anc = anchors.get(k)
         tier_i = st.get("tier") if st else None
         t = tl[tier_i - 1] if (tl and tier_i and tier_i <= len(tl)) else None
-        nt = neu_tier_of_batch.get(k)
         ren = neu_of.get(k)
 
         for j, r in enumerate(brs):
@@ -349,45 +328,30 @@ for strain in sorted(by_strain):
                 for c in (8, 9, 10, 11):
                     put(row, c, None, fill=zeb)
 
-            # renamed block
+            # buyer's new name — a LABEL ONLY. PP specifications are keyed to
+            # the original strain name, so no grade is ever declared under a
+            # renamed name here and nothing is taken from the master sheet.
             if j == 0 and ren is not None:
                 same = ren["neu"].strip().lower() == strain.strip().lower()
                 put(row, 12, ren["neu"], size=9.5, bold=not same,
-                    color=(MUT if same else NAVY), fill=(zeb if same else YFILL))
-                put(row, 13, ren["brand"] or "—", size=8.5, color=MUT,
-                    fill=(zeb if same else YFILL))
-                if nt is not None:
-                    _neu, ni, ntier = nt
-                    put(row, 14, "Pot.-%d" % ni, size=9.5, bold=True, color=GOLD, fill=YFILL)
-                    put(row, 15, "%.2f%%" % ntier["nominal"], size=9.5, bold=True,
-                        color=GOLD, fill=YFILL)
-                    put(row, 16, "± %.2f%%" % ntier["tol"], size=9.5, color=GOLD, fill=YFILL)
-                    put(row, 17, "%.2f%% – %.2f%%" % (ntier["lo"], ntier["hi"]),
-                        size=9.5, color=GOLD, fill=YFILL)
-                else:
-                    for c in (14, 15, 16, 17):
-                        put(row, c, "—" if c == 14 else None, size=9, color=MUT, fill=YFILL)
+                    color=(MUT if same else GOLD), fill=(zeb if same else YFILL))
             elif j == 0:
-                put(row, 12, "— не е во мастерот | not in master", size=8.5,
-                    italic=True, color=MUT, fill=zeb)
-                for c in (13, 14, 15, 16, 17):
-                    put(row, c, None, fill=zeb)
+                put(row, 12, "—", size=9, color=MUT, fill=zeb)
             else:
-                for c in range(12, 18):
-                    put(row, c, None, fill=zeb)
+                put(row, 12, None, fill=zeb)
 
             # in-range verdict, per result against its batch's declared tier
             if t is not None and r["value"] is not None:
                 ok = t["range"][0] - 1e-6 <= r["value"] <= t["range"][1] + 1e-6
                 if ok:
                     n_in += 1
-                    put(row, 18, "ДА | YES", size=9, bold=True, color=GREEN, fill=GFILL)
+                    put(row, 13, "ДА | YES", size=9, bold=True, color=GREEN, fill=GFILL)
                 else:
                     n_out += 1
-                    put(row, 18, "НАДВОР | OUTSIDE", size=8.5, bold=True,
+                    put(row, 13, "НАДВОР | OUTSIDE", size=8.5, bold=True,
                         color=ROSE, fill=RFILL)
             else:
-                put(row, 18, "—", size=9, color=MUT, fill=zeb)
+                put(row, 13, "—", size=9, color=MUT, fill=zeb)
             row += 1
             n_rows += 1
 
@@ -400,12 +364,11 @@ put(row, 1, "Сидро ✔ = најновиот верификуван резу
             "ингестираниот документ. | Anchor ✔ = the most recent verified result — only "
             "it sets the batch's grade; earlier results are shown for history, which is "
             "why some fall outside the current range. The eCoA code links to the "
-            "ingested document.", size=8.5, italic=True, color=MUT, align="left",
+            "ingested document. Преименувањата се само ознака кај купувачот — PP спецификациите одат по оригиналното име на сортата и ниту една класа не се декларира под ново име. | Renamings are the buyer's label only — PP specifications are keyed to the original strain name and no grade is ever declared under a new name.", size=8.5, italic=True, color=MUT, align="left",
     wrap=True, border=False)
 ws.row_dimensions[row].height = 30
 
-widths = [4.5, 16, 12, 20, 8, 22, 13, 8.5, 11, 12, 17,
-          20, 9, 8.5, 11, 12, 17, 15]
+widths = [4.5, 16, 12, 20, 8, 22, 13, 8.5, 11, 12, 17, 24, 15]
 for i, w in enumerate(widths, 1):
     ws.column_dimensions[get_column_letter(i)].width = w
 ws.freeze_panes = ws.cell(row=6, column=1)
@@ -485,10 +448,9 @@ assert n_rows == len(records), (n_rows, len(records))
 import export_classes
 export_classes.add_sheets(wb, dict(
     records=records, stock=stock, anchors=anchors,
-    tiers_by_strain=tiers_by_strain, neu_of=neu_of,
-    neu_tier_of_batch=neu_tier_of_batch, normb=normb,
-    p_codes=d["p_codes"], register_results=d["register_results"],
-    stock_rows=d["stock"]))
+    tiers_by_strain=tiers_by_strain,
+    normb=normb, p_codes=d["p_codes"],
+    register_results=d["register_results"], stock_rows=d["stock"]))
 
 wb.save(OUT)
 print("wrote", OUT, os.path.getsize(OUT), "bytes")

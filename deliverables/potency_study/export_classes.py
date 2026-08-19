@@ -74,8 +74,6 @@ def add_sheets(wb, ctx):
     stock = ctx["stock"]
     anchors = ctx["anchors"]
     tiers_by_strain = ctx["tiers_by_strain"]
-    neu_of = ctx["neu_of"]
-    neu_tier_of_batch = ctx["neu_tier_of_batch"]
     normb = ctx["normb"]
 
     # ---- join keys: the export list books batches by P-number, and a handful
@@ -108,10 +106,15 @@ def add_sheets(wb, ctx):
         by_val.setdefault((rr["strain"], round(rr["value"], 2)),
                           set()).add(normb(rr["batch"]))
     for b in ctx["stock_rows"]:
-        a = b["anchor"] if b["anchor"] is not None else b["declared"]
-        if a is not None:
-            by_val.setdefault((b["strain"], round(a, 2)),
-                              set()).add(normb(b["batch"]))
+        # BOTH the anchor and the DECLARED value are valid evidence: the export
+        # list quotes the value that was declared on the tranche sheet, which
+        # for a re-tested batch is not the same as our latest verified result.
+        # Pairing on the anchor alone made re-tested batches look like they had
+        # no certificate at all, when in fact they have a newer one.
+        for a in (b["anchor"], b["declared"]):
+            if a is not None:
+                by_val.setdefault((b["strain"], round(a, 2)),
+                                  set()).add(normb(b["batch"]))
 
     def resolve(code, strain=None, thc=None):
         c = str(code).strip().upper()
@@ -171,12 +174,16 @@ def add_sheets(wb, ctx):
               "recovered from the list's own quantity tables: a batch goes to the "
               "HIGHEST class whose ±10% window contains its value. Under it all 33 "
               "per-tranche class quantities reproduce exactly, with one exception "
-              "(P060142, 7.05% — below class 8's 7.20% floor, yet counted there).",
+              "(P060142, 7.05% — below class 8's 7.20% floor, yet counted there). "
+              "Декларираната класа е секогаш онаа на ОРИГИНАЛНАТА сорта — "
+              "преименувањето е ознака кај купувачот, не PP сорта. | The declared "
+              "grade is always the ORIGINAL strain's — a renaming is the buyer's "
+              "label, not a PP strain.",
         size=8.5, italic=True, color=NAVY, fill=BAND, align="left", wrap=True)
     ws.row_dimensions[3].height = 74
 
     HEAD = ["№", "Транша | Tranche", "Сорта (листа) | Strain (list)",
-            "Ново име (листа) | New name (list)", "Серија на листата | List batch no.",
+            "Ново име кај купувачот | Buyer's new name", "Серија на листата | List batch no.",
             "Наша серија | Our batch", "THC на листата | List THC",
             "Наш резултат | Our result", "Δ (пп | pp)",
             "Наша класа | Our tier", "Наш опсег | Our range",
