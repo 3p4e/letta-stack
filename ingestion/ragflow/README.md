@@ -95,3 +95,44 @@ The six 3-page reports are the quiet ones: they parse, produce chunks and look
 healthy, but page 4 carries the closing results and signature block, so
 retrieval answers from them while silently missing the tail. File size is not
 a reliable tell — 1289, 1291 and 1361 are the same ~150 KB and are complete.
+
+## eCOA_INGEST repair, 19.08.2026
+
+The dataset held 389 documents of which **128 had zero chunks** — present but
+unreachable by retrieval, and most of them marked `DONE`, so no status roll-up
+would have flagged them. 115 of the 125 water reports were among them.
+
+Every failure died at the same step, `"Start to generate meta-data for every
+chunk"`, which costs ~45-60 s per document and calls an LLM per chunk. The
+original bulk load swamped it. Re-parsing repairs them, but only at low
+concurrency:
+
+| Approach | Hit rate |
+|---|---|
+| 6 documents per batch | ~25% |
+| 3 per batch, 10 s apart, two passes | 92 + 17 of 123 |
+| 1 at a time, server idle | 10 of the last 14 |
+
+**Result: 385 of 389 searchable.**
+
+Four remain, all from the same family — `700094-5`, `-6`, `-8`, `-25`. They
+are not defective: full text layers (13-15 k characters), and parsing itself
+completes ("Finish parsing", all pages processed). They are simply larger than
+the rest — 6 pages and 24-42 embedded images against 4 pages and 8 — so they
+generate more chunks and therefore more metadata calls. `700094-7`, the
+largest of the family at 697 KB, succeeded on retry with 82 chunks, so the
+step is marginal for this size rather than incapable.
+
+**Two levers if they matter enough to chase:**
+
+1. Turn off `enable_metadata` on the dataset. Every one of the 128 failures
+   died at that step, so this removes the failure mode outright. It costs the
+   `update_time` / `file_name` chunk metadata, which is minor — both are
+   already document attributes. It is a dataset config change on the server.
+2. Check which model RAGFlow has bound to metadata generation. It is an LLM
+   call, and this estate has had provider trouble: Moonshot was suspended for
+   insufficient balance, then began returning 401 after recharge.
+
+**Never trust `run` status alone.** `1464.pdf` reported `run=FAIL` while
+holding 56 usable chunks, and 84 documents reported `DONE` with none. Gate on
+`chunk_count`.
