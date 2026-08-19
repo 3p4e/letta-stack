@@ -25,13 +25,24 @@ Order of operations per file, and it stops at the first failure:
      is never reported as ingested — that is exactly how 128 documents came to
      sit in this dataset unsearchable.
 
+Identity is read off the PAGE, never off the filename. The same report may
+arrive as `1468 П.pdf`, as `ЦЈЗ_skenirano_0043.pdf`, as the lab's digital
+export or as a scan — all of them carry `Лаб. број: NNNN/YYYY`, and a scan is
+OCR'd (Tesseract, `mkd`) to read it. One lab number is one document, so a
+scanned copy of something already held is recognised as the same record and
+replaces it rather than duplicating it.
+
 Usage:
-    python3 replace_reissued.py <dataset> <file.pdf> [file.pdf ...]
-    python3 replace_reissued.py --check <file.pdf>     # gate only, no writes
+    python3 replace_reissued.py --index <dataset> [--refresh]  # build content index
+    python3 replace_reissued.py <dataset> <file.pdf> [...]     # replace + verify
+    python3 replace_reissued.py --check <file.pdf>             # gate only, no writes
 
 Environment: RAGFLOW_API_KEY, RAGFLOW_API_SERVER
 """
 import json, os, re, subprocess, sys, time, urllib.request
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from doc_identity import identity, key, better_of, pages, raw_text as text
 
 KEY = os.environ.get("RAGFLOW_API_KEY", "")
 SRV = os.environ.get("RAGFLOW_API_SERVER", "").rstrip("/")
@@ -88,33 +99,98 @@ def norm(s):
     return re.sub(r"\s+", " ", s).strip()
 
 
-def find_doc(ds, lab):
-    """The document already in the dataset for this lab number, if any."""
+INDEX = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                     ".content_index.json")
+
+
+def fetch(ds, doc_id, dest):
+    r = urllib.request.Request("%s/api/v1/datasets/%s/documents/%s" % (SRV, ds, doc_id),
+                               headers={"Authorization": "Bearer " + KEY})
+    with urllib.request.urlopen(r, timeout=180) as f:
+        open(dest, "wb").write(f.read())
+
+
+def build_index(ds, refresh=False):
+    """Map lab number -> document id by reading each document's CONTENT.
+
+    Filenames are not identity: the same report arrives as `1468 П.pdf`, as a
+    differently-named scan, or as a lab re-export. Reading the lab number off
+    the page is the only way to know we already hold it.
+    """
+    cache = {}
+    if os.path.exists(INDEX) and not refresh:
+        cache = json.load(open(INDEX, encoding="utf-8"))
+    docs = []
     for p in range(1, 8):
-        docs = (api("datasets/%s/documents?page=%d&page_size=100" % (ds, p))
-                .get("data") or {}).get("docs") or []
-        for d in docs:
-            if lab and lab in LABNO.findall(d.get("name", "")):
-                return d
-        if len(docs) < 100:
-            return None
+        got = (api("datasets/%s/documents?page=%d&page_size=100" % (ds, p))
+               .get("data") or {}).get("docs") or []
+        docs += got
+        if len(got) < 100:
+            break
+    known = cache.get("by_doc", {})
+    out = dict(known)
+    for i, d in enumerate(docs, 1):
+        if d["id"] in known and not refresh:
+            continue
+        tmp = "/tmp/_idx_%s.pdf" % d["id"][:10]
+        try:
+            fetch(ds, d["id"], tmp)
+            ident = identity(tmp)
+            out[d["id"]] = {"lab_no": ident["lab_no"], "name": d.get("name"),
+                            "pages": ident["pages"], "source": ident["source"],
+                            "chunks": d.get("chunk_count")}
+            print("  [%d/%d] %-28s lab=%s" % (i, len(docs), (d.get("name") or "")[:28],
+                                              ident["lab_no"]), flush=True)
+        except Exception as e:
+            print("  [%d/%d] %-28s SKIP %s" % (i, len(docs), (d.get("name") or "")[:28],
+                                               type(e).__name__), flush=True)
+        finally:
+            if os.path.exists(tmp):
+                os.remove(tmp)
+    cache = {"dataset": ds, "by_doc": out}
+    json.dump(cache, open(INDEX, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    n = sum(1 for v in out.values() if v.get("lab_no"))
+    print("index: %d documents, %d with a readable lab number" % (len(out), n))
+    return cache
+
+
+def find_doc(ds, lab_no):
+    """The document already holding this lab number — by content, not name."""
+    if not lab_no:
+        return None
+    if not os.path.exists(INDEX):
+        print("  no content index yet — run with --index first"); return None
+    cache = json.load(open(INDEX, encoding="utf-8"))
+    for doc_id, v in cache.get("by_doc", {}).items():
+        if v.get("lab_no") == lab_no:
+            return {"id": doc_id, "name": v.get("name"),
+                    "chunk_count": v.get("chunks"), "run": None,
+                    "pages": v.get("pages"), "source": v.get("source")}
     return None
 
 
 def replace(ds, pdf, force=False):
     name = os.path.basename(pdf)
-    lab = (LABNO.search(name) or [None])[0] if LABNO.search(name) else None
-    print("\n=== %s (lab %s)" % (name, lab or "?"))
+    ident = identity(pdf)
+    lab = ident["lab_no"]
+    print("\n=== %s" % name)
+    print("  identity: lab=%s sampled=%s read-via=%s pages=%s/%s"
+          % (lab, ident["sampled"], ident["source"], ident["pages"],
+             ident["declared_pages"]))
 
-    ok, msg = check(pdf)
-    print("  gate: %s" % msg)
-    if not ok:
-        print("  REJECTED — nothing changed."); return False
+    if not ident["readable"]:
+        print("  REJECTED — no lab number could be read, even by OCR. "
+              "Cannot be matched against what is already ingested."); return False
+    if not ident["complete"]:
+        print("  REJECTED — INCOMPLETE (%s of %s pages). Nothing changed."
+              % (ident["pages"], ident["declared_pages"])); return False
+    print("  gate: complete — %s of %s pages" % (ident["pages"], ident["declared_pages"]))
 
     old = find_doc(ds, lab)
     if old:
-        print("  in dataset: %s  run=%s chunks=%s"
-              % (old["name"], old.get("run"), old.get("chunk_count")))
+        print("  already ingested as: %s (%s, %s pages, chunks=%s)"
+              % (old["name"], old.get("source"), old.get("pages"),
+                 old.get("chunk_count")))
         # page-by-page diff against what we already hold
         blob = api("datasets/%s/documents/%s" % (ds, old["id"]))  # metadata only
         tmp = "/tmp/_ingested_%s.pdf" % lab
@@ -177,8 +253,18 @@ if __name__ == "__main__":
     args = sys.argv[1:]
     if args and args[0] == "--check":
         for f in args[1:]:
-            ok, msg = check(f)
-            print("%-28s %s" % (os.path.basename(f), msg))
+            i = identity(f)
+            print("%-30s lab=%-10s %s  (%s)"
+                  % (os.path.basename(f)[:30], i["lab_no"] or "?",
+                     "complete %s/%s" % (i["pages"], i["declared_pages"])
+                     if i["complete"] else
+                     "INCOMPLETE %s/%s" % (i["pages"], i["declared_pages"]),
+                     i["source"]))
+        sys.exit(0)
+    if args and args[0] == "--index":
+        if len(args) < 2:
+            sys.exit("usage: --index <dataset_id> [--refresh]")
+        build_index(args[1], refresh="--refresh" in args)
         sys.exit(0)
     if len(args) < 2:
         sys.exit(__doc__)

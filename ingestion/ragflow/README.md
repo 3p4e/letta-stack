@@ -5,6 +5,32 @@ RAGFlow on KVM4 is the ingestion and RAG pipeline for every database — see
 
 Environment: `RAGFLOW_API_KEY`, `RAGFLOW_API_SERVER`.
 
+## Identity is read off the page, never off the filename
+
+`doc_identity.py` decides whether we already hold a report by what is printed
+on it, not what the file is called:
+
+```
+Лаб. број: 1468/2026          -> lab number, the dedup key
+Датум на земање: 14.05.2026   -> sampling date, cross-check
+Мерно место: ... -RO-E84-014  -> sampling point
+Страна 1 од 4                 -> how long the report should be
+```
+
+A **scan** has no text layer, so its pages are rasterised and run through
+Tesseract (`mkd`) to recover the same fields. Verified: the identical report
+as a digital export and as a differently-named image-only scan both resolve to
+`lab_no 1233/2026, sampled 04.05.2026, 3 of 4 pages` — one via the text layer,
+one via OCR. So a scanned copy of something already ingested is recognised as
+the same record and replaces it; it is not added alongside.
+
+Where both forms exist, `better_of()` keeps the one with more pages, and on a
+tie prefers the digital original over the scan (OCR text is a lossy reading).
+
+A document whose lab number cannot be read even by OCR is **rejected**, not
+guessed at — it cannot be matched against the corpus, so ingesting it would
+risk exactly the duplication this is meant to prevent.
+
 ## `replace_reissued.py` — swap a truncated lab report for its reissue
 
 A reissued report **replaces** its predecessor. It is never appended to it:
@@ -13,9 +39,14 @@ page-level anchor to append against, and a reissue may amend an earlier page
 as well as complete the report. One lab number, one document, one record.
 
 ```bash
-python3 replace_reissued.py --check reissue.pdf          # gate only, no writes
+python3 replace_reissued.py --index <dataset_id>          # build the content index
+python3 replace_reissued.py --check reissue.pdf           # gate only, no writes
 python3 replace_reissued.py <dataset_id> reissue.pdf ...  # replace + verify
 ```
+
+`--index` reads every document already in the dataset and caches
+`lab number -> document id`. That index is what makes filename-independent
+matching possible; refresh it with `--refresh` after bulk changes.
 
 Per file, stopping at the first failure:
 
