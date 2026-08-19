@@ -50,13 +50,13 @@ now returns **0**. What was destroyed:
 | `CoA_Individual_Split` | 0 | — |
 | **Total** | **870** | |
 
-**Three records had no source document anywhere** and were destroyed with the
-rest, to be re-authored directly in RAGFlow: `QC_ERRATA_micro_OCR_defect_notice`,
+Three QC-authored records were destroyed with the rest and are to be
+re-authored in RAGFlow as part of the rebuild: `QC_ERRATA_micro_OCR_defect_notice`,
 `QC_ERRATA_potency_OCR_defect_notice`, and
-`QC_QUERY_PPK26127_FatBastard_FB032601_foreign_matter_seed` (the FB032601
-foreign-matter OOS query). Re-authoring them is outstanding work, not a
-completed migration — treat the FB032601 query as an open QC record until it
-exists again.
+`QC_QUERY_PPK26127_FatBastard_FB032601_foreign_matter_seed`. They were
+commentary on source documents that are all still in Drive — the FB032601
+query derives from certificate ППК26127, which is on file — so they are
+re-authored from the evidence like everything else, not recovered.
 
 The deleted Letta water source recorded, in its own description, that **Voyage
 was the original target** and OpenAI was a fallback "because Letta 0.16.x has
