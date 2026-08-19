@@ -14,15 +14,47 @@ So identity comes from the document body:
     Мерно место: ... -RO-E84-014 -> sampling point code
     Страна 1 од 4               -> how many pages the report should have
 
-For a scan there is no text layer, so the pages are rasterised and run through
-Tesseract (`mkd`) to recover the same fields. Identity and the completeness
-check therefore work identically for scanned and digital copies.
+For a scan there is no text layer, so the pages are rasterised and read by a
+VISION MODEL, per `AGENT_MODEL_POLICY.md`:
+
+    OCR / document vision -> kimi-k2.6 -> moonshot-v1-128k-vision-preview -> gpt-4o
+
+Classical OCR is deliberately not used. These certificates are Macedonian
+Cyrillic mixed with Latin chemical symbols, Greek letters and superscripts —
+the case classical OCR handles worst — and the reasoning is recorded in
+`pp_ocr_scanned_pdf.py`, which was verified against GG1024 to reproduce all 29
+register rows exactly. The one normalisation carried over from it: a vision
+model surrounded by Cyrillic returns homoglyphs for Latin chemical symbols
+("ТНС" for "THC"), so the prompt pins chemical and unit symbols to Latin.
+Identity and the completeness check therefore work identically for scanned and
+digital copies.
 
 Where both forms of one report exist, `better_of()` picks the one to keep:
 more pages wins; on a tie the digital original beats the scan, because OCR
 text is a lossy reading of it.
 """
-import os, re, subprocess, tempfile
+import base64, json, os, re, subprocess, tempfile, urllib.request
+
+# Per AGENT_MODEL_POLICY.md — OCR / document vision.
+OCR_CHAIN = [
+    ("kimi-k2.6", "https://api.moonshot.ai/v1", "MOONSHOT_API_KEY"),
+    ("moonshot-v1-128k-vision-preview", "https://api.moonshot.ai/v1", "MOONSHOT_API_KEY"),
+    ("gpt-4o", "https://api.openai.com/v1", "OPENAI_API_KEY"),
+]
+
+PROMPT = (
+    "Transcribe this scanned laboratory certificate page verbatim for a "
+    "pharmaceutical quality register.\n"
+    "1. Copy exactly what is printed. Never correct, complete or improve anything.\n"
+    "2. Preserve Macedonian Cyrillic exactly; do NOT transliterate.\n"
+    "3. Chemical and unit symbols are printed in Latin: THC, CBD, CBN, Pb, Cd, As, "
+    "Hg, CFU/g, mg/kg, %w/w. Render these in Latin even when surrounded by "
+    "Cyrillic — never Cyrillic lookalikes such as ТНС for THC.\n"
+    "4. Include every header and footer line, especially lines of the form "
+    "'Лаб. број: NNNN/YYYY', 'Датум на земање: DD.MM.YYYY', 'Мерно место: ...' "
+    "and the page footer 'Страна N од M'.\n"
+    "Return the page text only, no commentary."
+)
 
 LAB = re.compile(r"(?:Лаб\.?\s*број|Број)\s*[:：]?\s*(\d{3,5})\s*/\s*(20\d{2})")
 SAMPLED = re.compile(r"Датум на земање\s*[:：]?\s*(\d{2}\.\d{2}\.20\d{2})")
@@ -43,21 +75,56 @@ def raw_text(pdf, first=None, last=None):
     return subprocess.run(cmd + [pdf, "-"], capture_output=True, text=True).stdout
 
 
-def ocr_text(pdf, max_pages=2, dpi=200, lang="mkd"):
-    """Rasterise and OCR — the scanned-copy path."""
-    out = []
-    with tempfile.TemporaryDirectory() as td:
-        subprocess.run(["pdftoppm", "-r", str(dpi), "-png", "-f", "1",
-                        "-l", str(max_pages), pdf, os.path.join(td, "p")],
-                       capture_output=True)
-        for png in sorted(os.listdir(td)):
-            base = os.path.join(td, png[:-4])
-            subprocess.run(["tesseract", os.path.join(td, png), base, "-l", lang],
-                           capture_output=True)
-            try:
-                out.append(open(base + ".txt", encoding="utf-8").read())
-            except OSError:
-                pass
+def _page_pngs(pdf, max_pages=2, dpi=200):
+    td = tempfile.mkdtemp()
+    subprocess.run(["pdftoppm", "-r", str(dpi), "-png", "-f", "1",
+                    "-l", str(max_pages), pdf, os.path.join(td, "p")],
+                   capture_output=True)
+    return td, [os.path.join(td, f) for f in sorted(os.listdir(td)) if f.endswith(".png")]
+
+
+def _vision(model, base, key, png):
+    body = {
+        "model": model,
+        "messages": [{"role": "user", "content": [
+            {"type": "text", "text": PROMPT},
+            {"type": "image_url", "image_url": {"url": "data:image/png;base64," +
+             base64.b64encode(open(png, "rb").read()).decode()}},
+        ]}],
+        "temperature": 0,
+    }
+    r = urllib.request.Request(base.rstrip("/") + "/chat/completions",
+                               data=json.dumps(body).encode(),
+                               headers={"Authorization": "Bearer " + key,
+                                        "Content-Type": "application/json"})
+    with urllib.request.urlopen(r, timeout=180) as f:
+        d = json.loads(f.read().decode())
+    return d["choices"][0]["message"]["content"]
+
+
+def ocr_text(pdf, max_pages=2, dpi=200, verbose=False):
+    """Read a scanned page with the policy vision chain. Never classical OCR."""
+    td, pngs = _page_pngs(pdf, max_pages, dpi)
+    out, used = [], None
+    try:
+        for png in pngs:
+            for model, base, env in OCR_CHAIN:
+                key = os.environ.get(env)
+                if not key:
+                    continue
+                try:
+                    out.append(_vision(model, base, key, png))
+                    used = model
+                    break
+                except Exception as e:
+                    if verbose:
+                        print("   %s failed: %s" % (model, str(e)[:90]))
+                    continue
+    finally:
+        for f in pngs:
+            os.path.exists(f) and os.remove(f)
+        os.path.isdir(td) and os.rmdir(td)
+    ocr_text.last_model = used
     return "\n".join(out)
 
 
@@ -66,7 +133,8 @@ def text_of(pdf):
     t = raw_text(pdf)
     if len(t.strip()) > 200:
         return t, "text-layer"
-    return ocr_text(pdf), "ocr"
+    t = ocr_text(pdf)
+    return t, "vision:" + (getattr(ocr_text, "last_model", None) or "none")
 
 
 def identity(pdf):

@@ -17,12 +17,27 @@ on it, not what the file is called:
 Страна 1 од 4                 -> how long the report should be
 ```
 
-A **scan** has no text layer, so its pages are rasterised and run through
-Tesseract (`mkd`) to recover the same fields. Verified: the identical report
-as a digital export and as a differently-named image-only scan both resolve to
-`lab_no 1233/2026, sampled 04.05.2026, 3 of 4 pages` — one via the text layer,
-one via OCR. So a scanned copy of something already ingested is recognised as
-the same record and replaces it; it is not added alongside.
+A **scan** has no text layer, so its pages are rasterised and read by a vision
+model, per `AGENT_MODEL_POLICY.md`:
+
+    OCR / document vision -> kimi-k2.6 -> moonshot-v1-128k-vision-preview -> gpt-4o
+
+Classical OCR is deliberately **not** used. These certificates are Macedonian
+Cyrillic mixed with Latin chemical symbols, Greek letters and superscripts —
+the case classical OCR handles worst — and the reasoning is already recorded in
+`letta_host_tools/pp_ocr_scanned_pdf.py`, which was verified against GG1024 to
+reproduce all 29 register rows exactly. The prompt carries that tool's rules:
+transcribe verbatim, never improve, preserve Cyrillic, and pin chemical and
+unit symbols to Latin so a Cyrillic-surrounded model does not return "ТНС" for
+"THC".
+
+Verified live: the identical report as a digital export and as a
+differently-named image-only scan both resolve to `lab_no 1233/2026, sampled
+04.05.2026, 3 of 4 pages` — one via the text layer, one via the vision chain.
+So a scanned copy of something already ingested is recognised as the same
+record and replaces it; it is not added alongside. (On that run Moonshot
+answered 429 on both models and the chain fell through to `gpt-4o`, which is
+what the fallback exists for.)
 
 Where both forms exist, `better_of()` keeps the one with more pages, and on a
 tie prefers the digital original over the scan (OCR text is a lossy reading).
