@@ -1,4 +1,8 @@
 {
+  "env": {
+    "RAGFLOW_API_KEY": "ragflow-ATkhiZz6C8j545AMowk82RlHzV8WMovBO2QwSpNvS3c",
+    "RAGFLOW_API_SERVER": "https://ragflow.srv1231216.hstgr.cloud"
+  },
   "permissions": {
     "allow": [
       "Bash(git status*)",
