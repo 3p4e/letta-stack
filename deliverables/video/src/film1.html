@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+<meta charset="UTF-8">
+<title>Извршен брифинг</title>
+<style>
+@font-face{font-family:'Oswald';src:url('fonts/Oswald.ttf');font-weight:200 700;font-style:normal;}
+@font-face{font-family:'PlexSans';src:url('fonts/IBMPlexSans.ttf');font-weight:100 700;font-style:normal;}
+@font-face{font-family:'JBMono';src:url('fonts/JetBrainsMono.ttf');font-weight:100 800;font-style:normal;}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#04080f;}
+#bg{position:absolute;inset:0;}
+#stage{position:absolute;inset:0;}
+.scene{position:absolute;inset:0;opacity:0;will-change:opacity;}
+
+/* ── shared type ── */
+.eyebrow{font-family:'JBMono';font-size:19px;font-weight:600;letter-spacing:.34em;
+  text-transform:uppercase;color:#00d4ff;}
+.h1{font-family:'Oswald';font-weight:700;color:#eaf2ff;line-height:.94;
+  letter-spacing:.005em;text-transform:uppercase;}
+.h2{font-family:'Oswald';font-weight:600;font-size:62px;color:#eaf2ff;
+  letter-spacing:.02em;text-transform:uppercase;line-height:1;}
+.body{font-family:'PlexSans';font-weight:300;color:#9fc0e0;line-height:1.5;}
+.mono{font-family:'JBMono';}
+.rule{height:3px;background:linear-gradient(90deg,#0a84ff,#00d4ff 55%,rgba(0,212,255,0));border-radius:2px;}
+
+/* ── scene chrome ── */
+.chrome{position:absolute;left:120px;top:96px;}
+.chrome .rule{width:96px;margin-top:20px;}
+.ticker{position:absolute;left:120px;bottom:74px;font-family:'JBMono';font-size:16px;
+  letter-spacing:.22em;color:#2f5a86;text-transform:uppercase;}
+.tickerR{position:absolute;right:120px;bottom:74px;font-family:'JBMono';font-size:16px;
+  letter-spacing:.22em;color:#2f5a86;text-transform:uppercase;}
+
+.card{position:absolute;background:linear-gradient(160deg,rgba(19,40,66,.94),rgba(11,26,45,.94));
+  border:1px solid rgba(42,120,190,.34);border-radius:4px;}
+.cin{width:100%;height:100%;will-change:opacity,transform;}
+.card .k{font-family:'JBMono';font-size:15px;letter-spacing:.2em;text-transform:uppercase;}
+.card .v{font-family:'Oswald';font-weight:600;color:#eaf2ff;letter-spacing:.02em;}
+</style>
+</head>
+<body>
+<canvas id="bg" width="1920" height="1080"></canvas>
+<div id="stage"></div>
+<script>
+/* ═══════════════════════════════════════════════════════════
+   Deterministic film renderer.  Every visual is a pure
+   function of t (seconds).  No rAF, no CSS animation — the
+   capture harness calls render(t) then screenshots.
+   ═══════════════════════════════════════════════════════════ */
+const W=1920,H=1080;
+const C={bg:'#04080f',ink:'#eaf2ff',dim:'#9fc0e0',mute:'#2f5a86',
+         blue:'#0a84ff',cyan:'#00d4ff',teal:'#3ff0c4',amber:'#ffb020',red:'#ff5470'};
+
+/* ── easing / timing ── */
+const cl=(x,a,b)=>Math.max(a,Math.min(b,x));
+const P =(t,a,d)=>cl((t-a)/d,0,1);                       // linear progress
+const EO=x=>1-Math.pow(1-x,3);                            // easeOutCubic
+const EIO=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const EB=x=>{const c=1.70158+1;return 1+c*Math.pow(x-1,3)+1.70158*Math.pow(x-1,2);};
+
+/* reveal: returns {o, y} for a stagger-in element */
+function rise(t,at,dur=.85,dy=42){const p=EO(P(t,at,dur));return{o:p,y:(1-p)*dy};}
+function apply(el,r,extra=''){el.style.opacity=r.o;
+  el.style.transform=`translate3d(0,${r.y.toFixed(2)}px,0) ${extra}`;}
+
+/* ── seeded PRNG for the background field ── */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;
+  let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;
+  return((t^t>>>14)>>>0)/4294967296;};}
+
+const rnd=mulberry32(20260821);
+const NODES=[];
+for(let i=0;i<70;i++){
+  NODES.push({x:rnd()*W,y:rnd()*H,vx:(rnd()-.5)*7,vy:(rnd()-.5)*7,
+    r:i<8?4.2:1+rnd()*2.2,hub:i<8,
+    c:[C.blue,C.cyan,C.teal,'#2f5a86'][Math.floor(rnd()*4)],
+    a:.2+rnd()*.5, ph:rnd()*Math.PI*2});
+}
+const ctx=document.getElementById('bg').getContext('2d');
+
+function drawBG(t,intensity){
+  ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,H);
+  // horizon glow — slow breathing
+  const g=ctx.createRadialGradient(W*.5,H*1.02,60,W*.5,H*1.02,H*1.15);
+  const br=.10+.03*Math.sin(t*.35);
+  g.addColorStop(0,`rgba(10,132,255,${(br*intensity).toFixed(3)})`);
+  g.addColorStop(1,'rgba(10,132,255,0)');
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  // drifting document-node field
+  const pts=NODES.map(n=>({
+    x:((n.x+n.vx*t)%(W+160)+W+160)%(W+160)-80,
+    y:((n.y+n.vy*t)%(H+160)+H+160)%(H+160)-80,
+    r:n.r,c:n.c,hub:n.hub,
+    a:n.a*(.72+.28*Math.sin(t*.9+n.ph))}));
+  ctx.lineWidth=1;
+  for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){
+    const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.hypot(dx,dy);
+    if(d<178){ctx.strokeStyle=`rgba(24,110,190,${((1-d/178)*.20*intensity).toFixed(3)})`;
+      ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.stroke();}
+  }
+  for(const p of pts){
+    if(p.hub){ctx.beginPath();ctx.arc(p.x,p.y,p.r*4.2,0,7);
+      ctx.fillStyle=p.c+'14';ctx.fill();}
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,7);
+    ctx.globalAlpha=p.a*intensity;ctx.fillStyle=p.c;ctx.fill();ctx.globalAlpha=1;
+  }
+  // vignette
+  const v=ctx.createRadialGradient(W/2,H/2,H*.35,W/2,H/2,H*1.0);
+  v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,.62)');
+  ctx.fillStyle=v;ctx.fillRect(0,0,W,H);
+}
+
+/* ═══════════ helpers to build DOM ═══════════ */
+const stage=document.getElementById('stage');
+function mk(tag,cls,css,html,parent){
+  const e=document.createElement(tag);
+  if(cls)e.className=cls;
+  if(css)e.style.cssText=css;
+  if(html!=null)e.innerHTML=html;
+  (parent||stage).appendChild(e);return e;
+}
+function chrome(sc,label,idx,total){
+  const c=mk('div','chrome','',`<div class="eyebrow">${label}</div><div class="rule"></div>`,sc);
+  mk('div','ticker','',`Purely Plant GmbH · Контрола на квалитет`,sc);
+  mk('div','tickerR','',`${String(idx).padStart(2,'0')} / ${String(total).padStart(2,'0')}`,sc);
+  return c;
+}
+/* number formatting with Macedonian thousands separator */
+const fmt=n=>Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+
+/* A card whose empty frame is present from the first frame of the scene and
+   whose contents arrive on the narration beat — keeps the composition
+   balanced instead of leaving half the screen dead while the VO catches up. */
+function card(sc,css,inner,innerCss){
+  const e=mk('div','card',css,`<div class="cin" style="${innerCss||''}">${inner}</div>`,sc);
+  e.cin=e.firstElementChild;return e;
+}
+function ghost(e,t,at,dur=.8,dy=30){
+  const r=rise(t,at,dur,dy);
+  e.style.opacity=(.15+.85*r.o).toFixed(3);
+  e.cin.style.opacity=r.o.toFixed(3);
+  e.cin.style.transform=`translate3d(0,${r.y.toFixed(2)}px,0)`;
+  return r;
+}
+
+/* ═══════════ SCENES ═══════════ */
+const SC=[];
+function scene(id,build){SC.push({id,build});}
+
+/* ── 01 TITLE ───────────────────────────────────────────── */
+scene('title',sc=>{
+  const wrap=mk('div',null,'position:absolute;left:120px;top:236px;width:1400px;',null,sc);
+  const eb=mk('div','eyebrow','',`Purely Plant GmbH · Контрола на квалитет`,wrap);
+  const t1=mk('div','h1','font-size:196px;margin-top:26px;','RAGFLOW',wrap);
+  const rl=mk('div','rule','width:0px;height:5px;margin-top:8px;','',wrap);
+  const t2=mk('div','h2','font-size:53px;margin-top:30px;color:#9fc0e0;font-weight:400;',
+    'Платформа за интелигентна<br>обработка на документи',wrap);
+  const stats=[['480','Регулирани документи'],['11.088','Пребарливи сегменти'],
+               ['1.038','Потврдени параметри'],['€0','Трошок за лиценци']];
+  const els=stats.map((s,i)=>card(sc,
+    `left:${120+i*372}px;top:806px;width:340px;height:150px;`,
+    `<div class="v" style="font-size:64px;line-height:1;">${s[0]}</div>
+     <div class="k" style="color:#2f5a86;margin-top:14px;">${s[1]}</div>`,
+    'padding:26px 28px;'));
+  return (t,d)=>{
+    apply(eb,rise(t,.25));
+    apply(t1,rise(t,.55,1.1,60));
+    rl.style.width=(EO(P(t,1.15,.9))*470)+'px';rl.style.opacity=P(t,1.15,.3);
+    apply(t2,rise(t,7.6,1.0,34));
+    const beats=[.9,3.2,5.4,6.4];
+    els.forEach((e,i)=>{const r=ghost(e,t,beats[i],.75);
+      e.style.borderColor=`rgba(0,212,255,${(.16+.34*r.o).toFixed(3)})`;});
+  };
+});
+
+/* ── 02 PROBLEM ─────────────────────────────────────────── */
+scene('problem',sc=>{
+  chrome(sc,'Состојбата пред системот',2,8);
+  const h=mk('div','h1','position:absolute;left:120px;top:196px;font-size:96px;width:1500px;',
+    'Три отворени ризика',sc);
+  const items=[
+    ['01','Сертификатите како PDF на споделен диск','Без индекс, без метаподатоци, без контрола на пристап.',C.amber],
+    ['02','Преиздадените извештаи коегзистираат','Одлуки за квалитет донесени врз застарен документ.',C.red],
+    ['03','Прашање низ повеќе серии: 20+ минути','Рачно отворање датотека по датотека.',C.amber],
+    ['04','Анекс 11 — неусогласеност','Без ревизорска трага, без валидација, без контрола.',C.red]];
+  const els=items.map((it,i)=>card(sc,
+    `left:120px;top:${360+i*152}px;width:1680px;height:128px;`,
+    `<div class="mono" style="font-size:34px;font-weight:700;color:${it[3]};min-width:60px;">${it[0]}</div>
+     <div style="flex:1">
+       <div class="v" style="font-size:37px;">${it[1]}</div>
+       <div class="body" style="font-size:22px;margin-top:7px;color:#6d90b4;">${it[2]}</div>
+     </div>
+     <div style="width:5px;height:76px;background:${it[3]};border-radius:3px;opacity:.85;"></div>`,
+    'display:flex;align-items:center;gap:28px;padding:26px 34px;'));
+  return t=>{
+    apply(h,rise(t,.3,1.0,40));
+    const beats=[1.5,6.8,12.3,19.3];
+    els.forEach((e,i)=>ghost(e,t,beats[i],.8,34));
+  };
+});
+
+/* ── 03 ARCHITECTURE ────────────────────────────────────── */
+scene('arch',sc=>{
+  chrome(sc,'Архитектура · сопствен сервер KVM4',3,8);
+  const h=mk('div','h1','position:absolute;left:120px;top:196px;font-size:96px;','Пет компоненти',sc);
+  const nodes=[['RAGFlow','Оркестрација,<br>сегментација, API',C.cyan,'v0.26.4'],
+               ['Elasticsearch','Хибриден индекс:<br>текст + вектори',C.blue,'8.x'],
+               ['MinIO','Објектна меморија:<br>PDF и сегменти',C.blue,'S3'],
+               ['MySQL','Метаподатоци,<br>потекло, состојба',C.blue,'8.0'],
+               ['Redis','Редица на задачи,<br>кеш на сесии',C.blue,'7.x']];
+  const svg=mk('div',null,'position:absolute;left:0;top:0;width:1920px;height:1080px;',
+    `<svg width="1920" height="1080" id="archsvg"></svg>`,sc);
+  const s=svg.querySelector('svg');
+  const cx=[276,600,924,1248,1572],cy=560;
+  const lines=[];
+  for(let i=0;i<4;i++){
+    const l=document.createElementNS('http://www.w3.org/2000/svg','line');
+    l.setAttribute('x1',cx[i]+134);l.setAttribute('y1',cy);
+    l.setAttribute('x2',cx[i+1]-134);l.setAttribute('y2',cy);
+    l.setAttribute('stroke','#0a84ff');l.setAttribute('stroke-width','2');
+    l.setAttribute('stroke-dasharray','7 9');s.appendChild(l);lines.push(l);
+  }
+  const els=nodes.map((n,i)=>card(sc,
+    `left:${cx[i]-134}px;top:${cy-142}px;width:268px;height:284px;`,
+    `<div class="mono" style="font-size:13px;letter-spacing:.2em;color:#2f5a86;">${n[3]}</div>
+     <div class="v" style="font-size:39px;margin-top:16px;color:${n[2]};">${n[0]}</div>
+     <div style="width:44px;height:2px;background:${n[2]};margin:18px auto;opacity:.5;"></div>
+     <div class="body" style="font-size:21px;">${n[1]}</div>`,
+    'padding:30px 26px;text-align:center;'));
+  const foot=mk('div','body','position:absolute;left:120px;top:836px;width:1680px;font-size:31px;color:#9fc0e0;',
+    '<span style="color:#3ff0c4;font-weight:500;">Целосно отворен код.</span> Без зависност од производител, без лиценци, без извоз на податоци кон трето лице.',sc);
+  return t=>{
+    apply(h,rise(t,.3,1.0,40));
+    const beats=[4.6,6.6,8.8,10.8,12.8];
+    els.forEach((e,i)=>{const r=ghost(e,t,beats[i],.7,36);
+      e.style.borderColor=`rgba(0,212,255,${(.14+(i===0?.4:.2)*r.o).toFixed(3)})`;});
+    lines.forEach((l,i)=>{l.style.opacity=(.55*P(t,beats[i+1]-.25,.6)).toFixed(3);
+      l.setAttribute('stroke-dashoffset',(-t*22).toFixed(1));});
+    apply(foot,rise(t,15.0,.9,26));
+  };
+});
+
+/* ── 04 PIPELINE ────────────────────────────────────────── */
+scene('pipeline',sc=>{
+  chrome(sc,'Патека на обработка',4,8);
+  const h=mk('div','h1','position:absolute;left:120px;top:196px;font-size:96px;','Пет чекори',sc);
+  const steps=[['Прием','SHA-256 отпечаток на содржината'],
+               ['OCR','Каскада од три модели'],
+               ['Идентитет','Лаб. број + датум + страници'],
+               ['Вектори','voyage-3-large'],
+               ['Пребарување','Природен јазик · API · агенти']];
+  const x0=126,gap=346,wid=312,yy=486;
+  const els=steps.map((s,i)=>card(sc,
+    `left:${x0+i*gap}px;top:${yy}px;width:${wid}px;height:246px;`,
+    `<div class="mono" style="font-size:15px;letter-spacing:.2em;color:#0a84ff;">0${i+1}</div>
+     <div class="v" style="font-size:41px;margin-top:14px;">${s[0]}</div>
+     <div class="body" style="font-size:20px;margin-top:14px;">${s[1]}</div>`,
+    'padding:28px 26px;'));
+  const arrows=[];
+  for(let i=0;i<4;i++)arrows.push(mk('div','mono',
+    `position:absolute;left:${x0+i*gap+wid+4}px;top:${yy+100}px;width:34px;
+     font-size:34px;color:#0a84ff;text-align:center;`,'›',sc));
+  const track=mk('div',null,
+    `position:absolute;left:${x0}px;top:${yy+286}px;width:${gap*4+wid}px;height:2px;
+     background:rgba(42,120,190,.28);`,'',sc);
+  const tok=mk('div',null,
+    `position:absolute;left:0;top:${yy+272}px;width:30px;height:30px;border-radius:50%;
+     background:#3ff0c4;box-shadow:0 0 34px 10px rgba(63,240,196,.5);`,'',sc);
+  const note=mk('div','body','position:absolute;left:120px;top:838px;width:1680px;font-size:29px;',
+    'Преиздаден извештај <span style="color:#3ff0c4;font-weight:500;">го заменува</span> претходникот — атомски, во кодот, без човечка одлука.',sc);
+  return t=>{
+    apply(h,rise(t,.3,1.0,40));
+    const beats=[3.6,7.2,13.2,20.6,22.8];
+    els.forEach((e,i)=>ghost(e,t,beats[i],.7,34));
+    arrows.forEach((a,i)=>{a.style.opacity=(.75*P(t,beats[i+1]-.3,.5)).toFixed(3);});
+    track.style.opacity=P(t,3.6,.8);
+    const tp=P(t,23.6,3.0);
+    tok.style.opacity=(tp>0&&tp<1?1:tp>=1?0:0).toFixed(2);
+    tok.style.left=(x0+EIO(tp)*(gap*4+wid-30))+'px';
+    apply(note,rise(t,24.0,.9,26));
+  };
+});
+
+/* ── 05 OCR CASCADE ─────────────────────────────────────── */
+scene('ocr',sc=>{
+  chrome(sc,'OCR · Каскада на вештачка интелигенција',5,8);
+  const h=mk('div','h1','position:absolute;left:120px;top:196px;font-size:96px;','Три модели',sc);
+  const rows=[['ПРВ','kimi-k2.6','Moonshot · долг контекст, мултимодален',C.cyan],
+              ['РЕЗЕРВА 1','moonshot-v1-128k-vision','128k прозорец · густи научни табели',C.blue],
+              ['РЕЗЕРВА 2','gpt-4o','OpenAI · граничен случај, нула изгубени',C.teal]];
+  const els=rows.map((r,i)=>card(sc,
+    `left:200px;top:${372+i*164}px;width:1520px;height:132px;`,
+    `<div class="mono" style="font-size:15px;letter-spacing:.18em;color:${r[3]};
+        border:1px solid ${r[3]}66;border-radius:3px;padding:9px 15px;min-width:142px;text-align:center;">${r[0]}</div>
+     <div class="mono" style="font-size:36px;font-weight:600;color:#eaf2ff;min-width:520px;">${r[1]}</div>
+     <div class="body" style="font-size:23px;">${r[2]}</div>`,
+    'padding:0 40px;display:flex;align-items:center;gap:38px;'));
+  const fall=[0,1].map(i=>mk('div','mono',
+    `position:absolute;left:0;right:0;top:${372+i*164+136}px;text-align:center;
+     font-size:19px;color:#2f5a86;letter-spacing:.16em;`,'↓ ПРИ НЕУСПЕХ',sc));
+  const tess=mk('div',null,'position:absolute;left:200px;top:884px;width:1520px;text-align:center;',
+    `<span class="mono" style="font-size:38px;color:#ff5470;letter-spacing:.06em;
+       text-decoration:line-through;text-decoration-thickness:3px;">Tesseract</span>
+     <span class="mono" style="font-size:26px;color:#6d90b4;letter-spacing:.2em;margin-left:26px;">НЕ СЕ КОРИСТИ · НИКОГАШ</span>`,sc);
+  return t=>{
+    apply(h,rise(t,.3,1.0,40));
+    const beats=[4.6,7.5,11.2];
+    els.forEach((e,i)=>{
+      const r=ghost(e,t,beats[i],.7);
+      // active glow while its line is narrated
+      const on=P(t,beats[i],.5)-P(t,beats[i]+3.1,.7);
+      e.style.borderColor=`rgba(0,212,255,${(.14+.5*cl(on,0,1)).toFixed(3)})`;
+      e.style.boxShadow=`0 0 ${(46*cl(on,0,1)).toFixed(1)}px rgba(0,212,255,${(.20*cl(on,0,1)).toFixed(3)})`;
+    });
+    fall.forEach((f,i)=>{f.style.opacity=(.9*P(t,beats[i+1]-.4,.4)).toFixed(2);});
+    apply(tess,rise(t,14.7,.7,22));
+  };
+});
+
+/* ── 06 DATA INTEGRITY ──────────────────────────────────── */
+scene('integrity',sc=>{
+  chrome(sc,'Интегритет на податоци',6,8);
+  const h=mk('div','h1','position:absolute;left:120px;top:196px;font-size:96px;','Заменува, не додава',sc);
+  const oldc=card(sc,'left:196px;top:396px;width:560px;height:212px;',
+    `<div class="mono" style="font-size:15px;letter-spacing:.2em;color:#ff5470;">ПРЕТХОДНА ВЕРЗИЈА</div>
+     <div class="mono" style="font-size:33px;color:#eaf2ff;margin-top:20px;">700094-12 · 04.2026</div>
+     <div class="body" style="font-size:21px;margin-top:14px;">Избришан од индексот и од објектната меморија пред запис.</div>`,
+    'padding:30px 34px;');
+  const arrow=mk('div','mono','position:absolute;left:800px;top:470px;width:320px;text-align:center;font-size:58px;color:#0a84ff;','⟶',sc);
+  const newc=card(sc,'left:1164px;top:396px;width:560px;height:212px;',
+    `<div class="mono" style="font-size:15px;letter-spacing:.2em;color:#3ff0c4;">ПРЕИЗДАДЕНА ВЕРЗИЈА</div>
+     <div class="mono" style="font-size:33px;color:#eaf2ff;margin-top:20px;">700094-12 · 07.2026</div>
+     <div class="body" style="font-size:21px;margin-top:14px;">Единствена жива верзија. Историјата е во ревизорската трага.</div>`,
+    'padding:30px 34px;');
+  const badge=mk('div',null,'position:absolute;left:0;right:0;top:664px;text-align:center;',
+    `<span class="mono" style="font-size:25px;letter-spacing:.22em;color:#3ff0c4;
+      border:1px solid rgba(63,240,196,.42);border-radius:3px;padding:15px 34px;">
+      ВГРАДЕНО ВО КОДОТ — НЕ Е РАБОТНА НАВИКА</span>`,sc);
+  const code=mk('div','mono','position:absolute;left:196px;top:766px;width:1528px;'+
+    'background:rgba(0,0,0,.42);border:1px solid rgba(42,120,190,.30);border-radius:4px;'+
+    'padding:26px 34px;font-size:24px;color:#3ff0c4;line-height:1.62;white-space:pre;',
+    'delete(old_doc_id)          # индексот и меморијата се чистат прво\n'+
+    'new_id = upload(new_pdf)\nassert new_id is not None   # без тивок неуспех — извозот запира',sc);
+  return t=>{
+    apply(h,rise(t,.3,1.0,40));
+    const ro=ghost(oldc,t,.6);
+    arrow.style.opacity=(.85*P(t,4.4,.6)).toFixed(3);
+    ghost(newc,t,4.6);
+    // the superseded record visibly loses its colour as the new one lands
+    const sup=P(t,5.2,1.2);
+    oldc.cin.style.filter=`grayscale(${(sup*.9).toFixed(2)})`;
+    oldc.cin.style.opacity=(ro.o*(1-.5*sup)).toFixed(3);
+    oldc.style.borderColor=`rgba(255,84,112,${(.34*(1-.6*sup)).toFixed(3)})`;
+    newc.style.borderColor=`rgba(63,240,196,${(.16+.4*P(t,4.6,.8)).toFixed(3)})`;
+    apply(badge,rise(t,7.0,.8,24));
+    apply(code,rise(t,10.7,.9,26));
+  };
+});
+
+/* ── 07 NUMBERS ─────────────────────────────────────────── */
+scene('numbers',sc=>{
+  chrome(sc,'Состојба · август 2026',7,8);
+  const h=mk('div','h1','position:absolute;left:120px;top:196px;font-size:96px;','Мерливо, не ветено',sc);
+  const data=[[389,'Документи во главната база','eCOA_INGEST'],
+              [385,'Целосно пребарливи','98,97 % достапност'],
+              [1038,'Потврдени параметри','низ 49 серии']];
+  const els=data.map((d,i)=>{
+    const e=card(sc,`left:${146+i*546}px;top:404px;width:502px;height:352px;`,
+      `<div class="v n" style="font-size:150px;line-height:1;color:#00d4ff;">0</div>
+       <div class="k" style="color:#eaf2ff;margin-top:26px;font-size:21px;">${d[1]}</div>
+       <div class="body mono" style="font-size:18px;margin-top:14px;color:#2f5a86;letter-spacing:.1em;">${d[2]}</div>`,
+      'padding:44px 40px;text-align:center;');
+    return{e,n:e.querySelector('.n'),target:d[0]};});
+  return t=>{
+    apply(h,rise(t,.3,1.0,40));
+    const beats=[.5,4.6,8.1];
+    els.forEach((o,i)=>{ghost(o.e,t,beats[i],.7,32);
+      o.n.textContent=fmt(EO(P(t,beats[i]+.15,1.6))*o.target);});
+  };
+});
+
+/* ── 08 VERDICT ─────────────────────────────────────────── */
+scene('verdict',sc=>{
+  const wrap=mk('div',null,'position:absolute;left:120px;top:300px;width:1680px;',null,sc);
+  const l1=mk('div','h1','font-size:142px;','Ова не е прототип.',wrap);
+  const rl=mk('div','rule','width:0;height:5px;margin-top:34px;','',wrap);
+  const l2=mk('div','h2','font-size:66px;margin-top:40px;color:#9fc0e0;font-weight:400;line-height:1.24;',
+    'Жива, продукциска база на знаење<br>за контрола на квалитет.',wrap);
+  const l3=mk('div',null,'margin-top:54px;',
+    `<span class="mono" style="font-size:31px;letter-spacing:.16em;color:#3ff0c4;
+      border-left:4px solid #3ff0c4;padding-left:26px;">ПОДГОТВЕНА Е ЗА ПРАШАЊЕ ОД ИНСПЕКТОР.</span>`,wrap);
+  const foot=mk('div','mono','position:absolute;left:120px;bottom:96px;font-size:18px;'+
+    'letter-spacing:.24em;color:#2f5a86;','PURELY PLANT GMBH · RAGFLOW v0.26.4 · KVM4 · EU GMP ANNEX 11',sc);
+  return t=>{
+    apply(l1,rise(t,.5,1.1,50));
+    rl.style.width=(EO(P(t,1.5,1.0))*540)+'px';rl.style.opacity=P(t,1.5,.3);
+    apply(l2,rise(t,2.4,1.0,36));
+    apply(l3,rise(t,5.9,.9,28));
+    apply(foot,rise(t,6.6,.9,20));
+  };
+});
+
+/* ═══════════ timeline wiring ═══════════ */
+let TL=null,DRAW=[];
+window.setTimeline=function(tl){
+  TL=tl;
+  DRAW=SC.map(s=>{
+    const el=mk('div','scene','',null);
+    return{el,fn:s.build(el)};
+  });
+  return SC.length;
+};
+window.render=function(t){
+  const FADE=.55;
+  let intensity=.55;
+  TL.scenes.forEach((s,i)=>{
+    const a=s.scene_start,b=a+s.scene_dur,d=DRAW[i];
+    if(t<a-FADE||t>b+FADE){d.el.style.opacity=0;d.el.style.display='none';return;}
+    d.el.style.display='block';
+    const fin=P(t,a,FADE), fout=1-P(t,b-FADE*.7,FADE);
+    const o=Math.min(fin,fout);
+    d.el.style.opacity=o.toFixed(3);
+    if(o>0)d.fn(t-a,s.scene_dur);
+    if(o>.5)intensity=.55+.45*Math.min(1,(t-a)/1.5);
+  });
+  drawBG(t,intensity);
+};
+window.fontsReady=()=>document.fonts.ready;
+</script>
+</body>
+</html>
