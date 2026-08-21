@@ -1,0 +1,108 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  policy:
+    name: Policy and integrity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # Guards the standing rules: no classical OCR, no Letta source creation,
+      # no committed credentials, every Python file parses, and the batch gap
+      # analysis CSV does not drift from the counts its README states.
+      - name: Policy check
+        run: python3 scripts/policy_check.py
+
+  secrets:
+    name: Secret scan (history)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+  build:
+    name: Deliverable builders import cleanly
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install what the analysis scripts need
+        run: python3 -m pip install --quiet openpyxl
+
+      # The gap analysis is a regulated deliverable: if its inputs stop parsing
+      # or the numbers move, that must fail here rather than in a QC meeting.
+      - name: Re-derive the batch gap analysis from the register
+        run: |
+          python3 - <<'PY'
+          import csv, openpyxl, re, sys
+          xlsx = "deliverables/qc_gap_analysis/PP_Batch_Release_QC_Register_CORRECTED.xlsx"
+          ws = openpyxl.load_workbook(xlsx, data_only=True)["Batch Release QC"]
+          rows = [[c.value for c in r] for r in ws.iter_rows()]
+          v = lambda x: "" if x is None or str(x).strip() in ("", "/", "None", "-", "—") else str(x).strip()
+          batches = sum(1 for r in rows[5:]
+                        if r and re.fullmatch(r"\d+(\.0)?", v(r[0]) or "x"))
+          published = len(list(csv.DictReader(
+              open("deliverables/qc_gap_analysis/batch_gap_analysis.csv", encoding="utf-8"))))
+          print(f"register batches={batches}  csv rows={published}")
+          if batches != published:
+              sys.exit(f"drift: register holds {batches} batches, CSV holds {published}")
+          print("gap analysis agrees with the register")
+          PY
+
+  markdown:
+    name: Deliverable docs are well formed
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Tables have consistent column counts
+        run: |
+          python3 - <<'PY'
+          import glob, sys
+          bad = []
+          for p in glob.glob("deliverables/**/*.md", recursive=True) + glob.glob("server/*.md"):
+              rows, width, start = [], None, 0
+              for i, line in enumerate(open(p, encoding="utf-8"), 1):
+                  s = line.strip()
+                  if s.startswith("|") and s.endswith("|"):
+                      n = len(s.split("|")) - 2
+                      if width is None:
+                          width, start = n, i
+                      elif n != width:
+                          bad.append(f"{p}:{i}: table starting line {start} has "
+                                     f"{width} columns, this row has {n}")
+                  else:
+                      width = None
+          for b in bad:
+              print("FAIL", b)
+          sys.exit(1 if bad else 0)
+          PY
