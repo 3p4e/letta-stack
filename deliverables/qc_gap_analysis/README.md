@@ -179,3 +179,10 @@ register found three discrepancies and no more:
 - `batch_gap_analysis.csv` — one row per production batch: certificate count,
   per-panel coverage, and the issuance flags (`needs_CoQ`,
   `needs_CoQ_reissue`, `iCoA_scope`).
+
+  `in_register` records whether the batch has a row in
+  `PP_Batch_Release_QC_Register_CORRECTED.xlsx`. It is `N` only for `GG1024`,
+  which is a genuine batch the register omits. CI reconciles the two: every
+  register batch must appear here, and any row marked `N` must be explained in
+  this README — so an omission from the register stays visible rather than being
+  quietly absorbed into the totals.

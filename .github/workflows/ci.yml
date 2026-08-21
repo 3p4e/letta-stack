@@ -68,22 +68,44 @@ jobs:
 
       # The gap analysis is a regulated deliverable: if its inputs stop parsing
       # or the numbers move, that must fail here rather than in a QC meeting.
-      - name: Re-derive the batch gap analysis from the register
+      # The gap analysis is a regulated deliverable. Every batch the register
+      # carries must appear in the CSV; a CSV row the register does NOT carry is
+      # allowed only when it is flagged in_register=N and named in the README,
+      # so an omission from the register stays visible instead of being absorbed.
+      - name: Gap analysis reconciles with the register
         run: |
           python3 - <<'PY'
           import csv, openpyxl, re, sys
-          xlsx = "deliverables/qc_gap_analysis/PP_Batch_Release_QC_Register_CORRECTED.xlsx"
-          ws = openpyxl.load_workbook(xlsx, data_only=True)["Batch Release QC"]
-          rows = [[c.value for c in r] for r in ws.iter_rows()]
+          base = "deliverables/qc_gap_analysis/"
+          ws = openpyxl.load_workbook(base + "PP_Batch_Release_QC_Register_CORRECTED.xlsx",
+                                      data_only=True)["Batch Release QC"]
+          R = [[c.value for c in r] for r in ws.iter_rows()]
           v = lambda x: "" if x is None or str(x).strip() in ("", "/", "None", "-", "—") else str(x).strip()
-          batches = sum(1 for r in rows[5:]
-                        if r and re.fullmatch(r"\d+(\.0)?", v(r[0]) or "x"))
-          published = len(list(csv.DictReader(
-              open("deliverables/qc_gap_analysis/batch_gap_analysis.csv", encoding="utf-8"))))
-          print(f"register batches={batches}  csv rows={published}")
-          if batches != published:
-              sys.exit(f"drift: register holds {batches} batches, CSV holds {published}")
-          print("gap analysis agrees with the register")
+          reg = {v(r[1]) for r in R[5:] if r and re.fullmatch(r"\d+(\.0)?", v(r[0]) or "x")}
+          rows = list(csv.DictReader(open(base + "batch_gap_analysis.csv", encoding="utf-8")))
+          readme = open(base + "README.md", encoding="utf-8").read()
+
+          csv_in  = {r["batch"] for r in rows if r["in_register"] == "Y"}
+          csv_out = [r["batch"] for r in rows if r["in_register"] != "Y"]
+          bad = []
+
+          missing = reg - csv_in
+          if missing:
+              bad.append(f"register batches absent from the CSV: {sorted(missing)}")
+          mislabelled = csv_in - reg
+          if mislabelled:
+              bad.append(f"flagged in_register=Y but not in the register: {sorted(mislabelled)}")
+          for b in csv_out:
+              if b in reg:
+                  bad.append(f"{b} is in the register but flagged in_register=N")
+              elif b not in readme:
+                  bad.append(f"{b} is not in the register and not explained in README.md")
+
+          print(f"register={len(reg)}  csv in_register=Y {len(csv_in)}  "
+                f"documented exceptions {len(csv_out)} {csv_out}")
+          for b in bad:
+              print("FAIL", b)
+          sys.exit(1 if bad else 0)
           PY
 
   markdown:
