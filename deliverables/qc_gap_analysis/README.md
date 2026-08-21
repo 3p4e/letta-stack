@@ -1,18 +1,28 @@
 # Batch gap analysis — CoQ and internal CoA issuance counts
 
-Derived **from the live RAGFlow `eCOA_INGEST` dataset on KVM4**, August 2026.
-Every number is recomputed from the ingested certificates, not carried over
-from an earlier working file.
+Derived from **`PP_Batch_Release_QC_Register_CORRECTED.xlsx`** (owner-supplied,
+modified 18.08.2026), parsed cell-by-cell with `openpyxl` — not from OCR.
+
+> **Supersedes the first pass.** An earlier version of this analysis read the
+> register through RAGFlow's OCR'd chunks of `PP_Batch_Release_QC_Register.xlsx`
+> — the *uncorrected* file — and inferred coverage from certificate type rather
+> than from cell values. That understated coverage badly: it reported 238
+> certificates and 11 fully-covered batches against the true 284 and 43. The
+> batch count (80), the reissue count (21) and the internal-CoA split (68 / 12)
+> were unaffected.
 
 ## Headline counts
 
 | Question | Answer |
 |---|---|
 | Production batches on file | **80** |
+| Certificates on file | **284** |
 | Certificates of Quality to issue (one per batch) | **80** |
 | CoQ **reissues** — Farmahem 197-series (cannabinoids + mycotoxins) | **21** |
 | Batches needing the **full** internal CoA panel | **68** |
 | Batches needing **Identification C only** | **12** |
+| Batches complete on all six outsourced panels | **43** |
+| Batches with **no** micro / metals / mycotoxin result | **35** |
 
 ## Parameter model
 
@@ -69,12 +79,12 @@ assay.
 
 | Parameter | Tested | Not tested |
 |---|---:|---:|
-| Cannabinoids (THC / CBD / CBN) | 76 | 4 |
-| Loss on drying | 58 | 22 |
-| Microbiology | 37 | 43 |
-| Heavy metals | 49 | 31 |
-| Pesticides | 43 | 37 |
-| Mycotoxins | 22 | 58 |
+| Cannabinoids (THC / CBD / CBN) | 80 | 0 |
+| Loss on drying | 71 | 9 |
+| Microbiology | 45 | 35 |
+| Heavy metals | 45 | 35 |
+| Pesticides | 45 | 35 |
+| Mycotoxins | 52 | 28 |
 | Identification A / appearance (macroscopy) | 12 | 68 |
 | Identification B (microscopy) | 12 | 68 |
 | Foreign matter (2.8.2) | 12 | 68 |
@@ -95,26 +105,44 @@ need an internal CoA. If Identification C must be stated per batch, all 80 do.
 
 | Institution | Certificates |
 |---|---:|
-| IPH — Institute of Public Health | 84 |
-| UKIM Faculty of Pharmacy — CNP | 74 |
-| Farmahem | 63 |
-| Purely Plant GmbH (in-house) | 16 |
+| UKIM Faculty of Pharmacy — CNP | 62 |
+| IPH — Institute of Public Health | 43 |
+| Farmahem | 30 |
+| Purely Plant GmbH (in-house) | 15 |
 | State Phytosanitary Laboratory | 1 |
-| **Total** | **238** |
+| unattributed in register | 18 |
+
+## Cohorts — outsourced coverage
+
+| Batches | State | Range |
+|---:|---|---|
+| **43** | complete on all six panels | #1–51 |
+| **28** | cannabinoids only — micro, metals, pesticides, mycotoxins never run | #42–71 |
+| **7** | missing loss on drying, micro, metals, pesticides | #72–78 |
+| **2** | missing loss on drying only | #79–80 |
+
+The 35 batches with no microbiology, heavy-metal or mycotoxin result **cannot be
+closed by an internal certificate** — they require samples sent to a laboratory.
+That is a separate problem from the identification gap.
 
 ## Method
 
-1. All 389 documents and 9 302 chunks pulled from `eCOA_INGEST` via the
-   RAGFlow API.
-2. Documents classified cannabis vs water by analytical-method markers
-   (`ISO 9308 / 6222 / 7899 / 7027 / 10523` → municipal water; cannabinoid /
-   mycotoxin / Ph. Eur. markers → cannabis): **134 cannabis, 243 water,
-   2 registers, 4 unreadable**.
-3. `PP_Batch_Release_QC_Register.xlsx` — itself ingested into the dataset —
-   parsed as the authoritative batch list: one numbered row per production
-   batch, one sub-row per certificate.
-4. Each of the 238 certificates classified by code pattern and issuing
-   institution, then rolled up to per-batch coverage.
+1. `PP_Batch_Release_QC_Register_CORRECTED.xlsx` parsed with `openpyxl`:
+   header on row 4, specification limits on row 5, data from row 6. A row whose
+   first cell holds an integer starts a batch; following rows are that batch's
+   further certificates.
+2. A panel counts as tested when **any** of its columns holds a real value for
+   that batch — blank, `/`, `None`, `-` and `—` all read as absent.
+   Cannabinoids = THC/CBD/CBN; micro = TAMC, TYMC, bile-tolerant GNB,
+   Salmonella, E. coli; mycotoxins = aflatoxins Σ, aflatoxin B₁, ochratoxin A;
+   metals = Pb, Cd, As, Hg.
+3. Identification and foreign matter are **not columns in the register** — that
+   coverage was established from the certificates themselves in `eCOA_INGEST`
+   (389 documents, 9 302 chunks pulled via the RAGFlow API).
+4. Cross-check: the 12 CNP Ph. Eur. certificates found in RAGFlow
+   (ППК26110–26119, 26127, 26128) map to exactly batches #60–71 in the
+   register, and the 21 batches carrying a 197-series certificate agree between
+   both sources.
 
 Note on term matching: CNP writes **`Макроскопија`** / **`Страни материи`**.
 Searching for the adjectival stems (`макроскопск`, `туѓи примеси`) returns
