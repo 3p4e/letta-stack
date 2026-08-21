@@ -33,6 +33,11 @@ jobs:
   secrets:
     name: Secret scan (history)
     runs-on: ubuntu-latest
+    # gitleaks-action lists the PR's commits to scan just that range, which
+    # needs pull-requests:read on top of the workflow-wide contents:read.
+    permissions:
+      contents: read
+      pull-requests: read
     steps:
       - uses: actions/checkout@v4
         with:
