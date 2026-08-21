@@ -15,11 +15,11 @@ modified 18.08.2026), parsed cell-by-cell with `openpyxl` — not from OCR.
 
 | Question | Answer |
 |---|---|
-| Production batches on file | **80** |
+| Production batches on file | **81** |
 | Certificates on file | **284** |
-| Certificates of Quality to issue (one per batch) | **80** |
+| Certificates of Quality to issue (one per batch) | **81** |
 | CoQ **reissues** — Farmahem 197-series (cannabinoids + mycotoxins) | **21** |
-| Batches needing the **full** internal CoA panel | **68** |
+| Batches needing the **full** internal CoA panel | **69** |
 | Batches needing **Identification C only** | **12** |
 | Batches complete on all six outsourced panels | **43** |
 | Batches with **no** micro / metals / mycotoxin result | **35** |
@@ -79,27 +79,27 @@ assay.
 
 | Parameter | Tested | Not tested |
 |---|---:|---:|
-| Cannabinoids (THC / CBD / CBN) | 80 | 0 |
-| Loss on drying | 71 | 9 |
-| Microbiology | 45 | 35 |
-| Heavy metals | 45 | 35 |
-| Pesticides | 45 | 35 |
-| Mycotoxins | 52 | 28 |
-| Identification A / appearance (macroscopy) | 12 | 68 |
-| Identification B (microscopy) | 12 | 68 |
-| Foreign matter (2.8.2) | 12 | 68 |
-| **Identification C (TLC)** | **0** | **80** |
+| Cannabinoids (THC / CBD / CBN) | 81 | 0 |
+| Loss on drying | 71 | 10 |
+| Microbiology | 46 | 35 |
+| Heavy metals | 46 | 35 |
+| Pesticides | 46 | 35 |
+| Mycotoxins | 53 | 28 |
+| Identification A / appearance (macroscopy) | 12 | 69 |
+| Identification B (microscopy) | 12 | 69 |
+| Foreign matter (2.8.2) | 12 | 69 |
+| **Identification C (TLC)** | **0** | **81** |
 
 ## Internal CoA issuance
 
 | Scope | Batches |
 |---|---:|
-| Full panel — Identification A/B, Identification C, foreign matter | **68** |
+| Full panel — Identification A/B, Identification C, foreign matter | **69** |
 | Identification C only (already hold a CNP Ph. Eur. certificate) | **12** |
 
-Whether this is **68** or **80** documents is a QC decision: if Identification C
-is discharged by a single risk-analysis annex citing the HPLC assay, only the 68
-need an internal CoA. If Identification C must be stated per batch, all 80 do.
+Whether this is **69** or **81** documents is a QC decision: if Identification C
+is discharged by a single risk-analysis annex citing the HPLC assay, only the 69
+need an internal CoA. If Identification C must be stated per batch, all 81 do.
 
 ## Certificates on file, by issuing institution
 
@@ -149,13 +149,30 @@ Searching for the adjectival stems (`макроскопск`, `туѓи прим
 nothing and produces a false "never tested" result. The scan here matches the
 nominal forms.
 
-## Open item
+## GG1024 — a row missing from the register
 
-`GG1024.pdf` declares `Batch No: GG1024`, but the register carries no row under
-that exact code — only `GG1024_01` and `GG1024_02`. `HPA1024` and `OPM1024` do
-have their own rows (#79, #80). Either `GG1024` is a missing 81st row or it is
-the parent of the two sub-lots. The counts above treat it as **not** a separate
-batch; ruling the other way moves every total by one.
+`GG1024` is a genuine early production batch, confirmed by the owner. **The
+register has no row for it**, although the two other batches of the same vintage,
+`HPA1024` and `OPM1024`, do (#79, #80). It is carried here as **#81**.
+
+It is not a stray document. `GG1024.pdf` (23.04.2025) is a complete Purely Plant
+in-house release certificate covering Appearance (visual), Identification (HPLC
+retention time, DAB), Foreign matter (< 2.0 %, Ph. Eur. 2.8.2), Assay,
+Microbiology, Heavy metals, Pesticides and Aflatoxins. Only loss on drying is
+absent.
+
+**The register is therefore incomplete, and that is the finding.** Every count in
+this document is drawn from the register, so a batch missing from it is a batch
+missing from every downstream number until corrected.
+
+A sweep of all batch codes declared inside the ingested certificates against the
+register found three discrepancies and no more:
+
+| Declared in a certificate | Verdict |
+|---|---|
+| `GG1024` | **genuine batch, row missing** — added as #81 |
+| `FB012601/1` (ППК26067) | register holds `FB012601` (#53) without the `/1`. Elsewhere `/1` and `/2` sub-lots get their own rows (`CJ052501-1`, `CJ062501-2`), so this is either a sub-lot with no row or a notation inconsistency. **Needs a QC ruling.** |
+| `MB0824` | parsing artifact — the certificate reads `серија: MB0824A104`, an OCR reading of `MB0824_04` (#6). Not a batch. |
 
 ## Files
 

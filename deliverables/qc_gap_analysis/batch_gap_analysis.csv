@@ -79,3 +79,4 @@ no,batch,p_number,strain,certificates,cannabinoids,loss_on_drying,microbiology,h
 78,P060402,P060402,GorillaGlue,3,Y,N,N,N,N,Y,N,N,N,N,lod;micro;metals;pesticides,Y,Y,Y,full panel (IdentA/B + IdentC + foreign matter)
 79,HPA1024,,HighProAmnesia,3,Y,N,Y,Y,Y,Y,N,N,N,N,lod,Y,Y,Y,full panel (IdentA/B + IdentC + foreign matter)
 80,OPM1024,,OrangePunchMimosa,3,Y,N,Y,Y,Y,Y,N,N,N,N,lod,Y,Y,Y,full panel (IdentA/B + IdentC + foreign matter)
+81,GG1024,,Gorilla Glue,1,Y,N,Y,Y,Y,Y,N,N,N,N,lod,N,Y,N,full panel (IdentA/B + IdentC + foreign matter)
