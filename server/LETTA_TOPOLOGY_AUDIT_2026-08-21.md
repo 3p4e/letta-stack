@@ -7,22 +7,43 @@ deleted in producing this document.**
 
 | Stack | Compose dir | Agents | Sources | Exposure | Verdict |
 |---|---|---:|---:|---|---|
-| **`letta` + `letta-postgres`** | `/opt/stacks/letta` | **66** | 0 | via `letta-mcp-rust` | **canonical — keep** |
-| `letta-6ou3-letta-1` + `letta-6ou3-db-1` | `/docker/letta-6ou3` — **directory does not exist** | 8 | 0 | **published on host :32770** | **orphan — unmanageable** |
+| `letta` + `letta-postgres` | `/opt/stacks/letta` | 66 | 0 | **published :8283** | **OLD — to retire** |
+| **`letta-6ou3-letta-1` + `letta-6ou3-db-1`** | `/opt/ai-stack/letta-6ou3-image-override.yml` | 8 | 0 | published :32770 | **NEW letta-code — canonical** |
 | `wwf-letta` + `wwf-letta-db` | `/opt/stacks/wwf_letta` | 20 | **4** | internal only | GrowFlow line — owner decision |
 | Letta Cloud (`api.letta.com`) | — | 3 | n/a | SaaS | `Letta Code`, `RAG`, `Memo` |
 
-The MCP server (`letta-mcp-rust`) resolves `LETTA_BASE_URL=http://letta:8283`,
-so every Letta operation performed through this session has been against the
-**`letta`** stack — not `letta-6ou3`, and not `wwf-letta`.
+**Correction to an earlier reading of this estate:** `letta` (created 04.06.2026,
+published on :8283) is the OLD deployment. `letta-6ou3` (created 16.08.2026,
+published on :32770) is the NEW letta-code deployment and is canonical going
+forward. Confirmed by the owner.
 
-## Finding 1 — `letta-6ou3` is a running orphan, and it is exposed
+The MCP server (`letta-mcp-rust`) resolves `LETTA_BASE_URL=http://letta:8283` —
+it is still bound to the **OLD** stack. Every Letta operation performed through
+this session therefore ran against the deployment being retired.
 
-Its compose project directory `/docker/letta-6ou3` no longer exists, so the
-stack cannot be stopped, updated or inspected with `docker compose`. It is
-nevertheless **running and publishing port 8283 on host port 32770** with
-8 agents inside. This is the single clearest "old remnant with a loose end":
-an unmanaged, network-exposed Letta that nobody is maintaining.
+## Finding 1 — the cut-over to letta-code was started and never finished
+
+The new deployment is real and working, but only one consumer was moved to it.
+Three are still wired to the old stack:
+
+| Consumer | `LETTA_BASE_URL` | State |
+|---|---|---|
+| `wwf-docengine` | `http://letta-6ou3-letta-1:8283` | **migrated** |
+| `letta-mcp-rust` | `http://letta:8283` | **still on old** |
+| `wwf-scheduler` | `http://letta:8283` | **still on old** |
+| `weekly_weed_flow-backend-1` | `http://letta:8283` | **still on old** |
+
+Agent migration is likewise partial: the 8 `gf_*` agents were recreated on the
+new stack on 17.08.2026, but **58 of the 66 agents exist only on the old one**.
+
+`letta-6ou3`'s compose label points at `/docker/letta-6ou3`, which does not
+exist — the stack is actually defined by
+`/opt/ai-stack/letta-6ou3-image-override.yml`. The stale label should be
+corrected so the stack is managable with `docker compose`.
+
+The old `letta` is attached to **14 docker networks**, several belonging to
+stacks that are already gone (`label-studio-1dns`, `agent-zero-t4sx`,
+`agent-zero-ugsd`, `coa-tracker`, `visual-studio-code-server-7gqe`).
 
 ## Finding 2 — Letta is still acting as a RAG engine in `wwf-letta`
 
@@ -109,11 +130,17 @@ sources deleted without backup. A blanket `docker volume prune` is therefore
 
 Ordered so that nothing irreversible happens before a restore point exists.
 
-### Phase 0 — backup first (no deletions)
-`pg_dump` all three Letta databases (`letta-postgres`, `letta-6ou3-db-1`,
-`wwf-letta-db`), export all 94 agents to JSON, and copy the artefacts off KVM4.
-Given nine sources were already lost once without backup, this phase is not
-optional and must complete before Phase 2 or 3 begins.
+### Phase 0 — backup — **DONE 21.08.2026**
+`/opt/backups/letta/20260821/`, all gzip-verified:
+
+| File | Size |
+|---|---|
+| `old_letta-20260821.sql.gz` | 140 MB |
+| `wwf_letta-20260821.sql.gz` | 86 MB |
+| `new_letta6ou3-20260821.sql.gz` | 1.5 MB |
+| `old_letta-agents.json` | 66 agents |
+| `wwf_letta-agents.json` | 20 agents |
+| `new_letta6ou3-agents.json` | 8 agents |
 
 ### Phase 1 — repair and redirect (reversible)
 Rewrite the system prompt of the 30 orphaned agents so retrieval points at
@@ -123,11 +150,13 @@ plainly that Letta holds no corpus. Agents that cannot be given a real retrieval
 path are marked deprecated in their description rather than silently left
 answering from nothing.
 
-### Phase 2 — consolidate (needs owner decision)
-Retire `letta-6ou3`: unpublish port 32770, migrate or discard its 8 agents, stop
-and remove the stack. Decide `wwf-letta`: either keep as the GrowFlow system of
-record, or migrate `DB1_REGULATORY` and `DB3_PP_CURRENT_unified` into RAGFlow
-and drop those two sources.
+### Phase 2 — finish the cut-over (needs owner decision)
+Repoint `letta-mcp-rust`, `wwf-scheduler` and `weekly_weed_flow-backend-1` at
+`letta-6ou3-letta-1:8283`. Decide the fate of the 58 agents that exist only on
+the old stack — migrate from `old_letta-agents.json` or retire them. Then
+unpublish :8283 and stop the old stack. Decide `wwf-letta`: keep as the GrowFlow
+system of record, or migrate `DB1_REGULATORY` and `DB3_PP_CURRENT_unified` into
+RAGFlow and drop those two sources.
 
 ### Phase 3 — delete deprecated (irreversible)
 Remove the 21 stopped containers and their images. Volumes are handled
@@ -136,8 +165,8 @@ by `prune`.
 
 ## Open decisions
 
-1. `letta-6ou3` — migrate its 8 agents into the canonical stack first, or
-   discard them with the stack?
+1. The 58 agents that live only on the old stack — migrate to letta-code, or
+   retire? (`old_letta-agents.json` holds them.)
 2. `wwf-letta` — is GrowFlow a separate legitimate system that keeps its
    sources, or does everything Purely-Plant move to RAGFlow?
 3. CVAT and ZoneMinder — genuinely finished, or paused and expected back?
