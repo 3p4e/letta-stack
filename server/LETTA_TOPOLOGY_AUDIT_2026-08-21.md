@@ -66,6 +66,43 @@ an assumption.**
 Note the embedding model: `text-embedding-3-small`, not `voyage-3-large`. These
 were never part of the RAGFlow corpus.
 
+### Owner decision (21.08.2026)
+
+> `wwf-letta` migrates from the old `letta` to the new letta-code deployment. If
+> migration is not possible, rebuilding WWF from scratch is acceptable.
+
+**Migration is feasible — a rebuild is not required.** Verified:
+
+| Check | Result |
+|---|---|
+| Letta version, all three stacks | **0.16.8** — identical |
+| `letta/letta:0.16.8-wwf` | a plain retag; no custom labels or patched layers |
+| `text-embedding-3-small` on target | **available** on `letta-6ou3` |
+| Volume to move | 20 agents, 4 sources, **372 files** |
+
+Per-source file counts: `DB3_PP_CURRENT_unified` 278, `DB1_REGULATORY` 77,
+`GrowFlow_Weekly_Snapshots` 15, `GrowFlow_Weekly_Snapshots_MASS` 2.
+
+**The migration forks, because of the RAG rule.** 355 of the 372 files
+(`DB1_REGULATORY` + `DB3_PP_CURRENT_unified`) are Purely Plant regulatory and QC
+corpora. Recreating them as Letta sources on the new stack would carry the very
+thing the owner rule excludes onto the deployment meant to be clean. They belong
+in RAGFlow. Only `GrowFlow_Weekly_Snapshots*` (17 files) is GrowFlow product
+data, and whether even that stays a Letta source is a separate call.
+
+Proposed split:
+
+| What | Where | Why |
+|---|---|---|
+| 20 agents | → `letta-6ou3` | same version, direct export/import |
+| `GrowFlow_Weekly_Snapshots` + `_MASS` (17 files) | → `letta-6ou3` sources, **if** GrowFlow needs Letta retrieval | product-line data, not Purely Plant QC |
+| `DB1_REGULATORY` + `DB3_PP_CURRENT_unified` (355 files) | → **RAGFlow dataset**, not a Letta source | Purely Plant corpora; Letta is excluded as RAG engine |
+
+Also required, and independent of the above: `wwf-scheduler` and
+`weekly_weed_flow-backend-1` still point at `http://letta:8283` and must be
+repointed at `letta-6ou3-letta-1:8283` before the old stack is stopped, or the
+WWF scheduler and backend lose their Letta the moment it goes down.
+
 ## Finding 3 — 30 of 66 agents reference retrieval that no longer exists
 
 On the canonical `letta` stack, 30 agents carry references to deleted Letta
@@ -167,8 +204,11 @@ by `prune`.
 
 1. The 58 agents that live only on the old stack — migrate to letta-code, or
    retire? (`old_letta-agents.json` holds them.)
-2. `wwf-letta` — is GrowFlow a separate legitimate system that keeps its
-   sources, or does everything Purely-Plant move to RAGFlow?
+2. ~~`wwf-letta` — migrate or rebuild?~~ **Answered 21.08.2026: migrate to
+   letta-code; rebuild acceptable if migration fails. Verified feasible, so
+   migration it is.** Remaining sub-question: do the two
+   `GrowFlow_Weekly_Snapshots*` sources stay Letta sources, or does GrowFlow
+   also move to RAGFlow retrieval?
 3. CVAT and ZoneMinder — genuinely finished, or paused and expected back?
 4. Letta Cloud (`Letta Code`, `RAG`, `Memo`) — in scope for this consolidation
    or left alone?
