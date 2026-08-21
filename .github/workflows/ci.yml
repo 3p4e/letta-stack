@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: ["**"]
+    branches: [main]          # branch pushes are covered by pull_request
   pull_request:
   workflow_dispatch:
 
@@ -38,11 +38,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Enforcing, not advisory. Provider shapes this stack can actually leak
+      # are declared in .gitleaks.toml; the one known historical finding is
+      # allowlisted there by commit, with a note, so new leaks still fail.
       - name: gitleaks
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        continue-on-error: true
+          GITLEAKS_CONFIG: .gitleaks.toml
 
   build:
     name: Deliverable builders import cleanly

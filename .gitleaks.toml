@@ -1,0 +1,68 @@
+# Secret-scanning rules for this repository.
+#
+# The default gitleaks ruleset did not catch the RAGFlow key that reached this
+# repository's history on 2026-08-21, because `ragflow-…` is not a shape it
+# knows. The providers this stack actually uses are declared here so the scan
+# fails on the credentials we can really leak, not only on the famous ones.
+
+title = "letta-stack"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "ragflow-api-key"
+description = "RAGFlow API key"
+regex = '''ragflow-[A-Za-z0-9_-]{30,}'''
+keywords = ["ragflow-"]
+
+[[rules]]
+id = "voyage-api-key"
+description = "Voyage AI API key"
+regex = '''\bpa-[A-Za-z0-9_-]{35,}'''
+keywords = ["pa-"]
+
+[[rules]]
+id = "moonshot-platform-key"
+description = "Moonshot / Kimi platform key"
+regex = '''\bsk-(?:kimi-)?[A-Za-z0-9]{40,}'''
+keywords = ["sk-kimi", "sk-"]
+
+[[rules]]
+id = "letta-api-key"
+description = "Letta API key"
+regex = '''\bsk-let-[A-Za-z0-9_-]{30,}'''
+keywords = ["sk-let-"]
+
+[[rules]]
+id = "elevenlabs-api-key"
+description = "ElevenLabs API key in a header or assignment"
+regex = '''(?i)xi-api-key["'\s:=]+[A-Za-z0-9_-]{24,}'''
+keywords = ["xi-api-key"]
+
+[allowlist]
+description = "Documentation, placeholders and rendered deliverables"
+# Known historical exposure, already reported and pending key rotation:
+# 83ae904 committed a live RAGFlow key to .claude/settings.json. It was removed
+# from HEAD in 15ac26b and the file is now gitignored, but the blob remains in
+# history. This entry keeps CI meaningful for NEW leaks without going
+# permanently red on one already-known finding. Remove it once the key is
+# rotated, at which point the historical blob is inert.
+commits = ["83ae9049957a023eaae569772b18ba2d4e2d8e06"]
+paths = [
+  # The films and the register are binary deliverables, not source.
+  '''deliverables/video/film.*\.mp4''',
+  '''deliverables/qc_gap_analysis/PP_Batch_Release_QC_Register_CORRECTED\.xlsx''',
+  # This file necessarily contains the patterns it matches.
+  '''\.gitleaks\.toml''',
+  # The policy checker carries the same shapes for the same reason.
+  '''scripts/policy_check\.py''',
+]
+regexes = [
+  '''sk-\.\.\.''',
+  '''sk-xxx''',
+  '''sk-kimi-\.\.\.''',
+  '''YOUR_[A-Z_]+''',
+  '''<set[,>]''',
+  '''example|placeholder''',
+]
