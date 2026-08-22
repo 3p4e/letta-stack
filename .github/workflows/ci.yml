@@ -66,6 +66,15 @@ jobs:
       - name: Install what the analysis scripts need
         run: python3 -m pip install --quiet openpyxl
 
+      # The batch-identity rule has one definition and everything keys through it.
+      # Its doctests are the contract: separators collapse, sub-lot indices nest,
+      # a verification sample stays distinct from the lot it verifies.
+      - name: Batch identity rule holds
+        run: |
+          python3 ingestion/common/batch_id.py
+          python3 deliverables/qc_gap_analysis/batch_spellings.py
+          git diff --exit-code -- deliverables/qc_gap_analysis/batch_spellings.csv
+
       # The gap analysis is a regulated deliverable: if its inputs stop parsing
       # or the numbers move, that must fail here rather than in a QC meeting.
       # The gap analysis is a regulated deliverable. Every batch the register

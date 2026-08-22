@@ -1,0 +1,122 @@
+batch_key,spellings,as_written,sources
+AB092501,1,AB092501,certificate | gap analysis | register | scan filename
+BG1024,2,BG 1024 | BG1024,certificate | gap analysis | register | scan filename
+BSS052501,2,BSS 052501 | BSS052501,certificate | gap analysis | register | scan filename
+BSS1024,2,BSS 1024 | BSS1024,certificate | gap analysis | register | scan filename
+BSS1024/1,2,BSS 1024-01 | BSS1024_01,certificate | gap analysis | register
+BSS10240/1,1,BSS10240_01,scan filename
+CC112501,1,CC112501,certificate | gap analysis | register
+CJ052501/1,3,CJ 052501/1 | CJ052501-1 | CJ052501/1,certificate | gap analysis | register | scan filename
+CJ052501/2,3,CJ 052501/2 | CJ052501-2 | CJ052501/2,certificate | gap analysis | register | scan filename
+CJ0602501/2,1,CJ0602501-2,scan filename
+CJ062501/1,3,CJ 062501/1 | CJ062501-1 | CJ062501/1,certificate | gap analysis | register | scan filename
+CJ062501/2,3,CJ 062501/2 | CJ062501-2 | CJ062501/2,certificate | gap analysis | register
+CJ072501,2,CJ 072501 | CJ072501,certificate | gap analysis | register | scan filename
+CJ082501/1,2,CJ082501-1 | CJ082501/1,certificate | gap analysis | register | scan filename
+CJ082501/2,2,CJ082501-2 | CJ082501/2,certificate | gap analysis | register | scan filename
+CJ092501,1,CJ092501,certificate | gap analysis | register | scan filename
+CJ1024,2,CJ 1024 | CJ1024,certificate | gap analysis | register | scan filename
+CLE072501,1,CLE072501,certificate | gap analysis | register | scan filename
+FB012601,1,FB012601,gap analysis | register
+FB012601/1,1,FB012601/1,certificate
+FB012603,1,FB012603,certificate | gap analysis | register
+FB012603V,1,FB012603V,certificate | gap analysis | register
+FB032601,1,FB032601,certificate | gap analysis | register
+FB112501,1,FB112501,certificate | gap analysis | register
+GG012601,1,GG012601,certificate | gap analysis | register
+GG012603,1,GG012603,certificate | gap analysis | register
+GG032601,1,GG032601,certificate | gap analysis | register
+GG1024,1,GG1024,gap analysis | scan filename
+GG1024/1,3,GG 1024_01 | GG1024-01 | GG1024_01,certificate | gap analysis | register | scan filename
+GG1024/2,3,GG 1024_02 | GG1024-02 | GG1024_02,certificate | gap analysis | register | scan filename
+GG112501,1,GG112501,certificate | gap analysis | register
+GP052501,2,GP 052501 | GP052501,certificate | gap analysis | register | scan filename
+GP062501,2,GP 062501 | GP062501,certificate | gap analysis | register | scan filename
+GP072501/1,3,GP 072501/1 | GP072501-1 | GP072501/1,certificate | gap analysis | register | scan filename
+GP072501/2,3,GP 072501/2 | GP072501-2 | GP072501/2,certificate | gap analysis | register | scan filename
+GP0824/1,3,GP 0824_01 | GP0824-01 | GP0824_01,certificate | gap analysis | register | scan filename
+GP0824/2,4,GP 0824-02 | GP 0824_02 | GP0824-02 | GP0824_02,certificate | gap analysis | register | scan filename
+GP0824/3,2,GP 0824-03 | GP0824_03,certificate | gap analysis | register | scan filename
+GP082501/1,3,GP 082501/1 | GP082501-1 | GP082501/1,certificate | gap analysis | register | scan filename
+GP082501/2,3,GP 082501/2 | GP082501-2 | GP082501/2,certificate | gap analysis | register | scan filename
+GP092501,1,GP092501,certificate | gap analysis | register | scan filename
+GRC102501/2,2,GRC102501-2 | GRC102501/2,certificate | gap analysis | register
+HPA052501,2,HPA 052501 | HPA052501,certificate | gap analysis | register | scan filename
+HPA1024,1,HPA1024,certificate | gap analysis | register | scan filename
+HPA1024/1,2,HPA 1024-01 | HPA1024_01,certificate | gap analysis | register | scan filename
+J31102501,1,J31102501,certificate | gap analysis | register
+J311122501,1,J311122501,certificate
+J31112501,1,J31112501,certificate | gap analysis | register
+J31122501,1,J31122501,certificate | gap analysis | register
+JD012601,1,JD012601,certificate | gap analysis | register
+JD012603/2,2,JD012603-02 | JD012603/02,certificate | gap analysis | register
+JD012603/2V,2,JD012603-02V | JD012603/02V,certificate | gap analysis | register
+JD022601,1,JD022601,certificate | gap analysis | register
+JD112501,1,JD112501,certificate | gap analysis | register
+KC102501,1,KC102501,certificate | gap analysis | register
+MB0824/1,1,MB0824_01,certificate
+MB0824/4,3,MB 0824_04 | MB0824-04 | MB0824_04,certificate | gap analysis | register | scan filename
+MB0824/5,3,MB 0824-05 | MB 0824_05 | MB0824_05,certificate | gap analysis | register | scan filename
+OPM052501,2,OPM 052501 | OPM052501,certificate | gap analysis | register | scan filename
+OPM092501,1,OPM092501,certificate | gap analysis | register | scan filename
+OPM1024,2,OPM 1024 | OPM1024,certificate | gap analysis | register | scan filename
+OPM1024/1,3,OPM 1024-01 | OPM 1024_01 | OPM1024_01,certificate | gap analysis | register | scan filename
+OPM1024/2,3,OPM 1024-02 | OPM 1024_02 | OPM1024_02,certificate | gap analysis | register | scan filename
+OPM1024/3,3,OPM 1024-03 | OPM 1024_03 | OPM1024_03,certificate | gap analysis | register | scan filename
+OPM112501,1,OPM112501,certificate | gap analysis | register
+OPM122501,1,OPM122501,certificate | gap analysis | register | scan filename
+P050012,1,P050012,certificate
+P050022,1,P050022,certificate
+P050032,1,P050032,certificate
+P050062,1,P050062,certificate
+P050072,1,P050072,certificate
+P050082,1,P050082,certificate
+P050092,1,P050092,certificate
+P050102,1,P050102,certificate
+P050112,1,P050112,certificate
+P050122,1,P050122,certificate
+P050132,1,P050132,certificate
+P050152,1,P050152,certificate
+P050162,1,P050162,certificate
+P050172,1,P050172,certificate
+P050182,1,P050182,certificate
+P050192,1,P050192,certificate
+P050202,1,P050202,certificate
+P050212,1,P050212,certificate
+P050272,1,P050272,certificate
+P050282,1,P050282,certificate
+P050292,1,P050292,certificate
+P050302,1,P050302,certificate
+P050312,1,P050312,certificate
+P050322,1,P050322,certificate
+P060012,1,P060012,certificate
+P060022,1,P060022,certificate
+P060032,1,P060032,certificate
+P060042,1,P060042,certificate
+P060052,1,P060052,certificate
+P060062,1,P060062,certificate
+P060072,1,P060072,certificate
+P060082,1,P060082,certificate
+P060092,1,P060092,certificate
+P060152,1,P060152,certificate | gap analysis | register
+P060212,1,P060212,certificate | gap analysis | register
+P060242,1,P060242,certificate | gap analysis | register
+P060332,1,P060332,certificate | gap analysis | register
+P060352,1,P060352,certificate | gap analysis | register
+P060382,1,P060382,certificate | gap analysis | register
+P060402,1,P060402,certificate | gap analysis | register
+P160012,1,P160012,certificate | gap analysis | register
+P160022,1,P160022,certificate | gap analysis | register
+P160032,1,P160032,certificate | gap analysis | register
+PM072501,1,PM072501,certificate | gap analysis | register | scan filename
+PM092501,1,PM092501,certificate | gap analysis | register | scan filename
+PM112501,1,PM112501,certificate | gap analysis | register
+PO50022,1,PO50022,certificate
+PO50202,1,PO50202,certificate
+SCR022601,1,SCR022601,certificate | gap analysis | register
+SCR112501,1,SCR112501,certificate | gap analysis | register
+SJ092501,1,SJ092501,certificate | gap analysis | register | scan filename
+SJ102501,1,SJ102501,certificate | gap analysis | register
+SJ112501,1,SJ112501,certificate | gap analysis | register
+WC072501,1,WC072501,certificate | gap analysis | register | scan filename
+WC082501,1,WC082501,certificate | gap analysis | register | scan filename

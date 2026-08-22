@@ -179,6 +179,27 @@ which is not `JD012603/2`. CI asserts the column and that no two rows collapse o
 one key, which would be the same batch counted twice in every figure here. All 81
 rows key distinctly.
 
+### How often documents actually depart from the rule
+
+The rule matters because the sources disagree constantly. `batch_spellings.py`
+keys every batch code appearing in the register, on the certificate face, in the
+scan filename and in this analysis, and groups them:
+
+| | |
+|---|---:|
+| Batch keys observed across all sources | 121 |
+| Recorded with **more than one** spelling | **35** |
+| Most spellings of a single batch | **4** |
+
+`GP0824/2` alone is written `GP 0824-02`, `GP 0824_02`, `GP0824-02` and
+`GP0824_02`. The owner's example, `GG1024/1`, appears as `GG 1024_01`,
+`GG1024-01` and `GG1024_01`. Full listing in `batch_spellings.csv`.
+
+None of this is an error in the batches — it is an error waiting to happen in any
+pipeline that keys on the string. One batch becomes three records, its certificates
+scatter across them, and nothing looks wrong. Everything reading batch codes out of
+documents must key through `ingestion/common/batch_id.py`.
+
 ### The convention changed between vintages
 
 Reading the 81 batches as families exposes it:
@@ -237,6 +258,9 @@ about the 41 in-house `QCCoA 001v02` release CoAs.
 ## Files
 
 - `CROSS_CHECK_2026-08-22.md` — the comparison, and the corrections it produced.
+- `batch_spellings.py` / `batch_spellings.csv` — every spelling of every batch
+  across the register, the certificate faces, the scan filenames and this
+  analysis, keyed through `ingestion/common/batch_id.py`.
 - `QC_eCoA_Database_ProductCoA_2026-08-22.xlsx` — the independent build, as
   supplied, unmodified.
 - `batch_gap_analysis.csv` — one row per production batch: certificate count,

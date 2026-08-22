@@ -23,6 +23,13 @@ Run locally exactly as CI runs it:
 import ast, csv, os, re, subprocess, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# The batch-identity rule has exactly one definition. A second copy here would
+# drift from it, and the drift would be invisible: both would pass their own
+# tests while keying the same certificate to two different batches.
+sys.path.insert(0, os.path.join(ROOT, "ingestion", "common"))
+from batch_id import batch_key                                    # noqa: E402
+
 FAIL = []
 WARN = []
 
@@ -141,34 +148,6 @@ def check_python_parses():
 
 
 # ── 5. the gap analysis must stay self-consistent ────────────────────────
-def batch_key(b):
-    """Canonical batch identity: separator-blind, and hierarchical.
-
-    Two rules from the owner, and they interact:
-
-      * The separator before a sub-lot index carries no meaning. `GG1024/01`,
-        `GG1024_01`, `GG1024-01` and `GG 1024_01` are one batch.
-      * A sub-lot index is itself part of a batch code, so a batch that already
-        carries one can carry another. `GG1024_01/01` is sub-lot 01 of batch
-        `GG1024_01` — a distinct record from its parent, with `GG1024_01/02`
-        possible alongside it.
-
-    So the key cannot strip one index and stop: every segment is normalised and
-    rejoined, which keeps the hierarchy visible and lets parent and child key
-    apart. `GG1024_01` -> `GG1024/1`; `GG1024_01/01` -> `GG1024/1/1`.
-
-    A trailing V marks a verification sample and belongs to the identity —
-    `JD012603-02V` -> `JD012603/2V`, which is not `JD012603/2`.
-    """
-    s = b.strip().upper().replace(" ", "")
-    v = ""
-    if s.endswith("V"):
-        s, v = s[:-1], "V"
-    head, *tail = re.split(r"[/_-]", s)
-    return "/".join([head] + [t.lstrip("0") or "0" if t.isdigit() else t
-                              for t in tail]) + v
-
-
 def check_gap_analysis():
     csv_p = os.path.join(ROOT, "deliverables/qc_gap_analysis/batch_gap_analysis.csv")
     md_p = os.path.join(ROOT, "deliverables/qc_gap_analysis/README.md")
