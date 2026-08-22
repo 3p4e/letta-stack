@@ -160,17 +160,55 @@ Searching for the adjectival stems (`макроскопск`, `туѓи прим
 nothing and produces a false "never tested" result. The scan here matches the
 nominal forms.
 
+## Batch identity — how a code is read
+
+Two rules from the owner, and they interact:
+
+- **The separator before a sub-lot index carries no meaning.** `GG1024/01`,
+  `GG1024_01`, `GG1024-01` and `GG 1024_01` are one batch. Spacing and a leading
+  zero on the index are equally insignificant.
+- **A sub-lot index is part of a batch code, so a batch carrying one can carry
+  another.** `GG1024_01/01` is sub-lot 01 of batch `GG1024_01` — a distinct record
+  from its parent, with `GG1024_01/02` possible alongside it.
+
+The CSV therefore carries a canonical `batch_key`: every segment normalised and
+rejoined with `/`, so parent and child key apart and the hierarchy stays visible.
+`GG1024_01` → `GG1024/1`; `GG1024_01/01` → `GG1024/1/1`. A trailing V marks a
+verification sample and belongs to the identity — `JD012603-02V` → `JD012603/2V`,
+which is not `JD012603/2`. CI asserts the column and that no two rows collapse onto
+one key, which would be the same batch counted twice in every figure here. All 81
+rows key distinctly.
+
+### The convention changed between vintages
+
+Reading the 81 batches as families exposes it:
+
+| Vintage | Families | Parent has its own row |
+|---|---|---|
+| 2024 — `BSS1024`, `GG1024`, `HPA1024`, `OPM1024` | 4 | **4 of 4** |
+| 2025 onward — `CJ052501`, `CJ062501`, `CJ082501`, `GP072501`, `GP0824`, `GP082501`, `GRC102501`, `JD012603`, `MB0824` | 9 | **0 of 9** |
+
+In 2024 the parent bulk lot was registered and released in its own right; from 2025
+only sub-lots are registered. That is not a defect, but it decides two open
+questions below.
+
 ## GG1024 — a row missing from the register
 
 `GG1024` is a genuine early production batch, confirmed by the owner. **The
 register has no row for it**, although the two other batches of the same vintage,
 `HPA1024` and `OPM1024`, do (#79, #80). It is carried here as **#81**.
 
-It is not a stray document. `GG1024.pdf` (23.04.2025) is a complete Purely Plant
-in-house release certificate covering Appearance (visual), Identification (HPLC
-retention time, DAB), Foreign matter (< 2.0 %, Ph. Eur. 2.8.2), Assay,
-Microbiology, Heavy metals, Pesticides and Aflatoxins. Only loss on drying is
-absent.
+It is not a stray document. `GG1024.pdf` is a complete Purely Plant in-house
+release certificate on form `QCCoA 001v02`, a distinct two-page document with its
+own SHA-256 (`8029082e7b163c6c`), held in both `ImB_COAs` and `ImB_QC_COAs`.
+
+**The batch-identity rule settles it structurally.** `GG1024` is a 2024-vintage
+parent whose sub-lots `GG1024_01` and `GG1024_02` are registered as #4 and #8. The
+three other 2024 families — `BSS1024`, `HPA1024`, `OPM1024` — all carry a parent row
+(#2, #79, #80) *and* sub-lot rows, and all three have a parent-level in-house
+release CoA on disk (`HPA1024.pdf`, `OPM1024.pdf`, `BSS1024_CoA.pdf`) exactly as
+GG1024 does. GG1024 is the only 2024 family missing its parent row. That is a
+clerical omission, not an ambiguity.
 
 **The register is therefore incomplete, and that is the finding.** Every count in
 this document is drawn from the register, so a batch missing from it is a batch
@@ -182,7 +220,7 @@ register found three discrepancies and no more:
 | Declared in a certificate | Verdict |
 |---|---|
 | `GG1024` | **genuine batch, row missing** — added as #81 |
-| `FB012601/1` (ППК26067) | register holds `FB012601` (#53) without the `/1`. Elsewhere `/1` and `/2` sub-lots get their own rows (`CJ052501-1`, `CJ062501-2`), so this is either a sub-lot with no row or a notation inconsistency. **Needs a QC ruling.** |
+| `FB012601/1` (ППК26067) | `/1` is a real sub-lot index under the identity rule, and FB012601 is a 2026 batch, where the convention registers sub-lots and not parents. Two independent readings confirm the certificate prints `/1`. So #53 should almost certainly read `FB012601/1` — or an unregistered sub-lot exists. **Still a QC ruling, but no longer an open question of fact.** |
 | `MB0824` | parsing artifact — the certificate reads `серија: MB0824A104`, an OCR reading of `MB0824_04` (#6). Not a batch. |
 
 ## Cross-check against an independent build

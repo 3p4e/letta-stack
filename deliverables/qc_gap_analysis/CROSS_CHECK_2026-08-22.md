@@ -44,13 +44,21 @@ those against the register's P-number column collapses them onto **78 of the 81
 batches**. `BG 1024` / `BG1024` / `Blue Gelato BG1024`, and `GG1024_01` /
 `GG 1024_01` / `GG1024-01`, are one batch each, not three.
 
+The normalisation is not a convenience: it is the owner's identity rule, recorded
+in `README.md` §Batch identity. The separator before a sub-lot index carries no
+meaning, but the index itself does, and it nests — `GG1024_01/01` is sub-lot 01 of
+batch `GG1024_01`, a distinct record from its parent. Collapsing one level and
+stopping would have merged parent into child. Under the full rule all 81 batches
+key distinctly, which is what makes the 78-of-81 match meaningful rather than an
+artifact of loose matching.
+
 The residue is small and informative:
 
 | Code | Reading |
 |---|---|
 | `PO50022`, `PO50202`, `GPO824-02` | letter O read for a zero — OCR, not a batch |
 | `J311122501` | a doubled digit against `J31122501` |
-| `MB0824_01` on ППК25118 | see below — a genuine identity mismatch |
+| `MB0824_01` on ППК25118 | a well-formed sub-lot code, not an OCR artifact — see below |
 
 **"262 certificates" versus 284.** Different denominators, both correct:
 
@@ -95,17 +103,28 @@ descriptions support roughly 15.
 ### 2. ППК25118 prints a batch its filename contradicts
 
 The certificate is filed as `MB0824_04 (P050032) 3.pdf` and the page reads
-`MB0824_01`. This analysis flagged the same certificate as an OCR artifact and
-read it as `MB0824_04`; the independent transcription read `MB0824_01`. One of the
-two readings is wrong and the page has to be looked at. Nothing else in the
-population declares an `MB0824_01`.
+`MB0824_01`. This analysis flagged the same certificate as an OCR artifact and read
+it as `MB0824_04`; the independent transcription read `MB0824_01`.
+
+Under the batch-identity rule this is no longer safely dismissable as a misread.
+`MB0824_01` is a **well-formed sub-lot code** — the register carries `MB0824_04`
+and `MB0824_05`, so sub-lots 01 to 03 of the same parent may well have existed and
+never been registered. The certificate has to be looked at: either it is misfiled
+under the wrong sub-lot, or an unregistered sub-lot is on record. `GRC102501` is in
+the same position, registered at sub-lot 2 with no `/1`.
 
 ### 3. FB012601/1 is confirmed as printed, not as a parsing artifact
 
 ППК26067 prints `FB012601/1` while being filed in a folder named `FB012601`, and
 the register carries `FB012601` without the `/1`. Two independent readings now
-agree the certificate itself says `/1`. The QC ruling this needs is unchanged, but
-it is no longer possible that this is a transcription slip.
+agree the certificate itself says `/1`.
+
+The batch-identity rule since supplied by the owner closes most of the remaining
+question: `/1` is a genuine sub-lot index, not decoration, and FB012601 is a 2026
+batch — a vintage where the register lists sub-lots and never the parent (9
+families out of 9). So #53 reading a bare `FB012601` is the anomaly. Either the row
+should read `FB012601/1`, or a sub-lot exists that was never registered. The edit
+is a QC decision; the fact is no longer in doubt.
 
 ### 4. The scanning stock is materially worse than the register suggests
 
@@ -169,8 +188,16 @@ Consequences:
 **`GG1024.pdf` is therefore confirmed, not refuted.** It is a distinct two-page
 document with its own hash, held in two locations, exactly as reported in
 `README.md` §GG1024. The independent build did not fail to find it — it merged it
-into a neighbouring record. The register still has no row for GG1024, and that
-remains the finding.
+into a neighbouring record.
+
+The batch-identity rule then confirms it a second way, structurally. Of the four
+2024-vintage families, `BSS1024`, `HPA1024` and `OPM1024` each carry a parent row
+in the register *and* a parent-level in-house release CoA in this very bucket —
+`BSS1024_CoA.pdf`, `HPA1024.pdf`, `OPM1024.pdf`. `GG1024` has the CoA and not the
+row, and is the only 2024 family in that position. From 2025 on the convention
+changes and no parent is registered at all, so the omission is confined to one
+vintage and one batch. The register still has no row for GG1024, and that remains
+the finding.
 
 ## The one place the shared workbook changes a number here
 
