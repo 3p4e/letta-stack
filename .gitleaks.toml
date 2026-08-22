@@ -53,6 +53,7 @@ paths = [
   # The films and the register are binary deliverables, not source.
   '''deliverables/video/film.*\.mp4''',
   '''deliverables/qc_gap_analysis/PP_Batch_Release_QC_Register_CORRECTED\.xlsx''',
+  '''deliverables/qc_gap_analysis/QC_eCoA_Database_ProductCoA_2026-08-22\.xlsx''',
   # This file necessarily contains the patterns it matches.
   '''\.gitleaks\.toml''',
   # The policy checker carries the same shapes for the same reason.

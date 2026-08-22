@@ -103,14 +103,25 @@ need an internal CoA. If Identification C must be stated per batch, all 81 do.
 
 ## Certificates on file, by issuing institution
 
+The register carries 284 rows bearing a CoA code, but only **250 distinct codes** —
+34 codes appear against more than one batch row, because one certificate can cover
+several batches. The split below counts distinct codes.
+
 | Institution | Certificates |
 |---|---:|
-| UKIM Faculty of Pharmacy — CNP | 62 |
-| IPH — Institute of Public Health | 43 |
-| Farmahem | 30 |
-| Purely Plant GmbH (in-house) | 15 |
+| IPH — Institute of Public Health | 89 |
+| UKIM Faculty of Pharmacy — CNP | 78 |
+| Farmahem | 63 |
+| Purely Plant GmbH (in-house) | 17 |
 | State Phytosanitary Laboratory | 1 |
-| unattributed in register | 18 |
+| unattributed in register | 2 |
+
+> **Corrected 22.08.2026.** An earlier version of this table read 62 / 43 / 30 / 15
+> / 1 / 18 and summed to 169 against a stated total of 284 — it counted only part
+> of the register and is simply wrong. The error was caught by the cross-check in
+> `CROSS_CHECK_2026-08-22.md`, where an independent build of the same evidence
+> found 63 Farmahem certificates against the 30 stated here. No other figure in
+> this document was derived from that table.
 
 ## Cohorts — outsourced coverage
 
@@ -174,8 +185,22 @@ register found three discrepancies and no more:
 | `FB012601/1` (ППК26067) | register holds `FB012601` (#53) without the `/1`. Elsewhere `/1` and `/2` sub-lots get their own rows (`CJ052501-1`, `CJ062501-2`), so this is either a sub-lot with no row or a notation inconsistency. **Needs a QC ruling.** |
 | `MB0824` | parsing artifact — the certificate reads `серија: MB0824A104`, an OCR reading of `MB0824_04` (#6). Not a batch. |
 
+## Cross-check against an independent build
+
+`CROSS_CHECK_2026-08-22.md` compares every headline here against
+`QC_eCoA_Database_ProductCoA_2026-08-22.xlsx`, an independent database built from
+the 340 physical PDFs rather than from the register. The 21 CoQ reissues, the 12
+CNP Ph. Eur. certificates, the FB032601 foreign-matter failure and the total
+absence of Identification C all reproduce exactly. It also surfaces roughly ten
+certificates released against a failing microbiological result — a class of
+problem this coverage analysis does not look for — and raises one open QC decision
+about the 41 in-house `QCCoA 001v02` release CoAs.
+
 ## Files
 
+- `CROSS_CHECK_2026-08-22.md` — the comparison, and the corrections it produced.
+- `QC_eCoA_Database_ProductCoA_2026-08-22.xlsx` — the independent build, as
+  supplied, unmodified.
 - `batch_gap_analysis.csv` — one row per production batch: certificate count,
   per-panel coverage, and the issuance flags (`needs_CoQ`,
   `needs_CoQ_reissue`, `iCoA_scope`).
