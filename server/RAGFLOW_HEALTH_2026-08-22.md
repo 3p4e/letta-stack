@@ -6,6 +6,11 @@ model configuration was touched. Every figure below was measured, not inferred.
 Checked at 21:30–21:45 UTC against `https://ragflow.srv1231216.hstgr.cloud`, with
 host access through the KVM4 runner.
 
+> **All three findings below were repaired on 24.08.2026.** The verdict is kept as
+> written so the record shows what was found; see **Remediation — 24.08.2026** for
+> what was done, what it changed, and where two of the findings turned out to be
+> wrong.
+
 ## Verdict
 
 The deployment is healthy and retrieval works end to end on all three datasets.
@@ -207,22 +212,31 @@ Items 1 and 2 are write operations on the corpus and are **not** started here.
 Owner authorised fixing everything fixable. What follows is what was done, what it
 changed, and where the original diagnosis turned out to be wrong.
 
-### The root cause was not parsing — the task executor is being killed
+### Two failure modes, not one
 
-Queueing the eight documents for reparse produced **three executor restarts in five
-minutes** (16:53:53, 16:56:33, 16:58:09 container time; before that, restarts were
-~14 h apart). Each restart abandons the in-flight document at `progress=-1`.
+The six failures had **two distinct causes**, and only the second leaves a message.
 
-**No traceback precedes any restart.** The process vanishes and a fresh one
-initialises — the signature of an external kill, not a Python fault. Host memory
-was down to **985 MB available with `SwapTotal: 0`** while parsing ran, on a
-16 GB box carrying 30 containers.
+**Executor kills.** Queueing the eight documents produced three task-executor
+restarts in five minutes (16:53:53, 16:56:33, 16:58:09 container time; before that,
+restarts were ~14 h apart). No traceback precedes any of them — the process
+vanishes and a fresh one initialises, the signature of an external kill rather than
+a fault. Host memory was down to **985 MB available with `SwapTotal: 0`**, on a
+16 GB box carrying 30 containers. Run the same document alone with memory free and
+it completes: `700094-6` failed four times inside the queue, then finished in
+isolation with 128 chunks in 578 s.
 
-Run the same document *alone* with memory free and it completes: `700094-6` failed
-four times in the queue, then succeeded in isolation with **128 chunks in 578 s**.
+**Embedding-provider resets.** `700094-5` failed once with an explicit error:
 
-That is the whole explanation for the six original failures, and it is a capacity
-problem rather than a data problem.
+> `[ERROR]Generate embedding error: Embedding request failed for VoyageEmbed.
+> Error: Error communicating with VoyageAI: ('Connection aborted.',
+> ConnectionResetError(104, 'Connection reset by peer'))`
+
+178 chunks were generated and the embedding call was reset by the peer. A plain
+retry cleared it. This is almost certainly what killed `1220.pdf` and `1377.pdf`
+originally — both died immediately after an `Embedding chunks (Ns)` line.
+
+Neither cause is a data problem. Both are recoverable, and **queueing heavy
+documents one at a time recovered every one of them.**
 
 ### Correction — the Elasticsearch cap was a misread
 
@@ -236,54 +250,89 @@ fill. The number that matters:
 | JVM heap in use | 178 355 264 |
 | **heap utilisation** | **17 %** |
 
-Elasticsearch is not under memory pressure, and raising `MEM_LIMIT` — which is
-shared by five services in `/opt/stacks/ragflow/.env` — while the host itself is
-starved would have made the executor kills *more* likely. **The cap was left
-alone.** The metric to watch is heap, not container RSS.
+Elasticsearch is not under memory pressure, and raising `MEM_LIMIT` — shared by
+five services in `/opt/stacks/ragflow/.env` — while the host itself was starved
+would have made the executor kills *more* likely. **The cap was left alone.** The
+metric to watch is heap, not container RSS.
 
 ### Correction — the ingestion cost has a cause worth knowing
 
 `eCOA_INGEST` runs with **both** `raptor.use_raptor: true` **and**
 `graphrag.use_graphrag: true`, on top of per-page vision parsing with
 `gpt-4.1@openai-vlm`. GraphRAG is what produces the 2 351 knowledge-graph entities
-and relations counted earlier, and the combination is what makes a seven-page
-report expensive enough to trigger a kill.
+and relations, and the combination is what makes a seven-page report expensive
+enough to be killed.
 
-It also has a consequence that reparsing exposed: **a document reparse rebuilds
-base chunks only.** Its RAPTOR summary chunks are not regenerated until the
-dataset-level tree is rebuilt, so a reparsed document legitimately returns fewer
-chunks than the register recorded. That accounts for the reparsed counts below
-being lower than the "before" figures, and is not lost certificate text —
-retrieval was re-tested and is unchanged.
+It has a consequence the reparse exposed: **a document reparse rebuilds base chunks
+only.** RAPTOR summary chunks are not regenerated until the dataset-level tree is
+rebuilt, so a reparsed document legitimately returns fewer chunks than the register
+recorded. No certificate text was lost — retrieval was re-tested and is unchanged.
 
 ### What was repaired
 
-| Item | Result |
-|---|---|
-| `1200.pdf` | reparsed clean — **56 chunks** |
-| `1208.pdf` | reparsed clean — **45 chunks** |
-| `1220.pdf` | reparsed clean — **62 chunks** |
-| `1377.pdf` | reparsed clean — **65 chunks** |
-| `700094-6-2026` | recovered in isolation — **128 chunks** |
-| Ten orphaned MinIO buckets | **deleted**, after backup |
+| Document | Before | After |
+|---|---|---|
+| `1200.pdf` | 122 claimed, 98 indexed | **56, consistent** |
+| `1208.pdf` | 112 claimed, 85 indexed | **45, consistent** |
+| `1220.pdf` | failed, 54 of 71 | **62, consistent** |
+| `1377.pdf` | failed, 64 of 75 | **65, consistent** |
+| `700094-5-2026` | failed, 0 chunks | **122** |
+| `700094-6-2026` | failed, 0 chunks | **128** |
+| `700094-8-2026` | failed, 0 chunks | **133** |
+| `700094-25-2026` | failed, 0 chunks | **121** |
 
-Every bucket was first confirmed referenced nowhere in `knowledgebase`,
-`document.kb_id`, `file.parent_id` or `file.source_type`; its 22 objects were then
-mirrored to `/opt/backups/ragflow/20260824/minio_orphan_buckets.tar.gz` (10.8 MB,
-33 entries, gzip-verified) before removal. MinIO now holds four buckets: the three
-live datasets and `imagetemps`.
+Dataset counters were then realigned to the documents they contain:
 
-Retrieval was re-tested on all three datasets after the reparse. Same top hits,
-same similarities, no degradation.
+| Dataset | chunk_num | token_num |
+|---|---|---|
+| `eCOA_INGEST` | 9 880 → **9 303** | 958 587 → **937 761** |
+| `STABILITY_PROGRAMME` | 357 (unchanged) | 11 787 → **23 741** |
+| `eCOA_INGEST_SUMMA` | 1 583 (unchanged) | 46 180 (unchanged) |
 
-### Blocked — needs an owner decision
+Ten orphaned MinIO buckets were deleted. Each was first confirmed referenced
+nowhere in `knowledgebase`, `document.kb_id`, `file.parent_id` or
+`file.source_type`; all 22 objects were mirrored to
+`/opt/backups/ragflow/20260824/minio_orphan_buckets.tar.gz` (10.8 MB, 33 entries,
+gzip-verified) before removal. MinIO now holds four buckets: the three live
+datasets and `imagetemps`.
+
+### Verified end state
+
+| Check | Before | After |
+|---|---:|---:|
+| Documents in a failed state | 6 | **0** |
+| Documents with no chunk in the index | 4 | **0** |
+| Documents where the index holds fewer chunks than the database claims | 2 (51 chunks) | **0** |
+| Index `doc_id` values with no database row | 0 | **0** |
+| Documents present in both database and index | 476 of 480 | **480 of 480** |
+| Residual counter drift | 3 datasets | **none** |
+| MinIO buckets for datasets that no longer exist | 10 | **0** |
+
+Retrieval was re-tested on all three datasets. Every previous probe returns the
+same document at the same similarity, and a new probe against the recovered water
+reports —"Колиформни бактерии 700094 Генлајт вода" — now returns
+`WATER_TESTING/7.8.6, 700094-25-2026` at 0.515, content that was unreachable
+before.
+
+The remaining index surplus of **+570** over the database total is the expected
+population: chunks explicitly marked unavailable, plus RAPTOR summaries on
+documents that were not reparsed. Neither is retrievable-but-unaccounted.
+
+### Left undone — needs an owner decision
 
 **Adding swap.** A 4 GB swapfile with `vm.swappiness=10` is the correct remedy for
-a swapless host that OOM-kills its ingestion worker. The attempt was **refused by
-this session's permission policy** and was not worked around. Until swap exists —
-or roughly 2 GB is freed by stopping services — the executor will keep dying
-whenever a bulk ingestion coincides with a memory spike. The workaround that does
-work today is queueing heavy documents **one at a time**.
+a swapless host that kills its ingestion worker under load. The attempt was
+**refused by this session's permission policy** and was not worked around. Until
+swap exists — or roughly 2 GB is freed by stopping services — a bulk ingestion that
+coincides with a memory spike will lose whichever document is in flight. The
+working practice today is to queue heavy documents **one at a time**, which
+recovered all eight here.
+
+**Whether RAPTOR and GraphRAG both need to be on.** They are the reason ingestion
+is expensive enough to be fragile, and the reason a reparse cannot restore a
+document to its previous chunk count on its own. Turning either off changes
+retrieval behaviour, so it is a QC decision, not a maintenance one. If they stay
+on, the dataset-level RAPTOR tree should be rebuilt after any bulk reparse.
 
 ## Not RAGFlow, but found while looking
 
