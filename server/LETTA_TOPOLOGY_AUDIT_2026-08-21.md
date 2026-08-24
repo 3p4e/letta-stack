@@ -8,9 +8,21 @@ deleted in producing this document.**
 | Stack | Compose dir | Agents | Sources | Exposure | Verdict |
 |---|---|---:|---:|---|---|
 | `letta` + `letta-postgres` | `/opt/stacks/letta` | 66 | 0 | **published :8283** | **OLD — to retire** |
-| **`letta-6ou3-letta-1` + `letta-6ou3-db-1`** | `/opt/ai-stack/letta-6ou3-image-override.yml` | 8 | 0 | published :32770 | **NEW letta-code — canonical** |
+| **`letta-6ou3-letta-1` + `letta-6ou3-db-1`** | `/opt/ai-stack/letta-6ou3-image-override.yml` | 8 | 0 | `https://letta-6ou3.srv1231216.hstgr.cloud` (also :32770) | **NEW letta-code — canonical** |
 | `wwf-letta` + `wwf-letta-db` | `/opt/stacks/wwf_letta` | 20 | **4** | internal only | GrowFlow line — owner decision |
+| `letta-scy7-letta-1` + `letta-scy7-db-1` | — | — | — | internal only | **out of scope — dedicated to other work** |
 | Letta Cloud (`api.letta.com`) | — | 3 | n/a | SaaS | `Letta Code`, `RAG`, `Memo` |
+
+### Owner direction (24.08.2026)
+
+> Use `https://letta-6ou3.srv1231216.hstgr.cloud/`. Leave `letta-scy7-letta-1` and
+> `letta-scy7-db-1` alone — they are dedicated to other things.
+
+So the canonical endpoint for every Letta operation is the **hostname**, not the
+published port, and the `letta-scy7` pair is excluded from this consolidation
+entirely: not to be migrated, repointed, stopped or deleted. It appeared on the
+host after this audit was written, which is why the survey above counts three
+stacks and the host now runs four.
 
 **Correction to an earlier reading of this estate:** `letta` (created 04.06.2026,
 published on :8283) is the OLD deployment. `letta-6ou3` (created 16.08.2026,
@@ -188,8 +200,10 @@ path are marked deprecated in their description rather than silently left
 answering from nothing.
 
 ### Phase 2 — finish the cut-over (needs owner decision)
-Repoint `letta-mcp-rust`, `wwf-scheduler` and `weekly_weed_flow-backend-1` at
-`letta-6ou3-letta-1:8283`. Decide the fate of the 58 agents that exist only on
+Repoint `letta-mcp-rust`, `wwf-scheduler` and `weekly_weed_flow-backend-1` at the
+canonical deployment — `letta-6ou3-letta-1:8283` on the internal network, or
+`https://letta-6ou3.srv1231216.hstgr.cloud` from outside it. `letta-scy7` is out of
+scope and must not be touched. Decide the fate of the 58 agents that exist only on
 the old stack — migrate from `old_letta-agents.json` or retire them. Then
 unpublish :8283 and stop the old stack. Decide `wwf-letta`: keep as the GrowFlow
 system of record, or migrate `DB1_REGULATORY` and `DB3_PP_CURRENT_unified` into

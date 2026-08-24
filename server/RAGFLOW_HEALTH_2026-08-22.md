@@ -202,6 +202,89 @@ source file; that is where 6.8 of the 7.5 GB sits.
 
 Items 1 and 2 are write operations on the corpus and are **not** started here.
 
+## Remediation — 24.08.2026
+
+Owner authorised fixing everything fixable. What follows is what was done, what it
+changed, and where the original diagnosis turned out to be wrong.
+
+### The root cause was not parsing — the task executor is being killed
+
+Queueing the eight documents for reparse produced **three executor restarts in five
+minutes** (16:53:53, 16:56:33, 16:58:09 container time; before that, restarts were
+~14 h apart). Each restart abandons the in-flight document at `progress=-1`.
+
+**No traceback precedes any restart.** The process vanishes and a fresh one
+initialises — the signature of an external kill, not a Python fault. Host memory
+was down to **985 MB available with `SwapTotal: 0`** while parsing ran, on a
+16 GB box carrying 30 containers.
+
+Run the same document *alone* with memory free and it completes: `700094-6` failed
+four times in the queue, then succeeded in isolation with **128 chunks in 578 s**.
+
+That is the whole explanation for the six original failures, and it is a capacity
+problem rather than a data problem.
+
+### Correction — the Elasticsearch cap was a misread
+
+The earlier finding said ES sat at 74 % of a 2 GiB cap with "little room". That
+figure was container RSS, which is mostly Lucene page cache and is *expected* to
+fill. The number that matters:
+
+| | |
+|---|---:|
+| JVM heap max | 1 073 741 824 (1 GiB) |
+| JVM heap in use | 178 355 264 |
+| **heap utilisation** | **17 %** |
+
+Elasticsearch is not under memory pressure, and raising `MEM_LIMIT` — which is
+shared by five services in `/opt/stacks/ragflow/.env` — while the host itself is
+starved would have made the executor kills *more* likely. **The cap was left
+alone.** The metric to watch is heap, not container RSS.
+
+### Correction — the ingestion cost has a cause worth knowing
+
+`eCOA_INGEST` runs with **both** `raptor.use_raptor: true` **and**
+`graphrag.use_graphrag: true`, on top of per-page vision parsing with
+`gpt-4.1@openai-vlm`. GraphRAG is what produces the 2 351 knowledge-graph entities
+and relations counted earlier, and the combination is what makes a seven-page
+report expensive enough to trigger a kill.
+
+It also has a consequence that reparsing exposed: **a document reparse rebuilds
+base chunks only.** Its RAPTOR summary chunks are not regenerated until the
+dataset-level tree is rebuilt, so a reparsed document legitimately returns fewer
+chunks than the register recorded. That accounts for the reparsed counts below
+being lower than the "before" figures, and is not lost certificate text —
+retrieval was re-tested and is unchanged.
+
+### What was repaired
+
+| Item | Result |
+|---|---|
+| `1200.pdf` | reparsed clean — **56 chunks** |
+| `1208.pdf` | reparsed clean — **45 chunks** |
+| `1220.pdf` | reparsed clean — **62 chunks** |
+| `1377.pdf` | reparsed clean — **65 chunks** |
+| `700094-6-2026` | recovered in isolation — **128 chunks** |
+| Ten orphaned MinIO buckets | **deleted**, after backup |
+
+Every bucket was first confirmed referenced nowhere in `knowledgebase`,
+`document.kb_id`, `file.parent_id` or `file.source_type`; its 22 objects were then
+mirrored to `/opt/backups/ragflow/20260824/minio_orphan_buckets.tar.gz` (10.8 MB,
+33 entries, gzip-verified) before removal. MinIO now holds four buckets: the three
+live datasets and `imagetemps`.
+
+Retrieval was re-tested on all three datasets after the reparse. Same top hits,
+same similarities, no degradation.
+
+### Blocked — needs an owner decision
+
+**Adding swap.** A 4 GB swapfile with `vm.swappiness=10` is the correct remedy for
+a swapless host that OOM-kills its ingestion worker. The attempt was **refused by
+this session's permission policy** and was not worked around. Until swap exists —
+or roughly 2 GB is freed by stopping services — the executor will keep dying
+whenever a bulk ingestion coincides with a memory spike. The workaround that does
+work today is queueing heavy documents **one at a time**.
+
 ## Not RAGFlow, but found while looking
 
 A **fourth Letta stack** now exists on this host: `letta-scy7-letta-1` and
