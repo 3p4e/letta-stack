@@ -39,10 +39,12 @@ def fmt_date(iso):
 
 def fmt_pct(v):
     """House numeric rule: exactly two decimals, % immediately after the digit,
-    no space; Macedonian uses a decimal comma, English a decimal point."""
+    no space. A percentage is the same figure in either language — only the
+    decimal mark would differ — so it is printed ONCE, not as an MK|EN pair;
+    the document is Macedonian-primary, so the decimal comma is used."""
     if v is None:
-        return None, None
-    return f"{v:.2f}".replace(".", ",") + "%", f"{v:.2f}%"
+        return None
+    return f"{v:.2f}".replace(".", ",") + "%"
 
 
 def ecoa_label(row):
@@ -71,11 +73,8 @@ def build(data):
     for i, row in enumerate(rows, start=1):
         pr.cellfmt(t.cell(i, 0), row["p_number"], None, 10, pr.BLACK, bold=True)
         pr.cellfmt(t.cell(i, 1), row["cultivation_batch"], None, 10, pr.BLACK)
-        mk, en = fmt_pct(row["thc_pct"])
-        if mk is None:
-            pr.cellfmt(t.cell(i, 2), "—", None, 10, pr.GREY)
-        else:
-            pr.cellfmt(t.cell(i, 2), mk, en, 10, pr.BLACK)
+        pct = fmt_pct(row["thc_pct"])
+        pr.cellfmt(t.cell(i, 2), pct or "—", None, 10, pr.BLACK if pct else pr.GREY)
         pr.cellfmt(t.cell(i, 3), ecoa_label(row), None, 9, pr.BLACK)
         pr.cellfmt(t.cell(i, 4), fmt_date(row["date"]), None, 9, pr.BLACK)
     pr.fixed(t, weights=[2.3, 3.4, 2.7, 5.36, 2.7])
@@ -96,9 +95,8 @@ def self_check(data):
     for r in rows:
         if r["thc_pct"] is None:
             continue
-        mk, en = fmt_pct(r["thc_pct"])
-        assert mk.endswith("%") and "," in mk and " " not in mk, f"house format violated: {mk}"
-        assert en.endswith("%") and "." in en and " " not in en, f"house format violated: {en}"
+        pct = fmt_pct(r["thc_pct"])
+        assert pct.endswith("%") and "," in pct and " " not in pct, f"house format violated: {pct}"
     print("SELF-CHECK OK — 12 rows, 2 confirmed-absent, 10 certified, "
           "2 correctly labeled PP in-house.")
 
