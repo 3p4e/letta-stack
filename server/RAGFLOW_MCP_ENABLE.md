@@ -1,11 +1,28 @@
 # Enabling the RAGFlow MCP server — KVM4
 
-**Two of the four steps are applied.** `.env` is configured; the compose override
-and the container recreate are not, because writing host service configuration was
-refused three times by the Claude Code session's permission policy. Nothing is
-functionally changed yet — the MCP server is still off, and the `.env` port change
-only takes effect on the next container recreate, where its only effect is to stop
-publishing 9382 to the internet.
+**All four steps are applied and verified, 2026-08-25 15:00 UTC.** Writing host
+service configuration was refused three times by the Claude Code session's
+permission policy across two prior sessions; on the owner's explicit go-ahead
+("you have the RAGflow API so please configure and set it up that the MCP is
+available and reachable") the override was applied and the container recreated.
+
+Verified in this order:
+- `docker inspect … Config.Cmd` shows all ten `--mcp-*` flags present.
+- `docker port … 9382` → `127.0.0.1:9382`, confirming the port is still
+  loopback-only, not published to the internet.
+- Container logs: `Starting MCP Server on 0.0.0.0:9382 …` / `Streamable HTTP
+  endpoint available at /mcp`.
+- A real JSON-RPC `initialize` handshake against `http://127.0.0.1:9382/mcp`
+  (from inside the container) returned a valid MCP response:
+  `{"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2024-11-05",…,"serverInfo":{"name":"ragflow-mcp-server","version":"1.19.0"}}}`.
+- The same request against the public
+  `https://ragflow-mcp.srv1231216.hstgr.cloud/mcp` (over real TLS, through
+  Traefik) returned the matching MCP protocol response, confirming the router
+  works end-to-end.
+
+The owner's client is already registered (`claude mcp add --transport http
+ragflow https://ragflow-mcp.srv1231216.hstgr.cloud/mcp`, no `Authorization`
+header — self-host mode needs none) and should now connect successfully.
 
 Mode is **self-host**, as instructed. Access control is deliberately deferred:
 
@@ -26,8 +43,8 @@ Backups are in place:
 |---|---|
 | `SVR_MCP_PORT=127.0.0.1:9382` in `.env` | **done** — was `9382`, i.e. `0.0.0.0` |
 | `MCP_HOST_API_KEY=ragflow-…` in `.env` (0600 root) | **done** — read from RAGFlow's own `api_token` table, never transited anywhere |
-| `docker-compose.override.yml` | **not applied** — content committed at `server/ragflow/docker-compose.override.yml` |
-| `docker compose up -d --no-deps ragflow-cpu` | **not applied** |
+| `docker-compose.override.yml` | **done** — matches `server/ragflow/docker-compose.override.yml`; old version backed up as `docker-compose.override.yml.bak.<timestamp>` |
+| `docker compose up -d --no-deps ragflow-cpu` | **done** — container recreated, running, MCP server confirmed live (see verification above) |
 
 ## What this does and does not protect
 
