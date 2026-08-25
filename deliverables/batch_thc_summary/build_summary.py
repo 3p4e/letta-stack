@@ -39,12 +39,12 @@ def fmt_date(iso):
 
 def fmt_pct(v):
     """House numeric rule: exactly two decimals, % immediately after the digit,
-    no space. A percentage is the same figure in either language — only the
-    decimal mark would differ — so it is printed ONCE, not as an MK|EN pair;
-    the document is Macedonian-primary, so the decimal comma is used."""
+    no space. A percentage is the same figure in either language, so there is
+    no MK|EN pair and no decimal mark to swap either — printed exactly as
+    every source certificate itself prints it: a period."""
     if v is None:
         return None
-    return f"{v:.2f}".replace(".", ",") + "%"
+    return f"{v:.2f}%"
 
 
 def ecoa_label(row):
@@ -96,7 +96,7 @@ def self_check(data):
         if r["thc_pct"] is None:
             continue
         pct = fmt_pct(r["thc_pct"])
-        assert pct.endswith("%") and "," in pct and " " not in pct, f"house format violated: {pct}"
+        assert pct.endswith("%") and "." in pct and " " not in pct, f"house format violated: {pct}"
     print("SELF-CHECK OK — 12 rows, 2 confirmed-absent, 10 certified, "
           "2 correctly labeled PP in-house.")
 
