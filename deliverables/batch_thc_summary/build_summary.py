@@ -91,14 +91,16 @@ def self_check(data):
     assert missing == ["P060122", "P060132"], f"unexpected missing set: {missing}"
     assert sum(1 for r in rows if r["thc_pct"] is not None) == 10
     pp_rows = [r["p_number"] for r in rows if r.get("is_pp")]
-    assert pp_rows == ["P050192", "GG1024"], f"unexpected PP-labeled set: {pp_rows}"
+    expected_pp = ["P050192", "P060022", "P060072", "P050282", "GG1024", "P050302", "P050312"]
+    assert pp_rows == expected_pp, f"unexpected PP-labeled set: {pp_rows}"
     for r in rows:
         if r["thc_pct"] is None:
             continue
         pct = fmt_pct(r["thc_pct"])
         assert pct.endswith("%") and "." in pct and " " not in pct, f"house format violated: {pct}"
     print("SELF-CHECK OK — 12 rows, 2 confirmed-absent, 10 certified, "
-          "2 correctly labeled PP in-house.")
+          f"{len(expected_pp)} correctly labeled PP (in-house or PP certificate "
+          "citing an outsourced result, whichever is the latest-dated document).")
 
 
 if __name__ == "__main__":
