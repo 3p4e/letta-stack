@@ -112,51 +112,70 @@ def reclassify_one(doc):
     return f"fixed:{tt['test_type']}"
 
 
-def main():
-    log("watcher started")
-    idle_rounds = 0
-    while True:
-        docs = list_all_docs()
-        unknown_done = [d for d in docs if d["run"] == "DONE"
-                        and (d.get("meta_fields") or {}).get("test_type") == "UNKNOWN"]
-        still_running = sum(1 for d in docs if d["run"] == "RUNNING")
-        failed = sum(1 for d in docs if d["run"] == "FAIL")
-
-        if not unknown_done:
-            idle_rounds += 1
-            log(f"nothing new to reclassify this round — {still_running} still parsing, "
-                f"{failed} failed to parse, idle_rounds={idle_rounds}")
-            if still_running == 0:
-                log("no documents left RUNNING — watcher exiting")
-                break
-            time.sleep(180)
-            continue
-
-        idle_rounds = 0
-        fixed = still_unknown = errors = 0
-        for d in unknown_done:
-            try:
-                outcome = reclassify_one(d)
-            except Exception as e:
-                outcome = f"error:{e}"
-            if outcome.startswith("fixed"):
-                fixed += 1
-            elif outcome == "still_unknown":
-                still_unknown += 1
-            else:
-                errors += 1
-                log(f"  {d['name']}: {outcome}")
-        log(f"round complete: {len(unknown_done)} newly-DONE UNKNOWN docs processed — "
-            f"fixed={fixed} still_unknown={still_unknown} errors={errors} "
-            f"| {still_running} still parsing, {failed} failed")
-        time.sleep(120)
-
-    log("watcher finished — final sweep")
+def run_one_pass():
+    """Single check-and-patch pass: reclassify every newly-DONE UNKNOWN
+    document, then return a status dict. No sleeping, no looping — meant
+    to be invoked repeatedly by an external scheduler (this session waking
+    itself up via send_later) rather than by an in-process loop, since a
+    long-lived background process in this environment isn't reliable
+    across container/shell resets (confirmed this session: a plain
+    nohup-backgrounded loop here died silently after ~10 minutes with no
+    error, and the KVM4 remote-shell runner turned out to be its own
+    minimal/uncertain-persistence container too, not the actual host)."""
     docs = list_all_docs()
+    unknown_done = [d for d in docs if d["run"] == "DONE"
+                    and (d.get("meta_fields") or {}).get("test_type") == "UNKNOWN"]
+    still_running = sum(1 for d in docs if d["run"] == "RUNNING")
+    failed = sum(1 for d in docs if d["run"] == "FAIL")
+
+    fixed = still_unknown = errors = 0
+    error_details = []
+    for d in unknown_done:
+        try:
+            outcome = reclassify_one(d)
+        except Exception as e:
+            outcome = f"error:{e}"
+        if outcome.startswith("fixed"):
+            fixed += 1
+        elif outcome == "still_unknown":
+            still_unknown += 1
+        else:
+            errors += 1
+            error_details.append((d["name"], outcome))
+
     import collections
     tt_counts = collections.Counter((d.get("meta_fields") or {}).get("test_type") for d in docs)
-    log(f"final test_type distribution: {dict(tt_counts)}")
+    result = {
+        "newly_done_unknown_processed": len(unknown_done),
+        "fixed": fixed, "still_unknown": still_unknown, "errors": errors,
+        "error_details": error_details,
+        "still_running": still_running, "failed_to_parse": failed,
+        "total_docs": len(docs),
+        "test_type_distribution": dict(tt_counts),
+        "all_settled": still_running == 0,
+    }
+    log(f"pass complete: {len(unknown_done)} newly-DONE UNKNOWN processed — "
+        f"fixed={fixed} still_unknown={still_unknown} errors={errors} "
+        f"| {still_running} still parsing, {failed} failed to parse "
+        f"| distribution={dict(tt_counts)}")
+    return result
+
+
+def loop_forever():
+    """Original always-on mode — kept for use on a genuinely persistent
+    host if one becomes available. NOT what this session actually uses;
+    see run_one_pass()'s docstring."""
+    log("watcher started (loop mode)")
+    while True:
+        result = run_one_pass()
+        if result["all_settled"]:
+            log("no documents left RUNNING — watcher exiting")
+            break
+        time.sleep(180)
 
 
 if __name__ == "__main__":
-    main()
+    if "--once" in sys.argv:
+        print(json.dumps(run_one_pass(), ensure_ascii=False))
+    else:
+        loop_forever()
