@@ -169,30 +169,76 @@ def new_style_filename(batch_no, doc_code, date_of_issue, lab):
 # ---------------------------------------------------------------------------
 # Content-based test-type classification — the part explicitly requested:
 # read each certificate's own sample-description line, tag accordingly.
+#
+# The single field label "Име на примерокот" only covers CNP/PP-Macedonian
+# certificates. Verified against real text from three other lab templates
+# this session:
+#   IJZ / IJZ-MB  — "Примерок: GRAPE PIE-сув цвет .../ DF 0013" under a
+#                    "ПОДАТОЦИ ЗА ПРИМЕРОКОТ" section header
+#   FHM           — no inline field at all; the sample is a table cell
+#                    under "2. Опис на примероците" / "Ознака на примерок
+#                    од клиент" (e.g. "Grape Pie P050022")
+#   PP (in-house) — the certificate is entirely in English ("Variety/
+#                    Strain:", "Batch No:"), no Macedonian field exists
+# Chasing every lab's own field layout is unbounded. The one signal that
+# is lab-template-independent is simpler and was verified directly: the
+# word "стабилност" (or a declined form) appears somewhere in a real
+# stability-timepoint certificate regardless of which lab issued it, and
+# is absent from a real release certificate regardless of which lab
+# issued it — confirmed against real FB032601 (CNP release, no match)
+# and both real P050072 timepoints (CNP stability, match). So test_type
+# is driven by that keyword search over the FULL text, not by first
+# locating one specific field. sample_description is still populated on
+# a best-effort basis (useful provenance) but no longer gates the
+# classification — a lab whose template classify_ecoa doesn't recognize
+# no longer collapses to UNKNOWN for the majority of the corpus.
 # ---------------------------------------------------------------------------
-_SAMPLE_DESC_RE = re.compile(
-    r'Име на примерок(?:от)?[:\s]*([^\n]+)', re.IGNORECASE)
+_SAMPLE_DESC_PATTERNS = [
+    re.compile(r'Име на примерок(?:от)?[:\s]*([^\n]+)', re.IGNORECASE),
+    re.compile(r'(?:^|\n)\s*Примерок:\s*([^\n]+)', re.IGNORECASE),
+    re.compile(r'Variety/Strain:\s*([^\n]+)', re.IGNORECASE),
+]
 _STAB_KEYWORD_RE = re.compile(r'стабилн\w*', re.IGNORECASE)
 _MONTH_RE = re.compile(r'мес(?:ец)?\.?\s*(\d+)', re.IGNORECASE)
 _COND_RE = re.compile(r'(\d+)\s*°?\s*C\s*/\s*(\d+)\s*%?\s*RH', re.IGNORECASE)
+
+# Below this many non-whitespace characters, text extraction itself is
+# treated as having failed (OCR refusal, blank page, truncated transcript)
+# — a data-quality problem, not evidence the certificate is a release.
+_MIN_USABLE_TEXT_CHARS = 80
+
+
+def _extract_sample_description(hay):
+    for pattern in _SAMPLE_DESC_PATTERNS:
+        m = pattern.search(hay)
+        if m:
+            return m.group(1).strip()
+    return None
 
 
 def classify_test_type(cert_text):
     """cert_text: the certificate's extracted text (native layer or vision
     OCR transcript). Returns test_type in {STABILITY_TIMEPOINT, RELEASE,
-    UNKNOWN}. UNKNOWN means the sample-description line itself could not be
-    found in the text — never guessed as RELEASE by default in that case,
-    since a missing field is a data-quality problem, not evidence of
-    anything."""
+    UNKNOWN}. UNKNOWN means text extraction itself produced too little
+    content to judge — never guessed at from a genuinely blank/failed
+    extraction. A real certificate with real content but no recognized
+    sample-description field is still classified (RELEASE, absent a
+    stability keyword) rather than punted to UNKNOWN — see the module
+    docstring above this function for why."""
     hay = cert_text or ""
-    m = _SAMPLE_DESC_RE.search(hay)
-    sample_description = m.group(1).strip() if m else None
-    if sample_description is None:
+    if len(hay.strip()) < _MIN_USABLE_TEXT_CHARS:
         return {"test_type": "UNKNOWN", "sample_description": None,
                 "stability_month": None, "stability_condition": None}
-    if _STAB_KEYWORD_RE.search(sample_description):
-        mm = _MONTH_RE.search(sample_description)
-        cc = _COND_RE.search(sample_description)
+
+    sample_description = _extract_sample_description(hay)
+    stab_match = _STAB_KEYWORD_RE.search(hay)
+    if stab_match:
+        # search near the keyword first (tighter, less chance of picking
+        # up an unrelated number elsewhere in the document), then the
+        # sample_description line if one was found, then the full text
+        window = hay[max(0, stab_match.start() - 40):stab_match.end() + 120]
+        mm = _MONTH_RE.search(window) or (_MONTH_RE.search(sample_description) if sample_description else None) or _MONTH_RE.search(hay)
+        cc = _COND_RE.search(window) or (_COND_RE.search(sample_description) if sample_description else None) or _COND_RE.search(hay)
         return {
             "test_type": "STABILITY_TIMEPOINT",
             "sample_description": sample_description,
@@ -313,9 +359,36 @@ if __name__ == "__main__":
     assert r6["stability_month"] == 6, r6
     assert r6["stability_condition"] == "40°C/75%RH", r6
 
-    unknown_text = "no sample-description field present in this text at all"
+    unknown_text = "too short"
     ru = classify_test_type(unknown_text)
     assert ru["test_type"] == "UNKNOWN", ru
+
+    # real IJZ certificate text (P050202_4762-2025_IJZ.pdf), fresh vision-OCR
+    # transcript this session — no "Име на примерокот" field at all, batch
+    # printed under a completely different label ("Сериски број"); this is
+    # the case that used to collapse to UNKNOWN before the fix
+    ijz_text = (
+        "ЗДРАВСТВЕНА БЕЗБЕДНОСТ НА ПРИМЕРОК\n\nПОДАТОЦИ ЗА ПРИМЕРОКОТ\n"
+        "Примерок: GRAPE PIE-сув цвет од медицински канабис/ DF 0013\n\n"
+        "Датум на прием: 01.10.2025 Со писмо: 093/2025\n"
+        "Датум на земање: 25.09.2025\n"
+        "Сериски број: GP 062501\n")
+    r_ijz = classify_test_type(ijz_text)
+    assert r_ijz["test_type"] == "RELEASE", r_ijz
+    assert r_ijz["sample_description"] and "GRAPE PIE" in r_ijz["sample_description"], r_ijz
+
+    # real FHM certificate text (P050022_197-11-K-26_FHM.pdf), fresh
+    # vision-OCR transcript this session — sample identified only inside a
+    # markdown table cell, no colon-labeled field classify_ecoa recognizes
+    # at all; must still classify from the стабилн-anywhere signal, not UNKNOWN
+    fhm_text = (
+        "2. Опис на примероците\n\n"
+        "| Ознака на примерок од клиент | Интерен број од ФЛЖКС | Тип на примерок |\n"
+        "| Grape Pie P050022 | CF-406/26 | Цвет |\n\n"
+        "3. Резултати од анализа на примероци\n"
+        "Вкупно Δ9-Tetrahydrocannabinol | Total Δ9-THC | 22.61 | 1.39\n")
+    r_fhm = classify_test_type(fhm_text)
+    assert r_fhm["test_type"] == "RELEASE", r_fhm
 
     # §4 canonicalisation, against the spec's own worked examples
     assert canonicalize_batch("GG1024/01")[0] == "GG1024_01"
