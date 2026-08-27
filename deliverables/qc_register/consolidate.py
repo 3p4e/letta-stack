@@ -227,6 +227,25 @@ def observations(cert_list, field):
     out.sort(key=lambda o: (o['date'] or dt.date(1900, 1, 1)))
     return out
 
+# QC decision 27.08.2026: J31122501 was release-tested as two parallel
+# preparations, each with a complete panel (potency + micro + chem) -> two rows.
+SPLIT_PREPS = {
+    'J31122501#trim': ('J31122501 (machine-trimmed)', ('100-3-К', '100-3-K', '230/0393', '230-0393', '1625')),
+    'J31122501#hand': ('J31122501 (hand-trimmed)', ('100-2-К', '100-2-K', '231/0394', '231-0394', '1628')),
+}
+SPLIT_META = {'p_number': 'P060262', 'strain': 'Jokerz 31', 'product_code': 'J31_THC21.5:CBD1',
+              'production': '2025-12', 'coq': {'J31122501#trim': 'CoQ-PP-2026-0054', 'J31122501#hand': None}}
+if 'J31122501' in by_batch:
+    _certs = by_batch.pop('J31122501')
+    for _sk, (_disp, _codes) in SPLIT_PREPS.items():
+        _lst = [c for c in _certs
+                if any(cd in (c['meta'].get('cert_code') or '') or cd in c['name'] for cd in _codes)]
+        if _lst: by_batch[_sk] = _lst
+    _rest = [c for c in _certs if not any(c in v for v in
+             (by_batch.get('J31122501#trim', []), by_batch.get('J31122501#hand', [])))]
+    if _rest:
+        raise SystemExit('J31122501 split left unassigned certs: %r' % [c['name'] for c in _rest])
+
 rows, coq_dossier, retests, stability_rows = [], [], [], []
 
 for bkey, clist in by_batch.items():
@@ -236,6 +255,8 @@ for bkey, clist in by_batch.items():
         if b and norm_batch(b) == bkey: disp = b; break
     if disp is None:
         disp = cult2p.get(bkey, clist[0]['meta'].get('batch_canonical', bkey))
+    if bkey in SPLIT_PREPS:
+        disp = SPLIT_PREPS[bkey][0]
     row = {
         'batch': disp, 'key': bkey,
         'p_number': pnum_of.get(bkey) or (disp if re.match(r'^P\d{6}$', str(disp)) else None),
@@ -243,6 +264,10 @@ for bkey, clist in by_batch.items():
         'production': prod_of.get(bkey), 'coq': coq_of.get(bkey),
         'n_certs': len(clist),
     }
+    if bkey in SPLIT_PREPS:
+        row.update({'p_number': SPLIT_META['p_number'], 'strain': SPLIT_META['strain'],
+                    'product_code': SPLIT_META['product_code'], 'production': SPLIT_META['production'],
+                    'coq': SPLIT_META['coq'][bkey]})
     if not row['p_number']:
         for c in clist:
             pr = c.get('params', {}).get('batch_printed')

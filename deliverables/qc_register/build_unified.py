@@ -28,6 +28,15 @@ def drive_url(cert_name):
     fid = DRIVE.get(nrm(cert_name))
     return f'https://drive.google.com/file/d/{fid}/view' if fid else None
 
+def base_batch(b):
+    return str(b).split(' (')[0]
+
+def lookup(d, row):
+    for k in (row['batch'], base_batch(row['batch']), row.get('p_number') or '§'):
+        v = d.get(nrm(k))
+        if v: return v
+    return None
+
 LABNAME = {'CNP': 'UKIM Faculty of Pharmacy — Center for Natural Products',
            'IJZ': 'IPH — Institute of Public Health (chemistry)',
            'IJZ-MB': 'IPH — Institute of Public Health (microbiology)',
@@ -138,7 +147,7 @@ ws, r = sheet('Batch Release QC', HEADS, WID,
 nb = 0
 for row in ROWS:
     nb += 1
-    is_new = nrm(row['batch']) not in reg_batches and nrm(row.get('p_number') or '§') not in reg_batches
+    is_new = nrm(base_batch(row['batch'])) not in reg_batches and nrm(row.get('p_number') or '§') not in reg_batches
     certs = sorted(CERT_MAP[row['key']], key=lambda n: RECS[n]['meta'].get('date_of_issue','')[::-1])
     def dkey(n):
         d = RECS[n]['meta'].get('date_of_issue') or '99.99.9999'
@@ -174,7 +183,7 @@ for row in ROWS:
         # THC spec on the CoQ-forming THC row
         if name == (row.get('total_thc_pct__file') or '').replace('_',', ').replace(', pdf','.pdf') or \
            nrm(name) == nrm(row.get('total_thc_pct__file') or '§'):
-            a = ASSIGN.get(nrm(row['batch'])) or ASSIGN.get(nrm(row.get('p_number') or '§'))
+            a = lookup(ASSIGN, row)
             put(ws,r,6, a['range'] if a else '/')
         put(ws,r,27, m.get('cert_code') or p.get('doc_code') or '')
         put(ws,r,28, m.get('date_of_issue') or '')
@@ -244,7 +253,7 @@ for strain in sorted(by_strain, key=lambda s: (s.startswith('—'), s)):
             rec = RECS[name]; p = rec.get('params') or {}; m = rec['meta']
             if m.get('test_type')=='STABILITY_TIMEPOINT' or p.get('is_stability'): continue
             if p.get('total_thc_pct') in (None,'') or m.get('lab') not in ('CNP','FHM','NGP','PP'): continue
-            a = ASSIGN.get(nrm(row['batch'])) or ASSIGN.get(nrm(row.get('p_number') or '§'))
+            a = lookup(ASSIGN, row)
             put(ws3,r3,1, seq if first else '')
             put(ws3,r3,2, row['batch'] if first else '', BOLD9 if first else CELL, LFT)
             put(ws3,r3,3, row.get('p_number') or '' if first else '')
@@ -266,8 +275,8 @@ n4 = 0
 for row in ROWS:
     n4 += 1
     thc = row.get('total_thc_pct'); src = row.get('total_thc_pct__src') or ''
-    tier = TIER.get(nrm(row['batch'])) or TIER.get(nrm(row.get('p_number') or '§'))
-    a = ASSIGN.get(nrm(row['batch'])) or ASSIGN.get(nrm(row.get('p_number') or '§'))
+    tier = lookup(TIER, row)
+    a = lookup(ASSIGN, row)
     rng = (tier or {}).get('range') or (a or {}).get('range')
     verdict = ''
     pr = parse_range(rng) if rng else None
@@ -401,7 +410,7 @@ srow('Layer B — labeled-line anchors','106 / 107 (99.1%)','Potency-critical fi
 srow('Layer C — human register cross-check','271 / 314 values agree','Values compared against the owner-maintained Batch Release register per CoA code. ~30 "differences" are Cyrillic Н.Д. vs Latin N.D. (equivalent). Adjudicated live diffs: BG1024 CBN (register transcribed uncertainty 0.02, cert prints 0.28), HPA1024 CBN 0.36, P060352 CBD/CBN swapped in register, P050042 Hg 0.001 (register 0.011) — in all four the RAG value matches the certificate; the register cell is wrong.')
 srow('Paper loop — vision samples','3 / 3 exact','Actual PDFs read visually and compared to the parse: GG012603/ППК26114 (CNP), BG1024/197-1-K-26 (FHM), CJ072501/ППК25367 (CNP, owner-supplied scan). Parse text reproduces the printed tables exactly.')
 srow('Repairs applied to extraction','49 entries','All logged with certificate-text evidence; classes: 5 pesticide polarity flips ("Не одговара" fabricated where certs print not-detected), 3 blanket-phantom docs (fields deleted for sections not on the certificate), GG012603 column shift (FM/LoD/CBN/CBD re-seated), 2 line-pick errors (ППК25367 CBD, ППК26005 THC), as-printed wording restored (Одговара vs "Absent").')
-srow('Still open (QC review / paper checks)','6 items','ППК25117 printed THC total 1.58 vs own components 15.38 — VERIFY ON PAPER; ППК25154 printed 1.87 same class; BSS052501 sheet 20.47 — probably the NGP result but the NGP scan parses as garbage, read off paper; GP062501 PP cert prints 24.89 vs tranche sheet 22.89 — QC decision; J31112501 sheet 25.00 = the March 051-5-K-26 result (25.27, CF-77/26), stale — superseded by the April retest 100-1-K-26 (20.21); J31122501 sheet 21.77 ≈ the 100-3-K-26 trimmed-sample result (21.84, CF-153/26) while the register carries the hand-trimmed 100-2-K-26 (19.84, CF-151/26) — same-day dual-preparation results: QC to decide which preparation is CoQ-forming.')
+srow('Still open (QC review / paper checks)','6 items','ППК25117 printed THC total 1.58 vs own components 15.38 — VERIFY ON PAPER; ППК25154 printed 1.87 same class; BSS052501 sheet 20.47 — probably the NGP result but the NGP scan parses as garbage, read off paper; GP062501 PP cert prints 24.89 vs tranche sheet 22.89 — QC decision; J31112501 sheet 25.00 = the March 051-5-K-26 result (25.27, CF-77/26), stale — superseded by the April retest 100-1-K-26 (20.21); J31122501 RESOLVED 27.08.2026: QC designated the trimmed preparation (100-3-K-26, 21.84) as CoQ-forming; hand-trimmed 19.84 (100-2-K-26) kept as experimental processing-mode comparison of the same batch; tranche sheet prints 21.77 — transcription slip of 21.84, correct the sheet.')
 srow('Verdict','DATABASE FAITHFUL','After the 49 logged repairs, the RAGed data is verbatim-consistent with the certificate text at 3 verification layers, and the parse text is vision-verified against the printed PDFs. Known residual risks are confined to the 4 open paper checks above.')
 r8 += 1
 put(ws8,r8,1,'REPAIR LOG', BOLD9, LFT, BATCHF)
