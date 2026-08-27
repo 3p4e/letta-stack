@@ -336,7 +336,8 @@ print('corrections applied:', corr_applied)
 # chronological ordering: by first result date, then batch
 rows.sort(key=lambda r: (parse_date(r['first_result']) or dt.date(2100, 1, 1), str(r['batch'])))
 
-json.dump({'rows': rows, 'retests': retests, 'stability': stability_rows,
+cert_map = {bk: [c['name'] for c in cl] for bk, cl in by_batch.items()}
+json.dump({'rows': rows, 'retests': retests, 'stability': stability_rows, 'cert_map': cert_map,
            'params': PARAMS, 'ac': AC, 'drive': drive},
           open(f'{S}/consolidated.json', 'w'), ensure_ascii=False, default=str)
 
