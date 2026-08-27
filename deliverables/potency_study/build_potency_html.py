@@ -1122,30 +1122,31 @@ def methodology_section():
             'zones — <b>8.81–8.99</b> (THC10/THC8) and <b>6.61–7.19</b> (THC8/THC6) — '
             'plugged by the odd fallback (THC9: 8.10–9.90; THC7: 6.30–7.70), so every '
             'result above ≈5.0% THC is placeable.</p>'
-            '<h4>2 · Симетричниот закон на континуитет | The symmetric contiguity law</h4>'
-            '<p>Every grade is <code>N ± t</code> with the SAME tolerance above and below. '
-            'Two neighbouring grades touching at 0.01 satisfy the EQUALITY '
-            '<code>tₛ + t_w = (Nₛ − N_w) − 0.01</code> — so every tolerance in a contiguous '
-            'ladder is an affine function of the top grade&#39;s tolerance (alternating '
-            'sign): fixing t₁ fixes the whole ladder. The solver reduces each ladder to one '
-            'variable — every grade contributes an interval constraint '
-            '<code>max(containment, 0.50) ≤ tₖ ≤ 0.10·Nₖ</code> on t₁ — intersects the '
-            'intervals, and t₁ takes the MAXIMUM of the intersection (strongest grade '
-            'first). Reserve grades close spans that batch grades cannot bridge (5 exist: '
-            'CJ THC17, CC THC16, FB THC16, GP THC22, OPM THC12); below 10% THC, where no '
-            'meaningful symmetric ladder joins, the lowest grade keeps its full ±10% with a '
-            'documented uncovered zone (GRC 7.71–10.79; OPM 8.81–9.10).</p>'
-            '<h4>3 · Непарни номинали и толеранција | Odd nominals &amp; tolerance</h4>'
-            '<p>For every cluster the solver tries the initially selected even nominal, '
-            'then the adjacent odd numbers, ranking candidates by fewest odd nominals, '
-            'fewest reserves, then the largest top-grade tolerance. Example — Grape '
-            'Pie&#39;s top cluster spans 22.61–26.32: an even THC24 needs t ≥ 2.32, '
-            'leaving a negative budget (1.99 − 2.32) for any touching grade below — '
-            'infeasible; the adjacent odd <b>THC25 ±2.47</b> (22.53% — 27.47%) holds the '
-            'cluster and chains cleanly. Nine grades carry odd nominals: CJ 21/19/17R/15, '
-            'FB 21, GP 25, JD 19, OPM 21, GRC 7. Every grade prints ONE symmetric '
-            'tolerance: <code>nn.00% ±t.tt% (lower% — upper%)</code>, and nominal − t = '
-            'lower, nominal + t = upper hold exactly by construction.</p>'
+            '<h4>2 · Симетричниот буџетски закон | The symmetric budget law</h4>'
+            '<p>Every grade is <code>N ± t</code> with the SAME tolerance above and below '
+            '(t ≤ 0.10·N, minimum 0.50). Two grades touching at 0.01 satisfy the EQUALITY '
+            '<code>tₛ + t_w = (Nₛ − N_w) − 0.01</code>; two grades merely coexisting '
+            'satisfy it as an inequality (no overlap). NO EMPTY GRADES: every grade holds '
+            'at least one tested batch — where real grades cannot reach each other under '
+            'the 10% cap, the result-free span stays as a DOCUMENTED GAP. Where grades '
+            'touch, the shared budget is split as EQUALLY as batch containment allows; a '
+            'grade facing a gap takes its maximum coverage. The solver enumerates every '
+            'feasible nominal per cluster and every gap placement, solves each '
+            'configuration exactly (tolerances in a touching run are affine in one '
+            'variable; the balance optimum sits at a breakpoint), and ranks: fewest odd '
+            'nominals → fewest gaps → smallest imbalance → smallest gap length → most '
+            'natural nominals → largest total tolerance.</p>'
+            '<h4>3 · Задолжителни кодови | Mandatory product codes</h4>'
+            '<p>The 48 tranche-list batches carry exactly the THCnn:CBD1 codes management '
+            'assigned (27.08.2026) — fixed constraints in the solver. 46/48 hold exactly; '
+            'two are arithmetically impossible and carry the minimal flagged deviation: '
+            '<b>CJ062501/1</b> (21.51, THC22) collides with the mandatory THC24 holding '
+            '22.30 (their containment needs exceed the 1.99 no-overlap budget) → THC20, '
+            'yielding the balanced pair 24 ±1.99 / 20 ±2.00; and <b>PM112501</b> (audited '
+            '13.33 > 13.20 = 1.10·12) → THC14. Uncoded batches take any feasible even '
+            'nominal; odd only where no even works (GRC_THC7 dead-zone fallback). Every '
+            'grade prints ONE symmetric tolerance: <code>nn.00% ±t.tt% (lower% — '
+            'upper%)</code>.</p>'
             '<h4>4 · Сидро | Anchor policy</h4>'
             '<p>The grade anchors on the batch&#39;s latest result — the retest where one '
             'exists (T1 197-series 07.08.2026, April J31 retests, pending T2 re-analysis). '
@@ -1159,7 +1160,7 @@ def methodology_section():
             '<tr><td>Batch anchors inside their assigned grade</td>'
             '<td class="ok">86 / 86 (77 certified + 8 declared + J31122501)</td></tr>'
             '<tr><td>Windows centred on their nominal (single symmetric ± tolerance)</td>'
-            '<td class="ok">58 / 58</td></tr>'
+            '<td class="ok">52 / 52</td></tr>'
             '<tr><td>Batches without a grade (register ∪ stock census)</td>'
             '<td class="ok">0</td></tr>'
             '<tr><td>Superseded results still inside a grade of their strain</td>'
@@ -1215,7 +1216,7 @@ HTML = """<!doctype html>
   <span class="chip"><b>%d</b>сорти | strains</span>
   <span class="chip"><b>%d</b>серии | batches</span>
   <span class="chip"><b>%d</b>класи | grades</span>
-  <span class="chip"><b>%d</b>резервни класи | reserve grades</span>
+  <span class="chip"><b>%d</b>документирани празнини | documented gaps</span>
   <span class="chip"><b>0</b>наоди од независна проверка | independent-audit findings</span>
  </div>
  <div class="informal">Неформален работен документ · не е контролиран запис · 27.08.2026 |
@@ -1243,57 +1244,59 @@ in the Pot.- tiers).</p>
  the Methodology chapter below.</div>
 
  <div class="mrules">
-  <div class="mrule"><b><i>1</i>Парна цела номинала | Even whole nominal</b>
-   Номиналата на секоја класа е ПАРЕН цел број (… 8, 10, 12 … 26), во продукт-кодот
-   <b style="display:inline;text-transform:none;font-size:12.5px">XX_THCnn:CBD1</b>;
-   само каде што парната номинала математички не може да носи симетричен прозорец,
-   номиналата преминува на соседниот НЕПАРЕН број.
-   <em>Every grade's nominal is an EVEN whole number, printed in the product code; only
-   where the even nominal mathematically cannot carry a symmetric window does it shift
-   to the adjacent ODD number (9 grades: CJ 21/19/17R/15, FB 21, GP 25, JD 19, OPM 21,
-   GRC 7).</em></div>
+  <div class="mrule"><b><i>1</i>Задолжителни кодови | Mandatory codes</b>
+   48-те серии од листата на менаџментот ги носат ТОЧНО доделените кодови
+   <b style="display:inline;text-transform:none;font-size:12.5px">XX_THCnn:CBD1</b>
+   (парни цели номинали); отстапка само каде што кодовите се меѓусебно математички
+   невозможни — минимална и означена (2 случаи: CJ062501/1 и PM112501).
+   <em>The 48 management-listed batches carry EXACTLY their assigned codes (even whole
+   nominals); a deviation only where the codes are mutually impossible — minimal and
+   flagged (2 cases). Uncoded batches take any feasible even nominal; odd only where
+   no even works (GRC_THC7).</em></div>
 
-  <div class="mrule"><b><i>2</i>Симетрична толеранција | Symmetric tolerance</b>
+  <div class="mrule"><b><i>2</i>Симетрична и балансирана | Symmetric &amp; balanced</b>
    Секоја класа е номинала ± t со ИСТА толеранција над и под неа (t ≤ 10,00%% од
-   номиналата); допирањето на соседни класи ја дава равенката
-   t<sub>горна</sub> + t<sub>долна</sub> = разлика на номиналите − 0,01, па сите
-   толеранции во скалата се врзани за највисоката класа, која зема максимум прва.
-   <em>Every grade is nominal ± t with the SAME t above and below (t ≤ 10%% of nominal);
-   contiguity binds neighbours by t_upper + t_lower = nominal difference − 0.01, chaining
-   the whole ladder to the top grade, which takes its maximum first.</em></div>
+   номиналата, мин. 0,50); каде што класите се допираат (на 0,01), заедничкиот буџет
+   t<sub>горна</sub> + t<sub>долна</sub> = разлика − 0,01 се дели ШТО ПОРАМНОМЕРНО;
+   ниедна класа не се стеснува во корист на соседот.
+   <em>Every grade is nominal ± t with the SAME t above and below (t ≤ 10%% of nominal,
+   min 0.50); where grades touch, the shared budget is split as EQUALLY as containment
+   allows — no grade is squeezed for its neighbour&#39;s benefit.</em></div>
 
-  <div class="mrule"><b><i>3</i>Континуитет и резервни класи | Contiguity &amp; reserve grades</b>
-   Од највисоката класа надолу, соседните опсези се допираат на 0,01 — без јаз и без
-   преклоп; каде што класите со серии не можат да се допрат, се вметнува РЕЗЕРВНА класа
-   (спецификациски дефинирана, без тековна серија). Под 10%% THC, каде што парната скала
-   математички не се спојува, најниската класа стои со документирана непокриена зона.
-   <em>Consecutive ranges join at 0.01; reserve grades close unbridgeable spans above
-   10%%; below 10%% the lowest grade may sit with a documented uncovered zone.</em></div>
+  <div class="mrule"><b><i>3</i>Без празни класи | No empty grades</b>
+   Секоја класа содржи барем една тестирана серија; каде што реалните класи не можат
+   да се допрат под капата од 10%%, просторот БЕЗ резултати останува ДОКУМЕНТИРАНА
+   ПРАЗНИНА — никогаш празна резервна класа. Резултат во празнина = ревизија на
+   класите, не растегнување.
+   <em>Every grade holds at least one tested batch; where real grades cannot reach each
+   other under the 10%% cap, the result-free span stays a DOCUMENTED GAP — never an
+   empty reserve grade. A future result in a gap triggers a grade-set revision.</em></div>
  </div>
 
  <div class="mparams">
   <span class="mparam">Толеранција | Tolerance <b>≤ 10,00%%</b> од номиналата | of nominal</span>
-  <span class="mparam">Номинала | Nominal <b>парен цел број | even whole number</b></span>
-  <span class="mparam">Допир на класи | Grades meet at <b>0,01</b></span>
+  <span class="mparam">Номинала | Nominal <b>задолжителен код | mandatory code</b></span>
+  <span class="mparam">Допир | Touch at <b>0,01</b> · празнини без резултати | gaps result-free</span>
   <span class="mparam">Сидро | Anchor = <b>ретест (CoQ-формирачки) | retest (CoQ-forming)</b></span>
   <span class="mparam">Изразување | Expression <b>nn.00%% ±t.tt%% (долна%% — горна%%)</b></span>
   <span class="mparam">Мин. толеранција | Min tolerance <b>0,50</b></span>
  </div>
 
- <div class="mwork"><b>Пример | Worked example</b> — Blue Sunset Sherbet
- (сидра | anchors 20,39 / 23,42 / 25,01):
- <code>BSS_THC24:CBD1 — 24.00%% ±2.40%% (21.60%% — 26.40%%)</code> ја зема полната
- ширина | takes the full cap<span class="arrow">→</span>равенката t₂₄ + t₂₀ = 3,99
- | the equality t₂₄ + t₂₀ = 3.99 дава | yields
- <code>BSS_THC20:CBD1 — 20.00%% ±1.59%% (18.41%% — 21.59%%)</code> — симетрично око
- номиналата | centred on the nominal.</div>
+ <div class="mwork"><b>Пример | Worked example</b> — Fat Bastard:
+ <code>FB_THC22:CBD1 — 22.00%% ±2.19%%</code> и | and
+ <code>FB_THC18:CBD1 — 18.00%% ±1.80%%</code> се допираат на 19,80/19,81 | touch at
+ 19.80/19.81<span class="arrow">→</span>THC18 не стигнува до THC14 (буџет 3,99 &gt;
+ капи 3,20) | THC18 cannot reach THC14 (budget 3.99 &gt; caps 3.20), па просторот без
+ резултати 15,00–16,19 останува празнина | so the result-free span stays a gap, а долу |
+ below <code>FB_THC14 — 14.00%% ±0.99%%</code> и <code>FB_THC12 — 12.00%% ±1.00%%</code>
+ го делат буџетот речиси наполу | split their budget almost exactly in half.</div>
 
- <div class="msum"><b>Накратко | In short:</b> парна цела номинала, максимум 10%% од
- номиналата на страна, најсилната класа прва, соседните класи се допираат на 0,01,
- резервни класи ги затвораат преостанатите јазови, а сидро е секогаш најновиот
- (ретест) резултат. | <b>Even whole nominal, at most 10%% of nominal per side, strongest
- grade first, neighbouring grades touch at 0.01, reserve grades close remaining spans,
- and the anchor is always the latest (retest) result.</b></div>
+ <div class="msum"><b>Накратко | In short:</b> задолжителните кодови важат, секоја класа
+ е симетрична околу номиналата, соседите го делат буџетот што порамномерно, нема празни
+ класи — просторите без резултати се документирани празнини, а сидро е секогаш најновиот
+ (ретест) резултат. | <b>Mandatory codes hold, every grade is centred on its nominal,
+ touching neighbours split the budget as equally as possible, no empty grades — result-free
+ spans are documented gaps, and the anchor is always the latest (retest) result.</b></div>
 </div>
 %s</section>
 
@@ -1359,7 +1362,7 @@ The laboratory certificates in the QMS remain authoritative.</span>
 """
 
 _n_grades = sum(len(v) for v in d["merged_ranges"].values())
-_n_reserve = sum(1 for v in d["merged_ranges"].values() for t in v if t.get("bridge"))
+_n_reserve = len(GD["exceptions"])
 _n_gbatches = len({b for v in d["merged_ranges"].values() for t in v for b in t["batches"]})
 
 HTML = HTML % (CSS, d["n_results"], d["n_strains"], _n_gbatches, _n_grades, _n_reserve,

@@ -53,8 +53,8 @@ for strain, entry in D['strains'].items():
         # A2 nominal inside, even (or flagged odd)
         if not (lo <= N <= up): prob(f"{strain} THC{N}: nominal outside [{lo},{up}]")
         if N % 2 and not g.get('odd'): prob(f"{strain} THC{N}: odd nominal not flagged")
-        if N % 2 and not any(('ODD fallback' in f or 'odd shift' in f) and strain in f
-                             for f in D['flags']):
+        if N % 2 and not any(('ODD fallback' in f or 'odd shift' in f or 'odd nominal' in f)
+                             and strain in f for f in D['flags']):
             prob(f"{strain} THC{N}: odd nominal without a recorded fallback/shift flag")
         # A3 tolerance arithmetic
         if abs(round(N - g['minus_tol'], 2) - lo) > 1e-9:

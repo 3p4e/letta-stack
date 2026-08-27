@@ -174,163 +174,246 @@ for strain in sorted(strains):
                                  f"weakest THC{N} batch ({vminN:.2f}) -> re-coded THC{N}{note}")
                     x['req'] = N; changed = True
 
-    # 4. SYMMETRIC ladder (management rule 27.08.2026): every grade is
-    #    nominal +/- t with EQUAL tolerance above and below. Contiguity then
-    #    binds neighbours by the equality  t_s + t_w = (N_s - N_w) - 0.01,
-    #    chaining every tolerance to the top grade's. Where the initially
-    #    selected even nominal cannot carry a symmetric window under all
-    #    rules, the nominal shifts to the adjacent ODD whole number.
+    # 4. DISTRIBUTION-AWARE SYMMETRIC LADDER (management rules 27.08.2026):
+    #    - every grade is nominal +/- t, SAME t above and below, t <= 10% of N
+    #    - NO empty grades: every grade holds at least one result; where real
+    #      grades cannot reach each other the result-free span stays as a
+    #      documented gap instead of a reserve grade
+    #    - the nominal is NOT value-chased: any feasible even nominal may hold
+    #      a cluster (11.3 can sit under THC10 or THC12); odd only when no
+    #      even configuration exists
+    #    - tolerance at each junction is split as EQUALLY as the constraints
+    #      allow (replaces strongest-takes-maximum); neighbouring grades touch
+    #      at 0.01 wherever the mathematics permits
     import itertools
     TMIN = 0.50
 
     def tcap(N):
         return round(0.10 * N, 2)
 
-    # batch clusters, strongest first (E = initially selected even nominal)
-    gset = sorted({x['req'] for x in rows_g}, reverse=True)
-    clusters = []
-    for N in gset:
-        mem = [x for x in rows_g if x['req'] == N]
-        clusters.append({'E': N, 'vmin': min(x['v'] for x in mem),
-                         'vmax': max(x['v'] for x in mem), 'mem': mem})
-
     def creq(N, c):
         return round(max(N - c['vmin'], c['vmax'] - N, TMIN), 2)
 
-    def solve_chain(ladder, reqs):
-        """maximize t of the strongest grade; all t chained by contiguity."""
-        a, s = [0.0], [1]
-        for i in range(1, len(ladder)):
-            g = round(ladder[i - 1] - ladder[i] - 0.01, 2)
-            a.append(round(g - a[i - 1], 4)); s.append(-s[i - 1])
-        lo, hi = -1e9, 1e9
-        for i, N in enumerate(ladder):
-            lo_i, hi_i = reqs[i], tcap(N)
-            if lo_i > hi_i + 1e-9: return None
-            if s[i] > 0:
-                lo = max(lo, lo_i - a[i]); hi = min(hi, hi_i - a[i])
-            else:
-                lo = max(lo, a[i] - hi_i); hi = min(hi, a[i] - lo_i)
-        if lo > hi + 1e-9: return None
-        t0 = round(hi, 2)
-        ts = [round(a[i] + s[i] * t0, 2) for i in range(len(ladder))]
-        for i, N in enumerate(ladder):
-            if ts[i] < reqs[i] - 1e-9 or ts[i] > tcap(N) + 1e-9: return None
-        return ts
+    def make_clusters(rows_x):
+        gs = sorted({x['req'] for x in rows_x}, reverse=True)
+        cl = []
+        for N in gs:
+            mem = [x for x in rows_x if x['req'] == N]
+            cl.append({'E': N, 'vmin': min(x['v'] for x in mem),
+                       'vmax': max(x['v'] for x in mem), 'mem': mem,
+                       'owner': any(x['owner'] for x in mem)})
+        return cl
 
-    def solve_segment(cl):
-        """cl: descending cluster list. Returns (rank, ladder, is_res, ts) or None."""
-        opts = []
-        for c in cl:
-            o = []
-            for N in (c['E'], c['E'] + 1, c['E'] - 1):
-                if N >= 2 and creq(N, c) <= tcap(N) + 1e-9:
-                    o.append(N)
-            if not o: return None
-            opts.append(o)
-        best = None
-        for combo in itertools.product(*opts):
-            if any(combo[i] <= combo[i + 1] for i in range(len(combo) - 1)):
-                continue
-            gap_opts = []
-            for i in range(len(combo) - 1):
-                mids = list(range(combo[i + 1] + 1, combo[i]))
-                subs = [()]
-                for r in (1, 2, 3):
-                    subs += [tuple(sorted(ss, reverse=True))
-                             for ss in itertools.combinations(mids, r)]
-                gap_opts.append(subs)
-            for resv in itertools.product(*gap_opts):
-                ladder, reqs, is_res = [], [], []
-                for i, N in enumerate(combo):
-                    ladder.append(N); reqs.append(creq(N, cl[i])); is_res.append(False)
-                    if i < len(resv):
-                        for M in resv[i]:
-                            ladder.append(M); reqs.append(TMIN); is_res.append(True)
-                if any(ladder[j] <= ladder[j + 1] for j in range(len(ladder) - 1)):
+    clusters = make_clusters(rows_g)
+
+    def options(c):
+        """owner-coded clusters are MANDATORY: nominal fixed. Free clusters:
+        feasible evens then odds, nearest-mid first."""
+        if c['owner']:
+            return [c['E']] if creq(c['E'], c) <= tcap(c['E']) + 1e-9 else []
+        mid = (c['vmin'] + c['vmax']) / 2
+        ev = sorted((N for N in range(2, 41, 2) if creq(N, c) <= tcap(N) + 1e-9),
+                    key=lambda N: abs(N - mid))
+        od = sorted((N for N in range(3, 41, 2) if creq(N, c) <= tcap(N) + 1e-9),
+                    key=lambda N: abs(N - mid))
+        return (ev + od)[:6]
+
+    def solve_config_g(combo, gapped, clusters):
+        """combo: nominal per cluster (descending). gapped: junction indices
+        NOT chained. Global objective: total |t_k - t_{k+1}| over ALL adjacent
+        grades (balance rule), tie-break larger total tolerance.
+        Returns (imbalance, gap_len, sum_t, ts, zones) or None."""
+        m = len(combo)
+        reqs = [creq(N, c) for N, c in zip(combo, clusters)]
+        for i in range(m - 1):
+            B = round(combo[i] - combo[i + 1] - 0.01, 2)
+            if reqs[i] + reqs[i + 1] > B + 1e-9:
+                return None
+        segs, cur = [], [0]
+        for i in range(m - 1):
+            if i in gapped:
+                segs.append(cur); cur = [i + 1]
+            else:
+                cur.append(i + 1)
+        segs.append(cur)
+
+        def seg_affine(seg):
+            Ns = [combo[j] for j in seg]
+            a, s = [0.0], [1]
+            for k in range(1, len(Ns)):
+                g = round(Ns[k - 1] - Ns[k] - 0.01, 2)
+                a.append(round(g - a[k - 1], 4)); s.append(-s[k - 1])
+            return Ns, a, s
+
+        best_leaf = [None]
+
+        def touching(ts_all, k):
+            return (round(combo[k] - ts_all[k], 2) - 0.01
+                    <= round(combo[k + 1] + ts_all[k + 1], 2) + 1e-9)
+
+        def dfs(si, prev_last, ts_acc):
+            if si == len(segs):
+                imb = sum(abs(ts_acc[k] - ts_acc[k + 1]) for k in range(m - 1)
+                          if touching(ts_acc, k))
+                key = (round(imb, 2), -round(sum(ts_acc), 2))
+                if best_leaf[0] is None or key < best_leaf[0][0]:
+                    best_leaf[0] = (key, list(ts_acc))
+                return
+            seg = segs[si]
+            Ns, a, s = seg_affine(seg)
+            lo, hi = -1e9, 1e9
+            for k, N in enumerate(Ns):
+                lo_k, hi_k = reqs[seg[k]], tcap(N)
+                if k == 0 and prev_last is not None:
+                    Bgap = round(prev_last[0] - N - 0.01, 2)
+                    hi_k = min(hi_k, round(Bgap - prev_last[1], 2))
+                if lo_k > hi_k + 1e-9: return
+                if s[k] > 0:
+                    lo = max(lo, lo_k - a[k]); hi = min(hi, hi_k - a[k])
+                else:
+                    lo = max(lo, a[k] - hi_k); hi = min(hi, a[k] - lo_k)
+            if lo > hi + 1e-9: return
+            # piecewise-linear objective: optimum at a breakpoint.
+            # candidates: interval ends; t0 equalizing each internal pair
+            # t_k = t_{k+1}; t0 equalizing the boundary junction with the
+            # previous segment's bottom tolerance (+-0.01 neighbours).
+            cand = {round(lo, 2), round(hi, 2)}
+            for k in range(len(Ns) - 1):
+                den = s[k] - s[k + 1]
+                if den:
+                    t_eq = (a[k + 1] - a[k]) / den
+                    for d in (-0.01, 0.0, 0.01):
+                        v = round(t_eq + d, 2)
+                        if lo - 1e-9 <= v <= hi + 1e-9: cand.add(v)
+            if prev_last is not None and s[0] != 0:
+                t_eq = (prev_last[1] - a[0]) / s[0]
+                for d in (-0.01, 0.0, 0.01):
+                    v = round(t_eq + d, 2)
+                    if lo - 1e-9 <= v <= hi + 1e-9: cand.add(v)
+            cand = sorted(cand)
+            for t0 in cand:
+                tt = [round(a[k] + s[k] * t0, 2) for k in range(len(Ns))]
+                if any(tt[k] < reqs[seg[k]] - 1e-9 or tt[k] > tcap(Ns[k]) + 1e-9
+                       for k in range(len(Ns))):
                     continue
-                ts = solve_chain(ladder, reqs)
-                if ts is None: continue
-                n_ob = sum(1 for j, N in enumerate(ladder) if not is_res[j] and N % 2)
-                n_or = sum(1 for j, N in enumerate(ladder) if is_res[j] and N % 2)
-                n_r = sum(is_res)
-                shift = sum(abs(N - c['E']) for N, c in zip(combo, cl))
-                rank = (n_ob, n_or, n_r, tuple(-t for t in ts), shift)
-                if best is None or rank < best[0]:
-                    best = (rank, ladder, is_res, ts, combo)
-        return best
+                dfs(si + 1, (Ns[-1], tt[-1]), ts_acc + tt)
 
-    # segment splitting: only where the bottom cluster lives below 10% and
-    # nothing (reserves, odd shifts) can join it — the permitted floater rule
-    segments, gaps = [], []
-    todo = clusters
-    while todo:
-        sol = solve_segment(todo)
-        if sol is not None:
-            segments.append((todo, sol)); todo = []
-        elif len(todo) > 1 and todo[-1]['E'] < 10:
-            top, bottom = todo[:-1], todo[-1:]
-            sol_top = solve_segment(top)
-            if sol_top is not None:
-                segments.append((top, sol_top)); todo = bottom
-            else:
-                flags.append(f"{strain}: symmetric ladder UNSOLVABLE — CONFLICT"); todo = []
-        else:
-            flags.append(f"{strain}: symmetric ladder UNSOLVABLE — CONFLICT"); todo = []
+        dfs(0, None, [])
+        if best_leaf[0] is None: return None
+        ts = best_leaf[0][1]
+        imb = round(sum(abs(ts[k] - ts[k + 1]) for k in range(m - 1)
+                        if touching(ts, k)), 2)
+        zones, gap_len = [], 0.0
+        for i in sorted(gapped):
+            za = round(combo[i + 1] + ts[i + 1] + 0.01, 2)
+            zb = round(combo[i] - ts[i] - 0.01, 2)
+            if za > zb + 1e-9:
+                continue
+            zones.append((combo[i], combo[i + 1], za, zb))
+            gap_len += zb - za + 0.01
+        return (imb, round(gap_len, 2), round(sum(ts), 2), ts, zones)
 
-    grades = []
-    prev_seg_bottom = None
-    for cl, (rank, ladder, is_res, ts, combo) in segments:
-        # owner-code nominal shifts -> flags
-        for N, c in zip(combo, cl):
+    def attempt(cl):
+        bst = None
+        mm = len(cl)
+        for combo in itertools.product(*(options(c) for c in cl)):
+            if any(combo[i] <= combo[i + 1] for i in range(mm - 1)):
+                continue
+            n_odd = sum(1 for N in combo if N % 2)
+            for r in range(0, mm):
+                for gp in itertools.combinations(range(mm - 1), r):
+                    sol = solve_config_g(combo, set(gp), cl)
+                    if sol is None: continue
+                    imb, gap_len, sum_t, ts, zones = sol
+                    nat = round(sum(abs(N - (c['vmin'] + c['vmax']) / 2)
+                                    for N, c in zip(combo, cl)), 2)
+                    shift = sum(abs(N - c['E']) for N, c in zip(combo, cl)
+                                if c['owner'])
+                    rank = (n_odd, len(zones), round(imb, 2), gap_len, nat, -sum_t, shift)
+                    if bst is None or rank < bst[0]:
+                        bst = (rank, combo, ts, zones)
+        return bst
+
+    best = attempt(clusters)
+    if best is None:
+        # MANDATORY codes mutually infeasible: minimal-deviation search —
+        # move the fewest batches (prefer uncoded) to another feasible grade
+        cands = []
+        for x in rows_g:
+            for N in feas(x['v']):
+                if N != x['req']:
+                    cands.append((x['batch'], N))
+        found = None
+        for size in (1, 2, 3):
+            best_mv = None
+            for mv in itertools.combinations(cands, size):
+                names = [nm for nm, _ in mv]
+                if len(set(names)) < size: continue
+                rows_x = [dict(x) for x in rows_g]
+                for nm, N in mv:
+                    for x in rows_x:
+                        if x['batch'] == nm: x['req'] = N
+                cl2 = make_clusters(rows_x)
+                b2 = attempt(cl2)
+                if b2 is not None:
+                    n_own = sum(1 for nm, _ in mv
+                                for x in rows_g if x['batch'] == nm and x['owner'])
+                    key = (n_own, b2[0])
+                    if best_mv is None or key < best_mv[0]:
+                        best_mv = (key, mv, b2, cl2, rows_x)
+            if best_mv is not None:
+                found = best_mv; break
+        if found is not None:
+            _, mv, best, clusters, rows_g2 = found
+            for nm, N in mv:
+                xo = next(x for x in rows_g if x['batch'] == nm)
+                tag = ('MANDATORY-CODE DEVIATION (unavoidable)' if xo['owner']
+                       else 'uncoded batch re-joined')
+                flags.append(f"{strain} / {nm}: {tag} — THC{xo['req']} for {xo['v']:.2f} "
+                             f"cannot coexist with the neighbouring mandatory grades "
+                             f"(symmetric ±10%, no overlap) -> THC{N}")
+            rows_g = rows_g2
+    if best is None:
+        flags.append(f"{strain}: ladder UNSOLVABLE — CONFLICT")
+        report[strain] = []
+    else:
+        rank, combo, ts, zones = best
+        for N, c in zip(combo, clusters):
             if N != c['E']:
                 who = ', '.join(x['batch'] for x in c['mem'])
-                own = any(x['owner'] for x in c['mem'])
-                flags.append(f"{strain}: THC{c['E']} -> THC{N} (odd shift for symmetric "
-                             f"tolerance){' [owner-coded]' if own else ''}: {who}")
-        cmap = {N: c for N, c in zip(combo, cl)}
-        if prev_seg_bottom is not None:
-            za = round(prev_seg_bottom, 2); zb = round(ladder[0] + ts[0], 2)
-            gaps.append((ladder[0], round(zb + 0.01, 2), za))
-        for j, N in enumerate(ladder):
-            t = ts[j]
+                kind = 'odd nominal' if N % 2 else 'even re-nominal'
+                flags.append(f"{strain}: THC{c['E']} -> THC{N} ({kind}, distribution rule)"
+                             f"{' [owner-coded]' if c['owner'] else ''}: {who}")
+        for upN, dnN, za, zb in zones:
+            low10 = 'sub-10% territory — ' if dnN < 10 else 'result-free span — '
+            exceptions.append(f"{strain}: uncovered zone {za:.2f}-{zb:.2f} between THC{upN} "
+                              f"and THC{dnN} ({low10}no result on file; no-empty-grades rule)")
+        grades = []
+        for (N, c), t in zip(zip(combo, clusters), ts):
             lo, up = round(N - t, 2), round(N + t, 2)
-            mem = cmap.get(N, {}).get('mem', []) if not is_res[j] else []
             grades.append({'nominal': N, 'lower': lo, 'upper': up, 'tol': t,
                            'width': round(2 * t, 2), 'odd': bool(N % 2),
-                           'bridge': is_res[j],
-                           'full': abs(t - tcap(N)) < 1e-9,
+                           'bridge': False, 'full': abs(t - tcap(N)) < 1e-9,
                            'batches': [{'batch': x['batch'], 'v': x['v'],
                                         'owner_req': x['owner'], 'src': x['src'],
                                         'basis': x['basis']}
-                                       for x in sorted(mem, key=lambda y: -y['v'])]})
-        prev_seg_bottom = round(ladder[-1] - ts[-1], 2)
-    gap_pairs = set()
-    if len(segments) == 2:
-        upN = segments[0][1][1][-1]; dnN = segments[1][1][1][0]
-        gap_pairs.add((upN, dnN))
-        za = round(segments[1][1][1][0] + segments[1][1][3][0] + 0.01, 2)
-        zb = round(segments[0][1][1][-1] - segments[0][1][3][-1] - 0.01, 2)
-        exceptions.append(f"{strain}: uncovered zone {za:.2f}-{zb:.2f} between "
-                          f"THC{upN} and THC{dnN} (sub-10% territory — ladder cannot "
-                          f"join symmetrically; permitted per rule)")
-
-    # final assertions
-    for i in range(len(grades) - 1):
-        upg, dng = grades[i], grades[i + 1]
-        assert upg['lower'] > dng['upper'], f"{strain}: overlap {upg['nominal']}/{dng['nominal']}"
-        if (upg['nominal'], dng['nominal']) not in gap_pairs:
-            assert abs(upg['lower'] - 0.01 - dng['upper']) < 1e-9, \
-                f"{strain}: {upg['nominal']}/{dng['nominal']} not contiguous"
-    for g in grades:
-        N, t = g['nominal'], g['tol']
-        assert abs((N - g['lower']) - (g['upper'] - N)) < 1e-9, f"{strain} THC{N}: not symmetric"
-        assert t <= tcap(N) + 1e-9 and t >= TMIN - 1e-9
-        assert g['lower'] <= N <= g['upper']
-        for bb in g['batches']:
-            assert g['lower'] - 1e-9 <= bb['v'] <= g['upper'] + 1e-9, \
-                f"{strain} THC{N}: {bb['batch']} {bb['v']} outside"
-    report[strain] = grades
+                                       for x in sorted(c['mem'], key=lambda y: -y['v'])]})
+        gap_pairs = {(upN, dnN) for upN, dnN, _, _ in zones}
+        for i in range(len(grades) - 1):
+            upg, dng = grades[i], grades[i + 1]
+            assert upg['lower'] > dng['upper'], f"{strain}: overlap {upg['nominal']}/{dng['nominal']}"
+            if (upg['nominal'], dng['nominal']) not in gap_pairs:
+                assert abs(upg['lower'] - 0.01 - dng['upper']) < 1e-9, \
+                    f"{strain}: {upg['nominal']}/{dng['nominal']} not contiguous, no declared gap"
+        for g in grades:
+            N, t = g['nominal'], g['tol']
+            assert abs((N - g['lower']) - (g['upper'] - N)) < 1e-9
+            assert TMIN - 1e-9 <= t <= tcap(N) + 1e-9
+            assert g['batches'], f"{strain} THC{N}: empty grade (forbidden)"
+            for bb in g['batches']:
+                assert g['lower'] - 1e-9 <= bb['v'] <= g['upper'] + 1e-9, \
+                    f"{strain} THC{N}: {bb['batch']} {bb['v']} outside"
+        report[strain] = grades
 
 STRAIN_CODE = {
  'Amnesia Core Cut': 'ACC', 'Apple and Banana': 'AB', 'Blue Gelato': 'BG',

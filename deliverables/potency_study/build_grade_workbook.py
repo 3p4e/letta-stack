@@ -21,10 +21,10 @@ wb = openpyxl.Workbook()
 ws = wb.active; ws.title = 'Grade Boards'
 ws.append(['ImB POTENCY GRADE RANGES — EVEN WHOLE-NUMBER NOMINALS (proposal 27.08.2026)'])
 ws['A1'].font = Font(bold=True, size=13)
-ws.append(['Rules: nominal = whole even number (adjacent odd only where symmetry is impossible); '
-           'tolerance EQUAL above and below the nominal, at most 10% of it; two-decimal bounds; '
-           'no overlap; contiguous ladders; strongest grade takes the maximum range first; '
-           'every batch falls in exactly one grade.'])
+ws.append(['Rules: whole even nominal preferred (odd only where no even configuration works); '
+           'tolerance EQUAL above and below the nominal, at most 10% of it; NO empty grades — '
+           'result-free spans stay as documented gaps; touching grades split their budget as '
+           'equally as the constraints allow; every batch falls in exactly one grade.'])
 ws['A2'].alignment = LFT
 ws.append([])
 hdr = ['Strain', 'Code', 'Grade', 'Product Code', 'Spec. Doc. Code', 'Nominal %', 'Tolerance %',
@@ -39,7 +39,7 @@ for strain, entry in D['strains'].items():
     for g in entry:
         bl = ', '.join(f"{b['batch']} {b['v']:.2f}" for b in g['batches']) \
              or '— reserve grade (no current batch)'
-        status = 'FULL ±10%' if g['full'] else 'clipped (contiguity rule)'
+        status = 'FULL ±10%' if g['full'] else 'balanced (shared budget)'
         if g.get('bridge'): status = 'RESERVE (contiguity bridge)'
         if g.get('odd'): status += ' — ODD nominal (fallback rule 5)'
         tol = (f"±{g['plus_tol']:.2f}" if g['symmetric']
@@ -98,27 +98,32 @@ ws2.freeze_panes = 'A2'
 ws3 = wb.create_sheet('Notes & Exceptions')
 rows = [
  ('DESIGN RULES', ''),
- ('1', 'Nominal potency of every grade is a whole EVEN number (…8, 10, 12 … 26), printed in the '
-       'product code as THCnn : CBD1 and shown on the specification as nn.00 %.'),
- ('2', 'A grade range never extends more than 10% of the nominal to either side '
-       '(lower >= 0.90 x nominal, upper <= 1.10 x nominal). Bounds carry two decimals.'),
- ('3', 'SYMMETRIC tolerance (management rule, 27.08.2026): every grade is nominal ± t with the '
-       'SAME t above and below, so the window is always centred on the nominal. Contiguity then '
-       'binds neighbouring grades by the equality t_upper + t_lower = (N_upper - N_lower) - 0.01, '
-       'which chains every tolerance to the top grade of the ladder.'),
- ('4', 'Ranges within one strain do not overlap; the strongest grade is given the maximum '
-       'tolerance the chain allows first, each weaker grade takes what the equalities leave.'),
- ('5', 'Every batch of the strain falls inside exactly one grade window at its latest certified '
-       'Total THC value (retest = CoQ-forming; superseded pre-retest results are out of scope).'),
- ('6', 'Contiguity: from the top grade down, consecutive ranges join at 0.01. RESERVE grades '
-       '(spec-defined, no current batch) close spans that batch-bearing grades cannot bridge. '
-       'Sole exception below 10% THC where no meaningful symmetric ladder joins: the lowest '
-       'grade(s) sit with a documented uncovered zone (GRC 7.71-10.79; OPM 8.81-9.10).'),
- ('7', 'ODD-nominal adjustment (management rule, 27.08.2026): where the initially selected even '
-       'nominal cannot carry a symmetric window under rules 2-6, the nominal shifts to the '
-       'adjacent odd whole number (above or below). Also covers isolated results in the even '
-       'ladder dead zones (GRC_THC7). No grade tolerance is allowed below 0.50 (a 0.40pp-wide '
-       'grade is not a meaningful specification).'),
+ ('1', 'MANDATORY product codes (management, 27.08.2026): the 48 tranche-list batches carry '
+       'exactly the THCnn : CBD1 codes management assigned. The solver treats them as fixed '
+       'constraints; a deviation is permitted only where the assigned codes are mutually '
+       'impossible under rules 2-4, is minimal (fewest batches moved), and is flagged. '
+       'Result: 46/48 honored; 2 unavoidable deviations (CJ062501/1 21.51: THC22->THC20 '
+       'beside the mandatory THC24 holding 22.30; PM112501 audited 13.33 > 13.20 ceiling '
+       'of THC12 -> THC14). Uncoded batches take any feasible even nominal — the nominal is '
+       'NOT chased after the analysis value; odd only where no even configuration exists.'),
+ ('2', 'SYMMETRIC tolerance: every grade is nominal ± t with the SAME t above and below '
+       '(window centred on the nominal), t at most 10% of the nominal, bounds two decimals, '
+       'minimum meaningful tolerance 0.50.'),
+ ('3', 'NO EMPTY GRADES (management rule, 27.08.2026): every grade holds at least one tested '
+       'batch. Where real grades cannot reach each other under the 10% cap, the result-free '
+       'span between them stays as a DOCUMENTED GAP — never as an empty reserve grade.'),
+ ('4', 'BALANCED distribution (management rule, 27.08.2026): where two grades touch, the '
+       'shared budget (nominal difference − 0.01) is split as EQUALLY as the batch-containment '
+       'and 10% constraints allow — no grade is squeezed for the benefit of its neighbour. '
+       'Grades touch wherever the mathematics permits; a grade facing a gap takes its maximum '
+       'coverage.'),
+ ('5', 'Every batch falls in exactly one grade at its latest certified value (retest = '
+       'CoQ-forming; superseded pre-retest results are out of specification scope).'),
+ ('6', 'Gaps carry no results by construction (each gap lies between the windows of grades '
+       'that jointly contain every result of the strain); typical at the very lowest grades '
+       '(GRC 7.71-10.79; OPM 8.81-8.99) and in result-free mid-spans (CJ, CC, FB, GP, JD, '
+       'OPM). A future result landing in a gap triggers a grade-set revision, not an ad-hoc '
+       'stretch.'),
  ('', ''),
  ('FLAGS', ''),
 ]

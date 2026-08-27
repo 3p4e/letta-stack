@@ -36,104 +36,92 @@ holds against every analysis result on file.
    GRC102501/1, the P16-series) enter at their declared values; their grades are provisional
    until an eCoA exists.
 
-## 3. The rule set (management, 27.08.2026)
+## 3. The rule set (management, 27.08.2026 — final revision)
 
-R1. The nominal of every grade is a **whole even number** (… 8, 10, 12 … 26), shown as
-    `nn.00 %` and in the product code as `THCnn : CBD1`. Where an even nominal cannot carry
-    a rule-compliant window, the nominal shifts to the **adjacent odd** whole number (R7).
-R2. A grade's tolerance never exceeds **10 % of the nominal**; bounds carry two decimals.
-R3. **Symmetric tolerance** (27.08.2026): every grade is `nominal ± t` with the **same t
-    above and below** — the window is always centred on the nominal.
-R4. Ranges within one strain **never overlap**, and the **strongest grade is given the
-    maximum tolerance first**; each weaker grade takes what remains.
-R5. Every batch of the strain falls in **exactly one** grade at its anchor value
-    (**retest supersession**: retest values are CoQ-forming, superseded results out of scope).
-R6. **Contiguity**: consecutive ranges join at 0.01, with **reserve grades** closing
-    unbridgeable spans; sole exception below 10 % THC (documented uncovered zone).
-R7. **Odd-nominal adjustment**: the adjacent odd whole number replaces an even nominal that
-    cannot satisfy R2–R6, and covers isolated results in the even ladder's dead zones.
-    No grade tolerance may be below **0.50** (a 0.40 pp-wide grade is not a meaningful
-    specification).
+R1. **Mandatory product codes**: the 48 tranche-list batches carry exactly the
+    `THCnn : CBD1` codes management assigned (27.08.2026 list). The solver treats them as
+    fixed constraints; a deviation is permitted only where the assigned codes are mutually
+    impossible under R2–R4, is minimal (fewest batches moved), and is flagged. Uncoded
+    batches take any feasible **even** nominal (the nominal is not chased after the
+    analysis value); the adjacent **odd** whole number only where no even works.
+R2. **Symmetric tolerance**: every grade is `nominal ± t` with the **same t above and
+    below**; `t ≤ 0.10·N`; bounds carry two decimals; minimum meaningful tolerance 0.50.
+R3. **No empty grades**: every grade holds at least one tested batch. Where real grades
+    cannot reach each other under the 10 % cap, the result-free span between them stays a
+    **documented gap** — never an empty reserve grade.
+R4. **Balanced distribution**: where two grades touch, the shared budget
+    `(Nₛ − N_w) − 0.01` is split as **equally** as batch containment and the 10 % cap
+    allow — no grade is squeezed for the benefit of its neighbour. Grades touch wherever
+    the mathematics permits; a grade facing a gap takes its maximum coverage.
+R5. Every batch falls in **exactly one** grade at its anchor value (**retest
+    supersession**: retest values are CoQ-forming; superseded results out of scope).
+R6. Gaps carry **no results by construction**; a future result landing in a gap triggers a
+    grade-set revision, not an ad-hoc stretch.
 
 ## 4. The mathematics
 
-### 4.1 Feasibility of a nominal for a result
+### 4.1 Feasibility of a nominal for a cluster
 
-A result `v` can carry nominal `N` iff `0.90·N ≤ v ≤ 1.10·N`, i.e.
-
-> **N ∈ [ v/1.1 , v/0.9 ]**
-
-That interval has width `v·(1/0.9 − 1/1.1) ≈ 0.202·v`. It therefore always contains a whole
-number once `v ≥ 4.95`, and always contains an **even** number once the interval is at least
-2 wide, i.e. `v ≥ 9.9`. Below that, the even ladder has two **dead zones** where consecutive
-even windows do not touch:
-
-| junction | stronger window starts | weaker window ends | dead zone |
-|---|---|---|---|
-| THC10 / THC8 | 9.00 | 8.80 | **8.81 – 8.99** |
-| THC8 / THC6 | 7.20 | 6.60 | **6.61 – 7.19** |
-
-(For N ≥ 12 adjacent even windows overlap — `1.1·(N−2) ≥ 0.9·N ⇔ N ≥ 11` — so every value
-≥ 10.80 is coverable by evens.) Rule R7 plugs the dead zones: THC9 covers 8.10–9.90 and THC7
-covers 6.30–7.70, so **every result above ≈ 5.0 % THC is placeable**. Today exactly one batch
-needs it: GRC102501/1 (declared 7.05 → `GRC_THC7:CBD1`, 6.30–7.70).
+A cluster of results `[vmin, vmax]` can carry nominal `N` iff its containment requirement
+`req(N) = max(N − vmin, vmax − N, 0.50)` does not exceed the cap `0.10·N`. The even
+ladder's low-end dead zones (8.81–8.99 and 6.61–7.19) are the only places where no even
+nominal exists for an isolated result — the odd fallback covers them (one case today:
+GRC102501/1 at 7.05 → `GRC_THC7:CBD1`).
 
 ### 4.2 Grade assignment
 
-Per strain, anchors are processed strongest-first:
+Batches keep the owner's product codes as *cluster* membership (which batches grade
+together); the cluster's *nominal* is then chosen freely per R1. Three audited
+corrections applied first (KC102501 17.04, PM112501 13.33, BSS052501 20.39); PM112501's
+owner code THC12 is arithmetically impossible for 13.33 (ceiling 13.20) and its cluster
+moved to THC14.
 
-1. **Owner-coded batches keep their code** if feasible per §4.1. Infeasible codes are
-   escalated to the nearest feasible even (odd only if no even exists) and flagged — one case:
-   PM112501, owner code THC12, audited value 13.33 > 13.20 = 1.10·12 → **THC14**.
-2. **Uncoded batches join an existing grade** of the strain when their value fits its raw
-   ±10 % window (nearest nominal on ties, upward); only when no existing grade fits is a new
-   grade created at the nearest feasible even. This keeps grade sets minimal — e.g. the new
-   Grape-Pie P16-series batches (26.32, 25.72, 24.78) joined the existing THC24 rather than
-   spawning a THC26.
-3. **Value-order repair**: no batch may sit at or above the weakest batch of a stronger
-   grade; offenders are re-coded upward (e.g. Cap Junky CJ1024 23.00 → THC24, above the
-   owner-coded THC24 batch CJ092501 22.30).
+### 4.3 The symmetric budget law and the balance objective
 
-### 4.3 The symmetric contiguity law
+Two grades touching at 0.01 satisfy **tₛ + t_w = (Nₛ − N_w) − 0.01** — an equality that
+chains every tolerance in a touching run to one free variable. Two grades merely
+*coexisting* (gap allowed) satisfy the same expression as an **inequality** (no overlap).
+The solver enumerates, per strain: every feasible nominal per cluster (evens first),
+every subset of junctions allowed to gap, and solves each configuration exactly —
+tolerances inside a touching run are affine in the run's top tolerance, and the optimum
+of the piecewise-linear balance objective lies at a breakpoint. Configurations are
+ranked: (1) fewest odd nominals, (2) fewest gaps, (3) smallest total imbalance
+`Σ|tₖ − tₖ₊₁|` over junctions whose windows actually touch, (4) smallest total gap
+length, (5) nominals closest to the cluster centres, (6) largest total tolerance.
 
-With symmetric windows `N ± t`, two neighbouring grades `Nₛ > N_w` touching at 0.01 satisfy
+### 4.4 Mandatory-code feasibility and minimal deviation
 
-> **tₛ + t_w = (Nₛ − N_w) − 0.01**
+Two of the 48 mandatory codes are arithmetically impossible and were resolved with the
+smallest possible deviation, both flagged:
 
-— an *equality*, not an inequality. For an adjacent even pair the budget is 1.99; inserting
-an odd nominal between changes the two budgets to 0.99 and 1.99 halves. Because each
-junction is an equality, **every tolerance in a contiguous ladder is an affine function of
-the top grade's tolerance** (alternating sign): fixing t₁ fixes the whole ladder. The
-solver therefore reduces each ladder to a one-variable feasibility problem — every grade
-contributes an interval constraint on t₁ from `max(containment, 0.50) ≤ tₖ ≤ 0.10·Nₖ` —
-intersects the intervals, and takes **t₁ = the maximum of the intersection** (R4:
-strongest first). Containment means `tₖ ≥ max(Nₖ − vminₖ, vmaxₖ − Nₖ)` over the grade's
-batches.
+- **Cap Junky**: CJ092501 (22.30) in THC24 needs `t₂₄ ≥ 1.70`; CJ062501/1 (21.51) in
+  THC22 needs `t₂₂ ≥ 0.49`; their no-overlap budget is `1.99 < 1.70 + 0.49 + …` — the
+  windows must collide. The single-move fix regrades **CJ062501/1 → THC20**, giving the
+  balanced ladder 24 ±1.99 (22.01–25.99) touching 20 ±2.00 (18.00–22.00, full) — every
+  other Cap Junky mandatory code holds.
+- **PM112501**: the audited certificate value 13.33 exceeds THC12's ceiling
+  `1.10·12 = 13.20`; the batch is graded **THC14** (13.00–15.00). If the pending paper
+  check of ППК26030 were to read 13.00 as on the owner sheet, THC12 would become
+  feasible and the design re-runs in one command.
 
-### 4.4 Choosing the nominals — even first, odd only when forced
+### 4.5 What the rules produce
 
-For every batch cluster the solver tries the initially selected even nominal E, then E+1
-and E−1; between clusters it tries direct junctions first, then up to three reserve
-nominals. Candidate ladders are ranked: (1) fewest odd batch-grade nominals, (2) fewest
-odd reserves, (3) fewest reserves, (4) largest (t₁, t₂, …) lexicographically, (5) smallest
-total nominal shift. Worked example — Grape Pie: the top cluster spans 22.61–26.32, so an
-even THC24 needs t ≥ 2.32, leaving ≤ −0.33 for any touching grade below (budget 1.99):
-**THC24 is infeasible**; the adjacent odd **THC25 ± 2.47** (22.53–27.47) holds the whole
-cluster and chains cleanly through a reserve THC22 to THC20/18/16. Cap Junky's mid-ladder
-forces three odd shifts (21, 19, 15) for the same reason. Where a sub-10 % bottom cluster
-cannot join even through odd bridges without violating the 0.50 minimum tolerance, the
-ladder splits and the lowest grade keeps its full ±10 % with a documented uncovered zone
-(GRC 7.71–10.79; OPM 8.81–9.10).
+Worked example — Fat Bastard (the case that motivated the final revision): clusters at
+20.83 / {18.86, 18.29, 16.69} / 14.68 / 12.39. THC20 cannot sit over the 18-cluster
+(req 0.83 + req 1.31 > 1.99), so the top takes **THC22 ±2.19** touching **THC18 ±1.80**
+(budget 3.99 split 2.19/1.80, cap-limited); 18 cannot reach 14 (budget 3.99 > cap sum
+3.20) so the result-free span **15.00–16.19 stays a documented gap**; below it
+**THC14 ±0.99** and **THC12 ±1.00** split their 1.99 budget almost exactly in half.
+No empty grade exists anywhere; every tested result sits inside a grade; gaps carry no
+results. The same machinery yields near-half splits across the portfolio (GG
+1.00/0.99/1.00, OPM 0.99/1.00/0.99/1.00, PM, MB, SJ, CC, JD) and full ±10 % wherever a
+grade faces a gap or stands alone.
 
-### 4.5 Tolerance expression
+### 4.6 Tolerance expression
 
-Every grade prints one symmetric tolerance:
-
-> `nn.00 % ± t.tt % (lower % — upper %)` — e.g. `24.00% ±2.40% (21.60% — 26.40%)`,
-> `25.00% ±2.47% (22.53% — 27.47%)`, `21.00% ±0.59% (20.41% — 21.59%)`.
-
-The bounds in parentheses are the governing acceptance limits; nominal − t = lower and
-nominal + t = upper hold exactly by construction.
+> `nn.00 % ± t.tt % (lower % — upper %)` — e.g. `22.00% ±2.19% (19.81% — 24.19%)`,
+> `12.00% ±1.00% (11.00% — 13.00%)`. Nominal − t = lower and nominal + t = upper hold
+> exactly by construction; the bounds are the governing acceptance limits.
 
 ## 5. Verification protocol and results (27.08.2026)
 
@@ -171,13 +159,13 @@ BSS052501 paper check (20.39 vs 20.47 — THC20 either way) · OMP1024_01 (15.38
 re-analysis eCoAs land; the design re-runs in one command (`python3 imb_grade_design.py &&
 python3 check_design.py`).
 
-## 7. Result (symmetric design, 27.08.2026)
+## 7. Result (final revision, 27.08.2026)
 
-24 strains · **58 grades** (53 batch-bearing + 5 reserve) · **86 batches**, each in exactly
-one grade · every window **centred on its nominal** (single ± tolerance) · 21 grades at the
-full ±10 % · **9 odd nominals** where the even could not hold a symmetric ladder (Cap Junky
-21/19/17R/15, Fat Bastard 21, Grape Pie 25, Jelly Donutz 19, Orange Punch Mimosa 21, and
-the GRC THC7 dead-zone fallback) · 2 permitted sub-10 % uncovered zones (GRC 7.71–10.79,
-OPM 8.81–9.10) · every constraint machine-asserted and independently re-audited (0 findings).
-Full boards: `ImB_Potency_Grade_Ranges.xlsx` (Grade Boards / Batch Assignments / Notes &
-Exceptions) and `grade_design_even.json`.
+**Mandatory codes: 46/48 honored exactly; 2 unavoidable, minimal, flagged deviations.**
+24 strains · **52 grades** (all batch-bearing — zero empty grades) · **86 batches**, each
+in exactly one grade · every window centred on its nominal · touching neighbours split
+their budgets near-equally · **8 documented result-free gaps** (GRC 7.71–10.79 and OPM
+8.81–8.99 at the low end; CJ, CC, FB, GP, JD, OPM mid-spans) · odd nominals only where
+no even configuration exists (CJ THC21, GRC THC7) · every constraint machine-asserted
+and independently re-audited (0 findings).
+Full boards: `ImB_Potency_Grade_Ranges.xlsx` and `grade_design_even.json`.
