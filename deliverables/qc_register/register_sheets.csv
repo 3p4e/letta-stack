@@ -1,5 +1,5 @@
 Purely Plant — Batch QC Testing Results Register
-"One row per batch · consolidated from eCoA_DATABASE (291 certificates, complete mirror of the ingestion folder) · CoQ-forming value = latest release-type result from a laboratory scoped for the parameter · stability results excluded · values exactly as printed on the certificate; units in headers only · built 27.08.2026 · rev.3: sanity-check repairs + J31122501 split into hand-trimmed (experimental) and machine-trimmed (CoQ-forming, CoQ-PP-2026-0054) preparations per QC designation"
+"One row per batch · consolidated from eCoA_DATABASE (291 certificates, complete mirror of the ingestion folder) · CoQ-forming value = latest release-type result from a laboratory scoped for the parameter · stability results excluded · values exactly as printed on the certificate; units in headers only · built 27.08.2026 · rev.4: J31122501 split per QC designation + P-numbers backfilled from PP-TH-VER (P060212/P060412/P060422)"
 
 No.,Production,Tranche,Batch No. (cultivation),P-number,Strain,Product code,CoQ doc. code (proposed),First result,Latest result,# eCoAs,Total Δ9-THC [%],Total CBD [%],Total CBN [%],Loss on Drying [%],Foreign Matter [%],Macroscopic ID,Microscopic ID,Identification (HPTLC),TAMC [CFU/g],TYMC [CFU/g],Bile-tolerant GNB [CFU/g],Salmonella [/25 g],E. coli [/1 g],Total Aflatoxins [µg/kg],Aflatoxin B1 [µg/kg],Ochratoxin A [µg/kg],Lead (Pb) [mg/kg],Cadmium (Cd) [mg/kg],Arsenic (As) [mg/kg],Mercury (Hg) [mg/kg],Pesticide Residues
 ,,,,,,A.C. →,,,,,per target grade (QCSP 001 §01),≤ 1.0,≤ 1.0,≤ 12.0,≤ 2.0,Conforms to description,Conforms to description,Identity confirmed,≤ 10^5,≤ 10^4,≤ 10^4,Absence /25 g,Absence /1 g,≤ 4,≤ 2,≤ 20,≤ 0.5,≤ 0.3,≤ 0.2,≤ 0.1,≤ LOQ (Ph. Eur. 2.8.13)
@@ -64,14 +64,14 @@ No.,Production,Tranche,Batch No. (cultivation),P-number,Strain,Product code,CoQ 
 59,,,GG012601*,,,,,28.04.2026,11.05.2026,3,15.35,,,6.13,,,,,1 x 10⁴ CFU/g,1 x 10⁴ CFU/g,< 10 CFU/g,отсутна/25 g,отсутна/g,< 2,Н.Д.,Н.Д.,0.0227,0.0179,0.0163,0.031,Н.д.
 60,2025-11,3,GG112501,P060252,Gorilla Glue,GG_THC15:CBD1,CoQ-PP-2026-0058,28.04.2026,11.05.2026,3,17.94,0.08,,6.31,,,,,"5,1 x 10^3","4,5 x 10^3",,отсутна/25 г,отсутен/г,< 2,Н.Д.,Н.Д.,0.033,0.0154,0.0272,0.0146,Н.Д.
 61,,,JD012601*,,,,,28.04.2026,11.05.2026,3,18.16,0.06,BLQ,6.68,,,,,"1,9 x 10³ CFU/g","2,4 x 10² CFU/g",,отсутна/25 g,отсутна/g,< 2,Н.Д.,Н.Д.,0.0739,0.0166,0.0136,0.0322,Н.д.
-62,,1,JD112501,,Jelly Donutz,CAYN JD 20/1,,28.04.2026,10.08.2026,5,20.32,< LOQ,< LOQ,6.69,,,,,"2,6 x 10^3","3,3 x 10^3",,отсутна/25,отсутна/g,< 2,ND,Н.Д.,0.022,0.0149,0.02,0.0166,Н.Д.
+62,,1,JD112501,P060212,Jelly Donutz,CAYN JD 20/1,,28.04.2026,10.08.2026,5,20.32,< LOQ,< LOQ,6.69,,,,,"2,6 x 10^3","3,3 x 10^3",,отсутна/25,отсутна/g,< 2,ND,Н.Д.,0.022,0.0149,0.02,0.0166,Н.Д.
 63,,,JD112501*,,,,,28.04.2026,11.05.2026,3,13.93,,,6.38,,,,,1 x 10⁴ CFU/g,"6,7 x 10³ CFU/g",,отсутна/25 g,отсутна/g,< 2,N.D.,N.D.,0.0109,0.01287,0.0175,0.0165,Н.д.
 64,2025-11,2,SCR112501,P060282,Scrambler,SCR_THC18.5:CBD1,CoQ-PP-2026-0060,28.04.2026,11.05.2026,3,17.13,,,6.84,,,,,"2,3 x 10³","4,3 x 10³",,отсутна/25 g,отсутна/g,< 2,Н.д.,Н.д.,0.0299,0.0136,0.0154,0.017,Н.д.
 65,2026-01,3,FB012603,,Fat Bastard,FB_THC22:CBD1,CoQ-PP-2026-0064,30.06.2026,30.06.2026,1,20.83,0.21,0.06,7.04,Одговара,Одговара,Одговара,,,,,,,,,,,,,,
 66,2026-01,3,FB012603V,P060392,Fat Bastard,FB_THC16.5:CBD1,CoQ-PP-2026-0065,30.06.2026,30.06.2026,1,18.29,0.16,0.06,6.36,Одговара,Одговара,Одговара,,,,,,,,,,,,,,
 67,2026-01,1,GG012603,P060402,Gorilla Glue,GG_THC15:CBD1,CoQ-PP-2026-0094,30.06.2026,10.08.2026,3,16.70,< LOQ,< LOQ,6.48,0.09,Одговара,Одговара,,,,,,,ND,ND,ND,,,,,
-68,,2,JD012603_02,,JellyDonutz,CAYN JD 20/1,,30.06.2026,30.06.2026,1,20.54,0.05,0.05,7.52,Одговара,Одговара,Одговара,,,,,,,,,,,,,,
-69,,2,JD012603_02V,,JellyDonutz,CAYN JD 16/1,,30.06.2026,30.06.2026,1,15.16,BLQ,0.04,7.04,Одговара,Одговара,Одговара,,,,,,,,,,,,,,
+68,,2,JD012603_02,P060412,JellyDonutz,CAYN JD 20/1,,30.06.2026,30.06.2026,1,20.54,0.05,0.05,7.52,Одговара,Одговара,Одговара,,,,,,,,,,,,,,
+69,,2,JD012603_02V,P060422,JellyDonutz,CAYN JD 16/1,,30.06.2026,30.06.2026,1,15.16,BLQ,0.04,7.04,Одговара,Одговара,Одговара,,,,,,,,,,,,,,
 70,2026-02,,JD022601,,Jelly Donutz,JD_THC20:CBD1,CoQ-PP-2026-0068,30.06.2026,30.06.2026,1,18.58,,0.05,7.73,Одговара,Одговара,Одговара,,,,,,,,,,,,,,
 71,,,P160012,P160012,GrapePie,,,06.07.2026,06.07.2026,1,26.32,0.15,0.09,6.31,0.42,Одговара,,,,,,,,,,,,,,,
 72,,,P160022,P160022,GrapePie,,,06.07.2026,06.07.2026,1,25.72,0.15,0.10,6.67,Одговара,Одговара,Одговара,,,,,,,,,,,,,,

@@ -54,8 +54,8 @@ No.,CoQ doc. code (proposed),Batch,P-number,Strain,Forming certificates (code ·
 50,CoQ-PP-2026-0050,SJ112501,P060192,Sleepy Joy,051-2-LoD-26 · 02.03.2026 · FHM | 051-2-K-26 · 04.03.2026 · FHM,—
 51,CoQ-PP-2026-0051,OPM112501,P060222,Orange Punch Mimosa,ППК26031 · 05.03.2026 · CNP,—
 52,CoQ-PP-2026-0052,PM112501,P060232,Permanent Marker,ППК26030 · 05.03.2026 · CNP,—
-53,,"J31122501 (hand-trimmed)",P060262,Jokerz 31,"100-2-K-26 · 09.04.2026 · FHM (CF-151/26, THC 19.84) | 231-0394-26 · 07.04.2026 · IJZ-MB (micro) | 1628-2026 · 23.04.2026 · IJZ (chem)","experimental processing-mode comparison lot (рачно тримиран) — complete panel, not CoQ-issued"
-54,CoQ-PP-2026-0054,"J31122501 (machine-trimmed)",P060262,Jokerz 31,"100-3-K-26 · 09.04.2026 · FHM (CF-153/26, THC 21.84) | 230-0393-26 · 07.04.2026 · IJZ-MB (micro) | 1625-2026 · 23.04.2026 · IJZ (chem)","QC designation 27.08.2026: released preparation (тримиран) — CoQ-forming; matches owner Batch Assignments row ''J31122501 (machine-trimmed)''"
+53,,J31122501 (hand-trimmed),P060262,Jokerz 31,"100-2-K-26 · 09.04.2026 · FHM (CF-151/26, THC 19.84) | 231-0394-26 · 07.04.2026 · IJZ-MB (micro) | 1628-2026 · 23.04.2026 · IJZ (chem)","experimental processing-mode comparison lot (рачно тримиран) — complete panel, not CoQ-issued"
+54,CoQ-PP-2026-0054,J31122501 (machine-trimmed),P060262,Jokerz 31,"100-3-K-26 · 09.04.2026 · FHM (CF-153/26, THC 21.84) | 230-0393-26 · 07.04.2026 · IJZ-MB (micro) | 1625-2026 · 23.04.2026 · IJZ (chem)",QC designation 27.08.2026: released preparation (тримиран) — CoQ-forming; matches owner Batch Assignments row ''J31122501 (machine-trimmed)''
 55,CoQ-PP-2026-0055,OPM122501,P060242,Orange Punch Mimosa,229-0392-26 · 07.04.2026 · IJZ-MB | 197-19-K-26 · 07.08.2026 · FHM | 100-4-LoD-26 · 09.04.2026 · FHM | 197-19-M-26 · 10.08.2026 · FHM | 1627-2026 · 23.04.2026 · IJZ,"Total Δ9-THC: 8.09 (100-4-K-26, 09.04.2026, FHM) → 7.91 (197-19-K-26, 07.08.2026, FHM), +120d | Total CBD: <LOQ (100-4-K-26, 09.04.2026, FHM) → <LOQ (197-19-K-26, 07.08.2026, FHM), +120d | Total CBN: <LOQ (100-4-K-26, 09.04.2026, FHM) → <LOQ (197-19-K-26, 07.08.2026, FHM), +120d | Aflatoxin B1: Н.Д. (1627-2026, 23.04.2026, IJZ) → ND (197-19-M-26, 10.08.2026, FHM), +109d"
 56,CoQ-PP-2026-0056,CC112501,P060272,Cash Cow,ППК26068 · 11.05.2026 · CNP | 311-0555-26 · 28.04.2026 · IJZ-MB | 2359-2026 · 29.04.2026 · IJZ,—
 57,CoQ-PP-2026-0061,FB012601_1,P060322,Fat Bastard,ППК26067 · 11.05.2026 · CNP | 308-0552-26 · 28.04.2026 · IJZ-MB | 2362-2026 · 30.04.2026 · IJZ,—
@@ -63,14 +63,14 @@ No.,CoQ doc. code (proposed),Batch,P-number,Strain,Forming certificates (code ·
 59,,GG012601*,,,ППК26062 · 11.05.2026 · CNP | 310-0554-26 · 28.04.2026 · IJZ-MB | 2364-2026 · 30.04.2026 · IJZ,—
 60,CoQ-PP-2026-0058,GG112501,P060252,Gorilla Glue,ППК26061 · 11.05.2026 · CNP | 304-0548-26 · 28.04.2026 · IJZ-MB | 2358-2026 · 29.04.2026 · IJZ,—
 61,,JD012601*,,,ППК26064 · 11.05.2026 · CNP | 309-0553-26 · 28.04.2026 · IJZ-MB | 2363-2026 · 30.04.2026 · IJZ,—
-62,,JD112501,,Jelly Donutz,197-15-K-26 · 07.08.2026 · FHM | 197-15-M-26 · 10.08.2026 · FHM | ППК26063 · 11.05.2026 · CNP | 307-0551-26 · 28.04.2026 · IJZ-MB | 2361-2026 · 30.04.2026 · IJZ,"Total Δ9-THC: 19.64 (ППК26063, 11.05.2026, CNP) → 20.32 (197-15-K-26, 07.08.2026, FHM), +88d | Aflatoxin B1: Н.Д. (2361-2026, 30.04.2026, IJZ) → ND (197-15-M-26, 10.08.2026, FHM), +102d"
+62,,JD112501,P060212,Jelly Donutz,197-15-K-26 · 07.08.2026 · FHM | 197-15-M-26 · 10.08.2026 · FHM | ППК26063 · 11.05.2026 · CNP | 307-0551-26 · 28.04.2026 · IJZ-MB | 2361-2026 · 30.04.2026 · IJZ,"Total Δ9-THC: 19.64 (ППК26063, 11.05.2026, CNP) → 20.32 (197-15-K-26, 07.08.2026, FHM), +88d | Aflatoxin B1: Н.Д. (2361-2026, 30.04.2026, IJZ) → ND (197-15-M-26, 10.08.2026, FHM), +102d"
 63,,JD112501*,,,ППК26065 · 11.05.2026 · CNP | 306-0550-26 · 28.04.2026 · IJZ-MB | 2365-2026 · 30.04.2026 · IJZ,—
 64,CoQ-PP-2026-0060,SCR112501,P060282,Scrambler,ППК26069 · 11.05.2026 · CNP | 305-0549-26 · 28.04.2026 · IJZ-MB | 2360-2026 · 29.04.2026 · IJZ,—
 65,CoQ-PP-2026-0064,FB012603,,Fat Bastard,ППК26112 · 30.06.2026 · CNP,—
 66,CoQ-PP-2026-0065,FB012603V,P060392,Fat Bastard,ППК26110 · 30.06.2026 · CNP,—
 67,CoQ-PP-2026-0094,GG012603,P060402,Gorilla Glue,197-8-K-26 · 07.08.2026 · FHM | 197-8-M-26 · 10.08.2026 · FHM | ППК26114 · 30.06.2026 · CNP,—
-68,,JD012603_02,,JellyDonutz,ППК26113 · 30.06.2026 · CNP,—
-69,,JD012603_02V,,JellyDonutz,ППК26111 · 30.06.2026 · CNP,—
+68,,JD012603_02,P060412,JellyDonutz,ППК26113 · 30.06.2026 · CNP,—
+69,,JD012603_02V,P060422,JellyDonutz,ППК26111 · 30.06.2026 · CNP,—
 70,CoQ-PP-2026-0068,JD022601,,Jelly Donutz,ППК26115 · 30.06.2026 · CNP,—
 71,,P160012,P160012,GrapePie,ППК26117 · 06.07.2026 · CNP,—
 72,,P160022,P160022,GrapePie,ППК26118 · 06.07.2026 · CNP,—
@@ -135,11 +135,11 @@ SCR022601,P060442,3,16.0,21.92,"ППК26116, 06.07.2026, CNP",sheet stale — ne
 SJ112501,P060192,3,9.0,9.20,"051-2-K-26, 04.03.2026, FHM",sheet rounded 9.00 — certificate prints 9.20 (verified)
 
 SECTION 4 — Batches on the tranche sheet with NO certificate in the ingestion folder
-ACC102501
-CC012603
-CF102501
-JD012603/01
-PUM102501
+ACC102501 (P060122)
+CC012603 (P060372)
+CF102501 (P060132)
+JD012603/01 (P060362)
+PUM102501 (P060112)
 GG012601
 GRC102501/1
 JD012601
