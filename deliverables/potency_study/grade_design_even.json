@@ -20,6 +20,10 @@
     ],
     "grade": "I",
     "strain_code": "ACC",
+    "minus_tol": 1.2,
+    "plus_tol": 1.2,
+    "symmetric": true,
+    "expression": "12.00% ±1.20% (10.80% — 13.20%)",
     "product_code": "ACC_THC12:CBD1",
     "spec_code": "QCSP_001_ACC-I"
    }
@@ -44,6 +48,10 @@
     ],
     "grade": "I",
     "strain_code": "AB",
+    "minus_tol": 1.6,
+    "plus_tol": 1.6,
+    "symmetric": true,
+    "expression": "16.00% ±1.60% (14.40% — 17.60%)",
     "product_code": "AB_THC16:CBD1",
     "spec_code": "QCSP_001_AB-I"
    }
@@ -68,6 +76,10 @@
     ],
     "grade": "I",
     "strain_code": "BG",
+    "minus_tol": 2.6,
+    "plus_tol": 2.6,
+    "symmetric": true,
+    "expression": "26.00% ±2.60% (23.40% — 28.60%)",
     "product_code": "BG_THC26:CBD1",
     "spec_code": "QCSP_001_BG-I"
    }
@@ -99,6 +111,10 @@
     ],
     "grade": "I",
     "strain_code": "BSS",
+    "minus_tol": 2.4,
+    "plus_tol": 2.4,
+    "symmetric": true,
+    "expression": "24.00% ±2.40% (21.60% — 26.40%)",
     "product_code": "BSS_THC24:CBD1",
     "spec_code": "QCSP_001_BSS-I"
    },
@@ -121,6 +137,10 @@
     ],
     "grade": "II",
     "strain_code": "BSS",
+    "minus_tol": 2.0,
+    "plus_tol": 1.59,
+    "symmetric": false,
+    "expression": "20.00% +1.59%/−2.00% (18.00% — 21.59%)",
     "product_code": "BSS_THC20:CBD1",
     "spec_code": "QCSP_001_BSS-II"
    }
@@ -173,6 +193,10 @@
     ],
     "grade": "I",
     "strain_code": "CJ",
+    "minus_tol": 1.99,
+    "plus_tol": 2.4,
+    "symmetric": false,
+    "expression": "24.00% +2.40%/−1.99% (22.01% — 26.40%)",
     "product_code": "CJ_THC24:CBD1",
     "spec_code": "QCSP_001_CJ-I"
    },
@@ -195,6 +219,10 @@
     ],
     "grade": "II",
     "strain_code": "CJ",
+    "minus_tol": 1.99,
+    "plus_tol": 0.0,
+    "symmetric": false,
+    "expression": "22.00% +0.00%/−1.99% (20.01% — 22.00%)",
     "product_code": "CJ_THC22:CBD1",
     "spec_code": "QCSP_001_CJ-II"
    },
@@ -224,6 +252,10 @@
     ],
     "grade": "III",
     "strain_code": "CJ",
+    "minus_tol": 1.99,
+    "plus_tol": 0.0,
+    "symmetric": false,
+    "expression": "20.00% +0.00%/−1.99% (18.01% — 20.00%)",
     "product_code": "CJ_THC20:CBD1",
     "spec_code": "QCSP_001_CJ-III"
    },
@@ -238,6 +270,10 @@
     "batches": [],
     "grade": "IV",
     "strain_code": "CJ",
+    "minus_tol": 1.8,
+    "plus_tol": 0.0,
+    "symmetric": false,
+    "expression": "18.00% +0.00%/−1.80% (16.20% — 18.00%)",
     "product_code": "CJ_THC18:CBD1",
     "spec_code": "QCSP_001_CJ-IV"
    },
@@ -252,6 +288,10 @@
     "batches": [],
     "grade": "V",
     "strain_code": "CJ",
+    "minus_tol": 1.06,
+    "plus_tol": 0.19,
+    "symmetric": false,
+    "expression": "16.00% +0.19%/−1.06% (14.94% — 16.19%)",
     "product_code": "CJ_THC16:CBD1",
     "spec_code": "QCSP_001_CJ-V"
    },
@@ -274,6 +314,10 @@
     ],
     "grade": "VI",
     "strain_code": "CJ",
+    "minus_tol": 1.4,
+    "plus_tol": 0.93,
+    "symmetric": false,
+    "expression": "14.00% +0.93%/−1.40% (12.60% — 14.93%)",
     "product_code": "CJ_THC14:CBD1",
     "spec_code": "QCSP_001_CJ-VI"
    }
@@ -298,6 +342,10 @@
     ],
     "grade": "I",
     "strain_code": "CC",
+    "minus_tol": 1.8,
+    "plus_tol": 1.8,
+    "symmetric": true,
+    "expression": "18.00% ±1.80% (16.20% — 19.80%)",
     "product_code": "CC_THC18:CBD1",
     "spec_code": "QCSP_001_CC-I"
    },
@@ -312,6 +360,10 @@
     "batches": [],
     "grade": "II",
     "strain_code": "CC",
+    "minus_tol": 1.6,
+    "plus_tol": 0.19,
+    "symmetric": false,
+    "expression": "16.00% +0.19%/−1.60% (14.40% — 16.19%)",
     "product_code": "CC_THC16:CBD1",
     "spec_code": "QCSP_001_CC-II"
    },
@@ -334,6 +386,10 @@
     ],
     "grade": "III",
     "strain_code": "CC",
+    "minus_tol": 1.4,
+    "plus_tol": 0.39,
+    "symmetric": false,
+    "expression": "14.00% +0.39%/−1.40% (12.60% — 14.39%)",
     "product_code": "CC_THC14:CBD1",
     "spec_code": "QCSP_001_CC-III"
    },
@@ -356,6 +412,10 @@
     ],
     "grade": "IV",
     "strain_code": "CC",
+    "minus_tol": 1.2,
+    "plus_tol": 0.59,
+    "symmetric": false,
+    "expression": "12.00% +0.59%/−1.20% (10.80% — 12.59%)",
     "product_code": "CC_THC12:CBD1",
     "spec_code": "QCSP_001_CC-IV"
    }
@@ -380,6 +440,10 @@
     ],
     "grade": "I",
     "strain_code": "CF",
+    "minus_tol": 1.0,
+    "plus_tol": 1.0,
+    "symmetric": true,
+    "expression": "10.00% ±1.00% (9.00% — 11.00%)",
     "product_code": "CF_THC10:CBD1",
     "spec_code": "QCSP_001_CF-I"
    }
@@ -404,6 +468,10 @@
     ],
     "grade": "I",
     "strain_code": "CLE",
+    "minus_tol": 0.8,
+    "plus_tol": 0.8,
+    "symmetric": true,
+    "expression": "8.00% ±0.80% (7.20% — 8.80%)",
     "product_code": "CLE_THC8:CBD1",
     "spec_code": "QCSP_001_CLE-I"
    }
@@ -428,6 +496,10 @@
     ],
     "grade": "I",
     "strain_code": "FB",
+    "minus_tol": 1.13,
+    "plus_tol": 2.0,
+    "symmetric": false,
+    "expression": "20.00% +2.00%/−1.13% (18.87% — 22.00%)",
     "product_code": "FB_THC20:CBD1",
     "spec_code": "QCSP_001_FB-I"
    },
@@ -464,6 +536,10 @@
     ],
     "grade": "II",
     "strain_code": "FB",
+    "minus_tol": 1.8,
+    "plus_tol": 0.86,
+    "symmetric": false,
+    "expression": "18.00% +0.86%/−1.80% (16.20% — 18.86%)",
     "product_code": "FB_THC18:CBD1",
     "spec_code": "QCSP_001_FB-II"
    },
@@ -478,6 +554,10 @@
     "batches": [],
     "grade": "III",
     "strain_code": "FB",
+    "minus_tol": 1.31,
+    "plus_tol": 0.19,
+    "symmetric": false,
+    "expression": "16.00% +0.19%/−1.31% (14.69% — 16.19%)",
     "product_code": "FB_THC16:CBD1",
     "spec_code": "QCSP_001_FB-III"
    },
@@ -500,6 +580,10 @@
     ],
     "grade": "IV",
     "strain_code": "FB",
+    "minus_tol": 1.4,
+    "plus_tol": 0.68,
+    "symmetric": false,
+    "expression": "14.00% +0.68%/−1.40% (12.60% — 14.68%)",
     "product_code": "FB_THC14:CBD1",
     "spec_code": "QCSP_001_FB-IV"
    },
@@ -522,6 +606,10 @@
     ],
     "grade": "V",
     "strain_code": "FB",
+    "minus_tol": 1.2,
+    "plus_tol": 0.59,
+    "symmetric": false,
+    "expression": "12.00% +0.59%/−1.20% (10.80% — 12.59%)",
     "product_code": "FB_THC12:CBD1",
     "spec_code": "QCSP_001_FB-V"
    }
@@ -560,6 +648,10 @@
     ],
     "grade": "I",
     "strain_code": "GG",
+    "minus_tol": 1.29,
+    "plus_tol": 1.8,
+    "symmetric": false,
+    "expression": "18.00% +1.80%/−1.29% (16.71% — 19.80%)",
     "product_code": "GG_THC18:CBD1",
     "spec_code": "QCSP_001_GG-I"
    },
@@ -587,7 +679,7 @@
       "basis": "certificate"
      },
      {
-      "batch": "GG012601",
+      "batch": "GG012601*",
       "v": 15.35,
       "owner_req": false,
       "src": "ППК26062, 11.05.2026, UKIM",
@@ -596,6 +688,10 @@
     ],
     "grade": "II",
     "strain_code": "GG",
+    "minus_tol": 1.6,
+    "plus_tol": 0.7,
+    "symmetric": false,
+    "expression": "16.00% +0.70%/−1.60% (14.40% — 16.70%)",
     "product_code": "GG_THC16:CBD1",
     "spec_code": "QCSP_001_GG-II"
    },
@@ -618,6 +714,10 @@
     ],
     "grade": "III",
     "strain_code": "GG",
+    "minus_tol": 1.4,
+    "plus_tol": 0.39,
+    "symmetric": false,
+    "expression": "14.00% +0.39%/−1.40% (12.60% — 14.39%)",
     "product_code": "GG_THC14:CBD1",
     "spec_code": "QCSP_001_GG-III"
    }
@@ -684,6 +784,10 @@
     ],
     "grade": "I",
     "strain_code": "GP",
+    "minus_tol": 2.4,
+    "plus_tol": 2.4,
+    "symmetric": true,
+    "expression": "24.00% ±2.40% (21.60% — 26.40%)",
     "product_code": "GP_THC24:CBD1",
     "spec_code": "QCSP_001_GP-I"
    },
@@ -727,6 +831,10 @@
     ],
     "grade": "II",
     "strain_code": "GP",
+    "minus_tol": 1.47,
+    "plus_tol": 1.59,
+    "symmetric": false,
+    "expression": "20.00% +1.59%/−1.47% (18.53% — 21.59%)",
     "product_code": "GP_THC20:CBD1",
     "spec_code": "QCSP_001_GP-II"
    },
@@ -749,6 +857,10 @@
     ],
     "grade": "III",
     "strain_code": "GP",
+    "minus_tol": 1.8,
+    "plus_tol": 0.52,
+    "symmetric": false,
+    "expression": "18.00% +0.52%/−1.80% (16.20% — 18.52%)",
     "product_code": "GP_THC18:CBD1",
     "spec_code": "QCSP_001_GP-III"
    },
@@ -771,6 +883,10 @@
     ],
     "grade": "IV",
     "strain_code": "GP",
+    "minus_tol": 1.6,
+    "plus_tol": 0.19,
+    "symmetric": false,
+    "expression": "16.00% +0.19%/−1.60% (14.40% — 16.19%)",
     "product_code": "GP_THC16:CBD1",
     "spec_code": "QCSP_001_GP-IV"
    }
@@ -795,6 +911,10 @@
     ],
     "grade": "I",
     "strain_code": "GRC",
+    "minus_tol": 1.2,
+    "plus_tol": 1.2,
+    "symmetric": true,
+    "expression": "12.00% ±1.20% (10.80% — 13.20%)",
     "product_code": "GRC_THC12:CBD1",
     "spec_code": "QCSP_001_GRC-I"
    },
@@ -817,6 +937,10 @@
     ],
     "grade": "II",
     "strain_code": "GRC",
+    "minus_tol": 0.7,
+    "plus_tol": 0.7,
+    "symmetric": true,
+    "expression": "7.00% ±0.70% (6.30% — 7.70%)",
     "product_code": "GRC_THC7:CBD1",
     "spec_code": "QCSP_001_GRC-II"
    }
@@ -848,6 +972,10 @@
     ],
     "grade": "I",
     "strain_code": "HPA",
+    "minus_tol": 2.2,
+    "plus_tol": 2.2,
+    "symmetric": true,
+    "expression": "22.00% ±2.20% (19.80% — 24.20%)",
     "product_code": "HPA_THC22:CBD1",
     "spec_code": "QCSP_001_HPA-I"
    },
@@ -870,6 +998,10 @@
     ],
     "grade": "II",
     "strain_code": "HPA",
+    "minus_tol": 1.8,
+    "plus_tol": 1.79,
+    "symmetric": false,
+    "expression": "18.00% +1.79%/−1.80% (16.20% — 19.79%)",
     "product_code": "HPA_THC18:CBD1",
     "spec_code": "QCSP_001_HPA-II"
    }
@@ -906,7 +1038,7 @@
       "basis": "certificate"
      },
      {
-      "batch": "JD012601",
+      "batch": "JD012601*",
       "v": 18.16,
       "owner_req": false,
       "src": "ППК26064, 11.05.2026, UKIM",
@@ -915,6 +1047,10 @@
     ],
     "grade": "I",
     "strain_code": "JD",
+    "minus_tol": 1.99,
+    "plus_tol": 2.0,
+    "symmetric": false,
+    "expression": "20.00% +2.00%/−1.99% (18.01% — 22.00%)",
     "product_code": "JD_THC20:CBD1",
     "spec_code": "QCSP_001_JD-I"
    },
@@ -929,6 +1065,10 @@
     "batches": [],
     "grade": "II",
     "strain_code": "JD",
+    "minus_tol": 1.28,
+    "plus_tol": 0.0,
+    "symmetric": false,
+    "expression": "18.00% +0.00%/−1.28% (16.72% — 18.00%)",
     "product_code": "JD_THC18:CBD1",
     "spec_code": "QCSP_001_JD-II"
    },
@@ -958,8 +1098,38 @@
     ],
     "grade": "III",
     "strain_code": "JD",
+    "minus_tol": 1.6,
+    "plus_tol": 0.71,
+    "symmetric": false,
+    "expression": "16.00% +0.71%/−1.60% (14.40% — 16.71%)",
     "product_code": "JD_THC16:CBD1",
     "spec_code": "QCSP_001_JD-III"
+   },
+   {
+    "nominal": 14,
+    "lower": 12.6,
+    "upper": 14.39,
+    "width": 1.79,
+    "odd": false,
+    "bridge": false,
+    "full": false,
+    "batches": [
+     {
+      "batch": "JD112501*",
+      "v": 13.93,
+      "owner_req": false,
+      "src": "ППК26065, 11.05.2026, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "IV",
+    "strain_code": "JD",
+    "minus_tol": 1.4,
+    "plus_tol": 0.39,
+    "symmetric": false,
+    "expression": "14.00% +0.39%/−1.40% (12.60% — 14.39%)",
+    "product_code": "JD_THC14:CBD1",
+    "spec_code": "QCSP_001_JD-IV"
    }
   ],
   "Jokerz 31": [
@@ -989,6 +1159,10 @@
     ],
     "grade": "I",
     "strain_code": "J31",
+    "minus_tol": 2.2,
+    "plus_tol": 2.2,
+    "symmetric": true,
+    "expression": "22.00% ±2.20% (19.80% — 24.20%)",
     "product_code": "J31_THC22:CBD1",
     "spec_code": "QCSP_001_J31-I"
    },
@@ -1011,6 +1185,10 @@
     ],
     "grade": "II",
     "strain_code": "J31",
+    "minus_tol": 1.8,
+    "plus_tol": 1.79,
+    "symmetric": false,
+    "expression": "18.00% +1.79%/−1.80% (16.20% — 19.79%)",
     "product_code": "J31_THC18:CBD1",
     "spec_code": "QCSP_001_J31-II"
    }
@@ -1035,6 +1213,10 @@
     ],
     "grade": "I",
     "strain_code": "KC",
+    "minus_tol": 1.8,
+    "plus_tol": 1.8,
+    "symmetric": true,
+    "expression": "18.00% ±1.80% (16.20% — 19.80%)",
     "product_code": "KC_THC18:CBD1",
     "spec_code": "QCSP_001_KC-I"
    }
@@ -1059,6 +1241,10 @@
     ],
     "grade": "I",
     "strain_code": "MB",
+    "minus_tol": 1.17,
+    "plus_tol": 1.8,
+    "symmetric": false,
+    "expression": "18.00% +1.80%/−1.17% (16.83% — 19.80%)",
     "product_code": "MB_THC18:CBD1",
     "spec_code": "QCSP_001_MB-I"
    },
@@ -1081,6 +1267,10 @@
     ],
     "grade": "II",
     "strain_code": "MB",
+    "minus_tol": 1.6,
+    "plus_tol": 0.82,
+    "symmetric": false,
+    "expression": "16.00% +0.82%/−1.60% (14.40% — 16.82%)",
     "product_code": "MB_THC16:CBD1",
     "spec_code": "QCSP_001_MB-II"
    }
@@ -1105,6 +1295,10 @@
     ],
     "grade": "I",
     "strain_code": "OPM",
+    "minus_tol": 2.2,
+    "plus_tol": 2.2,
+    "symmetric": true,
+    "expression": "22.00% ±2.20% (19.80% — 24.20%)",
     "product_code": "OPM_THC22:CBD1",
     "spec_code": "QCSP_001_OPM-I"
    },
@@ -1127,6 +1321,10 @@
     ],
     "grade": "II",
     "strain_code": "OPM",
+    "minus_tol": 1.44,
+    "plus_tol": 1.79,
+    "symmetric": false,
+    "expression": "18.00% +1.79%/−1.44% (16.56% — 19.79%)",
     "product_code": "OPM_THC18:CBD1",
     "spec_code": "QCSP_001_OPM-II"
    },
@@ -1156,6 +1354,10 @@
     ],
     "grade": "III",
     "strain_code": "OPM",
+    "minus_tol": 1.6,
+    "plus_tol": 0.55,
+    "symmetric": false,
+    "expression": "16.00% +0.55%/−1.60% (14.40% — 16.55%)",
     "product_code": "OPM_THC16:CBD1",
     "spec_code": "QCSP_001_OPM-III"
    },
@@ -1178,6 +1380,10 @@
     ],
     "grade": "IV",
     "strain_code": "OPM",
+    "minus_tol": 1.4,
+    "plus_tol": 0.39,
+    "symmetric": false,
+    "expression": "14.00% +0.39%/−1.40% (12.60% — 14.39%)",
     "product_code": "OPM_THC14:CBD1",
     "spec_code": "QCSP_001_OPM-IV"
    },
@@ -1192,6 +1398,10 @@
     "batches": [],
     "grade": "V",
     "strain_code": "OPM",
+    "minus_tol": 1.2,
+    "plus_tol": 0.59,
+    "symmetric": false,
+    "expression": "12.00% +0.59%/−1.20% (10.80% — 12.59%)",
     "product_code": "OPM_THC12:CBD1",
     "spec_code": "QCSP_001_OPM-V"
    },
@@ -1214,6 +1424,10 @@
     ],
     "grade": "VI",
     "strain_code": "OPM",
+    "minus_tol": 1.0,
+    "plus_tol": 0.79,
+    "symmetric": false,
+    "expression": "10.00% +0.79%/−1.00% (9.00% — 10.79%)",
     "product_code": "OPM_THC10:CBD1",
     "spec_code": "QCSP_001_OPM-VI"
    },
@@ -1243,6 +1457,10 @@
     ],
     "grade": "VII",
     "strain_code": "OPM",
+    "minus_tol": 0.8,
+    "plus_tol": 0.8,
+    "symmetric": true,
+    "expression": "8.00% ±0.80% (7.20% — 8.80%)",
     "product_code": "OPM_THC8:CBD1",
     "spec_code": "QCSP_001_OPM-VII"
    }
@@ -1267,6 +1485,10 @@
     ],
     "grade": "I",
     "strain_code": "PM",
+    "minus_tol": 1.4,
+    "plus_tol": 1.4,
+    "symmetric": true,
+    "expression": "14.00% ±1.40% (12.60% — 15.40%)",
     "product_code": "PM_THC14:CBD1",
     "spec_code": "QCSP_001_PM-I"
    },
@@ -1289,6 +1511,10 @@
     ],
     "grade": "II",
     "strain_code": "PM",
+    "minus_tol": 1.2,
+    "plus_tol": 0.59,
+    "symmetric": false,
+    "expression": "12.00% +0.59%/−1.20% (10.80% — 12.59%)",
     "product_code": "PM_THC12:CBD1",
     "spec_code": "QCSP_001_PM-II"
    },
@@ -1311,6 +1537,10 @@
     ],
     "grade": "III",
     "strain_code": "PM",
+    "minus_tol": 1.0,
+    "plus_tol": 0.79,
+    "symmetric": false,
+    "expression": "10.00% +0.79%/−1.00% (9.00% — 10.79%)",
     "product_code": "PM_THC10:CBD1",
     "spec_code": "QCSP_001_PM-III"
    }
@@ -1335,6 +1565,10 @@
     ],
     "grade": "I",
     "strain_code": "PUM",
+    "minus_tol": 1.6,
+    "plus_tol": 1.6,
+    "symmetric": true,
+    "expression": "16.00% ±1.60% (14.40% — 17.60%)",
     "product_code": "PUM_THC16:CBD1",
     "spec_code": "QCSP_001_PUM-I"
    }
@@ -1359,6 +1593,10 @@
     ],
     "grade": "I",
     "strain_code": "SCR",
+    "minus_tol": 2.2,
+    "plus_tol": 2.2,
+    "symmetric": true,
+    "expression": "22.00% ±2.20% (19.80% — 24.20%)",
     "product_code": "SCR_THC22:CBD1",
     "spec_code": "QCSP_001_SCR-I"
    },
@@ -1395,6 +1633,10 @@
     ],
     "grade": "II",
     "strain_code": "SCR",
+    "minus_tol": 1.8,
+    "plus_tol": 1.79,
+    "symmetric": false,
+    "expression": "18.00% +1.79%/−1.80% (16.20% — 19.79%)",
     "product_code": "SCR_THC18:CBD1",
     "spec_code": "QCSP_001_SCR-II"
    }
@@ -1419,6 +1661,10 @@
     ],
     "grade": "I",
     "strain_code": "SJ",
+    "minus_tol": 1.03,
+    "plus_tol": 1.2,
+    "symmetric": false,
+    "expression": "12.00% +1.20%/−1.03% (10.97% — 13.20%)",
     "product_code": "SJ_THC12:CBD1",
     "spec_code": "QCSP_001_SJ-I"
    },
@@ -1448,6 +1694,10 @@
     ],
     "grade": "II",
     "strain_code": "SJ",
+    "minus_tol": 1.0,
+    "plus_tol": 0.96,
+    "symmetric": false,
+    "expression": "10.00% +0.96%/−1.00% (9.00% — 10.96%)",
     "product_code": "SJ_THC10:CBD1",
     "spec_code": "QCSP_001_SJ-II"
    }
@@ -1472,6 +1722,10 @@
     ],
     "grade": "I",
     "strain_code": "WED",
+    "minus_tol": 2.2,
+    "plus_tol": 2.2,
+    "symmetric": true,
+    "expression": "22.00% ±2.20% (19.80% — 24.20%)",
     "product_code": "WED_THC22:CBD1",
     "spec_code": "QCSP_001_WED-I"
    }
@@ -1503,6 +1757,10 @@
     ],
     "grade": "I",
     "strain_code": "WC",
+    "minus_tol": 2.2,
+    "plus_tol": 2.2,
+    "symmetric": true,
+    "expression": "22.00% ±2.20% (19.80% — 24.20%)",
     "product_code": "WC_THC22:CBD1",
     "spec_code": "QCSP_001_WC-I"
    }

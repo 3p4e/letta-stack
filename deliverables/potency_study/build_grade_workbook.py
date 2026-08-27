@@ -26,8 +26,9 @@ ws.append(['Rules: nominal = whole even number; range <= 10% of nominal each sid
            'every batch falls in exactly one grade.'])
 ws['A2'].alignment = LFT
 ws.append([])
-hdr = ['Strain', 'Code', 'Grade', 'Product Code', 'Spec. Doc. Code', 'Nominal %',
-        'Lower %', 'Upper %', 'Width pp', 'Range status', 'Batches (latest Total THC %)']
+hdr = ['Strain', 'Code', 'Grade', 'Product Code', 'Spec. Doc. Code', 'Nominal %', 'Tolerance %',
+        'Lower %', 'Upper %', 'Width pp', 'Potency expression', 'Range status',
+        'Batches (latest Total THC %)']
 ws.append(hdr)
 hr = ws.max_row
 for c in range(1, len(hdr) + 1):
@@ -40,20 +41,22 @@ for strain, entry in D['strains'].items():
         status = 'FULL ±10%' if g['full'] else 'clipped (contiguity rule)'
         if g.get('bridge'): status = 'RESERVE (contiguity bridge)'
         if g.get('odd'): status += ' — ODD nominal (fallback rule 5)'
+        tol = (f"±{g['plus_tol']:.2f}" if g['symmetric']
+               else f"+{g['plus_tol']:.2f} / −{g['minus_tol']:.2f}")
         ws.append([strain if first else '', g['strain_code'] if first else '', g['grade'],
-                   g['product_code'].replace(':', ' : '), g['spec_code'], g['nominal'],
-                   g['lower'], g['upper'], g['width'], status, bl])
+                   g['product_code'].replace(':', ' : '), g['spec_code'], g['nominal'], tol,
+                   g['lower'], g['upper'], g['width'], g['expression'], status, bl])
         r = ws.max_row
         for c in range(1, len(hdr) + 1):
             cell = ws.cell(r, c); cell.border = BORDER
-            cell.alignment = LFT if c in (1, 11) else CTR
-        for c in (6, 7, 8, 9):
+            cell.alignment = LFT if c in (1, 11, 13) else CTR
+        for c in (6, 8, 9, 10):
             ws.cell(r, c).number_format = '0.00'
-        ws.cell(r, 10).fill = FULLF if g['full'] else SUB
+        ws.cell(r, 12).fill = FULLF if g['full'] else SUB
         if first:
             ws.cell(r, 1).font = BOLD
         first = False
-widths = [22, 6, 7, 20, 18, 10, 9, 9, 9, 22, 78]
+widths = [22, 6, 7, 20, 18, 10, 14, 9, 9, 9, 40, 24, 66]
 for i, w in enumerate(widths, 1):
     ws.column_dimensions[openpyxl.utils.get_column_letter(i)].width = w
 ws.freeze_panes = 'A5'
@@ -141,6 +144,15 @@ rows += [
  ('•', 'GP062501: PP cert prints 24.89 vs owner sheet 22.89 — grade THC24 holds under either value.'),
  ('•', 'J31122501 graded on the machine-trimmed CoQ-forming preparation (21.84, CoQ-PP-2026-0054); '
        'the hand-trimmed 19.84 result is experimental only.'),
+ ('•', 'Truth-check finding (27.08.2026): certificate ППК26065 (13.93, CNP, 11.05.2026) prints '
+       'серија JD112501* — the milled Jelly Donutz presentation, a separate register batch — and was '
+       'misattributed to JD112501 (whole flower, retest 20.32) in the source dataset. Reattributed; '
+       'JD112501* now carries its own grade JD_THC14:CBD1 (12.60 — 14.39).'),
+ ('•', 'Grades whose upper bound is pinned by the grade above print +0.00% up-tolerance (CJ-II, '
+       'CJ-III, CJ-IV): the nominal sits at the very top of its window — the mathematically forced '
+       'consequence of the strongest-first maximum-range rule with even nominals two steps apart. '
+       'Management may instead grant each such grade a small up-headroom at the cost of the grade '
+       'above; flag for decision if the +0.00 display is unacceptable.'),
  ('•', 'Batches on declared values (no eCoA yet): ACC102501, CC012603, CF102501, JD012603/01, '
        'PUM102501 (T2 re-analysis sampled 12.08.2026, results pending), SCR012601, WED102501, '
        'JD022601, GRC102501/1, P160012, P160022, P160032 — their grades are provisional.'),

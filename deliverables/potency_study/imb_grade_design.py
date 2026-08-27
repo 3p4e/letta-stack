@@ -50,6 +50,12 @@ VALUE_OVERRIDE = {  # batch -> (value, why)
                       'hand-trimmed 19.84 is the experimental prep'),
 }
 STRAIN_FIX = {'JellyDonutz': 'Jelly Donutz', 'Permanent Market': 'Permanent Marker'}
+# dataset misattribution fix (truth-check finding, 27.08.2026): cert ППК26065
+# (13.93, CNP, 11.05.2026) prints серија JD112501* — the milled presentation,
+# a separate register row — not JD112501 (whole flower, retest 20.32)
+REATTRIBUTE = {('JD112501', 'ППК26065'): 'JD112501*'}
+# certificates print the milled marker; restore it in display names
+DISPLAY_STAR = {'GG012601': 'GG012601*', 'JD012601': 'JD012601*'}
 
 def canon(b): return ALIAS.get(b, b)
 def pdate(s):
@@ -60,13 +66,15 @@ def pdate(s):
 latest = {}
 for r in DS['register_results']:
     b = canon(r['batch'])
+    b = REATTRIBUTE.get((b, r.get('cert')), b)
+    b = DISPLAY_STAR.get(b, b)
     if b not in latest or pdate(r['date']) > pdate(latest[b]['date']):
         latest[b] = {'batch': b, 'strain': STRAIN_FIX.get(r['strain'], r['strain']),
                      'value': r['value'], 'date': r['date'],
                      'src': f"{r.get('cert','')}, {r['date']}, {r.get('lab','')}",
                      'basis': 'certificate'}
 for s in DS['stock']:
-    b = canon(s['batch'])
+    b = DISPLAY_STAR.get(canon(s['batch']), canon(s['batch']))
     if b not in latest:
         v = s.get('anchor') or s.get('declared')
         basis = 'certificate' if s.get('anchor') else 'declared (no eCoA yet)'
@@ -80,7 +88,8 @@ for b, (v, why) in VALUE_OVERRIDE.items():
         latest[b]['src'] = why
 
 # ------------------------------------------------- owner key -> batch
-pmap = {r['p_number'].upper(): canon(r['batch']) for r in CONS['rows'] if r.get('p_number')}
+pmap = {r['p_number'].upper(): DISPLAY_STAR.get(canon(r['batch']), canon(r['batch']))
+        for r in CONS['rows'] if r.get('p_number')}
 pmap.update(MANUAL_P)
 resolved, unmatched, value_notes = {}, [], []
 for key, (nom, val) in OWNER.items():
@@ -284,8 +293,19 @@ for strain, grades in report.items():
     sc = strain_code(strain, grades)
     entry = []
     for i, g in enumerate(grades):
+        N = g['nominal']
+        tminus = round(N - g['lower'], 2)
+        tplus = round(g['upper'] - N, 2)
+        if abs(tminus - tplus) < 0.005:
+            expr = f"{N}.00% ±{tplus:.2f}% ({g['lower']:.2f}% — {g['upper']:.2f}%)"
+        else:
+            expr = (f"{N}.00% +{tplus:.2f}%/−{tminus:.2f}% "
+                    f"({g['lower']:.2f}% — {g['upper']:.2f}%)")
         entry.append({**g, 'grade': roman[i], 'strain_code': sc,
-                      'product_code': f"{sc}_THC{g['nominal']}:CBD1",
+                      'minus_tol': tminus, 'plus_tol': tplus,
+                      'symmetric': abs(tminus - tplus) < 0.005,
+                      'expression': expr,
+                      'product_code': f"{sc}_THC{N}:CBD1",
                       'spec_code': f"QCSP_001_{sc}-{roman[i]}"})
     out['strains'][strain] = entry
 json.dump(out, open('grade_design_even.json', 'w'), ensure_ascii=False, indent=1)
