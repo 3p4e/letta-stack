@@ -10,6 +10,12 @@ Management rules (27.08.2026):
   the maximum range first, weaker grades take what remains
 - every batch falls in exactly one grade; the owner's requested codes from
   the tranche 1-3 list are honored wherever the value permits
+
+Anchor revision (27.08.2026): the Tranche 1+2 re-analysis campaign
+(Farmahem, reported 26.08.2026 — unofficial, formal eCoAs pending) is the
+CoQ-forming value set per the retest rule (R5). The owner re-issued the
+mandatory THCnn codes against these values on the same date; OWNER below
+carries that revised list verbatim (T1 19 codes + T2 29 codes).
 """
 import json
 from datetime import datetime
@@ -18,22 +24,35 @@ DS = json.load(open('/home/user/letta-stack/deliverables/potency_study/potency_d
 CONS = json.load(open('/home/user/letta-stack/deliverables/qc_register/consolidated.json'))
 
 # ---------------------------------------------------------------- owner list
-OWNER = {  # P-number or batch -> (requested even nominal, sheet value)
+OWNER = {  # P-number or batch -> (requested nominal, CoQ-forming value)
+ # ---- Tranche 1 (retest 197-series, 07.08.2026, FARM) — codes revised 27.08.2026
  'BG1024':(26,26.14),'BSS1024':(24,25.01),'P050162':(24,24.05),'P060032':(20,18.29),
- 'P060352':(18,18.86),'P060402':(16,16.70),'P050092':(18,18.67),'P050152':(18,18.52),
+ 'P060352':(20,18.86),'P060402':(16,16.70),'P050092':(18,18.67),'P050152':(20,18.52),
  'P050022':(24,22.61),'P050322':(16,15.70),'HPA1024':(18,17.31),'P050052':(22,21.61),
  'P060212':(20,20.32),'P060152':(18,17.32),'OPM1024':(22,20.03),'P050062':(18,18.04),
- 'P060242':(8,7.91),'P060062':(12,12.25),'P060382':(18,17.84),'P060122':(12,12.91),
- 'P050192':(20,20.47),'P050222':(22,21.51),'P060022':(24,24.96),'P060072':(24,22.30),
- 'P060372':(12,12.32),'P060132':(10,9.83),'P050282':(8,8.02),'P060322':(14,14.68),
- 'GG1024':(14,13.34),'P050302':(20,19.81),'P050072':(24,25.45),'P050312':(20,21.29),
- 'P060092':(24,25.73),'P060182':(12,11.53),'P050182':(22,20.39),'P060362':(16,16.71),
- 'P060412':(20,20.54),'P060422':(16,15.16),'P060172':(18,17.40),'P050112':(16,16.82),
- 'P050042':(16,15.38),'P060042':(10,9.43),'P050082':(16,16.55),'P060232':(12,13.00),
- 'P060112':(16,15.63),'P060282':(18,17.13),'P060082':(10,10.96),'P060012':(22,21.67),
+ 'P060242':(8,7.91),'P060062':(12,12.25),'P060382':(18,17.84),
+ # ---- Tranche 2 (re-analysis, Farmahem 26.08.2026, unofficial — eCoA pending)
+ 'P060122':(12,12.09),'P050192':(20,20.52),'P050222':(24,24.80),'P060022':(28,28.34),
+ 'P060072':(26,25.65),'P060372':(14,14.76),'P060132':(10,9.55),'P050282':(8,8.65),
+ 'P060322':(16,17.99),'GG1024':(16,15.51),'P050302':(20,18.29),'P050072':(28,28.03),
+ 'P050312':(26,25.13),'P060092':(26,25.24),'P060182':(12,9.80),'P050182':(20,19.69),
+ 'P060362':(20,21.01),'P060412':(20,14.43),'P060422':(16,17.09),'P060172':(18,17.06),
+ 'P050112':(18,17.93),'P050042':(18,18.99),'P060042':(10,10.18),'P050082':(18,19.30),
+ 'P060232':(12,10.79),'P060112':(14,13.95),'P060282':(18,19.73),'P060082':(10,10.39),
+ 'P060012':(22,23.48),
 }
-# register-audited corrections to the owner's sheet values
-SHEET_FIX = {'P060172': 17.04, 'P060232': 13.33, 'P050192': 20.39}
+# keys whose value is the 26.08.2026 T2 re-analysis (supersedes the register
+# anchor per retest rule R5; unofficial until the formal eCoA is filed)
+T2_KEYS = {
+ 'P060122','P050192','P050222','P060022','P060072','P060372','P060132','P050282',
+ 'P060322','GG1024','P050302','P050072','P050312','P060092','P060182','P050182',
+ 'P060362','P060412','P060422','P060172','P050112','P050042','P060042','P050082',
+ 'P060232','P060112','P060282','P060082','P060012'}
+T2_SRC = 'Farmahem re-analysis, 26.08.2026 (unofficial — eCoA pending)'
+# register-audited corrections to the owner's sheet values — obsolete since the
+# 26.08.2026 T2 campaign superseded the disputed values (kept for the record):
+# {'P060172': 17.04, 'P060232': 13.33, 'P050192': 20.39}
+SHEET_FIX = {}
 # pending tranche-2 batches (sampled 12.08.2026, no eCoA yet) - manual map
 MANUAL_P = {'P060122': 'ACC102501', 'P060372': 'CC012603', 'P060132': 'CF102501',
             'P060362': 'JD012603/01', 'P060112': 'PUM102501'}
@@ -99,8 +118,14 @@ for key, (nom, val) in OWNER.items():
         unmatched.append((key, nom, val)); continue
     dv = latest[b]['value']
     if dv is not None and abs(float(dv) - val) > 0.005:
-        value_notes.append(f"{key} ({b}): owner {val:.2f} vs dataset {float(dv):.2f} — owner value used")
+        why = ('superseded by T2 re-analysis (R5)' if key in T2_KEYS
+               else 'owner value used')
+        value_notes.append(f"{key} ({b}): dataset {float(dv):.2f} vs {val:.2f} — {why}")
     latest[b]['value'] = val
+    if key in T2_KEYS:
+        latest[b]['basis'] = 'T2 re-analysis (unofficial)'
+        latest[b]['src'] = T2_SRC
+        latest[b]['date'] = '26.08.2026'
     resolved[b] = nom
 
 # ------------------------------------------------- per-strain design

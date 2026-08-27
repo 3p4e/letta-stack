@@ -18,23 +18,25 @@ holds against every analysis result on file.
 
 ## 2. Inputs and the anchor policy
 
-1. **One anchor value per batch** — the batch's **latest** Total-THC result. Where a batch has
-   been retested (the Tranche-1 197-series campaign of 07.08.2026, the April 2026 Jokerz
-   retests, and the Tranche-2 re-analysis sampled 12.08.2026 once its results are filed), the
-   **retest value is the CoQ-forming result** and the grade is designed on it. Superseded
-   pre-retest results are **out of specification scope** — they graded the batch once, and the
-   retest replaced them.
+1. **One anchor value per batch** — the batch's **CoQ-forming** Total-THC result. Where a
+   batch has been retested (the Tranche-1 197-series campaign of 07.08.2026, the April 2026
+   Jokerz retests, and the **Tranche-2 re-analysis reported by Farmahem on 26.08.2026 —
+   29 batches, unofficial until the formal eCoAs are filed**), the **retest value is the
+   CoQ-forming result** and the grade is designed on it. Superseded pre-retest results are
+   **out of specification scope** — they graded the batch once, and the retest replaced them.
+   Grades anchored on the unofficial T2 values are provisional pending the certificates.
 2. **Owner-requested product codes** for the 48 tranche-list batches are design constraints:
-   they are honored wherever the value mathematically permits.
-3. Three register-audited corrections to the tranche sheet were applied before design:
-   KC102501 17.04 (not 17.40), PM112501 13.33 (not 13.00), BSS052501 20.39 (not 20.47 — NGP
-   paper check still open; the grade is stable under either value).
+   they are honored wherever the value mathematically permits. Management revised the code
+   list on 27.08.2026 against the T1+T2 re-analysis values; the solver carries that revised
+   list verbatim.
+3. The earlier register-audited sheet corrections (KC102501 17.04, PM112501 13.33,
+   BSS052501 20.39) are all **superseded by the T2 re-analysis** (17.06, 10.79, 20.52) and
+   are retired.
 4. J31122501 is graded on the **machine-trimmed CoQ-forming preparation (21.84,
    CoQ-PP-2026-0054)**; the same-day hand-trimmed 19.84 is an experimental processing
    comparison (it happens to fall inside the same grade window).
-5. Batches without any certificate (five T2-pending, SCR012601, WED102501, JD022601,
-   GRC102501/1, the P16-series) enter at their declared values; their grades are provisional
-   until an eCoA exists.
+5. Batches without any analysis at all (SCR012601, WED102501, GRC102501/1) enter at their
+   declared values; their grades are provisional until an eCoA exists.
 
 ## 3. The rule set (management, 27.08.2026 — final revision)
 
@@ -71,10 +73,9 @@ GRC102501/1 at 7.05 → `GRC_THC7:CBD1`).
 ### 4.2 Grade assignment
 
 Batches keep the owner's product codes as *cluster* membership (which batches grade
-together); the cluster's *nominal* is then chosen freely per R1. Three audited
-corrections applied first (KC102501 17.04, PM112501 13.33, BSS052501 20.39); PM112501's
-owner code THC12 is arithmetically impossible for 13.33 (ceiling 13.20) and its cluster
-moved to THC14.
+together); the cluster's *nominal* is then chosen freely per R1. Where an owner code is
+arithmetically impossible for the batch's CoQ-forming value (§4.4), the batch is moved to
+the nearest feasible even nominal and the deviation is flagged.
 
 ### 4.3 The symmetric budget law and the balance objective
 
@@ -91,31 +92,38 @@ length, (5) nominals closest to the cluster centres, (6) largest total tolerance
 
 ### 4.4 Mandatory-code feasibility and minimal deviation
 
-Two of the 48 mandatory codes are arithmetically impossible and were resolved with the
-smallest possible deviation, both flagged:
+Six of the 48 mandatory codes (revised 27.08.2026 against the T1+T2 re-analysis values)
+are arithmetically impossible and were resolved with the smallest possible deviation,
+all flagged:
 
-- **Cap Junky**: CJ092501 (22.30) in THC24 needs `t₂₄ ≥ 1.70`; CJ062501/1 (21.51) in
-  THC22 needs `t₂₂ ≥ 0.49`; their no-overlap budget is `1.99 < 1.70 + 0.49 + …` — the
-  windows must collide. The single-move fix regrades **CJ062501/1 → THC20**, giving the
-  balanced ladder 24 ±1.99 (22.01–25.99) touching 20 ±2.00 (18.00–22.00, full) — every
-  other Cap Junky mandatory code holds.
-- **PM112501**: the audited certificate value 13.33 exceeds THC12's ceiling
-  `1.10·12 = 13.20`; the batch is graded **THC14** (13.00–15.00). If the pending paper
-  check of ППК26030 were to read 13.00 as on the owner sheet, THC12 would become
-  feasible and the design re-runs in one command.
+- **FB012601/1**: 17.99 exceeds THC16's ceiling `1.10·16 = 17.60` → **THC18** (it lands
+  at 17.99, just inside THC18's balanced window 17.15–18.85). The uncoded FB112501
+  (16.69) is re-joined to THC16 so the FB ladder stays solvable.
+- **GRC102501/2**: 9.80 is below THC12's floor `0.90·12 = 10.80` → **THC10** (9.00–11.00,
+  full ±10 %).
+- **JD012603/02**: 14.43 is far below THC20's floor 18.00 → **THC14** (13.10–14.90),
+  where it grades beside JD112501* 13.93.
+- **PM112501**: 10.79 misses THC12's floor `0.90·12 = 10.80` by **exactly 0.01** →
+  **THC10** (9.00–11.00). The near-miss is worth an owner review: a paper value of 10.80
+  would make THC12 feasible and the design re-runs in one command.
+- **GP092501 (25.24) and GP082501/1 (25.13), coded THC26**: the THC26 floor they force
+  needs `t₂₆ ≥ 26 − 25.13 = 0.87`, while the mandatory THC24 holding GP0824_02 (22.61)
+  needs `t₂₄ ≥ 1.39`; `0.87 + 1.39 = 2.26 > 1.99`, the 26/24 no-overlap budget — the
+  windows must collide whatever the split. The minimal fix regrades **both → THC24**
+  (22.61–25.39), leaving THC26 (25.40–26.60) to the uncoded P160012 26.32 and
+  P160022 25.72; no smaller move set (including any single-batch move) is feasible.
 
 ### 4.5 What the rules produce
 
-Worked example — Fat Bastard (the case that motivated the final revision): clusters at
-20.83 / {18.86, 18.29, 16.69} / 14.68 / 12.39. THC20 cannot sit over the 18-cluster
-(req 0.83 + req 1.31 > 1.99), so the top takes **THC22 ±2.19** touching **THC18 ±1.80**
-(budget 3.99 split 2.19/1.80, cap-limited); 18 cannot reach 14 (budget 3.99 > cap sum
-3.20) so the result-free span **15.00–16.19 stays a documented gap**; below it
-**THC14 ±0.99** and **THC12 ±1.00** split their 1.99 budget almost exactly in half.
+Worked example — Fat Bastard (T2-revised): clusters at {20.83, 18.86} / {18.29, 17.99} /
+16.69 / 12.39. **THC20 ±1.14**, **THC18 ±0.85** and **THC16 ±1.14** touch in a chain
+(each 1.99 budget split as evenly as containment allows: 18.86 pins t₂₀, 17.99+18.29 pin
+t₁₈'s centre); THC16 cannot reach THC12 (budget 3.99 > cap sum 2.80) so the result-free
+span **13.21–14.85 stays a documented gap**; **THC12 ±1.00** takes its full ±10 % window.
 No empty grade exists anywhere; every tested result sits inside a grade; gaps carry no
-results. The same machinery yields near-half splits across the portfolio (GG
-1.00/0.99/1.00, OPM 0.99/1.00/0.99/1.00, PM, MB, SJ, CC, JD) and full ±10 % wherever a
-grade faces a gap or stands alone.
+results. The same machinery yields near-even splits across the portfolio (CJ
+1.00/0.99/1.00 at the top, HPA 1.00/0.99/1.00, PM, SJ, GG 0.99/1.00) and full ±10 %
+wherever a grade faces a gap or stands alone.
 
 ### 4.6 Tolerance expression
 
@@ -135,37 +143,39 @@ result on file** against the strain windows:
 | category | count | verdict |
 |---|---|---|
 | structural problems | **0** | design internally consistent |
-| batch anchors in their assigned grade | **86 / 86** | R4 holds (77 certified + 8 declared + J31122501) |
+| batch anchors in their assigned grade | **86 / 86** | R4 holds (53 register-certified + 29 T2 re-analysis + 3 declared + J31122501) |
 | anchors outside assigned grade | 0 | — |
 | batches without a grade | 0 | census complete (register ∪ stock) |
-| superseded results, same grade | 12 | retests moved the value, not the grade |
-| superseded results, different grade of the strain | 7 | historical value would have graded differently — retest governs (R5) |
-| superseded results now outside all windows | 3 | BG1024 21.80, HPA1024 14.97, J31112501 25.27 — exactly the R5 supersession cases; not OOS events, the results are replaced |
-| stability 25 °C/60 %RH (long-term arm) | 5 | 4 of 5 inside the release grade; GP0824_02 M6 21.31 dips one grade then returns (M9 23.08) — sampling variance, no monotonic decline |
+| superseded results, same grade | 26 | retests moved the value, not the grade |
+| superseded results, different grade of the strain | 11 | historical value would have graded differently — retest governs (R5) |
+| superseded results now outside all windows | 9 | BG1024 21.80, GG1024 13.34, HPA1024 14.97, CJ092501 22.30, PM092501 14.06, GRC102501/2 11.53, J31112501 25.27, PM112501 13.33, FB012601/1 14.68 — exactly the R5 supersession cases; not OOS events, the results are replaced |
+| stability 25 °C/60 %RH (long-term arm) | 5 | 3 of 5 inside the release grade; GP0824_02 M6 21.31 dips one grade then returns (M9 23.08) — sampling variance; GP0824_03 M6 24.62 sits one grade below its **new** THC28 anchor (28.03, T2) — the anchor moved up, the batch did not decline |
 | stability 40 °C/75 %RH (accelerated arm) | 4 | 13.16–18.62, out of or below grade — heat-stress artefact, not release-relevant; consistent with the CBN rise (2.05–2.35 %) |
 
 **Bugs found and fixed by this audit:** certificate ППК26065 (13.93, CNP, 11.05.2026) prints
 `серија JD112501*` — the milled Jelly-Donutz presentation, a separate register batch — but
 was attributed to JD112501 (whole flower, retest 20.32) in `potency_dataset.json`. It was
-masquerading as a superseded-OOS value of JD112501; reattributed, JD112501* now carries its
-own new contiguous grade `JD_THC14:CBD1` (13.10 — 14.90 in the symmetric design). Milled
+masquerading as a superseded-OOS value of JD112501; reattributed, JD112501* now grades in
+`JD_THC14:CBD1` (13.10 — 14.90) beside the T2-regraded JD012603/02. Milled
 display names GG012601*/JD012601* were also restored (certificates print the asterisk).
 
 ## 6. Open items the design does not depend on
 
-BSS052501 paper check (20.39 vs 20.47 — THC20 either way) · OMP1024_01 (15.38, cert prints
-1.58 — VERIFY ON PAPER) · GG1024_02 (15.95 vs printed 15.59 — THC16 either way) · GP062501
-(24.89 vs sheet 22.89 — THC24 either way) · the five T2-pending batches re-anchor when their
-re-analysis eCoAs land; the design re-runs in one command (`python3 imb_grade_design.py &&
-python3 check_design.py`).
+GG1024_02 (15.95 vs printed 15.59 — THC16 either way) · GP062501 (24.89 vs sheet 22.89 —
+THC24 either way) · the 29 T2-anchored grades firm up when the formal Farmahem eCoAs are
+filed (the earlier BSS052501 / OMP1024_01 / PM112501 paper checks are superseded by T2);
+the design re-runs in one command (`python3 imb_grade_design.py && python3 check_design.py`).
 
 ## 7. Result (final revision, 27.08.2026)
 
-**Mandatory codes: 46/48 honored exactly; 2 unavoidable, minimal, flagged deviations.**
-24 strains · **52 grades** (all batch-bearing — zero empty grades) · **86 batches**, each
-in exactly one grade · every window centred on its nominal · touching neighbours split
-their budgets near-equally · **8 documented result-free gaps** (GRC 7.71–10.79 and OPM
-8.81–8.99 at the low end; CJ, CC, FB, GP, JD, OPM mid-spans) · odd nominals only where
-no even configuration exists (CJ THC21, GRC THC7) · every constraint machine-asserted
-and independently re-audited (0 findings).
+**Mandatory codes: 42/48 honored exactly; 6 unavoidable, minimal, flagged deviations**
+(FB012601/1, GRC102501/2, JD012603/02, PM112501, GP092501, GP082501/1 — §4.4).
+24 strains · **51 grades** (all batch-bearing — zero empty grades) · **86 batches**, each
+in exactly one grade (53 register-certified + 29 T2 re-analysis + 3 declared +
+J31122501) · every window centred on its nominal · touching neighbours split their
+budgets near-equally · **11 documented result-free gaps** (GRC 7.71–8.99 and OPM
+8.81–8.99 at the low end; CJ, CC, FB, GP, JD, OPM mid-spans) · the only odd nominal is
+the GRC_THC7 dead-zone fallback · every constraint machine-asserted and independently
+re-audited (0 findings). Grades anchored on the unofficial 26.08.2026 T2 values are
+provisional until the formal eCoAs are filed.
 Full boards: `ImB_Potency_Grade_Ranges.xlsx` and `grade_design_even.json`.

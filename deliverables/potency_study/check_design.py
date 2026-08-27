@@ -100,6 +100,16 @@ def find_grade(strain, v):
 # batch -> anchor (the graded value)
 anchor = {b: g for b, g in grade_of_batch.items()}
 
+# batches graded on the 26.08.2026 T2 re-analysis (unofficial Farmahem values,
+# not yet in the register dataset): every register result for them is a
+# superseded pre-retest value, and the anchor lives only in the design JSON
+t2_graded = {}
+for strain, entry in D['strains'].items():
+    for g in entry:
+        for bb in g['batches']:
+            if 'T2' in bb.get('basis', ''):
+                t2_graded[bb['batch']] = bb['v']
+
 # ---------------------------------------------------- B. all register results
 def pdate(s):
     try: return datetime.strptime(s, '%d.%m.%Y')
@@ -123,7 +133,7 @@ for b, results in by_batch.items():
         v = float(r['value'])
         is_latest = pdate(r['date']) == latest_date
         tag = f"{b} {v:.2f} ({r['cert']}, {r['date']}, {r['lab']})"
-        if is_latest and b != 'J31122501':
+        if is_latest and b != 'J31122501' and b not in t2_graded:
             # anchor value: must equal the graded value and sit in the assigned grade
             if lo - 1e-9 <= v <= up + 1e-9:
                 cat['anchor-in-assigned-grade'].append(tag)
@@ -138,6 +148,16 @@ for b, results in by_batch.items():
                 cat['superseded-in-other-grade'].append(f"{tag} -> THC{g2} (assigned THC{N})")
             else:
                 cat['superseded-now-outside-spec'].append(f"{tag} (assigned grade THC{N} on retest)")
+
+# T2-graded batches: anchor = 26.08.2026 re-analysis value from the design JSON
+for b, v in sorted(t2_graded.items()):
+    strain, N, lo, up = grade_of_batch[b]
+    if lo - 1e-9 <= v <= up + 1e-9:
+        cat['anchor-T2-reanalysis-in-grade'].append(
+            f"{b} {v:.2f} (Farmahem 26.08.2026, unofficial) -> THC{N} [{lo},{up}]")
+    else:
+        cat['ANCHOR-OUTSIDE-ASSIGNED'].append(
+            f"{b} T2 {v:.2f} assigned THC{N} [{lo},{up}]")
 
 # J31122501 special: dataset latest = hand-trimmed 19.84 (experimental), graded on 21.84
 for r in by_batch.get('J31122501', []):
@@ -186,7 +206,8 @@ json.dump(out, open('design_check.json', 'w'), ensure_ascii=False, indent=1)
 print(f"STRUCTURAL PROBLEMS: {len(problems)}")
 for p in problems: print('  !!', p)
 print()
-for k in ['anchor-in-assigned-grade', 'superseded-in-same-grade', 'superseded-in-other-grade',
+for k in ['anchor-in-assigned-grade', 'anchor-T2-reanalysis-in-grade',
+          'superseded-in-same-grade', 'superseded-in-other-grade',
           'superseded-now-outside-spec', 'ANCHOR-OUTSIDE-ASSIGNED', 'repeat-pairs',
           'stability-25C-longterm', 'stability-40C-accelerated', 'batch-not-graded']:
     v = cat.get(k, [])

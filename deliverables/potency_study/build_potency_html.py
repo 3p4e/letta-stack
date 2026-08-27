@@ -1056,6 +1056,8 @@ def stab_table():
 
 def stock_table():
     # batch -> (strain, tier) from the even-nominal design
+    t2b = {norm_b(bb["batch"]) for _s, _e in GD["strains"].items()
+           for _g in _e for bb in _g["batches"] if "T2" in bb.get("basis", "")}
     tmap = {}
     for _s, _tiers in d["merged_ranges"].items():
         for _t in _tiers:
@@ -1072,8 +1074,13 @@ def stock_table():
         decl = b["anchor"] is None
         val = t["values"].get(next(_b for _b in t["batches"]
                                    if norm_b(_b) == norm_b(b["batch"])), None)
-        anc = ("%.2f%% (декл. | decl.)" % b["declared"]) if decl \
-            else "%.2f%% (%s)" % (b["anchor"], b["anchor_date"])
+        if norm_b(b["batch"]) in t2b and val is not None:
+            anc = ("%.2f%% (реанализа 26.08.2026, неофиц. | re-analysis, unofficial)"
+                   % val)
+        elif decl:
+            anc = "%.2f%% (декл. | decl.)" % b["declared"]
+        else:
+            anc = "%.2f%% (%s)" % (b["anchor"], b["anchor_date"])
         if b.get("declared") is not None:
             out_of_grade = not (t["range"][0] - 1e-6 <= b["declared"] <= t["range"][1] + 1e-6)
             cur = ('<span class="mismatch" title="надвор од новата класа | outside the new '
@@ -1138,19 +1145,25 @@ def methodology_section():
             'natural nominals → largest total tolerance.</p>'
             '<h4>3 · Задолжителни кодови | Mandatory product codes</h4>'
             '<p>The 48 tranche-list batches carry exactly the THCnn:CBD1 codes management '
-            'assigned (27.08.2026) — fixed constraints in the solver. 46/48 hold exactly; '
-            'two are arithmetically impossible and carry the minimal flagged deviation: '
-            '<b>CJ062501/1</b> (21.51, THC22) collides with the mandatory THC24 holding '
-            '22.30 (their containment needs exceed the 1.99 no-overlap budget) → THC20, '
-            'yielding the balanced pair 24 ±1.99 / 20 ±2.00; and <b>PM112501</b> (audited '
-            '13.33 > 13.20 = 1.10·12) → THC14. Uncoded batches take any feasible even '
-            'nominal; odd only where no even works (GRC_THC7 dead-zone fallback). Every '
-            'grade prints ONE symmetric tolerance: <code>nn.00% ±t.tt% (lower% — '
-            'upper%)</code>.</p>'
+            'assigned (27.08.2026, revised against the 26.08.2026 T1+T2 re-analysis '
+            'values) — fixed constraints in the solver. 42/48 hold exactly; six are '
+            'arithmetically impossible and carry the minimal flagged deviation: '
+            '<b>FB012601/1</b> (17.99 &gt; 17.60 = 1.10·16) → THC18; <b>GRC102501/2</b> '
+            '(9.80 &lt; 10.80 = 0.90·12) → THC10; <b>JD012603/02</b> (14.43, far below '
+            'the 18.00 floor of THC20) → THC14; <b>PM112501</b> (10.79 misses the 10.80 '
+            'floor of THC12 by 0.01) → THC10; and <b>GP092501</b> (25.24) with '
+            '<b>GP082501/1</b> (25.13) coded THC26: the THC26 floor they force (t ≥ 0.87) '
+            'plus the t ≥ 1.39 that the mandatory THC24 needs for GP0824_02 22.61 exceeds '
+            'the 1.99 no-overlap budget (2.26 &gt; 1.99) → both THC24. Uncoded batches '
+            'take any feasible even nominal; odd only where no even works (GRC_THC7 '
+            'dead-zone fallback). Every grade prints ONE symmetric tolerance: '
+            '<code>nn.00% ±t.tt% (lower% — upper%)</code>.</p>'
             '<h4>4 · Сидро | Anchor policy</h4>'
-            '<p>The grade anchors on the batch&#39;s latest result — the retest where one '
-            'exists (T1 197-series 07.08.2026, April J31 retests, pending T2 re-analysis). '
-            'Retest values are CoQ-forming; superseded pre-retest results are out of '
+            '<p>The grade anchors on the batch&#39;s CoQ-forming value — the retest where '
+            'one exists: T1 197-series (07.08.2026, FARM), April J31 retests, and the '
+            'Tranche-2 re-analysis (Farmahem, reported 26.08.2026 — 29 batches, UNOFFICIAL '
+            'until the formal eCoAs are filed; those grades are provisional). Retest '
+            'values are CoQ-forming (rule R5); superseded pre-retest results are out of '
             'specification scope. J31122501 anchors on the machine-trimmed CoQ preparation '
             '(21.84, CoQ-PP-2026-0054); the hand-trimmed 19.84 is experimental.</p>'
             '<h4>5 · Независна верификација | Independent verification (27.08.2026)</h4>'
@@ -1158,19 +1171,22 @@ def methodology_section():
             '<tr><td>Structural rules (caps, contiguity, non-overlap, nominal-inside, 2dp, '
             'tolerance arithmetic)</td><td class="ok">0 problems</td></tr>'
             '<tr><td>Batch anchors inside their assigned grade</td>'
-            '<td class="ok">86 / 86 (77 certified + 8 declared + J31122501)</td></tr>'
+            '<td class="ok">86 / 86 (53 register-certified + 29 T2 re-analysis + '
+            '3 declared + J31122501)</td></tr>'
             '<tr><td>Windows centred on their nominal (single symmetric ± tolerance)</td>'
-            '<td class="ok">52 / 52</td></tr>'
+            '<td class="ok">51 / 51</td></tr>'
             '<tr><td>Batches without a grade (register ∪ stock census)</td>'
             '<td class="ok">0</td></tr>'
             '<tr><td>Superseded results still inside a grade of their strain</td>'
-            '<td>19 (12 same grade, 7 neighbouring)</td></tr>'
+            '<td>37 (26 same grade, 11 neighbouring)</td></tr>'
             '<tr><td>Superseded results now outside all windows (retest supersession, '
-            'rule R5 — not OOS events)</td><td class="warn">3 — BG1024 21.80, HPA1024 '
-            '14.97, J31112501 25.27</td></tr>'
-            '<tr><td>Stability 25 °C/60 %RH (long-term)</td><td>4 of 5 inside the release '
+            'rule R5 — not OOS events)</td><td class="warn">9 — BG1024 21.80, GG1024 '
+            '13.34, HPA1024 14.97, CJ092501 22.30, PM092501 14.06, GRC102501/2 11.53, '
+            'J31112501 25.27, PM112501 13.33, FB012601/1 14.68</td></tr>'
+            '<tr><td>Stability 25 °C/60 %RH (long-term)</td><td>3 of 5 inside the release '
             'grade; GP0824_02 M6 21.31 dips one grade, returns by M9 (23.08) — variance, '
-            'no monotonic decline</td></tr>'
+            'no monotonic decline; GP0824_03 M6 24.62 sits one grade below its NEW THC28 '
+            'anchor (28.03, T2) — the anchor moved up, the batch did not decline</td></tr>'
             '<tr><td>Stability 40 °C/75 %RH (accelerated)</td><td>13.16–18.62, out of/below '
             'grade — heat-stress artefact (CBN 2.05–2.35%), not release-relevant</td></tr>'
             '</table>'
@@ -1187,7 +1203,7 @@ def methodology_section():
                "<li>Certificate ППК26065 (13.93, CNP, 11.05.2026) prints "
                "серија JD112501* — the milled presentation, its own register batch — and was "
                "misattributed to JD112501 in the dataset; reattributed, JD112501* now carries "
-               "its own grade JD_THC14:CBD1 (12.60 — 14.39).</li>"
+               "its own grade JD_THC14:CBD1.</li>"
             ).replace("@EXC@", "".join(ex))
 
 
@@ -1247,12 +1263,13 @@ in the Pot.- tiers).</p>
   <div class="mrule"><b><i>1</i>Задолжителни кодови | Mandatory codes</b>
    48-те серии од листата на менаџментот ги носат ТОЧНО доделените кодови
    <b style="display:inline;text-transform:none;font-size:12.5px">XX_THCnn:CBD1</b>
-   (парни цели номинали); отстапка само каде што кодовите се меѓусебно математички
-   невозможни — минимална и означена (2 случаи: CJ062501/1 и PM112501).
+   (парни цели номинали, ревидирани 27.08.2026 според реанализата од 26.08.2026);
+   отстапка само каде што кодот е математички невозможен — минимална и означена
+   (6 случаи: FB012601/1, GRC102501/2, JD012603/02, PM112501, GP092501, GP082501/1).
    <em>The 48 management-listed batches carry EXACTLY their assigned codes (even whole
-   nominals); a deviation only where the codes are mutually impossible — minimal and
-   flagged (2 cases). Uncoded batches take any feasible even nominal; odd only where
-   no even works (GRC_THC7).</em></div>
+   nominals, revised 27.08.2026 against the 26.08.2026 re-analysis); a deviation only
+   where the code is mathematically impossible — minimal and flagged (6 cases). Uncoded
+   batches take any feasible even nominal; odd only where no even works (GRC_THC7).</em></div>
 
   <div class="mrule"><b><i>2</i>Симетрична и балансирана | Symmetric &amp; balanced</b>
    Секоја класа е номинала ± t со ИСТА толеранција над и под неа (t ≤ 10,00%% од
@@ -1283,13 +1300,14 @@ in the Pot.- tiers).</p>
  </div>
 
  <div class="mwork"><b>Пример | Worked example</b> — Fat Bastard:
- <code>FB_THC22:CBD1 — 22.00%% ±2.19%%</code> и | and
- <code>FB_THC18:CBD1 — 18.00%% ±1.80%%</code> се допираат на 19,80/19,81 | touch at
- 19.80/19.81<span class="arrow">→</span>THC18 не стигнува до THC14 (буџет 3,99 &gt;
- капи 3,20) | THC18 cannot reach THC14 (budget 3.99 &gt; caps 3.20), па просторот без
- резултати 15,00–16,19 останува празнина | so the result-free span stays a gap, а долу |
- below <code>FB_THC14 — 14.00%% ±0.99%%</code> и <code>FB_THC12 — 12.00%% ±1.00%%</code>
- го делат буџетот речиси наполу | split their budget almost exactly in half.</div>
+ <code>FB_THC20:CBD1 — 20.00%% ±1.14%%</code>,
+ <code>FB_THC18:CBD1 — 18.00%% ±0.85%%</code> и | and
+ <code>FB_THC16:CBD1 — 16.00%% ±1.14%%</code> се допираат ланчано (18,86/18,85 и
+ 17,15/17,14) | touch in a chain (18.86/18.85 and 17.15/17.14)<span class="arrow">→</span>
+ THC16 не стигнува до THC12 (буџет 3,99 &gt; капи 2,80) | THC16 cannot reach THC12
+ (budget 3.99 &gt; caps 2.80), па просторот без резултати 13,21–14,85 останува празнина |
+ so the result-free span stays a gap, а | while <code>FB_THC12 — 12.00%% ±1.00%%</code>
+ ја зема полната ±10%% прозорка | takes its full ±10%% window.</div>
 
  <div class="msum"><b>Накратко | In short:</b> задолжителните кодови важат, секоја класа
  е симетрична околу номиналата, соседите го делат буџетот што порамномерно, нема празни

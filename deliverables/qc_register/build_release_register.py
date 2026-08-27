@@ -26,7 +26,7 @@ def nrm(s):
     return re.sub(r'[\s,_/()\-*]+', '', s).lower()
 
 DRIVE = {}
-for line in open(f'{SC}/drive_all.tsv', encoding='utf-8'):
+for line in open(f'{Q}/drive_all.tsv', encoding='utf-8'):
     fid, name = line.rstrip('\n').split('\t')
     DRIVE[nrm(name)] = fid
 def drive_url(name):
@@ -42,12 +42,16 @@ LABNAME = {'CNP': 'UKIM Faculty of Pharmacy — Center for Natural Products',
            'NGP': 'NGP — in-house GC cross-check', 'DFL': 'DFL Deutsches Institut (DE)'}
 
 # ---- grade lookup (final design) -------------------------------------------
-GRADE = {}     # nrm(batch) -> grade dict + strain
+def bkey(b):
+    s = str(b)
+    return nrm(s) + ('#star' if '*' in s else '')
+
+GRADE = {}     # bkey(batch) -> grade dict + strain
 for strain, entry in GD['strains'].items():
     for g in entry:
         for b in g['batches']:
-            GRADE[nrm(b['batch'])] = {**g, 'strain': strain, 'anchor': b['v'],
-                                      'basis': b['basis']}
+            GRADE[bkey(b['batch'])] = {**g, 'strain': strain, 'anchor': b['v'],
+                                       'basis': b['basis']}
 BALIAS = {'CJ052501/1': 'CJ052501/01', 'CJ052501/2': 'CJ052501/02',
           'JD012603/2': 'JD012603/02', 'JD012603/2V': 'JD012603/02V',
           'OPM1024_01': 'OMP1024_01', 'BSS1024_01/1': 'BSS1024_01',
@@ -59,13 +63,19 @@ def canonb(b): return BALIAS.get(b, b)
 def grade_of(row):
     for k in (row['batch'], base_batch(row['batch']),
               canonb(base_batch(row['batch'])), row.get('p_number') or '§'):
-        v = GRADE.get(nrm(k))
+        v = GRADE.get(bkey(k))
         if v: return v
     return None
 
 def gr_range(g):  return f"{g['lower']:.2f} – {g['upper']:.2f} %"
 def gr_tol(g):    return f"{g['nominal']}.00% ±{g['tol']:.2f}%"
 def gr_label(g):  return f"{g['grade']} · {g['product_code'].replace(':', ' : ')}"
+
+# basis helpers: declared (no analysis at all) vs T2 re-analysis (26.08.2026,
+# unofficial Farmahem values — CoQ-forming per R5, formal eCoAs pending)
+def is_decl(basis): return basis.startswith('declared')
+def is_t2(basis):   return 'T2' in basis
+T2_TAG = 'Т2 26.08.2026 (неофиц. | unofficial)'
 
 # ---- styling ----------------------------------------------------------------
 HDR = Font(bold=True, size=9, color='FFFFFF'); HDRF = PatternFill('solid', fgColor='1F4E5F')
@@ -133,7 +143,8 @@ ws, r = sheet('Batch Release QC', HEADS, WID,
     'Purely Plant GmbH — QC Batch Release Results Register (final potency grades, 27.08.2026)',
     'One row per certificate · "/" = not tested on that certificate · grouped per batch · '
     'source: RAGFlow eCoA_DATABASE (291 certificates, sanity-checked) · grades: ImB_Potency_Grade_Ranges '
-    '(mandatory management codes, symmetric balanced tolerances)', REFROW)
+    '(mandatory management codes revised 27.08.2026, symmetric balanced tolerances, anchors = '
+    'T1+T2 re-analysis of 26.08.2026 where retested — T2 values unofficial pending formal eCoAs)', REFROW)
 
 def dkey(name):
     d = RECS[name]['meta'].get('date_of_issue') or '99.99.9999'
@@ -181,19 +192,22 @@ for row in CONS['rows']:
 
 # pending batches (no eCoA on file) with their provisional grades
 r += 1
-put(ws, r, 1, '', CELL); ws.cell(r, 2, 'PENDING — no eCoA on file (grades provisional, declared values)').font = BOLD9
+put(ws, r, 1, '', CELL); ws.cell(r, 2, 'PENDING — no eCoA on file (grades provisional: '
+    'owner-declared values, or unofficial T2 re-analysis values of 26.08.2026)').font = BOLD9
 r += 1
-reg_norms = {nrm(base_batch(x['batch'])) for x in CONS['rows']} | \
-            {nrm(x.get('p_number') or '§') for x in CONS['rows']}
-for bkey, g in sorted(GRADE.items(), key=lambda kv: kv[1]['strain']):
-    if g['basis'].startswith('declared') and bkey not in reg_norms:
+reg_norms = {bkey(base_batch(x['batch'])) for x in CONS['rows']} | \
+            {bkey(x.get('p_number') or '§') for x in CONS['rows']}
+for bk, g in sorted(GRADE.items(), key=lambda kv: kv[1]['strain']):
+    if (is_decl(g['basis']) or is_t2(g['basis'])) and bk not in reg_norms:
         bname = next(b['batch'] for e in GD['strains'].values() for gg in e
-                     for b in gg['batches'] if nrm(b['batch']) == bkey)
+                     for b in gg['batches'] if bkey(b['batch']) == bk)
         nb += 1
+        vtxt = (f"{g['anchor']:.2f} (declared)" if is_decl(g['basis'])
+                else f"{g['anchor']:.2f} ({T2_TAG})")
         put(ws, r, 1, nb, BOLD9, CTR, PENDF)
         put(ws, r, 2, bname, BOLD9, LFT, PENDF)
         put(ws, r, 4, g['strain'], CELL, LFT, PENDF)
-        put(ws, r, 5, f"{g['anchor']:.2f} (declared)", CELL, CTR, PENDF)
+        put(ws, r, 5, vtxt, CELL, CTR, PENDF)
         put(ws, r, 6, gr_range(g), CELL, CTR, PENDF)
         put(ws, r, 31, gr_label(g), CELL, LFT, PENDF)
         put(ws, r, 32, g['spec_code'], CELL, CTR, PENDF)
@@ -247,7 +261,8 @@ for strain in sorted(GD['strains']):
     first = True
     for gi, g in enumerate(entry):
         anchors = ', '.join(f"{b['batch']} {b['v']:.2f}"
-                            + (' (декл.)' if b['basis'].startswith('declared') else '')
+                            + (' (декл.)' if is_decl(b['basis'])
+                               else ' (Т2 неофиц.)' if is_t2(b['basis']) else '')
                             for b in g['batches'])
         hist = []
         for res in results:
@@ -300,33 +315,50 @@ H3 = ['#','Batch No.','P-number','Strain','Tested Total Δ⁹-THC %','Basis','Te
 W3 = [4,16,10,20,12,11,22,16,7,18,17,16,34]
 ws3, r3 = sheet('Batch Assignments', H3, W3,
     'Purely Plant GmbH — Batch → Potency Grade Assignments (final, 27.08.2026)',
-    '86 batches · anchor = latest (retest = CoQ-forming) certified Total Δ⁹-THC; declared where no eCoA yet · '
-    'mandatory management codes: 46/48 exact, 2 flagged unavoidable deviations')
+    '86 batches · anchor = CoQ-forming Total Δ⁹-THC (T1+T2 re-analysis of 26.08.2026 where retested; '
+    'T2 values unofficial pending formal eCoAs; declared where no analysis) · '
+    'mandatory management codes revised 27.08.2026: 42/48 exact, 6 flagged unavoidable deviations')
 
 PNUM = {}
 for row in CONS['rows']:
     if row.get('p_number'):
-        PNUM[nrm(base_batch(row['batch']))] = row['p_number']
+        PNUM[bkey(base_batch(row['batch']))] = row['p_number']
 MANUAL_P = {'ACC102501':'P060122','CC012603':'P060372','CF102501':'P060132',
             'JD012603/01':'P060362','PUM102501':'P060112'}
-DEVN = {'CJ062501/1': 'MANDATORY-CODE DEVIATION: THC22 impossible beside THC24 holding 22.30 — regraded THC20',
-        'PM112501': 'MANDATORY-CODE DEVIATION: audited 13.33 > 13.20 ceiling of THC12 — regraded THC14'}
+# mandatory-code deviations, derived from the design flags (T2-revised codes)
+DEVN = {}
+for strain in GD['strains']:
+    for g in GD['strains'][strain]:
+        for b in g['batches']:
+            f = next((f for f in GD['flags']
+                      if f.startswith(f"{strain} / {b['batch']}:")
+                      and ('infeasible' in f or 'MANDATORY-CODE DEVIATION' in f)), None)
+            if f:
+                txt = f.split(': ', 1)[1]
+                if not txt.startswith('MANDATORY-CODE DEVIATION'):
+                    txt = 'MANDATORY-CODE DEVIATION: ' + txt
+                DEVN[b['batch']] = txt
 i3 = 0
 for strain in sorted(GD['strains']):
     for g in GD['strains'][strain]:
         for b in g['batches']:
             i3 += 1
-            src = b['src'] if not b['basis'].startswith('declared') else 'owner-declared value'
+            src = b['src'] if not is_decl(b['basis']) else 'owner-declared value'
             note = DEVN.get(b['batch'], '')
-            if b['basis'].startswith('declared') and not note:
+            if is_decl(b['basis']) and not note:
                 note = 'declared — no eCoA yet, grade provisional'
-            fill = DEVF if b['batch'] in DEVN else (PENDF if b['basis'].startswith('declared') else None)
+            elif is_t2(b['basis']) and not note:
+                note = 'T2 re-analysis (unofficial) — formal eCoA pending'
+            fill = DEVF if b['batch'] in DEVN else (
+                PENDF if is_decl(b['basis']) or is_t2(b['basis']) else None)
             put(ws3, r3, 1, i3, CELL, CTR, fill)
             put(ws3, r3, 2, b['batch'], BOLD9, LFT, fill)
-            put(ws3, r3, 3, PNUM.get(nrm(b['batch']), MANUAL_P.get(b['batch'], '')), CELL, CTR, fill)
+            put(ws3, r3, 3, PNUM.get(bkey(b['batch']), MANUAL_P.get(b['batch'], '')), CELL, CTR, fill)
             put(ws3, r3, 4, strain, CELL, LFT, fill)
             put(ws3, r3, 5, f"{b['v']:.2f}", BOLD9, CTR, fill)
-            put(ws3, r3, 6, 'certificate' if not b['basis'].startswith('declared') else 'declared', CELL, CTR, fill)
+            basis_txt = ('declared' if is_decl(b['basis'])
+                         else 'T2 re-analysis' if is_t2(b['basis']) else 'certificate')
+            put(ws3, r3, 6, basis_txt, CELL, CTR, fill)
             put(ws3, r3, 7, src[:40], Font(size=8), LFT, fill)
             put(ws3, r3, 8, f"QCSP_001_{g['strain_code']}", CELL, CTR, fill)
             put(ws3, r3, 9, g['grade'], BOLD9, CTR, fill)
@@ -354,3 +386,67 @@ for rr in range(5, src_ws.max_row + 1):
 out = f'{Q}/QC_Batch_Release_Results_Register.xlsx'
 wb.save(out)
 print(f'saved {out}: S1 {S1_ROWS} rows, S2 {r2} rows, S3 {i3} batches, S4 {r4} rows')
+
+# ============ Compact stacked CSV (Google-Sheet delivery) ====================
+# Part 1 is a batch-level condensation of Sheet 1; Parts 2-3 are taken verbatim
+# from the Specifications-by-Strain and Batch-Assignments worksheet cells so the
+# CSV can never drift from the workbook.
+import csv as _csv
+cpath = f'{Q}/release_register_compact.csv'
+FIELDS1 = ['total_cbd_pct','total_cbn_pct','loss_on_drying_pct','foreign_matter_pct',
+           'tamc','tymc','bile_tolerant_gnb','salmonella','e_coli','aflatoxins_total',
+           'aflatoxin_b1','ochratoxin_a','pb','cd','arsenic','hg','pesticides']
+with open(cpath, 'w', newline='', encoding='utf-8') as fh:
+    w = _csv.writer(fh)
+    w.writerow(['QC BATCH RELEASE RESULTS REGISTER — FINAL POTENCY GRADES '
+                '(27.08.2026, rev. 2 — T1+T2 re-analysis anchors of 26.08.2026)'])
+    w.writerow(['Part 1: batch-level release results (CoQ-forming values) with assigned grade · '
+                'Part 2: Specifications by Strain — every grade, range, and the results in it · '
+                'Part 3: Batch -> Grade Assignments. Per-certificate detail: '
+                'QC_Batch_Release_Results_Register.xlsx (letta-stack) and the eCoA Register sheet rev.5. '
+                'Source: RAGFlow eCoA_DATABASE · ImB_Potency_Grade_Ranges · Potency Atlas. '
+                'T2 values (Farmahem, 26.08.2026) are unofficial until the formal eCoAs are filed.'])
+    w.writerow([])
+    w.writerow(['PART 1 — BATCH RELEASE QC (batch level)'])
+    w.writerow(['No.','Batch','P-number','Strain','THC %','Grade range %','Potency grade',
+                'Spec code','CBD %','CBN %','LoD %','FM %','TAMC','TYMC','BTGNB','Salmonella',
+                'E.coli','AflaΣ','AflaB1','OTA','Pb','Cd','As','Hg','Pesticides',
+                'No. of certs','CoQ code'])
+    n1 = 0
+    for row in CONS['rows']:
+        n1 += 1
+        g = grade_of(row)
+        thc = (f"{g['anchor']:.2f} (Т2 неофиц.)" if g and is_t2(g['basis'])
+               else row.get('total_thc_pct') or '')
+        def _dot(v):
+            # bare decimal-comma numbers -> dots so Sheets parses them as numbers
+            s = str(v)
+            return s.replace(',', '.') if re.fullmatch(r'\d+,\d+', s) else s
+        w.writerow([n1, row['batch'], row.get('p_number') or '', row.get('strain') or '', thc,
+                    f"{g['lower']:.2f}-{g['upper']:.2f}" if g else '',
+                    f"{g['grade']} · {g['product_code']}" if g else '',
+                    g['spec_code'] if g else '']
+                   + [_dot(row.get(f) or '') for f in FIELDS1]
+                   + [row.get('n_certs') or '', row.get('coq') or ''])
+    for bk, g in sorted(GRADE.items(), key=lambda kv: (kv[1]['strain'], kv[0])):
+        if (is_decl(g['basis']) or is_t2(g['basis'])) and bk not in reg_norms:
+            bname = next(b['batch'] for e in GD['strains'].values() for gg in e
+                         for b in gg['batches'] if bkey(b['batch']) == bk)
+            tag = 'declared' if is_decl(g['basis']) else 'Т2 26.08.2026, неофиц.'
+            w.writerow(['', bname, '', g['strain'], f"{g['anchor']:.2f} ({tag})",
+                        f"{g['lower']:.2f}-{g['upper']:.2f}",
+                        f"{g['grade']} · {g['product_code']}", g['spec_code'],
+                        'PENDING — no eCoA on file'])
+    w.writerow([]); w.writerow([])
+    w.writerow(['PART 2 — SPECIFICATIONS BY STRAIN (all grades · ranges · results within)'])
+    w.writerow([ws2.cell(4, c).value or '' for c in range(1, 11)])
+    for rr in range(5, r2):
+        w.writerow([ws2.cell(rr, c).value if ws2.cell(rr, c).value is not None else ''
+                    for c in range(1, 11)])
+    w.writerow([]); w.writerow([])
+    w.writerow(['PART 3 — BATCH -> GRADE ASSIGNMENTS (86 batches)'])
+    w.writerow([ws3.cell(4, c).value or '' for c in range(1, 14)])
+    for rr in range(5, r3):
+        w.writerow([ws3.cell(rr, c).value if ws3.cell(rr, c).value is not None else ''
+                    for c in range(1, 14)])
+print(f'saved {cpath}')
