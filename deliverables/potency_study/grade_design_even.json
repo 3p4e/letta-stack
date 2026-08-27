@@ -1,0 +1,1311 @@
+{
+ "strains": {
+  "Amnesia Core Cut": [
+   {
+    "nominal": 12,
+    "lower": 10.8,
+    "upper": 13.2,
+    "width": 2.4,
+    "full": true,
+    "batches": [
+     {
+      "batch": "ACC102501",
+      "v": 12.91,
+      "owner_req": true,
+      "src": "owner-declared value",
+      "basis": "declared (no eCoA yet)"
+     }
+    ],
+    "grade": "I",
+    "strain_code": "ACC",
+    "product_code": "ACC_THC12:CBD1",
+    "spec_code": "QCSP_001_ACC-I"
+   }
+  ],
+  "Apple and Banana": [
+   {
+    "nominal": 16,
+    "lower": 14.4,
+    "upper": 17.6,
+    "width": 3.2,
+    "full": true,
+    "batches": [
+     {
+      "batch": "AB092501",
+      "v": 16.93,
+      "owner_req": false,
+      "src": "PP CoA #037 / ППК26005, 21.01.2026, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "I",
+    "strain_code": "AB",
+    "product_code": "AB_THC16:CBD1",
+    "spec_code": "QCSP_001_AB-I"
+   }
+  ],
+  "Blue Gelato": [
+   {
+    "nominal": 26,
+    "lower": 23.4,
+    "upper": 28.6,
+    "width": 5.2,
+    "full": true,
+    "batches": [
+     {
+      "batch": "BG1024",
+      "v": 26.14,
+      "owner_req": true,
+      "src": "197-1-К/26, 07.08.2026, FARM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "I",
+    "strain_code": "BG",
+    "product_code": "BG_THC26:CBD1",
+    "spec_code": "QCSP_001_BG-I"
+   }
+  ],
+  "Blue Sunset Sherbet": [
+   {
+    "nominal": 24,
+    "lower": 21.6,
+    "upper": 26.4,
+    "width": 4.8,
+    "full": true,
+    "batches": [
+     {
+      "batch": "BSS1024",
+      "v": 25.01,
+      "owner_req": true,
+      "src": "197-2-К/26, 07.08.2026, FARM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "BSS1024_01",
+      "v": 23.42,
+      "owner_req": false,
+      "src": "ППК25176, 10.07.2025, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "I",
+    "strain_code": "BSS",
+    "product_code": "BSS_THC24:CBD1",
+    "spec_code": "QCSP_001_BSS-I"
+   },
+   {
+    "nominal": 20,
+    "lower": 18.0,
+    "upper": 21.59,
+    "width": 3.59,
+    "full": false,
+    "batches": [
+     {
+      "batch": "BSS052501",
+      "v": 20.39,
+      "owner_req": true,
+      "src": "In-house GC cross-check NGP/QCG/SOP-024, 28.11.2025, PP",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "II",
+    "strain_code": "BSS",
+    "product_code": "BSS_THC20:CBD1",
+    "spec_code": "QCSP_001_BSS-II"
+   }
+  ],
+  "Cap Junky": [
+   {
+    "nominal": 24,
+    "lower": 22.01,
+    "upper": 26.4,
+    "width": 4.39,
+    "full": false,
+    "batches": [
+     {
+      "batch": "CJ082501/1",
+      "v": 24.96,
+      "owner_req": true,
+      "src": "ППК26002, 21.01.2026, UKIM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "CJ052501/01",
+      "v": 24.05,
+      "owner_req": true,
+      "src": "197-3-К/26, 07.08.2026, FARM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "CJ072501",
+      "v": 23.7,
+      "owner_req": false,
+      "src": "ППК25367, 28.11.2025, UKIM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "CJ1024",
+      "v": 23.0,
+      "owner_req": false,
+      "src": "ППК25052, 26.02.2025, UKIM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "CJ092501",
+      "v": 22.3,
+      "owner_req": true,
+      "src": "ППК26007, 21.01.2026, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "I",
+    "strain_code": "CJ",
+    "product_code": "CJ_THC24:CBD1",
+    "spec_code": "QCSP_001_CJ-I"
+   },
+   {
+    "nominal": 22,
+    "lower": 20.01,
+    "upper": 22.0,
+    "width": 1.99,
+    "full": false,
+    "batches": [
+     {
+      "batch": "CJ062501/1",
+      "v": 21.51,
+      "owner_req": true,
+      "src": "ППК25321, 23.10.2025, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "II",
+    "strain_code": "CJ",
+    "product_code": "CJ_THC22:CBD1",
+    "spec_code": "QCSP_001_CJ-II"
+   },
+   {
+    "nominal": 20,
+    "lower": 18.0,
+    "upper": 20.0,
+    "width": 2.0,
+    "full": false,
+    "batches": [
+     {
+      "batch": "CJ062501/2",
+      "v": 18.91,
+      "owner_req": false,
+      "src": "197-4-К/26, 07.08.2026, FARM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "CJ082501/2",
+      "v": 18.29,
+      "owner_req": true,
+      "src": "197-5-К/26, 07.08.2026, FARM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "III",
+    "strain_code": "CJ",
+    "product_code": "CJ_THC20:CBD1",
+    "spec_code": "QCSP_001_CJ-III"
+   },
+   {
+    "nominal": 14,
+    "lower": 12.6,
+    "upper": 15.4,
+    "width": 2.8,
+    "full": true,
+    "batches": [
+     {
+      "batch": "CJ052501/02",
+      "v": 14.93,
+      "owner_req": false,
+      "src": "ППК25281, 17.09.2025, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "IV",
+    "strain_code": "CJ",
+    "product_code": "CJ_THC14:CBD1",
+    "spec_code": "QCSP_001_CJ-IV"
+   }
+  ],
+  "Cash Cow": [
+   {
+    "nominal": 18,
+    "lower": 16.2,
+    "upper": 19.8,
+    "width": 3.6,
+    "full": true,
+    "batches": [
+     {
+      "batch": "CC012601/1",
+      "v": 17.67,
+      "owner_req": false,
+      "src": "197-6-К/26, 07.08.2026, FARM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "I",
+    "strain_code": "CC",
+    "product_code": "CC_THC18:CBD1",
+    "spec_code": "QCSP_001_CC-I"
+   },
+   {
+    "nominal": 14,
+    "lower": 12.6,
+    "upper": 15.4,
+    "width": 2.8,
+    "full": true,
+    "batches": [
+     {
+      "batch": "CC112501",
+      "v": 13.35,
+      "owner_req": false,
+      "src": "ППК26068, 11.05.2026, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "II",
+    "strain_code": "CC",
+    "product_code": "CC_THC14:CBD1",
+    "spec_code": "QCSP_001_CC-II"
+   },
+   {
+    "nominal": 12,
+    "lower": 10.8,
+    "upper": 12.59,
+    "width": 1.79,
+    "full": false,
+    "batches": [
+     {
+      "batch": "CC012603",
+      "v": 12.32,
+      "owner_req": true,
+      "src": "owner-declared value",
+      "basis": "declared (no eCoA yet)"
+     }
+    ],
+    "grade": "III",
+    "strain_code": "CC",
+    "product_code": "CC_THC12:CBD1",
+    "spec_code": "QCSP_001_CC-III"
+   }
+  ],
+  "Chem Flyer": [
+   {
+    "nominal": 10,
+    "lower": 9.0,
+    "upper": 11.0,
+    "width": 2.0,
+    "full": true,
+    "batches": [
+     {
+      "batch": "CF102501",
+      "v": 9.83,
+      "owner_req": true,
+      "src": "owner-declared value",
+      "basis": "declared (no eCoA yet)"
+     }
+    ],
+    "grade": "I",
+    "strain_code": "CF",
+    "product_code": "CF_THC10:CBD1",
+    "spec_code": "QCSP_001_CF-I"
+   }
+  ],
+  "Clemosa a bud": [
+   {
+    "nominal": 8,
+    "lower": 7.2,
+    "upper": 8.8,
+    "width": 1.6,
+    "full": true,
+    "batches": [
+     {
+      "batch": "CLE072501",
+      "v": 8.02,
+      "owner_req": true,
+      "src": "PP CoA #027 / ППК25370, 21.01.2026, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "I",
+    "strain_code": "CLE",
+    "product_code": "CLE_THC8:CBD1",
+    "spec_code": "QCSP_001_CLE-I"
+   }
+  ],
+  "Fat Bastard": [
+   {
+    "nominal": 20,
+    "lower": 18.87,
+    "upper": 22.0,
+    "width": 3.13,
+    "full": false,
+    "batches": [
+     {
+      "batch": "FB012603",
+      "v": 20.83,
+      "owner_req": false,
+      "src": "ППК26112, 30.06.2026, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "I",
+    "strain_code": "FB",
+    "product_code": "FB_THC20:CBD1",
+    "spec_code": "QCSP_001_FB-I"
+   },
+   {
+    "nominal": 18,
+    "lower": 16.2,
+    "upper": 18.86,
+    "width": 2.66,
+    "full": false,
+    "batches": [
+     {
+      "batch": "FB012602",
+      "v": 18.86,
+      "owner_req": true,
+      "src": "197-7-К/26, 07.08.2026, FARM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "FB012603V",
+      "v": 18.29,
+      "owner_req": false,
+      "src": "ППК26110, 30.06.2026, UKIM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "FB112501",
+      "v": 16.69,
+      "owner_req": false,
+      "src": "ППК26066, 11.05.2026, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "II",
+    "strain_code": "FB",
+    "product_code": "FB_THC18:CBD1",
+    "spec_code": "QCSP_001_FB-II"
+   },
+   {
+    "nominal": 14,
+    "lower": 12.6,
+    "upper": 15.4,
+    "width": 2.8,
+    "full": true,
+    "batches": [
+     {
+      "batch": "FB012601/1",
+      "v": 14.68,
+      "owner_req": true,
+      "src": "ППК26067, 11.05.2026, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "III",
+    "strain_code": "FB",
+    "product_code": "FB_THC14:CBD1",
+    "spec_code": "QCSP_001_FB-III"
+   },
+   {
+    "nominal": 12,
+    "lower": 10.8,
+    "upper": 12.59,
+    "width": 1.79,
+    "full": false,
+    "batches": [
+     {
+      "batch": "FB032601",
+      "v": 12.39,
+      "owner_req": false,
+      "src": "ППК26127, 21.07.2026, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "IV",
+    "strain_code": "FB",
+    "product_code": "FB_THC12:CBD1",
+    "spec_code": "QCSP_001_FB-IV"
+   }
+  ],
+  "Gorilla Glue": [
+   {
+    "nominal": 18,
+    "lower": 16.71,
+    "upper": 19.8,
+    "width": 3.09,
+    "full": false,
+    "batches": [
+     {
+      "batch": "GG032601",
+      "v": 18.98,
+      "owner_req": false,
+      "src": "ППК26128, 21.07.2026, UKIM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "GG1024_01",
+      "v": 18.67,
+      "owner_req": true,
+      "src": "197-9-К/26, 07.08.2026, FARM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "GG112501",
+      "v": 17.94,
+      "owner_req": false,
+      "src": "ППК26061, 11.05.2026, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "I",
+    "strain_code": "GG",
+    "product_code": "GG_THC18:CBD1",
+    "spec_code": "QCSP_001_GG-I"
+   },
+   {
+    "nominal": 16,
+    "lower": 14.4,
+    "upper": 16.7,
+    "width": 2.3,
+    "full": false,
+    "batches": [
+     {
+      "batch": "GG012603",
+      "v": 16.7,
+      "owner_req": true,
+      "src": "197-8-К/26, 07.08.2026, FARM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "GG1024_02",
+      "v": 15.95,
+      "owner_req": false,
+      "src": "ППК25140, 22.05.2025, UKIM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "GG012601",
+      "v": 15.35,
+      "owner_req": false,
+      "src": "ППК26062, 11.05.2026, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "II",
+    "strain_code": "GG",
+    "product_code": "GG_THC16:CBD1",
+    "spec_code": "QCSP_001_GG-II"
+   },
+   {
+    "nominal": 14,
+    "lower": 12.6,
+    "upper": 14.39,
+    "width": 1.79,
+    "full": false,
+    "batches": [
+     {
+      "batch": "GG1024",
+      "v": 13.34,
+      "owner_req": true,
+      "src": "n/a — Purely Plant in-house CoA (Batch GG1024, no certificate/report number printed), 23.04.2025, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "III",
+    "strain_code": "GG",
+    "product_code": "GG_THC14:CBD1",
+    "spec_code": "QCSP_001_GG-III"
+   }
+  ],
+  "Grape Pie": [
+   {
+    "nominal": 24,
+    "lower": 21.6,
+    "upper": 26.4,
+    "width": 4.8,
+    "full": true,
+    "batches": [
+     {
+      "batch": "P160012",
+      "v": 26.32,
+      "owner_req": false,
+      "src": "ППК26117, 06.07.2026, UKIM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "GP092501",
+      "v": 25.73,
+      "owner_req": true,
+      "src": "ППК26009, 21.01.2026, UKIM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "P160022",
+      "v": 25.72,
+      "owner_req": false,
+      "src": "ППК26118, 06.07.2026, UKIM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "GP0824_03",
+      "v": 25.45,
+      "owner_req": true,
+      "src": "ППК25175, 10.07.2025, UKIM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "GP062501",
+      "v": 24.89,
+      "owner_req": false,
+      "src": "In-house HPLC cross-check NPCCC/SCP-02, NGP/QCG/SOP-024, 28.11.2025, PP",
+      "basis": "certificate"
+     },
+     {
+      "batch": "P160032",
+      "v": 24.78,
+      "owner_req": false,
+      "src": "ППК26119, 06.07.2026, UKIM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "GP0824_02",
+      "v": 22.61,
+      "owner_req": true,
+      "src": "197-11-К/26, 07.08.2026, FARM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "I",
+    "strain_code": "GP",
+    "product_code": "GP_THC24:CBD1",
+    "spec_code": "QCSP_001_GP-I"
+   },
+   {
+    "nominal": 20,
+    "lower": 18.53,
+    "upper": 21.59,
+    "width": 3.06,
+    "full": false,
+    "batches": [
+     {
+      "batch": "GP072501/1",
+      "v": 21.36,
+      "owner_req": false,
+      "src": "PP CoA #018 / ППК25378, 21.01.2026, UKIM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "GP082501/1",
+      "v": 21.29,
+      "owner_req": true,
+      "src": "PP CoA #020 / ППК25380, 21.01.2026, UKIM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "GP0824_01",
+      "v": 20.79,
+      "owner_req": false,
+      "src": "ППК25105, 17.04.2025, UKIM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "GP072501/2",
+      "v": 19.81,
+      "owner_req": true,
+      "src": "PP CoA #019 / ППК25379, 21.01.2026, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "II",
+    "strain_code": "GP",
+    "product_code": "GP_THC20:CBD1",
+    "spec_code": "QCSP_001_GP-II"
+   },
+   {
+    "nominal": 18,
+    "lower": 16.2,
+    "upper": 18.52,
+    "width": 2.32,
+    "full": false,
+    "batches": [
+     {
+      "batch": "GP052501",
+      "v": 18.52,
+      "owner_req": true,
+      "src": "197-10-К/26, 07.08.2026, FARM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "III",
+    "strain_code": "GP",
+    "product_code": "GP_THC18:CBD1",
+    "spec_code": "QCSP_001_GP-III"
+   },
+   {
+    "nominal": 16,
+    "lower": 14.4,
+    "upper": 16.19,
+    "width": 1.79,
+    "full": false,
+    "batches": [
+     {
+      "batch": "GP082501/2",
+      "v": 15.7,
+      "owner_req": true,
+      "src": "197-12-К/26, 07.08.2026, FARM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "IV",
+    "strain_code": "GP",
+    "product_code": "GP_THC16:CBD1",
+    "spec_code": "QCSP_001_GP-IV"
+   }
+  ],
+  "Graps & Creme": [
+   {
+    "nominal": 12,
+    "lower": 10.8,
+    "upper": 13.2,
+    "width": 2.4,
+    "full": true,
+    "batches": [
+     {
+      "batch": "GRC102501/2",
+      "v": 11.53,
+      "owner_req": true,
+      "src": "051-6-K/26, 04.03.2026, FARM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "I",
+    "strain_code": "GRC",
+    "product_code": "GRC_THC12:CBD1",
+    "spec_code": "QCSP_001_GRC-I"
+   }
+  ],
+  "High Pro Amnesia": [
+   {
+    "nominal": 22,
+    "lower": 19.8,
+    "upper": 24.2,
+    "width": 4.4,
+    "full": true,
+    "batches": [
+     {
+      "batch": "HPA1024_01",
+      "v": 21.61,
+      "owner_req": true,
+      "src": "197-14-К/26, 07.08.2026, FARM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "HPA052501",
+      "v": 20.39,
+      "owner_req": true,
+      "src": "ППК25278, 19.09.2025, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "I",
+    "strain_code": "HPA",
+    "product_code": "HPA_THC22:CBD1",
+    "spec_code": "QCSP_001_HPA-I"
+   },
+   {
+    "nominal": 18,
+    "lower": 16.2,
+    "upper": 19.79,
+    "width": 3.59,
+    "full": false,
+    "batches": [
+     {
+      "batch": "HPA1024",
+      "v": 17.31,
+      "owner_req": true,
+      "src": "197-13-К/26, 07.08.2026, FARM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "II",
+    "strain_code": "HPA",
+    "product_code": "HPA_THC18:CBD1",
+    "spec_code": "QCSP_001_HPA-II"
+   }
+  ],
+  "Jelly Donutz": [
+   {
+    "nominal": 20,
+    "lower": 18.0,
+    "upper": 22.0,
+    "width": 4.0,
+    "full": true,
+    "batches": [
+     {
+      "batch": "JD012603/02",
+      "v": 20.54,
+      "owner_req": true,
+      "src": "ППК26113, 30.06.2026, UKIM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "JD112501",
+      "v": 20.32,
+      "owner_req": true,
+      "src": "197-15-К/26, 07.08.2026, FARM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "JD022601",
+      "v": 18.58,
+      "owner_req": false,
+      "src": "ППК26115, 30.06.2026, UKIM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "JD012601",
+      "v": 18.16,
+      "owner_req": false,
+      "src": "ППК26064, 11.05.2026, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "I",
+    "strain_code": "JD",
+    "product_code": "JD_THC20:CBD1",
+    "spec_code": "QCSP_001_JD-I"
+   },
+   {
+    "nominal": 16,
+    "lower": 14.4,
+    "upper": 17.6,
+    "width": 3.2,
+    "full": true,
+    "batches": [
+     {
+      "batch": "JD012603/01",
+      "v": 16.71,
+      "owner_req": true,
+      "src": "owner-declared value",
+      "basis": "declared (no eCoA yet)"
+     },
+     {
+      "batch": "JD012603/02V",
+      "v": 15.16,
+      "owner_req": true,
+      "src": "ППК26111, 30.06.2026, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "II",
+    "strain_code": "JD",
+    "product_code": "JD_THC16:CBD1",
+    "spec_code": "QCSP_001_JD-II"
+   }
+  ],
+  "Jokerz 31": [
+   {
+    "nominal": 22,
+    "lower": 19.8,
+    "upper": 24.2,
+    "width": 4.4,
+    "full": true,
+    "batches": [
+     {
+      "batch": "J31122501",
+      "v": 21.84,
+      "owner_req": false,
+      "src": "machine-trimmed preparation, CoQ-forming (CoQ-PP-2026-0054); hand-trimmed 19.84 is the experimental prep",
+      "basis": "certificate"
+     },
+     {
+      "batch": "J31112501",
+      "v": 20.21,
+      "owner_req": false,
+      "src": "100-1-K/26, 09.04.2026, FARM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "I",
+    "strain_code": "J31",
+    "product_code": "J31_THC22:CBD1",
+    "spec_code": "QCSP_001_J31-I"
+   },
+   {
+    "nominal": 18,
+    "lower": 16.2,
+    "upper": 19.79,
+    "width": 3.59,
+    "full": false,
+    "batches": [
+     {
+      "batch": "J31102501",
+      "v": 17.32,
+      "owner_req": true,
+      "src": "197-16-К/26, 07.08.2026, FARM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "II",
+    "strain_code": "J31",
+    "product_code": "J31_THC18:CBD1",
+    "spec_code": "QCSP_001_J31-II"
+   }
+  ],
+  "Kush Crasher": [
+   {
+    "nominal": 18,
+    "lower": 16.2,
+    "upper": 19.8,
+    "width": 3.6,
+    "full": true,
+    "batches": [
+     {
+      "batch": "KC102501",
+      "v": 17.04,
+      "owner_req": true,
+      "src": "051-4-K/26, 04.03.2026, FARM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "I",
+    "strain_code": "KC",
+    "product_code": "KC_THC18:CBD1",
+    "spec_code": "QCSP_001_KC-I"
+   }
+  ],
+  "Motor Breath": [
+   {
+    "nominal": 18,
+    "lower": 16.83,
+    "upper": 19.8,
+    "width": 2.97,
+    "full": false,
+    "batches": [
+     {
+      "batch": "MB0824_04",
+      "v": 18.67,
+      "owner_req": false,
+      "src": "ППК25118, 06.05.2025, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "I",
+    "strain_code": "MB",
+    "product_code": "MB_THC18:CBD1",
+    "spec_code": "QCSP_001_MB-I"
+   },
+   {
+    "nominal": 16,
+    "lower": 14.4,
+    "upper": 16.82,
+    "width": 2.42,
+    "full": false,
+    "batches": [
+     {
+      "batch": "MB0824_05",
+      "v": 16.82,
+      "owner_req": true,
+      "src": "ППК52211, 28.07.2025, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "II",
+    "strain_code": "MB",
+    "product_code": "MB_THC16:CBD1",
+    "spec_code": "QCSP_001_MB-II"
+   }
+  ],
+  "Orange Punch Mimosa": [
+   {
+    "nominal": 22,
+    "lower": 19.8,
+    "upper": 24.2,
+    "width": 4.4,
+    "full": true,
+    "batches": [
+     {
+      "batch": "OPM1024",
+      "v": 20.03,
+      "owner_req": true,
+      "src": "197-17-К/26, 07.08.2026, FARM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "I",
+    "strain_code": "OPM",
+    "product_code": "OPM_THC22:CBD1",
+    "spec_code": "QCSP_001_OPM-I"
+   },
+   {
+    "nominal": 18,
+    "lower": 16.56,
+    "upper": 19.79,
+    "width": 3.23,
+    "full": false,
+    "batches": [
+     {
+      "batch": "OPM1024_02",
+      "v": 18.04,
+      "owner_req": true,
+      "src": "197-18-К/26, 07.08.2026, FARM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "II",
+    "strain_code": "OPM",
+    "product_code": "OPM_THC18:CBD1",
+    "spec_code": "QCSP_001_OPM-II"
+   },
+   {
+    "nominal": 16,
+    "lower": 14.4,
+    "upper": 16.55,
+    "width": 2.15,
+    "full": false,
+    "batches": [
+     {
+      "batch": "OPM1024_03",
+      "v": 16.55,
+      "owner_req": true,
+      "src": "ППК25210, 28.07.2025, UKIM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "OMP1024_01",
+      "v": 15.38,
+      "owner_req": true,
+      "src": "ППК25117, 06.05.2025, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "III",
+    "strain_code": "OPM",
+    "product_code": "OPM_THC16:CBD1",
+    "spec_code": "QCSP_001_OPM-III"
+   },
+   {
+    "nominal": 14,
+    "lower": 12.6,
+    "upper": 14.39,
+    "width": 1.79,
+    "full": false,
+    "batches": [
+     {
+      "batch": "OPM052501",
+      "v": 14.16,
+      "owner_req": false,
+      "src": "ППК52557, 05.09.2025, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "IV",
+    "strain_code": "OPM",
+    "product_code": "OPM_THC14:CBD1",
+    "spec_code": "QCSP_001_OPM-IV"
+   },
+   {
+    "nominal": 10,
+    "lower": 9.0,
+    "upper": 11.0,
+    "width": 2.0,
+    "full": true,
+    "batches": [
+     {
+      "batch": "OPM092501",
+      "v": 9.43,
+      "owner_req": true,
+      "src": "ППК26008, 21.01.2026, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "V",
+    "strain_code": "OPM",
+    "product_code": "OPM_THC10:CBD1",
+    "spec_code": "QCSP_001_OPM-V"
+   },
+   {
+    "nominal": 8,
+    "lower": 7.2,
+    "upper": 8.8,
+    "width": 1.6,
+    "full": true,
+    "batches": [
+     {
+      "batch": "OPM112501",
+      "v": 8.0,
+      "owner_req": false,
+      "src": "ППК26031, 05.03.2026, UKIM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "OPM122501",
+      "v": 7.91,
+      "owner_req": true,
+      "src": "197-19-К/26, 07.08.2026, FARM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "VI",
+    "strain_code": "OPM",
+    "product_code": "OPM_THC8:CBD1",
+    "spec_code": "QCSP_001_OPM-VI"
+   }
+  ],
+  "Permanent Marker": [
+   {
+    "nominal": 14,
+    "lower": 12.6,
+    "upper": 15.4,
+    "width": 2.8,
+    "full": true,
+    "batches": [
+     {
+      "batch": "PM112501",
+      "v": 13.33,
+      "owner_req": true,
+      "src": "ППК26030, 05.03.2026, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "I",
+    "strain_code": "PM",
+    "product_code": "PM_THC14:CBD1",
+    "spec_code": "QCSP_001_PM-I"
+   },
+   {
+    "nominal": 12,
+    "lower": 10.8,
+    "upper": 12.59,
+    "width": 1.79,
+    "full": false,
+    "batches": [
+     {
+      "batch": "PM092501",
+      "v": 12.25,
+      "owner_req": true,
+      "src": "197-20-К/26, 07.08.2026, FARM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "II",
+    "strain_code": "PM",
+    "product_code": "PM_THC12:CBD1",
+    "spec_code": "QCSP_001_PM-II"
+   },
+   {
+    "nominal": 10,
+    "lower": 9.0,
+    "upper": 10.79,
+    "width": 1.79,
+    "full": false,
+    "batches": [
+     {
+      "batch": "PM072501",
+      "v": 10.01,
+      "owner_req": false,
+      "src": "ППК25368, 28.11.2025, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "III",
+    "strain_code": "PM",
+    "product_code": "PM_THC10:CBD1",
+    "spec_code": "QCSP_001_PM-III"
+   }
+  ],
+  "Pure Michigen": [
+   {
+    "nominal": 16,
+    "lower": 14.4,
+    "upper": 17.6,
+    "width": 3.2,
+    "full": true,
+    "batches": [
+     {
+      "batch": "PUM102501",
+      "v": 15.63,
+      "owner_req": true,
+      "src": "owner-declared value",
+      "basis": "declared (no eCoA yet)"
+     }
+    ],
+    "grade": "I",
+    "strain_code": "PUM",
+    "product_code": "PUM_THC16:CBD1",
+    "spec_code": "QCSP_001_PUM-I"
+   }
+  ],
+  "Scrambler": [
+   {
+    "nominal": 22,
+    "lower": 19.8,
+    "upper": 24.2,
+    "width": 4.4,
+    "full": true,
+    "batches": [
+     {
+      "batch": "SCR022601",
+      "v": 21.92,
+      "owner_req": false,
+      "src": "ППК26116, 06.07.2026, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "I",
+    "strain_code": "SCR",
+    "product_code": "SCR_THC22:CBD1",
+    "spec_code": "QCSP_001_SCR-I"
+   },
+   {
+    "nominal": 18,
+    "lower": 16.2,
+    "upper": 19.79,
+    "width": 3.59,
+    "full": false,
+    "batches": [
+     {
+      "batch": "SCR012601",
+      "v": 18.07,
+      "owner_req": false,
+      "src": "owner-declared value",
+      "basis": "declared (no eCoA yet)"
+     },
+     {
+      "batch": "SCR012603",
+      "v": 17.84,
+      "owner_req": true,
+      "src": "197-21-К/26, 07.08.2026, FARM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "SCR112501",
+      "v": 17.13,
+      "owner_req": true,
+      "src": "ППК26069, 11.05.2026, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "II",
+    "strain_code": "SCR",
+    "product_code": "SCR_THC18:CBD1",
+    "spec_code": "QCSP_001_SCR-II"
+   }
+  ],
+  "Sleepy Joy": [
+   {
+    "nominal": 12,
+    "lower": 10.97,
+    "upper": 13.2,
+    "width": 2.23,
+    "full": false,
+    "batches": [
+     {
+      "batch": "SJ102501",
+      "v": 11.2,
+      "owner_req": false,
+      "src": "051-3-K/26, 04.03.2026, FARM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "I",
+    "strain_code": "SJ",
+    "product_code": "SJ_THC12:CBD1",
+    "spec_code": "QCSP_001_SJ-I"
+   },
+   {
+    "nominal": 10,
+    "lower": 9.0,
+    "upper": 10.96,
+    "width": 1.96,
+    "full": false,
+    "batches": [
+     {
+      "batch": "SJ092501",
+      "v": 10.96,
+      "owner_req": true,
+      "src": "ППК26006, 21.01.2026, UKIM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "SJ112501",
+      "v": 9.2,
+      "owner_req": false,
+      "src": "051-2-K/26, 04.03.2026, FARM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "II",
+    "strain_code": "SJ",
+    "product_code": "SJ_THC10:CBD1",
+    "spec_code": "QCSP_001_SJ-II"
+   }
+  ],
+  "Wedding Cake": [
+   {
+    "nominal": 22,
+    "lower": 19.8,
+    "upper": 24.2,
+    "width": 4.4,
+    "full": true,
+    "batches": [
+     {
+      "batch": "WED102501",
+      "v": 22.05,
+      "owner_req": false,
+      "src": "owner-declared value",
+      "basis": "declared (no eCoA yet)"
+     }
+    ],
+    "grade": "I",
+    "strain_code": "WED",
+    "product_code": "WED_THC22:CBD1",
+    "spec_code": "QCSP_001_WED-I"
+   }
+  ],
+  "Wedding Crasher": [
+   {
+    "nominal": 22,
+    "lower": 19.8,
+    "upper": 24.2,
+    "width": 4.4,
+    "full": true,
+    "batches": [
+     {
+      "batch": "WC072501",
+      "v": 22.11,
+      "owner_req": false,
+      "src": "ППК25369, 28.11.2025, UKIM",
+      "basis": "certificate"
+     },
+     {
+      "batch": "WC082501",
+      "v": 21.67,
+      "owner_req": true,
+      "src": "ППК26001, 21.01.2026, UKIM",
+      "basis": "certificate"
+     }
+    ],
+    "grade": "I",
+    "strain_code": "WC",
+    "product_code": "WC_THC22:CBD1",
+    "spec_code": "QCSP_001_WC-I"
+   }
+  ]
+ },
+ "flags": [
+  "Permanent Marker / PM112501: owner code THC12 infeasible for 13.33 (max window 10.80-13.20) -> THC14"
+ ],
+ "exceptions": [
+  "Graps & Creme / GRC102501/1: 7.05 (declared (no eCoA yet)) fits NO even nominal within +/-10% — dead zone, excluded pending re-test"
+ ],
+ "unmatched": [],
+ "value_notes": []
+}
