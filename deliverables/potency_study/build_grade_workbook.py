@@ -21,8 +21,9 @@ wb = openpyxl.Workbook()
 ws = wb.active; ws.title = 'Grade Boards'
 ws.append(['ImB POTENCY GRADE RANGES — EVEN WHOLE-NUMBER NOMINALS (proposal 27.08.2026)'])
 ws['A1'].font = Font(bold=True, size=13)
-ws.append(['Rules: nominal = whole even number; range <= 10% of nominal each side; two-decimal bounds; '
-           'no overlap within a strain; strongest grade takes the maximum range first; '
+ws.append(['Rules: nominal = whole even number (adjacent odd only where symmetry is impossible); '
+           'tolerance EQUAL above and below the nominal, at most 10% of it; two-decimal bounds; '
+           'no overlap; contiguous ladders; strongest grade takes the maximum range first; '
            'every batch falls in exactly one grade.'])
 ws['A2'].alignment = LFT
 ws.append([])
@@ -101,28 +102,23 @@ rows = [
        'product code as THCnn : CBD1 and shown on the specification as nn.00 %.'),
  ('2', 'A grade range never extends more than 10% of the nominal to either side '
        '(lower >= 0.90 x nominal, upper <= 1.10 x nominal). Bounds carry two decimals.'),
- ('3', 'Ranges within one strain do not overlap. The strongest grade is given the maximum range '
-       'first; each weaker grade takes the widest window that remains. Where an even nominal two '
-       'steps down must still contain its own nominal value, the stronger grade cedes the minimum '
-       'necessary from the bottom of its window (this is why some strong-grade lower bounds sit '
-       'above 0.90 x nominal).'),
- ('4', 'Every batch of the strain falls inside exactly one grade window at its latest certified '
-       'Total THC value (register CoQ-forming value).'),
- ('5', 'Retest results are the CoQ-forming anchors (management rule, 27.08.2026): where a batch '
-       'has a retest (Tranche 1 197-series of 07.08.2026, the April J31 retests, and the pending '
-       'Tranche 2 re-analysis when it lands), the grade is designed on the retest value; '
-       'superseded pre-retest results are out of specification scope.'),
- ('6', 'Contiguity (management rule, 27.08.2026): from the top grade down, consecutive grade '
-       'ranges join without gap or overlap (upper of the weaker = lower of the stronger minus '
-       '0.01). Where batch-bearing grades cannot join directly, RESERVE grades (spec-defined, '
-       'no current batch) are inserted to close the span. Sole exception: below 10% THC, where '
-       'the ladder mathematically cannot join, the lowest grade(s) may sit with a documented '
-       'uncovered zone above them (GRC 7.71-10.79; OPM 8.81-8.99).'),
- ('7', 'ODD-nominal fallback (management rule, 27.08.2026): an isolated result that no even '
-       'nominal can hold within ±10% (the even ladder has dead zones at 6.61–7.19 and 8.81–8.99) '
-       'takes the adjacent ODD whole-number nominal instead, formed without overlap against the '
-       'neighbouring ranges. With this fallback every result above ≈5.0% THC is always placeable '
-       '(for any value v, at least one whole number lies between v/1.1 and v/0.9 once v ≥ 5).'),
+ ('3', 'SYMMETRIC tolerance (management rule, 27.08.2026): every grade is nominal ± t with the '
+       'SAME t above and below, so the window is always centred on the nominal. Contiguity then '
+       'binds neighbouring grades by the equality t_upper + t_lower = (N_upper - N_lower) - 0.01, '
+       'which chains every tolerance to the top grade of the ladder.'),
+ ('4', 'Ranges within one strain do not overlap; the strongest grade is given the maximum '
+       'tolerance the chain allows first, each weaker grade takes what the equalities leave.'),
+ ('5', 'Every batch of the strain falls inside exactly one grade window at its latest certified '
+       'Total THC value (retest = CoQ-forming; superseded pre-retest results are out of scope).'),
+ ('6', 'Contiguity: from the top grade down, consecutive ranges join at 0.01. RESERVE grades '
+       '(spec-defined, no current batch) close spans that batch-bearing grades cannot bridge. '
+       'Sole exception below 10% THC where no meaningful symmetric ladder joins: the lowest '
+       'grade(s) sit with a documented uncovered zone (GRC 7.71-10.79; OPM 8.81-9.10).'),
+ ('7', 'ODD-nominal adjustment (management rule, 27.08.2026): where the initially selected even '
+       'nominal cannot carry a symmetric window under rules 2-6, the nominal shifts to the '
+       'adjacent odd whole number (above or below). Also covers isolated results in the even '
+       'ladder dead zones (GRC_THC7). No grade tolerance is allowed below 0.50 (a 0.40pp-wide '
+       'grade is not a meaningful specification).'),
  ('', ''),
  ('FLAGS', ''),
 ]
@@ -148,11 +144,6 @@ rows += [
        'серија JD112501* — the milled Jelly Donutz presentation, a separate register batch — and was '
        'misattributed to JD112501 (whole flower, retest 20.32) in the source dataset. Reattributed; '
        'JD112501* now carries its own grade JD_THC14:CBD1 (12.60 — 14.39).'),
- ('•', 'Grades whose upper bound is pinned by the grade above print +0.00% up-tolerance (CJ-II, '
-       'CJ-III, CJ-IV): the nominal sits at the very top of its window — the mathematically forced '
-       'consequence of the strongest-first maximum-range rule with even nominals two steps apart. '
-       'Management may instead grant each such grade a small up-headroom at the cost of the grade '
-       'above; flag for decision if the +0.00 display is unacceptable.'),
  ('•', 'Batches on declared values (no eCoA yet): ACC102501, CC012603, CF102501, JD012603/01, '
        'PUM102501 (T2 re-analysis sampled 12.08.2026, results pending), SCR012601, WED102501, '
        'JD022601, GRC102501/1, P160012, P160022, P160032 — their grades are provisional.'),

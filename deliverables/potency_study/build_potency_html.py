@@ -26,6 +26,42 @@ import re
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 d = json.load(open(os.path.join(HERE, "potency_dataset.json"), encoding="utf-8"))
+GD = json.load(open(os.path.join(HERE, "grade_design_even.json"), encoding="utf-8"))
+
+# truth-check fix (27.08.2026): cert ППК26065 prints серија JD112501* (milled,
+# its own register batch); restore milled markers on display names
+for _r in d["register_results"]:
+    if _r["batch"] == "JD112501" and _r.get("cert") == "ППК26065":
+        _r["batch"] = "JD112501*"
+    _r["batch"] = {"GG012601": "GG012601*", "JD012601": "JD012601*"}.get(_r["batch"], _r["batch"])
+for _s in d["stock"]:
+    _s["batch"] = {"GG012601": "GG012601*", "JD012601": "JD012601*"}.get(_s["batch"], _s["batch"])
+
+# convert the even-nominal grade design into the atlas tier schema (ascending)
+import re as _re
+_gaps = set()
+for _e in GD["exceptions"]:
+    _m = _re.search(r"^(.*?): uncovered zone .* between THC(\d+) and THC(\d+)", _e)
+    if _m:
+        _gaps.add((_m.group(1), int(_m.group(3))))   # (strain, weaker nominal below gap)
+_new_mr = {}
+for _strain, _entry in GD["strains"].items():
+    _tiers = []
+    for _g in reversed(_entry):                      # ascending
+        _tiers.append({
+            "range": [_g["lower"], _g["upper"]], "nominal": _g["nominal"],
+            "tol": max(_g["minus_tol"], _g["plus_tol"]),
+            "plus_tol": _g["plus_tol"], "minus_tol": _g["minus_tol"],
+            "symmetric": _g["symmetric"], "expression": _g["expression"],
+            "grade": _g["grade"], "product_code": _g["product_code"],
+            "spec_code": _g["spec_code"], "bridge": _g.get("bridge", False),
+            "odd": _g.get("odd", False),
+            "gap_after": (_strain, _g["nominal"]) in _gaps,
+            "batches": [_b["batch"] for _b in _g["batches"]],
+            "values": {_b["batch"]: _b["v"] for _b in _g["batches"]},
+        })
+    _new_mr[_strain] = _tiers
+d["merged_ranges"] = _new_mr
 F = json.load(open(os.path.join(HERE, "webfonts", "fonts_b64.json"), encoding="utf-8"))
 PM = json.load(open(os.path.join(HERE, "portfolio_master.json"), encoding="utf-8"))
 
@@ -73,6 +109,11 @@ def potlabel(i, t, html_ent=True):
     """Full potency-class label: 'Pot.-1: 22.00% ±2.20%'. Accepts a
     merged_ranges tier dict or a (nominal, tol) pair. html_ent=False for
     plain-text targets (matplotlib figures, docx, xlsx cells)."""
+    if isinstance(t, dict) and "grade" in t:
+        tol = ("±%.2f%%" % t["plus_tol"]) if t.get("symmetric") \
+            else ("+%.2f%%/−%.2f%%" % (t["plus_tol"], t["minus_tol"]))
+        s = "%s · %d.00%% %s" % (t["product_code"].split(":")[0].split("_")[1], t["nominal"], tol)
+        return s.replace(" ", "&nbsp;") if html_ent else s
     nom, tol = (t["nominal"], t["tol"]) if isinstance(t, dict) else t
     if html_ent:
         return "Pot.-%d:&nbsp;%.2f%%&nbsp;±%.2f%%" % (i, nom, tol)
@@ -536,9 +577,16 @@ def tiers_block(s):
                 "No T1/T2/T3 stock batches.</i></div>")
     rows = ""
     for i, t in enumerate(tiers):
+        blist = (esc(", ".join("%s %.2f" % (b, t["values"].get(b, 0)) for b in t["batches"]))
+                 if t.get("batches") else
+                 "<i>резервна класа — нема тековна серија | reserve grade — no current batch</i>")
+        codes = ('<span class="tr-codes"><b>%s</b> · %s · %s</span>'
+                 % (esc(t.get("grade", "")), esc(t.get("product_code", "").replace(":", " : ")),
+                    esc(t.get("spec_code", ""))))
         rows += ('<div class="trow"><span class="tr-range">%s</span>'
-                 '<span class="tr-span">(%.2f%% – %.2f%%)</span><span>%s</span></div>'
-                 % (potlabel(i + 1, t), t["range"][0], t["range"][1], esc(", ".join(t["batches"]))))
+                 '<span class="tr-span">(%.2f%% – %.2f%%)</span>%s<span>%s</span></div>'
+                 % (esc(t.get("expression", "").split(" (")[0]),
+                    t["range"][0], t["range"][1], codes, blist))
         if t.get("gap_after") and i + 1 < len(tiers):
             glo, ghi = t["range"][1], tiers[i + 1]["range"][0]
             rows += ('<div class="trow gaprow">⚠ <span class="tr-span">(%.2f%% – %.2f%%)</span>'
@@ -547,7 +595,7 @@ def tiers_block(s):
                      'assessment</span></div>' % (glo, ghi))
     # The declaration rule is stated ONCE, in the methodology panel at the top
     # of this section — never repeated per strain.
-    return ('<div class="tiers"><b>Предложени класи | Proposed tiers:</b>%s</div>' % rows)
+    return ('<div class="tiers"><b>Потенциски класи | Potency grades (спецификации | specifications):</b>%s</div>' % rows)
 
 
 def strain_cards():
@@ -562,7 +610,7 @@ def strain_cards():
         has_gap = any(t.get("gap_after") for t in d["merged_ranges"].get(s, []))
         legend = ('<div class="legend"><i><span class="dotk"></span>резултат | result</i>'
                   '<i><span class="zonek"></span>±1,50% зона | zone</i>'
-                  '<i><span class="tierk"></span>Pot.-класи | tiers</i>'
+                  '<i><span class="tierk"></span>класи | grades</i>'
                   '<i><span class="oldk"></span>стари граници на класи | old grade boundaries</i>'
                   + ('<i><span class="gapk"></span>нема класа | no established grade</i>'
                      if has_gap else "") + '</div>')
@@ -609,15 +657,13 @@ def renames_section():
         k = norm_b(r["batch"])
         if k not in anch or dkey(r["date"]) > dkey(anch[k]["date"]):
             anch[k] = r
-    # our tier range per batch, from the stock table
+    # our grade per batch, straight from the even-nominal design
     ours = {}
-    for b in d["stock"]:
-        if b.get("proposed") and b.get("tier"):
-            tiers = d["merged_ranges"].get(b["strain"], [])
-            if 0 < b["tier"] <= len(tiers):
-                t = tiers[b["tier"] - 1]
-                ours[norm_b(b["batch"])] = (t["range"][0], t["range"][1],
-                                            t["nominal"], t["tol"])
+    for _tiers in d["merged_ranges"].values():
+        for t in _tiers:
+            for _b in t["batches"]:
+                ours[norm_b(_b)] = (t["range"][0], t["range"][1],
+                                    t["nominal"], t["tol"], t["expression"])
 
     groups = OrderedDict()
     for rec in PM:
@@ -672,8 +718,7 @@ def renames_section():
                                            else ("%.2f%% декл." % it["val"] if it["val"] is not None else "—"))
                               for it in items)
             mb_lbl = " · ".join(sorted({it["mb"][2] for it in items if it["mb"]})) or "—"
-            ours_lbl = " · ".join("%.2f%% ± %.2f%% (%.2f%%–%.2f%%)" % (w[2], w[3], w[0], w[1])
-                                  for w in wset) or "—"
+            ours_lbl = " · ".join(w[4] for w in wset) or "—"
             rows_html += (
                 '<div class="flowrow">'
                 '<div class="flowname">%s<span class="bchip %s">%s</span>%s'
@@ -732,8 +777,7 @@ def final_ranges():
         items = [(r["batch"],) + anchors[norm_b(r["batch"])]
                  for r in recs if norm_b(r["batch"]) in anchors]
         if items:
-            _ov = OVERRIDE_BY_TOP_ANCHOR.get(round(max(a for _b, a, _t in items), 2))
-            neu_tiers[neu] = tiers_from_anchors(items, top_override=_ov)
+            pass  # per-new-name ladders retired: the even-nominal design governs
     neu_origins = {neu: sorted({CANON.get((r.get("original") or "").strip(),
                                           (r.get("original") or "").strip())
                                 for r in recs}) for neu, recs in groups.items()}
@@ -753,11 +797,14 @@ def final_ranges():
             prov = len(tested) == 0
             if not prov:
                 strain_prov = False
-            pills += ('<span class="fpill%s" title="%s">%s'
-                      "<small>%.2f%% – %.2f%% · %d %s</small></span>"
-                      % (" prov" if prov else "", esc(", ".join(t["batches"])),
-                         potlabel(i + 1, t), t["range"][0], t["range"][1], len(t["batches"]),
-                         "серии | batches" if len(t["batches"]) != 1 else "серија | batch"))
+            cnt = ("резервна | reserve" if t.get("bridge")
+                   else "%d %s" % (len(t["batches"]),
+                                   "серии | batches" if len(t["batches"]) != 1 else "серија | batch"))
+            pills += ('<span class="fpill%s" title="%s · %s">%s'
+                      "<small>%.2f%% – %.2f%% · %s</small></span>"
+                      % (" prov" if prov else "",
+                         esc(t.get("spec_code", "")), esc(", ".join(t["batches"]) or "—"),
+                         potlabel(i + 1, t), t["range"][0], t["range"][1], cnt))
             if t.get("gap_after") and i + 1 < len(tiers):
                 glo, ghi = t["range"][1], tiers[i + 1]["range"][0]
                 pills += ('<span class="fgap" title="Нема воспоставена класа %.2f%%–%.2f%% | '
@@ -1008,31 +1055,46 @@ def stab_table():
 
 
 def stock_table():
+    # batch -> (strain, tier) from the even-nominal design
+    tmap = {}
+    for _s, _tiers in d["merged_ranges"].items():
+        for _t in _tiers:
+            for _b in _t["batches"]:
+                tmap[norm_b(_b)] = (_s, _t)
     rows = ""
+    n_rows = 0
     for b in sorted(d["stock"], key=lambda x: (x["tranche"], x["strain"], x["batch"])):
-        if not b.get("proposed"):
+        hit = tmap.get(norm_b(b["batch"]))
+        if hit is None:
             continue
+        _strain, t = hit
+        n_rows += 1
         decl = b["anchor"] is None
+        val = t["values"].get(next(_b for _b in t["batches"]
+                                   if norm_b(_b) == norm_b(b["batch"])), None)
         anc = ("%.2f%% (декл. | decl.)" % b["declared"]) if decl \
             else "%.2f%% (%s)" % (b["anchor"], b["anchor_date"])
         if b.get("declared") is not None:
-            out_of_grade = not (b["proposed"][0] - 1e-6 <= b["declared"] <= b["proposed"][1] + 1e-6)
+            out_of_grade = not (t["range"][0] - 1e-6 <= b["declared"] <= t["range"][1] + 1e-6)
             cur = ('<span class="mismatch" title="надвор од новата класа | outside the new '
                    'grade">%.2f%%</span>' % b["declared"]) if out_of_grade else "%.2f%%" % b["declared"]
         else:
             cur = "—"
+        head = (val - t["range"][0]) if val is not None else None
         rows += ('<tr%s><td>Т%s</td><td class=num>%s</td><td>%s</td><td class=num>%s</td>'
-                 "<td>%s</td><td class=num>%s</td><td>%s</td><td class=v>%.2f%% ± %.2f%%</td>"
-                 "<td class=num>%.2f%% – %.2f%%</td><td class=num>%.2f</td></tr>"
+                 "<td>%s</td><td class=num>%s</td><td>%s</td><td class=v>%s</td>"
+                 "<td class=num>%.2f%% – %.2f%%</td><td class=num>%s</td></tr>"
                  % (' class="decl"' if decl else "", esc(b["tranche"]), esc(b["batch"]),
                     esc(b["strain"]), anc, esc(fmt_bracket(b["bracket_old"])), cur,
-                    "Pot.-%s" % b.get("tier", "—"), b["nominal"], b["tol"],
-                    b["proposed"][0], b["proposed"][1], b["headroom_down"]))
-    return ('<div class="tblwrap" style="padding:0"><table><thead><tr>'
+                    "%s · %s" % (esc(t["grade"]), esc(t["product_code"].replace(":", " : "))),
+                    esc(t["expression"].split(" (")[0]),
+                    t["range"][0], t["range"][1],
+                    ("%.2f" % head) if head is not None else "—"))
+    return n_rows, ('<div class="tblwrap" style="padding:0"><table><thead><tr>'
             "<th>Т</th><th>Серија | Batch</th><th>Сорта | Strain</th>"
             "<th>Сидро | Anchor</th><th>Стара | Old</th>"
-            "<th>Тековна декл. | Currently declared</th><th>Класа | Tier</th>"
-            "<th>Номинала ± толеранција | Nominal ± tolerance</th>"
+            "<th>Тековна декл. | Currently declared</th><th>Класа | Grade</th>"
+            "<th>Номинала + толеранција | Nominal + tolerance</th>"
             "<th>= опсег | = span</th><th>Простор ↓ (пп) | Headroom (pp)</th>"
             "</tr></thead><tbody>%s</tbody></table></div>" % rows)
 
@@ -1042,6 +1104,93 @@ nav = "".join('<a href="#s-%s">%s</a>'
               for s in sorted(d["stats"])) + '<a href="#final" style="border-color:var(--gold);color:#8A6D14;font-weight:700">★ Финални опсези | Final ranges</a>'
 
 n_stab_usable = sum(1 for r in d["stability"] if r["usable"])
+
+def methodology_section():
+    fb = []
+    for f in GD["flags"]:
+        fb.append("<li>%s</li>" % esc(f))
+    ex = []
+    for e in GD["exceptions"]:
+        ex.append("<li>%s</li>" % esc(e))
+    return ('<section id="method2"><h2>Методологија <span>| Methodology — the mathematics '
+            'behind every bound</span></h2><div class="mth">'
+            '<h4>1 · Изводливост | Feasibility of a nominal</h4>'
+            '<p>A result <code>v</code> can carry nominal <code>N</code> iff '
+            '<code>0.90·N ≤ v ≤ 1.10·N</code>, i.e. <code>N ∈ [v/1.1, v/0.9]</code> — an '
+            'interval of width ≈ <code>0.202·v</code>. It always holds a whole number once '
+            'v ≥ 4.95, and an even one once v ≥ 9.9. The even ladder has exactly two dead '
+            'zones — <b>8.81–8.99</b> (THC10/THC8) and <b>6.61–7.19</b> (THC8/THC6) — '
+            'plugged by the odd fallback (THC9: 8.10–9.90; THC7: 6.30–7.70), so every '
+            'result above ≈5.0% THC is placeable.</p>'
+            '<h4>2 · Симетричниот закон на континуитет | The symmetric contiguity law</h4>'
+            '<p>Every grade is <code>N ± t</code> with the SAME tolerance above and below. '
+            'Two neighbouring grades touching at 0.01 satisfy the EQUALITY '
+            '<code>tₛ + t_w = (Nₛ − N_w) − 0.01</code> — so every tolerance in a contiguous '
+            'ladder is an affine function of the top grade&#39;s tolerance (alternating '
+            'sign): fixing t₁ fixes the whole ladder. The solver reduces each ladder to one '
+            'variable — every grade contributes an interval constraint '
+            '<code>max(containment, 0.50) ≤ tₖ ≤ 0.10·Nₖ</code> on t₁ — intersects the '
+            'intervals, and t₁ takes the MAXIMUM of the intersection (strongest grade '
+            'first). Reserve grades close spans that batch grades cannot bridge (5 exist: '
+            'CJ THC17, CC THC16, FB THC16, GP THC22, OPM THC12); below 10% THC, where no '
+            'meaningful symmetric ladder joins, the lowest grade keeps its full ±10% with a '
+            'documented uncovered zone (GRC 7.71–10.79; OPM 8.81–9.10).</p>'
+            '<h4>3 · Непарни номинали и толеранција | Odd nominals &amp; tolerance</h4>'
+            '<p>For every cluster the solver tries the initially selected even nominal, '
+            'then the adjacent odd numbers, ranking candidates by fewest odd nominals, '
+            'fewest reserves, then the largest top-grade tolerance. Example — Grape '
+            'Pie&#39;s top cluster spans 22.61–26.32: an even THC24 needs t ≥ 2.32, '
+            'leaving a negative budget (1.99 − 2.32) for any touching grade below — '
+            'infeasible; the adjacent odd <b>THC25 ±2.47</b> (22.53% — 27.47%) holds the '
+            'cluster and chains cleanly. Nine grades carry odd nominals: CJ 21/19/17R/15, '
+            'FB 21, GP 25, JD 19, OPM 21, GRC 7. Every grade prints ONE symmetric '
+            'tolerance: <code>nn.00% ±t.tt% (lower% — upper%)</code>, and nominal − t = '
+            'lower, nominal + t = upper hold exactly by construction.</p>'
+            '<h4>4 · Сидро | Anchor policy</h4>'
+            '<p>The grade anchors on the batch&#39;s latest result — the retest where one '
+            'exists (T1 197-series 07.08.2026, April J31 retests, pending T2 re-analysis). '
+            'Retest values are CoQ-forming; superseded pre-retest results are out of '
+            'specification scope. J31122501 anchors on the machine-trimmed CoQ preparation '
+            '(21.84, CoQ-PP-2026-0054); the hand-trimmed 19.84 is experimental.</p>'
+            '<h4>5 · Независна верификација | Independent verification (27.08.2026)</h4>'
+            '<table><tr><th>Проверка | Check</th><th>Резултат | Result</th></tr>'
+            '<tr><td>Structural rules (caps, contiguity, non-overlap, nominal-inside, 2dp, '
+            'tolerance arithmetic)</td><td class="ok">0 problems</td></tr>'
+            '<tr><td>Batch anchors inside their assigned grade</td>'
+            '<td class="ok">86 / 86 (77 certified + 8 declared + J31122501)</td></tr>'
+            '<tr><td>Windows centred on their nominal (single symmetric ± tolerance)</td>'
+            '<td class="ok">58 / 58</td></tr>'
+            '<tr><td>Batches without a grade (register ∪ stock census)</td>'
+            '<td class="ok">0</td></tr>'
+            '<tr><td>Superseded results still inside a grade of their strain</td>'
+            '<td>19 (12 same grade, 7 neighbouring)</td></tr>'
+            '<tr><td>Superseded results now outside all windows (retest supersession, '
+            'rule R5 — not OOS events)</td><td class="warn">3 — BG1024 21.80, HPA1024 '
+            '14.97, J31112501 25.27</td></tr>'
+            '<tr><td>Stability 25 °C/60 %RH (long-term)</td><td>4 of 5 inside the release '
+            'grade; GP0824_02 M6 21.31 dips one grade, returns by M9 (23.08) — variance, '
+            'no monotonic decline</td></tr>'
+            '<tr><td>Stability 40 °C/75 %RH (accelerated)</td><td>13.16–18.62, out of/below '
+            'grade — heat-stress artefact (CBN 2.05–2.35%), not release-relevant</td></tr>'
+            '</table>'
+            '<h4>6 · Наоди | Findings fixed by the audit</h4>'
+            '<ul>@FLAGS@</ul>'
+            '<h4>7 · Дозволени исклучоци | Permitted exceptions</h4>'
+            '<ul>@EXC@</ul>'
+            '<p>Engine: <code>imb_grade_design.py</code> · design: '
+            '<code>grade_design_even.json</code> · independent audit: '
+            '<code>check_design.py</code> (deliverables/potency_study, letta-stack). '
+            'Пълна постапка | Full write-up: METHODOLOGY_Potency_Grades.md.</p>'
+            '</div></section>'
+            ).replace("@FLAGS@", "".join(fb) +
+               "<li>Certificate ППК26065 (13.93, CNP, 11.05.2026) prints "
+               "серија JD112501* — the milled presentation, its own register batch — and was "
+               "misattributed to JD112501 in the dataset; reattributed, JD112501* now carries "
+               "its own grade JD_THC14:CBD1 (12.60 — 14.39).</li>"
+            ).replace("@EXC@", "".join(ex))
+
+
+_stock_n, _stock_html = stock_table()
 
 HTML = """<!doctype html>
 <html lang="mk"><head><meta charset="utf-8">
@@ -1053,16 +1202,23 @@ HTML = """<!doctype html>
  <div class="brand">PURELY<em>PLANT</em> <small>THE FUTURE OF CANNABIS</small></div>
  <h1>Атлас на потенција</h1>
  <div class="en">Potency Atlas</div>
- <div class="sub">Сите некогаш тестирани резултати за Вкупен Δ⁹-THC, по сорта,
- со растојанија меѓу резултатите и предлог за нови опсези по класи за залихата од Транша 1/2/3.
- | Every Total Δ⁹-THC result ever tested, per strain, with between-result distances and the
- proposed new warehouse grade tiers for the Tranche 1/2/3 stock.</div>
+ <div class="sub">Сите некогаш тестирани резултати за Вкупен Δ⁹-THC, по сорта, со
+ финалните потенциски класи: ЦЕЛА номинала (парна; соседна непарна само каде што мора)
+ со ЕДНАКВА толеранција над и под неа — спецификациски кодови QCSP_001, продукт-типови
+ XX_THCnn:CBD1, номинала ± толеранција и опсег за секоја класа.
+ | Every Total Δ⁹-THC result ever tested, per strain, with the FINAL potency grades:
+ whole-number nominal (even; adjacent odd only where forced) with an EQUAL tolerance
+ above and below it — QCSP_001 specification codes, XX_THCnn:CBD1 product types,
+ nominal ± tolerance and range for every grade.</div>
  <div class="chips">
   <span class="chip"><b>%d</b>резултати | results</span>
   <span class="chip"><b>%d</b>сорти | strains</span>
   <span class="chip"><b>%d</b>серии | batches</span>
+  <span class="chip"><b>%d</b>класи | grades</span>
+  <span class="chip"><b>%d</b>резервни класи | reserve grades</span>
+  <span class="chip"><b>0</b>наоди од независна проверка | independent-audit findings</span>
  </div>
- <div class="informal">Неформален работен документ · не е контролиран запис · 14.08.2026 |
+ <div class="informal">Неформален работен документ · не е контролиран запис · 27.08.2026 |
  Informal working document · not a controlled record</div>
 </div></header>
 
@@ -1080,56 +1236,64 @@ is the range of TESTED results — not the proposed potency grade range (that is
 in the Pot.- tiers).</p>
 
 <div class="method">
- <h3>Како се одредени класите <span>| How the grades were set</span></h3>
- <div class="lede">Правилото важи за секоја сорта во овој документ и е наведено
- само овде — не се повторува подолу. | The rule below governs every strain in this
- document and is stated here only; it is not repeated further down.</div>
+ <h3>Како се одредени класите <span>| How the grades were set (правила од 27.08.2026 | rules of 27.08.2026)</span></h3>
+ <div class="lede">Правилата важат за секоја сорта во овој документ и се наведени само
+ овде. Целосната математичка постапка е во поглавјето „Методологија" подолу. | The rules
+ govern every strain in this document and are stated here once; the full mathematics is in
+ the Methodology chapter below.</div>
 
  <div class="mrules">
-  <div class="mrule"><b><i>1</i>Најсилната класа прва | Strongest tier first</b>
-   Најсилната (највисоката) класа ја зема својата <b style="display:inline;text-transform:none;font-size:12.5px">полна ±10,00%%</b>.
-   Над неа ништо не ја ограничува, па најсилната класа никогаш не се стеснува.
-   <em>The highest tier takes its full ±10.00%% — nothing constrains it from above,
-   so the strongest grade is never squeezed.</em></div>
+  <div class="mrule"><b><i>1</i>Парна цела номинала | Even whole nominal</b>
+   Номиналата на секоја класа е ПАРЕН цел број (… 8, 10, 12 … 26), во продукт-кодот
+   <b style="display:inline;text-transform:none;font-size:12.5px">XX_THCnn:CBD1</b>;
+   само каде што парната номинала математички не може да носи симетричен прозорец,
+   номиналата преминува на соседниот НЕПАРЕН број.
+   <em>Every grade's nominal is an EVEN whole number, printed in the product code; only
+   where the even nominal mathematically cannot carry a symmetric window does it shift
+   to the adjacent ODD number (9 grades: CJ 21/19/17R/15, FB 21, GP 25, JD 19, OPM 21,
+   GRC 7).</em></div>
 
-  <div class="mrule"><b><i>2</i>Надолу до допир | Extend downward to touch</b>
-   Секоја пониска класа се протега надолу: горната граница е точно <b style="display:inline;text-transform:none;font-size:12.5px">0,01</b>
-   под долната граница на класата над неа (без празен простор), и зема онолку од
-   своите ±10,00%% колку што стигнува до таа граница.
-   <em>Each lower tier's ceiling sits exactly 0.01 below the floor of the tier above
-   — no blind gap — taking as much of its own ±10.00%% as reaches that ceiling.</em></div>
+  <div class="mrule"><b><i>2</i>Симетрична толеранција | Symmetric tolerance</b>
+   Секоја класа е номинала ± t со ИСТА толеранција над и под неа (t ≤ 10,00%% од
+   номиналата); допирањето на соседни класи ја дава равенката
+   t<sub>горна</sub> + t<sub>долна</sub> = разлика на номиналите − 0,01, па сите
+   толеранции во скалата се врзани за највисоката класа, која зема максимум прва.
+   <em>Every grade is nominal ± t with the SAME t above and below (t ≤ 10%% of nominal);
+   contiguity binds neighbours by t_upper + t_lower = nominal difference − 0.01, chaining
+   the whole ladder to the top grade, which takes its maximum first.</em></div>
 
-  <div class="mrule"><b><i>3</i>Потесна само ако мора | Narrower only if forced</b>
-   Пониска класа е потесна од своите полни ±10%% <b style="display:inline;text-transform:none;font-size:12.5px">само</b>
-   кога допирањето со класата над неа не остава повеќе простор — никогаш поради
-   друга причина.
-   <em>A lower tier is narrower than its full ±10%% only when meeting the tier above
-   leaves no more room — never for any other reason.</em></div>
+  <div class="mrule"><b><i>3</i>Континуитет и резервни класи | Contiguity &amp; reserve grades</b>
+   Од највисоката класа надолу, соседните опсези се допираат на 0,01 — без јаз и без
+   преклоп; каде што класите со серии не можат да се допрат, се вметнува РЕЗЕРВНА класа
+   (спецификациски дефинирана, без тековна серија). Под 10%% THC, каде што парната скала
+   математички не се спојува, најниската класа стои со документирана непокриена зона.
+   <em>Consecutive ranges join at 0.01; reserve grades close unbridgeable spans above
+   10%%; below 10%% the lowest grade may sit with a documented uncovered zone.</em></div>
  </div>
 
  <div class="mparams">
   <span class="mparam">Толеранција | Tolerance <b>≤ 10,00%%</b> од номиналата | of nominal</span>
-  <span class="mparam">Номинала | Nominal на чекор | on a <b>0,50%%</b> grid</span>
-  <span class="mparam">Допир на класи | Tiers meet at <b>0,01</b></span>
-  <span class="mparam">Под | Floor <b>5,00%%</b> Вкупен THC | Total THC</span>
-  <span class="mparam">Сидро | Anchor = <b>најнов резултат | most recent result</b></span>
+  <span class="mparam">Номинала | Nominal <b>парен цел број | even whole number</b></span>
+  <span class="mparam">Допир на класи | Grades meet at <b>0,01</b></span>
+  <span class="mparam">Сидро | Anchor = <b>ретест (CoQ-формирачки) | retest (CoQ-forming)</b></span>
+  <span class="mparam">Изразување | Expression <b>nn.00%% ±t.tt%% (долна%% — горна%%)</b></span>
+  <span class="mparam">Мин. толеранција | Min tolerance <b>0,50</b></span>
  </div>
 
  <div class="mwork"><b>Пример | Worked example</b> — Blue Sunset Sherbet
  (сидра | anchors 20,39 / 23,42 / 25,01):
- <code>Pot.-2 24.50%% ±2.45%%</code> (22.05%%–26.95%%) ја зема полната ширина | takes the
- full cap<span class="arrow">→</span>подот 22,05 | its floor 22.05 ја дава горната
- граница | sets the ceiling 22,04 за | for
- <code>Pot.-1 20.50%% ±1.54%%</code> (18.96%%–22.04%%).</div>
+ <code>BSS_THC24:CBD1 — 24.00%% ±2.40%% (21.60%% — 26.40%%)</code> ја зема полната
+ ширина | takes the full cap<span class="arrow">→</span>равенката t₂₄ + t₂₀ = 3,99
+ | the equality t₂₄ + t₂₀ = 3.99 дава | yields
+ <code>BSS_THC20:CBD1 — 20.00%% ±1.59%% (18.41%% — 21.59%%)</code> — симетрично око
+ номиналата | centred on the nominal.</div>
 
- <div class="msum"><b>Накратко | In short:</b> највисоката класа зема полни ±10%%, секоја
- следна се протега надолу до допир на 0,01, и ниту една не е потесна освен ако мора.
- Вистински јаз останува само таму каде што ниту еден пар номинали не може да премости
- два тестирани резултати во рамки на 10%% — означен, никогаш измислена преодна класа.
- | <b>The highest tier takes its full ±10%%, each next one extends down to touch it at
- 0.01, and none is narrower unless forced.</b> A genuine gap remains only where no
- nominal pair can bridge two tested results within the 10%% cap — flagged, never a
- fabricated bridge tier.</div>
+ <div class="msum"><b>Накратко | In short:</b> парна цела номинала, максимум 10%% од
+ номиналата на страна, најсилната класа прва, соседните класи се допираат на 0,01,
+ резервни класи ги затвораат преостанатите јазови, а сидро е секогаш најновиот
+ (ретест) резултат. | <b>Even whole nominal, at most 10%% of nominal per side, strongest
+ grade first, neighbouring grades touch at 0.01, reserve grades close remaining spans,
+ and the anchor is always the latest (retest) result.</b></div>
 </div>
 %s</section>
 
@@ -1145,13 +1309,15 @@ master document suggests</b> (amber) versus <b style="color:#1E8449">our propose
 (green, nominal ± tolerance), on one 0.00%%–30.00%% axis.</p>
 %s</section>
 
-<section><h2>Залиха Т1/Т2/Т3 <span>| Stock — предложени класи по серија</span></h2>
-<details open><summary>78 серии | batches — сидро, стара класа, нова класа, простор надолу
-| anchor, old grade, new tier, downward headroom</summary>%s</details>
+<section><h2>Залиха Т1/Т2/Т3 <span>| Stock — класи по серија | grades per batch</span></h2>
+<details open><summary>%d серии | batches — сидро, стара класа, нова класа, простор надолу
+| anchor, old grade, new grade, downward headroom</summary>%s</details>
 <p style="font-size:12px;color:var(--mut);margin-top:8px">Жолти редови: без ниту еден
 сертификат — основа е декларираната вредност; тестирајте пред формално декларирање класа. |
 Yellow rows: no certificate on file — declared value used; test before declaring a grade.</p>
 </section>
+
+%s
 
 <section id="final"><h2>Финални опсези на потенција по сорта <span>| Final Potency Grade Ranges per Strain</span></h2>
 %s</section>
@@ -1190,8 +1356,15 @@ ecoa_retrieval_gpt4o). | Study summary logged to the host's shared memory.</span
 The laboratory certificates in the QMS remain authoritative.</span>
 </div></footer>
 </body></html>
-""" % (CSS, d["n_results"], d["n_strains"], d["n_batches"],
-       nav, strain_cards(), renames_section(), stock_table(), final_ranges(),
+"""
+
+_n_grades = sum(len(v) for v in d["merged_ranges"].values())
+_n_reserve = sum(1 for v in d["merged_ranges"].values() for t in v if t.get("bridge"))
+_n_gbatches = len({b for v in d["merged_ranges"].values() for t in v for b in t["batches"]})
+
+HTML = HTML % (CSS, d["n_results"], d["n_strains"], _n_gbatches, _n_grades, _n_reserve,
+       nav, strain_cards(), renames_section(), _stock_n, _stock_html,
+       methodology_section(), final_ranges(),
        d["n_results"], d["n_strains"], d["n_results"])
 
 out = os.path.join(HERE, "Potency_Atlas.html")

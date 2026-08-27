@@ -53,15 +53,19 @@ for strain, entry in D['strains'].items():
         # A2 nominal inside, even (or flagged odd)
         if not (lo <= N <= up): prob(f"{strain} THC{N}: nominal outside [{lo},{up}]")
         if N % 2 and not g.get('odd'): prob(f"{strain} THC{N}: odd nominal not flagged")
-        if N % 2 and not any('ODD fallback' in f and strain in f for f in D['flags']):
-            prob(f"{strain} THC{N}: odd nominal without a recorded fallback flag")
+        if N % 2 and not any(('ODD fallback' in f or 'odd shift' in f) and strain in f
+                             for f in D['flags']):
+            prob(f"{strain} THC{N}: odd nominal without a recorded fallback/shift flag")
         # A3 tolerance arithmetic
         if abs(round(N - g['minus_tol'], 2) - lo) > 1e-9:
             prob(f"{strain} THC{N}: minus_tol {g['minus_tol']} != N - lower")
         if abs(round(N + g['plus_tol'], 2) - up) > 1e-9:
             prob(f"{strain} THC{N}: plus_tol {g['plus_tol']} != upper - N")
-        want = (f"{N}.00% ±{g['plus_tol']:.2f}% ({lo:.2f}% — {up:.2f}%)" if g['symmetric']
-                else f"{N}.00% +{g['plus_tol']:.2f}%/−{g['minus_tol']:.2f}% ({lo:.2f}% — {up:.2f}%)")
+        if not g['symmetric'] or abs(g['minus_tol'] - g['plus_tol']) > 1e-9:
+            prob(f"{strain} THC{N}: tolerance not symmetric ({g['minus_tol']}/{g['plus_tol']})")
+        if abs((N - lo) - (up - N)) > 1e-9:
+            prob(f"{strain} THC{N}: window not centred on nominal")
+        want = f"{N}.00% ±{g['plus_tol']:.2f}% ({lo:.2f}% — {up:.2f}%)"
         if g['expression'] != want:
             prob(f"{strain} THC{N}: expression mismatch: {g['expression']!r} vs {want!r}")
         # A4 width

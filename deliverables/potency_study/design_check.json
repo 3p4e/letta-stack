@@ -105,10 +105,10 @@
   ],
   "superseded-in-other-grade": [
    "BSS1024 21.03 (ППК25051, 26.02.2025, UKIM) -> THC20 (assigned THC24)",
-   "CJ052501/01 20.29 (ППК25280, 17.09.2025, UKIM) -> THC22 (assigned THC24)",
+   "CJ052501/01 20.29 (ППК25280, 17.09.2025, UKIM) -> THC19 (assigned THC24)",
    "GP052501 18.98 (ППК25279, 19.09.2025, UKIM) -> THC20 (assigned THC18)",
-   "CJ062501/2 16.56 (ППК25322, 23.10.2025, UKIM) -> THC18 (assigned THC20)",
-   "CJ082501/2 20.84 (ППК26003, 21.01.2026, UKIM) -> THC22 (assigned THC20)",
+   "CJ062501/2 16.56 (ППК25322, 23.10.2025, UKIM) -> THC17 (assigned THC19)",
+   "CJ082501/2 20.84 (ППК26003, 21.01.2026, UKIM) -> THC21 (assigned THC19)",
    "PM092501 14.06 (ППК26004, 21.01.2026, UKIM) -> THC14 (assigned THC12)",
    "GG012603 17.59 (ППК26114, 30.06.2026, UKIM) -> THC18 (assigned THC16)"
   ],
@@ -119,17 +119,17 @@
    "J31122501: first 19.84 (09.04.2026) -> THC22; retest 21.84 (09.04.2026) -> THC22"
   ],
   "stability-25C-longterm": [
-   "GP0824_02 [25°C/60%RH, M6] 21.31 (ППК26032) -> THC20; release grade THC24",
-   "GP0824_03 [25°C/60%RH, M6] 24.62 (ППК26034) -> THC24; release grade THC24",
-   "GP062501 [25°C/60%RH, M3] 22.83 (ППК26036) -> THC24; release grade THC24",
-   "GP062501 [25°C/60%RH, M6] 24.51 (ППК26057) -> THC24; release grade THC24",
-   "GP0824_02 [25°C/60%RH, M9] 23.08 (ППК26059) -> THC24; release grade THC24"
+   "GP0824_02 [25°C/60%RH, M6] 21.31 (ППК26032) -> THC20; release grade THC25",
+   "GP0824_03 [25°C/60%RH, M6] 24.62 (ППК26034) -> THC25; release grade THC25",
+   "GP062501 [25°C/60%RH, M3] 22.83 (ППК26036) -> THC25; release grade THC25",
+   "GP062501 [25°C/60%RH, M6] 24.51 (ППК26057) -> THC25; release grade THC25",
+   "GP0824_02 [25°C/60%RH, M9] 23.08 (ППК26059) -> THC25; release grade THC25"
   ],
   "stability-40C-accelerated": [
-   "GP0824_02 [40°C/75%RH, M6] 13.16 (ППК26033) -> outside all grades; release grade THC24",
-   "GP0824_03 [40°C/75%RH, M6] 14.99 (ППК26035) -> THC16; release grade THC24",
-   "GP062501 [40°C/75%RH, M3] 18.62 (ППК26037) -> THC20; release grade THC24",
-   "GP062501 [40°C/75%RH, M6] 17.05 (ППК26058) -> THC18; release grade THC24"
+   "GP0824_02 [40°C/75%RH, M6] 13.16 (ППК26033) -> outside all grades; release grade THC25",
+   "GP0824_03 [40°C/75%RH, M6] 14.99 (ППК26035) -> THC16; release grade THC25",
+   "GP062501 [40°C/75%RH, M3] 18.62 (ППК26037) -> THC20; release grade THC25",
+   "GP062501 [40°C/75%RH, M6] 17.05 (ППК26058) -> THC16; release grade THC25"
   ]
  }
 }
