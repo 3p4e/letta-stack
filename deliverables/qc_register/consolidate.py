@@ -269,9 +269,13 @@ for bkey, clist in by_batch.items():
                     'product_code': SPLIT_META['product_code'], 'production': SPLIT_META['production'],
                     'coq': SPLIT_META['coq'][bkey]})
     # P-numbers confirmed by the owner's tranche sheet (PP-TH-VER), 27.08.2026
-    P_BACKFILL = {'JD112501': 'P060212', 'JD012603_02': 'P060412', 'JD012603_02V': 'P060422'}
+    P_BACKFILL = {'JD112501': 'P060212', 'JD012603_02': 'P060412', 'JD012603_02V': 'P060422',
+                  'GG012601*': 'P060302', 'JD012601*': 'P060312'}
     if not row.get('p_number') and row['batch'] in P_BACKFILL:
         row['p_number'] = P_BACKFILL[row['batch']]
+    S_BACKFILL = {'GG012601*': 'Gorilla Glue', 'JD012601*': 'Jelly Donutz', 'JD112501*': 'Jelly Donutz'}
+    if not row.get('strain') and row['batch'] in S_BACKFILL:
+        row['strain'] = S_BACKFILL[row['batch']]
     if not row['p_number']:
         for c in clist:
             pr = c.get('params', {}).get('batch_printed')
