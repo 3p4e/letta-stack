@@ -304,6 +304,10 @@ for bkey, clist in by_batch.items():
 # --- corrections overlay: ONLY values individually verified against the
 # certificate's own parsed text this session; each carries its evidence ---
 CORRECTIONS = {
+    # extraction filed the Δ9-THCA component line (26.20) as Total CBD;
+    # owner eye-checked the paper certificate 27.08.2026: Вкупно CBD = 0.09
+    ('P050252', 'total_cbd_pct'): ('0.09', 'ППК25367, 28.11.2025, CNP',
+        'extraction row misassignment (took Δ9-THCA 26.20); 0.09 confirmed on paper original by QC'),
     # extraction took the "Содржина на Δ9-THC" component line (0.48) instead
     # of the "Вкупно Δ9-THC" total; certificate text verified to print 16.93
     ('P060052', 'total_thc_pct'): ('16.93', 'ППК26005, 21.01.2026, CNP',
