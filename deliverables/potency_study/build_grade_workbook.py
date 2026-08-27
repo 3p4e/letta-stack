@@ -35,8 +35,10 @@ for c in range(1, len(hdr) + 1):
 for strain, entry in D['strains'].items():
     first = True
     for g in entry:
-        bl = ', '.join(f"{b['batch']} {b['v']:.2f}" for b in g['batches'])
-        status = 'FULL ±10%' if g['full'] else 'clipped (no-overlap rule)'
+        bl = ', '.join(f"{b['batch']} {b['v']:.2f}" for b in g['batches']) \
+             or '— reserve grade (no current batch)'
+        status = 'FULL ±10%' if g['full'] else 'clipped (contiguity rule)'
+        if g.get('bridge'): status = 'RESERVE (contiguity bridge)'
         if g.get('odd'): status += ' — ODD nominal (fallback rule 5)'
         ws.append([strain if first else '', g['strain_code'] if first else '', g['grade'],
                    g['product_code'].replace(':', ' : '), g['spec_code'], g['nominal'],
@@ -103,7 +105,17 @@ rows = [
        'above 0.90 x nominal).'),
  ('4', 'Every batch of the strain falls inside exactly one grade window at its latest certified '
        'Total THC value (register CoQ-forming value).'),
- ('5', 'ODD-nominal fallback (management rule, 27.08.2026): an isolated result that no even '
+ ('5', 'Retest results are the CoQ-forming anchors (management rule, 27.08.2026): where a batch '
+       'has a retest (Tranche 1 197-series of 07.08.2026, the April J31 retests, and the pending '
+       'Tranche 2 re-analysis when it lands), the grade is designed on the retest value; '
+       'superseded pre-retest results are out of specification scope.'),
+ ('6', 'Contiguity (management rule, 27.08.2026): from the top grade down, consecutive grade '
+       'ranges join without gap or overlap (upper of the weaker = lower of the stronger minus '
+       '0.01). Where batch-bearing grades cannot join directly, RESERVE grades (spec-defined, '
+       'no current batch) are inserted to close the span. Sole exception: below 10% THC, where '
+       'the ladder mathematically cannot join, the lowest grade(s) may sit with a documented '
+       'uncovered zone above them (GRC 7.71-10.79; OPM 8.81-8.99).'),
+ ('7', 'ODD-nominal fallback (management rule, 27.08.2026): an isolated result that no even '
        'nominal can hold within ±10% (the even ladder has dead zones at 6.61–7.19 and 8.81–8.99) '
        'takes the adjacent ODD whole-number nominal instead, formed without overlap against the '
        'neighbouring ranges. With this fallback every result above ≈5.0% THC is always placeable '

@@ -165,27 +165,80 @@ for strain in sorted(strains):
                                  f"weakest THC{N} batch ({vminN:.2f}) -> re-coded THC{N}{note}")
                     x['req'] = N; changed = True
 
-    # 4. windows: chain strongest -> weakest
+    # 4. ladder with contiguity: no gaps/overlap between consecutive grades
+    #    from the top down (management rule 27.08.2026); bridge/reserve grades
+    #    (spec-defined, no current batch) are inserted where batch-bearing
+    #    grades cannot join directly. Sole exception: below 10% where the
+    #    even ladder mathematically cannot join, the lowest grade(s) may sit
+    #    with a documented uncovered zone above them.
     gset = sorted({x['req'] for x in rows_g}, reverse=True)
+    stats = {N: ( min(x['v'] for x in rows_g if x['req'] == N),
+                  max(x['v'] for x in rows_g if x['req'] == N) ) for N in gset}
+
+    def junction(Ns, Nw):
+        """boundary zone [loB, hiB] between stronger Ns and weaker Nw; None if impossible"""
+        vmin_s = stats.get(Ns, (None, None))[0]
+        vmax_w = stats.get(Nw, (None, None))[1]
+        loB = max(round(0.9 * Ns, 2), round(Nw + 0.01, 2),
+                  round(vmax_w + 0.01, 2) if vmax_w is not None else 0)
+        hiB = min(round(1.1 * Nw + 0.01, 2),
+                  vmin_s if vmin_s is not None else 99, Ns)
+        return (loB, hiB) if loB <= hiB + 1e-9 else None
+
+    ladder, gaps = [gset[0]], []   # gaps: (above_nominal, below_nominal, zone)
+    def gapzone(A, B):
+        return f"{round(1.1*B+0.01,2):.2f}-{round(0.9*A-0.01,2):.2f}"
+    for B in gset[1:]:
+        A = ladder[-1]
+        if junction(A, B):
+            ladder.append(B); continue
+        if 1.1 * B < 10 and B == gset[-1]:
+            # lowest grade sits below 10% and cannot join: permitted floater,
+            # the zone directly above it stays uncovered (management rule)
+            gaps.append((A, B, gapzone(A, B))); ladder.append(B); continue
+        mids = [M for M in range(B + 2 if B % 2 == 0 else B + 1, A, 2) if M % 2 == 0]
+        chain = sorted(mids, reverse=True) + [B]
+        prev = A
+        for M in chain:
+            if junction(prev, M):
+                ladder.append(M); prev = M
+            elif 1.1 * M < 10:
+                gaps.append((prev, M, gapzone(prev, M)))
+                ladder.append(M); prev = M
+            else:
+                flags.append(f"{strain}: junction THC{prev}->THC{M} impossible above 10% — CONFLICT")
+                ladder.append(M); prev = M
+    # drop batchless bridges that are not needed (both neighbours join directly)
+    changed = True
+    while changed:
+        changed = False
+        for i in range(1, len(ladder) - 1):
+            M = ladder[i]
+            if M not in stats and junction(ladder[i - 1], ladder[i + 1]):
+                ladder.pop(i); changed = True; break
+
     grades, prev_lower = [], None
-    for i, N in enumerate(gset):
+    gap_above = {b for a, b, z in gaps}
+    for i, N in enumerate(ladder):
         mem = [x for x in rows_g if x['req'] == N]
-        vmin, vmax = min(x['v'] for x in mem), max(x['v'] for x in mem)
-        nxt = gset[i + 1] if i + 1 < len(gset) else None
+        vmin, vmax = stats.get(N, (None, None))
         lo_cap, hi_cap = round(0.9 * N, 2), round(1.1 * N, 2)
-        upper = hi_cap if prev_lower is None else min(hi_cap, round(prev_lower - 0.01, 2))
-        lower = lo_cap
-        if nxt is not None:
-            below = [x for x in rows_g if x['req'] < N]
-            need = [lo_cap, round(nxt + 0.01, 2)]
-            if below: need.append(round(max(x['v'] for x in below) + 0.01, 2))
-            lower = max(need)
-        ok = (lower <= vmin + 1e-9 and vmax <= upper + 1e-9 and lower <= N <= upper)
+        if prev_lower is None or N in gap_above:
+            upper = hi_cap                     # top of a chain (or below allowed gap)
+        else:
+            upper = round(prev_lower - 0.01, 2)
+        nxt = ladder[i + 1] if i + 1 < len(ladder) else None
+        if nxt is None or nxt in gap_above:
+            lower = lo_cap                     # bottom of a chain
+        else:
+            lower = junction(N, nxt)[0]        # contiguous boundary, max range up
+        ok = (lower <= N <= upper and lower >= lo_cap - 1e-9 and upper <= hi_cap + 1e-9
+              and (vmin is None or (lower <= vmin + 1e-9 and vmax <= upper + 1e-9)))
         if not ok:
-            flags.append(f"{strain} THC{N}: window [{lower:.2f},{upper:.2f}] cannot hold "
-                         f"batches [{vmin:.2f},{vmax:.2f}] + nominal — CONFLICT")
+            flags.append(f"{strain} THC{N}: window [{lower:.2f},{upper:.2f}] fails — CONFLICT")
         grades.append({'nominal': N, 'lower': lower, 'upper': upper,
                        'width': round(upper - lower, 2), 'odd': bool(N % 2),
+                       'bridge': N not in stats,
                        'full': (lower == lo_cap and upper == hi_cap),
                        'batches': [{'batch': x['batch'], 'v': x['v'], 'owner_req': x['owner'],
                                     'src': x['src'], 'basis': x['basis']}
@@ -193,7 +246,11 @@ for strain in sorted(strains):
         prev_lower = lower
     # final assertions
     for i in range(len(grades) - 1):
-        assert grades[i]['lower'] > grades[i + 1]['upper'], f"{strain}: overlap"
+        up, dn = grades[i], grades[i + 1]
+        assert up['lower'] > dn['upper'], f"{strain}: overlap {up['nominal']}/{dn['nominal']}"
+        if dn['nominal'] not in gap_above:
+            assert abs(up['lower'] - 0.01 - dn['upper']) < 1e-9, \
+                f"{strain}: gap {up['nominal']}/{dn['nominal']} not contiguous"
     for g in grades:
         N = g['nominal']
         assert g['lower'] >= 0.9 * N - 1e-9 and g['upper'] <= 1.1 * N + 1e-9
@@ -202,6 +259,10 @@ for strain in sorted(strains):
             assert g['lower'] - 1e-9 <= bb['v'] <= g['upper'] + 1e-9, \
                 f"{strain} THC{N}: {bb['batch']} {bb['v']} outside"
     report[strain] = grades
+    if gaps:
+        for a, b, z in gaps:
+            exceptions.append(f"{strain}: uncovered zone {z} between THC{a} and THC{b} "
+                              f"(sub-10% territory — even ladder cannot join; permitted per rule)")
 
 STRAIN_CODE = {
  'Amnesia Core Cut': 'ACC', 'Apple and Banana': 'AB', 'Blue Gelato': 'BG',
@@ -216,8 +277,8 @@ STRAIN_CODE = {
 def strain_code(strain, grades):
     return STRAIN_CODE[strain]
 
-roman = ['I', 'II', 'III', 'IV', 'V', 'VI']
-out = {'strains': {}, 'flags': flags, 'exceptions': exceptions,
+roman = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII']
+out = {'strains': {}, 'flags': flags, 'exceptions': exceptions, 'note_retest': 'anchors are the latest (retest) results per batch — retest values are CoQ-forming; superseded pre-retest results are out of spec scope',
        'unmatched': unmatched, 'value_notes': value_notes}
 for strain, grades in report.items():
     sc = strain_code(strain, grades)
@@ -235,7 +296,7 @@ for strain, entry in out['strains'].items():
         tag = ('FULL +/-10%' if g['full'] else f"width {g['width']:.2f}") + (' ODD' if g['odd'] else '')
         bl = ', '.join(f"{b['batch']} {b['v']:.2f}{'*' if not b['owner_req'] else ''}"
                        + ('!' if b['basis'].startswith('declared') else '')
-                       for b in g['batches'])
+                       for b in g['batches']) or '— reserve grade (no current batch)'
         print(f"  {g['grade']:>3s}  {g['product_code']:<18s} {g['lower']:6.2f} - {g['upper']:6.2f}  [{tag:12s}]  {bl}")
     print()
 print('(* = code assigned by value, not in owner list; ! = declared value, no eCoA yet)\n')

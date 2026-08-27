@@ -7,6 +7,7 @@
     "upper": 13.2,
     "width": 2.4,
     "odd": false,
+    "bridge": false,
     "full": true,
     "batches": [
      {
@@ -30,6 +31,7 @@
     "upper": 17.6,
     "width": 3.2,
     "odd": false,
+    "bridge": false,
     "full": true,
     "batches": [
      {
@@ -53,6 +55,7 @@
     "upper": 28.6,
     "width": 5.2,
     "odd": false,
+    "bridge": false,
     "full": true,
     "batches": [
      {
@@ -76,6 +79,7 @@
     "upper": 26.4,
     "width": 4.8,
     "odd": false,
+    "bridge": false,
     "full": true,
     "batches": [
      {
@@ -104,6 +108,7 @@
     "upper": 21.59,
     "width": 3.59,
     "odd": false,
+    "bridge": false,
     "full": false,
     "batches": [
      {
@@ -127,6 +132,7 @@
     "upper": 26.4,
     "width": 4.39,
     "odd": false,
+    "bridge": false,
     "full": false,
     "batches": [
      {
@@ -176,6 +182,7 @@
     "upper": 22.0,
     "width": 1.99,
     "odd": false,
+    "bridge": false,
     "full": false,
     "batches": [
      {
@@ -193,10 +200,11 @@
    },
    {
     "nominal": 20,
-    "lower": 18.0,
+    "lower": 18.01,
     "upper": 20.0,
-    "width": 2.0,
+    "width": 1.99,
     "odd": false,
+    "bridge": false,
     "full": false,
     "batches": [
      {
@@ -220,12 +228,41 @@
     "spec_code": "QCSP_001_CJ-III"
    },
    {
+    "nominal": 18,
+    "lower": 16.2,
+    "upper": 18.0,
+    "width": 1.8,
+    "odd": false,
+    "bridge": true,
+    "full": false,
+    "batches": [],
+    "grade": "IV",
+    "strain_code": "CJ",
+    "product_code": "CJ_THC18:CBD1",
+    "spec_code": "QCSP_001_CJ-IV"
+   },
+   {
+    "nominal": 16,
+    "lower": 14.94,
+    "upper": 16.19,
+    "width": 1.25,
+    "odd": false,
+    "bridge": true,
+    "full": false,
+    "batches": [],
+    "grade": "V",
+    "strain_code": "CJ",
+    "product_code": "CJ_THC16:CBD1",
+    "spec_code": "QCSP_001_CJ-V"
+   },
+   {
     "nominal": 14,
     "lower": 12.6,
-    "upper": 15.4,
-    "width": 2.8,
+    "upper": 14.93,
+    "width": 2.33,
     "odd": false,
-    "full": true,
+    "bridge": false,
+    "full": false,
     "batches": [
      {
       "batch": "CJ052501/02",
@@ -235,10 +272,10 @@
       "basis": "certificate"
      }
     ],
-    "grade": "IV",
+    "grade": "VI",
     "strain_code": "CJ",
     "product_code": "CJ_THC14:CBD1",
-    "spec_code": "QCSP_001_CJ-IV"
+    "spec_code": "QCSP_001_CJ-VI"
    }
   ],
   "Cash Cow": [
@@ -248,6 +285,7 @@
     "upper": 19.8,
     "width": 3.6,
     "odd": false,
+    "bridge": false,
     "full": true,
     "batches": [
      {
@@ -264,12 +302,27 @@
     "spec_code": "QCSP_001_CC-I"
    },
    {
+    "nominal": 16,
+    "lower": 14.4,
+    "upper": 16.19,
+    "width": 1.79,
+    "odd": false,
+    "bridge": true,
+    "full": false,
+    "batches": [],
+    "grade": "II",
+    "strain_code": "CC",
+    "product_code": "CC_THC16:CBD1",
+    "spec_code": "QCSP_001_CC-II"
+   },
+   {
     "nominal": 14,
     "lower": 12.6,
-    "upper": 15.4,
-    "width": 2.8,
+    "upper": 14.39,
+    "width": 1.79,
     "odd": false,
-    "full": true,
+    "bridge": false,
+    "full": false,
     "batches": [
      {
       "batch": "CC112501",
@@ -279,10 +332,10 @@
       "basis": "certificate"
      }
     ],
-    "grade": "II",
+    "grade": "III",
     "strain_code": "CC",
     "product_code": "CC_THC14:CBD1",
-    "spec_code": "QCSP_001_CC-II"
+    "spec_code": "QCSP_001_CC-III"
    },
    {
     "nominal": 12,
@@ -290,6 +343,7 @@
     "upper": 12.59,
     "width": 1.79,
     "odd": false,
+    "bridge": false,
     "full": false,
     "batches": [
      {
@@ -300,10 +354,10 @@
       "basis": "declared (no eCoA yet)"
      }
     ],
-    "grade": "III",
+    "grade": "IV",
     "strain_code": "CC",
     "product_code": "CC_THC12:CBD1",
-    "spec_code": "QCSP_001_CC-III"
+    "spec_code": "QCSP_001_CC-IV"
    }
   ],
   "Chem Flyer": [
@@ -313,6 +367,7 @@
     "upper": 11.0,
     "width": 2.0,
     "odd": false,
+    "bridge": false,
     "full": true,
     "batches": [
      {
@@ -336,6 +391,7 @@
     "upper": 8.8,
     "width": 1.6,
     "odd": false,
+    "bridge": false,
     "full": true,
     "batches": [
      {
@@ -359,6 +415,7 @@
     "upper": 22.0,
     "width": 3.13,
     "odd": false,
+    "bridge": false,
     "full": false,
     "batches": [
      {
@@ -380,6 +437,7 @@
     "upper": 18.86,
     "width": 2.66,
     "odd": false,
+    "bridge": false,
     "full": false,
     "batches": [
      {
@@ -410,12 +468,27 @@
     "spec_code": "QCSP_001_FB-II"
    },
    {
+    "nominal": 16,
+    "lower": 14.69,
+    "upper": 16.19,
+    "width": 1.5,
+    "odd": false,
+    "bridge": true,
+    "full": false,
+    "batches": [],
+    "grade": "III",
+    "strain_code": "FB",
+    "product_code": "FB_THC16:CBD1",
+    "spec_code": "QCSP_001_FB-III"
+   },
+   {
     "nominal": 14,
     "lower": 12.6,
-    "upper": 15.4,
-    "width": 2.8,
+    "upper": 14.68,
+    "width": 2.08,
     "odd": false,
-    "full": true,
+    "bridge": false,
+    "full": false,
     "batches": [
      {
       "batch": "FB012601/1",
@@ -425,10 +498,10 @@
       "basis": "certificate"
      }
     ],
-    "grade": "III",
+    "grade": "IV",
     "strain_code": "FB",
     "product_code": "FB_THC14:CBD1",
-    "spec_code": "QCSP_001_FB-III"
+    "spec_code": "QCSP_001_FB-IV"
    },
    {
     "nominal": 12,
@@ -436,6 +509,7 @@
     "upper": 12.59,
     "width": 1.79,
     "odd": false,
+    "bridge": false,
     "full": false,
     "batches": [
      {
@@ -446,10 +520,10 @@
       "basis": "certificate"
      }
     ],
-    "grade": "IV",
+    "grade": "V",
     "strain_code": "FB",
     "product_code": "FB_THC12:CBD1",
-    "spec_code": "QCSP_001_FB-IV"
+    "spec_code": "QCSP_001_FB-V"
    }
   ],
   "Gorilla Glue": [
@@ -459,6 +533,7 @@
     "upper": 19.8,
     "width": 3.09,
     "odd": false,
+    "bridge": false,
     "full": false,
     "batches": [
      {
@@ -494,6 +569,7 @@
     "upper": 16.7,
     "width": 2.3,
     "odd": false,
+    "bridge": false,
     "full": false,
     "batches": [
      {
@@ -529,6 +605,7 @@
     "upper": 14.39,
     "width": 1.79,
     "odd": false,
+    "bridge": false,
     "full": false,
     "batches": [
      {
@@ -552,6 +629,7 @@
     "upper": 26.4,
     "width": 4.8,
     "odd": false,
+    "bridge": false,
     "full": true,
     "batches": [
      {
@@ -615,6 +693,7 @@
     "upper": 21.59,
     "width": 3.06,
     "odd": false,
+    "bridge": false,
     "full": false,
     "batches": [
      {
@@ -657,6 +736,7 @@
     "upper": 18.52,
     "width": 2.32,
     "odd": false,
+    "bridge": false,
     "full": false,
     "batches": [
      {
@@ -678,6 +758,7 @@
     "upper": 16.19,
     "width": 1.79,
     "odd": false,
+    "bridge": false,
     "full": false,
     "batches": [
      {
@@ -701,6 +782,7 @@
     "upper": 13.2,
     "width": 2.4,
     "odd": false,
+    "bridge": false,
     "full": true,
     "batches": [
      {
@@ -722,6 +804,7 @@
     "upper": 7.7,
     "width": 1.4,
     "odd": true,
+    "bridge": false,
     "full": true,
     "batches": [
      {
@@ -745,6 +828,7 @@
     "upper": 24.2,
     "width": 4.4,
     "odd": false,
+    "bridge": false,
     "full": true,
     "batches": [
      {
@@ -773,6 +857,7 @@
     "upper": 19.79,
     "width": 3.59,
     "odd": false,
+    "bridge": false,
     "full": false,
     "batches": [
      {
@@ -792,11 +877,12 @@
   "Jelly Donutz": [
    {
     "nominal": 20,
-    "lower": 18.0,
+    "lower": 18.01,
     "upper": 22.0,
-    "width": 4.0,
+    "width": 3.99,
     "odd": false,
-    "full": true,
+    "bridge": false,
+    "full": false,
     "batches": [
      {
       "batch": "JD012603/02",
@@ -833,12 +919,27 @@
     "spec_code": "QCSP_001_JD-I"
    },
    {
+    "nominal": 18,
+    "lower": 16.72,
+    "upper": 18.0,
+    "width": 1.28,
+    "odd": false,
+    "bridge": true,
+    "full": false,
+    "batches": [],
+    "grade": "II",
+    "strain_code": "JD",
+    "product_code": "JD_THC18:CBD1",
+    "spec_code": "QCSP_001_JD-II"
+   },
+   {
     "nominal": 16,
     "lower": 14.4,
-    "upper": 17.6,
-    "width": 3.2,
+    "upper": 16.71,
+    "width": 2.31,
     "odd": false,
-    "full": true,
+    "bridge": false,
+    "full": false,
     "batches": [
      {
       "batch": "JD012603/01",
@@ -855,10 +956,10 @@
       "basis": "certificate"
      }
     ],
-    "grade": "II",
+    "grade": "III",
     "strain_code": "JD",
     "product_code": "JD_THC16:CBD1",
-    "spec_code": "QCSP_001_JD-II"
+    "spec_code": "QCSP_001_JD-III"
    }
   ],
   "Jokerz 31": [
@@ -868,6 +969,7 @@
     "upper": 24.2,
     "width": 4.4,
     "odd": false,
+    "bridge": false,
     "full": true,
     "batches": [
      {
@@ -896,6 +998,7 @@
     "upper": 19.79,
     "width": 3.59,
     "odd": false,
+    "bridge": false,
     "full": false,
     "batches": [
      {
@@ -919,6 +1022,7 @@
     "upper": 19.8,
     "width": 3.6,
     "odd": false,
+    "bridge": false,
     "full": true,
     "batches": [
      {
@@ -942,6 +1046,7 @@
     "upper": 19.8,
     "width": 2.97,
     "odd": false,
+    "bridge": false,
     "full": false,
     "batches": [
      {
@@ -963,6 +1068,7 @@
     "upper": 16.82,
     "width": 2.42,
     "odd": false,
+    "bridge": false,
     "full": false,
     "batches": [
      {
@@ -986,6 +1092,7 @@
     "upper": 24.2,
     "width": 4.4,
     "odd": false,
+    "bridge": false,
     "full": true,
     "batches": [
      {
@@ -1007,6 +1114,7 @@
     "upper": 19.79,
     "width": 3.23,
     "odd": false,
+    "bridge": false,
     "full": false,
     "batches": [
      {
@@ -1028,6 +1136,7 @@
     "upper": 16.55,
     "width": 2.15,
     "odd": false,
+    "bridge": false,
     "full": false,
     "batches": [
      {
@@ -1056,6 +1165,7 @@
     "upper": 14.39,
     "width": 1.79,
     "odd": false,
+    "bridge": false,
     "full": false,
     "batches": [
      {
@@ -1072,12 +1182,27 @@
     "spec_code": "QCSP_001_OPM-IV"
    },
    {
+    "nominal": 12,
+    "lower": 10.8,
+    "upper": 12.59,
+    "width": 1.79,
+    "odd": false,
+    "bridge": true,
+    "full": false,
+    "batches": [],
+    "grade": "V",
+    "strain_code": "OPM",
+    "product_code": "OPM_THC12:CBD1",
+    "spec_code": "QCSP_001_OPM-V"
+   },
+   {
     "nominal": 10,
     "lower": 9.0,
-    "upper": 11.0,
-    "width": 2.0,
+    "upper": 10.79,
+    "width": 1.79,
     "odd": false,
-    "full": true,
+    "bridge": false,
+    "full": false,
     "batches": [
      {
       "batch": "OPM092501",
@@ -1087,10 +1212,10 @@
       "basis": "certificate"
      }
     ],
-    "grade": "V",
+    "grade": "VI",
     "strain_code": "OPM",
     "product_code": "OPM_THC10:CBD1",
-    "spec_code": "QCSP_001_OPM-V"
+    "spec_code": "QCSP_001_OPM-VI"
    },
    {
     "nominal": 8,
@@ -1098,6 +1223,7 @@
     "upper": 8.8,
     "width": 1.6,
     "odd": false,
+    "bridge": false,
     "full": true,
     "batches": [
      {
@@ -1115,10 +1241,10 @@
       "basis": "certificate"
      }
     ],
-    "grade": "VI",
+    "grade": "VII",
     "strain_code": "OPM",
     "product_code": "OPM_THC8:CBD1",
-    "spec_code": "QCSP_001_OPM-VI"
+    "spec_code": "QCSP_001_OPM-VII"
    }
   ],
   "Permanent Marker": [
@@ -1128,6 +1254,7 @@
     "upper": 15.4,
     "width": 2.8,
     "odd": false,
+    "bridge": false,
     "full": true,
     "batches": [
      {
@@ -1149,6 +1276,7 @@
     "upper": 12.59,
     "width": 1.79,
     "odd": false,
+    "bridge": false,
     "full": false,
     "batches": [
      {
@@ -1170,6 +1298,7 @@
     "upper": 10.79,
     "width": 1.79,
     "odd": false,
+    "bridge": false,
     "full": false,
     "batches": [
      {
@@ -1193,6 +1322,7 @@
     "upper": 17.6,
     "width": 3.2,
     "odd": false,
+    "bridge": false,
     "full": true,
     "batches": [
      {
@@ -1216,6 +1346,7 @@
     "upper": 24.2,
     "width": 4.4,
     "odd": false,
+    "bridge": false,
     "full": true,
     "batches": [
      {
@@ -1237,6 +1368,7 @@
     "upper": 19.79,
     "width": 3.59,
     "odd": false,
+    "bridge": false,
     "full": false,
     "batches": [
      {
@@ -1274,6 +1406,7 @@
     "upper": 13.2,
     "width": 2.23,
     "odd": false,
+    "bridge": false,
     "full": false,
     "batches": [
      {
@@ -1295,6 +1428,7 @@
     "upper": 10.96,
     "width": 1.96,
     "odd": false,
+    "bridge": false,
     "full": false,
     "batches": [
      {
@@ -1325,6 +1459,7 @@
     "upper": 24.2,
     "width": 4.4,
     "odd": false,
+    "bridge": false,
     "full": true,
     "batches": [
      {
@@ -1348,6 +1483,7 @@
     "upper": 24.2,
     "width": 4.4,
     "odd": false,
+    "bridge": false,
     "full": true,
     "batches": [
      {
@@ -1376,7 +1512,11 @@
   "Graps & Creme / GRC102501/1: 7.05 fits no even nominal (even-ladder dead zone) -> ODD fallback THC7 [6.30-7.70]",
   "Permanent Marker / PM112501: owner code THC12 infeasible for 13.33 (max window 10.80-13.20) -> THC14"
  ],
- "exceptions": [],
+ "exceptions": [
+  "Graps & Creme: uncovered zone 7.71-10.79 between THC12 and THC7 (sub-10% territory — even ladder cannot join; permitted per rule)",
+  "Orange Punch Mimosa: uncovered zone 8.81-8.99 between THC10 and THC8 (sub-10% territory — even ladder cannot join; permitted per rule)"
+ ],
+ "note_retest": "anchors are the latest (retest) results per batch — retest values are CoQ-forming; superseded pre-retest results are out of spec scope",
  "unmatched": [],
  "value_notes": []
 }
