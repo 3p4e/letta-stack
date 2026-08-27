@@ -6,6 +6,7 @@
     "lower": 10.8,
     "upper": 13.2,
     "width": 2.4,
+    "odd": false,
     "full": true,
     "batches": [
      {
@@ -28,6 +29,7 @@
     "lower": 14.4,
     "upper": 17.6,
     "width": 3.2,
+    "odd": false,
     "full": true,
     "batches": [
      {
@@ -50,6 +52,7 @@
     "lower": 23.4,
     "upper": 28.6,
     "width": 5.2,
+    "odd": false,
     "full": true,
     "batches": [
      {
@@ -72,6 +75,7 @@
     "lower": 21.6,
     "upper": 26.4,
     "width": 4.8,
+    "odd": false,
     "full": true,
     "batches": [
      {
@@ -99,6 +103,7 @@
     "lower": 18.0,
     "upper": 21.59,
     "width": 3.59,
+    "odd": false,
     "full": false,
     "batches": [
      {
@@ -121,6 +126,7 @@
     "lower": 22.01,
     "upper": 26.4,
     "width": 4.39,
+    "odd": false,
     "full": false,
     "batches": [
      {
@@ -169,6 +175,7 @@
     "lower": 20.01,
     "upper": 22.0,
     "width": 1.99,
+    "odd": false,
     "full": false,
     "batches": [
      {
@@ -189,6 +196,7 @@
     "lower": 18.0,
     "upper": 20.0,
     "width": 2.0,
+    "odd": false,
     "full": false,
     "batches": [
      {
@@ -216,6 +224,7 @@
     "lower": 12.6,
     "upper": 15.4,
     "width": 2.8,
+    "odd": false,
     "full": true,
     "batches": [
      {
@@ -238,6 +247,7 @@
     "lower": 16.2,
     "upper": 19.8,
     "width": 3.6,
+    "odd": false,
     "full": true,
     "batches": [
      {
@@ -258,6 +268,7 @@
     "lower": 12.6,
     "upper": 15.4,
     "width": 2.8,
+    "odd": false,
     "full": true,
     "batches": [
      {
@@ -278,6 +289,7 @@
     "lower": 10.8,
     "upper": 12.59,
     "width": 1.79,
+    "odd": false,
     "full": false,
     "batches": [
      {
@@ -300,6 +312,7 @@
     "lower": 9.0,
     "upper": 11.0,
     "width": 2.0,
+    "odd": false,
     "full": true,
     "batches": [
      {
@@ -322,6 +335,7 @@
     "lower": 7.2,
     "upper": 8.8,
     "width": 1.6,
+    "odd": false,
     "full": true,
     "batches": [
      {
@@ -344,6 +358,7 @@
     "lower": 18.87,
     "upper": 22.0,
     "width": 3.13,
+    "odd": false,
     "full": false,
     "batches": [
      {
@@ -364,6 +379,7 @@
     "lower": 16.2,
     "upper": 18.86,
     "width": 2.66,
+    "odd": false,
     "full": false,
     "batches": [
      {
@@ -398,6 +414,7 @@
     "lower": 12.6,
     "upper": 15.4,
     "width": 2.8,
+    "odd": false,
     "full": true,
     "batches": [
      {
@@ -418,6 +435,7 @@
     "lower": 10.8,
     "upper": 12.59,
     "width": 1.79,
+    "odd": false,
     "full": false,
     "batches": [
      {
@@ -440,6 +458,7 @@
     "lower": 16.71,
     "upper": 19.8,
     "width": 3.09,
+    "odd": false,
     "full": false,
     "batches": [
      {
@@ -474,6 +493,7 @@
     "lower": 14.4,
     "upper": 16.7,
     "width": 2.3,
+    "odd": false,
     "full": false,
     "batches": [
      {
@@ -508,6 +528,7 @@
     "lower": 12.6,
     "upper": 14.39,
     "width": 1.79,
+    "odd": false,
     "full": false,
     "batches": [
      {
@@ -530,6 +551,7 @@
     "lower": 21.6,
     "upper": 26.4,
     "width": 4.8,
+    "odd": false,
     "full": true,
     "batches": [
      {
@@ -592,6 +614,7 @@
     "lower": 18.53,
     "upper": 21.59,
     "width": 3.06,
+    "odd": false,
     "full": false,
     "batches": [
      {
@@ -633,6 +656,7 @@
     "lower": 16.2,
     "upper": 18.52,
     "width": 2.32,
+    "odd": false,
     "full": false,
     "batches": [
      {
@@ -653,6 +677,7 @@
     "lower": 14.4,
     "upper": 16.19,
     "width": 1.79,
+    "odd": false,
     "full": false,
     "batches": [
      {
@@ -675,6 +700,7 @@
     "lower": 10.8,
     "upper": 13.2,
     "width": 2.4,
+    "odd": false,
     "full": true,
     "batches": [
      {
@@ -689,6 +715,27 @@
     "strain_code": "GRC",
     "product_code": "GRC_THC12:CBD1",
     "spec_code": "QCSP_001_GRC-I"
+   },
+   {
+    "nominal": 7,
+    "lower": 6.3,
+    "upper": 7.7,
+    "width": 1.4,
+    "odd": true,
+    "full": true,
+    "batches": [
+     {
+      "batch": "GRC102501/1",
+      "v": 7.05,
+      "owner_req": false,
+      "src": "owner-declared value",
+      "basis": "declared (no eCoA yet)"
+     }
+    ],
+    "grade": "II",
+    "strain_code": "GRC",
+    "product_code": "GRC_THC7:CBD1",
+    "spec_code": "QCSP_001_GRC-II"
    }
   ],
   "High Pro Amnesia": [
@@ -697,6 +744,7 @@
     "lower": 19.8,
     "upper": 24.2,
     "width": 4.4,
+    "odd": false,
     "full": true,
     "batches": [
      {
@@ -724,6 +772,7 @@
     "lower": 16.2,
     "upper": 19.79,
     "width": 3.59,
+    "odd": false,
     "full": false,
     "batches": [
      {
@@ -746,6 +795,7 @@
     "lower": 18.0,
     "upper": 22.0,
     "width": 4.0,
+    "odd": false,
     "full": true,
     "batches": [
      {
@@ -787,6 +837,7 @@
     "lower": 14.4,
     "upper": 17.6,
     "width": 3.2,
+    "odd": false,
     "full": true,
     "batches": [
      {
@@ -816,6 +867,7 @@
     "lower": 19.8,
     "upper": 24.2,
     "width": 4.4,
+    "odd": false,
     "full": true,
     "batches": [
      {
@@ -843,6 +895,7 @@
     "lower": 16.2,
     "upper": 19.79,
     "width": 3.59,
+    "odd": false,
     "full": false,
     "batches": [
      {
@@ -865,6 +918,7 @@
     "lower": 16.2,
     "upper": 19.8,
     "width": 3.6,
+    "odd": false,
     "full": true,
     "batches": [
      {
@@ -887,6 +941,7 @@
     "lower": 16.83,
     "upper": 19.8,
     "width": 2.97,
+    "odd": false,
     "full": false,
     "batches": [
      {
@@ -907,6 +962,7 @@
     "lower": 14.4,
     "upper": 16.82,
     "width": 2.42,
+    "odd": false,
     "full": false,
     "batches": [
      {
@@ -929,6 +985,7 @@
     "lower": 19.8,
     "upper": 24.2,
     "width": 4.4,
+    "odd": false,
     "full": true,
     "batches": [
      {
@@ -949,6 +1006,7 @@
     "lower": 16.56,
     "upper": 19.79,
     "width": 3.23,
+    "odd": false,
     "full": false,
     "batches": [
      {
@@ -969,6 +1027,7 @@
     "lower": 14.4,
     "upper": 16.55,
     "width": 2.15,
+    "odd": false,
     "full": false,
     "batches": [
      {
@@ -996,6 +1055,7 @@
     "lower": 12.6,
     "upper": 14.39,
     "width": 1.79,
+    "odd": false,
     "full": false,
     "batches": [
      {
@@ -1016,6 +1076,7 @@
     "lower": 9.0,
     "upper": 11.0,
     "width": 2.0,
+    "odd": false,
     "full": true,
     "batches": [
      {
@@ -1036,6 +1097,7 @@
     "lower": 7.2,
     "upper": 8.8,
     "width": 1.6,
+    "odd": false,
     "full": true,
     "batches": [
      {
@@ -1065,6 +1127,7 @@
     "lower": 12.6,
     "upper": 15.4,
     "width": 2.8,
+    "odd": false,
     "full": true,
     "batches": [
      {
@@ -1085,6 +1148,7 @@
     "lower": 10.8,
     "upper": 12.59,
     "width": 1.79,
+    "odd": false,
     "full": false,
     "batches": [
      {
@@ -1105,6 +1169,7 @@
     "lower": 9.0,
     "upper": 10.79,
     "width": 1.79,
+    "odd": false,
     "full": false,
     "batches": [
      {
@@ -1127,6 +1192,7 @@
     "lower": 14.4,
     "upper": 17.6,
     "width": 3.2,
+    "odd": false,
     "full": true,
     "batches": [
      {
@@ -1149,6 +1215,7 @@
     "lower": 19.8,
     "upper": 24.2,
     "width": 4.4,
+    "odd": false,
     "full": true,
     "batches": [
      {
@@ -1169,6 +1236,7 @@
     "lower": 16.2,
     "upper": 19.79,
     "width": 3.59,
+    "odd": false,
     "full": false,
     "batches": [
      {
@@ -1205,6 +1273,7 @@
     "lower": 10.97,
     "upper": 13.2,
     "width": 2.23,
+    "odd": false,
     "full": false,
     "batches": [
      {
@@ -1225,6 +1294,7 @@
     "lower": 9.0,
     "upper": 10.96,
     "width": 1.96,
+    "odd": false,
     "full": false,
     "batches": [
      {
@@ -1254,6 +1324,7 @@
     "lower": 19.8,
     "upper": 24.2,
     "width": 4.4,
+    "odd": false,
     "full": true,
     "batches": [
      {
@@ -1276,6 +1347,7 @@
     "lower": 19.8,
     "upper": 24.2,
     "width": 4.4,
+    "odd": false,
     "full": true,
     "batches": [
      {
@@ -1301,11 +1373,10 @@
   ]
  },
  "flags": [
+  "Graps & Creme / GRC102501/1: 7.05 fits no even nominal (even-ladder dead zone) -> ODD fallback THC7 [6.30-7.70]",
   "Permanent Marker / PM112501: owner code THC12 infeasible for 13.33 (max window 10.80-13.20) -> THC14"
  ],
- "exceptions": [
-  "Graps & Creme / GRC102501/1: 7.05 (declared (no eCoA yet)) fits NO even nominal within +/-10% — dead zone, excluded pending re-test"
- ],
+ "exceptions": [],
  "unmatched": [],
  "value_notes": []
 }

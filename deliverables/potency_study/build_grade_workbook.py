@@ -36,7 +36,8 @@ for strain, entry in D['strains'].items():
     first = True
     for g in entry:
         bl = ', '.join(f"{b['batch']} {b['v']:.2f}" for b in g['batches'])
-        status = 'FULL ±10%' if g['full'] else f"clipped (no-overlap rule)"
+        status = 'FULL ±10%' if g['full'] else 'clipped (no-overlap rule)'
+        if g.get('odd'): status += ' — ODD nominal (fallback rule 5)'
         ws.append([strain if first else '', g['strain_code'] if first else '', g['grade'],
                    g['product_code'].replace(':', ' : '), g['spec_code'], g['nominal'],
                    g['lower'], g['upper'], g['width'], status, bl])
@@ -102,6 +103,11 @@ rows = [
        'above 0.90 x nominal).'),
  ('4', 'Every batch of the strain falls inside exactly one grade window at its latest certified '
        'Total THC value (register CoQ-forming value).'),
+ ('5', 'ODD-nominal fallback (management rule, 27.08.2026): an isolated result that no even '
+       'nominal can hold within ±10% (the even ladder has dead zones at 6.61–7.19 and 8.81–8.99) '
+       'takes the adjacent ODD whole-number nominal instead, formed without overlap against the '
+       'neighbouring ranges. With this fallback every result above ≈5.0% THC is always placeable '
+       '(for any value v, at least one whole number lies between v/1.1 and v/0.9 once v ≥ 5).'),
  ('', ''),
  ('FLAGS', ''),
 ]
@@ -110,6 +116,7 @@ if not D['flags']: rows.append(('•', 'none'))
 rows.append(('', ''))
 rows.append(('EXCEPTIONS', ''))
 for e in D['exceptions']: rows.append(('•', e))
+if not D['exceptions']: rows.append(('•', 'none — the odd-nominal fallback (rule 5) resolves all former dead-zone cases'))
 rows += [
  ('', ''),
  ('OPEN VERIFICATIONS CARRIED OVER', ''),

@@ -95,8 +95,15 @@ for key, (nom, val) in OWNER.items():
     resolved[b] = nom
 
 # ------------------------------------------------- per-strain design
-def feas(v):
-    return [N for N in range(2, 41, 2)
+def feas(v, parity=2):
+    """whole nominals holding v within +/-10%; parity=2 evens, parity=1 all"""
+    step = 2 if parity == 2 else 1
+    start = 2 if parity == 2 else 3
+    return [N for N in range(start, 41, step)
+            if 0.9 * N <= v + 1e-9 and v <= 1.1 * N + 1e-9]
+
+def feas_odd(v):
+    return [N for N in range(3, 41, 2)
             if 0.9 * N <= v + 1e-9 and v <= 1.1 * N + 1e-9]
 
 strains = {}
@@ -110,23 +117,33 @@ report, flags, exceptions = {}, [], []
 for strain in sorted(strains):
     rows = sorted(strains[strain], key=lambda x: -x['v'])
 
-    # 1. owner codes: validate feasibility
+    # 1. owner codes: validate feasibility (even first, odd fallback)
     for x in rows:
         if x['req'] is not None and x['req'] not in feas(x['v']):
-            cands = feas(x['v'])
+            cands = feas(x['v']) or feas_odd(x['v'])
             new = min(cands, key=lambda N: (abs(N - x['v']), -N)) if cands else None
+            odd = ' (ODD fallback)' if new is not None and new % 2 else ''
             flags.append(f"{strain} / {x['batch']}: owner code THC{x['req']} infeasible for "
-                         f"{x['v']:.2f} (max window {0.9*x['req']:.2f}-{1.1*x['req']:.2f}) -> THC{new}")
+                         f"{x['v']:.2f} (max window {0.9*x['req']:.2f}-{1.1*x['req']:.2f}) -> THC{new}{odd}")
             x['req'] = new
 
     # 2. uncoded batches: join an existing grade when feasible, else create one
+    #    (even nominals preferred; adjacent odd nominal only when no even fits —
+    #     management rule 27.08.2026)
     for x in rows:
         if x['req'] is None:
             cands = feas(x['v'])
             if not cands:
-                exceptions.append(f"{strain} / {x['batch']}: {x['v']:.2f} ({x['basis']}) fits NO even "
-                                  f"nominal within +/-10% — dead zone, excluded pending re-test")
-                x['req'] = 'EXC'; continue
+                cands = feas_odd(x['v'])
+                if not cands:
+                    exceptions.append(f"{strain} / {x['batch']}: {x['v']:.2f} ({x['basis']}) fits NO "
+                                      f"whole-number nominal within +/-10% — excluded pending re-test")
+                    x['req'] = 'EXC'; continue
+                pick = min(cands, key=lambda N: (abs(N - x['v']), -N))
+                flags.append(f"{strain} / {x['batch']}: {x['v']:.2f} fits no even nominal "
+                             f"(even-ladder dead zone) -> ODD fallback THC{pick} "
+                             f"[{0.9*pick:.2f}-{1.1*pick:.2f}]")
+                x['req'] = pick; continue
             gset = {y['req'] for y in rows if isinstance(y['req'], int)}
             ing = [N for N in cands if N in gset]
             pool = ing if ing else cands
@@ -168,7 +185,7 @@ for strain in sorted(strains):
             flags.append(f"{strain} THC{N}: window [{lower:.2f},{upper:.2f}] cannot hold "
                          f"batches [{vmin:.2f},{vmax:.2f}] + nominal — CONFLICT")
         grades.append({'nominal': N, 'lower': lower, 'upper': upper,
-                       'width': round(upper - lower, 2),
+                       'width': round(upper - lower, 2), 'odd': bool(N % 2),
                        'full': (lower == lo_cap and upper == hi_cap),
                        'batches': [{'batch': x['batch'], 'v': x['v'], 'owner_req': x['owner'],
                                     'src': x['src'], 'basis': x['basis']}
@@ -179,7 +196,7 @@ for strain in sorted(strains):
         assert grades[i]['lower'] > grades[i + 1]['upper'], f"{strain}: overlap"
     for g in grades:
         N = g['nominal']
-        assert N % 2 == 0 and g['lower'] >= 0.9 * N - 1e-9 and g['upper'] <= 1.1 * N + 1e-9
+        assert g['lower'] >= 0.9 * N - 1e-9 and g['upper'] <= 1.1 * N + 1e-9
         assert g['lower'] <= N <= g['upper'], f"{strain} THC{N}: nominal outside window"
         for bb in g['batches']:
             assert g['lower'] - 1e-9 <= bb['v'] <= g['upper'] + 1e-9, \
@@ -215,7 +232,7 @@ json.dump(out, open('grade_design_even.json', 'w'), ensure_ascii=False, indent=1
 for strain, entry in out['strains'].items():
     print(f"== {strain} ({entry[0]['strain_code']}) ==")
     for g in entry:
-        tag = 'FULL +/-10%' if g['full'] else f"width {g['width']:.2f}"
+        tag = ('FULL +/-10%' if g['full'] else f"width {g['width']:.2f}") + (' ODD' if g['odd'] else '')
         bl = ', '.join(f"{b['batch']} {b['v']:.2f}{'*' if not b['owner_req'] else ''}"
                        + ('!' if b['basis'].startswith('declared') else '')
                        for b in g['batches'])
