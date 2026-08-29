@@ -376,10 +376,14 @@ imported wholesale from an older source while the font work was being done.
 **Options.** (a) Investigate and, if accidental, restore the logic. (b) Accept the
 simpler version. (c) Leave it until the bake-off.
 
-**Recommendation: (a) — 🟢 proceeding by default.** It is read-only investigation plus,
-at most, restoring code that already existed in this repository's history. It must happen
-*before* D2: comparing engines while one of them is in an unintended state measures the
-wrong thing.
+**~~Recommendation: (a)~~ — RESOLVED 29.08.2026.** It was an accidental revert, and the
+first guess about the mechanism was wrong: not a wholesale import, but a genuine edit
+(adding `informal_header()`, which the message does describe) that took collateral damage
+in `fixed()`. None of the 60 changed lines mention a font, a glyph or an asset.
+
+Restored surgically — `fixed()` is byte-identical to its pre-`593e7f7` state and the
+informal-header work is untouched — and covered by `pp-document-suite/tests/test_layout.py`,
+whose two key cases fail against the regressed version. **This changes D2 and D3.**
 
 **What changes.** If restored, wide bilingual tables in root-built documents size the way
 they did before 14.08.2026 — headers wrap less, data cells stop wrapping. Documents built
@@ -401,16 +405,20 @@ ways:
 
 | | Table overflow compression | Glyph guard (fails delivery on tofu) |
 |---|---|---|
-| Root | ❌ (lost at `593e7f7`) | ✅ |
+| Root | ✅ *(restored 29.08.2026 — see D1)* | ✅ |
 | Vendored | ✅ | ❌ |
 
 **Options.** (a) Run the bake-off: same prompt through both, both verified, rendered and
 compared page by page — you pick. (b) Merge the vendored `fixed()` into root, which
 already has the glyph guard, the assets and the consumers. (c) Leave both.
 
-**Recommendation: (a), expecting it to conclude (b).** The likely answer is that neither
-wins outright and the merge is correct — but that is a hypothesis to test, not a
-conclusion to adopt, and it is your rendered output that settles it.
+**Recommendation: (a), and it is now a narrower question than it was.** With the restore,
+root carries both *known* contested capabilities, so the case for merging the vendored
+`fixed()` into root has largely been served by another route. What has **not** been
+examined is everything else: root's `pp_format.py` is 331 lines against the vendored 612,
+the vendored tree carries a `pp_format_layout_addons.py` that root does not, and
+`pp_charts.py` and `pp_data.py` differ by a line or two each with nobody having read the
+diffs. Run the bake-off on those, rather than on a gap that is now closed.
 
 **What changes.** Whatever wins, the loser's canon document is amended in the same change
 so this cannot recur. Any wiring change is its own commit with a regression pass against
@@ -418,29 +426,36 @@ previously issued documents.
 
 ---
 
-### D3 🔴 **Host** — the engine sync runbook is on hold
+### D3 🟠 **Host** — sync the engine to the volume (hold lifted 29.08.2026)
 
 **What it is.** `server/runbooks/engine_sync.md` copies the repo master onto the Letta
 volume at `/root/.letta/pp-document-suite`, hash-gated at every step.
 
-**Why it is open.** The drift is not one-directional. The volume runs `pp_report
-1be84f35` — the pre-`593e7f7` version, which **has** the overflow compression — and
-`pp_verify a2060978`, which **lacks** the glyph guard. So:
+**Why it was open.** The drift ran both ways. The volume runs `pp_report 1be84f35` —
+the pre-`593e7f7` version, which **has** the overflow compression — and `pp_verify
+a2060978`, which **lacks** the glyph guard. So:
 
 | | Overflow compression | Glyph guard |
 |---|---|---|
 | Live volume | ✅ | ❌ |
-| Repo master | ❌ | ✅ |
+| Repo master | ✅ *(restored 29.08.2026)* | ✅ |
 
-Running the sync today would install the guard **and remove working table sizing from the
-engine that builds your controlled documents.**
+Running the sync *before 29.08.2026* would have installed the guard **and removed working
+table sizing from the engine that builds controlled documents**. The restore in D1 put both
+capabilities on the master, so **the hold is lifted** — but the hashes recorded in
+`engine_sync.md` now describe neither side, so step 1's diff must be re-run and the new
+pair recorded before anything is transferred.
 
-**Recommendation: hold, which is now written into the runbook at the point someone would
-act on it.** Resolve D1 first, then sync a master that has both.
+**Recommendation: sync, after re-hashing.** D1 is resolved, so this is now the ordinary
+hash-gated procedure — with one caveat written into the runbook: the canonical hashes
+recorded there predate the restore and describe neither side, so step 1's diff must be
+re-run and the new pair recorded first. Do not sync against the stale figures.
 
-**What changes.** Nothing until D1 is answered. Then one sync installs both capabilities
-instead of trading one for the other. Also worth adding: a drift check, so the gap is
-detected rather than discovered — sync is manual and nothing currently notices.
+**What changes.** One sync installs both capabilities instead of trading one for the
+other. Documents built through the Letta tool start getting the glyph guard, which fails
+delivery rather than shipping scrambled Cyrillic. Worth adding at the same time: a drift
+check, so the next gap is detected rather than discovered — sync is manual and nothing
+currently notices.
 
 ---
 

@@ -43,7 +43,13 @@ Root matches the volume exactly on **two of four**; the vendored copy matches on
 This is the part that makes the decision a real one. Only `pp_theme.py` (`4fad64b1`)
 is byte-identical between the trees; every other file differs.
 
-**Only the vendored line has** content-aware table handling. Its `pp_format.fixed()`
+> **Superseded 29.08.2026 for the two capabilities below.** Root has since had the
+> overflow compression and the word-boundary matching restored (see the `593e7f7`
+> resolution). The description is kept because it is what the vendored line's
+> `PROVENANCE.md` documents and what the graft actually does — but it is no longer a
+> capability root lacks.
+
+**Only the vendored line had** content-aware table handling. Its `pp_format.fixed()`
 carries the graft `PROVENANCE.md` documents, with the marker comment at the graft site:
 
 - **Overflow compression.** Each column is floored to its widest *data* cell (data must
@@ -66,7 +72,12 @@ subset Carlito webfonts with no Cyrillic shadowed the system font and scrambled
 Macedonian into tofu. Root also holds the brand assets, the verified
 Carlito/Montserrat fonts and `pp_setup_fonts.sh`.
 
-Neither line has both capabilities. That is the whole decision in one sentence.
+Neither line had both capabilities — that was the whole decision in one sentence, until
+the restore put both on root. **What remains genuinely open is everything else**: root's
+`pp_format.py` is 331 lines against the vendored 612, the vendored tree carries
+`pp_format_layout_addons.py` that root does not, and `pp_charts.py` and `pp_data.py`
+differ between the two by a line or two each with nobody having read the diffs. Those
+have not been examined and are what the bake-off is now for.
 
 ## Two documentation claims that are no longer true
 
@@ -97,11 +108,17 @@ the weekly report and brand assets — replaced it with the simpler form: substr
 matching, and `ideal[j] = max(ideal[j], min(L,cap)*CHCM+PAD)` with the
 `data_cm`/`hdr_cm`/`word_cm` machinery deleted.
 
-Nothing in that commit explains the change, and it is not plausibly part of a font fix.
-**Confirm whether it was a deliberate simplification or an accidental revert** — most
-likely `pp_report.py` was imported wholesale from an older source while the font work
-was being done. If accidental, root should recover it *before* the bake-off, or the
-comparison measures an unintended state.
+**Resolved 29.08.2026 — and the guess above was wrong.** It was not a wholesale import
+from an older source. The same commit also added `informal_header()` and
+`cover_page(controlled=False)`, which are exactly what its message describes and are
+correct; it was a genuine edit to the file that took collateral damage in `fixed()`.
+None of the 60 changed lines in `pp_report.py` mention a font, a glyph or an asset.
+
+The logic has been restored surgically — `fixed()` is byte-identical to its
+pre-`593e7f7` state, the informal-header work is untouched — and is now covered by
+`pp-document-suite/tests/test_layout.py`, whose two key cases were run against the
+regressed version and fail there. **Root therefore now carries both contested
+capabilities**, which changes what the bake-off is comparing.
 
 **A naive sync would push that regression onto the live volume.** The volume runs
 `pp_report 1be84f35` — the *pre-*`593e7f7` version, which **has** the overflow

@@ -15,15 +15,17 @@ Canonical hashes as of the 2026-07-30 sync (verified again live 2026-08-08):
 | pp_format.py | `1d54edab` | 16 538 |
 | pp_verify.py | `a2060978` | 3 357 |
 
-> ⚠️ **HOLD — do not run this procedure as of 2026-08-29.** The repo master has
-> drifted ahead of the volume on `pp_report.py` and `pp_verify.py`, and the drift is
-> not one-directional: the volume's `pp_report 1be84f35` still carries the table
-> overflow-compression logic that commit `593e7f7` removed from the master, while the
-> master's `pp_verify d045d6b4` carries a glyph guard the volume lacks. Syncing now
-> would install the guard **and** remove working table sizing from the engine that
-> builds controlled documents. See `docs/ENGINE_CONSOLIDATION_2026-08-29.md` — the
-> `593e7f7` question must be answered first. Step 1's diff is what surfaces this;
-> do not skip it.
+> **Hold lifted 29.08.2026 — but re-hash before you sync.** The hold existed because
+> the drift ran both ways: the volume's `pp_report 1be84f35` carried the table
+> overflow-compression logic that `593e7f7` had removed from the master, so a sync
+> would have installed the glyph guard **and** taken working table sizing off the
+> engine that builds controlled documents. That logic has since been restored to the
+> master and is covered by `pp-document-suite/tests/test_layout.py`, so the master now
+> carries both capabilities and a sync installs both.
+>
+> The hashes in the table below therefore no longer describe either side. **Re-run
+> step 1 and record the new pair before transferring anything** — do not sync against
+> the stale figures. Background: `docs/ENGINE_CONSOLIDATION_2026-08-29.md`.
 
 Procedure (as executed and proven):
 1. **Diff first** — `run_from_source` probe hashes the volume files; compare to repo hashes.
