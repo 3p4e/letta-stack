@@ -197,6 +197,31 @@ jobs:
         working-directory: apps/ppdocwiz
         run: python3 -m pytest tests/ -q
 
+  engine-layout:
+    name: Document engine column sizing
+    runs-on: ubuntu-latest
+    # The engine has no other automated coverage, and it builds controlled
+    # documents. These tests exist because commit 593e7f7 rewrote pp_report.fixed()
+    # while adding the brand assets: the table overflow compression and the
+    # word-boundary entry matching went with it, the commit message said nothing
+    # about layout, and nothing noticed for two weeks. Both guards were verified to
+    # fail against that version and pass against the restore.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      # python-docx is all these need — the tables are built in memory and the
+      # assertions read column widths back off the XML. No LibreOffice, no network.
+      - name: Install the engine's document dependency and the test runner
+        run: python3 -m pip install --quiet python-docx pytest
+
+      - name: pytest
+        run: python3 -m pytest pp-document-suite/tests/ -q
+
   deps:
     name: Dependency advisories
     runs-on: ubuntu-latest

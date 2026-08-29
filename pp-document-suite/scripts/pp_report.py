@@ -4,6 +4,7 @@
 # House rules: body text JUSTIFIED; table text CENTERED (h+v); every table FITS the page;
 # per-step two-role sign-off (Operator + QC Department Manager) for protocol record steps.
 # Canonical tokens (pp_theme.py): one house navy #2B547E; 6 pt font floor.
+import re
 from docx import Document
 from docx.shared import Pt, RGBColor, Cm
 from docx.enum.text import WD_ALIGN_PARAGRAPH
@@ -65,20 +66,33 @@ def fixed(tbl, weights=None, min_cm=0.9, cap=34, mode=None, header_repeat=True):
     CHCM=0.176; PAD=0.42                              # ≈ cm per char (10 pt Calibri) + cell padding
     hdr=[_tctext(rows[0].tc_lst[j]).lower().strip() if rows else "" for j in range(ncol)]
     ent={}; forced=bool(weights and len(weights)==ncol)
+    # Per-column content measures (for use-aware sizing of compressed data tables):
+    #   data_cm = widest DATA cell — data must NEVER wrap, so this is a hard floor;
+    #   hdr_cm  = header's full inline width — its demand for space;
+    #   word_cm = header's longest single token — a header may wrap, but not below its longest word.
+    data_cm=[0.8]*ncol; hdr_cm=[0.8]*ncol; word_cm=[0.6]*ncol
     if forced:
         ideal=[float(w) for w in weights]
     else:
         ideal=[0.8]*ncol
-        for tr in rows:
+        for ri,tr in enumerate(rows):
             for j,tc in enumerate(tr.tc_lst):
                 t=_tctext(tc).replace("\n"," ").strip()
                 if not t: continue
                 ps=t.split(" | ")
                 L=(len(ps[0])+3+0.8*len(ps[1])) if len(ps)==2 else len(t)   # TRUE inline bilingual width (MK + sep + smaller EN)
-                ideal[j]=max(ideal[j], min(L,cap)*CHCM+PAD)
+                w=min(L,cap)*CHCM+PAD
+                ideal[j]=max(ideal[j], w)
+                if ri==0:
+                    hdr_cm[j]=w
+                    toks=t.replace(" | "," ").split()
+                    word_cm[j]=(max((len(x) for x in toks), default=1))*CHCM+PAD
+                else:
+                    data_cm[j]=max(data_cm[j], w)
         for j,h in enumerate(hdr):                    # purpose-size hand-written entry columns
-            for kws,cm in _ENTRY_TARGETS:
-                if any(k in h for k in kws): ent[j]=cm; break
+            for kws,cm in _ENTRY_TARGETS:             # match at a WORD boundary (prefix ok) so e.g. the
+                if any(re.search(r'\b'+re.escape(k), h) for k in kws):  # 'име' in 'примерок' is NOT a hit
+                    ent[j]=cm; break
         for j,cm in ent.items(): ideal[j]=cm
     ideal_sum=sum(ideal) or 1.0
     if   mode=="full":    compact=False
@@ -98,6 +112,14 @@ def fixed(tbl, weights=None, min_cm=0.9, cap=34, mode=None, header_repeat=True):
             if ncol>=4 and all(ideal[j]<=even+1e-6 for j in range(1,ncol)):  # labeled grid: data cols uniform & fit
                 c0=max(ideal[0],min_cm); rest=(PAGE_W-c0)/(ncol-1)            # col0 sized to its labels (single-line header),
                 widths=[c0]+[rest]*(ncol-1)                                   # columns 2..N split the remainder EVENLY
+            elif (not forced) and ideal_sum>PAGE_W:                           # table would OVERFLOW → intelligent compression:
+                base=[max(data_cm[j], word_cm[j]) for j in range(ncol)]       #   each column floored to its DATA (never wraps)
+                sb=sum(base)                                                  #   and its header's longest word (headers may wrap);
+                if sb>=PAGE_W:                                                #   if even the floors overflow, share proportionally,
+                    widths=[b/sb*PAGE_W for b in base]
+                else:                                                         #   else give the spare width to the LONGEST headers
+                    slack=PAGE_W-sb; hw=sum(hdr_cm) or 1.0                    #   so headers wrap least where they are longest.
+                    widths=[base[j]+slack*hdr_cm[j]/hw for j in range(ncol)]
             else:
                 widths=[w/ideal_sum*PAGE_W for w in ideal]                    # else content-proportional
         for _ in range(6):                            # enforce a minimum, redistribute the rest
