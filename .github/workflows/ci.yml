@@ -117,6 +117,115 @@ jobs:
           sys.exit(1 if bad else 0)
           PY
 
+  docengine-tests:
+    name: DocEngine suite runs against a real Postgres
+    runs-on: ubuntu-latest
+    # tests/conftest.py SKIPS the persistence tests when no DSN is set, and
+    # test_api.py was written assuming CI would supply one. Without this service
+    # app/db.py — job_create, document_create, reap_stale_jobs — has no executed
+    # coverage at all. Verified locally: 45 passed / 6 skipped without a DB,
+    # 51 passed / 0 skipped with one. Credentials here are throwaway and scoped
+    # to this container.
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: docengine
+          POSTGRES_PASSWORD: docengine
+          POSTGRES_DB: docengine
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U docengine -d docengine"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          # Matches the service's own Dockerfile. tests/test_db.py needs 3.10+
+          # regardless (it evaluates `str | None` as a runtime annotation).
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: apps/wwf-docengine/requirements.txt
+
+      # Deps come from the service's own pinned manifest, so anything added on
+      # any branch flows through without editing this workflow. pytest is in no
+      # requirements file and there is no dev-requirements file, so it is pinned
+      # inline rather than left to float.
+      - name: Install service deps and the test runner
+        working-directory: apps/wwf-docengine
+        run: |
+          python3 -m pip install --quiet -r requirements.txt
+          python3 -m pip install --quiet pytest pytest-asyncio
+
+      # Must run FROM apps/wwf-docengine: tests/conftest.py puts the parent of
+      # tests/ on sys.path, which is how `from app import db` resolves. Scoped to
+      # this directory on purpose — ingestion/qms-creator-framework/tests drives a
+      # live LettaService and would fail on infra CI deliberately does not have.
+      - name: pytest
+        working-directory: apps/wwf-docengine
+        env:
+          DOCENGINE_DATABASE_URL: postgresql://docengine:docengine@localhost:5432/docengine
+        run: python3 -m pytest tests/ -q
+
+  ppdocwiz-tests:
+    name: PP Doc Wiz auth and path handling
+    runs-on: ubuntu-latest
+    # A separate job from the one above so a failure introduced in the docengine
+    # tests cannot mask this signal, and vice versa.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: apps/ppdocwiz/requirements.txt
+
+      # httpx is a TEST-only dependency: the Letta proxy uses stdlib urllib, so
+      # it is deliberately absent from requirements.txt and installed only here.
+      - name: Install app deps and the test runner
+        working-directory: apps/ppdocwiz
+        run: |
+          python3 -m pip install --quiet -r requirements.txt
+          python3 -m pip install --quiet pytest httpx
+
+      - name: pytest
+        working-directory: apps/ppdocwiz
+        run: python3 -m pytest tests/ -q
+
+  deps:
+    name: Dependency advisories
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pip-audit
+        run: python3 -m pip install --quiet pip-audit
+
+      # The CVE notes hand-written into apps/wwf-docengine/requirements.txt (the
+      # starlette 0.41.x advisories, lxml PYSEC-2026-87) are the record of one
+      # manual pip-audit run. This repeats it on every PR instead of letting it
+      # age out. All three manifests are fully pinned, so the result is
+      # deterministic: red means a new advisory landed on a version we deploy.
+      #
+      # pp-document-suite/requirements.txt is NOT audited here — it keeps ranges
+      # on purpose so a dev install is not over-constrained, and would resolve
+      # differently on every run. requirements-service.txt is what the image
+      # actually installs, and that is what is checked.
+      - name: Pinned manifests carry no known advisories
+        run: |
+          python3 -m pip_audit --strict -r apps/wwf-docengine/requirements.txt
+          python3 -m pip_audit --strict -r apps/ppdocwiz/requirements.txt
+          python3 -m pip_audit --strict -r pp-document-suite/requirements-service.txt
+
   markdown:
     name: Deliverable docs are well formed
     runs-on: ubuntu-latest
