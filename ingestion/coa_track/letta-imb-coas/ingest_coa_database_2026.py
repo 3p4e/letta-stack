@@ -43,7 +43,7 @@ A note on the OCR prompt: a narrow prompt asking the model to extract only
 the sample-description field was tested this session and is NOT reliable —
 against two of this run's own real pilot files it silently dropped the
 field it was asked for, and once triggered an outright refusal. A full
-verbatim "transcribe everything" prompt (the shape already used in
+verbatim "transcribe everything" prompt (the shape proven by the retired
 ingest_imb_coas_v2.py's OCR_PROMPT) is the robust pattern: classify_ecoa's
 regexes then find the sample-description line themselves inside the full
 transcript, which is exactly what they are built to do and is proven

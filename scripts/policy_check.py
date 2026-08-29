@@ -104,15 +104,21 @@ def check_no_classical_ocr():
 SOURCE_CREATE = re.compile(
     r"letta_source_manager[\s\S]{0,200}?['\"]operation['\"]\s*:\s*['\"]create['\"]|"
     r"['\"]operation['\"]\s*:\s*['\"]create['\"][\s\S]{0,200}?letta_source_manager|"
-    r"\.sources\.create\(|/v1/sources/?['\"]\s*,\s*(?:data|json)")
+    r"\.sources\.create\(|/v1/sources/?['\"]\s*,\s*(?:data|json)|"
+    r"POST\s+/v1/sources|-X\s*['\"]?POST['\"]?[^\n]*/v1/sources")
 
 
 def check_no_letta_sources():
-    for p in walk((".py",)):
+    # Shell as well as Python: the two deploy.sh bundles retired on 29.08.2026
+    # created their sources with `curl -X POST .../v1/sources/`, so scanning
+    # only .py left the way this repository actually did it uncovered.
+    for p in walk((".py", ".sh")):
+        if os.path.abspath(p) == SELF:
+            continue                      # the pattern's own definition, as in check 1
         txt = read(p)
-        if SOURCE_CREATE.search(txt):
-            line = next((i for i, l in enumerate(txt.splitlines(), 1)
-                         if "letta_source_manager" in l or "sources.create" in l), 0)
+        hit = SOURCE_CREATE.search(txt)
+        if hit:
+            line = txt.count("\n", 0, hit.start()) + 1
             FAIL.append(f"{rel(p)}:{line}: creates a Letta source — Letta is "
                         f"excluded as a RAG engine; retrieval belongs to RAGFlow")
 

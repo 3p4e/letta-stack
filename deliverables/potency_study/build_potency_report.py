@@ -4,7 +4,9 @@
 
 Everything printed binds from potency_dataset.json (§6B). No doc code, no
 version — informal working analysis; the authoritative results remain the
-laboratory certificates in the QMS and the ImB_QC_COAs knowledgebase.
+laboratory certificates themselves, held in the QMS and in Drive. (The corpus
+was compiled from the Letta ImB_QC_COAs knowledgebase, retired 19.08.2026; the
+same certificates are now in the RAGFlow eCoA dataset.)
 """
 import json
 import os
@@ -127,9 +129,10 @@ para("Оваа студија ги собира на едно место сит�
 # ---------- 2. Data & verification ----------
 pr.chapter(doc, "2", "ПОДАТОЦИ И ВЕРИФИКАЦИЈА", "Data & Verification")
 _sweep = d["verification"]["host_sweep"].split("; 9 stability")[0]
-para("Корпусот е компајлиран од регистарот на eCoA сертификати и потоа проверен во живо на "
-     "Letta-базата на знаење (ImB_QC_COAs): %s. | Corpus compiled from the eCoA register "
-     "and live-verified against the Letta knowledgebase: %s." % (_sweep, _sweep), 9)
+para("Корпусот е компајлиран од регистарот на eCoA сертификати и потоа беше проверен во живо "
+     "на Letta-базата на знаење (ImB_QC_COAs, повлечена 19.08.2026): %s. | Corpus compiled "
+     "from the eCoA register and live-verified at the time against the Letta knowledgebase "
+     "(retired 19.08.2026): %s." % (_sweep, _sweep), 9)
 table(["Слој | Layer", "Резултати | Results", "Забелешка | Note"],
       [["Регистар на сертификати | Certificate register", str(d["n_results"]),
         "77 серии, %d сорти; секоја вредност препишана дословно | 77 batches, %d strains; "

@@ -5,7 +5,9 @@
 Compiles EVERY Total Δ⁹-THC result ever recorded for Purely Plant batches:
 
   1. The eCoA register corpus — 99 assays / 77 batches / 20 strains, all
-     previously live-verified against the ImB_QC_COAs knowledgebase.
+     previously live-verified against the ImB_QC_COAs knowledgebase. That Letta
+     source was retired 19.08.2026 — the sweep below is the dated record of a
+     verification that was performed while it existed, not a live check.
   2. The Grape Pie stability program (found in this session's live host sweep):
      ППК26032–26037 + ППК26057–26059, batches P050022/P050072/P050202
      (= GP0824_02 / GP0824_03 / GP062501), months 3/6/9 at 25°C/60%RH and
@@ -530,7 +532,8 @@ def build():
             "batches can flip out of grade on any remeasure or with modest degradation — the "
             "bracket encodes no downward headroom for a specific batch."),
         verification=dict(
-            host_sweep="4,134 passages scanned live (ImB_QC_COAs); 176 unique Total-THC lines; "
+            host_sweep="4,134 passages scanned live (ImB_QC_COAs, before its retirement "
+                       "19.08.2026); 176 unique Total-THC lines; "
                        "all 99 register values present; 9 stability rows recovered and "
                        "attributed (3 P-codes → GP batches via the eCoA register)",
             source_id="source-271bc3be-10d1-4541-8a5b-be3f6fab7c97"))

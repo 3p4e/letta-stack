@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 """Build the Purely Plant eCoA master workbook.
 
-Ten sheets, every fact drawn from the ImB_QC_COAs knowledgebase:
+Ten sheets, every fact drawn from the ImB_QC_COAs corpus (the Letta source of
+that name was retired 19.08.2026; the certificates are now in RAGFlow):
 
   Read Me            conventions, legend and the data-integrity rules this file follows
   Batch Register     one row per tested batch: identity, disposition, coverage, labs
@@ -162,8 +163,9 @@ def main():
     ws = wb.active
     ws.title = "Read Me"
     sheet_title(ws, "Purely Plant GmbH — eCoA Master Database",
-                "Outsourced laboratory certificates for every tested batch, compiled from the "
-                "ImB_QC_COAs knowledgebase.", S)
+                "Outsourced laboratory certificates for every tested batch, compiled from "
+                "the ImB_QC_COAs corpus (Letta source retired 19.08.2026; the same "
+                "certificates are now the RAGFlow eCoA dataset).", S)
     ws.column_dimensions["A"].width = 24
     ws.column_dimensions["B"].width = 104
     r = 4

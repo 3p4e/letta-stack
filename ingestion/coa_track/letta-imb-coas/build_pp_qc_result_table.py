@@ -6,7 +6,8 @@ A direct copy of the house example table (Replek-era "Production Batches QC Resu
 Table"): the same columns in the same order, the "Laboratory Reference values" row
 directly under the header, one row per batch with a further row per additional
 laboratory report, "/" where a report did not cover a parameter, and the legend at
-the foot. Populated from the ImB_QC_COAs knowledgebase.
+the foot. Populated from the ImB_QC_COAs corpus (Letta source retired 19.08.2026;
+the certificates are now in RAGFlow).
 
 Adjustments the owner has directed, and nothing else:
   - result values stand alone in their cells; units live in the column headers

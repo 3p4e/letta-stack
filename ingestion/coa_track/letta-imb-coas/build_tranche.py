@@ -13,7 +13,7 @@ feed these batches) and the cover-sheet coverage table (recomputed for the subse
 cover additionally shows the tranche delivery overview — THC bracket, declared THC and
 volume per batch — transcribed from the tranches source of truth.
 
-A tranche can include batches for which the ImB_QC_COAs knowledgebase holds no eCoA at
+A tranche can include batches for which the eCoA corpus holds no certificate at
 all (control-sheet-only batches). Those appear as all-Missing rows so the tranche is
 complete rather than silently short, and they carry no '#' and no proposed CoQ number:
 QCSOP 012 v.03 §6.4.1 does not allow a CoQ to be initiated before every specification

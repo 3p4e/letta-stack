@@ -1367,8 +1367,9 @@ adoption remains with the QCSP specifications through the regular procedure.</p>
 <footer><div class="wrap">
 <b>Потекло | Provenance</b>
 <span>Корпус: %d резултати од регистарот на eCoA (77 серии, %d сорти); сите вредности
-проверени во живо на изворот ImB_QC_COAs (4 134 пасуси). | Corpus: %d register results;
-all values live-verified against the ImB_QC_COAs source (4,134 passages).</span>
+беа проверени во живо на изворот ImB_QC_COAs (4 134 пасуси; изворот е повлечен 19.08.2026).
+| Corpus: %d register results; all values live-verified at the time against the ImB_QC_COAs
+source (4,134 passages; that source was retired 19.08.2026).</span>
 <span>Датасет и обработка | Dataset &amp; build: deliverables/potency_study/
 (potency_dataset.json · build_potency_dataset.py · build_potency_html.py) —
 letta-stack. Резиме запишано во споделената меморија на хостот (агент
