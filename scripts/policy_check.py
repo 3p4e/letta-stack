@@ -201,12 +201,83 @@ def check_gap_analysis():
         FAIL.append(f"gap analysis: unrecognised iCoA_scope {sorted(unknown)}")
 
 
+# ── 6. no compose we author publishes on 0.0.0.0 ─────────────────────────
+# Traefik is the sole public ingress on KVM4; a raw published port is either
+# absent or pinned to loopback (server/RAGFLOW_MCP_ENABLE.md: "The fix is one
+# line: bind the published port to loopback"). ppdocwiz shipped "8770:8770",
+# i.e. every interface, in front of an app with no authentication.
+#
+# Scoped to the composes this repository OWNS. ingestion/coa_track/network-shared/
+# and server/compose/*.sanitized.yml are captured snapshots of the live host —
+# rewriting them to satisfy a lint would destroy the record they exist to be.
+OWNED_COMPOSE = ("apps/", "pp-document-suite/")
+PUBLISH = re.compile(r'^\s*-\s*"?(?!127\.0\.0\.1:|::1:|localhost:)(\d+):(\d+)"?\s*$')
+
+
+def check_no_public_ports():
+    for p in walk((".yml", ".yaml")):
+        if not rel(p).startswith(OWNED_COMPOSE):
+            continue
+        for i, line in enumerate(read(p).splitlines(), 1):
+            if PUBLISH.match(line):
+                FAIL.append(f"{rel(p)}:{i}: publishes a port on all interfaces — "
+                            f"bind to 127.0.0.1 and route via Traefik\n      {line.strip()}")
+
+
+# ── 7. no unpinned pip install in a tracked Dockerfile ───────────────────
+# An unpinned image is not reproducible, and it silently changes the framework
+# behaviour the app's own path handling rests on.
+PIP_INSTALL = re.compile(r"pip\s+install\b")
+
+
+def check_pinned_pip():
+    for p in walk():
+        if os.path.basename(p) != "Dockerfile" and not os.path.basename(p).startswith("Dockerfile."):
+            continue
+        for i, line in enumerate(read(p).splitlines(), 1):
+            if not PIP_INSTALL.search(line) or line.lstrip().startswith("#"):
+                continue
+            # -r <file> defers the pins to a manifest; == pins inline. Either is fine.
+            if " -r " not in line and "==" not in line:
+                FAIL.append(f"{rel(p)}:{i}: unpinned pip install — use -r requirements.txt "
+                            f"or ==versions\n      {line.strip()}")
+
+
+# ── 8. no unescaped interpolation into innerHTML ─────────────────────────
+# The ppdocwiz frontend interpolated build output, agent replies and tool
+# returns straight into innerHTML. Escaping every sink once is a cleanup the
+# next feature can silently undo; this keeps it undone-able.
+INNER_HTML = re.compile(r"\.innerHTML\s*(=|\+=)")
+INTERP = re.compile(r"\$\{([^}]*)\}")
+
+
+def check_escaped_innerhtml():
+    for p in walk((".html", ".js")):
+        if not rel(p).startswith("apps/"):
+            continue
+        src = read(p)
+        # Assignment and template body can span lines, so judge the whole file:
+        # any interpolation at all must be esc()-wrapped where innerHTML is used.
+        if not INNER_HTML.search(src):
+            continue
+        for m in INTERP.finditer(src):
+            if "esc(" in m.group(1):
+                continue
+            line = src[:m.start()].count("\n") + 1
+            FAIL.append(f"{rel(p)}:{line}: interpolation not esc()-wrapped in a file that "
+                        f"writes innerHTML — escape it, or assign via textContent\n"
+                        f"      ${{{m.group(1).strip()[:60]}}}")
+
+
 CHECKS = [
     ("classical OCR never invoked", check_no_classical_ocr),
     ("no Letta source creation", check_no_letta_sources),
     ("no committed credentials", check_no_secrets),
     ("all Python parses", check_python_parses),
     ("gap analysis self-consistent", check_gap_analysis),
+    ("no all-interfaces published ports", check_no_public_ports),
+    ("pip installs are pinned", check_pinned_pip),
+    ("innerHTML interpolations are escaped", check_escaped_innerhtml),
 ]
 
 if __name__ == "__main__":
