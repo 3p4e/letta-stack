@@ -31,7 +31,10 @@ PARAM_KEYS = ["identification_a_macroscopic","identification_b_microscopic","ide
 SYSTEM = """You are reading a scanned laboratory Certificate of Analysis for medical cannabis
 flower, issued in the Republic of North Macedonia. It may be written in Macedonian Cyrillic,
 in English, or bilingually. It may be an eCoA, iCoA, Certificate of Quality, Report of
-Analysis or an in-house QC record.
+Analysis, Result of Testing (РЕЗУЛТАТ ОД ИСПИТУВАЊЕ), Report of Testing (ИЗВЕШТАЈ ОД
+ТЕСТИРАЊЕ) or an in-house QC record. These titles all name the SAME kind of document -
+a laboratory's report of what it found - and every one of them is a Certificate of
+Analysis for our purposes. The title never changes how you read the page.
 
 Transcribe what is printed. Output ONLY a JSON object, no prose, no markdown fence.
 
@@ -95,6 +98,33 @@ OTHER RULES
     signatories    list of {name, title} for every person who signed or approved
   These are usually in the certificate header, footer, or an accreditation statement.
   Any field not printed is null - never supply an accreditation number from memory.
+- cert_code is THE DOCUMENT'S OWN IDENTIFYING NUMBER - the code by which this document
+  is filed and cited. Every certificate has one and it is almost never missing. Do not
+  require the document to call itself a "certificate": a laboratory issues the same
+  document under many titles, and all of them are Certificates of Analysis for our
+  purposes:
+    "РЕЗУЛТАТ ОД ИСПИТУВАЊЕ"   Result of Testing    (CNP / Faculty of Pharmacy)
+    "ИЗВЕШТАЈ ОД ТЕСТИРАЊЕ"    Report of Testing    (IJZ)
+    "Certificate of Analysis" / "Извештај за анализа" / "Сертификат за анализа"
+  The code follows a label, which varies by laboratory. All of these introduce it:
+    "Број:"                              e.g. 752/2025
+    "Бр."                                e.g. 163/0271/25
+    "Број на главна контролна книга:"    e.g. ППК25050   (main control book number)
+    "Реф. бр." / "No." / "Report No."
+  Take the code that identifies THIS DOCUMENT - not the sample number, the protocol
+  number, the batch, or the accreditation number. It may be Cyrillic; transcribe it in
+  the script it is printed in. If you genuinely cannot find one, return null - but look
+  in the header, the top-right box, and the line above the title before concluding that.
+- Some laboratories mark individual results as obtained by a NON-ACCREDITED method,
+  usually with an asterisk on the row and a legend below the table, e.g.
+  "Со * се означени резултати од тестирање добиени со неакредитирани методи".
+  This matters: a Certificate of Quality cites the laboratory's accreditation against
+  each result, and a result the laboratory itself marks as non-accredited must not be
+  presented as an accredited determination. For every parameter set
+  method_accredited false when the row carries such a marker, true when the certificate
+  makes an accreditation statement and the row is NOT marked, and null when the
+  certificate says nothing either way. Record the legend verbatim in
+  accreditation_note on the certificate.
 - Record the batch exactly as printed in batch_printed, and a Latin-folded form in
   batch_canonical (Cyrillic К -> K, etc).
 - If the page is illegible or is not a certificate, return {"unreadable": true} and nothing else.
@@ -108,11 +138,13 @@ SCHEMA
  "lab_accreditation":str|null,"lab_accreditation_body":str|null,"lab_standard":str|null,
  "signatories":[{"name":str,"title":str}]|null,
  "test_type":"release"|"retest"|"stability"|"in_process"|"unknown","overall_conclusion":str|null,
+ "accreditation_note":str|null,
  "parameters":[{"parameter":str,"parameter_printed":str,"result_printed":str|null,
    "result_numeric":num|null,"unit":str|null,"operator":"="|"<"|"<="|">"|">="|null,
    "limit_printed":str|null,"limit_numeric":num|null,
    "limit_max_printed":str|null,"limit_max_numeric":num|null,"method":str|null,
-   "exponent_uncertain":bool,"coverage":"explicit"|"collective","covered_by":str|null}]}"""
+   "exponent_uncertain":bool,"coverage":"explicit"|"collective","covered_by":str|null,
+   "method_accredited":bool|null}]}"""
 
 
 def render(pdf_bytes):
@@ -269,6 +301,15 @@ def squash(v):
     return t
 
 
+def _accred(xa, xb):
+    """Merge the two reads' accreditation markers, resolving toward not-accredited."""
+    if xa is False or xb is False:
+        return False
+    if xa is True and xb is True:
+        return True
+    return None
+
+
 def reconcile(a, b):
     """Merge two independent reads. Any disagreement -> null + flagged."""
     out = {'reads_agree': True, 'review': []}
@@ -374,6 +415,11 @@ def reconcile(a, b):
                'limit_max_numeric': mx if agree else None,
                'unit': x.get('unit'), 'method': x.get('method'),
                'coverage': x.get('coverage'), 'covered_by': x.get('covered_by'),
+               # A result the laboratory marks as non-accredited must never be cited
+               # under its accreditation. Where the reads differ, take the RESTRICTIVE
+               # answer: claiming accreditation the row does not carry is the harmful
+               # direction, and withholding one that it does carry is merely cautious.
+               'method_accredited': _accred(x.get('method_accredited'), y.get('method_accredited')),
                'exponent_uncertain': bool(x.get('exponent_uncertain') or y.get('exponent_uncertain')),
                'reads_agree': agree, 'confidence': 'ok' if agree else 'review',
                'read_a': {'result': x.get('result_printed'), 'limit': x.get('limit_printed')},

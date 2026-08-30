@@ -138,7 +138,7 @@ def compile_coq(db, batch):
     rows = db.execute("""SELECT r.parameter, r.result_printed, r.result_numeric, r.unit,
              r.method, r.date_iso, r.cert_code, r.lab, r.confidence,
              r.exceeds_criterion, r.outside_range, c.document, c.doc_id,
-             r.parameter_printed
+             r.parameter_printed, r.method_accredited
         FROM result r JOIN certificate c ON c.doc_id = r.doc_id
         WHERE r.batch = ? ORDER BY r.date_iso""", (batch,)).fetchall()
     by = {}
@@ -147,7 +147,7 @@ def compile_coq(db, batch):
 
     section02, sources, unresolved = [], {}, []
 
-    def cite(entry, lab, code, date):
+    def cite(entry, lab, code, date, accredited=None):
         """Record a citation on the Section 03 row for this LABORATORY.
 
         Grouping is by institution, not by certificate and not by department:
@@ -156,11 +156,16 @@ def compile_coq(db, batch):
         """
         lab_id, lab_name = canonical_lab(lab)
         s = sources.setdefault(lab_id or lab_name, {'lab': lab_name, 'id': lab_id,
-                                                    'certs': [], 'params': []})
+                                                    'certs': [], 'params': [],
+                                                    'non_accredited': []})
         if (code, date) not in s['certs']:
             s['certs'].append((code, date))
         if entry not in s['params']:
             s['params'].append(entry)
+        # A result the laboratory marked as obtained by a non-accredited method must
+        # not be presented under that laboratory's accreditation on the CoQ.
+        if accredited == 0 and entry not in s['non_accredited']:
+            s['non_accredited'].append(entry)
 
     for n, sub, key, name, criterion, method in SPEC:
         if key == 'pesticide_residues':
@@ -207,9 +212,11 @@ def compile_coq(db, batch):
                          date=latest[5], cert_code=latest[6], lab=latest[7],
                          document=latest[11],
                          exceeds_criterion=latest[9], outside_range=latest[10],
+                         method_accredited=latest[14],
                          superseded=_dedupe([(r[5], r[1], r[6]) for r in cands[:-1]
                                              if _canon(r[1]) != _canon(latest[1])]))
-            cite(_num(n, sub), latest[7], latest[6], latest[5])
+            cite(_num(n, sub), latest[7], latest[6], latest[5],
+                 accredited=latest[14])
         section02.append(entry)
     return section02, sources, unresolved
 
@@ -263,7 +270,7 @@ def _pesticides(by, n, criterion, method, cite):
                  provenance={1: 'accredited eCoA', 2: 'in-house iCoA',
                              3: 'DERIVED — superseded QCCoA, originating eCoA not available'}[best],
                  date=date, cert_code=code, lab=lab, document=crows[-1][11], superseded=[])
-    cite('12', lab, code, date)
+    cite('12', lab, code, date, accredited=crows[-1][14])
     return entry
 
 
@@ -313,6 +320,9 @@ def render(db, batch):
             print('%-46s %-26s' % ('', extra))
         cred = _credentials(db, s)
         print('%-46s' % ('    ' + cred[:70]))
+        if s['non_accredited']:
+            print('    ⚑ NON-ACCREDITED method per the certificate: param. %s'
+                  % ','.join(sorted(s['non_accredited'], key=_sortkey)))
     print('-' * W)
     ok = sum(1 for e in s02 if e['status'] == 'ok')
     miss = [e for e in unresolved if e['status'] == 'MISSING']
@@ -372,7 +382,9 @@ if __name__ == '__main__':
                           'section03': [{'lab': s['lab'], 'lab_id': s['id'],
                                          'certificates': [{'cert_code': c, 'date': d}
                                                           for c, d in s['certs']],
-                                         'params': sorted(s['params'], key=_sortkey)}
+                                         'params': sorted(s['params'], key=_sortkey),
+                                         'non_accredited': sorted(s['non_accredited'],
+                                                                  key=_sortkey)}
                                         for s in src.values()],
                           'unresolved': un}, ensure_ascii=False, indent=1))
     else:

@@ -67,6 +67,14 @@ check('TYMC 4,9 x 10^4 is within the max acceptable count',
       49000 <= PE.max_acceptable('tymc'))
 check('TYMC 6 x 10^4 is out of specification', 60000 > PE.max_acceptable('tymc'))
 
+print('\n4a. ACCREDITATION MARKER')
+check('a row either read as non-accredited is non-accredited', R._accred(True, False) is False)
+check('both reads accredited -> accredited', R._accred(True, True) is True)
+check('unknown to one model is not an accreditation claim', R._accred(None, True) is None)
+check('cert_code is defined for the model, not just named',
+      'РЕЗУЛТАТ ОД ИСПИТУВАЊЕ' in R.SYSTEM and 'главна контролна книга' in R.SYSTEM)
+check('the non-accredited legend is in the prompt', 'неакредитирани' in R.SYSTEM)
+
 print('\n4b. CONTROLLED VOCABULARIES')
 check('IJZ microbiology and chemistry are one laboratory',
       CT.canonical_lab('ЈЗУ ИНСТИТУТ ЗА ЈАВНО ЗДРАВЈЕ НА РСМАКЕДОНИЈА, Оддел за микробиологија')[0]

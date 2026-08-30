@@ -73,7 +73,8 @@ SCHEMA = """
 CREATE TABLE IF NOT EXISTS certificate (
   doc_id TEXT PRIMARY KEY, document TEXT, batch TEXT, batch_printed TEXT,
   p_number TEXT, strain TEXT, cert_code TEXT, date_of_issue TEXT, date_iso TEXT,
-  lab TEXT, test_type TEXT, conclusion TEXT, reads_agree INT, ragflow_url TEXT);
+  lab TEXT, test_type TEXT, conclusion TEXT, accreditation_note TEXT,
+  reads_agree INT, ragflow_url TEXT);
 CREATE TABLE IF NOT EXISTS result (
   doc_id TEXT, batch TEXT, strain TEXT, cert_code TEXT, date_iso TEXT, lab TEXT,
   test_type TEXT, parameter TEXT, parameter_printed TEXT,
@@ -84,7 +85,7 @@ CREATE TABLE IF NOT EXISTS result (
   limit_status TEXT, limit_status_note TEXT,
   range_low REAL, range_high REAL, outside_range INT,
   exceeds_criterion INT, exceeds_max INT,
-  method TEXT, coverage TEXT, covered_by TEXT,
+  method TEXT, method_accredited INT, coverage TEXT, covered_by TEXT,
   confidence TEXT, reads_agree INT, read_a TEXT, read_b TEXT,
   FOREIGN KEY(doc_id) REFERENCES certificate(doc_id));
 CREATE INDEX IF NOT EXISTS ix_res_batch ON result(batch);
@@ -104,11 +105,11 @@ def build(records, dbpath, base_url=''):
         strain = canonical_strain(r.get('strain'))
         diso = parse_date(r.get('date_of_issue'))
         url = ('%s/document/%s' % (base_url.rstrip('/'), did)) if base_url else None
-        db.execute('INSERT OR REPLACE INTO certificate VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+        db.execute('INSERT OR REPLACE INTO certificate VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
             (did, r.get('document'), batch, r.get('batch_printed'), r.get('p_number'),
              strain, r.get('cert_code'), r.get('date_of_issue'), diso,
              r.get('lab'), r.get('test_type'), r.get('overall_conclusion'),
-             int(bool(r.get('reads_agree'))), url))
+             r.get('accreditation_note'), int(bool(r.get('reads_agree'))), url))
         for p in r.get('parameters') or []:
             # Compute the two flags here from the stored numbers rather than trusting
             # a field the extractor may or may not have written - the field was renamed
@@ -133,7 +134,7 @@ def build(records, dbpath, base_url=''):
             use = gl if gl is not None else lv
             ec = int(rv > use) if (conf_ok and rv is not None and use is not None) else None
             em = int(rv > mv) if (conf_ok and rv is not None and mv is not None) else None
-            db.execute('INSERT INTO result VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+            db.execute('INSERT INTO result VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                 (did, batch, strain, r.get('cert_code'), diso, r.get('lab'),
                  r.get('test_type'), p.get('parameter'), p.get('parameter_printed'),
                  p.get('result_printed'), p.get('result_numeric'),
@@ -143,7 +144,10 @@ def build(records, dbpath, base_url=''):
                  gl, gref, disagrees, lstat, lnote,
                  rlo, rhi, orange,
                  ec, em,
-                 p.get('method'), p.get('coverage'), p.get('covered_by'),
+                 p.get('method'),
+                 (None if p.get('method_accredited') is None
+                  else int(p['method_accredited'])),
+                 p.get('coverage'), p.get('covered_by'),
                  p.get('confidence'), int(bool(p.get('reads_agree'))),
                  json.dumps(p.get('read_a'), ensure_ascii=False),
                  json.dumps(p.get('read_b'), ensure_ascii=False)))
@@ -176,6 +180,10 @@ QUERIES = {
  'printed_limit_superseded_not_defective': """SELECT batch, cert_code, date_iso, lab, parameter,
                  limit_printed, governing_limit AS now_is, limit_status_note
                  FROM result WHERE limit_status='superseded' ORDER BY parameter, batch""",
+ 'results_from_NON_ACCREDITED_methods': """SELECT batch, cert_code, lab, parameter,
+                 result_printed, method
+                 FROM result WHERE method_accredited=0 AND confidence='ok'
+                 ORDER BY batch, cert_code, parameter""",
  'needs_review': """SELECT batch, cert_code, parameter, read_a, read_b
                  FROM result WHERE confidence!='ok' ORDER BY batch, parameter""",
  'exceeds_stated_criterion': """SELECT batch, cert_code, parameter, result_numeric,
