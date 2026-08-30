@@ -169,10 +169,19 @@ class BudgetExhausted(RuntimeError):
     pass
 
 
+# Print a spend alert at every whole dollar (Head of QC, 31.08: alert at $1
+# steps). The driver's log carries these to the user between tranches.
+ALERT_STEP_USD = float(os.environ.get('OPENAI_ALERT_STEP_USD', '1.0'))
+
+
 def _meter(model, usage):
     pin, pout = OPENAI_PRICES.get(model, (2.0, 10.0))
     usd = (usage.get('prompt_tokens', 0) * pin + usage.get('completion_tokens', 0) * pout) / 1e6
+    before = SPEND['usd']
     SPEND['usd'] += usd; SPEND['calls'] += 1
+    if int(SPEND['usd'] / ALERT_STEP_USD) > int(before / ALERT_STEP_USD):
+        print('   $$ SPEND ALERT: OpenAI $%.2f of the $%.2f ceiling (%d calls)'
+              % (SPEND['usd'], OPENAI_BUDGET_USD, SPEND['calls'])); sys.stdout.flush()
     if SPEND['usd'] >= OPENAI_BUDGET_USD:
         raise BudgetExhausted('OpenAI spend $%.2f reached the $%.2f ceiling after %d calls'
                               % (SPEND['usd'], OPENAI_BUDGET_USD, SPEND['calls']))
