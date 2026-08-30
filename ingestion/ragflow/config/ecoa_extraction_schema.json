@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://3p4e.github.io/letta-stack/ecoa_extraction_schema.json",
+  "title": "eCoA result record",
+  "description": "One measured result from one certificate. The unit of extraction is a result and its limit together, because a value only means anything next to the limit it is judged against — separating them is what let a mould count of 4,2 x 10^4 sit in a register as 4.2x10^3 and read as passing.",
+
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "certificate", "batch", "lab", "page",
+    "parameter", "parameter_printed",
+    "value", "value_printed",
+    "limit", "limit_printed",
+    "doc_class", "confidence", "reads_agree", "extracted_at"
+  ],
+
+  "properties": {
+    "certificate": {
+      "type": "string",
+      "description": "Code exactly as printed, e.g. '320/0587/25'. Cyrillic and Latin homoglyphs are preserved here verbatim; normalisation belongs in the lookup key, not the record.",
+      "minLength": 1
+    },
+    "certificate_key": {
+      "type": "string",
+      "pattern": "^[A-Z0-9]+$",
+      "description": "Normalised lookup form: homoglyphs folded to Latin, separators stripped, Farmahem '-LoD-' mapped to GS. '197-1-К/26' and '197-1-K-26' both key to 1971K26."
+    },
+    "batch": { "type": "string", "description": "Batch as printed on the certificate." },
+    "batch_key": {
+      "type": "string",
+      "description": "From ingestion/common/batch_id.py::batch_key — the single batch-identity definition in this repository. GG1024/01 and GG1024_01 key alike; GG1024_01/01 stays distinct from its parent."
+    },
+    "p_number": {
+      "type": ["string", "null"],
+      "pattern": "^P[0-9]{6}$",
+      "description": "Filenames key on the P-number while the register keys on the strain-batch code. Carrying both is what makes reconciliation resolve on the first pass."
+    },
+    "lab": {
+      "type": "string",
+      "enum": ["IJZ", "IJZ-MB", "CNP", "FHM", "NGP", "DFL", "PP", "OTHER"],
+      "description": "IJZ Institute of Public Health, -MB its microbiology department; CNP UKIM Center for Natural Products; FHM Farmahem; NGP New Garden Pharma; DFL State Phytosanitary Laboratory; PP in-house."
+    },
+    "page": { "type": "integer", "minimum": 1 },
+
+    "parameter": {
+      "type": "string",
+      "enum": [
+        "TAMC", "TYMC", "BILE_TOLERANT_GNB", "SALMONELLA", "E_COLI",
+        "TOTAL_THC", "THC", "THCA", "TOTAL_CBD", "CBD", "CBDA", "CBN",
+        "LOSS_ON_DRYING", "AFLATOXIN_TOTAL", "AFLATOXIN_B1", "OCHRATOXIN_A",
+        "PB", "CD", "AS", "HG", "PESTICIDES",
+        "FOREIGN_MATTER", "IDENTIFICATION_A", "IDENTIFICATION_B", "IDENTIFICATION_C",
+        "APPEARANCE", "OTHER"
+      ],
+      "description": "Canonical parameter. OTHER is permitted only for doc_class B or C, where the parameter set is not known in advance."
+    },
+    "parameter_printed": {
+      "type": "string",
+      "description": "Verbatim label, e.g. 'Вкупен број габи и мувли-ТYMC'. The corpus writes this as ТУМС, ТYMC and TUMC for the same parameter; keeping it verbatim is how that stays auditable."
+    },
+
+    "value": {
+      "type": ["number", "null"],
+      "description": "The measurement as a NUMBER. 4,2 x 10^4 is stored as 42000.0. The exponent is resolved here, once, so nothing downstream ever has to read a superscript again — which is the single change that would have prevented this whole class of error. null only when operator is 'absent' or 'not_tested'."
+    },
+    "value_printed": {
+      "type": "string",
+      "description": "Verbatim, glyphs intact: '4,2 x 10⁴ CFU/g'. This is what a human checks the machine against."
+    },
+    "operator": {
+      "type": "string",
+      "enum": ["=", "<", ">", "<=", ">=", "range", "absent", "not_tested", "BLQ", "ND"],
+      "default": "=",
+      "description": "'< 10 CFU/g' is not 10. Results are also printed as bounded ranges — '< 10^4 и > 10^3' — which is a range, not a point."
+    },
+    "value_upper": {
+      "type": ["number", "null"],
+      "description": "Upper bound when operator is 'range'."
+    },
+
+    "limit": {
+      "type": ["number", "null"],
+      "description": "The limit printed on THIS certificate, as a number. Captured per result, never inherited from a column header: 1220/2171/25 prints TYMC <= 10^2 where the register's column says 10^4, so its result of 200 fails on the paper and passes against the column."
+    },
+    "limit_printed": { "type": "string" },
+    "limit_operator": { "type": "string", "enum": ["<=", "<", ">=", ">", "absent", "none"], "default": "<=" },
+    "unit": { "type": "string", "description": "CFU/g, %, mg/kg, µg/kg." },
+
+    "verdict_printed": {
+      "type": ["string", "null"],
+      "description": "The laboratory's own conclusion, verbatim — ОДГОВАРА or НЕ ОДГОВАРА. Recorded as a CLAIM, never as the disposition. Ten certificates in this corpus concluded ОДГОВАРА over their own failing number."
+    },
+
+    "doc_class": {
+      "type": "string",
+      "enum": ["A", "B", "C"],
+      "description": "A templated (IJZ/CNP/FHM, same table every time) — strict schema, two reads must agree. B non-standard (NGP, DFL, in-house QCCoA, NO-DOC-CODE reports) — open parameter set, human sign-off required. C scanned with no usable text layer — B plus a stored page image."
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["high", "low", "review"],
+      "description": "'review' is forced for every doc_class B and C record: with no fixed layout there is nothing to validate the shape against, so a person confirms before the record is trusted."
+    },
+    "reads_agree": {
+      "type": "boolean",
+      "description": "Two independent vision reads agreed on every numeric field. false means neither value was stored and the page was raised — a second read costs far less than a missed out-of-specification batch."
+    },
+    "flag": {
+      "type": ["string", "null"],
+      "enum": ["over_limit", "one_decade_below_limit", "verdict_contradicts_value", "no_limit_printed", "unreadable", null],
+      "description": "Set at ingest by the R1/R2 rules in validate_ecoa_limits.py. 'over_limit' is written, never suppressed. 'one_decade_below_limit' is the exact shape a misread 10^4->10^3 leaves behind and is the only shape that silently turns a fail into a pass."
+    },
+
+    "source_file": { "type": "string" },
+    "source_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "page_image": { "type": ["string", "null"], "description": "Rendered page kept for doc_class C, so the paper is always one click away." },
+    "extracted_at": { "type": "string", "format": "date-time" },
+    "model_chain": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Models used, in order tried. Per AGENT_MODEL_POLICY.md; classical OCR is forbidden and policy_check.py rule 1 enforces it."
+    }
+  },
+
+  "allOf": [
+    {
+      "if": { "properties": { "doc_class": { "enum": ["B", "C"] } }, "required": ["doc_class"] },
+      "then": { "properties": { "confidence": { "const": "review" } } }
+    },
+    {
+      "if": { "properties": { "reads_agree": { "const": false } }, "required": ["reads_agree"] },
+      "then": { "properties": { "value": { "const": null } } }
+    }
+  ]
+}

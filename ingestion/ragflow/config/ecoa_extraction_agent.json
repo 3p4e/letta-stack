@@ -1,0 +1,110 @@
+{
+  "name": "ecoa_extraction_agent",
+  "version": "1.0.0",
+  "created": "2026-08-30",
+  "purpose": "Read a certificate page and emit typed result records. Replaces free-text chunk retrieval as the source of numeric truth for eCoAs.",
+
+  "_why": {
+    "measured": "Against 17 certificates whose values were read off the rendered page, the existing RAGFlow parse of the TYMC result was correct on 6, WRONG on 2, and not extractable on 9.",
+    "both_errors_identical": "10^4 read as 10^3, never the reverse. 320/0587/25 and 1032/1851/25.",
+    "not_a_vision_problem": "eCoA_DATABASE already runs gpt-4.1@openai-vlm for layout recognition. The VLM was not the weak link — chunk_method 'naive' flattened its output, so the value came apart from the parameter it belongs to and the limit it must be compared against. The 9 unextractable cases are a structure failure, not a reading failure.",
+    "consequence": "Numbers stop being retrieved from prose. Chunks answer narrative questions; every value a release decision touches comes from a record typed against ecoa_extraction_schema.json, checked by subtraction, and stored only if it passes."
+  },
+
+  "input": {
+    "render": {
+      "tool": "pdftoppm",
+      "dpi": 300,
+      "format": "png",
+      "note": "The rendered page is the ONLY authoritative source. Drive's text layer drops superscripts entirely — the same certificate extracts as '- 10 CFU/g … 4,2 x 10 CFU/g', with every exponent gone — so pdftotext and any text layer are excluded from the numeric path."
+    }
+  },
+
+  "model_chain": ["kimi-k2.6", "moonshot-v1-128k-vision-preview", "gpt-4o"],
+  "model_chain_source": "ingestion/coa_track/letta-imb-coas/agent_model_policy.py::OCR_CHAIN",
+  "classical_ocr": "FORBIDDEN — scripts/policy_check.py rule 1. These pages are Macedonian Cyrillic mixed with Latin chemical symbols, the case Tesseract handles worst.",
+
+  "reads_required": 2,
+  "agreement_policy": {
+    "fields": ["value", "limit", "operator", "parameter"],
+    "on_disagreement": "store neither value; set reads_agree=false, value=null, confidence=review, and raise the page for a person",
+    "rationale": "A second read is cheap next to a missed out-of-specification batch. The failure being fixed here was a single unchecked read."
+  },
+
+  "output_schema": "./ecoa_extraction_schema.json",
+  "output_format": "jsonl",
+
+  "routing": [
+    {
+      "class": "A",
+      "label": "templated",
+      "match": { "lab": ["IJZ", "IJZ-MB", "CNP", "FHM"] },
+      "population": "~250 of 291 documents",
+      "schema_mode": "strict",
+      "parameter_set": "closed — the enum in the schema",
+      "reads": 2,
+      "human_signoff": false,
+      "note": "Same table on every certificate, so the shape itself is a check: a missing row or an unexpected parameter is a signal."
+    },
+    {
+      "class": "B",
+      "label": "non-standard",
+      "match": {
+        "code_contains": ["NGP-QCG-SOP-024", "QCCoA 001v02", "NO-DOC-CODE", "10802_2845"],
+        "lab": ["NGP", "DFL", "PP"]
+      },
+      "schema_mode": "open",
+      "parameter_set": "open — OTHER permitted, parameter_printed always retained",
+      "reads": 2,
+      "human_signoff": true,
+      "confidence": "review",
+      "note": "Not a lesser path — the same vision read with the schema loosened and a person in the loop, because with no fixed layout there is nothing to validate the shape against. The two NGP documents currently parse to NOTHING numeric; under this they produce a reviewed record or an explicit gap, never silent absence."
+    },
+    {
+      "class": "C",
+      "label": "scanned, no usable text layer",
+      "match": { "text_layer_chars_lt": 200 },
+      "schema_mode": "open",
+      "reads": 2,
+      "human_signoff": true,
+      "confidence": "review",
+      "store_page_image": true,
+      "note": "Class B plus the rendered page kept alongside the record, so a reviewer never has to go back to Drive to check a number."
+    }
+  ],
+
+  "system_prompt": "You are reading one page of a laboratory Certificate of Analysis for Purely Plant GmbH. The page is Macedonian Cyrillic mixed with Latin chemical symbols.\n\nReturn ONLY JSON conforming to ecoa_extraction_schema.json — one object per measured result. No prose, no commentary.\n\nRules that matter more than fluency:\n\n1. EXPONENTS. Results are printed as '4,2 x 10⁴ CFU/g'. Read the superscript from the image with care and resolve it: value must be the NUMBER 42000.0, and value_printed must keep the glyphs verbatim. Confusing 10⁴ with 10³ turns a failing batch into a passing one; it has already happened in this corpus. If a superscript is not legible, set value to null and confidence to 'review'. Never guess an exponent.\n\n2. THE LIMIT COMES FROM THIS PAGE. Every row prints its own specification next to the result — capture it as limit and limit_printed. Do not carry a limit over from another certificate or from a column header you remember. Certificates in this corpus disagree with each other: one prints TYMC ≤ 10² where most print ≤ 10⁴.\n\n3. THE VERDICT IS A CLAIM, NOT A FACT. Record ЗАКЛУЧОК / ОДГОВАРА / НЕ ОДГОВАРА verbatim in verdict_printed. Do NOT let it influence value or limit. Certificates in this corpus conclude ОДГОВАРА over a result that exceeds their own printed limit; your job is to report both faithfully and let the arithmetic decide.\n\n4. OPERATORS ARE PART OF THE VALUE. '< 10 CFU/g' is not 10 — set operator '<'. '< 10⁴ и > 10³' is a range: operator 'range', value the lower bound, value_upper the upper. 'отсутна' is operator 'absent'. BLQ and N.D. are their own operators.\n\n5. PARAMETER NAMES VARY. The same parameter appears as ТУМС, ТYMC and TUMC; TAMC as ТАМС and TAMC. Map to the canonical enum and keep the printed form in parameter_printed.\n\n6. BATCH AND CODE VERBATIM. Copy the серија and the laboratory number exactly as printed, including any /1 sub-lot index and whichever alphabet is used. Do not normalise, correct or complete them — a certificate reading 'серија: FB012601/1' is evidence, and the register saying otherwise is the thing being checked.\n\nIf a field is not on the page, omit it rather than inventing it. If the page is unreadable, return a single object with confidence 'review' and flag 'unreadable'.",
+
+  "validation": {
+    "at_ingest": "ingestion/ragflow/validate_ecoa_limits.py",
+    "rules": {
+      "R1": "value > limit -> flag 'over_limit'. Written, never suppressed, whatever the certificate concluded. This rule alone would have caught all ten.",
+      "R2": "value is exactly one decade below limit -> flag 'one_decade_below_limit'. The shape a misread ⁴->³ leaves behind, and the only shape that silently converts a fail into a pass. Verify against the page.",
+      "R3": "verdict_printed is ОДГОВАРА while value > limit -> flag 'verdict_contradicts_value'. Not an extraction error — a finding, and the one that needs a deviation record."
+    },
+    "gate": "A record carrying flag 'over_limit' or 'verdict_contradicts_value' is stored AND surfaced. It is never written silently."
+  },
+
+  "identity_normalisation": {
+    "batch": "ingestion/common/batch_id.py::batch_key — the single definition in this repository; policy_check.py already imports it.",
+    "certificate_code": "fold Cyrillic homoglyphs (АВЕКМНОРСТУХ) onto Latin, strip separators, map Farmahem '-LoD-' to GS, map in-house 'QCCoA 001v02' to 'PP CoA #NNN'",
+    "why": "Without these four, a naive reconciliation reports hundreds of false failures. With them, 236 of 284 register rows resolved on the first pass."
+  },
+
+  "acceptance_tests": {
+    "must_reproduce": {
+      "320/0587/25": { "parameter": "TYMC", "value": 42000.0, "limit": 10000.0, "flag": "over_limit" },
+      "628/1129/25": { "parameter": "TYMC", "value": 12000.0, "limit": 10000.0, "flag": "over_limit" },
+      "904/1589/25": { "parameter": "TYMC", "value": 33000.0, "limit": 10000.0, "flag": "over_limit" },
+      "946/1684/25": { "parameter": "TYMC", "value": 36000.0, "limit": 10000.0, "flag": "over_limit" },
+      "1032/1851/25": { "parameter": "TYMC", "value": 49000.0, "limit": 10000.0, "flag": "over_limit" },
+      "163/0271/25": { "parameter": "TYMC", "value": 10000.0, "limit": 10000.0, "flag": null }
+    },
+    "must_not_flag": [
+      "161/0269/25", "588/1067/25", "767/1376/25", "947/1685/25", "1009/1813/25",
+      "1218/2169/25", "1226/2192/25", "1227/2193/25", "1228/2194/25", "4/0007/26", "6/0009/26"
+    ],
+    "must_not_be_silent": ["P050202 NGP-QCG-SOP-024 F3", "P050192 NGP-QCG-SOP-024 F3"],
+    "note": "These 17 values were read off the rendered pages during the 29–30.08.2026 verification and are the regression set. An extractor that cannot reproduce them has not fixed the thing it exists to fix."
+  }
+}

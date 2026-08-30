@@ -127,6 +127,21 @@ the paper is always one click away. Free-text chunks stay available for
 narrative questions — who signed, what method, what the remarks say — but never
 supply a number that a release decision rests on.
 
+## The files
+
+| File | What it is |
+|---|---|
+| `config/ecoa_dataset_config.json` | PATCH body for `/api/v1/datasets/f29f8f58…`, generated from the live config so only the intended fields differ. Strip `_`-prefixed keys before sending. |
+| `config/ecoa_extraction_schema.json` | JSON Schema for the typed record. Draft 2020-12, and its conditional rules are enforced, not decorative — a class B record with `confidence: high`, or `reads_agree: false` with a non-null value, are both rejected. |
+| `config/ecoa_extraction_agent.json` | Model chain, the extraction prompt, routing by document class, and the acceptance tests. |
+| `validate_ecoa_limits.py` | R1/R2 at ingest. |
+
+The agent config carries an `acceptance_tests` block naming the 17 certificates
+whose values were read off the page during the verification, with the six
+expected flags and the eleven that must stay clean. **An extractor that cannot
+reproduce those has not fixed the thing it exists to fix**, and that is a
+runnable claim rather than a hope.
+
 ## Fixing what is already in the corpus
 
 1. **Re-ingest under the new extraction.** The current `eCoA_DATABASE` parse is
