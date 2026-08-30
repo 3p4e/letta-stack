@@ -200,6 +200,36 @@ methodology says — unofficial, eCoA pending — but it has two consequences wo
   when the Farmahem eCoA is filed. Reading the existing certificate does not help; it
   reports the superseded 13.33.
 
+### 9. 🟡 How far the superscript error spreads — bounded, not systematic
+
+The obvious worry after finding 2 is that the whole register is affected. Scoping it:
+
+| IPH rows carrying a TYMC value | 45 |
+|---|---|
+| recorded as **x×10³** — a hidden failure *iff* the page says 10⁴ | **17** |
+| recorded as x×10⁴ or higher — already visible as over-limit | 9 |
+| plain number or other form | 19 |
+
+Six of the 17 at-risk rows have now been page-verified:
+
+- **Five were wrong** — and all five are certificates the cross-check had flagged.
+- **One was right**: `947/1685/25` (`CJ052501-2`) reads **6,3 × 10³** on the page and the
+  register records 6.3×10³. It passes, and the register says so.
+
+That last one matters, because it **breaks the inference that all 17 are wrong**. The
+errors are not randomly distributed across the 10³ population — they line up with the
+cross-check's flags. Which is consistent with how that workbook was built: from the 340
+physical PDFs, every page re-read from the rendered image. It read the superscripts
+correctly, which is exactly why it caught these and why its list of ten is sound.
+
+**Residual risk.** Eleven at-risk rows remain unread. The evidence now suggests they are
+mostly fine, but "suggests" is not "verified", and each is one page read away from being
+settled:
+
+`163/0271/25`, `161/0269/25`, `588/1067/25`, `767/1376/25`, `1009/1813/25`,
+`1218/2169/25`, `1228/2194/25`, `1226/2192/25`, the unnumbered Dec-2025 microbiology
+report, `4/0007/26`, `6/0009/26`.
+
 ## Not yet checked
 
 Stated plainly rather than left to inference:
