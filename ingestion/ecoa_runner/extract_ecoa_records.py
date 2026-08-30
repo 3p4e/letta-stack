@@ -188,8 +188,10 @@ def read_gemini(images, model='gemini-3.6-flash'):
             'generationConfig': {'temperature': 0, 'maxOutputTokens': 32768}}
     # Google free tier rate-limits hard (429). Rotate across every key we have
     # before giving up - a 429 on one project says nothing about the others.
+    # GEMINI_API_KEY is deliberately absent: Google reports it leaked; it is dead.
     keys = [os.environ[v] for v in ('AZ_GEMINI_API_KEY', 'BN_GEMINI_API',
-                                    'BN_GOOGLE_GEMINI_API_KEY') if os.environ.get(v)]
+                                    'BN_GOOGLE_GEMINI_API_KEY', 'EP_GEMINI_API')
+            if os.environ.get(v)]
     if not keys:
         raise RuntimeError('no Gemini API key in environment')
     last = None
