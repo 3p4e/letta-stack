@@ -107,8 +107,8 @@
     },
     "flag": {
       "type": ["string", "null"],
-      "enum": ["over_limit", "one_decade_below_limit", "verdict_contradicts_value", "no_limit_printed", "unreadable", null],
-      "description": "Set at ingest by the R1/R2 rules in validate_ecoa_limits.py. 'over_limit' is written, never suppressed. 'one_decade_below_limit' is the exact shape a misread 10^4->10^3 leaves behind and is the only shape that silently turns a fail into a pass."
+      "enum": ["over_limit", "one_decade_below_limit", "verdict_contradicts_value", "total_thc_mismatch", "no_limit_printed", "unreadable", null],
+      "description": "Set at ingest by the R1/R2 rules in validate_ecoa_limits.py. 'over_limit' is written, never suppressed. 'one_decade_below_limit' is the exact shape a misread 10^4->10^3 leaves behind and is the only shape that silently turns a fail into a pass. 'total_thc_mismatch' is R4: a potency certificate whose printed Total THC does not equal d9_thc + thca * 0.877, so the page contradicts itself."
     },
 
     "source_file": { "type": "string" },

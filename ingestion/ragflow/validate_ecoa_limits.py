@@ -42,6 +42,50 @@ HEADER_ROW, SPEC_ROW, FIRST_DATA = 4, 5, 6
 
 SUP = {"⁰": "0", "¹": "1", "²": "2", "³": "3", "⁴": "4", "⁵": "5", "⁶": "6"}
 
+# Δ9-THCA decarboxylates to Δ9-THC on heating, losing the carboxyl group. The mass
+# ratio of the two molecules is 314.46/358.47 = 0.877, which is why every certificate
+# in this corpus prints the same conversion in its own footnote.
+THCA_TO_THC = 0.877
+
+
+def total_thc_consistent(d9_thc, thca, total_thc, tol=0.06):
+    """R4 — check a potency certificate against its own arithmetic.
+
+    Every CNP certificate prints all three of Δ9-THC, Δ9-THCA and Вкупно Δ9-THC,
+    and states the relation between them in a footnote:
+
+        Вкупно Δ9-THC = Δ9-THC + Δ9-THCA × 0.877
+
+    So each certificate carries its own proof, and a single corrupted digit stops
+    being invisible. Run over eCoA_DATABASE on 30.08.2026 it flagged two of the
+    fifteen certificates where all three values could be read:
+
+      ППК25117  total 1.58 beside Δ9-THC 0.46 and Δ9-THCA 17.01, which sum to
+                15.38 — the value the register carries.
+      ППК25139  total 23.79 beside Δ9-THC 0.53 and Δ9-THCA 0.52, which sum to 0.99.
+                For the total to hold, THCA would have to be 26.52, so a digit
+                group is missing from the THCA row.
+
+    In both cases the three numbers on one page cannot all be right, and in both the
+    rule says so without needing any other source. Which of the three is the wrong
+    one — and whether the fault is in the paper or in the parse — is a question only
+    the rendered page answers. That is the correct outcome: the rule raises the page,
+    it does not decide it.
+
+    Returns None when any input is missing (nothing to check), True when the printed
+    total matches the computed one within `tol`, False when it does not.
+
+    >>> total_thc_consistent(0.46, 17.01, 15.38)
+    True
+    >>> total_thc_consistent(0.46, 17.01, 1.58)
+    False
+    >>> total_thc_consistent(0.46, None, 15.38) is None
+    True
+    """
+    if d9_thc is None or thca is None or total_thc is None:
+        return None
+    return abs(total_thc - (d9_thc + thca * THCA_TO_THC)) <= tol
+
 
 def magnitude(text):
     """Parse '4,2×10⁴ CFU/g', '4.9×10^3', '200', '< 10' to a float, or None.

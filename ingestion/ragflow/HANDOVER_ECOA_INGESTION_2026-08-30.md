@@ -278,7 +278,22 @@ Two near-misses, both caught only at the last moment:
 A stability timepoint over limit is data. A release result over limit is a deviation.
 Establish which you are looking at *before* writing a finding.
 
-**10. Do not trust the chunk text over the page.** During this work three certificates were
+**10. The chunks endpoint caps `page_size` at 100 — and fails silently past it.**
+`?page_size=300` returns HTTP 200 with `{"code":100,"data":null}`, not an error status. A
+sweep written against it produced **zero** extractions across all 291 documents and looked
+like an empty corpus rather than a bug. Always assert `data is not None`, and paginate.
+
+**11. A regex anchored on a parameter label matches the footnote.** Certificates end with
+`**** Вкупно Δ9-THC - сума на содржина на Δ9-THC и Δ9-THCA x 0.877 …`. A pattern looking
+for the label followed by a number finds that line and returns **9**, from `Δ9`. This
+produced 24 fake "disagreements" against the register — fourteen of them at exactly 9.0 —
+before it was caught. **Take numbers only from table rows** (pipe-delimited, or
+whitespace-aligned with a 2+ space gap); never from a line of prose. Then reject any row
+whose label or value carries `мин.` / `макс.` / `≤` / `≥` / an en-dash range, because
+`• Вкупно Δ9-THC* мин. 5.00 %` is a specification and an extractor without that guard
+reports 5.00 as the batch's THC.
+
+**12. Do not trust the chunk text over the page.** During this work three certificates were
 reported to the user as false alarms on the strength of RAGFlow chunk text reading
 `4,2 х 10³`. The rendered page read `4,2 x 10⁴`. **The cross-check was right and the parse
 was wrong**, and the correction had to be issued to the user. If chunk text and rendered
