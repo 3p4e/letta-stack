@@ -37,6 +37,8 @@ model_list:
     litellm_params: {model: gemini/gemini-3.6-flash, api_key: os.environ/BN_GOOGLE_GEMINI_API_KEY}
   - model_name: gemini-flash
     litellm_params: {model: gemini/gemini-3.6-flash, api_key: os.environ/EP_GEMINI_API}
+  - model_name: gemini-flash
+    litellm_params: {model: gemini/gemini-3.6-flash, api_key: os.environ/UC_GEMINI_API}
 
 litellm_settings:
   num_retries: 2
