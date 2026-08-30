@@ -142,18 +142,35 @@ batch **J31122501**. Both batches exist in the register. Whether Farmahem mislab
 LoD certificates or the register mis-filed them cannot be settled from the paper alone —
 this needs a QC ruling, not a silent edit.
 
-### 6. 🔴 `ППК26058` — CBN at twice its limit, released as conforming
+### 6. 🟢 The CBN exceedances are accelerated-stability results, not failed releases — and the register records them correctly
 
-`P050202, ППК26058, 11.05.2026, CNP.pdf` prints, in its own results table:
+`ППК26058` does print **CBN 2.05 %** against a limit of **≤ 1.00 %**, so the cross-check's
+number is right. But the framing that grouped it with the microbiology failures is wrong,
+and the register is not.
 
-| Parameter | Limit | Result |
-|---|---|---|
-| Содржина на CBN | **≤ 1.00 %** | **2.05 %** |
-| Вкупно Δ9-THC | / | 17.05 % |
+On the **Batch Release QC** sheet these certificates show `/` in every column, which looked
+like an omission of a failing value. It is not. They are stability-programme timepoints,
+and the workbook's **Stability Testing Programme** sheet records them in full — with the
+exceedance annotated in the row:
 
-Twice the limit. This confirms the first of the two CNP CBN claims in the cross-check.
-`ППК26033` could not be confirmed — the RAGFlow parse dropped its numeric table and the
-page has not been read yet.
+| Batch | Report | Timepoint | Condition | CBN | Note in the sheet |
+|---|---|---|---|---|---|
+| `P050022` | `ППК26033` | 6 months | **40 °C / 75 % RH** | **2.35 %** | "CBN 2.35 % exceeds…" |
+| `P050072` | `ППК26035` | 6 months | **40 °C / 75 % RH** | **2.15 %** | "CBN 2.15 % exceeds…" |
+| `P050202` | `ППК26058` | 6 months | **40 °C / 75 % RH** | **2.05 %** | "CBN 2.05 % exceeds…" |
+
+Three points follow.
+
+1. **All three are accelerated conditions** (40 °C / 75 % RH), where CBN rising is the
+   expected degradation product of THC. This is a **shelf-life signal**, not a batch
+   released against a failing result. No product was released on these certificates.
+2. **The cross-check names two; there are three.** `ППК26035` on `P050072` was missed.
+3. **The register is right here.** The `/` on the release sheet is correct — a stability
+   timepoint is not a release result — and the values are recorded, with the exceedance
+   flagged, on the sheet that should hold them.
+
+This materially narrows open item B1: the microbiology finding stands and concerns real
+releases; the CBN finding is a stability observation the register already documents.
 
 ### 7. 🟢 `PM112501` is **not** a register error — the register and the grade design are both right
 
@@ -192,9 +209,10 @@ Stated plainly rather than left to inference:
   already show an over-limit TYMC **in the register itself**, so the register needs no
   transcription fix for them and the finding does not depend on reading them — but they
   should still be read before the deviation records are written.
-- `ППК26033`, the second CNP CBN certificate — its numeric table did not survive the
-  RAGFlow parse and the page has not been read.
-- The in-house THC on `P050202`.
+- The in-house THC on `P050202` flagged by the cross-check.
+- Page-level confirmation of the three stability CBN values; they are taken here from the
+  register's own stability sheet, whose numbers the RAGFlow parse could not corroborate
+  because it dropped the result column on all four `P050202` CNP certificates.
 - The `CJ072501` CBD correction (26.20 → 0.09).
 - Layer 3, the stratified sample for a transcription error rate across the other ~250 rows.
 
