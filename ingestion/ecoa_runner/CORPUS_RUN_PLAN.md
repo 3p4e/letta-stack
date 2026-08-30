@@ -1,6 +1,6 @@
 # eCOA_DB corpus run — consolidated plan (30.08.2026)
 
-Single source of truth for the from-scratch run over the 291 documents in
+Single source of truth for the from-scratch run over the 253 documents in
 `eCOA_DB`. Consolidates every Head-of-QC ruling and budget decision to date;
 supersedes the plans scattered through the session that produced it.
 
@@ -22,7 +22,8 @@ supersedes the plans scattered through the session that produced it.
 | 12 | Results a laboratory marks non-accredited (*) must not be cited under its accreditation |
 | 13 | Legacy-corpus rectifications adopted: R4 arithmetic self-check, E5 spec-line guard, F2 stability rule |
 | 14 | Old chunks are contaminated: dataset wiped (verified 0 per-doc, 0 retrieval hits); all documents re-ingest from scratch |
-| 15 | `desktop.ini` (Drive sync junk) deleted from the dataset — the corpus is **291** certificates, matching the legacy dataset |
+| 15 | `desktop.ini` (Drive sync junk) deleted from the dataset |
+| 16 | **QCCoA 001/001v02 excluded entirely** (31.08): all 38 deleted from `eCOA_DB`, never ingested, never extracted. The corpus is **253** external/CNP certificates. Consequence: a parameter whose only source was a QCCoA now reports **MISSING** on the CoQ — no tier-3 fallback rows will exist. The tier-3 code path in `build_coq` stays as a dormant guard |
 
 ## Budget posture (user, 30.08.2026)
 
