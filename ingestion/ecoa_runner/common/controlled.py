@@ -109,6 +109,33 @@ def canonical_strain(printed):
     return printed
 
 
+# --- Units --------------------------------------------------------------------
+# Heavy metals and mycotoxins are reported in mg/kg and µg/kg across the corpus;
+# no certificate prints ppm. Should one appear, ppm IS mg/kg and ppb IS µg/kg for
+# a solid matrix, so the unit strings are unified rather than the numbers
+# converted - a conversion factor here would be a factor of one and a place for a
+# future bug to hide.
+_UNITS = {
+    'mg/kg': ['mg/kg', 'ppm', 'мг/кг'],
+    'µg/kg': ['µg/kg', 'ug/kg', 'mcg/kg', 'ppb', 'мкг/кг'],
+    'CFU/g': ['cfu/g', 'кое/г'],
+    '%':     ['%', '% w/w', '%w/w', '% m/m'],
+}
+_UNIT_LOOKUP = {_fold(v): k for k, vs in _UNITS.items() for v in vs}
+
+
+def canonical_unit(printed):
+    """Canonical unit for a printed one, or the printed value unchanged.
+
+    Certificate capture picks up footnote markers ("mg/kg(1)" read as "mg/kg(l)"),
+    so a trailing parenthesised marker is stripped before matching.
+    """
+    if printed is None:
+        return None
+    s = re.sub(r'\s*\([^)]*\)\s*$', '', str(printed).strip())
+    return _UNIT_LOOKUP.get(_fold(s), printed)
+
+
 # --- Pesticide panels ---------------------------------------------------------
 # The specification offers a choice of panel by jurisdiction. Both reporting
 # shapes occur in the corpus and both are valid:

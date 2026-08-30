@@ -49,10 +49,10 @@ except Exception:
 # `governing` returns no criterion for any parameter, which makes every
 # out-of-specification query return zero rows and the table look clean. An import
 # error must stop the build, not quietly disable the acceptance criteria.
-from pheur import governing, max_acceptable       # Ph. Eur. 5.1.8 cat. C
+from pheur import governing, max_acceptable, classify_printed_limit
 # Strain names are resolved against the controlled list, so a certificate typo
 # ("Cap Junkie") groups with the strain it refers to rather than as its own.
-from controlled import canonical_strain
+from controlled import canonical_strain, canonical_unit
 
 # A batch code is a short alpha prefix + digits, optionally a sub-lot and a
 # verification V. Models sometimes append the strain or the lab to it
@@ -81,6 +81,7 @@ CREATE TABLE IF NOT EXISTS result (
   limit_printed TEXT, limit_numeric REAL,
   limit_max_printed TEXT, limit_max_numeric REAL,
   governing_limit REAL, governing_ref TEXT, printed_limit_disagrees INT,
+  limit_status TEXT, limit_status_note TEXT,
   range_low REAL, range_high REAL, outside_range INT,
   exceeds_criterion INT, exceeds_max INT,
   method TEXT, coverage TEXT, covered_by TEXT,
@@ -118,7 +119,10 @@ def build(records, dbpath, base_url=''):
             # not whatever the certificate printed. A printed limit that disagrees is
             # a template defect to surface, never a threshold to judge against.
             gl, gref = governing(p.get('parameter'))
-            disagrees = int(gl is not None and lv is not None and abs(gl - lv) > 1e-9)
+            # A criterion has a history. A certificate printing the criterion that
+            # was in force when it was issued is correct for its date, not defective.
+            lstat, lnote = classify_printed_limit(p.get('parameter'), lv, diso)
+            disagrees = int(lstat == 'disagrees')
             mv = p.get('limit_max_numeric')
             if mv is None:
                 mv = max_acceptable(p.get('parameter'))
@@ -129,13 +133,14 @@ def build(records, dbpath, base_url=''):
             use = gl if gl is not None else lv
             ec = int(rv > use) if (conf_ok and rv is not None and use is not None) else None
             em = int(rv > mv) if (conf_ok and rv is not None and mv is not None) else None
-            db.execute('INSERT INTO result VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+            db.execute('INSERT INTO result VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                 (did, batch, strain, r.get('cert_code'), diso, r.get('lab'),
                  r.get('test_type'), p.get('parameter'), p.get('parameter_printed'),
-                 p.get('result_printed'), p.get('result_numeric'), p.get('unit'),
+                 p.get('result_printed'), p.get('result_numeric'),
+                 canonical_unit(p.get('unit')),
                  p.get('limit_printed'), p.get('limit_numeric'),
                  p.get('limit_max_printed'), p.get('limit_max_numeric'),
-                 gl, gref, disagrees,
+                 gl, gref, disagrees, lstat, lnote,
                  rlo, rhi, orange,
                  ec, em,
                  p.get('method'), p.get('coverage'), p.get('covered_by'),
@@ -168,6 +173,9 @@ QUERIES = {
  'printed_limit_disagrees_with_PhEur': """SELECT batch, cert_code, lab, parameter,
                  limit_printed, limit_numeric AS printed, governing_limit AS should_be, governing_ref
                  FROM result WHERE printed_limit_disagrees=1 ORDER BY parameter, batch""",
+ 'printed_limit_superseded_not_defective': """SELECT batch, cert_code, date_iso, lab, parameter,
+                 limit_printed, governing_limit AS now_is, limit_status_note
+                 FROM result WHERE limit_status='superseded' ORDER BY parameter, batch""",
  'needs_review': """SELECT batch, cert_code, parameter, read_a, read_b
                  FROM result WHERE confidence!='ok' ORDER BY batch, parameter""",
  'exceeds_stated_criterion': """SELECT batch, cert_code, parameter, result_numeric,

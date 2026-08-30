@@ -38,6 +38,48 @@ SPEC_SECTION_02 = {
 }
 # total_thc is deliberately absent: it is per grade (specification Section 01).
 
+# --- Superseded criteria ------------------------------------------------------
+# A criterion has a history. Loss on drying was ≤ 10.0 % under the DAB 2018
+# monograph method; the monograph was later updated and Ph. Eur. sets ≤ 12.0 %.
+# A certificate issued while the earlier criterion was in force and printing that
+# earlier value is CORRECT for its date - it is not a template defect, and
+# reporting it as one sends QC chasing a laboratory that did nothing wrong.
+#
+# `until` is the last date on which the earlier criterion applied. It is a QA
+# determination and is NOT guessed here: while it is None, a printed value that
+# matches a superseded criterion is classified as superseded regardless of date,
+# which is the safe direction (it never manufactures a defect). Set it to the
+# changeover date from the Product Specification version history to date-bound it.
+SUPERSEDED_CRITERIA = {
+    'loss_on_drying': [
+        {'limit': 10.0, 'unit': '%', 'ref': 'DAB 2018 monograph, dry cannabis flower',
+         'until': None},
+    ],
+}
+
+
+def classify_printed_limit(parameter, printed_limit, date_iso=None):
+    """How a certificate's printed acceptance criterion relates to the governing one.
+
+    'match'       - the printed criterion is the governing one
+    'superseded'  - it is a criterion that WAS in force (correct for its date)
+    'disagrees'   - it is neither: a template defect to raise with the laboratory
+    'unknown'     - nothing printed, or no governing criterion for this parameter
+    """
+    gl, _ = governing(parameter)
+    if gl is None or printed_limit is None:
+        return 'unknown', None
+    if abs(gl - printed_limit) <= 1e-9:
+        return 'match', None
+    for old in SUPERSEDED_CRITERIA.get(parameter, []):
+        if abs(old['limit'] - printed_limit) > 1e-9:
+            continue
+        if old['until'] is None or date_iso is None or date_iso <= old['until']:
+            return 'superseded', old['ref']
+        # The earlier criterion, printed after it ceased to apply: still a defect.
+        return 'disagrees', 'superseded criterion printed after %s' % old['until']
+    return 'disagrees', None
+
 # --- Maximum acceptable count -------------------------------------------------
 # A Ph. Eur. acceptance criterion stated as 10^n is interpreted with a maximum
 # acceptable count above it, and a result is out of specification only above THAT.

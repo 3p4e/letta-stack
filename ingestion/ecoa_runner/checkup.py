@@ -85,6 +85,17 @@ check('panel statement distinguished from a compound',
 check('n.d. in either script means not found',
       CT.is_not_found('н.д.') and CT.is_not_found('N.D.') and CT.is_not_found('≤ LOQ'))
 check('a detected compound is not "not found"', not CT.is_not_found('0,05 mg/kg'))
+check('heavy-metal units canonicalise to mg/kg',
+      CT.canonical_unit('mg/Kg') == CT.canonical_unit('mg/kg(l)') == 'mg/kg')
+check('ppm is mg/kg, not converted', CT.canonical_unit('ppm') == 'mg/kg')
+check('µg/kg variants unify', CT.canonical_unit('ug/kg') == CT.canonical_unit('ppb') == 'µg/kg')
+check('an unknown unit is not renamed', CT.canonical_unit('IU/g') == 'IU/g')
+check('LoD 10.0 (DAB) is superseded, not a defect',
+      PE.classify_printed_limit('loss_on_drying', 10.0, '2025-02-26')[0] == 'superseded')
+check('LoD 12.0 matches the governing criterion',
+      PE.classify_printed_limit('loss_on_drying', 12.0, '2025-02-26')[0] == 'match')
+check('a criterion in no version of the spec still disagrees',
+      PE.classify_printed_limit('lead', 5.0, '2025-02-27')[0] == 'disagrees')
 check('both jurisdiction panels are modelled',
       CT.panel_of('МКС EN 15662:2020') == 'MKS_EN_15662'
       and CT.panel_of('Ph. Eur. 2.8.13/ MKC EN 15662:2020') is not None)
