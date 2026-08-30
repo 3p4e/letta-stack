@@ -1,6 +1,6 @@
 # eCOA_DB corpus run — consolidated plan (30.08.2026)
 
-Single source of truth for the from-scratch run over the 292 documents in
+Single source of truth for the from-scratch run over the 291 documents in
 `eCOA_DB`. Consolidates every Head-of-QC ruling and budget decision to date;
 supersedes the plans scattered through the session that produced it.
 
@@ -21,7 +21,8 @@ supersedes the plans scattered through the session that produced it.
 | 11 | Heavy-metal units are mg/kg corpus-wide; `(l)` on IJZ certs is an undefined template artefact, ppm==mg/kg |
 | 12 | Results a laboratory marks non-accredited (*) must not be cited under its accreditation |
 | 13 | Legacy-corpus rectifications adopted: R4 arithmetic self-check, E5 spec-line guard, F2 stability rule |
-| 14 | Old chunks are contaminated: dataset wiped (verified 0 per-doc, 0 retrieval hits); all 292 re-ingest from scratch |
+| 14 | Old chunks are contaminated: dataset wiped (verified 0 per-doc, 0 retrieval hits); all documents re-ingest from scratch |
+| 15 | `desktop.ini` (Drive sync junk) deleted from the dataset — the corpus is **291** certificates, matching the legacy dataset |
 
 ## Budget posture (user, 30.08.2026)
 
@@ -68,6 +69,29 @@ supersedes the plans scattered through the session that produced it.
 8. Gemini 3 thinking tokens eat `maxOutputTokens` — stay at 32768.
 9. Both models agreeing is not truth (cert_code null on ППК25050): shared blind
    spots are prompt defects, not disagreements.
+10. Dataset `parser_config` shipped with `use_graphrag: true` and
+    `use_raptor: true` — a large silent token burn had either ever triggered.
+    Both now off; the update PUT only accepts a MINIMAL parser_config (sending
+    the config back with its internal keys fails with code 101).
+11. The canvas held `image/table_context_size: 1` against the engine's 0 — a
+    canvas save would have changed chunking behaviour mid-corpus. Aligned.
+
+## Alignment with the official pipeline documentation (ragflow.io, read 30.08)
+
+- Component order Parser → Chunker → Transformer → Indexer: ours matches.
+- The docs state the exact failure we found live: "The Transformer node does
+  not automatically acquire content from its preceding nodes" — upstream
+  variables must be referenced explicitly. Our chain (Questions reads the
+  chunker, Keywords reads Questions' output) is the documented pattern.
+- Indexing pre-generated QUESTIONS yields "significantly higher similarity
+  than matching questions with answers" — we index questions + keywords + text.
+- The docs' default chunk size is 512; we deliberately run 2048 with 0 overlap
+  so one certificate stays one chunk. Retrieval here finds the CERTIFICATE
+  (the runner then reads the actual PDF); splitting a 2-page certificate into
+  four fragments would only separate the batch code from the results table.
+- Cross-dataset retrieval requires the same embedding model on every dataset
+  searched together; the legacy dataset does not share `voyage-3-large`, so
+  never query it jointly with `eCOA_DB`.
 
 ## Order of operations
 
