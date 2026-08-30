@@ -1,0 +1,32 @@
+# LiteLLM proxy for KVM4, beside RAGFlow.
+#
+# Purpose: one OpenAI-compatible endpoint that (1) enforces a hard spend ceiling
+# on the prepaid OpenAI balance, (2) rotates the free-tier Gemini keys, and
+# (3) falls back to the Moonshot subscription when a paid or rate-limited
+# provider is unavailable - so a quota event degrades the run instead of
+# corrupting it.
+#
+# Start (on KVM4, in this directory):
+#   1. cp env.example .env   and fill in the real keys (never commit .env)
+#   2. docker compose up -d
+#   3. curl -s http://localhost:4000/health -H "Authorization: Bearer $LITELLM_MASTER_KEY"
+#
+# RAGFlow: add an OpenAI-compatible provider with base_url http://litellm:4000/v1
+# (same docker network) or http://<kvm4-ip>:4000/v1, api_key = LITELLM_MASTER_KEY.
+services:
+  litellm:
+    image: ghcr.io/berriai/litellm:main-stable
+    container_name: litellm
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:4000:4000"   # localhost only; publish wider only behind auth
+    env_file: .env
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+    command: ["--config", "/app/config.yaml", "--port", "4000"]
+    networks: [ragflow]
+
+networks:
+  ragflow:
+    external: true
+    name: docker_ragflow    # `docker network ls` on KVM4; adjust if named differently

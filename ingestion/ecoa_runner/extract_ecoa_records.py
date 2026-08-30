@@ -152,6 +152,39 @@ SCHEMA
    "method_accredited":bool|null}]}"""
 
 
+# --- Spend and quota safeguards ------------------------------------------------
+# The OpenAI balance is small and prepaid; running dry mid-corpus must stop the
+# run cleanly, never produce half-read documents. Costs are metered from each
+# response's own usage block at published per-token prices and the run stops
+# BEFORE the document that would cross the ceiling. The ceiling deliberately
+# sits under the real balance so the arbiter pass and retries keep headroom.
+# Every document is written to --out as it completes, so a stopped run resumes
+# by re-running with the remaining documents.
+OPENAI_PRICES = {'gpt-5': (1.25, 10.0), 'gpt-4.1': (2.0, 8.0), 'gpt-4.1-mini': (0.4, 1.6)}
+OPENAI_BUDGET_USD = float(os.environ.get('OPENAI_BUDGET_USD', '5.50'))
+SPEND = {'usd': 0.0, 'calls': 0}
+
+
+class BudgetExhausted(RuntimeError):
+    pass
+
+
+def _meter(model, usage):
+    pin, pout = OPENAI_PRICES.get(model, (2.0, 10.0))
+    usd = (usage.get('prompt_tokens', 0) * pin + usage.get('completion_tokens', 0) * pout) / 1e6
+    SPEND['usd'] += usd; SPEND['calls'] += 1
+    if SPEND['usd'] >= OPENAI_BUDGET_USD:
+        raise BudgetExhausted('OpenAI spend $%.2f reached the $%.2f ceiling after %d calls'
+                              % (SPEND['usd'], OPENAI_BUDGET_USD, SPEND['calls']))
+    return usd
+
+
+# All Gemini keys exhausted in one document = the free tier is done for the day.
+# Continuing would burn OpenAI spend on read A with no read B to confirm it.
+class GeminiExhausted(RuntimeError):
+    pass
+
+
 def render(pdf_bytes):
     import fitz
     doc = fitz.open(stream=pdf_bytes, filetype='pdf')
@@ -174,7 +207,9 @@ def read_openai(images, model='gpt-5'):
         headers={'Authorization': 'Bearer ' + os.environ['OPENAI_API_KEY'],
                  'Content-Type': 'application/json'})
     o = json.load(urllib.request.urlopen(r, timeout=900))
-    return o['choices'][0]['message']['content'], o.get('usage', {})
+    u = o.get('usage', {})
+    u['cost_usd'] = round(_meter(model, u), 4)
+    return o['choices'][0]['message']['content'], u
 
 
 def read_gemini(images, model='gemini-3.6-flash'):
@@ -207,6 +242,8 @@ def read_gemini(images, model='gemini-3.6-flash'):
             if e.code in (429, 503) and n < len(keys) - 1:
                 print('   gemini key %d rate-limited (%d), trying next key' % (n + 1, e.code))
                 sys.stdout.flush(); continue
+            if e.code in (429, 503):
+                raise GeminiExhausted('all %d Gemini keys rate-limited' % len(keys))
             raise
     if o is None:
         raise last
@@ -533,8 +570,16 @@ def run(doc_ids, names, outpath):
         print('   %d page(s) rendered at %d DPI' % (len(imgs), DPI)); sys.stdout.flush()
         t0 = time.time()
         try: ta, ua = with_retry(lambda: read_openai(imgs), 'read A (gpt-5)')
+        except (BudgetExhausted, GeminiExhausted) as e:
+            print('\n== RUN STOPPED CLEANLY: %s' % e)
+            print('   %d document(s) completed and saved; re-run to resume with the rest.' % len(results))
+            break
         except Exception as e: ta, ua = '', {'error': str(e)[:120]}
         try: tb, ub = with_retry(lambda: read_gemini(imgs), 'read B (gemini)')
+        except (BudgetExhausted, GeminiExhausted) as e:
+            print('\n== RUN STOPPED CLEANLY: %s' % e)
+            print('   read A for this document is discarded; %d document(s) saved.' % len(results))
+            break
         except Exception as e: tb, ub = '', {'error': str(e)[:120]}
         A, B = parse_json(ta), parse_json(tb)
         if tb and B is None:
@@ -553,6 +598,8 @@ def run(doc_ids, names, outpath):
         print('   agreed=%d  needs review=%d  batch=%s' % (ok, rv, rec.get('batch_canonical'))); sys.stdout.flush()
         for line in rec.get('review', [])[:6]: print('     ! ' + line); sys.stdout.flush()
         json.dump(results, open(outpath, 'w'), ensure_ascii=False, indent=1)
+    print('\nOpenAI spend this run: $%.2f over %d call(s) (ceiling $%.2f)'
+          % (SPEND['usd'], SPEND['calls'], OPENAI_BUDGET_USD))
     return results
 
 
