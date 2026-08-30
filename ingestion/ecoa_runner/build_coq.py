@@ -1,0 +1,265 @@
+#!/usr/bin/env python3
+"""Assemble the CoQ dataset for a batch, in the structure of QCSOP 012 v.03.
+
+Section 02  Consolidated Analytical Results - the twelve numbered specification
+            rows, groups 9/10/11 carrying their sub-rows.
+Section 03  Laboratory & Certificate Cross-Reference - one row per issuing
+            laboratory, with its accreditation, the CoA document code and date,
+            and the PARAMETER NUMBERS that laboratory supplied.
+
+Every result on the certificate must trace to a laboratory and a document code.
+A parameter with no confirmed result is reported MISSING; nothing is inferred
+from a sibling batch, from an earlier test, or from the specification.
+"""
+import os, sys, json, sqlite3, argparse
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, '..', 'common'))
+
+# Specification Section 02 exactly as printed: (number, sub, key, English, criterion, method)
+SPEC = [
+    ('1',  None, 'identification_a_macroscopic', 'Identification A, Appearance',      'Conforms to monograph', 'Ph. Eur. mon. 3028'),
+    ('2',  None, 'identification_b_microscopic', 'Identification B',                  'Conforms to monograph', 'Ph. Eur. 2.8.23 (microscopy)'),
+    ('3',  None, 'identification_c_hplc',        'Identification C',                  'Conforms to monograph', 'Ph. Eur. 2.2.29 (3028)'),
+    ('4',  None, 'total_thc',                    'Assay — Total Δ9-THC',              'per grade, Section 01', 'Ph. Eur. 2.2.29 (HPLC); THC + THCA × 0.877'),
+    ('5',  None, 'total_cbd',                    'Assay — Total CBD',                 '≤ 1.0 %, w/w',          'Ph. Eur. 2.2.29 (HPLC); CBD + CBDA × 0.877'),
+    ('6',  None, 'total_cbn',                    'Total CBN',                         '≤ 1.0 %, w/w',          'Ph. Eur. 2.2.29 (HPLC); CBN + CBNA × 0.876'),
+    ('7',  None, 'foreign_matter',               'Foreign Matter',                    '≤ 2.0 % / 25–50 g',     'Ph. Eur. 2.8.2 / in-house'),
+    ('8',  None, 'loss_on_drying',               'Loss on Drying',                    '≤ 12.0 %',              'Ph. Eur. 2.2.32 (3028)'),
+    ('9',  'a',  'tamc',                         'TAMC',                              '≤ 10^5 CFU/g',          'Ph. Eur. 2.6.12 cat. C'),
+    ('9',  'b',  'tymc',                         'TYMC',                              '≤ 10^4 CFU/g',          'Ph. Eur. 2.6.12 cat. C'),
+    ('9',  'c',  'bile_tolerant_gram_negative',  'Bile-tolerant gram-neg.',           '≤ 10^4 CFU/g',          'Ph. Eur. 2.6.31 cat. C'),
+    ('9',  'd',  'salmonella',                   'Salmonella',                        'Absence / 25 g',        'Ph. Eur. 2.6.31 cat. C'),
+    ('9',  'e',  'escherichia_coli',             'Escherichia coli',                  'Absence / 1 g',         'Ph. Eur. 2.6.13 cat. C'),
+    ('10', 'a',  'aflatoxin_b1',                 'Aflatoxin B1',                      '≤ 2 µg/kg',             'Ph. Eur. 2.8.18 (HPLC-FLD)'),
+    ('10', 'b',  'aflatoxins_total',             'Aflatoxins ∑ (B1+B2+G1+G2)',        '≤ 4 µg/kg',             'Ph. Eur. 2.8.18 (HPLC-FLD)'),
+    ('10', 'c',  'ochratoxin_a',                 'Ochratoxin A',                      '≤ 20 µg/kg',            'Ph. Eur. 2.8.22 (HPLC-FLD)'),
+    ('11', 'a',  'lead',                         'Lead (Pb)',                         '≤ 0.5 mg/kg',           'Ph. Eur. 2.4.27 (ICP-MS)'),
+    ('11', 'b',  'cadmium',                      'Cadmium (Cd)',                      '≤ 0.3 mg/kg',           'Ph. Eur. 2.4.27 (ICP-MS)'),
+    ('11', 'c',  'arsenic',                      'Arsenic (As)',                      '≤ 0.2 mg/kg',           'Ph. Eur. 2.4.27 (ICP-MS)'),
+    ('11', 'd',  'mercury',                      'Mercury (Hg)',                      '≤ 0.1 mg/kg',           'Ph. Eur. 2.4.27 (ICP-MS)'),
+    ('12', None, 'pesticide_residues',           'Pesticide Residues',                '≤ LOQ per 2.8.13',      'Ph. Eur. 2.8.13 (LC-MS/MS)'),
+]
+# Reported only when requested; absence is not a gap.
+ON_REQUEST = {'pseudomonas_aeruginosa', 'staphylococcus_aureus', 'pesticide_residues_cumcs'}
+
+# ---------------------------------------------------------------------------
+# Source precedence (Head of QC)
+#
+# QCCoA 001 / QCCoA 001v02 are a superseded attempt at a Purely Plant group
+# certificate compiled FROM the outsourced laboratories' eCoAs. Every parameter on
+# them is derived; none originates there. Citing one on a CoQ would attribute an
+# accredited determination to the wrong laboratory. The CoQ supersedes them.
+#
+#   tier 1  external accredited laboratory eCoA        - the originating source
+#   tier 2  in-house iCoA                              - parameters PP performs itself
+#   tier 3  QCCoA 001 / 001v02                         - fallback ONLY where the
+#           originating eCoA is missing or not yet ingested, and always flagged
+# ---------------------------------------------------------------------------
+SUPERSEDED_INHOUSE = ('QCCOA 001', 'QCCOA001')
+
+
+def source_tier(cert_code, lab):
+    code = (cert_code or '').upper().replace(' ', '')
+    if any(code.startswith(x.replace(' ', '')) for x in SUPERSEDED_INHOUSE):
+        return 3
+    if code.startswith('ICOA') or 'PURELYPLANT' in (lab or '').upper().replace(' ', ''):
+        return 2
+    return 1
+
+
+def _dedupe(rows):
+    """Collapse repeats of the same value from the same certificate.
+
+    A pesticide panel reports dozens of compounds that currently share the key
+    pesticide_residues, so the same "N.D." from one certificate would otherwise
+    print as dozens of superseding retests. Distinct compounds need distinct keys
+    (pesticide:<compound>); until then, do not present them as a retest history.
+    """
+    seen, out = set(), []
+    for d, v, c in rows:
+        k = (d, _canon(v), c)
+        if k in seen:
+            continue
+        seen.add(k); out.append((d, v, c))
+    return out
+
+
+GROUP_KEYS = {
+    '9':  ['tamc', 'tymc', 'bile_tolerant_gram_negative', 'salmonella', 'escherichia_coli'],
+    '10': ['aflatoxin_b1', 'aflatoxins_total', 'ochratoxin_a'],
+    '11': ['lead', 'cadmium', 'arsenic', 'mercury'],
+}
+
+
+def _group_cover(by, group):
+    """The certificate that covered this parameter group, if any.
+
+    Returns (cert_code, lab, date) from the most recent certificate that reported
+    ANY parameter in the group - evidence the panel was run.
+    """
+    best = None
+    for k in GROUP_KEYS.get(group, []):
+        for r in by.get(k, []):
+            if r[8] == 'ok' and r[1] not in (None, ''):
+                if best is None or (r[5] or '') > (best[2] or ''):
+                    best = (r[6], r[7], r[5])
+    return best
+
+
+_EQUIV = {'н.д.': 'nd', 'n.d.': 'nd', 'nd': 'nd', 'not detected': 'nd',
+          'одговара': 'conforms', 'conforms': 'conforms',
+          'confirms': 'conforms', 'отсуство': 'absent',
+          'absent': 'absent', 'absence': 'absent'}
+
+
+def _canon(v):
+    # Normalise a printed result for comparison. 'n.d.' and its Cyrillic form are
+    # the same result, as are '<LOQ' and '<= LOQ'. Comparing printed strings makes a
+    # transcription difference look like a retest and would trigger a CoQ reissue
+    # where no new test was performed.
+    if v is None:
+        return None
+    t = str(v).strip().lower().replace('≤', '<').replace(' ', ' ')
+    t = ' '.join(t.split())
+    if t in _EQUIV:
+        return _EQUIV[t]
+    t = t.replace(' ', '').replace(',', '.')
+    return _EQUIV.get(t, t)
+
+
+def _num(n, sub):
+    return n if sub is None else '%s%s' % (n, sub)
+
+
+def compile_coq(db, batch):
+    rows = db.execute("""SELECT r.parameter, r.result_printed, r.result_numeric, r.unit,
+             r.method, r.date_iso, r.cert_code, r.lab, r.confidence,
+             r.exceeds_criterion, r.outside_range, c.document, c.doc_id
+        FROM result r JOIN certificate c ON c.doc_id = r.doc_id
+        WHERE r.batch = ? ORDER BY r.date_iso""", (batch,)).fetchall()
+    by = {}
+    for r in rows:
+        by.setdefault(r[0], []).append(r)
+
+    section02, sources, unresolved = [], {}, []
+    for n, sub, key, name, criterion, method in SPEC:
+        usable = [r for r in by.get(key, []) if r[8] == 'ok' and r[1] not in (None, '')]
+        # Take the best available tier, then the most recent within it.
+        tiers = {}
+        for r in usable:
+            tiers.setdefault(source_tier(r[6], r[7]), []).append(r)
+        best = min(tiers) if tiers else None
+        cands = tiers.get(best, [])
+        held  = [r for r in by.get(key, []) if r[8] != 'ok']
+        entry = {'no': _num(n, sub), 'group': n, 'key': key, 'parameter': name,
+                 'criterion': criterion, 'method': method}
+        if not cands:
+            entry['result'] = None
+            if held:
+                entry['status'] = 'HELD'
+            else:
+                # A parameter absent from a certificate that DID cover its group is
+                # "not tested" - the laboratory ran the panel and did not include it.
+                # That is declarable on the CoQ. A parameter with no covering
+                # certificate at all is MISSING, and blocks issuance. The ImB
+                # specification lists three mycotoxins; many eCoAs report only one.
+                cover = _group_cover(by, n)
+                if cover:
+                    entry['status'] = 'NOT TESTED'
+                    entry['covered_by_cert'] = cover[0]
+                    entry['covered_by_lab'] = cover[1]
+                    entry['covered_on'] = cover[2]
+                else:
+                    entry['status'] = 'MISSING'
+            unresolved.append(entry)
+        else:
+            latest = cands[-1]
+            entry.update(result=latest[1], numeric=latest[2], status='ok',
+                         source_tier=best,
+                         provenance={1: 'accredited eCoA', 2: 'in-house iCoA',
+                                     3: 'DERIVED — superseded QCCoA, originating eCoA not available'}[best],
+                         date=latest[5], cert_code=latest[6], lab=latest[7],
+                         document=latest[11],
+                         exceeds_criterion=latest[9], outside_range=latest[10],
+                         superseded=_dedupe([(r[5], r[1], r[6]) for r in cands[:-1]
+                                             if _canon(r[1]) != _canon(latest[1])]))
+            src = (latest[7], latest[6], latest[5])          # lab, cert code, date
+            sources.setdefault(src, []).append(_num(n, sub))
+        section02.append(entry)
+    return section02, sources, unresolved
+
+
+def render(db, batch):
+    s02, sources, unresolved = compile_coq(db, batch)
+    cert = db.execute("SELECT strain FROM certificate WHERE batch=? AND strain IS NOT NULL LIMIT 1",
+                      (batch,)).fetchone()
+    W = 104
+    print('=' * W)
+    print('CERTIFICATE OF QUALITY — data assembly   batch %s%s   (QCSOP 012 v.03 structure)'
+          % (batch, '  ·  %s' % cert[0] if cert else ''))
+    print('=' * W)
+    print('\n02  CONSOLIDATED ANALYTICAL RESULTS')
+    print('%-5s %-32s %-24s %-18s %s' % ('№', 'Parameter', 'Acceptance criterion', 'Result', 'Source'))
+    print('-' * W)
+    last = None
+    for e in s02:
+        if e['group'] != last and e['group'] in ('9', '10', '11'):
+            title = {'9': 'Microbiological Purity', '10': 'Mycotoxins', '11': 'Heavy Metals'}[e['group']]
+            print('%-5s %s' % (e['group'], title))
+        last = e['group']
+        res = e['result'] if e['status'] == 'ok' else '— ' + e['status']
+        flag = ' ⚑' if e.get('exceeds_criterion') or e.get('outside_range') else ''
+        print('%-5s %-32s %-24s %-18s %s%s'
+              % (e['no'], e['parameter'][:32], e['criterion'][:24], str(res)[:18],
+                 (e.get('cert_code') or '') if e['status'] == 'ok' else '', flag))
+        for d, v, c in e.get('superseded', []):
+            print('%-5s   ↳ superseded %-25s %-24s %s' % ('', v, '', '%s, %s' % (c or '—', d)))
+    print('-' * W)
+    print('\n03  LABORATORY & CERTIFICATE CROSS-REFERENCE')
+    print('%-46s %-26s %s' % ('Laboratory · Accreditation', 'CoA doc. code, issued', 'Param. №'))
+    print('-' * W)
+    for (lab, code, date), nums in sorted(sources.items(), key=lambda kv: kv[1][0]):
+        acc = db.execute("""SELECT lab_accreditation, lab_accreditation_body, lab_standard
+                            FROM certificate WHERE lab=? AND lab_accreditation IS NOT NULL
+                            LIMIT 1""", (lab,)).fetchone() if _has_accred(db) else None
+        cred = ('· %s (%s) · %s' % acc) if acc and acc[0] else '· accreditation NOT CAPTURED'
+        print('%-46s %-26s %s' % ((lab or '?')[:46], '%s, %s' % (code or '—', date or '—'),
+                                  ','.join(nums)))
+        print('%-46s' % ('    ' + cred[:70]))
+    print('-' * W)
+    ok = sum(1 for e in s02 if e['status'] == 'ok')
+    miss = [e for e in unresolved if e['status'] == 'MISSING']
+    held = [e for e in unresolved if e['status'] == 'HELD']
+    print('\n%d of %d specification rows sourced.' % (ok, len(SPEC)))
+    if miss:
+        print('MISSING (no result on any certificate for this batch): %s'
+              % ', '.join('%s %s' % (e['no'], e['parameter']) for e in miss))
+    if held:
+        print('HELD FOR REVIEW (reads disagreed): %s'
+              % ', '.join('%s %s' % (e['no'], e['parameter']) for e in held))
+    if miss or held:
+        print('\nA CoQ cannot be issued: every specification row must carry a confirmed,')
+        print('traceable result before the QC conformity statement can be made.')
+    return s02, sources, unresolved
+
+
+def _has_accred(db):
+    cols = {r[1] for r in db.execute("PRAGMA table_info(certificate)")}
+    return 'lab_accreditation' in cols
+
+
+if __name__ == '__main__':
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--db', default=HERE + '/ecoa.sqlite')
+    ap.add_argument('--batch', required=True)
+    ap.add_argument('--json', action='store_true')
+    a = ap.parse_args()
+    db = sqlite3.connect(a.db)
+    if a.json:
+        s02, src, un = compile_coq(db, a.batch)
+        print(json.dumps({'section02': s02,
+                          'section03': [{'lab': k[0], 'cert_code': k[1], 'date': k[2], 'params': v}
+                                        for k, v in src.items()],
+                          'unresolved': un}, ensure_ascii=False, indent=1))
+    else:
+        render(db, a.batch)

@@ -83,6 +83,18 @@ OTHER RULES
 - Appearance / Изглед (macroscopic description of the flower) is part of
   Identification A in the specification - map it to identification_a_macroscopic,
   not to "other".
+- Capture the ISSUING INSTITUTION in full, as printed. A Certificate of Quality must
+  cite, for every result, who performed the test and under what accreditation:
+    lab            full institution name as printed
+    lab_department the testing department/unit, where named
+    lab_address    postal address as printed
+    lab_accreditation      the accreditation register number, e.g. "LT-017", "ЛТ-005"
+    lab_accreditation_body the accrediting body, e.g. "Институт за акредитација на
+                           Република Северна Македонија (ИАРСМ)" / "IARNM"
+    lab_standard   the accreditation standard, e.g. "MKC EN ISO/IEC 17025:2018"
+    signatories    list of {name, title} for every person who signed or approved
+  These are usually in the certificate header, footer, or an accreditation statement.
+  Any field not printed is null - never supply an accreditation number from memory.
 - Record the batch exactly as printed in batch_printed, and a Latin-folded form in
   batch_canonical (Cyrillic К -> K, etc).
 - If the page is illegible or is not a certificate, return {"unreadable": true} and nothing else.
@@ -91,7 +103,10 @@ parameter must be one of: """ + " | ".join(PARAM_KEYS) + """
 
 SCHEMA
 {"batch_printed":str|null,"batch_canonical":str|null,"p_number":str|null,"strain":str|null,
- "cert_code":str|null,"date_of_issue":str|null,"date_of_sampling":str|null,"lab":str|null,
+ "cert_code":str|null,"date_of_issue":str|null,"date_of_sampling":str|null,
+ "lab":str|null,"lab_department":str|null,"lab_address":str|null,
+ "lab_accreditation":str|null,"lab_accreditation_body":str|null,"lab_standard":str|null,
+ "signatories":[{"name":str,"title":str}]|null,
  "test_type":"release"|"retest"|"stability"|"in_process"|"unknown","overall_conclusion":str|null,
  "parameters":[{"parameter":str,"parameter_printed":str,"result_printed":str|null,
    "result_numeric":num|null,"unit":str|null,"operator":"="|"<"|"<="|">"|">="|null,
@@ -284,7 +299,8 @@ def reconcile(a, b):
             out[f] = None; out['reads_agree'] = False
             out['review'].append('%s: %r vs %r' % (f, va, vb))
     # Descriptive fields: keep the fuller reading, never block on wording.
-    for f in ('lab','overall_conclusion','test_type'):
+    for f in ('lab','lab_department','lab_address','lab_accreditation',
+              'lab_accreditation_body','lab_standard','overall_conclusion','test_type'):
         va, vb = a.get(f), b.get(f)
         out[f] = va if len(str(va or '')) >= len(str(vb or '')) else vb
         if squash(va) != squash(vb):
@@ -391,6 +407,10 @@ def reconcile(a, b):
     out['parameters'] = params
     for f in ('batch_printed','p_number','date_of_sampling'):
         out[f] = a.get(f) if a.get(f) == b.get(f) else None
+    # Signatories: keep the fuller list; an approver named by only one read is still
+    # evidence of attribution, and the raw reads remain available for audit.
+    sa, sb = a.get('signatories') or [], b.get('signatories') or []
+    out['signatories'] = sa if len(sa) >= len(sb) else sb
     return out
 
 
