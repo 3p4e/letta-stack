@@ -67,6 +67,37 @@ check('TYMC 4,9 x 10^4 is within the max acceptable count',
       49000 <= PE.max_acceptable('tymc'))
 check('TYMC 6 x 10^4 is out of specification', 60000 > PE.max_acceptable('tymc'))
 
+print('\n2b. ARITHMETIC SELF-CHECK — R4, adopted from the legacy-corpus register')
+def _r4(free, acid, tot):
+    rec = {'parameters': [
+        {'parameter': 'thc_free', 'result_numeric': free, 'confidence': 'ok'},
+        {'parameter': 'thca', 'result_numeric': acid, 'confidence': 'ok'},
+        {'parameter': 'total_thc', 'result_numeric': tot, 'confidence': 'ok'}]}
+    return R.arithmetic_check(rec)['parameters'][2]['confidence']
+# ППК25117 as the certificate prints it, and as the corrupted corpus held it
+check('0.46 + 17.01 x 0.877 = 15.38 passes', _r4(0.46, 17.01, 15.38) == 'ok')
+check('the ten-fold corruption 1.58 is caught', _r4(0.46, 17.01, 1.58) == 'review')
+# ППК25139: THCA missing its leading digits
+check('THCA 0.52 for 26.52 is caught', _r4(0.53, 0.52, 23.79) == 'review')
+check('a mismatch flags all three rows', all(
+    p['confidence'] == 'review' for p in R.arithmetic_check({'parameters': [
+        {'parameter': 'thc_free', 'result_numeric': 0.46, 'confidence': 'ok'},
+        {'parameter': 'thca', 'result_numeric': 17.01, 'confidence': 'ok'},
+        {'parameter': 'total_thc', 'result_numeric': 1.58, 'confidence': 'ok'}]})['parameters']))
+check('an N.D. component is never assumed zero', _r4(None, 17.01, 15.38) == 'ok')
+check('tolerance is 0.06, not exactness', _r4(0.46, 17.01, 15.42) == 'ok')
+
+print('\n2c. SPECIFICATION-LINE GUARD — E5')
+def _e5(v):
+    rec = {'parameters': [{'parameter': 'total_thc', 'result_printed': v, 'confidence': 'ok'}]}
+    return R.spec_line_guard(rec)['parameters'][0]['confidence']
+check('"мин. 5.00 %" is not a result', _e5('мин. 5.00 %') == 'review')
+check('"15.1 – 18.5% of the labelled amount" is not a result',
+      _e5('15.1 – 18.5% of the labelled amount') == 'review')
+check('a genuine measured value passes', _e5('26.14') == 'ok')
+check('"< 2" and "<LOQ" are results, not spec lines',
+      _e5('< 2') == 'ok' and _e5('<LOQ') == 'ok')
+
 print('\n4a. ACCREDITATION MARKER')
 check('a row either read as non-accredited is non-accredited', R._accred(True, False) is False)
 check('both reads accredited -> accredited', R._accred(True, True) is True)

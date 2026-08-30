@@ -138,7 +138,7 @@ def compile_coq(db, batch):
     rows = db.execute("""SELECT r.parameter, r.result_printed, r.result_numeric, r.unit,
              r.method, r.date_iso, r.cert_code, r.lab, r.confidence,
              r.exceeds_criterion, r.outside_range, c.document, c.doc_id,
-             r.parameter_printed, r.method_accredited
+             r.parameter_printed, r.method_accredited, r.test_type
         FROM result r JOIN certificate c ON c.doc_id = r.doc_id
         WHERE r.batch = ? ORDER BY r.date_iso""", (batch,)).fetchall()
     by = {}
@@ -181,6 +181,15 @@ def compile_coq(db, batch):
             tiers.setdefault(source_tier(r[6], r[7]), []).append(r)
         best = min(tiers) if tiers else None
         cands = tiers.get(best, [])
+        # Stability timepoints are genuine analyses but not release results. A CoQ
+        # states the batch's release quality; a later stability pull must never
+        # silently supersede it (register F2: P050022 alone carries five CNP
+        # certificates - timepoints, not retests). Prefer non-stability rows; fall
+        # back to stability only when nothing else exists, and say so.
+        rel = [r for r in cands if (r[15] or 'unknown') != 'stability']
+        stability_only = bool(cands) and not rel
+        if rel:
+            cands = rel
         held  = [r for r in by.get(key, []) if r[8] != 'ok']
         entry = {'no': _num(n, sub), 'group': n, 'key': key, 'parameter': name,
                  'criterion': criterion, 'method': method}
@@ -206,6 +215,7 @@ def compile_coq(db, batch):
         else:
             latest = cands[-1]
             entry.update(result=latest[1], numeric=latest[2], status='ok',
+                         stability_only=stability_only or None,
                          source_tier=best,
                          provenance={1: 'accredited eCoA', 2: 'in-house iCoA',
                                      3: 'DERIVED — superseded QCCoA, originating eCoA not available'}[best],
@@ -243,6 +253,9 @@ def _pesticides(by, n, criterion, method, cite):
         tiers.setdefault(source_tier(r[6], r[7]), []).append(r)
     best = min(tiers)
     cands = tiers[best]
+    rel = [r for r in cands if (r[15] or 'unknown') != 'stability']
+    if rel:
+        cands = rel
     per_cert = {}
     for r in cands:
         per_cert.setdefault((r[6], r[7], r[5]), []).append(r)
@@ -302,6 +315,8 @@ def render(db, batch):
         print('%-5s %-32s %-24s %-18s %s%s'
               % (e['no'], e['parameter'][:32], e['criterion'][:24], str(res)[:18],
                  (e.get('cert_code') or '') if e['status'] == 'ok' else '', flag))
+        if e.get('stability_only'):
+            print('%-5s   ⚑ STABILITY TIMEPOINT — no release result available' % '')
         if e.get('panel_name'):
             print('%-5s   panel: %s' % ('', e['panel_name']))
         for f in e.get('finds', []):

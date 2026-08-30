@@ -83,6 +83,11 @@ OTHER RULES
     "Вкупно CBD" / "Total CBD"                  -> total_cbd
     "Вкупен CBN" / "Total CBN"                  -> total_cbn
   If only a total is printed, emit only the total. Never compute one from the other.
+- A row whose value cell is a SPECIFICATION, not a measurement - "мин. 5.00 %",
+  "макс. 1.0 %", "15.1 - 18.5% of the labelled amount" - is a limit line. Put it in
+  limit_printed and leave result_printed and result_numeric null. In-house CoAs print
+  whole columns of these; reporting one as the batch's measured value is the worst
+  single error this corpus has produced.
 - Appearance / Изглед (macroscopic description of the flower) is part of
   Identification A in the specification - map it to identification_a_macroscopic,
   not to "other".
@@ -301,6 +306,60 @@ def squash(v):
     return t
 
 
+# The certificate proves itself: every CNP potency page prints the free form, the
+# acid form and the total, and states the conversion in its own footnote. Rule R4
+# of the legacy-corpus rectification register (30.08.2026): this check alone found
+# two ten-fold corruptions (ППК25117 total 1.58 for 15.38; ППК25139 THCA 0.52 for
+# 26.52) with no external reference of any kind. A mismatch never picks a side -
+# all three rows go to review, because of the three R4 flags raised so far, zero
+# were the laboratory's fault (register E2: a flag means open the page).
+TOTALS = (('total_thc', 'thc_free', 'thca', 0.877),
+          ('total_cbd', 'cbd_free', 'cbda', 0.877),
+          ('total_cbn', 'cbn_free', 'cbna', 0.876))
+R4_TOL = 0.06
+
+
+def arithmetic_check(rec):
+    by = {}
+    for p in rec.get('parameters') or []:
+        by.setdefault(p.get('parameter'), p)
+    for tot, free, acid, k in TOTALS:
+        t, f, a = by.get(tot), by.get(free), by.get(acid)
+        if not (t and f and a):
+            continue
+        tv, fv, av = t.get('result_numeric'), f.get('result_numeric'), a.get('result_numeric')
+        if tv is None or fv is None or av is None:
+            continue    # an N.D. component cannot be assumed zero
+        want = fv + av * k
+        if abs(tv - want) > R4_TOL:
+            note = ('%s_mismatch: printed %s but %s + %s x %s = %.2f'
+                    % (tot, tv, fv, av, k, want))
+            for x in (t, f, a):
+                x['confidence'] = 'review'
+                x['arithmetic_mismatch'] = note
+            rec.setdefault('review', []).append(note)
+    return rec
+
+
+# A value cell that is a specification band, not a measurement (register E5):
+# "мин. 5.00 %", "15.1 - 18.5% of the labelled amount". Reported as the batch's
+# measured value, these produce a confident wrong number - so they go to review
+# even when both models transcribed them identically.
+SPEC_LINE = re.compile(r'^\s*(?:мин|макс|min|max)\.?\s', re.I)
+SPEC_RANGE = re.compile(r'^\s*\d+(?:[.,]\d+)?\s*[–—−-]\s*\d+(?:[.,]\d+)?\s*%')
+
+
+def spec_line_guard(rec):
+    for p in rec.get('parameters') or []:
+        v = p.get('result_printed')
+        if v and (SPEC_LINE.search(str(v)) or SPEC_RANGE.match(str(v))):
+            p['confidence'] = 'review'
+            p['spec_line_suspect'] = True
+            rec.setdefault('review', []).append(
+                '%s: result cell reads as a specification line: %r' % (p.get('parameter'), v))
+    return rec
+
+
 def _accred(xa, xb):
     """Merge the two reads' accreditation markers, resolving toward not-accredited."""
     if xa is False or xb is False:
@@ -483,7 +542,7 @@ def run(doc_ids, names, outpath):
         print('   read A (gpt-5): %s | read B (gemini-3.6-flash): %s | %.0fs'
               % ('ok' if A else 'FAILED %s' % ua.get('error',''),
                  'ok' if B else 'FAILED %s' % ub.get('error',''), time.time()-t0)); sys.stdout.flush()
-        rec = reconcile(A, B)
+        rec = spec_line_guard(arithmetic_check(reconcile(A, B)))
         rec['document'] = short; rec['doc_id'] = did
         rec['raw'] = {'A': A, 'B': B}
         results.append(rec)
