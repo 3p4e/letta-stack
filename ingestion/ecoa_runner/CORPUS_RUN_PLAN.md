@@ -118,6 +118,29 @@ supersedes the plans scattered through the session that produced it.
    BLOCKED / NEEDS-ICOA / REISSUE-DUE; legacy register B-codes confirmed
    against extracted CNP codes for the Head of QC to apply.
 
+## CoQ production queue (Head of QC, 31.08)
+
+Every deleted QCCoA 001/001v02 is replaced by a CoQ compiled from the
+originating eCoAs — one per batch below. A batch whose parameters were
+retested additionally gets a **new CoQ version** carrying the retested value
+together with every non-retested value under its ORIGINAL certificate
+reference and date (QCSOP 012 v.03 versioning; retest detection is value-based
+via `build_coq` superseded rows, stability timepoints excluded).
+
+QCCoA 001 (16): BG1024, BSS1024, CJ1024, P050012, P050022 (two issues,
+10.07 + 17.07.2025 — both retired), P050032, P050042, P050052, P050062,
+P050072, P050092, P050102, P050122, P050162, P050182
+
+QCCoA 001v02 (22): P050082, P050112, P050132, P050172, P050192, P050202,
+P050212, P050272, P050282, P050292, P050302, P050312, P050322,
+P060012, P060022, P060032, P060042, P060052, P060062, P060072, P060082,
+P060092
+
+That is ~37 unique batches. `coq_index` decides per batch whether the CoQ can
+issue (READY) or what blocks it (MISSING rows now that no tier-3 fallback
+exists); the BG1024 retest (THC 21.80 → 26.14) is already the first entry in
+the reissue queue.
+
 ## Outside this session's reach (needs the user)
 
 - LiteLLM deploy on KVM4 (`ingestion/litellm/README.md`, three commands).
