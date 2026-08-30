@@ -4,7 +4,7 @@ Verification of `PP_Batch_Release_QC_Register_CORRECTED.xlsx` (Drive `1wSJ-WtS_�
 against the 291 certificates in Drive folder `1rwBvSAE…` and the RAGFlow `eCoA_DATABASE`
 dataset (`f29f8f58…`, 291 documents, 1 261 chunks, all `DONE`).
 
-**Status: interim. Layer 1 complete; Layer 2 microbiology complete, remainder outstanding;
+**Status: interim. Layer 1 complete; Layer 2 microbiology and potency complete, two items outstanding;
 Layer 3 not started.**
 Every claim below cites the certificate it rests on. What has *not* been checked is listed
 at the end rather than left implied.
@@ -142,6 +142,47 @@ batch **J31122501**. Both batches exist in the register. Whether Farmahem mislab
 LoD certificates or the register mis-filed them cannot be settled from the paper alone —
 this needs a QC ruling, not a silent edit.
 
+### 6. 🔴 `ППК26058` — CBN at twice its limit, released as conforming
+
+`P050202, ППК26058, 11.05.2026, CNP.pdf` prints, in its own results table:
+
+| Parameter | Limit | Result |
+|---|---|---|
+| Содржина на CBN | **≤ 1.00 %** | **2.05 %** |
+| Вкупно Δ9-THC | / | 17.05 % |
+
+Twice the limit. This confirms the first of the two CNP CBN claims in the cross-check.
+`ППК26033` could not be confirmed — the RAGFlow parse dropped its numeric table and the
+page has not been read yet.
+
+### 7. 🟢 `PM112501` is **not** a register error — the register and the grade design are both right
+
+Worth recording because it looks like a contradiction and is not. `ППК26030` prints
+**Вкупно Δ9-THC 13.33 %** and loss on drying **8.61 %**, and the register records exactly
+those. Open item C2 says `PM112501` is **10.79**.
+
+Both are correct: `PM112501` is P-number `P060232`, and the grade design uses the Farmahem
+re-analysis of 26.08.2026, which supersedes the original under rule R5. The solver's own
+notes say so — *"P060232 (PM112501): dataset 13.33 vs 10.79 — superseded by T2
+re-analysis (R5)"*. The register records the filed certificate; the design records the
+retest. They are answering different questions.
+
+### 8. 🟠 The T2 re-analysis has no certificate anywhere in the corpus
+
+**Zero** of the 291 documents are dated 26.08.2026. The latest certificates on file are
+21 dated 07.08.2026 and 21 dated 10.08.2026 (the Farmahem 197-series).
+
+So the values that anchor 29 batches' grades cannot be checked against any document in
+this corpus, because the documents do not exist yet. That is consistent with what the
+methodology says — unofficial, eCoA pending — but it has two consequences worth stating:
+
+- **Open item C1 is confirmed from the corpus side**: 29 batches carry a grade whose
+  evidence is not on file.
+- **Open item C2 is blocked on C1**, not answerable now. Whether `PM112501`'s retest reads
+  10.79 or 10.80 — the 0.01 that decides between THC10 and THC12 — can only be settled
+  when the Farmahem eCoA is filed. Reading the existing certificate does not help; it
+  reports the superseded 13.33.
+
 ## Not yet checked
 
 Stated plainly rather than left to inference:
@@ -151,9 +192,10 @@ Stated plainly rather than left to inference:
   already show an over-limit TYMC **in the register itself**, so the register needs no
   transcription fix for them and the finding does not depend on reading them — but they
   should still be read before the deviation records are written.
-- The two CNP CBN certificates (`ППК26033`, `ППК26058`) and the in-house THC on `P050202`.
-- The 26.08.2026 Farmahem T2 re-analysis rows.
-- `PM112501` (open item C2) and the `CJ072501` CBD correction.
+- `ППК26033`, the second CNP CBN certificate — its numeric table did not survive the
+  RAGFlow parse and the page has not been read.
+- The in-house THC on `P050202`.
+- The `CJ072501` CBD correction (26.20 → 0.09).
 - Layer 3, the stratified sample for a transcription error rate across the other ~250 rows.
 
 **No cell has been corrected yet.** The five confirmed errors in finding 2 are corrections
