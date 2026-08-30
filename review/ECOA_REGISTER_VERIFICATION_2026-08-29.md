@@ -4,7 +4,8 @@ Verification of `PP_Batch_Release_QC_Register_CORRECTED.xlsx` (Drive `1wSJ-WtS_�
 against the 291 certificates in Drive folder `1rwBvSAE…` and the RAGFlow `eCoA_DATABASE`
 dataset (`f29f8f58…`, 291 documents, 1 261 chunks, all `DONE`).
 
-**Status: interim. Layer 1 complete; Layer 2 partially complete; Layer 3 not started.**
+**Status: interim. Layer 1 complete; Layer 2 microbiology complete, remainder outstanding;
+Layer 3 not started.**
 Every claim below cites the certificate it rests on. What has *not* been checked is listed
 at the end rather than left implied.
 
@@ -61,14 +62,41 @@ the register writes `ГС`/`GS`; and in-house certificates are `QCCoA 001v02` on
 This is the most serious finding and it is confirmed from the rendered certificate pages,
 not from any text layer.
 
-| Register | Batch | Certificate | **Certificate reads** | **Register records** | Limit | Lab verdict |
-|---|---|---|---|---|---|---|
-| r21 | `GG1024_01` | `320/0587/25` | **4,2 × 10⁴ CFU/g** | 4.2×10³ | 10⁴ | ОДГОВАРА |
-| r56 | `GP0824_03` | `628/1129/25` | **1,2 × 10⁴ CFU/g** | 1.2×10³ | 10⁴ | ОДГОВАРА |
-| r82 | `GP052501` | `946/1684/25` | **3,6 × 10⁴ CFU/g** | 3.6×10³ | 10⁴ | ОДГОВАРА |
+| Register | Batch | Certificate | **Certificate reads** | **Register records** | Limit | Over by | Lab verdict |
+|---|---|---|---|---|---|---|---|
+| r21 | `GG1024_01` | `320/0587/25` | **4,2 × 10⁴ CFU/g** | 4.2×10³ | 10⁴ | 4.2× | ОДГОВАРА |
+| r56 | `GP0824_03` | `628/1129/25` | **1,2 × 10⁴ CFU/g** | 1.2×10³ | 10⁴ | 1.2× | ОДГОВАРА |
+| r71 | `OPM052501` | `904/1589/25` | **3,3 × 10⁴ CFU/g** | 3.3×10³ | 10⁴ | 3.3× | ОДГОВАРА |
+| r82 | `GP052501` | `946/1684/25` | **3,6 × 10⁴ CFU/g** | 3.6×10³ | 10⁴ | 3.6× | ОДГОВАРА |
+| r100 | `CJ062501-2` | `1032/1851/25` | **4,9 × 10⁴ CFU/g** | 4.9×10³ | 10⁴ | 4.9× | ОДГОВАРА |
 
-Three for three, same signature: the exponent is recorded one lower than the certificate
-prints, so a result **over** the Ph. Eur. limit appears **under** it.
+**Five for five**, same signature every time: the exponent is recorded one lower than the
+certificate prints, so a result **over** the Ph. Eur. limit appears **under** it. Every
+certificate that the register showed as a passing 10³ value reads 10⁴ on the page — there
+were no false alarms in this group.
+
+### 2b. 🔴 All ten flagged microbiology certificates exceed their own TYMC limit
+
+With the five above resolved, the picture for the ten certificates named in
+`CROSS_CHECK_2026-08-22.md` is complete, and **the cross-check was right about all ten**:
+
+| Batch | Certificate | TYMC | Limit | Visible in register? |
+|---|---|---|---|---|
+| `GG1024_01` | `320/0587/25` | 4.2×10⁴ | 10⁴ | **hidden** — recorded 10³ |
+| `GG1024_02` | `472/0863/25` | 1.9×10⁴ | 10⁴ | visible |
+| `HPA1024_01` | `587/1066/25` | 1.5×10⁴ | 10⁴ | visible |
+| `GP0824_03` | `628/1129/25` | 1.2×10⁴ | 10⁴ | **hidden** |
+| `OPM052501` | `904/1589/25` | 3.3×10⁴ | 10⁴ | **hidden** |
+| `CJ052501-1` | `949/1687/25` | 1.7×10⁴ | 10⁴ | visible |
+| `GP052501` | `946/1684/25` | 3.6×10⁴ | 10⁴ | **hidden** |
+| `HPA052501` | `948/1686/25` | 2.6×10⁴ | 10⁴ | visible |
+| `CJ062501-2` | `1032/1851/25` | 4.9×10⁴ | 10⁴ | **hidden** |
+| `PM072501` | `1220/2171/25` | 200 | 10² | visible |
+
+Ten certificates, ten results over the printed limit, ten conclusions of **ОДГОВАРА**.
+Five were page-verified here; the other five already show an over-limit value in the
+register itself and so need no transcription fix — but they are equally releases against a
+failing result. **Ten batches need a deviation record**, which is open item B1.
 
 **Root cause, and why it went unnoticed.** The exponent is a superscript, and neither
 machine-readable source preserves it correctly:
@@ -118,17 +146,16 @@ this needs a QC ruling, not a silent edit.
 
 Stated plainly rather than left to inference:
 
-- **Seven of the ten flagged microbiology certificates** have not been page-verified.
-  Five (`472/0863/25`, `587/1066/25`, `949/1687/25`, `948/1686/25`, `1220/2171/25`) already
-  show an over-limit TYMC **in the register itself**, so they need no transcription fix —
-  but they are genuine releases against a failing result. Two (`1032/1851/25`,
-  `904/1589/25`) show a passing value in the register and are **suspect** given the 3-for-3
-  understatement rate above.
+- **Five of the ten microbiology certificates** have not been page-verified
+  (`472/0863/25`, `587/1066/25`, `949/1687/25`, `948/1686/25`, `1220/2171/25`). All five
+  already show an over-limit TYMC **in the register itself**, so the register needs no
+  transcription fix for them and the finding does not depend on reading them — but they
+  should still be read before the deviation records are written.
 - The two CNP CBN certificates (`ППК26033`, `ППК26058`) and the in-house THC on `P050202`.
 - The 26.08.2026 Farmahem T2 re-analysis rows.
 - `PM112501` (open item C2) and the `CJ072501` CBD correction.
 - Layer 3, the stratified sample for a transcription error rate across the other ~250 rows.
 
-**No cell has been corrected yet.** The three confirmed errors in finding 2 are corrections
+**No cell has been corrected yet.** The five confirmed errors in finding 2 are corrections
 that turn released batches into visibly out-of-specification ones; they are recorded here
 first so the change is reviewable before it lands.
