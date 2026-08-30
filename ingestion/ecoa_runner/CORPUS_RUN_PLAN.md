@@ -75,6 +75,13 @@ supersedes the plans scattered through the session that produced it.
     the config back with its internal keys fails with code 101).
 11. The canvas held `image/table_context_size: 1` against the engine's 0 — a
     canvas save would have changed chunking behaviour mid-corpus. Aligned.
+12. A scan can be SIDEWAYS while its PDF metadata says portrait/rotation-0
+    (both NGP worksheets). gpt-4.1 hallucinates on a sideways page; gpt-5 read
+    it anyway. Remedy, proven on both: rotate pages upright
+    (`page.set_rotation(90)`), replace the document, re-ingest. The quality
+    gate is what surfaces these; a length check alone is not enough — one
+    hallucinated retry passed 300 chars, so the gate also probes for a
+    plausible batch code in the content.
 
 ## Alignment with the official pipeline documentation (ragflow.io, read 30.08)
 
@@ -95,9 +102,10 @@ supersedes the plans scattered through the session that produced it.
 
 ## Order of operations
 
-1. **Regression gate** — re-run the 12-doc pilot set through the current runner;
-   require: all previously confirmed values reproduced, `ППК25050` cert_code
-   now captured, IJZ 752/2025 rows carry `method_accredited=false`.
+1. **Regression gate** — re-run the pilot set through the current runner;
+   require: all previously confirmed values reproduced and `ППК25050` cert_code
+   captured. The IJZ non-accredited markers are reported but non-blocking
+   (Head of QC, 31.08: "not that of great importance").
 2. **Tranche loop** (~20 docs): ingest (`run:1, delete:true`) → poll to terminal
    → quality gate (chunk>0, no `**ERROR**`, no mojibake per `quality_guard`,
    questions+keywords populated) → two-pass runner → `build_table` rebuild →
