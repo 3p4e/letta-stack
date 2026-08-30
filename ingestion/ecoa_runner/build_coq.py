@@ -14,6 +14,9 @@ from a sibling batch, from an earlier test, or from the specification.
 import os, sys, json, sqlite3, argparse
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, '..', 'common'))
+sys.path.insert(0, HERE)
+from common.controlled import (canonical_lab, canonical_strain, PANELS,
+                               is_panel_statement, is_not_found, panel_of)
 
 # Specification Section 02 exactly as printed: (number, sub, key, English, criterion, method)
 SPEC = [
@@ -134,7 +137,8 @@ def _num(n, sub):
 def compile_coq(db, batch):
     rows = db.execute("""SELECT r.parameter, r.result_printed, r.result_numeric, r.unit,
              r.method, r.date_iso, r.cert_code, r.lab, r.confidence,
-             r.exceeds_criterion, r.outside_range, c.document, c.doc_id
+             r.exceeds_criterion, r.outside_range, c.document, c.doc_id,
+             r.parameter_printed
         FROM result r JOIN certificate c ON c.doc_id = r.doc_id
         WHERE r.batch = ? ORDER BY r.date_iso""", (batch,)).fetchall()
     by = {}
@@ -142,7 +146,29 @@ def compile_coq(db, batch):
         by.setdefault(r[0], []).append(r)
 
     section02, sources, unresolved = [], {}, []
+
+    def cite(entry, lab, code, date):
+        """Record a citation on the Section 03 row for this LABORATORY.
+
+        Grouping is by institution, not by certificate and not by department:
+        IJZ appears once, carrying every certificate code and issue date it
+        supplied for this batch (Head of QC ruling).
+        """
+        lab_id, lab_name = canonical_lab(lab)
+        s = sources.setdefault(lab_id or lab_name, {'lab': lab_name, 'id': lab_id,
+                                                    'certs': [], 'params': []})
+        if (code, date) not in s['certs']:
+            s['certs'].append((code, date))
+        if entry not in s['params']:
+            s['params'].append(entry)
+
     for n, sub, key, name, criterion, method in SPEC:
+        if key == 'pesticide_residues':
+            entry = _pesticides(by, n, criterion, method, cite)
+            section02.append(entry)
+            if entry['status'] != 'ok':
+                unresolved.append(entry)
+            continue
         usable = [r for r in by.get(key, []) if r[8] == 'ok' and r[1] not in (None, '')]
         # Take the best available tier, then the most recent within it.
         tiers = {}
@@ -183,10 +209,67 @@ def compile_coq(db, batch):
                          exceeds_criterion=latest[9], outside_range=latest[10],
                          superseded=_dedupe([(r[5], r[1], r[6]) for r in cands[:-1]
                                              if _canon(r[1]) != _canon(latest[1])]))
-            src = (latest[7], latest[6], latest[5])          # lab, cert code, date
-            sources.setdefault(src, []).append(_num(n, sub))
+            cite(_num(n, sub), latest[7], latest[6], latest[5])
         section02.append(entry)
     return section02, sources, unresolved
+
+
+def _pesticides(by, n, criterion, method, cite):
+    """Row 12, supporting either panel reporting shape.
+
+    The specification offers a choice of panel by jurisdiction, so the panel that
+    was actually run is read from the certificate rather than assumed. A panel-wide
+    "≤ LOQ" covers every compound in it; a per-compound panel conforms only if every
+    compound conforms, and any compound above LOQ is named on the CoQ.
+    """
+    rows = [r for r in by.get('pesticide_residues', []) if r[8] == 'ok' and r[1] not in (None, '')]
+    entry = {'no': '12', 'group': '12', 'key': 'pesticide_residues',
+             'parameter': 'Pesticide Residues', 'criterion': criterion, 'method': method}
+    if not rows:
+        held = [r for r in by.get('pesticide_residues', []) if r[8] != 'ok']
+        entry.update(result=None, status='HELD' if held else 'MISSING')
+        return entry
+
+    # Best available tier, then the certificate that reported the most compounds.
+    tiers = {}
+    for r in rows:
+        tiers.setdefault(source_tier(r[6], r[7]), []).append(r)
+    best = min(tiers)
+    cands = tiers[best]
+    per_cert = {}
+    for r in cands:
+        per_cert.setdefault((r[6], r[7], r[5]), []).append(r)
+    (code, lab, date), crows = max(per_cert.items(), key=lambda kv: (kv[0][2] or '', len(kv[1])))
+
+    compounds = [r for r in crows if not is_panel_statement(_printed(r))]
+    finds = [(_printed(r), r[1]) for r in compounds if not is_not_found(r[1])]
+    pid = panel_of(' '.join(filter(None, (r[4] for r in crows))))
+    panel = PANELS.get(pid)
+
+    if compounds:
+        shape, result = 'per-compound', ('≤ LOQ (all %d compounds)' % len(compounds)
+                                         if not finds else 'FINDS: %d compound(s) above LOQ'
+                                         % len(finds))
+    else:
+        shape, result = 'panel-wide', crows[-1][1]
+
+    entry.update(result=result, status='ok', source_tier=best, shape=shape,
+                 panel=pid, panel_name=panel['name'] if panel else None,
+                 criterion=panel['criterion'] if panel else criterion,
+                 method=panel['method'] if panel else method,
+                 compounds_tested=len(compounds) or None,
+                 finds=[{'compound': c, 'result': v} for c, v in finds],
+                 exceeds_criterion=bool(finds), outside_range=False,
+                 provenance={1: 'accredited eCoA', 2: 'in-house iCoA',
+                             3: 'DERIVED — superseded QCCoA, originating eCoA not available'}[best],
+                 date=date, cert_code=code, lab=lab, document=crows[-1][11], superseded=[])
+    cite('12', lab, code, date)
+    return entry
+
+
+def _printed(r):
+    """The parameter label as printed on the certificate (compound name, if any)."""
+    return r[13]
 
 
 def render(db, batch):
@@ -196,7 +279,7 @@ def render(db, batch):
     W = 104
     print('=' * W)
     print('CERTIFICATE OF QUALITY — data assembly   batch %s%s   (QCSOP 012 v.03 structure)'
-          % (batch, '  ·  %s' % cert[0] if cert else ''))
+          % (batch, '  ·  %s' % canonical_strain(cert[0]) if cert else ''))
     print('=' * W)
     print('\n02  CONSOLIDATED ANALYTICAL RESULTS')
     print('%-5s %-32s %-24s %-18s %s' % ('№', 'Parameter', 'Acceptance criterion', 'Result', 'Source'))
@@ -212,19 +295,23 @@ def render(db, batch):
         print('%-5s %-32s %-24s %-18s %s%s'
               % (e['no'], e['parameter'][:32], e['criterion'][:24], str(res)[:18],
                  (e.get('cert_code') or '') if e['status'] == 'ok' else '', flag))
+        if e.get('panel_name'):
+            print('%-5s   panel: %s' % ('', e['panel_name']))
+        for f in e.get('finds', []):
+            print('%-5s   ⚑ %-30s %s' % ('', f['compound'][:30], f['result']))
         for d, v, c in e.get('superseded', []):
             print('%-5s   ↳ superseded %-25s %-24s %s' % ('', v, '', '%s, %s' % (c or '—', d)))
     print('-' * W)
     print('\n03  LABORATORY & CERTIFICATE CROSS-REFERENCE')
     print('%-46s %-26s %s' % ('Laboratory · Accreditation', 'CoA doc. code, issued', 'Param. №'))
     print('-' * W)
-    for (lab, code, date), nums in sorted(sources.items(), key=lambda kv: kv[1][0]):
-        acc = db.execute("""SELECT lab_accreditation, lab_accreditation_body, lab_standard
-                            FROM certificate WHERE lab=? AND lab_accreditation IS NOT NULL
-                            LIMIT 1""", (lab,)).fetchone() if _has_accred(db) else None
-        cred = ('· %s (%s) · %s' % acc) if acc and acc[0] else '· accreditation NOT CAPTURED'
-        print('%-46s %-26s %s' % ((lab or '?')[:46], '%s, %s' % (code or '—', date or '—'),
-                                  ','.join(nums)))
+    for s in sorted(sources.values(), key=lambda s: _sortkey(s['params'][0])):
+        certs = ['%s, %s' % (c or '—', d or '—') for c, d in s['certs']]
+        print('%-46s %-26s %s' % ((s['lab'] or '?')[:46], certs[0],
+                                  ','.join(sorted(s['params'], key=_sortkey))))
+        for extra in certs[1:]:
+            print('%-46s %-26s' % ('', extra))
+        cred = _credentials(db, s)
         print('%-46s' % ('    ' + cred[:70]))
     print('-' * W)
     ok = sum(1 for e in s02 if e['status'] == 'ok')
@@ -243,6 +330,30 @@ def render(db, batch):
     return s02, sources, unresolved
 
 
+def _sortkey(no):
+    """'9a' sorts after '8' and before '10'."""
+    d = ''.join(c for c in no if c.isdigit())
+    return (int(d or 0), no)
+
+
+def _credentials(db, source):
+    """Accreditation as printed on any certificate from this laboratory.
+
+    Certificates from one institution print its name several ways, so credentials
+    are looked up across every variant that canonicalised to this row rather than
+    by exact name match - otherwise the row carrying the credentials is missed.
+    """
+    if not _has_accred(db):
+        return '· accreditation NOT CAPTURED'
+    for lab, acc, body, std in db.execute(
+            """SELECT lab, lab_accreditation, lab_accreditation_body, lab_standard
+               FROM certificate WHERE lab_accreditation IS NOT NULL"""):
+        lab_id, name = canonical_lab(lab)
+        if (lab_id or name) == (source['id'] or source['lab']):
+            return '· %s (%s) · %s' % (acc, body, std)
+    return '· accreditation NOT CAPTURED'
+
+
 def _has_accred(db):
     cols = {r[1] for r in db.execute("PRAGMA table_info(certificate)")}
     return 'lab_accreditation' in cols
@@ -258,8 +369,11 @@ if __name__ == '__main__':
     if a.json:
         s02, src, un = compile_coq(db, a.batch)
         print(json.dumps({'section02': s02,
-                          'section03': [{'lab': k[0], 'cert_code': k[1], 'date': k[2], 'params': v}
-                                        for k, v in src.items()],
+                          'section03': [{'lab': s['lab'], 'lab_id': s['id'],
+                                         'certificates': [{'cert_code': c, 'date': d}
+                                                          for c, d in s['certs']],
+                                         'params': sorted(s['params'], key=_sortkey)}
+                                        for s in src.values()],
                           'unresolved': un}, ensure_ascii=False, indent=1))
     else:
         render(db, a.batch)

@@ -29,7 +29,9 @@ def parse_date(s):
     return None
 
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'common'))
+_HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(_HERE, 'common'))
+sys.path.insert(0, os.path.join(_HERE, '..', 'common'))
 try:
     from batch_id import batch_key
 except Exception:
@@ -43,10 +45,14 @@ try:
     from extract_ecoa_records import norm_range
 except Exception:
     norm_range = lambda v: None
-try:
-    from pheur import governing, max_acceptable   # Ph. Eur. 5.1.8 cat. C
-except Exception:
-    governing = lambda p: (None, None); max_acceptable = lambda p: None
+# These two are in-repo and must NOT be wrapped in a silent fallback. A stubbed
+# `governing` returns no criterion for any parameter, which makes every
+# out-of-specification query return zero rows and the table look clean. An import
+# error must stop the build, not quietly disable the acceptance criteria.
+from pheur import governing, max_acceptable       # Ph. Eur. 5.1.8 cat. C
+# Strain names are resolved against the controlled list, so a certificate typo
+# ("Cap Junkie") groups with the strain it refers to rather than as its own.
+from controlled import canonical_strain
 
 # A batch code is a short alpha prefix + digits, optionally a sub-lot and a
 # verification V. Models sometimes append the strain or the lab to it
@@ -94,11 +100,12 @@ def build(records, dbpath, base_url=''):
         if not r.get('parameters') and not r.get('batch_canonical'):
             continue
         did = r.get('doc_id'); batch = clean_batch(r.get('batch_canonical'))
+        strain = canonical_strain(r.get('strain'))
         diso = parse_date(r.get('date_of_issue'))
         url = ('%s/document/%s' % (base_url.rstrip('/'), did)) if base_url else None
         db.execute('INSERT OR REPLACE INTO certificate VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
             (did, r.get('document'), batch, r.get('batch_printed'), r.get('p_number'),
-             r.get('strain'), r.get('cert_code'), r.get('date_of_issue'), diso,
+             strain, r.get('cert_code'), r.get('date_of_issue'), diso,
              r.get('lab'), r.get('test_type'), r.get('overall_conclusion'),
              int(bool(r.get('reads_agree'))), url))
         for p in r.get('parameters') or []:
@@ -123,7 +130,7 @@ def build(records, dbpath, base_url=''):
             ec = int(rv > use) if (conf_ok and rv is not None and use is not None) else None
             em = int(rv > mv) if (conf_ok and rv is not None and mv is not None) else None
             db.execute('INSERT INTO result VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-                (did, batch, r.get('strain'), r.get('cert_code'), diso, r.get('lab'),
+                (did, batch, strain, r.get('cert_code'), diso, r.get('lab'),
                  r.get('test_type'), p.get('parameter'), p.get('parameter_printed'),
                  p.get('result_printed'), p.get('result_numeric'), p.get('unit'),
                  p.get('limit_printed'), p.get('limit_numeric'),

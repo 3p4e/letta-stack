@@ -11,6 +11,7 @@ PB = load('pb', 'common/pp_batch.py')
 PE = load('pe', 'common/pheur.py')
 CQ = load('cq', 'runner/build_coq.py')
 QG = load('qg', 'rag/quality_guard.py')
+CT = load('ct', 'common/controlled.py')
 
 P = F = 0
 def check(rule, cond, detail=''):
@@ -60,7 +61,33 @@ check('TYMC 10^4', PE.governing('tymc')[0] == 1e4)
 check('bile-tolerant gram-neg 10^4', PE.governing('bile_tolerant_gram_negative')[0] == 1e4)
 check('category C cited as the reference', 'cat. C' in PE.governing('tymc')[1])
 check('Total THC not governed here (per grade, §01)', PE.governing('total_thc') == (None, None))
-check('max acceptable count unset pending ruling', PE.MAX_MULTIPLIER is None)
+check('max acceptable count is 5x (Ph. Eur. 5.1.8, IJZ practice)', PE.MAX_MULTIPLIER == 5)
+check('TYMC max acceptable count 50 000', PE.max_acceptable('tymc') == 5e4)
+check('TYMC 4,9 x 10^4 is within the max acceptable count',
+      49000 <= PE.max_acceptable('tymc'))
+check('TYMC 6 x 10^4 is out of specification', 60000 > PE.max_acceptable('tymc'))
+
+print('\n4b. CONTROLLED VOCABULARIES')
+check('IJZ microbiology and chemistry are one laboratory',
+      CT.canonical_lab('ЈЗУ ИНСТИТУТ ЗА ЈАВНО ЗДРАВЈЕ НА РСМАКЕДОНИЈА, Оддел за микробиологија')[0]
+      == CT.canonical_lab('ЈЗУ Институт за јавно здравје на Република Северна Македонија - Скопје')[0]
+      == 'IJZ')
+check('canonical IJZ name carries no department',
+      'Оддел' not in CT.canonical_lab('ЈЗУ ИНСТИТУТ ЗА ЈАВНО ЗДРАВЈЕ НА РСМАКЕДОНИЈА, '
+                                      'Оддел за микробиологија')[1])
+check('Cap Junkie resolves to Cap Junky', CT.canonical_strain('Cap Junkie') == 'Cap Junky')
+check('strain with batch code appended still resolves',
+      CT.canonical_strain('Blue Gelato BG1024') == 'Blue Gelato')
+check('unknown laboratory is not renamed', CT.canonical_lab('Acme Labs') == (None, 'Acme Labs'))
+check('panel statement distinguished from a compound',
+      CT.is_panel_statement('Нема пронајдено ниту еден пестицид, над LOQ')
+      and not CT.is_panel_statement('Deltamethrin'))
+check('n.d. in either script means not found',
+      CT.is_not_found('н.д.') and CT.is_not_found('N.D.') and CT.is_not_found('≤ LOQ'))
+check('a detected compound is not "not found"', not CT.is_not_found('0,05 mg/kg'))
+check('both jurisdiction panels are modelled',
+      CT.panel_of('МКС EN 15662:2020') == 'MKS_EN_15662'
+      and CT.panel_of('Ph. Eur. 2.8.13/ MKC EN 15662:2020') is not None)
 
 print('\n5. SOURCE PRECEDENCE — QCCoA retired, CoQ supersedes')
 check('QCCoA 001 is tier 3 (fallback only)', CQ.source_tier('QCCoA 001', 'PURELYPLANT') == 3)

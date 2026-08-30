@@ -41,14 +41,22 @@ SPEC_SECTION_02 = {
 # --- Maximum acceptable count -------------------------------------------------
 # A Ph. Eur. acceptance criterion stated as 10^n is interpreted with a maximum
 # acceptable count above it, and a result is out of specification only above THAT.
-# The multiplier is a QA determination and is NOT set here: the in-house template
-# prints 5x (10^4 -> "max 50 000"), while the general interpretation rule for
-# non-sterile products is commonly cited as 2x. Getting this wrong in either
-# direction misclassifies batches, so nothing is assumed.
+# Ph. Eur. 5.1.8 states the interpretation as "maximum acceptable count = 5 x 10^n"
+# (10^4 CFU/g -> 50 000), which is what the in-house template already prints.
 #
-# Set MAX_MULTIPLIER to the ruled value (e.g. 2 or 5) to enable out-of-specification
-# determination. While it is None, only "exceeds the stated criterion" is reported.
-MAX_MULTIPLIER = None
+# This is confirmed by the issuing laboratory's own practice. Four IJZ (ИЈЗ)
+# microbiology certificates report TYMC above the printed 10^4 criterion and
+# conclude ОДГОВАРА (conforms) on every one:
+#
+#   163/0271/25  24.02.2025  BG1024      TYMC 1,0 x 10^4
+#   320/0587/25  14.04.2025  GG1024_01   TYMC 4,2 x 10^4
+#   628/1129/25  02.07.2025  GP0824_03   TYMC 1,2 x 10^4
+#   904/1589/25  02.09.2025  OPM052501   TYMC 3,3 x 10^4
+#   1032/1851/25 17.10.2025  CJ062501_2  TYMC 4,9 x 10^4   (newest)
+#
+# All five sit below 5 x 10^4 and none below 2 x 10^4, so the laboratory applying
+# these criteria uses the 5x rule; 2x would have failed four of the five.
+MAX_MULTIPLIER = 5
 
 
 def governing(parameter):
