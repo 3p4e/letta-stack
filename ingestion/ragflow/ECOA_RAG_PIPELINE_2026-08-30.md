@@ -1,0 +1,150 @@
+# A RAG pipeline for the eCoAs that cannot hide a failed result
+
+Written after the register verification of 29–30.08.2026, which found ten
+certificates carrying a mould count over the Ph. Eur. limit — five of them
+recorded in the register an exponent too low, so they read as passing.
+
+The point of this document is not that an OCR made a mistake. It is that
+**a single superscript decides pass or fail, and nothing in the pipeline was
+built to notice.** That is a design problem, not a model problem, and a better
+prompt does not fix it.
+
+## What the current pipeline actually produces
+
+Measured against 17 certificates whose values were read off the rendered page:
+
+| RAGFlow's parse of the TYMC result | Count |
+|---|---|
+| Correct | 6 |
+| **Wrong** | **2** |
+| **Not extractable at all** — parameter label present, result absent | **9** |
+
+So for these certificates the corpus is reliable for about a third of the
+values, wrong on one in eight, and silent on half. An agent querying it gets a
+confident answer built on that.
+
+Both errors are the same failure and point the same way: **10⁴ read as 10³**,
+never the reverse. `320/0587/25` parses as `4,2 х 10³` where the page says
+`4,2 x 10⁴`. `1032/1851/25` parses as `4,9 х 10³` where the page says
+`4,9 x 10⁴`.
+
+## Four root causes
+
+**1. The exponent is a superscript, and no text path survives it.**
+Drive's text extraction drops it entirely — the same certificate extracts as
+`- 10 CFU/g … 5,1 х 10 CFU/g 4,2 x 10 CFU/g`, with every exponent gone. The
+RAGFlow vision parse renders exponents but misreads ⁴ as ³. There is no text
+route to a trustworthy number here; only the rendered page is authoritative.
+
+**2. Table structure is lost, so values detach from their labels.**
+In 9 of 17 the chunk contains `Вкупен број габи и мувли-ТYMC` and, somewhere
+else, a list of numbers — but nothing binds the parameter to its result and its
+limit. Retrieval then returns a plausible sentence with the wrong number in it,
+which is worse than returning nothing.
+
+**3. Cyrillic and Latin homoglyphs are unstable across the corpus.**
+`ТАМС`/`TAMC`, `ТУМС`/`ТYMC`/`TUMC` for the same parameter; `131112501` parsed
+for batch `J31112501`; certificate codes appear as `197-1-К/26` (Cyrillic К) and
+`197-1-K-26` (Latin K) for the same document. Any exact-match lookup fails
+silently on these.
+
+**4. Nothing ever compared a result to its own limit.**
+Every certificate prints the limit next to the result. Ten of them printed a
+result above it and concluded ОДГОВАРА. One subtraction would have caught all
+ten, at ingest, years before a person did.
+
+## The pipeline
+
+The governing idea: **numbers stop being retrieved from prose.** Chunk text is
+for narrative questions; every value a QC decision touches comes from a typed
+record extracted once, validated, and stored.
+
+### 1. Render, never read the text layer
+
+Every page goes to an image at ≥300 DPI and is read by the vision chain in
+`AGENT_MODEL_POLICY.md`. `pdftotext` and the Drive text layer are excluded from
+the numeric path entirely — proven above to drop exponents. This is also why
+`scripts/policy_check.py` rule 1 forbids classical OCR: Macedonian Cyrillic
+mixed with Latin chemical symbols is the case it handles worst.
+
+### 2. Extract to a typed record, not a chunk
+
+Per result, capture five fields together, because their meaning is only in
+their relationship:
+
+```json
+{"parameter": "TYMC", "value": 42000.0, "value_printed": "4,2 x 10⁴ CFU/g",
+ "limit": 10000.0, "limit_printed": "10⁴ CFU/g", "unit": "CFU/g",
+ "verdict_printed": "ОДГОВАРА", "certificate": "320/0587/25",
+ "batch": "GG1024-01", "page": 1}
+```
+
+`value` and `limit` are floats. The exponent becomes an integer power at
+extraction, so no downstream consumer ever has to read a superscript again.
+`value_printed` is retained verbatim so a human can always check the machine
+against the paper.
+
+**Capture the limit per result, not per column.** The register's column header
+says TYMC ≤ 10⁴, but `1220/2171/25` prints ≤ 10² on its own face — its result of
+200 fails on the paper and passes against the column. Only a per-result limit
+gets that right.
+
+### 3. Two independent reads, and require agreement
+
+Extract each numeric field twice — different model in the chain, or two passes —
+and compare. Agreement stores the value; disagreement stores neither and raises
+the page for a human. A second read is far cheaper than a missed out-of-spec
+batch, and the failure here was a single unchecked read.
+
+### 4. Validate arithmetically at ingest, and refuse to store silently
+
+`validate_ecoa_limits.py` implements the two rules that matter:
+
+- **R1** — a result above its limit is reported regardless of the laboratory's
+  verdict. A conclusion of ОДГОВАРА is a claim, not a fact.
+- **R2** — a result exactly one decade below its limit is flagged SUSPECT,
+  because that is the precise shape a misread ⁴→³ leaves behind, and the only
+  shape that converts a fail into a pass.
+
+Run against the register before and after this batch's corrections: **5 R1
+findings before, 9 after**. The check works, and the gap between those numbers
+is exactly the set of failures the pipeline had been hiding.
+
+### 5. Normalise identity at ingest
+
+One canonical form for certificate codes and batches, computed once:
+fold Cyrillic homoglyphs onto Latin, strip separators, map Farmahem's `-LoD-` to
+`ГС`/`GS`, and map in-house `QCCoA 001v02` to the register's `PP CoA #NNN`.
+Reuse `ingestion/common/batch_id.py::batch_key` for batches — it is the single
+definition in this repository and `policy_check.py` already imports it. Without
+these four normalisations a naive reconciliation reports hundreds of false
+failures; with them, 236 of 284 register rows resolve on the first pass.
+
+### 6. Retrieval returns the record and a link to the page
+
+A QC answer cites the typed record and the certificate page it came from, so
+the paper is always one click away. Free-text chunks stay available for
+narrative questions — who signed, what method, what the remarks say — but never
+supply a number that a release decision rests on.
+
+## Fixing what is already in the corpus
+
+1. **Re-ingest under the new extraction.** The current `eCoA_DATABASE` parse is
+   wrong on at least two documents and silent on many more; it should not be the
+   basis of any QC answer until re-read.
+2. **Run R1/R2 over the re-ingest** and clear every finding against a page
+   before the dataset is trusted.
+3. **The chunk counter drifts** — the dataset header advertises 1272 chunks
+   where the documents sum to 1261. Refresh it, or consumers keep reading a
+   number that is not true.
+4. **Keep the corpus and the register in one direction.** The register agreeing
+   with the parse and disagreeing with the paper is what let this run; whichever
+   becomes the system of record, the other should be derived from it and
+   diffed, never maintained in parallel.
+
+## What this does not solve
+
+The ten certificates still concluded ОДГОВАРА over their own failing numbers.
+No pipeline fixes that — it is a question for the issuing laboratories and for
+the deviation records. What the pipeline changes is that the next one is caught
+at ingest instead of a year later.

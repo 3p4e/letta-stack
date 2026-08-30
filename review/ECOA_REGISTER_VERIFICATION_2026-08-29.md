@@ -4,8 +4,8 @@ Verification of `PP_Batch_Release_QC_Register_CORRECTED.xlsx` (Drive `1wSJ-WtS_�
 against the 291 certificates in Drive folder `1rwBvSAE…` and the RAGFlow `eCoA_DATABASE`
 dataset (`f29f8f58…`, 291 documents, 1 261 chunks, all `DONE`).
 
-**Status: interim. Layer 1 complete; Layer 2 microbiology and potency complete, two items outstanding;
-Layer 3 not started.**
+**Status: microbiology verification COMPLETE. All 17 at-risk rows page-verified,
+corrections applied, root cause traced and a replacement pipeline specified.**
 Every claim below cites the certificate it rests on. What has *not* been checked is listed
 at the end rather than left implied.
 
@@ -229,6 +229,61 @@ settled:
 `163/0271/25`, `161/0269/25`, `588/1067/25`, `767/1376/25`, `1009/1813/25`,
 `1218/2169/25`, `1228/2194/25`, `1226/2192/25`, the unnumbered Dec-2025 microbiology
 report, `4/0007/26`, `6/0009/26`.
+
+### 10. ✅ All 17 at-risk rows verified — 6 errors, 11 correct
+
+Every register row recording a mould count as `x×10³` has now been read off its
+certificate page. The result is bounded and specific:
+
+| | |
+|---|---|
+| At-risk rows (TYMC recorded as x×10³) | 17 |
+| **Understated by a factor of ten** | **6** |
+| Recorded correctly | 11 |
+
+The six: `320/0587/25`, `628/1129/25`, `904/1589/25`, `946/1684/25`,
+`1032/1851/25` — all five of which hide a genuine failure — plus `163/0271/25`,
+where the page reads `1 x 10⁴` against a recorded `1×10³`. That last one sits
+exactly at the limit, so it is a transcription error whose disposition does not
+change.
+
+The eleven correct: `161/0269/25`, `588/1067/25`, `767/1376/25`, `947/1685/25`,
+`1009/1813/25`, `1218/2169/25`, `1226/2192/25`, `1227/2193/25`, `1228/2194/25`,
+`4/0007/26`, `6/0009/26`.
+
+**Also identified**: row 141's uncoded "Microbiology report (Dec 2025)" is
+certificate **`1227/2193/25`** — `GP082501-2` is P050322, and the row's own TAMC
+3.2×10³ and TYMC 5.8×10³ match that page exactly.
+
+**And a flagging inconsistency**: of the ten rows whose TYMC exceeds its limit,
+only two carried the sheet's own amber "laboratory finding" style. Eight sat
+unflagged, which is part of why this stayed invisible.
+
+### 11. ✅ Corrections applied
+
+`deliverables/qc_gap_analysis/apply_register_corrections.py` — re-runnable,
+idempotent, and it refuses to touch a cell whose current value is not the one
+verified, so it cannot be run against the wrong revision.
+
+Seven cell values change (six TYMC, one CoA code) and eight amber flags are
+applied. A full before/after diff confirms **nothing else in the workbook
+moves**.
+
+**The corrections could not be written to Drive from this session** — Drive
+write access needs an approval this session cannot grant. The corrected workbook
+is produced locally and delivered for upload; the snapshot step is therefore
+yours to take, and the original in Drive is untouched.
+
+### 12. 🔴 Root cause, and the pipeline that replaces it
+
+Measured against the 17 verified pages, the RAGFlow parse of the TYMC result is
+**correct on 6, wrong on 2, and not extractable on 9**. Both errors are the same
+failure in the same direction — 10⁴ read as 10³, never the reverse.
+
+Four causes, and a replacement pipeline, are set out in
+`ingestion/ragflow/ECOA_RAG_PIPELINE_2026-08-30.md`. The executable half is
+`ingestion/ragflow/validate_ecoa_limits.py`, which compares every result to its
+limit: **5 findings against the register before these corrections, 9 after.**
 
 ## Not yet checked
 
