@@ -58,19 +58,29 @@ def total_thc_consistent(d9_thc, thca, total_thc, tol=0.06):
 
     So each certificate carries its own proof, and a single corrupted digit stops
     being invisible. Run over eCoA_DATABASE on 30.08.2026 it flagged two of the
-    fifteen certificates where all three values could be read:
+    fifteen certificates where all three values could be read. **Both were then
+    checked against the source PDF in Drive, and in both the certificate was correct
+    and the corpus was wrong:**
 
-      ППК25117  total 1.58 beside Δ9-THC 0.46 and Δ9-THCA 17.01, which sum to
-                15.38 — the value the register carries.
-      ППК25139  total 23.79 beside Δ9-THC 0.53 and Δ9-THCA 0.52, which sum to 0.99.
-                For the total to hold, THCA would have to be 26.52, so a digit
-                group is missing from the THCA row.
+      ППК25117  corpus total 1.58 beside 0.46 and 17.01. The page prints 15.38,
+                which is what 0.46 + 17.01 x 0.877 gives, and what the register
+                already held.
+      ППК25139  corpus THCA 0.52 against a total of 23.79. The page prints 26.52,
+                and 0.53 + 26.52 x 0.877 = 23.79 exactly. The same corpus record
+                also holds "Satre Pie" for Grape Pie and "GF0824_02" for GP0824_02
+                — three corruptions in one document.
 
-    In both cases the three numbers on one page cannot all be right, and in both the
-    rule says so without needing any other source. Which of the three is the wrong
-    one — and whether the fault is in the paper or in the parse — is a question only
-    the rendered page answers. That is the correct outcome: the rule raises the page,
-    it does not decide it.
+    So the measured rate is **2 of 15 potency certificates carrying a value that is
+    wrong rather than missing — 13%** — and nothing but the certificates' own
+    footnote formula detected it. That is a second, independent measurement of the
+    defect first found in the mould counts, on a different parameter and a different
+    laboratory, and it says the corpus is unreliable for numbers in general and not
+    merely for superscripts.
+
+    The rule raises the page; it does not decide it. Both times the page had a clear
+    answer and the laboratory was not at fault — which is the outcome to expect, and
+    the reason a flag here must never be reported as a laboratory finding before
+    someone has looked.
 
     Returns None when any input is missing (nothing to check), True when the printed
     total matches the computed one within `tol`, False when it does not.

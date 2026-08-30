@@ -101,9 +101,10 @@
       "R1": "value > limit -> flag 'over_limit'. Written, never suppressed, whatever the certificate concluded. This rule alone would have caught all ten.",
       "R2": "value is exactly one decade below limit -> flag 'one_decade_below_limit'. The shape a misread ⁴->³ leaves behind, and the only shape that silently converts a fail into a pass. Verify against the page.",
       "R3": "verdict_printed is ОДГОВАРА while value > limit -> flag 'verdict_contradicts_value'. Not an extraction error — a finding, and the one that needs a deviation record.",
-      "R4": "total_thc != d9_thc + thca * 0.877 (+/-0.06) -> flag 'total_thc_mismatch'. Every CNP certificate prints all three and states the conversion in its own footnote, so each one carries its own proof. Measured over eCoA_DATABASE on 30.08.2026 it flagged 2 of the 15 certificates where all three could be read (PPK25117, PPK25139). It raises the page; it does not decide which of the three numbers is wrong."
+      "R4": "total_thc != d9_thc + thca * 0.877 (+/-0.06) -> flag 'total_thc_mismatch'. Every CNP certificate prints all three and states the conversion in its own footnote, so each page proves itself. Measured over eCoA_DATABASE on 30.08.2026: 2 of the 15 certificates where all three could be read were flagged, and BOTH were then checked against the source PDF and found to be corpus corruptions, not laboratory faults. PPK25117 - corpus 1.58, page 15.38. PPK25139 - corpus THCA 0.52, page 26.52. That is a 13% rate of values that are wrong rather than missing, undetectable by any means except this arithmetic."
     },
-    "gate": "A record carrying flag 'over_limit' or 'verdict_contradicts_value' is stored AND surfaced. It is never written silently."
+    "gate": "A record carrying flag 'over_limit' or 'verdict_contradicts_value' is stored AND surfaced. It is never written silently.",
+    "flag_is_not_a_finding": "A flag means OPEN THE PAGE. It is never a laboratory finding on its own. Of the three flags raised this way during the 29-30.08.2026 work, zero were the laboratory's fault; every one was a corrupted parse. Reporting a flag as a certificate defect before someone has looked at the page has already produced three retractions."
   },
   "identity_normalisation": {
     "batch": "ingestion/common/batch_id.py::batch_key — the single definition in this repository; policy_check.py already imports it.",

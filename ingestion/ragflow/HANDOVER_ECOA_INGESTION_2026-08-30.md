@@ -293,11 +293,27 @@ whose label or value carries `мин.` / `макс.` / `≤` / `≥` / an en-das
 `• Вкупно Δ9-THC* мин. 5.00 %` is a specification and an extractor without that guard
 reports 5.00 as the batch's THC.
 
-**12. Do not trust the chunk text over the page.** During this work three certificates were
-reported to the user as false alarms on the strength of RAGFlow chunk text reading
-`4,2 х 10³`. The rendered page read `4,2 x 10⁴`. **The cross-check was right and the parse
-was wrong**, and the correction had to be issued to the user. If chunk text and rendered
-page disagree, the page wins, every time, without exception.
+**12. Do not trust the chunk text over the page.** Three worked examples, all from the
+same two days, all the same mistake.
+
+*The mould counts.* Three certificates were reported to the owner as false alarms on the
+strength of chunk text reading `4,2 х 10³`. The rendered page read `4,2 x 10⁴`. The
+cross-check was right and the parse was wrong; the correction had to be issued.
+
+*`ППК25139`.* R4 flagged it, and it was reported as a certificate that "contradicts
+itself" — Δ9-THC 0.53, Δ9-THCA 0.52, Total 23.79. The owner challenged it and asked to see
+the certificate. The page prints **Δ9-THCA 26.52**, and 0.53 + 26.52 × 0.877 = 23.79
+exactly. The certificate was perfect; the corpus had dropped two digits. The same record
+also holds `Satre Pie` for Grape Pie and `GF0824_02` for GP0824_02.
+
+*`ППК25117`.* Corpus total 1.58 against 0.46 and 17.01. Page prints **15.38**. Correct
+certificate, correct register, corrupt corpus — again.
+
+**The rule.** If chunk text and page disagree, the page wins, every time, without
+exception. And a validation flag is a reason to *open the page*, never a laboratory
+finding in itself — of the three flags raised this way so far, **zero** turned out to be
+the laboratory's fault. Pulling the page costs one Drive read and would have prevented
+all three misreports.
 
 ---
 
