@@ -360,7 +360,7 @@ def _credentials(db, source):
                FROM certificate WHERE lab_accreditation IS NOT NULL"""):
         lab_id, name = canonical_lab(lab)
         if (lab_id or name) == (source['id'] or source['lab']):
-            return '· %s (%s) · %s' % (acc, body, std)
+            return '· ' + ' · '.join(x for x in (acc, body, std) if x)
     return '· accreditation NOT CAPTURED'
 
 

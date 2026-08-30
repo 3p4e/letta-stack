@@ -73,7 +73,8 @@ SCHEMA = """
 CREATE TABLE IF NOT EXISTS certificate (
   doc_id TEXT PRIMARY KEY, document TEXT, batch TEXT, batch_printed TEXT,
   p_number TEXT, strain TEXT, cert_code TEXT, date_of_issue TEXT, date_iso TEXT,
-  lab TEXT, test_type TEXT, conclusion TEXT, accreditation_note TEXT,
+  lab TEXT, lab_accreditation TEXT, lab_accreditation_body TEXT, lab_standard TEXT,
+  test_type TEXT, conclusion TEXT, accreditation_note TEXT,
   reads_agree INT, ragflow_url TEXT);
 CREATE TABLE IF NOT EXISTS result (
   doc_id TEXT, batch TEXT, strain TEXT, cert_code TEXT, date_iso TEXT, lab TEXT,
@@ -105,10 +106,11 @@ def build(records, dbpath, base_url=''):
         strain = canonical_strain(r.get('strain'))
         diso = parse_date(r.get('date_of_issue'))
         url = ('%s/document/%s' % (base_url.rstrip('/'), did)) if base_url else None
-        db.execute('INSERT OR REPLACE INTO certificate VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+        db.execute('INSERT OR REPLACE INTO certificate VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
             (did, r.get('document'), batch, r.get('batch_printed'), r.get('p_number'),
              strain, r.get('cert_code'), r.get('date_of_issue'), diso,
-             r.get('lab'), r.get('test_type'), r.get('overall_conclusion'),
+             r.get('lab'), r.get('lab_accreditation'), r.get('lab_accreditation_body'),
+             r.get('lab_standard'), r.get('test_type'), r.get('overall_conclusion'),
              r.get('accreditation_note'), int(bool(r.get('reads_agree'))), url))
         for p in r.get('parameters') or []:
             # Compute the two flags here from the stored numbers rather than trusting
