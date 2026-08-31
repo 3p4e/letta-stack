@@ -109,7 +109,7 @@ jobs:
           import re, subprocess, sys
           out = subprocess.run(
               [sys.executable, "ingestion/ragflow/validate_ecoa_limits.py",
-               "deliverables/qc_gap_analysis/PP_Batch_Release_QC_Register_FHM3_2026-08-31.xlsx"],
+               "deliverables/qc_gap_analysis/PP_Batch_Release_QC_Register_FHM4_2026-08-31.xlsx"],
               capture_output=True, text=True).stdout
           print(out)
 

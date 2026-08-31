@@ -8,7 +8,7 @@ transcription's to make.** This is that list, gathered in one place.
 Nothing here is a defect in the register's arithmetic. Every one is a question about what a
 number means, what a row is for, or what a laboratory intended.
 
-**Current workbook: `deliverables/qc_gap_analysis/PP_Batch_Release_QC_Register_QCSP_2026-08-31.xlsx`.**
+**Current workbook: `deliverables/qc_gap_analysis/PP_Batch_Release_QC_Register_FHM4_2026-08-31.xlsx`.**
 
 ---
 

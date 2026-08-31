@@ -55,7 +55,7 @@ from openpyxl.utils import get_column_letter
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-REG_X = "deliverables/qc_gap_analysis/PP_Batch_Release_QC_Register_FHM3_2026-08-31.xlsx"
+REG_X = "deliverables/qc_gap_analysis/PP_Batch_Release_QC_Register_FHM4_2026-08-31.xlsx"
 ICOA = "deliverables/qc_gap_analysis/icoa_issuance_register_2026-08-31.csv"
 MASTER = "deliverables/qc_gap_analysis/potency_master_batch_map.json"
 SHEET = "Batch Release QC"

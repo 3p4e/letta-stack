@@ -331,3 +331,31 @@ floor of that window; the ceiling is always the signing day itself. As of 31.08.
 live desk enforces both sides: an iCoA assignment or CoQ issuance dated before the SOP,
 before its document floor, or after today is refused, and a received certificate
 cannot be recorded bearing a future date.
+
+---
+
+## Superseded by the after-intervention review, 31.08.2026 (night)
+
+Two statements above no longer hold, and one figure predates the universe this
+document now serves. They are corrected here rather than edited in place, because
+the account above is the record of what was believed when the schedule was built.
+
+- **`197-7-К/26` (row 276) — the correction ran the wrong way.** The section above
+  reports the certificate as printing Total CBD `<LOQ` and Total CBN `0.22 %`, and
+  credits chain step 16 with correcting the register to match. Both the certificate's
+  own results table and the page read of 31.08.2026 give the opposite pairing —
+  **Total CBD `0.22`, Total CBN `< LOQ`** — and the register now carries that, restored
+  by chain step 17. Step 16 followed `master_coa_table.tsv`, a derived export that
+  transposes this one record (93 values swept, one disagreement). Step 16 stands as
+  applied and is marked superseded; the export carries a defect note.
+- **"The only disagreement in the series" understated the campaign.** The Farmahem
+  page verification compared all 63 reports and found four CBD/CBN defects (rows 9,
+  276, 286 and the twin-batch label on the ГС pair), not one.
+- **The 61-CoQ tables predate the universe.** The counts in this document were
+  computed over the issue plan's 61 CoQs; the owner's ruling of the same day extends
+  the universe to **166** (83 batches × initial + reissue). The per-CoQ logic is
+  unchanged — only the population is larger.
+- **"Ph. Eur. 11.5" reads as a house label here.** The owner's ruling of 31.08.2026 is
+  that **Ph. Eur. 11.0** is the house edition label, printed as the certificates print
+  it. Where this document says 11.5 descriptively it means the same 07/2024 monograph
+  version; quoted certificate text is unchanged.

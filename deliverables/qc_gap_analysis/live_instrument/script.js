@@ -185,9 +185,14 @@ D.icoa_plan.forEach(function(p, i){
   p.reissue = p.coq_type.indexOf("additional") === 0;
   p.hay = [p.number, p.pp, p.cb, p.strain, p.icoa_ref, p.scope, p.coq_type].join(" ").toLowerCase();
 });
+var CONTRA = {};
+(D.corpus_contradictions || []).forEach(function(x){
+  (CONTRA[x.code] = CONTRA[x.code] || []).push(x);
+});
 D.ecoa.forEach(function(e, i){
   e.i = i;
   e.fix = OV.verify[e.code] || null;
+  e.contra = CONTRA[e.code] || null;
   e.hay = [e.code, e.batch, e.strain, e.lab, e.pn].concat(e.reported)
     .concat(e.fix ? Object.keys(e.fix.params).map(function(k){
       return k + " " + e.fix.params[k].v; }) : [])
@@ -603,6 +608,12 @@ function renderEcoa(){
           return '<span class="vchip ' + (rv.t === "T1" ? "pv" : "cv") + '" title="' +
             esc(rv.src) + '"><b>' + esc(rv.k) + '</b>' + esc(rv.v) + '</span>';
         }).join("") : "") +
+        (e.contra ? "<br>" + e.contra.map(function(cx){
+          return '<span class="vchip xv" title="' + esc(cx.src +
+            " \u2014 the ingested corpus holds " + cx.corpus + " where the page reads " +
+            cx.page + ". The page wins; the corpus value is not carried.") + '">' +
+            '<b>corpus corrupt</b>' + esc(cx.analyte + ": " + cx.corpus) + "</span>";
+        }).join("") : "") +
         (e.fix ? "<br>" + Object.keys(e.fix.params).map(function(k2){
           var pv = e.fix.params[k2];
           return '<span class="vchip" title="transcribed from the opened document at the desk by ' +
@@ -631,7 +642,7 @@ document.querySelector("#t-spec tbody").innerHTML = D.dets.map(function(d){
     '<td><span class="nm">' + esc(d.en) + '</span><span class="sub mk">' + esc(d.mk) + '</span></td>' +
     '<td class="mono" style="white-space:normal">' + esc(d.method) + '</td>' +
     '<td class="mono" style="white-space:normal">' + esc(d.crit) + '</td>' +
-    '<td class="c mono">' + (d.col || '<span class="dim">—</span>') + '</td>' +
+    '<td class="c mono">' + (d.col ? esc(d.col) : '<span class="dim">—</span>') + '</td>' +
     '<td><span class="pill p-' + (d.src === "in_house_icoa" ? "info" : d.src === "upon_request" ? "none" : "ok") + '">' +
       esc(SUPPLY[d.src]) + '</span></td></tr>';
 }).join("");
@@ -1123,7 +1134,8 @@ el("ne-go").addEventListener("click", function(){
   if (!DATE_RX.test(date)) return msgIn("ne-msg", "Date of issue must be dd.mm.yyyy.", false);
   if (sortDate(date) > sortDate(todayStr())) return msgIn("ne-msg", "A certificate cannot bear a date in the future — check the page.", false);
   if (link && !/^https:\/\//.test(link)) return msgIn("ne-msg", "A document link must start with https://", false);
-  var dup = D.ecoa.some(function(e){ return e.code === code; });
+  var dup = D.ecoa.some(function(e){ return e.code === code; }) ||
+            OV.ecoa.some(function(e){ return e.code === code; });
   if (dup) return msgIn("ne-msg", "That certificate code is already in the receipt register.", false);
   /* tested values, recorded with the receipt: "name = value" pairs separated
      by · — stored in the same shape the remediation desk writes, so a value
@@ -1139,22 +1151,34 @@ el("ne-go").addEventListener("click", function(){
     });
     if (bad) return msgIn("ne-msg", "Values must read \u201cparameter = value\u201d separated by · — could not read \u201c" + bad + "\u201d.", false);
   }
+  /* a value already recorded for a parameter is never silently replaced and
+     never silently dropped — the desk refuses and says so, exactly as the
+     remediation desk does. A reading is a record; overwriting one is a new
+     record, not an edit. */
+  var v3 = OV.verify[code];
+  var clash = pairs.filter(function(pr){ return v3 && v3.params[pr[0]]; });
+  if (clash.length) return msgIn("ne-msg", "Already recorded for this certificate: " +
+    clash.map(function(pr){ return pr[0] + " = " + v3.params[pr[0]].v; }).join(" · ") +
+    ". One reading, one record — correct it at the remediation desk with a note.", false);
+  var who = operator(), when = stamp();
   OV.ecoa.push({ code: code, date: date, lab: lab, batch: batch, params: params,
-                 link: link, by: operator(), at: stamp() });
+                 link: link, by: who, at: when });
   var hadVerify = !!OV.verify[code];
   if (pairs.length) {
-    var v3 = OV.verify[code] = OV.verify[code] || { params: {}, notes: [] };
-    pairs.forEach(function(pr){
-      if (!v3.params[pr[0]]) v3.params[pr[0]] = { v: pr[1], by: operator(), at: stamp() };
-    });
+    v3 = OV.verify[code] = OV.verify[code] || { params: {}, notes: [] };
+    pairs.forEach(function(pr){ v3.params[pr[0]] = { v: pr[1], by: who, at: when }; });
   }
   msgIn("ne-msg", "Publishing the receipt…", true);
   saveState("certificate receipt", code + " (" + lab.split(" — ")[0] + ") for " + batch +
     (pairs.length ? " — " + pairs.map(function(pr){ return pr[0] + " = " + pr[1]; }).join(" · ") : ""),
     null, function(m){
       OV.ecoa.pop();
-      if (pairs.length && !hadVerify) delete OV.verify[code];
-      else if (pairs.length) pairs.forEach(function(pr){ delete OV.verify[code].params[pr[0]]; });
+      /* undo exactly what was written, and nothing that was already there */
+      if (pairs.length) {
+        pairs.forEach(function(pr){ delete OV.verify[code].params[pr[0]]; });
+        if (!hadVerify && !Object.keys(OV.verify[code].params).length &&
+            !OV.verify[code].notes.length) delete OV.verify[code];
+      }
       msgIn("ne-msg", m, false);
     });
 });
@@ -1181,8 +1205,7 @@ var EF_TARGET = null;
     '<span class="fld"><label>Resolution note (optional)</label><input id="ef-note" placeholder="e.g. flag resolved — page reads 4,2 x 10⁴"></span>' +
     '<button class="btn" id="ef-go" disabled>Record page reading</button></div>' +
     '<div class="deskmsg" id="ef-msg">Open the document from its row, read the value off the page, transcribe it exactly. A page reading never overwrites the register — it stands beside it, attributed.</div>' +
-    '<datalist id="ef-params">' + names.map(function(n2){
-      return '<option value="' + esc(n2) + '">'; }).join("") + '</datalist></div>');
+    "</div>");
 })();
 document.querySelector("#t-ecoas tbody").addEventListener("click", function(e){
   var b = e.target.closest(".ec-fix");
@@ -1211,9 +1234,11 @@ el("ef-go").addEventListener("click", function(){
   saveState("page remediation", tk + (val ? ": " + param + " = " + val : "") +
     (note ? (val ? " — " : ": ") + note : ""),
     null, function(m2){
-      if (hadVal) delete v.params[param];
-      if (hadNote) v.notes.pop();
-      if (!Object.keys(v.params).length && !v.notes.length) delete OV.verify[tk];
+      var cur = OV.verify[tk];
+      if (!cur) return msgIn("ef-msg", m2, false);
+      if (hadVal) delete cur.params[param];
+      if (hadNote) cur.notes.pop();
+      if (!Object.keys(cur.params).length && !cur.notes.length) delete OV.verify[tk];
       msgIn("ef-msg", m2, false);
     });
 });
@@ -1341,6 +1366,20 @@ function fillCoq(c){
     var g = groupNo(r.no);
     if (r.no.indexOf(".") > 0 && groups[g]) groups[g].push(r); else singles[r.no] = r;
   });
+  /* The printed certificate carries the citation in its compact one-line form.
+     The schedule, the workbooks and the detail table above keep the full
+     bilingual criterion; the CoQ master is a fixed A4 page whose signature
+     block falls off it when the identification rows wrap to three lines
+     (owner's decision, 31.08.2026, after the layout was measured). */
+  /* Measured against the master: this form sets on ONE line, so the page keeps
+     the geometry the owner designed (identical overflow and approval-block
+     position to the master's own "Conforms to monograph"). The two-line forms
+     pushed the signature block off the page. "mon." is the master's own
+     abbreviation — its method column reads "Ph. Eur. mon. 3028". */
+  var DOC_IDENT_CRIT = "Conforms to mon. Cannabis flos (07/2024:3028), Ph.Eur. 11.0";
+  function docCrit(no, crit){
+    return (no === "1" || no === "2" || no === "3") ? DOC_IDENT_CRIT : crit;
+  }
   function res(r){
     var v = (r.res && r.res !== "—") ? r.res : "—";
     return '<td class="r-cell"><span class="r-val' + rCls(v) + '">' + esc(v) + "</span></td>";
@@ -1350,7 +1389,7 @@ function fillCoq(c){
     var d = DET[no] || {};
     return '<tr' + (last ? ' class="last-row"' : "") + '><td>' + no + '</td><td><span class="p-name">' +
       esc(d.en) + ' <span class="mk">' + esc(d.mk) + '</span></span></td><td><span class="p-method">' +
-      esc(d.method) + '</span></td><td><span class="p-spec">' + esc(r.crit) + "</span></td>" + res(r) + "</tr>";
+      esc(d.method) + '</span></td><td><span class="p-spec">' + esc(docCrit(no, r.crit)) + "</span></td>" + res(r) + "</tr>";
   }
   function group(no){
     var rows2 = groups[no]; if (!rows2.length) return "";
@@ -1362,7 +1401,7 @@ function fillCoq(c){
       html += '<tr class="sub-row"><td></td><td><span class="p-sub">' + esc(d.en) +
         ' <i class="bisep">|</i> <span class="mk">' + esc(d.mk) + '</span></span></td>' +
         '<td><span class="p-method">' + esc(d.method) + '</span></td>' +
-        '<td><span class="p-spec">' + esc(r.crit) + "</span></td>" + res(r) + "</tr>";
+        '<td><span class="p-spec">' + esc(docCrit(r.no, r.crit)) + "</span></td>" + res(r) + "</tr>";
     });
     return html;
   }
@@ -1444,14 +1483,19 @@ function fillIcoa(p, asn){
     ch.className = ch.className.replace("chip-sel", "chip-un");
     var bx = ch.querySelector(".bx"); if (bx) bx.textContent = "\u2610";
   });
-  setLk(doc, "Prod. Code", (coq && coq.pcode) || "\u2014");
-  setLk(doc, "Spec. Ref.", ((coq && coq.spec) || "QCSP 001 v.03") + " \u00b7 " + SCOPE_SEC[kind]);
-  setLk(doc, "Prod. Batch \u2116", p.pp || p.cb);
-  setLk(doc, "Proc. Batch \u2116", p.cb);
-  setLk(doc, "Sampling Date", "\u2014");
-  setLk(doc, "Test Period", "\u2014");
+  /* the masters do not all spell their lockup labels the same way — P03 and
+     P09 write them out in full — so every fill tries both spellings; setLk is
+     a no-op when neither is present */
+  var LK = [[["Prod. Code", "Product Code"], (coq && coq.pcode) || "\u2014"],
+            [["Spec. Ref.", "Specification Ref."],
+             ((coq && coq.spec) || "QCSP 001 v.03") + " \u00b7 " + SCOPE_SEC[kind]],
+            [["Prod. Batch \u2116", "Production Batch \u2116"], p.pp || p.cb],
+            [["Proc. Batch \u2116", "Processing Batch \u2116"], p.cb],
+            [["Sampling Date", "Date of Sampling"], "\u2014"],
+            [["Test Period", "Test Start"], "\u2014"]];
+  LK.forEach(function(e2){ e2[0].forEach(function(lbl){ setLk(doc, lbl, e2[1]); }); });
   setIdb(doc, "Prod. Code", (coq && coq.pcode) || "\u2014");
-  setIdb(doc, "Spec. Ref.", (coq && coq.spec) || "QCSP 001 v.03");
+  setIdb(doc, "Spec. Ref.", ((coq && coq.spec) || "QCSP 001 v.03") + " \u00b7 " + SCOPE_SEC[kind]);
   setIdb(doc, "Prod. Batch \u2116", p.pp || p.cb);
   setIdb(doc, "Date of Sampling", "\u2014");
   /* results table: which cells are the worked batch's measurements, per master */

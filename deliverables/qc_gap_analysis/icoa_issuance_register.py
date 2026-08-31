@@ -65,7 +65,7 @@ import sys
 from openpyxl import load_workbook
 
 GAP = "deliverables/qc_gap_analysis/batch_gap_analysis.csv"
-REG = "deliverables/qc_gap_analysis/PP_Batch_Release_QC_Register_FHM3_2026-08-31.xlsx"
+REG = "deliverables/qc_gap_analysis/PP_Batch_Release_QC_Register_FHM4_2026-08-31.xlsx"
 SHEET = "Batch Release QC"
 
 PARAMS = [("A", "identA_appearance"), ("B", "identB_microscopy"),

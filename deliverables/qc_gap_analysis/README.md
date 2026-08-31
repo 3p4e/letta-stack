@@ -1,8 +1,8 @@
 # Batch gap analysis — CoQ and internal CoA issuance counts
 
-> ## The current workbook is `PP_Batch_Release_QC_Register_QCSP_2026-08-31.xlsx`
+> ## The current workbook is `PP_Batch_Release_QC_Register_FHM4_2026-08-31.xlsx`
 >
-> This directory holds thirteen workbooks, one per correction pass, and **the file named
+> This directory holds eighteen workbooks, one per correction pass, and **the file named
 > `FINAL` is not the last one.** Each is the input to the next script's refuse-on-mismatch
 > guard, so none can be deleted without breaking the chain that proves what changed; the
 > order is what tells you which is current, and the order is:

@@ -20,12 +20,19 @@ corpus is read from its local materialisations: the structured extraction
 (`deliverables/qc_register/extracted_params.json`) and the vendored chunk
 cache (`ingestion/ragflow/cache/all_cert_texts_2026-08-30.json`).
 
-Corpus-derived entries: **37 certificates**, tiered T2 (passed the R4
-arithmetic) or T3 (no independent check — pre-fill only, promote through
-the remediation desk after opening the scan).
+Corpus-derived entries: **37 certificates**, 321 values, every one tier T3
+— present in the corpus with no independent check available, so they are
+pre-fill only and are promoted through the remediation desk after the scan
+is opened. **No value reached T2**: the R4 arithmetic gate needs a document
+carrying Δ9-THC, Δ9-THCA and the total together, and no entry in this set
+does. A corpus value is never rendered beside a page value for the same
+analyte — where the two disagree the page wins and the corpus value is
+recorded as a corruption instead.
 
 ## Farmahem register vs page cross-check
 
 All register values for the 63 Farmahem receipts agree with the
-page reads — the CBD/CBN defects the campaign found (rows 9, 276,
-286) are corrected in the FHM2 register.
+page reads. The CBD/CBN defects the campaign found (rows 9, 276,
+286) are corrected in the canonical register — row 276 by chain
+step 17, after chain step 16 had reinstated the transposition on
+the authority of an older derived export.

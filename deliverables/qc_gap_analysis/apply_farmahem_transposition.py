@@ -2,6 +2,15 @@
 # -*- coding: utf-8 -*-
 """Chain step 16 — one transposed pair on 197-7-К/26, and the batch behind P060332.
 
+    SUPERSEDED IN PART BY CHAIN STEP 17 (restore_farmahem_pair.py), 31.08.2026.
+    The CBD/CBN swap this step applies is WRONG and step 17 reverses it. This
+    docstring's account of the certificate came from
+    `ingestion/coa_track/letta-imb-coas/exports/master_coa_table.tsv`, a derived
+    export that transposes the pair; the certificate's own results table and the
+    page read of 31.08.2026 both give Total CBD 0.22 and Total CBN < LOQ. The
+    step is left exactly as applied — an applied correction is never rewritten,
+    it is superseded — and the P060332 identity flag it also sets still stands.
+
     python3 deliverables/qc_gap_analysis/apply_farmahem_transposition.py IN.xlsx OUT.xlsx
 
 **The transposition.** `197-7-К/26` (Fat Bastard, cultivation batch FB012602, packaged

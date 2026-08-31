@@ -449,3 +449,45 @@ loses the in-flight document under memory pressure.
 Nothing in this register changes a batch disposition. What it changes is how much of
 the corpus can be believed without opening the paper — which, on the evidence here, is
 still less than half.
+
+---
+
+## A5 — three more corpus corruptions, found by comparing every page read to the corpus (31.08.2026)
+
+The rectification layer built on 31.08.2026 puts a page read and a corpus value for the
+same analyte side by side for the first time, over all 247 receipts. Comparing by
+**magnitude** rather than by string (the two sources write `4,2 x 10^4` and `4,2 х 10³`
+with different letters, superscripts and decimal marks), six analyte-level
+disagreements survive. All six are corpus corruptions; the register and the page agree
+in every case.
+
+| certificate | analyte | page / register | corpus holds | class |
+|---|---|---|---|---|
+| `320/0587/25` | TYMC | **4,2 × 10⁴** | `4,2 х 10³` | decade — superscript |
+| `904/1589/25` | TYMC | **3,3 × 10⁴** | `3,3 x 10³` | decade — superscript |
+| `1032/1851/25` | TYMC | **4,9 × 10⁴** | `4,9 x 10³` | decade — superscript |
+| `ППК25154` | Total Δ9-THC | **18.27** | `1.87` | decimal displacement (already recorded as A1-class) |
+| `ППК26037` | Total CBN | **1.09** | `0.19` | **new** — digits transposed and displaced |
+| `ППК26037` | Total CBD | **0.04** | `0.05` | rounding-scale, 0.01 |
+
+Two things this measurement settles:
+
+1. **The mould-count decade error is not one document.** `320/0587/25` was the
+   certificate that started the whole verification campaign; the same corruption class
+   is now confirmed on **three** certificates, all TYMC, all a full decade low — the
+   direction that turns a deviation into a pass. A retrieval index that answers "what
+   was the mould count" would have said `10³` on all three.
+2. **`ППК26037` is the first corruption found on a value that is out of specification.**
+   The page and the register carry CBN 1.09 % (a stability-arm exceedance, amber on the
+   register); the corpus carries 0.19 %, which conforms. Until this comparison existed,
+   the two sat one line apart in the artifact with nothing reconciling them.
+
+The rectification layer now suppresses a corpus value whenever a page read covers the
+same analyte, and records the disagreement instead of rendering it — the page wins,
+every time (trap 12). The suppressed values are listed as `corpus_contradictions` in
+`deliverables/qc_gap_analysis/coq_artifact_data.json` and shown on the receipt row.
+
+**This is the strongest evidence yet for the typed-record pipeline.** Every one of these
+six survived a parser change, a re-ingest and a dataset migration; none is the
+laboratory's fault; and only a value-against-value comparison with an independent
+source found them.

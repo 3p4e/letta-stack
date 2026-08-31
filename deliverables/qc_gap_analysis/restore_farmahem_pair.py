@@ -18,9 +18,13 @@ What actually happened, in order:
 
    `apply_farmahem_corrections.py` (chain step 7) corrected it to
    G=`0.22`, H=`< LOQ` — matching the page.
-2. Step 16, written later the same day, misread the certificate — its docstring
-   asserts "Total CBN 0.22 (U 0.01)" — and swapped the corrected pair back to
-   G=`< LOQ`, H=`0.22`, un-fixing the fix.
+2. Step 16, written later the same day, swapped the corrected pair back to
+   G=`< LOQ`, H=`0.22`, un-fixing the fix. It was not a misreading: step 16
+   cited `ingestion/coa_track/letta-imb-coas/exports/master_coa_table.tsv`,
+   an older derived export, and that file genuinely pairs the two values the
+   other way round (`Total CBN … 0.22`, `Total CBD … <LOQ`) — on this one
+   certificate only. So the register held a **source conflict**, not a slip:
+   two direct readings of the certificate against one derived export.
 3. The rectification cross-check of 31.08.2026 (evening) compared every
    register value against the page reads and caught the regression. Two
    independent primary sources agree against step 16:
@@ -30,6 +34,15 @@ What actually happened, in order:
 
        | Вкупен Cannabidiol  | Total CBD | 0.22 | 0.01 |
        | Вкупен Cannabinol   | Total CBN | <LOQ | /    |
+
+The direct readings win: a visual read of the rendered page and a verbatim
+transcription of the certificate's own results table both outrank an export
+derived from an earlier parse. The export was swept against all 31 Farmahem
+page reads during the after-intervention review — 93 values compared, and this
+pair is its only disagreement, so it is not a systematic ordering difference
+but one transposed record. **`master_coa_table.tsv` still holds the transposed
+pair**: anything re-derived from that export reintroduces this defect, and a
+warning to that effect sits beside it.
 
 Neither value changes a disposition — both conform to ≤ 1.00 % — but a CoQ
 compiled for P060352's reissue would have printed them under the wrong
@@ -58,7 +71,12 @@ NOTE = (
     "page-verification fix (chain step 7) had it right; step 16 misread the "
     "certificate and un-fixed it; this step restores the certificate's values. "
     "Both values conform to the 1.00 % criterion either way — the register "
-    "reports what the laboratory reports."
+    "reports what the laboratory reports.\n\n"
+    "History of this cell: transposed in the first transcription; corrected by "
+    "the page-verification campaign of 31.08.2026 (chain step 7, whose note read "
+    "'Corrected 31.08.2026 against the page: the certificate reports Total CBD "
+    "0.22 and Total CBN < LOQ'); swapped back by chain step 16 on the authority "
+    "of an older derived export; restored here as chain step 17."
 )
 
 

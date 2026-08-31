@@ -19,7 +19,10 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 os.chdir(ROOT)
 sys.path.insert(0, HERE)
 
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), "ingestion", "ragflow"))
+
 import build_coq_schedule as CQ            # noqa: E402
+import validate_ecoa_limits as VEL         # noqa: E402
 import build_document_registers as DR      # noqa: E402
 
 
@@ -30,7 +33,7 @@ PR_LABELS = {
     "cnp": [("thc", "Total Δ9-THC %"), ("d9", "Δ9-THC %"), ("thca", "Δ9-THCA %"),
             ("cbd", "Total CBD %"), ("cbd_raw", "CBD %"), ("cbda", "CBDA %"),
             ("cbn", "CBN %"), ("lod", "Loss on drying %"),
-            ("foreign_matter", "Foreign matter")],
+            ("foreign_matter", "Foreign matter"), ("verdict", "Verdict")],
     "farmahem": [("thc", "Total Δ9-THC %"), ("cbd", "Total CBD %"),
                  ("cbn", "Total CBN %"), ("afla", "Aflatoxins Σ µg/kg"),
                  ("aflab1", "Aflatoxin B1 µg/kg"), ("afla_b2", "Aflatoxin B2 µg/kg"),
@@ -49,6 +52,35 @@ PR_LABELS = {
 }
 
 
+# One analyte, one identity — whatever a source calls it. Tier suppression and
+# contradiction detection both key on this, because a page value and a corpus
+# value for the same analyte arrived under different labels and rendered side by
+# side (ППК26037: page CBN 1.09 beside corpus "Total CBN" 0.19).
+def analyte(label):
+    l = label.lower()
+    for a, b in (("δ9-thc", "thc"), ("δ9", ""), ("total ", ""), ("σ", ""),
+                 ("(partial read)", ""), ("%", ""), ("µg/kg", ""), ("mg/kg", ""),
+                 ("cfu/g", ""), ("/1 g", ""), ("/25 g", ""), (" ", ""), ("-", "")):
+        l = l.replace(a, b)
+    return l.strip(" .·")
+
+
+def disagree(a, b):
+    """True when two printed values are different measurements, not different
+    spellings of the same one."""
+    import re as _re
+    ma, mb = VEL.magnitude(a), VEL.magnitude(b)
+    if ma is not None and mb is not None:
+        return abs(ma - mb) > max(abs(ma), abs(mb)) * 1e-9
+    def canon(v):
+        u = str(v).upper().replace(",", ".")
+        u = _re.sub(r"\s*\([^)]*\)", "", u)
+        u = u.replace("\u0425", "X").replace("\u0445", "X").replace("\u00d7", "X")
+        u = _re.sub(r"CFU/G|\u0418|AND|\u041D\.\u0414\.|N\.D\.|ND", "", u)
+        return _re.sub(r"[^A-Z0-9<>.^]", "", u)
+    return canon(a) != canon(b)
+
+
 def page_rect_map():
     """fold(code) -> the certificate's values as read off its own page (tier T1)."""
     import glob
@@ -57,10 +89,19 @@ def page_rect_map():
     for path in sorted(glob.glob("review/*_page_reads_*.json")):
         blk = path.split("/")[-1].split("_page_reads")[0]
         for code, rec in json.load(open(path, encoding="utf-8")).items():
-            vals = [{"k": lbl, "v": str(rec[f]), "src": "page-read 31.08.2026 (" + blk + ")",
-                     "t": "T1"}
-                    for f, lbl in PR_LABELS[blk]
-                    if rec.get(f) not in (None, "", {})]
+            vals = []
+            for f, lbl in PR_LABELS[blk]:
+                if rec.get(f) in (None, "", {}):
+                    continue
+                src = "page-read 31.08.2026 (" + blk + ")"
+                # a partially read panel is not a panel result: three IPH
+                # pesticide reads cover only part of the page and say so in
+                # their own record, so the qualifier travels with the value
+                if f == "pest" and rec.get("pest_pages") and \
+                        "full" not in str(rec["pest_pages"]).lower():
+                    lbl += " (partial read)"
+                    src += " · coverage: " + str(rec["pest_pages"])
+                vals.append({"k": lbl, "v": str(rec[f]), "src": src, "t": "T1"})
             if vals:
                 out[VC.fold(code)] = vals
     return out
@@ -94,11 +135,15 @@ FLAG_DOSSIER = {
     "946/1684/25": _TYMC_STANDS % ("3.6\u00d710\u2074", "1.80") +
         " Value read 10\u00b3 in the first transcription; corrected to 10\u2074 on the page read.",
     "948/1686/25": _TYMC_STANDS % ("2.6\u00d710\u2074", "1.30"),
-    "1032/1851/25": _TYMC_STANDS % ("4.9\u00d710\u2074", "2.45") + " Largest count on the register.",
-    "472/0863/25": _TYMC_UNDET % "1.9\u00d710\u2074",
+    "1032/1851/25": _TYMC_STANDS % ("4.9\u00d710\u2074", "2.45") +
+        " The largest TYMC on the register (320/0587/25 carries a larger count "
+        "overall \u2014 TAMC 5.1\u00d710\u2074 \u2014 but against a criterion ten times higher).",
+    "472/0863/25": _TYMC_UNDET % "1.9\u00d710\u2074" +
+        " The closest call on the register: 19 000 against a maximum acceptable "
+        "count of 20 000.",
     "587/1066/25": _TYMC_UNDET % "1.5\u00d710\u2074",
     "628/1129/25": _TYMC_UNDET % "1.2\u00d710\u2074",
-    "949/1687/25": _TYMC_UNDET % "1.7\u00d710\u2074" + " The closest call on the register.",
+    "949/1687/25": _TYMC_UNDET % "1.7\u00d710\u2074",
     "1220/2171/25": "TYMC 200 CFU/g against the certificate's own printed limit 10\u00b2 — "
         "2\u00d7 over on its own paper, conforming against the register column's 10\u2074. "
         "A per-certificate manufacturer spec, outside the pharmacopoeial rule.",
@@ -127,15 +172,28 @@ FLAG_DOSSIER = {
     "197-14-М/26": "Ochratoxin A 2.06 \u00b5g/kg — DETECTED above LOQ, conforming against "
         "the 20 \u00b5g/kg criterion. Baseline amber; cause documented on rectification, "
         "31.08.2026.",
-    "100-2-ГС/26": "Loss on drying 10.3 % — above the 10.00 % limit CNP applies. The page "
-        "also prints twin-batch label J31112501 where its siblings print J31122501 "
-        "(see FARMAHEM_PAGE_VERIFICATION_2026-08-31).",
-    "100-3-ГС/26": "Loss on drying 10.3 % — above the 10.00 % limit CNP applies. Same "
-        "twin-batch label defect as 100-2-ГС/26, and the scan is bound backwards "
-        "(results page first).",
-    "197-6-К/26": "The batch cell is flagged, not a value: cultivation batch CC012601/1 "
-        "appears in no register and no issue plan — identity unresolved (P060332). "
-        "No certificate of quality can issue until it is.",
+    "100-2-ГС/26": "Loss on drying 10.3 % \u2014 <b>conforming</b>: the certificate "
+        "prints its own specification as &lt; 12, the register column criterion is "
+        "\u2264 12.00 and QCSP 001 \u00a78 reads \u2264 12.0 %. (The 10.00 % limit belongs to the "
+        "older CNP certificate form and to the stability programme; it does not govern "
+        "a Farmahem release loss-on-drying certificate.) The amber records a document "
+        "defect, not a result: the page prints twin-batch label J31112501 where its "
+        "cannabinoid sibling 100-2-К/26 and the register print J31122501 \u2014 see "
+        "FARMAHEM_PAGE_VERIFICATION_2026-08-31. Cause documented on rectification, "
+        "31.08.2026.",
+    "100-3-ГС/26": "Loss on drying 10.3 % \u2014 <b>conforming</b> against the "
+        "certificate\u2019s own &lt; 12, the register\u2019s \u2264 12.00 and QCSP 001 \u00a78\u2019s "
+        "\u2264 12.0 %. The amber records two document defects: the same twin-batch label "
+        "as 100-2-ГС/26, and a scan bound backwards (results on page 1, cover on "
+        "page 2). Cause documented on rectification, 31.08.2026.",
+    "197-6-К/26": "The batch cell is flagged, not a value: cultivation batch "
+        "CC012601/1 appears in no register and no issue plan \u2014 identity unresolved "
+        "(P060332) \u2014 and the record holds nothing else for the lot: no identity, "
+        "foreign matter, loss on drying, heavy metals, pesticides or microbiology. The "
+        "register comment asks QC to confirm the batch and open the block properly; "
+        "that no certificate of quality can issue meanwhile follows from this folder\u2019s "
+        "own rule \u2014 a CoQ never carries a result or a conformity assertion that has "
+        "not been certified.",
 }
 
 
@@ -182,11 +240,32 @@ def main(out):
     corpus = corpus_rect_map()
     import verification_coverage as VC
 
+    contradictions = []
+
     def rect_for(code):
         vals = next((rectmap[c] for c in VC.candidates(code) if c in rectmap), [])
         extra = corpus.get(code.strip(), [])
-        have = {x["k"] for x in vals}
-        return vals + [x for x in extra if x["k"] not in have]
+        have = {}
+        for x in vals:
+            have.setdefault(analyte(x["k"]), x)
+        out = list(vals)
+        for x in extra:
+            a = analyte(x["k"])
+            if a not in have:
+                out.append(x)
+                continue
+            # the page always wins (trap 12): a corpus value that disagrees with
+            # the page read of the same analyte is a corpus corruption. It is
+            # recorded as a finding, never rendered beside the page value.
+            # Compared by magnitude, not by string — the two sources write the
+            # same number differently (Cyrillic х for ×, ^4 for a superscript,
+            # decimal comma for point), and a notation difference is not a
+            # disagreement.
+            if disagree(have[a]["v"], x["v"]):
+                contradictions.append({"code": code.strip(), "analyte": a,
+                                       "page": have[a]["v"], "corpus": x["v"],
+                                       "src": x["src"]})
+        return out
 
     ecoa = [{
         "date": r["date"], "lab": r["lab"], "code": r["code"], "batch": r["batch"],
@@ -240,6 +319,7 @@ def main(out):
         "coqs": coqs,
         "icoa_plan": plan,
         "ecoa": ecoa,
+        "corpus_contradictions": contradictions,
     }
     with open(out, "w", encoding="utf-8") as fh:
         json.dump(data, fh, ensure_ascii=False, separators=(",", ":"))

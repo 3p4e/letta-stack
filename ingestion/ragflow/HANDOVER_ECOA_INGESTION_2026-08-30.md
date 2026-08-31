@@ -381,3 +381,38 @@ in the same object, checked by subtraction, stored only if it passes. A chunk ca
 invisibly. A record with `value` and `limit` as numbers cannot.
 
 That is the entire design, and everything in `config/` is downstream of it.
+
+---
+
+## Trap 13 — a valid credential can be the wrong tenant, and the API says 200 (31.08.2026)
+
+`GET /api/v1/datasets` answered **HTTP 200** with a normal-looking dataset list, so the
+credential was live. But the corpus every rectification document is written against —
+`eCoA_DATABASE` (291 documents, 1 261 chunks) — was not in that list, and probing it
+directly returned **HTTP 200** carrying
+
+```json
+{"code":102,"message":"You don't own the dataset f29f8f58a13c11f1858cf58865604f65. "}
+```
+
+Same for `ImB_QC_COAs`: `code 102`, `lacks permission`. The listing endpoint had shown a
+*different tenant's* four datasets (`eCOA_SS`, `eCOA_DB`, `DB01_REG`,
+`WATER_QC_REZULTS`) — all real, none the one being worked on.
+
+This is trap 10 wearing a different costume, and it is worse: a script that asserts only
+on `response.status_code == 200`, or that iterates whatever `/datasets` returns, reads
+this as success and produces an **empty or wrong-corpus result with no error anywhere**.
+
+Two rules follow:
+
+1. **Assert on the body, not the status.** Any RAGflow response carrying `code` ≠ 0 is a
+   failure however healthy the HTTP status looks.
+2. **Assert the dataset identity before reading it.** Resolve the dataset by id and
+   confirm its name and document count against what the work expects, before a single
+   value is extracted.
+
+The corpus was read instead from its local materialisations, which is where it now
+lives for good: `ingestion/ragflow/cache/all_cert_texts_2026-08-30.json` (the 291
+documents / 1 261 chunks, vendored so a container reset cannot take it) and
+`deliverables/qc_register/extracted_params.json` (the typed extraction). The REST path
+in §"REST API — reliable" above is only reliable **with the owning tenant's key**.

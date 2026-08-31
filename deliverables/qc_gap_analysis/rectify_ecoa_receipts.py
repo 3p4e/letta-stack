@@ -128,7 +128,7 @@ def main():
         # keyed differently)
         cands = list(VC.candidates(r["code"]))
         recs = next((by_fold[c] for c in cands if c in by_fold), None)
-        via = "cert code"
+        via, multi = "cert code", False
         if recs is None:
             # the register's "PP CoA #0xx" series and the corpus's per-batch
             # "QCCoA 001v02" filenames are the same in-house certificate line,
@@ -138,6 +138,13 @@ def main():
             pool = (by_pn.get((r["pn"] or "").strip()) or
                     by_pn.get(VC.fold(r["batch"])) or [])
             pool = [x for x in pool if x["meta"].get("lab") == "PP"]
+            # a batch can hold more than one in-house certificate (P050022 has
+            # two QCCoA 001 of different dates carrying different values), so the
+            # pick is never left to file order: newest issue date wins and the
+            # ambiguity is disclosed on the value itself
+            multi = len(pool) > 1
+            pool.sort(key=lambda x: DR.key(x["meta"].get("date_of_issue", "")),
+                      reverse=True)
             if pool:
                 recs = pool
                 via = "batch %s (its in-house QCCoA)" % (r["pn"] or r["batch"]).strip()
@@ -165,6 +172,8 @@ def main():
                    else "corpus — verify on page") + " · " + rec["name"]
             if via != "cert code":
                 src += " · matched via " + via
+            if multi:
+                src += " · newest of %d in-house certificates for this batch" % len(recs)
             params.append({"k": label, "v": str(v), "src": src, "t": tier})
         if spec_hits:
             spec_only.append((r["code"], spec_hits))
@@ -237,10 +246,15 @@ def main():
         "(`deliverables/qc_register/extracted_params.json`) and the vendored chunk",
         "cache (`ingestion/ragflow/cache/all_cert_texts_2026-08-30.json`).",
         "",
-        "Corpus-derived entries: **%d certificates**, tiered T2 (passed the R4"
-        % len(certs),
-        "arithmetic) or T3 (no independent check — pre-fill only, promote through",
-        "the remediation desk after opening the scan).",
+        "Corpus-derived entries: **%d certificates**, %d values, every one tier T3"
+        % (len(certs), sum(len(c["params"]) for c in certs.values())),
+        "— present in the corpus with no independent check available, so they are",
+        "pre-fill only and are promoted through the remediation desk after the scan",
+        "is opened. **No value reached T2**: the R4 arithmetic gate needs a document",
+        "carrying Δ9-THC, Δ9-THCA and the total together, and no entry in this set",
+        "does. A corpus value is never rendered beside a page value for the same",
+        "analyte — where the two disagree the page wins and the corpus value is",
+        "recorded as a corruption instead.",
         "",
     ]
     if no_corpus:
@@ -257,8 +271,10 @@ def main():
                   for m in mismatches]
     else:
         lines += ["All register values for the 63 Farmahem receipts agree with the",
-                  "page reads — the CBD/CBN defects the campaign found (rows 9, 276,",
-                  "286) are corrected in the FHM2 register."]
+                  "page reads. The CBD/CBN defects the campaign found (rows 9, 276,",
+                  "286) are corrected in the canonical register — row 276 by chain",
+                  "step 17, after chain step 16 had reinstated the transposition on",
+                  "the authority of an older derived export."]
     lines += [""]
     with open(OUT_MD, "w", encoding="utf-8") as fh:
         fh.write("\n".join(lines))
