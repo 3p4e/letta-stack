@@ -45,6 +45,10 @@ model_list:
     litellm_params: {model: openrouter/google/gemini-3.6-flash,
                      api_key: os.environ/OPEN_ROUTER_API_KEY}
 
+  - model_name: gemini-flash
+    litellm_params: {model: openai/gemini-2.5-flash, api_base: https://api.cometapi.com/v1,
+                     api_key: os.environ/COMETAPI_API_KEY}
+
 litellm_settings:
   num_retries: 2
   request_timeout: 600

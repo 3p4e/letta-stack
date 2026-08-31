@@ -224,42 +224,44 @@ def read_openai(images, model='gpt-5'):
     return o['choices'][0]['message']['content'], u
 
 
-def _openrouter_gemini(parts, images):
-    """Backstop for Google free-tier exhaustion: the SAME Gemini family served
-    through OpenRouter, so read B stays a non-OpenAI vendor and the cross-vendor
-    guarantee holds. Tries the free-tier variant first, then the cheap paid one
-    (OpenRouter bills its own credit; the OpenAI budget meter is not affected).
-    Returns (text, usage) or None when no key is configured or every model fails.
+def _relay_gemini(images):
+    """Backstop for Google free-tier exhaustion: the Gemini family served
+    through relay providers, so read B stays a non-OpenAI vendor and the
+    cross-vendor guarantee holds. Relays bill their own credit - the OpenAI
+    budget meter is untouched. Order: OpenRouter first, CometAPI second
+    (its gemini-3.6-flash returned empty on the live probe, so it leads with
+    2.5-flash). Returns (text, usage) or None when nothing answers.
     """
-    key = os.environ.get('OPEN_ROUTER_API_KEY') or os.environ.get('OPENROUTER_API_KEY')
-    if not key:
-        return None
     content = [{'type': 'text', 'text': SYSTEM + '\n\nTranscribe this certificate as JSON.'}]
     for b64 in images:
         content.append({'type': 'image_url',
                         'image_url': {'url': 'data:image/png;base64,' + b64}})
-    # No free Gemini variant exists on OpenRouter (checked 31.08.2026), but the
-    # EXACT read-B model is served there - same behaviour, separate quota pool,
-    # flash-tier price on OpenRouter credit.
-    models = [m for m in (os.environ.get('OPENROUTER_GEMINI_MODEL'),
-                          'google/gemini-3.6-flash',
-                          'google/gemini-2.5-flash') if m]
-    for m in models:
-        body = {'model': m, 'temperature': 0, 'max_tokens': 32768,
-                'messages': [{'role': 'user', 'content': content}]}
-        r = urllib.request.Request('https://openrouter.ai/api/v1/chat/completions',
-            data=json.dumps(body).encode(),
-            headers={'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json'})
-        try:
-            o = json.load(urllib.request.urlopen(r, timeout=900))
-            txt = o['choices'][0]['message']['content']
-            if txt:
-                print('   read B served by OpenRouter (%s) - Google free tier exhausted' % m)
-                sys.stdout.flush()
-                u = o.get('usage', {}); u['served_by'] = 'openrouter:' + m
-                return txt, u
-        except Exception as e:
-            print('   openrouter %s failed: %s' % (m, str(e)[:80])); sys.stdout.flush()
+    relays = []
+    ork = os.environ.get('OPEN_ROUTER_API_KEY') or os.environ.get('OPENROUTER_API_KEY')
+    if ork:
+        relays.append(('openrouter', 'https://openrouter.ai/api/v1/chat/completions', ork,
+                       [m for m in (os.environ.get('OPENROUTER_GEMINI_MODEL'),
+                                    'google/gemini-3.6-flash', 'google/gemini-2.5-flash') if m]))
+    ck = os.environ.get('COMETAPI_API_KEY')
+    if ck:
+        relays.append(('cometapi', 'https://api.cometapi.com/v1/chat/completions', ck,
+                       ['gemini-2.5-flash', 'gemini-3.6-flash']))
+    for relay, url, key, models in relays:
+        for m in models:
+            body = {'model': m, 'temperature': 0, 'max_tokens': 32768,
+                    'messages': [{'role': 'user', 'content': content}]}
+            r = urllib.request.Request(url, data=json.dumps(body).encode(),
+                headers={'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json'})
+            try:
+                o = json.load(urllib.request.urlopen(r, timeout=900))
+                txt = o['choices'][0]['message']['content']
+                if txt:
+                    print('   read B served by %s (%s) - Google free tier exhausted' % (relay, m))
+                    sys.stdout.flush()
+                    u = o.get('usage', {}); u['served_by'] = '%s:%s' % (relay, m)
+                    return txt, u
+            except Exception as e:
+                print('   %s %s failed: %s' % (relay, m, str(e)[:80])); sys.stdout.flush()
     return None
 
 
@@ -295,7 +297,7 @@ def read_gemini(images, model='gemini-3.6-flash'):
                 print('   gemini key %d rate-limited (%d), trying next key' % (n + 1, e.code))
                 sys.stdout.flush(); continue
             if e.code in (429, 503):
-                o = _openrouter_gemini(parts=None, images=images)
+                o = _relay_gemini(images)
                 if o is None:
                     raise GeminiExhausted('all %d Gemini keys rate-limited; no OpenRouter fallback available' % len(keys))
                 return o
