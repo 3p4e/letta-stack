@@ -134,13 +134,25 @@ def _num(n, sub):
     return n if sub is None else '%s%s' % (n, sub)
 
 
-def compile_coq(db, batch):
+def compile_coq(db, batch, as_of=None):
+    """Assemble the CoQ dataset for a batch.
+
+    `as_of` (ISO date) compiles the certificate AS IT STOOD on that date -
+    what version v.01 must say, rather than what the later retest found. A
+    result dated after `as_of` did not exist when that version was issued and
+    must not appear on it; without this every version of a batch would show
+    the newest value and the reissue history would be meaningless.
+    """
     rows = db.execute("""SELECT r.parameter, r.result_printed, r.result_numeric, r.unit,
              r.method, r.date_iso, r.cert_code, r.lab, r.confidence,
              r.exceeds_criterion, r.outside_range, c.document, c.doc_id,
              r.parameter_printed, r.method_accredited, r.test_type
         FROM result r JOIN certificate c ON c.doc_id = r.doc_id
         WHERE r.batch = ? ORDER BY r.date_iso""", (batch,)).fetchall()
+    if as_of:
+        # An undated row cannot be proven to predate the cut, so it is excluded
+        # from a point-in-time compile rather than assumed contemporaneous.
+        rows = [r for r in rows if r[5] and r[5] <= as_of]
     by = {}
     for r in rows:
         by.setdefault(r[0], []).append(r)

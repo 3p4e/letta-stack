@@ -79,6 +79,16 @@ _ps=R.reconcile(json.loads(json.dumps(_A)),json.loads(json.dumps(_B)))['paramete
 check('other/pesticide keys with *-marked label pair as ONE row',
       len(_ps)==1 and _ps[0]['confidence']=='ok' and _ps[0]['parameter']=='pesticide_residues')
 
+print('\n2a3. A PRINTED MINIMUM IS A FLOOR, NOT A CEILING (corpus false-flag)')
+import importlib.util as _iu, re as _re
+_bt = _iu.module_from_spec(_iu.spec_from_file_location('bt', H + '/build_table.py'))
+_iu.spec_from_file_location('bt', H + '/build_table.py').loader.exec_module(_bt)
+check('"мин. 5.00 %" is recognised as a minimum', bool(_bt._MINIMUM.match('мин. 5.00 %')))
+check('"min. 5.00" and "≥ 5.00" too',
+      bool(_bt._MINIMUM.match('min. 5.00')) and bool(_bt._MINIMUM.match('≥ 5.00')))
+check('a ceiling is NOT read as a minimum',
+      not _bt._MINIMUM.match('≤ 12.0 %') and not _bt._MINIMUM.match('10^5 CFU/g'))
+
 print('\n2b. ARITHMETIC SELF-CHECK — R4, adopted from the legacy-corpus register')
 def _r4(free, acid, tot):
     rec = {'parameters': [

@@ -86,6 +86,9 @@ BATCH_ALIAS = _load_batch_aliases()
 # across several rows, so isolate the code before handing it to batch_key.
 _CODE = re.compile(r'\b([A-Z]{1,4}\s?\d{4,8}(?:\s?[-_/]\s?\d{1,3})?V?)\b')
 
+# "мин. 5.00 %" / "min. 5.00" / "≥ 5.00" - a floor, never a ceiling.
+_MINIMUM = re.compile(r'^\s*(?:мин|min|најмалку|не\s*помалку)\.?\s|^\s*[≥>]')
+
 def clean_batch(raw):
     """Canonical batch per the Head of QC grammar (GG1024_01), falling back to
     the repo key only if no batch code can be isolated. A PP number resolves to
@@ -114,7 +117,7 @@ CREATE TABLE IF NOT EXISTS result (
   governing_limit REAL, governing_ref TEXT, printed_limit_disagrees INT,
   limit_status TEXT, limit_status_note TEXT,
   range_low REAL, range_high REAL, outside_range INT,
-  exceeds_criterion INT, exceeds_max INT,
+  exceeds_criterion INT, exceeds_max INT, limit_is_minimum INT, below_minimum INT,
   method TEXT, method_accredited INT, coverage TEXT, covered_by TEXT,
   confidence TEXT, reads_agree INT, read_a TEXT, read_b TEXT,
   FOREIGN KEY(doc_id) REFERENCES certificate(doc_id));
@@ -162,10 +165,16 @@ def build(records, dbpath, base_url=''):
             rng = norm_range(p.get('limit_printed'))
             rlo, rhi = (rng if rng else (None, None))
             orange = int(rv < rlo or rv > rhi) if (conf_ok and rv is not None and rng) else None
-            use = gl if gl is not None else lv
+            # A printed limit can be a FLOOR, not a ceiling: CNP potency
+            # certificates print "мин. 5.00 %" against Total THC. Comparing a
+            # result against it as a maximum flagged 26.32 % THC as exceeding
+            # its criterion - eleven false findings, every one a good batch.
+            is_min = int(bool(_MINIMUM.match(str(p.get('limit_printed') or ''))))
+            use = gl if gl is not None else (None if is_min else lv)
             ec = int(rv > use) if (conf_ok and rv is not None and use is not None) else None
+            bm = int(rv < lv) if (conf_ok and is_min and rv is not None and lv is not None) else None
             em = int(rv > mv) if (conf_ok and rv is not None and mv is not None) else None
-            db.execute('INSERT INTO result VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+            db.execute('INSERT INTO result VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                 (did, batch, strain, r.get('cert_code'), diso, r.get('lab'),
                  r.get('test_type'), p.get('parameter'), p.get('parameter_printed'),
                  p.get('result_printed'), p.get('result_numeric'),
@@ -174,7 +183,7 @@ def build(records, dbpath, base_url=''):
                  p.get('limit_max_printed'), p.get('limit_max_numeric'),
                  gl, gref, disagrees, lstat, lnote,
                  rlo, rhi, orange,
-                 ec, em,
+                 ec, em, is_min, bm,
                  p.get('method'),
                  (None if p.get('method_accredited') is None
                   else int(p['method_accredited'])),
@@ -215,6 +224,8 @@ QUERIES = {
                  result_printed, method
                  FROM result WHERE method_accredited=0 AND confidence='ok'
                  ORDER BY batch, cert_code, parameter""",
+ 'BELOW_MINIMUM': """SELECT batch, cert_code, parameter, result_printed, limit_printed
+                 FROM result WHERE below_minimum=1 AND confidence='ok' ORDER BY batch""",
  'needs_review': """SELECT batch, cert_code, parameter, read_a, read_b
                  FROM result WHERE confidence!='ok' ORDER BY batch, parameter""",
  'exceeds_stated_criterion': """SELECT batch, cert_code, parameter, result_numeric,
