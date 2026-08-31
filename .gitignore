@@ -17,3 +17,4 @@ ingestion/coa_track/letta-imb-coas/reports/_fig_*.png
 ingestion/ecoa_runner/_tranche_records.json
 ingestion/ecoa_runner/held_ingest.json
 ingestion/ecoa_runner/ecoa.sqlite
+ingestion/ecoa_runner/decisions.tsv

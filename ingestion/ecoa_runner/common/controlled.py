@@ -215,3 +215,41 @@ def panel_of(method_printed):
         if any(_fold(m) in f for m in p['match']):
             return pid
     return None
+
+
+# --- Qualitative result equivalence ------------------------------------------
+# A qualitative result is a WORD, and Macedonian inflects it: one model reads
+# "отсуство" (absence, noun), another "отсутна" (absent, fem.) or "отсуства"
+# from the same printed cell. These are the same finding, and holding them as a
+# disagreement wastes a reviewer on grammar. Latin "g" vs Cyrillic "г" in the
+# unit is the same class.
+#
+# The map is EXPLICIT, never fuzzy: "присутна" (present) must never resolve to
+# absent, so nothing is matched by stem or edit distance.
+_QUALITATIVE = {
+    'absent':   ['отсуство', 'отсутна', 'отсутен', 'отсутно', 'отсуства', 'отсутни',
+                 'absent', 'absence', 'notdetected', 'negative', 'неутврдено'],
+    'conforms': ['одговара', 'соодветствува', 'conforms', 'confirms', 'complies',
+                 'conform', 'compliant'],
+    'nd':       ['нд', 'nd', 'н.д.', 'n.d.', 'notdetected'],
+    'blq':      ['blq', 'loq', 'подloq'],
+}
+_QUAL_LOOKUP = {}
+for _k, _vs in _QUALITATIVE.items():
+    for _v in _vs:
+        _QUAL_LOOKUP[_fold(_v)] = _k
+
+
+def qualitative_key(printed):
+    """The finding a qualitative result states, ignoring inflection and script.
+
+    Returns a canonical token ('absent', 'conforms', ...) when the value is a
+    recognised qualitative finding, else None - so a caller can fall back to
+    comparing the printed strings and never silently equate two numbers.
+    A trailing unit ("отсутна/25 g") is stripped before matching.
+    """
+    if printed is None:
+        return None
+    t = str(printed).split('/')[0]
+    t = re.sub(r'[\d\s]+$', '', t)
+    return _QUAL_LOOKUP.get(_fold(t))

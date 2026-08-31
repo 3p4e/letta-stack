@@ -14,6 +14,12 @@ from concurrent.futures import ThreadPoolExecutor
 # Keys added mid-run land in a root-only file (never the repo): a session's
 # environment is fixed at container start, but each tranche spawns a fresh
 # runner process, which picks these up here. Environment always wins.
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'common'))
+try:
+    from controlled import qualitative_key
+except Exception:
+    qualitative_key = lambda v: None
+
 _KEYFILE = '/root/.ecoa_keys.env'
 if os.path.exists(_KEYFILE):
     for _line in open(_KEYFILE):
@@ -502,6 +508,50 @@ SPEC_LINE = re.compile(r'^\s*(?:мин|макс|min|max)\.?\s', re.I)
 SPEC_RANGE = re.compile(r'^\s*\d+(?:[.,]\d+)?\s*[–—−-]\s*\d+(?:[.,]\d+)?\s*%')
 
 
+def arithmetic_adjudicate(rec):
+    """Where the reads disagree ONLY on a total, let the certificate decide.
+
+    Every CNP potency page prints the free form, the acid form and the total,
+    and states the conversion in its own footnote. When both models agree on
+    the components, the total follows arithmetically - so a disagreement of
+    14.60 vs 14.06 is settled by 0.38 + 15.59 x 0.877 = 14.05 without opening
+    the page or asking a third model for an opinion.
+
+    This RECOMMENDS; it does not record. The candidate and the arithmetic are
+    attached to the row so a reviewer confirms in one look, and confidence
+    stays "review" until they do - the certificate's own arithmetic is strong
+    evidence, but writing a value nobody looked at is what this design exists
+    to prevent.
+    """
+    by = {}
+    for p in rec.get('parameters') or []:
+        by.setdefault(p.get('parameter'), p)
+    for tot, free, acid, k in TOTALS:
+        t, f, a = by.get(tot), by.get(free), by.get(acid)
+        if not (t and f and a) or t.get('confidence') == 'ok':
+            continue
+        fv, av = f.get('result_numeric'), a.get('result_numeric')
+        if fv is None or av is None or f.get('confidence') != 'ok' or a.get('confidence') != 'ok':
+            continue
+        want = fv + av * k
+        cands = []
+        for side in ('read_a', 'read_b'):
+            v = norm_num((t.get(side) or {}).get('result'))
+            if v is not None:
+                cands.append((side, v, abs(v - want)))
+        fits = [c for c in cands if c[2] <= R4_TOL]
+        if len(fits) == 1 and len(cands) == 2:
+            side, v, d = fits[0]
+            t['arithmetic_says'] = {
+                'candidate': v, 'from': side,
+                'computed': round(want, 3),
+                'working': '%s + %s x %s = %.3f' % (fv, av, k, want),
+                'rejected': [c[1] for c in cands if c[0] != side]}
+            rec.setdefault('notes', []).append(
+                '%s: arithmetic favours %s (%s)' % (tot, v, t['arithmetic_says']['working']))
+    return rec
+
+
 def spec_line_guard(rec):
     for p in rec.get('parameters') or []:
         v = p.get('result_printed')
@@ -649,7 +699,13 @@ def reconcile(a, b):
         # exactly this before the split.
         res_agree = (rx == ry)
         if rx is None and ry is None:
-            res_agree = squash(x.get('result_printed')) == squash(y.get('result_printed'))
+            px, py = x.get('result_printed'), y.get('result_printed')
+            # A qualitative result is a WORD, and Macedonian inflects it:
+            # "отсуство" / "отсутна" / "отсуства" are one finding read three
+            # ways, as are Cyrillic "г" and Latin "g" in the unit. Comparing
+            # the strings sends a reviewer to adjudicate grammar.
+            qx, qy = qualitative_key(px), qualitative_key(py)
+            res_agree = (qx == qy) if (qx and qy) else (squash(px) == squash(py))
         lim_agree = (lx == ly) and (mx == my_)
         agree = res_agree
         rec = {'parameter': pname,
@@ -749,7 +805,7 @@ def run(doc_ids, names, outpath):
         print('   read A (gpt-5): %s | read B (gemini-3.6-flash): %s | %.0fs'
               % ('ok' if A else 'FAILED %s' % ua.get('error',''),
                  'ok' if B else 'FAILED %s' % ub.get('error',''), time.time()-t0)); sys.stdout.flush()
-        rec = spec_line_guard(arithmetic_check(reconcile(A, B)))
+        rec = arithmetic_adjudicate(spec_line_guard(arithmetic_check(reconcile(A, B))))
         rec['document'] = short; rec['doc_id'] = did
         rec['raw'] = {'A': A, 'B': B}
         results.append(rec)
