@@ -121,7 +121,12 @@ def _cell(e):
         HELD        both reads disagree - a ruling, not a test
         NOT TESTED  a covering certificate exists but omits the row - retest
         MISSING     no covering certificate at all - test and issue an iCoA
+        PARTIAL     the laboratory reported a related quantity but not the one
+                    the specification asks for - ask it to restate
     """
+    if e['status'] == 'PARTIAL':
+        lab_id, _ = CQ.canonical_lab(e.get('lab'))
+        return 'PARTIAL', e.get('result'), lab_id, e.get('cert_code')
     if e['status'] != 'ok':
         return e['status'], None, None, None
     lab_id, _ = CQ.canonical_lab(e.get('lab'))
@@ -185,9 +190,14 @@ def schedule(db, issue_as_of=None):
             state, val, src, cert = _cell(e)
             r['cells'].append({'no': e['no'], 'parameter': e['parameter'],
                                'criterion': e['criterion'], 'state': state,
-                               'value': val, 'source': src, 'cert': cert})
+                               'value': val, 'source': src, 'cert': cert,
+                               'no_date': bool(e.get('date_not_captured'))})
         for c in r['cells']:
-            if c['state'] in ('MISSING', 'NOT TESTED'):
+            if c['state'] == 'PARTIAL':
+                # Not a missing test - a missing restatement. The laboratory
+                # holds the data; it reported the wrong form of it.
+                c['route'] = 'RESTATE'
+            elif c['state'] in ('MISSING', 'NOT TESTED'):
                 c['route'] = ('iCoA' if c['no'] in IN_HOUSE_CAPABLE else
                               'iCoA?' if c['no'] in IN_HOUSE_CONDITIONAL else
                               'OUTSOURCE')
@@ -196,7 +206,11 @@ def schedule(db, issue_as_of=None):
             else:
                 c['route'] = ''
         r['gaps'] = [c for c in r['cells']
-                     if c['state'] in ('MISSING', 'NOT TESTED', 'IN-HOUSE')]
+                     if c['state'] in ('MISSING', 'NOT TESTED', 'IN-HOUSE',
+                                       'PARTIAL')]
+        # A row whose certificate has no captured issue date is sourced, but the
+        # CoQ cannot cite it until the date is recovered from the document.
+        r['undated_rows'] = [c['no'] for c in r['cells'] if c.get('no_date')]
         r['icoa_rows'] = [c['no'] for c in r['cells'] if c['route'] in ('iCoA', 'iCoA?')]
         r['outsource_rows'] = [c['no'] for c in r['cells'] if c['route'] == 'OUTSOURCE']
     # The iCoA carries the house document scheme too, one sequence per year,
@@ -218,7 +232,7 @@ def schedule(db, issue_as_of=None):
 
 
 # --- rendering ----------------------------------------------------------------
-BOX = {'OUTSOURCED': '[x]', 'IN-HOUSE': '[x]', 'HELD': '[!]',
+BOX = {'OUTSOURCED': '[x]', 'IN-HOUSE': '[x]', 'HELD': '[!]', 'PARTIAL': '[~]',
        'NOT TESTED': '[ ]', 'MISSING': '[ ]'}
 
 
@@ -260,11 +274,16 @@ def render(rows):
                 src = '-> ' + c['route']
             print('   %s %-4s %-30s %-22s %-20s %s'
                   % (BOX[c['state']], c['no'], c['parameter'][:30],
-                     str(val)[:22], (c['cert'] or '')[:20], src))
+                     str(val)[:22], (c['cert'] or '')[:20],
+                     src + ('  [no issue date]' if c.get('no_date') else '')))
         g = r['gaps']
-        print('   %d of %d rows sourced from an accredited laboratory; %d gap%s'
-              % (sum(1 for c in r['cells'] if c['state'] == 'OUTSOURCED'),
-                 len(r['cells']), len(g), '' if len(g) == 1 else 's'))
+        line = ('   %d of %d rows sourced from an accredited laboratory; %d gap%s'
+                % (sum(1 for c in r['cells'] if c['state'] == 'OUTSOURCED'),
+                   len(r['cells']), len(g), '' if len(g) == 1 else 's'))
+        if r['undated_rows']:
+            line += ('; %d row(s) cite a certificate whose issue date was not '
+                     'captured' % len(r['undated_rows']))
+        print(line)
 
     print('\n' + '=' * W)
     print('SUMMARY')
