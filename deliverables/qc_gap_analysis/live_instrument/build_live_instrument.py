@@ -38,22 +38,35 @@ def main():
 
     # The owner's document masters, vendored beside this script and carried in
     # the page base64-encoded: the desk generates real certificates from them.
+    # The four per-scope iCoA masters (31.08.2026) supersede the Variation F
+    # master for compilation; the Variation F file stays vendored on record.
     tdir = os.path.join(HERE, "templates")
     coq_tpl = open(os.path.join(tdir, "_CoQ_MASTER_Template.html"),
                    encoding="utf-8").read()
-    icoa_tpl = open(os.path.join(tdir, "iCoA_Template_v02_VariationF.html"),
-                    encoding="utf-8").read()
-    # The iCoA master references a signature scan by a relative path that cannot
-    # resolve inside the artifact; a generated document carries a signature line,
-    # never an embedded signature image.
-    SIG = '<img class="sig-img" src="../../assets/sig_blagoj_hand.png">'
-    assert SIG in icoa_tpl, "iCoA sig image not found - template changed?"
-    icoa_tpl = icoa_tpl.replace(SIG, "")
-    assert "@@" not in coq_tpl and "@@" not in icoa_tpl
+    scoped = {
+        "tpl-icoa-ab": "iCoA_P01-02_Appearance_Identification_AB.html",
+        "tpl-icoa-c":  "iCoA_P03_Identification_C_Chromatographic.html",
+        "tpl-icoa-fm": "iCoA_P07_Foreign_Matter.html",
+        "tpl-icoa-mb": "iCoA_P09_Microbiological_Purity.html",
+    }
+    import re as _re
+    tpls = {}
+    for tid, fn in scoped.items():
+        t = open(os.path.join(tdir, fn), encoding="utf-8").read()
+        # A master may carry handwritten signature scans (P07 does, as data
+        # URIs); a generated document carries a signature line, never an
+        # embedded signature image.
+        t, nsig = _re.subn(r'<img class="ap-img handwritten"[^>]*>', "", t)
+        if fn.endswith("Foreign_Matter.html"):
+            assert nsig == 2, f"expected 2 handwritten sigs in {fn}, found {nsig}"
+        assert "@@" not in t, f"stray placeholder text in {fn}"
+        tpls[tid] = t
+    assert "@@" not in coq_tpl
     b64 = lambda t: base64.b64encode(t.encode("utf-8")).decode("ascii")
     tags = ('<script id="qc-data" type="application/json">@@DATA@@</script>\n'
             '<script id="tpl-coq" type="text/plain">' + b64(coq_tpl) + '</script>\n'
-            '<script id="tpl-icoa" type="text/plain">' + b64(icoa_tpl) + '</script>\n'
+            + "".join('<script id="' + tid + '" type="text/plain">' + b64(t) +
+                      "</script>\n" for tid, t in sorted(tpls.items())) +
             '<script id="qc-shell" type="text/plain">@@SHELL@@</script>\n'
             '<script id="qc-overlay" type="application/json">@@OVERLAY@@</script>\n'
             '<script>\n' + script + '\n</script>')

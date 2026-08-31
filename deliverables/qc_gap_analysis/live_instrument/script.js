@@ -7,6 +7,7 @@ OV.v = OV.v || 1;
 OV.batches = OV.batches || []; OV.ecoa = OV.ecoa || [];
 OV.attach = OV.attach || {}; OV.icoa = OV.icoa || {};
 OV.issue = OV.issue || {}; OV.log = OV.log || [];
+OV.verify = OV.verify || {};
 var DET = {}; D.dets.forEach(function(d){ DET[d.no] = d; });
 
 function esc(s){ return String(s == null ? "" : s)
@@ -186,7 +187,11 @@ D.icoa_plan.forEach(function(p, i){
 });
 D.ecoa.forEach(function(e, i){
   e.i = i;
-  e.hay = [e.code, e.batch, e.strain, e.lab, e.pn].concat(e.reported).join(" ").toLowerCase();
+  e.fix = OV.verify[e.code] || null;
+  e.hay = [e.code, e.batch, e.strain, e.lab, e.pn].concat(e.reported)
+    .concat(e.fix ? Object.keys(e.fix.params).map(function(k){
+      return k + " " + e.fix.params[k].v; }) : [])
+    .join(" ").toLowerCase();
 });
 
 var COQ = D.coqs, ICO = D.icoa_plan, ECO = D.ecoa;
@@ -381,6 +386,25 @@ function renderCoqs(){
   el("cnt-coq").textContent = list.length + " of " + COQ.length + " certificates";
   el("e-coq").classList.toggle("hide", list.length > 0);
 }
+/* the owner's per-scope masters double as bench worksheets: from any CoQ,
+   print the master for a determination filled with this batch's identity */
+var BENCH = { "1": "ab", "2": "ab", "3": "c", "7": "fm" };
+el("coq-detail").addEventListener("click", function(e){
+  var b = e.target.closest(".dm-go");
+  if (!b || OPEN == null) return;
+  var c = COQ[OPEN], k = b.dataset.k;
+  var pseudo = { cb: c.cb, pp: c.pp, strain: c.strain, scope: SCOPE_NAME[k],
+                 reissue: c.reissue, coq_type: c.t };
+  var asn = OV.icoa[icoaKey(pseudo)] || null;
+  openDoc((asn ? asn.ref : "BENCH MASTER") + " \u2014 " + SCOPE_NAME[k] + " \u2014 " + c.cb,
+    icoaDocName(pseudo, asn), fillIcoa(pseudo, asn));
+});
+function openDets(c){
+  return c.rows.filter(function(r){
+    return r.st.indexOf("to be performed") === 0 || r.st.indexOf("not tested") === 0 ||
+           r.st.indexOf("awaiting") === 0 || r.st.indexOf("in-house CoA only") === 0;
+  }).map(function(r){ return r.no; });
+}
 function renderDetail(){
   var box = el("coq-detail");
   if (OPEN == null) { box.innerHTML = ""; return; }
@@ -391,7 +415,10 @@ function renderDetail(){
     var head = "";
     if (d.group && d.group !== lastGroup) {
       lastGroup = d.group;
-      head = '<tr class="grp"><td colspan="7">' + esc(d.group) + '</td></tr>';
+      head = '<tr class="grp"><td colspan="7">' + esc(d.group) +
+        (r.no.indexOf("9.") === 0
+          ? ' <button class="btn sm dm-go" data-k="mb">Bench master \u00a79</button>' : "") +
+        '</td></tr>';
     }
     var kind = stKind(r.st);
     return head + '<tr><td class="c num">' + esc(r.no) + '</td>' +
@@ -405,7 +432,9 @@ function renderDetail(){
         : '<span class="dim">—</span>') + '</td>' +
       '<td><span class="pill p-' + kind + '">' + esc(r.st) + '</span>' +
         (r.route ? '<span class="sub">' + esc(r.route) + '</span>' : "") +
-        (r.also ? '<span class="sub dim">also on file: ' + esc(r.also) + '</span>' : "") + '</td></tr>';
+        (r.also ? '<span class="sub dim">also on file: ' + esc(r.also) + '</span>' : "") +
+        (BENCH[r.no] ? ' <button class="btn sm dm-go" data-k="' + BENCH[r.no] +
+          '">Bench master</button>' : "") + '</td></tr>';
   }).join("");
   var notes = [];
   if (!c.reg) notes.push("<b>No outsourced certificate is on file for this cultivation batch.</b> Every value shown comes from the in-house CoA transcription, whose footnote attributes the testing to accredited laboratories. Locate the physical certificates, scan and upload.");
@@ -416,10 +445,7 @@ function renderDetail(){
   if (c.conflict) notes.push("<b>Grade range conflict.</b> " + c.conflict);
   if (c.reissue) notes.push("Ten determinations are in the retest scope; the other eleven read <i>outside the retest scope</i> and stand on this batch's initial certificate.");
   /* determinations still uncertified, in this CoQ's scope */
-  var open_dets = c.rows.filter(function(r){
-    return r.st.indexOf("to be performed") === 0 || r.st.indexOf("not tested") === 0 ||
-           r.st.indexOf("awaiting") === 0 || r.st.indexOf("in-house CoA only") === 0;
-  }).map(function(r){ return r.no; });
+  var open_dets = openDets(c);
   var deskHtml = "";
   if (!c.deskIssued) {
     deskHtml = '<div class="desk" style="margin:12px;max-width:none" data-desk="1">' +
@@ -559,10 +585,20 @@ function renderEcoa(){
         '<span class="sub">' + esc(e.lab.split(" — ")[0]) + '</span></td>' +
       '<td class="mono">' + dash(e.batch) + '</td><td class="mono dim">' + dash(e.pn) + '</td>' +
       '<td>' + dash(e.strain) + '</td>' +
-      '<td style="font-size:10.6px;color:var(--text-sec)">' + (e.reported.length ? esc(e.reported.join(" · ")) : '<span class="dim">—</span>') + '</td>' +
-      '<td class="c">' + (e.verified ? '<span class="pill p-ok">page-read</span>' : '<span class="pill p-none">not read</span>') + '</td>' +
+      '<td style="font-size:10.6px;color:var(--text-sec)">' +
+        (e.reported.length ? esc(e.reported.join(" · ")) : '<span class="dim">—</span>') +
+        (e.fix ? "<br>" + Object.keys(e.fix.params).map(function(k2){
+          var pv = e.fix.params[k2];
+          return '<span class="vchip" title="transcribed from the opened document at the desk by ' +
+            esc(pv.by) + ", " + esc(pv.at) + '"><b>' + esc(k2) + '</b>' + esc(pv.v) + '</span>';
+        }).join("") : "") + '</td>' +
+      '<td class="c">' + (e.verified ? '<span class="pill p-ok">page-read</span>' : '<span class="pill p-none">not read</span>') +
+        (e.fix && Object.keys(e.fix.params).length ? '<br><span class="pill p-info">desk-read</span>' : "") +
+        ' <button class="btn sm ec-fix" data-code="' + esc(e.code) + '">Remediate</button></td>' +
       '<td class="c">' + (e.flag === "red" ? '<span class="pill p-fail">red</span>'
-        : e.flag === "amber" ? '<span class="pill p-warn">amber</span>' : '<span class="dim">—</span>') + '</td>' +
+        : e.flag === "amber" ? '<span class="pill p-warn">amber</span>' : '<span class="dim">—</span>') +
+        (e.fix && e.fix.notes.length ? '<span class="sub" style="max-width:130px;white-space:normal">' +
+          esc(e.fix.notes[e.fix.notes.length - 1].t) + '</span>' : "") + '</td>' +
       '<td class="c">' + (e.pdf ? '<a href="' + esc(e.pdf) + '" target="_blank" rel="noopener">open</a>' : '<span class="dim">—</span>') + '</td></tr>';
   }).join("");
   el("cnt-ecoa").textContent = list.length + " of " + ECO.length + " certificates";
@@ -637,6 +673,78 @@ document.querySelector("#t-coqs tbody").addEventListener("click", function(e){
   OPEN = (OPEN === i) ? null : i;
   renderDetail(); renderCoqs();
 });
+
+/* ---- batch issuance ----
+   The owner's convention of 31.08.2026: when the parameters missing from the
+   outsourced certificates finally arrive, the certificates of quality they
+   were holding up are issued together — one date, sequential numbers, in
+   chronological order of their basis dates. */
+function issueReady(){
+  return COQ.filter(function(c){
+    if (c.issued || c.unresolved) return false;
+    if (openDets(c).length) return false;
+    return sortDate(c.issue.replace("\u2265 ", "")) <= sortDate(todayStr());
+  }).sort(function(a, b){
+    var d = sortDate(a.basis).localeCompare(sortDate(b.basis));
+    return d || (a.cb < b.cb ? -1 : a.cb > b.cb ? 1 : 0);
+  });
+}
+function pad4(n){ return ("000" + n).slice(-4); }
+document.querySelector("#p-coq .controls").insertAdjacentHTML("afterend",
+  '<div class="desk" id="bi-desk" data-desk="1"><h3>Batch issuance \u2014 one date, sequential numbers, chronological order</h3>' +
+  '<div class="deskmsg" id="bi-list" style="margin-bottom:8px"></div>' +
+  '<div class="frm">' +
+  '<span class="fld"><label>First CoQ number of the batch</label><input id="bi-num" placeholder="CoQ-PP-2026-NNNN"></span>' +
+  '<span class="fld"><label>Date of issue (all certificates)</label><input id="bi-date" placeholder="dd.mm.yyyy"></span>' +
+  '<button class="btn gold" id="bi-go">Issue the batch</button></div>' +
+  '<div class="deskmsg" id="bi-msg">A CoQ number is copied from this issuance record at issue \u2014 numbering continues the sequence, in chronological order of the basis dates.</div></div>');
+function renderBatchIssue(){
+  var list = issueReady();
+  el("bi-list").innerHTML = list.length
+    ? "<b>" + list.length + " certificate" + (list.length === 1 ? "" : "s") +
+      " fully certified and inside the dating window:</b> " +
+      list.map(function(c){ return esc(c.cb) + (c.reissue ? " (reissue)" : ""); }).join(" \u00b7 ")
+    : "Nothing is ready: no certificate of quality has every determination in scope " +
+      "certified with its dating window open. Attach the arriving certificates first \u2014 " +
+      "readiness is computed, never asserted.";
+  el("bi-go").disabled = !list.length;
+}
+el("bi-go").addEventListener("click", function(){
+  var list = issueReady();
+  if (!list.length) return;
+  var num = el("bi-num").value.trim(), date = el("bi-date").value.trim();
+  if (!operator()) return msgIn("bi-msg", "Enter your initials on the Desk log tab first.", false);
+  var m = /^CoQ-PP-(\d{4})-(\d{4})$/.exec(num);
+  if (!m) return msgIn("bi-msg", "The first number must read CoQ-PP-YYYY-NNNN.", false);
+  var start = parseInt(m[2], 10);
+  if (start + list.length - 1 > 9999)
+    return msgIn("bi-msg", "The sequence would run past 9999 \u2014 start lower.", false);
+  for (var i = 0; i < list.length; i++) {
+    var dw = dateWindowError(date, list[i].issue.replace("\u2265 ", ""));
+    if (dw) return msgIn("bi-msg", list[i].cb + ": " + dw, false);
+  }
+  var nums = list.map(function(_, i){ return "CoQ-PP-" + m[1] + "-" + pad4(start + i); });
+  var clash = nums.filter(function(n2){
+    return COQ.some(function(x){ return x.n === n2; }) ||
+      Object.keys(OV.issue).some(function(k){ return OV.issue[k].number === n2; });
+  });
+  if (clash.length) return msgIn("bi-msg", "Already taken: " + clash.join(", ") +
+    ". One number, one document, forever.", false);
+  var recorded = [];
+  list.forEach(function(c, i){
+    OV.issue[c.key] = { number: nums[i], date: date, by: operator(), at: stamp(), batch: true };
+    recorded.push(c.key);
+  });
+  msgIn("bi-msg", "Publishing " + list.length + " issuances\u2026", true);
+  saveState("CoQ batch issuance", list.length + " certificates issued " + date + ": " +
+    nums[0] + " \u2026 " + nums[nums.length - 1] + " \u2014 " +
+    list.map(function(c){ return c.cb; }).join(", "),
+    null, function(msg2){
+      recorded.forEach(function(k){ delete OV.issue[k]; });
+      msgIn("bi-msg", msg2, false);
+    });
+});
+renderBatchIssue();
 
 /* ---- iCoA assignment ---- */
 var IC_TARGET = null;
@@ -822,7 +930,15 @@ function renderReg(){
               var col = D.reg_columns[L] || { name: L };
               var cls = ct.oos[L] ? " over" : (ct.undet[L] ? " undet" :
                 (ct.flags[L] === "red" ? " flagR" : ct.flags[L] === "amber" ? " flagA" : ""));
-              return '<span class="vchip' + cls + (ct.stab ? " stab" : "") + '"><b>' +
+              /* the tooltip answers "against what?": the acceptance criterion,
+                 and — for a microbial criterion written as a bare power of ten —
+                 the ×2-per-decade maximum acceptable count (Ph. Eur. 5.1.4) */
+              var al = acceptanceLimit(col.crit || ""), mg = magnitude(col.crit || "");
+              var tip = col.name + (col.crit ? " — A.C. " + col.crit : "") +
+                (al != null && mg != null && al !== mg
+                  ? " · maximum acceptable count " + al.toLocaleString("en") +
+                    " (Ph. Eur. 5.1.4, ×2 per decade)" : "");
+              return '<span class="vchip' + cls + (ct.stab ? " stab" : "") + '" title="' + esc(tip) + '"><b>' +
                 esc(col.name.replace(/ CFU\/g| %| µg\/kg| mg\/kg|\/1 g|\/25 g/g, "")) + '</b>' +
                 esc(ct.vals[L]) + '</span>';
             }).join("") + '</td></tr>';
@@ -871,7 +987,7 @@ if (typeof window.claude === "object" && window.claude && typeof window.claude.u
 }
 function setRO(msg){
   RO_REASON = msg;
-  document.querySelectorAll(".desk .btn, .att-go, .iss-go, .ic-go").forEach(function(b){ b.disabled = true; });
+  document.querySelectorAll(".desk .btn, .att-go, .iss-go, .ic-go, .ec-fix").forEach(function(b){ b.disabled = true; });
   document.querySelectorAll(".deskmsg").forEach(function(d){ d.textContent = msg; d.className = "deskmsg bad"; });
 }
 function stamp(){
@@ -965,6 +1081,65 @@ el("ne-go").addEventListener("click", function(){
   msgIn("ne-msg", "Publishing the receipt…", true);
   saveState("certificate receipt", code + " (" + lab.split(" — ")[0] + ") for " + batch,
     null, function(m){ OV.ecoa.pop(); msgIn("ne-msg", m, false); });
+});
+
+/* ---- page remediation ----
+   Where ingestion lost or corrupted a value — a certificate standing "not
+   read", an amber or red flag, a parameter with no value — the operator
+   opens the actual document (the open link on the row), reads the value off
+   the page and transcribes it here, exactly as printed. The desk records who
+   read it and when; flags are never cleared, a resolution note stands beside
+   them. */
+var EF_TARGET = null;
+(function(){
+  var pset = {}, names = [];
+  Object.keys(D.reg_columns).forEach(function(L){
+    var n2 = D.reg_columns[L].name;
+    if (!pset[n2]) { pset[n2] = 1; names.push(n2); }
+  });
+  document.querySelector("#p-ecoa .desk").insertAdjacentHTML("afterend",
+    '<div class="desk" id="ef-desk" data-desk="1"><h3>Remediation — transcribe a value from the opened document · <span id="ef-what" style="font-weight:400">pick a certificate below (Remediate)</span></h3>' +
+    '<div class="frm">' +
+    '<span class="fld"><label>Parameter</label><input id="ef-param" list="ef-params" placeholder="TYMC CFU/g · THC % · …"></span>' +
+    '<span class="fld"><label>Value, exactly as printed</label><input id="ef-val" placeholder="verbatim from the page"></span>' +
+    '<span class="fld"><label>Resolution note (optional)</label><input id="ef-note" placeholder="e.g. flag resolved — page reads 4,2 x 10⁴"></span>' +
+    '<button class="btn" id="ef-go" disabled>Record page reading</button></div>' +
+    '<div class="deskmsg" id="ef-msg">Open the document from its row, read the value off the page, transcribe it exactly. A page reading never overwrites the register — it stands beside it, attributed.</div>' +
+    '<datalist id="ef-params">' + names.map(function(n2){
+      return '<option value="' + esc(n2) + '">'; }).join("") + '</datalist></div>');
+})();
+document.querySelector("#t-ecoas tbody").addEventListener("click", function(e){
+  var b = e.target.closest(".ec-fix");
+  if (!b) return;
+  EF_TARGET = b.dataset.code;
+  el("ef-what").textContent = EF_TARGET;
+  el("ef-go").disabled = false;
+  el("ef-desk").scrollIntoView({ block: "nearest" });
+});
+el("ef-go").addEventListener("click", function(){
+  if (!EF_TARGET) return;
+  var tk = EF_TARGET;
+  var param = el("ef-param").value.trim(), val = el("ef-val").value.trim(),
+      note = el("ef-note").value.trim();
+  if (!operator()) return msgIn("ef-msg", "Enter your initials on the Desk log tab first.", false);
+  if (!val && !note) return msgIn("ef-msg", "Transcribe a value, or record a resolution note — an empty reading records nothing.", false);
+  if (val && !param) return msgIn("ef-msg", "Name the parameter the value belongs to — a value without its parameter is how registers rot.", false);
+  var v = OV.verify[tk] || (OV.verify[tk] = { params: {}, notes: [] });
+  if (val && v.params[param])
+    return msgIn("ef-msg", "That parameter already carries a page reading (" + v.params[param].v +
+      "). One reading, one record — a correction is a new note.", false);
+  var hadVal = !!val, hadNote = !!note;
+  if (val) v.params[param] = { v: val, by: operator(), at: stamp() };
+  if (note) v.notes.push({ t: note, by: operator(), at: stamp() });
+  msgIn("ef-msg", "Publishing the page reading…", true);
+  saveState("page remediation", tk + (val ? ": " + param + " = " + val : "") +
+    (note ? (val ? " — " : ": ") + note : ""),
+    null, function(m2){
+      if (hadVal) delete v.params[param];
+      if (hadNote) v.notes.pop();
+      if (!Object.keys(v.params).length && !v.notes.length) delete OV.verify[tk];
+      msgIn("ef-msg", m2, false);
+    });
 });
 
 /* ---- desk log ---- */
@@ -1139,71 +1314,109 @@ function fillCoq(c){
   if (draft) addDraftMark(doc);
   return serializeDoc(doc);
 }
-function setSg(doc, label, value){
-  doc.querySelectorAll(".sg-cell").forEach(function(cell){
-    var l = cell.querySelector(".sg-label");
-    if (l && l.textContent.trim() === label) {
-      cell.querySelector(".sg-val").textContent = value;
-    }
-  });
+/* The four per-scope iCoA masters (31.08.2026) supersede the Variation F
+   master for compilation. Each is a worked specimen: everything that is the
+   worked batch's measurement data is blanked to a controlled "—" — the desk
+   holds only the overall disposition, and bench observations belong to the
+   analyst's worksheet, never to a compilation. Criterion and method columns
+   are specification text and stay as the master prints them. */
+var SCOPE_TPL = { ab: "tpl-icoa-ab", c: "tpl-icoa-c", fm: "tpl-icoa-fm", mb: "tpl-icoa-mb" };
+var SCOPE_SEC = { ab: "\u00a71\u20132", c: "\u00a73", fm: "\u00a77", mb: "\u00a79" };
+var SCOPE_NAME = { ab: "Ident A + B", c: "Ident C \u2014 chromatographic",
+                   fm: "Foreign matter", mb: "Microbiological purity" };
+function scopeKind(scope){
+  if (scope.indexOf("Ident A") === 0) return "ab";
+  if (scope.indexOf("Ident C") === 0) return "c";
+  if (scope.indexOf("Foreign") === 0) return "fm";
+  return "mb";
 }
 function fillIcoa(p, asn){
-  var doc = tplDoc("tpl-icoa");
-  var q = function(s){ return doc.querySelector(s); };
+  var kind = scopeKind(p.scope);
+  var doc = tplDoc(SCOPE_TPL[kind]);
+  var q = function(sel){ return doc.querySelector(sel); };
   var draft = !asn;
-  var ref = asn ? asn.ref : "iCoA-PP-····-····";
+  var ref = asn ? asn.ref : "iCoA-PP-\u00b7\u00b7\u00b7\u00b7-\u00b7\u00b7\u00b7\u00b7";
   var coq = COQ.filter(function(c){ return c.cb === p.cb && c.reissue === p.reissue; })[0];
-  var fm = p.scope.indexOf("Foreign") === 0;
   q(".hb-code").textContent = ref;
-  q(".ribbon-mono").innerHTML = esc(p.pp || "—") + " <small>(Production)</small> · " +
-    esc(p.cb) + " <small>(Cultivation)</small> · " + esc(p.strain) +
-    (coq && coq.grade ? " <small>· Grade " + esc(coq.grade) + "</small>" : "");
-  q(".ribbon-types").innerHTML = '<span class="rt-pill chemo">' + esc(p.scope) +
-    " · QCSP 001 №" + (fm ? " 7" : " 1, 2") + "</span>" +
-    '<span class="rt-pill botanical">' + (p.reissue ? "12-month reissue" : "Initial release") + "</span>";
-  q(".ribbon-stamp-val").textContent = asn ? asn.date : "—";
-  setSg(doc, "Lab Sample ID", "—");
-  setSg(doc, "Sample Received", "—");
-  setSg(doc, "Sampled by", "QC Officer (Internal)");
-  setSg(doc, "Sample Mass", fm ? "25–50 g" : "—");
-  setSg(doc, "Requested Tests", p.scope);
-  setSg(doc, "Analysis Started", "—");
-  setSg(doc, "Analysis Completed", asn ? asn.date : "—");
-  setSg(doc, "Specification Ref.", (coq && coq.spec) || "QCSP 001 v.03");
-  setSg(doc, "Linked CoQ", coq ? coq.n : "—");
-  /* keep only the scope's rows of the master's analytical table */
-  var tb = q("table.methods tbody");
-  var keep = fm ? [6] : [0, 1];
-  var rows2 = Array.prototype.slice.call(tb.querySelectorAll("tr"));
-  tb.innerHTML = "";
-  keep.forEach(function(i, n){
-    var tr = rows2[i];
-    tr.querySelector("td").textContent = n + 1;
-    var rv = tr.querySelector(".m-result");
-    rv.textContent = asn && asn.res ? asn.res : "—";
-    if (asn && /^does not/i.test(asn.res)) rv.className = "m-result fail";
-    tb.appendChild(tr);
-  });
-  var conf = asn && asn.res && !/^does not/i.test(asn.res);
-  q(".cs-badge").textContent = draft ? "—" : (conf ? "Conforms" : "Does not conform");
-  q(".cs-body").innerHTML = "<strong>Result:</strong> " + esc(p.scope) +
-    " (QCSP 001 v.03 determination" + (fm ? " 7" : "s 1 and 2") + ") — " +
-    (draft ? "to be performed and recorded at issue." :
-      "<strong>" + esc(asn.res) + "</strong>.") +
-    " This iCoA reports analytical results only; formal batch release is documented in " +
-    "the linked Certificate of Quality &nbsp;<span class=\"linked-coq\">" +
-    esc(coq ? coq.n : "—") + "</span>.";
-  var sig = doc.querySelectorAll(".sig-block");
-  if (sig[0]) {
-    sig[0].querySelector(".sig-name").textContent = asn ? asn.analyst : "—";
-    sig[0].querySelector(".sig-cred").textContent = "QC Laboratory";
+  q(".hb-issue").innerHTML = "Issued \u00b7 \u0418\u0437\u0434\u0430\u0434\u0435\u043d <b>" +
+    esc(draft ? "\u2014" : asn.date) + "</b>";
+  q(".pb-name").innerHTML = "<span style=\"font-family:'Roboto Mono',monospace\">" +
+    esc(p.pp || p.cb) + '</span> <i class="bisep" style="font-size:.7em">|</i> ' +
+    '<span style="font-weight:800;text-transform:uppercase">' + esc(p.strain) + "</span>";
+  var pot = q(".pb-potency");
+  if (pot) {
+    var pv = pot.querySelector(".pbp-val"), pt = pot.querySelector(".pbp-tol");
+    if (pv) pv.textContent = (coq && coq.thc) ? coq.thc + "%" : "\u00b7\u00b7.\u00b7\u00b7%";
+    if (pt) pt.textContent = "";
   }
-  if (sig[1]) sig[1].querySelector(".sig-name").textContent = "";
-  doc.querySelectorAll(".sig-date-val").forEach(function(n){
-    n.textContent = asn ? asn.date : "—";
+  /* phenotype and processing are controlled blanks QC ticks by hand;
+     chemotype THC is the product's class and stays ticked */
+  doc.querySelectorAll(".selrow .chip-sel").forEach(function(ch){
+    if (/THC/.test(ch.textContent)) return;
+    ch.className = ch.className.replace("chip-sel", "chip-un");
+    var bx = ch.querySelector(".bx"); if (bx) bx.textContent = "\u2610";
   });
-  var fr = q(".foot-right");
-  if (fr) fr.innerHTML = "MK GMP Certified Facility<br>" + esc(ref) + " · Page 1 of 1";
+  setLk(doc, "Prod. Code", (coq && coq.pcode) || "\u2014");
+  setLk(doc, "Spec. Ref.", ((coq && coq.spec) || "QCSP 001 v.03") + " \u00b7 " + SCOPE_SEC[kind]);
+  setLk(doc, "Prod. Batch \u2116", p.pp || p.cb);
+  setLk(doc, "Proc. Batch \u2116", p.cb);
+  setLk(doc, "Sampling Date", "\u2014");
+  setLk(doc, "Test Period", "\u2014");
+  /* results table: which cells are the worked batch's measurements, per master */
+  var BLANK = { ab: [3, 4], c: [2, 3, 4, 5, 6], fm: [2, 3, 4, 5], mb: [4, 5] };
+  doc.querySelectorAll("table.data tbody tr").forEach(function(tr){
+    if (kind === "mb" && /Not requested/.test(tr.textContent)) return;
+    var tds = tr.querySelectorAll("td");
+    BLANK[kind].forEach(function(ix){
+      if (tds[ix]) { tds[ix].textContent = "\u2014"; tds[ix].className = "c"; }
+    });
+  });
+  var res = asn && asn.res ? asn.res : "\u2014";
+  var bad = !!(asn && /^does not/i.test(asn.res || ""));
+  var tf = doc.querySelectorAll("table.data tfoot td");
+  if (tf.length) {
+    if (kind === "fm") {
+      /* [criterion label, total g, total % w/w, status] */
+      tf[1].textContent = "\u2014";
+      tf[2].textContent = res;
+    } else {
+      tf[tf.length - 2].textContent = res;
+    }
+    var st = tf[tf.length - 1];
+    st.textContent = draft ? "\u2014" : (bad ? "FAIL" : "PASS");
+    st.className = "c" + (!draft && !bad ? " ok" : "");
+    if (bad) st.setAttribute("style", "color:#9B2C2C;font-weight:800");
+  }
+  var pn = q(".pot-note");
+  if (pn) pn.textContent = "Bench observations and raw measurements are recorded by " +
+    "the analyst on the printed worksheet and in the laboratory records; this " +
+    "compilation carries the desk-recorded overall disposition only.";
+  var dr = q(".disp-row .grp");
+  if (dr) dr.innerHTML = '<span class="lk-lbl">Result vs Specification' +
+    '<span class="mk">\u0420\u0435\u0437\u0443\u043b\u0442\u0430\u0442 \u0441\u043f\u043e\u0440\u0435\u0434 \u0441\u043f\u0435\u0446.</span></span>' +
+    '<span class="' + (!draft && !bad ? "chip-sel" : "chip-un") + '"><span class="bx">' +
+    (!draft && !bad ? "\u2612" : "\u2610") + '</span> Conforms <span class="mk">\u0421\u043e\u043e\u0434\u0432\u0435\u0442\u0441\u0442\u0432\u0443\u0432\u0430</span></span>' +
+    '<span class="' + (!draft && bad ? "chip-sel" : "chip-un") + '"><span class="bx">' +
+    (!draft && bad ? "\u2612" : "\u2610") + "</span> Does not conform</span>";
+  var dn = q(".disp-note");
+  if (dn) dn.innerHTML = "The sample " +
+    (draft ? "<strong>is under examination</strong> against"
+           : (bad ? "<strong>does not conform</strong> to" : "<strong>conforms</strong> to")) +
+    " <strong>" + esc(((coq && coq.spec) || "QCSP 001 v.03") + " " + SCOPE_SEC[kind]) +
+    " (" + esc(p.scope) + ")</strong>" +
+    (draft ? "" : " \u2014 desk-recorded result: <strong>" + esc(asn.res) + "</strong>") +
+    ". Results relate only to the sample(s) as received; the report is reproducible " +
+    "only in full. Testing performed <strong>in-house</strong> (ISO/IEC 17025-aligned, " +
+    "MK GMP facility); OOS handling per QCSOP 014. Linked Certificate of Quality: " +
+    "<strong>" + esc(coq ? coq.n : "\u2014") + "</strong>.";
+  var aps = doc.querySelectorAll(".approval-grid > div");
+  if (aps[0]) {
+    var an = aps[0].querySelector(".ap-name");
+    if (an) an.textContent = asn ? asn.analyst : "\u2014";
+  }
+  doc.querySelectorAll(".ap-date-val").forEach(function(n){
+    n.textContent = asn ? asn.date : "\u2014";
+  });
   if (draft) addDraftMark(doc);
   return serializeDoc(doc);
 }
@@ -1256,6 +1469,6 @@ function coqDocName(c){
   return (c.issued ? c.n : "DRAFT_CoQ") + "_" + (c.pp || c.cb).replace(/[^\w-]/g, "_") + ".html";
 }
 function icoaDocName(p, asn){
-  return (asn ? asn.ref : "DRAFT_iCoA") + "_" + p.cb.replace(/[^\w-]/g, "_") + "_" +
-    (p.scope.indexOf("Ident") === 0 ? "Ident" : "FM") + ".html";
+  var short = { ab: "IdentAB", c: "IdentC", fm: "FM", mb: "Micro" }[scopeKind(p.scope)];
+  return (asn ? asn.ref : "DRAFT_iCoA") + "_" + p.cb.replace(/[^\w-]/g, "_") + "_" + short + ".html";
 }

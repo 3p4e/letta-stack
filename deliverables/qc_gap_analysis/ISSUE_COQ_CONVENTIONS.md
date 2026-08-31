@@ -117,3 +117,31 @@ first in the queue, not issuable. A thirteenth lot, **P060332**, has the same pa
 file but is not in that queue at all: its cultivation batch, `CC012601/1`, appears in no
 register and no plan, and a certificate of quality cannot be issued for material whose
 identity is unresolved.
+
+## Three further conventions from the owner, 31.08.2026 (evening)
+
+- **The only certificates that legitimately carry 2025 issue dates are the old
+  QCCoA 001 v.01/v.02 in-house CoAs** — the pre-SOP documents, with their own
+  document codes and issuance dates. Each is **superseded** by the corresponding
+  CoQ, whose doc code and issue date are assigned only from 11.05.2026 onward —
+  after SOP v.03 came into use — in chronological order. No iCoA or CoQ ever
+  prints a 2025 date.
+- **CoQs may be issued in batches.** When the parameters missing from the
+  outsourced certificates finally arrive, every CoQ they were holding up is
+  issued together: **one date, sequential numbers, in chronological order** of
+  the basis dates. The live instrument's batch-issuance desk computes the ready
+  set (every determination in scope certified, dating window open), refuses a
+  date outside any member's window, and assigns the sequence in one attributed
+  operation.
+- **Four per-scope iCoA masters** (from `ACME_SOP/QC_SPCs/pipe`, 31.08.2026)
+  supersede the Variation F master for in-artifact compilation:
+  `iCoA_P01-02_Appearance_Identification_AB`, `iCoA_P03_Identification_C_Chromatographic`,
+  `iCoA_P07_Foreign_Matter`, `iCoA_P09_Microbiological_Purity`. Each master is a
+  worked specimen: a compiled document blanks every cell that is the worked
+  batch's measurement data (observations, retention times, masses, counts) to a
+  controlled `—` — bench observations belong to the analyst's worksheet, the
+  desk holds only the overall disposition — and strips the handwritten
+  signature scans; criterion and method columns are specification text and
+  stay. Notably, the P09 master itself prints the Ph. Eur. 5.1.8 **category C**
+  criteria — TAMC ≤ 10⁵, TYMC ≤ 10⁴, BTGNB ≤ 10⁴ CFU/g, absences /25 g and
+  /1 g — one more primary-document confirmation of the category-C ruling.
