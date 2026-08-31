@@ -15,6 +15,5 @@ ingestion/coa_track/letta-imb-coas/.fontcache/
 ingestion/coa_track/letta-imb-coas/reports/_fig_*.png
 .env
 ingestion/ecoa_runner/_tranche_records.json
-ingestion/ecoa_runner/records_corpus.json
 ingestion/ecoa_runner/held_ingest.json
 ingestion/ecoa_runner/ecoa.sqlite
