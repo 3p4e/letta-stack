@@ -1,5 +1,24 @@
 # Batch gap analysis — CoQ and internal CoA issuance counts
 
+> ## The current workbook is `PP_Batch_Release_QC_Register_LINKED_2026-08-31.xlsx`
+>
+> This directory holds thirteen workbooks, one per correction pass, and **the file named
+> `FINAL` is not the last one.** Each is the input to the next script's refuse-on-mismatch
+> guard, so none can be deleted without breaking the chain that proves what changed; the
+> order is what tells you which is current, and the order is:
+>
+> `CORRECTED` (owner-supplied) → `CORRECTED_2026-08-30` → `CORRECTED_2026-08-31` →
+> `MICRO` → `LINKS` → `LINKS2` → `IPH` → `FHM` → `DATES` → `CNP` → `FINAL` → **`LINKED`**
+>
+> The counts below describe `CORRECTED.xlsx` and still hold. The correction passes changed
+> values, links, dates and flags, and inserted one row (ППК25139); they did not add or
+> remove a batch, and 284 is still the number of rows carrying a CoA code.
+>
+> Verification against the source documents is in `review/*_PAGE_VERIFICATION_2026-08-31.md`,
+> `review/PDF_LINK_AUDIT_2026-08-31.md` and `review/BATCH_TEST_COVERAGE_2026-08-31.md`.
+> 226 certificates were read off their pages; 1 033 of 1 073 populated result cells (96.3%)
+> are now verified against a document.
+
 Derived from **`PP_Batch_Release_QC_Register_CORRECTED.xlsx`** (owner-supplied,
 modified 18.08.2026), parsed cell-by-cell with `openpyxl` — not from OCR.
 
@@ -12,6 +31,37 @@ modified 18.08.2026), parsed cell-by-cell with `openpyxl` — not from OCR.
 > were unaffected.
 
 ## Headline counts
+
+> **What the first three rows count, exactly.** Both figures are easy to misread from the
+> register, and both were misread while writing this note — the numbers below are right and
+> the misreading was mine.
+>
+> **81 batches on file; the register holds 80.** The eighty-first is `GG1024`, and
+> `batch_gap_analysis.csv` marks it `in_register=N` — a batch with one certificate that never
+> made it into the register. So "on file" is the right word and 81 is the right number, while
+> any count taken *from* the register says 80 and is equally right: its Ref column runs 1 to
+> 80 with no gaps. The CoQ row follows: 81 are owed, because `GG1024` is owed one too.
+>
+> **284 certificates is every row carrying something in the CoA-code column; 247 of them name
+> a document.** The other 37 say a certificate does not exist: 17 read `(not numbered)`, 18
+> read `n/a`, and 2 read `n/a — Purely Plant in-house CoA (… no certificate/report)`.
+> 247 + 17 + 18 + 2 = 284 exactly, and the CSV's per-batch `certificates` column sums the
+> same way, so the figure is self-consistent with its data.
+>
+> Whether those 37 belong in a count called "certificates on file" is a QC decision and is
+> **not made here**, because it is not obvious in one direction. The 17 and the 18 are
+> entirely empty rows and are plainly not certificates. The 2 in-house rows carry 16 result
+> values each: they are records of testing that never got a certificate number, which is a
+> different thing from nothing. Changing the number means recomputing the CSV's per-batch
+> column on somebody else's definition of the word, so what is recorded here is the
+> composition.
+>
+> Live per-batch testing coverage, measured against the current workbook by
+> `deliverables/qc_gap_analysis/batch_test_coverage.py`: 80 register batches, **42** with both
+> microbiology and physico-chemical results, **28** with none of microbiology, metals or
+> mycotoxins. Those are not drop-in replacements for the 43 and 35 below — they count
+> families of testing where the rows below count six named panels — but they are the live
+> numbers and the script prints its own definitions.
 
 | Question | Answer |
 |---|---|
