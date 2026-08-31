@@ -99,5 +99,254 @@
    "cbn": "/",
    "thc": "1.16"
   }
+ },
+ "19712K26": {
+  "batch_page": "Grape Pie / P050322",
+  "internal": "CF-407/26",
+  "cbd": "< LOQ",
+  "cbn": "< LOQ",
+  "thc": "15.70",
+  "u": {
+   "cbn": "/",
+   "thc": "0.96"
+  }
+ },
+ "1975K26": {
+  "batch_page": "Cap Junkie / P060032",
+  "internal": "CF-400/26",
+  "cbd": "< LOQ",
+  "cbn": "< LOQ",
+  "thc": "18.29",
+  "u": {
+   "cbn": "/",
+   "thc": "1.12"
+  }
+ },
+ "19720K26": {
+  "batch_page": "Permanent Market / P060062",
+  "internal": "CF-415/26",
+  "cbd": "< LOQ",
+  "cbn": "< LOQ",
+  "thc": "12.25",
+  "u": {
+   "cbn": "/",
+   "thc": "0.75"
+  }
+ },
+ "0516K26": {
+  "batch_page": "Graps & Creme / GRC102501/2",
+  "internal": "CF-78/26",
+  "cbd": "<LOQ",
+  "cbn": "<LOQ",
+  "thc": "11.53",
+  "u": {
+   "cbn": "/",
+   "thc": "±0.71"
+  }
+ },
+ "0511K26": {
+  "batch_page": "Jokerz 31 / J31102501",
+  "internal": "CF-73/26",
+  "cbd": "<LOQ",
+  "cbn": "<LOQ",
+  "thc": "19.14",
+  "u": {
+   "cbn": "/",
+   "thc": "±1.18"
+  }
+ },
+ "0515K26": {
+  "batch_page": "Jokerz 31 / J31112501",
+  "internal": "CF-77/26",
+  "cbd": "<LOQ",
+  "cbn": "<LOQ",
+  "thc": "25.27",
+  "u": {
+   "cbn": "/",
+   "thc": "±1.55"
+  }
+ },
+ "1001K26": {
+  "batch_page": "Jokerz 31 / J31112501",
+  "internal": "CF-149/26",
+  "cbd": "<LOQ",
+  "cbn": "<LOQ",
+  "thc": "20.21",
+  "u": {
+   "cbn": "/",
+   "thc": "±1.24"
+  }
+ },
+ "0514K26": {
+  "batch_page": "Kush Crasher / KC102501",
+  "internal": "CF-76/26",
+  "cbd": "<LOQ",
+  "cbn": "<LOQ",
+  "thc": "17.04",
+  "u": {
+   "cbn": "/",
+   "thc": "±1.05"
+  }
+ },
+ "0513K26": {
+  "batch_page": "Sleepy Joy / SJ102501",
+  "internal": "CF-75/26",
+  "cbd": "<LOQ",
+  "cbn": "<LOQ",
+  "thc": "11.20",
+  "u": {
+   "cbn": "/",
+   "thc": "±0.69"
+  }
+ },
+ "0512K26": {
+  "batch_page": "Sleepy Joy / SJ112501",
+  "internal": "CF-74/26",
+  "cbd": "<LOQ",
+  "cbn": "<LOQ",
+  "thc": "9.20",
+  "u": {
+   "cbn": "/",
+   "thc": "±0.57"
+  }
+ },
+ "1002K26": {
+  "batch_page": "Jokerz 31 / J31122501 (рачно тримиран цвет)",
+  "internal": "CF-151/26",
+  "cbd": "<LOQ",
+  "cbn": "<LOQ",
+  "thc": "19.84",
+  "u": {
+   "cbn": "/",
+   "thc": "±1.22"
+  },
+  "note": "serial printed J31122501 — the same batch the IJZ certificate 1628/2026 prints as J311122501, confirming that extra digit as an outlier on that one document"
+ },
+ "1003K26": {
+  "batch_page": "Jokerz 31 / J31122501 (тримиран цвет)",
+  "internal": "CF-153/26",
+  "cbd": "<LOQ",
+  "cbn": "<LOQ",
+  "thc": "21.84",
+  "u": {
+   "cbn": "/",
+   "thc": "±1.34"
+  }
+ },
+ "1004K26": {
+  "batch_page": "Orange Punch Mimosa / OPM122501",
+  "internal": "CF-155/26",
+  "cbd": "<LOQ",
+  "cbn": "<LOQ",
+  "thc": "8.09",
+  "u": {
+   "cbn": "/",
+   "thc": "±0.50"
+  }
+ },
+ "19716K26": {
+  "batch_page": "Jokerz 31 / P060152",
+  "internal": "CF-411/26",
+  "cbd": "< LOQ",
+  "cbn": "< LOQ",
+  "thc": "17.32",
+  "u": {
+   "cbn": "/",
+   "thc": "1.06"
+  }
+ },
+ "19715K26": {
+  "batch_page": "Jelly Donutz / P060212",
+  "internal": "CF-410/26",
+  "cbd": "< LOQ",
+  "cbn": "< LOQ",
+  "thc": "20.32",
+  "u": {
+   "cbn": "/",
+   "thc": "1.25"
+  }
+ },
+ "19719K26": {
+  "batch_page": "Orange Punch Mimosa / P060242",
+  "internal": "CF-414/26",
+  "cbd": "< LOQ",
+  "cbn": "< LOQ",
+  "thc": "7.91",
+  "u": {
+   "cbn": "/",
+   "thc": "0.49"
+  }
+ },
+ "1976K26": {
+  "batch_page": "Cash Cow / P060332",
+  "internal": "CF-401/26",
+  "cbd": "< LOQ",
+  "cbn": "< LOQ",
+  "thc": "17.67",
+  "u": {
+   "cbd": "/",
+   "cbn": "/",
+   "thc": "1.09"
+  }
+ },
+ "1977K26": {
+  "batch_page": "Fat Bastard / P060352",
+  "internal": "CF-402/26",
+  "cbd": "0.22",
+  "cbn": "< LOQ",
+  "thc": "18.86",
+  "u": {
+   "cbd": "0.01",
+   "cbn": "/",
+   "thc": "1.16"
+  }
+ },
+ "19721K26": {
+  "batch_page": "Scrambler / P060382",
+  "internal": "CF-416/26",
+  "cbd": "< LOQ",
+  "cbn": "< LOQ",
+  "thc": "17.84",
+  "u": {
+   "cbd": "/",
+   "cbn": "/",
+   "thc": "1.10"
+  }
+ },
+ "1978K26": {
+  "batch_page": "Gorilla Glue / P060402",
+  "internal": "CF-403/26",
+  "cbd": "< LOQ",
+  "cbn": "< LOQ",
+  "thc": "16.70",
+  "u": {
+   "cbd": "/",
+   "cbn": "/",
+   "thc": "1.03"
+  }
+ },
+ "19713K26": {
+  "batch_page": "High Pro Amnesia / HPA1024",
+  "internal": "CF-408/26",
+  "cbd": "< LOQ",
+  "cbn": "0.36",
+  "thc": "17.31",
+  "u": {
+   "cbd": "/",
+   "cbn": "0.02",
+   "thc": "1.06"
+  }
+ },
+ "19717K26": {
+  "batch_page": "Orange Punch Mimosa / OPM 1024",
+  "internal": "CF-412/26",
+  "cbd": "< LOQ",
+  "cbn": "< LOQ",
+  "thc": "20.03",
+  "u": {
+   "cbd": "/",
+   "cbn": "/",
+   "thc": "1.23"
+  }
  }
 }
