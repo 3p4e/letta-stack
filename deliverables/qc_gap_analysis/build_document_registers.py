@@ -53,7 +53,7 @@ from openpyxl.utils import get_column_letter
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-REG_X = "deliverables/qc_gap_analysis/PP_Batch_Release_QC_Register_QCSP_2026-08-31.xlsx"
+REG_X = "deliverables/qc_gap_analysis/PP_Batch_Release_QC_Register_FHM2_2026-08-31.xlsx"
 ICOA = "deliverables/qc_gap_analysis/icoa_issuance_register_2026-08-31.csv"
 MASTER = "deliverables/qc_gap_analysis/potency_master_batch_map.json"
 SHEET = "Batch Release QC"
@@ -255,7 +255,8 @@ def main(out):
             ("Banner THC", 11, "actual assay, per the plan"),
             ("Acceptance range", 28, "grade nominal ± tolerance"),
             ("iCoA reference", 16, "printed on the CoQ"),
-            ("Covered", 9, "of 21 required"), ("To perform", 10, ""),
+            ("Covered", 9, "of 21 on an initial CoQ, 10 in the retest scope"),
+            ("To perform", 10, ""),
             ("Not tested", 10, ""), ("Out of spec", 10, ""),
             ("Documents", 10, ""),
             ("Source documents", 66, "every report this CoQ must cite"),
@@ -303,7 +304,10 @@ def main(out):
             any(nk(m) in ver for m in re.findall(r"ППК\s*\d+", r["code"]))), "31.08.2026 campaign"),
         ("  carrying a live document link", sum(1 for r in docs if r["pdf"]), ""),
         ("", "", ""),
-        ("iCoA issuance register", len(ic), "one per batch"),
+        ("iCoA issuance register", len(ic),
+         "one row per register entry — NOT one per material: six rows (P060152, "
+         "P060212, P060242, P060352, P060382, P060402) are the Farmahem 12-month "
+         "re-analyses of plan lots that also appear under their cultivation batch"),
         ("  full panel — Ident A + B + C + foreign matter", sum(1 for r in ic if r["ident_A"] == "required"), ""),
         ("  Ident C only — CNP Ph. Eur. 11.5 form covers the rest", sum(1 for r in ic if r["ident_A"] != "required"), ""),
         ("", "", ""),
@@ -329,11 +333,20 @@ def main(out):
         ("  no eCoA on file for the cultivation batch",
          sum(1 for x in coq if not x["in_register"]),
          "locate the physical certificates, scan and upload"),
-        ("  re-analysed early — reissue issuable now",
+        ("  re-analysed ahead of the 12-month date",
          sum(1 for x in coq if x["type"].startswith("additional") and not x["issued"]
              and x["counts"][CQ.ST_OK] + x["counts"][CQ.ST_FINDING]
              + x["counts"][CQ.ST_OOS] + x["counts"][CQ.ST_UNDET]),
-         "the Farmahem 197-series pair is already on file"),
+         "the 197-series pair is on file — cannabinoids and mycotoxins certified; "
+         "identity and foreign matter still to perform before any of them can issue"),
+        ("  initial CoQs whose banner potency is the re-analysis, not the release "
+         "assay", 19,
+         "the master spec carries the newest assay; defensible only because no CoQ "
+         "issues before 11.05.2026 — a QC decision to take knowingly"),
+        ("", "", ""),
+        ("In-house certificates the routing requires", len(CQ.icoa_plan(cov)),
+         "one Ident A + B and one foreign-matter iCoA per initial CoQ where no "
+         "outsourced certificate covers them; one foreign-matter iCoA per reissue"),
         ("", "", ""),
         ("", "", ""),
         ("CoQ parameter schedule", len(sched),

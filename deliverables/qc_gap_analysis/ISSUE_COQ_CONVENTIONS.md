@@ -92,10 +92,22 @@ FB012602, SCR012603, GG012603` — matched by the plan's own packaged-lot number
 separate batches; their results fold into the lot. `P160012/22/32` and `P060332`
 match no plan lot and stand as their own entries on the record.
 
+**Corrected on adversarial review, the same day.** The in-house certificate count
+first published for this universe (137) was wrong three times over — a dedup key on the
+packaged lot, which a predicted CoQ does not have; an is-this-a-reissue test that sent
+predicted *initial* releases down the retest route; and release-time CNP coverage being
+allowed to excuse the same determination on a reissue a year later. **The routing
+requires 224 in-house certificates: 71 Ident A + B and 153 foreign matter.** Full
+account in `review/COQ_SCHEDULE_2026-08-31.md`.
+
 And one finding the extension exposed: **five issued additional-testing CoQs —
 `0029` (GG1024), `0033` (OMP1024_01), `0036` (GP0824_03), `0037` (OPM1024_03),
 `0039` (MB0824_05) — cite no 197-series certificate on file.** The plan records their
 retest dates; the certificates never reached the file. Same defect class as GG1024's
 initial testing: locate the physical certificates, scan, upload. Conversely, 13
-batches are re-analysed already — the 197-series pair is on file — and their reissue
-CoQs can be numbered and issued now.
+batches are re-analysed already — the 197-series pair is on file — which certifies the
+cannabinoid and mycotoxin half of their reissue and **nothing else**: a 197-К carries
+Total Δ⁹-THC, CBD and CBN, its М sibling the six mycotoxins, and identity and foreign
+matter are outstanding on every one of them. Under this folder's own rule — *a CoQ must
+never carry a result or a conformity assertion that has not been certified* — they are
+first in the queue, not issuable.

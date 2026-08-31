@@ -51,10 +51,12 @@ transcription and every one is flagged: locate the physical certificates, scan, 
 Nine more lots' cultivation batches are in the same state.
 
 Cross-checks the build runs and reports rather than resolves: the plan's banner THC
-against the register's assays (26 lots disagree — the master spec carries analyses whose
-certificates the register has never received), the plan's grade range against the QCSP
-001 PDF (35 lots differ beyond the endpoint convention — two grade designs), and every
-citation's date against the CoQ's issue date.
+against the register's assays (**22 lots disagree** — the master spec carries analyses
+whose certificates the register has never received), the plan's grade range against the
+QCSP 001 PDF (**27 lots differ** beyond the endpoint convention — two grade designs —
+which the schedule shows on 54 CoQ documents, each lot's conflict appearing on both its
+initial CoQ and its reissue), and every citation's date against the CoQ's earliest
+permissible issue date.
 
 Conformity is judged by `ingestion/ragflow/validate_ecoa_limits.py`, imported rather
 than reimplemented — that rule has been got wrong once already, in two directions, and
@@ -74,7 +76,7 @@ from openpyxl.utils import get_column_letter
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
-REG_X = os.path.join(HERE, "PP_Batch_Release_QC_Register_QCSP_2026-08-31.xlsx")
+REG_X = os.path.join(HERE, "PP_Batch_Release_QC_Register_FHM2_2026-08-31.xlsx")
 SPEC_J = os.path.join(HERE, "product_specifications_QCSP001.json")
 ICOA_C = os.path.join(HERE, "icoa_issuance_register_2026-08-31.csv")
 MASTER_J = os.path.join(HERE, "potency_master_batch_map.json")
@@ -207,12 +209,20 @@ def icoa_plan(per_coq):
     plan, seen = [], set()
     for p in per_coq:
         for scope, nos in (("Ident A + B", ("1", "2")), ("Foreign matter", ("7",))):
-            typ = "reissue" if p["type"] != "initial release" else "initial release"
+            # A CoQ is a reissue when it is additional testing — NOT merely when its
+            # type differs from the string "initial release". A first version tested
+            # `p["type"] != "initial release"`, which sent all 35 *predicted* initial
+            # releases down the retest route, where Farmahem covers identity, and
+            # silently dropped 26 Ident A + B certificates the schedule's own rows
+            # say the in-house laboratory owes.
+            typ = "reissue" if p["type"].startswith("additional") else "initial release"
             owed = [n for n in nos if n in p["outstanding"]
                     and route_for(typ, n).startswith("Purely Plant laboratory")]
             if not owed:
                 continue
-            key = (p["pp"], p["type"], scope)
+            # Keyed on the CoQ, not on its packaged lot: a predicted CoQ has no lot
+            # number yet, and keying on one collapsed all 70 of them into two rows.
+            key = (p["coq"], scope)
             if key in seen:
                 continue
             seen.add(key)
@@ -499,9 +509,20 @@ def outstanding_of(det, icoa_row, reg, reissue, blocked):
 
     Blocked is not outstanding: FB032601's foreign matter was determined, and failed.
     Buying it again is not what that batch needs.
+
+    **Release-time coverage does not carry to a reissue.** Twelve batches have identity
+    and foreign matter covered by their CNP Ph. Eur. 11.5 certificate *at release*. A
+    12-month CoQ certifies the material as it is at that date: the owner's routing of
+    31.08.2026 sends identity to Farmahem with the assay and leaves foreign matter to
+    the in-house laboratory, on every batch. A certificate from the release round
+    cannot stand behind a determination on a document dated a year later — the same
+    rule that keeps an initial CoQ from citing the 197-series re-analysis, running the
+    other way.
     """
     if blocked and det["no"] == "7":
         return False
+    if reissue:
+        return True
     return icoa_row.get(ICOA_FIELD[det["no"]], "required") == "required"
 
 
@@ -876,7 +897,8 @@ def write_workbook(rows, per_coq, dets):
             ("Acceptance range", 30, "issue plan, grade nominal ± tolerance"),
             ("Spec doc", 22, "QCSP 001"),
             ("iCoA reference", 17, ""),
-            ("Covered", 9, "of 21 required"), ("To perform", 10, ""),
+            ("Covered", 9, "of 21 on an initial CoQ, 10 in the retest scope"),
+            ("To perform", 10, ""),
             ("Not tested", 10, ""), ("Out of spec", 10, ""), ("Undetermined", 12, ""),
             ("Documents", 10, "count"),
             ("Source documents", 70, "every report this CoQ must cite"),
@@ -1075,11 +1097,42 @@ def report(rows, per_coq, dets):
         if p["banner_thc"] not in got | alts:
             mism.append((p["number"], p["cb"], p["banner_thc"],
                          ", ".join(sorted(got | alts))))
+    # Where the plan's banner is found ONLY in a 197-series re-analysis, the lot does
+    # not mismatch — but it does not agree with a release assay either. On an
+    # initial-release CoQ that is the banner quoting a result the batch did not have
+    # at release, and it is only defensible because no CoQ may now be issued before
+    # 11.05.2026: a certificate of quality speaks as of its date of issue.
+    reanalysed = []
+    for p in per_coq:
+        if not p["in_register"] or p["type"] != "initial release":
+            continue
+        for r in rows:
+            if r["CoQ number"] != p["number"] or r["№"] != "4":
+                continue
+            if r["Result"] == p["banner_thc"]:
+                break
+            for a in r["Also on file"].split("; "):
+                if a.startswith(p["banner_thc"] + " (197-"):
+                    reanalysed.append((p["number"], p["cb"], p["banner_thc"],
+                                       r["Result"], a.split("(")[1].rstrip(")")))
+                    break
     if mism:
         print(f"  {len(mism):>5}  CoQs whose issue-plan banner THC matches NO register "
               f"assay for the lot — master spec vs register, unresolved")
         for m in mism:
             print(f"         {m[0]} {m[1]}: plan {m[2]} vs register {m[3]}")
+        print()
+    if reanalysed:
+        print(f"  {len(reanalysed):>5}  INITIAL-release CoQs whose banner THC is the "
+              f"12-month RE-ANALYSIS, not a release assay")
+        for m in reanalysed:
+            print(f"         {m[0]} {m[1]}: banner {m[2]} ({m[4]}) vs release assay "
+                  f"{m[3]}")
+        print("         Not a mismatch and not an error — the master spec carries the "
+              "newest assay, and no CoQ may now print an issue date before "
+              f"{SOP_EFFECTIVE}, so the certificate speaks as of a date on which the "
+              "re-analysis exists. It IS a decision QC should make knowingly: an "
+              "initial-release CoQ banner that is not the release result.")
         print()
     # An ISSUED additional-testing CoQ with nothing to cite is a controlled
     # blank on a signed document: the plan records the retest date, but the
@@ -1097,11 +1150,24 @@ def report(rows, per_coq, dets):
     early = [p for p in per_coq
              if p["type"].endswith("predicted") and p["type"].startswith("additional")
              and any(c.startswith("197-") for c in p["codes"])]
-    print(f"  {len(early):>5}  batches re-analysed early — the 197-series pair is on "
-          f"file and the reissue CoQ can be numbered and issued now")
+    print(f"  {len(early):>5}  batches re-analysed ahead of their 12-month date — the "
+          f"197-series pair is on file, so the cannabinoid and mycotoxin half of the "
+          f"reissue is already certified.")
+    print("         NOT issuable on that alone. The 197 series carries the assay, "
+          "total CBD and CBN on its К certificate and the mycotoxins on its М — "
+          "nothing else. Identity A, B and C and foreign matter are outstanding on "
+          "every one of them, and a CoQ must not carry a conformity assertion that "
+          "has not been certified. What these 13 are is FIRST IN THE QUEUE: order "
+          "Farmahem's identity, issue the in-house foreign-matter iCoA, then number "
+          "and issue.")
     print()
+    # One lot, one conflict — but a lot has two CoQs, its initial and its reissue,
+    # and the note belongs on both. Report both granularities: counting the documents
+    # alone silently doubles a lot-level finding.
     nospec = sum(1 for p in per_coq if p["spec_conflict"])
-    print(f"  {nospec:>5}  CoQs whose issue-plan range disagrees with the QCSP 001 PDF")
+    nospec_lots = len({p["cb"] for p in per_coq if p["spec_conflict"]})
+    print(f"  {nospec_lots:>5}  lots whose issue-plan grade range disagrees with the "
+          f"QCSP 001 PDF, shown on {nospec} CoQ documents (initial + reissue each)")
     print(f"  {sum(1 for p in per_coq if not p['in_register']):>5}  CoQs whose "
           f"cultivation batch has no eCoA on file at all — physical certificates to "
           f"locate and scan")
