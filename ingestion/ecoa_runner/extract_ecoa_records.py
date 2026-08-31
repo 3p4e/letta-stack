@@ -11,6 +11,17 @@ turns a failing batch into a passing one. A single unverified read caused that.
 import os, io, re, json, base64, time, urllib.request, urllib.error, argparse, sys, threading
 from concurrent.futures import ThreadPoolExecutor
 
+# Keys added mid-run land in a root-only file (never the repo): a session's
+# environment is fixed at container start, but each tranche spawns a fresh
+# runner process, which picks these up here. Environment always wins.
+_KEYFILE = '/root/.ecoa_keys.env'
+if os.path.exists(_KEYFILE):
+    for _line in open(_KEYFILE):
+        _line = _line.strip()
+        if _line and not _line.startswith('#') and '=' in _line:
+            _k, _v = _line.split('=', 1)
+            os.environ.setdefault(_k.strip(), _v.strip())
+
 RAG = os.environ['RAGFLOW_API_SERVER'].rstrip('/')
 RAGKEY = os.environ['RAGFLOW_API_KEY']
 DPI = 300
