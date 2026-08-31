@@ -8,7 +8,21 @@
 > order is what tells you which is current, and the order is:
 >
 > `CORRECTED` (owner-supplied) → `CORRECTED_2026-08-30` → `CORRECTED_2026-08-31` →
-> `MICRO` → `LINKS` → `LINKS2` → `IPH` → `FHM` → `DATES` → `CNP` → `FINAL` → **`LINKED`**
+> `LINKS` → `MICRO` → `LINKS2` → `IPH` → `FHM` → `DATES` → `CNP` → `FINAL` → **`LINKED`**
+>
+> That order is not a guess and is not what the file listing suggests — an earlier version of
+> this note had `MICRO` before `LINKS`, which is wrong. `replay_correction_chain.py` rebuilds
+> the whole thing from the owner's original and compares each step, and the register proves
+> the order itself: the committed `LINKS` does not carry the ten microbiology corrections,
+> while `LINKS2` carries them *and* a different link on row 26 — because correcting that row's
+> code from `319/0586/25` to `318/0585/25` changed which certificate it resolves to. The link
+> moved because the code moved.
+>
+> Run `python3 deliverables/qc_gap_analysis/replay_correction_chain.py` to re-derive the
+> corrected register from `CORRECTED.xlsx`. Every value at every step matches the committed
+> workbook, and the final one matches exactly on values and links. Two link differences at the
+> intermediate steps are expected and explained in that script's docstring: both are fixes
+> made later in the week, landing earlier in the replay than they did in history.
 >
 > The counts below describe `CORRECTED.xlsx` and still hold. The correction passes changed
 > values, links, dates and flags, and inserted one row (ППК25139); they did not add or
