@@ -507,6 +507,18 @@ function renderDetail(){
       coqDocName(c), fillCoq(c));
   });
   var att = el("att-save");
+  var attNo = el("att-no");
+  if (attNo) {
+    var attHint = function(){
+      var d2 = DET[attNo.value] || {};
+      var ar = el("att-res");
+      if (ar) ar.placeholder = d2.crit ? "criterion: " +
+        (d2.crit.split(" | ")[0].length > 46 ? d2.crit.split(" | ")[0].slice(0, 44) + "…"
+          : d2.crit.split(" | ")[0]) : "verbatim";
+    };
+    attNo.addEventListener("change", attHint);
+    attHint();
+  }
   if (att) att.addEventListener("click", function(){
     var no = el("att-no").value, doc = el("att-doc").value.trim(), res = el("att-res").value.trim();
     if (!operator()) return msgIn("att-msg", "Enter your initials on the Desk log tab first.", false);
@@ -826,6 +838,35 @@ el("ic-save").addEventListener("click", function(){
 
 renderCoqs(); renderIcoa(); renderEcoa();
 
+/* ---- known constants as input suggestions ----
+   Every CoQ draws on a finite, known set: the specification's determinations,
+   the register's columns with their units, the batches and strains on record.
+   The desks suggest them instead of asking the operator to remember. */
+(function(){
+  var params = [];
+  D.dets.forEach(function(d2){ if (params.indexOf(d2.en) < 0) params.push(d2.en); });
+  Object.keys(D.reg_columns).forEach(function(L){
+    var n2 = D.reg_columns[L].name;
+    if (params.indexOf(n2) < 0) params.push(n2);
+  });
+  var strains = {}, batches = {};
+  D.coqs.forEach(function(c2){
+    strains[c2.strain] = 1; batches[c2.cb] = 1; if (c2.pp) batches[c2.pp] = 1;
+  });
+  function dl(id, arr){
+    return '<datalist id="' + id + '">' +
+      arr.map(function(x){ return '<option value="' + esc(x) + '">'; }).join("") + "</datalist>";
+  }
+  document.body.insertAdjacentHTML("beforeend",
+    dl("known-params", params) + dl("known-batches", Object.keys(batches).sort()) +
+    dl("known-strains", Object.keys(strains).sort()));
+  [["ne-batch", "known-batches"], ["nb-cb", "known-batches"],
+   ["nb-strain", "known-strains"], ["ne-params", "known-params"],
+   ["ef-param", "known-params"]].forEach(function(pr){
+    var n3 = el(pr[0]); if (n3) n3.setAttribute("list", pr[1]);
+  });
+})();
+
 /* ================= release register view =================
    The value-judging rules are ported verbatim from the published release-register
    artifact: magnitude() answers "what number is this measurement"; acceptanceLimit()
@@ -1135,7 +1176,7 @@ var EF_TARGET = null;
   document.querySelector("#p-ecoa .desk").insertAdjacentHTML("afterend",
     '<div class="desk" id="ef-desk" data-desk="1"><h3>Remediation — transcribe a value from the opened document · <span id="ef-what" style="font-weight:400">pick a certificate below (Remediate)</span></h3>' +
     '<div class="frm">' +
-    '<span class="fld"><label>Parameter</label><input id="ef-param" list="ef-params" placeholder="TYMC CFU/g · THC % · …"></span>' +
+    '<span class="fld"><label>Parameter</label><input id="ef-param" list="known-params" placeholder="TYMC CFU/g · THC % · …"></span>' +
     '<span class="fld"><label>Value, exactly as printed</label><input id="ef-val" placeholder="verbatim from the page"></span>' +
     '<span class="fld"><label>Resolution note (optional)</label><input id="ef-note" placeholder="e.g. flag resolved — page reads 4,2 x 10⁴"></span>' +
     '<button class="btn" id="ef-go" disabled>Record page reading</button></div>' +

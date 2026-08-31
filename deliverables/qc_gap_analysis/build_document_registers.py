@@ -45,6 +45,8 @@ import json
 import os
 import re
 import sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from collections import Counter
 
 from openpyxl import Workbook, load_workbook
@@ -131,7 +133,42 @@ def load_register():
                          lab=str(ws.cell(row=r, column=25).value or ""),
                          pdf=getattr(ws.cell(row=r, column=26).hyperlink, "target", None) or "",
                          reported=reported, flags=flags))
+    # The CNP full Ph. Eur. form certifies identity and foreign matter too,
+    # but those determinations have no register column, so a column-derived
+    # "parameters reported" list silently drops them. Append them from the
+    # documents' own table text.
+    ff = full_form_cnp()
+    if ff:
+        for r in rows:
+            if any(nk(x) in ff for x in re.findall(r"ППК\s*\d+", r["code"])):
+                r["reported"] = r["reported"] + ["Ident A + B", "Foreign matter"]
     return rows
+
+
+def full_form_cnp():
+    """Certificate codes of the CNP full Ph. Eur. form — the certificates whose
+    own results table prints Идентификација (Макроскопија · Микроскопија) and
+    Страни материи. The release register has no column for identity or foreign
+    matter, so a receipt row derived from columns alone reads these documents
+    as potency-only — "not noticed", as the owner put it. Detected from each
+    document's own table text in the vendored corpus cache; 12 as of
+    31.08.2026 (ППК26110–26115, 26116–26119 for P160012/22/32 and SCR022601,
+    26127, 26128)."""
+    import re as _re
+    path = os.path.join(ROOT, "ingestion", "ragflow", "cache",
+                        "all_cert_texts_2026-08-30.json")
+    if not os.path.exists(path):
+        return set()
+    out = set()
+    for rec in json.load(open(path, encoding="utf-8")):
+        if "CNP" not in rec["name"]:
+            continue
+        t = rec["text"]
+        if _re.search(r"дентифика", t) and _re.search(r"акроскоп", t):
+            m = _re.search(r"ППК\s*\d+", rec["name"])
+            if m:
+                out.add(nk(m.group(0)))
+    return out
 
 
 def verified_map():

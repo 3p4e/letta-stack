@@ -145,3 +145,25 @@ identity is unresolved.
   stay. Notably, the P09 master itself prints the Ph. Eur. 5.1.8 **category C**
   criteria — TAMC ≤ 10⁵, TYMC ≤ 10⁴, BTGNB ≤ 10⁴ CFU/g, absences /25 g and
   /1 g — one more primary-document confirmation of the category-C ruling.
+
+## Identification citation and the CNP full form — owner rulings, 31.08.2026 (night)
+
+- **Identification criteria print the full monograph citation**, exactly as the
+  house documents do: *Conforms to the monograph for Cannabis flos
+  (07/2024:3028) in Ph. Eur. 11.0 | Согласно монографија за Cannabis flos
+  (07/2024:3028) во Ph. Eur. 11.0* — determinations 1, 2 and 3, everywhere the
+  schedule, workbooks and generated documents print an identification
+  criterion. The 07/2024 monograph version is technically the 11.5 supplement
+  of the 11th Edition; **Ph. Eur. 11.0 is the house edition label and is kept
+  verbatim** (owner's choice over the technically-precise 11.5).
+- **The CNP full Ph. Eur. form certifies identity and foreign matter, and the
+  receipt register must say so.** Twelve CNP certificates print
+  Идентификација (Макроскопија · Микроскопија) and Страни материи in their own
+  results table (ППК26110–26119, 26127, 26128 — verified in the documents'
+  table text; the routing already credited them). Because the release register
+  has no column for identity or foreign matter, a column-derived "parameters
+  reported" list read these documents as potency-only; the receipt register
+  now appends *Ident A + B* and *Foreign matter* for exactly those documents.
+  Page sampling across the rest of the series (ППК25050 release form,
+  ППК26057 stability form) confirms the other CNP forms genuinely carry no
+  identification — their batches correctly owe the in-house iCoAs.

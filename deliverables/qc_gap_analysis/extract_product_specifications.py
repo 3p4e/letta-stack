@@ -59,18 +59,23 @@ SEC1, SEC2, SIGN = "01 CULTIVAR", "02 ANALYTICAL PARAMETERS", "P R E PA R E D"
 # `no` sorts the grouped rows: 9.1 is TAMC under "Microbiological Purity". `column` is
 # the release register's column letter, or "" where the register has no column for it —
 # identity and foreign matter have none, which is why 81 in-house iCoAs are owed.
+# Identification criteria print the full monograph citation, exactly as the
+# house documents do (owner ruling, 31.08.2026, from the QCCoA 001 specimen):
+# "(07/2024:3028) во Ph. Eur. 11.0". The 07/2024 monograph version is
+# technically the 11.5 supplement of the 11th Edition; the 11.0 edition label
+# is the owner's house form and is kept verbatim.
 DETERMINATIONS = [
     dict(no="1",  group="", en="Identification A, Appearance · Macroscopic",
          mk="Идентиф. A, Изглед, Макроскопски", method="Ph. Eur. mon. 3028",
-         criterion="Conforms to monograph | Соодветствува со монографијата",
+         criterion="Conforms to the monograph for Cannabis flos (07/2024:3028) in Ph. Eur. 11.0 | Согласно монографија за Cannabis flos (07/2024:3028) во Ph. Eur. 11.0",
          column="", source="in_house_icoa"),
     dict(no="2",  group="", en="Identification B · Microscopic",
          mk="Идентиф. Б · Микроскопски", method="Ph. Eur. 2.8.23 (microscopy)",
-         criterion="Conforms to monograph | Соодветствува со монографијата",
+         criterion="Conforms to the monograph for Cannabis flos (07/2024:3028) in Ph. Eur. 11.0 | Согласно монографија за Cannabis flos (07/2024:3028) во Ph. Eur. 11.0",
          column="", source="in_house_icoa"),
     dict(no="3",  group="", en="Identification C · HPLC/HPTLC",
          mk="Идентиф. Ц · HPLC/HPTLC", method="Ph. Eur. 2.2.29 (3028)",
-         criterion="Conforms to monograph | Соодветствува со монографијата",
+         criterion="Conforms to the monograph for Cannabis flos (07/2024:3028) in Ph. Eur. 11.0 | Согласно монографија за Cannabis flos (07/2024:3028) во Ph. Eur. 11.0",
          column="", source="in_house_icoa"),
     dict(no="4",  group="", en="Assay — Total Δ⁹-THC", mk="Анализа — вкупен Δ⁹-THC",
          method="Ph. Eur. 2.2.29 (HPLC)",
