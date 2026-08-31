@@ -10,6 +10,10 @@ less, and treating it as a difference would bury the one difference that matters
 
 `±0.71` and `0.71` in the uncertainty column likewise differ only in how the
 laboratory chose to print the sign that year.
+
+And the register annotates a detected mycotoxin — `2.06 — DETECTED, >LOQ` — where the
+certificate prints the bare number. That annotation is the register doing its job, and
+reading it as a difference produced a false finding once already.
 """
 import json, re, sys
 
@@ -25,6 +29,8 @@ KEY = {"thc": "THC %", "cbd": "CBD %", "cbn": "CBN %",
 def norm(v):
     s = str(v or "").strip().lower().replace(" ", "").replace("*", "").replace("±", "")
     s = re.sub(r"\(<?0?\.?20%?\)$", "", s)          # the register's inline LOQ footnote
+    s = re.sub(r"[—-]detected.*$", "", s)          # the register's own detection flag
+    s = re.sub(r"^(\d+),(\d+)$", r"\1.\2", s)      # Macedonian decimal comma
     if s.startswith("<loq"): return "<loq"
     if s in ("nd", "n.d.", "н.д.", "нд"): return "nd"
     return s

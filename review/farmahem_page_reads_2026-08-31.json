@@ -348,5 +348,398 @@
    "cbn": "/",
    "thc": "1.23"
   }
+ },
+ "1971M26": {
+  "batch_page": "Blue Gelato / BG1024",
+  "internal": "CF-396/26",
+  "aflab1": "ND",
+  "afla_b2": "ND",
+  "afla_g1": "ND",
+  "afla_g2": "ND",
+  "afla": "ND",
+  "ota": "ND",
+  "u": {
+   "ota": "/"
+  }
+ },
+ "1972M26": {
+  "batch_page": "Blue Sunset Sherbet / BSS1024",
+  "internal": "CF-397/26",
+  "aflab1": "ND",
+  "afla_b2": "ND",
+  "afla_g1": "ND",
+  "afla_g2": "ND",
+  "afla": "ND",
+  "ota": "ND",
+  "u": {
+   "ota": "/"
+  }
+ },
+ "1979M26": {
+  "batch_page": "Gorilla Glue / GG1024_01",
+  "internal": "CF-404/26",
+  "aflab1": "ND",
+  "afla_b2": "ND",
+  "afla_g1": "ND",
+  "afla_g2": "ND",
+  "afla": "ND",
+  "ota": "ND",
+  "u": {
+   "ota": "/"
+  }
+ },
+ "19714M26": {
+  "batch_page": "High Pro Amnesia / HPA1024_01",
+  "internal": "CF-409/26",
+  "aflab1": "ND",
+  "afla_b2": "ND",
+  "afla_g1": "ND",
+  "afla_g2": "ND",
+  "afla": "ND",
+  "ota": "2.06",
+  "u": {
+   "ota": "11.80"
+  },
+  "note": "Ochratoxin A DETECTED at 2.06 µg/kg (U 11.80%). The register records ND for it."
+ },
+ "19718M26": {
+  "batch_page": "Orange Punch Mimosa / P050062",
+  "internal": "CF-413/26",
+  "aflab1": "ND",
+  "afla_b2": "ND",
+  "afla_g1": "ND",
+  "afla_g2": "ND",
+  "afla": "ND",
+  "ota": "ND",
+  "u": {
+   "ota": "/"
+  }
+ },
+ "19711M26": {
+  "batch_page": "Grape Pie / P050022",
+  "internal": "CF-406/26",
+  "aflab1": "ND",
+  "afla_b2": "ND",
+  "afla_g1": "ND",
+  "afla_g2": "ND",
+  "afla": "ND",
+  "ota": "ND",
+  "u": {
+   "ota": "/"
+  }
+ },
+ "1973M26": {
+  "batch_page": "Cap Junkie / P050162",
+  "internal": "CF-398/26",
+  "aflab1": "ND",
+  "afla_b2": "ND",
+  "afla_g1": "ND",
+  "afla_g2": "ND",
+  "afla": "ND",
+  "ota": "ND",
+  "u": {
+   "ota": "/"
+  }
+ },
+ "19710M26": {
+  "batch_page": "Grape Pie / P050152",
+  "internal": "CF-405/26",
+  "aflab1": "ND",
+  "afla_b2": "ND",
+  "afla_g1": "ND",
+  "afla_g2": "ND",
+  "afla": "ND",
+  "ota": "ND",
+  "u": {
+   "ota": "/"
+  }
+ },
+ "1974M26": {
+  "batch_page": "Cap Junky / P050212",
+  "internal": "CF-399/26",
+  "aflab1": "ND",
+  "afla_b2": "ND",
+  "afla_g1": "ND",
+  "afla_g2": "ND",
+  "afla": "ND",
+  "ota": "ND",
+  "u": {
+   "ota": "/"
+  },
+  "note": "sample name printed 'Cap Junky'; every other report in the series writes 'Cap Junkie'"
+ },
+ "27631M25": {
+  "batch_page": "Blue Sunset Sherbet, бр. на серија BSS 052501",
+  "internal": "CF-723/25",
+  "aflab1": "ND",
+  "afla_b2": "ND",
+  "afla_g1": "ND",
+  "afla_g2": "ND",
+  "afla": "ND",
+  "ota": "<LOQ",
+  "u": {
+   "ota": "/"
+  },
+  "note": "addressed to НЬУ ГАРДЕН ФАРМА, not Purely Plant — the same third-party client as IPH 5661/2025. Ochratoxin A is <LOQ (<1 µg/kg), not ND (<0.5): the laboratory distinguishes the two."
+ },
+ "19712M26": {
+  "batch_page": "Grape Pie / P050322",
+  "internal": "CF-407/26",
+  "aflab1": "ND",
+  "afla_b2": "ND",
+  "afla_g1": "ND",
+  "afla_g2": "ND",
+  "afla": "ND",
+  "ota": "ND",
+  "u": {
+   "ota": "/"
+  }
+ },
+ "1975M26": {
+  "batch_page": "Cap Junkie / P060032",
+  "internal": "CF-400/26",
+  "aflab1": "ND",
+  "afla_b2": "ND",
+  "afla_g1": "ND",
+  "afla_g2": "ND",
+  "afla": "ND",
+  "ota": "ND",
+  "u": {
+   "ota": "/"
+  }
+ },
+ "19720M26": {
+  "batch_page": "Permanent Market / P060062",
+  "internal": "CF-415/26",
+  "aflab1": "ND",
+  "afla_b2": "ND",
+  "afla_g1": "ND",
+  "afla_g2": "ND",
+  "afla": "ND",
+  "ota": "ND",
+  "u": {
+   "ota": "/"
+  }
+ },
+ "19716M26": {
+  "batch_page": "Jokerz 31 / P060152",
+  "internal": "CF-411/26",
+  "aflab1": "ND",
+  "afla_b2": "ND",
+  "afla_g1": "ND",
+  "afla_g2": "ND",
+  "afla": "ND",
+  "ota": "ND",
+  "u": {
+   "ota": "/"
+  }
+ },
+ "19715M26": {
+  "batch_page": "Jelly Donutz / P060212",
+  "internal": "CF-410/26",
+  "aflab1": "ND",
+  "afla_b2": "ND",
+  "afla_g1": "ND",
+  "afla_g2": "ND",
+  "afla": "ND",
+  "ota": "ND",
+  "u": {
+   "ota": "/"
+  }
+ },
+ "19719M26": {
+  "batch_page": "Orange Punch Mimosa / P060242",
+  "internal": "CF-414/26",
+  "aflab1": "ND",
+  "afla_b2": "ND",
+  "afla_g1": "ND",
+  "afla_g2": "ND",
+  "afla": "ND",
+  "ota": "ND",
+  "u": {
+   "ota": "/"
+  }
+ },
+ "19713M26": {
+  "batch_page": "High Pro Amnesia / HPA1024",
+  "internal": "CF-408/26",
+  "aflab1": "ND",
+  "afla_b2": "ND",
+  "afla_g1": "ND",
+  "afla_g2": "ND",
+  "afla": "ND",
+  "ota": "<LOQ",
+  "u": {
+   "ota": "/"
+  },
+  "note": "Ochratoxin A <LOQ (<1 µg/kg), not ND (<0.5) — the laboratory distinguishes the two"
+ },
+ "19717M26": {
+  "batch_page": "Orange Punch Mimosa / OPM 1024",
+  "internal": "CF-412/26",
+  "aflab1": "ND",
+  "afla_b2": "ND",
+  "afla_g1": "ND",
+  "afla_g2": "ND",
+  "afla": "ND",
+  "ota": "ND",
+  "u": {
+   "ota": "/"
+  }
+ },
+ "1976M26": {
+  "batch_page": "Cash Cow / P060332",
+  "internal": "CF-401/26",
+  "aflab1": "ND",
+  "afla_b2": "ND",
+  "afla_g1": "ND",
+  "afla_g2": "ND",
+  "afla": "ND",
+  "ota": "ND",
+  "u": {
+   "ota": "/"
+  }
+ },
+ "1977M26": {
+  "batch_page": "Fat Bastard / P060352",
+  "internal": "CF-402/26",
+  "aflab1": "ND",
+  "afla_b2": "ND",
+  "afla_g1": "ND",
+  "afla_g2": "ND",
+  "afla": "ND",
+  "ota": "ND",
+  "u": {
+   "ota": "/"
+  }
+ },
+ "19721M26": {
+  "batch_page": "Scrambler / P060382",
+  "internal": "CF-416/26",
+  "aflab1": "ND",
+  "afla_b2": "ND",
+  "afla_g1": "ND",
+  "afla_g2": "ND",
+  "afla": "ND",
+  "ota": "ND",
+  "u": {
+   "ota": "/"
+  }
+ },
+ "1978M26": {
+  "batch_page": "Gorilla Glue / P060402",
+  "internal": "CF-403/26",
+  "aflab1": "ND",
+  "afla_b2": "ND",
+  "afla_g1": "ND",
+  "afla_g2": "ND",
+  "afla": "ND",
+  "ota": "ND",
+  "u": {
+   "ota": "/"
+  }
+ },
+ "0516LOD26": {
+  "batch_page": "Graps & Creme / GRC102501/2",
+  "internal": "CF-78/26",
+  "lod": "7,7",
+  "spec": "< 12",
+  "u": {
+   "lod": "± 0,2"
+  },
+  "method": "Ph. Eur. 11.5 Loss on Drying (2.2.32:2024)"
+ },
+ "0511LOD26": {
+  "batch_page": "Jokerz 31 / J31102501",
+  "internal": "CF-73/26",
+  "lod": "6,3",
+  "spec": "< 12",
+  "u": {
+   "lod": "± 0,2"
+  },
+  "method": "Ph. Eur. 11.5 Loss on Drying (2.2.32:2024)"
+ },
+ "0515LOD26": {
+  "batch_page": "Jokerz 31 / J31112501",
+  "internal": "CF-77/26",
+  "lod": "8,4",
+  "spec": "< 12",
+  "u": {
+   "lod": "± 0,2"
+  },
+  "method": "Ph. Eur. 11.5 Loss on Drying (2.2.32:2024)"
+ },
+ "1001LOD26": {
+  "batch_page": "Jokerz 31 / J31112501",
+  "internal": "CF-150/26",
+  "lod": "7,6",
+  "spec": "< 12",
+  "u": {
+   "lod": "± 0,2"
+  },
+  "method": "Ph. Eur. 11.5 Loss on Drying (2.2.32:2024)"
+ },
+ "0514LOD26": {
+  "batch_page": "Kush Krasher / KC102501",
+  "internal": "CF-76/26",
+  "lod": "8,6",
+  "spec": "< 12",
+  "u": {
+   "lod": "± 0,2"
+  },
+  "method": "Ph. Eur. 11.5 Loss on Drying (2.2.32:2024)",
+  "note": "sample name printed 'Kush Krasher'; the cannabinoid report 051-4-K/26 writes 'Kush Crasher'"
+ },
+ "0513LOD26": {
+  "batch_page": "Sleepy Joy / SJ102501",
+  "internal": "CF-75/26",
+  "lod": "7,8",
+  "spec": "< 12",
+  "u": {
+   "lod": "± 0,2"
+  },
+  "method": "Ph. Eur. 11.5 Loss on Drying (2.2.32:2024)"
+ },
+ "0512LOD26": {
+  "batch_page": "Sleepy Joy / SJ112501",
+  "internal": "CF-74/26",
+  "lod": "6,7",
+  "spec": "< 12",
+  "u": {
+   "lod": "± 0,2"
+  },
+  "method": "Ph. Eur. 11.5 Loss on Drying (2.2.32:2024)"
+ },
+ "1002LOD26": {
+  "batch_page": "Jokerz 31 J31112501 (рачно тримиран цвет)",
+  "internal": "CF-152/26",
+  "lod": "10,3",
+  "spec": "< 12",
+  "u": {
+   "lod": "± 0,2"
+  },
+  "method": "Ph. Eur. 11.5 Loss on Drying (2.2.32:2024)",
+  "note": "BATCH DISAGREES with its own cannabinoid report: 100-2-К/26 (CF-151/26), the same hand-trimmed sample, prints J31122501 — and so does the register. This LoD report prints J31112501."
+ },
+ "1003LOD26": {
+  "batch_page": "Jokerz 31 J31112501 (тримиран цвет)",
+  "internal": "CF-154/26",
+  "lod": "10,3",
+  "spec": "< 12",
+  "u": {
+   "lod": "± 0,2"
+  },
+  "method": "Ph. Eur. 11.5 Loss on Drying (2.2.32:2024)",
+  "note": "pages bound in REVERSE — results on page 1, cover on page 2; the only such document in the family. Same batch disagreement as 100-2-ГС/26: its cannabinoid report 100-3-К/26 (CF-153/26) prints J31122501."
+ },
+ "1004LOD26": {
+  "batch_page": "Orange Punch Mimosa / OPM122501",
+  "internal": "CF-156/26",
+  "lod": "6,6",
+  "spec": "< 12",
+  "u": {
+   "lod": "± 0,2"
+  },
+  "method": "Ph. Eur. 11.5 Loss on Drying (2.2.32:2024)"
  }
 }
