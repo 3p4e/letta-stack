@@ -102,10 +102,14 @@ def gate(doc_id, expect_prefix):
         if not c.get('important_keywords'): return False, 'keywords empty'
     return True, 'ok'
 
-def ingest_and_gate(tranche):
+def start_ingest(tranche):
     verify_prompts_flat()
+    req('/api/v1/documents/ingest',
+        {'doc_ids': [x['id'] for x in tranche], 'run': 1, 'delete': True}, 'POST')
+
+
+def wait_and_gate(tranche):
     ids = [x['id'] for x in tranche]
-    req('/api/v1/documents/ingest', {'doc_ids': ids, 'run': 1, 'delete': True}, 'POST')
     deadline = time.time() + INGEST_TIMEOUT
     while time.time() < deadline:
         time.sleep(20)
@@ -155,11 +159,17 @@ def main():
     say('corpus: %d document(s) to process (%d priority first)' %
         (len(queue), sum(1 for x in queue if x in prio)))
     held_all = []
-    for i in range(0, len(queue), TRANCHE):
-        tr = queue[i:i + TRANCHE]
-        say('\n===== TRANCHE %d: %d docs, starting %s' %
-            (i // TRANCHE + 1, len(tr), tr[0]['name'][-45:]))
-        held = ingest_and_gate(tr)
+    tranches = [queue[i:i + TRANCHE] for i in range(0, len(queue), TRANCHE)]
+    if tranches:
+        start_ingest(tranches[0])
+    for i, tr in enumerate(tranches):
+        say('\n===== TRANCHE %d/%d: %d docs, starting %s' %
+            (i + 1, len(tranches), len(tr), tr[0]['name'][-45:]))
+        held = wait_and_gate(tr)
+        # Ingest-ahead: the NEXT tranche parses in RAGFlow while this one is
+        # being extracted - the single task executor is otherwise idle then.
+        if i + 1 < len(tranches):
+            start_ingest(tranches[i + 1])
         held_all += held
         held_ids = {h['doc_id'] for h in held}
         runnable = [x for x in tr if x['id'] not in held_ids]
@@ -169,7 +179,7 @@ def main():
         say('tranche done: %d records (corpus %d); %d held' % (len(recs), len(corpus), len(held)))
         if stopped:
             say('\n== DRIVER HALTED on a clean runner stop (budget or Gemini quota).')
-            say('   Re-run run_corpus.py to resume; %d document(s) remain.' % (len(queue) - i - len(recs)))
+            say('   Re-run run_corpus.py to resume where it stopped.')
             break
     json.dump(held_all, open(HERE + '/held_ingest.json', 'w'), ensure_ascii=False, indent=1)
     say('\nHELD at ingest: %d  (held_ingest.json)' % len(held_all))

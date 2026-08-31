@@ -8,7 +8,8 @@ never silently resolved. Numbers are never taken from a PDF text layer.
 Ground rule from the register audit: a TYMC exponent misread by one power of ten
 turns a failing batch into a passing one. A single unverified read caused that.
 """
-import os, io, re, json, base64, time, urllib.request, urllib.error, argparse, sys
+import os, io, re, json, base64, time, urllib.request, urllib.error, argparse, sys, threading
+from concurrent.futures import ThreadPoolExecutor
 
 RAG = os.environ['RAGFLOW_API_SERVER'].rstrip('/')
 RAGKEY = os.environ['RAGFLOW_API_KEY']
@@ -163,6 +164,7 @@ SCHEMA
 OPENAI_PRICES = {'gpt-5': (1.25, 10.0), 'gpt-4.1': (2.0, 8.0), 'gpt-4.1-mini': (0.4, 1.6)}
 OPENAI_BUDGET_USD = float(os.environ.get('OPENAI_BUDGET_USD', '5.50'))
 SPEND = {'usd': 0.0, 'calls': 0}
+_SPEND_LOCK = threading.Lock()
 
 
 class BudgetExhausted(RuntimeError):
@@ -177,8 +179,9 @@ ALERT_STEP_USD = float(os.environ.get('OPENAI_ALERT_STEP_USD', '1.0'))
 def _meter(model, usage):
     pin, pout = OPENAI_PRICES.get(model, (2.0, 10.0))
     usd = (usage.get('prompt_tokens', 0) * pin + usage.get('completion_tokens', 0) * pout) / 1e6
-    before = SPEND['usd']
-    SPEND['usd'] += usd; SPEND['calls'] += 1
+    with _SPEND_LOCK:
+        before = SPEND['usd']
+        SPEND['usd'] += usd; SPEND['calls'] += 1
     if int(SPEND['usd'] / ALERT_STEP_USD) > int(before / ALERT_STEP_USD):
         print('   $$ SPEND ALERT: OpenAI $%.2f of the $%.2f ceiling (%d calls)'
               % (SPEND['usd'], OPENAI_BUDGET_USD, SPEND['calls'])); sys.stdout.flush()
@@ -620,18 +623,23 @@ def run(doc_ids, names, outpath):
         imgs = render(pdf)
         print('   %d page(s) rendered at %d DPI' % (len(imgs), DPI)); sys.stdout.flush()
         t0 = time.time()
-        try: ta, ua = with_retry(lambda: read_openai(imgs), 'read A (gpt-5)')
-        except (BudgetExhausted, GeminiExhausted) as e:
-            print('\n== RUN STOPPED CLEANLY: %s' % e)
+        # The two reads are independent vendors by design; running them in
+        # parallel changes nothing about reconciliation and roughly halves the
+        # per-document wall clock.
+        stop = None
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            fa = pool.submit(with_retry, lambda: read_openai(imgs), 'read A (gpt-5)')
+            fb = pool.submit(with_retry, lambda: read_gemini(imgs), 'read B (gemini)')
+            try: ta, ua = fa.result()
+            except (BudgetExhausted, GeminiExhausted) as e: stop = e; ta, ua = '', {}
+            except Exception as e: ta, ua = '', {'error': str(e)[:120]}
+            try: tb, ub = fb.result()
+            except (BudgetExhausted, GeminiExhausted) as e: stop = e; tb, ub = '', {}
+            except Exception as e: tb, ub = '', {'error': str(e)[:120]}
+        if stop is not None:
+            print('\n== RUN STOPPED CLEANLY: %s' % stop)
             print('   %d document(s) completed and saved; re-run to resume with the rest.' % len(results))
             break
-        except Exception as e: ta, ua = '', {'error': str(e)[:120]}
-        try: tb, ub = with_retry(lambda: read_gemini(imgs), 'read B (gemini)')
-        except (BudgetExhausted, GeminiExhausted) as e:
-            print('\n== RUN STOPPED CLEANLY: %s' % e)
-            print('   read A for this document is discarded; %d document(s) saved.' % len(results))
-            break
-        except Exception as e: tb, ub = '', {'error': str(e)[:120]}
         A, B = parse_json(ta), parse_json(tb)
         if tb and B is None:
             ub = dict(ub or {}); ub['error'] = 'response did not parse as JSON (%d chars, likely truncated)' % len(tb)
