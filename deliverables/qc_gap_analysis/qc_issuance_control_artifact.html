@@ -313,6 +313,7 @@ tr.grp td{background:var(--gold-tint)!important;font-family:var(--d);font-size:8
     <button class="chip warn" data-f="coq:ghost">Retest certificate missing<span class="c" id="c-gh"></span></button>
     <button class="chip warn" data-f="coq:banner">Banner = re-analysis<span class="c" id="c-ban"></span></button>
     <button class="chip" data-f="coq:ready">Re-analysis on file<span class="c" id="c-rdy"></span></button>
+    <button class="chip fail" data-f="coq:unres">Batch unresolved<span class="c" id="c-unr"></span></button>
     <button class="clear" data-clear="coq">clear</button>
     <span class="count" id="cnt-coq"></span>
   </div>
@@ -458,8 +459,12 @@ D.coqs.forEach(function(c, i){
   c.k = k;
   /* an issued reissue that cites no re-analysis at all */
   c.ghost = c.reissue && c.issued && !c.codes.some(function(x){ return x.indexOf("197-") === 0; });
-  /* a reissue whose Farmahem pair is already on file */
+  /* a reissue whose Farmahem pair is already on file. A lot with no packaged lot and
+     a P-number for a batch has no resolved cultivation batch, so it cannot be queued
+     for issue however complete its re-analysis is. */
   c.ready = c.reissue && c.codes.some(function(x){ return x.indexOf("197-") === 0; });
+  c.unresolved = c.ready && !c.issued && !c.pp && c.cb.indexOf("P0") === 0;
+  if (c.unresolved) c.ready = false;
   /* an initial CoQ whose banner potency is the 12-month re-analysis, not the release assay */
   c.banner = false;
   if (!c.reissue && c.thc) {
@@ -490,6 +495,8 @@ var N = {
   noe:    COQ.filter(function(c){ return !c.reg; }).length,
   ghost:  COQ.filter(function(c){ return c.ghost; }).length,
   ready:  COQ.filter(function(c){ return c.ready && !c.issued; }).length,
+  unres:  COQ.filter(function(c){ return c.unresolved; }).length,
+  readyAll: COQ.filter(function(c){ return c.ready; }).length,
   banner: COQ.filter(function(c){ return c.banner; }).length,
   ab:     ICO.filter(function(p){ return p.scope.indexOf("Ident") === 0; }).length,
   fm:     ICO.filter(function(p){ return p.scope.indexOf("Foreign") === 0; }).length,
@@ -552,6 +559,8 @@ el("findings").innerHTML = [
    "The plan records the retest date; the Farmahem certificate never reached the file. Same defect class, one step later."],
   [N.ready, "predicted reissues already have their Farmahem pair on file", "info",
    "The cannabinoid and mycotoxin half is certified. Identity and foreign matter are still outstanding on every one — first in the queue, not issuable."],
+  [N.unres, "re-analysed lot cannot be queued at all: its cultivation batch is unresolved", "fail",
+   "P060332 has both Farmahem panels on file, but the batch behind it — CC012601/1, per the certificate table — is in no register and no issue plan, and nothing else exists for it anywhere: no identity, foreign matter, loss on drying, heavy metals, pesticides or microbiology. A certificate of quality cannot be issued for material whose identity is unresolved."],
   [N.banner, "initial certificates would print the 12-month re-analysis as banner potency", "warn",
    "Not the release assay. Defensible only because no CoQ may now issue before " + D.sop_effective + " and a certificate speaks as of its date of issue — but a decision to take knowingly."]
 ].map(function(f){
@@ -599,6 +608,7 @@ function passCoq(c){
     if (x === "ghost"     &&  c.ghost)   any = true;
     if (x === "banner"    &&  c.banner)  any = true;
     if (x === "ready"     &&  c.ready)   any = true;
+    if (x === "unres"     &&  c.unresolved) any = true;
   });
   return any;
 }
@@ -641,6 +651,7 @@ function coqFlags(c){
   if (c.ghost)  out.push('<span class="pill p-warn">retest certificate missing</span>');
   if (c.banner) out.push('<span class="pill p-warn">banner = re-analysis</span>');
   if (c.ready && !c.issued) out.push('<span class="pill p-info">re-analysis on file</span>');
+  if (c.unresolved) out.push('<span class="pill p-fail">cultivation batch unresolved</span>');
   if (c.conflict) out.push('<span class="pill p-warn">grade range vs QCSP 001</span>');
   return out.join(" ") || '<span class="dim">—</span>';
 }
@@ -695,6 +706,7 @@ function renderDetail(){
   if (!c.reg) notes.push("<b>No outsourced certificate is on file for this cultivation batch.</b> Every value shown comes from the in-house CoA transcription, whose footnote attributes the testing to accredited laboratories. Locate the physical certificates, scan and upload.");
   if (c.ghost) notes.push("<b>This certificate is numbered and its retest date recorded, but no 197-series re-analysis is on file.</b> Locate and scan it before issue.");
   if (c.banner) notes.push("<b>The banner potency is the 12-month re-analysis, not the release assay.</b> The master spec carries the newest result; the certificate speaks as of its date of issue, which cannot precede " + D.sop_effective + ". A decision to take knowingly.");
+  if (c.unresolved) notes.push("<b>The Farmahem pair is on file, but this lot cannot be queued for issue.</b> The batch behind it — CC012601/1, per the certificate table — is in no register and no issue plan, and nothing else exists for it anywhere: no identity, foreign matter, loss on drying, heavy metals, pesticides or microbiology. Resolve the identity first.");
   if (c.ready && !c.issued) notes.push("<b>The Farmahem pair is on file ahead of the 12-month date</b> — the cannabinoid and mycotoxin half is certified. Identity and foreign matter are still to perform, so this is first in the queue, not issuable.");
   if (c.conflict) notes.push("<b>Grade range conflict.</b> " + c.conflict);
   if (c.reissue) notes.push("Ten determinations are in the retest scope; the other eleven read <i>outside the retest scope</i> and stand on this batch's initial certificate.");
@@ -773,8 +785,8 @@ document.querySelector("#t-spec tbody").innerHTML = D.dets.map(function(d){
 }).join("");
 
 [["c-init",N.init],["c-reis",N.reis],["c-num",N.issued],["c-pred",N.pred],["c-oos",N.oos],
- ["c-und",N.und],["c-noe",N.noe],["c-gh",N.ghost],["c-ban",N.banner],["c-rdy",N.ready],
- ["c-ab",N.ab],["c-fm",N.fm],["c-iini",N.iini],["c-irei",N.irei],
+ ["c-und",N.und],["c-noe",N.noe],["c-gh",N.ghost],["c-ban",N.banner],["c-rdy",N.readyAll],
+ ["c-unr",N.unres], ["c-ab",N.ab],["c-fm",N.fm],["c-iini",N.iini],["c-irei",N.irei],
  ["c-iph",labN("IPH")],["c-cnp",labN("UKIM")],["c-fhm",labN("Farmahem")],["c-pp",labN("Purely")],
  ["c-ver",N.ver],["c-red",N.red],["c-amb",N.amb]
 ].forEach(function(p){ var n = el(p[0]); if (n) n.textContent = p[1]; });

@@ -104,10 +104,13 @@ And one finding the extension exposed: **five issued additional-testing CoQs —
 `0029` (GG1024), `0033` (OMP1024_01), `0036` (GP0824_03), `0037` (OPM1024_03),
 `0039` (MB0824_05) — cite no 197-series certificate on file.** The plan records their
 retest dates; the certificates never reached the file. Same defect class as GG1024's
-initial testing: locate the physical certificates, scan, upload. Conversely, 13
+initial testing: locate the physical certificates, scan, upload. Conversely, 12
 batches are re-analysed already — the 197-series pair is on file — which certifies the
 cannabinoid and mycotoxin half of their reissue and **nothing else**: a 197-К carries
 Total Δ⁹-THC, CBD and CBN, its М sibling the six mycotoxins, and identity and foreign
 matter are outstanding on every one of them. Under this folder's own rule — *a CoQ must
 never carry a result or a conformity assertion that has not been certified* — they are
-first in the queue, not issuable.
+first in the queue, not issuable. A thirteenth lot, **P060332**, has the same pair on
+file but is not in that queue at all: its cultivation batch, `CC012601/1`, appears in no
+register and no plan, and a certificate of quality cannot be issued for material whose
+identity is unresolved.

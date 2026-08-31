@@ -169,8 +169,9 @@ yet) the 12-month due date, whichever is latest. 75 CoQs may be issued from
 
 **The rebuilt totals: 166 CoQ documents** — 48 issued initial + 13 issued additional
 testing + 35 predicted initial + 35 predicted Tranche-01/02 reissues + 35 predicted
-later reissues — **× 23 determinations = 3 818 rows**; the iCoA plan grows to
-**137** (45 × Ident A+B, 92 × foreign matter, every reissue owing exactly one).
+later reissues — **× 23 determinations = 3 818 rows**; ~~the iCoA plan grows to 137
+(45 × Ident A+B, 92 × foreign matter, every reissue owing exactly one)~~ — **wrong by 87
+documents, corrected below to 224: 71 × Ident A + B and 153 × foreign matter.**
 
 Two findings the extension exposed:
 
@@ -179,13 +180,18 @@ Two findings the extension exposed:
   `0036` GP0824_03 (14.07.2026), `0037` OPM1024_03 (22.07.2026), `0039` MB0824_05
   (25.08.2026). The plan records the retests; the certificates never reached the
   file. Same defect class as GG1024's initial testing: locate, scan, upload.
-* **Thirteen batches are re-analysed early** — the Farmahem pair is already on file,
-  ahead of the 12-month mark for most — so their reissue CoQs can be numbered and
-  issued now: GP052501, CJ052501/01, GP082501/2, CJ082501/2, PM092501, CJ062501-2,
-  and the six P-row lots above, plus **P060332** (Cash Cow), which matches no plan
-  lot and no register cultivation batch — its identity is an open question for QC
-  (CC112501, the only Cash Cow on record, assayed 13.35 % against the P-row's
-  17.67 %: not obviously the same material).
+* **Thirteen batches are re-analysed early** — the Farmahem pair is on file ahead of
+  the 12-month mark for most: GP052501, CJ052501/01, GP082501/2, CJ082501/2, PM092501,
+  CJ062501-2, the six P-row lots above, and P060332. ~~So their reissue CoQs can be
+  numbered and issued now~~ — **no.** A 197-К certificate carries Total Δ⁹-THC, Total
+  CBD and Total CBN; its М sibling the six mycotoxins; **neither carries identity or
+  foreign matter**, and both are outstanding on all thirteen. Under this repository's
+  own rule — a CoQ must never carry a conformity assertion that has not been certified
+  — they are **first in the queue**: order Farmahem's identity, issue the in-house
+  foreign-matter iCoA, then number and issue. **P060332 is not even in that queue**:
+  its cultivation batch (CC012601/1, from the certificate table) is in no register and
+  in no plan, and a certificate of quality cannot be issued for material whose identity
+  is unresolved. See the correction section below.
 
 All 21 Farmahem 197-series pairs in the register land on exactly 21 distinct reissue
 CoQs — 8 issued, 13 predicted — none lost, none double-cited.

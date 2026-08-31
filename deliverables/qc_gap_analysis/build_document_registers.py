@@ -179,11 +179,30 @@ def main(out):
             ("Flag", 9, "amber / red per the register legend"),
             ("Packaged-lot linkage", 34, "from PP_Potency_MASTER_Spec"),
             ("Register row", 11, ""), ("Document link", 15, "")]
-    band(ws, COLS, "Purely Plant GmbH — eCoA receipt register",
-         "Every certificate received from an outside laboratory, in issue-date order. "
-         "Document control: what was received, from whom, when, and whether it has been checked.")
+    band(ws, COLS, "Purely Plant GmbH — certificate receipt register",
+         "Every certificate the release register cites, in issue-date order — outsourced "
+         "and, where the batch has one, Purely Plant's own in-house CoA. Document control: "
+         "what was received, from whom, when, and whether it has been read off its page.")
     docs = [r for r in rows if not r["code"].lower().startswith(("n/a", "(not numbered)"))]
     docs.sort(key=lambda r: (key(r["date"]), r["row"]))
+    # One document, one row. The register cites PP CoA #033 on two rows of GP092501's
+    # block, one dated 20.02.2026 and one undated; a receipt register that lists the
+    # same certificate twice with different dates cannot answer its own question.
+    # Keep the dated row and record the duplicate rather than dropping it silently.
+    # Keyed on the code EXACTLY as printed, never on nk(): nk() strips every
+    # non-ASCII character, and the Farmahem series distinguishes its cannabinoid
+    # certificate from its mycotoxin certificate by a single Cyrillic letter —
+    # 197-1-К/26 against 197-1-М/26. Normalising merged all 21 pairs into 21 rows
+    # and lost 21 real documents before this was caught.
+    seen, dupes, uniq = {}, [], []
+    for r in docs:
+        k = r["code"].strip()
+        if k in seen:
+            dupes.append((r, seen[k]))
+            continue
+        seen[k] = r
+        uniq.append(r)
+    docs = uniq
     for n, r in enumerate(docs):
         i = 6 + n
         v = ver.get(nk(r["code"])) or next(
@@ -271,7 +290,8 @@ def main(out):
     for n, c in enumerate(cov):
         i = 6 + n
         k = c["counts"]
-        covered = k[CQ.ST_OK] + k[CQ.ST_FINDING] + k[CQ.ST_OOS] + k[CQ.ST_UNDET]
+        covered = (k[CQ.ST_OK] + k[CQ.ST_FINDING] + k[CQ.ST_OOS] + k[CQ.ST_UNDET]
+                   + k[CQ.ST_BLOCK] + k[CQ.ST_OFFREG])
         oos = k[CQ.ST_OOS] + k[CQ.ST_BLOCK]
         note = c["spec_conflict"]
         if not c["in_register"]:
@@ -299,7 +319,13 @@ def main(out):
     s.cell(row=2, column=1, value="Generated 31.08.2026 from the corrected release register, "
            "the iCoA gap analysis, and PP_Potency_MASTER_Spec.xlsx").font = Font("Arial", 9, color=SUB)
     lines = [
-        ("eCoA receipt register", len(docs), "certificates received from outside laboratories"),
+        ("Certificate receipt register", len(docs),
+         "distinct certificates the release register cites — %d of them Purely Plant's "
+         "own in-house CoA%s" % (
+             sum(1 for r in docs if r["lab"].startswith("Purely")),
+             (" · %d duplicate row%s removed: %s" % (
+                 len(dupes), "" if len(dupes) == 1 else "s",
+                 ", ".join(sorted({d[0]["code"] for d in dupes})))) if dupes else "")),
         ("  page-verified against their own page", sum(1 for r in docs if nk(r["code"]) in ver or
             any(nk(m) in ver for m in re.findall(r"ППК\s*\d+", r["code"]))), "31.08.2026 campaign"),
         ("  carrying a live document link", sum(1 for r in docs if r["pdf"]), ""),
@@ -352,7 +378,8 @@ def main(out):
         ("CoQ parameter schedule", len(sched),
          f"{len(coq)} CoQs x 23 determinations"),
         ("  covered by a certificate on file", scount[CQ.ST_OK] + scount[CQ.ST_FINDING]
-         + scount[CQ.ST_OOS] + scount[CQ.ST_UNDET], ""),
+         + scount[CQ.ST_OOS] + scount[CQ.ST_UNDET] + scount[CQ.ST_BLOCK]
+         + scount[CQ.ST_OFFREG], "conforming, findings, OOS, undetermined and blocked alike"),
         ("  still to be performed", scount[CQ.ST_ICOA],
          "identity A, B, C and foreign matter — routed per the Sourcing routes sheet"),
         ("  awaiting the 12-month re-analysis — Farmahem",
@@ -367,8 +394,15 @@ def main(out):
          "parameter 4's criterion is 'per target grade as per Section 01'"),
         ("  upon request — not required for release", scount[CQ.ST_REQ],
          "P. aeruginosa and S. aureus"),
-        ("  out of specification", scount[CQ.ST_OOS] + scount[CQ.ST_BLOCK], ""),
-        ("  undetermined pending the QCSP 001 reading", scount[CQ.ST_UNDET], ""),
+        ("  in-house CoA only — no outsourced eCoA on file", scount[CQ.ST_SCAN],
+         "GG1024: locate the physical certificates, scan and upload"),
+        ("     of the covered, out of specification", scount[CQ.ST_OOS], ""),
+        ("     of the covered, undetermined pending QCSP 001", scount[CQ.ST_UNDET], ""),
+        ("     of the covered, a conforming laboratory finding", scount[CQ.ST_FINDING], ""),
+        ("     of the covered, declared out of specification by the laboratory",
+         scount[CQ.ST_BLOCK], ""),
+        ("     of the covered, batch not in the release register",
+         scount[CQ.ST_OFFREG], ""),
         ("", "", ""),
         ("Determinations no laboratory has ever performed", "",
          f"per CoQ, over {len(coq)} CoQs"),
@@ -402,18 +436,27 @@ def main(out):
         "analysis performed at packaging; their earlier testing sits under the cultivation batch's own "
         "entry. Two more — P060352 from FB012602, P060382 from SCR012603 — are packaged lots whose "
         "cultivation batch is not in the release register at all. P060332 appears in neither document.",
-        "So for four batches the register counts the same material twice, and the CoQ total turns on "
-        "whether a CoQ is issued per cultivation batch or per released lot. 102 is the count on the "
-        "register's own numbering; issuing one CoQ per released material instead would remove four. "
-        "That is a QC decision and is not made here — the linkage is carried on every sheet so the "
-        "question is visible wherever a count is read.",
+        "So for four batches the register counts the same material twice. THAT QUESTION IS NOW "
+        "SETTLED: the owner's ruling of 31.08.2026 issues one CoQ per released material, and the six "
+        "P-number blocks fold into their cultivation batch rather than standing as batches of their "
+        "own. The CoQ sheet counts 166 documents on that basis — one initial per batch on record and "
+        "one 12-month reissue per batch. The linkage is still carried on every sheet, because the "
+        "register itself has not been renumbered.",
         "",
-        "WHY THE iCoA SHEET STILL LISTS 81 WHILE THE ISSUE_COQ PLAN CARRIES 61 CoQ DOCUMENTS. The 81 "
-        "rows predate the plan and are kept as the per-cultivation-batch view; the plan's "
-        "iCoA-PP-YYYY-NNNN references and the routing decision of 31.08.2026 are on the CoQ sheets "
-        "and in PP_CoQ_Parameter_Schedule_2026-08-31.xlsx. Identity and foreign matter are properties of the "
-        "material, determined once. A CoQ reissued because the cannabinoids and mycotoxins were "
-        "re-analysed covers the same batch, so it references the iCoA already issued.",
+        "WHY THIS SHEET STILL LISTS 81 ROWS WHILE THE ROUTING REQUIRES 224 IN-HOUSE CERTIFICATES. "
+        "The 81 rows predate the plan and are kept as the per-register-entry view — and six of them "
+        "(P060152, P060212, P060242, P060352, P060382, P060402) are the Farmahem re-analysis rows of "
+        "plan lots, so 81 rows are not 81 materials. What the routing actually requires is on the CoQ "
+        "sheets and in PP_CoQ_Parameter_Schedule_2026-08-31.xlsx: 71 Ident A + B certificates and 153 "
+        "foreign-matter certificates, 224 in all.",
+        "AN EARLIER NOTE HERE SAID THE OPPOSITE AND IS WITHDRAWN. It read: \"Identity and foreign "
+        "matter are properties of the material, determined once. A CoQ reissued because the "
+        "cannabinoids and mycotoxins were re-analysed covers the same batch, so it references the "
+        "iCoA already issued.\" The owner's routing of 31.08.2026 rules otherwise: at a 12-month "
+        "reissue Farmahem performs identity together with the assay, and Purely Plant's laboratory "
+        "issues a fresh foreign-matter iCoA. A certificate from the release round cannot stand behind "
+        "a determination on a document dated a year later — the same rule that stops an initial CoQ "
+        "citing the 197-series re-analysis, running the other way.",
         "WHERE THE SCOPE SPLIT COMES FROM. CNP changed its certificate form in mid-2026: the older DAB "
         "form reports loss on drying and cannabinoids only; the Ph. Eur. 11.5 form adds identification "
         "(macroscopy and microscopy) and foreign matter. Twelve certificates are on the newer form — "

@@ -205,6 +205,13 @@ def icoa_plan(per_coq):
     initial release owing both identity and foreign matter needs **two** documents, and
     a retest needs one — because Farmahem covers identity at retest and Purely Plant's
     laboratory only has foreign matter left to certify.
+
+    One CoQ is deliberately absent from the foreign-matter side: **FB032601's reissue**.
+    Its foreign matter was determined at release and DECLARED OUT OF SPECIFICATION by
+    the laboratory (ППК26127). Foreign matter does not improve in storage, so buying the
+    determination again twelve months on is not what that batch needs; its reissue CoQ
+    carries the finding, not a blank. So 83 reissues yield 82 foreign-matter
+    certificates, and the one missing is missing on purpose.
     """
     plan, seen = [], set()
     for p in per_coq:
@@ -359,6 +366,8 @@ INHOUSE_MAP = [
 
 ST_SCAN = ("in-house CoA only — underlying eCoA NOT on file: locate the physical "
            "certificate, scan and upload")
+ST_OFFREG = ("covered — certificate on file, but the release register has no block "
+             "for this cultivation batch")
 
 # The retest programme is universal — every batch has a 12-month re-analysis of the
 # CANNABINOIDS and the MYCOTOXINS and gets a CoQ reissue for it (owner, 31.08.2026).
@@ -379,8 +388,23 @@ NO_NUMBER = "(assigned on issue)"
 SOP_EFFECTIVE = "11.05.2026"
 
 
+IN_HOUSE_CODE = ("n/a — Purely Plant", "PP CoA #", "In-house ")
+
+
 def inhouse_cells(cb):
-    """The in-house CoA transcription for a cultivation batch, keyed by determination.
+    """The certificate transcription for a cultivation batch, keyed by determination.
+
+    Used only where the release register has no block for the batch at all, to put the
+    values that exist on the CoQ rather than leaving it blank.
+
+    **Not everything it returns is an in-house document, and it must not say so.** The
+    transcription table holds whatever certificate covers the batch — for GG1024 that is
+    genuinely Purely Plant's own unnumbered CoA, but for FB012601/1 it is `ППК26067`, a
+    UKIM CNP certificate that is on file and page-verified. A first version stamped every
+    record `Purely Plant in-house` and the caller then flagged it *"underlying eCoA NOT on
+    file: locate the physical certificate"* — three false assertions about a document
+    anyone can open. The record now carries `family(code)`, the same rule the register
+    uses, and an `inhouse` flag the caller reads instead of assuming.
 
     Pesticides are 13 residue rows on the in-house CoA; the schedule carries the panel
     as one determination, so they collapse to N.D. only when every row is N.D.
@@ -396,10 +420,12 @@ def inhouse_cells(cb):
     out, pest = {}, []
     for r in rows:
         pname = (r["Parameter"] or "").lower()
-        rec = {"value": clean(r["Result"]), "code": clean(r["Certificate Code"]),
+        code = clean(r["Certificate Code"])
+        rec = {"value": clean(r["Result"]), "code": code,
                "date": clean(r["Issue Date"]), "lab": clean(r["Issuing Institution"]),
-               "family": "Purely Plant in-house", "flag": None, "stability": False,
-               "note": "", "row": None}
+               "family": family(code), "flag": None, "stability": False,
+               "note": "", "row": None,
+               "inhouse": code.startswith(IN_HOUSE_CODE)}
         if "ph. eur. 2.8.13" in (r["Parameter"] or "").lower():
             pest.append(rec)
             continue
@@ -712,7 +738,12 @@ def schedule():
             st = status_of(det, chosen, lim, cb, blocked)
             if chosen is None and not additional and det["no"] in inhouse:
                 chosen, others = inhouse[det["no"]], []
-                st = ST_SCAN
+                # An outsourced certificate that happens to be the only source for a
+                # batch the register has no block for is still an outsourced
+                # certificate: judge it, do not declare it missing.
+                st = ST_SCAN if chosen.get("inhouse") else \
+                    (ST_OFFREG if status_of(det, chosen, lim, cb, blocked) == ST_OK
+                     else status_of(det, chosen, lim, cb, blocked))
             if additional and chosen is None:
                 if det["no"] in ICOA_FIELD:
                     st = ST_ICOA
@@ -912,7 +943,10 @@ def write_workbook(rows, per_coq, dets):
     for i, p2 in enumerate(per_coq):
         rr = 6 + i
         k = p2["counts"]
-        covered = k[ST_OK] + k[ST_FINDING] + k[ST_OOS] + k[ST_UNDET]
+        # BLOCKED is covered: a certificate on file stands behind it, and it failed.
+        # Leaving it out of every bucket made FB032601's row sum to 20 of 21.
+        covered = k[ST_OK] + k[ST_FINDING] + k[ST_OOS] + k[ST_UNDET] + k[ST_BLOCK] \
+            + k[ST_OFFREG]
         note = p2["spec_conflict"]
         if not p2["in_register"]:
             note = ("Cultivation batch not in the release register — no eCoA on file "
@@ -1079,9 +1113,17 @@ def report(rows, per_coq, dets):
                     if p["date"] != "≥ " + SOP_EFFECTIVE})
     print(f"  issue dates: the CoQ SOP is in use since {SOP_EFFECTIVE}; the plan's "
           f"2025/2026 dates are packaging dates (the numbering series), not issue "
-          f"dates. {len(per_coq) - len(later)} CoQs may be issued from "
-          f"{SOP_EFFECTIVE}; {len(later)} are bound later by a cited document or "
-          f"a 12-month due date.")
+          f"dates. {len(per_coq) - len(later)} CoQs have no date constraint beyond "
+          f"the SOP floor; {len(later)} are bound later by a cited document or a "
+          f"12-month due date.")
+    ready = [p for p in per_coq
+             if not (p["counts"][ST_ICOA] + p["counts"][ST_NONE] + p["counts"][ST_SCAN]
+                     + p["counts"][ST_AWAIT_K] + p["counts"][ST_AWAIT_M]
+                     + p["counts"][ST_NOSPEC])]
+    print(f"         A date floor is not a clearance. {len(ready)} of {len(per_coq)} "
+          f"CoQs have every determination in scope certified — the rest carry at "
+          f"least one result no document stands behind, and a CoQ must never carry a "
+          f"conformity assertion that has not been certified.")
     print()
     # The plan's banner THC is supposed to be the lot's actual assay. Where a register
     # block exists, at least one register THC value should equal it; a disagreement
@@ -1150,6 +1192,11 @@ def report(rows, per_coq, dets):
     early = [p for p in per_coq
              if p["type"].endswith("predicted") and p["type"].startswith("additional")
              and any(c.startswith("197-") for c in p["codes"])]
+    # P060332 is re-analysed but cannot be queued: its cultivation batch, CC012601/1
+    # per the certificate table, is in no register and in no issue plan. A certificate
+    # of quality cannot be issued for material whose identity is unresolved.
+    unresolved = [p for p in early if not p["pp"] and p["cb"].startswith("P0")]
+    early = [p for p in early if p not in unresolved]
     print(f"  {len(early):>5}  batches re-analysed ahead of their 12-month date — the "
           f"197-series pair is on file, so the cannabinoid and mycotoxin half of the "
           f"reissue is already certified.")
@@ -1157,9 +1204,13 @@ def report(rows, per_coq, dets):
           "total CBD and CBN on its К certificate and the mycotoxins on its М — "
           "nothing else. Identity A, B and C and foreign matter are outstanding on "
           "every one of them, and a CoQ must not carry a conformity assertion that "
-          "has not been certified. What these 13 are is FIRST IN THE QUEUE: order "
+          "has not been certified. What they are is FIRST IN THE QUEUE: order "
           "Farmahem's identity, issue the in-house foreign-matter iCoA, then number "
           "and issue.")
+    for p in unresolved:
+        print(f"         {p['cb']} is re-analysed too and is NOT in that queue: its "
+              f"cultivation batch is in no register and no issue plan. Resolve the "
+              f"identity first.")
     print()
     # One lot, one conflict — but a lot has two CoQs, its initial and its reissue,
     # and the note belongs on both. Report both granularities: counting the documents
