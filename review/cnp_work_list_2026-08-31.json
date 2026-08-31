@@ -1,0 +1,1094 @@
+[
+ {
+  "row": 6,
+  "batch": "BG1024",
+  "code": "ППК25050",
+  "date": "26.02.2025",
+  "vals": {
+   "THC %": "21.80",
+   "CBD %": "0.04",
+   "Loss on drying %": "5.73"
+  },
+  "n": 1,
+  "fid": "1B9qiy9tp7EeejTTOCk0hWqqCHiih8Ja8",
+  "title": "BG1024_ППК25050, 26.02.2025_CNP.pdf"
+ },
+ {
+  "row": 11,
+  "batch": "BSS1024",
+  "code": "ППК25051",
+  "date": "26.02.2025",
+  "vals": {
+   "THC %": "21.03",
+   "CBD %": "0.04",
+   "Loss on drying %": "5.99"
+  },
+  "n": 1,
+  "fid": "1sX1V0sWLnxh26HZdho2jgDMU1tEllzG9",
+  "title": "BSS1024_ППК25051, 26.02.2025_CNP.pdf"
+ },
+ {
+  "row": 16,
+  "batch": "CJ1024",
+  "code": "ППК25052",
+  "date": "26.02.2025",
+  "vals": {
+   "THC %": "23.00",
+   "CBD %": "0.05",
+   "Loss on drying %": "5.91"
+  },
+  "n": 1,
+  "fid": "19lhlVlmQ9KkmXEGPAtB-wSqUMNYj5CXh",
+  "title": "CJ1024_ППК25052, 26.02.2025_CNP.pdf"
+ },
+ {
+  "row": 19,
+  "batch": "GG1024_01",
+  "code": "ППК25104",
+  "date": "17.04.2025",
+  "vals": {
+   "THC %": "17.22",
+   "CBD %": "0.05",
+   "Loss on drying %": "7.54"
+  },
+  "n": 1,
+  "fid": "1AXKtOP_J2NmicNMmBU7IpFnDL3XkHa5u",
+  "title": "P050092_ППК25104, 17.04.2025_CNP.pdf"
+ },
+ {
+  "row": 24,
+  "batch": "GP0824_01",
+  "code": "ППК25105",
+  "date": "17.04.2025",
+  "vals": {
+   "THC %": "20.79",
+   "CBD %": "0.06",
+   "Loss on drying %": "6.73"
+  },
+  "n": 1,
+  "fid": "18b8oWiuynDr6J1R4ir1jgIn4hzcBMBk5",
+  "title": "P050102_ППК25105, 17.04.2025_CNP.pdf"
+ },
+ {
+  "row": 27,
+  "batch": "MB0824_04",
+  "code": "ППК25118",
+  "date": "06.05.2025",
+  "vals": {
+   "THC %": "18.67",
+   "CBD %": "0.05",
+   "Loss on drying %": "6.01"
+  },
+  "n": 1,
+  "fid": "1GazF52nEZWRg70mHrXl0zN1Qh1TxyJip",
+  "title": "P050032_ППК25118, 06.05.2025_CNP.pdf"
+ },
+ {
+  "row": 30,
+  "batch": "OPM1024_01",
+  "code": "ППК25117",
+  "date": "06.05.2025",
+  "vals": {
+   "THC %": "15.38",
+   "CBD %": "0.04",
+   "Loss on drying %": "5.86"
+  },
+  "n": 1,
+  "fid": "1LqxMy5OADxq6-K2dUIe-LgghWrTxMaSn",
+  "title": "P050042_ППК25117, 06.05.2025_CNP.pdf"
+ },
+ {
+  "row": 33,
+  "batch": "GG1024_02",
+  "code": "ППК25140",
+  "date": "22.05.2025",
+  "vals": {
+   "THC %": "15.95",
+   "CBD %": "0.05",
+   "Loss on drying %": "6.88"
+  },
+  "n": 1,
+  "fid": "1mBuEZBxY593pUJhFyQvvQSQLD6Mf2nFO",
+  "title": "P050012_ППК25140, 22.05.2025_CNP.pdf"
+ },
+ {
+  "row": 36,
+  "batch": "HPA1024_01",
+  "code": "ППК25155",
+  "date": "24.06.2025",
+  "vals": {
+   "THC %": "22.43",
+   "CBD %": "0.1",
+   "Loss on drying %": "6.36"
+  },
+  "n": 1,
+  "fid": "1ITBVp3HA8m3Xor2wMzR9KyQaEzsXqWM0",
+  "title": "P050052_ППК25155, 24.06.2025_CNP.pdf"
+ },
+ {
+  "row": 41,
+  "batch": "OPM1024_02",
+  "code": "ППК25154",
+  "date": "24.06.2025",
+  "vals": {
+   "THC %": "18.27",
+   "CBD %": "0.05",
+   "Loss on drying %": "6.89"
+  },
+  "n": 1,
+  "fid": "1nDFU4rNhcZinF7J4YOjvH8ifB7HonJaC",
+  "title": "P050062_ППК25154, 24.06.2025_CNP.pdf"
+ },
+ {
+  "row": 46,
+  "batch": "GP0824_02",
+  "code": "ППК25174",
+  "date": "10.07.2025",
+  "vals": {
+   "THC %": "23.19",
+   "CBD %": "0.07",
+   "Loss on drying %": "6.51"
+  },
+  "n": 1,
+  "fid": "1i6JtHOhYkTTmhfcE7Wt98RYNDcM7saG4",
+  "title": "P050022_ППК25174, 10.07.2025_CNP.pdf"
+ },
+ {
+  "row": 47,
+  "batch": "GP0824_02",
+  "code": "ППК25139",
+  "date": "22.05.2025",
+  "vals": {
+   "THC %": "23.79",
+   "CBD %": "0.10",
+   "CBN %": "0.02",
+   "Loss on drying %": "7.21"
+  },
+  "n": 1,
+  "fid": "1_Shekzw6aT8o2_JtmrEtRZyzxrOZVVKj",
+  "title": "P050022_ППК25139, 22.05.2025_CNP.pdf"
+ },
+ {
+  "row": 52,
+  "batch": "GP0824_02",
+  "code": "ППК26032",
+  "date": "05.03.2026",
+  "vals": {},
+  "n": 1,
+  "fid": "1uzigVegMMDMLx323GJQBpYVQucxruwEF",
+  "title": "P050022_ППК26032, 05.03.2026_CNP.pdf"
+ },
+ {
+  "row": 53,
+  "batch": "GP0824_02",
+  "code": "ППК26033",
+  "date": "05.03.2026",
+  "vals": {},
+  "n": 1,
+  "fid": "1jqlsRLoQNShKvilX_M3eiiDWIqp6JrsV",
+  "title": "P050022_ППК26033, 05.03.2026_CNP.pdf"
+ },
+ {
+  "row": 54,
+  "batch": "GP0824_02",
+  "code": "ППК26059",
+  "date": "11.05.2026",
+  "vals": {},
+  "n": 1,
+  "fid": "1f7OzzG8KPfD7efI1crDjvwWm-N2W2YPF",
+  "title": "P050022_ППК26059, 11.05.2026_CNP.pdf"
+ },
+ {
+  "row": 55,
+  "batch": "GP0824_03",
+  "code": "ППК25175",
+  "date": "10.07.2025",
+  "vals": {
+   "THC %": "25.45",
+   "CBD %": "0.08",
+   "Loss on drying %": "6.58"
+  },
+  "n": 1,
+  "fid": "1CHtNIOEl-BuazbxWmBL4g8VZ0HolZGpW",
+  "title": "P050072_ППК25175, 10.07.2025_CNP.pdf"
+ },
+ {
+  "row": 58,
+  "batch": "GP0824_03",
+  "code": "ППК26034",
+  "date": "05.03.2026",
+  "vals": {},
+  "n": 1,
+  "fid": "11vbCN9zQ2h7r0f7W9FPdC91dctTUb59q",
+  "title": "P050072_ППК26034, 05.03.2026_CNP.pdf"
+ },
+ {
+  "row": 59,
+  "batch": "GP0824_03",
+  "code": "ППК26035",
+  "date": "05.03.2026",
+  "vals": {},
+  "n": 1,
+  "fid": "1R219WxECi23Rauh99HBOTvW7vqgUXPFV",
+  "title": "P050072_ППК26035, 05.03.2026_CNP.pdf"
+ },
+ {
+  "row": 60,
+  "batch": "GP0824_03",
+  "code": "ППК26060",
+  "date": "11.05.2026",
+  "vals": {},
+  "n": 1,
+  "fid": "1m1ndnsgDRoqUF7U7nEZ09T4UZDeZygtm",
+  "title": "P050072_ППК26060, 11.05.2026_CNP.pdf"
+ },
+ {
+  "row": 61,
+  "batch": "BSS1024_01",
+  "code": "ППК25176",
+  "date": "10.07.2025",
+  "vals": {
+   "THC %": "23.42",
+   "CBD %": "0.06",
+   "Loss on drying %": "6.38"
+  },
+  "n": 1,
+  "fid": "1_UtmBdZ8XrhH4VmtLlzy8SLDEJv93B-k",
+  "title": "P050122_ППК25176, 10.07.2025_CNP.pdf"
+ },
+ {
+  "row": 64,
+  "batch": "OPM1024_03",
+  "code": "ППК25210",
+  "date": "28.07.2025",
+  "vals": {
+   "THC %": "16.55",
+   "CBD %": "0.04",
+   "Loss on drying %": "6.38"
+  },
+  "n": 1,
+  "fid": "17CXfgnjvpP37ykDy6Qged8OvcB-R0Nre",
+  "title": "P050082_ППК25210, 28.07.2025_CNP.pdf"
+ },
+ {
+  "row": 67,
+  "batch": "MB0824_05",
+  "code": "ППК25211",
+  "date": "28.07.2025",
+  "vals": {
+   "THC %": "16.82",
+   "CBD %": "0.06",
+   "Loss on drying %": "6.56"
+  },
+  "n": 1,
+  "fid": "10K6KshFG-ycy70PfG7vGCVMUDVfLmbNn",
+  "title": "P050112_ППК25211, 28.07.2025_CNP.pdf"
+ },
+ {
+  "row": 70,
+  "batch": "OPM052501",
+  "code": "ППК25257",
+  "date": "05.09.2025",
+  "vals": {
+   "THC %": "14.16",
+   "CBD %": "0.04",
+   "Loss on drying %": "8.28"
+  },
+  "n": 1,
+  "fid": "1TR0neYMG2bjmZ9CsNBTak7PF91eb7O70",
+  "title": "P050132_ППК25257, 05.09.2025_CNP.pdf"
+ },
+ {
+  "row": 73,
+  "batch": "CJ052501-1",
+  "code": "ППК25280",
+  "date": "17.09.2025",
+  "vals": {
+   "THC %": "20.29",
+   "CBD %": "0.07",
+   "Loss on drying %": "7.93"
+  },
+  "n": 1,
+  "fid": "1F5cAWUorHTwbBFsngMM1p0RXGq161p4B",
+  "title": "P050162_ППК25280, 17.09.2025_CNP.pdf"
+ },
+ {
+  "row": 78,
+  "batch": "CJ052501-2",
+  "code": "ППК25281",
+  "date": "17.09.2025",
+  "vals": {
+   "THC %": "14.93",
+   "CBD %": "0.10",
+   "Loss on drying %": "6.63"
+  },
+  "n": 1,
+  "fid": "1lphAn-qMKU1MHIKX7NOZV7wEwXiIkfjG",
+  "title": "P050172_ППК25281, 17.09.2025_CNP.pdf"
+ },
+ {
+  "row": 81,
+  "batch": "GP052501",
+  "code": "ППК25279",
+  "date": "19.09.2025",
+  "vals": {
+   "THC %": "18.98",
+   "CBD %": "0.08",
+   "Loss on drying %": "7.30"
+  },
+  "n": 1,
+  "fid": "1YsDx8xRj8b_FhfYKljshP_9SZ1xZn36E",
+  "title": "P050152_ППК25279, 19.09.2025_CNP.pdf"
+ },
+ {
+  "row": 86,
+  "batch": "HPA052501",
+  "code": "ППК25278",
+  "date": "19.09.2025",
+  "vals": {
+   "THC %": "20.39",
+   "CBD %": "0.09",
+   "Loss on drying %": "7.29"
+  },
+  "n": 1,
+  "fid": "1BU2qqCRVdw0YTvSPLWUSyHizDldPYupB",
+  "title": "P050182_ППК25278, 19.09.2025_CNP.pdf"
+ },
+ {
+  "row": 94,
+  "batch": "GP062501",
+  "code": "ППК26036",
+  "date": "05.03.2026",
+  "vals": {},
+  "n": 1,
+  "fid": "1mQ7C5tCuiHFMXSg-hC0BJmP9EcCBjPna",
+  "title": "P050202_ППК26036, 05.03.2026_CNP.pdf"
+ },
+ {
+  "row": 95,
+  "batch": "GP062501",
+  "code": "ППК26037",
+  "date": "05.03.2026",
+  "vals": {},
+  "n": 1,
+  "fid": "1Bxic2EMuU_QAbDOj0PgM0k6Ar3pojN9W",
+  "title": "P050202_ППК26037, 05.03.2026_CNP.pdf"
+ },
+ {
+  "row": 96,
+  "batch": "GP062501",
+  "code": "ППК26057",
+  "date": "11.05.2026",
+  "vals": {},
+  "n": 1,
+  "fid": "1PcD0sA0eMmdxHM5wq9Q7VUHozrWIXl4C",
+  "title": "P050202_ППК26057, 11.05.2026_CNP.pdf"
+ },
+ {
+  "row": 97,
+  "batch": "GP062501",
+  "code": "ППК26058",
+  "date": "11.05.2026",
+  "vals": {},
+  "n": 1,
+  "fid": "1sQ6cnSihkjeNxv5NkLD5D-YmPFQXIAEe",
+  "title": "P050202_ППК26058, 11.05.2026_CNP.pdf"
+ },
+ {
+  "row": 99,
+  "batch": "CJ062501-2",
+  "code": "ППК25322",
+  "date": "23.10.2025",
+  "vals": {
+   "THC %": "16.56",
+   "THC spec": "14.9 – 18.2 %",
+   "CBD %": "0.14",
+   "Loss on drying %": "6.70"
+  },
+  "n": 1,
+  "fid": "1InKoXCVDz1dElTMeE6cdL_RGHybsZM1-",
+  "title": "P050212_ППК25322, 23.10.2025_CNP.pdf"
+ },
+ {
+  "row": 104,
+  "batch": "CJ062501-1",
+  "code": "ППК25321",
+  "date": "23.10.2025",
+  "vals": {
+   "THC %": "21.51",
+   "THC spec": "n/a (informational)",
+   "CBD %": "0.07",
+   "Loss on drying %": "7.77"
+  },
+  "n": 1,
+  "fid": "1yhrm6qWqhLYna7ghRx0gwj6U1klUr70E",
+  "title": "P050222_ППК25321, 23.10.2025_CNP.pdf"
+ },
+ {
+  "row": 113,
+  "batch": "CJ072501",
+  "code": "ППК25367",
+  "date": "28.11.2025",
+  "vals": {
+   "THC %": "23.70",
+   "THC spec": "n/a (informational)",
+   "CBD %": "0.09",
+   "Loss on drying %": "8.22"
+  },
+  "n": 1,
+  "fid": "1AQuYuMiJOLIVd7ORZ-0gGoYtfKv2wWCO",
+  "title": "P050252_ППК25367, 28.11.2025_CNP.pdf"
+ },
+ {
+  "row": 116,
+  "batch": "WC072501",
+  "code": "ППК25369",
+  "date": "28.11.2025",
+  "vals": {
+   "THC %": "22.11",
+   "THC spec": "n/a (informational)",
+   "CBD %": "0.06",
+   "Loss on drying %": "8.94"
+  },
+  "n": 1,
+  "fid": "1Pvcby8XCd9MyU9rko71ysN4gyMWUIaIO",
+  "title": "P050262_ППК25369, 28.11.2025_CNP.pdf"
+ },
+ {
+  "row": 120,
+  "batch": "PM072501",
+  "code": "ППК25368",
+  "date": "28.11.2025",
+  "vals": {
+   "THC %": "10.01",
+   "THC spec": "9 – 11.01 %",
+   "CBD %": "0.04",
+   "Loss on drying %": "9.52"
+  },
+  "n": 1,
+  "fid": "1SPoSFCvIQZCJpd-PhT1cjlX0pTglZWTp",
+  "title": "P050272_ППК25368, 28.11.2025_CNP.pdf"
+ },
+ {
+  "row": 123,
+  "batch": "CLE072501",
+  "code": "PP CoA #027 / ППК25370",
+  "date": "21.01.2026",
+  "vals": {
+   "THC %": "8.02",
+   "THC spec": "7.2 – 8.82 %",
+   "CBD %": "0.04",
+   "Loss on drying %": "9.68"
+  },
+  "n": 1,
+  "fid": "1NNhnjSneM_HbeyBWEkurSCH4CMZxesJI",
+  "title": "P050282_ППК25370, 28.11.2025_CNP.pdf",
+  "cnp_code": "ППК25370"
+ },
+ {
+  "row": 124,
+  "batch": "CLE072501",
+  "code": "ППК25370",
+  "date": "28.11.2025",
+  "vals": {},
+  "n": 1,
+  "fid": "1NNhnjSneM_HbeyBWEkurSCH4CMZxesJI",
+  "title": "P050282_ППК25370, 28.11.2025_CNP.pdf"
+ },
+ {
+  "row": 127,
+  "batch": "GP072501-1",
+  "code": "PP CoA #018 / ППК25378",
+  "date": "21.01.2026",
+  "vals": {
+   "THC %": "21.36",
+   "THC spec": "19.2 – 23.4 %",
+   "CBD %": "0.11",
+   "Loss on drying %": "6.62"
+  },
+  "n": 1,
+  "fid": "1LABqnRTW7hNoGRjNxr06M9ZtZ1O74Ill",
+  "title": "P050292_ППК25378, 12.12.2025_CNP.pdf",
+  "cnp_code": "ППК25378"
+ },
+ {
+  "row": 128,
+  "batch": "GP072501-1",
+  "code": "ППК25378",
+  "date": "Completed Nov-Dec 2025",
+  "vals": {},
+  "n": 1,
+  "fid": "1LABqnRTW7hNoGRjNxr06M9ZtZ1O74Ill",
+  "title": "P050292_ППК25378, 12.12.2025_CNP.pdf"
+ },
+ {
+  "row": 131,
+  "batch": "GP072501-2",
+  "code": "PP CoA #019 / ППК25379",
+  "date": "21.01.2026",
+  "vals": {
+   "THC %": "19.81",
+   "THC spec": "17.8 – 21.7 %",
+   "CBD %": "0.10",
+   "Loss on drying %": "7.41"
+  },
+  "n": 1,
+  "fid": "1xkMryK9WQn3bsrDy36BdP1BKIOQePelo",
+  "title": "P050302_ППК25379, 12.12.2025_CNP.pdf",
+  "cnp_code": "ППК25379"
+ },
+ {
+  "row": 132,
+  "batch": "GP072501-2",
+  "code": "ППК25379",
+  "date": "Completed Nov-Dec 2025",
+  "vals": {},
+  "n": 1,
+  "fid": "1xkMryK9WQn3bsrDy36BdP1BKIOQePelo",
+  "title": "P050302_ППК25379, 12.12.2025_CNP.pdf"
+ },
+ {
+  "row": 135,
+  "batch": "GP082501-1",
+  "code": "PP CoA #020 / ППК25380",
+  "date": "21.01.2026",
+  "vals": {
+   "THC %": "21.29",
+   "THC spec": "19.1 – 23.4 %",
+   "CBD %": "0.08",
+   "Loss on drying %": "6.29"
+  },
+  "n": 1,
+  "fid": "1jTyGHoVxN2q1C4BJGmr1Pfax4AJMvoGf",
+  "title": "P050312_ППК25380, 12.12.2025_CNP.pdf",
+  "cnp_code": "ППК25380"
+ },
+ {
+  "row": 136,
+  "batch": "GP082501-1",
+  "code": "ППК25380",
+  "date": "Completed Nov-Dec 2025",
+  "vals": {},
+  "n": 1,
+  "fid": "1jTyGHoVxN2q1C4BJGmr1Pfax4AJMvoGf",
+  "title": "P050312_ППК25380, 12.12.2025_CNP.pdf"
+ },
+ {
+  "row": 139,
+  "batch": "GP082501-2",
+  "code": "PP CoA #021 / ППК25381",
+  "date": "21.01.2026",
+  "vals": {
+   "THC %": "14.83",
+   "THC spec": "13.3 – 16.3 %",
+   "CBD %": "0.11",
+   "Loss on drying %": "6.88"
+  },
+  "n": 1,
+  "fid": "1EdZmQ5nKLRmRPiWU1lEuXFVA46w33sQw",
+  "title": "P050322_ППК25381, 12.12.2025_CNP.pdf",
+  "cnp_code": "ППК25381"
+ },
+ {
+  "row": 140,
+  "batch": "GP082501-2",
+  "code": "ППК25381",
+  "date": "Completed Nov-Dec 2025",
+  "vals": {},
+  "n": 1,
+  "fid": "1EdZmQ5nKLRmRPiWU1lEuXFVA46w33sQw",
+  "title": "P050322_ППК25381, 12.12.2025_CNP.pdf"
+ },
+ {
+  "row": 146,
+  "batch": "WC082501",
+  "code": "ППК26001",
+  "date": "21.01.2026",
+  "vals": {
+   "THC %": "21.67",
+   "THC spec": "19.5 – 23.83 %",
+   "CBD %": "0.08",
+   "Loss on drying %": "7.50"
+  },
+  "n": 1,
+  "fid": "1SKB-DN4NPfTga9grCAFi-updgmqHycVG",
+  "title": "P060012_ППК26001, 21.01.2026_CNP.pdf"
+ },
+ {
+  "row": 150,
+  "batch": "CJ082501-1",
+  "code": "ППК26002",
+  "date": "21.01.2026",
+  "vals": {
+   "THC %": "24.96",
+   "THC spec": "22.46 – 27.45 %",
+   "CBD %": "0.09",
+   "Loss on drying %": "7.21"
+  },
+  "n": 1,
+  "fid": "1N1plj9RdRuq6Au2jiYwNXUHPPDz1wIPT",
+  "title": "P060022_ППК26002, 21.01.2026_CNP.pdf"
+ },
+ {
+  "row": 154,
+  "batch": "CJ082501-2",
+  "code": "ППК26003",
+  "date": "21.01.2026",
+  "vals": {
+   "THC %": "20.84",
+   "THC spec": "18.75 – 22.92 %",
+   "CBD %": "0.08",
+   "Loss on drying %": "7.37"
+  },
+  "n": 1,
+  "fid": "1RUScCCDRI9Anu4rrlDGslTAqBLTOaJNg",
+  "title": "P060032_ППК26003, 21.01.2026_CNP.pdf"
+ },
+ {
+  "row": 160,
+  "batch": "OPM092501",
+  "code": "ППК26008",
+  "date": "21.01.2026",
+  "vals": {
+   "THC %": "9.43",
+   "THC spec": "8.48 – 10.37 %",
+   "CBD %": "0.04",
+   "Loss on drying %": "7.85"
+  },
+  "n": 1,
+  "fid": "1EdL_lbNZXwLnX2ng_q04YQWGDvuqc2lp",
+  "title": "P060042_ППК26008, 21.01.2026_CNP.pdf"
+ },
+ {
+  "row": 163,
+  "batch": "AB092501",
+  "code": "PP CoA #037 / ППК26005",
+  "date": "21.01.2026",
+  "vals": {
+   "THC %": "16.93",
+   "THC spec": "15.23 – 18.62 %",
+   "CBD %": "0.07",
+   "Loss on drying %": "6.77"
+  },
+  "n": 1,
+  "fid": "1xW_DfxbOWXmIZ3ZP2OwBOMDPPoaUbOeo",
+  "title": "P060052_ППК26005, 21.01.2026_CNP.pdf",
+  "cnp_code": "ППК26005"
+ },
+ {
+  "row": 165,
+  "batch": "AB092501",
+  "code": "ППК26005",
+  "date": "21.01.2026",
+  "vals": {},
+  "n": 1,
+  "fid": "1xW_DfxbOWXmIZ3ZP2OwBOMDPPoaUbOeo",
+  "title": "P060052_ППК26005, 21.01.2026_CNP.pdf"
+ },
+ {
+  "row": 169,
+  "batch": "PM092501",
+  "code": "ППК26004",
+  "date": "21.01.2026",
+  "vals": {
+   "THC %": "14.06",
+   "THC spec": "12.65 – 15.46 %",
+   "CBD %": "0.05",
+   "Loss on drying %": "7.97"
+  },
+  "n": 1,
+  "fid": "1xQ2Xbfxcf-6aIOPNK32iwOjd-xGKBLaK",
+  "title": "P060062_ППК26004, 21.01.2026_CNP.pdf"
+ },
+ {
+  "row": 175,
+  "batch": "CJ092501",
+  "code": "ППК26007",
+  "date": "21.01.2026",
+  "vals": {
+   "THC %": "22.30",
+   "THC spec": "20.07 – 24.53 %",
+   "CBD %": "0.10",
+   "Loss on drying %": "7.64"
+  },
+  "n": 1,
+  "fid": "1qnyzWQb86gk2xd1gYFxx9bjm_F8-pZgM",
+  "title": "P060072_ППК26007, 21.01.2026_CNP.pdf"
+ },
+ {
+  "row": 179,
+  "batch": "SJ092501",
+  "code": "ППК26006",
+  "date": "21.01.2026",
+  "vals": {
+   "THC %": "10.96",
+   "THC spec": "9.86 – 12.05 %",
+   "CBD %": "0.07",
+   "Loss on drying %": "8.68"
+  },
+  "n": 1,
+  "fid": "1YERZwHFtanavz05EBz3lkWvCKCMb1K9i",
+  "title": "P060082_ППК26006, 21.01.2026_CNP.pdf"
+ },
+ {
+  "row": 184,
+  "batch": "GP092501",
+  "code": "ППК26009",
+  "date": "21.01.2026",
+  "vals": {
+   "THC %": "25.73",
+   "THC spec": "23.15 – 28.3 %",
+   "CBD %": "0.11",
+   "Loss on drying %": "6.91"
+  },
+  "n": 1,
+  "fid": "1q2Fm5POHptPtp8w3I7HwsyEEX_zjVh-e",
+  "title": "P060092_ППК26009, 21.01.2026_CNP.pdf"
+ },
+ {
+  "row": 207,
+  "batch": "OPM112501",
+  "code": "ППК26031",
+  "date": "05.03.2026",
+  "vals": {
+   "THC %": "8.00",
+   "CBD %": "0.02",
+   "Loss on drying %": "8.06"
+  },
+  "n": 1,
+  "fid": "1nku9YNCHxzqbrGIdcfi6U94C5E-yE4rK",
+  "title": "OPM112501_ППК26031, 05.03.2026_CNP.pdf"
+ },
+ {
+  "row": 209,
+  "batch": "PM112501",
+  "code": "ППК26030",
+  "date": "05.03.2026",
+  "vals": {
+   "THC %": "13.33",
+   "CBD %": "0.03",
+   "Loss on drying %": "8.61"
+  },
+  "n": 1,
+  "fid": "1PBCtnETA1VMtf4LuyDGdrfKIm6r_Dshg",
+  "title": "PM112501_ППК26030, 05.03.2026_CNP.pdf"
+ },
+ {
+  "row": 223,
+  "batch": "CC112501",
+  "code": "ППК26068",
+  "date": "11.05.2026",
+  "vals": {
+   "THC %": "13.35",
+   "CBD %": "0.04",
+   "Loss on drying %": "7.39"
+  },
+  "n": 1,
+  "fid": "14NWYtELMDfjB_X-59LH_QWFx_vhrOkGb",
+  "title": "CC112501_ППК26068, 11.05.2026_CNP.pdf"
+ },
+ {
+  "row": 225,
+  "batch": "FB012601",
+  "code": "ППК26067",
+  "date": "11.05.2026",
+  "vals": {
+   "THC %": "14.68",
+   "CBD %": "0.04",
+   "Loss on drying %": "7.67"
+  },
+  "n": 1,
+  "fid": "1f2JrPscsJa4msq4dOzRSogAKZEa8nzh2",
+  "title": "FB012601_1_ППК26067, 11.05.2026_CNP.pdf"
+ },
+ {
+  "row": 227,
+  "batch": "FB112501",
+  "code": "ППК26066",
+  "date": "11.05.2026",
+  "vals": {
+   "THC %": "16.69",
+   "CBD %": "0.05",
+   "Loss on drying %": "6.09"
+  },
+  "n": 1,
+  "fid": "1uVs0X1RHP_CTDjI0MWm7gqo6YFz8vkQs",
+  "title": "FB112501_ППК26066, 11.05.2026_CNP.pdf"
+ },
+ {
+  "row": 229,
+  "batch": "GG012601",
+  "code": "ППК26062",
+  "date": "11.05.2026",
+  "vals": {
+   "THC %": "15.35",
+   "CBD %": "0.06",
+   "Loss on drying %": "6.13"
+  },
+  "n": 1,
+  "fid": "1KYnoJkMbCekOds8bLE17bNwaQJOBSxdk",
+  "title": "GG012601＊_ППК26062, 11.05.2026_CNP.pdf"
+ },
+ {
+  "row": 231,
+  "batch": "GG112501",
+  "code": "ППК26061",
+  "date": "11.05.2026",
+  "vals": {
+   "THC %": "17.94",
+   "CBD %": "0.08",
+   "Loss on drying %": "6.31"
+  },
+  "n": 1,
+  "fid": "1jruTab7KRHo2WbZz4qoDffvWw_ttBayR",
+  "title": "GG112501_ППК26061, 11.05.2026_CNP.pdf"
+ },
+ {
+  "row": 233,
+  "batch": "JD012601",
+  "code": "ППК26064",
+  "date": "11.05.2026",
+  "vals": {
+   "THC %": "18.16",
+   "CBD %": "0.06",
+   "Loss on drying %": "6.68"
+  },
+  "n": 1,
+  "fid": "1sFDrL4PrMl5dSfKO8VB78OoxrWEE713m",
+  "title": "JD012601＊_ППК26064, 11.05.2026_CNP.pdf"
+ },
+ {
+  "row": 235,
+  "batch": "JD112501",
+  "code": "ППК26063",
+  "date": "11.05.2026",
+  "vals": {
+   "THC %": "19.64",
+   "CBD %": "0.06",
+   "Loss on drying %": "6.69"
+  },
+  "n": 1,
+  "fid": "19hwHQVAAXitH3rv2DMZdSHcZ1CxUEzka",
+  "title": "JD112501_ППК26063, 11.05.2026_CNP.pdf"
+ },
+ {
+  "row": 236,
+  "batch": "JD112501",
+  "code": "ППК26065",
+  "date": "11.05.2026",
+  "vals": {
+   "THC %": "13.93",
+   "CBD %": "0.04",
+   "Loss on drying %": "6.38"
+  },
+  "n": 1,
+  "fid": "1A6PyZIOCmW4RON0BO9p7E2wvmoVTzgRl",
+  "title": "JD112501＊_ППК26065, 11.05.2026_CNP.pdf"
+ },
+ {
+  "row": 238,
+  "batch": "SCR112501",
+  "code": "ППК26069",
+  "date": "11.05.2026",
+  "vals": {
+   "THC %": "17.13",
+   "CBD %": "0.04",
+   "Loss on drying %": "6.84"
+  },
+  "n": 1,
+  "fid": "1pMxhkxCwHOaXKKvy3uEpHw12DlhlSwct",
+  "title": "SCR112501_ППК26069, 11.05.2026_CNP.pdf"
+ },
+ {
+  "row": 240,
+  "batch": "FB012603",
+  "code": "ППК26112",
+  "date": "30.06.2026",
+  "vals": {
+   "THC %": "20.83",
+   "THC spec": "≥ 5.00 %",
+   "CBD %": "0.21",
+   "CBN %": "0.06",
+   "Loss on drying %": "7.04"
+  },
+  "n": 1,
+  "fid": "181zXj7u1tWVvnYg-Op4c_aoEnZO9myIc",
+  "title": "FB012603_ППК26112, 30.06.2026_CNP.pdf"
+ },
+ {
+  "row": 242,
+  "batch": "FB012603V",
+  "code": "ППК26110",
+  "date": "30.06.2026",
+  "vals": {
+   "THC %": "18.29",
+   "THC spec": "≥ 5.00 %",
+   "CBD %": "0.16",
+   "CBN %": "0.06",
+   "Loss on drying %": "6.36"
+  },
+  "n": 1,
+  "fid": "1aphoHjYgJtvCpAcow8uqWjdE5w7KDhpJ",
+  "title": "FB012603V_ППК26110, 30.06.2026_CNP.pdf"
+ },
+ {
+  "row": 244,
+  "batch": "GG012603",
+  "code": "ППК26114",
+  "date": "30.06.2026",
+  "vals": {
+   "THC %": "17.59",
+   "THC spec": "≥ 5.00 %",
+   "CBD %": "0.05",
+   "CBN %": "0.15",
+   "Loss on drying %": "6.48"
+  },
+  "n": 1,
+  "fid": "1NIFmWX_WtGWeYEcuHmc97EQGOWpW10v5",
+  "title": "GG012603_ППК26114, 30.06.2026_CNP.pdf"
+ },
+ {
+  "row": 246,
+  "batch": "JD012603-02",
+  "code": "ППК26113",
+  "date": "30.06.2026",
+  "vals": {
+   "THC %": "20.54",
+   "THC spec": "≥ 5.00 %",
+   "CBD %": "0.05",
+   "CBN %": "0.05",
+   "Loss on drying %": "7.52"
+  },
+  "n": 1,
+  "fid": "1yFKpryOF75dev4pHj3zEv1smPLe0tseL",
+  "title": "JD012603_02_ППК26113, 30.06.2026_CNP.pdf"
+ },
+ {
+  "row": 248,
+  "batch": "JD012603-02V",
+  "code": "ППК26111",
+  "date": "30.06.2026",
+  "vals": {
+   "THC %": "15.16",
+   "THC spec": "≥ 5.00 %",
+   "CBD %": "BLQ (below limit of quantification)",
+   "CBN %": "0.04",
+   "Loss on drying %": "7.04"
+  },
+  "n": 1,
+  "fid": "1c-TGLdtti6GOVXt0FUnT9xKThpHlzwui",
+  "title": "JD012603_02V_ППК26111, 30.06.2026_CNP.pdf"
+ },
+ {
+  "row": 250,
+  "batch": "JD022601",
+  "code": "ППК26115",
+  "date": "30.06.2026",
+  "vals": {
+   "THC %": "18.58",
+   "THC spec": "≥ 5.00 %",
+   "CBD %": "BLQ (below limit of quantification)",
+   "CBN %": "0.05",
+   "Loss on drying %": "7.73"
+  },
+  "n": 1,
+  "fid": "14_KoVQqcj8CcZxkSDcefUWOCKu9mBOd7",
+  "title": "JD022601_ППК26115, 30.06.2026_CNP.pdf"
+ },
+ {
+  "row": 252,
+  "batch": "P160012",
+  "code": "ППК26117",
+  "date": "06.07.2026",
+  "vals": {
+   "THC %": "26.32",
+   "THC spec": "≥ 5.00 %",
+   "CBD %": "0.15",
+   "CBN %": "0.09",
+   "Loss on drying %": "6.31"
+  },
+  "n": 1,
+  "fid": "1iasd6Wwc9PZJYcLRK92y-8gqwK09gyoM",
+  "title": "P160012_ППК26117, 06.07.2026_CNP.pdf"
+ },
+ {
+  "row": 254,
+  "batch": "P160022",
+  "code": "ППК26118",
+  "date": "06.07.2026",
+  "vals": {
+   "THC %": "25.72",
+   "THC spec": "≥ 5.00 %",
+   "CBD %": "0.15",
+   "CBN %": "0.10",
+   "Loss on drying %": "6.67"
+  },
+  "n": 1,
+  "fid": "10137WpbLuuEKMSvZH3G6vOG96BrvrQlF",
+  "title": "P160022_ППК26118, 06.07.2026_CNP.pdf"
+ },
+ {
+  "row": 256,
+  "batch": "P160032",
+  "code": "ППК26119",
+  "date": "06.07.2026",
+  "vals": {
+   "THC %": "24.78",
+   "THC spec": "≥ 5.00 %",
+   "CBD %": "0.06",
+   "CBN %": "0.08",
+   "Loss on drying %": "6.78"
+  },
+  "n": 1,
+  "fid": "1FERqPKxoNw3d13ufoB4Qs35obFbQpfoC",
+  "title": "P160032_ППК26119, 06.07.2026_CNP.pdf"
+ },
+ {
+  "row": 258,
+  "batch": "SCR022601",
+  "code": "ППК26116",
+  "date": "06.07.2026",
+  "vals": {
+   "THC %": "21.92",
+   "THC spec": "≥ 5.00 %",
+   "CBD %": "0.19",
+   "CBN %": "0.06",
+   "Loss on drying %": "7.06"
+  },
+  "n": 1,
+  "fid": "1jDIElJv7YngcurgvKTL1yDazQonS37W5",
+  "title": "SCR022601_ППК26116, 06.07.2026_CNP.pdf"
+ },
+ {
+  "row": 260,
+  "batch": "FB032601",
+  "code": "ППК26127",
+  "date": "21.07.2026",
+  "vals": {
+   "THC %": "12.39",
+   "THC spec": "≥ 5.00 %",
+   "CBD %": "0.06",
+   "CBN %": "0.04",
+   "Loss on drying %": "7.77"
+  },
+  "n": 1,
+  "fid": "15gjM1c_Vx2tQyNB5OYhEvd9zanuF9cdu",
+  "title": "FB032601_ППК26127, 21.07.2026_CNP.pdf"
+ },
+ {
+  "row": 262,
+  "batch": "GG032601",
+  "code": "ППК26128",
+  "date": "21.07.2026",
+  "vals": {
+   "THC %": "18.98",
+   "THC spec": "≥ 5.00 %",
+   "CBD %": "0.25",
+   "CBN %": "0.04",
+   "Loss on drying %": "7.88"
+  },
+  "n": 1,
+  "fid": "1FHbOuEPONtLUbFPKVJrxFg6I8TretNZP",
+  "title": "GG032601_ППК26128, 21.07.2026_CNP.pdf"
+ }
+]
