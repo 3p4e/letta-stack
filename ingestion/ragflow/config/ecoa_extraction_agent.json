@@ -102,11 +102,13 @@
       "R2": "value is exactly one decade below the criterion's PRINTED exponent -> flag 'one_decade_below_limit'. The shape a misread 4->3 leaves behind, and the only shape that silently converts a fail into a pass. Verify against the page. Anchored on the printed exponent rather than on max_acceptable, because R2 is about notation. Two guards it needed and did not have: the value must actually be written as a power of ten (testing '10' in the string matched '0.10' and reported four CBD percentages), and a two-bound range such as '< 10^3 and > 10^2' is not a measurement.",
       "R3": "verdict_printed is ОДГОВАРА while value > max_acceptable -> flag 'verdict_contradicts_value'. Not an extraction error — a finding, and the one that needs a deviation record.",
       "R4": "total_thc != d9_thc + thca * 0.877 (+/-0.06) -> flag 'total_thc_mismatch'. Every CNP certificate prints all three and states the conversion in its own footnote, so each page proves itself. Measured over eCoA_DATABASE on 30.08.2026: 2 of the 15 certificates where all three could be read were flagged, and BOTH were then checked against the source PDF and found to be corpus corruptions, not laboratory faults. PPK25117 - corpus 1.58, page 15.38. PPK25139 - corpus THCA 0.52, page 26.52. That is a 13% rate of values that are wrong rather than missing, undetectable by any means except this arithmetic.",
-      "R5": "a result above its criterion on a sample the register's own Stability Testing Programme sheet lists is reported SEPARATELY and is NOT a release failure -> no 'over_limit' flag. Four accelerated 40 C / 75 % RH timepoints exceed the CBN release limit because d9-THCA has decarboxylated and the neutral cannabinoids have oxidised on to CBN; the sample was never a release sample. Which certificates those are is read off the workbook, not hard-coded. Implemented 31.08.2026."
+      "R5": "a result above its criterion on a sample the register's own Stability Testing Programme sheet lists is reported SEPARATELY and is NOT a release failure -> no 'over_limit' flag. Four accelerated 40 C / 75 % RH timepoints exceed the CBN release limit because d9-THCA has decarboxylated and the neutral cannabinoids have oxidised on to CBN; the sample was never a release sample. Which certificates those are is read off the workbook, not hard-coded. Implemented 31.08.2026.",
+      "R6": "value > the criterion as printed AND value <= max_acceptable -> flag 'undetermined_manufacturer_spec'. The compendial x2 interpretation clears it; the manufacturer's own specification, read as written, does not. Ph. Eur. 5.1.4's own scope says the note does not automatically extend to an in-house specification, so this band is decided by a document, not by arithmetic. Never reported as passing and never as failing. Added 31.08.2026 after QCSP 001 v.03 was read."
     },
     "gate": "A record carrying flag 'over_limit' or 'verdict_contradicts_value' is stored AND surfaced. It is never written silently.",
     "flag_is_not_a_finding": "A flag means OPEN THE PAGE. It is never a laboratory finding on its own. Of the three flags raised this way during the 29-30.08.2026 work, zero were the laboratory's fault; every one was a corrupted parse. Reporting a flag as a certificate defect before someone has looked at the page has already produced three retractions. Add a fourth: on 31.08.2026 nine 'over_limit' flags were re-examined and four were withdrawn — not because the values were wrong, but because they had been compared against the wrong ceiling. A flag raised by an unverified rule is worth no more than a flag raised by an unverified parse.",
-    "limit_vs_max_acceptable": "NEVER compare a result against a limit with the function that parsed the result. magnitude() answers what number a measurement is; acceptance_limit() answers what the largest conforming result is. For 10^n CFU/g those differ by a factor of two, and using one for the other is the same defect this whole pipeline exists to catch: the right value taken from the wrong column."
+    "limit_vs_max_acceptable": "NEVER compare a result against a limit with the function that parsed the result. magnitude() answers what number a measurement is; acceptance_limit() answers what the largest conforming result is. For 10^n CFU/g those differ by a factor of two, and using one for the other is the same defect this whole pipeline exists to catch: the right value taken from the wrong column.",
+    "manufacturer_specification": "deliverables/imb_spec_pdfs/SPC_FINAL_ImB_PDF/**/*.pdf — 48 Purely Plant product specifications, QCSP 001 v.03, signed by the QC and QA Managers. All 48 print TAMC 'Ph. Eur. 2.6.12 cat. C  <= 10^5 CFU/g', TYMC '<= 10^4 CFU/g', bile-tolerant gram-neg. 'Ph. Eur. 2.6.31 cat. C  <= 10^4 CFU/g'. No pass in this campaign had opened them before 31.08.2026, and four release dispositions turn on how they are read. A limit captured per result from the certificate is still not the whole answer: the release criterion can live in a third document that neither the certificate nor the register cites."
   },
   "identity_normalisation": {
     "batch": "ingestion/common/batch_id.py::batch_key — the single definition in this repository; policy_check.py already imports it.",
@@ -161,8 +163,8 @@
         "limit": 10000.0,
         "max_acceptable": 20000.0,
         "limit_basis": "pharmacopoeial_enumeration",
-        "flag": null,
-        "note": "Conforms. The register held 1.2x10^3 and the page reads 1,2 x 10^4, so the transcription correction of 30.08 stands — it simply does not change this batch's disposition. 12 000 is inside the maximum acceptable count of 20 000. An extractor that flags this has the arithmetic wrong, not the reading."
+        "flag": "undetermined_manufacturer_spec",
+        "note": "UNDETERMINED, not conforming. Corrected again 31.08.2026. Above the criterion as printed (10 000) and at or below the Ph. Eur. 5.1.4 maximum acceptable count (20 000). Purely Plant's own release specification QCSP 001 v.03 — all 48 product specifications in deliverables/imb_spec_pdfs/ — prints \"TYMC | Ph. Eur. 2.6.12 cat. C | <= 10^4 CFU/g\" and states no maximum acceptable count, and the x2 note does not automatically extend to a manufacturer's own specification. Which reading governs is a QA determination on that document. An extractor must neither pass nor fail these."
       },
       "472/0863/25": {
         "parameter": "TYMC",
@@ -170,8 +172,8 @@
         "limit": 10000.0,
         "max_acceptable": 20000.0,
         "limit_basis": "pharmacopoeial_enumeration",
-        "flag": null,
-        "note": "Conforms, and it is the closest call in the set: inside by 5 %, on a value reported to two significant figures."
+        "flag": "undetermined_manufacturer_spec",
+        "note": "UNDETERMINED, not conforming. Corrected again 31.08.2026. Above the criterion as printed (10 000) and at or below the Ph. Eur. 5.1.4 maximum acceptable count (20 000). Purely Plant's own release specification QCSP 001 v.03 — all 48 product specifications in deliverables/imb_spec_pdfs/ — prints \"TYMC | Ph. Eur. 2.6.12 cat. C | <= 10^4 CFU/g\" and states no maximum acceptable count, and the x2 note does not automatically extend to a manufacturer's own specification. Which reading governs is a QA determination on that document. An extractor must neither pass nor fail these."
       },
       "949/1687/25": {
         "parameter": "TYMC",
@@ -179,8 +181,8 @@
         "limit": 10000.0,
         "max_acceptable": 20000.0,
         "limit_basis": "pharmacopoeial_enumeration",
-        "flag": null,
-        "note": "Conforms."
+        "flag": "undetermined_manufacturer_spec",
+        "note": "UNDETERMINED, not conforming. Corrected again 31.08.2026. Above the criterion as printed (10 000) and at or below the Ph. Eur. 5.1.4 maximum acceptable count (20 000). Purely Plant's own release specification QCSP 001 v.03 — all 48 product specifications in deliverables/imb_spec_pdfs/ — prints \"TYMC | Ph. Eur. 2.6.12 cat. C | <= 10^4 CFU/g\" and states no maximum acceptable count, and the x2 note does not automatically extend to a manufacturer's own specification. Which reading governs is a QA determination on that document. An extractor must neither pass nor fail these."
       },
       "587/1066/25": {
         "parameter": "TYMC",
@@ -188,8 +190,8 @@
         "limit": 10000.0,
         "max_acceptable": 20000.0,
         "limit_basis": "pharmacopoeial_enumeration",
-        "flag": null,
-        "note": "Conforms."
+        "flag": "undetermined_manufacturer_spec",
+        "note": "UNDETERMINED, not conforming. Corrected again 31.08.2026. Above the criterion as printed (10 000) and at or below the Ph. Eur. 5.1.4 maximum acceptable count (20 000). Purely Plant's own release specification QCSP 001 v.03 — all 48 product specifications in deliverables/imb_spec_pdfs/ — prints \"TYMC | Ph. Eur. 2.6.12 cat. C | <= 10^4 CFU/g\" and states no maximum acceptable count, and the x2 note does not automatically extend to a manufacturer's own specification. Which reading governs is a QA determination on that document. An extractor must neither pass nor fail these."
       },
       "163/0271/25": {
         "parameter": "TYMC",
@@ -212,17 +214,13 @@
       "1227/2193/25",
       "1228/2194/25",
       "4/0007/26",
-      "6/0009/26",
-      "472/0863/25",
-      "587/1066/25",
-      "628/1129/25",
-      "949/1687/25"
+      "6/0009/26"
     ],
     "must_not_be_silent": [
       "P050202 NGP-QCG-SOP-024 F3",
       "P050192 NGP-QCG-SOP-024 F3"
     ],
-    "note": "These values were read off the rendered pages during the 29-31.08.2026 verification and are the regression set. An extractor that cannot reproduce them has not fixed the thing it exists to fix. CORRECTED 31.08.2026: five of these ten certificates are out of specification and five conform. The earlier version of this block expected 'over_limit' on 628/1129/25 and would have accepted an extractor that flagged all nine — so the regression set itself encoded the defect. The values did not change; the ceiling did. Record: review/OOS_RECTIFICATION_2026-08-31.md.",
+    "note": "These values were read off the rendered pages during the 29-31.08.2026 verification and are the regression set. An extractor that cannot reproduce them has not fixed the thing it exists to fix. CORRECTED TWICE on 31.08.2026: five of these ten certificates are out of specification, one conforms outright (163/0271/25) and four are UNDETERMINED — they clear the pharmacopoeial maximum acceptable count and exceed Purely Plant's own QCSP 001 read as written. The first correction called those four conforming; that was the pharmacopoeia read correctly and the manufacturer's specification not read at all. The earlier version of this block expected 'over_limit' on 628/1129/25 and would have accepted an extractor that flagged all nine — so the regression set itself encoded the defect. The values did not change; the ceiling did. Record: review/OOS_RECTIFICATION_2026-08-31.md.",
     "stability_not_release": {
       "certificates": [
         "ППК26033",
@@ -231,6 +229,15 @@
         "ППК26058"
       ],
       "expectation": "CBN 2.35, 2.15, 1.09 and 2.05 % against a release criterion of <= 1.00 %. All four are accelerated 40 C / 75 % RH stability timepoints. They must be reported under R5 and must NOT carry flag 'over_limit': the sample was never a release sample."
+    },
+    "undetermined_pending_manufacturer_spec": {
+      "certificates": [
+        "472/0863/25",
+        "587/1066/25",
+        "628/1129/25",
+        "949/1687/25"
+      ],
+      "expectation": "flag 'undetermined_manufacturer_spec', never 'over_limit' and never absent. A result between the criterion as printed and its pharmacopoeial maximum acceptable count is decided by the manufacturer specification, not by arithmetic. QCSP 001 v.03 also labels these rows 'Ph. Eur. 2.6.12 cat. C' — a chapter that has no categories — while printing Category B figures, and its version in force on the June-2025 test date is unestablished (header v.01, footer v.03 signed 01.06.2026). All three are QA items."
     }
   }
 }

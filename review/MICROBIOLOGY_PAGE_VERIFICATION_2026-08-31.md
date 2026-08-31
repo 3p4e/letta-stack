@@ -128,7 +128,8 @@ parser keyed on the old wording will miss it.
 > of `10⁴ CFU/g` means a **maximum acceptable count of 2 × 10⁴ = 20 000** (Ph. Eur. 5.1.4 /
 > 2.6.12, USP <1111>), so the ratios that matter are 2.45×, 2.10×, 1.80×, 1.65× and 1.30×
 > for the first five — and the last four (`472/0863/25`, `949/1687/25`, `587/1066/25`,
-> `628/1129/25`) **conform**. `1220/2171/25` at 200 against a manufacturer's own `10²` is a
+> `628/1129/25`) clear the pharmacopoeial ceiling — though not Purely Plant's own QCSP 001,
+> so they are undetermined rather than conforming. `1220/2171/25` at 200 against a manufacturer's own `10²` is a
 > question about that specification's wording, not one the pharmacopoeia settles.
 > See `review/OOS_RECTIFICATION_2026-08-31.md`.
 

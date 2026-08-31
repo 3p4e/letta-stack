@@ -34,6 +34,15 @@ Three rules, and they catch different failures:
       CBN release limit; the sample was never a release sample. Which
       certificates those are is read off the workbook, not hard-coded.
 
+  R6  a result **between** the criterion as printed and the maximum acceptable
+      count Ph. Eur. gives it is reported as UNDETERMINED. Four TYMC results sit
+      in that band. They conform under Ph. Eur. 5.1.4 and exceed Purely Plant's
+      own release specification, QCSP 001 v.03, read as written — it prints
+      `Ph. Eur. 2.6.12 cat. C  ≤ 10⁴ CFU/g` and states no maximum acceptable
+      count, and the ×2 note does not automatically extend to a manufacturer's
+      own specification. Which governs is a QA determination on that document.
+      Neither cleared nor failed until it is made.
+
   R2  a result recorded at exactly one power of ten below the criterion's
       printed exponent is reported as SUSPECT. That is the shape the superscript
       misread produces — 4,2×10⁴ read as 4,2×10³ — and the only shape that
@@ -53,9 +62,9 @@ columns:
 
     python3 ingestion/ragflow/validate_ecoa_limits.py REGISTER.xlsx
 
-Exit status is 1 if any R1 finding exists, so it can gate a pipeline. R5 and R2
-do not gate: a stability observation and a suspect notation both need a person,
-not a blocked pipeline.
+Exit status is 1 if any R1 finding exists, so it can gate a pipeline. R5, R6 and
+R2 do not gate: a stability observation, an undetermined criterion and a suspect
+notation all need a person, not a blocked pipeline.
 
 (R3 and R4 are numbered in `ingestion/ragflow/config/ecoa_extraction_agent.json`:
 R3 is a verdict contradicting its own value, which needs the certificate's
@@ -431,7 +440,7 @@ def main(path):
         if lim.value:
             cols.append((j, hdr[j], lim))
 
-    over, held, suspect, batch = [], [], [], ""
+    over, held, undet, suspect, batch = [], [], [], [], ""
     for row in ws.iter_rows(min_row=FIRST_DATA):
         cells = [v(c.value) for c in row]
         if not any(cells):
@@ -449,6 +458,12 @@ def main(path):
             if got > lim.value:
                 finding = (row[0].row, batch, code, name, txt, lim, got / lim.value)
                 (held if fold(code) in stability else over).append(finding)
+            elif lim.power and got > lim.power:
+                # R6: between the criterion as printed and the maximum acceptable
+                # count the pharmacopoeia gives it. Conforms under Ph. Eur. 5.1.4,
+                # over under Purely Plant's own QCSP 001 read as written.
+                undet.append((row[0].row, batch, code, name, txt, lim,
+                              got / lim.power))
 
         # R2: a value exactly one decade below the limit, written as a power of
         # ten, is the shape a misread ⁴->³ leaves behind. Two guards, both
@@ -498,6 +513,20 @@ def main(path):
               "are not batch-release results. An accelerated-condition sample "
               "over a release limit is a stability observation; whether it is a "
               "failure is a question for the stability protocol.")
+    else:
+        print("   none")
+
+    print(f"\nR6  between the printed criterion and its maximum acceptable count — "
+          f"UNDETERMINED: {len(undet)}")
+    for r, b, code, name, txt, lim, ratio in undet:
+        print(f"   r{r:<4} {b:<13} {code:<15} {name:<22} {txt:<10} conforms vs "
+              f"{lim.value:g}, {ratio:.2f}x over the printed {lim.power:g}")
+    if undet:
+        print("   These conform under Ph. Eur. 5.1.4's maximum acceptable count and "
+              "exceed Purely Plant's own QCSP 001 v.03 read as written — it prints "
+              "\"Ph. Eur. 2.6.12 cat. C  <= 10^4 CFU/g\" and states no maximum. Which "
+              "governs is a QA determination on that specification, not an arithmetic "
+              "question. Neither cleared nor failed until it is made.")
     else:
         print("   none")
 

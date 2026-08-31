@@ -97,16 +97,19 @@ jobs:
       - name: The correction chain replays
         run: python3 deliverables/qc_gap_analysis/replay_correction_chain.py
 
-      # Five TYMC results are over their acceptance criterion and no others are.
-      # If that count moves without a correction script moving with it, something
+      # Five TYMC results are over their acceptance criterion and no others are;
+      # four more sit between the criterion as printed and its pharmacopoeial
+      # maximum acceptable count, undetermined until QA reads QCSP 001 v.03; four
+      # are stability timepoints and are not release results at all. If any of
+      # those counts moves without a correction script moving with it, something
       # has changed a release determination silently.
-      - name: The register's out-of-specification count is five, all TYMC
+      - name: Five out of specification, four undetermined, four stability
         run: |
           python3 - <<'EOF'
           import re, subprocess, sys
           out = subprocess.run(
               [sys.executable, "ingestion/ragflow/validate_ecoa_limits.py",
-               "deliverables/qc_gap_analysis/PP_Batch_Release_QC_Register_AC_2026-08-31.xlsx"],
+               "deliverables/qc_gap_analysis/PP_Batch_Release_QC_Register_QCSP_2026-08-31.xlsx"],
               capture_output=True, text=True).stdout
           print(out)
 
@@ -117,10 +120,17 @@ jobs:
           bad = []
           r1, r1line = count("R1")
           r5, r5line = count("R5")
+          r6, r6line = count("R6")
           if r1 != 5:
               bad.append("R1 should be 5 release results over their criterion: " + r1line)
           if r5 != 4:
               bad.append("R5 should be 4 stability timepoints: " + r5line)
+          # Four TYMC results clear Ph. Eur. 5.1.4's maximum acceptable count and
+          # exceed Purely Plant's own QCSP 001 v.03 read as written. They are
+          # neither cleared nor failed until QA determines which governs, and a
+          # move in this count means something has decided that silently.
+          if r6 != 4:
+              bad.append("R6 should be 4 undetermined against QCSP 001: " + r6line)
 
           # every R1 finding must be a TYMC count, and no stability timepoint may
           # appear among them — a CBN result on a 40 C / 75 % RH sample is not a

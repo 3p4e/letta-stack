@@ -79,7 +79,9 @@ codes. The workbook's scope also excludes `WATER_TESTING` entirely.
 > all real and all page-verified since. The limit they were compared against was not: an
 > enumeration criterion of `10⁴ CFU/g` means a **maximum acceptable count of 2 × 10⁴** under
 > Ph. Eur. 5.1.4 / 2.6.12 and USP <1111>, so `472/0863/25`, `587/1066/25`, `949/1687/25`
-> and `628/1129/25` conform. Five remain out of specification and need a deviation record.
+> and `628/1129/25` clear that ceiling — but not Purely Plant's own QCSP 001, so they are
+> **undetermined** rather than conforming. Five remain out of specification and need a
+> deviation record.
 > The CBN values on ППК26033 and ППК26058 are accelerated 40 °C / 75 % RH **stability**
 > timepoints, not failed releases. See `review/OOS_RECTIFICATION_2026-08-31.md`.
 

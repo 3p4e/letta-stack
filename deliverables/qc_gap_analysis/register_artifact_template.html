@@ -456,6 +456,25 @@ function overLimit(v,lim,colName){
   return a>b*1.0000001;
 }
 
+/* Between the criterion as printed and the maximum acceptable count Ph. Eur.
+   gives it. Four TYMC results sit in that band: they conform under Ph. Eur.
+   5.1.4 and exceed Purely Plant's own release specification QCSP 001 v.03 read
+   as written, which prints "Ph. Eur. 2.6.12 cat. C  <= 10^4 CFU/g" and states
+   no maximum. Which governs is a QA determination on that document, so the page
+   shows them as undetermined rather than passing or failing. */
+function undetermined(v,lim,colName){
+  if(!v||!lim) return false;
+  var s=String(lim).trim();
+  var norm=s.replace(/[⁰¹²³⁴-⁹]/g,function(c){return "^"+SUP[c];})
+            .replace(/[хХ×✕]/g,"x").replace(/\s+/g,"");
+  var m=norm.match(/^[<≤]?10\^(\d)(?!\d)/);
+  if(!m||!COUNTED.test(String(colName||"")+" "+s)) return false;
+  var printed=Math.pow(10,parseInt(m[1],10));
+  var a=magnitude(String(v).trim());
+  if(a==null||/^[<≤]/.test(String(v).trim())) return false;
+  return a>printed*1.0000001 && a<=printed*PH_EUR_FACTOR*1.0000001;
+}
+
 /* Over a RELEASE criterion. A row the register files under its own Stability
    Testing Programme is not a release sample: the four accelerated 40 °C / 75 %
    RH timepoints sit above the CBN release limit because Δ9-THCA has
@@ -849,8 +868,9 @@ function detail(r,b){
       var raw=overLimit(v,col.limit,col.name);
       var over=raw&&!r.stability;
       var stab=raw&&r.stability;
+      var undet=!raw&&!r.stability&&undetermined(v,col.limit,col.name);
       var fl=(r.flags||{})[L];
-      var cls=over?"over":(stab?"flag":(fl||""));
+      var cls=over?"over":((stab||undet)?"flag":(fl||""));
       var lim=acceptanceLimit(col.limit,col.name);
       var limTxt=col.limit||"no limit stated";
       /* Name the count a value was judged against, unless the criterion already
@@ -859,12 +879,15 @@ function detail(r,b){
         var pretty=String(lim).replace(/\B(?=(\d{3})+(?!\d))/g," ");
         if(limTxt.replace(/\s+/g," ").indexOf(pretty)<0)
           limTxt+=" — max acceptable count "+pretty+" CFU/g (Ph. Eur. 5.1.4)";
+        if(undet)
+          limTxt+="; QCSP 001 v.03 prints ≤ 10⁴ CFU/g and no maximum";
       }
       g.appendChild(el('<div class="pcard '+cls+'">'+
         '<div class="pn2">'+esc(col.name||L)+'</div>'+
         '<div class="pv">'+esc(v)+(over?' <span class="pill fail">over</span>':"")+
           (stab?' <span class="pill warn">stability timepoint</span>':"")+
-          (fl==="amber"&&!over&&!stab?' <span class="pill warn">flag</span>':"")+
+          (undet?' <span class="pill warn">undetermined — QCSP 001</span>':"")+
+          (fl==="amber"&&!over&&!stab&&!undet?' <span class="pill warn">flag</span>':"")+
           (fl==="red"&&!over?' <span class="pill fail">OOS</span>':"")+'</div>'+
         '<div class="pl">'+esc(limTxt)+'</div></div>'));
     });

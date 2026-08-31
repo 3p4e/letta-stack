@@ -73,9 +73,10 @@ CHAIN = [
     ("repair_ppcoa_pdf_links.py",         None,                   [MAP]),
     ("repair_register_pdf_links.py",      "LINKED_2026-08-31",    [MAP]),
     ("apply_acceptance_criterion_corrections.py", "AC_2026-08-31",  []),
+    ("apply_qcsp001_reconciliation.py",    "QCSP_2026-08-31",      []),
 ]
 
-FINAL = "AC_2026-08-31"
+FINAL = "QCSP_2026-08-31"
 
 
 def cells(path):

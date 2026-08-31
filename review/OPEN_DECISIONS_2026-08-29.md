@@ -159,9 +159,11 @@ against a criterion of `10⁴ CFU/g` whose maximum acceptable count is 20 000.
 
 > **Amended 31.08.2026.** This item read *"at least ten"* and additionally named
 > `472/0863/25`, `587/1066/25`, `949/1687/25`, `628/1129/25` and `1220/2171/25`. The first
-> four (19 000, 15 000, 17 000, 12 000) **conform**: Ph. Eur. 5.1.4 / 2.6.12 and USP <1111>
-> read an enumeration criterion of `10ⁿ CFU` as a maximum acceptable count of 2 × 10ⁿ, not
-> 10ⁿ. `1220/2171/25` (200 against `10²`) turns on a manufacturer's own tighter
+> four (19 000, 15 000, 17 000, 12 000) clear the pharmacopoeial ceiling: Ph. Eur. 5.1.4 /
+> 2.6.12 and USP <1111> read an enumeration criterion of `10ⁿ CFU` as a maximum acceptable
+> count of 2 × 10ⁿ, not 10ⁿ. They do **not** clear Purely Plant's own `QCSP 001 v.03`, which
+> prints `≤ 10⁴ CFU/g` and states no maximum, so they are **undetermined** pending a QA
+> reading of that specification — neither cleared nor failed. `1220/2171/25` (200 against `10²`) turns on a manufacturer's own tighter
 > specification and is item 1.4 of `review/QC_DECISIONS_2026-08-31.md`, not this one. The
 > **two CNP CBN results** (ППК26033 on P050022, ППК26058 on P050202) are accelerated
 > 40 °C / 75 % RH **stability** timepoints and not failed releases — see §6 of

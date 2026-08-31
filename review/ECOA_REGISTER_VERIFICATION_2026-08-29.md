@@ -82,7 +82,7 @@ were no false alarms in this group.
 > is the ceiling they were compared against. An acceptance criterion of `10⁴ CFU/g` does not
 > mean 10 000: Ph. Eur. 5.1.4 / 2.6.12 and USP <1111> read it as a **maximum acceptable
 > count of 2 × 10⁴ = 20 000**. Against that, `1,9 × 10⁴`, `1,7 × 10⁴`, `1,5 × 10⁴` and
-> `1,2 × 10⁴` **conform**, and their amber flags have been withdrawn. Five remain out of
+> `1,2 × 10⁴` clear the pharmacopoeial ceiling. Five remain out of
 > specification — `4,2`, `4,9`, `3,6`, `3,3` and `2,6 × 10⁴` — and those five still need a
 > deviation record. `1220/2171/25` (200 against a manufacturer's own `10²`) is a separate
 > question that the pharmacopoeia does not settle. Full record in

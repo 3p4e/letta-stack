@@ -1,6 +1,6 @@
 # Batch gap analysis — CoQ and internal CoA issuance counts
 
-> ## The current workbook is `PP_Batch_Release_QC_Register_AC_2026-08-31.xlsx`
+> ## The current workbook is `PP_Batch_Release_QC_Register_QCSP_2026-08-31.xlsx`
 >
 > This directory holds thirteen workbooks, one per correction pass, and **the file named
 > `FINAL` is not the last one.** Each is the input to the next script's refuse-on-mismatch
@@ -339,7 +339,8 @@ re-read, re-run or backed out without unpicking the others. **The current workbo
 | `..._CNP_2026-08-31.xlsx` | `apply_cnp_corrections.py` | 40 stability cells filled; the ППК26127 foreign-matter failure flagged red |
 | `..._FINAL_2026-08-31.xlsx` | `apply_residual_corrections.py` | the last six certificates; `V109` cites one pharmacopoeia, not two |
 | `..._LINKED_2026-08-31.xlsx` | `repair_ppcoa_pdf_links.py` | the twenty in-house CoA links, by P-number |
-| **`..._AC_2026-08-31.xlsx`** | `apply_acceptance_criterion_corrections.py` | the microbial acceptance criteria read under Ph. Eur. 5.1.4: `10ⁿ CFU/g` means a maximum acceptable count of 2 × 10ⁿ. Four amber TYMC flags withdrawn as conforming, five confirmed and given the comment they never had |
+| `..._AC_2026-08-31.xlsx` | `apply_acceptance_criterion_corrections.py` | the microbial acceptance criteria read under Ph. Eur. 5.1.4: `10ⁿ CFU/g` means a maximum acceptable count of 2 × 10ⁿ. Four amber TYMC flags withdrawn as conforming, five confirmed and given the comment they never had |
+| **`..._QCSP_2026-08-31.xlsx`** | `apply_qcsp001_reconciliation.py` | Purely Plant's own release specification, QCSP 001 v.03, states `≤ 10⁴ CFU/g` and no maximum. The four withdrawn flags return as **undetermined** — conforming under the pharmacopoeia, over under QCSP 001 read as written. Two stability-sheet cells corrected from the page reads |
 
 **Order matters in one place only.** `add_ppk25139_and_codes.py` inserts a row and
 shifts everything below 46 down by one, so anything addressing rows by index must run

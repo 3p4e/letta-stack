@@ -37,8 +37,10 @@ The finding:
 printed power of ten once corrected. That is not the same as exceeding the criterion.
 Ph. Eur. 5.1.4 / 2.6.12 and USP <1111> read an enumeration criterion of `10ⁿ CFU` as a
 **maximum acceptable count of 2 × 10ⁿ**, so `≤ 10⁴ CFU/g` conforms up to 20 000. Against
-that, five rows are out of specification (21, 71, 82, 87, 100) and four conform (35, 38,
-56, 74); row 121 turns on a manufacturer specification rather than on the pharmacopoeia.
+that, five rows are out of specification (21, 71, 82, 87, 100) and four clear the
+pharmacopoeial ceiling (35, 38, 56, 74) — but not Purely Plant's own QCSP 001 v.03, which
+prints `≤ 10⁴ CFU/g` and no maximum, so those four are **undetermined**, not conforming.
+Row 121 turns on a manufacturer specification too.
 Full record in `review/OOS_RECTIFICATION_2026-08-31.md`.
 
 **Every one of those five certificates still concluded ОДГОВАРА** — "complies". That second

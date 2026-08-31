@@ -1,5 +1,16 @@
 # The acceptance criteria were read wrong, and four batches were flagged that conform
 
+> **REOPENED the same day, and the headline above is half right.** An adversarial pass over
+> every determination on this page found a document no pass in this campaign had opened:
+> **Purely Plant's own release specification.** `QCSP 001 v.03` — all 48 product
+> specifications in `deliverables/imb_spec_pdfs/` — prints
+> `TYMC | Ph. Eur. 2.6.12 cat. C | ≤ 10⁴ CFU/g` and **states no maximum acceptable count.**
+> Ph. Eur. 5.1.4's own scope says the ×2 note does not automatically extend to a
+> manufacturer's specification. So the four results below are **undetermined**, not
+> conforming: they clear the pharmacopoeia and exceed QCSP 001 read as written. See
+> **Reopened** at the foot of this page. The five confirmed exceedances are unaffected —
+> they fail under every reading.
+
 31.08.2026 · rectification of the out-of-specification determinations in the eCoA
 register documents, the workbooks and the published artifact.
 
@@ -207,3 +218,122 @@ page-verified, 81 iCoA entries — differing only in the corrections above.
 6. **`Ph. Eur. 5.1.8` category.** The in-house CoA labels its microbiology "Ph. Eur. 5.1.8,
    category C" while printing TAMC 10⁵ / TYMC 10⁴. Noted, not resolved here — it is a
    question for the specification, not for a transcription pass.
+
+
+---
+
+# Reopened · Purely Plant's own release specification
+
+Written after an adversarial verification pass over all fourteen determinations above.
+Twelve survived. **Two were refuted, and both refutations were checked against the
+documents before being acted on.**
+
+## 1. There is a manufacturer's specification, and no pass had opened it
+
+The pharmacopoeial rule that governs everything above carries its own scope limit, and I
+quoted it in this very file without following it: *a manufacturer's own specification means
+what its own document says, and the ×2 interpretation does not automatically extend to it.*
+
+`deliverables/imb_spec_pdfs/SPC_FINAL_ImB_PDF/**` holds **48 Purely Plant product
+specifications**, `QCSP 001 v.03`, signed by the QC and QA Managers. **All 48 state the same
+thing**, section 09 *Microbiological Purity | Микробиолошка Чистота*:
+
+| Parameter | Reference printed | Criterion printed |
+|---|---|---|
+| TAMC | `Ph. Eur. 2.6.12 cat. C` | `≤ 10⁵ CFU/g` |
+| TYMC | `Ph. Eur. 2.6.12 cat. C` | `≤ 10⁴ CFU/g` |
+| Bile-tolerant gram-neg. | `Ph. Eur. 2.6.31 cat. C` | `≤ 10⁴ CFU/g` |
+
+Two readings, and this register cannot choose:
+
+* It cites **Ph. Eur. 2.6.12**, and 2.6.12's own *Interpretation of results* is exactly
+  where the ×2 note lives. A specification that adopts a chapter arguably adopts how that
+  chapter says to read it — `≤ 10⁴` means 20 000 and the four conform.
+* It states **no maximum acceptable count**, and Purely Plant documents distinguish the two
+  ideas when they mean to: the in-house CoA form prints `<10^4, max 50 000 CFU/g`. Read as a
+  plain in-house ceiling, `≤ 10⁴` means 10 000 and the four are 1.20× to 1.90× over.
+
+| Row | Batch | Certificate | TYMC | vs Ph. Eur. 20 000 | vs QCSP 001 as written |
+|---|---|---|---|---|---|
+| 35 | `GG1024_02` | `472/0863/25` | 19 000 | conforms | **1.90× over** |
+| 75 | `CJ052501-1` | `949/1687/25` | 17 000 | conforms | **1.70× over** |
+| 38 | `HPA1024_01` | `587/1066/25` | 15 000 | conforms | **1.50× over** |
+| 57 | `GP0824_03` | `628/1129/25` | 12 000 | conforms | **1.20× over** |
+
+They are back to **amber, as undetermined** — not cleared and not failed. New rule **R6**
+reports exactly this band. The register's specification row is unchanged: row 2 says its
+reference values are the Ph. Eur. release specification, and they are.
+
+**Two further defects in QCSP 001**, both bearing on which reading governs, neither this
+register's to settle:
+
+1. It labels every microbiology row **`cat. C`** while printing 10⁵ / 10⁴. Ph. Eur. 5.1.8
+   Category C is TAMC 10⁴ and TYMC **10²** — which is exactly what certificates
+   `1220/2171/25` and `1221/2172/25` print. On that reading these results fail by two
+   further decades.
+2. **Ph. Eur. 2.6.12 has no categories.** It is the enumeration method; the categories live
+   in 5.1.4 and 5.1.8. `Ph. Eur. 2.6.12 cat. C` cites a chapter for something it does not
+   contain.
+
+And the version in force on the test date is unestablished: header `QCSP_001_…_v.01`, footer
+`QCSP 001 v.03`, signed **01.06.2026** — a year after the June-2025 testing.
+
+**What this says about the campaign's method.** The typed-record design says a value only
+means something next to the limit it is judged against, and this file then said a limit is
+two numbers. Both are still true and both were still not enough. **The release criterion can
+live in a third document that neither the certificate nor the register cites** — and it did,
+in this repository, unread through fourteen correction passes.
+
+## 2. The stability sheet disagrees with two of its own certificates
+
+The `Stability Testing Programme` sheet has never been page-verified —
+`CNP_PAGE_VERIFICATION_2026-08-31.md`'s "202 of 202" covers the Batch Release QC sheet only.
+Against the CNP page reads, **eight of its ten rows match exactly and two do not**:
+
+| Row | Certificate | Sheet held | Page reads |
+|---|---|---|---|
+| 16 | `ППК26037` | CBN **0.19**, remark blank | CBN **1.09**, over the certificate's `≤ 1.00 %` |
+| 18 | `ППК26058` | Δ⁹-THC **0.29** · THCA **0.97** · Total **1.17** | **16.99** · **0.07** · **17.05** |
+
+Row 16 is the worse of the two: a result over its printed limit sat on the stability sheet
+as a comfortably passing 0.19 with the remark column blank, while Batch Release QC row 95
+held 1.09, page-read and flagged. The workbook contradicted itself across two sheets.
+
+**Row 18 is the one worth understanding.** `0.29 + 0.97 × 0.877 = 1.14` against a printed
+1.17 — **inside the R4 tolerance.** The page's `16.99 + 0.07 × 0.877 = 17.05` is equally
+consistent. Three corrupted values together reproduced the certificate's own arithmetic
+proof. **R4 shows a document self-consistent, not correct**, and that belongs beside every
+claim made for it.
+
+Both corrected from the page reads; row 16's remark now matches its siblings.
+
+## 3. The stability certificates' verdicts were never read
+
+Four CBN comments said the certificate "carries no verdict of any kind."
+`CNP_PAGE_VERIFICATION_2026-08-31.md` records that the CNP pages were rendered **cropped to
+0.10–0.82 of page height**, and that `ППК26127`'s failure was found only on a **second,
+uncropped** render because its ЗАКЛУЧОК heading ran off the bottom edge. The ЗАКЛУЧОК block
+sits below the results table — below the crop. On **72 of 73** CNP certificates the region
+where a verdict appears was never in the image.
+
+The comments now say that. An absence nobody looked for is not evidence.
+
+## What the verify pass did not overturn
+
+Twelve of fourteen determinations survived unchanged, including all five confirmed
+exceedances, all four stability-sample classifications as *not a release sample*, and row
+218 as *not a result at all*. The five that need a deviation record are the same five.
+
+## Open, restated
+
+1. **QA to determine what QCSP 001's `≤ 10⁴ CFU/g` means**, and which version was in force
+   on the test date. Four release results turn on it.
+2. **QCSP 001's `cat. C` label** against its Category B figures, and its citation of a
+   chapter that has no categories.
+3. **Five deviation records** — rows 21, 72, 83, 88, 101.
+4. **Page-verify the Stability Testing Programme sheet.** Two of ten rows were wrong and one
+   of those was wrong in a way R4 cannot see.
+5. **Re-render the CNP certificates uncropped** and read the ЗАКЛУЧОК region on all 73.
+6. **The Purely Plant in-house CoA form**, which states a maximum acceptable count 2.5× the
+   compendial one.
+7. Row 122 — whether `производителска спецификација` `10²` is absolute.

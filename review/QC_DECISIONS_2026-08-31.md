@@ -8,7 +8,7 @@ transcription's to make.** This is that list, gathered in one place.
 Nothing here is a defect in the register's arithmetic. Every one is a question about what a
 number means, what a row is for, or what a laboratory intended.
 
-**Current workbook: `deliverables/qc_gap_analysis/PP_Batch_Release_QC_Register_AC_2026-08-31.xlsx`.**
+**Current workbook: `deliverables/qc_gap_analysis/PP_Batch_Release_QC_Register_QCSP_2026-08-31.xlsx`.**
 
 ---
 
@@ -48,12 +48,24 @@ that the sample conforms — `320/0587/25` (42 000), `1032/1851/25` (49 000), `9
 > withdrawn. `1220/2171/25` is item 1.4, not this one. Record:
 > `review/OOS_RECTIFICATION_2026-08-31.md`.
 
+> **Reopened later the same day.** Those four do not "conform" — they are **undetermined**.
+> Purely Plant's own release specification, `QCSP 001 v.03` (all 48 product specifications
+> in `deliverables/imb_spec_pdfs/`), prints `TYMC | Ph. Eur. 2.6.12 cat. C | ≤ 10⁴ CFU/g`
+> and states **no maximum acceptable count**, and Ph. Eur. 5.1.4's own scope says the ×2
+> note does not automatically extend to a manufacturer's specification. Read as written it
+> means 10 000, and the four are 1.20× to 1.90× over. Which reading governs is a QA
+> determination on that document. See "Reopened" in `review/OOS_RECTIFICATION_2026-08-31.md`.
+
 > **Decide:** deviation records for the five, and a question to IJZ about how a result over a
 > printed limit reaches a conforming conclusion. No pipeline can resolve this.
 
-> **Also decide:** row 35 (`472/0863/25`, GG1024_02) conforms by 5 % on a value reported to
-> two significant figures. Confirming it against the raw plate count before releasing on that
-> margin is cheap.
+> **Also decide, and this is now the bigger question:** what `QCSP 001 v.03`'s
+> `≤ 10⁴ CFU/g` means. Four release results (rows 35, 38, 57, 75) clear the pharmacopoeial
+> maximum acceptable count of 20 000 and exceed a literal 10 000. QCSP 001 also labels those
+> rows `Ph. Eur. 2.6.12 cat. C` — a chapter that has no categories — while printing Category
+> B figures, and the version in force on the June-2025 test date is unestablished (header
+> v.01, footer v.03 signed 01.06.2026). Row 35 is inside the pharmacopoeial ceiling by 5 % on
+> a two-significant-figure value, so its raw plate count is worth pulling either way.
 
 *Evidence: `review/MICROBIOLOGY_PAGE_VERIFICATION_2026-08-31.md` §C.*
 
@@ -211,7 +223,7 @@ disposition turns on it.
 
 ## 6 · Owner actions carried forward
 
-- **Snapshot the Drive workbook before replacing it** with `..._AC_2026-08-31.xlsx`.
+- **Snapshot the Drive workbook before replacing it** with `..._QCSP_2026-08-31.xlsx`.
 - **Rotate the RAGFlow API key.** It is still in this repository's git history at commit
   `83ea904`; **the repository must stay private until it is rotated.**
 - **Open the deviation records** for 1.2, and decide on 1.1 and 1.3.
