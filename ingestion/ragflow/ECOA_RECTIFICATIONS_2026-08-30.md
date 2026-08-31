@@ -327,6 +327,46 @@ way — both values sit comfortably within spec — but the register should say 
 
 ---
 
+## G. Every PDF link in the register is dead
+
+### G1 · All 264 "Open" links point at deleted files · **OPEN** · P, C
+
+Found while building a row-to-document map for the source-document verification: the
+register's PDF column carries a Drive file id on 264 of 285 rows, and **not one of them
+resolves.** Both spot checks returned `Requested entity was not found`, while ids
+obtained from a live Drive search on the same day work normally.
+
+| Certificate | Register link | Live file |
+|---|---|---|
+| ППК25174 | `1F7HmOn5tMa1…` — **not found** | `1i6JtHOhYkTTmhfcE7Wt98RYNDcM7saG4` |
+| ППК25050 | `1IWtlFE2zBnn…` — **not found** | `1B9qiy9tp7EeejTTOCk0hWqqCHiih8Ja8` |
+
+**Cause.** Every PDF in the certificate folder carries `createdTime = 2026-08-22`. The
+folder was rebuilt that day; Drive assigns a new id to a re-uploaded file, and the
+register's links still address the originals, which no longer exist. The documents
+themselves are intact and correctly named — only the addresses are stale.
+
+**Why it matters more than it looks.** A dead link fails silently at exactly the moment
+it is needed: an auditor clicking through from a batch row to its certificate gets
+nothing, and the register offers no other way to reach the document. The links were the
+register's only mechanical tie to its own evidence.
+
+**Rectification.** Rebuild the PDF column from a live Drive inventory, matching on the
+certificate code and P-number already in the filename
+(`P050022_ППК25174, 10.07.2025_CNP.pdf`). Do not match on the register's stale ids.
+Verify afterwards by resolving every id, not by spot check — that is what missed this.
+
+One row is already correct: the ППК25139 row added on 31.08.2026 carries a live id,
+because it was looked up rather than inherited.
+
+### G2 · 21 rows have no PDF link at all · **OPEN** · M
+
+Seventeen are continuation rows marked `(not numbered)`; two are in-house
+`PP CoA #016` / `#028`; two are the HPA1024 and OPM1024 in-house CoAs. These cannot be
+reached from the register by any route and are unverifiable from it alone.
+
+---
+
 ## Summary
 
 | Class | Count | Status |
@@ -336,6 +376,8 @@ way — both values sit comfortably within spec — but the register should say 
 | Register codes resolved from guess to confirmed | 4 | PROPOSED |
 | Documents whose value is lost in chunking | 35 | OPEN — re-ingest |
 | Dataset-level defects | 3 | OPEN — decisions |
+| **PDF links in the register that are dead** | **264** | **OPEN — rebuild from live Drive** |
+| Rows with no PDF link at all | 21 | OPEN |
 | Query-method defects fixed and documented | 7 | RECTIFIED |
 | Register errors found | **0** | — |
 
