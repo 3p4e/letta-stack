@@ -51,24 +51,54 @@ _LAT = "ABEKMHOPCTYXJSI"
 def fold(s):
     """Comparison key: homoglyphs onto Latin, separators dropped, upper case.
 
-    `197-18-К/26` (Cyrillic К, slash) and `197-18-K-26` (Latin K, dash) are the same
-    certificate written two ways, and both appear in this corpus.
+    Three conventions differ between the register and the filenames, and all three
+    were found the hard way, by a search returning nothing:
+
+    - `197-18-К/26` (Cyrillic К, slash) and `197-18-K-26` (Latin K, dash) are the
+      same certificate written two ways, and both appear in this corpus.
+    - Farmahem's loss-on-drying reports are `-GS-` / `-ГС-` in the register and
+      `-LoD-` in the filename — the same suffix in two languages, not two reports.
+    - The register annotates some codes with the sample description in brackets,
+      `230/0393/26 (Trimiran cvet)`. The brackets are a note, not part of the code.
     """
-    u = str(s or "").upper()
+    u = re.sub(r"\s*\([^)]*\)\s*$", "", str(s or "")).upper()
+    # Before the homoglyph fold, not after: Г has no Latin lookalike and is left
+    # alone by it, so `ГС` would arrive here as `ГC` and never match the rule.
+    u = re.sub(r"(?<=[^A-Za-z0-9])(GS|ГС)(?=[^A-Za-z0-9]|$)", "LOD", u)
     for a, b in zip(_CYR, _LAT):
         u = u.replace(a, b)
     return re.sub(r"[^A-Z0-9]", "", u)
 
 
 def build_index(mapping):
-    """filename map -> {folded code: [{key, fid, title}, ...]}."""
+    """filename map -> {folded code: [{key, fid, title, lang}, ...]}.
+
+    The filename is `<batch or P-number>_<certificate code>, <date>_<lab>.pdf`, and
+    the underscore is not a reliable boundary in either direction: the batch can
+    carry one (`GRC102501_2_051-6-LoD-26`) and so can the code
+    (`P050192_10802_2845-2 MK`). Splitting at the first underscore loses the former,
+    splitting at the last loses the latter.
+
+    So every underscore is treated as a possible boundary and each right-hand side
+    is indexed as a candidate code. A register code matches whichever split is the
+    real one; the wrong splits index strings no certificate code looks like, and the
+    P-number check behind this guards the rest.
+    """
     idx = {}
     for title, fid in mapping.items():
-        base = title.rsplit(".", 1)[0]
-        key, _, rest = base.partition("_")
-        code = rest.split(",")[0].strip()
-        idx.setdefault(fold(code), []).append(
-            {"key": fold(key), "fid": fid, "title": title})
+        head = title.rsplit(".", 1)[0].split(",")[0]
+        parts = head.split("_")
+        for i in range(1, len(parts)):
+            key, code = "_".join(parts[:i]), "_".join(parts[i:]).strip()
+            # A report issued in both languages is one report: `10802_2845-2 MK` and
+            # `... EN` are the Macedonian original and its translation, and the
+            # register has a single row for them.
+            m = re.search(r"\s(MK|EN)$", code)
+            lang = m.group(1) if m else ""
+            if m:
+                code = code[:m.start()]
+            idx.setdefault(fold(code), []).append(
+                {"key": fold(key), "fid": fid, "title": title, "lang": lang})
     return idx
 
 
@@ -92,6 +122,10 @@ def main(src, dst, mapfile):
             # P-number, then its batch code.
             want = fold(ws.cell(row=r, column=3).value) or fold(ws.cell(row=r, column=2).value)
             narrowed = [c for c in cands if c["key"] == want]
+            # Two files that are one report in two languages: link the Macedonian,
+            # which is the issued original — the English is a translation of it.
+            if len(narrowed) == 2 and {c["lang"] for c in narrowed} == {"MK", "EN"}:
+                narrowed = [c for c in narrowed if c["lang"] == "MK"]
             if len(narrowed) != 1:
                 ambiguous.append((r, str(code)[:34], len(cands)))
                 continue
