@@ -4,14 +4,29 @@
 
     python3 deliverables/qc_gap_analysis/build_coq_schedule.py
 
-The CoQ universe is the owner's, not a prediction. The ISSUE_COQ folder in Drive holds
-the approved master template, 48 rendered initial-release CoQs numbered
+The numbered CoQs are the owner's, not a prediction. The ISSUE_COQ folder in Drive
+holds the approved master template, 48 rendered initial-release CoQs numbered
 `CoQ-PP-{year}-{NNNN}` sequentially by packaging date, and 13 additional-testing CoQs
 (`CoQ-PP-2026-0027 … 0039`) for the lots whose 12-month retest fell due — one CoQ per
 **packaged lot**, each carrying an `iCoA-PP-{year}-{NNNN}` reference. Its issue plan is
 committed beside this file as `coq_issue_plan.json`; the conventions are in
-`ISSUE_COQ_CONVENTIONS.md`. That settles a question three registers left open: **61
-CoQs, not the 102 once predicted per cultivation batch.**
+`ISSUE_COQ_CONVENTIONS.md`.
+
+The universe those 61 sit in is the owner's ruling of 31.08.2026: **one initial CoQ
+for every batch on record, first to last** — the 48 numbered lots are Tranche 01 (19)
+and Tranche 02 (29) only, and every batch past them gets a PREDICTED initial CoQ —
+**and a 12-month cannabinoid + mycotoxin reissue for every batch**, starting from the
+beginning of Tranche 01/02: 13 reissues carry numbers (0027…0039), the other 35 of
+the 48 are predicted at packaging + 12 months, and every later batch is predicted at
+release + 12 months. A predicted CoQ carries no number — numbers are copied from the
+issuance record at issue, never computed in advance.
+
+Dating: **the CoQ SOP was put in use on 11.05.2026** (owner, 31.08.2026). No CoQ may
+print an earlier issue date. The plan's per-CoQ dates are packaging dates — the basis
+of the numbering series (`CoQ-PP-2025-…` is the 2025 packaging series), never issue
+dates. Each schedule row therefore shows the basis date and the earliest permissible
+issue date: the SOP date, the newest document the CoQ cites, or the 12-month due
+date, whichever is latest. QC sets the real date at issue.
 
 The plan deliberately leaves controlled blanks — every result the master spec does not
 hold, and every eCoA code: *"A CoQ must never carry a result or a conformity assertion
@@ -335,6 +350,24 @@ INHOUSE_MAP = [
 ST_SCAN = ("in-house CoA only — underlying eCoA NOT on file: locate the physical "
            "certificate, scan and upload")
 
+# The retest programme is universal — every batch has a 12-month re-analysis of the
+# CANNABINOIDS and the MYCOTOXINS and gets a CoQ reissue for it (owner, 31.08.2026).
+# Identity is redone by Farmahem together with the assay, foreign matter by the
+# in-house laboratory. Everything else is not retested: on a reissue those
+# determinations stand on the initial CoQ, and saying "owed" for them — as an earlier
+# revision of this file did — invented testing nobody ordered.
+RETEST_K = {"4", "5", "6"}
+RETEST_M = {"10.1", "10.2", "10.3"}
+ST_AWAIT_K = "awaiting the cannabinoid re-analysis — Farmahem, with Ident A + B + C"
+ST_AWAIT_M = "awaiting the mycotoxin re-analysis — Farmahem"
+ST_OUTSIDE = "outside the retest scope — the release determination stands on {initial}"
+NO_NUMBER = "(assigned on issue)"
+
+# The CoQ SOP was put in use on 11.05.2026 (owner, 31.08.2026): no CoQ may print an
+# issue date before it. The plan's per-CoQ dates are packaging dates — the numbering
+# series basis — never issue dates.
+SOP_EFFECTIVE = "11.05.2026"
+
 
 def inhouse_cells(cb):
     """The in-house CoA transcription for a cultivation batch, keyed by determination.
@@ -501,8 +534,11 @@ def schedule():
     grade acceptance range and the issue date. See ISSUE_COQ_CONVENTIONS.md.
 
     This settles a question three registers left open: **a CoQ is issued per packaged
-    lot, and there are 61, not the 102 predicted per register batch.** Register batches
-    with no packaged lot get no CoQ.
+    lot**, and 61 carry numbers. The universe around them is the owner's ruling of
+    31.08.2026: one initial CoQ per batch on record, a reissue for all 48 Tranche
+    01 + 02 lots (19 + 29), and a predicted reissue a year after release for every
+    batch past them — the 12-month cannabinoid + mycotoxin retest programme is
+    universal.
 
     What the ISSUE_COQ folder leaves as controlled blanks — every result the master
     spec does not hold, and every eCoA code — is exactly what this fills in, from the
@@ -520,14 +556,77 @@ def schedule():
     plan = json.load(open(PLAN_J, encoding="utf-8"))
     plan.sort(key=lambda x: (sort_date(x["pk"]), x["id"]))
 
+    # Six register blocks are keyed by a packaged-lot P-number and hold the
+    # Farmahem 12-month re-analyses OF plan lots (the register's "197-only"
+    # rows: P060152 is J31102501, P060212 is JD112501, P060242 is OPM122501,
+    # P060352 is FB012602, P060382 is SCR012603, P060402 is GG012603 — matched
+    # by the plan's own packaged-lot number). Same material, second analysis:
+    # their cells fold into the plan lot's block and they get no CoQ of their
+    # own. Where the lot's cultivation batch has no register block of its own,
+    # the P-number block IS its block. P160012/22/32 and P060332 match no plan
+    # lot and stand as their own entries on the record.
+    pp_alias = {}
+    for x in plan:
+        ppk = BI.batch_key(x["pp"]) if x["pp"] else None
+        cbk = BI.batch_key(PLAN_CB_ALIASES.get(x["cb"], x["cb"]))
+        if ppk and ppk != cbk and ppk in reg_by_key:
+            pp_alias[ppk] = cbk
+    for ppk, cbk in pp_alias.items():
+        if cbk in reg_by_key:
+            dst, srcb = batches[reg_by_key[cbk]], batches[reg_by_key[ppk]]
+            for col, lst in srcb["cells"].items():
+                dst["cells"][col] += lst
+        else:
+            reg_by_key[cbk] = reg_by_key[ppk]
+
+    # One initial CoQ for every batch on record, first to last (owner,
+    # 31.08.2026): the 48 numbered lots of the plan, then a PREDICTED initial
+    # CoQ for every register batch the plan does not cover. No packaged lot,
+    # grade or number exists for these yet; the schedule holds their place and
+    # their documents — a CoQ number is copied from the issuance record at
+    # issue, never computed in advance.
     coqs = [{"date": x["issue"], "type": "initial release", "plan": x,
-             "number": x["id"]} for x in plan]
-    # The 13 additional-testing CoQs are ordinary sequential numbers, 0027…0039, in
-    # packaging-date order — confirmed against the rendered files in ISSUE_COQ
-    # (CoQ-PP-2026-0034 is P050052, 0038 is P050092, 0039 is P050112).
+             "number": x["id"], "issued": True} for x in plan]
+    covered = {BI.batch_key(PLAN_CB_ALIASES.get(x["cb"], x["cb"])) for x in plan}
+    covered |= set(pp_alias)
+    stubs = []
+    for key, r in icoa.items():
+        if key in covered:
+            continue
+        stub = {"pp": "", "cb": r["batch"], "nm": r["strain"], "grade": "",
+                "cls": "", "nom": "", "tol": "", "lo": "", "hi": "", "thc": "",
+                "md": "", "pk": "", "id": NO_NUMBER, "ic": NO_NUMBER,
+                "issue": r["release_date"], "retest": ""}
+        stubs.append(stub)
+        coqs.append({"date": r["release_date"], "type": "initial release — predicted",
+                     "plan": stub, "number": NO_NUMBER, "issued": False})
+
+    def plus_year(d):
+        m = re.match(r"^(\d{2})\.(\d{2})\.(\d{4})$", clean(d))
+        return f"{m.group(1)}.{m.group(2)}.{int(m.group(3)) + 1}" if m else ""
+
+    # Then the reissue series, starting from the beginning of Tranche 01 and 02
+    # — all 48 lots (19 + 29) retest cannabinoids and mycotoxins and get a CoQ
+    # reissue. The 13 already due carry ordinary sequential numbers, 0027…0039,
+    # in packaging-date order — confirmed against the rendered files in
+    # ISSUE_COQ (CoQ-PP-2026-0034 is P050052, 0038 is P050092, 0039 is
+    # P050112). The other 35 are PREDICTED at packaging + 12 months, in plan
+    # order — from the beginning.
     for i, x in enumerate([x for x in plan if x.get("retest")]):
         coqs.append({"date": x["retest"], "type": "additional testing (12-month)",
-                     "plan": x, "number": f"CoQ-PP-2026-{27 + i:04d}"})
+                     "plan": x, "number": f"CoQ-PP-2026-{27 + i:04d}", "issued": True})
+    for x in plan:
+        if not x.get("retest"):
+            coqs.append({"date": plus_year(x["issue"]),
+                         "type": "additional testing (12-month) — predicted",
+                         "plan": x, "number": NO_NUMBER, "issued": False})
+
+    # The retest programme is universal: every batch past Tranche 02 gets a
+    # predicted reissue a year after release, in record order.
+    for stub in stubs:
+        coqs.append({"date": plus_year(stub["issue"]),
+                     "type": "additional testing (12-month) — predicted",
+                     "plan": stub, "number": NO_NUMBER, "issued": False})
 
     rows, per_coq = [], []
     for n, coq in enumerate(coqs, 1):
@@ -537,12 +636,15 @@ def schedule():
         reg = batches.get(cb, {"pnumber": "", "strain": x["nm"],
                                "cells": defaultdict(list)})
         ic_row = icoa.get(BI.batch_key(x["cb"]), {})
-        sp = specs.get(x["pp"])
-        additional = coq["type"] != "initial release"
+        sp = specs.get(x["pp"]) if x["pp"] else None
+        additional = coq["type"].startswith("additional")
         blocked = cb == "FB032601"
 
         thc_criterion = (f"{x['lo']} – {x['hi']} %  (grade {x['grade']}, class "
-                         f"THC {x['cls']}, nominal {x['nom']} ± {x['tol']})")
+                         f"THC {x['cls']}, nominal {x['nom']} ± {x['tol']})"
+                         if x["lo"] else
+                         "Per target grade — no packaged lot or grade assigned in "
+                         "the master spec yet")
         # The plan writes the top of the range as nominal + tolerance − 0.01 (an
         # inclusive endpoint: 24.00 ± 2.40 → 21.60–26.39) where the QCSP PDF writes
         # 21.60–26.40. That is one range in two conventions, not a conflict; only a
@@ -560,6 +662,7 @@ def schedule():
 
         inhouse = {} if cb else inhouse_cells(x["cb"])
         codes, counts = OrderedDict(), defaultdict(int)
+        start = len(rows)
         assay = pick(reg["cells"].get("E", []), additional)[0]
         cnp = assay if assay and assay["family"] == "UKIM CNP potency" else \
             (pick([c for c in reg["cells"].get("E", [])
@@ -589,9 +692,19 @@ def schedule():
             if chosen is None and not additional and det["no"] in inhouse:
                 chosen, others = inhouse[det["no"]], []
                 st = ST_SCAN
-            if additional and chosen is None and st in (ST_NONE, ST_ICOA):
-                st = (ST_ICOA if det["no"] in ICOA_FIELD else
-                      "additional testing owed — no post-release certificate yet")
+            if additional and chosen is None:
+                if det["no"] in ICOA_FIELD:
+                    st = ST_ICOA
+                elif det["no"] in RETEST_K:
+                    st = ST_AWAIT_K
+                elif det["no"] in RETEST_M:
+                    st = ST_AWAIT_M
+                elif det["no"] in ("9.6", "9.7"):
+                    st = ST_REQ
+                else:
+                    st = ST_OUTSIDE.format(
+                        initial=x["id"] if x["id"] != NO_NUMBER else
+                        "the batch's initial CoQ (number assigned on issue)")
             counts[st] += 1
             if chosen:
                 codes.setdefault(chosen["code"], chosen["lab"])
@@ -603,7 +716,8 @@ def schedule():
 
             rows.append(OrderedDict([
                 ("Seq", len(rows) + 1), ("CoQ number", coq["number"]),
-                ("CoQ type", coq["type"]), ("Issue date", coq["date"] or "—"),
+                ("CoQ type", coq["type"]), ("Basis date", coq["date"] or "—"),
+                ("Issue date", ""),
                 ("Packaged lot", x["pp"]), ("Cultivation batch", x["cb"]),
                 ("Strain", x["nm"]), ("Grade", x["grade"]),
                 ("iCoA reference", x["ic"]),
@@ -622,9 +736,29 @@ def schedule():
                                            for o in others)),
             ]))
 
+        # The printed issue date is set at issue, and may be no earlier than the
+        # latest of the SOP in-use date (11.05.2026) and the newest document the
+        # CoQ cites. An additional-testing CoQ that cites nothing yet cannot
+        # precede its 12-month due date either — but once the re-analysis is on
+        # file, the due date stops being a floor (Farmahem ran several lots
+        # early: J31102501's 197-16 pair is dated 10 months after packaging).
+        bound = (sort_date(SOP_EFFECTIVE), SOP_EFFECTIVE)
+        cited_dates = [r2["Document date"] for r2 in rows[start:]
+                       if r2["Source document"] not in ("", "—")
+                       and r2["Document date"]
+                       and sort_date(r2["Document date"]) != "9999"]
+        for dd in cited_dates:
+            bound = max(bound, (sort_date(dd), dd))
+        if additional and not cited_dates and coq["date"] \
+                and sort_date(coq["date"]) != "9999":
+            bound = max(bound, (sort_date(coq["date"]), coq["date"]))
+        for r2 in rows[start:]:
+            r2["Issue date"] = "≥ " + bound[1]
+
         per_coq.append({
             "coq": n, "number": coq["number"], "type": coq["type"],
-            "date": coq["date"] or "—", "pp": x["pp"], "cb": x["cb"],
+            "date": "≥ " + bound[1], "basis": coq["date"] or "—",
+            "issued": coq["issued"], "pp": x["pp"], "cb": x["cb"],
             "in_register": bool(cb), "strain": x["nm"], "grade": x["grade"],
             "cls": x["cls"], "icoa_ref": x["ic"], "banner_thc": x["thc"],
             "md": x["md"], "pk": x["pk"], "thc": thc_criterion,
@@ -684,7 +818,9 @@ def write_workbook(rows, per_coq, dets):
     # ------------------------------------------------------------- 1 · schedule
     ws = wb.create_sheet("CoQ Parameter Schedule")
     COLS = [("Seq", 6, ""), ("CoQ number", 17, "ISSUE_COQ numbering"),
-            ("CoQ type", 20, ""), ("Issue date", 12, ""),
+            ("CoQ type", 20, ""),
+            ("Basis date", 12, "packaging / 12-month due"),
+            ("Issue date", 13, "set at issue — no earlier than shown"),
             ("Packaged lot", 12, ""), ("Cultivation batch", 14, ""),
             ("Strain", 18, ""), ("Grade", 7, ""),
             ("iCoA reference", 17, "printed on the CoQ"),
@@ -697,10 +833,15 @@ def write_workbook(rows, per_coq, dets):
             ("Performed by", 54, "the decided route for identity and foreign matter"),
             ("Also on file", 40, "other documents carrying this determination")]
     _band(ws, COLS, "Purely Plant GmbH — Certificate of Quality parameter schedule",
-          "All 61 CoQs of the ISSUE_COQ plan — 48 initial release, 13 additional "
-          "testing — with every determination QCSP 001 v.03 requires and the document "
-          "that certifies it. This is the transcription source for the controlled "
-          "blanks on each CoQ.")
+          "The full CoQ universe of 31.08.2026: one initial CoQ per batch on record "
+          "(48 numbered by the ISSUE_COQ plan — Tranche 01 + 02 — the rest predicted) "
+          "and a 12-month cannabinoid + mycotoxin reissue for every batch, starting "
+          "from the beginning of Tranche 01/02 (13 numbered, 35 predicted; later "
+          "batches at release + 12 months). Every determination QCSP 001 v.03 "
+          "requires, with the document that certifies it. The CoQ SOP is in use "
+          "since 11.05.2026: no CoQ prints an earlier issue date, and a predicted "
+          "CoQ's number is copied from the issuance record at issue. This is the "
+          "transcription source for the controlled blanks on each CoQ.")
     fills = {ST_OOS: RED, ST_BLOCK: RED, ST_UNDET: AMBER, ST_FINDING: AMBER,
              ST_ICOA: BLUE, ST_NONE: AMBER, ST_NOSPEC: AMBER, ST_OK: GREEN,
              ST_SCAN: RED}
@@ -716,18 +857,19 @@ def write_workbook(rows, per_coq, dets):
             if band:
                 c.fill = band
         st = row["Status"]
-        cell = ws.cell(row=rr, column=21)
+        cell = ws.cell(row=rr, column=22)
         if st in fills:
             cell.fill = PatternFill("solid", fgColor=fills[st])
             cell.font = Font(FONT, 9, bold=st in (ST_OOS, ST_BLOCK, ST_SCAN), color=INK)
-        elif st.startswith("additional testing owed"):
+        elif st in (ST_AWAIT_K, ST_AWAIT_M):
             cell.fill = PatternFill("solid", fgColor=AMBER)
-    ws.freeze_panes = "J6"
-    ws.auto_filter.ref = f"A5:W{5 + len(rows)}"
+    ws.freeze_panes = "K6"
+    ws.auto_filter.ref = f"A5:X{5 + len(rows)}"
 
     # ------------------------------------------------------------- 2 · per CoQ
     ws = wb.create_sheet("CoQ Coverage")
-    COLS = [("CoQ number", 17, ""), ("Type", 20, ""), ("Issue date", 12, ""),
+    COLS = [("CoQ number", 17, ""), ("Type", 20, ""),
+            ("Issue date", 13, "no earlier than — set at issue"),
             ("Packaged lot", 12, ""), ("Cultivation batch", 14, ""),
             ("Strain", 18, ""), ("Grade", 7, ""), ("Class", 8, ""),
             ("Banner THC", 11, "actual assay"),
@@ -741,9 +883,10 @@ def write_workbook(rows, per_coq, dets):
             ("Who performs the rest", 56, ""),
             ("Note", 42, "")]
     _band(ws, COLS, "Purely Plant GmbH — CoQ coverage and document references",
-          "One row per CoQ of the ISSUE_COQ plan. Covered counts determinations a "
+          "One row per CoQ — issued and predicted. Covered counts determinations a "
           "certificate on file stands behind; the identity and foreign-matter routing "
-          "is the owner's decision of 31.08.2026.")
+          "is the owner's decision of 31.08.2026, and no issue date precedes the CoQ "
+          "SOP's in-use date of 11.05.2026.")
     for i, p2 in enumerate(per_coq):
         rr = 6 + i
         k = p2["counts"]
@@ -758,8 +901,7 @@ def write_workbook(rows, per_coq, dets):
                 p2["strain"], p2["grade"], f"THC {p2['cls']}", p2["banner_thc"],
                 p2["thc"], p2["spec_doc"] or "no QCSP PDF on file", p2["icoa_ref"],
                 covered, k[ST_ICOA] + k[ST_SCAN]
-                + sum(v for s2, v in k.items()
-                      if s2.startswith("additional testing owed")),
+                + k[ST_AWAIT_K] + k[ST_AWAIT_M],
                 k[ST_NONE] + k[ST_NOSPEC], k[ST_OOS] + k[ST_BLOCK], k[ST_UNDET],
                 len(p2["codes"]), "; ".join(p2["codes"]),
                 "; ".join(dict.fromkeys(p2["route"].values())) or "—", note]
@@ -887,6 +1029,12 @@ def report(rows, per_coq, dets):
     st = Counter(r["Status"] for r in rows)
     print(os.path.relpath(OUT_X, ROOT))
     print(f"  CoQ documents            {len(per_coq):>5}")
+    by_type = Counter(p["type"] for p in per_coq)
+    for t in ("initial release", "initial release — predicted",
+              "additional testing (12-month)",
+              "additional testing (12-month) — predicted"):
+        if by_type.get(t):
+            print(f"    {by_type[t]:>5}  {t}")
     print(f"  determinations each      {len(dets):>5}  "
           f"({sum(1 for d in dets if d['source'] == 'upon_request')} upon request)")
     print(f"  schedule rows            {len(rows):>5}")
@@ -894,22 +1042,25 @@ def report(rows, per_coq, dets):
     for k, v in st.most_common():
         print(f"  {v:>5}  {k}")
     print()
-    late = [r for r in rows if r["Source document"] not in ("", "—")
-            and sort_date(r["Issue date"]) != "9999"
+    # Dating rule: the CoQ SOP is in use since 11.05.2026 — no CoQ prints an
+    # earlier issue date, and none may print a date earlier than the newest
+    # document it cites (or its 12-month due date). Every row shows the bound.
+    viol = [r for r in rows if r["Source document"] not in ("", "—")
             and sort_date(r["Document date"]) != "9999"
-            and sort_date(r["Document date"]) > sort_date(r["Issue date"])]
-    if late:
-        by = defaultdict(int)
-        for r in late:
-            by[r["CoQ number"]] += 1
-        print(f"  {len(late):>5}  rows on {len(by)} CoQs cite a document dated AFTER "
-              f"the CoQ's issue date.")
-        print("         The plan dates each initial CoQ at its packaging date, and "
-              "testing routinely finished after packaging — so this is expected on "
-              "the initial series. A CoQ's printed issue date must still be no "
-              "earlier than the newest document it cites; QC sets the real date at "
-              "issue.")
+            and sort_date(r["Document date"]) >
+            sort_date(r["Issue date"].lstrip("≥ "))]
+    if viol:
+        print(f"  {len(viol):>5}  rows cite a document dated AFTER the CoQ's "
+              f"earliest-issue bound — MUST NOT HAPPEN, check the build")
         print()
+    later = sorted({(p["number"], p["cb"], p["date"]) for p in per_coq
+                    if p["date"] != "≥ " + SOP_EFFECTIVE})
+    print(f"  issue dates: the CoQ SOP is in use since {SOP_EFFECTIVE}; the plan's "
+          f"2025/2026 dates are packaging dates (the numbering series), not issue "
+          f"dates. {len(per_coq) - len(later)} CoQs may be issued from "
+          f"{SOP_EFFECTIVE}; {len(later)} are bound later by a cited document or "
+          f"a 12-month due date.")
+    print()
     # The plan's banner THC is supposed to be the lot's actual assay. Where a register
     # block exists, at least one register THC value should equal it; a disagreement
     # means the master spec and the register tell different stories about one lot.
@@ -930,6 +1081,25 @@ def report(rows, per_coq, dets):
         for m in mism:
             print(f"         {m[0]} {m[1]}: plan {m[2]} vs register {m[3]}")
         print()
+    # An ISSUED additional-testing CoQ with nothing to cite is a controlled
+    # blank on a signed document: the plan records the retest date, but the
+    # Farmahem certificate never reached the file.
+    ghost = [p for p in per_coq
+             if p["type"] == "additional testing (12-month)"
+             and not any(c.startswith("197-") for c in p["codes"])]
+    if ghost:
+        print(f"  {len(ghost):>5}  ISSUED additional-testing CoQs cite NO re-analysis "
+              f"certificate on file — the plan records the retest, the 197-series "
+              f"certificate is missing: locate and scan")
+        for p in ghost:
+            print(f"         {p['number']} {p['cb']} — retest per plan {p['basis']}")
+        print()
+    early = [p for p in per_coq
+             if p["type"].endswith("predicted") and p["type"].startswith("additional")
+             and any(c.startswith("197-") for c in p["codes"])]
+    print(f"  {len(early):>5}  batches re-analysed early — the 197-series pair is on "
+          f"file and the reissue CoQ can be numbered and issued now")
+    print()
     nospec = sum(1 for p in per_coq if p["spec_conflict"])
     print(f"  {nospec:>5}  CoQs whose issue-plan range disagrees with the QCSP 001 PDF")
     print(f"  {sum(1 for p in per_coq if not p['in_register']):>5}  CoQs whose "

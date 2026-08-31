@@ -236,19 +236,20 @@ def main(out):
 
     # ---------------------------------------------------------------- 3 · CoQ issuance
     #
-    # The CoQ universe is the owner's ISSUE_COQ plan — 48 packaged lots with issued
-    # numbers plus 13 additional-testing CoQs — not the 102 this register once
-    # predicted per cultivation batch. One CoQ per packaged lot; register batches with
-    # no packaged lot get no CoQ, and that list is in the summary. The coverage columns
-    # come from build_coq_schedule.schedule() so this sheet and the parameter schedule
-    # cannot drift apart.
+    # The CoQ universe (owner, 31.08.2026): one initial CoQ per batch on record and
+    # a 12-month cannabinoid + mycotoxin reissue for every batch — 61 carry numbers
+    # from the ISSUE_COQ plan (48 initial for Tranche 01 + 02, 13 additional
+    # testing), the rest are predicted and numbered on issue. No CoQ prints an issue
+    # date before the SOP's in-use date, 11.05.2026. The coverage columns come from
+    # build_coq_schedule.schedule() so this sheet and the parameter schedule cannot
+    # drift apart.
     import build_coq_schedule as CQ
     sched, cov, dets = CQ.schedule()
     scount = Counter(r["Status"] for r in sched)
 
     ws = wb.create_sheet("CoQ Issuance")
     COLS = [("CoQ number", 17, "ISSUE_COQ numbering"), ("CoQ type", 20, ""),
-            ("Issue date", 12, "initial: the packaging date"),
+            ("Issue date", 13, "no earlier than — set at issue"),
             ("Packaged lot", 12, ""), ("Cultivation batch", 14, ""),
             ("Strain", 19, ""), ("Grade", 7, ""), ("Class", 8, ""),
             ("Banner THC", 11, "actual assay, per the plan"),
@@ -260,9 +261,11 @@ def main(out):
             ("Source documents", 66, "every report this CoQ must cite"),
             ("Who performs the rest", 52, ""), ("Note", 40, "")]
     band(ws, COLS, "Purely Plant GmbH — Certificate of Quality issuance register",
-         "The 61 CoQs of the owner's ISSUE_COQ plan: 48 initial release, numbered "
-         "sequentially by packaging date, and 13 additional-testing CoQs for the lots "
-         "whose 12-month retest fell due. Detail per determination in "
+         "One initial CoQ per batch on record and a 12-month reissue for every batch "
+         "(owner, 31.08.2026). 61 carry ISSUE_COQ numbers — 48 initial release for "
+         "Tranche 01 + 02, 13 additional testing — and the rest are predicted, "
+         "numbered on issue. Issue dates are set at issue, no earlier than the CoQ "
+         "SOP's in-use date of 11.05.2026. Detail per determination in "
          "PP_CoQ_Parameter_Schedule_2026-08-31.xlsx.")
     for n, c in enumerate(cov):
         i = 6 + n
@@ -277,8 +280,7 @@ def main(out):
                     c["grade"], f"THC {c['cls']}", c["banner_thc"], c["thc"],
                     c["icoa_ref"], covered,
                     k[CQ.ST_ICOA] + k[CQ.ST_SCAN]
-                    + sum(v for s2, v in k.items()
-                          if s2.startswith("additional testing owed")),
+                    + k[CQ.ST_AWAIT_K] + k[CQ.ST_AWAIT_M],
                     k[CQ.ST_NONE] + k[CQ.ST_NOSPEC], oos, len(c["codes"]),
                     "; ".join(c["codes"]),
                     "; ".join(dict.fromkeys(c["route"].values())) or "—", note],
@@ -305,17 +307,33 @@ def main(out):
         ("  full panel — Ident A + B + C + foreign matter", sum(1 for r in ic if r["ident_A"] == "required"), ""),
         ("  Ident C only — CNP Ph. Eur. 11.5 form covers the rest", sum(1 for r in ic if r["ident_A"] != "required"), ""),
         ("", "", ""),
-        ("CoQ issuance register", len(coq), "the owner's ISSUE_COQ plan: 48 initial "
-         "release + 13 additional testing"),
+        ("CoQ issuance register", len(coq), "one initial CoQ per batch on record + "
+         "a 12-month reissue for every batch; 61 numbered by the ISSUE_COQ plan, "
+         "the rest predicted — issue dates from 11.05.2026 (SOP in use) onward"),
+        ("  issued — numbered by the ISSUE_COQ plan",
+         sum(1 for x in coq if x["issued"]),
+         "48 initial (Tranche 01: 19, Tranche 02: 29) + 13 additional testing"),
+        ("  predicted initial — batches past Tranche 02",
+         sum(1 for x in coq if x["type"] == "initial release — predicted"),
+         "no packaged lot or grade assigned yet; number copied at issue"),
+        ("  predicted reissue — the remaining Tranche 01/02 lots",
+         sum(1 for x in coq if x["type"].startswith("additional")
+             and not x["issued"] and x["pp"]),
+         "every one of the 48 retests cannabinoids and mycotoxins"),
+        ("  predicted reissue — batches past Tranche 02",
+         sum(1 for x in coq if x["type"].startswith("additional")
+             and not x["issued"] and not x["pp"]),
+         "release + 12 months"),
         ("  carrying an out-of-specification determination",
          sum(1 for x in coq if x["counts"][CQ.ST_OOS] + x["counts"][CQ.ST_BLOCK]), ""),
         ("  no eCoA on file for the cultivation batch",
          sum(1 for x in coq if not x["in_register"]),
          "locate the physical certificates, scan and upload"),
-        ("  register batches with no packaged lot, hence no CoQ",
-         80 - len({x["cb"] for x in coq if x["in_register"]}),
-         "among them OPM052501 and CJ062501-2, both carrying a TYMC over its "
-         "criterion"),
+        ("  re-analysed early — reissue issuable now",
+         sum(1 for x in coq if x["type"].startswith("additional") and not x["issued"]
+             and x["counts"][CQ.ST_OK] + x["counts"][CQ.ST_FINDING]
+             + x["counts"][CQ.ST_OOS] + x["counts"][CQ.ST_UNDET]),
+         "the Farmahem 197-series pair is already on file"),
         ("", "", ""),
         ("", "", ""),
         ("CoQ parameter schedule", len(sched),
@@ -324,6 +342,13 @@ def main(out):
          + scount[CQ.ST_OOS] + scount[CQ.ST_UNDET], ""),
         ("  still to be performed", scount[CQ.ST_ICOA],
          "identity A, B, C and foreign matter — routed per the Sourcing routes sheet"),
+        ("  awaiting the 12-month re-analysis — Farmahem",
+         scount[CQ.ST_AWAIT_K] + scount[CQ.ST_AWAIT_M],
+         "cannabinoids + mycotoxins on every not-yet-re-analysed batch"),
+        ("  outside the retest scope",
+         sum(v for k2, v in scount.items()
+             if k2.startswith("outside the retest scope")),
+         "on a reissue, the release determination stands on the initial CoQ"),
         ("  not tested by anyone", scount[CQ.ST_NONE], ""),
         ("  criterion unstatable — no product specification", scount[CQ.ST_NOSPEC],
          "parameter 4's criterion is 'per target grade as per Section 01'"),
@@ -332,7 +357,8 @@ def main(out):
         ("  out of specification", scount[CQ.ST_OOS] + scount[CQ.ST_BLOCK], ""),
         ("  undetermined pending the QCSP 001 reading", scount[CQ.ST_UNDET], ""),
         ("", "", ""),
-        ("Determinations no laboratory has ever performed", "", "per CoQ, over 102 CoQs"),
+        ("Determinations no laboratory has ever performed", "",
+         f"per CoQ, over {len(coq)} CoQs"),
     ] + [("  " + d["en"], sum(1 for r in sched if r["Parameter"] == d["en"]
                              and r["Status"] in (CQ.ST_NONE, CQ.ST_ICOA)),
           "QCSP 001 no. " + d["no"])

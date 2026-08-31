@@ -59,3 +59,43 @@ table carries ten §01 rows, merging QCSP 001 items 1 and 2 (Identification A an
 into one appearance/identification row. The parameter schedule keys on the
 specification's 23 determinations; whoever transcribes onto the rendered form carries
 determinations 1 and 2 into its merged row together.
+
+## The universe around the 61 — the owner's ruling of 31.08.2026
+
+Three corrections from the owner, later the same day, that extend — without
+contradicting — everything above:
+
+- **The 48 packaged lots are Tranche 01 and Tranche 02 only** — 19 + 29 — not the
+  whole of production, which now stands at more than 80 batches. **Every batch on
+  record gets one initial CoQ, first to last**; batches past Tranche 02 have no
+  packaged lot, grade or number assigned yet, so their CoQs are carried as
+  *predicted* — a CoQ number is copied from the issuance record at issue, never
+  computed in advance.
+- **The 12-month cannabinoid + mycotoxin retest programme is universal, and every
+  batch gets a CoQ reissue** — starting from the beginning of Tranche 01/02: the 13
+  numbered additional-testing CoQs (`0027 … 0039`) are the ones already due; the
+  remaining 35 of the 48 are predicted at packaging + 12 months, and every later
+  batch at release + 12 months. (Per the convention above, none of these is labelled
+  "retest" — each is an ordinary sequential CoQ.)
+- **The CoQ SOP has been in use since 11.05.2026, and no CoQ may print an earlier
+  issue date.** The plan's per-CoQ dates are **packaging dates** — the basis of the
+  numbering series (`CoQ-PP-2025-…` is the 2025 *packaging* series) — never issue
+  dates. The schedule therefore shows, per CoQ, the basis date and the earliest
+  permissible issue date: the SOP date, the newest document the CoQ cites, or (for an
+  additional-testing CoQ that cites nothing yet) the 12-month due date, whichever is
+  latest. QC sets the real date at issue.
+
+Two register identities resolved on the way: six release-register blocks keyed by a
+packaged-lot P-number (`P060152, P060212, P060242, P060352, P060382, P060402`) are the
+Farmahem 197-series re-analyses **of plan lots** (`J31102501, JD112501, OPM122501,
+FB012602, SCR012603, GG012603` — matched by the plan's own packaged-lot numbers), not
+separate batches; their results fold into the lot. `P160012/22/32` and `P060332`
+match no plan lot and stand as their own entries on the record.
+
+And one finding the extension exposed: **five issued additional-testing CoQs —
+`0029` (GG1024), `0033` (OMP1024_01), `0036` (GP0824_03), `0037` (OPM1024_03),
+`0039` (MB0824_05) — cite no 197-series certificate on file.** The plan records their
+retest dates; the certificates never reached the file. Same defect class as GG1024's
+initial testing: locate the physical certificates, scan, upload. Conversely, 13
+batches are re-analysed already — the 197-series pair is on file — and their reissue
+CoQs can be numbered and issued now.

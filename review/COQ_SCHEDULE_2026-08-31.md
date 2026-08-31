@@ -123,3 +123,69 @@ in 48 files with zero content differences; the `10⁵`/`10⁴` superscripts, the
 subscripts and the µ/∑/– codepoints are confirmed from glyph baselines; and every source
 rule this build implements was independently restated from the repository. Its two
 genuinely new findings are items 6 and 7 above.
+
+---
+
+## Extended the same day: the universe around the 61 (owner's ruling, 31.08.2026)
+
+Three further owner decisions arrived after the build above was recorded, and the
+schedule was rebuilt on them. **The 61 numbered CoQs stand exactly as described; the
+universe around them changed.** Figures above marked "over the 61" are superseded by
+the rebuilt workbook.
+
+**1 — The 48 lots are Tranche 01 + 02 only (19 + 29), and every batch on record gets
+one initial CoQ, first to last.** Production stands at more than 80 batches. The
+35 record batches past Tranche 02 now carry **predicted initial CoQs** — no packaged
+lot, grade or number exists for them yet; a number is copied from the issuance record
+at issue, never computed in advance. The earlier statement "register batches with no
+packaged lot get no CoQ — there are 41 of them" is withdrawn: **six of those 41 were
+not batches at all** but the register's P-number-keyed rows holding the Farmahem
+197-series re-analyses *of plan lots* (`P060152`→J31102501, `P060212`→JD112501,
+`P060242`→OPM122501, `P060352`→FB012602, `P060382`→SCR012603, `P060402`→GG012603 —
+matched by the plan's own packaged-lot numbers), and their results now fold into
+those lots. This also resolves four of the 26 banner-THC mismatches — the "missing"
+analyses were on file under the P-rows all along — leaving **22**. OPM052501 and
+CJ062501-2, the two lots whose over-criterion TYMC had no CoQ to hold it, now have
+predicted CoQs carrying the finding.
+
+**2 — The 12-month cannabinoid + mycotoxin retest programme is universal: every batch
+gets a CoQ reissue, starting from the beginning of Tranche 01/02.** The 13 numbered
+additional-testing CoQs are the ones already due; the remaining **35 of the 48** are
+predicted at packaging + 12 months, and every batch past Tranche 02 at release + 12
+months. On a reissue, only identity (Farmahem, with the assay), foreign matter (one
+in-house iCoA), cannabinoids and mycotoxins are re-certified — every other
+determination is *outside the retest scope; the release determination stands on the
+initial CoQ*.
+
+**3 — The CoQ SOP has been in use since 11.05.2026, and no CoQ may print an earlier
+issue date.** The plan's per-CoQ dates are packaging dates — the basis of the
+numbering series — never issue dates. Item 3 under "Recorded, not resolved" above
+(192 rows citing documents dated after the CoQ's date) is thereby **dissolved, not
+fixed**: there was never a violation, only a misread of what the plan's dates were.
+The schedule now prints, per CoQ, the basis date and the earliest permissible issue
+date — the SOP date, the newest cited document, or (for a reissue that cites nothing
+yet) the 12-month due date, whichever is latest. 75 CoQs may be issued from
+11.05.2026; 91 are bound later.
+
+**The rebuilt totals: 166 CoQ documents** — 48 issued initial + 13 issued additional
+testing + 35 predicted initial + 35 predicted Tranche-01/02 reissues + 35 predicted
+later reissues — **× 23 determinations = 3 818 rows**; the iCoA plan grows to
+**137** (45 × Ident A+B, 92 × foreign matter, every reissue owing exactly one).
+
+Two findings the extension exposed:
+
+* **Five ISSUED additional-testing CoQs cite no 197-series certificate on file** —
+  `0029` GG1024 (retest per plan 11.03.2026), `0033` OMP1024_01 (20.06.2026),
+  `0036` GP0824_03 (14.07.2026), `0037` OPM1024_03 (22.07.2026), `0039` MB0824_05
+  (25.08.2026). The plan records the retests; the certificates never reached the
+  file. Same defect class as GG1024's initial testing: locate, scan, upload.
+* **Thirteen batches are re-analysed early** — the Farmahem pair is already on file,
+  ahead of the 12-month mark for most — so their reissue CoQs can be numbered and
+  issued now: GP052501, CJ052501/01, GP082501/2, CJ082501/2, PM092501, CJ062501-2,
+  and the six P-row lots above, plus **P060332** (Cash Cow), which matches no plan
+  lot and no register cultivation batch — its identity is an open question for QC
+  (CC112501, the only Cash Cow on record, assayed 13.35 % against the P-row's
+  17.67 %: not obviously the same material).
+
+All 21 Farmahem 197-series pairs in the register land on exactly 21 distinct reissue
+CoQs — 8 issued, 13 predicted — none lost, none double-cited.
