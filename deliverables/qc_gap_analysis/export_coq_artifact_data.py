@@ -26,6 +26,8 @@ import build_document_registers as DR      # noqa: E402
 def main(out):
     rows, per_coq, dets = CQ.schedule()
     plan = CQ.icoa_plan(per_coq)
+    specj = json.load(open(os.path.join(HERE, "product_specifications_QCSP001.json"),
+                           encoding="utf-8"))["specifications"]
 
     coqs, by_n = [], {}
     for r in rows:
@@ -39,7 +41,10 @@ def main(out):
                 "strain": p["strain"], "grade": p["grade"], "cls": p["cls"],
                 "ic": p["icoa_ref"], "thc": p["banner_thc"],
                 "spec": p["spec_doc"], "conflict": p["spec_conflict"],
-                "reg": p["in_register"], "issued": p["issued"], "rows": [],
+                "reg": p["in_register"], "issued": p["issued"],
+                "md": p.get("md", ""), "pk": p.get("pk", ""),
+                "pcode": (specj.get(p["pp"]) or {}).get("product_code", ""),
+                "rows": [],
             }
             coqs.append(by_n[k])
         by_n[k]["rows"].append({

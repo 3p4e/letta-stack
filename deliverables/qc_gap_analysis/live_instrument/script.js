@@ -465,7 +465,9 @@ function renderDetail(){
       lk("Packaged lot", c.pp || "—") + lk("Cultivation batch", c.cb) +
       lk("Grade", c.grade ? c.grade + " · THC " + c.cls : "—") +
       lk("iCoA reference", c.ic) + lk("Spec. ref.", c.spec || "—") +
-    '</div></div><button class="close" id="cl">Close</button></div>' +
+    '</div></div><span style="display:flex;gap:8px">' +
+    '<button class="btn sm gold" id="d-view">' + (c.issued ? "View certificate" : "Preview draft") + '</button>' +
+    '<button class="close" id="cl">Close</button></span></div>' +
     (notes.length ? '<div class="d-note">' + notes.join("<br>") + '</div>' : "") +
     '<div class="scroll"><table><thead><tr>' +
     '<th style="width:44px">№</th><th style="width:190px">Parameter<span class="mk">Параметар</span></th>' +
@@ -474,6 +476,10 @@ function renderDetail(){
     '<th style="width:170px">Source document</th><th>Status · route</th>' +
     '</tr></thead><tbody>' + body + '</tbody></table></div>' + deskHtml + '</div>';
   el("cl").addEventListener("click", function(){ OPEN = null; renderDetail(); renderCoqs(); });
+  el("d-view").addEventListener("click", function(){
+    openDoc((c.issued ? c.n : "DRAFT") + " — Certificate of Quality — " + c.strain,
+      coqDocName(c), fillCoq(c));
+  });
   var att = el("att-save");
   if (att) att.addEventListener("click", function(){
     var no = el("att-no").value, doc = el("att-doc").value.trim(), res = el("att-res").value.trim();
@@ -533,9 +539,11 @@ function renderIcoa(){
         esc(asn ? asn.ref : p.icoa_ref) + '</td>' +
       (asn
         ? '<td class="mono">' + esc(asn.date) + '</td><td>' + esc(asn.analyst) +
-          ' <span class="desk-entry">' + esc(asn.by || "") + '</span></td>'
+          ' <span class="desk-entry">' + esc(asn.by || "") + '</span>' +
+          ' <button class="btn sm ic-view" data-ik="' + esc(icoaKey(p)) + '">View</button></td>'
         : '<td colspan="2"><button class="btn sm ic-go" data-ik="' + esc(icoaKey(p)) +
-          '" data-lbl="' + esc(p.scope + " — " + p.cb + " (" + num + ")") + '">Assign at the desk</button></td>') +
+          '" data-lbl="' + esc(p.scope + " — " + p.cb + " (" + num + ")") + '">Assign at the desk</button>' +
+          ' <button class="btn sm ic-view" data-ik="' + esc(icoaKey(p)) + '">Draft</button></td>') +
       '</tr>';
   }).join("");
   el("cnt-icoa").textContent = list.length + " of " + ICO.length + " in-house certificates";
@@ -638,31 +646,67 @@ document.querySelector("#p-icoa .controls").insertAdjacentHTML("afterend",
   '<span class="fld"><label>iCoA reference</label><input id="ic-ref" placeholder="iCoA-PP-2026-NNNN"></span>' +
   '<span class="fld"><label>Date of issue</label><input id="ic-date" placeholder="dd.mm.yyyy"></span>' +
   '<span class="fld"><label>Analyst</label><input id="ic-analyst" placeholder="name"></span>' +
+  '<span class="fld"><label>Result, exactly as printed</label><input id="ic-res" placeholder="pick a row first"></span>' +
   '<button class="btn" id="ic-save" disabled>Record assignment</button></div>' +
   '<div class="deskmsg" id="ic-msg">Numbers are copied from this issuance record — assigning here IS the record.</div></div>');
 document.querySelector("#t-icoas tbody").addEventListener("click", function(e){
+  var v = e.target.closest(".ic-view");
+  if (v) {
+    var k = v.dataset.ik;
+    var p = ICO.filter(function(x){ return icoaKey(x) === k; })[0];
+    if (!p) return;
+    var asn = OV.icoa[k] || null;
+    openDoc((asn ? asn.ref : "DRAFT") + " — in-house CoA — " + p.scope + " — " + p.cb,
+      icoaDocName(p, asn), fillIcoa(p, asn));
+    return;
+  }
   var b = e.target.closest(".ic-go");
   if (!b) return;
   IC_TARGET = b.dataset.ik;
   el("ic-what").textContent = b.dataset.lbl;
+  el("ic-res").placeholder = IC_TARGET.split("|")[1].indexOf("Ident") === 0
+    ? "Conforms / Does not conform" : "e.g. 0.4 % w/w";
   el("ic-save").disabled = false;
   el("ic-desk").scrollIntoView({ block: "nearest" });
 });
 el("ic-save").addEventListener("click", function(){
   if (!IC_TARGET) return;
+  var tk = IC_TARGET;
   var ref = el("ic-ref").value.trim(), date = el("ic-date").value.trim(),
-      analyst = el("ic-analyst").value.trim();
+      analyst = el("ic-analyst").value.trim(), res = el("ic-res").value.trim();
   if (!operator()) return msgIn("ic-msg", "Enter your initials on the Desk log tab first.", false);
   if (!/^iCoA-PP-\d{4}-\d{4}$/.test(ref)) return msgIn("ic-msg", "Reference must read iCoA-PP-YYYY-NNNN.", false);
   var dwi = dateWindowError(date, null);
   if (dwi) return msgIn("ic-msg", dwi, false);
   if (!analyst) return msgIn("ic-msg", "Analyst is required.", false);
+  if (!res) return msgIn("ic-msg", "The result is required — an iCoA without a result certifies nothing.", false);
   var taken = Object.keys(OV.icoa).some(function(k){ return OV.icoa[k].ref === ref; });
   if (taken) return msgIn("ic-msg", "That iCoA number is already assigned. One number, one document, forever.", false);
-  OV.icoa[IC_TARGET] = { ref: ref, date: date, analyst: analyst, by: operator(), at: stamp() };
+  /* the assignment IS the certificate: carry its result onto the linked CoQ's
+     determinations (1+2 for Ident A+B, 7 for foreign matter) so the CoQ compiles
+     from the desk record — never overwriting an attachment already there */
+  var parts = tk.split("|");
+  var ck = parts[0] + "|" + parts[2];
+  var dets = parts[1].indexOf("Ident") === 0 ? ["1", "2"] : ["7"];
+  var attached = [];
+  if (COQ.some(function(c){ return c.key === ck; })) {
+    OV.attach[ck] = OV.attach[ck] || {};
+    dets.forEach(function(no){
+      if (OV.attach[ck][no]) return;
+      OV.attach[ck][no] = { doc: ref, res: res, date: date,
+        lab: "Purely Plant — QC Laboratory (in-house iCoA)", by: operator(), at: stamp() };
+      attached.push(no);
+    });
+  }
+  OV.icoa[tk] = { ref: ref, date: date, analyst: analyst, res: res, by: operator(), at: stamp() };
   msgIn("ic-msg", "Publishing the assignment…", true);
-  saveState("iCoA assignment", ref + " -> " + IC_TARGET.split("|").slice(0, 2).join(" "),
-    null, function(m){ delete OV.icoa[IC_TARGET]; msgIn("ic-msg", m, false); });
+  saveState("iCoA assignment", ref + " -> " + parts.slice(0, 2).join(" ") + " = " + res +
+    (attached.length ? "; carried onto CoQ det " + attached.join(", ") : ""),
+    null, function(m){
+      delete OV.icoa[tk];
+      attached.forEach(function(no){ delete OV.attach[ck][no]; });
+      msgIn("ic-msg", m, false);
+    });
 });
 
 renderCoqs(); renderIcoa(); renderEcoa();
@@ -939,3 +983,279 @@ function renderLog(){
   el("e-log").classList.toggle("hide", OV.log.length > 0);
 }
 renderLog(); renderReg();
+
+/* ================= document generation =================
+   The owner's own masters — _CoQ_MASTER_Template.html and
+   iCoA_Template_v02_VariationF.html — are carried in the page base64-encoded
+   and filled from the same data the registers render. Nothing is retyped: a
+   generated certificate is the schedule, laid on the approved form. A document
+   that is not yet issued renders with a DRAFT watermark and placeholder code. */
+function tplDoc(id){
+  var b = document.getElementById(id).textContent.trim();
+  var bytes = atob(b), arr = new Uint8Array(bytes.length);
+  for (var i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
+  return new DOMParser().parseFromString(new TextDecoder("utf-8").decode(arr), "text/html");
+}
+function serializeDoc(doc){ return "<!DOCTYPE html>\n" + doc.documentElement.outerHTML; }
+var LAB_META = {
+  "Purely": ['Purely Plant — QC Department · In-house QC Laboratory · MK GMP Certified',
+             'Пјурли Плант — Оддел за КК · Интерна лабораторија за КК · МК ДПП сертифицирана',
+             'Kojlija 1043, Petrovec-Skopje, MK'],
+  "UKIM":   ['UKIM Faculty of Pharmacy — Center for Natural Products · ISO/IEC 17025:2017 · LT-083 (IARM)',
+             'УКИМ ФФ — Центар за Природни Производи', 'Mother Theresa 47, 1000 Skopje, MK'],
+  "IPH":    ['JZU Institute for Public Health (IPH Skopje) · ISO/IEC 17025:2017 · LT-005 (IARM)',
+             'ЈЗУ Институт за јавно здравје (ИЈЗ Скопје)', '50ta Divizija 6, 1000 Skopje, MK'],
+  "Farmahem": ['Farmahem — Laboratorija za zivotna sredina · ISO/IEC 17025:2017',
+             'Фармахем — Лабораторија за животна средина', 'Skopje, MK'],
+  "State":  ['State Phytosanitary Laboratory', 'Државна фитосанитарна лабораторија', 'Skopje, MK']
+};
+function labMeta(lab){
+  for (var k in LAB_META) if (lab.indexOf(k) === 0) return LAB_META[k];
+  return [lab, "", ""];
+}
+function groupNo(no){ return no.indexOf(".") > 0 ? no.split(".")[0] : no; }
+function condenseNos(list){
+  var ns = Array.from(new Set(list)).map(Number).sort(function(a, b){ return a - b; });
+  var out = [], run = [ns[0]];
+  for (var i = 1; i <= ns.length; i++) {
+    if (i < ns.length && ns[i] === ns[i - 1] + 1) { run.push(ns[i]); continue; }
+    out.push(run.length > 2 ? run[0] + "–" + run[run.length - 1] : run.join(", "));
+    run = [ns[i]];
+  }
+  return out.join(", ");
+}
+function rCls(res){
+  if (/^(conforms|absent|одговара)/i.test(res)) return " r-conform";
+  if (/^(n\.?d\.?|blq|—|—)/i.test(res)) return " r-nd";
+  return "";
+}
+function setLk(doc, label, value){
+  var lbls = doc.querySelectorAll(".lk-lbl");
+  for (var i = 0; i < lbls.length; i++) {
+    if (lbls[i].textContent.indexOf(label) !== 0) continue;
+    var v = lbls[i].parentElement.querySelector(".lk-val");
+    if (v) v.textContent = value;
+    return;
+  }
+}
+function chipRow(label, mk, opts){
+  return '<span class="grp"><span class="lk-lbl">' + esc(label) +
+    ' <span class="mk">' + esc(mk) + '</span></span><span class="stack">' +
+    opts.map(function(o){
+      return '<span class="' + (o[1] ? "chip-sel" : "chip-un") + '"><span class="bx">' +
+        (o[1] ? "☒" : "☐") + '</span> ' + esc(o[0]) + '</span>';
+    }).join("") + '</span></span>';
+}
+function fillCoq(c){
+  var doc = tplDoc("tpl-coq");
+  var q = function(s){ return doc.querySelector(s); };
+  var draft = !c.issued;
+  q(".hb-code").textContent = draft ? "CoQ-PP-····-····" : c.n;
+  q(".hb-issue").innerHTML = "Issued · Издаден <b>" +
+    esc(draft ? "—" : c.issue.replace("≥ ", "")) + "</b>";
+  q(".pb-name").innerHTML = "<span style=\"font-family:'Roboto Mono',monospace\">" +
+    esc(c.pp || c.cb) + '</span> <i class="bisep" style="font-size:.7em">|</i> ' +
+    '<span style="font-weight:800;text-transform:uppercase">' + esc(c.strain) + "</span>";
+  q(".pbp-val").textContent = c.thc ? c.thc + "%" : "··.··%";
+  /* phenotype and processing are not held by the desk: controlled blanks QC
+     ticks by hand. Chemotype is the product's THC class and stays ticked. */
+  q(".selrow").innerHTML =
+    chipRow("Phenotype", "Фенотип", [["Hybrid", false], ["Indica", false], ["Sativa", false]]) +
+    chipRow("Chemotype", "Хемотип", [["THC", true], ["CBD", false]]) +
+    chipRow("Processing", "Обработка", [["Machine", false], ["Hand", false]]);
+  var a4 = c.rows.filter(function(r){ return r.no === "4"; })[0];
+  setLk(doc, "Prod. Code", c.pcode || "—");
+  setLk(doc, "Potency", a4 ? a4.crit.split("(")[0].trim() : "—");
+  setLk(doc, "Spec. Ref.", c.spec || "—");
+  setLk(doc, "Prod. Batch №", c.pp || c.cb);
+  setLk(doc, "Manuf. Date", c.md || "—");
+  setLk(doc, "Pack. Date", c.pk || "—");
+  /* section 02 — rebuilt row for row from the schedule, criteria verbatim */
+  var groups = { "9": [], "10": [], "11": [] };
+  var singles = {};
+  c.rows.forEach(function(r){
+    if (r.no === "9.6" || r.no === "9.7") return;      /* upon request — not printed */
+    var g = groupNo(r.no);
+    if (r.no.indexOf(".") > 0 && groups[g]) groups[g].push(r); else singles[r.no] = r;
+  });
+  function res(r){
+    var v = (r.res && r.res !== "—") ? r.res : "—";
+    return '<td class="r-cell"><span class="r-val' + rCls(v) + '">' + esc(v) + "</span></td>";
+  }
+  function single(no, last){
+    var r = singles[no]; if (!r) return "";
+    var d = DET[no] || {};
+    return '<tr' + (last ? ' class="last-row"' : "") + '><td>' + no + '</td><td><span class="p-name">' +
+      esc(d.en) + ' <span class="mk">' + esc(d.mk) + '</span></span></td><td><span class="p-method">' +
+      esc(d.method) + '</span></td><td><span class="p-spec">' + esc(r.crit) + "</span></td>" + res(r) + "</tr>";
+  }
+  function group(no){
+    var rows2 = groups[no]; if (!rows2.length) return "";
+    var d0 = DET[rows2[0].no] || {};
+    var html = '<tr class="row-group"><td>' + no + '</td><td colspan="4"><span class="p-name">' +
+      esc(d0.group) + "</span></td></tr>";
+    rows2.forEach(function(r){
+      var d = DET[r.no] || {};
+      html += '<tr class="sub-row"><td></td><td><span class="p-sub">' + esc(d.en) +
+        ' <i class="bisep">|</i> <span class="mk">' + esc(d.mk) + '</span></span></td>' +
+        '<td><span class="p-method">' + esc(d.method) + '</span></td>' +
+        '<td><span class="p-spec">' + esc(r.crit) + "</span></td>" + res(r) + "</tr>";
+    });
+    return html;
+  }
+  q("table.results tbody").innerHTML =
+    single("1") + single("2") + single("3") + single("4") + single("5") + single("6") +
+    single("7") + single("8") + group("9") + group("10") + group("11") + single("12", true);
+  /* section 03 — from the citations themselves */
+  var labs = {};
+  c.rows.forEach(function(r){
+    if (!r.doc || r.doc === "—") return;
+    var L = labs[r.lab] || (labs[r.lab] = { codes: {}, nos: [] });
+    L.codes[r.doc] = r.dd || "";
+    L.nos.push(groupNo(r.no));
+  });
+  q("table.labref tbody").innerHTML = Object.keys(labs).map(function(lab){
+    var m = labMeta(lab), L = labs[lab];
+    var codes = Object.keys(L.codes).map(function(cd){
+      return esc(cd) + (L.codes[cd] ? ", " + esc(L.codes[cd]) : "");
+    }).join(" · ");
+    return '<tr><td><span class="lr-lab">' + esc(m[0]) +
+      (m[1] ? ' <i class="bisep">|</i> <span class="mk" style="display:inline">' + esc(m[1]) + "</span>" : "") +
+      (m[2] ? "<small>" + esc(m[2]) + "</small>" : "") + '</span></td><td class="lr-mono">' + codes +
+      '</td><td class="lr-mono">' + condenseNos(L.nos) + "</td></tr>";
+  }).join("") || '<tr><td colspan="3" style="padding:8px;color:#8C9BB0">No certificate on file yet — controlled blanks.</td></tr>';
+  /* section 04 — disposition follows the dispositions, ticked only at issue */
+  var bad = c.k.oos > 0, open2 = c.k.und > 0;
+  var disp = q(".disp-row .grp");
+  disp.innerHTML = '<span class="lk-lbl">Batch ' + esc(c.pp || c.cb) +
+    '<span class="mk">Серија ' + esc(c.pp || c.cb) + "</span></span>" +
+    '<span class="' + (!draft && !bad && !open2 ? "chip-sel" : "chip-un") + '"><span class="bx">' +
+    (!draft && !bad && !open2 ? "☒" : "☐") + '</span> Conforms to Specification <span class="mk">Одговара на спецификацијата</span></span>' +
+    '<span class="' + (!draft && bad ? "chip-sel" : "chip-un") + '"><span class="bx">' +
+    (!draft && bad ? "☒" : "☐") + "</span> Does not conform</span>";
+  doc.querySelectorAll(".ap-date-val").forEach(function(n){
+    n.textContent = draft ? "—" : c.issue.replace("≥ ", "");
+  });
+  if (draft) addDraftMark(doc);
+  return serializeDoc(doc);
+}
+function setSg(doc, label, value){
+  doc.querySelectorAll(".sg-cell").forEach(function(cell){
+    var l = cell.querySelector(".sg-label");
+    if (l && l.textContent.trim() === label) {
+      cell.querySelector(".sg-val").textContent = value;
+    }
+  });
+}
+function fillIcoa(p, asn){
+  var doc = tplDoc("tpl-icoa");
+  var q = function(s){ return doc.querySelector(s); };
+  var draft = !asn;
+  var ref = asn ? asn.ref : "iCoA-PP-····-····";
+  var coq = COQ.filter(function(c){ return c.cb === p.cb && c.reissue === p.reissue; })[0];
+  var fm = p.scope.indexOf("Foreign") === 0;
+  q(".hb-code").textContent = ref;
+  q(".ribbon-mono").innerHTML = esc(p.pp || "—") + " <small>(Production)</small> · " +
+    esc(p.cb) + " <small>(Cultivation)</small> · " + esc(p.strain) +
+    (coq && coq.grade ? " <small>· Grade " + esc(coq.grade) + "</small>" : "");
+  q(".ribbon-types").innerHTML = '<span class="rt-pill chemo">' + esc(p.scope) +
+    " · QCSP 001 №" + (fm ? " 7" : " 1, 2") + "</span>" +
+    '<span class="rt-pill botanical">' + (p.reissue ? "12-month reissue" : "Initial release") + "</span>";
+  q(".ribbon-stamp-val").textContent = asn ? asn.date : "—";
+  setSg(doc, "Lab Sample ID", "—");
+  setSg(doc, "Sample Received", "—");
+  setSg(doc, "Sampled by", "QC Officer (Internal)");
+  setSg(doc, "Sample Mass", fm ? "25–50 g" : "—");
+  setSg(doc, "Requested Tests", p.scope);
+  setSg(doc, "Analysis Started", "—");
+  setSg(doc, "Analysis Completed", asn ? asn.date : "—");
+  setSg(doc, "Specification Ref.", (coq && coq.spec) || "QCSP 001 v.03");
+  setSg(doc, "Linked CoQ", coq ? coq.n : "—");
+  /* keep only the scope's rows of the master's analytical table */
+  var tb = q("table.methods tbody");
+  var keep = fm ? [6] : [0, 1];
+  var rows2 = Array.prototype.slice.call(tb.querySelectorAll("tr"));
+  tb.innerHTML = "";
+  keep.forEach(function(i, n){
+    var tr = rows2[i];
+    tr.querySelector("td").textContent = n + 1;
+    var rv = tr.querySelector(".m-result");
+    rv.textContent = asn && asn.res ? asn.res : "—";
+    if (asn && /^does not/i.test(asn.res)) rv.className = "m-result fail";
+    tb.appendChild(tr);
+  });
+  var conf = asn && asn.res && !/^does not/i.test(asn.res);
+  q(".cs-badge").textContent = draft ? "—" : (conf ? "Conforms" : "Does not conform");
+  q(".cs-body").innerHTML = "<strong>Result:</strong> " + esc(p.scope) +
+    " (QCSP 001 v.03 determination" + (fm ? " 7" : "s 1 and 2") + ") — " +
+    (draft ? "to be performed and recorded at issue." :
+      "<strong>" + esc(asn.res) + "</strong>.") +
+    " This iCoA reports analytical results only; formal batch release is documented in " +
+    "the linked Certificate of Quality &nbsp;<span class=\"linked-coq\">" +
+    esc(coq ? coq.n : "—") + "</span>.";
+  var sig = doc.querySelectorAll(".sig-block");
+  if (sig[0]) {
+    sig[0].querySelector(".sig-name").textContent = asn ? asn.analyst : "—";
+    sig[0].querySelector(".sig-cred").textContent = "QC Laboratory";
+  }
+  if (sig[1]) sig[1].querySelector(".sig-name").textContent = "";
+  doc.querySelectorAll(".sig-date-val").forEach(function(n){
+    n.textContent = asn ? asn.date : "—";
+  });
+  var fr = q(".foot-right");
+  if (fr) fr.innerHTML = "MK GMP Certified Facility<br>" + esc(ref) + " · Page 1 of 1";
+  if (draft) addDraftMark(doc);
+  return serializeDoc(doc);
+}
+function addDraftMark(doc){
+  var wm = doc.createElement("div");
+  wm.setAttribute("style", "position:fixed;inset:0;display:flex;align-items:center;" +
+    "justify-content:center;pointer-events:none;z-index:99");
+  wm.innerHTML = "<div style=\"font:800 96px 'Montserrat',sans-serif;" +
+    "color:rgba(155,44,44,.14);transform:rotate(-28deg);letter-spacing:14px\">DRAFT</div>";
+  doc.body.appendChild(wm);
+}
+
+/* ---------- the viewer ---------- */
+var DL = null;
+if (typeof window.claude === "object" && window.claude && typeof window.claude.use === "function") {
+  window.claude.use("downloads").then(function(d){ DL = d; });
+}
+document.body.insertAdjacentHTML("beforeend",
+  '<dialog id="dv" style="width:min(940px,96vw);height:92vh;border:1px solid var(--rule);' +
+  'border-top:3px solid var(--gold-deep);padding:0;background:#FFF">' +
+  '<div style="display:flex;align-items:center;gap:10px;padding:9px 14px;background:var(--heaven);' +
+  'border-bottom:1px solid var(--border)"><b id="dv-t" style="font-family:var(--d);font-size:10px;' +
+  'letter-spacing:1px;text-transform:uppercase;color:var(--navy)"></b>' +
+  '<span style="margin-left:auto"></span>' +
+  '<button class="btn sm" id="dv-print">Print</button>' +
+  '<button class="btn sm gold" id="dv-save">Save HTML</button>' +
+  '<button class="close" id="dv-close">Close</button></div>' +
+  '<iframe id="dv-f" style="width:100%;height:calc(92vh - 46px);border:0;background:#B1BAC5"></iframe></dialog>');
+var DV_HTML = "", DV_NAME = "";
+function openDoc(title, filename, html){
+  DV_HTML = html; DV_NAME = filename;
+  el("dv-t").textContent = title;
+  el("dv-f").srcdoc = html;
+  el("dv-save").hidden = !DL;
+  el("dv").showModal();
+}
+el("dv-close").addEventListener("click", function(){ el("dv").close(); });
+el("dv-print").addEventListener("click", function(){
+  var w = el("dv-f").contentWindow;
+  if (w) { w.focus(); w.print(); }
+});
+el("dv-save").addEventListener("click", function(){
+  if (!DL) return;
+  DL.save({ filename: DV_NAME, data: DV_HTML }).catch(function(err){
+    if (err && err.code === "declined") return;
+    el("dv-t").textContent = "Save failed (" + ((err && err.code) || "unknown") + ")";
+  });
+});
+function coqDocName(c){
+  return (c.issued ? c.n : "DRAFT_CoQ") + "_" + (c.pp || c.cb).replace(/[^\w-]/g, "_") + ".html";
+}
+function icoaDocName(p, asn){
+  return (asn ? asn.ref : "DRAFT_iCoA") + "_" + p.cb.replace(/[^\w-]/g, "_") + "_" +
+    (p.scope.indexOf("Ident") === 0 ? "Ident" : "FM") + ".html";
+}
