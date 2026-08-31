@@ -54,6 +54,32 @@ from pheur import governing, max_acceptable, classify_printed_limit
 # ("Cap Junkie") groups with the strain it refers to rather than as its own.
 from controlled import canonical_strain, canonical_unit
 
+# A batch is filed under TWO codes: the cultivation code (GP0824_02) and the PP
+# number (P050022). Certificates use whichever their laboratory was given, so
+# without unification one physical batch splits into two - each looking
+# half-tested, and its retests reading as separate histories. The Head of QC's
+# manifest is the authority for the pairing; the cultivation code wins because
+# it is the form the sec. 2.1 batch grammar validates.
+def _load_batch_aliases():
+    m = {}
+    path = os.path.join(_HERE, 'priority_batches.tsv')
+    if not os.path.exists(path):
+        return m
+    for line in open(path, encoding='utf-8'):
+        line = line.strip()
+        if not line or line.startswith('#'):
+            continue
+        parts = line.split('\t')
+        if len(parts) < 3:
+            continue
+        cultiv, pp = parts[1].strip(), parts[2].strip()
+        canon = pp_batch(cultiv) or cultiv
+        if pp and pp != cultiv:
+            m[pp.upper()] = canon
+    return m
+
+BATCH_ALIAS = _load_batch_aliases()
+
 # A batch code is a short alpha prefix + digits, optionally a sub-lot and a
 # verification V. Models sometimes append the strain or the lab to it
 # ("BSS052501 - Blue Sunset Sherbet -"); keying that verbatim splits one batch
@@ -62,12 +88,15 @@ _CODE = re.compile(r'\b([A-Z]{1,4}\s?\d{4,8}(?:\s?[-_/]\s?\d{1,3})?V?)\b')
 
 def clean_batch(raw):
     """Canonical batch per the Head of QC grammar (GG1024_01), falling back to
-    the repo key only if no batch code can be isolated."""
+    the repo key only if no batch code can be isolated. A PP number resolves to
+    its cultivation code so one batch never splits across two keys."""
     if not raw: return None
     v = pp_batch(raw)
-    if v: return v
-    m = _CODE.search(str(raw).strip().upper())
-    return batch_key(m.group(1)) if m else None
+    if not v:
+        m = _CODE.search(str(raw).strip().upper())
+        v = batch_key(m.group(1)) if m else None
+    if not v: return None
+    return BATCH_ALIAS.get(v.upper(), v)
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS certificate (

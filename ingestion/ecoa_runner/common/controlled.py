@@ -85,12 +85,39 @@ def canonical_lab(printed):
 # Established nomenclature. A certificate spelling that resolves here refers to
 # the canonical strain: "Cap Junkie" on an eCoA means Cap Junky.
 STRAINS = [
-    ('Cap Junky',           ['capjunky', 'capjunkie', 'capjunki', 'capjuncky']),
+    # Established names are the Head of QC's own manifest (priority_batches.tsv).
+    # Aliases are every spelling the corpus actually produced across 221
+    # certificates - laboratory typos, transliterations and case variants.
+    # Without these, query 2 (THC per strain) splits one strain into four rows:
+    # Cap Junky appeared as Cup Junky / Cup Junkie / Cup Jankie / CUP JUNKIE.
+    ('Cap Junky',           ['capjunky', 'capjunkie', 'capjunki', 'capjuncky',
+                             'cupjunky', 'cupjunkie', 'cupjankie', 'cupjanky']),
     ('Blue Gelato',         ['bluegelato']),
-    ('Blue Sunset Sherbet', ['bluesunsetsherbet', 'bluesunsetsherbert']),
-    ('Grape Pie',           ['grapepie']),
+    ('Blue Sunset Sherbet', ['bluesunsetsherbet', 'bluesunsetsherbert', 'bluesunsetsherb']),
+    ('Grape Pie',           ['grapepie', 'grappie']),
     ('Gorilla Glue',        ['gorillaglue', 'gorilaglue']),
-    ('Orange Punch Mimosa', ['orangepunchmimosa']),
+    ('Orange Punch Mimosa', ['orangepunchmimosa', 'orangepiemimosa', 'orangepunch',
+                             'orangepunchmimoza']),
+    ('High Pro Amnesia',    ['highproamnesia']),
+    ('Jelly Donuts',        ['jellydonuts', 'jellydonutz']),
+    ('Jokerz 31',           ['jokerz31', 'jokers31']),
+    ('Permanent Marker',    ['permanentmarker', 'permanentmarket']),
+    ('Scrambler',           ['scrambler']),
+    ('Fat Bastard',         ['fatbastard']),
+    ('Cash Cow',            ['cashcow']),
+    ('Sleepy Joe',          ['sleepyjoe', 'sleepyjoy']),
+    ('Kush Crasher',        ['kushcrasher', 'kushkrasher']),
+    ('Motor Breath',        ['motorbreath']),
+    ('Grapes and Cream',    ['grapesandcream', 'grapscreme', 'grapsandcreme',
+                             'grapescream']),
+    ('Appels & Bananas',    ['appelsbananas', 'appleandbanana', 'applesandbananas',
+                             'appleandbananas']),
+    ('Clemosa A Bud',       ['clemosaabud']),
+    ('Amnesia Core Cut',    ['amnesiacorecut']),
+    ('Chem Flyer',          ['chemflyer']),
+    ('Pure Michigen',       ['puremichigen', 'puremichigan']),
+    ('Wedding Crusher',     ['weddingcrusher']),
+    ('Wedding Cake',        ['weddingcake']),
 ]
 
 
