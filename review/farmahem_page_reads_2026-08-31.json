@@ -1,0 +1,103 @@
+{
+ "1971K26": {
+  "batch_page": "Blue Gelato / BG1024",
+  "internal": "CF-396/26",
+  "cbd": "< LOQ",
+  "cbn": "0.28",
+  "thc": "26.14",
+  "u": {
+   "cbd": "/",
+   "cbn": "0.02",
+   "thc": "1.61"
+  },
+  "note": "register CBN 0.02 is the U (uncertainty) column, not the result — the result is 0.28"
+ },
+ "1972K26": {
+  "batch_page": "Blue Sunset Sherbet / BSS1024",
+  "internal": "CF-397/26",
+  "cbd": "< LOQ",
+  "cbn": "< LOQ",
+  "thc": "25.01",
+  "u": {
+   "cbn": "/",
+   "thc": "1.54"
+  }
+ },
+ "1979K26": {
+  "batch_page": "Gorilla Glue / GG1024_01",
+  "internal": "CF-404/26",
+  "cbd": "< LOQ",
+  "cbn": "0.20",
+  "thc": "18.67",
+  "u": {
+   "cbn": "0.01",
+   "thc": "1.15"
+  }
+ },
+ "19714K26": {
+  "batch_page": "High Pro Amnesia / HPA1024_01",
+  "internal": "CF-409/26",
+  "cbd": "< LOQ",
+  "cbn": "< LOQ",
+  "thc": "21.61",
+  "u": {
+   "cbn": "/",
+   "thc": "1.33"
+  }
+ },
+ "19718K26": {
+  "batch_page": "Orange Punch Mimosa / P050062",
+  "internal": "CF-413/26",
+  "cbd": "< LOQ",
+  "cbn": "< LOQ",
+  "thc": "18.04",
+  "u": {
+   "cbn": "/",
+   "thc": "1.11"
+  }
+ },
+ "19711K26": {
+  "batch_page": "Grape Pie / P050022",
+  "internal": "CF-406/26",
+  "cbd": "< LOQ",
+  "cbn": "0.23",
+  "thc": "22.61",
+  "u": {
+   "cbn": "0.01",
+   "thc": "1.39"
+  }
+ },
+ "1973K26": {
+  "batch_page": "Cap Junkie / P050162",
+  "internal": "CF-398/26",
+  "cbd": "< LOQ",
+  "cbn": "< LOQ",
+  "thc": "24.05",
+  "u": {
+   "cbn": "/",
+   "thc": "1.48"
+  }
+ },
+ "19710K26": {
+  "batch_page": "Grape Pie / P050152",
+  "internal": "CF-405/26",
+  "cbd": "< LOQ",
+  "cbn": "< LOQ",
+  "thc": "18.52",
+  "u": {
+   "cbn": "/",
+   "thc": "1.14"
+  }
+ },
+ "1974K26": {
+  "batch_page": "Cap Junkie / P050212",
+  "internal": "CF-399/26",
+  "cbd": "< LOQ",
+  "cbn": "< LOQ",
+  "thc": "18.91",
+  "u": {
+   "cbn": "/",
+   "thc": "1.16"
+  }
+ }
+}
