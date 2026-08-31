@@ -254,10 +254,11 @@ Classical OCR is not used and is forbidden by `scripts/policy_check.py` rule 1.
 | After dates of issue (266 rows) | 797 |
 | After this pass (73 certificates) | **~993 (~77%)** |
 
-(About six values are counted twice: `ППК25117` and `ППК25139` were read on 30.08 and are
-inside this pass's 202. The figure is rounded down accordingly.)
+That last figure was an estimate, and it was wrong in the pessimistic direction. Counting it
+instead — `deliverables/qc_gap_analysis/verification_coverage.py`, which folds each row's code
+and looks for it among the certificates actually read — gives **1 033 of 1 073 populated result
+cells, 96.3%**. See `review/RESIDUAL_PAGE_VERIFICATION_2026-08-31.md`.
 
-What remains unverified is no longer a family. It is the residue: the microbiology and
-contaminant columns on rows whose certificates were read for other parameters, the 41 in-house
-PP CoAs, the two NGP documents and the phytosanitary reports — the Class B documents the
-ingestion plan set aside because they have no fixed layout to validate against.
+What remains unverified is no longer a family, and the count says exactly what it is: **40
+cells on four Purely Plant in-house rows** whose own code cells read `no certificate/report`.
+There is no document behind them to read.
