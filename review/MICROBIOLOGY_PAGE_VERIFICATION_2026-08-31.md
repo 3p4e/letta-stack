@@ -142,8 +142,12 @@ Plus `163/0271/25` (BG1024) at exactly 1 × 10⁴ — at the limit, not over it.
 inferred from a parse, and it remains a question for the issuing laboratory and for the
 deviation records, not something any pipeline can resolve.
 
-`1220/2171/25` is new to this list: it was not among the ten found earlier, because that
-search compared against the register's column and this certificate's limit is its own.
+These are the same ten the 22.08 cross-check named, and `1220/2171/25` was already among
+them with its 10² limit recorded on 29.08 — it is not a new discovery. What is new is
+that it had never been read: it was one of the five in that list still marked *not
+page-verified*, and all five have now been read. What the page adds is the reason its
+limit is 10² — the certificate carries a manufacturer specification of its own, which is
+what B2 records.
 
 ## D. The six corrections of 30.08.2026, independently confirmed
 
@@ -160,6 +164,50 @@ again, from the original PDF, by a separate pass:
 | `1032/1851/25` | CJ062501-2 | 4,9 × 10⁴ | 4.9×10⁴ ✓ |
 
 All six agree. The corrections were right.
+
+---
+
+## E. What was applied to the register
+
+All ten substantive differences in section A are now in the workbook, applied by
+`deliverables/qc_gap_analysis/apply_microbiology_corrections.py` and written to
+`PP_Batch_Release_QC_Register_MICRO_2026-08-31.xlsx`. The script is idempotent and
+refuses to run against a workbook whose cells differ from the values verified here.
+
+| Cell | Was | Now | Certificate |
+|---|---|---|---|
+| W26 | `319/0586/25` | `318/0585/25` | the row's TAMC matches 318 |
+| K26 | `6×10²` | `6×10³` | `318/0585/25` |
+| Z26 | link to 319 | link to 318 | follows the code |
+| L88 | `<10¹` | `< 10` | `948/1686/25` |
+| L92 | `<10^1 and >10^1` | `< 10^3 and > 10^2` | `1009/1813/25` |
+| L142 | `< 10 and > 10^3` | `< 10^4 and > 10^3` | `1227/2193/25` |
+| L156 | `< 10^2 and > 10` | `< 10` | `4/0007/26` |
+| N148 · N156 · N171 · N177 | `< 10` | `Odgovara (Absent)` | `3/0006/26`, `4/0007/26`, `6/0009/26`, `10/0013/26` |
+
+**The link moved with the code.** Repointing Z26 is not cosmetic: leaving it would have
+produced a live link opening `319`'s certificate from a row labelled `318` — the exact
+defect that had to be cleaned off 190 rows earlier this week, and the one that does not
+announce itself, because the document it opens is real and its numbers look plausible.
+
+**Two comments instead of two columns.** K122 and K118 now carry the manufacturer
+specification their certificates print (TAMC 10⁴, TYMC 10², GNB ≤ 10²) and the two extra
+parameters tested (*S. aureus*, *P. aeruginosa*, both `Одговара`). K122's comment states
+plainly that its 200 passes the column and fails its own paper. Columns were not added:
+two rows out of 291 would leave 289 blanks, and the finding belongs to the certificate,
+not to the register's schema.
+
+**Effect on the validator.** `validate_ecoa_limits.py` R1 is unchanged at 9 — row 122's
+exceedance is still invisible to it, by construction, because the column says 10⁴. R2
+moves 24 → 23: row 26's TYMC and row 142's GNB stop being flagged because they are now
+correct, and row 92's GNB starts being flagged in the same benign class as rows 75, 138
+and 217. The amber flags, the 268 hyperlinks and all 8 merged ranges are byte-identical
+before and after; exactly 10 cell values and 1 link target changed.
+
+**Left open, deliberately.** `319/0586/25` is a real certificate for a released batch and
+now has no row of its own. Giving it one is an addition rather than a correction, and it
+is QC's call — the same call the batch owner made for ППК25139. `305/0549/26` (SCR112501)
+is in the same position.
 
 ---
 

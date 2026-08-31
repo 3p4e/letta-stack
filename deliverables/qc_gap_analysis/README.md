@@ -255,6 +255,26 @@ certificates released against a failing microbiological result — a class of
 problem this coverage analysis does not look for — and raises one open QC decision
 about the 41 in-house `QCCoA 001v02` release CoAs.
 
+## Register revisions — which workbook is current
+
+Each step is a separate script and a separate file, so any one of them can be
+re-read, re-run or backed out without unpicking the others. **The current workbook is
+`PP_Batch_Release_QC_Register_MICRO_2026-08-31.xlsx`.**
+
+| Workbook | Produced by | What it added |
+|---|---|---|
+| `..._CORRECTED.xlsx` | owner-supplied | the baseline this analysis is drawn from |
+| `..._CORRECTED_2026-08-30.xlsx` | `apply_register_corrections.py` | six TYMC values read off the page; ten exceedances flagged amber |
+| `..._CORRECTED_2026-08-31.xlsx` | `add_ppk25139_and_codes.py` | the ППК25139 row; four certificate codes confirmed; row 41 flagged |
+| `..._LINKS_2026-08-31.xlsx` | `repair_register_pdf_links.py` | 166 PDF links repointed at their own certificate |
+| **`..._MICRO_2026-08-31.xlsx`** | `apply_microbiology_corrections.py` | the ten microbiology corrections from reading all forty pages |
+
+**Order matters in one place only.** `add_ppk25139_and_codes.py` inserts a row and
+shifts everything below 46 down by one, so anything addressing rows by index must run
+before it. `apply_register_corrections.py` does, and did. The two scripts that came
+after it use post-insert row numbers, and `repair_register_pdf_links.py` addresses rows
+by certificate code rather than by index, so it is immune either way.
+
 ## Files
 
 - `CROSS_CHECK_2026-08-22.md` — the comparison, and the corrections it produced.
