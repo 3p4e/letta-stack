@@ -15,9 +15,21 @@ are actually produced in:
   WAVE 4  Tranche 2 retest reissues
   WAVE 5  Tranche 3 (and un-tranched) retest reissues
 
-Within a wave the order is chronological. CoQ numbers are assigned in this
-issuance order and belong to the BATCH for life - a retest in wave 3, 4 or 5
-advances that batch's VERSION and reuses its number (QCSOP 012 v.03 04).
+Within a wave the order is chronological.
+
+DOCUMENT CODES are CoQ-PP-<year>-<NNNN>, the year taken from the issue date and
+the sequence running from 0001 within that year. That makes the code a property
+of the DOCUMENT, not of the batch: a 2026 reissue cannot carry a 2025 number, so
+a retest gets its own code and names the certificate it supersedes. The batch is
+identified by its batch number and the version count, as before.
+
+Numbers are allocated strictly in date order across the whole register, not in
+wave order, because a register whose codes run backwards in time does not
+survive an audit. The waves order the WORK; the codes order the DOCUMENTS.
+
+The issue date is the date of the testing campaign the certificate reports.
+Pass --issue-as-of to date the wave 1 and wave 2 backlog to the day it is
+actually signed instead, which moves those codes into the current year.
 
 For every CoQ the schedule prints one cell per specification row: the value
 where one exists, and where it came from - an accredited outsourced laboratory,
@@ -117,7 +129,7 @@ def _cell(e):
     return state, e.get('result'), lab_id or (e.get('lab') or '')[:18], e.get('cert_code')
 
 
-def schedule(db):
+def schedule(db, issue_as_of=None):
     """Every CoQ to issue, in wave order, with a cell per specification row."""
     rows = CR.register(db)
     for r in rows:
@@ -136,14 +148,37 @@ def schedule(db):
     # Numbering follows ISSUANCE order, assigned on the batch's first document
     # and held for life. Sorting the release rows by (wave, date) is therefore
     # what fixes every number in the register.
-    firsts = sorted((r for r in rows if r['version'] == 1),
-                    key=lambda r: (r['wave'], r['date'] or '9999-12-31', r['batch']))
-    number = {r['batch']: i + 1 for i, r in enumerate(firsts)}
     for r in rows:
-        r['no'] = number[r['batch']]
-        r['code'] = 'QCCoQ %03d v.%02d' % (r['no'], r['version'])
-        # Each version is compiled AT ITS OWN DATE: v.01 must state what was
-        # known when it issued, not what a later retest found.
+        r['issue_date'] = r['date']
+    if issue_as_of:
+        # A backlog certificate signed today is dated today, whatever campaign
+        # it reports. The campaign date stays on the document as the date of
+        # analysis; only the issue date moves.
+        for r in rows:
+            if r['wave'] in (1, 2):
+                r['issue_date'] = issue_as_of
+
+    # One sequence per year, allocated in date order. Ties are broken by wave
+    # then batch so the allocation is deterministic and reproducible.
+    seq = {}
+    for r in sorted(rows, key=lambda r: (r['issue_date'] or '9999-12-31',
+                                         r['wave'], r['batch'], r['version'])):
+        year = (r['issue_date'] or '9999')[:4]
+        seq[year] = seq.get(year, 0) + 1
+        r['no'] = seq[year]
+        r['year'] = year
+        r['code'] = 'CoQ-PP-%s-%04d' % (year, seq[year])
+    # A reissue names the certificate it replaces; the chain is how a reader
+    # gets from the current document back to the batch's release certificate.
+    prev = {}
+    for r in sorted(rows, key=lambda r: (r['batch'], r['version'])):
+        r['supersedes_coq'] = prev.get(r['batch'])
+        prev[r['batch']] = r['code']
+
+    for r in rows:
+        # Each version is compiled AT ITS OWN CAMPAIGN DATE: v.01 must state what was
+        # known when its campaign ran, not what a later retest found. This is
+        # the date of analysis, which is not moved by --issue-as-of.
         s02, _, _ = CQ.compile_coq(db, r['batch'], as_of=r['date'])
         r['cells'] = []
         for e in s02:
@@ -164,8 +199,21 @@ def schedule(db):
                      if c['state'] in ('MISSING', 'NOT TESTED', 'IN-HOUSE')]
         r['icoa_rows'] = [c['no'] for c in r['cells'] if c['route'] in ('iCoA', 'iCoA?')]
         r['outsource_rows'] = [c['no'] for c in r['cells'] if c['route'] == 'OUTSOURCE']
-    rows.sort(key=lambda r: (r['wave'], r['date'] or '9999-12-31', r['no'],
-                             r['version']))
+    # The iCoA carries the house document scheme too, one sequence per year,
+    # allocated in the same date order so a CoQ and the iCoA behind it sit at
+    # the same place in their two registers.
+    iseq = {}
+    for r in sorted(rows, key=lambda r: (r['issue_date'] or '9999-12-31',
+                                         r['wave'], r['batch'], r['version'])):
+        if not r['icoa_rows']:
+            r['icoa_code'] = None
+            continue
+        year = (r['issue_date'] or '9999')[:4]
+        iseq[year] = iseq.get(year, 0) + 1
+        r['icoa_code'] = 'iCoA-PP-%s-%04d' % (year, iseq[year])
+
+    rows.sort(key=lambda r: (r['wave'], r['issue_date'] or '9999-12-31',
+                             r['no'], r['version']))
     return rows
 
 
@@ -190,15 +238,20 @@ def render(rows):
                   % (wave, WAVES[wave], n, '' if n == 1 else 's'))
             print('=' * W)
         print('\n%s   %s   %s   %s'
-              % (r['code'], r['date'] or '(no date)', r['batch'],
+              % (r['code'], r['issue_date'] or '(no date)', r['batch'],
                  r['strain'] or ''))
         head = '   spec %s' % (r['spec_code'] or 'NOT IN MASTER')
         if r['pp_batch'] and r['pp_batch'] != r['batch']:
             head += '   PP %s' % r['pp_batch']
-        if r['supersedes']:
+        # The retired QCCoA is what the batch's FIRST CoQ replaces; a later
+        # reissue supersedes that CoQ, not the QCCoA, and saying both would
+        # leave a reader unsure which document is actually being withdrawn.
+        if r['supersedes'] and r['version'] == 1:
             head += '   supersedes %s' % r['supersedes']
         if r['version'] > 1:
-            head += '   retest, tranche %s' % r['tranche']
+            head += '   retest no. %d, tranche %s' % (r['version'] - 1, r['tranche'])
+        if r['supersedes_coq']:
+            head += '   supersedes %s' % r['supersedes_coq']
         print(head)
         for c in r['cells']:
             val = c['value'] if c['value'] is not None else c['state']
@@ -239,16 +292,16 @@ def render_icoa(rows):
     print('same order as the CoQ schedule; one iCoA closes one CoQ')
     print('=' * W)
     print('%-17s %-16s %-11s %-17s %-5s %s'
-          % ('iCoA', 'for CoQ', 'date', 'batch', 'rows', 'specification rows'))
+          % ('iCoA', 'for CoQ', 'issued', 'batch', 'rows', 'specification rows'))
     print('-' * W)
     n = 0
     for r in rows:
         if not r['icoa_rows']:
             continue
         n += 1
-        print('%-17s %-16s %-11s %-17s %-5d %s'
-              % ('QCiCoA %03d/%02d' % (r['no'], r['version']), r['code'],
-                 r['date'] or '(no date)', r['batch'][:17], len(r['icoa_rows']),
+        print('%-17s %-17s %-11s %-17s %-5d %s'
+              % (r['icoa_code'], r['code'],
+                 r['issue_date'] or '(no date)', r['batch'][:17], len(r['icoa_rows']),
                  ', '.join(r['icoa_rows'])))
     print('-' * W)
     print('%d iCoA document(s), covering %d batch(es).'
@@ -260,16 +313,16 @@ def render_icoa(rows):
     print('OUTSOURCED RE-ANALYSIS REGISTER')
     print('rows no in-house iCoA can close - they need an accredited laboratory')
     print('=' * W)
-    print('%-16s %-11s %-17s %-5s %s'
-          % ('for CoQ', 'date', 'batch', 'rows', 'specification rows'))
+    print('%-17s %-11s %-17s %-5s %s'
+          % ('for CoQ', 'issued', 'batch', 'rows', 'specification rows'))
     print('-' * W)
     m = 0
     for r in rows:
         if not r['outsource_rows']:
             continue
         m += 1
-        print('%-16s %-11s %-17s %-5d %s'
-              % (r['code'], r['date'] or '(no date)', r['batch'][:17],
+        print('%-17s %-11s %-17s %-5d %s'
+              % (r['code'], r['issue_date'] or '(no date)', r['batch'][:17],
                  len(r['outsource_rows']), ', '.join(r['outsource_rows'])))
     print('-' * W)
     print('%d CoQ(s) need outsourced re-analysis, covering %d batch(es).'
@@ -292,25 +345,29 @@ def main():
     ap.add_argument('--db', default=HERE + '/ecoa.sqlite')
     ap.add_argument('--json', action='store_true')
     ap.add_argument('--icoa-only', action='store_true')
+    ap.add_argument('--issue-as-of', metavar='YYYY-MM-DD',
+                    help='date the wave 1 and 2 backlog to the day it is signed, '
+                         'instead of to the campaign it reports')
     ap.add_argument('--tsv', action='store_true',
                     help='one row per CoQ per specification row, for a spreadsheet')
     a = ap.parse_args()
-    rows = schedule(sqlite3.connect(a.db))
+    rows = schedule(sqlite3.connect(a.db), issue_as_of=a.issue_as_of)
     if a.json:
         print(json.dumps(rows, ensure_ascii=False, indent=1)); return
     if a.tsv:
         # One row per cell: the shape a reviewer can sort, filter and tick.
-        print('\t'.join(['wave', 'wave_name', 'coq_code', 'coq_date', 'batch',
-                         'pp_batch', 'strain', 'version', 'supersedes',
-                         'tranche', 'spec_code', 'param_no', 'parameter',
+        print('\t'.join(['wave', 'wave_name', 'coq_code', 'issue_date', 'batch',
+                         'pp_batch', 'strain', 'version', 'supersedes_qccoa',
+                         'supersedes_coq', 'tranche', 'spec_code', 'param_no', 'parameter',
                          'criterion', 'state', 'value', 'source', 'cert_code',
                          'route']))
         for r in rows:
             for c in r['cells']:
                 print('\t'.join(str(x if x is not None else '') for x in [
-                    r['wave'], WAVES[r['wave']], r['code'], r['date'] or '',
+                    r['wave'], WAVES[r['wave']], r['code'], r['issue_date'] or '',
                     r['batch'], r['pp_batch'] or '', r['strain'] or '',
-                    'v.%02d' % r['version'], r['supersedes'] or '', r['tranche'],
+                    r['version'], r['supersedes'] or '', r['supersedes_coq'] or '',
+                    r['tranche'],
                     r['spec_code'] or '', c['no'], c['parameter'], c['criterion'],
                     c['state'], c['value'] or '', c['source'] or '',
                     c['cert'] or '', c['route']]))
