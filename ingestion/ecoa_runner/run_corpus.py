@@ -124,8 +124,18 @@ def wait_and_gate(tranche):
         if not ok: retry.append((x, why))
     if retry:
         say('  re-queue %d failed doc(s): %s' % (len(retry), [x['name'][-40:] for x, _ in retry]))
-        req('/api/v1/documents/ingest', {'doc_ids': [x['id'] for x, _ in retry], 'run': 1, 'delete': True}, 'POST')
-        time.sleep(120)
+        rids = [x['id'] for x, _ in retry]
+        req('/api/v1/documents/ingest', {'doc_ids': rids, 'run': 1, 'delete': True}, 'POST')
+        # Poll the retries to TERMINAL state - a flat sleep gated documents
+        # before their parses finished and held perfectly good ones ("no
+        # chunks" on documents that parsed fine hours earlier).
+        rdeadline = time.time() + 20 * 60
+        while time.time() < rdeadline:
+            time.sleep(20)
+            cur = {x['id']: x for x in all_docs() if x['id'] in rids}
+            if all(x.get('run') in ('DONE', 'FAIL') and float(x.get('progress') or 0) in (1.0, -1.0)
+                   for x in cur.values()) and len(cur) == len(rids):
+                break
         for x, _ in retry:
             ok, why = gate(x['id'], '')
             if not ok:
