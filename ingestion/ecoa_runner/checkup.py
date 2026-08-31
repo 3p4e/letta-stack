@@ -67,6 +67,18 @@ check('TYMC 4,9 x 10^4 is within the max acceptable count',
       49000 <= PE.max_acceptable('tymc'))
 check('TYMC 6 x 10^4 is out of specification', 60000 > PE.max_acceptable('tymc'))
 
+print('\n2a2. PER-FIELD AGREEMENT AND CROSS-KEY PAIRING (corpus tranche-1 defects)')
+_A={'parameters':[{'parameter':'arsenic','parameter_printed':'арсен','result_printed':'0,081','result_numeric':0.081,'limit_printed':None}]}
+_B={'parameters':[{'parameter':'arsenic','parameter_printed':'арсен','result_printed':'0,081','result_numeric':0.081,'limit_printed':'2','limit_numeric':2}]}
+_o=R.reconcile(json.loads(json.dumps(_A)),json.loads(json.dumps(_B)))['parameters'][0]
+check('agreed result with disagreed limit stays CONFIRMED', _o['confidence']=='ok' and _o['result_numeric']==0.081)
+check('the disagreed limit itself is dropped, not guessed', _o['limit_numeric'] is None)
+_A={'parameters':[{'parameter':'other','parameter_printed':'HCB','result_printed':'н.д.'}]}
+_B={'parameters':[{'parameter':'pesticide_residues','parameter_printed':'* HCB','result_printed':'н.д.'}]}
+_ps=R.reconcile(json.loads(json.dumps(_A)),json.loads(json.dumps(_B)))['parameters']
+check('other/pesticide keys with *-marked label pair as ONE row',
+      len(_ps)==1 and _ps[0]['confidence']=='ok' and _ps[0]['parameter']=='pesticide_residues')
+
 print('\n2b. ARITHMETIC SELF-CHECK — R4, adopted from the legacy-corpus register')
 def _r4(free, acid, tot):
     rec = {'parameters': [

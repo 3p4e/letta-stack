@@ -464,6 +464,31 @@ def reconcile(a, b):
         for p in rows or []:
             g.setdefault(p.get('parameter'), []).append(p)
         return g
+    # The two models sometimes KEY the same printed row differently - one maps
+    # all 29 pesticide compounds to pesticide_residues, the other to "other".
+    # Grouping by key would leave 29+29 unpaired rows all held for review
+    # (observed on every IJZ full-panel report, tranche 1 of the corpus run).
+    # Unify first: when the same printed label carries different keys and one of
+    # them is "other", both take the more specific key.
+    # One model transcribes the non-accredited marker into the label
+    # ("* HCB"), the other does not ("HCB") - same printed row. Strip markers
+    # before comparing labels, for unification and pairing alike.
+    def _plabel(v):
+        return (squash(v) or '').strip('*＊•· ')
+    def _label_keys(rows):
+        m = {}
+        for p in rows or []:
+            m.setdefault(_plabel(p.get('parameter_printed')), set()).add(p.get('parameter'))
+        return m
+    la, lb = _label_keys(a.get('parameters')), _label_keys(b.get('parameters'))
+    for rows, other_map in ((a.get('parameters'), lb), (b.get('parameters'), la)):
+        for p in rows or []:
+            if p.get('parameter') != 'other':
+                continue
+            keys = other_map.get(_plabel(p.get('parameter_printed'))) or set()
+            specific = [k for k in keys if k and k != 'other']
+            if len(specific) == 1:
+                p['parameter'] = specific[0]
     ga, gb = _group(a.get('parameters')), _group(b.get('parameters'))
     pa, pb = {}, {}
     for param in set(ga) | set(gb):
@@ -471,9 +496,9 @@ def reconcile(a, b):
         used_b = set()
         pairs = []
         for x in ra:                                   # 1. exact label match
-            lx = squash(x.get('parameter_printed'))
+            lx = _plabel(x.get('parameter_printed'))
             hit = next((j for j, y in enumerate(rb)
-                        if j not in used_b and squash(y.get('parameter_printed')) == lx), None)
+                        if j not in used_b and _plabel(y.get('parameter_printed')) == lx), None)
             if hit is not None:
                 used_b.add(hit); pairs.append((x, rb[hit]))
             else:
@@ -510,17 +535,27 @@ def reconcile(a, b):
         # on the cases that are fine and buries the ones that are not.
         mx = norm_num(x.get('limit_max_numeric') if x.get('limit_max_numeric') is not None else x.get('limit_max_printed'))
         my_ = norm_num(y.get('limit_max_numeric') if y.get('limit_max_numeric') is not None else y.get('limit_max_printed'))
-        agree = (rx == ry) and (lx == ly) and (mx == my_)
+        # Per-field agreement. The RESULT and the printed LIMIT are separate
+        # questions: both models reading 0,081 while only one bothers with the
+        # certificate's MaxDK column is an agreed measurement with an unusable
+        # printed limit - not a disagreement about the batch. The governing
+        # criterion comes from Ph. Eur./the specification in build_table anyway,
+        # so a limit the reads disagree on is nulled, noted, and never blocks
+        # the result. Tranche 1 of the corpus run held 68% of its results on
+        # exactly this before the split.
+        res_agree = (rx == ry)
         if rx is None and ry is None:
-            agree = squash(x.get('result_printed')) == squash(y.get('result_printed'))
+            res_agree = squash(x.get('result_printed')) == squash(y.get('result_printed'))
+        lim_agree = (lx == ly) and (mx == my_)
+        agree = res_agree
         rec = {'parameter': pname,
                'parameter_printed': x.get('parameter_printed') or y.get('parameter_printed'),
-               'result_printed': x.get('result_printed') if agree else None,
-               'result_numeric': rx if agree else None,
-               'limit_printed': x.get('limit_printed') if agree else None,
-               'limit_numeric': lx if agree else None,
-               'limit_max_printed': x.get('limit_max_printed') if agree else None,
-               'limit_max_numeric': mx if agree else None,
+               'result_printed': x.get('result_printed') if res_agree else None,
+               'result_numeric': rx if res_agree else None,
+               'limit_printed': x.get('limit_printed') if lim_agree else None,
+               'limit_numeric': lx if lim_agree else None,
+               'limit_max_printed': x.get('limit_max_printed') if lim_agree else None,
+               'limit_max_numeric': mx if lim_agree else None,
                'unit': x.get('unit'), 'method': x.get('method'),
                'coverage': x.get('coverage'), 'covered_by': x.get('covered_by'),
                # A result the laboratory marks as non-accredited must never be cited
@@ -529,15 +564,21 @@ def reconcile(a, b):
                # direction, and withholding one that it does carry is merely cautious.
                'method_accredited': _accred(x.get('method_accredited'), y.get('method_accredited')),
                'exponent_uncertain': bool(x.get('exponent_uncertain') or y.get('exponent_uncertain')),
-               'reads_agree': agree, 'confidence': 'ok' if agree else 'review',
+               'reads_agree': res_agree and lim_agree,
+               'confidence': 'ok' if res_agree else 'review',
+               'limit_disagrees_between_reads': (res_agree and not lim_agree) or None,
                'read_a': {'result': x.get('result_printed'), 'limit': x.get('limit_printed')},
                'read_b': {'result': y.get('result_printed'), 'limit': y.get('limit_printed')}}
         # Two distinct questions, and conflating them is how a compliant batch gets
         # called a deviation. "Exceeds the stated criterion" is a signal to look;
         # "exceeds the maximum acceptable count" is out of specification.
-        if agree and rx is not None and lx is not None:
+        if res_agree and not lim_agree:
+            out.setdefault('notes', []).append(
+                '%s: limit read differently (%r vs %r) - result confirmed, limit dropped'
+                % (pname, x.get('limit_printed'), y.get('limit_printed')))
+        if res_agree and lim_agree and rx is not None and lx is not None:
             rec['exceeds_criterion'] = rx > lx
-        if agree and rx is not None and mx is not None:
+        if res_agree and lim_agree and rx is not None and mx is not None:
             rec['exceeds_max'] = rx > mx
         if not agree:
             out['reads_agree'] = False
