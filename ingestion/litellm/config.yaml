@@ -40,6 +40,11 @@ model_list:
   - model_name: gemini-flash
     litellm_params: {model: gemini/gemini-3.6-flash, api_key: os.environ/UC_GEMINI_API}
 
+  # OpenRouter backstop: the same Gemini family through a separate quota pool.
+  - model_name: gemini-flash
+    litellm_params: {model: openrouter/google/gemini-3.6-flash,
+                     api_key: os.environ/OPEN_ROUTER_API_KEY}
+
 litellm_settings:
   num_retries: 2
   request_timeout: 600
