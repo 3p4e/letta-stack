@@ -172,10 +172,31 @@ SCHEMA
 # sits under the real balance so the arbiter pass and retries keep headroom.
 # Every document is written to --out as it completes, so a stopped run resumes
 # by re-running with the remaining documents.
-OPENAI_PRICES = {'gpt-5': (1.25, 10.0), 'gpt-4.1': (2.0, 8.0), 'gpt-4.1-mini': (0.4, 1.6)}
+OPENAI_PRICES = {'gpt-5': (1.25, 10.0), 'gpt-4.1': (2.0, 8.0), 'gpt-4.1-mini': (0.4, 1.6),
+                 'gpt-5-mini': (0.25, 2.0), 'openai/gpt-5-mini': (0.25, 2.0),
+                 'openai/gpt-5': (1.25, 10.0), 'google/gemini-3.6-flash': (0.30, 2.50)}
 OPENAI_BUDGET_USD = float(os.environ.get('OPENAI_BUDGET_USD', '5.50'))
-SPEND = {'usd': 0.0, 'calls': 0}
+# The meter must survive process boundaries: each tranche is a fresh process,
+# so an in-memory total guards per-tranche only. Totals persist per POOL in
+# /root/.ecoa_spend.json and every fresh runner resumes the count.
+_SPEND_FILE = '/root/.ecoa_spend.json'
+try:
+    _ALL = json.load(open(_SPEND_FILE))
+except Exception:
+    _ALL = {}
+for _pool in ('openai', 'openrouter'):
+    _ALL.setdefault(_pool, {'usd': 0.0, 'calls': 0})
+SPEND = _ALL['openai']          # legacy alias; reporting sums both pools
+CEILINGS = {'openai': float(os.environ.get('OPENAI_BUDGET_USD', '5.50')),
+            'openrouter': float(os.environ.get('OPENROUTER_BUDGET_USD', '4.40'))}
 _SPEND_LOCK = threading.Lock()
+
+
+def _save_spend():
+    try:
+        json.dump(_ALL, open(_SPEND_FILE, 'w'))
+    except Exception:
+        pass
 
 
 class BudgetExhausted(RuntimeError):
@@ -187,18 +208,20 @@ class BudgetExhausted(RuntimeError):
 ALERT_STEP_USD = float(os.environ.get('OPENAI_ALERT_STEP_USD', '1.0'))
 
 
-def _meter(model, usage):
+def _meter(model, usage, pool='openrouter'):
     pin, pout = OPENAI_PRICES.get(model, (2.0, 10.0))
     usd = (usage.get('prompt_tokens', 0) * pin + usage.get('completion_tokens', 0) * pout) / 1e6
+    p = _ALL[pool]
     with _SPEND_LOCK:
-        before = SPEND['usd']
-        SPEND['usd'] += usd; SPEND['calls'] += 1
-    if int(SPEND['usd'] / ALERT_STEP_USD) > int(before / ALERT_STEP_USD):
-        print('   $$ SPEND ALERT: OpenAI $%.2f of the $%.2f ceiling (%d calls)'
-              % (SPEND['usd'], OPENAI_BUDGET_USD, SPEND['calls'])); sys.stdout.flush()
-    if SPEND['usd'] >= OPENAI_BUDGET_USD:
-        raise BudgetExhausted('OpenAI spend $%.2f reached the $%.2f ceiling after %d calls'
-                              % (SPEND['usd'], OPENAI_BUDGET_USD, SPEND['calls']))
+        before = p['usd']
+        p['usd'] += usd; p['calls'] += 1
+        _save_spend()
+    if int(p['usd'] / ALERT_STEP_USD) > int(before / ALERT_STEP_USD):
+        print('   $$ SPEND ALERT: %s pool $%.2f of $%.2f (%d calls)'
+              % (pool, p['usd'], CEILINGS[pool], p['calls'])); sys.stdout.flush()
+    if p['usd'] >= CEILINGS[pool]:
+        raise BudgetExhausted('%s spend $%.2f reached the $%.2f ceiling after %d calls'
+                              % (pool, p['usd'], CEILINGS[pool], p['calls']))
     return usd
 
 
@@ -219,20 +242,41 @@ def render(pdf_bytes):
 
 
 def read_openai(images, model='gpt-5'):
+    """Read A. THE MODEL NEVER CHANGES (Head of QC, 31.08: do not lower the
+    quality of the pipeline). What changes is who serves it: the OpenAI
+    platform first, and when its credit is exhausted (401/402/403/429), the
+    SAME model through OpenRouter, metered against that pool's own ceiling.
+    gpt-5-mini was gated against ground truth and FAILED (3 divergences,
+    one a TAMC exponent) - it is not permitted here."""
     content = [{'type': 'text', 'text': 'Transcribe this certificate as JSON.'}]
     for b64 in images:
         content.append({'type': 'image_url',
                         'image_url': {'url': 'data:image/png;base64,' + b64, 'detail': 'high'}})
-    body = {'model': model, 'messages': [{'role': 'system', 'content': SYSTEM},
-                                         {'role': 'user', 'content': content}]}
-    r = urllib.request.Request('https://api.openai.com/v1/chat/completions',
-        data=json.dumps(body).encode(),
-        headers={'Authorization': 'Bearer ' + os.environ['OPENAI_API_KEY'],
-                 'Content-Type': 'application/json'})
-    o = json.load(urllib.request.urlopen(r, timeout=900))
-    u = o.get('usage', {})
-    u['cost_usd'] = round(_meter(model, u), 4)
-    return o['choices'][0]['message']['content'], u
+    def _call(base, key, mdl):
+        body = {'model': mdl, 'messages': [{'role': 'system', 'content': SYSTEM},
+                                           {'role': 'user', 'content': content}]}
+        r = urllib.request.Request(base + '/chat/completions',
+            data=json.dumps(body).encode(),
+            headers={'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json'})
+        return json.load(urllib.request.urlopen(r, timeout=900))
+    try:
+        o = _call('https://api.openai.com/v1', os.environ['OPENAI_API_KEY'], model)
+        u = o.get('usage', {})
+        u['cost_usd'] = round(_meter(model, u, pool='openai'), 4)
+        return o['choices'][0]['message']['content'], u
+    except urllib.error.HTTPError as e:
+        if e.code not in (401, 402, 403, 429):
+            raise
+        ork = os.environ.get('OPEN_ROUTER_API_KEY') or os.environ.get('OPENROUTER_API_KEY')
+        if not ork:
+            raise
+        print('   OpenAI platform refused (%d) - read A continuing on OpenRouter, same model' % e.code)
+        sys.stdout.flush()
+        o = _call('https://openrouter.ai/api/v1', ork, 'openai/' + model)
+        u = o.get('usage', {})
+        u['served_by'] = 'openrouter:openai/' + model
+        u['cost_usd'] = round(_meter('openai/' + model, u, pool='openrouter'), 4)
+        return o['choices'][0]['message']['content'], u
 
 
 def _relay_gemini(images):
@@ -270,6 +314,8 @@ def _relay_gemini(images):
                     print('   read B served by %s (%s) - Google free tier exhausted' % (relay, m))
                     sys.stdout.flush()
                     u = o.get('usage', {}); u['served_by'] = '%s:%s' % (relay, m)
+                    if relay == 'openrouter':
+                        u['cost_usd'] = round(_meter(m, u), 4)
                     return txt, u
             except Exception as e:
                 print('   %s %s failed: %s' % (relay, m, str(e)[:80])); sys.stdout.flush()

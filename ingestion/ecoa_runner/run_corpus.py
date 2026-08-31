@@ -166,6 +166,12 @@ def main():
         say('\n===== TRANCHE %d/%d: %d docs, starting %s' %
             (i + 1, len(tranches), len(tr), tr[0]['name'][-45:]))
         held = wait_and_gate(tr)
+        if len(held) == len(tr):
+            say('\n== DRIVER HALTED: the entire tranche failed ingest - the parser')
+            say('   (gpt-4.1 on the OpenAI platform) has likely run out of credit.')
+            say('   Nothing extracted under degraded parses. Re-run to resume later.')
+            held_all += held
+            break
         # Ingest-ahead: the NEXT tranche parses in RAGFlow while this one is
         # being extracted - the single task executor is otherwise idle then.
         if i + 1 < len(tranches):
