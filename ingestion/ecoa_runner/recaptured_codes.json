@@ -1,0 +1,83 @@
+[
+ {
+  "doc_id": "82fd7728a47a11f1858cf58865604f65",
+  "document": "BG1024_197-1-M-26, 10.08.2026_FHM.pdf",
+  "batch": "BG1024",
+  "lab": "Фармахем Лабораторија за животна средина",
+  "read_a": "197-1-М/26",
+  "read_b": "197-1-М/26",
+  "agree": true
+ },
+ {
+  "doc_id": "833ef8e2a47a11f1858cf58865604f65",
+  "document": "BSS1024_197-2-K-26, 07.08.2026_FHM.pdf",
+  "batch": "BSS1024",
+  "lab": "Фармахем Лабораторија за животна средина",
+  "read_a": "197-2-К/26",
+  "read_b": "197-2-К/26",
+  "agree": true
+ },
+ {
+  "doc_id": "84ceb63ea47a11f1858cf58865604f65",
+  "document": "GG012601＊_310-0554-26, 28.04.2026_IJZ-MB.pdf",
+  "batch": "GG012601*",
+  "lab": "ЈЗУ Институт за јавно здравје на РС Македонија",
+  "read_a": "31/00554/26",
+  "read_b": "310/0554/26",
+  "agree": false
+ },
+ {
+  "doc_id": "8507816ca47a11f1858cf58865604f65",
+  "document": "GG1024_NO-DOC-CODE (Report of Analysis), 23.04.2025_PP.pdf",
+  "batch": "GG1024",
+  "lab": "PURELYPLANT",
+  "read_a": null,
+  "read_b": null,
+  "agree": false
+ },
+ {
+  "doc_id": "8594542aa47a11f1858cf58865604f65",
+  "document": "GRC102501_2_051-6-K-26, 04.03.2026_FHM.pdf",
+  "batch": "GRC102501_2",
+  "lab": "Фармахем Лабораторија за животна средина",
+  "read_a": "051-6-К/26",
+  "read_b": "051-6-К/26",
+  "agree": true
+ },
+ {
+  "doc_id": "85c434c4a47a11f1858cf58865604f65",
+  "document": "HPA1024_NO-DOC-CODE (Report of Analysis), 23.04.2025_PP.pdf",
+  "batch": "HPA1024",
+  "lab": "PURELYPLANT",
+  "read_a": null,
+  "read_b": null,
+  "agree": false
+ },
+ {
+  "doc_id": "85f18988a47a11f1858cf58865604f65",
+  "document": "J31112501_051-5-K-26, 04.03.2026_FHM.pdf",
+  "batch": "J31112501",
+  "lab": "Фармахем Лабораторија за животна средина",
+  "read_a": "051-5-К/26",
+  "read_b": "051-5-К/26",
+  "agree": true
+ },
+ {
+  "doc_id": "87c9561ea47a11f1858cf58865604f65",
+  "document": "OPM1024_197-17-K-26, 07.08.2026_FHM.pdf",
+  "batch": "OPM1024",
+  "lab": "Фармахем Лабораторија за животна средина",
+  "read_a": "197-17-К/26",
+  "read_b": "197-17-К/26",
+  "agree": true
+ },
+ {
+  "doc_id": "87e2b6d6a47a11f1858cf58865604f65",
+  "document": "OPM1024_NO-DOC-CODE (Report of Analysis), 23.04.2025_PP.pdf",
+  "batch": "OPM1024",
+  "lab": "PURELYPLANT",
+  "read_a": null,
+  "read_b": null,
+  "agree": false
+ }
+]
