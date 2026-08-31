@@ -88,6 +88,24 @@ function sortDate(d){
   return m ? m[3] + m[2] + m[1] : "9999";
 }
 function laterOf(a, b){ return sortDate(b) > sortDate(a) ? b : a; }
+function todayStr(){
+  var d = new Date(), p = function(n){ return (n < 10 ? "0" : "") + n; };
+  return p(d.getDate()) + "." + p(d.getMonth() + 1) + "." + d.getFullYear();
+}
+/* The dating window is two-sided: no document before the SOP came into use,
+   and none post-dated — a document is dated the day it is signed. */
+function dateWindowError(date, floor){
+  if (!DATE_RX.test(date)) return "The date must read dd.mm.yyyy.";
+  if (sortDate(date) < sortDate(D.sop_effective))
+    return "No document is issued before the SOP came into use, " + D.sop_effective + ".";
+  if (floor && sortDate(date) < sortDate(floor))
+    return "The printed date may be no earlier than " + floor +
+           " — the newest cited document, or the 12-month due date.";
+  if (sortDate(date) > sortDate(todayStr()))
+    return "A document is never post-dated: it is dated the day it is signed, " +
+           "so the latest permissible date is today, " + todayStr() + ".";
+  return null;
+}
 
 /* ---------- derived per-CoQ facts, computed once ---------- */
 var ST = {
@@ -430,7 +448,11 @@ function renderDetail(){
       '<div class="deskmsg" id="iss-msg">' + (open_dets.length
         ? open_dets.length + " determination" + (open_dets.length === 1 ? " is" : "s are") +
           " still uncertified (" + open_dets.join(", ") + ") — a CoQ must never carry a conformity assertion that has not been certified, so issuance is locked until each is covered."
-        : "All in scope certified. The printed date may be no earlier than " + c.issue.replace("≥ ", "") + ".") + '</div></div>';
+        : (sortDate(c.issue.replace("≥ ", "")) > sortDate(todayStr())
+           ? "All in scope certified, but the dating window is EMPTY: the earliest permissible date, " +
+             c.issue.replace("≥ ", "") + ", lies in the future, and a document is never post-dated. Issue when it arrives."
+           : "All in scope certified. The printed date must lie between " +
+             c.issue.replace("≥ ", "") + " and today — a document is dated the day it is signed, never post-dated.")) + '</div></div>';
   } else {
     deskHtml = '<div class="d-note"><b>Issued at this desk</b> as ' + esc(c.n) + " on " + esc(c.issue) +
       (c.issuedBy ? " by " + esc(c.issuedBy) : "") + ". An issued certificate is final: a correction is a new document.</div>";
@@ -471,9 +493,9 @@ function renderDetail(){
     var num = el("iss-num").value.trim(), date = el("iss-date").value.trim();
     if (!operator()) return msgIn("iss-msg", "Enter your initials on the Desk log tab first.", false);
     if (!/^CoQ-PP-\d{4}-\d{4}$/.test(num)) return msgIn("iss-msg", "Number must read CoQ-PP-YYYY-NNNN.", false);
-    if (!DATE_RX.test(date)) return msgIn("iss-msg", "Date must be dd.mm.yyyy.", false);
     var bound = c.issue.replace("≥ ", "");
-    if (sortDate(date) < sortDate(bound)) return msgIn("iss-msg", "The printed date may be no earlier than " + bound + " — the SOP floor, the newest cited document, or the 12-month due date.", false);
+    var dw = dateWindowError(date, bound);
+    if (dw) return msgIn("iss-msg", dw, false);
     var clash = COQ.some(function(x){ return x !== c && x.n === num; }) ||
       Object.keys(OV.issue).some(function(k){ return k !== c.key && OV.issue[k].number === num; });
     if (clash) return msgIn("iss-msg", "That CoQ number is already taken. One number, one document, forever.", false);
@@ -632,8 +654,8 @@ el("ic-save").addEventListener("click", function(){
       analyst = el("ic-analyst").value.trim();
   if (!operator()) return msgIn("ic-msg", "Enter your initials on the Desk log tab first.", false);
   if (!/^iCoA-PP-\d{4}-\d{4}$/.test(ref)) return msgIn("ic-msg", "Reference must read iCoA-PP-YYYY-NNNN.", false);
-  if (!DATE_RX.test(date)) return msgIn("ic-msg", "Date must be dd.mm.yyyy.", false);
-  if (sortDate(date) < sortDate(D.sop_effective)) return msgIn("ic-msg", "No document is issued before the SOP came into use, " + D.sop_effective + ".", false);
+  var dwi = dateWindowError(date, null);
+  if (dwi) return msgIn("ic-msg", dwi, false);
   if (!analyst) return msgIn("ic-msg", "Analyst is required.", false);
   var taken = Object.keys(OV.icoa).some(function(k){ return OV.icoa[k].ref === ref; });
   if (taken) return msgIn("ic-msg", "That iCoA number is already assigned. One number, one document, forever.", false);
@@ -890,6 +912,7 @@ el("ne-go").addEventListener("click", function(){
   if (!operator()) return msgIn("ne-msg", "Enter your initials on the Desk log tab first.", false);
   if (!code || !batch) return msgIn("ne-msg", "Certificate code and batch are required.", false);
   if (!DATE_RX.test(date)) return msgIn("ne-msg", "Date of issue must be dd.mm.yyyy.", false);
+  if (sortDate(date) > sortDate(todayStr())) return msgIn("ne-msg", "A certificate cannot bear a date in the future — check the page.", false);
   if (link && !/^https:\/\//.test(link)) return msgIn("ne-msg", "A document link must start with https://", false);
   var dup = D.ecoa.some(function(e){ return e.code === code; });
   if (dup) return msgIn("ne-msg", "That certificate code is already in the receipt register.", false);

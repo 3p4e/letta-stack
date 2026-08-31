@@ -320,3 +320,14 @@ determination on a signed document:
   cat. C`, `2.6.13 cat. C`. Those are the test methods; the categories and their
   criteria live in 5.1.8, which is how the certificates cite them. A citation defect on
   the signed specification, not a numeric one.
+
+**Dating window closed on both sides (owner, 31.08.2026, second ruling).** No iCoA or
+CoQ could have been issued before 11.05.2026 — and none is ever post-dated: a document
+is dated the day it is signed. Every printed issue date therefore lies in
+**[11.05.2026 … the day of issue]**. The schedule's "no earlier than" bound is the
+floor of that window; the ceiling is always the signing day itself. As of 31.08.2026,
+114 of the 166 CoQs have an open dating window; 52 have none at all — their floor is a
+12-month due date still in the future, and they cannot yet be issued on any date. The
+live desk enforces both sides: an iCoA assignment or CoQ issuance dated before the SOP,
+before its document floor, or after today is refused, and a received certificate
+cannot be recorded bearing a future date.

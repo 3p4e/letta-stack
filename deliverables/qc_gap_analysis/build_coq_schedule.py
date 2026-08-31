@@ -387,6 +387,13 @@ NO_NUMBER = "(assigned on issue)"
 # series basis — never issue dates.
 SOP_EFFECTIVE = "11.05.2026"
 
+# The dating window is two-sided (owner, 31.08.2026): no iCoA or CoQ could have
+# been issued before the SOP came into use, and none is ever post-dated — a
+# document is dated the day it is signed. Every printed issue date therefore
+# lies in [11.05.2026 … the day of issue]. AS_OF is this build's date, used
+# only to say which windows are open today; it moves with each rebuild.
+AS_OF = "31.08.2026"
+
 
 IN_HOUSE_CODE = ("n/a — Purely Plant", "PP CoA #", "In-house ")
 
@@ -872,7 +879,8 @@ def write_workbook(rows, per_coq, dets):
     COLS = [("Seq", 6, ""), ("CoQ number", 17, "ISSUE_COQ numbering"),
             ("CoQ type", 20, ""),
             ("Basis date", 12, "packaging / 12-month due"),
-            ("Issue date", 13, "set at issue — no earlier than shown"),
+            ("Issue date", 13,
+             "set on the day of issue — no earlier than shown, never post-dated"),
             ("Packaged lot", 12, ""), ("Cultivation batch", 14, ""),
             ("Strain", 18, ""), ("Grade", 7, ""),
             ("iCoA reference", 17, "printed on the CoQ"),
@@ -921,7 +929,8 @@ def write_workbook(rows, per_coq, dets):
     # ------------------------------------------------------------- 2 · per CoQ
     ws = wb.create_sheet("CoQ Coverage")
     COLS = [("CoQ number", 17, ""), ("Type", 20, ""),
-            ("Issue date", 13, "no earlier than — set at issue"),
+            ("Issue date", 13,
+             "set on the day of issue — no earlier than shown, never post-dated"),
             ("Packaged lot", 12, ""), ("Cultivation batch", 14, ""),
             ("Strain", 18, ""), ("Grade", 7, ""), ("Class", 8, ""),
             ("Banner THC", 11, "actual assay"),
@@ -1124,6 +1133,14 @@ def report(rows, per_coq, dets):
           f"CoQs have every determination in scope certified — the rest carry at "
           f"least one result no document stands behind, and a CoQ must never carry a "
           f"conformity assertion that has not been certified.")
+    closed = [p for p in per_coq
+              if sort_date(p["date"].lstrip("≥ ")) > sort_date(AS_OF)]
+    print(f"         The window is two-sided: a document is dated the day it is "
+          f"signed, never post-dated, so every printed date lies in "
+          f"[{SOP_EFFECTIVE} … the day of issue]. As of {AS_OF}, "
+          f"{len(per_coq) - len(closed)} CoQs have an open dating window and "
+          f"{len(closed)} have none at all — their floor (a 12-month due date) "
+          f"lies in the future, and they cannot yet be issued on any date.")
     print()
     # The plan's banner THC is supposed to be the lot's actual assay. Where a register
     # block exists, at least one register THC value should equal it; a disagreement

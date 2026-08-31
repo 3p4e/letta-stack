@@ -77,8 +77,11 @@ contradicting — everything above:
   remaining 35 of the 48 are predicted at packaging + 12 months, and every later
   batch at release + 12 months. (Per the convention above, none of these is labelled
   "retest" — each is an ordinary sequential CoQ.)
-- **The CoQ SOP has been in use since 11.05.2026, and no CoQ may print an earlier
-  issue date.** The plan's per-CoQ dates are **packaging dates** — the basis of the
+- **The CoQ SOP has been in use since 11.05.2026, and no iCoA or CoQ may print an
+  earlier issue date — nor a later one than the day it is signed.** The window is
+  two-sided: nothing could have been issued before the SOP came into use, and a
+  document is never post-dated, so every printed issue date lies in
+  [11.05.2026 … the day of issue]. The plan's per-CoQ dates are **packaging dates** — the basis of the
   numbering series (`CoQ-PP-2025-…` is the 2025 *packaging* series) — never issue
   dates. The schedule therefore shows, per CoQ, the basis date and the earliest
   permissible issue date: the SOP date, the newest document the CoQ cites, or (for an

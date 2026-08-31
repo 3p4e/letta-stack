@@ -268,7 +268,8 @@ def main(out):
 
     ws = wb.create_sheet("CoQ Issuance")
     COLS = [("CoQ number", 17, "ISSUE_COQ numbering"), ("CoQ type", 20, ""),
-            ("Issue date", 13, "no earlier than — set at issue"),
+            ("Issue date", 13,
+             "set on the day of issue — no earlier than shown, never post-dated"),
             ("Packaged lot", 12, ""), ("Cultivation batch", 14, ""),
             ("Strain", 19, ""), ("Grade", 7, ""), ("Class", 8, ""),
             ("Banner THC", 11, "actual assay, per the plan"),
