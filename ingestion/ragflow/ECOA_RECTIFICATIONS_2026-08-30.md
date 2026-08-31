@@ -359,6 +359,39 @@ Verify afterwards by resolving every id, not by spot check — that is what miss
 One row is already correct: the ППК25139 row added on 31.08.2026 carries a live id,
 because it was looked up rather than inherited.
 
+### G3 · 190 rows never pointed at their own document · **PARTLY RECTIFIED** · M
+
+The worse of the two defects, and it would have been wrong even if the ids were live.
+
+| | |
+|---|---|
+| Rows carrying a PDF link | 285 |
+| **Distinct** ids among them | **136** |
+| Ids shared by two or more rows | 62 |
+| **Rows addressing another row's document** | **190** |
+| Rows with an id no other row uses | 74 |
+
+One link per *batch* was copied down across all of that batch's certificate rows.
+`BSS052501` has six rows — an in-house CoA, a State Phytosanitary report, two IPH
+reports and a Farmahem report — and all six address one file.
+
+**This is the more dangerous defect.** A dead link fails visibly and someone eventually
+notices. A live link to the wrong laboratory's certificate does not: it opens a real
+document with real numbers on it, and nothing about it says it belongs to a different
+row. Had the folder never been rebuilt, this would still be wrong and would have been
+much harder to spot.
+
+**Rectified so far: 133 rows** now address their own certificate, matched on the code
+plus P-number carried in the Drive filename. Distinct ids across linked rows rose from
+136 to 230, and ids shared by more than one row fell from 62 to 25. Verified: zero cell
+values changed, and a sample id resolves to exactly the expected document.
+
+**Still to do: 151 rows**, whose certificates were not in the partial Drive inventory
+transcribed on 31.08.2026 (`deliverables/qc_gap_analysis/drive_certificate_ids_2026-08-31.json`,
+178 of ~264 files). Complete the inventory and re-run
+`repair_register_pdf_links.py`; it is idempotent and leaves anything it cannot match
+untouched, because a wrong link is not improved by replacing it with a guess.
+
 ### G2 · 21 rows have no PDF link at all · **OPEN** · M
 
 Seventeen are continuation rows marked `(not numbered)`; two are in-house
@@ -376,7 +409,8 @@ reached from the register by any route and are unverifiable from it alone.
 | Register codes resolved from guess to confirmed | 4 | PROPOSED |
 | Documents whose value is lost in chunking | 35 | OPEN — re-ingest |
 | Dataset-level defects | 3 | OPEN — decisions |
-| **PDF links in the register that are dead** | **264** | **OPEN — rebuild from live Drive** |
+| **PDF links in the register that are dead** | **285** | **133 RECTIFIED, 151 remain** |
+| Rows that addressed another row's document | 190 | PARTLY RECTIFIED |
 | Rows with no PDF link at all | 21 | OPEN |
 | Query-method defects fixed and documented | 7 | RECTIFIED |
 | Register errors found | **0** | — |
