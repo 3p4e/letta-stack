@@ -381,16 +381,41 @@ document with real numbers on it, and nothing about it says it belongs to a diff
 row. Had the folder never been rebuilt, this would still be wrong and would have been
 much harder to spot.
 
-**Rectified so far: 133 rows** now address their own certificate, matched on the code
-plus P-number carried in the Drive filename. Distinct ids across linked rows rose from
-136 to 230, and ids shared by more than one row fell from 62 to 25. Verified: zero cell
-values changed, and a sample id resolves to exactly the expected document.
+**Rectified so far: 166 rows** now address their own certificate, matched on the code
+plus P-number carried in the Drive filename.
 
-**Still to do: 151 rows**, whose certificates were not in the partial Drive inventory
-transcribed on 31.08.2026 (`deliverables/qc_gap_analysis/drive_certificate_ids_2026-08-31.json`,
-178 of ~264 files). Complete the inventory and re-run
-`repair_register_pdf_links.py`; it is idempotent and leaves anything it cannot match
-untouched, because a wrong link is not improved by replacing it with a guess.
+| | Before | After |
+|---|---|---|
+| Distinct ids across linked rows | 136 | **245** |
+| Ids shared by more than one row | 62 | **16** |
+
+Verified: zero cell values changed, eight merged ranges intact, and a sampled id
+resolves to exactly the expected document.
+
+**Still to do: 118 rows**, whose certificates are not yet in
+`deliverables/qc_gap_analysis/drive_certificate_ids_2026-08-31.json` (211 of ~264
+files). Note on method: paginating the folder listing stopped converging — later pages
+re-served files already seen — so the remaining ids were found by **searching on the
+certificate code directly**, which is precise and cheap. Two such searches added 33
+files. Four more queries of the same shape finish the set; they are built by the stem
+logic described in G4. Re-run `repair_register_pdf_links.py` after extending the map:
+it is idempotent and leaves anything it cannot match untouched, because a wrong link is
+not improved by replacing it with a guess.
+
+### G4 · Searching the folder listing does not enumerate it · **RECTIFIED** · M
+
+Worth recording for anyone rebuilding this map. Paging `parentId = '<folder>'` returned
+overlapping pages: the third page was almost entirely files already returned by the
+second, so the listing never reached the whole folder. Searching `title contains '<code>'`
+in batches of ~14 codes is precise, returns only what is asked for, and completes.
+
+Two folding rules matter when building those queries, and both were got wrong first:
+
+- `ППК` codes are **Cyrillic in the filenames too** — do not fold them to Latin, or
+  nothing matches.
+- Farmahem suffixes **do** differ: the register writes `197-1-К/26` (Cyrillic К) where
+  the file has `197-1-K-26`, and writes `ГС`/`GS` where the file has `LoD`. Searching on
+  the numeric stem (`197-1`) sidesteps both.
 
 ### G2 · 21 rows have no PDF link at all · **OPEN** · M
 
@@ -409,7 +434,7 @@ reached from the register by any route and are unverifiable from it alone.
 | Register codes resolved from guess to confirmed | 4 | PROPOSED |
 | Documents whose value is lost in chunking | 35 | OPEN — re-ingest |
 | Dataset-level defects | 3 | OPEN — decisions |
-| **PDF links in the register that are dead** | **285** | **133 RECTIFIED, 151 remain** |
+| **PDF links in the register that are dead** | **285** | **166 RECTIFIED, 118 remain** |
 | Rows that addressed another row's document | 190 | PARTLY RECTIFIED |
 | Rows with no PDF link at all | 21 | OPEN |
 | Query-method defects fixed and documented | 7 | RECTIFIED |
