@@ -587,16 +587,23 @@ function renderEcoa(){
       '<td>' + dash(e.strain) + '</td>' +
       '<td style="font-size:10.6px;color:var(--text-sec)">' +
         (e.reported.length ? esc(e.reported.join(" · ")) : '<span class="dim">—</span>') +
+        ((e.rect || []).length ? "<br>" + e.rect.map(function(rv){
+          return '<span class="vchip ' + (rv.t === "T1" ? "pv" : "cv") + '" title="' +
+            esc(rv.src) + '"><b>' + esc(rv.k) + '</b>' + esc(rv.v) + '</span>';
+        }).join("") : "") +
         (e.fix ? "<br>" + Object.keys(e.fix.params).map(function(k2){
           var pv = e.fix.params[k2];
           return '<span class="vchip" title="transcribed from the opened document at the desk by ' +
             esc(pv.by) + ", " + esc(pv.at) + '"><b>' + esc(k2) + '</b>' + esc(pv.v) + '</span>';
         }).join("") : "") + '</td>' +
-      '<td class="c">' + (e.verified ? '<span class="pill p-ok">page-read</span>' : '<span class="pill p-none">not read</span>') +
+      '<td class="c">' + (e.verified
+          ? '<span class="pill p-ok" title="the certificate\u2019s values were read off its own page, 31.08.2026">page-verified</span>'
+          : '<span class="pill p-none" title="the document is on file (open \u2192) \u2014 its values have not been read off the page; corpus values shown are pre-fill, promoted only through remediation">not page-verified</span>') +
         (e.fix && Object.keys(e.fix.params).length ? '<br><span class="pill p-info">desk-read</span>' : "") +
         ' <button class="btn sm ec-fix" data-code="' + esc(e.code) + '">Remediate</button></td>' +
-      '<td class="c">' + (e.flag === "red" ? '<span class="pill p-fail">red</span>'
-        : e.flag === "amber" ? '<span class="pill p-warn">amber</span>' : '<span class="dim">—</span>') +
+      '<td class="c">' + (e.flag === "red" ? '<span class="pill p-fail"' + (e.why ? ' title="' + esc(e.why) + '"' : "") + '>red</span>'
+        : e.flag === "amber" ? '<span class="pill p-warn"' + (e.why ? ' title="' + esc(e.why) + '"' : "") + '>amber</span>' : '<span class="dim">—</span>') +
+        (e.why ? '<span class="sub" style="max-width:150px;white-space:normal">' + esc(e.why.length > 90 ? e.why.slice(0, 88) + "…" : e.why) + '</span>' : "") +
         (e.fix && e.fix.notes.length ? '<span class="sub" style="max-width:130px;white-space:normal">' +
           esc(e.fix.notes[e.fix.notes.length - 1].t) + '</span>' : "") + '</td>' +
       '<td class="c">' + (e.pdf ? '<a href="' + esc(e.pdf) + '" target="_blank" rel="noopener">open</a>' : '<span class="dim">—</span>') + '</td></tr>';
@@ -1068,7 +1075,8 @@ el("nb-go").addEventListener("click", function(){
 el("ne-go").addEventListener("click", function(){
   var code = el("ne-code").value.trim(), date = el("ne-date").value.trim(),
       lab = el("ne-lab").value, batch = el("ne-batch").value.trim(),
-      params = el("ne-params").value.trim(), link = el("ne-link").value.trim();
+      params = el("ne-params").value.trim(), link = el("ne-link").value.trim(),
+      vals = el("ne-vals") ? el("ne-vals").value.trim() : "";
   if (!operator()) return msgIn("ne-msg", "Enter your initials on the Desk log tab first.", false);
   if (!code || !batch) return msgIn("ne-msg", "Certificate code and batch are required.", false);
   if (!DATE_RX.test(date)) return msgIn("ne-msg", "Date of issue must be dd.mm.yyyy.", false);
@@ -1076,11 +1084,38 @@ el("ne-go").addEventListener("click", function(){
   if (link && !/^https:\/\//.test(link)) return msgIn("ne-msg", "A document link must start with https://", false);
   var dup = D.ecoa.some(function(e){ return e.code === code; });
   if (dup) return msgIn("ne-msg", "That certificate code is already in the receipt register.", false);
+  /* tested values, recorded with the receipt: "name = value" pairs separated
+     by · — stored in the same shape the remediation desk writes, so a value
+     entered at receipt and a value transcribed later are one kind of record */
+  var pairs = [];
+  if (vals) {
+    var segs = vals.split("·"), bad = null;
+    segs.forEach(function(sg){
+      sg = sg.trim(); if (!sg) return;
+      var eq = sg.indexOf("=");
+      var k2 = eq > 0 ? sg.slice(0, eq).trim() : "", v2 = eq > 0 ? sg.slice(eq + 1).trim() : "";
+      if (!k2 || !v2) bad = sg; else pairs.push([k2, v2]);
+    });
+    if (bad) return msgIn("ne-msg", "Values must read \u201cparameter = value\u201d separated by · — could not read \u201c" + bad + "\u201d.", false);
+  }
   OV.ecoa.push({ code: code, date: date, lab: lab, batch: batch, params: params,
                  link: link, by: operator(), at: stamp() });
+  var hadVerify = !!OV.verify[code];
+  if (pairs.length) {
+    var v3 = OV.verify[code] = OV.verify[code] || { params: {}, notes: [] };
+    pairs.forEach(function(pr){
+      if (!v3.params[pr[0]]) v3.params[pr[0]] = { v: pr[1], by: operator(), at: stamp() };
+    });
+  }
   msgIn("ne-msg", "Publishing the receipt…", true);
-  saveState("certificate receipt", code + " (" + lab.split(" — ")[0] + ") for " + batch,
-    null, function(m){ OV.ecoa.pop(); msgIn("ne-msg", m, false); });
+  saveState("certificate receipt", code + " (" + lab.split(" — ")[0] + ") for " + batch +
+    (pairs.length ? " — " + pairs.map(function(pr){ return pr[0] + " = " + pr[1]; }).join(" · ") : ""),
+    null, function(m){
+      OV.ecoa.pop();
+      if (pairs.length && !hadVerify) delete OV.verify[code];
+      else if (pairs.length) pairs.forEach(function(pr){ delete OV.verify[code].params[pr[0]]; });
+      msgIn("ne-msg", m, false);
+    });
 });
 
 /* ---- page remediation ----
@@ -1209,6 +1244,18 @@ function setLk(doc, label, value){
   for (var i = 0; i < lbls.length; i++) {
     if (lbls[i].textContent.indexOf(label) !== 0) continue;
     var v = lbls[i].parentElement.querySelector(".lk-val");
+    if (v) v.textContent = value;
+    return;
+  }
+}
+/* the reworked FM master keys its identification band on .idb-k/.idb-v
+   cells instead of .lk lockups; a fill helper per shape, both no-ops when
+   the shape is absent, keeps one filler working across every master */
+function setIdb(doc, label, value){
+  var lbls = doc.querySelectorAll(".idb-k");
+  for (var i = 0; i < lbls.length; i++) {
+    if (lbls[i].textContent.indexOf(label) !== 0) continue;
+    var v = lbls[i].parentElement.querySelector(".idb-v");
     if (v) v.textContent = value;
     return;
   }
@@ -1362,6 +1409,10 @@ function fillIcoa(p, asn){
   setLk(doc, "Proc. Batch \u2116", p.cb);
   setLk(doc, "Sampling Date", "\u2014");
   setLk(doc, "Test Period", "\u2014");
+  setIdb(doc, "Prod. Code", (coq && coq.pcode) || "\u2014");
+  setIdb(doc, "Spec. Ref.", (coq && coq.spec) || "QCSP 001 v.03");
+  setIdb(doc, "Prod. Batch \u2116", p.pp || p.cb);
+  setIdb(doc, "Date of Sampling", "\u2014");
   /* results table: which cells are the worked batch's measurements, per master */
   var BLANK = { ab: [3, 4], c: [2, 3, 4, 5, 6], fm: [2, 3, 4, 5], mb: [4, 5] };
   doc.querySelectorAll("table.data tbody tr").forEach(function(tr){
@@ -1387,6 +1438,9 @@ function fillIcoa(p, asn){
     st.className = "c" + (!draft && !bad ? " ok" : "");
     if (bad) st.setAttribute("style", "color:#9B2C2C;font-weight:800");
   }
+  var fn2 = q(".fnote");
+  if (fn2) fn2.innerHTML = "<b>Seed check</b> <span class=\"mkx\">Проверка на семки</span> — " +
+    "whole and fragment counts are recorded by the analyst at the bench; the criterion requires no seeds.";
   var pn = q(".pot-note");
   if (pn) pn.textContent = "Bench observations and raw measurements are recorded by " +
     "the analyst on the printed worksheet and in the laboratory records; this " +

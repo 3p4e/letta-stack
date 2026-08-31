@@ -76,7 +76,7 @@ from openpyxl.utils import get_column_letter
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
-REG_X = os.path.join(HERE, "PP_Batch_Release_QC_Register_FHM2_2026-08-31.xlsx")
+REG_X = os.path.join(HERE, "PP_Batch_Release_QC_Register_FHM3_2026-08-31.xlsx")
 SPEC_J = os.path.join(HERE, "product_specifications_QCSP001.json")
 ICOA_C = os.path.join(HERE, "icoa_issuance_register_2026-08-31.csv")
 MASTER_J = os.path.join(HERE, "potency_master_batch_map.json")

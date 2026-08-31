@@ -53,7 +53,7 @@ from openpyxl.utils import get_column_letter
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-REG_X = "deliverables/qc_gap_analysis/PP_Batch_Release_QC_Register_FHM2_2026-08-31.xlsx"
+REG_X = "deliverables/qc_gap_analysis/PP_Batch_Release_QC_Register_FHM3_2026-08-31.xlsx"
 ICOA = "deliverables/qc_gap_analysis/icoa_issuance_register_2026-08-31.csv"
 MASTER = "deliverables/qc_gap_analysis/potency_master_batch_map.json"
 SHEET = "Batch Release QC"
@@ -120,7 +120,7 @@ def load_register():
         reported = [cols[c][0] for c in range(5, 23)
                     if str(ws.cell(row=r, column=c).value or "").strip() not in ("", "/", "None")]
         flags = []
-        for c in list(range(5, 23)) + [23]:
+        for c in [2] + list(range(5, 23)) + [23]:
             rgb = getattr(getattr(ws.cell(row=r, column=c).fill, "start_color", None), "rgb", None)
             if rgb == AMBER and "amber" not in flags:
                 flags.append("amber")
@@ -135,13 +135,30 @@ def load_register():
 
 
 def verified_map():
+    """folded certificate code -> verification block, from the page-read records.
+
+    Keyed on verification_coverage.fold(), never nk(): nk() strips every
+    non-ASCII character, so the Cyrillic К and М that distinguish a Farmahem
+    cannabinoid certificate from its mycotoxin sibling vanish, ГС never folds
+    to LOD, and a trailing bracketed note defeats the match. That produced 59
+    false "not verified" receipts (56 Farmahem + 3 IPH) out of 74."""
     import glob
+    import verification_coverage as VC
     out = {}
     for p in sorted(glob.glob("review/*_page_reads_*.json")):
         blk = p.split("/")[-1].split("_page_reads")[0]
         for c in json.load(open(p, encoding="utf-8")):
-            out[nk(c)] = blk
+            out[VC.fold(c)] = blk
     return out
+
+
+def page_verified(code, ver):
+    """The verification block whose page reads cover this certificate, or ''."""
+    import verification_coverage as VC
+    for c in VC.candidates(code):
+        if c in ver:
+            return ver[c]
+    return ""
 
 
 def main(out):
@@ -205,8 +222,7 @@ def main(out):
     docs = uniq
     for n, r in enumerate(docs):
         i = 6 + n
-        v = ver.get(nk(r["code"])) or next(
-            (ver[nk(m)] for m in re.findall(r"ППК\s*\d+", r["code"]) if nk(m) in ver), "")
+        v = page_verified(r["code"], ver)
         fl = "red" if "red" in r["flags"] else ("amber" if r["flags"] else "")
         put(ws, i, [n + 1, r["date"] or "no date", r["lab"], r["code"], r["batch"], r["ref"],
                     r["strain"], r["pn"], ", ".join(r["reported"]) or "—",

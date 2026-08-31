@@ -53,12 +53,13 @@ def main():
     tpls = {}
     for tid, fn in scoped.items():
         t = open(os.path.join(tdir, fn), encoding="utf-8").read()
-        # A master may carry handwritten signature scans (P07 does, as data
-        # URIs); a generated document carries a signature line, never an
-        # embedded signature image.
+        # A master may carry handwritten signature scans as data URIs (the
+        # 31.08.2026 evening revisions of P01-02 and P07 each carry two); a
+        # generated document carries a signature line, never an embedded
+        # signature image.
         t, nsig = _re.subn(r'<img class="ap-img handwritten"[^>]*>', "", t)
-        if fn.endswith("Foreign_Matter.html"):
-            assert nsig == 2, f"expected 2 handwritten sigs in {fn}, found {nsig}"
+        want = 2 if ("Identification_AB" in fn or "Foreign_Matter" in fn) else 0
+        assert nsig == want, f"expected {want} handwritten sigs in {fn}, found {nsig}"
         assert "@@" not in t, f"stray placeholder text in {fn}"
         tpls[tid] = t
     assert "@@" not in coq_tpl
