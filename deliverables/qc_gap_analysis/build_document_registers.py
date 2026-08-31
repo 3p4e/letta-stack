@@ -42,12 +42,16 @@ so it is visible wherever a count is read.
 """
 import csv
 import json
+import os
 import re
 import sys
+from collections import Counter
 
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 REG_X = "deliverables/qc_gap_analysis/PP_Batch_Release_QC_Register_QCSP_2026-08-31.xlsx"
 ICOA = "deliverables/qc_gap_analysis/icoa_issuance_register_2026-08-31.csv"
@@ -231,41 +235,60 @@ def main(out):
     ws.auto_filter.ref = f"A5:R{5+len(ic)}"
 
     # ---------------------------------------------------------------- 3 · CoQ issuance
+    #
+    # The CoQ universe is the owner's ISSUE_COQ plan — 48 packaged lots with issued
+    # numbers plus 13 additional-testing CoQs — not the 102 this register once
+    # predicted per cultivation batch. One CoQ per packaged lot; register batches with
+    # no packaged lot get no CoQ, and that list is in the summary. The coverage columns
+    # come from build_coq_schedule.schedule() so this sheet and the parameter schedule
+    # cannot drift apart.
+    import build_coq_schedule as CQ
+    sched, cov, dets = CQ.schedule()
+    scount = Counter(r["Status"] for r in sched)
+
     ws = wb.create_sheet("CoQ Issuance")
-    COLS = [("Seq", 6, "chronological"), ("Anchor date", 13, "release, or the re-analysis"),
-            ("CoQ type", 15, ""), ("Reg. ref", 8, ""), ("Batch", 16, ""), ("Strain", 19, ""),
-            ("Basis", 30, "what this CoQ certifies"),
-            ("iCoA required", 14, ""), ("iCoA reference", 15, "fill in from the iCoA sheet"),
-            ("Status", 34, ""), ("Packaged-lot linkage", 34, "from PP_Potency_MASTER_Spec"),
-            ("CoQ number", 15, "fill in on issue"), ("CoQ date", 12, "fill in on issue"),
-            ("Issued by", 15, "fill in on issue")]
+    COLS = [("CoQ number", 17, "ISSUE_COQ numbering"), ("CoQ type", 20, ""),
+            ("Issue date", 12, "initial: the packaging date"),
+            ("Packaged lot", 12, ""), ("Cultivation batch", 14, ""),
+            ("Strain", 19, ""), ("Grade", 7, ""), ("Class", 8, ""),
+            ("Banner THC", 11, "actual assay, per the plan"),
+            ("Acceptance range", 28, "grade nominal ± tolerance"),
+            ("iCoA reference", 16, "printed on the CoQ"),
+            ("Covered", 9, "of 21 required"), ("To perform", 10, ""),
+            ("Not tested", 10, ""), ("Out of spec", 10, ""),
+            ("Documents", 10, ""),
+            ("Source documents", 66, "every report this CoQ must cite"),
+            ("Who performs the rest", 52, ""), ("Note", 40, "")]
     band(ws, COLS, "Purely Plant GmbH — Certificate of Quality issuance register",
-         "Every CoQ predicted: one per batch at initial release, plus one reissue where a "
-         "Farmahem 197-series re-analysis was performed.")
-    coq = []
-    for r in ic:
-        coq.append((key(r["release_date"]), r["release_date"], "initial release", r,
-                    "Outsourced release testing on file for this batch"))
-        if r["coq_reissue"] == "yes":
-            coq.append((key(r["reissue_basis_date"]), r["reissue_basis_date"], "reissue", r,
-                        "Farmahem 197-series re-analysis — cannabinoids and mycotoxins"))
-    coq.sort(key=lambda x: (x[0], int(x[3]["seq"])))
-    for n, (_, d, typ, r, basis) in enumerate(coq):
+         "The 61 CoQs of the owner's ISSUE_COQ plan: 48 initial release, numbered "
+         "sequentially by packaging date, and 13 additional-testing CoQs for the lots "
+         "whose 12-month retest fell due. Detail per determination in "
+         "PP_CoQ_Parameter_Schedule_2026-08-31.xlsx.")
+    for n, c in enumerate(cov):
         i = 6 + n
-        failed = r["batch"] == "FB032601"
-        if failed:
-            st, fill = "BLOCKED — foreign matter out of specification (seed present)", RED
-        elif r["outsourced_outstanding"]:
-            st, fill = "Blocked — awaiting " + r["outsourced_outstanding"], AMBER
-        else:
-            st, fill = "Ready once the iCoA is issued", GREEN
-        put(ws, i, [n + 1, d or "no date", typ, r["register_ref"], r["batch"], r["strain"],
-                    basis, "Ident C only" if r["ident_A"] != "required" else "Full panel",
-                    "", st, lot(r["batch"]), "", "", ""],
-            n % 2 == 0, centre=(1, 4, 8), wrap=(7, 10, 11),
-            fills={10: fill} | {c: WHITE for c in (9, 12, 13, 14)})
-    ws.freeze_panes = "E6"
-    ws.auto_filter.ref = f"A5:N{5+len(coq)}"
+        k = c["counts"]
+        covered = k[CQ.ST_OK] + k[CQ.ST_FINDING] + k[CQ.ST_OOS] + k[CQ.ST_UNDET]
+        oos = k[CQ.ST_OOS] + k[CQ.ST_BLOCK]
+        note = c["spec_conflict"]
+        if not c["in_register"]:
+            note = ("No eCoA on file for this cultivation batch — locate the physical "
+                    "certificates, scan and upload. " + note).strip()
+        put(ws, i, [c["number"], c["type"], c["date"], c["pp"], c["cb"], c["strain"],
+                    c["grade"], f"THC {c['cls']}", c["banner_thc"], c["thc"],
+                    c["icoa_ref"], covered,
+                    k[CQ.ST_ICOA] + k[CQ.ST_SCAN]
+                    + sum(v for s2, v in k.items()
+                          if s2.startswith("additional testing owed")),
+                    k[CQ.ST_NONE] + k[CQ.ST_NOSPEC], oos, len(c["codes"]),
+                    "; ".join(c["codes"]),
+                    "; ".join(dict.fromkeys(c["route"].values())) or "—", note],
+            n % 2 == 0, centre=(7, 8, 9, 12, 13, 14, 15, 16), wrap=(10, 17, 18, 19),
+            fills=({15: RED} if oos else {})
+                  | ({19: RED} if not c["in_register"] else
+                     ({19: AMBER} if note else {})))
+    ws.freeze_panes = "D6"
+    ws.auto_filter.ref = f"A5:S{5+len(cov)}"
+    coq = cov  # the summary below counts over the plan's CoQs
 
     # ---------------------------------------------------------------- 4 · summary
     s = wb.create_sheet("Summary & Notes")
@@ -282,19 +305,43 @@ def main(out):
         ("  full panel — Ident A + B + C + foreign matter", sum(1 for r in ic if r["ident_A"] == "required"), ""),
         ("  Ident C only — CNP Ph. Eur. 11.5 form covers the rest", sum(1 for r in ic if r["ident_A"] != "required"), ""),
         ("", "", ""),
-        ("CoQ issuance register", len(coq), "81 initial release + 21 reissue"),
-        ("  ready once the iCoA is issued", sum(1 for x in coq if not x[3]["outsourced_outstanding"]
-                                                and x[3]["batch"] != "FB032601"), ""),
-        ("  blocked — outsourced testing outstanding", sum(1 for x in coq if x[3]["outsourced_outstanding"]
-                                                           and x[3]["batch"] != "FB032601"), ""),
-        ("  blocked — result out of specification", sum(1 for x in coq if x[3]["batch"] == "FB032601"),
-         "FB032601, foreign matter"),
+        ("CoQ issuance register", len(coq), "the owner's ISSUE_COQ plan: 48 initial "
+         "release + 13 additional testing"),
+        ("  carrying an out-of-specification determination",
+         sum(1 for x in coq if x["counts"][CQ.ST_OOS] + x["counts"][CQ.ST_BLOCK]), ""),
+        ("  no eCoA on file for the cultivation batch",
+         sum(1 for x in coq if not x["in_register"]),
+         "locate the physical certificates, scan and upload"),
+        ("  register batches with no packaged lot, hence no CoQ",
+         80 - len({x["cb"] for x in coq if x["in_register"]}),
+         "among them OPM052501 and CJ062501-2, both carrying a TYMC over its "
+         "criterion"),
         ("", "", ""),
-        ("Missing, counted over the CoQ documents", "", ""),
-        ("  Ident A — macroscopy / appearance", 90, "69 batches"),
-        ("  Ident B — microscopy", 90, "69 batches"),
-        ("  Ident C — TLC", 102, "81 batches — no laboratory has ever performed it"),
-        ("  Foreign matter", 90, "69 batches"),
+        ("", "", ""),
+        ("CoQ parameter schedule", len(sched),
+         f"{len(coq)} CoQs x 23 determinations"),
+        ("  covered by a certificate on file", scount[CQ.ST_OK] + scount[CQ.ST_FINDING]
+         + scount[CQ.ST_OOS] + scount[CQ.ST_UNDET], ""),
+        ("  still to be performed", scount[CQ.ST_ICOA],
+         "identity A, B, C and foreign matter — routed per the Sourcing routes sheet"),
+        ("  not tested by anyone", scount[CQ.ST_NONE], ""),
+        ("  criterion unstatable — no product specification", scount[CQ.ST_NOSPEC],
+         "parameter 4's criterion is 'per target grade as per Section 01'"),
+        ("  upon request — not required for release", scount[CQ.ST_REQ],
+         "P. aeruginosa and S. aureus"),
+        ("  out of specification", scount[CQ.ST_OOS] + scount[CQ.ST_BLOCK], ""),
+        ("  undetermined pending the QCSP 001 reading", scount[CQ.ST_UNDET], ""),
+        ("", "", ""),
+        ("Determinations no laboratory has ever performed", "", "per CoQ, over 102 CoQs"),
+    ] + [("  " + d["en"], sum(1 for r in sched if r["Parameter"] == d["en"]
+                             and r["Status"] in (CQ.ST_NONE, CQ.ST_ICOA)),
+          "QCSP 001 no. " + d["no"])
+         for d in dets if sum(1 for r in sched if r["Parameter"] == d["en"]
+                              and r["Status"] in (CQ.ST_NONE, CQ.ST_ICOA)) >= 60] + [
+        ("", "", ""),
+        ("CoQs whose grade range disagrees with the QCSP 001 PDF",
+         sum(1 for c in cov if c["spec_conflict"]),
+         "two owner documents, two grade designs — recorded, not resolved"),
     ]
     for i, (a, b, c) in enumerate(lines, 4):
         s.cell(row=i, column=1, value=a).font = Font("Arial", 10, bold=not a.startswith("  ") and bool(a), color=INK)
@@ -322,7 +369,10 @@ def main(out):
         "That is a QC decision and is not made here — the linkage is carried on every sheet so the "
         "question is visible wherever a count is read.",
         "",
-        "WHY 81 iCoAs AGAINST 102 CoQ DOCUMENTS. Identity and foreign matter are properties of the "
+        "WHY THE iCoA SHEET STILL LISTS 81 WHILE THE ISSUE_COQ PLAN CARRIES 61 CoQ DOCUMENTS. The 81 "
+        "rows predate the plan and are kept as the per-cultivation-batch view; the plan's "
+        "iCoA-PP-YYYY-NNNN references and the routing decision of 31.08.2026 are on the CoQ sheets "
+        "and in PP_CoQ_Parameter_Schedule_2026-08-31.xlsx. Identity and foreign matter are properties of the "
         "material, determined once. A CoQ reissued because the cannabinoids and mycotoxins were "
         "re-analysed covers the same batch, so it references the iCoA already issued.",
         "WHERE THE SCOPE SPLIT COMES FROM. CNP changed its certificate form in mid-2026: the older DAB "
