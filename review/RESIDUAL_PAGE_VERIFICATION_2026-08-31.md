@@ -41,9 +41,16 @@ Every one of the six sits directly above a bare `ППКnnnnn` row:
 
 The upper row is the **in-house CoA**, dated when it was issued, carrying the numbers it
 transcribed. The lower row is the **CNP report those numbers came from**, dated when *it* was
-issued, carrying none of its own. The pattern holds on all six pairs. So the `21.01.2026` that
-`apply_date_corrections.py` deliberately declined to touch is correct, and so is the
-`12.12.2025` on the row beneath it. Two documents, two rows, two dates, all right.
+issued, carrying none of its own. So the `21.01.2026` that `apply_date_corrections.py`
+deliberately declined to touch is correct, and so is the `12.12.2025` on the row beneath it.
+Two documents, two rows, two dates, all right.
+
+> **Correction (later the same day).** This section first said the pattern "holds on all six
+> pairs". It holds on five. Block 37 has **three** rows — r163 `PP CoA #037 / ППК26005`
+> (21.01.2026), r164 `PP CoA #037` (20.02.2026), r165 `ППК26005` (21.01.2026) — so both
+> documents already have a row of their own and the combined cell on r163 is redundant, while
+> its date is `ППК26005`'s. Nothing there is a wrong value, and `PP CoA #037`'s own row carries
+> the 20.02.2026 its file confirms. See `review/PDF_LINK_AUDIT_2026-08-31.md`.
 
 `verification_coverage.py` now tries the whole cell first and then any embedded control-book
 number, so a two-document cell is credited to the certificate it names. That took the counted

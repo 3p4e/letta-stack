@@ -41,7 +41,7 @@ import sys
 from openpyxl import load_workbook
 
 SHEET = "Batch Release QC"
-CODE, PDF = 23, 26          # columns W and Z
+REF, BATCH, PNUM, CODE, PDF = 1, 2, 3, 23, 26      # columns A, B, C, W and Z
 FIRST_DATA = 6
 
 _CYR = "АВЕКМНОРСТУХЈЅІ"
@@ -102,6 +102,29 @@ def build_index(mapping):
     return idx
 
 
+def block_key(ws, row):
+    """The batch identity that applies to a row, inherited from its block header.
+
+    The register writes each batch's identity once — Ref, batch, P-number in columns
+    A-C — and leaves those columns blank on the continuation rows beneath it. So a
+    continuation row has no key of its own to disambiguate with, and any code issued
+    for more than one batch was being left unmatched rather than resolved.
+
+    `10802_2845/2` is the case that showed it: the code resolves to exactly two files,
+    the Macedonian original and its English translation, and the MK-preference rule
+    below would have picked the right one — but only after the P-number narrowed the
+    pair, and row 109 has no P-number. Its block header, row 107, carries P050192,
+    which is the file's own prefix and matches the sample the document names.
+    """
+    r = row
+    while r >= FIRST_DATA:
+        if ws.cell(row=r, column=REF).value not in (None, ""):
+            break
+        r -= 1
+    return (fold(ws.cell(row=r, column=PNUM).value)
+            or fold(ws.cell(row=r, column=BATCH).value))
+
+
 def main(src, dst, mapfile):
     idx = build_index(json.load(open(mapfile, encoding="utf-8")))
     wb = load_workbook(src)
@@ -120,7 +143,9 @@ def main(src, dst, mapfile):
         if len(cands) > 1:
             # Same code issued for more than one batch: disambiguate on the row's own
             # P-number, then its batch code.
-            want = fold(ws.cell(row=r, column=3).value) or fold(ws.cell(row=r, column=2).value)
+            want = (fold(ws.cell(row=r, column=PNUM).value)
+                    or fold(ws.cell(row=r, column=BATCH).value)
+                    or block_key(ws, r))
             narrowed = [c for c in cands if c["key"] == want]
             # Two files that are one report in two languages: link the Macedonian,
             # which is the issued original — the English is a translation of it.
