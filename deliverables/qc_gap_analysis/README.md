@@ -259,7 +259,7 @@ about the 41 in-house `QCCoA 001v02` release CoAs.
 
 Each step is a separate script and a separate file, so any one of them can be
 re-read, re-run or backed out without unpicking the others. **The current workbook is
-`PP_Batch_Release_QC_Register_MICRO_2026-08-31.xlsx`.**
+`PP_Batch_Release_QC_Register_IPH_2026-08-31.xlsx`.**
 
 | Workbook | Produced by | What it added |
 |---|---|---|
@@ -267,7 +267,9 @@ re-read, re-run or backed out without unpicking the others. **The current workbo
 | `..._CORRECTED_2026-08-30.xlsx` | `apply_register_corrections.py` | six TYMC values read off the page; ten exceedances flagged amber |
 | `..._CORRECTED_2026-08-31.xlsx` | `add_ppk25139_and_codes.py` | the ППК25139 row; four certificate codes confirmed; row 41 flagged |
 | `..._LINKS_2026-08-31.xlsx` | `repair_register_pdf_links.py` | 166 PDF links repointed at their own certificate |
-| **`..._MICRO_2026-08-31.xlsx`** | `apply_microbiology_corrections.py` | the ten microbiology corrections from reading all forty pages |
+| `..._MICRO_2026-08-31.xlsx` | `apply_microbiology_corrections.py` | the ten microbiology corrections from reading all forty pages |
+| `..._LINKS2_2026-08-31.xlsx` | `repair_register_pdf_links.py` (rerun) | 58 more links, after teaching the matcher four filename conventions |
+| **`..._IPH_2026-08-31.xlsx`** | `apply_iph_corrections.py` | mercury on row 31, from the IPH physico-chemical page reads |
 
 **Order matters in one place only.** `add_ppk25139_and_codes.py` inserts a row and
 shifts everything below 46 down by one, so anything addressing rows by index must run
