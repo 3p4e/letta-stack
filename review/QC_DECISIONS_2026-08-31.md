@@ -8,7 +8,7 @@ transcription's to make.** This is that list, gathered in one place.
 Nothing here is a defect in the register's arithmetic. Every one is a question about what a
 number means, what a row is for, or what a laboratory intended.
 
-**Current workbook: `deliverables/qc_gap_analysis/PP_Batch_Release_QC_Register_LINKED_2026-08-31.xlsx`.**
+**Current workbook: `deliverables/qc_gap_analysis/PP_Batch_Release_QC_Register_AC_2026-08-31.xlsx`.**
 
 ---
 
@@ -33,14 +33,27 @@ not a fix.
 
 *Evidence: `review/CNP_PAGE_VERIFICATION_2026-08-31.md` §B.*
 
-### 1.2 Ten TYMC results over their own printed limit, every one concluding ОДГОВАРА
+### 1.2 Five TYMC results over their acceptance criterion, every one concluding ОДГОВАРА
 
-Confirmed from the pages, not inferred from a parse: ten IJZ-MB certificates report a mould
-count above the limit printed on the same certificate, from 1.2× to 4.9× over, and all ten
-conclude that the sample conforms.
+Confirmed from the pages, not inferred from a parse: **five** IJZ-MB certificates report a
+mould count above the acceptance criterion, from 1.30× to 2.45× over, and all five conclude
+that the sample conforms — `320/0587/25` (42 000), `1032/1851/25` (49 000), `946/1684/25`
+(36 000), `904/1589/25` (33 000) and `948/1686/25` (26 000), all TYMC.
 
-> **Decide:** deviation records, and a question to IJZ about how a result over a printed limit
-> reaches a conforming conclusion. No pipeline can resolve this.
+> **Corrected 31.08.2026.** This item read *"Ten TYMC results … from 1.2× to 4.9× over"*.
+> The ten certificates and their counts are right; the ceiling was not. An enumeration
+> criterion of `10⁴ CFU/g` means a **maximum acceptable count of 2 × 10⁴ = 20 000**
+> (Ph. Eur. 5.1.4 / 2.6.12, USP <1111>), so `472/0863/25` (19 000), `949/1687/25` (17 000),
+> `587/1066/25` (15 000) and `628/1129/25` (12 000) conform, and their amber flags have been
+> withdrawn. `1220/2171/25` is item 1.4, not this one. Record:
+> `review/OOS_RECTIFICATION_2026-08-31.md`.
+
+> **Decide:** deviation records for the five, and a question to IJZ about how a result over a
+> printed limit reaches a conforming conclusion. No pipeline can resolve this.
+
+> **Also decide:** row 35 (`472/0863/25`, GG1024_02) conforms by 5 % on a value reported to
+> two significant figures. Confirming it against the raw plate count before releasing on that
+> margin is cheap.
 
 *Evidence: `review/MICROBIOLOGY_PAGE_VERIFICATION_2026-08-31.md` §C.*
 
@@ -52,11 +65,19 @@ beside them. The matched 25 °C / 60 % RH samples read 0.04 to 0.30 with THCA in
 the study behaving as a stability study should. **None of the four certificates carries a
 verdict of any kind.**
 
-Their results were not in the register at all until this week; writing them takes the
+Their results were not in the register at all until this week; writing them took the
 register's own R1 rule from 9 findings to 13.
 
-> **Decide:** whether an accelerated-condition sample is expected to meet a release limit. That
-> belongs in the stability protocol, not in this register. Flagged amber meanwhile.
+**Updated 31.08.2026.** They no longer count as R1 findings at all. R1 is *release* results
+above their criterion, and the register's own `Stability Testing Programme` sheet says in its
+subtitle that its results "are NOT batch-release results and must not be used as release or
+CoA-register values". A new rule **R3** reports them separately, and the published page marks
+them *stability timepoint* rather than *over*. Reporting them beside a genuine release failure
+said something false about the batch. R1 on the current workbook is **5**, all TYMC.
+
+> **Still to decide, unchanged:** whether an accelerated-condition sample is expected to meet a
+> release limit. That belongs in the stability protocol, not in this register. Amber meanwhile,
+> and the four cell comments say the certificates carry no verdict of any kind.
 
 *Evidence: `review/CNP_PAGE_VERIFICATION_2026-08-31.md` §A.*
 
@@ -190,7 +211,7 @@ disposition turns on it.
 
 ## 6 · Owner actions carried forward
 
-- **Snapshot the Drive workbook before replacing it** with `..._LINKED_2026-08-31.xlsx`.
+- **Snapshot the Drive workbook before replacing it** with `..._AC_2026-08-31.xlsx`.
 - **Rotate the RAGFlow API key.** It is still in this repository's git history at commit
   `83ea904`; **the repository must stay private until it is rotated.**
 - **Open the deviation records** for 1.2, and decide on 1.1 and 1.3.

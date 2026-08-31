@@ -328,6 +328,28 @@ def main():
               "tamc", "tymc", "bile", "ecoli", "salmonella",
               "packaging"]
     MYCO_KEYS = ("afla_b1", "aflatoxins", "ochratoxin")
+# The microbial enumeration criteria are stated as the maximum acceptable count
+    # the pharmacopoeia gives, not as the bare power of ten and not as the figure the
+    # Purely Plant in-house CoA form prints.
+    #
+    # Ph. Eur. 5.1.4, in identical PDG-harmonised wording USP <1111>, and again in the
+    # "Interpretation of results" text of Ph. Eur. 2.6.12 / USP <61>:
+    #
+    #   "10^1 CFU: maximum acceptable count = 20; 10^2 CFU: maximum acceptable
+    #    count = 200; 10^3 CFU: maximum acceptable count = 2000, and so forth."
+    #
+    # x2 per decade: 10^4 -> 20 000, 10^5 -> 200 000.
+    #
+    # CORRECTED 31.08.2026. These cells read "max 500 000" and "max 50 000" — a x5
+    # reading, taken verbatim from the in-house CoA form (see add_gg1024_rows.py,
+    # which transcribes "<10^5, max 500 000 CFU/g" off the GG1024, HPA1024 and
+    # OPM1024 release CoAs). No pharmacopoeial text uses a x5 multiplier for
+    # microbial limits. The transcription in add_gg1024_rows.py stays as the paper
+    # has it; this dict states the criterion and is corrected.
+    #
+    # ACTION FOR QA, outside this file: the in-house CoA form states a maximum
+    # acceptable count 2.5 times the compendial one and needs correcting at source.
+    # Record: review/OOS_RECTIFICATION_2026-08-31.md
     SPEC = {
         "appearance": "Characteristic flower & odour",
         "identification": "Conforms (Ph. Eur. 2.8.23)",
@@ -347,8 +369,8 @@ def main():
         "as_": "≤ 0.2 mg/kg", "hg": "≤ 0.1 mg/kg",
         "cu": "informational (no limit)",
         "pesticides": "≤ LOQ 0.01 mg/kg (Ph. Eur. 2.8.13)",
-        "tamc": "≤ 10⁵ CFU/g   (max 500 000)",
-        "tymc": "≤ 10⁴ CFU/g   (max 50 000)",
+        "tamc": "≤ 10⁵ CFU/g   (max 200 000)",
+        "tymc": "≤ 10⁴ CFU/g   (max 20 000)",
         "bile": "≤ 10⁴ CFU/g", "ecoli": "Absent", "salmonella": "Absent",
         "packaging": "Conforms",
     }

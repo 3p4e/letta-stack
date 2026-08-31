@@ -1,8 +1,20 @@
 # A RAG pipeline for the eCoAs that cannot hide a failed result
 
-Written after the register verification of 29–30.08.2026, which found ten
-certificates carrying a mould count over the Ph. Eur. limit — five of them
-recorded in the register an exponent too low, so they read as passing.
+Written after the register verification of 29–30.08.2026, which found **five**
+certificates carrying a mould count over the Ph. Eur. acceptance criterion —
+four of them recorded in the register an exponent too low, so they read as
+passing.
+
+> **Amended 31.08.2026.** This document originally said ten. Every certificate
+> named in it is real and every value page-verified, but the ceiling they were
+> compared against was the literal `10⁴` rather than the maximum acceptable count
+> of `2 × 10⁴` that Ph. Eur. 5.1.4 / 2.6.12 and USP <1111> prescribe. Five of the
+> ten conform. That correction strengthens the argument below rather than
+> weakening it: the pipeline's whole point is that a value only means something
+> next to the limit it is judged against, and **a limit is two numbers, not one**
+> — what the certificate prints, and the largest result that still conforms. The
+> typed record now carries both. Record:
+> `review/OOS_RECTIFICATION_2026-08-31.md`.
 
 The point of this document is not that an OCR made a mistake. It is that
 **a single superscript decides pass or fail, and nothing in the pipeline was
@@ -49,9 +61,18 @@ for batch `J31112501`; certificate codes appear as `197-1-К/26` (Cyrillic К) a
 silently on these.
 
 **4. Nothing ever compared a result to its own limit.**
-Every certificate prints the limit next to the result. Ten of them printed a
-result above it and concluded ОДГОВАРА. One subtraction would have caught all
-ten, at ingest, years before a person did.
+Every certificate prints the limit next to the result. Five of them printed a
+result above the acceptance criterion and concluded ОДГОВАРА. One subtraction
+would have caught all five, at ingest, years before a person did — provided the
+subtraction is done against the right number, which is the fifth cause below.
+
+**5. And when something finally did compare them, it compared against the wrong
+number.** The first version of `validate_ecoa_limits.py` parsed the criterion
+with the same function that parses the result. `magnitude()` answers *what number
+is this measurement*; `10⁴ CFU/g` as a criterion is not the number 10 000. Nine
+results were reported out of specification where five are. **The typed record is
+the fix for this too**: `limit` and `max_acceptable` are separate fields, and R1
+compares against the second.
 
 ## The pipeline
 
@@ -69,14 +90,16 @@ mixed with Latin chemical symbols is the case it handles worst.
 
 ### 2. Extract to a typed record, not a chunk
 
-Per result, capture five fields together, because their meaning is only in
-their relationship:
+Per result, capture the value and its criterion together, because their meaning
+is only in their relationship — and capture the criterion as **two** numbers,
+what the page prints and the largest result that still conforms:
 
 ```json
 {"parameter": "TYMC", "value": 42000.0, "value_printed": "4,2 x 10⁴ CFU/g",
- "limit": 10000.0, "limit_printed": "10⁴ CFU/g", "unit": "CFU/g",
- "verdict_printed": "ОДГОВАРА", "certificate": "320/0587/25",
- "batch": "GG1024-01", "page": 1}
+ "limit": 10000.0, "limit_printed": "10⁴ CFU/g",
+ "max_acceptable": 20000.0, "limit_basis": "pharmacopoeial_enumeration",
+ "unit": "CFU/g", "verdict_printed": "ОДГОВАРА",
+ "certificate": "320/0587/25", "batch": "GG1024-01", "page": 1}
 ```
 
 `value` and `limit` are floats. The exponent becomes an integer power at
@@ -159,7 +182,7 @@ runnable claim rather than a hope.
 
 ## What this does not solve
 
-The ten certificates still concluded ОДГОВАРА over their own failing numbers.
+The five certificates still concluded ОДГОВАРА over their own failing numbers.
 No pipeline fixes that — it is a question for the issuing laboratories and for
 the deviation records. What the pipeline changes is that the next one is caught
 at ingest instead of a year later.

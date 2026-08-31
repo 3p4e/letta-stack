@@ -151,14 +151,25 @@ leak of that same shape fails CI again.
 certificate *limits* — a question the coverage analysis never asked, because it only
 asked whether a panel had been tested.
 
-**Why it is open.** At least **ten IPH microbiology certificates report a count above
-the printed specification while still concluding ОДГОВАРА** (conforms). Named:
-`320/0587/25` (GG1024-01), `472/0863/25` (GG1024-02), `948/1686/25` (HPA052501),
-`1032/1851/25` (CJ062501/2), `587/1066/25`, `904/1589/25`, `946/1684/25`, `949/1687/25`,
-`628/1129/25`, `1220/2171/25`. Example: TYMC 4.2 × 10⁴ CFU/g against a stated limit of
-10⁴. Plus **two CNP certificates with a CBN assay out of specification** (ППК26033 on
-P050022, ППК26058 on P050202) and **one in-house CoA with an out-of-specification total
-Δ⁹-THC** (P050202).
+**Why it is open.** **Five IPH microbiology certificates report a count above the
+acceptance criterion while still concluding ОДГОВАРА** (conforms): `320/0587/25`
+(GG1024-01, 42 000), `1032/1851/25` (CJ062501/2, 49 000), `946/1684/25` (GP052501, 36 000),
+`904/1589/25` (OPM052501, 33 000) and `948/1686/25` (HPA052501, 26 000) — all TYMC, all
+against a criterion of `10⁴ CFU/g` whose maximum acceptable count is 20 000.
+
+> **Amended 31.08.2026.** This item read *"at least ten"* and additionally named
+> `472/0863/25`, `587/1066/25`, `949/1687/25`, `628/1129/25` and `1220/2171/25`. The first
+> four (19 000, 15 000, 17 000, 12 000) **conform**: Ph. Eur. 5.1.4 / 2.6.12 and USP <1111>
+> read an enumeration criterion of `10ⁿ CFU` as a maximum acceptable count of 2 × 10ⁿ, not
+> 10ⁿ. `1220/2171/25` (200 against `10²`) turns on a manufacturer's own tighter
+> specification and is item 1.4 of `review/QC_DECISIONS_2026-08-31.md`, not this one. The
+> **two CNP CBN results** (ППК26033 on P050022, ППК26058 on P050202) are accelerated
+> 40 °C / 75 % RH **stability** timepoints and not failed releases — see §6 of
+> `ECOA_REGISTER_VERIFICATION_2026-08-29.md`. Full record:
+> `review/OOS_RECTIFICATION_2026-08-31.md`.
+
+Also open, and unrelated to the arithmetic above: **one in-house CoA with an
+out-of-specification total Δ⁹-THC** (P050202).
 
 **This is the most urgent item in the register.** A batch with no test can still be
 tested. A batch released against a failing result has already left the building.
@@ -171,8 +182,13 @@ be misprinted, or the conclusion may rest on a criterion not on the page.
 **Recommendation: (b) then (a), in parallel with (c).** The cross-check's *free-text
 descriptions are reliable*, but its `Finding category` column is over-assigned — of 48
 rows tagged out-of-specification, the descriptions support roughly 15. So verify before
-raising thirteen deviations, but start the laboratory queries immediately since they
-have the longest lead time.
+raising deviations, but start the laboratory queries immediately since they have the
+longest lead time.
+
+**(b) has since been done.** All ten certificates were read from the rendered page on
+31.08.2026 and every value confirmed; the count of deviations owed then fell from ten to
+five on the arithmetic, not on the reading. That is the order this recommendation asked
+for, and it changed the answer by half.
 
 **What changes.** Confirmed cases become deviation records under your QMS, each with a
 product-impact assessment. Some may resolve as laboratory transcription errors. Any that

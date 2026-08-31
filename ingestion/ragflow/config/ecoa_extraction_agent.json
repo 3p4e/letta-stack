@@ -98,13 +98,15 @@
   "validation": {
     "at_ingest": "ingestion/ragflow/validate_ecoa_limits.py",
     "rules": {
-      "R1": "value > limit -> flag 'over_limit'. Written, never suppressed, whatever the certificate concluded. This rule alone would have caught all ten.",
-      "R2": "value is exactly one decade below limit -> flag 'one_decade_below_limit'. The shape a misread ⁴->³ leaves behind, and the only shape that silently converts a fail into a pass. Verify against the page.",
-      "R3": "verdict_printed is ОДГОВАРА while value > limit -> flag 'verdict_contradicts_value'. Not an extraction error — a finding, and the one that needs a deviation record.",
-      "R4": "total_thc != d9_thc + thca * 0.877 (+/-0.06) -> flag 'total_thc_mismatch'. Every CNP certificate prints all three and states the conversion in its own footnote, so each page proves itself. Measured over eCoA_DATABASE on 30.08.2026: 2 of the 15 certificates where all three could be read were flagged, and BOTH were then checked against the source PDF and found to be corpus corruptions, not laboratory faults. PPK25117 - corpus 1.58, page 15.38. PPK25139 - corpus THCA 0.52, page 26.52. That is a 13% rate of values that are wrong rather than missing, undetectable by any means except this arithmetic."
+      "R1": "value > max_acceptable -> flag 'over_limit'. Written, never suppressed, whatever the certificate concluded. AGAINST max_acceptable, NOT against limit: an enumeration criterion of 10^n CFU/g means a maximum acceptable count of 2 x 10^n (Ph. Eur. 5.1.4 / 2.6.12, USP <1111>), so 10^4 conforms up to 20 000. Comparing against the printed 10^4 reported nine TYMC results out of specification on 30.08.2026 where five are; the four false flags stood in a release register for a day. Rewritten 31.08.2026 — see review/OOS_RECTIFICATION_2026-08-31.md.",
+      "R2": "value is exactly one decade below the criterion's PRINTED exponent -> flag 'one_decade_below_limit'. The shape a misread 4->3 leaves behind, and the only shape that silently converts a fail into a pass. Verify against the page. Anchored on the printed exponent rather than on max_acceptable, because R2 is about notation. Two guards it needed and did not have: the value must actually be written as a power of ten (testing '10' in the string matched '0.10' and reported four CBD percentages), and a two-bound range such as '< 10^3 and > 10^2' is not a measurement.",
+      "R3": "verdict_printed is ОДГОВАРА while value > max_acceptable -> flag 'verdict_contradicts_value'. Not an extraction error — a finding, and the one that needs a deviation record.",
+      "R4": "total_thc != d9_thc + thca * 0.877 (+/-0.06) -> flag 'total_thc_mismatch'. Every CNP certificate prints all three and states the conversion in its own footnote, so each page proves itself. Measured over eCoA_DATABASE on 30.08.2026: 2 of the 15 certificates where all three could be read were flagged, and BOTH were then checked against the source PDF and found to be corpus corruptions, not laboratory faults. PPK25117 - corpus 1.58, page 15.38. PPK25139 - corpus THCA 0.52, page 26.52. That is a 13% rate of values that are wrong rather than missing, undetectable by any means except this arithmetic.",
+      "R5": "a result above its criterion on a sample the register's own Stability Testing Programme sheet lists is reported SEPARATELY and is NOT a release failure -> no 'over_limit' flag. Four accelerated 40 C / 75 % RH timepoints exceed the CBN release limit because d9-THCA has decarboxylated and the neutral cannabinoids have oxidised on to CBN; the sample was never a release sample. Which certificates those are is read off the workbook, not hard-coded. Implemented 31.08.2026."
     },
     "gate": "A record carrying flag 'over_limit' or 'verdict_contradicts_value' is stored AND surfaced. It is never written silently.",
-    "flag_is_not_a_finding": "A flag means OPEN THE PAGE. It is never a laboratory finding on its own. Of the three flags raised this way during the 29-30.08.2026 work, zero were the laboratory's fault; every one was a corrupted parse. Reporting a flag as a certificate defect before someone has looked at the page has already produced three retractions."
+    "flag_is_not_a_finding": "A flag means OPEN THE PAGE. It is never a laboratory finding on its own. Of the three flags raised this way during the 29-30.08.2026 work, zero were the laboratory's fault; every one was a corrupted parse. Reporting a flag as a certificate defect before someone has looked at the page has already produced three retractions. Add a fourth: on 31.08.2026 nine 'over_limit' flags were re-examined and four were withdrawn — not because the values were wrong, but because they had been compared against the wrong ceiling. A flag raised by an unverified rule is worth no more than a flag raised by an unverified parse.",
+    "limit_vs_max_acceptable": "NEVER compare a result against a limit with the function that parsed the result. magnitude() answers what number a measurement is; acceptance_limit() answers what the largest conforming result is. For 10^n CFU/g those differ by a factor of two, and using one for the other is the same defect this whole pipeline exists to catch: the right value taken from the wrong column."
   },
   "identity_normalisation": {
     "batch": "ingestion/common/batch_id.py::batch_key — the single definition in this repository; policy_check.py already imports it.",
@@ -117,37 +119,86 @@
         "parameter": "TYMC",
         "value": 42000.0,
         "limit": 10000.0,
-        "flag": "over_limit"
-      },
-      "628/1129/25": {
-        "parameter": "TYMC",
-        "value": 12000.0,
-        "limit": 10000.0,
+        "max_acceptable": 20000.0,
+        "limit_basis": "pharmacopoeial_enumeration",
         "flag": "over_limit"
       },
       "904/1589/25": {
         "parameter": "TYMC",
         "value": 33000.0,
         "limit": 10000.0,
+        "max_acceptable": 20000.0,
+        "limit_basis": "pharmacopoeial_enumeration",
         "flag": "over_limit"
       },
       "946/1684/25": {
         "parameter": "TYMC",
         "value": 36000.0,
         "limit": 10000.0,
+        "max_acceptable": 20000.0,
+        "limit_basis": "pharmacopoeial_enumeration",
         "flag": "over_limit"
       },
       "1032/1851/25": {
         "parameter": "TYMC",
         "value": 49000.0,
         "limit": 10000.0,
+        "max_acceptable": 20000.0,
+        "limit_basis": "pharmacopoeial_enumeration",
         "flag": "over_limit"
+      },
+      "948/1686/25": {
+        "parameter": "TYMC",
+        "value": 26000.0,
+        "limit": 10000.0,
+        "max_acceptable": 20000.0,
+        "limit_basis": "pharmacopoeial_enumeration",
+        "flag": "over_limit"
+      },
+      "628/1129/25": {
+        "parameter": "TYMC",
+        "value": 12000.0,
+        "limit": 10000.0,
+        "max_acceptable": 20000.0,
+        "limit_basis": "pharmacopoeial_enumeration",
+        "flag": null,
+        "note": "Conforms. The register held 1.2x10^3 and the page reads 1,2 x 10^4, so the transcription correction of 30.08 stands — it simply does not change this batch's disposition. 12 000 is inside the maximum acceptable count of 20 000. An extractor that flags this has the arithmetic wrong, not the reading."
+      },
+      "472/0863/25": {
+        "parameter": "TYMC",
+        "value": 19000.0,
+        "limit": 10000.0,
+        "max_acceptable": 20000.0,
+        "limit_basis": "pharmacopoeial_enumeration",
+        "flag": null,
+        "note": "Conforms, and it is the closest call in the set: inside by 5 %, on a value reported to two significant figures."
+      },
+      "949/1687/25": {
+        "parameter": "TYMC",
+        "value": 17000.0,
+        "limit": 10000.0,
+        "max_acceptable": 20000.0,
+        "limit_basis": "pharmacopoeial_enumeration",
+        "flag": null,
+        "note": "Conforms."
+      },
+      "587/1066/25": {
+        "parameter": "TYMC",
+        "value": 15000.0,
+        "limit": 10000.0,
+        "max_acceptable": 20000.0,
+        "limit_basis": "pharmacopoeial_enumeration",
+        "flag": null,
+        "note": "Conforms."
       },
       "163/0271/25": {
         "parameter": "TYMC",
         "value": 10000.0,
         "limit": 10000.0,
-        "flag": null
+        "max_acceptable": 20000.0,
+        "limit_basis": "pharmacopoeial_enumeration",
+        "flag": null,
+        "note": "At the printed 10^4 and well inside the maximum acceptable count. Conforms on every reading."
       }
     },
     "must_not_flag": [
@@ -161,12 +212,25 @@
       "1227/2193/25",
       "1228/2194/25",
       "4/0007/26",
-      "6/0009/26"
+      "6/0009/26",
+      "472/0863/25",
+      "587/1066/25",
+      "628/1129/25",
+      "949/1687/25"
     ],
     "must_not_be_silent": [
       "P050202 NGP-QCG-SOP-024 F3",
       "P050192 NGP-QCG-SOP-024 F3"
     ],
-    "note": "These 17 values were read off the rendered pages during the 29–30.08.2026 verification and are the regression set. An extractor that cannot reproduce them has not fixed the thing it exists to fix."
+    "note": "These values were read off the rendered pages during the 29-31.08.2026 verification and are the regression set. An extractor that cannot reproduce them has not fixed the thing it exists to fix. CORRECTED 31.08.2026: five of these ten certificates are out of specification and five conform. The earlier version of this block expected 'over_limit' on 628/1129/25 and would have accepted an extractor that flagged all nine — so the regression set itself encoded the defect. The values did not change; the ceiling did. Record: review/OOS_RECTIFICATION_2026-08-31.md.",
+    "stability_not_release": {
+      "certificates": [
+        "ППК26033",
+        "ППК26035",
+        "ППК26037",
+        "ППК26058"
+      ],
+      "expectation": "CBN 2.35, 2.15, 1.09 and 2.05 % against a release criterion of <= 1.00 %. All four are accelerated 40 C / 75 % RH stability timepoints. They must be reported under R5 and must NOT carry flag 'over_limit': the sample was never a release sample."
+    }
   }
 }

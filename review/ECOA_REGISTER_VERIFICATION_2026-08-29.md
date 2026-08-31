@@ -77,6 +77,18 @@ were no false alarms in this group.
 
 ### 2b. 🔴 All ten flagged microbiology certificates exceed their own TYMC limit
 
+> **AMENDED 31.08.2026 — this section's arithmetic was wrong, and the count is five, not
+> ten.** Every value in the table below is right and every page read stands. What was wrong
+> is the ceiling they were compared against. An acceptance criterion of `10⁴ CFU/g` does not
+> mean 10 000: Ph. Eur. 5.1.4 / 2.6.12 and USP <1111> read it as a **maximum acceptable
+> count of 2 × 10⁴ = 20 000**. Against that, `1,9 × 10⁴`, `1,7 × 10⁴`, `1,5 × 10⁴` and
+> `1,2 × 10⁴` **conform**, and their amber flags have been withdrawn. Five remain out of
+> specification — `4,2`, `4,9`, `3,6`, `3,3` and `2,6 × 10⁴` — and those five still need a
+> deviation record. `1220/2171/25` (200 against a manufacturer's own `10²`) is a separate
+> question that the pharmacopoeia does not settle. Full record in
+> `review/OOS_RECTIFICATION_2026-08-31.md`.
+
+
 With the five above resolved, the picture for the ten certificates named in
 `CROSS_CHECK_2026-08-22.md` is complete, and **the cross-check was right about all ten**:
 
@@ -93,10 +105,14 @@ With the five above resolved, the picture for the ten certificates named in
 | `CJ062501-2` | `1032/1851/25` | 4.9×10⁴ | 10⁴ | **hidden** |
 | `PM072501` | `1220/2171/25` | 200 | 10² | visible |
 
-Ten certificates, ten results over the printed limit, ten conclusions of **ОДГОВАРА**.
-Five were page-verified here; the other five already show an over-limit value in the
-register itself and so need no transcription fix — but they are equally releases against a
-failing result. **Ten batches need a deviation record**, which is open item B1.
+Ten certificates, ten results at or above the printed power of ten, ten conclusions of
+**ОДГОВАРА**. Five were page-verified here; the other five already show a high value in the
+register itself and so need no transcription fix.
+
+~~**Ten batches need a deviation record**, which is open item B1.~~ **Five do** — see the
+amendment above. Read against the maximum acceptable count the pharmacopoeia actually
+prescribes, four of these ten conform and one (`1220/2171/25`) turns on a manufacturer
+specification this register does not hold.
 
 **Root cause, and why it went unnoticed.** The exponent is a superscript, and neither
 machine-readable source preserves it correctly:
@@ -255,9 +271,11 @@ The eleven correct: `161/0269/25`, `588/1067/25`, `767/1376/25`, `947/1685/25`,
 certificate **`1227/2193/25`** — `GP082501-2` is P050322, and the row's own TAMC
 3.2×10³ and TYMC 5.8×10³ match that page exactly.
 
-**And a flagging inconsistency**: of the ten rows whose TYMC exceeds its limit,
-only two carried the sheet's own amber "laboratory finding" style. Eight sat
-unflagged, which is part of why this stayed invisible.
+**And a flagging inconsistency**: of the ten rows whose TYMC sits at or above its
+printed power of ten, only two carried the sheet's own amber "laboratory finding"
+style. Eight sat unflagged, which is part of why this stayed invisible. (All ten
+were later flagged amber; on 31.08.2026 four of those flags were withdrawn as
+conforming and the remaining five were given the comment they had never had.)
 
 ### 11. ✅ Corrections applied
 

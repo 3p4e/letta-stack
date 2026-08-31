@@ -1,0 +1,1174 @@
+<title>Purely Plant Release Register</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --paper:#F7F6F3; --card:#FFFFFF; --card-2:#FBFAF8;
+  --ink:#14202F; --ink-2:#5A6472; --ink-3:#8A93A1;
+  --rule:#E2DFD8; --rule-2:#EFEDE7;
+  --stamp:#2B4899; --stamp-soft:#EAEEF9; --stamp-line:#C6D2EE;
+  --pass:#1F6B4A; --pass-soft:#E6F1EB;
+  --warn:#8A6212; --warn-soft:#FAEED6;
+  --fail:#9E2A2A; --fail-soft:#F8E5E3;
+  --shadow:0 1px 2px rgba(20,32,47,.06),0 8px 24px -12px rgba(20,32,47,.14);
+  --d:Archivo,"Helvetica Neue",Arial,sans-serif;
+  --b:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --m:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0F141D; --card:#151B26; --card-2:#1A212D;
+  --ink:#E7EAEF; --ink-2:#98A2B2; --ink-3:#6C7789;
+  --rule:#242C3A; --rule-2:#1D2431;
+  --stamp:#7E9CE8; --stamp-soft:#1A2338; --stamp-line:#2C3A5C;
+  --pass:#5CBF90; --pass-soft:#132A21;
+  --warn:#D9A441; --warn-soft:#2B2312;
+  --fail:#E5786F; --fail-soft:#2E1A19;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+}}
+:root[data-theme="dark"]{
+  --paper:#0F141D; --card:#151B26; --card-2:#1A212D;
+  --ink:#E7EAEF; --ink-2:#98A2B2; --ink-3:#6C7789;
+  --rule:#242C3A; --rule-2:#1D2431;
+  --stamp:#7E9CE8; --stamp-soft:#1A2338; --stamp-line:#2C3A5C;
+  --pass:#5CBF90; --pass-soft:#132A21;
+  --warn:#D9A441; --warn-soft:#2B2312;
+  --fail:#E5786F; --fail-soft:#2E1A19;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--b);font-size:14px;line-height:1.5;
+  -webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--d);font-weight:600;letter-spacing:-.015em;margin:0;text-wrap:balance}
+.mono{font-family:var(--m);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--d);font-size:10px;font-weight:600;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3)}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:none}
+:focus-visible{outline:2px solid var(--stamp);outline-offset:2px;border-radius:3px}
+a{color:var(--stamp)}
+
+/* ---------- masthead ---------- */
+.top{border-bottom:1px solid var(--rule);background:var(--card)}
+.top-in{max-width:1400px;margin:0 auto;padding:20px 24px 0}
+.brandrow{display:flex;align-items:flex-start;gap:18px;flex-wrap:wrap;justify-content:space-between}
+.brand h1{font-size:23px;letter-spacing:-.02em}
+.brand p{margin:3px 0 0;color:var(--ink-2);font-size:12.5px;max-width:62ch}
+.stampmark{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--stamp-line);
+  color:var(--stamp);background:var(--stamp-soft);border-radius:999px;padding:4px 11px;
+  font-family:var(--d);font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.stampmark::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.tools{display:flex;gap:8px;align-items:center}
+.tbtn{border:1px solid var(--rule);background:var(--card);border-radius:7px;padding:7px 12px;
+  font-size:12.5px;font-weight:500;display:inline-flex;align-items:center;gap:6px;
+  transition:border-color .12s,background .12s}
+.tbtn:hover{border-color:var(--stamp);background:var(--stamp-soft);color:var(--stamp)}
+.tbtn.primary{background:var(--stamp);border-color:var(--stamp);color:#fff}
+.tbtn.primary:hover{filter:brightness(1.08);color:#fff}
+.tbtn[disabled]{opacity:.45;cursor:not-allowed}
+.halfdot{width:11px;height:11px;border-radius:50%;border:1.5px solid currentColor;
+  background:linear-gradient(90deg,currentColor 50%,transparent 50%);flex:0 0 auto}
+
+/* ---------- summary band ---------- */
+.band{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:0;
+  margin:18px -24px 0;border-top:1px solid var(--rule-2)}
+.stat{padding:13px 24px 15px;border-right:1px solid var(--rule-2)}
+.stat:last-child{border-right:none}
+.stat .n{font-family:var(--d);font-size:25px;font-weight:700;letter-spacing:-.03em;
+  font-variant-numeric:tabular-nums;display:block;line-height:1.1}
+.stat .l{font-size:11px;color:var(--ink-2);margin-top:2px;display:block}
+.stat .sub{font-size:10.5px;color:var(--ink-3);margin-top:1px;display:block}
+.stat.ok .n{color:var(--pass)} .stat.wa .n{color:var(--warn)} .stat.fa .n{color:var(--fail)}
+
+/* ---------- layout ---------- */
+.wrap{max-width:1400px;margin:0 auto;padding:20px 24px 80px;
+  display:grid;grid-template-columns:236px minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:960px){.wrap{grid-template-columns:1fr;padding:16px 14px 70px}}
+
+/* ---------- filter rail ---------- */
+.rail{position:sticky;top:14px;display:flex;flex-direction:column;gap:16px}
+@media (max-width:960px){.rail{position:static}}
+.fgroup{background:var(--card);border:1px solid var(--rule);border-radius:9px;padding:13px 13px 14px}
+.fgroup h4{font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);
+  margin-bottom:9px;font-weight:600}
+.srch{width:100%;border:1px solid var(--rule);background:var(--card-2);color:var(--ink);
+  border-radius:7px;padding:8px 10px;font:inherit;font-size:13px}
+.srch::placeholder{color:var(--ink-3)}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{border:1px solid var(--rule);border-radius:999px;padding:4px 10px;font-size:11.5px;
+  color:var(--ink-2);background:var(--card-2);transition:all .12s;white-space:nowrap}
+.chip:hover{border-color:var(--stamp-line);color:var(--stamp)}
+.chip[aria-pressed="true"]{background:var(--stamp);border-color:var(--stamp);color:#fff;font-weight:500}
+.chip .c{font-family:var(--m);font-size:10px;opacity:.7;margin-left:4px}
+.clearall{font-size:11.5px;color:var(--stamp);text-decoration:underline;text-underline-offset:2px;padding:0}
+
+/* ---------- batch cards ---------- */
+.list{display:flex;flex-direction:column;gap:9px;min-width:0}
+.covkey{display:flex;gap:13px;flex-wrap:wrap;align-items:center;padding:0 2px 9px;
+  font-size:10.5px;color:var(--ink-3)}
+.covkey b{font-family:var(--d);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--ink-3);font-weight:600}
+.covkey span{display:inline-flex;align-items:center;gap:5px}
+.covkey i{width:14px;height:6px;border-radius:2px;background:var(--stamp);display:inline-block}
+.resline{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+  padding:0 2px 3px;color:var(--ink-2);font-size:12px;flex-wrap:wrap}
+.batch{background:var(--card);border:1px solid var(--rule);border-radius:10px;overflow:hidden;
+  box-shadow:var(--shadow)}
+.batch.open{border-color:var(--stamp-line)}
+.bhead{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:13px;align-items:center;
+  padding:12px 14px;width:100%;text-align:left;transition:background .12s}
+.bhead:hover{background:var(--card-2)}
+.refno{font-family:var(--d);font-size:12px;font-weight:700;color:var(--ink-3);
+  font-variant-numeric:tabular-nums;border:1px solid var(--rule);border-radius:6px;
+  padding:5px 0;text-align:center;background:var(--card-2)}
+.bid{min-width:0}
+.bid .bn{font-family:var(--d);font-size:15.5px;font-weight:600;letter-spacing:-.01em;
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.bid .bm{font-size:11.5px;color:var(--ink-2);margin-top:2px;
+  display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.bid .bm .pn{font-family:var(--m);font-size:10.5px}
+.bright{display:flex;align-items:center;gap:12px;justify-content:flex-end;flex-wrap:wrap}
+
+/* coverage strip — five test families */
+.cov{display:flex;gap:3px}
+.cov i{width:22px;height:7px;border-radius:2px;background:var(--rule);display:block;
+  position:relative;cursor:help}
+.cov i.on{background:var(--stamp)}
+.covlab{font-size:10px;color:var(--ink-3);font-family:var(--m)}
+
+.pill{font-family:var(--d);font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
+  border-radius:5px;padding:3px 7px;border:1px solid transparent;white-space:nowrap}
+.pill.pass{background:var(--pass-soft);color:var(--pass);border-color:color-mix(in srgb,var(--pass) 26%,transparent)}
+.pill.warn{background:var(--warn-soft);color:var(--warn);border-color:color-mix(in srgb,var(--warn) 26%,transparent)}
+.pill.fail{background:var(--fail-soft);color:var(--fail);border-color:color-mix(in srgb,var(--fail) 30%,transparent)}
+.pill.none{background:var(--card-2);color:var(--ink-3);border-color:var(--rule)}
+.pill.info{background:var(--stamp-soft);color:var(--stamp);border-color:var(--stamp-line)}
+.caret{color:var(--ink-3);font-size:11px;transition:transform .16s;display:inline-block}
+.batch.open .caret{transform:rotate(90deg)}
+
+/* ---------- certificate table ---------- */
+.bbody{border-top:1px solid var(--rule-2);background:var(--card-2)}
+.ctab{width:100%;border-collapse:collapse;font-size:12.5px}
+.ctab th{font-family:var(--d);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--ink-3);text-align:left;padding:9px 10px;border-bottom:1px solid var(--rule-2);font-weight:600}
+.ctab td{padding:8px 10px;border-bottom:1px solid var(--rule-2);vertical-align:top}
+.ctab tr:last-child td{border-bottom:none}
+.ctab tr.crow{cursor:pointer}
+.ctab tr.crow:hover td{background:var(--card)}
+.ctab tr.sel td{background:var(--stamp-soft)}
+.code{font-family:var(--m);font-size:12px;font-weight:500;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.dot{width:6px;height:6px;border-radius:50%;flex:0 0 auto}
+.dot.amber{background:var(--warn)} .dot.red{background:var(--fail)}
+.dot.ver{background:var(--pass)} .dot.unver{background:var(--rule);border:1px solid var(--ink-3)}
+.vsum{display:flex;flex-wrap:wrap;gap:4px}
+.vchip{font-family:var(--m);font-size:10.5px;border:1px solid var(--rule);border-radius:4px;
+  padding:2px 5px;background:var(--card);white-space:nowrap}
+.vchip b{font-family:var(--b);font-weight:600;font-size:9.5px;color:var(--ink-3);
+  text-transform:uppercase;letter-spacing:.05em;margin-right:4px}
+.vchip.over{border-color:color-mix(in srgb,var(--fail) 45%,transparent);
+  background:var(--fail-soft);color:var(--fail)}
+.vchip.flag{border-color:color-mix(in srgb,var(--warn) 45%,transparent);background:var(--warn-soft);color:var(--warn)}
+.amend{font-size:10px;color:var(--stamp);font-family:var(--d);font-weight:600;letter-spacing:.06em;
+  text-transform:uppercase}
+.tdate{font-family:var(--m);font-size:11.5px;color:var(--ink-2);white-space:nowrap}
+.tlab{font-size:11.5px;color:var(--ink-2)}
+
+/* ---------- detail panel ---------- */
+.detail{border-top:1px solid var(--rule);background:var(--card);padding:16px 16px 18px}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(214px,1fr));gap:9px;margin-top:12px}
+.pcard{border:1px solid var(--rule);border-radius:8px;padding:9px 11px;background:var(--card-2)}
+.pcard .pn2{font-size:10.5px;color:var(--ink-2);line-height:1.35}
+.pcard .pv{font-family:var(--m);font-size:16px;font-weight:500;margin-top:3px;
+  display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+.pcard .pl{font-family:var(--m);font-size:10.5px;color:var(--ink-3);margin-top:2px}
+.pcard.over{border-color:color-mix(in srgb,var(--fail) 45%,transparent);background:var(--fail-soft)}
+.pcard.over .pv{color:var(--fail)}
+.pcard.amber{border-color:color-mix(in srgb,var(--warn) 45%,transparent);background:var(--warn-soft)}
+.pcard.red{border-color:color-mix(in srgb,var(--fail) 50%,transparent);background:var(--fail-soft)}
+.note{border-left:2px solid var(--stamp-line);background:var(--stamp-soft);border-radius:0 7px 7px 0;
+  padding:10px 12px;margin-top:10px;font-size:12px;color:var(--ink);white-space:pre-wrap;line-height:1.55}
+.note .nh{font-family:var(--d);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--stamp);margin-bottom:5px;font-weight:600}
+.drow{display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--ink-2)}
+.drow b{color:var(--ink);font-weight:600}
+
+/* ---------- disposition ---------- */
+.dispbar{display:flex;gap:9px;align-items:flex-start;padding:11px 14px;background:var(--card);
+  border-top:1px dashed var(--rule)}
+.dispbar .dtext{flex:1;min-width:0;font-size:12px;color:var(--ink-2)}
+.dispbar .dtext .who{font-size:10.5px;color:var(--ink-3);margin-top:2px}
+
+/* ---------- dialog ---------- */
+dialog{border:1px solid var(--rule);border-radius:12px;padding:0;background:var(--card);color:var(--ink);
+  max-width:620px;width:calc(100% - 28px);box-shadow:0 20px 60px -18px rgba(20,32,47,.5)}
+dialog::backdrop{background:rgba(20,32,47,.42);backdrop-filter:blur(2px)}
+.dlg-h{padding:15px 18px 12px;border-bottom:1px solid var(--rule-2)}
+.dlg-h h3{font-size:16px}
+.dlg-h p{margin:3px 0 0;color:var(--ink-2);font-size:12px}
+.dlg-b{padding:15px 18px;max-height:min(62vh,540px);overflow:auto}
+.dlg-f{padding:12px 18px;border-top:1px solid var(--rule-2);display:flex;gap:8px;justify-content:flex-end;
+  align-items:center;flex-wrap:wrap}
+.fld{margin-bottom:12px}
+.fld label{display:block;font-size:11px;font-weight:600;color:var(--ink-2);margin-bottom:4px;
+  letter-spacing:.03em}
+.fld input,.fld select,.fld textarea{width:100%;border:1px solid var(--rule);background:var(--card-2);
+  color:var(--ink);border-radius:7px;padding:8px 10px;font:inherit;font-size:13px}
+.fld textarea{min-height:74px;resize:vertical;line-height:1.5}
+.fld .hint{font-size:10.5px;color:var(--ink-3);margin-top:3px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:520px){.two{grid-template-columns:1fr}}
+.vedit{display:grid;grid-template-columns:1fr 118px;gap:8px;align-items:center;margin-bottom:7px}
+.vedit .vn{font-size:11.5px;color:var(--ink-2);line-height:1.3}
+.vedit .vn i{display:block;font-family:var(--m);font-style:normal;font-size:10px;color:var(--ink-3)}
+.vedit input{font-family:var(--m);font-size:12.5px}
+.msg{font-size:12px;flex:1;min-width:0}
+.msg.err{color:var(--fail)} .msg.ok{color:var(--pass)}
+
+/* ---------- view tabs ---------- */
+.tabs{display:flex;gap:2px;border:1px solid var(--rule);border-radius:8px;padding:2px;background:var(--card-2)}
+.tab{padding:6px 13px;border-radius:6px;font-size:12.5px;font-weight:500;color:var(--ink-2);white-space:nowrap}
+.tab[aria-selected="true"]{background:var(--stamp);color:#fff}
+.tab .n{font-family:var(--m);font-size:10.5px;opacity:.75;margin-left:5px}
+
+/* ---------- iCoA worklist ---------- */
+.ic{display:grid;grid-template-columns:34px 84px minmax(0,1fr) 128px 108px auto;gap:11px;
+  align-items:center;background:var(--card);border:1px solid var(--rule);border-radius:9px;
+  padding:10px 13px;box-shadow:var(--shadow);text-align:left;width:100%}
+.ic:hover{border-color:var(--stamp-line)}
+.ic.done{background:var(--pass-soft);border-color:color-mix(in srgb,var(--pass) 24%,transparent)}
+.ic.blocked{border-left:3px solid var(--fail)}
+@media (max-width:860px){.ic{grid-template-columns:34px minmax(0,1fr);row-gap:7px}
+  .ic .icdate,.ic .icscope,.ic .iccoq,.ic .icstate{grid-column:2}}
+.icseq{font-family:var(--m);font-size:11px;color:var(--ink-3);text-align:right}
+.icdate{font-family:var(--m);font-size:11.5px;color:var(--ink-2);white-space:nowrap}
+.icname{min-width:0}
+.icname b{font-family:var(--d);font-size:14px;font-weight:600;letter-spacing:-.01em}
+.icname span{display:block;font-size:11px;color:var(--ink-2);margin-top:1px}
+.icscope{display:flex;gap:3px}
+.pchip{width:27px;height:20px;border-radius:4px;border:1px solid var(--rule);
+  font-family:var(--d);font-size:9.5px;font-weight:700;letter-spacing:.02em;
+  display:inline-flex;align-items:center;justify-content:center;color:var(--ink-3);background:var(--card-2)}
+.pchip.req{background:var(--stamp);border-color:var(--stamp);color:#fff}
+.pchip.failed{background:var(--fail);border-color:var(--fail);color:#fff}
+.iccoq{font-size:11px;color:var(--ink-2);line-height:1.3}
+.icstate{justify-self:end}
+.icnote{grid-column:1/-1;font-size:11.5px;color:var(--ink-2);border-top:1px dashed var(--rule-2);
+  padding-top:8px;margin-top:2px;line-height:1.5}
+.icnote b{color:var(--ink)}
+.empty{padding:44px 20px;text-align:center;color:var(--ink-3);background:var(--card);
+  border:1px dashed var(--rule);border-radius:10px}
+.foot{max-width:1400px;margin:0 auto;padding:22px 24px 40px;color:var(--ink-3);font-size:11.5px;
+  border-top:1px solid var(--rule);line-height:1.7}
+.foot b{color:var(--ink-2)}
+.tag{display:inline-block;font-family:var(--m);font-size:10.5px;background:var(--card-2);
+  border:1px solid var(--rule);border-radius:4px;padding:1px 5px;margin-right:3px}
+.ro{background:var(--warn-soft);border:1px solid color-mix(in srgb,var(--warn) 30%,transparent);
+  color:var(--warn);border-radius:8px;padding:9px 12px;font-size:12px;margin-bottom:14px}
+[hidden]{display:none!important}
+</style>
+
+<div class="top">
+  <div class="top-in">
+    <div class="brandrow">
+      <div class="brand">
+        <div class="stampmark" id="mark">Outsourced-laboratory release results</div>
+        <h1 style="margin-top:9px">Purely Plant — Batch Release Register</h1>
+        <p id="sub"></p>
+      </div>
+      <div class="tools">
+        <div class="tabs" role="tablist">
+          <button class="tab" id="tabB" role="tab" aria-selected="true">Batches<span class="n" id="tabBn"></span></button>
+          <button class="tab" id="tabI" role="tab" aria-selected="false">iCoA due<span class="n" id="tabIn"></span></button>
+        </div>
+        <button class="tbtn" id="themeBtn" title="Switch theme"><span class="halfdot"></span>Theme</button>
+        <button class="tbtn" id="addBtn">+ Certificate</button>
+      </div>
+    </div>
+    <div class="band" id="band"></div>
+  </div>
+</div>
+
+<div class="wrap">
+  <aside class="rail">
+    <div class="fgroup">
+      <h4>Search</h4>
+      <input class="srch" id="q" type="search" placeholder="Batch, strain, code, P-number…" autocomplete="off">
+    </div>
+    <div class="fgroup" id="gLab">
+      <h4>Laboratory</h4>
+      <div class="chips" id="fLab"></div>
+    </div>
+    <div class="fgroup" id="gState">
+      <h4>State</h4>
+      <div class="chips" id="fState"></div>
+    </div>
+    <div class="fgroup" id="gDisp">
+      <h4>Disposition</h4>
+      <div class="chips" id="fDisp"></div>
+    </div>
+    <div class="fgroup" id="gScope" hidden>
+      <h4>iCoA scope</h4>
+      <div class="chips" id="fScope"></div>
+    </div>
+    <div class="fgroup" style="padding-top:11px">
+      <button class="clearall" id="clearBtn">Clear all filters</button>
+    </div>
+  </aside>
+
+  <main style="min-width:0">
+    <div class="resline">
+      <span id="count"></span>
+      <span id="hintline"></span>
+    </div>
+    <div class="covkey" id="covkey"></div>
+    <div class="list" id="list"></div>
+  </main>
+</div>
+
+<div class="foot" id="foot"></div>
+
+<dialog id="dlg">
+  <form method="dialog" id="dlgForm">
+    <div class="dlg-h"><h3 id="dlgTitle"></h3><p id="dlgSub"></p></div>
+    <div class="dlg-b" id="dlgBody"></div>
+    <div class="dlg-f">
+      <span class="msg" id="dlgMsg"></span>
+      <button class="tbtn" value="cancel" id="dlgCancel">Cancel</button>
+      <button class="tbtn primary" id="dlgSave" type="button">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<script type="text/plain" id="shell">{{SHELL_B64}}</script>
+<script type="application/json" id="register">{{REGISTER_JSON}}</script>
+<script type="application/json" id="overlay">{{OVERLAY_JSON}}</script>
+
+<script>
+"use strict";
+(function(){
+/* ============================================================
+   state
+   ============================================================ */
+var REG = JSON.parse(document.getElementById("register").textContent);
+var OV  = JSON.parse(document.getElementById("overlay").textContent);
+OV.added = OV.added || [];
+OV.amend = OV.amend || {};
+OV.disp  = OV.disp  || {};
+OV.log   = OV.log   || [];
+
+OV.icoa  = OV.icoa  || {};
+var pub = null, canWrite = false, roShown = false, VIEW = "batches";
+var F = {q:"", lab:new Set(), state:new Set(), disp:new Set(), scope:new Set()};
+var openB = new Set(), openR = null;
+
+var FAM = [
+  {k:"potency",      t:"Potency (CNP)"},
+  {k:"cannabinoids", t:"Cannabinoids (Farmahem)"},
+  {k:"mycotoxins",   t:"Mycotoxins (Farmahem)"},
+  {k:"microbiology", t:"Microbiology (IJZ-MB)"},
+  {k:"physchem",     t:"Physico-chemical (IPH)"}
+];
+var DISPO = [
+  {k:"released", t:"Released",   c:"pass"},
+  {k:"hold",     t:"On hold",    c:"warn"},
+  {k:"rejected", t:"Rejected",   c:"fail"},
+  {k:"pending",  t:"Pending",    c:"none"}
+];
+
+/* ============================================================
+   helpers
+   ============================================================ */
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function el(h){var t=document.createElement("template");t.innerHTML=h.trim();return t.content.firstElementChild;}
+function today(){var d=new Date();var p=function(n){return String(n).padStart(2,"0");};
+  return p(d.getDate())+"."+p(d.getMonth()+1)+"."+d.getFullYear();}
+function nowISO(){return new Date().toISOString();}
+
+/* magnitude() — mirrors validate_ecoa_limits.magnitude(): superscripts,
+   Cyrillic х, caret form, decimal comma. It answers ONE question: what number
+   is this measurement. Returns null when the cell is prose rather than a
+   number, which most cells on this register are. */
+var SUP={"⁰":"0","¹":"1","²":"2","³":"3","⁴":"4",
+         "⁵":"5","⁶":"6","⁷":"7","⁸":"8","⁹":"9"};
+function magnitude(raw){
+  if(raw==null) return null;
+  var s=String(raw).trim();
+  if(!s) return null;
+  /* A cell that is mostly prose is a note, not a measurement. Without this,
+     "COMPLIES (numeric value not present in captured source excerpt for report
+     1625/2026 …)" parses to 1625 and is shown as 406x over an aflatoxin limit
+     of 4 — a false failure on a cell whose first word is COMPLIES. */
+  var letters=(s.match(/[A-Za-zА-Яа-яЀ-ӿ]/g)||[]).length;
+  if(letters>12 && letters>s.length*0.35) return null;
+  s=s.replace(/[⁰¹²³⁴-⁹]/g,function(c){return "^"+SUP[c];});
+  s=s.replace(/[хХ×✕]/g,"x");
+  s=s.replace(/≤/g,"<=").replace(/≥/g,">=");
+  s=s.replace(/(\d),(\d)/g,"$1.$2");
+  var m=s.match(/(\d+(?:\.\d+)?)\s*x\s*10\s*\^?\s*(\d+)/i);
+  if(m) return parseFloat(m[1])*Math.pow(10,parseInt(m[2],10));
+  m=s.match(/(?:^|[^\d.])10\s*\^\s*(\d+)/);
+  if(m) return Math.pow(10,parseInt(m[1],10));
+  m=s.match(/(\d+(?:\.\d+)?)/);
+  if(m && !/and|и/i.test(s)) return parseFloat(m[1]);
+  return null;
+}
+
+/* acceptanceLimit() answers a DIFFERENT question: what is the largest result
+   that still conforms. For a microbial enumeration criterion written as a bare
+   power of ten those two numbers are not the same. Ph. Eur. 5.1.4, in identical
+   harmonised wording USP <1111>, and again in the "Interpretation of results"
+   text of Ph. Eur. 2.6.12 / USP <61>:
+
+     "10^1 CFU: maximum acceptable count = 20; 10^2 CFU: maximum acceptable
+      count = 200; 10^3 CFU: maximum acceptable count = 2000, and so forth."
+
+   ×2 per decade, so ≤ 10⁴ CFU/g conforms up to 20 000. Asking magnitude() for
+   the limit compared counts against 10 000 and showed nine TYMC results in
+   red where five belong there. It governs enumeration criteria only — never
+   the "absence in 1 g / 25 g" criteria, which are absolute — and never a
+   percentage or a µg/kg ceiling, which mean exactly what they say. */
+var PH_EUR_FACTOR=2;
+var COUNTED=/tamc|tymc|cfu|gnb|gram-negative|aerobic|yeast|mould|mold/i;
+function acceptanceLimit(lim,colName){
+  if(lim==null) return null;
+  var s=String(lim).trim();
+  if(!s) return null;
+  var norm=s.replace(/[⁰¹²³⁴-⁹]/g,function(c){return "^"+SUP[c];})
+            .replace(/[хХ×✕]/g,"x").replace(/\s+/g,"");
+  var m=norm.match(/^[<≤]?10\^(\d)(?!\d)/);
+  if(m && COUNTED.test(String(colName||"")+" "+s))
+    return PH_EUR_FACTOR*Math.pow(10,parseInt(m[1],10));
+  return magnitude(s);
+}
+
+/* a value is "over" only when both sides parse AND the cell is not a
+   bounded/absent statement; "<10" is a bound, not a measurement. */
+function overLimit(v,lim,colName){
+  if(!v||!lim) return false;
+  var sv=String(v).trim();
+  if(/^[<≤]/.test(sv)) return false;
+  if(/and|и/i.test(sv)) return false;
+  if(/^(n\.?d\.?|blq|absent|одговара|н\.д)/i.test(sv)) return false;
+  if(!/^[<>≤≥]?\s*[\d.,]/.test(sv.replace(/^[<>≤≥]\s*/,""))&&!/^\d/.test(sv)) return false;
+  var a=magnitude(sv), b=acceptanceLimit(lim,colName);
+  if(a==null||b==null) return false;
+  if(!/[<≤]/.test(String(lim))&&!/max/i.test(String(lim))) return false;
+  return a>b*1.0000001;
+}
+
+/* Over a RELEASE criterion. A row the register files under its own Stability
+   Testing Programme is not a release sample: the four accelerated 40 °C / 75 %
+   RH timepoints sit above the CBN release limit because Δ9-THCA has
+   decarboxylated and the neutral cannabinoids have oxidised on to CBN. That is
+   a stability observation. Whether it is a failure is a question for the
+   stability protocol, and showing it beside a genuine release failure says
+   something false about the batch. */
+function overRelease(r,L){
+  if(r&&r.stability) return false;
+  var col=REG.columns[L]||{};
+  return overLimit((r.vals||{})[L],col.limit,col.name);
+}
+
+function rowKey(r){return r.row!=null?("r"+r.row):("a"+r.id);}
+function allRows(){
+  var out=REG.rows.map(function(r){
+    var a=OV.amend[rowKey(r)];
+    if(!a) return r;
+    var c=Object.assign({},r); c.vals=Object.assign({},r.vals,a.vals);
+    c._amended=a; return c;
+  });
+  OV.added.forEach(function(r){var c=Object.assign({},r);c._added=true;out.push(c);});
+  return out;
+}
+function batchIndex(){
+  var m=new Map();
+  REG.blocks.forEach(function(b){m.set(b.batch,{ref:b.ref,batch:b.batch,pnumber:b.pnumber,
+    strain:b.strain,rows:[]});});
+  allRows().forEach(function(r){
+    if(!m.has(r.batch)) m.set(r.batch,{ref:r.ref||"—",batch:r.batch,pnumber:r.pnumber||"",
+      strain:r.strain||"",rows:[],_new:true});
+    m.get(r.batch).rows.push(r);
+  });
+  var arr=Array.from(m.values());
+  arr.forEach(function(b){
+    b.fam=families(b.rows);
+    b.famN=FAM.filter(function(f){return b.fam[f.k];}).length;
+    b.d=OV.disp[b.batch]||null;
+    b.flags=b.rows.filter(function(r){return r.flags;}).length;
+    b.over=0;
+    b.rows.forEach(function(r){
+      Object.keys(r.vals||{}).forEach(function(L){
+        if(overRelease(r,L)) b.over++;
+      });
+    });
+    b.ver=b.rows.filter(function(r){return r.verified;}).length;
+  });
+  arr.sort(function(x,y){var a=parseInt(x.ref,10),b2=parseInt(y.ref,10);
+    if(isNaN(a))return 1; if(isNaN(b2))return -1; return a-b2;});
+  return arr;
+}
+function families(rows){
+  var f={};
+  rows.forEach(function(r){
+    var c=String(r.code||"").replace(/\s*\([^)]*\)\s*$/,"").trim();
+    var lab=String(r.lab||"");
+    if(!c||/^(n\/a|\(not numbered\))/i.test(c)) return;
+    if(/ППК/.test(c)){f.potency=1;return;}
+    if(/Farmahem/i.test(lab)){ if(/-\s*[МM]\s*\//.test(c)) f.mycotoxins=1; else f.cannabinoids=1; return;}
+    if(/^\d+\/\d+\/\d+/.test(c)){f.microbiology=1;return;}
+    if(/^\d+\/\d{4}$/.test(c)){f.physchem=1;return;}
+    if(/10802/.test(c)){f.physchem=1;return;}
+  });
+  return f;
+}
+
+/* ============================================================
+   render
+   ============================================================ */
+function render(){
+  document.getElementById("tabB").setAttribute("aria-selected",VIEW==="batches");
+  document.getElementById("tabI").setAttribute("aria-selected",VIEW==="icoa");
+  document.getElementById("gLab").hidden=VIEW!=="batches";
+  document.getElementById("gState").hidden=VIEW!=="batches";
+  document.getElementById("gDisp").hidden=VIEW!=="batches";
+  document.getElementById("gScope").hidden=VIEW!=="icoa";
+  document.getElementById("addBtn").hidden=VIEW!=="batches";
+  document.getElementById("tabBn").textContent=REG.blocks.length;
+  document.getElementById("tabIn").textContent=(REG.icoa||[]).length;
+  if(VIEW==="icoa") return renderICoA();
+  var all=batchIndex();
+  var shown=all.filter(match);
+  document.getElementById("sub").textContent=REG.subtitle||"";
+  renderBand(all);
+  renderFilters(all);
+  var L=document.getElementById("list");
+  L.innerHTML="";
+  var shownRows=shown.reduce(function(a,b){return a+b.rows.length;},0);
+  var shownCerts=shown.reduce(function(a,b){return a+b.rows.filter(function(r){
+    return !/^(n\/a|\(not numbered\))/i.test(String(r.code));}).length;},0);
+  document.getElementById("count").innerHTML=
+    "<b>"+shown.length+"</b> of "+all.length+" batches · "+shownRows+" rows, "+
+    shownCerts+" naming a certificate";
+  document.getElementById("hintline").textContent =
+    canWrite ? "Click a batch to expand · click a row for full detail"
+             : (pub===null ? "" : "Read-only view");
+  document.getElementById("covkey").innerHTML='<b>Testing recorded</b>'+
+    FAM.map(function(f){return '<span><i></i>'+esc(f.t)+'</span>';}).join("");
+  if(!shown.length){L.appendChild(el('<div class="empty">No batch matches these filters.</div>'));return;}
+  shown.forEach(function(b){L.appendChild(batchCard(b));});
+}
+
+/* ============================================================
+   iCoA worklist — the in-house documents each CoQ is waiting on
+   ============================================================ */
+var PARAM=[{k:"A",t:"Ident A · macroscopy (the appearance examination), Ph. Eur. 2.8.23"},
+           {k:"B",t:"Ident B · microscopy, Ph. Eur. 2.8.23"},
+           {k:"C",t:"Ident C · TLC, Ph. Eur. 2.8.23 — no laboratory has ever performed it"},
+           {k:"FM",t:"Foreign matter, Ph. Eur. 2.8.2"}];
+function needs(x,k){return k==="FM"?x.fm:!!x.p[k];}
+function icoaOf(x){return OV.icoa[x.batch]||null;}
+
+function renderICoA(){
+  var rows=(REG.icoa||[]).slice();
+  var shown=rows.filter(function(x){
+    if(F.q){var h=(x.batch+" "+x.strain+" "+x.date+" "+x.ref).toLowerCase();
+      if(h.indexOf(F.q.toLowerCase())<0) return false;}
+    if(F.scope.size){
+      var iss=!!icoaOf(x);
+      var ok=false;
+      if(F.scope.has("full")&&x.scope==="ABCFM") ok=true;
+      if(F.scope.has("conly")&&x.scope==="C") ok=true;
+      if(F.scope.has("issued")&&iss) ok=true;
+      if(F.scope.has("outstanding")&&!iss) ok=true;
+      if(F.scope.has("blocked")&&x.block) ok=true;
+      if(!ok) return false;
+    }
+    return true;
+  });
+  var iss=rows.filter(icoaOf).length;
+  document.getElementById("band").innerHTML=[
+    {n:rows.length,l:"iCoA required",s:"one per batch"},
+    {n:rows.filter(function(x){return x.scope==="ABCFM";}).length,l:"Full panel",s:"A + B + C + foreign matter"},
+    {n:rows.filter(function(x){return x.scope==="C";}).length,l:"Ident C only",s:"CNP Ph. Eur. form covers the rest"},
+    {n:81+rows.filter(function(x){return x.reissue;}).length,l:"CoQ documents",s:"81 initial + "+
+      rows.filter(function(x){return x.reissue;}).length+" reissue"},
+    {n:iss,l:"iCoA issued",s:iss?"recorded here":"none yet",c:iss?"ok":""},
+    {n:rows.filter(function(x){return x.block;}).length,l:"CoQ still blocked",s:"outsourced panel outstanding",c:"wa"}
+  ].map(function(x){return '<div class="stat '+(x.c||"")+'"><span class="n">'+x.n+'</span><span class="l">'+
+      esc(x.l)+'</span><span class="sub">'+esc(x.s)+'</span></div>';}).join("");
+  chipset("fScope",[
+    {k:"full",t:"Full panel",c:rows.filter(function(x){return x.scope==="ABCFM";}).length},
+    {k:"conly",t:"Ident C only",c:rows.filter(function(x){return x.scope==="C";}).length},
+    {k:"outstanding",t:"Not yet issued",c:rows.length-iss},
+    {k:"issued",t:"Issued",c:iss},
+    {k:"blocked",t:"CoQ blocked",c:rows.filter(function(x){return x.block;}).length}
+  ],F.scope);
+  document.getElementById("count").innerHTML="<b>"+shown.length+"</b> of "+rows.length+
+    " iCoA documents · in release order";
+  document.getElementById("hintline").textContent=canWrite?
+    "Click a row to record the iCoA once it is issued":"Read-only view";
+  document.getElementById("covkey").innerHTML='<b>iCoA covers</b>'+
+    PARAM.map(function(p){return '<span><i style="width:auto;height:auto;background:none">'+
+      '<span class="pchip req" style="width:22px;height:16px">'+p.k+'</span></i>'+
+      esc(p.t.split("·")[0].trim())+'</span>';}).join("");
+  var L=document.getElementById("list"); L.innerHTML="";
+  if(!shown.length){L.appendChild(el('<div class="empty">No iCoA matches these filters.</div>'));return;}
+  shown.forEach(function(x){L.appendChild(icoaCard(x));});
+}
+
+function icoaCard(x){
+  var got=icoaOf(x);
+  var c=el('<button type="button" class="ic'+(got?" done":"")+(x.failed?" blocked":"")+'"></button>');
+  c.innerHTML=
+    '<span class="icseq">'+x.seq+'</span>'+
+    '<span class="icdate">'+esc(x.date||"no date")+'</span>'+
+    '<span class="icname"><b>'+esc(x.batch)+'</b><span>'+esc(x.strain||"—")+
+      (x.inreg?' · register ref '+esc(x.ref):' · not in the register')+
+      (x.note?' · '+esc(x.note):'')+'</span></span>'+
+    '<span class="icscope">'+PARAM.map(function(p){
+      var req=needs(x,p.k);
+      var fail=(p.k==="FM"&&x.failed);
+      return '<span class="pchip '+(fail?"failed":(req?"req":""))+'" title="'+esc(p.t)+
+        (fail?" — reported and FAILED":(req?" — required in-house":" — covered by the CNP certificate"))+
+        '">'+p.k+'</span>';}).join("")+'</span>'+
+    '<span class="iccoq">'+(x.reissue?"initial + reissue<br>"+esc(x.rdate):"initial release")+'</span>'+
+    '<span class="icstate">'+(got?'<span class="pill pass">'+esc(got.no||"issued")+'</span>'
+      :'<span class="pill '+(x.block?"warn":"none")+'">'+(x.block?"CoQ blocked":"outstanding")+'</span>')+'</span>'+
+    (x.failed?'<span class="icnote"><b>Nothing is missing here, and the CoQ still cannot be issued.</b> '+
+       esc(x.failed)+'</span>':'')+
+    (got?'<span class="icnote"><b>'+esc(got.no)+'</b> · '+esc(got.date)+' · '+esc(got.by)+
+       ' · covers '+esc((got.params||[]).join(" + "))+
+       (got.note?'<br>'+esc(got.note):'')+'</span>':'')+
+    (x.block&&!x.failed?'<span class="icnote">CoQ also waiting on outsourced testing: <b>'+
+       esc(x.block)+'</b>. The iCoA can be issued now; the CoQ cannot be compiled until that arrives.</span>':'');
+  c.onclick=function(){ if(canWrite) icoaDialog(x); };
+  return c;
+}
+
+function icoaDialog(x){
+  var got=icoaOf(x)||{};
+  var req=PARAM.filter(function(p){return needs(x,p.k);});
+  openDialog("iCoA — "+x.batch,
+    "Recorded against the batch. The CoQ"+(x.reissue?"s":"")+" for this batch reference this one document.",
+    '<div class="two">'+fld("iNo","iCoA number",got.no||"","e.g. iCoA-2026-014")+
+      fld("iDate","Date of issue",got.date||today())+'</div>'+
+    fld("iBy","Issued by",got.by||"","Name or initials")+
+    '<div class="eyebrow" style="margin:14px 0 7px">Parameters this iCoA covers</div>'+
+    req.map(function(p){
+      var on=!got.params||got.params.indexOf(p.k)>=0;
+      return '<label style="display:flex;gap:8px;align-items:flex-start;margin-bottom:7px;font-size:12px">'+
+        '<input type="checkbox" id="ip_'+p.k+'"'+(on?" checked":"")+' style="width:auto;margin-top:2px">'+
+        '<span><b>'+p.k+'</b> — '+esc(p.t.replace(/^[^·]*·\s*/,""))+'</span></label>';
+    }).join("")+
+    (x.scope==="C"?'<div class="hint" style="margin-top:6px">Ident A, Ident B and foreign matter are '+
+      'reported on this batch&rsquo;s CNP Ph. Eur. 11.5 certificate and are not repeated in-house.</div>':"")+
+    '<div class="fld" style="margin-top:13px"><label for="iN">Note</label><textarea id="iN" '+
+      'placeholder="Method, justification, retained-sample reference…">'+esc(got.note||"")+'</textarea></div>',
+    function(msg,save){
+      var no=val("iNo"), by=val("iBy");
+      if(!no||!by){msg.textContent="An iCoA needs its number and the person issuing it.";
+        msg.className="msg err";return;}
+      var ps=req.filter(function(p){var e=document.getElementById("ip_"+p.k);return e&&e.checked;})
+               .map(function(p){return p.k;});
+      if(!ps.length){msg.textContent="Tick at least one parameter, or this record covers nothing.";
+        msg.className="msg err";return;}
+      OV.icoa[x.batch]={no:no,date:val("iDate")||today(),by:by,params:ps,note:val("iN"),at:nowISO()};
+      OV.log.push({t:"icoa",batch:x.batch,no:no,by:by,at:nowISO(),params:ps});
+      commit(msg,save);
+    });
+}
+
+function renderBand(all){
+  var rows=allRows();
+  var certs=rows.filter(function(r){return !/^(n\/a|\(not numbered\))/i.test(String(r.code));});
+  var ver=rows.filter(function(r){return r.verified;}).length;
+  var over=all.reduce(function(a,b){return a+b.over;},0);
+  var full=all.filter(function(b){return b.fam.microbiology&&b.fam.physchem;}).length;
+  var dispN=Object.keys(OV.disp).length;
+  var band=[
+    {n:all.length,l:"Batches",s:full+" fully panelled"},
+    {n:certs.length,l:"Certificates",s:OV.added.length?("+"+OV.added.length+" added here"):"one row each"},
+    {n:ver,l:"Page-verified",s:Math.round(ver/rows.length*100)+"% of rows",c:"ok"},
+    {n:over,l:"Over own limit",s:"computed from the page",c:over?"fa":""},
+    {n:all.length-full,l:"Panel incomplete",s:"no micro or phys-chem",c:"wa"},
+    {n:dispN,l:"Dispositions",s:dispN?"recorded here":"none recorded",c:dispN?"ok":""}
+  ];
+  document.getElementById("band").innerHTML=band.map(function(s){
+    return '<div class="stat '+(s.c||"")+'"><span class="n">'+s.n+'</span>'+
+      '<span class="l">'+esc(s.l)+'</span><span class="sub">'+esc(s.s)+'</span></div>';
+  }).join("");
+}
+
+function renderFilters(all){
+  var labs={};
+  allRows().forEach(function(r){var l=(r.lab||"").split("—")[0].trim();
+    if(l&&l!=="n/a") labs[l]=(labs[l]||0)+1;});
+  chipset("fLab",Object.keys(labs).sort().map(function(k){
+    return {k:k,t:k.length>19?k.slice(0,18)+"…":k,c:labs[k]};}),F.lab);
+  chipset("fState",[
+    {k:"over",t:"Over limit",c:all.filter(function(b){return b.over;}).length},
+    {k:"flag",t:"Flagged",c:all.filter(function(b){return b.flags;}).length},
+    {k:"unver",t:"Not verified",c:all.filter(function(b){return b.ver<b.rows.length;}).length},
+    {k:"incomplete",t:"Panel incomplete",c:all.filter(function(b){return !(b.fam.microbiology&&b.fam.physchem);}).length},
+    {k:"amended",t:"Amended here",c:all.filter(function(b){return b.rows.some(function(r){return r._amended||r._added;});}).length}
+  ],F.state);
+  chipset("fDisp",DISPO.map(function(d){
+    return {k:d.k,t:d.t,c:all.filter(function(b){return b.d&&b.d.status===d.k;}).length};
+  }).concat([{k:"__none",t:"Not set",c:all.filter(function(b){return !b.d;}).length}]),F.disp);
+}
+function chipset(id,items,set){
+  var host=document.getElementById(id);
+  host.innerHTML=items.map(function(i){
+    return '<button type="button" class="chip" data-k="'+esc(i.k)+'" aria-pressed="'+
+      (set.has(i.k)?"true":"false")+'">'+esc(i.t)+'<span class="c">'+i.c+'</span></button>';
+  }).join("");
+  host.onclick=function(e){
+    var b=e.target.closest(".chip"); if(!b) return;
+    var k=b.dataset.k; set.has(k)?set.delete(k):set.add(k); render();
+  };
+}
+function match(b){
+  if(F.q){
+    var q=F.q.toLowerCase();
+    var hay=[b.batch,b.strain,b.pnumber,b.ref].concat(
+      b.rows.map(function(r){return r.code+" "+r.lab+" "+r.date;})).join(" ").toLowerCase();
+    if(hay.indexOf(q)<0) return false;
+  }
+  if(F.lab.size && !b.rows.some(function(r){
+    return F.lab.has((r.lab||"").split("—")[0].trim());})) return false;
+  if(F.state.size){
+    var ok=false;
+    if(F.state.has("over")&&b.over) ok=true;
+    if(F.state.has("flag")&&b.flags) ok=true;
+    if(F.state.has("unver")&&b.ver<b.rows.length) ok=true;
+    if(F.state.has("incomplete")&&!(b.fam.microbiology&&b.fam.physchem)) ok=true;
+    if(F.state.has("amended")&&b.rows.some(function(r){return r._amended||r._added;})) ok=true;
+    if(!ok) return false;
+  }
+  if(F.disp.size){
+    var s=b.d?b.d.status:"__none";
+    if(!F.disp.has(s)) return false;
+  }
+  return true;
+}
+
+function batchCard(b){
+  var open=openB.has(b.batch);
+  var card=el('<section class="batch'+(open?" open":"")+'"></section>');
+  var dp=b.d?DISPO.filter(function(d){return d.k===b.d.status;})[0]:null;
+  var head=el('<button class="bhead" type="button">'+
+    '<span class="refno">'+esc(b.ref)+'</span>'+
+    '<span class="bid"><span class="bn">'+esc(b.batch)+
+      (b._new?' <span class="pill info">added</span>':'')+
+      (b.over?' <span class="pill fail">'+b.over+' over limit</span>':'')+
+      (b.flags&&!b.over?' <span class="pill warn">'+b.flags+' flagged</span>':'')+
+    '</span><span class="bm">'+esc(b.strain||"—")+
+      (b.pnumber?' <span class="pn">'+esc(b.pnumber)+'</span>':'')+
+      ' · '+b.rows.length+' certificate'+(b.rows.length===1?"":"s")+
+      ' · '+b.ver+'/'+b.rows.length+' verified</span></span>'+
+    '<span class="bright">'+
+      '<span class="cov" title="Test families recorded">'+FAM.map(function(f){
+        return '<i class="'+(b.fam[f.k]?"on":"")+'" title="'+esc(f.t)+(b.fam[f.k]?" — recorded":" — none recorded")+'"></i>';
+      }).join("")+'</span>'+
+      '<span class="covlab">'+b.famN+'/5</span>'+
+      '<span class="pill '+(dp?dp.c:"none")+'">'+esc(dp?dp.t:"no disposition")+'</span>'+
+      '<span class="caret">&#9654;</span>'+
+    '</span></button>');
+  head.onclick=function(){openB.has(b.batch)?openB.delete(b.batch):openB.add(b.batch);render();};
+  card.appendChild(head);
+  if(open) card.appendChild(batchBody(b));
+  return card;
+}
+
+function batchBody(b){
+  var box=el('<div class="bbody"></div>');
+  var t=el('<table class="ctab"><thead><tr>'+
+    '<th style="width:23%">Certificate</th><th style="width:12%">Date</th>'+
+    '<th style="width:17%">Laboratory</th><th>Results</th></tr></thead><tbody></tbody></table>');
+  var tb=t.querySelector("tbody");
+  b.rows.forEach(function(r){
+    var k=rowKey(r);
+    var isSel=openR===k;
+    var vals=Object.keys(r.vals||{}).filter(function(L){
+      var v=r.vals[L]; return v && v!=="/" && String(v).toLowerCase()!=="n/a";});
+    var chips=vals.slice(0,7).map(function(L){
+      var col=REG.columns[L]||{}, v=r.vals[L];
+      var cls=overRelease(r,L)?" over":((r.flags&&r.flags[L])?" flag":"");
+      return '<span class="vchip'+cls+'"><b>'+esc(shortName(col.name))+'</b>'+esc(v)+'</span>';
+    }).join("")+(vals.length>7?'<span class="vchip">+'+(vals.length-7)+'</span>':"");
+    var fl=r.flags?Object.keys(r.flags).map(function(x){return r.flags[x];}):[];
+    var dot=fl.indexOf("red")>=0?"red":(fl.length?"amber":(r.verified?"ver":"unver"));
+    var dt=fl.indexOf("red")>=0?"Laboratory declared out of specification":
+      (fl.length?"Laboratory finding or data-integrity flag":
+      (r.verified?("Page-verified in the "+r.verified+" pass"):"Not page-verified"));
+    var tr=el('<tr class="crow'+(isSel?" sel":"")+'">'+
+      '<td><span class="code"><span class="dot '+dot+'" title="'+esc(dt)+'"></span>'+
+        esc(r.code)+(r._added?' <span class="amend">added</span>':"")+
+        (r._amended?' <span class="amend">amended</span>':"")+'</span></td>'+
+      '<td class="tdate">'+esc(r.date||"—")+'</td>'+
+      '<td class="tlab">'+esc((r.lab||"—").replace(/\s*—.*$/,""))+'</td>'+
+      '<td><span class="vsum">'+(chips||'<span class="tlab">no results recorded</span>')+'</span></td></tr>');
+    tr.onclick=function(){openR=(openR===k?null:k);render();};
+    tb.appendChild(tr);
+    if(isSel){
+      var d=el('<tr><td colspan="4" style="padding:0"></td></tr>');
+      d.firstElementChild.appendChild(detail(r,b));
+      tb.appendChild(d);
+    }
+  });
+  box.appendChild(t);
+  box.appendChild(dispBar(b));
+  return box;
+}
+function shortName(n){
+  return String(n||"").replace(" CFU/g","").replace(" µg/kg","").replace(" mg/kg","")
+    .replace("Bile-tolerant GNB /1 g","GNB").replace("Loss on drying %","LoD")
+    .replace("Aflatoxins Σ","Afla Σ").replace("Aflatoxin B1","Afla B1")
+    .replace("Ochratoxin A","OTA").replace(" /25 g","").replace(" /1 g","")
+    .replace("THC spec","spec").trim();
+}
+
+function detail(r,b){
+  var d=el('<div class="detail"></div>');
+  d.appendChild(el('<div class="drow">'+
+    '<span class="eyebrow">Certificate</span>'+
+    '<span class="mono" style="font-size:13px"><b>'+esc(r.code)+'</b></span>'+
+    '<span>Issued <b>'+esc(r.date||"—")+'</b></span>'+
+    '<span>'+esc(r.lab||"—")+'</span>'+
+    (r.row?'<span class="tag">register row '+r.row+'</span>':'<span class="tag">added here</span>')+
+    (r.verified?'<span class="pill pass">page-verified · '+esc(r.verified)+'</span>'
+               :'<span class="pill none">not page-verified</span>')+
+    (r.pdf?'<a href="'+esc(r.pdf)+'" target="_blank" rel="noopener">Open certificate ↗</a>':"")+
+    '</div>'));
+  var keys=Object.keys(REG.columns).filter(function(L){
+    var v=(r.vals||{})[L]; return v && v!=="/" ;});
+  if(keys.length){
+    var g=el('<div class="dgrid"></div>');
+    keys.forEach(function(L){
+      var col=REG.columns[L]||{}, v=r.vals[L];
+      var raw=overLimit(v,col.limit,col.name);
+      var over=raw&&!r.stability;
+      var stab=raw&&r.stability;
+      var fl=(r.flags||{})[L];
+      var cls=over?"over":(stab?"flag":(fl||""));
+      var lim=acceptanceLimit(col.limit,col.name);
+      var limTxt=col.limit||"no limit stated";
+      /* Name the count a value was judged against, unless the criterion already
+         prints it — the register's own specification row now does. */
+      if(lim!=null&&/10\^|[⁰¹²³⁴-⁹]/.test(String(col.limit))&&COUNTED.test(col.name||"")){
+        var pretty=String(lim).replace(/\B(?=(\d{3})+(?!\d))/g," ");
+        if(limTxt.replace(/\s+/g," ").indexOf(pretty)<0)
+          limTxt+=" — max acceptable count "+pretty+" CFU/g (Ph. Eur. 5.1.4)";
+      }
+      g.appendChild(el('<div class="pcard '+cls+'">'+
+        '<div class="pn2">'+esc(col.name||L)+'</div>'+
+        '<div class="pv">'+esc(v)+(over?' <span class="pill fail">over</span>':"")+
+          (stab?' <span class="pill warn">stability timepoint</span>':"")+
+          (fl==="amber"&&!over&&!stab?' <span class="pill warn">flag</span>':"")+
+          (fl==="red"&&!over?' <span class="pill fail">OOS</span>':"")+'</div>'+
+        '<div class="pl">'+esc(limTxt)+'</div></div>'));
+    });
+    d.appendChild(g);
+  } else {
+    d.appendChild(el('<div class="note" style="border-left-color:var(--rule)">'+
+      'This row records no result values. In the register a <span class="tag">/</span> means '+
+      '“parameter not covered by that certificate”.</div>'));
+  }
+  /* Notes hang off the cell they were written on. W and X are outside the result
+     columns — and W is where the one out-of-specification verdict in the whole
+     register is recorded, so it must not read as a bare column letter. */
+  var COLNAME={W:"Certificate code",X:"Date of issue"};
+  if(r.notes) Object.keys(r.notes).forEach(function(L){
+    var nm=(REG.columns[L]||{}).name||COLNAME[L]||L;
+    d.appendChild(el('<div class="note"><div class="nh">Verification note · '+
+      esc(nm)+'</div>'+esc(r.notes[L])+'</div>'));
+  });
+  if(r._amended){
+    var a=r._amended;
+    d.appendChild(el('<div class="note"><div class="nh">Amended in this register view</div>'+
+      esc(a.reason||"(no reason given)")+"\n\n"+esc(a.by||"unattributed")+" · "+esc(a.at||"")+
+      "\n"+Object.keys(a.vals).map(function(L){
+        return (REG.columns[L]||{}).name+": "+(r._amended.was&&r._amended.was[L]!=null?r._amended.was[L]:"—")+
+               " → "+a.vals[L];}).join("\n")+'</div>'));
+  }
+  if(canWrite){
+    var bar=el('<div class="drow" style="margin-top:13px;gap:8px"></div>');
+    var eb=el('<button class="tbtn" type="button">Amend values</button>');
+    eb.onclick=function(ev){ev.stopPropagation();amendDialog(r);};
+    bar.appendChild(eb);
+    d.appendChild(bar);
+  }
+  d.onclick=function(e){e.stopPropagation();};
+  return d;
+}
+
+function dispBar(b){
+  var d=b.d, dp=d?DISPO.filter(function(x){return x.k===d.status;})[0]:null;
+  var bar=el('<div class="dispbar"></div>');
+  bar.appendChild(el('<span class="pill '+(dp?dp.c:"none")+'">'+esc(dp?dp.t:"no disposition")+'</span>'));
+  bar.appendChild(el('<span class="dtext">'+
+    (d?esc(d.note||"(no note)")+'<div class="who">'+esc(d.by||"unattributed")+
+        " · "+esc(d.date||"")+'</div>'
+      :'The register has no disposition column. Record one here — it is kept as an overlay '+
+       'and never overwrites a laboratory value.')+'</span>'));
+  if(canWrite){
+    var btn=el('<button class="tbtn" type="button">'+(d?"Update":"Set")+' disposition</button>');
+    btn.onclick=function(e){e.stopPropagation();dispDialog(b);};
+    bar.appendChild(btn);
+  }
+  return bar;
+}
+
+/* ============================================================
+   dialogs
+   ============================================================ */
+var dlg=document.getElementById("dlg");
+function openDialog(title,sub,bodyHTML,onSave){
+  document.getElementById("dlgTitle").textContent=title;
+  document.getElementById("dlgSub").textContent=sub||"";
+  document.getElementById("dlgBody").innerHTML=bodyHTML;
+  var msg=document.getElementById("dlgMsg"); msg.textContent=""; msg.className="msg";
+  var save=document.getElementById("dlgSave");
+  save.disabled=false; save.textContent="Save";
+  save.onclick=function(){onSave(msg,save);};
+  dlg.showModal();
+  var f=document.getElementById("dlgBody").querySelector("input,select,textarea");
+  if(f) setTimeout(function(){f.focus();},30);
+}
+function fld(id,label,val,hint,type){
+  return '<div class="fld"><label for="'+id+'">'+esc(label)+'</label>'+
+    '<input id="'+id+'" type="'+(type||"text")+'" value="'+esc(val||"")+'">'+
+    (hint?'<div class="hint">'+esc(hint)+'</div>':"")+'</div>';
+}
+function val(id){var e=document.getElementById(id);return e?e.value.trim():"";}
+
+function dispDialog(b){
+  var d=b.d||{};
+  openDialog("Disposition — "+b.batch,
+    "The register records what each certificate says, not what was decided. This is kept separately.",
+    '<div class="fld"><label for="dS">Status</label><select id="dS">'+
+      DISPO.map(function(x){return '<option value="'+x.k+'"'+(d.status===x.k?" selected":"")+'>'+x.t+'</option>';}).join("")+
+    '</select></div>'+
+    '<div class="two">'+fld("dBy","Decided by",d.by||"","Name or initials")+
+      fld("dDate","Date",d.date||today())+'</div>'+
+    '<div class="fld"><label for="dN">Note</label><textarea id="dN" '+
+      'placeholder="Basis for the decision, deviation reference, conditions…">'+esc(d.note||"")+'</textarea></div>',
+    function(msg,save){
+      var rec={status:document.getElementById("dS").value,by:val("dBy"),
+        date:val("dDate")||today(),note:val("dN"),at:nowISO()};
+      if(!rec.by){msg.textContent="Say who decided — a disposition without an owner is not a record.";
+        msg.className="msg err";return;}
+      OV.disp[b.batch]=rec;
+      OV.log.push({t:"disposition",batch:b.batch,status:rec.status,by:rec.by,at:rec.at});
+      commit(msg,save);
+    });
+}
+
+function amendDialog(r){
+  var cur=r.vals||{};
+  var rows=Object.keys(REG.columns).map(function(L){
+    var col=REG.columns[L];
+    return '<div class="vedit"><span class="vn">'+esc(col.name||L)+
+      '<i>'+esc(col.limit||"no limit")+'</i></span>'+
+      '<input id="v_'+L+'" value="'+esc(cur[L]||"")+'"></div>';
+  }).join("");
+  openDialog("Amend "+r.code,
+    "Values are stored as an overlay with a reason and an author. The laboratory value stays intact underneath.",
+    rows+'<div class="two" style="margin-top:12px">'+
+      fld("aBy","Amended by","","Name or initials")+fld("aDate","Date",today())+'</div>'+
+      '<div class="fld"><label for="aR">Reason</label><textarea id="aR" '+
+      'placeholder="Why the register value changes — cite the page, the report or the record."></textarea></div>',
+    function(msg,save){
+      var by=val("aBy"), reason=val("aR");
+      if(!by||!reason){msg.textContent="An amendment needs an author and a reason.";
+        msg.className="msg err";return;}
+      var nv={}, was={};
+      Object.keys(REG.columns).forEach(function(L){
+        var v=val("v_"+L); var old=cur[L]||"";
+        if(v!==old){nv[L]=v;was[L]=old;}
+      });
+      if(!Object.keys(nv).length){msg.textContent="Nothing changed.";msg.className="msg err";return;}
+      var k=rowKey(r);
+      if(r._added){
+        OV.added.forEach(function(a){if("a"+a.id===k) a.vals=Object.assign({},a.vals,nv);});
+      } else {
+        OV.amend[k]={vals:nv,was:was,by:by,at:nowISO(),date:val("aDate")||today(),reason:reason};
+      }
+      OV.log.push({t:"amend",row:k,code:r.code,by:by,at:nowISO(),n:Object.keys(nv).length});
+      commit(msg,save);
+    });
+}
+
+function addDialog(){
+  var batches=batchIndex();
+  openDialog("Add a certificate record","Adds a row to this view. The workbook is not modified.",
+    '<div class="fld"><label for="nB">Batch</label><select id="nB">'+
+      batches.map(function(b){return '<option value="'+esc(b.batch)+'">'+esc(b.ref+" · "+b.batch+
+        (b.strain?" — "+b.strain:""))+'</option>';}).join("")+
+      '<option value="__new">— new batch —</option></select></div>'+
+    '<div id="nNewWrap" hidden>'+
+      '<div class="two">'+fld("nNB","New batch number","")+fld("nS","Strain","")+'</div>'+
+      fld("nP","P-number","")+'</div>'+
+    '<div class="two">'+fld("nC","Certificate code","","As printed on the document")+
+      fld("nD","Date of issue",today())+'</div>'+
+    '<div class="fld"><label for="nL">Laboratory</label><select id="nL">'+
+      ["UKIM Faculty of Pharmacy — Center for Natural Products",
+       "IPH — Institute of Public Health","Farmahem","State Phytosanitary Laboratory",
+       "Purely Plant GmbH (in-house)"].map(function(x){
+        return '<option>'+esc(x)+'</option>';}).join("")+'</select></div>'+
+    '<div class="eyebrow" style="margin:14px 0 8px">Results — leave blank where the certificate is silent</div>'+
+    Object.keys(REG.columns).map(function(L){
+      var c=REG.columns[L];
+      return '<div class="vedit"><span class="vn">'+esc(c.name||L)+'<i>'+esc(c.limit||"no limit")+
+        '</i></span><input id="n_'+L+'"></div>';}).join("")+
+    '<div class="two" style="margin-top:12px">'+fld("nBy","Entered by","","Name or initials")+"</div>",
+    function(msg,save){
+      var b=document.getElementById("nB").value;
+      var batch=b==="__new"?val("nNB"):b;
+      var code=val("nC"), by=val("nBy");
+      if(!batch||!code||!by){msg.textContent="Batch, certificate code and author are all required.";
+        msg.className="msg err";return;}
+      var vals={};
+      Object.keys(REG.columns).forEach(function(L){var v=val("n_"+L);if(v) vals[L]=v;});
+      var src=batches.filter(function(x){return x.batch===batch;})[0];
+      OV.added.push({id:"x"+Date.now().toString(36),batch:batch,
+        ref:src?src.ref:(val("nNB")?"new":"—"),
+        pnumber:b==="__new"?val("nP"):(src?src.pnumber:""),
+        strain:b==="__new"?val("nS"):(src?src.strain:""),
+        code:code,date:val("nD")||today(),lab:document.getElementById("nL").value,
+        pdf:"",vals:vals,by:by,at:nowISO()});
+      OV.log.push({t:"add",batch:batch,code:code,by:by,at:nowISO()});
+      openB.add(batch);
+      commit(msg,save);
+    });
+  document.getElementById("nB").onchange=function(){
+    document.getElementById("nNewWrap").hidden=this.value!=="__new";};
+}
+
+/* ============================================================
+   publish
+   ============================================================ */
+/* The page rebuilds its own source. `shell` is this document with the three data
+   blocks replaced by tokens, so substituting them back reproduces the page exactly —
+   and the tokens are assembled here rather than written whole so that each appears
+   only once in the shell, where the data block is. Never serialize the live DOM:
+   it carries viewer-session state and injected runtime scripts. */
+var T_SHELL="{{SHELL"+"_B64}}", T_REG="{{REGISTER"+"_JSON}}", T_OV="{{OVERLAY"+"_JSON}}";
+function b64utf8Decode(b64){
+  var bin=atob(b64), by=new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++) by[i]=bin.charCodeAt(i);
+  return new TextDecoder().decode(by);
+}
+/* publish() takes a COMPLETE document beginning with a doctype, while the source
+   authored for the Artifact tool is the body fragment the tool wraps at publish
+   time. So the page wraps itself, reproducing that skeleton — charset, viewport,
+   colour-scheme, zero body margin, [hidden] — and the shell stays a fragment
+   forever, wrapped identically on every republish. */
+var DOC_HEAD='<!doctype html>\n<html lang="en">\n<head>\n'+
+  '<meta charset="utf-8">\n'+
+  '<meta name="viewport" content="width=device-width, initial-scale=1">\n'+
+  '<style>:root{color-scheme:light dark}html,body{margin:0}'+
+  'body{font:14px system-ui,-apple-system,sans-serif}'+
+  'img{max-width:100%}[hidden]{display:none!important}</style>\n'+
+  '</head>\n<body>\n';
+var DOC_TAIL='\n</body>\n</html>\n';
+
+function buildDocument(){
+  var shellB64=document.getElementById("shell").textContent.trim();
+  var shell=b64utf8Decode(shellB64);
+  var regJSON=document.getElementById("register").textContent;
+  var ovJSON=JSON.stringify(OV);
+  /* function replacers: a $ in the data must not be read as a replacement pattern */
+  var body=shell.replace(T_SHELL,function(){return shellB64;})
+                .replace(T_REG,function(){return regJSON;})
+                .replace(T_OV,function(){return ovJSON;});
+  return DOC_HEAD+body+DOC_TAIL;
+}
+function commit(msg,save){
+  if(!pub){
+    msg.textContent="This view cannot save — the change is shown but not kept.";
+    msg.className="msg err"; render(); return;
+  }
+  save.disabled=true; save.textContent="Saving…";
+  msg.textContent="Publishing a new version…"; msg.className="msg";
+  pub.publish(buildDocument()).then(function(){
+    msg.textContent="Saved."; msg.className="msg ok";
+  })["catch"](function(e){
+    var c=e&&e.code;
+    if(c==="conflict"){
+      msg.textContent="Someone else saved first — this view is reloading to their version.";
+      msg.className="msg err"; return;
+    }
+    if(c==="not_writer"||c==="not_granted"||c==="not_declared"||c==="consent_required"){
+      canWrite=false; showReadOnly();
+      msg.textContent="This view is read-only, so the change was not kept.";
+      msg.className="msg err"; render(); return;
+    }
+    if(c==="too_large"){msg.textContent="The page is too large to publish.";}
+    else if(c==="rate_limited"){msg.textContent="Saving too often — wait a moment and try again.";}
+    else{msg.textContent="Could not save ("+(c||"unknown")+"). The change is shown but not kept.";}
+    msg.className="msg err";
+    save.disabled=false; save.textContent="Save";
+    render();
+  });
+}
+function showReadOnly(){
+  if(roShown) return; roShown=true;
+  document.getElementById("addBtn").disabled=true;
+  var m=document.querySelector("main");
+  m.insertBefore(el('<div class="ro"><b>Read-only view.</b> You can search, filter and read '+
+    'every certificate, but dispositions and amendments cannot be saved from here.</div>'),m.firstChild);
+}
+
+/* ============================================================
+   boot
+   ============================================================ */
+document.getElementById("q").addEventListener("input",function(){F.q=this.value.trim();render();});
+document.getElementById("clearBtn").onclick=function(){
+  F={q:"",lab:new Set(),state:new Set(),disp:new Set(),scope:new Set()};
+  document.getElementById("q").value=""; render();};
+document.getElementById("tabB").onclick=function(){VIEW="batches";render();};
+document.getElementById("tabI").onclick=function(){VIEW="icoa";render();};
+document.getElementById("addBtn").onclick=function(){if(canWrite) addDialog();};
+document.getElementById("themeBtn").onclick=function(){
+  var r=document.documentElement;
+  var cur=r.getAttribute("data-theme");
+  var next=cur==="dark"?"light":(cur==="light"?"dark":
+    (matchMedia("(prefers-color-scheme: dark)").matches?"light":"dark"));
+  r.setAttribute("data-theme",next);
+  try{localStorage.setItem("ppr-theme",next);}catch(e){}
+};
+try{var t=localStorage.getItem("ppr-theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}
+
+document.getElementById("foot").innerHTML=
+  '<b>How to read this register.</b> One row per certificate; a batch tested by several '+
+  'laboratories has one row each, and batch identity is shown once on the block header. '+
+  '<span class="tag">/</span> means the parameter is not covered by that certificate. '+
+  'A green dot marks a row whose certificate was read off its own page; amber marks a '+
+  'laboratory finding or data-integrity flag; red marks a result the issuing laboratory '+
+  'declared out of specification. “Over limit” is computed here by comparing each value '+
+  'against the limit printed in its own column header — and the column header states one '+
+  'vintage of limits where several certificates apply another, so it is a prompt to open '+
+  'the certificate, never a verdict.<br><br>'+
+  '<b>What is editable.</b> Dispositions, amendments and added certificates are stored as an '+
+  'overlay on top of the extracted register. Nothing overwrites a laboratory value: an '+
+  'amendment keeps the original underneath and records who changed it, when and why. '+
+  'Every change publishes a new version of this page, and every open view reloads to it.';
+
+render();
+
+/* Design for absence. Inside the viewer `window.claude` exists before this runs;
+   served top-level, or opened as a saved file, it may not exist at all — and even
+   when it does, use() can resolve null (not served, not granted, module failed).
+   All three are the same read-only page. */
+if(window.claude && typeof window.claude.use==="function"){
+  window.claude.use("artifact").then(function(a){
+    pub=a;
+    if(!a){ showReadOnly(); render(); return; }
+    canWrite=true; render();
+  })["catch"](function(){ showReadOnly(); render(); });
+} else {
+  showReadOnly(); render();
+}
+})();
+</script>

@@ -75,6 +75,15 @@ codes. The workbook's scope also excludes `WATER_TESTING` entirely.
 
 ### 1. Conformity was never checked here — and roughly ten certificates fail
 
+> **AMENDED 31.08.2026 — five, not ten.** The certificates and the counts named below are
+> all real and all page-verified since. The limit they were compared against was not: an
+> enumeration criterion of `10⁴ CFU/g` means a **maximum acceptable count of 2 × 10⁴** under
+> Ph. Eur. 5.1.4 / 2.6.12 and USP <1111>, so `472/0863/25`, `587/1066/25`, `949/1687/25`
+> and `628/1129/25` conform. Five remain out of specification and need a deviation record.
+> The CBN values on ППК26033 and ППК26058 are accelerated 40 °C / 75 % RH **stability**
+> timepoints, not failed releases. See `review/OOS_RECTIFICATION_2026-08-31.md`.
+
+
 This analysis asked only whether a panel had been *tested*. It never asked whether
 the reported value *passes*. The shared workbook did, and found a recurring
 pattern in the IPH microbiology reports:

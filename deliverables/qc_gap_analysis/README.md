@@ -1,6 +1,6 @@
 # Batch gap analysis — CoQ and internal CoA issuance counts
 
-> ## The current workbook is `PP_Batch_Release_QC_Register_LINKED_2026-08-31.xlsx`
+> ## The current workbook is `PP_Batch_Release_QC_Register_AC_2026-08-31.xlsx`
 >
 > This directory holds thirteen workbooks, one per correction pass, and **the file named
 > `FINAL` is not the last one.** Each is the input to the next script's refuse-on-mismatch
@@ -323,17 +323,23 @@ about the 41 in-house `QCCoA 001v02` release CoAs.
 
 Each step is a separate script and a separate file, so any one of them can be
 re-read, re-run or backed out without unpicking the others. **The current workbook is
-`PP_Batch_Release_QC_Register_IPH_2026-08-31.xlsx`.**
+`PP_Batch_Release_QC_Register_AC_2026-08-31.xlsx`.**
 
 | Workbook | Produced by | What it added |
 |---|---|---|
 | `..._CORRECTED.xlsx` | owner-supplied | the baseline this analysis is drawn from |
-| `..._CORRECTED_2026-08-30.xlsx` | `apply_register_corrections.py` | six TYMC values read off the page; ten exceedances flagged amber |
+| `..._CORRECTED_2026-08-30.xlsx` | `apply_register_corrections.py` | six TYMC values read off the page; ten counts flagged amber (four of those flags withdrawn on 31.08 — see `..._AC_2026-08-31.xlsx`) |
 | `..._CORRECTED_2026-08-31.xlsx` | `add_ppk25139_and_codes.py` | the ППК25139 row; four certificate codes confirmed; row 41 flagged |
 | `..._LINKS_2026-08-31.xlsx` | `repair_register_pdf_links.py` | 166 PDF links repointed at their own certificate |
 | `..._MICRO_2026-08-31.xlsx` | `apply_microbiology_corrections.py` | the ten microbiology corrections from reading all forty pages |
 | `..._LINKS2_2026-08-31.xlsx` | `repair_register_pdf_links.py` (rerun) | 58 more links, after teaching the matcher four filename conventions |
-| **`..._IPH_2026-08-31.xlsx`** | `apply_iph_corrections.py` | mercury on row 31, from the IPH physico-chemical page reads |
+| `..._IPH_2026-08-31.xlsx` | `apply_iph_corrections.py` | mercury on row 31, from the IPH physico-chemical page reads |
+| `..._FHM_2026-08-31.xlsx` | `apply_farmahem_corrections.py` | the Farmahem family: CBN under CBD, and an uncertainty read as a result |
+| `..._DATES_2026-08-31.xlsx` | `apply_date_corrections.py` | eleven dates of issue, against 231 checked from an outside source |
+| `..._CNP_2026-08-31.xlsx` | `apply_cnp_corrections.py` | 40 stability cells filled; the ППК26127 foreign-matter failure flagged red |
+| `..._FINAL_2026-08-31.xlsx` | `apply_residual_corrections.py` | the last six certificates; `V109` cites one pharmacopoeia, not two |
+| `..._LINKED_2026-08-31.xlsx` | `repair_ppcoa_pdf_links.py` | the twenty in-house CoA links, by P-number |
+| **`..._AC_2026-08-31.xlsx`** | `apply_acceptance_criterion_corrections.py` | the microbial acceptance criteria read under Ph. Eur. 5.1.4: `10ⁿ CFU/g` means a maximum acceptable count of 2 × 10ⁿ. Four amber TYMC flags withdrawn as conforming, five confirmed and given the comment they never had |
 
 **Order matters in one place only.** `add_ppk25139_and_codes.py` inserts a row and
 shifts everything below 46 down by one, so anything addressing rows by index must run

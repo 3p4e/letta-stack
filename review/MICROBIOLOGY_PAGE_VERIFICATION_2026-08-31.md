@@ -121,7 +121,17 @@ parser keyed on the old wording will miss it.
 
 ---
 
-## C. TYMC over its own printed limit — all ten, confirmed on the page
+## C. TYMC at or above its own printed power of ten — all ten, confirmed on the page
+
+> **AMENDED 31.08.2026 — the "Over by" column below compares against the wrong number.**
+> Every result and every page read here stands; the ratios do not. An enumeration criterion
+> of `10⁴ CFU/g` means a **maximum acceptable count of 2 × 10⁴ = 20 000** (Ph. Eur. 5.1.4 /
+> 2.6.12, USP <1111>), so the ratios that matter are 2.45×, 2.10×, 1.80×, 1.65× and 1.30×
+> for the first five — and the last four (`472/0863/25`, `949/1687/25`, `587/1066/25`,
+> `628/1129/25`) **conform**. `1220/2171/25` at 200 against a manufacturer's own `10²` is a
+> question about that specification's wording, not one the pharmacopoeia settles.
+> See `review/OOS_RECTIFICATION_2026-08-31.md`.
+
 
 | Certificate | Batch | Result | Printed limit | Over by |
 |---|---|---|---|---|
@@ -198,7 +208,9 @@ two rows out of 291 would leave 289 blanks, and the finding belongs to the certi
 not to the register's schema.
 
 **Effect on the validator.** `validate_ecoa_limits.py` R1 is unchanged at 9 — row 122's
-exceedance is still invisible to it, by construction, because the column says 10⁴. R2
+exceedance is still invisible to it, by construction, because the column says 10⁴. (On
+31.08 R1 moved to 5, once the rule stopped reading the criterion with `magnitude()`; four
+of the nine conform and four CBN stability timepoints moved to a new rule R3.) R2
 moves 24 → 23: row 26's TYMC and row 142's GNB stop being flagged because they are now
 correct, and row 92's GNB starts being flagged in the same benign class as rows 75, 138
 and 217. The amber flags, the 268 hyperlinks and all 8 merged ranges are byte-identical

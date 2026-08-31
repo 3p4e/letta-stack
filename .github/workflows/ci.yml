@@ -75,6 +75,67 @@ jobs:
           python3 deliverables/qc_gap_analysis/batch_spellings.py
           git diff --exit-code -- deliverables/qc_gap_analysis/batch_spellings.csv
 
+      # An acceptance criterion is not the number printed next to it. Ph. Eur.
+      # 5.1.4 / 2.6.12 and USP <1111> read an enumeration criterion of 10^n CFU
+      # as a maximum acceptable count of 2 x 10^n, so a TYMC criterion of 10^4
+      # conforms up to 20 000. Parsing that criterion with the function that
+      # parses the RESULT reported nine batches out of specification where five
+      # are, and four of those false flags reached a release register. The
+      # doctests on acceptance_limit() are that rule; they fail here rather than
+      # in a deviation meeting.
+      - name: Acceptance criteria are read the way the pharmacopoeia says
+        run: |
+          python3 -m doctest ingestion/ragflow/validate_ecoa_limits.py -v \
+            | tail -1
+          python3 -m doctest ingestion/ragflow/validate_ecoa_limits.py
+          python3 -m doctest deliverables/qc_gap_analysis/build_register_artifact.py
+          python3 -m doctest deliverables/qc_gap_analysis/apply_acceptance_criterion_corrections.py
+
+      # The register is a chain of small idempotent scripts over an owner-supplied
+      # baseline. Replaying it must reproduce the current workbook exactly, or one
+      # of the corrections has stopped being reproducible from evidence.
+      - name: The correction chain replays
+        run: python3 deliverables/qc_gap_analysis/replay_correction_chain.py
+
+      # Five TYMC results are over their acceptance criterion and no others are.
+      # If that count moves without a correction script moving with it, something
+      # has changed a release determination silently.
+      - name: The register's out-of-specification count is five, all TYMC
+        run: |
+          python3 - <<'EOF'
+          import re, subprocess, sys
+          out = subprocess.run(
+              [sys.executable, "ingestion/ragflow/validate_ecoa_limits.py",
+               "deliverables/qc_gap_analysis/PP_Batch_Release_QC_Register_AC_2026-08-31.xlsx"],
+              capture_output=True, text=True).stdout
+          print(out)
+
+          def count(rule):
+              line = next(l for l in out.splitlines() if l.startswith(rule + " "))
+              return int(re.search(r"(\d+)\s*$", line).group(1)), line
+
+          bad = []
+          r1, r1line = count("R1")
+          r5, r5line = count("R5")
+          if r1 != 5:
+              bad.append("R1 should be 5 release results over their criterion: " + r1line)
+          if r5 != 4:
+              bad.append("R5 should be 4 stability timepoints: " + r5line)
+
+          # every R1 finding must be a TYMC count, and no stability timepoint may
+          # appear among them — a CBN result on a 40 C / 75 % RH sample is not a
+          # release failure and must never be reported as one.
+          block = out.split("R1 ", 1)[1].split("R5 ", 1)[0]
+          for line in block.splitlines():
+              if re.match(r"\s+r\d+\s", line) and "TYMC" not in line:
+                  bad.append("a non-TYMC result is being reported as a release failure: "
+                             + line.strip())
+
+          for b in bad:
+              print("FAIL", b)
+          sys.exit(1 if bad else 0)
+          EOF
+
       # The gap analysis is a regulated deliverable: if its inputs stop parsing
       # or the numbers move, that must fail here rather than in a QC meeting.
       # The gap analysis is a regulated deliverable. Every batch the register

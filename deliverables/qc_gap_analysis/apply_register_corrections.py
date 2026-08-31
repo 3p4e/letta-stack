@@ -45,7 +45,7 @@ CORRECTIONS = [
     (82,  "3.6×10³", "3.6×10⁴", "946/1684/25  GP052501",
      "page reads 3,6 x 10⁴ — 3.6x the 10⁴ limit"),
     (100, "4.9×10^3", "4.9×10^4", "1032/1851/25  CJ062501-2",
-     "page reads 4,9 x 10⁴ — 4.9x the 10⁴ limit, the largest exceedance found"),
+     "page reads 4,9 x 10⁴ — 4.9x the printed 10⁴, the largest count found"),
 ]
 
 # An omission rather than an error: the row carries results but no code. The
@@ -57,9 +57,24 @@ CODE_FILLS = [
      "P050322, 1227-2193-25, 05.12.2025, IJZ-MB.pdf"),
 ]
 
-# Every row whose TYMC exceeds its printed limit, after the corrections above.
-# Only two of the ten carried the legend's amber today, which is part of why
-# this went unnoticed; flagging them consistently is what makes them visible.
+# Every row whose TYMC sits at or above its printed power of ten, after the
+# corrections above. Only two of the ten carried the legend's amber today, which
+# is part of why this went unnoticed; flagging them consistently is what makes
+# them visible.
+#
+# AMENDED 31.08.2026 — five of these ten conform and should not have been
+# flagged. An enumeration criterion of 10^n CFU/g is not the number 10^n:
+# Ph. Eur. 5.1.4 / 2.6.12 and USP <1111> read it as a maximum acceptable count
+# of 2 x 10^n, so <= 10^4 CFU/g conforms up to 20 000. Rows 35, 38, 56 and 74
+# (19 000, 15 000, 12 000, 17 000) are inside it; row 121 turns on a
+# manufacturer specification the pharmacopoeia does not govern.
+#
+# The flags are NOT removed here. This script is the 30.08 revision and re-runs
+# must reproduce it byte for byte or the chain stops being replayable —
+# `replay_correction_chain.py` proves that chain. The withdrawal is a later step
+# in the same chain, `apply_acceptance_criterion_corrections.py`, which also
+# gives the five that stand the comment they never had. Evidence in
+# `review/OOS_RECTIFICATION_2026-08-31.md`.
 FLAG_ROWS = [21, 35, 38, 56, 71, 74, 82, 87, 100, 121]
 
 

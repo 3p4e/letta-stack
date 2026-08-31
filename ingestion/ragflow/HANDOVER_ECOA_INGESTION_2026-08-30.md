@@ -33,13 +33,24 @@ The finding:
 | 100 | CJ062501-2 | 1032/1851/25 | 4.9×10^3 | **4,9 × 10⁴** | 4.9× over, largest found |
 | 8 | BG1024 | 163/0271/25 | 1×10³ | **1 × 10⁴** | at limit; disposition unchanged |
 
-Ten register rows exceed their printed TYMC limit once corrected (rows 21, 35, 38, 56, 71,
-74, 82, 87, 100, 121). **Every one of those certificates still concluded ОДГОВАРА** —
-"complies". That second fact is a laboratory problem, not a pipeline problem, and no
-amount of better ingestion fixes it. What the pipeline must do is stop *hiding* it.
+**AMENDED 31.08.2026 — the count is five, not ten.** Ten register rows sit at or above the
+printed power of ten once corrected. That is not the same as exceeding the criterion.
+Ph. Eur. 5.1.4 / 2.6.12 and USP <1111> read an enumeration criterion of `10ⁿ CFU` as a
+**maximum acceptable count of 2 × 10ⁿ**, so `≤ 10⁴ CFU/g` conforms up to 20 000. Against
+that, five rows are out of specification (21, 71, 82, 87, 100) and four conform (35, 38,
+56, 74); row 121 turns on a manufacturer specification rather than on the pharmacopoeia.
+Full record in `review/OOS_RECTIFICATION_2026-08-31.md`.
 
-Governing limits are Ph. Eur. 5.1.8 Category C: TAMC ≤ 10⁵, TYMC ≤ 10⁴ CFU/g. Some
-certificates print tighter limits of their own — see trap 6.
+**Every one of those five certificates still concluded ОДГОВАРА** — "complies". That second
+fact is a laboratory problem, not a pipeline problem, and no amount of better ingestion
+fixes it. What the pipeline must do is stop *hiding* it.
+
+Governing limits are Ph. Eur. 5.1.8 Category C: TAMC ≤ 10⁵, TYMC ≤ 10⁴ CFU/g, read under
+the interpretation note above. Some certificates print tighter limits of their own — see
+trap 6. And **never compare a count against a limit with the function that parsed the
+count**: `magnitude()` answers what number a measurement is, `acceptance_limit()` answers
+what the largest conforming result is, and for `10ⁿ CFU/g` those differ by a factor of two.
+That confusion is what produced the wrong number above.
 
 ---
 
@@ -82,7 +93,14 @@ numbers, with nothing binding parameter to result to limit.
 lookup fails silently on all of these.
 
 **4. Nothing ever compared a result to its own limit.** Every certificate prints the limit
-next to the result. One subtraction, at ingest, catches all ten — years before a person did.
+next to the result. One subtraction, at ingest, catches all five — years before a person did.
+
+**5. And a limit is two numbers, not one.** What the certificate prints, and the largest
+result that still conforms. For an enumeration criterion of `10ⁿ CFU/g` those differ by a
+factor of two (Ph. Eur. 5.1.4 / 2.6.12, USP <1111>). The first version of
+`validate_ecoa_limits.py` parsed the criterion with `magnitude()` — the function that parses
+the *result* — and reported nine TYMC results out of specification where five are. Use
+`acceptance_limit()`, never `magnitude()`, for a limit.
 
 ---
 
