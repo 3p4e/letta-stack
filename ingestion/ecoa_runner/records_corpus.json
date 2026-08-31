@@ -2,7 +2,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "CJ082501/2",
+  "batch_canonical": "CJ082501_2",
   "strain": "Cap Junky",
   "cert_code": "ППК26003",
   "date_of_issue": "21.01.2026",
@@ -593,7 +593,7 @@
  {
   "reads_agree": false,
   "review": [
-   "batch_canonical: 'C0J82501/2' vs 'CJ082501/2'"
+   "batch_canonical: 'J82501_2' vs 'CJ082501_2'"
   ],
   "batch_canonical": null,
   "strain": "CAP JUNKY",
@@ -2833,7 +2833,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "CJ082501/2",
+  "batch_canonical": "CJ082501_2",
   "strain": "Cup Junky",
   "cert_code": "4/0007/26",
   "date_of_issue": "20.01.2026",
@@ -4122,7 +4122,7 @@
    "strain: 'Cupinkie' vs 'CupJunkie'",
    "cert_code: 'ППК52580' vs 'ППК25280'"
   ],
-  "batch_canonical": "CJ052501/1",
+  "batch_canonical": "CJ052501_1",
   "strain": null,
   "cert_code": null,
   "date_of_issue": "17.09.2025",
@@ -5992,13 +5992,12 @@
  {
   "reads_agree": false,
   "review": [
-   "batch_canonical: 'P060352' vs 'FAT BASTARD P060352'",
    "cert_code: '197-7-K/26' vs '197-7-К/26'",
    "identification_a_macroscopic (Идентификација и квантификација на канабиноиди): present in only one read",
    "identification_b_microscopic (Идентификација и квантификација на канабиноиди): present in only one read",
    "identification_c_hplc (Идентификација и квантификација на канабиноиди): present in only one read"
   ],
-  "batch_canonical": null,
+  "batch_canonical": "P060352",
   "strain": "Fat Bastard",
   "cert_code": null,
   "date_of_issue": "07.08.2026",
@@ -6358,7 +6357,7 @@
   "review": [
    "bile_tolerant_gram_negative (На жолчка толерантни грам-негативни бактерии): result A='< 10^1 »10^2 CFU/g' B='< 10³ и >10² CFU/g'"
   ],
-  "batch_canonical": "CJ 052501/1",
+  "batch_canonical": "CJ052501_1",
   "strain": "Cup Jankie",
   "cert_code": "949/1687/25",
   "date_of_issue": "17.09.2025",
@@ -6774,7 +6773,7 @@
    "pesticide_residues_cumcs (* Endosulfan (alpha, beta and endosulfan sulfat)): present in only one read",
    "pesticide_residues_cumcs (* Chlordane (sum of cis- and trans-chlordane)): present in only one read"
   ],
-  "batch_canonical": "CJ 052501/1",
+  "batch_canonical": "CJ052501_1",
   "strain": "CUP JUNKIE",
   "cert_code": "4350/2025",
   "date_of_issue": "15.09.2025",
@@ -9703,11 +9702,9 @@
   }
  },
  {
-  "reads_agree": false,
-  "review": [
-   "batch_canonical: 'GG 1024 01' vs 'GG 1024_01'"
-  ],
-  "batch_canonical": null,
+  "reads_agree": true,
+  "review": [],
+  "batch_canonical": "GG1024_01",
   "strain": "GORILLA GLUE",
   "cert_code": "1766/2025",
   "date_of_issue": "11.04.2025",
@@ -12926,7 +12923,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "BSS 1024",
+  "batch_canonical": "BSS1024",
   "strain": "BLUE SUNSET SHERBET",
   "cert_code": "751/2025",
   "date_of_issue": "27.02.2025",
@@ -15803,7 +15800,7 @@
   "review": [
    "date_of_issue: '17.02.2025' vs '24.02.2025'"
   ],
-  "batch_canonical": "BSS 1024",
+  "batch_canonical": "BSS1024",
   "strain": "Blue Sunset Sherbet",
   "cert_code": "161/0269/25",
   "date_of_issue": null,
@@ -16789,7 +16786,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "BG 1024",
+  "batch_canonical": "BG1024",
   "strain": "BLUE GELATO",
   "cert_code": "752/2025",
   "date_of_issue": "27.02.2025",
@@ -19745,7 +19742,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "BG 1024",
+  "batch_canonical": "BG1024",
   "strain": "Blue Gelato",
   "cert_code": "163/0271/25",
   "date_of_issue": "24.02.2025",
@@ -20733,7 +20730,7 @@
    "tAMC (Вкупен број аеробни бактерии - ТАМС): present in only one read",
    "tamc (Вкупен број аеробни бактерии-ТАМС): present in only one read"
   ],
-  "batch_canonical": "GP 052501",
+  "batch_canonical": "GP052501",
   "strain": "Grape Pie",
   "cert_code": "946/1684/25",
   "date_of_issue": "17.09.2025",
@@ -21128,7 +21125,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "GP 052501",
+  "batch_canonical": "GP052501",
   "strain": "GRAPE PIE",
   "cert_code": "4348/2025",
   "date_of_issue": "15.09.2025",
@@ -24811,7 +24808,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "GG1024-01",
+  "batch_canonical": "GG1024_01",
   "strain": "Gorilla Glue",
   "cert_code": "320/0587/25",
   "date_of_issue": "14.04.2025",
@@ -28933,7 +28930,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "GP 0824-02",
+  "batch_canonical": "GP0824_02",
   "strain": "Grape Pie",
   "cert_code": "627/1128/25",
   "date_of_issue": "02.07.2025",
@@ -29330,7 +29327,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "GP0824-02",
+  "batch_canonical": "GP0824_02",
   "strain": "Grape Pie",
   "cert_code": "471/0862/25",
   "date_of_issue": "22.05.2025",
@@ -29737,7 +29734,7 @@
  {
   "reads_agree": false,
   "review": [
-   "batch_canonical: 'GP0824-02' vs 'GPO824-02'"
+   "batch_canonical: 'GP0824_02' vs 'GPO824-02'"
   ],
   "batch_canonical": null,
   "strain": "Grape Pie",
@@ -31956,7 +31953,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "GP 0824_02",
+  "batch_canonical": "GP0824_02",
   "strain": "GRAPE PIE",
   "cert_code": "2471/2025",
   "date_of_issue": "30.05.2025",
@@ -35683,7 +35680,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "GP082501/2",
+  "batch_canonical": "GP082501_2",
   "strain": "Grape Pie",
   "cert_code": "ППК25381",
   "date_of_issue": "12.12.2025",
@@ -36274,7 +36271,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "GP 082501/2",
+  "batch_canonical": "GP082501_2",
   "strain": "GRAPE PIE",
   "cert_code": "5889/2025",
   "date_of_issue": "12.12.2025",
@@ -39914,7 +39911,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "GP082501/2",
+  "batch_canonical": "GP082501_2",
   "strain": "Grape Pie",
   "cert_code": "1227/2193/25",
   "date_of_issue": "05.12.2025",
@@ -40324,10 +40321,9 @@
  {
   "reads_agree": false,
   "review": [
-   "batch_canonical: 'HPA1024 01' vs 'HPA1024_01'",
    "cert_code: 'ППК23158' vs 'ППК25050'"
   ],
-  "batch_canonical": null,
+  "batch_canonical": "HPA1024_01",
   "strain": "High Pro Amnesia",
   "cert_code": null,
   "date_of_issue": "24.06.2025",
@@ -40920,7 +40916,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "HPA 1024-01",
+  "batch_canonical": "HPA1024_01",
   "strain": "High Pro Amnesia",
   "cert_code": "587/1066/25",
   "date_of_issue": "18.06.2025",
@@ -41324,7 +41320,7 @@
    "pesticide_residues_cumcs (* vkupno DDT): present in only one read",
    "pesticide_residues_cumcs (* Endosulfan (alpha, beta and endosulfan sulfat)): present in only one read"
   ],
-  "batch_canonical": "HPA 1024-01",
+  "batch_canonical": "HPA1024_01",
   "strain": "HIGH PRO AMNESIA",
   "cert_code": "2995/2025",
   "date_of_issue": "19.06.2025",
@@ -46029,7 +46025,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "OPM 1024",
+  "batch_canonical": "OPM1024",
   "notes": [
    "batch_canonical read by only one model",
    "lab_address differs in wording between reads",
@@ -46436,7 +46432,7 @@
   "review": [
    "cert_code: '197-17-K/26' vs '197-17-К/26'"
   ],
-  "batch_canonical": "OPM 1024",
+  "batch_canonical": "OPM1024",
   "notes": [
    "batch_canonical read by only one model",
    "lab_standard differs in wording between reads"
@@ -47492,9 +47488,7 @@
   "reads_agree": false,
   "review": [
    "date_of_issue: '28.04.2026 година' vs '28.04.2026'",
-   "bile_tolerant_gram_negative (На жолчка толерантни грам-негативни бактерии): result A='< 10¹ – 10² CFU/g' B='< 10³ и >10² CFU/g'",
-   "escherichia_coli (Escherichia coli): A='отсуство/g' B='отсутна/g'",
-   "salmonella (Salmonella): A='отсуство/25' B='отсутна/25'"
+   "bile_tolerant_gram_negative (На жолчка толерантни грам-негативни бактерии): result A='< 10¹ – 10² CFU/g' B='< 10³ и >10² CFU/g'"
   ],
   "batch_canonical": "JD112501",
   "strain": "Jelly Donutz",
@@ -47545,7 +47539,7 @@
    {
     "parameter": "escherichia_coli",
     "parameter_printed": "Escherichia coli",
-    "result_printed": null,
+    "result_printed": "отсуство/g",
     "result_numeric": null,
     "limit_printed": "отсуство/g",
     "limit_numeric": null,
@@ -47557,8 +47551,8 @@
     "covered_by": null,
     "method_accredited": true,
     "exponent_uncertain": false,
-    "reads_agree": false,
-    "confidence": "review",
+    "reads_agree": true,
+    "confidence": "ok",
     "limit_disagrees_between_reads": null,
     "read_a": {
      "result": "отсуство/g",
@@ -47572,7 +47566,7 @@
    {
     "parameter": "salmonella",
     "parameter_printed": "Salmonella",
-    "result_printed": null,
+    "result_printed": "отсуство/25",
     "result_numeric": null,
     "limit_printed": "отсуство/25 g",
     "limit_numeric": null,
@@ -47584,8 +47578,8 @@
     "covered_by": null,
     "method_accredited": true,
     "exponent_uncertain": false,
-    "reads_agree": false,
-    "confidence": "review",
+    "reads_agree": true,
+    "confidence": "ok",
     "limit_disagrees_between_reads": null,
     "read_a": {
      "result": "отсуство/25",
@@ -55102,7 +55096,8 @@
   "notes": [
    "lab differs in wording between reads",
    "lab_department differs in wording between reads",
-   "lab_address differs in wording between reads"
+   "lab_address differs in wording between reads",
+   "total_thc: arithmetic favours 14.06 (0.38 + 15.59 x 0.877 = 14.052)"
   ],
   "lab_department": "Центар за природни производи / Center for natural products",
   "lab_address": "Ул. „Мајка Тереза“ бр.47, П. фах. 36, 1000 Скопје, Република С. Македонија, тел: +38923126024 / Mother Teresa St., No.47, P. O. Box 36, 1000 Skopje, Republic N. Macedonia, tel: +38923126024",
@@ -55327,6 +55322,15 @@
     "read_b": {
      "result": "14.06 %",
      "limit": null
+    },
+    "arithmetic_says": {
+     "candidate": 14.06,
+     "from": "read_b",
+     "computed": 14.052,
+     "working": "0.38 + 15.59 x 0.877 = 14.052",
+     "rejected": [
+      14.6
+     ]
     }
    }
   ],
@@ -59046,7 +59050,7 @@
   "review": [
    "strain: 'Blue Sunset Sherbet BSS 052501' vs 'Blue Sunset Sherbet'"
   ],
-  "batch_canonical": "BSS 052501 NGP",
+  "batch_canonical": "BSS052501",
   "notes": [
    "batch_canonical read by only one model",
    "lab_department differs in wording between reads",
@@ -59231,7 +59235,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "BSS 052501 NGP",
+  "batch_canonical": "BSS052501",
   "strain": "Blue Sunset Sherbet",
   "cert_code": "10802_2845/2",
   "date_of_issue": "17.11.2025",
@@ -60007,7 +60011,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "OPM 1024-02",
+  "batch_canonical": "OPM1024_02",
   "strain": "Orange Punch Mimosa",
   "cert_code": "588/1067/25",
   "date_of_issue": "18.06.2025",
@@ -60414,7 +60418,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "OPM 1024_02",
+  "batch_canonical": "OPM1024_02",
   "strain": "ORANGE PUNCH MIMOSA",
   "cert_code": "2994/2025",
   "date_of_issue": "19.06.2025",
@@ -70214,7 +70218,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "CJ082501/1",
+  "batch_canonical": "CJ082501_1",
   "strain": "Cap Junky",
   "cert_code": "ППК26002",
   "date_of_issue": "21.01.2026",
@@ -70811,7 +70815,7 @@
    "pesticide_residues (Endosulfan (alpha, beta and endosulfan sulfat)): present in only one read",
    "pesticide_residues (Endrin keton): present in only one read"
   ],
-  "batch_canonical": "CJ082501/1",
+  "batch_canonical": "CJ082501_1",
   "strain": "CAP JUNKY",
   "cert_code": "81/2026",
   "date_of_issue": "02.02.2026",
@@ -72992,7 +72996,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "CJ082501/1",
+  "batch_canonical": "CJ082501_1",
   "strain": "Cap Junky",
   "cert_code": "8/0011/26",
   "date_of_issue": "20.01.2026",
@@ -74400,7 +74404,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "CJ062501/1",
+  "batch_canonical": "CJ062501_1",
   "strain": "Cap Junkie",
   "cert_code": "ППК25321",
   "date_of_issue": "23.10.2025",
@@ -74995,7 +74999,7 @@
   "review": [
    "strain: 'CARPJUNKIE' vs 'CAPJUNKIE'"
   ],
-  "batch_canonical": "CJ 062501/1",
+  "batch_canonical": "CJ062501_1",
   "strain": null,
   "cert_code": "4907/2025",
   "date_of_issue": "24.10.2025",
@@ -77190,7 +77194,7 @@
    "other (vkupno DDT): present in only one read",
    "pesticide_residues (вкупно DDT): present in only one read"
   ],
-  "batch_canonical": "GP 082501/1",
+  "batch_canonical": "GP082501_1",
   "strain": "GRAPE PIE",
   "cert_code": "5888/2025",
   "date_of_issue": "12.12.2025",
@@ -79390,7 +79394,7 @@
    "cert_code: '1226/1292/25' vs '1226/2192/25'",
    "bile_tolerant_gram_negative (На жолчка толерантни грам-негативни бактерии): result A='< 10¹ и > 10² CFU/g' B='< 10³ и > 10² CFU/g'"
   ],
-  "batch_canonical": "GP082501/1",
+  "batch_canonical": "GP082501_1",
   "strain": "Grape Pie",
   "cert_code": null,
   "date_of_issue": "05.12.2025",
@@ -79799,7 +79803,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "GP072501/2",
+  "batch_canonical": "GP072501_2",
   "strain": "Grape Pie",
   "cert_code": "ППК25379",
   "date_of_issue": "12.12.2025",
@@ -80383,7 +80387,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "GP 072501/2",
+  "batch_canonical": "GP072501_2",
   "strain": "GRAPE PIE",
   "cert_code": "5887/2025",
   "date_of_issue": "12.12.2025",
@@ -82562,7 +82566,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "GP072501/2",
+  "batch_canonical": "GP072501_2",
   "strain": "Grape Pie",
   "cert_code": "1229/2195/25",
   "date_of_issue": "05.12.2025",
@@ -85139,7 +85143,7 @@
   "review": [
    "cert_code: '1217/2/168/25' vs '1217/2168/25'"
   ],
-  "batch_canonical": "CJ062501/1",
+  "batch_canonical": "CJ062501_1",
   "strain": "Cup Junky",
   "cert_code": null,
   "date_of_issue": "01.12.2025",
@@ -85548,7 +85552,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "BSS 052501",
+  "batch_canonical": "BSS052501",
   "notes": [
    "batch_canonical read by only one model",
    "lab differs in wording between reads",
@@ -85888,7 +85892,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "BSS 052501",
+  "batch_canonical": "BSS052501",
   "strain": "Blue Sunset Sherbet",
   "cert_code": "276-31-M/25",
   "date_of_issue": "04.12.2025",
@@ -86294,7 +86298,7 @@
   "review": [
    "cert_code: 'Лабораториски број: 1157/2058/25' vs '1157/2058/25'"
   ],
-  "batch_canonical": "BSS 052501",
+  "batch_canonical": "BSS052501",
   "strain": "Blue Sunset Sherbet",
   "cert_code": null,
   "date_of_issue": "24.11.2025",
@@ -89074,7 +89078,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "GP 0824-03",
+  "batch_canonical": "GP0824_03",
   "strain": "Grape Pie",
   "cert_code": "628/1129/25",
   "date_of_issue": "02.07.2025",
@@ -89481,7 +89485,7 @@
   "review": [
    "date_of_issue: '26.06.2025' vs '2025-06-26'"
   ],
-  "batch_canonical": "GP 0824-03",
+  "batch_canonical": "GP0824_03",
   "strain": "Grape Pie",
   "cert_code": "3178/2025",
   "date_of_issue": null,
@@ -93445,7 +93449,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "FB012601/1",
+  "batch_canonical": "FB012601_1",
   "strain": "Fat Bastard",
   "cert_code": "ППК26067",
   "date_of_issue": "11.05.2026",
@@ -94033,11 +94037,9 @@
   }
  },
  {
-  "reads_agree": false,
-  "review": [
-   "salmonella (Salmonella): A='отсутна/25 g' B='отсутна/25'"
-  ],
-  "batch_canonical": "FB012601/1",
+  "reads_agree": true,
+  "review": [],
+  "batch_canonical": "FB012601_1",
   "strain": "Fat Bastard",
   "cert_code": "308/0552/26",
   "date_of_issue": "28.04.2026",
@@ -94114,7 +94116,7 @@
    {
     "parameter": "salmonella",
     "parameter_printed": "Salmonella",
-    "result_printed": null,
+    "result_printed": "отсутна/25 g",
     "result_numeric": null,
     "limit_printed": "отсутна/25 g",
     "limit_numeric": null,
@@ -94126,8 +94128,8 @@
     "covered_by": null,
     "method_accredited": true,
     "exponent_uncertain": false,
-    "reads_agree": false,
-    "confidence": "review",
+    "reads_agree": true,
+    "confidence": "ok",
     "limit_disagrees_between_reads": null,
     "read_a": {
      "result": "отсутна/25 g",
@@ -94453,7 +94455,7 @@
    "pesticide_residues (Endosulfan (alpha, beta and endosulfan sulfat)): present in only one read",
    "pesticide_residues (Metoxychlor): present in only one read"
   ],
-  "batch_canonical": "FB012601/1",
+  "batch_canonical": "FB012601_1",
   "strain": "FAT BASTARD",
   "cert_code": "2362/2026",
   "date_of_issue": "30.04.2026",
@@ -100319,7 +100321,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "GP082501/1",
+  "batch_canonical": "GP082501_1",
   "strain": "Grape Pie",
   "cert_code": "ППК25380",
   "date_of_issue": "12.12.2025",
@@ -101919,7 +101921,7 @@
    "pesticide_residues_cumcs (Endosulfan (alpha, beta and endosulfan sulfat)): present in only one read",
    "pesticide_residues_cumcs (Chlordane (sum of cis- and trans-chlordane)): present in only one read"
   ],
-  "batch_canonical": "HPA 052501",
+  "batch_canonical": "HPA052501",
   "strain": "HIGH PRO AMNESIA DF008-01",
   "cert_code": "4352/2025",
   "date_of_issue": "15.09.2025",
@@ -104652,7 +104654,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "MB 0824-05",
+  "batch_canonical": "MB0824_05",
   "strain": "Motor Breath",
   "cert_code": "767/1376/25",
   "date_of_issue": "29.07.2025",
@@ -105061,7 +105063,7 @@
    "other (Endosulfan (alpha, beta and endosulfan sulfate)): present in only one read",
    "pesticide_residues (vkupno DDT): present in only one read"
   ],
-  "batch_canonical": "MB 0824_05",
+  "batch_canonical": "MB0824_05",
   "strain": "MOTOR BREATH",
   "cert_code": "3638/2025",
   "date_of_issue": "28.07.2025",
@@ -107838,7 +107840,7 @@
   "review": [
    "date_of_issue: '05.05.2025 година' vs '05.05.2025'"
   ],
-  "batch_canonical": "OPM 1024-01",
+  "batch_canonical": "OPM1024_01",
   "strain": "Orange Punch Mimosa",
   "cert_code": "407/0745/25",
   "date_of_issue": null,
@@ -108253,7 +108255,7 @@
    "pesticide_residues (* vkupno DDT): present in only one read",
    "pesticide_residues (* Endosulfan (alpha, beta and endosulfan sulfat)): present in only one read"
   ],
-  "batch_canonical": "OPM 1024_01",
+  "batch_canonical": "OPM1024_01",
   "strain": null,
   "cert_code": "2156/2025",
   "date_of_issue": "07.05.2025",
@@ -110945,7 +110947,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "JD012603/02",
+  "batch_canonical": "JD012603_02",
   "strain": "Jelly Donutz",
   "cert_code": "ППК26113",
   "date_of_issue": "30.06.2026",
@@ -111476,7 +111478,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "JD012603/02V",
+  "batch_canonical": "JD012603_02V",
   "strain": "Jelly Donutz",
   "cert_code": "ППК26111",
   "date_of_issue": "30.06.2026",
@@ -112006,7 +112008,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "GRC102501/2",
+  "batch_canonical": "GRC102501_2",
   "strain": "Graps & Creme",
   "cert_code": "051-6-ГС/26",
   "date_of_issue": "02.03.2026",
@@ -112180,13 +112182,12 @@
  {
   "reads_agree": false,
   "review": [
-   "batch_canonical: 'Graps & Creme GRC102501/2' vs 'GRC102501/2'",
    "cert_code: '051-6-K/26' vs '051-6-К/26'",
    "identification_a_macroscopic (Идентификација и квантификација на канабиноиди во цвет од канабис): present in only one read",
    "identification_b_microscopic (Идентификација и квантификација на канабиноиди во цвет од канабис): present in only one read",
    "identification_c_hplc (Идентификација и квантификација на канабиноиди во цвет од канабис): present in only one read"
   ],
-  "batch_canonical": null,
+  "batch_canonical": "GRC102501_2",
   "strain": "Graps & Creme",
   "cert_code": null,
   "date_of_issue": "04.03.2026",
@@ -128905,7 +128906,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "BSS 1024-01",
+  "batch_canonical": "BSS1024_01",
   "strain": "Blue Sunset Sherbet",
   "cert_code": "626/1127/25",
   "date_of_issue": "02.07.2025",
@@ -129317,7 +129318,7 @@
    "pesticide_residues (* Dieldrin и Aldrin (expressed as Dieldrin)): present in only one read",
    "pesticide_residues (* vkupno DDT): present in only one read"
   ],
-  "batch_canonical": "BSS 1024-01",
+  "batch_canonical": "BSS1024_01",
   "strain": "Blue Sunset Sherbet",
   "cert_code": "3177/2025",
   "date_of_issue": "26.06.2025",
@@ -132074,7 +132075,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "OPM 1024-03",
+  "batch_canonical": "OPM1024_03",
   "strain": "Orange Punch Mimosa",
   "cert_code": "766/1375/25",
   "date_of_issue": "29.07.2025",
@@ -132479,7 +132480,7 @@
    "pesticide_residues (* Endosulfan (alpha, beta and endosulfan sulfat)): present in only one read",
    "pesticide_residues (* Methoxychlor): present in only one read"
   ],
-  "batch_canonical": "OPM 1024_03",
+  "batch_canonical": "OPM1024_03",
   "strain": "ORANGE PUNCH MIMOSA",
   "cert_code": "3636/2025",
   "date_of_issue": "28.07.2025",
@@ -135282,7 +135283,7 @@
    "pesticide_residues (Heptachlor): present in only one read",
    "pesticide_residues (Endosulfan sulfate): present in only one read"
   ],
-  "batch_canonical": "CJ 072501",
+  "batch_canonical": "CJ072501",
   "strain": "CUP JUNKIE",
   "cert_code": "5697/2025",
   "date_of_issue": "02.12.2025",
@@ -136877,7 +136878,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "CJ052501/2",
+  "batch_canonical": "CJ052501_2",
   "strain": "Cup Junkie",
   "cert_code": "ППК25281",
   "date_of_issue": "17.09.2025",
@@ -137468,7 +137469,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "CJ 052501/2",
+  "batch_canonical": "CJ052501_2",
   "strain": "Cup Junkie",
   "cert_code": "947/1685/25",
   "date_of_issue": "17.09.2025",
@@ -137871,7 +137872,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "CJ 052501/2",
+  "batch_canonical": "CJ052501_2",
   "strain": "CUP JUNKIE",
   "cert_code": "4349/2025",
   "date_of_issue": "15.09.2025",
@@ -140643,8 +140644,7 @@
  {
   "reads_agree": false,
   "review": [
-   "date_of_issue: '28.04.2026' vs '28.04.2026 година'",
-   "escherichia_coli (Escherichia coli): A='отсутна/г' B='отсутна/g'"
+   "date_of_issue: '28.04.2026' vs '28.04.2026 година'"
   ],
   "batch_canonical": "GG112501",
   "strain": "Gorilla Glue",
@@ -140695,7 +140695,7 @@
    {
     "parameter": "escherichia_coli",
     "parameter_printed": "Escherichia coli",
-    "result_printed": null,
+    "result_printed": "отсутна/г",
     "result_numeric": null,
     "limit_printed": "отсутна/г",
     "limit_numeric": null,
@@ -140707,8 +140707,8 @@
     "covered_by": null,
     "method_accredited": true,
     "exponent_uncertain": false,
-    "reads_agree": false,
-    "confidence": "review",
+    "reads_agree": true,
+    "confidence": "ok",
     "limit_disagrees_between_reads": null,
     "read_a": {
      "result": "отсутна/г",
@@ -148128,7 +148128,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "CJ 1024",
+  "batch_canonical": "CJ1024",
   "strain": "CUP JUNKIE",
   "cert_code": "750/2025",
   "date_of_issue": "27.02.2025",
@@ -150344,7 +150344,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "CJ 1024",
+  "batch_canonical": "CJ1024",
   "strain": "Cup Junkie",
   "cert_code": "164/0272/25",
   "date_of_issue": "24.02.2025",
@@ -151328,11 +151328,8 @@
   }
  },
  {
-  "reads_agree": false,
-  "review": [
-   "escherichia_coli (Escherichia coli): A='отсуства/g' B='отсутна/g'",
-   "salmonella (Salmonella): A='отсуства/25' B='отсутна/25'"
-  ],
+  "reads_agree": true,
+  "review": [],
   "batch_canonical": "CC112501",
   "strain": "Cash Cow",
   "cert_code": "311/0555/26",
@@ -151383,7 +151380,7 @@
    {
     "parameter": "escherichia_coli",
     "parameter_printed": "Escherichia coli",
-    "result_printed": null,
+    "result_printed": "отсуства/g",
     "result_numeric": null,
     "limit_printed": "отсуства/g",
     "limit_numeric": null,
@@ -151395,8 +151392,8 @@
     "covered_by": null,
     "method_accredited": true,
     "exponent_uncertain": false,
-    "reads_agree": false,
-    "confidence": "review",
+    "reads_agree": true,
+    "confidence": "ok",
     "limit_disagrees_between_reads": null,
     "read_a": {
      "result": "отсуства/g",
@@ -151410,7 +151407,7 @@
    {
     "parameter": "salmonella",
     "parameter_printed": "Salmonella",
-    "result_printed": null,
+    "result_printed": "отсуства/25",
     "result_numeric": null,
     "limit_printed": "отсуства/25 g",
     "limit_numeric": null,
@@ -151422,8 +151419,8 @@
     "covered_by": null,
     "method_accredited": true,
     "exponent_uncertain": false,
-    "reads_agree": false,
-    "confidence": "review",
+    "reads_agree": true,
+    "confidence": "ok",
     "limit_disagrees_between_reads": null,
     "read_a": {
      "result": "отсуства/25",
@@ -154309,7 +154306,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "GP072501/1",
+  "batch_canonical": "GP072501_1",
   "strain": "Grape Pie",
   "cert_code": "ППК25378",
   "date_of_issue": "12.12.2025",
@@ -154903,7 +154900,7 @@
    "other (вкупно DDT): present in only one read",
    "pesticide_residues (vkupno DDT): present in only one read"
   ],
-  "batch_canonical": "GP 072501/1",
+  "batch_canonical": "GP072501_1",
   "strain": "GRAPE PIE",
   "cert_code": "5886/2025",
   "date_of_issue": "12.12.2025",
@@ -157076,7 +157073,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "GP072501/1",
+  "batch_canonical": "GP072501_1",
   "strain": "Grape Pie",
   "cert_code": "1228/2194/25",
   "date_of_issue": "05.12.2025",
@@ -159859,7 +159856,7 @@
    "other (vkupno DDT): present in only one read",
    "pesticide_residues (вкупно DDT): present in only one read"
   ],
-  "batch_canonical": "GP 062501",
+  "batch_canonical": "GP062501",
   "strain": "GRAPE PIE",
   "cert_code": "4762/2025",
   "date_of_issue": "08.10.2025",
@@ -163504,7 +163501,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "GG1024-02",
+  "batch_canonical": "GG1024_02",
   "strain": "Gorilla Glue",
   "cert_code": "472/0863/25",
   "date_of_issue": "22.05.2025",
@@ -163917,7 +163914,7 @@
    "pesticide_residues (Endosulfan (alpha, beta and endosulfan sulfate)): present in only one read",
    "pesticide_residues (Endrin ketон): present in only one read"
   ],
-  "batch_canonical": "GG 1024_02",
+  "batch_canonical": "GG1024_02",
   "strain": "GORILLA GLUE",
   "cert_code": "2472/2025",
   "date_of_issue": "30.05.2025",
@@ -178333,7 +178330,7 @@
  {
   "reads_agree": false,
   "review": [
-   "batch_canonical: 'Sleepy Joy SJI12501' vs 'SJ112501'",
+   "batch_canonical: 'SJI12501' vs 'SJ112501'",
    "cert_code: '051-2-K/26' vs '051-2-К/26'",
    "identification_a_macroscopic (Идентификација и квантификација на канабиноиди во цвет од канабис): present in only one read",
    "identification_b_microscopic (Идентификација и квантификација на канабиноиди во цвет од канабис): present in only one read",
@@ -181998,7 +181995,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "GP0824-01",
+  "batch_canonical": "GP0824_01",
   "strain": "Grape Pie",
   "cert_code": "318/0585/25",
   "date_of_issue": "14.04.2025",
@@ -182396,7 +182393,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "GP 0824_01",
+  "batch_canonical": "GP0824_01",
   "strain": "GRAPE PIE",
   "cert_code": "1767/2025",
   "date_of_issue": "11.04.2025",
@@ -198172,7 +198169,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "CJ062501/2",
+  "batch_canonical": "CJ062501_2",
   "strain": "Cap Junkie",
   "cert_code": "ППК25322",
   "date_of_issue": "23.10.2025",
@@ -198767,7 +198764,7 @@
    "other (вкупно DDT): present in only one read",
    "pesticide_residues (vkupno DDT): present in only one read"
   ],
-  "batch_canonical": "CJ 062501/2",
+  "batch_canonical": "CJ062501_2",
   "strain": null,
   "cert_code": "4908/2025",
   "date_of_issue": "24.10.2025",
@@ -201755,7 +201752,7 @@
  {
   "reads_agree": true,
   "review": [],
-  "batch_canonical": "CJ062501/2",
+  "batch_canonical": "CJ062501_2",
   "strain": "Cap Junkie",
   "cert_code": "1032/1851/25",
   "date_of_issue": "17.10.2025",
@@ -202757,7 +202754,7 @@
   "review": [
    "strain: 'Grape Pie (1)' vs 'Grape Pie'"
   ],
-  "batch_canonical": "GP0824-01",
+  "batch_canonical": "GP0824_01",
   "strain": null,
   "cert_code": "319/0586/25",
   "date_of_issue": "14.04.2025",

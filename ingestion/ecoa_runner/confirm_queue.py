@@ -34,21 +34,44 @@ def main():
     W = 112
     print('=' * W); print('CONFIRMATION QUEUE — decisions required before CoQs can issue'); print('=' * W)
 
-    print('\nA. HELD ANALYTICAL RESULTS — the two reads disagreed; the value is a')
-    print('   specification row on a CoQ. Open the page and record which is correct.')
     ph = ','.join('?' * len(SPEC_KEYS))
-    rows = db.execute("""SELECT batch, cert_code, date_iso, parameter, read_a, read_b
-        FROM result WHERE confidence!='ok' AND parameter IN (%s)
-        ORDER BY batch, parameter""" % ph, SPEC_KEYS).fetchall()
-    print('   %d row(s) on specification parameters (of %d held in total)\n'
-          % (len(rows), db.execute("SELECT COUNT(*) FROM result WHERE confidence!='ok'").fetchone()[0]))
-    for b, c, d, p, ra, rb in rows[:a.limit]:
-        def val(x):
-            try: return (json.loads(x) or {}).get('result')
-            except Exception: return None
-        print('   %-13s %-14s %-11s %-22s A=%-18s B=%s'
-              % (b or '?', (c or '—')[:14], d or '—', p, str(val(ra))[:18], str(val(rb))[:18]))
-    if len(rows) > a.limit: print('   ... and %d more' % (len(rows) - a.limit))
+    print('\nA. VALUE DISAGREEMENTS — the two reads returned different values for')
+    print('   the same printed row. These need a page and a ruling.')
+    rows = db.execute("""SELECT batch, cert_code, date_iso, parameter, read_a, read_b,
+        parameter_printed FROM result WHERE confidence!='ok'
+        AND read_a IS NOT NULL AND read_b IS NOT NULL
+        AND read_a NOT IN ('null','') AND read_b NOT IN ('null','')
+        ORDER BY CASE WHEN parameter IN (%s) THEN 0 ELSE 1 END, batch""" % ph,
+        SPEC_KEYS).fetchall()
+    def val(x):
+        try: return (json.loads(x) or {}).get('result')
+        except Exception: return None
+    real = [r for r in rows if str(val(r[4])) != str(val(r[5]))]
+    print('   %d row(s)\n' % len(real))
+    for b, c, d, p, ra, rb, pp in real[:a.limit]:
+        star = ' *SPEC ROW' if p in SPEC_KEYS else ''
+        print('   %-13s %-13s %-11s %-24s%s' % (b or '?', (c or '—')[:13], d or '—', p[:24], star))
+        print('        A: %-30s  B: %s' % (str(val(ra))[:30], str(val(rb))[:34]))
+    if len(real) > a.limit: print('   ... and %d more' % (len(real) - a.limit))
+
+    print('\nA2. SINGLE-READ ROWS — one model reported a row the other did not.')
+    print('    The question is whether the row EXISTS on the page, not which value')
+    print('    is right. Only specification rows are listed; pesticide compounds and')
+    print('    non-specification rows are excluded (they do not reach a CoQ).')
+    solo = db.execute("""SELECT batch, cert_code, date_iso, parameter, COUNT(*)
+        FROM result WHERE confidence!='ok'
+        AND (read_a IS NULL OR read_a IN ('null','')) 
+        AND (read_b IS NULL OR read_b IN ('null',''))
+        AND parameter IN (%s)
+        GROUP BY batch, cert_code, parameter ORDER BY batch""" % ph, SPEC_KEYS).fetchall()
+    excluded = db.execute("""SELECT COUNT(*) FROM result WHERE confidence!='ok'
+        AND (read_a IS NULL OR read_a IN ('null','')) AND parameter NOT IN (%s)""" % ph,
+        SPEC_KEYS).fetchone()[0]
+    print('    %d specification row(s); %d non-specification rows excluded\n'
+          % (len(solo), excluded))
+    for b, c, d, p, n in solo[:a.limit]:
+        print('    %-13s %-13s %-11s %s' % (b or '?', (c or '—')[:13], d or '—', p))
+    if len(solo) > a.limit: print('    ... and %d more' % (len(solo) - a.limit))
 
     print('\nB. CERTIFICATES WITH NO DOCUMENT CODE — a CoQ cites every result by')
     print('   document code; these cannot be cited until the code is supplied.')
