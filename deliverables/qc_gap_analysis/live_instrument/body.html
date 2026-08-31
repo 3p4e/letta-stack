@@ -1,0 +1,255 @@
+<div class="sheet">
+
+<div class="header">
+  <div>
+    <div class="h-title">CoX Quality Desk</div>
+    <div class="h-mk">Регистар и издавање на сертификати</div>
+    <div class="h-sub"><b>Certificate of Quality · in-house Certificate of Analysis · outsourced
+      eCoA.</b> One register per document class, and behind every one of them the parameter, the
+      acceptance criterion QCSP 001 v.03 states for it, the result, and the document code that
+      certifies it. This page is the working desk: batch intake, certificate receipt, iCoA
+      assignment and CoQ issuance recorded here are published back into the document itself,
+      so every viewer sees the same live state.</div>
+  </div>
+  <div class="h-right">
+    <div class="h-lbl">Document ID<br><span class="mk" style="font-size:6.8px">Код на документ</span></div>
+    <div class="h-code">QC-ISSUANCE-CONTROL</div>
+    <div class="h-issue">Compiled · Составен <b id="gen"></b><br>SOP in use · СОП во употреба <b id="sop"></b></div>
+  </div>
+</div>
+<div class="goldrule"></div>
+
+<div class="tabs" role="tablist">
+  <button class="tab" role="tab" id="t-over" aria-selected="true" data-p="over">Overview<span class="mk" style="text-transform:none;font-size:7.6px"> · Преглед</span></button>
+  <button class="tab" role="tab" id="t-reg"  aria-selected="false" data-p="reg">Release register<span class="n" id="n-reg"></span></button>
+  <button class="tab" role="tab" id="t-coq"  aria-selected="false" data-p="coq">CoQ issuance<span class="n" id="n-coq"></span></button>
+  <button class="tab" role="tab" id="t-icoa" aria-selected="false" data-p="icoa">iCoA plan<span class="n" id="n-icoa"></span></button>
+  <button class="tab" role="tab" id="t-ecoa" aria-selected="false" data-p="ecoa">eCoA receipt<span class="n" id="n-ecoa"></span></button>
+  <button class="tab" role="tab" id="t-spec" aria-selected="false" data-p="spec">QCSP 001 v.03<span class="n" id="n-spec"></span></button>
+  <button class="tab" role="tab" id="t-log"  aria-selected="false" data-p="log">Desk log<span class="n" id="n-log"></span></button>
+</div>
+
+<!-- ============================================ OVERVIEW -->
+<section id="p-over" role="tabpanel" aria-labelledby="t-over">
+  <div class="band"><span class="no">01</span> The three registers<span class="mk">Трите регистри</span></div>
+  <div class="pad">
+    <div class="kpis" id="kpis"></div>
+
+    <div class="nt">How the CoQ universe is built</div>
+    <p class="note"><b>One initial Certificate of Quality for every batch on record, first to last, and a
+      12-month cannabinoid + mycotoxin reissue for every batch.</b> Sixty-one carry numbers from the
+      owner's ISSUE_COQ plan — 48 initial for Tranche 01 (19) and Tranche 02 (29), and 13 additional-testing
+      CoQs, <code>CoQ-PP-2026-0027 … 0039</code>, for the lots whose retest fell due. The rest are
+      <b>predicted</b>: their number is copied from the issuance record at issue, never computed in advance.
+      A CoQ is never labelled "retest" — each is an ordinary sequential certificate of quality for the batch
+      at its date of issue.</p>
+    <p class="note"><b>No CoQ prints an issue date before <span id="sop2"></span>, when the CoQ SOP was put in
+      use.</b> The plan's 2025 and 2026 dates are <i>packaging</i> dates — the basis of the numbering series —
+      not issue dates. Every document below therefore carries two: its basis date, and the earliest date it
+      may be issued on — the SOP date, the newest document it cites, or (for a reissue that cites nothing yet)
+      its 12-month due date, whichever is latest. QC sets the printed date at issue.</p>
+    <p class="note"><b>On a reissue only ten determinations are re-certified</b> — identity A, B and C and the
+      assay from Farmahem together, foreign matter on an in-house iCoA, and the three mycotoxins. Every other
+      determination reads <i>outside the retest scope — the release determination stands on the initial CoQ</i>.</p>
+
+    <div class="nt">What needs a decision, and what needs finding</div>
+    <div id="findings"></div>
+  </div>
+
+  <div class="band"><span class="no">02</span> Microbiological purity — every criterion, checked<span class="mk">Микробиолошка чистота</span><span class="tail">Ph. Eur. 5.1.8 category C</span></div>
+  <div class="pad">
+    <p class="note">All microbiological purity testing is <b>Ph. Eur. 5.1.8 category C</b>. Seventeen IPH
+      certificates name the category on the parameter line itself — <code>Microbiological quality (Ph.Eur.
+      5.1.8 cat. C) — Total aerobic microbial count (TAMC) ≤ 10^5 CFU/g</code> — and Purely Plant's in-house
+      CoA form writes <code>Ph. Eur. 5.1.8, category C</code>. Against that, all seven criteria are correct as
+      the specification states them.</p>
+    <div class="scroll"><table id="micro"><thead><tr>
+      <th style="width:44px">№</th><th>Parameter<span class="mk">Параметар</span></th>
+      <th>Category C</th><th>This register</th><th style="width:150px">Verdict</th>
+      <th>Results over it</th></tr></thead><tbody></tbody></table></div>
+    <p class="note" style="margin-top:14px"><b>Ph. Eur. 5.1.4 reads an enumeration criterion of 10ⁿ CFU/g as a
+      maximum acceptable count of 2 × 10ⁿ</b> — "10¹ CFU: maximum acceptable count = 20; 10² CFU: 200; 10³ CFU:
+      2000, and so forth" — so ≤ 10⁵ conforms up to 200 000 and ≤ 10⁴ up to 20 000. It governs enumeration
+      criteria only, never an absence criterion. <b>No TAMC result in this register is over any reading of its
+      criterion</b>: the highest is 5.1 × 10⁴, a quarter of the maximum acceptable count. Every microbiological
+      exceedance is TYMC.</p>
+    <p class="note"><b>Four findings recorded rather than changed</b>, each a QA determination on a signed
+      document: Purely Plant's in-house CoA form multiplies by five, printing <code>&lt;10^5, max 500 000</code>
+      and <code>&lt;10^4, max 50 000</code> where the pharmacopoeia gives 200 000 and 20 000 — three documents
+      carry it and no disposition turns on it, but the form issues on every batch it is used for; the HPA1024
+      in-house CoA prints <code>&lt;10^ CFU/g</code> for bile-tolerant GNB, with no exponent; six certificates
+      apply criteria tighter than category C to a category C product, conservatively and with every result
+      conforming anyway; and QCSP 001 cites the categories as <code>2.6.12 cat. C</code>, <code>2.6.31 cat. C</code>,
+      <code>2.6.13 cat. C</code> — those are the test methods, the categories live in 5.1.8, which is how the
+      certificates cite them.</p>
+  </div>
+</section>
+
+<!-- ============================================ RELEASE REGISTER -->
+<section id="p-reg" role="tabpanel" aria-labelledby="t-reg" class="hide">
+  <div class="band"><span class="no">R</span> Batch release register<span class="mk">Регистар за пуштање на серии</span><span class="tail" id="reg-tail"></span></div>
+  <div class="controls">
+    <input class="search" id="q-reg" type="search" placeholder="Batch, P-number, strain, certificate code…" aria-label="Search the release register">
+    <button class="chip fail" data-f="reg:oos">Over a release limit<span class="c" id="c-roos"></span></button>
+    <button class="chip warn" data-f="reg:undet">Undetermined<span class="c" id="c-rund"></span></button>
+    <button class="chip warn" data-f="reg:flag">Flagged<span class="c" id="c-rflag"></span></button>
+    <button class="chip" data-f="reg:desk">Recorded at this desk<span class="c" id="c-rdesk"></span></button>
+    <button class="clear" data-clear="reg">clear</button>
+    <span class="count" id="cnt-reg"></span>
+  </div>
+  <div class="desk" data-desk="1">
+    <h3>Batch intake — add a cultivation batch to the record</h3>
+    <div class="frm">
+      <span class="fld"><label>Batch code</label><input id="nb-cb" placeholder="XX012604"></span>
+      <span class="fld"><label>Strain</label><input id="nb-strain" placeholder="Strain name"></span>
+      <span class="fld"><label>Release date</label><input id="nb-date" placeholder="dd.mm.yyyy"></span>
+      <span class="fld"><label>P-number (optional)</label><input id="nb-pn" placeholder="P06…"></span>
+      <button class="btn" id="nb-go">Add batch</button>
+    </div>
+    <div class="deskmsg" id="nb-msg">Creates the batch's predicted initial CoQ and its 12-month reissue, and the in-house certificates they owe.</div>
+  </div>
+  <div class="bcards" id="bcards"></div>
+  <div class="empty hide" id="e-reg">No batch matches those filters.</div>
+</section>
+
+<!-- ============================================ CoQ -->
+<section id="p-coq" role="tabpanel" aria-labelledby="t-coq" class="hide">
+  <div class="band"><span class="no">03</span> Certificate of Quality — issuance<span class="mk">Сертификат за квалитет</span><span class="tail" id="coq-tail"></span></div>
+  <div class="controls">
+    <input class="search" id="q-coq" type="search" placeholder="CoQ number, packaged lot, cultivation batch, strain, certificate code…" aria-label="Search certificates of quality">
+    <button class="chip" data-f="coq:initial">Initial release<span class="c" id="c-init"></span></button>
+    <button class="chip" data-f="coq:reissue">12-month reissue<span class="c" id="c-reis"></span></button>
+    <button class="chip" data-f="coq:issued">Numbered<span class="c" id="c-num"></span></button>
+    <button class="chip" data-f="coq:predicted">Predicted<span class="c" id="c-pred"></span></button>
+    <button class="chip fail" data-f="coq:oos">Out of specification<span class="c" id="c-oos"></span></button>
+    <button class="chip warn" data-f="coq:undet">Undetermined<span class="c" id="c-und"></span></button>
+    <button class="chip warn" data-f="coq:noecoa">No eCoA on file<span class="c" id="c-noe"></span></button>
+    <button class="chip warn" data-f="coq:ghost">Retest certificate missing<span class="c" id="c-gh"></span></button>
+    <button class="chip warn" data-f="coq:banner">Banner = re-analysis<span class="c" id="c-ban"></span></button>
+    <button class="chip" data-f="coq:ready">Re-analysis on file<span class="c" id="c-rdy"></span></button>
+    <button class="chip fail" data-f="coq:unres">Batch unresolved<span class="c" id="c-unr"></span></button>
+    <button class="clear" data-clear="coq">clear</button>
+    <span class="count" id="cnt-coq"></span>
+  </div>
+  <div id="coq-detail"></div>
+  <div class="scroll"><table id="t-coqs"><thead><tr>
+    <th style="width:150px">CoQ number</th><th style="width:118px">Series</th>
+    <th style="width:86px">Basis<span class="mk">Основа</span></th>
+    <th style="width:100px">Issue no earlier than</th>
+    <th style="width:76px">Lot</th><th style="width:104px">Batch</th>
+    <th>Strain · grade · potency</th>
+    <th style="width:126px">iCoA reference</th>
+    <th class="c" style="width:62px">Covered</th><th class="c" style="width:62px">To do</th>
+    <th style="width:200px">Flags</th></tr></thead><tbody></tbody></table></div>
+  <div class="empty hide" id="e-coq">No certificate matches those filters.</div>
+</section>
+
+<!-- ============================================ iCoA -->
+<section id="p-icoa" role="tabpanel" aria-labelledby="t-icoa" class="hide">
+  <div class="band"><span class="no">04</span> In-house Certificate of Analysis — plan<span class="mk">Интерен сертификат за анализа</span><span class="tail" id="icoa-tail"></span></div>
+  <div class="controls">
+    <input class="search" id="q-icoa" type="search" placeholder="CoQ number, batch, strain, iCoA reference…" aria-label="Search in-house certificate plan">
+    <button class="chip" data-f="icoa:ab">Ident A + B<span class="c" id="c-ab"></span></button>
+    <button class="chip" data-f="icoa:fm">Foreign matter<span class="c" id="c-fm"></span></button>
+    <button class="chip" data-f="icoa:initial">For an initial CoQ<span class="c" id="c-iini"></span></button>
+    <button class="chip" data-f="icoa:reissue">For a reissue<span class="c" id="c-irei"></span></button>
+    <button class="clear" data-clear="icoa">clear</button>
+    <span class="count" id="cnt-icoa"></span>
+  </div>
+  <div class="pad" style="padding-bottom:6px"><p class="note" style="margin-top:0">
+    <b>Identity A and B in one document, foreign matter in another.</b> Two determinations on two samples do
+    not belong on one certificate: either would then have to be reissued whenever the other was repeated.
+    At a 12-month reissue Farmahem covers identity together with the assay, so only foreign matter is left
+    in house — and release-time coverage by a CNP Ph. Eur. 11.5 certificate does not carry to it, because a
+    certificate from the release round cannot stand behind a determination dated a year later.</p></div>
+  <div class="scroll"><table id="t-icoas"><thead><tr>
+    <th style="width:44px">#</th><th style="width:150px">For CoQ</th><th style="width:118px">Series</th>
+    <th style="width:100px">Not before</th><th style="width:76px">Lot</th><th style="width:104px">Batch</th>
+    <th>Strain</th><th style="width:120px">Scope<span class="mk">Опсег</span></th>
+    <th style="width:82px">QCSP nos.</th><th style="width:126px">Reference</th>
+    <th style="width:78px">Date</th><th style="width:80px">Analyst</th></tr></thead><tbody></tbody></table></div>
+  <div class="empty hide" id="e-icoa">No in-house certificate matches those filters.</div>
+</section>
+
+<!-- ============================================ eCoA -->
+<section id="p-ecoa" role="tabpanel" aria-labelledby="t-ecoa" class="hide">
+  <div class="band"><span class="no">05</span> Outsourced certificates — receipt<span class="mk">Прием на надворешни сертификати</span><span class="tail" id="ecoa-tail"></span></div>
+  <div class="controls">
+    <input class="search" id="q-ecoa" type="search" placeholder="Certificate code, batch, strain, laboratory, parameter…" aria-label="Search outsourced certificate receipt">
+    <button class="chip" data-f="ecoa:iph">IPH<span class="c" id="c-iph"></span></button>
+    <button class="chip" data-f="ecoa:cnp">UKIM CNP<span class="c" id="c-cnp"></span></button>
+    <button class="chip" data-f="ecoa:fhm">Farmahem<span class="c" id="c-fhm"></span></button>
+    <button class="chip" data-f="ecoa:pp">Purely Plant in-house<span class="c" id="c-pp"></span></button>
+    <button class="chip" data-f="ecoa:ver">Page-verified<span class="c" id="c-ver"></span></button>
+    <button class="chip fail" data-f="ecoa:red">Red<span class="c" id="c-red"></span></button>
+    <button class="chip warn" data-f="ecoa:amber">Amber<span class="c" id="c-amb"></span></button>
+    <button class="clear" data-clear="ecoa">clear</button>
+    <span class="count" id="cnt-ecoa"></span>
+  </div>
+  <div class="desk" data-desk="1">
+    <h3>Certificate receipt — record a document received</h3>
+    <div class="frm">
+      <span class="fld"><label>Certificate code</label><input id="ne-code" placeholder="ППК26… / 197-…"></span>
+      <span class="fld"><label>Date of issue</label><input id="ne-date" placeholder="dd.mm.yyyy"></span>
+      <span class="fld"><label>Laboratory</label><select id="ne-lab">
+        <option>UKIM Faculty of Pharmacy — Center for Natural Products</option>
+        <option>IPH — Institute of Public Health</option>
+        <option>Farmahem</option>
+        <option>Purely Plant GmbH (in-house)</option>
+        <option>Other (state in parameters)</option></select></span>
+      <span class="fld"><label>Batch</label><input id="ne-batch" placeholder="cultivation batch"></span>
+      <span class="fld" style="flex:1;min-width:180px"><label>Parameters reported</label><input id="ne-params" placeholder="e.g. Total Δ9-THC · TYMC · aflatoxins"></span>
+      <span class="fld" style="min-width:180px"><label>Document link (optional)</label><input id="ne-link" placeholder="https://drive.google.com/…"></span>
+      <button class="btn" id="ne-go">Record receipt</button>
+    </div>
+    <div class="deskmsg" id="ne-msg">The document then becomes citable on the batch's CoQ determinations.</div>
+  </div>
+  <div class="scroll"><table id="t-ecoas"><thead><tr>
+    <th style="width:44px">#</th><th style="width:86px">Issued<span class="mk">Издаден</span></th>
+    <th style="width:190px">Certificate<span class="mk">Сертификат</span></th>
+    <th style="width:104px">Batch</th><th style="width:70px">Lot</th><th style="width:130px">Strain</th>
+    <th>Parameters reported<span class="mk">Пријавени параметри</span></th>
+    <th style="width:78px" class="c">Verified</th><th style="width:56px" class="c">Flag</th>
+    <th style="width:52px" class="c">PDF</th></tr></thead><tbody></tbody></table></div>
+  <div class="empty hide" id="e-ecoa">No certificate matches those filters.</div>
+</section>
+
+<!-- ============================================ SPEC -->
+<section id="p-spec" role="tabpanel" aria-labelledby="t-spec" class="hide">
+  <div class="band"><span class="no">06</span> QCSP 001 v.03 — the release specification<span class="mk">Спецификација за пуштање</span><span class="tail">Section 02, verbatim</span></div>
+  <div class="pad" style="padding-bottom:8px"><p class="note" style="margin-top:0">
+    Section 02 of the signed product specification, identical across all 48 documents. Transcribed verbatim:
+    a paraphrased acceptance criterion on a release document is a defect. This is what every CoQ certifies
+    against, and what each of the 23 rows of a CoQ's analytical table must carry.</p></div>
+  <div class="scroll"><table id="t-spec"><thead><tr>
+    <th style="width:44px">№</th><th style="width:170px">Group<span class="mk">Група</span></th>
+    <th style="width:200px">Parameter<span class="mk">Параметар</span></th>
+    <th style="width:190px">Method / reference<span class="mk">Метода</span></th>
+    <th style="width:200px">Acceptance criterion<span class="mk">Критериум</span></th>
+    <th style="width:74px" class="c">Column</th><th style="width:150px">Supplied by</th>
+    </tr></thead><tbody></tbody></table></div>
+</section>
+
+<!-- ============================================ LOG -->
+<section id="p-log" role="tabpanel" aria-labelledby="t-log" class="hide">
+  <div class="band"><span class="no">07</span> Desk log<span class="mk">Дневник на бирото</span><span class="tail" id="log-tail"></span></div>
+  <div class="desk" data-desk="1">
+    <h3>Operator</h3>
+    <div class="frm">
+      <span class="fld"><label>Initials — stamped on every entry you record</label><input id="op-init" maxlength="8" placeholder="e.g. BN"></span>
+    </div>
+    <div class="deskmsg">Kept in this browser only; the initials travel with each recorded entry.</div>
+  </div>
+  <div class="scroll"><table id="t-log"><thead><tr>
+    <th style="width:150px">When (this device's clock)</th><th style="width:70px">By</th>
+    <th style="width:170px">Action</th><th>Detail</th></tr></thead><tbody></tbody></table></div>
+  <div class="empty hide" id="e-log">Nothing recorded at the desk yet. Every batch intake, certificate receipt, iCoA assignment, attachment and issuance lands here.</div>
+</section>
+
+<div class="foot">
+  <div>Purely Plant DOOEL · Industriska ulica 9, br. 9, s. Kojlija 1043 · Petrovec-Skopje, North Macedonia<br>
+    Compiled from the corrected batch release register, the owner's ISSUE_COQ plan and QCSP 001 v.03.
+    Every value is transcribed, never computed: a CoQ must not carry a result that has not been certified.</div>
+  <div class="fr">CoX QUALITY DESK<br><span style="font-family:var(--b);font-weight:500;font-style:italic">Контрола на издавање</span></div>
+</div>
+</div>

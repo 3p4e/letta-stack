@@ -53,6 +53,9 @@ def main(out):
     docs = [r for r in DR.load_register()
             if not r["code"].lower().startswith(("n/a", "(not numbered)"))]
     docs.sort(key=lambda r: (DR.key(r["date"]), r["row"]))
+    seen = set()
+    docs = [r for r in docs
+            if not (r["code"].strip() in seen or seen.add(r["code"].strip()))]
     ver = DR.verified_map()
     ecoa = [{
         "date": r["date"], "lab": r["lab"], "code": r["code"], "batch": r["batch"],
@@ -65,9 +68,41 @@ def main(out):
         "pdf": r["pdf"],
     } for r in docs]
 
+    # The release-register view: every certificate row of every batch block,
+    # with the column criteria, so the page can show the register the way the
+    # published register artifact does — and judge values with the same
+    # acceptance-limit rule.
+    from openpyxl import load_workbook
+    from openpyxl.utils import get_column_letter
+    wb = load_workbook(CQ.REG_X)
+    ws = wb[CQ.SHEET]
+    columns = {}
+    for cidx in range(5, 23):
+        L = get_column_letter(cidx)
+        columns[L] = {"name": str(ws.cell(row=4, column=cidx).value or ""),
+                      "crit": str(ws.cell(row=5, column=cidx).value or "")}
+    order, batches, _limits = CQ.read_register()
+    reg = []
+    for cb in order:
+        b = batches[cb]
+        by_code = OrderedDict()
+        for L, lst in b["cells"].items():
+            for c in lst:
+                r = by_code.setdefault(c["code"], {
+                    "code": c["code"], "date": c["date"], "lab": c["lab"],
+                    "fam": c["family"], "stab": c["stability"], "vals": {},
+                    "flags": {}})
+                r["vals"][L] = c["value"]
+                if c["flag"]:
+                    r["flags"][L] = c["flag"]
+        reg.append({"cb": cb, "pn": b["pnumber"], "strain": b["strain"],
+                    "certs": list(by_code.values())})
+
     data = {
         "generated": "31.08.2026",
         "sop_effective": CQ.SOP_EFFECTIVE,
+        "reg_columns": columns,
+        "reg": reg,
         "dets": [{"no": d["no"], "group": d["group"], "en": d["en"],
                   "mk": d["mk"], "method": d["method"], "crit": d["criterion"],
                   "src": d["source"], "col": d["column"]} for d in dets],
