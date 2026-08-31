@@ -15,6 +15,7 @@ import os, sys, json, sqlite3, argparse
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, '..', 'common'))
 sys.path.insert(0, HERE)
+from common.master_spec import spec_for, thc_criterion
 from common.controlled import (canonical_lab, canonical_strain, PANELS,
                                is_panel_statement, is_not_found, panel_of)
 
@@ -180,6 +181,12 @@ def compile_coq(db, batch, as_of=None):
             s['non_accredited'].append(entry)
 
     for n, sub, key, name, criterion, method in SPEC:
+        # Total THC has no monograph limit: the criterion is the batch's own
+        # class from the potency master (nominal +/- 10 % relative). Without it
+        # the CoQ would print a placeholder where the acceptance limit belongs.
+        if key == 'total_thc':
+            tc = thc_criterion(batch)
+            criterion = tc[2] if tc else 'NO MASTER ROW - criterion unknown'
         if key == 'pesticide_residues':
             entry = _pesticides(by, n, criterion, method, cite)
             section02.append(entry)
@@ -313,6 +320,26 @@ def render(db, batch):
     print('CERTIFICATE OF QUALITY — data assembly   batch %s%s   (QCSOP 012 v.03 structure)'
           % (batch, '  ·  %s' % canonical_strain(cert[0]) if cert else ''))
     print('=' * W)
+
+    # 01 identifies the batch and, crucially, the SPECIFICATION it is judged
+    # against. A CoQ that does not name its specification cannot be audited.
+    m = spec_for(batch)
+    print('\n01  IDENTIFICATION')
+    if m:
+        print('    Specification      %s' % m['spec_code'])
+        print('    Product type       %s' % m['product_type'])
+        # Grade is a rank within the strain, not an absolute potency.
+        print('    Class / grade      %s  (%s — this strain\'s no. %d class)'
+              % (m['class'], m['grade'],
+                 ['I', 'II', 'III', 'IV', 'V'].index(m['grade'].split()[-1]) + 1))
+        print('    Cultivation batch  %s' % m['cultiv_batch_src'])
+        print('    PP batch number    %s' % m['pp_batch'])
+        print('    Harvest date       %s' % (m['harvest'] or '(not recorded)'))
+        print('    Packaging date     %s' % m['packaging'])
+    else:
+        print('    NO ROW IN THE POTENCY MASTER for this batch - the specification,')
+        print('    product type and packaging date cannot be stated, and the Total')
+        print('    THC acceptance range is unknown. Add the batch to the master.')
     print('\n02  CONSOLIDATED ANALYTICAL RESULTS')
     print('%-5s %-32s %-24s %-18s %s' % ('№', 'Parameter', 'Acceptance criterion', 'Result', 'Source'))
     print('-' * W)
