@@ -15,6 +15,7 @@ import os, sys, json, sqlite3, argparse
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, '..', 'common'))
 sys.path.insert(0, HERE)
+from common.master_spec import spec_for, thc_criterion
 from common.controlled import (canonical_lab, canonical_strain, PANELS,
                                is_panel_statement, is_not_found, panel_of)
 
@@ -59,6 +60,38 @@ ON_REQUEST = {'pseudomonas_aeruginosa', 'staphylococcus_aureus', 'pesticide_resi
 #           originating eCoA is missing or not yet ingested, and always flagged
 # ---------------------------------------------------------------------------
 SUPERSEDED_INHOUSE = ('QCCOA 001', 'QCCOA001')
+
+
+# A total cannabinoid is free acid x decarboxylation factor. Where a
+# certificate reports the components but not the total, the total is the
+# laboratory's own data rearranged - not a new measurement - so it may be
+# stated, marked as derived. Where only the FREE form was reported, the total
+# CANNOT be inferred: an unreported acid is not a zero one, and a free value
+# below the limit does not prove the total is. That case is reported PARTIAL,
+# carrying the value the laboratory did give, so the row reads as a question for
+# the laboratory rather than as an untested parameter.
+DERIVED = {
+    'total_thc': ('thc_free', 'thca', 0.877),
+    'total_cbd': ('cbd_free', 'cbda', 0.877),
+    'total_cbn': ('cbn_free', 'cbna', 0.876),
+}
+
+
+def _derive(by, key):
+    """(status, value, printed, source_row) for a total from its components."""
+    if key not in DERIVED:
+        return None
+    free_k, acid_k, factor = DERIVED[key]
+    free = [r for r in by.get(free_k, []) if r[8] == 'ok' and r[1] not in (None, '')]
+    acid = [r for r in by.get(acid_k, []) if r[8] == 'ok' and r[1] not in (None, '')]
+    if not free:
+        return None
+    f, a = free[-1], (acid[-1] if acid else None)
+    if a is not None and f[2] is not None and a[2] is not None:
+        return ('derived', f[2] + a[2] * factor,
+                '%.2f (derived: %s + %s x %.3f)' % (f[2] + a[2] * factor, f[2],
+                                                    a[2], factor), f)
+    return ('partial', f[2], f[1], f)
 
 
 def source_tier(cert_code, lab):
@@ -138,10 +171,24 @@ def compile_coq(db, batch, as_of=None):
     """Assemble the CoQ dataset for a batch.
 
     `as_of` (ISO date) compiles the certificate AS IT STOOD on that date -
-    what version v.01 must say, rather than what the later retest found. A
-    result dated after `as_of` did not exist when that version was issued and
-    must not appear on it; without this every version of a batch would show
-    the newest value and the reissue history would be meaningless.
+    what the release certificate must say, rather than what the later retest
+    found. A result dated after `as_of` did not exist when that version was
+    issued and must not appear on it; without this every version of a batch
+    would show the newest value and the reissue history would be meaningless.
+
+    A certificate whose issue date extraction did not capture is ADMITTED to
+    every version rather than dropped. Dropping it was wrong: 17 certificates
+    carry no date, and excluding them reported 79 specification rows as MISSING
+    when the laboratory had in fact reported them - whole microbiology panels
+    among them. An undated row can no more be proven to postdate the cut than
+    to predate it, so excluding it is not the conservative choice; it is the
+    one that loses evidence. Where a dated retest covers the same row it still
+    wins, because undated rows sort first and the most recent candidate is
+    taken - which is also the carry-forward rule a reissue needs.
+
+    Every row from such a certificate is marked `date_not_captured`. The CoQ
+    must cite each certificate's date of issue, so that flag blocks signing -
+    but it blocks on ONE FIELD, not on a claim that the test was never done.
     """
     rows = db.execute("""SELECT r.parameter, r.result_printed, r.result_numeric, r.unit,
              r.method, r.date_iso, r.cert_code, r.lab, r.confidence,
@@ -150,9 +197,7 @@ def compile_coq(db, batch, as_of=None):
         FROM result r JOIN certificate c ON c.doc_id = r.doc_id
         WHERE r.batch = ? ORDER BY r.date_iso""", (batch,)).fetchall()
     if as_of:
-        # An undated row cannot be proven to predate the cut, so it is excluded
-        # from a point-in-time compile rather than assumed contemporaneous.
-        rows = [r for r in rows if r[5] and r[5] <= as_of]
+        rows = [r for r in rows if not r[5] or r[5] <= as_of]
     by = {}
     for r in rows:
         by.setdefault(r[0], []).append(r)
@@ -180,6 +225,12 @@ def compile_coq(db, batch, as_of=None):
             s['non_accredited'].append(entry)
 
     for n, sub, key, name, criterion, method in SPEC:
+        # Total THC has no monograph limit: the criterion is the batch's own
+        # class from the potency master (nominal +/- 10 % relative). Without it
+        # the CoQ would print a placeholder where the acceptance limit belongs.
+        if key == 'total_thc':
+            tc = thc_criterion(batch)
+            criterion = tc[2] if tc else 'NO MASTER ROW - criterion unknown'
         if key == 'pesticide_residues':
             entry = _pesticides(by, n, criterion, method, cite)
             section02.append(entry)
@@ -206,6 +257,28 @@ def compile_coq(db, batch, as_of=None):
         entry = {'no': _num(n, sub), 'group': n, 'key': key, 'parameter': name,
                  'criterion': criterion, 'method': method}
         if not cands:
+            # Before declaring the row absent, ask whether the laboratory
+            # reported the same quantity in another form.
+            d = _derive(by, key)
+            if d:
+                how, num, printed, src = d
+                entry.update(result=printed, numeric=num,
+                             status='ok' if how == 'derived' else 'PARTIAL',
+                             derived=how, source_tier=1,
+                             provenance=('derived from the components the '
+                                         'certificate reports'
+                                         if how == 'derived' else
+                                         'certificate reports the free form '
+                                         'only; the total is not stated'),
+                             date=src[5], date_not_captured=not src[5] or None,
+                             cert_code=src[6], lab=src[7], document=src[11],
+                             exceeds_criterion=None, outside_range=None,
+                             method_accredited=src[14], superseded=[])
+                cite(_num(n, sub), src[7], src[6], src[5], accredited=src[14])
+                if how != 'derived':
+                    unresolved.append(entry)
+                section02.append(entry)
+                continue
             entry['result'] = None
             if held:
                 entry['status'] = 'HELD'
@@ -231,7 +304,8 @@ def compile_coq(db, batch, as_of=None):
                          source_tier=best,
                          provenance={1: 'accredited eCoA', 2: 'in-house iCoA',
                                      3: 'DERIVED — superseded QCCoA, originating eCoA not available'}[best],
-                         date=latest[5], cert_code=latest[6], lab=latest[7],
+                         date=latest[5], date_not_captured=not latest[5] or None,
+                         cert_code=latest[6], lab=latest[7],
                          document=latest[11],
                          exceeds_criterion=latest[9], outside_range=latest[10],
                          method_accredited=latest[14],
@@ -313,6 +387,26 @@ def render(db, batch):
     print('CERTIFICATE OF QUALITY — data assembly   batch %s%s   (QCSOP 012 v.03 structure)'
           % (batch, '  ·  %s' % canonical_strain(cert[0]) if cert else ''))
     print('=' * W)
+
+    # 01 identifies the batch and, crucially, the SPECIFICATION it is judged
+    # against. A CoQ that does not name its specification cannot be audited.
+    m = spec_for(batch)
+    print('\n01  IDENTIFICATION')
+    if m:
+        print('    Specification      %s' % m['spec_code'])
+        print('    Product type       %s' % m['product_type'])
+        # Grade is a rank within the strain, not an absolute potency.
+        print('    Class / grade      %s  (%s — this strain\'s no. %d class)'
+              % (m['class'], m['grade'],
+                 ['I', 'II', 'III', 'IV', 'V'].index(m['grade'].split()[-1]) + 1))
+        print('    Cultivation batch  %s' % m['cultiv_batch_src'])
+        print('    PP batch number    %s' % m['pp_batch'])
+        print('    Harvest date       %s' % (m['harvest'] or '(not recorded)'))
+        print('    Packaging date     %s' % m['packaging'])
+    else:
+        print('    NO ROW IN THE POTENCY MASTER for this batch - the specification,')
+        print('    product type and packaging date cannot be stated, and the Total')
+        print('    THC acceptance range is unknown. Add the batch to the master.')
     print('\n02  CONSOLIDATED ANALYTICAL RESULTS')
     print('%-5s %-32s %-24s %-18s %s' % ('№', 'Parameter', 'Acceptance criterion', 'Result', 'Source'))
     print('-' * W)

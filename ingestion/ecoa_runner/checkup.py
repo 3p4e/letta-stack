@@ -191,6 +191,65 @@ check('non-Macedonian Cyrillic flagged', not ok2)
 ok3, _ = QG.check(('The quick brown fox jumps over the lazy dog. ' * 20))
 check('plain English not flagged', ok3)
 
+# A quality certificate is identified by its code. A malformed one, a duplicate,
+# or a sequence that runs backwards in time is an audit finding, so the register
+# is checked as a register and not only as data.
+print('\n9. DOCUMENT CODES')
+import re as _re
+_db = os.path.join(H, 'ecoa.sqlite')
+if os.path.exists(_db):
+    CI = load('ci', 'runner/coq_issuance.py')
+    _rows = CI.schedule(sqlite3.connect(_db))
+    _codes = [r['code'] for r in _rows]
+    check('every CoQ code is CoQ-PP-YYYY-NNNN',
+          all(_re.fullmatch(r'CoQ-PP-\d{4}-\d{4}', c) for c in _codes))
+    check('no CoQ code is issued twice', len(set(_codes)) == len(_codes))
+    _by = {}
+    for _r in _rows:
+        _by.setdefault(_r['code'][7:11], []).append((int(_r['code'][12:]),
+                                                     _r['issue_date'] or '9999'))
+    _seq = _mono = True
+    for _v in _by.values():
+        _v.sort()
+        _seq &= [n for n, _ in _v] == list(range(1, len(_v) + 1))
+        _mono &= [d for _, d in _v] == sorted(d for _, d in _v)
+    check('each year runs 0001 upward with no gap', _seq)
+    check('codes never run backwards in date', _mono)
+    check('the year in the code is the issue year',
+          all(r['code'][7:11] == (r['issue_date'] or '9999')[:4] for r in _rows))
+    check('a release certificate supersedes no CoQ',
+          all(r['supersedes_coq'] is None for r in _rows if r['version'] == 1))
+    check('every reissue names the CoQ it supersedes',
+          all(r['supersedes_coq'] for r in _rows if r['version'] > 1))
+    check('an iCoA code exists exactly where an iCoA is needed',
+          all(bool(r['icoa_code']) == bool(r['icoa_rows']) for r in _rows))
+    # The regression that made this check necessary: the point-in-time filter
+    # dropped every certificate whose issue date extraction had missed, and 79
+    # specification rows - whole microbiology panels - were reported MISSING
+    # while the laboratory's result sat in the database. A cell may say a
+    # parameter is absent only when the database holds nothing for it.
+    _key = {CQ._num(n, sub): k for n, sub, k, _, _, _ in CQ.SPEC}
+    _false = 0
+    for _r in _rows:
+        for _c in _r['cells']:
+            if _c['state'] not in ('MISSING', 'NOT TESTED'):
+                continue
+            _got = sqlite3.connect(_db).execute(
+                "SELECT date_iso FROM result WHERE batch=? AND parameter=? "
+                "AND result_printed IS NOT NULL AND result_printed<>''",
+                (_r['batch'], _key[_c['no']])).fetchall()
+            if _got and any(d is None for d, in _got):
+                _false += 1
+    check('no row is called absent while the database holds it', _false == 0,
+          '' if not _false else '%d false absences' % _false)
+    check('rows from an undated certificate are flagged, not hidden',
+          all(c.get('no_date') is not None for r in _rows for c in r['cells']))
+    check('no gap routes to an iCoA that PP cannot run',
+          all(c['no'] in CI.IN_HOUSE_CAPABLE or c['no'] in CI.IN_HOUSE_CONDITIONAL
+              for r in _rows for c in r['cells'] if c['route'].startswith('iCoA')))
+else:
+    check('document-code checks', True, 'skipped — no ecoa.sqlite')
+
 print('\n' + '=' * 92)
 print('%d passed, %d failed' % (P, F))
 sys.exit(1 if F else 0)
