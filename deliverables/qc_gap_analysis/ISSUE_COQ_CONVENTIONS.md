@@ -191,3 +191,44 @@ to the operator and dated, and neither touches the baseline register.
   says so in a note. Issued CoQ numbers, assigned iCoA references and their dates
   stay final under the same rule as before — a correction there is a new
   document, not an edit.
+
+## Desk-to-document data flow, and standard input options — 01.09.2026
+
+Two defects, found and fixed together.
+
+**Desk writes reached the generated document only after a publish-and-reload.**
+`COQ`/`ICO`/`ECO` were bare aliases onto arrays decorated once, at load, with
+the overlay; a publish reloads the whole page, so the effect of an attach, a
+page reading, an amendment or an issuance only appeared in the preview after
+that reload — attach a result, click *Preview draft* immediately, and the
+document still read "—". Worse, a page reading recorded at the remediation
+desk (`OV.verify`) never reached a document at all: its only consumer was the
+receipt-register chip, not the CoQ or iCoA filler. Fixed by making the fold-in
+idempotent and callable (`deriveCoqFacts`/`deriveIcoaFacts`/`deriveEcoaFacts`/
+`deriveRegFacts`), re-run immediately after every desk write and again on a
+declined publish, so the preview reflects the change (or its rollback) in the
+same session — and by folding a page reading into a CoQ row when it
+remediates the certificate that row already cites, for the same parameter,
+under the same "the page wins" rule the receipt register already applies.
+
+Two more defects surfaced by the same audit: a desk-attached value over its
+own acceptance criterion still ticked "Conforms to Specification" — the
+desk's counting never evaluated a desk value against its criterion the way a
+register value already is; and the iCoA-to-CoQ determination carry-through
+(`Ident A + B` → dets 1+2, `Foreign matter` → det 7) was a two-branch string
+guess, latent only because no other scope was in use yet. Both fixed, the
+second by reusing the desk's own `scopeKind()` classifier.
+
+**None of this touches the embedded CoQ/iCoA master templates.** The masters
+are still cloned and filled by `querySelector`, exactly as before — the fix
+is entirely in which data reaches that fill, not in the fill mechanism or the
+master files themselves.
+
+**Every desk input field now offers standard, pre-given options** — a
+`<datalist>` or `<select>` drawn from the specification's 23 determinations,
+the register's columns and units, the laboratories on file, or values this
+session has already recorded (analysts, operators, certificate codes) —
+while every field still accepts free text: nothing recordable before this
+change became impossible to record. The laboratory picker is generated at
+runtime from `LAB_META` so it can no longer silently omit an accredited
+laboratory, as it did for the State Phytosanitary Laboratory.

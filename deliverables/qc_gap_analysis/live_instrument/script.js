@@ -108,7 +108,79 @@ function dateWindowError(date, floor){
   return null;
 }
 
-/* ---------- derived per-CoQ facts, computed once ---------- */
+/* ================= release register view =================
+   The value-judging rules are ported verbatim from the published release-register
+   artifact: magnitude() answers "what number is this measurement"; acceptanceLimit()
+   answers "what is the largest conforming result" — for a microbial enumeration
+   criterion written as a bare power of ten those are different numbers (Ph. Eur.
+   5.1.4 / USP <1111>: x2 per decade). Absence criteria are absolute. */
+var SUP = {"⁰":"0","¹":"1","²":"2","³":"3","⁴":"4","⁵":"5","⁶":"6","⁷":"7","⁸":"8","⁹":"9"};
+function magnitude(v){
+  var s = String(v == null ? "" : v).trim();
+  if (!s || s === "/" || s === "—") return null;
+  s = s.replace(/[⁰¹²³⁴-⁹]/g, function(c){ return "^" + SUP[c]; })
+       .replace(/[хХ×✕·]/g, "x").replace(/≤/g, "<=").replace(/≥/g, ">=")
+       .replace(/(\d),(\d)/g, "$1.$2");
+  var m = s.match(/(\d+(?:\.\d+)?)\s*x\s*10\s*\^?\s*(\d+)/i);
+  if (m) return parseFloat(m[1]) * Math.pow(10, parseInt(m[2], 10));
+  m = s.match(/(?:^|[^\d.])10\s*\^\s*(\d+)/);
+  if (m) return Math.pow(10, parseInt(m[1], 10));
+  m = s.match(/(\d+(?:\.\d+)?)/);
+  if (m && !/and|и/i.test(s)) return parseFloat(m[1]);
+  return null;
+}
+var PH_EUR_FACTOR = 2;
+var COUNTED = /tamc|tymc|cfu|gnb|gram-negative|aerobic|yeast|mould|mold/i;
+function acceptanceLimit(lim, colName){
+  if (lim == null) return null;
+  var s = String(lim).trim();
+  if (!s) return null;
+  var norm = s.replace(/[⁰¹²³⁴-⁹]/g, function(c){ return "^" + SUP[c]; })
+              .replace(/[хХ×✕]/g, "x").replace(/\s+/g, "");
+  var m = norm.match(/^[<≤]?10\^(\d)(?!\d)/);
+  if (m && COUNTED.test(String(colName || "") + " " + s))
+    return PH_EUR_FACTOR * Math.pow(10, parseInt(m[1], 10));
+  return magnitude(s);
+}
+function isProse(sv){
+  /* a measurement is digits and short unit tokens; four letters running in any
+     script means an annotation ("COMPLIES (numeric value not present …)"), and
+     an annotation is never judged against a limit */
+  return /[A-Za-zА-Яа-я]{4}/.test(sv);
+}
+function overLimit(v, lim, colName){
+  if (!v || !lim) return false;
+  var sv = String(v).trim();
+  if (/^[<≤]/.test(sv)) return false;
+  if (/and|и/i.test(sv)) return false;
+  if (/^(n\.?d\.?|blq|absent|одговара|н\.д)/i.test(sv)) return false;
+  if (isProse(sv)) return false;
+  var a = magnitude(sv), b = acceptanceLimit(lim, colName);
+  if (a == null || b == null) return false;
+  if (!/[<≤]/.test(String(lim)) && !/max/i.test(String(lim))) return false;
+  return a > b * 1.0000001;
+}
+function undetBand(v, lim, colName){
+  if (!v || !lim) return false;
+  var norm = String(lim).trim().replace(/[⁰¹²³⁴-⁹]/g, function(c){ return "^" + SUP[c]; })
+    .replace(/[хХ×✕]/g, "x").replace(/\s+/g, "");
+  var m = norm.match(/^[<≤]?10\^(\d)(?!\d)/);
+  if (!m || !COUNTED.test(String(colName || "") + " " + String(lim))) return false;
+  if (/max/i.test(String(lim))) { /* an explicit max settles the band */ }
+  var printed = Math.pow(10, parseInt(m[1], 10));
+  var a = magnitude(String(v).trim());
+  if (a == null || /^[<≤]/.test(String(v).trim()) || isProse(String(v).trim())) return false;
+  return a > printed * 1.0000001 && a <= printed * PH_EUR_FACTOR * 1.0000001;
+}
+
+/* ---------- derived per-CoQ facts ----------
+   These run once at load, and again after every desk write — a publish
+   reloads the whole page anyway, but the operator should see the effect of
+   an attach, a page reading, an amendment or an issuance in the preview
+   *before* the reload confirms it, the same way an iCoA assignment already
+   does. Re-running must never compound onto the previous run's output, so
+   every field this fold can set is first reset from a baseline snapshot
+   taken on the very first run, then rebuilt from the current OV. */
 var ST = {
   OOS:  "OUT OF SPECIFICATION",
   UND:  "UNDETERMINED",
@@ -131,73 +203,126 @@ function stKind(s){
   if (s.indexOf(ST.OK) === 0) return "ok";
   return "none";
 }
-D.coqs.forEach(function(c, i){
-  c.i = i;
-  c.reissue = c.t.indexOf("additional") === 0;
-  c.key = coqKey(c);
-  var att = OV.attach[c.key] || {};
-  c.rows.forEach(function(r){
-    var a = att[r.no];
-    if (!a) return;
-    r.res = a.res; r.doc = a.doc; r.dd = a.date || ""; r.lab = a.lab || "";
-    r.fam = "desk transcription — verify against the page";
-    r.st = "covered — recorded at the desk (" + (a.by || "?") + "); verify against the page";
-    r.desk = true;
+function normParam(s){ return String(s == null ? "" : s).trim().toLowerCase().replace(/\s+/g, " "); }
+/* a page reading is filed under the certificate code (OV.verify), keyed by
+   whatever name the operator typed for the parameter — the datalist steers
+   that typing onto the schedule's own vocabulary (DET[no].en), so matching
+   is a normalised string compare rather than a second coding scheme */
+function matchParam(params, det){
+  if (!det) return null;
+  var want = normParam(det.en);
+  for (var k2 in params) if (normParam(k2) === want) return params[k2];
+  return null;
+}
+function deriveCoqFacts(){
+  D.coqs.forEach(function(c, i){
+    c.i = i;
+    c.reissue = c.t.indexOf("additional") === 0;
+    c.key = coqKey(c);
+    var att = OV.attach[c.key] || {};
+    c.rows.forEach(function(r){
+      if (r.baseRes === undefined) {
+        r.baseRes = r.res; r.baseDoc = r.doc; r.baseDD = r.dd; r.baseLab = r.lab;
+        r.baseFam = r.fam; r.baseSt = r.st;
+      }
+      r.res = r.baseRes; r.doc = r.baseDoc; r.dd = r.baseDD; r.lab = r.baseLab;
+      r.fam = r.baseFam; r.st = r.baseSt; r.desk = false; r.pageRead = false;
+      /* the page wins: a remediated reading on the certificate this row
+         already cites, for the same parameter, corrects the row — the same
+         precedence the receipt register and the corpus-contradiction handling
+         already use everywhere else in this instrument */
+      var pv = null;
+      if (r.doc && r.doc !== "—") {
+        var ver = OV.verify[r.doc];
+        pv = ver && ver.params ? matchParam(ver.params, DET[r.no]) : null;
+        if (pv) {
+          r.res = pv.v; r.fam = "page reading — transcribed at the desk";
+          r.st = "covered — read off the page (" + (pv.by || "?") + ")";
+          r.pageRead = true;
+        }
+      }
+      /* an explicit attach is a deliberate, later, complete replacement and
+         still wins over a page reading on the row's previous citation */
+      var a = att[r.no];
+      if (a) {
+        r.res = a.res; r.doc = a.doc; r.dd = a.date || ""; r.lab = a.lab || "";
+        r.fam = "desk transcription — verify against the page";
+        r.st = "covered — recorded at the desk (" + (a.by || "?") + "); verify against the page";
+        r.desk = true;
+      }
+      /* a desk-entered value is judged against its own criterion exactly as a
+         register value is — the desk is not a way around the specification */
+      if ((a || pv) && r.res && r.res !== "—") {
+        var nm = (DET[r.no] || {}).en || "";
+        if (overLimit(r.res, r.crit, nm)) r.st = ST.OOS + " — " + r.st;
+        else if (undetBand(r.res, r.crit, nm)) r.st = ST.UND + " — " + r.st;
+      }
+    });
+    if (c.baseN === undefined) {
+      c.baseN = c.n; c.baseIssued = c.issued; c.baseIssue = c.issue;
+    }
+    c.n = c.baseN; c.issued = c.baseIssued; c.issue = c.baseIssue;
+    c.deskIssued = false; c.issuedBy = undefined;
+    var iss = OV.issue[c.key];
+    if (iss) {
+      c.n = iss.number; c.issued = true; c.deskIssued = true;
+      c.issue = iss.date; c.issuedBy = iss.by;
+    }
+    c.codes = [];
+    var k = { oos:0, und:0, cov:0, todo:0, none:0, scan:0, await:0 };
+    c.rows.forEach(function(r){
+      if (r.doc && r.doc !== "—" && c.codes.indexOf(r.doc) < 0) c.codes.push(r.doc);
+      var s = r.st;
+      if (s.indexOf(ST.OOS) === 0 || s.indexOf(ST.BLK) === 0) k.oos++;
+      else if (s.indexOf(ST.UND) === 0) k.und++;
+      else if (s.indexOf(ST.SCAN) === 0) k.scan++;
+      else if (s.indexOf(ST.ICOA) === 0) k.todo++;
+      else if (s.indexOf(ST.AWK) === 0 || s.indexOf(ST.AWM) === 0) k.await++;
+      else if (s.indexOf(ST.NONE) === 0) k.none++;
+      if (s.indexOf(ST.OK) === 0 || s.indexOf(ST.OOS) === 0 || s.indexOf(ST.UND) === 0) k.cov++;
+    });
+    c.k = k;
+    /* an issued reissue that cites no re-analysis at all */
+    c.ghost = c.reissue && c.issued && !c.codes.some(function(x){ return x.indexOf("197-") === 0; });
+    /* a reissue whose Farmahem pair is already on file. A lot with no packaged lot and
+       a P-number for a batch has no resolved cultivation batch, so it cannot be queued
+       for issue however complete its re-analysis is. */
+    c.ready = c.reissue && c.codes.some(function(x){ return x.indexOf("197-") === 0; });
+    c.unresolved = c.ready && !c.issued && !c.pp && c.cb.indexOf("P0") === 0;
+    if (c.unresolved) c.ready = false;
+    /* an initial CoQ whose banner potency is the 12-month re-analysis, not the release assay */
+    c.banner = false;
+    if (!c.reissue && c.thc) {
+      var a2 = c.rows.filter(function(r){ return r.no === "4"; })[0];
+      if (a2 && a2.res !== c.thc && a2.also &&
+          a2.also.split("; ").some(function(x){ return x.indexOf(c.thc + " (197-") === 0; })) c.banner = true;
+    }
+    c.hay = [c.n, c.pp, c.cb, c.strain, c.ic, c.t, c.grade].concat(c.codes).join(" ").toLowerCase();
   });
-  var iss = OV.issue[c.key];
-  if (iss) {
-    c.n = iss.number; c.issued = true; c.deskIssued = true;
-    c.issue = iss.date; c.issuedBy = iss.by;
-  }
-  c.codes = [];
-  var k = { oos:0, und:0, cov:0, todo:0, none:0, scan:0, await:0 };
-  c.rows.forEach(function(r){
-    if (r.doc && r.doc !== "—" && c.codes.indexOf(r.doc) < 0) c.codes.push(r.doc);
-    var s = r.st;
-    if (s.indexOf(ST.OOS) === 0 || s.indexOf(ST.BLK) === 0) k.oos++;
-    else if (s.indexOf(ST.UND) === 0) k.und++;
-    else if (s.indexOf(ST.SCAN) === 0) k.scan++;
-    else if (s.indexOf(ST.ICOA) === 0) k.todo++;
-    else if (s.indexOf(ST.AWK) === 0 || s.indexOf(ST.AWM) === 0) k.await++;
-    else if (s.indexOf(ST.NONE) === 0) k.none++;
-    if (s.indexOf(ST.OK) === 0 || s.indexOf(ST.OOS) === 0 || s.indexOf(ST.UND) === 0) k.cov++;
+}
+function deriveIcoaFacts(){
+  D.icoa_plan.forEach(function(p, i){
+    p.i = i;
+    p.reissue = p.coq_type.indexOf("additional") === 0;
+    p.hay = [p.number, p.pp, p.cb, p.strain, p.icoa_ref, p.scope, p.coq_type].join(" ").toLowerCase();
   });
-  c.k = k;
-  /* an issued reissue that cites no re-analysis at all */
-  c.ghost = c.reissue && c.issued && !c.codes.some(function(x){ return x.indexOf("197-") === 0; });
-  /* a reissue whose Farmahem pair is already on file. A lot with no packaged lot and
-     a P-number for a batch has no resolved cultivation batch, so it cannot be queued
-     for issue however complete its re-analysis is. */
-  c.ready = c.reissue && c.codes.some(function(x){ return x.indexOf("197-") === 0; });
-  c.unresolved = c.ready && !c.issued && !c.pp && c.cb.indexOf("P0") === 0;
-  if (c.unresolved) c.ready = false;
-  /* an initial CoQ whose banner potency is the 12-month re-analysis, not the release assay */
-  c.banner = false;
-  if (!c.reissue && c.thc) {
-    var a = c.rows.filter(function(r){ return r.no === "4"; })[0];
-    if (a && a.res !== c.thc && a.also &&
-        a.also.split("; ").some(function(x){ return x.indexOf(c.thc + " (197-") === 0; })) c.banner = true;
-  }
-  c.hay = [c.n, c.pp, c.cb, c.strain, c.ic, c.t, c.grade].concat(c.codes).join(" ").toLowerCase();
-});
-D.icoa_plan.forEach(function(p, i){
-  p.i = i;
-  p.reissue = p.coq_type.indexOf("additional") === 0;
-  p.hay = [p.number, p.pp, p.cb, p.strain, p.icoa_ref, p.scope, p.coq_type].join(" ").toLowerCase();
-});
+}
 var CONTRA = {};
 (D.corpus_contradictions || []).forEach(function(x){
   (CONTRA[x.code] = CONTRA[x.code] || []).push(x);
 });
-D.ecoa.forEach(function(e, i){
-  e.i = i;
-  e.fix = OV.verify[e.code] || null;
-  e.contra = CONTRA[e.code] || null;
-  e.hay = [e.code, e.batch, e.strain, e.lab, e.pn].concat(e.reported)
-    .concat(e.fix ? Object.keys(e.fix.params).map(function(k){
-      return k + " " + e.fix.params[k].v; }) : [])
-    .join(" ").toLowerCase();
-});
+function deriveEcoaFacts(){
+  D.ecoa.forEach(function(e, i){
+    e.i = i;
+    e.fix = OV.verify[e.code] || null;
+    e.contra = CONTRA[e.code] || null;
+    e.hay = [e.code, e.batch, e.strain, e.lab, e.pn].concat(e.reported)
+      .concat(e.fix ? Object.keys(e.fix.params).map(function(k2){
+        return k2 + " " + e.fix.params[k2].v; }) : [])
+      .join(" ").toLowerCase();
+  });
+}
+deriveCoqFacts(); deriveIcoaFacts(); deriveEcoaFacts();
 
 var COQ = D.coqs, ICO = D.icoa_plan, ECO = D.ecoa;
 var N = {
@@ -475,18 +600,18 @@ function renderDetail(){
       }).join("") + '</select></span>' +
       '<span class="fld"><label>Certificate code (from the receipt register)</label>' +
       '<input id="att-doc" list="ecoa-codes" placeholder="ППК… / nnn/nnnn/nn / 197-…"></span>' +
-      '<span class="fld"><label>Result, exactly as printed</label><input id="att-res" placeholder="verbatim"></span>' +
+      '<span class="fld"><label>Result, exactly as printed</label>' +
+      '<input id="att-res" list="known-verdicts" placeholder="verbatim"></span>' +
       '<button class="btn att-go" ' + (open_dets.length ? "" : "disabled ") + 'id="att-save">Attach</button></div>' +
       '<div class="deskmsg" id="att-msg">' + (open_dets.length
         ? "The value is a desk transcription until verified against the page."
-        : "Every determination in scope is certified.") + '</div>' +
-      '<datalist id="ecoa-codes">' + ECO.map(function(e){
-        return '<option value="' + esc(e.code) + '">' + esc((e.batch || "") + " · " + e.lab.split(" — ")[0]) + '</option>';
-      }).join("") + '</datalist></div>' +
+        : "Every determination in scope is certified.") + '</div></div>' +
       '<div class="desk" style="margin:12px;max-width:none" data-desk="1">' +
       '<h3>Issue — assign the number and date</h3><div class="frm">' +
       '<span class="fld"><label>CoQ number</label><input id="iss-num" placeholder="CoQ-PP-2026-NNNN"' +
-        (c.issued ? ' value="' + esc(c.n) + '" readonly' : '') + '></span>' +
+        ' pattern="CoQ-PP-\\d{4}-\\d{4}"' +
+        (c.issued ? ' value="' + esc(c.n) + '" readonly'
+          : ' value="' + esc(nextSeqNumber("CoQ-PP", takenCoqNumbers())) + '"') + '></span>' +
       '<span class="fld"><label>Date of issue</label><input id="iss-date" placeholder="dd.mm.yyyy"></span>' +
       '<button class="btn gold iss-go" id="iss-save"' + (open_dets.length ? " disabled" : "") + '>Record issuance</button></div>' +
       '<div class="deskmsg" id="iss-msg">' + (open_dets.length
@@ -546,9 +671,10 @@ function renderDetail(){
     OV.attach[c.key] = OV.attach[c.key] || {};
     if (OV.attach[c.key][no]) return msgIn("att-msg", "That determination already carries a desk attachment.", false);
     OV.attach[c.key][no] = { doc: doc, res: res, date: e.date, lab: e.lab, by: operator(), at: stamp() };
+    refreshDerived();
     msgIn("att-msg", "Publishing the attachment…", true);
     saveState("attach certificate", doc + " -> " + c.cb + " det " + no + " = " + res,
-      null, function(m){ delete OV.attach[c.key][no]; msgIn("att-msg", m, false); });
+      null, function(m){ delete OV.attach[c.key][no]; refreshDerived(); msgIn("att-msg", m, false); });
   });
   var iss = el("iss-save");
   if (iss) iss.addEventListener("click", function(){
@@ -562,10 +688,11 @@ function renderDetail(){
       Object.keys(OV.issue).some(function(k){ return k !== c.key && OV.issue[k].number === num; });
     if (clash) return msgIn("iss-msg", "That CoQ number is already taken. One number, one document, forever.", false);
     OV.issue[c.key] = { number: num, date: date, by: operator(), at: stamp() };
+    refreshDerived();
     msgIn("iss-msg", "Publishing the issuance…", true);
     saveState("CoQ issuance", num + " issued " + date + " for " + c.cb +
       (c.reissue ? " (12-month reissue)" : " (initial release)"),
-      null, function(m){ delete OV.issue[c.key]; msgIn("iss-msg", m, false); });
+      null, function(m){ delete OV.issue[c.key]; refreshDerived(); msgIn("iss-msg", m, false); });
   });
   box.scrollIntoView({ block:"nearest" });
 }
@@ -741,7 +868,9 @@ document.querySelector("#p-coq .controls").insertAdjacentHTML("afterend",
   '<div class="desk" id="bi-desk" data-desk="1"><h3>Batch issuance \u2014 one date, sequential numbers, chronological order</h3>' +
   '<div class="deskmsg" id="bi-list" style="margin-bottom:8px"></div>' +
   '<div class="frm">' +
-  '<span class="fld"><label>First CoQ number of the batch</label><input id="bi-num" placeholder="CoQ-PP-2026-NNNN"></span>' +
+  '<span class="fld"><label>First CoQ number of the batch</label><input id="bi-num" ' +
+    'pattern="CoQ-PP-\\d{4}-\\d{4}" placeholder="CoQ-PP-2026-NNNN" value="' +
+    esc(nextSeqNumber("CoQ-PP", takenCoqNumbers())) + '"></span>' +
   '<span class="fld"><label>Date of issue (all certificates)</label><input id="bi-date" placeholder="dd.mm.yyyy"></span>' +
   '<button class="btn gold" id="bi-go">Issue the batch</button></div>' +
   '<div class="deskmsg" id="bi-msg">A CoQ number is copied from this issuance record at issue \u2014 numbering continues the sequence, in chronological order of the basis dates.</div></div>');
@@ -782,15 +911,18 @@ el("bi-go").addEventListener("click", function(){
     OV.issue[c.key] = { number: nums[i], date: date, by: operator(), at: stamp(), batch: true };
     recorded.push(c.key);
   });
+  refreshDerived();
   msgIn("bi-msg", "Publishing " + list.length + " issuances\u2026", true);
   saveState("CoQ batch issuance", list.length + " certificates issued " + date + ": " +
     nums[0] + " \u2026 " + nums[nums.length - 1] + " \u2014 " +
     list.map(function(c){ return c.cb; }).join(", "),
     null, function(msg2){
       recorded.forEach(function(k){ delete OV.issue[k]; });
+      refreshDerived();
       msgIn("bi-msg", msg2, false);
     });
 });
+var BI_READY = true;
 renderBatchIssue();
 
 /* ---- iCoA assignment ---- */
@@ -798,7 +930,9 @@ var IC_TARGET = null;
 document.querySelector("#p-icoa .controls").insertAdjacentHTML("afterend",
   '<div class="desk" id="ic-desk" data-desk="1"><h3>iCoA assignment — <span id="ic-what">pick a row below</span></h3>' +
   '<div class="frm">' +
-  '<span class="fld"><label>iCoA reference</label><input id="ic-ref" placeholder="iCoA-PP-2026-NNNN"></span>' +
+  '<span class="fld"><label>iCoA reference</label><input id="ic-ref" ' +
+    'pattern="iCoA-PP-\\d{4}-\\d{4}" placeholder="iCoA-PP-2026-NNNN" value="' +
+    esc(nextSeqNumber("iCoA-PP", takenIcoaRefs())) + '"></span>' +
   '<span class="fld"><label>Date of issue</label><input id="ic-date" placeholder="dd.mm.yyyy"></span>' +
   '<span class="fld"><label>Analyst</label><input id="ic-analyst" placeholder="name"></span>' +
   '<span class="fld"><label>Result, exactly as printed</label><input id="ic-res" placeholder="pick a row first"></span>' +
@@ -842,7 +976,11 @@ el("ic-save").addEventListener("click", function(){
      from the desk record — never overwriting an attachment already there */
   var parts = tk.split("|");
   var ck = parts[0] + "|" + parts[2];
-  var dets = parts[1].indexOf("Ident") === 0 ? ["1", "2"] : ["7"];
+  /* which determination(s) this scope carries onto the linked CoQ — reuse the
+     same ab/c/fm/mb classification fillIcoa() already trusts, rather than
+     guessing a second time from the scope string */
+  var SCOPE_DETS = { ab: ["1", "2"], c: ["3"], fm: ["7"], mb: [] };
+  var dets = SCOPE_DETS[scopeKind(parts[1])] || [];
   var attached = [];
   if (COQ.some(function(c){ return c.key === ck; })) {
     OV.attach[ck] = OV.attach[ck] || {};
@@ -854,12 +992,14 @@ el("ic-save").addEventListener("click", function(){
     });
   }
   OV.icoa[tk] = { ref: ref, date: date, analyst: analyst, res: res, by: operator(), at: stamp() };
+  refreshDerived();
   msgIn("ic-msg", "Publishing the assignment…", true);
   saveState("iCoA assignment", ref + " -> " + parts.slice(0, 2).join(" ") + " = " + res +
     (attached.length ? "; carried onto CoQ det " + attached.join(", ") : ""),
     null, function(m){
       delete OV.icoa[tk];
       attached.forEach(function(no){ delete OV.attach[ck][no]; });
+      refreshDerived();
       msgIn("ic-msg", m, false);
     });
 });
@@ -867,9 +1007,33 @@ el("ic-save").addEventListener("click", function(){
 renderCoqs(); renderIcoa(); renderEcoa();
 
 /* ---- known constants as input suggestions ----
-   Every CoQ draws on a finite, known set: the specification's determinations,
-   the register's columns with their units, the batches and strains on record.
-   The desks suggest them instead of asking the operator to remember. */
+   Pick-or-type throughout: every field below still takes free text — nothing
+   recordable today becomes impossible to record — but a finite, known set
+   (the specification's determinations, the register's columns and their
+   units, the batches, strains and laboratories already on record) is offered
+   instead of asking the operator to remember or retype it. */
+function dl(id, arr){
+  return '<datalist id="' + id + '">' +
+    arr.map(function(x){ return '<option value="' + esc(x) + '">'; }).join("") + "</datalist>";
+}
+/* the next free number in this year's sequence — a starting value the
+   operator can overwrite, not a reservation; scan every number this session
+   already knows about, baseline and desk-issued alike */
+function nextSeqNumber(prefix, taken){
+  var year = todayStr().slice(6);
+  var re = new RegExp("^" + prefix + "-" + year + "-(\\d{4})$");
+  var max = 0;
+  taken.forEach(function(n){ var m = re.exec(n); if (m) max = Math.max(max, parseInt(m[1], 10)); });
+  return prefix + "-" + year + "-" + pad4(max + 1);
+}
+function takenCoqNumbers(){
+  return COQ.map(function(c2){ return c2.n; })
+    .concat(Object.keys(OV.issue).map(function(k){ return OV.issue[k].number; }));
+}
+function takenIcoaRefs(){
+  return ICO.map(function(p2){ return p2.icoa_ref; })
+    .concat(Object.keys(OV.icoa).map(function(k){ return OV.icoa[k].ref; }));
+}
 (function(){
   var params = [];
   D.dets.forEach(function(d2){ if (params.indexOf(d2.en) < 0) params.push(d2.en); });
@@ -877,104 +1041,80 @@ renderCoqs(); renderIcoa(); renderEcoa();
     var n2 = D.reg_columns[L].name;
     if (params.indexOf(n2) < 0) params.push(n2);
   });
-  var strains = {}, batches = {};
+  var strains = {}, cultBatches = {}, lots = {}, allBatches = {};
   D.coqs.forEach(function(c2){
-    strains[c2.strain] = 1; batches[c2.cb] = 1; if (c2.pp) batches[c2.pp] = 1;
+    strains[c2.strain] = 1; cultBatches[c2.cb] = 1; allBatches[c2.cb] = 1;
+    if (c2.pp) { lots[c2.pp] = 1; allBatches[c2.pp] = 1; }
   });
-  function dl(id, arr){
-    return '<datalist id="' + id + '">' +
-      arr.map(function(x){ return '<option value="' + esc(x) + '">'; }).join("") + "</datalist>";
-  }
   document.body.insertAdjacentHTML("beforeend",
-    dl("known-params", params) + dl("known-batches", Object.keys(batches).sort()) +
-    dl("known-strains", Object.keys(strains).sort()));
-  [["ne-batch", "known-batches"], ["nb-cb", "known-batches"],
-   ["nb-strain", "known-strains"], ["ne-params", "known-params"],
-   ["ef-param", "known-params"]].forEach(function(pr){
+    dl("known-params", params) +
+    dl("known-batches", Object.keys(allBatches).sort()) +
+    dl("known-cultivation-batches", Object.keys(cultBatches).sort()) +
+    dl("known-lots", Object.keys(lots).sort()) +
+    dl("known-strains", Object.keys(strains).sort()) +
+    dl("known-verdicts", ["Conforms", "Does not conform"]) +
+    dl("known-analysts", []) + dl("known-operators", []) +
+    dl("ecoa-codes", []));
+  [["ne-batch", "known-cultivation-batches"], ["nb-cb", "known-batches"],
+   ["nb-pn", "known-lots"], ["nb-strain", "known-strains"],
+   ["ne-params", "known-params"],
+   ["ic-res", "known-verdicts"], ["ic-analyst", "known-analysts"]].forEach(function(pr){
     var n3 = el(pr[0]); if (n3) n3.setAttribute("list", pr[1]);
   });
 })();
+/* the certificate-code, analyst and operator suggestions grow as the desk is
+   used — rebuilt from the current baseline + overlay rather than fixed once
+   at load, so a certificate received or a name typed this session is
+   immediately offered back */
+function refreshSessionLists(){
+  var codes = el("ecoa-codes");
+  if (codes) codes.innerHTML = ECO.map(function(e){
+    return '<option value="' + esc(e.code) + '">' + esc((e.batch || "") + " · " + e.lab.split(" — ")[0]) + '</option>';
+  }).join("");
+  var an = {};
+  Object.keys(OV.icoa).forEach(function(k){ if (OV.icoa[k].analyst) an[OV.icoa[k].analyst] = 1; });
+  var la = el("known-analysts");
+  if (la) la.innerHTML = Object.keys(an).sort().map(function(x){ return '<option value="' + esc(x) + '">'; }).join("");
+  var op = {};
+  OV.log.forEach(function(l){ if (l.by && l.by !== "—") op[l.by] = 1; });
+  var lo = el("known-operators");
+  if (lo) lo.innerHTML = Object.keys(op).sort().map(function(x){ return '<option value="' + esc(x) + '">'; }).join("");
+}
+refreshSessionLists();
 
-/* ================= release register view =================
-   The value-judging rules are ported verbatim from the published release-register
-   artifact: magnitude() answers "what number is this measurement"; acceptanceLimit()
-   answers "what is the largest conforming result" — for a microbial enumeration
-   criterion written as a bare power of ten those are different numbers (Ph. Eur.
-   5.1.4 / USP <1111>: x2 per decade). Absence criteria are absolute. */
-var SUP = {"⁰":"0","¹":"1","²":"2","³":"3","⁴":"4","⁵":"5","⁶":"6","⁷":"7","⁸":"8","⁹":"9"};
-function magnitude(v){
-  var s = String(v == null ? "" : v).trim();
-  if (!s || s === "/" || s === "—") return null;
-  s = s.replace(/[⁰¹²³⁴-⁹]/g, function(c){ return "^" + SUP[c]; })
-       .replace(/[хХ×✕·]/g, "x").replace(/≤/g, "<=").replace(/≥/g, ">=")
-       .replace(/(\d),(\d)/g, "$1.$2");
-  var m = s.match(/(\d+(?:\.\d+)?)\s*x\s*10\s*\^?\s*(\d+)/i);
-  if (m) return parseFloat(m[1]) * Math.pow(10, parseInt(m[2], 10));
-  m = s.match(/(?:^|[^\d.])10\s*\^\s*(\d+)/);
-  if (m) return Math.pow(10, parseInt(m[1], 10));
-  m = s.match(/(\d+(?:\.\d+)?)/);
-  if (m && !/and|и/i.test(s)) return parseFloat(m[1]);
-  return null;
-}
-var PH_EUR_FACTOR = 2;
-var COUNTED = /tamc|tymc|cfu|gnb|gram-negative|aerobic|yeast|mould|mold/i;
-function acceptanceLimit(lim, colName){
-  if (lim == null) return null;
-  var s = String(lim).trim();
-  if (!s) return null;
-  var norm = s.replace(/[⁰¹²³⁴-⁹]/g, function(c){ return "^" + SUP[c]; })
-              .replace(/[хХ×✕]/g, "x").replace(/\s+/g, "");
-  var m = norm.match(/^[<≤]?10\^(\d)(?!\d)/);
-  if (m && COUNTED.test(String(colName || "") + " " + s))
-    return PH_EUR_FACTOR * Math.pow(10, parseInt(m[1], 10));
-  return magnitude(s);
-}
-function isProse(sv){
-  /* a measurement is digits and short unit tokens; four letters running in any
-     script means an annotation ("COMPLIES (numeric value not present …)"), and
-     an annotation is never judged against a limit */
-  return /[A-Za-zА-Яа-я]{4}/.test(sv);
-}
-function overLimit(v, lim, colName){
-  if (!v || !lim) return false;
-  var sv = String(v).trim();
-  if (/^[<≤]/.test(sv)) return false;
-  if (/and|и/i.test(sv)) return false;
-  if (/^(n\.?d\.?|blq|absent|одговара|н\.д)/i.test(sv)) return false;
-  if (isProse(sv)) return false;
-  var a = magnitude(sv), b = acceptanceLimit(lim, colName);
-  if (a == null || b == null) return false;
-  if (!/[<≤]/.test(String(lim)) && !/max/i.test(String(lim))) return false;
-  return a > b * 1.0000001;
-}
-function undetBand(v, lim, colName){
-  if (!v || !lim) return false;
-  var norm = String(lim).trim().replace(/[⁰¹²³⁴-⁹]/g, function(c){ return "^" + SUP[c]; })
-    .replace(/[хХ×✕]/g, "x").replace(/\s+/g, "");
-  var m = norm.match(/^[<≤]?10\^(\d)(?!\d)/);
-  if (!m || !COUNTED.test(String(colName || "") + " " + String(lim))) return false;
-  if (/max/i.test(String(lim))) { /* an explicit max settles the band */ }
-  var printed = Math.pow(10, parseInt(m[1], 10));
-  var a = magnitude(String(v).trim());
-  if (a == null || /^[<≤]/.test(String(v).trim()) || isProse(String(v).trim())) return false;
-  return a > printed * 1.0000001 && a <= printed * PH_EUR_FACTOR * 1.0000001;
-}
-D.reg.forEach(function(b, i){
-  b.i = i;
-  b.oos = 0; b.undet = 0; b.flags = 0;
-  b.certs.forEach(function(ct){
-    ct.oos = {}; ct.undet = {};
-    Object.keys(ct.vals).forEach(function(L){
-      var col = D.reg_columns[L] || {};
-      if (ct.stab) return;
-      if (overLimit(ct.vals[L], col.crit, col.name)) { ct.oos[L] = 1; b.oos++; }
-      else if (undetBand(ct.vals[L], col.crit, col.name)) { ct.undet[L] = 1; b.undet++; }
+function deriveRegFacts(){
+  D.reg.forEach(function(b, i){
+    b.i = i;
+    b.oos = 0; b.undet = 0; b.flags = 0;
+    b.certs.forEach(function(ct){
+      ct.oos = {}; ct.undet = {};
+      Object.keys(ct.vals).forEach(function(L){
+        var col = D.reg_columns[L] || {};
+        if (ct.stab) return;
+        if (overLimit(ct.vals[L], col.crit, col.name)) { ct.oos[L] = 1; b.oos++; }
+        else if (undetBand(ct.vals[L], col.crit, col.name)) { ct.undet[L] = 1; b.undet++; }
+      });
+      b.flags += Object.keys(ct.flags).length;
     });
-    b.flags += Object.keys(ct.flags).length;
+    b.hay = [b.cb, b.pn, b.strain].concat(b.certs.map(function(c){ return c.code; }))
+      .join(" ").toLowerCase();
   });
-  b.hay = [b.cb, b.pn, b.strain].concat(b.certs.map(function(c){ return c.code; }))
-    .join(" ").toLowerCase();
-});
+}
+deriveRegFacts();
+/* Re-run all four derivations, and whatever is on screen, after any desk
+   write — a publish reloads the page anyway, but the operator should see the
+   effect immediately, in the preview, the same way an iCoA assignment already
+   does. Call this right after mutating OV, before saveState(); call it again
+   inside every saveState() failure handler, after that handler reverts its
+   own OV write, so a rejected publish rolls the preview back too. */
+function refreshDerived(){
+  deriveCoqFacts(); deriveIcoaFacts(); deriveEcoaFacts(); deriveRegFacts();
+  refreshSessionLists();
+  renderCoqs();
+  if (OPEN != null) renderDetail();
+  renderIcoa(); renderEcoa(); renderReg(); renderLog();
+  if (typeof BI_READY !== "undefined" && BI_READY) renderBatchIssue();
+}
 var OPENB = {};
 function passReg(b){
   var f = F.reg;
@@ -1286,11 +1426,6 @@ el("ne-go").addEventListener("click", function(){
    them. */
 var EF_TARGET = null;
 (function(){
-  var pset = {}, names = [];
-  Object.keys(D.reg_columns).forEach(function(L){
-    var n2 = D.reg_columns[L].name;
-    if (!pset[n2]) { pset[n2] = 1; names.push(n2); }
-  });
   document.querySelector("#p-ecoa .desk").insertAdjacentHTML("afterend",
     '<div class="desk" id="ef-desk" data-desk="1"><h3>Remediation — transcribe a value from the opened document · <span id="ef-what" style="font-weight:400">pick a certificate below (Remediate)</span></h3>' +
     '<div class="frm">' +
@@ -1331,15 +1466,17 @@ el("ef-go").addEventListener("click", function(){
   var hadVal = !!val, hadNote = !!note;
   if (val) v.params[param] = { v: val, by: operator(), at: stamp() };
   if (note) v.notes.push({ t: note, by: operator(), at: stamp() });
+  refreshDerived();
   msgIn("ef-msg", "Publishing the page reading…", true);
   saveState("page remediation", tk + (val ? ": " + param + " = " + val : "") +
     (note ? (val ? " — " : ": ") + note : ""),
     null, function(m2){
       var cur = OV.verify[tk];
-      if (!cur) return msgIn("ef-msg", m2, false);
+      if (!cur) { refreshDerived(); return msgIn("ef-msg", m2, false); }
       if (hadVal) delete cur.params[param];
       if (hadNote) cur.notes.pop();
       if (!Object.keys(cur.params).length && !cur.notes.length) delete OV.verify[tk];
+      refreshDerived();
       msgIn("ef-msg", m2, false);
     });
 });
@@ -1366,7 +1503,7 @@ function dispDialog(cb){
     DISPO.map(function(x){
       return '<option' + (d.status === x ? " selected" : "") + '>' + esc(x) + "</option>";
     }).join("") + "</select></label>" +
-    dkFld("dk-by", "Decided by", d.by, "name and role") +
+    dkFld("dk-by", "Decided by", d.by, "name and role", null, "known-operators") +
     dkFld("dk-dt", "Date of decision", d.date || todayStr(), "dd.mm.yyyy") +
     dkFld("dk-nt", "Note", d.note, "the reasoning, in a sentence", "area"),
     function(){
@@ -1377,10 +1514,12 @@ function dispDialog(cb){
         return msgIn("dk-msg", "A decision is dated the day it is taken, so not later than today, " + todayStr() + ".", false);
       var prev = OV.disp[cb];
       OV.disp[cb] = { status: st, by: by, date: dt, note: nt, op: operator(), at: stamp() };
+      refreshDerived();
       msgIn("dk-msg", "Publishing the disposition…", true);
       saveState("batch disposition", cb + ": " + st + " — " + by + ", " + dt + (nt ? " · " + nt : ""),
         null, function(m){
           if (prev) OV.disp[cb] = prev; else delete OV.disp[cb];
+          refreshDerived();
           msgIn("dk-msg", m, false);
         });
     });
@@ -1408,10 +1547,12 @@ function amendDialog(kind, k1, k2, cur, label){
                                             by: slot.by, at: slot.at, reason: rs }]);
       if (slot.res !== undefined) slot.res = nv; else slot.v = nv;
       slot.by = operator(); slot.at = stamp(); slot.reason = rs;
+      refreshDerived();
       msgIn("dk-msg", "Publishing the amendment…", true);
       saveState("amendment", label + ": " + cur + " → " + nv + " — " + rs,
         null, function(m){
           if (kind === "attach") OV.attach[k1][k2] = prev; else OV.verify[k1].params[k2] = prev;
+          refreshDerived();
           msgIn("dk-msg", m, false);
         });
     });
@@ -1493,11 +1634,12 @@ function openDlg(title, sub, bodyHtml, onSave){
 }
 el("dk-x").addEventListener("click", function(){ el("dk").close(); });
 el("dk-ok").addEventListener("click", function(){ if (DK_SAVE) DK_SAVE(); });
-function dkFld(id, label, value, hint, type){
+function dkFld(id, label, value, hint, type, list){
   return '<label class="dk-fld" for="' + id + '"><span>' + esc(label) + '</span>' +
     (type === "area"
       ? '<textarea id="' + id + '" rows="2" placeholder="' + esc(hint || "") + '">' + esc(value || "") + "</textarea>"
-      : '<input id="' + id + '" value="' + esc(value || "") + '" placeholder="' + esc(hint || "") + '">') +
+      : '<input id="' + id + '" value="' + esc(value || "") + '" placeholder="' + esc(hint || "") +
+        '"' + (list ? ' list="' + esc(list) + '"' : "") + '>') +
     "</label>";
 }
 function dkVal(id){ var n = el(id); return n ? n.value.trim() : ""; }
@@ -1582,6 +1724,24 @@ function labMeta(lab){
   for (var k in LAB_META) if (lab.indexOf(k) === 0) return LAB_META[k];
   return [lab, "", ""];
 }
+/* the receipt desk's laboratory picker — short names for a quick pick, one
+   entry per LAB_META key so a laboratory can never go missing from the list
+   the way "State" once did; a key with no short name here still appears,
+   under its own key, rather than silently vanishing */
+var LAB_PICK = {
+  Purely: "Purely Plant GmbH (in-house)",
+  UKIM: "UKIM Faculty of Pharmacy — Center for Natural Products",
+  IPH: "IPH — Institute of Public Health",
+  Farmahem: "Farmahem",
+  State: "State Phytosanitary Laboratory"
+};
+(function(){
+  var sel = el("ne-lab");
+  if (!sel) return;
+  sel.innerHTML = Object.keys(LAB_META).map(function(k){
+    return "<option>" + esc(LAB_PICK[k] || k) + "</option>";
+  }).join("") + '<option>Other (state in parameters)</option>';
+})();
 function groupNo(no){ return no.indexOf(".") > 0 ? no.split(".")[0] : no; }
 function condenseNos(list){
   var ns = Array.from(new Set(list)).map(Number).sort(function(a, b){ return a - b; });
