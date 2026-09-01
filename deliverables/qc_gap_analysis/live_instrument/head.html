@@ -21,17 +21,64 @@
   --metal:linear-gradient(180deg,#ACBFD2 0%,#ACBFD2 1.4%,#DAE5EE 4.5%,#FAFCFE 9%,#F6FAFD 18%,#F6FAFD 28%,#F0F5FA 39%,#E9F0F7 50%,#E1EAF2 61%,#DAE5EE 72%,#D5E1EC 82%,#D9E3EE 92%,#E0E9F1 100%);
   --goldrule:linear-gradient(90deg,rgba(198,185,159,0) 0%,rgba(198,185,159,.33) 12%,rgba(198,185,159,.7) 32%,#C6B99F 50%,rgba(198,185,159,.7) 68%,rgba(198,185,159,.33) 88%,rgba(198,185,159,0) 100%);
 }
+
+/* ---------- dark ----------
+   Declared twice on purpose. The media block carries the automatic case and is
+   guarded with :not([data-theme="light"]) so an explicit light choice beats a
+   dark OS; the attribute block carries the manual choice so the toggle wins in
+   the other direction. Token names never change - only their values - so every
+   component keeps reading through the same variables. The grounds invert to
+   near-black navy, the papers become warm dark surfaces, and gold brightens:
+   at these luminances the print gold reads as brown. */
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --navy:#8FB4DA; --navy-deep:#C3D8EE; --navy-mid:#7FA7D2; --navy-soft:#6E93BC; --navy-title:#BFD5EA;
+  --gold:#D9B45C; --gold-bright:#E8C86E; --gold-deep:#C9A227; --gold-tint:#1E1B14;
+  --gold-label:#C9A85A; --gold-dark:#B08A2E; --cream:#221F17; --sec-no:#D9B45C;
+  --heaven:#161C25; --surface:#131820; --ground:#080B10;
+  --ink:#EEF2F7; --text:#DDE4EC; --text-sec:#A6B2C1; --text-ter:#778393; --mkc:#9AA9BC;
+  --border:#26303D; --border-light:#1C242F; --rule:#3A4757;
+  --green:#5CBF90; --green-soft:#122A20;
+  --fail:#E5786F; --fail-soft:#2E1918; --warn:#D9A441; --warn-soft:#2B2211;
+  --info:#7FA7D2; --info-soft:#152131;
+  --wash:linear-gradient(320deg,#121A24 0%,#141C27 14%,#161E29 28%,#18202B 42%,#1B1E24 56%,#1E1E1E 72%,#221F18 86%,#251F14 100%);
+  --metal:linear-gradient(180deg,#2A3442 0%,#2A3442 1.4%,#222B37 4.5%,#1B222C 9%,#1A212B 18%,#1A212B 28%,#181F28 39%,#161C25 50%,#141A22 61%,#131820 72%,#121720 82%,#141A22 92%,#161C25 100%);
+  --goldrule:linear-gradient(90deg,rgba(201,162,39,0) 0%,rgba(201,162,39,.22) 12%,rgba(201,162,39,.5) 32%,#C9A227 50%,rgba(201,162,39,.5) 68%,rgba(201,162,39,.22) 88%,rgba(201,162,39,0) 100%);
+}}
+:root[data-theme="dark"]{
+  --navy:#8FB4DA; --navy-deep:#C3D8EE; --navy-mid:#7FA7D2; --navy-soft:#6E93BC; --navy-title:#BFD5EA;
+  --gold:#D9B45C; --gold-bright:#E8C86E; --gold-deep:#C9A227; --gold-tint:#1E1B14;
+  --gold-label:#C9A85A; --gold-dark:#B08A2E; --cream:#221F17; --sec-no:#D9B45C;
+  --heaven:#161C25; --surface:#131820; --ground:#080B10;
+  --ink:#EEF2F7; --text:#DDE4EC; --text-sec:#A6B2C1; --text-ter:#778393; --mkc:#9AA9BC;
+  --border:#26303D; --border-light:#1C242F; --rule:#3A4757;
+  --green:#5CBF90; --green-soft:#122A20;
+  --fail:#E5786F; --fail-soft:#2E1918; --warn:#D9A441; --warn-soft:#2B2211;
+  --info:#7FA7D2; --info-soft:#152131;
+  --wash:linear-gradient(320deg,#121A24 0%,#141C27 14%,#161E29 28%,#18202B 42%,#1B1E24 56%,#1E1E1E 72%,#221F18 86%,#251F14 100%);
+  --metal:linear-gradient(180deg,#2A3442 0%,#2A3442 1.4%,#222B37 4.5%,#1B222C 9%,#1A212B 18%,#1A212B 28%,#181F28 39%,#161C25 50%,#141A22 61%,#131820 72%,#121720 82%,#141A22 92%,#161C25 100%);
+  --goldrule:linear-gradient(90deg,rgba(201,162,39,0) 0%,rgba(201,162,39,.22) 12%,rgba(201,162,39,.5) 32%,#C9A227 50%,rgba(201,162,39,.5) 68%,rgba(201,162,39,.22) 88%,rgba(201,162,39,0) 100%);
+}
+
 *{box-sizing:border-box}
 body{font-family:var(--b);background:var(--ground);color:var(--text);
   font-size:13px;line-height:1.45;-webkit-font-smoothing:antialiased}
-.sheet{max-width:1400px;margin:0 auto;background:#FFF;min-height:100vh;
+.sheet{max-width:1400px;margin:0 auto;background:var(--surface);min-height:100vh;
   box-shadow:0 8px 60px rgba(99,113,131,.25);display:flex;flex-direction:column}
 a{color:var(--navy-mid);text-decoration:none}
 a:hover{color:var(--gold-deep);text-decoration:underline;text-underline-offset:2px}
 .mk{font-family:var(--b);font-style:italic;font-weight:500;color:var(--mkc)}
 
+/* ---------- theme toggle ---------- */
+.thm{position:absolute;top:10px;right:12px;display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--d);font-size:8.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--navy);background:var(--surface);border:1px solid var(--border);border-radius:999px;
+  padding:5px 11px;cursor:pointer;z-index:5}
+.thm:hover{border-color:var(--gold);color:var(--gold-deep)}
+.thm .hd{width:11px;height:11px;border-radius:50%;border:1.5px solid currentColor;
+  background:linear-gradient(90deg,currentColor 0 50%,transparent 50% 100%)}
+
 /* ---------- header ---------- */
-.header{display:grid;grid-template-columns:1fr auto;align-items:center;gap:20px;
+.header{position:relative;display:grid;grid-template-columns:1fr auto;align-items:center;gap:20px;
   padding:26px 28px 20px;background:var(--wash)}
 .h-title{font-family:var(--d);font-size:24px;font-weight:800;letter-spacing:1.6px;
   text-transform:uppercase;color:var(--navy-title);line-height:1.12}
@@ -233,6 +280,55 @@ tr.grp td{background:var(--gold-tint)!important;font-family:var(--d);font-size:8
   color:var(--text)}
 .vchip.pv{background:#EAF4EE;border-color:#BFDCCB}
 .vchip.cv{background:#FDF6E7;border-color:#E3CC96;border-style:dashed}
+.vchip.more{background:transparent;border-style:dashed;color:var(--text-ter);cursor:help}
+/* coverage strip: five bars, one per test family, filled where a certificate exists */
+.cov{display:inline-flex;align-items:center;gap:2px;margin-right:8px;cursor:help}
+.cov i{width:16px;height:6px;border-radius:1px;background:var(--border);
+  border:1px solid var(--border);display:inline-block}
+.cov i.on{background:var(--navy-mid);border-color:var(--navy-mid)}
+.cov .covlab{font-family:var(--m);font-size:9px;color:var(--text-ter);margin-left:4px;
+  font-variant-numeric:tabular-nums}
+/* certificate status dot: one glyph, four states, precedence red > amber > read > unread */
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:6px;
+  vertical-align:1px;cursor:help}
+.dot.red{background:var(--fail)}
+.dot.amber{background:var(--warn)}
+.dot.ver{background:var(--green)}
+.dot.unver{background:var(--border);border:1px solid var(--text-ter)}
+.vchip .wasmark{font-style:normal;font-family:var(--d);font-size:7.5px;font-weight:700;
+  letter-spacing:.8px;text-transform:uppercase;color:var(--warn);margin-left:5px}
+.vchip.dk-am{cursor:pointer}
+.vchip.dk-am:hover{border-color:var(--gold)}
+.sub.was{font-family:var(--m);color:var(--warn)}
+/* ---------- the shared dialog ---------- */
+#dk{width:min(560px,94vw);border:1px solid var(--border);border-top:3px solid var(--gold-deep);
+  border-radius:4px;padding:0;background:var(--surface);color:var(--text)}
+#dk::backdrop{background:rgba(12,20,30,.42);backdrop-filter:blur(2px)}
+.dkf{display:flex;flex-direction:column}
+.dk-head{padding:13px 16px 10px;background:var(--heaven);border-bottom:1px solid var(--border)}
+.dk-head b{display:block;font-family:var(--d);font-size:11px;font-weight:800;letter-spacing:1px;
+  text-transform:uppercase;color:var(--navy)}
+.dk-head span{display:block;font-size:11px;color:var(--text-sec);margin-top:3px}
+.dk-body{padding:14px 16px;display:flex;flex-direction:column;gap:11px}
+.dk-fld{display:flex;flex-direction:column;gap:4px}
+.dk-fld>span{font-family:var(--d);font-size:8.5px;font-weight:700;letter-spacing:1px;
+  text-transform:uppercase;color:var(--gold-label)}
+.dk-fld input,.dk-fld select,.dk-fld textarea{font-family:var(--b);font-size:12.5px;color:var(--text);
+  background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:6px 8px;width:100%}
+.dk-fld input:focus,.dk-fld select:focus,.dk-fld textarea:focus{outline:2px solid var(--navy-soft);
+  outline-offset:1px;border-color:var(--navy-soft)}
+.dk-was{font-size:11.5px;color:var(--text-sec);background:var(--warn-soft);
+  border-left:2px solid var(--warn);padding:7px 10px;border-radius:2px}
+.dk-was b{font-family:var(--m);color:var(--text)}
+#dk .deskmsg{margin:0 16px}
+.dk-foot{display:flex;justify-content:flex-end;gap:8px;padding:11px 16px 14px}
+/* ---------- legend ---------- */
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;
+  padding:9px 14px;margin:0 12px 10px;background:var(--heaven);
+  border:1px solid var(--border);border-left:2px solid var(--gold);border-radius:3px}
+.legend b{font-family:var(--d);font-size:8px;font-weight:700;letter-spacing:1.1px;
+  text-transform:uppercase;color:var(--gold-label);margin-right:2px}
+.legend .li{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;color:var(--text-sec)}
 .vchip.xv{background:#FBEAEA;border-color:#D9A6A6;color:#7A2E2E}
 .vchip b{font-family:var(--b);font-size:8.4px;font-weight:700;letter-spacing:.4px;
   text-transform:uppercase;color:var(--text-ter);margin-right:4px}

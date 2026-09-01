@@ -82,7 +82,8 @@ def main():
     assert "@@DATA@@" in shell and "@@OVERLAY@@" in shell and "@@SHELL@@" in shell
 
     empty_overlay = json.dumps({"v": 1, "batches": [], "ecoa": [], "attach": {},
-                                "icoa": {}, "issue": {}, "log": []})
+                                "icoa": {}, "issue": {}, "verify": {}, "disp": {},
+                                "log": []})
     deliverable = (head + "\n" + body + "\n" + tags) \
         .replace("@@DATA@@", data).replace("@@OVERLAY@@", empty_overlay) \
         .replace("@@SHELL@@", shell_b64)

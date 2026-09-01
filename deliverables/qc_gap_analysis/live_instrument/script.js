@@ -7,7 +7,7 @@ OV.v = OV.v || 1;
 OV.batches = OV.batches || []; OV.ecoa = OV.ecoa || [];
 OV.attach = OV.attach || {}; OV.icoa = OV.icoa || {};
 OV.issue = OV.issue || {}; OV.log = OV.log || [];
-OV.verify = OV.verify || {};
+OV.verify = OV.verify || {}; OV.disp = OV.disp || {};
 var DET = {}; D.dets.forEach(function(d){ DET[d.no] = d; });
 
 function esc(s){ return String(s == null ? "" : s)
@@ -395,6 +395,14 @@ function renderCoqs(){
    print the master for a determination filled with this batch's identity */
 var BENCH = { "1": "ab", "2": "ab", "3": "c", "7": "fm" };
 el("coq-detail").addEventListener("click", function(e){
+  var am = e.target.closest(".am-go");
+  if (am && OPEN != null) {
+    var c2 = COQ[OPEN], no2 = am.dataset.no;
+    var a2 = (OV.attach[c2.key] || {})[no2];
+    if (!a2) return;
+    amendDialog("attach", c2.key, no2, a2.res, "determination " + no2 + " · " + c2.cb);
+    return;
+  }
   var b = e.target.closest(".dm-go");
   if (!b || OPEN == null) return;
   var c = COQ[OPEN], k = b.dataset.k;
@@ -439,7 +447,12 @@ function renderDetail(){
         (r.route ? '<span class="sub">' + esc(r.route) + '</span>' : "") +
         (r.also ? '<span class="sub dim">also on file: ' + esc(r.also) + '</span>' : "") +
         (BENCH[r.no] ? ' <button class="btn sm dm-go" data-k="' + BENCH[r.no] +
-          '">Bench master</button>' : "") + '</td></tr>';
+          '">Bench master</button>' : "") +
+        (r.desk ? ' <button class="btn sm am-go" data-no="' + esc(r.no) +
+          '">Amend</button>' : "") +
+        (r.desk && OV.attach[c.key] && OV.attach[c.key][r.no] && OV.attach[c.key][r.no].was
+          ? '<span class="sub was">' + OV.attach[c.key][r.no].was.map(function(w){
+              return esc(w.v) + " → "; }).join("") + esc(r.res) + '</span>' : "") + '</td></tr>';
   }).join("");
   var notes = [];
   if (!c.reg) notes.push("<b>No outsourced certificate is on file for this cultivation batch.</b> Every value shown comes from the in-house CoA transcription, whose footnote attributes the testing to accredited laboratories. Locate the physical certificates, scan and upload.");
@@ -616,8 +629,12 @@ function renderEcoa(){
         }).join("") : "") +
         (e.fix ? "<br>" + Object.keys(e.fix.params).map(function(k2){
           var pv = e.fix.params[k2];
-          return '<span class="vchip" title="transcribed from the opened document at the desk by ' +
-            esc(pv.by) + ", " + esc(pv.at) + '"><b>' + esc(k2) + '</b>' + esc(pv.v) + '</span>';
+          return '<span class="vchip dk-am" data-code="' + esc(e.code) + '" data-p="' + esc(k2) +
+            '" title="' + esc("Transcribed from the opened document at the desk by " + pv.by +
+              ", " + pv.at + (pv.was ? ". Amended from " + pv.was.map(function(w){ return w.v; }).join(" → ") : "") +
+              ". Click to amend — a desk entry may be corrected; a page value may not.") +
+            '"><b>' + esc(k2) + '</b>' + esc(pv.v) +
+            (pv.was ? '<i class="wasmark">amended</i>' : "") + '</span>';
         }).join("") : "") + '</td>' +
       '<td class="c">' + (e.verified
           ? '<span class="pill p-ok" title="the certificate\u2019s values were read off its own page, 31.08.2026">page-verified</span>'
@@ -972,6 +989,94 @@ function passReg(b){
   });
   return any;
 }
+/* ---- status glyphs ----
+   Three devices carried over from the release register, because a batch card
+   that prints every value is unreadable at 21 chips a certificate: a coverage
+   strip that answers "which testing does this batch actually have", a status
+   dot that answers "can I trust this certificate's row", and a chip cap so the
+   values that matter are the ones you see. */
+var FAM = [["pot", "Potency", "UKIM CNP \u2014 cannabinoid assay and loss on drying"],
+           ["can", "Cannabinoids", "Farmahem \u2014 12-month cannabinoid re-analysis"],
+           ["myc", "Mycotoxins", "Farmahem \u2014 aflatoxins and ochratoxin A"],
+           ["mic", "Microbiology", "IPH \u2014 TAMC, TYMC, GNB, Salmonella, E. coli"],
+           ["phy", "Physico-chem.", "IPH \u2014 heavy metals, pesticides, mycotoxins"]];
+function famKey(ct){
+  var f = String(ct.fam || "").toLowerCase();
+  if (/microbiolog/.test(f)) return "mic";
+  if (/metals|pesticid|loss on drying/.test(f)) return "phy";
+  if (/mycotoxin/.test(f)) return "myc";
+  if (/cannabinoid/.test(f)) return "can";
+  if (/potency/.test(f)) return "pot";
+  return "";
+}
+/* the receipt register knows which certificates were read off their own page;
+   the release register does not carry it, so the two are joined on the code */
+var VERIF = {}, EFLAG = {};
+D.ecoa.forEach(function(e){ VERIF[e.code] = e.verified; EFLAG[e.code] = e.flag; });
+function certDot(ct){
+  var fl = ct.flags || {};
+  /* a flag can sit on a value cell — which the release block carries — or on the
+     certificate's own code cell, which it does not: ППК26127's out-of-specification
+     verdict is written against the code, not against any result. The receipt
+     register knows that one, so the dot reads both. */
+  var red = Object.keys(fl).some(function(k){ return fl[k] === "red"; }) || EFLAG[ct.code] === "red";
+  var amb = Object.keys(fl).some(function(k){ return fl[k] === "amber"; }) || EFLAG[ct.code] === "amber";
+  var ver = VERIF[ct.code];
+  var k = red ? "red" : amb ? "amber" : ver ? "ver" : "unver";
+  var t = { red: "The issuing laboratory declared a result out of specification on this certificate.",
+            amber: "A laboratory finding or a data-integrity flag stands on this certificate.",
+            ver: "Read off its own page in the verification campaign of 31.08.2026.",
+            unver: "On file, but its values have not been read off the page." }[k];
+  return '<span class="dot ' + k + '" title="' + esc(t) + '"></span>';
+}
+function shortName(n){
+  return String(n || "")
+    .replace(/Bile-tolerant GNB.*/i, "GNB").replace(/Loss on drying.*/i, "LoD")
+    .replace(/Aflatoxins\s*\u03a3.*/i, "Afla \u03a3").replace(/Aflatoxin B1.*/i, "Afla B1")
+    .replace(/Ochratoxin A.*/i, "OTA").replace(/Salmonella.*/i, "Salm.")
+    .replace(/E\. coli.*/i, "E. coli").replace(/Pesticides.*/i, "Pest.")
+    .replace(/\s*(CFU\/g|\u00b5g\/kg|mg\/kg|%|\/1 g|\/25 g)\s*/g, "").trim();
+}
+function covStrip(b){
+  var has = {};
+  (b.certs || []).forEach(function(ct){ var k = famKey(ct); if (k) has[k] = 1; });
+  var n = FAM.filter(function(f){ return has[f[0]]; }).length;
+  return '<span class="cov" title="' + esc(FAM.map(function(f){
+      return f[1] + ": " + (has[f[0]] ? "on file" : "none") + " \u2014 " + f[2];
+    }).join("\n")) + '">' +
+    FAM.map(function(f){ return '<i class="' + (has[f[0]] ? "on" : "") + '"></i>'; }).join("") +
+    '<span class="covlab">' + n + '/5</span></span>';
+}
+function capChips(ct){
+  /* At most seven chips, and never the seven that happen to sort first: a
+     result over its limit, an undetermined one or a flagged one is why the
+     card exists, so those lead. The rest are summarised as "+N more" rather
+     than printed — a batch card was measuring 21 chips a certificate. */
+  var out = Object.keys(ct.vals).map(function(L){
+    var col = D.reg_columns[L] || { name: L };
+    var cls = ct.oos[L] ? " over" : (ct.undet[L] ? " undet" :
+      (ct.flags[L] === "red" ? " flagR" : ct.flags[L] === "amber" ? " flagA" : ""));
+    /* the tooltip answers "against what?": the acceptance criterion, and — for
+       a microbial criterion written as a bare power of ten — the ×2-per-decade
+       maximum acceptable count (Ph. Eur. 5.1.4) */
+    var al = acceptanceLimit(col.crit || ""), mg = magnitude(col.crit || "");
+    var tip = col.name + (col.crit ? " — A.C. " + col.crit : "") +
+      (al != null && mg != null && al !== mg
+        ? " · maximum acceptable count " + al.toLocaleString("en") +
+          " (Ph. Eur. 5.1.4, ×2 per decade)" : "");
+    return { rank: cls ? 0 : 1,
+      html: '<span class="vchip' + cls + (ct.stab ? " stab" : "") + '" title="' + esc(tip) + '"><b>' +
+        esc(shortName(col.name)) + '</b>' + esc(ct.vals[L]) + '</span>' };
+  });
+  var lead = out.filter(function(x){ return x.rank === 0; });
+  var rest = out.filter(function(x){ return x.rank === 1; });
+  var shown = lead.concat(rest).slice(0, 7);
+  var hid = out.length - shown.length;
+  return shown.map(function(x){ return x.html; }).join("") +
+    (hid > 0 ? '<span class="vchip more" title="' + esc(hid +
+      " further conforming result" + (hid === 1 ? "" : "s") +
+      " on this certificate. Open the certificate for the full panel.") + '">+' + hid + '</span>' : "");
+}
 function renderReg(){
   var list = D.reg.filter(passReg);
   el("bcards").innerHTML = list.map(function(b){
@@ -982,25 +1087,10 @@ function renderReg(){
         '<th style="width:170px">Certificate</th><th style="width:86px">Issued</th>' +
         '<th>Results — value against the release criterion</th></tr></thead><tbody>' +
         (b.certs.length ? b.certs.map(function(ct){
-          return '<tr><td><span class="src' + (ct.fam && ct.fam.indexOf("Farmahem") >= 0 ? " q" : "") + '">' + esc(ct.code.length > 30 ? ct.code.slice(0, 28) + "…" : ct.code) + '</span>' +
+          return '<tr><td>' + certDot(ct) + '<span class="src' + (ct.fam && ct.fam.indexOf("Farmahem") >= 0 ? " q" : "") + '">' + esc(ct.code.length > 30 ? ct.code.slice(0, 28) + "…" : ct.code) + '</span>' +
             '<span class="sub">' + esc((ct.lab || "").split(" — ")[0]) + (ct.stab ? " · stability timepoint" : "") + '</span></td>' +
             '<td class="mono dim">' + esc(ct.date || "") + '</td><td>' +
-            Object.keys(ct.vals).map(function(L){
-              var col = D.reg_columns[L] || { name: L };
-              var cls = ct.oos[L] ? " over" : (ct.undet[L] ? " undet" :
-                (ct.flags[L] === "red" ? " flagR" : ct.flags[L] === "amber" ? " flagA" : ""));
-              /* the tooltip answers "against what?": the acceptance criterion,
-                 and — for a microbial criterion written as a bare power of ten —
-                 the ×2-per-decade maximum acceptable count (Ph. Eur. 5.1.4) */
-              var al = acceptanceLimit(col.crit || ""), mg = magnitude(col.crit || "");
-              var tip = col.name + (col.crit ? " — A.C. " + col.crit : "") +
-                (al != null && mg != null && al !== mg
-                  ? " · maximum acceptable count " + al.toLocaleString("en") +
-                    " (Ph. Eur. 5.1.4, ×2 per decade)" : "");
-              return '<span class="vchip' + cls + (ct.stab ? " stab" : "") + '" title="' + esc(tip) + '"><b>' +
-                esc(col.name.replace(/ CFU\/g| %| µg\/kg| mg\/kg|\/1 g|\/25 g/g, "")) + '</b>' +
-                esc(ct.vals[L]) + '</span>';
-            }).join("") + '</td></tr>';
+            capChips(ct) + "</td></tr>";
         }).join("") : '<tr><td colspan="3" class="dim" style="padding:10px">No certificate recorded for this batch yet.</td></tr>') +
         '</tbody></table></div></div>';
     }
@@ -1009,7 +1099,9 @@ function renderReg(){
       (b.pn && b.pn !== b.cb ? '<span class="bc-pn">' + esc(b.pn) + '</span>' : "") +
       '<span class="bc-strain">' + esc(b.strain) + '</span>' +
       (b.desk ? '<span class="desk-entry">recorded at this desk</span>' : "") +
-      '<span class="bc-right">' +
+      '<span class="bc-right">' + covStrip(b) + dispPill(b.cb) +
+      '<button class="btn sm dp-go" data-cb="' + esc(b.cb) + '">' +
+        (OV.disp[b.cb] ? "Update" : "Disposition") + '</button>' +
       (b.oos ? '<span class="pill p-fail">' + b.oos + ' over limit</span>' : "") +
       (b.undet ? '<span class="pill p-warn">' + b.undet + ' undetermined</span>' : "") +
       (b.flags ? '<span class="pill p-warn">' + b.flags + ' flagged</span>' : "") +
@@ -1027,6 +1119,8 @@ function renderReg(){
   });
 }
 el("bcards").addEventListener("click", function(e){
+  var dp = e.target.closest(".dp-go");
+  if (dp) { e.stopPropagation(); dispDialog(dp.dataset.cb); return; }
   var h = e.target.closest(".bc-head");
   if (!h) return;
   OPENB[+h.dataset.b] = !OPENB[+h.dataset.b];
@@ -1208,6 +1302,13 @@ var EF_TARGET = null;
     "</div>");
 })();
 document.querySelector("#t-ecoas tbody").addEventListener("click", function(e){
+  var am = e.target.closest(".dk-am");
+  if (am) {
+    var cd = am.dataset.code, pn = am.dataset.p;
+    var slot = (OV.verify[cd] || { params: {} }).params[pn];
+    if (slot) amendDialog("verify", cd, pn, slot.v, pn + " · " + cd);
+    return;
+  }
   var b = e.target.closest(".ec-fix");
   if (!b) return;
   EF_TARGET = b.dataset.code;
@@ -1242,6 +1343,198 @@ el("ef-go").addEventListener("click", function(){
       msgIn("ef-msg", m2, false);
     });
 });
+
+/* ---- batch disposition ----
+   The register carries results; someone still has to decide what happens to the
+   material. A disposition is that decision: a status, the person who took it,
+   the date it was taken and why. It is dated the day it is taken and never
+   post-dated; unlike a certificate it has no SOP floor, because dispositions
+   predate the CoQ SOP. */
+var DISPO = ["Released", "Quarantined", "Rejected", "Under investigation"];
+function dispPill(cb){
+  var d = OV.disp[cb];
+  if (!d) return "";
+  var k = d.status === "Released" ? "ok" : d.status === "Rejected" ? "fail" : "warn";
+  return '<span class="pill p-' + k + '" title="' + esc(d.status + " — decided by " + d.by +
+    " on " + d.date + (d.note ? ". " + d.note : "") + " (recorded by " + (d.op || "?") +
+    ", " + d.at + ")") + '">' + esc(d.status) + '</span>';
+}
+function dispDialog(cb){
+  var d = OV.disp[cb] || {};
+  openDlg("Disposition — " + cb, "What happens to this material, and on whose authority.",
+    '<label class="dk-fld" for="dk-st"><span>Status</span><select id="dk-st">' +
+    DISPO.map(function(x){
+      return '<option' + (d.status === x ? " selected" : "") + '>' + esc(x) + "</option>";
+    }).join("") + "</select></label>" +
+    dkFld("dk-by", "Decided by", d.by, "name and role") +
+    dkFld("dk-dt", "Date of decision", d.date || todayStr(), "dd.mm.yyyy") +
+    dkFld("dk-nt", "Note", d.note, "the reasoning, in a sentence", "area"),
+    function(){
+      var st = el("dk-st").value, by = dkVal("dk-by"), dt = dkVal("dk-dt"), nt = dkVal("dk-nt");
+      if (!by) return msgIn("dk-msg", "Say who decided — a disposition without an owner is not a record.", false);
+      if (!DATE_RX.test(dt)) return msgIn("dk-msg", "The date must read dd.mm.yyyy.", false);
+      if (sortDate(dt) > sortDate(todayStr()))
+        return msgIn("dk-msg", "A decision is dated the day it is taken, so not later than today, " + todayStr() + ".", false);
+      var prev = OV.disp[cb];
+      OV.disp[cb] = { status: st, by: by, date: dt, note: nt, op: operator(), at: stamp() };
+      msgIn("dk-msg", "Publishing the disposition…", true);
+      saveState("batch disposition", cb + ": " + st + " — " + by + ", " + dt + (nt ? " · " + nt : ""),
+        null, function(m){
+          if (prev) OV.disp[cb] = prev; else delete OV.disp[cb];
+          msgIn("dk-msg", m, false);
+        });
+    });
+}
+
+/* ---- amend, desk entries only ----
+   A value read off a certificate page, a register value and a corpus value are
+   all records of what someone else wrote: they can be annotated, never altered.
+   What the desk itself typed can be corrected — and an amendment supersedes
+   rather than erases: the superseded value travels with the new one as `was`,
+   with a written reason, so the row shows its own history. */
+function amendDialog(kind, k1, k2, cur, label){
+  openDlg("Amend — " + label, "A desk entry. The superseded value is kept with the amendment.",
+    '<div class="dk-was">Recorded now: <b>' + esc(cur) + "</b></div>" +
+    dkFld("dk-nv", "Corrected value, exactly as printed", cur, "verbatim") +
+    dkFld("dk-rs", "Reason for the amendment", "", "why the recorded value is wrong", "area"),
+    function(){
+      var nv = dkVal("dk-nv"), rs = dkVal("dk-rs");
+      if (!nv) return msgIn("dk-msg", "A value is required — to withdraw a reading, record a note instead.", false);
+      if (!rs) return msgIn("dk-msg", "An amendment without a reason is not a record. Say why.", false);
+      if (nv === cur) return msgIn("dk-msg", "That is the value already recorded.", false);
+      var slot = kind === "attach" ? OV.attach[k1][k2] : OV.verify[k1].params[k2];
+      var prev = JSON.parse(JSON.stringify(slot));
+      slot.was = (slot.was || []).concat([{ v: slot.v !== undefined ? slot.v : slot.res,
+                                            by: slot.by, at: slot.at, reason: rs }]);
+      if (slot.res !== undefined) slot.res = nv; else slot.v = nv;
+      slot.by = operator(); slot.at = stamp(); slot.reason = rs;
+      msgIn("dk-msg", "Publishing the amendment…", true);
+      saveState("amendment", label + ": " + cur + " → " + nv + " — " + rs,
+        null, function(m){
+          if (kind === "attach") OV.attach[k1][k2] = prev; else OV.verify[k1].params[k2] = prev;
+          msgIn("dk-msg", m, false);
+        });
+    });
+}
+
+/* ---- the legend and the two explainers ----
+   Colour was carrying meaning that nothing on the page defined. The strip names
+   every glyph actually in use, in the desk's own vocabulary, and the footer
+   says how to read the instrument and what it is allowed to change. */
+(function(){
+  var items = [
+    ['<span class="dot ver"></span>', "page-verified — read off its own page"],
+    ['<span class="dot amber"></span>', "flagged — a finding or a data-integrity mark"],
+    ['<span class="dot red"></span>', "the laboratory declared a result out of specification"],
+    ['<span class="dot unver"></span>', "on file, values not read off the page"],
+    ['<span class="vchip pv"><b>value</b>page</span>', "page-read value"],
+    ['<span class="vchip cv"><b>value</b>corpus</span>', "corpus — verify on page before use"],
+    ['<span class="vchip xv"><b>corpus corrupt</b></span>', "corpus disagrees with the page; the page wins"],
+    ['<span class="vchip"><b>value</b>desk</span>', "recorded at this desk"],
+    ['<span class="vchip over"><b>over</b></span>', "over its acceptance criterion"],
+    ['<span class="vchip undet"><b>undet.</b></span>', "between the printed criterion and the pharmacopoeial maximum"],
+    ['<span class="cov"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><span class="covlab">2/5</span></span>',
+     "which of the five test families this batch has on file"]
+  ];
+  var html = '<div class="legend"><b>Key</b>' + items.map(function(it){
+    return '<span class="li">' + it[0] + esc(it[1]) + "</span>";
+  }).join("") + "</div>";
+  var a = el("bcards"); if (a) a.insertAdjacentHTML("beforebegin", html);
+  var b = document.querySelector("#p-ecoa .scroll"); if (b) b.insertAdjacentHTML("beforebegin", html);
+  var f = document.querySelector(".foot");
+  if (f) f.insertAdjacentHTML("afterbegin",
+    '<div class="note" style="margin:0 0 12px"><b>How to read this desk.</b> Three registers of one ' +
+    'process: what the outside laboratories certified (receipt), what this laboratory owes and has ' +
+    'issued (iCoA), and what the batch\u2019s certificate of quality can say (CoQ). A status word is ' +
+    'always about a <i>document</i>, never about the material \u2014 \u201cnot page-verified\u201d means nobody has ' +
+    'read that certificate against its own page, not that it is missing. <b>Over limit and ' +
+    'undetermined are computed here</b>, from the value and the criterion the specification prints; ' +
+    'they are a prompt to open the certificate, never a verdict, and a stability timepoint is never ' +
+    'counted as a release failure. Where a corpus value and a page reading disagree, the page wins ' +
+    'and the corpus value is recorded as a corruption rather than shown.</div>' +
+    '<div class="note" style="margin:0 0 12px"><b>What the desk can change.</b> Nothing in the ' +
+    'baseline. Every batch intake, certificate receipt, page reading, attachment, iCoA assignment, ' +
+    'disposition and issuance lives in an overlay that is published back into this document, ' +
+    'attributed to the initials on the Desk log and timestamped. A value the desk itself typed can ' +
+    'be <i>amended</i> \u2014 the superseded value travels with the correction and the reason \u2014 while a ' +
+    'value read off a certificate page can only be annotated. A document number, once issued, is ' +
+    'final: a correction there is a new document.</div>');
+})();
+
+/* ---- the shared dialog ----
+   One native <dialog> serves both new flows. showModal() gives the focus trap,
+   Escape and an inert backdrop for free; the first field is focused so the
+   keyboard works from the start. Writability is checked here, at click time,
+   rather than relying on setRO(): that sweep runs once, before the injected
+   desks exist. */
+document.body.insertAdjacentHTML("beforeend",
+  '<dialog id="dk"><form method="dialog" class="dkf">' +
+  '<div class="dk-head"><b id="dk-t"></b><span id="dk-s"></span></div>' +
+  '<div class="dk-body" id="dk-b"></div>' +
+  '<div class="deskmsg" id="dk-msg"></div>' +
+  '<div class="dk-foot"><button class="btn sm" id="dk-x" type="button">Cancel</button>' +
+  '<button class="btn gold" id="dk-ok" type="button">Record</button></div>' +
+  "</form></dialog>");
+var DK_SAVE = null;
+function openDlg(title, sub, bodyHtml, onSave){
+  if (!ART) { alert("This view is read-only — " + (RO_REASON || "no publish capability.")); return; }
+  if (!operator()) { alert("Enter your initials on the Desk log tab first — every entry is attributed."); return; }
+  el("dk-t").textContent = title;
+  el("dk-s").textContent = sub || "";
+  el("dk-b").innerHTML = bodyHtml;
+  el("dk-msg").textContent = "";
+  el("dk-msg").className = "deskmsg";
+  DK_SAVE = onSave;
+  el("dk").showModal();
+  setTimeout(function(){
+    var f = el("dk-b").querySelector("input,select,textarea");
+    if (f) f.focus();
+  }, 30);
+}
+el("dk-x").addEventListener("click", function(){ el("dk").close(); });
+el("dk-ok").addEventListener("click", function(){ if (DK_SAVE) DK_SAVE(); });
+function dkFld(id, label, value, hint, type){
+  return '<label class="dk-fld" for="' + id + '"><span>' + esc(label) + '</span>' +
+    (type === "area"
+      ? '<textarea id="' + id + '" rows="2" placeholder="' + esc(hint || "") + '">' + esc(value || "") + "</textarea>"
+      : '<input id="' + id + '" value="' + esc(value || "") + '" placeholder="' + esc(hint || "") + '">') +
+    "</label>";
+}
+function dkVal(id){ var n = el(id); return n ? n.value.trim() : ""; }
+
+/* ---- theme ----
+   Three states, in the order an operator actually wants them: the artifact's
+   own setting, then the opposite of it, then back. The choice is written to the
+   root element as data-theme, which the stylesheet's [data-theme] block reads
+   and which beats the OS preference in both directions; localStorage keeps it
+   across the publish-and-reload every desk entry causes. A generated
+   certificate is a printed document and stays on white paper: it renders in its
+   own iframe document, so this attribute never reaches it. */
+(function(){
+  var root = document.documentElement, btn = el("thm"), lbl = el("thm-t");
+  function sys(){
+    try { return window.matchMedia("(prefers-color-scheme:dark)").matches ? "dark" : "light"; }
+    catch (e) { return "light"; }
+  }
+  function paint(){
+    var t = root.getAttribute("data-theme");
+    lbl.textContent = t ? (t === "dark" ? "Dark" : "Light") : "Auto";
+    btn.title = t ? "Theme fixed to " + t + " — click to switch"
+                  : "Following the viewer's setting (" + sys() + ") — click to fix it";
+  }
+  try {
+    var st = localStorage.getItem("cox-theme");
+    if (st === "dark" || st === "light") root.setAttribute("data-theme", st);
+  } catch (e) {}
+  paint();
+  btn.addEventListener("click", function(){
+    var t = root.getAttribute("data-theme");
+    var next = !t ? (sys() === "dark" ? "light" : "dark") : (t === "dark" ? "light" : "dark");
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("cox-theme", next); } catch (e) {}
+    paint();
+  });
+})();
 
 /* ---- desk log ---- */
 try { el("op-init").value = localStorage.getItem("cox-op") || ""; } catch (e) {}

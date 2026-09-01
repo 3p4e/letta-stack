@@ -167,3 +167,27 @@ identity is unresolved.
   Page sampling across the rest of the series (ППК25050 release form,
   ППК26057 stability form) confirms the other CNP forms genuinely carry no
   identification — their batches correctly owe the in-house iCoAs.
+
+## Batch disposition and amendment at the desk — 01.09.2026
+
+Two QC acts were added to the Quality Desk. Both write to the overlay, attributed
+to the operator and dated, and neither touches the baseline register.
+
+- **Batch disposition** — *Released · Quarantined · Rejected · Under
+  investigation*, recorded on the batch card with the person who decided it, the
+  date and an optional note. A disposition is **not a certificate**, so the
+  11.05.2026 SOP floor does not apply to it; a batch quarantined in 2025 was
+  quarantined in 2025. What does apply is that **a decision is dated the day it
+  is taken**: the desk refuses a post-dated disposition. A disposition is a
+  standing state, not a number — it may be updated as often as the facts change,
+  and each update is logged.
+
+- **Amendment is for desk entries only.** A value typed at the desk — an attached
+  result, a remediated reading — may be corrected: the desk asks for a written
+  reason, keeps the superseded value with its own author and timestamp, and marks
+  the chip *amended* so the correction is visible on the row, not buried in the
+  log. A value **read off a certificate page is never amendable**, because the
+  page is the record and the desk is not; where the desk disagrees with a page it
+  says so in a note. Issued CoQ numbers, assigned iCoA references and their dates
+  stay final under the same rule as before — a correction there is a new
+  document, not an edit.
