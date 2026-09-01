@@ -1,0 +1,68 @@
+# Routing policy:
+#   - "gemini-flash" is one logical model over four free-tier keys; LiteLLM
+#     rotates and cools down a key that returns 429, so quota exhaustion on one
+#     project does not stop the run.
+#   - OpenAI models carry a max_budget; when spend crosses it the proxy refuses
+#     further OpenAI calls instead of silently overdrawing the prepaid balance.
+#   - fallbacks send a failed paid call to the Moonshot subscription (flat rate),
+#     so ingestion degrades to a working model rather than erroring the document.
+#     The two-pass runner's cross-vendor guarantee is NOT affected: it calls
+#     vendors directly and must never see a silent substitution.
+model_list:
+  - model_name: gpt-5
+    litellm_params: {model: openai/gpt-5, api_key: os.environ/OPENAI_API_KEY}
+  - model_name: gpt-4.1
+    litellm_params: {model: openai/gpt-4.1, api_key: os.environ/OPENAI_API_KEY}
+  - model_name: gpt-4.1-mini
+    litellm_params: {model: openai/gpt-4.1-mini, api_key: os.environ/OPENAI_API_KEY}
+
+  - model_name: kimi-k2.6
+    litellm_params: {model: openai/kimi-k2.6, api_base: https://api.moonshot.ai/v1,
+                     api_key: os.environ/MOONSHOT_API_KEY}
+  - model_name: moonshot-v1-128k
+    litellm_params: {model: openai/moonshot-v1-128k, api_base: https://api.moonshot.ai/v1,
+                     api_key: os.environ/MOONSHOT_API_KEY}
+  - model_name: moonshot-vision
+    litellm_params: {model: openai/moonshot-v1-128k-vision-preview,
+                     api_base: https://api.moonshot.ai/v1,
+                     api_key: os.environ/MOONSHOT_API_KEY}
+
+  # One logical Gemini model, four keys - the proxy load-balances and cools down
+  # whichever key answers 429.
+  - model_name: gemini-flash
+    litellm_params: {model: gemini/gemini-3.6-flash, api_key: os.environ/AZ_GEMINI_API_KEY}
+  - model_name: gemini-flash
+    litellm_params: {model: gemini/gemini-3.6-flash, api_key: os.environ/BN_GEMINI_API}
+  - model_name: gemini-flash
+    litellm_params: {model: gemini/gemini-3.6-flash, api_key: os.environ/BN_GOOGLE_GEMINI_API_KEY}
+  - model_name: gemini-flash
+    litellm_params: {model: gemini/gemini-3.6-flash, api_key: os.environ/EP_GEMINI_API}
+  - model_name: gemini-flash
+    litellm_params: {model: gemini/gemini-3.6-flash, api_key: os.environ/UC_GEMINI_API}
+
+  # OpenRouter backstop: the same Gemini family through a separate quota pool.
+  - model_name: gemini-flash
+    litellm_params: {model: openrouter/google/gemini-3.6-flash,
+                     api_key: os.environ/OPEN_ROUTER_API_KEY}
+
+  - model_name: gemini-flash
+    litellm_params: {model: openai/gemini-2.5-flash, api_base: https://api.cometapi.com/v1,
+                     api_key: os.environ/COMETAPI_API_KEY}
+
+litellm_settings:
+  num_retries: 2
+  request_timeout: 600
+  allowed_fails: 3
+  cooldown_time: 60
+  # Paid model unavailable or over budget -> flat-rate subscription model.
+  fallbacks:
+    - gpt-4.1-mini: [moonshot-v1-128k]
+    - gpt-4.1: [moonshot-vision]
+    - gemini-flash: [moonshot-vision]
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  # Proxy-wide OpenAI ceiling: refuse rather than overdraw. Reset by restarting
+  # with a raised value after topping up.
+  max_budget: 5.50
+  budget_duration: 30d

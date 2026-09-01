@@ -1,0 +1,338 @@
+[
+ {
+  "batch": "BG1024",
+  "strain": "Blue Gelato",
+  "tranche": 1,
+  "prev": 21.8,
+  "retest": 26.14
+ },
+ {
+  "batch": "BSS1024",
+  "strain": "Blue Sunset Sherbet",
+  "tranche": 1,
+  "prev": 21.03,
+  "retest": 25.01
+ },
+ {
+  "batch": "P050162",
+  "strain": "Cap Junky",
+  "tranche": 1,
+  "prev": 20.29,
+  "retest": 24.05
+ },
+ {
+  "batch": "P060032",
+  "strain": "Cap Junky",
+  "tranche": 1,
+  "prev": 20.84,
+  "retest": 18.29
+ },
+ {
+  "batch": "P060352",
+  "strain": "Fat Bastard",
+  "tranche": 1,
+  "prev": null,
+  "retest": 18.86
+ },
+ {
+  "batch": "P060402",
+  "strain": "Gorilla Glue",
+  "tranche": 1,
+  "prev": null,
+  "retest": 16.7
+ },
+ {
+  "batch": "P050092",
+  "strain": "Gorilla Glue",
+  "tranche": 1,
+  "prev": 17.22,
+  "retest": 18.67
+ },
+ {
+  "batch": "P050152",
+  "strain": "Grape Pie",
+  "tranche": 1,
+  "prev": 18.98,
+  "retest": 18.52
+ },
+ {
+  "batch": "P050022",
+  "strain": "Grape Pie",
+  "tranche": 1,
+  "prev": 23.19,
+  "retest": 22.61
+ },
+ {
+  "batch": "P050322",
+  "strain": "Grape Pie",
+  "tranche": 1,
+  "prev": 14.83,
+  "retest": 15.7
+ },
+ {
+  "batch": "HPA1024",
+  "strain": "High Pro Amnesia",
+  "tranche": 1,
+  "prev": 14.97,
+  "retest": 17.31
+ },
+ {
+  "batch": "P050052",
+  "strain": "High Pro Amnesia",
+  "tranche": 1,
+  "prev": 22.43,
+  "retest": 21.61
+ },
+ {
+  "batch": "P060212",
+  "strain": "Jelly Donutz",
+  "tranche": 1,
+  "prev": null,
+  "retest": 20.32
+ },
+ {
+  "batch": "P060152",
+  "strain": "Jokerz 31",
+  "tranche": 1,
+  "prev": null,
+  "retest": 17.32
+ },
+ {
+  "batch": "OPM1024",
+  "strain": "Orange Punch Mimosa",
+  "tranche": 1,
+  "prev": 19.96,
+  "retest": 20.03
+ },
+ {
+  "batch": "P050062",
+  "strain": "Orange Punch Mimosa",
+  "tranche": 1,
+  "prev": 18.27,
+  "retest": 18.04
+ },
+ {
+  "batch": "P060242",
+  "strain": "Orange Punch Mimosa",
+  "tranche": 1,
+  "prev": null,
+  "retest": 7.91
+ },
+ {
+  "batch": "P060062",
+  "strain": "Permanent Marker",
+  "tranche": 1,
+  "prev": 14.06,
+  "retest": 12.25
+ },
+ {
+  "batch": "P060382",
+  "strain": "Scrambler",
+  "tranche": 1,
+  "prev": null,
+  "retest": 17.84
+ },
+ {
+  "batch": "P060122",
+  "strain": "Amnesia Core Cut",
+  "tranche": 2,
+  "prev": 12.91,
+  "retest": 12.09
+ },
+ {
+  "batch": "P050192",
+  "strain": "Blue Sunset Sherbet",
+  "tranche": 2,
+  "prev": 20.47,
+  "retest": 20.52
+ },
+ {
+  "batch": "P050222",
+  "strain": "Cap Junky",
+  "tranche": 2,
+  "prev": 21.51,
+  "retest": 24.8
+ },
+ {
+  "batch": "P060022",
+  "strain": "Cap Junky",
+  "tranche": 2,
+  "prev": 24.96,
+  "retest": 28.34
+ },
+ {
+  "batch": "P060072",
+  "strain": "Cap Junky",
+  "tranche": 2,
+  "prev": 22.3,
+  "retest": 25.65
+ },
+ {
+  "batch": "P060372",
+  "strain": "Cash Cow",
+  "tranche": 2,
+  "prev": 12.32,
+  "retest": 14.76
+ },
+ {
+  "batch": "P060132",
+  "strain": "Chem Flyer",
+  "tranche": 2,
+  "prev": 9.83,
+  "retest": 9.55
+ },
+ {
+  "batch": "P050282",
+  "strain": "Clemosa A Bud",
+  "tranche": 2,
+  "prev": 8.02,
+  "retest": 8.65
+ },
+ {
+  "batch": "P060322",
+  "strain": "Fat Bastard",
+  "tranche": 2,
+  "prev": 14.68,
+  "retest": 17.99
+ },
+ {
+  "batch": "GG1024",
+  "strain": "Gorilla Glue",
+  "tranche": 2,
+  "prev": 13.34,
+  "retest": 15.51
+ },
+ {
+  "batch": "P050302",
+  "strain": "Grape Pie",
+  "tranche": 2,
+  "prev": 19.81,
+  "retest": 18.29
+ },
+ {
+  "batch": "P050072",
+  "strain": "Grape Pie",
+  "tranche": 2,
+  "prev": 25.45,
+  "retest": 28.3
+ },
+ {
+  "batch": "P050312",
+  "strain": "Grape Pie",
+  "tranche": 2,
+  "prev": 21.29,
+  "retest": 25.13
+ },
+ {
+  "batch": "P060092",
+  "strain": "Grape Pie",
+  "tranche": 2,
+  "prev": 25.73,
+  "retest": 25.24
+ },
+ {
+  "batch": "P060182",
+  "strain": "Grapes and Cream",
+  "tranche": 2,
+  "prev": 11.53,
+  "retest": 9.8
+ },
+ {
+  "batch": "P050182",
+  "strain": "High Pro Amnesia",
+  "tranche": 2,
+  "prev": 20.39,
+  "retest": 19.69
+ },
+ {
+  "batch": "P060362",
+  "strain": "Jelly Donutz",
+  "tranche": 2,
+  "prev": 16.71,
+  "retest": 21.01
+ },
+ {
+  "batch": "P060412",
+  "strain": "Jelly Donutz",
+  "tranche": 2,
+  "prev": 20.54,
+  "retest": 14.43
+ },
+ {
+  "batch": "P060422",
+  "strain": "Jelly Donutz",
+  "tranche": 2,
+  "prev": 15.16,
+  "retest": 17.09
+ },
+ {
+  "batch": "P060172",
+  "strain": "Kush Crasher",
+  "tranche": 2,
+  "prev": 17.4,
+  "retest": 17.06
+ },
+ {
+  "batch": "P050112",
+  "strain": "Motor Breath",
+  "tranche": 2,
+  "prev": 16.82,
+  "retest": 17.93
+ },
+ {
+  "batch": "P050042",
+  "strain": "Orange Punch Mimosa",
+  "tranche": 2,
+  "prev": 15.38,
+  "retest": 18.99
+ },
+ {
+  "batch": "P060042",
+  "strain": "Orange Punch Mimosa",
+  "tranche": 2,
+  "prev": 9.43,
+  "retest": 10.18
+ },
+ {
+  "batch": "P050082",
+  "strain": "Orange Punch Mimosa",
+  "tranche": 2,
+  "prev": 16.55,
+  "retest": 19.3
+ },
+ {
+  "batch": "P060232",
+  "strain": "Permanent Marker",
+  "tranche": 2,
+  "prev": 13.0,
+  "retest": 10.79
+ },
+ {
+  "batch": "P060112",
+  "strain": "Pure Michigen",
+  "tranche": 2,
+  "prev": 15.63,
+  "retest": 13.95
+ },
+ {
+  "batch": "P060282",
+  "strain": "Scrambler",
+  "tranche": 2,
+  "prev": 17.13,
+  "retest": 19.73
+ },
+ {
+  "batch": "P060082",
+  "strain": "Sleepy Joe",
+  "tranche": 2,
+  "prev": 10.96,
+  "retest": 10.39
+ },
+ {
+  "batch": "P060012",
+  "strain": "Wedding Crusher",
+  "tranche": 2,
+  "prev": 21.67,
+  "retest": 23.48
+ }
+]
