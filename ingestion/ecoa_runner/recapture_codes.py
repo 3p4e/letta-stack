@@ -110,6 +110,65 @@ def _code(txt):
     return v or None
 
 
+# --- adjudication -------------------------------------------------------------
+# Three witnesses exist for a certificate number: the two model reads, and the
+# digits in the controlled filename. The filename is not a transcription of the
+# LETTERS - it renders Cyrillic ГС as "LoD" and Cyrillic К as Latin K - but its
+# DIGITS are the ones the filer typed off the document, and they settle a
+# transposition that neither model can settle alone.
+#
+# Two rules, both evidence-based, both refusing to guess:
+#
+#   HOMOGLYPH  the reads differ only by Latin/Cyrillic lookalikes. The
+#              certificate is Macedonian and the suffix letter abbreviates a
+#              Macedonian word - К канабиноиди, М микробиологија, ГС губиток при
+#              сушење - and every Farmahem code the two-pass pipeline captured
+#              WITH agreement is Cyrillic. Take the Cyrillic reading.
+#   DIGITS     the reads differ in their digits and exactly one of them matches
+#              the digit string in the filename. Take that one.
+#
+# Anything else stays for a person. A wrong code on a released document cites a
+# certificate that does not exist.
+# <batch>_<code>, <dd.mm.yyyy>_<lab>.pdf - the same convention the date
+# recovery validated at 219/219.
+NAME = re.compile(r'^(?P<rest>.+?),\s*(?P<date>\d{2}\.\d{2}\.\d{4})_(?P<lab>[^.]+)\.pdf$')
+
+HOMOGLYPH = {'K': 'К', 'M': 'М', 'H': 'Н', 'P': 'Р', 'C': 'С', 'T': 'Т',
+             'A': 'А', 'B': 'В', 'E': 'Е', 'O': 'О', 'X': 'Х'}
+
+
+def _homoglyph_fold(s):
+    return ''.join(HOMOGLYPH.get(ch, ch) for ch in (s or ''))
+
+
+def _digits(s):
+    return re.sub(r'\D', '', s or '')
+
+
+def adjudicate(rec):
+    """(code, basis) for a disagreement, or (None, reason) when unresolved."""
+    a, b = rec.get('read_a'), rec.get('read_b')
+    if a is None and b is None:
+        return None, 'the page prints no certificate number'
+    if a and b and _homoglyph_fold(a) == _homoglyph_fold(b):
+        # Prefer whichever reading is already Cyrillic.
+        cyr = b if any(ch in 'КМНРСТАВЕОХ' for ch in b) else a
+        return cyr, 'homoglyph only; Macedonian certificate, Cyrillic taken'
+    m = NAME.match(rec['document'])
+    fd = _digits(m.group('rest')) if m else ''
+    if fd:
+        # The filename's leading digits are the batch prefix, so the code's
+        # digits are a SUFFIX of them, not the whole string.
+        hits = [x for x in (a, b) if x and _digits(x) and fd.endswith(_digits(x))]
+        if len(hits) == 1:
+            other = b if hits[0] is a else a
+            why = ('digits match the filename; the other read does not'
+                   if other else 'digits match the filename; the other read '
+                                 'found no number')
+            return hits[0], why
+    return None, 'unresolved - both readings differ beyond a rule'
+
+
 def targets(db):
     return db.execute("SELECT doc_id, document, batch, lab FROM certificate "
                       "WHERE cert_code IS NULL ORDER BY document").fetchall()
@@ -122,6 +181,9 @@ def main():
     ap.add_argument('--limit', type=int, default=0)
     ap.add_argument('--apply', action='store_true',
                     help='write codes where both models agree')
+    ap.add_argument('--adjudicate', action='store_true',
+                    help='also settle disagreements by the documented rules '
+                         '(no further reading, no cost)')
     a = ap.parse_args()
     db = sqlite3.connect(a.db)
     todo = targets(db)
@@ -177,6 +239,9 @@ def main():
         json.dump(out, open(a.out, 'w'), ensure_ascii=False, indent=1)
 
     ok = [r for r in out if r.get('agree')]
+    for r in out:
+        if 'read_a' in r:
+            r['no_code_on_page'] = r['read_a'] is None and r['read_b'] is None
     none = [r for r in out if r.get('no_code_on_page')]
     dis = [r for r in out if 'agree' in r and not r['agree']
            and not r.get('no_code_on_page')]
@@ -188,12 +253,28 @@ def main():
               % (r['document'][:46], r['read_a'] or '-', r['read_b'] or '-'))
     for r in none:
         print('   NO CODE   %s' % r['document'][:60])
+    if a.adjudicate:
+        print('\nADJUDICATION')
+        for r in dis + none:
+            code, basis = adjudicate(r)
+            r['adjudicated'] = code
+            r['basis'] = basis
+            print('   %-46s %-16s %s'
+                  % (r['document'][:46], code or '(none)', basis))
+        json.dump(out, open(a.out, 'w'), ensure_ascii=False, indent=1)
+        settled = [r for r in dis + none if r.get('adjudicated')]
+        left = [r for r in dis if not r.get('adjudicated')]
+        print('\n   %d settled by rule, %d certificate(s) print no code, '
+              '%d left for a person' % (len(settled), len(none), len(left)))
+        ok = ok + settled
+
     if a.apply:
         for r in ok:
+            code = r.get('adjudicated') or r['read_a']
             db.execute("UPDATE certificate SET cert_code=? WHERE doc_id=?",
-                       (r['read_a'], r['doc_id']))
+                       (code, r['doc_id']))
             db.execute("UPDATE result SET cert_code=? WHERE doc_id=?",
-                       (r['read_a'], r['doc_id']))
+                       (code, r['doc_id']))
         db.commit()
         print('Wrote %d code(s). Disagreements are left for a person to settle.' % len(ok))
     else:
