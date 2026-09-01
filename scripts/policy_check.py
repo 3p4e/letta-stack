@@ -127,7 +127,11 @@ def check_no_letta_sources():
 SECRET = re.compile(
     r"sk-[A-Za-z0-9_-]{20,}|ragflow-[A-Za-z0-9_-]{20,}|pa-[A-Za-z0-9_-]{30,}|"
     r"ghp_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|xi-api-key\s*[:=]\s*['\"][^'\"]{16,}")
-SECRET_OK = re.compile(r"sk-\.\.\.|sk-xxx|<set|example|placeholder|YOUR_|\bsk-kimi-\.\.\.", re.I)
+# A placeholder is not a credential. The exemption is keyed on the *line*, not
+# the filename: a real key inside a file called `env.example` is still an
+# incident, and naming a file `.example` must never buy an exemption.
+SECRET_OK = re.compile(r"sk-\.\.\.|sk-xxx|<set|example|placeholder|YOUR_|"
+                       r"CHANGE[-_]?ME|REPLACE[-_]?ME|<your|\bsk-kimi-\.\.\.", re.I)
 
 
 def check_no_secrets():
