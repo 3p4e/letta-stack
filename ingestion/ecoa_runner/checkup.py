@@ -203,6 +203,17 @@ check('a held component holds the derived row',
       CQ.derive_totals(_held)[-1][8] == 'review')
 check('a value above 1.0 % is flagged against the criterion',
       {r[0]: r for r in CQ.derive_totals([_row('cbn_free', '1.20', 1.20)])}['total_cbn'][9] == 1)
+_hi = {r[0]: r for r in CQ.derive_totals([_row('cbn_free', '0.85', 0.85)])}
+check('a lower bound close beneath the criterion is not concluded, it is held',
+      _hi['total_cbn'][9] is None and _hi['total_cbn'][8] == 'review'
+      and 'LOWER BOUND' in _hi['total_cbn'][16]['working'])
+_lo = {r[0]: r for r in CQ.derive_totals([_row('cbn_free', '0.02', 0.02)])}
+check('an ordinary figure far beneath the criterion still concludes',
+      _lo['total_cbn'][9] == 0 and _lo['total_cbn'][8] == 'ok'
+      and _lo['total_cbn'][16]['bound'] == 'lower')
+_comp = {r[0]: r for r in CQ.derive_totals([_row('cbn_free', '0.85', 0.85), _row('cbna', '0.10', 0.10)])}
+check('a computed total is not a bound and concludes normally',
+      _comp['total_cbn'][9] == 0 and 'bound' not in _comp['total_cbn'][16])
 check('nothing to derive from -> nothing added',
       len(CQ.derive_totals([_row('loss_on_drying', '5.73', 5.73)])) == 1)
 

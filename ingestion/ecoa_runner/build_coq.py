@@ -110,10 +110,20 @@ def _dedupe(rows):
 #       printed is the laboratory's own; nothing is invented;
 #   (c) free printed, acid printed but not quantified (ND / BLQ) -> as (b),
 #       noted; an N.D. component is never assumed to be zero.
+# (d) A total derived from the free form alone is a LOWER BOUND: the acid form the
+#     laboratory did not report can only push the true total up, never down. So the
+#     conformity conclusion is only safe in one direction. A lower bound that already
+#     exceeds the criterion is out of specification and says so; a lower bound that sits
+#     close beneath it cannot be concluded either way, and is left UNDETERMINED for a
+#     person rather than passed silently. Far below the criterion (the ordinary CNP CBN
+#     figure of a few hundredths of a per cent against ≤ 1.0 %) the conclusion holds.
 # A printed total always wins; a derived row never overrides or duplicates it.
 # Confidence follows the components: a held component holds the derived row.
 # The derivation travels with the row (index 16) so the CoQ can state it.
 # ---------------------------------------------------------------------------
+# How close beneath its criterion a lower-bound total may sit before the conclusion is
+# withheld. 0.8 keeps the ordinary CBN figures conforming and holds the borderline ones.
+LOWER_BOUND_MARGIN = 0.8
 TOTALS = (('total_thc', 'thc_free', 'thca', 0.877),
           ('total_cbd', 'cbd_free', 'cbda', 0.877),
           ('total_cbn', 'cbn_free', 'cbna', 0.876))
@@ -159,6 +169,14 @@ def derive_totals(rows):
                                     % (tot, label, f[1], acid.upper(), a[1])}
             gl, _ref = governing(tot)
             ec = int(val > gl) if (conf == 'ok' and val is not None and gl is not None) else None
+            if deriv['kind'] != 'computed' and val is not None and gl is not None:
+                deriv['bound'] = 'lower'
+                if ec == 0 and val >= LOWER_BOUND_MARGIN * gl:
+                    ec = None                      # cannot be concluded without the acid form
+                    conf = 'review'
+                    deriv['working'] += ('; this is a LOWER BOUND at %.2f against the %.2f criterion — '
+                                         'the unreported acid form can only raise it, so conformity is '
+                                         'not concluded here' % (val, gl))
             out.append((tot, printed, val, f[3], f[4], f[5], f[6], f[7], conf, ec, None,
                         f[11], f[12], f[13], f[14], f[15], deriv))
     out.sort(key=lambda r: (r[5] or ''))
