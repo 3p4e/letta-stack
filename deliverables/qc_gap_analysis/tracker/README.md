@@ -49,3 +49,25 @@ three sheets are v3's, untouched.
   unchanged.
 - Sized to print: Calibri 8, wrapped, row heights fitted to the tallest cell, A3
   landscape, one page wide, header rows repeated, panes frozen at D4.
+
+# CoQ_Analysis_Master_v5.xlsx — ✓/✗ on every certificate row, values on every sheet
+
+Built 02.09.2026 on v4. Every parameter column on the `CoQ Parameter Tracker` is now
+three columns — **✓/✗ · Result (as reported) · eCOA ref, (date) [Lab]** — one
+certificate per row, and the mark says what the row holds:
+
+| mark | meaning |
+|---|---|
+| ✓ green | certificate on file **and** its result on the desk |
+| ✓ orange | a stability-timepoint certificate — its result is not a release result |
+| ✗ amber, *no result on file* | the certificate is credited here, but the desk holds no result for this parameter from it — the parameter is not on that certificate, or the certificate never entered the release register |
+| ✗ red, *— MISSING —* | no certificate at all |
+
+The same treatment goes to the other sheets where it applies. The **Missing
+Parameters Report** keeps its six batch columns and gains, per parameter, a ✓/✗ and a
+`result — eCOA ref, (date) [Lab]` cell with one line per certificate. The **eCOA
+Document Index** gains, per document, the parameter values it reports as the desk
+holds them (`#4 26.14 · #5 <LOQ · #6 0.28`) and a ✓/✗. The Summary Dashboard is an
+aggregate and is unchanged. All three sheets print A3 landscape, one page wide, header
+rows repeated. Results and references come from the desk (register step 19, page reads
+of 31.08.2026, 12-month re-analyses), keyed on the certificate code; nothing is invented.
