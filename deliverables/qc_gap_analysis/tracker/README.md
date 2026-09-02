@@ -237,3 +237,41 @@ group. Coverage and conformance are unchanged: 261 parameter gaps, **5 out of
 specification, 4 undetermined, 3 stability results above the criterion**, on 122 blocks
 over 77 lots. The conformance check runs on v8's verbatim strings, decimal commas and
 `x 10^4` notation included.
+
+## Credit corrections applied at build time
+
+Two corrections to the credit table, each applied only where the evidence is explicit,
+each listed row by row on the **Credit Corrections** sheet, and **neither written back to
+the owner's workbook**. A removed credit does not remove the document: it still appears as
+a testing instance, marked `•` and "on file, not credited".
+
+| rule | removals | evidence |
+|---|---|---|
+| **R1 — the Farmahem pair** | 71, over 27 lots | the pair was credited jointly for #3–#6 *and* #8, while the `K` certificate reports identification C, THC, CBD and CBN and the `LoD` certificate reports loss on drying alone. Each now keeps only what it reports. |
+| **R2 — CNP identification B** | 61 | credited to CNP certificates that carry no microscopy row. Removed there, **kept** on ППК26110–26119 and ППК26127–26128, whose newer report format does carry it. |
+
+**The consequence of R2, stated plainly: gaps rise from 261 to 318.** Fifty-one lots now
+have no evidence at all for identification B, where before they had a credit that the
+certificate did not support. That is the honest state, and it is what the issuance plan
+already foresees — those lots need an in-house iCoA for identification A and B. The
+Credit Audit falls from 279 rows to **12**, because a silent credit is now either
+corrected or a real task.
+
+## Work Order — what no rebuild can fix
+
+The **Work Order** sheet carries the 9 remaining tasks, each naming the document, the lot
+and the parameters it blocks:
+
+- **6 documents to re-extract** (`not ingested`): ППК25118, ППК25257, ППК25368, ППК26031,
+  100-3-K-26 and 1625-2026. Each blocks Total CBN or identification C for its lot; two
+  independent reads at 300 DPI, as the runner does.
+- **3 figures held for review**: the two reads disagreed and a person must confirm from the
+  page — Total CBN on the NGP forms of BSS052501 and GP062501, identification C on
+  100-1-K-26 for J31112501.
+
+## Rendering
+
+v8 prints the page verbatim, which mixed decimal commas with decimal points and repeated
+the unit the column header already states. The separator and the trailing unit are
+rendering, not measurement, so both are normalised — 0 cells now carry a decimal comma or
+a trailing unit — and everything else stands as the laboratory printed it.

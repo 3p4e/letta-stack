@@ -145,6 +145,19 @@ for _r in index_rows:
 # v8's readings, keyed on the certificate. Extracted from the v8 workbook of PR #17,
 # which was built from the eCoA database; the map is committed so this build is
 # reproducible without the database, which lives on the ingestion host.
+def tidy(v):
+    """v8 prints the page verbatim, which mixes decimal commas with decimal points and
+    repeats the unit the column header already states. The separator and the unit are
+    rendering, not measurement: normalise those two and leave everything else as printed."""
+    t = str(v or "").strip()
+    t = re.sub(r"(?<=\d),(?=\d)", ".", t)
+    t = re.sub(r"\s*[xх×]\s*10\s*\^?\s*(\d+)",
+               lambda m: "×10" + "".join("⁰¹²³⁴⁵⁶⁷⁸⁹"[int(c)] for c in m.group(1)), t)
+    t = re.sub(r"\s+(CFU/g|µg/kg|mg/kg|%|w/w)\s*$", "", t, flags=re.I)
+    t = re.sub(r"([<>≤≥])\s+(?=[\d.])", r"\1", t)
+    return t.strip()
+
+
 _V8 = json.load(open(V8VALS))
 SILENT = ("held for review", "not on this certificate", "not ingested", "n.r.")
 V8VAL, V8SILENT = collections.defaultdict(dict), collections.defaultdict(dict)
@@ -154,9 +167,10 @@ for _k in _V8:
 for _k, _d in _V8.items():
     _cu, _ck = _k.split("|", 1)
     for _no, _v in _d.items():
-        (V8SILENT if _v in SILENT else V8VAL)[(_cu, _ck)][_no] = _v
+        _val = _v if _v in SILENT else tidy(_v)
+        (V8SILENT if _v in SILENT else V8VAL)[(_cu, _ck)][_no] = _val
         if len(_bycode[_ck]) == 1:                    # the code identifies one lot only
-            (V8SILENT if _v in SILENT else V8VAL)[("*", _ck)][_no] = _v
+            (V8SILENT if _v in SILENT else V8VAL)[("*", _ck)][_no] = _val
 
 
 def v8_of(code, cu, table):
@@ -218,6 +232,49 @@ for _b in batches:
 print(f"tracker rows {len(batches)} → batches {len(_merged)} "
       f"({sum(1 for b in _merged if b.get('rows', 1) > 1)} lots had an original and a re-analysis row)")
 batches = _merged
+
+
+# --------------------------------------------------------------------------- credit corrections
+# Two corrections to the owner's credit table, each applied only where the evidence is
+# explicit, each recorded on the "Credit Corrections" sheet, and neither written back to
+# the owner's workbook. A removed credit does not remove the document: it still appears as
+# a testing instance, marked "on file, not credited".
+LOD_RX = re.compile(r"LoD|ГС", re.I)
+K_RX = re.compile(r"(^|\D)\d+-\d+-[KК]-\d+")
+corrections = []
+
+
+def _reports(b, code, pno):
+    lab = next((l for c, d, l in b["docs"][pno] if c == code), "")
+    vals = values_of(code, lab, b["cu"], scope_of(b, code))
+    return any(vals.get(no) for no in T.GROUPS[pno])
+
+
+def apply_credit_corrections(batches):
+    """R1  The Farmahem pair is credited jointly for #3–#6 and #8, but the "K" certificate
+           reports identification C, THC, CBD and CBN, and the "LoD" certificate reports
+           loss on drying alone. Each keeps only what it reports.
+       R2  Identification B is credited to CNP certificates that carry no microscopy row.
+           The credit is removed there, and kept on the certificates that do report it
+           (ППК26110–26119, ППК26127–26128), where the laboratory's newer report format
+           carries the determination."""
+    for b in batches:
+        for p in T.PARAMS:
+            keep = []
+            for c, d, l in b["docs"][p["n"]]:
+                rule = why = None
+                if LOD_RX.search(c) and p["n"] != 8 and not _reports(b, c, p["n"]):
+                    rule, why = "R1 Farmahem pair", "loss-on-drying certificate; reports no such determination"
+                elif K_RX.search(c) and p["n"] == 8 and not _reports(b, c, 8):
+                    rule, why = "R1 Farmahem pair", "cannabinoid certificate; loss on drying is on the LoD certificate"
+                elif p["n"] == 2 and l == "CNP" and not _reports(b, c, 2):
+                    rule, why = "R2 CNP identification B", "no microscopy row on this certificate"
+                if rule:
+                    corrections.append((b["cu"], b["p"], c, d, l, p["n"], p["title"], rule, why))
+                else:
+                    keep.append((c, d, l))
+            b["docs"][p["n"]] = keep
+    return batches
 
 
 def instances(b, pno):
@@ -287,6 +344,10 @@ for p in T.PARAMS:
     p["end"] = col - 1
     p["width"] = p["end"] - p["start"] + 1
 LAST = col - 1
+
+batches = apply_credit_corrections(batches)
+print(f"credit corrections applied: {len(corrections)} "
+      f"({collections.Counter(c[7] for c in corrections)})")
 
 wb = openpyxl.load_workbook(SRC)
 if SHEET in wb.sheetnames:
@@ -594,6 +655,80 @@ aud.page_setup.fitToHeight = 0
 aud.sheet_properties.pageSetUpPr.fitToPage = True
 print("credit audit rows:", _r - 2,
       dict(collections.Counter(x[7] for x in audit)))
+
+# --------------------------------------------------------------------------- Credit Corrections
+cor = wb.create_sheet("Credit Corrections", wb.sheetnames.index("Credit Audit") + 1)
+ccols = [("CU Batch", 14), ("P Batch", 14), ("Certificate", 24), ("Date", 11), ("Lab", 8),
+         ("#", 5), ("Parameter", 30), ("Correction", 24), ("Evidence", 58)]
+for _i, (_t, _w) in enumerate(ccols, 1):
+    put(cor, 1, _i, _t, FW, NAVY, CEN)
+    cor.column_dimensions[L(_i)].width = _w
+cor.row_dimensions[1].height = 22
+_r = 2
+for cu, pb, code, date, lab, pno, title, rule, why in sorted(corrections, key=lambda x: (x[7], x[0], x[5])):
+    put(cor, _r, 1, cu, F7B, None, CEN); put(cor, _r, 2, pb, F7, None, CEN)
+    put(cor, _r, 3, code, F7, None, CEN)
+    put(cor, _r, 4, T.as_date(date), F7, None, CEN); cor.cell(_r, 4).number_format = "DD.MM.YYYY"
+    put(cor, _r, 5, lab, F7, None, CEN); put(cor, _r, 6, f"#{pno}", F7, None, CEN)
+    put(cor, _r, 7, title, F7, None, Alignment(horizontal="left", vertical="center", wrap_text=True))
+    put(cor, _r, 8, "credit removed", F7B, FILL["amber"], CEN)
+    put(cor, _r, 9, f"{rule} — {why}", F6I, None, Alignment(horizontal="left", vertical="center", wrap_text=True))
+    _r += 1
+cor.auto_filter.ref = f"A1:{L(len(ccols))}{_r - 1}"
+cor.freeze_panes = "A2"; cor.print_title_rows = "1:1"
+cor.page_setup.orientation = "landscape"; cor.page_setup.fitToWidth = 1; cor.page_setup.fitToHeight = 0
+cor.sheet_properties.pageSetUpPr.fitToPage = True
+note = ("These corrections are applied when the workbook is built and are NOT written back to the owner's tracker. "
+        "A removed credit does not remove the document: it still appears as a testing instance, marked • and "
+        "\"on file, not credited\". R1 — the Farmahem pair was credited jointly for #3–#6 and #8, while the K "
+        "certificate reports identification C, THC, CBD and CBN and the LoD certificate reports loss on drying alone; "
+        "each now keeps only what it reports. R2 — identification B was credited to CNP certificates carrying no "
+        "microscopy row; the credit is removed there and kept on ППК26110–26119 and ППК26127–26128, whose newer report "
+        "format does carry it. Removing R2 leaves 51 lots with no evidence for identification B at all: those lots need "
+        "an in-house iCoA for identification A and B, which is what the issuance plan already foresees.")
+cor.merge_cells(start_row=_r + 1, start_column=1, end_row=_r + 1, end_column=len(ccols))
+put(cor, _r + 1, 1, note, F6I, GREY, Alignment(horizontal="left", vertical="top", wrap_text=True))
+cor.row_dimensions[_r + 1].height = 58
+print("credit corrections sheet rows:", _r - 2)
+
+# --------------------------------------------------------------------------- Work Order
+# What no rebuild can fix: documents the database holds no read of, and figures the two
+# independent reads disagreed on. Each row is a task for the ingestion queue or for a person.
+wo = wb.create_sheet("Work Order", wb.sheetnames.index("Credit Corrections") + 1)
+wcols = [("Task", 22), ("CU Batch", 14), ("P Batch", 14), ("Certificate", 24), ("Date", 11),
+         ("Lab", 8), ("Parameters affected", 26), ("What is needed", 62)]
+for _i, (_t, _w) in enumerate(wcols, 1):
+    put(wo, 1, _i, _t, FW, NAVY, CEN)
+    wo.column_dimensions[L(_i)].width = _w
+wo.row_dimensions[1].height = 22
+tasks = collections.defaultdict(lambda: {"params": set(), "meta": None})
+for cu, pb, code, date, lab, pno, title, why in audit:
+    if why not in ("not ingested", "held for review"):
+        continue
+    k = (why, cu, code)
+    tasks[k]["params"].add(pno)
+    tasks[k]["meta"] = (pb, date, lab)
+NEED = {
+    "not ingested": "Re-extract the document into the eCoA database (two independent reads, 300 DPI). "
+                    "Until then the lot cannot reach a CoQ on these parameters.",
+    "held for review": "The two independent reads disagreed. A person must read the figure from the page and confirm it.",
+}
+_r = 2
+for (why, cu, code), d in sorted(tasks.items(), key=lambda x: (x[0][0], x[0][1])):
+    pb, date, lab = d["meta"]
+    put(wo, _r, 1, why, F7B, FILL["red"] if why == "not ingested" else FILL["amber"], CEN)
+    put(wo, _r, 2, cu, F7B, None, CEN); put(wo, _r, 3, pb, F7, None, CEN)
+    put(wo, _r, 4, code, F7, None, CEN)
+    put(wo, _r, 5, T.as_date(date), F7, None, CEN); wo.cell(_r, 5).number_format = "DD.MM.YYYY"
+    put(wo, _r, 6, lab, F7, None, CEN)
+    put(wo, _r, 7, ", ".join(f"#{n}" for n in sorted(d["params"])), F7, None, CEN)
+    put(wo, _r, 8, NEED[why], F6I, None, Alignment(horizontal="left", vertical="center", wrap_text=True))
+    _r += 1
+wo.auto_filter.ref = f"A1:{L(len(wcols))}{max(_r - 1, 2)}"
+wo.freeze_panes = "A2"; wo.print_title_rows = "1:1"
+wo.page_setup.orientation = "landscape"; wo.page_setup.fitToWidth = 1; wo.page_setup.fitToHeight = 0
+wo.sheet_properties.pageSetUpPr.fitToPage = True
+print("work order rows:", _r - 2)
 
 # --------------------------------------------------------------------------- index: values + batch key
 ix = wb["eCOA Document Index"]
