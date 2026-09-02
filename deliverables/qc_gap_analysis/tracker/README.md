@@ -28,46 +28,44 @@ The content of the tracker (which certificate is credited to which parameter) is
 the owner's and is not changed here; `review/TRACKER_TRUTH_CHECK_2026-09-01.md`
 records where it disagrees with the desk.
 
-# CoQ_Analysis_Master_v4.xlsx — one certificate per row, result | reference
+# CoQ_Analysis_Master_v6.xlsx — the tracker as flat tables
 
-Built 02.09.2026 on v3. The `CoQ Parameter Tracker` sheet is re-laid out; the other
-three sheets are v3's, untouched.
+Built 02.09.2026 by `build_tracker_v6.py` from v3 (the owner's content) and the desk's
+record (`../coq_artifact_data.json`: release register at chain step 19, page reads of
+31.08.2026, 12-month re-analyses). It replaces the v4 and v5 layouts, which stacked
+certificates inside merged batch blocks; those files are withdrawn (they remain in the
+branch history).
 
-- Every parameter column is split in two: **Result (as reported)** on the left, the
-  **eCOA ref, (date) [Lab]** on the right, and **each certificate sits on its own
-  row** — a batch with six cannabinoid certificates occupies six rows, its identity,
-  status, labs-present and missing-parameters cells merged down the block.
-- The results are the desk's, keyed on the certificate code: the release register
-  (chain step 19), the page reads of 31.08.2026 and the 12-month re-analyses.
-  Multi-determination parameters list each determination (`TAMC 1.6×10⁴ · TYMC
-  1×10⁴ · GNB <10² and >10 · Salm. absent · E. coli absent`). A stability-timepoint
-  certificate is amber and marked — its result is not a release result. `—` means the
-  certificate is credited on the tracker but the desk holds no value for that
-  parameter from it: the parameter is not on that certificate, or the certificate
-  never entered the release register (the 21 listed in the truth check).
-- Which certificate is credited to which parameter is the owner's, carried from v3
-  unchanged.
-- Sized to print: Calibri 8, wrapped, row heights fitted to the tallest cell, A3
-  landscape, one page wide, header rows repeated, panes frozen at D4.
+Structure rules, every sheet:
 
-# CoQ_Analysis_Master_v5.xlsx — ✓/✗ on every certificate row, values on every sheet
+- one header row, an autofilter on it, panes frozen under it; **no merged cells in any
+  data region** — a batch that has six certificates has six complete rows, its identity
+  repeated, never merged down a block;
+- one value per cell; dates are real dates (DD.MM.YYYY), numeric results are numbers with
+  the certificate's printed precision, qualitative results are text (`Conforms`, `absent`,
+  `<LOQ`, `N.D.`);
+- the state of a cell is carried by the standard Good / Neutral / Bad fills (legend on the
+  `Read Me` sheet); the mark is always a plain ✓ or ✗;
+- A3 landscape, one page wide, header row repeated on every printed page.
 
-Built 02.09.2026 on v4. Every parameter column on the `CoQ Parameter Tracker` is now
-three columns — **✓/✗ · Result (as reported) · eCOA ref, (date) [Lab]** — one
-certificate per row, and the mark says what the row holds:
+| sheet | one row per | columns |
+|---|---|---|
+| `Read Me` | — | purpose, sheet guide, legend, conventions |
+| `Batch Coverage` | batch (81) | CU, P, strain, status, ✓/✗ for each of the 12 parameters, missing (n), missing parameters, certificates (n), labs present |
+| `CoQ Parameter Tracker` | batch × certificate (253) | CU, P, certificate, date, lab, kind, then one column per determination (21) holding the value that certificate reports; blank = not credited for that parameter |
+| `Results Register` | batch × determination × certificate (1 726) | CU, P, #, parameter, determination, mark, result, acceptance criterion, certificate, date, lab, kind, note |
+| `eCOA Document Index` | document (253) | P, CU, lab, laboratory, kind, certificate, date, document type, parameters covered, values on desk ✓/✗, filename |
+| `Parameters` | determination (21) | method, global acceptance criterion, source, tracker column |
+| `Summary Dashboard` | — | the owner's aggregate, unchanged |
 
-| mark | meaning |
-|---|---|
-| ✓ green | certificate on file **and** its result on the desk |
-| ✓ orange | a stability-timepoint certificate — its result is not a release result |
-| ✗ amber, *no result on file* | the certificate is credited here, but the desk holds no result for this parameter from it — the parameter is not on that certificate, or the certificate never entered the release register |
-| ✗ red, *— MISSING —* | no certificate at all |
+Legend (fill · mark): green ✓ certificate (eCoA or iCoA) and value on the desk · amber —
+certificate credited but no value on the desk for that determination · orange ✓
+stability-timepoint certificate (not a release result) · grey ✓ in-house document only
+(not an eCoA or iCoA, not coverage for a release certificate) · red ✗ no certificate.
 
-The same treatment goes to the other sheets where it applies. The **Missing
-Parameters Report** keeps its six batch columns and gains, per parameter, a ✓/✗ and a
-`result — eCOA ref, (date) [Lab]` cell with one line per certificate. The **eCOA
-Document Index** gains, per document, the parameter values it reports as the desk
-holds them (`#4 26.14 · #5 <LOQ · #6 0.28`) and a ✓/✗. The Summary Dashboard is an
-aggregate and is unchanged. All three sheets print A3 landscape, one page wide, header
-rows repeated. Results and references come from the desk (register step 19, page reads
-of 31.08.2026, 12-month re-analyses), keyed on the certificate code; nothing is invented.
+Which certificate is credited to which parameter is the owner's (v3, unchanged); the
+counts agree with the owner's dashboard (287 batch × parameter gaps). Where the desk holds
+no value from a credited certificate — most often Identification B on CNP certificates,
+Total CBN on the 2025 CNP certificates, Aflatoxin B₁ and Ochratoxin A on Institute of
+Public Health certificates that report only the aflatoxin sum — the cell says so (amber
+—) rather than inventing a value.
