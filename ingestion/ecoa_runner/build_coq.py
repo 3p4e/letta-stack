@@ -17,6 +17,7 @@ sys.path.insert(0, os.path.join(HERE, '..', 'common'))
 sys.path.insert(0, HERE)
 from common.controlled import (canonical_lab, canonical_strain, PANELS,
                                is_panel_statement, is_not_found, panel_of)
+from common.pheur import governing
 
 # Specification Section 02 exactly as printed: (number, sub, key, English, criterion, method)
 SPEC = [
@@ -87,6 +88,87 @@ def _dedupe(rows):
     return out
 
 
+# ---------------------------------------------------------------------------
+# Derived cannabinoid totals (Head of QC, 02.09.2026)
+#
+# Specification rows 4-6 are TOTALS: free form + acid form x conversion factor
+# (Ph. Eur. 2.2.29 / mon. 3028). 55 of the 65 CNP potency certificates in the
+# corpus print "Содржина на CBN" - the laboratory's CBN figure, against the
+# ≤ 1.00 % criterion - but neither a CBNA row nor a "Вкупно CBN" row, while the
+# same page prints Total THC and Total CBD explicitly. Looking the key total_cbn
+# up on its own therefore reported every one of those certificates as having
+# "no result on file" for row 6: a certificate that DID report CBN, from an
+# accredited laboratory, was being shown as silent. That is a compiler defect,
+# not a laboratory gap.
+#
+# Rule, applied per certificate and only where NO total is printed:
+#   (a) free and acid both printed and numeric  -> total = free + acid x k,
+#       reported as COMPUTED with the working shown (ALCOA+: show the arithmetic);
+#   (b) free printed, acid form not reported    -> the free-form figure is the
+#       reportable result for the row, noted "acid form not reported by the
+#       laboratory" (Total CBN = CBN where CBNA was not determined). The value
+#       printed is the laboratory's own; nothing is invented;
+#   (c) free printed, acid printed but not quantified (ND / BLQ) -> as (b),
+#       noted; an N.D. component is never assumed to be zero.
+# A printed total always wins; a derived row never overrides or duplicates it.
+# Confidence follows the components: a held component holds the derived row.
+# The derivation travels with the row (index 16) so the CoQ can state it.
+# ---------------------------------------------------------------------------
+TOTALS = (('total_thc', 'thc_free', 'thca', 0.877),
+          ('total_cbd', 'cbd_free', 'cbda', 0.877),
+          ('total_cbn', 'cbn_free', 'cbna', 0.876))
+
+
+def derive_totals(rows):
+    """Append derived total_* rows for certificates that print components only.
+
+    `rows` are result tuples in the SELECT order of compile_coq (16 fields).
+    Derived rows carry a 17th field: a dict describing the derivation. The
+    returned list is re-sorted by date so "latest wins" still holds.
+    """
+    by_doc = {}
+    for r in rows:
+        by_doc.setdefault(r[12], {}).setdefault(r[0], []).append(r)
+    out = list(rows)
+    for doc, params in by_doc.items():
+        for tot, free, acid, k in TOTALS:
+            if params.get(tot):
+                continue                      # a printed total always wins
+            fr = params.get(free)
+            if not fr:
+                continue                      # nothing to derive from
+            f = fr[-1]
+            a = (params.get(acid) or [None])[-1]
+            conf = 'ok' if f[8] == 'ok' and (a is None or a[8] == 'ok') else 'review'
+            label = f[13] or free
+            if a is not None and f[2] is not None and a[2] is not None:
+                val = round(f[2] + a[2] * k, 2)
+                printed = '%.2f' % val
+                deriv = {'kind': 'computed', 'from': [free, acid],
+                         'working': '%s + %s × %s = %.2f' % (f[1], a[1], k, val)}
+            elif a is None:
+                val, printed = f[2], f[1]
+                deriv = {'kind': 'free-form-only', 'from': [free],
+                         'working': '%s reported as printed (%s = %s); %s not reported '
+                                    'by the laboratory' % (tot, label, f[1], acid.upper())}
+            else:
+                val, printed = f[2], f[1]
+                deriv = {'kind': 'acid-not-quantified', 'from': [free, acid],
+                         'working': '%s reported as printed (%s = %s); %s printed "%s" — '
+                                    'not quantified, not assumed zero'
+                                    % (tot, label, f[1], acid.upper(), a[1])}
+            gl, _ref = governing(tot)
+            ec = int(val > gl) if (conf == 'ok' and val is not None and gl is not None) else None
+            out.append((tot, printed, val, f[3], f[4], f[5], f[6], f[7], conf, ec, None,
+                        f[11], f[12], f[13], f[14], f[15], deriv))
+    out.sort(key=lambda r: (r[5] or ''))
+    return out
+
+
+def _derivation(r):
+    return r[16] if len(r) > 16 else None
+
+
 GROUP_KEYS = {
     '9':  ['tamc', 'tymc', 'bile_tolerant_gram_negative', 'salmonella', 'escherichia_coli'],
     '10': ['aflatoxin_b1', 'aflatoxins_total', 'ochratoxin_a'],
@@ -153,6 +235,7 @@ def compile_coq(db, batch, as_of=None):
         # An undated row cannot be proven to predate the cut, so it is excluded
         # from a point-in-time compile rather than assumed contemporaneous.
         rows = [r for r in rows if r[5] and r[5] <= as_of]
+    rows = derive_totals(rows)
     by = {}
     for r in rows:
         by.setdefault(r[0], []).append(r)
@@ -235,6 +318,7 @@ def compile_coq(db, batch, as_of=None):
                          document=latest[11],
                          exceeds_criterion=latest[9], outside_range=latest[10],
                          method_accredited=latest[14],
+                         derivation=_derivation(latest),
                          superseded=_dedupe([(r[5], r[1], r[6]) for r in cands[:-1]
                                              if _canon(r[1]) != _canon(latest[1])]))
             cite(_num(n, sub), latest[7], latest[6], latest[5],
@@ -329,6 +413,9 @@ def render(db, batch):
                  (e.get('cert_code') or '') if e['status'] == 'ok' else '', flag))
         if e.get('stability_only'):
             print('%-5s   ⚑ STABILITY TIMEPOINT — no release result available' % '')
+        if e.get('derivation'):
+            print('%-5s   ▸ derived (%s): %s' % ('', e['derivation']['kind'],
+                                                 e['derivation']['working']))
         if e.get('panel_name'):
             print('%-5s   panel: %s' % ('', e['panel_name']))
         for f in e.get('finds', []):
