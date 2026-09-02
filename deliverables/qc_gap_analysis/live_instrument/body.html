@@ -124,8 +124,19 @@
 
 <!-- ============================================ CoQ -->
 <section id="p-coq" role="tabpanel" aria-labelledby="t-coq" class="hide">
-  <div class="band"><span class="no">03</span> Certificate of Quality — issuance<span class="mk">Сертификат за квалитет</span><span class="tail" id="coq-tail"></span></div>
-  <div class="controls">
+  <div class="band"><span class="no">03</span> Certificate of Quality — parameter tracker and issuance<span class="mk">Сертификат за квалитет</span><span class="tail" id="coq-tail"></span></div>
+  <div class="controls" style="padding-bottom:4px">
+    <span class="seg" role="group" aria-label="View">
+      <button class="chip" id="trk-view-grid" aria-pressed="true">Parameter tracker</button>
+      <button class="chip" id="trk-view-list" aria-pressed="false">Document list</button>
+      <button class="chip" id="trk-compact" aria-pressed="false">✓/✗ only</button>
+    </span>
+    <button class="chip" data-f="coq:tcomplete">✅ Complete<span class="c" id="c-tcom"></span></button>
+    <button class="chip warn" data-f="coq:tpartial">⚠ 1–3 missing<span class="c" id="c-tpar"></span></button>
+    <button class="chip fail" data-f="coq:tincomplete">❌ 4+ missing<span class="c" id="c-tinc"></span></button>
+    <label class="fsel">Missing <select id="trk-miss" aria-label="Filter by missing parameter"></select></label>
+  </div>
+  <div class="controls" style="padding-top:6px">
     <input class="search" id="q-coq" type="search" placeholder="CoQ number, packaged lot, cultivation batch, strain, certificate code…" aria-label="Search certificates of quality">
     <button class="chip" data-f="coq:initial">Initial release<span class="c" id="c-init"></span></button>
     <button class="chip" data-f="coq:reissue">12-month reissue<span class="c" id="c-reis"></span></button>
@@ -141,8 +152,11 @@
     <button class="clear" data-clear="coq">clear</button>
     <span class="count" id="cnt-coq"></span>
   </div>
+  <div id="trk-dash"></div>
   <div id="coq-detail"></div>
-  <div class="scroll"><table id="t-coqs"><thead><tr>
+  <div class="scroll" id="trk-wrap"><table id="trk"><thead></thead><tbody></tbody></table>
+    <p class="trk-key"><b>✓</b> covered · <b>◐</b> partly covered · <b>✗</b> missing · <b style="color:var(--fail)">OUT OF SPECIFICATION</b> a result over its criterion · <b>[TAG]</b> the issuing laboratory (CNP · FHM-K/M/LoD · IJZ/IJZ-MB · PP · DFL) · <i>retest</i> the 12-month re-analysis · <b>desk</b>/<b>page</b> a value recorded or read at this desk. Click a row for the full determination table, the attach desk and issuance.</p></div>
+  <div class="scroll hide" id="coq-list"><table id="t-coqs"><thead><tr>
     <th style="width:150px">CoQ number</th><th style="width:118px">Series</th>
     <th style="width:86px">Basis<span class="mk">Основа</span></th>
     <th style="width:100px">Issue no earlier than</th>

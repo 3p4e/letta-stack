@@ -300,6 +300,59 @@ tr.grp td{background:var(--gold-tint)!important;font-family:var(--d);font-size:8
 .vchip.dk-am{cursor:pointer}
 .vchip.dk-am:hover{border-color:var(--gold)}
 .sub.was{font-family:var(--m);color:var(--warn)}
+
+/* ---------- the CoQ desk as a batch × parameter tracker ---------- */
+.seg{display:inline-flex;gap:0;margin-right:6px}
+.seg .chip{border-radius:0} .seg .chip:first-child{border-radius:3px 0 0 3px} .seg .chip:last-child{border-radius:0 3px 3px 0}
+.fsel{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:600;color:var(--text-sec)}
+.fsel select{font-family:var(--b);font-size:10.5px;padding:4px 6px;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:3px}
+#trk-dash{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;padding:10px 28px 8px}
+.dsh{border:1px solid var(--border);padding:8px 12px;background:var(--surface);display:flex;flex-direction:column;gap:2px}
+.dsh .k{font-size:8.4px;letter-spacing:.7px;text-transform:uppercase;color:var(--text-sec);font-weight:700}
+.dsh .v{font-family:var(--m);font-size:21px;font-weight:700;color:var(--navy);line-height:1.1;font-variant-numeric:tabular-nums}
+.dsh .s{font-size:9.6px;color:var(--text-ter)}
+.dsh.freq{grid-column:1/-1}
+.freq .bars{display:grid;grid-template-columns:repeat(12,1fr);gap:6px;margin-top:6px}
+.freq .bar{font-size:9px;text-align:center}
+.freq .bar i{display:block;height:36px;background:var(--heaven);position:relative;border:1px solid var(--border)}
+.freq .bar i b{position:absolute;bottom:0;left:0;right:0;background:var(--fail);opacity:.7;min-height:0}
+.freq .bar .n{display:block;font-family:var(--m);font-weight:700;color:var(--ink);margin-top:2px}
+.freq .bar .l{display:block;color:var(--text-sec);font-size:8.2px}
+#trk{font-size:10.6px;min-width:2300px}
+#trk thead th{position:sticky;top:0;z-index:3;vertical-align:top}
+#trk thead tr:nth-child(2) th{top:26px}
+#trk th.band{text-align:center;background:var(--navy);color:#F2F5F9;letter-spacing:1.1px;font-size:8.2px;padding:6px 8px;border-right:1px solid rgba(255,255,255,.18)}
+#trk th.band .m{display:inline-block;margin-left:6px;font-family:var(--m);font-weight:500;color:#C9A227;letter-spacing:0}
+#trk th.prm{white-space:normal;min-width:156px;line-height:1.25}
+#trk th.prm .m{display:block;font-weight:500;font-size:7.2px;color:var(--text-ter);text-transform:none;letter-spacing:.2px;margin-top:2px}
+#trk td{vertical-align:top;padding:5px 7px;border-bottom:1px solid var(--border);border-right:1px solid var(--border-light)}
+#trk .stk{position:sticky;background:var(--surface);z-index:2}
+#trk th.stk{z-index:4}
+#trk .s1{left:0;min-width:118px;max-width:150px} #trk .s2{left:126px;min-width:78px} #trk .s3{left:212px;min-width:104px;box-shadow:2px 0 0 var(--border)}
+#trk tr:nth-child(even) .stk{background:var(--heaven)}
+#trk .cell{min-width:156px;max-width:200px;white-space:normal}
+#trk .cell.ok{background:var(--green-soft)} #trk .cell.miss{background:var(--fail-soft)} #trk .cell.part,#trk .cell.warn{background:var(--warn-soft)}
+#trk .cell.oos{background:var(--fail-soft);box-shadow:inset 0 0 0 2px var(--fail)} #trk .cell.na{background:var(--heaven);color:var(--text-ter);text-align:center}
+#trk .g{font-family:var(--m);font-weight:700;font-size:12.5px;margin-right:5px;float:right}
+#trk .g.ok,#trk .g.warn{color:var(--green)} #trk .g.warn{color:var(--warn)} #trk .g.miss,#trk .g.oos{color:var(--fail)} #trk .g.part{color:var(--warn)}
+#trk .doc{display:block;font-family:var(--m);font-size:9.8px;white-space:nowrap;line-height:1.35;cursor:pointer}
+#trk .doc.ret .code{color:var(--gold-deep)}
+#trk .doc .dt{color:var(--text-ter);font-size:8.8px;margin-left:4px}
+#trk .doc .tag{display:inline-block;font-family:var(--d);font-size:6.6px;font-weight:800;letter-spacing:.5px;padding:0 4px;border-radius:2px;background:var(--navy);color:#F2F5F9;margin-left:4px;vertical-align:middle}
+#trk .doc .tag.dk{background:var(--info)} #trk .doc .tag.pg{background:var(--green)}
+#trk .res{display:block;font-family:var(--m);font-size:10.2px;color:var(--ink);white-space:normal;margin-top:2px;line-height:1.3}
+#trk .res.ret{color:var(--text-sec)} #trk .res.ret::before{content:"retest · ";font-family:var(--b);font-size:8.4px;letter-spacing:.3px;color:var(--gold-deep);font-weight:600}
+#trk .miss-t{display:block;font-family:var(--b);font-size:8.6px;font-weight:700;letter-spacing:.7px;color:var(--fail)}
+#trk tr.clk{cursor:pointer} #trk tr.clk:hover td{filter:brightness(.985)}
+#trk tr.sel td{box-shadow:inset 0 -2px 0 var(--gold),inset 0 2px 0 var(--gold)}
+#trk.compact .doc,#trk.compact .res,#trk.compact .miss-t{display:none}
+#trk.compact .cell{min-width:46px;max-width:60px;text-align:center} #trk.compact .g{float:none;margin:0}
+#trk.compact{min-width:0}
+.trk-st{white-space:nowrap;font-weight:700;font-size:10.4px} .trk-st.ok{color:var(--green)} .trk-st.warn{color:var(--warn)} .trk-st.fail{color:var(--fail)}
+#trk .labs{font-family:var(--m);font-size:9.2px;white-space:normal;min-width:180px;max-width:230px;color:var(--text-sec)}
+#trk .mpar{font-size:9.8px;white-space:normal;min-width:200px;max-width:260px;color:var(--fail)}
+.trk-key{font-size:10px;color:var(--text-sec);padding:8px 28px 14px;margin:0;max-width:none}
+.trk-key b{font-family:var(--m)}
 /* ---------- the shared dialog ---------- */
 #dk{width:min(560px,94vw);border:1px solid var(--border);border-top:3px solid var(--gold-deep);
   border-radius:4px;padding:0;background:var(--surface);color:var(--text)}

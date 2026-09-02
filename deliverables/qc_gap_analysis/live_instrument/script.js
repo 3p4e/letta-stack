@@ -324,7 +324,28 @@ function deriveEcoaFacts(){
 }
 deriveCoqFacts(); deriveIcoaFacts(); deriveEcoaFacts();
 
+var TRK_GROUPS = [
+  ["1",  "Identification A",       "Appearance · Ph. Eur. mon. 3028",                    ["1"]],
+  ["2",  "Identification B",       "Microscopy · Ph. Eur. 2.8.23",                        ["2"]],
+  ["3",  "Identification C",       "HPLC · Ph. Eur. 2.2.29 (the cannabinoid certificate)", ["3"]],
+  ["4",  "Assay — Total Δ⁹-THC",   "Ph. Eur. 2.2.29 (HPLC)",                              ["4"]],
+  ["5",  "Assay — Total CBD",      "Ph. Eur. 2.2.29 (HPLC)",                              ["5"]],
+  ["6",  "Total CBN",              "Ph. Eur. 2.2.29 (HPLC)",                              ["6"]],
+  ["7",  "Foreign matter",         "Ph. Eur. 2.8.2",                                      ["7"]],
+  ["8",  "Loss on drying",         "Губиток при сушење · Ph. Eur. 2.2.32",                ["8"]],
+  ["9",  "Microbiological purity", "TAMC · TYMC · GNB · Salmonella · E. coli · Ph. Eur. 2.6.12/2.6.13 cat. C", ["9.1","9.2","9.3","9.4","9.5","9.6","9.7"]],
+  ["10", "Mycotoxins",             "Aflatoxin B₁ · ΣAflatoxins · Ochratoxin A · Ph. Eur. 2.8.18", ["10.1","10.2","10.3"]],
+  ["11", "Heavy metals",           "Pb · Cd · As · Hg · Ph. Eur. 2.4.27",                 ["11.1","11.2","11.3","11.4"]],
+  ["12", "Pesticide residues",     "Ph. Eur. 2.8.13",                                     ["12"]]
+];
+var TRK_BANDS = [["IDENTIFICATION", "1–3", 3], ["CANNABINOID ASSAY", "4–6", 3],
+                 ["PHYSICAL", "7–8", 2], ["MICROBIOLOGY", "9", 1], ["CONTAMINANTS", "10–12", 3]];
+var TRK_ABBR = { "9.1":"TAMC", "9.2":"TYMC", "9.3":"GNB", "9.4":"Salm.", "9.5":"E. coli",
+  "9.6":"P. aer.", "9.7":"S. aur.", "10.1":"AfB₁", "10.2":"ΣAf", "10.3":"OTA",
+  "11.1":"Pb", "11.2":"Cd", "11.3":"As", "11.4":"Hg" };
+var TRK_ROWS = [], TRK_MISS = "", TRK_VIEW = "grid", TRK_COMPACT = false;
 var COQ = D.coqs, ICO = D.icoa_plan, ECO = D.ecoa;
+deriveTrackerFacts();
 var N = {
   init:   COQ.filter(function(c){ return !c.reissue; }).length,
   reis:   COQ.filter(function(c){ return c.reissue; }).length,
@@ -435,9 +456,13 @@ var OPEN = null;
 function passCoq(c){
   var f = F.coq;
   if (Q.coq && c.hay.indexOf(Q.coq) < 0) return false;
+  if (TRK_MISS && !(c.trk && c.trk.missSet.indexOf(TRK_MISS) >= 0)) return false;
   if (f.size === 0) return true;
   var any = false;
   f.forEach(function(x){
+    if (x === "tcomplete"   && c.trk && c.trk.miss === 0) any = true;
+    if (x === "tpartial"    && c.trk && c.trk.miss >= 1 && c.trk.miss <= 3) any = true;
+    if (x === "tincomplete" && c.trk && c.trk.miss >= 4) any = true;
     if (x === "initial"   && !c.reissue) any = true;
     if (x === "reissue"   &&  c.reissue) any = true;
     if (x === "issued"    &&  c.issued)  any = true;
@@ -515,7 +540,234 @@ function renderCoqs(){
   }).join("");
   el("cnt-coq").textContent = list.length + " of " + COQ.length + " certificates";
   el("e-coq").classList.toggle("hide", list.length > 0);
+  renderTracker();
 }
+
+/* ---------- the CoQ desk as a batch × parameter tracker ----------
+   One row per initial-release CoQ (a batch, or a packaged lot), twelve parameter
+   columns in five bands — the owner's CoQ_Analysis_Master workbook, drawn from
+   the desk's own rows so that every cell carries the certificate AND the result
+   it reports, and a desk attachment or a page reading shows the moment it is
+   recorded. The 12-month re-analysis sits in the same cell as a second line. */
+function labTag(lab, code){
+  lab = lab || ""; code = code || "";
+  if (lab.indexOf("UKIM") === 0) return "CNP";
+  if (lab.indexOf("Farmahem") === 0) {
+    if (/[-\/](ГС|GS|LoD)[-\/]/i.test(code)) return "FHM-LoD";
+    if (/[-\/][МM][-\/]/.test(code)) return "FHM-M";
+    return "FHM-K";
+  }
+  if (lab.indexOf("IPH") === 0) return /^\d{1,4}\/\d{4}\/\d{2}/.test(code) ? "IJZ-MB" : "IJZ";
+  if (lab.indexOf("Purely") === 0) return "PP";
+  if (lab.indexOf("State") === 0) return "DFL";
+  if (lab.indexOf("page reading") === 0 || lab.indexOf("desk") === 0) return "DESK";
+  return (lab.split(" — ")[0] || "?").slice(0, 8);
+}
+function shortRes(v){
+  v = String(v == null ? "" : v).trim();
+  if (!v || v === "—") return "";
+  if (v.indexOf(" | ") > 0) v = v.split(" | ")[0];
+  return v.length > 26 ? v.slice(0, 24) + "…" : v;
+}
+function trkCell(rel, ret){
+  /* rel: the release CoQ's rows for this group (in scope); ret: the reissue's.
+     A determination counts as covered when EITHER document reports it — the
+     owner's tracker reads the batch, not the certificate: CBN and the
+     mycotoxin trio arrive with the Farmahem re-analysis on most 2024–25
+     batches, and a batch that holds that pair has the parameter. */
+  function covOf(r){
+    var s = r.st;
+    if (s.indexOf(ST.OOS) === 0 || s.indexOf(ST.BLK) === 0) return "oos";
+    if (s.indexOf(ST.UND) === 0) return "und";
+    if (s.indexOf(ST.OK) === 0) return "ok";
+    if (s.indexOf(ST.SCAN) === 0) return "scan";
+    return "";
+  }
+  var byNo = {};
+  rel.forEach(function(r){ byNo[r.no] = { rel: covOf(r), ret: "" }; });
+  ret.forEach(function(r){ byNo[r.no] = byNo[r.no] || { rel: "", ret: "" }; byNo[r.no].ret = covOf(r); });
+  var nos = Object.keys(byNo), cov = 0, oos = 0, und = 0, scan = 0;
+  nos.forEach(function(no){
+    var x = byNo[no], any = x.rel || x.ret;
+    if (!any) return;
+    cov++;
+    if (x.rel === "oos" || x.ret === "oos") oos++;
+    else if ((x.rel === "und" || x.ret === "und") && !(x.rel === "ok" || x.ret === "ok")) und++;
+    else if (!(x.rel === "ok" || x.ret === "ok" || x.rel === "und" || x.ret === "und")) scan++;
+  });
+  var n = nos.length;
+  var kind = !n ? "na" : oos ? "oos" : cov === n ? (und || scan ? "warn" : "ok") : cov > 0 ? "part" : "miss";
+  var docs = [], seen = {};
+  function addDoc(r, retest){
+    if (!r.doc || r.doc === "—") return;
+    var k = r.doc + "|" + (retest ? "R" : "I");
+    if (seen[k]) return; seen[k] = 1;
+    docs.push({ doc: r.doc, dd: r.dd || "", tag: labTag(r.lab, r.doc), retest: retest, desk: !!r.desk, page: !!r.pageRead });
+  }
+  rel.forEach(function(r){ addDoc(r, false); });
+  ret.forEach(function(r){ addDoc(r, true); });
+  function resLine(rows){
+    var parts = [];
+    rows.forEach(function(r){
+      var v = shortRes(r.res); if (!v) return;
+      parts.push((rows.length > 1 || TRK_ABBR[r.no] ? (TRK_ABBR[r.no] || r.no) + " " : "") + v);
+    });
+    return parts.join(" · ");
+  }
+  return { kind: kind, docs: docs, res: resLine(rel), ret: resLine(ret.filter(function(r){ return r.doc && r.doc !== "—"; })),
+           awaiting: ret.some(function(r){ return r.st.indexOf(ST.AWK) === 0 || r.st.indexOf(ST.AWM) === 0; }),
+           n: n, cov: cov };
+}
+function deriveTrackerFacts(){
+  var byKey = {};
+  COQ.forEach(function(c){ if (c.reissue) byKey[c.cb + "|" + (c.pp || "")] = c; });
+  TRK_ROWS = [];
+  COQ.forEach(function(c){
+    c.trk = null;
+    if (c.reissue) return;
+    var cr = byKey[c.cb + "|" + (c.pp || "")] || null;
+    var cells = [], miss = [], missSet = [], oosAny = false, labs = {}, docsAll = {};
+    TRK_GROUPS.forEach(function(g){
+      var nos = g[3];
+      var rel = c.rows.filter(function(r){ return nos.indexOf(r.no) >= 0 && r.st.indexOf(ST.REQ) !== 0; });
+      var ret = cr ? cr.rows.filter(function(r){
+        return nos.indexOf(r.no) >= 0 && r.st.indexOf(ST.REQ) !== 0 && r.st.indexOf(ST.OUT) !== 0; }) : [];
+      var cell = trkCell(rel, ret);
+      cell.g = g; cells.push(cell);
+      if (cell.kind === "miss" || cell.kind === "part") { miss.push("#" + g[0] + " " + g[1]); missSet.push(g[0]); }
+      if (cell.kind === "oos") oosAny = true;
+      cell.docs.forEach(function(d){
+        if (docsAll[d.doc]) return; docsAll[d.doc] = 1;
+        labs[d.tag] = (labs[d.tag] || 0) + 1;
+      });
+    });
+    var trk = { cells: cells, miss: miss.length, missList: miss, missSet: missSet, oos: oosAny,
+      labs: Object.keys(labs).sort().map(function(t){ return "[" + t + "] " + labs[t] + " doc" + (labs[t] === 1 ? "" : "s"); }).join("  |  "),
+      ndocs: Object.keys(docsAll).length, cr: cr };
+    c.trk = trk;
+    TRK_ROWS.push({ ci: c, cr: cr, trk: trk });
+  });
+}
+function trkStatus(trk){
+  if (trk.miss === 0) return ["ok", "✅ COMPLETE"];
+  if (trk.miss <= 3) return ["warn", "⚠ " + trk.miss + " MISSING"];
+  return ["fail", "❌ " + trk.miss + " MISSING"];
+}
+function trkGlyph(kind){
+  return { ok:"✓", warn:"✓", part:"◐", miss:"✗", oos:"✗", na:"–" }[kind] || "–";
+}
+function renderTrackerHead(){
+  var h1 = '<tr><th class="band stk s1" colspan="3">BATCH IDENTIFICATION</th>' +
+    TRK_BANDS.map(function(b){ return '<th class="band" colspan="' + b[2] + '">' + esc(b[0]) + '<span class="m">' + esc(b[1]) + '</span></th>'; }).join("") +
+    '<th class="band" colspan="2">eCOA COVERAGE STATUS</th></tr>';
+  var h2 = '<tr><th class="stk s1">CU batch<span class="mk">Серија</span></th><th class="stk s2">P batch</th><th class="stk s3">Status</th>' +
+    TRK_GROUPS.map(function(g){
+      return '<th class="prm">#' + esc(g[0]) + '  ' + esc(g[1]) + '<span class="m">' + esc(g[2]) + '</span><span class="m">eCoA ref · ✓/✗ · result</span></th>';
+    }).join("") + '<th>Labs present</th><th>Missing parameters</th></tr>';
+  document.querySelector("#trk thead").innerHTML = h1 + h2;
+}
+function trkCellHtml(cell, ci, cr){
+  var g = cell.g, k = cell.kind;
+  var glyph = '<span class="g ' + k + '" title="' + esc(
+      k === "ok" ? "covered" : k === "warn" ? "covered — undetermined against QCSP 001, or in-house transcription only" :
+      k === "part" ? "partly covered: " + cell.cov + " of " + cell.n + " determinations" :
+      k === "oos" ? "OUT OF SPECIFICATION on this certificate" : k === "miss" ? "missing — no certificate covers it" : "not in scope") + '">' +
+      trkGlyph(k) + '</span>';
+  if (k === "na") return '<td class="cell na">' + glyph + '</td>';
+  var body = "";
+  if (k === "miss") body = '<span class="miss-t">— MISSING —</span>';
+  cell.docs.forEach(function(d){
+    body += '<span class="doc' + (d.retest ? " ret" : "") + '" data-c="' + (d.retest && cr ? cr.i : ci.i) + '"><span class="code">' + esc(d.doc.indexOf("n/a") === 0 ? "in-house CoA" : d.doc.length > 18 ? d.doc.slice(0, 16) + "…" : d.doc) + '</span>' +
+      (d.dd ? '<span class="dt">(' + esc(d.dd) + ')</span>' : "") +
+      '<span class="tag' + (d.desk ? " dk" : d.page ? " pg" : "") + '">' + esc(d.tag) + (d.desk ? " · desk" : d.page ? " · page" : "") + '</span></span>';
+  });
+  if (cell.res) body += '<span class="res">' + esc(cell.res) + '</span>';
+  if (cell.ret) body += '<span class="res ret">' + esc(cell.ret) + '</span>';
+  else if (cell.awaiting && cr) body += '<span class="res ret dim">awaiting the re-analysis</span>';
+  if (k === "oos") body += '<span class="miss-t">OUT OF SPECIFICATION</span>';
+  return '<td class="cell ' + k + '">' + glyph + body + '</td>';
+}
+function renderTrackerDash(){
+  var n = TRK_ROWS.length, com = 0, par = 0, inc = 0, oos = 0, freq = TRK_GROUPS.map(function(){ return 0; });
+  TRK_ROWS.forEach(function(r){
+    if (r.trk.miss === 0) com++; else if (r.trk.miss <= 3) par++; else inc++;
+    if (r.trk.oos) oos++;
+    r.trk.cells.forEach(function(c, i){ if (c.kind === "miss" || c.kind === "part") freq[i]++; });
+  });
+  var pc = function(x){ return n ? Math.round(100 * x / n) + "% of batches" : ""; };
+  el("trk-dash").innerHTML =
+    '<div class="dsh"><span class="k">Batches on record</span><span class="v">' + n + '</span><span class="s">' + N.init + ' initial CoQs · ' + N.reis + ' reissues</span></div>' +
+    '<div class="dsh"><span class="k">✅ Complete — all 12</span><span class="v">' + com + '</span><span class="s">' + pc(com) + '</span></div>' +
+    '<div class="dsh"><span class="k">⚠ Partial — 1–3 missing</span><span class="v">' + par + '</span><span class="s">' + pc(par) + '</span></div>' +
+    '<div class="dsh"><span class="k">❌ Incomplete — 4+ missing</span><span class="v">' + inc + '</span><span class="s">' + pc(inc) + '</span></div>' +
+    '<div class="dsh"><span class="k">Out of specification</span><span class="v" style="color:var(--fail)">' + oos + '</span><span class="s">batches with a result over its criterion</span></div>' +
+    '<div class="dsh freq"><span class="k">Missing-parameter frequency — batches lacking each parameter</span><div class="bars">' +
+    TRK_GROUPS.map(function(g, i){
+      var pct = n ? Math.round(100 * freq[i] / n) : 0;
+      return '<span class="bar" title="' + esc("#" + g[0] + " " + g[1] + ": " + freq[i] + " of " + n + " batches (" + pct + "%)") + '"><i><b style="height:' + pct + '%"></b></i><span class="n">' + freq[i] + '</span><span class="l">#' + esc(g[0]) + '</span></span>';
+    }).join("") + '</div></div>';
+  var setc = function(id, v){ var x = el(id); if (x) x.textContent = v; };
+  setc("c-tcom", com); setc("c-tpar", par); setc("c-tinc", inc);
+}
+function renderTracker(){
+  var wrap = el("trk-wrap"), lst = el("coq-list");
+  if (!wrap) return;
+  wrap.classList.toggle("hide", TRK_VIEW !== "grid");
+  lst.classList.toggle("hide", TRK_VIEW === "grid");
+  el("trk").classList.toggle("compact", TRK_COMPACT);
+  if (TRK_VIEW !== "grid") return;
+  if (!document.querySelector("#trk thead tr")) renderTrackerHead();
+  var rows = TRK_ROWS.filter(function(r){ return passCoq(r.ci) || (r.cr && passCoq(r.cr)); });
+  document.querySelector("#trk tbody").innerHTML = rows.map(function(r){
+    var c = r.ci, t = r.trk, st = trkStatus(t);
+    var sel = OPEN === c.i || (r.cr && OPEN === r.cr.i);
+    return '<tr class="clk' + (sel ? " sel" : "") + '" data-c="' + c.i + '">' +
+      '<td class="stk s1"><span class="nm mono">' + esc(c.cb) + '</span><span class="sub">' + esc(c.strain) +
+        (c.grade ? ' · <span class="grade">' + esc(c.grade) + '</span>' : "") + '</span>' +
+        (c.issued ? '<span class="sub mono">' + esc(c.n) + '</span>' : '<span class="sub dim">CoQ predicted</span>') + '</td>' +
+      '<td class="stk s2 mono">' + (c.pp ? esc(c.pp) : '<span class="dim" title="no packaged lot assigned in the master spec yet">—</span>') +
+        (r.cr ? '<span class="sub dim">+ 12-month reissue</span>' : "") + '</td>' +
+      '<td class="stk s3"><span class="trk-st ' + st[0] + '">' + esc(st[1]) + '</span>' +
+        (t.oos ? '<span class="sub" style="color:var(--fail);font-weight:700">OOS on file</span>' : "") + '</td>' +
+      t.cells.map(function(cell){ return trkCellHtml(cell, c, r.cr); }).join("") +
+      '<td class="labs">' + (t.labs ? esc(t.labs) : '<span class="dim">no certificate on file</span>') + '</td>' +
+      '<td class="mpar">' + (t.missList.length ? esc(t.missList.join(", ")) : '<span class="dim" style="color:var(--green)">none</span>') + '</td></tr>';
+  }).join("");
+  el("cnt-coq").textContent = rows.length + " of " + TRK_ROWS.length + " batches";
+  el("e-coq").classList.toggle("hide", rows.length > 0);
+  renderTrackerDash();
+}
+(function(){
+  var t = el("trk"); if (!t) return;
+  t.addEventListener("click", function(e){
+    var d = e.target.closest(".doc[data-c]");
+    var tr = e.target.closest("tr[data-c]");
+    if (!tr) return;
+    var i = d ? +d.dataset.c : +tr.dataset.c;
+    OPEN = (OPEN === i) ? null : i;
+    renderDetail(); renderCoqs();
+  });
+  var sel = el("trk-miss");
+  if (sel) {
+    sel.innerHTML = '<option value="">any parameter</option>' + TRK_GROUPS.map(function(g){
+      return '<option value="' + esc(g[0]) + '">missing #' + esc(g[0]) + " " + esc(g[1]) + '</option>'; }).join("");
+    sel.addEventListener("change", function(){ TRK_MISS = sel.value; OPEN = null; renderDetail(); renderCoqs(); });
+  }
+  [["trk-view-grid", "grid"], ["trk-view-list", "list"]].forEach(function(p){
+    var b = el(p[0]); if (!b) return;
+    b.addEventListener("click", function(){
+      TRK_VIEW = p[1];
+      el("trk-view-grid").setAttribute("aria-pressed", TRK_VIEW === "grid" ? "true" : "false");
+      el("trk-view-list").setAttribute("aria-pressed", TRK_VIEW === "list" ? "true" : "false");
+      renderCoqs();
+    });
+  });
+  var cb = el("trk-compact");
+  if (cb) cb.addEventListener("click", function(){
+    TRK_COMPACT = !TRK_COMPACT; cb.setAttribute("aria-pressed", TRK_COMPACT ? "true" : "false"); renderTracker();
+  });
+})();
+
 /* the owner's per-scope masters double as bench worksheets: from any CoQ,
    print the master for a determination filled with this batch's identity */
 var BENCH = { "1": "ab", "2": "ab", "3": "c", "7": "fm" };
@@ -1108,7 +1360,7 @@ deriveRegFacts();
    inside every saveState() failure handler, after that handler reverts its
    own OV write, so a rejected publish rolls the preview back too. */
 function refreshDerived(){
-  deriveCoqFacts(); deriveIcoaFacts(); deriveEcoaFacts(); deriveRegFacts();
+  deriveCoqFacts(); deriveTrackerFacts(); deriveIcoaFacts(); deriveEcoaFacts(); deriveRegFacts();
   refreshSessionLists();
   renderCoqs();
   if (OPEN != null) renderDetail();
