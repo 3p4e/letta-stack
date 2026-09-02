@@ -109,7 +109,7 @@ jobs:
           import re, subprocess, sys
           out = subprocess.run(
               [sys.executable, "ingestion/ragflow/validate_ecoa_limits.py",
-               "deliverables/qc_gap_analysis/PP_Batch_Release_QC_Register_FHM4_2026-08-31.xlsx"],
+               "deliverables/qc_gap_analysis/PP_Batch_Release_QC_Register_SUBLOT_2026-09-01.xlsx"],
               capture_output=True, text=True).stdout
           print(out)
 
@@ -152,12 +152,16 @@ jobs:
       # carries must appear in the CSV; a CSV row the register does NOT carry is
       # allowed only when it is flagged in_register=N and named in the README,
       # so an omission from the register stays visible instead of being absorbed.
+      # The reference is the correction chain's FINAL workbook, not the owner's
+      # original: since step 19 the chain corrects batch identity too (ref 53,
+      # FB012601 -> FB012601/1), and the CSV must agree with the register as
+      # corrected, which the replay step above has just proved reproducible.
       - name: Gap analysis reconciles with the register
         run: |
           python3 - <<'PY'
           import csv, openpyxl, re, sys
           base = "deliverables/qc_gap_analysis/"
-          ws = openpyxl.load_workbook(base + "PP_Batch_Release_QC_Register_CORRECTED.xlsx",
+          ws = openpyxl.load_workbook(base + "PP_Batch_Release_QC_Register_SUBLOT_2026-09-01.xlsx",
                                       data_only=True)["Batch Release QC"]
           R = [[c.value for c in r] for r in ws.iter_rows()]
           v = lambda x: "" if x is None or str(x).strip() in ("", "/", "None", "-", "—") else str(x).strip()
