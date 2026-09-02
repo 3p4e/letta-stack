@@ -173,6 +173,39 @@ check('same value in different notation is not a retest',
 check('a genuinely different value is a retest', CQ._canon('21.80') != CQ._canon('26.14'))
 check('Cyrillic conformity equals Latin', CQ._canon('Одговара') == CQ._canon('Conforms'))
 
+print('\n6a. DERIVED CANNABINOID TOTALS — a certificate printing CBN is never "no result"')
+def _row(param, printed, num, doc='D1', code='ППК25050', conf='ok', label=None):
+    # SELECT order of compile_coq: parameter, result_printed, result_numeric, unit,
+    # method, date_iso, cert_code, lab, confidence, exceeds, outside, document,
+    # doc_id, parameter_printed, method_accredited, test_type
+    return (param, printed, num, '% w/w', 'HPLC', '2025-02-26', code, 'CNP', conf,
+            None, None, doc + '.pdf', doc, label or param, 1, 'unknown')
+_cnp = [_row('cbn_free', '0.02', 0.02, label='Содржина на CBN'),
+        _row('thc_free', '0.90', 0.90), _row('thca', '23.83', 23.83),
+        _row('total_thc', '21.80', 21.80)]
+_d = {r[0]: r for r in CQ.derive_totals(_cnp)}
+check('CNP certificate with CBN but no CBNA supplies row 6 (Total CBN)',
+      'total_cbn' in _d and _d['total_cbn'][2] == 0.02 and _d['total_cbn'][6] == 'ППК25050')
+check('the derivation is stated on the row, not hidden',
+      _d['total_cbn'][16]['kind'] == 'free-form-only' and 'CBNA' in _d['total_cbn'][16]['working'])
+check('a printed total is never overridden by a computed one',
+      _d['total_thc'][2] == 21.80 and len(_d['total_thc']) == 16)
+_both = [_row('cbn_free', '0.10', 0.10), _row('cbna', '0.50', 0.50)]
+_b = {r[0]: r for r in CQ.derive_totals(_both)}
+check('free + acid printed, no total -> computed 0.10 + 0.50 x 0.876 = 0.54',
+      _b['total_cbn'][2] == 0.54 and _b['total_cbn'][16]['kind'] == 'computed')
+_nd = [_row('cbn_free', 'BLQ', None), _row('cbna', 'ND', None)]
+_n = {r[0]: r for r in CQ.derive_totals(_nd)}
+check('qualitative components carried as printed, N.D. never assumed zero',
+      _n['total_cbn'][1] == 'BLQ' and _n['total_cbn'][16]['kind'] == 'acid-not-quantified')
+_held = [_row('cbn_free', '0.02', 0.02, conf='review')]
+check('a held component holds the derived row',
+      CQ.derive_totals(_held)[-1][8] == 'review')
+check('a value above 1.0 % is flagged against the criterion',
+      {r[0]: r for r in CQ.derive_totals([_row('cbn_free', '1.20', 1.20)])}['total_cbn'][9] == 1)
+check('nothing to derive from -> nothing added',
+      len(CQ.derive_totals([_row('loss_on_drying', '5.73', 5.73)])) == 1)
+
 print('\n7. SPECIFICATION COVERAGE')
 keys = [k for _n, _s, k, _e, _c, _m in CQ.SPEC]
 check('12 numbered rows, 21 leaf parameters', len({n for n, *_ in CQ.SPEC}) == 12 and len(CQ.SPEC) == 21)

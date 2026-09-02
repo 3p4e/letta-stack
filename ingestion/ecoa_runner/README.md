@@ -50,6 +50,24 @@ rendering problem, not a model-capability one: at 300 DPI both vendors read them
 - **Gemini 3 counts reasoning tokens against `maxOutputTokens`** — 8548 thinking tokens
   on a 2-page certificate. Budget is 32768; do not lower it.
 
+## Derived cannabinoid totals (ruling 02.09.2026)
+
+Specification rows 4–6 are totals (free form + acid form × factor). Most CNP potency
+certificates print `Содржина на CBN` against the ≤ 1.00 % limit but no CBNA row and no
+`Вкупно CBN` row (they do print Total THC and Total CBD). Looking up `total_cbn` alone
+showed every such certificate as **"no result on file"** for row 6 — a compiler defect,
+not a laboratory gap. `build_coq.derive_totals` now supplies the row per certificate:
+
+| certificate prints | row 6 result | stated on the CoQ as |
+|---|---|---|
+| total | the total | printed |
+| free + acid, numeric | free + acid × 0.876 | `computed`, working shown |
+| free only | the free-form figure | `free-form-only` — "CBNA not reported by the laboratory" |
+| free, acid ND/BLQ | the free-form figure | `acid-not-quantified` — N.D. never assumed zero |
+
+A printed total always wins; a held component holds the derived row. `checkup.py §6a`
+guards the rule. Corpus effect: certificates supplying Total CBN 40 → 102.
+
 ## Open rulings
 
 - `pheur.MAX_MULTIPLIER` is unset. The in-house template prints 5× (10⁴ → "max 50 000");
