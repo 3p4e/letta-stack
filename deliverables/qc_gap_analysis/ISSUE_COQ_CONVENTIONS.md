@@ -277,3 +277,17 @@ digit is part of the batch number, `x…x_1`.** Consequences applied here:
   three in-house Reports of Analysis of 23.04.2025, and the in-house iCoAs. A
   CNP release form that reports THC, CBD and loss on drying discharges
   Identification C and nothing else.
+
+## Only an eCoA or an iCoA stands behind a CoQ row — owner's rule, 02.09.2026
+
+- **A parameter that no eCoA certifies — or, later, no iCoA the owner issues —
+  cannot be on a release certificate.** The old in-house documents (the QCCoA 001
+  forms, the Reports of Analysis of 23.04.2025, the in-house GC/HPLC
+  cross-checks) are documents on file, never coverage: their values are shown on
+  the row and in the tracker, the row stays *in-house CoA only — not an eCoA or
+  an iCoA*, and issuance stays locked until an outsourced certificate or an iCoA
+  stands behind it. The tracker marks such a cell ✗ and lists the document, so
+  the reason is on the row.
+- The CoQ document never carries an uncertified parameter: a draft prints the
+  determination with no result and the DRAFT mark; an issued certificate exists
+  only once every determination in its scope is certified.

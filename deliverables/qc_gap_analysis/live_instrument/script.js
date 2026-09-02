@@ -344,6 +344,7 @@ var TRK_ABBR = { "9.1":"TAMC", "9.2":"TYMC", "9.3":"GNB", "9.4":"Salm.", "9.5":"
   "9.6":"P. aer.", "9.7":"S. aur.", "10.1":"AfB₁", "10.2":"ΣAf", "10.3":"OTA",
   "11.1":"Pb", "11.2":"Cd", "11.3":"As", "11.4":"Hg" };
 var TRK_ROWS = [], TRK_MISS = "", TRK_VIEW = "grid", TRK_COMPACT = false;
+var TRK_ECO = {};   /* receipt register by code — filled with the tracker facts, declared here so no later initialiser can reset it */
 var COQ = D.coqs, ICO = D.icoa_plan, ECO = D.ecoa;
 deriveTrackerFacts();
 var N = {
@@ -586,17 +587,22 @@ function trkCell(rel, ret){
   var byNo = {};
   rel.forEach(function(r){ byNo[r.no] = { rel: covOf(r), ret: "" }; });
   ret.forEach(function(r){ byNo[r.no] = byNo[r.no] || { rel: "", ret: "" }; byNo[r.no].ret = covOf(r); });
+  /* Owner's rule, 02.09.2026: a parameter that no eCoA — or, later, no iCoA —
+     certifies cannot be on a release certificate. A value carried only by the
+     old in-house CoA transcription ("in-house CoA only — underlying eCoA not
+     on file") is therefore NOT coverage: the document is listed, the cell
+     stays ✗, exactly as the issuance desk already refuses it. */
   var nos = Object.keys(byNo), cov = 0, oos = 0, und = 0, scan = 0;
   nos.forEach(function(no){
-    var x = byNo[no], any = x.rel || x.ret;
-    if (!any) return;
+    var x = byNo[no];
+    var cert = (x.rel && x.rel !== "scan") || (x.ret && x.ret !== "scan");
+    if (!cert) { if (x.rel === "scan" || x.ret === "scan") scan++; return; }
     cov++;
     if (x.rel === "oos" || x.ret === "oos") oos++;
     else if ((x.rel === "und" || x.ret === "und") && !(x.rel === "ok" || x.ret === "ok")) und++;
-    else if (!(x.rel === "ok" || x.ret === "ok" || x.rel === "und" || x.ret === "und")) scan++;
   });
   var n = nos.length;
-  var kind = !n ? "na" : oos ? "oos" : cov === n ? (und || scan ? "warn" : "ok") : cov > 0 ? "part" : "miss";
+  var kind = !n ? "na" : oos ? "oos" : cov === n ? (und ? "warn" : "ok") : cov > 0 ? "part" : scan ? "inh" : "miss";
   var docs = [], seen = {};
   function addDoc(r, retest){
     if (!r.doc || r.doc === "—") return;
@@ -616,9 +622,112 @@ function trkCell(rel, ret){
   }
   return { kind: kind, docs: docs, res: resLine(rel), ret: resLine(ret.filter(function(r){ return r.doc && r.doc !== "—"; })),
            awaiting: ret.some(function(r){ return r.st.indexOf(ST.AWK) === 0 || r.st.indexOf(ST.AWM) === 0; }),
-           n: n, cov: cov };
+           n: n, cov: cov, scan: scan };
+}
+var TRK_X = null, TRK_CRIT_OPEN = false;
+/* the global acceptance criterion, as the specification prints it, shortened for a
+   column head; the panel below the grid carries every criterion in full */
+function shortCrit(c){
+  c = String(c || "");
+  if (c.indexOf("Absence") === 0) { var m = c.match(/\/\s*(\d+\s*g)/); return "absent" + (m ? "/" + m[1].replace(/\s+/g, "") : ""); }
+  var en = c.split(" | ")[0].replace(/\s*([≤<>≥])\s*/g, "$1").replace(", w/w", "").replace(" CFU/g", "");
+  if (en.indexOf("Conforms to the monograph") === 0) return "conforms to mon. 3028";
+  if (en.indexOf("Per target grade") === 0) return "per grade (§01)";
+  return en.length > 30 ? en.slice(0, 28) + "…" : en;
+}
+function groupCrit(g){
+  var nos = g[3];
+  if (nos.length === 1) return shortCrit((DET[nos[0]] || {}).crit);
+  return nos.filter(function(no){ return DET[no] && (DET[no].src !== "upon_request"); }).map(function(no){
+    return (TRK_ABBR[no] || no) + " " + shortCrit(DET[no].crit); }).join(" · ");
+}
+/* every value on this desk is judged against the same criterion set — the
+   schedule judged the register and re-analysis values, deriveCoqFacts judges a
+   desk or page value the same way; the verdict is read back off the status */
+function rowVerdict(r){
+  var s = r.st || "";
+  if (s.indexOf(ST.OOS) === 0 || s.indexOf(ST.BLK) === 0) return ["over", "OUT OF SPECIFICATION"];
+  if (s.indexOf(ST.UND) === 0) return ["undet", "undetermined — between the printed limit and the Ph. Eur. 5.1.4 maximum"];
+  if (s.indexOf(ST.SCAN) === 0) return ["inh", "not certified — in-house document only"];
+  if (s.indexOf(ST.OK) === 0) return ["conf", "conforms"];
+  if (s.indexOf(ST.REQ) === 0) return ["req", "upon request"];
+  if (s.indexOf(ST.OUT) === 0) return ["req", "outside the retest scope"];
+  if (s.indexOf(ST.AWK) === 0 || s.indexOf(ST.AWM) === 0) return ["none", "awaiting the re-analysis"];
+  return ["none", "not certified"];
+}
+function verdictBadge(r){
+  var v = rowVerdict(r);
+  return '<span class="vb ' + v[0] + '" title="' + esc(r.st) + '">' + esc(v[1].split(" — ")[0]) + '</span>';
+}
+function docLinks(r){
+  if (!r.doc || r.doc === "—") return '<span class="dim">no certificate</span>';
+  var e = TRK_ECO[r.doc];
+  var tag = labTag(r.lab, r.doc);
+  return '<span class="mono">' + esc(r.doc) + '</span> <span class="tag tg">' + esc(tag) + '</span>' +
+    (r.dd ? ' <span class="dim">' + esc(r.dd) + '</span>' : "") +
+    (e ? (e.verified ? ' <span class="dot ver" title="values read off the page on 31.08.2026"></span>' : ' <span class="dot unver" title="not page-verified"></span>') +
+         (e.flag ? ' <span class="pill p-' + (e.flag === "red" ? "fail" : "warn") + '">' + esc(e.flag) + '</span>' : "") +
+         '<span class="lnks">' + (e.pdf ? '<a href="' + esc(e.pdf) + '" target="_blank" rel="noopener">open certificate ↗</a>' : "") +
+         '<button class="lnk trk-ecoa" data-code="' + esc(r.doc) + '">receipt entry</button></span>'
+       : (r.desk ? ' <span class="pill p-info">desk</span>' : r.pageRead ? ' <span class="pill p-ok">page</span>' : ' <span class="dim">not in the receipt register</span>'));
+}
+function trkPanel(row, gi){
+  var g = TRK_GROUPS[gi], nos = g[3], c = row.ci, cr = row.cr;
+  var rel = c.rows.filter(function(r){ return nos.indexOf(r.no) >= 0; });
+  var ret = cr ? cr.rows.filter(function(r){ return nos.indexOf(r.no) >= 0; }) : [];
+  var byNo = {}; ret.forEach(function(r){ byNo[r.no] = r; });
+  var body = rel.map(function(r){
+    var d = DET[r.no] || {}, rr = byNo[r.no];
+    return '<tr><td class="c num">' + esc(r.no) + '</td>' +
+      '<td><span class="nm">' + esc(d.en || "") + '</span><span class="sub mk">' + esc(d.mk || "") + '</span></td>' +
+      '<td class="mono dim" style="white-space:normal">' + esc(d.method || "") + '</td>' +
+      '<td class="mono" style="white-space:normal">' + esc(r.crit) + '</td>' +
+      '<td><span class="num">' + dash(r.res) + '</span> ' + verdictBadge(r) + '<span class="sub">' + docLinks(r) + '</span></td>' +
+      '<td>' + (rr ? '<span class="num">' + dash(rr.res) + '</span> ' + verdictBadge(rr) + '<span class="sub">' + docLinks(rr) + '</span>'
+                   : '<span class="dim">' + (cr ? "—" : "no 12-month reissue on record") + '</span>') + '</td></tr>';
+  }).join("");
+  var bench = { "1": "ab", "2": "ab", "3": "c", "7": "fm", "9": "mb" }[g[0]];
+  return '<tr class="trk-x"><td colspan="17"><div class="xp">' +
+    '<div class="xp-h"><b>#' + esc(g[0]) + ' ' + esc(g[1]) + '</b> — ' + esc(c.cb) + (c.pp ? ' · ' + esc(c.pp) : "") + ' · ' + esc(c.strain) +
+      '<span class="xp-crit">global acceptance criterion: ' + esc(groupCrit(g)) + ' — QCSP 001 v.03</span>' +
+      '<span class="xp-btns">' +
+        '<button class="btn sm trk-det" data-c="' + c.i + '">CoQ detail · attach desk</button>' +
+        '<button class="btn sm gold trk-doc" data-c="' + c.i + '">' + (c.issued ? "View CoQ" : "Preview CoQ draft") + '</button>' +
+        (cr ? '<button class="btn sm trk-det" data-c="' + cr.i + '">12-month reissue</button>' : "") +
+        (bench ? '<button class="btn sm trk-bench" data-k="' + bench + '" data-c="' + c.i + '">Bench master</button>' : "") +
+        '<button class="close trk-close">Close</button></span></div>' +
+    '<div class="scroll"><table><thead><tr><th style="width:40px">№</th><th style="width:180px">Parameter<span class="mk">Параметар</span></th>' +
+    '<th style="width:150px">Method</th><th style="width:170px">Acceptance criterion<span class="mk">Критериум</span></th>' +
+    '<th>Release — result · verdict · certificate</th><th>12-month re-analysis</th></tr></thead><tbody>' + body + '</tbody></table></div></div></td></tr>';
+}
+function completion(c){
+  var m = 0, n = 0, oos = 0;
+  c.rows.forEach(function(r){
+    var s = r.st;
+    if (s.indexOf(ST.REQ) === 0 || s.indexOf(ST.OUT) === 0) return;
+    m++;
+    if (s.indexOf(ST.OK) === 0 || s.indexOf(ST.OOS) === 0 || s.indexOf(ST.UND) === 0 || s.indexOf(ST.BLK) === 0) n++;
+    if (s.indexOf(ST.OOS) === 0 || s.indexOf(ST.BLK) === 0) oos++;
+  });
+  return { n: n, m: m, oos: oos, pct: m ? Math.round(100 * n / m) : 0 };
+}
+function renderCritPanel(){
+  var box = el("trk-crit"); if (!box) return;
+  box.classList.toggle("hide", !TRK_CRIT_OPEN);
+  if (!TRK_CRIT_OPEN || box.dataset.done) return;
+  box.dataset.done = "1";
+  box.innerHTML = '<div class="crit-h"><b>Global acceptance criteria — QCSP 001 v.03</b> One set, the same on every batch. Every value on this desk — register, 12-month re-analysis, page reading, desk attachment — is judged against it: a result over its limit is <b>OUT OF SPECIFICATION</b>; a microbial count between the printed limit and the Ph. Eur. 5.1.4 maximum acceptable count (×2 per decade) is <b>undetermined</b> until QA rules; a value no eCoA or iCoA certifies is <b>not certified</b>. A criterion changes only by a specification revision, never at this desk.</div>' +
+    '<div class="scroll"><table><thead><tr><th style="width:40px">№</th><th style="width:220px">Parameter<span class="mk">Параметар</span></th><th style="width:170px">Method</th><th>Acceptance criterion<span class="mk">Критериум за прифаќање</span></th><th style="width:210px">Register form · maximum</th><th style="width:120px">Supply</th></tr></thead><tbody>' +
+    D.dets.map(function(d){
+      var rc = d.col && D.reg_columns[d.col] ? D.reg_columns[d.col].crit : "";
+      return '<tr><td class="c num">' + esc(d.no) + '</td><td><span class="nm">' + esc(d.en) + '</span><span class="sub mk">' + esc(d.mk) + '</span></td>' +
+        '<td class="mono dim" style="white-space:normal">' + esc(d.method) + '</td><td class="mono" style="white-space:normal">' + esc(d.crit) + '</td>' +
+        '<td class="mono dim" style="white-space:normal">' + (rc ? esc(rc) : '<span class="dim">—</span>') + '</td>' +
+        '<td><span class="pill p-' + (d.src === "in_house_icoa" ? "info" : d.src === "upon_request" ? "none" : "ok") + '">' + esc(SUPPLY[d.src] || d.src) + '</span></td></tr>';
+    }).join("") + '</tbody></table></div>';
 }
 function deriveTrackerFacts(){
+  TRK_ECO = {}; ECO.forEach(function(e){ TRK_ECO[e.code] = e; });
   var byKey = {};
   COQ.forEach(function(c){ if (c.reissue) byKey[c.cb + "|" + (c.pp || "")] = c; });
   TRK_ROWS = [];
@@ -634,7 +743,7 @@ function deriveTrackerFacts(){
         return nos.indexOf(r.no) >= 0 && r.st.indexOf(ST.REQ) !== 0 && r.st.indexOf(ST.OUT) !== 0; }) : [];
       var cell = trkCell(rel, ret);
       cell.g = g; cells.push(cell);
-      if (cell.kind === "miss" || cell.kind === "part") { miss.push("#" + g[0] + " " + g[1]); missSet.push(g[0]); }
+      if (cell.kind === "miss" || cell.kind === "part" || cell.kind === "inh") { miss.push("#" + g[0] + " " + g[1]); missSet.push(g[0]); }
       if (cell.kind === "oos") oosAny = true;
       cell.docs.forEach(function(d){
         if (docsAll[d.doc]) return; docsAll[d.doc] = 1;
@@ -654,7 +763,7 @@ function trkStatus(trk){
   return ["fail", "❌ " + trk.miss + " MISSING"];
 }
 function trkGlyph(kind){
-  return { ok:"✓", warn:"✓", part:"◐", miss:"✗", oos:"✗", na:"–" }[kind] || "–";
+  return { ok:"✓", warn:"✓", part:"◐", miss:"✗", inh:"✗", oos:"✗", na:"–" }[kind] || "–";
 }
 function renderTrackerHead(){
   var h1 = '<tr><th class="band stk s1" colspan="3">BATCH IDENTIFICATION</th>' +
@@ -662,7 +771,7 @@ function renderTrackerHead(){
     '<th class="band" colspan="2">eCOA COVERAGE STATUS</th></tr>';
   var h2 = '<tr><th class="stk s1">CU batch<span class="mk">Серија</span></th><th class="stk s2">P batch</th><th class="stk s3">Status</th>' +
     TRK_GROUPS.map(function(g){
-      return '<th class="prm">#' + esc(g[0]) + '  ' + esc(g[1]) + '<span class="m">' + esc(g[2]) + '</span><span class="m">eCoA ref · ✓/✗ · result</span></th>';
+      return '<th class="prm">#' + esc(g[0]) + '  ' + esc(g[1]) + '<span class="m">' + esc(g[2]) + '</span><span class="m crit" title="global acceptance criterion, QCSP 001 v.03">AC: ' + esc(groupCrit(g)) + '</span></th>';
     }).join("") + '<th>Labs present</th><th>Missing parameters</th></tr>';
   document.querySelector("#trk thead").innerHTML = h1 + h2;
 }
@@ -671,11 +780,14 @@ function trkCellHtml(cell, ci, cr){
   var glyph = '<span class="g ' + k + '" title="' + esc(
       k === "ok" ? "covered" : k === "warn" ? "covered — undetermined against QCSP 001, or in-house transcription only" :
       k === "part" ? "partly covered: " + cell.cov + " of " + cell.n + " determinations" :
-      k === "oos" ? "OUT OF SPECIFICATION on this certificate" : k === "miss" ? "missing — no certificate covers it" : "not in scope") + '">' +
+      k === "oos" ? "OUT OF SPECIFICATION on this certificate" : k === "miss" ? "missing — no certificate covers it" :
+      k === "inh" ? "in-house CoA only — the underlying eCoA is not on file; a value no eCoA or iCoA certifies cannot be on a release certificate" : "not in scope") + '">' +
       trkGlyph(k) + '</span>';
-  if (k === "na") return '<td class="cell na">' + glyph + '</td>';
+  var gi = TRK_GROUPS.indexOf(g), xo = TRK_X && TRK_X.i === ci.i && TRK_X.g === gi;
+  if (k === "na") return '<td class="cell na" data-g="' + gi + '">' + glyph + '</td>';
   var body = "";
   if (k === "miss") body = '<span class="miss-t">— MISSING —</span>';
+  if (k === "inh") body = '<span class="miss-t">IN-HOUSE CoA ONLY — eCoA NOT ON FILE</span>';
   cell.docs.forEach(function(d){
     body += '<span class="doc' + (d.retest ? " ret" : "") + '" data-c="' + (d.retest && cr ? cr.i : ci.i) + '"><span class="code">' + esc(d.doc.indexOf("n/a") === 0 ? "in-house CoA" : d.doc.length > 18 ? d.doc.slice(0, 16) + "…" : d.doc) + '</span>' +
       (d.dd ? '<span class="dt">(' + esc(d.dd) + ')</span>' : "") +
@@ -685,22 +797,26 @@ function trkCellHtml(cell, ci, cr){
   if (cell.ret) body += '<span class="res ret">' + esc(cell.ret) + '</span>';
   else if (cell.awaiting && cr) body += '<span class="res ret dim">awaiting the re-analysis</span>';
   if (k === "oos") body += '<span class="miss-t">OUT OF SPECIFICATION</span>';
-  return '<td class="cell ' + k + '">' + glyph + body + '</td>';
+  return '<td class="cell ' + k + (xo ? " xo" : "") + '" data-g="' + gi + '" title="click for every determination, its criterion, verdict and certificate">' + glyph + body + '</td>';
 }
 function renderTrackerDash(){
   var n = TRK_ROWS.length, com = 0, par = 0, inc = 0, oos = 0, freq = TRK_GROUPS.map(function(){ return 0; });
   TRK_ROWS.forEach(function(r){
     if (r.trk.miss === 0) com++; else if (r.trk.miss <= 3) par++; else inc++;
     if (r.trk.oos) oos++;
-    r.trk.cells.forEach(function(c, i){ if (c.kind === "miss" || c.kind === "part") freq[i]++; });
+    r.trk.cells.forEach(function(c, i){ if (c.kind === "miss" || c.kind === "part" || c.kind === "inh") freq[i]++; });
   });
   var pc = function(x){ return n ? Math.round(100 * x / n) + "% of batches" : ""; };
+  var cn = 0, cm = 0;
+  TRK_ROWS.forEach(function(r){ var cp = completion(r.ci); cn += cp.n; cm += cp.m; });
   el("trk-dash").innerHTML =
     '<div class="dsh"><span class="k">Batches on record</span><span class="v">' + n + '</span><span class="s">' + N.init + ' initial CoQs · ' + N.reis + ' reissues</span></div>' +
     '<div class="dsh"><span class="k">✅ Complete — all 12</span><span class="v">' + com + '</span><span class="s">' + pc(com) + '</span></div>' +
     '<div class="dsh"><span class="k">⚠ Partial — 1–3 missing</span><span class="v">' + par + '</span><span class="s">' + pc(par) + '</span></div>' +
     '<div class="dsh"><span class="k">❌ Incomplete — 4+ missing</span><span class="v">' + inc + '</span><span class="s">' + pc(inc) + '</span></div>' +
     '<div class="dsh"><span class="k">Out of specification</span><span class="v" style="color:var(--fail)">' + oos + '</span><span class="s">batches with a result over its criterion</span></div>' +
+    '<div class="dsh"><span class="k">Determinations certified</span><span class="v">' + (cm ? Math.round(100 * cn / cm) : 0) + '%</span><span class="s">' + cn + ' of ' + cm + ' in scope, all initial CoQs</span>' +
+      '<span class="cmp ' + (cm && cn === cm ? "ok" : "warn") + '"><i style="width:' + (cm ? Math.round(100 * cn / cm) : 0) + '%"></i></span></div>' +
     '<div class="dsh freq"><span class="k">Missing-parameter frequency — batches lacking each parameter</span><div class="bars">' +
     TRK_GROUPS.map(function(g, i){
       var pct = n ? Math.round(100 * freq[i] / n) : 0;
@@ -728,11 +844,16 @@ function renderTracker(){
       '<td class="stk s2 mono">' + (c.pp ? esc(c.pp) : '<span class="dim" title="no packaged lot assigned in the master spec yet">—</span>') +
         (r.cr ? '<span class="sub dim">+ 12-month reissue</span>' : "") + '</td>' +
       '<td class="stk s3"><span class="trk-st ' + st[0] + '">' + esc(st[1]) + '</span>' +
+        (function(){ var cp = completion(c); return '<span class="cmp ' + (cp.pct === 100 ? "ok" : cp.pct >= 50 ? "warn" : "fail") + '" title="' +
+          esc(cp.n + " of " + cp.m + " determinations in scope certified") + '"><i style="width:' + cp.pct + '%"></i></span>' +
+          '<span class="sub mono">' + cp.n + '/' + cp.m + ' certified · ' + cp.pct + '%</span>'; })() +
         (t.oos ? '<span class="sub" style="color:var(--fail);font-weight:700">OOS on file</span>' : "") + '</td>' +
       t.cells.map(function(cell){ return trkCellHtml(cell, c, r.cr); }).join("") +
       '<td class="labs">' + (t.labs ? esc(t.labs) : '<span class="dim">no certificate on file</span>') + '</td>' +
-      '<td class="mpar">' + (t.missList.length ? esc(t.missList.join(", ")) : '<span class="dim" style="color:var(--green)">none</span>') + '</td></tr>';
+      '<td class="mpar">' + (t.missList.length ? esc(t.missList.join(", ")) : '<span class="dim" style="color:var(--green)">none</span>') + '</td></tr>' +
+      (TRK_X && TRK_X.i === c.i ? trkPanel(r, TRK_X.g) : "");
   }).join("");
+  renderCritPanel();
   el("cnt-coq").textContent = rows.length + " of " + TRK_ROWS.length + " batches";
   el("e-coq").classList.toggle("hide", rows.length > 0);
   renderTrackerDash();
@@ -740,12 +861,45 @@ function renderTracker(){
 (function(){
   var t = el("trk"); if (!t) return;
   t.addEventListener("click", function(e){
-    var d = e.target.closest(".doc[data-c]");
+    if (e.target.closest("a")) return;                       /* a certificate link opens the document */
+    var b;
+    if ((b = e.target.closest(".trk-close"))) { TRK_X = null; renderTracker(); return; }
+    if ((b = e.target.closest(".trk-det"))) { OPEN = +b.dataset.c; renderDetail(); renderCoqs(); return; }
+    if ((b = e.target.closest(".trk-doc"))) {
+      var c0 = COQ[+b.dataset.c];
+      openDoc((c0.issued ? c0.n : "DRAFT") + " — Certificate of Quality — " + c0.strain, coqDocName(c0), fillCoq(c0));
+      return;
+    }
+    if ((b = e.target.closest(".trk-bench"))) {
+      var c1 = COQ[+b.dataset.c], k = b.dataset.k;
+      var pseudo = { cb: c1.cb, pp: c1.pp, strain: c1.strain, scope: SCOPE_NAME[k], reissue: c1.reissue, coq_type: c1.t };
+      var asn = OV.icoa[icoaKey(pseudo)] || null;
+      openDoc((asn ? asn.ref : "BENCH MASTER") + " \u2014 " + SCOPE_NAME[k] + " \u2014 " + c1.cb, icoaDocName(pseudo, asn), fillIcoa(pseudo, asn));
+      return;
+    }
+    if ((b = e.target.closest(".trk-ecoa"))) {
+      var code = b.dataset.code;
+      Q.ecoa = code.toLowerCase(); var qe = el("q-ecoa"); if (qe) qe.value = code;
+      renderEcoa(); el("t-ecoa").click();
+      return;
+    }
+    if (e.target.closest(".trk-x")) return;                  /* clicks inside the panel stay there */
+    var cell = e.target.closest("td.cell[data-g]");
     var tr = e.target.closest("tr[data-c]");
     if (!tr) return;
-    var i = d ? +d.dataset.c : +tr.dataset.c;
+    var i = +tr.dataset.c;
+    if (cell) {
+      var gi = +cell.dataset.g;
+      TRK_X = (TRK_X && TRK_X.i === i && TRK_X.g === gi) ? null : { i: i, g: gi };
+      renderTracker();
+      return;
+    }
     OPEN = (OPEN === i) ? null : i;
     renderDetail(); renderCoqs();
+  });
+  var cbtn = el("trk-crit-btn");
+  if (cbtn) cbtn.addEventListener("click", function(){
+    TRK_CRIT_OPEN = !TRK_CRIT_OPEN; cbtn.setAttribute("aria-pressed", TRK_CRIT_OPEN ? "true" : "false"); renderCritPanel();
   });
   var sel = el("trk-miss");
   if (sel) {

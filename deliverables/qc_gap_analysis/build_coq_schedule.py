@@ -377,6 +377,18 @@ INHOUSE_MAP = [
 
 ST_SCAN = ("in-house CoA only — underlying eCoA NOT on file: locate the physical "
            "certificate, scan and upload")
+# Owner's rule, 02.09.2026: a parameter that no eCoA — or, later, no iCoA the
+# owner issues — certifies cannot be on a release certificate. A register row
+# whose issuing institution is Purely Plant itself (the old QCCoA 001 forms, the
+# Reports of Analysis of 23.04.2025, the in-house cross-checks) is therefore a
+# document on file, never coverage: the value is shown, the row stays
+# uncertified, and issuance stays locked until an eCoA or an iCoA stands behind
+# it. The status shares its prefix with ST_SCAN so every consumer that already
+# refuses an in-house-only row refuses this one too.
+ST_INHOUSE = ("in-house CoA only — not an eCoA or an iCoA: a value no certificate "
+              "of analysis certifies cannot be on a release certificate (owner's "
+              "rule, 02.09.2026)")
+IN_HOUSE_LAB = "Purely Plant"
 ST_OFFREG = ("covered — certificate on file, but the release register has no block "
              "for this cultivation batch")
 
@@ -578,6 +590,9 @@ def status_of(det, chosen, limit, batch, blocked):
         return ST_REQ
     if chosen is None:
         return ST_ICOA if det["source"] == "in_house_icoa" else ST_NONE
+    if str(chosen.get("lab", "")).startswith(IN_HOUSE_LAB) and \
+            not str(chosen.get("code", "")).startswith("iCoA"):
+        return ST_INHOUSE
     got = V.magnitude(chosen["value"])
     if limit and limit.value and got is not None and not chosen["value"].startswith(("<", "≤")):
         if got > limit.value:
