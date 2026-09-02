@@ -142,6 +142,13 @@ def load_register():
         for r in rows:
             if any(nk(x) in ff for x in re.findall(r"ППК\s*\d+", r["code"])):
                 r["reported"] = r["reported"] + ["Ident A + B", "Foreign matter"]
+    # Owner's ruling, 02.09.2026, on a certificate basis: a certificate that
+    # reports the cannabinoid analytes by HPLC — Farmahem -K-, CNP, the in-house
+    # HPLC CoAs — shows detection, identification and quantification of the API,
+    # and so discharges Identification C. Reported wherever the THC assay is.
+    for r in rows:
+        if "THC %" in r["reported"] and "Ident C" not in r["reported"]:
+            r["reported"] = r["reported"] + ["Ident C"]
     return rows
 
 
@@ -388,8 +395,8 @@ def main(out):
          "one row per register entry — NOT one per material: six rows (P060152, "
          "P060212, P060242, P060352, P060382, P060402) are the Farmahem 12-month "
          "re-analyses of plan lots that also appear under their cultivation batch"),
-        ("  full panel — Ident A + B + C + foreign matter", sum(1 for r in ic if r["ident_A"] == "required"), ""),
-        ("  Ident C only — CNP Ph. Eur. 11.5 form covers the rest", sum(1 for r in ic if r["ident_A"] != "required"), ""),
+        ("  Ident A + B + foreign matter — Ident C discharged by the HPLC certificate", sum(1 for r in ic if r["ident_A"] == "required"), ""),
+        ("  none owed — the CNP Ph. Eur. 11.5 form covers identity and foreign matter", sum(1 for r in ic if r["ident_A"] != "required"), ""),
         ("", "", ""),
         ("CoQ issuance register", len(coq), "one initial CoQ per batch on record + "
          "a 12-month reissue for every batch; 61 numbered by the ISSUE_COQ plan, "

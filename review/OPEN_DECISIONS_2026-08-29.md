@@ -226,7 +226,7 @@ prompts are the only thing edited.
 
 ---
 
-### B3 🟠 **QC** — Identification C: 69 internal CoAs, or 81?
+### B3 🟠 **QC** — Identification C: 69 internal CoAs, or 81? — **RULED 02.09.2026: neither.** On a certificate basis, the HPLC cannabinoid certificate (Farmahem `-K-`, CNP, in-house HPLC CoA) discharges Identification C; no batch owes an in-house Identification C document. Applied in the CoQ schedule, the receipt register and the gap analysis.
 
 **What it is.** Identification C is the thin-layer chromatography identity test in the
 QCSP 001 specification panel.

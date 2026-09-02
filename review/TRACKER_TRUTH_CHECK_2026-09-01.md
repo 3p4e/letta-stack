@@ -22,8 +22,7 @@ outsourced certificates — the whole IPH chemical-safety and microbiology campa
 register never received and the desk therefore never showed. It also correctly credits
 the three in-house Reports of Analysis of 23.04.2025 with appearance and foreign matter.
 Against that, it ticks Identification B on 60 certificates that report only THC, CBD and
-loss on drying; ticks Identification C on 104 certificates none of which reports it (no
-laboratory has ever performed it); ticks CBN on 55 certificates that do not report CBN;
+loss on drying; ticks CBN on 55 certificates that do not report CBN;
 and ticks loss on drying on 35 Farmahem cannabinoid certificates whose LoD sits on a
 separate certificate. Its summary dashboard inherits all of that. The `1_` codes are
 the batch's own sub-lot digit, glued on by the first-underscore split of the Drive
@@ -120,15 +119,21 @@ with Identification A + B and foreign matter, and no others. The tracker's #2 co
 label ("Macroscopy … (microscopy)") also conflates the two: in the specification #1 is
 Identification A, appearance · macroscopic, and #2 is Identification B · microscopic.
 
-### B2. Identification C — 104 false ticks, and an inverted summary
+### B2. Identification C — the tracker's 104 ticks stand, under the ruling of 02.09.2026
 
-The tracker ticks #3 on 104 citations: every CNP cannabinoid form and every Farmahem
-`-K-` cannabinoid certificate. **None of them reports an identification C.** These are
-assays — quantitative HPLC — and the specification's Identification C is the
-chromatographic *identification* (HPLC/HPTLC against reference), which **no laboratory has
-performed on any of the 81 batches**; it is discharged in-house (iCoA P03). The summary
-dashboard's "#3 Identification C — missing on 1 batch (1 %)" is therefore inverted: it is
-missing on 81 of 81.
+The first pass of this check called all 104 #3 ticks wrong, on the ground that no
+certificate prints an Identification C result and no laboratory has performed a
+dedicated TLC/HPTLC identification. The owner ruled otherwise on 02.09.2026, on a
+certificate basis: a Farmahem `-K-` report declares *идентификација и квантификација
+на канабиноиди* by accredited HPLC/DAD against Ph. Eur. 3028 and states the analyte
+concentrations, which shows detection, identification and quantification of the API;
+a CNP form determines the cannabinoid content by Ph. Eur. 2.2.29. Both discharge
+Identification C. **Every one of the tracker's 104 citations is such a certificate,
+so every one is right** — and the desk was the one under-crediting. The CoQ's
+Identification C row now cites the same certificate as its Total Δ⁹-THC assay row,
+the receipt register reports Ident C on every HPLC cannabinoid certificate, and no
+batch owes an in-house Identification C document. The dashboard's "#3 — 1 % missing"
+is therefore broadly right (on the desk: 0 of 81).
 
 ### B3. CBN — 55 false ticks
 
@@ -155,7 +160,7 @@ prints it.
 
 Because the dashboard is computed from the ticks above, its frequencies are wrong in the
 same directions: #2 "23 % missing" (in truth 69 of 81 lack an Identification B
-certificate), #3 "1 % missing" (100 %), #6 "1 % missing" (overstated; CBN exists only
+certificate), #6 "1 % missing" (overstated; CBN exists only
 where a Farmahem `-K-` or an in-house certificate exists), #8 "1 % missing" (overstated
 by the 35 `-K-` citations). Its "Total eCOA documents 253 (QCCoA 001 excluded)" is
 consistent with the desk's 248 receipts once the 21 register-absent certificates and the

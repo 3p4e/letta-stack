@@ -121,6 +121,16 @@ ST_NOSPEC = "no product specification on file — criterion cannot be stated"
 #     has one outside route and it is the expensive one.
 #   · **Purely Plant's own laboratory can do Ident A, Ident B and foreign matter, but
 #     not Ident C.** Identity C is HPLC/HPTLC and needs an outside laboratory.
+#
+# And one ruling from the owner, 02.09.2026, on a certificate basis: **a certificate
+# that reports the cannabinoid analytes by HPLC discharges Identification C.** A
+# Farmahem -K- report declares "идентификација и квантификација на канабиноиди" by
+# accredited HPLC/DAD against Ph. Eur. 3028 and states the analyte concentrations;
+# a CNP form determines the cannabinoid content by 2.2.29; an in-house Report of
+# Analysis confirms identification by HPLC retention time. Stating the analytes is
+# showing detection, identification and quantification of the API. So the CoQ's
+# Identification C row cites the same certificate as its Total Δ⁹-THC assay row,
+# and the in-house P03 route remains only for a batch with no such certificate.
 CNP_FULL = "CNP — Ident A + B + C with Assay and Foreign matter"
 CNP_IDENT_ASSAY = "CNP — Ident A + B + C with Assay"
 CNP_IDENT_C = "CNP — Ident C only"
@@ -151,7 +161,8 @@ CAN_PERFORM = {
 ICOA_AB = "Purely Plant laboratory — iCoA covering Ident A + B"
 ICOA_FM = "Purely Plant laboratory — iCoA covering Foreign matter"
 FARMAHEM_RETEST = "Farmahem — Ident A + B + C with the Assay, at retest"
-AWAIT_C = "outside laboratory — Ident C (CNP Ident C only, or Farmahem with the retest)"
+AWAIT_C = ("outside laboratory — the HPLC cannabinoid certificate discharges Ident C "
+           "(Farmahem -K- or CNP); in-house iCoA P03 only where none exists")
 
 ROUTE = {
     ("initial release", "1"): ICOA_AB,
@@ -188,7 +199,7 @@ def route_for(coq_type, no):
     >>> route_for("initial release", "7")
     'Purely Plant laboratory — iCoA covering Foreign matter'
     >>> route_for("initial release", "3")
-    'outside laboratory — Ident C (CNP Ident C only, or Farmahem with the retest)'
+    'outside laboratory — the HPLC cannabinoid certificate discharges Ident C (Farmahem -K- or CNP); in-house iCoA P03 only where none exists'
     >>> route_for("reissue", "3")
     'Farmahem — Ident A + B + C with the Assay, at retest'
     >>> route_for("reissue", "7")
@@ -722,6 +733,17 @@ def schedule():
             (pick([c for c in reg["cells"].get("E", [])
                    if c["family"] == "UKIM CNP potency"], False)[0])
 
+        # Owner's ruling, 02.09.2026: the certificate that reports the cannabinoid
+        # analytes by HPLC discharges Identification C — the same certificate the
+        # assay row cites. At additional testing that is the re-analysis; a batch
+        # the register has no block for may hold an in-house HPLC report instead.
+        a4 = reg["cells"].get("E", [])
+        if additional:
+            a4 = [c for c in a4 if is_reanalysis(c["code"])]
+        ident_c_cert = pick(a4, additional)[0]
+        if ident_c_cert is None and not additional and "4" in inhouse:
+            ident_c_cert = inhouse["4"]
+
         for det in dets:
             col = det["column"]
             cands = reg["cells"].get(col, []) if col else []
@@ -737,12 +759,20 @@ def schedule():
             if det["no"] in ICOA_FIELD and not additional:
                 if ic_row.get(ICOA_FIELD[det["no"]], "required") != "required" and cnp:
                     chosen, others = dict(cnp, value="Conforms | Соодветствува"), []
+            if det["no"] == "3" and chosen is None and ident_c_cert is not None:
+                chosen, others = dict(
+                    ident_c_cert,
+                    value="Conforms — cannabinoids identified and quantified by HPLC | "
+                          "Соодветствува — идентификација и квантификација со HPLC"), []
 
             criterion = det["criterion"]
             if det.get("per_batch_criterion"):
                 criterion = thc_criterion
 
             st = status_of(det, chosen, lim, cb, blocked)
+            if det["no"] == "3" and chosen is not None and chosen is not cnp \
+                    and chosen.get("inhouse"):
+                st = ST_SCAN
             if chosen is None and not additional and det["no"] in inhouse:
                 chosen, others = inhouse[det["no"]], []
                 # An outsourced certificate that happens to be the only source for a
@@ -826,6 +856,7 @@ def schedule():
             "codes": list(codes), "counts": counts,
             "outstanding": sorted(
                 d["no"] for d in dets if d["no"] in ICOA_FIELD
+                and not (d["no"] == "3" and ident_c_cert is not None)
                 and outstanding_of(d, ic_row, reg, additional, blocked)),
         })
         per_coq[-1]["route"] = {n2: route_for(

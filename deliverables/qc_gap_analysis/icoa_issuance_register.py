@@ -28,8 +28,10 @@ certificates were read off their own pages on 31.08.2026**, so this is not infer
 from a filename or a parse.
 
 Twelve certificates are on the Ph. Eur. form. The gap analysis independently marks
-exactly twelve batches `IdentC only`, and the two sets agree with **no difference in
-either direction** — the page reads confirm the model rather than replacing it.
+exactly twelve batches `none — CNP Ph. Eur. form` (until 02.09.2026 `IdentC only`;
+the owner then ruled that the HPLC cannabinoid certificate discharges Identification
+C on a certificate basis), and the two sets agree with **no difference in either
+direction** — the page reads confirm the model rather than replacing it.
 
 ## What this produces
 

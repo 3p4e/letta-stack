@@ -83,8 +83,8 @@ modified 18.08.2026), parsed cell-by-cell with `openpyxl` — not from OCR.
 | Certificates on file | **284** |
 | Certificates of Quality to issue (one per batch) | **81** |
 | CoQ **reissues** — Farmahem 197-series (cannabinoids + mycotoxins) | **21** |
-| Batches needing the **full** internal CoA panel | **69** |
-| Batches needing **Identification C only** | **12** |
+| Batches needing an internal CoA for **Identification A/B and foreign matter** | **69** |
+| Batches needing **no** internal CoA (CNP Ph. Eur. form on file) | **12** |
 | Batches complete on all six outsourced panels | **43** |
 | Batches with **no** micro / metals / mycotoxin result | **35** |
 
@@ -133,11 +133,17 @@ cannabinoid assay together:
 Earlier CNP certificates (ППК25xxx / ППК26001–26109 / ТПК25xxx) predate the
 Ph. Eur. format and report only loss on drying and cannabinoids.
 
-**Identification C (TLC) has never been performed by any laboratory** — zero
-occurrences across all 389 ingested documents, including all 12 Ph. Eur.
-certificates. It is discharged in-house by risk analysis with scientific
-justification, using the qualitative determination from the HPLC cannabinoid
-assay.
+**Identification C has never been performed as a dedicated TLC/HPTLC test by any
+laboratory** — zero occurrences across all 389 ingested documents, including all 12
+Ph. Eur. certificates. **Ruled by the owner on 02.09.2026, on a certificate basis:**
+a certificate that reports the cannabinoid analytes by HPLC — a Farmahem `-K-`
+report, which declares "идентификација и квантификација на канабиноиди" by
+accredited HPLC/DAD against Ph. Eur. 3028; a CNP form, which determines the
+cannabinoid content by 2.2.29; an in-house Report of Analysis confirming
+identification by HPLC retention time — shows detection, identification and
+quantification of the API and so discharges Identification C. Every batch on
+record holds one. The CoQ's Identification C row cites the same certificate as
+its Total Δ⁹-THC assay row.
 
 ## External panel coverage across the 80 batches
 
@@ -152,18 +158,21 @@ assay.
 | Identification A / appearance (macroscopy) | 12 | 69 |
 | Identification B (microscopy) | 12 | 69 |
 | Foreign matter (2.8.2) | 12 | 69 |
-| **Identification C (TLC)** | **0** | **81** |
+| **Identification C** — discharged by the HPLC cannabinoid certificate (owner's ruling, 02.09.2026) | **81** | **0** |
 
 ## Internal CoA issuance
 
 | Scope | Batches |
 |---|---:|
-| Full panel — Identification A/B, Identification C, foreign matter | **69** |
-| Identification C only (already hold a CNP Ph. Eur. certificate) | **12** |
+| Identification A/B and foreign matter | **69** |
+| None — the CNP Ph. Eur. form covers identity and foreign matter | **12** |
 
-Whether this is **69** or **81** documents is a QC decision: if Identification C
-is discharged by a single risk-analysis annex citing the HPLC assay, only the 69
-need an internal CoA. If Identification C must be stated per batch, all 81 do.
+Until 02.09.2026 the table read "full panel (Identification A/B, C, foreign
+matter): 69" and "Identification C only: 12", and whether that meant 69 or 81
+documents was an open QC decision. The owner's ruling of 02.09.2026 settles it:
+Identification C is discharged by the HPLC cannabinoid certificate on a
+certificate basis, so no batch owes an in-house Identification C document and the
+twelve CNP Ph. Eur. batches owe nothing at all.
 
 ## Certificates on file, by issuing institution
 

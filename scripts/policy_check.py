@@ -175,10 +175,10 @@ def check_gap_analysis():
         ("Certificates of Quality to issue (one per batch)",
          sum(1 for r in rows if r["needs_CoQ"] == "Y")),
         ("CoQ **reissues**", sum(1 for r in rows if r["needs_CoQ_reissue"] == "Y")),
-        ("Batches needing the **full** internal CoA panel",
-         sum(1 for r in rows if r["iCoA_scope"].startswith("full"))),
-        ("Batches needing **Identification C only**",
-         sum(1 for r in rows if r["iCoA_scope"] == "IdentC only")),
+        ("Batches needing an internal CoA for **Identification A/B and foreign matter**",
+         sum(1 for r in rows if r["iCoA_scope"].startswith("IdentA/B"))),
+        ("Batches needing **no** internal CoA",
+         sum(1 for r in rows if r["iCoA_scope"].startswith("none"))),
     ]
     for label, actual in checks:
         want = stated(label)
@@ -206,7 +206,7 @@ def check_gap_analysis():
     if any(r["needs_CoQ"] != "Y" for r in rows):
         FAIL.append("gap analysis: a batch is not flagged needs_CoQ=Y")
     scopes = {r["iCoA_scope"] for r in rows}
-    unknown = scopes - {"IdentC only"} - {s for s in scopes if s.startswith("full")}
+    unknown = scopes - {"none — CNP Ph. Eur. form"} - {s for s in scopes if s.startswith("IdentA/B")}
     if unknown:
         FAIL.append(f"gap analysis: unrecognised iCoA_scope {sorted(unknown)}")
 

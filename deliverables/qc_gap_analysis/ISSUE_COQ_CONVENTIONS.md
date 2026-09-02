@@ -253,3 +253,27 @@ digit is part of the batch number, `x…x_1`.** Consequences applied here:
   `ingestion/common/batch_id.batch_key`, never a raw string
   (`rectify_ecoa_receipts.py` corrected). `deliverables/qc_register/consolidate.py`
   still keys raw (`FB0126011`); that deliverable is superseded and is not edited.
+
+## Identification C on a certificate basis — owner's ruling, 02.09.2026
+
+- **A certificate that reports the cannabinoid analytes by HPLC discharges
+  Identification C.** Either laboratory can perform it and carry it on its CoA: a
+  Farmahem `-K-` report declares *идентификација и квантификација на канабиноиди*
+  by accredited HPLC/DAD against Ph. Eur. 3028 and states the analyte
+  concentrations, which shows detection, identification and quantification of the
+  API; a CNP form determines the cannabinoid content by Ph. Eur. 2.2.29, and its
+  Ph. Eur. form carries a dedicated identification row besides. The in-house
+  Reports of Analysis and QCCoA forms that confirm identification by HPLC retention
+  time fall under the same rule.
+- **Consequences.** The CoQ's Identification C row cites the same certificate as
+  its Total Δ⁹-THC assay row, with the result *Conforms — cannabinoids identified
+  and quantified by HPLC*. The receipt register reports *Ident C* on every such
+  certificate. The in-house iCoA P03 (chromatographic identification) route
+  remains only for a batch with no HPLC cannabinoid certificate at all — today,
+  none. The twelve batches on the CNP Ph. Eur. form owe no in-house certificate;
+  the other 69 owe Identification A/B and foreign matter, as before.
+- **What does not change.** Identification A and B and foreign matter are still
+  certified only where a document prints them: the twelve CNP Ph. Eur. forms, the
+  three in-house Reports of Analysis of 23.04.2025, and the in-house iCoAs. A
+  CNP release form that reports THC, CBD and loss on drying discharges
+  Identification C and nothing else.
