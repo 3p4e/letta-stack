@@ -113,6 +113,37 @@ Three joins had to be got right, and each was a real defect while it was wrong:
 One lot is left as the owner has it: `JD112501＊` carries an asterisk and no P batch of
 its own, and its certificates are indexed under P060212.
 
+## Why a credited certificate is silent
+
+An amber cell no longer says only "no result on file". It names which of two different
+problems it is, and the **Credit Audit** sheet lists every one of the 279 pairs with the
+action it needs:
+
+| finding | rows | meaning | action |
+|---|---|---|---|
+| not on this certificate | 191 | the document was read and carries no such row | move the credit to the certificate that does report the parameter, or record why it stands |
+| not ingested | 88 | the desk holds no value from this document at all | re-extract it; the batch cannot reach a CoQ on that parameter until then |
+
+Two patterns account for most of the first kind, and each was checked against the desk
+before being written down:
+
+- **The Farmahem pair is credited jointly, not backwards.** For every `051-x` and `100-x`
+  lot the tracker credits *both* the `K` and the `LoD` certificate for #3–#6 *and* for #8.
+  The desk shows the split cleanly: `051-1-K-26` holds Identification C, THC, CBD and CBN;
+  `051-1-LoD-26` holds loss on drying, and nothing else. So each certificate of the pair
+  looks silent for the half it does not carry — 73 rows. Splitting the credit so each
+  certificate is credited only for what it reports clears all of them.
+- **The older CNP report has no Identification B row; the newer one does.** 55 CNP
+  certificates were read and carry no microscopy row, which is 55 of the audit rows. But
+  12 CNP certificates — the ППК26110–ППК26119 and ППК26127–ППК26128 series of 30.06 to
+  21.07.2026 — *do* report it, and the desk holds "Conforms" from each. So this is a change
+  in the laboratory's report format, not a laboratory that never performs the test: the
+  credit is wrong on the older series only, and must be kept on the newer one.
+
+Of the "not ingested" rows, 30 documents are involved: 6 CNP certificates, 22 Institute of
+Public Health certificates (the 2357–2365 and 304–312 series of 2026, a single systematic
+gap) and 2 in-house NGP forms.
+
 ## On file, but not credited
 
 A document that covers or reports a parameter while the owner's tracker does not credit it

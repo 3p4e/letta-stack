@@ -124,6 +124,19 @@ for _r in index_rows:
     COVERS[(_k, T.nkey(_r["code"]))] = _cov
 
 
+def was_read(code, lab, cu):
+    """True when the desk holds any value from this document. A credited document with no
+    value at all was never read into the corpus — a different problem from a document that
+    was read and simply does not report the parameter."""
+    if VAL.get(T.nkey(code)):
+        return True
+    return T.kind_of(code, lab, STAB) == "In-house" and bool(INH.get(T.cu_key(cu)))
+
+
+def silence_reason(code, lab, cu):
+    return "not on this certificate" if was_read(code, lab, cu) else "not ingested"
+
+
 def scope_of(b_or_key, code):
     key = b_or_key if isinstance(b_or_key, str) else join_key(b_or_key)
     return COVERS.get((key, T.nkey(code)))
@@ -255,6 +268,7 @@ for h, height in ((1, 16), (2, 30), (3, 26), (4, 24)):
 row = 5
 stats = collections.Counter()
 oos_rows = []
+audit = []
 BLANK = "FFFFFF"
 for b in batches:
     docs = {p["n"]: instances(b, p["n"]) for p in T.PARAMS}
@@ -338,6 +352,9 @@ for b in batches:
                     state = "extra"
                 else:
                     state = ("orange" if T.nkey(code) in STAB else "green") if has else "amber"
+                    if not has:
+                        audit.append((b["cu"], b["p"], code, date, lab, p["n"], p["title"],
+                                      silence_reason(code, lab, b["cu"])))
             fill = FILL[state] if state in FILL else BLANK
             glyph = {"green": "✓", "orange": "✓", "amber": "✗", "red": "✗", "extra": "•"}.get(state, "")
             gfill = GLYPHFILL[state] if state in GLYPHFILL else BLANK
@@ -348,7 +365,10 @@ for b in batches:
                 for j, no in enumerate(p["subs"]):
                     if here:
                         v = values_of(here[0], here[2], b["cu"], scope_of(b, here[0])).get(no)
-                        cell_v = v or "n.r."
+                        blank = not any(values_of(here[0], here[2], b["cu"], scope_of(b, here[0])).get(x)
+                                        for x in p["subs"])
+                        cell_v = v or (silence_reason(here[0], here[2], b["cu"]) if blank and j == 0
+                                       else ("" if blank else "n.r."))
                         font = F7R if T.over_limit(no, v or "") else (F7U if T.undetermined(no, v or "") else F7B)
                     else:
                         cell_v = "— MISSING —" if state == "red" else ""
@@ -363,7 +383,7 @@ for b in batches:
                 no = str(p["n"])
                 if here:
                     v = values_of(here[0], here[2], b["cu"], scope_of(b, here[0])).get(no)
-                    cell_v = v or "no result on file"
+                    cell_v = v or silence_reason(here[0], here[2], b["cu"])
                     font = F7R if T.over_limit(no, v or "") else (F7U if T.undetermined(no, v or "") else F7B)
                 else:
                     cell_v = "— MISSING —" if state == "red" else ""
@@ -464,6 +484,48 @@ ws.page_setup.fitToHeight = 0
 ws.sheet_properties.pageSetUpPr.fitToPage = True
 ws.page_margins.left = ws.page_margins.right = 0.3
 ws.page_margins.top = ws.page_margins.bottom = 0.4
+
+# --------------------------------------------------------------------------- Credit Audit
+# Every certificate the owner's tracker credits to a parameter that it does not report.
+# Two different problems, and they need different action:
+#   not on this certificate — the document was read and carries no such row; the credit
+#                             belongs on the certificate that does report it;
+#   not ingested            — the desk holds no value from this document at all; it has
+#                             never been read into the corpus, so nothing can be credited
+#                             until it is.
+aud = wb.create_sheet("Credit Audit", wb.sheetnames.index(SHEET) + 1)
+acols = [("CU Batch", 14), ("P Batch", 14), ("Certificate", 24), ("Date", 11), ("Lab", 8),
+         ("#", 5), ("Parameter", 30), ("Finding", 22), ("Action", 52)]
+for _i, (_t, _w) in enumerate(acols, 1):
+    put(aud, 1, _i, _t, FW, NAVY, CEN)
+    aud.column_dimensions[L(_i)].width = _w
+aud.row_dimensions[1].height = 22
+ACTION = {
+    "not on this certificate": "Move the credit to the certificate that reports this parameter, or record why it stands.",
+    "not ingested": "Re-extract the document into the corpus; the batch cannot reach a CoQ on this parameter until then.",
+}
+_r = 2
+for cu, pb, code, date, lab, pno, title, why in sorted(audit, key=lambda x: (x[7], x[0], x[5])):
+    put(aud, _r, 1, cu, F7B, IDF if False else None, CEN)
+    put(aud, _r, 2, pb, F7, None, CEN)
+    put(aud, _r, 3, code, F7, None, CEN)
+    put(aud, _r, 4, T.as_date(date), F7, None, CEN)
+    aud.cell(_r, 4).number_format = "DD.MM.YYYY"
+    put(aud, _r, 5, lab, F7, None, CEN)
+    put(aud, _r, 6, f"#{pno}", F7, None, CEN)
+    put(aud, _r, 7, title, F7, None, Alignment(horizontal="left", vertical="center", wrap_text=True))
+    put(aud, _r, 8, why, F7B, FILL["amber"] if why == "not on this certificate" else FILL["red"], CEN)
+    put(aud, _r, 9, ACTION[why], F6I, None, Alignment(horizontal="left", vertical="center", wrap_text=True))
+    _r += 1
+aud.auto_filter.ref = f"A1:{L(len(acols))}{_r - 1}"
+aud.freeze_panes = "A2"
+aud.print_title_rows = "1:1"
+aud.page_setup.orientation = "landscape"
+aud.page_setup.fitToWidth = 1
+aud.page_setup.fitToHeight = 0
+aud.sheet_properties.pageSetUpPr.fitToPage = True
+print("credit audit rows:", _r - 2,
+      dict(collections.Counter(x[7] for x in audit)))
 
 # --------------------------------------------------------------------------- index: values + batch key
 ix = wb["eCOA Document Index"]
