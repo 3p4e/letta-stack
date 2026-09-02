@@ -69,3 +69,67 @@ no value from a credited certificate — most often Identification B on CNP cert
 Total CBN on the 2025 CNP certificates, Aflatoxin B₁ and Ochratoxin A on Institute of
 Public Health certificates that report only the aflatoxin sum — the cell says so (amber
 —) rather than inventing a value.
+
+# CoQ_Analysis_Master_v7.xlsx — the block layout, with the criteria enforced
+
+Built 02.09.2026 by `build_tracker_v7.py` on the Head of QC's specification
+(`CoQ_Tracker_v7_rebuild.gs`). It is the v6 workbook plus the sheet
+`CoQ Parameter Tracker v7`; v6's flat table is kept beside it as
+`CoQ Parameter Tracker (flat)` so the two can be compared, and every other sheet is
+carried over unchanged.
+
+The block rule:
+
+- **one batch = one block of two rows**, boxed with a thick border, groups separated by
+  a medium rule;
+- **#1–#8 and #12** occupy `Result | eCOA ref | ✓/✗`, each merged vertically across the
+  two rows; **#9, #10, #11** give each sub-determination its own column — top row the
+  sub-results, bottom row the certificate(s);
+- several certificates for the same parameter are **stacked as lines in ascending date
+  order**, and line *n* of Result matches line *n* of eCOA ref matches glyph *n* of ✓/✗;
+- **acceptance criteria sit in header row 3** and are enforced.
+
+## The conformance check
+
+Row 3 carries the global acceptance criteria of the `Parameters` sheet — the controlled
+list of what is tested for QC batch release and CoQ compilation. The check is the
+Quality Desk's own (`live_instrument/script.js`: `magnitude`, `acceptanceLimit`,
+`overLimit`, `undetBand`), so the workbook and the desk cannot disagree:
+
+| verdict | shown as | rule |
+|---|---|---|
+| out of specification | result in **red** | the value provably exceeds its criterion |
+| undetermined | result in **amber** | a counted microbiological limit printed `≤ 10ⁿ CFU/g` is judged against **2 × 10ⁿ** (Ph. Eur. 5.1.4); between the printed limit and twice it the result is undetermined, not failing |
+| not judged | plain | `ND`, `<LOQ`, `<10`, `absent`, a range written with "and", or any prose annotation |
+
+Only **release** results are judged. A stability timepoint above the criterion is named
+separately in STATUS, because a stability result is not a release result.
+
+On the 81 batches this yields **5 out of specification** (TYMC above 2 × 10⁴ on GG1024_01,
+GP052501, HPA052501, OPM052501, CJ062501/2), **4 undetermined** (TYMC in the Ph. Eur. band
+on GG1024_02, HPA1024_01, GP0824_03, CJ052501/01) and **3 batches with a stability CBN
+result above the release criterion** (GP0824_02, GP0824_03, GP062501) — the same counts the
+release register and the CI gate hold. A scan of the whole register finds no further
+exceedance.
+
+## Rebuilding it inside Google Sheets
+
+`CoQ_Tracker_v7_rebuild.gs` is the corrected Apps Script: paste it into the Sheet
+(Extensions ▸ Apps Script) and run `buildTrackerV7`. Four corrections to the first draft,
+each of which would otherwise have produced wrong output:
+
+1. **Columns are found by header name**, not by fixed position. The draft read v5
+   positions (`D` params covered, `I` parameter values) plus a `K` batch-key column that
+   no version had; run against v6 it produced empty blocks.
+2. **Acceptance criteria are read from the `Parameters` sheet** instead of being
+   transcribed into the code, so the tracker cannot drift from the specification.
+3. **The Ph. Eur. doubling rule is applied.** The draft flagged the whole band above the
+   printed count limit as out of specification, which would have turned the four
+   undetermined results into four false failures.
+4. **Only release results are judged**, so the three stability CBN results are reported
+   as a stability observation rather than as three more false failures.
+
+To make the script runnable in Sheets, v7's `eCOA Document Index` gains two columns:
+`PARAMETER VALUES` (what each document reports, as the desk holds it) and `BATCH KEY`.
+The script's parser was run over all 253 index rows: 223 with values, 30 without, all 162
+sub-determination groups recovered, and its verdicts identical to the build's.
