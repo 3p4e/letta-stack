@@ -21,9 +21,16 @@ for f in sorted(TR.glob("mcp-Google_Drive-download_file_content-*.txt")):
     t = d.get("title", "")
     stem = t.rsplit(".", 1)[0]
     if stem.rsplit("_", 1)[-1] != "IJZ": continue
-    code = stem.partition("_")[2].split(",")[0].strip()
-    key = re.sub(r"[^A-Z0-9]", "", code.upper())
-    if key not in WANT or key in seen: continue
+    # The batch key can itself carry an underscore (FB012601_1_2362-2026), so the
+    # first underscore is not the boundary — splitting there yields the code
+    # "1_2362-2026", which matches nothing and silently drops the certificate.
+    # Try every split and take whichever right-hand side is a code we want,
+    # exactly as the Farmahem and CNP renderers already do.
+    parts = stem.split(",")[0].split("_")
+    cands = [re.sub(r"[^A-Z0-9]", "", "_".join(parts[i:]).strip().upper())
+             for i in range(1, len(parts))]
+    key = next((k for k in cands if k in WANT), None)
+    if key is None or key in seen: continue
     seen[key] = t
     dst = OUT / key
     if (dst / "p1.png").exists(): made.append((key, "cached", "?")); continue

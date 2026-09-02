@@ -38,6 +38,7 @@ sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(ROOT, "ingestion", "ragflow"))
 
 import build_document_registers as DR          # noqa: E402
+import batch_id as BI
 import verification_coverage as VC             # noqa: E402
 from validate_ecoa_limits import total_thc_consistent  # noqa: E402
 
@@ -104,7 +105,11 @@ def main():
     for rec in ep:
         pn = rec["meta"].get("batch_canonical", "")
         if pn:
-            by_pn.setdefault(pn, []).append(rec)
+            # keyed through the batch-identity rule, not the raw string: the
+            # corpus writes FB012601_1 where the register writes FB012601/1, and
+            # only batch_key() joins them (a raw key never fired for any
+            # underscored batch)
+            by_pn.setdefault(BI.batch_key(pn), []).append(rec)
         for c in (rec["meta"].get("cert_code", ""), rec["meta"].get("source_filename", "")):
             f = VC.fold(c)
             if f:
@@ -135,8 +140,8 @@ def main():
             # keyed differently — so the batch fallback may match ONLY the
             # batch's own in-house (lab PP) record, never another laboratory's
             # certificate for the same batch
-            pool = (by_pn.get((r["pn"] or "").strip()) or
-                    by_pn.get(VC.fold(r["batch"])) or [])
+            pool = (by_pn.get(BI.batch_key((r["pn"] or "").strip()) if (r["pn"] or "").strip() else "") or
+                    by_pn.get(BI.batch_key(r["batch"])) or [])
             pool = [x for x in pool if x["meta"].get("lab") == "PP"]
             # a batch can hold more than one in-house certificate (P050022 has
             # two QCCoA 001 of different dates carrying different values), so the

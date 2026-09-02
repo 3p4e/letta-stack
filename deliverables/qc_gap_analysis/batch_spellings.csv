@@ -17,8 +17,8 @@ CJ082501/2,2,CJ082501-2 | CJ082501/2,certificate | gap analysis | register | sca
 CJ092501,1,CJ092501,certificate | gap analysis | register | scan filename
 CJ1024,2,CJ 1024 | CJ1024,certificate | gap analysis | register | scan filename
 CLE072501,1,CLE072501,certificate | gap analysis | register | scan filename
-FB012601,1,FB012601,gap analysis | register
-FB012601/1,1,FB012601/1,certificate
+FB012601,1,FB012601,register
+FB012601/1,1,FB012601/1,certificate | gap analysis
 FB012603,1,FB012603,certificate | gap analysis | register
 FB012603V,1,FB012603V,certificate | gap analysis | register
 FB032601,1,FB032601,certificate | gap analysis | register

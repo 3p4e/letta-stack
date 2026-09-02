@@ -5,7 +5,7 @@
     python3 deliverables/qc_gap_analysis/build_icoa_workbook.py OUT.xlsx
 
 Deliberately a separate file rather than a fourth sheet in
-`PP_Batch_Release_QC_Register_FHM4_2026-08-31.xlsx`. That workbook is the end of a
+`PP_Batch_Release_QC_Register_SUBLOT_2026-09-01.xlsx`. That workbook is the end of a
 chain that `replay_correction_chain.py` re-derives from the owner's original and proves
 byte-for-byte; adding a sheet to it would mean the released register and the register
 that chain reproduces are no longer the same file. This one is generated from

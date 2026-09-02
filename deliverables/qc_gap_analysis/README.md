@@ -1,8 +1,8 @@
 # Batch gap analysis — CoQ and internal CoA issuance counts
 
-> ## The current workbook is `PP_Batch_Release_QC_Register_FHM4_2026-08-31.xlsx`
+> ## The current workbook is `PP_Batch_Release_QC_Register_SUBLOT_2026-09-01.xlsx`
 >
-> This directory holds eighteen workbooks, one per correction pass, and **the file named
+> This directory holds nineteen workbooks, one per correction pass, and **the file named
 > `FINAL` is not the last one.** Each is the input to the next script's refuse-on-mismatch
 > guard, so none can be deleted without breaking the chain that proves what changed; the
 > order is what tells you which is current, and the order is:
@@ -305,7 +305,7 @@ register found three discrepancies and no more:
 | Declared in a certificate | Verdict |
 |---|---|
 | `GG1024` | **genuine batch, row missing** — added as #81 |
-| `FB012601/1` (ППК26067) | `/1` is a real sub-lot index under the identity rule, and FB012601 is a 2026 batch, where the convention registers sub-lots and not parents. Two independent readings confirm the certificate prints `/1`. So #53 should almost certainly read `FB012601/1` — or an unregistered sub-lot exists. **Still a QC ruling, but no longer an open question of fact.** |
+| `FB012601/1` (ППК26067) | `/1` is a real sub-lot index under the identity rule, and FB012601 is a 2026 batch, where the convention registers sub-lots and not parents. Two independent readings confirm the certificate prints `/1`. So #53 should read `FB012601/1`. **Ruled by the owner on 01.09.2026 — the digit is part of the batch number — and applied as chain step 19 (`apply_fb012601_sublot.py`, register `SUBLOT_2026-09-01`).** The IPH microbiology report 308/0552/26 prints `Серија: FB012601/1` and, with 2362/2026, is filed under `FB012601_1`; neither is in the release register yet — see `review/TRACKER_TRUTH_CHECK_2026-09-01.md`. |
 | `MB0824` | parsing artifact — the certificate reads `серија: MB0824A104`, an OCR reading of `MB0824_04` (#6). Not a batch. |
 
 ## Cross-check against an independent build

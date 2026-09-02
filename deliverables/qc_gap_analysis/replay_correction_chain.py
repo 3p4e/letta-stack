@@ -78,9 +78,10 @@ CHAIN = [
     ("apply_farmahem_transposition.py",    "FHM2_2026-08-31",      []),
     ("restore_farmahem_pair.py",           "FHM3_2026-08-31",      []),
     ("apply_gnb_range_and_number.py",      "FHM4_2026-08-31",      []),
+    ("apply_fb012601_sublot.py",           "SUBLOT_2026-09-01",    []),
 ]
 
-FINAL = "FHM4_2026-08-31"
+FINAL = "SUBLOT_2026-09-01"
 
 
 def cells(path):

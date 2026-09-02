@@ -232,3 +232,24 @@ while every field still accepts free text: nothing recordable before this
 change became impossible to record. The laboratory picker is generated at
 runtime from `LAB_META` so it can no longer silently omit an accredited
 laboratory, as it did for the State Phytosanitary Laboratory.
+
+## A sub-lot digit is part of the batch number — owner's ruling, 01.09.2026
+
+The Drive filename convention is `‹batch›_‹code›, ‹date›_‹lab›.pdf`, and a batch
+can itself carry a sub-lot index (`FB012601_1`, `GRC102501_2`, `JD012603_02V`). Split
+at the first underscore, the index migrates onto the certificate code —
+`1_ППК26067`, `2_051-6-K-26` — and the batch loses it. The owner's ruling: **the
+digit is part of the batch number, `x…x_1`.** Consequences applied here:
+
+- Register ref 53 reads `FB012601/1`, not `FB012601` (chain step 19). The
+  certificate prints `/1`; the IPH microbiology report 308/0552/26 prints
+  `Серија: FB012601/1`.
+- Every filename parser in this directory tries every underscore as the boundary
+  and keeps the split whose right-hand side is a known certificate code
+  (`render_iph_certificates.py` now does what the Farmahem and CNP renderers
+  already did). The mirror case is real too: `10802_2845/2` is a State
+  Phytosanitary code that *contains* an underscore.
+- Anything keying a batch read off a document goes through
+  `ingestion/common/batch_id.batch_key`, never a raw string
+  (`rectify_ecoa_receipts.py` corrected). `deliverables/qc_register/consolidate.py`
+  still keys raw (`FB0126011`); that deliverable is superseded and is not edited.
