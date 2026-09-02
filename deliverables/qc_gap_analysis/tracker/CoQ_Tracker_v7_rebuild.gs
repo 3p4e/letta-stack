@@ -21,11 +21,14 @@
  *     criterion is reported separately in STATUS; it is not a release failure.
  *     The draft would have raised three false failures on aged-material CBN.
  *
- * Layout, unchanged from the specification: one batch = one block of two rows;
- * #1–#8 and #12 merged vertically over Result | eCOA ref | ✓/✗; #9, #10 and #11
- * with one column per sub-determination on the top row and the certificates on
- * the bottom; several certificates stacked as lines in ascending date order,
- * line n of Result ↔ line n of eCOA ref ↔ glyph n of ✓/✗.
+ * Layout: one TESTING INSTANCE = one block of two rows — the result(s) on the top
+ * row and the certificate that reports them on the bottom row. A batch holds as
+ * many blocks as it has testing instances (the largest number of certificates
+ * credited to any one of its parameters), so a parameter tested twice on two dates
+ * gets two blocks, never two text lines inside one. A parameter's certificates are
+ * taken in ascending date order, so the n-th block is the n-th round of testing.
+ * #1–#8 and #12 use Result | eCOA ref | ✓/✗, each merged across its block's two
+ * rows; #9, #10 and #11 give each sub-determination its own column on the top row.
  *
  * HOW TO RUN: Extensions ▸ Apps Script ▸ paste ▸ save ▸ run buildTrackerV7.
  * It reads two sheets and writes one; nothing else in the file is touched.
@@ -66,8 +69,8 @@ const SUB_ALIASES = {
 
 const C = {
   navy: '#1f3864', navyText: '#ffffff', subHdr: '#fff2cc', grey: '#efefef',
-  green: '#c6efce', orange: '#fce5cd', amber: '#fde9d9', red: '#f4cccc',
-  greenFill: '#6aa84f', orangeFill: '#e69138', amberFill: '#f6b26b', redFill: '#cc0000',
+  green: '#c6efce', orange: '#fce5cd', amber: '#fde9d9', red: '#f4cccc', extra: '#ededed',
+  greenFill: '#6aa84f', orangeFill: '#e69138', amberFill: '#f6b26b', redFill: '#cc0000', extraFill: '#a6a6a6',
   statusRed: '#cc0000', statusOrange: '#e69138', statusGreen: '#38761d',
   oosText: '#9c0006', undText: '#b45f06'
 };
@@ -95,7 +98,7 @@ function buildTrackerV7() {
 
   SpreadsheetApp.getUi().alert(
     'Tracker v7 built.\n\n' + batches.length + ' batches, ' + (res.lastRow - 4) + ' rows.\n' +
-    res.oos + ' out of specification, ' + res.und + ' undetermined (Ph. Eur. band), ' +
+    res.oos + ' batches out of specification, ' + res.und + ' undetermined (Ph. Eur. band), ' +
     res.stab + ' stability results above the criterion.\n' +
     (res.missingAC.length ? 'No acceptance criterion on the Parameters sheet for: ' + res.missingAC.join(', ') : 'Every criterion read from the Parameters sheet.'));
 }
@@ -120,7 +123,8 @@ function mapColumns_(sh) {
     params: /PARAMS?\s*COVERED|PARAMETERS\s*COVERED/i,
     values: /PARAMETER\s*VALUES/i,
     key:    /^BATCH\s*KEY$/i,
-    kind:   /^KIND$/i
+    kind:   /^KIND$/i,
+    credited: /^CREDITED\s*FOR$/i
   };
   const col = {};
   data[h].forEach(function (v, i) {
@@ -148,7 +152,9 @@ function readIndex_(sh) {
     const cu = String(row[col.cu] || '').trim();
     if (p) lastP = p;
     if (cu) lastCU = cu;
-    const key = String(col.key !== undefined ? (row[col.key] || '') : '').trim() || cu || lastCU;
+    /* Group on the LOT, never on the CU code: four CU codes carry two rounds of testing
+       and three lots share a CU with no code of their own, so a CU grouping merges lots. */
+    const key = String(col.key !== undefined ? (row[col.key] || '') : '').trim() || p || lastP || cu || lastCU;
     if (!key) continue;
     if (!map[key]) { map[key] = { key: key, p: p || lastP, cu: cu || lastCU || key, certs: [] }; order.push(key); }
     const dateStr = row[col.date] instanceof Date
@@ -160,6 +166,8 @@ function readIndex_(sh) {
       kind: String(col.kind !== undefined ? (row[col.kind] || '') : '').trim(),
       covers: (String(row[col.params] || '').match(/#\d+/g) || []).map(function (x) { return parseInt(x.slice(1), 10); }),
       ref: code, date: dateStr, sortKey: dateSortKey_(dateStr),
+      credited: col.credited === undefined ? null
+        : (String(row[col.credited] || '').match(/#\d+/g) || []).map(function (x) { return parseInt(x.slice(1), 10); }),
       values: parseValues_(raw)
     });
   }
@@ -353,83 +361,105 @@ function writeBatches_(sh, L, batches, AC) {
   let row = L.headerRows + 1, oosTotal = 0, undTotal = 0, stabTotal = 0;
   const missingAC = {};
   batches.forEach(function (b) {
-    const top = row, bot = row + 1;
-    sh.getRange(top, 1, 2, 1).merge().setValue(b.cu || 'CU CODE NOT RECORDED — TBC');
-    sh.getRange(top, 2, 2, 1).merge().setValue((!b.p || b.p === b.cu) ? 'N/A — no P batch assigned' : b.p);
-    sh.getRange(top, 1, 2, 2).setBackground(C.navy).setFontColor(C.navyText).setFontWeight('bold');
-
-    let noCert = 0, certNoResult = 0, missing = 0;
-    const oosList = [], undList = [], stabList = [];
-
+    /* Every certificate that reports a parameter or is credited to it, in date order.
+       The longest of these lists is how many testing instances the batch has. */
+    const perParam = {}, oosList = [], undList = [], stabList = [];
+    let K = 1;
     PARAMS.forEach(function (prm) {
-      const rel = [], stab = [], credited = [];
+      const list = [];
       b.certs.forEach(function (c) {
         const v = c.values[prm.n];
         const has = v !== undefined && v !== '' && !(typeof v === 'object' && Object.keys(v).length === 0);
-        if (has) (c.values.stability ? stab : rel).push({ c: c, v: v });
-        else if (c.covers.indexOf(prm.n) >= 0) credited.push({ c: c });
+        if (!has && c.covers.indexOf(prm.n) < 0) return;
+        /* A document on file that the owner's tracker does not credit for this parameter
+           is shown as a testing instance, greyed and marked •, but never counted as
+           coverage: what discharges a parameter stays the owner's judgement. */
+        const isCredited = c.credited === null ? true : c.credited.indexOf(prm.n) >= 0;
+        list.push({ c: c, v: has ? v : null, credited: isCredited });
       });
-      const lines = rel.concat(stab);
-      let state;
-      if (rel.length) state = 'green';
-      else if (stab.length) state = 'orange';
-      else if (credited.length) { state = 'amber'; certNoResult++; }
-      else { state = 'red'; noCert++; }
-      if (state !== 'green') missing++;
+      perParam[prm.n] = list;
+      if (list.length > K) K = list.length;
+    });
 
-      const ecoaLines = lines.map(function (x) { return ecoa_(x.c); }).concat(credited.map(function (x) { return ecoa_(x.c); }));
-      const glyphs = lines.map(function (x) { return { g: '✓', stab: x.c.values.stability }; })
-                          .concat(credited.map(function () { return { g: '✗', stab: false }; }));
-      if (!glyphs.length) glyphs.push({ g: '✗', stab: false });
-      const fill = { green: C.green, orange: C.orange, amber: C.amber, red: C.red }[state];
-      const glyphFill = { green: C.greenFill, orange: C.orangeFill, amber: C.amberFill, red: C.redFill }[state];
+    const first = row, last = row + 2 * K - 1;
+    sh.getRange(first, 1, 2 * K, 1).merge().setValue(b.cu || 'CU CODE NOT RECORDED — TBC');
+    sh.getRange(first, 2, 2 * K, 1).merge().setValue((!b.p || b.p === b.cu) ? 'N/A — no P batch assigned' : b.p);
+    sh.getRange(first, 1, 2 * K, 2).setBackground(C.navy).setFontColor(C.navyText).setFontWeight('bold');
 
-      /** Judge release results only; a stability exceedance is named apart. */
-      function judge(detKey, label, relVals, stabVals) {
+    /* The verdict is the batch's: judged over every certificate the parameter holds,
+       release results only, a stability exceedance named apart. */
+    let noCert = 0, certNoResult = 0, missing = 0;
+    const colourOf = {};
+    PARAMS.forEach(function (prm) {
+      const list = perParam[prm.n];
+      const own = list.filter(function (x) { return x.credited; });
+      const rel = own.filter(function (x) { return x.v !== null && !x.c.values.stability; });
+      const stab = own.filter(function (x) { return x.v !== null && x.c.values.stability; });
+      const credited = own.filter(function (x) { return x.v === null; });
+      if (!rel.length && !stab.length) { if (credited.length) certNoResult++; else noCert++; }
+      if (!rel.length) missing++;
+      (prm.det || [String(prm.n)]).forEach(function (detKey, j) {
+        const label = '#' + prm.n + (prm.subs ? ' ' + prm.subs[j] : '');
         const crit = acFor_(AC, detKey);
         if (!crit) missingAC[detKey] = 1;
-        const bad = relVals.some(function (x) { return overLimit_(x, crit, label); });
-        const und = !bad && relVals.some(function (x) { return undetBand_(x, crit, label); });
-        if (bad) oosList.push(label);
-        else if (und) undList.push(label);
-        if (stabVals.some(function (x) { return overLimit_(x, crit, label); })) stabList.push(label);
-        return bad ? C.oosText : (und ? C.undText : null);
-      }
-
-      if (prm.subs) {
-        prm.subs.forEach(function (s, i) {
-          const txt = lines.map(function (x) { return (x.v && typeof x.v === 'object') ? (x.v[s] || 'n.r.') : 'n.r.'; });
-          const cell = sh.getRange(top, prm.startCol + i);
-          cell.setValue(txt.length ? txt.join('\n') : (credited.length ? 'no result on file' : '— MISSING —')).setFontWeight('bold');
-          const colour = judge(prm.det[i], '#' + prm.n + ' ' + s,
-            rel.map(function (x) { return (x.v && typeof x.v === 'object') ? x.v[s] : null; }),
-            stab.map(function (x) { return (x.v && typeof x.v === 'object') ? x.v[s] : null; }));
-          if (colour) cell.setFontColor(colour);
-        });
-        sh.getRange(bot, prm.startCol, 1, prm.subs.length).merge().setValue(ecoaLines.join('\n')).setFontSize(6);
-        sh.getRange(top, prm.startCol, 2, prm.subs.length).setBackground(fill);
-      } else {
-        const res = lines.map(function (x) { return String(x.v); });
-        const rc = sh.getRange(top, prm.startCol, 2, 1).merge()
-          .setValue(res.length ? res.join('\n') : (credited.length ? 'no result on file' : '— MISSING —')).setFontWeight('bold');
-        const colour = judge(String(prm.n), '#' + prm.n,
-          rel.map(function (x) { return String(x.v); }), stab.map(function (x) { return String(x.v); }));
-        if (colour) rc.setFontColor(colour);
-        sh.getRange(top, prm.startCol + 1, 2, 1).merge().setValue(ecoaLines.join('\n')).setFontSize(6);
-        sh.getRange(top, prm.startCol, 2, 2).setBackground(fill);
-      }
-
-      const chk = sh.getRange(top, prm.endCol, 2, 1).merge();
-      const text = glyphs.map(function (x) { return x.g; }).join('\n');
-      let rtv = SpreadsheetApp.newRichTextValue().setText(text);
-      let pos = 0;
-      glyphs.forEach(function (x) {
-        rtv = rtv.setTextStyle(pos, pos + 1, SpreadsheetApp.newTextStyle()
-          .setForegroundColor(x.stab ? C.subHdr : '#ffffff').setBold(true).build());
-        pos += 2;
+        function pick(x) { return prm.subs ? ((x.v && typeof x.v === 'object') ? x.v[prm.subs[j]] : null) : x.v; }
+        const bad = rel.some(function (x) { return overLimit_(pick(x), crit, label); });
+        const und = !bad && rel.some(function (x) { return undetBand_(pick(x), crit, label); });
+        if (bad && oosList.indexOf(label) < 0) oosList.push(label);
+        else if (und && undList.indexOf(label) < 0) undList.push(label);
+        if (stab.some(function (x) { return overLimit_(pick(x), crit, label); }) && stabList.indexOf(label) < 0) stabList.push(label);
+        colourOf[label] = bad ? C.oosText : (und ? C.undText : null);
       });
-      chk.setRichTextValue(rtv.build()).setBackground(glyphFill);
     });
+
+    for (let i = 0; i < K; i++) {
+      const top = first + 2 * i, bot = top + 1;
+      PARAMS.forEach(function (prm) {
+        const list = perParam[prm.n], here = i < list.length ? list[i] : null;
+        let state;
+        const own = list.filter(function (x) { return x.credited; });
+        if (!here) state = (!own.length && i === 0) ? 'red' : 'none';
+        else if (!here.credited) state = 'extra';
+        else if (here.v === null) state = 'amber';
+        else state = here.c.values.stability ? 'orange' : 'green';
+        const fill = { green: C.green, orange: C.orange, amber: C.amber, red: C.red, extra: C.extra, none: '#ffffff' }[state];
+        const glyphFill = { green: C.greenFill, orange: C.orangeFill, amber: C.amberFill, red: C.redFill, extra: C.extraFill, none: '#ffffff' }[state];
+        const glyph = { green: '✓', orange: '✓', amber: '✗', red: '✗', extra: '•', none: '' }[state];
+        const ref = here ? (ecoa_(here.c) + (here.credited ? '' : ' · on file, not credited'))
+                         : (state === 'red' ? '— no certificate —' : '');
+
+        if (prm.subs) {
+          prm.subs.forEach(function (sname, j) {
+            const cell = sh.getRange(top, prm.startCol + j);
+            let text;
+            if (here) text = (here.v && typeof here.v === 'object') ? (here.v[sname] || 'n.r.') : 'n.r.';
+            else text = state === 'red' ? '— MISSING —' : '';
+            cell.setValue(text).setFontWeight('bold');
+            const colour = colourOf['#' + prm.n + ' ' + sname];
+            if (colour && here && here.v && typeof here.v === 'object' &&
+                (overLimit_(here.v[sname], acFor_(AC, prm.det[j]), sname) || undetBand_(here.v[sname], acFor_(AC, prm.det[j]), sname)))
+              cell.setFontColor(colour);
+          });
+          sh.getRange(bot, prm.startCol, 1, prm.subs.length).merge().setValue(ref).setFontSize(6);
+          sh.getRange(top, prm.startCol, 2, prm.subs.length).setBackground(fill);
+        } else {
+          const rc = sh.getRange(top, prm.startCol, 2, 1).merge().setFontWeight('bold');
+          if (here) rc.setValue(here.v === null ? 'no result on file' : String(here.v));
+          else rc.setValue(state === 'red' ? '— MISSING —' : '');
+          const colour = colourOf['#' + prm.n];
+          if (colour && here && here.v !== null &&
+              (overLimit_(String(here.v), acFor_(AC, String(prm.n)), '#' + prm.n) ||
+               undetBand_(String(here.v), acFor_(AC, String(prm.n)), '#' + prm.n)))
+            rc.setFontColor(colour);
+          sh.getRange(top, prm.startCol + 1, 2, 1).merge().setValue(ref).setFontSize(6);
+          sh.getRange(top, prm.startCol, 2, 2).setBackground(fill);
+        }
+        sh.getRange(top, prm.endCol, 2, 1).merge().setValue(glyph)
+          .setFontColor('#ffffff').setFontWeight('bold').setBackground(glyphFill);
+      });
+      if (i) sh.getRange(top, 1, 2, L.lastCol)
+        .setBorder(true, null, null, null, null, null, '#404040', SpreadsheetApp.BorderStyle.SOLID_MEDIUM);
+    }
 
     let st, colour;
     if (missing === 0) { st = '✓ COMPLETE'; colour = C.statusGreen; }
@@ -437,19 +467,26 @@ function writeBatches_(sh, L, batches, AC) {
       st = (missing <= STATUS_PARTIAL_MAX ? '⚠' : '✗') + ' ' + missing + ' NO RESULT\n(' + noCert + ' no cert / ' + certNoResult + ' cert w/o result)';
       colour = missing <= STATUS_PARTIAL_MAX ? C.statusOrange : C.statusRed;
     }
+    if (K > 1) st += '\n' + K + ' testing instances';
+    const uncredited = {};
+    PARAMS.forEach(function (prm) {
+      perParam[prm.n].forEach(function (x) { if (!x.credited) uncredited[x.c.ref] = 1; });
+    });
+    const nUn = Object.keys(uncredited).length;
+    if (nUn) st += '\n• ' + nUn + ' document(s) on file, not credited';
     if (oosList.length) { st += '\n✗ OUT OF SPECIFICATION: ' + oosList.join(', '); colour = C.statusRed; oosTotal++; }
     if (undList.length) { st += '\n◐ UNDETERMINED (Ph. Eur. band): ' + undList.join(', '); if (!oosList.length) colour = C.statusOrange; undTotal++; }
     if (stabList.length) { st += '\n· stability above A.C.: ' + stabList.join(', '); stabTotal++; }
-    sh.getRange(top, 3, 2, 1).merge().setValue(st).setBackground(colour).setFontColor('#ffffff').setFontWeight('bold');
+    sh.getRange(first, 3, 2 * K, 1).merge().setValue(st).setBackground(colour).setFontColor('#ffffff').setFontWeight('bold');
 
-    const block = sh.getRange(top, 1, 2, L.lastCol);
+    const block = sh.getRange(first, 1, 2 * K, L.lastCol);
     block.setFontSize(7).setWrap(true).setVerticalAlignment('middle').setHorizontalAlignment('center');
     block.setBorder(true, true, true, true, null, null, '#000000', SpreadsheetApp.BorderStyle.SOLID_THICK);
     PARAMS.forEach(function (prm) {
-      sh.getRange(top, prm.startCol, 2, prm.width)
+      sh.getRange(first, prm.startCol, 2 * K, prm.width)
         .setBorder(null, true, null, true, null, null, '#404040', SpreadsheetApp.BorderStyle.SOLID_MEDIUM);
     });
-    row += 2;
+    row = last + 1;
   });
   return { lastRow: row - 1, oos: oosTotal, und: undTotal, stab: stabTotal, missingAC: Object.keys(missingAC) };
 }
@@ -463,10 +500,13 @@ function writeKey_(sh, L, row) {
     'KEY — ✓ green: certificate on file AND its result in the eCOA Document Index. ' +
     '✓ orange: stability-timepoint certificate — the result is NOT a release result. ' +
     '✗ amber: the certificate is credited for this parameter but the Index holds no result from it. ' +
+    '• grey: the document is on file and covers or reports this parameter, but the owner\'s tracker does not credit it here — ' +
+    'shown as a testing instance, never counted as coverage. ' +
     '✗ red — MISSING —: no certificate covers this parameter for this batch. ' +
-    'BLOCK RULE: one batch = one block of two rows; several certificates for the same parameter are stacked as lines in ascending ' +
-    'date order, line n of Result ↔ line n of eCOA ref ↔ glyph n of ✓/✗. For #9, #10 and #11 the top row holds the ' +
-    'sub-determination results and the bottom row the certificate(s). n.r. = that sub-determination is not reported on that certificate. ' +
+    'BLOCK RULE: one TESTING INSTANCE = one block of two rows — result(s) on the top row, the certificate that reports them on the ' +
+    'bottom row. A batch holds as many blocks as it has testing instances, and a parameter\'s certificates are taken in ascending date ' +
+    'order, so the n-th block is the n-th round of testing; a parameter tested once is empty in the later blocks. For #9, #10 and #11 ' +
+    'each sub-determination has its own column on the top row. n.r. = that sub-determination is not reported on that certificate. ' +
     'RED result = OUT OF SPECIFICATION. AMBER result = UNDETERMINED: a counted microbiological limit printed as ≤ 10ⁿ CFU/g is judged ' +
     'against 2 × 10ⁿ (Ph. Eur. 5.1.4), and a result between the printed limit and twice it is undetermined, not failing. ' +
     'Only release results are judged; a stability timepoint above the criterion is named separately in STATUS. ND, <LOQ, <10, absent, ' +

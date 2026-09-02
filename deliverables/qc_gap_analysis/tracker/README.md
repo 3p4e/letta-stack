@@ -80,17 +80,47 @@ carried over unchanged.
 
 The block rule:
 
-- **one batch = one block of two rows**, boxed with a thick border, groups separated by
-  a medium rule;
-- **#1–#8 and #12** occupy `Result | eCOA ref | ✓/✗`, each merged vertically across the
-  two rows; **#9, #10, #11** give each sub-determination its own column — top row the
-  sub-results, bottom row the certificate(s);
-- several certificates for the same parameter are **stacked as lines in ascending date
-  order**, and line *n* of Result matches line *n* of eCOA ref matches glyph *n* of ✓/✗.
-  A certificate credited to a parameter but holding no result still takes its line, shown
-  as `—`, so the correspondence never slips; the check across all 81 blocks (972 parameter
-  cells, 243 sub-determination groups) reports no mismatch;
+- **one testing instance = one block of two rows** — the result(s) on the top row, the
+  certificate that reports them on the bottom row. A batch holds as many blocks as it has
+  testing instances, so a parameter tested twice on two dates gets **two blocks**, never
+  two text lines inside one cell. Verified: 122 blocks, 1 464 parameter cells, none
+  holding more than one certificate or more than one line;
+- a parameter's certificates are taken in **ascending date order**, so the n-th block is
+  the n-th round of testing; a parameter tested once is empty in the later blocks;
+- **#1–#8 and #12** use `Result | eCOA ref | ✓/✗`, each merged across the block's two
+  rows; **#9, #10, #11** give each sub-determination its own column on the top row, with
+  the certificate merged beneath;
+- the batch identity and STATUS are merged down all of the batch's blocks, and the whole
+  batch is boxed with a thick border, each block separated by a hairline;
 - **acceptance criteria sit in header row 3** and are enforced.
+
+## One batch is one lot
+
+Three joins had to be got right, and each was a real defect while it was wrong:
+
+- **The index is joined on the P batch, never on the CU code.** Four CU codes carry two
+  tracker rows (an original and the August re-analysis) and three lots share a CU code
+  while having P batches of their own, so a CU join pulled another lot's certificates into
+  the batch. An asterisk the owner puts on some CU codes is folded away for the join.
+- **Tracker rows that share a CU and a P batch are merged into one batch** (81 rows → 77
+  batches). They are the same lot, which the owner had to split across two rows because a
+  flat table cannot show two rounds of testing; the block layout can. A lot's coverage is
+  therefore the union of both rows' certificates, which is why the parameter gaps read 261
+  here against the 287 of the split rows.
+- **Certificate codes are matched on the folding key**, since the tracker and the index
+  spell the same code with different Cyrillic and Latin letter forms.
+
+One lot is left as the owner has it: `JD112501＊` carries an asterisk and no P batch of
+its own, and its certificates are indexed under P060212.
+
+## On file, but not credited
+
+A document that covers or reports a parameter while the owner's tracker does not credit it
+there is still shown as a testing instance — greyed, marked `•`, its reference suffixed
+"on file, not credited" — but it is **never counted as coverage**: what discharges a
+parameter stays the owner's judgement, so the gap counts are unaffected. There are 16 such
+instances across 11 batches, mostly CNP certificates of 30.06, 06.07 and 21.07.2026. They
+are worth a decision: either credit them on the tracker or record why they do not count.
 
 ## The conformance check
 

@@ -7,21 +7,25 @@ else, exactly as the specification asks (the v6 flat tracker is kept alongside, 
 
 The block rule, per the specification:
 
-  * one batch = one block of TWO rows, boxed with a thick border;
+  * one TESTING INSTANCE = one block of two rows, and a batch holds as many blocks as it
+    has testing instances (the largest number of certificates credited to any one of its
+    parameters), so a parameter tested twice on two dates gets two blocks, never two text
+    lines inside one; the batch identity and STATUS are merged down all of its blocks and
+    the whole batch is boxed with a thick border;
   * single-value parameters (#1–#8, #12) occupy Result | eCOA ref | ✓/✗, each cell
     merged vertically across the two rows;
   * #9 Microbiology, #10 Mycotoxins and #11 Heavy metals give each sub-determination
     its own column: the top row carries the sub-results, the bottom row carries the
     certificate reference(s) merged across them;
-  * several certificates for the same parameter are stacked as lines in ascending date
-    order — line n of Result matches line n of eCOA ref matches glyph n of ✓/✗, and the
-    glyphs are coloured individually;
+  * a parameter's certificates are taken in ascending date order: the n-th certificate
+    fills the n-th block, so a row of blocks reads across as "everything known from the
+    n-th round of testing";
   * acceptance criteria live in header row 3 and are enforced: a result that provably
     exceeds its criterion is printed red and bold and is named in the batch's STATUS.
 
 Sources: `tracker_data.py` (the desk's values, the owner's certificate credits).
 """
-import collections, importlib.util, math, os, sys
+import collections, importlib.util, math, os, re, sys
 
 import openpyxl
 from openpyxl.cell.rich_text import CellRichText, TextBlock
@@ -42,14 +46,15 @@ STATUS_PARTIAL_MAX = 3          # 1–3 without a release result → ⚠ PARTIAL
 
 # --------------------------------------------------------------------------- palette
 NAVY = "1F3864"; SUBHDR = "FFF2CC"; GREY = "EFEFEF"
-FILL = {"green": "C6EFCE", "orange": "FCE5CD", "amber": "FDE9D9", "red": "F4CCCC"}
-GLYPHFILL = {"green": "6AA84F", "orange": "E69138", "amber": "F6B26B", "red": "CC0000"}
+FILL = {"green": "C6EFCE", "orange": "FCE5CD", "amber": "FDE9D9", "red": "F4CCCC", "extra": "EDEDED"}
+GLYPHFILL = {"green": "6AA84F", "orange": "E69138", "amber": "F6B26B", "red": "CC0000", "extra": "A6A6A6"}
 STATUSFILL = {"green": "38761D", "orange": "E69138", "red": "CC0000"}
 RED = "9C0006"
 F7 = Font(name="Calibri", size=7)
 F7B = Font(name="Calibri", size=7, bold=True)
 F7R = Font(name="Calibri", size=7, bold=True, color=RED)
 F7U = Font(name="Calibri", size=7, bold=True, color="B45F06")
+FBAD = Font(name="Calibri", size=7, bold=True, color=RED)
 F6 = Font(name="Calibri", size=6)
 F6I = Font(name="Calibri", size=6.5, italic=True, color="595959")
 FW = Font(name="Calibri", size=8, bold=True, color="FFFFFF")
@@ -103,11 +108,82 @@ def nlines(text, width):
 VAL, INH, STAB, STRAIN, DET = T.load_desk()
 batches, index_rows = T.load_owner()
 
+# Every document the index holds for a batch, with the parameters it covers. A document
+# that covers a parameter but is not credited to it on the owner's tracker is still a
+# testing instance and is shown — greyed, marked "•", and labelled "not credited" — but it
+# is NOT counted as coverage: what discharges a parameter stays the owner's judgement.
+# The index is joined on the P BATCH, never on the CU code: four CU codes carry two
+# tracker rows (an original and the August re-analysis) and three lots share a CU with
+# no code of their own, so a CU join pulls another lot's certificates into the batch.
+COVERS = {}
+INDEX_DOCS = collections.defaultdict(list)
+for _r in index_rows:
+    _cov = {int(x[1:]) for x in re.findall(r"#\d+", _r["params"])}
+    _k = _r["p"] or re.sub(r"[＊*]", "", _r["cu"])
+    INDEX_DOCS[_k].append((_r["code"], _r["date"], _r["lab"], _cov))
+    COVERS[(_k, T.nkey(_r["code"]))] = _cov
 
-def values_of(code, lab, cu):
+
+def scope_of(b_or_key, code):
+    key = b_or_key if isinstance(b_or_key, str) else join_key(b_or_key)
+    return COVERS.get((key, T.nkey(code)))
+
+
+def join_key(b):
+    """The lot: its P batch, or its CU code when no P batch is assigned. The owner marks
+    some CU codes with an asterisk; the index does not, so the mark is folded away."""
+    return re.sub(r"[＊*]", "", b["cu"]) if b["p"].startswith("N/A") else b["p"]
+
+
+# One batch is one lot: tracker rows that share a CU and a P batch are the same lot split
+# by the owner across an original row and a re-analysis row, which the flat layout forced.
+# The block layout carries both rounds, so they are merged back into a single batch.
+_merged, _by = [], {}
+for _b in batches:
+    _k = (_b["cu"], _b["p"])
+    if _k in _by:
+        _t = _by[_k]
+        for _n in range(1, 13):
+            _have = {T.nkey(_x[0]) for _x in _t["docs"][_n]}
+            for _d in _b["docs"][_n]:
+                if T.nkey(_d[0]) not in _have:
+                    _t["docs"][_n].append(_d)
+                    _have.add(T.nkey(_d[0]))
+        _t["labs"] = sorted(set(_t["labs"]) | set(_b["labs"]))
+        _t["rows"] = _t.get("rows", 1) + 1
+    else:
+        _by[_k] = _b
+        _merged.append(_b)
+print(f"tracker rows {len(batches)} → batches {len(_merged)} "
+      f"({sum(1 for b in _merged if b.get('rows', 1) > 1)} lots had an original and a re-analysis row)")
+batches = _merged
+
+
+def instances(b, pno):
+    """(code, date, lab, credited) for every testing instance of this parameter, in date order."""
+    credited = [(c, d, l) for c, d, l in b["docs"][pno]]
+    seen = {T.nkey(c) for c, d, l in credited}          # fold: the tracker and the index
+    out = [(c, d, l, True) for c, d, l in credited]     # spell the same code differently
+    for c, d, l, cov in INDEX_DOCS.get(join_key(b), []):
+        if T.nkey(c) in seen:
+            continue
+        reports = any((VAL.get(T.nkey(c)) or {}).get(no) for no in T.GROUPS[pno])
+        if pno in cov or reports:
+            out.append((c, d, l, False))
+            seen.add(T.nkey(c))
+    return sorted(out, key=lambda x: (T.date_key(x[1]), x[0]))
+
+
+def values_of(code, lab, cu, scope=None):
+    """What this document reports. For an in-house record the desk keeps its values under
+    the batch, not the document, so the fallback is restricted to the parameters the index
+    says the document covers — otherwise one Report of Analysis would claim every in-house
+    determination the batch holds."""
     src = VAL.get(T.nkey(code))
     if not src and T.kind_of(code, lab, STAB) == "In-house":
         src = INH.get(T.cu_key(cu))
+        if src is not None and scope is not None:
+            src = {no: v for no, v in src.items() if int(str(no).split(".")[0]) in scope}
     return src or {}
 
 
@@ -175,20 +251,22 @@ for p in T.PARAMS:
 for h, height in ((1, 16), (2, 30), (3, 26), (4, 24)):
     ws.row_dimensions[h].height = height
 
-# ---- body: one block of two rows per batch
+# ---- body: one block of two rows per testing instance, batches boxed together
 row = 5
 stats = collections.Counter()
 oos_rows = []
+BLANK = "FFFFFF"
 for b in batches:
-    top, bot = row, row + 1
-    ws.merge_cells(start_row=top, start_column=1, end_row=bot, end_column=1)
-    put(ws, top, 1, b["cu"], FWS, NAVY)
-    ws.merge_cells(start_row=top, start_column=2, end_row=bot, end_column=2)
-    put(ws, top, 2, b["p"], FWS, NAVY)
-    for r in (top, bot):
-        for c in (1, 2):
-            ws.cell(r, c).fill = PatternFill("solid", fgColor=NAVY)
-            ws.cell(r, c).border = BOX
+    docs = {p["n"]: instances(b, p["n"]) for p in T.PARAMS}
+    K = max([len(v) for v in docs.values()] + [1])
+    extra = len({(x[0], x[1]) for v in docs.values() for x in v if not x[3]})
+    first, last = row, row + 2 * K - 1
+
+    for cidx, v, font in ((1, b["cu"], FWS), (2, b["p"], FWS), (3, None, FWS)):
+        if cidx != 3:
+            ws.merge_cells(start_row=first, start_column=cidx, end_row=last, end_column=cidx)
+            put(ws, first, cidx, v, font, NAVY)
+            fill_range(ws, first, cidx, last, cidx, NAVY)
 
     no_cert = cert_no_result = missing = 0
     oos_list, und_list, stab_list = [], [], []
@@ -197,74 +275,116 @@ for b in batches:
         """Judge release results only; a stability exceedance is reported apart."""
         bad = any(T.over_limit(det_no, x) for x in release_vals)
         und = (not bad) and any(T.undetermined(det_no, x) for x in release_vals)
-        if bad:
+        if bad and label not in oos_list:
             oos_list.append(label)
-        elif und:
+        elif und and label not in und_list:
             und_list.append(label)
-        if any(T.over_limit(det_no, x) for x in stability_vals):
+        if any(T.over_limit(det_no, x) for x in stability_vals) and label not in stab_list:
             stab_list.append(label)
         return F7R if bad else (F7U if und else F7B)
-    top_lines = bot_lines = 1
+
+    # the batch-level state of each parameter, from all of its certificates together
+    pstate = {}
     for p in T.PARAMS:
-        docs = b["docs"][p["n"]]
-        rel, stab, credited = [], [], []
-        for code, date, lab in docs:
-            vals = values_of(code, lab, b["cu"])
-            has = any(vals.get(no) for no in T.GROUPS[p["n"]])
-            if has:
-                (stab if T.nkey(code) in STAB else rel).append(((code, date, lab), vals))
+        rel = stab = credited = 0
+        for code, date, lab, is_cred in docs[p["n"]]:
+            if not is_cred:
+                continue
+            vals = values_of(code, lab, b["cu"], scope_of(b, code))
+            if any(vals.get(no) for no in T.GROUPS[p["n"]]):
+                if T.nkey(code) in STAB:
+                    stab += 1
+                else:
+                    rel += 1
             else:
-                credited.append(((code, date, lab), {}))
-        lines = rel + stab
+                credited += 1
         if rel:
-            state = "green"
+            st = "green"
         elif stab:
-            state = "orange"
+            st = "orange"
         elif credited:
-            state = "amber"; cert_no_result += 1
+            st = "amber"; cert_no_result += 1
         else:
-            state = "red"; no_cert += 1
-        if state != "green":
+            st = "red"; no_cert += 1
+        if st != "green":
             missing += 1
-        stats[state] += 1
+        stats[st] += 1
+        pstate[p["n"]] = st
+        # the verdict is the batch's, judged over every certificate it holds
+        for no in T.GROUPS[p["n"]]:
+            relv, stabv = [], []
+            for code, date, lab, is_cred in docs[p["n"]]:
+                if not is_cred:
+                    continue
+                v = values_of(code, lab, b["cu"], scope_of(b, code)).get(no)
+                if v:
+                    (stabv if T.nkey(code) in STAB else relv).append(v)
+            verdict(no, relv, stabv, f"#{p['n']}" + (" " + T.SUB[no] if len(T.GROUPS[p['n']]) > 1 else ""))
 
-        ecoa = [ecoa_line(*d) for d, _ in lines] + [ecoa_line(*d) for d, _ in credited]
-        glyphs = [("✓", "FFFFFF") for d, v in rel] + [("✓", "FFF2CC") for d, v in stab] + \
-                 [("✗", "FFFFFF") for _ in credited]
-        if not glyphs:
-            glyphs = [("✗", "FFFFFF")]
+    for i in range(K):
+        top, bot = first + 2 * i, first + 2 * i + 1
+        top_lines = bot_lines = 1
+        for p in T.PARAMS:
+            dlist = docs[p["n"]]
+            here = dlist[i] if i < len(dlist) else None
+            credited_here = [x for x in dlist if x[3]]
+            if here is None:
+                state = "red" if (not credited_here and i == 0) else "none"
+            else:
+                code, date, lab, is_cred = here
+                vals = values_of(code, lab, b["cu"], scope_of(b, code))
+                has = any(vals.get(no) for no in T.GROUPS[p["n"]])
+                if not is_cred:
+                    state = "extra"
+                else:
+                    state = ("orange" if T.nkey(code) in STAB else "green") if has else "amber"
+            fill = FILL[state] if state in FILL else BLANK
+            glyph = {"green": "✓", "orange": "✓", "amber": "✗", "red": "✗", "extra": "•"}.get(state, "")
+            gfill = GLYPHFILL[state] if state in GLYPHFILL else BLANK
+            ref = (f"{code}, ({date}) [{lab}]" + ("" if here[3] else " · on file, not credited")) if here \
+                else ("— no certificate —" if state == "red" else "")
 
-        if p["subs"]:
-            for i, no in enumerate(p["subs"]):
-                txt = [(v.get(no) or "n.r.") for _, v in lines] + ["—" for _ in credited]
-                cell_v = "\n".join(txt) if txt else "— MISSING —"
-                font = verdict(no, [v.get(no) for _, v in rel], [v.get(no) for _, v in stab], f"#{p['n']} {T.SUB[no]}")
-                put(ws, top, p["start"] + i, cell_v, font, FILL[state])
-                top_lines = max(top_lines, nlines(cell_v, 8.5))
-            ws.merge_cells(start_row=bot, start_column=p["start"], end_row=bot, end_column=p["end"] - 1)
-            put(ws, bot, p["start"], "\n".join(ecoa), F6, FILL[state], TOPC)
-            fill_range(ws, bot, p["start"], bot, p["end"] - 1, FILL[state])
-            bot_lines = max(bot_lines, nlines("\n".join(ecoa), 8.5 * (len(p["subs"]) - 1) + 21))
-        else:
-            res = [str(v.get(str(p["n"])) or "") for _, v in lines] + ["—" for _ in credited]
-            cell_v = "\n".join(res) if res else "— MISSING —"
-            font = verdict(str(p["n"]), [v.get(str(p["n"])) for _, v in rel], [v.get(str(p["n"])) for _, v in stab], f"#{p['n']}")
-            ws.merge_cells(start_row=top, start_column=p["start"], end_row=bot, end_column=p["start"])
-            put(ws, top, p["start"], cell_v, font, FILL[state])
-            ws.merge_cells(start_row=top, start_column=p["start"] + 1, end_row=bot, end_column=p["start"] + 1)
-            put(ws, top, p["start"] + 1, "\n".join(ecoa), F6, FILL[state], TOPC)
-            fill_range(ws, top, p["start"], bot, p["start"] + 1, FILL[state])
-            need = max(nlines(cell_v, 10), nlines("\n".join(ecoa), 21))
-            if need > top_lines + bot_lines:
-                bot_lines = need - top_lines
+            if p["subs"]:
+                for j, no in enumerate(p["subs"]):
+                    if here:
+                        v = values_of(here[0], here[2], b["cu"], scope_of(b, here[0])).get(no)
+                        cell_v = v or "n.r."
+                        font = F7R if T.over_limit(no, v or "") else (F7U if T.undetermined(no, v or "") else F7B)
+                    else:
+                        cell_v = "— MISSING —" if state == "red" else ""
+                        font = FBAD if state == "red" else F7
+                    put(ws, top, p["start"] + j, cell_v, font, fill)
+                    top_lines = max(top_lines, nlines(cell_v, 8.5))
+                ws.merge_cells(start_row=bot, start_column=p["start"], end_row=bot, end_column=p["end"] - 1)
+                put(ws, bot, p["start"], ref, F6, fill, TOPC)
+                fill_range(ws, bot, p["start"], bot, p["end"] - 1, fill)
+                bot_lines = max(bot_lines, nlines(ref, 8.6 * (len(p["subs"]) - 1) + 21))
+            else:
+                no = str(p["n"])
+                if here:
+                    v = values_of(here[0], here[2], b["cu"], scope_of(b, here[0])).get(no)
+                    cell_v = v or "no result on file"
+                    font = F7R if T.over_limit(no, v or "") else (F7U if T.undetermined(no, v or "") else F7B)
+                else:
+                    cell_v = "— MISSING —" if state == "red" else ""
+                    font = FBAD if state == "red" else F7
+                ws.merge_cells(start_row=top, start_column=p["start"], end_row=bot, end_column=p["start"])
+                put(ws, top, p["start"], cell_v, font, fill)
+                ws.merge_cells(start_row=top, start_column=p["start"] + 1, end_row=bot, end_column=p["start"] + 1)
+                put(ws, top, p["start"] + 1, ref, F6, fill, TOPC)
+                fill_range(ws, top, p["start"], bot, p["start"] + 1, fill)
+                need = max(nlines(cell_v, 10), nlines(ref, 21))
+                if need > top_lines + bot_lines:
+                    bot_lines = need - top_lines
 
-        ws.merge_cells(start_row=top, start_column=p["end"], end_row=bot, end_column=p["end"])
-        rich = CellRichText()
-        for i, (gl, colour) in enumerate(glyphs):
-            rich.append(TextBlock(InlineFont(rFont="Calibri", sz=7, b=True, color=colour), gl + ("\n" if i < len(glyphs) - 1 else "")))
-        cell = ws.cell(top, p["end"], rich)
-        cell.alignment = CEN
-        fill_range(ws, top, p["end"], bot, p["end"], GLYPHFILL[state])
+            ws.merge_cells(start_row=top, start_column=p["end"], end_row=bot, end_column=p["end"])
+            put(ws, top, p["end"], glyph, FWS, gfill, CEN)
+            fill_range(ws, top, p["end"], bot, p["end"], gfill)
+
+        ws.row_dimensions[top].height = max(14, 9.0 * top_lines + 3)
+        ws.row_dimensions[bot].height = max(13, 9.0 * bot_lines + 3)
+        if i:                                   # a hairline between testing instances
+            outline(ws, top, 1, bot, LAST, MED)
 
     if missing == 0:
         st, colour = "✓ COMPLETE", STATUSFILL["green"]
@@ -272,6 +392,11 @@ for b in batches:
         glyph = "⚠" if missing <= STATUS_PARTIAL_MAX else "✗"
         st = f"{glyph} {missing} NO RESULT\n({no_cert} no cert / {cert_no_result} cert w/o result)"
         colour = STATUSFILL["orange"] if missing <= STATUS_PARTIAL_MAX else STATUSFILL["red"]
+    if K > 1:
+        st += f"\n{K} testing instances"
+    if extra:
+        st += f"\n• {extra} document(s) on file, not credited"
+        stats["uncredited instances"] += extra
     if oos_list:
         st += "\n✗ OUT OF SPECIFICATION: " + ", ".join(oos_list)
         colour = STATUSFILL["red"]
@@ -284,16 +409,14 @@ for b in batches:
     if stab_list:
         st += "\n· stability above A.C.: " + ", ".join(stab_list)
         oos_rows.append((b["cu"], "stability", stab_list))
-    ws.merge_cells(start_row=top, start_column=3, end_row=bot, end_column=3)
-    put(ws, top, 3, st, FWS, colour)
-    fill_range(ws, top, 3, bot, 3, colour)
+    ws.merge_cells(start_row=first, start_column=3, end_row=last, end_column=3)
+    put(ws, first, 3, st, FWS, colour)
+    fill_range(ws, first, 3, last, 3, colour)
 
-    ws.row_dimensions[top].height = max(15, 9.0 * top_lines + 3)
-    ws.row_dimensions[bot].height = max(15, 9.0 * bot_lines + 3)
-    outline(ws, top, 1, bot, LAST, THICK)
+    outline(ws, first, 1, last, LAST, THICK)
     for p in T.PARAMS:
-        outline(ws, top, p["start"], bot, p["end"], MED)
-    row = bot + 1
+        outline(ws, first, p["start"], last, p["end"], MED)
+    row = last + 1
 
 LASTROW = row - 1
 
@@ -302,10 +425,12 @@ key = ("KEY — ✓ green: certificate on file AND its result on the desk (relea
        "✓ orange: stability-timepoint certificate — the result is NOT a release result. "
        "✗ amber: the certificate is credited for this parameter but the desk holds no result from it. "
        "✗ red — MISSING —: no certificate covers this parameter for this batch. "
-       "BLOCK RULE: one batch = one block of two rows; several certificates for the same parameter are stacked as lines in "
-       "ascending date order, line n of Result ↔ line n of eCOA ref ↔ glyph n of ✓/✗. For #9, #10 and #11 the top row holds the "
-       "sub-determination results and the bottom row the certificate(s). n.r. = that sub-determination is not reported on that "
-       "certificate; — on a result line means that certificate is credited here but holds no result. RED BOLD result = OUT OF SPECIFICATION against the criterion in row 3; AMBER BOLD result = UNDETERMINED, in the "
+       "BLOCK RULE: one TESTING INSTANCE = one block of two rows — result(s) on the top row, the certificate that reports them on "
+       "the bottom row. A batch holds as many blocks as it has testing instances, and a parameter's certificates are taken in "
+       "ascending date order, so the n-th block is the n-th round of testing; a parameter tested once has an empty cell in the "
+       "later blocks. For #9, #10 and #11 each sub-determination has its own column on the top row. n.r. = that sub-determination "
+       "is not reported on that certificate; \"no result on file\" = the certificate is credited here but the desk holds no result "
+       "from it. RED BOLD result = OUT OF SPECIFICATION against the criterion in row 3; AMBER BOLD result = UNDETERMINED, in the "
        "Ph. Eur. band between a printed count limit and twice it. The check follows the Quality Desk exactly: a counted "
        "microbiological limit printed as ≤ 10ⁿ CFU/g is judged against 2 × 10ⁿ (Ph. Eur. 5.1.4); ND, <LOQ, <10, absent, a range "
        "written with \"and\", and any prose annotation are never judged; only release results are judged, and a stability "
@@ -343,18 +468,28 @@ ws.page_margins.top = ws.page_margins.bottom = 0.4
 # --------------------------------------------------------------------------- index: values + batch key
 ix = wb["eCOA Document Index"]
 hdr = [str(c.value or "") for c in ix[1]]
-cv, ck = len(hdr) + 1, len(hdr) + 2
+cv, ck, cc = len(hdr) + 1, len(hdr) + 2, len(hdr) + 3
 put(ix, 1, cv, "PARAMETER VALUES", FW, NAVY)
 put(ix, 1, ck, "BATCH KEY", FW, NAVY)
+put(ix, 1, cc, "CREDITED FOR", FW, NAVY)
 ix.column_dimensions[L(cv)].width = 60
 ix.column_dimensions[L(ck)].width = 14
+ix.column_dimensions[L(cc)].width = 22
+
+# which parameters the owner's tracker credits each document with, per lot
+CREDITED = collections.defaultdict(set)
+for _b in batches:
+    for _p in T.PARAMS:
+        for _c, _d, _l in _b["docs"][_p["n"]]:
+            CREDITED[(join_key(_b), T.nkey(_c))].add(_p["n"])
 for r in range(2, ix.max_row + 1):
     code = str(ix.cell(r, 6).value or "").strip()
     cu = str(ix.cell(r, 2).value or "").strip()
     lab = str(ix.cell(r, 3).value or "").strip()
     if not code:
         continue
-    vals = values_of(code, lab, cu)
+    pb = str(ix.cell(r, 1).value or "").strip()
+    vals = values_of(code, lab, cu, COVERS.get((pb or re.sub(r"[＊*]", "", cu), T.nkey(code))))
     parts = []
     for p in T.PARAMS:
         subs = T.GROUPS[p["n"]]
@@ -364,9 +499,15 @@ for r in range(2, ix.max_row + 1):
     stab = " · stability timepoint" if T.nkey(code) in STAB else ""
     cell = ix.cell(r, cv, (" · ".join(parts) + stab) if parts else "no result on the desk for this document")
     cell.font, cell.alignment, cell.border = F7, Alignment(vertical="top", wrap_text=True), BOX
-    cell = ix.cell(r, ck, cu)
+    key = pb or re.sub(r"[＊*]", "", cu)
+    cell = ix.cell(r, ck, key)
     cell.font, cell.alignment, cell.border = F7, CEN, BOX
-ix.auto_filter.ref = f"A1:{L(ck)}{ix.max_row}"
+    cred = sorted(CREDITED.get((key, T.nkey(code)), set()))
+    cell = ix.cell(r, cc, ", ".join(f"#{n}" for n in cred) if cred else "— not credited —")
+    cell.font, cell.alignment, cell.border = (F7 if cred else F6I), CEN, BOX
+    if not cred:
+        cell.fill = PatternFill("solid", fgColor=FILL["extra"])
+ix.auto_filter.ref = f"A1:{L(cc)}{ix.max_row}"
 
 # ---- Read Me: the v7 block rule
 rm = wb["Read Me"]
@@ -386,7 +527,7 @@ for label, text in (("v7", "This workbook adds the sheet 'CoQ Parameter Tracker 
 
 wb.save(OUT)
 print("saved", OUT)
-print("blocks:", len(batches), "rows:", LASTROW - 4, "columns:", LAST)
+print("batches:", len(batches), "two-row blocks:", (LASTROW - 4) // 2, "rows:", LASTROW - 4, "columns:", LAST)
 print("parameter cells by state:", dict(stats))
 import collections as _c
 by = _c.Counter(k for _, k, _ in oos_rows)
