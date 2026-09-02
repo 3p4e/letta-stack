@@ -197,3 +197,43 @@ To make the script runnable in Sheets, v7's `eCOA Document Index` gains two colu
 `PARAMETER VALUES` (what each document reports, as the desk holds it) and `BATCH KEY`.
 The script's parser was run over all 253 index rows: 223 with values, 30 without, all 162
 sub-determination groups recovered, and its verdicts identical to the build's.
+
+# CoQ_Analysis_Master_v8.xlsx — v8's readings in the block layout, criteria enforced
+
+Built 02.09.2026 by `build_tracker_v8.py`. This is the convergence of the two lines of
+work on the tracker, and it is the file to use.
+
+| from | what it contributes |
+|---|---|
+| **v8** (PR #17, built from the eCoA database on the ingestion host) | the readings themselves — verbatim from the certificate, two independent reads, derived cannabinoid totals, the per-compound pesticide panel read as one result, and a vocabulary that never calls an accredited certificate silent |
+| **v7** (this line) | one two-row block per testing instance, the acceptance criteria in header row 3 enforced per Ph. Eur. 5.1.4, the lot join on the P batch, the merge of an original and a re-analysis row into one lot, and the Credit Audit |
+
+## The merge rule
+
+v8's reading wins where it has one, because it is verbatim from the page. **Where v8
+reports no value but the release register or a page read holds one, the register value
+stands** and is marked `ᴿ`. "Not ingested" is a statement about v8's corpus, not about the
+certificate, and a verified result is never dropped by a rebuild.
+
+That was checked before adopting anything: of the values both sources hold, **754 agree**
+once decimal commas, unit suffixes and Cyrillic connectives are normalised, and **none
+contradict**. v8 supplies 255 values the desk lacks; the desk supplies 133 v8 lacks.
+
+| mark | meaning |
+|---|---|
+| plain | v8's reading of the certificate |
+| `ᴰ` | a total the compiler derived from the free and acid forms because the laboratory printed none (57 cells) |
+| `ᴿ` | held by the release register or a page read of 31.08.2026, not by the eCoA database (141 cells) |
+| `held for review` | the two independent reads disagreed; a person must confirm from the page (3) |
+| `not on this certificate` | the document was read and carries no such row (130) |
+| `not ingested` | the database holds no read of that document at all (12) |
+| `— MISSING —` | no certificate covers the parameter for that lot |
+
+## What changed against v7
+
+Silent credited cells fall from 161 to 63, and the Credit Audit from 279 rows to 144 —
+v8's readings close 98 of them, the CNP Total CBN derivation being the largest single
+group. Coverage and conformance are unchanged: 261 parameter gaps, **5 out of
+specification, 4 undetermined, 3 stability results above the criterion**, on 122 blocks
+over 77 lots. The conformance check runs on v8's verbatim strings, decimal commas and
+`x 10^4` notation included.
