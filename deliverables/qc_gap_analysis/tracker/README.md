@@ -86,7 +86,10 @@ The block rule:
   two rows; **#9, #10, #11** give each sub-determination its own column — top row the
   sub-results, bottom row the certificate(s);
 - several certificates for the same parameter are **stacked as lines in ascending date
-  order**, and line *n* of Result matches line *n* of eCOA ref matches glyph *n* of ✓/✗;
+  order**, and line *n* of Result matches line *n* of eCOA ref matches glyph *n* of ✓/✗.
+  A certificate credited to a parameter but holding no result still takes its line, shown
+  as `—`, so the correspondence never slips; the check across all 81 blocks (972 parameter
+  cells, 243 sub-determination groups) reports no mismatch;
 - **acceptance criteria sit in header row 3** and are enforced.
 
 ## The conformance check

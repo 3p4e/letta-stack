@@ -236,8 +236,8 @@ for b in batches:
 
         if p["subs"]:
             for i, no in enumerate(p["subs"]):
-                txt = [(v.get(no) or "n.r.") for _, v in lines]
-                cell_v = "\n".join(txt) if txt else ("no result on file" if credited else "— MISSING —")
+                txt = [(v.get(no) or "n.r.") for _, v in lines] + ["—" for _ in credited]
+                cell_v = "\n".join(txt) if txt else "— MISSING —"
                 font = verdict(no, [v.get(no) for _, v in rel], [v.get(no) for _, v in stab], f"#{p['n']} {T.SUB[no]}")
                 put(ws, top, p["start"] + i, cell_v, font, FILL[state])
                 top_lines = max(top_lines, nlines(cell_v, 8.5))
@@ -246,8 +246,8 @@ for b in batches:
             fill_range(ws, bot, p["start"], bot, p["end"] - 1, FILL[state])
             bot_lines = max(bot_lines, nlines("\n".join(ecoa), 8.5 * (len(p["subs"]) - 1) + 21))
         else:
-            res = [str(v.get(str(p["n"])) or "") for _, v in lines]
-            cell_v = "\n".join(res) if res else ("no result on file" if credited else "— MISSING —")
+            res = [str(v.get(str(p["n"])) or "") for _, v in lines] + ["—" for _ in credited]
+            cell_v = "\n".join(res) if res else "— MISSING —"
             font = verdict(str(p["n"]), [v.get(str(p["n"])) for _, v in rel], [v.get(str(p["n"])) for _, v in stab], f"#{p['n']}")
             ws.merge_cells(start_row=top, start_column=p["start"], end_row=bot, end_column=p["start"])
             put(ws, top, p["start"], cell_v, font, FILL[state])
@@ -305,7 +305,7 @@ key = ("KEY — ✓ green: certificate on file AND its result on the desk (relea
        "BLOCK RULE: one batch = one block of two rows; several certificates for the same parameter are stacked as lines in "
        "ascending date order, line n of Result ↔ line n of eCOA ref ↔ glyph n of ✓/✗. For #9, #10 and #11 the top row holds the "
        "sub-determination results and the bottom row the certificate(s). n.r. = that sub-determination is not reported on that "
-       "certificate. RED BOLD result = OUT OF SPECIFICATION against the criterion in row 3; AMBER BOLD result = UNDETERMINED, in the "
+       "certificate; — on a result line means that certificate is credited here but holds no result. RED BOLD result = OUT OF SPECIFICATION against the criterion in row 3; AMBER BOLD result = UNDETERMINED, in the "
        "Ph. Eur. band between a printed count limit and twice it. The check follows the Quality Desk exactly: a counted "
        "microbiological limit printed as ≤ 10ⁿ CFU/g is judged against 2 × 10ⁿ (Ph. Eur. 5.1.4); ND, <LOQ, <10, absent, a range "
        "written with \"and\", and any prose annotation are never judged; only release results are judged, and a stability "

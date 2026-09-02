@@ -68,7 +68,7 @@ def clean(v):
         v = "Complies"
     if re.match(r"^not found any pesticide", v, re.I):
         v = "≤LOQ"
-    if re.match(r"^Н\.д\.", v):
+    if re.match(r"^н\.\s*д\.", v, re.I):
         v = "N.D."
     if re.match(r"^BLQ\b", v):
         v = "BLQ"
