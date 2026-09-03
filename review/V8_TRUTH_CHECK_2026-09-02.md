@@ -22,7 +22,7 @@ Thirteen certificates, about 65 values. Sources, in order of authority:
 | 948/1686/25 | HPA052501 | TYMC | 2.6×10⁴ | 2,6×10⁴ | not rendered | agree |
 | 587/1066/25 | HPA1024_01 | TYMC | 1.5×10⁴ | 1,5×10⁴ | not rendered | agree |
 | 949/1687/25 | CJ052501/01 | TYMC | 1.7×10⁴ | 1,7×10⁴ | not rendered | agree |
-| 472/0863/25 | GG1024_02 | TYMC | 1.9×10⁴ | 1,9×10**³** | **not on disk — unverified** | see below |
+| 472/0863/25 | GG1024_02 | TYMC | 1.9×10⁴ | 1,9×10**³** | **1,9 × 10⁴** (Head of QC, 03.09.2026) | v8 right; text layer wrong |
 | ППК26033 | GP0824_02 (stability) | CBN | 2.35 ᴰ | 2.35 (printed, ≤ 1.00 limit) | — | agree; the exceedance is real |
 | ППК26033 | GP0824_02 | Total CBD | 0.05 | 0.03 | **0.05 %** (Head of QC, 03.09.2026) | v8 right; text layer wrong |
 | ППК25050 | BG1024 | LoD, CBN ᴰ, CBD, THC | 5.73 / 0.02 / 0.04 / 21.80 | same | — | agree |
@@ -54,12 +54,14 @@ conclusion is boilerplate on these reports and must not be used as evidence eith
 
 ## Left open
 
-- **472/0863/25 (GG1024_02, TYMC).** v8 reads 1.9×10⁴, which puts the lot in the undetermined
-  band; the text layer reads 1,9×10³, which would conform. The page is not on disk here and the
-  text layer's chunk is visibly unreliable (it also misreads the printed limits on the same
-  page). Given the pattern on the other four, v8 is the likelier reading, but it is not
-  verified: **confirm from the page** before the lot's status is relied on. Added to the Work
-  Order.
-- ~~ППК26033 Total CBD~~ — closed 03.09.2026: the Head of QC read the page, it prints
-  **0.05 %**. v8 and the release register were right; the text layer misread a digit, the
-  fifth such misreading in this check.
+Nothing. Both items were closed from the page by the Head of QC on 03.09.2026:
+
+- **472/0863/25 (GG1024_02, TYMC)** prints **1,9 × 10⁴**. v8 was right; the text layer read
+  the exponent one power too low, as on the other four pages. The lot stays in the
+  undetermined band: above the printed 10⁴, below the 2 × 10⁴ that Ph. Eur. 5.1.4 judges
+  against.
+- **ППК26033 Total CBD** prints **0.05 %**. v8 and the release register were right.
+
+Final tally: every one of the thirteen certificates' decision-bearing values is correct in
+v8. The eCOA_DB text layer was wrong on six values across six certificates, every time in
+the direction of a smaller number.
