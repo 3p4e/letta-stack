@@ -24,7 +24,7 @@ Thirteen certificates, about 65 values. Sources, in order of authority:
 | 949/1687/25 | CJ052501/01 | TYMC | 1.7×10⁴ | 1,7×10⁴ | not rendered | agree |
 | 472/0863/25 | GG1024_02 | TYMC | 1.9×10⁴ | 1,9×10**³** | **not on disk — unverified** | see below |
 | ППК26033 | GP0824_02 (stability) | CBN | 2.35 ᴰ | 2.35 (printed, ≤ 1.00 limit) | — | agree; the exceedance is real |
-| ППК26033 | GP0824_02 | Total CBD | 0.05 | 0.03 | — | **differs**; no release effect (≤ 1.0) |
+| ППК26033 | GP0824_02 | Total CBD | 0.05 | 0.03 | **0.05 %** (Head of QC, 03.09.2026) | v8 right; text layer wrong |
 | ППК25050 | BG1024 | LoD, CBN ᴰ, CBD, THC | 5.73 / 0.02 / 0.04 / 21.80 | same | — | agree |
 | 197-1-K/26 | BG1024 | CBD, CBN, THC | <LOQ / 0.28 / 26.14 | same | — | agree |
 | ППК26005 | AB092501 | LoD, CBN ᴰ, CBD, THC | 6.77 / ND / 0.07 / 16.93 | same | — | agree |
@@ -60,5 +60,6 @@ conclusion is boilerplate on these reports and must not be used as evidence eith
   page). Given the pattern on the other four, v8 is the likelier reading, but it is not
   verified: **confirm from the page** before the lot's status is relied on. Added to the Work
   Order.
-- **ППК26033 Total CBD**, 0.05 (v8, and the release register) against 0.03 (text layer). Far
-  below the 1.0 % limit; confirm when the page is next opened.
+- ~~ППК26033 Total CBD~~ — closed 03.09.2026: the Head of QC read the page, it prints
+  **0.05 %**. v8 and the release register were right; the text layer misread a digit, the
+  fifth such misreading in this check.
