@@ -269,6 +269,16 @@ and the parameters it blocks:
   page — Total CBN on the NGP forms of BSS052501 and GP062501, identification C on
   100-1-K-26 for J31112501.
 
+## v9 — the verified build, slimmed for Drive
+
+`build_tracker_v8.py --v9` writes `CoQ_Analysis_Master_v9.xlsx`: the v8 content after
+the page-by-page truth check (`review/V8_TRUTH_CHECK_2026-09-02.md`), with the Results
+Register, the flat tracker and the eCOA Document Index left out — they stay in v8 here.
+Two build changes keep the file small enough to upload through the Drive connector
+(102 KB against v8's 3.5 MB): a block that carries nothing writes no cells, and a merged
+range is filled on its anchor cell only, which is the cell Excel and Google Sheets read.
+Coverage, conformance and every value are identical to v8.
+
 ## Rendering
 
 v8 prints the page verbatim, which mixed decimal commas with decimal points and repeated

@@ -54,10 +54,11 @@ spec = importlib.util.spec_from_file_location("tracker_data", os.path.join(HERE,
 T = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(T)
 
+V9 = "--v9" in sys.argv
 SRC = os.path.join(HERE, "CoQ_Analysis_Master_v6.xlsx")
 V8VALS = os.path.join(HERE, "v8_values.json")
-OUT = os.path.join(HERE, "CoQ_Analysis_Master_v8.xlsx")
-SHEET = "CoQ Parameter Tracker v8"
+OUT = os.path.join(HERE, "CoQ_Analysis_Master_v9.xlsx" if V9 else "CoQ_Analysis_Master_v8.xlsx")
+SHEET = "CoQ Parameter Tracker v9" if V9 else "CoQ Parameter Tracker v8"
 BUILT = "02.09.2026"
 import json  # noqa: E402
 STATUS_PARTIAL_MAX = 3          # 1–3 without a release result → ⚠ PARTIAL; ≥4 → ✗
@@ -95,10 +96,9 @@ def put(ws, r, c, v, font=F7, fill=None, al=CEN):
 
 
 def fill_range(ws, r1, c1, r2, c2, colour):
-    pf = PatternFill("solid", fgColor=colour)
-    for r in range(r1, r2 + 1):
-        for c in range(c1, c2 + 1):
-            ws.cell(r, c).fill = pf
+    """A merged range takes its format from the anchor cell in Excel and Google Sheets
+    alike, so only the anchor is styled — writing the covered cells doubled the file."""
+    ws.cell(r1, c1).fill = PatternFill("solid", fgColor=colour)
 
 
 def outline(ws, r1, c1, r2, c2, side):
@@ -482,6 +482,8 @@ for b in batches:
                     if not has:
                         audit.append((b["cu"], b["p"], code, date, lab, p["n"], p["title"],
                                       silence_reason(code, lab, b["cu"], T.GROUPS[p["n"]][0])))
+            if state == "none":
+                continue                       # an empty later block: no cells, no styles
             fill = FILL[state] if state in FILL else BLANK
             glyph = {"green": "✓", "orange": "✓", "amber": "✗", "red": "✗", "extra": "•"}.get(state, "")
             gfill = GLYPHFILL[state] if state in GLYPHFILL else BLANK
@@ -790,6 +792,24 @@ for label, text in (("v7", "This workbook adds the sheet 'CoQ Parameter Tracker 
     rm.row_dimensions[r].height = 13 * (len(text) // 118 + 1)
     r += 1
 
+if V9:
+    for _n in ("Results Register", "CoQ Parameter Tracker (flat)", "eCOA Document Index"):
+        if _n in wb.sheetnames:
+            wb.remove(wb[_n])
+    _rm = wb["Read Me"]
+    _r = _rm.max_row + 2
+    for _label, _text in (
+        ("v9", "The v8 build, verified and slimmed to live in Drive. Every decision-bearing value was checked against "
+               "the filed certificate page (review/V8_TRUTH_CHECK_2026-09-02.md): the five out-of-specification TYMC "
+               "results, the four undetermined ones and the stability CBN exceedance are real. The Results Register, "
+               "the flat tracker and the eCOA Document Index are left out here; they stay in v8 in the repository."),
+        ("Do not", "read counts from the eCOA_DB text layer. On five of six certificates checked it read the exponent "
+                   "or a digit too low, every time in the direction of a conforming result."),
+    ):
+        _c = _rm.cell(_r, 1, _label); _c.font = Font(name="Calibri", size=9, bold=True); _c.alignment = Alignment(vertical="top")
+        _c = _rm.cell(_r, 2, _text); _c.font = Font(name="Calibri", size=9); _c.alignment = Alignment(vertical="top", wrap_text=True)
+        _rm.row_dimensions[_r].height = 13 * (len(_text) // 118 + 1); _r += 1
+    wb["Read Me"]["A1"] = "CoQ Analysis Master — v9"
 wb.save(OUT)
 print("saved", OUT)
 print("batches:", len(batches), "two-row blocks:", (LASTROW - 4) // 2, "rows:", LASTROW - 4, "columns:", LAST)
