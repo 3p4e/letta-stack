@@ -37,6 +37,8 @@ rendering problem, not a model-capability one: at 300 DPI both vendors read them
 | `quality_guard.py` | post-ingest checks — length, alphabet, mojibake |
 | `apply_full.py` / `drop_meta.py` | RAGFlow pipeline-agent configuration |
 | `pilot2.py` | pipeline ingest loop with chunk clearing |
+| `ingest_new_documents.py` | run 2 driver: restore the agent's models, upload, ingest, poll, gate (see CORPUS_RUN_PLAN, run 2) |
+| `post_ingest.py` | after a run: both spellings of the P-number in the keywords and the prompts |
 | `pilot_records_12docs.json` | 13 certificates, 119 results, 107 confirmed |
 
 ## Operating notes

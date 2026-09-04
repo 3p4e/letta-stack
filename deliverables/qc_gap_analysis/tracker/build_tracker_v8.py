@@ -234,6 +234,57 @@ print(f"tracker rows {len(batches)} → batches {len(_merged)} "
 batches = _merged
 
 
+# --------------------------------------------------------------------------- new testing instances
+# Certificates ingested after the owner's tracker was read (eCOA_DB, 04.09.2026). Each is a
+# testing instance credited to the parameter it reports, carrying the values the two
+# independent reads agreed on; a value the reads disagreed on is 'held for review' until a
+# person rules on the page. A certificate naming a P batch the tracker does not carry opens a
+# new lot row with no CU code, and a Work Order task to record it.
+NEW_INSTANCES = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--new-instances=")),
+                     os.path.join(HERE, "new_instances.json"))
+NEW = json.load(open(NEW_INSTANCES)) if os.path.exists(NEW_INSTANCES) else []
+NEW_TOUCHED, NEW_LOTS, NEW_HELD = [], [], []
+
+
+def _lot_of(inst):
+    for b in batches:
+        if inst["p"]:
+            if inst["p"] in [x.strip() for x in b["p"].split("/")]:
+                return b
+        elif b["p"].startswith("N/A") and re.sub(r"[＊*]", "", b["cu"]) == inst["cu"]:
+            return b
+    return None
+
+
+for inst in NEW:
+    b = _lot_of(inst)
+    if b is None:
+        b = {"cu": "— not recorded —", "p": inst["p"] or "N/A — no P batch assigned", "status": "",
+             "labs": [], "docs": {n: [] for n in range(1, 13)}, "certs": [],
+             "strain": inst.get("strain", ""), "new_lot": True}
+        batches.append(b)
+        NEW_LOTS.append(b)
+    b.setdefault("strain", inst.get("strain", ""))
+    key = join_key(b)
+    ck = T.nkey(inst["code"])
+    for n in inst["params"]:
+        if ck not in {T.nkey(c) for c, d, l in b["docs"][n]}:
+            b["docs"][n].append((inst["code"], inst["date"], inst["lab"]))
+    INDEX_DOCS[key].append((inst["code"], inst["date"], inst["lab"], set(inst["params"])))
+    COVERS[(key, ck)] = set(inst["params"])
+    V8VAL[("*", ck)] = dict(inst["vals"])        # read from the eCoA database: no ᴿ mark
+    VAL[ck] = dict(inst["vals"])
+    for no in inst.get("held", []):
+        NEW_HELD.append((b["cu"], b["p"], inst["code"], inst["date"], inst["lab"], int(no.split(".")[0])))
+    if b not in NEW_TOUCHED:
+        NEW_TOUCHED.append(b)
+if NEW:
+    print(f"new instances: {len(NEW)} on {len(NEW_TOUCHED)} lot(s); "
+          f"{len(NEW_LOTS)} lot(s) not on the owner's tracker; {len(NEW_HELD)} value(s) held for review")
+    if V9:
+        OUT = os.path.join(HERE, "CoQ_Analysis_Master_v9.1.xlsx")
+
+
 # --------------------------------------------------------------------------- credit corrections
 # Two corrections to the owner's credit table, each applied only where the evidence is
 # explicit, each recorded on the "Credit Corrections" sheet, and neither written back to
@@ -396,12 +447,17 @@ row = 5
 stats = collections.Counter()
 oos_rows = []
 audit = []
+SPAN = {}
+for _cu, _pb, _code, _date, _lab, _pno in NEW_HELD:
+    audit.append((_cu, _pb, _code, _date, _lab, _pno,
+                  next(p["title"] for p in T.PARAMS if p["n"] == _pno), "held for review"))
 BLANK = "FFFFFF"
 for b in batches:
     docs = {p["n"]: instances(b, p["n"]) for p in T.PARAMS}
     K = max([len(v) for v in docs.values()] + [1])
     extra = len({(x[0], x[1]) for v in docs.values() for x in v if not x[3]})
     first, last = row, row + 2 * K - 1
+    SPAN[id(b)] = (first, last)
 
     for cidx, v, font in ((1, b["cu"], FWS), (2, b["p"], FWS), (3, None, FWS)):
         if cidx != 3:
@@ -710,10 +766,17 @@ for cu, pb, code, date, lab, pno, title, why in audit:
     k = (why, cu, code)
     tasks[k]["params"].add(pno)
     tasks[k]["meta"] = (pb, date, lab)
+for _b in NEW_LOTS:
+    for _c, _d, _l in _b["docs"][9]:
+        _k = ("lot not on tracker", _b["p"], _c)
+        tasks[_k]["params"].add(9)
+        tasks[_k]["meta"] = (_b["p"], _d, _l)
 NEED = {
     "not ingested": "Re-extract the document into the eCoA database (two independent reads, 300 DPI). "
                     "Until then the lot cannot reach a CoQ on these parameters.",
     "held for review": "The two independent reads disagreed. A person must read the figure from the page and confirm it.",
+    "lot not on tracker": "The certificate names a P batch the owner's tracker does not carry. Record the lot "
+                          "(cultivation batch code, strain) on the tracker so the certificate is credited under its batch.",
 }
 _r = 2
 for (why, cu, code), d in sorted(tasks.items(), key=lambda x: (x[0][0], x[0][1])):
@@ -810,6 +873,207 @@ if V9:
         _c = _rm.cell(_r, 2, _text); _c.font = Font(name="Calibri", size=9); _c.alignment = Alignment(vertical="top", wrap_text=True)
         _rm.row_dimensions[_r].height = 13 * (len(_text) // 118 + 1); _r += 1
     wb["Read Me"]["A1"] = "CoQ Analysis Master — v9"
+
+# --------------------------------------------------------------------------- new instances: the other sheets
+from copy import copy as _copy
+
+
+def _style_from(dst, src):
+    dst.font, dst.fill, dst.border, dst.alignment, dst.number_format = \
+        _copy(src.font), _copy(src.fill), _copy(src.border), _copy(src.alignment), src.number_format
+
+
+def patch_coverage(wb):
+    """Batch Coverage is inherited from v6: mark the newly covered parameters, recount the
+    missing list, the certificate count and the laboratories, and add the lots the owner's
+    tracker did not carry."""
+    cov = wb["Batch Coverage"]
+    last = max(r for r in range(2, cov.max_row + 1) if cov.cell(r, 1).value) if cov.max_row > 1 else 1
+    short = {}
+    for r in range(2, last + 1):
+        for tok in str(cov.cell(r, 18).value or "").split(";"):
+            m = re.match(r"\s*#(\d+)\s+(.+)", tok)
+            if m:
+                short[int(m.group(1))] = m.group(2).strip()
+    for p in T.PARAMS:
+        short.setdefault(p["n"], p["title"].split(" ", 1)[1])
+    tick = next((cov.cell(r, c) for r in range(2, last + 1) for c in range(5, 17)
+                 if cov.cell(r, c).value == "✓" and cov.cell(r, c).fill.fgColor.rgb not in (None, "00000000")), None)
+    cross = next((cov.cell(r, c) for r in range(2, last + 1) for c in range(5, 17) if cov.cell(r, c).value == "✗"), None)
+    status_style = {}
+    for r in range(2, last + 1):
+        st = str(cov.cell(r, 4).value or "")
+        status_style.setdefault(st[:1], cov.cell(r, 4))
+
+    def rowkey(cu, p):
+        return (re.sub(r"[＊*]", "", cu).strip(), "— not assigned —" if p.startswith("N/A") else p.strip())
+
+    rows = {rowkey(str(cov.cell(r, 1).value or ""), str(cov.cell(r, 2).value or "")): r for r in range(2, last + 1)}
+
+    def recount(r):
+        miss = [n for n in range(1, 13) if cov.cell(r, 4 + n).value == "✗"]
+        cov.cell(r, 17).value = len(miss)
+        cov.cell(r, 18).value = "; ".join(f"#{n} {short[n]}" for n in miss) or "—"
+        st = "✓ COMPLETE" if not miss else (f"⚠ {len(miss)} MISSING" if len(miss) <= 3 else f"❌ {len(miss)} MISSING")
+        cell = cov.cell(r, 4)
+        cell.value = st
+        if st[:1] in status_style:
+            _style_from(cell, status_style[st[:1]])
+
+    for b in NEW_TOUCHED:
+        new_docs = [(c, d, l) for n in range(1, 13) for c, d, l in b["docs"][n]
+                    if any(T.nkey(c) == T.nkey(x["code"]) for x in NEW)]
+        new_docs = sorted(set(new_docs))
+        if b.get("new_lot"):
+            r = last + 1
+            last = r
+            src = next((rr for rr in range(2, r) if str(cov.cell(rr, 4).value or "").startswith("❌")), 2)
+            for c in range(1, 21):
+                _style_from(cov.cell(r, c), cov.cell(src, c))
+            cov.cell(r, 1).value = b["cu"]
+            cov.cell(r, 2).value = "— not assigned —" if b["p"].startswith("N/A") else b["p"]
+            cov.cell(r, 3).value = b.get("strain", "")
+            for n in range(1, 13):
+                cell = cov.cell(r, 4 + n)
+                cell.value = "✓" if b["docs"][n] else "✗"
+                _style_from(cell, tick if b["docs"][n] else cross)
+            cov.cell(r, 19).value = len(new_docs)
+            cov.cell(r, 20).value = f"[{new_docs[0][2]}] {len(new_docs)}" if new_docs else ""
+            recount(r)
+            continue
+        r = rows.get(rowkey(b["cu"], b["p"]))
+        if r is None:
+            print("coverage: no row for", b["cu"], b["p"])
+            continue
+        for n in range(1, 13):
+            if b["docs"][n] and cov.cell(r, 4 + n).value != "✓":
+                cov.cell(r, 4 + n).value = "✓"
+                _style_from(cov.cell(r, 4 + n), tick)
+        cov.cell(r, 19).value = int(cov.cell(r, 19).value or 0) + len(new_docs)
+        labs = collections.OrderedDict()
+        for tok in str(cov.cell(r, 20).value or "").split(";"):
+            m = re.match(r"\s*\[([^\]]+)\]\s*(\d+)", tok)
+            if m:
+                labs[m.group(1)] = int(m.group(2))
+        for c, d, l in new_docs:
+            labs[l] = labs.get(l, 0) + 1
+        cov.cell(r, 20).value = "; ".join(f"[{k}] {v}" for k, v in labs.items())
+        recount(r)
+    if cov.auto_filter.ref:
+        cov.auto_filter.ref = f"A1:{L(20)}{last}"
+    return last
+
+
+def patch_dashboard(wb, last):
+    cov, dash = wb["Batch Coverage"], wb["Summary Dashboard"]
+    n = last - 1
+    marks = {p: [cov.cell(r, 4 + p).value for r in range(2, last + 1)] for p in range(1, 13)}
+    missing = [sum(1 for p in range(1, 13) if cov.cell(r, 4 + p).value == "✗") for r in range(2, last + 1)]
+    complete = sum(1 for m in missing if m == 0)
+    partial = sum(1 for m in missing if 1 <= m <= 3)
+    incomplete = sum(1 for m in missing if m >= 4)
+    for r in range(1, dash.max_row + 1):
+        label = str(dash.cell(r, 1).value or "")
+        if label == "Total Batches":
+            dash.cell(r, 2).value = n
+        elif label == "Total eCOA Documents":
+            dash.cell(r, 2).value = int(dash.cell(r, 2).value or 0) + len({x["code"] for x in NEW})
+        elif label.startswith("✅"):
+            dash.cell(r, 2).value = complete; dash.cell(r, 3).value = f"{round(100 * complete / n)}% of batches"
+        elif label.startswith("⚠"):
+            dash.cell(r, 2).value = partial; dash.cell(r, 3).value = f"{round(100 * partial / n)}% of batches"
+        elif label.startswith("❌"):
+            dash.cell(r, 2).value = incomplete; dash.cell(r, 3).value = f"{round(100 * incomplete / n)}% of batches"
+        else:
+            m = re.match(r"#(\d+)\s", label)
+            if m:
+                p = int(m.group(1))
+                k = sum(1 for v in marks[p] if v == "✗")
+                dash.cell(r, 2).value = k
+                dash.cell(r, 3).value = f"({round(100 * k / n)}% of batches missing this)"
+
+
+def add_mikro(wb, src_path):
+    """Rebuild the owner's 'Mikro CoQ Parameter' sheet from the tracker: the same lots, the
+    identity columns and the #7–#12 blocks, copied cell for cell from the rebuilt tracker."""
+    src = openpyxl.load_workbook(src_path, read_only=True)
+    if "Mikro CoQ Parameter" not in src.sheetnames:
+        return 0
+    want = []
+    for row in src["Mikro CoQ Parameter"].iter_rows(min_row=1, max_row=400, values_only=True):
+        cu, p = str(row[0] or "").strip(), str(row[1] or "").strip()
+        if cu and cu not in ("BATCH IDENTIFICATION", "CU Batch #"):
+            want.append((cu, p))
+    src.close()
+    lots = []
+    for cu, p in want:
+        cu0 = re.sub(r"[＊*]", "", cu)
+        for b in batches:
+            bp = "/" if b["p"].startswith("N/A") else b["p"]
+            if (cu0 == re.sub(r"[＊*]", "", b["cu"]) and (p in ("", "/", bp) or p == "N/A — no P batch assigned" and bp == "/")) \
+               or (cu0 == "— not recorded —" and p == bp) or (cu0 == "— not recorded —" and p and p in b["p"]):
+                if b not in lots:
+                    lots.append(b)
+                break
+    if "Mikro CoQ Parameter" in wb.sheetnames:
+        wb.remove(wb["Mikro CoQ Parameter"])
+    dst = wb.create_sheet("Mikro CoQ Parameter", wb.sheetnames.index(SHEET) + 1)
+    p7, p12 = next(p for p in T.PARAMS if p["n"] == 7), next(p for p in T.PARAMS if p["n"] == 12)
+    cols = [1, 2, 3] + list(range(p7["start"], p12["end"] + 1))
+    cmap = {c: i + 1 for i, c in enumerate(cols)}
+    rows = [1, 2, 3, 4]
+    for b in lots:
+        if id(b) in SPAN:
+            rows += list(range(SPAN[id(b)][0], SPAN[id(b)][1] + 1))
+    rmap = {r: i + 1 for i, r in enumerate(rows)}
+    for r in rows:
+        for c in cols:
+            sc, dc = ws.cell(r, c), dst.cell(rmap[r], cmap[c])
+            dc.value = sc.value
+            _style_from(dc, sc)
+        if ws.row_dimensions[r].height:
+            dst.row_dimensions[rmap[r]].height = ws.row_dimensions[r].height
+    for rng in ws.merged_cells.ranges:
+        if rng.min_row in rmap and rng.max_row in rmap and rng.min_col in cmap and rng.max_col in cmap:
+            dst.merge_cells(start_row=rmap[rng.min_row], start_column=cmap[rng.min_col],
+                            end_row=rmap[rng.max_row], end_column=cmap[rng.max_col])
+    for c in cols:
+        w = ws.column_dimensions[L(c)].width
+        if w:
+            dst.column_dimensions[L(cmap[c])].width = w
+    dst.freeze_panes = "D5"
+    dst.sheet_view.zoomScale = ws.sheet_view.zoomScale
+    matched = {(re.sub(r"[＊*]", "", b["cu"]), b["p"]) for b in lots}
+    print(f"Mikro CoQ Parameter: {len(lots)} of {len(want)} lot(s) matched, {len(rows) - 4} row(s)")
+    for cu, p in want:
+        if not any(re.sub(r"[＊*]", "", cu) == mcu or (cu == "— not recorded —" and p in mp) for mcu, mp in matched):
+            print("   not matched:", repr(cu), repr(p))
+    return len(lots)
+
+
+if NEW:
+    _last = patch_coverage(wb)
+    patch_dashboard(wb, _last)
+    _mikro = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--mikro=")), None)
+    if _mikro and os.path.exists(_mikro):
+        add_mikro(wb, _mikro)
+    _rm = wb["Read Me"]
+    _r = _rm.max_row + 2
+    _held = ", ".join(sorted({f"{c} (#{n})" for cu, pb, c, d, l, n in NEW_HELD}))
+    _lots = ", ".join(b["p"] for b in NEW_LOTS)
+    _text = (f"v9.1 — {len(NEW)} certificates ingested into eCOA_DB on 04.09.2026 (IJZ-MB microbiology, issued 31.08 and "
+             f"01.09.2026) are added as testing instances credited to #9, with the values the two independent reads "
+             f"agreed on. Batch Coverage, the tracker, the Credit Audit, the Work Order and the Summary Dashboard are "
+             f"recomputed with them."
+             + (f" Held for a person's read: {_held}." if _held else "")
+             + (f" Lots the owner's tracker does not carry, opened without a CU code: {_lots}." if _lots else "")
+             + " The laboratory prints the zero of a P-number as a letter O (PO60052); it is folded to P060052 here.")
+    for _label, _t in (("v9.1", _text),):
+        _c = _rm.cell(_r, 1, _label); _c.font = Font(name="Calibri", size=9, bold=True); _c.alignment = Alignment(vertical="top")
+        _c = _rm.cell(_r, 2, _t); _c.font = Font(name="Calibri", size=9); _c.alignment = Alignment(vertical="top", wrap_text=True)
+        _rm.row_dimensions[_r].height = 13 * (len(_t) // 118 + 1); _r += 1
+    if V9:
+        wb["Read Me"]["A1"] = "CoQ Analysis Master — v9.1"
 wb.save(OUT)
 print("saved", OUT)
 print("batches:", len(batches), "two-row blocks:", (LASTROW - 4) // 2, "rows:", LASTROW - 4, "columns:", LAST)
