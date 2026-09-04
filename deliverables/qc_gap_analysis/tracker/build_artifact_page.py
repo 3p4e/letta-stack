@@ -174,7 +174,7 @@ footer{color:var(--muted);font-size:12.5px;margin-top:40px;max-width:80ch}
 </section>
 
 <section id="icoa" hidden>
-  <p class="sub">One iCoA per batch, in the order of packaging: the iCoA is dated on the first day of packaging (the Head of QC\u2019s list of 04.09.2026), the day the issuance plan uses as the CoQ basis. Each carries identification A, identification B and foreign matter, tested at Purely Plant at packaging. Identification C is covered by the cannabinoid-assay certificate named in the last column, cited on the CoQ directly.</p>
+  <p class="sub">One iCoA per P lot, in the order of packaging: the iCoA is dated on the first day of packaging (the Head of QC\u2019s list of 04.09.2026), the day the issuance plan uses as the CoQ basis. Each carries identification A, identification B and foreign matter, tested at Purely Plant at packaging, and is issued no earlier than the last day of packaging (Packaging complete). Identification C is covered by the cannabinoid-assay certificate named in the last column, cited on the CoQ directly.</p>
   <div class="toolbar"><input id="ic-q" type="search" placeholder="Filter by batch, number, strain, certificate…" aria-label="Filter iCoA rows"><span id="ic-n" class="label"></span></div>
   <div class="scroll"><table id="ic-table"></table></div>
 </section>

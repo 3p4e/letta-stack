@@ -378,11 +378,6 @@ if ICOA_RULE:
         cu0 = re.sub(r"[＊*]", "", b["cu"])
         key = join_key(b)
         _drows = _dates_of(b, cu0)
-        _pk = sorted((r["packaging_from"] for r in _drows if r["packaging_from"]), key=lambda d: str(T.date_key(d)))
-        _idate = _pk[0] if _pk else ICOA_DATE
-        _many = len(_drows) > 1
-        _harvest = _span_of(_drows, "harvest_from", "harvest_to", _many) if _drows else "— not on the list —"
-        _packaging = _span_of(_drows, "packaging_from", "packaging_to", _many) if _drows else "— not on the list —"
         # --- CNP first: a CNP certificate that reports identification A, B or foreign matter
         #     is the reference for them (its document code goes on the CoQ)
         cnp = {}
@@ -406,45 +401,66 @@ if ICOA_RULE:
         fm_cnp = cnp.get(7)
         if fm_cnp and "Не одговара" in str(_vals_of(fm_cnp[0], b["cu"]).get("7", "")):
             NEW_NONCONF.append((b["cu"], b["p"], fm_cnp[0], fm_cnp[1], "CNP", 7))
-        # --- the in-house iCoA covers what CNP did not test
+        # --- ONE iCoA PER P LOT (Head of QC, 04.09.2026): a tracker row that holds several P lots
+        #     (GRC102501: two, JD012603: three) gets one initial and one retest iCoA per P lot,
+        #     each with its own planned number, CoQ and packaging dates; a row with one P lot
+        #     (or none, the R&D lots) is one lot. The CNP references are the row's.
+        _plist = [p.strip() for p in b["p"].split("/") if p.strip().upper().startswith("P0")]
+        _lots = _plist if len(_plist) > 1 else [b["p"]]
+        _single = len(_lots) == 1
         scope = [n for n in (1, 2, 7) if n not in cnp]
-        ref = _plan.get(T.batch_key(cu0)) or next((_plan["P:" + p.strip()] for p in b["p"].split("/") if _plan.get("P:" + p.strip())), None)
-        if not ref or not ref.startswith("iCoA-"):
-            ref = "iCoA — to be issued"
         fm = (INH.get(T.cu_key(b["cu"])) or {}).get("7") or "Conforms"
         vals = {"1": "Conforms", "2": "Conforms", "7": fm}
-        if scope:
-            ck = T.nkey(ref)
-            for n in scope:
-                if ck not in {T.nkey(c) for c, d, l in b["docs"][n]}:
-                    b["docs"][n].append((ref, _idate, "PP"))
-            INDEX_DOCS[key].append((ref, _idate, "PP", set(scope)))
-            COVERS[(key, ck)] = set(scope)
-            V8VAL[(b["cu"], ck)] = {str(n): vals[str(n)] for n in scope}
-            ADDED[id(b)].append((ref, _idate, "PP"))
-            if b not in NEW_TOUCHED:
-                NEW_TOUCHED.append(b)
-        _coq = _lookup(_COQ, b, cu0)
-        if _coq and _coq.get("basis") and _pk and _coq["basis"] != _pk[0]:
-            _packaging += f" (the issuance plan's basis: {_coq['basis']})"
         cell = lambda n: (f"CNP {cnp[n][0]}" if n in cnp else vals[str(n)])
-        ICOA_ROWS.append({"series": "initial release", "icoa": ref if scope else "not needed",
-                          "coq": _coq["n"] if _coq else "— not in the issuance plan —",
-                          "basis": (_coq["basis"] if _coq and _coq.get("basis") else (_pk[0] if _pk else "")),
-                          "issue": ("≥ 11.05.2026 · tests at packaging " + _idate) if _pk else "≥ 11.05.2026 · at packaging",
-                          "cu": b["cu"], "p": b["p"], "strain": b.get("strain") or STRAIN.get(T.batch_key(cu0), ""),
-                          "harvest": _harvest, "packaging": _packaging, "sortdate": (_pk[0] if _pk else ""),
-                          "scope": (" + ".join({1: "Ident A", 2: "Ident B", 7: "Foreign matter"}[n] for n in scope) if scope
-                                    else "— all three on the CNP certificate —"),
-                          "a": cell(1), "b": cell(2), "fm": cell(7),
-                          "c": _ident_c(b) or "— no cannabinoid certificate —",
-                          "assay_rt": "", "myco_rt": "", "carry": "",
-                          "status": ("not needed — CNP covers A, B and foreign matter" if not scope else
-                                     "planned number" if ref.startswith("iCoA-") else "number at issue")})
-        # --- RETEST SERIES: the QP's retesting campaign (medical use, GACP product / API) —
-        #     the same scope again, one iCoA per batch, dated at the retest sampling
-        _rt = _lookup(_RETEST, b, cu0)
-        if _rt:
+        for _lot in _lots:
+            _lrows = [r for r in _drows if _single or r["p_batch"] == _lot]
+            _lpk = sorted((r["packaging_from"] for r in _lrows if r["packaging_from"]), key=lambda d: str(T.date_key(d)))
+            _lend = sorted((r["packaging_to"] for r in _lrows if r["packaging_to"]), key=lambda d: str(T.date_key(d)))
+            _ldate = _lpk[0] if _lpk else ICOA_DATE
+            _complete = _lend[-1] if _lend else "— packaging date to record —"
+            _lharvest = _span_of(_lrows, "harvest_from", "harvest_to", False) if _lrows else "— not on the list —"
+            _lpackaging = _span_of(_lrows, "packaging_from", "packaging_to", False) if _lrows else "— not on the list —"
+            # the in-house iCoA covers what CNP did not test
+            if _single:
+                ref = _plan.get(T.batch_key(cu0)) or next((_plan["P:" + p.strip()] for p in b["p"].split("/") if _plan.get("P:" + p.strip())), None)
+            else:
+                ref = _plan.get("P:" + _lot)
+            if not ref or not ref.startswith("iCoA-"):
+                ref = "iCoA — to be issued" if _single else f"iCoA — to be issued ({_lot})"
+            if scope:
+                ck = T.nkey(ref)
+                for n in scope:
+                    if ck not in {T.nkey(c) for c, d, l in b["docs"][n]}:
+                        b["docs"][n].append((ref, _ldate, "PP"))
+                INDEX_DOCS[key].append((ref, _ldate, "PP", set(scope)))
+                COVERS[(key, ck)] = set(scope)
+                V8VAL[(b["cu"], ck)] = {str(n): vals[str(n)] for n in scope}
+                ADDED[id(b)].append((ref, _ldate, "PP"))
+                if b not in NEW_TOUCHED:
+                    NEW_TOUCHED.append(b)
+            _coq = _lookup(_COQ, b, cu0) if _single else _COQ.get("P:" + _lot)
+            if _coq and _coq.get("basis") and _lpk and _coq["basis"] != _lpk[0]:
+                _lpackaging += f" (the issuance plan's basis: {_coq['basis']})"
+            _strain = b.get("strain") or STRAIN.get(T.batch_key(cu0), "")
+            ICOA_ROWS.append({"series": "initial release", "icoa": ref if scope else "not needed",
+                              "coq": _coq["n"] if _coq else "— not in the issuance plan —",
+                              "basis": (_coq["basis"] if _coq and _coq.get("basis") else (_lpk[0] if _lpk else "")),
+                              "issue": ("≥ 11.05.2026 · tests at packaging " + _ldate) if _lpk else "≥ 11.05.2026 · at packaging",
+                              "cu": b["cu"], "p": _lot, "strain": _strain,
+                              "harvest": _lharvest, "packaging": _lpackaging, "complete": _complete,
+                              "sortdate": (_lpk[0] if _lpk else ""),
+                              "scope": (" + ".join({1: "Ident A", 2: "Ident B", 7: "Foreign matter"}[n] for n in scope) if scope
+                                        else "— all three on the CNP certificate —"),
+                              "a": cell(1), "b": cell(2), "fm": cell(7),
+                              "c": _ident_c(b) or "— no cannabinoid certificate —",
+                              "assay_rt": "", "myco_rt": "", "carry": "",
+                              "status": ("not needed — CNP covers A, B and foreign matter" if not scope else
+                                         "planned number" if ref.startswith("iCoA-") else "number at issue")})
+            # --- RETEST SERIES: the QP's retesting campaign (medical use, GACP product / API) —
+            #     the same scope again, one iCoA per P lot, dated at the retest sampling
+            _rt = _lookup(_RETEST, b, cu0) if _single else _RETEST.get("P:" + _lot)
+            if not _rt:
+                continue
             # a cannabinoid assay dated more than 60 days after the release basis is the retest
             # (the Farmahem 197-series of August 2026 is the QP's campaign, whatever the
             # plan's nominal 12-month date says)
@@ -472,8 +488,8 @@ if ICOA_RULE:
             ICOA_ROWS.append({"series": "retest — QP campaign", "icoa": "iCoA — new number at issue (retest)",
                               "coq": _rt["n"] if not _rt["n"].startswith("(") else "CoQ reissue (assigned on issue)",
                               "basis": _rt.get("basis", ""), "issue": "at retest sampling · QP campaign",
-                              "cu": b["cu"], "p": b["p"], "strain": b.get("strain") or STRAIN.get(T.batch_key(cu0), ""),
-                              "harvest": _harvest, "packaging": _packaging,
+                              "cu": b["cu"], "p": _lot, "strain": _strain,
+                              "harvest": _lharvest, "packaging": _lpackaging, "complete": _complete,
                               "scope": "Ident A + Ident B + Foreign matter", "a": "to test", "b": "to test", "fm": "to test",
                               "c": c_rt or "— retest assay not yet on file —",
                               "assay_rt": c_rt or "— pending —", "myco_rt": m_rt or "— pending —",
@@ -1282,10 +1298,10 @@ def add_mikro(wb, src_path):
 def add_icoa_sheet(wb):
     sh = wb.create_sheet("iCoA Issuance", wb.sheetnames.index("Work Order") + 1)
     icols = [("Seq", 6), ("Series", 20), ("iCoA", 28), ("CoQ", 30), ("Basis date", 12), ("Issue on", 28), ("CU Batch", 14),
-             ("P Batch", 22), ("Strain", 20), ("Harvest", 24), ("Packaging", 28), ("iCoA scope", 34), ("#1 Ident. A", 14), ("#2 Ident. B", 14),
+             ("P Batch", 22), ("Strain", 20), ("Harvest", 24), ("Packaging", 28), ("Packaging complete", 18), ("iCoA scope", 34), ("#1 Ident. A", 14), ("#2 Ident. B", 14),
              ("#7 Foreign matter", 16), ("Ident C — covered by (eCoA)", 34),
              ("Retest assay #4–#6 (eCoA)", 34), ("Retest mycotoxins #10 (eCoA)", 34), ("Carried forward", 30), ("Status", 44)]
-    keys = ("seq", "series", "icoa", "coq", "basis", "issue", "cu", "p", "strain", "harvest", "packaging", "scope", "a", "b", "fm", "c",
+    keys = ("seq", "series", "icoa", "coq", "basis", "issue", "cu", "p", "strain", "harvest", "packaging", "complete", "scope", "a", "b", "fm", "c",
             "assay_rt", "myco_rt", "carry", "status")
     for _i, (_t, _w) in enumerate(icols, 1):
         put(sh, 1, _i, _t, FW, NAVY, CEN)
@@ -1296,7 +1312,7 @@ def add_icoa_sheet(wb):
         for _i, k in enumerate(keys, 1):
             v = row[k]
             put(sh, _r, _i, v, F7B if k in ("icoa", "cu") else F7,
-                FILL["amber"] if (k == "fm" and v == "held for review") or (k in ("c", "assay_rt", "myco_rt", "harvest", "packaging") and str(v).startswith("—"))
+                FILL["amber"] if (k == "fm" and v == "held for review") or (k in ("c", "assay_rt", "myco_rt", "harvest", "packaging", "complete") and str(v).startswith("—"))
                 or (k == "status" and str(v).startswith("pending")) else
                 (FILL["green"] if k == "status" and str(v).startswith("due") else
                  (FILL["extra"] if k in ("a", "b", "fm") and str(v).startswith("CNP ") else None)), CEN)
@@ -1319,7 +1335,11 @@ def add_icoa_sheet(wb):
             "number takes its number at issue. Harvest and packaging dates are the Head of QC's list of 04.09.2026 "
             "(sheet Batch Dates): the iCoA is dated on the FIRST day of packaging, the day the issuance plan already "
             "uses as the CoQ basis, and a packaging that ran over several days shows its whole span; a lot the list "
-            "does not carry keeps 'packaging date — to record'. Foreign matter is 'Conforms' by the declaration of 13.08.2026, except FB032601, where "
+            "does not carry keeps 'packaging date — to record'. ONE iCoA PER P LOT: a tracker row that holds "
+            "several P lots (GRC102501, JD012603) has one row per P lot, each with its own number, CoQ and dates. "
+            "PACKAGING COMPLETE is the last day of packaging — the earliest day the iCoA can be issued: the sample "
+            "is taken before primary packaging (QCSOP 005), the certificate attests the complete packaged lot. "
+            "Foreign matter is 'Conforms' by the declaration of 13.08.2026, except FB032601, where "
             "ППК26127 reports 0.08 % (Не одговара): held for the Head of QC. Identification C is not on the iCoA: "
             "it conforms to the ImB specification on the certificate that carries the cannabinoid assay (#4), "
             "named per batch in the last column.")
@@ -1390,8 +1410,9 @@ if NEW:
                 "now holds that in-house instance for #1, #2 and #7 (see iCoA Issuance); identification C "
                 "conforms to the ImB specification on the certificate that carries the cannabinoid assay. "
                 "Harvest and packaging dates per batch are the Head of QC's list of 04.09.2026 (sheet Batch Dates): "
-                "the iCoA instance is dated on the first day of packaging, the day the issuance plan uses as the CoQ "
-                "basis. Rulings of 04.09.2026 on the two bile-tolerant gram-negative rows the reads disagreed on: "
+                "the iCoA instance is dated on the first day of packaging (sampling before primary packaging), the "
+                "day the issuance plan uses as the CoQ basis, and issued no earlier than the last day of packaging; "
+                "one iCoA per P lot where a tracker row holds several. Rulings of 04.09.2026 on the two bile-tolerant gram-negative rows the reads disagreed on: "
                 "P060262 < 10³ и > 10² CFU/g, P060432 < 10² и > 10 CFU/g (decisions_2026-09-04.tsv)."
                 if ICOA_RULE else ""))
     for _label, _t in ((f"v{VER}", _text),):

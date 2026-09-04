@@ -346,14 +346,24 @@ packaging or harvest that ran over several days as from/to, and a `note` for eve
 the script had to make: a year the list does not print is the harvest year of the same row,
 else the year of the row above (seven rows); `11-13-11.2025` is read as 11–13.11.2025; `0`
 and `]` are no date (two harvest dates missing: P050142, P050152). The builder loads the file
-by default (`--dates=path` overrides) and looks a lot up by P-number first (one tracker row
-may hold several P lots: GRC102501 two, JD012603 three — the row is dated on the earliest
-packaging and shows every span), then by CU code (the six R&D lots).
+by default (`--dates=path` overrides) and looks a lot up by P-number first, then by CU code
+(the six R&D lots). **One iCoA per P lot** (Head of QC, 04.09.2026): a tracker row that holds
+several P lots (GRC102501 two, JD012603 three) gets one initial and one retest row per P lot,
+each with its own planned number, CoQ and dates — 83 initial rows for 80 tracker rows, 74
+retest rows. The CNP references stay the row's: JD012603's two CNP certificates cover all
+three of its P lots on the sheet, because the tracker does not say which certificate belongs
+to which lot.
 
-The in-house iCoA instance is dated on the **first day of packaging**. That is the day the
-issuance plan of 31.08.2026 already uses as the CoQ basis wherever it holds a packaging date
-(16 lots pack over several days; the plan's basis is the first day on every one), so the
-planned iCoA numbers stay in chronological order. Where the plan's basis is not a packaging
+The in-house iCoA instance is dated on the **first day of packaging** — the sampling date:
+the iCoA master's own clause reads "sampling for release testing, before primary packaging
+(QCSOP 005 v.02)", and the macroscopic, microscopic and foreign-matter examinations are
+same-day work on that sample. That is also the day the issuance plan of 31.08.2026 uses as
+the CoQ basis wherever it holds a packaging date (16 lots pack over several days; the plan's
+basis is the first day on every one), so the planned iCoA numbers stay in chronological
+order. The **Packaging complete** column carries the last day of packaging: the earliest day
+the iCoA can be issued, since the certificate attests the complete packaged lot (29 of the 87
+lots pack over several days, up to 11; for the retroactive series the issue date is
+≥ 11.05.2026 in any case). Where the plan's basis is not a packaging
 date (the CoQs "assigned on issue"), the Packaging column names the plan's basis beside the
 list's date. 79 of the 87 rows date a tracker lot; the eight that do not (P050242, P050232,
 P060122, P060112, P060132, P060372, P060472, P060492) are batches the owner's tracker does not
