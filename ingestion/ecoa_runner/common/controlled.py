@@ -228,6 +228,7 @@ def panel_of(method_printed):
 # absent, so nothing is matched by stem or edit distance.
 _QUALITATIVE = {
     'absent':   ['отсуство', 'отсутна', 'отсутен', 'отсутно', 'отсуства', 'отсутни',
+                 'отсуствува',           # "is absent" - the verb form IJZ prints since 09.2026
                  'absent', 'absence', 'notdetected', 'negative', 'неутврдено'],
     'conforms': ['одговара', 'соодветствува', 'conforms', 'confirms', 'complies',
                  'conform', 'compliant'],
