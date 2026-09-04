@@ -34,6 +34,9 @@ import re
 __all__ = ["batch_key", "spelling_variants"]
 
 _SPLIT = re.compile(r"[/_\-–—]")
+# A P-number is P + six digits; IJZ certificates print its zero as a letter O
+# ("PO60052" on 552/1083/26). Fold it so both spellings key alike.
+_P_LETTER_O = re.compile(r"^PO(\d{5})(?=\D|$)")
 
 
 def batch_key(raw):
@@ -45,12 +48,15 @@ def batch_key(raw):
     ('GG1024/1/1', 'GG1024')
     >>> batch_key("JD012603-02V"), batch_key("JD012603-02")
     ('JD012603/2V', 'JD012603/2')
+    >>> batch_key("PO60052")          # letter O printed for the zero of a P-number
+    'P060052'
     """
     if raw is None:
         return None
     s = str(raw).strip().upper().replace(" ", "")
     if not s:
         return None
+    s = _P_LETTER_O.sub(r"P0\1", s)
     suffix = ""
     if s.endswith("V"):
         s, suffix = s[:-1], "V"
