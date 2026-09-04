@@ -13,11 +13,12 @@ KEYS = {'tamc': '9.1', 'tymc': '9.2', 'bile_tolerant_gram_negative': '9.3', 'sal
 
 
 def desk_form(v):
-    """'1,7 x 10² CFU/g' -> '1.7×10²';  '< 10 CFU/g' -> '<10';  'Отсутна/25 g' -> 'absent'."""
+    """'1,7 x 10² CFU/g' -> '1.7×10²';  '< 10 CFU/g' -> '<10';  'Отсутна/25 g', 'Отсуствува/g' -> 'absent'."""
     t = str(v or '').strip()
     if not t:
         return ''
-    if re.match(r'^(отсут|absen|absent|нема)', t, re.I):
+    # 'Отсутна', 'Отсуства', 'Отсуствува' (a Latin a may close the word) — all 'absent'
+    if re.match(r'^(отсу|absen|нема|not detected)', t, re.I):
         return 'absent'
     t = re.sub(r'\s*CFU\s*/\s*g\s*$', '', t, flags=re.I)
     t = re.sub(r'(?<=\d),(?=\d)', '.', t)
