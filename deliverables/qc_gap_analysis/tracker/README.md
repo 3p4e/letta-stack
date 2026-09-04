@@ -333,3 +333,21 @@ issue), what the iCoA carries, and the cannabinoid-assay certificate that covers
 identification C — the assay certificate itself, never a loss-on-drying certificate. Batch
 Coverage marks in-house-only coverage in grey, as v6 did. Coverage moves from 0 to 52
 complete lots of 84; conformance is unchanged.
+
+
+### CNP document codes, and the retest series (Head of QC, 04.09.2026, second ruling)
+
+Where a CNP certificate reports identification A, B or foreign matter (the report format
+of ППК26110–26119 and ППК26127–26128 does), its document code is the CoQ's reference for
+them and the iCoA covers only what CNP did not test; where CNP reports all three, no iCoA
+is needed (11 lots). FB032601's CNP foreign matter reads 0.08 % (Не одговара): it is
+credited as reported and raised on the Work Order as "non-conformance reported" — a
+deviation / OOS record is needed before that CoQ can issue. Farmahem: identification C is
+the K (potency) certificate.
+
+The **iCoA Issuance** sheet then carries a second series: one iCoA per batch, same scope,
+for the QP's retesting campaign (medical use, GACP product / API), in the order of the
+additional-testing CoQ each belongs to. A retest row is "due" where a cannabinoid assay
+dated more than 60 days after the release basis is on file (the Farmahem 197-series of
+August 2026, 21 lots) and "pending" where it is not; its results are "to test" until the
+campaign's certificates arrive.

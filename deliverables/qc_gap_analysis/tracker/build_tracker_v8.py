@@ -300,6 +300,7 @@ if NEW:
 # Не одговара) — that lot's foreign matter is held for the Head of QC.
 ICOA_RULE = "--icoa" in sys.argv
 ICOA_ROWS = []
+NEW_NONCONF = []
 ADDED = collections.defaultdict(list)        # lot -> documents added by this build (coverage recount)
 for _b in NEW_TOUCHED:
     ADDED[id(_b)] += [(x["code"], x["date"], x["lab"]) for x in NEW if _lot_of(x) is _b]
@@ -311,59 +312,127 @@ if ICOA_RULE:
         if _x.get("pp"):
             _plan.setdefault("P:" + _x["pp"].strip(), _x["icoa_ref"])
     ICOA_DATE = "packaging date — to record"
-    _COQ = {}
+    RETEST_DATE = "retest sampling date — to record"
+    _COQ, _RETEST = {}, {}
     for _c in _D["coqs"]:
-        if _c["t"].startswith("initial release"):
-            _COQ.setdefault(T.batch_key(re.sub(r"[＊*]", "", _c["cb"])), _c)
-            if _c.get("pp"):
-                _COQ.setdefault("P:" + _c["pp"].strip(), _c)
+        _tbl = _COQ if _c["t"].startswith("initial release") else _RETEST
+        _tbl.setdefault(T.batch_key(re.sub(r"[＊*]", "", _c["cb"])), _c)
+        if _c.get("pp"):
+            _tbl.setdefault("P:" + _c["pp"].strip(), _c)
+
+    def _lookup(tbl, b, cu0):
+        return tbl.get(T.batch_key(cu0)) or next((tbl.get("P:" + p.strip()) for p in b["p"].split("/") if tbl.get("P:" + p.strip())), None)
+
+    def _ident_c(b, after=None):
+        """The cannabinoid-assay certificate that covers identification C: the assay
+        certificate itself, never a loss-on-drying one; `after` restricts it to the retest."""
+        pool = list(b["docs"][4]) or list(b["docs"][3])
+        pool = [x for x in pool if not re.search(r"LoD|ГС", x[0], re.I)] or pool
+        if after:
+            pool = [x for x in pool if str(T.date_key(x[1])) >= str(T.date_key(after))]
+        pool = sorted(pool, key=lambda x: (T.date_key(x[1]), x[0]))
+        return f"{pool[0][0]}, ({pool[0][1]}) [{pool[0][2]}]" if pool else None
+
+    CNP_COVERED = {}
+
+    def _vals_of(code, cu):
+        """v8's reading first, the desk's beneath it (values_of is defined further down)."""
+        ck = T.nkey(code)
+        out = dict(VAL.get(ck) or {})
+        out.update(V8VAL.get(("*", ck)) or {})
+        out.update(V8VAL.get((cu, ck)) or {})
+        return out
+
     for b in batches:
         cu0 = re.sub(r"[＊*]", "", b["cu"])
-        ref = _plan.get(T.batch_key(cu0))
-        if not ref:
-            ref = next((_plan["P:" + p.strip()] for p in b["p"].split("/") if _plan.get("P:" + p.strip())), None)
-        if not ref or not ref.startswith("iCoA-"):     # the plan says "(assigned on issue)"
+        key = join_key(b)
+        # --- CNP first: a CNP certificate that reports identification A, B or foreign matter
+        #     is the reference for them (its document code goes on the CoQ)
+        cnp = {}
+        seen = set()
+        for c, d, l, cov in list(INDEX_DOCS.get(key, [])) + [(c, d, l, set()) for n in (1, 2, 3, 4, 7) for c, d, l in b["docs"][n]]:
+            if l != "CNP" or T.nkey(c) in seen:
+                continue
+            seen.add(T.nkey(c))
+            vals = _vals_of(c, b["cu"])
+            for n in (1, 2, 7):
+                if vals.get(str(n)) and n not in cnp:
+                    cnp[n] = (c, d, l)
+        for n, (c, d, l) in cnp.items():
+            if T.nkey(c) not in {T.nkey(x[0]) for x in b["docs"][n]}:
+                b["docs"][n].append((c, d, l))
+            COVERS[(key, T.nkey(c))] = set(COVERS.get((key, T.nkey(c)), set())) | {n}
+            ADDED[id(b)]
+        CNP_COVERED[id(b)] = cnp
+        if cnp and b not in NEW_TOUCHED:
+            NEW_TOUCHED.append(b)
+        fm_cnp = cnp.get(7)
+        if fm_cnp and "Не одговара" in str(_vals_of(fm_cnp[0], b["cu"]).get("7", "")):
+            NEW_NONCONF.append((b["cu"], b["p"], fm_cnp[0], fm_cnp[1], "CNP", 7))
+        # --- the in-house iCoA covers what CNP did not test
+        scope = [n for n in (1, 2, 7) if n not in cnp]
+        ref = _plan.get(T.batch_key(cu0)) or next((_plan["P:" + p.strip()] for p in b["p"].split("/") if _plan.get("P:" + p.strip())), None)
+        if not ref or not ref.startswith("iCoA-"):
             ref = "iCoA — to be issued"
         fm = (INH.get(T.cu_key(b["cu"])) or {}).get("7") or "Conforms"
-        held = cu0.startswith("FB032601")
-        if held:
-            fm = "held for review"
         vals = {"1": "Conforms", "2": "Conforms", "7": fm}
-        key = join_key(b)
-        ck = T.nkey(ref)
-        for n in (1, 2, 7):
-            if ck not in {T.nkey(c) for c, d, l in b["docs"][n]}:
-                b["docs"][n].append((ref, ICOA_DATE, "PP"))
-        INDEX_DOCS[key].append((ref, ICOA_DATE, "PP", {1, 2, 7}))
-        COVERS[(key, ck)] = {1, 2, 7}
-        V8VAL[(b["cu"], ck)] = dict(vals)
-        if held:
-            NEW_HELD.append((b["cu"], b["p"], ref, ICOA_DATE, "PP", 7))
-        ADDED[id(b)].append((ref, ICOA_DATE, "PP"))
-        if b not in NEW_TOUCHED:
-            NEW_TOUCHED.append(b)
-        # the batch's place in the issuance chronology: its initial-release CoQ (numbered or
-        # predicted) and the release basis date that CoQ follows; the certificate that covers
-        # identification C is the cannabinoid-assay certificate the tracker credits to #3.
-        _coq = _COQ.get(T.batch_key(cu0)) or next((_COQ.get("P:" + p.strip()) for p in b["p"].split("/") if _COQ.get("P:" + p.strip())), None)
-        # the certificate that carries the assay (#4) is the one that covers identification C;
-        # a loss-on-drying certificate credited for #3 by the owner is not
-        _assay = {T.nkey(c) for c, d, l in b["docs"][4]}
-        _pool = [x for x in b["docs"][3] if T.nkey(x[0]) in _assay] or list(b["docs"][4]) or list(b["docs"][3])
-        _c3 = sorted([x for x in _pool if not re.search(r"LoD|ГС", x[0], re.I)] or _pool, key=lambda x: (T.date_key(x[1]), x[0]))
-        ICOA_ROWS.append({"icoa": ref, "coq": _coq["n"] if _coq else "— not in the issuance plan —",
+        if scope:
+            ck = T.nkey(ref)
+            for n in scope:
+                if ck not in {T.nkey(c) for c, d, l in b["docs"][n]}:
+                    b["docs"][n].append((ref, ICOA_DATE, "PP"))
+            INDEX_DOCS[key].append((ref, ICOA_DATE, "PP", set(scope)))
+            COVERS[(key, ck)] = set(scope)
+            V8VAL[(b["cu"], ck)] = {str(n): vals[str(n)] for n in scope}
+            ADDED[id(b)].append((ref, ICOA_DATE, "PP"))
+            if b not in NEW_TOUCHED:
+                NEW_TOUCHED.append(b)
+        _coq = _lookup(_COQ, b, cu0)
+        cell = lambda n: (f"CNP {cnp[n][0]}" if n in cnp else vals[str(n)])
+        ICOA_ROWS.append({"series": "initial release", "icoa": ref if scope else "not needed",
+                          "coq": _coq["n"] if _coq else "— not in the issuance plan —",
                           "basis": _coq["basis"] if _coq else "", "issue": "≥ 11.05.2026 · at packaging",
                           "cu": b["cu"], "p": b["p"], "strain": b.get("strain") or STRAIN.get(T.batch_key(cu0), ""),
-                          "scope": "Ident A + Ident B + Foreign matter", "a": vals["1"], "b": vals["2"], "fm": vals["7"],
-                          "c": (f"{_c3[0][0]}, ({_c3[0][1]}) [{_c3[0][2]}]" if _c3 else "— no cannabinoid certificate —"),
-                          "number": "planned" if ref.startswith("iCoA-") else "at issue"})
+                          "scope": (" + ".join({1: "Ident A", 2: "Ident B", 7: "Foreign matter"}[n] for n in scope) if scope
+                                    else "— all three on the CNP certificate —"),
+                          "a": cell(1), "b": cell(2), "fm": cell(7),
+                          "c": _ident_c(b) or "— no cannabinoid certificate —",
+                          "status": ("not needed — CNP covers A, B and foreign matter" if not scope else
+                                     "planned number" if ref.startswith("iCoA-") else "number at issue")})
+        # --- RETEST SERIES: the QP's retesting campaign (medical use, GACP product / API) —
+        #     the same scope again, one iCoA per batch, dated at the retest sampling
+        _rt = _lookup(_RETEST, b, cu0)
+        if _rt:
+            # a cannabinoid assay dated more than 60 days after the release basis is the retest
+            # (the Farmahem 197-series of August 2026 is the QP's campaign, whatever the
+            # plan's nominal 12-month date says)
+            _after = None
+            if _coq and _coq.get("basis"):
+                import datetime as _dt
+                try:
+                    _after = (_dt.datetime.strptime(_coq["basis"], "%d.%m.%Y") + _dt.timedelta(days=60)).strftime("%d.%m.%Y")
+                except ValueError:
+                    _after = None
+            c_rt = _ident_c(b, after=_after) if _after else None
+            ICOA_ROWS.append({"series": "retest — QP campaign", "icoa": "iCoA — to be issued (retest)",
+                              "coq": _rt["n"] if not _rt["n"].startswith("(") else "CoQ reissue (assigned on issue)",
+                              "basis": _rt.get("basis", ""), "issue": "at retest sampling · QP campaign",
+                              "cu": b["cu"], "p": b["p"], "strain": b.get("strain") or STRAIN.get(T.batch_key(cu0), ""),
+                              "scope": "Ident A + Ident B + Foreign matter", "a": "to test", "b": "to test", "fm": "to test",
+                              "c": c_rt or "— retest assay not yet on file —",
+                              "status": "due — retest assay on file" if c_rt else "pending — retest assay not yet on file"})
+
     def _bkey(r):
-        return (str(T.date_key(r["basis"])) if r["basis"] else "99999998", r["icoa"])
+        return (0 if r["series"] == "initial release" else 1,
+                str(T.date_key(r["basis"])) if r["basis"] else "99999998", r["icoa"], r["cu"])
     ICOA_ROWS.sort(key=_bkey)
     for _i, _row in enumerate(ICOA_ROWS, 1):
         _row["seq"] = _i
-    print(f"iCoA rule: {len(ICOA_ROWS)} in-house instance(s) (#1, #2, #7), "
-          f"{sum(1 for r in ICOA_ROWS if not r['icoa'].startswith('iCoA-'))} without a planned number")
+    print(f"iCoA rule: {sum(1 for r in ICOA_ROWS if r['series'] == 'initial release')} initial rows "
+          f"({sum(1 for r in ICOA_ROWS if r['status'].startswith('not needed'))} covered by CNP, "
+          f"{sum(1 for r in ICOA_ROWS if r['status'] == 'number at issue')} numbered at issue), "
+          f"{sum(1 for r in ICOA_ROWS if r['series'] != 'initial release')} retest rows "
+          f"({sum(1 for r in ICOA_ROWS if r['status'].startswith('due'))} due, retest assay on file)")
 
 
 # --------------------------------------------------------------------------- credit corrections
@@ -529,6 +598,9 @@ stats = collections.Counter()
 oos_rows = []
 audit = []
 SPAN = {}
+for _cu, _pb, _code, _date, _lab, _pno in NEW_NONCONF:
+    audit.append((_cu, _pb, _code, _date, _lab, _pno,
+                  next(p["title"] for p in T.PARAMS if p["n"] == _pno), "non-conformance reported"))
 for _cu, _pb, _code, _date, _lab, _pno in NEW_HELD:
     audit.append((_cu, _pb, _code, _date, _lab, _pno,
                   next(p["title"] for p in T.PARAMS if p["n"] == _pno), "held for review"))
@@ -844,7 +916,7 @@ for _i, (_t, _w) in enumerate(wcols, 1):
 wo.row_dimensions[1].height = 22
 tasks = collections.defaultdict(lambda: {"params": set(), "meta": None})
 for cu, pb, code, date, lab, pno, title, why in audit:
-    if why not in ("not ingested", "held for review"):
+    if why not in ("not ingested", "held for review", "non-conformance reported"):
         continue
     k = (why, cu, code)
     tasks[k]["params"].add(pno)
@@ -858,6 +930,8 @@ NEED = {
     "not ingested": "Re-extract the document into the eCoA database (two independent reads, 300 DPI). "
                     "Until then the lot cannot reach a CoQ on these parameters.",
     "held for review": "The two independent reads disagreed. A person must read the figure from the page and confirm it.",
+    "non-conformance reported": "The laboratory reports the result as not conforming (Не одговара). A deviation / OOS "
+                                "record is needed before this lot's CoQ can issue.",
     "lot not on tracker": "The certificate names a P batch the owner's tracker does not carry. Record the lot "
                           "(cultivation batch code, strain) on the tracker so the certificate is credited under its batch.",
 }
@@ -1146,10 +1220,10 @@ def add_mikro(wb, src_path):
 
 def add_icoa_sheet(wb):
     sh = wb.create_sheet("iCoA Issuance", wb.sheetnames.index("Work Order") + 1)
-    icols = [("Seq", 6), ("iCoA", 20), ("CoQ", 20), ("Release basis", 13), ("Issue on", 24), ("CU Batch", 14),
-             ("P Batch", 22), ("Strain", 20), ("Scope", 30), ("#1 Ident. A", 11), ("#2 Ident. B", 11),
-             ("#7 Foreign matter", 15), ("Ident C — covered by (eCoA)", 34), ("Number", 10)]
-    keys = ("seq", "icoa", "coq", "basis", "issue", "cu", "p", "strain", "scope", "a", "b", "fm", "c", "number")
+    icols = [("Seq", 6), ("Series", 20), ("iCoA", 24), ("CoQ", 30), ("Basis date", 12), ("Issue on", 28), ("CU Batch", 14),
+             ("P Batch", 22), ("Strain", 20), ("iCoA scope", 34), ("#1 Ident. A", 14), ("#2 Ident. B", 14),
+             ("#7 Foreign matter", 16), ("Ident C — covered by (eCoA)", 34), ("Status", 40)]
+    keys = ("seq", "series", "icoa", "coq", "basis", "issue", "cu", "p", "strain", "scope", "a", "b", "fm", "c", "status")
     for _i, (_t, _w) in enumerate(icols, 1):
         put(sh, 1, _i, _t, FW, NAVY, CEN)
         sh.column_dimensions[L(_i)].width = _w
@@ -1159,10 +1233,19 @@ def add_icoa_sheet(wb):
         for _i, k in enumerate(keys, 1):
             v = row[k]
             put(sh, _r, _i, v, F7B if k in ("icoa", "cu") else F7,
-                FILL["amber"] if (k == "fm" and v == "held for review") or (k == "c" and str(v).startswith("—")) else None, CEN)
+                FILL["amber"] if (k == "fm" and v == "held for review") or (k == "c" and str(v).startswith("—"))
+                or (k == "status" and str(v).startswith("pending")) else
+                (FILL["green"] if k == "status" and str(v).startswith("due") else
+                 (FILL["extra"] if k in ("a", "b", "fm") and str(v).startswith("CNP ") else None)), CEN)
         _r += 1
     note = ("Chronological issuance: one iCoA per batch, in the order of the release basis date its initial-release "
-            "CoQ follows (the issuance plan of 31.08.2026; numbers iCoA-PP-YYYY-NNNN, one series per calendar year). "
+            "CoQ follows (the issuance plan of 31.08.2026; numbers iCoA-PP-YYYY-NNNN, one series per calendar year), "
+            "then the RETEST SERIES: the same scope again for every batch, for the QP's retesting campaign (medical "
+            "use, GACP product / API), dated at the retest sampling, in the order of the additional-testing CoQ each "
+            "one belongs to — 'due' where the retest cannabinoid assay is already on file, 'pending' where it is not. "
+            "Where a CNP certificate reports identification A, B or foreign matter, its document code is the "
+            "reference for them (grey cells) and the iCoA covers only the rest; where CNP reports all three, no "
+            "iCoA is needed. Farmahem: identification C is the K (potency) certificate. "
             "Head of QC, 04.09.2026: identification A (appearance) and B (microscopy) are tested at Purely Plant "
             "together with foreign matter, at the date of packaging, and ONE iCoA per batch carries the three "
             "results for release. Numbers follow the issuance plan (iCoA-PP-YYYY-NNNN); a lot without a planned "
