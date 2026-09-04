@@ -295,9 +295,10 @@ twice at 300 DPI. `new_instances_from_records.py` turns the reconciled records a
 manifest into `new_instances.json`; `build_tracker_v8.py --v9` reads it and:
 
 - credits each certificate to #9 on its lot as a new testing instance, in date order, with
-  the values the two reads agreed on — 29 of 30 read clean on every row; one row
-  (P060432, bile-tolerant gram-negative) is `held for review` and sits on the Work Order.
-  P060262's held row was ruled by the Head of QC on 04.09.2026 (`decisions_2026-09-04.tsv`);
+  the values the two reads agreed on — 28 of 30 read clean on every row; the two rows the
+  reads disagreed on (bile-tolerant gram-negative bacteria) were ruled by the Head of QC on
+  04.09.2026 from the certificate pages (`decisions_2026-09-04.tsv`): P060262 `< 10³ и > 10²
+  CFU/g`, P060432 `< 10² и > 10 CFU/g`. Nothing is held for review;
 - opens a lot row with no CU code for the three P batches the owner's tracker does not
   carry (P060102, P060342, P050142), each with a Work Order task to record the lot;
 - marks #9 ✓ on **Batch Coverage**, recounts the missing list, the certificate count and
@@ -323,17 +324,40 @@ tracker prints it as "Conforms (ImB spec.)".
 
 With `--icoa` every lot receives one in-house testing instance for #1, #2 and #7, referenced
 to its planned iCoA number (`iCoA-PP-YYYY-NNNN` from the issuance plan; "iCoA — to be issued"
-where the plan has none) and dated "packaging date — to record", because the packaging date
-is not on the desk. Foreign matter is "Conforms" by the declaration of 13.08.2026, except
+where the plan has none) and dated on the **first day of packaging** from the Head of QC's
+list of 04.09.2026 (`batch_dates.csv`, see below; "packaging date — to record" for the three
+P16 lots the list does not carry). Foreign matter is "Conforms" by the declaration of 13.08.2026, except
 FB032601, where ППК26127 reports 0.08 % (Не одговара): held for the Head of QC and on the
 Work Order. The **iCoA Issuance** sheet is the chronological issuance list: one row per batch in the
-order of the release basis date its initial-release CoQ follows (the issuance plan of
-31.08.2026), with the planned number (`iCoA — to be issued` where the plan assigns one at
+order of packaging — the iCoA's own date — with the CoQ basis date of the issuance plan of
+31.08.2026 beside it, the harvest and packaging spans, the planned number (`iCoA — to be issued` where the plan assigns one at
 issue), what the iCoA carries, and the cannabinoid-assay certificate that covers
 identification C — the assay certificate itself, never a loss-on-drying certificate. Batch
 Coverage marks in-house-only coverage in grey, as v6 did. Coverage moves from 0 to 52
 complete lots of 84; conformance is unchanged.
 
+
+### Batch dates (Head of QC, 04.09.2026) — `--dates=`
+
+The Head of QC sent the date of harvest and the packaging date for 87 batches (six R&D
+lots and 81 P lots). The list is kept verbatim in `batch_dates_raw_2026-09-04.tsv` and
+normalised by `batch_dates.py` into `batch_dates.csv` — every date as dd.mm.yyyy, a
+packaging or harvest that ran over several days as from/to, and a `note` for every reading
+the script had to make: a year the list does not print is the harvest year of the same row,
+else the year of the row above (seven rows); `11-13-11.2025` is read as 11–13.11.2025; `0`
+and `]` are no date (two harvest dates missing: P050142, P050152). The builder loads the file
+by default (`--dates=path` overrides) and looks a lot up by P-number first (one tracker row
+may hold several P lots: GRC102501 two, JD012603 three — the row is dated on the earliest
+packaging and shows every span), then by CU code (the six R&D lots).
+
+The in-house iCoA instance is dated on the **first day of packaging**. That is the day the
+issuance plan of 31.08.2026 already uses as the CoQ basis wherever it holds a packaging date
+(16 lots pack over several days; the plan's basis is the first day on every one), so the
+planned iCoA numbers stay in chronological order. Where the plan's basis is not a packaging
+date (the CoQs "assigned on issue"), the Packaging column names the plan's basis beside the
+list's date. 79 of the 87 rows date a tracker lot; the eight that do not (P050242, P050232,
+P060122, P060112, P060132, P060372, P060472, P060492) are batches the owner's tracker does not
+carry, and the **Batch Dates** sheet lists all 87 with the lot each one dated and the note.
 
 ### CNP document codes, and the retest series (Head of QC, 04.09.2026, second ruling)
 
