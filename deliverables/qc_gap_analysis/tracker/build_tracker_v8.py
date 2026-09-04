@@ -288,6 +288,59 @@ if NEW:
         VER = "9.1"
         OUT = os.path.join(HERE, "CoQ_Analysis_Master_v9.1.xlsx")
 
+# --------------------------------------------------------------------------- the iCoA rule (04.09.2026)
+# Head of QC, 04.09.2026: identification A (appearance) and B (microscopy) are tested at
+# Purely Plant together with foreign matter, at the date of packaging, and ONE iCoA per batch
+# carries the three results for release. Identification C conforms to the ImB specification
+# and is referenced to the certificate that carries the cannabinoid assay (#4), which the
+# desk already credits. The packaging date is not on the desk: the instance is dated
+# "packaging date — to record" and sorts last, and the iCoA Issuance sheet lists what each
+# batch's iCoA must carry. Foreign matter is "Conforms" by the declaration of 13.08.2026,
+# except where an outsourced certificate reports otherwise (FB032601, ППК26127: 0.08 %,
+# Не одговара) — that lot's foreign matter is held for the Head of QC.
+ICOA_RULE = "--icoa" in sys.argv
+ICOA_ROWS = []
+ADDED = collections.defaultdict(list)        # lot -> documents added by this build (coverage recount)
+for _b in NEW_TOUCHED:
+    ADDED[id(_b)] += [(x["code"], x["date"], x["lab"]) for x in NEW if _lot_of(x) is _b]
+if ICOA_RULE:
+    _D = json.load(open(T.DESK))
+    _plan = {}
+    for _x in _D["icoa_plan"]:
+        _plan.setdefault(T.batch_key(re.sub(r"[＊*]", "", _x["cb"])), _x["icoa_ref"])
+        if _x.get("pp"):
+            _plan.setdefault("P:" + _x["pp"].strip(), _x["icoa_ref"])
+    ICOA_DATE = "packaging date — to record"
+    for b in batches:
+        cu0 = re.sub(r"[＊*]", "", b["cu"])
+        ref = _plan.get(T.batch_key(cu0))
+        if not ref:
+            ref = next((_plan["P:" + p.strip()] for p in b["p"].split("/") if _plan.get("P:" + p.strip())), None)
+        ref = ref or "iCoA — to be issued"
+        fm = (INH.get(T.cu_key(b["cu"])) or {}).get("7") or "Conforms"
+        held = cu0.startswith("FB032601")
+        if held:
+            fm = "held for review"
+        vals = {"1": "Conforms", "2": "Conforms", "7": fm}
+        key = join_key(b)
+        ck = T.nkey(ref)
+        for n in (1, 2, 7):
+            if ck not in {T.nkey(c) for c, d, l in b["docs"][n]}:
+                b["docs"][n].append((ref, ICOA_DATE, "PP"))
+        INDEX_DOCS[key].append((ref, ICOA_DATE, "PP", {1, 2, 7}))
+        COVERS[(key, ck)] = {1, 2, 7}
+        V8VAL[(b["cu"], ck)] = dict(vals)
+        if held:
+            NEW_HELD.append((b["cu"], b["p"], ref, ICOA_DATE, "PP", 7))
+        ADDED[id(b)].append((ref, ICOA_DATE, "PP"))
+        if b not in NEW_TOUCHED:
+            NEW_TOUCHED.append(b)
+        ICOA_ROWS.append((ref, b["cu"], b["p"], b.get("strain") or STRAIN.get(T.batch_key(cu0), ""),
+                          "Ident A + Ident B + Foreign matter", ICOA_DATE, vals["1"], vals["2"], vals["7"],
+                          "planned number" if ref.startswith("iCoA-") else "number at issue"))
+    print(f"iCoA rule: {len(ICOA_ROWS)} in-house instance(s) (#1, #2, #7), "
+          f"{sum(1 for r in ICOA_ROWS if not r[0].startswith('iCoA-'))} without a planned number")
+
 
 # --------------------------------------------------------------------------- credit corrections
 # Two corrections to the owner's credit table, each applied only where the evidence is
@@ -573,6 +626,8 @@ for b in batches:
                 if here:
                     v = values_of(here[0], here[2], b["cu"], scope_of(b, here[0])).get(no)
                     cell_v = v or silence_reason(here[0], here[2], b["cu"], no)
+                    if ICOA_RULE and p["n"] == 3 and str(cell_v).startswith("Conforms"):
+                        cell_v = str(cell_v).replace("Conforms", "Conforms (ImB spec.)", 1)
                     font = F7R if T.over_limit(no, v or "") else (F7U if T.undetermined(no, v or "") else F7B)
                 else:
                     cell_v = "— MISSING —" if state == "red" else ""
@@ -925,9 +980,7 @@ def patch_coverage(wb):
             _style_from(cell, status_style[st[:1]])
 
     for b in NEW_TOUCHED:
-        new_docs = [(c, d, l) for n in range(1, 13) for c, d, l in b["docs"][n]
-                    if any(T.nkey(c) == T.nkey(x["code"]) for x in NEW)]
-        new_docs = sorted(set(new_docs))
+        new_docs = sorted(set(ADDED.get(id(b), [])))
         if b.get("new_lot"):
             r = last + 1
             last = r
@@ -941,11 +994,17 @@ def patch_coverage(wb):
                 cell = cov.cell(r, 4 + n)
                 cell.value = "✓" if b["docs"][n] else "✗"
                 _style_from(cell, tick if b["docs"][n] else cross)
+                if b["docs"][n] and all(T.kind_of(c, l, STAB) in ("In-house", "iCoA") for c, d, l in b["docs"][n]):
+                    cell.fill = PatternFill("solid", fgColor="E7E6E6")
+                    cell.font = Font(name="Calibri", size=9, color="595959")
             cov.cell(r, 19).value = len(new_docs)
             cov.cell(r, 20).value = f"[{new_docs[0][2]}] {len(new_docs)}" if new_docs else ""
             recount(r)
             continue
         r = rows.get(rowkey(b["cu"], b["p"]))
+        if r is None:                       # the owner's row names the lot by its P batch only
+            _kp = rowkey(b["cu"], b["p"])[1]
+            r = next((rr for (kcu, kp), rr in rows.items() if kp == _kp and _kp != "— not assigned —"), None)
         if r is None:
             print("coverage: no row for", b["cu"], b["p"])
             continue
@@ -953,6 +1012,9 @@ def patch_coverage(wb):
             if b["docs"][n] and cov.cell(r, 4 + n).value != "✓":
                 cov.cell(r, 4 + n).value = "✓"
                 _style_from(cov.cell(r, 4 + n), tick)
+                if all(T.kind_of(c, l, STAB) in ("In-house", "iCoA") for c, d, l in b["docs"][n]):
+                    cov.cell(r, 4 + n).fill = PatternFill("solid", fgColor="E7E6E6")
+                    cov.cell(r, 4 + n).font = Font(name="Calibri", size=9, color="595959")
         cov.cell(r, 19).value = int(cov.cell(r, 19).value or 0) + len(new_docs)
         labs = collections.OrderedDict()
         for tok in str(cov.cell(r, 20).value or "").split(";"):
@@ -1058,12 +1120,42 @@ def add_mikro(wb, src_path):
     return len(lots)
 
 
+def add_icoa_sheet(wb):
+    sh = wb.create_sheet("iCoA Issuance", wb.sheetnames.index("Work Order") + 1)
+    icols = [("iCoA", 20), ("CU Batch", 14), ("P Batch", 22), ("Strain", 20), ("Scope", 30), ("Date", 26),
+             ("#1 Ident. A", 12), ("#2 Ident. B", 12), ("#7 Foreign matter", 16), ("Number", 16)]
+    for _i, (_t, _w) in enumerate(icols, 1):
+        put(sh, 1, _i, _t, FW, NAVY, CEN)
+        sh.column_dimensions[L(_i)].width = _w
+    sh.row_dimensions[1].height = 22
+    _r = 2
+    for row in ICOA_ROWS:
+        for _i, v in enumerate(row, 1):
+            put(sh, _r, _i, v, F7B if _i in (1, 2) else F7, FILL["amber"] if (_i == 9 and v == "held for review") else None, CEN)
+        _r += 1
+    note = ("Head of QC, 04.09.2026: identification A (appearance) and B (microscopy) are tested at Purely Plant "
+            "together with foreign matter, at the date of packaging, and ONE iCoA per batch carries the three "
+            "results for release. Numbers follow the issuance plan (iCoA-PP-YYYY-NNNN); a lot without a planned "
+            "number takes its number at issue. The packaging date is not on the desk and is to be recorded on "
+            "issue. Foreign matter is 'Conforms' by the declaration of 13.08.2026, except FB032601, where "
+            "ППК26127 reports 0.08 % (Не одговара): held for the Head of QC. Identification C is not on the iCoA: "
+            "it conforms to the ImB specification on the certificate that carries the cannabinoid assay (#4).")
+    sh.merge_cells(start_row=_r + 1, start_column=1, end_row=_r + 1, end_column=len(icols))
+    put(sh, _r + 1, 1, note, F6I, GREY, Alignment(horizontal="left", vertical="top", wrap_text=True))
+    sh.row_dimensions[_r + 1].height = 64
+    sh.auto_filter.ref = f"A1:{L(len(icols))}{_r - 1}"
+    sh.freeze_panes = "A2"
+    print("iCoA issuance rows:", _r - 2)
+
+
 if NEW:
     _last = patch_coverage(wb)
     patch_dashboard(wb, _last)
     _mikro = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--mikro=")), None)
     if _mikro and os.path.exists(_mikro):
         add_mikro(wb, _mikro)
+    if ICOA_RULE:
+        add_icoa_sheet(wb)
     _rm = wb["Read Me"]
     _r = _rm.max_row + 2
     _held = ", ".join(sorted({f"{c} (#{n})" for cu, pb, c, d, l, n in NEW_HELD}))
@@ -1074,7 +1166,12 @@ if NEW:
              f"recomputed with them."
              + (f" Held for a person's read: {_held}." if _held else "")
              + (f" Lots the owner's tracker does not carry, opened without a CU code: {_lots}." if _lots else "")
-             + " The laboratory prints the zero of a P-number as a letter O (PO60052); it is folded to P060052 here.")
+             + " The laboratory prints the zero of a P-number as a letter O (PO60052); it is folded to P060052 here."
+             + (" Head of QC, 04.09.2026: identification A and B are tested at Purely Plant together with foreign "
+                "matter at the date of packaging, and one iCoA per batch carries the three results — every lot "
+                "now holds that in-house instance for #1, #2 and #7 (see iCoA Issuance); identification C "
+                "conforms to the ImB specification on the certificate that carries the cannabinoid assay."
+                if ICOA_RULE else ""))
     for _label, _t in ((f"v{VER}", _text),):
         _c = _rm.cell(_r, 1, _label); _c.font = Font(name="Calibri", size=9, bold=True); _c.alignment = Alignment(vertical="top")
         _c = _rm.cell(_r, 2, _t); _c.font = Font(name="Calibri", size=9); _c.alignment = Alignment(vertical="top", wrap_text=True)

@@ -311,3 +311,21 @@ the published page from the workbook. The conformance picture is unchanged: five
 specification, four undetermined, three stability exceedances — the new certificates are
 all within their criteria, and where a lot's earlier TYMC was out of specification the
 new instance stands beside it as a later round, not in place of it.
+
+
+### The iCoA rule (Head of QC, 04.09.2026) — `--icoa`
+
+Identification A (appearance) and B (microscopy) are tested at Purely Plant together with
+foreign matter, at the date of packaging, and **one iCoA per batch** carries the three
+results for release. Identification C conforms to the ImB specification and is referenced to
+the certificate that carries the cannabinoid assay (#4), which the desk already credits; the
+tracker prints it as "Conforms (ImB spec.)".
+
+With `--icoa` every lot receives one in-house testing instance for #1, #2 and #7, referenced
+to its planned iCoA number (`iCoA-PP-YYYY-NNNN` from the issuance plan; "iCoA — to be issued"
+where the plan has none) and dated "packaging date — to record", because the packaging date
+is not on the desk. Foreign matter is "Conforms" by the declaration of 13.08.2026, except
+FB032601, where ППК26127 reports 0.08 % (Не одговара): held for the Head of QC and on the
+Work Order. The **iCoA Issuance** sheet lists what each batch's iCoA must carry; Batch
+Coverage marks in-house-only coverage in grey, as v6 did. Coverage moves from 0 to 52
+complete lots of 84; conformance is unchanged.
