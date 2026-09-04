@@ -29,7 +29,7 @@ def table(name):
         vals = [ws.cell(r, c).value for c in range(1, len(hdr) + 1)]
         if not any(v not in (None, '') for v in vals[:3]):
             continue
-        if len(hdr) >= 9 and str(vals[0] or '').startswith('These corrections'):
+        if str(vals[0] or '').startswith(('These corrections', 'Chronological issuance', 'Head of QC')):
             continue
         d = {}
         for h, v in zip(hdr, vals):
@@ -107,7 +107,8 @@ for i, a in enumerate(anchors):
 data = {'coverage_headers': coverage_headers, 'coverage': coverage,
         'params': [{k: v for k, v in p.items() if k not in ('start', 'end')} for p in params],
         'lots': lots, 'work_order': table('Work Order'), 'credit_audit': table('Credit Audit'),
-        'corrections': table('Credit Corrections')}
+        'corrections': table('Credit Corrections'),
+        'icoa': table('iCoA Issuance') if 'iCoA Issuance' in wb.sheetnames else []}
 json.dump(data, open(OUT, 'w'), ensure_ascii=False)
 print('lots', len(lots), 'blocks', sum(len(l['blocks']) for l in lots), 'coverage rows', len(coverage),
       'work order', len(data['work_order']), 'audit', len(data['credit_audit']), 'corrections', len(data['corrections']))

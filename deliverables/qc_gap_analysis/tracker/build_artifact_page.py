@@ -126,6 +126,7 @@ footer{color:var(--muted);font-size:12.5px;margin-top:40px;max-width:80ch}
   <button role="tab" aria-selected="true" data-view="overview">Batch Coverage</button>
   <button role="tab" aria-selected="false" data-view="checklist">Checklist</button>
   <button role="tab" aria-selected="false" data-view="tracker">CoQ Parameter Tracker</button>
+  <button role="tab" aria-selected="false" data-view="icoa">iCoA Issuance</button>
 </nav>
 
 <section id="overview">
@@ -172,6 +173,12 @@ footer{color:var(--muted);font-size:12.5px;margin-top:40px;max-width:80ch}
   <div id="lots"></div>
 </section>
 
+<section id="icoa" hidden>
+  <p class="sub">One iCoA per batch, in the order of the release basis date its initial-release CoQ follows. Each carries identification A, identification B and foreign matter, tested at Purely Plant at packaging. Identification C is covered by the cannabinoid-assay certificate named in the last column, cited on the CoQ directly.</p>
+  <div class="toolbar"><input id="ic-q" type="search" placeholder="Filter by batch, number, strain, certificate…" aria-label="Filter iCoA rows"><span id="ic-n" class="label"></span></div>
+  <div class="scroll"><table id="ic-table"></table></div>
+</section>
+
 <footer>One two-row block per testing instance: the result on the top row, the certificate that carries it on the bottom. Parameters 9–11 print each determination in its own column. Conformance is judged on release results only, against the acceptance criteria on the Parameters sheet (counted limits ≤10ⁿ judged against 2×10ⁿ, Ph. Eur. 2.6.12). Built from <code>CoQ_Analysis_Master_v10.xlsx</code>, 04.09.2026: the 30 IJZ-MB microbiology certificates of 31.08/01.09.2026 are included as testing instances.</footer>
 </div>
 
@@ -191,7 +198,7 @@ document.getElementById('subline').textContent =
 const tabs = [...document.querySelectorAll('nav.tabs button')];
 function show(view){
   tabs.forEach(b => b.setAttribute('aria-selected', String(b.dataset.view===view)));
-  ['overview','checklist','tracker'].forEach(v => document.getElementById(v).hidden = v!==view);
+  ['overview','checklist','tracker','icoa'].forEach(v => document.getElementById(v).hidden = v!==view);
   try { localStorage.setItem('coq9.view', view); } catch(e){}
 }
 tabs.forEach(b => b.addEventListener('click', () => show(b.dataset.view)));
@@ -338,9 +345,27 @@ function renderTracker(){
 document.getElementById('tr-q').addEventListener('input', renderTracker);
 document.getElementById('tr-flag').addEventListener('change', renderTracker);
 
-renderOverview(); renderChecklist(); renderTracker();
+/* ---------- iCoA issuance ---------- */
+function renderIcoa(){
+  const rows = D.icoa || [];
+  const q = document.getElementById('ic-q').value.trim().toLowerCase();
+  const cols = rows.length ? Object.keys(rows[0]) : [];
+  let n = 0;
+  const body = rows.filter(r => !q || Object.values(r).join(' ').toLowerCase().includes(q)).map(r => { n++;
+    return '<tr>' + cols.map(c => {
+      const v = r[c] || '';
+      const cls = (c === 'Seq') ? ' class="c"' : (c === 'iCoA' || c === 'CoQ' || c === 'CU Batch' || c === 'P Batch' || c.startsWith('Ident C')) ? ' class="mono"' : '';
+      const pill = v === 'held for review' ? `<span class="pill p-warn">${esc(v)}</span>` : (v.startsWith('—') ? `<span class="pill p-bad">${esc(v)}</span>` : esc(v));
+      return `<td${cls}>${pill}</td>`;
+    }).join('') + '</tr>'; }).join('');
+  document.getElementById('ic-table').innerHTML = '<thead><tr>' + cols.map(c => `<th>${esc(c)}</th>`).join('') + '</tr></thead><tbody>' + body + '</tbody>';
+  document.getElementById('ic-n').textContent = `${n} of ${rows.length} iCoAs`;
+}
+document.getElementById('ic-q').addEventListener('input', renderIcoa);
+
+renderOverview(); renderChecklist(); renderTracker(); renderIcoa();
 let v = 'overview'; try { v = localStorage.getItem('coq9.view') || v; } catch(e){}
-show(['overview','checklist','tracker'].includes(v) ? v : 'overview');
+show(['overview','checklist','tracker','icoa'].includes(v) ? v : 'overview');
 })();
 </script>
 '''

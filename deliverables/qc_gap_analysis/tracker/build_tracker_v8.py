@@ -311,12 +311,19 @@ if ICOA_RULE:
         if _x.get("pp"):
             _plan.setdefault("P:" + _x["pp"].strip(), _x["icoa_ref"])
     ICOA_DATE = "packaging date — to record"
+    _COQ = {}
+    for _c in _D["coqs"]:
+        if _c["t"].startswith("initial release"):
+            _COQ.setdefault(T.batch_key(re.sub(r"[＊*]", "", _c["cb"])), _c)
+            if _c.get("pp"):
+                _COQ.setdefault("P:" + _c["pp"].strip(), _c)
     for b in batches:
         cu0 = re.sub(r"[＊*]", "", b["cu"])
         ref = _plan.get(T.batch_key(cu0))
         if not ref:
             ref = next((_plan["P:" + p.strip()] for p in b["p"].split("/") if _plan.get("P:" + p.strip())), None)
-        ref = ref or "iCoA — to be issued"
+        if not ref or not ref.startswith("iCoA-"):     # the plan says "(assigned on issue)"
+            ref = "iCoA — to be issued"
         fm = (INH.get(T.cu_key(b["cu"])) or {}).get("7") or "Conforms"
         held = cu0.startswith("FB032601")
         if held:
@@ -335,11 +342,28 @@ if ICOA_RULE:
         ADDED[id(b)].append((ref, ICOA_DATE, "PP"))
         if b not in NEW_TOUCHED:
             NEW_TOUCHED.append(b)
-        ICOA_ROWS.append((ref, b["cu"], b["p"], b.get("strain") or STRAIN.get(T.batch_key(cu0), ""),
-                          "Ident A + Ident B + Foreign matter", ICOA_DATE, vals["1"], vals["2"], vals["7"],
-                          "planned number" if ref.startswith("iCoA-") else "number at issue"))
+        # the batch's place in the issuance chronology: its initial-release CoQ (numbered or
+        # predicted) and the release basis date that CoQ follows; the certificate that covers
+        # identification C is the cannabinoid-assay certificate the tracker credits to #3.
+        _coq = _COQ.get(T.batch_key(cu0)) or next((_COQ.get("P:" + p.strip()) for p in b["p"].split("/") if _COQ.get("P:" + p.strip())), None)
+        # the certificate that carries the assay (#4) is the one that covers identification C;
+        # a loss-on-drying certificate credited for #3 by the owner is not
+        _assay = {T.nkey(c) for c, d, l in b["docs"][4]}
+        _pool = [x for x in b["docs"][3] if T.nkey(x[0]) in _assay] or list(b["docs"][4]) or list(b["docs"][3])
+        _c3 = sorted([x for x in _pool if not re.search(r"LoD|ГС", x[0], re.I)] or _pool, key=lambda x: (T.date_key(x[1]), x[0]))
+        ICOA_ROWS.append({"icoa": ref, "coq": _coq["n"] if _coq else "— not in the issuance plan —",
+                          "basis": _coq["basis"] if _coq else "", "issue": "≥ 11.05.2026 · at packaging",
+                          "cu": b["cu"], "p": b["p"], "strain": b.get("strain") or STRAIN.get(T.batch_key(cu0), ""),
+                          "scope": "Ident A + Ident B + Foreign matter", "a": vals["1"], "b": vals["2"], "fm": vals["7"],
+                          "c": (f"{_c3[0][0]}, ({_c3[0][1]}) [{_c3[0][2]}]" if _c3 else "— no cannabinoid certificate —"),
+                          "number": "planned" if ref.startswith("iCoA-") else "at issue"})
+    def _bkey(r):
+        return (str(T.date_key(r["basis"])) if r["basis"] else "99999998", r["icoa"])
+    ICOA_ROWS.sort(key=_bkey)
+    for _i, _row in enumerate(ICOA_ROWS, 1):
+        _row["seq"] = _i
     print(f"iCoA rule: {len(ICOA_ROWS)} in-house instance(s) (#1, #2, #7), "
-          f"{sum(1 for r in ICOA_ROWS if not r[0].startswith('iCoA-'))} without a planned number")
+          f"{sum(1 for r in ICOA_ROWS if not r['icoa'].startswith('iCoA-'))} without a planned number")
 
 
 # --------------------------------------------------------------------------- credit corrections
@@ -1122,24 +1146,31 @@ def add_mikro(wb, src_path):
 
 def add_icoa_sheet(wb):
     sh = wb.create_sheet("iCoA Issuance", wb.sheetnames.index("Work Order") + 1)
-    icols = [("iCoA", 20), ("CU Batch", 14), ("P Batch", 22), ("Strain", 20), ("Scope", 30), ("Date", 26),
-             ("#1 Ident. A", 12), ("#2 Ident. B", 12), ("#7 Foreign matter", 16), ("Number", 16)]
+    icols = [("Seq", 6), ("iCoA", 20), ("CoQ", 20), ("Release basis", 13), ("Issue on", 24), ("CU Batch", 14),
+             ("P Batch", 22), ("Strain", 20), ("Scope", 30), ("#1 Ident. A", 11), ("#2 Ident. B", 11),
+             ("#7 Foreign matter", 15), ("Ident C — covered by (eCoA)", 34), ("Number", 10)]
+    keys = ("seq", "icoa", "coq", "basis", "issue", "cu", "p", "strain", "scope", "a", "b", "fm", "c", "number")
     for _i, (_t, _w) in enumerate(icols, 1):
         put(sh, 1, _i, _t, FW, NAVY, CEN)
         sh.column_dimensions[L(_i)].width = _w
     sh.row_dimensions[1].height = 22
     _r = 2
     for row in ICOA_ROWS:
-        for _i, v in enumerate(row, 1):
-            put(sh, _r, _i, v, F7B if _i in (1, 2) else F7, FILL["amber"] if (_i == 9 and v == "held for review") else None, CEN)
+        for _i, k in enumerate(keys, 1):
+            v = row[k]
+            put(sh, _r, _i, v, F7B if k in ("icoa", "cu") else F7,
+                FILL["amber"] if (k == "fm" and v == "held for review") or (k == "c" and str(v).startswith("—")) else None, CEN)
         _r += 1
-    note = ("Head of QC, 04.09.2026: identification A (appearance) and B (microscopy) are tested at Purely Plant "
+    note = ("Chronological issuance: one iCoA per batch, in the order of the release basis date its initial-release "
+            "CoQ follows (the issuance plan of 31.08.2026; numbers iCoA-PP-YYYY-NNNN, one series per calendar year). "
+            "Head of QC, 04.09.2026: identification A (appearance) and B (microscopy) are tested at Purely Plant "
             "together with foreign matter, at the date of packaging, and ONE iCoA per batch carries the three "
             "results for release. Numbers follow the issuance plan (iCoA-PP-YYYY-NNNN); a lot without a planned "
             "number takes its number at issue. The packaging date is not on the desk and is to be recorded on "
             "issue. Foreign matter is 'Conforms' by the declaration of 13.08.2026, except FB032601, where "
             "ППК26127 reports 0.08 % (Не одговара): held for the Head of QC. Identification C is not on the iCoA: "
-            "it conforms to the ImB specification on the certificate that carries the cannabinoid assay (#4).")
+            "it conforms to the ImB specification on the certificate that carries the cannabinoid assay (#4), "
+            "named per batch in the last column.")
     sh.merge_cells(start_row=_r + 1, start_column=1, end_row=_r + 1, end_column=len(icols))
     put(sh, _r + 1, 1, note, F6I, GREY, Alignment(horizontal="left", vertical="top", wrap_text=True))
     sh.row_dimensions[_r + 1].height = 64

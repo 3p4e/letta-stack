@@ -326,6 +326,10 @@ to its planned iCoA number (`iCoA-PP-YYYY-NNNN` from the issuance plan; "iCoA �
 where the plan has none) and dated "packaging date — to record", because the packaging date
 is not on the desk. Foreign matter is "Conforms" by the declaration of 13.08.2026, except
 FB032601, where ППК26127 reports 0.08 % (Не одговара): held for the Head of QC and on the
-Work Order. The **iCoA Issuance** sheet lists what each batch's iCoA must carry; Batch
+Work Order. The **iCoA Issuance** sheet is the chronological issuance list: one row per batch in the
+order of the release basis date its initial-release CoQ follows (the issuance plan of
+31.08.2026), with the planned number (`iCoA — to be issued` where the plan assigns one at
+issue), what the iCoA carries, and the cannabinoid-assay certificate that covers
+identification C — the assay certificate itself, never a loss-on-drying certificate. Batch
 Coverage marks in-house-only coverage in grey, as v6 did. Coverage moves from 0 to 52
 complete lots of 84; conformance is unchanged.
