@@ -157,6 +157,14 @@ Thirty microbiology certificates the Head of QC added to the Drive folder on 04.
 sha256). Pulled through the Drive connector, hash-verified, uploaded to `eCOA_DB` and run
 through the pipeline agent; all 30 pass the gate. The manifest itself is not ingested.
 
+Two rows the reads disagreed on — bile-tolerant gram-negative bacteria, where the
+laboratory prints a range (`< 10³ и > 10²`) and one read saw only the exponent as `ˣ` —
+were ruled by the Head of QC from the certificate pages on 04.09.2026 and applied through
+`decisions_2026-09-04.tsv` (DECISION B, RULED_BY, BASIS): P060262 `< 10³ и > 10² CFU/g`,
+P060432 `< 10² и > 10 CFU/g`. `apply_decisions.py --write` regenerates the worksheet from
+the open items (it drops an unapplied decision typed into it): fill the sheet after
+`--write`, then apply without it.
+
 ### What had changed since run 1, and what was done about it
 
 | Found | Done |

@@ -203704,8 +203704,8 @@
    {
     "parameter": "bile_tolerant_gram_negative",
     "parameter_printed": "На жолчна толерантни грам-негативни бактерии",
-    "result_printed": null,
-    "result_numeric": null,
+    "result_printed": "< 10² и > 10 CFU/g",
+    "result_numeric": 100.0,
     "limit_printed": "≤ 10⁴ CFU/g",
     "limit_numeric": 10000.0,
     "limit_max_printed": null,
@@ -203717,7 +203717,7 @@
     "method_accredited": true,
     "exponent_uncertain": true,
     "reads_agree": false,
-    "confidence": "review",
+    "confidence": "ok",
     "limit_disagrees_between_reads": null,
     "read_a": {
      "result": "< 10ˣ CFU/g",
@@ -203726,6 +203726,14 @@
     "read_b": {
      "result": "< 10² и > 10 CFU/g",
      "limit": "≤ 10⁴ CFU/g"
+    },
+    "resolution": {
+     "decision": "B",
+     "ruled_by": "Head of QC (azu.sozon@gmail.com)",
+     "date": "2026-09-04",
+     "basis": "page read by the Head of QC, chat ruling 04.09.2026: the row prints < 10² и > 10 CFU/g",
+     "read_a": "< 10ˣ CFU/g",
+     "read_b": "< 10² и > 10 CFU/g"
     }
    },
    {

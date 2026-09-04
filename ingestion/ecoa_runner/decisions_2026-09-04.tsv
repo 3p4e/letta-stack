@@ -162,5 +162,4 @@ doc_id	batch	cert_code	parameter	parameter_printed	read_A	read_B	arithmetic_says
 91d03caea47a11f1858cf58865604f65	CJ062501_2	4908/2025	pesticide_residues	vkupno DDT						
 91bd3c62a47a11f1858cf58865604f65	P050212		identification_a_macroscopic	Идентификација и квантификација на канабиноиди во цвет						
 91bd3c62a47a11f1858cf58865604f65	P050212		identification_b_microscopic	Идентификација и квантификација на канабиноиди во цвет						
-130e4ed6a85011f1a78e816a02449cdc	P060432	537/1068/26	bile_tolerant_gram_negative	На жолчна толерантни грам-негативни бактерии	< 10ˣ CFU/g	< 10² и > 10 CFU/g				
-0e1632aea85011f1a78e816a02449cdc	P060262	544/1075/26	bile_tolerant_gram_negative	На жолчка толерантни грам-негативни бактерии	< 10² CFU/g	< 10³ и > 10² CFU/g		B	Head of QC (azu.sozon@gmail.com)	page read by the Head of QC, chat ruling 04.09.2026: the row prints < 10³ и > 10² CFU/g
+130e4ed6a85011f1a78e816a02449cdc	P060432	537/1068/26	bile_tolerant_gram_negative	На жолчна толерантни грам-негативни бактерии	< 10ˣ CFU/g	< 10² и > 10 CFU/g		B	Head of QC (azu.sozon@gmail.com)	page read by the Head of QC, chat ruling 04.09.2026: the row prints < 10² и > 10 CFU/g

@@ -626,15 +626,13 @@
    9
   ],
   "vals": {
-   "9.3": "held for review",
+   "9.3": "<10² и >10",
    "9.5": "absent",
    "9.4": "absent",
    "9.1": "9.8×10³",
    "9.2": "2.5×10³"
   },
-  "held": [
-   "9.3"
-  ],
+  "held": [],
   "document": "P060432_537-1068-26, 31.08.2026_IJZ-MB.pdf",
   "doc_id": "130e4ed6a85011f1a78e816a02449cdc",
   "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
