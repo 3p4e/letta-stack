@@ -235,6 +235,8 @@ _QUALITATIVE = {
     'nd':       ['нд', 'nd', 'н.д.', 'n.d.', 'notdetected'],
     'blq':      ['blq', 'loq', 'подloq'],
 }
+_LAT2CYR = str.maketrans('aceopxyABCEHKMOPTXY', 'асеорхуАВСЕНКМОРТХУ')
+_CYR2LAT = str.maketrans('асеорхуАВСЕНКМОРТХУ', 'aceopxyABCEHKMOPTXY')
 _QUAL_LOOKUP = {}
 for _k, _vs in _QUALITATIVE.items():
     for _v in _vs:
@@ -253,4 +255,13 @@ def qualitative_key(printed):
         return None
     t = str(printed).split('/')[0]
     t = re.sub(r'[\d\s]+$', '', t)
-    return _QUAL_LOOKUP.get(_fold(t))
+    k = _QUAL_LOOKUP.get(_fold(t))
+    if k is None:
+        # A model can finish a Cyrillic word with a Latin look-alike ("Отсуствa",
+        # Latin a) or the reverse. Try the word in one script, then the other -
+        # still an exact lookup in the explicit map, never a stem match.
+        for tbl in (_LAT2CYR, _CYR2LAT):
+            k = _QUAL_LOOKUP.get(_fold(t.translate(tbl)))
+            if k is not None:
+                break
+    return k

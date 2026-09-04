@@ -1,0 +1,664 @@
+[
+ {
+  "p": "",
+  "cu": "CJ1024",
+  "strain": "Cap Junky",
+  "code": "565-1096-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "<10",
+   "9.2": "10"
+  },
+  "held": [],
+  "document": "CJ1024_565-1096-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "006c94eaa85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P050012",
+  "cu": "",
+  "strain": "Gorilla Glue",
+  "code": "564-1095-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "<10",
+   "9.2": "<10"
+  },
+  "held": [],
+  "document": "P050012_564-1095-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "01299388a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P050032",
+  "cu": "",
+  "strain": "Motor Breath",
+  "code": "563-1094-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "Отсуства/g",
+   "9.4": "Отсуства/25 g",
+   "9.1": "<10",
+   "9.2": "<10"
+  },
+  "held": [],
+  "document": "P050032_563-1094-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "01efa712a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P050102",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "562-1093-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "<10",
+   "9.2": "50"
+  },
+  "held": [],
+  "document": "P050102_562-1093-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "02a19814a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P050122",
+  "cu": "",
+  "strain": "Blue Sunset Sherbet",
+  "code": "561-1092-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "10",
+   "9.2": "20"
+  },
+  "held": [],
+  "document": "P050122_561-1092-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "03583894a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P050132",
+  "cu": "",
+  "strain": "Orange Punch Mimosa",
+  "code": "560-1091-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "Отсуствува/g",
+   "9.4": "Отсуствува/25 g",
+   "9.1": "<10",
+   "9.2": "<10"
+  },
+  "held": [],
+  "document": "P050132_560-1091-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "04024baea85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P050142",
+  "cu": "",
+  "strain": "Blue Sunset Sherbet",
+  "code": "559-1090-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "Отсуства/g",
+   "9.4": "Отсуствa/25 g",
+   "9.1": "<10",
+   "9.2": "<10"
+  },
+  "held": [],
+  "document": "P050142_559-1090-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "04b0094ca85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P050172",
+  "cu": "",
+  "strain": "Cap Junky",
+  "code": "558-1089-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "<10",
+   "9.2": "<10"
+  },
+  "held": [],
+  "document": "P050172_558-1089-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "0552fa26a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P050192",
+  "cu": "",
+  "strain": "Sleepy Joe",
+  "code": "548-1079-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "5.4×10²",
+   "9.2": "3.7×10²"
+  },
+  "held": [],
+  "document": "P050192_548-1079-26, 31.08.2026_IJZ-MB.pdf",
+  "doc_id": "05fcca42a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P050202",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "557-1088-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "<10",
+   "9.2": "<10"
+  },
+  "held": [],
+  "document": "P050202_557-1088-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "06a88e04a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P050252",
+  "cu": "",
+  "strain": "Cap Junky",
+  "code": "556-1087-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "<10",
+   "9.2": "<10"
+  },
+  "held": [],
+  "document": "P050252_556-1087-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "075c4ffca85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P050262",
+  "cu": "",
+  "strain": "Wedding Crusher",
+  "code": "555-1086-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "<10",
+   "9.2": "<10"
+  },
+  "held": [],
+  "document": "P050262_555-1086-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "0810644ca85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P050272",
+  "cu": "",
+  "strain": "Permanent Marker",
+  "code": "554-1085-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "<10",
+   "9.2": "<10"
+  },
+  "held": [],
+  "document": "P050272_554-1085-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "08bbda20a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P050292",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "553-1084-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "<10",
+   "9.2": "<10"
+  },
+  "held": [],
+  "document": "P050292_553-1084-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "096c3384a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060052",
+  "cu": "",
+  "strain": "Apple and Banana",
+  "code": "552-1083-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "Отсуствa/g",
+   "9.4": "Отсуствa/25 g",
+   "9.1": "<10",
+   "9.2": "<10"
+  },
+  "held": [],
+  "document": "P060052_552-1083-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "ce756958a84f11f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060102",
+  "cu": "",
+  "strain": "Wedding Cake",
+  "code": "551-1082-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "<10",
+   "9.2": "<10"
+  },
+  "held": [],
+  "document": "P060102_551-1082-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "0a104302a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060142",
+  "cu": "",
+  "strain": "Graps & Creme",
+  "code": "550-1081-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "10",
+   "9.2": "<10"
+  },
+  "held": [],
+  "document": "P060142_550-1081-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "0ab3dac6a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060162",
+  "cu": "",
+  "strain": "Sleepy Joe",
+  "code": "549-1080-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "5.2×10²",
+   "9.2": "4.3×10²"
+  },
+  "held": [],
+  "document": "P060162_549-1080-26, 31.08.2026_IJZ-MB.pdf",
+  "doc_id": "0b5702e6a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060202",
+  "cu": "",
+  "strain": "Jokerz 31",
+  "code": "547-1078-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10²",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "4.4×10²",
+   "9.2": "8.6×10²"
+  },
+  "held": [],
+  "document": "P060202_547-1078-26, 31.08.2026_IJZ-MB.pdf",
+  "doc_id": "0c048498a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060222",
+  "cu": "",
+  "strain": "Orange Punch Mimosa",
+  "code": "546-1077-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "<10",
+   "9.2": "10"
+  },
+  "held": [],
+  "document": "P060222_546-1077-26, 31.08.2026_IJZ-MB.pdf",
+  "doc_id": "0cb03694a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060252",
+  "cu": "",
+  "strain": "Gorilla Glue",
+  "code": "545-1076-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10³ и >10²",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "5×10³",
+   "9.2": "1.1×10³"
+  },
+  "held": [],
+  "document": "P060252_545-1076-26, 31.08.2026_IJZ-MB.pdf",
+  "doc_id": "0d55705aa85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060262",
+  "cu": "",
+  "strain": "Jokerz 31",
+  "code": "544-1075-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10³ и >10²",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "1×10³",
+   "9.2": "1.7×10²"
+  },
+  "held": [],
+  "document": "P060262_544-1075-26, 31.08.2026_IJZ-MB.pdf",
+  "doc_id": "0e1632aea85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060272",
+  "cu": "",
+  "strain": "Cash Cow",
+  "code": "543-1074-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10³ и >10²",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "1.6×10³",
+   "9.2": "1×10³"
+  },
+  "held": [],
+  "document": "P060272_543-1074-26, 31.08.2026_IJZ-MB.pdf",
+  "doc_id": "0ee35b76a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060292",
+  "cu": "",
+  "strain": "Fat Bastard",
+  "code": "542-1073-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10²",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "3×10³",
+   "9.2": "5.2×10²"
+  },
+  "held": [],
+  "document": "P060292_542-1073-26, 31.08.2026_IJZ-MB.pdf",
+  "doc_id": "0f91cf94a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060302",
+  "cu": "",
+  "strain": "Gorilla Glue",
+  "code": "541-1072-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "2.2×10³",
+   "9.2": "2.1×10³"
+  },
+  "held": [],
+  "document": "P060302_541-1072-26, 31.08.2026_IJZ-MB.pdf",
+  "doc_id": "10448cc4a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060312",
+  "cu": "",
+  "strain": "Jelly Donutz",
+  "code": "540-1071-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "2.2×10³",
+   "9.2": "1.7×10³"
+  },
+  "held": [],
+  "document": "P060312_540-1071-26, 31.08.2026_IJZ-MB.pdf",
+  "doc_id": "11008b7ca85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060342",
+  "cu": "",
+  "strain": "Scrambler",
+  "code": "539-1070-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "8.3×10³",
+   "9.2": "5.3×10³"
+  },
+  "held": [],
+  "document": "P060342_539-1070-26, 31.08.2026_IJZ-MB.pdf",
+  "doc_id": "11a9a2e8a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060392",
+  "cu": "",
+  "strain": "Fat Bastard",
+  "code": "538-1069-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "2.9×10³",
+   "9.2": "2.5×10³"
+  },
+  "held": [],
+  "document": "P060392_538-1069-26, 31.08.2026_IJZ-MB.pdf",
+  "doc_id": "125d485ca85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060432",
+  "cu": "",
+  "strain": "Fat Bastard",
+  "code": "537-1068-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "held for review",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "9.8×10³",
+   "9.2": "2.5×10³"
+  },
+  "held": [
+   "9.3"
+  ],
+  "document": "P060432_537-1068-26, 31.08.2026_IJZ-MB.pdf",
+  "doc_id": "130e4ed6a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060442",
+  "cu": "",
+  "strain": "Scrambler",
+  "code": "536-1067-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "1.7×10³",
+   "9.2": "5.6×10²"
+  },
+  "held": [],
+  "document": "P060442_536-1067-26, 31.08.2026_IJZ-MB.pdf",
+  "doc_id": "13bee778a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ }
+]

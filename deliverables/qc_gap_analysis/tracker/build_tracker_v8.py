@@ -1002,7 +1002,7 @@ def add_mikro(wb, src_path):
     want = []
     for row in src["Mikro CoQ Parameter"].iter_rows(min_row=1, max_row=400, values_only=True):
         cu, p = str(row[0] or "").strip(), str(row[1] or "").strip()
-        if cu and cu not in ("BATCH IDENTIFICATION", "CU Batch #"):
+        if cu and cu not in ("BATCH IDENTIFICATION", "CU Batch #") and not cu.startswith("KEY"):
             want.append((cu, p))
     src.close()
     lots = []
@@ -1025,6 +1025,9 @@ def add_mikro(wb, src_path):
     for b in lots:
         if id(b) in SPAN:
             rows += list(range(SPAN[id(b)][0], SPAN[id(b)][1] + 1))
+    key_row = next((r for r in range(ws.max_row, 4, -1) if str(ws.cell(r, 1).value or "").startswith("KEY")), None)
+    if key_row:
+        rows.append(key_row)                 # the legend travels with the sheet
     rmap = {r: i + 1 for i, r in enumerate(rows)}
     for r in rows:
         for c in cols:
@@ -1034,9 +1037,9 @@ def add_mikro(wb, src_path):
         if ws.row_dimensions[r].height:
             dst.row_dimensions[rmap[r]].height = ws.row_dimensions[r].height
     for rng in ws.merged_cells.ranges:
-        if rng.min_row in rmap and rng.max_row in rmap and rng.min_col in cmap and rng.max_col in cmap:
+        if rng.min_row in rmap and rng.max_row in rmap and rng.min_col in cmap:
             dst.merge_cells(start_row=rmap[rng.min_row], start_column=cmap[rng.min_col],
-                            end_row=rmap[rng.max_row], end_column=cmap[rng.max_col])
+                            end_row=rmap[rng.max_row], end_column=cmap.get(rng.max_col, len(cols)))
     for c in cols:
         w = ws.column_dimensions[L(c)].width
         if w:

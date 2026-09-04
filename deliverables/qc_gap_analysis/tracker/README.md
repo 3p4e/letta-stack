@@ -285,3 +285,29 @@ v8 prints the page verbatim, which mixed decimal commas with decimal points and 
 the unit the column header already states. The separator and the trailing unit are
 rendering, not measurement, so both are normalised — 0 cells now carry a decimal comma or
 a trailing unit — and everything else stands as the laboratory printed it.
+
+
+## v9.1 — the 30 IJZ-MB certificates of 31.08 and 01.09.2026 (04.09.2026)
+
+Thirty microbiology certificates the Head of QC added to the Drive folder on 04.09.2026
+were ingested into `eCOA_DB` (run 2, `ingestion/ecoa_runner/CORPUS_RUN_PLAN.md`) and read
+twice at 300 DPI. `new_instances_from_records.py` turns the reconciled records and the split
+manifest into `new_instances.json`; `build_tracker_v8.py --v9` reads it and:
+
+- credits each certificate to #9 on its lot as a new testing instance, in date order, with
+  the values the two reads agreed on — 29 of 30 read clean on every row; one row
+  (P060432, bile-tolerant gram-negative) is `held for review` and sits on the Work Order.
+  P060262's held row was ruled by the Head of QC on 04.09.2026 (`decisions_2026-09-04.tsv`);
+- opens a lot row with no CU code for the three P batches the owner's tracker does not
+  carry (P060102, P060342, P050142), each with a Work Order task to record the lot;
+- marks #9 ✓ on **Batch Coverage**, recounts the missing list, the certificate count and
+  the laboratories per lot, and recomputes the **Summary Dashboard**;
+- rebuilds the owner's **Mikro CoQ Parameter** sheet (`--mikro=<the owner's workbook>`)
+  from the tracker: the same lots, the identity columns and the #7–#12 blocks.
+
+The laboratory prints the zero of a P-number as a letter O (`PO60052`); both batch
+normalisers fold it, and `build_artifact_page.py` / `extract_artifact_data.py` produce
+the published page from the workbook. The conformance picture is unchanged: five out of
+specification, four undetermined, three stability exceedances — the new certificates are
+all within their criteria, and where a lot's earlier TYMC was out of specification the
+new instance stands beside it as a later round, not in place of it.
