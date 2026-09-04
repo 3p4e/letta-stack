@@ -172,7 +172,7 @@ footer{color:var(--muted);font-size:12.5px;margin-top:40px;max-width:80ch}
   <div id="lots"></div>
 </section>
 
-<footer>One two-row block per testing instance: the result on the top row, the certificate that carries it on the bottom. Parameters 9–11 print each determination in its own column. Conformance is judged on release results only, against the acceptance criteria on the Parameters sheet (counted limits ≤10ⁿ judged against 2×10ⁿ, Ph. Eur. 2.6.12). Built from <code>CoQ_Analysis_Master_v9.1.xlsx</code>, 04.09.2026: the 30 IJZ-MB microbiology certificates of 31.08/01.09.2026 are included as testing instances.</footer>
+<footer>One two-row block per testing instance: the result on the top row, the certificate that carries it on the bottom. Parameters 9–11 print each determination in its own column. Conformance is judged on release results only, against the acceptance criteria on the Parameters sheet (counted limits ≤10ⁿ judged against 2×10ⁿ, Ph. Eur. 2.6.12). Built from <code>CoQ_Analysis_Master_v10.xlsx</code>, 04.09.2026: the 30 IJZ-MB microbiology certificates of 31.08/01.09.2026 are included as testing instances.</footer>
 </div>
 
 <script type="application/json" id="data">__DATA__</script>
@@ -185,7 +185,7 @@ const lsGet = k => { try { return JSON.parse(localStorage.getItem(k)||'{}'); } c
 const lsSet = (k,v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} };
 
 document.getElementById('subline').textContent =
-  `v9.1 · 04.09.2026 · ${S.lots} lots · 12 parameters · ${S.instances} testing instances · ${S.gaps} parameter gaps · ${S.oos} out of specification · ${S.und} undetermined · ${S.stab} stability exceedances`;
+  `v10 · 04.09.2026 · ${S.lots} lots · 12 parameters · ${S.instances} testing instances · ${S.gaps} parameter gaps · ${S.oos} out of specification · ${S.und} undetermined · ${S.stab} stability exceedances`;
 
 /* ---------- tabs ---------- */
 const tabs = [...document.querySelectorAll('nav.tabs button')];

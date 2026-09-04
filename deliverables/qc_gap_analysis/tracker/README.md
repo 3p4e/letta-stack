@@ -287,7 +287,7 @@ rendering, not measurement, so both are normalised — 0 cells now carry a decim
 a trailing unit — and everything else stands as the laboratory printed it.
 
 
-## v9.1 — the 30 IJZ-MB certificates of 31.08 and 01.09.2026 (04.09.2026)
+## v10 — the 30 IJZ-MB certificates of 31.08 and 01.09.2026 (04.09.2026)
 
 Thirty microbiology certificates the Head of QC added to the Drive folder on 04.09.2026
 were ingested into `eCOA_DB` (run 2, `ingestion/ecoa_runner/CORPUS_RUN_PLAN.md`) and read

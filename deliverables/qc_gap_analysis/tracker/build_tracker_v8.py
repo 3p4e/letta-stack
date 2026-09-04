@@ -55,10 +55,13 @@ T = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(T)
 
 V9 = "--v9" in sys.argv
+# --version=N names the build: the file, the tracker sheet and the Read Me carry vN.
+VER = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--version=")), "9" if V9 else "8")
+V9 = V9 or VER not in ("8",)
 SRC = os.path.join(HERE, "CoQ_Analysis_Master_v6.xlsx")
 V8VALS = os.path.join(HERE, "v8_values.json")
-OUT = os.path.join(HERE, "CoQ_Analysis_Master_v9.xlsx" if V9 else "CoQ_Analysis_Master_v8.xlsx")
-SHEET = "CoQ Parameter Tracker v9" if V9 else "CoQ Parameter Tracker v8"
+OUT = os.path.join(HERE, f"CoQ_Analysis_Master_v{VER}.xlsx")
+SHEET = f"CoQ Parameter Tracker v{VER}"
 BUILT = "02.09.2026"
 import json  # noqa: E402
 STATUS_PARTIAL_MAX = 3          # 1–3 without a release result → ⚠ PARTIAL; ≥4 → ✗
@@ -281,7 +284,8 @@ for inst in NEW:
 if NEW:
     print(f"new instances: {len(NEW)} on {len(NEW_TOUCHED)} lot(s); "
           f"{len(NEW_LOTS)} lot(s) not on the owner's tracker; {len(NEW_HELD)} value(s) held for review")
-    if V9:
+    if V9 and VER == "9":
+        VER = "9.1"
         OUT = os.path.join(HERE, "CoQ_Analysis_Master_v9.1.xlsx")
 
 
@@ -862,7 +866,7 @@ if V9:
     _rm = wb["Read Me"]
     _r = _rm.max_row + 2
     for _label, _text in (
-        ("v9", "The v8 build, verified and slimmed to live in Drive. Every decision-bearing value was checked against "
+        (f"v{VER}" if VER == "9" else "v9", "The v8 build, verified and slimmed to live in Drive. Every decision-bearing value was checked against "
                "the filed certificate page (review/V8_TRUTH_CHECK_2026-09-02.md): the five out-of-specification TYMC "
                "results, the four undetermined ones and the stability CBN exceedance are real. The Results Register, "
                "the flat tracker and the eCOA Document Index are left out here; they stay in v8 in the repository."),
@@ -872,7 +876,7 @@ if V9:
         _c = _rm.cell(_r, 1, _label); _c.font = Font(name="Calibri", size=9, bold=True); _c.alignment = Alignment(vertical="top")
         _c = _rm.cell(_r, 2, _text); _c.font = Font(name="Calibri", size=9); _c.alignment = Alignment(vertical="top", wrap_text=True)
         _rm.row_dimensions[_r].height = 13 * (len(_text) // 118 + 1); _r += 1
-    wb["Read Me"]["A1"] = "CoQ Analysis Master — v9"
+    wb["Read Me"]["A1"] = f"CoQ Analysis Master — v{VER}"
 
 # --------------------------------------------------------------------------- new instances: the other sheets
 from copy import copy as _copy
@@ -1064,19 +1068,19 @@ if NEW:
     _r = _rm.max_row + 2
     _held = ", ".join(sorted({f"{c} (#{n})" for cu, pb, c, d, l, n in NEW_HELD}))
     _lots = ", ".join(b["p"] for b in NEW_LOTS)
-    _text = (f"v9.1 — {len(NEW)} certificates ingested into eCOA_DB on 04.09.2026 (IJZ-MB microbiology, issued 31.08 and "
+    _text = (f"v{VER} — {len(NEW)} certificates ingested into eCOA_DB on 04.09.2026 (IJZ-MB microbiology, issued 31.08 and "
              f"01.09.2026) are added as testing instances credited to #9, with the values the two independent reads "
              f"agreed on. Batch Coverage, the tracker, the Credit Audit, the Work Order and the Summary Dashboard are "
              f"recomputed with them."
              + (f" Held for a person's read: {_held}." if _held else "")
              + (f" Lots the owner's tracker does not carry, opened without a CU code: {_lots}." if _lots else "")
              + " The laboratory prints the zero of a P-number as a letter O (PO60052); it is folded to P060052 here.")
-    for _label, _t in (("v9.1", _text),):
+    for _label, _t in ((f"v{VER}", _text),):
         _c = _rm.cell(_r, 1, _label); _c.font = Font(name="Calibri", size=9, bold=True); _c.alignment = Alignment(vertical="top")
         _c = _rm.cell(_r, 2, _t); _c.font = Font(name="Calibri", size=9); _c.alignment = Alignment(vertical="top", wrap_text=True)
         _rm.row_dimensions[_r].height = 13 * (len(_t) // 118 + 1); _r += 1
     if V9:
-        wb["Read Me"]["A1"] = "CoQ Analysis Master — v9.1"
+        wb["Read Me"]["A1"] = f"CoQ Analysis Master — v{VER}"
 wb.save(OUT)
 print("saved", OUT)
 print("batches:", len(batches), "two-row blocks:", (LASTROW - 4) // 2, "rows:", LASTROW - 4, "columns:", LAST)
