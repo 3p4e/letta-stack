@@ -397,6 +397,7 @@ if ICOA_RULE:
                                     else "— all three on the CNP certificate —"),
                           "a": cell(1), "b": cell(2), "fm": cell(7),
                           "c": _ident_c(b) or "— no cannabinoid certificate —",
+                          "assay_rt": "", "myco_rt": "", "carry": "",
                           "status": ("not needed — CNP covers A, B and foreign matter" if not scope else
                                      "planned number" if ref.startswith("iCoA-") else "number at issue")})
         # --- RETEST SERIES: the QP's retesting campaign (medical use, GACP product / API) —
@@ -414,13 +415,28 @@ if ICOA_RULE:
                 except ValueError:
                     _after = None
             c_rt = _ident_c(b, after=_after) if _after else None
-            ICOA_ROWS.append({"series": "retest — QP campaign", "icoa": "iCoA — to be issued (retest)",
+            # the reissued CoQ carries a NEW cannabinoid assay (#4–#6) and NEW mycotoxins (#10);
+            # #8, #9, #11 and #12 are carried forward from the initial testing
+            def _retest_doc(pno):
+                if not _after:
+                    return None
+                pool = [x for x in b["docs"][pno] if str(T.date_key(x[1])) >= str(T.date_key(_after))
+                        and not re.search(r"LoD|ГС", x[0], re.I)]
+                pool = sorted(pool, key=lambda x: (T.date_key(x[1]), x[0]))
+                return f"{pool[0][0]}, ({pool[0][1]}) [{pool[0][2]}]" if pool else None
+            m_rt = _retest_doc(10)
+            _st = ("due — retest assay and mycotoxins on file" if (c_rt and m_rt) else
+                   "due — retest assay on file, mycotoxins pending" if c_rt else
+                   "pending — retest assay not yet on file")
+            ICOA_ROWS.append({"series": "retest — QP campaign", "icoa": "iCoA — new number at issue (retest)",
                               "coq": _rt["n"] if not _rt["n"].startswith("(") else "CoQ reissue (assigned on issue)",
                               "basis": _rt.get("basis", ""), "issue": "at retest sampling · QP campaign",
                               "cu": b["cu"], "p": b["p"], "strain": b.get("strain") or STRAIN.get(T.batch_key(cu0), ""),
                               "scope": "Ident A + Ident B + Foreign matter", "a": "to test", "b": "to test", "fm": "to test",
                               "c": c_rt or "— retest assay not yet on file —",
-                              "status": "due — retest assay on file" if c_rt else "pending — retest assay not yet on file"})
+                              "assay_rt": c_rt or "— pending —", "myco_rt": m_rt or "— pending —",
+                              "carry": "#8, #9, #11, #12 from the initial testing",
+                              "status": _st})
 
     def _bkey(r):
         return (0 if r["series"] == "initial release" else 1,
@@ -1220,10 +1236,12 @@ def add_mikro(wb, src_path):
 
 def add_icoa_sheet(wb):
     sh = wb.create_sheet("iCoA Issuance", wb.sheetnames.index("Work Order") + 1)
-    icols = [("Seq", 6), ("Series", 20), ("iCoA", 24), ("CoQ", 30), ("Basis date", 12), ("Issue on", 28), ("CU Batch", 14),
+    icols = [("Seq", 6), ("Series", 20), ("iCoA", 28), ("CoQ", 30), ("Basis date", 12), ("Issue on", 28), ("CU Batch", 14),
              ("P Batch", 22), ("Strain", 20), ("iCoA scope", 34), ("#1 Ident. A", 14), ("#2 Ident. B", 14),
-             ("#7 Foreign matter", 16), ("Ident C — covered by (eCoA)", 34), ("Status", 40)]
-    keys = ("seq", "series", "icoa", "coq", "basis", "issue", "cu", "p", "strain", "scope", "a", "b", "fm", "c", "status")
+             ("#7 Foreign matter", 16), ("Ident C — covered by (eCoA)", 34),
+             ("Retest assay #4–#6 (eCoA)", 34), ("Retest mycotoxins #10 (eCoA)", 34), ("Carried forward", 30), ("Status", 44)]
+    keys = ("seq", "series", "icoa", "coq", "basis", "issue", "cu", "p", "strain", "scope", "a", "b", "fm", "c",
+            "assay_rt", "myco_rt", "carry", "status")
     for _i, (_t, _w) in enumerate(icols, 1):
         put(sh, 1, _i, _t, FW, NAVY, CEN)
         sh.column_dimensions[L(_i)].width = _w
@@ -1233,7 +1251,7 @@ def add_icoa_sheet(wb):
         for _i, k in enumerate(keys, 1):
             v = row[k]
             put(sh, _r, _i, v, F7B if k in ("icoa", "cu") else F7,
-                FILL["amber"] if (k == "fm" and v == "held for review") or (k == "c" and str(v).startswith("—"))
+                FILL["amber"] if (k == "fm" and v == "held for review") or (k in ("c", "assay_rt", "myco_rt") and str(v).startswith("—"))
                 or (k == "status" and str(v).startswith("pending")) else
                 (FILL["green"] if k == "status" and str(v).startswith("due") else
                  (FILL["extra"] if k in ("a", "b", "fm") and str(v).startswith("CNP ") else None)), CEN)
@@ -1242,7 +1260,11 @@ def add_icoa_sheet(wb):
             "CoQ follows (the issuance plan of 31.08.2026; numbers iCoA-PP-YYYY-NNNN, one series per calendar year), "
             "then the RETEST SERIES: the same scope again for every batch, for the QP's retesting campaign (medical "
             "use, GACP product / API), dated at the retest sampling, in the order of the additional-testing CoQ each "
-            "one belongs to — 'due' where the retest cannabinoid assay is already on file, 'pending' where it is not. "
+            "one belongs to. The reissued CoQ carries a NEW cannabinoid assay (#4–#6) and NEW mycotoxins (#10); #8, #9, "
+            "#11 and #12 are carried forward from the initial testing; identification C is the new Farmahem K "
+            "certificate. NUMBERING: a retest iCoA is a new document — a new number in the year of issue, never the "
+            "initial iCoA's number (the plan of 31.08.2026 reused it; that is corrected here). 'due' where the retest "
+            "certificates are on file, 'pending' where they are not. "
             "Where a CNP certificate reports identification A, B or foreign matter, its document code is the "
             "reference for them (grey cells) and the iCoA covers only the rest; where CNP reports all three, no "
             "iCoA is needed. Farmahem: identification C is the K (potency) certificate. "

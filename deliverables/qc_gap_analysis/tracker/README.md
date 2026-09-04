@@ -347,7 +347,10 @@ the K (potency) certificate.
 
 The **iCoA Issuance** sheet then carries a second series: one iCoA per batch, same scope,
 for the QP's retesting campaign (medical use, GACP product / API), in the order of the
-additional-testing CoQ each belongs to. A retest row is "due" where a cannabinoid assay
-dated more than 60 days after the release basis is on file (the Farmahem 197-series of
-August 2026, 21 lots) and "pending" where it is not; its results are "to test" until the
-campaign's certificates arrive.
+additional-testing CoQ each belongs to. The reissued CoQ carries a new cannabinoid assay (#4–#6) and
+new mycotoxins (#10); #8, #9, #11 and #12 are carried forward from the initial testing;
+identification C is the new Farmahem K certificate. Each retest row names the retest assay
+and mycotoxin certificates on file (the Farmahem 197-series K and M of August 2026: 20 lots
+with both, 1 with the assay only) and is "pending" where they are not. A retest iCoA is a
+new document with a new number in the year of issue — never the initial iCoA's number,
+which the plan of 31.08.2026 had reused.
