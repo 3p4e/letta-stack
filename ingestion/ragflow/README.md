@@ -5,6 +5,14 @@ RAGFlow on KVM4 is the ingestion and RAG pipeline for every database — see
 
 Environment: `RAGFLOW_API_KEY`, `RAGFLOW_API_SERVER`.
 
+**Picking up the eCoA pipeline? Start with
+[`HANDOVER_ECOA_INGESTION_2026-08-30.md`](HANDOVER_ECOA_INGESTION_2026-08-30.md)** — what
+the 29–30.08.2026 verification found, what is already built, what is not, and the twelve
+traps that each produced a confident wrong answer first. Then
+[`ECOA_RECTIFICATIONS_2026-08-30.md`](ECOA_RECTIFICATIONS_2026-08-30.md) for every
+inconsistency found in `eCoA_DATABASE` with its correction and evidence, and
+`ECOA_RAG_PIPELINE_2026-08-30.md` for the design.
+
 ## Identity is read off the page, never off the filename
 
 `doc_identity.py` decides whether we already hold a report by what is printed

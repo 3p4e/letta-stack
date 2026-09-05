@@ -43,6 +43,10 @@ def _to_latin(s):
     return None if _CYRILLIC.search(s) else s
 
 
+# A P-number is P + six digits. IJZ certificates print the second character as a
+# letter O ("Серија: PO60052" on 552/1083/26, 01.09.2026) - the digit zero in the
+# laboratory's typeface. Fold it before matching: 'PO' + five digits is a P-number.
+_P_LETTER_O = re.compile(r'\bPO(\d{5})(?=\D|$)')
 _SEP = r'[-_/\s]'
 _CODE = re.compile(
     r'([A-Z]{1,4})\s*(\d{4,8})'              # base - Latin only
@@ -59,6 +63,7 @@ def pp_batch(raw):
     txt = _to_latin(str(raw).upper().replace('＊', '*'))
     if txt is None:
         return None          # contains a Cyrillic letter with no Latin equivalent
+    txt = _P_LETTER_O.sub(r'P0\1', txt)
     m = _CODE.search(txt)
     if not m:
         return None

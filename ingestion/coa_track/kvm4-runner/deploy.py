@@ -135,9 +135,14 @@ def wait_health(token: str, timeout: int = 240) -> bool:
 
 
 def deploy() -> int:
-    token = os.environ.get("RUNNER_TOKEN") or secrets.token_urlsafe(36)
+    supplied = os.environ.get("RUNNER_TOKEN")
+    token = supplied or secrets.token_urlsafe(36)
     print(f"VM_ID={VM_ID}  HOST={HOST}")
-    print(f"RUNNER_TOKEN={token}")  # printed once — save it
+    # The token used to be echoed here AND again at the end. It grants
+    # root-on-host-equivalent access, so it is now printed at most once, and only
+    # when this run generated it — if the caller supplied RUNNER_TOKEN they
+    # already hold it, and reprinting only widens where it can be captured
+    # (scrollback, CI logs, shell history).
 
     runner_py = (HERE / "runner.py").read_text()
     compose = build_compose(runner_py, token)
@@ -186,9 +191,15 @@ def deploy() -> int:
         info = json.loads(r.read())
     print(f"  /info returned {len(info.get('containers', []))} containers")
     print()
-    print("DEPLOYED.  Set in your cloud session env (do NOT lose this token):")
+    print("DEPLOYED.  Set in your cloud session env:")
     print(f"  RUNNER_URL=https://{HOST}")
-    print(f"  RUNNER_TOKEN={token}")
+    if supplied:
+        print("  RUNNER_TOKEN=<unchanged — the value you supplied in the environment>")
+    else:
+        print(f"  RUNNER_TOKEN={token}")
+        print("  ^ generated for this deploy and shown ONCE. Store it like an SSH")
+        print("    private key; it is root-on-host equivalent. Rotate by re-running")
+        print("    this script with a new RUNNER_TOKEN in the environment.")
     return 0
 
 

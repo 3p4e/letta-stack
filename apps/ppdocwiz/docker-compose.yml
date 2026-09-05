@@ -13,15 +13,25 @@ services:
     container_name: ppdocwiz
     restart: unless-stopped
     environment:
+      # Required. `:?` so a misconfigured deploy fails at `up` with a readable
+      # message rather than starting a container that 503s every request.
+      - PPDOCWIZ_API_KEY=${PPDOCWIZ_API_KEY:?set PPDOCWIZ_API_KEY in /opt/stacks/ppdocwiz/.env (openssl rand -base64 32)}
       - PP_SUITE_DIR=/opt/pp-document-suite
       - PP_OUT_DIR=/data
       - LETTA_BASE_URL=${LETTA_BASE_URL:-}     # set to enable the Chat tab (e.g. https://ui.srv1231216.hstgr.cloud)
       - LETTA_TOKEN=${LETTA_TOKEN:-}           # only if the Letta server requires auth
+      # ALLOWLIST of agents the chat proxy may reach (comma-separated), not a
+      # default — the agent name used to come from the request body.
       - LETTA_AGENT=${LETTA_AGENT:-qms_docx_formatter}
     volumes:
       - ppdocwiz_out:/data
     ports:
-      - "8770:8770"
+      # Loopback only. Traefik is the sole public ingress on this host and reaches
+      # the container over the Docker network, so a route through it is
+      # unaffected; a raw all-interfaces publish is not. Same fix as SVR_MCP_PORT
+      # in server/RAGFLOW_MCP_ENABLE.md ("bind the published port to loopback").
+      # Reach it from a workstation with:  ssh -L 8770:127.0.0.1:8770 <host>
+      - "127.0.0.1:8770:8770"
     networks: [letta]
     healthcheck:
       test: ["CMD", "python3", "-c",
@@ -29,11 +39,22 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-    # HTTPS via Traefik instead of the raw port (uncomment + set host):
+    # HTTPS via Traefik instead of the raw port. This needs TWO changes, not one
+    # — the previous block omitted both, so uncommenting it alone would not have
+    # worked:
+    #   (a) join the network Traefik is on. This stack is on `letta` only, while
+    #       every Traefik-routed service in this repo also joins `shared`
+    #       (ingestion/coa_track/network-shared/after/letta.yml) or `ai-net`
+    #       (server/ragflow/docker-compose.override.yml). Add it to `networks:`
+    #       above and to the top-level networks block as `external: true`.
+    #   (b) uncomment these labels and set a real hostname. Note entrypoints and
+    #       certresolver, which the old block was missing — without them there is
+    #       no TLS and no router on the HTTPS entrypoint.
     # labels:
     #   - traefik.enable=true
     #   - traefik.http.routers.ppdocwiz.rule=Host(`docwiz.srv1231216.hstgr.cloud`)
-    #   - traefik.http.routers.ppdocwiz.tls=true
+    #   - traefik.http.routers.ppdocwiz.entrypoints=websecure
+    #   - traefik.http.routers.ppdocwiz.tls.certresolver=letsencrypt
     #   - traefik.http.services.ppdocwiz.loadbalancer.server.port=8770
 
 networks:

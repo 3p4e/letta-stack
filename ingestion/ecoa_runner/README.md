@@ -37,6 +37,8 @@ rendering problem, not a model-capability one: at 300 DPI both vendors read them
 | `quality_guard.py` | post-ingest checks — length, alphabet, mojibake |
 | `apply_full.py` / `drop_meta.py` | RAGFlow pipeline-agent configuration |
 | `pilot2.py` | pipeline ingest loop with chunk clearing |
+| `ingest_new_documents.py` | run 2 driver: restore the agent's models, upload, ingest, poll, gate (see CORPUS_RUN_PLAN, run 2) |
+| `post_ingest.py` | after a run: both spellings of the P-number in the keywords and the prompts |
 | `pilot_records_12docs.json` | 13 certificates, 119 results, 107 confirmed |
 
 ## Operating notes
@@ -49,6 +51,24 @@ rendering problem, not a model-capability one: at 300 DPI both vendors read them
   automatically; that is still only ~60 documents/day against 292.
 - **Gemini 3 counts reasoning tokens against `maxOutputTokens`** — 8548 thinking tokens
   on a 2-page certificate. Budget is 32768; do not lower it.
+
+## Derived cannabinoid totals (ruling 02.09.2026)
+
+Specification rows 4–6 are totals (free form + acid form × factor). Most CNP potency
+certificates print `Содржина на CBN` against the ≤ 1.00 % limit but no CBNA row and no
+`Вкупно CBN` row (they do print Total THC and Total CBD). Looking up `total_cbn` alone
+showed every such certificate as **"no result on file"** for row 6 — a compiler defect,
+not a laboratory gap. `build_coq.derive_totals` now supplies the row per certificate:
+
+| certificate prints | row 6 result | stated on the CoQ as |
+|---|---|---|
+| total | the total | printed |
+| free + acid, numeric | free + acid × 0.876 | `computed`, working shown |
+| free only | the free-form figure | `free-form-only` — "CBNA not reported by the laboratory" |
+| free, acid ND/BLQ | the free-form figure | `acid-not-quantified` — N.D. never assumed zero |
+
+A printed total always wins; a held component holds the derived row. `checkup.py §6a`
+guards the rule. Corpus effect: certificates supplying Total CBN 40 → 102.
 
 ## Open rulings
 

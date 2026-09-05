@@ -65,6 +65,79 @@ that mismatch. One Letta object still uses Voyage: the `pq1_water_qc_agent`
 **archival memory** (`voyage-3-large`, 1024d) — agent memory, not documents,
 and therefore untouched by this policy.
 
+## Code retired with the sources (29.08.2026)
+
+The owner's rule is that what was physically deleted from the server is
+discarded from the code too. These ingested **into the deleted Letta sources**,
+so they could not work and would have violated the rule above if they had:
+
+| Removed | Fed |
+|---|---|
+| `ingestion/coa_track/letta-imb-coas/deploy.sh` | created the `ImB_QC_COAs` source + `imb_qc_coa_agent` |
+| `ingestion/coa_track/letta-imb-coas/ingest_imb_coas.py` | `ImB_QC_COAs` |
+| `ingestion/coa_track/letta-imb-coas/ingest_imb_coas_v2.py` | `ImB_QC_COAs` (OCR variant) |
+| `ingestion/coa_track/letta-pq1/` (whole bundle) | created and filled `PQ1 Water Testing Results Report` |
+| `ingestion/coa_track/pq1-pipeline/fix_c71.py` | renamed 6 files inside that same source |
+
+Two orphans went with them — `ingestion/coa_track/kvm4-runner/gdrive_pull.py`
+and `ocr_batch.py`. Neither had a caller anywhere in the repository, and
+`ocr_batch.py`'s single-model OCR role is superseded by the documented chain in
+`ingestion/ragflow/README.md`.
+
+`scripts/policy_check.py` rule 2 was widened in the same change to read shell
+scripts as well as Python. It had only ever scanned `.py`, so the two
+`deploy.sh` files created Letta sources over `curl` without tripping it —
+the rule now covers the way this repository actually did it.
+
+### Provenance labels: corrected, not repointed
+
+About a dozen builders carry `ImB_QC_COAs` in a provenance string. They split
+two ways, and the difference matters because these are QC deliverables:
+
+- **Present-tense claims** — "the authoritative results remain the ImB_QC_COAs
+  knowledgebase", "a result can be uploaded to the source directly". These are
+  now false, and the second one instructs the reader to do what this policy
+  forbids. **Corrected.**
+- **Dated verification records** — "4,134 passages scanned live", "263 files,
+  all completed (verified live 13.08.2026)", and the weekly QC activity report's
+  account of deduplicating against the live source. Those checks were really
+  performed, against a store that really existed on those dates. Repointing them
+  at RAGFlow would assert a verification that was never run there — a worse
+  defect than a stale name. **Left standing, annotated** with the retirement so
+  no one chases a source id that no longer resolves.
+
+Where a name is an extraction stamp (`build_ecoa_register.py`'s `SOURCE`), the
+historical name stays and a separate `RETIRED` note carries the rest, rather
+than the retirement clause being wedged into a value that gets interpolated into
+several different sentences.
+
+### Dataset naming — `CoA_DATABASE_2026` is canonical
+
+The same RAGFlow dataset, id `f29f8f58a13c11f1858cf58865604f65`, appears under
+two names in this repository: **`CoA_DATABASE_2026`** in
+`ingest_coa_database_2026.py` and `reclassify_watcher.py`, and
+**`eCoA_DATABASE`** throughout `deliverables/qc_register/` and the potency
+methodology.
+
+`CoA_DATABASE_2026` is the dataset's actual name in RAGFlow and is therefore
+canonical; `eCoA_DATABASE` is an alias the deliverables adopted. The alias is
+**not** being renamed across the issued deliverables — that would churn the text
+of regulated artifacts to no benefit. Use the canonical name in new code, and
+read the two as one dataset.
+
+What was **kept**, and why the deletion rule does not reach it:
+
+- The builders in `letta-imb-coas/` read local and Drive data and emit
+  deliverables. Some still carry `ImB_QC_COAs` in a provenance label; the label
+  is stale lineage, not a live dependency.
+- `rewire_agents.py` / `rewire_via_rest.py` set agent `llm_config`. They touch
+  no sources, and the agents are still in service.
+- `server/manifests/2026-08-09/**` is a dated snapshot. Deleting the record of
+  what existed would destroy the evidence that it was deleted.
+- The four sources on the **`wwf-letta`** stack (`DB3_PP_CURRENT_unified`,
+  `DB1_REGULATORY`, `GrowFlow_Weekly_Snapshots`, `…_MASS`) are live. The
+  19.08.2026 deletion hit the old `letta` stack, not that one.
+
 ## Before ingesting anything
 
 1. Confirm the target dataset in RAGFlow and its embedding model — never create

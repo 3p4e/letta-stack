@@ -1,0 +1,344 @@
+[
+ {
+  "doc": "BG1024, 752-2025, 27.02.2025, IJZ.pdf",
+  "field": "pesticides",
+  "old": "Не одговара",
+  "new": "н.д.",
+  "reason": "polarity flip: extraction wrote \"Не одговара\" (=fails); cert prints not-detected per pesticide line"
+ },
+ {
+  "doc": "FB012601_1, 2362-2026, 30.04.2026, IJZ.pdf",
+  "field": "pesticides",
+  "old": "Не одговара",
+  "new": "Н.д.",
+  "reason": "polarity flip: extraction wrote \"Не одговара\" (=fails); cert prints not-detected per pesticide line"
+ },
+ {
+  "doc": "P050032, 2157-2025, 07.05.2025, IJZ.pdf",
+  "field": "pesticides",
+  "old": "Не одговара",
+  "new": "Н.Д.",
+  "reason": "polarity flip: extraction wrote \"Не одговара\" (=fails); cert prints not-detected per pesticide line"
+ },
+ {
+  "doc": "P050252, 5697-2025, 02.12.2025, IJZ.pdf",
+  "field": "pesticides",
+  "old": "Не одговара",
+  "new": "Н.д.",
+  "reason": "polarity flip: extraction wrote \"Не одговара\" (=fails); cert prints not-detected per pesticide line"
+ },
+ {
+  "doc": "P050192, 10802_2845-2 EN, 17.11.2025, DFL.pdf",
+  "field": "pesticides",
+  "action": "SKIPPED",
+  "reason": "could not verify DFL wording"
+ },
+ {
+  "doc": "OPM122501, 229-0392-26, 07.04.2026, IJZ-MB.pdf",
+  "field": "total_thc_pct",
+  "old": "N.D.",
+  "new": null,
+  "reason": "phantom: micro-only certificate, fields not present"
+ },
+ {
+  "doc": "OPM122501, 229-0392-26, 07.04.2026, IJZ-MB.pdf",
+  "field": "total_cbd_pct",
+  "old": "N.D.",
+  "new": null,
+  "reason": "phantom: micro-only certificate, fields not present"
+ },
+ {
+  "doc": "OPM122501, 229-0392-26, 07.04.2026, IJZ-MB.pdf",
+  "field": "total_cbn_pct",
+  "old": "N.D.",
+  "new": null,
+  "reason": "phantom: micro-only certificate, fields not present"
+ },
+ {
+  "doc": "OPM122501, 229-0392-26, 07.04.2026, IJZ-MB.pdf",
+  "field": "loss_on_drying_pct",
+  "old": "N.D.",
+  "new": null,
+  "reason": "phantom: micro-only certificate, fields not present"
+ },
+ {
+  "doc": "OPM122501, 229-0392-26, 07.04.2026, IJZ-MB.pdf",
+  "field": "foreign_matter_pct",
+  "old": "N.D.",
+  "new": null,
+  "reason": "phantom: micro-only certificate, fields not present"
+ },
+ {
+  "doc": "OPM122501, 229-0392-26, 07.04.2026, IJZ-MB.pdf",
+  "field": "macroscopic_id",
+  "old": "N.D.",
+  "new": null,
+  "reason": "phantom: micro-only certificate, fields not present"
+ },
+ {
+  "doc": "OPM122501, 229-0392-26, 07.04.2026, IJZ-MB.pdf",
+  "field": "microscopic_id",
+  "old": "N.D.",
+  "new": null,
+  "reason": "phantom: micro-only certificate, fields not present"
+ },
+ {
+  "doc": "OPM122501, 229-0392-26, 07.04.2026, IJZ-MB.pdf",
+  "field": "hptlc_id",
+  "old": "N.D.",
+  "new": null,
+  "reason": "phantom: micro-only certificate, fields not present"
+ },
+ {
+  "doc": "P050192, 5661-2025, 01.12.2025, IJZ.pdf",
+  "field": "total_thc_pct",
+  "old": "N.D.",
+  "new": null,
+  "reason": "phantom: metals-only certificate, fields not present"
+ },
+ {
+  "doc": "P050192, 5661-2025, 01.12.2025, IJZ.pdf",
+  "field": "total_cbd_pct",
+  "old": "N.D.",
+  "new": null,
+  "reason": "phantom: metals-only certificate, fields not present"
+ },
+ {
+  "doc": "P050192, 5661-2025, 01.12.2025, IJZ.pdf",
+  "field": "total_cbn_pct",
+  "old": "N.D.",
+  "new": null,
+  "reason": "phantom: metals-only certificate, fields not present"
+ },
+ {
+  "doc": "P050192, 5661-2025, 01.12.2025, IJZ.pdf",
+  "field": "loss_on_drying_pct",
+  "old": "N.D.",
+  "new": null,
+  "reason": "phantom: metals-only certificate, fields not present"
+ },
+ {
+  "doc": "P050192, 5661-2025, 01.12.2025, IJZ.pdf",
+  "field": "foreign_matter_pct",
+  "old": "N.D.",
+  "new": null,
+  "reason": "phantom: metals-only certificate, fields not present"
+ },
+ {
+  "doc": "P050192, 5661-2025, 01.12.2025, IJZ.pdf",
+  "field": "macroscopic_id",
+  "old": "N.D.",
+  "new": null,
+  "reason": "phantom: metals-only certificate, fields not present"
+ },
+ {
+  "doc": "P050192, 5661-2025, 01.12.2025, IJZ.pdf",
+  "field": "microscopic_id",
+  "old": "N.D.",
+  "new": null,
+  "reason": "phantom: metals-only certificate, fields not present"
+ },
+ {
+  "doc": "P050192, 5661-2025, 01.12.2025, IJZ.pdf",
+  "field": "hptlc_id",
+  "old": "N.D.",
+  "new": null,
+  "reason": "phantom: metals-only certificate, fields not present"
+ },
+ {
+  "doc": "P050192, 5661-2025, 01.12.2025, IJZ.pdf",
+  "field": "tamc",
+  "old": "N.D.",
+  "new": null,
+  "reason": "phantom: metals-only certificate, fields not present"
+ },
+ {
+  "doc": "P050192, 5661-2025, 01.12.2025, IJZ.pdf",
+  "field": "tymc",
+  "old": "N.D.",
+  "new": null,
+  "reason": "phantom: metals-only certificate, fields not present"
+ },
+ {
+  "doc": "P050192, 5661-2025, 01.12.2025, IJZ.pdf",
+  "field": "bile_tolerant_gnb",
+  "old": "N.D.",
+  "new": null,
+  "reason": "phantom: metals-only certificate, fields not present"
+ },
+ {
+  "doc": "P050192, 5661-2025, 01.12.2025, IJZ.pdf",
+  "field": "salmonella",
+  "old": "N.D.",
+  "new": null,
+  "reason": "phantom: metals-only certificate, fields not present"
+ },
+ {
+  "doc": "P050192, 5661-2025, 01.12.2025, IJZ.pdf",
+  "field": "e_coli",
+  "old": "N.D.",
+  "new": null,
+  "reason": "phantom: metals-only certificate, fields not present"
+ },
+ {
+  "doc": "P050192, 5661-2025, 01.12.2025, IJZ.pdf",
+  "field": "aflatoxins_total",
+  "old": "N.D.",
+  "new": null,
+  "reason": "phantom: metals-only certificate, fields not present"
+ },
+ {
+  "doc": "P050192, 5661-2025, 01.12.2025, IJZ.pdf",
+  "field": "aflatoxin_b1",
+  "old": "N.D.",
+  "new": null,
+  "reason": "phantom: metals-only certificate, fields not present"
+ },
+ {
+  "doc": "P050192, 5661-2025, 01.12.2025, IJZ.pdf",
+  "field": "ochratoxin_a",
+  "old": "N.D.",
+  "new": null,
+  "reason": "phantom: metals-only certificate, fields not present"
+ },
+ {
+  "doc": "P050192, 5661-2025, 01.12.2025, IJZ.pdf",
+  "field": "pesticides",
+  "old": "N.D.",
+  "new": null,
+  "reason": "phantom: metals-only certificate, fields not present"
+ },
+ {
+  "doc": "FB012601_1, 2362-2026, 30.04.2026, IJZ.pdf",
+  "field": "tamc",
+  "old": "<10",
+  "new": null,
+  "reason": "phantom: chem certificate has no microbiology section"
+ },
+ {
+  "doc": "FB012601_1, 2362-2026, 30.04.2026, IJZ.pdf",
+  "field": "tymc",
+  "old": "<10",
+  "new": null,
+  "reason": "phantom: chem certificate has no microbiology section"
+ },
+ {
+  "doc": "FB012601_1, 2362-2026, 30.04.2026, IJZ.pdf",
+  "field": "bile_tolerant_gnb",
+  "old": "Absent",
+  "new": null,
+  "reason": "phantom: chem certificate has no microbiology section"
+ },
+ {
+  "doc": "FB012601_1, 2362-2026, 30.04.2026, IJZ.pdf",
+  "field": "salmonella",
+  "old": "Absent",
+  "new": null,
+  "reason": "phantom: chem certificate has no microbiology section"
+ },
+ {
+  "doc": "FB012601_1, 2362-2026, 30.04.2026, IJZ.pdf",
+  "field": "e_coli",
+  "old": "Absent",
+  "new": null,
+  "reason": "phantom: chem certificate has no microbiology section"
+ },
+ {
+  "doc": "FB012603V, ППК26110, 30.06.2026, CNP.pdf",
+  "field": "foreign_matter_pct",
+  "old": "Absent",
+  "new": "Одговара",
+  "reason": "as printed \"/ (Одговара)\"; extraction wrote \"Absent\""
+ },
+ {
+  "doc": "GG032601, ППК26128, 21.07.2026, CNP.pdf",
+  "field": "foreign_matter_pct",
+  "old": "Absent",
+  "new": "Одговара",
+  "reason": "as printed \"/ (Одговара)\"; extraction wrote \"Absent\""
+ },
+ {
+  "doc": "JD012603_02V, ППК26111, 30.06.2026, CNP.pdf",
+  "field": "foreign_matter_pct",
+  "old": "Absent",
+  "new": "Одговара",
+  "reason": "as printed \"/ (Одговара)\"; extraction wrote \"Absent\""
+ },
+ {
+  "doc": "JD022601, ППК26115, 30.06.2026, CNP.pdf",
+  "field": "microscopic_id",
+  "old": "N.D.",
+  "new": "Одговара",
+  "reason": "cert prints Одговара; extraction wrote N.D."
+ },
+ {
+  "doc": "P050152, 946-1684-25, 17.09.2025, IJZ-MB.pdf",
+  "field": "salmonella",
+  "old": "Absent",
+  "new": "Одговара",
+  "reason": "as printed \"Одговара\"; extraction wrote \"Absent\""
+ },
+ {
+  "doc": "P050152, 946-1684-25, 17.09.2025, IJZ-MB.pdf",
+  "field": "e_coli",
+  "old": "Absent",
+  "new": "Одговара",
+  "reason": "as printed \"Одговара\"; extraction wrote \"Absent\""
+ },
+ {
+  "doc": "P060072, 10-0013-26, 20.01.2026, IJZ-MB.pdf",
+  "field": "salmonella",
+  "old": "Absent",
+  "new": "Одговара",
+  "reason": "as printed \"Одговара\"; extraction wrote \"Absent\""
+ },
+ {
+  "doc": "P060072, 10-0013-26, 20.01.2026, IJZ-MB.pdf",
+  "field": "e_coli",
+  "old": "Absent",
+  "new": "Одговара",
+  "reason": "as printed \"Одговара\"; extraction wrote \"Absent\""
+ },
+ {
+  "doc": "GG012603, ППК26114, 30.06.2026, CNP.pdf",
+  "field": "total_cbd_pct",
+  "old": "6.48",
+  "new": "0.05",
+  "reason": "column shift: result order Макро/Микро/FM/LoD/CBN/CBD/THC verified in parse text"
+ },
+ {
+  "doc": "GG012603, ППК26114, 30.06.2026, CNP.pdf",
+  "field": "loss_on_drying_pct",
+  "old": "0.09",
+  "new": "6.48",
+  "reason": "column shift: result order Макро/Микро/FM/LoD/CBN/CBD/THC verified in parse text"
+ },
+ {
+  "doc": "GG012603, ППК26114, 30.06.2026, CNP.pdf",
+  "field": "foreign_matter_pct",
+  "old": "0.05",
+  "new": "0.09",
+  "reason": "column shift: result order Макро/Микро/FM/LoD/CBN/CBD/THC verified in parse text"
+ },
+ {
+  "doc": "P050192, 10802_2845-2 EN, 17.11.2025, DFL.pdf",
+  "field": "pesticides",
+  "old": "Не одговара",
+  "new": "≤ LOQ",
+  "reason": "polarity flip: DFL prints \"Not found any pesticide above LOQ — ≤ LOQ\"; extraction wrote \"Не одговара\""
+ },
+ {
+  "doc": "P050252, ППК25367, 28.11.2025, CNP.pdf",
+  "field": "total_cbd_pct",
+  "old": "26.20",
+  "new": "0.09",
+  "reason": "row misassignment (Δ9-THCA line); anchor + paper original confirm Вкупно CBD 0.09"
+ },
+ {
+  "doc": "P060052, ППК26005, 21.01.2026, CNP.pdf",
+  "field": "total_thc_pct",
+  "old": "0.48",
+  "new": "16.93",
+  "reason": "component-line pick; anchor confirms Вкупно Δ9-THC*** 16.93"
+ }
+]

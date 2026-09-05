@@ -1,0 +1,87 @@
+{
+  "_meta": {
+    "purpose": "Corrected parser configuration for the eCoA_DATABASE dataset.",
+    "apply": "PATCH {RAGFLOW_API_SERVER}/api/v1/datasets/f29f8f58a13c11f1858cf58865604f65 — strip every key beginning with '_' first; the API rejects unknown fields.",
+    "baseline": "Read live 30.08.2026. Only the fields in _changes differ.",
+    "scope": "Improves narrative retrieval. Numbers come from the typed extraction, not from these chunks.",
+    "_changes": {
+      "chunk_method": "naive -> table. A certificate is a form wrapped around a results table; naive split it on newlines into 1536-token blobs, which is why 9 of 17 sampled certificates yielded no extractable result at all.",
+      "parser_config.chunk_token_num": "1536 -> 512. One results table per chunk instead of a whole certificate.",
+      "parser_config.table_column_names": "null -> the three column headers, so a result stays bound to its parameter and its limit.",
+      "parser_config.table_column_roles": "null -> key/limit/value, so a limit is distinguishable from a measurement downstream.",
+      "parser_config.table_column_mode": "null -> explicit, to use the names above rather than inferring per document.",
+      "parser_config.table_context_size": "0 -> 1, keeping the header row with the rows it labels.",
+      "parser_config.auto_keywords": "4 -> 0. Generated keywords add nothing to a templated certificate and cost a model call per chunk.",
+      "parser_config.layout_recognize": "UNCHANGED at gpt-4.1@openai-vlm. Vision was never the weak link — the measured failure was structural.",
+      "parser_config.raptor.use_raptor": "UNCHANGED. Whether RAPTOR and GraphRAG both earn their cost is open item E2 and a separate decision."
+    }
+  },
+  "chunk_method": "table",
+  "parser_config": {
+    "auto_keywords": 0,
+    "auto_questions": 0,
+    "children_delimiter": "",
+    "chunk_token_num": 512,
+    "compilation_template_group_id": [],
+    "delimiter": "\n",
+    "enable_children": false,
+    "ext": {},
+    "filename_embd_weight": 0.3,
+    "graphrag": {
+      "batch_chunk_token_size": 4096,
+      "build_subgraph_min_timeout_seconds": 600,
+      "build_subgraph_timeout_per_chunk_seconds": 300,
+      "community_timeout_seconds": 1800,
+      "entity_types": [
+        "organization",
+        "person",
+        "geo",
+        "event",
+        "category"
+      ],
+      "lock_acquire_timeout_seconds": 600,
+      "merge_timeout_seconds": 180,
+      "method": "light",
+      "resolution_timeout_seconds": 1800,
+      "retry_attempts": 2,
+      "retry_backoff_max_seconds": 60.0,
+      "retry_backoff_seconds": 2.0,
+      "use_graphrag": false
+    },
+    "html4excel": false,
+    "image_context_size": 0,
+    "layout_recognize": "gpt-4.1@openai-vlm@OpenAI",
+    "llm_id": "deepseek-v4-flash@DEEPSEEK_API@DeepSeek",
+    "pages": null,
+    "parent_child": {
+      "children_delimiter": "\\n",
+      "use_parent_child": false
+    },
+    "raptor": {
+      "clustering_method": "gmm",
+      "max_cluster": 64,
+      "max_token": 256,
+      "prompt": "Please summarize the following paragraphs. Be careful with the numbers, do not make things up. Paragraphs as following:\n      {cluster_content}\nThe above is the content you need to summarize.",
+      "random_seed": 0,
+      "scope": "file",
+      "threshold": 0.1,
+      "tree_builder": "raptor",
+      "use_raptor": true
+    },
+    "table_column_mode": "explicit",
+    "table_column_names": [
+      "Параметар",
+      "Спецификација",
+      "Резултат"
+    ],
+    "table_column_roles": [
+      "key",
+      "limit",
+      "value"
+    ],
+    "table_context_size": 1,
+    "tag_kb_ids": [],
+    "task_page_size": null,
+    "topn_tags": 1
+  }
+}

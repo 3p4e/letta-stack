@@ -148,3 +148,47 @@ the reissue queue.
 - Register edits: B-row cert codes; F3 (ППК25139 second analysis) decision.
 - `SUPERSEDED_CRITERIA['loss_on_drying'].until` changeover date from the
   specification version history.
+
+
+## Run 2 — 04.09.2026: 30 IJZ-MB certificates (issued 31.08 and 01.09.2026)
+
+Thirty microbiology certificates the Head of QC added to the Drive folder on 04.09.2026
+(`_SPLIT_MANIFEST_IJZ-MB_2026-08-31_01.09.2026.csv` names them, page by page, with
+sha256). Pulled through the Drive connector, hash-verified, uploaded to `eCOA_DB` and run
+through the pipeline agent; all 30 pass the gate. The manifest itself is not ingested.
+
+Two rows the reads disagreed on — bile-tolerant gram-negative bacteria, where the
+laboratory prints a range (`< 10³ и > 10²`) and one read saw only the exponent as `ˣ` —
+were ruled by the Head of QC from the certificate pages on 04.09.2026 and applied through
+`decisions_2026-09-04.tsv` (DECISION B, RULED_BY, BASIS): P060262 `< 10³ и > 10² CFU/g`,
+P060432 `< 10² и > 10 CFU/g`. `apply_decisions.py --write` regenerates the worksheet from
+the open items (it drops an unapplied decision typed into it): fill the sheet after
+`--write`, then apply without it.
+
+### What had changed since run 1, and what was done about it
+
+| Found | Done |
+|---|---|
+| The parser and the questions extractor pointed at an OpenRouter credential the tenant no longer holds | parser back to `gpt-4.1@openai-vlm@OpenAI` (run 1's id); questions to `gpt-4o-mini@openai-vlm@OpenAI` — `gpt-4.1-mini` cannot be registered on the OpenAI factory (`add_llm` fails its access test) |
+| `moonshot-v1-128k` answers "Not found the model / Permission denied" | keywords extractor to `kimi-k2.6@MOONSHOT_API@Moonshot`, the ruling's chat model |
+| Both extractor `prompts` fields had re-nested again (trap 2) | flattened before the run, as always |
+| The dataset carried `use_graphrag: true` and `use_raptor: true` again (trap 10) | both off, minimal `parser_config` PUT, verified |
+| OpenAI credit exhausted at the first parse (429 `credit_balance_exhausted`) | topped up by the Head of QC; the one certificate that failed in the window was re-queued |
+| IJZ prints the zero of the P-number as a letter O (`PO60052`) | `pp_batch` and `batch_key` fold it; every new chunk's keywords carry the digit-zero form; both extractor prompts now ask for both spellings |
+| Gemini: five keys live, one (`GEMINI_API_KEY`) reported leaked by Google | the runner rotates the five; the dead one is never read |
+
+### Model matrix (run 2)
+
+| Role | Model |
+|---|---|
+| RAGFlow parser (all formats) | gpt-4.1 @ openai-vlm @ OpenAI |
+| Extractor: questions | gpt-4o-mini @ openai-vlm @ OpenAI |
+| Extractor: keywords | kimi-k2.6 @ MOONSHOT_API @ Moonshot |
+| Embedding | voyage-3-large (unchanged) |
+| Runner read A / read B | gpt-5 / gemini-3.6-flash (unchanged) |
+
+### Tooling added
+
+- `ingest_new_documents.py` — `setup` (restore the agent's models, flatten prompts), `upload`, `run NAME…|--all` (ingest with integer `run: 1`, poll to a terminal state, gate), `status`. PDFs come from `ECOA_PDF_DIR`.
+- `post_ingest.py` — `keywords` (add the digit-zero P-number to every new chunk, verified by re-read), `prompts` (the P-number rule in both extractor prompts).
+- `deliverables/qc_gap_analysis/tracker/new_instances_from_records.py` — records + manifest → testing instances for the tracker builder.

@@ -1,0 +1,356 @@
+name: CI
+
+on:
+  push:
+    branches: [main]          # branch pushes are covered by pull_request
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  policy:
+    name: Policy and integrity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # Guards the standing rules: no classical OCR, no Letta source creation,
+      # no committed credentials, every Python file parses, and the batch gap
+      # analysis CSV does not drift from the counts its README states.
+      - name: Policy check
+        run: python3 scripts/policy_check.py
+
+  secrets:
+    name: Secret scan (history)
+    runs-on: ubuntu-latest
+    # gitleaks-action lists the PR's commits to scan just that range, which
+    # needs pull-requests:read on top of the workflow-wide contents:read.
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Enforcing, not advisory. Provider shapes this stack can actually leak
+      # are declared in .gitleaks.toml; the one known historical finding is
+      # allowlisted there by commit, with a note, so new leaks still fail.
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_CONFIG: .gitleaks.toml
+
+  build:
+    name: Deliverable builders import cleanly
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install what the analysis scripts need
+        run: python3 -m pip install --quiet openpyxl
+
+      # The batch-identity rule has one definition and everything keys through it.
+      # Its doctests are the contract: separators collapse, sub-lot indices nest,
+      # a verification sample stays distinct from the lot it verifies.
+      - name: Batch identity rule holds
+        run: |
+          python3 ingestion/common/batch_id.py
+          python3 deliverables/qc_gap_analysis/batch_spellings.py
+          git diff --exit-code -- deliverables/qc_gap_analysis/batch_spellings.csv
+
+      # An acceptance criterion is not the number printed next to it. Ph. Eur.
+      # 5.1.4 / 2.6.12 and USP <1111> read an enumeration criterion of 10^n CFU
+      # as a maximum acceptable count of 2 x 10^n, so a TYMC criterion of 10^4
+      # conforms up to 20 000. Parsing that criterion with the function that
+      # parses the RESULT reported nine batches out of specification where five
+      # are, and four of those false flags reached a release register. The
+      # doctests on acceptance_limit() are that rule; they fail here rather than
+      # in a deviation meeting.
+      - name: Acceptance criteria are read the way the pharmacopoeia says
+        run: |
+          python3 -m doctest ingestion/ragflow/validate_ecoa_limits.py -v \
+            | tail -1
+          python3 -m doctest ingestion/ragflow/validate_ecoa_limits.py
+          python3 -m doctest deliverables/qc_gap_analysis/build_register_artifact.py
+          python3 -m doctest deliverables/qc_gap_analysis/apply_acceptance_criterion_corrections.py
+
+      # The register is a chain of small idempotent scripts over an owner-supplied
+      # baseline. Replaying it must reproduce the current workbook exactly, or one
+      # of the corrections has stopped being reproducible from evidence.
+      - name: The correction chain replays
+        run: python3 deliverables/qc_gap_analysis/replay_correction_chain.py
+
+      # Five TYMC results are over their acceptance criterion and no others are;
+      # four more sit between the criterion as printed and its pharmacopoeial
+      # maximum acceptable count, undetermined until QA reads QCSP 001 v.03; four
+      # are stability timepoints and are not release results at all. If any of
+      # those counts moves without a correction script moving with it, something
+      # has changed a release determination silently.
+      - name: Five out of specification, four undetermined, four stability
+        run: |
+          python3 - <<'EOF'
+          import re, subprocess, sys
+          out = subprocess.run(
+              [sys.executable, "ingestion/ragflow/validate_ecoa_limits.py",
+               "deliverables/qc_gap_analysis/PP_Batch_Release_QC_Register_SUBLOT_2026-09-01.xlsx"],
+              capture_output=True, text=True).stdout
+          print(out)
+
+          def count(rule):
+              line = next(l for l in out.splitlines() if l.startswith(rule + " "))
+              return int(re.search(r"(\d+)\s*$", line).group(1)), line
+
+          bad = []
+          r1, r1line = count("R1")
+          r5, r5line = count("R5")
+          r6, r6line = count("R6")
+          if r1 != 5:
+              bad.append("R1 should be 5 release results over their criterion: " + r1line)
+          if r5 != 4:
+              bad.append("R5 should be 4 stability timepoints: " + r5line)
+          # Four TYMC results clear Ph. Eur. 5.1.4's maximum acceptable count and
+          # exceed Purely Plant's own QCSP 001 v.03 read as written. They are
+          # neither cleared nor failed until QA determines which governs, and a
+          # move in this count means something has decided that silently.
+          if r6 != 4:
+              bad.append("R6 should be 4 undetermined against QCSP 001: " + r6line)
+
+          # every R1 finding must be a TYMC count, and no stability timepoint may
+          # appear among them — a CBN result on a 40 C / 75 % RH sample is not a
+          # release failure and must never be reported as one.
+          block = out.split("R1 ", 1)[1].split("R5 ", 1)[0]
+          for line in block.splitlines():
+              if re.match(r"\s+r\d+\s", line) and "TYMC" not in line:
+                  bad.append("a non-TYMC result is being reported as a release failure: "
+                             + line.strip())
+
+          for b in bad:
+              print("FAIL", b)
+          sys.exit(1 if bad else 0)
+          EOF
+
+      # The gap analysis is a regulated deliverable: if its inputs stop parsing
+      # or the numbers move, that must fail here rather than in a QC meeting.
+      # The gap analysis is a regulated deliverable. Every batch the register
+      # carries must appear in the CSV; a CSV row the register does NOT carry is
+      # allowed only when it is flagged in_register=N and named in the README,
+      # so an omission from the register stays visible instead of being absorbed.
+      # The reference is the correction chain's FINAL workbook, not the owner's
+      # original: since step 19 the chain corrects batch identity too (ref 53,
+      # FB012601 -> FB012601/1), and the CSV must agree with the register as
+      # corrected, which the replay step above has just proved reproducible.
+      - name: Gap analysis reconciles with the register
+        run: |
+          python3 - <<'PY'
+          import csv, openpyxl, re, sys
+          base = "deliverables/qc_gap_analysis/"
+          ws = openpyxl.load_workbook(base + "PP_Batch_Release_QC_Register_SUBLOT_2026-09-01.xlsx",
+                                      data_only=True)["Batch Release QC"]
+          R = [[c.value for c in r] for r in ws.iter_rows()]
+          v = lambda x: "" if x is None or str(x).strip() in ("", "/", "None", "-", "—") else str(x).strip()
+          reg = {v(r[1]) for r in R[5:] if r and re.fullmatch(r"\d+(\.0)?", v(r[0]) or "x")}
+          rows = list(csv.DictReader(open(base + "batch_gap_analysis.csv", encoding="utf-8")))
+          readme = open(base + "README.md", encoding="utf-8").read()
+
+          csv_in  = {r["batch"] for r in rows if r["in_register"] == "Y"}
+          csv_out = [r["batch"] for r in rows if r["in_register"] != "Y"]
+          bad = []
+
+          missing = reg - csv_in
+          if missing:
+              bad.append(f"register batches absent from the CSV: {sorted(missing)}")
+          mislabelled = csv_in - reg
+          if mislabelled:
+              bad.append(f"flagged in_register=Y but not in the register: {sorted(mislabelled)}")
+          for b in csv_out:
+              if b in reg:
+                  bad.append(f"{b} is in the register but flagged in_register=N")
+              elif b not in readme:
+                  bad.append(f"{b} is not in the register and not explained in README.md")
+
+          print(f"register={len(reg)}  csv in_register=Y {len(csv_in)}  "
+                f"documented exceptions {len(csv_out)} {csv_out}")
+          for b in bad:
+              print("FAIL", b)
+          sys.exit(1 if bad else 0)
+          PY
+
+  docengine-tests:
+    name: DocEngine suite runs against a real Postgres
+    runs-on: ubuntu-latest
+    # tests/conftest.py SKIPS the persistence tests when no DSN is set, and
+    # test_api.py was written assuming CI would supply one. Without this service
+    # app/db.py — job_create, document_create, reap_stale_jobs — has no executed
+    # coverage at all. Verified locally: 45 passed / 6 skipped without a DB,
+    # 51 passed / 0 skipped with one. Credentials here are throwaway and scoped
+    # to this container.
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: docengine
+          POSTGRES_PASSWORD: docengine
+          POSTGRES_DB: docengine
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U docengine -d docengine"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          # Matches the service's own Dockerfile. tests/test_db.py needs 3.10+
+          # regardless (it evaluates `str | None` as a runtime annotation).
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: apps/wwf-docengine/requirements.txt
+
+      # Deps come from the service's own pinned manifest, so anything added on
+      # any branch flows through without editing this workflow. pytest is in no
+      # requirements file and there is no dev-requirements file, so it is pinned
+      # inline rather than left to float.
+      - name: Install service deps and the test runner
+        working-directory: apps/wwf-docengine
+        run: |
+          python3 -m pip install --quiet -r requirements.txt
+          python3 -m pip install --quiet pytest pytest-asyncio
+
+      # Must run FROM apps/wwf-docengine: tests/conftest.py puts the parent of
+      # tests/ on sys.path, which is how `from app import db` resolves. Scoped to
+      # this directory on purpose — ingestion/qms-creator-framework/tests drives a
+      # live LettaService and would fail on infra CI deliberately does not have.
+      - name: pytest
+        working-directory: apps/wwf-docengine
+        env:
+          DOCENGINE_DATABASE_URL: postgresql://docengine:docengine@localhost:5432/docengine
+        run: python3 -m pytest tests/ -q
+
+  ppdocwiz-tests:
+    name: PP Doc Wiz auth and path handling
+    runs-on: ubuntu-latest
+    # A separate job from the one above so a failure introduced in the docengine
+    # tests cannot mask this signal, and vice versa.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: apps/ppdocwiz/requirements.txt
+
+      # httpx is a TEST-only dependency: the Letta proxy uses stdlib urllib, so
+      # it is deliberately absent from requirements.txt and installed only here.
+      - name: Install app deps and the test runner
+        working-directory: apps/ppdocwiz
+        run: |
+          python3 -m pip install --quiet -r requirements.txt
+          python3 -m pip install --quiet pytest httpx
+
+      - name: pytest
+        working-directory: apps/ppdocwiz
+        run: python3 -m pytest tests/ -q
+
+  engine-layout:
+    name: Document engine column sizing
+    runs-on: ubuntu-latest
+    # The engine has no other automated coverage, and it builds controlled
+    # documents. These tests exist because commit 593e7f7 rewrote pp_report.fixed()
+    # while adding the brand assets: the table overflow compression and the
+    # word-boundary entry matching went with it, the commit message said nothing
+    # about layout, and nothing noticed for two weeks. Both guards were verified to
+    # fail against that version and pass against the restore.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      # python-docx is all these need — the tables are built in memory and the
+      # assertions read column widths back off the XML. No LibreOffice, no network.
+      - name: Install the engine's document dependency and the test runner
+        run: python3 -m pip install --quiet python-docx pytest
+
+      - name: pytest
+        run: python3 -m pytest pp-document-suite/tests/ -q
+
+  deps:
+    name: Dependency advisories
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pip-audit
+        run: python3 -m pip install --quiet pip-audit
+
+      # The CVE notes hand-written into apps/wwf-docengine/requirements.txt (the
+      # starlette 0.41.x advisories, lxml PYSEC-2026-87) are the record of one
+      # manual pip-audit run. This repeats it on every PR instead of letting it
+      # age out. All three manifests are fully pinned, so the result is
+      # deterministic: red means a new advisory landed on a version we deploy.
+      #
+      # pp-document-suite/requirements.txt is NOT audited here — it keeps ranges
+      # on purpose so a dev install is not over-constrained, and would resolve
+      # differently on every run. requirements-service.txt is what the image
+      # actually installs, and that is what is checked.
+      - name: Pinned manifests carry no known advisories
+        run: |
+          python3 -m pip_audit --strict -r apps/wwf-docengine/requirements.txt
+          python3 -m pip_audit --strict -r apps/ppdocwiz/requirements.txt
+          python3 -m pip_audit --strict -r pp-document-suite/requirements-service.txt
+
+  markdown:
+    name: Deliverable docs are well formed
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Tables have consistent column counts
+        run: |
+          python3 - <<'PY'
+          import glob, sys
+          bad = []
+          for p in glob.glob("deliverables/**/*.md", recursive=True) + glob.glob("server/*.md"):
+              rows, width, start = [], None, 0
+              for i, line in enumerate(open(p, encoding="utf-8"), 1):
+                  s = line.strip()
+                  if s.startswith("|") and s.endswith("|"):
+                      n = len(s.split("|")) - 2
+                      if width is None:
+                          width, start = n, i
+                      elif n != width:
+                          bad.append(f"{p}:{i}: table starting line {start} has "
+                                     f"{width} columns, this row has {n}")
+                  else:
+                      width = None
+          for b in bad:
+              print("FAIL", b)
+          sys.exit(1 if bad else 0)
+          PY
