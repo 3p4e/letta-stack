@@ -465,8 +465,9 @@ if ICOA_RULE:
         #                  eCoA it cites.
         #     Adherence (ISSUE_COQ_CONVENTIONS): a CoQ never precedes a document it cites, so a legacy
         #     lot whose latest eCoA is dated after 27.05.2026 takes the post-SOP CoQ rule and is
-        #     flagged; a CoQ never precedes its iCoA; a CoQ with an uncertified determination is not
-        #     issuable; nothing is dated on a weekend.
+        #     flagged; a CoQ never precedes its iCoA; a lot whose initial certificate for a
+        #     determination is not on file keeps its planned CoQ and number (the initial testing exists
+        #     at CNP, the certificate is to be located); nothing is dated on a weekend.
         _plist = [p.strip() for p in b["p"].split("/") if p.strip().upper().startswith("P0")]
         _lots = _plist if len(_plist) > 1 else [b["p"]]
         _single = len(_lots) == 1
@@ -536,7 +537,10 @@ if ICOA_RULE:
             elif _group == "post-SOP":
                 # the series continues after the legacy day: CoQ-PP_26-001 … are the legacy lots of
                 # 27.05.2026, so a post-SOP CoQ is never dated before it
-                _coq_issue = max(_workday(_latest_d, 7), LEGACY_COQ) if _latest_d else None
+                _coq_issue = max(_workday(_latest_d, 7), LEGACY_COQ) if _latest_d else max(LEGACY_COQ, _icoa_issue or LEGACY_COQ)
+                if not _latest_d:
+                    _coq_flag = "provisional date: no initial certificate on file yet — the date follows the latest eCoA once located"
+                    FLAGS.append(f"{_lot_id}: no initial certificate on file — the CoQ keeps its planned number with a provisional date {_F_(_coq_issue)}")
                 if _latest_d and _workday(_latest_d, 7) < LEGACY_COQ:
                     _coq_flag = f"rule date {_F_(_workday(_latest_d, 7))} held to the legacy series day"
                     FLAGS.append(f"{_lot_id}: post-SOP CoQ rule date {_F_(_workday(_latest_d, 7))} precedes the legacy series day 27.05.2026 — held to it, so the legacy CoQs keep 001 onward")
@@ -546,6 +550,12 @@ if ICOA_RULE:
                 FLAGS.append(f"{_lot_id}: CoQ rule date {_F_(_coq_issue)} precedes its iCoA of {_F_(_icoa_issue)} — held to the iCoA date")
                 _coq_issue = _icoa_issue
                 _coq_flag = (_coq_flag + "; " if _coq_flag else "") + "held to the iCoA date"
+            # a CoQ never precedes the packaging of its lot (a lot without an iCoA — CNP covers
+            # A, B and foreign matter — whose certificates all predate packaging)
+            if _coq_issue and _cmd and _coq_issue < _cmd:
+                FLAGS.append(f"{_lot_id}: CoQ rule date {_F_(_coq_issue)} precedes the packaging of the lot ({_F_(_cmd)}) — held to the packaging date")
+                _coq_issue = _workday(_cmd, 0)
+                _coq_flag = (_coq_flag + "; " if _coq_flag else "") + "held to the packaging date"
             # --- RETEST SERIES: the QP's campaign, sampled by tranche from July 2026 (Tranche 1 the
             #     first 21 lots produced, then Tranches 2 and 3). At the sampling, identification A, B
             #     and foreign matter are tested in-house on every bag of the representative sample
@@ -628,13 +638,14 @@ if ICOA_RULE:
     # iCoA-PP_26-nnn and CoQ-PP_26-nnn (nnn = 001 … 999, one series each for the year of issue),
     # assigned in the order the documents are issued: by the planned issue date, then by the first
     # day of packaging. No number is reserved for a document that cannot be issued yet: a lot
-    # without a packaging date, a held result, a CoQ with an uncertified determination, every
+    # without a packaging date, a held result, every
     # retest document. On the sheets the number, the code and the dates are FORMULAS; the values
     # computed here are the same numbers, for the page and the checks.
-    _issuable, _later = [], []
+    _issuable, _later, _na = [], [], []
     for r in ICOA_ROWS:
         if r["icoa"] == "not needed":
             r["code"], r["issuable"], r["reg_status"] = "", "n/a", r["status"]
+            _na.append(r)                     # on the sheet all the same: the CoQ Register reads its packaging date there
             continue
         if r["series"] != "initial release":
             r["why"] = ("retest assay on file; identification A, B and foreign matter to test at the retest sampling"
@@ -660,7 +671,8 @@ if ICOA_RULE:
         r["icoa"] = r["code"]
         if r["series"] == "initial release":
             r["status"] = r["reg_status"]
-    REGISTER = _issuable + sorted(_later, key=lambda r: (0 if r["series"] == "initial release" else 1 if r["status"].startswith("due") else 2,
+    REGISTER = _issuable + sorted(_na, key=lambda r: (str(T.date_key(r["sortdate"])) if r["sortdate"] else "9", r["cu"], r["p"])) \
+        + sorted(_later, key=lambda r: (0 if r["series"] == "initial release" else 1 if r["status"].startswith("due") else 2,
                                                           str(T.date_key(r["sortdate"] or r["basis"])) if (r["sortdate"] or r["basis"]) else "9", r["cu"], r["p"]))
     ICOA_BY_KEY = {r["key"]: r for r in ICOA_ROWS}
     _cq_ok, _cq_later = [], []
@@ -671,9 +683,6 @@ if ICOA_RULE:
             _cq_later.append(r)
         elif not r["coq_issue"]:
             r["why"] = "no packaging date on the list" if r["group"] == "—" else "no certificate on file"
-            _cq_later.append(r)
-        elif r["gaps"]:
-            r["why"] = "uncertified: #" + ", #".join(str(n) for n in r["gaps"])
             _cq_later.append(r)
         elif r["icoa_needed"] and ic and ic["issuable"] != "yes":
             r["why"] = "its iCoA is not yet issuable"
@@ -686,6 +695,12 @@ if ICOA_RULE:
         r["reg_status"] = (("registered — legacy series, issued 27.05.2026" if not r["coq_flag"] else "registered — " + r["coq_flag"])
                            if r["group"] == "legacy" else
                            ("registered — first working day 7 days after the latest eCoA" if not r["coq_flag"] else "registered — " + r["coq_flag"]))
+        # Head of QC, 05.09.2026 (evening): a production lot whose initial certificate for a
+        # determination is not on file keeps its planned CoQ and number — the initial testing
+        # exists at the Faculty of Pharmacy's Center for Natural Products and the certificate is
+        # to be located (Work Order); the number is not withheld for it
+        if r["gaps"]:
+            r["reg_status"] += " · initial certificate to locate (CNP): #" + ", #".join(str(n) for n in r["gaps"])
     for r in _cq_later:
         r["code"], r["issuable"] = "— at issue —", "no"
         r["reg_status"] = "not yet issuable — " + r["why"]
@@ -700,7 +715,7 @@ if ICOA_RULE:
           f"{sum(1 for r in _cq_ok if r['group'] == 'legacy' and r['coq_flag'])} legacy moved, "
           f"{sum(1 for r in _cq_ok if r['group'] != 'legacy')} post-SOP), {len(_cq_later)} not yet issuable "
           f"({sum(1 for r in _cq_later if r['series'] == 'initial release')} initial: "
-          f"{sum(1 for r in _cq_later if r['series'] == 'initial release' and r['why'].startswith('uncertified'))} uncertified; "
+          f"{sum(1 for r in _cq_ok if r['gaps'])} numbered with an initial certificate to locate; "
           f"{sum(1 for r in _cq_later if r['series'] != 'initial release')} retest)")
     print("adherence flags:", len(FLAGS))
     for _f in FLAGS:
@@ -1621,7 +1636,9 @@ COQ_NOTE = ("Head of QC, 05.09.2026: preliminary CoQ issuance register — codes
             "cites its lot's iCoA (identification A, B, foreign matter) and reports identification C as 'Conforms', referenced to "
             "the eCoA that covers Total THC. ADHERENCE (ISSUE_COQ_CONVENTIONS): a CoQ never precedes a document it cites — a legacy "
             "lot whose latest eCoA is dated after 27.05.2026 takes the post-SOP rule and is flagged in Status; a CoQ never precedes "
-            "its iCoA; a CoQ with an uncertified determination is not issuable and carries no number (Status names the gaps); a "
+            "its iCoA; Head of QC, 05.09.2026 (evening): a production lot whose initial certificate for a determination is not on "
+            "file keeps its planned CoQ and number — the initial testing exists at the Faculty of Pharmacy's Center for Natural "
+            "Products and the certificate is to be located (Work Order; Status names the determination); a "
             "certificate dated on or after 01.07.2026 is a retest document (the QP's campaign: Tranche 1, the first 21 lots, sampled "
             "July 2026; then Tranches 2 and 3) and never certifies the initial CoQ — a determination whose only certificate is a "
             "retest one is uncertified for the legacy CoQ and flagged; nothing is dated on a weekend. RETEST ROWS: the reissued CoQ "
@@ -1629,7 +1646,7 @@ COQ_NOTE = ("Head of QC, 05.09.2026: preliminary CoQ issuance register — codes
             "initial certificates for the rest; its rule date is the first working day 7 days after the latest retest certificate, "
             "and it is issued once the in-house retest iCoA exists. FORMULAS: No. and the code as on the iCoA Register; Rule date is 27.05.2026 for a legacy row "
             "whose latest eCoA is on or before it, else the first working day 7 days after the latest eCoA (not before 27.05.2026); the planned date is the "
-            "later of the rule date and the iCoA's date; iCoA (register) and its date are looked up on the iCoA Register by Key. "
+            "latest of the rule date, the iCoA's date and the lot's last day of packaging; iCoA (register) and its date are looked up on the iCoA Register by Key. "
             "The latest eCoA cited is a value (the first credited certificate per determination dated before the retest campaign; "
             "for a retest row, the latest retest certificate), recomputed by the builder. Working days are Monday to Friday; public holidays are not applied.")
 
@@ -1692,7 +1709,8 @@ def _fill_coq_register(sh):
         f_code = f'=IF(A{_r}<>"","CoQ-PP_26-"&TEXT(A{_r},"000"),"— at issue —")'
         f_rule = (f'=IF(ISNUMBER(F{_r}),IF(AND(J{_r}="legacy",F{_r}<=DATE(2026,5,27)),DATE(2026,5,27),MAX(DATE(2026,5,27),{_roll(f"F{_r}+7")})),'
                   f'IF(J{_r}="legacy",DATE(2026,5,27),""))')
-        f_issue = f'=IF(A{_r}="","",IF(ISNUMBER(I{_r}),MAX(E{_r},I{_r}),E{_r}))'
+        _pkc = f"INDEX('iCoA Register'!$F:$F,MATCH(S{_r},'iCoA Register'!${REG_KEY_COL}:${REG_KEY_COL},0))"
+        f_issue = f'=IF(A{_r}="","",MAX(E{_r},IF(ISNUMBER(I{_r}),I{_r},0),IFERROR(IF(ISNUMBER({_pkc}),{_roll(_pkc)},0),0)))'
         latest_d = _date(r["latest"][1]) if r["latest"] else None
         status = (r["reg_status"] if r["series"] == "initial release" else
                   "not yet issuable — " + r["rt_status"] + " · issued on the first working day 7 days after the latest retest certificate, once the in-house iCoA exists")

@@ -444,7 +444,7 @@ CoQ; they take numbers once the in-house retest iCoA exists.
 The ruling was checked against `ISSUE_COQ_CONVENTIONS.md` (a document never precedes one
 it cites, never precedes the SOP floor, is never post-dated, never carries an uncertified
 result) and against the dates on file. The builder writes every flag under the CoQ Register
-(21 in v11) and the page lists them under its CoQ Register tab.
+(25 in v11) and the page lists them under its CoQ Register tab.
 
 1. **A post-SOP CoQ is never dated before the legacy series day.** Seven post-SOP lots
    (P060262 to P060322, packed 14 to 22.05.2026) have every cited eCoA on file by
@@ -452,19 +452,29 @@ result) and against the dates on file. The builder writes every flag under the C
    `CoQ-PP_26-001`. Fix: they are held to 27.05.2026 and follow the legacy series as
    `-046` to `-052`, flagged.
 2. **A determination whose only certificate is a retest one is uncertified for the initial
-   CoQ.** Fourteen lots: microbiology only from the IJZ-MB certificates of 31.08/01.09.2026
-   (P060142, P060182, P060202, P060222, P060162, P050142, P060102), mycotoxins only from
-   the Farmahem M of 10.08.2026 (P060152, P060402), and the cannabinoids and mycotoxins
-   only from the Farmahem pair (HPA1024, OPM1024, P060332, P060352, P060382). Their initial
-   CoQ carries no number; the flag asks the Head of QC to rule whether the superseding CoQ
-   may report the determination as not tested at the initial testing, or whether the lot
-   waits for the reissue. For the last three, packed in May 2026, the Farmahem pair may in
-   fact be the initial testing rather than a re-analysis — a ruling settles that too.
+   CoQ — and the lot keeps its planned CoQ and number all the same.** Head of QC, 05.09.2026
+   (evening): the initial testing of every production lot exists at the Faculty of
+   Pharmacy's Center for Natural Products (cannabinoids and the rest), and a later resample
+   at Farmahem is the re-analysis; a certificate not on file is to be located, not a reason
+   to withhold the number. So the 28 initial CoQs with a gap are numbered in their
+   chronological place and their Status names the determination
+   (`initial certificate to locate (CNP): #9, #10`); the Work Order carries the search. The
+   fourteen lots whose only certificate for a determination is a retest one are flagged for
+   the same reason (microbiology only from the IJZ-MB certificates of 31.08/01.09.2026:
+   P060142, P060182, P060202, P060222, P060162, P050142, P060102; mycotoxins only from the
+   Farmahem M of 10.08.2026: P060152, P060402; cannabinoids and mycotoxins only from the
+   Farmahem pair: HPA1024, OPM1024, P060332, P060352, P060382). Three post-SOP lots with no
+   initial certificate on file at all (P060332, P060352, P060382) carry a provisional date
+   — the later of 27.05.2026 and their iCoA's date — that follows the latest eCoA once it is
+   located; flagged.
 3. **A CoQ never precedes its own iCoA.** The planned CoQ date is the later of the rule date
    and the iCoA's date (a formula on the sheet); after fix 1 no row needed it.
-4. **A CoQ with a gap is not issuable.** 25 initial CoQs have an uncertified determination
-   (the Status names it, e.g. `uncertified: #9, #10`) and carry no number; they take a
-   number when the certificate arrives, dated by the rule then.
+4. **A CoQ never precedes the packaging of its lot.** A lot whose certificates all predate
+   its packaging and which needs no iCoA (CNP covers identification A, B and foreign
+   matter) would otherwise get a CoQ dated before the lot existed: P060482, rule date
+   07.07.2026, packed 05.08.2026, held to the packaging date (a formula on the sheet: the
+   planned date is the latest of the rule date, the iCoA's date and the last day of
+   packaging, rolled to a working day).
 5. **Nothing on a weekend.** 15.05.2026 and 27.05.2026 are working days; the builder refuses
    a weekend for either (`--legacy-icoa=`, `--legacy-coq=`), and the post-SOP formulas roll
    a Saturday or Sunday forward.
@@ -474,10 +484,12 @@ result) and against the dates on file. The builder writes every flag under the C
 **iCoA Register** (144 rows): 70 numbered — `iCoA-PP_26-001` (CJ1024) to `-059` on
 15.05.2026 for the 59 legacy lots, `-060` (P060262, 19.05.2026) to `-070` (P060382,
 01.06.2026) for the 11 post-SOP lots, each on the first working day 5 days after
-packaging; 74 retest rows without a number. **CoQ Register** (157 rows): 52 numbered, all
-on 27.05.2026 — `CoQ-PP_26-001` (CJ1024) to `-045` legacy, `-046` to `-052` post-SOP (fix
-1); 31 initial CoQs without a number (25 uncertified, 3 P16 lots without a date, 3 without
-any certificate); 74 retest rows — 17 Tranche 1 with the Farmahem pair on file (rule date
+packaging; 74 retest rows without a number. **CoQ Register** (157 rows): 80 numbered —
+`CoQ-PP_26-001` (CJ1024) to `-059` legacy, all on 27.05.2026; `-060` (P060262) to `-080`
+(P060442) post-SOP, on 27.05.2026 (fix 1) up to 07.09.2026 (the lots whose IJZ-MB
+microbiology of 31.08.2026 is their initial one); 28 of them with an initial certificate
+to locate, 3 with a provisional date; 3 P16 lots without a number (no packaging date); 74
+retest rows — 17 Tranche 1 with the Farmahem pair on file (rule date
 17.08.2026), 22 sampled with the microbiology on file (07 or 08.09.2026), 7 re-analysed
 post-SOP lots, 28 not yet sampled. Every CoQ row names the iCoA it cites (looked up on the iCoA Register), the eCoA that
 covers Total THC for identification C, the CNP references, the old in-house certificate it
@@ -507,6 +519,6 @@ planned-date columns and the tracker's in-house instances for #1, #2 and #7 are
 `INDEX/MATCH` lookups by the row's **Key** (`P060342|I`: lot, initial or retest), never a
 copied code. Batch Dates holds real dates (its *iCoA basis* column is `=F`). What a formula
 does not do: re-sort the rows — a changed date that changes the order is a manual move.
-2,576 formulas in v11, all evaluated without an error through a LibreOffice recalculation;
+2,654 formulas in v11, all evaluated without an error through a LibreOffice recalculation;
 `extract_artifact_data.py` runs that recalculation on a copy before it reads the workbook,
 because openpyxl stores no computed values, so the page shows the computed numbers.
