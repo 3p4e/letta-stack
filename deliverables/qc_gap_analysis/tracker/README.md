@@ -408,9 +408,11 @@ the year of issue, assigned in the order the certificates can be issued: by the 
 permissible issue date, then by the basis date (the first day of packaging, when the sample
 is taken), identification A/B before foreign matter within a lot. Every printed issue date
 lies in [11.05.2026 … the day of signing] — the CoQ SOP came into use on 11.05.2026 and no
-document is post-dated (`ISSUE_COQ_CONVENTIONS.md`) — so the preliminary issue date is the
-SOP floor, or the last day of packaging where that is later; QC sets the real date at
-issue, and may issue in batches (one date, sequential numbers). **No number is reserved for
+document is post-dated (`ISSUE_COQ_CONVENTIONS.md`). **Head of QC, 05.09.2026: every
+certificate whose lot was packed before the SOP floor is issued on one day, 13.05.2026 (a
+Wednesday), in chronological order of packaging; the lots packed after it follow, each on
+its last day of packaging, the numbers running on.** The builder takes the day from
+`--batch-issue=` (default 13.05.2026) and refuses a weekend. **No number is reserved for
 a row that cannot be issued yet:** a lot without a packaging date, a held result, and every
 retest iCoA, whose tests are made at the retest sampling, a date not on the desk. The
 plan's references of 31.08.2026 (`iCoA-PP-YYYY-NNNN`, a series per packaging year) are
@@ -418,9 +420,9 @@ superseded by these codes and kept beside them in a *Plan reference* column.
 
 **What the register holds.** 288 rows: 140 numbered initial certificates — 70 identification
 A/B and 70 foreign matter, `iCoA-PP_26-001` (CJ1024, Ident A/B, packed 03.03.2025) to
-`-140` (P060382, foreign matter, packed 25.05.2026) — with preliminary issue dates
-11.05.2026 (the lots packed before the SOP floor) to 25.05.2026 (the lots packed after it,
-each on its last day of packaging); 148 retest rows without a number. The three lots the
+`-140` (P060382, foreign matter, packed 25.05.2026) — with `-001` to `-118` issued on
+13.05.2026 (the 59 lots packed before the SOP floor) and `-119` (P060262, packed 14.05.2026)
+to `-140` on each lot's last day of packaging, up to 25.05.2026; 148 retest rows without a number. The three lots the
 owner's tracker does not carry are named from the Head of QC's list. The 26 initial rows
 that need no certificate (CNP covers the scope) are on the iCoA Issuance sheet, not in the
 register.
@@ -433,7 +435,7 @@ register is an Excel table (`iCoA_Register`) whose number, code and dates are fo
 | No. | `=IF(C r="yes", COUNT(A$1:A r-1)+1, "")` | counts the issuable rows above it |
 | iCoA code | `="iCoA-PP_26-" & TEXT(A r, "000")` | built from No.; `— at issue —` when blank |
 | Issue date (preliminary) | `=E r` | the earliest permissible day; QC overtypes the real one |
-| Earliest permissible | `=MAX(DATE(2026,5,11), G r)` | the SOP floor or the last day of packaging |
+| Earliest permissible | `=MAX(DATE(2026,5,13), G r)` | the batch issue day or the last day of packaging |
 | Basis / Packaging complete | `INDEX/MATCH` on **Batch Dates** by P batch, else by batch as listed | a date corrected there moves the register |
 
 To add a certificate between 10 and 11: insert a row inside the table, fill the lot and set

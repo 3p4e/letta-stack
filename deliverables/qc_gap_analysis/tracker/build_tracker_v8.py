@@ -419,6 +419,10 @@ if ICOA_RULE:
         for _lot in _lots:
             _lot_id = _lot.strip() if re.match(r"^P0\d{5}$", _lot.strip()) else cu0
             _lrows = [r for r in _drows if _single or r["p_batch"] == _lot]
+            # the tracker names no P lot but the Head of QC's list does (JD112501 -> P060212): the
+            # list's P number goes on the row, so the sheet's date lookups by P batch find it
+            if not re.match(r"^P0\d{5}$", _lot.strip()) and _lrows and _lrows[0]["p_batch"]:
+                _lot = _lrows[0]["p_batch"]
             _lpk = sorted((r["packaging_from"] for r in _lrows if r["packaging_from"]), key=lambda d: str(T.date_key(d)))
             _lend = sorted((r["packaging_to"] for r in _lrows if r["packaging_to"]), key=lambda d: str(T.date_key(d)))
             _ldate = _lpk[0] if _lpk else ICOA_DATE
@@ -525,6 +529,12 @@ if ICOA_RULE:
     # FORMULAS (see _fill_register), so a row inserted between two certificates renumbers every
     # row beneath it; the values computed here are the same numbers, for the page and the checks.
     SOP_FLOOR = "11.05.2026"
+    # Head of QC, 05.09.2026: every certificate whose lot was packed before the SOP floor is
+    # issued on ONE day, 13.05.2026 (a Wednesday), in chronological order; the lots packed
+    # after it follow, each on its last day of packaging, the numbers running on.
+    BATCH_ISSUE = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--batch-issue=")), "13.05.2026")
+    import datetime as _dt2
+    assert _dt2.datetime.strptime(BATCH_ISSUE, "%d.%m.%Y").weekday() < 5, "the batch issue day falls on a weekend"
     _dk = lambda d: str(T.date_key(d))
     _issuable, _later = [], []
     for r in ICOA_ROWS:
@@ -542,10 +552,10 @@ if ICOA_RULE:
             r["earliest"], r["why"] = "— packaging date to record —", "no packaging date on the list"
             _later.append(r)
         elif r["sc"] == "FM" and r["fm"] == "held for review":
-            r["earliest"], r["why"] = max(SOP_FLOOR, comp, key=_dk), "foreign matter held for the Head of QC"
+            r["earliest"], r["why"] = max(BATCH_ISSUE, comp, key=_dk), "foreign matter held for the Head of QC"
             _later.append(r)
         else:
-            r["earliest"] = max(SOP_FLOOR, comp, key=_dk)
+            r["earliest"] = max(BATCH_ISSUE, comp, key=_dk)
             _issuable.append(r)
     _issuable.sort(key=lambda r: (_dk(r["earliest"]), _dk(r["sortdate"] or r["basis"]) if (r["sortdate"] or r["basis"]) else "9",
                                   r["cu"], r["p"], r["sc_order"]))
@@ -1462,9 +1472,9 @@ REG_NOTE = ("Head of QC, 05.09.2026: preliminary iCoA issuance register. Documen
             "one series for the year of issue, assigned in the order the certificates can be issued: by the earliest "
             "permissible issue date, then by the basis date (the first day of packaging, when the sample is taken). "
             "Every printed issue date lies in [11.05.2026 … the day of signing] — the CoQ SOP came into use on "
-            "11.05.2026 and no document is post-dated — so the preliminary date is the SOP floor, or the last day of "
-            "packaging where that is later; QC sets the real date at issue (documents may be issued in batches: one "
-            "date, sequential numbers). No number is reserved for a row that cannot be issued yet: a lot without a "
+            "11.05.2026 and no document is post-dated — and, Head of QC 05.09.2026, every certificate whose lot was packed "
+            "before the SOP floor is issued on ONE day, 13.05.2026 (a Wednesday), in chronological order of packaging; "
+            "the lots packed after it follow, each on its last day of packaging, the numbers running on. No number is reserved for a row that cannot be issued yet: a lot without a "
             "packaging date, a held result, and every retest iCoA (identification A, B and foreign matter are tested "
             "at the retest sampling, whose date is not on the desk). Where a CNP certificate reports all three, no iCoA "
             "is needed. The plan's references of 31.08.2026 (iCoA-PP-YYYY-NNNN) are superseded by these codes and kept "
@@ -1494,7 +1504,7 @@ def _fill_register(sh):
          A No.       =IF(C="yes", COUNT(A$1:A[above])+1, "")     — counts the issuable rows above it
          B code      ="iCoA-PP_26-" & TEXT(A, "000")
          D issue     =E (the preliminary date; QC overtypes the real one)
-         E earliest  =MAX(DATE(2026,5,11), G)                     — the SOP floor or the last day of packaging
+         E earliest  =MAX(DATE(2026,5,13), G)                     — the batch issue day or the last day of packaging
          F, G        packaging first / last day, looked up on Batch Dates by P batch, else by CU batch
        Insert a row inside the table and set Issuable to yes: the table copies the formulas into it
        (Excel; Google Sheets and LibreOffice: fill the formulas down) and every code beneath moves by one."""
@@ -1509,7 +1519,7 @@ def _fill_register(sh):
         f_no = f'=IF(C{_r}="yes",COUNT(A$1:A{_r - 1})+1,"")'
         f_code = f'=IF(A{_r}="","— at issue —","iCoA-PP_26-"&TEXT(A{_r},"000"))'
         f_issue = f'=IF(A{_r}="","",E{_r})'
-        f_earliest = f'=IF(AND(C{_r}="yes",ISNUMBER(G{_r})),MAX(DATE(2026,5,11),G{_r}),"")'
+        f_earliest = f'=IF(AND(C{_r}="yes",ISNUMBER(G{_r})),MAX(DATE(2026,5,13),G{_r}),"")'
         f_from = (f'=IFERROR(INDEX({BD_}!$F:$F,MATCH(J{_r},{BD_}!$C:$C,0)),'
                   f'IFERROR(INDEX({BD_}!$F:$F,MATCH(I{_r},{BD_}!$B:$B,0)),""))')
         f_to = (f'=IFERROR(INDEX({BD_}!$G:$G,MATCH(J{_r},{BD_}!$C:$C,0)),'
