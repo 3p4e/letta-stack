@@ -354,13 +354,16 @@ if ICOA_RULE:
     def _lookup(tbl, b, cu0):
         return tbl.get(T.batch_key(cu0)) or next((tbl.get("P:" + p.strip()) for p in b["p"].split("/") if tbl.get("P:" + p.strip())), None)
 
-    def _ident_c(b, after=None):
+    def _ident_c(b, after=None, before=None):
         """The cannabinoid-assay certificate that covers identification C: the assay
-        certificate itself, never a loss-on-drying one; `after` restricts it to the retest."""
+        certificate itself, never a loss-on-drying one; `after` restricts it to the retest
+        campaign, `before` to the initial testing."""
         pool = list(b["docs"][4]) or list(b["docs"][3])
         pool = [x for x in pool if not re.search(r"LoD|ГС", x[0], re.I)] or pool
         if after:
             pool = [x for x in pool if str(T.date_key(x[1])) >= str(T.date_key(after))]
+        if before:
+            pool = [x for x in pool if str(T.date_key(x[1])) < str(T.date_key(before))]
         pool = sorted(pool, key=lambda x: (T.date_key(x[1]), x[0]))
         return f"{pool[0][0]}, ({pool[0][1]}) [{pool[0][2]}]" if pool else None
 
@@ -405,6 +408,23 @@ if ICOA_RULE:
             OLD_COA.setdefault(T.batch_key(_e["batch"]), (_e["code"], _e["date"]))
     OLD_COA.pop("", None)
     FLAGS, COQ_ROWS = [], []
+    # the QP's retest campaign began in July 2026 with the sampling of Tranche 1 (the first 21 lots
+    # produced), then Tranches 2 and 3 (Head of QC, 05.09.2026): a certificate dated on or after
+    # RETEST_START is a retest document — it certifies the reissued CoQ, never the initial one
+    RETEST_START = _D_(next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--retest-start=")), "01.07.2026"))
+    RETEST_START_S = _F_(RETEST_START)
+    # A document is a RETEST document when the desk files it as a re-analysis (the Farmahem
+    # 197-series), or when its lot is legacy and it is dated after the legacy CoQ day (the
+    # legacy CoQ of 27.05.2026 cannot cite it, and for those lots everything later is the
+    # campaign), or when its lot is post-SOP and it is a second certificate for the
+    # determination. The first certificate of a post-SOP lot is its initial testing even when
+    # the campaign was already running (P060452's CNP certificate of 21.07.2026).
+    REANALYSIS = set()
+    for _rg in _D["reg"]:
+        for _ce in _rg.get("certs", []):
+            if "re-analysis" in str(_ce.get("fam", "")).lower():
+                REANALYSIS.add(T.nkey(_ce["code"]))
+    print(f"retest documents on the desk (re-analysis family): {len(REANALYSIS)}")
     REG_KEY_COL, COQ_KEY_COL = "P", "S"          # the Key columns of the iCoA Register and the CoQ Register (REG_COLS, COQ_COLS)
     for b in batches:
         cu0 = re.sub(r"[＊*]", "", b["cu"])
@@ -454,15 +474,6 @@ if ICOA_RULE:
         fm = (INH.get(T.cu_key(b["cu"])) or {}).get("7") or "Conforms"
         vals = {"1": "Conforms", "2": "Conforms", "7": fm}
         cell = lambda n: (f"CNP {cnp[n][0]}" if n in cnp else vals[str(n)])
-        # the documents the INITIAL CoQ cites: the first credited certificate per determination (the
-        # retest assay and mycotoxins are later by construction); in-house instances excluded
-        _first = {}
-        for n in range(1, 13):
-            pool = sorted([x for x in b["docs"][n] if x[2] != "PP"], key=lambda x: (str(T.date_key(x[1])), x[0]))
-            if pool:
-                _first[n] = pool[0]
-        _latest = max(_first.values(), key=lambda x: str(T.date_key(x[1]))) if _first else None
-        _gaps = [n for n in range(1, 13) if n not in _first and n not in scope and not (n == 3 and 4 in _first)]
         for _lot in _lots:
             _lot_id = _lot.strip() if re.match(r"^P0\d{5}$", _lot.strip()) else cu0
             _lrows = [r for r in _drows if _single or r["p_batch"] == _lot]
@@ -489,6 +500,27 @@ if ICOA_RULE:
             _old = OLD_COA.get(_lot) or OLD_COA.get(T.batch_key(cu0))
             _pkd, _cmd = _D_(_lpk[0]) if _lpk else None, _D_(_lend[-1]) if _lend else None
             _group = ("legacy" if (_pkd < SOP_D or _old) else "post-SOP") if _pkd else "—"
+            # the documents the INITIAL CoQ cites, and the RETEST documents, per determination
+            _first, _rt_docs = {}, {}
+            for n in range(1, 13):
+                pool = sorted([x for x in b["docs"][n] if x[2] != "PP"], key=lambda x: (str(T.date_key(x[1])), x[0]))
+                ini, rt = [], []
+                for x in pool:
+                    xd = _D_(x[1])
+                    is_rt = (T.nkey(x[0]) in REANALYSIS
+                             or (_group == "legacy" and xd and xd > LEGACY_COQ)
+                             or (_group != "legacy" and bool(ini)))
+                    (rt if is_rt else ini).append(x)
+                if ini:
+                    _first[n] = ini[0]
+                if rt:
+                    _rt_docs[n] = rt[0]
+            _latest = max(_first.values(), key=lambda x: str(T.date_key(x[1]))) if _first else None
+            _gaps = [n for n in range(1, 13) if n not in _first and n not in scope and not (n == 3 and 4 in _first)]
+            _rt_only = [n for n in _gaps if n in _rt_docs]
+            _rt_latest = max(_rt_docs.values(), key=lambda x: str(T.date_key(x[1]))) if _rt_docs else None
+            _ini_set = {(T.nkey(x[0]), n) for n, x in _first.items()}
+            _rt_set = {T.nkey(x[0]) for x in _rt_docs.values()}
             if _old and _pkd and _pkd >= SOP_D:
                 FLAGS.append(f"{_lot_id}: holds the old in-house CoA {_old[0]} but was packed {_lpk[0]}, after the SOP floor — treated as legacy")
             _icoa_issue = LEGACY_ICOA if _group == "legacy" else (_workday(_cmd, 5) if _cmd else None)
@@ -514,32 +546,37 @@ if ICOA_RULE:
                 FLAGS.append(f"{_lot_id}: CoQ rule date {_F_(_coq_issue)} precedes its iCoA of {_F_(_icoa_issue)} — held to the iCoA date")
                 _coq_issue = _icoa_issue
                 _coq_flag = (_coq_flag + "; " if _coq_flag else "") + "held to the iCoA date"
-            # --- RETEST SERIES (QP campaign): the same iCoA again per P lot, dated at the retest
-            #     sampling; a cannabinoid assay dated more than 60 days after the release basis is
-            #     the retest; release-time CNP coverage does not excuse a reissue
+            # --- RETEST SERIES: the QP's campaign, sampled by tranche from July 2026 (Tranche 1 the
+            #     first 21 lots produced, then Tranches 2 and 3). At the sampling, identification A, B
+            #     and foreign matter are tested in-house on every bag of the representative sample
+            #     (ONE iCoA per lot); Farmahem tests the cannabinoids — identification C with them —
+            #     and the mycotoxins; IJZ-MB the microbiology. The reissued CoQ carries those retest
+            #     results and the initial external certificates for the rest; release-time CNP
+            #     coverage does not excuse it. A retest document is one dated on or after RETEST_START.
             _rt = _lookup(_RETEST, b, cu0) if _single else _RETEST.get("P:" + _lot)
-            _after = None
-            if _rt and _coq and _coq.get("basis"):
-                try:
-                    _after = _F_(_D_(_coq["basis"]) + _dt.timedelta(days=60))
-                except (ValueError, TypeError):
-                    _after = None
-            c_rt = _ident_c(b, after=_after) if _after else None
-
-            def _retest_doc(pno):
-                if not _after:
-                    return None
-                pool = [x for x in b["docs"][pno] if str(T.date_key(x[1])) >= str(T.date_key(_after))
-                        and not re.search(r"LoD|ГС", x[0], re.I)]
-                pool = sorted(pool, key=lambda x: (T.date_key(x[1]), x[0]))
+            def _pick(pool_n, want_rt):
+                pool = [x for x in b["docs"][pool_n] if x[2] != "PP" and not re.search(r"LoD|ГС", x[0], re.I)]
+                pool = [x for x in pool if (T.nkey(x[0]) in _rt_set) == want_rt]
+                pool = sorted(pool, key=lambda x: (str(T.date_key(x[1])), x[0]))
                 return f"{pool[0][0]}, ({pool[0][1]}) [{pool[0][2]}]" if pool else None
-            m_rt = _retest_doc(10) if _rt else None
-            _st_rt = ("due — retest assay and mycotoxins on file" if (c_rt and m_rt) else
+            c_rt = _pick(4, True) or _pick(3, True)
+
+            m_rt, mb_rt = _pick(10, True), _pick(9, True)
+            _tranche = ("Tranche 1 (sampled July 2026)" if (c_rt and _group == "legacy") else
+                        "re-analysed" if c_rt else
+                        "sampled — Tranche 2/3 (potency and mycotoxins pending)" if _rt_docs else "not yet sampled")
+            _st_rt = ("due — retest assay, mycotoxins" + (" and microbiology" if mb_rt else "") + " on file; in-house iCoA to test" if (c_rt and m_rt) else
                       "due — retest assay on file, mycotoxins pending" if c_rt else
-                      "pending — retest assay not yet on file")
+                      "sampled — microbiology on file, retest assay pending" if mb_rt else
+                      "pending — not yet sampled")
+            if _rt_only:
+                _docs_txt = " / ".join(dict.fromkeys(_rt_docs[n][0] + " of " + _rt_docs[n][1] for n in _rt_only))
+                FLAGS.append(f"{_lot_id}: no initial certificate for #{', #'.join(str(n) for n in _rt_only)} — only the retest "
+                             f"{_docs_txt}; the {_group} CoQ cannot cite it "
+                             f"(Head of QC to rule: report as not tested at initial testing, or wait for the reissue)")
             _names = {1: "Ident A", 2: "Ident B", 7: "Foreign matter"}
             _cnp_txt = " / ".join(f"{k}: {cnp[n][0]}" for k, n in (("A", 1), ("B", 2), ("FM", 7)) if n in cnp) or "—"
-            _identc = _ident_c(b) or "— no cannabinoid certificate —"
+            _identc = _pick(4, False) or _pick(3, False) or "— no cannabinoid certificate from the initial testing —"
             common = {"cu": _cu_show, "p": _lot, "strain": _strain, "harvest": _lharvest, "packaging": _lpackaging,
                       "complete": _complete, "group": _group, "sortdate": (_lpk[0] if _lpk else ""), "test_date": _ldate}
             row = dict(common, series="initial release", icoa="" if scope else "not needed", plan_ref=_pref,
@@ -559,15 +596,16 @@ if ICOA_RULE:
                                  plan_coq=_coq["n"] if _coq else "— not in the issuance plan —",
                                  basis=(_coq["basis"] if _coq and _coq.get("basis") else (_lpk[0] if _lpk else ""))))
             if _rt:
-                ICOA_ROWS.append(dict(common, series="retest — QP campaign", icoa="", plan_ref="",
+                ICOA_ROWS.append(dict(common, series=f"retest — {_tranche}", icoa="", plan_ref="",
                                       coq_plan=_rt["n"] if not _rt["n"].startswith("(") else "CoQ reissue (assigned on issue)",
-                                      basis=_rt.get("basis", ""), issue="at retest sampling · QP campaign", icoa_issue=None,
+                                      basis=_rt.get("basis", ""), issue=f"at the retest sampling · {_tranche}", icoa_issue=None,
                                       key=f"{_lot_id}|R", scope="Ident A + Ident B + Foreign matter", a="to test", b="to test", fm="to test",
                                       c=c_rt or "— retest assay not yet on file —", cnp="—",
                                       assay_rt=c_rt or "— pending —", myco_rt=m_rt or "— pending —",
                                       carry="#8, #9, #11, #12 from the initial testing", status=_st_rt, sortdate=""))
-                COQ_ROWS.append(dict(common, series="retest — QP campaign", key=f"{_lot_id}|R", coq_issue=None, coq_flag="",
-                                     latest=None, icoa_needed=True, c=c_rt or "— retest assay not yet on file —", cnp="—",
+                COQ_ROWS.append(dict(common, series=f"retest — {_tranche}", key=f"{_lot_id}|R", coq_issue=None, coq_flag="",
+                                     latest=_rt_latest, icoa_needed=True, c=c_rt or "— retest assay not yet on file —", cnp="—",
+                                     rt_micro=mb_rt or "— pending —",
                                      gaps=[], old=None, plan_coq=_rt["n"] if not _rt["n"].startswith("(") else "CoQ reissue (assigned on issue)",
                                      basis=_rt.get("basis", ""), rt_status=_st_rt, assay_rt=c_rt or "— pending —", myco_rt=m_rt or "— pending —",
                                      sortdate=""))
@@ -1538,8 +1576,12 @@ def add_icoa_sheet(wb):
             "after packaging and the CoQ on the first working day 7 days after the latest eCoA it cites. The codes and the "
             "planned dates on this sheet are looked up on the iCoA Register and the CoQ Register by the row's key and follow "
             "a renumbering there. The RETEST SERIES (the QP's campaign: medical use, GACP product / API) repeats the iCoA and "
-            "the CoQ per lot at the retest sampling, with a NEW cannabinoid assay (#4–#6) and NEW mycotoxins (#10); #8, #9, #11 "
-            "and #12 are carried forward; a retest document takes a new number in the year of issue, never the initial one. "
+            "the CoQ per lot at the retest sampling, sampled by tranche from July 2026 (Tranche 1 the first 21 lots produced, then "
+            "Tranches 2 and 3): identification A, B and foreign matter are tested in-house on every bag of the representative "
+            "sample (one iCoA); Farmahem tests the cannabinoids — identification C with them — and the mycotoxins, IJZ-MB the "
+            "microbiology; the reissued CoQ carries those retest results and the initial external certificates for the rest. A "
+            "certificate dated on or after 01.07.2026 is a retest document and never certifies the initial CoQ. A retest document "
+            "takes a new number in the year of issue, never the initial one. "
             "'due' where the retest certificates are on file, 'pending' where they are not. Foreign matter is 'Conforms' by the "
             "declaration of 13.08.2026 unless an outsourced certificate reports otherwise.")
     sh.merge_cells(start_row=_r + 1, start_column=1, end_row=_r + 1, end_column=len(icols))
@@ -1579,12 +1621,17 @@ COQ_NOTE = ("Head of QC, 05.09.2026: preliminary CoQ issuance register — codes
             "cites its lot's iCoA (identification A, B, foreign matter) and reports identification C as 'Conforms', referenced to "
             "the eCoA that covers Total THC. ADHERENCE (ISSUE_COQ_CONVENTIONS): a CoQ never precedes a document it cites — a legacy "
             "lot whose latest eCoA is dated after 27.05.2026 takes the post-SOP rule and is flagged in Status; a CoQ never precedes "
-            "its iCoA; a CoQ with an uncertified determination is not issuable and carries no number (Status names the gaps); nothing "
-            "is dated on a weekend. FORMULAS: No. and the code as on the iCoA Register; Rule date is 27.05.2026 for a legacy row "
+            "its iCoA; a CoQ with an uncertified determination is not issuable and carries no number (Status names the gaps); a "
+            "certificate dated on or after 01.07.2026 is a retest document (the QP's campaign: Tranche 1, the first 21 lots, sampled "
+            "July 2026; then Tranches 2 and 3) and never certifies the initial CoQ — a determination whose only certificate is a "
+            "retest one is uncertified for the legacy CoQ and flagged; nothing is dated on a weekend. RETEST ROWS: the reissued CoQ "
+            "carries the retest results (cannabinoids with identification C by Farmahem, mycotoxins, microbiology by IJZ-MB) and the "
+            "initial certificates for the rest; its rule date is the first working day 7 days after the latest retest certificate, "
+            "and it is issued once the in-house retest iCoA exists. FORMULAS: No. and the code as on the iCoA Register; Rule date is 27.05.2026 for a legacy row "
             "whose latest eCoA is on or before it, else the first working day 7 days after the latest eCoA (not before 27.05.2026); the planned date is the "
             "later of the rule date and the iCoA's date; iCoA (register) and its date are looked up on the iCoA Register by Key. "
-            "The latest eCoA cited is a value (the first credited certificate per determination, the retest assay and mycotoxins "
-            "excluded), recomputed by the builder. Working days are Monday to Friday; public holidays are not applied.")
+            "The latest eCoA cited is a value (the first credited certificate per determination dated before the retest campaign; "
+            "for a retest row, the latest retest certificate), recomputed by the builder. Working days are Monday to Friday; public holidays are not applied.")
 
 
 def _roll(expr):
@@ -1647,10 +1694,12 @@ def _fill_coq_register(sh):
                   f'IF(J{_r}="legacy",DATE(2026,5,27),""))')
         f_issue = f'=IF(A{_r}="","",IF(ISNUMBER(I{_r}),MAX(E{_r},I{_r}),E{_r}))'
         latest_d = _date(r["latest"][1]) if r["latest"] else None
-        status = r["reg_status"] if r["series"] == "initial release" else "not yet issuable — " + r["rt_status"] + " · at retest sampling"
+        status = (r["reg_status"] if r["series"] == "initial release" else
+                  "not yet issuable — " + r["rt_status"] + " · issued on the first working day 7 days after the latest retest certificate, once the in-house iCoA exists")
+        f_rule_rt = f'=IF(ISNUMBER(F{_r}),MAX(DATE(2026,5,27),{_roll(f"F{_r}+7")}),"at retest sampling")'
         cells = (f_no, f_code, r["issuable"] if r["series"] == "initial release" else "no", f_issue,
-                 f_rule if r["series"] == "initial release" else "at retest sampling",
-                 latest_d or ("—" if r["series"] == "initial release" else "at retest"), (r["latest"][0] if r["latest"] else "—"),
+                 f_rule if r["series"] == "initial release" else f_rule_rt,
+                 latest_d or ("—" if r["series"] == "initial release" else "— not yet sampled —"), (r["latest"][0] if r["latest"] else "—"),
                  REG_LOOKUP("B", r["key"], "—"), REG_LOOKUP("D", r["key"], ""),
                  r["group"], r["series"], r["cu"], r["p"], r["strain"], r["c"], r["cnp"],
                  (f"{r['old'][0]} of {r['old'][1]}" if r.get("old") else "—"), r.get("plan_coq") or "—", r["key"], status)
