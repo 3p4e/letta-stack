@@ -175,13 +175,13 @@ footer{color:var(--muted);font-size:12.5px;margin-top:40px;max-width:80ch}
 </section>
 
 <section id="icoa" hidden>
-  <p class="sub">One iCoA per P lot, in the order of packaging: the iCoA is dated on the first day of packaging (the Head of QC\u2019s list of 04.09.2026), the day the issuance plan uses as the CoQ basis. Each carries identification A, identification B and foreign matter, tested at Purely Plant at packaging, and is issued no earlier than the last day of packaging (Packaging complete). Identification C is covered by the cannabinoid-assay certificate named in the last column, cited on the CoQ directly.</p>
+  <p class="sub">Two iCoAs per P lot (identification A and B; foreign matter), in the order of packaging: the iCoA is dated on the first day of packaging (the Head of QC\u2019s list of 04.09.2026), the day the issuance plan uses as the CoQ basis. Each carries identification A, identification B and foreign matter, tested at Purely Plant at packaging, and is issued no earlier than the last day of packaging (Packaging complete). Identification C is covered by the cannabinoid-assay certificate named in the last column, cited on the CoQ directly.</p>
   <div class="toolbar"><input id="ic-q" type="search" placeholder="Filter by batch, number, strain, certificate…" aria-label="Filter iCoA rows"><span id="ic-n" class="label"></span></div>
   <div class="scroll"><table id="ic-table"></table></div>
 </section>
 
 <section id="register" hidden>
-  <p class="sub">Preliminary issuance register (Head of QC, 05.09.2026). Codes iCoA-PP_26-nnn run in the order the certificates can be issued: by the earliest permissible issue date, then by the basis date. Every printed issue date lies between 11.05.2026, when the CoQ SOP came into use, and the day of signing, so the preliminary date is the SOP floor or the last day of packaging, whichever is later; QC sets the real date at issue. A row that cannot be issued yet carries no number: the retest iCoAs await the retest sampling, whose date is not on the desk. The plan\u2019s references of 31.08.2026 are superseded and kept beside the codes.</p>
+  <p class="sub">Preliminary issuance register (Head of QC, 05.09.2026). Two certificates per P lot: identification A and B on the P01-02 master, foreign matter on the P07 master. Codes iCoA-PP_26-nnn run in the order the certificates can be issued: by the earliest permissible issue date, then by the basis date. Every printed issue date lies between 11.05.2026, when the CoQ SOP came into use, and the day of signing, so the preliminary date is the SOP floor or the last day of packaging, whichever is later; QC sets the real date at issue. A row that cannot be issued yet carries no number: the retest iCoAs await the retest sampling, whose date is not on the desk. The plan\u2019s references of 31.08.2026 are superseded and kept beside the codes. In the workbook the number, the code and the dates are formulas, so a row inserted between two certificates renumbers every row beneath it; this page shows the computed values.</p>
   <div class="toolbar"><input id="rg-q" type="search" placeholder="Filter by code, batch, strain, date…" aria-label="Filter register rows"><span id="rg-n" class="label"></span></div>
   <div class="scroll"><table id="rg-table"></table></div>
 </section>
@@ -374,7 +374,7 @@ document.getElementById('ic-q').addEventListener('input', renderIcoa);
 function renderRegister(){
   const rows = D.register || [];
   const q = document.getElementById('rg-q').value.trim().toLowerCase();
-  const cols = rows.length ? Object.keys(rows[0]) : [];
+  const cols = rows.length ? Object.keys(rows[0]).filter(c => c !== 'Key') : [];
   let n = 0, numbered = 0;
   const body = rows.filter(r => !q || Object.values(r).join(' ').toLowerCase().includes(q)).map(r => { n++; if (r['No.']) numbered++;
     return '<tr>' + cols.map(c => {

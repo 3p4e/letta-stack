@@ -10,6 +10,30 @@ SHEET = sys.argv[3] if len(sys.argv) > 3 else 'CoQ Parameter Tracker v9'
 STATE = {'C6EFCE': 'ok', 'FCE5CD': 'stab', 'FDE9D9': 'silent', 'F4CCCC': 'missing', 'EDEDED': 'extra'}
 wb = openpyxl.load_workbook(SRC)
 
+# The register, the issuance sheet and the tracker's in-house cells are FORMULAS (the numbering
+# follows the sheet). openpyxl stores no computed values, so a copy is recalculated through
+# LibreOffice and every formula cell takes its computed value from that copy; formatting is read
+# from the original.
+import os, shutil, subprocess, tempfile
+_tmp = tempfile.mkdtemp(prefix='recalc_')
+shutil.copy(SRC, os.path.join(_tmp, 'in.xlsx'))
+subprocess.run(['soffice', '--headless', '--calc', '--convert-to', 'xlsx', '--outdir', os.path.join(_tmp, 'out'),
+                os.path.join(_tmp, 'in.xlsx')], check=True, capture_output=True, timeout=600)
+_wbv = openpyxl.load_workbook(os.path.join(_tmp, 'out', 'in.xlsx'), data_only=True)
+_n_formula = _n_err = 0
+for _name in wb.sheetnames:
+    _ws, _wv = wb[_name], _wbv[_name]
+    for _row in _ws.iter_rows():
+        for _c in _row:
+            if isinstance(_c.value, str) and _c.value.startswith('='):
+                _v = _wv.cell(_c.row, _c.column).value
+                _n_formula += 1
+                if isinstance(_v, str) and _v.startswith('#'):
+                    _n_err += 1
+                _c.value = _v
+shutil.rmtree(_tmp, ignore_errors=True)
+print(f'formulas recalculated: {_n_formula} ({_n_err} error value(s))')
+
 
 def rgb(cell):
     c = cell.fill.fgColor.rgb if cell.fill and cell.fill.fill_type == 'solid' else None
