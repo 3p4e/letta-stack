@@ -374,6 +374,7 @@ if ICOA_RULE:
         out.update(V8VAL.get((cu, ck)) or {})
         return out
 
+    _pending_inst = []                            # (lot, key, scope, values, date, row): the in-house instance, keyed after the register
     for b in batches:
         cu0 = re.sub(r"[＊*]", "", b["cu"])
         key = join_key(b)
@@ -427,26 +428,17 @@ if ICOA_RULE:
                 ref = _plan.get("P:" + _lot)
             if not ref or not ref.startswith("iCoA-"):
                 ref = "iCoA — to be issued" if _single else f"iCoA — to be issued ({_lot})"
-            if scope:
-                ck = T.nkey(ref)
-                for n in scope:
-                    if ck not in {T.nkey(c) for c, d, l in b["docs"][n]}:
-                        b["docs"][n].append((ref, _ldate, "PP"))
-                INDEX_DOCS[key].append((ref, _ldate, "PP", set(scope)))
-                COVERS[(key, ck)] = set(scope)
-                V8VAL[(b["cu"], ck)] = {str(n): vals[str(n)] for n in scope}
-                ADDED[id(b)].append((ref, _ldate, "PP"))
-                if b not in NEW_TOUCHED:
-                    NEW_TOUCHED.append(b)
             _coq = _lookup(_COQ, b, cu0) if _single else _COQ.get("P:" + _lot)
             if _coq and _coq.get("basis") and _lpk and _coq["basis"] != _lpk[0]:
                 _lpackaging += f" (the issuance plan's basis: {_coq['basis']})"
             _strain = b.get("strain") or STRAIN.get(T.batch_key(cu0), "")
+            # a lot the owner's tracker does not carry has no CU code there; the Head of QC's list names it
+            _cu_show = b["cu"] if not b["cu"].startswith("—") else (f"{_lrows[0]['cu_batch']} (from the list)" if _lrows else b["cu"])
             ICOA_ROWS.append({"series": "initial release", "icoa": ref if scope else "not needed",
                               "coq": _coq["n"] if _coq else "— not in the issuance plan —",
                               "basis": (_coq["basis"] if _coq and _coq.get("basis") else (_lpk[0] if _lpk else "")),
                               "issue": ("≥ 11.05.2026 · tests at packaging " + _ldate) if _lpk else "≥ 11.05.2026 · at packaging",
-                              "cu": b["cu"], "p": _lot, "strain": _strain,
+                              "cu": _cu_show, "p": _lot, "strain": _strain,
                               "harvest": _lharvest, "packaging": _lpackaging, "complete": _complete,
                               "sortdate": (_lpk[0] if _lpk else ""),
                               "scope": (" + ".join({1: "Ident A", 2: "Ident B", 7: "Foreign matter"}[n] for n in scope) if scope
@@ -456,6 +448,8 @@ if ICOA_RULE:
                               "assay_rt": "", "myco_rt": "", "carry": "",
                               "status": ("not needed — CNP covers A, B and foreign matter" if not scope else
                                          "planned number" if ref.startswith("iCoA-") else "number at issue")})
+            if scope:
+                _pending_inst.append((b, key, scope, vals, _ldate, ICOA_ROWS[-1]))
             # --- RETEST SERIES: the QP's retesting campaign (medical use, GACP product / API) —
             #     the same scope again, one iCoA per P lot, dated at the retest sampling
             _rt = _lookup(_RETEST, b, cu0) if _single else _RETEST.get("P:" + _lot)
@@ -488,7 +482,7 @@ if ICOA_RULE:
             ICOA_ROWS.append({"series": "retest — QP campaign", "icoa": "iCoA — new number at issue (retest)",
                               "coq": _rt["n"] if not _rt["n"].startswith("(") else "CoQ reissue (assigned on issue)",
                               "basis": _rt.get("basis", ""), "issue": "at retest sampling · QP campaign",
-                              "cu": b["cu"], "p": _lot, "strain": _strain,
+                              "cu": _cu_show, "p": _lot, "strain": _strain,
                               "harvest": _lharvest, "packaging": _lpackaging, "complete": _complete,
                               "scope": "Ident A + Ident B + Foreign matter", "a": "to test", "b": "to test", "fm": "to test",
                               "c": c_rt or "— retest assay not yet on file —",
@@ -510,6 +504,74 @@ if ICOA_RULE:
           f"({sum(1 for r in ICOA_ROWS if r['status'].startswith('due'))} due, retest assay on file)")
     print(f"batch dates: {len(DATE_USED)} of {len(DATE_ROWS)} list rows date a tracker lot; "
           f"{sum(1 for r in ICOA_ROWS if r['series'] == 'initial release' and r['packaging'].startswith('— not on'))} lot(s) not on the list")
+
+    # ------------------------------------------------------------------ the preliminary iCoA issuance register
+    # Head of QC, 05.09.2026: document codes iCoA-PP_26-nnn (nnn = 001 … 999, one series for the
+    # year of issue), assigned in the order the certificates can be issued. Every printed issue
+    # date lies in [11.05.2026 … the day of signing] (ISSUE_COQ_CONVENTIONS: the SOP floor, never
+    # post-dated), so the preliminary issue date is the earliest permissible one — the SOP floor,
+    # or the last day of packaging where that is later; QC sets the real date at issue. A row that
+    # cannot be issued yet carries no number: a lot without a packaging date, a held result, and
+    # every retest iCoA (its identification A, B and foreign matter are tested at the retest
+    # sampling, which is not on the desk). Numbers are never reserved ahead of issue. The plan's
+    # references of 31.08.2026 (iCoA-PP-YYYY-NNNN) are superseded and kept beside the code.
+    SOP_FLOOR = "11.05.2026"
+    _dk = lambda d: str(T.date_key(d))
+    _issuable, _later = [], []
+    for r in ICOA_ROWS:
+        r["plan_ref"] = r["icoa"] if r["icoa"].startswith("iCoA-PP-") else ""
+        if r["icoa"] == "not needed":
+            r["code"], r["earliest"], r["issue_date"], r["reg_status"] = "", "", "", "no iCoA — CNP covers A, B and foreign matter"
+            continue
+        comp = None if str(r["complete"]).startswith("—") else r["complete"]
+        if r["series"] != "initial release":
+            due = r["status"].startswith("due")
+            r["earliest"] = "retest sampling date — to record"
+            r["why"] = ("retest assay on file; identification A, B and foreign matter to test at the retest sampling"
+                        if due else "retest assay not yet on file")
+            _later.append(r)
+        elif comp is None:
+            r["earliest"], r["why"] = "— packaging date to record —", "no packaging date on the list"
+            _later.append(r)
+        elif r["fm"] == "held for review":
+            r["earliest"], r["why"] = max(SOP_FLOOR, comp, key=_dk), "foreign matter held for the Head of QC"
+            _later.append(r)
+        else:
+            r["earliest"] = max(SOP_FLOOR, comp, key=_dk)
+            _issuable.append(r)
+    _issuable.sort(key=lambda r: (_dk(r["earliest"]), _dk(r["sortdate"] or r["basis"]) if (r["sortdate"] or r["basis"]) else "9", r["cu"], r["p"]))
+    for _i, r in enumerate(_issuable, 1):
+        r["code"] = f"iCoA-PP_26-{_i:03d}"
+        r["issue_date"] = r["earliest"]
+        r["reg_status"] = "registered — preliminary date, QC sets the real date at issue"
+        r["icoa"], r["status"] = r["code"], r["reg_status"]
+        r["issue"] = r["issue_date"]
+    for r in _later:
+        r["code"] = "— at issue —"
+        r["issue_date"] = r["earliest"]
+        r["reg_status"] = "not yet issuable — " + r["why"]
+        if r["series"] == "initial release":
+            r["icoa"], r["status"] = r["code"], r["reg_status"]
+            r["issue"] = r["earliest"]
+    REGISTER = _issuable + sorted(_later, key=lambda r: (0 if r["series"] == "initial release" else 1 if r["status"].startswith("due") else 2,
+                                                          _dk(r.get("sortdate") or r["basis"]) if (r.get("sortdate") or r["basis"]) else "9", r["cu"], r["p"]))
+    print(f"iCoA register: {len(_issuable)} numbered (iCoA-PP_26-001 … {_issuable[-1]['code'][-3:] if _issuable else '—'}), "
+          f"{len(_later)} not yet issuable ({sum(1 for r in _later if r['series'] == 'initial release')} initial, "
+          f"{sum(1 for r in _later if r['series'] != 'initial release')} retest); "
+          f"issue dates {min(_dk(r['issue_date']) for r in _issuable) if _issuable else '—'} … {max(_dk(r['issue_date']) for r in _issuable) if _issuable else '—'}")
+    # the in-house instance now carries the register code (or the at-issue placeholder)
+    for b, key, scope, vals, _ldate, row in _pending_inst:
+        ref = row["code"] if row["code"].startswith("iCoA-PP_") else f"iCoA — at issue ({row['p'] or row['cu']})"
+        ck = T.nkey(ref)
+        for n in scope:
+            if ck not in {T.nkey(c) for c, d, l in b["docs"][n]}:
+                b["docs"][n].append((ref, _ldate, "PP"))
+        INDEX_DOCS[key].append((ref, _ldate, "PP", set(scope)))
+        COVERS[(key, ck)] = set(scope)
+        V8VAL[(b["cu"], ck)] = {str(n): vals[str(n)] for n in scope}
+        ADDED[id(b)].append((ref, _ldate, "PP"))
+        if b not in NEW_TOUCHED:
+            NEW_TOUCHED.append(b)
 
 
 # --------------------------------------------------------------------------- credit corrections
@@ -1297,11 +1359,11 @@ def add_mikro(wb, src_path):
 
 def add_icoa_sheet(wb):
     sh = wb.create_sheet("iCoA Issuance", wb.sheetnames.index("Work Order") + 1)
-    icols = [("Seq", 6), ("Series", 20), ("iCoA", 28), ("CoQ", 30), ("Basis date", 12), ("Issue on", 28), ("CU Batch", 14),
+    icols = [("Seq", 6), ("Series", 20), ("iCoA", 22), ("Plan reference (31.08.2026)", 22), ("CoQ", 30), ("Basis date", 12), ("Issue date (preliminary)", 24), ("CU Batch", 14),
              ("P Batch", 22), ("Strain", 20), ("Harvest", 24), ("Packaging", 28), ("Packaging complete", 18), ("iCoA scope", 34), ("#1 Ident. A", 14), ("#2 Ident. B", 14),
              ("#7 Foreign matter", 16), ("Ident C — covered by (eCoA)", 34),
              ("Retest assay #4–#6 (eCoA)", 34), ("Retest mycotoxins #10 (eCoA)", 34), ("Carried forward", 30), ("Status", 44)]
-    keys = ("seq", "series", "icoa", "coq", "basis", "issue", "cu", "p", "strain", "harvest", "packaging", "complete", "scope", "a", "b", "fm", "c",
+    keys = ("seq", "series", "icoa", "plan_ref", "coq", "basis", "issue", "cu", "p", "strain", "harvest", "packaging", "complete", "scope", "a", "b", "fm", "c",
             "assay_rt", "myco_rt", "carry", "status")
     for _i, (_t, _w) in enumerate(icols, 1):
         put(sh, 1, _i, _t, FW, NAVY, CEN)
@@ -1313,8 +1375,8 @@ def add_icoa_sheet(wb):
             v = row[k]
             put(sh, _r, _i, v, F7B if k in ("icoa", "cu") else F7,
                 FILL["amber"] if (k == "fm" and v == "held for review") or (k in ("c", "assay_rt", "myco_rt", "harvest", "packaging", "complete") and str(v).startswith("—"))
-                or (k == "status" and str(v).startswith("pending")) else
-                (FILL["green"] if k == "status" and str(v).startswith("due") else
+                or (k == "status" and str(v).startswith(("pending", "not yet"))) or (k == "icoa" and str(v).startswith("—")) else
+                (FILL["green"] if k == "status" and str(v).startswith(("due", "registered")) else
                  (FILL["extra"] if k in ("a", "b", "fm") and str(v).startswith("CNP ") else None)), CEN)
         _r += 1
     note = ("Chronological issuance: one iCoA per batch, in the order of the release basis date its initial-release "
@@ -1349,6 +1411,79 @@ def add_icoa_sheet(wb):
     sh.auto_filter.ref = f"A1:{L(len(icols))}{_r - 1}"
     sh.freeze_panes = "A2"
     print("iCoA issuance rows:", _r - 2)
+
+
+REG_COLS = [("No.", 6), ("iCoA code", 18), ("Issue date (preliminary)", 22), ("Earliest permissible", 20),
+            ("Basis — sampling at packaging", 16), ("Packaging complete", 16), ("Series", 20), ("CU Batch", 14), ("P Batch", 12),
+            ("Strain", 20), ("iCoA scope", 32), ("CNP references (A / B / FM)", 30), ("Ident C — eCoA", 34), ("CoQ", 28),
+            ("Plan reference (31.08.2026)", 22), ("Status", 60)]
+REG_NOTE = ("Head of QC, 05.09.2026: preliminary iCoA issuance register. Document codes iCoA-PP_26-nnn (nnn = 001 … 999), "
+            "one series for the year of issue, assigned in the order the certificates can be issued: by the earliest "
+            "permissible issue date, then by the basis date (the first day of packaging, when the sample is taken). "
+            "Every printed issue date lies in [11.05.2026 … the day of signing] — the CoQ SOP came into use on "
+            "11.05.2026 and no document is post-dated — so the preliminary date is the SOP floor, or the last day of "
+            "packaging where that is later; QC sets the real date at issue (documents may be issued in batches: one "
+            "date, sequential numbers). No number is reserved for a row that cannot be issued yet: a lot without a "
+            "packaging date, a held result, and every retest iCoA (identification A, B and foreign matter are tested "
+            "at the retest sampling, whose date is not on the desk). Where a CNP certificate reports all three, no iCoA "
+            "is needed. The plan's references of 31.08.2026 (iCoA-PP-YYYY-NNNN) are superseded by these codes and kept "
+            "beside them. Identification C is not on the iCoA: the CoQ cites the cannabinoid-assay eCoA named here.")
+
+
+def _register_rows():
+    out = []
+    for r in REGISTER:
+        cnp = " / ".join(f"{k}: {v[4:]}" for k, v in (("A", r["a"]), ("B", r["b"]), ("FM", r["fm"])) if str(v).startswith("CNP ")) or "—"
+        out.append((int(r["code"][-3:]) if r["code"].startswith("iCoA-PP_") else "", r["code"], r["issue_date"], r["earliest"],
+                    r.get("sortdate") or r["basis"] or "—", r["complete"], r["series"], r["cu"], r["p"], r["strain"], r["scope"],
+                    cnp, r["c"], r["coq"], r["plan_ref"] or "—", r["reg_status"]))
+    return out
+
+
+def _fill_register(sh):
+    for _i, (_t, _w) in enumerate(REG_COLS, 1):
+        put(sh, 1, _i, _t, FW, NAVY, CEN)
+        sh.column_dimensions[L(_i)].width = _w
+    sh.row_dimensions[1].height = 22
+    _r = 2
+    for row in _register_rows():
+        for _i, v in enumerate(row, 1):
+            put(sh, _r, _i, v, F7B if _i in (2, 8) else F7,
+                FILL["green"] if (_i == 16 and str(v).startswith("registered")) else
+                FILL["amber"] if (_i == 16 and str(v).startswith("not yet")) or (_i in (2, 3, 6, 13) and str(v).startswith("—")) else None,
+                CEN if _i != 16 else Alignment(horizontal="left", vertical="center", wrap_text=True))
+        _r += 1
+    sh.merge_cells(start_row=_r + 1, start_column=1, end_row=_r + 1, end_column=len(REG_COLS))
+    put(sh, _r + 1, 1, REG_NOTE, F6I, GREY, Alignment(horizontal="left", vertical="top", wrap_text=True))
+    sh.row_dimensions[_r + 1].height = 78
+    sh.auto_filter.ref = f"A1:{L(len(REG_COLS))}{_r - 1}"
+    sh.freeze_panes = "C2"
+    return _r - 2
+
+
+def add_register_sheet(wb):
+    sh = wb.create_sheet("iCoA Register", wb.sheetnames.index("iCoA Issuance") + 1)
+    print("iCoA register rows:", _fill_register(sh))
+
+
+def write_register_file(path):
+    """The register on its own, for the person issuing the certificates."""
+    w = openpyxl.Workbook()
+    sh = w.active
+    sh.title = "iCoA Register"
+    _fill_register(sh)
+    rm = w.create_sheet("Read Me")
+    rm.column_dimensions["A"].width = 120
+    for _i, t in enumerate((f"iCoA Issuance Register — preliminary — built with CoQ Analysis Master v{VER} on 05.09.2026",
+                            REG_NOTE,
+                            "Source: CoQ_Analysis_Master_v" + VER + ".xlsx, sheets iCoA Issuance and Batch Dates; "
+                            "dates from the Head of QC's list of 04.09.2026; the issuance plan of 31.08.2026 for the CoQ numbers."), 1):
+        c = rm.cell(_i, 1, t)
+        c.font = Font(name="Calibri", size=9, bold=(_i == 1))
+        c.alignment = Alignment(vertical="top", wrap_text=True)
+    rm.row_dimensions[2].height = 120
+    w.save(path)
+    print("saved", path)
 
 
 def add_dates_sheet(wb):
@@ -1393,7 +1528,9 @@ if NEW:
         add_mikro(wb, _mikro)
     if ICOA_RULE:
         add_icoa_sheet(wb)
+        add_register_sheet(wb)
         add_dates_sheet(wb)
+        write_register_file(os.path.join(HERE, "iCoA_Issuance_Register_prelim.xlsx"))
     _rm = wb["Read Me"]
     _r = _rm.max_row + 2
     _held = ", ".join(sorted({f"{c} (#{n})" for cu, pb, c, d, l, n in NEW_HELD}))
@@ -1412,7 +1549,10 @@ if NEW:
                 "Harvest and packaging dates per batch are the Head of QC's list of 04.09.2026 (sheet Batch Dates): "
                 "the iCoA instance is dated on the first day of packaging (sampling before primary packaging), the "
                 "day the issuance plan uses as the CoQ basis, and issued no earlier than the last day of packaging; "
-                "one iCoA per P lot where a tracker row holds several. Rulings of 04.09.2026 on the two bile-tolerant gram-negative rows the reads disagreed on: "
+                "one iCoA per P lot where a tracker row holds several. iCoA Register (05.09.2026): the preliminary "
+                "issuance register — codes iCoA-PP_26-nnn in the order the certificates can be issued, preliminary "
+                "issue dates at the earliest permissible day (the SOP floor 11.05.2026 or the last day of packaging), "
+                "no number for a row that cannot be issued yet; the tracker's in-house instances cite these codes. Rulings of 04.09.2026 on the two bile-tolerant gram-negative rows the reads disagreed on: "
                 "P060262 < 10³ и > 10² CFU/g, P060432 < 10² и > 10 CFU/g (decisions_2026-09-04.tsv)."
                 if ICOA_RULE else ""))
     for _label, _t in ((f"v{VER}", _text),):

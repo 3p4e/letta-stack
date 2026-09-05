@@ -27,7 +27,7 @@ def table(name):
     rows = []
     for r in range(2, ws.max_row + 1):
         vals = [ws.cell(r, c).value for c in range(1, len(hdr) + 1)]
-        if not any(v not in (None, '') for v in vals[:3]):
+        if not any(v not in (None, '') for v in vals[:3]) or str(vals[0] or '').startswith(('Head of QC', 'Chronological')):
             continue
         if str(vals[0] or '').startswith(('These corrections', 'Chronological issuance', 'Head of QC')):
             continue
@@ -108,7 +108,8 @@ data = {'coverage_headers': coverage_headers, 'coverage': coverage,
         'params': [{k: v for k, v in p.items() if k not in ('start', 'end')} for p in params],
         'lots': lots, 'work_order': table('Work Order'), 'credit_audit': table('Credit Audit'),
         'corrections': table('Credit Corrections'),
-        'icoa': table('iCoA Issuance') if 'iCoA Issuance' in wb.sheetnames else []}
+        'icoa': table('iCoA Issuance') if 'iCoA Issuance' in wb.sheetnames else [],
+        'register': table('iCoA Register') if 'iCoA Register' in wb.sheetnames else []}
 json.dump(data, open(OUT, 'w'), ensure_ascii=False)
 print('lots', len(lots), 'blocks', sum(len(l['blocks']) for l in lots), 'coverage rows', len(coverage),
       'work order', len(data['work_order']), 'audit', len(data['credit_audit']), 'corrections', len(data['corrections']))

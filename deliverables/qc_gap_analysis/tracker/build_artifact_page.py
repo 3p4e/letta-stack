@@ -127,6 +127,7 @@ footer{color:var(--muted);font-size:12.5px;margin-top:40px;max-width:80ch}
   <button role="tab" aria-selected="false" data-view="checklist">Checklist</button>
   <button role="tab" aria-selected="false" data-view="tracker">CoQ Parameter Tracker</button>
   <button role="tab" aria-selected="false" data-view="icoa">iCoA Issuance</button>
+  <button role="tab" aria-selected="false" data-view="register">iCoA Register</button>
 </nav>
 
 <section id="overview">
@@ -179,6 +180,12 @@ footer{color:var(--muted);font-size:12.5px;margin-top:40px;max-width:80ch}
   <div class="scroll"><table id="ic-table"></table></div>
 </section>
 
+<section id="register" hidden>
+  <p class="sub">Preliminary issuance register (Head of QC, 05.09.2026). Codes iCoA-PP_26-nnn run in the order the certificates can be issued: by the earliest permissible issue date, then by the basis date. Every printed issue date lies between 11.05.2026, when the CoQ SOP came into use, and the day of signing, so the preliminary date is the SOP floor or the last day of packaging, whichever is later; QC sets the real date at issue. A row that cannot be issued yet carries no number: the retest iCoAs await the retest sampling, whose date is not on the desk. The plan\u2019s references of 31.08.2026 are superseded and kept beside the codes.</p>
+  <div class="toolbar"><input id="rg-q" type="search" placeholder="Filter by code, batch, strain, date…" aria-label="Filter register rows"><span id="rg-n" class="label"></span></div>
+  <div class="scroll"><table id="rg-table"></table></div>
+</section>
+
 <footer>One two-row block per testing instance: the result on the top row, the certificate that carries it on the bottom. Parameters 9–11 print each determination in its own column. Conformance is judged on release results only, against the acceptance criteria on the Parameters sheet (counted limits ≤10ⁿ judged against 2×10ⁿ, Ph. Eur. 2.6.12). Built from <code>CoQ_Analysis_Master_v10.xlsx</code>, 04.09.2026: the 30 IJZ-MB microbiology certificates of 31.08/01.09.2026 are included as testing instances.</footer>
 </div>
 
@@ -192,13 +199,13 @@ const lsGet = k => { try { return JSON.parse(localStorage.getItem(k)||'{}'); } c
 const lsSet = (k,v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} };
 
 document.getElementById('subline').textContent =
-  `v10 · 04.09.2026 · ${S.lots} lots · 12 parameters · ${S.instances} testing instances · ${S.gaps} parameter gaps · ${S.oos} out of specification · ${S.und} undetermined · ${S.stab} stability exceedances`;
+  `v11 · 05.09.2026 · ${S.lots} lots · 12 parameters · ${S.instances} testing instances · ${S.gaps} parameter gaps · ${S.oos} out of specification · ${S.und} undetermined · ${S.stab} stability exceedances`;
 
 /* ---------- tabs ---------- */
 const tabs = [...document.querySelectorAll('nav.tabs button')];
 function show(view){
   tabs.forEach(b => b.setAttribute('aria-selected', String(b.dataset.view===view)));
-  ['overview','checklist','tracker','icoa'].forEach(v => document.getElementById(v).hidden = v!==view);
+  ['overview','checklist','tracker','icoa','register'].forEach(v => document.getElementById(v).hidden = v!==view);
   try { localStorage.setItem('coq9.view', view); } catch(e){}
 }
 tabs.forEach(b => b.addEventListener('click', () => show(b.dataset.view)));
@@ -363,9 +370,30 @@ function renderIcoa(){
 }
 document.getElementById('ic-q').addEventListener('input', renderIcoa);
 
-renderOverview(); renderChecklist(); renderTracker(); renderIcoa();
+/* ---------- iCoA register ---------- */
+function renderRegister(){
+  const rows = D.register || [];
+  const q = document.getElementById('rg-q').value.trim().toLowerCase();
+  const cols = rows.length ? Object.keys(rows[0]) : [];
+  let n = 0, numbered = 0;
+  const body = rows.filter(r => !q || Object.values(r).join(' ').toLowerCase().includes(q)).map(r => { n++; if (r['No.']) numbered++;
+    return '<tr>' + cols.map(c => {
+      const v = r[c] || '';
+      const cls = (c === 'No.') ? ' class="c"' : (c === 'iCoA code' || c === 'CoQ' || c === 'CU Batch' || c === 'P Batch' || c.startsWith('Ident C') || c.startsWith('Plan') || c.startsWith('CNP')) ? ' class="mono"' : '';
+      let cell = esc(v);
+      if (c === 'Status') cell = `<span class="pill ${v.startsWith('registered') ? 'p-ok' : v.startsWith('not yet') ? 'p-warn' : 'p-grey'}">${esc(v)}</span>`;
+      else if (c === 'iCoA code' && v.startsWith('—')) cell = `<span class="pill p-warn">${esc(v)}</span>`;
+      else if (v.startsWith('—') || v.startsWith('retest sampling')) cell = `<span class="pill p-grey">${esc(v)}</span>`;
+      return `<td${cls}>${cell}</td>`;
+    }).join('') + '</tr>'; }).join('');
+  document.getElementById('rg-table').innerHTML = '<thead><tr>' + cols.map(c => `<th>${esc(c)}</th>`).join('') + '</tr></thead><tbody>' + body + '</tbody>';
+  document.getElementById('rg-n').textContent = `${n} of ${rows.length} rows · ${numbered} numbered`;
+}
+document.getElementById('rg-q').addEventListener('input', renderRegister);
+
+renderOverview(); renderChecklist(); renderTracker(); renderIcoa(); renderRegister();
 let v = 'overview'; try { v = localStorage.getItem('coq9.view') || v; } catch(e){}
-show(['overview','checklist','tracker','icoa'].includes(v) ? v : 'overview');
+show(['overview','checklist','tracker','icoa','register'].includes(v) ? v : 'overview');
 })();
 </script>
 '''

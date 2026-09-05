@@ -388,3 +388,39 @@ and mycotoxin certificates on file (the Farmahem 197-series K and M of August 20
 with both, 1 with the assay only) and is "pending" where they are not. A retest iCoA is a
 new document with a new number in the year of issue — never the initial iCoA's number,
 which the plan of 31.08.2026 had reused.
+
+## v11 — the preliminary iCoA issuance register (05.09.2026)
+
+`CoQ_Analysis_Master_v11.xlsx` is v10 plus the **iCoA Register** sheet, also written on its
+own as `iCoA_Issuance_Register_prelim.xlsx` for the person issuing the certificates. Both
+come from the same rows of `build_tracker_v8.py --icoa` (with `--version=11`).
+
+**The rule (Head of QC, 05.09.2026).** Document codes `iCoA-PP_26-nnn`, nnn = 001 … 999,
+one series for the year of issue, assigned in the order the certificates can be issued: by
+the earliest permissible issue date, then by the basis date (the first day of packaging,
+when the sample is taken). Every printed issue date lies in [11.05.2026 … the day of
+signing] — the CoQ SOP came into use on 11.05.2026 and no document is post-dated
+(`ISSUE_COQ_CONVENTIONS.md`) — so the preliminary issue date is the SOP floor, or the last
+day of packaging where that is later; QC sets the real date at issue, and may issue in
+batches (one date, sequential numbers). **No number is reserved for a row that cannot be
+issued yet:** a lot without a packaging date, a held result, and every retest iCoA, whose
+identification A, B and foreign matter are tested at the retest sampling, a date not on
+the desk. Where a CNP certificate reports all three, no iCoA is needed. The plan's
+references of 31.08.2026 (`iCoA-PP-YYYY-NNNN`, a series per packaging year) are superseded
+by these codes and kept beside them in a *Plan reference* column; the tracker's in-house
+instances for #1, #2 and #7 now cite the register code (`iCoA — at issue (P…)` where none
+is assigned), and the iCoA Issuance sheet's *iCoA* column carries it too.
+
+**What the register holds.** 144 rows: 70 numbered initial iCoAs, `iCoA-PP_26-001` (CJ1024,
+packed 03.03.2025) to `-070` (P060342, packed 25.05.2026), with preliminary issue dates
+11.05.2026 (59 lots packed before the SOP floor) to 25.05.2026 (the eleven packed after it,
+each on its last day of packaging); 13 initial rows that need no iCoA (CNP covers all
+three); 74 retest rows without a number. The three lots the owner's tracker does not carry
+are named from the Head of QC's list (BSS1024_01/2, WED102501, SCR012601*). Three P16 lots
+without a packaging date and the retest series fall outside the numbering until their
+dates are on the desk.
+
+**Two things to know before issuing.** The 2025 R&D lots' CoQs are "assigned on issue" in
+the plan, so their register rows carry no CoQ number yet. And the codes assume the
+certificates are issued in this order; if QC issues a later lot first, the numbers shift —
+the register is rebuilt, not edited.
