@@ -128,6 +128,7 @@ footer{color:var(--muted);font-size:12.5px;margin-top:40px;max-width:80ch}
   <button role="tab" aria-selected="false" data-view="tracker">CoQ Parameter Tracker</button>
   <button role="tab" aria-selected="false" data-view="icoa">iCoA Issuance</button>
   <button role="tab" aria-selected="false" data-view="register">iCoA Register</button>
+  <button role="tab" aria-selected="false" data-view="coqreg">CoQ Register</button>
 </nav>
 
 <section id="overview">
@@ -175,15 +176,22 @@ footer{color:var(--muted);font-size:12.5px;margin-top:40px;max-width:80ch}
 </section>
 
 <section id="icoa" hidden>
-  <p class="sub">Two iCoAs per P lot (identification A and B; foreign matter), in the order of packaging: the iCoA is dated on the first day of packaging (the Head of QC\u2019s list of 04.09.2026), the day the issuance plan uses as the CoQ basis. Each carries identification A, identification B and foreign matter, tested at Purely Plant at packaging, and is issued no earlier than the last day of packaging (Packaging complete). Identification C is covered by the cannabinoid-assay certificate named in the last column, cited on the CoQ directly.</p>
+  <p class="sub">One iCoA per P lot (identification A and B and foreign matter), in the order of packaging: the iCoA is dated on the first day of packaging (the Head of QC\u2019s list of 04.09.2026), the day the issuance plan uses as the CoQ basis. Each carries identification A, identification B and foreign matter, tested at Purely Plant at packaging, and is issued no earlier than the last day of packaging (Packaging complete). Identification C is covered by the cannabinoid-assay certificate named in the last column, cited on the CoQ directly.</p>
   <div class="toolbar"><input id="ic-q" type="search" placeholder="Filter by batch, number, strain, certificate…" aria-label="Filter iCoA rows"><span id="ic-n" class="label"></span></div>
   <div class="scroll"><table id="ic-table"></table></div>
 </section>
 
 <section id="register" hidden>
-  <p class="sub">Preliminary issuance register (Head of QC, 05.09.2026). Two certificates per P lot: identification A and B on the P01-02 master, foreign matter on the P07 master. Codes iCoA-PP_26-nnn run in the order the certificates can be issued: by the earliest permissible issue date, then by the basis date. Every printed issue date lies between 11.05.2026, when the CoQ SOP came into use, and the day of signing, so the preliminary date is the SOP floor or the last day of packaging, whichever is later; QC sets the real date at issue. A row that cannot be issued yet carries no number: the retest iCoAs await the retest sampling, whose date is not on the desk. The plan\u2019s references of 31.08.2026 are superseded and kept beside the codes. In the workbook the number, the code and the dates are formulas, so a row inserted between two certificates renumbers every row beneath it; this page shows the computed values.</p>
+  <p class="sub">Preliminary iCoA issuance register (Head of QC, 05.09.2026). One iCoA per P lot for identification A, B and foreign matter, tested at packaging. Codes iCoA-PP_26-nnn in the order of issue: the legacy lots (packed before the SOP floor of 11.05.2026, or holding an old in-house certificate) are all issued on 15.05.2026 in chronological order of packaging; the post-SOP lots follow, each on the first working day 5 days after its packaging. A row that cannot be issued yet carries no number: the retest iCoAs await the retest sampling, whose date is not on the desk. The plan\u2019s references of 31.08.2026 are superseded and kept beside the codes. In the workbook the number, the code and the dates are formulas, so a row inserted between two certificates renumbers every row beneath it; this page shows the computed values.</p>
   <div class="toolbar"><input id="rg-q" type="search" placeholder="Filter by code, batch, strain, date…" aria-label="Filter register rows"><span id="rg-n" class="label"></span></div>
   <div class="scroll"><table id="rg-table"></table></div>
+</section>
+
+<section id="coqreg" hidden>
+  <p class="sub">Preliminary CoQ issuance register (Head of QC, 05.09.2026). Codes CoQ-PP_26-nnn in the order of issue: the legacy lots (packed before the SOP floor of 11.05.2026, or holding an old in-house QCCoA 001 certificate, which the CoQ supersedes) are all issued on 27.05.2026 in chronological order of packaging; the post-SOP lots follow on the first working day 7 days after the latest eCoA the CoQ cites, never before 27.05.2026. Every CoQ cites its lot\u2019s iCoA and reports identification C as Conforms, referenced to the eCoA that covers Total THC. No number is reserved for a CoQ that cannot be issued yet: an uncertified determination (named in Status), a missing packaging date, every retest CoQ. Adherence flags are listed under the table.</p>
+  <div class="toolbar"><input id="cq-q" type="search" placeholder="Filter by code, batch, strain, date…" aria-label="Filter CoQ register rows"><span id="cq-n" class="label"></span></div>
+  <div class="scroll"><table id="cq-table"></table></div>
+  <p class="sub" id="cq-flags"></p>
 </section>
 
 <footer>One two-row block per testing instance: the result on the top row, the certificate that carries it on the bottom. Parameters 9–11 print each determination in its own column. Conformance is judged on release results only, against the acceptance criteria on the Parameters sheet (counted limits ≤10ⁿ judged against 2×10ⁿ, Ph. Eur. 2.6.12). Built from <code>CoQ_Analysis_Master_v10.xlsx</code>, 04.09.2026: the 30 IJZ-MB microbiology certificates of 31.08/01.09.2026 are included as testing instances.</footer>
@@ -205,7 +213,7 @@ document.getElementById('subline').textContent =
 const tabs = [...document.querySelectorAll('nav.tabs button')];
 function show(view){
   tabs.forEach(b => b.setAttribute('aria-selected', String(b.dataset.view===view)));
-  ['overview','checklist','tracker','icoa','register'].forEach(v => document.getElementById(v).hidden = v!==view);
+  ['overview','checklist','tracker','icoa','register','coqreg'].forEach(v => document.getElementById(v).hidden = v!==view);
   try { localStorage.setItem('coq9.view', view); } catch(e){}
 }
 tabs.forEach(b => b.addEventListener('click', () => show(b.dataset.view)));
@@ -391,9 +399,32 @@ function renderRegister(){
 }
 document.getElementById('rg-q').addEventListener('input', renderRegister);
 
-renderOverview(); renderChecklist(); renderTracker(); renderIcoa(); renderRegister();
+/* ---------- CoQ register ---------- */
+function renderCoqReg(){
+  const rows = D.coq_register || [];
+  const q = document.getElementById('cq-q').value.trim().toLowerCase();
+  const cols = rows.length ? Object.keys(rows[0]).filter(c => c !== 'Key') : [];
+  let n = 0, numbered = 0;
+  const body = rows.filter(r => !q || Object.values(r).join(' ').toLowerCase().includes(q)).map(r => { n++; if (r['No.']) numbered++;
+    return '<tr>' + cols.map(c => {
+      const v = r[c] || '';
+      const cls = (c === 'No.') ? ' class="c"' : (c === 'CoQ code' || c.startsWith('iCoA') || c === 'CU Batch' || c === 'P Batch' || c.startsWith('Ident C') || c.startsWith('Plan') || c.startsWith('CNP') || c.startsWith('Latest') || c.startsWith('Supersedes')) ? ' class="mono"' : '';
+      let cell = esc(v);
+      if (c === 'Status') cell = `<span class="pill ${v.startsWith('registered') ? 'p-ok' : v.startsWith('not yet') ? 'p-warn' : 'p-grey'}">${esc(v)}</span>`;
+      else if (c === 'CoQ code' && v.startsWith('—')) cell = `<span class="pill p-warn">${esc(v)}</span>`;
+      else if (v.startsWith('—') || v.startsWith('at retest')) cell = `<span class="pill p-grey">${esc(v)}</span>`;
+      return `<td${cls}>${cell}</td>`;
+    }).join('') + '</tr>'; }).join('');
+  document.getElementById('cq-table').innerHTML = '<thead><tr>' + cols.map(c => `<th>${esc(c)}</th>`).join('') + '</tr></thead><tbody>' + body + '</tbody>';
+  document.getElementById('cq-n').textContent = `${n} of ${rows.length} rows · ${numbered} numbered`;
+  const flags = D.coq_flags || [];
+  document.getElementById('cq-flags').innerHTML = flags.length ? '<b>Adherence flags</b> — ' + flags.map(esc).join(' · ') : '';
+}
+document.getElementById('cq-q').addEventListener('input', renderCoqReg);
+
+renderOverview(); renderChecklist(); renderTracker(); renderIcoa(); renderRegister(); renderCoqReg();
 let v = 'overview'; try { v = localStorage.getItem('coq9.view') || v; } catch(e){}
-show(['overview','checklist','tracker','icoa','register'].includes(v) ? v : 'overview');
+show(['overview','checklist','tracker','icoa','register','coqreg'].includes(v) ? v : 'overview');
 })();
 </script>
 '''

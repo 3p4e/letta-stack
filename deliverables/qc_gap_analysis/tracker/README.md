@@ -389,69 +389,101 @@ with both, 1 with the assay only) and is "pending" where they are not. A retest 
 new document with a new number in the year of issue — never the initial iCoA's number,
 which the plan of 31.08.2026 had reused.
 
-## v11 — the preliminary iCoA issuance register (05.09.2026)
+## v11 — the preliminary iCoA and CoQ issuance registers (05.09.2026)
 
-`CoQ_Analysis_Master_v11.xlsx` is v10 plus the **iCoA Register** sheet, also written on its
-own as `iCoA_Issuance_Register_prelim.xlsx` (with the Batch Dates sheet its formulas read)
-for the person issuing the certificates. Both come from the same rows of
+`CoQ_Analysis_Master_v11.xlsx` is v10 plus the **iCoA Register** and **CoQ Register**
+sheets, also written on their own as `Issuance_Registers_prelim.xlsx` (with the Batch Dates
+sheet their date formulas read) for the person issuing the documents. All of it comes from
 `build_tracker_v8.py --icoa` (with `--version=11`).
 
-**Two certificates per P lot (Head of QC, 05.09.2026).** Identification A and B go on the
-P01-02 master, foreign matter on the P07 master — one of each per P lot, unless a CNP
-certificate reports that scope, in which case the CNP document code is the reference and
-no iCoA is needed for it (13 lots, both scopes). The retest series has the same two per lot.
-A tracker row that holds several P lots (GRC102501 two, JD012603 three) is one lot per
-P number.
+### The ruling (Head of QC, 05.09.2026)
 
-**The numbering rule.** Document codes `iCoA-PP_26-nnn`, nnn = 001 … 999, one series for
-the year of issue, assigned in the order the certificates can be issued: by the earliest
-permissible issue date, then by the basis date (the first day of packaging, when the sample
-is taken), identification A/B before foreign matter within a lot. Every printed issue date
-lies in [11.05.2026 … the day of signing] — the CoQ SOP came into use on 11.05.2026 and no
-document is post-dated (`ISSUE_COQ_CONVENTIONS.md`). **Head of QC, 05.09.2026: every
-certificate whose lot was packed before the SOP floor is issued on one day, 13.05.2026 (a
-Wednesday), in chronological order of packaging; the lots packed after it follow, each on
-its last day of packaging, the numbers running on.** The builder takes the day from
-`--batch-issue=` (default 13.05.2026) and refuses a weekend. **No number is reserved for
-a row that cannot be issued yet:** a lot without a packaging date, a held result, and every
-retest iCoA, whose tests are made at the retest sampling, a date not on the desk. The
-plan's references of 31.08.2026 (`iCoA-PP-YYYY-NNNN`, a series per packaging year) are
-superseded by these codes and kept beside them in a *Plan reference* column.
+- **One iCoA per P lot** carries identification A, identification B and foreign matter,
+  tested at packaging (the first day, when the sample is taken before primary packaging).
+  Where a CNP certificate reports one of them, the CNP document code is the reference and
+  the iCoA covers the rest; where CNP reports all three, no iCoA is needed (13 lots). The
+  assignment of A, B, C and foreign matter per batch stands as ruled on 04.09.2026.
+- **Identification C** is "Conforms" on the CoQ, referenced to the eCoA that covers Total
+  THC (the cannabinoid assay).
+- **Legacy lots** — packed before the SOP floor of 11.05.2026, or holding an old in-house
+  QCCoA 001 certificate (15 lots on the desk, all packed before the floor): the iCoAs are
+  all issued on **15.05.2026** (a Friday) in chronological order of packaging; the CoQs,
+  `CoQ-PP_26-nnn`, superseding the old certificate, are all issued on **27.05.2026** (a
+  Wednesday).
+- **Post-SOP lots** — packed after the floor: the iCoA is issued on the first working day
+  5 days after packaging; the CoQ on the first working day 7 days after the latest eCoA it
+  cites. Working days are Monday to Friday; public holidays are not applied.
+- Codes `iCoA-PP_26-nnn` and `CoQ-PP_26-nnn`, nnn = 001 … 999, one series each for the
+  year of issue, in the order of issue. **No number is reserved for a document that cannot
+  be issued yet:** a lot without a packaging date, a held result, a CoQ with an uncertified
+  determination, every retest document (the retest sampling dates are not on the desk).
+  The plan's references of 31.08.2026 (`iCoA-PP-YYYY-NNNN`, `CoQ-PP-YYYY-NNNN`) are
+  superseded and kept beside the codes.
 
-**What the register holds.** 288 rows: 140 numbered initial certificates — 70 identification
-A/B and 70 foreign matter, `iCoA-PP_26-001` (CJ1024, Ident A/B, packed 03.03.2025) to
-`-140` (P060382, foreign matter, packed 25.05.2026) — with `-001` to `-118` issued on
-13.05.2026 (the 59 lots packed before the SOP floor) and `-119` (P060262, packed 14.05.2026)
-to `-140` on each lot's last day of packaging, up to 25.05.2026; 148 retest rows without a number. The three lots the
-owner's tracker does not carry are named from the Head of QC's list. The 26 initial rows
-that need no certificate (CNP covers the scope) are on the iCoA Issuance sheet, not in the
-register.
+### Adherence, and the fixes applied
 
-**The sheet is formula-driven, so an insertion renumbers everything beneath it.** The
-register is an Excel table (`iCoA_Register`) whose number, code and dates are formulas:
+The ruling was checked against `ISSUE_COQ_CONVENTIONS.md` (a document never precedes one
+it cites, never precedes the SOP floor, is never post-dated, never carries an uncertified
+result) and against the dates on file. The builder writes every flag under the CoQ Register
+(17 in v11) and the page lists them under its CoQ Register tab.
 
-| Column | Formula (row *r*) | Meaning |
+1. **A legacy CoQ cannot be dated 27.05.2026 when it cites a certificate issued later.** Ten
+   legacy lots have their first certificate for a determination dated August or September
+   2026 — the IJZ-MB microbiology of 31.08/01.09.2026 (P060142, P060182, P060202, P060222,
+   P060162, P050142, P060102) or the Farmahem mycotoxins of 10.08.2026 (HPA1024, OPM1024,
+   P060152). Fix: those CoQs take the post-SOP rule (first working day 7 days after the
+   latest eCoA: 17.08, 07.09 or 08.09.2026) and are flagged. As it happens, all ten are also
+   still uncertified on another determination, so none of them is numbered yet.
+2. **A post-SOP CoQ is never dated before the legacy series day.** Seven post-SOP lots
+   (P060262 to P060322, packed 14 to 22.05.2026) have every cited eCoA on file by
+   11.05.2026, so the 7-day rule would date their CoQs 18 to 26.05.2026 — ahead of
+   `CoQ-PP_26-001`. Fix: they are held to 27.05.2026 and follow the legacy series as
+   `-046` to `-052`, flagged.
+3. **A CoQ never precedes its own iCoA.** The planned CoQ date is the later of the rule date
+   and the iCoA's date (a formula on the sheet); after fix 2 no row needed it.
+4. **A CoQ with a gap is not issuable.** 28 initial CoQs have an uncertified determination
+   (the Status names it, e.g. `uncertified: #10, #11`) and carry no number; they take a
+   number when the certificate arrives, dated by the rule then.
+5. **Nothing on a weekend.** 15.05.2026 and 27.05.2026 are working days; the builder refuses
+   a weekend for either (`--legacy-icoa=`, `--legacy-coq=`), and the post-SOP formulas roll
+   a Saturday or Sunday forward.
+
+### What the registers hold
+
+**iCoA Register** (144 rows): 70 numbered — `iCoA-PP_26-001` (CJ1024) to `-059` on
+15.05.2026 for the 59 legacy lots, `-060` (P060262, 19.05.2026) to `-070` (P060382,
+01.06.2026) for the 11 post-SOP lots, each on the first working day 5 days after
+packaging; 74 retest rows without a number. **CoQ Register** (157 rows): 52 numbered, all
+on 27.05.2026 — `CoQ-PP_26-001` (CJ1024) to `-045` legacy, `-046` to `-052` post-SOP (fix
+2); 31 initial CoQs without a number (28 uncertified, 3 P16 lots without a date); 74 retest
+rows. Every CoQ row names the iCoA it cites (looked up on the iCoA Register), the eCoA that
+covers Total THC for identification C, the CNP references, the old in-house certificate it
+supersedes, and the latest eCoA it cites with its date.
+
+### The sheets are formula-driven
+
+Both registers are Excel tables (`iCoA_Register`, `CoQ_Register`) whose number, code and
+dates are formulas, so a row inserted between two documents renumbers every row beneath it:
+
+| Sheet · column | Formula (row *r*) | Meaning |
 |---|---|---|
-| No. | `=IF(C r="yes", COUNT(A$1:A r-1)+1, "")` | counts the issuable rows above it |
-| iCoA code | `="iCoA-PP_26-" & TEXT(A r, "000")` | built from No.; `— at issue —` when blank |
-| Issue date (preliminary) | `=E r` | the earliest permissible day; QC overtypes the real one |
-| Earliest permissible | `=MAX(DATE(2026,5,13), G r)` | the batch issue day or the last day of packaging |
-| Basis / Packaging complete | `INDEX/MATCH` on **Batch Dates** by P batch, else by batch as listed | a date corrected there moves the register |
+| both · No. | `=IF(C r="yes", COUNT(A$1:A r-1)+1, "")` | counts the issuable rows above it |
+| both · code | `="iCoA-PP_26-" & TEXT(A r,"000")` / `"CoQ-PP_26-"` | built from No.; `— at issue —` when blank |
+| iCoA · Issue date | `=IF(G="legacy", DATE(2026,5,15), roll(F+5))` | the legacy day, or the first working day 5 days after Packaging complete |
+| iCoA · Test date, Packaging complete | `INDEX/MATCH` on **Batch Dates** by P batch, else by batch as listed | a date corrected there moves the register |
+| CoQ · Rule date | `=IF(legacy AND F ≤ 27.05.2026, 27.05.2026, MAX(27.05.2026, roll(F+7)))` | F = the latest eCoA cited (a value the builder recomputes) |
+| CoQ · Issue date | `=MAX(Rule date, iCoA issue date)` | never before its iCoA |
+| CoQ · iCoA, iCoA date · iCoA · CoQ | `INDEX/MATCH` by **Key** into the other register | the two registers cite each other |
 
-To add a certificate between 10 and 11: insert a row inside the table, fill the lot and set
-*Issuable* to `yes` — Excel copies the table's formulas into the new row (Google Sheets and
-LibreOffice: fill the five formula columns down) and 11 becomes 12, 12 becomes 13, and so
-on. Every cell that cites a code follows: the **iCoA Issuance** sheet's *iCoA* and *Issue
-date* columns and the tracker's in-house instances for #1, #2 and #7 are `INDEX/MATCH`
-lookups into the register by the row's **Key** (`P060342|FM|I`: lot, scope, initial or
-retest), never a copied code. The Batch Dates sheet holds real dates now (its *iCoA basis*
-column is `=F`). What a formula does not do: re-sort the rows — a changed date that changes
-the chronological order is a manual move. 2,472 formulas in v11, all evaluated without an
-error through a LibreOffice recalculation; `extract_artifact_data.py` runs that
-recalculation on a copy before it reads the workbook, because openpyxl stores no computed
-values, so the page shows the computed numbers.
-
-**Two things to know before issuing.** The 2025 R&D lots' CoQs are "assigned on issue" in
-the plan, so their register rows carry no CoQ number yet. And the codes assume the
-certificates are issued in this order; if QC issues a later lot first, the numbers shift
-with the rows, not with the dates.
+`roll(x)` is `x + CHOOSE(WEEKDAY(x,2),0,0,0,0,0,2,1)`: a Saturday moves to Monday, a Sunday
+too. To add a document between 10 and 11: insert a row inside the table, fill the lot and
+set *Issuable* to `yes` — Excel copies the table's formulas into the new row (Google Sheets
+and LibreOffice: fill the formula columns down) and 11 becomes 12, 12 becomes 13, and so
+on. Every cell that cites a code follows: the **iCoA Issuance** sheet's iCoA, CoQ and
+planned-date columns and the tracker's in-house instances for #1, #2 and #7 are
+`INDEX/MATCH` lookups by the row's **Key** (`P060342|I`: lot, initial or retest), never a
+copied code. Batch Dates holds real dates (its *iCoA basis* column is `=F`). What a formula
+does not do: re-sort the rows — a changed date that changes the order is a manual move.
+2,502 formulas in v11, all evaluated without an error through a LibreOffice recalculation;
+`extract_artifact_data.py` runs that recalculation on a copy before it reads the workbook,
+because openpyxl stores no computed values, so the page shows the computed numbers.

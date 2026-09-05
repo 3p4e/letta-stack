@@ -133,7 +133,14 @@ data = {'coverage_headers': coverage_headers, 'coverage': coverage,
         'lots': lots, 'work_order': table('Work Order'), 'credit_audit': table('Credit Audit'),
         'corrections': table('Credit Corrections'),
         'icoa': table('iCoA Issuance') if 'iCoA Issuance' in wb.sheetnames else [],
-        'register': table('iCoA Register') if 'iCoA Register' in wb.sheetnames else []}
+        'register': table('iCoA Register') if 'iCoA Register' in wb.sheetnames else [],
+        'coq_register': table('CoQ Register') if 'CoQ Register' in wb.sheetnames else []}
+# the adherence flags the builder wrote under the CoQ Register
+data['coq_flags'] = []
+if 'CoQ Register' in wb.sheetnames:
+    for _row in wb['CoQ Register'].iter_rows(values_only=True):
+        if _row[0] and str(_row[0]).startswith('Head of QC') and 'FLAGS: ' in str(_row[0]):
+            data['coq_flags'] = str(_row[0]).split('FLAGS: ', 1)[1].split(' | ')
 json.dump(data, open(OUT, 'w'), ensure_ascii=False)
 print('lots', len(lots), 'blocks', sum(len(l['blocks']) for l in lots), 'coverage rows', len(coverage),
       'work order', len(data['work_order']), 'audit', len(data['credit_audit']), 'corrections', len(data['corrections']))
