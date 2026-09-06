@@ -50,6 +50,7 @@ from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter as L
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+BUILD_DATE = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--build-date=")), "06.09.2026")
 spec = importlib.util.spec_from_file_location("tracker_data", os.path.join(HERE, "tracker_data.py"))
 T = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(T)
@@ -332,7 +333,9 @@ if ICOA_RULE:
             r = DATES.get(p.strip())
             if r and r not in rows:
                 rows.append(r)
-        if not rows and DATES_CU.get(T.batch_key(cu0)):
+        # the owner marks some CU codes with an asterisk (JD112501＊ beside JD112501, its own CNP
+        # certificate): a lot of its own, which the list names only by an exact code
+        if not rows and not re.search(r"[＊*]", b["cu"]) and DATES_CU.get(T.batch_key(cu0)):
             rows.append(DATES_CU[T.batch_key(cu0)])
         for r in rows:
             DATE_USED[r["seq"]] = b["cu"] if b["cu"] and not b["cu"].startswith("—") else b["p"]
@@ -1330,40 +1333,10 @@ for r in range(2, ix.max_row + 1):
         cell.fill = PatternFill("solid", fgColor=FILL["extra"])
 ix.auto_filter.ref = f"A1:{L(cc)}{ix.max_row}"
 
-# ---- Read Me: the v7 block rule
-rm = wb["Read Me"]
-r = rm.max_row + 2
-for label, text in (("v7", "This workbook adds the sheet 'CoQ Parameter Tracker v7' — one batch per two-row block, "
-                           "certificates stacked as lines in date order, sub-determinations in their own columns, acceptance "
-                           "criteria in header row 3 and enforced, out-of-specification results printed red and named in STATUS. "
-                           "The v6 flat table is kept as 'CoQ Parameter Tracker (flat)' for comparison."),
-                    ("Index", "'eCOA Document Index' now also carries PARAMETER VALUES and BATCH KEY, so the tracker can be "
-                              "rebuilt from the index alone (see CoQ_Tracker_v7_rebuild.gs)."),
-                    ("OOS check", "A result is flagged only when it provably exceeds its criterion. ND, <LOQ, <10 and absent pass; "
-                                  "'<10² and >10' is judged by its upper bound; a value that cannot be parsed is never flagged.")):
-    c0 = rm.cell(r, 1, label); c0.font = Font(name="Calibri", size=9, bold=True); c0.alignment = Alignment(vertical="top")
-    c1 = rm.cell(r, 2, text); c1.font = Font(name="Calibri", size=9); c1.alignment = Alignment(vertical="top", wrap_text=True)
-    rm.row_dimensions[r].height = 13 * (len(text) // 118 + 1)
-    r += 1
-
 if V9:
     for _n in ("Results Register", "CoQ Parameter Tracker (flat)", "eCOA Document Index"):
         if _n in wb.sheetnames:
             wb.remove(wb[_n])
-    _rm = wb["Read Me"]
-    _r = _rm.max_row + 2
-    for _label, _text in (
-        (f"v{VER}" if VER == "9" else "v9", "The v8 build, verified and slimmed to live in Drive. Every decision-bearing value was checked against "
-               "the filed certificate page (review/V8_TRUTH_CHECK_2026-09-02.md): the five out-of-specification TYMC "
-               "results, the four undetermined ones and the stability CBN exceedance are real. The Results Register, "
-               "the flat tracker and the eCOA Document Index are left out here; they stay in v8 in the repository."),
-        ("Do not", "read counts from the eCOA_DB text layer. On five of six certificates checked it read the exponent "
-                   "or a digit too low, every time in the direction of a conforming result."),
-    ):
-        _c = _rm.cell(_r, 1, _label); _c.font = Font(name="Calibri", size=9, bold=True); _c.alignment = Alignment(vertical="top")
-        _c = _rm.cell(_r, 2, _text); _c.font = Font(name="Calibri", size=9); _c.alignment = Alignment(vertical="top", wrap_text=True)
-        _rm.row_dimensions[_r].height = 13 * (len(_text) // 118 + 1); _r += 1
-    wb["Read Me"]["A1"] = f"CoQ Analysis Master — v{VER}"
 
 # --------------------------------------------------------------------------- new instances: the other sheets
 from copy import copy as _copy
@@ -1399,7 +1372,13 @@ def patch_coverage(wb):
     def rowkey(cu, p):
         return (re.sub(r"[＊*]", "", cu).strip(), "— not assigned —" if p.startswith("N/A") else p.strip())
 
-    rows = {rowkey(str(cov.cell(r, 1).value or ""), str(cov.cell(r, 2).value or "")): r for r in range(2, last + 1)}
+    rows, _dups = {}, []
+    for r in range(2, last + 1):
+        k = rowkey(str(cov.cell(r, 1).value or ""), str(cov.cell(r, 2).value or ""))
+        if k in rows:
+            _dups.append(r)                 # the owner's re-analysis row of a lot the tracker already merged
+        else:
+            rows[k] = r
 
     def recount(r):
         miss = [n for n in range(1, 13) if cov.cell(r, 4 + n).value == "✗"]
@@ -1441,12 +1420,13 @@ def patch_coverage(wb):
             print("coverage: no row for", b["cu"], b["p"])
             continue
         for n in range(1, 13):
-            if b["docs"][n] and cov.cell(r, 4 + n).value != "✓":
-                cov.cell(r, 4 + n).value = "✓"
-                _style_from(cov.cell(r, 4 + n), tick)
-                if all(T.kind_of(c, l, STAB) in ("In-house", "iCoA") for c, d, l in b["docs"][n]):
-                    cov.cell(r, 4 + n).fill = PatternFill("solid", fgColor="E7E6E6")
-                    cov.cell(r, 4 + n).font = Font(name="Calibri", size=9, color="595959")
+            want = "✓" if b["docs"][n] else "✗"
+            if cov.cell(r, 4 + n).value != want:
+                cov.cell(r, 4 + n).value = want
+                _style_from(cov.cell(r, 4 + n), tick if b["docs"][n] else cross)
+            if b["docs"][n] and all(T.kind_of(c, l, STAB) in ("In-house", "iCoA") for c, d, l in b["docs"][n]):
+                cov.cell(r, 4 + n).fill = PatternFill("solid", fgColor="E7E6E6")
+                cov.cell(r, 4 + n).font = Font(name="Calibri", size=9, color="595959")
         cov.cell(r, 19).value = int(cov.cell(r, 19).value or 0) + len(new_docs)
         labs = collections.OrderedDict()
         for tok in str(cov.cell(r, 20).value or "").split(";"):
@@ -1457,6 +1437,11 @@ def patch_coverage(wb):
             labs[l] = labs.get(l, 0) + 1
         cov.cell(r, 20).value = "; ".join(f"[{k}] {v}" for k, v in labs.items())
         recount(r)
+    for r in sorted(_dups, reverse=True):   # one row per lot
+        cov.delete_rows(r)
+        last -= 1
+    if _dups:
+        print(f"coverage: {len(_dups)} duplicate row(s) removed (the owner's re-analysis rows of merged lots)")
     if cov.auto_filter.ref:
         cov.auto_filter.ref = f"A1:{L(20)}{last}"
     return last
@@ -1849,6 +1834,138 @@ def add_dates_sheet(wb):
     print("batch dates rows:", _r - 2)
 
 
+SHEET_ABOUT = {
+    "Read Me": "This sheet.",
+    "CoQ Parameter Tracker": "One lot per block of two rows per testing instance: the result of each determination on the top row, the certificate that reports it (code, date, laboratory) beneath; acceptance criteria in row 3 and enforced; out-of-specification results in red and named in STATUS; the in-house iCoA cells cite the iCoA Register by key.",
+    "Batch Coverage": "One row per lot: ✓/✗ for each of the 12 parameters, the missing list, the number of certificates and the laboratories present. A grey ✓ is covered by the in-house iCoA.",
+    "Mikro CoQ Parameter": "The owner's microbiology sheet, rebuilt from the tracker: the #7–#12 spans per lot in the owner's layout.",
+    "Credit Audit": "Certificates credited on the owner's tracker that the desk holds no value from, with the reason.",
+    "Credit Corrections": "The two corrections applied to the owner's credits (the Farmahem pair, CNP identification B), one row each; nothing written back to the owner's workbook.",
+    "Work Order": "What a person must do next: certificates to ingest, values to read on the page, lots to record.",
+    "iCoA Issuance": "One row per P lot and series (initial release, retest): what its iCoA carries, the CNP references, the cannabinoid-assay eCoA that covers identification C, the codes and planned dates looked up on the registers.",
+    "Batch Dates": "The Head of QC's harvest and packaging dates per batch (04.09.2026), as dates; the registers look their packaging dates up here.",
+    "iCoA Register": "The preliminary iCoA issuance register: iCoA-PP_26-nnn in the order of issue, number, code and dates as formulas.",
+    "CoQ Register": "The preliminary CoQ issuance register: CoQ-PP_26-nnn in the order of issue, the latest eCoA each CoQ cites, its iCoA, the adherence flags under the table.",
+    "Parameters": "The 21 determinations with method, global acceptance criterion, source and tracker columns.",
+    "Summary Dashboard": "Counts recomputed from Batch Coverage: lots, documents, complete / partial / incomplete, missing-parameter frequency.",
+}
+
+
+def write_read_me(wb):
+    """The Read Me describes the workbook as it is: the sheets it holds, what the marks mean, the
+    rulings in force, the version history — regenerated on every build, never inherited."""
+    rm = wb["Read Me"]
+    for mr in list(rm.merged_cells.ranges):
+        rm.unmerge_cells(str(mr))
+    for row in rm.iter_rows():
+        for c in row:
+            c.value = None
+    for r_ in range(1, rm.max_row + 1):
+        rm.row_dimensions[r_].height = None
+    rm.column_dimensions["A"].width = 22
+    rm.column_dimensions["B"].width = 118
+    r = 1
+
+    def head(t, size=12):
+        nonlocal r
+        c = rm.cell(r, 1, t); c.font = Font(name="Calibri", size=size, bold=True, color=NAVY); c.alignment = Alignment(vertical="top")
+        r += 1
+
+    def line(label, text):
+        nonlocal r
+        c0 = rm.cell(r, 1, label); c0.font = Font(name="Calibri", size=9, bold=True); c0.alignment = Alignment(vertical="top", wrap_text=True)
+        c1 = rm.cell(r, 2, text); c1.font = Font(name="Calibri", size=9); c1.alignment = Alignment(vertical="top", wrap_text=True)
+        rm.row_dimensions[r].height = 13 * (len(text) // 150 + 1)
+        r += 1
+
+    head(f"CoQ Analysis Master — v{VER}", 14)
+    line("What it is", f"Built {BUILD_DATE} on the owner's CoQ_Analysis_Master. Which certificate is credited to which parameter is the owner's; results, dates "
+         "and laboratories are the desk's record: the release register, the page reads and the two-read extraction of every certificate in eCOA_DB. "
+         "Nothing is invented; a value the reads disagreed on is held until a person rules on the page.")
+    r += 1
+    head("SHEETS")
+    for name in wb.sheetnames:
+        about = SHEET_ABOUT.get(name) or (SHEET_ABOUT["CoQ Parameter Tracker"] if name.startswith("CoQ Parameter Tracker") else "")
+        line(name, about)
+    r += 1
+    head("LEGEND (tracker and coverage)")
+    line("✓ green", "A certificate is on file and its value is on the desk: an outsourced certificate (eCoA) or the in-house iCoA.")
+    line("✓ grey", "Covered by the in-house iCoA only (identification A, identification B, foreign matter, tested at Purely Plant at packaging): coverage for the release CoQ (Head of QC, 04.09.2026).")
+    line("✓ orange", "Stability-timepoint certificate — its value is not a release result.")
+    line("✗ amber", "Certificate credited on the tracker, but the desk holds no value for this determination from it — the determination is not on that certificate, or the certificate never entered the record.")
+    line("✗ red", "No certificate credited for the parameter.")
+    line("•", "A document on file that is not credited for the parameter (an old in-house Report of Analysis, an NGP form, the QCCoA 001 certificate): shown, not coverage.")
+    line("Conforms (ImB spec.)", "Identification C: conforms to the ImB specification on the certificate that carries the cannabinoid assay; the CoQ cites that eCoA (Head of QC, 04.09.2026).")
+    line("Red result", "Out of specification against the global acceptance criterion (row 3). Orange: undetermined (a Ph. Eur. band the result sits in).")
+    r += 1
+    head("CONVENTIONS")
+    line("Batch names", "CU batch as the owner names it; a sub-lot digit belongs to the batch (FB012601_1), never to the certificate code; an asterisk (JD112501＊) marks a lot of its own. The laboratory prints the zero of a P-number as a letter O (PO60052); it is folded to P060052.")
+    line("Certificate codes", "As printed on the certificate (Cyrillic ППК codes kept). [Lab]: CNP (Faculty of Pharmacy, Center for Natural Products), IJZ-MB / IPH (Institute of Public Health), FHM-K / FHM-M (Farmahem), PP (Purely Plant, in-house).")
+    line("Dates", "DD.MM.YYYY. The Batch Dates and register sheets hold real dates; the tracker prints them as text inside the reference.")
+    line("Results", "Numeric results with the certificate's printed precision; qualitative results as text (Conforms, absent, <LOQ, ND). A microbiological range (< 10³ и > 10²) is judged by its upper bound.")
+    line("OOS check", "A result is flagged only when it provably exceeds its criterion; ND, <LOQ, <10 and absent pass; a value that cannot be parsed is never flagged.")
+    line("Formulas", "On the two registers the number, the code and the dates are formulas, and the iCoA Issuance sheet and the tracker's in-house cells look the registers up by key: insert a row and every code beneath moves by one.")
+    line("Print", "Every sheet: landscape, A3, one page wide, the header rows repeated; panes frozen under the header.")
+    line("Do not", "read counts from the eCOA_DB text layer. On five of six certificates checked it read the exponent or a digit too low, every time in the direction of a conforming result.")
+    r += 1
+    head("RULINGS IN FORCE (Head of QC)")
+    line("04.09.2026 · iCoA", "Identification A and B are tested at Purely Plant together with foreign matter at packaging (the first day, when the sample is taken before primary packaging), and ONE iCoA per P lot carries the three results for the release CoQ. Where a CNP certificate reports one of them, the CNP document code is the reference; where CNP reports all three, no iCoA is needed.")
+    line("04.09.2026 · Ident C", "Identification C is 'Conforms', referenced to the eCoA that covers Total THC (the cannabinoid assay); for a Farmahem lot the K certificate.")
+    line("04.09.2026 · decisions", "The two bile-tolerant gram-negative rows the reads disagreed on: P060262 < 10³ и > 10² CFU/g, P060432 < 10² и > 10 CFU/g (decisions_2026-09-04.tsv).")
+    line("05.09.2026 · issuance", "Legacy lots (packed before the SOP floor of 11.05.2026, or holding an old in-house QCCoA 001 certificate): iCoAs issued together on 15.05.2026, CoQs (CoQ-PP_26-nnn, superseding the old certificate) on 27.05.2026, both in chronological order of packaging. Post-SOP lots: the iCoA on the first working day 5 days after packaging, the CoQ on the first working day 7 days after the latest eCoA it cites, never before 27.05.2026. Codes iCoA-PP_26-nnn and CoQ-PP_26-nnn, one series each for the year of issue.")
+    line("05.09.2026 · retest", "The QP's retest campaign, sampled by tranche from July 2026: identification A, B and foreign matter in-house on every bag of the representative sample (one iCoA), cannabinoids with identification C and mycotoxins at Farmahem, microbiology at IJZ-MB; the reissued CoQ carries those results and the initial certificates for the rest. A retest certificate never certifies the initial CoQ; the IJZ-MB delivery of 25/26.08.2026 is campaign sampling for every lot.")
+    line("05.09.2026 · missing", "A production lot whose initial certificate for a determination is not on file keeps its planned CoQ and number: the initial testing exists at CNP (microbiology: IJZ) and the certificate is to be located (Work Order).")
+    r += 1
+    head("VERSION HISTORY")
+    line("v7", "The two-row block tracker: one lot per block, certificates stacked in date order, sub-determinations in their own columns, acceptance criteria in row 3 and enforced, out-of-specification results in red and named in STATUS.")
+    line("v9", "Verified and slimmed to live in Drive: every decision-bearing value checked against the filed page (review/V8_TRUTH_CHECK_2026-09-02.md); three sheets of v8 (a flat results register, a flat tracker, a document index) were retired to the repository.")
+    line("v10", "The 30 IJZ-MB certificates of 31.08 and 01.09.2026 as testing instances credited to #9; the iCoA rule; the Head of QC's harvest and packaging dates (Batch Dates); one iCoA per P lot; the iCoA Issuance sheet.")
+    line("v11", "The iCoA Register and the CoQ Register (formula-driven); the ruling of 05.09.2026 on the legacy and post-SOP series; the retest campaign kept off the initial CoQs; the owner's edits to the Drive copies (row 4, result sizes, lot borders); one coverage row per lot.")
+
+
+def fix_parameters(wb):
+    """The Parameters sheet is inherited from the owner's workbook: its Source and Tracker column
+    values are set from the rulings and the live tracker layout."""
+    if "Parameters" not in wb.sheetnames:
+        return
+    sh = wb["Parameters"]
+    hdr = {str(sh.cell(1, c).value or "").strip(): c for c in range(1, sh.max_column + 1)}
+    src_c, col_c = hdr.get("Source"), hdr.get("Tracker column")
+    by_n = {p["n"]: p for p in T.PARAMS}
+    for r in range(2, sh.max_row + 1):
+        no = str(sh.cell(r, 1).value or "").strip()
+        if not no:
+            continue
+        n = int(no.split(".")[0])
+        p = by_n.get(n)
+        if src_c:
+            if n in (1, 2, 7):
+                sh.cell(r, src_c).value = "In-house iCoA (Purely Plant, at packaging) — coverage for the release CoQ; CNP document code where CNP reported it"
+            elif n == 3:
+                sh.cell(r, src_c).value = "Outsourced certificate (eCoA): the cannabinoid-assay certificate, reported as Conforms (ImB spec.)"
+            else:
+                sh.cell(r, src_c).value = "Outsourced certificate (eCoA)"
+        if col_c and p:
+            if "." in no and p.get("subs"):
+                j = int(no.split(".")[1]) - 1
+                sh.cell(r, col_c).value = L(p["start"] + j)
+            else:
+                sh.cell(r, col_c).value = f"{L(p['start'])}–{L(p['end'])}"
+    sh.column_dimensions[L(src_c)].width = 60 if src_c else None
+
+
+def print_setup(wb):
+    """Landscape, A3, one page wide, header rows repeated — on every sheet (the Read Me says so)."""
+    for sh in wb.worksheets:
+        sh.page_setup.orientation = "landscape"
+        sh.page_setup.paperSize = sh.PAPERSIZE_A3
+        sh.page_setup.fitToWidth = 1
+        sh.page_setup.fitToHeight = 0
+        sh.sheet_properties.pageSetUpPr.fitToPage = True
+        if not sh.print_title_rows:
+            sh.print_title_rows = "1:4" if sh.title.startswith(("CoQ Parameter Tracker", "Mikro")) else "1:1"
+
+
 if NEW:
     _last = patch_coverage(wb)
     patch_dashboard(wb, _last)
@@ -1861,40 +1978,9 @@ if NEW:
         add_coq_register_sheet(wb)
         add_dates_sheet(wb)
         write_register_file(os.path.join(HERE, "Issuance_Registers_prelim.xlsx"))
-    _rm = wb["Read Me"]
-    _r = _rm.max_row + 2
-    _held = ", ".join(sorted({f"{c} (#{n})" for cu, pb, c, d, l, n in NEW_HELD}))
-    _lots = ", ".join(b["p"] for b in NEW_LOTS)
-    _text = (f"v{VER} — {len(NEW)} certificates ingested into eCOA_DB on 04.09.2026 (IJZ-MB microbiology, issued 31.08 and "
-             f"01.09.2026) are added as testing instances credited to #9, with the values the two independent reads "
-             f"agreed on. Batch Coverage, the tracker, the Credit Audit, the Work Order and the Summary Dashboard are "
-             f"recomputed with them."
-             + (f" Held for a person's read: {_held}." if _held else "")
-             + (f" Lots the owner's tracker does not carry, opened without a CU code: {_lots}." if _lots else "")
-             + " The laboratory prints the zero of a P-number as a letter O (PO60052); it is folded to P060052 here."
-             + (" Head of QC, 04.09.2026: identification A and B are tested at Purely Plant together with foreign "
-                "matter at the date of packaging, and one iCoA per batch carries the three results — every lot "
-                "now holds that in-house instance for #1, #2 and #7 (see iCoA Issuance); identification C "
-                "conforms to the ImB specification on the certificate that carries the cannabinoid assay. "
-                "Harvest and packaging dates per batch are the Head of QC's list of 04.09.2026 (sheet Batch Dates): "
-                "the iCoA instance is dated on the first day of packaging (sampling before primary packaging), the "
-                "day the issuance plan uses as the CoQ basis, and issued no earlier than the last day of packaging; "
-                "one iCoA per P lot where a tracker row holds several. iCoA Register and CoQ Register (Head of QC, "
-                "05.09.2026): codes iCoA-PP_26-nnn and CoQ-PP_26-nnn in the order of issue — legacy lots (packed before "
-                "the SOP floor of 11.05.2026 or holding an old in-house QCCoA) have their iCoAs issued together on "
-                "15.05.2026 and their CoQs on 27.05.2026; post-SOP lots have the iCoA on the first working day 5 days "
-                "after packaging and the CoQ on the first working day 7 days after the latest eCoA it cites; no number is "
-                "reserved for a document that cannot be issued yet; the numbers, codes and dates are formulas on the "
-                "sheets and the other sheets cite them by key. Adherence flags are on the CoQ Register. "
-                "Rulings of 04.09.2026 on the two bile-tolerant gram-negative rows the reads disagreed on: "
-                "P060262 < 10³ и > 10² CFU/g, P060432 < 10² и > 10 CFU/g (decisions_2026-09-04.tsv)."
-                if ICOA_RULE else ""))
-    for _label, _t in ((f"v{VER}", _text),):
-        _c = _rm.cell(_r, 1, _label); _c.font = Font(name="Calibri", size=9, bold=True); _c.alignment = Alignment(vertical="top")
-        _c = _rm.cell(_r, 2, _t); _c.font = Font(name="Calibri", size=9); _c.alignment = Alignment(vertical="top", wrap_text=True)
-        _rm.row_dimensions[_r].height = 13 * (len(_t) // 118 + 1); _r += 1
-    if V9:
-        wb["Read Me"]["A1"] = f"CoQ Analysis Master — v{VER}"
+    write_read_me(wb)
+    fix_parameters(wb)
+    print_setup(wb)
 wb.save(OUT)
 print("saved", OUT)
 print("batches:", len(batches), "two-row blocks:", (LASTROW - 4) // 2, "rows:", LASTROW - 4, "columns:", LAST)

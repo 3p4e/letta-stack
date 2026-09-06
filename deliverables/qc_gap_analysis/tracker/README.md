@@ -554,3 +554,43 @@ the builder so every later version carries them:
 Also in the owner's v9, not adopted because v10 does not repeat them: every result and
 reference at 9 pt, the CU and P batch cells at 16 pt bold with column A widened to 21.9,
 references vertically centred. Say the word and they go in.
+
+### Truth check of the v10 workbook (06.09.2026)
+
+Every explanatory statement in the Drive copy of v10 (Read Me, Parameters, Summary
+Dashboard, the note rows) was read against the rulings in force, and the figures against
+the tracker. What was wrong, and what v11 does about it:
+
+- **Read Me, legend row 16** said an in-house document is "not an eCoA or iCoA; not
+  coverage for a release certificate". Wrong since 04.09.2026: the in-house iCoA for
+  identification A, B and foreign matter *is* the coverage for the release CoQ (the grey ✓).
+  The Read Me is no longer inherited from the owner's v6 workbook and patched; the builder
+  regenerates it on every build from the live workbook (`write_read_me`): the sheets it
+  actually holds with a line each, the legend (green / grey / orange ✓, amber / red ✗, •,
+  "Conforms (ImB spec.)"), the conventions, the rulings in force with their dates, and a
+  version history marked as history. The old Read Me also listed sheets retired in v9
+  (Results Register, eCOA Document Index), described the tracker as the v6 flat table,
+  called the dashboard "the owner's aggregate, unchanged" and cited a Kind column that no
+  longer exists.
+- **Parameters** gave identification C the source "In-house (iCoA)". Wrong: it is covered by
+  the cannabinoid-assay eCoA, reported as Conforms (ImB spec.). Fixed (`fix_parameters`),
+  with #1, #2 and #7 as "In-house iCoA … coverage for the release CoQ; CNP document code
+  where CNP reported it", and the *Tracker column* letters set from the live layout (they
+  still pointed at the v6 flat table: G, H, I …).
+- **Batch Coverage carried two rows for four lots** — the owner's original and re-analysis
+  rows of J31102501/P060152, JD112501/P060212, OPM122501/P060242 and GG012603/P060402,
+  which the tracker had merged into one lot. The patch had ticked one row and left the other
+  stale, so the dashboard counted 84 lots and reported identification A, B and foreign
+  matter missing on four lots that the iCoA covers. v11: one row per lot (80), every mark
+  set from the lot's credited documents, the duplicates removed, the dashboard recomputed
+  (51 complete, 10 partial, 19 incomplete). Six lots lost a ✓ on #8 loss on drying that the
+  owner's sheet had carried although the only #8 document credited is a Farmahem K
+  certificate that does not report it (HPA1024, OPM1024, P060262, P060332, P060352,
+  P060382): the coverage now says what the tracker says.
+- **JD112501＊ is a lot of its own** (its own CNP certificate ППК26065), not the asterisk-free
+  JD112501/P060212. The date lookup by CU code had given it JD112501's P number and
+  packaging dates and a second iCoA and CoQ for P060212. Fixed: a CU code with an asterisk is
+  matched only by an exact code, so JD112501＊ keeps "packaging date — to record" and no
+  number (69 iCoAs and 79 CoQs numbered).
+- **Print** was claimed for every table but set on five sheets; now set on all
+  (`print_setup`: landscape, A3, one page wide, header rows repeated).
