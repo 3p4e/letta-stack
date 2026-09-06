@@ -432,9 +432,15 @@ reissued CoQ and never the initial one — when the desk files it as a re-analys
 Farmahem 197-series certificates of 07 and 10.08.2026), when its lot is legacy and it is
 dated after 27.05.2026 (the legacy CoQ cannot cite it, and for those lots everything later
 is the campaign: the IJZ-MB microbiology of 31.08 and 01.09.2026), or when its lot is
-post-SOP and it is a second certificate for the determination. The first certificate of a
-post-SOP lot is its initial testing even when the campaign was already running (P060452's
-CNP certificate of 21.07.2026). The retest rows of both registers name the tranche derived
+post-SOP and it is a second certificate for the determination — and, whatever the lot, when
+it belongs to the IJZ-MB delivery of 25 and 26.08.2026 (requests 295 to 324/2026, the 30
+certificates of 31.08 and 01.09.2026, `split_manifest_IJZ-MB_2026-09-01.csv`,
+`--campaign-manifest=`): the samples reached the laboratory 68 to 436 days after packaging,
+against the one to two weeks release testing takes, so it is one campaign sampling for the
+post-SOP lots too (P060392, P060342, P060432, P060442, whose release testing is the CNP
+certificate of 30.06 or 06.07.2026). The first certificate of a post-SOP lot is otherwise its
+initial testing even when the campaign was already running (P060452's CNP certificate of
+21.07.2026). The retest rows of both registers name the tranche derived
 from the certificates on file (Tranche 1: the Farmahem pair; sampled: microbiology only;
 not yet sampled), the latest retest certificate and the rule date it gives the reissued
 CoQ; they take numbers once the in-house retest iCoA exists.
@@ -444,7 +450,7 @@ CoQ; they take numbers once the in-house retest iCoA exists.
 The ruling was checked against `ISSUE_COQ_CONVENTIONS.md` (a document never precedes one
 it cites, never precedes the SOP floor, is never post-dated, never carries an uncertified
 result) and against the dates on file. The builder writes every flag under the CoQ Register
-(25 in v11) and the page lists them under its CoQ Register tab.
+(30 in v11) and the page lists them under its CoQ Register tab.
 
 1. **A post-SOP CoQ is never dated before the legacy series day.** Seven post-SOP lots
    (P060262 to P060322, packed 14 to 22.05.2026) have every cited eCoA on file by
@@ -486,8 +492,7 @@ result) and against the dates on file. The builder writes every flag under the C
 01.06.2026) for the 11 post-SOP lots, each on the first working day 5 days after
 packaging; 74 retest rows without a number. **CoQ Register** (157 rows): 80 numbered —
 `CoQ-PP_26-001` (CJ1024) to `-059` legacy, all on 27.05.2026; `-060` (P060262) to `-080`
-(P060442) post-SOP, on 27.05.2026 (fix 1) up to 07.09.2026 (the lots whose IJZ-MB
-microbiology of 31.08.2026 is their initial one); 28 of them with an initial certificate
+(P060442) post-SOP, on 27.05.2026 (fix 1) up to 05.08.2026; 28 of them with an initial certificate
 to locate, 3 with a provisional date; 3 P16 lots without a number (no packaging date); 74
 retest rows — 17 Tranche 1 with the Farmahem pair on file (rule date
 17.08.2026), 22 sampled with the microbiology on file (07 or 08.09.2026), 7 re-analysed

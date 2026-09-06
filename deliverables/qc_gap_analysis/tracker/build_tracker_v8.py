@@ -424,7 +424,20 @@ if ICOA_RULE:
         for _ce in _rg.get("certs", []):
             if "re-analysis" in str(_ce.get("fam", "")).lower():
                 REANALYSIS.add(T.nkey(_ce["code"]))
-    print(f"retest documents on the desk (re-analysis family): {len(REANALYSIS)}")
+    # The IJZ-MB delivery of 25/26.08.2026 (requests 295–324/2026, certificates of 31.08 and
+    # 01.09.2026, the split manifest) is one campaign sampling: 68 to 436 days after packaging,
+    # against the one to two weeks release testing takes — so every certificate in it is a
+    # retest document, for the post-SOP lots too (Head of QC, 06.09.2026).
+    _cm = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--campaign-manifest=")),
+               os.path.join(HERE, "split_manifest_IJZ-MB_2026-09-01.csv"))
+    CAMPAIGN = set()
+    if os.path.exists(_cm):
+        import csv as _csv
+        for _row in _csv.DictReader(open(_cm, encoding="utf-8-sig")):
+            CAMPAIGN.add(T.nkey(_row["lab_no"]))
+            CAMPAIGN.add(T.nkey(_row["doc_code_in_filename"]))
+    REANALYSIS |= CAMPAIGN
+    print(f"retest documents: {len(REANALYSIS)} (the desk's re-analysis family and the IJZ-MB campaign delivery of 25/26.08.2026)")
     REG_KEY_COL, COQ_KEY_COL = "P", "S"          # the Key columns of the iCoA Register and the CoQ Register (REG_COLS, COQ_COLS)
     for b in batches:
         cu0 = re.sub(r"[＊*]", "", b["cu"])
@@ -700,7 +713,7 @@ if ICOA_RULE:
         # exists at the Faculty of Pharmacy's Center for Natural Products and the certificate is
         # to be located (Work Order); the number is not withheld for it
         if r["gaps"]:
-            r["reg_status"] += " · initial certificate to locate (CNP): #" + ", #".join(str(n) for n in r["gaps"])
+            r["reg_status"] += " · initial certificate to locate: " + ", ".join(f"#{n} ({'IJZ' if n == 9 else 'CNP'})" for n in r["gaps"])
     for r in _cq_later:
         r["code"], r["issuable"] = "— at issue —", "no"
         r["reg_status"] = "not yet issuable — " + r["why"]
@@ -1638,10 +1651,12 @@ COQ_NOTE = ("Head of QC, 05.09.2026: preliminary CoQ issuance register — codes
             "lot whose latest eCoA is dated after 27.05.2026 takes the post-SOP rule and is flagged in Status; a CoQ never precedes "
             "its iCoA; Head of QC, 05.09.2026 (evening): a production lot whose initial certificate for a determination is not on "
             "file keeps its planned CoQ and number — the initial testing exists at the Faculty of Pharmacy's Center for Natural "
-            "Products and the certificate is to be located (Work Order; Status names the determination); a "
+            "Products (microbiology: IJZ) and the certificate is to be located (Work Order; Status names the determination); a "
             "certificate dated on or after 01.07.2026 is a retest document (the QP's campaign: Tranche 1, the first 21 lots, sampled "
             "July 2026; then Tranches 2 and 3) and never certifies the initial CoQ — a determination whose only certificate is a "
-            "retest one is uncertified for the legacy CoQ and flagged; nothing is dated on a weekend. RETEST ROWS: the reissued CoQ "
+            "retest one is uncertified for the legacy CoQ and flagged; the IJZ-MB delivery of 25/26.08.2026 (certificates of 31.08 and "
+            "01.09.2026, 68 to 436 days after packaging) is one campaign sampling and every certificate in it is a retest document, "
+            "for the post-SOP lots too; nothing is dated on a weekend. RETEST ROWS: the reissued CoQ "
             "carries the retest results (cannabinoids with identification C by Farmahem, mycotoxins, microbiology by IJZ-MB) and the "
             "initial certificates for the rest; its rule date is the first working day 7 days after the latest retest certificate, "
             "and it is issued once the in-house retest iCoA exists. FORMULAS: No. and the code as on the iCoA Register; Rule date is 27.05.2026 for a legacy row "
