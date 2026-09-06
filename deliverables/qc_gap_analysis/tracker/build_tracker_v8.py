@@ -81,7 +81,8 @@ F6 = Font(name="Calibri", size=6)
 F6I = Font(name="Calibri", size=6.5, italic=True, color="595959")
 FW = Font(name="Calibri", size=8, bold=True, color="FFFFFF")
 FWS = Font(name="Calibri", size=7, bold=True, color="FFFFFF")
-FSUB = Font(name="Calibri", size=7, bold=True)
+FSUB = Font(name="Calibri", size=9, bold=True)        # row 4, the owner's size (v9, 04.09.2026)
+RESULT_PT = {4: 13, 5: 10, 6: 10}                     # the owner's v10 (06.09.2026): Total THC 13 pt, CBD and CBN 10 pt
 CEN = Alignment(horizontal="center", vertical="center", wrap_text=True)
 TOPC = Alignment(horizontal="center", vertical="top", wrap_text=True)
 thin = Side(style="thin", color="BFBFBF")
@@ -901,10 +902,10 @@ for p in T.PARAMS:
         put(ws, 3, p["start"], "A.C.: " + T.CRIT[str(p["n"])], F6I, GREY)
         put(ws, 3, p["start"] + 1, "", F6I, GREY)
         ws.merge_cells(start_row=3, start_column=p["start"], end_row=3, end_column=p["start"] + 1)
-        put(ws, 4, p["start"], "Result (as reported)", FSUB, SUBHDR)
-        put(ws, 4, p["start"] + 1, "eCOA ref, (date) [Lab] — one certificate per line", FSUB, SUBHDR)
+        put(ws, 4, p["start"], "Result", FSUB, SUBHDR)                       # the owner's labels (v9, 04.09.2026)
+        put(ws, 4, p["start"] + 1, "[eCOA code],[date],[Lab] ", FSUB, SUBHDR)
     put(ws, 3, p["end"], "", F6I, GREY)
-    put(ws, 4, p["end"], "✓/✗", FSUB, SUBHDR)
+    put(ws, 4, p["end"], "✓   ✗", FSUB, SUBHDR)
 for h, height in ((1, 16), (2, 30), (3, 26), (4, 24)):
     ws.row_dimensions[h].height = height
 
@@ -1044,7 +1045,10 @@ for b in batches:
                     cell_v = v or silence_reason(here[0], here[2], b["cu"], no)
                     if ICOA_RULE and p["n"] == 3 and str(cell_v).startswith("Conforms"):
                         cell_v = str(cell_v).replace("Conforms", "Conforms (ImB spec.)", 1)
-                    font = F7R if T.over_limit(no, v or "") else (F7U if T.undetermined(no, v or "") else F7B)
+                    _sz = RESULT_PT.get(p["n"], 7)
+                    font = (Font(name="Calibri", size=_sz, bold=True, color=RED) if T.over_limit(no, v or "") else
+                            Font(name="Calibri", size=_sz, bold=True, color="B45F06") if T.undetermined(no, v or "") else
+                            Font(name="Calibri", size=_sz, bold=True))
                 else:
                     cell_v = "— MISSING —" if state == "red" else ""
                     font = FBAD if state == "red" else F7
@@ -1056,6 +1060,8 @@ for b in batches:
                 need = max(nlines(cell_v, 10), nlines(ref_disp, 21))
                 if need > top_lines + bot_lines:
                     bot_lines = need - top_lines
+                if here and RESULT_PT.get(p["n"], 7) > 7:              # room for the larger result
+                    top_lines = max(top_lines, RESULT_PT[p["n"]] / 8.0)
 
             ws.merge_cells(start_row=top, start_column=p["end"], end_row=bot, end_column=p["end"])
             put(ws, top, p["end"], glyph, FWS, gfill, CEN)
@@ -1093,9 +1099,17 @@ for b in batches:
     put(ws, first, 3, st, FWS, colour)
     fill_range(ws, first, 3, last, 3, colour)
 
-    outline(ws, first, 1, last, LAST, THICK)
     for p in T.PARAMS:
         outline(ws, first, p["start"], last, p["end"], MED)
+    outline(ws, first, 1, last, LAST, THICK)             # last, so the lot's medium edges win on every column
+    # openpyxl gives a merged range the borders of its anchor cell on save, so the lot's medium
+    # bottom edge must sit on the anchor of every merged range that ends on the lot's last row
+    # (the identity cells A–C, the status cell, the two-row result and glyph merges of the
+    # last block) — the owner drew those edges by hand in v9 and v10
+    for _mr in ws.merged_cells.ranges:
+        if _mr.max_row == last and _mr.min_row >= first and _mr.min_row < last:
+            _an = ws.cell(_mr.min_row, _mr.min_col)
+            _an.border = Border(left=_an.border.left, right=_an.border.right, top=_an.border.top, bottom=THICK)
     row = last + 1
 
 LASTROW = row - 1

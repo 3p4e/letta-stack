@@ -527,3 +527,30 @@ does not do: re-sort the rows — a changed date that changes the order is a man
 2,654 formulas in v11, all evaluated without an error through a LibreOffice recalculation;
 `extract_artifact_data.py` runs that recalculation on a copy before it reads the workbook,
 because openpyxl stores no computed values, so the page shows the computed numbers.
+
+### The owner's edits to the Drive copies, adopted (06.09.2026)
+
+The Drive copies of v9 (`1o7ipvDg5Pp38fwRS_aiK7Xb86Uc9Yd1s`) and v10
+(`14XojqIlvGHikvPOnDuL4FWFWgK-enmIS`) were diffed cell by cell against the repository's
+files (`xlsx_diff.py` in the session scratchpad: values, fonts, fills, alignment, borders,
+widths, heights, merges, panes). Google Sheets re-exports leave noise — a theme colour on
+every font, row heights rounded to quarter points, `dd\.mm\.yyyy` for the date format, a
+13.0 default width on narrow columns — which was set aside. The deliberate edits, now in
+the builder so every later version carries them:
+
+- **Row 4 of the tracker** reads `Result` · `[eCOA code],[date],[Lab] ` · `✓   ✗` (the
+  owner's v9, in place of "Result (as reported)", "eCOA ref, (date) [Lab] — one certificate
+  per line", "✓/✗"), at 9 pt bold.
+- **The cannabinoid results are larger** (the owner's v10): #4 Total Δ⁹-THC at 13 pt bold,
+  #5 Total CBD and #6 Total CBN at 10 pt bold, the out-of-specification and undetermined
+  colours kept; the top row of a block grows to fit.
+- **Every lot ends in a medium border on every column** (the owner drew it by hand on
+  columns A–C in v10 and on every column in v9). The builder had drawn the lot outline
+  before the per-parameter outlines, which overwrote its bottom edge, and openpyxl gives a
+  merged range the borders of its anchor cell on save, which hid it again under the merged
+  identity, status, result and glyph cells. The lot outline is now drawn last and its
+  bottom edge is set on the anchor of every merged range that ends on the lot's last row.
+
+Also in the owner's v9, not adopted because v10 does not repeat them: every result and
+reference at 9 pt, the CU and P batch cells at 16 pt bold with column A widened to 21.9,
+references vertically centred. Say the word and they go in.
