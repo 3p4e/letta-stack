@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 """Purely Plant eCoA register — presentation-grade HTML and PDF.
 
-The register content is the structured extraction of the ImB_QC_COAs knowledgebase: 263
+The register content is the structured extraction of the ImB_QC_COAs corpus (Letta
+source retired 19.08.2026; the certificates now live in RAGFlow): 263
 ingested certificates, pivoted by coa_pivot into one record per batch per parameter, each
 carrying the certificate it was transcribed from and the Drive link to that certificate.
 This turns that table into a document a person can read — a house-styled register with a
@@ -33,7 +34,13 @@ OUT_HTML = os.path.join(HERE, "exports", "PP_eCoA_Register.html")
 OUT_PDF = os.path.join(HERE, "exports", "PP_eCoA_Register.pdf")
 CHROME = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
 
+# The corpus this register was extracted from. The name stays as it is because it
+# is what the extraction was actually made from; RETIRED carries the fact that the
+# Letta source behind it no longer exists, so a reader is not sent chasing it.
 SOURCE = "ImB_QC_COAs"
+RETIRED = ("That Letta source was retired 19.08.2026 and the certificates now live "
+           "in the RAGFlow eCoA dataset; the counts below are as verified while it "
+           "was live.")
 
 # The knowledgebase records the issuing laboratory as printed, which drifts across OCR
 # spellings and language — "Farmahem — Laboratorija za zivotna sredina", "Farmahem DOOEL —
@@ -297,12 +304,12 @@ def render(recs, certs, labs, fonts):
     # provenance
     parts.append(
         "<div class='prov'><b>Source of record.</b> Every entry is transcribed from an "
-        "outsourced-laboratory certificate held in the Letta knowledgebase <b>%s</b> "
-        "(source %s), which holds <b>%d</b> ingested certificates, all processed. Values are "
+        "outsourced-laboratory certificate in the <b>%s</b> corpus (source %s), which held "
+        "<b>%d</b> ingested certificates, all processed. %s Values are "
         "shown as printed; where a batch was assayed more than once the readings are kept side "
-        "by side. A cell is marked present (✓) only where the knowledgebase holds a transcribed "
+        "by side. A cell is marked present (✓) only where the corpus held a transcribed "
         "result — never a pass/fail judgement.</div>"
-        % (esc(SOURCE), esc(SOURCE_ID), FILES_INGESTED))
+        % (esc(SOURCE), esc(SOURCE_ID), FILES_INGESTED, esc(RETIRED)))
 
     # register table
     parts.append("<div class='sec'><div class='sec-h'>Batch register "
@@ -382,7 +389,7 @@ def render(recs, certs, labs, fonts):
         "Stability-study timepoints are held apart from this release register.</div>")
 
     parts.append("<div class='foot'><div>Purely Plant DOOEL · Quality Control</div>"
-                 "<div>Source %s · %d CoAs · generated from the ImB_QC_COAs knowledgebase</div></div>"
+                 "<div>Source %s · %d CoAs</div></div>"
                  % (esc(SOURCE), FILES_INGESTED))
 
     parts.append("</div></body></html>")

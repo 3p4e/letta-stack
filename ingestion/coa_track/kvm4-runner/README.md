@@ -70,3 +70,42 @@ curl -sS -X POST -H "Authorization: Bearer $RUNNER_TOKEN" \
   var; the running stack will be updated in place.
 - To revoke access entirely, `POST /docker/kvm4-runner/stop` via Hostinger
   API or delete the stack.
+
+### Hardening applied 2026-08-29
+
+- **Constant-time token compare.**  The check was a plain `!=` on `str`, which
+  short-circuits at the first differing byte and leaks the prefix to a timing
+  oracle; it now uses `hmac.compare_digest`.  The 401/403 split was collapsed
+  into one 401 — the old split confirmed to a guesser when the header *shape*
+  was right and only the secret was wrong.
+- **Writes are confined to a root.**  `/file/write` took any absolute path,
+  created parents and chmod'd to a caller-supplied mode, so it could rewrite the
+  runner's own source under `/opt` and silently redefine the service.  The
+  target is now `resolve()`d (collapsing `..` and following symlinks) and must
+  sit under `RUNNER_WRITE_ROOT`, default `/opt`.  The documented self-update path
+  still works; `/etc`, `/root` and `/usr` no longer do.
+- **Privileged calls are logged.**  `/file/read` and `/file/write` previously
+  logged nothing at all, so arbitrary host file access left no trace.  Both now
+  emit a log line, and a refused write is logged as a warning.
+- **`/exec/stream` has a deadline** (`RUNNER_STREAM_TIMEOUT`, default 600s).
+  `/exec` and `/shell` both bounded their runtime; this one did not, so a hung
+  command held the worker and the docker exec open indefinitely.
+- **No endpoint inventory is served anonymously.**  `GET /` returned the full
+  list of privileged endpoints, and FastAPI's `/docs`, `/redoc` and
+  `/openapi.json` were left enabled — a machine-readable map of every route and
+  request body, free to any scanner.  All four are off; the endpoint table above
+  is the reference.
+- **The token is printed at most once**, and only when `deploy.py` generated it.
+  It was previously echoed twice per deploy.
+
+**Still open — these need a host action, not a code change:**
+
+- The token is interpolated in plaintext into the compose YAML that is POSTed to
+  and stored by the Hostinger API.  A repo change cannot fix that.
+- There is no IP allowlist, rate limit or lockout, and no token expiry.  A
+  Traefik IP-allowlist middleware on this router is the cheapest real
+  improvement; see `docs/wwf_MASTER-PLAN-2026-08.md:191`.
+- **Editing this file changes nothing on the running service.**  `deploy.py`
+  inlines `runner.py` as a heredoc, so the deployed code can drift from this
+  copy and nothing verifies it.  Diff before and after, and redeploy for any of
+  the above to take effect.

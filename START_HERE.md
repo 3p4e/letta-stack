@@ -41,26 +41,31 @@ GitHub: https://github.com/3p4e/letta-stack · this Drive folder is the human/re
    → smoke test PASS → export + commit.
 5. Deliverable QC/QMS documents (SOPs, CoAs, specs) do NOT live here — only the machinery.
 
-## Top open work items (priority order)
+## Top open work items
 
-1. **Merge the two engine lines into v2.0.0** — graft line B's `kv_block()/cell08()/
-   value_span()` (§6D) into line A's `pp_format.py`, reconcile the two "v1.7.0" instruction
-   sets (canon vs SKILL.md), regression-test both consumer pipelines, then hash-gated sync
-   to the volume. Until merged, do not edit either line without recording it here.
-2. **Rotate the exposed credentials**: (a) the four in suma-platform / KVM4_VScode
-   (DeepSeek key, Voyage key, letta-postgres password, LETTA_SERVER_PASS) — committed in
-   plaintext; (b) the server password also leaks as a hardcoded default in CoA_TRACK
-   letta-pq1/letta-db2-gmp files. Purge/fix the source files when rotating.
-3. **Recover the authoritative live compose** from the VPS (`/opt/stacks/`, dockge) into
-   `server/compose/` (sanitized) — the in-repo copy is a reconstruction with known drift.
-4. **Schedule `pg_dump` of letta-postgres** on the VPS with rotation — the single
-   highest-value resilience item.
-5. Pending pushes from the consolidating session: letta-stack `main` itself (commit
-   76d089b, blocked by session repo policy — grant the session repo access or start the
-   next session ON letta-stack), the ACME_SOP fix-pack branch (patch in `delete/` here),
-   and the ACME_SOP + WWF deprecation pointers.
-6. The handover's §10 remainder: Mode B deploy, PP Doc Wiz deploy, orchestrator tool_rules,
-   AM02.1 code confirmation by QA, the defunct :8787 sidecar decision.
+**The list lives in `review/OPEN_DECISIONS_2026-08-29.md`** — 24 items, each with what
+the thing does, why it is open, the options, a recommendation and what changes. Read that
+rather than a summary here, because a summary is what let the previous version of this
+section go stale: it still had the engine merge as item 1 and said nothing about the
+Letta source deletion, RAGFlow, or the security batch.
+
+What needs a decision most urgently, as of 29.08.2026:
+
+| | Item | Owner |
+|---|---|---|
+| A1 | kvm4-runner is internet-facing with root-equivalent access; the hardening is committed but **not deployed** | host |
+| A2 | RAGFlow MCP authenticates no client and is publicly routed (accepted risk, 25.08.2026) | host |
+| A3 | The Letta API is unauthenticated — `LETTA_SERVER_PASS` vs `LETTA_SERVER_PASSWORD`, and no `SECURE` flag | host |
+| A4 | The RAGFlow API key is still in history at `83ae904` — rotate, then drop the gitleaks allowlist entry | host |
+| B1 | ~13 certificates released against failing results need deviation records | QC |
+| B2 | 30 of 66 agents retrieve from sources deleted 19.08.2026 — they answer from nothing | host |
+| D3 | The engine sync runbook is **on hold** — syncing today would remove working table sizing from the engine that builds controlled documents | host |
+| E1 | RAGFlow has no swap and loses the in-flight document under memory pressure | host |
+| E4 | Still no scheduled `pg_dump` of letta-postgres — the highest-value resilience item, and the sources were already lost once | host |
+
+Also standing, and not in that register because it is a build task rather than a
+decision: recover the authoritative live compose from `/opt/stacks/` into
+`server/compose/` (sanitized) — the in-repo copy is a reconstruction with known drift.
 
 ## Note on this Drive folder
 

@@ -1,0 +1,61 @@
+{
+  "_provenance": {
+    "sources": [
+      "PP_Batch_Release_QC_Register_CORRECTED.xlsx (deliverables/qc_gap_analysis/)",
+      "RAGFlow eCOA_INGEST dataset (vision-parsed certificate chunks)",
+      "Google Drive certificate folder 1rwBvSAEoAZWsSKSaAQFUXkQLmZA13mSI (direct PDF read where not yet in RAGFlow)"
+    ],
+    "explicitly_not_used": "List of COAs.xlsx and tranches_overview.tsv declared THC% are cultivation/delivery declarations, not QC results, per standing instruction — used ONLY to label the two batches with no certificate at all.",
+    "compiled": "2026-08-25",
+    "note": "Values independently re-verified against rendered certificate images (not OCR text alone) before entry."
+  },
+  "rows": [
+    {"p_number": "P060122", "strain": "Amnesia Core Cut", "cultivation_batch": "ACC102501", "cultivation_batch_is_declared_only": true,
+     "thc_pct": null, "ecoa_code": null, "date": null,
+     "remark_mk": "нема сертификат ниту еден извор", "remark_en": "no certificate on file — confirmed absent in register, RAGFlow, Drive folder and Drive index"},
+    {"p_number": "P050192", "strain": "Blue Sunset Sherbet", "cultivation_batch": "BSS052501",
+     "thc_pct": 20.39, "ecoa_code": "QCCoA 001v02 (Cert. No. 017)", "is_pp": true, "date": "2025-12-04",
+     "remark_mk": "интерен PP извештај — нема ЦНП лаб. сертификат", "remark_en": "in-house PurelyPlant report — no CNP lab certificate on file"},
+    {"p_number": "P050222", "strain": "Cap Junky", "cultivation_batch": "CJ062501/1",
+     "thc_pct": 21.51, "ecoa_code": "ППК25321", "date": "2025-10-23", "remark_mk": "", "remark_en": ""},
+    {"p_number": "P060022", "strain": "Cap Junkie", "cultivation_batch": "CJ082501/1",
+     "thc_pct": 24.96, "ecoa_code": "QCCoA 001v02 (Cert. No. 041)", "is_pp": true, "date": "2026-02-20",
+     "remark_mk": "PP сертификат го цитира истата вредност од ППК26002 (21.01.2026)", "remark_en": "PP certificate cites the same value as ППК26002 (21.01.2026)"},
+    {"p_number": "P060072", "strain": "Cap Junkie", "cultivation_batch": "CJ092501",
+     "thc_pct": 22.30, "ecoa_code": "QCCoA 001v02 (Cert. No. 039)", "is_pp": true, "date": "2026-02-20",
+     "remark_mk": "PP сертификат го цитира истата вредност од ППК26007 (21.01.2026)", "remark_en": "PP certificate cites the same value as ППК26007 (21.01.2026)"},
+    {"p_number": "P060132", "strain": "Chem Flyer", "cultivation_batch": "CF102501", "cultivation_batch_is_declared_only": true,
+     "thc_pct": null, "ecoa_code": null, "date": null,
+     "remark_mk": "нема сертификат ниту еден извор", "remark_en": "no certificate on file — confirmed absent in register, RAGFlow, Drive folder and Drive index"},
+    {"p_number": "P050282", "strain": "Clemosa a Bud", "cultivation_batch": "CLE072501",
+     "thc_pct": 8.02, "ecoa_code": "QCCoA 001v02 (Cert. No. 027)", "is_pp": true, "date": "2026-01-21",
+     "remark_mk": "PP сертификат го цитира истата вредност од ППК25370 (28.11.2025)", "remark_en": "PP certificate cites the same value as ППК25370 (28.11.2025)"},
+    {"p_number": "P060322", "strain": "Fat Bastard", "cultivation_batch": "FB032601",
+     "thc_pct": 12.39, "ecoa_code": "ППК26127", "date": "2026-07-21",
+     "remark_mk": "нема P-број; 5 регистрирани серии — Анекс А", "remark_en": "no P-number assigned; 5 registered batches — see Annex A"},
+    {"p_number": "GG1024", "strain": "Gorilla Glue", "cultivation_batch": "GG1024",
+     "thc_pct": 13.34, "ecoa_code": "Report of Analysis (без код | no code)", "is_pp": true, "date": "2025-04-23",
+     "remark_mk": "нема ред во QC регистарот", "remark_en": "no row in the QC register"},
+    {"p_number": "P050302", "strain": "Grape Pie", "cultivation_batch": "GP072501/2",
+     "thc_pct": 19.81, "ecoa_code": "QCCoA 001v02 (Cert. No. 019)", "is_pp": true, "date": "2026-01-21",
+     "remark_mk": "PP сертификат го цитира истата вредност од ППК25379 (12.12.2025)", "remark_en": "PP certificate cites the same value as ППК25379 (12.12.2025)"},
+    {"p_number": "P050072", "strain": "Grape Pie", "cultivation_batch": "GP0824_03",
+     "thc_pct": 25.98, "ecoa_code": "ППК26060", "date": "2026-05-11",
+     "remark_mk": "стабилност мес.9, 25°C/60%RH; 3 тестирања вкупно — Анекс Б", "remark_en": "stability month 9, 25°C/60%RH; 3 tests total — see Annex B"},
+    {"p_number": "P050312", "strain": "Grape Pie", "cultivation_batch": "GP082501/1",
+     "thc_pct": 21.29, "ecoa_code": "QCCoA 001v02 (Cert. No. 020)", "is_pp": true, "date": "2026-01-21",
+     "remark_mk": "PP сертификат го цитира истата вредност од ППК25380 (12.12.2025)", "remark_en": "PP certificate cites the same value as ППК25380 (12.12.2025)"}
+  ],
+  "annex_a_fat_bastard": [
+    {"cultivation_batch": "FB012601/1", "ecoa_code": "ППК26067", "date": "2026-05-11", "thc_pct": 14.68, "remark_mk": "", "remark_en": ""},
+    {"cultivation_batch": "FB112501", "ecoa_code": "ППК26066", "date": "2026-05-11", "thc_pct": 16.69, "remark_mk": "", "remark_en": ""},
+    {"cultivation_batch": "FB012603", "ecoa_code": "ППК26112", "date": "2026-06-30", "thc_pct": 20.83, "remark_mk": "", "remark_en": ""},
+    {"cultivation_batch": "FB012603V", "ecoa_code": "ППК26110", "date": "2026-06-30", "thc_pct": 18.29, "remark_mk": "верификациска потврда (V)", "remark_en": "verification retest (V)"},
+    {"cultivation_batch": "FB032601", "ecoa_code": "ППК26127", "date": "2026-07-21", "thc_pct": 12.39, "remark_mk": "страни материи НЕ ОДГОВАРА (0,08%)", "remark_en": "foreign matter FAILS (0.08%)"}
+  ],
+  "annex_b_p050072": [
+    {"round_mk": "издавање | release", "round_en": "release", "ecoa_code": "ППК25175", "date": "2025-07-10", "thc_pct": 25.45, "remark_mk": "", "remark_en": ""},
+    {"round_mk": "стабилност мес.6, 40°C/75%RH", "round_en": "stability month 6, 40°C/75%RH", "ecoa_code": "ППК26035", "date": "2026-03-05", "thc_pct": 14.99, "remark_mk": "CBN 2,15% над референца", "remark_en": "CBN 2.15% over reference"},
+    {"round_mk": "стабилност мес.9, 25°C/60%RH", "round_en": "stability month 9, 25°C/60%RH", "ecoa_code": "ППК26060", "date": "2026-05-11", "thc_pct": 25.98, "remark_mk": "", "remark_en": ""}
+  ]
+}

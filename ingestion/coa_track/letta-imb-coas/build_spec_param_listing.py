@@ -17,8 +17,9 @@ the knowledgebase holds no result for a spec parameter the row says so explicitl
 oversight and an explicit gap reads as a fact.
 
 Data source: exports/master_coa_table.tsv, the structured extraction of the ImB_QC_COAs
-knowledgebase on the Letta host (source-271bc3be…, re-verified live before this build:
-263 files, all processing_status=completed). Nothing is re-derived or judged: results are
+knowledgebase on the Letta host (source-271bc3be…, re-verified live before that build:
+263 files, all processing_status=completed — the Letta source has since been retired,
+19.08.2026, and the certificates now live in RAGFlow). Nothing is re-derived or judged: results are
 transcribed values with their certificates; the only computed column is the specification
 grade, which is classification against the QCSP 001 v.02 ladder, not a pass/fail verdict.
 Measurement uncertainty is stripped from result cells per the house rule; multiple assays
@@ -47,8 +48,12 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 OUT_XLSX = os.path.join(HERE, "exports", "PP_Spec_Parameter_Listing.xlsx")
 OUT_TSV = os.path.join(HERE, "exports", "PP_Spec_Parameter_Listing.tsv")
 
+# A dated verification record, not a live pointer: this is what was checked, and
+# when. The Letta source was retired 19.08.2026 — repointing the note at RAGFlow
+# would claim a verification that was never run there.
 SOURCE_NOTE = ("ImB_QC_COAs · source-271bc3be-10d1-4541-8a5b-be3f6fab7c97 · 263 files, "
-               "all completed (verified live 13.08.2026)")
+               "all completed (verified live 13.08.2026; that Letta source was "
+               "retired 19.08.2026 — the certificates are now in RAGFlow)")
 
 # The QCSP 001 panel, expanded. (item №, spec parameter, unit, pivot keys that feed it)
 SPEC_PANEL = [

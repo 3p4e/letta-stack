@@ -39,6 +39,21 @@
   <button id="tabC" onclick="tab('C')">💬 Chat</button>
 </div>
 <main>
+  <!-- Shown only when the API rejects us (401) or is unconfigured (503). The key
+       is POSTed once to /api/session and exchanged for an HttpOnly cookie, so it
+       is never held in JS-readable storage. -->
+  <div id="login" class="card" style="display:none">
+    <div class="sec-hd"><span class="pill">🔒 Locked</span></div>
+    <div class="muted" id="loginmsg">Enter the API key to unlock.</div>
+    <div class="row" style="margin-top:8px">
+      <div><label>API key</label>
+        <input id="apikey" type="password" autocomplete="current-password"
+               placeholder="PPDOCWIZ_API_KEY" onkeydown="if(event.key==='Enter')unlock()"></div>
+      <div style="max-width:120px;display:flex;align-items:flex-end">
+        <button class="btn" onclick="unlock()">Unlock</button></div>
+    </div>
+  </div>
+
   <!-- ===================== WIZARD ===================== -->
   <div id="paneW">
     <div class="card">
@@ -83,29 +98,53 @@
 
 <script>
 const $=id=>document.getElementById(id); let DOCTYPES=[];
+// Escape EVERY value interpolated into an HTML string. Same rule as the esc()
+// in deliverables/qc_register/qc_register_artifact.html. Covers the attribute
+// delimiters too (" and '), because several sinks below build value="..."
+// attributes — that is how a document Code of  x" onmouseover="y  used to break
+// out of the download link's href.
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
 function tab(t){ paneW.style.display=t=='W'?'':'none'; paneC.style.display=t=='C'?'':'none';
   tabW.classList.toggle('active',t=='W'); tabC.classList.toggle('active',t=='C'); }
 
 async function init(){
   try{ const h=await (await fetch('/api/health')).json();
     hstat.textContent='Purely Plant · '+(h.letta?'Letta ✓':'Letta ✗')+' · '+(h.pdf?'PDF ✓':'DOCX only'); }catch(e){}
-  const d=await (await fetch('/api/doctypes')).json(); DOCTYPES=d.doctypes;
-  doctype.innerHTML=DOCTYPES.map(x=>`<option value="${x.key}">${x.mk} | ${x.en}</option>`).join('');
+  const r=await fetch('/api/doctypes');
+  if(r.status===401||r.status===503){ showLogin(r.status); return; }
+  const d=await r.json(); DOCTYPES=d.doctypes;
+  doctype.innerHTML=DOCTYPES.map(x=>`<option value="${esc(x.key)}">${esc(x.mk)} | ${esc(x.en)}</option>`).join('');
   addSection();
+}
+
+// The key is exchanged once for an HttpOnly cookie, so it never lands in
+// localStorage/sessionStorage where an XSS could read it — and the cookie is
+// what makes the plain <a href> download links below authenticate at all.
+function showLogin(status){
+  $('login').style.display='';
+  $('loginmsg').textContent = status===503
+    ? 'This deployment has no PPDOCWIZ_API_KEY set — it refuses every request until one is configured.'
+    : 'Enter the API key to unlock.';
+}
+async function unlock(){
+  const r=await fetch('/api/session',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({key:$('apikey').value})});
+  if(r.ok){ $('apikey').value=''; $('login').style.display='none'; init(); }
+  else { $('loginmsg').textContent = r.status===503 ? 'Service not configured.' : 'Wrong key.'; }
 }
 let SEC=0;
 function addSection(pre){
   const id='s'+(SEC++); const wrap=document.createElement('div'); wrap.className='card'; wrap.id=id;
   wrap.innerHTML=`<div class="sec-hd"><span class="pill">Section</span>
-    <input style="max-width:70px" placeholder="№" value="${pre?pre.num:''}">
-    <input placeholder="Наслов (МК)" value="${pre?(pre.mk||''):''}">
-    <input placeholder="Title (EN)" value="${pre?(pre.en||''):''}">
+    <input style="max-width:70px" placeholder="№" value="${esc(pre?pre.num:'')}">
+    <input placeholder="Наслов (МК)" value="${esc(pre?(pre.mk||''):'')}">
+    <input placeholder="Title (EN)" value="${esc(pre?(pre.en||''):'')}">
     <select style="max-width:90px"><option value="1">Banner</option><option value="2">Sub-bar</option></select>
     <button class="btn ghost" onclick="this.closest('.card').remove()">✕</button></div>
     <div class="blocks"></div>
-    <button class="btn ghost" onclick="addBlock('${id}','text')">＋Text</button>
-    <button class="btn ghost" onclick="addBlock('${id}','form')">＋Form</button>
-    <button class="btn ghost" onclick="addBlock('${id}','table')">＋Table</button>`;
+    <button class="btn ghost" onclick="addBlock('${esc(id)}','text')">＋Text</button>
+    <button class="btn ghost" onclick="addBlock('${esc(id)}','form')">＋Form</button>
+    <button class="btn ghost" onclick="addBlock('${esc(id)}','table')">＋Table</button>`;
   $('sections').appendChild(wrap);
   if(pre){ if(pre.level==2) wrap.querySelector('select').value='2';
     (pre.blocks||[]).forEach(b=>addBlock(id,b.type,b)); }
@@ -113,19 +152,23 @@ function addSection(pre){
 }
 function addBlock(sid,type,pre){
   const host=$(sid).querySelector('.blocks'); const b=document.createElement('div'); b.className='block'; b.dataset.type=type;
-  let inner=`<span class="pill">${type}</span><button class="btn ghost" style="float:right" onclick="this.closest('.block').remove()">✕</button>`;
+  let inner=`<span class="pill">${esc(type)}</span><button class="btn ghost" style="float:right" onclick="this.closest('.block').remove()">✕</button>`;
   if(type=='text'){ const v=pre?(pre.paras||[]).map(p=>p.mk+(p.en?' ||| '+p.en:'')).join('\n'):'';
-    inner+=`<label>Paragraphs — one per line, "МК ||| EN"</label><textarea>${v}</textarea>`; }
+    inner+=`<label>Paragraphs — one per line, "МК ||| EN"</label><textarea>${esc(v)}</textarea>`; }
   if(type=='form'){ const v=pre?(pre.rows||[]).map(r=>[r.label_mk,r.label_en,r.value||''].join(' ~ ')).join('\n'):'';
-    inner+=`<label>Rows — one per line, "label_МК ~ label_EN ~ value"</label><textarea>${v}</textarea>`; }
+    inner+=`<label>Rows — one per line, "label_МК ~ label_EN ~ value"</label><textarea>${esc(v)}</textarea>`; }
   if(type=='table'){ const cols=pre?(pre.cols||[]).map(c=>c.mk+(c.en?'~'+c.en:'')).join(', '):'№, Параметар~Parameter, Метод~Method, Критериум~Acceptance';
     const rows=pre?(pre.rows||[]).map(r=>r.map(c=>c.mk+(c.en?'~'+c.en:'')).join(' | ')).join('\n'):'';
-    inner+=`<label>Columns — comma-separated "МК~EN"</label><input class="tcols" value="${cols}">
-      <label>Rows — one per line; cells "МК~EN" separated by " | "</label><textarea class="trows">${rows}</textarea>`; }
+    inner+=`<label>Columns — comma-separated "МК~EN"</label><input class="tcols" value="${esc(cols)}">
+      <label>Rows — one per line; cells "МК~EN" separated by " | "</label><textarea class="trows">${esc(rows)}</textarea>`; }
   b.innerHTML=inner; host.appendChild(b);
 }
 function collect(){
-  const p={ doctype:doctype.value, code:code.value, version:version.value, parent:parent.value,
+  // $('parent'), NOT bare `parent`: window.parent is a [Replaceable] own-property
+  // of Window that named-element access does NOT shadow, so `parent.value` was
+  // undefined and the Parent SOP field was silently dropped from every document
+  // this wizard built.
+  const p={ doctype:doctype.value, code:code.value, version:version.value, parent:$('parent').value,
     orient:orient.value, mk_title:mk_title.value, en_title:en_title.value, sections:[] };
   document.querySelectorAll('#sections>.card').forEach(sc=>{
     const ins=sc.querySelectorAll('.sec-hd input'), lvl=sc.querySelector('.sec-hd select').value;
@@ -154,9 +197,9 @@ async function build(){
   const r=await (await fetch('/api/wizard/build',{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({payload:collect()})})).json();
   if(r.ok){ result.innerHTML=`<span class="ok">✓ RESULT: PASS</span> &nbsp;
-      <a class="dl" href="${r.download_docx}">⬇ .docx</a><a class="dl" href="${r.download_pdf}">⬇ .pdf</a>
-      <div class="muted">${(r.verify||'').split('\n').slice(1).join(' · ')}</div>`; }
-  else{ result.innerHTML=`<span class="bad">✗ build failed</span><pre>${(r.error||'').slice(-800)}</pre>`; }
+      <a class="dl" href="${esc(r.download_docx)}">⬇ .docx</a><a class="dl" href="${esc(r.download_pdf)}">⬇ .pdf</a>
+      <div class="muted">${esc((r.verify||'').split('\n').slice(1).join(' · '))}</div>`; }
+  else{ result.innerHTML=`<span class="bad">✗ build failed</span><pre>${esc((r.error||'').slice(-800))}</pre>`; }
   md.style.display=''; md.textContent=r.markdown||'';
 }
 async function loadExample(){ const e=await (await fetch('/api/example')).json(); const p=e.payload;
@@ -165,13 +208,19 @@ async function loadExample(){ const e=await (await fetch('/api/example')).json()
   $('sections').innerHTML=''; SEC=0; (p.sections||[]).forEach(s=>addSection(s)); }
 
 // ---- chat ----
+// CONTRACT: callers pass already-escaped HTML. Anything that is plain text
+// (a user message, an agent reply) goes through bubbleText instead.
 function bubble(t,cls){ const d=document.createElement('div'); d.className='msg '+cls; d.innerHTML=t; chat.appendChild(d); chat.scrollTop=chat.scrollHeight; }
-async function send(){ const m=cmsg.value.trim(); if(!m)return; cmsg.value=''; bubble(m,'u'); bubble('<span class="muted">thinking…</span>','a');
+function bubbleText(t,cls){ const d=document.createElement('div'); d.className='msg '+cls; d.textContent=t; chat.appendChild(d); chat.scrollTop=chat.scrollHeight; }
+async function send(){ const m=cmsg.value.trim(); if(!m)return; cmsg.value=''; bubbleText(m,'u'); bubble('<span class="muted">thinking…</span>','a');
   try{ const r=await (await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({message:m,agent:agent.value})})).json(); chat.lastChild.remove();
-    if(r.ok){ let h=(r.reply||'').replace(/</g,'&lt;'); if(r.built) h+=`<div class="muted">✓ built: ${r.built.path} (${r.built.bytes} bytes)</div>`; bubble(h,'a'); }
-    else bubble('<span class="bad">'+(r.error||'error')+'</span>','a');
-  }catch(e){ chat.lastChild.remove(); bubble('<span class="bad">'+e+'</span>','a'); } }
+    // r.built comes from the Letta agent's tool-return, and r.reply from the
+    // agent itself — both are attacker-influenceable, and the old escape here
+    // handled only "<", missing &, >, " and '.
+    if(r.ok){ let h=esc(r.reply||''); if(r.built) h+=`<div class="muted">✓ built: ${esc(r.built.path)} (${esc(r.built.bytes)} bytes)</div>`; bubble(h,'a'); }
+    else bubble('<span class="bad">'+esc(r.error||'error')+'</span>','a');
+  }catch(e){ chat.lastChild.remove(); bubble('<span class="bad">'+esc(e)+'</span>','a'); } }
 init();
 </script>
 </body>

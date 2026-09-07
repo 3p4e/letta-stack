@@ -203,7 +203,8 @@ code{font-family:var(--mono);font-size:11.5px;background:var(--surface-2);paddin
     P.append('<p class="standfirst">Every tested batch with its outsourced laboratory results, '
              'acceptance criteria, issuing institution and a link to each source certificate.</p>')
     P.append('<div class="provenance">%d batches · %d parameter records · %d accredited laboratories<br>'
-             'Compiled from the ImB_QC_COAs knowledgebase and Drive folder <code>16oMK…kQsn5</code> · '
+             'Compiled from the ImB_QC_COAs corpus (Letta source retired 19.08.2026; now the '
+             'RAGFlow eCoA dataset) and Drive folder <code>16oMK…kQsn5</code> · '
              'values transcribed verbatim, nothing inferred</div>' % (n_batches, len(rows), n_labs))
     P.append('</header>')
 

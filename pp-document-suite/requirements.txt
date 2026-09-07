@@ -1,5 +1,10 @@
 # Purely Plant Document Suite — Python dependencies
 #
+# NOTE: this file documents what the suite CAN use, including optional extras,
+# and keeps ranges so a local/dev install is not over-constrained. The
+# authoritative PINNED set for the service image is requirements-service.txt,
+# and that is the file CI audits for advisories — it is what actually deploys.
+#
 # REQUIRED (core build — SOPs, annexes, reports, forms, verify gate):
 python-docx>=1.1        # .docx generation (the whole engine)
 lxml>=4.9               # XML plumbing used by python-docx + OMML equation insertion

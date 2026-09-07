@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import asyncio
 import base64
+import hmac
 import logging
 import os
 import time
@@ -49,15 +50,40 @@ if len(TOKEN) < 24:
 # Cap returned output so a runaway command can't blow up the response
 MAX_OUTPUT = int(os.environ.get("RUNNER_MAX_OUTPUT", "2000000"))  # 2 MB
 
-app = FastAPI(title="kvm4-runner", version="1.0.0")
+# /exec/stream had no timeout at all while /exec and /shell both enforce one, so a
+# hung stream held a worker open indefinitely. Same default as those two.
+STREAM_TIMEOUT = int(os.environ.get("RUNNER_STREAM_TIMEOUT", "600"))
+
+# /file/write accepts an absolute path, creates parents and chmods to a
+# caller-supplied mode. With /opt mounted read-write that reached anywhere on the
+# host the container can see — including this service's own source, so a token
+# holder could silently redefine the runner. Confine writes to one root. The
+# default keeps the documented self-update path (/opt/stacks/kvm4-runner/) working
+# while putting /etc, /root and /usr out of reach.
+WRITE_ROOT = Path(os.environ.get("RUNNER_WRITE_ROOT", "/opt")).resolve()
+
+# docs_url/redoc_url/openapi_url default to enabled, which published a
+# machine-readable schema of every privileged endpoint — including request-body
+# shapes — to anyone who could reach the host. Nothing consumes them.
+app = FastAPI(title="kvm4-runner", version="1.0.0",
+              docs_url=None, redoc_url=None, openapi_url=None)
 docker_client = docker.from_env()
 
 
 def authn(authorization: Optional[str] = Header(None)) -> None:
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(401, "Missing bearer token")
-    if authorization[7:] != TOKEN:
-        raise HTTPException(403, "Invalid token")
+    """Bearer gate.
+
+    Two deliberate properties, both previously absent:
+      * constant-time compare — a plain `!=` on str short-circuits at the first
+        differing byte, which leaks the token prefix to a timing oracle. Same
+        primitive the docengine uses (apps/wwf-docengine/app/security.py:16).
+      * one uniform 401 — the old 401-vs-403 split told an attacker when the
+        header *shape* was right and only the secret was wrong, which is exactly
+        the signal a guesser wants.
+    """
+    supplied = authorization[7:] if (authorization or "").startswith("Bearer ") else ""
+    if not hmac.compare_digest(supplied, TOKEN):
+        raise HTTPException(401, "Invalid or missing bearer token")
 
 
 class ExecReq(BaseModel):
@@ -93,16 +119,10 @@ def health() -> dict:
 
 @app.get("/", response_class=PlainTextResponse)
 def root() -> str:
-    return (
-        "kvm4-runner\n"
-        "  GET  /health\n"
-        "  GET  /info             (Bearer)\n"
-        "  POST /exec             (Bearer)\n"
-        "  POST /exec/stream      (Bearer)\n"
-        "  POST /shell            (Bearer)\n"
-        "  POST /file/read        (Bearer)\n"
-        "  POST /file/write       (Bearer)\n"
-    )
+    # Was an unauthenticated inventory of every privileged endpoint — a complete
+    # attack-surface map handed to any scanner that resolved the hostname. The
+    # endpoint list lives in README.md, which is the right place for it.
+    return "kvm4-runner\n"
 
 
 @app.get("/info", dependencies=[Depends(authn)])
@@ -181,7 +201,17 @@ async def exec_stream(req: ExecReq) -> StreamingResponse:
     async def agen():
         loop = asyncio.get_running_loop()
         it = iter(stream)
+        # Wall-clock deadline. /exec and /shell both bound their runtime; this
+        # endpoint did not, so a command that never finished held the worker and
+        # the docker exec open forever. Bounded here rather than per-chunk so a
+        # slow-but-progressing stream is not killed mid-flight.
+        deadline = loop.time() + max(1, min(req.timeout, STREAM_TIMEOUT))
         while True:
+            if loop.time() >= deadline:
+                log.warning("exec/stream container=%s hit the %ss deadline — cut",
+                            req.container, STREAM_TIMEOUT)
+                yield b"\n[kvm4-runner] stream deadline reached, output truncated\n"
+                break
             chunk = await loop.run_in_executor(None, lambda: next(it, None))
             if chunk is None:
                 break
@@ -215,6 +245,10 @@ async def shell(req: ShellReq) -> dict:
 
 @app.post("/file/read", dependencies=[Depends(authn)])
 def file_read(req: FileReadReq) -> dict:
+    # These two endpoints logged NOTHING, so arbitrary host file reads and writes
+    # left no trace at all — the "persistent audit log" half of the open item in
+    # docs/wwf_MASTER-PLAN-2026-08.md:191. Every privileged call is recorded now.
+    log.info("file/read path=%r max_bytes=%d", req.path, req.max_bytes)
     p = Path(req.path)
     if not p.is_file():
         raise HTTPException(404, f"{req.path} not found")
@@ -229,10 +263,18 @@ def file_read(req: FileReadReq) -> dict:
 
 @app.post("/file/write", dependencies=[Depends(authn)])
 def file_write(req: FileWriteReq) -> dict:
+    log.info("file/write path=%r mode=%o mkdir=%s", req.path, req.mode, req.mkdir)
     p = Path(req.path)
+    # Resolve BEFORE writing and confirm containment: resolve() collapses `..`
+    # and follows symlinks, so neither a traversal nor a planted link escapes.
+    # strict=False because the target legitimately may not exist yet.
+    resolved = p.resolve(strict=False)
+    if resolved != WRITE_ROOT and WRITE_ROOT not in resolved.parents:
+        log.warning("file/write REFUSED path=%r (outside %s)", req.path, WRITE_ROOT)
+        raise HTTPException(403, f"writes are confined to {WRITE_ROOT}")
     if req.mkdir:
-        p.parent.mkdir(parents=True, exist_ok=True)
+        resolved.parent.mkdir(parents=True, exist_ok=True)
     data = base64.b64decode(req.content_b64)
-    p.write_bytes(data)
-    p.chmod(req.mode)
-    return {"path": str(p), "bytes": len(data)}
+    resolved.write_bytes(data)
+    resolved.chmod(req.mode)
+    return {"path": str(resolved), "bytes": len(data)}

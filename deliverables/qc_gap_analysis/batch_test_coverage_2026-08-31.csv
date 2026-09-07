@@ -1,0 +1,81 @@
+row,batch,potency,cannabinoids,mycotoxins,microbiology,phys-chem,latest_certificate,marker
+6,BG1024,yes,yes,yes,yes,yes,10.08.2026,
+11,BSS1024,yes,yes,yes,yes,yes,10.08.2026,
+16,CJ1024,yes,,,yes,yes,27.02.2025,
+19,GG1024_01,yes,yes,yes,yes,yes,10.08.2026,
+24,GP0824_01,yes,,,yes,yes,17.04.2025,
+27,MB0824_04,yes,,,yes,yes,07.05.2025,
+30,OPM1024_01,yes,,,,yes,07.05.2025,
+33,GG1024_02,yes,,,yes,yes,30.05.2025,
+36,HPA1024_01,yes,yes,yes,yes,yes,10.08.2026,
+41,OPM1024_02,yes,yes,yes,yes,yes,10.08.2026,
+46,GP0824_02,yes,yes,yes,yes,yes,10.08.2026,
+55,GP0824_03,yes,,,yes,yes,11.05.2026,
+61,BSS1024_01,yes,,,yes,yes,10.07.2025,
+64,OPM1024_03,yes,,,yes,yes,29.07.2025,
+67,MB0824_05,yes,,,yes,yes,29.07.2025,
+70,OPM052501,yes,,,yes,yes,05.09.2025,
+73,CJ052501-1,yes,yes,yes,yes,yes,10.08.2026,
+78,CJ052501-2,yes,,,yes,yes,17.09.2025,
+81,GP052501,yes,yes,yes,yes,yes,10.08.2026,
+86,HPA052501,yes,,,yes,yes,19.09.2025,
+89,GP062501,yes,,,yes,yes,11.05.2026,
+98,CJ062501-2,yes,yes,yes,yes,yes,10.08.2026,
+104,CJ062501-1,yes,,,yes,yes,01.12.2025,
+107,BSS052501,,,yes,yes,yes,04.12.2025,
+113,CJ072501,yes,,,yes,yes,02.12.2025,
+116,WC072501,yes,,,yes,yes,02.12.2025,
+119,PM072501,yes,,,yes,yes,02.12.2025,
+123,CLE072501,yes,,,yes,yes,21.01.2026,
+127,GP072501-1,yes,,,yes,yes,21.01.2026,
+131,GP072501-2,yes,,,yes,yes,21.01.2026,
+135,GP082501-1,yes,,,yes,yes,21.01.2026,
+139,GP082501-2,yes,yes,yes,yes,yes,10.08.2026,
+145,WC082501,yes,,,yes,yes,02.02.2026,
+149,CJ082501-1,yes,,,yes,yes,02.02.2026,
+153,CJ082501-2,yes,yes,yes,yes,yes,10.08.2026,
+159,OPM092501,yes,,,yes,yes,03.02.2026,
+163,AB092501,yes,,,yes,yes,02.02.2026,
+168,PM092501,yes,yes,yes,yes,yes,10.08.2026,
+174,CJ092501,yes,,,yes,yes,02.02.2026,
+178,SJ092501,yes,,,yes,yes,02.02.2026,
+182,GP092501,yes,,,yes,yes,03.02.2026,
+187,GRC102501-2,,yes,,,,04.03.2026,(not numbered)
+190,J31102501,,yes,,,,04.03.2026,(not numbered)
+193,J31112501,,yes,,,,09.04.2026,(not numbered)
+198,KC102501,,yes,,,,04.03.2026,(not numbered)
+201,SJ102501,,yes,,,,04.03.2026,(not numbered)
+204,SJ112501,,yes,,,,04.03.2026,(not numbered)
+207,OPM112501,yes,,,,,05.03.2026,(not numbered)
+209,PM112501,yes,,,,,05.03.2026,(not numbered)
+211,J31122501,,yes,,yes,yes,23.04.2026,
+219,OPM122501,,yes,,yes,yes,23.04.2026,
+223,CC112501,yes,,,,,11.05.2026,(not numbered)
+225,FB012601,yes,,,,,11.05.2026,(not numbered)
+227,FB112501,yes,,,,,11.05.2026,(not numbered)
+229,GG012601,yes,,,,,11.05.2026,(not numbered)
+231,GG112501,yes,,,,,11.05.2026,(not numbered)
+233,JD012601,yes,,,,,11.05.2026,(not numbered)
+235,JD112501,yes,,,,,11.05.2026,(not numbered)
+238,SCR112501,yes,,,,,11.05.2026,(not numbered)
+240,FB012603,yes,,,,,30.06.2026,(not numbered)
+242,FB012603V,yes,,,,,30.06.2026,n/a
+244,GG012603,yes,,,,,30.06.2026,n/a
+246,JD012603-02,yes,,,,,30.06.2026,n/a
+248,JD012603-02V,yes,,,,,30.06.2026,n/a
+250,JD022601,yes,,,,,30.06.2026,n/a
+252,P160012,yes,,,,,06.07.2026,n/a
+254,P160022,yes,,,,,06.07.2026,n/a
+256,P160032,yes,,,,,06.07.2026,n/a
+258,SCR022601,yes,,,,,06.07.2026,n/a
+260,FB032601,yes,,,,,21.07.2026,n/a
+262,GG032601,yes,,,,,21.07.2026,n/a
+264,P060152,,yes,yes,,,10.08.2026,n/a
+267,P060212,,yes,yes,,,10.08.2026,n/a
+270,P060242,,yes,yes,,,10.08.2026,n/a
+273,P060332,,yes,yes,,,10.08.2026,n/a
+276,P060352,,yes,yes,,,10.08.2026,n/a
+279,P060382,,yes,yes,,,10.08.2026,n/a
+282,P060402,,yes,yes,,,10.08.2026,n/a
+285,HPA1024,,yes,yes,,,10.08.2026,
+288,OPM1024,,yes,yes,,,10.08.2026,
