@@ -663,3 +663,49 @@ What it found, and the build now fixes:
   lots** (GG012603, J31102501, JD112501, OPM122501): the kept row carried the original
   row's figures, so the count was short by one or two and the Farmahem laboratories were
   missing from the list. Both are recomputed from the lot's credited documents.
+
+### `verify_pages.py` — the workbook against the certificate pages (07.09.2026)
+
+The three passes above compare the workbook with the desk's record. This one goes behind the
+record to the documents themselves, in the Drive folder `1rwBvSAEoAZWsSKSaAQFUXkQLmZA13mSI`:
+`build_checklist.py` lists every value v11 prints with the certificate that must show it
+(1,376 values across 280 certificates), and `verify_pages.py` reads each certificate — its
+text layer where it has one, else OCR through tesseract with Macedonian and English
+(`ocr.py`, 300 DPI, about eight seconds a document, cached under `pagetext/`) — and tests
+that the value appears on the page in one of the forms the laboratories print: decimal comma
+or point, `x 10^2` / `×10²` / a superscript, spaced or unspaced comparators, the Macedonian
+words for conforms and absent.
+
+It is a presence test, not a fourth extraction, and it says what it cannot see: OCR renders a
+superscript as `°`, `o` or an inline digit, so an exponent is never confirmed by it. A value
+like `5.4×10²` is reported as **mantissa confirmed, exponent not machine-readable**, and a
+counted range as **structure confirmed** when the page shows a `< 10…` and a `> 10…` joined
+by *и*. A page with no text layer that OCR cannot read is reported as such, never as a
+mismatch.
+
+**The 30 IJZ-MB certificates of 31.08 and 01.09.2026 — all scans, no text layer — were read
+by OCR: 150 values, 118 confirmed outright, 32 confirmed in structure with the exponent left
+to the two-read record, none contradicted.** The remaining 250 certificates are not local yet;
+running the check on them needs their PDFs downloaded from the folder.
+
+**What the pages found: five results where the record kept less than the certificate says.**
+`reconcile()` compared the two reads by value, and a counted range parses to its upper bound,
+so `< 10²` and `< 10² и > 10 CFU/g` compared equal — the reconciler then kept the first read's
+wording and marked the row agreed. The OCR of the IJZ-MB pages shows the range in full
+(`< 10? u> 10 CFU/g`), and the second read had it. The rule is now content-based: **where the
+reads agree on the value and one printed form is the other with more of the row in it, the
+fuller form is the record**, and a note says so. Applied to the corpus as it stands:
+
+| Lot | Certificate | Parameter | was | now |
+|---|---|---|---|---|
+| GP0824_02 | 471/0862/25 | TYMC | `10 CFU/g` | `< 10 CFU/g` |
+| SJ092501 | 9/0012/26 | gram-negative | `10 CFU/g` | `< 10 CFU/g` |
+| GG112501 | 304/0548/26 | gram-negative | `< 10²` | `< 10² и >10 CFU/g` |
+| P060292 | 542/1073/26 | gram-negative | `< 10²` | `< 10² и > 10 CFU/g` |
+| P060202 | 547/1078/26 | gram-negative | `< 10²` | `< 10² и > 10 CFU/g` |
+
+No acceptance verdict changes — a range is judged by its upper bound, which was already the
+value held — but the certificate's own words are now what the tracker prints. The other 90
+differences between the reads are notation (`10^2` for `10²`, Cyrillic *х* for the
+multiplication sign: 56) or Macedonian inflection of the same word (*отсуство*, *отсутна*,
+*отсуства*: 21), which the desk already treats as one reading.

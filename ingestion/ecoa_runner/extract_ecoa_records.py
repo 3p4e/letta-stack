@@ -375,6 +375,22 @@ def read_gemini(images, model='gemini-3.6-flash'):
 
 _RANGE = re.compile(r'(-?\d+(?:[.,]\d+)?)\s*(?:-|–|—|to|до)\s*(-?\d+(?:[.,]\d+)?)')
 
+def _canon_printed(v):
+    """One spelling of a printed result, for comparing two reads of the same row: superscripts
+    written out, Cyrillic х and · read as the multiplication sign, decimal comma as a point,
+    spaces and the unit dropped. Notation only — it never changes what is stored."""
+    import unicodedata as _ud
+    sup = {'⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9'}
+    t = str(v or '')
+    for k, val in sup.items():
+        t = t.replace(k, '^' + val)
+    t = _ud.normalize('NFKC', t)
+    t = t.replace('·', 'x').replace('×', 'x').replace('х', 'x').replace('Х', 'x').replace('μ', 'µ')
+    t = re.sub(r'\s*x\s*10\s*\^?', 'x10^', t).replace(',', '.')
+    t = re.sub(r'\s+', '', t).lower()
+    return re.sub(r'cfu/g|µg/kg|mg/kg|%|/25g|/g|/25|/г', '', t)
+
+
 def norm_range(v):
     """A two-sided criterion, e.g. Total THC "19.8 - 24.2 % of the labelled amount".
 
@@ -698,6 +714,21 @@ def reconcile(a, b):
         # the result. Tranche 1 of the corpus run held 68% of its results on
         # exactly this before the split.
         res_agree = (rx == ry)
+        # Numeric equality is not textual agreement. A counted range prints as
+        # "< 10² и > 10 CFU/g" and both bounds matter on the certificate, but it parses to its
+        # upper bound alone, so a read that transcribed only "< 10²" compares equal. Taking the
+        # first read's wording then drops what the page says. Where one printed form is the
+        # other with more of the row in it, the FULLER form is the record.
+        printed_x, printed_y = x.get('result_printed'), y.get('result_printed')
+        fuller = printed_x
+        if res_agree and printed_x and printed_y:
+            cx, cy = _canon_printed(printed_x), _canon_printed(printed_y)
+            if cx != cy and (cx in cy or cy in cx):
+                fuller = printed_x if len(cx) >= len(cy) else printed_y
+                if fuller != printed_x:
+                    out.setdefault('notes', []).append(
+                        '%s: the reads agree on the value and one prints more of the row '
+                        '(%r vs %r) - the fuller form is kept' % (pname, printed_x, printed_y))
         if rx is None and ry is None:
             px, py = x.get('result_printed'), y.get('result_printed')
             # A qualitative result is a WORD, and Macedonian inflects it:
@@ -710,7 +741,7 @@ def reconcile(a, b):
         agree = res_agree
         rec = {'parameter': pname,
                'parameter_printed': x.get('parameter_printed') or y.get('parameter_printed'),
-               'result_printed': x.get('result_printed') if res_agree else None,
+               'result_printed': fuller if res_agree else None,
                'result_numeric': rx if res_agree else None,
                'limit_printed': x.get('limit_printed') if lim_agree else None,
                'limit_numeric': lx if lim_agree else None,

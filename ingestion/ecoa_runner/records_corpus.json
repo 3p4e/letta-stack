@@ -29346,7 +29346,8 @@
   "overall_conclusion": "Согласно микробиолошкиот наод, доставениот примерок за тестирање ОДГОВАРА на барањето на Ph.Eur монографија 04/2019:50108 “Microbiological quality of herbal medicinal products for oral use and extracts used in their preparations”.",
   "notes": [
    "overall_conclusion differs in wording between reads",
-   "test_type differs in wording between reads"
+   "test_type differs in wording between reads",
+   "tymc: the reads agree on the value and one prints more of the row ('10 CFU/g' vs '< 10 CFU/g') - the fuller form is kept (07.09.2026)"
   ],
   "test_type": "unknown",
   "parameters": [
@@ -29463,7 +29464,7 @@
    {
     "parameter": "tymc",
     "parameter_printed": "Вкупен број габи и мувли-ТYMC",
-    "result_printed": "10 CFU/g",
+    "result_printed": "< 10 CFU/g",
     "result_numeric": 10.0,
     "limit_printed": "- 10^4 CFU/g",
     "limit_numeric": 10000.0,
@@ -116913,7 +116914,8 @@
    "lab_department differs in wording between reads",
    "lab_accreditation differs in wording between reads",
    "lab_standard differs in wording between reads",
-   "overall_conclusion differs in wording between reads"
+   "overall_conclusion differs in wording between reads",
+   "bile_tolerant_gram_negative: the reads agree on the value and one prints more of the row ('10 CFU/g' vs '< 10 CFU/g') - the fuller form is kept (07.09.2026)"
   ],
   "lab_address": "ул. 50 Дивизија бр. 6, 1000 Скопје",
   "lab_accreditation": "ЛТ-005",
@@ -116925,7 +116927,7 @@
    {
     "parameter": "bile_tolerant_gram_negative",
     "parameter_printed": "На жолчка толерантни грам-негативни бактерии",
-    "result_printed": "10 CFU/g",
+    "result_printed": "< 10 CFU/g",
     "result_numeric": 10.0,
     "limit_printed": "- 10^4 CFU/g",
     "limit_numeric": 10000.0,
@@ -140664,7 +140666,8 @@
   "notes": [
    "lab_accreditation_body differs in wording between reads",
    "overall_conclusion differs in wording between reads",
-   "test_type differs in wording between reads"
+   "test_type differs in wording between reads",
+   "bile_tolerant_gram_negative: the reads agree on the value and one prints more of the row ('< 10^2 CFU/g' vs '< 10² и >10 CFU/g') - the fuller form is kept (07.09.2026)"
   ],
   "lab_standard": "MKC EN ISO/IEC 17025",
   "overall_conclusion": "ЗАКЛУЧОК: Резултатите од испитуваните параметри СЕ ВО СООГЛАСНОСТ со барањата на Ph.Eur монографија 04/2019:50108 “Microbiological quality of herbal medicinal products for oral use and extracts used in their preparations”.",
@@ -140673,7 +140676,7 @@
    {
     "parameter": "bile_tolerant_gram_negative",
     "parameter_printed": "На жолчно толерантни грам-негативни бактерии",
-    "result_printed": "< 10^2 CFU/g",
+    "result_printed": "< 10² и >10 CFU/g",
     "result_numeric": 100.0,
     "limit_printed": "≤ 10^4 CFU/g",
     "limit_numeric": 10000.0,
@@ -206368,7 +206371,8 @@
    "lab_accreditation_body differs in wording between reads",
    "lab_standard differs in wording between reads",
    "overall_conclusion differs in wording between reads",
-   "test_type differs in wording between reads"
+   "test_type differs in wording between reads",
+   "bile_tolerant_gram_negative: the reads agree on the value and one prints more of the row ('< 10^2 CFU/g' vs '< 10² и > 10 CFU/g') - the fuller form is kept (07.09.2026)"
   ],
   "lab_accreditation_body": "ИАРМ",
   "lab_standard": "МКС EN ISO/IEC 17025",
@@ -206378,7 +206382,7 @@
    {
     "parameter": "bile_tolerant_gram_negative",
     "parameter_printed": "На жолчка толерантни грам-негативни бактерии",
-    "result_printed": "< 10^2 CFU/g",
+    "result_printed": "< 10² и > 10 CFU/g",
     "result_numeric": 100.0,
     "limit_printed": "< 10^4 CFU/g",
     "limit_numeric": 10000.0,
@@ -209031,7 +209035,8 @@
    "lab_accreditation differs in wording between reads",
    "lab_standard differs in wording between reads",
    "overall_conclusion differs in wording between reads",
-   "test_type differs in wording between reads"
+   "test_type differs in wording between reads",
+   "bile_tolerant_gram_negative: the reads agree on the value and one prints more of the row ('< 10^2 CFU/g' vs '< 10² и > 10 CFU/g') - the fuller form is kept (07.09.2026)"
   ],
   "lab_accreditation_body": "ИАРМ",
   "lab_standard": "MKC EN ISO/IEC 17025",
@@ -209041,7 +209046,7 @@
    {
     "parameter": "bile_tolerant_gram_negative",
     "parameter_printed": "На жолчка толерантни грам-негативни бактерии",
-    "result_printed": "< 10^2 CFU/g",
+    "result_printed": "< 10² и > 10 CFU/g",
     "result_numeric": 100.0,
     "limit_printed": "< 10^4 CFU/g",
     "limit_numeric": 10000.0,
