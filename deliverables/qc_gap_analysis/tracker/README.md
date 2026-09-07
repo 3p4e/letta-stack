@@ -726,3 +726,63 @@ value held — but the certificate's own words are now what the tracker prints. 
 differences between the reads are notation (`10^2` for `10²`, Cyrillic *х* for the
 multiplication sign: 56) or Macedonian inflection of the same word (*отсуство*, *отсутна*,
 *отсуства*: 21), which the desk already treats as one reading.
+
+## v12 — the three delivery tranches, reconciled against the desk (07.09.2026)
+
+The tracker answers *what does the desk hold for this lot*. The question a QP has to answer
+is a different one: **6,934.26 kg of product left the site** in the deliveries of 31.07,
+14.08 and 28.08.2026 — 21, 29 and 28 cultivation batches — and every one of those 78 batches
+needs a certificate of quality. `tranches.py` reads the owner's *Tranches Overview* sheet,
+kept verbatim in `tranches_raw_2026-09-07.csv` and reconciled against its own ВКУПНО totals,
+and the new **Delivery T1–T3** sheet puts each delivered batch beside its row on Batch
+Coverage. It is built by reading that sheet, so the two cannot drift.
+
+**44 ready to issue, 30 short of coverage, 4 with nothing on file, and 5 delivered in a
+potency bracket their own certificate contradicts.** The full account, with the evidence for
+each, is in `DELIVERY_RECONCILIATION_2026-09-07.md`; the rulings a person owes are in
+`ingestion/ecoa_runner/identity_questions_2026-09-07.tsv`.
+
+Fifteen of the 78 resolved to no desk row at first. Only four of those were real; the rest
+were identity, and each mechanism is now closed at its source rather than at the call site:
+
+- **The asterisk, and which asterisk.** The company marks certain lots `GG012601*` and the
+  Head of QC's batch list writes them that way; the delivery sheet drops the mark, and nine
+  documents carry the fullwidth `＊` (U+FF0A) where the paper prints ASCII — the homoglyph
+  reflex that also returns `ТНС` for `THC`. `batch_key` now folds every star glyph onto ASCII
+  and **keeps the mark**, with doctests: a starred lot is not its unstarred namesake, and
+  which of the two a delivery means is a fact about the floor, not something a key may
+  decide. Before this, `SCR012601*` never met `P060342` and 90 kg of delivered Scrambler sat
+  in the tracker under no name at all.
+- **A certificate that names only the packaging lot.** IJZ-MB prints `Серија: P060102` and no
+  cultivation batch, so the lot was created nameless. The builder now back-fills the name
+  from the batch list by P number and prints what it did: `P050142 → BSS1024_01/2;
+  P060102 → WED102501; P060342 → SCR012601*`.
+- **A mistyped digit in the batch list** (`SJ0925021` for `SJ092501`). Resolved as evidence,
+  not as a guess: where a delivered batch matches no desk row, the sheet looks for the lot
+  that credits *the certificates which print that batch*, and says so in the Desk lot column.
+
+Two things the sheet reports that no rebuild can fix. A **roll-up** — one desk row for
+several delivered sub-lots (`GRC102501`, `JD012603`) — cannot state coverage for any one of
+them, and reading potency through one hands `JD012603/01` the assay from `JD012603/02V`'s
+certificate; the column now says so, and the potency comparison is keyed to the batch itself.
+And the **potency contradictions** are not desk errors at all: five batches were delivered in
+a bracket their own release certificate puts them outside of, four under-declared and one —
+OPM122501, 104.26 kg — over-declared at 11.00 % against a certificate reading 8.09 %.
+
+### RAGflow, corrected (07.09.2026)
+
+- `eCOA_SS` **had never been parsed**: ten stability certificates for the Grape Pie lots,
+  `UNSTART`, zero chunks, invisible to every retrieval since ingestion. GraphRAG and RAPTOR
+  were turned off first — on ten templated certificates they cost a great deal and buy
+  nothing — and parsing was started.
+- Two of the four datasets carried **no description**, and a description is the prompt an
+  agent reads when it chooses where to look. All four now describe themselves; `eCOA_DB`'s
+  says how to query it (the asterisk is part of the code and is ASCII; a sub-lot separator
+  carries no meaning; a batch that returns nothing may be on file under its P number) and
+  says plainly that **no measured value may be read out of the chunk text**.
+- `ecoa_extraction_agent.json` is at **1.1.0** with three new rules, each recorded against
+  the delivered batch its absence cost: the asterisk is part of the code and is written in
+  ASCII (7); the packaging lot is an identity and must be captured wherever it appears (8);
+  the strain is printed in Latin inside Macedonian text and is copied exactly — `Cup Junky`,
+  `Sleepy Joy`, `Permanent Market` and `GorillaGlue` are reader inventions, and they split
+  one strain in two wherever anything groups by strain (9).

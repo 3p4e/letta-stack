@@ -25,6 +25,21 @@ and child would no longer nest.
 A trailing V marks a verification sample and belongs to the identity: `JD012603/2V`
 is a different record from `JD012603/2`.
 
+  3. **A trailing asterisk is a mark on the lot, and it belongs to the identity —
+     but its GLYPH does not.** The company writes `GG012601*`, and the Head of QC's
+     own batch list writes it that way too, so `GG012601*` is not `GG012601` and the
+     key keeps the mark. What varies without meaning is which star character was
+     typed: a vision model reading a Cyrillic page returns the fullwidth `＊`
+     (U+FF0A) where the paper prints `*`, the same homoglyph reflex that returns
+     `ТНС` for `THC`. Nine records in the corpus carry the fullwidth form. Every
+     star glyph therefore folds to ASCII `*` here, so that the desk's `SCR012601＊`
+     and the batch list's `SCR012601*` are one batch — before this, they were two,
+     and 90 kg of delivered Scrambler sat in the tracker under no name at all.
+
+     Whether a starred lot and its unstarred namesake are the same batch is NOT a
+     question this function may answer: it is a fact about the floor, and it is
+     recorded in ingestion/ecoa_runner/identity_decisions.tsv when a person rules.
+
 Anything reading batch codes out of documents — ingestion, cross-checks, the gap
 analysis — must key through here rather than re-deriving the rule, so that a change
 to it changes every consumer at once.
@@ -34,6 +49,9 @@ import re
 __all__ = ["batch_key", "spelling_variants"]
 
 _SPLIT = re.compile(r"[/_\-–—]")
+# Star homoglyphs. The paper prints ASCII '*'; readers return the fullwidth, the
+# heavy asterisk or the low asterisk depending on the surrounding script.
+_STARS = "＊✱﹡∗*"
 # A P-number is P + six digits; IJZ certificates print its zero as a letter O
 # ("PO60052" on 552/1083/26). Fold it so both spellings key alike.
 _P_LETTER_O = re.compile(r"^PO(\d{5})(?=\D|$)")
@@ -50,12 +68,18 @@ def batch_key(raw):
     ('JD012603/2V', 'JD012603/2')
     >>> batch_key("PO60052")          # letter O printed for the zero of a P-number
     'P060052'
+    >>> batch_key("SCR012601＊") == batch_key("SCR012601*")   # fullwidth star folded
+    True
+    >>> batch_key("SCR012601*") == batch_key("SCR012601")     # the mark itself is kept
+    False
     """
     if raw is None:
         return None
     s = str(raw).strip().upper().replace(" ", "")
     if not s:
         return None
+    for _st in _STARS:
+        s = s.replace(_st, "*")
     s = _P_LETTER_O.sub(r"P0\1", s)
     suffix = ""
     if s.endswith("V"):

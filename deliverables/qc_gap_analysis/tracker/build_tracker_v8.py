@@ -283,6 +283,36 @@ for inst in NEW:
         NEW_HELD.append((b["cu"], b["p"], inst["code"], inst["date"], inst["lab"], int(no.split(".")[0])))
     if b not in NEW_TOUCHED:
         NEW_TOUCHED.append(b)
+# --------------------------------------------------------- the Head of QC's batch list
+# Loaded here rather than inside the iCoA block, because the FIRST thing it is needed for is
+# a lot's own name. A certificate that prints only the P number (IJZ-MB prints "Серија:
+# P060102" and no cultivation batch) creates a lot above with cu "— not recorded —" — and the
+# list has that lot's name. Before this, P060102 stood nameless in the tracker while the list
+# said WED102501, and 34 kg of delivered Wedding Cake looked like an unknown lot; P060342
+# likewise, where the list says SCR012601* and 90 kg of Scrambler was delivered in tranche 3.
+_bd = importlib.util.spec_from_file_location("batch_dates", os.path.join(HERE, "batch_dates.py"))
+BD = importlib.util.module_from_spec(_bd)
+_bd.loader.exec_module(BD)
+_dates_path = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--dates=")), os.path.join(HERE, "batch_dates.csv"))
+DATES = BD.load_dates(_dates_path)
+DATE_ROWS = sorted({r["seq"]: r for r in DATES.values()}.values(), key=lambda r: int(r["seq"]))
+DATES_CU = {T.batch_key(r["cu_batch"]): r for r in DATE_ROWS}
+DATES_P = {r["p_batch"]: r for r in DATE_ROWS if r.get("p_batch")}
+NAMED_FROM_LIST = []
+for _b in batches:
+    if not str(_b.get("cu", "")).startswith("—"):
+        continue
+    _ps = [x.strip() for x in str(_b.get("p", "")).split("/") if x.strip().startswith("P")]
+    _rows = [DATES_P[x] for x in _ps if x in DATES_P]
+    _names = sorted({r["cu_batch"] for r in _rows})
+    if len(_names) == 1:                    # one lot, one name; two names would be a roll-up
+        NAMED_FROM_LIST.append((_names[0], _b["p"]))
+        _b["cu"] = _names[0]
+        _b["named_from_list"] = True
+if NAMED_FROM_LIST:
+    print("named from the Head of QC's list: " +
+          "; ".join(f"{p} -> {c}" for c, p in NAMED_FROM_LIST))
+
 if NEW:
     print(f"new instances: {len(NEW)} on {len(NEW_TOUCHED)} lot(s); "
           f"{len(NEW_LOTS)} lot(s) not on the owner's tracker; {len(NEW_HELD)} value(s) held for review")
@@ -317,13 +347,7 @@ if ICOA_RULE:
             _plan.setdefault("P:" + _x["pp"].strip(), _x["icoa_ref"])
     ICOA_DATE = "packaging date — to record"
     RETEST_DATE = "retest sampling date — to record"
-    _bd = importlib.util.spec_from_file_location("batch_dates", os.path.join(HERE, "batch_dates.py"))
-    BD = importlib.util.module_from_spec(_bd)
-    _bd.loader.exec_module(BD)
-    _dates_path = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--dates=")), os.path.join(HERE, "batch_dates.csv"))
-    DATES = BD.load_dates(_dates_path)
-    DATE_ROWS = sorted({r["seq"]: r for r in DATES.values()}.values(), key=lambda r: int(r["seq"]))
-    DATES_CU = {T.batch_key(r["cu_batch"]): r for r in DATE_ROWS}
+    # DATES / DATE_ROWS / DATES_CU are loaded above, where the lot names are back-filled.
     DATE_USED = {}                                # seq -> the tracker lot it dated
 
     def _dates_of(b, cu0):
@@ -1859,6 +1883,7 @@ def add_dates_sheet(wb):
 SHEET_ABOUT = {
     "Read Me": "This sheet.",
     "CoQ Parameter Tracker": "One lot per block of two rows per testing instance: the result of each determination on the top row, the certificate that reports it (code, date, laboratory) beneath; acceptance criteria in row 3 and enforced; out-of-specification results in red and named in STATUS; the in-house iCoA cells cite the iCoA Register by key.",
+    "Delivery T1–T3": "The 78 cultivation batches delivered in the three tranches of 31.07, 14.08 and 28.08.2026, each against its row on Batch Coverage: the P lot, the CoQ status, what is missing, and the potency the batch was delivered under beside the potency its own certificate reports.",
     "Batch Coverage": "One row per lot: ✓/✗ for each of the 12 parameters, the missing list, the number of certificates and the laboratories present. A grey ✓ is covered by the in-house iCoA.",
     "Mikro CoQ Parameter": "The owner's microbiology sheet, rebuilt from the tracker: the #7–#12 spans per lot in the owner's layout.",
     "Credit Audit": "Certificates credited on the owner's tracker that the desk holds no value from, with the reason.",
@@ -1871,6 +1896,163 @@ SHEET_ABOUT = {
     "Parameters": "The 21 determinations with method, global acceptance criterion, source and tracker columns.",
     "Summary Dashboard": "Counts recomputed from Batch Coverage: lots, documents, complete / partial / incomplete, missing-parameter frequency.",
 }
+
+
+# --------------------------------------------------------------- delivery reconciliation
+def add_delivery_sheet(wb):
+    """The three delivery tranches against the desk: has every batch that LEFT THE SITE a CoQ?
+
+    The tracker answers "what does the desk hold for this lot". This sheet answers the
+    question the QP actually has to answer, which is not the same one: 1,480.66 + 2,747.87 +
+    2,705.73 kg went to the customer in three deliveries, and each of those 78 cultivation
+    batches needs a certificate of quality. The sheet is built by reading Batch Coverage, so
+    the two can never drift.
+
+    Three things it prints that the tracker cannot:
+
+      * a batch delivered under a name the desk does not carry (the delivery list drops the
+        asterisk the Head of QC's list writes, so GG012601 is the desk's GG012601*);
+      * a batch delivered with no record at all — four of them, 193 kg;
+      * the potency the batch was SOLD under, beside the potency its own certificate
+        reports. Those disagree on five batches, and on five the certificate puts the batch
+        in a different bracket from the one it was delivered in. That is a finding about
+        the delivery, not about the desk, and it belongs in front of a person.
+    """
+    import importlib.util as _il
+    _t = _il.spec_from_file_location("tranches", os.path.join(HERE, "tranches.py"))
+    TRN = _il.module_from_spec(_t)
+    _t.loader.exec_module(TRN)
+    rows_t = TRN.load()
+
+    cov = wb["Batch Coverage"]
+    last = cov.max_row
+    while last > 1 and not cov.cell(last, 1).value:
+        last -= 1
+    by_cu, by_p = {}, {}
+    for r in range(2, last + 1):
+        cu = str(cov.cell(r, 1).value or "")
+        if not cu:
+            continue
+        if not cu.startswith("—"):
+            by_cu.setdefault(T.batch_key(cu), r)
+        for _p in str(cov.cell(r, 2).value or "").split("/"):
+            _p = _p.strip()
+            if _p.startswith("P"):
+                by_p.setdefault(_p, r)
+
+    thc = collections.defaultdict(list)
+    cert_of = collections.defaultdict(set)          # batch -> the certificate codes that print it
+    lot_of_code = {}                                # certificate code -> the tracker lot crediting it
+    for _b0 in batches:
+        for _n in range(1, 13):
+            for _c, _d, _l in _b0["docs"][_n]:
+                lot_of_code.setdefault(T.nkey(_c), _b0)
+    _corp = os.path.join(T.ROOT, "ingestion", "ecoa_runner", "records_corpus.json")
+    if os.path.exists(_corp):
+        for _rec in json.load(open(_corp, encoding="utf-8")):
+            _b = _rec.get("batch_canonical") or _rec.get("batch_printed")
+            if not _b:
+                continue
+            if _rec.get("cert_code"):
+                cert_of[T.batch_key(str(_b))].add(str(_rec["cert_code"]))
+            for _pm in (_rec.get("parameters") or []):
+                if str(_pm.get("parameter")) != "total_thc":
+                    continue
+                _v = str(_pm.get("result_printed") or _pm.get("result") or "")
+                _m = re.match(r"^([\d.,]+)", _v.replace("%", "").strip())
+                if _m:
+                    thc[T.batch_key(str(_b))].append((float(_m.group(1).replace(",", ".")),
+                                                      str(_rec.get("cert_code")), str(_rec.get("date_of_issue"))))
+
+    sh = wb.create_sheet("Delivery T1–T3", wb.sheetnames.index("Batch Coverage") + 1)
+    cols = [("Tranche", 8), ("Delivered", 11), ("Batch (as delivered)", 18), ("Strain", 20), ("kg", 9),
+            ("Bracket", 9), ("Declared", 9), ("P lot", 10), ("Desk lot", 18), ("CoQ status", 14),
+            ("Missing", 40), ("Total THC on the eCoA", 11), ("Certificate", 16), ("Δ", 7), ("Ready to issue", 46)]
+    for i, (t, w) in enumerate(cols, 1):
+        put(sh, 1, i, t, FW, NAVY, CEN)
+        sh.column_dimensions[L(i)].width = w
+    sh.row_dimensions[1].height = 24
+    r = 2
+    n_ready = n_short = n_none = n_pot = 0
+    for t in sorted(rows_t, key=lambda x: (x["tranche"], x["batch_printed"])):
+        name = t["batch_printed"]
+        k, ks = T.batch_key(name), T.batch_key(name + "*")
+        row = by_cu.get(k) or by_cu.get(ks)
+        how = "" if by_cu.get(k) else ("the desk writes it " + name + "*" if by_cu.get(ks) else "")
+        pl = ""
+        _d = DATES_CU.get(k) or DATES_CU.get(ks)
+        if _d:
+            pl = _d.get("p_batch") or ""
+        if row is None and pl:
+            row = by_p.get(pl)
+            if row is not None:
+                _rcu = str(cov.cell(row, 1).value or "")
+                how = ("through its P lot; the desk row is the roll-up " + _rcu
+                       if T.batch_key(_rcu) not in (k, ks) else "through its P lot")
+        if row is None:
+            # Last resort, and the only one that is evidence rather than a name: the
+            # certificates that PRINT this batch. SJ092501 is delivered, three certificates
+            # print it, and the desk files them under SJ0925021 — the spelling the Head of
+            # QC's list carries for P060082. Without this step the batch reads as having
+            # nothing on file, which is the opposite of true.
+            _codes = cert_of.get(k) or cert_of.get(ks) or set()
+            _lots = {id(lot_of_code[T.nkey(c)]): lot_of_code[T.nkey(c)] for c in _codes if T.nkey(c) in lot_of_code}
+            if len(_lots) == 1:
+                _lot = next(iter(_lots.values()))
+                row = by_cu.get(T.batch_key(_lot["cu"])) or by_p.get(str(_lot["p"]).split("/")[0].strip())
+                if row is not None:
+                    how = ("through the certificates that print this batch (" +
+                           ", ".join(sorted(_codes)[:3]) + "); the desk names the lot " + _lot["cu"])
+        status = str(cov.cell(row, 4).value or "") if row else "— NO RECORD —"
+        missing = str(cov.cell(row, 18).value or "") if row else "no lot on the tracker for this batch"
+        desk_lot = str(cov.cell(row, 1).value or "") if row else "—"
+        vals = thc.get(k) or thc.get(ks) or []
+        best = min(vals, key=lambda x: abs(x[0] - t["thc_pct"])) if vals else None
+        delta = (best[0] - t["thc_pct"]) if best else None
+        oob = bool(best) and not TRN.in_bracket(best[0], t["thc_bracket"])
+        if row is None:
+            verdict, fill = "NO — nothing on file for a batch that has been delivered", "red"
+            n_none += 1
+        elif status.startswith("✓"):
+            verdict, fill = "yes — all 12 determinations covered", "green"
+            n_ready += 1
+        else:
+            verdict, fill = "no — " + status.split(" ", 1)[-1].lower(), "amber"
+            n_short += 1
+        if oob:
+            n_pot += 1
+            verdict += "  |  POTENCY: the certificate reads %.2f %%, outside the %s it was delivered under" % (best[0], t["thc_bracket"])
+            fill = "red"
+        vals_row = (t["tranche"], t["delivery_date"], name, t["strain"], t["volume_kg"], t["thc_bracket"],
+                    t["thc_pct"] / 100.0, pl or "—", desk_lot + ((" (" + how + ")") if how else ""),
+                    status, missing if missing != "—" else "—",
+                    (best[0] / 100.0) if best else "— none on the desk —", best[1] if best else "—",
+                    (delta / 100.0) if delta is not None else "—", verdict)
+        for i, v in enumerate(vals_row, 1):
+            c = put(sh, r, i, v, F7B if i == 3 else F7,
+                    FILL[fill] if i == 15 else (FILL["red"] if (i in (12, 13, 14) and oob) else None),
+                    CEN if i != 15 and i != 11 else Alignment(horizontal="left", vertical="center", wrap_text=True))
+            if i in (7, 12, 14):
+                c.number_format = '0.00%;[Red]-0.00%'
+            if i == 5:
+                c.number_format = "#,##0.00"
+        r += 1
+    note = ("The three deliveries of 31.07, 14.08 and 28.08.2026 (Tranches Overview, the owner's sheet), verbatim in "
+            "tranches_raw_2026-09-07.csv and reconciled against its own ВКУПНО totals. 'Desk lot' is the row on Batch "
+            "Coverage this batch resolves to: directly, through the asterisk the delivery list drops, or through the P "
+            "lot the Head of QC's list gives it. A roll-up in that column means the desk holds ONE row for several "
+            "delivered sub-lots, so its coverage is not a statement about this sub-lot alone. 'Total THC on the eCoA' "
+            "is the desk's record of the certificate for that batch, not a recalculation. A red potency line is not a "
+            "desk error: the batch was delivered in a bracket its own certificate contradicts, and only the QP can "
+            "settle which is right. Ready to issue: %d of %d; short of coverage: %d; nothing on file: %d; potency "
+            "contradicted: %d." % (n_ready, len(rows_t), n_short, n_none, n_pot))
+    sh.merge_cells(start_row=r + 1, start_column=1, end_row=r + 1, end_column=len(cols))
+    put(sh, r + 1, 1, note, F6I, GREY, Alignment(horizontal="left", vertical="top", wrap_text=True))
+    sh.row_dimensions[r + 1].height = 62
+    sh.auto_filter.ref = f"A1:{L(len(cols))}{r - 1}"
+    sh.freeze_panes = "D2"
+    print(f"delivery: {len(rows_t)} delivered batches — ready {n_ready}, short {n_short}, "
+          f"no record {n_none}, potency contradicted {n_pot}")
 
 
 def write_read_me(wb):
@@ -2000,6 +2182,7 @@ if NEW:
         add_coq_register_sheet(wb)
         add_dates_sheet(wb)
         write_register_file(os.path.join(HERE, "Issuance_Registers_prelim.xlsx"))
+    add_delivery_sheet(wb)
     write_read_me(wb)
     fix_parameters(wb)
     print_setup(wb)
