@@ -670,29 +670,46 @@ The three passes above compare the workbook with the desk's record. This one goe
 record to the documents themselves, in the Drive folder `1rwBvSAEoAZWsSKSaAQFUXkQLmZA13mSI`:
 `build_checklist.py` lists every value v11 prints with the certificate that must show it
 (1,376 values across 280 certificates), and `verify_pages.py` reads each certificate — its
-text layer where it has one, else OCR through tesseract with Macedonian and English
-(`ocr.py`, 300 DPI, about eight seconds a document, cached under `pagetext/`) — and tests
-that the value appears on the page in one of the forms the laboratories print: decimal comma
-or point, `x 10^2` / `×10²` / a superscript, spaced or unspaced comparators, the Macedonian
-words for conforms and absent.
+text layer where it has one, else the policy vision chain of `AGENT_MODEL_POLICY.md`
+(`page_read.py`: kimi-k2.6 → moonshot-v1-128k-vision-preview → gpt-4o, one implementation of
+the chain in `ingestion/ragflow/doc_identity.py`, cached under `pagetext/`) — and tests that
+the value appears on the page in one of the forms the laboratories print: decimal comma or
+point, `x 10^2` / `×10²` / a superscript, spaced or unspaced comparators, the Macedonian
+words for conforms and absent. Classical OCR is not used and cannot be: these pages are
+Macedonian Cyrillic mixed with Latin chemical symbols and superscripts, exactly what it
+handles worst, and the distinction it loses — `10²` read as `102`, a counted range read as a
+single number — is the distinction this pass exists to test. `scripts/policy_check.py`
+enforces that.
 
-It is a presence test, not a fourth extraction, and it says what it cannot see: OCR renders a
-superscript as `°`, `o` or an inline digit, so an exponent is never confirmed by it. A value
-like `5.4×10²` is reported as **mantissa confirmed, exponent not machine-readable**, and a
-counted range as **structure confirmed** when the page shows a `< 10…` and a `> 10…` joined
-by *и*. A page with no text layer that OCR cannot read is reported as such, never as a
-mismatch.
+Both directories and the workbook are arguments, so the pass is reproducible outside the
+session that wrote it:
+
+    QC_WORK_DIR=<dir> python3 build_checklist.py [workbook.xlsx]
+    QC_WORK_DIR=<dir> python3 verify_pages.py [pdf-dir ...]
+
+It is a presence test, not a fourth extraction, and it says what it cannot see. The forms of
+a value **compose** — a page prints `1,6 x 10^3`, which is decimal comma *and* spaced
+multiplication *and* a spaced comparator at once — so the candidate forms are closed over
+their rewrites rather than generated one at a time from the workbook's spelling; the first
+run of this pass reported 28 values as merely structure-confirmed for want of that closure.
+Where a reading still loses an exponent, the value is reported as **structure confirmed**
+rather than counted as agreement, and the exponent stays with the two-read record.
 
 **The 30 IJZ-MB certificates of 31.08 and 01.09.2026 — all scans, no text layer — were read
-by OCR: 150 values, 118 confirmed outright, 32 confirmed in structure with the exponent left
-to the two-read record, none contradicted.** The remaining 250 certificates are not local yet;
-running the check on them needs their PDFs downloaded from the folder.
+by the vision chain: 150 values, 148 confirmed outright, 2 structure-confirmed, none
+contradicted.** The two are the gram-negative counts of P060252 (545/1076/26) and P060262
+(544/1075/26), which the workbook prints as `< 10³ и > 10²`; the reader returned `< 10^1 и >
+10^2` at both 200 and 300 DPI — an impossible range, a count cannot be below 10 and above 100
+at once. The pages were then rendered and read directly: **both print `< 10³ и > 10² CFU/g`,
+so the workbook is right and the reader misread the superscript.** The remaining 250
+certificates are not local yet; running the check on them needs their PDFs downloaded from
+the folder.
 
 **What the pages found: five results where the record kept less than the certificate says.**
 `reconcile()` compared the two reads by value, and a counted range parses to its upper bound,
 so `< 10²` and `< 10² и > 10 CFU/g` compared equal — the reconciler then kept the first read's
 wording and marked the row agreed. The OCR of the IJZ-MB pages shows the range in full
-(`< 10? u> 10 CFU/g`), and the second read had it. The rule is now content-based: **where the
+in full, and the second read had it. The rule is now content-based: **where the
 reads agree on the value and one printed form is the other with more of the row in it, the
 fuller form is the record**, and a note says so. Applied to the corpus as it stands:
 

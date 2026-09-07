@@ -2,17 +2,25 @@
 """Third read of the certificates: does the page itself show what v11 prints?
 
 Not an extraction — a presence test. For each value the workbook prints, the certificate's
-text layer must contain it in one of the forms the laboratories use (decimal comma or point,
+own words must contain it in one of the forms the laboratories use (decimal comma or point,
 'x 10^2' / '×10²' / superscript, spaced or unspaced comparators, the Macedonian words for
-conforms and absent). A page with no text layer is reported as such, never as a mismatch.
+conforms and absent). A page that cannot be read is reported as such, never as a mismatch.
+
+The page is read by page_read.py — its text layer where it has one, otherwise the policy
+vision chain (AGENT_MODEL_POLICY.md). Classical OCR is never used; the reasons are in
+page_read.py and the rule is enforced by scripts/policy_check.py.
+
+    QC_WORK_DIR=<dir> python3 verify_pages.py [pdf-dir ...]
+
+<dir> holds checklist.json (written by build_checklist.py), the page cache and the
+written-out misses; the PDF directories default to <dir>/newpdf and <dir>/certs.
 """
 import json, os, re, sys, collections, unicodedata
-import pymupdf
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from ocr import ocr_pdf
+from page_read import page_text
 
-S = '/tmp/claude-0/-home-user-letta-stack/4877ce6e-ae82-551e-bf35-5698c379c3be/scratchpad'
-PDFDIRS = [S + '/newpdf', S + '/certs']
+S = os.environ.get('QC_WORK_DIR') or os.path.join(os.path.dirname(os.path.abspath(__file__)), 'work')
+PDFDIRS = sys.argv[1:] or [S + '/newpdf', S + '/certs']
 SUP = {'⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9'}
 
 
@@ -41,45 +49,34 @@ def candidates(v):
         out |= {'отсут', 'отсус', 'absent', 'не е детектирано'}
     if v.startswith('<= loq') or v.startswith('< loq') or v == 'nd':
         out |= {'loq', 'nd', 'не е детектиран'}
-    base = set(out)
-    for x in list(base):
-        out.add(x.replace('.', ','))                      # decimal comma
-        out.add(x.replace(',', '.'))
-        out.add(x.replace('x10^', ' x 10^'))
-        out.add(x.replace('x10^', 'x 10^'))
-        out.add(x.replace('x10^', ' x10^'))
-        out.add(x.replace('<', '< '))
-        out.add(x.replace('<', ''))
-        m = re.match(r'^([\d.,]+)\s*x\s*10\^(\d)$', x)
-        if m:                                             # 5.4x10^2 -> also 540 and 5,4x10²
-            out.add(f'{m.group(1)} x 10{m.group(2)}')
-            out.add(f'{m.group(1)}x10{m.group(2)}')
+    # the rewrites COMPOSE: a page prints "1,6 x 10^3" — decimal comma AND spaced
+    # multiplication AND a spaced comparator at once — so the forms are closed over,
+    # not generated one at a time from the workbook's own spelling
+    rewrites = [
+        lambda x: x.replace('.', ','),                    # decimal comma
+        lambda x: x.replace(',', '.'),
+        lambda x: x.replace('x10^', ' x 10^'),
+        lambda x: x.replace('x10^', 'x 10^'),
+        lambda x: x.replace('x10^', ' x10^'),
+        lambda x: x.replace('<', '< '),
+        lambda x: x.replace('>', '> '),
+        lambda x: re.sub(r'\^(\d)', r'\1', x),             # exponent written inline
+    ]
+    for _ in range(3):
+        for x in list(out):
+            for f in rewrites:
+                try:
+                    out.add(f(x))
+                except Exception:
+                    pass
     return {re.sub(r'\s+', ' ', o).strip() for o in out if o}
 
 
 CACHE = S + '/pagetext'
-os.makedirs(CACHE, exist_ok=True)
 
 
 def pdf_text(path):
-    """The page's own text, from its text layer when it has one, else by OCR (mkd+eng).
-    Cached, because OCR costs about eight seconds a document."""
-    key = os.path.join(CACHE, re.sub(r'[^0-9A-Za-zА-Яа-я.\-]', '_', os.path.basename(path)) + '.txt')
-    if os.path.exists(key):
-        return open(key, encoding='utf-8').read()
-    try:
-        doc = pymupdf.open(path)
-        t = '\n'.join(p.get_text() for p in doc)
-        doc.close()
-    except Exception:
-        t = ''
-    if len(t.strip()) < 200:
-        try:
-            t = '[OCR]\n' + ocr_pdf(path)
-        except Exception as e:
-            t = ''
-    open(key, 'w', encoding='utf-8').write(t)
-    return t
+    return page_text(path, cache=CACHE)
 
 
 checks = json.load(open(S + '/checklist.json'))
@@ -114,18 +111,19 @@ for c in checks:
     if any(cand in t for cand in candidates(c['value'])):
         ok += 1
         continue
-    # a counted range: "< 10^a и > 10^b". OCR renders the superscripts as °, o, or an inline
-    # digit, so the page can be held to the structure — a '< 10' and a '> 10' joined by и —
-    # and the exponents stay with the two-read record
+    # a counted range: "< 10^a и > 10^b". A reading — as opposed to the document's own
+    # text layer — can lose the exponent, so the page is held to the structure it does
+    # carry, a '< 10' and a '> 10' joined by и, and the exponents stay with the two-read
+    # record rather than being counted as confirmed
     rng = re.match(r'^<\s*10\^?(\d?)\s*(?:и|u)\s*>\s*10\^?(\d?)$', norm(c['value']))
-    if rng and t.startswith('[ocr]'):
+    if rng and t.startswith('[vision'):
         if re.search(r'<\s*10\S{0,2}\s*(?:и|u|и)\s*>\s*10', t):
             exp += 1
             continue
     m = re.match(r'^([\d.,]+)\s*x\s*10\^(\d)$', norm(c['value']))
-    if m and t.startswith('[ocr]'):
-        # OCR renders a superscript as °, o or an inline digit; the mantissa beside a '10' is
-        # what the page can be held to, and the exponent stays for the two-read record
+    if m and t.startswith('[vision'):
+        # where a reading loses the superscript, the mantissa beside a '10' is what the
+        # page can be held to, and the exponent stays for the two-read record
         mant = m.group(1)
         if any(f'{v} x 10' in t or f'{v}x10' in t for v in {mant, mant.replace('.', ','), mant.replace(',', '.')}):
             exp += 1
@@ -133,7 +131,7 @@ for c in checks:
     miss += 1
     misses.append(c)
 print(f'values checked against a page: {ok + miss + exp}   confirmed {ok}   structure confirmed, exponent not machine-readable {exp}   not found {miss}')
-print(f'certificates without a text layer: {len(set(notexts))} ({notext} value(s))')
+print(f'certificates that could not be read at all: {len(set(notexts))} ({notext} value(s))')
 print(f'values whose certificate PDF is not local yet: {nofile}')
 for m in misses[:40]:
     print(f"   [{m['cu']}/{m['p']}] #{m['det']} = {m['value']!r} on {m['code']} ({m['date']})")

@@ -83,11 +83,11 @@ def _page_pngs(pdf, max_pages=2, dpi=200):
     return td, [os.path.join(td, f) for f in sorted(os.listdir(td)) if f.endswith(".png")]
 
 
-def _vision(model, base, key, png):
+def _vision(model, base, key, png, prompt=None):
     body = {
         "model": model,
         "messages": [{"role": "user", "content": [
-            {"type": "text", "text": PROMPT},
+            {"type": "text", "text": prompt or PROMPT},
             {"type": "image_url", "image_url": {"url": "data:image/png;base64," +
              base64.b64encode(open(png, "rb").read()).decode()}},
         ]}],
@@ -102,8 +102,13 @@ def _vision(model, base, key, png):
     return d["choices"][0]["message"]["content"]
 
 
-def ocr_text(pdf, max_pages=2, dpi=200, verbose=False):
-    """Read a scanned page with the policy vision chain. Never classical OCR."""
+def ocr_text(pdf, max_pages=2, dpi=200, verbose=False, prompt=None):
+    """Read a scanned page with the policy vision chain. Never classical OCR.
+
+    `prompt` lets another caller state its own reading instruction — the CoQ
+    tracker reads certificates, not water reports, and its pages carry no
+    'Лаб. број' header — while the chain, its order and its fallback stay
+    defined here, in one place."""
     td, pngs = _page_pngs(pdf, max_pages, dpi)
     out, used = [], None
     try:
@@ -113,7 +118,7 @@ def ocr_text(pdf, max_pages=2, dpi=200, verbose=False):
                 if not key:
                     continue
                 try:
-                    out.append(_vision(model, base, key, png))
+                    out.append(_vision(model, base, key, png, prompt))
                     used = model
                     break
                 except Exception as e:

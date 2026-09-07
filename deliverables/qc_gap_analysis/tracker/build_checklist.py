@@ -1,14 +1,25 @@
 #!/usr/bin/env python3
-"""Every value v11 prints, keyed to the certificate that must show it on its page."""
-import json, re, sys, importlib.util, collections, subprocess, shutil, tempfile, os
+"""Every value the workbook prints, keyed to the certificate that must show it on its page.
+
+    QC_WORK_DIR=<dir> python3 build_checklist.py [workbook.xlsx]
+
+Writes <dir>/checklist.json, which verify_pages.py then tests against the certificates.
+The workbook defaults to the newest CoQ_Analysis_Master_vN.xlsx beside this script; its
+formulas are evaluated by LibreOffice first, because openpyxl stores no computed value.
+"""
+import json, re, sys, importlib.util, collections, subprocess, shutil, tempfile, os, glob
 import openpyxl
-HERE='/home/user/letta-stack/deliverables/qc_gap_analysis/tracker'
-S='/tmp/claude-0/-home-user-letta-stack/4877ce6e-ae82-551e-bf35-5698c379c3be/scratchpad'
+HERE=os.path.dirname(os.path.abspath(__file__))
+S=os.environ.get('QC_WORK_DIR') or os.path.join(HERE,'work')
+os.makedirs(S, exist_ok=True)
+BOOK=(sys.argv[1] if len(sys.argv)>1 else
+      max(glob.glob(os.path.join(HERE,'CoQ_Analysis_Master_v*.xlsx')),
+          key=lambda f: int(re.search(r'_v(\d+)\.xlsx$', f).group(1))))
 spec=importlib.util.spec_from_file_location('T', HERE+'/tracker_data.py'); T=importlib.util.module_from_spec(spec); spec.loader.exec_module(T)
-tmp=tempfile.mkdtemp(prefix='cl_'); shutil.copy(HERE+'/CoQ_Analysis_Master_v11.xlsx', tmp+'/in.xlsx')
+tmp=tempfile.mkdtemp(prefix='cl_'); shutil.copy(BOOK, tmp+'/in.xlsx')
 subprocess.run(['soffice','--headless','--calc','--convert-to','xlsx','--outdir',tmp+'/out',tmp+'/in.xlsx'],check=True,capture_output=True,timeout=900)
 WV=openpyxl.load_workbook(tmp+'/out/in.xlsx', data_only=True); shutil.rmtree(tmp, ignore_errors=True)
-WB=openpyxl.load_workbook(HERE+'/CoQ_Analysis_Master_v11.xlsx')
+WB=openpyxl.load_workbook(BOOK)
 TR=next(n for n in WB.sheetnames if n.startswith('CoQ Parameter Tracker'))
 sh=WB[TR]
 starts=[c for c in range(4, sh.max_column+1) if str(sh.cell(2,c).value or '').startswith('#')]
@@ -44,6 +55,7 @@ for a,nx in zip(anchors, anchors[1:]+[sh.max_row+1]):
                             'state':{'C6EFCE':'release','FCE5CD':'stability','EDEDED':'uncredited'}.get(fill(c),'other'),
                             'row':c.row,'col':c.column})
 json.dump(out, open(S+'/checklist.json','w'), ensure_ascii=False)
+print('workbook:', os.path.basename(BOOK))
 print('values to verify:', len(out), '| distinct certificates:', len({x['code'] for x in out}))
 print('by lab:', collections.Counter(x['lab'] for x in out).most_common())
 print('by state:', collections.Counter(x['state'] for x in out).most_common())
