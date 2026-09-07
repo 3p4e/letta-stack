@@ -493,11 +493,11 @@ if ICOA_RULE:
         vals = {"1": "Conforms", "2": "Conforms", "7": fm}
         cell = lambda n: (f"CNP {cnp[n][0]}" if n in cnp else vals[str(n)])
         for _lot in _lots:
-            _lot_id = _lot.strip() if re.match(r"^P0\d{5}$", _lot.strip()) else cu0
+            _lot_id = _lot.strip() if re.match(r"^P\d{6}$", _lot.strip()) else cu0
             _lrows = [r for r in _drows if _single or r["p_batch"] == _lot]
             # the tracker names no P lot but the Head of QC's list does (JD112501 -> P060212): the
             # list's P number goes on the row, so the sheet's date lookups by P batch find it
-            if not re.match(r"^P0\d{5}$", _lot.strip()) and _lrows and _lrows[0]["p_batch"]:
+            if not re.match(r"^P\d{6}$", _lot.strip()) and _lrows and _lrows[0]["p_batch"]:
                 _lot = _lrows[0]["p_batch"]
             _lpk = sorted((r["packaging_from"] for r in _lrows if r["packaging_from"]), key=lambda d: str(T.date_key(d)))
             _lend = sorted((r["packaging_to"] for r in _lrows if r["packaging_to"]), key=lambda d: str(T.date_key(d)))
@@ -1181,6 +1181,8 @@ ACTION = {
     "not on this certificate": "Move the credit to the certificate that reports this parameter, or record why it stands.",
     "not ingested": "Re-extract the document into the corpus; the batch cannot reach a CoQ on this parameter until then.",
     "held for review": "The two independent reads disagreed. A person must confirm the figure from the page.",
+    "non-conformance reported": "The certificate reports a result that does not conform. Open an investigation record; the "
+                                "Head of QC rules on the lot, and the iCoA for this parameter is held until then.",
     "n.r.": "Not reported on this certificate.",
 }
 _r = 2
@@ -1437,6 +1439,13 @@ def patch_coverage(wb):
             labs[l] = labs.get(l, 0) + 1
         cov.cell(r, 20).value = "; ".join(f"[{k}] {v}" for k, v in labs.items())
         recount(r)
+    for r in range(2, last + 1):           # one name per thing: the tracker's label for a lot without a CU code
+        _cu = str(cov.cell(r, 1).value or "")
+        if _cu.startswith("—"):
+            _p = str(cov.cell(r, 2).value or "").strip()
+            _b = next((b for b in batches if _p and _p in (b["p"] or "")), None)
+            if _b and _b["cu"] != _cu:
+                cov.cell(r, 1).value = _b["cu"]
     for r in sorted(_dups, reverse=True):   # one row per lot
         cov.delete_rows(r)
         last -= 1

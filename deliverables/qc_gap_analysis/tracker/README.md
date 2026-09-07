@@ -594,3 +594,41 @@ the tracker. What was wrong, and what v11 does about it:
   number (69 iCoAs and 79 CoQs numbered).
 - **Print** was claimed for every table but set on five sheets; now set on all
   (`print_setup`: landscape, A3, one page wide, header rows repeated).
+
+### `verify_workbook.py` — the workbook checked against the record (06.09.2026)
+
+`python3 verify_workbook.py CoQ_Analysis_Master_v11.xlsx` reads the workbook twice — as
+written and recalculated through LibreOffice, so a formula column is judged by what it
+computes — and reports every statement that does not hold. Two passes:
+
+**Internal consistency.** Batch Coverage against the tracker (every ✓/✗ against the lot's
+credited documents, the missing count, the missing list, the status text, one row per lot,
+no lot without a row); the Summary Dashboard against Batch Coverage (lots, complete /
+partial / incomplete, missing-parameter frequency); the Parameters sheet against the desk's
+criteria and the live column letters, and the tracker's row 3 against the same; Batch Dates
+against `batch_dates.csv`; both registers (numbers 1..n in row order, the code built from
+the number, unique keys, planned dates in the numbering order, a number only where the row
+is issuable, every CoQ's iCoA present and never later than the CoQ, no CoQ before its lot
+was packed, nothing before the SOP floor); the iCoA Issuance sheet's codes against the
+register; the Credit Audit and Work Order rows complete; the Read Me's sheet list and its
+print claim against the workbook.
+
+**Against the record.** Every printed result in the tracker against the two-read record of
+the certificate that reports it (5,567 comparisons in v11, none differing); every
+specification verdict against the criterion (red only where a result provably exceeds it,
+amber where it sits in the Ph. Eur. band, and no result over its criterion left unmarked);
+identification C against the certificate's own record (it must report the cannabinoid
+assay: the total, or the Δ⁹-THC and THCA pair it is computed from); the registers' legacy
+rows on their legacy day unless the Status says why not.
+
+v11 passes both passes with no finding. What the first runs found and the build now fixes:
+
+- The three P16 lots shared one register key, because a lot without a P-number of the
+  `P0…` shape fell back to its CU code and all three carry the same placeholder. The key
+  now accepts any `Pnnnnnn`, so each lot has its own row and the lookups resolve.
+- Batch Coverage named a lot without a CU code "— not assigned —" while the tracker and the
+  registers named it "— not recorded —". One name per thing: the coverage row now takes the
+  tracker's label.
+- The Credit Audit row for a reported non-conformance (FB032601, ППК26127, foreign matter
+  0.08 %) had no action beside it. It now reads: open an investigation record; the Head of
+  QC rules on the lot, and the iCoA for that parameter is held until then.
