@@ -128,13 +128,20 @@ for i, a in enumerate(anchors):
             lot['blocks'].append(blk)
     lots.append(lot)
 
+def _no_note(rows):
+    """Drop the merged note the builder writes under each table: one filled cell, the rest empty."""
+    return [r for r in rows if sum(1 for v in r.values() if str(v or '').strip()) > 2]
+
+
 data = {'coverage_headers': coverage_headers, 'coverage': coverage,
         'params': [{k: v for k, v in p.items() if k not in ('start', 'end')} for p in params],
         'lots': lots, 'work_order': table('Work Order'), 'credit_audit': table('Credit Audit'),
         'corrections': table('Credit Corrections'),
         'icoa': table('iCoA Issuance') if 'iCoA Issuance' in wb.sheetnames else [],
         'register': table('iCoA Register') if 'iCoA Register' in wb.sheetnames else [],
-        'coq_register': table('CoQ Register') if 'CoQ Register' in wb.sheetnames else []}
+        'coq_register': table('CoQ Register') if 'CoQ Register' in wb.sheetnames else [],
+        'delivery': _no_note(table('Delivery T1–T3')) if 'Delivery T1–T3' in wb.sheetnames else [],
+        'imb_register': _no_note(table('ImB Register')) if 'ImB Register' in wb.sheetnames else []}
 # the adherence flags the builder wrote under the CoQ Register
 data['coq_flags'] = []
 if 'CoQ Register' in wb.sheetnames:
@@ -143,4 +150,5 @@ if 'CoQ Register' in wb.sheetnames:
             data['coq_flags'] = str(_row[0]).split('FLAGS: ', 1)[1].split(' | ')
 json.dump(data, open(OUT, 'w'), ensure_ascii=False)
 print('lots', len(lots), 'blocks', sum(len(l['blocks']) for l in lots), 'coverage rows', len(coverage),
+      'delivery', len(data['delivery']), 'imb register', len(data['imb_register']),
       'work order', len(data['work_order']), 'audit', len(data['credit_audit']), 'corrections', len(data['corrections']))

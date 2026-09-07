@@ -28,7 +28,7 @@ summary = {"lots": len(lots), "instances": inst, "oos": oos, "und": und, "stab":
 d["summary"] = summary
 payload = json.dumps(d, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
 
-html = r'''<title>CoQ Analysis Master v9</title>
+html = r'''<title>CoQ Analysis Master v__VER__</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 :root{
@@ -119,7 +119,7 @@ footer{color:var(--muted);font-size:12.5px;margin-top:40px;max-width:80ch}
 </style>
 
 <div class="wrap">
-<h1>CoQ Analysis Master v9</h1>
+<h1>CoQ Analysis Master v__VER__</h1>
 <p class="sub" id="subline"></p>
 
 <nav class="tabs" role="tablist">
@@ -129,6 +129,8 @@ footer{color:var(--muted);font-size:12.5px;margin-top:40px;max-width:80ch}
   <button role="tab" aria-selected="false" data-view="icoa">iCoA Issuance</button>
   <button role="tab" aria-selected="false" data-view="register">iCoA Register</button>
   <button role="tab" aria-selected="false" data-view="coqreg">CoQ Register</button>
+  <button role="tab" aria-selected="false" data-view="delivery">Delivery T1–T3</button>
+  <button role="tab" aria-selected="false" data-view="imb">ImB Register</button>
 </nav>
 
 <section id="overview">
@@ -194,6 +196,18 @@ footer{color:var(--muted);font-size:12.5px;margin-top:40px;max-width:80ch}
   <p class="sub" id="cq-flags"></p>
 </section>
 
+<section id="delivery" hidden>
+  <p class="sub">The three deliveries of 31.07, 14.08 and 28.08.2026 \u2014 78 cultivation batches, 6,934.26 kg \u2014 each against its row on Batch Coverage. \u201cDesk lot\u201d says how the delivered batch resolves: directly, through the asterisk the delivery sheet drops, through the P lot the Head of QC\u2019s list gives it, or through the certificates that print it. A roll-up in that column means the desk holds ONE row for several delivered sub-lots, so its coverage is not a statement about this sub-lot alone. A red potency line is not a desk error: the batch was delivered in a bracket its own certificate contradicts, and only the QP can settle which is right.</p>
+  <div class="toolbar"><input id="dl-q" type="search" placeholder="Filter by batch, strain, P lot, status\u2026" aria-label="Filter delivery rows"><span id="dl-n" class="label"></span></div>
+  <div class="scroll"><table id="dl-table"></table></div>
+</section>
+
+<section id="imb" hidden>
+  <p class="sub">The customer\u2019s own certificate register, scanned 04.09.2026: 43 entries for the earliest production, each against its desk lot. It covers the six 2024 lots, P050012\u2013P050322 and P060012\u2013P060092, and inside that span is contiguous except for P050142, P050202, P050232 and P050242. Everything from P060102 onward is outside it entirely. Read through Drive\u2019s text extraction \u2014 the file is 12.3 MB and the connector will not download over 10 MB \u2014 so a batch found is firm, a batch absent is well supported but not proven on the page; the certificate numbers below 017 did not survive.</p>
+  <div class="toolbar"><input id="ib-q" type="search" placeholder="Filter by certificate, batch, strain\u2026" aria-label="Filter ImB register rows"><span id="ib-n" class="label"></span></div>
+  <div class="scroll"><table id="ib-table"></table></div>
+</section>
+
 <footer>One two-row block per testing instance: the result on the top row, the certificate that carries it on the bottom. Parameters 9–11 print each determination in its own column. Conformance is judged on release results only, against the acceptance criteria on the Parameters sheet (counted limits ≤10ⁿ judged against 2×10ⁿ, Ph. Eur. 2.6.12). Built from <code>CoQ_Analysis_Master_v10.xlsx</code>, 04.09.2026: the 30 IJZ-MB microbiology certificates of 31.08/01.09.2026 are included as testing instances.</footer>
 </div>
 
@@ -213,7 +227,7 @@ document.getElementById('subline').textContent =
 const tabs = [...document.querySelectorAll('nav.tabs button')];
 function show(view){
   tabs.forEach(b => b.setAttribute('aria-selected', String(b.dataset.view===view)));
-  ['overview','checklist','tracker','icoa','register','coqreg'].forEach(v => document.getElementById(v).hidden = v!==view);
+  ['overview','checklist','tracker','icoa','register','coqreg','delivery','imb'].forEach(v => { const el = document.getElementById(v); if (el) el.hidden = v!==view; });
   try { localStorage.setItem('coq9.view', view); } catch(e){}
 }
 tabs.forEach(b => b.addEventListener('click', () => show(b.dataset.view)));
@@ -422,9 +436,47 @@ function renderCoqReg(){
 }
 document.getElementById('cq-q').addEventListener('input', renderCoqReg);
 
+/* ---------- delivery ---------- */
+function renderDelivery(){
+  const q = (document.getElementById('dl-q').value || '').toLowerCase();
+  const rows = (D.delivery || []).filter(r => !q || Object.values(r).join(' ').toLowerCase().includes(q));
+  const cols = ['Tranche','Delivered','Batch (as delivered)','Strain','kg','Bracket','Declared','P lot','Desk lot','CoQ status','Missing','Total THC on the eCoA','Certificate','Ready to issue'];
+  document.getElementById('dl-n').textContent = rows.length + ' of ' + (D.delivery||[]).length + ' batches';
+  document.getElementById('dl-table').innerHTML =
+    '<thead><tr>' + cols.map(c => `<th>${esc(c)}</th>`).join('') + '</tr></thead><tbody>' +
+    rows.map(r => {
+      const v = String(r['Ready to issue'] || '');
+      const cls = v.startsWith('yes') ? 'p-green' : (v.startsWith('NO') ? 'p-red' : 'p-amber');
+      return '<tr>' + cols.map(c => {
+        const val = r[c] === undefined || r[c] === null ? '' : String(r[c]);
+        if (c === 'Ready to issue') return `<td><span class="pill ${cls}">${esc(val)}</span></td>`;
+        const mono = ['Batch (as delivered)','P lot','Desk lot','Certificate'].includes(c) ? ' class="mono"' : '';
+        return `<td${mono}>${esc(val)}</td>`;
+      }).join('') + '</tr>';
+    }).join('') + '</tbody>';
+}
+document.getElementById('dl-q').addEventListener('input', renderDelivery);
+
+/* ---------- ImB register ---------- */
+function renderImb(){
+  const q = (document.getElementById('ib-q').value || '').toLowerCase();
+  const rows = (D.imb_register || []).filter(r => !q || Object.values(r).join(' ').toLowerCase().includes(q));
+  const cols = ['Cert No','Strain (as printed)','Strain (ruled)','Batch','Manufactured','Retest','Desk lot','CoQ status','Note'];
+  document.getElementById('ib-n').textContent = rows.length + ' of ' + (D.imb_register||[]).length + ' certificates';
+  document.getElementById('ib-table').innerHTML =
+    '<thead><tr>' + cols.map(c => `<th>${esc(c)}</th>`).join('') + '</tr></thead><tbody>' +
+    rows.map(r => '<tr>' + cols.map(c => {
+      const val = r[c] === undefined || r[c] === null ? '' : String(r[c]);
+      const mono = ['Cert No','Batch','Desk lot'].includes(c) ? ' class="mono"' : '';
+      return `<td${mono}>${esc(val)}</td>`;
+    }).join('') + '</tr>').join('') + '</tbody>';
+}
+document.getElementById('ib-q').addEventListener('input', renderImb);
+
 renderOverview(); renderChecklist(); renderTracker(); renderIcoa(); renderRegister(); renderCoqReg();
+renderDelivery(); renderImb();
 let v = 'overview'; try { v = localStorage.getItem('coq9.view') || v; } catch(e){}
-show(['overview','checklist','tracker','icoa','register','coqreg'].includes(v) ? v : 'overview');
+show(['overview','checklist','tracker','icoa','register','coqreg','delivery','imb'].includes(v) ? v : 'overview');
 })();
 </script>
 '''
@@ -432,6 +484,8 @@ show(['overview','checklist','tracker','icoa','register','coqreg'].includes(v) ?
 # stayed that way through v10-v13, so a rebuilt page overwrote the previous one under a name
 # that named the wrong version.
 _m = re.search(r"v(\d+)", os.path.basename(DATA))
+_ver = _m.group(1) if _m else "latest"
+html = html.replace("__VER__", _ver)
 out = sys.argv[2] if len(sys.argv) > 2 else os.path.join(
     HERE, "coq_master_v%s.html" % (_m.group(1) if _m else "latest"))
 open(out, "w").write(html.replace("__DATA__", payload))
