@@ -786,3 +786,61 @@ OPM122501, 104.26 kg — over-declared at 11.00 % against a certificate reading 
   the strain is printed in Latin inside Macedonian text and is copied exactly — `Cup Junky`,
   `Sleepy Joy`, `Permanent Market` and `GorillaGlue` are reader inventions, and they split
   one strain in two wherever anything groups by strain (9).
+
+## v13 — the strain ruling and the ImB certificate register (07.09.2026)
+
+Two things arrived together: the Head of QC ruled a strain name, and the customer's own
+certificate register was scanned and could be read for the first time.
+
+### The ruling: **Cap Junky**
+
+The ImB certificate register of 04.09.2026 prints one strain three ways — `Cap Junky` on
+certificate 041, `Cap Junkie` on 028, `Cup Junkie` on the P050162 entry — and the delivery
+sheet prints `Cap Junkie`. Anything grouping by strain saw three strains. **Head of QC,
+07.09.2026: `Cap Junky` is correct.** It is in `identity_decisions.tsv` and carried by
+`strains.py`, applied at display time to Batch Coverage, Delivery T1–T3 and ImB Register —
+22 cells in v13. The certificates keep what they print, per the verbatim rule.
+
+`strains.py` does exactly three things, and the third is a refusal:
+
+1. applies rulings a person has made (today, one);
+2. repairs a **missing space** where the letters are otherwise identical — `GorillaGlue` →
+   `Gorilla Glue` — because that decides nothing;
+3. **does not** choose between two spellings that differ in their letters. Six such
+   disagreements between the delivery sheet and the certificate register — Sleepy Joe/Joy,
+   Permanent Marker/Market, Wedding Crusher/Crasher, Appels & Bananas/Apple and Banana,
+   Jelly Donuts/Donutz, Clemosa/Clemosa a Bud — are written onto the **Work Order** with both
+   sources named, for a ruling like the one above.
+
+This also corrects §5 of `DELIVERY_RECONCILIATION_2026-09-07.md`, which called these names
+reader inventions. They are not: four of them are printed in the company's own register, and
+the desk was copying faithfully. The correction is in the report.
+
+### The ImB Register sheet
+
+43 entries from the scan of 04.09.2026, each against its desk lot: certificate number, the
+strain as printed and as ruled, the batch, manufacturing and retest dates, the desk's lot and
+its CoQ status. It answers what the desk could not — which batches the customer already holds
+a certificate for.
+
+The register covers the earliest production only: the six 2024 lots, P050012–P050322 and
+P060012–P060092. Inside that span it is contiguous **except for four lots**: P050142, P050202,
+P050232, P050242 — `BSS1024_01/2`, `GP062501`, `GOG062501` and `SC062501` on the Head of QC's
+list. Everything from P060102 onward is outside the register altogether.
+
+Two limits are printed on the sheet rather than left implicit. The file is 12.3 MB and the
+Drive connector refuses downloads over 10 MB, so the **pages have not been read** — this is
+Drive's text extraction, which makes a batch found firm and a batch absent well supported but
+not proven. And the certificate numbers below 017 did not survive the extraction; they show
+as "— not read —".
+
+### Two smaller repairs
+
+- `build_artifact_page.py` wrote `coq_master_v9.html` no matter which workbook it was built
+  from, so v10 through v13 all overwrote a page named for v9. The page is now named for its
+  workbook (`coq_master_v13.html`).
+- The gap computation for the register ran across the P05/P06 series boundary and reported
+  970 missing lots where there are four. Gaps are now computed within a series.
+- `verify_prose.py` required every Work Order row to name a certificate on the Credit Audit.
+  A strain-name row names no document; a row whose certificate column holds an em dash is now
+  skipped rather than reported.

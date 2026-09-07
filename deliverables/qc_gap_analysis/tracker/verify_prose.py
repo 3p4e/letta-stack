@@ -163,6 +163,11 @@ for r in range(2, wo.max_row + 1):
     code = str(wo.cell(r, 4).value or "")
     if not task or task.startswith("Head of QC"):
         continue
+    # A Work Order row need not be about a certificate at all. The strain-name rows added
+    # 07.09.2026 name no document — they ask a person to rule on a spelling — and an em dash
+    # in the certificate column is how such a row says so.
+    if code.strip() in ("", "—", "-"):
+        continue
     if code and code not in audit_codes and "lot" not in task.lower():
         bad("Work Order", "names a certificate that is not on the Credit Audit", f"row {r}: {task[:30]} {code}")
 

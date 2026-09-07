@@ -1,4 +1,4 @@
-import json, os, collections
+import json, os, re, collections
 HERE = os.path.dirname(os.path.abspath(__file__))
 import sys
 DATA = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "v9_data.json")
@@ -428,6 +428,11 @@ show(['overview','checklist','tracker','icoa','register','coqreg'].includes(v) ?
 })();
 </script>
 '''
-out = os.path.join(HERE, "coq_master_v9.html")
+# The page is named for the workbook it was built from. It used to be hard-coded to v9 and
+# stayed that way through v10-v13, so a rebuilt page overwrote the previous one under a name
+# that named the wrong version.
+_m = re.search(r"v(\d+)", os.path.basename(DATA))
+out = sys.argv[2] if len(sys.argv) > 2 else os.path.join(
+    HERE, "coq_master_v%s.html" % (_m.group(1) if _m else "latest"))
 open(out, "w").write(html.replace("__DATA__", payload))
 print(out, os.path.getsize(out), summary)

@@ -123,18 +123,63 @@ now says "the desk row is the roll-up X" in the Desk lot column wherever this ap
 the potency column is keyed to the batch itself, never through the roll-up. Splitting the
 rows needs the owner's word on which certificate belongs to which sub-lot.
 
-## 5. Strain names invented by the reader
+## 5. Strain names — corrected 07.09.2026
 
-The corpus holds `Cup Junky`, `Sleepy Joy`, `Permanent Market`, `Appel and Banana`,
-`Wedding Crasher`, `GorillaGlue` and `Clemosa a bud` — none of which is what the page
-prints. Each splits one strain in two wherever anything groups by strain. Worse, the desk
-files **GG4** (GG012601, GG012603, GG112501) and **Gorilla Glue** (GG1024, GG1024_01,
-GG1024_02) under one strain name, while the delivery list keeps them apart as two strains.
+**This section said the reader invented these names. That was wrong, and the correction
+matters more than the original finding.** The ImB certificate register scanned on 04.09.2026
+— the company's own document — prints `Sleepy Joy` (P060082), `Permanent Market` (P060062,
+P050272), `Wedding Crasher` (P060012, P050262) and `Clemosa a Bud` (P050282). The desk was
+copying faithfully; the attribution of fault was the error.
+
+What is true, and is worse, is that **one strain is written three ways in that one
+register**: `Cap Junky` on certificate 041, `Cap Junkie` on 028, and `Cup Junkie` on the
+P050162 entry — while the delivery sheet prints `Cap Junkie`. Anything grouping by strain
+saw three strains.
+
+**Ruled (Head of QC, 07.09.2026): the correct spelling is `Cap Junky`.** It is recorded in
+`ingestion/ecoa_runner/identity_decisions.tsv` and carried by `strains.py`, which the tracker
+applies to the strain column of Batch Coverage, Delivery T1–T3 and the ImB Register — 22
+cells in v13. The certificates themselves keep what they print, per the verbatim rule; the
+ruling governs what the desk displays and what a CoQ will carry.
+
+Where two of the company's own documents disagree in their **letters** — Sleepy Joe against
+Sleepy Joy, Permanent Marker against Permanent Market, Wedding Crusher against Wedding
+Crasher, Appels & Bananas against Apple and Banana, Jelly Donuts against Jelly Donutz,
+Clemosa against Clemosa a Bud — nothing is decided here. Those six now appear on the **Work
+Order** with both sources named, for a ruling like the one above. A missing space is repaired
+without a ruling (`GorillaGlue` → `Gorilla Glue`), because that decides nothing.
+
+Two of the names in the original list do look like reading errors, since the register differs
+from what the desk holds: it prints `Apple and Banana` where the corpus has `Appel and
+Banana`, and `Gorilla Glue` where the tracker had `GorillaGlue`.
+
+Separately and still open: the desk files **GG4** (GG012601, GG012603, GG112501) and
+**Gorilla Glue** (GG1024, GG1024_01, GG1024_02) under one strain name, while the delivery
+sheet keeps them apart as two strains.
 
 *Fixed in the prompt* (rule 9, plus a closed strain list in `identity_normalisation`): the
 strain is printed in Latin inside Macedonian text and must be copied exactly — a read that
 lands outside the list is a reading error to raise, never a new strain and never a quiet
 mapping. The corpus keeps what it holds until re-read; the rule stops it recurring.
+
+## 5b. The ImB certificate register (scan of 04.09.2026)
+
+The customer's own certificate register, 43 entries, is now a sheet of its own — **ImB
+Register** — with each entry against its desk lot. It answers a question the desk could not:
+which batches ImB already holds a certificate for.
+
+It covers the earliest production only: the six 2024 lots, `P050012–P050322` and
+`P060012–P060092`. Within that span it is contiguous **except for four lots** — `P050142`,
+`P050202`, `P050232`, `P050242`, which the Head of QC's list names `BSS1024_01/2`,
+`GP062501`, `GOG062501` and `SC062501`. Everything from `P060102` onward is outside the
+register entirely, which is why 25 of the 30 lots checked against it on 07.09.2026 are absent
+for a structural reason rather than a worrying one. `BSS1024_01/2` is the exception: it sits
+inside the covered span and is skipped.
+
+One limit, stated on the sheet: the file is 12.3 MB and the Drive connector will not download
+over 10 MB, so the pages have not been read here — this is Drive's text extraction. A batch
+found is firm; a batch absent is well supported but not proven on the page. The certificate
+numbers below 017 did not survive the extraction.
 
 ## 6. RAGflow
 
