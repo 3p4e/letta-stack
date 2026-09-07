@@ -551,9 +551,11 @@ the builder so every later version carries them:
   identity, status, result and glyph cells. The lot outline is now drawn last and its
   bottom edge is set on the anchor of every merged range that ends on the lot's last row.
 
-Also in the owner's v9, not adopted because v10 does not repeat them: every result and
-reference at 9 pt, the CU and P batch cells at 16 pt bold with column A widened to 21.9,
-references vertically centred. Say the word and they go in.
+Also in the owner's v9: every result and reference at 9 pt, the CU and P batch cells at
+16 pt bold with column A widened to 21.9, references vertically centred. **Head of QC,
+07.09.2026: nothing further is carried over from v9** — those settings are declined and the
+question is closed. The tracker keeps 7 pt results (with #4 at 13 pt and #5, #6 at 10 pt from
+v10), 6 pt references, and column A at 13.0.
 
 ### Truth check of the v10 workbook (06.09.2026)
 
