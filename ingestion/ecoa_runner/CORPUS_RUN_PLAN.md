@@ -192,3 +192,26 @@ the open items (it drops an unapplied decision typed into it): fill the sheet af
 - `ingest_new_documents.py` — `setup` (restore the agent's models, flatten prompts), `upload`, `run NAME…|--all` (ingest with integer `run: 1`, poll to a terminal state, gate), `status`. PDFs come from `ECOA_PDF_DIR`.
 - `post_ingest.py` — `keywords` (add the digit-zero P-number to every new chunk, verified by re-read), `prompts` (the P-number rule in both extractor prompts).
 - `deliverables/qc_gap_analysis/tracker/new_instances_from_records.py` — records + manifest → testing instances for the tracker builder.
+
+## Identity rulings (Head of QC) — `identity_decisions.tsv`
+
+A ruling on a document's identity — which batch a certificate belongs to — is not a
+parameter value, so it does not belong in the value ledger `decisions_*.tsv`. It is recorded
+in `identity_decisions.tsv` (date, document, certificate, field, confirmed value, what it
+rested on before, who ruled, on what basis), and the record itself is stamped:
+`confirmed.batch_canonical` names the person and the date, and the caveat the extraction
+left behind ("batch_canonical read by only one model") is cleared.
+
+**07.09.2026 — 197-9-K-26 and 197-9-M-26 belong to GG1024_01.** The Farmahem retest pair of
+07 and 10.08.2026 had its batch from one read only; the other read was silent, and the
+attribution otherwise rested on the filename (`P050092_…`). The Head of QC read both pages:
+**GG1024_01 is printed on each.** The attribution stands, now on a page read rather than a
+single model.
+
+Two naming rules confirmed with it, and already in the code: **GG1024_01, GG1024/01 and
+GG1024-01 are one batch** (`batch_id.py` folds the separator), and **GG1024 is a different
+lot from GG1024_01** — an R&D batch is never folded into its production batch. So the R&D
+lot GG1024 has no cannabinoid assay of any kind on file: no CNP certificate, no Farmahem
+retest, only the in-house Report of Analysis of 23.04.2025 (13.34 %), which is not an eCoA.
+Of the six R&D lots, four were retested (BG1024, BSS1024, HPA1024, OPM1024); GG1024 and
+CJ1024 were not.

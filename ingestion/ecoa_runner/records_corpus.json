@@ -25219,9 +25219,9 @@
   ],
   "batch_canonical": "GG1024_01",
   "notes": [
-   "batch_canonical read by only one model",
    "lab_accreditation differs in wording between reads",
-   "lab_standard differs in wording between reads"
+   "lab_standard differs in wording between reads",
+   "batch confirmed on the certificate page by the Head of QC, 07.09.2026: GG1024_01"
   ],
   "strain": "Gorilla Glue",
   "cert_code": null,
@@ -25617,6 +25617,9 @@
      }
     ]
    }
+  },
+  "confirmed": {
+   "batch_canonical": "Head of QC (azu.sozon@gmail.com), 07.09.2026"
   }
  },
  {
@@ -25629,9 +25632,9 @@
   ],
   "batch_canonical": "GG1024_01",
   "notes": [
-   "batch_canonical read by only one model",
    "lab_accreditation differs in wording between reads",
-   "lab_accreditation_body differs in wording between reads"
+   "lab_accreditation_body differs in wording between reads",
+   "batch confirmed on the certificate page by the Head of QC, 07.09.2026: GG1024_01"
   ],
   "strain": "Gorilla Glue",
   "cert_code": null,
@@ -25980,6 +25983,9 @@
      }
     ]
    }
+  },
+  "confirmed": {
+   "batch_canonical": "Head of QC (azu.sozon@gmail.com), 07.09.2026"
   }
  },
  {
