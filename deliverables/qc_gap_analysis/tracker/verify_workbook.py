@@ -73,15 +73,17 @@ for a, nxt in zip(anchors, anchors[1:] + [sh.max_row + 1]):
     docs = collections.defaultdict(list)
     for n, (s0, e) in PCOL.items():
         single = (e - s0) <= 2
-        for r in range(a, nxt):
-            # a single-value parameter prints its reference beside the result; a parameter with
-            # sub-determinations prints it on the block's bottom row, merged from the first column
-            txt = str(WV[TRACKER].cell(r, s0 + 1 if single else s0).value or "")
-            if not txt or "no certificate" in txt or txt.startswith("— MISSING"):
+        for r in range(a, nxt, 2):
+            # coverage means what the tracker means by it: a credited certificate reporting a
+            # RELEASE result — the green fill. A credited certificate without a result (amber), a
+            # stability timepoint (orange) and an uncredited document (grey) are not coverage.
+            c = sh.cell(r, s0)
+            fill = c.fill.fgColor.rgb[-6:] if c.fill and c.fill.fill_type == "solid" and isinstance(c.fill.fgColor.rgb, str) else None
+            if fill != "C6EFCE":
                 continue
-            if "on file, not credited" in txt:      # shown, never coverage
-                continue
-            docs[n].append(txt)
+            txt = str(WV[TRACKER].cell(r if single else r + 1, s0 + 1 if single else s0).value or "")
+            if txt and "on file, not credited" not in txt:
+                docs[n].append(txt)
     LOTS[(cu, p)] = {"row": a, "docs": docs, "status": str(sh.cell(a, 3).value or "")}
 
 # ---------------------------------------------------------------- 1. Batch Coverage

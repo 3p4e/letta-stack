@@ -632,3 +632,32 @@ v11 passes both passes with no finding. What the first runs found and the build 
 - The Credit Audit row for a reported non-conformance (FB032601, ППК26127, foreign matter
   0.08 %) had no action beside it. It now reads: open an investigation record; the Head of
   QC rules on the lot, and the iCoA for that parameter is held until then.
+
+### `verify_prose.py` — what each sheet says about itself (07.09.2026)
+
+A third pass beside `verify_workbook.py`, because a true table under a false sentence is
+still a false sheet. It tests the tracker's STATUS cell (the missing count, the buckets it
+names, the number of testing instances, the number of uncredited documents) against the
+lot's own blocks; Batch Coverage's certificate count and laboratory list against the lot's
+credited documents; the Mikro sheet cell by cell against the tracker (430 cells); every
+Credit Audit finding against the corpus ("not ingested" only where the corpus really lacks
+the certificate, and an in-house form is never expected in it); the Work Order against the
+audit; each register note's dates against the rows beneath it; and Batch Dates against the
+list as the Head of QC sent it (`batch_dates_raw_2026-09-04.tsv`: name, P batch, and the
+day and month of every date).
+
+What it found, and the build now fixes:
+
+- **Two definitions of "covered".** Batch Coverage marked ✓ where a certificate was
+  credited; the tracker's STATUS counted the same parameter as NO RESULT when that
+  certificate carries no release result — a certificate credited without a value, or a
+  stability timepoint. They disagreed on six lots. One definition now, the tracker's: **✓
+  means a credited certificate reports a release result**, and the coverage marks are taken
+  from the tracker's own reading of each parameter, so coverage, the dashboard and every
+  STATUS agree. The dashboard moves to 46 complete, 14 partial, 20 incomplete of 80 lots.
+- **The status text had no bucket for a stability-only parameter**, so a lot could read
+  "1 NO RESULT (0 no cert / 0 cert w/o result)". It now reads "… / 1 stability only)".
+- **The certificate count and the laboratory list were not recomputed for the four merged
+  lots** (GG012603, J31102501, JD112501, OPM122501): the kept row carried the original
+  row's figures, so the count was short by one or two and the Farmahem laboratories were
+  missing from the list. Both are recomputed from the lot's credited documents.

@@ -917,6 +917,7 @@ row = 5
 stats = collections.Counter()
 oos_rows = []
 audit = []
+LOT_STATE = {}      # lot -> {"pstate": {n: green|orange|amber|red}, "codes": {code: lab}}
 SPAN = {}
 for _cu, _pb, _code, _date, _lab, _pno in NEW_NONCONF:
     audit.append((_cu, _pb, _code, _date, _lab, _pno,
@@ -938,7 +939,7 @@ for b in batches:
             put(ws, first, cidx, v, font, NAVY)
             fill_range(ws, first, cidx, last, cidx, NAVY)
 
-    no_cert = cert_no_result = missing = 0
+    no_cert = cert_no_result = stab_only = missing = 0
     oos_list, und_list, stab_list = [], [], []
 
     def verdict(det_no, release_vals, stability_vals, label):
@@ -971,7 +972,7 @@ for b in batches:
         if rel:
             st = "green"
         elif stab:
-            st = "orange"
+            st = "orange"; stab_only += 1
         elif credited:
             st = "amber"; cert_no_result += 1
         else:
@@ -1075,11 +1076,14 @@ for b in batches:
         if i:                                   # a hairline between testing instances
             outline(ws, top, 1, bot, LAST, MED)
 
+    LOT_STATE[id(b)] = {"pstate": dict(pstate),
+                        "codes": {c: l for v in docs.values() for c, d, l, cr in v if cr}}
     if missing == 0:
         st, colour = "✓ COMPLETE", STATUSFILL["green"]
     else:
         glyph = "⚠" if missing <= STATUS_PARTIAL_MAX else "✗"
-        st = f"{glyph} {missing} NO RESULT\n({no_cert} no cert / {cert_no_result} cert w/o result)"
+        st = (f"{glyph} {missing} NO RESULT\n({no_cert} no cert / {cert_no_result} cert w/o result"
+              + (f" / {stab_only} stability only)" if stab_only else ")"))
         colour = STATUSFILL["orange"] if missing <= STATUS_PARTIAL_MAX else STATUSFILL["red"]
     if K > 1:
         st += f"\n{K} testing instances"
@@ -1421,15 +1425,22 @@ def patch_coverage(wb):
         if r is None:
             print("coverage: no row for", b["cu"], b["p"])
             continue
+        # ✓ means what the tracker means by it: a credited certificate reports a release result.
+        # A certificate credited without a result, and a stability timepoint, are not coverage —
+        # the tracker's STATUS counts them as NO RESULT and the two sheets must not disagree.
+        _ps = (LOT_STATE.get(id(b)) or {}).get("pstate", {})
         for n in range(1, 13):
-            want = "✓" if b["docs"][n] else "✗"
+            want = "✓" if _ps.get(n, "red") == "green" else "✗"
             if cov.cell(r, 4 + n).value != want:
                 cov.cell(r, 4 + n).value = want
-                _style_from(cov.cell(r, 4 + n), tick if b["docs"][n] else cross)
-            if b["docs"][n] and all(T.kind_of(c, l, STAB) in ("In-house", "iCoA") for c, d, l in b["docs"][n]):
+                _style_from(cov.cell(r, 4 + n), tick if want == "✓" else cross)
+            if want == "✓" and b["docs"][n] and all(T.kind_of(c, l, STAB) in ("In-house", "iCoA") for c, d, l in b["docs"][n]):
                 cov.cell(r, 4 + n).fill = PatternFill("solid", fgColor="E7E6E6")
                 cov.cell(r, 4 + n).font = Font(name="Calibri", size=9, color="595959")
         cov.cell(r, 19).value = int(cov.cell(r, 19).value or 0) + len(new_docs)
+        _cd = (LOT_STATE.get(id(b)) or {}).get("codes") or {}
+        if _cd:                              # a merged lot carries the certificates of both its rows
+            cov.cell(r, 19).value = len(_cd)
         labs = collections.OrderedDict()
         for tok in str(cov.cell(r, 20).value or "").split(";"):
             m = re.match(r"\s*\[([^\]]+)\]\s*(\d+)", tok)
@@ -1437,7 +1448,9 @@ def patch_coverage(wb):
                 labs[m.group(1)] = int(m.group(2))
         for c, d, l in new_docs:
             labs[l] = labs.get(l, 0) + 1
-        cov.cell(r, 20).value = "; ".join(f"[{k}] {v}" for k, v in labs.items())
+        if _cd:
+            labs = collections.Counter(_cd.values())
+        cov.cell(r, 20).value = "; ".join(f"[{k}] {v}" for k, v in sorted(labs.items()))
         recount(r)
     for r in range(2, last + 1):           # one name per thing: the tracker's label for a lot without a CU code
         _cu = str(cov.cell(r, 1).value or "")
