@@ -1883,6 +1883,7 @@ def add_dates_sheet(wb):
 SHEET_ABOUT = {
     "Read Me": "This sheet.",
     "CoQ Parameter Tracker": "One lot per block of two rows per testing instance: the result of each determination on the top row, the certificate that reports it (code, date, laboratory) beneath; acceptance criteria in row 3 and enforced; out-of-specification results in red and named in STATUS; the in-house iCoA cells cite the iCoA Register by key.",
+    "ImB Register": "The customer's certificate register, scanned 04.09.2026: 43 certificates for the earliest production, each against its desk lot — the strain as printed and as ruled, the manufacturing and retest dates, and the four lots the register skips inside the span it covers.",
     "Delivery T1–T3": "The 78 cultivation batches delivered in the three tranches of 31.07, 14.08 and 28.08.2026, each against its row on Batch Coverage: the P lot, the CoQ status, what is missing, and the potency the batch was delivered under beside the potency its own certificate reports.",
     "Batch Coverage": "One row per lot: ✓/✗ for each of the 12 parameters, the missing list, the number of certificates and the laboratories present. A grey ✓ is covered by the in-house iCoA.",
     "Mikro CoQ Parameter": "The owner's microbiology sheet, rebuilt from the tracker: the #7–#12 spans per lot in the owner's layout.",
@@ -2055,6 +2056,157 @@ def add_delivery_sheet(wb):
           f"no record {n_none}, potency contradicted {n_pot}")
 
 
+# ------------------------------------------------------------------ strain names
+def _strains():
+    import importlib.util as _il
+    _sp = _il.spec_from_file_location("strains", os.path.join(HERE, "strains.py"))
+    _m = _il.module_from_spec(_sp)
+    _sp.loader.exec_module(_m)
+    return _m
+
+
+def apply_strain_rulings(wb):
+    """Print the strain a person has ruled on, and print the disagreements rather than hide them.
+
+    A strain name reaches the certificate of quality, so a strain written three ways is three
+    strains to anything that groups by it. The ImB certificate register of 04.09.2026 prints
+    "Cap Junky" (cert 041), "Cap Junkie" (028) and "Cup Junkie" (the P050162 entry) for one
+    strain; the Head of QC ruled Cap Junky on 07.09.2026 and strains.py carries the ruling.
+
+    What is NOT decided here: where the delivery sheet and the certificate register disagree
+    in their letters — Sleepy Joe against Sleepy Joy, Permanent Marker against Permanent
+    Market, Wedding Crusher against Wedding Crasher — both are the company's own documents,
+    and choosing between them is a person's job. Those are listed on the Work Order.
+    """
+    ST = _strains()
+    changed, conflicts = [], {}
+    for sheet, col in (("Batch Coverage", 3), ("Delivery T1\u2013T3", 4)):
+        if sheet not in wb.sheetnames:
+            continue
+        sh = wb[sheet]
+        for r in range(2, sh.max_row + 1):
+            v = sh.cell(r, col).value
+            if not v or str(v).startswith("\u2014"):
+                continue
+            c = ST.canonical(str(v))
+            if c != str(v).strip():
+                changed.append((sheet, str(v), c))
+                sh.cell(r, col).value = c
+            cf = ST.conflict(c)
+            if cf:
+                conflicts[c] = cf
+    # The unresolved ones go where a person will act on them, not into a log nobody reads.
+    if conflicts and "Work Order" in wb.sheetnames:
+        wo = wb["Work Order"]
+        r = wo.max_row
+        while r > 1 and not wo.cell(r, 1).value:
+            r -= 1
+        src = 2 if wo.max_row >= 2 else 1
+        seen = set()
+        for name, (a, b) in sorted(conflicts.items()):
+            if (a, b) in seen:
+                continue
+            seen.add((a, b))
+            r += 1
+            for c in range(1, 9):
+                _style_from(wo.cell(r, c), wo.cell(src, c))
+            for c, v in ((1, "strain name unruled"), (2, name), (3, "—"), (4, "—"), (5, "—"),
+                         (6, "—"), (7, "strain, printed on every CoQ"),
+                         (8, "Two of the company's own documents disagree: " + a + " against " +
+                             b + ". Both are yours, so the desk holds what it was given and "
+                             "prints neither as correct. Rule it as Cap Junky was ruled on "
+                             "07.09.2026, and strains.py will carry it.")):
+                wo.cell(r, c).value = v
+    print("strain rulings applied: %d cell(s); unresolved strain conflicts: %d (added to the Work Order)"
+          % (len(changed), len(conflicts)))
+    return changed, conflicts
+
+
+def add_imb_register_sheet(wb):
+    """The ImB certificate register (scan of 04.09.2026) against the desk.
+
+    43 certificates for the earliest production: the six 2024 lots, P050012-P050322 and
+    P060012-P060092. It is the customer-facing numbering, so it answers a question the desk
+    cannot: which batches ImB already holds a certificate for. Inside the span it covers it
+    is contiguous except for four lots, and those four are the finding.
+    """
+    src = os.path.join(HERE, "imb_certificate_register_scan_2026-09-04.tsv")
+    if not os.path.exists(src):
+        return
+    import csv as _csv
+    rows = list(_csv.DictReader(open(src, encoding="utf-8"), delimiter="\t"))
+    ST = _strains()
+    cov = wb["Batch Coverage"]
+    last = cov.max_row
+    while last > 1 and not cov.cell(last, 1).value:
+        last -= 1
+    by_p, by_cu = {}, {}
+    for r in range(2, last + 1):
+        cu = str(cov.cell(r, 1).value or "")
+        if cu and not cu.startswith("\u2014"):
+            by_cu[T.batch_key(cu)] = r
+        for _p in str(cov.cell(r, 2).value or "").split("/"):
+            _p = _p.strip()
+            if _p.startswith("P"):
+                by_p[_p] = r
+    where = (wb.sheetnames.index("Delivery T1\u2013T3") + 1) if "Delivery T1\u2013T3" in wb.sheetnames else len(wb.sheetnames)
+    sh = wb.create_sheet("ImB Register", where)
+    cols = [("Cert No", 9), ("Strain (as printed)", 20), ("Strain (ruled)", 18), ("Batch", 12),
+            ("Manufactured", 14), ("Retest", 15), ("Desk lot", 18), ("CoQ status", 14), ("Note", 46)]
+    for i, (t, w) in enumerate(cols, 1):
+        put(sh, 1, i, t, FW, NAVY, CEN)
+        sh.column_dimensions[L(i)].width = w
+    sh.row_dimensions[1].height = 22
+    r = 2
+    seen_p = []
+    for e in rows:
+        b = e["batch"].strip()
+        row = by_p.get(b) or by_cu.get(T.batch_key(b))
+        if b.startswith("P0"):
+            seen_p.append(b)
+        printed = e["strain_printed"].strip()
+        ruled = ST.canonical(printed)
+        note = ""
+        if ruled != printed:
+            note = "strain ruled Cap Junky; the register prints " + printed
+        elif ST.conflict(printed):
+            note = "strain unresolved: " + ST.conflict(printed)[0] + " vs " + ST.conflict(printed)[1]
+        vals = (e["cert_no"] or "\u2014 not read \u2014", printed, ruled, b, e["manufactured"] or "\u2014",
+                e["retest"] or "\u2014 none printed \u2014",
+                str(cov.cell(row, 1).value) if row else "\u2014 no desk lot \u2014",
+                str(cov.cell(row, 4).value) if row else "\u2014", note)
+        for i, v in enumerate(vals, 1):
+            put(sh, r, i, v, F7B if i == 4 else F7,
+                FILL["amber"] if ((i == 7 and not row) or (i == 1 and not e["cert_no"])) else
+                (FILL["green"] if (i == 3 and ruled != printed) else None),
+                CEN if i != 9 else Alignment(horizontal="left", vertical="center", wrap_text=True))
+        r += 1
+    # gaps are computed WITHIN each P series: P050332 -> P060012 is a change of series, not
+    # a run of 970 missing lots, and treating it as one produced exactly that nonsense once
+    gaps = []
+    for _pre in ("P05", "P06"):
+        _n = sorted(int(x[3:]) for x in seen_p if x.startswith(_pre))
+        if not _n:
+            continue
+        gaps += ["%s%04d" % (_pre, m) for m in range(_n[0], _n[-1] + 1, 10) if m not in _n]
+    note = ("The ImB certificate register, scanned 04.09.2026 (Emailing Scan - 2026-09-04 06_15_05.pdf), "
+            "read through the Drive text extraction: the file is 12.3 MB and the connector will not "
+            "download over 10 MB, so the PAGES have not been read here \u2014 a batch found is firm, a batch "
+            "absent is well supported but not proven on the page. 43 entries; the certificate numbers "
+            "below 017 did not survive the extraction and read '\u2014 not read \u2014'. The register covers the "
+            "earliest production only: the six 2024 lots, P050012\u2013P050322 and P060012\u2013P060092, contiguous "
+            "except for %s \u2014 which the Head of QC's list names BSS1024_01/2, GP062501, GOG062501 and "
+            "SC062501. Everything from P060102 onward is outside this register entirely."
+            % (", ".join(gaps) or "nothing"))
+    sh.merge_cells(start_row=r + 1, start_column=1, end_row=r + 1, end_column=len(cols))
+    put(sh, r + 1, 1, note, F6I, GREY, Alignment(horizontal="left", vertical="top", wrap_text=True))
+    sh.row_dimensions[r + 1].height = 58
+    sh.auto_filter.ref = f"A1:{L(len(cols))}{r - 1}"
+    sh.freeze_panes = "A2"
+    print("ImB register rows: %d (%d numbered); gaps inside the covered span: %s"
+          % (len(rows), sum(1 for e in rows if e["cert_no"]), ", ".join(gaps) or "none"))
+
+
 def write_read_me(wb):
     """The Read Me describes the workbook as it is: the sheets it holds, what the marks mean, the
     rulings in force, the version history — regenerated on every build, never inherited."""
@@ -2183,6 +2335,8 @@ if NEW:
         add_dates_sheet(wb)
         write_register_file(os.path.join(HERE, "Issuance_Registers_prelim.xlsx"))
     add_delivery_sheet(wb)
+    add_imb_register_sheet(wb)
+    apply_strain_rulings(wb)
     write_read_me(wb)
     fix_parameters(wb)
     print_setup(wb)
