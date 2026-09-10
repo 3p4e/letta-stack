@@ -4,36 +4,31 @@ Nothing in this folder is a certificate. Every document here is a **draft**:
 watermarked DRAFT, unsigned, with the conformity statement unticked. None has
 been issued and none may be filed or sent as though it had.
 
-## The red brackets
+## What the compiler writes, and what it must not
 
-**Anything printed in red inside square brackets is not held by the desk and has
-to be completed or confirmed before the document is issued.** Every draft says so
-in its own footnote, so the page explains itself away from this README.
+The owner's master is the document. This compiler fills **six things and nothing
+else**, and a check in the build proves it: the batch number, the strain, the
+date of manufacture (the harvest date), the packaging date, the 21 result values
+in section 02, and the laboratory cross-reference in section 03. Every parameter
+name, every method, every acceptance criterion and the whole of sections 01 and
+04 are the master's and are left exactly as it prints them.
 
-Three different things carry the marker, and the last two are the ones worth
-knowing about:
+`rowdiff.py`-style verification on every build: master 24 rows, draft 24 rows,
+**0 differences in the parameter, method and criterion columns**, 21 differences
+in the result column — which is the value, and the only thing there to change.
 
-- **a controlled blank** — the desk holds no result for that line, so it prints
-  `[—]`. Before, a blank printed as a bare em dash in the same muted grey as a
-  measured `N.D.`, in the one column where those two mean opposite things;
-- **a value the desk cannot stand behind** — the packaging construction and net
-  fill weight, and the two approvers' names and credentials. Nothing in the
-  compiler ever wrote those, so every draft was reprinting the master's worked
-  specimen as though it were this batch's. They are marked rather than deleted:
-  they are probably right, and confirming them is a person's job, not the
-  compiler's;
-- **a result that misses the criterion printed beside it** — determination 4 is
-  the only line on the certificate with a two-sided band, and nothing ever
-  judged it, so an assay below its range came through as covered. Three of these
-  22 drafts print a Total Δ⁹-THC outside its own range (19 lots corpus-wide).
-  The figure stays visible inside the brackets. Whether that is an
-  out-of-specification result or a lot in the wrong grade band is the QP's call,
-  and the compiler does not make it.
+A result the desk holds nothing for prints as `[—]` in red, so it cannot be read
+as the muted `N.D.` it used to share a colour with. That is the one marker left,
+and it sits in the result column, which is a field this compiler is asked to
+fill.
 
-The brackets carry the meaning on their own, so a greyscale photocopy loses
-nothing; the red is emphasis. It is deliberately not the red of the DRAFT
-watermark or of a failing result — a field still to be completed is not a
-failure.
+**Fields that still print the master's worked specimen**, because they are not on
+the list of what may be written and are the owner's to rule on: the document ID
+(`CoQ-PP-2026-0005`), the issue date, the product code, the potency range and
+Spec. Ref., the phenotype and processing chips, the headline potency placeholder,
+the two approvers' names, the packaging construction and net fill weight, and the
+page `<title>`. On a Grape Pie certificate several of those still read
+*Amsterdam Amnesia* and *P060052*.
 
 The drafts are compiled by
 `live_instrument/build_coq_drafts.py`, which calls the Quality Desk's own

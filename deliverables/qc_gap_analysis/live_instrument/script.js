@@ -2249,151 +2249,54 @@ function addTodoStyle(doc){
     "-webkit-print-color-adjust:exact;print-color-adjust:exact}";
   doc.head.appendChild(st);
 }
-/* textContent runs adjacent spans together ("...алу кесаPET 12..."), so the
-   element's own child nodes are joined with a space before they are marked */
-function flatText(el){
-  var out = [];
-  for (var i = 0; i < el.childNodes.length; i++) {
-    var t = (el.childNodes[i].textContent || "").trim();
-    if (t) out.push(t);
-  }
-  return (out.join(" ") || el.textContent).replace(/\s+/g, " ").trim();
-}
-function markTodo(el, text, cls){
-  if (el) el.innerHTML = todoHtml(text === undefined ? flatText(el) : text, cls);
-}
-function lkTodo(doc, label, value){
-  /* the lockup's own field name is what belongs in the bracket: a reader who
-     sees [Manuf. Date] knows both that it is missing and what goes there */
-  setLk(doc, label, value);
-  if (value !== "\u2014") return;
-  var lbls = doc.querySelectorAll(".lk-lbl");
-  for (var i = 0; i < lbls.length; i++) {
-    if (lbls[i].textContent.indexOf(label) !== 0) continue;
-    markTodo(lbls[i].parentElement.querySelector(".lk-val"), label);
-    return;
-  }
-}
 function fillCoq(c){
   var doc = tplDoc("tpl-coq");
   var q = function(s){ return doc.querySelector(s); };
   var draft = !docIssued(c);
   addTodoStyle(doc);
-  /* The master's <title> names its worked specimen — a CoQ number, a strain, a
-     grade and a batch belonging to no document this compiler produces — and it
-     is the one field that prints in the browser's own page header. It is set
-     from the batch, never inherited. */
-  doc.title = "Purely Plant \u2014 Certificate of Quality \u2014 " +
-    (draft ? "DRAFT" : c.n) + " \u2014 " + c.strain + " \u2014 Batch " + (c.pp || c.cb);
-  if (draft) markTodo(q(".hb-code"), "CoQ-PP-····-····");
-  else q(".hb-code").textContent = c.n;
-  q(".hb-issue").innerHTML = "Issued · Издаден <b>" +
-    (draft ? todoHtml("date") : esc(c.issue.replace("≥ ", ""))) + "</b>";
   q(".pb-name").innerHTML = "<span style=\"font-family:'Roboto Mono',monospace\">" +
     esc(c.pp || c.cb) + '</span> <i class="bisep" style="font-size:.7em">|</i> ' +
     '<span style="font-weight:800;text-transform:uppercase">' + esc(c.strain) + "</span>";
-  if (c.thc) q(".pbp-val").textContent = c.thc + "%";
-  else markTodo(q(".pbp-val"), "··.··%");
-  /* phenotype and processing are not held by the desk: controlled blanks QC
-     ticks by hand. Chemotype is the product's THC class and stays ticked. */
-  q(".selrow").innerHTML =
-    chipRow("Phenotype", "Фенотип", [["Hybrid", false], ["Indica", false], ["Sativa", false]]) +
-    chipRow("Chemotype", "Хемотип", [["THC", true], ["CBD", false]]) +
-    chipRow("Processing", "Обработка", [["Machine", false], ["Hand", false]]);
-  var a4 = c.rows.filter(function(r){ return r.no === "4"; })[0];
-  lkTodo(doc, "Prod. Code", c.pcode || "—");
-  lkTodo(doc, "Potency", a4 ? a4.crit.split("(")[0].trim() : "—");
-  lkTodo(doc, "Spec. Ref.", c.spec || "—");
+
+  /* Only the four fields the owner named: the batch number and strain in the
+     lockup above, the production batch number, the date of manufacture (the
+     harvest date) and the packaging date. Prod. Code, the Potency range and
+     Spec. Ref. are the master's and are not this compiler's to write. */
   setLk(doc, "Prod. Batch №", c.pp || c.cb);
-  lkTodo(doc, "Manuf. Date", c.md || "—");
-  lkTodo(doc, "Pack. Date", c.pk || "—");
-  /* The packaging lockup is the only value in section 01 that carries
-     batch-variable numbers — a bag size and a net fill weight — and nothing
-     writes it: the desk holds no packaging field at all, and setLk could not
-     reach it anyway because the value sits in .attr-val rather than .lk-val. It
-     is therefore the worked specimen's packaging, reprinted on every lot. The
-     text is kept and marked rather than removed, so nothing is lost and nobody
-     can mistake it for this batch's. */
-  var _lbl = doc.querySelectorAll(".lk-lbl");
-  for (var _i = 0; _i < _lbl.length; _i++) {
-    if (_lbl[_i].textContent.indexOf("Cont. Pack.") !== 0) continue;
-    var _cp = _lbl[_i].parentElement.querySelector(".attr-val");
-    if (_cp) markTodo(_cp);
-    break;
-  }
-  /* section 02 — rebuilt row for row from the schedule, criteria verbatim */
-  var groups = { "9": [], "10": [], "11": [] };
-  var singles = {};
-  c.rows.forEach(function(r){
-    if (r.no === "9.6" || r.no === "9.7") return;      /* upon request — not printed */
-    var g = groupNo(r.no);
-    if (r.no.indexOf(".") > 0 && groups[g]) groups[g].push(r); else singles[r.no] = r;
-  });
-  /* The printed certificate carries the citation in its compact one-line form.
-     The schedule, the workbooks and the detail table above keep the full
-     bilingual criterion; the CoQ master is a fixed A4 page whose signature
-     block falls off it when the identification rows wrap to three lines
-     (owner's decision, 31.08.2026, after the layout was measured). */
-  /* Measured against the master: this form sets on ONE line, so the page keeps
-     the geometry the owner designed (identical overflow and approval-block
-     position to the master's own "Conforms to monograph"). The two-line forms
-     pushed the signature block off the page. "mon." is the master's own
-     abbreviation — its method column reads "Ph. Eur. mon. 3028". */
-  var DOC_IDENT_CRIT = "Conforms to mon. Cannabis flos (07/2024:3028), Ph.Eur. 11.0";
-  function docCrit(no, crit){
-    return (no === "1" || no === "2" || no === "3") ? DOC_IDENT_CRIT : crit;
-  }
-  /* A blank result is not a result, and until now it printed in the same muted
-     grey as a measured N.D. — the one column where those two mean opposite
-     things. The blank is bracketed and marked on every compiled certificate,
-     draft or issued: an issued certificate with a blank result cell is a defect
-     that should be visible on its face, not a state to render quietly. */
-  /* Determination 4 is the only line on the certificate whose criterion is a
-     two-sided band, and nothing ever judged it: status_of tests got > limit and
-     has no lower bound, so an assay BELOW its band came through as "covered".
-     Nineteen lots print a Total Δ⁹-THC outside the range printed beside it.
-     Whether that is an out-of-specification result or a lot in the wrong grade
-     band is the QP's call and this compiler does not make it — but the figure
-     cannot print unmarked next to the range it misses. The value stays visible
-     inside the brackets; nothing is hidden. */
-  function outOfBand(r){
-    if (r.no !== "4") return false;
-    var b = /([\d.]+)\s*–\s*([\d.]+)/.exec(r.crit || "");
-    var m = /^\s*([\d.]+)/.exec((r.res || "").replace(",", "."));
-    if (!b || !m) return false;
-    var v = parseFloat(m[1]);
-    return v < parseFloat(b[1]) || v > parseFloat(b[2]);
-  }
-  function res(r){
-    var v = (r.res && r.res !== "—") ? r.res : "";
-    if (!v) return '<td class="r-cell">' + todoHtml("—", "r-val") + "</td>";
-    if (outOfBand(r)) return '<td class="r-cell">' + todoHtml(v, "r-val") + "</td>";
-    return '<td class="r-cell"><span class="r-val' + rCls(v) + '">' + esc(v) + "</span></td>";
-  }
-  function single(no, last){
-    var r = singles[no]; if (!r) return "";
-    var d = DET[no] || {};
-    return '<tr' + (last ? ' class="last-row"' : "") + '><td>' + no + '</td><td><span class="p-name">' +
-      esc(d.en) + ' <span class="mk">' + esc(d.mk) + '</span></span></td><td><span class="p-method">' +
-      esc(d.method) + '</span></td><td><span class="p-spec">' + esc(docCrit(no, r.crit)) + "</span></td>" + res(r) + "</tr>";
-  }
-  function group(no){
-    var rows2 = groups[no]; if (!rows2.length) return "";
-    var d0 = DET[rows2[0].no] || {};
-    var html = '<tr class="row-group"><td>' + no + '</td><td colspan="4"><span class="p-name">' +
-      esc(d0.group) + "</span></td></tr>";
-    rows2.forEach(function(r){
-      var d = DET[r.no] || {};
-      html += '<tr class="sub-row"><td></td><td><span class="p-sub">' + esc(d.en) +
-        ' <i class="bisep">|</i> <span class="mk">' + esc(d.mk) + '</span></span></td>' +
-        '<td><span class="p-method">' + esc(d.method) + '</span></td>' +
-        '<td><span class="p-spec">' + esc(docCrit(r.no, r.crit)) + "</span></td>" + res(r) + "</tr>";
+  setLk(doc, "Manuf. Date", c.md || "—");
+  setLk(doc, "Pack. Date", c.pk || "—");
+  /* Section 02 is the owner's, not the desk's. The master already prints every
+     parameter name, its method and its acceptance criterion, and this compiler
+     has no business rewriting any of them. It used to rebuild the table row for
+     row from the schedule, which silently reworded the parameter column — the
+     asterisk that ties Total THC, CBD and CBN to the footnote beneath the table
+     was being dropped, so the footnote referred to nothing — and rewrote the
+     method and acceptance-criteria columns too. Only the RESULT cell is written
+     now, into the master's own rows, in the master's own shape.
+
+     The master's 24 rows are the 21 determinations in the schedule's order plus
+     three group headers, and a header carries no result cell. If that ever
+     stops being true the table is left exactly as the master prints it: a
+     result written against the wrong parameter is the worst thing this file
+     could do. */
+  var ORDER = ["1", "2", "3", "4", "5", "6", "7", "8",
+               "9.1", "9.2", "9.3", "9.4", "9.5",
+               "10.1", "10.2", "10.3",
+               "11.1", "11.2", "11.3", "11.4", "12"];
+  var byNo = {};
+  c.rows.forEach(function(r){ byNo[r.no] = r; });
+  var cells = doc.querySelectorAll("table.results tbody td.r-cell");
+  if (cells.length === ORDER.length) {
+    cells.forEach(function(cell, i){
+      var r = byNo[ORDER[i]];
+      var v = (r && r.res && r.res !== "—") ? r.res : "";
+      /* a blank prints as the bracketed marker rather than the muted em dash it
+         used to share with a measured N.D. — the one column where those two
+         mean opposite things */
+      cell.innerHTML = v ? '<span class="r-val' + rCls(v) + '">' + esc(v) + "</span>"
+                         : todoHtml("\u2014", "r-val");
     });
-    return html;
   }
-  q("table.results tbody").innerHTML =
-    single("1") + single("2") + single("3") + single("4") + single("5") + single("6") +
-    single("7") + single("8") + group("9") + group("10") + group("11") + single("12", true);
   /* section 03 — from the citations themselves */
   var labs = {};
   c.rows.forEach(function(r){
@@ -2412,34 +2315,19 @@ function fillCoq(c){
       (m[2] ? "<small>" + esc(m[2]) + "</small>" : "") + '</span></td><td class="lr-mono">' + codes +
       '</td><td class="lr-mono">' + condenseNos(L.nos) + "</td></tr>";
   }).join("") || '<tr><td colspan="3" style="padding:8px;color:#8C9BB0">No certificate on file yet — controlled blanks.</td></tr>';
-  /* section 04 — disposition follows the dispositions, ticked only at issue */
-  var bad = c.k.oos > 0, open2 = c.k.und > 0;
-  var disp = q(".disp-row .grp");
-  disp.innerHTML = '<span class="lk-lbl">Batch ' + esc(c.pp || c.cb) +
-    '<span class="mk">Серија ' + esc(c.pp || c.cb) + "</span></span>" +
-    '<span class="' + (!draft && !bad && !open2 ? "chip-sel" : "chip-un") + '"><span class="bx">' +
-    (!draft && !bad && !open2 ? "☒" : "☐") + '</span> Conforms to Specification <span class="mk">Одговара на спецификацијата</span></span>' +
-    '<span class="' + (!draft && bad ? "chip-sel" : "chip-un") + '"><span class="bx">' +
-    (!draft && bad ? "☒" : "☐") + "</span> Does not conform</span>";
-  doc.querySelectorAll(".ap-date-val").forEach(function(n){
-    if (draft) markTodo(n, "date");
-    else n.textContent = c.issue.replace("≥ ", "");
-  });
-  if (draft) {
-    /* The two approvers' names and their professional credentials are the
-       master's, and the desk holds neither name — nothing in fillCoq ever wrote
-       them, so every draft for every batch printed the same two people as its
-       preparer and its reviewer under an unsigned approval block. Marked, not
-       deleted: the names are almost certainly the right officers, and that is
-       for a person to confirm rather than for this compiler to decide. */
-    doc.querySelectorAll(".ap-name, .ap-cred").forEach(function(n){ markTodo(n); });
-    var pn3 = q(".pot-note");
-    if (pn3) pn3.innerHTML += ' <i class="bisep">|</i> ' + todoHtml(" ") +
-      " Anything printed in red inside square brackets, and every unticked box, " +
-      "is either not held by the desk or not consistent with the criterion printed " +
-      "beside it: each must be completed or confirmed before this document is issued.";
-    addDraftMark(doc);
+  /* Section 04 and the approval block are the master's own and are left exactly
+     as it prints them — except the batch number, which the master prints in its
+     disposition label and which is one of the fields this compiler is asked to
+     fill. Only that label's text is replaced; both tick boxes stay as the master
+     ships them, unticked. The DRAFT watermark is an overlay on top of the page,
+     not a change to it. */
+  var _disp = q(".disp-row .grp .lk-lbl");
+  if (_disp) {
+    var _b = c.pp || c.cb, _mk = _disp.querySelector(".mk");
+    _disp.textContent = "Batch " + _b;
+    if (_mk) { _mk.textContent = "Серија " + _b; _disp.appendChild(_mk); }
   }
+  if (draft) addDraftMark(doc);
   return serializeDoc(doc);
 }
 /* The four per-scope iCoA masters (31.08.2026) supersede the Variation F

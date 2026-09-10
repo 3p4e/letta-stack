@@ -270,3 +270,64 @@ Specification" on issue over the top of it.
 
 The same family of disagreement is already on the Work Order at the delivery
 level, where a batch was sold in a bracket its own certificate contradicts.
+
+---
+
+# Third revision, 10.09.2026 — the master is the document
+
+The owner ruled that the CoQ template may not be modified in any way. The
+compiler may replace **parameter values** and **the laboratory reference
+section**, and the **batch number, strain, packaging date and date of manufacture
+(the harvest date)**. It may not touch the parameter names, the acceptance
+criteria column, or anything else.
+
+Two of the previous revision's changes were straightforwardly wrong under that
+rule and are reverted.
+
+**Section 02 was being rebuilt row for row from the desk's own schedule** — not
+just the results, but the parameter column, the method column and the acceptance
+criteria. Measured against the master, that reworded 18 criteria and 16 methods,
+and it **dropped the asterisk from "Assay — Total Δ⁹-THC\*", "Total CBD\*" and
+"Total CBN\*"** — the asterisk the footnote beneath the table refers to, so the
+footnote pointed at nothing. The compiler now walks the master's own 24 rows and
+writes the **result cell only**, in the master's own `<span class="r-val">` shape.
+Every build verifies it: 24 rows against 24, **0 differences in the parameter,
+method and criterion columns**, 21 in the result column.
+
+**Everything the last revision marked outside those fields is reverted** — the
+document ID, the issue date, the headline potency, the product code, the potency
+range, Spec. Ref., the phenotype and processing chips, the approval block, the
+packaging lockup, the appended footnote sentence, and the marking of a value that
+misses its band. The only marker left is `[—]` for a result the desk holds
+nothing for, which sits in the result column.
+
+Two things were kept because they are on the owner's list. The **laboratory
+cross-reference** in section 03 resolves the desk's short codes, so `CNP` and
+`IJZ` print as the accredited institutions they are rather than as bare
+abbreviations. And the **batch number in the section 04 disposition label** is
+written, because a batch number is a field the compiler is asked to fill; both
+tick boxes stay as the master ships them.
+
+## What this leaves printing the specimen's data
+
+Reverting is the right answer to the instruction and it has a cost, which is the
+owner's to weigh. On a Grape Pie certificate for P050022 the master still prints:
+
+| field | prints |
+| --- | --- |
+| document ID | `CoQ-PP-2026-0005` |
+| issue date | `05.06.2026` |
+| product code | `AA_THC28.5:CBD1` |
+| potency range · Spec. Ref. | `27.00 – 30.00 %` · `QCSP_001_AA-I_v.01` |
+| phenotype · processing | `☒ Hybrid Indica dom.` · `☒ Machine` |
+| headline potency | `XX.XX%` |
+| approvers | `Blagoj Nikolov` · `Jovana Romevska Cvetkovski` |
+| packaging | `… 300 × 500 mm · net. 400.0 g ±3%` |
+| page `<title>` | `… CoQ-PP-2026-0005 — Amsterdam Amnesia (AA) — Grade I — Batch P060052` |
+
+The `<title>` is the one with a consequence beyond the sheet: it is what a
+browser prints in the page header and what a PDF carries as its `/Title`, so the
+archived file is indexed under a certificate number that was never issued.
+
+Each of these is one line of code to fill from the desk. None is filled, because
+none is on the list.
