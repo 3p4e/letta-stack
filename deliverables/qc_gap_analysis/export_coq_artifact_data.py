@@ -405,6 +405,27 @@ def main(out):
     except Exception as _e:
         print("Internal CoA register not applied: %s" % _e)
 
+    # Owner's ruling, 10.09.2026: one notation for a not-detected result, and it
+    # is ND. The desk carried eight spellings of the same assertion on the
+    # certificates alone. result_notation.nd() is the single definition and it
+    # rewrites the notation and nothing else — unit, footnote marker and residue
+    # gloss all survive. Applied here, so the certificates, the desk and the PDFs
+    # inherit one spelling from one place.
+    try:
+        import result_notation as RN
+        _nd = 0
+        for _c in coqs:
+            for _r in _c["rows"]:
+                _v = _r.get("res")
+                if _v:
+                    _w = RN.nd(_v)
+                    if _w != _v:
+                        _r["res"] = _w
+                        _nd += 1
+        print("Notation: %d printed result(s) normalised to ND" % _nd)
+    except Exception as _e:
+        print("Notation not normalised: %s" % _e)
+
     docs = [r for r in DR.load_register()
             if not r["code"].lower().startswith(("n/a", "(not numbered)"))]
     docs.sort(key=lambda r: (DR.key(r["date"]), r["row"]))

@@ -563,3 +563,32 @@ not look the same.
 Read as **Total Aflatoxins** against ≤ 4 µg/kg they pass. Read as **Aflatoxin B₁**
 against ≤ 2 µg/kg they fail. The desk reads them as the sum. Nothing here settles
 it: the page has to be read before any of those four is signed.
+
+## One notation for a not-detected result
+
+Owner, 10.09.2026: *"we should have one use of any derivation of 'n.r.' and we
+will use ND everywhere."*
+
+The desk carried **eight spellings of one assertion** on the certificates alone —
+`ND`, `N.D.`, `Н.д.`, `Н.д. (not detected)`, `н.д.`, `ND ᴰ`, and two more carrying
+a residue gloss — and six further ones in the 09.09 pass, including `n.r.` and
+`Н.Д.`. A results column that spells one assertion eight ways invites a reader to
+think it means eight things.
+
+`result_notation.nd()` is the single definition. It rewrites **the notation and
+nothing else**: the unit stays, the footnote marker stays, the residue gloss
+stays, and anything that is not a not-detected result comes back untouched —
+including `Standard`, `Conforms and complies` and `2nd sample`, which contain the
+letters and are not results. **119 printed results rewritten**; the certificates
+now carry `ND`, `ND mg/kg — all 25 residues`, `ND ᴰ` and `ND — all 13 residues`,
+which is one notation with its units and references intact.
+
+It is applied where the desk stores a printed result, so the certificates, the
+Quality Desk and the PDFs all inherit one spelling from one place.
+
+**A note for the record, because the ruling settles the question rather than
+dissolving it.** *Not reported* and *not detected* are not the same statement:
+one says the analyte was measured and absent, the other that it was not measured.
+The owner's ruling is that in these documents `n.r.` is stated as a parameter
+result and means what `n.d.` means, so both print `ND`. That is a QC ruling on
+the company's own documents and it is recorded here as one.
