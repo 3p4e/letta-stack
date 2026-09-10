@@ -2348,9 +2348,26 @@ function fillCoq(c){
      things. The blank is bracketed and marked on every compiled certificate,
      draft or issued: an issued certificate with a blank result cell is a defect
      that should be visible on its face, not a state to render quietly. */
+  /* Determination 4 is the only line on the certificate whose criterion is a
+     two-sided band, and nothing ever judged it: status_of tests got > limit and
+     has no lower bound, so an assay BELOW its band came through as "covered".
+     Nineteen lots print a Total Δ⁹-THC outside the range printed beside it.
+     Whether that is an out-of-specification result or a lot in the wrong grade
+     band is the QP's call and this compiler does not make it — but the figure
+     cannot print unmarked next to the range it misses. The value stays visible
+     inside the brackets; nothing is hidden. */
+  function outOfBand(r){
+    if (r.no !== "4") return false;
+    var b = /([\d.]+)\s*–\s*([\d.]+)/.exec(r.crit || "");
+    var m = /^\s*([\d.]+)/.exec((r.res || "").replace(",", "."));
+    if (!b || !m) return false;
+    var v = parseFloat(m[1]);
+    return v < parseFloat(b[1]) || v > parseFloat(b[2]);
+  }
   function res(r){
     var v = (r.res && r.res !== "—") ? r.res : "";
     if (!v) return '<td class="r-cell">' + todoHtml("—", "r-val") + "</td>";
+    if (outOfBand(r)) return '<td class="r-cell">' + todoHtml(v, "r-val") + "</td>";
     return '<td class="r-cell"><span class="r-val' + rCls(v) + '">' + esc(v) + "</span></td>";
   }
   function single(no, last){
@@ -2419,8 +2436,8 @@ function fillCoq(c){
     var pn3 = q(".pot-note");
     if (pn3) pn3.innerHTML += ' <i class="bisep">|</i> ' + todoHtml(" ") +
       " Anything printed in red inside square brackets, and every unticked box, " +
-      "is not yet held by the desk: it must be completed and checked before this " +
-      "document is issued.";
+      "is either not held by the desk or not consistent with the criterion printed " +
+      "beside it: each must be completed or confirmed before this document is issued.";
     addDraftMark(doc);
   }
   return serializeDoc(doc);

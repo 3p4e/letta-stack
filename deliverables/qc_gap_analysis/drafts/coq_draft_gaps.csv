@@ -4,6 +4,7 @@ tranche,p_lot,cultivation batch,strain,determination,printed line,finding,detail
 1,P050162,CJ052501/01,Cap Junky,7,Foreign Matter Страни материи,blank,no transcribed result on the desk for this line
 1,P050162,CJ052501/01,Cap Junky,10.1,Mycotoxins | Микотоксини · Aflatoxin B₁ | Афлатоксин B₁,blank,no transcribed result on the desk for this line
 1,P050162,CJ052501/01,Cap Junky,10.3,Mycotoxins | Микотоксини · Ochratoxin A | Охратоксин A,blank,no transcribed result on the desk for this line
+1,P050162,CJ052501/01,Cap Junky,4,Assay — Total Δ⁹-THC Анализа — вкупен Δ⁹-THC,outside its printed band,"the result 20.29 falls outside the acceptance criterion printed beside it: 21.60 – 26.39 % (grade III, class THC 24, nominal 24.00 ± 2.40)"
 1,P050162,CJ052501/01,Cap Junky,3,Identification C · HPLC/HPTLC Идентиф. Ц · HPLC/HPTLC,runs off the sheet,the result runs 48 px past the edge of the sheet and is cut off in print: Conforms | Соодветствува
 1,P050162,CJ052501/01,Cap Junky,9.4,Microbiological Purity | Микробиолошка Чистота · Salmonella | Салмонела,runs off the sheet,the result runs 11 px past the edge of the sheet and is cut off in print: Одговара (absent)
 1,P050162,CJ052501/01,Cap Junky,9.5,Microbiological Purity | Микробиолошка Чистота · Escherichia coli | Ешерихија коли,runs off the sheet,the result runs 11 px past the edge of the sheet and is cut off in print: Одговара (absent)
@@ -130,6 +131,7 @@ tranche,p_lot,cultivation batch,strain,determination,printed line,finding,detail
 1,P060062,PM092501,Permanent Marker,7,Foreign Matter Страни материи,blank,no transcribed result on the desk for this line
 1,P060062,PM092501,Permanent Marker,10.1,Mycotoxins | Микотоксини · Aflatoxin B₁ | Афлатоксин B₁,blank,no transcribed result on the desk for this line
 1,P060062,PM092501,Permanent Marker,10.3,Mycotoxins | Микотоксини · Ochratoxin A | Охратоксин A,blank,no transcribed result on the desk for this line
+1,P060062,PM092501,Permanent Marker,4,Assay — Total Δ⁹-THC Анализа — вкупен Δ⁹-THC,outside its printed band,"the result 14.06 falls outside the acceptance criterion printed beside it: 10.80 – 13.19 % (grade I, class THC 12, nominal 12.00 ± 1.20)"
 1,P060062,PM092501,Permanent Marker,3,Identification C · HPLC/HPTLC Идентиф. Ц · HPLC/HPTLC,runs off the sheet,the result runs 48 px past the edge of the sheet and is cut off in print: Conforms | Соодветствува
 1,P060062,PM092501,Permanent Marker,9.4,Microbiological Purity | Микробиолошка Чистота · Salmonella | Салмонела,runs off the sheet,the result runs 11 px past the edge of the sheet and is cut off in print: Odgovara (Absent)
 1,P060062,PM092501,Permanent Marker,9.5,Microbiological Purity | Микробиолошка Чистота · Escherichia coli | Ешерихија коли,runs off the sheet,the result runs 11 px past the edge of the sheet and is cut off in print: Odgovara (Absent)
@@ -148,6 +150,7 @@ tranche,p_lot,cultivation batch,strain,determination,printed line,finding,detail
 2,P050302,GP072501/2,Grape Pie,7,Foreign Matter Страни материи,blank,no transcribed result on the desk for this line
 2,P050302,GP072501/2,Grape Pie,10.1,Mycotoxins | Микотоксини · Aflatoxin B₁ | Афлатоксин B₁,blank,no transcribed result on the desk for this line
 2,P050302,GP072501/2,Grape Pie,10.3,Mycotoxins | Микотоксини · Ochratoxin A | Охратоксин A,blank,no transcribed result on the desk for this line
+2,P050302,GP072501/2,Grape Pie,4,Assay — Total Δ⁹-THC Анализа — вкупен Δ⁹-THC,outside its printed band,"the result 19.81 falls outside the acceptance criterion printed beside it: 16.20 – 19.79 % (grade IV, class THC 18, nominal 18.00 ± 1.80)"
 2,P050302,GP072501/2,Grape Pie,3,Identification C · HPLC/HPTLC Идентиф. Ц · HPLC/HPTLC,runs off the sheet,the result runs 48 px past the edge of the sheet and is cut off in print: Conforms | Соодветствува
 2,P050302,GP072501/2,Grape Pie,9.4,Microbiological Purity | Микробиолошка Чистота · Salmonella | Салмонела,runs off the sheet,the result runs 11 px past the edge of the sheet and is cut off in print: Odgovara (Absent)
 2,P050302,GP072501/2,Grape Pie,9.5,Microbiological Purity | Микробиолошка Чистота · Escherichia coli | Ешерихија коли,runs off the sheet,the result runs 11 px past the edge of the sheet and is cut off in print: Odgovara (Absent)

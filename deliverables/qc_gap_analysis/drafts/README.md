@@ -10,8 +10,8 @@ been issued and none may be filed or sent as though it had.
 to be completed or confirmed before the document is issued.** Every draft says so
 in its own footnote, so the page explains itself away from this README.
 
-Two different things carry the marker, and the second is the one worth knowing
-about:
+Three different things carry the marker, and the last two are the ones worth
+knowing about:
 
 - **a controlled blank** — the desk holds no result for that line, so it prints
   `[—]`. Before, a blank printed as a bare em dash in the same muted grey as a
@@ -21,7 +21,14 @@ about:
   compiler ever wrote those, so every draft was reprinting the master's worked
   specimen as though it were this batch's. They are marked rather than deleted:
   they are probably right, and confirming them is a person's job, not the
-  compiler's.
+  compiler's;
+- **a result that misses the criterion printed beside it** — determination 4 is
+  the only line on the certificate with a two-sided band, and nothing ever
+  judged it, so an assay below its range came through as covered. Three of these
+  22 drafts print a Total Δ⁹-THC outside its own range (19 lots corpus-wide).
+  The figure stays visible inside the brackets. Whether that is an
+  out-of-specification result or a lot in the wrong grade band is the QP's call,
+  and the compiler does not make it.
 
 The brackets carry the meaning on their own, so a greyscale photocopy loses
 nothing; the red is emphasis. It is deliberately not the red of the DRAFT
@@ -42,12 +49,13 @@ same controlled blanks.
 | --- | --- |
 | `DRAFT_CoQ_<P lot>.html` | one A4 draft per production lot, 22 of them |
 | `Tranche_1_2_CoQ_Draft_Set.html` | the same 22, one page each, print-ready |
-| `coq_draft_gaps.csv` | every blank line and every result that runs off the sheet |
+| `coq_draft_gaps.csv` | every blank line, every result outside its band, every result that runs off the sheet |
 
 `coq_draft_gaps.csv` is the working list. A blank is not a compiler fault: it is
 the desk stating it holds nothing it may print on that line. **147 printed lines
-are blank across the 22 drafts**, so no draft here is complete, and a further 76
-printed results run past the edge of the sheet and would be cut off in print.
+are blank across the 22 drafts**, so no draft here is complete; 3 results fall
+outside the band printed beside them; and a further 76 run past the edge of the
+sheet and would be cut off in print.
 
 Eighteen of the 22 drafts carry exactly five blanks, and all five are the same
 five: identification A, identification B and foreign matter — whose in-house

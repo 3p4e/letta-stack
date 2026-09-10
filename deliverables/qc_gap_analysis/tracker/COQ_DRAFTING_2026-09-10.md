@@ -237,3 +237,36 @@ It is not marked, because it is not a blank: it is a figure from the owner's own
 `PP_Potency_MASTER_Spec`, and choosing between two measured values is a QP
 decision, not a compiler's. It is recorded here and belongs on the Work Order
 beside the other potency contradictions.
+
+## The criterion that was never enforced
+
+Determination 4 is the only line on the certificate whose acceptance criterion is
+a **two-sided band** — `21.60 – 26.39 % (grade III, class THC 24, nominal 24.00 ±
+2.40)`. Nothing ever judged it. `status_of` in `build_coq_schedule.py` tests
+`got > limit.value` and has no lower bound, and `tracker_data.over_limit` only
+fires on a criterion carrying `<`, `≤` or `max`. An assay **below** its band was
+therefore never flagged anywhere in the instrument.
+
+**19 lots corpus-wide print a Total Δ⁹-THC outside the range printed beside it,
+every one of them recorded as `covered`.** Three are in the Tranche 1 and 2
+drafts:
+
+| lot | prints | against |
+| --- | ---: | --- |
+| CJ052501/01 · P050162 | 20.29 % | 21.60 – 26.39 % |
+| GP072501/2 · P050302 | 19.81 % | 16.20 – 19.79 % |
+| PM092501 · P060062 | 14.06 % | 10.80 – 13.19 % |
+
+The widest in the corpus are FB012602 (24.09 % against 16.20 – 19.79 %),
+JD012603/02 (20.54 % against 12.60 – 15.39 %) and PM112501 (13.33 % against
+9.00 – 10.99 %).
+
+These are **marked, not failed**. Whether an assay below its band is an
+out-of-specification result or a lot sitting in the wrong grade band is a QP
+decision — the material may be perfectly good and simply graded wrong — and this
+compiler does not make it. What it will not do is let the figure print unmarked
+beside the range it misses, and the section 04 disposition tick "Conforms to
+Specification" on issue over the top of it.
+
+The same family of disagreement is already on the Work Order at the delivery
+level, where a batch was sold in a bracket its own certificate contradicts.

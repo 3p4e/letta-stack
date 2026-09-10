@@ -51,7 +51,7 @@ EXTRACT = r"""
     host.contentDocument.open(); host.contentDocument.write(html); host.contentDocument.close();
     const doc = host.contentDocument;
     const sheet = doc.querySelector("div.page").getBoundingClientRect();
-    const blanks = [], over = [];
+    const blanks = [], over = [], band = [];
     let head = null, sub = 0;
     doc.querySelectorAll("table.results tbody tr").forEach(tr => {
       const tds = tr.querySelectorAll("td");
@@ -71,8 +71,13 @@ EXTRACT = r"""
          so the gap report names the line the way the schedule names it. */
       if (!no && head) { sub += 1; no = head.no + "." + sub; name = head.name + " · " + name; }
       const txt = val.textContent.trim();
-      if (txt === "—" || txt === "[—]" || val.classList.contains("todo")) {
-        blanks.push({ no: no, name: name });
+      /* both a blank and a value that misses its own criterion print as the
+         bracketed marker, and they are not the same finding: only [—] is a line
+         the desk holds nothing for. */
+      if (txt === "—" || txt === "[—]") { blanks.push({ no: no, name: name }); return; }
+      if (val.classList.contains("todo")) {
+        band.push({ no: no, name: name, text: txt.replace(/^\[|\]$/g, ""),
+                    crit: (tr.querySelector(".p-spec") || {}).textContent || "" });
         return;
       }
       /* the master sets the result column at a fixed width and .r-val nowrap,
@@ -90,7 +95,7 @@ EXTRACT = r"""
     const pot = doc.querySelector(".pbp-val");
     out.push({
       p_lot: c.pp, cb: c.cb, strain: c.strain, thc: pot ? pot.textContent.trim() : "",
-      name: coqDocName(c), lk: lk, blanks: blanks, over: over, html: html,
+      name: coqDocName(c), lk: lk, blanks: blanks, over: over, band: band, html: html,
       labs: doc.querySelectorAll("table.labref tbody tr").length,
     });
   }
@@ -147,6 +152,11 @@ def main():
             gaps.append([tranche[d["p_lot"]], d["p_lot"], d["cb"], d["strain"],
                          b["no"] or "—", b["name"], "blank",
                          "no transcribed result on the desk for this line"])
+        for b in d["band"]:
+            gaps.append([tranche[d["p_lot"]], d["p_lot"], d["cb"], d["strain"],
+                         b["no"] or "—", b["name"], "outside its printed band",
+                         "the result %s falls outside the acceptance criterion printed "
+                         "beside it: %s" % (b["text"], " ".join(b["crit"].split())[:90])])
         for o in d["over"]:
             gaps.append([tranche[d["p_lot"]], d["p_lot"], d["cb"], d["strain"],
                          o["no"] or "—", o["name"], "runs off the sheet",
@@ -176,8 +186,9 @@ def main():
     print("%s: %.0f KiB" % (combined, os.path.getsize(combined) / 1024))
     nb = sum(len(d["blanks"]) for d in docs)
     no = sum(len(d["over"]) for d in docs)
-    print("%d blank printed lines and %d results that run off the sheet, "
-          "across %d documents" % (nb, no, len(docs)))
+    nd = sum(len(d["band"]) for d in docs)
+    print("%d blank printed lines, %d results outside their printed band and %d that "
+          "run off the sheet, across %d documents" % (nb, nd, no, len(docs)))
     return 1 if bad else 0
 
 
