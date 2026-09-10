@@ -38,6 +38,8 @@ def _items():
             items.append(("certificates/individual/" + name, os.path.join(DRAFTS, name),
                           "Certificate of quality, one lot — DRAFT, unsigned"))
     items += [
+        ("INDEX.html", os.path.join(HERE, "PACKAGE_INDEX.html"),
+         "Start here — every sheet, what the archive holds, what to read first"),
         ("certificates/Tranche_1_CoQ_Drafts.pdf", os.path.join(DRAFTS, "Tranche_1_CoQ_Drafts.pdf"),
          "Tranche 1 — 13 certificates, one A4 page each, fonts embedded"),
         ("certificates/Tranche_2_CoQ_Drafts.pdf", os.path.join(DRAFTS, "Tranche_2_CoQ_Drafts.pdf"),
@@ -52,6 +54,8 @@ def _items():
          "The live Quality Desk — click a batch to compile its certificate"),
         ("sources/issuance_schedule_2026-09-10.csv", os.path.join(HERE, "issuance_schedule_2026-09-10.csv"),
          "Every certificate and internal CoA with its date, under the 10.09 rulings"),
+        ("sources/icoa_register_2026-09-10.csv", os.path.join(HERE, "icoa_register_2026-09-10.csv"),
+         "The standing internal-CoA register — 106 certificates, coded in issue order"),
         ("sources/spec_attributes_2026-09-10.csv", os.path.join(HERE, "spec_attributes_2026-09-10.csv"),
          "Phenotype, dominance, chemotype, processing and packaging, read off 257 issued specifications"),
         ("sources/coq_register_2026-09-10.csv", os.path.join(HERE, "coq_register_2026-09-10.csv"),

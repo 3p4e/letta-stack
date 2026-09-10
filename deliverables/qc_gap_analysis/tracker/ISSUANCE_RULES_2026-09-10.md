@@ -131,3 +131,64 @@ date… with the date of packaging"*. Implemented as **the later of the two**: t
 testing date where that falls after the SOP, and 03.06.2026 for everything before
 it, so no controlled document predates the SOP that governs it. One constant
 changes it if that reading is wrong.
+
+---
+
+# The internal certificates of analysis — built 10.09.2026
+
+`icoa_register.py`. The owner's rulings, and what each one does:
+
+* **The register encompasses every internal certificate that exists or ever
+  will**, not only what the drafted lots need. **106 certificates over 80
+  batches** — one per testing round, which is exactly the number of certificates
+  of quality, because a round that needs a certificate of quality needs the
+  internal certificate behind it.
+* **One certificate per round, covering all the missing parameters.** Two things
+  and nothing else go on it: Identification A, Identification B and foreign
+  matter, always — the owner states these are performed in house on the packaging
+  date for the release round and the sampling date for a retest — plus any
+  determination whose only result in that round is an in-house record. A
+  determination with no result at all is covered by nothing; an internal
+  certificate can only certify what was tested.
+* **In-house results are never referenced on a certificate of quality.** They sit
+  behind the internal certificate, which the certificate of quality cites. **Four
+  certificates** carry an in-house determination beyond identity and foreign
+  matter — HPA1024 and OPM1024 carry thirteen each.
+* **Document codes follow the order of issuing**: `iCoA-PP_26-001` …
+  `iCoA-PP_26-106`, ordered by issue date, then by the date the work was done,
+  then by batch. The backlog shares one issue date, so within it the order is the
+  order the batches were packaged — the same order the certificate-of-quality
+  series is numbered in. **68 issue on 03.06.2026; 38 on later dates**, the last
+  on 10.08.2026.
+
+## What it did to the certificates
+
+Section 03 of every sheet now names the internal certificate by code and issue
+date against the parameters it carries:
+
+> Purely Plant — QC Department · In-house QC Laboratory · MK GMP Certified
+> **iCoA-PP_26-027, 03.06.2026** · 1, 2, 7
+
+**266 determinations now cite an internal certificate** and **150 results are
+unblocked** by it. `cell_resolution` rule 1 refused those because the certificate
+carrying them had not been issued; the owner has now issued, dated and coded it,
+so the premise of the refusal is gone — for exactly the determinations that
+certificate covers and for no others.
+
+**147 blank printed lines → 87.** Seventeen of the 22 drafts are down to **two**,
+and both are structural: Aflatoxin B₁ and Ochratoxin A, because the laboratory
+certificate reports the aflatoxin sum and not the single analytes. No
+transcription closes those.
+
+## The page paid for it
+
+The extra Section 03 row put four certificates past the footer. The cross-
+reference rows gave up their cell padding, the sentence-length Identification C
+result went to 6.5 px, and the footnote under the results table lost 7 px of its
+own padding. All 22 clear the footer again, the worst by 5 px.
+
+One thing was tried and reverted, and it is worth writing down: overriding
+`.approval-grid { margin-top: auto }` looked like free space. It is not — that
+`auto` is what pins the signature block to the bottom edge of the sheet whatever
+the certificate holds. Removing it did nothing for the one crowded certificate
+and would have left the other 21 with their signatures floating mid-page.

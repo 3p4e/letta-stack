@@ -2431,6 +2431,22 @@ function addFitStyle(doc){
      the only way to keep every certificate on one sheet without touching a
      value. */
   rules.push("table.results tbody td{padding-top:0;padding-bottom:0}");
+  /* Section 03 grows with the number of laboratories a lot cites, and the owner's
+     ruling of 10.09.2026 gave every certificate one more: the in-house laboratory,
+     carrying the internal CoA that discharges identity and foreign matter. Four
+     certificates went past the footer on the strength of that one row. The
+     cross-reference rows pay for it the same way the result rows did — the master
+     sets them 2.5 px apart on 7 px type, and 1 px is still clear of the 1.25
+     leading that already separates them. */
+  rules.push("table.labref tbody td{padding-top:0;padding-bottom:0}");
+  /* and the last few px come out of the footnote under the results table, which
+     the master sets 8 px clear above and 6 below on 8.4 px type. NOT out of the
+     space above the signatures: the master gives .approval-grid `margin-top:auto`
+     so the block sits on the bottom edge of the sheet whatever the certificate
+     holds, and overriding that pins it to the content instead — which does
+     nothing for the one crowded certificate and leaves the other 21 with their
+     signatures floating in the middle of the page. */
+  rules.push(".page .pot-note{padding-top:4px;padding-bottom:3px}");
   /* and the wrapped result sets on its own tighter leading — it is a short
      phrase in a narrow column, not running text, and 1.12 leading on four
      wrapped lines is what pushed the approval block into the footer band */
@@ -2441,7 +2457,7 @@ function addFitStyle(doc){
      alphabets, which no column on this master can hold on one line. It is set at
      the size the document already uses for its second-language glosses rather
      than shortened — every character it carries is still on the sheet. */
-  rules.push("table.results tbody td.r-cell .r-long{font-size:7.2px;letter-spacing:-.05px}");
+  rules.push("table.results tbody td.r-cell .r-long{font-size:6.5px;letter-spacing:-.08px}");
   st.textContent = rules.join("");
   doc.head.appendChild(st);
 }

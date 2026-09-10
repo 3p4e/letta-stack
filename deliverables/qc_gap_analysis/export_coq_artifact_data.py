@@ -353,6 +353,58 @@ def main(out):
     except Exception as _e:                       # the schedule is additive, never fatal
         print("Issuance schedule not applied: %s" % _e)
 
+    # Owner's rulings of 10.09.2026 on the internal certificate of analysis:
+    # identity A, identity B and foreign matter go on ONE internal certificate per
+    # testing round, its code and issue date are referenced on the certificate of
+    # quality against those parameters, and an in-house result is never referenced
+    # on a certificate of quality — it is carried on the internal certificate,
+    # which the certificate of quality then cites.
+    #
+    # `cell_resolution` rule 1 refused these determinations because the internal
+    # certificate carrying them had not been issued. The owner has now issued it,
+    # dated it and coded it, so the premise of that refusal is gone for exactly
+    # the determinations the certificate covers — and for no others.
+    try:
+        import icoa_register as ICO
+        import cell_resolution as _CR
+        _icoa = ICO.by_batch_round()
+        _pass = {}
+        for _r in _CR.load():
+            _no = _CR.det_no(_r.get("Determination", ""))
+            _v = _CR.pieces(_r.get("What the document prints", ""))
+            if _no and len(_v) == 1:
+                _pass[(CQ.BI.batch_key(_r["Batch"]), _no)] = _v[0]
+        _cited, _filled = 0, 0
+        for _c in coqs:
+            _kind = "additional" if _c["t"].startswith("additional") else "initial release"
+            _row = _icoa.get((CQ.BI.batch_key(_c["cb"]), _kind))
+            if not _row:
+                continue
+            _c["icoa_code"] = _row["code"]
+            _c["icoa_issue"] = _row["issued"]
+            _c["icoa_tested"] = _row["tested_from"]
+            _covers = set(_row["parameters"].split())
+            for _rr in _c["rows"]:
+                if _rr["no"] not in _covers:
+                    continue
+                _doc = (_rr.get("doc") or "").strip()
+                _lab = (_rr.get("lab") or "").strip()
+                if _doc and _doc != "\u2014" and not ICO.is_in_house(_lab):
+                    continue          # an outsourced certificate already covers it
+                _rr["doc"] = _row["code"]
+                _rr["dd"] = _row["issued"]
+                _rr["lab"] = "Purely Plant GmbH (in-house)"
+                _cited += 1
+                if (_rr.get("res") or "\u2014") == "\u2014":
+                    _val = _pass.get((CQ.BI.batch_key(_c["cb"]), _rr["no"]))
+                    if _val:
+                        _rr["res"] = _val
+                        _filled += 1
+        print("Internal CoA: %d determination(s) now cite one, %d result(s) unblocked"
+              % (_cited, _filled))
+    except Exception as _e:
+        print("Internal CoA register not applied: %s" % _e)
+
     docs = [r for r in DR.load_register()
             if not r["code"].lower().startswith(("n/a", "(not numbered)"))]
     docs.sort(key=lambda r: (DR.key(r["date"]), r["row"]))
