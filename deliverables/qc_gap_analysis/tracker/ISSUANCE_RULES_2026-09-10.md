@@ -68,6 +68,38 @@ certificate per round, tested start = end as above. Its document code and issue
 date are referenced in that round's certificate of quality, against those three
 parameters.
 
+## 3a · What the rule caught — 18 back-dated result cells
+
+Applying the rule to the deliverables, rather than only computing it, found that
+**post-release re-analysis was being printed on release certificates**. The
+owner's 09.09 pass fills any cell the register block does not answer, and that
+path bypassed `pick` — so while `pick` refused to let a release certificate cite
+the re-analysis, the pass handed it one anyway.
+
+Six lots, 18 result cells, including **four release assays — the figure that
+prints in the banner**:
+
+| lot | was printing | from | issued |
+| --- | ---: | --- | --- |
+| FB012602 | 24.09 % | 197-7-K-26 | 07.08.2026 |
+| JD012603/01 | 21.01 % | 220-16-K/26 | 25.08.2026 |
+| CC012603 | 14.76 % | 220-29-K/26 | 26.08.2026 |
+| SCR012603 | 17.84 % | 197-21-K-26 | 07.08.2026 |
+
+The remaining cells are Total CBD, Total CBN and Identification C on the same
+lots, plus Total CBN on HPA1024 and OPM1024. All of them belong to the retest
+that rests on them; where that leaves the release cell blank, the parameter was
+not determined at release.
+
+**FB012602's 24.09 % was one of the nineteen assays recorded as sitting outside
+its own band.** It was never a release value, so that finding does not apply to
+its release certificate.
+
+This is also why ruling the `220-` series a re-analysis changed nothing on the
+day it was made: `is_reanalysis` only ever *added* candidates to the retest
+certificate, and the release certificate was being filled down a path that never
+consulted it.
+
 ## 4 · Still to build
 
 - **In-house results never appear on a certificate of quality.** They may be
