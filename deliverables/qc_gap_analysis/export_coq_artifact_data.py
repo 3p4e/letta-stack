@@ -301,6 +301,58 @@ def main(out):
               "not on file%s" % (_sh, len(coqs), len(_sm),
                                  (" — " + ", ".join(sorted(_sm))) if _sm else ""))
 
+    # Owner's rulings of 10.09.2026 on when a document is issued —
+    # issuance_schedule.py, which reads them off the undivided register through
+    # testing_series.py. This supersedes the CoQ Register's planned dates: the
+    # register held one date per lot, and the ruling gives a date per lot per
+    # testing round, floored so that nothing controlled by the specification SOP
+    # predates it and nothing is dated before the evidence it cites.
+    try:
+        import issuance_schedule as ISS
+        _rows = ISS.build()
+        _tested = {}
+        for _r in _rows:
+            _kind = "initial release" if _r["kind"] == "initial release" else "additional"
+            _tested.setdefault((CQ.BI.batch_key(_r["batch"]), _kind), _r["tested"])
+        _n = 0
+        for _c in coqs:
+            _kind = "additional" if _c["t"].startswith("additional") else "initial release"
+            # The date is computed from the documents THIS certificate cites, not
+            # from everything the batch has on file. The two are not the same since
+            # a release certificate stopped citing the post-release re-analysis:
+            # nine certificates were waiting on a 10.08.2026 document they no
+            # longer print. A certificate is issued after its own evidence and
+            # after nothing else.
+            _dates = [(_r.get("dd") or "").strip() for _r in _c["rows"]
+                      if (_r.get("doc") or "").strip() not in ("", "\u2014")]
+            _dates = [_d for _d in _dates if ISS.parse(_d)]
+            if not _dates:
+                continue
+            _last = max(_dates, key=lambda _d: ISS.parse(_d))
+            # For the release round the internal CoA is tested on the batch's own
+            # packaging date, and the certificate carries it — that is the
+            # authority, not the schedule's per-batch lookup, which keys on the
+            # register's spelling of the batch and misses where the two differ. It
+            # missed on three lots and dated their certificates in August on the
+            # strength of an August testing date they do not have.
+            if _kind == "initial release":
+                _t = _c.get("pk") or _tested.get((CQ.BI.batch_key(_c["cb"]), _kind)) or _last
+            else:
+                _t = _tested.get((CQ.BI.batch_key(_c["cb"]), _kind)) or _last
+            _ic = ISS.icoa_issue(_t)
+            _issue = ISS.coq_issue(_last, _ic)
+            if not _issue:
+                continue
+            _c["issue"] = _issue
+            _c["icoa_issue"] = _ic or ""
+            _c["icoa_tested"] = _t
+            _c["last_external"] = _last
+            _n += 1
+        print("Issuance schedule: %d of %d CoQs take their date from the 10.09 rulings"
+              % (_n, len(coqs)))
+    except Exception as _e:                       # the schedule is additive, never fatal
+        print("Issuance schedule not applied: %s" % _e)
+
     docs = [r for r in DR.load_register()
             if not r["code"].lower().startswith(("n/a", "(not numbered)"))]
     docs.sort(key=lambda r: (DR.key(r["date"]), r["row"]))

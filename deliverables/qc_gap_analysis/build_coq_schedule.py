@@ -759,7 +759,19 @@ def schedule():
         # overrules the desk, and cell_resolution.py's three rules decide what it
         # is allowed to hand back at all — an unissued certificate and an
         # unlabelled list of analyte values both hand back nothing.
-        read0909 = {} if additional else CR.results(x["cb"])
+        # Owner's ruling, 10.09.2026: the first result a parameter has is release
+        # testing and every later one is a retest. The pass is consulted only for a
+        # release certificate, and it hands back whatever document it found — which
+        # on some batches is the post-release re-analysis. `pick` already refuses
+        # those for a release CoQ; this path bypassed `pick` entirely, so a
+        # 25.08.2026 certificate was filling the release cell of a lot packed in
+        # May. A re-analysis result belongs to the retest that rests on it, and if
+        # that leaves the release cell blank then the honest answer is that the
+        # parameter was not determined at release.
+        read0909 = {} if additional else {
+            no: rec for no, rec in CR.results(x["cb"]).items()
+            if not is_reanalysis(rec.get("code", ""))
+        }
         codes, counts = OrderedDict(), defaultdict(int)
         start = len(rows)
         assay = pick(reg["cells"].get("E", []), additional)[0]
