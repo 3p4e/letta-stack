@@ -22,10 +22,17 @@ same controlled blanks.
 | `coq_draft_gaps.csv` | every blank line and every result that runs off the sheet |
 
 `coq_draft_gaps.csv` is the working list. A blank is not a compiler fault: it is
-the desk stating it holds no transcribed result for that line. 168 printed lines
-are blank across the 22 drafts, so **no draft here is complete**, and a further
-72 printed results run past the edge of the sheet and would be cut off in print.
-Read `../tracker/COQ_DRAFTING_2026-09-10.md` before doing anything with these.
+the desk stating it holds nothing it may print on that line. **147 printed lines
+are blank across the 22 drafts**, so no draft here is complete, and a further 76
+printed results run past the edge of the sheet and would be cut off in print.
+
+Eighteen of the 22 drafts carry exactly five blanks, and all five are the same
+five: identification A, identification B and foreign matter — whose in-house
+certificate **has not been issued**, and whose microscopy was never performed —
+plus aflatoxin B₁ and ochratoxin A, which the certificate does not report
+separately from the aflatoxin sum. None of them is a transcription anyone can do
+today. Read `../tracker/COQ_DRAFTING_2026-09-10.md` and
+`../tracker/V20_RECONCILIATION_2026-09-10.md` before doing anything with these.
 
 Which lots are in scope, and why the other 28 delivered batches of Tranches 1
 and 2 are not, is recorded batch by batch in

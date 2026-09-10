@@ -84,6 +84,10 @@ PLAN_J = os.path.join(HERE, "coq_issue_plan.json")
 INHOUSE_TSV = os.path.join(ROOT, "ingestion", "coa_track", "letta-imb-coas",
                            "exports", "master_coa_table.tsv")
 BATCH_ID = os.path.join(ROOT, "ingestion", "common", "batch_id.py")
+if HERE not in sys.path:
+    sys.path.insert(0, HERE)
+import cell_resolution as CR                                        # noqa: E402
+
 OUT_X = os.path.join(HERE, "PP_CoQ_Parameter_Schedule_2026-08-31.xlsx")
 OUT_C = os.path.join(HERE, "coq_parameter_schedule_2026-08-31.csv")
 VALIDATOR = os.path.join(ROOT, "ingestion", "ragflow", "validate_ecoa_limits.py")
@@ -741,6 +745,13 @@ def schedule():
                                 f"Recorded, not resolved.")
 
         inhouse = {} if cb else inhouse_cells(x["cb"])
+        # The owner's 09.09.2026 pass over eCoA_DATABASE: for a determination the
+        # register block does not answer, the result a document on file prints.
+        # It is consulted last and only where nothing else answered, it never
+        # overrules the desk, and cell_resolution.py's three rules decide what it
+        # is allowed to hand back at all — an unissued certificate and an
+        # unlabelled list of analyte values both hand back nothing.
+        read0909 = {} if additional else CR.results(x["cb"])
         codes, counts = OrderedDict(), defaultdict(int)
         start = len(rows)
         assay = pick(reg["cells"].get("E", []), additional)[0]
@@ -796,6 +807,9 @@ def schedule():
                 st = ST_SCAN if chosen.get("inhouse") else \
                     (ST_OFFREG if status_of(det, chosen, lim, cb, blocked) == ST_OK
                      else status_of(det, chosen, lim, cb, blocked))
+            if chosen is None and not additional and det["no"] in read0909:
+                chosen, others = read0909[det["no"]], []
+                st = status_of(det, chosen, lim, cb, blocked)
             if additional and chosen is None:
                 if det["no"] in ICOA_FIELD:
                     st = ST_ICOA

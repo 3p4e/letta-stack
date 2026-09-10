@@ -100,18 +100,25 @@ for r, d in cov:
         bad("Batch Coverage", "row has no lot on the tracker", f"{cu} / {p}")
         continue
     docs = LOTS[key]["docs"]
-    miss = []
+    miss, onfile = [], set()
     for n in range(1, 13):
         mark = str(d[hdr[3 + n]] or "")
         want = "✓" if docs.get(n) else "✗"
-        if mark != want:
+        # ○ is a ✗ that says why: the tracker names no document, and a certificate
+        # for this parameter was found in eCoA_DATABASE on 09.09.2026. It is not
+        # coverage, so it counts as missing exactly as ✗ does.
+        if mark == "○" and want == "✗":
+            onfile.add(n)
+        elif mark != want:
             bad("Batch Coverage", f"#{n} mark disagrees with the tracker", f"{cu} / {p}: sheet {mark!r}, tracker {want!r}")
         if want == "✗":
             miss.append(n)
     if int(d[hdr[16]] or 0) != len(miss):
         bad("Batch Coverage", "missing count", f"{cu} / {p}: sheet {d[hdr[16]]}, computed {len(miss)}")
     st = str(d[hdr[3]] or "")
-    want_st = "✓ COMPLETE" if not miss else (f"⚠ {len(miss)} MISSING" if len(miss) <= 3 else f"❌ {len(miss)} MISSING")
+    want_st = "✓ COMPLETE" if not miss else (
+        f"○ {len(miss)} ON FILE, NOT RECORDED" if set(miss) == onfile and onfile else
+        (f"⚠ {len(miss)} MISSING" if len(miss) <= 3 else f"❌ {len(miss)} MISSING"))
     if st != want_st:
         bad("Batch Coverage", "status text", f"{cu} / {p}: {st!r} vs {want_st!r}")
 for k, n in seen.items():

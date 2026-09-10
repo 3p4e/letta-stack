@@ -41,7 +41,7 @@ The block rule, per the specification:
 
 Sources: `tracker_data.py` (the desk's values, the owner's certificate credits).
 """
-import collections, importlib.util, math, os, re, sys
+import collections, csv, importlib.util, math, os, re, sys
 
 import openpyxl
 from openpyxl.cell.rich_text import CellRichText, TextBlock
@@ -333,6 +333,46 @@ if NEW:
 # except where an outsourced certificate reports otherwise (FB032601, ППК26127: 0.08 %,
 # Не одговара) — that lot's foreign matter is held for the Head of QC.
 ICOA_RULE = "--icoa" in sys.argv
+# --cells absorbs the owner's 09.09.2026 pass over eCoA_DATABASE: the coverage it
+# closes on Batch Coverage, and the Reconciliation sheet that says what the two
+# records of those certificates agree and disagree about.
+CELLS_0909 = "--cells" in sys.argv
+GAPDIR = os.path.dirname(HERE)
+COVERAGE_UPDATE = os.path.join(GAPDIR, "coverage_update_2026-09-09.tsv")
+IDENTITY_BLOCK = os.path.join(GAPDIR, "identity_block_2026-09-09.tsv")
+COV_0909_APPLIED, COV_0909_SKIPPED = [], []
+
+IDENT_NOTE = (
+    "Identification A, Identification B and foreign matter are blank on almost "
+    "every lot in both tranches, and the reason is not that nobody transcribed "
+    "them. 118 of the 600 cells cite an in-house iCoA-PP_26-nnn whose issue date "
+    "is PLANNED, on 40 of the 50 batches: the certificate that carries the result "
+    "has not been issued, so there is nothing to cite. What the in-house "
+    "documents that DO exist carry is worse than missing. Appearance is the "
+    "single word \u201cConfirms\u201d with no description. Foreign matter is "
+    "\u201cConfirms\u201d against a < 2.0 % specification with NO PERCENTAGE "
+    "PRINTED \u2014 Ph. Eur. 2.8.2 is gravimetric and EudraLex Vol. 4 Ch. 6 "
+    "\u00a76.7 requires the result. Microscopy was NOT PERFORMED on any of the "
+    "five documents read. Three Report of Analysis documents carry no document "
+    "code, no version and no report number (EudraLex Vol. 4 Ch. 4 \u00a74.9), and "
+    "this build refuses to cite them. Issuing the iCoAs does not by itself fix "
+    "this: the microscopy has to be done and the foreign-matter percentage has "
+    "to be printed.")
+
+NOROW_NOTE = (
+    "These lots have certificates on file and no row on Batch Coverage, so the "
+    "closure had nowhere to land. Four of them \u2014 ACC102501, CF102501, "
+    "PUM102501 and CC012603 \u2014 are the batches the delivery reconciliation "
+    "of 07.09.2026 reported as delivered with nothing on file anywhere. That "
+    "finding is now out of date for them: something IS on file. A row cannot be "
+    "invented here, because a Batch Coverage row is a tracker lot and these are "
+    "not on the owner's tracker; they have to be added there first.")
+
+
+def load_coverage_update(path=COVERAGE_UPDATE):
+    """The 09.09 closures, verbatim: one row per lot and parameter."""
+    with open(path, encoding="utf-8") as fh:
+        return list(csv.DictReader(fh, delimiter="\t"))
 ICOA_ROWS = []
 NEW_NONCONF = []
 ADDED = collections.defaultdict(list)        # lot -> documents added by this build (coverage recount)
@@ -1411,10 +1451,19 @@ def patch_coverage(wb):
             rows[k] = r
 
     def recount(r):
-        miss = [n for n in range(1, 13) if cov.cell(r, 4 + n).value == "✗"]
+        # ○ is the owner's own third mark, from Batch Coverage v19: a certificate
+        # is on file for this parameter and the tracker does not name it. It is
+        # not coverage — nothing can be cited on a certificate of quality until
+        # the desk records the document — so it counts as missing and says why.
+        miss = [n for n in range(1, 13) if cov.cell(r, 4 + n).value in ("✗", "○")]
+        onfile = {n for n in range(1, 13) if cov.cell(r, 4 + n).value == "○"}
         cov.cell(r, 17).value = len(miss)
-        cov.cell(r, 18).value = "; ".join(f"#{n} {short[n]}" for n in miss) or "—"
-        st = "✓ COMPLETE" if not miss else (f"⚠ {len(miss)} MISSING" if len(miss) <= 3 else f"❌ {len(miss)} MISSING")
+        cov.cell(r, 18).value = "; ".join(
+            f"#{n} {short[n]}" + (" (on file 09.09, not recorded)" if n in onfile else "")
+            for n in miss) or "—"
+        st = "✓ COMPLETE" if not miss else (
+            f"○ {len(miss)} ON FILE, NOT RECORDED" if set(miss) == onfile else
+            (f"⚠ {len(miss)} MISSING" if len(miss) <= 3 else f"❌ {len(miss)} MISSING"))
         cell = cov.cell(r, 4)
         cell.value = st
         if st[:1] in status_style:
@@ -1488,6 +1537,64 @@ def patch_coverage(wb):
         last -= 1
     if _dups:
         print(f"coverage: {len(_dups)} duplicate row(s) removed (the owner's re-analysis rows of merged lots)")
+
+    # The owner's 09.09.2026 pass over eCoA_DATABASE names, per lot and per
+    # parameter, a certificate on file that the coverage sheet still marks ✗.
+    # Applied last, after the duplicate rows are gone, so the row map is the one
+    # the finished sheet has; a closure that finds no row is reported, never
+    # invented. See coverage_update_2026-09-09.tsv and the Reconciliation sheet.
+    if CELLS_0909:
+        by_row, by_key = {}, {}
+        for r in range(2, last + 1):
+            k = rowkey(str(cov.cell(r, 1).value or ""), str(cov.cell(r, 2).value or ""))
+            by_row[k] = r
+            by_key.setdefault(T.cu_key(k[0]), r)
+            _p = str(cov.cell(r, 2).value or "").strip()
+            if _p and not _p.startswith("—"):
+                by_key.setdefault("P:" + _p, r)
+        touched = set()
+        for u in load_coverage_update():
+            # The sheet's second block names several parameters in one cell —
+            # the lots it carried no row for at all, closed wholesale by one
+            # certificate. Every number in the cell is a parameter.
+            nums = [int(x) for x in re.findall(r"#(\d+)", u["Parameter"])]
+            if not nums:
+                continue
+            r = by_row.get(rowkey(u["CU batch"], u["P batch"])) \
+                or by_key.get(T.cu_key(u["CU batch"])) \
+                or by_key.get("P:" + u["P batch"].strip())
+            if r is None:
+                COV_0909_SKIPPED.append((u, "no row on Batch Coverage"))
+                continue
+            lab = re.search(r"\[([^\]]+)\]\s*$", u["Now covered by"].strip())
+            for n in nums:
+                cell = cov.cell(r, 4 + n)
+                if cell.value == "✓":
+                    COV_0909_SKIPPED.append((u, "#%d already covered" % n))
+                    continue
+                cell.value = "○"
+                _style_from(cell, cross)
+                cell.fill = PatternFill("solid", fgColor=FILL["amber"])
+                cell.font = Font(name="Calibri", size=9, bold=True, color="B45F06")
+                COV_0909_APPLIED.append((u, r, lab.group(1) if lab else ""))
+                touched.add(r)
+        for r in sorted(touched):
+            cov.cell(r, 19).value = int(cov.cell(r, 19).value or 0) + \
+                len({u["Now covered by"] for u, rr, _ in COV_0909_APPLIED if rr == r})
+            labs = collections.OrderedDict()
+            for tok in str(cov.cell(r, 20).value or "").split(";"):
+                m2 = re.match(r"\s*\[([^\]]+)\]\s*(\d+)", tok)
+                if m2:
+                    labs[m2.group(1)] = int(m2.group(2))
+            for _u, rr, lab in COV_0909_APPLIED:
+                if rr == r and lab:
+                    labs[lab] = labs.get(lab, 0) + 1
+            cov.cell(r, 20).value = "; ".join(f"[{k}] {v}" for k, v in sorted(labs.items()))
+            recount(r)
+        print(f"coverage update 09.09: {len(COV_0909_APPLIED)} parameter(s) marked ○ "
+              f"(on file, not recorded) on {len(touched)} lot(s); "
+              f"{len(COV_0909_SKIPPED)} not applied")
+
     if cov.auto_filter.ref:
         cov.auto_filter.ref = f"A1:{L(20)}{last}"
     return last
@@ -1883,6 +1990,7 @@ def add_dates_sheet(wb):
 SHEET_ABOUT = {
     "Read Me": "This sheet.",
     "CoQ Parameter Tracker": "One lot per block of two rows per testing instance: the result of each determination on the top row, the certificate that reports it (code, date, laboratory) beneath; acceptance criteria in row 3 and enforced; out-of-specification results in red and named in STATUS; the in-house iCoA cells cite the iCoA Register by key.",
+    "Reconciliation 09.09": "The owner's 09.09.2026 pass over the 387 certificates in eCoA_DATABASE against the desk, cell by cell: the parameters it closed on Batch Coverage, the cells the two records disagree about, and why the identity determinations stay blank on almost every lot — the iCoA that carries them has not been issued, and the in-house documents that do exist print no microscopy and no foreign-matter percentage.",
     "ImB Register": "The customer's certificate register, scanned 04.09.2026: 43 certificates for the earliest production, each against its desk lot — the strain as printed and as ruled, the manufacturing and retest dates, and the four lots the register skips inside the span it covers.",
     "Delivery T1–T3": "The 78 cultivation batches delivered in the three tranches of 31.07, 14.08 and 28.08.2026, each against its row on Batch Coverage: the P lot, the CoQ status, what is missing, and the potency the batch was delivered under beside the potency its own certificate reports.",
     "Batch Coverage": "One row per lot: ✓/✗ for each of the 12 parameters, the missing list, the number of certificates and the laboratories present. A grey ✓ is covered by the in-house iCoA.",
@@ -2004,15 +2112,28 @@ def add_delivery_sheet(wb):
                 if row is not None:
                     how = ("through the certificates that print this batch (" +
                            ", ".join(sorted(_codes)[:3]) + "); the desk names the lot " + _lot["cu"])
-        status = str(cov.cell(row, 4).value or "") if row else "— NO RECORD —"
-        missing = str(cov.cell(row, 18).value or "") if row else "no lot on the tracker for this batch"
+        # A batch with no row on Batch Coverage has no coverage this sheet can
+        # state — but "nothing on file" is a different claim, and for four of
+        # these it stopped being true on 09.09.2026. Say which it is.
+        found0909 = [u for u, why in COV_0909_SKIPPED
+                     if why == "no row on Batch Coverage"
+                     and T.cu_key(u["CU batch"]) == T.cu_key(t["batch_printed"])]
+        status = str(cov.cell(row, 4).value or "") if row else (
+            "— CERTIFICATES ON FILE, NO TRACKER ROW —" if found0909 else "— NO RECORD —")
+        missing = str(cov.cell(row, 18).value or "") if row else (
+            "no lot on the tracker for this batch; certificates found on 09.09.2026 "
+            "cover " + found0909[0]["Parameter"] + " — see Reconciliation 09.09"
+            if found0909 else "no lot on the tracker for this batch")
         desk_lot = str(cov.cell(row, 1).value or "") if row else "—"
         vals = thc.get(k) or thc.get(ks) or []
         best = min(vals, key=lambda x: abs(x[0] - t["thc_pct"])) if vals else None
         delta = (best[0] - t["thc_pct"]) if best else None
         oob = bool(best) and not TRN.in_bracket(best[0], t["thc_bracket"])
         if row is None:
-            verdict, fill = "NO — nothing on file for a batch that has been delivered", "red"
+            verdict, fill = (
+                ("NO — certificates are on file but the batch is on no tracker lot; "
+                 "add the lot, then re-run", "amber") if found0909 else
+                ("NO — nothing on file for a batch that has been delivered", "red"))
             n_none += 1
         elif status.startswith("✓"):
             verdict, fill = "yes — all 12 determinations covered", "green"
@@ -2120,6 +2241,132 @@ def apply_strain_rulings(wb):
     print("strain rulings applied: %d cell(s); unresolved strain conflicts: %d (added to the Work Order)"
           % (len(changed), len(conflicts)))
     return changed, conflicts
+
+
+def add_reconciliation_sheet(wb):
+    """The owner's 09.09.2026 pass against the desk, and what this build took from it.
+
+    The workbook the owner sent on 10.09.2026 (CoQ_Analysis_Master_v20_owner.xlsx,
+    Drive 1cBmbOgHSMlzIGyGjuZFRP5DagigtXx29) carries a pass over the 387 PDFs in
+    eCoA_DATABASE: every one of the 600 determinations of Tranches 1 and 2
+    resolved to a document, a laboratory, an issue date and the result that
+    document prints. This sheet says what came of putting the two records side
+    by side — what the pass closed, what it could not, and where the two do not
+    say the same thing about one certificate.
+
+    Nothing here resolves a disagreement. Two records of one document that
+    disagree are a finding for a person; the desk's value stands until someone
+    reads the page.
+    """
+    import importlib.util as _il
+    _r = _il.spec_from_file_location("reconcile_0909",
+                                     os.path.join(GAPDIR, "reconcile_0909.py"))
+    RC = _il.module_from_spec(_r)
+    try:
+        _r.loader.exec_module(RC)
+        cen = RC.census()
+        finds = RC.findings()
+    except Exception as exc:                      # the desk export is the source
+        print("reconciliation: %s" % exc)
+        return
+    CRm = RC.CR
+
+    where = (wb.sheetnames.index("Delivery T1\u2013T3") + 1) if "Delivery T1\u2013T3" in wb.sheetnames \
+        else len(wb.sheetnames)
+    sh = wb.create_sheet("Reconciliation 09.09", where)
+    LEFT = Alignment(horizontal="left", vertical="top", wrap_text=True)
+    for i, w in enumerate((34, 15, 15, 46, 46), 1):
+        sh.column_dimensions[L(i)].width = w
+    r = 1
+
+    def head(t):
+        nonlocal r
+        put(sh, r, 1, t, FW, NAVY, LEFT)
+        for c in range(2, 6):
+            put(sh, r, c, "", FW, NAVY, LEFT)
+        r += 2
+
+    def kv(k, v, note=""):
+        nonlocal r
+        put(sh, r, 1, k, F7, GREY, LEFT)
+        put(sh, r, 2, v, F7, None, LEFT)
+        if note:
+            put(sh, r, 4, note, F6I, None, LEFT)
+        r += 1
+
+    head("THE PASS THIS BUILD READ")
+    kv("Source", "CoQ_Analysis_Master_v20_owner.xlsx",
+       "the owner's workbook of 09.09.2026, vendored beside this one; the three "
+       "sheets it was read from are Cell Resolution 09.09, Coverage Update 09.09 "
+       "and Identity Problem 09.09")
+    kv("Certificates it read", "387", "eCoA_DATABASE, name for name")
+    kv("Determinations it resolved", "600", "50 lots of Tranches 1 and 2 x 12")
+    r += 1
+
+    head("WHAT IT CLOSED ON BATCH COVERAGE")
+    kv("Parameters closed", str(len(COV_0909_APPLIED)),
+       "a certificate on file that this sheet still marked missing")
+    kv("Lots affected", str(len({x[1] for x in COV_0909_APPLIED})))
+    kv("Closures not applied", str(len(COV_0909_SKIPPED)),
+       "already covered, or the lot has no row on Batch Coverage \u2014 listed below")
+    r += 1
+
+    head("WHAT THE TWO RECORDS SAY ABOUT THE SAME 600 CELLS")
+    for k, note in (
+            ("agree", "both hold a value and it is the same value"),
+            ("values", "both hold a value and the values differ \u2014 a finding"),
+            ("order", "the same values against different analytes \u2014 a finding"),
+            ("fill", "the desk held nothing and the pass holds a printable result"),
+            ("blocked", "the only document is an in-house iCoA that has not been issued"),
+            ("uncited", "the only document carries no document code at all"),
+            ("ambiguous", "the pass holds a list of values it does not label"),
+            ("basis note", "the pass names where identity comes from, not a result"),
+            ("none", "neither record holds anything"),
+            ("not comparable", "the two records hold different numbers of lines"),
+            ("no desk lot", "the desk carries no initial-release CoQ for the batch")):
+        if cen.get(k):
+            kv(k, str(cen[k]), note)
+    r += 1
+
+    head("THE DISAGREEMENTS")
+    for i, t in enumerate(("Batch", "Determination", "Kind", "The desk holds",
+                           "The 09.09 pass reads"), 1):
+        put(sh, r, i, t, FW, NAVY, LEFT)
+    r += 1
+    for row, state, d in finds:
+        put(sh, r, 1, row["Batch"], F7, None, LEFT)
+        put(sh, r, 2, "#" + (CRm.det_no(row["Determination"]) or ""), F7, None, LEFT)
+        put(sh, r, 3, "same values,\nother order" if state == "order" else "different values",
+            F7, FILL["amber"] if state == "order" else FILL["red"], LEFT)
+        put(sh, r, 4, "; ".join(d.get("desk", [])), F7, None, LEFT)
+        put(sh, r, 5, "; ".join(d.get("pass", [])), F7, None, LEFT)
+        r += 1
+    r += 1
+
+    head("THE IDENTITY DETERMINATIONS ARE NOT A TRANSCRIPTION PROBLEM")
+    put(sh, r, 1, IDENT_NOTE, F6I, GREY, LEFT)
+    sh.merge_cells(start_row=r, start_column=1, end_row=r + 6, end_column=5)
+    r += 8
+
+    head("CLOSURES THAT FOUND NO ROW")
+    for i, t in enumerate(("CU batch", "P batch", "", "Parameters now covered",
+                           "From"), 1):
+        put(sh, r, i, t, FW, NAVY, LEFT)
+    r += 1
+    for u, why in COV_0909_SKIPPED:
+        if why != "no row on Batch Coverage":
+            continue
+        put(sh, r, 1, u["CU batch"], F7, None, LEFT)
+        put(sh, r, 2, u["P batch"], F7, None, LEFT)
+        put(sh, r, 4, u["Parameter"], F7, None, LEFT)
+        put(sh, r, 5, u["Now covered by"], F7, None, LEFT)
+        r += 1
+    put(sh, r, 1, NOROW_NOTE, F6I, GREY, LEFT)
+    sh.merge_cells(start_row=r, start_column=1, end_row=r + 3, end_column=5)
+    sh.freeze_panes = "A2"
+    print("reconciliation sheet: %d disagreement(s), %d closure(s) with no row"
+          % (len(finds), sum(1 for _, w in COV_0909_SKIPPED
+                             if w == "no row on Batch Coverage")))
 
 
 def add_imb_register_sheet(wb):
@@ -2335,6 +2582,8 @@ if NEW:
         add_dates_sheet(wb)
         write_register_file(os.path.join(HERE, "Issuance_Registers_prelim.xlsx"))
     add_delivery_sheet(wb)
+    if CELLS_0909:
+        add_reconciliation_sheet(wb)
     add_imb_register_sheet(wb)
     apply_strain_rulings(wb)
     write_read_me(wb)

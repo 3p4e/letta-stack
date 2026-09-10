@@ -12,6 +12,13 @@ The **header** of the certificate can be filled for every lot in scope. The
 are in `../drafts/`; not one is complete, and the missing lines are named per
 lot in `../drafts/coq_draft_gaps.csv`.
 
+**Revised 10.09.2026**, after the owner's v20 workbook was reconciled into the
+desk (`V20_RECONCILIATION_2026-09-10.md`). The drafts were recompiled from the
+reconciled record: **168 blank printed lines became 147**, Total CBN and the
+pesticide panel closed entirely, and the reason the identity determinations are
+blank turned out to be worse than the one given below when this note was first
+written. Both corrections are carried through in the two sections that follow.
+
 ## Scope — 22 of the 50 batches delivered in Tranches 1 and 2
 
 A CoQ is issued per **production (P) lot**, not per delivered cultivation batch,
@@ -63,7 +70,7 @@ is used as a count or a filter.
 `table.results` is `table-layout:fixed` and `.r-val` is `white-space:nowrap`, so a
 result wider than its column does not wrap. The result column is the last one, so
 what it overflows into is the page margin and then the edge of the paper.
-Measured on the compiled pages at A4 width, 72 result lines across the 22 drafts
+Measured on the compiled pages at A4 width, 76 result lines across the 22 drafts
 end past the edge of the sheet:
 
 - `Conforms | Соодветствува` — 48 px past the edge, on 22 lines;
@@ -92,21 +99,40 @@ the record and the spelling corrected, this lot has no certificate to draft.
 
 ## What is still missing before any of these can be signed
 
-**168 blank printed lines across 22 drafts.** By determination:
+**147 blank printed lines across 22 drafts**, after the 09.09 evidence was
+absorbed. By determination:
 
 | line | blank on | why |
 | --- | --- | --- |
-| #1 Identification A, appearance | 21 of 22 | the result lives on the in-house iCoA and was never transcribed to the tracker |
-| #2 Identification B, microscopy | 21 of 22 | same |
-| #7 Foreign matter | 21 of 22 | same |
-| #6 Total CBN | 17 of 22 | not carried on the cited certificate |
-| #10.1 Aflatoxin B₁ · #10.3 Ochratoxin A | 22 of 22 | the certificate reports the sum, not the single analytes |
-| #9.1–9.5, #10.2, #11.1–11.4, #12 | 4 of 22 | GG012603, J31102501, JD112501 and KC102501 — the certificates that cover these were added to `eCoA_DATABASE` on 09.09.2026 and the tracker has not absorbed them |
+| #1 Identification A, appearance | 21 of 22 | **the iCoA that carries it has not been issued** — see below |
+| #2 Identification B, microscopy | 21 of 22 | same, and the microscopy was never performed |
+| #7 Foreign matter | 21 of 22 | same, and no percentage was ever printed |
+| #10.1 Aflatoxin B₁ · #10.3 Ochratoxin A | 22 of 22 | the certificate reports the aflatoxin sum, not the single analytes |
+| #9.1–9.5, #10.2, #11.1–11.4 | 4 of 22 | GG012603, J31102501, JD112501 and KC102501 — the 09.09 pass holds these as an unlabelled list of analyte values, and three lots prove the order cannot be assumed |
 
-The last row is the important one: those four lots are clean on the evidence and
-blank on the document, purely because the desk's own record is behind the
-certificate folder. Absorbing the 155 certificates added on 09.09 closes 44 of
-the 168 blanks without any new testing.
+**Eighteen of the 22 drafts now carry exactly five blank lines**, and all five are
+in the first two rows of that table.
+
+Two classes closed when the 09.09 pass was absorbed and are gone from the list:
+**#6 Total CBN**, which was blank on 17 of 22, and **#12 pesticide residues**.
+Sixty-nine result cells across the whole schedule now come from that pass, and
+nothing the desk already held was overwritten.
+
+### Why the identity determinations are blank — the first version of this note was wrong
+
+It said the results "live on the in-house iCoA and were never transcribed". They
+do live there, and transcription is not the problem. **118 of the 600 cells of
+Tranches 1 and 2 cite an in-house `iCoA-PP_26-nnn` whose issue date is PLANNED**,
+on 40 of the 50 batches: the certificate has not been issued, so there is nothing
+to cite. And of the five in-house documents that do exist, appearance is the
+single word "Confirms" with no description, **foreign matter is "Confirms" with
+no percentage printed** against a gravimetric < 2.0 % specification (Ph. Eur.
+2.8.2; EudraLex Vol. 4 Ch. 6 §6.7 requires the result), and **microscopy was not
+performed on any of them**. Three further documents carry no document code at all
+(EudraLex Vol. 4 Ch. 4 §4.9) and this build refuses to cite them.
+
+Issuing the iCoAs is necessary and not sufficient: the microscopy has to be done
+and the foreign-matter percentage has to be printed.
 
 ## What still has to be ruled before these are printed
 
@@ -127,6 +153,7 @@ its own class. Only the QP can settle which is right.
 
 ## Reproducing
 
+    python3 deliverables/qc_gap_analysis/export_coq_artifact_data.py
     python3 deliverables/qc_gap_analysis/live_instrument/build_live_instrument.py
     python3 deliverables/qc_gap_analysis/live_instrument/build_coq_drafts.py \
         --scope deliverables/qc_gap_analysis/tracker/coq_draft_scope_2026-09-10.csv
