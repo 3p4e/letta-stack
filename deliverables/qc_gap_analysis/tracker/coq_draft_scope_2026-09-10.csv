@@ -1,0 +1,51 @@
+tranche,batch_as_delivered,p_lot,strain_as_delivered,readiness_09_09,draftable,reason
+1,BG1024,—,Blue Gelato,BLOCKED,no,no P batch number assigned
+1,BSS1024,—,Blue Sunset Sherbet,BLOCKED,no,no P batch number assigned
+1,CC012601/1,P060332,CashCow,BLOCKED,no,3 parameter(s) with no certificate: #8 Loss on drying; #11 Heavy metals; #12 Pesticides
+1,CJ052501/01,P050162,Cap Junky,CLEAN,yes,
+1,CJ062501/2,P050212,Cap Junky,CLEAN,no,no initial-release record on the desk for this P lot — the desk carries this batch as a predicted instance with no P number
+1,CJ082501/2,P060032,Cap Junky,CLEAN,yes,
+1,FB012602,P060352,Fat Bastard,BLOCKED,no,3 parameter(s) with no certificate: #8 Loss on drying; #11 Heavy metals; #12 Pesticides
+1,GG012603,P060402,GG4,CLEAN,yes,
+1,GG1024_01,P050092,Gorilla Glue,CLEAN,yes,
+1,GP052501,P050152,Grape Pie,CLEAN,yes,
+1,GP0824_02,P050022,Grape Pie,CLEAN,yes,
+1,GP082501/2,P050322,Grape Pie,CLEAN,yes,
+1,HPA1024,—,High Pro Amnesia,BLOCKED,no,4 parameter(s) with no certificate: #8 Loss on drying; #9 Microbiology; #11 Heavy metals; #12 Pesticides | no P batch number assigned
+1,HPA1024_01,P050052,High Pro Amnesia,CLEAN,yes,
+1,J31102501,P060152,Jokerz 31,CLEAN,yes,
+1,JD112501,P060212,Jelly Donuts,CLEAN,yes,
+1,OPM1024,—,Orange Punch Mimosa,BLOCKED,no,4 parameter(s) with no certificate: #8 Loss on drying; #9 Microbiology; #11 Heavy metals; #12 Pesticides | no P batch number assigned
+1,OPM1024_02,P050062,Orange Punch Mimosa,CLEAN,yes,
+1,OPM122501,P060242,Orange Punch Mimosa,CLEAN,yes,
+1,PM092501,P060062,Permanent Marker,CLEAN,yes,
+1,SCR012603,P060382,Scrambler,BLOCKED,no,3 parameter(s) with no certificate: #8 Loss on drying; #11 Heavy metals; #12 Pesticides
+2,ACC102501,P060122,Amnesia Core Cut,BLOCKED,no,3 parameter(s) with no certificate: #1 Ident. A; #2 Ident. B; #7 Foreign matter
+2,BSS052501,P050192,Blue Sunset Sherbet,BLOCKED,no,"1 parameter(s) with no certificate: #8 Loss on drying | a value is held for review — two reads disagreed, a person must read the page"
+2,CC012603,P060372,CashCow,BLOCKED,no,7 parameter(s) with no certificate: #1 Ident. A; #2 Ident. B; #7 Foreign matter; #8 Loss on drying; #10 Mycotoxins; #11 Heavy metals; #12 Pesticides
+2,CF102501,P060132,Chem Flyer,BLOCKED,no,3 parameter(s) with no certificate: #1 Ident. A; #2 Ident. B; #7 Foreign matter
+2,CJ062501/1,P050222,Cap Junky,BLOCKED,no,the 25/26.08.2026 Farmahem retest differs from the assay on the tracker by +3.29 %w/w (24.80 vs 21.51) — the release potency must be settled
+2,CJ082501/1,P060022,Cap Junky,BLOCKED,no,the 25/26.08.2026 Farmahem retest differs from the assay on the tracker by +3.38 %w/w (28.34 vs 24.96) — the release potency must be settled
+2,CJ092501,P060072,Cap Junky,BLOCKED,no,the 25/26.08.2026 Farmahem retest differs from the assay on the tracker by +3.35 %w/w (25.65 vs 22.30) — the release potency must be settled
+2,CLE072501,P050282,Clemosa,CLEAN,yes,
+2,FB012601/1,P060322,Fat Bastard,BLOCKED,no,the 25/26.08.2026 Farmahem retest differs from the assay on the tracker by +3.31 %w/w (17.99 vs 14.68) — the release potency must be settled
+2,GG1024,—,Gorilla Glue,BLOCKED,no,no P batch number assigned
+2,GP072501/2,P050302,Grape Pie,CLEAN,yes,
+2,GP0824_03,P050072,Grape Pie,BLOCKED,no,the 25/26.08.2026 Farmahem retest differs from the assay on the tracker by +2.32 %w/w (28.30 vs 25.98) — the release potency must be settled
+2,GP082501/1,P050312,Grape Pie,BLOCKED,no,the 25/26.08.2026 Farmahem retest differs from the assay on the tracker by +3.84 %w/w (25.13 vs 21.29) — the release potency must be settled
+2,GP092501,P060092,Grape Pie,CLEAN,yes,
+2,GRC102501/2,P060182,Grapes and Cream,BLOCKED,no,no — 3 missing
+2,HPA052501,P050182,High Pro Amnesia,CLEAN,yes,
+2,JD012603/01,P060362,Jelly Donuts,BLOCKED,no,no — 4 missing
+2,JD012603/02,P060412,Jelly Donuts,BLOCKED,no,"no — 4 missing  |  POTENCY: the certificate reads 20.54 %, outside the 13–16% it was delivered under"
+2,JD012603/02V,P060422,Jelly Donuts,BLOCKED,no,no — 4 missing
+2,KC102501,P060172,Kush Crasher,CLEAN,yes,
+2,MB0824_05,P050112,Motor Breath,CLEAN,yes,
+2,OMP1024_01,P050042,Orange Punch Mimosa,BLOCKED,no,the 25/26.08.2026 Farmahem retest differs from the assay on the tracker by +2.76 %w/w (18.14 vs 15.38) — the release potency must be settled
+2,OPM092501,P060042,Orange Punch Mimosa,CLEAN,yes,
+2,OPM1024_03,P050082,Orange Punch Mimosa,BLOCKED,no,the 25/26.08.2026 Farmahem retest differs from the assay on the tracker by +2.75 %w/w (19.30 vs 16.55) — the release potency must be settled
+2,PM112501,P060232,Permanent Marker,BLOCKED,no,1 parameter(s) with no certificate: #10 Mycotoxins | the 25/26.08.2026 Farmahem retest differs from the assay on the tracker by -2.53 %w/w (10.80 vs 13.33) — the release potency must be settled
+2,PUM102501,P060112,Pure Michigen,BLOCKED,no,3 parameter(s) with no certificate: #1 Ident. A; #2 Ident. B; #7 Foreign matter
+2,SCR112501,P060282,Scrambler,BLOCKED,no,the 25/26.08.2026 Farmahem retest differs from the assay on the tracker by +2.60 %w/w (19.73 vs 17.13) — the release potency must be settled
+2,SJ092501,P060082,Sleepy Joe,CLEAN,yes,
+2,WC082501,P060012,Wedding Crusher,CLEAN,yes,

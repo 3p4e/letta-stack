@@ -867,7 +867,7 @@ function renderTracker(){
     if ((b = e.target.closest(".trk-det"))) { OPEN = +b.dataset.c; renderDetail(); renderCoqs(); return; }
     if ((b = e.target.closest(".trk-doc"))) {
       var c0 = COQ[+b.dataset.c];
-      openDoc((c0.issued ? c0.n : "DRAFT") + " — Certificate of Quality — " + c0.strain, coqDocName(c0), fillCoq(c0));
+      openDoc((docIssued(c0) ? c0.n : "DRAFT") + " — Certificate of Quality — " + c0.strain, coqDocName(c0), fillCoq(c0));
       return;
     }
     if ((b = e.target.closest(".trk-bench"))) {
@@ -2193,10 +2193,19 @@ function chipRow(label, mk, opts){
         (o[1] ? "☒" : "☐") + '</span> ' + esc(o[0]) + '</span>';
     }).join("") + '</span></span>';
 }
+/* c.issued means the lot carries a CoQ NUMBER in the owner's issuance plan —
+   the desk's own tail line calls those "numbered", against "predicted". It does
+   not mean a certificate was issued: every numbered CoQ in the baseline is
+   dated "≥ <SOP floor>", the earliest date on which it MAY be issued, and the
+   register sheet heads that column "Issue date (planned)". A document is
+   issued when the desk records the issuance — that is c.deskIssued, written
+   from OV.issue. Only then may a certificate print a date, tick a disposition
+   and carry a document number; until then it is a draft. */
+function docIssued(c){ return !!c.deskIssued; }
 function fillCoq(c){
   var doc = tplDoc("tpl-coq");
   var q = function(s){ return doc.querySelector(s); };
-  var draft = !c.issued;
+  var draft = !docIssued(c);
   q(".hb-code").textContent = draft ? "CoQ-PP-····-····" : c.n;
   q(".hb-issue").innerHTML = "Issued · Издаден <b>" +
     esc(draft ? "—" : c.issue.replace("≥ ", "")) + "</b>";
@@ -2464,7 +2473,7 @@ el("dv-save").addEventListener("click", function(){
   });
 });
 function coqDocName(c){
-  return (c.issued ? c.n : "DRAFT_CoQ") + "_" + (c.pp || c.cb).replace(/[^\w-]/g, "_") + ".html";
+  return (docIssued(c) ? c.n : "DRAFT_CoQ") + "_" + (c.pp || c.cb).replace(/[^\w-]/g, "_") + ".html";
 }
 function icoaDocName(p, asn){
   var short = { ab: "IdentAB", c: "IdentC", fm: "FM", mb: "Micro" }[scopeKind(p.scope)];
