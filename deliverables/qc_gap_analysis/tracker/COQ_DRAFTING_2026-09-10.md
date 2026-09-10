@@ -367,3 +367,28 @@ acceptance-criteria column, 21 in the result column. The identification criteria
 that an earlier revision had rewritten now read the master's own "Conforms to
 monograph" again, and the asterisks on Total THC, CBD and CBN — which tie those
 rows to the footnote — are back.
+
+## The date of issue comes from the register
+
+Owner, 10.09.2026: the date of issue is the one stated in the CoQ analysis master
+workbook, and the certificate prints that date.
+
+`CoQ Register` holds it per lot as `Issue date (planned)`, beside the code the
+certificate will carry. Both are formulas, so `tracker/extract_coq_register.py`
+recalculates the sheet through LibreOffice and lifts the computed values to
+`coq_register_2026-09-10.csv`; `export_coq_artifact_data.py` reads that, so the
+desk, the artifact page and the compiled certificates take the date from one
+place. The register keys itself on the P lot where a lot has one and on the
+cultivation batch where it does not, so both are indexed, through
+`batch_id.batch_key` rather than by string — the register writes `GG012601＊`
+where the schedule writes `GG012601`.
+
+**72 of the 164 CoQs** now take their issue date from the workbook, including
+**all 22** in these drafts: 21 on 27.05.2026 and J31102501 on 07.07.2026. It
+prints in the three places a certificate carries it — the header and the date
+under each of the two signatures — and they agree on every draft.
+
+A lot the register cannot issue yet has no date there and keeps the schedule's
+SOP floor, written `≥ 11.05.2026`. That is a rule, not a date, so it prints as the
+controlled blank the master ships rather than being silently stripped of its `≥`
+— which is what the header used to do.

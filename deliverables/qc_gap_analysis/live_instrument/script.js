@@ -2263,9 +2263,14 @@ function fillCoq(c){
   var q = function(s){ return doc.querySelector(s); };
   var draft = !docIssued(c);
   addTodoStyle(doc);
+  /* Owner, 10.09.2026: the date of issue is the one the CoQ Register states,
+     and the certificate prints it. c.issue carries that date wherever the
+     register holds one; where it does not it is still the SOP floor, written
+     "≥ <date>", which is a rule and not a date — that prints as the controlled
+     blank the master ships. */
+  var issueDate = /^\d{2}\.\d{2}\.\d{4}$/.test(c.issue || "") ? c.issue : "";
   q(".hb-code").textContent = draft ? "CoQ-PP-····-····" : c.n;
-  q(".hb-issue").innerHTML = "Issued · Издаден <b>" +
-    esc(draft ? "—" : c.issue.replace("≥ ", "")) + "</b>";
+  q(".hb-issue").innerHTML = "Issued · Издаден <b>" + esc(issueDate || "—") + "</b>";
   q(".pb-name").innerHTML = "<span style=\"font-family:'Roboto Mono',monospace\">" +
     esc(c.pp || c.cb) + '</span> <i class="bisep" style="font-size:.7em">|</i> ' +
     '<span style="font-weight:800;text-transform:uppercase">' + esc(c.strain) + "</span>";
@@ -2355,7 +2360,7 @@ function fillCoq(c){
      date, so all three carry the same controlled blank rather than the master
      specimen's 05.06.2026. */
   doc.querySelectorAll(".ap-date-val").forEach(function(n){
-    n.textContent = draft ? "—" : c.issue.replace("≥ ", "");
+    n.textContent = issueDate || "—";
   });
   /* Section 04 and the approval block are the master's own and are left exactly
      as it prints them — except the batch number, which the master prints in its

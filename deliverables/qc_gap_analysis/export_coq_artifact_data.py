@@ -229,6 +229,45 @@ def main(out):
             "route": r["Performed by"], "also": r["Also on file"],
         })
 
+    # The CoQ Register states, per lot, the code the certificate carries and the
+    # date it is issued (owner, 10.09.2026: the certificate prints THAT date).
+    # Lifted from the workbook by tracker/extract_coq_register.py, so the desk,
+    # the page and the compiled certificates all read one source. A lot the
+    # register cannot issue yet has no date, and keeps the schedule's floor.
+    reg_csv = os.path.join(HERE, "coq_register_2026-09-10.csv")
+    if os.path.exists(reg_csv):
+        import csv as _csv
+        _reg = {}
+        with open(reg_csv, encoding="utf-8") as _fh:
+            for _r in _csv.DictReader(_fh):
+                if _r["key"]:
+                    _reg[_r["key"]] = _r
+        # The register keys itself on the P lot where the lot has one and on the
+        # cultivation batch where it does not, so both are indexed — and through
+        # the single batch-identity definition, never by string: the register
+        # writes GG012601＊ where the schedule writes GG012601.
+        _byk = {}
+        for _kk, _rr in _reg.items():
+            _pre, _sfx = _kk.rsplit("|", 1)
+            for _name in (_pre, _rr.get("cu_batch", ""), _rr.get("p_batch", "")):
+                _name = (_name or "").strip()
+                if _name and not _name.startswith(("N/A", "\u2014")):
+                    _byk.setdefault((CQ.BI.batch_key(_name), _sfx), _rr)
+        _hit = 0
+        for _c in coqs:
+            _sfx = "R" if _c["t"].startswith("additional") else "I"
+            _row = (_byk.get((CQ.BI.batch_key(_c["pp"]), _sfx)) if _c["pp"] else None) \
+                or _byk.get((CQ.BI.batch_key(_c["cb"]), _sfx))
+            if not _row:
+                continue
+            _c["regcode"] = _row["coq_code"]
+            _d = (_row["issue_date"] or "").strip()
+            if _d and _d != "\u2014":
+                _c["issue"] = _d
+                _hit += 1
+        print("CoQ register: %d of %d CoQs take their issue date from the workbook"
+              % (_hit, len(coqs)))
+
     docs = [r for r in DR.load_register()
             if not r["code"].lower().startswith(("n/a", "(not numbered)"))]
     docs.sort(key=lambda r: (DR.key(r["date"]), r["row"]))

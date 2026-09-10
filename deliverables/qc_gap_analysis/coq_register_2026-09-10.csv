@@ -1,0 +1,158 @@
+key,cu_batch,p_batch,series,coq_code,issue_date,rule_date,icoa_ref,icoa_issue_date,issuable
+CJ1024|I,CJ1024,N/A — no P batch assigned,initial release,CoQ-PP_26-001,27.05.2026,27.05.2026,iCoA-PP_26-001,15.05.2026,yes
+BSS1024|I,BSS1024,N/A — no P batch assigned,initial release,CoQ-PP_26-002,27.05.2026,27.05.2026,iCoA-PP_26-002,15.05.2026,yes
+BG1024|I,BG1024,N/A — no P batch assigned,initial release,CoQ-PP_26-003,27.05.2026,27.05.2026,iCoA-PP_26-003,15.05.2026,yes
+GG1024|I,GG1024,N/A — no P batch assigned,initial release,CoQ-PP_26-004,27.05.2026,27.05.2026,iCoA-PP_26-004,15.05.2026,yes
+HPA1024|I,HPA1024,N/A — no P batch assigned,initial release,CoQ-PP_26-005,27.05.2026,27.05.2026,iCoA-PP_26-005,15.05.2026,yes
+OPM1024|I,OPM1024,N/A — no P batch assigned,initial release,CoQ-PP_26-006,27.05.2026,27.05.2026,iCoA-PP_26-006,15.05.2026,yes
+P050022|I,GP0824_02,P050022,initial release,CoQ-PP_26-007,27.05.2026,27.05.2026,iCoA-PP_26-007,15.05.2026,yes
+P050012|I,GG1024_02,P050012,initial release,CoQ-PP_26-008,27.05.2026,27.05.2026,iCoA-PP_26-008,15.05.2026,yes
+P050032|I,MB0824_04,P050032,initial release,CoQ-PP_26-009,27.05.2026,27.05.2026,iCoA-PP_26-009,15.05.2026,yes
+P050042|I,OMP1024_01,P050042,initial release,CoQ-PP_26-010,27.05.2026,27.05.2026,iCoA-PP_26-010,15.05.2026,yes
+P050052|I,HPA1024_01,P050052,initial release,CoQ-PP_26-011,27.05.2026,27.05.2026,iCoA-PP_26-011,15.05.2026,yes
+P050062|I,OPM1024_02,P050062,initial release,CoQ-PP_26-012,27.05.2026,27.05.2026,iCoA-PP_26-012,15.05.2026,yes
+P050072|I,GP0824_03,P050072,initial release,CoQ-PP_26-013,27.05.2026,27.05.2026,iCoA-PP_26-013,15.05.2026,yes
+P050082|I,OPM1024_03,P050082,initial release,CoQ-PP_26-014,27.05.2026,27.05.2026,iCoA-PP_26-014,15.05.2026,yes
+P050092|I,GG1024_01,P050092,initial release,CoQ-PP_26-015,27.05.2026,27.05.2026,iCoA-PP_26-015,15.05.2026,yes
+P050102|I,GP0824_01,P050102,initial release,CoQ-PP_26-016,27.05.2026,27.05.2026,iCoA-PP_26-016,15.05.2026,yes
+P050112|I,MB0824_05,P050112,initial release,CoQ-PP_26-017,27.05.2026,27.05.2026,iCoA-PP_26-017,15.05.2026,yes
+P050122|I,BSS1024_01/1,P050122,initial release,CoQ-PP_26-018,27.05.2026,27.05.2026,iCoA-PP_26-018,15.05.2026,yes
+P050132|I,OPM052501,P050132,initial release,CoQ-PP_26-019,27.05.2026,27.05.2026,iCoA-PP_26-019,15.05.2026,yes
+P050152|I,GP052501,P050152,initial release,CoQ-PP_26-020,27.05.2026,27.05.2026,iCoA-PP_26-020,15.05.2026,yes
+P050142|I,BSS1024_01/2,P050142,initial release,CoQ-PP_26-021,27.05.2026,27.05.2026,iCoA-PP_26-021,15.05.2026,yes
+P050162|I,CJ052501/01,P050162,initial release,CoQ-PP_26-022,27.05.2026,27.05.2026,iCoA-PP_26-022,15.05.2026,yes
+P050172|I,CJ052501/02,P050172,initial release,CoQ-PP_26-023,27.05.2026,27.05.2026,iCoA-PP_26-023,15.05.2026,yes
+P050182|I,HPA052501,P050182,initial release,CoQ-PP_26-024,27.05.2026,27.05.2026,iCoA-PP_26-024,15.05.2026,yes
+P050192|I,BSS052501,P050192,initial release,CoQ-PP_26-025,27.05.2026,27.05.2026,iCoA-PP_26-025,15.05.2026,yes
+P050202|I,GP062501,P050202,initial release,CoQ-PP_26-026,27.05.2026,27.05.2026,iCoA-PP_26-026,15.05.2026,yes
+P050212|I,CJ062501/2,P050212,initial release,CoQ-PP_26-027,27.05.2026,27.05.2026,iCoA-PP_26-027,15.05.2026,yes
+P050222|I,CJ062501/1,P050222,initial release,CoQ-PP_26-028,27.05.2026,27.05.2026,iCoA-PP_26-028,15.05.2026,yes
+P050252|I,CJ072501,P050252,initial release,CoQ-PP_26-029,27.05.2026,27.05.2026,iCoA-PP_26-029,15.05.2026,yes
+P050262|I,WC072501,P050262,initial release,CoQ-PP_26-030,27.05.2026,27.05.2026,iCoA-PP_26-030,15.05.2026,yes
+P050272|I,PM072501,P050272,initial release,CoQ-PP_26-031,27.05.2026,27.05.2026,iCoA-PP_26-031,15.05.2026,yes
+P050282|I,CLE072501,P050282,initial release,CoQ-PP_26-032,27.05.2026,27.05.2026,iCoA-PP_26-032,15.05.2026,yes
+P050292|I,GP072501/1,P050292,initial release,CoQ-PP_26-033,27.05.2026,27.05.2026,iCoA-PP_26-033,15.05.2026,yes
+P050302|I,GP072501/2,P050302,initial release,CoQ-PP_26-034,27.05.2026,27.05.2026,iCoA-PP_26-034,15.05.2026,yes
+P050312|I,GP082501/1,P050312,initial release,CoQ-PP_26-035,27.05.2026,27.05.2026,iCoA-PP_26-035,15.05.2026,yes
+P050322|I,GP082501/2,P050322,initial release,CoQ-PP_26-036,27.05.2026,27.05.2026,iCoA-PP_26-036,15.05.2026,yes
+P060012|I,WC082501,P060012,initial release,CoQ-PP_26-037,27.05.2026,27.05.2026,iCoA-PP_26-037,15.05.2026,yes
+P060022|I,CJ082501/1,P060022,initial release,CoQ-PP_26-038,27.05.2026,27.05.2026,iCoA-PP_26-038,15.05.2026,yes
+P060032|I,CJ082501/2,P060032,initial release,CoQ-PP_26-039,27.05.2026,27.05.2026,iCoA-PP_26-039,15.05.2026,yes
+P060042|I,OPM092501,P060042,initial release,CoQ-PP_26-040,27.05.2026,27.05.2026,iCoA-PP_26-040,15.05.2026,yes
+P060052|I,AB092501,P060052,initial release,CoQ-PP_26-041,27.05.2026,27.05.2026,iCoA-PP_26-041,15.05.2026,yes
+P060062|I,PM092501,P060062,initial release,CoQ-PP_26-042,27.05.2026,27.05.2026,iCoA-PP_26-042,15.05.2026,yes
+P060072|I,CJ092501,P060072,initial release,CoQ-PP_26-043,27.05.2026,27.05.2026,iCoA-PP_26-043,15.05.2026,yes
+P060082|I,SJ0925021,P060082,initial release,CoQ-PP_26-044,27.05.2026,27.05.2026,iCoA-PP_26-044,15.05.2026,yes
+P060092|I,GP092501,P060092,initial release,CoQ-PP_26-045,27.05.2026,27.05.2026,iCoA-PP_26-045,15.05.2026,yes
+P060102|I,WED102501,P060102,initial release,CoQ-PP_26-046,27.05.2026,27.05.2026,iCoA-PP_26-046,15.05.2026,yes
+P060142|I,GRC102501,P060142,initial release,CoQ-PP_26-047,27.05.2026,27.05.2026,iCoA-PP_26-047,15.05.2026,yes
+P060152|I,J31102501,P060152,initial release,CoQ-PP_26-048,27.05.2026,27.05.2026,iCoA-PP_26-048,15.05.2026,yes
+P060162|I,SJ102501,P060162,initial release,CoQ-PP_26-049,27.05.2026,27.05.2026,iCoA-PP_26-049,15.05.2026,yes
+P060172|I,KC102501,P060172,initial release,CoQ-PP_26-050,27.05.2026,27.05.2026,iCoA-PP_26-050,15.05.2026,yes
+P060182|I,GRC102501,P060182,initial release,CoQ-PP_26-051,27.05.2026,27.05.2026,iCoA-PP_26-051,15.05.2026,yes
+P060192|I,SJ112501,P060192,initial release,CoQ-PP_26-052,27.05.2026,27.05.2026,iCoA-PP_26-052,15.05.2026,yes
+P060202|I,J31112501,P060202,initial release,CoQ-PP_26-053,27.05.2026,27.05.2026,iCoA-PP_26-053,15.05.2026,yes
+P060212|I,JD112501,P060212,initial release,CoQ-PP_26-054,27.05.2026,27.05.2026,iCoA-PP_26-054,15.05.2026,yes
+P060222|I,OPM112501,P060222,initial release,CoQ-PP_26-055,27.05.2026,27.05.2026,iCoA-PP_26-055,15.05.2026,yes
+P060232|I,PM112501,P060232,initial release,CoQ-PP_26-056,27.05.2026,27.05.2026,iCoA-PP_26-056,15.05.2026,yes
+P060242|I,OPM122501,P060242,initial release,CoQ-PP_26-057,27.05.2026,27.05.2026,iCoA-PP_26-057,15.05.2026,yes
+P060252|I,GG112501,P060252,initial release,CoQ-PP_26-058,27.05.2026,27.05.2026,iCoA-PP_26-058,15.05.2026,yes
+P060262|I,J31122501,P060262,initial release,CoQ-PP_26-059,27.05.2026,27.05.2026,iCoA-PP_26-059,19.05.2026,yes
+P060272|I,CC112501,P060272,initial release,CoQ-PP_26-060,27.05.2026,27.05.2026,iCoA-PP_26-060,25.05.2026,yes
+P060282|I,SCR112501,P060282,initial release,CoQ-PP_26-061,27.05.2026,27.05.2026,iCoA-PP_26-061,25.05.2026,yes
+P060292|I,FB112501,P060292,initial release,CoQ-PP_26-062,27.05.2026,27.05.2026,iCoA-PP_26-062,25.05.2026,yes
+P060302|I,GG012601＊,P060302,initial release,CoQ-PP_26-063,27.05.2026,27.05.2026,iCoA-PP_26-063,25.05.2026,yes
+P060312|I,JD012601＊,P060312,initial release,CoQ-PP_26-064,27.05.2026,27.05.2026,iCoA-PP_26-064,26.05.2026,yes
+P060332|I,CC012601/1,P060332,initial release,CoQ-PP_26-065,27.05.2026,,iCoA-PP_26-065,27.05.2026,yes
+P060322|I,FB012601_1,P060322,initial release,CoQ-PP_26-066,27.05.2026,27.05.2026,iCoA-PP_26-066,27.05.2026,yes
+P060352|I,FB012602*,P060352,initial release,CoQ-PP_26-067,28.05.2026,,iCoA-PP_26-067,28.05.2026,yes
+P060342|I,SCR012601*,P060342,initial release,CoQ-PP_26-068,01.06.2026,,iCoA-PP_26-068,01.06.2026,yes
+P060382|I,SCR012603,P060382,initial release,CoQ-PP_26-069,01.06.2026,,iCoA-PP_26-069,01.06.2026,yes
+P060392|I,FB012603V,P060392,initial release,CoQ-PP_26-070,07.07.2026,07.07.2026,not needed,,yes
+P060362|I,JD012603,P060362,initial release,CoQ-PP_26-071,07.07.2026,07.07.2026,not needed,,yes
+P060422|I,JD012603,P060422,initial release,CoQ-PP_26-072,07.07.2026,07.07.2026,not needed,,yes
+P060402|I,GG012603,P060402,initial release,CoQ-PP_26-073,07.07.2026,07.07.2026,not needed,,yes
+P060412|I,JD012603,P060412,initial release,CoQ-PP_26-074,07.07.2026,07.07.2026,not needed,,yes
+P060432|I,FB012603,P060432,initial release,CoQ-PP_26-075,07.07.2026,07.07.2026,not needed,,yes
+P060442|I,SCR022601,P060442,initial release,CoQ-PP_26-076,13.07.2026,13.07.2026,not needed,,yes
+P060452|I,FB032601,P060452,initial release,CoQ-PP_26-077,28.07.2026,28.07.2026,not needed,,yes
+P060462|I,GG032601,P060462,initial release,CoQ-PP_26-078,28.07.2026,28.07.2026,not needed,,yes
+P060482|I,JD022601,P060482,initial release,CoQ-PP_26-079,05.08.2026,07.07.2026,not needed,,yes
+JD112501|I,JD112501＊,N/A — no P batch assigned,initial release,— at issue —,,27.05.2026,— at issue —,,no
+P160012|I,— not recorded —,P160012,initial release,— at issue —,,13.07.2026,not needed,,no
+P160022|I,— not recorded —,P160022,initial release,— at issue —,,13.07.2026,not needed,,no
+P160032|I,— not recorded —,P160032,initial release,— at issue —,,13.07.2026,not needed,,no
+CJ1024|R,CJ1024,N/A — no P batch assigned,retest — sampled — Tranche 2/3 (potency and mycotoxins pending),— at issue —,,08.09.2026,— at issue —,,no
+BSS1024|R,BSS1024,N/A — no P batch assigned,retest — Tranche 1 (sampled July 2026),— at issue —,,17.08.2026,— at issue —,,no
+BG1024|R,BG1024,N/A — no P batch assigned,retest — Tranche 1 (sampled July 2026),— at issue —,,17.08.2026,— at issue —,,no
+GG1024|R,GG1024,N/A — no P batch assigned,retest — not yet sampled,— at issue —,,at retest sampling,— at issue —,,no
+HPA1024|R,HPA1024,N/A — no P batch assigned,retest — Tranche 1 (sampled July 2026),— at issue —,,17.08.2026,— at issue —,,no
+P050102|R,GP0824_01,P050102,retest — sampled — Tranche 2/3 (potency and mycotoxins pending),— at issue —,,08.09.2026,— at issue —,,no
+OPM1024|R,OPM1024,N/A — no P batch assigned,retest — Tranche 1 (sampled July 2026),— at issue —,,17.08.2026,— at issue —,,no
+P050032|R,MB0824_04,P050032,retest — sampled — Tranche 2/3 (potency and mycotoxins pending),— at issue —,,08.09.2026,— at issue —,,no
+P050012|R,GG1024_02,P050012,retest — sampled — Tranche 2/3 (potency and mycotoxins pending),— at issue —,,08.09.2026,— at issue —,,no
+P050022|R,GP0824_02,P050022,retest — Tranche 1 (sampled July 2026),— at issue —,,17.08.2026,— at issue —,,no
+P050042|R,OMP1024_01,P050042,retest — not yet sampled,— at issue —,,at retest sampling,— at issue —,,no
+P050052|R,HPA1024_01,P050052,retest — Tranche 1 (sampled July 2026),— at issue —,,17.08.2026,— at issue —,,no
+P050062|R,OPM1024_02,P050062,retest — Tranche 1 (sampled July 2026),— at issue —,,17.08.2026,— at issue —,,no
+P050072|R,GP0824_03,P050072,retest — not yet sampled,— at issue —,,at retest sampling,— at issue —,,no
+P050082|R,OPM1024_03,P050082,retest — not yet sampled,— at issue —,,at retest sampling,— at issue —,,no
+P050092|R,GG1024_01,P050092,retest — Tranche 1 (sampled July 2026),— at issue —,,17.08.2026,— at issue —,,no
+P050112|R,MB0824_05,P050112,retest — not yet sampled,— at issue —,,at retest sampling,— at issue —,,no
+P050132|R,OPM052501,P050132,retest — sampled — Tranche 2/3 (potency and mycotoxins pending),— at issue —,,08.09.2026,— at issue —,,no
+P050172|R,CJ052501/02,P050172,retest — sampled — Tranche 2/3 (potency and mycotoxins pending),— at issue —,,08.09.2026,— at issue —,,no
+P050152|R,GP052501,P050152,retest — Tranche 1 (sampled July 2026),— at issue —,,17.08.2026,— at issue —,,no
+P050162|R,CJ052501/01,P050162,retest — Tranche 1 (sampled July 2026),— at issue —,,17.08.2026,— at issue —,,no
+P050182|R,HPA052501,P050182,retest — not yet sampled,— at issue —,,at retest sampling,— at issue —,,no
+P050192|R,BSS052501,P050192,retest — sampled — Tranche 2/3 (potency and mycotoxins pending),— at issue —,,07.09.2026,— at issue —,,no
+P050222|R,CJ062501/1,P050222,retest — not yet sampled,— at issue —,,at retest sampling,— at issue —,,no
+P050252|R,CJ072501,P050252,retest — sampled — Tranche 2/3 (potency and mycotoxins pending),— at issue —,,08.09.2026,— at issue —,,no
+P050262|R,WC072501,P050262,retest — sampled — Tranche 2/3 (potency and mycotoxins pending),— at issue —,,08.09.2026,— at issue —,,no
+P050282|R,CLE072501,P050282,retest — not yet sampled,— at issue —,,at retest sampling,— at issue —,,no
+P050302|R,GP072501/2,P050302,retest — not yet sampled,— at issue —,,at retest sampling,— at issue —,,no
+P050312|R,GP082501/1,P050312,retest — not yet sampled,— at issue —,,at retest sampling,— at issue —,,no
+P050322|R,GP082501/2,P050322,retest — Tranche 1 (sampled July 2026),— at issue —,,17.08.2026,— at issue —,,no
+P060012|R,WC082501,P060012,retest — not yet sampled,— at issue —,,at retest sampling,— at issue —,,no
+P060022|R,CJ082501/1,P060022,retest — not yet sampled,— at issue —,,at retest sampling,— at issue —,,no
+P050292|R,GP072501/1,P050292,retest — sampled — Tranche 2/3 (potency and mycotoxins pending),— at issue —,,08.09.2026,— at issue —,,no
+P050272|R,PM072501,P050272,retest — sampled — Tranche 2/3 (potency and mycotoxins pending),— at issue —,,08.09.2026,— at issue —,,no
+P050212|R,CJ062501/2,P050212,retest — Tranche 1 (sampled July 2026),— at issue —,,17.08.2026,— at issue —,,no
+P060032|R,CJ082501/2,P060032,retest — Tranche 1 (sampled July 2026),— at issue —,,17.08.2026,— at issue —,,no
+P060042|R,OPM092501,P060042,retest — not yet sampled,— at issue —,,at retest sampling,— at issue —,,no
+P060062|R,PM092501,P060062,retest — Tranche 1 (sampled July 2026),— at issue —,,17.08.2026,— at issue —,,no
+P060072|R,CJ092501,P060072,retest — not yet sampled,— at issue —,,at retest sampling,— at issue —,,no
+P060082|R,SJ0925021,P060082,retest — not yet sampled,— at issue —,,at retest sampling,— at issue —,,no
+P060092|R,GP092501,P060092,retest — not yet sampled,— at issue —,,at retest sampling,— at issue —,,no
+P060052|R,AB092501,P060052,retest — sampled — Tranche 2/3 (potency and mycotoxins pending),— at issue —,,08.09.2026,— at issue —,,no
+P060162|R,SJ102501,P060162,retest — sampled — Tranche 2/3 (potency and mycotoxins pending),— at issue —,,07.09.2026,— at issue —,,no
+P060192|R,SJ112501,P060192,retest — not yet sampled,— at issue —,,at retest sampling,— at issue —,,no
+P060152|R,J31102501,P060152,retest — Tranche 1 (sampled July 2026),— at issue —,,17.08.2026,— at issue —,,no
+P060222|R,OPM112501,P060222,retest — sampled — Tranche 2/3 (potency and mycotoxins pending),— at issue —,,07.09.2026,— at issue —,,no
+P060172|R,KC102501,P060172,retest — not yet sampled,— at issue —,,at retest sampling,— at issue —,,no
+P060182|R,GRC102501,P060182,retest — sampled — Tranche 2/3 (potency and mycotoxins pending),— at issue —,,08.09.2026,— at issue —,,no
+P060202|R,J31112501,P060202,retest — sampled — Tranche 2/3 (potency and mycotoxins pending),— at issue —,,07.09.2026,— at issue —,,no
+P060212|R,JD112501,P060212,retest — Tranche 1 (sampled July 2026),— at issue —,,17.08.2026,— at issue —,,no
+JD112501|R,JD112501＊,N/A — no P batch assigned,retest — not yet sampled,— at issue —,,at retest sampling,— at issue —,,no
+P060262|R,J31122501,P060262,retest — re-analysed,— at issue —,,27.05.2026,— at issue —,,no
+P060232|R,PM112501,P060232,retest — not yet sampled,— at issue —,,at retest sampling,— at issue —,,no
+P060242|R,OPM122501,P060242,retest — Tranche 1 (sampled July 2026),— at issue —,,17.08.2026,— at issue —,,no
+P060272|R,CC112501,P060272,retest — sampled — Tranche 2/3 (potency and mycotoxins pending),— at issue —,,07.09.2026,— at issue —,,no
+P060292|R,FB112501,P060292,retest — sampled — Tranche 2/3 (potency and mycotoxins pending),— at issue —,,07.09.2026,— at issue —,,no
+P060302|R,GG012601＊,P060302,retest — sampled — Tranche 2/3 (potency and mycotoxins pending),— at issue —,,07.09.2026,— at issue —,,no
+P060252|R,GG112501,P060252,retest — sampled — Tranche 2/3 (potency and mycotoxins pending),— at issue —,,07.09.2026,— at issue —,,no
+P050202|R,GP062501,P050202,retest — sampled — Tranche 2/3 (potency and mycotoxins pending),— at issue —,,08.09.2026,— at issue —,,no
+P060312|R,JD012601＊,P060312,retest — sampled — Tranche 2/3 (potency and mycotoxins pending),— at issue —,,07.09.2026,— at issue —,,no
+P060282|R,SCR112501,P060282,retest — not yet sampled,— at issue —,,at retest sampling,— at issue —,,no
+P060322|R,FB012601_1,P060322,retest — not yet sampled,— at issue —,,at retest sampling,— at issue —,,no
+P060352|R,FB012602*,P060352,retest — re-analysed,— at issue —,,17.08.2026,— at issue —,,no
+P060362|R,JD012603,P060362,retest — re-analysed,— at issue —,,07.07.2026,— at issue —,,no
+P060422|R,JD012603,P060422,retest — re-analysed,— at issue —,,07.07.2026,— at issue —,,no
+P060402|R,GG012603,P060402,retest — re-analysed,— at issue —,,17.08.2026,— at issue —,,no
+P060412|R,JD012603,P060412,retest — re-analysed,— at issue —,,07.07.2026,— at issue —,,no
+P060382|R,SCR012603,P060382,retest — re-analysed,— at issue —,,17.08.2026,— at issue —,,no
+P060432|R,FB012603,P060432,retest — sampled — Tranche 2/3 (potency and mycotoxins pending),— at issue —,,07.09.2026,— at issue —,,no
+P060392|R,FB012603V,P060392,retest — sampled — Tranche 2/3 (potency and mycotoxins pending),— at issue —,,07.09.2026,— at issue —,,no
+P060482|R,JD022601,P060482,retest — not yet sampled,— at issue —,,at retest sampling,— at issue —,,no
+P060442|R,SCR022601,P060442,retest — sampled — Tranche 2/3 (potency and mycotoxins pending),— at issue —,,07.09.2026,— at issue —,,no
+P060452|R,FB032601,P060452,retest — not yet sampled,— at issue —,,at retest sampling,— at issue —,,no
+P060462|R,GG032601,P060462,retest — not yet sampled,— at issue —,,at retest sampling,— at issue —,,no
