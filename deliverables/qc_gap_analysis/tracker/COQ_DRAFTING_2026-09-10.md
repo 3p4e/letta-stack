@@ -517,3 +517,49 @@ acceptance-criteria column, and the selection row still fits: the widest case
 
 `spec_attributes.py` needs `poppler-utils` (`pdftohtml`); everything else is
 already in the container.
+
+---
+
+# The mycotoxin sub-parameters — 10.09.2026
+
+Owner: *"the QC laboratory is referencing the mycotoxins separately but they all
+follow under one general mycotoxins parameter, and the sub-parameters are
+Ochratoxin A, Aflatoxin B₁ and total Aflatoxins — and nonetheless you transcribe
+the correct and corresponding parameter value into the certificate of quality
+accordingly."*
+
+**This corrects a claim made earlier in this note.** It said the certificate
+"reports the aflatoxin sum, not the single analytes", and offered that as the
+reason #10.1 and #10.3 are blank on every draft. That is true of the release
+certificates and of no others, and it was written as though it were the
+laboratory's practice generally. It is not.
+
+| laboratory | what it reports | what the desk does |
+| --- | --- | --- |
+| Farmahem `197-…-М/26` (re-analysis) | all three, separately, in register columns O, P and Q | transcribes each to its own line — **21 of 21 retest certificates carry all three** |
+| IJZ / IPH (release) | the three sub-parameters as one block, `n.r.; <2; n.r.` — one reported | maps the reported value to Total Aflatoxins (#10.2) |
+
+The mapping on the release certificates rests on the slot's position in the
+block, which matches both the certificate's own order and the register column the
+value was recorded in. It does **not** rest on a printed analyte name.
+
+## Two findings
+
+**The desk prints a blank where the source prints `n.r.`** Determinations 10.1 and
+10.3 come out as the bracketed marker on the release drafts, and the source says
+*not reported*. A line the desk holds nothing for and a line the laboratory did
+not determine are different statements, and on a certificate of quality they must
+not look the same.
+
+**The reading decides pass or fail on four lots.**
+
+| lot | document | reported |
+| --- | --- | ---: |
+| CLE072501 | 5700-2025 | 2.2 µg/kg |
+| OPM092501 | 87-2026 | 2.2 µg/kg |
+| OPM1024_03 | 3636-2025 | 2.1 µg/kg |
+| OPM122501 | 1627-2026 | 2.2 µg/kg |
+
+Read as **Total Aflatoxins** against ≤ 4 µg/kg they pass. Read as **Aflatoxin B₁**
+against ≤ 2 µg/kg they fail. The desk reads them as the sum. Nothing here settles
+it: the page has to be read before any of those four is signed.
