@@ -1,0 +1,218 @@
+<title>Purely Plant QC Package</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Roboto+Mono:wght@400;500;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap">
+<style>
+:root{
+  --ground:#F6F8FA; --surface:#FFFFFF; --sunk:#EEF2F6;
+  --ink:#12212F; --body:#33475C; --dim:#6C8299; --rule:#D3DDE6;
+  --navy:#15314F; --gold:#8A6A22; --gold-soft:#F3EBDA;
+  --stop:#B3382F; --stop-soft:#F8E5E2; --go:#2C7A4B; --go-soft:#E3F1E8;
+  --hold:#9A6510; --hold-soft:#FAEEDA;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#0E1720; --surface:#16222E; --sunk:#1B2937;
+  --ink:#E8EFF5; --body:#BACAD8; --dim:#8399AD; --rule:#2C3E4F;
+  --navy:#7FB0DC; --gold:#D9B266; --gold-soft:#2A2418;
+  --stop:#F09084; --stop-soft:#3B211E; --go:#74CE95; --go-soft:#17351F;
+  --hold:#E3AC53; --hold-soft:#38290F;
+}}
+:root[data-theme="dark"]{
+  --ground:#0E1720; --surface:#16222E; --sunk:#1B2937;
+  --ink:#E8EFF5; --body:#BACAD8; --dim:#8399AD; --rule:#2C3E4F;
+  --navy:#7FB0DC; --gold:#D9B266; --gold-soft:#2A2418;
+  --stop:#F09084; --stop-soft:#3B211E; --go:#74CE95; --go-soft:#17351F;
+  --hold:#E3AC53; --hold-soft:#38290F;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--body);
+  font-family:'Lora',Georgia,serif;font-size:15px;line-height:1.62;margin:0}
+.wrap{max-width:1120px;margin:0 auto;padding-block:40px;padding-left:20px;padding-right:20px}
+h1,h2,h3,.lbl,th,.ph,.stat b{font-family:'Montserrat',system-ui,sans-serif}
+h1{font-size:clamp(26px,4vw,38px);line-height:1.12;font-weight:800;letter-spacing:-.4px;
+  color:var(--ink);margin:0;text-wrap:balance}
+h2{font-size:19px;font-weight:700;letter-spacing:-.1px;color:var(--ink);margin:0 0 4px}
+h3{font-size:13px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+  color:var(--gold);margin:0 0 10px}
+p{margin:0 0 12px;max-width:72ch}
+a{color:var(--navy)}
+.m{font-family:'Roboto Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.dim{color:var(--dim)}
+.lbl{font-size:10.5px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--dim)}
+
+header{border-bottom:2px solid var(--navy);padding-bottom:22px;margin-bottom:26px}
+.eyebrow{display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;margin-bottom:12px}
+.sub{margin-top:10px;font-size:16px;color:var(--body);max-width:70ch}
+
+.warn{display:flex;gap:14px;align-items:flex-start;background:var(--stop-soft);
+  border-left:3px solid var(--stop);padding:14px 16px;margin:22px 0}
+.warn .lbl{color:var(--stop)}
+.warn p{margin:0;font-size:14px;color:var(--ink)}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));
+  gap:1px;background:var(--rule);border:1px solid var(--rule);margin:26px 0}
+.stat{background:var(--surface);padding:14px 16px}
+.stat b{display:block;font-size:26px;font-weight:700;color:var(--ink);
+  font-variant-numeric:tabular-nums;line-height:1.1}
+.stat span{display:block;font-size:11px;margin-top:3px}
+
+section{margin:34px 0}
+.tblwrap{overflow-x:auto;border:1px solid var(--rule);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{font-size:10px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;
+  color:var(--dim);text-align:left;padding:9px 10px;border-bottom:1px solid var(--rule);
+  background:var(--sunk);white-space:nowrap}
+td{padding:7px 10px;border-bottom:1px solid var(--rule);color:var(--body);vertical-align:top}
+tbody tr:last-child td{border-bottom:0}
+td.ctr,th.ctr{text-align:center}
+td.num,th.num{text-align:right}
+.wrap-cell{white-space:normal;min-width:15ch}
+caption{caption-side:top;text-align:left;padding:11px 10px;font-family:'Montserrat',sans-serif;
+  font-size:12px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--ink);
+  background:var(--surface);border-bottom:1px solid var(--rule)}
+.ph{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.6px;
+  text-transform:uppercase;padding:2px 7px;border-radius:2px;white-space:nowrap}
+.ph-hy{background:var(--gold-soft);color:var(--gold)}
+.ph-in{background:var(--go-soft);color:var(--go)}
+.ph-sa{background:var(--hold-soft);color:var(--hold)}
+.ph-no{background:var(--stop-soft);color:var(--stop)}
+
+.tree{white-space:pre;background:var(--surface);border:1px solid var(--rule);padding:16px 18px;
+  font-family:'Roboto Mono',monospace;font-size:12.5px;line-height:1.85;overflow-x:auto}
+.tree .f{color:var(--ink);font-weight:500}
+.tree .c{color:var(--dim)}
+
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+.note{background:var(--surface);border:1px solid var(--rule);border-top:2px solid var(--gold);
+  padding:16px 18px}
+.note.stop{border-top-color:var(--stop)}
+.note.open{border-top-color:var(--hold)}
+.note p{font-size:14px;margin:0 0 8px}
+.note p:last-child{margin:0}
+.note ul{margin:6px 0 0;padding-left:18px;font-size:14px}
+.note li{margin-bottom:5px}
+footer{border-top:1px solid var(--rule);margin-top:40px;padding-top:16px;
+  font-size:12.5px;color:var(--dim)}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">
+    <span class="lbl">Purely Plant DOOEL &middot; QC Department</span>
+    <span class="lbl m" style="color:var(--gold)">10.09.2026</span>
+  </div>
+  <h1>Certificates of quality, Tranches 1 and 2</h1>
+  <p class="sub">Twenty-two certificates compiled from the reconciled release
+  record, the workbook they came from, the sources behind them, and the notes
+  that say what each one still lacks.</p>
+</header>
+
+<div class="warn">
+  <span class="lbl">Draft</span>
+  <p>Every certificate in this package is watermarked DRAFT and unsigned, with its
+  conformity statement unticked and every field the desk cannot stand behind
+  bracketed in red. <b>None has been issued.</b></p>
+</div>
+
+<div class="stats">
+  <div class="stat"><b>22</b><span class="lbl">certificates drafted</span></div>
+  <div class="stat"><b>80</b><span class="lbl">batches on file</span></div>
+  <div class="stat"><b>106</b><span class="lbl">certificates scheduled</span></div>
+  <div class="stat"><b>147</b><span class="lbl">blank printed lines</span></div>
+  <div class="stat"><b>0</b><span class="lbl">running off the sheet</span></div>
+  <div class="stat"><b>12.1<small style="font-size:14px"> MiB</small></b><span class="lbl">package size</span></div>
+</div>
+
+<section>
+  <h3>The certificates</h3>
+  <h2>What each sheet carries</h2>
+  <p>Issue dates follow the rulings of 10.09.2026: five to ten days after the last
+  external certificate the sheet cites, floored to 06.06.2026 for everything that
+  would otherwise predate the specification SOP. P060402 is the exception &mdash; it
+  cites &#1055;&#1055;&#1050;26114 of 30.06.2026, so it issues seven days after that.</p>
+  <div class="tblwrap">
+    <table>
+      <caption>Tranche 1 &middot; 13 certificates</caption>
+      <thead><tr><th>P lot</th><th>Cultivation batch</th><th>Strain</th>
+        <th class="ctr">Grade</th><th class="num">Assay %</th><th>Phenotype</th>
+        <th>Issued</th><th class="ctr">Blanks</th><th>Specification</th></tr></thead>
+      <tbody><tr><td class="m">P050022</td><td class="m dim">GP0824_02</td><td>Grape Pie</td><td class="m ctr">III</td><td class="m num">22.61</td><td><span class="ph ph-hy">Hybrid</span></td><td class="m">06.06.2026</td><td class="m ctr">5</td><td class="m dim wrap-cell">QCSP_001_GP-III_v.01</td></tr><tr><td class="m">P050052</td><td class="m dim">HPA1024_01</td><td>High Pro Amnesia</td><td class="m ctr">I</td><td class="m num">21.61</td><td><span class="ph ph-sa">Sativa</span></td><td class="m">06.06.2026</td><td class="m ctr">5</td><td class="m dim wrap-cell">QCSP_001_HPA-I_v.01</td></tr><tr><td class="m">P050062</td><td class="m dim">OPM1024_02</td><td>Orange Punch Mimosa</td><td class="m ctr">III</td><td class="m num">18.04</td><td><span class="ph ph-in">Indica</span></td><td class="m">06.06.2026</td><td class="m ctr">5</td><td class="m dim wrap-cell">QCSP_001_OPM-II_v.01</td></tr><tr><td class="m">P050092</td><td class="m dim">GG1024_01</td><td>Gorilla Glue</td><td class="m ctr">I</td><td class="m num">18.67</td><td><span class="ph ph-in">Indica</span></td><td class="m">06.06.2026</td><td class="m ctr">5</td><td class="m dim wrap-cell">QCSP_001_GG-I_v.01</td></tr><tr><td class="m">P050152</td><td class="m dim">GP052501</td><td>Grape Pie</td><td class="m ctr">IV</td><td class="m num">18.52</td><td><span class="ph ph-no">not on file</span></td><td class="m">06.06.2026</td><td class="m ctr">5</td><td class="m dim wrap-cell">QCSP_001_GP-THC18_v.01</td></tr><tr><td class="m">P050162</td><td class="m dim">CJ052501/01</td><td>Cap Junky</td><td class="m ctr">III</td><td class="m num">24.05</td><td><span class="ph ph-hy">Hybrid</span></td><td class="m">06.06.2026</td><td class="m ctr">5</td><td class="m dim wrap-cell">QCSP_001_CJ-III_v.01</td></tr><tr><td class="m">P050322</td><td class="m dim">GP082501/2</td><td>Grape Pie</td><td class="m ctr">V</td><td class="m num">15.70</td><td><span class="ph ph-no">not on file</span></td><td class="m">06.06.2026</td><td class="m ctr">5</td><td class="m dim wrap-cell">QCSP_001_GP-V_v.01</td></tr><tr><td class="m">P060032</td><td class="m dim">CJ082501/2</td><td>Cap Junky</td><td class="m ctr">IV</td><td class="m num">18.29</td><td><span class="ph ph-no">not on file</span></td><td class="m">06.06.2026</td><td class="m ctr">5</td><td class="m dim wrap-cell">QCSP_001_CJ-IV_v.01</td></tr><tr><td class="m">P060062</td><td class="m dim">PM092501</td><td>Permanent Marker</td><td class="m ctr">I</td><td class="m num">12.25</td><td><span class="ph ph-hy">Hybrid</span></td><td class="m">06.06.2026</td><td class="m ctr">5</td><td class="m dim wrap-cell">QCSP_001_PM-I_v.01</td></tr><tr><td class="m">P060152</td><td class="m dim">J31102501</td><td>Jokerz 31</td><td class="m ctr">I</td><td class="m num">17.32</td><td><span class="ph ph-hy">Hybrid</span></td><td class="m">06.06.2026</td><td class="m ctr">15</td><td class="m dim wrap-cell">QCSP_001_J31-II_v.01</td></tr><tr><td class="m">P060212</td><td class="m dim">JD112501</td><td>Jelly Donuts</td><td class="m ctr">II</td><td class="m num">20.32</td><td><span class="ph ph-hy">Hybrid</span></td><td class="m">06.06.2026</td><td class="m ctr">15</td><td class="m dim wrap-cell">QCSP_001_JD-I_v.01</td></tr><tr><td class="m">P060242</td><td class="m dim">OPM122501</td><td>Orange Punch Mimosa</td><td class="m ctr">V</td><td class="m num">7.91</td><td><span class="ph ph-no">not on file</span></td><td class="m">06.06.2026</td><td class="m ctr">5</td><td class="m dim wrap-cell">QCSP_001_OPM-V_v.01</td></tr><tr><td class="m">P060402</td><td class="m dim">GG012603</td><td>Gorilla Glue</td><td class="m ctr">II</td><td class="m num">16.70</td><td><span class="ph ph-in">Indica</span></td><td class="m">07.07.2026</td><td class="m ctr">12</td><td class="m dim wrap-cell">QCSP_001_GG-II_v.01</td></tr></tbody>
+    </table>
+  </div>
+  <div class="tblwrap" style="margin-top:18px">
+    <table>
+      <caption>Tranche 2 &middot; 9 certificates</caption>
+      <thead><tr><th>P lot</th><th>Cultivation batch</th><th>Strain</th>
+        <th class="ctr">Grade</th><th class="num">Assay %</th><th>Phenotype</th>
+        <th>Issued</th><th class="ctr">Blanks</th><th>Specification</th></tr></thead>
+      <tbody><tr><td class="m">P050112</td><td class="m dim">MB0824_05</td><td>Motor Breath</td><td class="m ctr">I</td><td class="m num">17.93</td><td><span class="ph ph-hy">Hybrid</span></td><td class="m">06.06.2026</td><td class="m ctr">5</td><td class="m dim wrap-cell">QCSP_001_MB-I_v.01</td></tr><tr><td class="m">P050182</td><td class="m dim">HPA052501</td><td>High Pro Amnesia</td><td class="m ctr">II</td><td class="m num">19.69</td><td><span class="ph ph-sa">Sativa</span></td><td class="m">06.06.2026</td><td class="m ctr">5</td><td class="m dim wrap-cell">QCSP_001_HPA-II_v.01</td></tr><tr><td class="m">P050282</td><td class="m dim">CLE072501</td><td>Clemosa A Bud</td><td class="m ctr">I</td><td class="m num">8.65</td><td><span class="ph ph-hy">Hybrid</span></td><td class="m">06.06.2026</td><td class="m ctr">5</td><td class="m dim wrap-cell">QCSP_001_CLE-I_v.01</td></tr><tr><td class="m">P050302</td><td class="m dim">GP072501/2</td><td>Grape Pie</td><td class="m ctr">IV</td><td class="m num">18.29</td><td><span class="ph ph-hy">Hybrid</span></td><td class="m">06.06.2026</td><td class="m ctr">5</td><td class="m dim wrap-cell">QCSP_001_GP-IV_v.01</td></tr><tr><td class="m">P060012</td><td class="m dim">WC082501</td><td>Wedding Crusher</td><td class="m ctr">I</td><td class="m num">23.48</td><td><span class="ph ph-hy">Hybrid</span></td><td class="m">06.06.2026</td><td class="m ctr">5</td><td class="m dim wrap-cell">QCSP_001_WC-I_v.01</td></tr><tr><td class="m">P060042</td><td class="m dim">OPM092501</td><td>Orange Punch Mimosa</td><td class="m ctr">IV</td><td class="m num">10.18</td><td><span class="ph ph-in">Indica</span></td><td class="m">06.06.2026</td><td class="m ctr">5</td><td class="m dim wrap-cell">QCSP_001_OPM-IV_v.01</td></tr><tr><td class="m">P060082</td><td class="m dim">SJ092501</td><td>Sleepy Joe</td><td class="m ctr">I</td><td class="m num">10.39</td><td><span class="ph ph-hy">Hybrid</span></td><td class="m">06.06.2026</td><td class="m ctr">5</td><td class="m dim wrap-cell">QCSP_001_SJ-II_v.01</td></tr><tr><td class="m">P060092</td><td class="m dim">GP092501</td><td>Grape Pie</td><td class="m ctr">II</td><td class="m num">25.24</td><td><span class="ph ph-hy">Hybrid</span></td><td class="m">06.06.2026</td><td class="m ctr">5</td><td class="m dim wrap-cell">QCSP_001_GP-II_v.01</td></tr><tr><td class="m">P060172</td><td class="m dim">KC102501</td><td>Kush Crasher</td><td class="m ctr">I</td><td class="m num">17.06</td><td><span class="ph ph-in">Indica</span></td><td class="m">06.06.2026</td><td class="m ctr">15</td><td class="m dim wrap-cell">QCSP_001_KC-I_v.01</td></tr></tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h3>The archive</h3>
+  <h2>PP_QC_Package_2026-09-10.zip</h2>
+  <div class="tree">
+<span class="f">MANIFEST.md</span>                          <span class="c">every file, its size and its SHA-256</span>
+<span class="f">certificates/</span>
+  <span class="f">Tranche_1_CoQ_Drafts.pdf</span>            <span class="c">13 sheets, A4, fonts embedded</span>
+  <span class="f">Tranche_2_CoQ_Drafts.pdf</span>            <span class="c">9 sheets, A4, fonts embedded</span>
+  <span class="f">Tranche_1_2_CoQ_Draft_Set.html</span>      <span class="c">all 22 on one page</span>
+  <span class="f">individual/</span>                        <span class="c">22 single-lot HTML certificates</span>
+<span class="f">workbook/</span>
+  <span class="f">CoQ_Analysis_Master_v21.xlsx</span>        <span class="c">coverage, registers, Reconciliation 09.09</span>
+  <span class="f">coq_master_v21.html</span>                 <span class="c">the same workbook as nine views</span>
+<span class="f">desk/</span>
+  <span class="f">qc_quality_desk_artifact.html</span>       <span class="c">click a batch, it compiles the certificate</span>
+<span class="f">sources/</span>                              <span class="c">8 flat files &mdash; the evidence behind every figure</span>
+<span class="f">docs/</span>                                 <span class="c">5 notes &mdash; rulings, drafting, reconciliation</span>
+  </div>
+</section>
+
+<section>
+  <h3>Read these first</h3>
+  <div class="notes">
+    <div class="note stop">
+      <h2 style="font-size:16px">Eighteen back-dated cells</h2>
+      <p>Six lots were printing August 2026 re-analysis on a release certificate,
+      including four banner assays &mdash; FB012602 24.09&nbsp;%, JD012603/01
+      21.01&nbsp;%, CC012603 14.76&nbsp;%, SCR012603 17.84&nbsp;%. Those belong to
+      the retest that rests on them.</p>
+      <p>FB012602&rsquo;s figure was one of the nineteen assays recorded as outside
+      its own band. It was never a release value.</p>
+    </div>
+    <div class="note stop">
+      <h2 style="font-size:16px">Why the identity lines are blank</h2>
+      <p>#1, #2 and #7 are blank on 21 of 22 sheets because the internal
+      certificate carrying them <b>has not been issued</b> &mdash; on 40 of 50 batches.
+      Issuing it is necessary and not sufficient: microscopy was performed on none
+      of the five in-house documents read, and foreign matter prints no percentage
+      against a gravimetric &lt;&nbsp;2.0&nbsp;% specification.</p>
+    </div>
+    <div class="note open">
+      <h2 style="font-size:16px">Still to build</h2>
+      <ul>
+        <li>The internal CoA is not yet referenced in Section&nbsp;03.</li>
+        <li>49 determinations still cite an in-house document directly.</li>
+        <li>Identification C is not yet cited from the cannabinoid determination.</li>
+        <li>The potency acceptance range is still a placeholder in both places it prints.</li>
+      </ul>
+    </div>
+    <div class="note open">
+      <h2 style="font-size:16px">Waiting on a ruling</h2>
+      <ul>
+        <li>Do the recorded Ident A / B and foreign-matter results print once the
+        internal CoA counts as issued, or does the sheet cite it with the result
+        left blank?</li>
+        <li>The two approvers&rsquo; names still print the master&rsquo;s specimen.</li>
+        <li>46 desk-versus-pass disagreements are recorded and unresolved.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Built from <span class="m">coq_artifact_data.json</span> at 10.09.2026 &middot;
+  branch <span class="m">claude/google-drive-links-d932ku</span> &middot;
+  every figure on this page is read from the package, not transcribed.
+</footer>
+</div>
