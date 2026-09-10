@@ -38,12 +38,24 @@ em dash it used to share with a measured `N.D.` — the one column where those t
 mean opposite things. The brackets carry the meaning and the colour is emphasis,
 so a greyscale photocopy loses nothing.
 
+**The three selection bands come from the specification** (owner, 10.09.2026).
+Phenotype, chemotype and processing are product attributes, and the document that
+states them is the issued QCSP 001 specification the certificate names in
+Spec. Ref.; `spec_attributes.py` reads them off it, and 18 of the 22 drafts now
+carry the phenotype their own specification prints — 6 Indica, 2 Sativa, 10
+Hybrid — instead of the master specimen's `☒ Hybrid Indica dom.` on every lot. On
+the four lots whose specification is not on file, every pill in every band is
+unticked with its box marked. The Hybrid pill's dominance sub-label follows the
+same document: a ratio where it prints one, and its own words, bracketed, where
+it prints `TO BE DETERMINED`.
+
+The packaging line is the specification's too, and identical on all 257 issued
+specifications, so it is left exactly as the master sets it — and checked against
+the specification's figures on every lot rather than assumed.
+
 **Fields that still print the master's worked specimen**, because they are not on
-the README's list and are the owner's to rule on: the phenotype and processing
-chips (`☒ Hybrid Indica dom.`, `☒ Machine` on every lot), the two approvers'
-names and credentials, the packaging construction and net fill weight
-(`… 300 × 500 mm · net. 400.0 g ±3%`), and the page `<title>`, which is what a
-PDF carries as its `/Title`.
+the README's list and are the owner's to rule on: the two approvers' names and
+credentials, and the page `<title>`, which is what a PDF carries as its `/Title`.
 
 The drafts are compiled by
 `live_instrument/build_coq_drafts.py`, which calls the Quality Desk's own

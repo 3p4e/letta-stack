@@ -392,3 +392,128 @@ A lot the register cannot issue yet has no date there and keeps the schedule's
 SOP floor, written `≥ 11.05.2026`. That is a rule, not a date, so it prints as the
 controlled blank the master ships rather than being silently stripped of its `≥`
 — which is what the header used to do.
+
+---
+
+# Fifth revision, 10.09.2026 — the pills come from the specification
+
+Owner, 10.09.2026: *"the phenotype and the processing pills need to be selected
+according to the specification for the product strain."*
+
+Until this revision every draft printed the master's worked specimen —
+`☒ Hybrid Indica dom.`, `☒ THC`, `☒ Machine` — on all 22 lots, and the packaging
+line under it. Those are not laboratory results and they are not the desk's to
+guess. They are product attributes, and the document that states them is the
+**issued QCSP 001 specification the certificate already names in Spec. Ref.**
+
+## Reading a tick that is not a tick
+
+The specification does not print a ballot box. It prints all the options and sets
+the selected one in cream on a filled pill, the rest in muted olive on the
+ground — so a selection is a *colour*, and hard-coding which colour would let a
+restyle silently invert every certificate. `spec_attributes.py` calibrates on the
+document instead:
+
+* the phenotype band prints three options and exactly one is selected, so the
+  colour that appears **once** is the selected one;
+* that reading is accepted only if the once-colour is the **lighter** of the two
+  — cream on dark, never the other way round. Two ticked options would also
+  produce a once-colour, and this is what catches it;
+* the colour so derived is what selects in the two-option chemotype and
+  processing bands, which cannot calibrate themselves.
+
+A document whose phenotype band does not resolve that way is refused whole, the
+same discipline `cell_resolution.py` applies to a result.
+
+The specifications are PDFs generated from the company's own HTML, so they carry
+a real text layer and this reads that layer — `pdftohtml -xml`, from
+`poppler-utils`. **No page image is looked at**: the policy chain in
+`AGENT_MODEL_POLICY.md` is untouched and no classical OCR is invoked.
+
+## What it found
+
+**257 issued specifications** read across `BASE_SPCs` and the six tranche
+folders, with **no disagreement** between two copies of one document code.
+
+| band | |
+| --- | --- |
+| phenotype | HYBRID 165 · INDICA 86 · SATIVA 6 |
+| chemotype | THC 253 · CBD 4 |
+| processing | MACHINE TRIMMED 257 |
+| primary packaging | **one** distinct value across all 257 |
+
+So on the 22 drafts: **18 lots take a phenotype from their own specification** —
+6 Indica, 2 Sativa, 10 Hybrid — and the master's specimen was right on only some
+of them. The processing pill was right everywhere, and is now evidenced rather
+than assumed.
+
+## The dominance sub-label
+
+The master's Hybrid pill carries a dominance sub-label, `Indica dom.` on its
+specimen. That is a claim about the strain, and the specification is where it is
+made: under its own HYBRID pill it prints a ratio (`INDICA 70 : SATIVA 30`), a
+word (`INDICA-DOMINANT`), or its own controlled blank, `TO BE DETERMINED` —
+which **135 of the 165 issued hybrid specifications** say. Where it resolves the
+sub-label is set in the master's idiom; where it does not the certificate prints
+the specification's own words, bracketed and red. A certificate may not be more
+certain than the document it cites.
+
+## The packaging line was never the specimen's
+
+All 257 specifications print the same primary packaging, and it is what the
+master prints. So the line is **left exactly as the master sets it** — and
+checked rather than assumed. The two documents typeset it differently (the
+specification writes `Триплекс Aлу Kеса` with a Latin A and K and separates with
+commas; the master is lowercase Cyrillic and separates with middots), so the
+comparison is on the figures alone — bag construction, dimensions, fill weight —
+which is exactly what a change to the packaging would change.
+
+## Four lots whose specification is not on file
+
+`QCSP_001_GP-THC18_v.01`, `QCSP_001_GP-V_v.01`, `QCSP_001_CJ-IV_v.01` and
+`QCSP_001_OPM-V_v.01` are named by P050152, P050322, P060032 and P060242 and are
+in none of the specification folders. On those four drafts **every pill is
+unticked with its box marked, and the packaging line is bracketed**: the desk
+cannot cite a document it does not have. These are the same four lots already
+recorded as citing a different grade's specification.
+
+## How the pills are written
+
+In place. The class swaps between `chip-sel` and `chip-un` and the ballot glyph
+between ☒ and ☐; **the master's own chip text is never rewritten** — rebuilding
+the row is what dropped "Indica dom." and "Машинска" the last time this was
+touched. `rowdiff` still reports 24 master rows against 24 draft rows, **0**
+differences in the parameter and method columns and **1** in the
+acceptance-criteria column, and the selection row still fits: the widest case
+(`[TO BE DETERMINED]`) leaves 131 px spare on an A4 sheet.
+
+## Two repairs alongside
+
+1. **A controlled blank in the identification band printed a bare em dash.** On
+   this document an em dash is a measured result — a non-detection — so `Prod.
+   Code`, `Spec. Ref.`, `Prod. Batch №`, `Manuf. Date`, `Pack. Date` and the
+   issue date now print the bracketed marker when the desk holds nothing, like
+   every other unheld field.
+2. **The gap report's band check had been reporting `0` because nothing marked
+   it any more.** It measured a mark the compiler stopped making when the master
+   became the document, so it read "0 results outside their printed band" — which
+   is not the same statement as "none was checked". The comparison is now made in
+   the **report**, never on the certificate, and it declines two criteria rather
+   than guess at them: the master marks its powers of ten up as `<sup>`, so
+   `≤ 10⁵ CFU/g` reads as `≤ 105` through `textContent` and every microbiological
+   count would report as a failure; and the row-4 range is the owner's
+   placeholder, so there is no band to be outside of yet. Against what remains —
+   loss on drying, mycotoxins, heavy metals — **0 of the 22 drafts carries a
+   result outside the criterion printed beside it.**
+
+## Reproducing
+
+    python3 deliverables/qc_gap_analysis/spec_attributes.py --csv
+    python3 deliverables/qc_gap_analysis/export_coq_artifact_data.py
+    python3 deliverables/qc_gap_analysis/live_instrument/build_live_instrument.py
+    python3 deliverables/qc_gap_analysis/live_instrument/build_coq_drafts.py \
+        --scope deliverables/qc_gap_analysis/tracker/coq_draft_scope_2026-09-10.csv \
+        --chromium /opt/pw-browsers/chromium-1194/chrome-linux/chrome
+
+`spec_attributes.py` needs `poppler-utils` (`pdftohtml`); everything else is
+already in the container.

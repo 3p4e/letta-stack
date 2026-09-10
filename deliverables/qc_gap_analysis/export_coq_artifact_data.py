@@ -268,6 +268,39 @@ def main(out):
         print("CoQ register: %d of %d CoQs take their issue date from the workbook"
               % (_hit, len(coqs)))
 
+    # Owner, 10.09.2026: the phenotype and processing pills are selected
+    # according to the specification for the product strain. Those pills — and
+    # the chemotype pill beside them, and the primary-packaging line under them —
+    # are product attributes, not laboratory results, and the document that
+    # states them is the issued QCSP 001 specification the certificate already
+    # names in Spec. Ref. spec_attributes.py reads them off that document; this
+    # only joins them to the lot, on the specification code, which is the same
+    # string the certificate prints. A lot whose specification is not on file
+    # gets nothing, and the certificate marks the band rather than guessing it.
+    _spec_csv = os.path.join(HERE, "spec_attributes_2026-09-10.csv")
+    if os.path.exists(_spec_csv):
+        import csv as _csv2
+        _spec = {}
+        with open(_spec_csv, encoding="utf-8") as _fh:
+            for _r in _csv2.DictReader(_fh):
+                _spec[_r["code"].strip()] = _r
+        _sh, _sm = 0, set()
+        for _c in coqs:
+            _code = (_c.get("spec") or "").strip()
+            _r = _spec.get(_code)
+            if not _r:
+                if _code and _code != "\u2014":
+                    _sm.add(_code)
+                continue
+            _c["spc"] = {"code": _r["code"], "pheno": _r["phenotype"],
+                         "chemo": _r["chemotype"], "proc": _r["processing"],
+                         "dominance": _r["dominance"], "dom": _r["dom"],
+                         "pack": _r["packaging"]}
+            _sh += 1
+        print("Specification attributes: %d of %d CoQs; %d specification code(s) "
+              "not on file%s" % (_sh, len(coqs), len(_sm),
+                                 (" — " + ", ".join(sorted(_sm))) if _sm else ""))
+
     docs = [r for r in DR.load_register()
             if not r["code"].lower().startswith(("n/a", "(not numbered)"))]
     docs.sort(key=lambda r: (DR.key(r["date"]), r["row"]))

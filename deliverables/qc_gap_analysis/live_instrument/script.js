@@ -2254,10 +2254,123 @@ function addTodoStyle(doc){
   var st = doc.createElement("style");
   /* print-color-adjust, because a printer's colour management drops a colour it
      considers decorative — and this one is not decorative */
-  st.textContent = ".todo{color:" + TODO_RED + ";font-weight:700;" +
-    "-webkit-print-color-adjust:exact;print-color-adjust:exact}";
+  /* the master colours .mk, .attr-mono and a chip's ballot box on the child
+     itself, so a colour set on the parent never reaches them — each is named
+     here, or a marked line would print half red and half as if it were data */
+  st.textContent = ".todo,.todo .mk,.todo .attr-mono,.todo .p-spec," +
+    ".chip-sel .bx.todo,.chip-un .bx.todo{color:" + TODO_RED + " !important;" +
+    "-webkit-print-color-adjust:exact;print-color-adjust:exact}" +
+    ".todo{font-weight:700}";
   doc.head.appendChild(st);
 }
+/* ---- the selection bands, and the packaging line ---------------------------
+   Owner, 10.09.2026: "the phenotype and the processing pills need to be
+   selected according to the specification for the product strain." They are
+   product attributes, not laboratory results and not desk opinion, and the
+   document that states them is the issued QCSP 001 specification the
+   certificate already names in Spec. Ref. — read off that document by
+   spec_attributes.py and carried here on c.spc.
+
+   Every pill is re-ticked IN PLACE. The class swaps between chip-sel and
+   chip-un and the ballot glyph between ☒ and ☐; the master's own chip text is
+   never read for meaning and never rewritten. Rebuilding the row is what
+   dropped "Indica dom." and "Машинска" the last time this was touched. */
+function setChip(chip, on, todo){
+  if (!chip) return;
+  chip.className = on ? "chip-sel" : "chip-un";
+  var bx = chip.querySelector(".bx");
+  if (!bx) return;
+  bx.textContent = on ? "\u2612" : "\u2610";
+  if (todo) bx.classList.add("todo"); else bx.classList.remove("todo");
+}
+/* The word a pill stands for is what the master prints between the ballot box
+   and any sub-label: "Hybrid", not "Hybrid Indica dom."; "Machine", not
+   "Machine Машинска". Matching on the whole chip would find the word Indica
+   inside the Hybrid pill and tick the wrong one. */
+function chipWord(chip){
+  var n = chip.childNodes;
+  for (var i = 0; i < n.length; i++) {
+    if (n[i].nodeType === 3 && n[i].textContent.trim()) return n[i].textContent.trim();
+  }
+  return "";
+}
+function bandChips(doc, label){
+  var grps = doc.querySelectorAll(".selrow .grp"), out = [];
+  for (var i = 0; i < grps.length; i++) {
+    var l = grps[i].querySelector(".lk-lbl");
+    if (!l || l.textContent.indexOf(label) !== 0) continue;
+    grps[i].querySelectorAll(".chip-sel,.chip-un").forEach(function(ch){ out.push(ch); });
+    break;
+  }
+  return out;
+}
+/* The specification's word for an option against the master's word for the same
+   pill. They are not the same string — the specification writes MACHINE TRIMMED
+   where the certificate writes Machine — so the mapping is written down rather
+   than guessed at by prefix. */
+var BANDS = {
+  Phenotype:  { INDICA: "INDICA", SATIVA: "SATIVA", HYBRID: "HYBRID" },
+  Chemotype:  { THC: "THC", CBD: "CBD" },
+  Processing: { "MACHINE TRIMMED": "MACHINE", "HAND TRIMMED": "HAND" }
+};
+/* Tick one band from the specification. With no specification on file the band
+   cannot be asserted at all: every pill is unticked and every box carries the
+   marker, which is the certificate's own way of saying a selection is still to
+   be made. */
+function setBand(doc, label, want){
+  var map = BANDS[label], chips = bandChips(doc, label);
+  chips.forEach(function(ch){
+    var w = chipWord(ch).toUpperCase();
+    setChip(ch, !!want && map[want] === w, !want);
+  });
+  return chips.length;
+}
+/* The master's own text, bracketed and reddened where the desk cannot stand
+   behind it. Nothing is removed: a bracket text node goes in before and after
+   each printed line and the class colours them, so the wording, the second
+   alphabet and the markup all survive — a person reads what the master says
+   AND that it is not yet this batch's. */
+function markTodoEl(el){
+  if (!el || el.getAttribute("data-todo")) return;
+  el.setAttribute("data-todo", "1");
+  el.classList.add("todo");
+  var lines = [[]];
+  Array.prototype.forEach.call(el.childNodes, function(n){
+    if (n.nodeName === "BR") lines.push([]);
+    else lines[lines.length - 1].push(n);
+  });
+  lines.forEach(function(ns){
+    var first = null, last = null;
+    ns.forEach(function(n){
+      if (n.nodeType === 3 && !n.textContent.trim()) return;
+      if (!first) first = n;
+      last = n;
+    });
+    if (!first) return;
+    el.insertBefore(el.ownerDocument.createTextNode("["), first);
+    if (last.nextSibling) el.insertBefore(el.ownerDocument.createTextNode("]"), last.nextSibling);
+    else el.appendChild(el.ownerDocument.createTextNode("]"));
+  });
+}
+/* The attribute lockups under the selection bands print their value in
+   .attr-val, not the .lk-val that setLk writes, so they need their own reach. */
+function attrVal(doc, label){
+  var lbls = doc.querySelectorAll(".lk-lbl");
+  for (var i = 0; i < lbls.length; i++) {
+    if (lbls[i].textContent.indexOf(label) === 0) {
+      return lbls[i].parentElement.querySelector(".attr-val");
+    }
+  }
+  return null;
+}
+/* The figures in a packaging line, in the order they are printed. The master
+   and the specification typeset the same packaging differently — one separates
+   with middots and the other with commas, and the specification even spells
+   "Триплекс Aлу Kеса" with a Latin A and K — so comparing the text would report
+   a difference that is only typography. Comparing the figures does not: bag
+   construction, dimensions and fill weight are exactly what a change to the
+   packaging would change. */
+function numSeq(s){ return ((s || "").match(/\d+(?:\.\d+)?/g) || []).join("\u00b7"); }
 function fillCoq(c){
   var doc = tplDoc("tpl-coq");
   var q = function(s){ return doc.querySelector(s); };
@@ -2270,7 +2383,8 @@ function fillCoq(c){
      blank the master ships. */
   var issueDate = /^\d{2}\.\d{2}\.\d{4}$/.test(c.issue || "") ? c.issue : "";
   q(".hb-code").textContent = draft ? "CoQ-PP-····-····" : c.n;
-  q(".hb-issue").innerHTML = "Issued · Издаден <b>" + esc(issueDate || "—") + "</b>";
+  q(".hb-issue").innerHTML = "Issued · Издаден <b>" +
+    (issueDate ? esc(issueDate) : todoHtml("\u2014")) + "</b>";
   q(".pb-name").innerHTML = "<span style=\"font-family:'Roboto Mono',monospace\">" +
     esc(c.pp || c.cb) + '</span> <i class="bisep" style="font-size:.7em">|</i> ' +
     '<span style="font-weight:800;text-transform:uppercase">' + esc(c.strain) + "</span>";
@@ -2294,12 +2408,60 @@ function fillCoq(c){
     if (a4res) _pv.textContent = /%\s*$/.test(a4res) ? a4res : a4res + "%";
     else _pv.innerHTML = todoHtml("··.··%");
   }
-  setLk(doc, "Prod. Code", c.pcode || "—");
+  /* A field the desk holds nothing for prints the bracketed marker, not a bare
+     em dash: on this document an em dash is a measured result — a non-detection
+     — and the two must not look alike. */
+  var setField = function(label, value){
+    if (value && value !== "—") setLk(doc, label, value);
+    else setLkHtml(doc, label, todoHtml("\u2014"));
+  };
+  setField("Prod. Code", c.pcode);
   setLkHtml(doc, "Potency", todoHtml(potRange || "potency range"));
-  setLk(doc, "Spec. Ref.", c.spec || "—");
-  setLk(doc, "Prod. Batch №", c.pp || c.cb);
-  setLk(doc, "Manuf. Date", c.md || "—");
-  setLk(doc, "Pack. Date", c.pk || "—");
+  setField("Spec. Ref.", c.spec);
+  setField("Prod. Batch №", c.pp || c.cb);
+  setField("Manuf. Date", c.md);
+  setField("Pack. Date", c.pk);
+  /* the three selection bands and the packaging line — the specification's,
+     not the master specimen's; see setBand above */
+  var spc = c.spc || null;
+  setBand(doc, "Phenotype", spc && spc.pheno);
+  setBand(doc, "Chemotype", spc && spc.chemo);
+  setBand(doc, "Processing", spc && spc.proc);
+  /* The Hybrid pill carries a dominance sub-label — "Indica dom." on the
+     master's worked specimen. That is a claim about the strain, and the
+     specification is where it is made: under its own HYBRID pill it prints a
+     ratio ("INDICA 70 : SATIVA 30"), a word ("INDICA-DOMINANT"), or its own
+     controlled blank, "TO BE DETERMINED" — which 135 of the 165 issued hybrid
+     specifications say. Where it resolves, the sub-label is set in the master's
+     idiom; where it does not, the certificate prints the specification's own
+     words, marked. A certificate may not be more certain than the document it
+     cites. */
+  if (spc && spc.pheno === "HYBRID") {
+    var _hyb = null;
+    bandChips(doc, "Phenotype").forEach(function(ch){
+      if (chipWord(ch).toUpperCase() === "HYBRID") _hyb = ch;
+    });
+    var _sub = null;
+    if (_hyb) {
+      _hyb.querySelectorAll("span").forEach(function(sp){
+        if (!sp.classList.contains("bx") && !sp.classList.contains("mk")) _sub = sp;
+      });
+    }
+    if (_sub) {
+      if (spc.dom) _sub.textContent = spc.dom;
+      else _sub.innerHTML = todoHtml(spc.dominance || "dominance");
+    }
+  }
+  /* The packaging line is not the master's worked specimen. All 257 issued
+     QCSP 001 specifications print the same primary packaging and it is what the
+     master prints, so the line is left exactly as the master sets it — and
+     checked rather than assumed. A lot whose own specification is not on file,
+     or whose specification prints different figures, gets the marker instead of
+     a quietly wrong line. */
+  var _pack = attrVal(doc, "Cont. Pack.");
+  if (_pack && (!spc || numSeq(_pack.textContent) !== numSeq(spc.pack))) {
+    markTodoEl(_pack);
+  }
   /* Section 02 is the owner's, not the desk's. The master already prints every
      parameter name, its method and its acceptance criterion, and this compiler
      has no business rewriting any of them. It used to rebuild the table row for
@@ -2360,7 +2522,8 @@ function fillCoq(c){
      date, so all three carry the same controlled blank rather than the master
      specimen's 05.06.2026. */
   doc.querySelectorAll(".ap-date-val").forEach(function(n){
-    n.textContent = issueDate || "—";
+    if (issueDate) n.textContent = issueDate;
+    else n.innerHTML = todoHtml("\u2014");
   });
   /* Section 04 and the approval block are the master's own and are left exactly
      as it prints them — except the batch number, which the master prints in its

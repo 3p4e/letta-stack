@@ -41,9 +41,18 @@ implements:
    places that print it — the Section 01 "Potency" field and the row-4
    acceptance criterion — carry it **in brackets** until it is settled.
 
+3. **The phenotype and processing pills are selected according to the
+   specification for the product strain.** With the chemotype pill beside them
+   they are product attributes, not laboratory results, and the document that
+   states them is the issued QCSP 001 specification the certificate already
+   names in Spec. Ref. `spec_attributes.py` reads all three bands — and the
+   primary-packaging line — off that document. Where the specification is not on
+   file, every pill in the band is unticked and marked; the desk does not tick a
+   box it cannot cite.
+
 Everything else in the master is the master's. The compiler writes the fields
-listed under *Filled from the master spec*, the result cells, and the Section 03
-laboratory cross-reference — and nothing else. A build-time check holds it to
+listed under *Filled from the master spec*, the three selection bands, the result
+cells, and the Section 03 laboratory cross-reference — and nothing else. A build-time check holds it to
 that: master 24 rows against draft 24 rows, **zero** differences in the parameter
 and method columns, and exactly one in the acceptance-criteria column, which is
 the bracketed row-4 range.

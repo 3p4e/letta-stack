@@ -51,6 +51,28 @@ EXTRACT = r"""
     host.contentDocument.open(); host.contentDocument.write(html); host.contentDocument.close();
     const doc = host.contentDocument;
     const sheet = doc.querySelector("div.page").getBoundingClientRect();
+    const num = t => parseFloat(String(t).replace(",", "."));
+    /* The acceptance criterion as a numeric band, or null where it is not one.
+       Superscripts, ^ and LOQ mark a criterion this cannot read as a number —
+       "≤ 10⁴ CFU/g" would otherwise read as a limit of ten. */
+    const critBand = c => {
+      const s = (c || "").replace(/\s+/g, " ").trim();
+      if (!s || /[\u2070-\u209f^]|LOQ/i.test(s)) return null;
+      let m = s.match(/(\d+(?:[.,]\d+)?)\s*[\u2013\u2014-]\s*(\d+(?:[.,]\d+)?)/);
+      if (m) return { lo: num(m[1]), hi: num(m[2]) };
+      m = s.match(/^(\u2264|<=|<|\u2265|>=|>)\s*(\d+(?:[.,]\d+)?)/);
+      if (!m) return null;
+      return /[\u2264<]/.test(m[1]) ? { lo: null, hi: num(m[2]) }
+                                     : { lo: num(m[2]), hi: null };
+    };
+    /* A result that is a plain measured number, with or without its unit. A
+       result that is itself a bound, a non-detection or a conformity word is
+       not one, and returns null. */
+    const plainNum = t => {
+      const m = String(t || "").replace(/\s+/g, "").replace(/\*+$/, "")
+        .match(/^(\d+(?:[.,]\d+)?)(%|mg\/kg|\u00b5g\/kg|%w\/w)?$/i);
+      return m ? num(m[1]) : null;
+    };
     const blanks = [], over = [], band = [];
     let head = null, sub = 0;
     doc.querySelectorAll("table.results tbody tr").forEach(tr => {
@@ -73,21 +95,37 @@ EXTRACT = r"""
          so the gap report names the line the way the schedule names it. */
       if (!no && head) { sub += 1; no = head.no + "." + sub; name = head.name + " · " + name; }
       const txt = val.textContent.trim();
-      /* both a blank and a value that misses its own criterion print as the
-         bracketed marker, and they are not the same finding: only [—] is a line
-         the desk holds nothing for. */
+      /* a blank prints as the bracketed marker; [—] is the one that means the
+         desk holds nothing for this line. */
       if (txt === "—" || txt === "[—]") { blanks.push({ no: no, name: name }); return; }
-      if (val.classList.contains("todo")) {
-        band.push({ no: no, name: name, text: txt.replace(/^\[|\]$/g, ""),
-                    crit: (tr.querySelector(".p-spec") || {}).textContent || "" });
-        return;
-      }
+      if (val.classList.contains("todo")) return;      /* a placeholder, not a result */
       /* the master sets the result column at a fixed width and .r-val nowrap,
          so a long verbatim result does not wrap. The result column is the last
          one, so what it overflows into is the page margin and then the edge of
-         the sheet. Measured on the compiled page at A4 width, not guessed. */
+         the sheet. Measured on the compiled page at A4 width, not guessed.
+         Geometry, so it is measured on every result — before any question
+         about the criterion beside it, which some rows decline to answer. */
       const px = Math.round(val.getBoundingClientRect().right - sheet.right);
-      if (px > 0) over.push({ no: no, name: name, text: val.textContent.trim(), px: px });
+      if (px > 0) over.push({ no: no, name: name, text: txt, px: px });
+      /* Whether a result sits inside the criterion the certificate prints next
+         to it is decided HERE, in the report, and never on the document: the
+         master's acceptance-criteria column is the master's. The comparison is
+         attempted only where both sides are plainly numeric — an absence test,
+         a limit of detection, or a result that is itself a bound ("< 10") is
+         left alone rather than guessed at, so a finding here is a real one. */
+      const cel = tr.querySelector(".p-spec");
+      /* Two criteria this must not read as numbers, and textContent hides both:
+         the master marks its powers of ten up as <sup>, so "≤ 10⁵ CFU/g" comes
+         out "≤ 105 CFU/g" and every microbiological count would read as a
+         failure; and the row-4 range is the bracketed placeholder the owner
+         supplies separately, so there is no band to be outside of yet. */
+      if (!cel || cel.querySelector("sup") || cel.querySelector(".todo")) return;
+      const crit = cel.textContent;
+      const b = critBand(crit), v = plainNum(txt);
+      if (b && v !== null &&
+          ((b.lo !== null && v < b.lo) || (b.hi !== null && v > b.hi))) {
+        band.push({ no: no, name: name, text: txt, crit: crit.replace(/\s+/g, " ").trim() });
+      }
     });
     const lk = {};
     doc.querySelectorAll(".lk").forEach(s => {
