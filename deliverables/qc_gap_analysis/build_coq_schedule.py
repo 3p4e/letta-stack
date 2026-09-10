@@ -340,13 +340,21 @@ def family(code):
     return "other"
 
 
+# Post-release re-analysis series. 197- was the only one the desk knew; the owner
+# ruled on 10.09.2026 that 220- is the same thing, which moves every 220 result off
+# the initial-release certificate and onto the retest that rests on it.
+REANALYSIS_SERIES = ("197-", "220-")
+
+
 def is_reanalysis(code):
-    """True for a Farmahem 197-series certificate — the re-analysis a reissue rests on.
+    """True for a post-release re-analysis certificate — what a reissue rests on.
 
     >>> is_reanalysis("197-11-К/26"), is_reanalysis("ППК25174")
     (True, False)
+    >>> is_reanalysis("220-16-K/26"), is_reanalysis("220-29-K/26")
+    (True, True)
     """
-    return clean(code).startswith("197-")
+    return clean(code).startswith(REANALYSIS_SERIES)
 
 
 def sort_date(d):
