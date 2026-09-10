@@ -57,6 +57,38 @@ the specification's figures on every lot rather than assumed.
 the README's list and are the owner's to rule on: the two approvers' names and
 credentials, and the page `<title>`, which is what a PDF carries as its `/Title`.
 
+## The two merged PDFs
+
+`Tranche_1_CoQ_Drafts.pdf` (13 certificates) and `Tranche_2_CoQ_Drafts.pdf` (9),
+one A4 page per certificate, in P-lot order, printed by
+`live_instrument/print_coq_pdfs.py` from these same HTML files through the same
+headless Chromium. `@page{size:A4;margin:0}` and a `.page` fixed at 210 × 297 mm
+give exactly one page per document with no printer margin of its own, and
+backgrounds are printed — the DRAFT watermark, the selection pills and the red of
+every marked field are the document, not decoration.
+
+**The typefaces are embedded, not linked.** The compiled HTML pulls Montserrat,
+Roboto Mono and Orbitron from `fonts.googleapis.com`; a renderer that cannot reach
+Google substitutes Liberation Sans, and a controlled document that changes
+appearance depending on whether a third party is reachable is not one to hand a
+regulator. So the faces are fetched once, **subset to the characters these 22
+documents actually print**, and inlined — `house_fonts.py`, which the QCSP 001
+specifications already use for the same reason — and Google is then blocked at the
+network layer for the whole run, so the output is the same with or without a route
+to it. 53 faces, 1,636 KB upstream, 222 KB after subsetting. The certificate needs
+two things the specifications do not: **Orbitron**, which sets the banner, and the
+**Greek** subset, because every sheet prints "Total Δ⁹-THC". The brand mark is
+already a data URI in the master.
+
+The ballot boxes (☒ ☐) exist in none of the three families, so they are set in the
+renderer's own DejaVu — embedded in the PDF like everything else, so the file is
+still self-contained.
+
+    python3 deliverables/qc_gap_analysis/live_instrument/print_coq_pdfs.py \
+        --chromium /opt/pw-browsers/chromium-1194/chrome-linux/chrome
+
+Needs `poppler-utils` (`pdfunite`) and `fonttools==4.55.3` with `brotli==1.1.0`.
+
 The drafts are compiled by
 `live_instrument/build_coq_drafts.py`, which calls the Quality Desk's own
 `fillCoq()` in headless Chromium. A document here is therefore the same document

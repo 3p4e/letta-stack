@@ -50,7 +50,7 @@ FAMILIES = (
 ALWAYS = "TARGETNEW0123456789.,:;()[]/|-–—·%°±×≤≥<>&#@№µΔ⁹⁴⁵₁₂ "
 
 
-def _fetch(family_spec):
+def _fetch(family_spec, subsets=SUBSETS):
     """Upstream woff2 for one family: [(weight, style, subset, path)], cached on disk."""
     os.makedirs(CACHE, exist_ok=True)
     url = "https://fonts.googleapis.com/css2?family=%s&display=swap" % family_spec
@@ -59,7 +59,7 @@ def _fetch(family_spec):
     out = []
     for subset, block in re.findall(r"/\*\s*([a-z-]+)\s*\*/\s*(@font-face\s*\{.*?\})",
                                     css, re.S):
-        if subset not in SUBSETS:
+        if subset not in subsets:
             continue
         src = re.search(r"url\((https://[^)]+\.woff2)\)", block)
         weight = re.search(r"font-weight:\s*(\d+)", block)
@@ -101,6 +101,21 @@ def _subset(path, text, family="", weight="400", slant="normal"):
     from fontTools.ttLib import TTFont
 
     font = TTFont(path)
+    # Google serves these families as VARIABLE fonts, and a variable font cannot
+    # be embedded in a PDF: Skia rasterises each instance into Type 3 glyph
+    # procedures instead, which are an order of magnitude heavier than outlines
+    # and which some viewers render poorly. Pinning the weight axis first turns
+    # the face into an ordinary static font that embeds as TrueType.
+    if "fvar" in font:
+        from fontTools.varLib import instancer
+        axes = {a.axisTag: a for a in font["fvar"].axes}
+        loc = {}
+        if "wght" in axes:
+            w = float(weight)
+            loc["wght"] = min(max(w, axes["wght"].minValue), axes["wght"].maxValue)
+        for tag, axis in axes.items():
+            loc.setdefault(tag, axis.defaultValue)
+        font = instancer.instantiateVariableFont(font, loc, inplace=True, updateFontNames=False)
     cmap = set()
     for table in font["cmap"].tables:
         cmap |= set(table.cmap)
@@ -129,12 +144,19 @@ def _subset(path, text, family="", weight="400", slant="normal"):
     return buf.getvalue()
 
 
-def font_face_css(text):
-    """An @font-face block covering `text`, with every face inlined as a data URI."""
+def font_face_css(text, families=FAMILIES, subsets=SUBSETS):
+    """An @font-face block covering `text`, with every face inlined as a data URI.
+
+    `families` and `subsets` default to the QCSP 001 specifications' own — two
+    families, Latin and Cyrillic. A document that sets a third face or reaches
+    outside those two scripts passes its own: the certificate of quality sets its
+    banner in Orbitron and prints "Total Δ⁹-THC", and a Δ that is not in the
+    embedded subset is a Δ the renderer substitutes.
+    """
     chars = set(text) | set(ALWAYS)
     blocks, raw, embedded = [], 0, 0
-    for family, spec in FAMILIES:
-        for weight, style, subset, path in _fetch(spec):
+    for family, spec in families:
+        for weight, style, subset, path in _fetch(spec, subsets):
             data = _subset(path, "".join(chars), family, weight, style)
             if not data:
                 continue
