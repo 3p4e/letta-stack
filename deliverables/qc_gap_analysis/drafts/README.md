@@ -6,29 +6,44 @@ been issued and none may be filed or sent as though it had.
 
 ## What the compiler writes, and what it must not
 
-The owner's master is the document. This compiler fills **six things and nothing
-else**, and a check in the build proves it: the batch number, the strain, the
-date of manufacture (the harvest date), the packaging date, the 21 result values
-in section 02, and the laboratory cross-reference in section 03. Every parameter
-name, every method, every acceptance criterion and the whole of sections 01 and
-04 are the master's and are left exactly as it prints them.
+The owner's master is the document, and `../live_instrument/templates/ISSUE_COQ_README.md`
+is the specification for what may go into it. The compiler writes the fields that
+README lists — batch number, cultivation batch, strain, product code,
+specification doc code, date of manufacture (the harvest date), packaging date,
+issue date, the Total Δ⁹-THC assay and the CoQ number — plus the result cells and
+the Section 03 laboratory cross-reference. **Nothing else.** Every parameter name,
+every method and every other acceptance criterion is the master's and is left
+exactly as it prints them.
 
-`rowdiff.py`-style verification on every build: master 24 rows, draft 24 rows,
-**0 differences in the parameter, method and criterion columns**, 21 differences
-in the result column — which is the value, and the only thing there to change.
+A check runs on every build and is the reason to trust that sentence: master 24
+rows against draft 24 rows, **zero** differences in the parameter and method
+columns, and exactly **one** in the acceptance-criteria column — the bracketed
+row-4 potency range, which the owner asked for.
 
-A result the desk holds nothing for prints as `[—]` in red, so it cannot be read
-as the muted `N.D.` it used to share a colour with. That is the one marker left,
-and it sits in the result column, which is a field this compiler is asked to
-fill.
+### The two potency figures
+
+Per the owner's ruling of 10.09.2026:
+
+- the gold banner figure and the row-4 assay are **the same number, taken from
+  the certificate** — they disagreed on all 22 drafts before it, by up to 3.76
+  points;
+- the acceptance **range** is a placeholder supplied separately, so both places
+  that print it — the Section 01 "Potency" field and the row-4 acceptance
+  criterion — carry it **in brackets**.
+
+### The red brackets
+
+A result the desk holds nothing for prints as `[—]` in red rather than the muted
+em dash it used to share with a measured `N.D.` — the one column where those two
+mean opposite things. The brackets carry the meaning and the colour is emphasis,
+so a greyscale photocopy loses nothing.
 
 **Fields that still print the master's worked specimen**, because they are not on
-the list of what may be written and are the owner's to rule on: the document ID
-(`CoQ-PP-2026-0005`), the issue date, the product code, the potency range and
-Spec. Ref., the phenotype and processing chips, the headline potency placeholder,
-the two approvers' names, the packaging construction and net fill weight, and the
-page `<title>`. On a Grape Pie certificate several of those still read
-*Amsterdam Amnesia* and *P060052*.
+the README's list and are the owner's to rule on: the phenotype and processing
+chips (`☒ Hybrid Indica dom.`, `☒ Machine` on every lot), the two approvers'
+names and credentials, the packaging construction and net fill weight
+(`… 300 × 500 mm · net. 400.0 g ±3%`), and the page `<title>`, which is what a
+PDF carries as its `/Title`.
 
 The drafts are compiled by
 `live_instrument/build_coq_drafts.py`, which calls the Quality Desk's own

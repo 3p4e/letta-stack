@@ -2184,6 +2184,15 @@ function rCls(res){
   if (/^(n\.?d\.?|blq|—|—)/i.test(res)) return " r-nd";
   return "";
 }
+function setLkHtml(doc, label, html){
+  var lbls = doc.querySelectorAll(".lk-lbl");
+  for (var i = 0; i < lbls.length; i++) {
+    if (lbls[i].textContent.indexOf(label) !== 0) continue;
+    var v = lbls[i].parentElement.querySelector(".lk-val");
+    if (v) v.innerHTML = html;
+    return;
+  }
+}
 function setLk(doc, label, value){
   var lbls = doc.querySelectorAll(".lk-lbl");
   for (var i = 0; i < lbls.length; i++) {
@@ -2254,14 +2263,35 @@ function fillCoq(c){
   var q = function(s){ return doc.querySelector(s); };
   var draft = !docIssued(c);
   addTodoStyle(doc);
+  q(".hb-code").textContent = draft ? "CoQ-PP-····-····" : c.n;
+  q(".hb-issue").innerHTML = "Issued · Издаден <b>" +
+    esc(draft ? "—" : c.issue.replace("≥ ", "")) + "</b>";
   q(".pb-name").innerHTML = "<span style=\"font-family:'Roboto Mono',monospace\">" +
     esc(c.pp || c.cb) + '</span> <i class="bisep" style="font-size:.7em">|</i> ' +
     '<span style="font-weight:800;text-transform:uppercase">' + esc(c.strain) + "</span>";
 
-  /* Only the four fields the owner named: the batch number and strain in the
-     lockup above, the production batch number, the date of manufacture (the
-     harvest date) and the packaging date. Prod. Code, the Potency range and
-     Spec. Ref. are the master's and are not this compiler's to write. */
+  /* ISSUE_COQ README: the gold figure beside the strain is the ACTUAL Total
+     Δ⁹-THC assay result for the batch, not the grade nominal, and the ±
+     tolerance is never shown on a CoQ. The owner's ruling of 10.09.2026 settles
+     where that figure comes from — the certificate, which is the same value the
+     row-4 result carries — so the banner and the assay can never disagree on one
+     sheet, as they did on all 22 drafts before it.
+
+     The acceptance RANGE is a placeholder: it is supplied separately, so both
+     places that print it — the Section 01 Potency field and the row-4
+     acceptance criterion — carry it bracketed until it is. */
+  var a4 = null;
+  c.rows.forEach(function(r){ if (r.no === "4") a4 = r; });
+  var a4res = (a4 && a4.res && a4.res !== "—") ? String(a4.res).trim() : "";
+  var potRange = a4 ? a4.crit.split("(")[0].trim() : "";
+  var _pv = q(".pbp-val");
+  if (_pv) {
+    if (a4res) _pv.textContent = /%\s*$/.test(a4res) ? a4res : a4res + "%";
+    else _pv.innerHTML = todoHtml("··.··%");
+  }
+  setLk(doc, "Prod. Code", c.pcode || "—");
+  setLkHtml(doc, "Potency", todoHtml(potRange || "potency range"));
+  setLk(doc, "Spec. Ref.", c.spec || "—");
   setLk(doc, "Prod. Batch №", c.pp || c.cb);
   setLk(doc, "Manuf. Date", c.md || "—");
   setLk(doc, "Pack. Date", c.pk || "—");
@@ -2295,6 +2325,11 @@ function fillCoq(c){
          mean opposite things */
       cell.innerHTML = v ? '<span class="r-val' + rCls(v) + '">' + esc(v) + "</span>"
                          : todoHtml("\u2014", "r-val");
+      if (ORDER[i] === "4") {
+        var _tds = cell.parentElement.querySelectorAll("td");
+        var _sp = _tds.length > 3 ? _tds[3].querySelector(".p-spec") : null;
+        if (_sp) _sp.innerHTML = todoHtml(potRange || _sp.textContent.trim());
+      }
     });
   }
   /* section 03 — from the citations themselves */
@@ -2315,6 +2350,13 @@ function fillCoq(c){
       (m[2] ? "<small>" + esc(m[2]) + "</small>" : "") + '</span></td><td class="lr-mono">' + codes +
       '</td><td class="lr-mono">' + condenseNos(L.nos) + "</td></tr>";
   }).join("") || '<tr><td colspan="3" style="padding:8px;color:#8C9BB0">No certificate on file yet — controlled blanks.</td></tr>';
+  /* The issue date is one of the fields the README fills, and it prints in three
+     places: the header, and the date under each signature. A draft has no issue
+     date, so all three carry the same controlled blank rather than the master
+     specimen's 05.06.2026. */
+  doc.querySelectorAll(".ap-date-val").forEach(function(n){
+    n.textContent = draft ? "—" : c.issue.replace("≥ ", "");
+  });
   /* Section 04 and the approval block are the master's own and are left exactly
      as it prints them — except the batch number, which the master prints in its
      disposition label and which is one of the fields this compiler is asked to

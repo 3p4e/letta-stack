@@ -61,7 +61,9 @@ EXTRACT = r"""
       }
       /* a blank result now prints as the bracketed marker rather than a bare
          em dash; the report follows the compiler, or it would read "0 gaps" */
-      const val = tr.querySelector(".r-val, .todo");
+      /* only inside the result cell: row 4's acceptance criterion now carries a
+         bracketed placeholder too, and it comes first in document order */
+      const val = tr.querySelector("td.r-cell .r-val, td.r-cell .todo");
       if (!val) return;
       const nm = tr.querySelector(".p-name, .p-sub");
       let no = tds[0].textContent.trim();

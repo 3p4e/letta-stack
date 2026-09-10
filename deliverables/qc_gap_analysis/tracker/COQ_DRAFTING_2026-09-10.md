@@ -331,3 +331,39 @@ archived file is indexed under a certificate number that was never issued.
 
 Each of these is one line of code to fill from the desk. None is filled, because
 none is on the list.
+
+---
+
+# Fourth revision, 10.09.2026 — the owner's README, and the two potency figures
+
+The owner supplied `CoXTemp` (Drive `1JtunFDx-2sgOr1bEFv-Ktis9rB5hNrGw`): the CoQ
+master, `cox.css`, and `ISSUE_COQ_README.md`. **The template in that folder is
+byte-identical to the one already vendored here** — verified by md5 — so nothing
+about the master changed. The README is vendored beside it as
+`live_instrument/templates/ISSUE_COQ_README.md`; it is the specification for what
+may be written into the master, and it is broader than the previous revision
+assumed: batch number, cultivation batch, strain, grade, class, potency range,
+product code, specification doc code, manufacture date, packaging date, the Total
+Δ⁹-THC assay result, issue date and the iCoA reference code.
+
+Two rulings arrived with it, and both are now implemented.
+
+**The banner and the assay are one number, and it is the certificate's.** The
+README says the gold figure beside the strain is the actual Total Δ⁹-THC assay
+result, not the grade nominal; the owner's ruling of 10.09.2026 settles that it
+comes from the certificate — the same value the row-4 result carries. Before it,
+the banner carried the master spec's figure and row 4 the certificate's, and
+**they disagreed on all 22 drafts**, by up to 3.76 points (CJ052501/01 printed
+24.05 % beside 20.29 %). All 22 now agree, verified draft by draft.
+
+**The acceptance range is a placeholder.** It is supplied separately, so the two
+places that print it — the Section 01 "Potency" field and the row-4 acceptance
+criterion — carry it bracketed until it is settled. That is the single
+acceptance-criteria cell this compiler touches, and the build check counts it.
+
+The build check is the guarantee behind all of it: 24 master rows against 24
+draft rows, **0** differences in the parameter and method columns, **1** in the
+acceptance-criteria column, 21 in the result column. The identification criteria
+that an earlier revision had rewritten now read the master's own "Conforms to
+monograph" again, and the asterisks on Total THC, CBD and CBN — which tie those
+rows to the footnote — are back.
