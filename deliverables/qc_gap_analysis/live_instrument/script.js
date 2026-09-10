@@ -2371,11 +2371,86 @@ function attrVal(doc, label){
    construction, dimensions and fill weight are exactly what a change to the
    packaging would change. */
 function numSeq(s){ return ((s || "").match(/\d+(?:\.\d+)?/g) || []).join("\u00b7"); }
+/* ---- making the result column hold the result -------------------------------
+   Owner, 10.09.2026: the results section must not overflow, and the certificate
+   must stay one A4 page.
+
+   The master gives the result column whatever is left after the four fixed
+   columns — 30 + 300 + 146 + 158 of 717 px, so 83 px — and sets .r-val to
+   `nowrap`. 83 px holds "24.53" and "< 10", which is what the master's worked
+   specimen prints. It does not hold what the laboratories actually print: the
+   bilingual pair "Conforms | Соодветствува" is 124 px, "Одговара
+   (Complies/Absent)" 134 px, and the identity result of three lots runs to 594.
+   Every one of those was being cut off at the edge of the sheet.
+
+   The values are verbatim and are not shortened. The column is widened instead,
+   out of the slack the other columns are genuinely carrying — measured by
+   letting the table lay out at 3000 px and reading what each column then asks
+   for, rather than eyeballing it: the number column wants 21 px of its 30, the
+   parameter column 287 of its 300 and the method column 133 of its 146. That is
+   35 px of real slack and no more, so each keeps a couple of px of headroom and
+   the result column goes from 83 px to 110. Guessing here is expensive: an
+   earlier pass put the parameter column at 248 on a bad measurement and the
+   Macedonian gloss of "Identification A, Appearance" ran straight into the
+   method column.
+
+   The acceptance-criteria column is not touched. It is the owner's column, its
+   width is what makes "Conforms to monograph" set on one line, and narrowing it
+   would change how every criterion on the certificate breaks.
+
+   Anything still too wide then WRAPS rather than running off the sheet. Wrapping
+   is what keeps the value verbatim; it costs vertical space, which is why the
+   compiled page is measured for its single A4 afterwards.
+
+   This is a layout rule injected into the compiled copy, exactly as the marker
+   colour is. The master file is untouched, and the build-time check that
+   compares its 24 rows against the draft's still reports no difference in any
+   text column. */
+var FIT_COLS = [22, 290, 137, 158];
+function addFitStyle(doc){
+  var st = doc.createElement("style");
+  var rules = FIT_COLS.map(function(w, i){
+    /* the master sets these widths inline, and only !important outranks that */
+    return "table.results colgroup col:nth-child(" + (i + 1) + "){width:" + w + "px !important}";
+  });
+  /* .r-val stays inline: giving it display:inline-block adds a baseline gap to
+     every one of the 24 rows, which cost the page 16 px of height for no visible
+     change and is the sort of thing that turns one A4 sheet into two */
+  /* .r-val stays inline: giving it display:inline-block adds a baseline gap to
+     every one of the 24 rows, which cost the page 16 px of height for no visible
+     change and is the sort of thing that turns one A4 sheet into two */
+  rules.push("table.results tbody td.r-cell .r-val,table.results tbody td.r-cell .todo" +
+             "{white-space:normal;overflow-wrap:break-word}");
+  /* Wrapping buys the width back out of the page's height, and the page has none
+     to give: several certificates were already a few px past 297 mm before this,
+     clipped by the master's own overflow:hidden — section 03 grows with the
+     number of laboratories a lot cites, and nothing was watching it. Half a pixel
+     off the top and bottom of each of the 24 result rows returns 24 px, which
+     covers both the wrapping and the overflow that was already there. The rows
+     are 20 px set on 8.6 px type; the change is invisible at reading size and is
+     the only way to keep every certificate on one sheet without touching a
+     value. */
+  rules.push("table.results tbody td{padding-top:0;padding-bottom:0}");
+  /* and the wrapped result sets on its own tighter leading — it is a short
+     phrase in a narrow column, not running text, and 1.12 leading on four
+     wrapped lines is what pushed the approval block into the footer band */
+  rules.push("table.results tbody td.r-cell .r-val,table.results tbody td.r-cell .todo" +
+             "{line-height:1.02}");
+  /* One value on the certificate is a sentence rather than a figure: the desk's
+     conformity wording for Identification C, 130 characters across both
+     alphabets, which no column on this master can hold on one line. It is set at
+     the size the document already uses for its second-language glosses rather
+     than shortened — every character it carries is still on the sheet. */
+  rules.push("table.results tbody td.r-cell .r-long{font-size:7.2px;letter-spacing:-.05px}");
+  st.textContent = rules.join("");
+  doc.head.appendChild(st);
+}
 function fillCoq(c){
   var doc = tplDoc("tpl-coq");
   var q = function(s){ return doc.querySelector(s); };
   var draft = !docIssued(c);
   addTodoStyle(doc);
+  addFitStyle(doc);
   /* Owner, 10.09.2026: the date of issue is the one the CoQ Register states,
      and the certificate prints it. c.issue carries that date wherever the
      register holds one; where it does not it is still the SOP floor, written
@@ -2490,7 +2565,9 @@ function fillCoq(c){
       /* a blank prints as the bracketed marker rather than the muted em dash it
          used to share with a measured N.D. — the one column where those two
          mean opposite things */
-      cell.innerHTML = v ? '<span class="r-val' + rCls(v) + '">' + esc(v) + "</span>"
+      /* a result long enough to be a sentence is set smaller — see addFitStyle */
+      var _long = v.length > 60 ? " r-long" : "";
+      cell.innerHTML = v ? '<span class="r-val' + rCls(v) + _long + '">' + esc(v) + "</span>"
                          : todoHtml("\u2014", "r-val");
       if (ORDER[i] === "4") {
         var _tds = cell.parentElement.querySelectorAll("td");

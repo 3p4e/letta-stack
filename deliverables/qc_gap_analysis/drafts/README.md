@@ -57,6 +57,49 @@ the specification's figures on every lot rather than assumed.
 the README's list and are the owner's to rule on: the two approvers' names and
 credentials, and the page `<title>`, which is what a PDF carries as its `/Title`.
 
+## Nothing runs off the sheet, and it is one A4 page
+
+Owner, 10.09.2026: the results section must not overflow, and the certificate must
+stay one A4 page.
+
+The master gives the result column whatever is left after its four fixed columns —
+83 px of 717. That holds `24.53` and `< 10`, which is what its worked specimen
+prints; it does not hold what the laboratories print. `Conforms | Соодветствува`
+is 124 px, `Одговара (Complies/Absent)` 134, `< 0,01 mg/kg — all 22 residues` 155,
+and the identity result of three lots 594. Every one of them was cut off at the
+edge of the sheet.
+
+**No value is shortened.** The column is widened out of the slack the others are
+genuinely carrying — measured by letting the table lay out at 3,000 px and reading
+what each column then asks for: the number column wants 21 px of its 30, the
+parameter column 287 of its 300, the method column 133 of its 146. That is 35 px
+and no more, so the result column goes from 83 px to 110 and anything still too
+wide **wraps** rather than running off. The acceptance-criteria column is not
+touched: it is the owner's column and its width is what sets "Conforms to
+monograph" on one line.
+
+Wrapping buys width out of the page's height, and the page had none to give —
+several certificates were already a few px past 297 mm before this, clipped by the
+master's own `overflow:hidden`, because section 03 grows with the number of
+laboratories a lot cites and nothing was watching it. Three changes pay for it, all
+of them typographic and none of them touching a value: the result rows give up
+their 0.5 px of cell padding (the 1.12 leading already separates them), a wrapped
+result sets on 1.02 leading, and the one result that is a sentence rather than a
+figure — the desk's Identification C wording, 130 characters across both alphabets
+— sets at the size the document already uses for its second-language glosses.
+
+Every one of the 22 drafts now has **no cell wider than its column, no content
+below the footer, and one A4 page**; the worst case clears the footer by 5 px.
+`build_coq_drafts.py` reports **0 results running off the sheet**, and the master's
+24 rows still compare against the draft's with no difference in any text column.
+
+*Standing question for the owner:* that Identification C sentence — `Conforms —
+cannabinoids identified and quantified by HPLC | Соодветствува — идентификација и
+квантификација со HPLC`, on 35 lots — is composed by the desk, not printed by any
+laboratory, and it duplicates the method column of its own row. The other 60 lots
+already print `Conforms | Соодветствува` for the same assertion. Say the word and
+that cell goes back to one line.
+
 ## The two merged PDFs
 
 `Tranche_1_CoQ_Drafts.pdf` (13 certificates) and `Tranche_2_CoQ_Drafts.pdf` (9),
