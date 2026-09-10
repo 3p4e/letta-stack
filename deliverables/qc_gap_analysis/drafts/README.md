@@ -1,9 +1,32 @@
 # Draft Certificates of Quality — Tranche 1 and Tranche 2
 
 Nothing in this folder is a certificate. Every document here is a **draft**:
-watermarked DRAFT, document ID left as the controlled blank `CoQ-PP-····-····`,
-issue date `—`, the conformity statement unticked and both signature dates `—`.
-None has been issued and none may be filed or sent as though it had.
+watermarked DRAFT, unsigned, with the conformity statement unticked. None has
+been issued and none may be filed or sent as though it had.
+
+## The red brackets
+
+**Anything printed in red inside square brackets is not held by the desk and has
+to be completed or confirmed before the document is issued.** Every draft says so
+in its own footnote, so the page explains itself away from this README.
+
+Two different things carry the marker, and the second is the one worth knowing
+about:
+
+- **a controlled blank** — the desk holds no result for that line, so it prints
+  `[—]`. Before, a blank printed as a bare em dash in the same muted grey as a
+  measured `N.D.`, in the one column where those two mean opposite things;
+- **a value the desk cannot stand behind** — the packaging construction and net
+  fill weight, and the two approvers' names and credentials. Nothing in the
+  compiler ever wrote those, so every draft was reprinting the master's worked
+  specimen as though it were this batch's. They are marked rather than deleted:
+  they are probably right, and confirming them is a person's job, not the
+  compiler's.
+
+The brackets carry the meaning on their own, so a greyscale photocopy loses
+nothing; the red is emphasis. It is deliberately not the red of the DRAFT
+watermark or of a failing result — a field still to be completed is not a
+failure.
 
 The drafts are compiled by
 `live_instrument/build_coq_drafts.py`, which calls the Quality Desk's own

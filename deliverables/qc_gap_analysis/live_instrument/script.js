@@ -2124,7 +2124,27 @@ var LAB_META = {
              'ЈЗУ Институт за јавно здравје (ИЈЗ Скопје)', '50ta Divizija 6, 1000 Skopje, MK'],
   "Farmahem": ['Farmahem — Laboratorija za zivotna sredina · ISO/IEC 17025:2017',
              'Фармахем — Лабораторија за животна средина', 'Skopje, MK'],
-  "State":  ['State Phytosanitary Laboratory', 'Државна фитосанитарна лабораторија', 'Skopje, MK']
+  "State":  ['State Phytosanitary Laboratory', 'Државна фитосанитарна лабораторија', 'Skopje, MK'],
+  /* The desk files a certificate under the laboratory's SHORT code, and section
+     03 looks the laboratory up by whatever string the citation carries. Without
+     these keys CNP fell through to the bare abbreviation on 17 of the 22 drafts
+     and IJZ on 4 — the same two institutions that print in full, with their
+     accreditation, on the rows above. One laboratory printed twice under two
+     identities, one of them looking unaccredited. The mapping is
+     tracker_data.LABNAME's. */
+  "CNP":    ['UKIM Faculty of Pharmacy — Center for Natural Products · ISO/IEC 17025:2017 · LT-083 (IARM)',
+             'УКИМ ФФ — Центар за Природни Производи', 'Mother Theresa 47, 1000 Skopje, MK'],
+  "IJZ":    ['JZU Institute for Public Health (IPH Skopje) · ISO/IEC 17025:2017 · LT-005 (IARM)',
+             'ЈЗУ Институт за јавно здравје (ИЈЗ Скопје)', '50ta Divizija 6, 1000 Skopje, MK'],
+  "FHM":    ['Farmahem — Laboratorija za zivotna sredina · ISO/IEC 17025:2017',
+             'Фармахем — Лабораторија за животна средина', 'Skopje, MK'],
+  "NGP":    ['Purely Plant — QC Department · In-house QC Laboratory · MK GMP Certified',
+             'Пјурли Плант — Оддел за КК · Интерна лабораторија за КК · МК ДПП сертифицирана',
+             'Kojlija 1043, Petrovec-Skopje, MK'],
+  "PP":     ['Purely Plant — QC Department · In-house QC Laboratory · MK GMP Certified',
+             'Пјурли Плант — Оддел за КК · Интерна лабораторија за КК · МК ДПП сертифицирана',
+             'Kojlija 1043, Petrovec-Skopje, MK'],
+  "DFL":    ['State Phytosanitary Laboratory', 'Државна фитосанитарна лабораторија', 'Skopje, MK']
 };
 function labMeta(lab){
   for (var k in LAB_META) if (lab.indexOf(k) === 0) return LAB_META[k];
@@ -2202,17 +2222,78 @@ function chipRow(label, mk, opts){
    from OV.issue. Only then may a certificate print a date, tick a disposition
    and carry a document number; until then it is a draft. */
 function docIssued(c){ return !!c.deskIssued; }
+/* ---- fields the desk cannot fill -------------------------------------------
+   A compiled certificate must never leave a reader working out for themselves
+   which figures are this batch's. Two kinds of field fail that test: a
+   CONTROLLED BLANK, which the desk holds nothing for, and a value that survives
+   from the master's worked specimen because nothing overwrites it — the second
+   is the worse of the two, because it reads as data.
+
+   Both print inside square brackets, in a red used nowhere else on the
+   document, and the footnote says what the convention means. The brackets carry
+   the meaning on their own, so a greyscale photocopy loses nothing; the colour
+   is emphasis, not the message.
+
+   The red is deliberately NOT the #9B2C2C of the DRAFT watermark and of the
+   iCoA's FAIL status. A field still to be completed is not a failing result and
+   the two must not share a colour. */
+var TODO_RED = "#E02B20";
+function todoHtml(text, cls){
+  return '<span class="' + (cls ? esc(cls) + " " : "") + 'todo">[' + esc(text) + "]</span>";
+}
+function addTodoStyle(doc){
+  var st = doc.createElement("style");
+  /* print-color-adjust, because a printer's colour management drops a colour it
+     considers decorative — and this one is not decorative */
+  st.textContent = ".todo{color:" + TODO_RED + ";font-weight:700;" +
+    "-webkit-print-color-adjust:exact;print-color-adjust:exact}";
+  doc.head.appendChild(st);
+}
+/* textContent runs adjacent spans together ("...алу кесаPET 12..."), so the
+   element's own child nodes are joined with a space before they are marked */
+function flatText(el){
+  var out = [];
+  for (var i = 0; i < el.childNodes.length; i++) {
+    var t = (el.childNodes[i].textContent || "").trim();
+    if (t) out.push(t);
+  }
+  return (out.join(" ") || el.textContent).replace(/\s+/g, " ").trim();
+}
+function markTodo(el, text, cls){
+  if (el) el.innerHTML = todoHtml(text === undefined ? flatText(el) : text, cls);
+}
+function lkTodo(doc, label, value){
+  /* the lockup's own field name is what belongs in the bracket: a reader who
+     sees [Manuf. Date] knows both that it is missing and what goes there */
+  setLk(doc, label, value);
+  if (value !== "\u2014") return;
+  var lbls = doc.querySelectorAll(".lk-lbl");
+  for (var i = 0; i < lbls.length; i++) {
+    if (lbls[i].textContent.indexOf(label) !== 0) continue;
+    markTodo(lbls[i].parentElement.querySelector(".lk-val"), label);
+    return;
+  }
+}
 function fillCoq(c){
   var doc = tplDoc("tpl-coq");
   var q = function(s){ return doc.querySelector(s); };
   var draft = !docIssued(c);
-  q(".hb-code").textContent = draft ? "CoQ-PP-····-····" : c.n;
+  addTodoStyle(doc);
+  /* The master's <title> names its worked specimen — a CoQ number, a strain, a
+     grade and a batch belonging to no document this compiler produces — and it
+     is the one field that prints in the browser's own page header. It is set
+     from the batch, never inherited. */
+  doc.title = "Purely Plant \u2014 Certificate of Quality \u2014 " +
+    (draft ? "DRAFT" : c.n) + " \u2014 " + c.strain + " \u2014 Batch " + (c.pp || c.cb);
+  if (draft) markTodo(q(".hb-code"), "CoQ-PP-····-····");
+  else q(".hb-code").textContent = c.n;
   q(".hb-issue").innerHTML = "Issued · Издаден <b>" +
-    esc(draft ? "—" : c.issue.replace("≥ ", "")) + "</b>";
+    (draft ? todoHtml("date") : esc(c.issue.replace("≥ ", ""))) + "</b>";
   q(".pb-name").innerHTML = "<span style=\"font-family:'Roboto Mono',monospace\">" +
     esc(c.pp || c.cb) + '</span> <i class="bisep" style="font-size:.7em">|</i> ' +
     '<span style="font-weight:800;text-transform:uppercase">' + esc(c.strain) + "</span>";
-  q(".pbp-val").textContent = c.thc ? c.thc + "%" : "··.··%";
+  if (c.thc) q(".pbp-val").textContent = c.thc + "%";
+  else markTodo(q(".pbp-val"), "··.··%");
   /* phenotype and processing are not held by the desk: controlled blanks QC
      ticks by hand. Chemotype is the product's THC class and stays ticked. */
   q(".selrow").innerHTML =
@@ -2220,12 +2301,26 @@ function fillCoq(c){
     chipRow("Chemotype", "Хемотип", [["THC", true], ["CBD", false]]) +
     chipRow("Processing", "Обработка", [["Machine", false], ["Hand", false]]);
   var a4 = c.rows.filter(function(r){ return r.no === "4"; })[0];
-  setLk(doc, "Prod. Code", c.pcode || "—");
-  setLk(doc, "Potency", a4 ? a4.crit.split("(")[0].trim() : "—");
-  setLk(doc, "Spec. Ref.", c.spec || "—");
+  lkTodo(doc, "Prod. Code", c.pcode || "—");
+  lkTodo(doc, "Potency", a4 ? a4.crit.split("(")[0].trim() : "—");
+  lkTodo(doc, "Spec. Ref.", c.spec || "—");
   setLk(doc, "Prod. Batch №", c.pp || c.cb);
-  setLk(doc, "Manuf. Date", c.md || "—");
-  setLk(doc, "Pack. Date", c.pk || "—");
+  lkTodo(doc, "Manuf. Date", c.md || "—");
+  lkTodo(doc, "Pack. Date", c.pk || "—");
+  /* The packaging lockup is the only value in section 01 that carries
+     batch-variable numbers — a bag size and a net fill weight — and nothing
+     writes it: the desk holds no packaging field at all, and setLk could not
+     reach it anyway because the value sits in .attr-val rather than .lk-val. It
+     is therefore the worked specimen's packaging, reprinted on every lot. The
+     text is kept and marked rather than removed, so nothing is lost and nobody
+     can mistake it for this batch's. */
+  var _lbl = doc.querySelectorAll(".lk-lbl");
+  for (var _i = 0; _i < _lbl.length; _i++) {
+    if (_lbl[_i].textContent.indexOf("Cont. Pack.") !== 0) continue;
+    var _cp = _lbl[_i].parentElement.querySelector(".attr-val");
+    if (_cp) markTodo(_cp);
+    break;
+  }
   /* section 02 — rebuilt row for row from the schedule, criteria verbatim */
   var groups = { "9": [], "10": [], "11": [] };
   var singles = {};
@@ -2248,8 +2343,14 @@ function fillCoq(c){
   function docCrit(no, crit){
     return (no === "1" || no === "2" || no === "3") ? DOC_IDENT_CRIT : crit;
   }
+  /* A blank result is not a result, and until now it printed in the same muted
+     grey as a measured N.D. — the one column where those two mean opposite
+     things. The blank is bracketed and marked on every compiled certificate,
+     draft or issued: an issued certificate with a blank result cell is a defect
+     that should be visible on its face, not a state to render quietly. */
   function res(r){
-    var v = (r.res && r.res !== "—") ? r.res : "—";
+    var v = (r.res && r.res !== "—") ? r.res : "";
+    if (!v) return '<td class="r-cell">' + todoHtml("—", "r-val") + "</td>";
     return '<td class="r-cell"><span class="r-val' + rCls(v) + '">' + esc(v) + "</span></td>";
   }
   function single(no, last){
@@ -2304,9 +2405,24 @@ function fillCoq(c){
     '<span class="' + (!draft && bad ? "chip-sel" : "chip-un") + '"><span class="bx">' +
     (!draft && bad ? "☒" : "☐") + "</span> Does not conform</span>";
   doc.querySelectorAll(".ap-date-val").forEach(function(n){
-    n.textContent = draft ? "—" : c.issue.replace("≥ ", "");
+    if (draft) markTodo(n, "date");
+    else n.textContent = c.issue.replace("≥ ", "");
   });
-  if (draft) addDraftMark(doc);
+  if (draft) {
+    /* The two approvers' names and their professional credentials are the
+       master's, and the desk holds neither name — nothing in fillCoq ever wrote
+       them, so every draft for every batch printed the same two people as its
+       preparer and its reviewer under an unsigned approval block. Marked, not
+       deleted: the names are almost certainly the right officers, and that is
+       for a person to confirm rather than for this compiler to decide. */
+    doc.querySelectorAll(".ap-name, .ap-cred").forEach(function(n){ markTodo(n); });
+    var pn3 = q(".pot-note");
+    if (pn3) pn3.innerHTML += ' <i class="bisep">|</i> ' + todoHtml(" ") +
+      " Anything printed in red inside square brackets, and every unticked box, " +
+      "is not yet held by the desk: it must be completed and checked before this " +
+      "document is issued.";
+    addDraftMark(doc);
+  }
   return serializeDoc(doc);
 }
 /* The four per-scope iCoA masters (31.08.2026) supersede the Variation F

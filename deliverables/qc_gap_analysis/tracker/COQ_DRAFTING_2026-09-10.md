@@ -157,3 +157,83 @@ its own class. Only the QP can settle which is right.
     python3 deliverables/qc_gap_analysis/live_instrument/build_live_instrument.py
     python3 deliverables/qc_gap_analysis/live_instrument/build_coq_drafts.py \
         --scope deliverables/qc_gap_analysis/tracker/coq_draft_scope_2026-09-10.csv
+
+---
+
+# Marking what is not held — 10.09.2026 (second revision)
+
+The owner asked for the unfilled parameters and placeholders to print in square
+brackets and in red, so that what still has to be changed is obvious on the page.
+Doing it meant first finding *everything* that is unfilled, and the sweep turned
+up three fields that were not blank at all — they were the master's worked
+specimen printing as though it were this batch's data.
+
+## The convention
+
+**Anything in red inside square brackets is not held by the desk and must be
+completed or confirmed before issue.** Each draft now carries that sentence in
+its own footnote, next to a bracket swatch, so the page explains itself.
+
+Three deliberate choices behind it:
+
+- **The brackets carry the meaning, not the colour.** There is no
+  `print-color-adjust` anywhere in this master, so a colour a printer treats as
+  decorative simply disappears; a greyscale photocopy of these drafts still shows
+  every marker. The declaration is now added anyway, so the red prints too.
+- **The red is not the document's other red.** `#9B2C2C` is the DRAFT watermark
+  and, on the sibling iCoA, the FAIL status. A field still to be completed is not
+  a failing result, so the marker is `#E02B20` and nothing else on the page uses
+  it.
+- **A blank result prints `[—]`, never `[ ]`.** An empty bracket pair in a column
+  of `<10`, `<2`, `< LOQ (<0.20)` and `N.D.` reads as concentration notation. The
+  em dash cannot be read as a number.
+
+The marker is **not** draft-only on result cells. An issued certificate with a
+blank result is a defect that should be visible on its face, not rendered
+quietly — and until now a blank printed in the same muted grey as a measured
+`N.D.`, in the one column where those two mean opposite things.
+
+## Three fields that were printing the specimen's data
+
+| field | printed on all 22 drafts | now |
+| --- | --- | --- |
+| `<title>` | `… CoQ-PP-2026-0005 — Amsterdam Amnesia (AA) — Grade I — Batch P060052` | **set from the batch** |
+| the two approvers' names and credentials | `Blagoj Nikolov` / `Jovana Romevska Cvetkovski`, with their qualifications | marked |
+| `Cont. Pack.` | `TRIPLEX ALU BAG · … · 300 × 500 mm · net. 400.0 g ±3%` | marked |
+
+The title is the serious one and it is fixed rather than marked: it is not
+visible on the sheet, it is what a browser prints in the page header and what a
+PDF carries as its `/Title`, so every draft was being **archived under a
+certificate number that was never issued and a batch it does not describe**.
+Nothing else on the document could correct that, because nothing else on the
+document showed it.
+
+The other two are marked rather than deleted. The names are almost certainly the
+right officers and the packaging is probably a fixed product attribute — but the
+desk holds neither, no field feeds them, and `setLk` cannot even reach the
+packaging lockup because that value sits in `.attr-val` rather than `.lk-val`.
+Confirming them is a person's job.
+
+## One more repair: the laboratory that printed twice under two identities
+
+Section 03 exists to attribute each result to an accredited laboratory. `LAB_META`
+was keyed on long names only, so a citation filed under the desk's **short** code
+fell through to a bare abbreviation with no accreditation and no address: `CNP` on
+17 of the 22 drafts and `IJZ` on 4 — while the very same institutions printed in
+full, with their ISO/IEC 17025 numbers, on the rows above. A partly-populated
+field that looks legitimate is worse than a blank. The short codes now resolve,
+from `tracker_data.LABNAME`.
+
+## Left for the QP, not marked
+
+**On all 22 drafts the headline potency disagrees with the Total Δ⁹-THC assay in
+the results table of the same document** — by up to 3.76 points (CJ052501/01
+prints 24.05 % in the banner and 20.29 % in row 4). On **13** of them the banner
+value is on another certificate the desk holds for that determination, so the two
+numbers are two real measurements of one lot and the page does not say so. On the
+other **9** the banner value is on no certificate the desk holds at all.
+
+It is not marked, because it is not a blank: it is a figure from the owner's own
+`PP_Potency_MASTER_Spec`, and choosing between two measured values is a QP
+decision, not a compiler's. It is recorded here and belongs on the Work Order
+beside the other potency contradictions.

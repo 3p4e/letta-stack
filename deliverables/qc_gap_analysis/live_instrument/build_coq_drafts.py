@@ -59,7 +59,9 @@ EXTRACT = r"""
         head = { no: tds[0].textContent.trim(), name: tr.querySelector(".p-name").textContent.trim() };
         sub = 0; return;
       }
-      const val = tr.querySelector(".r-val");
+      /* a blank result now prints as the bracketed marker rather than a bare
+         em dash; the report follows the compiler, or it would read "0 gaps" */
+      const val = tr.querySelector(".r-val, .todo");
       if (!val) return;
       const nm = tr.querySelector(".p-name, .p-sub");
       let no = tds[0].textContent.trim();
@@ -68,7 +70,11 @@ EXTRACT = r"""
          and the desk numbers those 9.1, 10.2 and so on. Count within the group
          so the gap report names the line the way the schedule names it. */
       if (!no && head) { sub += 1; no = head.no + "." + sub; name = head.name + " · " + name; }
-      if (val.textContent.trim() === "—") { blanks.push({ no: no, name: name }); return; }
+      const txt = val.textContent.trim();
+      if (txt === "—" || txt === "[—]" || val.classList.contains("todo")) {
+        blanks.push({ no: no, name: name });
+        return;
+      }
       /* the master sets the result column at a fixed width and .r-val nowrap,
          so a long verbatim result does not wrap. The result column is the last
          one, so what it overflows into is the page margin and then the edge of
