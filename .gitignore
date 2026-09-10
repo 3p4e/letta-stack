@@ -23,3 +23,9 @@ ingestion/ecoa_runner/_tranche_records.json
 ingestion/ecoa_runner/held_ingest.json
 ingestion/ecoa_runner/ecoa.sqlite
 ingestion/ecoa_runner/decisions.tsv
+
+# Artifact-page intermediates — extract_artifact_data.py writes one per workbook
+# version, and build_artifact_page.py turns it straight into coq_master_vN.html.
+# Neither is a source: both are one command away from the workbook, and no
+# earlier vN_data.json was ever committed.
+deliverables/qc_gap_analysis/tracker/v*_data.json
