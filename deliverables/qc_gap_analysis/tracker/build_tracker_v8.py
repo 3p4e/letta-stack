@@ -54,6 +54,10 @@ BUILD_DATE = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--build
 spec = importlib.util.spec_from_file_location("tracker_data", os.path.join(HERE, "tracker_data.py"))
 T = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(T)
+# The controlled result vocabulary — one spelling per assertion, applied in
+# values_of() so every sheet in the workbook inherits it from one definition.
+sys.path.insert(0, os.path.dirname(HERE))
+import result_vocabulary as RV                                          # noqa: E402
 
 V9 = "--v9" in sys.argv
 # --version=N names the build: the file, the tracker sheet and the Read Me carry vN.
@@ -164,7 +168,7 @@ def tidy(v):
 
 
 _V8 = json.load(open(V8VALS))
-SILENT = ("held for review", "not on this certificate", "not ingested", "n.r.")
+SILENT = ("held for review", "not on this certificate", "not ingested", "not reported")
 V8VAL, V8SILENT = collections.defaultdict(dict), collections.defaultdict(dict)
 _bycode = collections.defaultdict(set)
 for _k in _V8:
@@ -264,7 +268,14 @@ def _lot_of(inst):
 for inst in NEW:
     b = _lot_of(inst)
     if b is None:
-        b = {"cu": "— not recorded —", "p": inst["p"] or "N/A — no P batch assigned", "status": "",
+        # The cultivation batch is genuinely unrecorded — the certificate prints only
+        # the P number — but three such lots (P160012, P160022, P160032) carried the
+        # identical label, so batch_key collapsed them to one and any join keyed on
+        # the printed cultivation batch silently picked one of the three. Naming the
+        # P number inside the label keeps the row identifiable without inventing a
+        # cultivation batch it does not have.
+        _unrec = "— not recorded —" + (f" ({inst['p']})" if inst.get("p") else "")
+        b = {"cu": _unrec, "p": inst["p"] or "N/A — no P batch assigned", "status": "",
              "labs": [], "docs": {n: [] for n in range(1, 13)}, "certs": [],
              "strain": inst.get("strain", ""), "new_lot": True}
         batches.append(b)
@@ -902,13 +913,21 @@ REGISTER_ONLY = set()          # (code, det) the desk holds and v8 does not — 
 
 
 def values_of(code, lab, cu, scope=None):
-    """v8's reading where it has one; the desk's verified value where it does not."""
+    """v8's reading where it has one; the desk's verified value where it does not.
+
+    Every value leaves here in the desk's controlled spelling. This is the one
+    funnel a result passes through on its way into the workbook, so the audit of
+    11.09.2026 — nine spellings of *absent*, seven of *below quantitation*, a
+    `Confirms` typo for the verdict and three multiplication signs — is closed at
+    the source rather than in each sheet that prints it. `canon` rewrites notation
+    only: digits, markers, glosses and a laboratory's own verdict all survive.
+    """
     out = dict(v8_of(code, cu, V8VAL))
     for no, v in desk_values(code, lab, cu, scope).items():
         if no not in out:
             out[no] = f"{v} ᴿ"        # ᴿ: the release register or a page read, not v8's extraction
             REGISTER_ONLY.add((T.nkey(code), no))
-    return out
+    return {no: RV.canon(v, no) for no, v in out.items()}
 
 
 def silent_as(code, cu, no):
@@ -1095,6 +1114,18 @@ for b in batches:
             if here and ICOA_RULE and T.nkey(code) in INST_KEY:
                 ref = ("=IFERROR(INDEX('iCoA Register'!$B:$B,MATCH(\"%s\",'iCoA Register'!$%s:$%s,0)),\"iCoA — at issue\")&\", (%s) [PP]\""
                        % (INST_KEY[T.nkey(code)], REG_KEY_COL, REG_KEY_COL, date))
+            elif here and str(code).startswith("NO-DOC-CODE"):
+                # An in-house report with no document code of its own, cited directly
+                # on Identification A and foreign matter for GG1024, HPA1024 and
+                # OPM1024. The standing ruling is that an in-house result is never
+                # referenced on a certificate of quality — it is carried by an
+                # internal CoA, which is what covers these determinations. None of
+                # the three lots has a packaging date, so their internal CoA is one
+                # of the seven the register leaves unnumbered; the reference says so
+                # in the register's own words rather than printing a placeholder
+                # that reads like a document code.
+                ref = ref_disp = (f"iCoA — at issue ({b['p'] if b['p'].startswith('P0') else b['cu']})"
+                                  f", ({date}) [PP]")
 
             if p["subs"]:
                 for j, no in enumerate(p["subs"]):
@@ -1102,8 +1133,16 @@ for b in batches:
                         v = values_of(here[0], here[2], b["cu"], scope_of(b, here[0])).get(no)
                         blank = not any(values_of(here[0], here[2], b["cu"], scope_of(b, here[0])).get(x)
                                         for x in p["subs"])
+                        # "not reported" is the desk saying this certificate does not
+                        # carry this sub-determination. It used to print "n.r.", which
+                        # the owner's ruling of 10.09.2026 reserves: any derivation of
+                        # n.r. printed as a PARAMETER RESULT is ND. This is not a
+                        # result — writing ND here would assert the analyte was
+                        # measured and absent, which is the one thing the cell knows
+                        # to be untrue — so the annotation is spelled out instead and
+                        # the notation is left to results.
                         cell_v = v or (silence_reason(here[0], here[2], b["cu"], no) if blank and j == 0
-                                       else ("" if blank else "n.r."))
+                                       else ("" if blank else "not reported"))
                         font = F7R if T.over_limit(no, v or "") else (F7U if T.undetermined(no, v or "") else F7B)
                     else:
                         cell_v = "— MISSING —" if state == "red" else ""
@@ -1201,7 +1240,7 @@ key = ("KEY — ✓ green: certificate on file AND its result on the desk (relea
        "BLOCK RULE: one TESTING INSTANCE = one block of two rows — result(s) on the top row, the certificate that reports them on "
        "the bottom row. A batch holds as many blocks as it has testing instances, and a parameter's certificates are taken in "
        "ascending date order, so the n-th block is the n-th round of testing; a parameter tested once has an empty cell in the "
-       "later blocks. For #9, #10 and #11 each sub-determination has its own column on the top row. n.r. = that sub-determination "
+       "later blocks. For #9, #10 and #11 each sub-determination has its own column on the top row. \"not reported\" = that sub-determination "
        "is not reported on that certificate; \"no result on file\" = the certificate is credited here but the desk holds no result "
        "from it. RED BOLD result = OUT OF SPECIFICATION against the criterion in row 3; AMBER BOLD result = UNDETERMINED, in the "
        "Ph. Eur. band between a printed count limit and twice it. The check follows the Quality Desk exactly: a counted "
@@ -1259,7 +1298,7 @@ ACTION = {
     "held for review": "The two independent reads disagreed. A person must confirm the figure from the page.",
     "non-conformance reported": "The certificate reports a result that does not conform. Open an investigation record; the "
                                 "Head of QC rules on the lot, and the iCoA for this parameter is held until then.",
-    "n.r.": "Not reported on this certificate.",
+    "not reported": "Not reported on this certificate.",
 }
 _r = 2
 for cu, pb, code, date, lab, pno, title, why in sorted(audit, key=lambda x: (x[7], x[0], x[5])):
@@ -1271,7 +1310,7 @@ for cu, pb, code, date, lab, pno, title, why in sorted(audit, key=lambda x: (x[7
     put(aud, _r, 5, lab, F7, None, CEN)
     put(aud, _r, 6, f"#{pno}", F7, None, CEN)
     put(aud, _r, 7, title, F7, None, Alignment(horizontal="left", vertical="center", wrap_text=True))
-    put(aud, _r, 8, why, F7B, FILL["amber"] if why in ("not on this certificate", "n.r.") else FILL["red"], CEN)
+    put(aud, _r, 8, why, F7B, FILL["amber"] if why in ("not on this certificate", "not reported") else FILL["red"], CEN)
     put(aud, _r, 9, ACTION.get(why, ""), F6I, None, Alignment(horizontal="left", vertical="center", wrap_text=True))
     _r += 1
 aud.auto_filter.ref = f"A1:{L(len(acols))}{_r - 1}"
@@ -1603,8 +1642,56 @@ def patch_coverage(wb):
               f"(on file, not recorded) on {len(touched)} lot(s); "
               f"{len(COV_0909_SKIPPED)} not applied")
 
+    # ---- Certificates (n) and Labs present, derived rather than inherited.
+    #
+    # Both columns came down from v6 and were *incremented* by each pass that
+    # touched a lot, so they counted documents the tracker does not cite and could
+    # not be reconciled with it: the audit of 11.09.2026 found 22 rows whose count
+    # exceeded the documents actually referenced (JD012603 said 7, the tracker
+    # cites 2) and 26 rows naming a laboratory that appears in no reference on the
+    # lot. The count was not wrong so much as answering a different question —
+    # it included the 09.09 documents the desk has not recorded — so the two
+    # questions now get two pairs of columns, and both are computed from scratch
+    # here rather than carried forward.
+    _cited, _onfile = {}, collections.defaultdict(set)
+    for b in batches:
+        k = rowkey(b["cu"], b["p"])
+        seen = {}
+        for n in range(1, 13):
+            for c, d, l in b["docs"][n]:
+                seen.setdefault(T.nkey(c), l)
+        _cited[k] = seen
+    for u, rr, lab in COV_0909_APPLIED:
+        _onfile[rr].add((u["Now covered by"].strip(), lab))
+    _hdr = cov.cell(1, 19)
+    for _c, _t in ((19, "Certificates (n)"), (20, "Labs present"),
+                   (21, "On file, not recorded (n)"), (22, "Labs on file, not recorded")):
+        if _c > 20:
+            _style_from(cov.cell(1, _c), _hdr)
+            cov.column_dimensions[L(_c)].width = 22
+        cov.cell(1, _c).value = _t
+    for r in range(2, last + 1):
+        k = rowkey(str(cov.cell(r, 1).value or ""), str(cov.cell(r, 2).value or ""))
+        cites = _cited.get(k)
+        if cites is None:                    # a row whose lot the tracker names differently
+            _p = k[1]
+            cites = next((v for (kc, kp), v in _cited.items() if kp == _p and _p != "— not assigned —"), {})
+        cov.cell(r, 19).value = len(cites)
+        _labs = collections.Counter(cites.values())
+        cov.cell(r, 20).value = "; ".join(f"[{a}] {b_}" for a, b_ in sorted(_labs.items())) or "—"
+        extra = _onfile.get(r, set())
+        for _c in (21, 22):
+            if cov.cell(r, _c).value is None:
+                _style_from(cov.cell(r, _c), cov.cell(r, 19 if _c == 21 else 20))
+        cov.cell(r, 21).value = len({c for c, l in extra})
+        _el = collections.Counter(l for c, l in extra if l)
+        cov.cell(r, 22).value = "; ".join(f"[{a}] {b_}" for a, b_ in sorted(_el.items())) or "—"
+    print("coverage: Certificates (n) and Labs present derived from the tracker's own "
+          f"references; {sum(1 for r in range(2, last + 1) if cov.cell(r, 21).value)} row(s) "
+          "carry documents on file that the desk has not recorded")
+
     if cov.auto_filter.ref:
-        cov.auto_filter.ref = f"A1:{L(20)}{last}"
+        cov.auto_filter.ref = f"A1:{L(22)}{last}"
     return last
 
 
@@ -1655,7 +1742,7 @@ def add_mikro(wb, src_path):
         for b in batches:
             bp = "/" if b["p"].startswith("N/A") else b["p"]
             if (cu0 == re.sub(r"[＊*]", "", b["cu"]) and (p in ("", "/", bp) or p == "N/A — no P batch assigned" and bp == "/")) \
-               or (cu0 == "— not recorded —" and p == bp) or (cu0 == "— not recorded —" and p and p in b["p"]):
+               or (cu0.startswith("— not recorded —") and p == bp) or (cu0.startswith("— not recorded —") and p and p in b["p"]):
                 if b not in lots:
                     lots.append(b)
                 break
@@ -1693,7 +1780,7 @@ def add_mikro(wb, src_path):
     matched = {(re.sub(r"[＊*]", "", b["cu"]), b["p"]) for b in lots}
     print(f"Mikro CoQ Parameter: {len(lots)} of {len(want)} lot(s) matched, {len(rows) - 4} row(s)")
     for cu, p in want:
-        if not any(re.sub(r"[＊*]", "", cu) == mcu or (cu == "— not recorded —" and p in mp) for mcu, mp in matched):
+        if not any(re.sub(r"[＊*]", "", cu) == mcu or (cu.startswith("— not recorded —") and p in mp) for mcu, mp in matched):
             print("   not matched:", repr(cu), repr(p))
     return len(lots)
 
@@ -2018,11 +2105,12 @@ SHEET_ABOUT = {
     "Reconciliation 09.09": "The owner's 09.09.2026 pass over the 387 certificates in eCoA_DATABASE against the desk, cell by cell: the parameters it closed on Batch Coverage, the cells the two records disagree about, and why the identity determinations stay blank on almost every lot — the iCoA that carries them has not been issued, and the in-house documents that do exist print no microscopy and no foreign-matter percentage.",
     "ImB Register": "The customer's certificate register, scanned 04.09.2026: 43 certificates for the earliest production, each against its desk lot — the strain as printed and as ruled, the manufacturing and retest dates, and the four lots the register skips inside the span it covers.",
     "Delivery T1–T3": "The 78 cultivation batches delivered in the three tranches of 31.07, 14.08 and 28.08.2026, each against its row on Batch Coverage: the P lot, the CoQ status, what is missing, and the potency the batch was delivered under beside the potency its own certificate reports.",
-    "Batch Coverage": "One row per lot: ✓/✗ for each of the 12 parameters, the missing list, the number of certificates and the laboratories present. A grey ✓ is covered by the in-house iCoA.",
+    "Batch Coverage": "One row per lot: ✓/✗/○ for each of the 12 parameters, the missing list, and two pairs of document columns — the certificates the tracker actually cites with their laboratories, and separately the documents on file from the 09.09.2026 pass that the desk has not recorded. Both pairs are derived here from the tracker rather than carried forward, which is what let them drift apart. ○ counts as missing: nothing can be cited until the desk records the document. A grey ✓ is covered by the in-house iCoA.",
     "Mikro CoQ Parameter": "The owner's microbiology sheet, rebuilt from the tracker: the #7–#12 spans per lot in the owner's layout.",
     "Credit Audit": "Certificates credited on the owner's tracker that the desk holds no value from, with the reason.",
     "Credit Corrections": "The two corrections applied to the owner's credits (the Farmahem pair, CNP identification B), one row each; nothing written back to the owner's workbook.",
     "Work Order": "What a person must do next: certificates to ingest, values to read on the page, lots to record.",
+    "Open Items": "The standing register of what the desk cannot decide: every finding raised and left to the owner, with what was found, what the desk did with it, the decision being asked for, and the evidence behind it. STATE is open (waiting, nothing printed), marked (the certificate prints the field bracketed in red and unticked) or ruled (kept for the record with the ruling). Built from open_items.py, which also writes OPEN_ITEMS.md.",
     "iCoA Issuance": "One row per P lot and series (initial release, retest): what its iCoA carries, the CNP references, the cannabinoid-assay eCoA that covers identification C, the codes and planned dates looked up on the registers.",
     "Batch Dates": "The Head of QC's harvest and packaging dates per batch (04.09.2026), as dates; the registers look their packaging dates up here.",
     "iCoA Register": "The preliminary iCoA issuance register: iCoA-PP_26-nnn in the order of issue, number, code and dates as formulas.",
@@ -2611,6 +2699,17 @@ if NEW:
         add_reconciliation_sheet(wb)
     add_imb_register_sheet(wb)
     apply_strain_rulings(wb)
+    # The standing register of what the desk cannot decide. Its own module, so the
+    # same list drives the sheet and the note that travels with the package and an
+    # item is written down once rather than rediscovered each session. Added before
+    # the Read Me, so it is described there like every other sheet.
+    try:
+        import open_items as OI
+        OI.sheet(wb, wb.sheetnames.index("Work Order") + 1)
+        print("open items: %d (%d awaiting a ruling, %d marked on the certificate)"
+              % (len(OI.ITEMS), len(OI.items("open")), len(OI.items("marked"))))
+    except Exception as _e:
+        print("Open Items sheet not written:", _e)
     write_read_me(wb)
     fix_parameters(wb)
     print_setup(wb)

@@ -20,6 +20,7 @@ applied twice — so the check is part of the build rather than a thing to remem
 """
 import hashlib
 import os
+import re
 import sys
 import zipfile
 
@@ -28,7 +29,7 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 DRAFTS = os.path.join(HERE, "drafts")
 TRACKER = os.path.join(HERE, "tracker")
 OUT_DIR = os.path.join(ROOT, "deliverables", "zips")
-STAMP = "2026-09-10"
+STAMP = "2026-09-11"
 
 # folder in the archive -> (source path, what it is)
 def _items():
@@ -46,9 +47,9 @@ def _items():
          "Tranche 2 — 9 certificates, one A4 page each, fonts embedded"),
         ("certificates/Tranche_1_2_CoQ_Draft_Set.html", os.path.join(DRAFTS, "Tranche_1_2_CoQ_Draft_Set.html"),
          "All 22 certificates as one scrollable page"),
-        ("workbook/CoQ_Analysis_Master_v22.xlsx", os.path.join(TRACKER, "CoQ_Analysis_Master_v22.xlsx"),
+        ("workbook/CoQ_Analysis_Master_v%s.xlsx" % VER, MASTER,
          "The desk workbook — coverage, registers with the 10-11.09 issue dates, Reconciliation 09.09"),
-        ("workbook/coq_master_v22.html", os.path.join(TRACKER, "coq_master_v22.html"),
+        ("workbook/coq_master_v%s.html" % VER, MASTER_PAGE,
          "The same workbook as a page, nine views"),
         ("desk/qc_quality_desk_artifact.html", os.path.join(HERE, "qc_quality_desk_artifact.html"),
          "The live Quality Desk — click a batch to compile its certificate"),
@@ -94,8 +95,27 @@ FRESH = [
     (os.path.join(DRAFTS, "Tranche_1_2_CoQ_Draft_Set.html"), os.path.join(HERE, "coq_artifact_data.json")),
     (os.path.join(DRAFTS, "Tranche_1_CoQ_Drafts.pdf"), os.path.join(DRAFTS, "Tranche_1_2_CoQ_Draft_Set.html")),
     (os.path.join(DRAFTS, "Tranche_2_CoQ_Drafts.pdf"), os.path.join(DRAFTS, "Tranche_1_2_CoQ_Draft_Set.html")),
-    (os.path.join(TRACKER, "coq_master_v22.html"), os.path.join(TRACKER, "CoQ_Analysis_Master_v22.xlsx")),
+    (MASTER_PAGE, MASTER),
 ]
+
+
+# The workbook version, derived rather than written down. Three places named v22
+# by hand, and a hard-coded version is exactly the defect the 11.09.2026 audit
+# found in Batch Coverage: a value carried forward stops being true and nothing
+# says so. The newest master on disk is the one the package ships.
+def _latest_master():
+    best, path = -1, None
+    for f in os.listdir(TRACKER):
+        m = re.fullmatch(r"CoQ_Analysis_Master_v(\d+)\.xlsx", f)
+        if m and int(m.group(1)) > best:
+            best, path = int(m.group(1)), f
+    if path is None:
+        raise SystemExit("no CoQ_Analysis_Master_vN.xlsx in " + TRACKER)
+    return str(best), os.path.join(TRACKER, path)
+
+
+VER, MASTER = _latest_master()
+MASTER_PAGE = os.path.join(TRACKER, "coq_master_v%s.html" % VER)
 
 
 def stale():

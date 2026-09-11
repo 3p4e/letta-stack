@@ -424,22 +424,27 @@ def main(out):
 
     # Owner's ruling, 10.09.2026: one notation for a not-detected result, and it
     # is ND. The desk carried eight spellings of the same assertion on the
-    # certificates alone. result_notation.nd() is the single definition and it
-    # rewrites the notation and nothing else — unit, footnote marker and residue
-    # gloss all survive. Applied here, so the certificates, the desk and the PDFs
-    # inherit one spelling from one place.
+    # certificates alone. The audit of 11.09.2026 found five more families of the
+    # same disease — below quantitation, the conformity verdict, absence, a
+    # counted colony and a mass fraction — so result_vocabulary.canon() is now the
+    # single definition and result_notation.nd() is the family inside it. It
+    # rewrites the notation and nothing else: unit, footnote marker, re-test and
+    # derived markers and residue glosses all survive, and a laboratory's own
+    # non-conformity is preserved as a verdict rather than folded away. Applied
+    # here, so the certificates, the desk and the PDFs inherit one spelling from
+    # one place.
     try:
-        import result_notation as RN
+        import result_vocabulary as RV
         _nd = 0
         for _c in coqs:
             for _r in _c["rows"]:
                 _v = _r.get("res")
                 if _v:
-                    _w = RN.nd(_v)
+                    _w = RV.canon(_v, str(_r.get("no") or "").strip())
                     if _w != _v:
                         _r["res"] = _w
                         _nd += 1
-        print("Notation: %d printed result(s) normalised to ND" % _nd)
+        print("Notation: %d printed result(s) in the controlled vocabulary" % _nd)
     except Exception as _e:
         print("Notation not normalised: %s" % _e)
 

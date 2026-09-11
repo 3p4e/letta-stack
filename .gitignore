@@ -29,3 +29,6 @@ ingestion/ecoa_runner/decisions.tsv
 # Neither is a source: both are one command away from the workbook, and no
 # earlier vN_data.json was ever committed.
 deliverables/qc_gap_analysis/tracker/v*_data.json
+
+# the per-sheet PDFs print_coq_pdfs.py renders before merging — scratch, not a deliverable
+deliverables/qc_gap_analysis/drafts/.pages/
