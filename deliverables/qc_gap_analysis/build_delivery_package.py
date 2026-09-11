@@ -89,16 +89,6 @@ def _items():
 
 # derived deliverable -> what it is derived from. A deliverable older than its
 # source is stale and the build stops.
-FRESH = [
-    (os.path.join(HERE, "coq_artifact_data.json"), os.path.join(HERE, "build_coq_schedule.py")),
-    (os.path.join(HERE, "qc_quality_desk_artifact.html"), os.path.join(HERE, "coq_artifact_data.json")),
-    (os.path.join(DRAFTS, "Tranche_1_2_CoQ_Draft_Set.html"), os.path.join(HERE, "coq_artifact_data.json")),
-    (os.path.join(DRAFTS, "Tranche_1_CoQ_Drafts.pdf"), os.path.join(DRAFTS, "Tranche_1_2_CoQ_Draft_Set.html")),
-    (os.path.join(DRAFTS, "Tranche_2_CoQ_Drafts.pdf"), os.path.join(DRAFTS, "Tranche_1_2_CoQ_Draft_Set.html")),
-    (MASTER_PAGE, MASTER),
-]
-
-
 # The workbook version, derived rather than written down. Three places named v22
 # by hand, and a hard-coded version is exactly the defect the 11.09.2026 audit
 # found in Batch Coverage: a value carried forward stops being true and nothing
@@ -116,6 +106,17 @@ def _latest_master():
 
 VER, MASTER = _latest_master()
 MASTER_PAGE = os.path.join(TRACKER, "coq_master_v%s.html" % VER)
+
+
+FRESH = [
+    (os.path.join(HERE, "coq_artifact_data.json"), os.path.join(HERE, "build_coq_schedule.py")),
+    (os.path.join(HERE, "qc_quality_desk_artifact.html"), os.path.join(HERE, "coq_artifact_data.json")),
+    (os.path.join(DRAFTS, "Tranche_1_2_CoQ_Draft_Set.html"), os.path.join(HERE, "coq_artifact_data.json")),
+    (os.path.join(DRAFTS, "Tranche_1_CoQ_Drafts.pdf"), os.path.join(DRAFTS, "Tranche_1_2_CoQ_Draft_Set.html")),
+    (os.path.join(DRAFTS, "Tranche_2_CoQ_Drafts.pdf"), os.path.join(DRAFTS, "Tranche_1_2_CoQ_Draft_Set.html")),
+    (MASTER_PAGE, MASTER),
+]
+
 
 
 def stale():
