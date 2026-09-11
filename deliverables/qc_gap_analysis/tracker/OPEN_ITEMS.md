@@ -4,7 +4,7 @@ Every finding the desk has raised and cannot itself settle, with the evidence
 behind it and the decision being asked for. Built by `open_items.py`; the same
 register is the **Open Items** sheet of the workbook.
 
-**17 open · 3 marked on the certificate**
+**18 open · 3 marked on the certificate**
 
 ## Specification
 
@@ -219,6 +219,30 @@ register is the **Open Items** sheet of the workbook.
 **The desk.** Printed as the desk holds it.
 
 **Needed.** How should a conforming detection print — the figure alone, or the figure with a detected qualifier? The same question as OI-15 for pesticides.
+
+## Document content
+
+### OI-24 · The Identification C result no longer states the method on the face of the document
+
+*State:* **open** · *Evidence:* #3 Identification C; 35 determinations
+
+**Found.** The result read "Conforms — cannabinoids identified and quantified by HPLC", which restated the METHOD column two cells to its left on the same row. Measured with the embedded fonts, that one cell stood 85 px tall against 18 px for a normal row, and div.page clips at A4: three certificates were losing their second approver's signature date off the bottom of the sheet.
+
+**The desk.** Shortened to "Conforms | Одговара" like every other identity row. The basis for Identification C stays in the Section 03 citation, where a basis belongs.
+
+**Needed.** Do you want the method restated in the result cell? It would need a wider results column, which is a change to the master.
+
+## Document rendering
+
+### OI-25 · The A4 page was never measured with the fonts it prints in
+
+*State:* **ruled** · *Evidence:* build_coq_drafts.py page-height report; measured 5 of 22 -> 0 of 22 losing content
+
+**Found.** "One A4 page" was checked by reading scrollHeight on the page itself — but div.page clips with overflow:hidden, so that reading returns the clipped height and always answers zero. Measured properly, inside an A4 frame with the subset fonts the PDF embeds, 5 of the 22 certificates stood past the bottom of the sheet, the worst by 72 px, and P060152 was printing only one of its two signature dates.
+
+**The desk.** The builder measures it on every run and names any document that overflows. Four compiled-copy fit rules close the gap: the Identification C result shortened (OI-24), short paired results held on one line rather than wrapped, and the leading of Section 03 and of the parameter column tightened. 21 of 22 now fit outright; the 22nd has a few px of trailing box space past the edge with no element beyond it.
+
+**Needed.** Nothing. Recorded because the claim had been made and was not true, and because the page has very little slack: the next thing that adds a line will need this check.
 
 ## Document content
 

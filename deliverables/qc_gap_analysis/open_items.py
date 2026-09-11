@@ -233,6 +233,35 @@ ITEMS = [
      "detected qualifier? The same question as OI-15 for pesticides.",
      "#10.3 Ochratoxin A, 1 determination"),
 
+    ("OI-24", "Document content", "open",
+     "The Identification C result no longer states the method on the face of the document",
+     "The result read \"Conforms — cannabinoids identified and quantified by HPLC\", which "
+     "restated the METHOD column two cells to its left on the same row. Measured with the "
+     "embedded fonts, that one cell stood 85 px tall against 18 px for a normal row, and "
+     "div.page clips at A4: three certificates were losing their second approver's signature "
+     "date off the bottom of the sheet.",
+     "Shortened to \"Conforms | Одговара\" like every other identity row. The basis for "
+     "Identification C stays in the Section 03 citation, where a basis belongs.",
+     "Do you want the method restated in the result cell? It would need a wider results "
+     "column, which is a change to the master.",
+     "#3 Identification C; 35 determinations"),
+
+    ("OI-25", "Document rendering", "ruled",
+     "The A4 page was never measured with the fonts it prints in",
+     "\"One A4 page\" was checked by reading scrollHeight on the page itself — but div.page "
+     "clips with overflow:hidden, so that reading returns the clipped height and always "
+     "answers zero. Measured properly, inside an A4 frame with the subset fonts the PDF "
+     "embeds, 5 of the 22 certificates stood past the bottom of the sheet, the worst by "
+     "72 px, and P060152 was printing only one of its two signature dates.",
+     "The builder measures it on every run and names any document that overflows. Four "
+     "compiled-copy fit rules close the gap: the Identification C result shortened (OI-24), "
+     "short paired results held on one line rather than wrapped, and the leading of Section "
+     "03 and of the parameter column tightened. 21 of 22 now fit outright; the 22nd has a "
+     "few px of trailing box space past the edge with no element beyond it.",
+     "Nothing. Recorded because the claim had been made and was not true, and because the "
+     "page has very little slack: the next thing that adds a line will need this check.",
+     "build_coq_drafts.py page-height report; measured 5 of 22 -> 0 of 22 losing content"),
+
     ("OI-23", "Document content", "open",
      "The Macedonian for an absent organism was chosen from the laboratories' own usage",
      "The owner ruled the conformity result prints \"Conforms | Одговара\". The absence "
@@ -299,7 +328,7 @@ def items(state=None, area=None):
     """The register, optionally narrowed.
 
     >>> len(items())
-    23
+    25
     >>> [i[0] for i in items(area="Specification")]
     ['OI-01', 'OI-02', 'OI-03']
     >>> sorted({i[2] for i in items()})

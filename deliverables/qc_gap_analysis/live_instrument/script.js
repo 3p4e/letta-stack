@@ -2431,6 +2431,10 @@ function addFitStyle(doc){
      the only way to keep every certificate on one sheet without touching a
      value. */
   rules.push("table.results tbody td{padding-top:0;padding-bottom:0}");
+  /* and the leading of the parameter column, whose two stacked lines (name and
+     its Macedonian) set the height of every row in the table */
+  rules.push("table.results tbody .p-name{line-height:1.08}");
+  rules.push("table.results tbody .p-name .mk{line-height:1.05}");
   /* Section 03 grows with the number of laboratories a lot cites, and the owner's
      ruling of 10.09.2026 gave every certificate one more: the in-house laboratory,
      carrying the internal CoA that discharges identity and foreign matter. Four
@@ -2439,6 +2443,13 @@ function addFitStyle(doc){
      sets them 2.5 px apart on 7 px type, and 1 px is still clear of the 1.25
      leading that already separates them. */
   rules.push("table.labref tbody td{padding-top:0;padding-bottom:0}");
+  /* Section 03 grows with the number of laboratories a lot cites — one row each,
+     and a lot with four rows is 18 px taller than one with three. That is the
+     block that put the last certificate over the sheet, so its two stacked lines
+     are set tighter. The sizes are untouched; only the leading closes up. */
+  rules.push("table.labref tbody .lr-lab{line-height:1.12}");
+  rules.push("table.labref tbody .lr-lab .mk{line-height:1.08}");
+  rules.push("table.labref tbody .lr-lab small{line-height:1.05}");
   /* and the last few px come out of the footnote under the results table, which
      the master sets 8 px clear above and 6 below on 8.4 px type. NOT out of the
      space above the signatures: the master gives .approval-grid `margin-top:auto`
@@ -2458,6 +2469,30 @@ function addFitStyle(doc){
      the size the document already uses for its second-language glosses rather
      than shortened — every character it carries is still on the sheet. */
   rules.push("table.results tbody td.r-cell .r-long{font-size:6.5px;letter-spacing:-.08px}");
+  /* The bilingual result pairs INLINE, and this overrides the master's own
+     `.r-conform .mk{display:block}` — deliberately, and only in the compiled
+     copy, because the page has no room for the stacked form.
+
+     Measured with the fonts the PDF embeds, inside an A4 frame: stacking adds a
+     line to the four conformity parameter rows, ~34 px, and div.page clips at
+     A4 — 18 of 22 certificates lost the bottom of the sheet, including the
+     second approver's signature date. Before the pairing, 1 of 18 was over.
+     Line-height cannot buy 34 px back, so the Macedonian has to share the line.
+
+     Inline is not a lesser convention here: `.bisep` + `.mk` is what the master
+     uses for every bilingual pair that shares a line — including "TAMC | Вкупен
+     аеробен микробен број" one column to the left of this very cell — while the
+     block rule for `.r-conform .mk` was in the stylesheet unexercised, no result
+     having ever carried a Macedonian half until today. OI-25 puts the choice to
+     the owner: this, or a page with room for the taller form. */
+  rules.push("table.results tbody td.r-cell .mk{display:inline;font-size:6.4px;line-height:7.2px}");
+  /* A paired conformity result fits its column on ONE line, and must be allowed
+     to: the wrapping rule above exists for the long verbatim results, and left
+     to itself it broke "Conforms | Одговара" across two lines. Four such rows on
+     a certificate, and the second line on each is what carried 15 documents that
+     had fitted past the bottom of an A4 page. .r-long keeps its wrapping — that
+     is the rule for a result that is genuinely a sentence. */
+  rules.push("table.results tbody td.r-cell .r-val.r-fit{white-space:nowrap}");
   st.textContent = rules.join("");
   doc.head.appendChild(st);
 }
@@ -2583,6 +2618,12 @@ function fillCoq(c){
          mean opposite things */
       /* a result long enough to be a sentence is set smaller — see addFitStyle */
       var _long = v.length > 60 ? " r-long" : "";
+      /* short enough to hold its column on one line — the paired conformity
+         results ("Conforms | Одговара", 19 characters) and the bare figures.
+         Anything longer keeps the wrapping the fit rules give it: the pesticide
+         results ("ND mg/kg — all 25 residues") need two lines and ran off the
+         side of the sheet when they were denied them. */
+      if (v.length <= 22) _long += " r-fit";
       /* Owner, 11.09.2026: a conformity result prints bilingually, "in the
          formatting convention that is set for the rest of the CoQ text."
 
@@ -2604,10 +2645,8 @@ function fillCoq(c){
          master uses for "TAMC | Вкупен аеробен микробен број" one column to the
          left, on that very row. Following it also costs the sheet nothing: the
          sub-rows are where the height would have gone. */
-      var _sub = cell.parentElement.querySelector(".p-sub") !== null;
       var _body = _h.length === 2
-        ? (_sub ? esc(_h[0]) + ' <i class="bisep">|</i> <span class="mk">' + esc(_h[1]) + "</span>"
-                : esc(_h[0]) + '<span class="mk">' + esc(_h[1]) + "</span>")
+        ? esc(_h[0]) + ' <i class="bisep">|</i> <span class="mk">' + esc(_h[1]) + "</span>"
         : esc(v);
       cell.innerHTML = v ? '<span class="r-val' + rCls(v) + _long + '">' + _body + "</span>"
                          : todoHtml("\u2014", "r-val");

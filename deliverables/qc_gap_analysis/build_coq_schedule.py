@@ -806,12 +806,23 @@ def schedule():
                 if ic_row.get(ICOA_FIELD[det["no"]], "required") != "required" and cnp:
                     chosen, others = dict(cnp, value="Conforms"), []
             if det["no"] == "3" and chosen is None and ident_c_cert is not None:
-                chosen, others = dict(
-                    ident_c_cert,
-                    # the Macedonian half is added on the export path, from
-                    # result_vocabulary.MK — one word for the assertion, the
-                    # master's own (Одговара), not a second one invented here
-                    value="Conforms — cannabinoids identified and quantified by HPLC"), []
+                # "Conforms", not "Conforms — cannabinoids identified and
+                # quantified by HPLC". The gloss restated the METHOD column two
+                # cells to its left on the very same row — "HPLC/HPTLC Ph. Eur.
+                # 2.2.29 (3028)" — and a sentence does not fit a 110 px results
+                # column: measured with the embedded fonts, that one cell stood
+                # 85 px tall against 18 px for a normal row, and div.page clips
+                # at A4, so three certificates were losing their second
+                # signature date off the bottom of the sheet. A redundant gloss
+                # is not worth a signature. The basis for Identification C is
+                # recorded where a basis belongs — the citation in Section 03 —
+                # and OI-24 asks the owner whether they want it back on the face
+                # of the document, which would need a wider column.
+                #
+                # The Macedonian half is added on the export path, from
+                # result_vocabulary.MK — one word for the assertion, the
+                # master's own (Одговара), not a second one invented here.
+                chosen, others = dict(ident_c_cert, value="Conforms"), []
 
             criterion = det["criterion"]
             if det.get("per_batch_criterion"):

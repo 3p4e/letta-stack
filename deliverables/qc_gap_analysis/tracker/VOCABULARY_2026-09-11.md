@@ -253,6 +253,47 @@ not conformity. They print **`Absent | Отсутна`** — CNP's own most-used
 (`отсутна/25 g`), capitalised, rather than a term translated afresh for a
 controlled document. That is **OI-23**, and it asks for confirmation.
 
+## The page was never measured with the fonts it prints in
+
+Pairing 375 results with their Macedonian is a line of extra height on four rows
+of every certificate, and that is when the A4 page turned out never to have been
+checked properly.
+
+**"One A4 page" had been verified by reading `scrollHeight` on the page itself.**
+`div.page` clips with `overflow:hidden`, so that reading returns the *clipped*
+height and always answers zero. The check could not fail. Measured the only way
+that means anything — inside an A4 frame, with the subset fonts the PDF embeds —
+the baseline was:
+
+| | |
+| --- | --- |
+| before any of today's certificate work | **5 of 22 past the bottom of the sheet, worst 72 px** |
+| P060152 | printing **one** of its two approvers' signature dates; the second was off the sheet |
+
+So this was not a regression to undo but a defect to fix. Four changes, all in
+the compiled copy, none touching the master:
+
+* **the Identification C result shortened.** It read *"Conforms — cannabinoids
+  identified and quantified by HPLC"*, restating the METHOD column two cells to
+  its left on the same row. That single cell stood **85 px** tall against 18 px
+  for a normal row. A redundant gloss is not worth a signature (OI-24);
+* **a short paired result is held on one line.** The wrapping rule exists for the
+  long verbatim results; left to itself it broke `Conforms | Одговара` across two
+  lines, and that second line put 15 documents that had fitted over the edge;
+* **Section 03's leading closed up.** It grows one row per laboratory, and the
+  lot citing four was the last one over;
+* **the parameter column's leading closed up** — its two stacked lines set the
+  height of every row in the table.
+
+**5 of 22 losing content → 0.** Twenty-one fit outright; the twenty-second has a
+few pixels of trailing box space past the edge with **no element beyond it**.
+
+And the builder now measures this on every run and names any document that
+overflows, because the page has very little slack left: the next thing that adds
+a line will need the check. It says what it measures, too — the HTML drafts carry
+no embedded fonts, so its own figure is a fallback-metric approximation and the
+rendered PDF is the verdict.
+
 ## Reproducing
 
     python3 deliverables/qc_gap_analysis/result_vocabulary.py
