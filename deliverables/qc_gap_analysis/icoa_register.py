@@ -124,7 +124,23 @@ def code(seq):
 
 
 COLS = ["code", "batch", "p_lot", "strain", "round", "tested_from", "tested_to",
-        "issued", "parameters", "covers_in_house"]
+        "issued", "parameters", "covers_in_house", "note"]
+
+
+_BI = None
+
+
+def _bi():
+    """Batch identity — the single definition, imported the way the schedule does."""
+    global _BI
+    if _BI is None:
+        import importlib.util
+        root = os.path.dirname(os.path.dirname(HERE))
+        spec = importlib.util.spec_from_file_location(
+            "batch_id", os.path.join(root, "ingestion", "common", "batch_id.py"))
+        _BI = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(_BI)
+    return _BI
 
 
 def build(path=DATA):
@@ -136,10 +152,36 @@ def build(path=DATA):
     for det in data.get("dets", []):
         if det.get("col"):
             col2det.setdefault(det["col"], []).append(det["no"])
+    # Keyed through the single batch-identity definition, never by string: the
+    # register spells a batch one way and the release record another, and matching
+    # raw found the packaging date for 29 of 80 batches instead of 39. The other
+    # 51 fell back to the round's last external date, which put 25 internal
+    # certificates' testing date on 10.08.2026 — the re-analysis date — when the
+    # ruling says the packaging date.
+    # `Batch Dates` in the workbook carries the packaging window for every batch —
+    # 87 of them, including those with no P number — and carries it as a range,
+    # which is what "start and end date of testing" wants. The release record
+    # holds it for the 48 P lots only, so it is the fallback and not the source.
     packed = {}
+    dates_csv = os.path.join(HERE, "batch_dates_2026-09-10.csv")
+    if os.path.exists(dates_csv):
+        with open(dates_csv, encoding="utf-8") as fh:
+            for row in csv.DictReader(fh):
+                frm = (row.get("packaging_from") or "").strip()
+                if not frm:
+                    continue
+                win = (frm, (row.get("packaging_to") or "").strip() or frm)
+                # the sheet keys a batch by its cultivation number and carries the
+                # P number beside it; the register keys some entries by one and
+                # some by the other, so both are indexed — the same reason the CoQ
+                # register lookup indexes both
+                for name in (row.get("batch"), row.get("p_batch")):
+                    name = (name or "").strip()
+                    if name and not name.startswith(("N/A", "\u2014")):
+                        packed.setdefault(_bi().batch_key(name), win)
     for c in data["coqs"]:
         if c["t"] == "initial release" and c.get("pk"):
-            packed[c["cb"]] = c["pk"]
+            packed.setdefault(_bi().batch_key(c["cb"]), (c["pk"], c["pk"]))
     rows = []
     for entry in data.get("reg", []):
         by = TS.by_parameter(entry)
@@ -149,14 +191,24 @@ def build(path=DATA):
             last = TS.last_date(round_)
             if not last:
                 continue
-            tested = (packed.get(entry["cb"]) or last) if i == 0 else last
+            # The release round is tested on the packaging date and a retest on
+            # its own sampling date. A batch with no packaging date on file was
+            # never packaged as a production batch, and the desk will not put an
+            # unrelated laboratory's date in its place: the certificate has no
+            # testing date until someone supplies one.
+            if i == 0:
+                frm, to = packed.get(_bi().batch_key(entry["cb"]), ("", ""))
+            else:
+                frm = to = last
+            tested = frm
             params = scope(round_, col2det)
             extra = [p for p in params if p not in ALWAYS]
             rows.append({
+                "note": "" if tested else "no packaging date on file — testing date not stated",
                 "batch": entry["cb"], "p_lot": entry.get("pn") or "",
                 "strain": entry.get("strain") or "",
                 "round": "initial release" if i == 0 else ("retest %d" % i),
-                "tested_from": tested, "tested_to": tested,
+                "tested_from": frm, "tested_to": to,
                 "issued": ISS.icoa_issue(tested) or "",
                 "parameters": " ".join(params),
                 "covers_in_house": " ".join(extra),
@@ -166,20 +218,23 @@ def build(path=DATA):
     rows.sort(key=lambda r: (ISS.parse(r["issued"]) or ISS.parse("31.12.2099"),
                              ISS.parse(r["tested_from"]) or ISS.parse("31.12.2099"),
                              r["batch"]))
-    for n, r in enumerate(rows, 1):
-        r["code"] = code(n)
+    # A code in an issue-ordered series says the certificate was issued. A
+    # certificate with no testing date cannot be, so it is listed with its note
+    # and takes no number — the series stays a series of issued documents.
+    n = 0
+    for r in rows:
+        if r["issued"]:
+            n += 1
+            r["code"] = code(n)
+        else:
+            r["code"] = ""
     return rows
 
 
 def by_batch_round(path=DATA, _cache={}):
     """The register keyed the way a compiler needs it: (batch key, round) -> row."""
     if path not in _cache:
-        import importlib.util
-        root = os.path.dirname(os.path.dirname(HERE))
-        spec = importlib.util.spec_from_file_location(
-            "batch_id", os.path.join(root, "ingestion", "common", "batch_id.py"))
-        bi = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(bi)
+        bi = _bi()
         out = {}
         for r in build(path):
             kind = "initial release" if r["round"] == "initial release" else "additional"
@@ -215,10 +270,13 @@ def main(argv):
           % len(extra))
     for r in extra[:6]:
         print("      %s  %-12s %s" % (r["code"], r["batch"], r["covers_in_house"]))
-    if rows:
-        print("  first: %s %s (%s)  last: %s %s (%s)"
-              % (rows[0]["code"], rows[0]["batch"], rows[0]["issued"],
-                 rows[-1]["code"], rows[-1]["batch"], rows[-1]["issued"]))
+    numbered = [r for r in rows if r["code"]]
+    pending = [r for r in rows if not r["code"]]
+    if numbered:
+        print("  numbered %s .. %s" % (numbered[0]["code"], numbered[-1]["code"]))
+    if pending:
+        print("  %d awaiting a packaging date, unnumbered: %s"
+              % (len(pending), ", ".join(r["batch"] for r in pending)))
     return 0
 
 

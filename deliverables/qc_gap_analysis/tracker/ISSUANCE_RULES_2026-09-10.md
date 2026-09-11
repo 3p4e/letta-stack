@@ -154,12 +154,22 @@ changes it if that reading is wrong.
   behind the internal certificate, which the certificate of quality cites. **Four
   certificates** carry an in-house determination beyond identity and foreign
   matter — HPA1024 and OPM1024 carry thirteen each.
+* **The testing window is the packaging window.** `Batch Dates` in the workbook
+  carries `Packaging from` and `Packaging to` for 87 batches — including those
+  with no P number — and that range is what "start and end date of testing"
+  wants. **26 of the certificates span more than one day**, which a single date
+  could not have said. `tracker/extract_batch_dates.py` lifts it to
+  `batch_dates_2026-09-10.csv`.
 * **Document codes follow the order of issuing**: `iCoA-PP_26-001` …
   `iCoA-PP_26-106`, ordered by issue date, then by the date the work was done,
   then by batch. The backlog shares one issue date, so within it the order is the
   order the batches were packaged — the same order the certificate-of-quality
-  series is numbered in. **68 issue on 03.06.2026; 38 on later dates**, the last
-  on 10.08.2026.
+  series is numbered in. **71 issue on 03.06.2026 and 28 on eight later dates**, the
+  last on 10.08.2026. **Seven take no number**: without a packaging date on file
+  they cannot be issued, and a code in an issue-ordered series says a certificate
+  was — BSS1024_01, GG012601, JD012601, OPM1024_01, P160012, P160022 and P160032
+  are listed with that note instead. The series runs `iCoA-PP_26-001` …
+  `iCoA-PP_26-099`.
 
 ## What it did to the certificates
 
@@ -192,3 +202,24 @@ One thing was tried and reverted, and it is worth writing down: overriding
 `auto` is what pins the signature block to the bottom edge of the sheet whatever
 the certificate holds. Removing it did nothing for the one crowded certificate
 and would have left the other 21 with their signatures floating mid-page.
+
+## A correction to the first build of the register
+
+The register was keyed on the **raw batch spelling** when it looked up the
+packaging date, and found one for 29 of 80 batches. The rest fell back to the
+round's last external date — which put **25 internal certificates' testing date
+on 10.08.2026, the Farmahem re-analysis date**, on batches packaged a year
+earlier. It is the same defect as the one fixed in the exporter an hour before,
+in a second place, and it is the reason `batch_id.batch_key` exists.
+
+Three things fixed it, and the second is the one that matters:
+
+1. The lookup goes through `batch_key`, never by string — 29 → 39.
+2. `Batch Dates` replaced the release record as the source. The release record
+   carries a packaging date only for the 48 lots that have a P number; the sheet
+   carries a packaging **window** for 87 batches — 39 → 99.
+3. Both the cultivation number and the P number are indexed, because the register
+   keys some entries by one and some by the other — 92 → 99.
+
+What remains is seven batches with no packaging date anywhere on file. They are
+listed, noted and unnumbered rather than given an invented date.

@@ -54,6 +54,8 @@ def _items():
          "The live Quality Desk — click a batch to compile its certificate"),
         ("sources/issuance_schedule_2026-09-10.csv", os.path.join(HERE, "issuance_schedule_2026-09-10.csv"),
          "Every certificate and internal CoA with its date, under the 10.09 rulings"),
+        ("sources/batch_dates_2026-09-10.csv", os.path.join(HERE, "batch_dates_2026-09-10.csv"),
+         "Harvest and packaging windows per batch — where the internal CoA's testing dates come from"),
         ("sources/icoa_register_2026-09-10.csv", os.path.join(HERE, "icoa_register_2026-09-10.csv"),
          "The standing internal-CoA register — 106 certificates, coded in issue order"),
         ("sources/spec_attributes_2026-09-10.csv", os.path.join(HERE, "spec_attributes_2026-09-10.csv"),
