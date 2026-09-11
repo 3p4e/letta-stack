@@ -159,9 +159,10 @@ def build(path=DATA):
     # certificates' testing date on 10.08.2026 — the re-analysis date — when the
     # ruling says the packaging date.
     # `Batch Dates` in the workbook carries the packaging window for every batch —
-    # 87 of them, including those with no P number — and carries it as a range,
-    # which is what "start and end date of testing" wants. The release record
-    # holds it for the 48 P lots only, so it is the fallback and not the source.
+    # 87 of them, including those with no P number — where the release record
+    # holds a date only for the 48 lots that have a P number. The owner's ruling
+    # of 11.09.2026 takes the FIRST day of that window, so the release record is
+    # the fallback and not the source.
     packed = {}
     dates_csv = os.path.join(HERE, "batch_dates_2026-09-10.csv")
     if os.path.exists(dates_csv):
@@ -170,7 +171,11 @@ def build(path=DATA):
                 frm = (row.get("packaging_from") or "").strip()
                 if not frm:
                     continue
-                win = (frm, (row.get("packaging_to") or "").strip() or frm)
+                # Owner, 11.09.2026: take the FIRST packaging date. `Batch Dates`
+                # carries a window and 26 batches were packaged over more than one
+                # day; the internal certificate is dated on the day the packaging
+                # started, and its testing start and end are that one date.
+                win = (frm, frm)
                 # the sheet keys a batch by its cultivation number and carries the
                 # P number beside it; the register keys some entries by one and
                 # some by the other, so both are indexed — the same reason the CoQ

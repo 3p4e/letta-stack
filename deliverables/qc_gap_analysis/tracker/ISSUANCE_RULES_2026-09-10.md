@@ -154,11 +154,13 @@ changes it if that reading is wrong.
   behind the internal certificate, which the certificate of quality cites. **Four
   certificates** carry an in-house determination beyond identity and foreign
   matter — HPA1024 and OPM1024 carry thirteen each.
-* **The testing window is the packaging window.** `Batch Dates` in the workbook
-  carries `Packaging from` and `Packaging to` for 87 batches — including those
-  with no P number — and that range is what "start and end date of testing"
-  wants. **26 of the certificates span more than one day**, which a single date
-  could not have said. `tracker/extract_batch_dates.py` lifts it to
+* **The testing date is the first day of packaging.** `Batch Dates` in the
+  workbook carries `Packaging from` and `Packaging to` for 87 batches — including
+  those with no P number, where the release record has a date only for the 48
+  lots that have one. **26 batches were packaged over more than one day**, and
+  the owner ruled on 11.09.2026 that the certificate takes the **first** of those
+  dates: start and end of testing are that one day.
+  `tracker/extract_batch_dates.py` lifts the sheet to
   `batch_dates_2026-09-10.csv`.
 * **Document codes follow the order of issuing**: `iCoA-PP_26-001` …
   `iCoA-PP_26-106`, ordered by issue date, then by the date the work was done,
@@ -217,7 +219,7 @@ Three things fixed it, and the second is the one that matters:
 1. The lookup goes through `batch_key`, never by string — 29 → 39.
 2. `Batch Dates` replaced the release record as the source. The release record
    carries a packaging date only for the 48 lots that have a P number; the sheet
-   carries a packaging **window** for 87 batches — 39 → 99.
+   carries a packaging date for 87 batches — 39 → 99.
 3. Both the cultivation number and the P number are indexed, because the register
    keys some entries by one and some by the other — 92 → 99.
 
