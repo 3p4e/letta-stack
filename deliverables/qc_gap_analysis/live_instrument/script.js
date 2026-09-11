@@ -2595,8 +2595,19 @@ function fillCoq(c){
          and this cell has its own rule. The export pairs the halves with " | ";
          only the split happens here, and the master does the styling. */
       var _h = v.split(" | ");
+      /* and the master's convention is row-type dependent, which is the whole of
+         the rule rather than a space-saving compromise:
+             .p-name .mk { display:block  }   a parameter row stacks
+             .p-sub  .mk { display:inline }   a sub-row runs inline
+         So a parameter result stacks its Macedonian beneath the English, and a
+         sub-determination pairs inline with the .bisep pipe — the same pipe the
+         master uses for "TAMC | Вкупен аеробен микробен број" one column to the
+         left, on that very row. Following it also costs the sheet nothing: the
+         sub-rows are where the height would have gone. */
+      var _sub = cell.parentElement.querySelector(".p-sub") !== null;
       var _body = _h.length === 2
-        ? esc(_h[0]) + '<span class="mk">' + esc(_h[1]) + "</span>"
+        ? (_sub ? esc(_h[0]) + ' <i class="bisep">|</i> <span class="mk">' + esc(_h[1]) + "</span>"
+                : esc(_h[0]) + '<span class="mk">' + esc(_h[1]) + "</span>")
         : esc(v);
       cell.innerHTML = v ? '<span class="r-val' + rCls(v) + _long + '">' + _body + "</span>"
                          : todoHtml("\u2014", "r-val");

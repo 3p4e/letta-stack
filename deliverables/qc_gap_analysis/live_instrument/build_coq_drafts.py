@@ -51,7 +51,23 @@ EXTRACT = r"""
     const html = fillCoq(c);
     host.contentDocument.open(); host.contentDocument.write(html); host.contentDocument.close();
     const doc = host.contentDocument;
-    const sheet = doc.querySelector("div.page").getBoundingClientRect();
+    const pageEl = doc.querySelector("div.page");
+    const sheet = pageEl.getBoundingClientRect();
+    /* Does the document still fit one A4 page? The master sets div.page to A4
+       and clips with overflow:hidden, so content past the bottom edge does not
+       announce itself — it is simply gone from the printed sheet. Every change
+       that adds a line risks it: the 11.09 rulings removed 36 rows for untested
+       analytes and then added a second line to the conformity results.
+
+       Two things make this an EARLY WARNING and not the verdict. It must be
+       measured inside this A4 iframe, because reading scrollHeight on a page
+       that is itself clipped returns the clipped height and always says zero —
+       the overflow is invisible to the element that is hiding it. And the HTML
+       drafts carry no embedded fonts (only print_coq_pdfs.py inlines them), so
+       what is measured here is the FALLBACK metric, which runs taller than
+       Montserrat. A document named here needs checking against the rendered
+       PDF, which is the sheet a person actually holds. */
+    const tall = Math.round(pageEl.scrollHeight - pageEl.clientHeight);
     const num = t => parseFloat(String(t).replace(",", "."));
     /* The acceptance criterion as a numeric band, or null where it is not one.
        Superscripts, ^ and LOQ mark a criterion this cannot read as a number —
@@ -137,6 +153,7 @@ EXTRACT = r"""
     out.push({
       p_lot: c.pp, cb: c.cb, strain: c.strain, thc: pot ? pot.textContent.trim() : "",
       name: coqDocName(c), lk: lk, blanks: blanks, over: over, band: band, html: html,
+      tall: tall,
       labs: doc.querySelectorAll("table.labref tbody tr").length,
     });
   }
@@ -237,6 +254,18 @@ def main():
     nd = sum(len(d["band"]) for d in docs)
     print("%d blank printed lines, %d results outside their printed band and %d that "
           "run off the sheet, across %d documents" % (nb, nd, no, len(docs)))
+    # One A4 page is a requirement of the document, not a preference, and
+    # div.page clips with overflow:hidden — content past the bottom edge is
+    # simply absent from the printed sheet, silently. So it is reported on every
+    # build, and a document that no longer fits is named.
+    tall = [d for d in docs if d.get("tall", 0) > 0]
+    if tall:
+        print("PAST THE BOTTOM OF THE SHEET in fallback fonts — %d document(s), "
+              "check against the rendered PDF:" % len(tall))
+        for d in sorted(tall, key=lambda x: -x["tall"]):
+            print("    %-10s %d px past the page" % (d["p_lot"], d["tall"]))
+    else:
+        print("every document fits one A4 page, even in fallback fonts")
     return 1 if bad else 0
 
 
