@@ -354,3 +354,28 @@ jobs:
               print("FAIL", b)
           sys.exit(1 if bad else 0)
           PY
+
+  # The controlled registers check themselves. verify_workbook.py compares the
+  # workbook's sheets against the records they are built from — and, since
+  # 11.09.2026, the iCoA series against icoa_register.py, which is what the
+  # certificates print their codes from. It had no exit code and no workflow, so
+  # it reported a series numbered twice with 49 of 49 comparable rows disagreeing
+  # while CI stayed green. A verifier that cannot fail is a report, not a check.
+  workbook:
+    name: Controlled registers agree
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install what the analysis scripts need
+        run: python3 -m pip install --quiet openpyxl==3.1.5
+
+      - name: The workbook agrees with the records it is built from
+        run: |
+          python3 deliverables/qc_gap_analysis/tracker/verify_workbook.py \
+            deliverables/qc_gap_analysis/tracker/CoQ_Analysis_Master_v23.xlsx

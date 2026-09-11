@@ -503,3 +503,16 @@ print()
 print(f"deeper checks: {checked} printed result(s) compared with the certificate records; {len(FIND2)} finding(s)")
 for s, w, d in FIND2:
     print(f"  [{s}] {w}" + (f" — {d}" if d else ""))
+
+# The exit code, which this never had: it printed its findings and exited 0, so
+# nothing could gate on it and no workflow ran it. A verifier that cannot fail is
+# a report, not a check — and on 11.09.2026 it reported that the iCoA series is
+# numbered twice with 49 of 49 comparable rows disagreeing, while CI stayed green.
+if FIND or FIND2:
+    print()
+    print("FAILED: %d finding(s) on the sheets, %d in the deeper checks"
+          % (len(FIND), len(FIND2)))
+    sys.exit(1)
+print()
+print("workbook verified: no findings")
+sys.exit(0)
