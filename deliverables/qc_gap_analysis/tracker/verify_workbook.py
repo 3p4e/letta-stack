@@ -23,19 +23,55 @@ def bad(sheet, what, detail=""):
     FIND.append((sheet, what, detail))
 
 
+NO_CALC = ""          # why the computed values are unavailable, if they are
+
+
 def load_values(path):
+    """The workbook with its formulas evaluated, or None where that is not possible.
+
+    openpyxl writes formulas and no cached values, so the only way to read what
+    a formula computes is to let a spreadsheet engine compute it. Where LibreOffice
+    is not installed this used to raise FileNotFoundError and take the whole
+    verifier down with it — which is how a CI job added to gate the registers
+    failed on a missing dependency instead of on the thing it was watching, and
+    would have failed the same way whether the registers agreed or not.
+
+    The checks that read only literals — the register codes, the keys, the sheet
+    inventory — do not need an engine. Those still run. The deeper pass over
+    computed results is skipped, loudly, and the exit code still reflects
+    everything that did run.
+    """
+    global NO_CALC
+    if shutil.which("soffice") is None:
+        NO_CALC = "LibreOffice (soffice) is not installed"
+        return None
     tmp = tempfile.mkdtemp(prefix="verify_")
-    shutil.copy(path, os.path.join(tmp, "in.xlsx"))
-    subprocess.run(["soffice", "--headless", "--calc", "--convert-to", "xlsx", "--outdir",
-                    os.path.join(tmp, "out"), os.path.join(tmp, "in.xlsx")],
-                   check=True, capture_output=True, timeout=900)
-    wb = openpyxl.load_workbook(os.path.join(tmp, "out", "in.xlsx"), data_only=True)
-    shutil.rmtree(tmp, ignore_errors=True)
-    return wb
+    try:
+        shutil.copy(path, os.path.join(tmp, "in.xlsx"))
+        subprocess.run(["soffice", "--headless", "--calc", "--convert-to", "xlsx", "--outdir",
+                        os.path.join(tmp, "out"), os.path.join(tmp, "in.xlsx")],
+                       check=True, capture_output=True, timeout=900)
+        return openpyxl.load_workbook(os.path.join(tmp, "out", "in.xlsx"), data_only=True)
+    except (subprocess.SubprocessError, OSError) as e:
+        NO_CALC = "LibreOffice could not evaluate the workbook: %s" % e
+        return None
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
 
 
 WB = openpyxl.load_workbook(SRC)
 WV = load_values(SRC)
+if WV is None:
+    # Cannot verify is not the same as verified, and must never read as success.
+    # Most of these checks compare what a FORMULA computes against the record it
+    # is built from, and openpyxl stores no cached values — without an engine
+    # there is nothing to compare. Better to stop here saying so than to run a
+    # partial pass that prints a reassuring number.
+    print("CANNOT VERIFY: %s." % NO_CALC)
+    print("  The workbook's registers and dates are live formulas and openpyxl "
+          "stores no computed values, so an engine is needed to read them.")
+    print("  Install libreoffice-calc and run again.")
+    sys.exit(2)
 TRACKER = next(n for n in WB.sheetnames if n.startswith("CoQ Parameter Tracker"))
 
 

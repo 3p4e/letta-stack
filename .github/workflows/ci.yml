@@ -372,8 +372,16 @@ jobs:
           python-version: "3.11"
           cache: pip
 
-      - name: Install what the analysis scripts need
-        run: python3 -m pip install --quiet openpyxl==3.1.5
+      # The registers and every date on them are live formulas, and openpyxl
+      # stores no computed values — so reading what they compute needs a
+      # spreadsheet engine. Without it the verifier cannot run at all, which is
+      # how its first CI run failed on a missing 'soffice' rather than on the
+      # registers it was added to watch.
+      - name: Install what the verifier needs
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libreoffice-calc >/dev/null
+          python3 -m pip install --quiet openpyxl==3.1.5
 
       - name: The workbook agrees with the records it is built from
         run: |
