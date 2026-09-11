@@ -39,9 +39,17 @@ SUBSETS = ("latin", "cyrillic")
 # request no italic axis, so a browser fakes it by slanting the upright face and the
 # headless renderer gives up and reaches for Liberation Sans Italic instead. Requesting
 # the real italics costs six more faces and removes both problems. Only the weights that
-# are actually set in italic are asked for.
+# are actually set in italic are asked for — and EVERY weight that is, which is a
+# stricter requirement than it looks. `.ap-cred` on the certificate sets
+# `font-weight:600; font-style:italic`, and italic 600 was missing from this list, so
+# Chromium picked the nearest real italic (500) and emboldened it. A synthesised face
+# has no outlines to embed: Skia rasterises it into Type 3 glyph procedures, which is
+# why 39 faces in the Tranche 1 PDF and 27 in Tranche 2 were Type 3 while the same
+# family embedded as TrueType elsewhere in the same document. Pinning the variable
+# axes fixed the faces the page asks for by name; it could not fix one the page never
+# asked for. When a rule sets an italic weight, that weight belongs here.
 FAMILIES = (
-    ("Montserrat", "Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,700"),
+    ("Montserrat", "Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700"),
     ("Roboto Mono", "Roboto+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500"),
 )
 

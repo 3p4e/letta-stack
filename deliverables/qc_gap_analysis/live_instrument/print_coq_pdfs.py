@@ -50,8 +50,17 @@ sys.path.insert(0, os.path.join(ROOT, "ingestion", "coa_track", "letta-imb-coas"
 
 # The two the specifications use, plus the banner face. Orbitron carries no
 # italic and only the weights the banner sets.
+#
+# EVERY italic weight the stylesheet sets must be listed here, or the browser
+# emboldens a neighbouring italic and the synthesised face — having no outlines of
+# its own — is rasterised into Type 3 glyph procedures. `.ap-cred` sets
+# font-weight:600 in italic and italic 600 was missing: 39 faces in the Tranche 1
+# PDF and 27 in Tranche 2 came out Type 3 while the same family embedded as
+# TrueType on other pages of the same document. Pinning the variable axes, which
+# removed Type 3 the first time, fixes the faces the page asks for by name; it
+# cannot fix one the page never asked for.
 FAMILIES = (
-    ("Montserrat", "Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500"),
+    ("Montserrat", "Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700"),
     ("Roboto Mono", "Roboto+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500"),
     ("Orbitron", "Orbitron:wght@500;600;700;800;900"),
 )

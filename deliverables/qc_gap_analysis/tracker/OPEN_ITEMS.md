@@ -220,6 +220,18 @@ register is the **Open Items** sheet of the workbook.
 
 **Needed.** How should a conforming detection print — the figure alone, or the figure with a detected qualifier? The same question as OI-15 for pesticides.
 
+## Document rendering
+
+### OI-21 · Sixty-six faces in the tranche PDFs embedded as Type 3 rather than outlines
+
+*State:* **ruled** · *Evidence:* print_coq_pdfs.py FAMILIES; pdffonts on both tranche PDFs
+
+**Found.** 39 faces in Tranche 1 and 27 in Tranche 2 were Montserrat Medium Italic rasterised into Type 3 glyph procedures, while the same family embedded as TrueType elsewhere in the same document. The count was identical in the previously committed PDFs, so it predates the 11.09 work. Cause: .ap-cred sets font-weight:600 in italic and the font request asked for italic at 400, 500 and 700 only, so the browser emboldened the nearest real italic — and a synthesised face has no outlines to embed.
+
+**The desk.** Fixed: italic 600 and 700 added to the font request in both print_coq_pdfs.py and house_fonts.py, and the rule written down beside them — when a stylesheet sets an italic weight, that weight belongs in FAMILIES.
+
+**Needed.** Nothing. Recorded because the first Type 3 fix (pinning the variable axes) looked complete and was not: it fixes the faces the page asks for by name, never one the page never asked for.
+
 ## Desk status
 
 ### OI-20 · Nine result cells hold a desk status instead of a value

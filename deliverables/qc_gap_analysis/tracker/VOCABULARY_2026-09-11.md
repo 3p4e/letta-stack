@@ -149,6 +149,23 @@ was found, what the desk did with it, precisely what is being asked, and the
 evidence behind it, because *"there is a problem with the specifications"* is not
 a question anyone can answer and OI-01 is.
 
+## One more, found while checking the PDFs
+
+39 faces in the Tranche 1 PDF and 27 in Tranche 2 embedded as **Type 3 glyph
+procedures** rather than outlines — all of them Montserrat Medium Italic, while
+the same family embedded as TrueType elsewhere in the same document. The count
+was identical in the previously committed PDFs, so it predates this work.
+
+The cause is one weight. `.ap-cred` sets `font-weight:600; font-style:italic`,
+and the font request asked for italic at 400, 500 and 700 only. Chromium took
+the nearest real italic and emboldened it, and a synthesised face has no
+outlines to embed, so Skia rasterises it. Pinning the variable axes — the fix
+that removed Type 3 the first time — fixed the faces the page asks for by name;
+it could not fix one the page never asked for.
+
+`1,600` is now in the request. The rule that avoids the next one: **when a rule
+sets an italic weight, that weight belongs in `FAMILIES`.**
+
 ## Reproducing
 
     python3 deliverables/qc_gap_analysis/result_vocabulary.py

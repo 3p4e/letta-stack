@@ -230,6 +230,22 @@ ITEMS = [
      "detected qualifier? The same question as OI-15 for pesticides.",
      "#10.3 Ochratoxin A, 1 determination"),
 
+    ("OI-21", "Document rendering", "ruled",
+     "Sixty-six faces in the tranche PDFs embedded as Type 3 rather than outlines",
+     "39 faces in Tranche 1 and 27 in Tranche 2 were Montserrat Medium Italic rasterised "
+     "into Type 3 glyph procedures, while the same family embedded as TrueType elsewhere "
+     "in the same document. The count was identical in the previously committed PDFs, so "
+     "it predates the 11.09 work. Cause: .ap-cred sets font-weight:600 in italic and the "
+     "font request asked for italic at 400, 500 and 700 only, so the browser emboldened "
+     "the nearest real italic — and a synthesised face has no outlines to embed.",
+     "Fixed: italic 600 and 700 added to the font request in both print_coq_pdfs.py and "
+     "house_fonts.py, and the rule written down beside them — when a stylesheet sets an "
+     "italic weight, that weight belongs in FAMILIES.",
+     "Nothing. Recorded because the first Type 3 fix (pinning the variable axes) looked "
+     "complete and was not: it fixes the faces the page asks for by name, never one the "
+     "page never asked for.",
+     "print_coq_pdfs.py FAMILIES; pdffonts on both tranche PDFs"),
+
     ("OI-20", "Desk status", "open",
      "Nine result cells hold a desk status instead of a value",
      "not ingested (the document exists but has not been extracted into the eCoA database) "
@@ -249,11 +265,11 @@ def items(state=None, area=None):
     """The register, optionally narrowed.
 
     >>> len(items())
-    20
+    21
     >>> [i[0] for i in items(area="Specification")]
     ['OI-01', 'OI-02', 'OI-03']
     >>> sorted({i[2] for i in items()})
-    ['marked', 'open']
+    ['marked', 'open', 'ruled']
     >>> all(len(i) == len(HEAD) for i in items())
     True
     >>> sorted({i[0] for i in items()}) == sorted([i[0] for i in items()])
