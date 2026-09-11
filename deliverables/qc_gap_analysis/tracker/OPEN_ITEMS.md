@@ -4,7 +4,7 @@ Every finding the desk has raised and cannot itself settle, with the evidence
 behind it and the decision being asked for. Built by `open_items.py`; the same
 register is the **Open Items** sheet of the workbook.
 
-**18 open · 3 marked on the certificate**
+**19 open · 3 marked on the certificate**
 
 ## Specification
 
@@ -233,6 +233,16 @@ register is the **Open Items** sheet of the workbook.
 **Needed.** Do you want the method restated in the result cell? It would need a wider results column, which is a change to the master.
 
 ## Document identity
+
+### OI-27 · The register sheet carries fewer rows than the series it now numbers
+
+*State:* **open** · *Evidence:* 60 numbered rows on the sheet vs 95 in the series; 48 citations unresolvable
+
+**Found.** The numbering is settled — where both carry a row they agree, 36 of 36, 0 disagreements. But the sheet holds 60 numbered rows against the series' 95, because the two model retests differently: icoa_register.py registers one certificate per TESTING ROUND, as the owner ruled, while the sheet groups retests by sampling campaign ("Tranche 1 (sampled July 2026)", "re-analysed", "not yet sampled"). So 48 certificate citations name a code that cannot be looked up on the register sheet — 31 on initial-release certificates (3 issued-style, 28 predicted) and 17 on retests.
+
+**The desk.** Nothing structural. The numbering defect is closed and verify_workbook.py holds it closed; this is coverage, not identity — no certificate cites a code the register gives to a different batch.
+
+**Needed.** Should the register sheet be regenerated from icoa_register.py so it carries one row per testing round, matching the series it numbers? That is the shape the ruling describes. The sheet's planning columns (Group, CNP reference, Plan reference) already live on the iCoA Issuance sheet, so nothing would be lost.
 
 ### OI-26 · The internal-CoA number was defined twice and the two disagreed on every comparable row
 
