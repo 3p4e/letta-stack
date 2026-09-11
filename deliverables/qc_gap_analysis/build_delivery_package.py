@@ -73,6 +73,12 @@ def _items():
          "Which of the 50 delivered batches are draftable, and why the rest are not"),
         ("sources/coq_draft_gaps.csv", os.path.join(DRAFTS, "coq_draft_gaps.csv"),
          "Every blank printed line on the 22 certificates, with its cause"),
+        ("docs/OPEN_ITEMS.md", os.path.join(TRACKER, "OPEN_ITEMS.md"),
+         "Everything still the owner's to decide — what was found, what the desk did, "
+         "what is being asked, and the evidence behind each"),
+        ("docs/VOCABULARY_2026-09-11.md", os.path.join(TRACKER, "VOCABULARY_2026-09-11.md"),
+         "The 11.09 audit of parameter values and references: one spelling per assertion, "
+         "and the laboratory verdict the desk could not read"),
         ("docs/ISSUANCE_RULES_2026-09-10.md", os.path.join(TRACKER, "ISSUANCE_RULES_2026-09-10.md"),
          "The 10.09 rulings, what they changed, and what is still to build"),
         ("docs/COQ_DRAFTING_2026-09-10.md", os.path.join(TRACKER, "COQ_DRAFTING_2026-09-10.md"),
