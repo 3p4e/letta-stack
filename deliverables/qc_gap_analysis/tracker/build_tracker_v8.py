@@ -466,8 +466,16 @@ if ICOA_RULE:
         return x
     LEGACY_ICOA = _D_(next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--legacy-icoa=")), "15.05.2026"))
     LEGACY_COQ = _D_(next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--legacy-coq=")), "27.05.2026"))
+    # The desk's own convention is that a controlled document is issued on a
+    # working day. It is a convention, not a rule from anywhere above it, so the
+    # owner naming a date outranks it — 06.06.2026 is a Saturday and was chosen
+    # deliberately. The date is honoured and the choice is flagged on the sheet
+    # rather than quietly moved to the Monday.
+    _DAY_FLAGS = []
     for _nm, _d in (("legacy iCoA day", LEGACY_ICOA), ("legacy CoQ day", LEGACY_COQ)):
-        assert _d and _d.weekday() < 5 and _d >= SOP_D, f"the {_nm} must be a working day on or after the SOP floor"
+        assert _d and _d >= SOP_D, f"the {_nm} must be on or after the SOP floor"
+        if _d.weekday() >= 5:
+            _DAY_FLAGS.append(f"the {_nm} {_F_(_d)} is a {_d.strftime('%A')} — the owner's date, kept as given")
     # the old in-house certificates (QCCoA 001 v.01/v.02) the desk knows, by P number and by batch
     OLD_COA = {}
     for _e in _D["ecoa"]:
@@ -475,7 +483,7 @@ if ICOA_RULE:
             OLD_COA.setdefault(_e.get("pn") or "", (_e["code"], _e["date"]))
             OLD_COA.setdefault(T.batch_key(_e["batch"]), (_e["code"], _e["date"]))
     OLD_COA.pop("", None)
-    FLAGS, COQ_ROWS = [], []
+    FLAGS, COQ_ROWS = list(_DAY_FLAGS), []
     # the QP's retest campaign began in July 2026 with the sampling of Tranche 1 (the first 21 lots
     # produced), then Tranches 2 and 3 (Head of QC, 05.09.2026): a certificate dated on or after
     # RETEST_START is a retest document — it certifies the reissued CoQ, never the initial one
@@ -612,7 +620,7 @@ if ICOA_RULE:
                 if _latest_d and _latest_d > LEGACY_COQ:
                     _coq_issue = _workday(_latest_d, 7)
                     _coq_flag = f"moved off 27.05.2026: cites {_latest[0]} of {_latest[1]}"
-                    FLAGS.append(f"{_lot_id}: legacy CoQ cannot be dated 27.05.2026 — it cites {_latest[0]} of {_latest[1]}; planned {_F_(_coq_issue)} (first working day 7 days after)")
+                    FLAGS.append(f"{_lot_id}: legacy CoQ cannot be dated {_F_(LEGACY_COQ)} — it cites {_latest[0]} of {_latest[1]}; planned {_F_(_coq_issue)} (first working day 7 days after)")
                 else:
                     _coq_issue = LEGACY_COQ
             elif _group == "post-SOP":
@@ -624,7 +632,7 @@ if ICOA_RULE:
                     FLAGS.append(f"{_lot_id}: no initial certificate on file — the CoQ keeps its planned number with a provisional date {_F_(_coq_issue)}")
                 if _latest_d and _workday(_latest_d, 7) < LEGACY_COQ:
                     _coq_flag = f"rule date {_F_(_workday(_latest_d, 7))} held to the legacy series day"
-                    FLAGS.append(f"{_lot_id}: post-SOP CoQ rule date {_F_(_workday(_latest_d, 7))} precedes the legacy series day 27.05.2026 — held to it, so the legacy CoQs keep 001 onward")
+                    FLAGS.append(f"{_lot_id}: post-SOP CoQ rule date {_F_(_workday(_latest_d, 7))} precedes the legacy series day {_F_(LEGACY_COQ)} — held to it, so the legacy CoQs keep 001 onward")
             else:
                 _coq_issue = None
             if _coq_issue and _icoa_issue and scope and _coq_issue < _icoa_issue:
@@ -1823,6 +1831,11 @@ def _roll(expr):
     return f"({expr})+CHOOSE(WEEKDAY({expr},2),0,0,0,0,0,2,1)"
 
 
+def _XD(d):
+    """A Python date as an Excel DATE() literal, so one constant drives both."""
+    return "DATE(%d,%d,%d)" % (d.year, d.month, d.day)
+
+
 def _fill_register(sh):
     """The iCoA register as an Excel table whose number, code and dates are formulas."""
     from openpyxl.worksheet.table import Table, TableStyleInfo
@@ -1835,7 +1848,12 @@ def _fill_register(sh):
     for r in REGISTER:
         f_no = f'=IF(C{_r}="yes",COUNT(A$1:A{_r - 1})+1,"")'
         f_code = f'=IF(A{_r}<>"","iCoA-PP_26-"&TEXT(A{_r},"000"),IF(C{_r}="n/a","not needed","— at issue —"))'
-        f_issue = f'=IF(A{_r}="","",IF(G{_r}="legacy",DATE(2026,5,15),IF(ISNUMBER(F{_r}),{_roll(f"F{_r}+5")},"")))'
+        # Owner, 10-11.09.2026: the internal certificate is tested on the FIRST
+        # day of packaging (column E, not the packaging-complete date in F) and
+        # issued that day, or on the specification SOP's day where that day comes
+        # first. No lag and no roll to a working day — this is the same arithmetic
+        # `issuance_schedule.icoa_issue` does, and the certificates print that.
+        f_issue = f'=IF(A{_r}="","",IF(ISNUMBER(E{_r}),MAX({_XD(LEGACY_ICOA)},E{_r}),{_XD(LEGACY_ICOA)}))'
         f_from = (f'=IFERROR(INDEX({BD_}!$F:$F,MATCH(J{_r},{BD_}!$C:$C,0)),'
                   f'IFERROR(INDEX({BD_}!$F:$F,MATCH(I{_r},{BD_}!$B:$B,0)),""))')
         f_to = (f'=IFERROR(INDEX({BD_}!$G:$G,MATCH(J{_r},{BD_}!$C:$C,0)),'
@@ -1874,14 +1892,21 @@ def _fill_coq_register(sh):
     for r in COQ_REGISTER:
         f_no = f'=IF(C{_r}="yes",COUNT(A$1:A{_r - 1})+1,"")'
         f_code = f'=IF(A{_r}<>"","CoQ-PP_26-"&TEXT(A{_r},"000"),"— at issue —")'
-        f_rule = (f'=IF(ISNUMBER(F{_r}),IF(AND(J{_r}="legacy",F{_r}<=DATE(2026,5,27)),DATE(2026,5,27),MAX(DATE(2026,5,27),{_roll(f"F{_r}+7")})),'
-                  f'IF(J{_r}="legacy",DATE(2026,5,27),""))')
+        # Owner, 10.09.2026: five to ten days after the last external certificate
+        # the sheet cites, floored to the blanket day. LAG_DAYS is 7 in
+        # issuance_schedule.py and 7 here, and neither rolls to a working day.
+        f_rule = (f'=IF(ISNUMBER(F{_r}),MAX({_XD(LEGACY_COQ)},F{_r}+7),{_XD(LEGACY_COQ)})')
+        # never before the rule date, never before the internal certificate it
+        # references, and never before the lot finished being packed. The last is
+        # not decoration: P060482's last external certificate is dated 30.06.2026
+        # and the lot was still being packed on 05.08.2026.
         _pkc = f"INDEX('iCoA Register'!$F:$F,MATCH(S{_r},'iCoA Register'!${REG_KEY_COL}:${REG_KEY_COL},0))"
-        f_issue = f'=IF(A{_r}="","",MAX(E{_r},IF(ISNUMBER(I{_r}),I{_r},0),IFERROR(IF(ISNUMBER({_pkc}),{_roll(_pkc)},0),0)))'
+        f_issue = (f'=IF(A{_r}="","",MAX(E{_r},IF(ISNUMBER(I{_r}),I{_r},0),'
+                   f'IFERROR(IF(ISNUMBER({_pkc}),{_pkc},0),0)))')
         latest_d = _date(r["latest"][1]) if r["latest"] else None
         status = (r["reg_status"] if r["series"] == "initial release" else
                   "not yet issuable — " + r["rt_status"] + " · issued on the first working day 7 days after the latest retest certificate, once the in-house iCoA exists")
-        f_rule_rt = f'=IF(ISNUMBER(F{_r}),MAX(DATE(2026,5,27),{_roll(f"F{_r}+7")}),"at retest sampling")'
+        f_rule_rt = f'=IF(ISNUMBER(F{_r}),MAX({_XD(LEGACY_COQ)},F{_r}+7),"at retest sampling")'
         cells = (f_no, f_code, r["issuable"] if r["series"] == "initial release" else "no", f_issue,
                  f_rule if r["series"] == "initial release" else f_rule_rt,
                  latest_d or ("—" if r["series"] == "initial release" else "— not yet sampled —"), (r["latest"][0] if r["latest"] else "—"),

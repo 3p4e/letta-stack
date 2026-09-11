@@ -225,3 +225,57 @@ Three things fixed it, and the second is the one that matters:
 
 What remains is seven batches with no packaging date anywhere on file. They are
 listed, noted and unnumbered rather than given an invented date.
+
+---
+
+# v22 — the rulings written into the workbook, 11.09.2026
+
+Owner: *"the workbook data is the correct one regarding the packaging dates and
+manufacturing dates … update that workbook and all the sheets inside with the
+updated information regarding everything we configure here, especially regarding
+the issue date of the certificate of analysis."*
+
+    python3 deliverables/qc_gap_analysis/tracker/build_tracker_v8.py \
+        --v9 --version=22 --icoa --cells --mikro=CoQ_Analysis_Master_v13.xlsx \
+        --build-date=11.09.2026 --legacy-icoa=03.06.2026 --legacy-coq=06.06.2026
+
+The workbook computes its registers as **live Excel formulas**, so the rulings had
+to go into the formulas, not into a column of pasted values. Four changes:
+
+| | was | is |
+| --- | --- | --- |
+| internal CoA issue | `15.05.2026` for a legacy row, else packaging **complete** + 5 working days | **the first day of packaging**, or **03.06.2026** where that is earlier |
+| certificate rule date | `27.05.2026` floor, latest eCoA + 7 working days | **06.06.2026** floor, latest eCoA + 7 days |
+| certificate issue | rule date, the internal CoA, and packaging complete rolled forward | rule date, the internal CoA, and **packaging complete** |
+| the two floors | literals in three formulas | `--legacy-icoa` / `--legacy-coq`, one constant each |
+
+The first line is the substantive one and it was wrong twice over: the workbook
+dated the internal certificate from the day packaging **finished**, plus five
+working days. The ruling is the day packaging **started**, with no lag.
+
+## Two things the rebuild caught
+
+**A certificate of quality dated before its lot was packed.** Removing the
+packaging term from the issue formula — it looked redundant once the internal
+certificate carried the packaging date — dated **P060482 / JD022601** on
+07.07.2026 against a lot still being packed on 05.08.2026. The term is restored in
+the formula *and* in `issuance_schedule.coq_issue`, which had the same hole and
+which is what the certificates actually print. That lot now issues **12.08.2026**:
+seven days after its own internal certificate, which is dated at packaging.
+
+**06.06.2026 is a Saturday.** The builder refused it — `assert _d.weekday() < 5`,
+the desk's own convention that a controlled document is issued on a working day.
+That is a convention and not a rule from anywhere above it, so the owner's date
+outranks it: the assertion now admits the date and the sheet carries a flag
+saying it is a Saturday and was chosen deliberately. **57 certificates of quality
+are dated on it.**
+
+## And one in the checker
+
+`verify_workbook.py` pinned `15.05.2026` and `27.05.2026` as literals, so a ruling
+lived in two files and one of them was always the stale one. It now reads the
+legacy day off the workbook and checks that the legacy rows **agree on one day**,
+which is the stronger statement anyway.
+
+**v22 verifies with 0 findings**, and the deeper pass compares 5,482 printed
+results against the certificate records with 0 findings.

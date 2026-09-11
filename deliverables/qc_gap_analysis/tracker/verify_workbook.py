@@ -413,20 +413,37 @@ for r, d in iss:
         bad2("iCoA Issuance", "identification C cites a certificate whose record reports no Total THC", f"row {r}: {c[:40]}")
 
 # ---- 12. the registers: the group and the rule that dates it
+# The legacy day is read off the workbook rather than pinned here. It is a ruling
+# and rulings change — it moved from 15.05/27.05.2026 to 03.06/06.06.2026 on
+# 10.09.2026 — and a literal in the checker means the same decision lives in two
+# files and one of them is always the stale one. Taking the day the legacy rows
+# agree on turns this into the stronger check anyway: that they agree at all.
+def _legacy_day(rows, flagged=()):
+    from collections import Counter
+    seen = Counter(fmt(d["Issue date (planned)"]) for d in rows.values()
+                   if d["No."] and str(d["Group"]) == "legacy"
+                   and fmt(d["Issue date (planned)"])
+                   and not any(w in str(d["Status"]) for w in flagged))
+    return seen.most_common(1)[0][0] if seen else None
+
+
+_coq_day = _legacy_day(cqv, ("held", "moved"))
 for r, d in cqv.items():
     if not d["No."]:
         continue
     grp, a = str(d["Group"]), fmt(d["Issue date (planned)"])
-    if grp == "legacy" and a and a != "27.05.2026":
+    if grp == "legacy" and a and _coq_day and a != _coq_day:
         st = str(d["Status"])
         if "held" not in st and "moved" not in st:
-            bad2("CoQ Register", "a legacy CoQ not on the legacy day and not flagged", f"{d['P Batch']}: {a}")
+            bad2("CoQ Register", f"a legacy CoQ not on the legacy day {_coq_day} and not flagged",
+                 f"{d['P Batch']}: {a}")
+_reg_day = _legacy_day(regv)
 for r, d in regv.items():
     if not d["No."]:
         continue
     grp, a = str(d["Group"]), fmt(d["Issue date (planned)"])
-    if grp == "legacy" and a != "15.05.2026":
-        bad2("iCoA Register", "a legacy iCoA not on the legacy day", f"{d['P Batch']}: {a}")
+    if grp == "legacy" and _reg_day and a != _reg_day:
+        bad2("iCoA Register", f"a legacy iCoA not on the legacy day {_reg_day}", f"{d['P Batch']}: {a}")
 
 # ---- 13. Mikro CoQ Parameter against the tracker
 if "Mikro CoQ Parameter" in WB.sheetnames:

@@ -310,6 +310,19 @@ def main(out):
     try:
         import issuance_schedule as ISS
         _rows = ISS.build()
+        _packto = {}
+        _bd = os.path.join(HERE, "batch_dates_2026-09-10.csv")
+        if os.path.exists(_bd):
+            import csv as _csv3
+            with open(_bd, encoding="utf-8") as _fh:
+                for _r in _csv3.DictReader(_fh):
+                    _to = (_r.get("packaging_to") or "").strip()
+                    if not _to:
+                        continue
+                    for _n in (_r.get("batch"), _r.get("p_batch")):
+                        _n = (_n or "").strip()
+                        if _n:
+                            _packto.setdefault(CQ.BI.batch_key(_n), _to)
         _tested = {}
         for _r in _rows:
             _kind = "initial release" if _r["kind"] == "initial release" else "additional"
@@ -340,7 +353,11 @@ def main(out):
             else:
                 _t = _tested.get((CQ.BI.batch_key(_c["cb"]), _kind)) or _last
             _ic = ISS.icoa_issue(_t)
-            _issue = ISS.coq_issue(_last, _ic)
+            # never before the batch finished being packed: JD022601's last
+            # external certificate is dated 30.06.2026 and the lot was still being
+            # packed on 05.08.2026
+            _pkto = _packto.get(CQ.BI.batch_key(_c["cb"]), "") if _kind == "initial release" else ""
+            _issue = ISS.coq_issue(_last, _ic, _pkto)
             if not _issue:
                 continue
             _c["issue"] = _issue

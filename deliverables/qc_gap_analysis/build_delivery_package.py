@@ -46,9 +46,9 @@ def _items():
          "Tranche 2 — 9 certificates, one A4 page each, fonts embedded"),
         ("certificates/Tranche_1_2_CoQ_Draft_Set.html", os.path.join(DRAFTS, "Tranche_1_2_CoQ_Draft_Set.html"),
          "All 22 certificates as one scrollable page"),
-        ("workbook/CoQ_Analysis_Master_v21.xlsx", os.path.join(TRACKER, "CoQ_Analysis_Master_v21.xlsx"),
-         "The desk workbook — coverage, registers, Reconciliation 09.09"),
-        ("workbook/coq_master_v21.html", os.path.join(TRACKER, "coq_master_v21.html"),
+        ("workbook/CoQ_Analysis_Master_v22.xlsx", os.path.join(TRACKER, "CoQ_Analysis_Master_v22.xlsx"),
+         "The desk workbook — coverage, registers with the 10-11.09 issue dates, Reconciliation 09.09"),
+        ("workbook/coq_master_v22.html", os.path.join(TRACKER, "coq_master_v22.html"),
          "The same workbook as a page, nine views"),
         ("desk/qc_quality_desk_artifact.html", os.path.join(HERE, "qc_quality_desk_artifact.html"),
          "The live Quality Desk — click a batch to compile its certificate"),
@@ -94,7 +94,7 @@ FRESH = [
     (os.path.join(DRAFTS, "Tranche_1_2_CoQ_Draft_Set.html"), os.path.join(HERE, "coq_artifact_data.json")),
     (os.path.join(DRAFTS, "Tranche_1_CoQ_Drafts.pdf"), os.path.join(DRAFTS, "Tranche_1_2_CoQ_Draft_Set.html")),
     (os.path.join(DRAFTS, "Tranche_2_CoQ_Drafts.pdf"), os.path.join(DRAFTS, "Tranche_1_2_CoQ_Draft_Set.html")),
-    (os.path.join(TRACKER, "coq_master_v21.html"), os.path.join(TRACKER, "CoQ_Analysis_Master_v21.xlsx")),
+    (os.path.join(TRACKER, "coq_master_v22.html"), os.path.join(TRACKER, "CoQ_Analysis_Master_v22.xlsx")),
 ]
 
 

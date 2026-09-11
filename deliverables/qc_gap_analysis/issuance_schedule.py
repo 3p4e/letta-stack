@@ -45,6 +45,22 @@ LAG_DAYS = 7                       # the owner's "5 to 10 days", as one number
 OUT = os.path.join(HERE, "issuance_schedule_2026-09-10.csv")
 
 
+_BI = None
+
+
+def _bkey(name):
+    """Batch identity — the single definition, never a string comparison."""
+    global _BI
+    if _BI is None:
+        import importlib.util
+        root = os.path.dirname(os.path.dirname(HERE))
+        spec = importlib.util.spec_from_file_location(
+            "batch_id", os.path.join(root, "ingestion", "common", "batch_id.py"))
+        _BI = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(_BI)
+    return _BI.batch_key(name)
+
+
 def parse(d):
     """DD.MM.YYYY to a date, or None.
 
@@ -97,12 +113,18 @@ def icoa_issue(tested):
     return fmt(max(d, parse(ICOA_FLOOR)))
 
 
-def coq_issue(last_external, icoa=None):
+def coq_issue(last_external, icoa=None, packed_to=None):
     """When a certificate of quality is issued.
 
     Five to ten days after the last external certificate it cites — never before
-    it, and never before the internal certificate it references. Anything that
-    would land before the SOP is issued with the backlog on 06.06.2026.
+    it, never before the internal certificate it references, and never before the
+    batch finished being packed. Anything that would land before the SOP is issued
+    with the backlog on 06.06.2026.
+
+    The packaging term is not decoration. JD022601's last external certificate is
+    dated 30.06.2026 and the lot was still being packed on 05.08.2026, so the rule
+    alone would have dated its certificate of quality a month before the material
+    it certifies existed in its container.
 
     >>> coq_issue("04.03.2025")
     '06.06.2026'
@@ -112,6 +134,8 @@ def coq_issue(last_external, icoa=None):
     '02.09.2026'
     >>> coq_issue("28.05.2026", icoa="03.06.2026")
     '06.06.2026'
+    >>> coq_issue("30.06.2026", packed_to="05.08.2026")
+    '05.08.2026'
     >>> coq_issue("") is None
     True
     """
@@ -124,10 +148,13 @@ def coq_issue(last_external, icoa=None):
     ic = parse(icoa or "")
     if ic and out < ic:
         out = plus(ic)
+    pk = parse(packed_to or "")
+    if pk and out < pk:
+        out = pk
     return fmt(out)
 
 
-def schedule(entry, packaging=""):
+def schedule(entry, packaging="", packed_to=""):
     """Every certificate a batch needs, in order — one row per testing period.
 
     Each row is ``{period, kind, tested, icoa_issue, last_external, coq_issue,
@@ -155,7 +182,7 @@ def schedule(entry, packaging=""):
             "tested": tested,
             "icoa_issue": ic or "",
             "last_external": last,
-            "coq_issue": coq_issue(last, ic) or "",
+            "coq_issue": coq_issue(last, ic, packed_to if i == 0 else None) or "",
             "parameters": " ".join(params),
         })
     return rows
@@ -169,13 +196,31 @@ def build(path=None):
     """The whole register, batch by batch."""
     data = json.load(open(path or os.path.join(HERE, "coq_artifact_data.json"),
                           encoding="utf-8"))
-    packed = {}
+    # The packaging window per batch, from the workbook — the first day is when
+    # the identity testing happened and the last is the day before which no
+    # certificate of quality for the lot can be dated.
+    packed, packed_to = {}, {}
+    dates_csv = os.path.join(HERE, "batch_dates_2026-09-10.csv")
+    if os.path.exists(dates_csv):
+        import csv as _csv
+        with open(dates_csv, encoding="utf-8") as fh:
+            for row in _csv.DictReader(fh):
+                frm = (row.get("packaging_from") or "").strip()
+                if not frm:
+                    continue
+                to = (row.get("packaging_to") or "").strip() or frm
+                for name in (row.get("batch"), row.get("p_batch")):
+                    name = (name or "").strip()
+                    if name:
+                        packed.setdefault(_bkey(name), frm)
+                        packed_to.setdefault(_bkey(name), to)
     for c in data["coqs"]:
         if c["t"] == "initial release" and c.get("pk"):
-            packed[c["cb"]] = c["pk"]
+            packed.setdefault(_bkey(c["cb"]), c["pk"])
     out = []
     for entry in data.get("reg", []):
-        for row in schedule(entry, packed.get(entry["cb"], "")):
+        _k = _bkey(entry["cb"])
+        for row in schedule(entry, packed.get(_k, ""), packed_to.get(_k, "")):
             row.update({"batch": entry["cb"], "p_lot": entry.get("pn") or "",
                         "strain": entry.get("strain") or ""})
             out.append(row)
