@@ -30,6 +30,7 @@ import argparse
 import csv
 import json
 import os
+import re
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -209,7 +210,14 @@ def main():
     # The combined set: one head, then every page. Every document comes off the
     # same master, so the stylesheet is the same stylesheet — carried once.
     first = docs[0]["html"]
-    head = first[:first.index("<body>")] + "<body>\n"
+    # <body> carries attributes now — data-untested names the sub-determinations
+    # the compiler removed because the laboratory never tested them — so the head
+    # is split on the tag, not on a literal string. The combined set opens its own
+    # <body> and each page is spliced in beneath it.
+    _m = re.search(r"<body\b[^>]*>", first)
+    if _m is None:
+        raise SystemExit("compiled document has no <body>: " + docs[0]["p_lot"])
+    head = first[:_m.start()] + "<body>\n"
     head += ('<style>div.page{page-break-after:always;break-after:page}'
              'div.page:last-of-type{page-break-after:auto;break-after:auto}</style>\n')
     parts = [head]

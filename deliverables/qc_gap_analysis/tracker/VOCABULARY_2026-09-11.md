@@ -166,6 +166,44 @@ it could not fix one the page never asked for.
 `1,600` is now in the request. The rule that avoids the next one: **when a rule
 sets an italic weight, that weight belongs in `FAMILIES`.**
 
+## The boundary of the ND ruling — 11.09.2026, second ruling
+
+> *"since they're not tested, those sub-parameters are not going to enter inside
+> the certificate of quality at all."*
+
+The initial testing of a batch often runs only part of a parameter's panel:
+mycotoxins assayed for **total aflatoxins alone**, with Aflatoxin B₁ and
+Ochratoxin A not tested. The retest of the same batch then runs all three.
+
+The certificate was printing a bracketed blank for each untested analyte, which
+in a results column reads as a finding still to come. Before the ND ruling was
+scoped it would have been worse — `n.r.` mapping to `ND`, asserting the analyte
+was measured and absent.
+
+So this is the boundary of that ruling, and both halves matter:
+
+* `n.r.` printed **by a laboratory, as a result**, means what `n.d.` means → `ND`;
+* an analyte **absent from the panel** is not a result at all → no line.
+
+`fillCoq()` removes the row from the compiled copy. It applies **only to a
+sub-determination inside a parameter that was tested** — where nothing in the
+group has a result the parameter itself is missing, and that is a gap the
+certificate has to show, not hide. The master file is untouched; this is the
+compiled copy, the same latitude `addFitStyle` and the marker colour take. Each
+compiled document records what was removed in `data-untested` on its `<body>`,
+so the omission is on the page's own record rather than only in this note.
+
+**36 rows removed across the 22 drafts — every one of them Aflatoxin B₁ or
+Ochratoxin A, on the 18 release certificates whose initial panel was total
+aflatoxins alone. Blank printed lines 87 → 51.**
+
+Verified on one batch through `fillCoq` in headless Chromium, both ways:
+
+| BG1024 | mycotoxin rows printed |
+| --- | --- |
+| initial release, 06.06.2026 | `Aflatoxins ∑ = < 2` |
+| retest, 12-month, 17.08.2026 | `Aflatoxin B₁ = ND` · `Aflatoxins ∑ = ND` · `Ochratoxin A = ND` |
+
 ## Reproducing
 
     python3 deliverables/qc_gap_analysis/result_vocabulary.py

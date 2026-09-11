@@ -230,6 +230,25 @@ ITEMS = [
      "detected qualifier? The same question as OI-15 for pesticides.",
      "#10.3 Ochratoxin A, 1 determination"),
 
+    ("OI-22", "Result reading", "ruled",
+     "An analyte the laboratory never tested was printing a line on the certificate",
+     "The initial testing of a batch often runs only part of a parameter's panel: mycotoxins "
+     "assayed for total aflatoxins alone, with Aflatoxin B1 and Ochratoxin A not tested. The "
+     "certificate printed a bracketed blank for each untested analyte, which in a results "
+     "column reads as a finding still to come; before the ND ruling was scoped it would have "
+     "printed ND, asserting the analyte was measured and absent.",
+     "Owner's ruling of 11.09.2026: \"since they're not tested, those sub-parameters are not "
+     "going to enter inside the certificate of quality at all.\" fillCoq() removes the row "
+     "from the compiled copy — only for a sub-determination inside a parameter that WAS "
+     "tested, because if nothing in the group has a result the parameter itself is missing "
+     "and that is a gap the certificate must show. 36 rows removed across the 22 drafts, all "
+     "of them Aflatoxin B1 or Ochratoxin A on 18 release certificates; the retest of the same "
+     "batch prints all three. Blank printed lines 87 -> 51. The master file is untouched.",
+     "Nothing. Recorded because it is the boundary of the ND ruling: n.r. printed by a "
+     "laboratory as a result means ND, and an analyte absent from the panel is not a result "
+     "at all.",
+     "BG1024 release vs 12-month retest, verified through fillCoq in headless Chromium"),
+
     ("OI-21", "Document rendering", "ruled",
      "Sixty-six faces in the tranche PDFs embedded as Type 3 rather than outlines",
      "39 faces in Tranche 1 and 27 in Tranche 2 were Montserrat Medium Italic rasterised "
@@ -265,7 +284,7 @@ def items(state=None, area=None):
     """The register, optionally narrowed.
 
     >>> len(items())
-    21
+    22
     >>> [i[0] for i in items(area="Specification")]
     ['OI-01', 'OI-02', 'OI-03']
     >>> sorted({i[2] for i in items()})

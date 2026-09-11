@@ -2591,6 +2591,42 @@ function fillCoq(c){
         if (_sp) _sp.innerHTML = todoHtml(potRange || _sp.textContent.trim());
       }
     });
+    /* Owner, 11.09.2026: "since they're not tested, those sub-parameters are not
+       going to enter inside the certificate of quality at all."
+
+       The initial testing of a batch often runs only part of a parameter's panel
+       — mycotoxins assayed for total aflatoxins alone, with Aflatoxin B1 and
+       Ochratoxin A not tested — and the retest of the same batch then runs all
+       three. An analyte that was never tested has no result to report, and the
+       certificate must not carry a line for it: a bracketed blank in a results
+       column reads as a finding that is still to come, and ND would be worse
+       still, asserting the analyte was measured and absent.
+
+       So the row is removed from the compiled copy. It applies ONLY to a
+       sub-determination inside a parameter that WAS tested — if nothing in the
+       group has a result the parameter itself is missing, and that is a gap the
+       certificate has to show, not hide. The master file is untouched; this is
+       the compiled copy, the same latitude addFitStyle and the marker colour
+       already take. */
+    var tested = {};
+    ORDER.forEach(function(no){
+      var r = byNo[no];
+      if (r && ((r.res && r.res !== "—") || (r.doc && r.doc !== "—"))) {
+        tested[groupNo(no)] = true;
+      }
+    });
+    var dropped = [];
+    cells.forEach(function(cell, i){
+      var no = ORDER[i];
+      if (no.indexOf(".") < 0 || !tested[groupNo(no)]) return;
+      var r = byNo[no];
+      var hasRes = r && r.res && r.res !== "—";
+      var hasDoc = r && r.doc && r.doc !== "—";
+      if (hasRes || hasDoc) return;
+      var tr = cell.parentElement;
+      if (tr && tr.parentElement) { tr.parentElement.removeChild(tr); dropped.push(no); }
+    });
+    if (dropped.length) doc.body.setAttribute("data-untested", dropped.join(" "));
   }
   /* section 03 — from the citations themselves */
   var labs = {};
