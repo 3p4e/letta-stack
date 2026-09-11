@@ -350,9 +350,18 @@ for sh_ in WB.worksheets:
 # iCoA-PP_26-001 is two controlled documents contradicting each other about the
 # identity of a third, so it is checked here rather than noticed by a reader.
 try:
+    # Both paths are derived from this file, never written down: an absolute path
+    # to one machine's checkout is not a path on another, and hard-coding one is
+    # how this check first ran in CI reporting "No module named 'ingestion'"
+    # instead of the register disagreement it was added to catch.
+    #   <root>/deliverables/qc_gap_analysis/tracker/verify_workbook.py
     import sys as _sys, os as _os
-    _sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
-    _sys.path.insert(0, "/home/user/letta-stack")
+    _here = _os.path.dirname(_os.path.abspath(__file__))
+    _gap = _os.path.dirname(_here)
+    _root = _os.path.dirname(_os.path.dirname(_gap))
+    for _p in (_gap, _root):
+        if _p not in _sys.path:
+            _sys.path.insert(0, _p)
     import icoa_register as _IR
     from ingestion.common.batch_id import batch_key as _bk
     _mod = {}
