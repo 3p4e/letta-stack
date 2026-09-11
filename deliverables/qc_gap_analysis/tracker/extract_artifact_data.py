@@ -128,6 +128,17 @@ for i, a in enumerate(anchors):
             lot['blocks'].append(blk)
     lots.append(lot)
 
+def raw_rows(name, ncol=5):
+    """A sectioned sheet as rows of strings — it has no single header row to key on."""
+    ws = wb[name]
+    out = []
+    for row in ws.iter_rows(min_col=1, max_col=ncol, values_only=True):
+        vals = ['' if v is None else str(v) for v in row]
+        if any(v.strip() for v in vals):
+            out.append(vals)
+    return out
+
+
 def _no_note(rows):
     """Drop the merged note the builder writes under each table: one filled cell, the rest empty."""
     return [r for r in rows if sum(1 for v in r.values() if str(v or '').strip()) > 2]
@@ -141,7 +152,15 @@ data = {'coverage_headers': coverage_headers, 'coverage': coverage,
         'register': table('iCoA Register') if 'iCoA Register' in wb.sheetnames else [],
         'coq_register': table('CoQ Register') if 'CoQ Register' in wb.sheetnames else [],
         'delivery': _no_note(table('Delivery T1–T3')) if 'Delivery T1–T3' in wb.sheetnames else [],
-        'imb_register': _no_note(table('ImB Register')) if 'ImB Register' in wb.sheetnames else []}
+        'imb_register': _no_note(table('ImB Register')) if 'ImB Register' in wb.sheetnames else [],
+        'reconciliation': raw_rows('Reconciliation 09.09') if 'Reconciliation 09.09' in wb.sheetnames else []}
+# The page's own subtitle used to hard-code a version and a date; it now takes both
+# from the workbook, the way the file name already does.
+import re as _re
+_about = next((str(r[1]) for r in wb['Read Me'].iter_rows(min_col=1, max_col=2, values_only=True)
+               if r[0] and str(r[0]).strip() == 'What it is'), '')
+_bm = _re.search(r'Built\s+(\d{2}\.\d{2}\.\d{4})', _about)
+data['built'] = _bm.group(1) if _bm else ''
 # the adherence flags the builder wrote under the CoQ Register
 data['coq_flags'] = []
 if 'CoQ Register' in wb.sheetnames:
@@ -151,4 +170,5 @@ if 'CoQ Register' in wb.sheetnames:
 json.dump(data, open(OUT, 'w'), ensure_ascii=False)
 print('lots', len(lots), 'blocks', sum(len(l['blocks']) for l in lots), 'coverage rows', len(coverage),
       'delivery', len(data['delivery']), 'imb register', len(data['imb_register']),
+      'reconciliation', len(data['reconciliation']),
       'work order', len(data['work_order']), 'audit', len(data['credit_audit']), 'corrections', len(data['corrections']))

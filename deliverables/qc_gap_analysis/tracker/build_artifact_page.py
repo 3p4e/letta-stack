@@ -71,6 +71,7 @@ nav.tabs button:focus-visible,button:focus-visible,input:focus-visible,select:fo
 .toolbar label{display:flex;gap:6px;align-items:center;color:var(--muted)}
 .scroll{overflow-x:auto;border:1px solid var(--line);background:var(--surface)}
 table{border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
+.note{white-space:normal;color:#4a5568;font-size:.86em;line-height:1.45;padding:8px 10px}
 th,td{border:1px solid var(--line);padding:4px 7px;text-align:left;vertical-align:top;white-space:nowrap}
 th{background:var(--head);font-weight:500;position:sticky;top:0;z-index:2}
 td.c,th.c{text-align:center}
@@ -131,6 +132,7 @@ footer{color:var(--muted);font-size:12.5px;margin-top:40px;max-width:80ch}
   <button role="tab" aria-selected="false" data-view="coqreg">CoQ Register</button>
   <button role="tab" aria-selected="false" data-view="delivery">Delivery T1–T3</button>
   <button role="tab" aria-selected="false" data-view="imb">ImB Register</button>
+  <button role="tab" aria-selected="false" data-view="recon">Reconciliation 09.09</button>
 </nav>
 
 <section id="overview">
@@ -208,6 +210,12 @@ footer{color:var(--muted);font-size:12.5px;margin-top:40px;max-width:80ch}
   <div class="scroll"><table id="ib-table"></table></div>
 </section>
 
+<section id="recon" hidden>
+  <p class="sub">The owner’s pass of 09.09.2026 over the 387 certificates in <code>eCoA_DATABASE</code>, put beside the desk cell by cell. It closed 84 parameters this workbook had marked ✗ — those now read ○, which is not coverage: a certificate is on file and the tracker does not name it, so nothing can be cited on a certificate of quality until the desk records the document. It also disagrees with the desk about 46 cells, and none of those is resolved here. And it settles why identification A, identification B and foreign matter are blank almost everywhere: the iCoA that carries them has not been issued.</p>
+  <div class="toolbar"><input id="rc-q" type="search" placeholder="Filter…" aria-label="Filter reconciliation rows"><span id="rc-n" class="label"></span></div>
+  <div class="scroll"><table id="rc-table"></table></div>
+</section>
+
 <footer>One two-row block per testing instance: the result on the top row, the certificate that carries it on the bottom. Parameters 9–11 print each determination in its own column. Conformance is judged on release results only, against the acceptance criteria on the Parameters sheet (counted limits ≤10ⁿ judged against 2×10ⁿ, Ph. Eur. 2.6.12). Built from <code>CoQ_Analysis_Master_v10.xlsx</code>, 04.09.2026: the 30 IJZ-MB microbiology certificates of 31.08/01.09.2026 are included as testing instances.</footer>
 </div>
 
@@ -221,13 +229,13 @@ const lsGet = k => { try { return JSON.parse(localStorage.getItem(k)||'{}'); } c
 const lsSet = (k,v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} };
 
 document.getElementById('subline').textContent =
-  `v11 · 05.09.2026 · ${S.lots} lots · 12 parameters · ${S.instances} testing instances · ${S.gaps} parameter gaps · ${S.oos} out of specification · ${S.und} undetermined · ${S.stab} stability exceedances`;
+  `v__VER__ · ${D.built || ''} · ${S.lots} lots · 12 parameters · ${S.instances} testing instances · ${S.gaps} parameter gaps · ${S.oos} out of specification · ${S.und} undetermined · ${S.stab} stability exceedances`;
 
 /* ---------- tabs ---------- */
 const tabs = [...document.querySelectorAll('nav.tabs button')];
 function show(view){
   tabs.forEach(b => b.setAttribute('aria-selected', String(b.dataset.view===view)));
-  ['overview','checklist','tracker','icoa','register','coqreg','delivery','imb'].forEach(v => { const el = document.getElementById(v); if (el) el.hidden = v!==view; });
+  ['overview','checklist','tracker','icoa','register','coqreg','delivery','imb','recon'].forEach(v => { const el = document.getElementById(v); if (el) el.hidden = v!==view; });
   try { localStorage.setItem('coq9.view', view); } catch(e){}
 }
 tabs.forEach(b => b.addEventListener('click', () => show(b.dataset.view)));
@@ -473,10 +481,32 @@ function renderImb(){
 }
 document.getElementById('ib-q').addEventListener('input', renderImb);
 
+/* ---------- reconciliation ---------- */
+/* The sheet is sectioned rather than tabular: a row with only its first cell
+   filled, in capitals, opens a section; everything else is a row of that
+   section. Rendered the same way so the page and the sheet read alike. */
+function renderRecon(){
+  const q = (document.getElementById('rc-q').value || '').toLowerCase();
+  const all = D.reconciliation || [];
+  const rows = all.filter(r => !q || r.join(' ').toLowerCase().includes(q));
+  document.getElementById('rc-n').textContent = rows.length + ' of ' + all.length + ' rows';
+  /* a row with only its first cell filled spans the table: in capitals it opens
+     a section, otherwise it is one of the sheet's notes. Left as an ordinary
+     cell it would stretch column one to the width of the note. */
+  const alone = r => r[0] && !r.slice(1).some(c => c && c.trim());
+  document.getElementById('rc-table').innerHTML = '<tbody>' + rows.map(r =>
+    alone(r) ? (r[0] === r[0].toUpperCase()
+        ? `<tr><th colspan="5" style="text-align:left">${esc(r[0])}</th></tr>`
+        : `<tr><td colspan="5" class="note">${esc(r[0])}</td></tr>`)
+      : '<tr>' + r.map((c, i) => `<td${i === 0 ? ' class="mono"' : ''}>${esc(c)}</td>`).join('') + '</tr>'
+  ).join('') + '</tbody>';
+}
+document.getElementById('rc-q').addEventListener('input', renderRecon);
+
 renderOverview(); renderChecklist(); renderTracker(); renderIcoa(); renderRegister(); renderCoqReg();
-renderDelivery(); renderImb();
+renderDelivery(); renderImb(); renderRecon();
 let v = 'overview'; try { v = localStorage.getItem('coq9.view') || v; } catch(e){}
-show(['overview','checklist','tracker','icoa','register','coqreg','delivery','imb'].includes(v) ? v : 'overview');
+show(['overview','checklist','tracker','icoa','register','coqreg','delivery','imb','recon'].includes(v) ? v : 'overview');
 })();
 </script>
 '''

@@ -84,6 +84,10 @@ PLAN_J = os.path.join(HERE, "coq_issue_plan.json")
 INHOUSE_TSV = os.path.join(ROOT, "ingestion", "coa_track", "letta-imb-coas",
                            "exports", "master_coa_table.tsv")
 BATCH_ID = os.path.join(ROOT, "ingestion", "common", "batch_id.py")
+if HERE not in sys.path:
+    sys.path.insert(0, HERE)
+import cell_resolution as CR                                        # noqa: E402
+
 OUT_X = os.path.join(HERE, "PP_CoQ_Parameter_Schedule_2026-08-31.xlsx")
 OUT_C = os.path.join(HERE, "coq_parameter_schedule_2026-08-31.csv")
 VALIDATOR = os.path.join(ROOT, "ingestion", "ragflow", "validate_ecoa_limits.py")
@@ -336,13 +340,21 @@ def family(code):
     return "other"
 
 
+# Post-release re-analysis series. 197- was the only one the desk knew; the owner
+# ruled on 10.09.2026 that 220- is the same thing, which moves every 220 result off
+# the initial-release certificate and onto the retest that rests on it.
+REANALYSIS_SERIES = ("197-", "220-")
+
+
 def is_reanalysis(code):
-    """True for a Farmahem 197-series certificate — the re-analysis a reissue rests on.
+    """True for a post-release re-analysis certificate — what a reissue rests on.
 
     >>> is_reanalysis("197-11-К/26"), is_reanalysis("ППК25174")
     (True, False)
+    >>> is_reanalysis("220-16-K/26"), is_reanalysis("220-29-K/26")
+    (True, True)
     """
-    return clean(code).startswith("197-")
+    return clean(code).startswith(REANALYSIS_SERIES)
 
 
 def sort_date(d):
@@ -741,6 +753,25 @@ def schedule():
                                 f"Recorded, not resolved.")
 
         inhouse = {} if cb else inhouse_cells(x["cb"])
+        # The owner's 09.09.2026 pass over eCoA_DATABASE: for a determination the
+        # register block does not answer, the result a document on file prints.
+        # It is consulted last and only where nothing else answered, it never
+        # overrules the desk, and cell_resolution.py's three rules decide what it
+        # is allowed to hand back at all — an unissued certificate and an
+        # unlabelled list of analyte values both hand back nothing.
+        # Owner's ruling, 10.09.2026: the first result a parameter has is release
+        # testing and every later one is a retest. The pass is consulted only for a
+        # release certificate, and it hands back whatever document it found — which
+        # on some batches is the post-release re-analysis. `pick` already refuses
+        # those for a release CoQ; this path bypassed `pick` entirely, so a
+        # 25.08.2026 certificate was filling the release cell of a lot packed in
+        # May. A re-analysis result belongs to the retest that rests on it, and if
+        # that leaves the release cell blank then the honest answer is that the
+        # parameter was not determined at release.
+        read0909 = {} if additional else {
+            no: rec for no, rec in CR.results(x["cb"]).items()
+            if not is_reanalysis(rec.get("code", ""))
+        }
         codes, counts = OrderedDict(), defaultdict(int)
         start = len(rows)
         assay = pick(reg["cells"].get("E", []), additional)[0]
@@ -773,12 +804,25 @@ def schedule():
 
             if det["no"] in ICOA_FIELD and not additional:
                 if ic_row.get(ICOA_FIELD[det["no"]], "required") != "required" and cnp:
-                    chosen, others = dict(cnp, value="Conforms | Соодветствува"), []
+                    chosen, others = dict(cnp, value="Conforms"), []
             if det["no"] == "3" and chosen is None and ident_c_cert is not None:
-                chosen, others = dict(
-                    ident_c_cert,
-                    value="Conforms — cannabinoids identified and quantified by HPLC | "
-                          "Соодветствува — идентификација и квантификација со HPLC"), []
+                # "Conforms", not "Conforms — cannabinoids identified and
+                # quantified by HPLC". The gloss restated the METHOD column two
+                # cells to its left on the very same row — "HPLC/HPTLC Ph. Eur.
+                # 2.2.29 (3028)" — and a sentence does not fit a 110 px results
+                # column: measured with the embedded fonts, that one cell stood
+                # 85 px tall against 18 px for a normal row, and div.page clips
+                # at A4, so three certificates were losing their second
+                # signature date off the bottom of the sheet. A redundant gloss
+                # is not worth a signature. The basis for Identification C is
+                # recorded where a basis belongs — the citation in Section 03 —
+                # and OI-24 asks the owner whether they want it back on the face
+                # of the document, which would need a wider column.
+                #
+                # The Macedonian half is added on the export path, from
+                # result_vocabulary.MK — one word for the assertion, the
+                # master's own (Одговара), not a second one invented here.
+                chosen, others = dict(ident_c_cert, value="Conforms"), []
 
             criterion = det["criterion"]
             if det.get("per_batch_criterion"):
@@ -796,6 +840,9 @@ def schedule():
                 st = ST_SCAN if chosen.get("inhouse") else \
                     (ST_OFFREG if status_of(det, chosen, lim, cb, blocked) == ST_OK
                      else status_of(det, chosen, lim, cb, blocked))
+            if chosen is None and not additional and det["no"] in read0909:
+                chosen, others = read0909[det["no"]], []
+                st = status_of(det, chosen, lim, cb, blocked)
             if additional and chosen is None:
                 if det["no"] in ICOA_FIELD:
                     st = ST_ICOA

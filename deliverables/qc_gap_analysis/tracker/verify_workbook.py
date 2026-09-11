@@ -11,7 +11,26 @@ import csv, importlib.util, json, os, re, shutil, subprocess, sys, tempfile, col
 import openpyxl
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SRC = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "CoQ_Analysis_Master_v11.xlsx")
+def _latest_master():
+    """The newest CoQ_Analysis_Master_vN.xlsx beside this file.
+
+    The default used to be a literal — v11 here, v23 in the CI workflow — so the
+    gate watched whichever workbook someone last typed into it, and every rebuild
+    needed the version edited in two files or the check quietly verified a stale
+    one. The newest on disk is the one that ships (build_delivery_package.py picks
+    it the same way), so it is the one to check.
+    """
+    best, path = -1, None
+    for f in os.listdir(HERE):
+        m = re.fullmatch(r"CoQ_Analysis_Master_v(\d+)\.xlsx", f)
+        if m and int(m.group(1)) > best:
+            best, path = int(m.group(1)), os.path.join(HERE, f)
+    return path
+
+
+SRC = sys.argv[1] if len(sys.argv) > 1 else _latest_master()
+if not SRC or not os.path.exists(SRC):
+    raise SystemExit("no workbook to verify in " + HERE)
 spec = importlib.util.spec_from_file_location("tracker_data", os.path.join(HERE, "tracker_data.py"))
 T = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(T)
@@ -23,19 +42,55 @@ def bad(sheet, what, detail=""):
     FIND.append((sheet, what, detail))
 
 
+NO_CALC = ""          # why the computed values are unavailable, if they are
+
+
 def load_values(path):
+    """The workbook with its formulas evaluated, or None where that is not possible.
+
+    openpyxl writes formulas and no cached values, so the only way to read what
+    a formula computes is to let a spreadsheet engine compute it. Where LibreOffice
+    is not installed this used to raise FileNotFoundError and take the whole
+    verifier down with it — which is how a CI job added to gate the registers
+    failed on a missing dependency instead of on the thing it was watching, and
+    would have failed the same way whether the registers agreed or not.
+
+    The checks that read only literals — the register codes, the keys, the sheet
+    inventory — do not need an engine. Those still run. The deeper pass over
+    computed results is skipped, loudly, and the exit code still reflects
+    everything that did run.
+    """
+    global NO_CALC
+    if shutil.which("soffice") is None:
+        NO_CALC = "LibreOffice (soffice) is not installed"
+        return None
     tmp = tempfile.mkdtemp(prefix="verify_")
-    shutil.copy(path, os.path.join(tmp, "in.xlsx"))
-    subprocess.run(["soffice", "--headless", "--calc", "--convert-to", "xlsx", "--outdir",
-                    os.path.join(tmp, "out"), os.path.join(tmp, "in.xlsx")],
-                   check=True, capture_output=True, timeout=900)
-    wb = openpyxl.load_workbook(os.path.join(tmp, "out", "in.xlsx"), data_only=True)
-    shutil.rmtree(tmp, ignore_errors=True)
-    return wb
+    try:
+        shutil.copy(path, os.path.join(tmp, "in.xlsx"))
+        subprocess.run(["soffice", "--headless", "--calc", "--convert-to", "xlsx", "--outdir",
+                        os.path.join(tmp, "out"), os.path.join(tmp, "in.xlsx")],
+                       check=True, capture_output=True, timeout=900)
+        return openpyxl.load_workbook(os.path.join(tmp, "out", "in.xlsx"), data_only=True)
+    except (subprocess.SubprocessError, OSError) as e:
+        NO_CALC = "LibreOffice could not evaluate the workbook: %s" % e
+        return None
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
 
 
 WB = openpyxl.load_workbook(SRC)
 WV = load_values(SRC)
+if WV is None:
+    # Cannot verify is not the same as verified, and must never read as success.
+    # Most of these checks compare what a FORMULA computes against the record it
+    # is built from, and openpyxl stores no cached values — without an engine
+    # there is nothing to compare. Better to stop here saying so than to run a
+    # partial pass that prints a reassuring number.
+    print("CANNOT VERIFY: %s." % NO_CALC)
+    print("  The workbook's registers and dates are live formulas and openpyxl "
+          "stores no computed values, so an engine is needed to read them.")
+    print("  Install libreoffice-calc and run again.")
+    sys.exit(2)
 TRACKER = next(n for n in WB.sheetnames if n.startswith("CoQ Parameter Tracker"))
 
 
@@ -47,7 +102,13 @@ def table(wb, name, key_row=1):
         vals = [sh.cell(r, c).value for c in range(1, len(hdr) + 1)]
         if not any(v not in (None, "") for v in vals[:3]):
             continue
-        if str(vals[0] or "").startswith(("Head of QC", "Chronological", "These corrections")):
+        # The footnote under a table is one merged cell spanning its width, so it
+        # arrives as a long string in the first column with nothing beside it.
+        # That is how it is recognised. It used to be recognised by its opening
+        # words — "Head of QC", "Chronological", "These corrections" — and
+        # rewriting a note then fed its own text to int() as a row number.
+        if isinstance(vals[0], str) and len(vals[0]) > 120 and not any(
+                v not in (None, "") for v in vals[1:]):
             continue
         out.append((r, dict(zip(hdr, vals))))
     return out
@@ -100,18 +161,25 @@ for r, d in cov:
         bad("Batch Coverage", "row has no lot on the tracker", f"{cu} / {p}")
         continue
     docs = LOTS[key]["docs"]
-    miss = []
+    miss, onfile = [], set()
     for n in range(1, 13):
         mark = str(d[hdr[3 + n]] or "")
         want = "✓" if docs.get(n) else "✗"
-        if mark != want:
+        # ○ is a ✗ that says why: the tracker names no document, and a certificate
+        # for this parameter was found in eCoA_DATABASE on 09.09.2026. It is not
+        # coverage, so it counts as missing exactly as ✗ does.
+        if mark == "○" and want == "✗":
+            onfile.add(n)
+        elif mark != want:
             bad("Batch Coverage", f"#{n} mark disagrees with the tracker", f"{cu} / {p}: sheet {mark!r}, tracker {want!r}")
         if want == "✗":
             miss.append(n)
     if int(d[hdr[16]] or 0) != len(miss):
         bad("Batch Coverage", "missing count", f"{cu} / {p}: sheet {d[hdr[16]]}, computed {len(miss)}")
     st = str(d[hdr[3]] or "")
-    want_st = "✓ COMPLETE" if not miss else (f"⚠ {len(miss)} MISSING" if len(miss) <= 3 else f"❌ {len(miss)} MISSING")
+    want_st = "✓ COMPLETE" if not miss else (
+        f"○ {len(miss)} ON FILE, NOT RECORDED" if set(miss) == onfile and onfile else
+        (f"⚠ {len(miss)} MISSING" if len(miss) <= 3 else f"❌ {len(miss)} MISSING"))
     if st != want_st:
         bad("Batch Coverage", "status text", f"{cu} / {p}: {st!r} vs {want_st!r}")
 for k, n in seen.items():
@@ -202,8 +270,15 @@ for name, rows, code_col, prefix in (("iCoA Register", regv, "iCoA code", "iCoA-
                                      ("CoQ Register", cqv, "CoQ code", "CoQ-PP_26-")):
     nums = [(r, d) for r, d in rows.items() if d["No."] not in (None, "")]
     seqn = [int(d["No."]) for _, d in sorted(nums)]
-    if seqn != list(range(1, len(seqn) + 1)):
-        bad(name, "numbers are not 1..n in row order", f"{seqn[:6]} …")
+    # Strictly increasing down the page, not contiguous 1..n. The iCoA series is
+    # icoa_register.py's, which numbers every testing round; this sheet carries
+    # the rounds it models, so its numbers are an ordered SUBSET with gaps where
+    # a round is registered elsewhere. Contiguity was only ever true while the
+    # sheet numbered its own rows by position — the defect that was removed.
+    if any(b <= a for a, b in zip(seqn, seqn[1:])):
+        bad(name, "numbers do not increase down the page", f"{seqn[:8]} …")
+    if seqn and seqn[0] < 1:
+        bad(name, "numbering does not start at 1", str(seqn[0]))
     for r, d in nums:
         want = f"{prefix}{int(d['No.']):03d}"
         if str(d[code_col]) != want:
@@ -297,6 +372,95 @@ for n in listed:
 for sh_ in WB.worksheets:
     if sh_.page_setup.orientation != "landscape" or not sh_.page_setup.fitToWidth:
         bad("Read Me", "the print claim is not true for this sheet", sh_.title)
+
+# ---------------------------------------------------------------- the iCoA series
+# The internal-CoA number exists in two places: icoa_register.py, which the
+# certificates print from, and this workbook's iCoA Register sheet, which numbers
+# its rows by position with COUNT(A$1:A{n})+1. Two definitions of one number will
+# disagree, and on 11.09.2026 they did — on every row that could be compared. A
+# certificate citing iCoA-PP_26-066 while the register gives that batch
+# iCoA-PP_26-001 is two controlled documents contradicting each other about the
+# identity of a third, so it is checked here rather than noticed by a reader.
+try:
+    # Both paths are derived from this file, never written down: an absolute path
+    # to one machine's checkout is not a path on another, and hard-coding one is
+    # how this check first ran in CI reporting "No module named 'ingestion'"
+    # instead of the register disagreement it was added to catch.
+    #   <root>/deliverables/qc_gap_analysis/tracker/verify_workbook.py
+    import sys as _sys, os as _os
+    _here = _os.path.dirname(_os.path.abspath(__file__))
+    _gap = _os.path.dirname(_here)
+    _root = _os.path.dirname(_os.path.dirname(_gap))
+    for _p in (_gap, _root):
+        if _p not in _sys.path:
+            _sys.path.insert(0, _p)
+    import icoa_register as _IR
+    from ingestion.common.batch_id import batch_key as _bk
+    # The key names the ROUND, not merely "some retest". `setdefault` on a bare
+    # |R gave the key to whichever retest the issue order happened to put first,
+    # so GP0824_03's |R resolved to its retest 2 and the sheet's retest 1 was
+    # reported as disagreeing with the series it had been taken from. Retest 1
+    # keeps the bare |R that every existing lookup cites; rounds 2 and up take
+    # |R2 … |R5, exactly as the builder writes them.
+    _mod = {}
+    for _row in _IR.build():
+        _rd = _row["round"]
+        _suf = "I" if _rd == "initial release" else ("R" if _rd == "retest 1" else "R" + _rd.split()[-1])
+        for _base in filter(None, (_row["p_lot"], _row["batch"])):
+            _mod.setdefault("%s|%s" % (_bk(_base), _suf), _row["code"])
+    _reg = WB["iCoA Register"]
+    _n, _agree, _differ, _unknown = 0, 0, 0, 0
+    for _r in range(2, _reg.max_row + 1):
+        _key = str(_reg.cell(_r, 16).value or "")
+        if not _key or str(_reg.cell(_r, 3).value or "") != "yes":
+            continue
+        _n += 1
+        # the code the sheet actually prints, read from the sheet. This used to
+        # recompute it from the row's position — which was the very defect being
+        # checked for, so once the sheet stopped numbering by position the check
+        # went on comparing against a number no longer on the page.
+        _sheet_code = str(_reg.cell(_r, 2).value or "").strip()
+        _base, _, _suf = _key.rpartition("|")
+        _want = _mod.get("%s|%s" % (_bk(_base), _suf))
+        if _want is None:
+            _unknown += 1
+        elif _want == _sheet_code:
+            _agree += 1
+        else:
+            _differ += 1
+            if _differ <= 5:
+                bad("iCoA Register", "code disagrees with icoa_register.py",
+                    "%s: sheet %s, certificates cite %s" % (_key, _sheet_code, _want))
+    if _differ:
+        bad("iCoA Register", "the series is numbered twice and the two disagree",
+            "%d of %d comparable rows differ; %d rows the module cannot identify"
+            % (_differ, _agree + _differ, _unknown))
+
+    # The check above compares the codes of the rows the sheet happens to carry,
+    # and it passed while the sheet carried 60 of the series' 95 certificates:
+    # a code cannot disagree with a row that is not on the page. The owner's
+    # ruling is about COVERAGE — "every internal certificate that exists or ever
+    # will" — so that is what is checked. Each certificate in the series appears
+    # on the sheet exactly once, printed under its own code.
+    _want_codes = [_row["code"] for _row in _IR.build() if _row["code"]]
+    _seen_codes = collections.Counter()
+    for _r in range(2, _reg.max_row + 1):
+        _c = str(_reg.cell(_r, 2).value or "").strip()
+        if _c.startswith("iCoA-PP_26-"):
+            _seen_codes[_c] += 1
+    _absent = [_c for _c in _want_codes if not _seen_codes[_c]]
+    _twice = sorted(_c for _c, _k in _seen_codes.items() if _k > 1)
+    _alien = sorted(set(_seen_codes) - set(_want_codes))
+    if _absent:
+        bad("iCoA Register", "the standing register does not carry every certificate in the series",
+            "%d of %d absent: %s%s" % (len(_absent), len(_want_codes), ", ".join(_absent[:6]),
+                                       " …" if len(_absent) > 6 else ""))
+    if _twice:
+        bad("iCoA Register", "a certificate is registered on more than one row", ", ".join(_twice[:6]))
+    if _alien:
+        bad("iCoA Register", "a code on the sheet is not in the series", ", ".join(_alien[:6]))
+except Exception as _e:
+    bad("iCoA Register", "could not be checked against icoa_register.py", str(_e))
 
 print(f"{len(FIND)} finding(s)")
 for s, w, d in FIND:
@@ -406,20 +570,43 @@ for r, d in iss:
         bad2("iCoA Issuance", "identification C cites a certificate whose record reports no Total THC", f"row {r}: {c[:40]}")
 
 # ---- 12. the registers: the group and the rule that dates it
+# The legacy day is read off the workbook rather than pinned here. It is a ruling
+# and rulings change — it moved from 15.05/27.05.2026 to 03.06/06.06.2026 on
+# 10.09.2026 — and a literal in the checker means the same decision lives in two
+# files and one of them is always the stale one. Taking the day the legacy rows
+# agree on turns this into the stronger check anyway: that they agree at all.
+def _legacy_day(rows, flagged=()):
+    from collections import Counter
+    seen = Counter(fmt(d["Issue date (planned)"]) for d in rows.values()
+                   if d["No."] and str(d["Group"]) == "legacy"
+                   and fmt(d["Issue date (planned)"])
+                   and not any(w in str(d["Status"]) for w in flagged))
+    return seen.most_common(1)[0][0] if seen else None
+
+
+_coq_day = _legacy_day(cqv, ("held", "moved"))
 for r, d in cqv.items():
     if not d["No."]:
         continue
     grp, a = str(d["Group"]), fmt(d["Issue date (planned)"])
-    if grp == "legacy" and a and a != "27.05.2026":
+    if grp == "legacy" and a and _coq_day and a != _coq_day:
         st = str(d["Status"])
         if "held" not in st and "moved" not in st:
-            bad2("CoQ Register", "a legacy CoQ not on the legacy day and not flagged", f"{d['P Batch']}: {a}")
+            bad2("CoQ Register", f"a legacy CoQ not on the legacy day {_coq_day} and not flagged",
+                 f"{d['P Batch']}: {a}")
+_reg_day = _legacy_day(regv)
 for r, d in regv.items():
     if not d["No."]:
         continue
     grp, a = str(d["Group"]), fmt(d["Issue date (planned)"])
-    if grp == "legacy" and a != "15.05.2026":
-        bad2("iCoA Register", "a legacy iCoA not on the legacy day", f"{d['P Batch']}: {a}")
+    # Only the RELEASE round. A legacy lot is one packed before the specification
+    # SOP, so its release certificate is back-dated to the SOP's day — but its
+    # retest is tested at a sampling in July or August 2026 and is issued then,
+    # which is the ruling ("issued that day, or 03.06.2026 if that day is before
+    # the SOP"), not a violation of it. The retest rounds only reached this sheet
+    # on 11.09.2026, and the check had never had to say which round it meant.
+    if grp == "legacy" and _reg_day and a != _reg_day and str(d["Series"]) == "initial release":
+        bad2("iCoA Register", f"a legacy iCoA not on the legacy day {_reg_day}", f"{d['P Batch']}: {a}")
 
 # ---- 13. Mikro CoQ Parameter against the tracker
 if "Mikro CoQ Parameter" in WB.sheetnames:
@@ -434,3 +621,16 @@ print()
 print(f"deeper checks: {checked} printed result(s) compared with the certificate records; {len(FIND2)} finding(s)")
 for s, w, d in FIND2:
     print(f"  [{s}] {w}" + (f" — {d}" if d else ""))
+
+# The exit code, which this never had: it printed its findings and exited 0, so
+# nothing could gate on it and no workflow ran it. A verifier that cannot fail is
+# a report, not a check — and on 11.09.2026 it reported that the iCoA series is
+# numbered twice with 49 of 49 comparable rows disagreeing, while CI stayed green.
+if FIND or FIND2:
+    print()
+    print("FAILED: %d finding(s) on the sheets, %d in the deeper checks"
+          % (len(FIND), len(FIND2)))
+    sys.exit(1)
+print()
+print("workbook verified: no findings")
+sys.exit(0)

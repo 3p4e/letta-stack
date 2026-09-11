@@ -87,9 +87,36 @@ def cu_key(cu):
     return batch_key(cu)
 
 
+# A laboratory's own verdict, printed in Macedonian. The negation must be tested
+# BEFORE the affirmative, because "Не одговара" contains "одговара": a search for
+# the affirmative alone matches the laboratory saying the lot FAILS. That is
+# exactly what the desk did until 11.09.2026 — clean("Не одговара") returned
+# "absent", and every judge downstream reads "absent" as a pass. One lot was
+# affected, FB032601 foreign matter, and it was printing a pass against a CNP
+# certificate that states a non-conformity.
+_NONCONF = re.compile(r"\bне\s*одговара\b", re.I)
+_CONF = re.compile(r"\bодговара\b", re.I)
+
+
+def nonconforming(v):
+    """True when the laboratory itself prints the result as not conforming.
+
+    >>> nonconforming("0.08% (Не одговара)"), nonconforming("Не одговара")
+    (True, True)
+    >>> nonconforming("0.42% (Одговара)"), nonconforming("Одговара"), nonconforming("24.53")
+    (False, False, False)
+    >>> nonconforming("Does not conform"), nonconforming(""), nonconforming(None)
+    (True, False, False)
+    """
+    s = str(v or "")
+    return bool(_NONCONF.search(s)) or "does not conform" in s.lower()
+
+
 def clean(v):
     """The value as the certificate prints it, with the desk's own annotations removed."""
     v = str(v or "").strip()
+    if nonconforming(v):
+        return "Does not conform"
     if not v or v in ("—", "/"):
         return ""
     if " | " in v:
@@ -97,7 +124,7 @@ def clean(v):
     v = re.sub(r"\s*[xх]\s*10\^?", "×10", v)
     v = re.sub(r"10\^(\d)", lambda m: "10" + "⁰¹²³⁴⁵⁶⁷⁸⁹"[int(m.group(1))], v)
     v = re.sub(r"([<>≤≥])\s+", r"\1", v)
-    if re.search(r"одговара|отсутн|отсуств|absent", v, re.I):
+    if _CONF.search(v) or re.search(r"отсутн|отсуств|absent", v, re.I):
         v = "absent"
     if re.match(r"^conforms", v, re.I):
         v = "Conforms"
@@ -202,7 +229,18 @@ def _judgeable(v, lim):
 
 
 def over_limit(det_no, v):
-    """True only when the value provably exceeds its acceptance criterion."""
+    """True when the value provably exceeds its criterion, or the lab says it fails.
+
+    The second limb matters and is not redundant. A criterion is a number and the
+    judge can only test what parses as one, so a result the laboratory prints as
+    a verdict — with or without a figure beside it — was never judged at all. But
+    a laboratory writing *Не одговара* has already done the judging, against the
+    limb of the criterion it applies (for foreign matter, Ph. Eur. 2.8.2 also
+    limits leaf and stem size, not only the gravimetric percentage), and its
+    verdict outranks anything the desk can compute from the figure alone.
+    """
+    if nonconforming(v):
+        return True
     lim = CRIT.get(det_no)
     s = _judgeable(v, lim)
     if s is None:
@@ -298,8 +336,17 @@ def load_owner(path=SRC_V3):
         if not cu:
             continue
         p = str(old.cell(r, 2).value or "").strip()
-        rec = {"cu": "— not recorded —" if "NOT ASSIGNED" in cu else cu,
-               "p": "N/A — no P batch assigned" if ("NOT ASSIGNED" in p or not p) else p,
+        # A lot whose cultivation batch the owner's tracker does not carry. The
+        # label used to be the same string for every one of them, so batch_key
+        # collapsed the three P160xxx lots into a single key and any join made on
+        # the printed cultivation batch silently picked one of the three — which
+        # is exactly what happened between this sheet and Mikro CoQ Parameter.
+        # Naming the P number inside the label keeps the row identifiable without
+        # inventing a cultivation batch the lot does not have.
+        _p_clean = "" if ("NOT ASSIGNED" in p or not p) else p
+        rec = {"cu": (("— not recorded —" + (f" ({_p_clean})" if _p_clean else ""))
+                      if "NOT ASSIGNED" in cu else cu),
+               "p": "N/A — no P batch assigned" if not _p_clean else p,
                "status": str(old.cell(r, 3).value or "").strip(),
                "labs": [x.strip() for x in str(old.cell(r, 28).value or "").split("|") if x.strip()],
                "docs": {}}

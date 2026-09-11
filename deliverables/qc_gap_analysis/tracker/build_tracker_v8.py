@@ -41,7 +41,7 @@ The block rule, per the specification:
 
 Sources: `tracker_data.py` (the desk's values, the owner's certificate credits).
 """
-import collections, importlib.util, math, os, re, sys
+import collections, csv, importlib.util, math, os, re, sys
 
 import openpyxl
 from openpyxl.cell.rich_text import CellRichText, TextBlock
@@ -54,6 +54,10 @@ BUILD_DATE = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--build
 spec = importlib.util.spec_from_file_location("tracker_data", os.path.join(HERE, "tracker_data.py"))
 T = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(T)
+# The controlled result vocabulary — one spelling per assertion, applied in
+# values_of() so every sheet in the workbook inherits it from one definition.
+sys.path.insert(0, os.path.dirname(HERE))
+import result_vocabulary as RV                                          # noqa: E402
 
 V9 = "--v9" in sys.argv
 # --version=N names the build: the file, the tracker sheet and the Read Me carry vN.
@@ -164,7 +168,7 @@ def tidy(v):
 
 
 _V8 = json.load(open(V8VALS))
-SILENT = ("held for review", "not on this certificate", "not ingested", "n.r.")
+SILENT = ("held for review", "not on this certificate", "not ingested", "not reported")
 V8VAL, V8SILENT = collections.defaultdict(dict), collections.defaultdict(dict)
 _bycode = collections.defaultdict(set)
 for _k in _V8:
@@ -264,7 +268,14 @@ def _lot_of(inst):
 for inst in NEW:
     b = _lot_of(inst)
     if b is None:
-        b = {"cu": "— not recorded —", "p": inst["p"] or "N/A — no P batch assigned", "status": "",
+        # The cultivation batch is genuinely unrecorded — the certificate prints only
+        # the P number — but three such lots (P160012, P160022, P160032) carried the
+        # identical label, so batch_key collapsed them to one and any join keyed on
+        # the printed cultivation batch silently picked one of the three. Naming the
+        # P number inside the label keeps the row identifiable without inventing a
+        # cultivation batch it does not have.
+        _unrec = "— not recorded —" + (f" ({inst['p']})" if inst.get("p") else "")
+        b = {"cu": _unrec, "p": inst["p"] or "N/A — no P batch assigned", "status": "",
              "labs": [], "docs": {n: [] for n in range(1, 13)}, "certs": [],
              "strain": inst.get("strain", ""), "new_lot": True}
         batches.append(b)
@@ -333,6 +344,46 @@ if NEW:
 # except where an outsourced certificate reports otherwise (FB032601, ППК26127: 0.08 %,
 # Не одговара) — that lot's foreign matter is held for the Head of QC.
 ICOA_RULE = "--icoa" in sys.argv
+# --cells absorbs the owner's 09.09.2026 pass over eCoA_DATABASE: the coverage it
+# closes on Batch Coverage, and the Reconciliation sheet that says what the two
+# records of those certificates agree and disagree about.
+CELLS_0909 = "--cells" in sys.argv
+GAPDIR = os.path.dirname(HERE)
+COVERAGE_UPDATE = os.path.join(GAPDIR, "coverage_update_2026-09-09.tsv")
+IDENTITY_BLOCK = os.path.join(GAPDIR, "identity_block_2026-09-09.tsv")
+COV_0909_APPLIED, COV_0909_SKIPPED = [], []
+
+IDENT_NOTE = (
+    "Identification A, Identification B and foreign matter are blank on almost "
+    "every lot in both tranches, and the reason is not that nobody transcribed "
+    "them. 118 of the 600 cells cite an in-house iCoA-PP_26-nnn whose issue date "
+    "is PLANNED, on 40 of the 50 batches: the certificate that carries the result "
+    "has not been issued, so there is nothing to cite. What the in-house "
+    "documents that DO exist carry is worse than missing. Appearance is the "
+    "single word \u201cConfirms\u201d with no description. Foreign matter is "
+    "\u201cConfirms\u201d against a < 2.0 % specification with NO PERCENTAGE "
+    "PRINTED \u2014 Ph. Eur. 2.8.2 is gravimetric and EudraLex Vol. 4 Ch. 6 "
+    "\u00a76.7 requires the result. Microscopy was NOT PERFORMED on any of the "
+    "five documents read. Three Report of Analysis documents carry no document "
+    "code, no version and no report number (EudraLex Vol. 4 Ch. 4 \u00a74.9), and "
+    "this build refuses to cite them. Issuing the iCoAs does not by itself fix "
+    "this: the microscopy has to be done and the foreign-matter percentage has "
+    "to be printed.")
+
+NOROW_NOTE = (
+    "These lots have certificates on file and no row on Batch Coverage, so the "
+    "closure had nowhere to land. Four of them \u2014 ACC102501, CF102501, "
+    "PUM102501 and CC012603 \u2014 are the batches the delivery reconciliation "
+    "of 07.09.2026 reported as delivered with nothing on file anywhere. That "
+    "finding is now out of date for them: something IS on file. A row cannot be "
+    "invented here, because a Batch Coverage row is a tracker lot and these are "
+    "not on the owner's tracker; they have to be added there first.")
+
+
+def load_coverage_update(path=COVERAGE_UPDATE):
+    """The 09.09 closures, verbatim: one row per lot and parameter."""
+    with open(path, encoding="utf-8") as fh:
+        return list(csv.DictReader(fh, delimiter="\t"))
 ICOA_ROWS = []
 NEW_NONCONF = []
 ADDED = collections.defaultdict(list)        # lot -> documents added by this build (coverage recount)
@@ -426,8 +477,16 @@ if ICOA_RULE:
         return x
     LEGACY_ICOA = _D_(next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--legacy-icoa=")), "15.05.2026"))
     LEGACY_COQ = _D_(next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--legacy-coq=")), "27.05.2026"))
+    # The desk's own convention is that a controlled document is issued on a
+    # working day. It is a convention, not a rule from anywhere above it, so the
+    # owner naming a date outranks it — 06.06.2026 is a Saturday and was chosen
+    # deliberately. The date is honoured and the choice is flagged on the sheet
+    # rather than quietly moved to the Monday.
+    _DAY_FLAGS = []
     for _nm, _d in (("legacy iCoA day", LEGACY_ICOA), ("legacy CoQ day", LEGACY_COQ)):
-        assert _d and _d.weekday() < 5 and _d >= SOP_D, f"the {_nm} must be a working day on or after the SOP floor"
+        assert _d and _d >= SOP_D, f"the {_nm} must be on or after the SOP floor"
+        if _d.weekday() >= 5:
+            _DAY_FLAGS.append(f"the {_nm} {_F_(_d)} is a {_d.strftime('%A')} — the owner's date, kept as given")
     # the old in-house certificates (QCCoA 001 v.01/v.02) the desk knows, by P number and by batch
     OLD_COA = {}
     for _e in _D["ecoa"]:
@@ -435,7 +494,7 @@ if ICOA_RULE:
             OLD_COA.setdefault(_e.get("pn") or "", (_e["code"], _e["date"]))
             OLD_COA.setdefault(T.batch_key(_e["batch"]), (_e["code"], _e["date"]))
     OLD_COA.pop("", None)
-    FLAGS, COQ_ROWS = [], []
+    FLAGS, COQ_ROWS = list(_DAY_FLAGS), []
     # the QP's retest campaign began in July 2026 with the sampling of Tranche 1 (the first 21 lots
     # produced), then Tranches 2 and 3 (Head of QC, 05.09.2026): a certificate dated on or after
     # RETEST_START is a retest document — it certifies the reissued CoQ, never the initial one
@@ -572,7 +631,7 @@ if ICOA_RULE:
                 if _latest_d and _latest_d > LEGACY_COQ:
                     _coq_issue = _workday(_latest_d, 7)
                     _coq_flag = f"moved off 27.05.2026: cites {_latest[0]} of {_latest[1]}"
-                    FLAGS.append(f"{_lot_id}: legacy CoQ cannot be dated 27.05.2026 — it cites {_latest[0]} of {_latest[1]}; planned {_F_(_coq_issue)} (first working day 7 days after)")
+                    FLAGS.append(f"{_lot_id}: legacy CoQ cannot be dated {_F_(LEGACY_COQ)} — it cites {_latest[0]} of {_latest[1]}; planned {_F_(_coq_issue)} (first working day 7 days after)")
                 else:
                     _coq_issue = LEGACY_COQ
             elif _group == "post-SOP":
@@ -584,7 +643,7 @@ if ICOA_RULE:
                     FLAGS.append(f"{_lot_id}: no initial certificate on file — the CoQ keeps its planned number with a provisional date {_F_(_coq_issue)}")
                 if _latest_d and _workday(_latest_d, 7) < LEGACY_COQ:
                     _coq_flag = f"rule date {_F_(_workday(_latest_d, 7))} held to the legacy series day"
-                    FLAGS.append(f"{_lot_id}: post-SOP CoQ rule date {_F_(_workday(_latest_d, 7))} precedes the legacy series day 27.05.2026 — held to it, so the legacy CoQs keep 001 onward")
+                    FLAGS.append(f"{_lot_id}: post-SOP CoQ rule date {_F_(_workday(_latest_d, 7))} precedes the legacy series day {_F_(LEGACY_COQ)} — held to it, so the legacy CoQs keep 001 onward")
             else:
                 _coq_issue = None
             if _coq_issue and _icoa_issue and scope and _coq_issue < _icoa_issue:
@@ -700,9 +759,88 @@ if ICOA_RULE:
             _later.append(r)
         else:
             _issuable.append(r)
-    _issuable.sort(key=lambda r: (r["icoa_issue"], str(T.date_key(r["sortdate"])) if r["sortdate"] else "9", r["cu"], r["p"]))
+    # The number comes from icoa_register.py and is not computed again here.
+    #
+    # It used to be: sort these rows, then number them 1..N by position. That is a
+    # second definition of a controlled document code, and on 11.09.2026 the owner
+    # found what two definitions do — batch J31122501 / P060262 was the first row
+    # of this sheet, so it took iCoA-PP_26-001, while its own certificate cited
+    # iCoA-PP_26-066. Of the 49 rows that could be compared, none agreed.
+    #
+    # The module implements the owner's ruling of 10.09.2026: "the register
+    # encompasses every internal certificate that exists or ever will … one per
+    # testing round, which is exactly the number of certificates of quality" —
+    # 106 over 80 batches — ordered by the issue date, then when the work was
+    # done, then the batch. The certificates print from it. So does this sheet
+    # now, and the local sort survives only to order the rows the module has no
+    # entry for.
+    _MOD_CODE, _MOD_KNOWN, _MOD_ROWS = {}, set(), []
+    try:
+        import icoa_register as _IR
+        _MOD_ROWS = _IR.build()
+        for _m in _MOD_ROWS:
+            _suf = "I" if _m["round"] == "initial release" else "R"
+            for _base in filter(None, (_m["p_lot"], _m["batch"])):
+                _k = f"{T.batch_key(_base)}|{_suf}"
+                _MOD_KNOWN.add(_k)
+                if _m["code"]:
+                    _MOD_CODE.setdefault(_k, _m["code"])
+    except Exception as _e:
+        print("iCoA codes NOT taken from icoa_register.py:", _e)
+
+    def _mod_keys(r):
+        _base, _, _suf = r["key"].rpartition("|")
+        return (f"{T.batch_key(_base)}|{_suf}", f"{T.batch_key(r['cu'])}|{_suf}")
+
+    def _mod_code(r):
+        return next((_MOD_CODE[k] for k in _mod_keys(r) if k in _MOD_CODE), None)
+
+    def _mod_withheld(r):
+        """The register knows this round and deliberately gave it no number.
+
+        A code in an issue-ordered series says the certificate was issued, and a
+        certificate with no testing date cannot be. Two lots were being numbered
+        here that the register withholds a number from for exactly that reason.
+        """
+        return any(k in _MOD_KNOWN for k in _mod_keys(r)) and _mod_code(r) is None
+
+    _issuable.sort(key=lambda r: (_mod_code(r) or "zzz",
+                                  str(T.date_key(r["icoa_issue"])) if r["icoa_issue"] else "9",
+                                  str(T.date_key(r["sortdate"])) if r["sortdate"] else "9",
+                                  r["cu"], r["p"]))
+    # A row the register does not number is not in the series, and must not be
+    # given a number here. There used to be a positional fallback for rows the
+    # register cannot identify, and it minted numbers out of this sheet's own
+    # row count — which collided head-on with the real series: rows took 061-066
+    # while the register had already given those numbers to other rounds.
+    _withheld, _unknown = [], []
+    for r in _issuable:
+        if _mod_withheld(r):
+            r["why"] = "no packaging date on the list — the register withholds a number"
+            _withheld.append(r)
+        elif _mod_code(r) is None:
+            r["why"] = ("not in icoa_register.py — the register numbers the series and "
+                        "does not carry this round")
+            _unknown.append(r)
+    _issuable = [r for r in _issuable if r not in _withheld and r not in _unknown]
+    _later.extend(_withheld + _unknown)
+    if _unknown:
+        print("iCoA register: %d issuable row(s) the register does not carry, left unnumbered: %s"
+              % (len(_unknown), ", ".join(sorted(r["key"] for r in _unknown))))
+    _no_mod = 0
+    if os.environ.get("ICOA_DEBUG"):
+        print("DEBUG _MOD_CODE entries:", len(_MOD_CODE))
+        for _k in ("P060152|I", "P060162|I"):
+            print("   probe", _k, "->", _MOD_CODE.get(_k))
+        for _rr in _issuable[:3]:
+            print("   row key=%r cu=%r -> %r" % (_rr["key"], _rr["cu"], _mod_code(_rr)))
+        _p = next((x for x in _issuable if x["key"] == "P060152|I"), None)
+        print("   P060152 row:", (_p or {}).get("key"), "->", _mod_code(_p) if _p else "no such row")
     for _i, r in enumerate(_issuable, 1):
-        r["code"], r["issuable"] = f"iCoA-PP_26-{_i:03d}", "yes"
+        _c = _mod_code(r)
+        if _c is None:
+            _no_mod += 1
+        r["code"], r["issuable"] = _c, "yes"
         r["reg_status"] = ("registered — issued with the legacy series on 15.05.2026" if r["group"] == "legacy"
                            else "registered — first working day 5 days after packaging")
         r["icoa"], r["status"] = r["code"], r["reg_status"]
@@ -712,9 +850,103 @@ if ICOA_RULE:
         r["icoa"] = r["code"]
         if r["series"] == "initial release":
             r["status"] = r["reg_status"]
-    REGISTER = _issuable + sorted(_na, key=lambda r: (str(T.date_key(r["sortdate"])) if r["sortdate"] else "9", r["cu"], r["p"])) \
+    PLANNING = _issuable + sorted(_na, key=lambda r: (str(T.date_key(r["sortdate"])) if r["sortdate"] else "9", r["cu"], r["p"])) \
         + sorted(_later, key=lambda r: (0 if r["series"] == "initial release" else 1 if r["status"].startswith("due") else 2,
                                                           str(T.date_key(r["sortdate"] or r["basis"])) if (r["sortdate"] or r["basis"]) else "9", r["cu"], r["p"]))
+
+    # ------------------------------------------------------- the register IS the standing series
+    # Owner, 10.09.2026: "The register encompasses every internal certificate that
+    # exists or ever will" — one per testing round. Two modules were deciding
+    # which internal certificates exist: icoa_register.py, which holds the series
+    # the certificates print from, and the rows above, which are this file's
+    # issuance planning for the lots it drafts. A value defined twice disagrees,
+    # and this pair did. The sheet printed 60 of the series' 95 codes; it showed
+    # no retest certificate at all where the series issues 26, because its retest
+    # rows are one per lot per tranche and a lot with four retest rounds had one
+    # row standing for four certificates; and it withheld nine more on a rule the
+    # owner has replaced. "Where a CNP certificate reports all three, no iCoA is
+    # needed" is the note of 05.09.2026; the ruling of 10.09.2026 is
+    # "identification A, identification B and foreign matter, ALWAYS", because
+    # they are performed in house at packaging whatever an external laboratory
+    # also reports. The certificate exists, so the register carries it. WHICH
+    # document the certificate of quality cites for those three is a separate
+    # question, decided by cell_resolution, and nothing here touches it.
+    #
+    # So the series is the definition and this sheet renders it, one row per
+    # testing round. Planning columns come from the planning row for the same lot
+    # and round; a lot the series does not carry keeps its planning row,
+    # unnumbered and saying why.
+    _plan_lot = {}
+    for r in PLANNING:
+        _suf = "I" if r["series"] == "initial release" else "R"
+        for _b in (r["p"], re.sub(r"[＊*]", "", r["cu"])):
+            if _b and not str(_b).startswith(("N/A", "—")):
+                _plan_lot.setdefault((T.batch_key(str(_b)), _suf), r)
+    _DETN = {"1": "Ident A", "2": "Ident B", "7": "Foreign matter"}
+
+    def _dmy(v):
+        import datetime as _dt
+        try:
+            return _dt.datetime.strptime(str(v), "%d.%m.%Y").date()
+        except ValueError:
+            return None
+
+    REGISTER, _emitted = [], set()
+    for _m in _MOD_ROWS:
+        _rel = _m["round"] == "initial release"
+        _base = "I" if _rel else "R"
+        _plan = next((_plan_lot[(T.batch_key(_b), _base)] for _b in filter(None, (_m["p_lot"], _m["batch"]))
+                      if (T.batch_key(_b), _base) in _plan_lot), None)
+        # retest 1 keeps the bare |R the planning row already used, so every
+        # lookup that cites a register key — the iCoA Issuance sheet, the CoQ
+        # Register, and the tracker's own in-house cells through INST_KEY —
+        # resolves to the same row it resolved to before. Rounds 2 and up were
+        # unaddressable until now and take |R2 … |R5.
+        _n = "" if _rel or _m["round"] == "retest 1" else _m["round"].split()[-1]
+        _key = ((_plan or {}).get("key") or "%s|%s" % (_m["p_lot"] or _m["batch"], _base))
+        _key = _key.rpartition("|")[0] + "|" + _base + _n
+        if _key in _emitted:
+            # Two certificates cannot share a key: the lookups that cite one
+            # take the first match and the second would be invisible. Fall back
+            # to the round's own names before giving up, and say so if even that
+            # collides — a dropped row here is a certificate missing from the
+            # register, which is the defect this block exists to fix.
+            _alt = "%s|%s%s" % (_m["p_lot"] or _m["batch"], _base, _n)
+            if _alt in _emitted:
+                print("iCoA register: %s (%s, %s) collides on key %s and is NOT on the sheet"
+                      % (_m["code"] or "unnumbered", _m["batch"], _m["round"], _key))
+                continue
+            _key = _alt
+        _emitted.add(_key)
+        _scope = " + ".join(_DETN.get(_d, "#" + _d) for _d in (_m["parameters"] or "").split())
+        REGISTER.append({
+            "code": _m["code"] or "", "issuable": "yes" if _m["code"] else "no",
+            "series": _m["round"],          # the series' own vocabulary: "retest 1" … "retest 5"
+            "group": (_plan or {}).get("group", "—"),
+            "cu": (_plan or {}).get("cu") or _m["batch"],
+            "p": (_plan or {}).get("p") or _m["p_lot"] or "N/A — no P batch assigned",
+            "strain": _m["strain"] or (_plan or {}).get("strain", ""),
+            "scope": _scope, "cnp": (_plan or {}).get("cnp", "—"),
+            "plan_ref": (_plan or {}).get("plan_ref") or "—", "key": _key,
+            # A release round is dated from `Batch Dates` by formula, so the
+            # workbook stays live; a retest is dated at its own sampling, which
+            # is on no sheet, so the module's date is written as a literal.
+            "lit_from": None if _rel else _dmy(_m["tested_from"]),
+            "lit_issue": None if _rel else _dmy(_m["issued"]),
+            "reg_status": ("registered — %s, issued %s" % (_m["round"], _m["issued"]) if _m["code"]
+                           else "not yet issuable — %s" % (_m["note"] or "no testing date on file")),
+        })
+    # Every lot the series does not carry keeps the row the planning gave it. Ten
+    # rows arrive here and none of them is an oversight to paper over: three lots
+    # have no production record at all, and seven are the starred lots, whose
+    # star batch_id.batch_key deliberately keeps — whether GG012601＊ is GG012601
+    # is a fact about the floor and is the Head of QC's to rule, not a function's.
+    for r in PLANNING:
+        if r["key"] in _emitted:
+            continue
+        _emitted.add(r["key"])
+        r["code"] = "" if r["issuable"] == "n/a" else r.get("code") or ""
+        REGISTER.append(r)
     ICOA_BY_KEY = {r["key"]: r for r in ICOA_ROWS}
     _cq_ok, _cq_later = [], []
     for r in COQ_ROWS:
@@ -747,10 +979,18 @@ if ICOA_RULE:
         r["reg_status"] = "not yet issuable — " + r["why"]
     COQ_REGISTER = _cq_ok + sorted(_cq_later, key=lambda r: (0 if r["series"] == "initial release" else 1,
                                                              str(T.date_key(r["sortdate"] or r["basis"])) if (r["sortdate"] or r["basis"]) else "9", r["cu"], r["p"]))
-    print(f"iCoA register: {len(_issuable)} numbered (iCoA-PP_26-001 … {_issuable[-1]['code'][-3:] if _issuable else '—'}; "
-          f"{sum(1 for r in _issuable if r['group'] == 'legacy')} legacy on 15.05.2026, "
-          f"{sum(1 for r in _issuable if r['group'] != 'legacy')} post-SOP), {len(_later)} not yet issuable "
-          f"({sum(1 for r in _later if r['series'] == 'initial release')} initial, {sum(1 for r in _later if r['series'] != 'initial release')} retest)")
+    # The register sheet is the series, so it is the series that is counted here.
+    # This line used to report the planning rows it numbered — 60 — while the
+    # sheet carried 95 codes, which is how a stale statistic outlives the thing
+    # it described.
+    _rg_num = [r for r in REGISTER if r.get("code", "").startswith("iCoA-PP_26-")]
+    print(f"iCoA register: {len(_rg_num)} numbered (iCoA-PP_26-001 … "
+          f"{_rg_num[-1]['code'][-3:] if _rg_num else '—'}; "
+          f"{sum(1 for r in _rg_num if r['series'] == 'initial release')} release, "
+          f"{sum(1 for r in _rg_num if r['series'] != 'initial release')} retest), "
+          f"{len(REGISTER) - len(_rg_num)} not yet issuable "
+          f"({sum(1 for r in REGISTER if not r.get('code', '').startswith('iCoA-PP_26-') and r['series'] == 'initial release')} "
+          f"initial, {sum(1 for r in REGISTER if not r.get('code', '').startswith('iCoA-PP_26-') and r['series'] != 'initial release')} retest)")
     print(f"CoQ register: {len(_cq_ok)} numbered (CoQ-PP_26-001 … {_cq_ok[-1]['code'][-3:] if _cq_ok else '—'}; "
           f"{sum(1 for r in _cq_ok if r['group'] == 'legacy' and not r['coq_flag'])} legacy on 27.05.2026, "
           f"{sum(1 for r in _cq_ok if r['group'] == 'legacy' and r['coq_flag'])} legacy moved, "
@@ -854,13 +1094,21 @@ REGISTER_ONLY = set()          # (code, det) the desk holds and v8 does not — 
 
 
 def values_of(code, lab, cu, scope=None):
-    """v8's reading where it has one; the desk's verified value where it does not."""
+    """v8's reading where it has one; the desk's verified value where it does not.
+
+    Every value leaves here in the desk's controlled spelling. This is the one
+    funnel a result passes through on its way into the workbook, so the audit of
+    11.09.2026 — nine spellings of *absent*, seven of *below quantitation*, a
+    `Confirms` typo for the verdict and three multiplication signs — is closed at
+    the source rather than in each sheet that prints it. `canon` rewrites notation
+    only: digits, markers, glosses and a laboratory's own verdict all survive.
+    """
     out = dict(v8_of(code, cu, V8VAL))
     for no, v in desk_values(code, lab, cu, scope).items():
         if no not in out:
             out[no] = f"{v} ᴿ"        # ᴿ: the release register or a page read, not v8's extraction
             REGISTER_ONLY.add((T.nkey(code), no))
-    return out
+    return {no: RV.canon(v, no) for no, v in out.items()}
 
 
 def silent_as(code, cu, no):
@@ -1047,6 +1295,18 @@ for b in batches:
             if here and ICOA_RULE and T.nkey(code) in INST_KEY:
                 ref = ("=IFERROR(INDEX('iCoA Register'!$B:$B,MATCH(\"%s\",'iCoA Register'!$%s:$%s,0)),\"iCoA — at issue\")&\", (%s) [PP]\""
                        % (INST_KEY[T.nkey(code)], REG_KEY_COL, REG_KEY_COL, date))
+            elif here and str(code).startswith("NO-DOC-CODE"):
+                # An in-house report with no document code of its own, cited directly
+                # on Identification A and foreign matter for GG1024, HPA1024 and
+                # OPM1024. The standing ruling is that an in-house result is never
+                # referenced on a certificate of quality — it is carried by an
+                # internal CoA, which is what covers these determinations. None of
+                # the three lots has a packaging date, so their internal CoA is one
+                # of the seven the register leaves unnumbered; the reference says so
+                # in the register's own words rather than printing a placeholder
+                # that reads like a document code.
+                ref = ref_disp = (f"iCoA — at issue ({b['p'] if b['p'].startswith('P0') else b['cu']})"
+                                  f", ({date}) [PP]")
 
             if p["subs"]:
                 for j, no in enumerate(p["subs"]):
@@ -1054,8 +1314,16 @@ for b in batches:
                         v = values_of(here[0], here[2], b["cu"], scope_of(b, here[0])).get(no)
                         blank = not any(values_of(here[0], here[2], b["cu"], scope_of(b, here[0])).get(x)
                                         for x in p["subs"])
+                        # "not reported" is the desk saying this certificate does not
+                        # carry this sub-determination. It used to print "n.r.", which
+                        # the owner's ruling of 10.09.2026 reserves: any derivation of
+                        # n.r. printed as a PARAMETER RESULT is ND. This is not a
+                        # result — writing ND here would assert the analyte was
+                        # measured and absent, which is the one thing the cell knows
+                        # to be untrue — so the annotation is spelled out instead and
+                        # the notation is left to results.
                         cell_v = v or (silence_reason(here[0], here[2], b["cu"], no) if blank and j == 0
-                                       else ("" if blank else "n.r."))
+                                       else ("" if blank else "not reported"))
                         font = F7R if T.over_limit(no, v or "") else (F7U if T.undetermined(no, v or "") else F7B)
                     else:
                         cell_v = "— MISSING —" if state == "red" else ""
@@ -1153,7 +1421,7 @@ key = ("KEY — ✓ green: certificate on file AND its result on the desk (relea
        "BLOCK RULE: one TESTING INSTANCE = one block of two rows — result(s) on the top row, the certificate that reports them on "
        "the bottom row. A batch holds as many blocks as it has testing instances, and a parameter's certificates are taken in "
        "ascending date order, so the n-th block is the n-th round of testing; a parameter tested once has an empty cell in the "
-       "later blocks. For #9, #10 and #11 each sub-determination has its own column on the top row. n.r. = that sub-determination "
+       "later blocks. For #9, #10 and #11 each sub-determination has its own column on the top row. \"not reported\" = that sub-determination "
        "is not reported on that certificate; \"no result on file\" = the certificate is credited here but the desk holds no result "
        "from it. RED BOLD result = OUT OF SPECIFICATION against the criterion in row 3; AMBER BOLD result = UNDETERMINED, in the "
        "Ph. Eur. band between a printed count limit and twice it. The check follows the Quality Desk exactly: a counted "
@@ -1211,7 +1479,7 @@ ACTION = {
     "held for review": "The two independent reads disagreed. A person must confirm the figure from the page.",
     "non-conformance reported": "The certificate reports a result that does not conform. Open an investigation record; the "
                                 "Head of QC rules on the lot, and the iCoA for this parameter is held until then.",
-    "n.r.": "Not reported on this certificate.",
+    "not reported": "Not reported on this certificate.",
 }
 _r = 2
 for cu, pb, code, date, lab, pno, title, why in sorted(audit, key=lambda x: (x[7], x[0], x[5])):
@@ -1223,7 +1491,7 @@ for cu, pb, code, date, lab, pno, title, why in sorted(audit, key=lambda x: (x[7
     put(aud, _r, 5, lab, F7, None, CEN)
     put(aud, _r, 6, f"#{pno}", F7, None, CEN)
     put(aud, _r, 7, title, F7, None, Alignment(horizontal="left", vertical="center", wrap_text=True))
-    put(aud, _r, 8, why, F7B, FILL["amber"] if why in ("not on this certificate", "n.r.") else FILL["red"], CEN)
+    put(aud, _r, 8, why, F7B, FILL["amber"] if why in ("not on this certificate", "not reported") else FILL["red"], CEN)
     put(aud, _r, 9, ACTION.get(why, ""), F6I, None, Alignment(horizontal="left", vertical="center", wrap_text=True))
     _r += 1
 aud.auto_filter.ref = f"A1:{L(len(acols))}{_r - 1}"
@@ -1411,10 +1679,19 @@ def patch_coverage(wb):
             rows[k] = r
 
     def recount(r):
-        miss = [n for n in range(1, 13) if cov.cell(r, 4 + n).value == "✗"]
+        # ○ is the owner's own third mark, from Batch Coverage v19: a certificate
+        # is on file for this parameter and the tracker does not name it. It is
+        # not coverage — nothing can be cited on a certificate of quality until
+        # the desk records the document — so it counts as missing and says why.
+        miss = [n for n in range(1, 13) if cov.cell(r, 4 + n).value in ("✗", "○")]
+        onfile = {n for n in range(1, 13) if cov.cell(r, 4 + n).value == "○"}
         cov.cell(r, 17).value = len(miss)
-        cov.cell(r, 18).value = "; ".join(f"#{n} {short[n]}" for n in miss) or "—"
-        st = "✓ COMPLETE" if not miss else (f"⚠ {len(miss)} MISSING" if len(miss) <= 3 else f"❌ {len(miss)} MISSING")
+        cov.cell(r, 18).value = "; ".join(
+            f"#{n} {short[n]}" + (" (on file 09.09, not recorded)" if n in onfile else "")
+            for n in miss) or "—"
+        st = "✓ COMPLETE" if not miss else (
+            f"○ {len(miss)} ON FILE, NOT RECORDED" if set(miss) == onfile else
+            (f"⚠ {len(miss)} MISSING" if len(miss) <= 3 else f"❌ {len(miss)} MISSING"))
         cell = cov.cell(r, 4)
         cell.value = st
         if st[:1] in status_style:
@@ -1488,8 +1765,114 @@ def patch_coverage(wb):
         last -= 1
     if _dups:
         print(f"coverage: {len(_dups)} duplicate row(s) removed (the owner's re-analysis rows of merged lots)")
+
+    # The owner's 09.09.2026 pass over eCoA_DATABASE names, per lot and per
+    # parameter, a certificate on file that the coverage sheet still marks ✗.
+    # Applied last, after the duplicate rows are gone, so the row map is the one
+    # the finished sheet has; a closure that finds no row is reported, never
+    # invented. See coverage_update_2026-09-09.tsv and the Reconciliation sheet.
+    if CELLS_0909:
+        by_row, by_key = {}, {}
+        for r in range(2, last + 1):
+            k = rowkey(str(cov.cell(r, 1).value or ""), str(cov.cell(r, 2).value or ""))
+            by_row[k] = r
+            by_key.setdefault(T.cu_key(k[0]), r)
+            _p = str(cov.cell(r, 2).value or "").strip()
+            if _p and not _p.startswith("—"):
+                by_key.setdefault("P:" + _p, r)
+        touched = set()
+        for u in load_coverage_update():
+            # The sheet's second block names several parameters in one cell —
+            # the lots it carried no row for at all, closed wholesale by one
+            # certificate. Every number in the cell is a parameter.
+            nums = [int(x) for x in re.findall(r"#(\d+)", u["Parameter"])]
+            if not nums:
+                continue
+            r = by_row.get(rowkey(u["CU batch"], u["P batch"])) \
+                or by_key.get(T.cu_key(u["CU batch"])) \
+                or by_key.get("P:" + u["P batch"].strip())
+            if r is None:
+                COV_0909_SKIPPED.append((u, "no row on Batch Coverage"))
+                continue
+            lab = re.search(r"\[([^\]]+)\]\s*$", u["Now covered by"].strip())
+            for n in nums:
+                cell = cov.cell(r, 4 + n)
+                if cell.value == "✓":
+                    COV_0909_SKIPPED.append((u, "#%d already covered" % n))
+                    continue
+                cell.value = "○"
+                _style_from(cell, cross)
+                cell.fill = PatternFill("solid", fgColor=FILL["amber"])
+                cell.font = Font(name="Calibri", size=9, bold=True, color="B45F06")
+                COV_0909_APPLIED.append((u, r, lab.group(1) if lab else ""))
+                touched.add(r)
+        for r in sorted(touched):
+            cov.cell(r, 19).value = int(cov.cell(r, 19).value or 0) + \
+                len({u["Now covered by"] for u, rr, _ in COV_0909_APPLIED if rr == r})
+            labs = collections.OrderedDict()
+            for tok in str(cov.cell(r, 20).value or "").split(";"):
+                m2 = re.match(r"\s*\[([^\]]+)\]\s*(\d+)", tok)
+                if m2:
+                    labs[m2.group(1)] = int(m2.group(2))
+            for _u, rr, lab in COV_0909_APPLIED:
+                if rr == r and lab:
+                    labs[lab] = labs.get(lab, 0) + 1
+            cov.cell(r, 20).value = "; ".join(f"[{k}] {v}" for k, v in sorted(labs.items()))
+            recount(r)
+        print(f"coverage update 09.09: {len(COV_0909_APPLIED)} parameter(s) marked ○ "
+              f"(on file, not recorded) on {len(touched)} lot(s); "
+              f"{len(COV_0909_SKIPPED)} not applied")
+
+    # ---- Certificates (n) and Labs present, derived rather than inherited.
+    #
+    # Both columns came down from v6 and were *incremented* by each pass that
+    # touched a lot, so they counted documents the tracker does not cite and could
+    # not be reconciled with it: the audit of 11.09.2026 found 22 rows whose count
+    # exceeded the documents actually referenced (JD012603 said 7, the tracker
+    # cites 2) and 26 rows naming a laboratory that appears in no reference on the
+    # lot. The count was not wrong so much as answering a different question —
+    # it included the 09.09 documents the desk has not recorded — so the two
+    # questions now get two pairs of columns, and both are computed from scratch
+    # here rather than carried forward.
+    _cited, _onfile = {}, collections.defaultdict(set)
+    for b in batches:
+        k = rowkey(b["cu"], b["p"])
+        seen = {}
+        for n in range(1, 13):
+            for c, d, l in b["docs"][n]:
+                seen.setdefault(T.nkey(c), l)
+        _cited[k] = seen
+    for u, rr, lab in COV_0909_APPLIED:
+        _onfile[rr].add((u["Now covered by"].strip(), lab))
+    _hdr = cov.cell(1, 19)
+    for _c, _t in ((19, "Certificates (n)"), (20, "Labs present"),
+                   (21, "On file, not recorded (n)"), (22, "Labs on file, not recorded")):
+        if _c > 20:
+            _style_from(cov.cell(1, _c), _hdr)
+            cov.column_dimensions[L(_c)].width = 22
+        cov.cell(1, _c).value = _t
+    for r in range(2, last + 1):
+        k = rowkey(str(cov.cell(r, 1).value or ""), str(cov.cell(r, 2).value or ""))
+        cites = _cited.get(k)
+        if cites is None:                    # a row whose lot the tracker names differently
+            _p = k[1]
+            cites = next((v for (kc, kp), v in _cited.items() if kp == _p and _p != "— not assigned —"), {})
+        cov.cell(r, 19).value = len(cites)
+        _labs = collections.Counter(cites.values())
+        cov.cell(r, 20).value = "; ".join(f"[{a}] {b_}" for a, b_ in sorted(_labs.items())) or "—"
+        extra = _onfile.get(r, set())
+        for _c in (21, 22):
+            if cov.cell(r, _c).value is None:
+                _style_from(cov.cell(r, _c), cov.cell(r, 19 if _c == 21 else 20))
+        cov.cell(r, 21).value = len({c for c, l in extra})
+        _el = collections.Counter(l for c, l in extra if l)
+        cov.cell(r, 22).value = "; ".join(f"[{a}] {b_}" for a, b_ in sorted(_el.items())) or "—"
+    print("coverage: Certificates (n) and Labs present derived from the tracker's own "
+          f"references; {sum(1 for r in range(2, last + 1) if cov.cell(r, 21).value)} row(s) "
+          "carry documents on file that the desk has not recorded")
+
     if cov.auto_filter.ref:
-        cov.auto_filter.ref = f"A1:{L(20)}{last}"
+        cov.auto_filter.ref = f"A1:{L(22)}{last}"
     return last
 
 
@@ -1540,7 +1923,7 @@ def add_mikro(wb, src_path):
         for b in batches:
             bp = "/" if b["p"].startswith("N/A") else b["p"]
             if (cu0 == re.sub(r"[＊*]", "", b["cu"]) and (p in ("", "/", bp) or p == "N/A — no P batch assigned" and bp == "/")) \
-               or (cu0 == "— not recorded —" and p == bp) or (cu0 == "— not recorded —" and p and p in b["p"]):
+               or (cu0.startswith("— not recorded —") and p == bp) or (cu0.startswith("— not recorded —") and p and p in b["p"]):
                 if b not in lots:
                     lots.append(b)
                 break
@@ -1578,7 +1961,7 @@ def add_mikro(wb, src_path):
     matched = {(re.sub(r"[＊*]", "", b["cu"]), b["p"]) for b in lots}
     print(f"Mikro CoQ Parameter: {len(lots)} of {len(want)} lot(s) matched, {len(rows) - 4} row(s)")
     for cu, p in want:
-        if not any(re.sub(r"[＊*]", "", cu) == mcu or (cu == "— not recorded —" and p in mp) for mcu, mp in matched):
+        if not any(re.sub(r"[＊*]", "", cu) == mcu or (cu.startswith("— not recorded —") and p in mp) for mcu, mp in matched):
             print("   not matched:", repr(cu), repr(p))
     return len(lots)
 
@@ -1674,18 +2057,32 @@ COQ_COLS = [("No.", 6), ("CoQ code", 18), ("Issuable", 9), ("Issue date (planned
             ("Group", 10), ("Series", 20), ("CU Batch", 16), ("P Batch", 12), ("Strain", 20), ("Ident C — eCoA (Total THC)", 34),
             ("CNP references", 26), ("Supersedes (old in-house CoA)", 26), ("Plan reference (31.08.2026)", 22), ("Key", 14),
             ("Status", 64)]
-REG_NOTE = ("Head of QC, 05.09.2026: preliminary iCoA issuance register — ONE iCoA per P lot for identification A, B and foreign "
-            "matter, tested at packaging (the first day). Codes iCoA-PP_26-nnn (nnn = 001 … 999), one series for the year of "
-            "issue, in the order of issue: LEGACY lots (packed before the SOP floor of 11.05.2026, or holding an old in-house "
-            "QCCoA 001 certificate) are all issued on 15.05.2026, in chronological order of packaging; POST-SOP lots follow, each "
-            "on the first working day 5 days after its packaging. No number is reserved for a row that cannot be issued yet (a lot "
-            "without a packaging date, a held result, every retest iCoA, whose sampling date is not on the desk); where a CNP "
-            "certificate reports all three, no iCoA is needed. FORMULAS: No. counts the issuable rows above it; the code is built "
-            "from No.; the planned date is 15.05.2026 for a legacy row, else the first working day 5 days after Packaging complete; "
-            "the packaging dates are looked up on Batch Dates by P batch (else by the batch as listed); CoQ (register) is looked up on "
-            "the CoQ Register by Key. Insert a row, set Issuable to yes, and every code beneath moves by one — the iCoA Issuance "
-            "sheet and the tracker cite this register by Key, so they follow. Rows are not re-sorted by a formula: a changed date "
-            "that changes the order is a manual move. Working days are Monday to Friday; public holidays are not applied.")
+REG_NOTE = ("THE STANDING REGISTER OF INTERNAL CERTIFICATES OF ANALYSIS. Head of QC, 10.09.2026: \"the register encompasses every "
+            "internal certificate that exists or ever will\" — ONE PER TESTING ROUND, not one per lot and not only the ones the "
+            "drafted certificates happen to need. Each carries identification A, identification B and foreign matter ALWAYS "
+            "(performed in house, on the first day of packaging for the release round and at its own sampling for a retest), plus "
+            "any determination whose only result in that round is an in-house record. Codes iCoA-PP_26-nnn, one series for the "
+            "year of issue, in the order of issue: by issue date, then by when the work was done, then by batch — 03.06.2026 for "
+            "anything that would otherwise predate the specification SOP, so the backlog shares one date and orders by packaging, "
+            "as the CoQ series does. THE ROWS, THE NUMBER AND THE CODE ARE NOT COMPUTED HERE (11.09.2026): this sheet RENDERS "
+            "icoa_register.py, which is the series, and writes its numbers as literal values. Two things were being decided twice "
+            "and disagreed. The number used to be a formula over this sheet's own row order, so the first physical row took "
+            "iCoA-PP_26-001 while its own certificate cited iCoA-PP_26-066 and none of the 49 comparable rows agreed; and the ROW "
+            "SET was this sheet's issuance planning, so it printed 60 of the series' 95 codes, showed no retest certificate at all "
+            "where the series issues 26 (its retest rows are one per lot per tranche — a lot with four retest rounds had one row "
+            "standing for four certificates), and withheld nine more under \"where a CNP certificate reports all three, no iCoA is "
+            "needed\", the note of 05.09.2026 that the ruling of 10.09.2026 replaced: the in-house laboratory performs those three "
+            "whatever an external laboratory also reports, so the certificate exists and is registered. Which document the "
+            "CERTIFICATE OF QUALITY cites for them is a separate question and is unchanged. Rows below the series are lots it does "
+            "not carry — a retest that is planned but not yet sampled, a lot with no production record, and the starred lots, "
+            "whose star batch_id.batch_key deliberately keeps because whether GG012601＊ is GG012601 is the Head of QC's to rule. "
+            "They are unnumbered and say why. Inserting a row renumbers nothing. verify_workbook.py compares sheet and series on "
+            "every run. FORMULAS remaining: a release round's testing date and packaging-complete date are looked up on Batch "
+            "Dates by P batch (else by the batch as listed) and its issue date is the later of that testing date and 03.06.2026; a "
+            "RETEST is dated at its own sampling, which no sheet holds, so the series' dates are written as literals rather than "
+            "guessed by a formula. CoQ (register) is looked up on the CoQ Register by Key — the iCoA Issuance sheet and the "
+            "tracker's in-house cells cite this register by Key, so they follow it. Working days are Monday to Friday; public "
+            "holidays are not applied.")
 COQ_NOTE = ("Head of QC, 05.09.2026: preliminary CoQ issuance register — codes CoQ-PP_26-nnn (nnn = 001 … 999), one series for the "
             "year of issue, in the order of issue. LEGACY lots (packed before the SOP floor of 11.05.2026, or holding an old "
             "in-house QCCoA 001 certificate, which the CoQ supersedes) are all issued on 27.05.2026, in chronological order of "
@@ -1716,6 +2113,11 @@ def _roll(expr):
     return f"({expr})+CHOOSE(WEEKDAY({expr},2),0,0,0,0,0,2,1)"
 
 
+def _XD(d):
+    """A Python date as an Excel DATE() literal, so one constant drives both."""
+    return "DATE(%d,%d,%d)" % (d.year, d.month, d.day)
+
+
 def _fill_register(sh):
     """The iCoA register as an Excel table whose number, code and dates are formulas."""
     from openpyxl.worksheet.table import Table, TableStyleInfo
@@ -1726,14 +2128,36 @@ def _fill_register(sh):
     BD_ = "'Batch Dates'"
     _r = 2
     for r in REGISTER:
-        f_no = f'=IF(C{_r}="yes",COUNT(A$1:A{_r - 1})+1,"")'
-        f_code = f'=IF(A{_r}<>"","iCoA-PP_26-"&TEXT(A{_r},"000"),IF(C{_r}="n/a","not needed","— at issue —"))'
-        f_issue = f'=IF(A{_r}="","",IF(G{_r}="legacy",DATE(2026,5,15),IF(ISNUMBER(F{_r}),{_roll(f"F{_r}+5")},"")))'
+        # The number and the code are LITERALS taken from icoa_register.py, not
+        # formulas over this sheet's row order. COUNT(A$1:A{n})+1 numbered a
+        # controlled series by where a row happened to sit, which is how the
+        # first physical row took iCoA-PP_26-001 while its certificate cited
+        # iCoA-PP_26-066. A document code is not a function of its row.
+        import re as _re
+        _m = _re.search(r"(\d+)$", str(r.get("code") or ""))
+        f_no = int(_m.group(1)) if _m else ""
+        f_code = r.get("code") or ("not needed" if r["issuable"] == "n/a" else "— at issue —")
+        # Owner, 10-11.09.2026: the internal certificate is tested on the FIRST
+        # day of packaging (column E, not the packaging-complete date in F) and
+        # issued that day, or on the specification SOP's day where that day comes
+        # first. No lag and no roll to a working day — this is the same arithmetic
+        # `issuance_schedule.icoa_issue` does, and the certificates print that.
+        f_issue = f'=IF(A{_r}="","",IF(ISNUMBER(E{_r}),MAX({_XD(LEGACY_ICOA)},E{_r}),{_XD(LEGACY_ICOA)}))'
         f_from = (f'=IFERROR(INDEX({BD_}!$F:$F,MATCH(J{_r},{BD_}!$C:$C,0)),'
                   f'IFERROR(INDEX({BD_}!$F:$F,MATCH(I{_r},{BD_}!$B:$B,0)),""))')
         f_to = (f'=IFERROR(INDEX({BD_}!$G:$G,MATCH(J{_r},{BD_}!$C:$C,0)),'
                 f'IFERROR(INDEX({BD_}!$G:$G,MATCH(I{_r},{BD_}!$B:$B,0)),""))')
-        cells = (f_no, f_code, r["issuable"], f_issue, f_from if r["series"] == "initial release" else "at retest sampling", f_to,
+        # A release round is tested on the packaging date, which `Batch Dates`
+        # carries, so both dates stay formulas and the workbook stays live. A
+        # retest is tested at its own sampling, which is on no sheet to look up:
+        # the series computed it and it is written here as a literal, because a
+        # formula over a value the workbook does not hold can only be a guess.
+        if r.get("lit_from"):
+            f_from = r["lit_from"]
+        if r.get("lit_issue"):
+            f_issue = r["lit_issue"]
+        cells = (f_no, f_code, r["issuable"], f_issue,
+                 f_from if (r["series"] == "initial release" or r.get("lit_from")) else "at retest sampling", f_to,
                  r["group"], r["series"], r["cu"], r["p"], r["strain"], r["scope"], r["cnp"],
                  COQ_LOOKUP("B", r["key"], "—"), r.get("plan_ref") or "—", r["key"], r["reg_status"])
         for _i, v in enumerate(cells, 1):
@@ -1767,14 +2191,21 @@ def _fill_coq_register(sh):
     for r in COQ_REGISTER:
         f_no = f'=IF(C{_r}="yes",COUNT(A$1:A{_r - 1})+1,"")'
         f_code = f'=IF(A{_r}<>"","CoQ-PP_26-"&TEXT(A{_r},"000"),"— at issue —")'
-        f_rule = (f'=IF(ISNUMBER(F{_r}),IF(AND(J{_r}="legacy",F{_r}<=DATE(2026,5,27)),DATE(2026,5,27),MAX(DATE(2026,5,27),{_roll(f"F{_r}+7")})),'
-                  f'IF(J{_r}="legacy",DATE(2026,5,27),""))')
+        # Owner, 10.09.2026: five to ten days after the last external certificate
+        # the sheet cites, floored to the blanket day. LAG_DAYS is 7 in
+        # issuance_schedule.py and 7 here, and neither rolls to a working day.
+        f_rule = (f'=IF(ISNUMBER(F{_r}),MAX({_XD(LEGACY_COQ)},F{_r}+7),{_XD(LEGACY_COQ)})')
+        # never before the rule date, never before the internal certificate it
+        # references, and never before the lot finished being packed. The last is
+        # not decoration: P060482's last external certificate is dated 30.06.2026
+        # and the lot was still being packed on 05.08.2026.
         _pkc = f"INDEX('iCoA Register'!$F:$F,MATCH(S{_r},'iCoA Register'!${REG_KEY_COL}:${REG_KEY_COL},0))"
-        f_issue = f'=IF(A{_r}="","",MAX(E{_r},IF(ISNUMBER(I{_r}),I{_r},0),IFERROR(IF(ISNUMBER({_pkc}),{_roll(_pkc)},0),0)))'
+        f_issue = (f'=IF(A{_r}="","",MAX(E{_r},IF(ISNUMBER(I{_r}),I{_r},0),'
+                   f'IFERROR(IF(ISNUMBER({_pkc}),{_pkc},0),0)))')
         latest_d = _date(r["latest"][1]) if r["latest"] else None
         status = (r["reg_status"] if r["series"] == "initial release" else
                   "not yet issuable — " + r["rt_status"] + " · issued on the first working day 7 days after the latest retest certificate, once the in-house iCoA exists")
-        f_rule_rt = f'=IF(ISNUMBER(F{_r}),MAX(DATE(2026,5,27),{_roll(f"F{_r}+7")}),"at retest sampling")'
+        f_rule_rt = f'=IF(ISNUMBER(F{_r}),MAX({_XD(LEGACY_COQ)},F{_r}+7),"at retest sampling")'
         cells = (f_no, f_code, r["issuable"] if r["series"] == "initial release" else "no", f_issue,
                  f_rule if r["series"] == "initial release" else f_rule_rt,
                  latest_d or ("—" if r["series"] == "initial release" else "— not yet sampled —"), (r["latest"][0] if r["latest"] else "—"),
@@ -1883,16 +2314,21 @@ def add_dates_sheet(wb):
 SHEET_ABOUT = {
     "Read Me": "This sheet.",
     "CoQ Parameter Tracker": "One lot per block of two rows per testing instance: the result of each determination on the top row, the certificate that reports it (code, date, laboratory) beneath; acceptance criteria in row 3 and enforced; out-of-specification results in red and named in STATUS; the in-house iCoA cells cite the iCoA Register by key.",
+    "Reconciliation 09.09": "The owner's 09.09.2026 pass over the 387 certificates in eCoA_DATABASE against the desk, cell by cell: the parameters it closed on Batch Coverage, the cells the two records disagree about, and why the identity determinations stay blank on almost every lot — the iCoA that carries them has not been issued, and the in-house documents that do exist print no microscopy and no foreign-matter percentage.",
     "ImB Register": "The customer's certificate register, scanned 04.09.2026: 43 certificates for the earliest production, each against its desk lot — the strain as printed and as ruled, the manufacturing and retest dates, and the four lots the register skips inside the span it covers.",
     "Delivery T1–T3": "The 78 cultivation batches delivered in the three tranches of 31.07, 14.08 and 28.08.2026, each against its row on Batch Coverage: the P lot, the CoQ status, what is missing, and the potency the batch was delivered under beside the potency its own certificate reports.",
-    "Batch Coverage": "One row per lot: ✓/✗ for each of the 12 parameters, the missing list, the number of certificates and the laboratories present. A grey ✓ is covered by the in-house iCoA.",
+    "Batch Coverage": "One row per lot: ✓/✗/○ for each of the 12 parameters, the missing list, and two pairs of document columns — the certificates the tracker actually cites with their laboratories, and separately the documents on file from the 09.09.2026 pass that the desk has not recorded. Both pairs are derived here from the tracker rather than carried forward, which is what let them drift apart. ○ counts as missing: nothing can be cited until the desk records the document. A grey ✓ is covered by the in-house iCoA.",
     "Mikro CoQ Parameter": "The owner's microbiology sheet, rebuilt from the tracker: the #7–#12 spans per lot in the owner's layout.",
     "Credit Audit": "Certificates credited on the owner's tracker that the desk holds no value from, with the reason.",
     "Credit Corrections": "The two corrections applied to the owner's credits (the Farmahem pair, CNP identification B), one row each; nothing written back to the owner's workbook.",
     "Work Order": "What a person must do next: certificates to ingest, values to read on the page, lots to record.",
+    "Open Items": "The standing register of what the desk cannot decide: every finding raised and left to the owner, with what was found, what the desk did with it, the decision being asked for, and the evidence behind it. STATE is open (waiting, nothing printed), marked (the certificate prints the field bracketed in red and unticked) or ruled (kept for the record with the ruling). Built from open_items.py, which also writes OPEN_ITEMS.md.",
     "iCoA Issuance": "One row per P lot and series (initial release, retest): what its iCoA carries, the CNP references, the cannabinoid-assay eCoA that covers identification C, the codes and planned dates looked up on the registers.",
     "Batch Dates": "The Head of QC's harvest and packaging dates per batch (04.09.2026), as dates; the registers look their packaging dates up here.",
-    "iCoA Register": "The preliminary iCoA issuance register: iCoA-PP_26-nnn in the order of issue, number, code and dates as formulas.",
+    "iCoA Register": "The standing register of internal certificates of analysis, one row per testing round (the owner's ruling of "
+                     "10.09.2026: every internal certificate that exists or ever will). It renders icoa_register.py — the series the "
+                     "certificates print from — so the number and the code are literals taken from it, never computed from a row's "
+                     "position; a lot the series does not carry follows below, unnumbered and saying why.",
     "CoQ Register": "The preliminary CoQ issuance register: CoQ-PP_26-nnn in the order of issue, the latest eCoA each CoQ cites, its iCoA, the adherence flags under the table.",
     "Parameters": "The 21 determinations with method, global acceptance criterion, source and tracker columns.",
     "Summary Dashboard": "Counts recomputed from Batch Coverage: lots, documents, complete / partial / incomplete, missing-parameter frequency.",
@@ -2004,15 +2440,28 @@ def add_delivery_sheet(wb):
                 if row is not None:
                     how = ("through the certificates that print this batch (" +
                            ", ".join(sorted(_codes)[:3]) + "); the desk names the lot " + _lot["cu"])
-        status = str(cov.cell(row, 4).value or "") if row else "— NO RECORD —"
-        missing = str(cov.cell(row, 18).value or "") if row else "no lot on the tracker for this batch"
+        # A batch with no row on Batch Coverage has no coverage this sheet can
+        # state — but "nothing on file" is a different claim, and for four of
+        # these it stopped being true on 09.09.2026. Say which it is.
+        found0909 = [u for u, why in COV_0909_SKIPPED
+                     if why == "no row on Batch Coverage"
+                     and T.cu_key(u["CU batch"]) == T.cu_key(t["batch_printed"])]
+        status = str(cov.cell(row, 4).value or "") if row else (
+            "— CERTIFICATES ON FILE, NO TRACKER ROW —" if found0909 else "— NO RECORD —")
+        missing = str(cov.cell(row, 18).value or "") if row else (
+            "no lot on the tracker for this batch; certificates found on 09.09.2026 "
+            "cover " + found0909[0]["Parameter"] + " — see Reconciliation 09.09"
+            if found0909 else "no lot on the tracker for this batch")
         desk_lot = str(cov.cell(row, 1).value or "") if row else "—"
         vals = thc.get(k) or thc.get(ks) or []
         best = min(vals, key=lambda x: abs(x[0] - t["thc_pct"])) if vals else None
         delta = (best[0] - t["thc_pct"]) if best else None
         oob = bool(best) and not TRN.in_bracket(best[0], t["thc_bracket"])
         if row is None:
-            verdict, fill = "NO — nothing on file for a batch that has been delivered", "red"
+            verdict, fill = (
+                ("NO — certificates are on file but the batch is on no tracker lot; "
+                 "add the lot, then re-run", "amber") if found0909 else
+                ("NO — nothing on file for a batch that has been delivered", "red"))
             n_none += 1
         elif status.startswith("✓"):
             verdict, fill = "yes — all 12 determinations covered", "green"
@@ -2120,6 +2569,132 @@ def apply_strain_rulings(wb):
     print("strain rulings applied: %d cell(s); unresolved strain conflicts: %d (added to the Work Order)"
           % (len(changed), len(conflicts)))
     return changed, conflicts
+
+
+def add_reconciliation_sheet(wb):
+    """The owner's 09.09.2026 pass against the desk, and what this build took from it.
+
+    The workbook the owner sent on 10.09.2026 (CoQ_Analysis_Master_v20_owner.xlsx,
+    Drive 1cBmbOgHSMlzIGyGjuZFRP5DagigtXx29) carries a pass over the 387 PDFs in
+    eCoA_DATABASE: every one of the 600 determinations of Tranches 1 and 2
+    resolved to a document, a laboratory, an issue date and the result that
+    document prints. This sheet says what came of putting the two records side
+    by side — what the pass closed, what it could not, and where the two do not
+    say the same thing about one certificate.
+
+    Nothing here resolves a disagreement. Two records of one document that
+    disagree are a finding for a person; the desk's value stands until someone
+    reads the page.
+    """
+    import importlib.util as _il
+    _r = _il.spec_from_file_location("reconcile_0909",
+                                     os.path.join(GAPDIR, "reconcile_0909.py"))
+    RC = _il.module_from_spec(_r)
+    try:
+        _r.loader.exec_module(RC)
+        cen = RC.census()
+        finds = RC.findings()
+    except Exception as exc:                      # the desk export is the source
+        print("reconciliation: %s" % exc)
+        return
+    CRm = RC.CR
+
+    where = (wb.sheetnames.index("Delivery T1\u2013T3") + 1) if "Delivery T1\u2013T3" in wb.sheetnames \
+        else len(wb.sheetnames)
+    sh = wb.create_sheet("Reconciliation 09.09", where)
+    LEFT = Alignment(horizontal="left", vertical="top", wrap_text=True)
+    for i, w in enumerate((34, 15, 15, 46, 46), 1):
+        sh.column_dimensions[L(i)].width = w
+    r = 1
+
+    def head(t):
+        nonlocal r
+        put(sh, r, 1, t, FW, NAVY, LEFT)
+        for c in range(2, 6):
+            put(sh, r, c, "", FW, NAVY, LEFT)
+        r += 2
+
+    def kv(k, v, note=""):
+        nonlocal r
+        put(sh, r, 1, k, F7, GREY, LEFT)
+        put(sh, r, 2, v, F7, None, LEFT)
+        if note:
+            put(sh, r, 4, note, F6I, None, LEFT)
+        r += 1
+
+    head("THE PASS THIS BUILD READ")
+    kv("Source", "CoQ_Analysis_Master_v20_owner.xlsx",
+       "the owner's workbook of 09.09.2026, vendored beside this one; the three "
+       "sheets it was read from are Cell Resolution 09.09, Coverage Update 09.09 "
+       "and Identity Problem 09.09")
+    kv("Certificates it read", "387", "eCoA_DATABASE, name for name")
+    kv("Determinations it resolved", "600", "50 lots of Tranches 1 and 2 x 12")
+    r += 1
+
+    head("WHAT IT CLOSED ON BATCH COVERAGE")
+    kv("Parameters closed", str(len(COV_0909_APPLIED)),
+       "a certificate on file that this sheet still marked missing")
+    kv("Lots affected", str(len({x[1] for x in COV_0909_APPLIED})))
+    kv("Closures not applied", str(len(COV_0909_SKIPPED)),
+       "already covered, or the lot has no row on Batch Coverage \u2014 listed below")
+    r += 1
+
+    head("WHAT THE TWO RECORDS SAY ABOUT THE SAME 600 CELLS")
+    for k, note in (
+            ("agree", "both hold a value and it is the same value"),
+            ("values", "both hold a value and the values differ \u2014 a finding"),
+            ("order", "the same values against different analytes \u2014 a finding"),
+            ("fill", "the desk held nothing and the pass holds a printable result"),
+            ("blocked", "the only document is an in-house iCoA that has not been issued"),
+            ("uncited", "the only document carries no document code at all"),
+            ("ambiguous", "the pass holds a list of values it does not label"),
+            ("basis note", "the pass names where identity comes from, not a result"),
+            ("none", "neither record holds anything"),
+            ("not comparable", "the two records hold different numbers of lines"),
+            ("no desk lot", "the desk carries no initial-release CoQ for the batch")):
+        if cen.get(k):
+            kv(k, str(cen[k]), note)
+    r += 1
+
+    head("THE DISAGREEMENTS")
+    for i, t in enumerate(("Batch", "Determination", "Kind", "The desk holds",
+                           "The 09.09 pass reads"), 1):
+        put(sh, r, i, t, FW, NAVY, LEFT)
+    r += 1
+    for row, state, d in finds:
+        put(sh, r, 1, row["Batch"], F7, None, LEFT)
+        put(sh, r, 2, "#" + (CRm.det_no(row["Determination"]) or ""), F7, None, LEFT)
+        put(sh, r, 3, "same values,\nother order" if state == "order" else "different values",
+            F7, FILL["amber"] if state == "order" else FILL["red"], LEFT)
+        put(sh, r, 4, "; ".join(d.get("desk", [])), F7, None, LEFT)
+        put(sh, r, 5, "; ".join(d.get("pass", [])), F7, None, LEFT)
+        r += 1
+    r += 1
+
+    head("THE IDENTITY DETERMINATIONS ARE NOT A TRANSCRIPTION PROBLEM")
+    put(sh, r, 1, IDENT_NOTE, F6I, GREY, LEFT)
+    sh.merge_cells(start_row=r, start_column=1, end_row=r + 6, end_column=5)
+    r += 8
+
+    head("CLOSURES THAT FOUND NO ROW")
+    for i, t in enumerate(("CU batch", "P batch", "", "Parameters now covered",
+                           "From"), 1):
+        put(sh, r, i, t, FW, NAVY, LEFT)
+    r += 1
+    for u, why in COV_0909_SKIPPED:
+        if why != "no row on Batch Coverage":
+            continue
+        put(sh, r, 1, u["CU batch"], F7, None, LEFT)
+        put(sh, r, 2, u["P batch"], F7, None, LEFT)
+        put(sh, r, 4, u["Parameter"], F7, None, LEFT)
+        put(sh, r, 5, u["Now covered by"], F7, None, LEFT)
+        r += 1
+    put(sh, r, 1, NOROW_NOTE, F6I, GREY, LEFT)
+    sh.merge_cells(start_row=r, start_column=1, end_row=r + 3, end_column=5)
+    sh.freeze_panes = "A2"
+    print("reconciliation sheet: %d disagreement(s), %d closure(s) with no row"
+          % (len(finds), sum(1 for _, w in COV_0909_SKIPPED
+                             if w == "no row on Batch Coverage")))
 
 
 def add_imb_register_sheet(wb):
@@ -2271,12 +2846,27 @@ def write_read_me(wb):
     line("05.09.2026 · issuance", "Legacy lots (packed before the SOP floor of 11.05.2026, or holding an old in-house QCCoA 001 certificate): iCoAs issued together on 15.05.2026, CoQs (CoQ-PP_26-nnn, superseding the old certificate) on 27.05.2026, both in chronological order of packaging. Post-SOP lots: the iCoA on the first working day 5 days after packaging, the CoQ on the first working day 7 days after the latest eCoA it cites, never before 27.05.2026. Codes iCoA-PP_26-nnn and CoQ-PP_26-nnn, one series each for the year of issue.")
     line("05.09.2026 · retest", "The QP's retest campaign, sampled by tranche from July 2026: identification A, B and foreign matter in-house on every bag of the representative sample (one iCoA), cannabinoids with identification C and mycotoxins at Farmahem, microbiology at IJZ-MB; the reissued CoQ carries those results and the initial certificates for the rest. A retest certificate never certifies the initial CoQ; the IJZ-MB delivery of 25/26.08.2026 is campaign sampling for every lot.")
     line("05.09.2026 · missing", "A production lot whose initial certificate for a determination is not on file keeps its planned CoQ and number: the initial testing exists at CNP (microbiology: IJZ) and the certificate is to be located (Work Order).")
+    line("09.09.2026 · reconciliation", "The owner's own pass over the 387 certificates in eCoA_DATABASE (CoQ_Analysis_Master_v20.xlsx) is taken in as the base for everything after it. cell_resolution.py refuses more than it accepts when filling a cell from it: no citable document code, an unissued certificate, or an unlabelled list of analyte values are each left blank rather than guessed.")
+    line("10.09.2026 · release vs retest", "\"The first value of a parameter obtained is counted as initial quality control testing; every other point of testing for any parameter from a batch is a retest.\" A result's round is its own position in its own parameter's history, never the certificate series it happens to sit in — one campaign can certify cannabinoids one day, microbiology another and metals a third, and that is still one testing period, not several (testing_series.py).")
+    line("10.09.2026 · issuance dates", "Specification SOP approved 01.06.2026; nothing it governs is dated earlier. Internal CoA: tested and issued the first day of packaging (release) or the round's sampling date (retest), or 03.06.2026 where that day is before the SOP. Certificate of quality: 5–10 days after the last external certificate it cites (LAG_DAYS = 7) and never before its own internal CoA; anything that would land before the SOP issues on the blanket date 06.06.2026 — a Saturday, kept as given and flagged, because the owner's date outranks the desk's own working-day convention (issuance_schedule.py).")
+    line("10.09.2026 · internal CoA scope", "One internal certificate per testing round, covering identification A, identification B and foreign matter ALWAYS — performed in house at packaging or sampling whatever an external laboratory also reports — plus any determination whose only result that round is in-house. In-house results are never referenced on a certificate of quality; they sit behind the internal certificate, which the CoQ cites. The register is standing: every internal certificate that exists or ever will, not only the ones a drafted lot needs (icoa_register.py).")
+    line("10.09.2026 · untested analytes", "An analyte the laboratory never tested does not enter the certificate of quality at all — printed, not left blank, not marked ND. Where the initial mycotoxin testing ran only the total-aflatoxins method, Aflatoxin B₁ and Ochratoxin A are absent from that certificate; the retest date, once all three are tested, shows all three.")
+    line("10.09.2026 · conformity wording", "'Conforms | Одговара', in the same ENG/MK formatting convention as the rest of the certificate's bilingual text; every conformity result is printed bilingually, with no other Macedonian rendering of 'conforms' surviving on a certificate (result_vocabulary.py).")
+    line("11.09.2026 · packaging date", "A batch packaged over more than one day is tested — and its internal certificate dated — on the FIRST day of that window, not the day packaging completed.")
     r += 1
     head("VERSION HISTORY")
     line("v7", "The two-row block tracker: one lot per block, certificates stacked in date order, sub-determinations in their own columns, acceptance criteria in row 3 and enforced, out-of-specification results in red and named in STATUS.")
     line("v9", "Verified and slimmed to live in Drive: every decision-bearing value checked against the filed page (review/V8_TRUTH_CHECK_2026-09-02.md); three sheets of v8 (a flat results register, a flat tracker, a document index) were retired to the repository.")
     line("v10", "The 30 IJZ-MB certificates of 31.08 and 01.09.2026 as testing instances credited to #9; the iCoA rule; the Head of QC's harvest and packaging dates (Batch Dates); one iCoA per P lot; the iCoA Issuance sheet.")
     line("v11", "The iCoA Register and the CoQ Register (formula-driven); the ruling of 05.09.2026 on the legacy and post-SOP series; the retest campaign kept off the initial CoQs; the owner's edits to the Drive copies (row 4, result sizes, lot borders); one coverage row per lot.")
+    line("v12", "The Delivery T1–T3 sheet: the 78 cultivation batches delivered in the three tranches of 31.07, 14.08 and 28.08.2026, each against its row on Batch Coverage.")
+    line("v13", "The strain ruling (Cap Junky, Head of QC 07.09.2026) and the ImB Register: the customer's own certificate register, scanned 04.09.2026, 43 entries against their desk lots.")
+    line("v20", "The owner's own workbook, built outside this pipeline and vendored in as the base for everything after it — not a version this desk produced.")
+    line("v21", "The owner's v20 pass reconciled in: 387 certificates, all 600 determinations of Tranches 1 and 2 resolved through cell_resolution.py; 69 cells filled, 0 non-blank cells overwritten.")
+    line("v22", "The rulings of 10.09.2026 written into the workbook's own live Excel formulas: release-versus-retest by position, the issuance dates, the internal-CoA register.")
+    line("v23", "One controlled spelling per result (result_vocabulary.py): 175 non-canonical not-detected spellings to 0, the 'Одговара'/'Не одговара' confusion that read a laboratory's non-conformity as a pass (FB032601) corrected, untested analytes removed from certificates entirely, every conformity result made bilingual, the A4 page fit measured with the fonts it prints in and repaired (5 of 22 losing content → 0).")
+    line("v24", "The internal-CoA number and the internal-CoA register unified on one definition: icoa_register.py is the standing series (a certificate a person can look up by code), and both the number and the row set on the iCoA Register sheet are taken from it rather than computed from a row's position — 95 of 95 series codes now on the sheet, up from 60.")
+    line("v25", "The Read Me sheet's own version history and rulings-in-force brought forward from v11 / 05.09.2026 to this build — nine versions and six days of rulings that were built and verified but never written down here. Two findings promoted from doc prose that had never reached the standing register: OI-30 (the Loss on Drying method line is uniform across every lot and the desk holds no per-certificate method text to check it against) and OI-31 (six batches silently filed under one strain name, 'Gorilla Glue', where the delivery sheet keeps 'GG4' apart — never ruled, never tracked).")
 
 
 def fix_parameters(wb):
@@ -2335,8 +2925,21 @@ if NEW:
         add_dates_sheet(wb)
         write_register_file(os.path.join(HERE, "Issuance_Registers_prelim.xlsx"))
     add_delivery_sheet(wb)
+    if CELLS_0909:
+        add_reconciliation_sheet(wb)
     add_imb_register_sheet(wb)
     apply_strain_rulings(wb)
+    # The standing register of what the desk cannot decide. Its own module, so the
+    # same list drives the sheet and the note that travels with the package and an
+    # item is written down once rather than rediscovered each session. Added before
+    # the Read Me, so it is described there like every other sheet.
+    try:
+        import open_items as OI
+        OI.sheet(wb, wb.sheetnames.index("Work Order") + 1)
+        print("open items: %d (%d awaiting a ruling, %d marked on the certificate)"
+              % (len(OI.ITEMS), len(OI.items("open")), len(OI.items("marked"))))
+    except Exception as _e:
+        print("Open Items sheet not written:", _e)
     write_read_me(wb)
     fix_parameters(wb)
     print_setup(wb)

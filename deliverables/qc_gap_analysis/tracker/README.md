@@ -487,10 +487,18 @@ result) and against the dates on file. The builder writes every flag under the C
 
 ### What the registers hold
 
-**iCoA Register** (144 rows): 70 numbered — `iCoA-PP_26-001` (CJ1024) to `-059` on
-15.05.2026 for the 59 legacy lots, `-060` (P060262, 19.05.2026) to `-070` (P060382,
-01.06.2026) for the 11 post-SOP lots, each on the first working day 5 days after
-packaging; 74 retest rows without a number. **CoQ Register** (157 rows): 80 numbered —
+**iCoA Register** (166 rows): the standing register of internal certificates of
+analysis, **one row per testing round** — the owner's ruling of 10.09.2026, *"every
+internal certificate that exists or ever will"*. It renders `icoa_register.py`, which
+is the series: all **95** codes, `iCoA-PP_26-001` … `-095`, in the order of issue, 69
+release and 26 retest, written as literal values and never computed from a row's
+position. 71 rows carry no number — a retest planned but not yet sampled, a lot with no
+production record, and the seven starred lots the series cannot reach (OI-28) — and each
+says why. Until 11.09.2026 the sheet carried its own issuance planning instead: 60 of the
+95 codes, no retest certificate at all (its retest rows were one per lot per sampling
+campaign, so a lot with four rounds had one row for four certificates), and nine release
+certificates withheld under a rule the 10.09 ruling had replaced.
+**CoQ Register** (157 rows): 80 numbered —
 `CoQ-PP_26-001` (CJ1024) to `-059` legacy, all on 27.05.2026; `-060` (P060262) to `-080`
 (P060442) post-SOP, on 27.05.2026 (fix 1) up to 05.08.2026; 28 of them with an initial certificate
 to locate, 3 with a provisional date; 3 P16 lots without a number (no packaging date); 74
@@ -844,3 +852,51 @@ as "— not read —".
 - `verify_prose.py` required every Work Order row to name a certificate on the Credit Audit.
   A strain-name row names no document; a row whose certificate column holds an em dash is now
   skipped rather than reported.
+
+# CoQ_Analysis_Master_v21.xlsx — the owner's 09.09.2026 pass, reconciled in (10.09.2026)
+
+    python3 build_tracker_v8.py --v9 --version=21 --icoa --cells \
+        --mikro=CoQ_Analysis_Master_v13.xlsx --build-date=10.09.2026
+
+v13 plus the evidence in the owner's v20 workbook, which arrived on 10.09.2026 and is
+vendored beside this one as `CoQ_Analysis_Master_v20_owner.xlsx`. What the reconciliation
+found, cell by cell, is written up in `V20_RECONCILIATION_2026-09-10.md`; the workbook
+carries the same thing on a sheet of its own.
+
+`--cells` is what absorbs it, from three flat sources lifted verbatim by
+`extract_v20_evidence.py` into the directory above (`cell_resolution_2026-09-09.tsv`,
+`coverage_update_2026-09-09.tsv`, `identity_block_2026-09-09.tsv`).
+
+**A third mark on Batch Coverage.** `○` is the owner's own mark, from his `Batch Coverage
+v19`: a certificate for this parameter is in `eCoA_DATABASE` and the tracker does not name
+it. 84 parameters on 24 lots now read `○` where they read `✗`. It is deliberately **not**
+counted as coverage — nothing may be cited on a certificate of quality until the desk records
+the document — so a `○` counts as missing, the missing list says "(on file 09.09, not
+recorded)", and a lot whose every gap is a `○` reads `○ n ON FILE, NOT RECORDED`. Ready to
+issue therefore stays at 44 of 78 delivered batches, which is the honest number; what the
+sheet gains is the distinction between an evidence gap and a record gap. `verify_workbook.py`
+knows the third mark and holds the two sheets to it.
+
+**New sheet, Reconciliation 09.09.** What the pass closed, what the two records disagree
+about (46 cells, none of them resolved), and why the identity determinations are blank on
+almost every lot: the iCoA that carries them has not been issued, on 40 of the 50 batches of
+Tranches 1 and 2, and the in-house documents that do exist print no microscopy and no
+foreign-matter percentage.
+
+**The Delivery sheet corrected.** ACC102501, CF102501, PUM102501 and CC012603 were reported
+on 07.09.2026 as delivered with nothing on file. Certificates for all four were found on
+09.09. They still have no tracker lot for a Batch Coverage row to belong to, so the sheet now
+says `— CERTIFICATES ON FILE, NO TRACKER ROW —` and names them.
+
+### Three repairs found on the way
+
+- **LibreOffice could not open a spreadsheet in this container at all** — `libreoffice-calc`
+  was never installed, only `libreoffice-core`. `extract_artifact_data.py` recalculates
+  formulas through it, so the artifact-page pipeline had been broken for several sessions and
+  pages were being corrected by hand instead of rebuilt. Installing the package fixed it;
+  2,653 formulas now recalculate with no error value.
+- The artifact page's subtitle hard-coded `v11 · 05.09.2026` whatever workbook built it — the
+  same defect as the file name fixed for v13, one line below it. Both now follow the workbook.
+- `build_artifact_page.py` rendered a sheet's full-width note as an ordinary first-column
+  cell, which stretched column one to 7,593 px. A row with only its first cell filled now
+  spans the table.

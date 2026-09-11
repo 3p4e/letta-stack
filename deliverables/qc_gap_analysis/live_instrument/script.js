@@ -867,7 +867,7 @@ function renderTracker(){
     if ((b = e.target.closest(".trk-det"))) { OPEN = +b.dataset.c; renderDetail(); renderCoqs(); return; }
     if ((b = e.target.closest(".trk-doc"))) {
       var c0 = COQ[+b.dataset.c];
-      openDoc((c0.issued ? c0.n : "DRAFT") + " — Certificate of Quality — " + c0.strain, coqDocName(c0), fillCoq(c0));
+      openDoc((docIssued(c0) ? c0.n : "DRAFT") + " — Certificate of Quality — " + c0.strain, coqDocName(c0), fillCoq(c0));
       return;
     }
     if ((b = e.target.closest(".trk-bench"))) {
@@ -2124,7 +2124,27 @@ var LAB_META = {
              'ЈЗУ Институт за јавно здравје (ИЈЗ Скопје)', '50ta Divizija 6, 1000 Skopje, MK'],
   "Farmahem": ['Farmahem — Laboratorija za zivotna sredina · ISO/IEC 17025:2017',
              'Фармахем — Лабораторија за животна средина', 'Skopje, MK'],
-  "State":  ['State Phytosanitary Laboratory', 'Државна фитосанитарна лабораторија', 'Skopje, MK']
+  "State":  ['State Phytosanitary Laboratory', 'Државна фитосанитарна лабораторија', 'Skopje, MK'],
+  /* The desk files a certificate under the laboratory's SHORT code, and section
+     03 looks the laboratory up by whatever string the citation carries. Without
+     these keys CNP fell through to the bare abbreviation on 17 of the 22 drafts
+     and IJZ on 4 — the same two institutions that print in full, with their
+     accreditation, on the rows above. One laboratory printed twice under two
+     identities, one of them looking unaccredited. The mapping is
+     tracker_data.LABNAME's. */
+  "CNP":    ['UKIM Faculty of Pharmacy — Center for Natural Products · ISO/IEC 17025:2017 · LT-083 (IARM)',
+             'УКИМ ФФ — Центар за Природни Производи', 'Mother Theresa 47, 1000 Skopje, MK'],
+  "IJZ":    ['JZU Institute for Public Health (IPH Skopje) · ISO/IEC 17025:2017 · LT-005 (IARM)',
+             'ЈЗУ Институт за јавно здравје (ИЈЗ Скопје)', '50ta Divizija 6, 1000 Skopje, MK'],
+  "FHM":    ['Farmahem — Laboratorija za zivotna sredina · ISO/IEC 17025:2017',
+             'Фармахем — Лабораторија за животна средина', 'Skopje, MK'],
+  "NGP":    ['Purely Plant — QC Department · In-house QC Laboratory · MK GMP Certified',
+             'Пјурли Плант — Оддел за КК · Интерна лабораторија за КК · МК ДПП сертифицирана',
+             'Kojlija 1043, Petrovec-Skopje, MK'],
+  "PP":     ['Purely Plant — QC Department · In-house QC Laboratory · MK GMP Certified',
+             'Пјурли Плант — Оддел за КК · Интерна лабораторија за КК · МК ДПП сертифицирана',
+             'Kojlija 1043, Petrovec-Skopje, MK'],
+  "DFL":    ['State Phytosanitary Laboratory', 'Државна фитосанитарна лабораторија', 'Skopje, MK']
 };
 function labMeta(lab){
   for (var k in LAB_META) if (lab.indexOf(k) === 0) return LAB_META[k];
@@ -2164,6 +2184,15 @@ function rCls(res){
   if (/^(n\.?d\.?|blq|—|—)/i.test(res)) return " r-nd";
   return "";
 }
+function setLkHtml(doc, label, html){
+  var lbls = doc.querySelectorAll(".lk-lbl");
+  for (var i = 0; i < lbls.length; i++) {
+    if (lbls[i].textContent.indexOf(label) !== 0) continue;
+    var v = lbls[i].parentElement.querySelector(".lk-val");
+    if (v) v.innerHTML = html;
+    return;
+  }
+}
 function setLk(doc, label, value){
   var lbls = doc.querySelectorAll(".lk-lbl");
   for (var i = 0; i < lbls.length; i++) {
@@ -2193,80 +2222,477 @@ function chipRow(label, mk, opts){
         (o[1] ? "☒" : "☐") + '</span> ' + esc(o[0]) + '</span>';
     }).join("") + '</span></span>';
 }
+/* c.issued means the lot carries a CoQ NUMBER in the owner's issuance plan —
+   the desk's own tail line calls those "numbered", against "predicted". It does
+   not mean a certificate was issued: every numbered CoQ in the baseline is
+   dated "≥ <SOP floor>", the earliest date on which it MAY be issued, and the
+   register sheet heads that column "Issue date (planned)". A document is
+   issued when the desk records the issuance — that is c.deskIssued, written
+   from OV.issue. Only then may a certificate print a date, tick a disposition
+   and carry a document number; until then it is a draft. */
+function docIssued(c){ return !!c.deskIssued; }
+/* ---- fields the desk cannot fill -------------------------------------------
+   A compiled certificate must never leave a reader working out for themselves
+   which figures are this batch's. Two kinds of field fail that test: a
+   CONTROLLED BLANK, which the desk holds nothing for, and a value that survives
+   from the master's worked specimen because nothing overwrites it — the second
+   is the worse of the two, because it reads as data.
+
+   Both print inside square brackets, in a red used nowhere else on the
+   document, and the footnote says what the convention means. The brackets carry
+   the meaning on their own, so a greyscale photocopy loses nothing; the colour
+   is emphasis, not the message.
+
+   The red is deliberately NOT the #9B2C2C of the DRAFT watermark and of the
+   iCoA's FAIL status. A field still to be completed is not a failing result and
+   the two must not share a colour. */
+var TODO_RED = "#E02B20";
+function todoHtml(text, cls){
+  return '<span class="' + (cls ? esc(cls) + " " : "") + 'todo">[' + esc(text) + "]</span>";
+}
+function addTodoStyle(doc){
+  var st = doc.createElement("style");
+  /* print-color-adjust, because a printer's colour management drops a colour it
+     considers decorative — and this one is not decorative */
+  /* the master colours .mk, .attr-mono and a chip's ballot box on the child
+     itself, so a colour set on the parent never reaches them — each is named
+     here, or a marked line would print half red and half as if it were data */
+  st.textContent = ".todo,.todo .mk,.todo .attr-mono,.todo .p-spec," +
+    ".chip-sel .bx.todo,.chip-un .bx.todo{color:" + TODO_RED + " !important;" +
+    "-webkit-print-color-adjust:exact;print-color-adjust:exact}" +
+    ".todo{font-weight:700}";
+  doc.head.appendChild(st);
+}
+/* ---- the selection bands, and the packaging line ---------------------------
+   Owner, 10.09.2026: "the phenotype and the processing pills need to be
+   selected according to the specification for the product strain." They are
+   product attributes, not laboratory results and not desk opinion, and the
+   document that states them is the issued QCSP 001 specification the
+   certificate already names in Spec. Ref. — read off that document by
+   spec_attributes.py and carried here on c.spc.
+
+   Every pill is re-ticked IN PLACE. The class swaps between chip-sel and
+   chip-un and the ballot glyph between ☒ and ☐; the master's own chip text is
+   never read for meaning and never rewritten. Rebuilding the row is what
+   dropped "Indica dom." and "Машинска" the last time this was touched. */
+function setChip(chip, on, todo){
+  if (!chip) return;
+  chip.className = on ? "chip-sel" : "chip-un";
+  var bx = chip.querySelector(".bx");
+  if (!bx) return;
+  bx.textContent = on ? "\u2612" : "\u2610";
+  if (todo) bx.classList.add("todo"); else bx.classList.remove("todo");
+}
+/* The word a pill stands for is what the master prints between the ballot box
+   and any sub-label: "Hybrid", not "Hybrid Indica dom."; "Machine", not
+   "Machine Машинска". Matching on the whole chip would find the word Indica
+   inside the Hybrid pill and tick the wrong one. */
+function chipWord(chip){
+  var n = chip.childNodes;
+  for (var i = 0; i < n.length; i++) {
+    if (n[i].nodeType === 3 && n[i].textContent.trim()) return n[i].textContent.trim();
+  }
+  return "";
+}
+function bandChips(doc, label){
+  var grps = doc.querySelectorAll(".selrow .grp"), out = [];
+  for (var i = 0; i < grps.length; i++) {
+    var l = grps[i].querySelector(".lk-lbl");
+    if (!l || l.textContent.indexOf(label) !== 0) continue;
+    grps[i].querySelectorAll(".chip-sel,.chip-un").forEach(function(ch){ out.push(ch); });
+    break;
+  }
+  return out;
+}
+/* The specification's word for an option against the master's word for the same
+   pill. They are not the same string — the specification writes MACHINE TRIMMED
+   where the certificate writes Machine — so the mapping is written down rather
+   than guessed at by prefix. */
+var BANDS = {
+  Phenotype:  { INDICA: "INDICA", SATIVA: "SATIVA", HYBRID: "HYBRID" },
+  Chemotype:  { THC: "THC", CBD: "CBD" },
+  Processing: { "MACHINE TRIMMED": "MACHINE", "HAND TRIMMED": "HAND" }
+};
+/* Tick one band from the specification. With no specification on file the band
+   cannot be asserted at all: every pill is unticked and every box carries the
+   marker, which is the certificate's own way of saying a selection is still to
+   be made. */
+function setBand(doc, label, want){
+  var map = BANDS[label], chips = bandChips(doc, label);
+  chips.forEach(function(ch){
+    var w = chipWord(ch).toUpperCase();
+    setChip(ch, !!want && map[want] === w, !want);
+  });
+  return chips.length;
+}
+/* The master's own text, bracketed and reddened where the desk cannot stand
+   behind it. Nothing is removed: a bracket text node goes in before and after
+   each printed line and the class colours them, so the wording, the second
+   alphabet and the markup all survive — a person reads what the master says
+   AND that it is not yet this batch's. */
+function markTodoEl(el){
+  if (!el || el.getAttribute("data-todo")) return;
+  el.setAttribute("data-todo", "1");
+  el.classList.add("todo");
+  var lines = [[]];
+  Array.prototype.forEach.call(el.childNodes, function(n){
+    if (n.nodeName === "BR") lines.push([]);
+    else lines[lines.length - 1].push(n);
+  });
+  lines.forEach(function(ns){
+    var first = null, last = null;
+    ns.forEach(function(n){
+      if (n.nodeType === 3 && !n.textContent.trim()) return;
+      if (!first) first = n;
+      last = n;
+    });
+    if (!first) return;
+    el.insertBefore(el.ownerDocument.createTextNode("["), first);
+    if (last.nextSibling) el.insertBefore(el.ownerDocument.createTextNode("]"), last.nextSibling);
+    else el.appendChild(el.ownerDocument.createTextNode("]"));
+  });
+}
+/* The attribute lockups under the selection bands print their value in
+   .attr-val, not the .lk-val that setLk writes, so they need their own reach. */
+function attrVal(doc, label){
+  var lbls = doc.querySelectorAll(".lk-lbl");
+  for (var i = 0; i < lbls.length; i++) {
+    if (lbls[i].textContent.indexOf(label) === 0) {
+      return lbls[i].parentElement.querySelector(".attr-val");
+    }
+  }
+  return null;
+}
+/* The figures in a packaging line, in the order they are printed. The master
+   and the specification typeset the same packaging differently — one separates
+   with middots and the other with commas, and the specification even spells
+   "Триплекс Aлу Kеса" with a Latin A and K — so comparing the text would report
+   a difference that is only typography. Comparing the figures does not: bag
+   construction, dimensions and fill weight are exactly what a change to the
+   packaging would change. */
+function numSeq(s){ return ((s || "").match(/\d+(?:\.\d+)?/g) || []).join("\u00b7"); }
+/* ---- making the result column hold the result -------------------------------
+   Owner, 10.09.2026: the results section must not overflow, and the certificate
+   must stay one A4 page.
+
+   The master gives the result column whatever is left after the four fixed
+   columns — 30 + 300 + 146 + 158 of 717 px, so 83 px — and sets .r-val to
+   `nowrap`. 83 px holds "24.53" and "< 10", which is what the master's worked
+   specimen prints. It does not hold what the laboratories actually print: the
+   bilingual pair "Conforms | Соодветствува" is 124 px, "Одговара
+   (Complies/Absent)" 134 px, and the identity result of three lots runs to 594.
+   Every one of those was being cut off at the edge of the sheet.
+
+   The values are verbatim and are not shortened. The column is widened instead,
+   out of the slack the other columns are genuinely carrying — measured by
+   letting the table lay out at 3000 px and reading what each column then asks
+   for, rather than eyeballing it: the number column wants 21 px of its 30, the
+   parameter column 287 of its 300 and the method column 133 of its 146. That is
+   35 px of real slack and no more, so each keeps a couple of px of headroom and
+   the result column goes from 83 px to 110. Guessing here is expensive: an
+   earlier pass put the parameter column at 248 on a bad measurement and the
+   Macedonian gloss of "Identification A, Appearance" ran straight into the
+   method column.
+
+   The acceptance-criteria column is not touched. It is the owner's column, its
+   width is what makes "Conforms to monograph" set on one line, and narrowing it
+   would change how every criterion on the certificate breaks.
+
+   Anything still too wide then WRAPS rather than running off the sheet. Wrapping
+   is what keeps the value verbatim; it costs vertical space, which is why the
+   compiled page is measured for its single A4 afterwards.
+
+   This is a layout rule injected into the compiled copy, exactly as the marker
+   colour is. The master file is untouched, and the build-time check that
+   compares its 24 rows against the draft's still reports no difference in any
+   text column. */
+var FIT_COLS = [22, 290, 137, 158];
+function addFitStyle(doc){
+  var st = doc.createElement("style");
+  var rules = FIT_COLS.map(function(w, i){
+    /* the master sets these widths inline, and only !important outranks that */
+    return "table.results colgroup col:nth-child(" + (i + 1) + "){width:" + w + "px !important}";
+  });
+  /* .r-val stays inline: giving it display:inline-block adds a baseline gap to
+     every one of the 24 rows, which cost the page 16 px of height for no visible
+     change and is the sort of thing that turns one A4 sheet into two */
+  /* .r-val stays inline: giving it display:inline-block adds a baseline gap to
+     every one of the 24 rows, which cost the page 16 px of height for no visible
+     change and is the sort of thing that turns one A4 sheet into two */
+  rules.push("table.results tbody td.r-cell .r-val,table.results tbody td.r-cell .todo" +
+             "{white-space:normal;overflow-wrap:break-word}");
+  /* Wrapping buys the width back out of the page's height, and the page has none
+     to give: several certificates were already a few px past 297 mm before this,
+     clipped by the master's own overflow:hidden — section 03 grows with the
+     number of laboratories a lot cites, and nothing was watching it. Half a pixel
+     off the top and bottom of each of the 24 result rows returns 24 px, which
+     covers both the wrapping and the overflow that was already there. The rows
+     are 20 px set on 8.6 px type; the change is invisible at reading size and is
+     the only way to keep every certificate on one sheet without touching a
+     value. */
+  rules.push("table.results tbody td{padding-top:0;padding-bottom:0}");
+  /* and the leading of the parameter column, whose two stacked lines (name and
+     its Macedonian) set the height of every row in the table */
+  rules.push("table.results tbody .p-name{line-height:1.08}");
+  rules.push("table.results tbody .p-name .mk{line-height:1.05}");
+  /* Section 03 grows with the number of laboratories a lot cites, and the owner's
+     ruling of 10.09.2026 gave every certificate one more: the in-house laboratory,
+     carrying the internal CoA that discharges identity and foreign matter. Four
+     certificates went past the footer on the strength of that one row. The
+     cross-reference rows pay for it the same way the result rows did — the master
+     sets them 2.5 px apart on 7 px type, and 1 px is still clear of the 1.25
+     leading that already separates them. */
+  rules.push("table.labref tbody td{padding-top:0;padding-bottom:0}");
+  /* Section 03 grows with the number of laboratories a lot cites — one row each,
+     and a lot with four rows is 18 px taller than one with three. That is the
+     block that put the last certificate over the sheet, so its two stacked lines
+     are set tighter. The sizes are untouched; only the leading closes up. */
+  rules.push("table.labref tbody .lr-lab{line-height:1.12}");
+  rules.push("table.labref tbody .lr-lab .mk{line-height:1.08}");
+  rules.push("table.labref tbody .lr-lab small{line-height:1.05}");
+  /* and the last few px come out of the footnote under the results table, which
+     the master sets 8 px clear above and 6 below on 8.4 px type. NOT out of the
+     space above the signatures: the master gives .approval-grid `margin-top:auto`
+     so the block sits on the bottom edge of the sheet whatever the certificate
+     holds, and overriding that pins it to the content instead — which does
+     nothing for the one crowded certificate and leaves the other 21 with their
+     signatures floating in the middle of the page. */
+  rules.push(".page .pot-note{padding-top:4px;padding-bottom:3px}");
+  /* and the wrapped result sets on its own tighter leading — it is a short
+     phrase in a narrow column, not running text, and 1.12 leading on four
+     wrapped lines is what pushed the approval block into the footer band */
+  rules.push("table.results tbody td.r-cell .r-val,table.results tbody td.r-cell .todo" +
+             "{line-height:1.02}");
+  /* One value on the certificate is a sentence rather than a figure: the desk's
+     conformity wording for Identification C, 130 characters across both
+     alphabets, which no column on this master can hold on one line. It is set at
+     the size the document already uses for its second-language glosses rather
+     than shortened — every character it carries is still on the sheet. */
+  rules.push("table.results tbody td.r-cell .r-long{font-size:6.5px;letter-spacing:-.08px}");
+  /* The bilingual result pairs INLINE, and this overrides the master's own
+     `.r-conform .mk{display:block}` — deliberately, and only in the compiled
+     copy, because the page has no room for the stacked form.
+
+     Measured with the fonts the PDF embeds, inside an A4 frame: stacking adds a
+     line to the four conformity parameter rows, ~34 px, and div.page clips at
+     A4 — 18 of 22 certificates lost the bottom of the sheet, including the
+     second approver's signature date. Before the pairing, 1 of 18 was over.
+     Line-height cannot buy 34 px back, so the Macedonian has to share the line.
+
+     Inline is not a lesser convention here: `.bisep` + `.mk` is what the master
+     uses for every bilingual pair that shares a line — including "TAMC | Вкупен
+     аеробен микробен број" one column to the left of this very cell — while the
+     block rule for `.r-conform .mk` was in the stylesheet unexercised, no result
+     having ever carried a Macedonian half until today. OI-25 puts the choice to
+     the owner: this, or a page with room for the taller form. */
+  rules.push("table.results tbody td.r-cell .mk{display:inline;font-size:6.4px;line-height:7.2px}");
+  /* A paired conformity result fits its column on ONE line, and must be allowed
+     to: the wrapping rule above exists for the long verbatim results, and left
+     to itself it broke "Conforms | Одговара" across two lines. Four such rows on
+     a certificate, and the second line on each is what carried 15 documents that
+     had fitted past the bottom of an A4 page. .r-long keeps its wrapping — that
+     is the rule for a result that is genuinely a sentence. */
+  rules.push("table.results tbody td.r-cell .r-val.r-fit{white-space:nowrap}");
+  st.textContent = rules.join("");
+  doc.head.appendChild(st);
+}
 function fillCoq(c){
   var doc = tplDoc("tpl-coq");
   var q = function(s){ return doc.querySelector(s); };
-  var draft = !c.issued;
+  var draft = !docIssued(c);
+  addTodoStyle(doc);
+  addFitStyle(doc);
+  /* Owner, 10.09.2026: the date of issue is the one the CoQ Register states,
+     and the certificate prints it. c.issue carries that date wherever the
+     register holds one; where it does not it is still the SOP floor, written
+     "≥ <date>", which is a rule and not a date — that prints as the controlled
+     blank the master ships. */
+  var issueDate = /^\d{2}\.\d{2}\.\d{4}$/.test(c.issue || "") ? c.issue : "";
   q(".hb-code").textContent = draft ? "CoQ-PP-····-····" : c.n;
   q(".hb-issue").innerHTML = "Issued · Издаден <b>" +
-    esc(draft ? "—" : c.issue.replace("≥ ", "")) + "</b>";
+    (issueDate ? esc(issueDate) : todoHtml("\u2014")) + "</b>";
   q(".pb-name").innerHTML = "<span style=\"font-family:'Roboto Mono',monospace\">" +
     esc(c.pp || c.cb) + '</span> <i class="bisep" style="font-size:.7em">|</i> ' +
     '<span style="font-weight:800;text-transform:uppercase">' + esc(c.strain) + "</span>";
-  q(".pbp-val").textContent = c.thc ? c.thc + "%" : "··.··%";
-  /* phenotype and processing are not held by the desk: controlled blanks QC
-     ticks by hand. Chemotype is the product's THC class and stays ticked. */
-  q(".selrow").innerHTML =
-    chipRow("Phenotype", "Фенотип", [["Hybrid", false], ["Indica", false], ["Sativa", false]]) +
-    chipRow("Chemotype", "Хемотип", [["THC", true], ["CBD", false]]) +
-    chipRow("Processing", "Обработка", [["Machine", false], ["Hand", false]]);
-  var a4 = c.rows.filter(function(r){ return r.no === "4"; })[0];
-  setLk(doc, "Prod. Code", c.pcode || "—");
-  setLk(doc, "Potency", a4 ? a4.crit.split("(")[0].trim() : "—");
-  setLk(doc, "Spec. Ref.", c.spec || "—");
-  setLk(doc, "Prod. Batch №", c.pp || c.cb);
-  setLk(doc, "Manuf. Date", c.md || "—");
-  setLk(doc, "Pack. Date", c.pk || "—");
-  /* section 02 — rebuilt row for row from the schedule, criteria verbatim */
-  var groups = { "9": [], "10": [], "11": [] };
-  var singles = {};
-  c.rows.forEach(function(r){
-    if (r.no === "9.6" || r.no === "9.7") return;      /* upon request — not printed */
-    var g = groupNo(r.no);
-    if (r.no.indexOf(".") > 0 && groups[g]) groups[g].push(r); else singles[r.no] = r;
-  });
-  /* The printed certificate carries the citation in its compact one-line form.
-     The schedule, the workbooks and the detail table above keep the full
-     bilingual criterion; the CoQ master is a fixed A4 page whose signature
-     block falls off it when the identification rows wrap to three lines
-     (owner's decision, 31.08.2026, after the layout was measured). */
-  /* Measured against the master: this form sets on ONE line, so the page keeps
-     the geometry the owner designed (identical overflow and approval-block
-     position to the master's own "Conforms to monograph"). The two-line forms
-     pushed the signature block off the page. "mon." is the master's own
-     abbreviation — its method column reads "Ph. Eur. mon. 3028". */
-  var DOC_IDENT_CRIT = "Conforms to mon. Cannabis flos (07/2024:3028), Ph.Eur. 11.0";
-  function docCrit(no, crit){
-    return (no === "1" || no === "2" || no === "3") ? DOC_IDENT_CRIT : crit;
+
+  /* ISSUE_COQ README: the gold figure beside the strain is the ACTUAL Total
+     Δ⁹-THC assay result for the batch, not the grade nominal, and the ±
+     tolerance is never shown on a CoQ. The owner's ruling of 10.09.2026 settles
+     where that figure comes from — the certificate, which is the same value the
+     row-4 result carries — so the banner and the assay can never disagree on one
+     sheet, as they did on all 22 drafts before it.
+
+     The acceptance RANGE is a placeholder: it is supplied separately, so both
+     places that print it — the Section 01 Potency field and the row-4
+     acceptance criterion — carry it bracketed until it is. */
+  var a4 = null;
+  c.rows.forEach(function(r){ if (r.no === "4") a4 = r; });
+  var a4res = (a4 && a4.res && a4.res !== "—") ? String(a4.res).trim() : "";
+  var potRange = a4 ? a4.crit.split("(")[0].trim() : "";
+  var _pv = q(".pbp-val");
+  if (_pv) {
+    if (a4res) _pv.textContent = /%\s*$/.test(a4res) ? a4res : a4res + "%";
+    else _pv.innerHTML = todoHtml("··.··%");
   }
-  function res(r){
-    var v = (r.res && r.res !== "—") ? r.res : "—";
-    return '<td class="r-cell"><span class="r-val' + rCls(v) + '">' + esc(v) + "</span></td>";
-  }
-  function single(no, last){
-    var r = singles[no]; if (!r) return "";
-    var d = DET[no] || {};
-    return '<tr' + (last ? ' class="last-row"' : "") + '><td>' + no + '</td><td><span class="p-name">' +
-      esc(d.en) + ' <span class="mk">' + esc(d.mk) + '</span></span></td><td><span class="p-method">' +
-      esc(d.method) + '</span></td><td><span class="p-spec">' + esc(docCrit(no, r.crit)) + "</span></td>" + res(r) + "</tr>";
-  }
-  function group(no){
-    var rows2 = groups[no]; if (!rows2.length) return "";
-    var d0 = DET[rows2[0].no] || {};
-    var html = '<tr class="row-group"><td>' + no + '</td><td colspan="4"><span class="p-name">' +
-      esc(d0.group) + "</span></td></tr>";
-    rows2.forEach(function(r){
-      var d = DET[r.no] || {};
-      html += '<tr class="sub-row"><td></td><td><span class="p-sub">' + esc(d.en) +
-        ' <i class="bisep">|</i> <span class="mk">' + esc(d.mk) + '</span></span></td>' +
-        '<td><span class="p-method">' + esc(d.method) + '</span></td>' +
-        '<td><span class="p-spec">' + esc(docCrit(r.no, r.crit)) + "</span></td>" + res(r) + "</tr>";
+  /* A field the desk holds nothing for prints the bracketed marker, not a bare
+     em dash: on this document an em dash is a measured result — a non-detection
+     — and the two must not look alike. */
+  var setField = function(label, value){
+    if (value && value !== "—") setLk(doc, label, value);
+    else setLkHtml(doc, label, todoHtml("\u2014"));
+  };
+  setField("Prod. Code", c.pcode);
+  setLkHtml(doc, "Potency", todoHtml(potRange || "potency range"));
+  setField("Spec. Ref.", c.spec);
+  setField("Prod. Batch №", c.pp || c.cb);
+  setField("Manuf. Date", c.md);
+  setField("Pack. Date", c.pk);
+  /* the three selection bands and the packaging line — the specification's,
+     not the master specimen's; see setBand above */
+  var spc = c.spc || null;
+  setBand(doc, "Phenotype", spc && spc.pheno);
+  setBand(doc, "Chemotype", spc && spc.chemo);
+  setBand(doc, "Processing", spc && spc.proc);
+  /* The Hybrid pill carries a dominance sub-label — "Indica dom." on the
+     master's worked specimen. That is a claim about the strain, and the
+     specification is where it is made: under its own HYBRID pill it prints a
+     ratio ("INDICA 70 : SATIVA 30"), a word ("INDICA-DOMINANT"), or its own
+     controlled blank, "TO BE DETERMINED" — which 135 of the 165 issued hybrid
+     specifications say. Where it resolves, the sub-label is set in the master's
+     idiom; where it does not, the certificate prints the specification's own
+     words, marked. A certificate may not be more certain than the document it
+     cites. */
+  if (spc && spc.pheno === "HYBRID") {
+    var _hyb = null;
+    bandChips(doc, "Phenotype").forEach(function(ch){
+      if (chipWord(ch).toUpperCase() === "HYBRID") _hyb = ch;
     });
-    return html;
+    var _sub = null;
+    if (_hyb) {
+      _hyb.querySelectorAll("span").forEach(function(sp){
+        if (!sp.classList.contains("bx") && !sp.classList.contains("mk")) _sub = sp;
+      });
+    }
+    if (_sub) {
+      if (spc.dom) _sub.textContent = spc.dom;
+      else _sub.innerHTML = todoHtml(spc.dominance || "dominance");
+    }
   }
-  q("table.results tbody").innerHTML =
-    single("1") + single("2") + single("3") + single("4") + single("5") + single("6") +
-    single("7") + single("8") + group("9") + group("10") + group("11") + single("12", true);
+  /* The packaging line is not the master's worked specimen. All 257 issued
+     QCSP 001 specifications print the same primary packaging and it is what the
+     master prints, so the line is left exactly as the master sets it — and
+     checked rather than assumed. A lot whose own specification is not on file,
+     or whose specification prints different figures, gets the marker instead of
+     a quietly wrong line. */
+  var _pack = attrVal(doc, "Cont. Pack.");
+  if (_pack && (!spc || numSeq(_pack.textContent) !== numSeq(spc.pack))) {
+    markTodoEl(_pack);
+  }
+  /* Section 02 is the owner's, not the desk's. The master already prints every
+     parameter name, its method and its acceptance criterion, and this compiler
+     has no business rewriting any of them. It used to rebuild the table row for
+     row from the schedule, which silently reworded the parameter column — the
+     asterisk that ties Total THC, CBD and CBN to the footnote beneath the table
+     was being dropped, so the footnote referred to nothing — and rewrote the
+     method and acceptance-criteria columns too. Only the RESULT cell is written
+     now, into the master's own rows, in the master's own shape.
+
+     The master's 24 rows are the 21 determinations in the schedule's order plus
+     three group headers, and a header carries no result cell. If that ever
+     stops being true the table is left exactly as the master prints it: a
+     result written against the wrong parameter is the worst thing this file
+     could do. */
+  var ORDER = ["1", "2", "3", "4", "5", "6", "7", "8",
+               "9.1", "9.2", "9.3", "9.4", "9.5",
+               "10.1", "10.2", "10.3",
+               "11.1", "11.2", "11.3", "11.4", "12"];
+  var byNo = {};
+  c.rows.forEach(function(r){ byNo[r.no] = r; });
+  var cells = doc.querySelectorAll("table.results tbody td.r-cell");
+  if (cells.length === ORDER.length) {
+    cells.forEach(function(cell, i){
+      var r = byNo[ORDER[i]];
+      var v = (r && r.res && r.res !== "—") ? r.res : "";
+      /* a blank prints as the bracketed marker rather than the muted em dash it
+         used to share with a measured N.D. — the one column where those two
+         mean opposite things */
+      /* a result long enough to be a sentence is set smaller — see addFitStyle */
+      var _long = v.length > 60 ? " r-long" : "";
+      /* short enough to hold its column on one line — the paired conformity
+         results ("Conforms | Одговара", 19 characters) and the bare figures.
+         Anything longer keeps the wrapping the fit rules give it: the pesticide
+         results ("ND mg/kg — all 25 residues") need two lines and ran off the
+         side of the sheet when they were denied them. */
+      if (v.length <= 22) _long += " r-fit";
+      /* Owner, 11.09.2026: a conformity result prints bilingually, "in the
+         formatting convention that is set for the rest of the CoQ text."
+
+         The master already sets that convention for this exact cell and nothing
+         had ever used it: `.r-conform .mk{display:block;font-size:6.8px;
+         color:#5f8f74}` — the Macedonian on its own line beneath the English, a
+         shade smaller, in the muted green of a conforming result. So the halves
+         are stacked here rather than joined by the .bisep pipe the master uses
+         for inline pairs elsewhere; the pipe is for a label that shares a line,
+         and this cell has its own rule. The export pairs the halves with " | ";
+         only the split happens here, and the master does the styling. */
+      var _h = v.split(" | ");
+      /* and the master's convention is row-type dependent, which is the whole of
+         the rule rather than a space-saving compromise:
+             .p-name .mk { display:block  }   a parameter row stacks
+             .p-sub  .mk { display:inline }   a sub-row runs inline
+         So a parameter result stacks its Macedonian beneath the English, and a
+         sub-determination pairs inline with the .bisep pipe — the same pipe the
+         master uses for "TAMC | Вкупен аеробен микробен број" one column to the
+         left, on that very row. Following it also costs the sheet nothing: the
+         sub-rows are where the height would have gone. */
+      var _body = _h.length === 2
+        ? esc(_h[0]) + ' <i class="bisep">|</i> <span class="mk">' + esc(_h[1]) + "</span>"
+        : esc(v);
+      cell.innerHTML = v ? '<span class="r-val' + rCls(v) + _long + '">' + _body + "</span>"
+                         : todoHtml("\u2014", "r-val");
+      if (ORDER[i] === "4") {
+        var _tds = cell.parentElement.querySelectorAll("td");
+        var _sp = _tds.length > 3 ? _tds[3].querySelector(".p-spec") : null;
+        if (_sp) _sp.innerHTML = todoHtml(potRange || _sp.textContent.trim());
+      }
+    });
+    /* Owner, 11.09.2026: "since they're not tested, those sub-parameters are not
+       going to enter inside the certificate of quality at all."
+
+       The initial testing of a batch often runs only part of a parameter's panel
+       — mycotoxins assayed for total aflatoxins alone, with Aflatoxin B1 and
+       Ochratoxin A not tested — and the retest of the same batch then runs all
+       three. An analyte that was never tested has no result to report, and the
+       certificate must not carry a line for it: a bracketed blank in a results
+       column reads as a finding that is still to come, and ND would be worse
+       still, asserting the analyte was measured and absent.
+
+       So the row is removed from the compiled copy. It applies ONLY to a
+       sub-determination inside a parameter that WAS tested — if nothing in the
+       group has a result the parameter itself is missing, and that is a gap the
+       certificate has to show, not hide. The master file is untouched; this is
+       the compiled copy, the same latitude addFitStyle and the marker colour
+       already take. */
+    var tested = {};
+    ORDER.forEach(function(no){
+      var r = byNo[no];
+      if (r && ((r.res && r.res !== "—") || (r.doc && r.doc !== "—"))) {
+        tested[groupNo(no)] = true;
+      }
+    });
+    var dropped = [];
+    cells.forEach(function(cell, i){
+      var no = ORDER[i];
+      if (no.indexOf(".") < 0 || !tested[groupNo(no)]) return;
+      var r = byNo[no];
+      var hasRes = r && r.res && r.res !== "—";
+      var hasDoc = r && r.doc && r.doc !== "—";
+      if (hasRes || hasDoc) return;
+      var tr = cell.parentElement;
+      if (tr && tr.parentElement) { tr.parentElement.removeChild(tr); dropped.push(no); }
+    });
+    if (dropped.length) doc.body.setAttribute("data-untested", dropped.join(" "));
+  }
   /* section 03 — from the citations themselves */
   var labs = {};
   c.rows.forEach(function(r){
@@ -2285,18 +2711,26 @@ function fillCoq(c){
       (m[2] ? "<small>" + esc(m[2]) + "</small>" : "") + '</span></td><td class="lr-mono">' + codes +
       '</td><td class="lr-mono">' + condenseNos(L.nos) + "</td></tr>";
   }).join("") || '<tr><td colspan="3" style="padding:8px;color:#8C9BB0">No certificate on file yet — controlled blanks.</td></tr>';
-  /* section 04 — disposition follows the dispositions, ticked only at issue */
-  var bad = c.k.oos > 0, open2 = c.k.und > 0;
-  var disp = q(".disp-row .grp");
-  disp.innerHTML = '<span class="lk-lbl">Batch ' + esc(c.pp || c.cb) +
-    '<span class="mk">Серија ' + esc(c.pp || c.cb) + "</span></span>" +
-    '<span class="' + (!draft && !bad && !open2 ? "chip-sel" : "chip-un") + '"><span class="bx">' +
-    (!draft && !bad && !open2 ? "☒" : "☐") + '</span> Conforms to Specification <span class="mk">Одговара на спецификацијата</span></span>' +
-    '<span class="' + (!draft && bad ? "chip-sel" : "chip-un") + '"><span class="bx">' +
-    (!draft && bad ? "☒" : "☐") + "</span> Does not conform</span>";
+  /* The issue date is one of the fields the README fills, and it prints in three
+     places: the header, and the date under each signature. A draft has no issue
+     date, so all three carry the same controlled blank rather than the master
+     specimen's 05.06.2026. */
   doc.querySelectorAll(".ap-date-val").forEach(function(n){
-    n.textContent = draft ? "—" : c.issue.replace("≥ ", "");
+    if (issueDate) n.textContent = issueDate;
+    else n.innerHTML = todoHtml("\u2014");
   });
+  /* Section 04 and the approval block are the master's own and are left exactly
+     as it prints them — except the batch number, which the master prints in its
+     disposition label and which is one of the fields this compiler is asked to
+     fill. Only that label's text is replaced; both tick boxes stay as the master
+     ships them, unticked. The DRAFT watermark is an overlay on top of the page,
+     not a change to it. */
+  var _disp = q(".disp-row .grp .lk-lbl");
+  if (_disp) {
+    var _b = c.pp || c.cb, _mk = _disp.querySelector(".mk");
+    _disp.textContent = "Batch " + _b;
+    if (_mk) { _mk.textContent = "Серија " + _b; _disp.appendChild(_mk); }
+  }
   if (draft) addDraftMark(doc);
   return serializeDoc(doc);
 }
@@ -2464,7 +2898,7 @@ el("dv-save").addEventListener("click", function(){
   });
 });
 function coqDocName(c){
-  return (c.issued ? c.n : "DRAFT_CoQ") + "_" + (c.pp || c.cb).replace(/[^\w-]/g, "_") + ".html";
+  return (docIssued(c) ? c.n : "DRAFT_CoQ") + "_" + (c.pp || c.cb).replace(/[^\w-]/g, "_") + ".html";
 }
 function icoaDocName(p, asn){
   var short = { ab: "IdentAB", c: "IdentC", fm: "FM", mb: "Micro" }[scopeKind(p.scope)];
