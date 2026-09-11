@@ -447,3 +447,65 @@ then issue by themselves.
 **v24 verifies with 0 findings**, the deeper pass compares **5,341 printed
 results** against the certificate records with 0 findings, and the 2,330
 recalculated formulas produce **0 error values**.
+
+---
+
+# v25 — the workbook says what has been ruled, 11.09.2026
+
+The Read Me sheet's own VERSION HISTORY stopped at v11 and its RULINGS IN FORCE stopped at
+05.09.2026 — nine versions and six days of built, verified, pushed work that the workbook
+never wrote down about itself. A person opening `CoQ_Analysis_Master_v25.xlsx` cold, reading
+only its own Read Me, would not learn that the register is standing, that an analyte never
+tested does not appear on a certificate, or that a laboratory's own non-conformity is read as
+one. Extended through v25, both sections, from primary sources: the git history for what each
+version actually built, `ISSUANCE_RULES_2026-09-10.md` and `VOCABULARY_2026-09-11.md` for the
+rulings' own wording.
+
+## Two findings that were written down once and then left
+
+Auditing for rulings not reflected in the workbook surfaced two findings that exist in this
+folder's own prose but never reached the standing register:
+
+* **OI-30 — the Loss on Drying method line is uniform across every lot.** The ruling of
+  10.09.2026 says the certificates should attribute the method each lot was actually tested
+  by (German pharmacopoeia, < 10 %, before the Ph. Eur. cannabis monograph 3028; the Ph. Eur.
+  method, ≤ 12 %, after). The printed method line has always been the latter, for all 80
+  lots. The one lot whose own numeric result sits where the two criteria disagree —
+  J31122501, 10.30 % — was already investigated and resolved on 31.08.2026: the certificate
+  prints its own limit as `< 12`, so `≤ 12.0 %` is that certificate's own specification, not a
+  substitution. What remains unverified is the method TEXT on the other ~94 lots, because no
+  certificate's own method paragraph is in the desk's record — only its number.
+* **OI-31 — six batches are silently filed under one strain name.**
+  `DELIVERY_RECONCILIATION_2026-09-07.md` records, and never closed, that the desk files GG4
+  (GG012601, GG012603, GG112501) and Gorilla Glue (GG1024, GG1024_01, GG1024_02) under one
+  strain name while the delivery sheet keeps them apart — unlike its six siblings in the same
+  finding, which all print on the Work Order as "strain name unruled." Today's iCoA Issuance
+  sheet prints all six as `Gorilla Glue`, a merge nobody ruled on. No certificate is wrong
+  today because none of the five non-`GG1024` lots carries a specification at all (OI-03) —
+  but the day one is filed under either name, the merge decides the other five by default.
+
+Neither is fixed by guessing. `strains.py`'s own rule is to repair a missing space (decides
+nothing) or list a letter-for-letter disagreement for a ruling (decides nothing either) — not
+to merge two names that differ in their letters, which GG4 and Gorilla Glue do.
+
+## One item shortened, not because it closed by ruling
+
+OI-14 named three placeholders; Identification C's document sourcing is built —
+`_pick(4, False) or _pick(3, False)` resolves it on all 22 drafts, 0 falling back to the
+unresolved message — so the clause is folded out rather than left to read as still open. The
+other two (the approvers' names, the potency range) are still the master template's specimen
+and still open.
+
+## Reproducing
+
+    python3 deliverables/qc_gap_analysis/open_items.py --md
+    python3 deliverables/qc_gap_analysis/tracker/build_tracker_v8.py \
+        --v9 --version=25 --icoa --cells \
+        --mikro=CoQ_Analysis_Master_v13.xlsx \
+        --build-date=11.09.2026 --legacy-icoa=03.06.2026 --legacy-coq=06.06.2026
+    python3 deliverables/qc_gap_analysis/tracker/verify_workbook.py
+
+**v25 verifies with 0 findings**, the deeper pass compares **5,341 printed results** against
+the certificate records with 0 findings — unchanged from v24, because nothing here touches a
+certificate: `coq_artifact_data.json` and every drafted certificate are byte-identical before
+and after.

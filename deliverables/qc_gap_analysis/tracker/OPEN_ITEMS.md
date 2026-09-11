@@ -4,7 +4,7 @@ Every finding the desk has raised and cannot itself settle, with the evidence
 behind it and the decision being asked for. Built by `open_items.py`; the same
 register is the **Open Items** sheet of the workbook.
 
-**20 open · 3 marked on the certificate**
+**22 open · 3 marked on the certificate**
 
 ## Specification
 
@@ -162,6 +162,30 @@ register is the **Open Items** sheet of the workbook.
 
 **Needed.** For each pair, is the starred lot the same batch as the unstarred one? A ruling goes in ingestion/ecoa_runner/identity_decisions.tsv, which is where batch_key says such a ruling belongs, and the seven certificates then issue by themselves.
 
+## Method status
+
+### OI-30 · The Loss on Drying method text is not verified per lot against the era it was tested in
+
+*State:* **open** · *Evidence:* ISSUANCE_RULES_2026-09-10.md §4; extract_product_specifications.py #8; 70 numeric results, 1 in the disputed band (already resolved)
+
+**Found.** ISSUANCE_RULES_2026-09-10.md §4 records the ruling: "the Center for Natural Products first used the German pharmacopoeia method for the cannabinoids with loss on drying < 10 %; after the Ph. Eur. cannabis monograph 3028 it uses the Ph. Eur. method and ≤ 12 %. Both eras are on file and the certificates should attribute the method each lot was actually tested by." The certificate prints one method line for every lot — "Ph. Eur. 2.2.32 (3028) · at 40 °C, 24 h, 15–25 mbar", ≤ 12.0 % — regardless of which method the certifying laboratory actually used. Only one lot's own numeric result sits where the two criteria disagree — J31122501, 10.30 % on 100-2-ГС/26 — and that one is already resolved: the certificate prints its own limit as < 12, so ≤ 12.0 % is its own specification, not a substitution (export_coq_artifact_data.py corpus_contradictions, documented 31.08.2026). The other 69 numeric results are all under 10 %, where the two criteria agree regardless. What is NOT verified is the METHOD TEXT itself on the other ~94 lots: no certificate's own method paragraph is in the desk's record, only its number, so a lot actually tested and reported under the German pharmacopoeia method would still print the Ph. Eur. 2.2.32 (3028) method line here.
+
+**The desk.** Nothing changed on the printed method text — it was already uniform before this check and stays uniform, because there is no per-certificate method record to read it from. Nothing is guessed.
+
+**Needed.** Is a fixed method line acceptable because Ph. Eur. 3028 is now the specification the desk certifies against regardless of what a given laboratory used at the time (i.e. the ACCEPTANCE CRITERION is what the SOP requires today, not a transcription of each certificate's own method paragraph)? If so this item closes as designed. If not, which lots were tested under the older method needs to come from re-reading each Loss on Drying certificate's own text, which the desk has not done.
+
+## Batch identity
+
+### OI-31 · Six batches are silently filed under one strain name where a source document keeps two
+
+*State:* **open** · *Evidence:* tracker/DELIVERY_RECONCILIATION_2026-09-07.md §5; tracker/strains.py; iCoA Issuance sheet Strain column, 6 lots
+
+**Found.** DELIVERY_RECONCILIATION_2026-09-07.md records, and never closes: "the desk files GG4 (GG012601, GG012603, GG112501) and Gorilla Glue (GG1024, GG1024_01, GG1024_02) under one strain name, while the delivery sheet keeps them apart as two strains." It was never promoted to a tracked question — unlike its six siblings in the same finding (Sleepy Joe/Joy, Permanent Marker/Market, Wedding Crusher/Crasher, Appels & Bananas/Apple and Banana, Jelly Donuts/Donutz, Clemosa/Clemosa a Bud), which all print on the Work Order sheet as "strain name unruled" rows. The iCoA Issuance sheet today prints all six GG batches as strain ‘Gorilla Glue’ (one, GG012603, still unspaced as ‘GorillaGlue’) — a de facto merge nobody ruled on.
+
+**The desk.** Nothing decided. strains.py's own rule is explicit: it repairs a missing space (decides nothing) and lists a letter-for-letter disagreement in CONFLICTS for a ruling (decides nothing either) — it does not merge two names that differ in their letters, and GG4 / Gorilla Glue do. GG012601, GG012603, GG112501, GG1024_01 and GG1024_02 carry no specification on file today regardless (OI-03), so no certificate currently prints a grade or a THC range that would be wrong if the merge is wrong — but the moment a specification is filed for either name, whichever certificate resolution runs first decides the other five lots' grade by default.
+
+**Needed.** Is GG4 the same strain as Gorilla Glue, or a separate strain that happens to be filed under it? If separate, the six lots need their own strain field and, in time, their own specification.
+
 ## Panel scope
 
 ### OI-13 · Two optional test panels have never been exercised
@@ -176,15 +200,15 @@ register is the **Open Items** sheet of the workbook.
 
 ## Document content
 
-### OI-14 · Three fields still print a specimen or a placeholder
+### OI-14 · Two fields still print a specimen or a placeholder
 
 *State:* **open** · *Evidence:* _CoQ_MASTER_Template.html; 22 drafts
 
-**Found.** The two approvers' names are the master template's specimen. The potency acceptance range is a bracketed placeholder in both places it prints. Identification C is not yet cited from the cannabinoid-determination document the owner's ruling names.
+**Found.** The two approvers' names are the master template's specimen. The potency acceptance range is a bracketed placeholder in both places it prints.
 
-**The desk.** All three print bracketed in red and unticked, so no draft can be mistaken for issued.
+**The desk.** Both print bracketed in red and unticked, so no draft can be mistaken for issued. (A third field once listed here — Identification C's document sourcing — is built: _pick(4, False) or _pick(3, False) resolves it on every one of the 22 drafts, 0 falling back to the unresolved message. Closed 11.09.2026, folded out of this item rather than left to read as still open.)
 
-**Needed.** The approvers' names and titles; the potency range per grade; confirmation of the Identification C sourcing rule for the initial series.
+**Needed.** The approvers' names and titles; the potency range per grade.
 
 ## Method status
 
