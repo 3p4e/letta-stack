@@ -487,10 +487,18 @@ result) and against the dates on file. The builder writes every flag under the C
 
 ### What the registers hold
 
-**iCoA Register** (144 rows): 70 numbered — `iCoA-PP_26-001` (CJ1024) to `-059` on
-15.05.2026 for the 59 legacy lots, `-060` (P060262, 19.05.2026) to `-070` (P060382,
-01.06.2026) for the 11 post-SOP lots, each on the first working day 5 days after
-packaging; 74 retest rows without a number. **CoQ Register** (157 rows): 80 numbered —
+**iCoA Register** (166 rows): the standing register of internal certificates of
+analysis, **one row per testing round** — the owner's ruling of 10.09.2026, *"every
+internal certificate that exists or ever will"*. It renders `icoa_register.py`, which
+is the series: all **95** codes, `iCoA-PP_26-001` … `-095`, in the order of issue, 69
+release and 26 retest, written as literal values and never computed from a row's
+position. 71 rows carry no number — a retest planned but not yet sampled, a lot with no
+production record, and the seven starred lots the series cannot reach (OI-28) — and each
+says why. Until 11.09.2026 the sheet carried its own issuance planning instead: 60 of the
+95 codes, no retest certificate at all (its retest rows were one per lot per sampling
+campaign, so a lot with four rounds had one row for four certificates), and nine release
+certificates withheld under a rule the 10.09 ruling had replaced.
+**CoQ Register** (157 rows): 80 numbered —
 `CoQ-PP_26-001` (CJ1024) to `-059` legacy, all on 27.05.2026; `-060` (P060262) to `-080`
 (P060442) post-SOP, on 27.05.2026 (fix 1) up to 05.08.2026; 28 of them with an initial certificate
 to locate, 3 with a provisional date; 3 P16 lots without a number (no packaging date); 74

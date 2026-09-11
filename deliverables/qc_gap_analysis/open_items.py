@@ -157,6 +157,48 @@ ITEMS = [
      "Is JD112501＊ a distinct lot? If so, which round's microbiology belongs to it?",
      "JD112501 / JD112501＊"),
 
+    ("OI-29", "Document identity", "open",
+     "The two series count different things, so they cannot be the same length",
+     "The ruling of 10.09.2026 says the internal certificates are \"one per testing round, "
+     "which is EXACTLY the number of certificates of quality\". They are not, and the reason "
+     "is that the two registers count different things. icoa_register.py counts rounds the "
+     "testing record SHOWS: 102 over 76 lots. The certificate-of-quality model counts "
+     "certificates it PLANS: exactly two per lot — one release and one 12-month retest — 164 "
+     "over 82 lots, 103 of them predicted. Across the 76 lots both carry, the counts agree on "
+     "14 and differ on 62. GP0824_02 has six testing rounds and two certificates of quality; "
+     "GP062501 has five; GP0824_03 has four.",
+     "Nothing renumbered. The internal register was brought to one row per round on "
+     "11.09.2026 because that is what the ruling says it is; the CoQ series was left exactly "
+     "as it stands, because renumbering controlled documents the owner has already seen is "
+     "not a change to make on a reading. No certificate loses a code to this today: no lot "
+     "has more than one non-initial certificate of quality, so the single |R row still "
+     "resolves for every one of them.",
+     "Does a lot with four retest rounds take four reissued certificates of quality — one per "
+     "round, matching its four internal certificates — or one reissue per retest campaign, as "
+     "the register plans now? The first reading makes the ruling's arithmetic true and "
+     "renumbers the CoQ series; the second keeps the series and means the sentence describes "
+     "the rounds that produce a certificate, not every round on the record.",
+     "icoa_register.py 102 rounds / 76 lots vs coq_artifact_data.json 164 records / 82 lots; "
+     "3 lots with 4, 5 and 6 rounds"),
+
+    ("OI-28", "Batch identity", "open",
+     "Seven starred lots have no internal certificate of analysis at all",
+     "GG1024, BSS1024_01/2 (P050142), WED102501 (P060102), GRC102501 (P060142), GG012601 "
+     "(P060302), JD012601 (P060312) and SCR012601* (P060342) appear on the register sheet "
+     "with no certificate in the series behind them. The cause is the star. The company "
+     "writes GG012601* and the testing record writes GG012601, and batch_id.batch_key keeps "
+     "the mark on purpose — its own docstring says whether a starred lot and its unstarred "
+     "namesake are the same batch \"is NOT a question this function may answer: it is a fact "
+     "about the floor\". So the two spellings are two batches, the testing record attaches "
+     "to one and the register sheet's row to the other, and neither can see the other.",
+     "Nothing invented. batch_key is untouched, the seven rows sit on the register "
+     "unnumbered, and each says the series does not carry it. They are the whole of the "
+     "difference between the sheet's 83 release rows and the series' 76.",
+     "For each pair, is the starred lot the same batch as the unstarred one? A ruling goes "
+     "in ingestion/ecoa_runner/identity_decisions.tsv, which is where batch_key says such a "
+     "ruling belongs, and the seven certificates then issue by themselves.",
+     "ingestion/common/batch_id.py; 7 lots on the iCoA Register with no series row"),
+
     ("OI-13", "Panel scope", "open",
      "Two optional test panels have never been exercised",
      "The pesticide panel offers a Ph. Eur. 2.8.13 option and a CUMCS-equivalency option, and "
@@ -246,23 +288,28 @@ ITEMS = [
      "column, which is a change to the master.",
      "#3 Identification C; 35 determinations"),
 
-    ("OI-27", "Document identity", "open",
-     "The register sheet carries fewer rows than the series it now numbers",
-     "The numbering is settled — where both carry a row they agree, 36 of 36, 0 "
-     "disagreements. But the sheet holds 60 numbered rows against the series' 95, because "
-     "the two model retests differently: icoa_register.py registers one certificate per "
-     "TESTING ROUND, as the owner ruled, while the sheet groups retests by sampling campaign "
-     "(\"Tranche 1 (sampled July 2026)\", \"re-analysed\", \"not yet sampled\"). So 48 "
-     "certificate citations name a code that cannot be looked up on the register sheet — 31 "
-     "on initial-release certificates (3 issued-style, 28 predicted) and 17 on retests.",
-     "Nothing structural. The numbering defect is closed and verify_workbook.py holds it "
-     "closed; this is coverage, not identity — no certificate cites a code the register "
-     "gives to a different batch.",
-     "Should the register sheet be regenerated from icoa_register.py so it carries one row "
-     "per testing round, matching the series it numbers? That is the shape the ruling "
-     "describes. The sheet's planning columns (Group, CNP reference, Plan reference) already "
-     "live on the iCoA Issuance sheet, so nothing would be lost.",
-     "60 numbered rows on the sheet vs 95 in the series; 48 citations unresolvable"),
+    ("OI-27", "Document identity", "ruled",
+     "The register sheet carried 60 of the series' 95 internal certificates",
+     "The numbering agreed wherever both carried a row, but the ROW SETS did not. The sheet "
+     "held 60 numbered rows against the series' 95: it showed no retest certificate at all "
+     "where the series issues 26 — its retest rows are one per lot per sampling campaign, so "
+     "a lot with four retest rounds had ONE row standing for four certificates — and it "
+     "withheld nine release certificates under \"where a CNP certificate reports all three, "
+     "no iCoA is needed\".",
+     "Built, 11.09.2026. The sheet now RENDERS icoa_register.py: one row per testing round, "
+     "all 95 codes printed and numbered, retests 2-5 addressable for the first time (keys "
+     "|R2 .. |R5, while retest 1 keeps the bare |R every existing lookup cites). The nine "
+     "withheld release certificates are registered — the 05.09.2026 note was superseded by "
+     "the ruling below, and which document the certificate of QUALITY cites for those three "
+     "determinations is a separate question and is unchanged. A lot the series does not "
+     "carry keeps its planning row, unnumbered and saying why. verify_workbook.py now checks "
+     "COVERAGE, not just agreement: every certificate in the series appears on the sheet "
+     "exactly once. Run against the previous workbook it reports the 35 that were missing.",
+     "Nothing — this was already ruled and the desk had recorded it as a question. "
+     "10.09.2026: \"the register encompasses every internal certificate that exists or ever "
+     "will, not only what the drafted lots need ... one per testing round\", and "
+     "\"identification A, identification B and foreign matter, ALWAYS\".",
+     "95 of 95 series codes on the sheet (was 60); 166 rows; verify_workbook.py 0 findings"),
 
     ("OI-26", "Document identity", "ruled",
      "The internal-CoA number was defined twice and the two disagreed on every comparable row",
@@ -376,7 +423,7 @@ def items(state=None, area=None):
     """The register, optionally narrowed.
 
     >>> len(items())
-    27
+    29
     >>> [i[0] for i in items(area="Specification")]
     ['OI-01', 'OI-02', 'OI-03']
     >>> sorted({i[2] for i in items()})

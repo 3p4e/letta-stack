@@ -11,7 +11,26 @@ import csv, importlib.util, json, os, re, shutil, subprocess, sys, tempfile, col
 import openpyxl
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SRC = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "CoQ_Analysis_Master_v11.xlsx")
+def _latest_master():
+    """The newest CoQ_Analysis_Master_vN.xlsx beside this file.
+
+    The default used to be a literal — v11 here, v23 in the CI workflow — so the
+    gate watched whichever workbook someone last typed into it, and every rebuild
+    needed the version edited in two files or the check quietly verified a stale
+    one. The newest on disk is the one that ships (build_delivery_package.py picks
+    it the same way), so it is the one to check.
+    """
+    best, path = -1, None
+    for f in os.listdir(HERE):
+        m = re.fullmatch(r"CoQ_Analysis_Master_v(\d+)\.xlsx", f)
+        if m and int(m.group(1)) > best:
+            best, path = int(m.group(1)), os.path.join(HERE, f)
+    return path
+
+
+SRC = sys.argv[1] if len(sys.argv) > 1 else _latest_master()
+if not SRC or not os.path.exists(SRC):
+    raise SystemExit("no workbook to verify in " + HERE)
 spec = importlib.util.spec_from_file_location("tracker_data", os.path.join(HERE, "tracker_data.py"))
 T = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(T)
@@ -83,7 +102,13 @@ def table(wb, name, key_row=1):
         vals = [sh.cell(r, c).value for c in range(1, len(hdr) + 1)]
         if not any(v not in (None, "") for v in vals[:3]):
             continue
-        if str(vals[0] or "").startswith(("Head of QC", "Chronological", "These corrections")):
+        # The footnote under a table is one merged cell spanning its width, so it
+        # arrives as a long string in the first column with nothing beside it.
+        # That is how it is recognised. It used to be recognised by its opening
+        # words — "Head of QC", "Chronological", "These corrections" — and
+        # rewriting a note then fed its own text to int() as a row number.
+        if isinstance(vals[0], str) and len(vals[0]) > 120 and not any(
+                v not in (None, "") for v in vals[1:]):
             continue
         out.append((r, dict(zip(hdr, vals))))
     return out
@@ -371,9 +396,16 @@ try:
             _sys.path.insert(0, _p)
     import icoa_register as _IR
     from ingestion.common.batch_id import batch_key as _bk
+    # The key names the ROUND, not merely "some retest". `setdefault` on a bare
+    # |R gave the key to whichever retest the issue order happened to put first,
+    # so GP0824_03's |R resolved to its retest 2 and the sheet's retest 1 was
+    # reported as disagreeing with the series it had been taken from. Retest 1
+    # keeps the bare |R that every existing lookup cites; rounds 2 and up take
+    # |R2 … |R5, exactly as the builder writes them.
     _mod = {}
     for _row in _IR.build():
-        _suf = "I" if _row["round"] == "initial release" else "R"
+        _rd = _row["round"]
+        _suf = "I" if _rd == "initial release" else ("R" if _rd == "retest 1" else "R" + _rd.split()[-1])
         for _base in filter(None, (_row["p_lot"], _row["batch"])):
             _mod.setdefault("%s|%s" % (_bk(_base), _suf), _row["code"])
     _reg = WB["iCoA Register"]
@@ -403,6 +435,30 @@ try:
         bad("iCoA Register", "the series is numbered twice and the two disagree",
             "%d of %d comparable rows differ; %d rows the module cannot identify"
             % (_differ, _agree + _differ, _unknown))
+
+    # The check above compares the codes of the rows the sheet happens to carry,
+    # and it passed while the sheet carried 60 of the series' 95 certificates:
+    # a code cannot disagree with a row that is not on the page. The owner's
+    # ruling is about COVERAGE — "every internal certificate that exists or ever
+    # will" — so that is what is checked. Each certificate in the series appears
+    # on the sheet exactly once, printed under its own code.
+    _want_codes = [_row["code"] for _row in _IR.build() if _row["code"]]
+    _seen_codes = collections.Counter()
+    for _r in range(2, _reg.max_row + 1):
+        _c = str(_reg.cell(_r, 2).value or "").strip()
+        if _c.startswith("iCoA-PP_26-"):
+            _seen_codes[_c] += 1
+    _absent = [_c for _c in _want_codes if not _seen_codes[_c]]
+    _twice = sorted(_c for _c, _k in _seen_codes.items() if _k > 1)
+    _alien = sorted(set(_seen_codes) - set(_want_codes))
+    if _absent:
+        bad("iCoA Register", "the standing register does not carry every certificate in the series",
+            "%d of %d absent: %s%s" % (len(_absent), len(_want_codes), ", ".join(_absent[:6]),
+                                       " …" if len(_absent) > 6 else ""))
+    if _twice:
+        bad("iCoA Register", "a certificate is registered on more than one row", ", ".join(_twice[:6]))
+    if _alien:
+        bad("iCoA Register", "a code on the sheet is not in the series", ", ".join(_alien[:6]))
 except Exception as _e:
     bad("iCoA Register", "could not be checked against icoa_register.py", str(_e))
 
@@ -543,7 +599,13 @@ for r, d in regv.items():
     if not d["No."]:
         continue
     grp, a = str(d["Group"]), fmt(d["Issue date (planned)"])
-    if grp == "legacy" and _reg_day and a != _reg_day:
+    # Only the RELEASE round. A legacy lot is one packed before the specification
+    # SOP, so its release certificate is back-dated to the SOP's day — but its
+    # retest is tested at a sampling in July or August 2026 and is issued then,
+    # which is the ruling ("issued that day, or 03.06.2026 if that day is before
+    # the SOP"), not a violation of it. The retest rounds only reached this sheet
+    # on 11.09.2026, and the check had never had to say which round it meant.
+    if grp == "legacy" and _reg_day and a != _reg_day and str(d["Series"]) == "initial release":
         bad2("iCoA Register", f"a legacy iCoA not on the legacy day {_reg_day}", f"{d['P Batch']}: {a}")
 
 # ---- 13. Mikro CoQ Parameter against the tracker

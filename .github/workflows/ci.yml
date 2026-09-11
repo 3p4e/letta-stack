@@ -383,7 +383,10 @@ jobs:
           sudo apt-get install -y -qq libreoffice-calc >/dev/null
           python3 -m pip install --quiet openpyxl==3.1.5
 
+      # No version is named here. It used to pin v23, so every rebuild needed the
+      # number edited in the workflow too — and a forgotten edit leaves the gate
+      # verifying a workbook that no longer ships. With no argument the verifier
+      # picks the newest master beside it, which is the one the package ships.
       - name: The workbook agrees with the records it is built from
         run: |
-          python3 deliverables/qc_gap_analysis/tracker/verify_workbook.py \
-            deliverables/qc_gap_analysis/tracker/CoQ_Analysis_Master_v23.xlsx
+          python3 deliverables/qc_gap_analysis/tracker/verify_workbook.py

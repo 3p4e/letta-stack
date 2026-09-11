@@ -312,3 +312,138 @@ rendered PDF is the verdict.
 
 **v23 verifies with 0 findings**, and the deeper pass compares **5,287 printed
 results** against the certificate records with 0 findings.
+
+---
+
+# v24 — the standing register carries every internal certificate, 11.09.2026
+
+The ruling of 10.09.2026, in the owner's words:
+
+> **The register encompasses every internal certificate that exists or ever
+> will**, not only what the drafted lots need. **106 certificates over 80
+> batches** — one per testing round, which is exactly the number of certificates
+> of quality, because a round that needs a certificate of quality needs the
+> internal certificate behind it.
+
+The desk had recorded that as an open question (OI-27) rather than as a ruling to
+implement. It is a ruling. This builds it.
+
+## What the sheet was carrying
+
+The iCoA Register sheet printed **60 of the series' 95 certificates**. The
+numbering was not the problem — where both carried a row they agreed, which
+`verify_workbook.py` had been checking since the morning. The **row set** was the
+problem, and a check that compares the codes of the rows a sheet happens to carry
+cannot see a row that is not on the page.
+
+| | absent from the sheet |
+| --- | ---: |
+| retest certificates | 26 |
+| release certificates withheld as "not needed" | 9 |
+| **total** | **35** |
+
+**No retest certificate appeared at all.** The sheet's retest rows are one per lot
+per sampling campaign — "Tranche 1 (sampled July 2026)", "re-analysed", "not yet
+sampled" — so GP062501, which has four retest rounds and four internal
+certificates, had **one row standing for four documents**. Rounds 2 and up were
+not merely unnumbered; they were unaddressable, because the row key `<lot>|R`
+named "some retest" and there was only one of it.
+
+**Nine release certificates were withheld on a rule the owner has replaced.**
+"Where a CNP certificate reports all three, no iCoA is needed" is the note of
+05.09.2026. The ruling of 10.09.2026 is *"identification A, identification B and
+foreign matter, **always**"* — they are performed in house on the packaging date
+whatever an external laboratory also reports, so the certificate exists, and a
+register of every certificate that exists carries it. Which document the
+certificate of **quality** cites for those three determinations is a separate
+question, decided by `cell_resolution`, and nothing here touches it: the 22
+drafted certificates are **byte-identical** before and after.
+
+## What it is now
+
+The sheet **renders `icoa_register.py`** — one row per testing round, 95 codes
+printed and numbered, in the order of issue. The series is the definition; the
+sheet is a view of it. That is the same repair as the one made to the number
+itself in the morning, applied one level up: the number had been a function of a
+row's position, and the row set had been a second opinion about which
+certificates exist.
+
+Keys are round-specific for the first time. **Retest 1 keeps the bare `|R`** that
+the iCoA Issuance sheet, the CoQ Register and the tracker's own in-house cells
+already cite, so no lookup changes what it resolves to; rounds 2–5 take `|R2` …
+`|R5`. A release round keeps its formulas — testing date from `Batch Dates`,
+issue date the later of that and the SOP day — so the workbook stays live. A
+**retest is dated at its own sampling, which no sheet holds**, so the series'
+dates are written as literals rather than guessed by a formula over a value the
+workbook does not have.
+
+| | v23 | v24 |
+| --- | ---: | ---: |
+| series codes on the sheet | 60 of 95 | **95 of 95** |
+| retest certificates registered | 0 of 26 | **26 of 26** |
+| rows | 157 | 166 |
+| addressable rounds per lot | 1 release + 1 retest | every round |
+
+## Three defects in the desk's own checks, found by fixing the sheet
+
+1. **The register check could not see a missing row.** It compared the code of
+   every row the sheet carried and passed at 60 of 95. It now checks
+   **coverage** — every certificate in the series appears on the sheet exactly
+   once, and no code appears that the series does not issue. Run against v23 it
+   reports the 35 that were absent, which is how a gate is shown to bite.
+
+2. **`|R` meant "whichever retest the issue order put first".** The verifier
+   built its map with `setdefault` on a bare `|R`, so GP0824_03's `|R` resolved
+   to its retest **2** and the sheet's retest 1 was reported as disagreeing with
+   the series it had just been taken from. The key names the round now, on both
+   sides.
+
+3. **"A legacy iCoA not on the legacy day" did not say which round it meant.**
+   A legacy lot is one packed before the SOP, so its *release* certificate is
+   back-dated to the SOP's day — but its *retest* is sampled in July or August
+   2026 and is issued then, which is the ruling, not a breach of it. The retest
+   rounds only reached this sheet today, and the check had never had to be
+   precise before. It is scoped to the release round.
+
+   A fourth, smaller one: `table()` recognised a sheet's footnote by its opening
+   words — "Head of QC", "Chronological", "These corrections" — so rewriting a
+   note fed its own text to `int()` as a row number. A footnote is now recognised
+   by its shape: one long string spanning the table's width with nothing beside
+   it.
+
+## What it could not fix, and why
+
+**Seven lots have no internal certificate at all** — GG1024, BSS1024_01/2,
+WED102501, GRC102501, GG012601, JD012601 and SCR012601*. The cause is the
+**star**. The company writes `GG012601*`; the testing record writes `GG012601`;
+and `batch_id.batch_key` keeps the mark deliberately, its own docstring saying
+that whether a starred lot and its unstarred namesake are the same batch *"is NOT
+a question this function may answer: it is a fact about the floor"*. So the
+testing record attaches to one spelling and the register row to the other, and
+neither can see the other.
+
+That is the whole of the difference between the sheet's 83 release rows and the
+series' 76. The seven sit on the register unnumbered, each saying the series does
+not carry it, and the question is **OI-28**: for each pair, is the starred lot
+the same batch? A ruling goes in `ingestion/ecoa_runner/identity_decisions.tsv`,
+which is where `batch_key` says such a ruling belongs, and the seven certificates
+then issue by themselves.
+
+## Reproducing
+
+    python3 deliverables/qc_gap_analysis/open_items.py --md
+    python3 deliverables/qc_gap_analysis/tracker/build_tracker_v8.py \
+        --v9 --version=24 --icoa --cells \
+        --mikro=CoQ_Analysis_Master_v13.xlsx \
+        --build-date=11.09.2026 --legacy-icoa=03.06.2026 --legacy-coq=06.06.2026
+    python3 deliverables/qc_gap_analysis/tracker/verify_workbook.py \
+        deliverables/qc_gap_analysis/tracker/CoQ_Analysis_Master_v24.xlsx
+    python3 deliverables/qc_gap_analysis/tracker/extract_artifact_data.py \
+        deliverables/qc_gap_analysis/tracker/CoQ_Analysis_Master_v24.xlsx \
+        deliverables/qc_gap_analysis/tracker/v24_data.json "CoQ Parameter Tracker v24"
+    python3 deliverables/qc_gap_analysis/tracker/build_artifact_page.py \
+        deliverables/qc_gap_analysis/tracker/v24_data.json
+
+**v24 verifies with 0 findings**, the deeper pass compares **5,341 printed
+results** against the certificate records with 0 findings, and the 2,330
+recalculated formulas produce **0 error values**.

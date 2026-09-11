@@ -774,10 +774,11 @@ if ICOA_RULE:
     # done, then the batch. The certificates print from it. So does this sheet
     # now, and the local sort survives only to order the rows the module has no
     # entry for.
-    _MOD_CODE, _MOD_KNOWN = {}, set()
+    _MOD_CODE, _MOD_KNOWN, _MOD_ROWS = {}, set(), []
     try:
         import icoa_register as _IR
-        for _m in _IR.build():
+        _MOD_ROWS = _IR.build()
+        for _m in _MOD_ROWS:
             _suf = "I" if _m["round"] == "initial release" else "R"
             for _base in filter(None, (_m["p_lot"], _m["batch"])):
                 _k = f"{T.batch_key(_base)}|{_suf}"
@@ -849,9 +850,103 @@ if ICOA_RULE:
         r["icoa"] = r["code"]
         if r["series"] == "initial release":
             r["status"] = r["reg_status"]
-    REGISTER = _issuable + sorted(_na, key=lambda r: (str(T.date_key(r["sortdate"])) if r["sortdate"] else "9", r["cu"], r["p"])) \
+    PLANNING = _issuable + sorted(_na, key=lambda r: (str(T.date_key(r["sortdate"])) if r["sortdate"] else "9", r["cu"], r["p"])) \
         + sorted(_later, key=lambda r: (0 if r["series"] == "initial release" else 1 if r["status"].startswith("due") else 2,
                                                           str(T.date_key(r["sortdate"] or r["basis"])) if (r["sortdate"] or r["basis"]) else "9", r["cu"], r["p"]))
+
+    # ------------------------------------------------------- the register IS the standing series
+    # Owner, 10.09.2026: "The register encompasses every internal certificate that
+    # exists or ever will" — one per testing round. Two modules were deciding
+    # which internal certificates exist: icoa_register.py, which holds the series
+    # the certificates print from, and the rows above, which are this file's
+    # issuance planning for the lots it drafts. A value defined twice disagrees,
+    # and this pair did. The sheet printed 60 of the series' 95 codes; it showed
+    # no retest certificate at all where the series issues 26, because its retest
+    # rows are one per lot per tranche and a lot with four retest rounds had one
+    # row standing for four certificates; and it withheld nine more on a rule the
+    # owner has replaced. "Where a CNP certificate reports all three, no iCoA is
+    # needed" is the note of 05.09.2026; the ruling of 10.09.2026 is
+    # "identification A, identification B and foreign matter, ALWAYS", because
+    # they are performed in house at packaging whatever an external laboratory
+    # also reports. The certificate exists, so the register carries it. WHICH
+    # document the certificate of quality cites for those three is a separate
+    # question, decided by cell_resolution, and nothing here touches it.
+    #
+    # So the series is the definition and this sheet renders it, one row per
+    # testing round. Planning columns come from the planning row for the same lot
+    # and round; a lot the series does not carry keeps its planning row,
+    # unnumbered and saying why.
+    _plan_lot = {}
+    for r in PLANNING:
+        _suf = "I" if r["series"] == "initial release" else "R"
+        for _b in (r["p"], re.sub(r"[＊*]", "", r["cu"])):
+            if _b and not str(_b).startswith(("N/A", "—")):
+                _plan_lot.setdefault((T.batch_key(str(_b)), _suf), r)
+    _DETN = {"1": "Ident A", "2": "Ident B", "7": "Foreign matter"}
+
+    def _dmy(v):
+        import datetime as _dt
+        try:
+            return _dt.datetime.strptime(str(v), "%d.%m.%Y").date()
+        except ValueError:
+            return None
+
+    REGISTER, _emitted = [], set()
+    for _m in _MOD_ROWS:
+        _rel = _m["round"] == "initial release"
+        _base = "I" if _rel else "R"
+        _plan = next((_plan_lot[(T.batch_key(_b), _base)] for _b in filter(None, (_m["p_lot"], _m["batch"]))
+                      if (T.batch_key(_b), _base) in _plan_lot), None)
+        # retest 1 keeps the bare |R the planning row already used, so every
+        # lookup that cites a register key — the iCoA Issuance sheet, the CoQ
+        # Register, and the tracker's own in-house cells through INST_KEY —
+        # resolves to the same row it resolved to before. Rounds 2 and up were
+        # unaddressable until now and take |R2 … |R5.
+        _n = "" if _rel or _m["round"] == "retest 1" else _m["round"].split()[-1]
+        _key = ((_plan or {}).get("key") or "%s|%s" % (_m["p_lot"] or _m["batch"], _base))
+        _key = _key.rpartition("|")[0] + "|" + _base + _n
+        if _key in _emitted:
+            # Two certificates cannot share a key: the lookups that cite one
+            # take the first match and the second would be invisible. Fall back
+            # to the round's own names before giving up, and say so if even that
+            # collides — a dropped row here is a certificate missing from the
+            # register, which is the defect this block exists to fix.
+            _alt = "%s|%s%s" % (_m["p_lot"] or _m["batch"], _base, _n)
+            if _alt in _emitted:
+                print("iCoA register: %s (%s, %s) collides on key %s and is NOT on the sheet"
+                      % (_m["code"] or "unnumbered", _m["batch"], _m["round"], _key))
+                continue
+            _key = _alt
+        _emitted.add(_key)
+        _scope = " + ".join(_DETN.get(_d, "#" + _d) for _d in (_m["parameters"] or "").split())
+        REGISTER.append({
+            "code": _m["code"] or "", "issuable": "yes" if _m["code"] else "no",
+            "series": _m["round"],          # the series' own vocabulary: "retest 1" … "retest 5"
+            "group": (_plan or {}).get("group", "—"),
+            "cu": (_plan or {}).get("cu") or _m["batch"],
+            "p": (_plan or {}).get("p") or _m["p_lot"] or "N/A — no P batch assigned",
+            "strain": _m["strain"] or (_plan or {}).get("strain", ""),
+            "scope": _scope, "cnp": (_plan or {}).get("cnp", "—"),
+            "plan_ref": (_plan or {}).get("plan_ref") or "—", "key": _key,
+            # A release round is dated from `Batch Dates` by formula, so the
+            # workbook stays live; a retest is dated at its own sampling, which
+            # is on no sheet, so the module's date is written as a literal.
+            "lit_from": None if _rel else _dmy(_m["tested_from"]),
+            "lit_issue": None if _rel else _dmy(_m["issued"]),
+            "reg_status": ("registered — %s, issued %s" % (_m["round"], _m["issued"]) if _m["code"]
+                           else "not yet issuable — %s" % (_m["note"] or "no testing date on file")),
+        })
+    # Every lot the series does not carry keeps the row the planning gave it. Ten
+    # rows arrive here and none of them is an oversight to paper over: three lots
+    # have no production record at all, and seven are the starred lots, whose
+    # star batch_id.batch_key deliberately keeps — whether GG012601＊ is GG012601
+    # is a fact about the floor and is the Head of QC's to rule, not a function's.
+    for r in PLANNING:
+        if r["key"] in _emitted:
+            continue
+        _emitted.add(r["key"])
+        r["code"] = "" if r["issuable"] == "n/a" else r.get("code") or ""
+        REGISTER.append(r)
     ICOA_BY_KEY = {r["key"]: r for r in ICOA_ROWS}
     _cq_ok, _cq_later = [], []
     for r in COQ_ROWS:
@@ -884,10 +979,18 @@ if ICOA_RULE:
         r["reg_status"] = "not yet issuable — " + r["why"]
     COQ_REGISTER = _cq_ok + sorted(_cq_later, key=lambda r: (0 if r["series"] == "initial release" else 1,
                                                              str(T.date_key(r["sortdate"] or r["basis"])) if (r["sortdate"] or r["basis"]) else "9", r["cu"], r["p"]))
-    print(f"iCoA register: {len(_issuable)} numbered (iCoA-PP_26-001 … {_issuable[-1]['code'][-3:] if _issuable else '—'}; "
-          f"{sum(1 for r in _issuable if r['group'] == 'legacy')} legacy on 15.05.2026, "
-          f"{sum(1 for r in _issuable if r['group'] != 'legacy')} post-SOP), {len(_later)} not yet issuable "
-          f"({sum(1 for r in _later if r['series'] == 'initial release')} initial, {sum(1 for r in _later if r['series'] != 'initial release')} retest)")
+    # The register sheet is the series, so it is the series that is counted here.
+    # This line used to report the planning rows it numbered — 60 — while the
+    # sheet carried 95 codes, which is how a stale statistic outlives the thing
+    # it described.
+    _rg_num = [r for r in REGISTER if r.get("code", "").startswith("iCoA-PP_26-")]
+    print(f"iCoA register: {len(_rg_num)} numbered (iCoA-PP_26-001 … "
+          f"{_rg_num[-1]['code'][-3:] if _rg_num else '—'}; "
+          f"{sum(1 for r in _rg_num if r['series'] == 'initial release')} release, "
+          f"{sum(1 for r in _rg_num if r['series'] != 'initial release')} retest), "
+          f"{len(REGISTER) - len(_rg_num)} not yet issuable "
+          f"({sum(1 for r in REGISTER if not r.get('code', '').startswith('iCoA-PP_26-') and r['series'] == 'initial release')} "
+          f"initial, {sum(1 for r in REGISTER if not r.get('code', '').startswith('iCoA-PP_26-') and r['series'] != 'initial release')} retest)")
     print(f"CoQ register: {len(_cq_ok)} numbered (CoQ-PP_26-001 … {_cq_ok[-1]['code'][-3:] if _cq_ok else '—'}; "
           f"{sum(1 for r in _cq_ok if r['group'] == 'legacy' and not r['coq_flag'])} legacy on 27.05.2026, "
           f"{sum(1 for r in _cq_ok if r['group'] == 'legacy' and r['coq_flag'])} legacy moved, "
@@ -1954,25 +2057,32 @@ COQ_COLS = [("No.", 6), ("CoQ code", 18), ("Issuable", 9), ("Issue date (planned
             ("Group", 10), ("Series", 20), ("CU Batch", 16), ("P Batch", 12), ("Strain", 20), ("Ident C — eCoA (Total THC)", 34),
             ("CNP references", 26), ("Supersedes (old in-house CoA)", 26), ("Plan reference (31.08.2026)", 22), ("Key", 14),
             ("Status", 64)]
-REG_NOTE = ("Head of QC, 05.09.2026: preliminary iCoA issuance register — ONE iCoA per P lot for identification A, B and foreign "
-            "matter, tested at packaging (the first day). Codes iCoA-PP_26-nnn (nnn = 001 … 999), one series for the year of "
-            "issue, in the order of issue: LEGACY lots (packed before the SOP floor of 11.05.2026, or holding an old in-house "
-            "QCCoA 001 certificate) are all issued on 15.05.2026, in chronological order of packaging; POST-SOP lots follow, each "
-            "on the first working day 5 days after its packaging. No number is reserved for a row that cannot be issued yet (a lot "
-            "without a packaging date, a held result, every retest iCoA, whose sampling date is not on the desk); where a CNP "
-            "certificate reports all three, no iCoA is needed. THE NUMBER AND THE CODE ARE NOT COMPUTED HERE (11.09.2026). They "
-            "are taken from icoa_register.py, which holds the standing series — one certificate per testing round, ordered by the "
-            "issue date, then when the work was done, then the batch — and they are written as literal values. They used to be "
-            "formulas over this sheet's own row order, No. counting the issuable rows above it and the code built from No.; that "
-            "made the number a function of where a row happened to sit, and the owner found what it cost: the first physical row "
-            "took iCoA-PP_26-001 while its own certificate cited iCoA-PP_26-066, and of the 49 rows that could be compared, none "
-            "agreed. The numbers here are therefore an ordered SUBSET of the series with gaps, because the series numbers rounds "
-            "this sheet does not carry as separate rows; a row the series does not number is left unnumbered and says why. "
-            "Inserting a row no longer renumbers anything. verify_workbook.py compares the two on every run. FORMULAS remaining: "
-            "the planned date is 15.05.2026 for a legacy row, else the first working day 5 days after Packaging complete; the "
-            "packaging dates are looked up on Batch Dates by P batch (else by the batch as listed); CoQ (register) is looked up on "
-            "the CoQ Register by Key — the iCoA Issuance sheet and the tracker cite this register by Key, so they follow. Working "
-            "days are Monday to Friday; public holidays are not applied.")
+REG_NOTE = ("THE STANDING REGISTER OF INTERNAL CERTIFICATES OF ANALYSIS. Head of QC, 10.09.2026: \"the register encompasses every "
+            "internal certificate that exists or ever will\" — ONE PER TESTING ROUND, not one per lot and not only the ones the "
+            "drafted certificates happen to need. Each carries identification A, identification B and foreign matter ALWAYS "
+            "(performed in house, on the first day of packaging for the release round and at its own sampling for a retest), plus "
+            "any determination whose only result in that round is an in-house record. Codes iCoA-PP_26-nnn, one series for the "
+            "year of issue, in the order of issue: by issue date, then by when the work was done, then by batch — 03.06.2026 for "
+            "anything that would otherwise predate the specification SOP, so the backlog shares one date and orders by packaging, "
+            "as the CoQ series does. THE ROWS, THE NUMBER AND THE CODE ARE NOT COMPUTED HERE (11.09.2026): this sheet RENDERS "
+            "icoa_register.py, which is the series, and writes its numbers as literal values. Two things were being decided twice "
+            "and disagreed. The number used to be a formula over this sheet's own row order, so the first physical row took "
+            "iCoA-PP_26-001 while its own certificate cited iCoA-PP_26-066 and none of the 49 comparable rows agreed; and the ROW "
+            "SET was this sheet's issuance planning, so it printed 60 of the series' 95 codes, showed no retest certificate at all "
+            "where the series issues 26 (its retest rows are one per lot per tranche — a lot with four retest rounds had one row "
+            "standing for four certificates), and withheld nine more under \"where a CNP certificate reports all three, no iCoA is "
+            "needed\", the note of 05.09.2026 that the ruling of 10.09.2026 replaced: the in-house laboratory performs those three "
+            "whatever an external laboratory also reports, so the certificate exists and is registered. Which document the "
+            "CERTIFICATE OF QUALITY cites for them is a separate question and is unchanged. Rows below the series are lots it does "
+            "not carry — a retest that is planned but not yet sampled, a lot with no production record, and the starred lots, "
+            "whose star batch_id.batch_key deliberately keeps because whether GG012601＊ is GG012601 is the Head of QC's to rule. "
+            "They are unnumbered and say why. Inserting a row renumbers nothing. verify_workbook.py compares sheet and series on "
+            "every run. FORMULAS remaining: a release round's testing date and packaging-complete date are looked up on Batch "
+            "Dates by P batch (else by the batch as listed) and its issue date is the later of that testing date and 03.06.2026; a "
+            "RETEST is dated at its own sampling, which no sheet holds, so the series' dates are written as literals rather than "
+            "guessed by a formula. CoQ (register) is looked up on the CoQ Register by Key — the iCoA Issuance sheet and the "
+            "tracker's in-house cells cite this register by Key, so they follow it. Working days are Monday to Friday; public "
+            "holidays are not applied.")
 COQ_NOTE = ("Head of QC, 05.09.2026: preliminary CoQ issuance register — codes CoQ-PP_26-nnn (nnn = 001 … 999), one series for the "
             "year of issue, in the order of issue. LEGACY lots (packed before the SOP floor of 11.05.2026, or holding an old "
             "in-house QCCoA 001 certificate, which the CoQ supersedes) are all issued on 27.05.2026, in chronological order of "
@@ -2037,7 +2147,17 @@ def _fill_register(sh):
                   f'IFERROR(INDEX({BD_}!$F:$F,MATCH(I{_r},{BD_}!$B:$B,0)),""))')
         f_to = (f'=IFERROR(INDEX({BD_}!$G:$G,MATCH(J{_r},{BD_}!$C:$C,0)),'
                 f'IFERROR(INDEX({BD_}!$G:$G,MATCH(I{_r},{BD_}!$B:$B,0)),""))')
-        cells = (f_no, f_code, r["issuable"], f_issue, f_from if r["series"] == "initial release" else "at retest sampling", f_to,
+        # A release round is tested on the packaging date, which `Batch Dates`
+        # carries, so both dates stay formulas and the workbook stays live. A
+        # retest is tested at its own sampling, which is on no sheet to look up:
+        # the series computed it and it is written here as a literal, because a
+        # formula over a value the workbook does not hold can only be a guess.
+        if r.get("lit_from"):
+            f_from = r["lit_from"]
+        if r.get("lit_issue"):
+            f_issue = r["lit_issue"]
+        cells = (f_no, f_code, r["issuable"], f_issue,
+                 f_from if (r["series"] == "initial release" or r.get("lit_from")) else "at retest sampling", f_to,
                  r["group"], r["series"], r["cu"], r["p"], r["strain"], r["scope"], r["cnp"],
                  COQ_LOOKUP("B", r["key"], "—"), r.get("plan_ref") or "—", r["key"], r["reg_status"])
         for _i, v in enumerate(cells, 1):
@@ -2205,7 +2325,10 @@ SHEET_ABOUT = {
     "Open Items": "The standing register of what the desk cannot decide: every finding raised and left to the owner, with what was found, what the desk did with it, the decision being asked for, and the evidence behind it. STATE is open (waiting, nothing printed), marked (the certificate prints the field bracketed in red and unticked) or ruled (kept for the record with the ruling). Built from open_items.py, which also writes OPEN_ITEMS.md.",
     "iCoA Issuance": "One row per P lot and series (initial release, retest): what its iCoA carries, the CNP references, the cannabinoid-assay eCoA that covers identification C, the codes and planned dates looked up on the registers.",
     "Batch Dates": "The Head of QC's harvest and packaging dates per batch (04.09.2026), as dates; the registers look their packaging dates up here.",
-    "iCoA Register": "The preliminary iCoA issuance register: iCoA-PP_26-nnn in the order of issue, number, code and dates as formulas.",
+    "iCoA Register": "The standing register of internal certificates of analysis, one row per testing round (the owner's ruling of "
+                     "10.09.2026: every internal certificate that exists or ever will). It renders icoa_register.py — the series the "
+                     "certificates print from — so the number and the code are literals taken from it, never computed from a row's "
+                     "position; a lot the series does not carry follows below, unnumbered and saying why.",
     "CoQ Register": "The preliminary CoQ issuance register: CoQ-PP_26-nnn in the order of issue, the latest eCoA each CoQ cites, its iCoA, the adherence flags under the table.",
     "Parameters": "The 21 determinations with method, global acceptance criterion, source and tracker columns.",
     "Summary Dashboard": "Counts recomputed from Batch Coverage: lots, documents, complete / partial / incomplete, missing-parameter frequency.",
