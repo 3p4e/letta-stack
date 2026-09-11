@@ -4,7 +4,7 @@ Every finding the desk has raised and cannot itself settle, with the evidence
 behind it and the decision being asked for. Built by `open_items.py`; the same
 register is the **Open Items** sheet of the workbook.
 
-**19 open · 3 marked on the certificate**
+**18 open · 3 marked on the certificate**
 
 ## Specification
 
@@ -234,15 +234,15 @@ register is the **Open Items** sheet of the workbook.
 
 ## Document identity
 
-### OI-26 · STOP — the internal-CoA number is defined twice and the two definitions disagree on every comparable row
+### OI-26 · The internal-CoA number was defined twice and the two disagreed on every comparable row
 
-*State:* **open** · *Evidence:* icoa_register.py vs the iCoA Register sheet; 49 of 49 comparable rows differ
+*State:* **ruled** · *Evidence:* icoa_register.py and the iCoA Register sheet; 49 of 49 differed, now 0
 
 **Found.** The certificates print the code from icoa_register.py, which sorts by the order of issuing exactly as ruled and numbers iCoA-PP_26-001 .. -099, leaving 7 lots unnumbered for want of a packaging date. The workbook's iCoA Register sheet numbers its own rows by position, COUNT(A$1:A{n})+1, over a different row order and a different rule — it also withholds a number from every retest and every held result, numbering 69. Of the 49 rows that can be compared, 0 agree. J31122501 / P060262 is the owner's example: the sheet makes it iCoA-PP_26-001 because it is physically the first row; the certificate cites iCoA-PP_26-066, its true place in the issue order. The two also identify lots differently — the module's rows often carry no P number, so 20 sheet rows cannot even be matched to it.
 
-**The desk.** Nothing has been renumbered. verify_workbook.py now fails on the disagreement and names the rows, so it cannot pass unnoticed. NO CERTIFICATE SHOULD BE ISSUED until this is settled: a certificate citing iCoA-PP_26-066 while the register assigns that code to another batch is two controlled documents contradicting each other about the identity of a third.
+**The desk.** Closed against the ruling of 10.09.2026, which already answered it: "the register encompasses every internal certificate that exists or ever will … one per testing round, which is exactly the number of certificates of quality." A retest takes a number and a held lot takes a number; only a certificate with no testing date takes none, because a code in an issue-ordered series says the certificate was issued. The workbook now takes its codes from icoa_register.py as literals — one definition — and mints none of its own; a row the series does not carry is left unnumbered and says so. Two defects were found on the way: the register carried 26 rows with no P number that Batch Dates could supply, and it registered four lots TWICE for the same round, once under the cultivation batch and once under the bare P number (J31102501/P060152, JD112501/P060212, OPM122501/P060242, GG012603/P060402) — same P number, same testing date, same issue date, so two internal certificates for one testing, which the ruling forbids. 106 rows -> 102. verify_workbook.py compares the two registers on every run and the workbook verifies with 0 findings.
 
-**Needed.** Which rule governs the series? (a) Does a RETEST document take a number, or only an initial release? The module numbers retests; the workbook does not. (b) Does a lot whose foreign matter is held take a number? The module does; the workbook does not. Once the rule is fixed the workbook takes its codes from the module, one definition, and the P numbers the module is missing come from Batch Dates.
+**Needed.** Nothing. Recorded because the numbers moved: de-duplicating shifted every code from 045 onward, so any code quoted before 11.09.2026 is stale.
 
 ## Document rendering
 

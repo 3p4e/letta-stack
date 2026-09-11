@@ -759,9 +759,87 @@ if ICOA_RULE:
             _later.append(r)
         else:
             _issuable.append(r)
-    _issuable.sort(key=lambda r: (r["icoa_issue"], str(T.date_key(r["sortdate"])) if r["sortdate"] else "9", r["cu"], r["p"]))
+    # The number comes from icoa_register.py and is not computed again here.
+    #
+    # It used to be: sort these rows, then number them 1..N by position. That is a
+    # second definition of a controlled document code, and on 11.09.2026 the owner
+    # found what two definitions do — batch J31122501 / P060262 was the first row
+    # of this sheet, so it took iCoA-PP_26-001, while its own certificate cited
+    # iCoA-PP_26-066. Of the 49 rows that could be compared, none agreed.
+    #
+    # The module implements the owner's ruling of 10.09.2026: "the register
+    # encompasses every internal certificate that exists or ever will … one per
+    # testing round, which is exactly the number of certificates of quality" —
+    # 106 over 80 batches — ordered by the issue date, then when the work was
+    # done, then the batch. The certificates print from it. So does this sheet
+    # now, and the local sort survives only to order the rows the module has no
+    # entry for.
+    _MOD_CODE, _MOD_KNOWN = {}, set()
+    try:
+        import icoa_register as _IR
+        for _m in _IR.build():
+            _suf = "I" if _m["round"] == "initial release" else "R"
+            for _base in filter(None, (_m["p_lot"], _m["batch"])):
+                _k = f"{T.batch_key(_base)}|{_suf}"
+                _MOD_KNOWN.add(_k)
+                if _m["code"]:
+                    _MOD_CODE.setdefault(_k, _m["code"])
+    except Exception as _e:
+        print("iCoA codes NOT taken from icoa_register.py:", _e)
+
+    def _mod_keys(r):
+        _base, _, _suf = r["key"].rpartition("|")
+        return (f"{T.batch_key(_base)}|{_suf}", f"{T.batch_key(r['cu'])}|{_suf}")
+
+    def _mod_code(r):
+        return next((_MOD_CODE[k] for k in _mod_keys(r) if k in _MOD_CODE), None)
+
+    def _mod_withheld(r):
+        """The register knows this round and deliberately gave it no number.
+
+        A code in an issue-ordered series says the certificate was issued, and a
+        certificate with no testing date cannot be. Two lots were being numbered
+        here that the register withholds a number from for exactly that reason.
+        """
+        return any(k in _MOD_KNOWN for k in _mod_keys(r)) and _mod_code(r) is None
+
+    _issuable.sort(key=lambda r: (_mod_code(r) or "zzz",
+                                  str(T.date_key(r["icoa_issue"])) if r["icoa_issue"] else "9",
+                                  str(T.date_key(r["sortdate"])) if r["sortdate"] else "9",
+                                  r["cu"], r["p"]))
+    # A row the register does not number is not in the series, and must not be
+    # given a number here. There used to be a positional fallback for rows the
+    # register cannot identify, and it minted numbers out of this sheet's own
+    # row count — which collided head-on with the real series: rows took 061-066
+    # while the register had already given those numbers to other rounds.
+    _withheld, _unknown = [], []
+    for r in _issuable:
+        if _mod_withheld(r):
+            r["why"] = "no packaging date on the list — the register withholds a number"
+            _withheld.append(r)
+        elif _mod_code(r) is None:
+            r["why"] = ("not in icoa_register.py — the register numbers the series and "
+                        "does not carry this round")
+            _unknown.append(r)
+    _issuable = [r for r in _issuable if r not in _withheld and r not in _unknown]
+    _later.extend(_withheld + _unknown)
+    if _unknown:
+        print("iCoA register: %d issuable row(s) the register does not carry, left unnumbered: %s"
+              % (len(_unknown), ", ".join(sorted(r["key"] for r in _unknown))))
+    _no_mod = 0
+    if os.environ.get("ICOA_DEBUG"):
+        print("DEBUG _MOD_CODE entries:", len(_MOD_CODE))
+        for _k in ("P060152|I", "P060162|I"):
+            print("   probe", _k, "->", _MOD_CODE.get(_k))
+        for _rr in _issuable[:3]:
+            print("   row key=%r cu=%r -> %r" % (_rr["key"], _rr["cu"], _mod_code(_rr)))
+        _p = next((x for x in _issuable if x["key"] == "P060152|I"), None)
+        print("   P060152 row:", (_p or {}).get("key"), "->", _mod_code(_p) if _p else "no such row")
     for _i, r in enumerate(_issuable, 1):
-        r["code"], r["issuable"] = f"iCoA-PP_26-{_i:03d}", "yes"
+        _c = _mod_code(r)
+        if _c is None:
+            _no_mod += 1
+        r["code"], r["issuable"] = _c, "yes"
         r["reg_status"] = ("registered — issued with the legacy series on 15.05.2026" if r["group"] == "legacy"
                            else "registered — first working day 5 days after packaging")
         r["icoa"], r["status"] = r["code"], r["reg_status"]
@@ -1882,12 +1960,19 @@ REG_NOTE = ("Head of QC, 05.09.2026: preliminary iCoA issuance register — ONE 
             "QCCoA 001 certificate) are all issued on 15.05.2026, in chronological order of packaging; POST-SOP lots follow, each "
             "on the first working day 5 days after its packaging. No number is reserved for a row that cannot be issued yet (a lot "
             "without a packaging date, a held result, every retest iCoA, whose sampling date is not on the desk); where a CNP "
-            "certificate reports all three, no iCoA is needed. FORMULAS: No. counts the issuable rows above it; the code is built "
-            "from No.; the planned date is 15.05.2026 for a legacy row, else the first working day 5 days after Packaging complete; "
-            "the packaging dates are looked up on Batch Dates by P batch (else by the batch as listed); CoQ (register) is looked up on "
-            "the CoQ Register by Key. Insert a row, set Issuable to yes, and every code beneath moves by one — the iCoA Issuance "
-            "sheet and the tracker cite this register by Key, so they follow. Rows are not re-sorted by a formula: a changed date "
-            "that changes the order is a manual move. Working days are Monday to Friday; public holidays are not applied.")
+            "certificate reports all three, no iCoA is needed. THE NUMBER AND THE CODE ARE NOT COMPUTED HERE (11.09.2026). They "
+            "are taken from icoa_register.py, which holds the standing series — one certificate per testing round, ordered by the "
+            "issue date, then when the work was done, then the batch — and they are written as literal values. They used to be "
+            "formulas over this sheet's own row order, No. counting the issuable rows above it and the code built from No.; that "
+            "made the number a function of where a row happened to sit, and the owner found what it cost: the first physical row "
+            "took iCoA-PP_26-001 while its own certificate cited iCoA-PP_26-066, and of the 49 rows that could be compared, none "
+            "agreed. The numbers here are therefore an ordered SUBSET of the series with gaps, because the series numbers rounds "
+            "this sheet does not carry as separate rows; a row the series does not number is left unnumbered and says why. "
+            "Inserting a row no longer renumbers anything. verify_workbook.py compares the two on every run. FORMULAS remaining: "
+            "the planned date is 15.05.2026 for a legacy row, else the first working day 5 days after Packaging complete; the "
+            "packaging dates are looked up on Batch Dates by P batch (else by the batch as listed); CoQ (register) is looked up on "
+            "the CoQ Register by Key — the iCoA Issuance sheet and the tracker cite this register by Key, so they follow. Working "
+            "days are Monday to Friday; public holidays are not applied.")
 COQ_NOTE = ("Head of QC, 05.09.2026: preliminary CoQ issuance register — codes CoQ-PP_26-nnn (nnn = 001 … 999), one series for the "
             "year of issue, in the order of issue. LEGACY lots (packed before the SOP floor of 11.05.2026, or holding an old "
             "in-house QCCoA 001 certificate, which the CoQ supersedes) are all issued on 27.05.2026, in chronological order of "
@@ -1933,8 +2018,15 @@ def _fill_register(sh):
     BD_ = "'Batch Dates'"
     _r = 2
     for r in REGISTER:
-        f_no = f'=IF(C{_r}="yes",COUNT(A$1:A{_r - 1})+1,"")'
-        f_code = f'=IF(A{_r}<>"","iCoA-PP_26-"&TEXT(A{_r},"000"),IF(C{_r}="n/a","not needed","— at issue —"))'
+        # The number and the code are LITERALS taken from icoa_register.py, not
+        # formulas over this sheet's row order. COUNT(A$1:A{n})+1 numbered a
+        # controlled series by where a row happened to sit, which is how the
+        # first physical row took iCoA-PP_26-001 while its certificate cited
+        # iCoA-PP_26-066. A document code is not a function of its row.
+        import re as _re
+        _m = _re.search(r"(\d+)$", str(r.get("code") or ""))
+        f_no = int(_m.group(1)) if _m else ""
+        f_code = r.get("code") or ("not needed" if r["issuable"] == "n/a" else "— at issue —")
         # Owner, 10-11.09.2026: the internal certificate is tested on the FIRST
         # day of packaging (column E, not the packaging-complete date in F) and
         # issued that day, or on the specification SOP's day where that day comes

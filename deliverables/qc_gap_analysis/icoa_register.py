@@ -164,6 +164,12 @@ def build(path=DATA):
     # of 11.09.2026 takes the FIRST day of that window, so the release record is
     # the fallback and not the source.
     packed = {}
+    # `Batch Dates` carries the P number beside the cultivation number, and the
+    # register needs it: without it a row cannot be matched to the workbook's
+    # iCoA Register, whose key is the P number wherever a lot has one. 37 of the
+    # 106 rows reach here with no P number of their own; this supplies 26 of
+    # them, and the 7 that remain are the lots that genuinely have none.
+    p_of = {}
     dates_csv = os.path.join(HERE, "batch_dates_2026-09-10.csv")
     if os.path.exists(dates_csv):
         with open(dates_csv, encoding="utf-8") as fh:
@@ -180,10 +186,13 @@ def build(path=DATA):
                 # P number beside it; the register keys some entries by one and
                 # some by the other, so both are indexed — the same reason the CoQ
                 # register lookup indexes both
-                for name in (row.get("batch"), row.get("p_batch")):
-                    name = (name or "").strip()
+                _cu = (row.get("batch") or "").strip()
+                _pn = (row.get("p_batch") or "").strip()
+                for name in (_cu, _pn):
                     if name and not name.startswith(("N/A", "\u2014")):
                         packed.setdefault(_bi().batch_key(name), win)
+                if _cu and _pn and not _pn.startswith(("N/A", "\u2014")):
+                    p_of.setdefault(_bi().batch_key(_cu), _pn)
     for c in data["coqs"]:
         if c["t"] == "initial release" and c.get("pk"):
             packed.setdefault(_bi().batch_key(c["cb"]), (c["pk"], c["pk"]))
@@ -210,7 +219,8 @@ def build(path=DATA):
             extra = [p for p in params if p not in ALWAYS]
             rows.append({
                 "note": "" if tested else "no packaging date on file — testing date not stated",
-                "batch": entry["cb"], "p_lot": entry.get("pn") or "",
+                "batch": entry["cb"],
+                "p_lot": entry.get("pn") or p_of.get(_bi().batch_key(entry["cb"]), ""),
                 "strain": entry.get("strain") or "",
                 "round": "initial release" if i == 0 else ("retest %d" % i),
                 "tested_from": frm, "tested_to": to,
@@ -218,6 +228,31 @@ def build(path=DATA):
                 "parameters": " ".join(params),
                 "covers_in_house": " ".join(extra),
             })
+    # One certificate per round, and the register contains one row for it.
+    #
+    # The desk's record carries some lots twice — once under the cultivation
+    # batch and once under the bare P number, because the certificate that named
+    # only the P number created a second entry. Four lots reached here that way:
+    # J31102501 beside P060152, JD112501 beside P060212, OPM122501 beside
+    # P060242, GG012603 beside P060402 — each pair the same P number, the same
+    # testing date and the same issue date, so each pair is one lot and one
+    # round. Two rows would be two internal certificates for one testing, which
+    # the owner's ruling of 10.09.2026 forbids ("one per testing round"), and
+    # each spare row also pushed every later number along by one.
+    #
+    # The row named by the cultivation batch wins: a bare P number is the name
+    # the desk fell back to when the certificate gave it nothing else.
+    _seen = {}
+    for r in rows:
+        k = (_bi().batch_key(r["p_lot"] or r["batch"]), r["round"])
+        keep = _seen.get(k)
+        if keep is None:
+            _seen[k] = r
+        elif keep["batch"] == keep["p_lot"] and r["batch"] != r["p_lot"]:
+            _seen[k] = r          # the cultivation-batch row replaces the P-number one
+    rows = [r for r in rows if _seen.get(
+        (_bi().batch_key(r["p_lot"] or r["batch"]), r["round"])) is r]
+
     # the order of issuing: the issue date, then when the work was done, then the
     # batch, so a shared issue date orders by packaging as the CoQ series does
     rows.sort(key=lambda r: (ISS.parse(r["issued"]) or ISS.parse("31.12.2099"),

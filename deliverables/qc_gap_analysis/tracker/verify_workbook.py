@@ -245,8 +245,15 @@ for name, rows, code_col, prefix in (("iCoA Register", regv, "iCoA code", "iCoA-
                                      ("CoQ Register", cqv, "CoQ code", "CoQ-PP_26-")):
     nums = [(r, d) for r, d in rows.items() if d["No."] not in (None, "")]
     seqn = [int(d["No."]) for _, d in sorted(nums)]
-    if seqn != list(range(1, len(seqn) + 1)):
-        bad(name, "numbers are not 1..n in row order", f"{seqn[:6]} …")
+    # Strictly increasing down the page, not contiguous 1..n. The iCoA series is
+    # icoa_register.py's, which numbers every testing round; this sheet carries
+    # the rounds it models, so its numbers are an ordered SUBSET with gaps where
+    # a round is registered elsewhere. Contiguity was only ever true while the
+    # sheet numbered its own rows by position — the defect that was removed.
+    if any(b <= a for a, b in zip(seqn, seqn[1:])):
+        bad(name, "numbers do not increase down the page", f"{seqn[:8]} …")
+    if seqn and seqn[0] < 1:
+        bad(name, "numbering does not start at 1", str(seqn[0]))
     for r, d in nums:
         want = f"{prefix}{int(d['No.']):03d}"
         if str(d[code_col]) != want:
@@ -376,7 +383,11 @@ try:
         if not _key or str(_reg.cell(_r, 3).value or "") != "yes":
             continue
         _n += 1
-        _sheet_code = "iCoA-PP_26-%03d" % _n
+        # the code the sheet actually prints, read from the sheet. This used to
+        # recompute it from the row's position — which was the very defect being
+        # checked for, so once the sheet stopped numbering by position the check
+        # went on comparing against a number no longer on the page.
+        _sheet_code = str(_reg.cell(_r, 2).value or "").strip()
         _base, _, _suf = _key.rpartition("|")
         _want = _mod.get("%s|%s" % (_bk(_base), _suf))
         if _want is None:
