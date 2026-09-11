@@ -2583,7 +2583,22 @@ function fillCoq(c){
          mean opposite things */
       /* a result long enough to be a sentence is set smaller — see addFitStyle */
       var _long = v.length > 60 ? " r-long" : "";
-      cell.innerHTML = v ? '<span class="r-val' + rCls(v) + _long + '">' + esc(v) + "</span>"
+      /* Owner, 11.09.2026: a conformity result prints bilingually, "in the
+         formatting convention that is set for the rest of the CoQ text."
+
+         The master already sets that convention for this exact cell and nothing
+         had ever used it: `.r-conform .mk{display:block;font-size:6.8px;
+         color:#5f8f74}` — the Macedonian on its own line beneath the English, a
+         shade smaller, in the muted green of a conforming result. So the halves
+         are stacked here rather than joined by the .bisep pipe the master uses
+         for inline pairs elsewhere; the pipe is for a label that shares a line,
+         and this cell has its own rule. The export pairs the halves with " | ";
+         only the split happens here, and the master does the styling. */
+      var _h = v.split(" | ");
+      var _body = _h.length === 2
+        ? esc(_h[0]) + '<span class="mk">' + esc(_h[1]) + "</span>"
+        : esc(v);
+      cell.innerHTML = v ? '<span class="r-val' + rCls(v) + _long + '">' + _body + "</span>"
                          : todoHtml("\u2014", "r-val");
       if (ORDER[i] === "4") {
         var _tds = cell.parentElement.querySelectorAll("td");

@@ -210,16 +210,19 @@ ITEMS = [
      "need a disposition.",
      "Ph. Eur. 5.1.4; 9 lots"),
 
-    ("OI-18", "Document content", "open",
-     "The same assertion prints bilingually on some certificates and in English on others",
+    ("OI-18", "Document content", "ruled",
+     "The same assertion printed bilingually on some certificates and in English on others",
      "Identification A and foreign matter print Conforms on 51 determinations and "
      "Conforms | Соодветствува on 12 — the certificate's own English | Macedonian pattern, "
      "applied to some cells and not others.",
-     "Left as it stands: which form a bilingual certificate uses is a document-design "
-     "decision, not a transcription one, so the desk did not impose a choice.",
-     "Should every result print bilingually, or every result in English with the "
-     "Macedonian only in the column headings?",
-     "63 determinations across the 22 drafts"),
+     "Owner's ruling of 11.09.2026: every conformity result prints bilingually, in the "
+     "convention the rest of the certificate uses. The master already set that convention "
+     "for this exact cell and nothing had used it — .r-conform .mk stacks the Macedonian "
+     "beneath the English in a smaller muted green — so the halves are stacked, not joined "
+     "by the .bisep pipe the master keeps for inline pairs. 375 results paired. A measured "
+     "number is not translated.",
+     "Nothing further.",
+     "375 determinations; .r-conform .mk in _CoQ_MASTER_Template.html"),
 
     ("OI-19", "Result", "open",
      "One ochratoxin result prints as a working note rather than a value",
@@ -229,6 +232,18 @@ ITEMS = [
      "How should a conforming detection print — the figure alone, or the figure with a "
      "detected qualifier? The same question as OI-15 for pesticides.",
      "#10.3 Ochratoxin A, 1 determination"),
+
+    ("OI-23", "Document content", "open",
+     "The Macedonian for an absent organism was chosen from the laboratories' own usage",
+     "The owner ruled the conformity result prints \"Conforms | Одговара\". The absence "
+     "columns (Salmonella, E. coli) assert absence rather than conformity and were not "
+     "covered by that word. The source certificates spell it four ways — отсутна (7), "
+     "отсуство (2), отсуства (2) — and most often write Одговара there instead (84).",
+     "The certificate prints \"Absent | Отсутна\" on 92 determinations: CNP's own most-used "
+     "form (\"отсутна/25 g\"), capitalised, rather than a term translated afresh for a "
+     "controlled document.",
+     "Confirm Отсутна, or give the term the two absence rows should carry.",
+     "#9.4 Salmonella, #9.5 E. coli; 92 determinations"),
 
     ("OI-22", "Result reading", "ruled",
      "An analyte the laboratory never tested was printing a line on the certificate",
@@ -284,7 +299,7 @@ def items(state=None, area=None):
     """The register, optionally narrowed.
 
     >>> len(items())
-    22
+    23
     >>> [i[0] for i in items(area="Specification")]
     ['OI-01', 'OI-02', 'OI-03']
     >>> sorted({i[2] for i in items()})

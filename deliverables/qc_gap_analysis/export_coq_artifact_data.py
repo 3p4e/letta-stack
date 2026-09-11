@@ -433,18 +433,31 @@ def main(out):
     # non-conformity is preserved as a verdict rather than folded away. Applied
     # here, so the certificates, the desk and the PDFs inherit one spelling from
     # one place.
+    #
+    # The Macedonian half is added here and not in canon(), because the two
+    # serve different readers. The workbook is the desk's own record and keeps
+    # one word per assertion; the certificate is a bilingual controlled document
+    # and prints both, in the ENG | MK convention the master already uses in its
+    # sub-row labels. Owner's ruling of 11.09.2026: "Conforms | Одговара, and use
+    # the formatting convention that is set for the rest of the CoQ text."
     try:
         import result_vocabulary as RV
-        _nd = 0
+        _nd = _bi = 0
         for _c in coqs:
             for _r in _c["rows"]:
                 _v = _r.get("res")
-                if _v:
-                    _w = RV.canon(_v, str(_r.get("no") or "").strip())
-                    if _w != _v:
-                        _r["res"] = _w
-                        _nd += 1
-        print("Notation: %d printed result(s) in the controlled vocabulary" % _nd)
+                if not _v:
+                    continue
+                _no = str(_r.get("no") or "").strip()
+                _w = RV.canon(_v, _no)
+                if _w != _v:
+                    _nd += 1
+                _b = RV.bilingual(_w, _no)
+                if _b != _w:
+                    _bi += 1
+                _r["res"] = _b
+        print("Notation: %d printed result(s) in the controlled vocabulary; "
+              "%d conformity result(s) paired with their Macedonian" % (_nd, _bi))
     except Exception as _e:
         print("Notation not normalised: %s" % _e)
 

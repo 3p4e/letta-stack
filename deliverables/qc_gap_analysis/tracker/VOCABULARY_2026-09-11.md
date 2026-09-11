@@ -204,6 +204,55 @@ Verified on one batch through `fillCoq` in headless Chromium, both ways:
 | initial release, 06.06.2026 | `Aflatoxins ∑ = < 2` |
 | retest, 12-month, 17.08.2026 | `Aflatoxin B₁ = ND` · `Aflatoxins ∑ = ND` · `Ochratoxin A = ND` |
 
+## One Macedonian word for one assertion — 11.09.2026, third ruling
+
+> *"use Conforms | Одговара, and use the formatting convention that is set for
+> the rest of the CoQ text formatting regarding ENG and MK parts."*
+
+The results column carried **two different Macedonian words for the same
+assertion**, and the page disagreed with itself:
+
+* the desk printed **Соодветствува** on 131 results — a word that appears
+  **nowhere in the master template** and on no laboratory certificate in the
+  record. `build_coq_schedule.py` introduced it in two hard-coded strings;
+* the master's own conformity declaration, three rows below on the same page,
+  reads **"Одговара на спецификацијата"**, and every laboratory writes
+  **Одговара** (and **Не одговара** for a failure — the word whose negation the
+  desk had been folding away).
+
+Соодветствува is gone from the desk. **0 occurrences remain** in the certificate
+data.
+
+And the column printed 152 results in English only beside 131 bilingual ones.
+Every conformity result is bilingual now — **375 paired**. A measured number is
+not translated: `20.29`, `< 2` and `ND` print as they are.
+
+### The convention was already in the master
+
+This is the part worth writing down. The formatting convention the owner asked
+for is not a house style to be reconstructed — the master **already sets it for
+this exact cell**, and nothing had ever used the rule:
+
+```css
+.r-conform .mk { display:block; font-size:6.8px; color:#5f8f74 }
+```
+
+The Macedonian belongs on its own line beneath the English, a shade smaller, in
+the muted green of a conforming result. So the halves are **stacked**, not joined
+by the `.bisep` pipe the master keeps for inline pairs like `TAMC | Вкупен
+аеробен микробен број`. The pipe is for a label sharing a line; this cell has its
+own rule. The export pairs the halves with `" | "`, `fillCoq()` splits on it, and
+the master does the styling:
+
+```html
+<span class="r-val r-conform">Conforms<span class="mk">Одговара</span></span>
+```
+
+The absence rows are the one term the owner did not name: they assert absence,
+not conformity. They print **`Absent | Отсутна`** — CNP's own most-used form
+(`отсутна/25 g`), capitalised, rather than a term translated afresh for a
+controlled document. That is **OI-23**, and it asks for confirmation.
+
 ## Reproducing
 
     python3 deliverables/qc_gap_analysis/result_vocabulary.py

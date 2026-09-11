@@ -230,6 +230,78 @@ def canon(value, no=None):
     return (body + mark).strip()
 
 
+# The Macedonian half of a conformity result, for the certificate.
+#
+# Owner's ruling, 11.09.2026: the results column prints "Conforms | Одговара",
+# in the ENG | MK convention the rest of the certificate already uses.
+#
+# Одговара, not Соодветствува. The desk had introduced Соодветствува — a second
+# Macedonian word for the same assertion — and printed it on 131 results, while
+# the master template's own conformity declaration three rows below reads
+# "Одговара на спецификацијата" and every laboratory certificate in the record
+# writes Одговара. Соодветствува appears nowhere in the master. It was the desk's
+# word, and the page disagreed with itself.
+#
+# Отсутна is the laboratories' own word for an absent organism (CNP prints
+# "отсутна/25 g"), kept rather than translated afresh — see OI-23, which asks the
+# owner to confirm it for a controlled document.
+MK = {
+    "Conforms": "Одговара",
+    "Does not conform": "Не одговара",
+    "Absent": "Отсутна",
+    # Identification C states the method in the result. Its Macedonian was
+    # already written and is kept verbatim — only the verb changes.
+    "Conforms — cannabinoids identified and quantified by HPLC":
+        "Одговара — идентификација и квантификација со HPLC",
+}
+_SEP = " | "
+
+
+def bilingual(value, no=None):
+    """A conformity result as the certificate prints it: English, then Macedonian.
+
+    Only a conformity assertion is paired. A measured number needs no
+    translation, and a result that already carries its Macedonian is left alone.
+
+    >>> bilingual("Conforms", "1"), bilingual("Conforms", "7")
+    ('Conforms | Одговара', 'Conforms | Одговара')
+    >>> bilingual("Absent", "9.4"), bilingual("Does not conform", "7")
+    ('Absent | Отсутна', 'Does not conform | Не одговара')
+
+    A qualifier in brackets or after a dash travels with the English and is
+    repeated in neither half — the assertion is what is paired, not the gloss:
+
+    >>> bilingual("Conforms (ImB spec.)", "3")
+    'Conforms (ImB spec.) | Одговара'
+    >>> bilingual("Conforms ᴿ", "1")
+    'Conforms ᴿ | Одговара'
+
+    A result that states its method keeps the Macedonian that was written for it:
+
+    >>> bilingual("Conforms — cannabinoids identified and quantified by HPLC", "3")
+    'Conforms — cannabinoids identified and quantified by HPLC | Одговара — идентификација и квантификација со HPLC'
+
+    Everything else is returned untouched, including a value that is already
+    bilingual and anything numeric:
+
+    >>> bilingual("Conforms | Одговара", "1")
+    'Conforms | Одговара'
+    >>> bilingual("20.29", "4"), bilingual("< 2", "10.2"), bilingual("ND", "11.1")
+    ('20.29', '< 2', 'ND')
+    >>> bilingual("", "1"), bilingual("— MISSING —", "1")
+    ('', '— MISSING —')
+    """
+    s = (value or "").strip()
+    if not s or _SEP in s or s.startswith("—"):
+        return s
+    body, mark = _split(s)
+    core = re.sub(r"\s*\([^()]*\)\s*$", "", body).strip()
+    mk = MK.get(core)
+    if not mk:
+        return s
+    return body + mark + _SEP + mk
+
+
 def census(path=None):
     """Every result cell in a workbook the vocabulary would rewrite."""
     import collections

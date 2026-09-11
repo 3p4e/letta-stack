@@ -198,15 +198,15 @@ register is the **Open Items** sheet of the workbook.
 
 ## Document content
 
-### OI-18 · The same assertion prints bilingually on some certificates and in English on others
+### OI-18 · The same assertion printed bilingually on some certificates and in English on others
 
-*State:* **open** · *Evidence:* 63 determinations across the 22 drafts
+*State:* **ruled** · *Evidence:* 375 determinations; .r-conform .mk in _CoQ_MASTER_Template.html
 
 **Found.** Identification A and foreign matter print Conforms on 51 determinations and Conforms | Соодветствува on 12 — the certificate's own English | Macedonian pattern, applied to some cells and not others.
 
-**The desk.** Left as it stands: which form a bilingual certificate uses is a document-design decision, not a transcription one, so the desk did not impose a choice.
+**The desk.** Owner's ruling of 11.09.2026: every conformity result prints bilingually, in the convention the rest of the certificate uses. The master already set that convention for this exact cell and nothing had used it — .r-conform .mk stacks the Macedonian beneath the English in a smaller muted green — so the halves are stacked, not joined by the .bisep pipe the master keeps for inline pairs. 375 results paired. A measured number is not translated.
 
-**Needed.** Should every result print bilingually, or every result in English with the Macedonian only in the column headings?
+**Needed.** Nothing further.
 
 ## Result
 
@@ -219,6 +219,18 @@ register is the **Open Items** sheet of the workbook.
 **The desk.** Printed as the desk holds it.
 
 **Needed.** How should a conforming detection print — the figure alone, or the figure with a detected qualifier? The same question as OI-15 for pesticides.
+
+## Document content
+
+### OI-23 · The Macedonian for an absent organism was chosen from the laboratories' own usage
+
+*State:* **open** · *Evidence:* #9.4 Salmonella, #9.5 E. coli; 92 determinations
+
+**Found.** The owner ruled the conformity result prints "Conforms | Одговара". The absence columns (Salmonella, E. coli) assert absence rather than conformity and were not covered by that word. The source certificates spell it four ways — отсутна (7), отсуство (2), отсуства (2) — and most often write Одговара there instead (84).
+
+**The desk.** The certificate prints "Absent | Отсутна" on 92 determinations: CNP's own most-used form ("отсутна/25 g"), capitalised, rather than a term translated afresh for a controlled document.
+
+**Needed.** Confirm Отсутна, or give the term the two absence rows should carry.
 
 ## Result reading
 

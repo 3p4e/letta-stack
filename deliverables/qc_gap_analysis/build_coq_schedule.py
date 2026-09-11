@@ -804,12 +804,14 @@ def schedule():
 
             if det["no"] in ICOA_FIELD and not additional:
                 if ic_row.get(ICOA_FIELD[det["no"]], "required") != "required" and cnp:
-                    chosen, others = dict(cnp, value="Conforms | Соодветствува"), []
+                    chosen, others = dict(cnp, value="Conforms"), []
             if det["no"] == "3" and chosen is None and ident_c_cert is not None:
                 chosen, others = dict(
                     ident_c_cert,
-                    value="Conforms — cannabinoids identified and quantified by HPLC | "
-                          "Соодветствува — идентификација и квантификација со HPLC"), []
+                    # the Macedonian half is added on the export path, from
+                    # result_vocabulary.MK — one word for the assertion, the
+                    # master's own (Одговара), not a second one invented here
+                    value="Conforms — cannabinoids identified and quantified by HPLC"), []
 
             criterion = det["criterion"]
             if det.get("per_batch_criterion"):
