@@ -246,6 +246,31 @@ ITEMS = [
      "column, which is a change to the master.",
      "#3 Identification C; 35 determinations"),
 
+    ("OI-26", "Document identity", "open",
+     "STOP — the internal-CoA number is defined twice and the two definitions disagree on "
+     "every comparable row",
+     "The certificates print the code from icoa_register.py, which sorts by the order of "
+     "issuing exactly as ruled and numbers iCoA-PP_26-001 .. -099, leaving 7 lots unnumbered "
+     "for want of a packaging date. The workbook's iCoA Register sheet numbers its own rows "
+     "by position, COUNT(A$1:A{n})+1, over a different row order and a different rule — it "
+     "also withholds a number from every retest and every held result, numbering 69. Of the "
+     "49 rows that can be compared, 0 agree. J31122501 / P060262 is the owner's example: the "
+     "sheet makes it iCoA-PP_26-001 because it is physically the first row; the certificate "
+     "cites iCoA-PP_26-066, its true place in the issue order. The two also identify lots "
+     "differently — the module's rows often carry no P number, so 20 sheet rows cannot even "
+     "be matched to it.",
+     "Nothing has been renumbered. verify_workbook.py now fails on the disagreement and "
+     "names the rows, so it cannot pass unnoticed. NO CERTIFICATE SHOULD BE ISSUED until "
+     "this is settled: a certificate citing iCoA-PP_26-066 while the register assigns that "
+     "code to another batch is two controlled documents contradicting each other about the "
+     "identity of a third.",
+     "Which rule governs the series? (a) Does a RETEST document take a number, or only an "
+     "initial release? The module numbers retests; the workbook does not. (b) Does a lot "
+     "whose foreign matter is held take a number? The module does; the workbook does not. "
+     "Once the rule is fixed the workbook takes its codes from the module, one definition, "
+     "and the P numbers the module is missing come from Batch Dates.",
+     "icoa_register.py vs the iCoA Register sheet; 49 of 49 comparable rows differ"),
+
     ("OI-25", "Document rendering", "ruled",
      "The A4 page was never measured with the fonts it prints in",
      "\"One A4 page\" was checked by reading scrollHeight on the page itself — but div.page "
@@ -328,7 +353,7 @@ def items(state=None, area=None):
     """The register, optionally narrowed.
 
     >>> len(items())
-    25
+    26
     >>> [i[0] for i in items(area="Specification")]
     ['OI-01', 'OI-02', 'OI-03']
     >>> sorted({i[2] for i in items()})

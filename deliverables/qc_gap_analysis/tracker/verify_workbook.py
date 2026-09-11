@@ -305,6 +305,51 @@ for sh_ in WB.worksheets:
     if sh_.page_setup.orientation != "landscape" or not sh_.page_setup.fitToWidth:
         bad("Read Me", "the print claim is not true for this sheet", sh_.title)
 
+# ---------------------------------------------------------------- the iCoA series
+# The internal-CoA number exists in two places: icoa_register.py, which the
+# certificates print from, and this workbook's iCoA Register sheet, which numbers
+# its rows by position with COUNT(A$1:A{n})+1. Two definitions of one number will
+# disagree, and on 11.09.2026 they did — on every row that could be compared. A
+# certificate citing iCoA-PP_26-066 while the register gives that batch
+# iCoA-PP_26-001 is two controlled documents contradicting each other about the
+# identity of a third, so it is checked here rather than noticed by a reader.
+try:
+    import sys as _sys, os as _os
+    _sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+    _sys.path.insert(0, "/home/user/letta-stack")
+    import icoa_register as _IR
+    from ingestion.common.batch_id import batch_key as _bk
+    _mod = {}
+    for _row in _IR.build():
+        _suf = "I" if _row["round"] == "initial release" else "R"
+        for _base in filter(None, (_row["p_lot"], _row["batch"])):
+            _mod.setdefault("%s|%s" % (_bk(_base), _suf), _row["code"])
+    _reg = WB["iCoA Register"]
+    _n, _agree, _differ, _unknown = 0, 0, 0, 0
+    for _r in range(2, _reg.max_row + 1):
+        _key = str(_reg.cell(_r, 16).value or "")
+        if not _key or str(_reg.cell(_r, 3).value or "") != "yes":
+            continue
+        _n += 1
+        _sheet_code = "iCoA-PP_26-%03d" % _n
+        _base, _, _suf = _key.rpartition("|")
+        _want = _mod.get("%s|%s" % (_bk(_base), _suf))
+        if _want is None:
+            _unknown += 1
+        elif _want == _sheet_code:
+            _agree += 1
+        else:
+            _differ += 1
+            if _differ <= 5:
+                bad("iCoA Register", "code disagrees with icoa_register.py",
+                    "%s: sheet %s, certificates cite %s" % (_key, _sheet_code, _want))
+    if _differ:
+        bad("iCoA Register", "the series is numbered twice and the two disagree",
+            "%d of %d comparable rows differ; %d rows the module cannot identify"
+            % (_differ, _agree + _differ, _unknown))
+except Exception as _e:
+    bad("iCoA Register", "could not be checked against icoa_register.py", str(_e))
+
 print(f"{len(FIND)} finding(s)")
 for s, w, d in FIND:
     print(f"  [{s}] {w}" + (f" — {d}" if d else ""))

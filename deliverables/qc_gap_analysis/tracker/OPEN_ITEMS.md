@@ -4,7 +4,7 @@ Every finding the desk has raised and cannot itself settle, with the evidence
 behind it and the decision being asked for. Built by `open_items.py`; the same
 register is the **Open Items** sheet of the workbook.
 
-**18 open · 3 marked on the certificate**
+**19 open · 3 marked on the certificate**
 
 ## Specification
 
@@ -231,6 +231,18 @@ register is the **Open Items** sheet of the workbook.
 **The desk.** Shortened to "Conforms | Одговара" like every other identity row. The basis for Identification C stays in the Section 03 citation, where a basis belongs.
 
 **Needed.** Do you want the method restated in the result cell? It would need a wider results column, which is a change to the master.
+
+## Document identity
+
+### OI-26 · STOP — the internal-CoA number is defined twice and the two definitions disagree on every comparable row
+
+*State:* **open** · *Evidence:* icoa_register.py vs the iCoA Register sheet; 49 of 49 comparable rows differ
+
+**Found.** The certificates print the code from icoa_register.py, which sorts by the order of issuing exactly as ruled and numbers iCoA-PP_26-001 .. -099, leaving 7 lots unnumbered for want of a packaging date. The workbook's iCoA Register sheet numbers its own rows by position, COUNT(A$1:A{n})+1, over a different row order and a different rule — it also withholds a number from every retest and every held result, numbering 69. Of the 49 rows that can be compared, 0 agree. J31122501 / P060262 is the owner's example: the sheet makes it iCoA-PP_26-001 because it is physically the first row; the certificate cites iCoA-PP_26-066, its true place in the issue order. The two also identify lots differently — the module's rows often carry no P number, so 20 sheet rows cannot even be matched to it.
+
+**The desk.** Nothing has been renumbered. verify_workbook.py now fails on the disagreement and names the rows, so it cannot pass unnoticed. NO CERTIFICATE SHOULD BE ISSUED until this is settled: a certificate citing iCoA-PP_26-066 while the register assigns that code to another batch is two controlled documents contradicting each other about the identity of a third.
+
+**Needed.** Which rule governs the series? (a) Does a RETEST document take a number, or only an initial release? The module numbers retests; the workbook does not. (b) Does a lot whose foreign matter is held take a number? The module does; the workbook does not. Once the rule is fixed the workbook takes its codes from the module, one definition, and the P numbers the module is missing come from Batch Dates.
 
 ## Document rendering
 
