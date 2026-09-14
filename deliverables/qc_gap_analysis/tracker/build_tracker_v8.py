@@ -696,15 +696,15 @@ if ICOA_RULE:
             _identc = _pick(4, False) or _pick(3, False) or "— no cannabinoid certificate from the initial testing —"
             common = {"cu": _cu_show, "p": _lot, "strain": _strain, "harvest": _lharvest, "packaging": _lpackaging,
                       "complete": _complete, "group": _group, "sortdate": (_lpk[0] if _lpk else ""), "test_date": _ldate}
-            row = dict(common, series="initial release", icoa="" if scope else "not needed", plan_ref=_pref,
+            row = dict(common, series="initial release", icoa="", plan_ref=_pref,
                        coq_plan=_coq["n"] if _coq else "— not in the issuance plan —",
                        basis=(_coq["basis"] if _coq and _coq.get("basis") else (_lpk[0] if _lpk else "")),
                        issue=_F_(_icoa_issue) if _icoa_issue else "— packaging date to record —",
                        icoa_issue=_icoa_issue, key=f"{_lot_id}|I",
-                       scope=(" + ".join(_names[n] for n in scope) if scope else "— all three on the CNP certificate —"),
+                       scope=" + ".join(_names[n] for n in (1, 2, 7)),
                        a=cell(1), b=cell(2), fm=cell(7), c=_identc, cnp=_cnp_txt,
                        assay_rt="", myco_rt="", carry="",
-                       status="not needed — CNP covers A, B and foreign matter" if not scope else "to register")
+                       status="to register")
             ICOA_ROWS.append(row)
             if scope:
                 _pending_inst.append((b, key, scope, vals, _ldate, row))
@@ -735,7 +735,6 @@ if ICOA_RULE:
     for _i, _row in enumerate(ICOA_ROWS, 1):
         _row["seq"] = _i
     print(f"iCoA rule: {sum(1 for r in ICOA_ROWS if r['series'] == 'initial release')} initial rows "
-          f"({sum(1 for r in ICOA_ROWS if r['status'].startswith('not needed'))} covered by CNP), "
           f"{sum(1 for r in ICOA_ROWS if r['series'] != 'initial release')} retest rows "
           f"({sum(1 for r in ICOA_ROWS if r['status'].startswith('due'))} with the retest assay on file)")
     print(f"batch dates: {len(DATE_USED)} of {len(DATE_ROWS)} list rows date a tracker lot; "
@@ -748,12 +747,9 @@ if ICOA_RULE:
     # without a packaging date, a held result, every
     # retest document. On the sheets the number, the code and the dates are FORMULAS; the values
     # computed here are the same numbers, for the page and the checks.
+    _NOT_IN_RELEASE_REGISTER = {c["pp"] for c in _D["coqs"] if c["t"] == "initial release" and not c.get("reg")}
     _issuable, _later, _na = [], [], []
     for r in ICOA_ROWS:
-        if r["icoa"] == "not needed":
-            r["code"], r["issuable"], r["reg_status"] = "", "n/a", r["status"]
-            _na.append(r)                     # on the sheet all the same: the CoQ Register reads its packaging date there
-            continue
         if r["series"] != "initial release":
             r["why"] = ("retest assay on file; identification A, B and foreign matter to test at the retest sampling"
                         if r["status"].startswith("due") else "retest assay not yet on file")
@@ -826,8 +822,16 @@ if ICOA_RULE:
             r["why"] = "no packaging date on the list — the register withholds a number"
             _withheld.append(r)
         elif _mod_code(r) is None:
-            r["why"] = ("not in icoa_register.py — the register numbers the series and "
-                        "does not carry this round")
+            # The series is built from the owner's release register. A batch with
+            # no entry there has no testing history for it to number, however
+            # firmly the plan schedules its certificate — P060362 is packed
+            # 23.05.2026 with a CoQ planned and is not in the register.
+            if r["p"] in _NOT_IN_RELEASE_REGISTER:
+                r["why"] = ("not in the release register — icoa_register.py builds from it and has no "
+                            "testing history for this batch to number; the batch has to be entered there first")
+            else:
+                r["why"] = ("not in icoa_register.py — the register numbers the series and "
+                            "does not carry this round")
             _unknown.append(r)
     _issuable = [r for r in _issuable if r not in _withheld and r not in _unknown]
     _later.extend(_withheld + _unknown)
@@ -968,7 +972,7 @@ if ICOA_RULE:
         if r["key"] in _emitted:
             continue
         _emitted.add(r["key"])
-        r["code"] = "" if r["issuable"] == "n/a" else r.get("code") or ""
+        r["code"] = r.get("code") or ""
         REGISTER.append(r)
     ICOA_BY_KEY = {r["key"]: r for r in ICOA_ROWS}
     _cq_ok, _cq_later = [], []
@@ -2185,7 +2189,7 @@ def _fill_register(sh):
         import re as _re
         _m = _re.search(r"(\d+)$", str(r.get("code") or ""))
         f_no = int(_m.group(1)) if _m else ""
-        f_code = r.get("code") or ("not needed" if r["issuable"] == "n/a" else "— at issue —")
+        f_code = r.get("code") or "— at issue —"
         # Owner, 10-11.09.2026: the internal certificate is tested on the FIRST
         # day of packaging (column E, not the packaging-complete date in F) and
         # issued that day, or on the specification SOP's day where that day comes
@@ -2318,15 +2322,16 @@ def write_register_file(path):
     _fill_dates(w.create_sheet("Batch Dates"))
     rm = w.create_sheet("Read Me")
     rm.column_dimensions["A"].width = 120
-    for _i, t in enumerate((f"iCoA and CoQ Issuance Registers — preliminary — built with CoQ Analysis Master v{VER} on 05.09.2026",
+    for _i, t in enumerate((f"iCoA and CoQ Issuance Registers — preliminary — built with CoQ Analysis Master v{VER} on {BUILD_DATE}",
                             REG_NOTE, COQ_NOTE + (" FLAGS: " + " | ".join(FLAGS) if FLAGS else ""),
-                            "Source: CoQ_Analysis_Master_v" + VER + ".xlsx, sheets iCoA Issuance and Batch Dates; "
+                            "Source: CoQ_Analysis_Master_v" + VER + ".xlsx, sheets iCoA Register and Batch Dates; "
                             "dates from the Head of QC's list of 04.09.2026; the issuance plan of 31.08.2026 for the plan references."), 1):
         c = rm.cell(_i, 1, t)
         c.font = Font(name="Calibri", size=9, bold=(_i == 1))
         c.alignment = Alignment(vertical="top", wrap_text=True)
     rm.row_dimensions[2].height = 150
     rm.row_dimensions[3].height = 190
+    apply_strain_rulings(w)
     w.save(path)
     print("saved", path)
 
@@ -2598,7 +2603,18 @@ def apply_strain_rulings(wb):
     """
     ST = _strains()
     changed, conflicts = [], {}
-    for sheet, col in (("Batch Coverage", 3), ("Delivery T1\u2013T3", 4)):
+    # The two registers print the strain the series module carries, which is the
+    # certificate register's own spelling — "Cup Junky", "GorillaGlue". They were
+    # never on this list, so the one sheet that printed the ruled spelling was the
+    # iCoA Issuance sheet, and when that was folded away on 14.09.2026 the ruling
+    # of 07.09.2026 left the workbook with it.
+    targets = [("Batch Coverage", 3), ("Delivery T1\u2013T3", 4)]
+    for reg in ("iCoA Register", "CoQ Register"):
+        if reg in wb.sheetnames:
+            hdr = [str(c.value or "").strip() for c in wb[reg][1]]
+            if "Strain" in hdr:
+                targets.append((reg, hdr.index("Strain") + 1))
+    for sheet, col in targets:
         if sheet not in wb.sheetnames:
             continue
         sh = wb[sheet]
@@ -2898,8 +2914,9 @@ def write_read_me(wb):
         about = SHEET_ABOUT.get(name) or (SHEET_ABOUT["CoQ Parameter Tracker"] if name.startswith("CoQ Parameter Tracker") else "")
         line(name, about)
     if _folding:
-        line("(folded in)", "The iCoA Issuance sheet is gone: every column it carried is on the iCoA Register, which was always "
-                            "the same one row per batch and round. These are now sections of Reference rather than tabs — "
+        line("(folded in)", "The iCoA Issuance sheet is gone: every column it carried is on the iCoA Register (its CoQ plan "
+                            "reference on the CoQ Register), which was always the same one row per batch and round; only its own "
+                            "row number is not carried. These are now sections of Reference rather than tabs — "
                             + ", ".join(_folding) + ".")
     r += 1
     head("LEGEND (tracker and coverage)")
@@ -2950,6 +2967,7 @@ def write_read_me(wb):
     line("v23", "One controlled spelling per result (result_vocabulary.py): 175 non-canonical not-detected spellings to 0, the 'Одговара'/'Не одговара' confusion that read a laboratory's non-conformity as a pass (FB032601) corrected, untested analytes removed from certificates entirely, every conformity result made bilingual, the A4 page fit measured with the fonts it prints in and repaired (5 of 22 losing content → 0).")
     line("v24", "The internal-CoA number and the internal-CoA register unified on one definition: icoa_register.py is the standing series (a certificate a person can look up by code), and both the number and the row set on the iCoA Register sheet are taken from it rather than computed from a row's position — 95 of 95 series codes now on the sheet, up from 60.")
     line("v25", "The Read Me sheet's own version history and rulings-in-force brought forward from v11 / 05.09.2026 to this build — nine versions and six days of rulings that were built and verified but never written down here. Two findings promoted from doc prose that had never reached the standing register: OI-30 (the Loss on Drying method line is uniform across every lot and the desk holds no per-certificate method text to check it against) and OI-31 (six batches silently filed under one strain name, 'Gorilla Glue', where the delivery sheet keeps 'GG4' apart — never ruled, never tracked).")
+    line("v26", "Seven tabs, not sixteen (owner, 14.09.2026). The iCoA Issuance sheet is gone — one row per batch and round, which is what the iCoA Register is, so its eleven columns are register columns and nothing looked it up by formula. Ten sheets are sections of one Reference sheet, each section's row range recorded as a defined name so a reader never guesses where it ends. verify_prose.py — what the sheets say about themselves — had never run against a shipping workbook (its default was v11, and it was not in CI); against v25 it found eleven false sentences, three the workbook's (a note and the register Status strings naming 27.05.2026 and 15.05.2026 for a legacy series that issues on 06.06 and 03.06; an uncredited in-house reference printed without its 'on file, not credited'), eight the checker's own. All fixed and the check is in CI. OI-32: thirty Tranche 3 Farmahem 227-K/26 potency retests found on file and none in the record — twenty-five prepared and not written, five held on batch identity.")
 
 
 def fix_parameters(wb):

@@ -573,6 +573,45 @@ every Status that names a day to the row's own issue date. And `build_delivery_p
 `STAMP` was `"2026-09-11"`, so a rebuild on the 14th overwrote the 11th's archive under the
 11th's name; the archive is stamped with the build date the workbook states about itself.
 
+## Truth check of the fold, 14.09.2026 afternoon
+
+The owner asked for another truth check. The three gates were green; the question was what
+they do not test — whether the fold and the register merge preserved everything. An
+independent pass compared v25 to v26 cell for cell: every folded sheet is identical in value,
+style, merged range and formula result at its place on Reference; no formula anywhere names a
+folded sheet; every value the old iCoA Issuance sheet carried is on a register under the same
+batch and round (its CoQ plan reference on the CoQ Register, its own row number nowhere —
+that was a position, not a fact). Four things it found that the gates could not:
+
+* **The registers never asked `strains.py`.** `apply_strain_rulings` covered Batch Coverage and
+  the Delivery sheet and nothing else, so both registers printed the certificate register's
+  own spelling — `Cup Junky` and `Cap Junkie` on eight lots against the Head of QC's ruling of
+  07.09.2026, `GorillaGlue`, `FatBastard`, `GrapePie` unspaced. The one sheet that printed the
+  ruled spelling was iCoA Issuance, and folding it away took the ruling out of the workbook
+  with it. Both registers and the preliminary registers workbook now go through the rulings;
+  every strain on the register is canonical, and the unruled pairs print on the Work Order.
+  `strains.py` repairs a missing space only for names on its known list, which had
+  `GorillaGlue` and not `CashCow` or `JellyDonutz`; both added — a space repair decides
+  nothing, and Jelly Donuts / Jelly Donutz stays an unruled conflict on the Work Order.
+* **One register row said "not needed".** JD012603/01 (P060362) printed `not needed — CNP
+  covers A, B and foreign matter`: the note of 05.09.2026 that the ruling of 10.09.2026
+  ("identification A, B and foreign matter, always") replaced. The row exists because the
+  plan of 31.08.2026 schedules its certificate; the series does not carry it because the batch
+  has no entry in the owner's release register, so `icoa_register.py` has no testing history
+  to number — packed 23.05.2026, a CoQ planned with 21.01 % THC, and absent from the register
+  it should be in. Nothing on either register says "not needed" now; a row the series does
+  not carry says why, and this one says that.
+* **The preliminary registers workbook said two false things** on its Read Me — built "on
+  05.09.2026" (a literal; it now states the build date) and sourced from "sheets iCoA
+  Issuance and Batch Dates".
+* **The Read Me's version history stopped at v25**, and OI-31 still described the iCoA
+  Issuance sheet. Both brought forward. **OI-32** added: the thirty Tranche 3 Farmahem
+  227-K/26 potency retests on file and in no record, twenty-five prepared and not written,
+  five held on batch identity — a finding that had been living in chat.
+
+What the fold does lose, and cannot help: each folded sheet had its own frozen header row and
+six had an autofilter. One sheet has one of each, so the Reference sections have neither.
+
 ## Reproducing
 
     python3 deliverables/qc_gap_analysis/open_items.py --md

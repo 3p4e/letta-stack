@@ -236,9 +236,8 @@ ITEMS = [
      "never promoted to a tracked question — unlike its six siblings in the same finding "
      "(Sleepy Joe/Joy, Permanent Marker/Market, Wedding Crusher/Crasher, Appels & Bananas/"
      "Apple and Banana, Jelly Donuts/Donutz, Clemosa/Clemosa a Bud), which all print on the "
-     "Work Order sheet as \"strain name unruled\" rows. The iCoA Issuance sheet today prints "
-     "all six GG batches as strain ‘Gorilla Glue’ (one, GG012603, still unspaced as "
-     "‘GorillaGlue’) — a de facto merge nobody ruled on.",
+     "Work Order sheet as \"strain name unruled\" rows. The iCoA Register today prints "
+     "all six GG batches as strain ‘Gorilla Glue’ — a de facto merge nobody ruled on.",
      "Nothing decided. strains.py's own rule is explicit: it repairs a missing space "
      "(decides nothing) and lists a letter-for-letter disagreement in CONFLICTS for a ruling "
      "(decides nothing either) — it does not merge two names that differ in their letters, "
@@ -250,8 +249,41 @@ ITEMS = [
      "Is GG4 the same strain as Gorilla Glue, or a separate strain that happens to be filed "
      "under it? If separate, the six lots need their own strain field and, in time, their own "
      "specification.",
-     "tracker/DELIVERY_RECONCILIATION_2026-09-07.md §5; tracker/strains.py; iCoA Issuance "
-     "sheet Strain column, 6 lots"),
+     "tracker/DELIVERY_RECONCILIATION_2026-09-07.md §5; tracker/strains.py; iCoA Register "
+     "Strain column, 6 lots"),
+
+    ("OI-32", "Batch identity", "open",
+     "Thirty Tranche 3 potency retests are on file and none is in the record",
+     "Farmahem's 227-K/26 series — thirty cannabinoid certificates for the Tranche 3 sampling, "
+     "dated 10–11.09.2026 — was found in the ProcessedECOAs folder on 12.09.2026, and the "
+     "owner's instruction is that every one of them is a retest. Not one appears in "
+     "coq_artifact_data.json, so no register row, no tracker cell and no certificate of "
+     "quality knows they exist. Twenty-five map cleanly onto a batch the register already "
+     "carries. Five do not: BSS1024_01/1 (P050122) arrives with a sub-lot index the register's "
+     "existing BSS1024_01 release entry lacks, on the same P lot; and WED102501 (P060102), "
+     "SCR012601 (P060342), GRC102501/1 (P060142) and BSS1024_01/2 (P050142) have no earlier "
+     "cannabinoid result on file at all — so the 227-K certificate would be their FIRST "
+     "potency determination, which testing_series.py must place as the initial release round, "
+     "while the owner says it is a retest.",
+     "The twenty-five transcriptions are prepared row for row in the register's own format "
+     "(THC, spec, CBD, CBN, code, date, Farmahem) and NOT written: the register "
+     "PP_Batch_Release_QC_Register_SUBLOT_2026-09-01.xlsx is the owner's file and the desk "
+     "does not write to it without permission. A checkpoint of the same twenty-five went into "
+     "master_coa_table.tsv (commit 7393bc4), which is a fallback source the schedule never "
+     "reads for a batch the register carries, so it changes nothing downstream. The five are "
+     "held: batch_key does not decide whether a starred or sub-lotted name is the same batch "
+     "as its plain namesake — that is a fact about the floor, recorded in "
+     "identity_decisions.tsv when a person rules.",
+     "Two rulings. (1) Is BSS1024_01/1 the same batch as BSS1024_01? If so its 227-K result "
+     "is that batch's retest; if not it is a new sub-lot with no release testing on file. "
+     "(2) For WED102501, SCR012601, GRC102501/1 and BSS1024_01/2: was there an earlier "
+     "cannabinoid test whose certificate is not on file (then the 227-K is a retest and the "
+     "initial certificate goes on the Work Order), or is the 227-K their first — in which "
+     "case it is the release result, whatever the campaign called it? And: may the desk "
+     "write the twenty-five rows into the register, or will the owner?",
+     "Drive ProcessedECOAs, 227-K/26 series (30 documents); "
+     "PP_Batch_Release_QC_Register_SUBLOT_2026-09-01.xlsx; ingestion/common/batch_id.py "
+     "batch_key docstring; ingestion/ecoa_runner/identity_decisions.tsv; commit 7393bc4"),
 
     ("OI-13", "Panel scope", "open",
      "Two optional test panels have never been exercised",
@@ -479,7 +511,7 @@ def items(state=None, area=None):
     """The register, optionally narrowed.
 
     >>> len(items())
-    31
+    32
     >>> [i[0] for i in items(area="Specification")]
     ['OI-01', 'OI-02', 'OI-03']
     >>> sorted({i[2] for i in items()})
