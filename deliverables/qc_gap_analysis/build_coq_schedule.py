@@ -325,9 +325,14 @@ def family(code):
         return "IPH mycotoxins, metals, pesticides"
     if c.startswith("ППК") or c.startswith("PP CoA"):
         return "UKIM CNP potency"
-    if re.match(r"^197-.*[КK]/26$", c):
+    # The re-analysis label follows REANALYSIS_SERIES, the one list of which series
+    # are post-release re-analysis. It used to name 197- alone, so when the owner
+    # ruled on 10.09.2026 that 220- is the same series, is_reanalysis() knew and
+    # this label did not — and the tracker, which files a document as a retest
+    # by this label, rendered none of the 32 Tranche 2 mycotoxin certificates.
+    if c.startswith(REANALYSIS_SERIES) and re.search(r"-[КK]/\d\d$", c):
         return "Farmahem re-analysis — cannabinoids"
-    if re.match(r"^197-.*[МM]/26$", c):
+    if c.startswith(REANALYSIS_SERIES) and re.search(r"-[МM]/\d\d$", c):
         return "Farmahem re-analysis — mycotoxins"
     if re.search(r"(ГС|GS)/\d\d$", c):
         return "Farmahem — loss on drying"
@@ -342,8 +347,11 @@ def family(code):
 
 # Post-release re-analysis series. 197- was the only one the desk knew; the owner
 # ruled on 10.09.2026 that 220- is the same thing, which moves every 220 result off
-# the initial-release certificate and onto the retest that rests on it.
-REANALYSIS_SERIES = ("197-", "220-")
+# the initial-release certificate and onto the retest that rests on it, and on
+# 12.09.2026 that the Tranche 3 227-K/26 potency certificates are retests too
+# (none is in the register yet — OI-32 — so the entry is ready for them, not acting).
+# family() derives its re-analysis labels from this tuple: one definition.
+REANALYSIS_SERIES = ("197-", "220-", "227-")
 
 
 def is_reanalysis(code):

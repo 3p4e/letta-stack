@@ -285,6 +285,28 @@ ITEMS = [
      "PP_Batch_Release_QC_Register_SUBLOT_2026-09-01.xlsx; ingestion/common/batch_id.py "
      "batch_key docstring; ingestion/ecoa_runner/identity_decisions.tsv; commit 7393bc4"),
 
+    ("OI-33", "Batch identity", "open",
+     "Two batches on the Tranche 2 mycotoxin certificates are on no list the desk holds",
+     "Farmahem 220-31-М/26 (Fat Bastard, printed FB042601) and 220-32-М/26 (Cash Cow, printed "
+     "CC042601), issued 11.09.2026, name a cultivation batch and no P-number. Neither batch is "
+     "in the release register, on the Head of QC's batch list (tracker/batch_dates.csv) or on "
+     "the owner's tracker — the two certificates are the desk's only record that the batches "
+     "exist. A third certificate of the same delivery, 220-30-М/26 (Jelly Donutz, printed "
+     "JD042601), prints no P-number either, but the batch list carries JD042601 as P060492 "
+     "(harvest 21.07.2026, packaged 13.08.2026, four days before the laboratory received the "
+     "sample), so its block and its tracker lot took that P-number from the list.",
+     "The intake of 14.09.2026 opens a release-register block for each (No. 88 and 89) with "
+     "the cultivation code, no P-number and the strain as printed, and a tracker lot of the "
+     "same name. With no packaging date there is no day to date an internal CoA on and no "
+     "place in the issuance series; the one result each carries is ND.",
+     "The P-number, harvest and packaging dates of FB042601 and CC042601 for the batch list — "
+     "or the ruling that they are R&D lots outside the release series, as GG1024 and CJ1024 "
+     "are listed. And confirmation that the JD042601 on 220-30-М/26 is the batch list's "
+     "JD042601 (P060492).",
+     "intake_220M_2026-09-14/ (reads_claude.json n=30, 31, 32; placement.json); "
+     "tracker/batch_dates.csv; PP_Batch_Release_QC_Register_SUBLOT_2026-09-01.xlsx after "
+     "apply_220M.py"),
+
     ("OI-13", "Panel scope", "open",
      "Two optional test panels have never been exercised",
      "The pesticide panel offers a Ph. Eur. 2.8.13 option and a CUMCS-equivalency option, and "
@@ -511,7 +533,7 @@ def items(state=None, area=None):
     """The register, optionally narrowed.
 
     >>> len(items())
-    32
+    33
     >>> [i[0] for i in items(area="Specification")]
     ['OI-01', 'OI-02', 'OI-03']
     >>> sorted({i[2] for i in items()})

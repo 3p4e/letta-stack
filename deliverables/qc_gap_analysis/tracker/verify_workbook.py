@@ -364,6 +364,21 @@ for r, d in wo:
     if not str(d.get("Task") or "").strip() or not str(d.get("What is needed") or "").strip():
         bad("Work Order", "row without a task or what is needed", f"row {r}")
 
+# ---------------------------------------------------------------- 7b. an in-house lookup keys its own lot
+# The tracker's in-house cells look the internal-CoA code up in the iCoA Register by the
+# lot's own key, so a renumbering follows. v26 keyed eight of them to another lot's key
+# (the at-issue placeholder folded to one key under nkey, and the last lot written held it):
+# invisible while every one of those lots was at issue, wrong the day any was numbered.
+for a, nxt in zip(anchors, anchors[1:] + [sh.max_row + 1]):
+    cu, p = str(sh.cell(a, 1).value), str(sh.cell(a, 2).value or "")
+    own = {p} | {x.strip() for x in p.split("/")} if not p.startswith("N/A") else {re.sub(r"[＊*]", "", cu)}
+    for r in range(a, nxt):
+        for c in range(4, sh.max_column + 1):
+            v = sh.cell(r, c).value
+            m = re.search(r'MATCH\("([^"|]+)\|[IR]', v) if isinstance(v, str) else None
+            if m and m.group(1) not in own:
+                bad(TRACKER, "an in-house lookup keys another lot", f"row {r} {cu} ({p}) looks up {m.group(1)}")
+
 # ---------------------------------------------------------------- 8. Read Me
 rm = sheet_or_section(WB, "Read Me")
 txt = "\n".join(str(c.value) for row in rm.iter_rows() for c in row if isinstance(c.value, str))

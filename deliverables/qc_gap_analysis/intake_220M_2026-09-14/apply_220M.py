@@ -17,7 +17,10 @@ What it does, row by row (reads_claude.json, cross-checked against reads_gemini.
     CC012603 (P060372) — the six the delivery reconciliation found absent from the
     register — and JD042601, FB042601, CC042601, three batches the certificates print
     with no P-number. The label row carries the certificate, as every block's does; the
-    P-number and the strain are the certificate's own.
+    strain is the certificate's own, and so is the P-number where it prints one. Where it
+    does not, the P-number is the Head of QC's batch list's (tracker/batch_dates.csv, the
+    one place the desk keeps cultivation batch <-> P-number): JD042601 = P060492. FB042601
+    and CC042601 are on no list the desk holds and keep no P-number (OI-33).
   * every row: "/" in the columns the certificate does not report, ND / ND / ND in
     Aflatoxins Σ / Aflatoxin B1 / Ochratoxin A (Σ is the register's own column; the
     certificate prints B1, B2, G1, G2 and OTA separately, all ND, and the Tranche 1 rows
@@ -36,10 +39,25 @@ from batch_id import batch_key  # noqa: E402
 PLACEHOLDER = {'', '(not numbered)', 'n/a'}
 
 
+def p_from_list(cu):
+    """The P-number the Head of QC's batch list gives a cultivation batch, or None.
+
+    For a certificate that names its lot by cultivation code alone. Keyed on batch_key,
+    never on the string: the list spells a batch the way the floor does.
+    """
+    import csv
+    path = os.path.join(GAP, 'tracker', 'batch_dates.csv')
+    rows = {batch_key(r['cu_batch']): r for r in csv.DictReader(open(path, encoding='utf-8'))}
+    return (rows.get(batch_key(cu)) or {}).get('p_batch') or None
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--register', default=os.path.join(GAP, 'PP_Batch_Release_QC_Register_SUBLOT_2026-09-01.xlsx'))
     ap.add_argument('--out', default=None)
+    ap.add_argument('--no-new-blocks', action='store_true',
+                    help='write only the certificates whose batch already has a block; hold the nine that would open one '
+                         '(opening a block numbers the batch into the issue-ordered internal-CoA series and renumbers every code after it)')
     a = ap.parse_args()
     out = a.out or a.register
     R = json.load(open(os.path.join(HERE, 'reads_claude.json'), encoding='utf-8'))
@@ -92,6 +110,9 @@ def main():
         b = m['batch_printed']; cands = [b, p.get('new_label')] + ([p['block']['label']] if p.get('block') else [])
         blk = next((blocks[batch_key(c)] for c in cands if c and batch_key(c) in blocks), None)
         (into if blk else new).append((n, p, m, blk))
+    if a.no_new_blocks:
+        print('held (no block, --no-new-blocks): %s' % ', '.join(p.get('new_label') or m['batch_printed'] for n, p, m, _ in new))
+        new = []
     inserts = sorted(((max(r for r in range(blk['first'], blk['last'] + 1) if real(r)) + 1, m) for n, p, m, blk in into), key=lambda t: -t[0])
     merged_below = [str(mr) for mr in ws.merged_cells.ranges if mr.min_row > last_data]
     for mr in merged_below: ws.unmerge_cells(mr)
@@ -99,10 +120,17 @@ def main():
         ws.insert_rows(at); style_from(tmpl_row + (1 if tmpl_row >= at else 0), at)
         for c, v in enumerate(values(m), 1): ws.cell(at, c).value = v
     last_data += len(inserts); tmpl_label += sum(1 for at, _ in inserts if at <= tmpl_label)
+    from_list = []
     for i, (n, p, m, _) in enumerate(new):
         at = last_data + 1 + i; ws.insert_rows(at); style_from(tmpl_label, at)
-        v = values(m); v[0], v[1], v[2], v[3] = last_no + 1 + i, p['new_label'] or m['batch_printed'], m['p_number'], m['strain_printed']
+        label = p['new_label'] or m['batch_printed']
+        pn = m['p_number'] or p_from_list(label)
+        if pn and not m['p_number']:
+            from_list.append('%s = %s' % (label, pn))
+        v = values(m); v[0], v[1], v[2], v[3] = last_no + 1 + i, label, pn, m['strain_printed']
         for c, val in enumerate(v, 1): ws.cell(at, c).value = val
+    if from_list:
+        print('P-number from the batch list (certificate prints the cultivation batch only): ' + ', '.join(from_list))
     shift = len(inserts) + len(new)
     for mr in merged_below:
         c1, r1, c2, r2 = range_boundaries(mr); ws.merge_cells(start_row=r1 + shift, start_column=c1, end_row=r2 + shift, end_column=c2)

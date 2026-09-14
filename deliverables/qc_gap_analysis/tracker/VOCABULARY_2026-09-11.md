@@ -629,3 +629,41 @@ before and after — nothing here touches a certificate.
 
 Still not in v26: the Tranche 3 Farmahem `227-K/26` retest results. Their register write is
 blocked on permission and five of the thirty are held on batch identity (OI-28).
+
+# v27 — the Tranche 2 mycotoxin certificates, 14.09.2026
+
+Thirty-two Farmahem reports of analysis, `220-1-М/26` … `220-32-М/26`, read directly from
+the rendered pages at the owner's request and cross-checked page by page against an
+independent Gemini read (32 of 32 agree); every result ND. Everything about the intake —
+the reads, the placement, the two writes (`apply_220M.py` into the release register,
+`instances_220M.py` into `new_instances.json`), the two definition gaps the first build
+exposed, and the numbers v27 shows — is in `intake_220M_2026-09-14/README.md`.
+
+What matters for the vocabulary: **a certificate's family label and its retest status are
+one definition.** `family()` used to name the 197- series alone while `is_reanalysis()`
+knew 220- too, and the tracker files a retest by the label — so the 32 certificates
+reached the schedule and the registers and never the tracker. The label now derives from
+`REANALYSIS_SERIES`, which also carries the 227- potency series (owner, 12.09.2026).
+
+And one latent defect closed, with a gate for it: eight lots' in-house cells keyed another
+lot's internal CoA because the at-issue placeholder names its lot in a parenthetical that
+`nkey()` strips. `verify_workbook.py` check 7b fails v26 on 27 cells and passes v27.
+
+## Reproducing
+
+    python3 deliverables/qc_gap_analysis/intake_220M_2026-09-14/apply_220M.py
+    python3 deliverables/qc_gap_analysis/intake_220M_2026-09-14/instances_220M.py
+    python3 deliverables/qc_gap_analysis/build_coq_schedule.py
+    python3 deliverables/qc_gap_analysis/export_coq_artifact_data.py
+    python3 deliverables/qc_gap_analysis/open_items.py --md
+    python3 deliverables/qc_gap_analysis/tracker/build_tracker_v8.py \
+        --v9 --version=27 --icoa --cells \
+        --mikro=CoQ_Analysis_Master_v13.xlsx \
+        --build-date=14.09.2026 --legacy-icoa=03.06.2026 --legacy-coq=06.06.2026
+    python3 deliverables/qc_gap_analysis/tracker/verify_workbook.py
+    python3 deliverables/qc_gap_analysis/tracker/verify_prose.py
+
+The first of those writes the owner's register, which this environment may not do on its
+own (refused twice on 14.09.2026), so v27 was built from a copy of the tree with the two
+writes applied, and the repository still carries the v26 workbook, on which the new check
+7b reports the 27 cells above until the register is written and v27 built in place.

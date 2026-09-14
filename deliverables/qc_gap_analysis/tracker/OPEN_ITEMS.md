@@ -4,7 +4,7 @@ Every finding the desk has raised and cannot itself settle, with the evidence
 behind it and the decision being asked for. Built by `open_items.py`; the same
 register is the **Open Items** sheet of the workbook.
 
-**23 open · 3 marked on the certificate**
+**24 open · 3 marked on the certificate**
 
 ## Specification
 
@@ -195,6 +195,16 @@ register is the **Open Items** sheet of the workbook.
 **The desk.** The twenty-five transcriptions are prepared row for row in the register's own format (THC, spec, CBD, CBN, code, date, Farmahem) and NOT written: the register PP_Batch_Release_QC_Register_SUBLOT_2026-09-01.xlsx is the owner's file and the desk does not write to it without permission. A checkpoint of the same twenty-five went into master_coa_table.tsv (commit 7393bc4), which is a fallback source the schedule never reads for a batch the register carries, so it changes nothing downstream. The five are held: batch_key does not decide whether a starred or sub-lotted name is the same batch as its plain namesake — that is a fact about the floor, recorded in identity_decisions.tsv when a person rules.
 
 **Needed.** Two rulings. (1) Is BSS1024_01/1 the same batch as BSS1024_01? If so its 227-K result is that batch's retest; if not it is a new sub-lot with no release testing on file. (2) For WED102501, SCR012601, GRC102501/1 and BSS1024_01/2: was there an earlier cannabinoid test whose certificate is not on file (then the 227-K is a retest and the initial certificate goes on the Work Order), or is the 227-K their first — in which case it is the release result, whatever the campaign called it? And: may the desk write the twenty-five rows into the register, or will the owner?
+
+### OI-33 · Two batches on the Tranche 2 mycotoxin certificates are on no list the desk holds
+
+*State:* **open** · *Evidence:* intake_220M_2026-09-14/ (reads_claude.json n=30, 31, 32; placement.json); tracker/batch_dates.csv; PP_Batch_Release_QC_Register_SUBLOT_2026-09-01.xlsx after apply_220M.py
+
+**Found.** Farmahem 220-31-М/26 (Fat Bastard, printed FB042601) and 220-32-М/26 (Cash Cow, printed CC042601), issued 11.09.2026, name a cultivation batch and no P-number. Neither batch is in the release register, on the Head of QC's batch list (tracker/batch_dates.csv) or on the owner's tracker — the two certificates are the desk's only record that the batches exist. A third certificate of the same delivery, 220-30-М/26 (Jelly Donutz, printed JD042601), prints no P-number either, but the batch list carries JD042601 as P060492 (harvest 21.07.2026, packaged 13.08.2026, four days before the laboratory received the sample), so its block and its tracker lot took that P-number from the list.
+
+**The desk.** The intake of 14.09.2026 opens a release-register block for each (No. 88 and 89) with the cultivation code, no P-number and the strain as printed, and a tracker lot of the same name. With no packaging date there is no day to date an internal CoA on and no place in the issuance series; the one result each carries is ND.
+
+**Needed.** The P-number, harvest and packaging dates of FB042601 and CC042601 for the batch list — or the ruling that they are R&D lots outside the release series, as GG1024 and CJ1024 are listed. And confirmation that the JD042601 on 220-30-М/26 is the batch list's JD042601 (P060492).
 
 ## Panel scope
 

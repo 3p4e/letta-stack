@@ -274,8 +274,11 @@ for inst in NEW:
         # the printed cultivation batch silently picked one of the three. Naming the
         # P number inside the label keeps the row identifiable without inventing a
         # cultivation batch it does not have.
+        # A certificate that prints the cultivation batch and no P number (Farmahem
+        # 220-30/31/32-М/26: JD042601, FB042601, CC042601) names its lot itself; the
+        # label is only for the lot nothing names.
         _unrec = "— not recorded —" + (f" ({inst['p']})" if inst.get("p") else "")
-        b = {"cu": _unrec, "p": inst["p"] or "N/A — no P batch assigned", "status": "",
+        b = {"cu": inst.get("cu") or _unrec, "p": inst["p"] or "N/A — no P batch assigned", "status": "",
              "labs": [], "docs": {n: [] for n in range(1, 13)}, "certs": [],
              "strain": inst.get("strain", ""), "new_lot": True}
         batches.append(b)
@@ -1031,10 +1034,21 @@ if ICOA_RULE:
     # the in-house instance carries the register code (or the at-issue placeholder); the tracker
     # cell that cites it is a lookup into the register by KEY (INST_KEY), so it follows a renumbering
     INST_KEY = {}
+
+    def _inst_ck(ref):
+        """INST_KEY's key for an in-house reference. nkey() folds a trailing parenthetical
+        away, and the at-issue placeholder names its lot in one — so under nkey every lot
+        whose internal CoA was at issue shared ONE key, the last lot written held it, and
+        the in-house cells of the other eight (v26: GG012601*, GG1024, JD012601*, JD112501*,
+        OMP1024_01, BSS1024_01/1, BSS1024_01/2, WED102501) looked SCR012601's certificate up.
+        Invisible while every one of them was at issue; wrong the day any was numbered.
+        The placeholder is its own key; a register code folds as before."""
+        return ref if str(ref).startswith("iCoA — at issue") else T.nkey(ref)
+
     for b, key, scope, vals, _ldate, row in _pending_inst:
         ref = row["code"] if row["code"].startswith("iCoA-PP_") else f"iCoA — at issue ({row['p'] if row['p'].startswith('P0') else row['cu']})"
         ck = T.nkey(ref)
-        INST_KEY[ck] = row["key"]
+        INST_KEY[_inst_ck(ref)] = row["key"]
         for n in scope:
             if ck not in {T.nkey(c) for c, d, l in b["docs"][n]}:
                 b["docs"][n].append((ref, _ldate, "PP"))
@@ -1319,12 +1333,12 @@ for b in batches:
             ref = (f"{code}, ({date}) [{lab}]" + ("" if here[3] else " · on file, not credited")) if here \
                 else ("— no certificate —" if state == "red" else "")
             ref_disp = ref
-            if here and ICOA_RULE and T.nkey(code) in INST_KEY:
+            if here and ICOA_RULE and _inst_ck(code) in INST_KEY:
                 # The suffix follows the credit flag here exactly as it does on
                 # the literal reference above; this formula used to drop it, so
                 # a grey in-house cell read like a credited one.
                 ref = ("=IFERROR(INDEX('iCoA Register'!$B:$B,MATCH(\"%s\",'iCoA Register'!$%s:$%s,0)),\"iCoA — at issue\")&\", (%s) [PP]%s\""
-                       % (INST_KEY[T.nkey(code)], REG_KEY_COL, REG_KEY_COL, date,
+                       % (INST_KEY[_inst_ck(code)], REG_KEY_COL, REG_KEY_COL, date,
                           "" if here[3] else " · on file, not credited"))
             elif here and str(code).startswith("NO-DOC-CODE"):
                 # An in-house report with no document code of its own, cited directly
@@ -1588,10 +1602,11 @@ for cu, pb, code, date, lab, pno, title, why in audit:
     tasks[k]["params"].add(pno)
     tasks[k]["meta"] = (pb, date, lab)
 for _b in NEW_LOTS:
-    for _c, _d, _l in _b["docs"][9]:
-        _k = ("lot not on tracker", _b["p"], _c)
-        tasks[_k]["params"].add(9)
-        tasks[_k]["meta"] = (_b["p"], _d, _l)
+    for _n in range(1, 13):                  # every determination the new lot's certificates cover, not #9 alone
+        for _c, _d, _l in _b["docs"][_n]:
+            _k = ("lot not on tracker", _b["p"], _c)
+            tasks[_k]["params"].add(_n)
+            tasks[_k]["meta"] = (_b["p"], _d, _l)
 NEED = {
     "not ingested": "Re-extract the document into the eCoA database (two independent reads, 300 DPI). "
                     "Until then the lot cannot reach a CoQ on these parameters.",
@@ -2968,6 +2983,7 @@ def write_read_me(wb):
     line("v24", "The internal-CoA number and the internal-CoA register unified on one definition: icoa_register.py is the standing series (a certificate a person can look up by code), and both the number and the row set on the iCoA Register sheet are taken from it rather than computed from a row's position — 95 of 95 series codes now on the sheet, up from 60.")
     line("v25", "The Read Me sheet's own version history and rulings-in-force brought forward from v11 / 05.09.2026 to this build — nine versions and six days of rulings that were built and verified but never written down here. Two findings promoted from doc prose that had never reached the standing register: OI-30 (the Loss on Drying method line is uniform across every lot and the desk holds no per-certificate method text to check it against) and OI-31 (six batches silently filed under one strain name, 'Gorilla Glue', where the delivery sheet keeps 'GG4' apart — never ruled, never tracked).")
     line("v26", "Seven tabs, not sixteen (owner, 14.09.2026). The iCoA Issuance sheet is gone — one row per batch and round, which is what the iCoA Register is, so its eleven columns are register columns and nothing looked it up by formula. Ten sheets are sections of one Reference sheet, each section's row range recorded as a defined name so a reader never guesses where it ends. verify_prose.py — what the sheets say about themselves — had never run against a shipping workbook (its default was v11, and it was not in CI); against v25 it found eleven false sentences, three the workbook's (a note and the register Status strings naming 27.05.2026 and 15.05.2026 for a legacy series that issues on 06.06 and 03.06; an uncredited in-house reference printed without its 'on file, not credited'), eight the checker's own. All fixed and the check is in CI. OI-32: thirty Tranche 3 Farmahem 227-K/26 potency retests found on file and none in the record — twenty-five prepared and not written, five held on batch identity.")
+    line("v27", "Tranche 2 mycotoxin retests taken in: 32 Farmahem certificates 220-1-М/26 to 220-32-М/26 (received 17.08.2026, analysed 07.09.2026, issued 11.09.2026), every result ND for aflatoxins B1, B2, G1, G2 and ochratoxin A. Read directly from the rendered pages at the owner's request and cross-checked against an independent Gemini read of every page, 32 of 32 agreeing. 26 are the Tranche 2 list; the laboratory also tested P050282, P060042, P060082 and three batches printed with no P-number (JD042601, FB042601, CC042601). 23 certificates joined an existing release-register block; nine batches had none and were given one (No. 81 to 89), six of them the batches the delivery reconciliation had found absent from the register; JD042601 took its P-number (P060492) from the Head of QC's batch list, FB042601 and CC042601 are on no list the desk holds (OI-33). Documented in intake_220M_2026-09-14/. Two definition gaps found by the first build, which rendered none of the 32 on this sheet: family() labelled only the 197- series a re-analysis while is_reanalysis() already knew 220- was one, and the tracker files a retest by the label — the label now derives from the same list (REANALYSIS_SERIES, which also carries the 227- potency series the owner called retests on 12.09.2026); and the tracker's document pool is the owner's index plus new_instances.json, never the release register — the 32 are now testing instances there (instances_220M.py), seven of them opening a lot the owner's tracker did not carry. Found on the way and fixed: the in-house cells of eight lots (GG012601*, GG1024, JD012601*, JD112501*, OMP1024_01, BSS1024_01/1, BSS1024_01/2, WED102501) looked their internal CoA up under another lot's key — the at-issue placeholder folded to one key and the last lot written held it — invisible while every one of them was at issue, wrong the day any was numbered; verify_workbook.py now checks that every lookup keys its own lot (27 cells in v26).")
 
 
 def fix_parameters(wb):
