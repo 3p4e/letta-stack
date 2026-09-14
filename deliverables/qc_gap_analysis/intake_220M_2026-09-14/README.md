@@ -67,8 +67,13 @@ Two definition gaps were found by that first build and are closed in the code:
 
 ## What v27 shows
 
-Built 14.09.2026 from a copy of this tree with the register written and the instances in
-place: 32 tracker cells cite a 220 certificate, `220-n-M-26, (11.09.2026) [FHM-M]`, in the
+`CoQ_Analysis_Master_v27.xlsx`, in this folder, was built 14.09.2026 from a copy of this
+tree with the register written and the instances in place (SHA-256
+0c25a92fbb8fd976088e0cc4bfc7b0148f3e915d75dd6f6ff16008ec218816d2). It sits here and not in
+`tracker/` because the repository's register has not been written: the tracker folder holds
+the workbooks its own record can verify, and this one verifies against the record as it
+stands after `apply_220M.py` and `instances_220M.py`, not before. Once the two writes are
+run in place, the same command chain rebuilds it byte for byte in `tracker/`. What it shows: 32 tracker cells cite a 220 certificate, `220-n-M-26, (11.09.2026) [FHM-M]`, in the
 #10 retest row of its lot; the tracker carries 87 lots, up from 80 (ACC102501, CF102501,
 PUM102501, CC012603, JD042601, FB042601, CC042601 — every one on the Work Order as a lot not
 on the owner's tracker); the iCoA Register cites 27 of the codes and the CoQ Register 30
