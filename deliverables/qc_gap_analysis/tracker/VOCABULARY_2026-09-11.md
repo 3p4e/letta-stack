@@ -509,3 +509,84 @@ and still open.
 the certificate records with 0 findings — unchanged from v24, because nothing here touches a
 certificate: `coq_artifact_data.json` and every drafted certificate are byte-identical before
 and after.
+
+# v26 — seven tabs, not sixteen, 14.09.2026
+
+The owner, 14.09.2026: "Do we need all of those chips? I really need just these" — Batch
+Coverage, the tracker, iCoA Register (with iCoA Issuance inside it), Batch Dates, CoQ
+Register, Parameters — "or you can put all those formula calculating misc in one sheet?"
+
+## What moved
+
+The **iCoA Issuance** sheet is gone. It was one row per batch and round, which is exactly what
+the iCoA Register is, so its eleven columns that the register did not already carry (basis
+date, harvest, packaging, planned CoQ issue, the three in-house results, identification C's
+eCoA, the retest assay and mycotoxin eCoAs, carried-forward) are now register columns. Nothing
+looked the issuance sheet up by formula — the register was always the lookup target — so no
+key changed. The register's `Key` column moved from P to AA; `REG_KEY_COL` is now asserted
+against `REG_COLS` at build time, because a formula matching the wrong column would resolve
+silently to the wrong certificate.
+
+Ten sheets — Read Me, Delivery T1–T3, ImB Register, Mikro CoQ Parameter, Reconciliation
+09.09, Credit Audit, Credit Corrections, Work Order, Open Items, Summary Dashboard — are now
+sections of one **Reference** sheet (817 rows), each under its own title in capitals. Nothing
+was deleted: none of them is a formula source, but they are the audit trail.
+
+## Where a section ends is recorded, not guessed
+
+The first fold marked section boundaries by a two-row blank gutter, and the reader looked for
+that gutter. Reconciliation 09.09 separates its *own* sections with the same gutter, so the
+reader stopped at the first inner one and the sheet lost its last section — "CLOSURES THAT
+FOUND NO ROW", eight rows — silently. `fold_reference_sheet` now writes a defined name
+`_fold_<slug>` per section with its exact row range, and `reference_sections.py` reads that.
+Every consumer (verify_workbook, verify_prose, extract_artifact_data) goes through
+`sheet_or_section`, which returns the sheet if it still exists and a view onto its section if
+it does not, so no check had to learn where its table went.
+
+## Eleven false sentences found by running a checker that had never run
+
+`verify_prose.py` — the third pass, what the sheets *say* — defaulted to v11 and was not in
+CI, so it had been checking a workbook that stopped shipping on 09.09. Pointed at v25 it
+reported eleven findings, all also in v24. Three were the workbook's:
+
+* The CoQ Register note said the legacy series is issued on **27.05.2026**; the rows issue on
+  06.06.2026 (`--legacy-coq`, the owner's date). The note was a literal. Both register notes
+  now take their day from the same value the rows do.
+* An uncredited in-house reference on the tracker read `iCoA-PP_26-004, (11.04.2025) [PP]`
+  with no "on file, not credited" — the register-lookup formula dropped the suffix that
+  every literal reference carries. The grey fill and the STATUS count were right; the text
+  was not. Four lots.
+
+Eight were the checker's. It judged coverage by whether a reference opened with an em dash,
+which is the shape of every in-house result (`— at issue —, (16.02.2026) [PP]`) — so it
+uncounted identification A, B and foreign matter on every lot and read the STATUS cell as
+undercounting when the cell was right. It now reads the fill, which is the tracker's
+definition and `verify_workbook.py`'s. It compared the legacy day against a literal of its
+own (15.05.2026) rather than the note, so it held a third copy of the date; it found the
+note by its opening words, so the register's rewritten note returned "" and every check on it
+passed on an empty string. Both fixed; the check is in CI.
+
+Two more of the same shape, found on the way out. The register **Status** strings said
+"issued 27.05.2026" and "issued with the legacy series on 15.05.2026" — literals again, on
+rows that issue on 06.06 and 03.06; they take the series' day now, and `verify_prose` holds
+every Status that names a day to the row's own issue date. And `build_delivery_package.py`'s
+`STAMP` was `"2026-09-11"`, so a rebuild on the 14th overwrote the 11th's archive under the
+11th's name; the archive is stamped with the build date the workbook states about itself.
+
+## Reproducing
+
+    python3 deliverables/qc_gap_analysis/open_items.py --md
+    python3 deliverables/qc_gap_analysis/tracker/build_tracker_v8.py \
+        --v9 --version=26 --icoa --cells \
+        --mikro=CoQ_Analysis_Master_v13.xlsx \
+        --build-date=14.09.2026 --legacy-icoa=03.06.2026 --legacy-coq=06.06.2026
+    python3 deliverables/qc_gap_analysis/tracker/verify_workbook.py
+    python3 deliverables/qc_gap_analysis/tracker/verify_prose.py
+
+**v26 verifies with 0 findings**, the deeper pass compares **5,341 printed results** with 0
+findings, the prose pass compares 430 Mikro cells with 0 findings; 36,373 recalculated cells,
+0 formula errors. `coq_artifact_data.json` and every drafted certificate are byte-identical
+before and after — nothing here touches a certificate.
+
+Still not in v26: the Tranche 3 Farmahem `227-K/26` retest results. Their register write is
+blocked on permission and five of the thirty are held on batch identity (OI-28).

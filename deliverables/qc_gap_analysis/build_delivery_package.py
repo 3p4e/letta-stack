@@ -29,7 +29,6 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 DRAFTS = os.path.join(HERE, "drafts")
 TRACKER = os.path.join(HERE, "tracker")
 OUT_DIR = os.path.join(ROOT, "deliverables", "zips")
-STAMP = "2026-09-11"
 
 # folder in the archive -> (source path, what it is)
 def _items():
@@ -99,18 +98,34 @@ def _items():
 # by hand, and a hard-coded version is exactly the defect the 11.09.2026 audit
 # found in Batch Coverage: a value carried forward stops being true and nothing
 # says so. The newest master on disk is the one the package ships.
-def _latest_master():
-    best, path = -1, None
-    for f in os.listdir(TRACKER):
-        m = re.fullmatch(r"CoQ_Analysis_Master_v(\d+)\.xlsx", f)
-        if m and int(m.group(1)) > best:
-            best, path = int(m.group(1)), f
-    if path is None:
-        raise SystemExit("no CoQ_Analysis_Master_vN.xlsx in " + TRACKER)
-    return str(best), os.path.join(TRACKER, path)
+sys.path.insert(0, TRACKER)
+from reference_sections import latest_master, sheet_or_section   # noqa: E402
+
+MASTER = latest_master(TRACKER)
+if MASTER is None:
+    raise SystemExit("no CoQ_Analysis_Master_vN.xlsx in " + TRACKER)
+VER = re.search(r"_v(\d+)\.xlsx$", MASTER).group(1)
 
 
-VER, MASTER = _latest_master()
+def _build_date(master):
+    """The archive is stamped with the build date the workbook states about itself.
+
+    The stamp used to be a literal, so every rebuild overwrote the previous day's
+    archive under the previous day's name, and the package could carry a v26
+    built on the 14th under a file called the 11th.
+    """
+    import openpyxl
+    wb = openpyxl.load_workbook(master, read_only=False)
+    rm = sheet_or_section(wb, "Read Me")
+    for row in rm.iter_rows(min_col=1, max_col=2, values_only=True):
+        if row[0] and str(row[0]).strip() == "What it is":
+            m = re.search(r"Built\s+(\d{2})\.(\d{2})\.(\d{4})", str(row[1]))
+            if m:
+                return "%s-%s-%s" % (m.group(3), m.group(2), m.group(1))
+    raise SystemExit("the Read Me of %s does not state its build date" % os.path.basename(master))
+
+
+STAMP = _build_date(MASTER)
 MASTER_PAGE = os.path.join(TRACKER, "coq_master_v%s.html" % VER)
 
 

@@ -127,7 +127,6 @@ footer{color:var(--muted);font-size:12.5px;margin-top:40px;max-width:80ch}
   <button role="tab" aria-selected="true" data-view="overview">Batch Coverage</button>
   <button role="tab" aria-selected="false" data-view="checklist">Checklist</button>
   <button role="tab" aria-selected="false" data-view="tracker">CoQ Parameter Tracker</button>
-  <button role="tab" aria-selected="false" data-view="icoa">iCoA Issuance</button>
   <button role="tab" aria-selected="false" data-view="register">iCoA Register</button>
   <button role="tab" aria-selected="false" data-view="coqreg">CoQ Register</button>
   <button role="tab" aria-selected="false" data-view="delivery">Delivery T1–T3</button>
@@ -179,20 +178,14 @@ footer{color:var(--muted);font-size:12.5px;margin-top:40px;max-width:80ch}
   <div id="lots"></div>
 </section>
 
-<section id="icoa" hidden>
-  <p class="sub">One iCoA per P lot (identification A and B and foreign matter), in the order of packaging: the iCoA is dated on the first day of packaging (the Head of QC’s list of 04.09.2026), the day the issuance plan uses as the CoQ basis. Each carries identification A, identification B and foreign matter, tested at Purely Plant at packaging, and is issued no earlier than the last day of packaging (Packaging complete). Identification C is covered by the cannabinoid-assay certificate named in the last column, cited on the CoQ directly.</p>
-  <div class="toolbar"><input id="ic-q" type="search" placeholder="Filter by batch, number, strain, certificate…" aria-label="Filter iCoA rows"><span id="ic-n" class="label"></span></div>
-  <div class="scroll"><table id="ic-table"></table></div>
-</section>
-
 <section id="register" hidden>
-  <p class="sub">Preliminary iCoA issuance register (Head of QC, 05.09.2026). One iCoA per P lot for identification A, B and foreign matter, tested at packaging. Codes iCoA-PP_26-nnn in the order of issue: the legacy lots (packed before the SOP floor of 11.05.2026, or holding an old in-house certificate) are all issued on 15.05.2026 in chronological order of packaging; the post-SOP lots follow, each on the first working day 5 days after its packaging. A row that cannot be issued yet carries no number: the retest iCoAs await the retest sampling, whose date is not on the desk. The plan’s references of 31.08.2026 are superseded and kept beside the codes. In the workbook the number, the code and the dates are formulas, so a row inserted between two certificates renumbers every row beneath it; this page shows the computed values.</p>
+  <p class="sub" id="rg-note"></p>
   <div class="toolbar"><input id="rg-q" type="search" placeholder="Filter by code, batch, strain, date…" aria-label="Filter register rows"><span id="rg-n" class="label"></span></div>
   <div class="scroll"><table id="rg-table"></table></div>
 </section>
 
 <section id="coqreg" hidden>
-  <p class="sub">Preliminary CoQ issuance register (Head of QC, 05.09.2026). Codes CoQ-PP_26-nnn in the order of issue: the legacy lots (packed before the SOP floor of 11.05.2026, or holding an old in-house QCCoA 001 certificate, which the CoQ supersedes) are all issued on 27.05.2026 in chronological order of packaging; the post-SOP lots follow on the first working day 7 days after the latest eCoA the CoQ cites, never before 27.05.2026. Every CoQ cites its lot’s iCoA and reports identification C as Conforms, referenced to the eCoA that covers Total THC. No number is reserved for a CoQ that cannot be issued yet: an uncertified determination (named in Status), a missing packaging date, every retest CoQ. Adherence flags are listed under the table.</p>
+  <p class="sub" id="cq-note"></p>
   <div class="toolbar"><input id="cq-q" type="search" placeholder="Filter by code, batch, strain, date…" aria-label="Filter CoQ register rows"><span id="cq-n" class="label"></span></div>
   <div class="scroll"><table id="cq-table"></table></div>
   <p class="sub" id="cq-flags"></p>
@@ -235,7 +228,7 @@ document.getElementById('subline').textContent =
 const tabs = [...document.querySelectorAll('nav.tabs button')];
 function show(view){
   tabs.forEach(b => b.setAttribute('aria-selected', String(b.dataset.view===view)));
-  ['overview','checklist','tracker','icoa','register','coqreg','delivery','imb','recon'].forEach(v => { const el = document.getElementById(v); if (el) el.hidden = v!==view; });
+  ['overview','checklist','tracker','register','coqreg','delivery','imb','recon'].forEach(v => { const el = document.getElementById(v); if (el) el.hidden = v!==view; });
   try { localStorage.setItem('coq9.view', view); } catch(e){}
 }
 tabs.forEach(b => b.addEventListener('click', () => show(b.dataset.view)));
@@ -382,25 +375,12 @@ function renderTracker(){
 document.getElementById('tr-q').addEventListener('input', renderTracker);
 document.getElementById('tr-flag').addEventListener('change', renderTracker);
 
-/* ---------- iCoA issuance ---------- */
-function renderIcoa(){
-  const rows = D.icoa || [];
-  const q = document.getElementById('ic-q').value.trim().toLowerCase();
-  const cols = rows.length ? Object.keys(rows[0]) : [];
-  let n = 0;
-  const body = rows.filter(r => !q || Object.values(r).join(' ').toLowerCase().includes(q)).map(r => { n++;
-    return '<tr>' + cols.map(c => {
-      const v = r[c] || '';
-      const cls = (c === 'Seq') ? ' class="c"' : (c === 'iCoA' || c === 'CoQ' || c === 'CU Batch' || c === 'P Batch' || c.startsWith('Ident C')) ? ' class="mono"' : '';
-      const pill = v === 'held for review' ? `<span class="pill p-warn">${esc(v)}</span>` : (v.startsWith('—') ? `<span class="pill p-bad">${esc(v)}</span>` : esc(v));
-      return `<td${cls}>${pill}</td>`;
-    }).join('') + '</tr>'; }).join('');
-  document.getElementById('ic-table').innerHTML = '<thead><tr>' + cols.map(c => `<th>${esc(c)}</th>`).join('') + '</tr></thead><tbody>' + body + '</tbody>';
-  document.getElementById('ic-n').textContent = `${n} of ${rows.length} iCoAs`;
-}
-document.getElementById('ic-q').addEventListener('input', renderIcoa);
-
 /* ---------- iCoA register ---------- */
+/* The note under each register is the workbook's own, not a sentence kept here: this
+   page once stated 15.05.2026 and 27.05.2026 for the legacy series while the sheets
+   issued on 03.06.2026 and 06.06.2026. */
+document.getElementById('rg-note').textContent = D.register_note || '';
+document.getElementById('cq-note').textContent = D.coq_note || '';
 function renderRegister(){
   const rows = D.register || [];
   const q = document.getElementById('rg-q').value.trim().toLowerCase();
@@ -503,10 +483,10 @@ function renderRecon(){
 }
 document.getElementById('rc-q').addEventListener('input', renderRecon);
 
-renderOverview(); renderChecklist(); renderTracker(); renderIcoa(); renderRegister(); renderCoqReg();
+renderOverview(); renderChecklist(); renderTracker(); renderRegister(); renderCoqReg();
 renderDelivery(); renderImb(); renderRecon();
 let v = 'overview'; try { v = localStorage.getItem('coq9.view') || v; } catch(e){}
-show(['overview','checklist','tracker','icoa','register','coqreg','delivery','imb','recon'].includes(v) ? v : 'overview');
+show(['overview','checklist','tracker','register','coqreg','delivery','imb','recon'].includes(v) ? v : 'overview');
 })();
 </script>
 '''

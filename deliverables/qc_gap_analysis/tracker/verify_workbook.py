@@ -11,24 +11,10 @@ import csv, importlib.util, json, os, re, shutil, subprocess, sys, tempfile, col
 import openpyxl
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-def _latest_master():
-    """The newest CoQ_Analysis_Master_vN.xlsx beside this file.
+sys.path.insert(0, HERE)
+from reference_sections import latest_master, sheet_or_section      # noqa: E402
 
-    The default used to be a literal — v11 here, v23 in the CI workflow — so the
-    gate watched whichever workbook someone last typed into it, and every rebuild
-    needed the version edited in two files or the check quietly verified a stale
-    one. The newest on disk is the one that ships (build_delivery_package.py picks
-    it the same way), so it is the one to check.
-    """
-    best, path = -1, None
-    for f in os.listdir(HERE):
-        m = re.fullmatch(r"CoQ_Analysis_Master_v(\d+)\.xlsx", f)
-        if m and int(m.group(1)) > best:
-            best, path = int(m.group(1)), os.path.join(HERE, f)
-    return path
-
-
-SRC = sys.argv[1] if len(sys.argv) > 1 else _latest_master()
+SRC = sys.argv[1] if len(sys.argv) > 1 else latest_master(HERE)
 if not SRC or not os.path.exists(SRC):
     raise SystemExit("no workbook to verify in " + HERE)
 spec = importlib.util.spec_from_file_location("tracker_data", os.path.join(HERE, "tracker_data.py"))
@@ -114,6 +100,26 @@ def table(wb, name, key_row=1):
     return out
 
 
+def table_or_section(wb, name, key_row=1):
+    """`table()` for a sheet, or for its section on the Reference sheet."""
+    if name in wb.sheetnames:
+        return table(wb, name, key_row)
+    sh = sheet_or_section(wb, name)
+    hdr = [str(sh.cell(key_row, c).value or "").strip() for c in range(1, sh.max_column + 1)]
+    while hdr and not hdr[-1]:
+        hdr.pop()
+    out = []
+    for r in range(key_row + 1, sh.max_row + 1):
+        vals = [sh.cell(r, c).value for c in range(1, len(hdr) + 1)]
+        if not any(v not in (None, "") for v in vals[:3]):
+            continue
+        if isinstance(vals[0], str) and len(vals[0]) > 120 and not any(
+                v not in (None, "") for v in vals[1:]):
+            continue
+        out.append((r, dict(zip(hdr, vals))))
+    return out
+
+
 def fmt(v):
     return v.strftime("%d.%m.%Y") if hasattr(v, "strftime") else ("" if v is None else str(v))
 
@@ -190,7 +196,7 @@ for k in LOTS:
         bad("Batch Coverage", "lot on the tracker has no coverage row", str(k))
 
 # ---------------------------------------------------------------- 2. Summary Dashboard
-db = WB["Summary Dashboard"]
+db = sheet_or_section(WB, "Summary Dashboard")
 lab = {str(db.cell(r, 1).value or ""): r for r in range(1, db.max_row + 1)}
 nlots = len(cov)
 miss_per = collections.Counter()
@@ -328,23 +334,25 @@ for name, rows, col in (("iCoA Register", regv, "Issue date (planned)"), ("CoQ R
         if a and (a[6:] + a[3:5] + a[:2]) < "20260511":
             bad(name, "issue date before the SOP floor of 11.05.2026", f"row {r}: {a}")
 
-# ---------------------------------------------------------------- 6. iCoA Issuance vs the registers
-iss = table(WV, "iCoA Issuance")
-for r, d in iss:
-    code = str(d.get("iCoA") or "")
-    if code.startswith("iCoA-PP_26-"):
-        k = None
-        for kk, dd in icoa_by_key.items():
-            if str(dd["iCoA code"]) == code:
-                k = kk
-        if k is None:
-            bad("iCoA Issuance", "cites a code that is not in the register", f"row {r}: {code}")
-    if str(d.get("Series") or "").startswith("initial") and str(d.get("iCoA scope") or "").startswith("—") and code not in ("not needed", ""):
-        bad("iCoA Issuance", "no scope but a code", f"row {r}: {code}")
+# ---------------------------------------------------------------- 6. a code always states its scope
+# This ran against the iCoA Issuance sheet, which no longer exists: its columns
+# were folded into the iCoA Register on 14.09.2026, both having always been one
+# row per batch and round. Half of what it checked went with the merge — "cites a
+# code that is not in the register" cannot fail when the sheet IS the register —
+# and that half is dropped rather than rewritten into a tautology. What survives
+# is the half that still says something: a row carrying an issued code must also
+# say what that certificate covers, because a certificate of quality cites this
+# scope and an empty one would let it assert a determination nobody certified.
+for r, d in table(WV, "iCoA Register"):
+    code = str(d.get("iCoA code") or "")
+    if not code.startswith("iCoA-PP_26-"):
+        continue
+    if str(d.get("Series") or "").startswith("initial") and str(d.get("iCoA scope") or "").startswith("—"):
+        bad("iCoA Register", "an issued code with no scope", f"row {r}: {code}")
 
 # ---------------------------------------------------------------- 7. Work Order / Credit Audit
-wo = table(WB, "Work Order")
-au = table(WB, "Credit Audit")
+wo = table_or_section(WB, "Work Order")
+au = table_or_section(WB, "Credit Audit")
 if not wo:
     bad("Work Order", "empty", "")
 for r, d in au:
@@ -357,7 +365,7 @@ for r, d in wo:
         bad("Work Order", "row without a task or what is needed", f"row {r}")
 
 # ---------------------------------------------------------------- 8. Read Me
-rm = WB["Read Me"]
+rm = sheet_or_section(WB, "Read Me")
 txt = "\n".join(str(c.value) for row in rm.iter_rows() for c in row if isinstance(c.value, str))
 listed = {str(rm.cell(r, 1).value) for r in range(1, rm.max_row + 1) if rm.cell(r, 2).value}
 for n in WB.sheetnames:
@@ -553,7 +561,9 @@ for (cu, p), lot in LOTS.items():
                 if und and not (is_amber or is_red):
                     bad2(TRACKER, f"undetermined but not marked ({sub})", f"{cu}/{p}: {v!r}")
 
-# ---- 11. iCoA Issuance: identification C names a certificate that reports Total THC for the lot
+# ---- 11. identification C names a certificate that reports Total THC for the lot
+# The "Ident C — covered by (eCoA)" column moved from iCoA Issuance to the iCoA
+# Register with the fold of 14.09.2026; the check follows the column.
 # a certificate carries the cannabinoid assay when it reports the total, or the free acid pair
 # it is computed from (Δ⁹-THC + THCA × 0.877), which is how the CNP certificates print it
 ASSAY = {"total_thc", "thc_free", "thca", "delta9_thc"}
@@ -561,13 +571,13 @@ thc_codes = set()
 for r in recs:
     if any(x.get("parameter") in ASSAY and x.get("result_printed") for x in r.get("parameters", [])):
         thc_codes.add(T.nkey(str(r.get("cert_code") or "")))
-for r, d in iss:
+for r, d in table(WV, "iCoA Register"):
     c = str(d.get("Ident C — covered by (eCoA)") or "")
     if c.startswith("—") or not c:
         continue
     code = T.nkey(c.split(",")[0])
     if by_code.get(code) and code not in thc_codes:
-        bad2("iCoA Issuance", "identification C cites a certificate whose record reports no Total THC", f"row {r}: {c[:40]}")
+        bad2("iCoA Register", "identification C cites a certificate whose record reports no Total THC", f"row {r}: {c[:40]}")
 
 # ---- 12. the registers: the group and the rule that dates it
 # The legacy day is read off the workbook rather than pinned here. It is a ruling

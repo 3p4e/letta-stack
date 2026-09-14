@@ -525,7 +525,14 @@ if ICOA_RULE:
             CAMPAIGN.add(T.nkey(_row["doc_code_in_filename"]))
     REANALYSIS |= CAMPAIGN
     print(f"retest documents: {len(REANALYSIS)} (the desk's re-analysis family and the IJZ-MB campaign delivery of 25/26.08.2026)")
-    REG_KEY_COL, COQ_KEY_COL = "P", "S"          # the Key columns of the iCoA Register and the CoQ Register (REG_COLS, COQ_COLS)
+    # The Key columns of the iCoA Register and the CoQ Register (REG_COLS, COQ_COLS).
+    # iCoA Register's Key moved P -> AA on 14.09.2026 when the iCoA Issuance sheet
+    # was folded in and ten columns landed ahead of it. Every lookup into the
+    # register goes through this one constant, and _fill_register asserts it still
+    # names the column REG_COLS actually puts Key in — insert a column without
+    # moving this and the build fails loudly instead of silently matching the
+    # wrong column, which is how a register lookup returns another lot's code.
+    REG_KEY_COL, COQ_KEY_COL = "AA", "S"
     for b in batches:
         cu0 = re.sub(r"[＊*]", "", b["cu"])
         key = join_key(b)
@@ -841,7 +848,7 @@ if ICOA_RULE:
         if _c is None:
             _no_mod += 1
         r["code"], r["issuable"] = _c, "yes"
-        r["reg_status"] = ("registered — issued with the legacy series on 15.05.2026" if r["group"] == "legacy"
+        r["reg_status"] = ("registered — issued with the legacy series on " + _F_(LEGACY_ICOA) if r["group"] == "legacy"
                            else "registered — first working day 5 days after packaging")
         r["icoa"], r["status"] = r["code"], r["reg_status"]
     for r in _later:
@@ -928,6 +935,22 @@ if ICOA_RULE:
             "strain": _m["strain"] or (_plan or {}).get("strain", ""),
             "scope": _scope, "cnp": (_plan or {}).get("cnp", "—"),
             "plan_ref": (_plan or {}).get("plan_ref") or "—", "key": _key,
+            # The iCoA Issuance sheet was folded into this one (owner, 14.09.2026:
+            # "iCoA Issuance basically should be contained inside iCoA Register").
+            # Both were already one row per batch and round, so the merge is a
+            # column union, not a reshape: the register keeps the identity and the
+            # dates it always had and gains the eleven columns only the issuance
+            # sheet carried — the per-parameter results, the eCoA that covers each,
+            # and the raw harvest/packaging dates behind the testing date.
+            "basis": (_plan or {}).get("basis", "—"),
+            "harvest": (_plan or {}).get("harvest", "—"),
+            "packaging": (_plan or {}).get("packaging", "—"),
+            "coq_issue": (_plan or {}).get("coq_issue", ""),
+            "a": (_plan or {}).get("a", "—"), "b": (_plan or {}).get("b", "—"),
+            "fm": (_plan or {}).get("fm", "—"), "c": (_plan or {}).get("c", "—"),
+            "assay_rt": (_plan or {}).get("assay_rt", "—"),
+            "myco_rt": (_plan or {}).get("myco_rt", "—"),
+            "carry": (_plan or {}).get("carry", "—"),
             # A release round is dated from `Batch Dates` by formula, so the
             # workbook stays live; a retest is dated at its own sampling, which
             # is on no sheet, so the module's date is written as a literal.
@@ -965,7 +988,7 @@ if ICOA_RULE:
     _cq_ok.sort(key=lambda r: (r["coq_issue"], str(T.date_key(r["sortdate"])) if r["sortdate"] else "9", r["cu"], r["p"]))
     for _i, r in enumerate(_cq_ok, 1):
         r["code"], r["issuable"] = f"CoQ-PP_26-{_i:03d}", "yes"
-        r["reg_status"] = (("registered — legacy series, issued 27.05.2026" if not r["coq_flag"] else "registered — " + r["coq_flag"])
+        r["reg_status"] = (("registered — legacy series, issued " + _F_(LEGACY_COQ) if not r["coq_flag"] else "registered — " + r["coq_flag"])
                            if r["group"] == "legacy" else
                            ("registered — first working day 7 days after the latest eCoA" if not r["coq_flag"] else "registered — " + r["coq_flag"]))
         # Head of QC, 05.09.2026 (evening): a production lot whose initial certificate for a
@@ -1293,8 +1316,12 @@ for b in batches:
                 else ("— no certificate —" if state == "red" else "")
             ref_disp = ref
             if here and ICOA_RULE and T.nkey(code) in INST_KEY:
-                ref = ("=IFERROR(INDEX('iCoA Register'!$B:$B,MATCH(\"%s\",'iCoA Register'!$%s:$%s,0)),\"iCoA — at issue\")&\", (%s) [PP]\""
-                       % (INST_KEY[T.nkey(code)], REG_KEY_COL, REG_KEY_COL, date))
+                # The suffix follows the credit flag here exactly as it does on
+                # the literal reference above; this formula used to drop it, so
+                # a grey in-house cell read like a credited one.
+                ref = ("=IFERROR(INDEX('iCoA Register'!$B:$B,MATCH(\"%s\",'iCoA Register'!$%s:$%s,0)),\"iCoA — at issue\")&\", (%s) [PP]%s\""
+                       % (INST_KEY[T.nkey(code)], REG_KEY_COL, REG_KEY_COL, date,
+                          "" if here[3] else " · on file, not credited"))
             elif here and str(code).startswith("NO-DOC-CODE"):
                 # An in-house report with no document code of its own, cited directly
                 # on Identification A and foreign matter for GG1024, HPA1024 and
@@ -2051,6 +2078,13 @@ def add_icoa_sheet(wb):
 REG_COLS = [("No.", 6), ("iCoA code", 18), ("Issuable", 9), ("Issue date (planned)", 18), ("Test date (packaging)", 16),
             ("Packaging complete", 16), ("Group", 10), ("Series", 20), ("CU Batch", 16), ("P Batch", 12), ("Strain", 20),
             ("iCoA scope", 30), ("CNP reference", 26), ("CoQ (register)", 16), ("Plan reference (31.08.2026)", 22),
+            # From here: the columns the iCoA Issuance sheet used to carry alone,
+            # folded in on 14.09.2026 so one sheet answers both questions — which
+            # internal certificates exist, and what each one actually covers.
+            ("Basis date", 12), ("Harvest", 24), ("Packaging", 28), ("CoQ issue (planned)", 16),
+            ("#1 Ident. A", 14), ("#2 Ident. B", 14), ("#7 Foreign matter", 16),
+            ("Ident C — covered by (eCoA)", 34), ("Retest assay #4–#6 (eCoA)", 34),
+            ("Retest mycotoxins #10 (eCoA)", 34), ("Carried forward", 30),
             ("Key", 14), ("Status", 60)]
 COQ_COLS = [("No.", 6), ("CoQ code", 18), ("Issuable", 9), ("Issue date (planned)", 18), ("Rule date", 14),
             ("Latest eCoA cited (date)", 16), ("Latest eCoA cited (code)", 22), ("iCoA (register)", 16), ("iCoA issue date", 14),
@@ -2062,7 +2096,7 @@ REG_NOTE = ("THE STANDING REGISTER OF INTERNAL CERTIFICATES OF ANALYSIS. Head of
             "drafted certificates happen to need. Each carries identification A, identification B and foreign matter ALWAYS "
             "(performed in house, on the first day of packaging for the release round and at its own sampling for a retest), plus "
             "any determination whose only result in that round is an in-house record. Codes iCoA-PP_26-nnn, one series for the "
-            "year of issue, in the order of issue: by issue date, then by when the work was done, then by batch — 03.06.2026 for "
+            "year of issue, in the order of issue: by issue date, then by when the work was done, then by batch — {icoa} for "
             "anything that would otherwise predate the specification SOP, so the backlog shares one date and orders by packaging, "
             "as the CoQ series does. THE ROWS, THE NUMBER AND THE CODE ARE NOT COMPUTED HERE (11.09.2026): this sheet RENDERS "
             "icoa_register.py, which is the series, and writes its numbers as literal values. Two things were being decided twice "
@@ -2078,19 +2112,19 @@ REG_NOTE = ("THE STANDING REGISTER OF INTERNAL CERTIFICATES OF ANALYSIS. Head of
             "whose star batch_id.batch_key deliberately keeps because whether GG012601＊ is GG012601 is the Head of QC's to rule. "
             "They are unnumbered and say why. Inserting a row renumbers nothing. verify_workbook.py compares sheet and series on "
             "every run. FORMULAS remaining: a release round's testing date and packaging-complete date are looked up on Batch "
-            "Dates by P batch (else by the batch as listed) and its issue date is the later of that testing date and 03.06.2026; a "
+            "Dates by P batch (else by the batch as listed) and its issue date is the later of that testing date and {icoa}; a "
             "RETEST is dated at its own sampling, which no sheet holds, so the series' dates are written as literals rather than "
-            "guessed by a formula. CoQ (register) is looked up on the CoQ Register by Key — the iCoA Issuance sheet and the "
+            "guessed by a formula. CoQ (register) is looked up on the CoQ Register by Key — the "
             "tracker's in-house cells cite this register by Key, so they follow it. Working days are Monday to Friday; public "
             "holidays are not applied.")
 COQ_NOTE = ("Head of QC, 05.09.2026: preliminary CoQ issuance register — codes CoQ-PP_26-nnn (nnn = 001 … 999), one series for the "
             "year of issue, in the order of issue. LEGACY lots (packed before the SOP floor of 11.05.2026, or holding an old "
-            "in-house QCCoA 001 certificate, which the CoQ supersedes) are all issued on 27.05.2026, in chronological order of "
+            "in-house QCCoA 001 certificate, which the CoQ supersedes) are all issued on {coq}, in chronological order of "
             "packaging; POST-SOP lots follow, each on the first working day 7 days after the latest eCoA the CoQ cites and never "
-            "before 27.05.2026, so the legacy series keeps 001 onward. Every CoQ "
+            "before {coq}, so the legacy series keeps 001 onward. Every CoQ "
             "cites its lot's iCoA (identification A, B, foreign matter) and reports identification C as 'Conforms', referenced to "
             "the eCoA that covers Total THC. ADHERENCE (ISSUE_COQ_CONVENTIONS): a CoQ never precedes a document it cites — a legacy "
-            "lot whose latest eCoA is dated after 27.05.2026 takes the post-SOP rule and is flagged in Status; a CoQ never precedes "
+            "lot whose latest eCoA is dated after {coq} takes the post-SOP rule and is flagged in Status; a CoQ never precedes "
             "its iCoA; Head of QC, 05.09.2026 (evening): a production lot whose initial certificate for a determination is not on "
             "file keeps its planned CoQ and number — the initial testing exists at the Faculty of Pharmacy's Center for Natural "
             "Products (microbiology: IJZ) and the certificate is to be located (Work Order; Status names the determination); a "
@@ -2101,11 +2135,18 @@ COQ_NOTE = ("Head of QC, 05.09.2026: preliminary CoQ issuance register — codes
             "for the post-SOP lots too; nothing is dated on a weekend. RETEST ROWS: the reissued CoQ "
             "carries the retest results (cannabinoids with identification C by Farmahem, mycotoxins, microbiology by IJZ-MB) and the "
             "initial certificates for the rest; its rule date is the first working day 7 days after the latest retest certificate, "
-            "and it is issued once the in-house retest iCoA exists. FORMULAS: No. and the code as on the iCoA Register; Rule date is 27.05.2026 for a legacy row "
-            "whose latest eCoA is on or before it, else the first working day 7 days after the latest eCoA (not before 27.05.2026); the planned date is the "
+            "and it is issued once the in-house retest iCoA exists. FORMULAS: No. and the code as on the iCoA Register; Rule date is {coq} for a legacy row "
+            "whose latest eCoA is on or before it, else the first working day 7 days after the latest eCoA (not before {coq}); the planned date is the "
             "latest of the rule date, the iCoA's date and the lot's last day of packaging; iCoA (register) and its date are looked up on the iCoA Register by Key. "
             "The latest eCoA cited is a value (the first credited certificate per determination dated before the retest campaign; "
             "for a retest row, the latest retest certificate), recomputed by the builder. Working days are Monday to Friday; public holidays are not applied.")
+
+# Both notes used to print the legacy issue days as literals while the rows took
+# theirs from --legacy-icoa / --legacy-coq, so a sheet could state one date and
+# issue on another — as the CoQ Register did, saying 27.05.2026 over rows dated
+# 06.06.2026. The note now says whatever the series issues on.
+REG_NOTE = REG_NOTE.format(icoa=_F_(LEGACY_ICOA))
+COQ_NOTE = COQ_NOTE.format(coq=_F_(LEGACY_COQ))
 
 
 def _roll(expr):
@@ -2121,6 +2162,14 @@ def _XD(d):
 def _fill_register(sh):
     """The iCoA register as an Excel table whose number, code and dates are formulas."""
     from openpyxl.worksheet.table import Table, TableStyleInfo
+    # Every lookup into this register matches on REG_KEY_COL. If a column is ever
+    # inserted ahead of Key without moving that constant, MATCH silently starts
+    # reading a different column and hands back another lot's code — so the build
+    # refuses rather than shipping a register whose own lookups are off by n.
+    _key_at = L([_t for _t, _w in REG_COLS].index("Key") + 1)
+    assert _key_at == REG_KEY_COL, (
+        "REG_KEY_COL is %r but REG_COLS puts Key in column %r — every formula that "
+        "looks this register up by key would match the wrong column." % (REG_KEY_COL, _key_at))
     for _i, (_t, _w) in enumerate(REG_COLS, 1):
         put(sh, 1, _i, _t, FW, NAVY, CEN)
         sh.column_dimensions[L(_i)].width = _w
@@ -2159,14 +2208,29 @@ def _fill_register(sh):
         cells = (f_no, f_code, r["issuable"], f_issue,
                  f_from if (r["series"] == "initial release" or r.get("lit_from")) else "at retest sampling", f_to,
                  r["group"], r["series"], r["cu"], r["p"], r["strain"], r["scope"], r["cnp"],
-                 COQ_LOOKUP("B", r["key"], "—"), r.get("plan_ref") or "—", r["key"], r["reg_status"])
+                 COQ_LOOKUP("B", r["key"], "—"), r.get("plan_ref") or "—",
+                 # folded in from the former iCoA Issuance sheet
+                 r.get("basis") or "—", r.get("harvest") or "—", r.get("packaging") or "—",
+                 COQ_LOOKUP("D", r["key"], ""),
+                 r.get("a") or "—", r.get("b") or "—", r.get("fm") or "—", r.get("c") or "—",
+                 r.get("assay_rt") or "—", r.get("myco_rt") or "—", r.get("carry") or "—",
+                 r["key"], r["reg_status"])
+        # Column roles are looked up by HEADER, not written as numbers. They were
+        # literals — Status was 17, Key was 16 — and folding the issuance sheet in
+        # moved both ten columns to the right, which would have painted the fill
+        # on "Ident C — covered by" and left Status unwrapped.
+        _hdr = [_t for _t, _w in REG_COLS]
+        _at = lambda name: _hdr.index(name) + 1
+        _c_status, _c_cnp, _c_plan = _at("Status"), _at("CNP reference"), _at("Plan reference (31.08.2026)")
+        _c_dates = {_at("Issue date (planned)"), _at("Test date (packaging)"),
+                    _at("Packaging complete"), _at("CoQ issue (planned)")}
         for _i, v in enumerate(cells, 1):
             c = put(sh, _r, _i, v, F7B if _i in (2, 9) else F7,
-                    FILL["green"] if (_i == 17 and str(v).startswith("registered")) or (_i == 3 and v == "yes") else
-                    FILL["amber"] if (_i == 17 and str(v).startswith("not yet")) or (_i == 3 and v == "no")
-                    or (_i in (13, 15) and str(v).startswith("—")) else None,
-                    CEN if _i != 17 else Alignment(horizontal="left", vertical="center", wrap_text=True))
-            if _i in (4, 5, 6):
+                    FILL["green"] if (_i == _c_status and str(v).startswith("registered")) or (_i == 3 and v == "yes") else
+                    FILL["amber"] if (_i == _c_status and str(v).startswith("not yet")) or (_i == 3 and v == "no")
+                    or (_i in (_c_cnp, _c_plan) and str(v).startswith("—")) else None,
+                    CEN if _i != _c_status else Alignment(horizontal="left", vertical="center", wrap_text=True))
+            if _i in _c_dates:
                 c.number_format = "DD.MM.YYYY"
         _r += 1
     tab = Table(displayName="iCoA_Register", ref=f"A1:{L(len(REG_COLS))}{_r - 1}")
@@ -2332,6 +2396,11 @@ SHEET_ABOUT = {
     "CoQ Register": "The preliminary CoQ issuance register: CoQ-PP_26-nnn in the order of issue, the latest eCoA each CoQ cites, its iCoA, the adherence flags under the table.",
     "Parameters": "The 21 determinations with method, global acceptance criterion, source and tracker columns.",
     "Summary Dashboard": "Counts recomputed from Batch Coverage: lots, documents, complete / partial / incomplete, missing-parameter frequency.",
+    "Reference": "Everything that is neither a primary view nor a formula source, on one sheet (owner, 14.09.2026: six tabs, "
+                 "not sixteen), each section under its own title in capitals and separated by a blank gutter; the sections "
+                 "are listed under '(folded in)' below. Nothing was deleted — none of these is read by a formula, so they could "
+                 "be moved without touching a lookup, but they are the audit trail and taking that out of a controlled record "
+                 "is the one direction that cannot be undone from inside the workbook.",
 }
 
 
@@ -2815,9 +2884,23 @@ def write_read_me(wb):
          "Nothing is invented; a value the reads disagreed on is held until a person rules on the page.")
     r += 1
     head("SHEETS")
-    for name in wb.sheetnames:
+    # The sheet list as the workbook will READ once the fold has run, not as it
+    # stands at this moment. This Read Me is written before fold_reference_sheet()
+    # — it has to be, because it is itself one of the sheets folded in — so
+    # enumerating wb.sheetnames here would describe sixteen tabs that are about to
+    # become seven, and the verifier's "sheet not described" check would fail on
+    # the one sheet this list forgot: Reference.
+    _folding = [n for n in FOLD_INTO_REFERENCE if n in wb.sheetnames]
+    _final = [n for n in wb.sheetnames if n not in _folding and n != "iCoA Issuance"]
+    if _folding:
+        _final.append("Reference")
+    for name in _final:
         about = SHEET_ABOUT.get(name) or (SHEET_ABOUT["CoQ Parameter Tracker"] if name.startswith("CoQ Parameter Tracker") else "")
         line(name, about)
+    if _folding:
+        line("(folded in)", "The iCoA Issuance sheet is gone: every column it carried is on the iCoA Register, which was always "
+                            "the same one row per batch and round. These are now sections of Reference rather than tabs — "
+                            + ", ".join(_folding) + ".")
     r += 1
     head("LEGEND (tracker and coverage)")
     line("✓ green", "A certificate is on file and its value is on the desk: an outsourced certificate (eCoA) or the in-house iCoA.")
@@ -2900,6 +2983,85 @@ def fix_parameters(wb):
     sh.column_dimensions[L(src_c)].width = 60 if src_c else None
 
 
+# The nine sheets that are neither a primary view nor a formula source. Owner,
+# 14.09.2026: the workbook had sixteen tabs and needs six. None of these is read
+# by a formula anywhere — only iCoA Register, CoQ Register and Batch Dates are —
+# so they can be moved without breaking a single lookup. They are CONSOLIDATED
+# rather than deleted: they are the audit trail (what was reconciled, what is
+# credited, what a person must still do, what is unresolved), and taking that out
+# of a controlled record is the one direction that cannot be undone from inside
+# the workbook. Deleting the one sheet they now share is a keystroke if the owner
+# decides otherwise.
+FOLD_INTO_REFERENCE = ["Read Me", "Delivery T1–T3", "ImB Register", "Mikro CoQ Parameter",
+                       "Reconciliation 09.09", "Credit Audit", "Credit Corrections",
+                       "Work Order", "Open Items", "Summary Dashboard"]
+
+
+def fold_reference_sheet(wb, names=None):
+    """Stack the leaf sheets onto one Reference sheet and drop the originals.
+
+    Values, fonts, fills, alignment and number formats come across cell for cell;
+    merged ranges are translated by the row offset so a note that spans its table
+    still reads as one block. Column widths cannot follow — one sheet has one set
+    — so the widest section's widths are taken and the rest wrap under them.
+
+    Each section's row range is recorded as a defined name, `_fold_<slug>`. Where
+    a section ends is a fact this function knows and nothing downstream can infer:
+    several of the folded sheets separate their own sections with the same blank
+    gutter used between sections here, so a reader guessing from blank rows stops
+    at the first inner gutter and silently loses the rest of the sheet.
+    """
+    import copy as _copy
+    import re as _re
+    from openpyxl.utils import range_boundaries
+    from openpyxl.workbook.defined_name import DefinedName
+
+    names = [n for n in (names or FOLD_INTO_REFERENCE) if n in wb.sheetnames]
+    if not names:
+        return 0, 0
+    ref = wb.create_sheet("Reference")
+    row = 1
+    widths = {}
+    for name in names:
+        src = wb[name]
+        c = ref.cell(row, 1, name.upper())
+        c.font = Font(name="Calibri", size=12, bold=True, color=NAVY)
+        c.alignment = Alignment(vertical="center")
+        ref.row_dimensions[row].height = 20
+        row += 1
+        top = row
+        for r in range(1, src.max_row + 1):
+            for col in range(1, src.max_column + 1):
+                s = src.cell(r, col)
+                if s.value is None and not s.has_style:
+                    continue
+                d = ref.cell(row, col, s.value)
+                d.font = _copy.copy(s.font)
+                d.fill = _copy.copy(s.fill)
+                d.border = _copy.copy(s.border)
+                d.alignment = _copy.copy(s.alignment)
+                d.number_format = s.number_format
+            if src.row_dimensions[r].height:
+                ref.row_dimensions[row].height = src.row_dimensions[r].height
+            row += 1
+        for m in list(src.merged_cells.ranges):
+            c1, r1, c2, r2 = range_boundaries(str(m))
+            ref.merge_cells(start_row=r1 + top - 1, start_column=c1,
+                            end_row=r2 + top - 1, end_column=c2)
+        for letter, dim in src.column_dimensions.items():
+            if dim.width and dim.width > widths.get(letter, 0):
+                widths[letter] = dim.width
+        wb.defined_names.add(DefinedName(
+            "_fold_" + _re.sub(r"\W+", "_", name).strip("_"),
+            attr_text="Reference!$A$%d:$A$%d" % (top, row - 1)))
+        row += 2                                    # a blank gutter between sections
+    for letter, w in widths.items():
+        ref.column_dimensions[letter].width = w
+    for name in names:
+        del wb[name]
+    return len(names), row - 1
+
+
 def print_setup(wb):
     """Landscape, A3, one page wide, header rows repeated — on every sheet (the Read Me says so)."""
     for sh in wb.worksheets:
@@ -2942,6 +3104,21 @@ if NEW:
         print("Open Items sheet not written:", _e)
     write_read_me(wb)
     fix_parameters(wb)
+    # Sixteen tabs down to seven (owner, 14.09.2026). iCoA Issuance is already
+    # gone by here — its columns were folded into the iCoA Register, which was
+    # always the same one-row-per-round shape — and these nine fold onto one
+    # Reference sheet. What is left is the six sheets the owner asked for plus
+    # the audit trail behind them.
+    _folded, _ref_rows = fold_reference_sheet(wb)
+    # iCoA Issuance is DROPPED, not folded: every column it carried is now on the
+    # iCoA Register beside the code and dates those columns belong to. Stacking it
+    # onto Reference as well would put the same values in the workbook twice, and
+    # a value that exists in two places is the defect this folder keeps finding.
+    if "iCoA Issuance" in wb.sheetnames:
+        del wb["iCoA Issuance"]
+        print("iCoA Issuance: dropped — its columns are on the iCoA Register")
+    print("reference sheet: %d sheet(s) folded into one, %d rows; workbook now %d tabs — %s"
+          % (_folded, _ref_rows, len(wb.sheetnames), ", ".join(wb.sheetnames)))
     print_setup(wb)
 wb.save(OUT)
 print("saved", OUT)

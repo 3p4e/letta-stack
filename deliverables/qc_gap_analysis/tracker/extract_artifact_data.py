@@ -2,7 +2,9 @@
 """Workbook -> v9_data.json for the artifact (coverage, parameters, lots with their
 two-row blocks, work order, credit audit, credit corrections). Reads the rendered
 sheet, so what the page shows is what the workbook shows."""
-import sys, json, re, openpyxl
+import sys, json, re, os, openpyxl
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from reference_sections import sheet_or_section, has as _readable
 
 SRC = sys.argv[1]
 OUT = sys.argv[2]
@@ -46,8 +48,10 @@ def fcol(cell):
 
 
 def table(name):
-    ws = wb[name]
-    hdr = [str(c.value or '').strip() for c in ws[1]]
+    ws = sheet_or_section(wb, name)
+    hdr = [str(ws.cell(1, c).value or '').strip() for c in range(1, ws.max_column + 1)]
+    while hdr and not hdr[-1]:
+        hdr.pop()
     rows = []
     for r in range(2, ws.max_row + 1):
         vals = [ws.cell(r, c).value for c in range(1, len(hdr) + 1)]
@@ -130,7 +134,7 @@ for i, a in enumerate(anchors):
 
 def raw_rows(name, ncol=5):
     """A sectioned sheet as rows of strings — it has no single header row to key on."""
-    ws = wb[name]
+    ws = sheet_or_section(wb, name)
     out = []
     for row in ws.iter_rows(min_col=1, max_col=ncol, values_only=True):
         vals = ['' if v is None else str(v) for v in row]
@@ -144,20 +148,31 @@ def _no_note(rows):
     return [r for r in rows if sum(1 for v in r.values() if str(v or '').strip()) > 2]
 
 
+def note_of(name):
+    """The footnote under a table: one long string in the first column, nothing beside it."""
+    ws = sheet_or_section(wb, name)
+    for row in ws.iter_rows():
+        if isinstance(row[0].value, str) and len(row[0].value) > 200 and not any(
+                c.value not in (None, '') for c in row[1:]):
+            return row[0].value
+    return ''
+
+
 data = {'coverage_headers': coverage_headers, 'coverage': coverage,
+        'register_note': note_of('iCoA Register') if _readable(wb, 'iCoA Register') else '',
+        'coq_note': note_of('CoQ Register').split(' FLAGS: ', 1)[0] if _readable(wb, 'CoQ Register') else '',
         'params': [{k: v for k, v in p.items() if k not in ('start', 'end')} for p in params],
         'lots': lots, 'work_order': table('Work Order'), 'credit_audit': table('Credit Audit'),
         'corrections': table('Credit Corrections'),
-        'icoa': table('iCoA Issuance') if 'iCoA Issuance' in wb.sheetnames else [],
-        'register': table('iCoA Register') if 'iCoA Register' in wb.sheetnames else [],
-        'coq_register': table('CoQ Register') if 'CoQ Register' in wb.sheetnames else [],
-        'delivery': _no_note(table('Delivery T1–T3')) if 'Delivery T1–T3' in wb.sheetnames else [],
-        'imb_register': _no_note(table('ImB Register')) if 'ImB Register' in wb.sheetnames else [],
-        'reconciliation': raw_rows('Reconciliation 09.09') if 'Reconciliation 09.09' in wb.sheetnames else []}
+        'register': table('iCoA Register') if _readable(wb, 'iCoA Register') else [],
+        'coq_register': table('CoQ Register') if _readable(wb, 'CoQ Register') else [],
+        'delivery': _no_note(table('Delivery T1–T3')) if _readable(wb, 'Delivery T1–T3') else [],
+        'imb_register': _no_note(table('ImB Register')) if _readable(wb, 'ImB Register') else [],
+        'reconciliation': raw_rows('Reconciliation 09.09') if _readable(wb, 'Reconciliation 09.09') else []}
 # The page's own subtitle used to hard-code a version and a date; it now takes both
 # from the workbook, the way the file name already does.
 import re as _re
-_about = next((str(r[1]) for r in wb['Read Me'].iter_rows(min_col=1, max_col=2, values_only=True)
+_about = next((str(r[1]) for r in sheet_or_section(wb, 'Read Me').iter_rows(min_col=1, max_col=2, values_only=True)
                if r[0] and str(r[0]).strip() == 'What it is'), '')
 _bm = _re.search(r'Built\s+(\d{2}\.\d{2}\.\d{4})', _about)
 data['built'] = _bm.group(1) if _bm else ''

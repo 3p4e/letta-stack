@@ -390,3 +390,10 @@ jobs:
       - name: The workbook agrees with the records it is built from
         run: |
           python3 deliverables/qc_gap_analysis/tracker/verify_workbook.py
+      # The third pass reads what the sheets SAY about themselves — a STATUS
+      # cell's counts, a note's dates. It was never in this workflow and its own
+      # default pointed at v11, so eleven false sentences rode along from v12 to
+      # v25 with every table underneath them verified true.
+      - name: The workbook's sentences agree with its tables
+        run: |
+          python3 deliverables/qc_gap_analysis/tracker/verify_prose.py
