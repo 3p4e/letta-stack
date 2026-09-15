@@ -279,3 +279,64 @@ which is the stronger statement anyway.
 
 **v22 verifies with 0 findings**, and the deeper pass compares 5,482 printed
 results against the certificate records with 0 findings.
+
+---
+
+# A code allocated before its date — the owner's ruling of 15.09.2026 (evening)
+
+The standing rule since 31.08.2026 was that a CoQ number is copied from the
+issuance record at issue and never computed in advance, and the CoQ Register
+numbered only what it could issue: after v30 the Tranche 3 reissues stood without
+a code because their mycotoxin certificates (227-М/26) do not exist yet. The
+owner's ruling:
+
+> "for tranche three there are still missing retest parameter results, so it
+> cannot be issued. But also because all of the retest parameters are performed
+> in Farmahem, they will all come in one date, so practically you can even now
+> allocate the certificates of quality document codes for tranche three batches.
+> And after them, you should list any of the production batches that are maybe
+> still under testing, under production, or that are not even included in
+> tranche one and two and three."
+
+What it is in the register (`tracker/build_tracker_v8.py`):
+
+* **A Tranche 3 reissue whose release certificate is numbered takes its code
+  now**, after the last Tranche 2 reissue, in the order the series gives rows of
+  one date (cultivation batch, then P lot — the same key the Tranche 1 and 2
+  reissues of one day are ordered by). Its `Issuable` reads **`allocated`**, not
+  `yes`; `No.` counts it; the **planned date is the owner's** — the analyses
+  complete within ten days, likely by Friday 18.09.2026, and all Tranche 3
+  certificates issue on one day, *"let's say Monday next week"*: **21.09.2026**,
+  passed to the build as `--t3-issue=21.09.2026` and **provisional** until the
+  227-М certificates exist (the rule-date cell says so). The codes stay
+  chronological: every Tranche 3 date is after the last Tranche 2 date. Nothing
+  else about the row is computed in advance: the certificate it supersedes, the
+  internal certificate it cites and the potency grading are the row's own.
+* **The date is not a code.** The compiled certificate prints the allocated code
+  in its header (the register's code, as since 15.09.2026) and is **not drafted**
+  until the register dates it: `live_instrument/reissue_scope.py` marks a
+  numbered-but-undated reissue not draftable and says so.
+* **A reissue is never numbered before the certificate it supersedes.** The two
+  Tranche 3 lots whose release CoQ the register withholds (GG012601＊ and
+  JD012601＊ — no internal certificate, OI-28) keep their reissue unallocated
+  with it.
+* **The retest programme is the QP's, not universal.** *"For all the production
+  batches that are not listed into tranche one, two, or three, those are not
+  subject to a retest as of yet … They are not subject for sale, so the QP did
+  not request retest for them. Only Tranche 1, 2 or 3 production batches are for
+  sale and thus QP asked for retest and reissue."* `build_coq_schedule.py` gives a
+  reissue only to a lot whose register block holds a campaign re-analysis
+  certificate (197-, 220-, 227- series); the six batches outside every tranche
+  that v30 carried with a predicted reissue — JD022601 (P060482), FB032601
+  (P060452), GG032601 (P060462), P160012, P160022, P160032 — have their release
+  certificate and no retest row on either register.
+* **After the numbered and the allocated rows** the register lists the batches
+  the tranches do not cover — under production, under testing, or on no tranche
+  list — lot by lot, with the reason each is not yet issuable. None of them can
+  take a code before its external results and its packaging exist (owner,
+  15.09.2026: *"no CoQ code could be issued yet"*).
+
+`verify_workbook.py` holds the sheet to it: an `allocated` row has a number and
+is a Tranche 3 reissue; the allocated rows share one planned date (or none) and
+it is not before any date the register has issued on; a number on any other row
+that is not `yes` is a finding, as before.

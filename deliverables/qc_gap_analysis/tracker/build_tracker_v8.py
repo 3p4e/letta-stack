@@ -51,6 +51,11 @@ from openpyxl.utils import get_column_letter as L
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 BUILD_DATE = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--build-date=")), "06.09.2026")
+# Owner, 15.09.2026 (evening): the Tranche 3 retest analyses complete within ten days,
+# likely by Friday 18.09.2026, and all Tranche 3 certificates of quality issue on one
+# day — "let's say Monday next week". The allocated rows carry that planned date,
+# provisional until the 227-М certificates exist; blank when no date is given.
+T3_ISSUE = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--t3-issue=")), "")
 spec = importlib.util.spec_from_file_location("tracker_data", os.path.join(HERE, "tracker_data.py"))
 T = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(T)
@@ -1083,7 +1088,7 @@ if ICOA_RULE:
     for r in COQ_ROWS:
         if r["series"] != "initial release" and r.get("campaign"):
             r["key"] = _camp_key.get(r["key"].rpartition("|")[0], r["key"])
-    _cq_ok, _cq_later = [], []
+    _cq_ok, _cq_alloc, _cq_later = [], [], []
     # A reissue supersedes the lot's initial certificate, so it cannot be numbered
     # before that certificate is: a lot whose release CoQ the register withholds
     # (no packaging date on the list — FB042601, CC042601) has its Tranche 2
@@ -1094,6 +1099,9 @@ if ICOA_RULE:
             ic = ICOA_BY_KEY.get(r["key"])
             if not r["coq_issue"] or (r["icoa_needed"] and ic and ic["issuable"] != "yes"):
                 _init_held.add((r["cu"], r["p"]))
+    # the campaign's internal certificate, as the iCoA Register numbers it (the
+    # sheet's own rows, campaign keys included — not the planning row's status)
+    _reg_code = {r["key"]: str(r.get("code") or "") for r in REGISTER}
     for r in COQ_ROWS:
         ic = ICOA_BY_KEY.get(r["key"])
         if r["series"] != "initial release":
@@ -1103,6 +1111,14 @@ if ICOA_RULE:
                 _cq_later.append(r)
             elif r["coq_issue"]:
                 _cq_ok.append(r)
+            elif str(r.get("rt_tranche", "")).startswith("Tranche 3") and _reg_code.get(r["key"], "").startswith("iCoA-PP_26-"):
+                # Owner, 15.09.2026 (evening): every Tranche 3 retest parameter is tested at
+                # Farmahem and its certificates all issue on one date, so the Tranche 3
+                # reissues take their codes now — after the last Tranche 2 reissue, in the
+                # order the series would give them — and only the date waits for the 227-М
+                # mycotoxin certificate. The one code computed in advance, by the owner's
+                # own ruling; Issuable reads "allocated", never "yes".
+                _cq_alloc.append(r)
             else:
                 r["why"] = r["rt_status"]
                 _cq_later.append(r)
@@ -1133,14 +1149,36 @@ if ICOA_RULE:
         # to be located (Work Order); the number is not withheld for it
         if r["gaps"]:
             r["reg_status"] += " · initial certificate to locate: " + ", ".join(f"#{n} ({'IJZ' if n == 9 else 'CNP'})" for n in r["gaps"])
+    _cq_alloc.sort(key=lambda r: (r["cu"], r["p"]))
+    for _j, r in enumerate(_cq_alloc, len(_cq_ok) + 1):
+        r["code"], r["issuable"] = f"CoQ-PP_26-{_j:03d}", "allocated"
+        r["coq_issue"] = _D_(T3_ISSUE) if T3_ISSUE else None
+        _kb, _, _ks = r["key"].rpartition("|")
+        r["reg_status"] = ("allocated — code reserved 15.09.2026 for the %s reissue (owner: every Tranche 3 retest parameter is "
+                           "tested at Farmahem and its certificates all issue on one date); sampled %s, retest assay %s on file, "
+                           "mycotoxins pending; %s, after every Tranche 2 reissue; cites %s of %s"
+                           % (r["rt_tranche"], r["rt_sampled"], str(r.get("assay_rt", "")).split(", (")[0],
+                              ("planned %s — the owner's date of 15.09.2026 for all of Tranche 3, the 227-М certificates expected by "
+                               "18.09.2026, provisional until they exist" % _F_(r["coq_issue"])) if r["coq_issue"] else
+                              "issued on the owner's date once the 227-М certificate exists",
+                              _MOD_CODE.get(f"{T.batch_key(_kb)}|{_ks}", "the campaign iCoA"), _F_(r["rt_icoa_day"])))
     for r in _cq_later:
         r["code"], r["issuable"] = "— at issue —", "no"
         r["reg_status"] = "not yet issuable — " + r["why"]
     for r in _cq_later:
         if r["series"] != "initial release":
             r["reg_status"] = "not yet issuable — " + r["rt_status"] + " · issued 7 days after the latest retest certificate once the assay, the mycotoxins and the iCoA exist"
-    COQ_REGISTER = _cq_ok + sorted(_cq_later, key=lambda r: (0 if r["series"] == "initial release" else 1,
-                                                             str(T.date_key(r["sortdate"] or r["basis"])) if (r["sortdate"] or r["basis"]) else "9", r["cu"], r["p"]))
+    # After the numbered and the allocated rows, the batches the tranches do not cover
+    # — under production, under testing, or on no tranche list — lot by lot. Such a
+    # batch has a release row and no retest row: only the tranche batches are for
+    # sale, so only they were retested at the QP's request (owner, 15.09.2026).
+    _lot_day = {}
+    for r in COQ_ROWS:
+        if r["series"] == "initial release":
+            _d = r["sortdate"] or r["basis"]
+            _lot_day[(r["cu"], r["p"])] = str(T.date_key(_d)) if _d else "9"
+    COQ_REGISTER = _cq_ok + _cq_alloc + sorted(_cq_later, key=lambda r: (_lot_day.get((r["cu"], r["p"]), "9"), r["cu"], r["p"],
+                                                                         0 if r["series"] == "initial release" else 1))
     # The register sheet is the series, so it is the series that is counted here.
     # This line used to report the planning rows it numbered — 60 — while the
     # sheet carried 95 codes, which is how a stale statistic outlives the thing
@@ -1156,7 +1194,7 @@ if ICOA_RULE:
     print(f"CoQ register: {len(_cq_ok)} numbered (CoQ-PP_26-001 … {_cq_ok[-1]['code'][-3:] if _cq_ok else '—'}; "
           f"{sum(1 for r in _cq_ok if r['group'] == 'legacy' and not r['coq_flag'])} legacy on 27.05.2026, "
           f"{sum(1 for r in _cq_ok if r['group'] == 'legacy' and r['coq_flag'])} legacy moved, "
-          f"{sum(1 for r in _cq_ok if r['group'] != 'legacy')} post-SOP), {len(_cq_later)} not yet issuable "
+          f"{sum(1 for r in _cq_ok if r['group'] != 'legacy')} post-SOP), {len(_cq_alloc)} allocated in advance (Tranche 3: code reserved, planned {_F_(_D_(T3_ISSUE)) if T3_ISSUE else 'undated'}, provisional), {len(_cq_later)} not yet issuable "
           f"({sum(1 for r in _cq_later if r['series'] == 'initial release')} initial: "
           f"{sum(1 for r in _cq_ok if r['gaps'])} numbered with an initial certificate to locate; "
           f"{sum(1 for r in _cq_later if r['series'] != 'initial release')} retest)")
@@ -2299,7 +2337,14 @@ COQ_NOTE = ("Head of QC, 05.09.2026: preliminary CoQ issuance register — codes
             "not retested, the initial certificate's result and document (owner, 15.09.2026); its rule date is 7 days after the "
             "latest retest certificate it cites, and it is numbered, in date order with the release series, once the retest assay, "
             "the mycotoxins and the campaign's internal certificate (sampled and issued per sampling_dates.py) all exist — Tranche 1 "
-            "and Tranche 2 in this build (Tranche 2 since v30, its potency certificates of 25/26.08.2026 taken in on 15.09.2026); Tranche 3 waits for its mycotoxin certificates. FORMULAS: No. and the code as on the iCoA Register; Rule date is {coq} for a legacy row "
+            "and Tranche 2 in this build (Tranche 2 since v30, its potency certificates of 25/26.08.2026 taken in on 15.09.2026). TRANCHE 3 (owner, 15.09.2026, evening): "
+            "every Tranche 3 retest parameter is tested at Farmahem and its certificates all issue on one date, so the Tranche 3 reissues take their codes now — "
+            "after the last Tranche 2 reissue, in the order the series gives them — with Issuable reading 'allocated' and the planned date the owner's: {t3}, all "
+            "Tranche 3 certificates on one day, the 227-М mycotoxin certificates expected by 18.09.2026, provisional until they exist; the one code computed "
+            "in advance, by the owner's ruling. After the numbered and the allocated "
+            "rows, the batches the tranches do not cover — under production, under testing, or on no tranche list — are listed lot by lot; such a batch carries "
+            "its release certificate and no retest row, because only the tranche batches are for sale and only they were retested at the QP's request "
+            "(owner, 15.09.2026). FORMULAS: No. counts the rows whose Issuable is 'yes' or 'allocated'; No. and the code as on the iCoA Register; Rule date is {coq} for a legacy row "
             "whose latest eCoA is on or before it, else the first working day 7 days after the latest eCoA (not before {coq}); the planned date is the "
             "latest of the rule date, the iCoA's date and the lot's last day of packaging; iCoA (register) and its date are looked up on the iCoA Register by Key. "
             "SUPERSEDES (initial CoQ): a reissue names the initial certificate of the same lot by the register's own code, looked up by Key, so it follows a "
@@ -2320,7 +2365,7 @@ COQ_NOTE = ("Head of QC, 05.09.2026: preliminary CoQ issuance register — codes
 # issue on another — as the CoQ Register did, saying 27.05.2026 over rows dated
 # 06.06.2026. The note now says whatever the series issues on.
 REG_NOTE = REG_NOTE.format(icoa=_F_(LEGACY_ICOA))
-COQ_NOTE = COQ_NOTE.format(coq=_F_(LEGACY_COQ))
+COQ_NOTE = COQ_NOTE.format(coq=_F_(LEGACY_COQ), t3=(_F_(_D_(T3_ISSUE)) if T3_ISSUE else "not yet set"))
 
 
 def _roll(expr):
@@ -2427,7 +2472,7 @@ def _fill_coq_register(sh):
     sh.row_dimensions[1].height = 22
     _r = 2
     for r in COQ_REGISTER:
-        f_no = f'=IF(C{_r}="yes",COUNT(A$1:A{_r - 1})+1,"")'
+        f_no = f'=IF(OR(C{_r}="yes",C{_r}="allocated"),COUNT(A$1:A{_r - 1})+1,"")'
         f_code = f'=IF(A{_r}<>"","CoQ-PP_26-"&TEXT(A{_r},"000"),"— at issue —")'
         # Owner, 10.09.2026: five to ten days after the last external certificate
         # the sheet cites, floored to the blanket day. LAG_DAYS is 7 in
@@ -2438,7 +2483,9 @@ def _fill_coq_register(sh):
         # not decoration: P060482's last external certificate is dated 30.06.2026
         # and the lot was still being packed on 05.08.2026.
         _pkc = f"INDEX('iCoA Register'!$F:$F,MATCH(S{_r},'iCoA Register'!${REG_KEY_COL}:${REG_KEY_COL},0))"
-        f_issue = (f'=IF(A{_r}="","",MAX(E{_r},IF(ISNUMBER(I{_r}),I{_r},0),'
+        # an allocated row (Tranche 3, 15.09.2026) carries its code and no date: the date
+        # is 7 days after the mycotoxin certificate, which does not exist yet
+        f_issue = (f'=IF(OR(A{_r}="",C{_r}="allocated"),"",MAX(E{_r},IF(ISNUMBER(I{_r}),I{_r},0),'
                    f'IFERROR(IF(ISNUMBER({_pkc}),{_pkc},0),0)))')
         latest_d = _date(r["latest"][1]) if r["latest"] else None
         status = r["reg_status"]
@@ -2446,8 +2493,12 @@ def _fill_coq_register(sh):
         _g = r.get("grading") or {}
         _sup = ("n/a — initial certificate" if r["series"] == "initial release"
                 else COQ_LOOKUP("B", r["key"].rpartition("|")[0] + "|I", "— initial certificate not on the register —"))
-        cells = (f_no, f_code, r["issuable"], f_issue,
-                 f_rule if r["series"] == "initial release" else f_rule_rt,
+        # an allocated row carries the owner's planned date as a value, not the formula
+        _issue_cell = ((_date(T3_ISSUE) if T3_ISSUE else "") if r["issuable"] == "allocated" else f_issue)
+        cells = (f_no, f_code, r["issuable"], _issue_cell,
+                 f_rule if r["series"] == "initial release" else
+                 ("— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —"
+                  if r["issuable"] == "allocated" else f_rule_rt),
                  latest_d or ("—" if r["series"] == "initial release" else "— no retest certificate on file —"), (r["latest"][0] if r["latest"] else "—"),
                  REG_LOOKUP("B", r["key"], "—"), REG_LOOKUP("D", r["key"], ""),
                  r["group"], r["series"], r["cu"], r["p"], r["strain"], r["c"], r["cnp"],
@@ -2458,6 +2509,7 @@ def _fill_coq_register(sh):
         for _i, v in enumerate(cells, 1):
             c = put(sh, _r, _i, v, F7B if _i in (2, 12) else F7,
                     FILL["green"] if (_i == 20 and str(v).startswith("registered")) or (_i == 3 and v == "yes") else
+                    FILL["orange"] if (_i == 20 and str(v).startswith("allocated")) or (_i == 3 and v == "allocated") else
                     FILL["amber"] if (_i == 20 and str(v).startswith("not yet")) or (_i == 3 and v == "no")
                     or (_i in (15, 16) and str(v).startswith("—")) or (_i == 29 and v) or (_i == 28 and "replaces" in str(v)) else None,
                     CEN if _i not in (20, 28, 29) else Alignment(horizontal="left", vertical="center", wrap_text=True))
@@ -3214,6 +3266,7 @@ def write_read_me(wb):
     line("v24", "The internal-CoA number and the internal-CoA register unified on one definition: icoa_register.py is the standing series (a certificate a person can look up by code), and both the number and the row set on the iCoA Register sheet are taken from it rather than computed from a row's position — 95 of 95 series codes now on the sheet, up from 60.")
     line("v25", "The Read Me sheet's own version history and rulings-in-force brought forward from v11 / 05.09.2026 to this build — nine versions and six days of rulings that were built and verified but never written down here. Two findings promoted from doc prose that had never reached the standing register: OI-30 (the Loss on Drying method line is uniform across every lot and the desk holds no per-certificate method text to check it against) and OI-31 (six batches silently filed under one strain name, 'Gorilla Glue', where the delivery sheet keeps 'GG4' apart — never ruled, never tracked).")
     line("v26", "Seven tabs, not sixteen (owner, 14.09.2026). The iCoA Issuance sheet is gone — one row per batch and round, which is what the iCoA Register is, so its eleven columns are register columns and nothing looked it up by formula. Ten sheets are sections of one Reference sheet, each section's row range recorded as a defined name so a reader never guesses where it ends. verify_prose.py — what the sheets say about themselves — had never run against a shipping workbook (its default was v11, and it was not in CI); against v25 it found eleven false sentences, three the workbook's (a note and the register Status strings naming 27.05.2026 and 15.05.2026 for a legacy series that issues on 06.06 and 03.06; an uncredited in-house reference printed without its 'on file, not credited'), eight the checker's own. All fixed and the check is in CI. OI-32: thirty Tranche 3 Farmahem 227-K/26 potency retests found on file and none in the record — twenty-five prepared and not written, five held on batch identity.")
+    line("v31", "Tranche 3 codes allocated (owner, 15.09.2026, evening: every Tranche 3 retest parameter is tested at Farmahem and its certificates all issue on one date — \"so practically you can even now allocate the certificates of quality document codes for tranche three batches\"; the analyses complete within ten days, likely by Friday 18.09.2026, and all Tranche 3 certificates issue on one day, \"let's say Monday next week\"): the 28 Tranche 3 reissues whose release certificate is numbered take CoQ-PP_26-134 … 161 after the last Tranche 2 reissue, in the order the series gives them, with Issuable reading 'allocated' and the planned date the owner's — 21.09.2026, provisional until the 227-М mycotoxin certificates exist — the one code computed in advance, by the owner's ruling; the compiled certificates print the allocated code and are not drafted until the mycotoxin results exist. The two Tranche 3 lots whose release certificate the register withholds (GG012601＊, JD012601＊: no internal certificate, OI-28) wait with it. One Tranche 3 lot had no reissue row at all — BSS1024_01/1 (P050122), spelled BSS1024_01 on the 31.08 list — because the schedule's placeholder carried no P lot; a placeholder now takes its register block's packaged lot. And the retest programme is the QP's, not universal (owner, 15.09.2026): only the batches of Tranches 1, 2 and 3 are for sale, so only they were retested and get a reissue; the six batches outside every tranche with a predicted reissue on v30 (JD022601/P060482, FB032601/P060452, GG032601/P060462, P160012, P160022, P160032) carry their release certificate and no retest row, and after the numbered and the allocated rows the CoQ Register lists the batches the tranches do not cover — under production, under testing, or on no tranche list — lot by lot, none of which can take a code before its external results and packaging exist. The registers' rows, the tracker and every laboratory result are otherwise v30's.")
     line("v30", "The Tranche 2 potency certificates taken in (intake_220K_2026-09-15): the 32 Farmahem 220-1-К/26 … 220-32-К/26 cannabinoid reports — received 17.08.2026, analysed 24/25.08, issued 25/26.08.2026 — were in the owner's eCoA database from 09.09.2026 and had never been read into the desk, which is why every Tranche 2 reissue stood 'retest assay pending' on v29 (owner, 15.09.2026: \"here are all retest results that I have on file and correct yourself\"). Read from the rendered pages and gated against an independent second transcription of the same pages (32 of 32 agree on batch, dates, sample number, every result and its uncertainty), then written into the release register (apply_220K.py) and the tracker instances (instances_220K.py); the receipt date 17.08.2026 joins the references table. With the mycotoxins of 11.09.2026 and the campaign's internal certificates of 17.08.2026, all three parts of every Tranche 2 reissue now exist, so the CoQ Register numbers the Tranche 2 reissues after Tranche 1, each planned for the first working day 7 days after the last certificate it cites, and the reissue drafts are compiled for them. Tranche 3 still waits for its mycotoxin certificates (227-М/26), which are on no list the desk holds. The registers' rows, the tracker and every other laboratory result are otherwise v29's.")
     line("v29 · 15.09.2026, later the same day", "Sequential grade numerals (owner, 15.09.2026: \"I choose sequential naming of specification grades\"): the grades of the potency specification of 15.09.2026 are numbered as its table lists them, frozen in potency_grades_2026-09-15.csv (column numeral); a grade defined later takes the strain's next numeral whatever its nominal, and a result in no window of its strain reads 'new specification required' with the next numeral reserved — every code in this build is unchanged by the rule, which only fixes what happens next. The two registers were audited for order and completeness (see Reference: 'Register audit, 15.09.2026'). And the compiled certificate: the document code it prints is the one the CoQ Register states, like its date of issue since 10.09.2026, and a reissue prints under that date, in small bracketed type, '(supersedes <code> of <date>)' naming the initial certificate it replaces — the 21 numbered Tranche 1 reissues are compiled as drafts beside the 22 initial drafts (drafts/…_reissue.html, Tranche_1_CoQ_Reissue_Drafts.pdf). The registers' rows, the tracker and every laboratory result are otherwise unchanged.")
     line("v29", "The CoQ References table inside the workbook (owner, 15.09.2026: \"inside the v28 workbook\"): a tab of one row per certificate of quality and one column per determination — the cited document, its date and laboratory, the sampling day and the laboratory's receipt date — with every n/t cell red, and its Not Tested Review as a section of Reference. The CoQ code on the tab is the one the CoQ Register tab prints, keyed to its rows. And the Potency Grades tab (owner, 15.09.2026): the potency grades per strain — nominal, tolerance, specification window — as the Head of QC's potency specification of 15.09.2026 prints them, one row per strain and grade, with the measured results each page rests on. On the CoQ Register, two things the owner asked for the same day: a reissue names the initial certificate it supersedes by the register's own code (looked up by Key), and every certificate states the potency grade its Total THC result falls in — nominal ± tolerance, window, grade numeral — with the product code and the specification document code generated from it (potency_grading.py: every specification document code is v.01 — the initially issued ones were wrong and this is not the official issuing, the set goes for review — and the status records what the issued v.01 of the same strain and numeral printed). Every certificate's Total THC criterion, grade, product code and specification code now come from that specification alone (owner, 15.09.2026: the grades, nominals, tolerances and ranges in the issued specifications and on the certificates are old and potentially wrong); the issued v.01 document is recorded beside the generated code, not used. The registers' rows, the tracker and every laboratory result are otherwise v28's.")

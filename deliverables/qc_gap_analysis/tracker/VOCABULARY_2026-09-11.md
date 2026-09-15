@@ -909,3 +909,65 @@ reissue set (GG1024, LoD 76.07 — the open item it was).
     python3 deliverables/qc_gap_analysis/live_instrument/reissue_scope.py
     python3 deliverables/qc_gap_analysis/live_instrument/build_coq_drafts.py --series reissue \
         --scope tracker/coq_reissue_scope_2026-09-15.csv
+
+# v31 — the Tranche 3 codes allocated, the retest programme the QP's, 15.09.2026 (evening)
+
+Three rulings from the owner the same evening, after v30 was delivered.
+
+**"You can even now allocate the certificate of quality document codes for Tranche 3."**
+The Tranche 3 reissues stood without a code because no 227-М mycotoxin certificate exists
+yet; but every Tranche 3 retest parameter is tested at Farmahem and its certificates all
+issue on one date, so the codes can be given now. Then: the analyses complete within ten
+days, likely by Friday 18.09.2026, and all Tranche 3 certificates issue on one day, "let's
+say Monday next week" — and the series must stay chronological. In the register
+(`build_tracker_v8.py`): a Tranche 3 reissue whose release certificate is numbered takes the
+next code after the last Tranche 2 reissue, in the same order rows of one day are given
+(cultivation batch, then P lot); `Issuable` reads **`allocated`** — never `yes` — `No.` counts
+it, and the planned date is the owner's, **21.09.2026** (`--t3-issue=21.09.2026`), provisional
+until the 227-М certificates exist, which the rule-date cell and the Status say. **28
+allocated, CoQ-PP_26-134 … 161**, every one dated after the last Tranche 2 date (18.09.2026),
+so the chronology the numbering promises holds. The compiled certificate prints the allocated
+code (the register's, as since 15.09.2026), and `reissue_scope.py` refuses to draft a reissue
+whose register row is `allocated` rather than `yes`: the export carries `reg_issuable`
+beside `regcode`, so a code is never mistaken for an issue. The first attempt tested the
+date instead of that field and compiled 28 Tranche 3 drafts with no mycotoxin result on
+them; the field is the definition now.
+
+The two Tranche 3 lots whose release certificate the register withholds (GG012601＊,
+JD012601＊ — no internal certificate, OI-28) keep their reissue unallocated with it: a reissue
+is never numbered before the certificate it supersedes.
+
+**One Tranche 3 lot had no reissue row at all.** `227-29-К/26` is BSS1024_01/1 (P050122); the
+31.08 iCoA list spells the batch BSS1024_01 and the schedule's placeholder for it carried no
+P lot, so the tracker — which finds a lot by its P number where the cultivation batch is
+spelled with a sub-lot on one side and without on the other — never found the reissue. A
+placeholder now takes its register block's packaged lot (`_block_lot`), which also makes the
+export say P050212 for CJ062501/2 rather than the bare cultivation batch: its Tranche 1
+reissue draft is `DRAFT_CoQ_P050212_reissue.html` now, the lot the register keys it by.
+
+**"For all the production batches that are not listed into Tranche 1, 2 or 3, those are not
+subject to a retest as of yet."** Only the tranche batches are for sale, so only they were
+retested at the QP's request; the rest get their release certificate — the final quality
+control testing before packaging — and nothing more. The schedule had treated the retest
+programme as universal (every batch a predicted reissue a year after release). It now gives a
+reissue only to a lot whose register block holds a campaign re-analysis certificate (197-,
+220-, 227- series, `is_reanalysis`), which is the mark of a batch the QP had sampled. Six
+batches lose the predicted retest row they carried on v30 — JD022601 (P060482), FB032601
+(P060452), GG032601 (P060462), P160012, P160022, P160032 — on both registers; the iCoA Register
+keeps its 184 numbered rows and the CoQ Register is 82 initial + 21 Tranche 1 + 30 Tranche 2 +
+28 allocated Tranche 3, then the batches the tranches do not cover, lot by lot, none of which
+can take a code before its external results and its packaging exist.
+
+## Reproducing
+
+    python3 deliverables/qc_gap_analysis/build_coq_schedule.py
+    python3 deliverables/qc_gap_analysis/export_coq_artifact_data.py
+    python3 deliverables/qc_gap_analysis/tracker/build_tracker_v8.py \
+        --v9 --version=31 --icoa --cells \
+        --mikro=CoQ_Analysis_Master_v13.xlsx \
+        --build-date=15.09.2026 --legacy-icoa=03.06.2026 --legacy-coq=06.06.2026 \
+        --t3-issue=21.09.2026
+    python3 deliverables/qc_gap_analysis/tracker/extract_coq_register.py tracker/CoQ_Analysis_Master_v31.xlsx coq_register_2026-09-10.csv
+    python3 deliverables/qc_gap_analysis/export_coq_artifact_data.py
+    python3 deliverables/qc_gap_analysis/live_instrument/reissue_scope.py
+    python3 deliverables/qc_gap_analysis/tracker/verify_workbook.py CoQ_Analysis_Master_v31.xlsx

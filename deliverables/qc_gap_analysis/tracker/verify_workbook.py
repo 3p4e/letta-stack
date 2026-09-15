@@ -300,8 +300,24 @@ for name, rows, code_col, prefix in (("iCoA Register", regv, "iCoA code", "iCoA-
     for r, d in rows.items():
         if d["Issuable"] == "yes" and not d["No."]:
             bad(name, "issuable row without a number", f"row {r} {d.get('Key')}")
-        if d["Issuable"] != "yes" and d["No."]:
+        if d["Issuable"] not in ("yes", "allocated") and d["No."]:
             bad(name, "number on a row that is not issuable", f"row {r} {d.get('Key')}")
+        # an allocated row (CoQ Register, Tranche 3, owner 15.09.2026) carries its code
+        # and no date — the date follows the mycotoxin certificate
+        if d["Issuable"] == "allocated":
+            if not d["No."]:
+                bad(name, "allocated row without a number", f"row {r} {d.get('Key')}")
+            if not str(d.get("Series", "")).startswith("retest — Tranche 3"):
+                bad(name, "allocated row is not a Tranche 3 reissue", f"row {r} {d.get('Key')}: {d.get('Series')}")
+    # the allocated rows share ONE planned date — the owner's, for the whole tranche,
+    # 15.09.2026 — or none, and it is not before any date the register has issued on
+    _alloc_days = {fmt(d["Issue date (planned)"]) for d in rows.values() if d["Issuable"] == "allocated"}
+    _yes_days = [fmt(d["Issue date (planned)"]) for d in rows.values() if d["Issuable"] == "yes" and fmt(d["Issue date (planned)"])]
+    if len(_alloc_days) > 1:
+        bad(name, "the allocated rows do not share one planned date", str(sorted(_alloc_days)))
+    for _ad in _alloc_days:
+        if _ad and _yes_days and (_ad[6:] + _ad[3:5] + _ad[:2]) < max(x[6:] + x[3:5] + x[:2] for x in _yes_days):
+            bad(name, "an allocated row is planned before an issued row", f"{_ad} before {max(_yes_days, key=lambda x: x[6:] + x[3:5] + x[:2])}")
 # every CoQ cites an iCoA that exists, and is not dated before it
 icoa_by_key = {str(d["Key"]): d for d in regv.values()}
 for r, d in cqv.items():

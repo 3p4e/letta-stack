@@ -309,9 +309,18 @@ def main(out):
             if not _row:
                 continue
             _c["regcode"] = _row["coq_code"]
+            # "yes" where the register issues the certificate, "allocated" where it has
+            # reserved the code and set a provisional date (Tranche 3, 15.09.2026)
+            _c["reg_issuable"] = (_row.get("issuable") or "").strip()
             _d = (_row["issue_date"] or "").strip()
             if _d and _d != "\u2014":
                 _c["issue"] = _d
+                # the register's date is the certificate's (owner, 10.09.2026); the
+                # schedule below still supplies the round's internal certificate and
+                # testing date but never overrides a date the register states —
+                # Tranche 3 is planned by the owner on 21.09.2026 where the 7-day rule
+                # would say 18.09 (15.09.2026)
+                _c["reg_dated"] = True
                 _hit += 1
         print("CoQ register: %d of %d CoQs take their issue date from the workbook"
               % (_hit, len(coqs)))
@@ -470,7 +479,8 @@ def main(out):
             _issue = ISS.coq_issue(_last, _ic, _pkto)
             if not _issue:
                 continue
-            _c["issue"] = _issue
+            if not _c.get("reg_dated"):
+                _c["issue"] = _issue
             _c["icoa_issue"] = _ic or ""
             _c["icoa_tested"] = _t
             _c["last_external"] = _last

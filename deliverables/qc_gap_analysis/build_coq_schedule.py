@@ -691,10 +691,23 @@ def schedule():
     covered = {BI.batch_key(PLAN_CB_ALIASES.get(x["cb"], x["cb"])) for x in plan}
     covered |= set(pp_alias)
     stubs = []
+    # A stub's packaged lot is the one its register block names (the Head of QC's
+    # list), so the tracker finds the lot by its P number where the cultivation
+    # batch is spelled with a sub-lot on one side and without on the other —
+    # BSS1024_01 on the 31.08 list, BSS1024_01/1 (P050122) on the batch list —
+    # which is how one Tranche 3 lot had no reissue row until 15.09.2026.
+    _pp_taken = {BI.batch_key(x["pp"]) for x in plan if x["pp"]}
+    def _block_lot(name):
+        b = reg_by_key.get(BI.batch_key(name))
+        pn = batches[b]["pnumber"] if b else ""
+        if not pn or BI.batch_key(pn) in _pp_taken or BI.batch_key(pn) == BI.batch_key(name):
+            return ""
+        _pp_taken.add(BI.batch_key(pn))
+        return pn
     for key, r in icoa.items():
         if key in covered:
             continue
-        stub = {"pp": "", "cb": r["batch"], "nm": r["strain"], "grade": "",
+        stub = {"pp": _block_lot(r["batch"]), "cb": r["batch"], "nm": r["strain"], "grade": "",
                 "cls": "", "nom": "", "tol": "", "lo": "", "hi": "", "thc": "",
                 "md": "", "pk": "", "id": NO_NUMBER, "ic": NO_NUMBER,
                 "issue": r["release_date"], "retest": ""}
@@ -745,15 +758,29 @@ def schedule():
     for i, x in enumerate([x for x in plan if x.get("retest")]):
         coqs.append({"date": x["retest"], "type": "additional testing (12-month)",
                      "plan": x, "number": f"CoQ-PP-2026-{27 + i:04d}", "issued": True})
+    def campaign_on_file(name, pp=""):
+        """A campaign re-analysis certificate in the lot's register block (or the block
+        keyed by its packaged lot) — the mark of a batch the QP had retested."""
+        for nm in (PLAN_CB_ALIASES.get(name, name), pp):
+            b = reg_by_key.get(BI.batch_key(nm)) if nm else None
+            if b and any(is_reanalysis(c["code"]) for lst in batches[b]["cells"].values() for c in lst):
+                return True
+        return False
     for x in plan:
-        if not x.get("retest"):
+        if not x.get("retest") and campaign_on_file(x["cb"], x["pp"]):
             coqs.append({"date": plus_year(x["issue"]),
                          "type": "additional testing (12-month) — predicted",
                          "plan": x, "number": NO_NUMBER, "issued": False})
 
-    # The retest programme is universal: every batch past Tranche 02 gets a
-    # predicted reissue a year after release, in record order.
+    # The retest programme is the QP's, not universal (owner, 15.09.2026): only the
+    # batches of Tranches 1, 2 and 3 are for sale, so only they were sampled for
+    # re-analysis and get a reissued certificate of quality. Every other batch —
+    # under production, under testing, or on no tranche list — gets its release
+    # certificate and nothing more. A lot is in a tranche when a campaign
+    # re-analysis certificate (197-, 220-, 227- series) is on file in its block.
     for stub in stubs:
+        if not campaign_on_file(stub["cb"]):
+            continue
         coqs.append({"date": plus_year(stub["issue"]),
                      "type": "additional testing (12-month) — predicted",
                      "plan": stub, "number": NO_NUMBER, "issued": False})

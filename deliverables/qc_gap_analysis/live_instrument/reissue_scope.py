@@ -13,6 +13,7 @@ scope is the whole series and not only the part that compiles.
 """
 import csv
 import json
+import re
 import os
 import sys
 
@@ -31,9 +32,17 @@ def rows(src):
             continue
         code = c.get("regcode") or ""
         numbered = code.startswith("CoQ-PP_26-")
+        # a code the register has allocated in advance (Tranche 3, owner 15.09.2026)
+        # is not an issued one: Issuable reads "allocated", the date is the owner's
+        # provisional one, and the certificate is compiled once the register says yes
+        issuable = c.get("reg_issuable") == "yes"
         camp = c.get("icoa_campaign")
         sup = c.get("supersedes") or {}
-        if numbered:
+        if numbered and not issuable:
+            numbered = False
+            reason = ("Tranche %s: code %s allocated on the CoQ Register (owner, 15.09.2026), planned %s provisionally — "
+                      "compiled once the 227-М mycotoxin certificates exist" % (TRANCHE.get(camp, camp), code, c.get("issue") or "undated"))
+        elif numbered:
             reason = ""
         elif not camp:
             reason = "no retest campaign sampling on file for this lot (iCoA Register: not numbered)"
