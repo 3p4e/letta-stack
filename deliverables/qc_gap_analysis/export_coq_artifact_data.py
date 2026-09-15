@@ -197,6 +197,43 @@ FLAG_DOSSIER = {
 }
 
 
+def register_view():
+    """The release-register view: every certificate row of every batch block,
+    with the column criteria, so the page can show the register the way the
+    published register artifact does — and judge values with the same
+    acceptance-limit rule. Built once, early, because issuance_schedule.py and
+    icoa_register.py read the register OFF THE EXPORTED FILE: until 15.09.2026
+    they read the previous export, so a certificate taken in on one build only
+    dated and numbered anything on the build after it."""
+    from openpyxl import load_workbook
+    from openpyxl.utils import get_column_letter
+    wb = load_workbook(CQ.REG_X)
+    ws = wb[CQ.SHEET]
+    columns = {}
+    for cidx in range(5, 23):
+        L = get_column_letter(cidx)
+        columns[L] = {"name": str(ws.cell(row=4, column=cidx).value or ""),
+                      "crit": str(ws.cell(row=5, column=cidx).value or "")}
+    order, batches, _limits = CQ.read_register()
+    reg = []
+    for cb in order:
+        b = batches[cb]
+        by_code = OrderedDict()
+        for L, lst in b["cells"].items():
+            for c in lst:
+                r = by_code.setdefault(c["code"], {
+                    "code": c["code"], "date": c["date"], "lab": c["lab"],
+                    "fam": c["family"], "stab": c["stability"], "vals": {},
+                    "flags": {}})
+                r["vals"][L] = c["value"]
+                if c["flag"]:
+                    r["flags"][L] = c["flag"]
+        reg.append({"cb": cb, "pn": b["pnumber"], "strain": b["strain"],
+                    "certs": list(by_code.values())})
+
+    return columns, reg
+
+
 def main(out):
     rows, per_coq, dets = CQ.schedule()
     plan = CQ.icoa_plan(per_coq)
@@ -221,8 +258,10 @@ def main(out):
                 "rows": [],
             }
             coqs.append(by_n[k])
+        _det_method = next((d["method"] for d in dets if d["no"] == r["№"]), "")
         by_n[k]["rows"].append({
             "no": r["№"], "crit": r["Acceptance criterion"],
+            **({"mth": r["Method / reference"]} if r["Method / reference"] != _det_method else {}),
             "res": r["Result"], "doc": r["Source document"],
             "dd": r["Document date"], "lab": r["Issuing institution"],
             "fam": r["Report series"], "st": r["Status"],
@@ -255,9 +294,16 @@ def main(out):
                     _byk.setdefault((CQ.BI.batch_key(_name), _sfx), _rr)
         _hit = 0
         for _c in coqs:
-            _sfx = "R" if _c["t"].startswith("additional") else "I"
-            _row = (_byk.get((CQ.BI.batch_key(_c["pp"]), _sfx)) if _c["pp"] else None) \
-                or _byk.get((CQ.BI.batch_key(_c["cb"]), _sfx))
+            # a reissue's register row is the CAMPAIGN round's: |R for most lots,
+            # |R4 or |R5 for a lot with earlier in-house re-tests (15.09.2026)
+            _sfxs = ("R", "R2", "R3", "R4", "R5") if _c["t"].startswith("additional") else ("I",)
+            _row = None
+            for _sfx in _sfxs:
+                _cand = (_byk.get((CQ.BI.batch_key(_c["pp"]), _sfx)) if _c["pp"] else None) \
+                    or _byk.get((CQ.BI.batch_key(_c["cb"]), _sfx))
+                if _cand and (not _row or (_cand.get("coq_code", "").startswith("CoQ-PP_26-")
+                                           and not _row.get("coq_code", "").startswith("CoQ-PP_26-"))):
+                    _row = _cand
             if not _row:
                 continue
             _c["regcode"] = _row["coq_code"]
@@ -301,6 +347,18 @@ def main(out):
               "not on file%s" % (_sh, len(coqs), len(_sm),
                                  (" — " + ", ".join(sorted(_sm))) if _sm else ""))
 
+    # The register view, and a preliminary export of it with the certificates
+    # as they stand, so that the schedule and the internal-CoA register below
+    # read THIS build's register and not the previous build's file.
+    columns, reg = register_view()
+    with open(out, "w", encoding="utf-8") as fh:
+        json.dump({"generated": "31.08.2026", "sop_effective": CQ.SOP_EFFECTIVE,
+                   "reg_columns": columns, "reg": reg,
+                   "dets": [{"no": d["no"], "col": d["column"]} for d in dets],
+                   "coqs": coqs, "icoa_plan": plan, "ecoa": [],
+                   "corpus_contradictions": [], "preliminary": True},
+                  fh, ensure_ascii=False, separators=(",", ":"))
+
     # Owner's rulings of 10.09.2026 on when a document is issued —
     # issuance_schedule.py, which reads them off the undivided register through
     # testing_series.py. This supersedes the CoQ Register's planned dates: the
@@ -309,7 +367,7 @@ def main(out):
     # predates it and nothing is dated before the evidence it cites.
     try:
         import issuance_schedule as ISS
-        _rows = ISS.build()
+        _rows = ISS.build(out)
         _packto = {}
         _bd = os.path.join(HERE, "batch_dates_2026-09-10.csv")
         if os.path.exists(_bd):
@@ -323,10 +381,17 @@ def main(out):
                         _n = (_n or "").strip()
                         if _n:
                             _packto.setdefault(CQ.BI.batch_key(_n), _to)
+        # (tested, internal-CoA issue day) per batch and round, under the batch's
+        # name and its P lot — seven Tranche 1 lots hold their re-analysis under a
+        # register block named by the P number alone. "additional" is the campaign
+        # round where the batch has one (sampling_dates.py), else its first retest.
         _tested = {}
         for _r in _rows:
             _kind = "initial release" if _r["kind"] == "initial release" else "additional"
-            _tested.setdefault((CQ.BI.batch_key(_r["batch"]), _kind), _r["tested"])
+            for _nm in filter(None, (_r["batch"], _r.get("p_lot"))):
+                _k = (CQ.BI.batch_key(_nm), _kind)
+                if _k not in _tested or (_r.get("campaign") and not _tested[_k][2]):
+                    _tested[_k] = (_r["tested"], _r["icoa_issue"], _r.get("campaign", ""))
         _n = 0
         for _c in coqs:
             _kind = "additional" if _c["t"].startswith("additional") else "initial release"
@@ -335,13 +400,18 @@ def main(out):
             # a release certificate stopped citing the post-release re-analysis:
             # nine certificates were waiting on a 10.08.2026 document they no
             # longer print. A certificate is issued after its own evidence and
-            # after nothing else.
+            # after nothing else. A row a reissue carries from the initial
+            # certificate (owner, 15.09.2026) is the initial certificate's
+            # evidence, so it neither dates the reissue nor lifts its floor.
             _dates = [(_r.get("dd") or "").strip() for _r in _c["rows"]
-                      if (_r.get("doc") or "").strip() not in ("", "\u2014")]
+                      if (_r.get("doc") or "").strip() not in ("", "\u2014")
+                      and not str(_r.get("st") or "").startswith(CQ.ST_CARRIED)]
             _dates = [_d for _d in _dates if ISS.parse(_d)]
             if not _dates:
                 continue
             _last = max(_dates, key=lambda _d: ISS.parse(_d))
+            _sched = (_tested.get((CQ.BI.batch_key(_c["pp"]), _kind)) if _c.get("pp") else None) \
+                or _tested.get((CQ.BI.batch_key(_c["cb"]), _kind)) or ("", "", "")
             # For the release round the internal CoA is tested on the batch's own
             # packaging date, and the certificate carries it — that is the
             # authority, not the schedule's per-batch lookup, which keys on the
@@ -349,10 +419,13 @@ def main(out):
             # missed on three lots and dated their certificates in August on the
             # strength of an August testing date they do not have.
             if _kind == "initial release":
-                _t = _c.get("pk") or _tested.get((CQ.BI.batch_key(_c["cb"]), _kind)) or _last
+                _t = _c.get("pk") or _sched[0] or _last
+                _ic = ISS.icoa_issue(_t)
             else:
-                _t = _tested.get((CQ.BI.batch_key(_c["cb"]), _kind)) or _last
-            _ic = ISS.icoa_issue(_t)
+                _t = _sched[0] or _last
+                # a campaign retest issues its internal certificate on the
+                # campaign's day, not on the sampling day
+                _ic = (_sched[1] if _sched[2] else None) or ISS.icoa_issue(_t)
             # never before the batch finished being packed: JD022601's last
             # external certificate is dated 30.06.2026 and the lot was still being
             # packed on 05.08.2026
@@ -384,25 +457,50 @@ def main(out):
     try:
         import icoa_register as ICO
         import cell_resolution as _CR
-        _icoa = ICO.by_batch_round()
+        _icoa = ICO.by_batch_round(out)
         _pass = {}
         for _r in _CR.load():
             _no = _CR.det_no(_r.get("Determination", ""))
             _v = _CR.pieces(_r.get("What the document prints", ""))
             if _no and len(_v) == 1:
                 _pass[(CQ.BI.batch_key(_r["Batch"]), _no)] = _v[0]
-        _cited, _filled = 0, 0
+        _cited, _filled, _carried = 0, 0, 0
+
+        def _icoa_row(_c, _kind):
+            for _nm in filter(None, (_c.get("pp"), _c["cb"])):
+                _r = _icoa.get((CQ.BI.batch_key(_nm), _kind))
+                if _r:
+                    return _r
+            return None
+
         for _c in coqs:
             _kind = "additional" if _c["t"].startswith("additional") else "initial release"
-            _row = _icoa.get((CQ.BI.batch_key(_c["cb"]), _kind))
+            _row = _icoa_row(_c, _kind)
+            # A reissue carries the initial certificate's rows for what it did not
+            # retest (owner, 15.09.2026). Where such a row rests on an in-house
+            # record, the document the reissue cites is the RELEASE round's
+            # internal certificate — the one that carried that record — never the
+            # record itself: an in-house result is never referenced on a CoQ.
+            _rel = _icoa_row(_c, "initial release") if _kind == "additional" else None
+            _rel_covers = set(_rel["parameters"].split()) if _rel else set()
+            for _rr in _c["rows"]:
+                if _rel and str(_rr.get("st") or "").startswith(CQ.ST_CARRIED) \
+                        and _rr["no"] in _rel_covers:
+                    _doc = (_rr.get("doc") or "").strip()
+                    _lab = (_rr.get("lab") or "").strip()
+                    if not (_doc and _doc != "\u2014" and not ICO.is_in_house(_lab)):
+                        _rr["doc"], _rr["dd"] = _rel["code"], _rel["issued"]
+                        _rr["lab"] = "Purely Plant GmbH (in-house)"
+                        _carried += 1
             if not _row:
                 continue
             _c["icoa_code"] = _row["code"]
             _c["icoa_issue"] = _row["issued"]
             _c["icoa_tested"] = _row["tested_from"]
+            _c["icoa_campaign"] = _row.get("campaign", "")
             _covers = set(_row["parameters"].split())
             for _rr in _c["rows"]:
-                if _rr["no"] not in _covers:
+                if _rr["no"] not in _covers or str(_rr.get("st") or "").startswith(CQ.ST_CARRIED):
                     continue
                 _doc = (_rr.get("doc") or "").strip()
                 _lab = (_rr.get("lab") or "").strip()
@@ -417,8 +515,9 @@ def main(out):
                     if _val:
                         _rr["res"] = _val
                         _filled += 1
-        print("Internal CoA: %d determination(s) now cite one, %d result(s) unblocked"
-              % (_cited, _filled))
+        print("Internal CoA: %d determination(s) now cite one, %d result(s) unblocked, "
+              "%d carried row(s) re-cited to the release round's certificate"
+              % (_cited, _filled, _carried))
     except Exception as _e:
         print("Internal CoA register not applied: %s" % _e)
 
@@ -509,36 +608,6 @@ def main(out):
         "why": FLAG_DOSSIER.get(r["code"].strip(), ""),
         "pdf": r["pdf"],
     } for r in docs]
-
-    # The release-register view: every certificate row of every batch block,
-    # with the column criteria, so the page can show the register the way the
-    # published register artifact does — and judge values with the same
-    # acceptance-limit rule.
-    from openpyxl import load_workbook
-    from openpyxl.utils import get_column_letter
-    wb = load_workbook(CQ.REG_X)
-    ws = wb[CQ.SHEET]
-    columns = {}
-    for cidx in range(5, 23):
-        L = get_column_letter(cidx)
-        columns[L] = {"name": str(ws.cell(row=4, column=cidx).value or ""),
-                      "crit": str(ws.cell(row=5, column=cidx).value or "")}
-    order, batches, _limits = CQ.read_register()
-    reg = []
-    for cb in order:
-        b = batches[cb]
-        by_code = OrderedDict()
-        for L, lst in b["cells"].items():
-            for c in lst:
-                r = by_code.setdefault(c["code"], {
-                    "code": c["code"], "date": c["date"], "lab": c["lab"],
-                    "fam": c["family"], "stab": c["stability"], "vals": {},
-                    "flags": {}})
-                r["vals"][L] = c["value"]
-                if c["flag"]:
-                    r["flags"][L] = c["flag"]
-        reg.append({"cb": cb, "pn": b["pnumber"], "strain": b["strain"],
-                    "certs": list(by_code.values())})
 
     data = {
         "generated": "31.08.2026",

@@ -604,6 +604,7 @@ def _legacy_day(rows, flagged=()):
     from collections import Counter
     seen = Counter(fmt(d["Issue date (planned)"]) for d in rows.values()
                    if d["No."] and str(d["Group"]) == "legacy"
+                   and str(d["Series"]) == "initial release"
                    and fmt(d["Issue date (planned)"])
                    and not any(w in str(d["Status"]) for w in flagged))
     return seen.most_common(1)[0][0] if seen else None
@@ -614,7 +615,9 @@ for r, d in cqv.items():
     if not d["No."]:
         continue
     grp, a = str(d["Group"]), fmt(d["Issue date (planned)"])
-    if grp == "legacy" and a and _coq_day and a != _coq_day:
+    # the release round only: a legacy lot's reissue is dated by its own retest
+    # certificates and its campaign's internal certificate (15.09.2026)
+    if grp == "legacy" and a and _coq_day and a != _coq_day and str(d["Series"]) == "initial release":
         st = str(d["Status"])
         if "held" not in st and "moved" not in st:
             bad2("CoQ Register", f"a legacy CoQ not on the legacy day {_coq_day} and not flagged",

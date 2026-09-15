@@ -667,3 +667,79 @@ The first of those writes the owner's register, which this environment may not d
 own (refused twice on 14.09.2026), so v27 was built from a copy of the tree with the two
 writes applied, and the repository still carries the v26 workbook, on which the new check
 7b reports the 27 cells above until the register is written and v27 built in place.
+
+# v28 — the retest sampling dated, the retest series issued, 15.09.2026
+
+Four rulings of 15.09.2026, and what each one is in code:
+
+* **The retest campaigns were sampled on dates the owner set.** `sampling_dates.py` is the one
+  definition: Tranche 1 on 21–24.07.2026 (Tuesday to Friday of the week 25.07 falls in,
+  6/5/5/5 by certificate number; Farmahem received the samples 27/29.07), Tranche 2 on
+  12–14.08.2026 (11/11/10; received 17.08), Tranche 3 on 19–21.08.2026 (10/10/10; received
+  24.08). A campaign's internal certificates are all issued three days after its last sampling
+  day: 27.07, 17.08, 24.08.2026. A batch's sampling day follows its certificate's running
+  number, a fact the certificate carries.
+* **A re-analysis certificate is never release testing.** `testing_series.rounds()` places every
+  197-, 220- and 227-series certificate in a campaign round of its own, after the rounds the
+  rest of the record makes; the release round may be empty. `REANALYSIS_SERIES` and
+  `is_reanalysis()` moved there from `build_coq_schedule.py`, which imports them — one
+  definition. Sixteen batches whose register block holds nothing but a campaign certificate
+  now have a retest round, and seven Tranche 1 lots under a P-number-only block have theirs.
+* **Identification A, B and foreign matter are performed on every batch, and every CoQ cites
+  the internal certificate for them.** `icoa_register.py` emits a release row for every batch
+  (an empty release round included) and numbers a round whose packaging date the list does
+  not hold, with the testing date not stated. A campaign round is tested on the sampling day
+  and issued on the campaign's day; the tracker's internal-certificate day is now the same
+  arithmetic (it was "5 working days after packaging complete" there alone).
+* **A reissue prints every parameter.** `build_coq_schedule.py` carries the initial
+  certificate's row — result, document, date, laboratory, and its status — for every
+  determination outside the retest scope (`ST_CARRIED`); the export re-cites the release
+  round's internal certificate where the carried row rests on an in-house record, and a
+  carried row neither dates the reissue nor lifts its 12-month floor.
+
+And the reissue is numbered by the same rule as the release certificate: 7 days after the
+last certificate it cites, never before its internal certificate, in date order with the
+release series, once the retest assay, the mycotoxins and the internal certificate exist.
+Tranche 1's 21 reissues take CoQ-PP_26-083 to -103 on 17.08.2026; Tranche 2 waits for its
+potency certificates and Tranche 3 for its mycotoxin certificates, and the CoQ Register says
+so per lot. A tracker row holding several P lots reads its campaign per lot from the series,
+not from the document pool the lots share, and a reissue needs its assay and mycotoxins
+from ONE campaign.
+
+`cnp_methods.py` reads off every CNP certificate which pharmacopoeial method it reports:
+DAB (Deutsches Arzneibuch 2018) on every certificate from ППК25050 (26.02.2025) to ППК26069
+(11.05.2026), Ph. Eur. 3028 from ППК26110 (30.06.2026). A CoQ row citing a DAB certificate
+for #3–#6 or #8 prints the DAB reference (`mth` in the export), and the Parameters sheet says
+so. `receipt_dates.py` reads the date each external certificate says the laboratory
+admitted the sample — 335 certificates, from the certificate texts and the page reads — and
+`coq_references.py` carries it beside every cited certificate, with the sampling day, and
+paints every `n/t` cell red with a list for the owner's check.
+
+One defect found on the way: the export consulted `issuance_schedule.py` and
+`icoa_register.py` on the PREVIOUS build's `coq_artifact_data.json`, so an intake numbered
+and dated nothing until the build after it. It now writes a preliminary export first and
+reads that.
+
+## Reproducing
+
+    python3 deliverables/qc_gap_analysis/intake_220M_2026-09-14/apply_220M.py
+    python3 deliverables/qc_gap_analysis/intake_220M_2026-09-14/instances_220M.py
+    python3 deliverables/qc_gap_analysis/intake_227K_2026-09-15/apply_227K.py
+    python3 deliverables/qc_gap_analysis/intake_227K_2026-09-15/instances_227K.py
+    python3 deliverables/qc_gap_analysis/cnp_methods.py
+    python3 deliverables/qc_gap_analysis/receipt_dates.py
+    python3 deliverables/qc_gap_analysis/build_coq_schedule.py
+    python3 deliverables/qc_gap_analysis/export_coq_artifact_data.py
+    python3 deliverables/qc_gap_analysis/icoa_register.py --csv
+    python3 deliverables/qc_gap_analysis/issuance_schedule.py --csv
+    python3 deliverables/qc_gap_analysis/open_items.py --md
+    python3 deliverables/qc_gap_analysis/tracker/build_tracker_v8.py \
+        --v9 --version=28 --icoa --cells \
+        --mikro=CoQ_Analysis_Master_v13.xlsx \
+        --build-date=15.09.2026 --legacy-icoa=03.06.2026 --legacy-coq=06.06.2026
+    python3 deliverables/qc_gap_analysis/tracker/extract_coq_register.py \
+        deliverables/qc_gap_analysis/tracker/CoQ_Analysis_Master_v28.xlsx
+    python3 deliverables/qc_gap_analysis/export_coq_artifact_data.py      # the register codes
+    python3 deliverables/qc_gap_analysis/coq_references.py --out deliverables/qc_gap_analysis/intake_227K_2026-09-15/CoQ_references_v28
+    python3 deliverables/qc_gap_analysis/tracker/verify_workbook.py
+    python3 deliverables/qc_gap_analysis/tracker/verify_prose.py

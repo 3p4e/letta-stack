@@ -253,37 +253,32 @@ ITEMS = [
      "Strain column, 6 lots"),
 
     ("OI-32", "Batch identity", "open",
-     "Thirty Tranche 3 potency retests are on file and none is in the record",
-     "Farmahem's 227-K/26 series — thirty cannabinoid certificates for the Tranche 3 sampling, "
-     "dated 10–11.09.2026 — was found in the ProcessedECOAs folder on 12.09.2026, and the "
-     "owner's instruction is that every one of them is a retest. Not one appears in "
-     "coq_artifact_data.json, so no register row, no tracker cell and no certificate of "
-     "quality knows they exist. Twenty-five map cleanly onto a batch the register already "
-     "carries. Five do not: BSS1024_01/1 (P050122) arrives with a sub-lot index the register's "
-     "existing BSS1024_01 release entry lacks, on the same P lot; and WED102501 (P060102), "
-     "SCR012601 (P060342), GRC102501/1 (P060142) and BSS1024_01/2 (P050142) have no earlier "
-     "cannabinoid result on file at all — so the 227-K certificate would be their FIRST "
-     "potency determination, which testing_series.py must place as the initial release round, "
-     "while the owner says it is a retest.",
-     "The twenty-five transcriptions are prepared row for row in the register's own format "
-     "(THC, spec, CBD, CBN, code, date, Farmahem) and NOT written: the register "
-     "PP_Batch_Release_QC_Register_SUBLOT_2026-09-01.xlsx is the owner's file and the desk "
-     "does not write to it without permission. A checkpoint of the same twenty-five went into "
-     "master_coa_table.tsv (commit 7393bc4), which is a fallback source the schedule never "
-     "reads for a batch the register carries, so it changes nothing downstream. The five are "
-     "held: batch_key does not decide whether a starred or sub-lotted name is the same batch "
-     "as its plain namesake — that is a fact about the floor, recorded in "
-     "identity_decisions.tsv when a person rules.",
-     "Two rulings. (1) Is BSS1024_01/1 the same batch as BSS1024_01? If so its 227-K result "
-     "is that batch's retest; if not it is a new sub-lot with no release testing on file. "
-     "(2) For WED102501, SCR012601, GRC102501/1 and BSS1024_01/2: was there an earlier "
-     "cannabinoid test whose certificate is not on file (then the 227-K is a retest and the "
-     "initial certificate goes on the Work Order), or is the 227-K their first — in which "
-     "case it is the release result, whatever the campaign called it? And: may the desk "
-     "write the twenty-five rows into the register, or will the owner?",
-     "Drive ProcessedECOAs, 227-K/26 series (30 documents); "
-     "PP_Batch_Release_QC_Register_SUBLOT_2026-09-01.xlsx; ingestion/common/batch_id.py "
-     "batch_key docstring; ingestion/ecoa_runner/identity_decisions.tsv; commit 7393bc4"),
+     "Five of the thirty Tranche 3 potency retests rest on one page read",
+     "Farmahem's 227-К/26 series — thirty cannabinoid certificates for the Tranche 3 sampling, "
+     "issued 11.09.2026 — is in the record since the intake of 15.09.2026 "
+     "(intake_227K_2026-09-15/): every one of them a retest, as the owner ruled on 12.09.2026, "
+     "each in a campaign round of its own and sampled 19–21.08.2026 by the owner's ruling of "
+     "15.09.2026. Twenty-five were written after the page read and the checkpoint "
+     "transcription of the same day (master_coa_table.tsv, commit 7393bc4) agreed on the "
+     "batch, the P lot, the date and every result. Five have no second read on file: "
+     "227-1-К/26 (BSS1024_01/2, P050142), 227-4-К/26 (WED102501, P060102), 227-8-К/26 "
+     "(SCR012601, P060342), 227-16-К/26 (GRC102501/1, P060142) and 227-29-К/26 (BSS1024_01/1, "
+     "P050122). The first four batches had no register block and were given one (No. 90–93), "
+     "with the P lot the certificate prints — the same P lot the Head of QC's batch list "
+     "gives them; the fifth went into the register's BSS1024_01 block, whose P lot P050122 "
+     "the certificate prints.",
+     "The five are written on the page read alone and say so in the tracker instance's "
+     "source. The identity question the desk had raised — whether a 227-К certificate could be "
+     "a batch's first potency determination — is settled by the ruling that the series is a "
+     "retest series (testing_series.rounds), so the four batches' release potency is simply not "
+     "on file, which the CoQ Register already flags per lot.",
+     "A second read of the five pages (or the owner's confirmation of the transcribed values: "
+     "26.69 / <LOQ / <LOQ; 25.15 / <LOQ / <LOQ; 22.40 / <LOQ / <LOQ; 7.50 / <LOQ / <LOQ; "
+     "26.10 / <LOQ / 0.20 for THC / CBD / CBN), and confirmation that BSS1024_01/1 on "
+     "227-29-К/26 is the register's BSS1024_01 (P050122).",
+     "intake_227K_2026-09-15/ (reads_227K.json, checkpoint_master_coa_table.json, "
+     "apply_227K.py); PP_Batch_Release_QC_Register_SUBLOT_2026-09-01.xlsx after apply_227K.py; "
+     "tracker/batch_dates.csv"),
 
     ("OI-33", "Batch identity", "open",
      "Two batches on the Tranche 2 mycotoxin certificates are on no list the desk holds",
@@ -306,6 +301,24 @@ ITEMS = [
      "intake_220M_2026-09-14/ (reads_claude.json n=30, 31, 32; placement.json); "
      "tracker/batch_dates.csv; PP_Batch_Release_QC_Register_SUBLOT_2026-09-01.xlsx after "
      "apply_220M.py"),
+
+    ("OI-34", "Register scope", "open",
+     "The IJZ-MB campaign microbiology is on the tracker and not in the release register",
+     "The thirty IJZ-MB certificates of the campaign sampling of 25/26.08.2026 (issued 31.08 "
+     "and 01.09.2026) are testing instances on the tracker since 04.09.2026 and are not rows "
+     "of the release register, which is the one source the certificates of quality are "
+     "compiled from. Since 15.09.2026 a reissue prints, for every determination it did not "
+     "retest, the initial certificate's result — so for a lot whose microbiology WAS retested "
+     "in that campaign the reissue would print the release microbiology while a newer result "
+     "sits on the tracker. No Tranche 1 lot is affected (none was in that delivery); the "
+     "Tranche 2 and 3 reissues that are cannot be issued yet for other reasons.",
+     "Flagged, not written: entering thirty certificates into the register is an intake of "
+     "its own, with the two-read gate the 220-М and 227-К intakes used.",
+     "Whether the desk should write the IJZ-MB campaign certificates into the release "
+     "register (columns TAMC, TYMC, bile-tolerant GNB, Salmonella, E. coli) before the "
+     "Tranche 2 and 3 reissues are compiled.",
+     "tracker/new_instances.json (the 30 IJZ-MB instances); "
+     "tracker/split_manifest_IJZ-MB_2026-09-01.csv; build_coq_schedule.py ST_CARRIED"),
 
     ("OI-13", "Panel scope", "open",
      "Two optional test panels have never been exercised",
@@ -533,7 +546,7 @@ def items(state=None, area=None):
     """The register, optionally narrowed.
 
     >>> len(items())
-    33
+    34
     >>> [i[0] for i in items(area="Specification")]
     ['OI-01', 'OI-02', 'OI-03']
     >>> sorted({i[2] for i in items()})

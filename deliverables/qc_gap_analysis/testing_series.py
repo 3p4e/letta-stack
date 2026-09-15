@@ -23,19 +23,82 @@ Two things follow that the desk could not say before:
   owner's own description — "comes a moment when production batches do not have a
   retest, and the only record is the initial testing record" — is not a rule that
   has to be written down anywhere. It falls out of the data.
-* **A retest certificate carries only the parameters that were retested.** Nothing
-  is copied forward from the release testing to fill it out.
+* **A retest round holds only the parameters that were retested.** Nothing is
+  copied forward into the round. What the certificate of quality PRINTS for the
+  parameters a retest did not cover is a separate rule (owner, 15.09.2026: the
+  initial result, from the release certificate) and lives in build_coq_schedule.
 
 Ties are release testing. Where two certificates carry the same parameter on the
 same date, neither is "after" the other, so both are initial and neither creates a
 retest — a laboratory splitting one day's work across two documents is not a
 second testing period.
+
+**A re-analysis certificate is never release testing.** Owner, 10.09.2026 (220-),
+12.09.2026 (227-, "all of these results for potency are from retests") and
+15.09.2026 (the sampling campaigns): Farmahem's 197-, 220- and 227- series are the
+retest campaigns of Tranches 1, 2 and 3, sampled on dates the owner set. The
+per-parameter rule alone put such a certificate in the RELEASE round wherever it
+happened to be the parameter's first result on file — a batch whose only
+mycotoxin result is its Tranche 2 certificate had no retest round at all, and
+seven Tranche 1 lots whose register block holds nothing but the re-analysis had
+none either. `rounds()` therefore places every campaign certificate in a round of
+its own, one per campaign, after the rounds the rest of the record makes; the
+release round may then be empty, and a consumer skips an empty round.
+`REANALYSIS_SERIES` is the one list of those series; `build_coq_schedule.family()`
+and `is_reanalysis()` there read it from here.
 """
 import os
 import re
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+
+# Post-release re-analysis series — the retest campaigns. 197- was the only one the
+# desk knew; the owner ruled on 10.09.2026 that 220- is the same thing and on
+# 12.09.2026 that the Tranche 3 227-K/26 potency certificates are retests too.
+REANALYSIS_SERIES = ("197-", "220-", "227-")
+_REAN_RX = re.compile(r"^\s*(%s)(\d{1,3})-[КKМM](?:[/-]\d\d)?\s*$"
+                      % "|".join(re.escape(s) for s in REANALYSIS_SERIES))
+
+
+def is_reanalysis(code):
+    """True for a post-release re-analysis certificate — what a reissue rests on.
+
+    The shape is Farmahem's: series, running number, К or М, year. An IPH
+    microbiology number such as 197-0350-25 shares the prefix and is not one.
+
+    >>> is_reanalysis("197-11-К/26"), is_reanalysis("ППК25174")
+    (True, False)
+    >>> is_reanalysis("220-16-K/26"), is_reanalysis("227-1-K-26"), is_reanalysis("197-0350-25")
+    (True, True, False)
+    >>> is_reanalysis(""), is_reanalysis(None)
+    (False, False)
+    """
+    return bool(_REAN_RX.match(str(code or "")))
+
+
+def series_of(code):
+    """The campaign a re-analysis certificate belongs to, as its series prefix.
+
+    >>> series_of("197-11-К/26"), series_of("220-32-М/26"), series_of("227-1-K-26")
+    ('197', '220', '227')
+    >>> series_of("ППК25174") is None
+    True
+    """
+    m = _REAN_RX.match(str(code or ""))
+    return m.group(1).rstrip("-") if m else None
+
+
+def number_of(code):
+    """The running number inside a re-analysis certificate code.
+
+    >>> number_of("197-11-К/26"), number_of("220-3-М/26")
+    (11, 3)
+    >>> number_of("ППК25174") is None
+    True
+    """
+    m = _REAN_RX.match(str(code or ""))
+    return int(m.group(2)) if m else None
 
 
 def key(date):
@@ -91,13 +154,12 @@ def batch(cells_by_param):
     >>> [c["date"] for c in ret["4"]]
     ['07.08.2026']
     """
-    release, retests = {}, {}
-    for param, cells in cells_by_param.items():
-        rel, ret = split(cells)
-        if rel:
-            release[param] = rel
-        if ret:
-            retests[param] = ret
+    rs = rounds(cells_by_param)
+    release = dict(rs[0]) if rs else {}
+    retests = {}
+    for r in rs[1:]:
+        for param, cells in r.items():
+            retests.setdefault(param, []).extend(cells)
     return release, retests
 
 
@@ -142,6 +204,11 @@ def rounds(cells_by_param):
     not its position in the batch's calendar.
 
     Returns a list of rounds, each ``{parameter: [records]}``, earliest first.
+    Round 0 is the release round. A re-analysis certificate (`is_reanalysis`)
+    never sits in it: each campaign's certificates form one round of their own,
+    appended after the rounds the rest of the record makes, in the order of the
+    campaigns' dates. A batch whose record holds nothing but a campaign therefore
+    has an EMPTY release round — a fact, not a gap, and the consumer skips it.
 
     >>> r = rounds({"4": [{"date": "07.08.2026"}, {"date": "04.03.2025"}],
     ...             "8": [{"date": "05.03.2025"}],
@@ -154,16 +221,33 @@ def rounds(cells_by_param):
     ['07.08.2026']
     >>> rounds({})
     []
+    >>> k = {"date": "07.08.2026", "code": "197-1-К/26"}
+    >>> m = {"date": "10.08.2026", "code": "197-1-М/26"}
+    >>> r = rounds({"E": [{"date": "26.02.2025", "code": "ППК25050"}, k], "G": [k], "O": [m]})
+    >>> len(r), sorted(r[0]), sorted(r[1])
+    (2, ['E'], ['E', 'G', 'O'])
+    >>> r = rounds({"O": [{"date": "11.09.2026", "code": "220-9-М/26"}]})
+    >>> r[0], sorted(r[1])
+    ({}, ['O'])
     """
     out = []
+    campaigns = {}
     for param, cells in cells_by_param.items():
-        rel, ret = split(cells)
+        own = [c for c in cells if not is_reanalysis(c.get("code", ""))]
+        for c in cells:
+            if is_reanalysis(c.get("code", "")):
+                campaigns.setdefault(series_of(c["code"]), {}).setdefault(param, []).append(c)
+        rel, ret = split(own)
         for i, group in enumerate([rel] + [[c] for c in ret]):
             if not group:
                 continue
             while len(out) <= i:
                 out.append({})
             out[i].setdefault(param, []).extend(group)
+    if campaigns and not out:
+        out.append({})            # the release round exists and is empty
+    for s in sorted(campaigns, key=lambda s: key(last_date(campaigns[s]) or "")):
+        out.append(campaigns[s])
     return out
 
 

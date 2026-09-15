@@ -17,6 +17,12 @@ The owner's rulings of 10.09.2026:
 * **Identification A, Identification B and foreign matter go on one internal
   certificate per testing round**, tested start = end = the packaging date for the
   release round and the round's sampling date for a retest.
+* **The retest sampling dates** (owner, 15.09.2026) are in `sampling_dates.py`: a
+  campaign round — one whose certificates are Farmahem's 197-, 220- or 227-series
+  — is tested on the day its batch was sampled and its certificate is issued on
+  the campaign's issue day, one day for the whole campaign. A retest round outside
+  the campaigns (the in-house re-tests of spring 2026) has no sampling date on
+  file and stays dated at its certificate.
 * **One certificate for all the missing parameters** — "let's make it one
   certificate of analysis for all of the missing parameters that Purely Plant
   needs to issue" — so a round has exactly one internal certificate, whatever it
@@ -54,6 +60,7 @@ if HERE not in sys.path:
     sys.path.insert(0, HERE)
 import testing_series as TS                                          # noqa: E402
 import issuance_schedule as ISS                                      # noqa: E402
+import sampling_dates as SD                                          # noqa: E402
 
 OUT = os.path.join(HERE, "icoa_register_2026-09-10.csv")
 DATA = os.path.join(HERE, "coq_artifact_data.json")
@@ -123,8 +130,8 @@ def code(seq):
     return "%s%03d" % (PREFIX, seq)
 
 
-COLS = ["code", "batch", "p_lot", "strain", "round", "tested_from", "tested_to",
-        "issued", "parameters", "covers_in_house", "note"]
+COLS = ["code", "batch", "p_lot", "strain", "round", "campaign", "tranche",
+        "tested_from", "tested_to", "issued", "parameters", "covers_in_house", "note"]
 
 
 _BI = None
@@ -203,28 +210,45 @@ def build(path=DATA):
             continue
         for i, round_ in enumerate(TS.rounds(by)):
             last = TS.last_date(round_)
-            if not last:
+            # Owner, 15.09.2026: identification A, B and foreign matter are performed
+            # at packaging on every batch, so the release round's internal certificate
+            # exists even where the register holds no release certificate for the
+            # batch — sixteen blocks hold nothing but a campaign re-analysis. An
+            # empty RETEST round, by contrast, is no round at all.
+            if not last and i > 0:
                 continue
             # The release round is tested on the packaging date and a retest on
             # its own sampling date. A batch with no packaging date on file was
             # never packaged as a production batch, and the desk will not put an
             # unrelated laboratory's date in its place: the certificate has no
             # testing date until someone supplies one.
+            campaign, issued = "", None
             if i == 0:
                 frm, to = packed.get(_bi().batch_key(entry["cb"]), ("", ""))
             else:
-                frm = to = last
+                sampled, issued, campaign = SD.retest_dates(round_)
+                # a campaign round is tested on its sampling day and issued on the
+                # campaign's day; any other retest is dated at its own certificate
+                frm = to = sampled or last
+                campaign = campaign if sampled else ""
             tested = frm
             params = scope(round_, col2det)
             extra = [p for p in params if p not in ALWAYS]
+            # Owner, 15.09.2026: identification A, B and foreign matter are performed
+            # on every batch and every certificate of quality cites the internal
+            # certificate for them — so the certificate exists and is numbered even
+            # where the batch list holds no packaging date; the testing date is then
+            # not stated, and the note says so. It issues on the SOP's day or, for a
+            # round after it, on the day its last external certificate is dated.
             rows.append({
-                "note": "" if tested else "no packaging date on file — testing date not stated",
+                "note": "" if tested else "no packaging date on file — testing date not stated (owner, 15.09.2026: certified all the same)",
                 "batch": entry["cb"],
                 "p_lot": entry.get("pn") or p_of.get(_bi().batch_key(entry["cb"]), ""),
                 "strain": entry.get("strain") or "",
                 "round": "initial release" if i == 0 else ("retest %d" % i),
+                "campaign": campaign, "tranche": SD.label(campaign) or "",
                 "tested_from": frm, "tested_to": to,
-                "issued": ISS.icoa_issue(tested) or "",
+                "issued": (issued if campaign else ISS.icoa_issue(tested or last) or ISS.ICOA_FLOOR) or "",
                 "parameters": " ".join(params),
                 "covers_in_house": " ".join(extra),
             })
@@ -258,9 +282,10 @@ def build(path=DATA):
     rows.sort(key=lambda r: (ISS.parse(r["issued"]) or ISS.parse("31.12.2099"),
                              ISS.parse(r["tested_from"]) or ISS.parse("31.12.2099"),
                              r["batch"]))
-    # A code in an issue-ordered series says the certificate was issued. A
-    # certificate with no testing date cannot be, so it is listed with its note
-    # and takes no number — the series stays a series of issued documents.
+    # A code in an issue-ordered series says the certificate was issued. Until
+    # 15.09.2026 a certificate with no testing date took no number; the owner's
+    # ruling that every batch is tested and every certificate of quality cites the
+    # internal certificate numbers them all, with the testing date left unstated.
     n = 0
     for r in rows:
         if r["issued"]:
@@ -272,13 +297,22 @@ def build(path=DATA):
 
 
 def by_batch_round(path=DATA, _cache={}):
-    """The register keyed the way a compiler needs it: (batch key, round) -> row."""
+    """The register keyed the way a compiler needs it: (batch key, round) -> row.
+
+    "additional" resolves to the batch's CAMPAIGN round where it has one — the
+    round the reissue certificate rests on — and otherwise to its first retest.
+    Both the cultivation batch and the P lot are keys: seven Tranche 1 lots hold
+    their re-analysis under a register block named by the P number alone.
+    """
     if path not in _cache:
         bi = _bi()
         out = {}
         for r in build(path):
             kind = "initial release" if r["round"] == "initial release" else "additional"
-            out.setdefault((bi.batch_key(r["batch"]), kind), r)
+            for name in filter(None, (r["batch"], r["p_lot"])):
+                k = (bi.batch_key(name), kind)
+                if k not in out or (r["campaign"] and not out[k]["campaign"]):
+                    out[k] = r
         _cache[path] = out
     return _cache[path]
 
@@ -305,6 +339,11 @@ def main(argv):
           % (ISS.ICOA_FLOOR, issued.get(ISS.ICOA_FLOOR, 0),
              len(issued) - (1 if ISS.ICOA_FLOOR in issued else 0),
              sum(v for k, v in issued.items() if k != ISS.ICOA_FLOOR)))
+    from collections import Counter as _C
+    camp = _C((r["tranche"], r["issued"], r["tested_from"]) for r in rows if r["campaign"])
+    print("  campaign retest rounds: %d" % sum(camp.values()))
+    for (tr, iss, samp), v in sorted(camp.items(), key=lambda kv: (ISS.parse(kv[0][2]) or ISS.parse("31.12.2099"))):
+        print("      %-36s sampled %s  issued %s  %2d" % (tr, samp, iss, v))
     extra = [r for r in rows if r["covers_in_house"]]
     print("  carrying an in-house determination beyond identity and foreign matter: %d"
           % len(extra))

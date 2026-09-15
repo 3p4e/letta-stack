@@ -87,6 +87,7 @@ BATCH_ID = os.path.join(ROOT, "ingestion", "common", "batch_id.py")
 if HERE not in sys.path:
     sys.path.insert(0, HERE)
 import cell_resolution as CR                                        # noqa: E402
+import cnp_methods as CM                                             # noqa: E402
 
 OUT_X = os.path.join(HERE, "PP_CoQ_Parameter_Schedule_2026-08-31.xlsx")
 OUT_C = os.path.join(HERE, "coq_parameter_schedule_2026-08-31.csv")
@@ -111,6 +112,14 @@ ST_ICOA = "to be performed — see route"
 ST_NONE = "not tested — no certificate covers it"
 ST_REQ = "upon request — not required for release"
 ST_BLOCK = "BLOCKED — declared out of specification by the laboratory"
+# Owner, 15.09.2026: "the written certificate of quality should contain all
+# parameter results — the retested parameter results, and all of the parameter
+# results that were not tested will be taken from the initial quality control
+# testing." A reissue therefore prints, for every determination outside its
+# retest scope, exactly what the batch's initial certificate prints — result,
+# document, date, laboratory — and says so. The initial certificate's own status
+# for that determination travels with it, so a release-time finding stays visible.
+ST_CARRIED = "carried from the initial testing"
 ST_NOSPEC = "no product specification on file — criterion cannot be stated"
 
 # ---------------------------------------------------------------------------------
@@ -348,21 +357,12 @@ def family(code):
 # Post-release re-analysis series. 197- was the only one the desk knew; the owner
 # ruled on 10.09.2026 that 220- is the same thing, which moves every 220 result off
 # the initial-release certificate and onto the retest that rests on it, and on
-# 12.09.2026 that the Tranche 3 227-K/26 potency certificates are retests too
-# (none is in the register yet — OI-32 — so the entry is ready for them, not acting).
-# family() derives its re-analysis labels from this tuple: one definition.
-REANALYSIS_SERIES = ("197-", "220-", "227-")
-
-
-def is_reanalysis(code):
-    """True for a post-release re-analysis certificate — what a reissue rests on.
-
-    >>> is_reanalysis("197-11-К/26"), is_reanalysis("ППК25174")
-    (True, False)
-    >>> is_reanalysis("220-16-K/26"), is_reanalysis("220-29-K/26")
-    (True, True)
-    """
-    return clean(code).startswith(REANALYSIS_SERIES)
+# 12.09.2026 that the Tranche 3 227-K/26 potency certificates are retests too.
+# The list and the test live in testing_series.py since 15.09.2026, because the
+# testing rounds have to know them as well: a campaign certificate is a retest
+# round of its own, never the release round, whatever the dates say. One
+# definition; family() above and pick() below read it from there.
+from testing_series import REANALYSIS_SERIES, is_reanalysis          # noqa: E402
 
 
 def sort_date(d):
@@ -729,6 +729,8 @@ def schedule():
                      "plan": stub, "number": NO_NUMBER, "issued": False})
 
     rows, per_coq = [], []
+    # the initial certificate's rows per batch, for the reissue to carry forward
+    initial_rows = {}
     for n, coq in enumerate(coqs, 1):
         x = coq["plan"]
         cb = reg_by_key.get(BI.batch_key(
@@ -851,6 +853,7 @@ def schedule():
             if chosen is None and not additional and det["no"] in read0909:
                 chosen, others = read0909[det["no"]], []
                 st = status_of(det, chosen, lim, cb, blocked)
+            also_override = None
             if additional and chosen is None:
                 if det["no"] in ICOA_FIELD:
                     st = ST_ICOA
@@ -861,12 +864,39 @@ def schedule():
                 elif det["no"] in ("9.6", "9.7"):
                     st = ST_REQ
                 else:
-                    st = ST_OUTSIDE.format(
-                        initial=x["id"] if x["id"] != NO_NUMBER else
-                        "the batch's initial CoQ (number assigned on issue)")
+                    # Outside the retest scope: the reissue prints the initial
+                    # certificate's row for this determination (owner, 15.09.2026).
+                    initial_id = (x["id"] if x["id"] != NO_NUMBER else
+                                  "the batch's initial CoQ (number assigned on issue)")
+                    prior = None
+                    for _k in filter(None, (x["cb"], PLAN_CB_ALIASES.get(x["cb"]), x["pp"])):
+                        prior = initial_rows.get(BI.batch_key(_k), {}).get(det["no"])
+                        if prior is not None:
+                            break
+                    if prior is not None and prior["Source document"] not in ("", "—"):
+                        chosen = {"value": prior["Result"], "code": prior["Source document"],
+                                  "date": prior["Document date"], "lab": prior["Issuing institution"],
+                                  "family": prior["Report series"], "flag": "",
+                                  "stability": False, "inhouse": False}
+                        also_override = prior["Also on file"]
+                        st = f"{ST_CARRIED} ({initial_id}) — {prior['Status']}"
+                    elif prior is not None:
+                        st = f"{ST_CARRIED} ({initial_id}) — {prior['Status']}"
+                    else:
+                        st = ST_OUTSIDE.format(initial=initial_id)
             counts[st] += 1
             if chosen:
                 codes.setdefault(chosen["code"], chosen["lab"])
+
+            # Owner, 15.09.2026: the method reference names the method the cited
+            # certificate actually used. CNP ran the cannabinoid assay and loss on
+            # drying by the DAB monograph until it accredited Ph. Eur. 3028
+            # (cnp_methods.py reads which off each certificate). Decided after
+            # every fallback above has chosen the document, so it holds whichever
+            # path found the certificate.
+            method = det["method"]
+            if chosen and det["no"] in CM.DAB_METHOD and CM.method_of(chosen.get("code")) == "DAB":
+                method = CM.DAB_METHOD[det["no"]]
 
             route = ""
             if det["no"] in ICOA_FIELD and st == ST_ICOA:
@@ -882,7 +912,7 @@ def schedule():
                 ("iCoA reference", x["ic"]),
                 ("№", det["no"]), ("Group", det["group"]),
                 ("Parameter", det["en"]), ("Параметар", det["mk"]),
-                ("Method / reference", det["method"]),
+                ("Method / reference", method),
                 ("Acceptance criterion", criterion),
                 ("Result", chosen["value"] if chosen else "—"),
                 ("Source document", chosen["code"] if chosen else "—"),
@@ -891,9 +921,13 @@ def schedule():
                 ("Report series", chosen["family"] if chosen else ""),
                 ("Status", st),
                 ("Performed by", route),
-                ("Also on file", "; ".join(f"{o['value']} ({o['code']})"
-                                           for o in others)),
+                ("Also on file", also_override if also_override is not None else
+                 "; ".join(f"{o['value']} ({o['code']})" for o in others)),
             ]))
+        if not additional:
+            _mine = {r2["№"]: r2 for r2 in rows[start:]}
+            for _k in filter(None, (x["cb"], PLAN_CB_ALIASES.get(x["cb"]), x["pp"])):
+                initial_rows.setdefault(BI.batch_key(_k), _mine)
 
         # The printed issue date is set at issue, and may be no earlier than the
         # latest of the SOP in-use date (11.05.2026) and the newest document the
@@ -902,9 +936,12 @@ def schedule():
         # file, the due date stops being a floor (Farmahem ran several lots
         # early: J31102501's 197-16 pair is dated 10 months after packaging).
         bound = (sort_date(SOP_EFFECTIVE), SOP_EFFECTIVE)
+        # A carried row is the initial certificate's evidence, not this
+        # certificate's: it neither dates a reissue nor lifts the 12-month floor.
         cited_dates = [r2["Document date"] for r2 in rows[start:]
                        if r2["Source document"] not in ("", "—")
                        and r2["Document date"]
+                       and not str(r2["Status"]).startswith(ST_CARRIED)
                        and sort_date(r2["Document date"]) != "9999"]
         for dd in cited_dates:
             bound = max(bound, (sort_date(dd), dd))

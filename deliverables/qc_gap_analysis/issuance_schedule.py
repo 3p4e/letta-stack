@@ -16,6 +16,9 @@ means for a date on a document:
 3. **Identification A, Identification B and foreign matter go on ONE internal
    certificate of analysis per testing period**, tested start = end = the
    packaging date for the release period and the sampling date for a retest.
+   The sampling dates of the three retest campaigns, and the one day each
+   campaign's internal certificates issue on, are the owner's rulings of
+   15.09.2026 in `sampling_dates.py`.
 4. **A certificate of quality is issued 5–10 days after the last external
    certificate it cites.** The owner put it as a question rather than a rule —
    "how can a certificate of quality be dated earlier than the last certificate of
@@ -37,6 +40,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path:
     sys.path.insert(0, HERE)
 import testing_series as TS                                          # noqa: E402
+import sampling_dates as SD                                          # noqa: E402
 
 SOP_SPEC_APPROVED = "01.06.2026"
 ICOA_FLOOR = "03.06.2026"          # no internal CoA is dated before the SOP
@@ -173,12 +177,21 @@ def schedule(entry, packaging="", packed_to=""):
             continue
         params = sorted(round_)
         # the internal CoA is tested on the packaging date for the release round
-        # and on the round's own sampling date for a retest
-        tested = (packaging or last) if i == 0 else last
-        ic = icoa_issue(tested)
+        # and on the round's own sampling day for a campaign retest, issued on
+        # the campaign's day; a retest outside the campaigns is dated at its
+        # certificate, as before
+        campaign = ""
+        if i == 0:
+            tested, ic = (packaging or last), None
+        else:
+            sampled, ic, campaign = SD.retest_dates(round_)
+            tested = sampled or last
+            campaign = campaign if sampled else ""
+        ic = ic if campaign else icoa_issue(tested)
         rows.append({
             "period": last,
             "kind": "initial release" if i == 0 else ("retest %d" % i),
+            "campaign": campaign,
             "tested": tested,
             "icoa_issue": ic or "",
             "last_external": last,
@@ -188,7 +201,7 @@ def schedule(entry, packaging="", packed_to=""):
     return rows
 
 
-COLS = ["batch", "p_lot", "strain", "period", "kind", "tested", "icoa_issue",
+COLS = ["batch", "p_lot", "strain", "period", "kind", "campaign", "tested", "icoa_issue",
         "last_external", "coq_issue", "parameters"]
 
 

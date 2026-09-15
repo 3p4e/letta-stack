@@ -189,6 +189,7 @@ var ST = {
   NONE: "not tested",
   REQ:  "upon request",
   OUT:  "outside the retest scope",
+  CARRIED: "carried from the initial testing",
   AWK:  "awaiting the cannabinoid",
   AWM:  "awaiting the mycotoxin",
   BLK:  "BLOCKED",
@@ -652,6 +653,7 @@ function rowVerdict(r){
   if (s.indexOf(ST.OK) === 0) return ["conf", "conforms"];
   if (s.indexOf(ST.REQ) === 0) return ["req", "upon request"];
   if (s.indexOf(ST.OUT) === 0) return ["req", "outside the retest scope"];
+  if (s.indexOf(ST.CARRIED) === 0) return ["ok", "carried from the initial testing"];
   if (s.indexOf(ST.AWK) === 0 || s.indexOf(ST.AWM) === 0) return ["none", "awaiting the re-analysis"];
   return ["none", "not certified"];
 }
