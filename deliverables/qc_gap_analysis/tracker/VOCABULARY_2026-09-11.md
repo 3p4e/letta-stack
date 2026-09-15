@@ -795,3 +795,10 @@ issued takes v.01 (to issue). The issued v.01 document is recorded beside the ge
 processing, packaging — are the strain's and are read off any issued specification of the same
 strain. The desk artifact and the 22 draft certificates were recompiled from the new export;
 v29 was rebuilt in place.
+
+**And no second version (owner, 15.09.2026):** every specification document code is v.01 —
+the initially issued specifications were wrong, and this is not the official issuing of the
+document; the set goes for review. `potency_grading.spec_code()` returns
+`QCSP_001_{ABBR}-{numeral}_v.01` always, and the status beside it records, for that review,
+what the v.01 already issued under the same strain and numeral printed ("replaces the issued …",
+"same as issued", or "new").

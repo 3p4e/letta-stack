@@ -27,10 +27,11 @@ specifications):
   the highest nominal (I) down — the issued convention (Cap Junky: I = 28, II = 26 …).
   Owner, 15.09.2026: every grade, nominal, tolerance and range already in the issued
   specifications and on the certificates is old and potentially wrong; the specification
-  of 15.09.2026 is used exactly, everywhere. So the v.01 document is cited only where it
-  carries the same product code AND the same window; a numeral that is issued with any
-  other content takes v.02 and the status names what it supersedes; a numeral never
-  issued takes v.01 (to issue).
+  of 15.09.2026 is used exactly, everywhere — and there is no second version: every
+  specification document code is v.01, because the initially issued ones were wrong and
+  this is not the official issuing of the document; the set goes for review. The status
+  beside each code records, for that review, what the v.01 already issued under the same
+  strain and numeral printed.
 """
 import csv
 import json
@@ -164,27 +165,28 @@ def product_code(abbr, nominal):
 
 
 def spec_code(abbr, roman, pcode, lo=None, hi=None):
-    """The specification document code, and whether it is issued, to issue, or a new version.
+    """The specification document code — always v.01 — and what it stands against.
+
+    Owner, 15.09.2026: no second version. Every specification document is v.01,
+    because the initially issued ones were wrong and this is not the official issuing
+    of the document — the set goes for review. The status records, for that review,
+    what the v.01 already issued under the same strain and numeral printed.
 
     >>> spec_code("BSS", "II", "BSS_THC24 : CBD1", 21.89, 26.10)
-    ('QCSP_001_BSS-II_v.02', 'v.02 supersedes QCSP_001_BSS-II_v.01 (was BSS_THC20 : CBD1); now BSS_THC24 : CBD1 21.89 – 26.10 %')
+    ('QCSP_001_BSS-II_v.01', 'for review — replaces the issued QCSP_001_BSS-II_v.01 (was BSS_THC20 : CBD1, 18.00 – 22.00 %); now BSS_THC24 : CBD1 21.89 – 26.10 %')
     >>> spec_code("ZZ", "I", "ZZ_THC10 : CBD1", 9.0, 10.99)
-    ('QCSP_001_ZZ-I_v.01', 'to issue')
+    ('QCSP_001_ZZ-I_v.01', 'for review — new')
     """
     _load()
-    base = "QCSP_001_%s-%s_v.01" % (abbr, roman)
+    code = "QCSP_001_%s-%s_v.01" % (abbr, roman)
     win = "%.2f – %.2f %%" % (lo, hi) if lo is not None else ""
-    if base in _ISSUED and _ISSUED[base] == pcode and _same_window(_BY_PCODE.get(pcode, ("", ""))[1], lo, hi):
-        return base, "issued, same window (%s)" % _BY_PCODE[pcode][1]
-    if base in _ISSUED:
-        # the numeral is issued: as this product code with another window, or as another nominal
-        what = ("same product code, window was %s" % _BY_PCODE[pcode][1]) if _ISSUED[base] == pcode \
-            else "was %s" % _ISSUED[base]
-        return "QCSP_001_%s-%s_v.02" % (abbr, roman), "v.02 supersedes %s (%s); now %s %s" % (base, what, pcode, win)
-    if pcode in _BY_PCODE:
-        code, crit = _BY_PCODE[pcode]
-        return base, "to issue — %s was issued as %s (%s); now %s under the specification of 15.09.2026" % (pcode, code, crit, win)
-    return base, "to issue"
+    if code in _ISSUED:
+        was_pcode = _ISSUED[code]
+        was_crit = _BY_PCODE.get(was_pcode, ("", ""))[1]
+        if was_pcode == pcode and _same_window(was_crit, lo, hi):
+            return code, "for review — same as issued (%s)" % was_crit
+        return code, "for review — replaces the issued %s (was %s, %s); now %s %s" % (code, was_pcode, was_crit, pcode, win)
+    return code, "for review — new"
 
 
 def _same_window(crit, lo, hi):
@@ -202,7 +204,7 @@ def grading(cb, strain, res):
 
     >>> g = grading("BSS1024", "Blue Sunset Sherbet", "25.01")
     >>> g["abbr"], g["thc"], g["grade"], g["window"], g["product_code"], g["spec_code"], g["spec_status"][:5]
-    ('BSS', 25.01, '24.00 ± 2.11 (II)', '21.89 – 26.10 %', 'BSS_THC24 : CBD1', 'QCSP_001_BSS-II_v.02', 'v.02 ')
+    ('BSS', 25.01, '24.00 ± 2.11 (II)', '21.89 – 26.10 %', 'BSS_THC24 : CBD1', 'QCSP_001_BSS-II_v.01', 'for r')
     >>> grading("BSS1024", "Blue Sunset Sherbet", "—")["note"]
     'no Total THC result on this certificate'
     """
