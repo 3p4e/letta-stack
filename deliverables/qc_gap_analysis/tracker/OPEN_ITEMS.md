@@ -4,7 +4,7 @@ Every finding the desk has raised and cannot itself settle, with the evidence
 behind it and the decision being asked for. Built by `open_items.py`; the same
 register is the **Open Items** sheet of the workbook.
 
-**25 open · 3 marked on the certificate**
+**27 open · 3 marked on the certificate**
 
 ## Specification
 
@@ -217,6 +217,30 @@ register is the **Open Items** sheet of the workbook.
 **The desk.** Flagged, not written: entering thirty certificates into the register is an intake of its own, with the two-read gate the 220-М and 227-К intakes used.
 
 **Needed.** Whether the desk should write the IJZ-MB campaign certificates into the release register (columns TAMC, TYMC, bile-tolerant GNB, Salmonella, E. coli) before the Tranche 2 and 3 reissues are compiled.
+
+## Tracker scope
+
+### OI-35 · The tracker does not carry the documents of the 09.09 pass that eleven certificates print from
+
+*State:* **open** · *Evidence:* tracker/TRUTH_CHECK_2026-09-15.md (T5); cell_resolution_2026-09-09.tsv; coq_artifact_data.json rows citing those codes
+
+**Found.** The truth check of 15.09.2026 (tracker/truth_check_2026-09-15.py) compared every row of every certificate with the tracker's cells for the lot. Twenty rows on eleven certificates cite a document the tracker holds nowhere: the 17 documents the owner's 09.09.2026 pass over eCoA_DATABASE recorded (cell_resolution_2026-09-09.tsv) and the two-read pipeline never ingested — ППК25008 and 748/2025 (GG1024: the loss on drying of 76.07 % and the pesticides), 031-2/4/5-К/26 and 031-2/4/5-LoD/26 (P060112, P060122, P060132: the Farmahem cannabinoid and loss-on-drying certificates of 10.02.2026), 326/327/330/2026, 1056/1058/1059/1060/2026 and 3659/3660/3662/2026 (the IJZ pesticide certificates of P060112, P060122, P060132, P060152, P060172, P060182, P060232, P060402, P060412, P060422). Each rests on one page read. The tracker's document pool is the desk's index plus the intake instances, so its cell for GG1024 #8 reads '— MISSING —' while the certificate prints 76.07 % from ППК25008, and J31122501 #8 cites the cannabinoid certificates where the certificate cites the loss-on-drying certificate 100-2-ГС/26.
+
+**The desk.** Recorded, not built: the 17 documents need the two-read intake the 220-М, 227-К and 220-К certificates had before the tracker credits them, and the certificate rows that rest on them are marked on the references table as single-read.
+
+**Needed.** Whether the desk should read the 17 documents of the 09.09 pass through the two-read gate now, so that the tracker and the certificates cite one record — or whether the certificates that print from a single read (GG1024 above all) wait for it.
+
+## Record integrity
+
+### OI-36 · Four two-read corpus records passed the gate with their reads disagreeing on a comparator
+
+*State:* **open** · *Evidence:* tracker/TRUTH_CHECK_2026-09-15.md (T3, T4, T5); ingestion/ecoa_runner/records_corpus.json; the four page reads of 15.09.2026
+
+**Found.** The truth check of 15.09.2026 found four IJZ-MB microbiology results where the owner's v8 tracker and one of the two corpus reads carried a value the page contradicts, and the corpus record was marked as agreed: 5/0008/26 TAMC (read A '< 1 x 10²', read B '1 x 10²', record kept A; the page prints 1 x 10² CFU/g), 9/0012/26 bile-tolerant (A '10', B '< 10', record kept B; the page prints < 10), 471/0862/25 TYMC (A '10', B '< 10', record kept B; the page prints < 10), 304/0548/26 bile-tolerant (A '< 10²', B '< 10² и >10', record kept B; the page prints < 10² и > 10). In every case the release register was right and v8 was wrong; the certificates print the register's value. The same check found the 09.09 pass table (cell_resolution_2026-09-09.tsv) holding Total THC, CBD and CBN values for 197-13-К/26, 197-7-К/26 and 197-6-К/26 that neither the register nor the two reads carry (19.68 / 24.09 / 23.29 % against 17.31 / 18.86 / 17.67 %); nothing prints them.
+
+**The desk.** The four tracker cells are corrected from a third read of each page (tracker/value_corrections_2026-09-15.json, applied in values_of). The corpus records and the pass table are the ingestion's and are left as they are, listed here.
+
+**Needed.** Whether the ingestion's reconciliation should treat a comparator ('<', '>') as part of the result when it compares two reads, and re-gate the four records; and whether the three pass-table cells should be corrected or the rows retired.
 
 ## Panel scope
 

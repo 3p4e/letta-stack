@@ -971,3 +971,65 @@ can take a code before its external results and its packaging exist.
     python3 deliverables/qc_gap_analysis/export_coq_artifact_data.py
     python3 deliverables/qc_gap_analysis/live_instrument/reissue_scope.py
     python3 deliverables/qc_gap_analysis/tracker/verify_workbook.py CoQ_Analysis_Master_v31.xlsx
+
+# v32 — the truth check, 15.09.2026 (evening)
+
+The owner asked for a truth check of the parameter results and the eCoA codes, dates and
+laboratories the desk cites. `tracker/truth_check_2026-09-15.py` is an **independent code
+path** — it imports none of the schedule, the export, the tracker builder or the verifier —
+that reads the primary records (the release register with the intakes applied, the intake
+transcriptions and their second reads, the two-read corpus, the 09.09 pass, the tracker
+instances) with its own key and value normalisation and compares, forward, what every
+derived layer states: the export (the certificates' rows), the tracker sheet of the
+recalculated workbook, the compiled drafts, the references table and the CoQ Register.
+The report is `tracker/TRUTH_CHECK_2026-09-15.md`: 94 intake certificates against their
+register rows and instances (282 results each way), 1,866 certificate rows against a primary
+record (1,557 results compared), 1,964 tracker citations (1,414 results), 1,497 certificate
+rows against the tracker, 73 drafts (1,497 printed results, 359 cited documents), 1,549
+references-table cells and 161 register rows. The first run reported 1,173 findings; 1,042 of
+them were the checker's own notation gaps — `N.D.`/`н.д.`, superscripts, the tracker's ᴿ/ᴰ
+markers, `Одговара (absent)`, `BLQ`, the composite in-house strings — which the desk's
+controlled vocabulary already folds. What was left is what the check is for.
+
+**Two defects on the tracker, corrected in this build (103 cells).**
+
+* **99 mycotoxin cells read ND for an analyte the laboratory never printed.** The owner's v8
+  tracker marks Aflatoxin B1 and Ochratoxin A `n.r.` on the IJZ release certificates; the ND
+  ruling of 10.09.2026 folds `n.r.` into ND, and the tracker did. The page of 752/2025, read
+  on 15.09.2026, prints one mycotoxin line — *Вкупни афлатоксини < 2 µg/kg* — and no B1 or OTA
+  line; the release register says *not tested*; the corpus reads hold only the total. The
+  mark is the owner's, not a result, and the boundary ruled on 11.09.2026 applies: an analyte
+  absent from the panel is not a result. `values_of()` now renders v8's `n.r.` as **not
+  reported** wherever the desk holds no result for the determination, and ND where it does
+  (the Farmahem -М- certificates' total aflatoxins, ND on the register — 21 cells unchanged).
+  The compiled certificates already omitted the line; the tracker and the certificates now
+  say the same thing. The desk's document index also listed a column the register marks
+  *not tested* as "reported"; it no longer does.
+* **Four microbiology cells whose v8 value the page contradicts**, each corrected from a
+  third read of the page (`tracker/value_corrections_2026-09-15.json`, applied in
+  `values_of()`): 5/0008/26 TAMC **1 × 10²** (v8 and the corpus read A said < 1 × 10²; the
+  register and read B were right), 9/0012/26 bile-tolerant **< 10** (v8 said 10), 471/0862/25
+  TYMC **< 10** (v8 said 10), 304/0548/26 bile-tolerant **< 10² and > 10** (v8 stopped at
+  < 10²). In all four the release register was right and the certificates print it.
+
+**What the check found and this build does not change** — two open items.
+
+* **OI-35.** The tracker does not carry the 17 documents of the 09.09 pass that eleven
+  certificates print from (ППК25008 and 748/2025 for GG1024, the 031-n-К/LoD certificates of
+  P060112/122/132, ten IJZ pesticide certificates), each on one page read; the tracker's cell
+  for GG1024 #8 reads *— MISSING —* while the certificate prints 76.07 %.
+* **OI-36.** Four two-read corpus records passed the gate with their reads disagreeing on a
+  comparator, and the 09.09 pass table holds Total THC/CBD/CBN values for 197-13-К/26,
+  197-7-К/26 and 197-6-К/26 that neither the register nor the two reads carry; nothing prints
+  them.
+
+The 21 findings the check still reports on v32 are these two items and the two starred lots
+(JD012601＊, GG012601＊) whose register block carries no P lot (OI-28). Both registers, the
+certificates, the references table and every draft: no other finding.
+
+## Reproducing
+
+    python3 deliverables/qc_gap_analysis/tracker/truth_check_2026-09-15.py \
+        --root <qc_gap_analysis with the intakes applied to its register> \
+        --workbook <recalculated CoQ_Analysis_Master_v32.xlsx> \
+        --out deliverables/qc_gap_analysis/tracker/TRUTH_CHECK_2026-09-15.md
