@@ -310,8 +310,10 @@ ITEMS = [
      "compiled from. Since 15.09.2026 a reissue prints, for every determination it did not "
      "retest, the initial certificate's result — so for a lot whose microbiology WAS retested "
      "in that campaign the reissue would print the release microbiology while a newer result "
-     "sits on the tracker. No Tranche 1 lot is affected (none was in that delivery); the "
-     "Tranche 2 and 3 reissues that are cannot be issued yet for other reasons.",
+     "sits on the tracker. No Tranche 1 lot is affected (none was in that delivery). Since v30 "
+     "(15.09.2026) the thirty Tranche 2 reissues ARE numbered, planned 18.09.2026, so a "
+     "Tranche 2 lot in that delivery would print its release microbiology; the Tranche 3 "
+     "reissues still wait for their mycotoxin certificates.",
      "Flagged, not written: entering thirty certificates into the register is an intake of "
      "its own, with the two-read gate the 220-М and 227-К intakes used.",
      "Whether the desk should write the IJZ-MB campaign certificates into the release "

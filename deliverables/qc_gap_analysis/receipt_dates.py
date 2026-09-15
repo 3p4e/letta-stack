@@ -18,7 +18,9 @@ hold those words:
      date_received);
   3. the Tranche 3 page reads (intake_227K_2026-09-15/reads_227K.json, date_received);
   4. the IJZ-MB campaign manifest (tracker/split_manifest_IJZ-MB_2026-09-01.csv,
-     receipt_date, pixel-verified).
+     receipt_date, pixel-verified);
+  5. the Tranche 2 cannabinoid page reads (intake_220K_2026-09-15/reads_220K.json,
+     date_received).
 
 A page read outranks the corpus (trap 12: where chunk text and page disagree, the
 page wins); a corpus date is written with its source named so a reader knows which
@@ -103,6 +105,10 @@ def build():
     if os.path.exists(p):
         for m in json.load(open(p, encoding="utf-8")).values():
             put(m["cert_code"], "FHM-K", m.get("date_received"), "page read 12.09.2026", "Датум на прием", 1)
+    p = os.path.join(HERE, "intake_220K_2026-09-15", "reads_220K.json")
+    if os.path.exists(p):
+        for m in json.load(open(p, encoding="utf-8")).values():
+            put(m["cert_code"], "FHM-K", m.get("date_received"), "page read 15.09.2026", "Датум на прием", 1)
     p = os.path.join(HERE, "tracker", "split_manifest_IJZ-MB_2026-09-01.csv")
     if os.path.exists(p):
         with open(p, encoding="utf-8-sig") as fh:

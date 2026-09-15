@@ -28,7 +28,7 @@ Outputs, under deliverables/qc_gap_analysis/drafts/:
 
 With --series reissue and the reissue scope (tracker/coq_reissue_scope_2026-09-15.csv)
 the same compiler produces the 12-month reissues instead — DRAFT_CoQ_<lot>_reissue.html,
-Tranche_1_CoQ_Reissue_Draft_Set.html and coq_reissue_draft_gaps.csv. A reissue
+Tranche_1_2_CoQ_Reissue_Draft_Set.html and coq_reissue_draft_gaps.csv. A reissue
 prints, under its date of issue, the small bracketed line "(supersedes <code> of
 <date>)" naming the initial certificate it replaces (owner, 15.09.2026); the build
 reads that line back off every compiled page and names any reissue without one.
@@ -211,9 +211,9 @@ def main():
     args = ap.parse_args()
     reissue = args.series == "reissue"
     if args.title is None:
-        args.title = ("Tranche 1 — Reissued Certificates of Quality (DRAFT)" if reissue
+        args.title = ("Tranche 1 &amp; 2 — Reissued Certificates of Quality (DRAFT)" if reissue
                       else "Tranche 1 &amp; 2 — Certificates of Quality (DRAFT)")
-    set_name = "Tranche_1_CoQ_Reissue_Draft_Set.html" if reissue else "Tranche_1_2_CoQ_Draft_Set.html"
+    set_name = "Tranche_1_2_CoQ_Reissue_Draft_Set.html" if reissue else "Tranche_1_2_CoQ_Draft_Set.html"
     gaps_name = "coq_reissue_draft_gaps.csv" if reissue else "coq_draft_gaps.csv"
 
     rows = [r for r in csv.DictReader(open(args.scope, encoding="utf-8"))

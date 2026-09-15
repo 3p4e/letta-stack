@@ -67,11 +67,11 @@ P060292|I,FB112501,P060292,initial release,CoQ-PP_26-065,06.06.2026,06.06.2026,i
 P060332|I,CC012601/1,P060332,initial release,CoQ-PP_26-066,06.06.2026,06.06.2026,iCoA-PP_26-077,03.06.2026,yes
 P060322|I,FB012601_1,P060322,initial release,CoQ-PP_26-067,06.06.2026,06.06.2026,iCoA-PP_26-076,03.06.2026,yes
 P060352|I,FB012602*,P060352,initial release,CoQ-PP_26-068,06.06.2026,06.06.2026,iCoA-PP_26-081,03.06.2026,yes
-P060372|I,CC012603,P060372,initial release,CoQ-PP_26-069,06.06.2026,06.06.2026,iCoA-PP_26-082,03.06.2026,yes
-P060342|I,SCR012601*,P060342,initial release,CoQ-PP_26-070,06.06.2026,06.06.2026,iCoA-PP_26-092,03.06.2026,yes
-P060382|I,SCR012603,P060382,initial release,CoQ-PP_26-071,06.06.2026,06.06.2026,iCoA-PP_26-085,03.06.2026,yes
-P060392|I,FB012603V,P060392,initial release,CoQ-PP_26-072,07.07.2026,07.07.2026,iCoA-PP_26-078,03.06.2026,yes
-P060362|I,JD012603,P060362,initial release,CoQ-PP_26-073,07.07.2026,07.07.2026,iCoA-PP_26-080,03.06.2026,yes
+P060362|I,JD012603,P060362,initial release,CoQ-PP_26-069,06.06.2026,06.06.2026,iCoA-PP_26-080,03.06.2026,yes
+P060372|I,CC012603,P060372,initial release,CoQ-PP_26-070,06.06.2026,06.06.2026,iCoA-PP_26-082,03.06.2026,yes
+P060342|I,SCR012601*,P060342,initial release,CoQ-PP_26-071,06.06.2026,06.06.2026,iCoA-PP_26-092,03.06.2026,yes
+P060382|I,SCR012603,P060382,initial release,CoQ-PP_26-072,06.06.2026,06.06.2026,iCoA-PP_26-085,03.06.2026,yes
+P060392|I,FB012603V,P060392,initial release,CoQ-PP_26-073,07.07.2026,07.07.2026,iCoA-PP_26-078,03.06.2026,yes
 P060422|I,JD012603,P060422,initial release,CoQ-PP_26-074,07.07.2026,07.07.2026,iCoA-PP_26-079,03.06.2026,yes
 P060402|I,GG012603,P060402,initial release,CoQ-PP_26-075,07.07.2026,07.07.2026,iCoA-PP_26-083,03.06.2026,yes
 P060412|I,JD012603,P060412,initial release,CoQ-PP_26-076,07.07.2026,07.07.2026,iCoA-PP_26-084,03.06.2026,yes
@@ -102,6 +102,36 @@ P050062|R,OPM1024_02,P050062,retest — Tranche 1 (sampled 21–24.07.2026),CoQ-
 P060242|R,OPM122501,P060242,retest — Tranche 1 (sampled 21–24.07.2026),CoQ-PP_26-101,17.08.2026,17.08.2026,iCoA-PP_26-118,27.07.2026,yes
 P060062|R,PM092501,P060062,retest — Tranche 1 (sampled 21–24.07.2026),CoQ-PP_26-102,17.08.2026,17.08.2026,iCoA-PP_26-120,27.07.2026,yes
 P060382|R,SCR012603,P060382,retest — Tranche 1 (sampled 21–24.07.2026),CoQ-PP_26-103,17.08.2026,17.08.2026,iCoA-PP_26-119,27.07.2026,yes
+P060122|R,ACC102501,P060122,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-104,18.09.2026,18.09.2026,iCoA-PP_26-123,17.08.2026,yes
+P050192|R,BSS052501,P050192,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-105,18.09.2026,18.09.2026,iCoA-PP_26-124,17.08.2026,yes
+P060372|R,CC012603,P060372,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-106,18.09.2026,18.09.2026,iCoA-PP_26-145,17.08.2026,yes
+P060132|R,CF102501,P060132,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-107,18.09.2026,18.09.2026,iCoA-PP_26-125,17.08.2026,yes
+P050222|R,CJ062501/1,P050222,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-108,18.09.2026,18.09.2026,iCoA-PP_26-126,17.08.2026,yes
+P060022|R,CJ082501/1,P060022,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-109,18.09.2026,18.09.2026,iCoA-PP_26-127,17.08.2026,yes
+P060072|R,CJ092501,P060072,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-110,18.09.2026,18.09.2026,iCoA-PP_26-128,17.08.2026,yes
+P050282|R,CLE072501,P050282,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-111,18.09.2026,18.09.2026,iCoA-PP_26-129,17.08.2026,yes
+P060322|R,FB012601_1,P060322,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-112,18.09.2026,18.09.2026,iCoA-PP_26-130,17.08.2026,yes
+GG1024|R,GG1024,N/A — no P batch assigned,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-113,18.09.2026,18.09.2026,iCoA-PP_26-131,17.08.2026,yes
+P050302|R,GP072501/2,P050302,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-114,18.09.2026,18.09.2026,iCoA-PP_26-132,17.08.2026,yes
+P050072|R4,GP0824_03,P050072,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-115,18.09.2026,18.09.2026,iCoA-PP_26-133,17.08.2026,yes
+P050312|R,GP082501/1,P050312,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-116,18.09.2026,18.09.2026,iCoA-PP_26-134,17.08.2026,yes
+P060092|R,GP092501,P060092,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-117,18.09.2026,18.09.2026,iCoA-PP_26-135,17.08.2026,yes
+P060182|R,GRC102501,P060182,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-118,18.09.2026,18.09.2026,iCoA-PP_26-136,17.08.2026,yes
+P050182|R,HPA052501,P050182,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-119,18.09.2026,18.09.2026,iCoA-PP_26-137,17.08.2026,yes
+P060362|R,JD012603,P060362,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-120,18.09.2026,18.09.2026,iCoA-PP_26-140,17.08.2026,yes
+P060412|R,JD012603,P060412,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-121,18.09.2026,18.09.2026,iCoA-PP_26-138,17.08.2026,yes
+P060422|R,JD012603,P060422,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-122,18.09.2026,18.09.2026,iCoA-PP_26-139,17.08.2026,yes
+P060492|R,JD042601,P060492,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-123,18.09.2026,18.09.2026,iCoA-PP_26-148,17.08.2026,yes
+P060172|R,KC102501,P060172,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-124,18.09.2026,18.09.2026,iCoA-PP_26-141,17.08.2026,yes
+P050112|R,MB0824_05,P050112,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-125,18.09.2026,18.09.2026,iCoA-PP_26-142,17.08.2026,yes
+P050042|R,OMP1024_01,P050042,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-126,18.09.2026,18.09.2026,iCoA-PP_26-144,17.08.2026,yes
+P060042|R,OPM092501,P060042,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-127,18.09.2026,18.09.2026,iCoA-PP_26-143,17.08.2026,yes
+P050082|R,OPM1024_03,P050082,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-128,18.09.2026,18.09.2026,iCoA-PP_26-149,17.08.2026,yes
+P060232|R,PM112501,P060232,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-129,18.09.2026,18.09.2026,iCoA-PP_26-150,17.08.2026,yes
+P060112|R,PUM102501,P060112,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-130,18.09.2026,18.09.2026,iCoA-PP_26-151,17.08.2026,yes
+P060282|R,SCR112501,P060282,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-131,18.09.2026,18.09.2026,iCoA-PP_26-152,17.08.2026,yes
+P060082|R,SJ0925021,P060082,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-132,18.09.2026,18.09.2026,iCoA-PP_26-153,17.08.2026,yes
+P060012|R,WC082501,P060012,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-133,18.09.2026,18.09.2026,iCoA-PP_26-154,17.08.2026,yes
 JD112501|I,JD112501＊,N/A — no P batch assigned,initial release,— at issue —,,06.06.2026,— at issue —,,no
 P060302|I,GG012601＊,P060302,initial release,— at issue —,,06.06.2026,iCoA-PP_26-089,03.06.2026,no
 P060312|I,JD012601＊,P060312,initial release,— at issue —,,06.06.2026,iCoA-PP_26-090,03.06.2026,no
@@ -111,57 +141,31 @@ P160032|I,— not recorded — (P160032),P160032,initial release,— at issue �
 CC042601|I,CC042601,N/A — no P batch assigned,initial release,— at issue —,,06.06.2026,iCoA-PP_26-087,03.06.2026,no
 FB042601|I,FB042601,N/A — no P batch assigned,initial release,— at issue —,,06.06.2026,iCoA-PP_26-088,03.06.2026,no
 CJ1024|R,CJ1024,N/A — no P batch assigned,retest — Tranche 3 (sampled 19–21.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-180,24.08.2026,no
-GG1024|R,GG1024,N/A — no P batch assigned,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-131,17.08.2026,no
 P050102|R,GP0824_01,P050102,retest — Tranche 3 (sampled 19–21.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-156,24.08.2026,no
 P050032|R,MB0824_04,P050032,retest — Tranche 3 (sampled 19–21.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-173,24.08.2026,no
 P050012|R,GG1024_02,P050012,retest — Tranche 3 (sampled 19–21.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-165,24.08.2026,no
-P050042|R,OMP1024_01,P050042,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-144,17.08.2026,no
-P050072|R4,GP0824_03,P050072,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-133,17.08.2026,no
-P050082|R,OPM1024_03,P050082,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-149,17.08.2026,no
-P050112|R,MB0824_05,P050112,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-142,17.08.2026,no
 P050132|R,OPM052501,P050132,retest — Tranche 3 (sampled 19–21.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-174,24.08.2026,no
 P050172|R,CJ052501/02,P050172,retest — Tranche 3 (sampled 19–21.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-178,24.08.2026,no
-P050182|R,HPA052501,P050182,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-137,17.08.2026,no
-P050192|R,BSS052501,P050192,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-124,17.08.2026,no
-P050222|R,CJ062501/1,P050222,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-126,17.08.2026,no
+P050142|R,BSS1024_01/2,P050142,retest — Tranche 3 (sampled 19–21.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-155,24.08.2026,no
 P050252|R,CJ072501,P050252,retest — Tranche 3 (sampled 19–21.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-179,24.08.2026,no
 P050262|R,WC072501,P050262,retest — Tranche 3 (sampled 19–21.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-163,24.08.2026,no
-P050282|R,CLE072501,P050282,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-129,17.08.2026,no
-P050302|R,GP072501/2,P050302,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-132,17.08.2026,no
-P050312|R,GP082501/1,P050312,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-134,17.08.2026,no
-P060012|R,WC082501,P060012,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-154,17.08.2026,no
-P060022|R,CJ082501/1,P060022,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-127,17.08.2026,no
 P050292|R,GP072501/1,P050292,retest — Tranche 3 (sampled 19–21.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-168,24.08.2026,no
 P050272|R,PM072501,P050272,retest — Tranche 3 (sampled 19–21.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-158,24.08.2026,no
-P060042|R,OPM092501,P060042,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-143,17.08.2026,no
-P060072|R,CJ092501,P060072,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-128,17.08.2026,no
-P060082|R,SJ0925021,P060082,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-153,17.08.2026,no
-P060092|R,GP092501,P060092,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-135,17.08.2026,no
-P060112|R,PUM102501,P060112,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-151,17.08.2026,no
-P060122|R,ACC102501,P060122,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-123,17.08.2026,no
-P060132|R,CF102501,P060132,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-125,17.08.2026,no
+P060102|R,WED102501,P060102,retest — Tranche 3 (sampled 19–21.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-164,24.08.2026,no
 P060052|R,AB092501,P060052,retest — Tranche 3 (sampled 19–21.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-175,24.08.2026,no
+P060142|R,GRC102501,P060142,retest — Tranche 3 (sampled 19–21.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-169,24.08.2026,no
 P060162|R,SJ102501,P060162,retest — Tranche 3 (sampled 19–21.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-161,24.08.2026,no
 P060192|R,SJ112501,P060192,retest — Tranche 3 (sampled 19–21.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-162,24.08.2026,no
 P060222|R,OPM112501,P060222,retest — Tranche 3 (sampled 19–21.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-157,24.08.2026,no
-P060172|R,KC102501,P060172,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-141,17.08.2026,no
-P060182|R,GRC102501,P060182,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-136,17.08.2026,no
 P060202|R2,J31112501,P060202,retest — Tranche 3 (sampled 19–21.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-170,24.08.2026,no
 JD112501|R,JD112501＊,N/A — no P batch assigned,retest — not yet sampled,— at issue —,,— awaiting the retest certificates —,— at issue —,,no
 P060262|R,J31122501,P060262,retest — Tranche 3 (sampled 19–21.08.2026),— at issue —,,06.06.2026,iCoA-PP_26-171,24.08.2026,no
-P060232|R,PM112501,P060232,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-150,17.08.2026,no
 P060272|R,CC112501,P060272,retest — Tranche 3 (sampled 19–21.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-177,24.08.2026,no
 P060292|R,FB112501,P060292,retest — Tranche 3 (sampled 19–21.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-183,24.08.2026,no
 P060302|R,GG012601＊,P060302,retest — Tranche 3 (sampled 19–21.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-184,24.08.2026,no
 P060252|R,GG112501,P060252,retest — Tranche 3 (sampled 19–21.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-166,24.08.2026,no
 P050202|R5,GP062501,P050202,retest — Tranche 3 (sampled 19–21.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-167,24.08.2026,no
 P060312|R,JD012601＊,P060312,retest — Tranche 3 (sampled 19–21.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-172,24.08.2026,no
-P060282|R,SCR112501,P060282,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-152,17.08.2026,no
-P060322|R,FB012601_1,P060322,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-130,17.08.2026,no
-P060362|R,JD012603,P060362,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-140,17.08.2026,no
-P060422|R,JD012603,P060422,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-139,17.08.2026,no
-P060372|R,CC012603,P060372,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-145,17.08.2026,no
-P060412|R,JD012603,P060412,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-138,17.08.2026,no
 P060432|R,FB012603,P060432,retest — Tranche 3 (sampled 19–21.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-181,24.08.2026,no
 P060392|R,FB012603V,P060392,retest — Tranche 3 (sampled 19–21.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-182,24.08.2026,no
 P060482|R,JD022601,P060482,retest — not yet sampled,— at issue —,,— awaiting the retest certificates —,— at issue —,,no
@@ -171,3 +175,6 @@ P160022|R,— not recorded — (P160022),P160022,retest — not yet sampled,— 
 P160032|R,— not recorded — (P160032),P160032,retest — not yet sampled,— at issue —,,— awaiting the retest certificates —,— at issue —,,no
 P060452|R,FB032601,P060452,retest — not yet sampled,— at issue —,,— awaiting the retest certificates —,— at issue —,,no
 P060462|R,GG032601,P060462,retest — not yet sampled,— at issue —,,— awaiting the retest certificates —,— at issue —,,no
+CC042601|R,CC042601,N/A — no P batch assigned,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-146,17.08.2026,no
+FB042601|R,FB042601,N/A — no P batch assigned,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-147,17.08.2026,no
+P060342|R,SCR012601*,P060342,retest — Tranche 3 (sampled 19–21.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-159,24.08.2026,no

@@ -2018,5 +2018,773 @@
   "document": "227-30-K-26 Pjureli Plant.pdf",
   "doc_id": "1n56bs1Z8_RvrqJ8JmvNQpmaA4oMa4umv",
   "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy), checkpoint transcription in master_coa_table.tsv agreeing on batch, P lot, date and every result; not through the eCoA database"
+ },
+ {
+  "p": "P060122",
+  "cu": "",
+  "strain": "Amnesia Core Cut",
+  "code": "220-1-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "12.09",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-1-K-26_FHM_ACC102501-P060122.pdf",
+  "doc_id": "1MI6k-tSaHYNCq9bMwSB1P0mHhQ6yCIJt",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P050192",
+  "cu": "",
+  "strain": "Blue Sunset Sherbet",
+  "code": "220-2-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "20.52",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-2-K-26_FHM_BSS052501-P050192.pdf",
+  "doc_id": "1UEUpS0uQT6lAuja0oaBs7NgQtj0RqGHr",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P050222",
+  "cu": "",
+  "strain": "Cap Junkie",
+  "code": "220-3-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "24.80",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-3-K-26_FHM_CJ062501-1-P050222.pdf",
+  "doc_id": "1owRfb56cZYnA-Y020-KuMR8kAIhep4Xl",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060022",
+  "cu": "",
+  "strain": "Cap Junkie",
+  "code": "220-4-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "28.34",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-4-K-26_FHM_CJ082501-1-P060022.pdf",
+  "doc_id": "1qfreY-xYd3bcQcJu416UcdEXRptvsc1l",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060072",
+  "cu": "",
+  "strain": "Cap Junkie",
+  "code": "220-5-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "25.65",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-5-K-26_FHM_CJ092501-P060072.pdf",
+  "doc_id": "1QVgUtiuZHBtB2wYI79gPJHuhb-zzLGYH",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060132",
+  "cu": "",
+  "strain": "Chem Flyer",
+  "code": "220-6-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "9.55",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-6-K-26_FHM_CF102501-P060132.pdf",
+  "doc_id": "1QfhQHm0lUQwXtxKZhA4ESR8oIyu6oI15",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P050282",
+  "cu": "",
+  "strain": "Clemosa a Bud",
+  "code": "220-7-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "8.65",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-7-K-26_FHM_CLE072501-P050282.pdf",
+  "doc_id": "1FNzbU6TVtmO_xwyszefvqojUxbgi5fVn",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060322",
+  "cu": "",
+  "strain": "Fat Bastard",
+  "code": "220-8-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "17.99",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-8-K-26_FHM_FB012601-1-P060322.pdf",
+  "doc_id": "1xkplHaoXcn1aYL29LPi9PYXhRMGrCE26",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "",
+  "cu": "GG1024",
+  "strain": "Gorilla Glue",
+  "code": "220-9-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "15.51",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-9-K-26_FHM_GG1024.pdf",
+  "doc_id": "1jJN5EQlLyFXm6kV7BPHZN2XDmvyay9c-",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P050302",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "220-10-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "18.29",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-10-K-26_FHM_GP072501-2-P050302.pdf",
+  "doc_id": "1elibkS6xl6LsYXTJQdVyiQ7NaC-jvU6H",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P050072",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "220-11-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "28.30",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-11-K-26_FHM_GP0824_03-P050072.pdf",
+  "doc_id": "1HtcusG1aL-slRNySg38lWSjjH4pGxnn2",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P050312",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "220-12-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "25.13",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-12-K-26_FHM_GP082501-1-P050312.pdf",
+  "doc_id": "1nk36JFkKHzwfOIshyLudRjj59qO26n5d",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060092",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "220-13-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "25.24",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-13-K-26_FHM_GP092501-P060092.pdf",
+  "doc_id": "1O29KSgRneP-k8UCyCD2GrYn6F3jHhqim",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060182",
+  "cu": "",
+  "strain": "Grapes and Cream",
+  "code": "220-14-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "9.80",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-14-K-26_FHM_GRC102501-2-P060182.pdf",
+  "doc_id": "1KG-3OglvITfkz8X47kmXye7NPZpAIqbF",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P050182",
+  "cu": "",
+  "strain": "High Pro Amnesia",
+  "code": "220-15-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "19.69",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-15-K-26_FHM_HPA052501-P050182.pdf",
+  "doc_id": "1qy7D4p2HnpIvhhnmpF0FX28hrzM1A0Kl",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060362",
+  "cu": "",
+  "strain": "Jelly Donutz",
+  "code": "220-16-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "21.01",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-16-K-26_FHM_JD012603-01-P060362.pdf",
+  "doc_id": "14VkCqXY7thJrlKO9uDhGsOsTNFPNpyUJ",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060412",
+  "cu": "",
+  "strain": "Jelly Donutz",
+  "code": "220-17-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "14.43",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-17-K-26_FHM_JD012603-02-P060412.pdf",
+  "doc_id": "1e8vjDT5ev8CrRLGkiJ9RzCNaAtdcabDz",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060422",
+  "cu": "",
+  "strain": "Jelly Donutz",
+  "code": "220-18-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "17.09",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-18-K-26_FHM_JD012603-02V-P060422.pdf",
+  "doc_id": "14D1xjxdt9B5_b0AHH9sz13bdDUtT4Ux4",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060172",
+  "cu": "",
+  "strain": "Kush Crasher",
+  "code": "220-19-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "17.06",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-19-K-26_FHM_KC102501-P060172.pdf",
+  "doc_id": "1xnJg1PDby3P8VDHnDufvz0SrT3Be2ybc",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P050112",
+  "cu": "",
+  "strain": "Motor Breath",
+  "code": "220-20-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "17.93",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-20-K-26_FHM_MB0824_05-P050112.pdf",
+  "doc_id": "1NMq2Xu_z_UuzYCvm7vxmQs9Cr252wLWJ",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P050042",
+  "cu": "",
+  "strain": "Orange Punch Mimosa",
+  "code": "220-21-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "18.14",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-21-K-26_FHM_OMP1024_01-P050042.pdf",
+  "doc_id": "19d945xqYrxKyS3LdPZgU611wL5rLZ7iy",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060042",
+  "cu": "",
+  "strain": "Orange Punch Mimosa",
+  "code": "220-22-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "10.18",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-22-K-26_FHM_OPM092501-P060042.pdf",
+  "doc_id": "1o9_7QErac41MaCE4oakmiYM1XeccMc1r",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P050082",
+  "cu": "",
+  "strain": "Orange Punch Mimosa",
+  "code": "220-23-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "19.30",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-23-K-26_FHM_OPM1024_03-P050082.pdf",
+  "doc_id": "1SYbT-ij0xo9I3aI79ZS5uurBVI-Tb8VI",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060232",
+  "cu": "",
+  "strain": "Permanent Marker",
+  "code": "220-24-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "10.80",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-24-K-26_FHM_PM112501-P060232.pdf",
+  "doc_id": "1wHRdiczYdeixyxLzTfvfMBw6_SsIgx32",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060112",
+  "cu": "",
+  "strain": "Pure Michigen",
+  "code": "220-25-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "13.95",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-25-K-26_FHM_PUM102501-P060112.pdf",
+  "doc_id": "1JTXMk8Yc_VEU8yTveQkje6jg4t-2dP09",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060282",
+  "cu": "",
+  "strain": "Scrambler",
+  "code": "220-26-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "19.73",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-26-K-26_FHM_SCR112501-P060282.pdf",
+  "doc_id": "1z_XD50_GN0B3B7_SVL448VVahY-N2lzP",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060082",
+  "cu": "",
+  "strain": "Sleepy Joe",
+  "code": "220-27-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "10.39",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-27-K-26_FHM_SJ092501-P060082.pdf",
+  "doc_id": "1nEQGhKjjaf0VxrGMGUvSaH40GeCCvRE4",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060012",
+  "cu": "",
+  "strain": "Wedding Crusher",
+  "code": "220-28-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "23.48",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-28-K-26_FHM_WC082501-P060012.pdf",
+  "doc_id": "1ovwwWrwAQG_dqcrYAcGNW01yAgZ8gYor",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060372",
+  "cu": "",
+  "strain": "Cash Cow",
+  "code": "220-29-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "14.76",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-29-K-26_FHM_CC012603-P060372.pdf",
+  "doc_id": "1B9xPy8c8xBWqJ3Jz6IlO5hw63zAurs1E",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060492",
+  "cu": "JD042601",
+  "strain": "Jelly Donutz",
+  "code": "220-30-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "14.89",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-30-K-26_FHM_JD042601.pdf",
+  "doc_id": "1GgHwQhy6gVJ5ToUUtGEi8hopYNpcuK7W",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "",
+  "cu": "FB042601",
+  "strain": "Fat Bastard",
+  "code": "220-31-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "14.99",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-31-K-26_FHM_FB042601.pdf",
+  "doc_id": "1PyB6ttblQ3-Pkdn491RSD3Oy2gQkUoSV",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "",
+  "cu": "CC042601",
+  "strain": "Cash Cow",
+  "code": "220-32-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "14.90",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-32-K-26_FHM_CC042601.pdf",
+  "doc_id": "1SOiEuGBBHjdz0vqiEDalrrDAhmoXJ6hw",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
  }
 ]

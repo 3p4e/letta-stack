@@ -1,0 +1,1698 @@
+{
+ "220-1-K-26": {
+  "n": 1,
+  "report_number": "220-1-K/26",
+  "file": "250826_220-1-K-26_FHM_ACC102501-P060122.pdf",
+  "sha256": "700faab660133433ad15e0284644f3b203a93a78c4211a6693bc4bb673d0f6d5",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "25.08.2026",
+  "sample": {
+   "strain": "Amnesia Core Cut",
+   "batch": "P060122",
+   "lab_sample_number": "CF-506/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "10.74"
+  },
+  "analysis_date": "24.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "12.09",
+    "U": "0.74"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-1-K/26",
+  "batch_printed": "P060122",
+  "p_number": "P060122",
+  "strain_printed": "Amnesia Core Cut",
+  "date_of_issue": "25.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "24.08.2026",
+  "lab_sample_number": "CF-506/26",
+  "drive_id": "1MI6k-tSaHYNCq9bMwSB1P0mHhQ6yCIJt",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "12.09"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "0.74"
+  }
+ },
+ "220-2-K-26": {
+  "n": 2,
+  "report_number": "220-2-K/26",
+  "file": "250826_220-2-K-26_FHM_BSS052501-P050192.pdf",
+  "sha256": "558640fa9553f9de1f1a6904e0afd9a053237652b92e362ba614a7698a80c822",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "25.08.2026",
+  "sample": {
+   "strain": "Blue Sunset Sherbet",
+   "batch": "P050192",
+   "lab_sample_number": "CF-507/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "11.51"
+  },
+  "analysis_date": "24.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "20.52",
+    "U": "1.26"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-2-K/26",
+  "batch_printed": "P050192",
+  "p_number": "P050192",
+  "strain_printed": "Blue Sunset Sherbet",
+  "date_of_issue": "25.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "24.08.2026",
+  "lab_sample_number": "CF-507/26",
+  "drive_id": "1UEUpS0uQT6lAuja0oaBs7NgQtj0RqGHr",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "20.52"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "1.26"
+  }
+ },
+ "220-3-K-26": {
+  "n": 3,
+  "report_number": "220-3-K/26",
+  "file": "250826_220-3-K-26_FHM_CJ062501-1-P050222.pdf",
+  "sha256": "cf270b7b2155df3332f398c11a0f6746244315424db270eae2184b9e2d6b68bb",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "25.08.2026",
+  "sample": {
+   "strain": "Cap Junkie",
+   "batch": "P050222",
+   "lab_sample_number": "CF-508/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "11.82"
+  },
+  "analysis_date": "24.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "24.80",
+    "U": "1.52"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-3-K/26",
+  "batch_printed": "P050222",
+  "p_number": "P050222",
+  "strain_printed": "Cap Junkie",
+  "date_of_issue": "25.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "24.08.2026",
+  "lab_sample_number": "CF-508/26",
+  "drive_id": "1owRfb56cZYnA-Y020-KuMR8kAIhep4Xl",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "24.80"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "1.52"
+  }
+ },
+ "220-4-K-26": {
+  "n": 4,
+  "report_number": "220-4-K/26",
+  "file": "250826_220-4-K-26_FHM_CJ082501-1-P060022.pdf",
+  "sha256": "fb12a0d7dae4937cbcf2f3b5096a56083c87b1e0f40d987189f86c131411c36b",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "25.08.2026",
+  "sample": {
+   "strain": "Cap Junkie",
+   "batch": "P060022",
+   "lab_sample_number": "CF-509/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "11.53"
+  },
+  "analysis_date": "24.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "28.34",
+    "U": "1.74"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-4-K/26",
+  "batch_printed": "P060022",
+  "p_number": "P060022",
+  "strain_printed": "Cap Junkie",
+  "date_of_issue": "25.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "24.08.2026",
+  "lab_sample_number": "CF-509/26",
+  "drive_id": "1qfreY-xYd3bcQcJu416UcdEXRptvsc1l",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "28.34"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "1.74"
+  }
+ },
+ "220-5-K-26": {
+  "n": 5,
+  "report_number": "220-5-K/26",
+  "file": "250826_220-5-K-26_FHM_CJ092501-P060072.pdf",
+  "sha256": "41d72d7080960052d6009db3f6b47c24eb98c954c0dba0f608749a0fae2dc413",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "25.08.2026",
+  "sample": {
+   "strain": "Cap Junkie",
+   "batch": "P060072",
+   "lab_sample_number": "CF-510/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "11.61"
+  },
+  "analysis_date": "24.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "25.65",
+    "U": "1.58"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-5-K/26",
+  "batch_printed": "P060072",
+  "p_number": "P060072",
+  "strain_printed": "Cap Junkie",
+  "date_of_issue": "25.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "24.08.2026",
+  "lab_sample_number": "CF-510/26",
+  "drive_id": "1QVgUtiuZHBtB2wYI79gPJHuhb-zzLGYH",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "25.65"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "1.58"
+  }
+ },
+ "220-6-K-26": {
+  "n": 6,
+  "report_number": "220-6-K/26",
+  "file": "250826_220-6-K-26_FHM_CF102501-P060132.pdf",
+  "sha256": "7fa8dea3aa063e1e43ea3937fe85f9db4aca11504c6df281b20429feb123ed59",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "25.08.2026",
+  "sample": {
+   "strain": "Chem Flyer",
+   "batch": "P060132",
+   "lab_sample_number": "CF-511/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "12.94"
+  },
+  "analysis_date": "24.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "9.55",
+    "U": "0.59"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-6-K/26",
+  "batch_printed": "P060132",
+  "p_number": "P060132",
+  "strain_printed": "Chem Flyer",
+  "date_of_issue": "25.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "24.08.2026",
+  "lab_sample_number": "CF-511/26",
+  "drive_id": "1QfhQHm0lUQwXtxKZhA4ESR8oIyu6oI15",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "9.55"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "0.59"
+  }
+ },
+ "220-7-K-26": {
+  "n": 7,
+  "report_number": "220-7-K/26",
+  "file": "250826_220-7-K-26_FHM_CLE072501-P050282.pdf",
+  "sha256": "59bd8ac955d66750a5380b020959bd26fd7b811ef05f0a347a8304c000d7aaab",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "25.08.2026",
+  "sample": {
+   "strain": "Clemosa a Bud",
+   "batch": "P050282",
+   "lab_sample_number": "CF-512/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "11.47"
+  },
+  "analysis_date": "24.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "8.65",
+    "U": "0.53"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-7-K/26",
+  "batch_printed": "P050282",
+  "p_number": "P050282",
+  "strain_printed": "Clemosa a Bud",
+  "date_of_issue": "25.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "24.08.2026",
+  "lab_sample_number": "CF-512/26",
+  "drive_id": "1FNzbU6TVtmO_xwyszefvqojUxbgi5fVn",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "8.65"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "0.53"
+  }
+ },
+ "220-8-K-26": {
+  "n": 8,
+  "report_number": "220-8-K/26",
+  "file": "250826_220-8-K-26_FHM_FB012601-1-P060322.pdf",
+  "sha256": "ae40d803b1f0bed6221000aa419af239b80fc4fe66972a856e76c601ed767398",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "25.08.2026",
+  "sample": {
+   "strain": "Fat Bastard",
+   "batch": "P060322",
+   "lab_sample_number": "CF-513/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "11.53"
+  },
+  "analysis_date": "24.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "17.99",
+    "U": "1.10"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-8-K/26",
+  "batch_printed": "P060322",
+  "p_number": "P060322",
+  "strain_printed": "Fat Bastard",
+  "date_of_issue": "25.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "24.08.2026",
+  "lab_sample_number": "CF-513/26",
+  "drive_id": "1xkplHaoXcn1aYL29LPi9PYXhRMGrCE26",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "17.99"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "1.10"
+  }
+ },
+ "220-9-K-26": {
+  "n": 9,
+  "report_number": "220-9-K/26",
+  "file": "250826_220-9-K-26_FHM_GG1024.pdf",
+  "sha256": "0bb963996674fffc458ebde02f154c1d855f78d08447315d8a147b216593fc32",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "25.08.2026",
+  "sample": {
+   "strain": "Gorilla Glue",
+   "batch": "GG1024",
+   "lab_sample_number": "CF-514/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "12.83"
+  },
+  "analysis_date": "24.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "15.51",
+    "U": "0.95"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-9-K/26",
+  "batch_printed": "GG1024",
+  "p_number": "",
+  "strain_printed": "Gorilla Glue",
+  "date_of_issue": "25.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "24.08.2026",
+  "lab_sample_number": "CF-514/26",
+  "drive_id": "1jJN5EQlLyFXm6kV7BPHZN2XDmvyay9c-",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "15.51"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "0.95"
+  }
+ },
+ "220-10-K-26": {
+  "n": 10,
+  "report_number": "220-10-K/26",
+  "file": "250826_220-10-K-26_FHM_GP072501-2-P050302.pdf",
+  "sha256": "66b18d711d5bf089b6089e8a95fd80b12000f74c8de84e63d0c4e3c55d616fb9",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "25.08.2026",
+  "sample": {
+   "strain": "Grape Pie",
+   "batch": "P050302",
+   "lab_sample_number": "CF-515/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "11.58"
+  },
+  "analysis_date": "24.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "18.29",
+    "U": "1.12"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-10-K/26",
+  "batch_printed": "P050302",
+  "p_number": "P050302",
+  "strain_printed": "Grape Pie",
+  "date_of_issue": "25.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "24.08.2026",
+  "lab_sample_number": "CF-515/26",
+  "drive_id": "1elibkS6xl6LsYXTJQdVyiQ7NaC-jvU6H",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "18.29"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "1.12"
+  }
+ },
+ "220-11-K-26": {
+  "n": 11,
+  "report_number": "220-11-K/26",
+  "file": "250826_220-11-K-26_FHM_GP0824_03-P050072.pdf",
+  "sha256": "350f878b07de143f9a592b49f70a22e40278f1e832d64b210d77a6f0f47a303d",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "25.08.2026",
+  "sample": {
+   "strain": "Grape Pie",
+   "batch": "P050072",
+   "lab_sample_number": "CF-516/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "13.87"
+  },
+  "analysis_date": "24.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "28.30",
+    "U": "1.74"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-11-K/26",
+  "batch_printed": "P050072",
+  "p_number": "P050072",
+  "strain_printed": "Grape Pie",
+  "date_of_issue": "25.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "24.08.2026",
+  "lab_sample_number": "CF-516/26",
+  "drive_id": "1HtcusG1aL-slRNySg38lWSjjH4pGxnn2",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "28.30"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "1.74"
+  }
+ },
+ "220-12-K-26": {
+  "n": 12,
+  "report_number": "220-12-K/26",
+  "file": "250826_220-12-K-26_FHM_GP082501-1-P050312.pdf",
+  "sha256": "697a4373a4d191f1b4c4274351c16ff7a33183012929491f50de4c3253f51b32",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "25.08.2026",
+  "sample": {
+   "strain": "Grape Pie",
+   "batch": "P050312",
+   "lab_sample_number": "CF-517/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "12.19"
+  },
+  "analysis_date": "24.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "25.13",
+    "U": "1.54"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-12-K/26",
+  "batch_printed": "P050312",
+  "p_number": "P050312",
+  "strain_printed": "Grape Pie",
+  "date_of_issue": "25.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "24.08.2026",
+  "lab_sample_number": "CF-517/26",
+  "drive_id": "1nk36JFkKHzwfOIshyLudRjj59qO26n5d",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "25.13"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "1.54"
+  }
+ },
+ "220-13-K-26": {
+  "n": 13,
+  "report_number": "220-13-K/26",
+  "file": "250826_220-13-K-26_FHM_GP092501-P060092.pdf",
+  "sha256": "00d30dc606f38b08623937f8bbc770833a8e7e60d993656b136a6ab56f69f273",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "25.08.2026",
+  "sample": {
+   "strain": "Grape Pie",
+   "batch": "P060092",
+   "lab_sample_number": "CF-518/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "11.99"
+  },
+  "analysis_date": "24.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "25.24",
+    "U": "1.55"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-13-K/26",
+  "batch_printed": "P060092",
+  "p_number": "P060092",
+  "strain_printed": "Grape Pie",
+  "date_of_issue": "25.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "24.08.2026",
+  "lab_sample_number": "CF-518/26",
+  "drive_id": "1O29KSgRneP-k8UCyCD2GrYn6F3jHhqim",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "25.24"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "1.55"
+  }
+ },
+ "220-14-K-26": {
+  "n": 14,
+  "report_number": "220-14-K/26",
+  "file": "250826_220-14-K-26_FHM_GRC102501-2-P060182.pdf",
+  "sha256": "a11003b589c2593bee170d4cacd079d5b6f1cf9c648b54b19f86e77be115e8f2",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "25.08.2026",
+  "sample": {
+   "strain": "Grapes and Cream",
+   "batch": "P060182",
+   "lab_sample_number": "CF-519/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "11.29"
+  },
+  "analysis_date": "24.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "9.80",
+    "U": "0.60"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-14-K/26",
+  "batch_printed": "P060182",
+  "p_number": "P060182",
+  "strain_printed": "Grapes and Cream",
+  "date_of_issue": "25.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "24.08.2026",
+  "lab_sample_number": "CF-519/26",
+  "drive_id": "1KG-3OglvITfkz8X47kmXye7NPZpAIqbF",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "9.80"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "0.60"
+  }
+ },
+ "220-15-K-26": {
+  "n": 15,
+  "report_number": "220-15-K/26",
+  "file": "250826_220-15-K-26_FHM_HPA052501-P050182.pdf",
+  "sha256": "ae210749a2f620f733a54e3ca60b92caa10458db990b72d08cdd1a8770fbb132",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "25.08.2026",
+  "sample": {
+   "strain": "High Pro Amnesia",
+   "batch": "P050182",
+   "lab_sample_number": "CF-520/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "10.86"
+  },
+  "analysis_date": "24.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "19.69",
+    "U": "1.21"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-15-K/26",
+  "batch_printed": "P050182",
+  "p_number": "P050182",
+  "strain_printed": "High Pro Amnesia",
+  "date_of_issue": "25.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "24.08.2026",
+  "lab_sample_number": "CF-520/26",
+  "drive_id": "1qy7D4p2HnpIvhhnmpF0FX28hrzM1A0Kl",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "19.69"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "1.21"
+  }
+ },
+ "220-16-K-26": {
+  "n": 16,
+  "report_number": "220-16-K/26",
+  "file": "250826_220-16-K-26_FHM_JD012603-01-P060362.pdf",
+  "sha256": "2fef66b00b59fe24f49ee4c3c84bdc6ceb1aabb611ea97626711341f6981ee2e",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "25.08.2026",
+  "sample": {
+   "strain": "Jelly Donutz",
+   "batch": "P060362",
+   "lab_sample_number": "CF-521/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "12.12"
+  },
+  "analysis_date": "24.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "21.01",
+    "U": "1.29"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-16-K/26",
+  "batch_printed": "P060362",
+  "p_number": "P060362",
+  "strain_printed": "Jelly Donutz",
+  "date_of_issue": "25.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "24.08.2026",
+  "lab_sample_number": "CF-521/26",
+  "drive_id": "14VkCqXY7thJrlKO9uDhGsOsTNFPNpyUJ",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "21.01"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "1.29"
+  }
+ },
+ "220-17-K-26": {
+  "n": 17,
+  "report_number": "220-17-K/26",
+  "file": "260826_220-17-K-26_FHM_JD012603-02-P060412.pdf",
+  "sha256": "bcdf73b8aec8347f2497cd4bbc9855e14e4e364ac7fec4b9df9a7a5662869456",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "26.08.2026",
+  "sample": {
+   "strain": "Jelly Donutz",
+   "batch": "P060412",
+   "lab_sample_number": "CF-522/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "12.70"
+  },
+  "analysis_date": "25.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "14.43",
+    "U": "0.89"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-17-K/26",
+  "batch_printed": "P060412",
+  "p_number": "P060412",
+  "strain_printed": "Jelly Donutz",
+  "date_of_issue": "26.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "25.08.2026",
+  "lab_sample_number": "CF-522/26",
+  "drive_id": "1e8vjDT5ev8CrRLGkiJ9RzCNaAtdcabDz",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "14.43"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "0.89"
+  }
+ },
+ "220-18-K-26": {
+  "n": 18,
+  "report_number": "220-18-K/26",
+  "file": "260826_220-18-K-26_FHM_JD012603-02V-P060422.pdf",
+  "sha256": "a5165408193d592b0c1f5add41b76e7aa9b27cf7bc07be132abdfa7dadb910fe",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "26.08.2026",
+  "sample": {
+   "strain": "Jelly Donutz",
+   "batch": "P060422",
+   "lab_sample_number": "CF-523/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "12.65"
+  },
+  "analysis_date": "25.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "17.09",
+    "U": "1.05"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-18-K/26",
+  "batch_printed": "P060422",
+  "p_number": "P060422",
+  "strain_printed": "Jelly Donutz",
+  "date_of_issue": "26.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "25.08.2026",
+  "lab_sample_number": "CF-523/26",
+  "drive_id": "14D1xjxdt9B5_b0AHH9sz13bdDUtT4Ux4",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "17.09"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "1.05"
+  }
+ },
+ "220-19-K-26": {
+  "n": 19,
+  "report_number": "220-19-K/26",
+  "file": "260826_220-19-K-26_FHM_KC102501-P060172.pdf",
+  "sha256": "b82f85915b3b09df1992b98378c2986f5d4548a8847ffd11f948bd10c592fbff",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "26.08.2026",
+  "sample": {
+   "strain": "Kush Crasher",
+   "batch": "P060172",
+   "lab_sample_number": "CF-524/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "12.70"
+  },
+  "analysis_date": "25.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "17.06",
+    "U": "1.05"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-19-K/26",
+  "batch_printed": "P060172",
+  "p_number": "P060172",
+  "strain_printed": "Kush Crasher",
+  "date_of_issue": "26.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "25.08.2026",
+  "lab_sample_number": "CF-524/26",
+  "drive_id": "1xnJg1PDby3P8VDHnDufvz0SrT3Be2ybc",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "17.06"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "1.05"
+  }
+ },
+ "220-20-K-26": {
+  "n": 20,
+  "report_number": "220-20-K/26",
+  "file": "260826_220-20-K-26_FHM_MB0824_05-P050112.pdf",
+  "sha256": "4be671a60987cf4de694163e6d58b7ff118e860ee319b45c774580cdf829bf09",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "26.08.2026",
+  "sample": {
+   "strain": "Motor Breath",
+   "batch": "P050112",
+   "lab_sample_number": "CF-525/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "12.22"
+  },
+  "analysis_date": "25.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "17.93",
+    "U": "1.10"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-20-K/26",
+  "batch_printed": "P050112",
+  "p_number": "P050112",
+  "strain_printed": "Motor Breath",
+  "date_of_issue": "26.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "25.08.2026",
+  "lab_sample_number": "CF-525/26",
+  "drive_id": "1NMq2Xu_z_UuzYCvm7vxmQs9Cr252wLWJ",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "17.93"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "1.10"
+  }
+ },
+ "220-21-K-26": {
+  "n": 21,
+  "report_number": "220-21-K/26",
+  "file": "260826_220-21-K-26_FHM_OMP1024_01-P050042.pdf",
+  "sha256": "2a79327e4664521a6bf917f6f81be76de2b476d6649af2f4e78bbd0b9bd305f6",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "26.08.2026",
+  "sample": {
+   "strain": "Orange Punch Mimosa",
+   "batch": "P050042",
+   "lab_sample_number": "CF-526/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "10.34"
+  },
+  "analysis_date": "25.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "18.14",
+    "U": "1.17"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-21-K/26",
+  "batch_printed": "P050042",
+  "p_number": "P050042",
+  "strain_printed": "Orange Punch Mimosa",
+  "date_of_issue": "26.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "25.08.2026",
+  "lab_sample_number": "CF-526/26",
+  "drive_id": "19d945xqYrxKyS3LdPZgU611wL5rLZ7iy",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "18.14"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "1.17"
+  }
+ },
+ "220-22-K-26": {
+  "n": 22,
+  "report_number": "220-22-K/26",
+  "file": "260826_220-22-K-26_FHM_OPM092501-P060042.pdf",
+  "sha256": "09ed659392053976f432b6abfcde40eb65793322c64c0271f2af60b4537ec1cc",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "26.08.2026",
+  "sample": {
+   "strain": "Orange Punch Mimosa",
+   "batch": "P060042",
+   "lab_sample_number": "CF-527/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "10.40"
+  },
+  "analysis_date": "25.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "10.18",
+    "U": "0.62"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-22-K/26",
+  "batch_printed": "P060042",
+  "p_number": "P060042",
+  "strain_printed": "Orange Punch Mimosa",
+  "date_of_issue": "26.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "25.08.2026",
+  "lab_sample_number": "CF-527/26",
+  "drive_id": "1o9_7QErac41MaCE4oakmiYM1XeccMc1r",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "10.18"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "0.62"
+  }
+ },
+ "220-23-K-26": {
+  "n": 23,
+  "report_number": "220-23-K/26",
+  "file": "260826_220-23-K-26_FHM_OPM1024_03-P050082.pdf",
+  "sha256": "d6e7c417f85c4f8cb0c99d34b99836538e8e825058a982d17161bf975ac8793b",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "26.08.2026",
+  "sample": {
+   "strain": "Orange Punch Mimosa",
+   "batch": "P050082",
+   "lab_sample_number": "CF-528/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "10.96"
+  },
+  "analysis_date": "25.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "19.30",
+    "U": "1.19"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-23-K/26",
+  "batch_printed": "P050082",
+  "p_number": "P050082",
+  "strain_printed": "Orange Punch Mimosa",
+  "date_of_issue": "26.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "25.08.2026",
+  "lab_sample_number": "CF-528/26",
+  "drive_id": "1SYbT-ij0xo9I3aI79ZS5uurBVI-Tb8VI",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "19.30"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "1.19"
+  }
+ },
+ "220-24-K-26": {
+  "n": 24,
+  "report_number": "220-24-K/26",
+  "file": "260826_220-24-K-26_FHM_PM112501-P060232.pdf",
+  "sha256": "e06549c35d1e662beb04640a5e9f5b7b8329ee65e104cff7649a8cc5548d8b6d",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "26.08.2026",
+  "sample": {
+   "strain": "Permanent Marker",
+   "batch": "P060232",
+   "lab_sample_number": "CF-529/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "11.67"
+  },
+  "analysis_date": "25.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "10.80",
+    "U": "0.66"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-24-K/26",
+  "batch_printed": "P060232",
+  "p_number": "P060232",
+  "strain_printed": "Permanent Marker",
+  "date_of_issue": "26.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "25.08.2026",
+  "lab_sample_number": "CF-529/26",
+  "drive_id": "1wHRdiczYdeixyxLzTfvfMBw6_SsIgx32",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "10.80"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "0.66"
+  }
+ },
+ "220-25-K-26": {
+  "n": 25,
+  "report_number": "220-25-K/26",
+  "file": "260826_220-25-K-26_FHM_PUM102501-P060112.pdf",
+  "sha256": "c65f72a5b59a8ed6f95a0cf4f849a5828f538b9de2cc1c81fc5226645cc89b4b",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "26.08.2026",
+  "sample": {
+   "strain": "Pure Michigen",
+   "batch": "P060112",
+   "lab_sample_number": "CF-530/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "11.68"
+  },
+  "analysis_date": "25.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "13.95",
+    "U": "0.86"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-25-K/26",
+  "batch_printed": "P060112",
+  "p_number": "P060112",
+  "strain_printed": "Pure Michigen",
+  "date_of_issue": "26.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "25.08.2026",
+  "lab_sample_number": "CF-530/26",
+  "drive_id": "1JTXMk8Yc_VEU8yTveQkje6jg4t-2dP09",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "13.95"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "0.86"
+  }
+ },
+ "220-26-K-26": {
+  "n": 26,
+  "report_number": "220-26-K/26",
+  "file": "260826_220-26-K-26_FHM_SCR112501-P060282.pdf",
+  "sha256": "42422b4f8a6a4f8ec75ae7be3aa5285f2b4cc90c8e56e29ea8a4922b770df878",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "26.08.2026",
+  "sample": {
+   "strain": "Scrambler",
+   "batch": "P060282",
+   "lab_sample_number": "CF-531/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "11.92"
+  },
+  "analysis_date": "25.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "19.73",
+    "U": "1.21"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-26-K/26",
+  "batch_printed": "P060282",
+  "p_number": "P060282",
+  "strain_printed": "Scrambler",
+  "date_of_issue": "26.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "25.08.2026",
+  "lab_sample_number": "CF-531/26",
+  "drive_id": "1z_XD50_GN0B3B7_SVL448VVahY-N2lzP",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "19.73"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "1.21"
+  }
+ },
+ "220-27-K-26": {
+  "n": 27,
+  "report_number": "220-27-K/26",
+  "file": "260826_220-27-K-26_FHM_SJ092501-P060082.pdf",
+  "sha256": "31e646079ca0ce5f9b8a2c3e365bbb4595d151072661f34e13c20c8149abd322",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "26.08.2026",
+  "sample": {
+   "strain": "Sleepy Joe",
+   "batch": "P060082",
+   "lab_sample_number": "CF-532/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "11.61"
+  },
+  "analysis_date": "25.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "10.39",
+    "U": "0.64"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-27-K/26",
+  "batch_printed": "P060082",
+  "p_number": "P060082",
+  "strain_printed": "Sleepy Joe",
+  "date_of_issue": "26.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "25.08.2026",
+  "lab_sample_number": "CF-532/26",
+  "drive_id": "1nEQGhKjjaf0VxrGMGUvSaH40GeCCvRE4",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "10.39"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "0.64"
+  }
+ },
+ "220-28-K-26": {
+  "n": 28,
+  "report_number": "220-28-K/26",
+  "file": "260826_220-28-K-26_FHM_WC082501-P060012.pdf",
+  "sha256": "dd6c2d74c195bea53861d4986b2411a8e45225c828b2daee96b8791985ebe88c",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "26.08.2026",
+  "sample": {
+   "strain": "Wedding Crusher",
+   "batch": "P060012",
+   "lab_sample_number": "CF-533/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "11.90"
+  },
+  "analysis_date": "25.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "23.48",
+    "U": "1.44"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-28-K/26",
+  "batch_printed": "P060012",
+  "p_number": "P060012",
+  "strain_printed": "Wedding Crusher",
+  "date_of_issue": "26.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "25.08.2026",
+  "lab_sample_number": "CF-533/26",
+  "drive_id": "1ovwwWrwAQG_dqcrYAcGNW01yAgZ8gYor",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "23.48"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "1.44"
+  }
+ },
+ "220-29-K-26": {
+  "n": 29,
+  "report_number": "220-29-K/26",
+  "file": "260826_220-29-K-26_FHM_CC012603-P060372.pdf",
+  "sha256": "2ad596f546f9478b180ef417ed5be37b7fed42e315179672a8389f14df0db804",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "26.08.2026",
+  "sample": {
+   "strain": "Cash Cow",
+   "batch": "P060372",
+   "lab_sample_number": "CF-534/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "10.50"
+  },
+  "analysis_date": "25.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "14.76",
+    "U": "0.91"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-29-K/26",
+  "batch_printed": "P060372",
+  "p_number": "P060372",
+  "strain_printed": "Cash Cow",
+  "date_of_issue": "26.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "25.08.2026",
+  "lab_sample_number": "CF-534/26",
+  "drive_id": "1B9xPy8c8xBWqJ3Jz6IlO5hw63zAurs1E",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "14.76"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "0.91"
+  }
+ },
+ "220-30-K-26": {
+  "n": 30,
+  "report_number": "220-30-K/26",
+  "file": "260826_220-30-K-26_FHM_JD042601.pdf",
+  "sha256": "66626aff2581690000cdd170660e6d56033ad399b9a172760ccc7557ef54d46a",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "26.08.2026",
+  "sample": {
+   "strain": "Jelly Donutz",
+   "batch": "JD042601",
+   "lab_sample_number": "CF-535/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "13.04"
+  },
+  "analysis_date": "25.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "14.89",
+    "U": "0.91"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-30-K/26",
+  "batch_printed": "JD042601",
+  "p_number": "",
+  "strain_printed": "Jelly Donutz",
+  "date_of_issue": "26.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "25.08.2026",
+  "lab_sample_number": "CF-535/26",
+  "drive_id": "1GgHwQhy6gVJ5ToUUtGEi8hopYNpcuK7W",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "14.89"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "0.91"
+  }
+ },
+ "220-31-K-26": {
+  "n": 31,
+  "report_number": "220-31-K/26",
+  "file": "260826_220-31-K-26_FHM_FB042601.pdf",
+  "sha256": "2edef8dce12e29bf3f836a85d4bfaa91f0289c79b8c0ecfb88d1a5ef7c3815e1",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "26.08.2026",
+  "sample": {
+   "strain": "Fat Bastard",
+   "batch": "FB042601",
+   "lab_sample_number": "CF-536/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "10.62"
+  },
+  "analysis_date": "25.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "14.99",
+    "U": "0.92"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-31-K/26",
+  "batch_printed": "FB042601",
+  "p_number": "",
+  "strain_printed": "Fat Bastard",
+  "date_of_issue": "26.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "25.08.2026",
+  "lab_sample_number": "CF-536/26",
+  "drive_id": "1PyB6ttblQ3-Pkdn491RSD3Oy2gQkUoSV",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "14.99"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "0.92"
+  }
+ },
+ "220-32-K-26": {
+  "n": 32,
+  "report_number": "220-32-K/26",
+  "file": "260826_220-32-K-26_FHM_CC042601.pdf",
+  "sha256": "fb36161faff4a2fe12ff5cd4398aaae8031dcff8e4720135eb38439f5a29156d",
+  "laboratory": "Фармахем Лабораторија за животна средина (FHM), Skopje",
+  "received": "17.08.2026",
+  "issued": "26.08.2026",
+  "sample": {
+   "strain": "Cash Cow",
+   "batch": "CC042601",
+   "lab_sample_number": "CF-537/26",
+   "type": "Цвет",
+   "packaging": "Алуминиумско пакување",
+   "mass_g": "12.73"
+  },
+  "analysis_date": "25.08.2026",
+  "method": "ИР 7.2.1-47К (в.1) — HPLC/DAD, Ph. Eur. Cannabis flos (3028), MKC EN ISO 17025:2018",
+  "results": {
+   "Total CBD": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total CBN": {
+    "result": "< LOQ",
+    "U": "/"
+   },
+   "Total Δ9-THC": {
+    "result": "14.90",
+    "U": "0.92"
+   }
+  },
+  "read": "Claude page read of 15.09.2026 from rendered page crops at 100 DPI (no text layer, no classical OCR)",
+  "cert_code": "220-32-K/26",
+  "batch_printed": "CC042601",
+  "p_number": "",
+  "strain_printed": "Cash Cow",
+  "date_of_issue": "26.08.2026",
+  "date_received": "17.08.2026",
+  "date_analysed": "25.08.2026",
+  "lab_sample_number": "CF-537/26",
+  "drive_id": "1SOiEuGBBHjdz0vqiEDalrrDAhmoXJ6hw",
+  "results_flat": {
+   "Total CBD": "< LOQ",
+   "Total CBN": "< LOQ",
+   "Total THC": "14.90"
+  },
+  "uncertainty": {
+   "Total CBD": "/",
+   "Total CBN": "/",
+   "Total THC": "0.92"
+  }
+ }
+}

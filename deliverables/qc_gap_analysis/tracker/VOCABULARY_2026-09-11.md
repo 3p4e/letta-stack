@@ -836,3 +836,76 @@ prints them to `Tranche_1_CoQ_Reissue_Drafts.pdf`.
         --series reissue --scope deliverables/qc_gap_analysis/tracker/coq_reissue_scope_2026-09-15.csv
     python3 deliverables/qc_gap_analysis/live_instrument/print_coq_pdfs.py \
         --series reissue --scope deliverables/qc_gap_analysis/tracker/coq_reissue_scope_2026-09-15.csv
+
+# v30 — the Tranche 2 potency certificates, and every batch on record in the schedule, 15.09.2026
+
+The owner asked why CoQ Register rows 105–173 of v29 had no code, and answered the reason
+himself: "they are all contained in the database … here are all retest results that I have on
+file and correct yourself." The thirty-two Farmahem reports `220-1-К/26` … `220-32-К/26` — the
+Tranche 2 re-analysis of cannabinoids, received 17.08, analysed 24/25.08, issued 25/26.08.2026
+— had been in `eCoA_DATABASE` since 09.09.2026 and the desk had never taken them in as the
+retest assays. `intake_220K_2026-09-15/` is the intake (two independent page reads, 32 of 32
+agreeing on batch, dates, sample number, results and uncertainty; `apply_220K.py` writes the
+register rows into existing blocks only; `instances_220K.py` the tracker instances;
+`receipt_dates.py` reads the receipt date as its fifth source). With the assay on file beside
+the 220-М mycotoxins, the Tranche 2 reissues are issuable under the owner's rules of 31.08 and
+10.09: **thirty Tranche 2 reissues numbered CoQ-PP_26-104 … 133, planned 18.09.2026** (the first
+working day 7 days after the latest certificate cited, 220-М of 11.09.2026), after the 82
+initial certificates and the 21 Tranche 1 reissues of 17.08.2026. The Tranche 3 reissues still
+wait: no 227-М mycotoxin certificate exists on any list the owner has provided.
+
+Two definitions had to move for the numbers to be right.
+
+**A tracker document belongs to one lot.** Three lots of JD012603 (P060362, P060412, P060422)
+and two of GRC102501 (P060142, P060182) share one cultivation batch, and the tracker filed
+every document of the batch in one pool — so a sister lot's certificate could be cited as a
+lot's retest, and in v29 `220-16-М/26` was cited by all three JD012603 lots. `DOC_LOT` now
+records the P lot of every certificate — from the instance that attaches it, and for every
+certificate of a release-register block from the block's lot (or the batch list's lot for the
+block's cultivation batch) — and the register part cites, for a lot, only documents of that
+lot or of no lot. Each JD012603 lot now cites its own 220-16/17/18-К and -М.
+
+**Every batch on record has its place in the schedule.** `build_coq_schedule.py` built its
+placeholder lots from the iCoA issuance list of 31.08.2026, which predates the blocks the
+intakes opened: JD042601 (P060492) on 09.09 and the sub-lot blocks BSS1024_01/2 (P050142),
+WED102501 (P060102), SCR012601 (P060342), GRC102501/1 (P060142) with their 227-К re-analyses on
+11.09 — five blocks with certificates on file and no CoQ in the export at all, so no reissue
+row on the register (FB042601 and CC042601 had a release row from the tracker and no reissue).
+Every register block outside the plan and the list now gets a predicted release and reissue,
+dated from the batch list's packaging date: 178 CoQs in the export, 180 rows on the register.
+JD042601's Tranche 2 reissue is numbered with the others; the four 227-К lots wait with
+Tranche 3.
+
+**And a reissue is numbered after the certificate it supersedes, never before it.** FB042601
+and CC042601 have their Tranche 2 assay and mycotoxins on file but no packaging date on the
+list, so the register withholds their release CoQ — and now withholds the reissue with it
+("initial certificate withheld"), where the first v30 build had numbered the reissue of an
+unnumbered certificate.
+
+Both registers audited on the recalculated workbook (`audit_registers.py`): iCoA Register 184
+numbered contiguous 1..184; CoQ Register 133 numbered contiguous 1..133, codes equal to their
+numbers, dates non-decreasing, every numbered CoQ citing a numbered iCoA dated on or before it,
+all 51 numbered reissues after every initial certificate and naming the one they supersede by
+the register's code. `verify_workbook.py` and `verify_prose.py`: no findings. 53 reissue
+drafts compiled (21 Tranche 1, 30 Tranche 2 — including the two withheld lots, which print the
+at-issue placeholder where the code goes), every one printing its register code, date and supersedes line;
+`Tranche_1_2_CoQ_Reissue_Draft_Set.html` replaces the Tranche 1 set,
+`Tranche_2_CoQ_Reissue_Drafts.pdf` is new. One result still prints outside its band on the
+reissue set (GG1024, LoD 76.07 — the open item it was).
+
+## Reproducing
+
+    python3 deliverables/qc_gap_analysis/intake_220K_2026-09-15/apply_220K.py --register <register>
+    python3 deliverables/qc_gap_analysis/intake_220K_2026-09-15/instances_220K.py
+    python3 deliverables/qc_gap_analysis/receipt_dates.py
+    python3 deliverables/qc_gap_analysis/build_coq_schedule.py
+    python3 deliverables/qc_gap_analysis/export_coq_artifact_data.py
+    python3 deliverables/qc_gap_analysis/tracker/build_tracker_v8.py \
+        --v9 --version=30 --icoa --cells \
+        --mikro=CoQ_Analysis_Master_v13.xlsx \
+        --build-date=15.09.2026 --legacy-icoa=03.06.2026 --legacy-coq=06.06.2026
+    python3 deliverables/qc_gap_analysis/tracker/extract_coq_register.py tracker/CoQ_Analysis_Master_v30.xlsx coq_register_2026-09-10.csv
+    python3 deliverables/qc_gap_analysis/export_coq_artifact_data.py
+    python3 deliverables/qc_gap_analysis/live_instrument/reissue_scope.py
+    python3 deliverables/qc_gap_analysis/live_instrument/build_coq_drafts.py --series reissue \
+        --scope tracker/coq_reissue_scope_2026-09-15.csv

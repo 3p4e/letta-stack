@@ -702,6 +702,35 @@ def schedule():
         coqs.append({"date": r["release_date"], "type": "initial release — predicted",
                      "plan": stub, "number": NO_NUMBER, "issued": False})
 
+    # Register blocks the 31.08 iCoA list never carried — lots the later intakes
+    # opened on the record (JD042601 / P060492 on 09.09; the sub-lot blocks
+    # BSS1024_01/2, WED102501, SCR012601, GRC102501/1 with their 227-K
+    # re-analyses on 11.09). Every batch on record gets its place in the
+    # schedule (owner, 31.08.2026); their release date is the packaging date of
+    # the batch list, the same basis the registers use. Found 15.09.2026: five
+    # blocks with certificates on file and no CoQ in the schedule at all.
+    packed = {}
+    _bd = os.path.join(HERE, "tracker", "batch_dates.csv")
+    if os.path.exists(_bd):
+        with open(_bd, encoding="utf-8") as fh:
+            for r in csv.DictReader(fh):
+                packed[BI.batch_key(r["cu_batch"])] = r["packaging_to"] or r["packaging_from"]
+                if r["p_batch"]:
+                    packed.setdefault(BI.batch_key(r["p_batch"]), r["packaging_to"] or r["packaging_from"])
+    for b in order:
+        bk = BI.batch_key(b)
+        if bk in covered or bk in icoa or bk in pp_alias:
+            continue
+        pn = batches[b]["pnumber"]
+        stub = {"pp": pn, "cb": b, "nm": batches[b]["strain"], "grade": "",
+                "cls": "", "nom": "", "tol": "", "lo": "", "hi": "", "thc": "",
+                "md": "", "pk": packed.get(bk, ""), "id": NO_NUMBER, "ic": NO_NUMBER,
+                "issue": packed.get(bk, ""), "retest": ""}
+        stubs.append(stub)
+        covered.add(bk)
+        coqs.append({"date": stub["issue"], "type": "initial release — predicted",
+                     "plan": stub, "number": NO_NUMBER, "issued": False})
+
     def plus_year(d):
         m = re.match(r"^(\d{2})\.(\d{2})\.(\d{4})$", clean(d))
         return f"{m.group(1)}.{m.group(2)}.{int(m.group(3)) + 1}" if m else ""
