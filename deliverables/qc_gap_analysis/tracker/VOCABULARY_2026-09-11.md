@@ -1033,3 +1033,46 @@ certificates, the references table and every draft: no other finding.
         --root <qc_gap_analysis with the intakes applied to its register> \
         --workbook <recalculated CoQ_Analysis_Master_v32.xlsx> \
         --out deliverables/qc_gap_analysis/tracker/TRUTH_CHECK_2026-09-15.md
+
+# v33 — the CoQ compilation, the first request, 15.09.2026 (evening)
+
+The owner, recalling the request of 31.08.2026 that started the series: *"for all
+certificates of quality, for all batches, for all initial and retest certificates of
+quality, a table containing all information that is needed for the certificate of quality
+template, but most importantly, from parameter 1 to 12, the document codes and date of
+issuing of the certificate of analysis from external laboratories … and the analysis results
+for each of those parameters … for every certificate of quality document code individually,
+for every single one of the parameters."* He thought it was in the master workbook. It was
+not, in that form: the `CoQ References` tab (v29) carries the codes, dates and laboratories
+per determination, folded into one cell per parameter, and no results; the results and the
+header data lived in `coq_artifact_data.json`, which is not a table anyone reads.
+
+`coq_compilation.py` builds it from that export, with the CoQ Register's code, and the
+workbook build adds it as two tabs:
+
+* **CoQ Compilation** — one row per certificate of quality, 172 (89 release, 83 reissue):
+  the template's header fields — code, series, register status, date of issue, the
+  certificate it supersedes, plan number, batch, P lot, strain, harvest and packaging from
+  the batch list, the template's manufacturing and packaging dates, the internal certificate
+  (code, issued, tested), the retest campaign, Total THC and its certificate, grade, potency
+  window, product code, specification code and status, the specification's bands
+  (phenotype, chemotype, processing, dominance, packaging), the latest external certificate
+  — then for every determination #1 … #12 with its sub-determinations (23) four columns:
+  **result, document, issued, laboratory**. A determination the certificate prints no
+  result for says why in the result column (not tested, upon request, to be performed in
+  house, awaiting the Farmahem certificate) and carries no document.
+* **CoQ Compilation (long)** — the same, one row per certificate and determination (3,956
+  rows), with the method, the acceptance criterion, the laboratory's receipt date of the
+  sample, the desk's status for the row, the route where nothing is on file yet, and the
+  other documents on file that also carry the result.
+
+The same tables stand alone as `tracker/CoQ_compilation_v33.xlsx`, `_wide.csv` and
+`_long.csv`. What the compilation says is what the certificate prints — the export is the
+one source of both, and the truth check of v32 stands over it.
+
+## Reproducing
+
+    python3 deliverables/qc_gap_analysis/coq_compilation.py --out tracker/CoQ_compilation_v33
+    python3 deliverables/qc_gap_analysis/tracker/build_tracker_v8.py \
+        --v9 --version=33 --icoa --cells --mikro=CoQ_Analysis_Master_v13.xlsx \
+        --build-date=15.09.2026 --legacy-icoa=03.06.2026 --legacy-coq=06.06.2026 --t3-issue=21.09.2026
