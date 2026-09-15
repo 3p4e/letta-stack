@@ -10,6 +10,7 @@ load_register() / verified_map() — so the artifact cannot drift from the
 deliverables. No value is retyped here.
 """
 import json
+import re
 import os
 import sys
 from collections import OrderedDict
@@ -254,7 +255,8 @@ def main(out):
                 "spec": p["spec_doc"], "conflict": p["spec_conflict"],
                 "reg": p["in_register"], "issued": p["issued"],
                 "md": p.get("md", ""), "pk": p.get("pk", ""),
-                "pcode": (specj.get(p["pp"]) or {}).get("product_code", ""),
+                "pcode": p.get("pcode", ""), "spec_status": p.get("spec_status", ""),
+                "issued_spec": p.get("issued_spec", ""),
                 "rows": [],
             }
             coqs.append(by_n[k])
@@ -330,15 +332,26 @@ def main(out):
         with open(_spec_csv, encoding="utf-8") as _fh:
             for _r in _csv2.DictReader(_fh):
                 _spec[_r["code"].strip()] = _r
+        # Owner, 15.09.2026: the specification code a certificate prints is generated
+        # from the potency specification (potency_grading.py) and is usually a version
+        # the file does not hold yet; the ATTRIBUTES — phenotype, chemotype, processing,
+        # packaging — are the strain's, the same on every grade of it (OI-01), so they
+        # are read off any issued specification of the same strain.
+        _by_abbr = {}
+        for _k, _r in _spec.items():
+            _m = re.match(r"QCSP_001_([A-Z0-9]+)-", _k)
+            if _m:
+                _by_abbr.setdefault(_m.group(1), _r)
         _sh, _sm = 0, set()
         for _c in coqs:
             _code = (_c.get("spec") or "").strip()
-            _r = _spec.get(_code)
+            _m = re.match(r"QCSP_001_([A-Z0-9]+)-", _code)
+            _r = _spec.get(_code) or (_by_abbr.get(_m.group(1)) if _m else None)
             if not _r:
                 if _code and _code != "\u2014":
                     _sm.add(_code)
                 continue
-            _c["spc"] = {"code": _r["code"], "pheno": _r["phenotype"],
+            _c["spc"] = {"code": _code or _r["code"], "attributes_from": _r["code"], "pheno": _r["phenotype"],
                          "chemo": _r["chemotype"], "proc": _r["processing"],
                          "dominance": _r["dominance"], "dom": _r["dom"],
                          "pack": _r["packaging"]}

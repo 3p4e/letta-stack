@@ -780,3 +780,18 @@ version rule — v.01 cited where a specification with that product code is issu
 where none is, v.02 where the numeral is issued for another nominal, because the
 specification of 15.09.2026 changed the grade set of several strains. A result in no window
 is graded to the nearest window and the Grading note says so.
+
+**Correction the same day (owner, 15.09.2026): every grade, nominal, tolerance and range already in
+the issued specifications, the issue plan and the certificates is old and potentially wrong; the
+potency specification of 15.09.2026 is used exactly, everywhere.** `build_coq_schedule.py` no
+longer takes the Total THC criterion, grade, product code or specification document code from
+the issue plan or the issued QCSP 001 v.01: each certificate's criterion is the window its own
+Total THC result falls in (the release result on the release certificate, the re-analysis on the
+reissue), and the product code and the specification code are generated from it. The v.01
+document is cited only where it carries the same product code and the same window; a numeral
+issued with any other content takes v.02 and the status says what it supersedes; a numeral never
+issued takes v.01 (to issue). The issued v.01 document is recorded beside the generated code
+(`issued_spec`, `spec_conflict`), not used. The specification attributes — phenotype, chemotype,
+processing, packaging — are the strain's and are read off any issued specification of the same
+strain. The desk artifact and the 22 draft certificates were recompiled from the new export;
+v29 was rebuilt in place.

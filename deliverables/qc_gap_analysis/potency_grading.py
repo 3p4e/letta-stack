@@ -25,11 +25,12 @@ specifications):
 * **Product code** `{ABBR}_THC{nominal} : CBD1` and **specification document code**
   `QCSP_001_{ABBR}-{grade numeral}_v.NN`, the numeral ranking the strain's grades from
   the highest nominal (I) down — the issued convention (Cap Junky: I = 28, II = 26 …).
-  The version is v.01 for a document not yet issued; where the v.01 with that strain and
-  numeral is issued for the same product code it is cited, with its window; where the
-  product code is issued under another numeral, or the numeral under another nominal,
-  the generated code is v.02 and the status names the issued document — the
-  specification of 15.09.2026 changed the grade set and the windows of several strains.
+  Owner, 15.09.2026: every grade, nominal, tolerance and range already in the issued
+  specifications and on the certificates is old and potentially wrong; the specification
+  of 15.09.2026 is used exactly, everywhere. So the v.01 document is cited only where it
+  carries the same product code AND the same window; a numeral that is issued with any
+  other content takes v.02 and the status names what it supersedes; a numeral never
+  issued takes v.01 (to issue).
 """
 import csv
 import json
@@ -162,26 +163,38 @@ def product_code(abbr, nominal):
     return "%s_THC%d : CBD1" % (abbr, round(nominal))
 
 
-def spec_code(abbr, roman, pcode):
+def spec_code(abbr, roman, pcode, lo=None, hi=None):
     """The specification document code, and whether it is issued, to issue, or a new version.
 
-    >>> spec_code("BSS", "II", "BSS_THC24 : CBD1")
-    ('QCSP_001_BSS-II_v.02', 'v.02 — BSS_THC24 : CBD1 is issued as QCSP_001_BSS-I_v.01 (22.01 – 25.99 %); the numeral and the window change under the specification of 15.09.2026')
-    >>> spec_code("ZZ", "I", "ZZ_THC10 : CBD1")
+    >>> spec_code("BSS", "II", "BSS_THC24 : CBD1", 21.89, 26.10)
+    ('QCSP_001_BSS-II_v.02', 'v.02 supersedes QCSP_001_BSS-II_v.01 (was BSS_THC20 : CBD1); now BSS_THC24 : CBD1 21.89 – 26.10 %')
+    >>> spec_code("ZZ", "I", "ZZ_THC10 : CBD1", 9.0, 10.99)
     ('QCSP_001_ZZ-I_v.01', 'to issue')
     """
     _load()
     base = "QCSP_001_%s-%s_v.01" % (abbr, roman)
-    if base in _ISSUED and _ISSUED[base] == pcode:
-        return base, "issued (%s)" % _BY_PCODE.get(pcode, ("", ""))[1]
+    win = "%.2f – %.2f %%" % (lo, hi) if lo is not None else ""
+    if base in _ISSUED and _ISSUED[base] == pcode and _same_window(_BY_PCODE.get(pcode, ("", ""))[1], lo, hi):
+        return base, "issued, same window (%s)" % _BY_PCODE[pcode][1]
+    if base in _ISSUED:
+        # the numeral is issued: as this product code with another window, or as another nominal
+        what = ("same product code, window was %s" % _BY_PCODE[pcode][1]) if _ISSUED[base] == pcode \
+            else "was %s" % _ISSUED[base]
+        return "QCSP_001_%s-%s_v.02" % (abbr, roman), "v.02 supersedes %s (%s); now %s %s" % (base, what, pcode, win)
     if pcode in _BY_PCODE:
         code, crit = _BY_PCODE[pcode]
-        return ("QCSP_001_%s-%s_v.02" % (abbr, roman),
-                "v.02 — %s is issued as %s (%s); the numeral and the window change under the specification of 15.09.2026"
-                % (pcode, code, crit))
-    if base in _ISSUED:
-        return "QCSP_001_%s-%s_v.02" % (abbr, roman), "v.02 — %s is issued for another nominal (%s)" % (base, _ISSUED[base])
+        return base, "to issue — %s was issued as %s (%s); now %s under the specification of 15.09.2026" % (pcode, code, crit, win)
     return base, "to issue"
+
+
+def _same_window(crit, lo, hi):
+    """Does an issued criterion print this window?
+
+    >>> _same_window("22.01 – 25.99 %", 22.01, 25.99), _same_window("22.01 – 25.99 %", 21.89, 26.10)
+    (True, False)
+    """
+    m = re.findall(r"\d+\.\d+", str(crit or ""))
+    return len(m) >= 2 and lo is not None and abs(float(m[0]) - lo) < 0.005 and abs(float(m[1]) - hi) < 0.005
 
 
 def grading(cb, strain, res):
@@ -208,7 +221,8 @@ def grading(cb, strain, res):
     out["grade"] = "%.2f ± %.2f (%s)" % (g["nominal"], g["tol"], g["roman"])
     out["window"] = "%.2f – %.2f %%" % (g["lo"], g["hi"])
     out["product_code"] = product_code(out["abbr"], g["nominal"])
-    out["spec_code"], out["spec_status"] = spec_code(out["abbr"], g["roman"], out["product_code"])
+    out["spec_code"], out["spec_status"] = spec_code(out["abbr"], g["roman"], out["product_code"], g["lo"], g["hi"])
+    out["nominal"], out["tol"], out["lo"], out["hi"], out["roman"] = g["nominal"], g["tol"], g["lo"], g["hi"], g["roman"]
     out["note"] = g["note"]
     return out
 

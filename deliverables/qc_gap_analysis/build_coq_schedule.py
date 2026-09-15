@@ -88,6 +88,7 @@ if HERE not in sys.path:
     sys.path.insert(0, HERE)
 import cell_resolution as CR                                        # noqa: E402
 import cnp_methods as CM                                             # noqa: E402
+import potency_grading as PGR                                        # noqa: E402
 
 OUT_X = os.path.join(HERE, "PP_CoQ_Parameter_Schedule_2026-08-31.xlsx")
 OUT_C = os.path.join(HERE, "coq_parameter_schedule_2026-08-31.csv")
@@ -742,25 +743,17 @@ def schedule():
         additional = coq["type"].startswith("additional")
         blocked = cb == "FB032601"
 
-        thc_criterion = (f"{x['lo']} – {x['hi']} %  (grade {x['grade']}, class "
-                         f"THC {x['cls']}, nominal {x['nom']} ± {x['tol']})"
-                         if x["lo"] else
-                         "Per target grade — no packaged lot or grade assigned in "
-                         "the master spec yet")
-        # The plan writes the top of the range as nominal + tolerance − 0.01 (an
-        # inclusive endpoint: 24.00 ± 2.40 → 21.60–26.39) where the QCSP PDF writes
-        # 21.60–26.40. That is one range in two conventions, not a conflict; only a
-        # difference beyond 0.01 on either endpoint is one.
+        # Owner, 15.09.2026: the grade, nominal, tolerance and range on a certificate
+        # are the potency specification's of 15.09.2026 — never the issue plan's and
+        # never the issued QCSP 001 v.01's, which are old and potentially wrong. The
+        # grade is the window the certificate's OWN Total THC result falls in (the
+        # release result on the release certificate, the re-analysis on the reissue),
+        # decided below once the assay certificate is chosen; the product code and the
+        # specification document code follow from it (potency_grading.py). What the
+        # issued v.01 document printed is recorded beside it, not used.
+        thc_criterion = "Per grade of the potency specification of 15.09.2026 — no Total THC result on file"
         conflict = ""
-        if sp:
-            m = re.findall(r"[\d.]+", sp["thc_criterion"])
-            if len(m) >= 2:
-                lo_s, hi_s = float(m[0]), float(m[1])
-                if abs(lo_s - float(x["lo"])) > 0.011 or \
-                        abs(hi_s - float(x["hi"])) > 0.011:
-                    conflict = (f"QCSP 001 prints {sp['thc_criterion']} for this lot; "
-                                f"the issue plan's grade range is {x['lo']} – {x['hi']} %. "
-                                f"Recorded, not resolved.")
+        grading = {}
 
         inhouse = {} if cb else inhouse_cells(x["cb"])
         # The owner's 09.09.2026 pass over eCoA_DATABASE: for a determination the
@@ -785,6 +778,16 @@ def schedule():
         codes, counts = OrderedDict(), defaultdict(int)
         start = len(rows)
         assay = pick(reg["cells"].get("E", []), additional)[0]
+        grading = PGR.grading(x["cb"] or x["pp"], x["nm"], assay["value"] if assay else "")
+        if grading.get("grade"):
+            thc_criterion = (f"{grading['window']}  (grade {grading['roman']}, nominal "
+                             f"{grading['nominal']:.2f} ± {grading['tol']:.2f})")
+            if grading.get("note"):
+                thc_criterion += f"  — {grading['note']}"
+            if sp and not grading["spec_status"].startswith("issued"):
+                conflict = (f"QCSP 001 {sp['spec_doc_code']} printed {sp['thc_criterion']} ({sp['product_code']}) "
+                            f"for this lot; the potency specification of 15.09.2026 gives {grading['window']} "
+                            f"({grading['product_code']}) — {grading['spec_status']}.")
         cnp = assay if assay and assay["family"] == "UKIM CNP potency" else \
             (pick([c for c in reg["cells"].get("E", [])
                    if c["family"] == "UKIM CNP potency"], False)[0])
@@ -955,11 +958,17 @@ def schedule():
             "coq": n, "number": coq["number"], "type": coq["type"],
             "date": "≥ " + bound[1], "basis": coq["date"] or "—",
             "issued": coq["issued"], "pp": x["pp"], "cb": x["cb"],
-            "in_register": bool(cb), "strain": x["nm"], "grade": x["grade"],
-            "cls": x["cls"], "icoa_ref": x["ic"], "banner_thc": x["thc"],
+            "in_register": bool(cb), "strain": x["nm"],
+            "grade": grading.get("roman") or "",
+            "cls": (int(round(grading["nominal"])) if grading.get("grade") else ""),
+            "icoa_ref": x["ic"],
+            "banner_thc": (("%.2f" % grading["thc"]) if grading.get("thc") is not None else ""),
             "md": x["md"], "pk": x["pk"], "thc": thc_criterion,
             "spec_conflict": conflict,
-            "spec_doc": sp["spec_doc_code"] if sp else "",
+            "spec_doc": grading.get("spec_code") or "",
+            "spec_status": grading.get("spec_status") or "",
+            "pcode": grading.get("product_code") or "",
+            "issued_spec": sp["spec_doc_code"] if sp else "",
             "codes": list(codes), "counts": counts,
             "outstanding": sorted(
                 d["no"] for d in dets if d["no"] in ICOA_FIELD
