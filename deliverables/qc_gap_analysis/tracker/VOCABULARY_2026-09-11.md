@@ -743,3 +743,26 @@ reads that.
     python3 deliverables/qc_gap_analysis/coq_references.py --out deliverables/qc_gap_analysis/intake_227K_2026-09-15/CoQ_references_v28
     python3 deliverables/qc_gap_analysis/tracker/verify_workbook.py
     python3 deliverables/qc_gap_analysis/tracker/verify_prose.py
+
+# v29 — the references table inside the workbook, 15.09.2026
+
+The owner asked for the references table and its n/t list "inside the v28 workbook". A
+workbook with two more sections is a new build, so it is v29; nothing else changed. The
+`CoQ References` tab is `coq_references.py` run inside the build (`build_rows` /
+`fill_sheet`), with the CoQ code taken from the `CoQ Register` tab of the same workbook —
+keyed to its rows — rather than from the export's copy of an earlier register, so the two
+tabs cannot disagree. Every n/t cell is red, and `Not Tested Review` is a section of Reference
+listing them (certificate, batch, series, determination, the cell as printed). The
+`Potency Grades` tab (owner, 15.09.2026: "include this information inside the workbook")
+renders `potency_grades_2026-09-15.csv`, which `potency_grades.py` parses off the Head of
+QC's potency specification of 15.09.2026 (`potency_grades_2026-09-15/`): one row per strain
+and grade — nominal, tolerance, specification window — with the measured results each page
+rests on. The
+standalone files `intake_227K_2026-09-15/CoQ_references_v29.{csv,md,xlsx}` and
+`CoQ_references_v29_nt.md` are the same table written by the same code from the command
+line, after `extract_coq_register.py` has lifted the v29 register into the export.
+
+    python3 deliverables/qc_gap_analysis/tracker/build_tracker_v8.py \
+        --v9 --version=29 --icoa --cells \
+        --mikro=CoQ_Analysis_Master_v13.xlsx \
+        --build-date=15.09.2026 --legacy-icoa=03.06.2026 --legacy-coq=06.06.2026

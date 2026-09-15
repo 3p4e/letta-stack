@@ -2421,6 +2421,71 @@ def add_coq_register_sheet(wb):
     print("CoQ register rows:", _fill_coq_register(sh))
 
 
+def add_potency_sheet(wb):
+    """The potency grades per strain — nominal, tolerance, specification window — as the
+    owner's potency specification of 15.09.2026 prints them (potency_grades.py, from
+    Potency_specifications_233.pdf), one row per strain and grade, with the measured
+    Total THC results the page rests on. Owner, 15.09.2026: "include this information
+    inside the workbook"."""
+    import potency_grades as PG
+    rows = PG.load()
+    sh = wb.create_sheet("Potency Grades", wb.sheetnames.index("CoQ References") + 1)
+    hdr = [("Strain", 22), ("Abbr.", 7), ("Status", 10), ("Grade nominal (% THC)", 12), ("Tolerance (±%)", 12),
+           ("Window low (%)", 12), ("Window high (%)", 12), ("Grades", 8), ("Measured results (n)", 10),
+           ("Measured range (%)", 14), ("Basis", 22), ("Measured Total Δ9-THC results, as printed", 60)]
+    for _i, (_t, _w) in enumerate(hdr, 1):
+        put(sh, 1, _i, _t, FW, NAVY, CEN)
+        sh.column_dimensions[L(_i)].width = _w
+    sh.row_dimensions[1].height = 30
+    _r = 2
+    for r in rows:
+        vals = (r["strain"], r["abbr"], r["status"].title(), float(r["nominal"]), float(r["tolerance"]),
+                float(r["window_low"]), float(r["window_high"]), int(r["grades_n"]), int(r["results_n"]),
+                r["results_range"], r["basis"], r["measured"])
+        for _i, v in enumerate(vals, 1):
+            c = put(sh, _r, _i, v, F7B if _i == 1 else F7, None,
+                    CEN if _i != 12 else Alignment(horizontal="left", vertical="center", wrap_text=True))
+            if _i in (4, 5, 6, 7):
+                c.number_format = "0.00"
+        _r += 1
+    note = ("Head of QC, 15.09.2026: the potency grades per strain as the potency specification of 15.09.2026 prints them "
+            "(Potency_specifications_233.pdf, Drive id 1NEZSRNPt5GtPvUfpi1dotAG9dkorEAGn; starting nominals QCSP 001 v.03, "
+            "results CoQ_Analysis_Master_v25; text layer read by potency_grades.py, one row per strain and grade). The "
+            "specification window is nominal ± tolerance as printed; the measured results are the page's own list, in "
+            "the page's own order, and 'Basis' says whether every result or the initial result per batch was used. "
+            "A lot's grade on its certificate of quality is the window its Total Δ9-THC result falls in.")
+    sh.merge_cells(start_row=_r + 1, start_column=1, end_row=_r + 1, end_column=len(hdr))
+    put(sh, _r + 1, 1, note, F6I, GREY, Alignment(horizontal="left", vertical="top", wrap_text=True))
+    sh.row_dimensions[_r + 1].height = 60
+    sh.auto_filter.ref = f"A1:{L(len(hdr))}{_r - 1}"
+    sh.freeze_panes = "B2"
+    print("potency grades: %d row(s)" % (_r - 2))
+
+
+def add_references_sheet(wb):
+    """The CoQ references table as a tab of the workbook, and its n/t cells as a section
+    of Reference (owner, 15.09.2026: "inside the v28 workbook"). One row per certificate
+    of quality, one column per determination, the document each cites with its date and
+    laboratory, the sampling day and the laboratory's receipt date; every n/t cell red.
+    The CoQ code is the one the CoQ Register tab of THIS workbook prints — the table is
+    keyed to the register's rows, not to the export's copy of an earlier register — so
+    the two tabs cannot disagree."""
+    import coq_references as CRF
+    codes = {}
+    for r in COQ_REGISTER:
+        if str(r.get("code", "")).startswith("CoQ-PP_26-"):
+            _base, _, _sfx = r["key"].rpartition("|")
+            codes.setdefault((T.batch_key(_base), "R" if _sfx.startswith("R") else "I"), r["code"])
+            if r.get("cu") and not str(r["cu"]).startswith("—"):
+                codes.setdefault((T.batch_key(re.sub(r"[＊*]", "", str(r["cu"]))), "R" if _sfx.startswith("R") else "I"), r["code"])
+    rows = CRF.build_rows(T.DESK, os.path.join(HERE, "new_instances.json"), codes)
+    sh = wb.create_sheet("CoQ References", wb.sheetnames.index("CoQ Register") + 1)
+    n = CRF.fill_sheet(sh, rows)
+    nt = CRF.nt_rows(rows)
+    CRF.fill_nt_sheet(wb.create_sheet("Not Tested Review"), nt)
+    print("CoQ references: %d rows, %d n/t cell(s) painted red (Not Tested Review: %d rows)" % (len(rows), n, len(nt)))
+
+
 def write_register_file(path):
     """The two registers on their own, for the person issuing the documents (with the Batch Dates
     sheet their date formulas look up)."""
@@ -2501,6 +2566,9 @@ SHEET_ABOUT = {
     "Credit Audit": "Certificates credited on the owner's tracker that the desk holds no value from, with the reason.",
     "Credit Corrections": "The two corrections applied to the owner's credits (the Farmahem pair, CNP identification B), one row each; nothing written back to the owner's workbook.",
     "Work Order": "What a person must do next: certificates to ingest, values to read on the page, lots to record.",
+    "CoQ References": "One row per certificate of quality, one column per determination #1 to #12: the document the CoQ cites for it — code, date of issue, laboratory abbreviation (CNP, IJZ, IJZ-MB, FHM-K, FHM-M, DFL, PP) — with the sampling day (the campaign's for a reissue, the packaging day for a release certificate) and the date each cited external certificate says the laboratory admitted the sample (receipt_dates.py). `*` an internal CoA issued at the certificate's issue; `also X` a later document for the same determination; `(initial)` a reissue's row carried from the initial certificate; `DAB` the cited CNP certificate used the DAB monograph; `u/r` upon request; `n/t` not tested — every n/t cell is red for the owner's check and listed in the Not Tested Review section of Reference. The CoQ code is the CoQ Register's. Built by coq_references.py.",
+    "Potency Grades": "The potency grades per strain — grade nominal, tolerance and specification window (nominal ± tolerance) — as the Head of QC's potency specification of 15.09.2026 prints them (Potency_specifications_233.pdf; starting nominals QCSP 001 v.03, results CoQ_Analysis_Master_v25), one row per strain and grade, with the measured Total Δ9-THC results each page rests on. Built from potency_grades_2026-09-15.csv by potency_grades.py.",
+    "Not Tested Review": "Every n/t cell of the CoQ References tab — certificate, batch, series, determination, the cell as printed — for the owner's check (owner, 15.09.2026: legitimate only where nothing was ever tested — aflatoxin B1 and ochratoxin A beside an IJZ total-aflatoxin result, and the upon-request organisms and pesticide panel).",
     "Open Items": "The standing register of what the desk cannot decide: every finding raised and left to the owner, with what was found, what the desk did with it, the decision being asked for, and the evidence behind it. STATE is open (waiting, nothing printed), marked (the certificate prints the field bracketed in red and unticked) or ruled (kept for the record with the ruling). Built from open_items.py, which also writes OPEN_ITEMS.md.",
     "iCoA Issuance": "One row per P lot and series (initial release, retest): what its iCoA carries, the CNP references, the cannabinoid-assay eCoA that covers identification C, the codes and planned dates looked up on the registers.",
     "Batch Dates": "The Head of QC's harvest and packaging dates per batch (04.09.2026), as dates; the registers look their packaging dates up here.",
@@ -3079,6 +3147,7 @@ def write_read_me(wb):
     line("v24", "The internal-CoA number and the internal-CoA register unified on one definition: icoa_register.py is the standing series (a certificate a person can look up by code), and both the number and the row set on the iCoA Register sheet are taken from it rather than computed from a row's position — 95 of 95 series codes now on the sheet, up from 60.")
     line("v25", "The Read Me sheet's own version history and rulings-in-force brought forward from v11 / 05.09.2026 to this build — nine versions and six days of rulings that were built and verified but never written down here. Two findings promoted from doc prose that had never reached the standing register: OI-30 (the Loss on Drying method line is uniform across every lot and the desk holds no per-certificate method text to check it against) and OI-31 (six batches silently filed under one strain name, 'Gorilla Glue', where the delivery sheet keeps 'GG4' apart — never ruled, never tracked).")
     line("v26", "Seven tabs, not sixteen (owner, 14.09.2026). The iCoA Issuance sheet is gone — one row per batch and round, which is what the iCoA Register is, so its eleven columns are register columns and nothing looked it up by formula. Ten sheets are sections of one Reference sheet, each section's row range recorded as a defined name so a reader never guesses where it ends. verify_prose.py — what the sheets say about themselves — had never run against a shipping workbook (its default was v11, and it was not in CI); against v25 it found eleven false sentences, three the workbook's (a note and the register Status strings naming 27.05.2026 and 15.05.2026 for a legacy series that issues on 06.06 and 03.06; an uncredited in-house reference printed without its 'on file, not credited'), eight the checker's own. All fixed and the check is in CI. OI-32: thirty Tranche 3 Farmahem 227-K/26 potency retests found on file and none in the record — twenty-five prepared and not written, five held on batch identity.")
+    line("v29", "The CoQ References table inside the workbook (owner, 15.09.2026: \"inside the v28 workbook\"): a tab of one row per certificate of quality and one column per determination — the cited document, its date and laboratory, the sampling day and the laboratory's receipt date — with every n/t cell red, and its Not Tested Review as a section of Reference. The CoQ code on the tab is the one the CoQ Register tab prints, keyed to its rows. And the Potency Grades tab (owner, 15.09.2026): the potency grades per strain — nominal, tolerance, specification window — as the Head of QC's potency specification of 15.09.2026 prints them, one row per strain and grade, with the measured results each page rests on. Nothing else changed: the registers, the tracker and every result are v28's.")
     line("v28", "Retest sampling dated and the retest series issued (owner, 15.09.2026). The 30 Farmahem 227-К/26 Tranche 3 potency certificates taken in (intake_227K_2026-09-15/: 26 into existing register blocks, four batches given a block — BSS1024_01/2 P050142, WED102501 P060102, SCR012601 P060342, GRC102501/1 P060142 — five rest on the page read alone, OI-32). testing_series.rounds() now places every Farmahem re-analysis certificate in a campaign round of its own, never the release round, so every Tranche 1, 2 and 3 batch has a retest round and its internal certificate: Tranche 1 tested 21–24.07 and issued 27.07.2026, Tranche 2 tested 12–14.08 and issued 17.08.2026, Tranche 3 tested 19–21.08 and issued 24.08.2026. The iCoA Register numbers every round, including the seven whose packaging date the list does not hold. The CoQ Register numbers the Tranche 1 reissues (retest assay, mycotoxins and iCoA all on file) in date order with the release series; Tranche 2 waits for its potency certificates and Tranche 3 for its mycotoxin certificates, and says so. A reissue now prints the initial certificate's result and document for every determination it did not retest. The Parameters sheet and the CoQ rows name the DAB monograph where the cited CNP certificate used it (cnp_methods.py: ППК25050–ППК26069). The export reads its own register on the same build (it read the previous build's file, so an intake numbered nothing until the build after). verify_workbook.py holds the legacy-day check to the release round.")
     line("v27", "Tranche 2 mycotoxin retests taken in: 32 Farmahem certificates 220-1-М/26 to 220-32-М/26 (received 17.08.2026, analysed 07.09.2026, issued 11.09.2026), every result ND for aflatoxins B1, B2, G1, G2 and ochratoxin A. Read directly from the rendered pages at the owner's request and cross-checked against an independent Gemini read of every page, 32 of 32 agreeing. 26 are the Tranche 2 list; the laboratory also tested P050282, P060042, P060082 and three batches printed with no P-number (JD042601, FB042601, CC042601). 23 certificates joined an existing release-register block; nine batches had none and were given one (No. 81 to 89), six of them the batches the delivery reconciliation had found absent from the register; JD042601 took its P-number (P060492) from the Head of QC's batch list, FB042601 and CC042601 are on no list the desk holds (OI-33). Documented in intake_220M_2026-09-14/. Two definition gaps found by the first build, which rendered none of the 32 on this sheet: family() labelled only the 197- series a re-analysis while is_reanalysis() already knew 220- was one, and the tracker files a retest by the label — the label now derives from the same list (REANALYSIS_SERIES, which also carries the 227- potency series the owner called retests on 12.09.2026); and the tracker's document pool is the owner's index plus new_instances.json, never the release register — the 32 are now testing instances there (instances_220M.py), seven of them opening a lot the owner's tracker did not carry. Found on the way and fixed: the in-house cells of eight lots (GG012601*, GG1024, JD012601*, JD112501*, OMP1024_01, BSS1024_01/1, BSS1024_01/2, WED102501) looked their internal CoA up under another lot's key — the at-issue placeholder folded to one key and the last lot written held it — invisible while every one of them was at issue, wrong the day any was numbered; verify_workbook.py now checks that every lookup keys its own lot (27 cells in v26).")
 
@@ -3137,7 +3206,7 @@ def fix_parameters(wb):
 # decides otherwise.
 FOLD_INTO_REFERENCE = ["Read Me", "Delivery T1–T3", "ImB Register", "Mikro CoQ Parameter",
                        "Reconciliation 09.09", "Credit Audit", "Credit Corrections",
-                       "Work Order", "Open Items", "Summary Dashboard"]
+                       "Work Order", "Open Items", "Not Tested Review", "Summary Dashboard"]
 
 
 def fold_reference_sheet(wb, names=None):
@@ -3227,6 +3296,8 @@ if NEW:
         add_icoa_sheet(wb)
         add_register_sheet(wb)
         add_coq_register_sheet(wb)
+        add_references_sheet(wb)
+        add_potency_sheet(wb)
         add_dates_sheet(wb)
         write_register_file(os.path.join(HERE, "Issuance_Registers_prelim.xlsx"))
     add_delivery_sheet(wb)

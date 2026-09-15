@@ -1,0 +1,663 @@
+PURELY PLANT · POTENCY SPECIFICATION
+
+Amnesia Core Cut                                                                                                                      ACC · FINISHED
+1 measured result · 12.09–12.09 % · 1 grade · all results
+
+
+
+
+10                                                     12                                                       14                       Total ”9-THC (% w/w)16
+                                                       12
+                                                   11.05–12.94
+
+
+
+
+Grade nominal                                          Tolerance                              Specification window
+
+12.00 %                                                ± 0.95 %                               11.05 – 12.94 %
+
+Measured Total ”9-THC results
+12.09
+
+
+
+
+Starting nominals: QCSP 001 v.03 · Results: CoQ_Analysis_Master_v25                                                                    Generated 2026-09-15
+Built by Blagoj Nikolov, M.Pharm · Drug Quality Control Specialist · Quality Control Department Manager · Purely Plant DOOEL Skopje
+PURELY PLANT · POTENCY SPECIFICATION
+
+Apple and Banana                                                                                                                           AB · FINISHED
+2 measured results · 16.93–22.97 % · 2 grades · all results
+
+
+
+
+              16                             18                             20                             22                         24     Total ”9-THC (% w/w)26
+                                             18                                                            22
+                                        16.20–19.79                                                    19.80–24.19
+
+
+
+
+Grade nominal                                          Tolerance                              Specification window
+
+18.00 %                                                ± 1.80 %                               16.20 – 19.79 %
+22.00 %                                                ± 2.20 %                               19.80 – 24.19 %
+
+Measured Total ”9-THC results
+16.93 22.97
+
+
+
+
+Starting nominals: QCSP 001 v.03 · Results: CoQ_Analysis_Master_v25                                                                        Generated 2026-09-15
+Built by Blagoj Nikolov, M.Pharm · Drug Quality Control Specialist · Quality Control Department Manager · Purely Plant DOOEL Skopje
+PURELY PLANT · POTENCY SPECIFICATION
+
+Blue Gelato                                                                                                                           BG · FINISHED
+2 measured results · 21.80–26.14 % · 2 grades · all results
+
+
+
+
+18                           20                             22                              24                             26           Total 28
+                                                                                                                                              ”9-THC (% w/w)
+                                                            22                                                            26
+                                                        19.80–24.19                                                   24.20–27.79
+
+
+
+
+Grade nominal                                          Tolerance                              Specification window
+
+22.00 %                                                ± 2.20 %                               19.80 – 24.19 %
+26.00 %                                                ± 1.80 %                               24.20 – 27.79 %
+
+Measured Total ”9-THC results
+21.80 26.14
+
+
+
+
+Starting nominals: QCSP 001 v.03 · Results: CoQ_Analysis_Master_v25                                                                   Generated 2026-09-15
+Built by Blagoj Nikolov, M.Pharm · Drug Quality Control Specialist · Quality Control Department Manager · Purely Plant DOOEL Skopje
+PURELY PLANT · POTENCY SPECIFICATION
+
+Blue Sunset Sherbet                                                                                                                           BSS · FINISHED
+7 measured results · 20.39–26.10 % · 3 grades · all results
+
+
+
+
+           18                      20                      22                       24                      26                        28        Total ”9-THC
+                                                                                                                                                         30 (% w/w)
+                                   20                                              24                                                 28
+                              18.11–21.88                                      21.89–26.10                                      26.07–29.92
+
+
+
+
+Grade nominal                                          Tolerance                              Specification window
+
+20.00 %                                                ± 1.89 %                               18.11 – 21.88 %
+24.00 %                                                ± 2.11 %                               21.89 – 26.10 %
+28.00 %                                                ± 1.93 %                               26.07 – 29.92 %
+
+Measured Total ”9-THC results
+20.39 20.39 20.52 21.03 23.42 25.01 26.10
+
+
+
+
+Starting nominals: QCSP 001 v.03 · Results: CoQ_Analysis_Master_v25                                                                           Generated 2026-09-15
+Built by Blagoj Nikolov, M.Pharm · Drug Quality Control Specialist · Quality Control Department Manager · Purely Plant DOOEL Skopje
+PURELY PLANT · POTENCY SPECIFICATION
+
+Cap Junky                                                                                                                                   CJ · FINISHED
+18 measured results · 14.93–28.34 % · 5 grades · all results
+
+
+
+
+       12               14               16                 18             20               22               24                26         28   Total ”9-THC30(% w/w)
+                        14                       17                        20                                24                          28
+                    12.60–15.39               15.60–18.39              18.40–21.59                       21.60–26.39                  26.40–29.59
+
+
+
+
+Grade nominal                                          Tolerance                              Specification window
+
+14.00 %                                                ± 1.40 %                               12.60 – 15.39 %
+17.00 %                                                ± 1.40 %                               15.60 – 18.39 %
+20.00 %                                                ± 1.60 %                               18.40 – 21.59 %
+24.00 %                                                ± 2.40 %                               21.60 – 26.39 %
+28.00 %                                                ± 1.60 %                               26.40 – 29.59 %
+
+Measured Total ”9-THC results
+14.93 16.56 18.29 18.91 20.29 20.84 21.30 21.51 22.30 23.00 23.70 24.05 24.80 24.96 25.65 28.12 28.18
+ 28.34
+
+
+
+
+Starting nominals: QCSP 001 v.03 · Results: CoQ_Analysis_Master_v25                                                                        Generated 2026-09-15
+Built by Blagoj Nikolov, M.Pharm · Drug Quality Control Specialist · Quality Control Department Manager · Purely Plant DOOEL Skopje
+PURELY PLANT · POTENCY SPECIFICATION
+
+Cash Cow                                                                                                                                   CC · FINISHED
+4 measured results · 13.35–17.67 % · 2 grades · all results
+
+
+
+
+                 12                                    14                                    16                                       18     Total ”9-THC (% w/w)20
+                                                       14                                                       17
+                                                   12.65–15.34                                              15.35–18.64
+
+
+
+
+Grade nominal                                          Tolerance                              Specification window
+
+14.00 %                                                ± 1.35 %                               12.65 – 15.34 %
+17.00 %                                                ± 1.65 %                               15.35 – 18.64 %
+
+Measured Total ”9-THC results
+13.35 14.76 16.36 17.67
+
+
+
+
+Starting nominals: QCSP 001 v.03 · Results: CoQ_Analysis_Master_v25                                                                        Generated 2026-09-15
+Built by Blagoj Nikolov, M.Pharm · Drug Quality Control Specialist · Quality Control Department Manager · Purely Plant DOOEL Skopje
+PURELY PLANT · POTENCY SPECIFICATION
+
+Chem Flyer                                                                                                                            CF · FINISHED
+1 measured result · 9.55–9.55 % · 1 grade · all results
+
+
+
+
+8                                                      10                                                       12                      Total ”9-THC (% w/w)14
+                                                       10
+                                                   9.00–10.99
+
+
+
+
+Grade nominal                                          Tolerance                              Specification window
+
+10.00 %                                                ± 1.00 %                               9.00 – 10.99 %
+
+Measured Total ”9-THC results
+9.55
+
+
+
+
+Starting nominals: QCSP 001 v.03 · Results: CoQ_Analysis_Master_v25                                                                   Generated 2026-09-15
+Built by Blagoj Nikolov, M.Pharm · Drug Quality Control Specialist · Quality Control Department Manager · Purely Plant DOOEL Skopje
+PURELY PLANT · POTENCY SPECIFICATION
+
+Clemosa A Bud                                                                                                                         CLE · FINISHED
+1 measured result · 8.02–8.02 % · 1 grade · all results
+
+
+
+
+6                                                       8                                                       10                      Total ”9-THC (% w/w)12
+                                                        8
+                                                    7.20–8.79
+
+
+
+
+Grade nominal                                          Tolerance                              Specification window
+
+8.00 %                                                 ± 0.80 %                               7.20 – 8.79 %
+
+Measured Total ”9-THC results
+8.02
+
+
+
+
+Starting nominals: QCSP 001 v.03 · Results: CoQ_Analysis_Master_v25                                                                   Generated 2026-09-15
+Built by Blagoj Nikolov, M.Pharm · Drug Quality Control Specialist · Quality Control Department Manager · Purely Plant DOOEL Skopje
+PURELY PLANT · POTENCY SPECIFICATION
+
+Fat Bastard                                                                                                                                FB · FINISHED
+9 measured results · 12.39–20.83 % · 4 grades · all results
+
+
+
+
+        10                  12                   14                  16                  18                  20                  22          Total
+                                                                                                                                              24 ”9-THC (% w/w)26
+                            12                            15                            18                                       22
+                        10.80–13.19                   13.80–16.19                   16.20–19.79                              19.80–24.19
+
+
+
+
+Grade nominal                                          Tolerance                              Specification window
+
+12.00 %                                                ± 1.20 %                               10.80 – 13.19 %
+15.00 %                                                ± 1.20 %                               13.80 – 16.19 %
+18.00 %                                                ± 1.80 %                               16.20 – 19.79 %
+22.00 %                                                ± 2.20 %                               19.80 – 24.19 %
+
+Measured Total ”9-THC results
+12.39 14.68 16.69 17.99 18.29 18.86 19.31 20.00 20.83
+
+
+
+
+Starting nominals: QCSP 001 v.03 · Results: CoQ_Analysis_Master_v25                                                                        Generated 2026-09-15
+Built by Blagoj Nikolov, M.Pharm · Drug Quality Control Specialist · Quality Control Department Manager · Purely Plant DOOEL Skopje
+PURELY PLANT · POTENCY SPECIFICATION
+
+Gorilla Glue                                                                                                                          GG · FINISHED
+12 measured results · 15.35–19.16 % · 2 grades · all results
+
+
+
+
+12                                  14                                    16                                    18                      Total
+                                                                                                                                         20 ”9-THC (% w/w)
+                                                       15                                                       18
+                                                   13.77–16.22                                              16.23–19.76
+
+
+
+
+Grade nominal                                          Tolerance                              Specification window
+
+15.00 %                                                ± 1.23 %                               13.77 – 16.22 %
+18.00 %                                                ± 1.77 %                               16.23 – 19.76 %
+
+Measured Total ”9-THC results
+15.35 15.51 15.95 16.70 17.22 17.59 17.76 17.94 18.64 18.67 18.98 19.16
+
+
+
+
+Starting nominals: QCSP 001 v.03 · Results: CoQ_Analysis_Master_v25                                                                   Generated 2026-09-15
+Built by Blagoj Nikolov, M.Pharm · Drug Quality Control Specialist · Quality Control Department Manager · Purely Plant DOOEL Skopje
+PURELY PLANT · POTENCY SPECIFICATION
+
+Grape Pie                                                                                                                                      GP · FINISHED
+17 measured results · 14.83–28.68 % · 4 grades · initial result per batch
+
+
+
+
+        14                 16                 18                 20                 22                 24                 26              28        Total ”9-THC
+                                                                                                                                                               30(% w/w)
+                          16                                    20                                    24                                 28
+                      14.40–17.59                           18.00–21.99                           22.00–25.99                         26.00–29.99
+
+
+
+
+Grade nominal                                          Tolerance                              Specification window
+
+16.00 %                                                ± 1.60 %                               14.40 – 17.59 %
+20.00 %                                                ± 2.00 %                               18.00 – 21.99 %
+24.00 %                                                ± 2.00 %                               22.00 – 25.99 %
+28.00 %                                                ± 2.00 %                               26.00 – 29.99 %
+
+Measured Total ”9-THC results
+14.83 18.29 18.98 19.81 20.79 21.29 21.36 23.79 24.89 25.13 25.24 25.45 25.73 25.97 26.54 28.03 28.68
+
+
+
+
+Starting nominals: QCSP 001 v.03 · Results: CoQ_Analysis_Master_v25                                                                            Generated 2026-09-15
+Built by Blagoj Nikolov, M.Pharm · Drug Quality Control Specialist · Quality Control Department Manager · Purely Plant DOOEL Skopje
+PURELY PLANT · POTENCY SPECIFICATION
+
+Grapes And Cream                                                                                                                        GRC · FINISHED
+3 measured results · 7.50–11.53 % · 3 grades · all results
+
+
+
+
+6                                         8                                         10                                         12          Total ”9-THC (% w/w)14
+                                         8                                         10                                         12
+                                      7.20–8.79                                 9.00–10.99                                11.00–12.99
+
+
+
+
+Grade nominal                                          Tolerance                              Specification window
+
+8.00 %                                                 ± 0.80 %                               7.20 – 8.79 %
+10.00 %                                                ± 1.00 %                               9.00 – 10.99 %
+12.00 %                                                ± 1.00 %                               11.00 – 12.99 %
+
+Measured Total ”9-THC results
+7.50 9.80 11.53
+
+
+
+
+Starting nominals: QCSP 001 v.03 · Results: CoQ_Analysis_Master_v25                                                                      Generated 2026-09-15
+Built by Blagoj Nikolov, M.Pharm · Drug Quality Control Specialist · Quality Control Department Manager · Purely Plant DOOEL Skopje
+PURELY PLANT · POTENCY SPECIFICATION
+
+High Pro Amnesia                                                                                                                      HPA · FINISHED
+6 measured results · 14.97–22.43 % · 3 grades · all results
+
+
+
+
+12                     14                      16                       18                      20                      22            24 Total ”9-THC (% w/w)26
+                                   15                                  18                                               22
+                              13.80–16.19                          16.20–19.79                                      19.80–24.19
+
+
+
+
+Grade nominal                                          Tolerance                              Specification window
+
+15.00 %                                                ± 1.20 %                               13.80 – 16.19 %
+18.00 %                                                ± 1.80 %                               16.20 – 19.79 %
+22.00 %                                                ± 2.20 %                               19.80 – 24.19 %
+
+Measured Total ”9-THC results
+14.97 17.31 19.69 20.39 21.61 22.43
+
+
+
+
+Starting nominals: QCSP 001 v.03 · Results: CoQ_Analysis_Master_v25                                                                   Generated 2026-09-15
+Built by Blagoj Nikolov, M.Pharm · Drug Quality Control Specialist · Quality Control Department Manager · Purely Plant DOOEL Skopje
+PURELY PLANT · POTENCY SPECIFICATION
+
+Jelly Donuts                                                                                                                          JD · FINISHED
+11 measured results · 13.93–21.01 % · 3 grades · all results
+
+
+
+
+12                     14                      16                       18                      20                      22            24 Total ”9-THC (% w/w)26
+                                   15                                  18                                               22
+                              13.80–16.19                          16.20–19.79                                      19.80–24.19
+
+
+
+
+Grade nominal                                          Tolerance                              Specification window
+
+15.00 %                                                ± 1.20 %                               13.80 – 16.19 %
+18.00 %                                                ± 1.80 %                               16.20 – 19.79 %
+22.00 %                                                ± 2.20 %                               19.80 – 24.19 %
+
+Measured Total ”9-THC results
+13.93 14.43 15.16 17.09 18.16 18.58 19.64 19.99 20.32 20.54 21.01
+
+
+
+
+Starting nominals: QCSP 001 v.03 · Results: CoQ_Analysis_Master_v25                                                                   Generated 2026-09-15
+Built by Blagoj Nikolov, M.Pharm · Drug Quality Control Specialist · Quality Control Department Manager · Purely Plant DOOEL Skopje
+PURELY PLANT · POTENCY SPECIFICATION
+
+Jokerz 31                                                                                                                                     J31 · FINISHED
+8 measured results · 17.32–25.27 % · 3 grades · all results
+
+
+
+
+           16                      18                      20                       22                      24                        26        Total ”9-THC
+                                                                                                                                                         28 (% w/w)
+                                   18                                              22                                                 26
+                              16.20–19.79                                      19.80–24.19                                      24.20–27.79
+
+
+
+
+Grade nominal                                          Tolerance                              Specification window
+
+18.00 %                                                ± 1.80 %                               16.20 – 19.79 %
+22.00 %                                                ± 2.20 %                               19.80 – 24.19 %
+26.00 %                                                ± 1.80 %                               24.20 – 27.79 %
+
+Measured Total ”9-THC results
+17.32 19.14 19.84 20.21 21.84 23.85 24.48 25.27
+
+
+
+
+Starting nominals: QCSP 001 v.03 · Results: CoQ_Analysis_Master_v25                                                                           Generated 2026-09-15
+Built by Blagoj Nikolov, M.Pharm · Drug Quality Control Specialist · Quality Control Department Manager · Purely Plant DOOEL Skopje
+PURELY PLANT · POTENCY SPECIFICATION
+
+Kush Crasher                                                                                                                               KC · FINISHED
+1 measured result · 17.04–17.04 % · 1 grade · all results
+
+
+
+
+                           16                                                       18                                                20     Total ”9-THC (% w/w)
+                                                                                   18
+                                                                               16.20–19.79
+
+
+
+
+Grade nominal                                          Tolerance                              Specification window
+
+18.00 %                                                ± 1.80 %                               16.20 – 19.79 %
+
+Measured Total ”9-THC results
+17.04
+
+
+
+
+Starting nominals: QCSP 001 v.03 · Results: CoQ_Analysis_Master_v25                                                                        Generated 2026-09-15
+Built by Blagoj Nikolov, M.Pharm · Drug Quality Control Specialist · Quality Control Department Manager · Purely Plant DOOEL Skopje
+PURELY PLANT · POTENCY SPECIFICATION
+
+Motor Breath                                                                                                                               MB · FINISHED
+4 measured results · 16.82–18.67 % · 1 grade · all results
+
+
+
+
+                           16                                                       18                                                20     Total ”9-THC (% w/w)
+                                                                                   18
+                                                                               16.20–19.79
+
+
+
+
+Grade nominal                                          Tolerance                              Specification window
+
+18.00 %                                                ± 1.80 %                               16.20 – 19.79 %
+
+Measured Total ”9-THC results
+16.82 17.57 17.93 18.67
+
+
+
+
+Starting nominals: QCSP 001 v.03 · Results: CoQ_Analysis_Master_v25                                                                        Generated 2026-09-15
+Built by Blagoj Nikolov, M.Pharm · Drug Quality Control Specialist · Quality Control Department Manager · Purely Plant DOOEL Skopje
+PURELY PLANT · POTENCY SPECIFICATION
+
+Orange Punch Mimosa                                                                                                                            OPM · FINISHED
+15 measured results · 7.91–20.03 % · 5 grades · all results
+
+
+
+
+6                  8                   10                  12                  14                  16                  18                 20        Total ”9-THC
+                                                                                                                                                               22 (% w/w)
+                   8                  10                                      14                             17                          20
+               7.20–8.79           9.00–10.99                             12.60–15.39                   15.40–18.59                   18.60–21.39
+
+
+
+
+Grade nominal                                          Tolerance                              Specification window
+
+8.00 %                                                 ± 0.80 %                               7.20 – 8.79 %
+10.00 %                                                ± 1.00 %                               9.00 – 10.99 %
+14.00 %                                                ± 1.40 %                               12.60 – 15.39 %
+17.00 %                                                ± 1.60 %                               15.40 – 18.59 %
+20.00 %                                                ± 1.40 %                               18.60 – 21.39 %
+
+Measured Total ”9-THC results
+7.91 8.00 8.09 9.43 9.73 14.16 15.38 16.55 17.83 18.04 18.27 18.99 19.30 19.96 20.03
+
+
+
+
+Starting nominals: QCSP 001 v.03 · Results: CoQ_Analysis_Master_v25                                                                             Generated 2026-09-15
+Built by Blagoj Nikolov, M.Pharm · Drug Quality Control Specialist · Quality Control Department Manager · Purely Plant DOOEL Skopje
+PURELY PLANT · POTENCY SPECIFICATION
+
+Permanent Marker                                                                                                                        PM · FINISHED
+6 measured results · 10.01–14.06 % · 3 grades · all results
+
+
+
+
+8                                        10                                         12                                         14         Total ”9-THC (% w/w)16
+                                         10                                        12                                         14
+                                     9.00–10.99                                11.00–12.99                                13.00–14.99
+
+
+
+
+Grade nominal                                          Tolerance                              Specification window
+
+10.00 %                                                ± 1.00 %                               9.00 – 10.99 %
+12.00 %                                                ± 1.00 %                               11.00 – 12.99 %
+14.00 %                                                ± 1.00 %                               13.00 – 14.99 %
+
+Measured Total ”9-THC results
+10.01 10.79 12.25 12.77 13.33 14.06
+
+
+
+
+Starting nominals: QCSP 001 v.03 · Results: CoQ_Analysis_Master_v25                                                                     Generated 2026-09-15
+Built by Blagoj Nikolov, M.Pharm · Drug Quality Control Specialist · Quality Control Department Manager · Purely Plant DOOEL Skopje
+PURELY PLANT · POTENCY SPECIFICATION
+
+Pure Michigen                                                                                                                          PUM · FINISHED
+1 measured result · 13.95–13.95 % · 1 grade · all results
+
+
+
+
+                           12                                                       14                                                16     Total ”9-THC (% w/w)
+                                                                                   14
+                                                                               12.60–15.39
+
+
+
+
+Grade nominal                                          Tolerance                              Specification window
+
+14.00 %                                                ± 1.40 %                               12.60 – 15.39 %
+
+Measured Total ”9-THC results
+13.95
+
+
+
+
+Starting nominals: QCSP 001 v.03 · Results: CoQ_Analysis_Master_v25                                                                        Generated 2026-09-15
+Built by Blagoj Nikolov, M.Pharm · Drug Quality Control Specialist · Quality Control Department Manager · Purely Plant DOOEL Skopje
+PURELY PLANT · POTENCY SPECIFICATION
+
+Scrambler                                                                                                                                  SCR · FINISHED
+6 measured results · 16.68–22.40 % · 2 grades · all results
+
+
+
+
+              16                             18                             20                             22                         24      Total ”9-THC (% w/w)26
+                                             18                                                            22
+                                        16.20–19.79                                                    19.80–24.19
+
+
+
+
+Grade nominal                                          Tolerance                              Specification window
+
+18.00 %                                                ± 1.80 %                               16.20 – 19.79 %
+22.00 %                                                ± 2.20 %                               19.80 – 24.19 %
+
+Measured Total ”9-THC results
+16.68 17.13 17.84 19.73 21.92 22.40
+
+
+
+
+Starting nominals: QCSP 001 v.03 · Results: CoQ_Analysis_Master_v25                                                                         Generated 2026-09-15
+Built by Blagoj Nikolov, M.Pharm · Drug Quality Control Specialist · Quality Control Department Manager · Purely Plant DOOEL Skopje
+PURELY PLANT · POTENCY SPECIFICATION
+
+Sleepy Joe                                                                                                                            SJ · FINISHED
+5 measured results · 9.20–11.27 % · 2 grades · all results
+
+
+
+
+8                                                      10                                                       12                      Total ”9-THC (% w/w)14
+                                                       10                                                       12
+                                                   9.00–10.99                                               11.00–12.99
+
+
+
+
+Grade nominal                                          Tolerance                              Specification window
+
+10.00 %                                                ± 1.00 %                               9.00 – 10.99 %
+12.00 %                                                ± 1.00 %                               11.00 – 12.99 %
+
+Measured Total ”9-THC results
+9.20 10.61 10.96 11.20 11.27
+
+
+
+
+Starting nominals: QCSP 001 v.03 · Results: CoQ_Analysis_Master_v25                                                                   Generated 2026-09-15
+Built by Blagoj Nikolov, M.Pharm · Drug Quality Control Specialist · Quality Control Department Manager · Purely Plant DOOEL Skopje
+PURELY PLANT · POTENCY SPECIFICATION
+
+Wedding Crusher                                                                                                                            WC · FINISHED
+4 measured results · 21.67–25.37 % · 2 grades · all results
+
+
+
+
+              20                             22                             24                             26                         28     Total ”9-THC (% w/w)30
+                                             22                                                            26
+                                        20.60–23.39                                                    23.40–28.59
+
+
+
+
+Grade nominal                                          Tolerance                              Specification window
+
+22.00 %                                                ± 1.40 %                               20.60 – 23.39 %
+26.00 %                                                ± 2.60 %                               23.40 – 28.59 %
+
+Measured Total ”9-THC results
+21.67 22.11 23.48 25.37
+
+
+
+
+Starting nominals: QCSP 001 v.03 · Results: CoQ_Analysis_Master_v25                                                                        Generated 2026-09-15
+Built by Blagoj Nikolov, M.Pharm · Drug Quality Control Specialist · Quality Control Department Manager · Purely Plant DOOEL Skopje
+
