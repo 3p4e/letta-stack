@@ -278,7 +278,22 @@ def read_openai(images, model='gpt-5'):
             raise
         print('   OpenAI platform refused (%d) - read A continuing on OpenRouter, same model' % e.code)
         sys.stdout.flush()
-        o = _call('https://openrouter.ai/api/v1', ork, 'openai/' + model)
+        try:
+            o = _call('https://openrouter.ai/api/v1', ork, 'openai/' + model)
+        except urllib.error.HTTPError as e2:
+            # Third server for the same model. OpenRouter answered 402 on
+            # 14.09.2026 with $0.06 of credit left, and without this the runner
+            # went on saving single-read records — which the two-read rule
+            # forbids. CometAPI bills its own credit; nothing here is metered.
+            ck = os.environ.get('COMETAPI_API_KEY')
+            if e2.code not in (401, 402, 403, 429) or not ck:
+                raise
+            print('   OpenRouter refused (%d) - read A continuing on CometAPI, same model' % e2.code)
+            sys.stdout.flush()
+            o = _call('https://api.cometapi.com/v1', ck, model)
+            u = o.get('usage', {})
+            u['served_by'] = 'cometapi:' + model
+            return o['choices'][0]['message']['content'], u
         u = o.get('usage', {})
         u['served_by'] = 'openrouter:openai/' + model
         u['cost_usd'] = round(_meter('openai/' + model, u, pool='openrouter'), 4)

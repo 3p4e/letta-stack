@@ -119,8 +119,12 @@ def load_register():
         code = ws.cell(row=r, column=23).value
         if not code or not cur:
             continue
+        # a column the row fills with a RESULT — "not tested", "n/a" and "—" are the
+        # register saying the document does not report it (the IJZ release
+        # certificates print one mycotoxin line; B1 and OTA are "not tested")
         reported = [cols[c][0] for c in range(5, 23)
-                    if str(ws.cell(row=r, column=c).value or "").strip() not in ("", "/", "None")]
+                    if str(ws.cell(row=r, column=c).value or "").strip().lower()
+                    not in ("", "/", "none", "n/a", "na", "-", "—", "not tested")]
         flags = []
         for c in [2] + list(range(5, 23)) + [23]:
             rgb = getattr(getattr(ws.cell(row=r, column=c).fill, "start_color", None), "rgb", None)

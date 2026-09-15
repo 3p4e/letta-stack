@@ -1,0 +1,898 @@
+{
+  "220-1-K-26": {
+    "report_number": "220-1-K/26",
+    "issue_date": "25.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Amnesia Core Cut",
+      "batch": "P060122"
+    },
+    "lab_sample_number": "CF-506/26",
+    "mass_g": "10.74",
+    "analysis_date": "24.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "12.09",
+        "U": "0.74"
+      }
+    },
+    "notes": ""
+  },
+  "220-2-K-26": {
+    "report_number": "220-2-K/26",
+    "issue_date": "25.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Blue Sunset Sherbet",
+      "batch": "P050192"
+    },
+    "lab_sample_number": "CF-507/26",
+    "mass_g": "11.51",
+    "analysis_date": "24.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "20.52",
+        "U": "1.26"
+      }
+    },
+    "notes": ""
+  },
+  "220-3-K-26": {
+    "report_number": "220-3-K/26",
+    "issue_date": "25.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Cap Junkie",
+      "batch": "P050222"
+    },
+    "lab_sample_number": "CF-508/26",
+    "mass_g": "11.82",
+    "analysis_date": "24.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "24.80",
+        "U": "1.52"
+      }
+    },
+    "notes": ""
+  },
+  "220-4-K-26": {
+    "report_number": "220-4-K/26",
+    "issue_date": "25.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Cap Junkie",
+      "batch": "P060022"
+    },
+    "lab_sample_number": "CF-509/26",
+    "mass_g": "11.53",
+    "analysis_date": "24.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "28.34",
+        "U": "1.74"
+      }
+    },
+    "notes": ""
+  },
+  "220-5-K-26": {
+    "report_number": "220-5-K/26",
+    "issue_date": "25.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Cap Junkie",
+      "batch": "P060072"
+    },
+    "lab_sample_number": "CF-510/26",
+    "mass_g": "11.61",
+    "analysis_date": "24.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "25.65",
+        "U": "1.58"
+      }
+    },
+    "notes": ""
+  },
+  "220-6-K-26": {
+    "report_number": "220-6-K/26",
+    "issue_date": "25.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Chem Flyer",
+      "batch": "P060132"
+    },
+    "lab_sample_number": "CF-511/26",
+    "mass_g": "12.94",
+    "analysis_date": "24.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "9.55",
+        "U": "0.59"
+      }
+    },
+    "notes": ""
+  },
+  "220-7-K-26": {
+    "report_number": "220-7-K/26",
+    "issue_date": "25.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Clemosa a Bud",
+      "batch": "P050282"
+    },
+    "lab_sample_number": "CF-512/26",
+    "mass_g": "11.47",
+    "analysis_date": "24.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "8.65",
+        "U": "0.53"
+      }
+    },
+    "notes": "Strain printed as \"Clemosa a Bud\" (with a space before \"a\"); confirmed at 300 DPI."
+  },
+  "220-8-K-26": {
+    "report_number": "220-8-K/26",
+    "issue_date": "25.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Fat Bastard",
+      "batch": "P060322"
+    },
+    "lab_sample_number": "CF-513/26",
+    "mass_g": "11.53",
+    "analysis_date": "24.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "17.99",
+        "U": "1.10"
+      }
+    },
+    "notes": ""
+  },
+  "220-9-K-26": {
+    "report_number": "220-9-K/26",
+    "issue_date": "25.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Gorilla Glue",
+      "batch": "GG1024"
+    },
+    "lab_sample_number": "CF-514/26",
+    "mass_g": "12.83",
+    "analysis_date": "24.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "15.51",
+        "U": "0.95"
+      }
+    },
+    "notes": "Batch line is \"GG1024\" (no P-number)."
+  },
+  "220-10-K-26": {
+    "report_number": "220-10-K/26",
+    "issue_date": "25.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Grape Pie",
+      "batch": "P050302"
+    },
+    "lab_sample_number": "CF-515/26",
+    "mass_g": "11.58",
+    "analysis_date": "24.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "18.29",
+        "U": "1.12"
+      }
+    },
+    "notes": ""
+  },
+  "220-11-K-26": {
+    "report_number": "220-11-K/26",
+    "issue_date": "25.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Grape Pie",
+      "batch": "P050072"
+    },
+    "lab_sample_number": "CF-516/26",
+    "mass_g": "13.87",
+    "analysis_date": "24.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "28.30",
+        "U": "1.74"
+      }
+    },
+    "notes": ""
+  },
+  "220-12-K-26": {
+    "report_number": "220-12-K/26",
+    "issue_date": "25.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Grape Pie",
+      "batch": "P050312"
+    },
+    "lab_sample_number": "CF-517/26",
+    "mass_g": "12.19",
+    "analysis_date": "24.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "25.13",
+        "U": "1.54"
+      }
+    },
+    "notes": ""
+  },
+  "220-13-K-26": {
+    "report_number": "220-13-K/26",
+    "issue_date": "25.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Grape Pie",
+      "batch": "P060092"
+    },
+    "lab_sample_number": "CF-518/26",
+    "mass_g": "11.99",
+    "analysis_date": "24.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "25.24",
+        "U": "1.55"
+      }
+    },
+    "notes": ""
+  },
+  "220-14-K-26": {
+    "report_number": "220-14-K/26",
+    "issue_date": "25.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Grapes and Cream",
+      "batch": "P060182"
+    },
+    "lab_sample_number": "CF-519/26",
+    "mass_g": "11.29",
+    "analysis_date": "24.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "9.80",
+        "U": "0.60"
+      }
+    },
+    "notes": ""
+  },
+  "220-15-K-26": {
+    "report_number": "220-15-K/26",
+    "issue_date": "25.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "High Pro Amnesia",
+      "batch": "P050182"
+    },
+    "lab_sample_number": "CF-520/26",
+    "mass_g": "10.86",
+    "analysis_date": "24.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "19.69",
+        "U": "1.21"
+      }
+    },
+    "notes": ""
+  },
+  "220-16-K-26": {
+    "report_number": "220-16-K/26",
+    "issue_date": "25.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Jelly Donutz",
+      "batch": "P060362"
+    },
+    "lab_sample_number": "CF-521/26",
+    "mass_g": "12.12",
+    "analysis_date": "24.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "21.01",
+        "U": "1.29"
+      }
+    },
+    "notes": ""
+  },
+  "220-17-K-26": {
+    "report_number": "220-17-K/26",
+    "issue_date": "26.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Jelly Donutz",
+      "batch": "P060412"
+    },
+    "lab_sample_number": "CF-522/26",
+    "mass_g": "12.70",
+    "analysis_date": "25.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "14.43",
+        "U": "0.89"
+      }
+    },
+    "notes": ""
+  },
+  "220-18-K-26": {
+    "report_number": "220-18-K/26",
+    "issue_date": "26.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Jelly Donutz",
+      "batch": "P060422"
+    },
+    "lab_sample_number": "CF-523/26",
+    "mass_g": "12.65",
+    "analysis_date": "25.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "17.09",
+        "U": "1.05"
+      }
+    },
+    "notes": "Certificate label reads only \"Jelly Donutz / P060422\"; no \"V\" suffix printed (file name has \"02V\")."
+  },
+  "220-19-K-26": {
+    "report_number": "220-19-K/26",
+    "issue_date": "26.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Kush Crasher",
+      "batch": "P060172"
+    },
+    "lab_sample_number": "CF-524/26",
+    "mass_g": "12.70",
+    "analysis_date": "25.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "17.06",
+        "U": "1.05"
+      }
+    },
+    "notes": ""
+  },
+  "220-20-K-26": {
+    "report_number": "220-20-K/26",
+    "issue_date": "26.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Motor Breath",
+      "batch": "P050112"
+    },
+    "lab_sample_number": "CF-525/26",
+    "mass_g": "12.22",
+    "analysis_date": "25.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "17.93",
+        "U": "1.10"
+      }
+    },
+    "notes": ""
+  },
+  "220-21-K-26": {
+    "report_number": "220-21-K/26",
+    "issue_date": "26.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Orange Punch Mimosa",
+      "batch": "P050042"
+    },
+    "lab_sample_number": "CF-526/26",
+    "mass_g": "10.34",
+    "analysis_date": "25.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "18.14",
+        "U": "1.17"
+      }
+    },
+    "notes": ""
+  },
+  "220-22-K-26": {
+    "report_number": "220-22-K/26",
+    "issue_date": "26.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Orange Punch Mimosa",
+      "batch": "P060042"
+    },
+    "lab_sample_number": "CF-527/26",
+    "mass_g": "10.40",
+    "analysis_date": "25.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "10.18",
+        "U": "0.62"
+      }
+    },
+    "notes": ""
+  },
+  "220-23-K-26": {
+    "report_number": "220-23-K/26",
+    "issue_date": "26.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Orange Punch Mimosa",
+      "batch": "P050082"
+    },
+    "lab_sample_number": "CF-528/26",
+    "mass_g": "10.96",
+    "analysis_date": "25.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "19.30",
+        "U": "1.19"
+      }
+    },
+    "notes": ""
+  },
+  "220-24-K-26": {
+    "report_number": "220-24-K/26",
+    "issue_date": "26.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Permanent Marker",
+      "batch": "P060232"
+    },
+    "lab_sample_number": "CF-529/26",
+    "mass_g": "11.67",
+    "analysis_date": "25.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "10.80",
+        "U": "0.66"
+      }
+    },
+    "notes": ""
+  },
+  "220-25-K-26": {
+    "report_number": "220-25-K/26",
+    "issue_date": "26.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Pure Michigen",
+      "batch": "P060112"
+    },
+    "lab_sample_number": "CF-530/26",
+    "mass_g": "11.68",
+    "analysis_date": "25.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "13.95",
+        "U": "0.86"
+      }
+    },
+    "notes": "Strain printed as \"Pure Michigen\" (spelling as printed, not \"Michigan\")."
+  },
+  "220-26-K-26": {
+    "report_number": "220-26-K/26",
+    "issue_date": "26.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Scrambler",
+      "batch": "P060282"
+    },
+    "lab_sample_number": "CF-531/26",
+    "mass_g": "11.92",
+    "analysis_date": "25.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "19.73",
+        "U": "1.21"
+      }
+    },
+    "notes": ""
+  },
+  "220-27-K-26": {
+    "report_number": "220-27-K/26",
+    "issue_date": "26.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Sleepy Joe",
+      "batch": "P060082"
+    },
+    "lab_sample_number": "CF-532/26",
+    "mass_g": "11.61",
+    "analysis_date": "25.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "10.39",
+        "U": "0.64"
+      }
+    },
+    "notes": ""
+  },
+  "220-28-K-26": {
+    "report_number": "220-28-K/26",
+    "issue_date": "26.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Wedding Crusher",
+      "batch": "P060012"
+    },
+    "lab_sample_number": "CF-533/26",
+    "mass_g": "11.90",
+    "analysis_date": "25.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "23.48",
+        "U": "1.44"
+      }
+    },
+    "notes": ""
+  },
+  "220-29-K-26": {
+    "report_number": "220-29-K/26",
+    "issue_date": "26.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Cash Cow",
+      "batch": "P060372"
+    },
+    "lab_sample_number": "CF-534/26",
+    "mass_g": "10.50",
+    "analysis_date": "25.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "14.76",
+        "U": "0.91"
+      }
+    },
+    "notes": ""
+  },
+  "220-30-K-26": {
+    "report_number": "220-30-K/26",
+    "issue_date": "26.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Jelly Donutz",
+      "batch": "JD042601"
+    },
+    "lab_sample_number": "CF-535/26",
+    "mass_g": "13.04",
+    "analysis_date": "25.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "14.89",
+        "U": "0.91"
+      }
+    },
+    "notes": "Batch line is \"JD042601\" (no P-number)."
+  },
+  "220-31-K-26": {
+    "report_number": "220-31-K/26",
+    "issue_date": "26.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Fat Bastard",
+      "batch": "FB042601"
+    },
+    "lab_sample_number": "CF-536/26",
+    "mass_g": "10.62",
+    "analysis_date": "25.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "14.99",
+        "U": "0.92"
+      }
+    },
+    "notes": "Batch line is \"FB042601\" (no P-number)."
+  },
+  "220-32-K-26": {
+    "report_number": "220-32-K/26",
+    "issue_date": "26.08.2026",
+    "received_date": "17.08.2026",
+    "client_sample_label": {
+      "strain": "Cash Cow",
+      "batch": "CC042601"
+    },
+    "lab_sample_number": "CF-537/26",
+    "mass_g": "12.73",
+    "analysis_date": "25.08.2026",
+    "method": "ИР 7.2.1-47К (в.1)",
+    "results": {
+      "Total CBD": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total CBN": {
+        "result": "< LOQ",
+        "U": "/"
+      },
+      "Total Δ9-THC": {
+        "result": "14.90",
+        "U": "0.92"
+      }
+    },
+    "notes": "Batch line is \"CC042601\" (no P-number)."
+  }
+}

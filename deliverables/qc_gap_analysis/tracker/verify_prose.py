@@ -10,7 +10,12 @@ import csv, importlib.util, json, os, re, shutil, subprocess, sys, tempfile, col
 import openpyxl
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SRC = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "CoQ_Analysis_Master_v11.xlsx")
+sys.path.insert(0, HERE)
+from reference_sections import latest_master, sheet_or_section, has as _readable
+
+SRC = sys.argv[1] if len(sys.argv) > 1 else latest_master(HERE)
+if not SRC or not os.path.exists(SRC):
+    raise SystemExit("no workbook to check in " + HERE)
 spec = importlib.util.spec_from_file_location("tracker_data", os.path.join(HERE, "tracker_data.py"))
 T = importlib.util.module_from_spec(spec); spec.loader.exec_module(T)
 F = []
@@ -41,18 +46,31 @@ for a, nxt in zip(anchors, anchors[1:] + [sh.max_row + 1]):
     for mr in sh.merged_cells.ranges:
         if mr.min_col == 1 and mr.min_row == a:
             end = mr.max_row
-    refs, credited = collections.defaultdict(list), collections.defaultdict(list)
+    refs, credited, uncredited = collections.defaultdict(list), collections.defaultdict(list), set()
     for n, (s0, e) in PCOL.items():
         single = (e - s0) <= 2
         for r in range(a, end + 1, 2):
             t = str(WV[TR].cell(r if single else r + 1, s0 + 1 if single else s0).value or "")
-            if not t or t.startswith("—") or "no certificate" in t:
+            if not t or "no certificate" in t:
                 continue
             refs[n].append(t)
-            if "not credited" not in t:
+            # Coverage is the green fill, which is how the tracker and
+            # verify_workbook.py both define it. This used to skip any reference
+            # opening with an em dash, which is the shape of every in-house
+            # result ("— at issue —, (16.02.2026) [PP]"): identification A and B
+            # and foreign matter are performed in house on every lot, so the
+            # recount dropped three covered parameters per lot and read the
+            # STATUS cell as undercounting when the cell was right.
+            c = sh.cell(r, s0)
+            fill = (c.fill.fgColor.rgb[-6:] if c.fill and c.fill.fill_type == "solid"
+                    and isinstance(c.fill.fgColor.rgb, str) else None)
+            if fill == "C6EFCE":
                 credited[n].append(t)
+            elif fill == "EDEDED":
+                uncredited.add(t.split(",")[0].strip())
     LOT[(str(sh.cell(a, 1).value), str(sh.cell(a, 2).value or ""))] = {
         "row": a, "end": end, "blocks": (end - a + 1) // 2, "refs": refs, "credited": credited,
+        "uncredited": uncredited,
         "status": str(WV[TR].cell(a, 3).value or "")}
 
 # ---------------------------------------------------------------- 1. the tracker's STATUS cell
@@ -75,7 +93,9 @@ for (cu, p), d in LOT.items():
     if m and int(m.group(1)) != d["blocks"]:
         bad(TR, "STATUS names a different number of testing instances", f"{cu}/{p}: says {m.group(1)}, block has {d['blocks']}")
     m = re.search(r"• (\d+) document\(s\) on file, not credited", st)
-    extra = len({t.split(",")[0] for n in d["refs"] for t in d["refs"][n] if "not credited" in t})
+    # an uncredited document is a grey cell, the tracker's own definition; the
+    # suffix in the text follows the fill and is not what is counted
+    extra = len(d["uncredited"])
     if m and int(m.group(1)) != extra:
         bad(TR, "STATUS names a different number of uncredited documents", f"{cu}/{p}: says {m.group(1)}, block has {extra}")
 
@@ -105,9 +125,9 @@ for r in range(2, cov.max_row + 1):
             bad("Batch Coverage", "a laboratory on the tracker is not in the Labs column", f"{cu}/{p}: {lab} missing from {labs_sheet!r}")
 
 # ---------------------------------------------------------------- 3. Mikro CoQ Parameter against the tracker
-if "Mikro CoQ Parameter" in WB.sheetnames:
-    mk = WB["Mikro CoQ Parameter"]
-    mkv = WV["Mikro CoQ Parameter"]
+if _readable(WB, "Mikro CoQ Parameter"):
+    mk = sheet_or_section(WB, "Mikro CoQ Parameter")
+    mkv = sheet_or_section(WV, "Mikro CoQ Parameter")
     mst = [c for c in range(4, mk.max_column + 1) if str(mk.cell(2, c).value or "").startswith("#")]
     MP = {}
     for i, s0 in enumerate(mst):
@@ -142,7 +162,7 @@ if "Mikro CoQ Parameter" in WB.sheetnames:
 CORPUS = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(HERE))), "ingestion", "ecoa_runner", "records_corpus.json")
 recs = json.load(open(CORPUS)) if os.path.exists(CORPUS) else []
 in_corpus = {T.nkey(str(r.get("cert_code") or "")) for r in recs}
-aud = WB["Credit Audit"]
+aud = sheet_or_section(WB, "Credit Audit")
 for r in range(2, aud.max_row + 1):
     code = str(aud.cell(r, 3).value or "")
     why = str(aud.cell(r, 8).value or "")
@@ -156,7 +176,7 @@ for r in range(2, aud.max_row + 1):
         bad("Credit Audit", "says 'not on this certificate' but the corpus does not hold it", f"row {r}: {code}")
 
 # ---------------------------------------------------------------- 5. Work Order against the audit and the registers
-wo = WB["Work Order"]
+wo = sheet_or_section(WB, "Work Order")
 audit_codes = {str(aud.cell(r, 3).value or "") for r in range(2, aud.max_row + 1)}
 for r in range(2, wo.max_row + 1):
     task = str(wo.cell(r, 1).value or "")
@@ -173,11 +193,17 @@ for r in range(2, wo.max_row + 1):
 
 # ---------------------------------------------------------------- 6. the notes' own figures
 def note_of(name):
-    s = WB[name]
+    """The footnote under a table: one long string in the first column, nothing beside it.
+
+    It used to be recognised by the opening words "Head of QC", so rewriting a
+    note's first sentence made this return "" — and every check that reads the
+    note then passed on an empty string instead of failing.
+    """
+    s = sheet_or_section(WB, name)
     for row in s.iter_rows():
-        for c in row:
-            if isinstance(c.value, str) and c.value.startswith("Head of QC") and len(c.value) > 200:
-                return c.value
+        if isinstance(row[0].value, str) and len(row[0].value) > 200 and not any(
+                c.value not in (None, "") for c in row[1:]):
+            return row[0].value
     return ""
 
 
@@ -196,22 +222,39 @@ def rows_of(name, key_row=1):
 ic = rows_of("iCoA Register"); cq = rows_of("CoQ Register")
 icn = [d for d in ic if d["No."] not in (None, "")]
 cqn = [d for d in cq if d["No."] not in (None, "")]
-leg_i = sum(1 for d in icn if str(d["Group"]) == "legacy")
-leg_c = sum(1 for d in cqn if str(d["Group"]) == "legacy")
-for name, txt, pairs in (
-        ("iCoA Register", note_of("iCoA Register"), [("15.05.2026", sum(1 for d in icn if str(d.get("Issue date (planned)") or "")[:10] or True))]),
-        ("CoQ Register", note_of("CoQ Register"), [])):
-    if "iCoA-PP_26-nnn" not in txt and name == "iCoA Register":
-        bad(name, "the note does not state the code series", "")
-# the note's dates must be the dates the rows carry
+if "iCoA-PP_26-nnn" not in note_of("iCoA Register"):
+    bad("iCoA Register", "the note does not state the code series", "")
+
+
 def fmt(v):
     return v.strftime("%d.%m.%Y") if hasattr(v, "strftime") else ("" if v is None else str(v))
-leg_days = {fmt(d["Issue date (planned)"]) for d in icn if str(d["Group"]) == "legacy"}
-if leg_days and leg_days != {"15.05.2026"}:
-    bad("iCoA Register", "the note names 15.05.2026 for the legacy series but the rows say otherwise", str(sorted(leg_days)))
-leg_days_c = {fmt(d["Issue date (planned)"]) for d in cqn if str(d["Group"]) == "legacy"}
-if leg_days_c and leg_days_c != {"27.05.2026"}:
-    bad("CoQ Register", "the note names 27.05.2026 for the legacy series but the rows say otherwise", str(sorted(leg_days_c)))
+
+
+# The legacy backlog is released on one day, the note explains that day, and the
+# two have to agree. The day is read off the rows and looked for in the note; it
+# used to be a literal here, so the rows were compared against a third copy of the
+# date that no sheet held, and the check passed or failed on whether someone had
+# updated the checker rather than on whether the sheet contradicted itself. Only
+# the release round is held to the blanket day: a legacy lot's retest is sampled
+# in its own campaign and issued then, which is the ruling of 05.09.2026.
+for name, rows in (("iCoA Register", icn), ("CoQ Register", cqn)):
+    days = {fmt(d["Issue date (planned)"]) for d in rows
+            if str(d["Group"]) == "legacy" and str(d["Series"]) == "initial release"}
+    txt = note_of(name)
+    for day in sorted(d for d in days if d):
+        if day not in txt:
+            bad(name, "the note never names the day the legacy series is released on",
+                "rows say %s; the note names %s" % (day, sorted(set(re.findall(r"\d{2}\.\d{2}\.\d{4}", txt)))))
+    # A Status that says "issued <day>" is a sentence about its own row: the day it
+    # names is the row's planned issue date or the sentence is false. The builder
+    # wrote this day as a literal too, so a register could issue on 06.06.2026 and
+    # say 27.05.2026 in the same row.
+    for d in rows:
+        said = re.search(r"issued (?:with the legacy series on )?(\d{2}\.\d{2}\.\d{4})", str(d.get("Status") or ""))
+        if said and said.group(1) != fmt(d["Issue date (planned)"]):
+            bad(name, "Status names an issue day that is not the row's",
+                "%s: Status says %s, row issues %s" % (d.get("iCoA code") or d.get("CoQ code"),
+                                                        said.group(1), fmt(d["Issue date (planned)"])))
 
 # ---------------------------------------------------------------- 7. Batch Dates against the list as it was sent
 raw = os.path.join(HERE, "batch_dates_raw_2026-09-04.tsv")
