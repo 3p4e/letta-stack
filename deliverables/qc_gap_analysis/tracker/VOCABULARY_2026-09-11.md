@@ -766,3 +766,17 @@ line, after `extract_coq_register.py` has lifted the v29 register into the expor
         --v9 --version=29 --icoa --cells \
         --mikro=CoQ_Analysis_Master_v13.xlsx \
         --build-date=15.09.2026 --legacy-icoa=03.06.2026 --legacy-coq=06.06.2026
+
+Two more columns groups on the `CoQ Register` in the same build (owner, 15.09.2026): a reissue
+names the **initial certificate it supersedes** by the register's own code, looked up by Key
+so it follows a renumbering (n/a on an initial certificate); and every certificate carries
+its **potency grading** — the Total THC result it prints and the certificate it comes from,
+the grade of the potency specification of 15.09.2026 whose window it falls in (nominal ±
+tolerance, grade numeral from the highest nominal down), and the product code
+`{ABBR}_THC{nominal} : CBD1` and specification document code `QCSP_001_{ABBR}-{numeral}_v.NN`
+generated from it. `potency_grading.py` is the one definition: the strain from the batch
+code's letters (else the strain name through the rulings), the window as printed, and the
+version rule — v.01 cited where a specification with that product code is issued, "to issue"
+where none is, v.02 where the numeral is issued for another nominal, because the
+specification of 15.09.2026 changed the grade set of several strains. A result in no window
+is graded to the nearest window and the Grading note says so.
