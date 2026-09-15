@@ -1068,7 +1068,12 @@ workbook build adds it as two tabs:
 
 The same tables stand alone as `tracker/CoQ_compilation_v33.xlsx`, `_wide.csv` and
 `_long.csv`. What the compilation says is what the certificate prints — the export is the
-one source of both, and the truth check of v32 stands over it.
+one source of both — and the truth check now gates it: **T9** compares the wide tab and its
+files with the export (172 certificates, 3,956 determination cells: result, document, date of
+issue, laboratory), the long tab with the wide one cell for cell (3,956 rows), and the
+workbook's tabs with the files. **No finding.** The wide table is keyed on code, series,
+batch and lot, not on the code alone: nine rows share the code `— at issue —`, which is what
+an unnumbered certificate carries, and only the batch and the lot tell them apart.
 
 ## Reproducing
 

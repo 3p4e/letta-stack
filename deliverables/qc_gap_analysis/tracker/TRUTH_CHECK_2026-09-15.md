@@ -40,7 +40,14 @@ and tracker instances on every result, date, laboratory and lot; the 89 with a s
 with it. Every one of the 73 compiled drafts prints the register's code, the export's date, the
 superseded certificate, every result and every cited document as the export holds them.
 
-**Residual findings on v32 (21):** the two open items above (T3, T5) and the two starred lots
+**The compilation (v33).** The check gates it too (T9): the CoQ Compilation tab and its two
+files against the export they are built from — one row per certificate of quality (172), and
+per determination the result, the document, its date of issue and its laboratory (3,956 cells),
+with the long tab's 3,956 rows agreeing with the wide one cell for cell and the workbook's tabs
+carrying the same rows as the files. **No finding.** Separately, all 1,497 results printed on
+the 73 compiled drafts were compared with the compilation: no difference.
+
+**Residual findings on v33 (21):** the two open items above (T3, T5) and the two starred lots
 whose register block carries no P lot (T1; OI-28). The generated report follows.
 
 ---
@@ -75,6 +82,9 @@ the recalculated workbook (tracker and CoQ Register), the references table and e
 | T7 cells | 1549 |
 | T7 certificates | 161 |
 | T8 numbered rows | 161 |
+| T9 certificates | 172 |
+| T9 determination cells | 3956 |
+| T9 long rows | 3956 |
 
 ## Findings — 21
 

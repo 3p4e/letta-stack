@@ -17,6 +17,8 @@ value normalisation, what the derived layers state:
       every cited (code, date)
   T7  references table → export: per certificate and determination, code, date, lab
   T8  CoQ Register → export/primary: Total THC and its certificate, the latest eCoA cited
+  T9  CoQ compilation (both tabs) → export: one row per certificate, and per determination
+      the result, the document, its date of issue and its laboratory
 
 A finding is a sentence with the evidence beside it. Counts are printed per check so a
 zero is a zero over N comparisons, never over none.
@@ -835,6 +837,94 @@ def t7_references(path, export):
                 bad("T7", "references table names a laboratory differently (#%d)" % g, "%s: %s table %s, certificate %s" % (row["CoQ"], code, lab, er.get("lab")))
 
 
+def t9_compilation(root, export, wb_values):
+    """The compilation of 15.09.2026 — the owner's first request — against the export it is
+    built from: one row per certificate, and per determination the result, the document, its
+    date of issue and its laboratory. The wide table is keyed on code + series + batch + lot,
+    because an unnumbered certificate's code ("— at issue —") is shared by nine rows."""
+    import csv as _csv
+    wide_p = sorted(glob.glob(os.path.join(root, "tracker", "CoQ_compilation_v*_wide.csv")))
+    long_p = sorted(glob.glob(os.path.join(root, "tracker", "CoQ_compilation_v*_long.csv")))
+    if not wide_p:
+        bad("T9", "the compilation table is not on file", os.path.join(root, "tracker"))
+        return
+    wide = list(_csv.DictReader(open(wide_p[-1], encoding="utf-8")))
+    long_ = list(_csv.DictReader(open(long_p[-1], encoding="utf-8"))) if long_p else []
+
+    def key(code, t, cb, pp):
+        return (code or "— at issue —",
+                "reissue — 12-month retest" if t.startswith("additional") else "release",
+                cb or "—", pp or "— no P lot assigned —")
+    idx = {}
+    for r in wide:
+        k = (r["CoQ code"], r["Series"], r["Batch (cultivation)"], r["P lot"])
+        if k in idx:
+            bad("T9", "two compilation rows for one certificate", str(k))
+        idx[k] = r
+    if len(wide) != len(export["coqs"]):
+        bad("T9", "the compilation does not carry one row per certificate",
+            "compilation %d, export %d" % (len(wide), len(export["coqs"])))
+    for c in export["coqs"]:
+        code = c.get("regcode") if str(c.get("regcode", "")).startswith("CoQ-PP_26-") else ""
+        row = idx.get(key(code, c["t"], c.get("cb"), c.get("pp")))
+        COUNT["T9 certificates"] += 1
+        if not row:
+            bad("T9", "a certificate of the export has no compilation row",
+                "%s %s %s" % (code or "— at issue —", c.get("cb"), c.get("pp")))
+            continue
+        # the header fields the certificate itself prints
+        if row["Date of issue"] not in (c.get("issue") or "—", "%s (floor — not yet dated)" % (c.get("issue") or "")):
+            bad("T9", "compilation date of issue differs from the export",
+                "%s: compilation %r, export %r" % (code, row["Date of issue"], c.get("issue")))
+        for r in c["rows"]:
+            no = str(r["no"])
+            if ("#%s document" % no) not in row:
+                continue
+            COUNT["T9 determination cells"] += 1
+            doc = (r.get("doc") or "").strip() or "—"
+            res = (r.get("res") or "").strip()
+            if row["#%s document" % no] != doc:
+                bad("T9", "compilation names a document the export does not (#%s)" % no,
+                    "%s: compilation %r, export %r" % (code, row["#%s document" % no], doc))
+            elif doc != "—":
+                if row["#%s issued" % no] != (r.get("dd") or "—"):
+                    bad("T9", "compilation dates a document differently from the export (#%s)" % no,
+                        "%s %s: compilation %r, export %r" % (code, doc, row["#%s issued" % no], r.get("dd")))
+                if row["#%s laboratory" % no] != (r.get("lab") or "—"):
+                    bad("T9", "compilation names a laboratory the export does not (#%s)" % no,
+                        "%s %s: compilation %r, export %r" % (code, doc, row["#%s laboratory" % no], r.get("lab")))
+            if res and res != "—" and row["#%s result" % no] != res:
+                bad("T9", "compilation prints a result the export does not (#%s)" % no,
+                    "%s: compilation %r, export %r" % (code, row["#%s result" % no], res))
+    # the long table: one row per certificate and determination, agreeing with the wide one
+    if long_:
+        seen = set()
+        for r in long_:
+            k = (r["CoQ code"], r["Series"], r["Batch (cultivation)"], r["P lot"], r["#"])
+            if k in seen:
+                bad("T9", "two long-table rows for one certificate and determination", str(k))
+            seen.add(k)
+            w = idx.get(k[:4])
+            if not w:
+                bad("T9", "a long-table row has no wide row", str(k))
+                continue
+            COUNT["T9 long rows"] += 1
+            for a, b in (("Result", "result"), ("Document", "document"), ("Issued", "issued"), ("Laboratory", "laboratory")):
+                if r[a] != w["#%s %s" % (r["#"], b)]:
+                    bad("T9", "the two compilation tabs disagree (#%s %s)" % (r["#"], b),
+                        "%s: long %r, wide %r" % (r["CoQ code"], r[a], w["#%s %s" % (r["#"], b)]))
+        if len(long_) != len(wide) * 23:
+            bad("T9", "the long table is not one row per certificate and determination",
+                "%d rows, expected %d × 23 = %d" % (len(long_), len(wide), len(wide) * 23))
+    # and the workbook's own tabs carry the same number of rows
+    for tab, n in (("CoQ Compilation", len(wide)), ("CoQ Compilation (long)", len(long_))):
+        if tab in wb_values.sheetnames and n:
+            got = wb_values[tab].max_row - 1
+            if got != n:
+                bad("T9", "the workbook tab and the file differ in row count",
+                    "%s: tab %d, file %d" % (tab, got, n))
+
+
 def t8_register(wb_values, export, prim):
     ws = wb_values["CoQ Register"]
     rows = list(ws.iter_rows(values_only=True))
@@ -912,6 +1002,7 @@ def main():
     refs = sorted(glob.glob(os.path.join(root, "tracker", "CoQ_references_v*.csv")))
     t7_references(refs[-1] if refs else "", export)
     t8_register(wbv, export, prim)
+    t9_compilation(root, export, wbv)
 
     print()
     for k in sorted(COUNT):
