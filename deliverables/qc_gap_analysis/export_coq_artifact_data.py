@@ -316,6 +316,30 @@ def main(out):
         print("CoQ register: %d of %d CoQs take their issue date from the workbook"
               % (_hit, len(coqs)))
 
+    # Owner, 15.09.2026: a reissue names the initial certificate it supersedes —
+    # the register's code and the date it was issued — and the compiled
+    # certificate prints it, small, in its header. An initial certificate has
+    # nothing to supersede.
+    _initial = {}
+    for _c in coqs:
+        if not _c["t"].startswith("additional"):
+            for _nm in filter(None, (_c.get("pp"), _c.get("cb"))):
+                _initial.setdefault(CQ.BI.batch_key(_nm), _c)
+    _sup = 0
+    for _c in coqs:
+        if not _c["t"].startswith("additional"):
+            continue
+        _i = next((_initial[CQ.BI.batch_key(_nm)] for _nm in filter(None, (_c.get("pp"), _c.get("cb")))
+                   if CQ.BI.batch_key(_nm) in _initial), None)
+        if _i:
+            _code = _i.get("regcode") if str(_i.get("regcode", "")).startswith("CoQ-PP_26-") else \
+                (_i["n"] if _i["n"] != CQ.NO_NUMBER else "")
+            _c["supersedes"] = {"code": _code or "— initial certificate not yet numbered —",
+                                "date": _i.get("issue", "") if _code else "",
+                                "issued": bool(_code)}
+            _sup += 1
+    print("Supersedes: %d reissue(s) name the initial certificate they replace" % _sup)
+
     # Owner, 10.09.2026: the phenotype and processing pills are selected
     # according to the specification for the product strain. Those pills — and
     # the chemotype pill beside them, and the primary-packaging line under them —

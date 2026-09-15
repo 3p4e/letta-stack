@@ -20,11 +20,15 @@ specifications):
   (OMP1024_01), the strain name decides, through the tracker's strain rulings and the
   spellings the record carries.
 * **The grade is the window the result falls in**, nominal − tolerance to nominal +
-  tolerance as the specification prints them. A result in no window is graded to the
-  nearest window and says so — a fact for the Head of QC, not a certificate.
+  tolerance as the specification prints them. A result in no window is not graded to a
+  neighbour: it needs a specification of its own — "new specification required", with
+  the strain's next numeral reserved for it — a fact for the Head of QC, not a certificate.
 * **Product code** `{ABBR}_THC{nominal} : CBD1` and **specification document code**
-  `QCSP_001_{ABBR}-{grade numeral}_v.NN`, the numeral ranking the strain's grades from
-  the highest nominal (I) down — the issued convention (Cap Junky: I = 28, II = 26 …).
+  `QCSP_001_{ABBR}-{numeral}_v.01`. The numeral is SEQUENTIAL within the strain (owner,
+  15.09.2026): the order the strain's specifications were created, kept in
+  potency_grades_2026-09-15.csv and never changed. The first table was numbered from the
+  highest nominal down, so today it also reads as a ladder; a grade added later takes the
+  next free numeral wherever it sits on the scale.
   Owner, 15.09.2026: every grade, nominal, tolerance and range already in the issued
   specifications and on the certificates is old and potentially wrong; the specification
   of 15.09.2026 is used exactly, everywhere — and there is no second version: every
@@ -63,12 +67,12 @@ def _load():
         for r in csv.DictReader(fh):
             _G.setdefault(r["abbr"], []).append({"nominal": float(r["nominal"]), "tol": float(r["tolerance"]),
                                                  "lo": float(r["window_low"]), "hi": float(r["window_high"]),
-                                                 "strain": r["strain"]})
+                                                 "strain": r["strain"], "roman": (r.get("numeral") or "").strip()})
             _NAMES[_squash(r["strain"])] = r["abbr"]
     for abbr, gs in _G.items():
         gs.sort(key=lambda g: -g["nominal"])
         for i, g in enumerate(gs):
-            g["roman"] = ROMAN[i]
+            g["roman"] = g.get("roman") or ROMAN[i]     # the table's numeral; a rank only for a table without one
     global _BY_PCODE
     _ISSUED, _BY_PCODE = {}, {}
     if os.path.exists(SPEC_JSON):
@@ -133,8 +137,8 @@ def grade_of(abbr, thc):
     (24.0, 'II', '')
     >>> g = grade_of("BSS", 21.03); g["nominal"], g["lo"], g["hi"]
     (20.0, 18.11, 21.88)
-    >>> g = grade_of("CJ", 29.9); g["nominal"], g["note"]
-    (28.0, 'above the highest window (26.40 – 29.59): graded to the nearest')
+    >>> g = grade_of("CJ", 29.9); g["nominal"], g["roman"], g["note"][:52]
+    (None, 'VI', 'new specification required — 29.90 % is in no window')
     >>> grade_of("ZZZ", 10) is None
     True
     """
@@ -145,14 +149,13 @@ def grade_of(abbr, thc):
     for g in gs:
         if g["lo"] <= thc <= g["hi"]:
             return dict(g, note="")
+    # Owner, 15.09.2026: a result in no window is not graded to a neighbour — it
+    # needs a specification of its own, which takes the strain's next numeral.
     near = min(gs, key=lambda g: min(abs(thc - g["lo"]), abs(thc - g["hi"])))
-    if thc > gs[0]["hi"]:
-        note = "above the highest window (%.2f – %.2f): graded to the nearest" % (gs[0]["lo"], gs[0]["hi"])
-    elif thc < gs[-1]["lo"]:
-        note = "below the lowest window (%.2f – %.2f): graded to the nearest" % (gs[-1]["lo"], gs[-1]["hi"])
-    else:
-        note = "between two windows: graded to the nearest (%.2f – %.2f)" % (near["lo"], near["hi"])
-    return dict(near, note=note)
+    nxt = next(x for x in ROMAN if x not in {g["roman"] for g in gs})
+    return {"nominal": None, "tol": None, "lo": None, "hi": None, "roman": nxt, "strain": gs[0]["strain"],
+            "note": "new specification required — %.2f %% is in no window of %s (nearest %.2f – %.2f); "
+                    "nominal and tolerance to define, numeral %s" % (thc, abbr, near["lo"], near["hi"], nxt)}
 
 
 def product_code(abbr, nominal):
@@ -219,6 +222,10 @@ def grading(cb, strain, res):
     g = grade_of(out["abbr"], out["thc"])
     if not g:
         out["note"] = "no grades for %s in the specification" % out["abbr"]
+        return out
+    if g["nominal"] is None:
+        out["note"], out["roman"] = g["note"], g["roman"]
+        out["spec_code"], out["spec_status"] = "QCSP_001_%s-%s_v.01" % (out["abbr"], g["roman"]), "for review — new specification required"
         return out
     out["grade"] = "%.2f ± %.2f (%s)" % (g["nominal"], g["tol"], g["roman"])
     out["window"] = "%.2f – %.2f %%" % (g["lo"], g["hi"])

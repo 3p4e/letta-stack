@@ -39,6 +39,7 @@ not decoration.
 import argparse
 import csv
 import os
+import re
 import subprocess
 import sys
 
@@ -80,8 +81,11 @@ def scope(path):
             lot = (r.get("p_lot") or "").strip()
             if not lot or lot == "—":
                 continue
-            out.setdefault(r["tranche"].strip(), []).append(lot)
-    return {t: sorted(v) for t, v in sorted(out.items())}
+            # in the order of issue where the scope states the register code
+            # (the reissue scope does), else in P-lot order
+            code = (r.get("coq_code") or "").strip()
+            out.setdefault(r["tranche"].strip(), []).append((code if code.startswith("CoQ-PP_26-") else "~" + lot, lot))
+    return {t: [lot for _, lot in sorted(v)] for t, v in sorted(out.items())}
 
 
 def page_text(paths):
@@ -131,11 +135,15 @@ def main(argv=None):
     ap.add_argument("--drafts", default=DRAFTS)
     ap.add_argument("--out", default=DRAFTS)
     ap.add_argument("--chromium", default=os.environ.get("CHROMIUM_PATH"))
+    ap.add_argument("--series", choices=("initial", "reissue"), default="initial",
+                    help="reissue: print the DRAFT_CoQ_<lot>_reissue.html documents of the "
+                         "reissue scope into Tranche_<n>_CoQ_Reissue_Drafts.pdf")
     a = ap.parse_args(argv)
+    sfx, tag = ("_reissue", "Reissue_") if a.series == "reissue" else ("", "")
 
     import house_fonts
     tranches = scope(a.scope)
-    files = {t: [os.path.join(a.drafts, "DRAFT_CoQ_%s.html" % lot) for lot in lots]
+    files = {t: [os.path.join(a.drafts, "DRAFT_CoQ_%s%s.html" % (re.sub(r"[^\w-]", "_", lot), sfx)) for lot in lots]
              for t, lots in tranches.items()}
     missing = [p for ps in files.values() for p in ps if not os.path.exists(p)]
     if missing:
@@ -150,7 +158,7 @@ def main(argv=None):
     os.makedirs(tmp, exist_ok=True)
     for t, ps in files.items():
         parts = render(ps, tmp, a.chromium, css)
-        out = os.path.join(a.out, "Tranche_%s_CoQ_Drafts.pdf" % t)
+        out = os.path.join(a.out, "Tranche_%s_CoQ_%sDrafts.pdf" % (t, tag))
         merge(parts, out)
         print("Tranche %s: %d certificate(s) -> %s (%d KiB)"
               % (t, len(parts), out, os.path.getsize(out) // 1024))

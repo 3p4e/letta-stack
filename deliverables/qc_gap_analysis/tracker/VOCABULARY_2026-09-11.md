@@ -802,3 +802,37 @@ document; the set goes for review. `potency_grading.spec_code()` returns
 `QCSP_001_{ABBR}-{numeral}_v.01` always, and the status beside it records, for that review,
 what the v.01 already issued under the same strain and numeral printed ("replaces the issued …",
 "same as issued", or "new").
+
+**Sequential numerals (owner, 15.09.2026: "I choose sequential naming of specification
+grades").** The grade numeral of a strain is an ordinal of definition, not of potency: the
+grades the potency specification of 15.09.2026 lists are numbered in the order that table
+prints them (the first table by nominal descending, so it reads as before) and frozen in
+`potency_grades_2026-09-15.csv`, column `numeral`; `potency_grades.number()` assigns a grade
+added later the strain's next free numeral whatever its nominal, and never renumbers one that
+is frozen. So `QCSP_001_BSS-II_v.01` is not below or above `-I`, only defined after it. A
+result that falls in no window of its strain gets no grade: `potency_grading.grade_of()` returns
+"new specification required — X % is in no window of ABBR (nearest …); nominal and tolerance to
+define, numeral N", with the strain's next numeral reserved, and the CoQ Register prints that
+note in its Grading note column. In this build no result falls outside every window, so the
+rule changes no code; it fixes what happens the day one does.
+
+**The compiled certificate names what the register states (owner, 15.09.2026).** `fillCoq()`
+prints the document code the `CoQ Register` states (`regcode`) in the header's Document ID
+line — the same rule as the date of issue since 10.09.2026; a certificate the register has not
+numbered keeps the controlled blank `CoQ-PP-····-····`. A reissue prints, under its date of
+issue and in small bracketed type, `(supersedes <code> of <date>)` — the initial certificate of
+the same lot by the register's own code and its date of issue (`export_coq_artifact_data.py`
+writes `supersedes` on every additional-testing record from the initial record of the same
+batch key). `build_coq_drafts.py --series reissue` compiles the 12-month reissues of
+`tracker/coq_reissue_scope_2026-09-15.csv` (`live_instrument/reissue_scope.py` writes it from
+the export: the 21 numbered Tranche 1 reissues draftable, every other reissue listed with the
+reason it is not) into `drafts/DRAFT_CoQ_<lot>_reissue.html`,
+`Tranche_1_CoQ_Reissue_Draft_Set.html` and `coq_reissue_draft_gaps.csv`, reading the code, the
+date and the supersedes line back off every compiled page; `print_coq_pdfs.py --series reissue`
+prints them to `Tranche_1_CoQ_Reissue_Drafts.pdf`.
+
+    python3 deliverables/qc_gap_analysis/live_instrument/reissue_scope.py
+    python3 deliverables/qc_gap_analysis/live_instrument/build_coq_drafts.py \
+        --series reissue --scope deliverables/qc_gap_analysis/tracker/coq_reissue_scope_2026-09-15.csv
+    python3 deliverables/qc_gap_analysis/live_instrument/print_coq_pdfs.py \
+        --series reissue --scope deliverables/qc_gap_analysis/tracker/coq_reissue_scope_2026-09-15.csv

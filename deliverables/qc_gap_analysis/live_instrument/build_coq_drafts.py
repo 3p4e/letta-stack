@@ -25,6 +25,13 @@ Outputs, under deliverables/qc_gap_analysis/drafts/:
   DRAFT_CoQ_<P lot>.html            one A4 document per lot
   Tranche_1_2_CoQ_Draft_Set.html    all of them, one page each, print-ready
   coq_draft_gaps.csv                every blank and every over-running result
+
+With --series reissue and the reissue scope (tracker/coq_reissue_scope_2026-09-15.csv)
+the same compiler produces the 12-month reissues instead — DRAFT_CoQ_<lot>_reissue.html,
+Tranche_1_CoQ_Reissue_Draft_Set.html and coq_reissue_draft_gaps.csv. A reissue
+prints, under its date of issue, the small bracketed line "(supersedes <code> of
+<date>)" naming the initial certificate it replaces (owner, 15.09.2026); the build
+reads that line back off every compiled page and names any reissue without one.
 """
 import argparse
 import csv
@@ -45,8 +52,14 @@ EXTRACT = r"""
   host.setAttribute("style", "position:fixed;left:-9999px;width:794px;height:1123px;border:0");
   document.body.appendChild(host);
   for (const lot of lots) {
-    const i = COQ.findIndex(c => c.pp === lot.p_lot && c.t === "initial release");
-    if (i < 0) { out.push({ p_lot: lot.p_lot, error: "no initial-release record" }); continue; }
+    /* the initial certificate of a lot, or — series "reissue" — its 12-month
+       reissue. A lot with no packaged-lot number is carried under its
+       cultivation batch, so a reissue is matched on either name. */
+    const reissue = lot.series === "reissue";
+    const i = COQ.findIndex(c => reissue
+      ? (c.t.indexOf("additional") === 0 && (c.pp === lot.p_lot || (!c.pp && c.cb === lot.p_lot)))
+      : (c.pp === lot.p_lot && c.t === "initial release"));
+    if (i < 0) { out.push({ p_lot: lot.p_lot, error: reissue ? "no reissue record" : "no initial-release record" }); continue; }
     const c = COQ[i];
     const html = fillCoq(c);
     host.contentDocument.open(); host.contentDocument.write(html); host.contentDocument.close();
@@ -150,9 +163,24 @@ EXTRACT = r"""
       if (l && v) lk[l.textContent.trim()] = v.textContent.trim();
     });
     const pot = doc.querySelector(".pbp-val");
+    /* the header band: the document code, the date of issue and — on a reissue
+       — the small bracketed line naming the certificate it supersedes. The
+       line is measured against the sheet like any result: nowrap text that
+       outgrows the header's right column would run off the page unannounced. */
+    const codeEl = doc.querySelector(".hb-code"), issEl = doc.querySelector(".hb-issue b");
+    const supEl = doc.querySelector(".hb-supersedes");
+    if (supEl) {
+      const r = supEl.getBoundingClientRect();
+      const px = Math.max(Math.round(r.right - sheet.right), Math.round(sheet.left - r.left));
+      if (px > 0) over.push({ no: "—", name: "header · supersedes line", text: supEl.textContent.trim(), px: px });
+    }
     out.push({
-      p_lot: c.pp, cb: c.cb, strain: c.strain, thc: pot ? pot.textContent.trim() : "",
-      name: coqDocName(c), lk: lk, blanks: blanks, over: over, band: band, html: html,
+      p_lot: lot.p_lot, cb: c.cb, strain: c.strain, thc: pot ? pot.textContent.trim() : "",
+      code: codeEl ? codeEl.textContent.trim() : "",
+      issue: issEl ? issEl.textContent.trim() : "",
+      supersedes: supEl ? supEl.textContent.trim() : "",
+      name: coqDocName(c).replace(/\.html$/, reissue ? "_reissue.html" : ".html"),
+      lk: lk, blanks: blanks, over: over, band: band, html: html,
       tall: tall,
       labs: doc.querySelectorAll("table.labref tbody tr").length,
     });
@@ -176,8 +204,17 @@ def main():
     ap.add_argument("--out", default=os.path.join(GAP, "drafts"))
     ap.add_argument("--chromium", default=os.environ.get("CHROMIUM_PATH", ""),
                     help="browser executable; defaults to whatever Playwright resolves")
-    ap.add_argument("--title", default="Tranche 1 &amp; 2 — Certificates of Quality (DRAFT)")
+    ap.add_argument("--title", default=None)
+    ap.add_argument("--series", choices=("initial", "reissue"), default="initial",
+                    help="initial: the lot's initial-release certificate (default); "
+                         "reissue: its 12-month reissue, which names the certificate it supersedes")
     args = ap.parse_args()
+    reissue = args.series == "reissue"
+    if args.title is None:
+        args.title = ("Tranche 1 — Reissued Certificates of Quality (DRAFT)" if reissue
+                      else "Tranche 1 &amp; 2 — Certificates of Quality (DRAFT)")
+    set_name = "Tranche_1_CoQ_Reissue_Draft_Set.html" if reissue else "Tranche_1_2_CoQ_Draft_Set.html"
+    gaps_name = "coq_reissue_draft_gaps.csv" if reissue else "coq_draft_gaps.csv"
 
     rows = [r for r in csv.DictReader(open(args.scope, encoding="utf-8"))
             if r["draftable"].strip() == "yes"]
@@ -192,7 +229,7 @@ def main():
         pg = br.new_page()
         pg.goto("file://" + os.path.abspath(args.artifact))
         pg.wait_for_function("typeof COQ !== 'undefined' && typeof fillCoq === 'function'")
-        docs = pg.evaluate(EXTRACT, [{"p_lot": r["p_lot"]} for r in rows])
+        docs = pg.evaluate(EXTRACT, [{"p_lot": r["p_lot"], "series": args.series} for r in rows])
         br.close()
 
     tranche = {r["p_lot"]: r["tranche"] for r in rows}
@@ -220,7 +257,7 @@ def main():
                          o["no"] or "—", o["name"], "runs off the sheet",
                          "the result runs %d px past the edge of the sheet and "
                          "is cut off in print: %s" % (o["px"], o["text"])])
-    with open(os.path.join(args.out, "coq_draft_gaps.csv"), "w", newline="",
+    with open(os.path.join(args.out, gaps_name), "w", newline="",
               encoding="utf-8") as fh:
         csv.writer(fh).writerows(gaps)
 
@@ -241,13 +278,28 @@ def main():
     for d in sorted(docs, key=lambda x: (tranche[x["p_lot"]], x["p_lot"])):
         parts.append(page_body(d["html"]))
     parts.append("</body>\n</html>\n")
-    combined = os.path.join(args.out, "Tranche_1_2_CoQ_Draft_Set.html")
+    combined = os.path.join(args.out, set_name)
     with open(combined, "w", encoding="utf-8") as fh:
         fh.write("".join(parts))
 
     n1 = sum(1 for d in docs if tranche[d["p_lot"]] == "1")
-    print("%d documents (%d Tranche 1, %d Tranche 2) -> %s"
-          % (len(docs), n1, len(docs) - n1, args.out))
+    print("%d %sdocuments (%d Tranche 1, %d Tranche 2) -> %s"
+          % (len(docs), "reissued " if reissue else "", n1, len(docs) - n1, args.out))
+    # What the header band prints, read off the compiled page: the register's
+    # code and date, and — on a reissue — the supersedes line. A reissue that
+    # prints no supersedes line, or no code, is named: it is not a defect of the
+    # compiler but a certificate the register has not numbered.
+    nocode = [d for d in docs if not d.get("code", "").startswith("CoQ-PP_26-")]
+    print("%d of %d print a CoQ Register code in the header; %d print the register's date of issue"
+          % (len(docs) - len(nocode), len(docs), sum(1 for d in docs if re.match(r"^\d\d\.\d\d\.\d{4}$", d.get("issue", "")))))
+    for d in nocode:
+        print("    %-12s header code reads %r" % (d["p_lot"], d.get("code", "")))
+    if reissue:
+        nosup = [d for d in docs if not d.get("supersedes", "").startswith("(supersedes CoQ-PP_26-")]
+        print("%d of %d reissues print a supersedes line naming the initial certificate's register code"
+              % (len(docs) - len(nosup), len(docs)))
+        for d in nosup:
+            print("    %-12s supersedes line reads %r" % (d["p_lot"], d.get("supersedes", "")))
     print("%s: %.0f KiB" % (combined, os.path.getsize(combined) / 1024))
     nb = sum(len(d["blanks"]) for d in docs)
     no = sum(len(d["over"]) for d in docs)

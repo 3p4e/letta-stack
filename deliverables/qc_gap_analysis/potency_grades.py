@@ -17,8 +17,10 @@ The owner asked for this information inside the workbook (15.09.2026); the `Pote
 Grades` tab renders this CSV, one row per strain and grade.
 
 Output: potency_grades_2026-09-15.csv — strain, abbr, status, results_n, results_range,
-grades_n, basis, nominal, tolerance, window_low, window_high, measured (the results as
-printed, space-separated).
+grades_n, basis, numeral, nominal, tolerance, window_low, window_high, measured (the
+results as printed, space-separated). `numeral` is the specification's sequential number
+within the strain (owner, 15.09.2026): assigned once by `number()` and kept on every later
+run, so a specification document code never changes its meaning.
 """
 import csv
 import os
@@ -82,7 +84,46 @@ def build(src=SRC):
 
 
 COLS = ["strain", "abbr", "status", "results_n", "results_range", "grades_n", "basis",
-        "nominal", "tolerance", "window_low", "window_high", "measured"]
+        "numeral", "nominal", "tolerance", "window_low", "window_high", "measured"]
+ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"]
+
+
+def number(rows, previous=None):
+    """Give every grade its specification numeral — SEQUENTIALLY, once, for good.
+
+    Owner, 15.09.2026: the numeral in a specification document code is the order the
+    strain's specifications were created, never a rank on the potency scale. A grade
+    already numbered in the previous table keeps its numeral; a grade new to a strain
+    takes the strain's next free numeral, wherever its nominal sits. The first table
+    (this one) was numbered from the highest nominal down, which is how the review set
+    reads today; from here on nothing is renumbered.
+
+    >>> rows = [{"abbr": "X", "nominal": "20.00"}, {"abbr": "X", "nominal": "24.00"}, {"abbr": "Y", "nominal": "8.00"}]
+    >>> [r["numeral"] for r in number(rows)]
+    ['II', 'I', 'I']
+    >>> prev = {("X", "24.00"): "I", ("X", "20.00"): "II"}
+    >>> [r["numeral"] for r in number(rows + [{"abbr": "X", "nominal": "28.00"}], prev)]
+    ['II', 'I', 'I', 'III']
+    """
+    previous = previous or {}
+    used = {}
+    for (abbr, nom), num in previous.items():
+        used.setdefault(abbr, set()).add(num)
+    for r in rows:
+        k = (r["abbr"], "%.2f" % float(r["nominal"]))
+        if k in previous:
+            r["numeral"] = previous[k]
+    for abbr in sorted({r["abbr"] for r in rows}):
+        todo = [r for r in rows if r["abbr"] == abbr and not r.get("numeral")]
+        if previous and any(r.get("numeral") for r in rows if r["abbr"] == abbr):
+            todo.sort(key=lambda r: float(r["nominal"]) * -1)      # appended in the order the table lists them
+        else:
+            todo.sort(key=lambda r: -float(r["nominal"]))          # the first numbering: highest nominal first
+        for r in todo:
+            n = next(x for x in ROMAN if x not in used.get(abbr, set()))
+            r["numeral"] = n
+            used.setdefault(abbr, set()).add(n)
+    return rows
 
 
 def load(path=OUT):
@@ -97,6 +138,13 @@ def main(argv):
     if fail:
         return 1
     rows = build()
+    # the numerals already given stand; only a grade new to a strain gets a number
+    previous = {}
+    if os.path.exists(OUT):
+        for r in load(OUT):
+            if r.get("numeral"):
+                previous[(r["abbr"], "%.2f" % float(r["nominal"]))] = r["numeral"]
+    number(rows, previous)
     with open(OUT, "w", newline="", encoding="utf-8") as fh:
         wr = csv.DictWriter(fh, fieldnames=COLS)
         wr.writeheader()

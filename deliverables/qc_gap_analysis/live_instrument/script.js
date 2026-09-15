@@ -2495,6 +2495,7 @@ function addFitStyle(doc){
      had fitted past the bottom of an A4 page. .r-long keeps its wrapping — that
      is the rule for a result that is genuinely a sentence. */
   rules.push("table.results tbody td.r-cell .r-val.r-fit{white-space:nowrap}");
+  rules.push("table.results tbody td.r-cell .r-val.r-tight{font-size:7.8px;letter-spacing:-.05px}");
   st.textContent = rules.join("");
   doc.head.appendChild(st);
 }
@@ -2510,9 +2511,24 @@ function fillCoq(c){
      "≥ <date>", which is a rule and not a date — that prints as the controlled
      blank the master ships. */
   var issueDate = /^\d{2}\.\d{2}\.\d{4}$/.test(c.issue || "") ? c.issue : "";
-  q(".hb-code").textContent = draft ? "CoQ-PP-····-····" : c.n;
+  /* Owner, 15.09.2026: the document code is the one the CoQ Register states,
+     and the certificate prints it — the same rule as the date of issue below.
+     A certificate the register has not numbered yet keeps the controlled blank. */
+  var regCode = /^CoQ-PP_26-\d{3}$/.test(c.regcode || "") ? c.regcode : "";
+  q(".hb-code").textContent = regCode || (draft ? "CoQ-PP-····-····" : c.n);
   q(".hb-issue").innerHTML = "Issued · Издаден <b>" +
     (issueDate ? esc(issueDate) : todoHtml("\u2014")) + "</b>";
+  /* Owner, 15.09.2026: a reissue names the certificate it supersedes — the
+     register's code and its date of issue — in small type under the issue date,
+     in brackets. An initial certificate supersedes nothing and prints nothing. */
+  if (c.reissue && c.supersedes) {
+    var sup = doc.createElement("span");
+    sup.className = "hb-supersedes";
+    sup.setAttribute("style", "display:block;font-size:.66em;font-weight:400;opacity:.8;margin-top:1px;white-space:nowrap");
+    sup.textContent = "(supersedes " + c.supersedes.code +
+      (c.supersedes.date ? " of " + c.supersedes.date : "") + ")";
+    q(".hb-issue").appendChild(sup);
+  }
   q(".pb-name").innerHTML = "<span style=\"font-family:'Roboto Mono',monospace\">" +
     esc(c.pp || c.cb) + '</span> <i class="bisep" style="font-size:.7em">|</i> ' +
     '<span style="font-weight:800;text-transform:uppercase">' + esc(c.strain) + "</span>";
@@ -2625,7 +2641,13 @@ function fillCoq(c){
          Anything longer keeps the wrapping the fit rules give it: the pesticide
          results ("ND mg/kg — all 25 residues") need two lines and ran off the
          side of the sheet when they were denied them. */
-      if (v.length <= 22) _long += " r-fit";
+      /* Roboto Mono is monospaced, so width is a count: 19 characters end
+         inside the 0.4in text-safe margin at the master's 8.6px; 20 to 22 are
+         kept on one line at 7.8px, which brings the longest of them ("2.06 —
+         DETECTED, >LOQ", 21) back inside the margin on the rendered sheet. Any
+         longer wraps. Measured on the printed PDF, 15.09.2026. */
+      if (v.length <= 19) _long += " r-fit";
+      else if (v.length <= 22) _long += " r-fit r-tight";
       /* Owner, 11.09.2026: a conformity result prints bilingually, "in the
          formatting convention that is set for the rest of the CoQ text."
 

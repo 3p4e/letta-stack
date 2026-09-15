@@ -782,8 +782,9 @@ def schedule():
         if grading.get("grade"):
             thc_criterion = (f"{grading['window']}  (grade {grading['roman']}, nominal "
                              f"{grading['nominal']:.2f} ± {grading['tol']:.2f})")
-            if grading.get("note"):
-                thc_criterion += f"  — {grading['note']}"
+        elif grading.get("thc") is not None and grading.get("note"):
+            thc_criterion = "Per grade of the potency specification of 15.09.2026 — " + grading["note"]
+        if grading.get("grade"):
             if sp and not grading["spec_status"].startswith("issued"):
                 conflict = (f"QCSP 001 {sp['spec_doc_code']} printed {sp['thc_criterion']} ({sp['product_code']}) "
                             f"for this lot; the potency specification of 15.09.2026 gives {grading['window']} "
