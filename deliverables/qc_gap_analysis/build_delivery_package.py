@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """One archive with everything the QC desk has produced, and a manifest of it.
 
-    python3 deliverables/qc_gap_analysis/build_delivery_package.py
+    python3 deliverables/qc_gap_analysis/build_delivery_package.py [--no-pdf]
 
 The pieces of this work live where they are built — the certificates beside the
 compiler, the workbook beside the tracker, the flat sources beside the schedule —
@@ -219,13 +219,19 @@ def human(n):
     return "%.1f MiB" % (n / 1024.0 ** 2)
 
 
-def manifest(items):
-    lines = ["# Purely Plant — QC package, %s" % STAMP, "",
+def manifest(items, no_pdf=False):
+    lines = ["# Purely Plant — QC package, %s%s" % (STAMP, " (no PDFs)" if no_pdf else ""), "",
              "Everything the QC desk has produced, as it stands. Every certificate in",
              "here is a **DRAFT**: watermarked, unsigned, its conformity statement",
              "unticked, and every field the desk cannot stand behind bracketed in red.",
-             "**None has been issued.**", "",
-             "| file | size | what it is |", "| --- | ---: | --- |"]
+             "**None has been issued.**", ""]
+    if no_pdf:
+        lines += ["The four compiled tranche PDFs are **not** in this archive — they come to",
+                  "104 MiB together. Every certificate is still here as HTML, individually",
+                  "under `certificates/individual/` and as two scrollable sets. The PDFs",
+                  "download on their own from `deliverables/qc_gap_analysis/drafts/` in the",
+                  "repository.", ""]
+    lines += ["| file | size | what it is |", "| --- | ---: | --- |"]
     for arc, src, what in items:
         lines.append("| `%s` | %s | %s |" % (arc, human(os.path.getsize(src)), what))
     lines += ["", "## Checksums", "", "```"]
@@ -241,6 +247,12 @@ def main():
     print("%d doctests, %d failed" % (ran, fail))
     if fail:
         return 1
+    # The four tranche PDFs are 104 MiB of the 107 the archive otherwise carries,
+    # and a reader who wants the workbook, the compilation and the reports does not
+    # want to wait for them. --no-pdf drops the compiled certificate PDFs and
+    # NOTHING ELSE: the individual certificates and the two scrollable draft sets
+    # stay, so every document is still in the archive, as HTML rather than print.
+    no_pdf = "--no-pdf" in sys.argv
     bad = stale()
     if bad:
         print("\nrefusing to package a stale build:")
@@ -249,10 +261,17 @@ def main():
         print("\nrebuild it and run again.")
         return 2
     items = _items()
+    suffix = ""
+    if no_pdf:
+        dropped = [a for a, _, _ in items if a.endswith(".pdf")]
+        items = [(a, b, c) for a, b, c in items if not a.endswith(".pdf")]
+        suffix = "_no_PDF"
+        print("excluded %d compiled PDF(s): %s"
+              % (len(dropped), ", ".join(os.path.basename(a) for a in dropped)))
     os.makedirs(OUT_DIR, exist_ok=True)
-    out = os.path.join(OUT_DIR, "PP_QC_Package_%s.zip" % STAMP)
+    out = os.path.join(OUT_DIR, "PP_QC_Package_%s%s.zip" % (STAMP, suffix))
     with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as z:
-        z.writestr("MANIFEST.md", manifest(items))
+        z.writestr("MANIFEST.md", manifest(items, no_pdf))
         for arc, src, _ in items:
             z.write(src, arc)
     print("%s: %d file(s), %s" % (os.path.relpath(out, ROOT), len(items) + 1,
