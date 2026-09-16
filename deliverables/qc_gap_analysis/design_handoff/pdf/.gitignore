@@ -1,3 +1,8 @@
-# One PDF per document, re-made by print_v40.py / merge_tranches_v40.py in a few
-# minutes and 61 MB on disk. The merged documents beside them are the deliverable.
 pages/
+# The per-folder flattened prints are working output: 164 MiB for the four, and every
+# one of them is one command away (toolchain/print_v40.py). The flattened documents the
+# owner asked for are the tranche files, and those stay tracked.
+CoQ_ISSUE_COQ_flat.pdf
+CoQ_REISSUE_T1_flat.pdf
+CoQ_REISSUE_T2_flat.pdf
+CoQ_REISSUE_T3_flat.pdf
