@@ -157,10 +157,17 @@ EXTRACT = r"""
         band.push({ no: no, name: name, text: txt, crit: crit.replace(/\s+/g, " ").trim() });
       }
     });
+    /* Section 01 read back off the printed page: the master's lockups are
+       .lk-lbl / .lk-val (and .attr-val for the three attribute blocks), the
+       label carrying its Macedonian twin in a .mk child. Until 16.09.2026 this
+       queried .l / .v, which the master has never had, so it read nothing and
+       nothing downstream noticed — the same gap that let the title survive. */
     const lk = {};
     doc.querySelectorAll(".lk").forEach(s => {
-      const l = s.querySelector(".l"), v = s.querySelector(".v");
-      if (l && v) lk[l.textContent.trim()] = v.textContent.trim();
+      const l = s.querySelector(".lk-lbl"), v = s.querySelector(".lk-val, .attr-val");
+      if (!l || !v) return;
+      const lbl = Array.from(l.childNodes).filter(n => n.nodeType === 3).map(n => n.textContent).join("").trim();
+      if (lbl) lk[lbl] = v.textContent.replace(/\s+/g, " ").trim();
     });
     const pot = doc.querySelector(".pbp-val");
     /* the header band: the document code, the date of issue and — on a reissue
@@ -175,24 +182,16 @@ EXTRACT = r"""
       if (px > 0) over.push({ no: "—", name: "header · supersedes line", text: supEl.textContent.trim(), px: px });
     }
     /* The document must name ITSELF in its title. The master carries a literal
-       <title> from the lot it was authored on, and fillCoq never rewrote it, so
-       every draft the desk has ever produced went out carrying another lot's
-       code, strain, grade and batch in the browser tab and in the PDF metadata
-       — 73 of 73 said "CoQ-PP-2026-0005 — Amsterdam Amnesia (AA) — Grade I —
-       Batch P060052". A controlled document that names a different lot anywhere
-       on it is wrong wherever that name appears, and the title is the one place
-       nothing on the desk was reading back. It is written here rather than in
-       the master so it holds whichever master the document is compiled from. */
-    const esc = t => String(t == null ? "" : t)
-      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    const titleCode = codeEl ? codeEl.textContent.trim() : "";
-    const titleLot = c.pp || c.cb || "";
-    const titleText = ["Purely Plant \u2014 Certificate of Quality",
-                       titleCode, c.strain,
-                       c.grade ? "Grade " + c.grade : "",
-                       titleLot ? "Batch " + titleLot : ""]
-      .filter(x => x).join(" \u2014 ");
-    html = html.replace(/<title>[\s\S]*?<\/title>/i, "<title>" + esc(titleText) + "</title>");
+       <title> from the lot it was authored on, and until 16.09.2026 fillCoq never
+       rewrote it, so every draft the desk had produced went out carrying another
+       lot's code, strain, grade and batch in the browser tab and in the PDF
+       metadata — 73 of 73 said "CoQ-PP-2026-0005 — Amsterdam Amnesia (AA) —
+       Grade I — Batch P060052". The compiler writes the title now (fillCoq, so
+       the desk's own Print and Save HTML carry it as well as this build); this
+       build only READS it back, like every other field, and the Python side
+       refuses a document whose title does not name its own lot and code. */
+    const titleEl = doc.querySelector("title");
+    const titleText = titleEl ? titleEl.textContent.trim() : "";
 
     out.push({
       title: titleText,
@@ -328,6 +327,18 @@ def main():
           % (len(docs) - len(badtitle), len(docs)))
     for d in badtitle:
         print("    %-12s title reads %r" % (d["p_lot"], d.get("title", "")))
+    # Section 01, read back off the page the same way: the production batch the
+    # lockup prints must be the document's own P lot, and the potency and the
+    # specification reference must be there at all. Until 16.09.2026 this read-back
+    # queried classes the master does not have and so read nothing.
+    bad01 = [d for d in docs
+             if (d.get("p_lot") or "").startswith("P")
+             and ((d.get("lk") or {}).get("Prod. Batch №") != d["p_lot"]
+                  or not (d.get("lk") or {}).get("Potency") or not (d.get("lk") or {}).get("Spec. Ref."))]
+    print("%d of %d print their own P lot, a potency and a specification reference in Section 01"
+          % (len(docs) - len(bad01), len(docs)))
+    for d in bad01:
+        print("    %-12s Section 01 reads %r" % (d["p_lot"], d.get("lk", {})))
     if reissue:
         nosup = [d for d in docs if not d.get("supersedes", "").startswith("(supersedes CoQ-PP_26-")]
         print("%d of %d reissues print a supersedes line naming the initial certificate's register code"

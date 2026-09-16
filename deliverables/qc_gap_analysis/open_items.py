@@ -170,9 +170,18 @@ ITEMS = [
      "split, so they source no certificate of quality; everywhere else the result stands. The "
      "certificates were already right: CoQ-PP_26-057 prints 19.64 % from ППК26063 and "
      "CoQ-PP_26-098 prints 20.32 % from 197-15-К/26. Neither prints 13.93 %.",
-     "Nothing further on this lot. What the asterisk DENOTES on the floor — hand-trimmed "
-     "material, a different drying or milling treatment, or a sampling position — is still "
-     "unwritten; the pages do not say and the desk will not infer it.",
+     "Two consequences of the ruling to see, and one thing still unwritten. (1) The 09.09 "
+     "resolution pass cited 306-0550-26 — the STARRED sample's microbiology, TAMC 1 × 10⁴ — "
+     "for JD112501's #9, and the unstarred 2361-2026 for #10–#12. Under the ruling the starred "
+     "sample does not certify, so since the intake of 16.09.2026 (intake_IJZ0426_2026-09-16) "
+     "CoQ-PP_26-057 cites 307/0551/26, TAMC 2,6 × 10³, for #9. Both conform. Is that right, or "
+     "does the pass's choice stand for microbiology? (2) The certificate's \"Also on file\" "
+     "note no longer names the starred value beside the release result (13.93 % beside "
+     "19.64 %): the exclusion reaches the footnote as well as the cited document. Should the "
+     "certificate declare on its face that a second sample exists, or stay silent about it? "
+     "(3) What the asterisk DENOTES on the floor — hand-trimmed material, a different drying "
+     "or milling treatment, a sampling position — is still unwritten; the pages do not say "
+     "and the desk will not infer it.",
      "ППК26063 / ППК26065 (both P060212); the scans 110526_ППК26063_CNP_JD112501-P060212.pdf "
      "and 110526_ППК26065_CNP_JD112501＊-P060212.pdf; cell_resolution_2026-09-09.tsv; "
      "testing_series.EXPERIMENTAL"),
@@ -201,23 +210,38 @@ ITEMS = [
      "icoa_register.py 102 rounds / 76 lots vs coq_artifact_data.json 164 records / 82 lots; "
      "3 lots with 4, 5 and 6 rounds"),
 
-    ("OI-28", "Batch identity", "open",
-     "Seven starred lots have no internal certificate of analysis at all",
-     "GG1024, BSS1024_01/2 (P050142), WED102501 (P060102), GRC102501 (P060142), GG012601 "
-     "(P060302), JD012601 (P060312) and SCR012601* (P060342) appear on the register sheet "
-     "with no certificate in the series behind them. The cause is the star. The company "
-     "writes GG012601* and the testing record writes GG012601, and batch_id.batch_key keeps "
-     "the mark on purpose — its own docstring says whether a starred lot and its unstarred "
-     "namesake are the same batch \"is NOT a question this function may answer: it is a fact "
-     "about the floor\". So the two spellings are two batches, the testing record attaches "
-     "to one and the register sheet's row to the other, and neither can see the other.",
-     "Nothing invented. batch_key is untouched, the seven rows sit on the register "
-     "unnumbered, and each says the series does not carry it. They are the whole of the "
-     "difference between the sheet's 83 release rows and the series' 76.",
-     "For each pair, is the starred lot the same batch as the unstarred one? A ruling goes "
-     "in ingestion/ecoa_runner/identity_decisions.tsv, which is where batch_key says such a "
-     "ruling belongs, and the seven certificates then issue by themselves.",
-     "ingestion/common/batch_id.py; 7 lots on the iCoA Register with no series row"),
+    ("OI-28", "Batch identity", "ruled",
+     "The starred spellings are one lot each with their unstarred namesakes — applied; one word confirms it",
+     "Raised on 10.09.2026 as seven starred lots with no internal certificate. The audit of "
+     "16.09.2026 re-read the premise: only THREE of the seven are starred anywhere (GG012601*, "
+     "JD012601*, SCR012601* on the Head of QC's batch list; GG1024, BSS1024_01/2, WED102501 and "
+     "GRC102501 carry no star and were resolved by v31), and all seven have carried an iCoA row "
+     "since the 227-К and 220-М intakes. What the star still broke was two lots: the batch list "
+     "writes GG012601* against P060302 and JD012601* against P060312, the release register "
+     "labels the same blocks GG012601 and JD012601 with no P number, and icoa_register.py "
+     "looked the packaging date and the P lot up by the unstarred label — so iCoA-PP_26-087 "
+     "and -088 had no testing date and the two Tranche 3 release certificates stood at "
+     "\"— at issue —\", withheld over a glyph. iCoA-PP_26-090 (SCR012601) had no testing date "
+     "for the same reason. No unstarred twin sample exists for any of the three: the "
+     "certificates that name the lot print the star (ППК26062, 310/0554/26, 2364/2026; "
+     "ППК26064, 309/0553/26, 2363/2026), each P number has exactly one cultivation-batch "
+     "spelling on the list, and the identity questions of 07.09.2026 proposed one lot for "
+     "each (and for FB012602*, starred on the list alone).",
+     "Applied as a consequence of the ruling of 16.09.2026 — \"if both THC results are "
+     "assigned with the same P number production batch, that means it is the same batch\" — "
+     "recorded as data: ingestion/ecoa_runner/identity_decisions.tsv carries a batch_alias row "
+     "for each of GG012601*, JD012601*, SCR012601*, FB012602* and JD112501*, and batch_key "
+     "applies them after normalising, so the two spellings key alike everywhere at once. The "
+     "rule itself is unchanged — a star on a spelling no person has ruled on still keeps the "
+     "mark. Consequence in the build: iCoA-PP_26-087, -088 and -090 take their testing dates "
+     "from the packaging (20.05, 21.05, 25.05.2026) and the release certificates of P060302 "
+     "and P060312 are no longer withheld.",
+     "The four rows for GG012601*, JD012601*, SCR012601* and FB012602* say \"the desk, as a "
+     "consequence of the ruling\" where the JD112501* row says \"Head of QC\". One word from "
+     "the Head of QC turns the four into rulings; one word reverses them.",
+     "ingestion/ecoa_runner/identity_decisions.tsv (batch_alias, 16.09.2026); "
+     "identity_questions_2026-09-07.tsv rows 2–6; icoa_register.py:227/:246; "
+     "tracker/FLEET_FINDINGS_2026-09-16.md"),
 
     ("OI-30", "Method status", "open",
      "The Loss on Drying method text is not verified per lot against the era it was tested in",
@@ -497,6 +521,62 @@ ITEMS = [
      "print Conforms on the strength of the internal certificate alone?",
      "44 lots, 82 certificates, 246 determination rows; build_coq_schedule.ST_ICOA; "
      "tracker/HANDOVER_RESPONSE_2026-09-16.md §2.1"),
+
+    ("OI-42", "Record integrity", "open",
+     "Forty-four laboratory certificates are on Drive and in no record of the desk; 58 more are only in the 09.09 pass",
+     "The audit of 16.09.2026 enumerated the owner's eCoA_DATABASE on Drive (490 scans: 449 "
+     "laboratory, 41 in-house) and held it against every desk record — the ingested corpus, "
+     "the release register and the 09.09 resolution pass. Forty-four laboratory scans are in "
+     "NONE of them: 20 IJZ contaminant reports (mycotoxins, metals, pesticides — 329/2026 "
+     "WED102501, 1057/2026 J31112501, 1061/2026 SJ112501, 1062/2026 OPM112501, 1065/2026 "
+     "SJ102501, 3654–3658/2026 P160032, P160022, P160012, SCR022601, JD022601, 3661/2026 "
+     "FB012603, 3663/2026 FB012603V, 3924/2026 FB032601, 3925/2026 GG032601, 4374/2026 "
+     "JD032601, and the five of 29–30.04.2026 taken in the same day), 22 IJZ-MB microbiology "
+     "reports (319/0586/25 GP0824_01; 75/0118/26 WED102501; 130–137/02xx/26 SJ112501, "
+     "J31112501, SJ102501, OPM112501; the five of 28.04.2026 taken in the same day; 362/0692/26 "
+     "SCR012601; 402–411/07xx/26 JD022601, SCR022601, FB012603V, FB012603, P160012, P160032, "
+     "P160022; 433/0847/26 and 434/0848/26 FB032601; 477/0929/26 JD032601) and the two "
+     "Farmahem certificates 031-3-К/26 and 031-3-ГС/26 of WED102501. A further 58 scans are "
+     "cited in the 09.09 pass and never reached the register or the corpus — among them the "
+     "whole Farmahem 031 campaign of February 2026 and 534/1065/26 and 535/1066/26 of the "
+     "31.08.2026 IJZ-MB delivery, which fall outside the 536–565 range the IJZ-MB intake "
+     "took. For every one of the 20 IJZ reports the lot's register block holds NO metals, "
+     "mycotoxin or pesticide document at all, so the certificate of quality prints "
+     "\"not tested — no certificate covers it\" for #10–#12 while the report sits on Drive, "
+     "dated before the certificate — and the sweep's \"no lot carries a second heavy-metal "
+     "certificate\" is a register gap, not a testing fact. The reverse direction is clean: "
+     "every laboratory code the desk holds has a scan (0 of 403 missing).",
+     "The eighteen of 21.04.2026 whose two reads existed were taken in on 16.09.2026 "
+     "(intake_IJZ0426_2026-09-16). The remaining 44 + 58 have no read on the desk yet; each "
+     "needs the two-read gate before it is written, and until then the certificates named "
+     "above print \"not tested\" where a document exists. Nothing is written from a listing.",
+     "Nothing to decide for the intake itself — it is the desk's next work. Three lots on "
+     "the batch list need a word: JD032601 (P060472) has an IJZ-MB and an IJZ report on Drive "
+     "and no release-register block and no CNP potency certificate anywhere — is it a "
+     "production lot? SC062501 (P050242) and GOG062501 (P050232) have no document on Drive "
+     "at all — were they ever tested?",
+     "tracker/FLEET_FINDINGS_2026-09-16.md (audit A); the Drive tree 1SmOicCRa8KEqoB-YlCojdap161YMQ-Di "
+     "and _IN-HOUSE_PP 1bBGgFavrUTOu7PC7VVRcj0P4onWOAquN, enumerated 16.09.2026"),
+
+    ("OI-43", "Record integrity", "open",
+     "Twenty-eight in-house certificates of analysis are on Drive with no desk entry — twelve of them for lots OI-41 names",
+     "_IN-HOUSE_PP holds 41 in-house scans: 38 QCCoA 001 / 001v02 forms named "
+     "<ddmmyy>_QCCoA 001[v02]_PP_<batch>-<P lot>.pdf and the three Reports of Analysis of "
+     "23.04.2025. The desk's in-house entries number 16 and match 13 of the scans. The 28 "
+     "without any desk entry are the QCCoA 001 of BG1024, BSS1024, CJ1024, MB0824_04, "
+     "OMP1024_01, GP0824_02 (twice), GG1024_02, GP0824_03, HPA1024_01, OPM1024_02, GG1024_01, "
+     "P050102, HPA052501, CJ052501-01, BSS1024_01-1, GP062501 (v02) and the eleven QCCoA 001v02 "
+     "of 21.01.2026 (GP082501-1/-2, GP072501-1/-2, CLE072501, PM072501, P050212, CJ052501-02, "
+     "OPM052501, MB0824_05, OPM1024_03), plus the three Reports of Analysis. Twelve of the 44 "
+     "lots whose certificates print nothing for #1, #2 and #7 (OI-41) have one of these scans "
+     "— the in-house record OI-41 asks for exists on Drive for them.",
+     "Nothing read, nothing written: an in-house scan reaches the desk through the same "
+     "two-read gate as a laboratory certificate, and the desk holds no read of any of the 28.",
+     "May the desk take the QCCoA 001 scans in as the record of the in-house results, so "
+     "that the certificates of those twelve lots print what the form states for #1, #2 and #7 "
+     "and cite the internal certificate that carries it? If yes, OI-41 shrinks from 44 lots "
+     "to 32.",
+     "tracker/FLEET_FINDINGS_2026-09-16.md (audits A and B); the 41 scans in _IN-HOUSE_PP"),
 
     ("OI-35", "Tracker scope", "open",
      "The tracker does not carry the documents of the 09.09 pass that eleven certificates print from",
@@ -782,7 +862,7 @@ def items(state=None, area=None):
     """The register, optionally narrowed.
 
     >>> len(items())
-    41
+    43
     >>> [i[0] for i in items(area="Specification")]
     ['OI-01', 'OI-02', 'OI-03']
     >>> sorted({i[2] for i in items()})

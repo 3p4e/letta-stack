@@ -159,6 +159,10 @@ _RETEST_ONLY_KEYS = frozenset(re.sub(r"[\s\-/_.]+", "/", c).strip("/") for c in 
 EXPERIMENTAL = (
     "ППК26065",          # JD112501＊ / P060212 — Total THC 13.93 %, loss on drying 6.38 %;
                          # the release arm is ППК26063, 19.64 % and 6.69 %
+    "306/0550/26",       # JD112501＊ / P060212 — IJZ-MB microbiology of 28.04.2026, TAMC 1 × 10⁴;
+                         # the release arm is 307/0551/26, TAMC 2,6 × 10³ (intake_IJZ0426_2026-09-16)
+    "2365/2026",         # JD112501＊ / P060212 — IJZ contaminants of 30.04.2026, Pb 0.0109 mg/kg;
+                         # the release arm is 2361/2026, Pb 0.022 mg/kg (intake_IJZ0426_2026-09-16)
 )
 
 

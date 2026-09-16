@@ -2755,6 +2755,19 @@ function fillCoq(c){
     _disp.textContent = "Batch " + _b;
     if (_mk) { _mk.textContent = "Серија " + _b; _disp.appendChild(_mk); }
   }
+  /* The document names ITSELF in its title. The master carries a literal <title>
+     from the lot it was authored on (CoQ-PP-2026-0005, Amsterdam Amnesia, P060052),
+     and every certificate compiled before 16.09.2026 went out carrying it in the
+     browser tab and the PDF metadata. It is written here, in the compiler, so the
+     desk's own Print and Save HTML carry it exactly as the bulk build does, and so
+     it holds whichever master a document is compiled from. */
+  var _tEl = doc.querySelector("title");
+  if (_tEl) {
+    _tEl.textContent = ["Purely Plant — Certificate of Quality",
+        q(".hb-code") ? q(".hb-code").textContent.trim() : "", c.strain || "",
+        c.grade ? "Grade " + c.grade : "", (c.pp || c.cb) ? "Batch " + (c.pp || c.cb) : ""]
+      .filter(function(x){ return x; }).join(" — ");
+  }
   if (draft) addDraftMark(doc);
   return serializeDoc(doc);
 }
