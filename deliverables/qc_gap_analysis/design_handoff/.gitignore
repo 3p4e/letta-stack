@@ -1,3 +1,2 @@
-
-# run logs — the receipt is docs/REBUILD_v40.md
-*_run.log
+# Run logs. The receipt for a build is docs/REBUILD_v40.md, not a console capture.
+*.log
