@@ -128,6 +128,55 @@ def is_retest_only(code):
 _RETEST_ONLY_KEYS = frozenset(re.sub(r"[\s\-/_.]+", "/", c).strip("/") for c in RETEST_ONLY)
 
 
+# ---------------------------------------------------------------- experimental samples
+# Owner's ruling, 16.09.2026, on the starred cultivation batches:
+#
+#   "The asterisk is probably some experiment and is generally not the result that will go
+#    for the batch release official documentation. If both THC results are assigned with the
+#    same P number production batch, that means it is the same batch, but two samples have
+#    been sent for the parameter. You will NOT ignore the value and data with the asterisk —
+#    you will include it in calculation statistics and all — but in the CoQ you will take the
+#    other value and corresponding certificate."
+#
+# So a starred sample is NOT a second lot. It is a second SAMPLE of the same packaged lot,
+# sent for a limited panel outside the release testing. Three consequences, and the third is
+# the one this module enforces:
+#
+#   * its results are real and stay in the record, on the tracker and in every statistic;
+#   * the lot is identified by its P number, not by the spelling of its cultivation batch;
+#   * it never sources a certificate of quality — where a determination has both, the
+#     certificate takes the unstarred certificate's value and cites its certificate.
+#
+# This is the third class of document that is real data and never certifies a release,
+# beside the stability timepoints the register marks and RETEST_ONLY above.
+#
+# The list is explicit rather than derived because the mark is not in the release register:
+# ППК26065 sits in a block labelled JD112501 with no star. The star is on the certificate's
+# own page ("серија: JD112501*", read 16.09.2026) and in the eCoA scan's file name
+# (110526_ППК26065_CNP_JD112501＊-P060212.pdf). Its unstarred pair ППК26063 carries the same
+# lot P060212, the same sample description, the same delivery date of 21.04.2026 and the same
+# DAB method — the batch number is the only difference between the two pages.
+EXPERIMENTAL = (
+    "ППК26065",          # JD112501＊ / P060212 — Total THC 13.93 %, loss on drying 6.38 %;
+                         # the release arm is ППК26063, 19.64 % and 6.69 %
+)
+
+
+def is_experimental(code):
+    """True for a certificate of a starred sample: real data, never certifying a release.
+
+    >>> is_experimental("ППК26065")
+    True
+    >>> is_experimental("ППК26063"), is_experimental(""), is_experimental(None)
+    (False, False, False)
+    """
+    c = re.sub(r"[\s\-/_.]+", "/", str(code or "").strip()).strip("/")
+    return c in _EXPERIMENTAL_KEYS
+
+
+_EXPERIMENTAL_KEYS = frozenset(re.sub(r"[\s\-/_.]+", "/", c).strip("/") for c in EXPERIMENTAL)
+
+
 def is_reanalysis(code):
     """True for a post-release re-analysis certificate — what a reissue rests on.
 

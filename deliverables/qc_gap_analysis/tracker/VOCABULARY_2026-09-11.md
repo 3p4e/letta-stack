@@ -1341,3 +1341,84 @@ numbers: 19.14 % is P060152's result, 11.53 % is P060182's and 19.64 % is P06021
 document carries the *previous* lot's assay, while its window is v35's own. The grades are
 right and the assay values are one row out. It is the row-alignment trap the handover's own
 §1 warns about, and it is on the document side, not in the master.
+
+# v36 — the starred-sample ruling, and a title that named another lot, 16.09.2026
+
+## The asterisk, ruled
+
+The Head of QC asked what `JD112501＊` marks beside `JD112501`, suspecting an experimental
+arm whose panel would be incomplete, and that the arm with the **full external panel** is the
+real production batch. The record confirms the structure, and the Head of QC then ruled:
+
+> "The asterisk is probably some experiment and is generally not the result that will go for
+> the batch release official documentation. If both THC results are assigned with the same
+> P number production batch, that means it is the same batch, but two samples have been sent
+> for the parameter. You will **not** ignore the value and data with the asterisk — you will
+> include it in calculation statistics and all — but in the CoQ you will take the other value
+> and corresponding certificate."
+
+So a starred sample is a second **sample** of one packaged lot, not a second lot. It is the
+third class of document that is real data and never certifies a release, beside the stability
+timepoints the register marks and the `RETEST_ONLY` campaign of v34.
+
+**What the two pages say.** Read on 16.09.2026:
+
+| scan | batch on the page | Total THC | Loss on drying |
+| --- | --- | ---: | ---: |
+| `110526_ППК26063_CNP_JD112501-P060212.pdf` | `JD112501` | **19.64 %** | 6.69 % |
+| `110526_ППК26065_CNP_JD112501＊-P060212.pdf` | `JD112501*` | **13.93 %** | 6.38 % |
+
+Both name the same packaged lot `P060212`, the same sample description (*Сув сомелен цвет од
+медицински канабис сорта Jelly Donutz*), the same delivery of 21.04.2026, the same DAB method
+(2.2.32 + 2.2.29) and the same 12 g, with a `Цел` limited to loss on drying and cannabinoids.
+**The batch number is the only difference between the two pages** — which is why the meaning
+of the mark was the owner's to give and not the desk's to infer. Neither page says
+hand-trimmed, and the desk does not write down what no document states.
+
+The panels are what mark the release arm. `cell_resolution_2026-09-09.tsv` gives
+`JD112501 / P060212` a complete panel and cites **`ППК26063`** for #3–#6 and #8, with
+`iCoA-PP_26-054` for #1/#2/#7, `306-0550-26` for microbiology and `2361-2026` for mycotoxins,
+metals and pesticides. **`ППК26065` is cited nowhere in that pass.**
+
+**The certificates were already right.** `CoQ-PP_26-057` prints 19.64 % from `ППК26063`;
+`CoQ-PP_26-098` prints 20.32 % from `197-15-К/26`. Neither prints 13.93 %.
+
+`testing_series.EXPERIMENTAL` now holds the starred certificates and `is_experimental()` reads
+them; `build_coq_schedule` drops them **before** the release/reissue split, because a starred
+sample certifies neither. The list is explicit rather than derived: the register block is
+labelled `JD112501` with no star, so the mark exists only on the page and in the scan's file
+name. **OI-12 is ruled.** **OI-39** keeps only its `J31122501` half, which the ruling does not
+reach — there the laboratories' own pages name two *products*, *Рачно тримиран цвет* against
+*Тримиран цвет*, on three dates, and no asterisk appears anywhere.
+
+## A title that named another lot — on every document the desk has ever compiled
+
+The master template carries a literal `<title>` from the lot it was authored on, and
+`fillCoq()` never replaced it. So **73 of 73 drafts**, and the four tranche PDFs built from
+them, went out titled:
+
+    Purely Plant — Certificate of Quality — CoQ-PP-2026-0005 — Amsterdam Amnesia (AA)
+    — Grade I — Batch P060052
+
+Another lot's code, strain, grade and batch, in the browser tab and in the PDF metadata of
+every certificate. Nothing on the desk was reading the title, which is why it survived every
+verification pass since the first draft was compiled.
+
+`build_coq_drafts.py` now writes each document's own title from its register code, strain,
+grade and lot, and **reads it back off the compiled page** beside the header band and the
+supersedes line, so a document that does not name itself is reported at build time. It is
+written at the compiler rather than in the master, so it holds whichever master a document is
+compiled from — which matters, because the design of the certificate is moving to the file
+the Head of QC is preparing.
+
+**Still open, and the desk will not decide it:** the strain prints as *Jelly Donuts* on eight
+certificates and *Jelly Donutz* on four. `strains.py` already holds the pair in `CONFLICTS` —
+where two of the company's own documents disagree in their letters, the delivery sheet against
+the desk's own record — and that table is deliberately not decided by code. It needs one word
+from the Head of QC.
+
+## Reproducing
+
+    python3 deliverables/qc_gap_analysis/testing_series.py
+    python3 deliverables/qc_gap_analysis/live_instrument/build_coq_drafts.py \
+        --scope tracker/coq_draft_scope_2026-09-10.csv --chromium <chromium>

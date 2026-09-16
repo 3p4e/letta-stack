@@ -364,7 +364,7 @@ def family(code):
 # round of its own, never the release round, whatever the dates say. One
 # definition; family() above and pick() below read it from there.
 from testing_series import (REANALYSIS_SERIES, is_reanalysis,       # noqa: E402
-                            is_retest_only)
+                            is_retest_only, is_experimental)
 
 
 def sort_date(d):
@@ -863,7 +863,15 @@ def schedule():
 
         for det in dets:
             col = det["column"]
-            cands = reg["cells"].get(col, []) if col else []
+            # A starred sample is a second sample of the same packaged lot, sent for a
+            # limited panel outside the release testing, and it never sources a
+            # certificate of quality — the owner's ruling of 16.09.2026. It is dropped
+            # here, before the release/reissue split, because it certifies NEITHER: the
+            # certificate takes the unstarred certificate's value for that determination.
+            # The result itself is untouched everywhere else; the ruling is explicit that
+            # it stays in the record and in every statistic.
+            cands = [c for c in (reg["cells"].get(col, []) if col else [])
+                     if not is_experimental(c.get("code", ""))]
             if additional:
                 # an additional-testing CoQ certifies the additional testing: only a
                 # post-release (197-series) certificate may stand behind a result on it

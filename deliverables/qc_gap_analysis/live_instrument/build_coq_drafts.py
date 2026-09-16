@@ -61,7 +61,7 @@ EXTRACT = r"""
       : (c.pp === lot.p_lot && c.t === "initial release"));
     if (i < 0) { out.push({ p_lot: lot.p_lot, error: reissue ? "no reissue record" : "no initial-release record" }); continue; }
     const c = COQ[i];
-    const html = fillCoq(c);
+    let html = fillCoq(c);
     host.contentDocument.open(); host.contentDocument.write(html); host.contentDocument.close();
     const doc = host.contentDocument;
     const pageEl = doc.querySelector("div.page");
@@ -174,7 +174,28 @@ EXTRACT = r"""
       const px = Math.max(Math.round(r.right - sheet.right), Math.round(sheet.left - r.left));
       if (px > 0) over.push({ no: "—", name: "header · supersedes line", text: supEl.textContent.trim(), px: px });
     }
+    /* The document must name ITSELF in its title. The master carries a literal
+       <title> from the lot it was authored on, and fillCoq never rewrote it, so
+       every draft the desk has ever produced went out carrying another lot's
+       code, strain, grade and batch in the browser tab and in the PDF metadata
+       — 73 of 73 said "CoQ-PP-2026-0005 — Amsterdam Amnesia (AA) — Grade I —
+       Batch P060052". A controlled document that names a different lot anywhere
+       on it is wrong wherever that name appears, and the title is the one place
+       nothing on the desk was reading back. It is written here rather than in
+       the master so it holds whichever master the document is compiled from. */
+    const esc = t => String(t == null ? "" : t)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const titleCode = codeEl ? codeEl.textContent.trim() : "";
+    const titleLot = c.pp || c.cb || "";
+    const titleText = ["Purely Plant \u2014 Certificate of Quality",
+                       titleCode, c.strain,
+                       c.grade ? "Grade " + c.grade : "",
+                       titleLot ? "Batch " + titleLot : ""]
+      .filter(x => x).join(" \u2014 ");
+    html = html.replace(/<title>[\s\S]*?<\/title>/i, "<title>" + esc(titleText) + "</title>");
+
     out.push({
+      title: titleText,
       p_lot: lot.p_lot, cb: c.cb, strain: c.strain, thc: pot ? pot.textContent.trim() : "",
       code: codeEl ? codeEl.textContent.trim() : "",
       issue: issEl ? issEl.textContent.trim() : "",
@@ -294,6 +315,19 @@ def main():
           % (len(docs) - len(nocode), len(docs), sum(1 for d in docs if re.match(r"^\d\d\.\d\d\.\d{4}$", d.get("issue", "")))))
     for d in nocode:
         print("    %-12s header code reads %r" % (d["p_lot"], d.get("code", "")))
+    # Every document must name ITSELF in its title, read back off the compiled
+    # page. Until 16.09.2026 none did: the master's literal <title> named the lot
+    # it was authored on and fillCoq never replaced it, so all 73 drafts carried
+    # "CoQ-PP-2026-0005 — Amsterdam Amnesia (AA) — Grade I — Batch P060052".
+    # Nothing on the desk was reading the title, which is why it survived every
+    # verification pass, so it is read back here beside the header band.
+    badtitle = [d for d in docs
+                if (d.get("p_lot") or "") not in (d.get("title") or "")
+                or (d.get("code") or "") not in (d.get("title") or "")]
+    print("%d of %d print their own lot and document code in the title"
+          % (len(docs) - len(badtitle), len(docs)))
+    for d in badtitle:
+        print("    %-12s title reads %r" % (d["p_lot"], d.get("title", "")))
     if reissue:
         nosup = [d for d in docs if not d.get("supersedes", "").startswith("(supersedes CoQ-PP_26-")]
         print("%d of %d reissues print a supersedes line naming the initial certificate's register code"
