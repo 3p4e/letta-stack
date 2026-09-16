@@ -492,10 +492,35 @@ html body div.page div.tbl-wrap table.labref tbody tr:last-child{background-imag
    flattens alpha, so neither a mask nor an alpha veil survives to print here.
    The vertical shading is not lost: the original gradient is kept as the upper layer,
    painted from 10mm to 100%-10mm, and the ramp beneath carries that gradient's own
-   mid-height colour, so the two meet in the same tone. Nothing is resized or reworded. */
-html body div.page .sec-label{background-color:#fff !important;background-image:linear-gradient(rgb(172,191,210) 0%,rgb(172,191,210) 1.4%,rgb(218,229,238) 4.5%,rgb(250,252,254) 9%,rgb(246,250,253) 18%,rgb(246,250,253) 28%,rgb(240,245,250) 39%,rgb(233,240,247) 50%,rgb(225,234,242) 61%,rgb(218,229,238) 72%,rgb(213,225,236) 82%,rgb(217,227,238) 92%,rgb(224,233,241) 100%),linear-gradient(90deg,#fff 0,#fff 3mm,#E9F0F7 10mm,#E9F0F7 calc(100% - 10mm),#fff calc(100% - 3mm),#fff 100%) !important;background-size:calc(100% - 20mm) 100%,100% 100% !important;background-position:10mm top,left top !important;background-repeat:no-repeat,no-repeat !important}
+   mid-height colour, so the two meet in the same tone.
+   The section bar carried its top highlight and its bottom edge as INSET BOX-SHADOWS
+   (rgb(250,253,255) 0 1px 0 inset, rgb(168,188,209) 0 -1px 0 inset), which no
+   background fade can reach: printed, that bottom rule read rgb(184,201,217) at x=2
+   of 1653 against rgb(177,196,214) mid-page, a 1px bar across the whole sheet. Both
+   are re-drawn as 1px background layers on the same ramp, and the shadow is dropped.
+   The masthead and the footer keep their full bleed by design. Nothing is resized
+   or reworded. */
+html body div.page .sec-label{box-shadow:none !important;background-color:#fff !important;background-image:linear-gradient(90deg,#fff 0,#fff 3mm,#FAFDFF 10mm,#FAFDFF calc(100% - 10mm),#fff calc(100% - 3mm),#fff 100%),linear-gradient(90deg,#fff 0,#fff 3mm,#A8BCD1 10mm,#A8BCD1 calc(100% - 10mm),#fff calc(100% - 3mm),#fff 100%),linear-gradient(rgb(172,191,210) 0%,rgb(172,191,210) 1.4%,rgb(218,229,238) 4.5%,rgb(250,252,254) 9%,rgb(246,250,253) 18%,rgb(246,250,253) 28%,rgb(240,245,250) 39%,rgb(233,240,247) 50%,rgb(225,234,242) 61%,rgb(218,229,238) 72%,rgb(213,225,236) 82%,rgb(217,227,238) 92%,rgb(224,233,241) 100%),linear-gradient(90deg,#fff 0,#fff 3mm,#E9F0F7 10mm,#E9F0F7 calc(100% - 10mm),#fff calc(100% - 3mm),#fff 100%) !important;background-size:100% 1px,100% 1px,calc(100% - 20mm) 100%,100% 100% !important;background-position:left top,left bottom,10mm top,left top !important;background-repeat:no-repeat,no-repeat,no-repeat,no-repeat !important}
 html body div.page .pb-main{background-color:#fff !important;background-image:linear-gradient(rgb(242,245,249) 0%,rgb(249,251,253) 55%,rgb(255,255,255) 100%),linear-gradient(90deg,#fff 0,#fff 3mm,#F9FBFD 10mm,#F9FBFD calc(100% - 10mm),#fff calc(100% - 3mm),#fff 100%) !important;background-size:calc(100% - 20mm) 100%,100% 100% !important;background-position:10mm top,left top !important;background-repeat:no-repeat,no-repeat !important}
 html body div.page .selrow{background-color:#fff !important;background-image:linear-gradient(90deg,#fff 0,#fff 3mm,#FCFDFE 10mm,#FCFDFE calc(100% - 10mm),#fff calc(100% - 3mm),#fff 100%) !important;background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important}
+</style>
+<style id="__owner-uniform-result-ink">
+/* Owner, 16.09.2026: "make all certificates of quality analysis results column in
+   heading 2 be one colour dark navy blue and do not use any other colour indicating
+   edge cases of the analysis results or reds or any other colour than the uniform
+   navy blue." The RESULT column is now one ink: --navy #1B3A5C, the colour .r-val
+   already carries by default, for every cell — the 738 red, the 10 amber and the
+   green Conforms alike, in both halves of a bilingual cell.
+   The inline colour is left in the MARKUP on purpose. A12 reads it to prove that a
+   result above its own criterion was marked, so stripping it would quietly disarm the
+   desk's own check; overriding it here changes the ink on the page and nothing else.
+   Note for the reader of the page: a result above its criterion no longer announces
+   itself by colour. It is still legible against the ACC. CRITERIA column beside it,
+   and Section 04 still carries the conformity decision. */
+html body div.page div.tbl-wrap table.results td.r-cell .r-val,
+html body div.page div.tbl-wrap table.results td.r-cell .r-val .mk,
+html body div.page div.tbl-wrap table.results td.r-cell .r-val.r-conform,
+html body div.page div.tbl-wrap table.results td.r-cell .r-val.r-conform .mk{color:#1B3A5C !important}
 </style>
 </head>
 <body>
@@ -571,7 +596,7 @@ html body div.page .selrow{background-color:#fff !important;background-image:lin
       </tbody>
     </table>
   </div>
-  <div class="pot-note"><strong>*</strong> Total THC / CBD / CBN expressed as the sum of the acidic and decarboxylated forms (Ph. Eur. 2.2.29) <i class="bisep">|</i> <span class="mk">Вкупните вредности се збир на киселинската и декарбоксилираната форма.</span><br>Parameter attribution to the issuing laboratory is given in Section 03 by Param. №; in-house parameters are performed prior to final release sampling, before packaging starts (QCSOP 005 v.02).</div>
+  <div class="pot-note"><strong>*</strong> Total THC / CBD / CBN expressed as the sum of the acidic and decarboxylated forms (Ph. Eur. 2.2.29) <i class="bisep">|</i> <span class="mk">Вкупните вредности се збир на киселинската и декарбоксилираната форма.</span></div>
 
   <div class="sec-label" style="margin-top:10px"><span class="sec-no">03</span> Laboratory &amp; Certificate Cross-Reference <span class="mk">Лаборатории и вкрстена референца на сертификати</span></div>
   <div class="tbl-wrap">

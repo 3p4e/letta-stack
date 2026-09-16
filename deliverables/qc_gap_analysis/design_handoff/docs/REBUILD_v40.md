@@ -38,7 +38,7 @@ Eighty-nine release certificates and eighty-three 12-month reissues. Every one c
 the **Section 04 conformity decision ticked**, as ordered on 16.09.2026, and none
 carries a DRAFT stamp.
 
-## 3 · The four corrections of 16.09.2026
+## 3 · The seven corrections of 16.09.2026
 
 **The conformity result is bilingual, and the row does not grow.** `Conforms` keeps its
 size and its green; `Одговара` sits with it at the template's own `.r-conform .mk` size
@@ -80,6 +80,69 @@ bar and of the batch band is not lost: the original gradient is kept as the uppe
 painted from 10 mm to 100 % − 10 mm, over a horizontal ramp carrying that gradient's own
 mid-height colour, so the two meet in the same tone. Nothing is resized, reworded or
 re-coloured; the masthead and the footer keep their full-bleed by design.
+
+**The RESULT column is one ink.** The Head of QC asked that the analysis-results column of
+Section 02 be a single dark navy and that no colour mark an edge case:
+
+> "Make all certificates of quality analysis results column in heading 2 be one colour dark
+> navy blue and do not use any other colour indicating edge cases of the analysis results,
+> or reds, or any other colour than the uniform navy blue."
+
+`<style id="__owner-uniform-result-ink">` sets every result cell — both halves of a
+bilingual one — to `--navy` `#1B3A5C`, which is the colour `.r-val` carries by default. That
+covers the 738 red cells, the 10 amber and the green `Conforms`. Measured on the rendered
+page, the RESULT column now computes one colour, `rgb(27, 58, 92)`, and nothing else.
+
+The inline colour is deliberately **left in the markup**. Assertion A12 reads it to prove
+that a result above its own criterion was marked, so stripping it would quietly disarm the
+desk's own check; overriding it in the last layer changes the ink on the page and nothing
+else. One consequence worth naming: a result above its criterion no longer announces itself
+by colour. It is still printed beside its own `ACC. CRITERIA`, the desk's register still
+carries the word, and Section 04 still carries the conformity decision — but the page no
+longer flags it.
+
+**A determination that was not performed reads `[NT]`.** The Head of QC named the pair:
+
+> "Mostly in the initial certificates of quality two parameters are not tested in
+> mycotoxins, which is aflatoxin B₁ and ochratoxin — not tested, and included and tested in
+> the retest for every batch, for tranches 1, 2 and 3. So in cases when you have a parameter
+> that is not tested in the initial quality control testing, you will put NT as the analysis
+> result, and also put it in brackets."
+
+The package prints `[ — ]` in a result cell for a determination that was not performed — no
+result on file, *to be performed*, *upon request*, *in-house CoA only*. Every one of those is
+"not tested", so in the RESULT column of Section 02 the cell now reads `[NT]`: **720 cells**,
+of which the Aflatoxin B₁ `#10.1` and Ochratoxin A `#10.3` rows of the release certificates
+are the pair he named. Nowhere else changes — Section 01 and the Section 03 work-order row
+keep `[ — ]` in **276** places, because that is a statement about a missing *document*, not
+about a determination.
+
+`[NT]` is four characters against five, so no cell changes its length class and no column
+moves. The document is **checked** in its package-conformant form, exactly as the owner's
+Macedonian half already is: the assertions know the package's closed vocabulary, and the
+substitution is made on the document that is written.
+
+**The note under Section 02 names no procedure and no document code.**
+
+> "Below the table for analysis results in heading 2, in the asterisk text, please remove
+> all references to SOPs and procedures and remove the references with the codes — only the
+> explanation about the assay; and where NT is used as an abbreviation you can explain the
+> meaning for those."
+
+The note carried two sentences. The first is the `*` that rows 4, 5 and 6 of Section 02 point
+at — how total THC, CBD and CBN are computed — and it stays exactly as the package wrote it.
+The second was procedural, and carried the only document code on the line:
+
+> ~~Parameter attribution to the issuing laboratory is given in Section 03 by Param. №;
+> in-house parameters are performed prior to final release sampling, before packaging starts
+> (QCSOP 005 v.02).~~
+
+It is gone from all 172 documents. In its place, and **only on the 114 documents that
+actually print `[NT]`**, the abbreviation is glossed in the note's own bilingual form:
+`[NT] not tested — the determination was not performed in this testing round | не е
+тестирано — определувањето не е извршено во овој круг на испитување.` The other 58 carry the
+assay sentence alone. The build fails loudly if the sentence it is told to remove is not
+found, so the note can never be left half-rewritten.
 
 ## 4 · Four defects the rebuild exposed, and what was done
 

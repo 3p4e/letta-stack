@@ -201,13 +201,39 @@ const EDGE_FADE_LAYER = '<style id="__owner-edge-fade">\n' +
   '   flattens alpha, so neither a mask nor an alpha veil survives to print here.\n' +
   '   The vertical shading is not lost: the original gradient is kept as the upper layer,\n' +
   '   painted from 10mm to 100%-10mm, and the ramp beneath carries that gradient\'s own\n' +
-  '   mid-height colour, so the two meet in the same tone. Nothing is resized or reworded. */\n' +
-  'html body div.page .sec-label{background-color:#fff !important;background-image:linear-gradient(rgb(172,191,210) 0%,rgb(172,191,210) 1.4%,rgb(218,229,238) 4.5%,rgb(250,252,254) 9%,rgb(246,250,253) 18%,rgb(246,250,253) 28%,rgb(240,245,250) 39%,rgb(233,240,247) 50%,rgb(225,234,242) 61%,rgb(218,229,238) 72%,rgb(213,225,236) 82%,rgb(217,227,238) 92%,rgb(224,233,241) 100%),linear-gradient(90deg,#fff 0,#fff 3mm,#E9F0F7 10mm,#E9F0F7 calc(100% - 10mm),#fff calc(100% - 3mm),#fff 100%) !important;' +
-  'background-size:calc(100% - 20mm) 100%,100% 100% !important;background-position:10mm top,left top !important;background-repeat:no-repeat,no-repeat !important}\n' +
+  '   mid-height colour, so the two meet in the same tone.\n' +
+  '   The section bar carried its top highlight and its bottom edge as INSET BOX-SHADOWS\n' +
+  '   (rgb(250,253,255) 0 1px 0 inset, rgb(168,188,209) 0 -1px 0 inset), which no\n' +
+  '   background fade can reach: printed, that bottom rule read rgb(184,201,217) at x=2\n' +
+  '   of 1653 against rgb(177,196,214) mid-page, a 1px bar across the whole sheet. Both\n' +
+  '   are re-drawn as 1px background layers on the same ramp, and the shadow is dropped.\n' +
+  '   The masthead and the footer keep their full bleed by design. Nothing is resized\n' +
+  '   or reworded. */\n' +
+  'html body div.page .sec-label{box-shadow:none !important;background-color:#fff !important;background-image:linear-gradient(90deg,#fff 0,#fff 3mm,#FAFDFF 10mm,#FAFDFF calc(100% - 10mm),#fff calc(100% - 3mm),#fff 100%),linear-gradient(90deg,#fff 0,#fff 3mm,#A8BCD1 10mm,#A8BCD1 calc(100% - 10mm),#fff calc(100% - 3mm),#fff 100%),linear-gradient(rgb(172,191,210) 0%,rgb(172,191,210) 1.4%,rgb(218,229,238) 4.5%,rgb(250,252,254) 9%,rgb(246,250,253) 18%,rgb(246,250,253) 28%,rgb(240,245,250) 39%,rgb(233,240,247) 50%,rgb(225,234,242) 61%,rgb(218,229,238) 72%,rgb(213,225,236) 82%,rgb(217,227,238) 92%,rgb(224,233,241) 100%),linear-gradient(90deg,#fff 0,#fff 3mm,#E9F0F7 10mm,#E9F0F7 calc(100% - 10mm),#fff calc(100% - 3mm),#fff 100%) !important;' +
+  'background-size:100% 1px,100% 1px,calc(100% - 20mm) 100%,100% 100% !important;background-position:left top,left bottom,10mm top,left top !important;background-repeat:no-repeat,no-repeat,no-repeat,no-repeat !important}\n' +
   'html body div.page .pb-main{background-color:#fff !important;background-image:linear-gradient(rgb(242,245,249) 0%,rgb(249,251,253) 55%,rgb(255,255,255) 100%),linear-gradient(90deg,#fff 0,#fff 3mm,#F9FBFD 10mm,#F9FBFD calc(100% - 10mm),#fff calc(100% - 3mm),#fff 100%) !important;' +
   'background-size:calc(100% - 20mm) 100%,100% 100% !important;background-position:10mm top,left top !important;background-repeat:no-repeat,no-repeat !important}\n' +
   'html body div.page .selrow{background-color:#fff !important;background-image:linear-gradient(90deg,#fff 0,#fff 3mm,#FCFDFE 10mm,#FCFDFE calc(100% - 10mm),#fff calc(100% - 3mm),#fff 100%) !important;' +
   'background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important}\n' +
+'</style>';
+
+const INK_LAYER = '<style id="__owner-uniform-result-ink">\n' +
+  '/* Owner, 16.09.2026: "make all certificates of quality analysis results column in\n' +
+  '   heading 2 be one colour dark navy blue and do not use any other colour indicating\n' +
+  '   edge cases of the analysis results or reds or any other colour than the uniform\n' +
+  '   navy blue." The RESULT column is now one ink: --navy #1B3A5C, the colour .r-val\n' +
+  '   already carries by default, for every cell — the 738 red, the 10 amber and the\n' +
+  '   green Conforms alike, in both halves of a bilingual cell.\n' +
+  '   The inline colour is left in the MARKUP on purpose. A12 reads it to prove that a\n' +
+  '   result above its own criterion was marked, so stripping it would quietly disarm the\n' +
+  '   desk\'s own check; overriding it here changes the ink on the page and nothing else.\n' +
+  '   Note for the reader of the page: a result above its criterion no longer announces\n' +
+  '   itself by colour. It is still legible against the ACC. CRITERIA column beside it,\n' +
+  '   and Section 04 still carries the conformity decision. */\n' +
+  'html body div.page div.tbl-wrap table.results td.r-cell .r-val,\n' +
+  'html body div.page div.tbl-wrap table.results td.r-cell .r-val .mk,\n' +
+  'html body div.page div.tbl-wrap table.results td.r-cell .r-val.r-conform,\n' +
+  'html body div.page div.tbl-wrap table.results td.r-cell .r-val.r-conform .mk{color:#1B3A5C !important}\n' +
 '</style>';
 
 const PRINT_ZEBRA_LAYER = printOpaqueLayer(base);
@@ -228,10 +254,41 @@ for (const c of data.coqs) {
   if (html.indexOf(UN) < 0) throw new Error('Section 04 conformity chip not found');
   html = html.replace(UN, SEL);
   // append the owner layer as the new last layer (the package's own mechanism)
-  html = html.replace(/<\/head>/, OWNER_LAYER + '\n' + HB_SUP_LAYER + '\n' + PRINT_ZEBRA_LAYER + '\n' + EDGE_FADE_LAYER + '\n</head>');
+  html = html.replace(/<\/head>/, OWNER_LAYER + '\n' + HB_SUP_LAYER + '\n' + PRINT_ZEBRA_LAYER + '\n' + EDGE_FADE_LAYER + '\n' + INK_LAYER + '\n</head>');
+  // Owner, 16.09.2026: "in cases when you have actually a parameter that's not tested —
+  // and that is in the initial quality control testing of all tranche batches — you will
+  // put NT as the analysis result, and also put it in brackets." Aflatoxin B1 (#10.1) and
+  // Ochratoxin A (#10.3) are the pair he named: not determined at release, determined at
+  // the 12-month retest on every batch of tranches 1, 2 and 3.
+  // The package prints [ — ] for a determination that was not performed — no result on
+  // file, to be performed, upon request, in-house CoA only. Every one of those is "not
+  // tested", so in the RESULT column of Section 02 it now reads [NT]. Nowhere else:
+  // Section 01 and the Section 03 work-order row keep [ — ], which is a different
+  // statement about a missing document rather than about a determination.
+  // [NT] is 4 characters against 5, so no cell changes its length class and no column
+  // moves. The document is CHECKED in its package-conformant form, below, exactly as the
+  // owner's Macedonian half is — the assertions know the package's closed vocabulary.
+  let htmlOut = html.replace(
+    /(<td class="r-cell[^"]*"><span class="r-val"(?:\s[^>]*)?>)\[ \u2014 \]<\/span>/g, '$1[NT]</span>');
+  // Owner, 16.09.2026: "below the table for analysis results in heading 2, in the asterisk
+  // text, please remove all references to SOPs and procedures and remove the references
+  // with the codes — only the explanation about the assay; and where NT is used as an
+  // abbreviation you can explain the meaning for those."
+  // The note's second sentence is the procedural one and carries the only document code on
+  // the line, so it goes. The assay sentence — the * that Section 02 rows 4, 5 and 6 point
+  // at — stays exactly as the package wrote it. In its place, and ONLY on a document that
+  // actually prints [NT], the abbreviation is glossed, bilingually, in the note's own form.
+  const NT_NOTE = '<br><strong>[NT]</strong> not tested \u2014 the determination was not ' +
+    'performed in this testing round <i class="bisep">|</i> <span class="mk">\u043d\u0435 \u0435 ' +
+    '\u0442\u0435\u0441\u0442\u0438\u0440\u0430\u043d\u043e \u2014 \u043e\u043f\u0440\u0435\u0434\u0435\u043b\u0443\u0432\u0430\u045a\u0435\u0442\u043e \u043d\u0435 \u0435 ' +
+    '\u0438\u0437\u0432\u0440\u0448\u0435\u043d\u043e \u0432\u043e \u043e\u0432\u043e\u0458 \u043a\u0440\u0443\u0433 \u043d\u0430 \u0438\u0441\u043f\u0438\u0442\u0443\u0432\u0430\u045a\u0435.</span>';
+  const OLD_NOTE = /<br>Parameter attribution to the issuing laboratory[^<]*<\/div>/;
+  if (!OLD_NOTE.test(htmlOut)) throw new Error('Section 02 note sentence not found');
+  htmlOut = htmlOut.replace(OLD_NOTE,
+    (htmlOut.indexOf('>[NT]</span>') >= 0 ? NT_NOTE : '') + '</div>');
   const dir = r.series === 'reissue' ? path.join(OUT, 'REISSUE', tranche[r.lot] ? 'T' + String(tranche[r.lot]).replace(/\D/g, '') : 'T3') : path.join(OUT, 'ISSUE_COQ');
   fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(path.join(dir, out.filename), html);
+  fs.writeFileSync(path.join(dir, out.filename), htmlOut);
   stats.n++; stats.byDir[path.relative(OUT, dir)] = (stats.byDir[path.relative(OUT, dir)] || 0) + 1;
   if (out.warnings.length) { stats.warn++; report.push(out.filename + ': ' + out.warnings.join('; ')); }
   // the assertions know the package's closed vocabulary, not the owner's MK half:
