@@ -1,0 +1,308 @@
+{
+ "_source": "Drive folder 1SmOicCRa8KEqoB-YlCojdap161YMQ-Di — the Tranche 3 mycotoxin re-analysis",
+ "_lab": "Farmahem — Laboratorija za zivotna sredina",
+ "_series": "227-n-М/26, issued 16.09.2026, received 24.08.2026, analysed 15.09.2026",
+ "_read": "one read of each page's own text layer, 16.09.2026. These are digitally generated PDFs, not scans: the code, the sample number, the internal FLŽS number, the strain, the P lot and all five analytes come off the page verbatim, with no OCR in the path. Each page prints its own P lot, so the batch mapping is verified per certificate rather than inferred from the paired K certificate.",
+ "_all_five_nd": "every certificate below prints ND for Aflatoxin B1, B2, G1, G2 and Ochratoxin A",
+ "certs": [
+  {
+   "n": 1,
+   "code": "227-1-М/26",
+   "p": "P050142",
+   "cb": "BSS1024_01-2",
+   "strain": "Blue Sunset Sherbet",
+   "sample": "294/2026",
+   "flzs": "CF-543/26",
+   "read_by": "this desk (Drive text layer)"
+  },
+  {
+   "n": 2,
+   "code": "227-2-М/26",
+   "p": "P050102",
+   "cb": "GP0824_01",
+   "strain": "Grape Pie",
+   "sample": "293/2026",
+   "flzs": "CF-544/26",
+   "read_by": "this desk (Drive text layer)"
+  },
+  {
+   "n": 3,
+   "code": "227-3-М/26",
+   "p": "P050262",
+   "cb": "WC072501",
+   "strain": "Wedding Crusher",
+   "sample": "292/2026",
+   "flzs": "CF-545/26",
+   "read_by": "this desk (Drive text layer)"
+  },
+  {
+   "n": 4,
+   "code": "227-4-М/26",
+   "p": "P060102",
+   "cb": "WED102501",
+   "strain": "Wedding Cake",
+   "sample": "291/2026",
+   "flzs": "CF-546/26",
+   "read_by": "this desk (Drive text layer)"
+  },
+  {
+   "n": 5,
+   "code": "227-5-М/26",
+   "p": "P060192",
+   "cb": "SJ112501",
+   "strain": "Sleepy Joe",
+   "sample": "290/2026",
+   "flzs": "CF-547/26",
+   "read_by": "this desk (Drive text layer)"
+  },
+  {
+   "n": 6,
+   "code": "227-6-М/26",
+   "p": "P060162",
+   "cb": "SJ102501",
+   "strain": "Sleepy Joe",
+   "sample": "289/2026",
+   "flzs": "CF-548/26",
+   "read_by": "this desk (Drive text layer)"
+  },
+  {
+   "n": 7,
+   "code": "227-7-М/26",
+   "p": "P060442",
+   "cb": "SCR022601",
+   "strain": "Scrambler",
+   "sample": "288/2026",
+   "flzs": "CF-549/26",
+   "read_by": "this desk (Drive text layer)"
+  },
+  {
+   "n": 8,
+   "code": "227-8-М/26",
+   "p": "P060342",
+   "cb": "SCR012601",
+   "strain": "Scrambler",
+   "sample": "287/2026",
+   "flzs": "CF-550/26",
+   "read_by": "this desk (Drive text layer)"
+  },
+  {
+   "n": 9,
+   "code": "227-9-М/26",
+   "p": "P050272",
+   "cb": "PM072501",
+   "strain": "Permanent Marker",
+   "sample": "286/2026",
+   "flzs": "CF-551/26",
+   "read_by": "this desk (Drive text layer)"
+  },
+  {
+   "n": 10,
+   "code": "227-10-М/26",
+   "p": "P060222",
+   "cb": "OPM112501",
+   "strain": "Orange Punch Mimosa",
+   "sample": "285/2026",
+   "flzs": "CF-552/26",
+   "read_by": "this desk (Drive text layer)"
+  },
+  {
+   "n": 11,
+   "code": "227-11-М/26",
+   "p": "P050132",
+   "cb": "OPM052501",
+   "strain": "Orange Punch Mimosa",
+   "sample": "284/2026",
+   "flzs": "CF-553/26",
+   "read_by": "this desk (Drive text layer)"
+  },
+  {
+   "n": 12,
+   "code": "227-12-М/26",
+   "p": "P050032",
+   "cb": "MB0824_04",
+   "strain": "Motor Breath",
+   "sample": "283/2026",
+   "flzs": "CF-554/26",
+   "read_by": "this desk (Drive text layer)"
+  },
+  {
+   "n": 13,
+   "code": "227-13-М/26",
+   "p": "P060262",
+   "cb": "J31122501",
+   "strain": "Jokerz 31",
+   "sample": "",
+   "flzs": "",
+   "read_by": "Head of QC, 16.09.2026 — this desk could not extract the page in three attempts"
+  },
+  {
+   "n": 14,
+   "code": "227-14-М/26",
+   "p": "P060202",
+   "cb": "J31112501",
+   "strain": "Jokerz 31",
+   "sample": "281/2026",
+   "flzs": "CF-556/26",
+   "read_by": "this desk (Drive text layer)"
+  },
+  {
+   "n": 15,
+   "code": "227-15-М/26",
+   "p": "P060312",
+   "cb": "JD012601",
+   "strain": "Jelly Donutz",
+   "sample": "280/2026",
+   "flzs": "CF-557/26",
+   "read_by": "this desk (Drive text layer)"
+  },
+  {
+   "n": 16,
+   "code": "227-16-М/26",
+   "p": "P060142",
+   "cb": "GRC102501-1",
+   "strain": "Grapes & Creme",
+   "sample": "279/2026",
+   "flzs": "CF-558/26",
+   "read_by": "this desk (Drive text layer)"
+  },
+  {
+   "n": 17,
+   "code": "227-17-М/26",
+   "p": "P050292",
+   "cb": "GP072501-1",
+   "strain": "Grape Pie",
+   "sample": "278/2026",
+   "flzs": "CF-560/26",
+   "read_by": "this desk (Drive text layer)"
+  },
+  {
+   "n": 19,
+   "code": "227-19-М/26",
+   "p": "P050012",
+   "cb": "GG1024_02",
+   "strain": "Gorilla Glue",
+   "sample": "276/2026",
+   "flzs": "CF-562/26",
+   "read_by": "this desk (Drive text layer)"
+  },
+  {
+   "n": 20,
+   "code": "227-20-М/26",
+   "p": "P060252",
+   "cb": "GG112501",
+   "strain": "Gorilla Glue",
+   "sample": "",
+   "flzs": "",
+   "read_by": "Head of QC, 16.09.2026 — this desk could not extract the page in three attempts"
+  },
+  {
+   "n": 21,
+   "code": "227-21-М/26",
+   "p": "P060302",
+   "cb": "GG012601",
+   "strain": "Gorilla Glue",
+   "sample": "274/2026",
+   "flzs": "CF-564/26",
+   "read_by": "this desk (Drive text layer)"
+  },
+  {
+   "n": 22,
+   "code": "227-22-М/26",
+   "p": "P060292",
+   "cb": "FB112501",
+   "strain": "Fat Bastard",
+   "sample": "273/2026",
+   "flzs": "CF-565/26",
+   "read_by": "this desk (Drive text layer)"
+  },
+  {
+   "n": 23,
+   "code": "227-23-М/26",
+   "p": "P060392",
+   "cb": "FB012603V",
+   "strain": "Fat Bastard",
+   "sample": "272/2026",
+   "flzs": "CF-566/26",
+   "read_by": "this desk (Drive text layer)"
+  },
+  {
+   "n": 24,
+   "code": "227-24-М/26",
+   "p": "P060432",
+   "cb": "FB012603",
+   "strain": "Fat Bastard",
+   "sample": "271/2026",
+   "flzs": "CF-567/26",
+   "read_by": "this desk (Drive text layer)"
+  },
+  {
+   "n": 25,
+   "code": "227-25-М/26",
+   "p": "P060272",
+   "cb": "CC112501",
+   "strain": "Cash Cow",
+   "sample": "270/2026",
+   "flzs": "CF-568/26",
+   "read_by": "this desk (Drive text layer)"
+  },
+  {
+   "n": 26,
+   "code": "227-26-М/26",
+   "p": "",
+   "cb": "CJ1024",
+   "strain": "Cap Junky",
+   "sample": "269/2026",
+   "flzs": "CF-569/26",
+   "read_by": "this desk (Drive text layer)"
+  },
+  {
+   "n": 27,
+   "code": "227-27-М/26",
+   "p": "P050252",
+   "cb": "CJ072501",
+   "strain": "Cap Junky",
+   "sample": "268/2026",
+   "flzs": "CF-570/26",
+   "read_by": "this desk (Drive text layer)"
+  },
+  {
+   "n": 28,
+   "code": "227-28-М/26",
+   "p": "P050172",
+   "cb": "CJ052501-02",
+   "strain": "Cap Junky",
+   "sample": "267/2026",
+   "flzs": "CF-571/26",
+   "read_by": "this desk (Drive text layer)"
+  },
+  {
+   "n": 29,
+   "code": "227-29-М/26",
+   "p": "P050122",
+   "cb": "BSS1024_01-1",
+   "strain": "Blue Sunset Sherbet",
+   "sample": "266/2026",
+   "flzs": "CF-572/26",
+   "read_by": "this desk (Drive text layer)"
+  },
+  {
+   "n": 30,
+   "code": "227-30-М/26",
+   "p": "P060052",
+   "cb": "AB092501",
+   "strain": "Amsterdam Amnesia",
+   "sample": "",
+   "flzs": "",
+   "read_by": "Head of QC, 16.09.2026 — this desk could not extract the page in three attempts"
+  }
+ ],
+ "_held": [
+  {
+   "code": "227-18-М/26",
+   "cb": "GP062501",
+   "p": "P050202",
+   "why": "neither reader could extract the page — this desk three times, the Head of QC twice. It is the ONE certificate of the thirty that nobody has read, and the only one that needs opening by hand. #10.1 and #10.3 stay empty on P050202 until it is."
+  }
+ ],
+ "_two_readers": "Two readers took this series independently on 16.09.2026 and they failed on DIFFERENT certificates, which is the useful fact. This desk could not extract 227-13, 227-18, 227-20 and 227-30 (three attempts each, blank every time); the Head of QC could not extract 227-2, 227-7, 227-16, 227-18, 227-23 and 227-27, all of which this desk read in full. So the blank is a property of the reader, not of the scan, and the six the Head of QC flagged for manual opening do not all need it. Between the two reads 29 of the 30 have been read and no certificate is read differently by the two. Only 227-18 is unread by anyone."
+}

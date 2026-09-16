@@ -1,5 +1,5 @@
 # Open items — awaiwrote /home/user/letta-stack/deliverables/qc_gap_analysis/tracker/OPEN_ITEMS.md
-open items: 47 (34 open, 3 marked on the certificate)
+open items: 48 (35 open, 3 marked on the certificate)
    Batch identity   9
    Document content 5
    Specification    4
@@ -17,10 +17,11 @@ open items: 47 (34 open, 3 marked on the certificate)
    Register cell    1
    Result read      1
    Ingestion        1
+   Document         1
    Tracker scope    1
    Panel scope      1
    Desk status      1
-I, II and III; CJ082501/2 is grade IV. Grape Pie and Orange Punch Mimosa stop at IV and each has a grade V lot. Exactly one grade V specification exists in the whole issued set (Clemosa).
+1/2 is grade IV. Grape Pie and Orange Punch Mimosa stop at IV and each has a grade V lot. Exactly one grade V specification exists in the whole issued set (Clemosa).
 
 **The desk.** The phenotype, chemotype, processing and packaging pills are left unticked and the band is marked, on 3 lots.
 
@@ -355,6 +356,18 @@ I, II and III; CJ082501/2 is grade IV. Grape Pie and Orange Punch Mimosa stop at
 **The desk.** The twenty-three documents are now in the release register, and the certificates print from them. The ingestion itself is untouched — the same folder may hold more that the corpus lacks, and nothing in the pipeline would say so.
 
 **Needed.** Should the desk re-run the CoA_DATABASE_2026 ingestion against the whole folder and reconcile it against the register, so that a coverage gap means the document does not exist rather than that it was not fetched?
+
+## Document
+
+### OI-48 · One Tranche 3 mycotoxin certificate has not been read by anyone, and one lot's #10 waits on it
+
+*State:* **open** · *Evidence:* intake_227M_2026-09-16/reads.json; tracker/T3_MYCOTOXIN_INTAKE_2026-09-16.md; apply_227M_intake.py
+
+**Found.** The thirty Farmahem reports 227-1-М/26 … 227-30-М/26 of 16.09.2026 were read twice and independently — by this desk and by the Head of QC — and the two readers failed on DIFFERENT certificates, so the blank page is a property of the reader and not of the scan. This desk could not extract 227-13, 227-18, 227-20 and 227-30 in three attempts each; the Head of QC could not extract 227-2, 227-7, 227-16, 227-18, 227-23 and 227-27, five of which this desk read in full. Between the two reads 29 of the 30 are read and no certificate is read differently by the two. **227-18-М/26 (GP062501, P050202) is the one nobody has read.**
+
+**The desk.** The 29 are in the release register and their certificates print them. P050202's #10.1 and #10.3 stay empty — the desk does not print a result from a page nobody has seen, and it will not take the value from the twenty-nine siblings that were all ND, because a batch's own mycotoxin result is not a property of the campaign it was submitted in.
+
+**Needed.** Open 227-18-М/26 by hand and tell the desk the five analytes. It is the only certificate of the thirty that needs it — the six the Head of QC flagged on 16.09.2026 were flagged from one reader's failures, and five of those six are read.
 
 ## Tracker scope
 

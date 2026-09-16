@@ -686,6 +686,26 @@ ITEMS = [
      "ingestion/coa_track/letta-imb-coas/ingest_coa_database_2026.py; "
      "exports/master_coa_table.tsv; tracker/DRIVE_DATABASE_INTAKE_2026-09-16.md"),
 
+    ("OI-48", "Document", "open",
+     "One Tranche 3 mycotoxin certificate has not been read by anyone, and one lot's #10 waits on it",
+     "The thirty Farmahem reports 227-1-\u041c/26 \u2026 227-30-\u041c/26 of 16.09.2026 were read twice "
+     "and independently \u2014 by this desk and by the Head of QC \u2014 and the two readers failed on "
+     "DIFFERENT certificates, so the blank page is a property of the reader and not of the "
+     "scan. This desk could not extract 227-13, 227-18, 227-20 and 227-30 in three attempts "
+     "each; the Head of QC could not extract 227-2, 227-7, 227-16, 227-18, 227-23 and "
+     "227-27, five of which this desk read in full. Between the two reads 29 of the 30 are "
+     "read and no certificate is read differently by the two. **227-18-\u041c/26 (GP062501, "
+     "P050202) is the one nobody has read.**",
+     "The 29 are in the release register and their certificates print them. P050202's #10.1 "
+     "and #10.3 stay empty \u2014 the desk does not print a result from a page nobody has seen, "
+     "and it will not take the value from the twenty-nine siblings that were all ND, because "
+     "a batch's own mycotoxin result is not a property of the campaign it was submitted in.",
+     "Open 227-18-\u041c/26 by hand and tell the desk the five analytes. It is the only "
+     "certificate of the thirty that needs it \u2014 the six the Head of QC flagged on "
+     "16.09.2026 were flagged from one reader's failures, and five of those six are read.",
+     "intake_227M_2026-09-16/reads.json; tracker/T3_MYCOTOXIN_INTAKE_2026-09-16.md; "
+     "apply_227M_intake.py"),
+
     ("OI-35", "Tracker scope", "open",
      "The tracker does not carry the documents of the 09.09 pass that eleven certificates print from",
      "The truth check of 15.09.2026 (tracker/truth_check_2026-09-15.py) compared every row of "
@@ -989,7 +1009,7 @@ def items(state=None, area=None):
     """The register, optionally narrowed.
 
     >>> len(items())
-    47
+    48
     >>> [i[0] for i in items(area="Specification")]
     ['OI-01', 'OI-02', 'OI-03', 'OI-44']
     >>> sorted({i[2] for i in items()})
