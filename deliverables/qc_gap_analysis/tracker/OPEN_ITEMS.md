@@ -4,7 +4,7 @@ Every finding the desk has raised and cannot itself settle, with the evidence
 behind it and the decision being asked for. Built by `open_items.py`; the same
 register is the **Open Items** sheet of the workbook.
 
-**32 open · 3 marked on the certificate**
+**33 open · 3 marked on the certificate**
 
 ## Specification
 
@@ -311,6 +311,18 @@ register is the **Open Items** sheet of the workbook.
 **The desk.** Nothing hidden and nothing renumbered a second time. Every affected certificate's record prints spec_status — "for review — replaces the issued QCSP_001_GP-IV_v.01 (was GP_THC20 : CBD1, 18.00 – 22.00 %); now GP_THC16 : CBD1 14.40 – 17.59 %" — and 88 certificates carry the conflict sentence beside it. The ladder is used exactly as the potency specification of 15.09.2026 prints it, which is the ruling of that date.
 
 **Needed.** Two rulings meet here and only one can hold. Either the potency specification of 15.09.2026 is used exactly as it prints (15.09.2026) and the issued v.01 documents are superseded numeral and all — in which case the 69 codes are correct and the issued documents are reissued under their new meaning — or a numeral once issued is never reused, in which case the ladder must be renumbered around the issued set and the new grades take fresh numerals. Which?
+
+## Register cell
+
+### OI-45 · One in-house microbiology cell states two bounds that cannot both be true, and two certificates print it
+
+*State:* **open** · *Evidence:* coq_artifact_data.json reg[OPM1024]; design_handoff/out/_build_report.txt; design_handoff/toolchain/coq_check.js A11
+
+**Found.** The release register carries bile-tolerant gram-negative bacteria for OPM1024 as “<10²>10³”, from Purely Plant's own certificate of analysis of 23.04.2025 — the block with no certificate or report number printed. Every other block in the register writes the pair as an upper bound and then a lower one (“<10² and >10”, “<10³ and >10²”), so the two figures here are the wrong way round: nothing is both below 100 and above 1000. It reaches CoQ-PP_26-006 and CoQ-PP_26-101, both OPM1024, where assertion A11 of the Claude Design package refuses the cell as off-vocabulary.
+
+**The desk.** Nothing was corrected in place. The desk does not rewrite a figure on the company's own certificate of analysis, and the certificate prints the cell as the register states it rather than a reading the desk prefers. The two documents carry the assertion finding so the pair travels with them.
+
+**Needed.** Is the intended reading “< 10³ and > 10²” — the same pair as every other block, with the bounds transposed in transcription? One word corrects the register cell and both certificates with it.
 
 ## Tracker scope
 

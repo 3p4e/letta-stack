@@ -107,6 +107,50 @@ function rec(c) {
 }
 fs.rmSync(OUT, { recursive: true, force: true });
 const stats = { n: 0, warn: 0, findings: 0, hard: 0, byDir: {} }, report = [];
+// ---- the grey edges of determinations 9 to 12 -----------------------------------
+// The package's __print-opaque layer exists because Chromium flattens a transparency
+// group at raster resolution: an alpha-to-transparent gradient prints as grey banding,
+// not as a fade to white. That layer converts every zebra stripe to its opaque
+// equivalent — but only for the selectors it names, and the package's own comment says
+// why that is not all of them: "the sub-rows kept the long band only because their
+// sibling selector outranks those." The 642-character sibling chain that stripes the
+// sub-rows of a group outranks the print layer too, so determinations 9 to 12 printed
+// their fade as grey down both page edges while 1 to 8 printed clean.
+//
+// This finds every rule in the base that still paints the alpha stripe and re-emits it,
+// verbatim selector and all, inside @media print with the opaque gradient. Same
+// selector means same specificity, and last in source wins — so the conversion reaches
+// exactly the rules it missed, with no new selector, colour, geometry or row height.
+// rgba(247,249,252,a) over white is rgb(C + (255-C)(1-a)), which is the package's own
+// substitution: .55 -> 251,252,253 and .92 -> 248,249,252.
+const ZEBRA_ALPHA = /rgba\(247,\s*249,\s*252/;
+const OPAQUE_ZEBRA =
+  'background-color:transparent !important;background-image:linear-gradient(90deg,' +
+  '#fff 0,#fff 38px,rgb(251,252,253) 92px,rgb(248,249,252) 150px,rgb(247,249,252) 50%,' +
+  'rgb(248,249,252) calc(100% - 150px),rgb(251,252,253) calc(100% - 92px),' +
+  '#fff calc(100% - 38px),#fff 100%) !important;background-size:100% 100% !important;' +
+  'background-position:top left !important;background-repeat:no-repeat !important';
+function printOpaqueLayer(doc) {
+  const seen = new Set(), rules = [];
+  const re = /([^{}]+)\{([^{}]*)\}/g;
+  let m;
+  while ((m = re.exec(doc))) {
+    const body = m[2];
+    if (!ZEBRA_ALPHA.test(body) || body.indexOf('linear-gradient(90deg') < 0) continue;
+    // the selector as written, with any comment before it stripped off
+    const sel = m[1].replace(/\/\*[\s\S]*?\*\//g, '').replace(/<[^>]*>/g, '').trim();
+    if (!sel || seen.has(sel)) continue;
+    seen.add(sel);
+    rules.push(sel + '{' + OPAQUE_ZEBRA + '}');
+  }
+  if (!rules.length) throw new Error('no alpha zebra rule found to convert');
+  return '<style id="__print-opaque-zebra-rest">\n@media print{\n' +
+         rules.join('\n') + '\n}</style>';
+}
+const PRINT_ZEBRA_LAYER = printOpaqueLayer(base);
+console.log('print-opaque: %d zebra rule(s) converted for print',
+            (PRINT_ZEBRA_LAYER.match(/\}/g) || []).length - 2);
+
 for (const c of data.coqs) {
   const r = rec(c);
   CURRENT = r;
@@ -121,7 +165,7 @@ for (const c of data.coqs) {
   if (html.indexOf(UN) < 0) throw new Error('Section 04 conformity chip not found');
   html = html.replace(UN, SEL);
   // append the owner layer as the new last layer (the package's own mechanism)
-  html = html.replace(/<\/head>/, OWNER_LAYER + '\n</head>');
+  html = html.replace(/<\/head>/, OWNER_LAYER + '\n' + PRINT_ZEBRA_LAYER + '\n</head>');
   const dir = r.series === 'reissue' ? path.join(OUT, 'REISSUE', tranche[r.lot] ? 'T' + String(tranche[r.lot]).replace(/\D/g, '') : 'T3') : path.join(OUT, 'ISSUE_COQ');
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, out.filename), html);

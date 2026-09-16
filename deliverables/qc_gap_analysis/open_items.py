@@ -624,6 +624,26 @@ ITEMS = [
      "potency_grades.py number(); potency_grades_2026-09-15.csv; "
      "product_specifications_QCSP001.json; tracker/FLEET_FINDINGS_2026-09-16.md (audit C)"),
 
+    ("OI-45", "Register cell", "open",
+     "One in-house microbiology cell states two bounds that cannot both be true, and two certificates print it",
+     "The release register carries bile-tolerant gram-negative bacteria for OPM1024 as "
+     "\u201c<10\u00b2>10\u00b3\u201d, from Purely Plant's own certificate of analysis of "
+     "23.04.2025 \u2014 the block with no certificate or report number printed. Every other "
+     "block in the register writes the pair as an upper bound and then a lower one "
+     "(\u201c<10\u00b2 and >10\u201d, \u201c<10\u00b3 and >10\u00b2\u201d), so the two "
+     "figures here are the wrong way round: nothing is both below 100 and above 1000. It "
+     "reaches CoQ-PP_26-006 and CoQ-PP_26-101, both OPM1024, where assertion A11 of the "
+     "Claude Design package refuses the cell as off-vocabulary.",
+     "Nothing was corrected in place. The desk does not rewrite a figure on the company's own "
+     "certificate of analysis, and the certificate prints the cell as the register states it "
+     "rather than a reading the desk prefers. The two documents carry the assertion finding "
+     "so the pair travels with them.",
+     "Is the intended reading \u201c< 10\u00b3 and > 10\u00b2\u201d \u2014 the same pair as "
+     "every other block, with the bounds transposed in transcription? One word corrects the "
+     "register cell and both certificates with it.",
+     "coq_artifact_data.json reg[OPM1024]; design_handoff/out/_build_report.txt; "
+     "design_handoff/toolchain/coq_check.js A11"),
+
     ("OI-35", "Tracker scope", "open",
      "The tracker does not carry the documents of the 09.09 pass that eleven certificates print from",
      "The truth check of 15.09.2026 (tracker/truth_check_2026-09-15.py) compared every row of "
@@ -908,7 +928,7 @@ def items(state=None, area=None):
     """The register, optionally narrowed.
 
     >>> len(items())
-    44
+    45
     >>> [i[0] for i in items(area="Specification")]
     ['OI-01', 'OI-02', 'OI-03', 'OI-44']
     >>> sorted({i[2] for i in items()})

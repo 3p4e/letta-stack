@@ -16,6 +16,11 @@ So a tranche document holds both rounds for its own lots — the release certifi
 first, in register order, then the reissues, in register order. That is the order the
 rounds happened in, which is how a batch file reads.
 
+`--series reissue` writes the tranche's **12-month retest certificates alone**, which is
+what the Head of QC asked for on 16.09.2026: the reissue is the document that travels with
+the batch, and the release certificate is the record of the round that released it.
+`--series both` (the default) keeps the complete file, release round then retest.
+
 ## Which certificate belongs to which tranche
 
 The tranche of a lot is the desk's own scope, not a property of the certificate:
@@ -124,6 +129,10 @@ def main(argv):
     ap.add_argument("--no-flatten", action="store_true")
     ap.add_argument("--tranche", action="append", default=None,
                     help="restrict to these tranches (default: 1 and 2)")
+    ap.add_argument("--series", choices=("reissue", "release", "both"), default="both",
+                    help="reissue: the 12-month retest certificates only, which is the "
+                         "document that travels with the batch (owner, 16.09.2026); "
+                         "release: the release round only; both: release then reissue")
     ap.add_argument("--no-print", action="store_true",
                     help="fail instead of printing a document that has no page yet")
     ap.add_argument("--chromium", default=None)
@@ -132,6 +141,8 @@ def main(argv):
     rows = collect()
     pages_dir = os.path.join(PDF, "pages")
     missing, outside = [], sorted(s for t, _, s, _h in rows if not t)
+    if a.series != "both":
+        rows = [r for r in rows if r[1] == a.series]
     todo = [h for t, _s, stem, h in rows if t in wanted
             and not os.path.exists(os.path.join(pages_dir, stem + ".pdf"))]
     if todo and not a.no_print:
@@ -148,7 +159,8 @@ def main(argv):
         for _t, _s, stem, _h in group:
             p = os.path.join(pages_dir, stem + ".pdf")
             (parts if os.path.exists(p) else missing).append(p)
-        stem_out = os.path.join(PDF, "CoQ_Tranche_%s" % t)
+        suffix = {"reissue": "_Retest", "release": "_Release", "both": ""}[a.series]
+        stem_out = os.path.join(PDF, "CoQ_Tranche_%s%s" % (t, suffix))
         n = merge(parts, stem_out + ".pdf", False, a.dpi)
         line = "  Tranche %s  %3d page(s)  %s (%.1f MiB)" % (
             t, n, os.path.basename(stem_out + ".pdf"),
@@ -157,7 +169,7 @@ def main(argv):
             merge(parts, stem_out + "_flat.pdf", True, a.dpi)
             line += "  flat %.1f MiB" % (os.path.getsize(stem_out + "_flat.pdf") / 1048576.0)
         print(line)
-        print("      %d release + %d reissue" % (
+        print("      %d release + %d retest reissue" % (
             sum(1 for r in group if r[1] == "release"),
             sum(1 for r in group if r[1] == "reissue")))
     if missing:
