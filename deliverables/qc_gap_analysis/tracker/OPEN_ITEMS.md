@@ -4,7 +4,7 @@ Every finding the desk has raised and cannot itself settle, with the evidence
 behind it and the decision being asked for. Built by `open_items.py`; the same
 register is the **Open Items** sheet of the workbook.
 
-**31 open · 3 marked on the certificate**
+**30 open · 3 marked on the certificate**
 
 ## Specification
 
@@ -130,13 +130,13 @@ register is the **Open Items** sheet of the workbook.
 
 ### OI-12 · A lot and its ＊ sub-lot are credited from the same three documents
 
-*State:* **open** · *Evidence:* JD112501 / JD112501＊
+*State:* **ruled** · *Evidence:* ППК26063 / ППК26065 (both P060212); the scans 110526_ППК26063_CNP_JD112501-P060212.pdf and 110526_ППК26065_CNP_JD112501＊-P060212.pdf; cell_resolution_2026-09-09.tsv; testing_series.EXPERIMENTAL
 
-**Found.** JD112501 and JD112501＊ both cite ППК26065, 2365-2026 and 306-0550-26. On the parent those readings are marked on file, not credited; on the sub-lot they are credited. The sub-lot's microbiology block also carries the parent's round-1 values while its cannabinoids and metals come from round 2.
+**Found.** JD112501 and JD112501＊ both cite ППК26065, 2365-2026 and 306-0550-26. On the parent those readings are marked on file, not credited; on the sub-lot they are credited. The sub-lot's microbiology block also carries the parent's round-1 values while its cannabinoids and metals come from round 2. Read on the pages on 16.09.2026: ППК26063 and ППК26065 are the same lot P060212, the same sample description (Сув сомелен цвет од медицински канабис сорта Jelly Donutz), the same delivery of 21.04.2026, the same DAB method and the same 12 g — the batch number is the ONLY difference between the two pages, ППК26063 reading JD112501 and ППК26065 reading JD112501*. The owner's own resolution pass of 09.09.2026 gives JD112501/P060212 a complete panel and cites ППК26063 for #3-#6 and #8; ППК26065 is cited nowhere in it.
 
-**The desk.** Both rows are left as recorded and the pair is named here.
+**The desk.** Owner's ruling of 16.09.2026: "The asterisk is probably some experiment and is generally not the result that will go for the batch release official documentation. If both THC results are assigned with the same P number production batch, that means it is the same batch, but two samples have been sent for the parameter. You will NOT ignore the value and data with the asterisk — you will include it in calculation statistics and all — but in the CoQ you will take the other value and corresponding certificate." So it is ONE batch and two samples, not two lots. testing_series.EXPERIMENTAL holds the starred certificates and build_coq_schedule drops them before the release/reissue split, so they source no certificate of quality; everywhere else the result stands. The certificates were already right: CoQ-PP_26-057 prints 19.64 % from ППК26063 and CoQ-PP_26-098 prints 20.32 % from 197-15-К/26. Neither prints 13.93 %.
 
-**Needed.** Is JD112501＊ a distinct lot? If so, which round's microbiology belongs to it?
+**Needed.** Nothing further on this lot. What the asterisk DENOTES on the floor — hand-trimmed material, a different drying or milling treatment, or a sampling position — is still unwritten; the pages do not say and the desk will not infer it.
 
 ## Document identity
 
@@ -246,13 +246,13 @@ register is the **Open Items** sheet of the workbook.
 
 ### OI-39 · Two register blocks carry two sublots each, and the certificate prints one of them
 
-*State:* **open** · *Evidence:* tracker/RESULT_SUPERSESSION_2026-09-16.md section 2; the register blocks J31122501 (10 certificates) and JD112501 (2); tracker/batch_dates.csv rows 61 and 64
+*State:* **open** · *Evidence:* tracker/RESULT_SUPERSESSION_2026-09-16.md section 3; the register block J31122501 (10 certificates); tracker/batch_dates.csv row 64; OI-12 for the JD112501 half
 
-**Found.** The sweep of 16.09.2026 (result_supersession.py, check `parallel`) looked for a block holding two certificates of the SAME testing on the SAME day that report DIFFERENT results. Over 93 blocks there are two, and both are unmistakable. **J31122501** (Jokerz 31, P060262) holds three such pairs: the microbiology of 07.04.2026, where 231/0394/26 names its sample Рачно тримиран цвет (hand-trimmed flower) and reads TAMC 850 while 230/0393/26 names Тримиран цвет (trimmed flower) and reads 1900; the Farmahem cannabinoids of 09.04.2026, 100-2-К/26 at 19.84 % against 100-3-К/26 at 21.84 %; and the IJZ mycotoxins and metals of 23.04.2026, 1628/2026 against 1625/2026. The documents themselves say these are two products of one cultivation batch, tested in parallel. **JD112501** (Jelly Donutz, P060212) holds one pair: ППК26063 and ППК26065 of 11.05.2026, 19.64 % against 13.93 % total THC — six percentage points apart, which is not one sample read twice. The owner's batch list gives each cultivation batch exactly one P lot (J31122501 = P060262, JD112501 = P060212), so the register has no second lot number to file the second sublot under.
+**Found.** The sweep of 16.09.2026 (result_supersession.py, check `parallel`) looked for a block holding two certificates of the SAME testing on the SAME day that report DIFFERENT results. Over 93 blocks there were two; one of them, JD112501, was ruled on 16.09.2026 to be one batch and two samples and is now OI-12, leaving one. **J31122501** (Jokerz 31, P060262) holds three such pairs: the microbiology of 07.04.2026, where 231/0394/26 names its sample Рачно тримиран цвет (hand-trimmed flower) and reads TAMC 850 while 230/0393/26 names Тримиран цвет (trimmed flower) and reads 1900; the Farmahem cannabinoids of 09.04.2026, 100-2-К/26 at 19.84 % against 100-3-К/26 at 21.84 %; and the IJZ mycotoxins and metals of 23.04.2026, 1628/2026 against 1625/2026. The documents themselves say these are two products of one cultivation batch, tested in parallel. The owner's batch list gives J31122501 exactly one P lot, P060262, so the register has no second number to file the second product under. The starred-sample ruling does NOT reach this block: these pages carry no asterisk, and they name two PRODUCTS on three separate dates, not two samples of one.
 
-**The desk.** Nothing invented. testing_series.rounds() treats two documents of one day as one testing period — right when they describe one sample — so both sit in the release round and the certificate of quality prints the first: 231/0394/26, 100-2-К/26, 1628/2026 and ППК26063. The tracker shows BOTH: J31122501 carries 100-2/1628/231 and 100-3/1625/230 as separate testing instances, JD112501 carries ППК26063 and ППК26065, so nothing is hidden anywhere the desk shows its working. What the certificate of quality does not say is WHICH sublot it certifies.
+**The desk.** Nothing invented. testing_series.rounds() treats two documents of one day as one testing period — right when they describe one sample — so both sit in the release round and the certificate of quality prints the first: 231/0394/26, 100-2-К/26 and 1628/2026. The tracker shows BOTH — 100-2/1628/231 and 100-3/1625/230 as separate testing instances — so nothing is hidden anywhere the desk shows its working. What the certificate of quality does not say is WHICH product it certifies.
 
-**Needed.** Are J31122501 and JD112501 each one lot or two? If two, what P lot number does the second carry, and does it need its own certificate of quality — which would make the four documents the certificates do not print (230/0393/26, 100-3-К/26, 1625/2026, ППК26065) the second lot's record rather than unused results? If one, which of each pair is the lot's result?
+**Needed.** Is J31122501 one lot or two? If two, what P lot number does the second carry, and does it need its own certificate of quality — which would make the three documents the certificate does not print (230/0393/26, 100-3-К/26, 1625/2026) the second product's record rather than unused results? If one, which of each pair is the lot's result?
 
 ## Document identity
 

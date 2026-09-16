@@ -50,6 +50,7 @@ from collections import Counter, defaultdict
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "tracker"))
 import tracker_data as TD                                            # noqa: E402
+import testing_series as TS                                          # noqa: E402
 
 _spec = __import__("importlib.util", fromlist=["util"]).spec_from_file_location(
     "_tc_norm", os.path.join(HERE, "tracker", "truth_check_2026-09-15.py"))
@@ -255,8 +256,13 @@ def parallel(data):
         have = set().union(*(cited[k] for k in keys)) if keys else set()
         byday = defaultdict(list)
         for c in b["certs"]:
-            if not c.get("stab"):
-                byday[(TC.dkey(c.get("date")), c.get("fam") or "")].append(c)
+            # A stability timepoint is not release testing, and a STARRED SAMPLE is not a
+            # second sublot — the owner ruled on 16.09.2026 that it is a second sample of
+            # the same packaged lot, kept in the record and in every statistic but never
+            # certifying. Counting either here would report a question that has an answer.
+            if c.get("stab") or TS.is_experimental(c.get("code", "")):
+                continue
+            byday[(TC.dkey(c.get("date")), c.get("fam") or "")].append(c)
         for (day, fam), group in sorted(byday.items()):
             if len(group) < 2:
                 continue
@@ -294,6 +300,8 @@ def _unp_class(m):
         return "the IJZ-MB campaign microbiology of 25/26.08.2026"
     if c.lower().startswith("n/a") or "in-house" in c.lower():
         return "an in-house document with no document number"
+    if TS.is_experimental(c):
+        return "a starred sample, which by the ruling of 16.09.2026 never certifies"
     return "an ordinary laboratory certificate"
 
 
@@ -432,6 +440,12 @@ def report(data, want=None):
              "the delivery v34 wrote into the register. The reissues carry the initial "
              "microbiology instead — that is OI-38, and these are the results a ruling "
              "for *the latest on file* would put on the certificates."),
+            ("a starred sample, which by the ruling of 16.09.2026 never certifies",
+             "a second sample of the same packaged lot, sent for a limited panel outside "
+             "the release testing. The Head of QC ruled on 16.09.2026 that its result stays "
+             "in the record and in every statistic but never sources a certificate of "
+             "quality, so appearing here is correct and not a gap "
+             "(testing_series.EXPERIMENTAL)."),
             ("an in-house document with no document number",
              "the two in-house certificates of analysis for HPA1024 and OPM1024, which "
              "print no report number, and the two in-house cross-checks. A certificate of "
