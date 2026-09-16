@@ -78,3 +78,28 @@ IJZ-MB campaign, the April-2026 panel, the Farmahem 227-К series.
 
 That is the next job, and it is bounded — the table holds a few dozen distinct parameter
 spellings, not thousands.
+
+## The RAGflow container was asked directly — 16.09.2026
+
+The Head of QC asked that the eCoA database on the KVM server be queried before the desk
+concluded anything. It was, through the RAGflow retrieval interface, for the microbiology
+and heavy metals of the eleven lots that carry neither: `P060112`, `P060122`, `P060132`,
+`P060172`, `P060182`, `P060232`, `P060362`, `P060372`, `P060412`, `P060422`, `P060492`.
+
+**Three chunks came back, and all three are the Purely Plant in-house Report of Analysis
+for `GG1024`, `HPA1024` and `OPM1024`.** Nothing for any of the eleven. The `eCOA_DB`
+dataset holds 283 documents, which is the corpus the desk already reads; the container
+holds no document the desk does not.
+
+Two things the pages themselves settle, read off the retrieved chunks:
+
+* `GG1024` prints bile-tolerant gram-negative bacteria as `<10^2>10 CFU/g` — an upper
+  bound then a lower one with the connector left out. That is the third spelling the
+  controlled vocabulary now reads.
+* `OPM1024` prints `<10²>10³CFU/g` — **at source**, on the company's own report. OI-45 is
+  therefore a transcription on the original page and not a defect of any intake, and the
+  desk cannot correct it without the Head of QC's word.
+
+So the eleven lots were not tested for microbiology and heavy metals at release, or the
+pages exist outside the database. Either way the certificate cannot cite them, and the
+question is now the Head of QC's.
