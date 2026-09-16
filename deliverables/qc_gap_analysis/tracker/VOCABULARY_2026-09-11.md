@@ -1408,7 +1408,7 @@ is unchanged**: a star nobody has ruled on still keeps its mark.
 | certificates of quality numbered | 133 | **135** |
 | Tranche 3 codes allocated | 28 | **30** |
 | not yet issuable | 13 (8 initial, 5 retest) | **7** (5 initial, 2 retest) |
-| issuable rows the register could not number | 2 (P060302\|I, P060312\|I) | **0** |
+| issuable rows the register could not number | 2 (the initial rows of P060302 and P060312) | **0** |
 | blank printed lines, release drafts | 51 | **39** |
 
 The owner's tracker row `JD112501＊`, which the ruling says is not a lot, folds into P060212 on
