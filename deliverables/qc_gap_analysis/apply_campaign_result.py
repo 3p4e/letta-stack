@@ -115,9 +115,11 @@ def apply(data, log=None):
     have = register_index(data["reg"])
     listing = listing_index()
     changed = []
+    # Both rounds, not the reissue alone. The date rule is the only guard a certificate
+    # needs: it may cite a document issued on or before its own day and no other, so a
+    # release certificate of 06.06.2026 still refuses the retest campaign of August while
+    # it takes the in-house sheet of April 2025 that was on the desk when it issued.
     for c in data["coqs"]:
-        if not str(c.get("t") or "").startswith("additional"):
-            continue
         iss = day(c.get("issue"))
         if iss is None:
             continue
