@@ -144,6 +144,45 @@ actually print `[NT]`**, the abbreviation is glossed in the note's own bilingual
 assay sentence alone. The build fails loudly if the sentence it is told to remove is not
 found, so the note can never be left half-rewritten.
 
+## 3b · The alignment and signature pass of 16.09.2026
+
+A second round of the Head of QC's corrections, all appended as two new last layers
+(`__owner-edges`, `__owner-align-s1-s4`) placed at the **end of the body**, after the
+package's own trailing correction layers — a desk layer in the head loses to those at equal
+specificity, which is why the first attempt did not take.
+
+**Edges.** The four section heading bars (01–04) go **edge to edge, full bleed** — the desk
+no longer touches `.sec-label`, so each prints as the package draws it, a full-width bar on a
+page with a zero printer margin. The bands and rows beneath fade to **pure white through the
+page margin**, so no row colour reaches the sheet edge, and every fade is a single straight
+ramp — white at the edge, full colour by ~11–12 mm — with no flat-then-ramp kink to read as a
+hard transition.
+
+**Section 01.** The label and value of each info row centre on the row; the manufacturer's
+Macedonian line is smaller and its cell content reads left.
+
+**Section 02.** Acceptance criteria reads left, centred on the row; the result reads to the
+right page margin, centred on the row; the parameter and number cells read left off the
+margin, centred, keeping the sub-row indents of #9/#10/#11.
+
+**Section 03.** The laboratory column is laid out as clean lines — English name and
+accreditation, then the Macedonian name and the LT code, then the address, small and grey —
+off the left page margin. The CoA document codes sit centred, each on its own line, with the
+issue date smaller and grey; the parameter numbers hug the right page margin; the header cells
+follow their columns.
+
+**Section 04.** The conformity row packs to the left: the label (two lines), then the batch
+number in a bordered box as tall as the label with its value centred, then the two verdict
+pills beside it, their content centred. The role lines are given air below the gold rule. The
+two managers' **signatures are reapplied** — Blagoj Nikolov, QC Manager, and Jovana Romevska
+Cvetkovski, QA Manager — the same authentic scans and tilts the internal certificates carry,
+vendored under `assets/` as trimmed transparent PNGs and embedded so each certificate stays
+self-contained through PDF export.
+
+Build unchanged: 172 documents, apply warnings 0, assertion findings 48 (hard 2), 0 partial
+panels, all policy checks pass. Every document reprinted and each merged document flattened at
+300 dpi for press.
+
 ## 4 · Four defects the rebuild exposed, and what was done
 
 ### 4.1 · A register status was hiding results the desk holds

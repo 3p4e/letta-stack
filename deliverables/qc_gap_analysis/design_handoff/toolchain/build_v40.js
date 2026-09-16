@@ -12,6 +12,17 @@ const base = fs.readFileSync(path.join(HANDOFF, 'base', 'CoQ-PP_26-013_P050072_G
 const data = JSON.parse(fs.readFileSync(path.join(GAP, 'coq_artifact_data.json'), 'utf8'));
 const OUT = path.join(HANDOFF, 'out');
 
+// The two authentic handwritten signature scans, vendored under assets/ as trimmed,
+// downscaled transparent PNGs (crisp at print, ~40 KB and ~20 KB). They are the same
+// scans the internal certificates of analysis carry: Blagoj Nikolov, QC Manager, tilted
+// -1.5deg, and Jovana Romevska Cvetkovski, QA Manager, tilted +2deg — the tilts the
+// package already used. Embedded as data URIs so each certificate stays self-contained
+// through download and PDF export, as the package embeds its logo.
+const SIG = {
+  qc: 'data:image/png;base64,' + fs.readFileSync(path.join(HANDOFF, 'assets', 'sig_qc_manager.png')).toString('base64'),
+  qa: 'data:image/png;base64,' + fs.readFileSync(path.join(HANDOFF, 'assets', 'sig_qa_manager.png')).toString('base64'),
+};
+
 // tranche of a reissue, from the desk's scope files
 const tranche = {};
 for (const [f, t] of [['coq_reissue_scope_2026-09-15.csv', null], ['coq_draft_scope_2026-09-10.csv', null]]) {
@@ -189,32 +200,36 @@ const HB_SUP_LAYER = '<style id="__owner-header-and-cells">\n' +
   'html body div.page div.tbl-wrap table.results tbody tr.sub-row td.r-cell .r-val.r-conform .mk::before{' +
   'content:"" !important}\n</style>';
 
-const EDGE_FADE_LAYER = '<style id="__owner-edge-fade">\n' +
-  '/* Owner, 16.09.2026: the section bars and the two Section 01 bands ran to the sheet\n' +
-  '   edge at full strength. Measured on the rendered page: .sec-label read rgb(232,239,246)\n' +
-  '   at x=1 of 793, .pb-main rgb(248,250,252), .selrow rgb(252,253,254) — no fade at all,\n' +
-  '   while .gridrow and the table zebra were already white at x=0 and correct. @page margin\n' +
-  '   is 0, so a band with no fade is printed to the physical edge of the sheet.\n' +
-  '   Each band now reaches white by the sheet edge and full colour by the typographic\n' +
-  '   margin, in the package\'s own edge geometry. It is built from OPAQUE stops: the 56th\n' +
-  '   layer switches -webkit-mask-image off (mask-image:none !important) and the print layer\n' +
-  '   flattens alpha, so neither a mask nor an alpha veil survives to print here.\n' +
-  '   The vertical shading is not lost: the original gradient is kept as the upper layer,\n' +
-  '   painted from 10mm to 100%-10mm, and the ramp beneath carries that gradient\'s own\n' +
-  '   mid-height colour, so the two meet in the same tone.\n' +
-  '   The section bar carried its top highlight and its bottom edge as INSET BOX-SHADOWS\n' +
-  '   (rgb(250,253,255) 0 1px 0 inset, rgb(168,188,209) 0 -1px 0 inset), which no\n' +
-  '   background fade can reach: printed, that bottom rule read rgb(184,201,217) at x=2\n' +
-  '   of 1653 against rgb(177,196,214) mid-page, a 1px bar across the whole sheet. Both\n' +
-  '   are re-drawn as 1px background layers on the same ramp, and the shadow is dropped.\n' +
-  '   The masthead and the footer keep their full bleed by design. Nothing is resized\n' +
-  '   or reworded. */\n' +
-  'html body div.page .sec-label{box-shadow:none !important;background-color:#fff !important;background-image:linear-gradient(90deg,#fff 0,#fff 3mm,#FAFDFF 10mm,#FAFDFF calc(100% - 10mm),#fff calc(100% - 3mm),#fff 100%),linear-gradient(90deg,#fff 0,#fff 3mm,#A8BCD1 10mm,#A8BCD1 calc(100% - 10mm),#fff calc(100% - 3mm),#fff 100%),linear-gradient(rgb(172,191,210) 0%,rgb(172,191,210) 1.4%,rgb(218,229,238) 4.5%,rgb(250,252,254) 9%,rgb(246,250,253) 18%,rgb(246,250,253) 28%,rgb(240,245,250) 39%,rgb(233,240,247) 50%,rgb(225,234,242) 61%,rgb(218,229,238) 72%,rgb(213,225,236) 82%,rgb(217,227,238) 92%,rgb(224,233,241) 100%),linear-gradient(90deg,#fff 0,#fff 3mm,#E9F0F7 10mm,#E9F0F7 calc(100% - 10mm),#fff calc(100% - 3mm),#fff 100%) !important;' +
-  'background-size:100% 1px,100% 1px,calc(100% - 20mm) 100%,100% 100% !important;background-position:left top,left bottom,10mm top,left top !important;background-repeat:no-repeat,no-repeat,no-repeat,no-repeat !important}\n' +
-  'html body div.page .pb-main{background-color:#fff !important;background-image:linear-gradient(rgb(242,245,249) 0%,rgb(249,251,253) 55%,rgb(255,255,255) 100%),linear-gradient(90deg,#fff 0,#fff 3mm,#F9FBFD 10mm,#F9FBFD calc(100% - 10mm),#fff calc(100% - 3mm),#fff 100%) !important;' +
-  'background-size:calc(100% - 20mm) 100%,100% 100% !important;background-position:10mm top,left top !important;background-repeat:no-repeat,no-repeat !important}\n' +
-  'html body div.page .selrow{background-color:#fff !important;background-image:linear-gradient(90deg,#fff 0,#fff 3mm,#FCFDFE 10mm,#FCFDFE calc(100% - 10mm),#fff calc(100% - 3mm),#fff 100%) !important;' +
-  'background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important}\n' +
+const EDGE_FADE_LAYER = '<style id="__owner-edges">\n' +
+  '/* Owner, 16.09.2026 (later pass): the section heading bars (01/02/03/04) go edge to\n' +
+  '   edge — full bleed, not faded — so the desk no longer touches .sec-label at all and\n' +
+  '   it prints as the package draws it, a full-width bar on a page with a zero printer\n' +
+  '   margin. The bands and rows BENEATH the bars fade to pure white through the page\n' +
+  '   margin, so no row colour reaches the sheet edge. Every fade here is a SINGLE straight\n' +
+  '   ramp — white at the edge, full colour by the typographic margin (~11mm) — with no\n' +
+  '   flat-then-ramp junction, so there is no hard transition to read. The masthead and\n' +
+  '   the footer keep their full bleed by design. */\n' +
+  'html body div.page .pb-main{background-color:#fff !important;background-image:' +
+     'linear-gradient(90deg,#fff 0,rgb(244,247,251) 11mm,rgb(244,247,251) calc(100% - 11mm),#fff 100%) !important;' +
+     'background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important}\n' +
+  'html body div.page .selrow{background-color:#fff !important;background-image:' +
+     'linear-gradient(90deg,#fff 0,rgb(250,252,254) 11mm,rgb(250,252,254) calc(100% - 11mm),#fff 100%) !important;' +
+     'background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important}\n' +
+  '/* The table header rules and body carry the same single straight ramp, so the grey\n' +
+  '   header bar and the row tint blend to white through the margin without a kink. */\n' +
+  'html body div.page div.tbl-wrap table.results thead tr,\n' +
+  'html body div.page div.tbl-wrap table.labref thead tr{background-color:transparent !important;background-image:' +
+     'linear-gradient(90deg,#fff 0,#9EACBA 12mm,#9EACBA calc(100% - 12mm),#fff 100%),' +
+     'linear-gradient(90deg,#fff 0,#9EACBA 12mm,#9EACBA calc(100% - 12mm),#fff 100%),' +
+     'linear-gradient(90deg,#fff 0,#F2F5F9 12mm,#F2F5F9 calc(100% - 12mm),#fff 100%) !important;' +
+     'background-size:100% 2px,100% 2px,100% calc(100% - 4px) !important;' +
+     'background-position:top left,bottom left,left top 2px !important;background-repeat:no-repeat !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody tr:last-child{background-color:transparent !important;background-image:' +
+     'linear-gradient(90deg,#fff 0,#9EACBA 12mm,#9EACBA calc(100% - 12mm),#fff 100%) !important;' +
+     'background-size:100% 2px !important;background-position:bottom left !important;background-repeat:no-repeat !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody tr:nth-child(even){background-color:transparent !important;background-image:' +
+     'linear-gradient(90deg,#fff 0,rgb(247,249,252) 12mm,rgb(247,249,252) calc(100% - 12mm),#fff 100%) !important;' +
+     'background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important}\n' +
 '</style>';
 
 const INK_LAYER = '<style id="__owner-uniform-result-ink">\n' +
@@ -236,6 +251,72 @@ const INK_LAYER = '<style id="__owner-uniform-result-ink">\n' +
   'html body div.page div.tbl-wrap table.results td.r-cell .r-val.r-conform .mk{color:#1B3A5C !important}\n' +
 '</style>';
 
+// Owner, 16.09.2026 (second pass): the Section 03 cross-reference table and the Section
+// 04 conformity row are re-aligned, the signature roles given air, and the two managers'
+// signatures reapplied. Appended as one new last layer over the package's own stack; the
+// selectors carry the full html body div.page ... chain so they win the cascade, and
+// nothing is resized on the results table or reworded.
+const S34_LAYER = '<style id="__owner-align-s1-s4">\n' +
+  '/* Owner, 16.09.2026 (alignment pass): Sections 01-04 re-aligned. One appended layer,\n' +
+  '   full html body div.page ... selectors so it wins the cascade; nothing on the results\n' +
+  '   table is resized or reworded. */\n' +
+  '/* -- Section 01 -- the info rows centre their label and value on the row; the\n' +
+  '   manufacturer\'s Macedonian line is smaller and its cell content reads left, with the\n' +
+  '   production-batch / manufacture-date / packaging-date group given room. */\n' +
+  'html body div.page div.gridrow.lk-inline > .lk{align-items:center !important}\n' +
+  'html body div.page div.gridrow.lk-inline .lk-lbl{align-self:center !important}\n' +
+  'html body div.page div.gridrow.lk-inline .lk-val{align-self:center !important}\n' +
+  'html body div.page div.gridrow.lk-inline .lk .attr-val{align-self:center !important;text-align:left !important}\n' +
+  'html body div.page div.gridrow.lk-inline .lk .attr-val .mk{font-size:5.8px !important;line-height:1.15 !important}\n' +
+  '/* -- Section 02 -- acceptance criteria reads left, centred on the row; the result\n' +
+  '   reads to the right page margin, centred on the row; the parameter and number cells\n' +
+  '   read left off the margin, centred on the row, keeping the sub-row indents of #9/#10/#11. */\n' +
+  'html body div.page div.tbl-wrap table.results tbody td{vertical-align:middle !important;padding-bottom:1px !important}\n' +
+  'html body div.page div.tbl-wrap table.results tbody td:nth-child(4){text-align:left !important;vertical-align:middle !important}\n' +
+  'html body div.page div.tbl-wrap table.results tbody td.r-cell{text-align:right !important;vertical-align:middle !important;padding-right:var(--MARGIN-H) !important}\n' +
+  'html body div.page div.tbl-wrap table.results tbody td.r-cell .r-val{text-align:right !important}\n' +
+  '/* -- Section 03 -- laboratory column left to the page margin as clean lines, CoA codes\n' +
+  '   centred on the row, parameter numbers to the right page margin, headers following\n' +
+  '   their columns, issue dates smaller and grey. */\n' +
+  'html body div.page div.tbl-wrap table.labref{table-layout:fixed !important}\n' +
+  'html body div.page div.tbl-wrap table.labref colgroup col:nth-child(2){width:286px !important}\n' +
+  'html body div.page div.tbl-wrap table.labref colgroup col:nth-child(3){width:104px !important}\n' +
+  'html body div.page div.tbl-wrap table.labref thead th:first-child,\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td:first-child{text-align:left !important;padding-left:var(--MARGIN-H) !important}\n' +
+  'html body div.page div.tbl-wrap table.labref thead th:nth-child(2),\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td.lr-mono:not(.pcell){text-align:center !important;vertical-align:middle !important}\n' +
+  'html body div.page div.tbl-wrap table.labref thead th:nth-child(3),\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td.pcell{text-align:right !important;vertical-align:middle !important;padding-right:var(--MARGIN-H) !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td .lr-lab{display:block !important;line-height:1.32 !important;text-align:left !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td .lr-lab .bisep{display:none !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td .lr-lab .mk{display:block !important;margin-left:0 !important;margin-top:1px !important;white-space:normal !important;line-height:1.25 !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td .lr-lab small{display:block !important;margin-top:1px !important;white-space:normal !important;line-height:1.2 !important;color:#7C8FA6 !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td .lr-lab small::before{content:"" !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td.lr-mono:not(.pcell){display:table-cell !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td.lr-mono:not(.pcell) .cert{display:block !important;text-align:center !important;white-space:nowrap !important;margin-top:0 !important;min-width:0 !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td.lr-mono:not(.pcell) .cert + .cert{margin-top:2px !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td.lr-mono .cert .cd{font-size:6.6px !important;font-weight:600 !important;color:#8C9BB0 !important;white-space:nowrap !important}\n' +
+  '/* -- Section 04 -- the row packs to the left: the label (two lines) left, then the\n' +
+  '   batch number in a box as tall as the label with its value centred, then the two\n' +
+  '   verdict pills beside it, their content centred. The package\'s spreading auto-margins\n' +
+  '   are removed. */\n' +
+  'html body div.page div.disp-row{align-items:stretch !important}\n' +
+  'html body div.page div.disp-row .grp{display:flex !important;flex-wrap:nowrap !important;justify-content:flex-start !important;align-items:stretch !important;gap:12px !important}\n' +
+  'html body div.page div.disp-row .grp .lk-lbl{flex:0 0 auto !important;margin:0 !important;text-align:left !important;align-self:center !important;white-space:nowrap !important}\n' +
+  'html body div.page div.disp-row .grp .lk-lbl .mk{display:block !important;margin-left:0 !important;text-align:left !important}\n' +
+  'html body div.page div.disp-row .grp .lk-lbl .mk::before{content:none !important}\n' +
+  'html body div.page div.disp-row .grp .lk-lbl .bisep{display:none !important}\n' +
+  'html body div.page div.disp-row .grp .lk-lbl + *{margin-left:0 !important}\n' +
+  'html body div.page div.disp-row .grp .disp-batch{flex:0 0 auto !important;align-self:stretch !important;display:flex !important;align-items:center !important;justify-content:center !important;text-align:center !important;min-width:104px !important;max-width:132px !important;padding:1px 10px !important;margin:0 !important;border:1px solid #C6D4E2 !important;border-radius:6px !important;background:linear-gradient(180deg,#FFFFFF 0%,#F6FAFD 100%) !important;font-size:13px !important;font-weight:700 !important;color:#1B3A5C !important;box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 1px 1.5px rgba(21,46,74,.12) !important}\n' +
+  'html body div.page div.disp-row .grp .disp-batch + *{margin-left:0 !important}\n' +
+  'html body div.page div.disp-row .grp .chip-sel,\n' +
+  'html body div.page div.disp-row .grp .chip-un{flex:0 0 auto !important;align-self:stretch !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;text-align:center !important;margin:0 !important}\n' +
+  'html body div.page div.approval-grid .ap-role{padding-top:12px !important}\n' +
+  'html body div.page div.approval-grid .ap-sign{height:52px !important}\n' +
+  'html body div.page div.approval-grid .ap-title{padding-top:3px !important}\n' +
+  'html body div.page div.approval-grid .ap-img.handwritten{position:absolute !important;left:50% !important;bottom:1px !important;max-height:52px !important;max-width:92% !important;mix-blend-mode:multiply !important;z-index:6 !important;pointer-events:none !important}\n' +
+  '</style>';
+
 const PRINT_ZEBRA_LAYER = printOpaqueLayer(base);
 console.log('print-opaque: %d gradient rule(s) converted for print',
             PRINT_ZEBRA_LAYER.split('\n').length - 3);
@@ -253,8 +334,31 @@ for (const c of data.coqs) {
   const SEL = '<span class="chip-sel"><span class="bx">\u2612</span> Conforms to Specification <span class="mk">';
   if (html.indexOf(UN) < 0) throw new Error('Section 04 conformity chip not found');
   html = html.replace(UN, SEL);
-  // append the owner layer as the new last layer (the package's own mechanism)
-  html = html.replace(/<\/head>/, OWNER_LAYER + '\n' + HB_SUP_LAYER + '\n' + PRINT_ZEBRA_LAYER + '\n' + EDGE_FADE_LAYER + '\n' + INK_LAYER + '\n</head>');
+  // Append the desk's layers as the new LAST layers in the document. The package appends
+  // its own final correction layers (__labref-ac-certgrid, __lk-shrink-fit, __sig-space)
+  // at the end of the body, not in the head — so a desk layer in the head loses to them at
+  // equal specificity. Placing the desk's layers right before </body>, after everything
+  // the package appended, is the package's own "new last layer" mechanism done correctly.
+  const DESK_LAYERS = OWNER_LAYER + '\n' + HB_SUP_LAYER + '\n' + PRINT_ZEBRA_LAYER + '\n' + EDGE_FADE_LAYER + '\n' + INK_LAYER + '\n' + S34_LAYER + '\n';
+  if (html.indexOf('</body>') < 0) throw new Error('no </body> to append the desk layers before');
+  html = html.replace('</body>', DESK_LAYERS + '</body>');
+  // Owner, 16.09.2026 (second pass): the issue date in the Section 03 code column is
+  // wrapped so the layer above can size and grey it. The package emits it as a bare text
+  // node after the code, "<b>CODE</b> · DATE"; wrapping is a markup change, so it is
+  // done here in the desk's adapter, not in the package's builder.
+  html = html.replace(/(<span class="cert"><b>[^<]*<\/b>)\s*·\s*([^<]*)<\/span>/g,
+                      '$1 <i class="cd">· $2</i></span>');
+  // The two managers' signatures are placed into their signature boxes: the QC Manager's
+  // scan into "Prepared & Approved by", the QA Manager's into "Reviewed by". Each is set
+  // just before the signature line, with the tilt the package used.
+  const sigImg = (src, deg) => '<img class="ap-img handwritten" style="transform:translateX(-50%) rotate(' + deg + ')" alt="" src="' + src + '">';
+  const putSig = (h, role, src, deg) => {
+    const anchor = '<div class="ap-sign"><div class="ap-line"></div></div><div class="ap-title">' + role;
+    if (h.indexOf(anchor) < 0) throw new Error('Section 04 signature anchor not found: ' + role);
+    return h.replace(anchor, '<div class="ap-sign">' + sigImg(src, deg) + '<div class="ap-line"></div></div><div class="ap-title">' + role);
+  };
+  html = putSig(html, 'QC Manager', SIG.qc, '-1.5deg');
+  html = putSig(html, 'QA Manager', SIG.qa, '2deg');
   // Owner, 16.09.2026: "in cases when you have actually a parameter that's not tested —
   // and that is in the initial quality control testing of all tranche batches — you will
   // put NT as the analysis result, and also put it in brackets." Aflatoxin B1 (#10.1) and
