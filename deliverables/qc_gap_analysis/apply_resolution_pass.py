@@ -36,6 +36,8 @@ guessed at. Writing is additive: a value the register already carries is never r
 import argparse, csv, json, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, "tracker"))
+from tracker_data import nkey                                          # noqa: E402
 SRC = os.path.join(HERE, "coq_artifact_data.json")
 PASS = os.path.join(HERE, "cell_resolution_2026-09-09.tsv")
 GROUPS = {
@@ -149,7 +151,13 @@ def apply(data, certs):
         if block is None:
             missing.append(("/".join(lot), code))
             continue
-        have = [c for c in block["certs"] if str(c.get("code") or "").strip() == code]
+        # The pass writes an Institute code with hyphens (2156-2025, 163-0271-25) and the
+        # register with slashes (2156/2025, 163/0271/25) — the same document, two
+        # spellings. Matched on the raw string it is written twice, and a second
+        # certificate on a lot is a second testing round: two internal certificates
+        # appeared in the series that no testing had produced. The desk's own fold,
+        # tracker_data.nkey, is what a document is compared by everywhere else.
+        have = [c for c in block["certs"] if nkey(c.get("code")) == nkey(code)]
         if have:
             new = {k: v for k, v in vals.items() if k not in (have[0].get("vals") or {})}
             if new:

@@ -24,6 +24,8 @@ and the reason are listed in `reads_microbiology.json` under `_held`.
 import argparse, json, os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, "tracker"))
+from tracker_data import nkey                                          # noqa: E402
 SRC = os.path.join(HERE, "coq_artifact_data.json")
 IN = os.path.join(HERE, "intake_ijz_2026-09-16")
 IPH = "IPH — Institute of Public Health"
@@ -78,7 +80,7 @@ def main(argv):
         if block is None:
             missing.append((pn, cb, code))
             continue
-        have = [c for c in block["certs"] if str(c.get("code") or "").strip() == code]
+        have = [c for c in block["certs"] if nkey(c.get("code")) == nkey(code)]
         if have:
             # idempotent, and additive: a value the register already carries is never
             # rewritten, a value it lacks is added. That is what lets a figure held for a
