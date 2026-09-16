@@ -644,28 +644,30 @@ ITEMS = [
      "coq_artifact_data.json reg[OPM1024]; design_handoff/out/_build_report.txt; "
      "design_handoff/toolchain/coq_check.js A11"),
 
-    ("OI-46", "Result read", "open",
-     "Ten microbiology cells were read once from the certificate database and are held until a page is read twice",
-     "The intake of 16.09.2026 took twenty-three Institute of Public Health certificates out of "
-     "the Head of QC's Drive folder 1SmOicCRa8KEqoB-YlCojdap161YMQ-Di and into the release "
-     "register \u2014 documents that the register, master_coa_table.tsv, the spec parameter "
-     "listing, the RAGFlow corpus and the RAGFlow container all lacked. It filled 145 cells that "
-     "had been printing a red [ \u2014 ]. It is ONE read of the page, not the desk's usual two, "
-     "because the owner asked for the fastest route that still tells the truth. Eight cells did "
-     "not render unambiguously \u2014 an exponent or a bound lost \u2014 and two more read as "
-     "figures that would put a released batch out of specification while the laboratory's own "
-     "verdict on the same page is conforms: 73/0116/26 (P060132) #9.2 as 3.9 \u00d7 10\u2074, "
-     "and 364/0694/26 (P060382) #9.2 as 1.8 \u00d7 10\u2074.",
-     "None of the ten is written. The desk does not put a figure on a certificate of quality on "
-     "one read of a page it could not render, and never one that would take a released batch out "
-     "of specification against that page's own conclusion. Every held cell, with the reason, is "
-     "in intake_ijz_2026-09-16/reads_microbiology.json under _held.",
-     "Read the ten cells a second time \u2014 or tell the desk the figures, which is faster. The "
-     "two contested counts are the ones that matter: if 3.9 \u00d7 10\u2074 and 1.8 \u00d7 "
-     "10\u2074 are what the pages say, P060132 and P060382 have a conformity question, not a "
-     "transcription one.",
-     "intake_ijz_2026-09-16/reads_microbiology.json; tracker/DRIVE_DATABASE_INTAKE_2026-09-16.md; "
-     "apply_ijz_intake.py"),
+    ("OI-46", "Result read", "ruled",
+     "Ten microbiology cells were read once and held; the Head of QC's own pass had all five "
+     "values for every one of them",
+     "The intake of 16.09.2026 read twenty-three Institute of Public Health certificates off "
+     "the scans and held ten cells whose figures the page did not render \u2014 an exponent or a "
+     "bound lost. That left certificates printing two or three of the five microbiological "
+     "purity parameters and leaving the rest blank. The Head of QC objected the same day: a "
+     "report determines all five on one sample, so a batch cannot have one and not the "
+     "others. He was right, and the values were already on the desk \u2014 "
+     "cell_resolution_2026-09-09.tsv, his own reading pass, carries all five for every lot, "
+     "with the document, its date and its laboratory.",
+     "apply_resolution_pass.py makes the pass the source and the scan the cross-check rather "
+     "than the other way round: 66 certificates written into the release register and 39 "
+     "columns added to certificates already there, taking #9 (five values), #11 (four \u2014 the "
+     "order confirmed against the register's own long-standing 752/2025 row) and #12 (one "
+     "determination over a uniform panel). #10 is not taken, because its rows carry one, "
+     "three or five values and a mapping that is not certain is not a mapping. Where the two "
+     "readings can be compared they agree, including on the figure this desk had held as "
+     "contested: the pass reads 73/0116/26 TYMC as 3,9 \u00d7 10\u2074 too. **No certificate prints a "
+     "partial panel now**, and verify_panels.py is the standing check that none may.",
+     "Nothing. Two rows of the pass are still held and named in the script's output: "
+     "305-0549-26 carries ten values where five are wanted, and 85/2026 five where four are.",
+     "cell_resolution_2026-09-09.tsv; apply_resolution_pass.py; verify_panels.py; "
+     "intake_ijz_2026-09-16/reads_microbiology.json"),
 
     ("OI-47", "Ingestion", "open",
      "Twenty-three certificates in the owner's database folder were never ingested, and every desk file recorded their absence as a coverage gap",
@@ -788,29 +790,33 @@ ITEMS = [
      "FB032601; ППК26127, 21.07.2026 [CNP]"),
 
     ("OI-17", "Result", "open",
-     "Five microbiological counts exceed the Ph. Eur. 5.1.4 band and five sit inside it — "
-     "and one word about the #9.2 criterion would settle every one of them",
-     "Judged as the desk judges a counted limit — ≤ 10ⁿ against 2 × 10ⁿ — GG1024_01, "
-     "OPM052501, GP052501, HPA052501 and CJ062501/2 are out of specification on TYMC; "
-     "GG1024_02, HPA1024_01, GP0824_03, CJ052501/01 and now SCR012603 (P060382, 1.8 × 10⁴ "
-     "on 364/0694/26, taken in from the certificate database on 16.09.2026) are in the "
-     "undetermined band. Every one of the ten is TYMC against the ≤ 10⁴ CFU/g that all 172 "
-     "certificates print for #9.2, and every laboratory that issued them declared the "
-     "sample conforms. The Head of QC observed on 16.09.2026 that the printed "
-     "specification may be 10⁵. If it is, all ten clear at once with margin, the red and "
-     "amber marking lifts, and P060132's held TYMC reading (3.9 × 10⁴, OI-46) becomes an "
-     "ordinary in-specification result. The register has been carrying the question in its "
-     "own words for some time: four of these cells state \u201cUNDETERMINED — pending the "
-     "QCSP 001 reading\u201d.",
+     "Thirteen lots exceed a criterion — every one of them on #9.2, and on nothing else in "
+     "the whole set",
+     "Judged as the desk judges a counted limit, \u2264 10\u207f against 2 \u00d7 10\u207f (Ph. Eur. 5.1.4): "
+     "**eight lots are out of specification** \u2014 P050092 4.2 \u00d7 10\u2074, P050212 4.9 \u00d7 10\u2074, "
+     "P060132 3.9 \u00d7 10\u2074, P050152 3.6 \u00d7 10\u2074, P050132 3.3 \u00d7 10\u2074, P050182 2.6 \u00d7 10\u2074, "
+     "P060332 and P060352 2.2 \u00d7 10\u2074 \u2014 and **five are in the undetermined band**: P050012 "
+     "1.9 \u00d7 10\u2074, P060382 1.8 \u00d7 10\u2074, P050162 1.7 \u00d7 10\u2074, P050052 1.5 \u00d7 10\u2074, P050072 "
+     "1.2 \u00d7 10\u2074. Thirteen lots, and **every one is #9.2 (TYMC) against the \u2264 10\u2074 CFU/g all "
+     "172 certificates print**. Across 3,956 determination cells no other parameter exceeds "
+     "its criterion anywhere \u2014 not TAMC against \u2264 10\u2075, not the bile-tolerant count, not a "
+     "metal, not a mycotoxin, not a pesticide. Every laboratory that issued the thirteen "
+     "declared the sample conforms. The Head of QC observed on 16.09.2026 that the printed "
+     "specification may be 10\u2075; at 10\u2075 the maximum acceptable count is 2 \u00d7 10\u2075 and all "
+     "thirteen clear with a fourfold margin. Four of the register cells have been saying "
+     "\u201cUNDETERMINED \u2014 pending the QCSP 001 reading\u201d for some time.",
      "Printed red bold and amber bold respectively, and named in each lot's STATUS. "
-     "mark_microbial_band.py now states the rule over every counted row rather than leaving "
-     "it to the row that happened to raise it, and it defers to the desk's own word where "
-     "the register already calls a cell out of specification or undetermined. Nothing about "
-     "the criterion was changed: the certificate prints what QCSP 001 says, ≤ 10⁴.",
-     "Is the #9.2 (TYMC) criterion in QCSP 001 10⁴ or 10⁵ CFU/g? That single answer closes "
-     "this item either way. If 10⁴ stands, each out-of-specification count needs an "
-     "investigation record and the five undetermined need a disposition.",
-     "Ph. Eur. 5.1.4; 10 lots; QCSP 001 #9.2; mark_microbial_band.py"),
+     "mark_microbial_band.py states the rule over every counted row and defers to the "
+     "register's own word where it already calls a cell out of specification or "
+     "undetermined. Nothing about the criterion was changed: the certificate prints what "
+     "QCSP 001 says.",
+     "Is the #9.2 (TYMC) criterion in QCSP 001 10\u2074 or 10\u2075 CFU/g? A specification that "
+     "thirteen batches fail on one parameter and nothing else, against thirteen laboratory "
+     "declarations of conformity, is more likely a criterion transcribed one power out than "
+     "thirteen excursions \u2014 but that is the Head of QC's to say, not the desk's. If 10\u2074 "
+     "stands, each of the eight needs an investigation record and the five need a "
+     "disposition.",
+     "Ph. Eur. 5.1.4; 13 lots, all #9.2; QCSP 001; mark_microbial_band.py"),
 
     ("OI-18", "Document content", "ruled",
      "The same assertion printed bilingually on some certificates and in English on others",

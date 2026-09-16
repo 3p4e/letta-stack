@@ -136,3 +136,58 @@ python3 deliverables/qc_gap_analysis/design_handoff/toolchain/merge_tranches_v40
 
 Both appliers are idempotent: a certificate whose code is already in the register is
 skipped, and a row that already carries a result is left alone.
+
+---
+
+## 8 · The objection that corrected the intake, the same day
+
+The Head of QC, on reading §4:
+
+> "It's not possible that the same batch has only one parameter for microbiological purity
+> stated as absent and the others missing. If there are values for one parameter of the
+> microbiological purity, there are results and values for all of them from that batch."
+
+He is right, and it is a property of the document rather than a preference: a
+microbiological purity report determines all five parameters on one sample and prints them
+in one table. Holding an unreadable figure cell by cell produced certificates printing two
+of five and leaving three blank — a page that claims the desk holds part of a result that
+does not come in parts.
+
+**And the values were already on the desk.** `cell_resolution_2026-09-09.tsv` — the Head of
+QC's own reading pass over 50 lots and twelve determination groups — carries, for each, the
+document to cite, its date, its laboratory and *what the document prints*: every value the
+page holds, in determination order. All five microbiology parameters, for every lot in §4.
+
+So the pass is the source and the scan is the cross-check, which is the right way round.
+`apply_resolution_pass.py` takes:
+
+* **#9** — five values, 9.1 … 9.5, in order (49 of 50 rows carry exactly five);
+* **#11** — four values, 11.1 … 11.4. The order is **confirmed, not assumed**: the pass
+  writes `752-2025` as `0,01; 0,016; 0,014; 0,005`, and the register has carried that
+  certificate as R 0.01, S 0.016, T 0.014, U 0.005 since long before this work;
+* **#12** — one determination over a panel that reads the same on every line.
+
+**#10 is not taken.** Its rows carry one, three or five values depending on what the
+laboratory printed, and a mapping that is not certain is not a mapping.
+
+**66 certificates written into the register, 39 columns added to certificates already
+there, 2 rows held and named.** Where the two readings can be compared they agree —
+including on the figure §4 had held as contested: the pass reads `73/0116/26` TYMC as
+`3,9 × 10⁴` as well.
+
+| | §4 | after the pass |
+| --- | ---: | ---: |
+| Tranche 1 retest — cells with no result | 31 | **20** |
+| Tranche 2 retest | 108 | **72** |
+| all 172 certificates | 1,330 | **1,129** |
+| certificates printing a partial panel | 9 | **0** |
+
+`verify_panels.py` is the standing check that none may print one again — over the desk's
+export, so a partial panel is caught before a certificate is built from it.
+
+**What the recount showed.** With every panel whole, thirteen lots now exceed their
+criterion, and **every one of them is #9.2 (TYMC) against ≤ 10⁴ CFU/g**. Across 3,956
+determination cells nothing else in the set exceeds its own criterion — not TAMC against
+≤ 10⁵, not a metal, not a mycotoxin, not a pesticide — and every laboratory that issued the
+thirteen declared the sample conforms. That is OI-17, and it is now a question about one
+number in QCSP 001 rather than about thirteen batches.
