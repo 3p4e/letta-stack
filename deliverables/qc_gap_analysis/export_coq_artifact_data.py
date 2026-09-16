@@ -518,7 +518,13 @@ def main(out):
             _pp = (_r.get("P lot") or "").strip()
             if re.match(r"^P\d{6}$", _pp):
                 _pass.setdefault((CQ.BI.batch_key(_pp), _no), _v[0])
-        _cited, _filled, _carried = 0, 0, 0
+        _cited, _filled, _carried, _inhouse_filled = 0, 0, 0, 0
+        try:
+            import inhouse_certificates as _IHC
+            _INH = _IHC.results()
+        except Exception as _e_ih:
+            print("in-house certificates not read: %s" % _e_ih)
+            _INH = {}
 
         def _icoa_row(_c, _kind):
             for _nm in filter(None, (_c.get("pp"), _c["cb"])):
@@ -575,12 +581,28 @@ def main(out):
                 if (_rr.get("res") or "\u2014") == "\u2014":
                     _val = _pass.get((CQ.BI.batch_key(_c["cb"]), _rr["no"])) \
                         or (_pass.get((CQ.BI.batch_key(_c["pp"]), _rr["no"])) if _c.get("pp") else None)
+                    # The company's own certificate of analysis, where the 09.09 pass does
+                    # not reach: 41 of them have been in the page-text cache since
+                    # 30.08.2026 and nothing on the desk had read them, which is why 117
+                    # certificates printed "to be performed (in house)" for #1, #3 and #7
+                    # with the record on disk (OI-41). inhouse_certificates.py supplies only
+                    # a page an EXTERNAL certificate of the same lot confirms on its own
+                    # loss on drying or assay, and never #2: no page of the 41 states a
+                    # microscopic identification.
+                    if not _val:
+                        _ih = _INH.get(CQ.BI.batch_key(_c.get("pp") or "")) \
+                            or _INH.get(CQ.BI.batch_key(_c["cb"]))
+                        if _ih:
+                            _val = (_ih["values"] or {}).get(_rr["no"])
+                            if _val:
+                                _inhouse_filled += 1
                     if _val:
                         _rr["res"] = _val
                         _filled += 1
-        print("Internal CoA: %d determination(s) now cite one, %d result(s) unblocked, "
+        print("Internal CoA: %d determination(s) now cite one, %d result(s) unblocked "
+              "(%d from the company's own certificate of analysis, %d lots on file), "
               "%d carried row(s) re-cited to the release round's certificate"
-              % (_cited, _filled, _carried))
+              % (_cited, _filled, _inhouse_filled, len(_INH), _carried))
     except Exception as _e:
         print("Internal CoA register not applied: %s" % _e)
 
