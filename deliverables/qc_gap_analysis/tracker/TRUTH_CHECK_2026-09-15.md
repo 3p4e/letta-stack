@@ -47,6 +47,15 @@ with the long tab's 3,956 rows agreeing with the wide one cell for cell and the 
 carrying the same rows as the files. **No finding.** Separately, all 1,497 results printed on
 the 73 compiled drafts were compared with the compilation: no difference.
 
+**Re-run on v35 (16.09.2026): 21 findings, the same items — no new one.** Three things in
+the build moved the counts and nothing moved the verdicts. The comparison is smaller because
+thirteen release certificates stopped citing an IJZ-MB microbiology certificate issued after
+them (T3 cited rows 2,016 → 1,866; results compared 1,707 → 1,557; T5 rows 1,637 → 1,497;
+T7 cells 1,575 → 1,551). The Farmahem loss-on-drying codes read `031-2-ГС/26` where they read
+`031-2-LoD/26`, which is the spelling the pages print (`document_codes.py`). And the
+compilation and references tabs were rebuilt around both. T9 gates the compilation as before:
+172 certificates, 3,956 determination cells, 3,956 long rows, no finding.
+
 **Residual findings on v33 (21):** the two open items above (T3, T5) and the two starred lots
 whose register block carries no P lot (T1; OI-28). The generated report follows.
 
@@ -69,17 +78,17 @@ the recalculated workbook (tracker and CoQ Register), the references table and e
 | T1 results | 282 |
 | T2 instances | 94 |
 | T2 results | 282 |
-| T3 cited rows | 2016 |
+| T3 cited rows | 1866 |
 | T3 column map entries | 17 |
-| T3 results compared | 1707 |
+| T3 results compared | 1557 |
 | T4 results compared | 1414 |
 | T4 tracker citations | 1964 |
 | T5 certificates with no tracker lot | 15 |
-| T5 rows | 1637 |
+| T5 rows | 1497 |
 | T6 cited documents | 359 |
 | T6 drafts | 73 |
 | T6 results compared | 1497 |
-| T7 cells | 1575 |
+| T7 cells | 1551 |
 | T7 certificates | 161 |
 | T8 numbered rows | 161 |
 | T9 certificates | 172 |
@@ -123,13 +132,13 @@ the recalculated workbook (tracker and CoQ Register), the references table and e
 ### T5 · certificate cites a document the tracker does not cite for the lot (#8) — 10
 
 * GG1024: ППК25008; tracker cites []
-* P060112: 031-2-LoD/26; tracker cites []
-* P060122: 031-5-LoD/26; tracker cites []
-* P060132: 031-4-LoD/26; tracker cites []
+* P060112: 031-2-ГС/26; tracker cites []
+* P060122: 031-5-ГС/26; tracker cites []
+* P060132: 031-4-ГС/26; tracker cites []
 * J31122501: 100-2-ГС/26; tracker cites ['100/2/K/26', '100/3/K/26']
 * GG1024: ППК25008; tracker cites []
-* P060112: 031-2-LoD/26; tracker cites []
-* P060122: 031-5-LoD/26; tracker cites []
-* P060132: 031-4-LoD/26; tracker cites []
+* P060112: 031-2-ГС/26; tracker cites []
+* P060122: 031-5-ГС/26; tracker cites []
+* P060132: 031-4-ГС/26; tracker cites []
 * J31122501: 100-2-ГС/26; tracker cites ['100/2/K/26', '100/3/K/26']
 
