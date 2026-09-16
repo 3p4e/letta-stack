@@ -46,7 +46,7 @@ The certificate cites the document as the one that covers the determination. Eve
 | CoQ-PP_26-026 | initial release — predicted | P050202 | #9.2 | TYMC | 4.2 × 10³ | 1009/1813/25 (08.10.2025) | 1155/2056/25 = 400 (24.11.2025) |
 | CoQ-PP_26-026 | initial release — predicted | P050202 | #9.3 | Bile-tolerant GNB | < 10³ and > 10² | 1009/1813/25 (08.10.2025) | 1155/2056/25 = < 10 (24.11.2025) |
 | CoQ-PP_26-007 | initial release | P050022 | #4 | Total Δ9-THC | 23.79 | ППК25139 (22.05.2025) | ППК25174 = 23.19 (10.07.2025) |
-| CoQ-PP_26-056 | initial release — predicted | J31112501 | #4 | Total Δ9-THC | 25.27 | 051-5-K/26 (04.03.2026) | 100-1-K/26 = 20.21 (09.04.2026) |
+| CoQ-PP_26-056 | initial release — predicted | J31112501 | #4 | Total Δ9-THC | 25.27 | 051-5-К/26 (04.03.2026) | 100-1-К/26 = 20.21 (09.04.2026) |
 | CoQ-PP_26-007 | initial release | P050022 | #5 | Total CBD | 0.10 | ППК25139 (22.05.2025) | ППК25174 = 0.07 (10.07.2025) |
 
 ### carried forward — 43
@@ -137,8 +137,8 @@ None, over every determination of every certificate. Every cited document was on
 |---|---|---|---|---|
 | GP062501 (P050202) | 1155/2056/25 | 24.11.2025 | IPH microbiology | 9.1 9.2 9.3 9.4 9.5 |
 | GP0824_02 (P050022) | ППК25174 | 10.07.2025 | UKIM CNP potency | 4 5 8 |
-| J31112501 | 100-1-K/26 | 09.04.2026 | Farmahem — cannabinoids | 4 5 6 |
 | J31112501 | 100-1-ГС/26 | 09.04.2026 | Farmahem — loss on drying | 8 |
+| J31112501 | 100-1-К/26 | 09.04.2026 | Farmahem — cannabinoids | 4 5 6 |
 | J31122501 | 100-3-ГС/26 | 09.04.2026 | Farmahem — loss on drying | 8 |
 | J31122501 | 100-3-К/26 | 09.04.2026 | Farmahem — cannabinoids | 4 5 6 |
 | J31122501 | 1625/2026 | 23.04.2026 | IPH mycotoxins, metals, pesticides | 10.2 12 |

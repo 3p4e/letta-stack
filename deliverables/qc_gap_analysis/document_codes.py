@@ -24,6 +24,33 @@ are genuine, do not transliterate — applies to `ГС` exactly as it does to th
 own file names carry `LoD` and one earlier extraction carries `GS`, which is how both
 spellings reached the desk; the page outranks both.
 
+## The cannabinoid letter, the same repair — 16.09.2026
+
+The design desk's render of the set found the `ГС` series clean and the `К` series not:
+**25 codes carrying a Latin `K` (U+004B) against 200 carrying the Cyrillic `К` (U+041A)**,
+one document reading `051-6-ГС/26` beside `051-6-K/26` — the same campaign, the same item,
+two alphabets. Nine distinct codes on the desk are affected, all in the February 2026
+campaigns: `031-2/4/5-K/26` and `051-1…6-K/26`.
+
+**This is a homoglyph, not a second convention**, and the pages settle it the way they
+settled `ГС`:
+
+    051-1-K-26 (J31102501)  prints  Извештај број: 051-1-К/26   — Cyrillic, three times
+    051-4-K-26 (KC102501)   prints  Извештај број: 051-4-К/26   — Cyrillic
+    both titled  «Извештај од анализа на канабиноиди во цвет од канабис»
+
+One page of the nine, `051-6-K-26`, does read a Latin `K` — on a page whose text is
+visibly homoglyph-damaged elsewhere in the same lines (`Извештај брoj` for `број`,
+`канабинонди` for `канабиноиди`, `CBDCA` for `CBDA`). A laboratory does not change the
+letter of its own series for one report of six; a reader — human or machine — substitutes
+a Latin letter for a Cyrillic one that looks identical. So the fold is a CORRECTION toward
+what the page prints, which is the opposite of transliterating: `К` is канабиноиди, as `М`
+is микотоксини and `ГС` губитоци при сушење.
+
+The fold is deliberately narrow — only the analysis-letter slot of the Farmahem
+`<campaign>-<item>-<letter>/<year>` shape, only for a bare `K` or `M`. It cannot touch a
+number, a laboratory whose codes are genuinely Latin, or any other field.
+
 The second family is a note that leaked into a code field. The register's row 32 holds
 
     2156/2025 (microbiology sub-report lab-ref not distinctly captured in OCR text)
@@ -52,6 +79,13 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 # The Farmahem loss-on-drying analysis letter, read off the pages on 16.09.2026.
 _FHM_LOD = re.compile(r"^(\d{2,3}-\d{1,2})-(?:GS|LoD|LOD|lod|gs)([-/]\d\d)$")
 
+# The cannabinoid and mycotoxin letters, in the same slot of the same shape. A Latin K or
+# M there is the Cyrillic К or М typed with the homoglyph — the pages print Cyrillic (see
+# the module docstring). Only a BARE single Latin letter in the analysis slot matches, so
+# a genuinely Latin code elsewhere, and the ГС pattern above, are untouched.
+_FHM_LATIN = re.compile(r"^(\d{2,3}-\d{1,2})-([KM])([-/]\d\d)$")
+_LATIN_TO_CYR = {"K": "\u041a", "M": "\u041c"}
+
 # A reader's note that leaked into a code field: the parenthetical says something about
 # the READING, not about the sample. Kept as a pattern rather than a list of codes so a
 # second one cannot slip past.
@@ -72,6 +106,12 @@ def canon(code):
     >>> canon("2156/2025 (microbiology sub-report lab-ref not distinctly captured in OCR text)")
     '2156/2025'
 
+    The cannabinoid and mycotoxin letters take the same repair — the Latin homoglyph
+    folds to the Cyrillic letter the page prints:
+
+    >>> canon("051-6-K/26"), canon("031-2-K/26"), canon("197-4-M/26")
+    ('051-6-К/26', '031-2-К/26', '197-4-М/26')
+
     A code the laboratory prints this way is returned unchanged, and so is a
     parenthetical that names the sample rather than the reading:
 
@@ -91,6 +131,9 @@ def canon(code):
     m = _FHM_LOD.match(s)
     if m:
         return "%s-ГС%s" % (m.group(1), m.group(2))
+    m = _FHM_LATIN.match(s)
+    if m:
+        return "%s-%s%s" % (m.group(1), _LATIN_TO_CYR[m.group(2)], m.group(3))
     return s
 
 
