@@ -4,7 +4,7 @@ Every finding the desk has raised and cannot itself settle, with the evidence
 behind it and the decision being asked for. Built by `open_items.py`; the same
 register is the **Open Items** sheet of the workbook.
 
-**28 open · 3 marked on the certificate**
+**31 open · 3 marked on the certificate**
 
 ## Specification
 
@@ -232,15 +232,51 @@ register is the **Open Items** sheet of the workbook.
 
 ## Certificate content
 
-### OI-38 · Twelve reissues carry the initial microbiology while a later campaign result is on file
+### OI-38 · Fourteen reissues carry the initial result while a later one for the same lot is on file
 
-*State:* **open** · *Evidence:* intake_IJZMB_2026-09-16/carried_microbiology_2026-09-16.csv (26 rows, 12 reissues); build_coq_schedule.py ST_CARRIED; the ruling of 15.09.2026
+*State:* **open** · *Evidence:* intake_IJZMB_2026-09-16/carried_microbiology_2026-09-16.csv (26 rows, 12 reissues); tracker/RESULT_SUPERSESSION_2026-09-16.md section 1 (31 rows, 14 reissues); build_coq_schedule.py ST_CARRIED; the ruling of 15.09.2026
 
-**Found.** Since 16.09.2026 the IJZ-MB campaign certificates of 25/26.08.2026 are rows of the release register (intake_IJZMB_2026-09-16), so the desk now holds, for 29 lots, a microbiology result LATER than the release one. A reissue rests on its Farmahem campaign (220- or 227-), whose scope is the assay and the mycotoxins; microbiology is outside that scope, so the reissue carries the initial certificate's result — the owner's ruling of 15.09.2026, correctly applied. The consequence is that twelve reissues will print a microbiology result that a newer certificate for the same lot contradicts, and not narrowly: CoQ-PP_26-144 (P050012) carries TAMC 2.1 × 10⁴ where 561/1092/26 of 01.09.2026 reads < 10, and CoQ-PP_26-153 (P050132) carries TYMC 3.3 × 10⁴ where 560/1091/26 reads < 10. The 26 rows are listed in intake_IJZMB_2026-09-16/carried_microbiology_2026-09-16.csv. The twelve RELEASE certificates that print the same release values are not in question: a release certificate states the release testing, and a later retest does not belong on it.
+**Found.** Since 16.09.2026 the IJZ-MB campaign certificates of 25/26.08.2026 are rows of the release register (intake_IJZMB_2026-09-16), so the desk now holds, for 29 lots, a microbiology result LATER than the release one. A reissue rests on its Farmahem campaign (220- or 227-), whose scope is the assay and the mycotoxins; microbiology is outside that scope, so the reissue carries the initial certificate's result — the owner's ruling of 15.09.2026, correctly applied. The consequence is that twelve reissues will print a microbiology result that a newer certificate for the same lot contradicts, and not narrowly: CoQ-PP_26-144 (P050012) carries TAMC 2.1 × 10⁴ where 561/1092/26 of 01.09.2026 reads < 10, and CoQ-PP_26-153 (P050132) carries TYMC 3.3 × 10⁴ where 560/1091/26 reads < 10. The 26 rows are listed in intake_IJZMB_2026-09-16/carried_microbiology_2026-09-16.csv. The twelve RELEASE certificates that print the same release values are not in question: a release certificate states the release testing, and a later retest does not belong on it. The sweep of 16.09.2026 (result_supersession.py) then asked the same question of all seventeen determinations the register carries and found the shape is not confined to microbiology: 31 rows on FOURTEEN reissues, 29 of them the twelve microbiology reissues above and TWO of them loss on drying — CoQ-PP_26-093 (P050022) carries 7.21 % from ППК25139 of 22.05.2025 where ППК25174 of 10.07.2025 reads 6.51 %, and CoQ-PP_26-150 (J31112501) carries 8.4 % from 051-5-GS/26 of 02.03.2026 where 100-1-GS/26 of 09.04.2026 reads 7.6 %. Neither superseding certificate is a stability timepoint. The sweep reports its coverage beside every zero: no lot on file carries a second HEAVY-METAL certificate (45 documents, 0 lots with two), so #11 could not be compared at all and its silence is a gap in the record rather than a clean result; aflatoxin B1, ochratoxin A and the pesticide panel were comparable on one lot each. Total aflatoxins over 30 lots, Total CBN over 12 and Salmonella and E. coli over 14 each are real zeros. One more consequence the owner should weigh with this: for THIRTEEN lots the campaign certificate is the ONLY microbiology on file. Until 16.09.2026 those lots' RELEASE certificates printed it, which put a document of 31.08 or 01.09.2026 on a certificate dated 06.06, 07.07 or 13.07.2026 — impossible, and now fixed: a retest-only document can no longer stand behind a release result, so those thirteen release certificates print nothing for #9.1-#9.5. If the ruling here is CARRY THE INITIAL, their reissues print nothing either and the thirteen lots have no microbiology on any certificate of quality at all. If it is PRINT THE LATEST, the campaign result lands on the reissue, which is the only certificate dated after it. The thirteen are BSS1024_01/2, CC112501, FB012603, FB012603V, FB112501, GG112501, GRC102501/1, J31112501, OPM112501, SCR012601, SCR022601, SJ102501 and WED102501.
 
 **The desk.** Nothing on the certificates. The campaign results are in the register, on the tracker and in the compilation, so the newer result is visible everywhere the desk shows its working; what a controlled document prints is the owner's to rule, not a defect to repair silently. The IJZ-MB delivery is also a different sampling from the tranche it would be printed on — 25/26.08.2026 against 12–14.08 (Tranche 2) and 19–21.08 (Tranche 3) — so it is not simply 'the same campaign, later certificate'.
 
-**Needed.** Should a 12-month reissue print the LATEST microbiology on file — the IJZ-MB campaign of 25/26.08.2026 — instead of carrying the initial result, given that the microbiology was sampled on a different day from the Farmahem campaign the reissue rests on? And if it should, does the reissue then cite two samplings on one certificate?
+**Needed.** When a reissue carries a determination forward because its campaign did not retest it, should it carry the INITIAL result or the LATEST result on file? For microbiology that is the IJZ-MB campaign of 25/26.08.2026, sampled on a different day from the Farmahem campaign the reissue rests on; for loss on drying it is an ordinary repeat test by the same laboratory. If the answer is the latest, does the reissue then cite two or three samplings on one certificate?
+
+## Batch identity
+
+### OI-39 · Two register blocks carry two sublots each, and the certificate prints one of them
+
+*State:* **open** · *Evidence:* tracker/RESULT_SUPERSESSION_2026-09-16.md section 2; the register blocks J31122501 (10 certificates) and JD112501 (2); tracker/batch_dates.csv rows 61 and 64
+
+**Found.** The sweep of 16.09.2026 (result_supersession.py, check `parallel`) looked for a block holding two certificates of the SAME testing on the SAME day that report DIFFERENT results. Over 93 blocks there are two, and both are unmistakable. **J31122501** (Jokerz 31, P060262) holds three such pairs: the microbiology of 07.04.2026, where 231/0394/26 names its sample Рачно тримиран цвет (hand-trimmed flower) and reads TAMC 850 while 230/0393/26 names Тримиран цвет (trimmed flower) and reads 1900; the Farmahem cannabinoids of 09.04.2026, 100-2-К/26 at 19.84 % against 100-3-К/26 at 21.84 %; and the IJZ mycotoxins and metals of 23.04.2026, 1628/2026 against 1625/2026. The documents themselves say these are two products of one cultivation batch, tested in parallel. **JD112501** (Jelly Donutz, P060212) holds one pair: ППК26063 and ППК26065 of 11.05.2026, 19.64 % against 13.93 % total THC — six percentage points apart, which is not one sample read twice. The owner's batch list gives each cultivation batch exactly one P lot (J31122501 = P060262, JD112501 = P060212), so the register has no second lot number to file the second sublot under.
+
+**The desk.** Nothing invented. testing_series.rounds() treats two documents of one day as one testing period — right when they describe one sample — so both sit in the release round and the certificate of quality prints the first: 231/0394/26, 100-2-К/26, 1628/2026 and ППК26063. The tracker shows BOTH: J31122501 carries 100-2/1628/231 and 100-3/1625/230 as separate testing instances, JD112501 carries ППК26063 and ППК26065, so nothing is hidden anywhere the desk shows its working. What the certificate of quality does not say is WHICH sublot it certifies.
+
+**Needed.** Are J31122501 and JD112501 each one lot or two? If two, what P lot number does the second carry, and does it need its own certificate of quality — which would make the four documents the certificates do not print (230/0393/26, 100-3-К/26, 1625/2026, ППК26065) the second lot's record rather than unused results? If one, which of each pair is the lot's result?
+
+## Document identity
+
+### OI-40 · Six lots hold two register rows for one testing, the results on the composite row
+
+*State:* **open** · *Evidence:* register rows 123/124, 127/128, 131/132, 135/136, 139/140, 163/165; tracker/HANDOVER_RESPONSE_2026-09-16.md §2.2
+
+**Found.** The audit of 16.09.2026 flagged six document codes of the form "PP CoA #027 / ППК25370" — an in-house certificate number and a Center for Natural Products number in one cell. Reading the register shows why it matters: EVERY one of the six also exists as a bare ППК row on the same lot, with its own EARLIER date and NO results. P050282 row 123 "PP CoA #027 / ППК25370" of 21.01.2026 carries THC 8.02, CBD 0.04 and loss on drying 9.68; row 124 "ППК25370" of 28.11.2025 carries nothing. The same shape on P050292/ППК25378 and P050302/ППК25379 (bare rows 12.12.2025), P050312/ППК25380, P050322/ППК25381 and P060052/ППК26005. So for these six lots the results sit on the composite row and the row that names the external certificate alone is empty — and the certificate of quality therefore prints "PP CoA #027 / ППК25370" dated 21.01.2026 as its document.
+
+**The desk.** Nothing changed. document_codes.py canonicalises SPELLING only and leaves these composites exactly as the register writes them: deciding which of two rows is the certificate, and which date the certificate of quality should cite, is not a spelling. The six are listed here with their rows so the owner rules on the record.
+
+**Needed.** For these six lots, which row is the certificate the certificate of quality should cite — the Center for Natural Products certificate on its own date, or the in-house certificate of 21.01.2026 that carries the results? And should the two rows be one row, with the in-house number as a cross-reference?
+
+## Document content
+
+### OI-41 · Eighty-two certificates print no result for the three determinations done in-house
+
+*State:* **open** · *Evidence:* 44 lots, 82 certificates, 246 determination rows; build_coq_schedule.ST_ICOA; tracker/HANDOVER_RESPONSE_2026-09-16.md §2.1
+
+**Found.** Determinations #1 Identification A, #2 Identification B and #7 Foreign matter are performed in the Purely Plant laboratory on every batch. On 82 of the 172 certificates — 44 lots — all three print nothing: the row cites the lot's internal certificate and the laboratory, and the result reads "—" with the status "to be performed — see route". The other 90 certificates print Conforms. The desk is not failing to find the internal certificate (it cites one on all 172); it has no RECORD OF THE RESULT for those 44 lots, and rule six forbids printing a result that has not been certified. The audit of 16.09.2026 read the same 82 as a builder fault and counted 41 of them; it is not a builder fault and it is 82.
+
+**The desk.** Printed as the desk holds it: the determination named, the internal certificate cited, the result blank and the route stated. Nothing is asserted that no record supports.
+
+**Needed.** Either the in-house results for the 44 lots are recorded somewhere the desk has not been given — in which case, where — or the testing is on the internal certificate without a separate written result, in which case may the certificate of quality print Conforms on the strength of the internal certificate alone?
 
 ## Tracker scope
 

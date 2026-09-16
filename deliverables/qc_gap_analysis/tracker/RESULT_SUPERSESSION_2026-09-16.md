@@ -43,7 +43,7 @@ The certificate cites the document as the one that covers the determination. Eve
 | certificate | series | lot | # | parameter | prints | from | superseded by |
 |---|---|---|---|---|---|---|---|
 | CoQ-PP_26-007 | initial release | P050022 | #8 | Loss on drying | 7.21 | ППК25139 (22.05.2025) | ППК25174 = 6.51 (10.07.2025) |
-| CoQ-PP_26-056 | initial release — predicted | J31112501 | #8 | Loss on drying | 8.4 | 051-5-GS/26 (02.03.2026) | 100-1-GS/26 = 7.6 (09.04.2026) |
+| CoQ-PP_26-056 | initial release — predicted | J31112501 | #8 | Loss on drying | 8.4 | 051-5-ГС/26 (02.03.2026) | 100-1-ГС/26 = 7.6 (09.04.2026) |
 | CoQ-PP_26-026 | initial release — predicted | P050202 | #9.1 | TAMC | 1.3 × 10⁴ | 1009/1813/25 (08.10.2025) | 1155/2056/25 = 600 (24.11.2025) |
 | CoQ-PP_26-026 | initial release — predicted | P050202 | #9.2 | TYMC | 4.2 × 10³ | 1009/1813/25 (08.10.2025) | 1155/2056/25 = 400 (24.11.2025) |
 | CoQ-PP_26-026 | initial release — predicted | P050202 | #9.3 | Bile-tolerant GNB | < 10³ and > 10² | 1009/1813/25 (08.10.2025) | 1155/2056/25 = < 10 (24.11.2025) |
@@ -58,7 +58,7 @@ The certificate carries the result forward from the initial testing because the 
 | certificate | series | lot | # | parameter | prints | from | superseded by |
 |---|---|---|---|---|---|---|---|
 | CoQ-PP_26-093 | additional testing (12-month) | P050022 | #8 | Loss on drying | 7.21 | ППК25139 (22.05.2025) | ППК25174 = 6.51 (10.07.2025) |
-| CoQ-PP_26-150 | additional testing (12-month) — predicted | J31112501 | #8 | Loss on drying | 8.4 | 051-5-GS/26 (02.03.2026) | 100-1-GS/26 = 7.6 (09.04.2026) |
+| CoQ-PP_26-150 | additional testing (12-month) — predicted | J31112501 | #8 | Loss on drying | 8.4 | 051-5-ГС/26 (02.03.2026) | 100-1-ГС/26 = 7.6 (09.04.2026) |
 | CoQ-PP_26-135 | additional testing (12-month) — predicted | P050122 | #9.1 | TAMC | < 10 | 626/1127/25 (02.07.2025) | 561/1092/26 = 10 (01.09.2026) |
 | CoQ-PP_26-138 | additional testing (12-month) — predicted | P050172 | #9.1 | TAMC | 9 × 10³ | 947/1685/25 (17.09.2025) | 558/1089/26 = < 10 (01.09.2026) |
 | CoQ-PP_26-139 | additional testing (12-month) — predicted | P050252 | #9.1 | TAMC | 4.5 × 10³ | 1218/2169/25 (01.12.2025) | 556/1087/26 = < 10 (01.09.2026) |
@@ -91,75 +91,7 @@ The certificate carries the result forward from the initial testing because the 
 
 ## 2 · A certificate resting on a document issued after it
 
-**65 row(s) on 13 certificate(s).** A controlled document cannot cite one that did not yet exist.
-
-| certificate | series | lot | issued | # | document | its date |
-|---|---|---|---|---|---|---|
-| CoQ-PP_26-021 | initial release — predicted | P050142 | 06.06.2026 | #9.1 | 559/1090/26 | 01.09.2026 |
-| CoQ-PP_26-021 | initial release — predicted | P050142 | 06.06.2026 | #9.2 | 559/1090/26 | 01.09.2026 |
-| CoQ-PP_26-021 | initial release — predicted | P050142 | 06.06.2026 | #9.3 | 559/1090/26 | 01.09.2026 |
-| CoQ-PP_26-021 | initial release — predicted | P050142 | 06.06.2026 | #9.4 | 559/1090/26 | 01.09.2026 |
-| CoQ-PP_26-021 | initial release — predicted | P050142 | 06.06.2026 | #9.5 | 559/1090/26 | 01.09.2026 |
-| CoQ-PP_26-063 | initial release — predicted | CC112501 | 06.06.2026 | #9.1 | 543/1074/26 | 31.08.2026 |
-| CoQ-PP_26-063 | initial release — predicted | CC112501 | 06.06.2026 | #9.2 | 543/1074/26 | 31.08.2026 |
-| CoQ-PP_26-063 | initial release — predicted | CC112501 | 06.06.2026 | #9.3 | 543/1074/26 | 31.08.2026 |
-| CoQ-PP_26-063 | initial release — predicted | CC112501 | 06.06.2026 | #9.4 | 543/1074/26 | 31.08.2026 |
-| CoQ-PP_26-063 | initial release — predicted | CC112501 | 06.06.2026 | #9.5 | 543/1074/26 | 31.08.2026 |
-| CoQ-PP_26-077 | initial release — predicted | FB012603 | 07.07.2026 | #9.1 | 537/1068/26 | 31.08.2026 |
-| CoQ-PP_26-077 | initial release — predicted | FB012603 | 07.07.2026 | #9.2 | 537/1068/26 | 31.08.2026 |
-| CoQ-PP_26-077 | initial release — predicted | FB012603 | 07.07.2026 | #9.3 | 537/1068/26 | 31.08.2026 |
-| CoQ-PP_26-077 | initial release — predicted | FB012603 | 07.07.2026 | #9.4 | 537/1068/26 | 31.08.2026 |
-| CoQ-PP_26-077 | initial release — predicted | FB012603 | 07.07.2026 | #9.5 | 537/1068/26 | 31.08.2026 |
-| CoQ-PP_26-073 | initial release — predicted | FB012603V | 07.07.2026 | #9.1 | 538/1069/26 | 31.08.2026 |
-| CoQ-PP_26-073 | initial release — predicted | FB012603V | 07.07.2026 | #9.2 | 538/1069/26 | 31.08.2026 |
-| CoQ-PP_26-073 | initial release — predicted | FB012603V | 07.07.2026 | #9.3 | 538/1069/26 | 31.08.2026 |
-| CoQ-PP_26-073 | initial release — predicted | FB012603V | 07.07.2026 | #9.4 | 538/1069/26 | 31.08.2026 |
-| CoQ-PP_26-073 | initial release — predicted | FB012603V | 07.07.2026 | #9.5 | 538/1069/26 | 31.08.2026 |
-| CoQ-PP_26-065 | initial release — predicted | FB112501 | 06.06.2026 | #9.1 | 542/1073/26 | 31.08.2026 |
-| CoQ-PP_26-065 | initial release — predicted | FB112501 | 06.06.2026 | #9.2 | 542/1073/26 | 31.08.2026 |
-| CoQ-PP_26-065 | initial release — predicted | FB112501 | 06.06.2026 | #9.3 | 542/1073/26 | 31.08.2026 |
-| CoQ-PP_26-065 | initial release — predicted | FB112501 | 06.06.2026 | #9.4 | 542/1073/26 | 31.08.2026 |
-| CoQ-PP_26-065 | initial release — predicted | FB112501 | 06.06.2026 | #9.5 | 542/1073/26 | 31.08.2026 |
-| CoQ-PP_26-061 | initial release — predicted | GG112501 | 06.06.2026 | #9.1 | 545/1076/26 | 31.08.2026 |
-| CoQ-PP_26-061 | initial release — predicted | GG112501 | 06.06.2026 | #9.2 | 545/1076/26 | 31.08.2026 |
-| CoQ-PP_26-061 | initial release — predicted | GG112501 | 06.06.2026 | #9.3 | 545/1076/26 | 31.08.2026 |
-| CoQ-PP_26-061 | initial release — predicted | GG112501 | 06.06.2026 | #9.4 | 545/1076/26 | 31.08.2026 |
-| CoQ-PP_26-061 | initial release — predicted | GG112501 | 06.06.2026 | #9.5 | 545/1076/26 | 31.08.2026 |
-| CoQ-PP_26-050 | initial release — predicted | P060142 | 06.06.2026 | #9.1 | 550/1081/26 | 01.09.2026 |
-| CoQ-PP_26-050 | initial release — predicted | P060142 | 06.06.2026 | #9.2 | 550/1081/26 | 01.09.2026 |
-| CoQ-PP_26-050 | initial release — predicted | P060142 | 06.06.2026 | #9.3 | 550/1081/26 | 01.09.2026 |
-| CoQ-PP_26-050 | initial release — predicted | P060142 | 06.06.2026 | #9.4 | 550/1081/26 | 01.09.2026 |
-| CoQ-PP_26-050 | initial release — predicted | P060142 | 06.06.2026 | #9.5 | 550/1081/26 | 01.09.2026 |
-| CoQ-PP_26-056 | initial release — predicted | J31112501 | 06.06.2026 | #9.1 | 547/1078/26 | 31.08.2026 |
-| CoQ-PP_26-056 | initial release — predicted | J31112501 | 06.06.2026 | #9.2 | 547/1078/26 | 31.08.2026 |
-| CoQ-PP_26-056 | initial release — predicted | J31112501 | 06.06.2026 | #9.3 | 547/1078/26 | 31.08.2026 |
-| CoQ-PP_26-056 | initial release — predicted | J31112501 | 06.06.2026 | #9.4 | 547/1078/26 | 31.08.2026 |
-| CoQ-PP_26-056 | initial release — predicted | J31112501 | 06.06.2026 | #9.5 | 547/1078/26 | 31.08.2026 |
-| CoQ-PP_26-058 | initial release — predicted | OPM112501 | 06.06.2026 | #9.1 | 546/1077/26 | 31.08.2026 |
-| CoQ-PP_26-058 | initial release — predicted | OPM112501 | 06.06.2026 | #9.2 | 546/1077/26 | 31.08.2026 |
-| CoQ-PP_26-058 | initial release — predicted | OPM112501 | 06.06.2026 | #9.3 | 546/1077/26 | 31.08.2026 |
-| CoQ-PP_26-058 | initial release — predicted | OPM112501 | 06.06.2026 | #9.4 | 546/1077/26 | 31.08.2026 |
-| CoQ-PP_26-058 | initial release — predicted | OPM112501 | 06.06.2026 | #9.5 | 546/1077/26 | 31.08.2026 |
-| CoQ-PP_26-071 | initial release — predicted | P060342 | 06.06.2026 | #9.1 | 539/1070/26 | 31.08.2026 |
-| CoQ-PP_26-071 | initial release — predicted | P060342 | 06.06.2026 | #9.2 | 539/1070/26 | 31.08.2026 |
-| CoQ-PP_26-071 | initial release — predicted | P060342 | 06.06.2026 | #9.3 | 539/1070/26 | 31.08.2026 |
-| CoQ-PP_26-071 | initial release — predicted | P060342 | 06.06.2026 | #9.4 | 539/1070/26 | 31.08.2026 |
-| CoQ-PP_26-071 | initial release — predicted | P060342 | 06.06.2026 | #9.5 | 539/1070/26 | 31.08.2026 |
-| CoQ-PP_26-078 | initial release — predicted | SCR022601 | 13.07.2026 | #9.1 | 536/1067/26 | 31.08.2026 |
-| CoQ-PP_26-078 | initial release — predicted | SCR022601 | 13.07.2026 | #9.2 | 536/1067/26 | 31.08.2026 |
-| CoQ-PP_26-078 | initial release — predicted | SCR022601 | 13.07.2026 | #9.3 | 536/1067/26 | 31.08.2026 |
-| CoQ-PP_26-078 | initial release — predicted | SCR022601 | 13.07.2026 | #9.4 | 536/1067/26 | 31.08.2026 |
-| CoQ-PP_26-078 | initial release — predicted | SCR022601 | 13.07.2026 | #9.5 | 536/1067/26 | 31.08.2026 |
-| CoQ-PP_26-052 | initial release — predicted | SJ102501 | 06.06.2026 | #9.1 | 549/1080/26 | 31.08.2026 |
-| CoQ-PP_26-052 | initial release — predicted | SJ102501 | 06.06.2026 | #9.2 | 549/1080/26 | 31.08.2026 |
-| CoQ-PP_26-052 | initial release — predicted | SJ102501 | 06.06.2026 | #9.3 | 549/1080/26 | 31.08.2026 |
-| CoQ-PP_26-052 | initial release — predicted | SJ102501 | 06.06.2026 | #9.4 | 549/1080/26 | 31.08.2026 |
-| CoQ-PP_26-052 | initial release — predicted | SJ102501 | 06.06.2026 | #9.5 | 549/1080/26 | 31.08.2026 |
-| CoQ-PP_26-046 | initial release — predicted | P060102 | 06.06.2026 | #9.1 | 551/1082/26 | 01.09.2026 |
-| CoQ-PP_26-046 | initial release — predicted | P060102 | 06.06.2026 | #9.2 | 551/1082/26 | 01.09.2026 |
-| CoQ-PP_26-046 | initial release — predicted | P060102 | 06.06.2026 | #9.3 | 551/1082/26 | 01.09.2026 |
-| CoQ-PP_26-046 | initial release — predicted | P060102 | 06.06.2026 | #9.4 | 551/1082/26 | 01.09.2026 |
-| CoQ-PP_26-046 | initial release — predicted | P060102 | 06.06.2026 | #9.5 | 551/1082/26 | 01.09.2026 |
+None, over every determination of every certificate. Every cited document was on file the day its certificate of quality issues.
 
 ## 3 · One block, two sublots
 
@@ -187,9 +119,9 @@ The certificate carries the result forward from the initial testing because the 
 
 ## 4 · Results on file that no certificate of quality prints
 
-128, over 20 lot(s). The number is large and almost all of it is already accounted for by the two sections above; it is here so a ruling can be costed.
+203, over 34 lot(s). The number is large and almost all of it is already accounted for by the two sections above; it is here so a ruling can be costed.
 
-**70 — the IJZ-MB campaign microbiology of 25/26.08.2026.** the delivery v34 wrote into the register. The reissues carry the initial microbiology instead — that is OI-38, and these are the results a ruling for *the latest on file* would put on the certificates.
+**145 — the IJZ-MB campaign microbiology of 25/26.08.2026.** the delivery v34 wrote into the register. The reissues carry the initial microbiology instead — that is OI-38, and these are the results a ruling for *the latest on file* would put on the certificates.
 
 **32 — an in-house document with no document number.** the two in-house certificates of analysis for HPA1024 and OPM1024, which print no report number, and the two in-house cross-checks. A certificate of quality cannot cite a document that has no code; these are routed through the lot's internal certificate instead. Nothing to do.
 
@@ -199,8 +131,8 @@ The certificate carries the result forward from the initial testing because the 
 |---|---|---|---|---|
 | GP062501 (P050202) | 1155/2056/25 | 24.11.2025 | IPH microbiology | 9.1 9.2 9.3 9.4 9.5 |
 | GP0824_02 (P050022) | ППК25174 | 10.07.2025 | UKIM CNP potency | 4 5 8 |
-| J31112501 | 100-1-GS/26 | 09.04.2026 | Farmahem — loss on drying | 8 |
 | J31112501 | 100-1-K/26 | 09.04.2026 | Farmahem — cannabinoids | 4 5 6 |
+| J31112501 | 100-1-ГС/26 | 09.04.2026 | Farmahem — loss on drying | 8 |
 | J31122501 | 100-3-ГС/26 | 09.04.2026 | Farmahem — loss on drying | 8 |
 | J31122501 | 100-3-К/26 | 09.04.2026 | Farmahem — cannabinoids | 4 5 6 |
 | J31122501 | 1625/2026 | 23.04.2026 | IPH mycotoxins, metals, pesticides | 10.2 12 |
@@ -213,16 +145,16 @@ All of it by determination:
 |---|---|
 | Aflatoxins Σ | 3 |
 | As | 2 |
-| Bile-tolerant GNB | 18 |
+| Bile-tolerant GNB | 33 |
 | Cd | 2 |
-| E. coli | 18 |
+| E. coli | 33 |
 | Hg | 2 |
 | Loss on drying | 6 |
 | Pb | 2 |
 | Pesticides | 3 |
-| Salmonella | 18 |
-| TAMC | 18 |
-| TYMC | 18 |
+| Salmonella | 33 |
+| TAMC | 33 |
+| TYMC | 33 |
 | Total CBD | 8 |
 | Total CBN | 2 |
 | Total Δ9-THC | 8 |
