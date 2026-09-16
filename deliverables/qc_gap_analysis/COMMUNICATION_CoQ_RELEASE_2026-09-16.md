@@ -1,4 +1,4 @@
-<!-- pending figures measured on the v41 draft build of 16.09.2026 -->
+<!-- pending figures measured on the v40 draft build of 16.09.2026 -->
 
 # Сертификати за квалитет — состојба на 16.09.2026
 
