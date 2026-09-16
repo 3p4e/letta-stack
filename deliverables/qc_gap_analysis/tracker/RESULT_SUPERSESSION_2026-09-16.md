@@ -95,7 +95,7 @@ None, over every determination of every certificate. Every cited document was on
 
 ## 3 · One block, two sublots
 
-4 group(s) where a register block holds two certificates of the same testing on the same day that report different results, over 2 block(s). The certificate of quality prints one of the pair; the other's results appear on no certificate at all.
+3 group(s) where a register block holds two certificates of the same testing on the same day that report different results, over 1 block(s). The certificate of quality prints one of the pair; the other's results appear on no certificate at all.
 
 **J31122501 — Jokerz 31, 2026-04-07, IPH microbiology.** Documents `231/0394/26 (Racno trimiran cvet)`, `230/0393/26 (Trimiran cvet)`; the certificate of quality prints `231/0394/26 (Racno trimiran cvet)`.
 
@@ -111,21 +111,17 @@ None, over every determination of every certificate. Every cited document was on
 
 * #10.2 Aflatoxins Σ — `1628/2026` = 2.5; `1625/2026` = COMPLIES (numeric value not present in captured source excerpt for report 1625/2026 — see Bundle cross-reference)
 
-**JD112501 — Jelly Donutz, 2026-05-11, UKIM CNP potency.** Documents `ППК26063`, `ППК26065`; the certificate of quality prints `ППК26063`.
-
-* #4 Total Δ9-THC — `ППК26063` = 19.64; `ППК26065` = 13.93
-* #5 Total CBD — `ППК26063` = 0.06; `ППК26065` = 0.04
-* #8 Loss on drying — `ППК26063` = 6.69; `ППК26065` = 6.38
-
 ## 4 · Results on file that no certificate of quality prints
 
 203, over 34 lot(s). The number is large and almost all of it is already accounted for by the two sections above; it is here so a ruling can be costed.
 
 **145 — the IJZ-MB campaign microbiology of 25/26.08.2026.** the delivery v34 wrote into the register. The reissues carry the initial microbiology instead — that is OI-38, and these are the results a ruling for *the latest on file* would put on the certificates.
 
+**3 — a starred sample, which by the ruling of 16.09.2026 never certifies.** a second sample of the same packaged lot, sent for a limited panel outside the release testing. The Head of QC ruled on 16.09.2026 that its result stays in the record and in every statistic but never sources a certificate of quality, so appearing here is correct and not a gap (testing_series.EXPERIMENTAL).
+
 **32 — an in-house document with no document number.** the two in-house certificates of analysis for HPA1024 and OPM1024, which print no report number, and the two in-house cross-checks. A certificate of quality cannot cite a document that has no code; these are routed through the lot's internal certificate instead. Nothing to do.
 
-**26 — an ordinary laboratory certificate.** each is either an intermediate retest round no certificate of quality rests on, or the second sublot of section 2.
+**23 — an ordinary laboratory certificate.** each is either an intermediate retest round no certificate of quality rests on, or the second sublot of section 2.
 
 | lot | document | date | testing | determinations |
 |---|---|---|---|---|
@@ -137,7 +133,6 @@ None, over every determination of every certificate. Every cited document was on
 | J31122501 | 100-3-К/26 | 09.04.2026 | Farmahem — cannabinoids | 4 5 6 |
 | J31122501 | 1625/2026 | 23.04.2026 | IPH mycotoxins, metals, pesticides | 10.2 12 |
 | J31122501 | 230/0393/26 (Trimiran cvet) | 07.04.2026 | IPH microbiology | 9.1 9.2 9.3 9.4 9.5 |
-| JD112501 | ППК26065 | 11.05.2026 | UKIM CNP potency | 4 5 8 |
 
 All of it by determination:
 
