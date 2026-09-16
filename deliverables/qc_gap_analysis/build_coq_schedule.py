@@ -363,7 +363,8 @@ def family(code):
 # testing rounds have to know them as well: a campaign certificate is a retest
 # round of its own, never the release round, whatever the dates say. One
 # definition; family() above and pick() below read it from there.
-from testing_series import REANALYSIS_SERIES, is_reanalysis          # noqa: E402
+from testing_series import (REANALYSIS_SERIES, is_reanalysis,       # noqa: E402
+                            is_retest_only)
 
 
 def sort_date(d):
@@ -869,7 +870,20 @@ def schedule():
                 cands = [c for c in cands if is_reanalysis(c["code"])]
                 chosen, others = pick(cands, True)
             else:
-                chosen, others = pick(cands, False)
+                # A certificate of the IJZ-MB delivery of 25/26.08.2026 is a RETEST
+                # document by the owner's ruling of 10.09.2026 — "one campaign sampling
+                # and every certificate in it is a retest document, for the post-SOP lots
+                # too" — whatever its code series says. testing_series.rounds() has held
+                # that since v34; this branch did not, so wherever the delivery was the
+                # ONLY microbiology a lot had, it stood behind the lot's RELEASE result.
+                # Thirteen release certificates were citing a document issued 31.08 or
+                # 01.09.2026 while dated 06.06, 07.07 or 13.07.2026 — a controlled
+                # document resting on one that did not yet exist. They now print nothing
+                # for #9.1-#9.5, which is what the record supports: no microbiology was
+                # certified for those lots at release. Where the campaign result should
+                # then appear is OI-38.
+                chosen, others = pick([c for c in cands
+                                       if not is_retest_only(c.get("code", ""))], False)
             lim = limits.get(col)
 
             if det["no"] in ICOA_FIELD and not additional:

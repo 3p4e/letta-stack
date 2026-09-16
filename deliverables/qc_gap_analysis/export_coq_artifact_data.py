@@ -669,6 +669,16 @@ def main(out):
         "ecoa": ecoa,
         "corpus_contradictions": contradictions,
     }
+    # One spelling per document code, on the way out — the same discipline
+    # result_vocabulary applies to results. Farmahem's loss-on-drying series is
+    # ГС (губитоци при сушење) on its own pages, not the GS or LoD the desk's two
+    # sources spell it, and a reader's OCR note is not a document code. Nothing
+    # here merges, splits or re-points a citation (document_codes.py).
+    import document_codes as DC
+    _dc = DC.walk(data)
+    print("Document codes: %d field(s) canonicalised (Farmahem ГС; reader notes out "
+          "of the code field)" % _dc)
+
     with open(out, "w", encoding="utf-8") as fh:
         json.dump(data, fh, ensure_ascii=False, separators=(",", ":"))
     print(f"{out}: {len(coqs)} CoQs, {sum(len(c['rows']) for c in coqs)} rows, "

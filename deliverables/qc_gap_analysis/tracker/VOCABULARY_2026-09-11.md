@@ -1173,3 +1173,171 @@ and the ruling says only that they are retest documents.
     python3 deliverables/qc_gap_analysis/tracker/build_tracker_v8.py \
         --v9 --version=34 --icoa --cells --mikro=CoQ_Analysis_Master_v13.xlsx \
         --build-date=15.09.2026 --legacy-icoa=03.06.2026 --legacy-coq=06.06.2026 --t3-issue=21.09.2026
+
+# v35 — the supersession sweep, every determination, 16.09.2026
+
+The Head of QC reports that a second desk, working the same job in parallel, flags
+inconsistencies in **heavy metals, microbiology and mycotoxins**. v34 found and repaired a
+real defect in microbiology. It found it by asking one question of every certificate:
+
+> does it print a result that a **later** certificate for the **same lot** — one already on
+> file the day the certificate issues — contradicts?
+
+That question was asked of microbiology alone. v35 asks it of all seventeen determinations
+the release register carries, over 172 certificates of quality and 93 register blocks, and
+asks two neighbouring questions it raises. The sweep is
+`deliverables/qc_gap_analysis/result_supersession.py`; its report is
+`tracker/RESULT_SUPERSESSION_2026-09-16.md`; inside the workbook it is the **Result
+Supersession** tab, one filterable row per finding, coloured by what the desk can do about
+it. Nothing in the tracker, the registers, the certificates, the references or the
+compilation changed — v35 adds the sweep and what it found.
+
+## What it found
+
+**A zero is only as good as what could be compared**, so the sweep prints its coverage
+beside every one. This is where the second desk's report and the record part company:
+
+| # | parameter | documents on file | lots with two or more | contradictions |
+| --- | --- | ---: | ---: | ---: |
+| #4 · #5 | Total Δ9-THC, Total CBD | 160 | 64 | 3 |
+| #6 | Total CBN | 106 | 12 | **0 — a real zero** |
+| #8 | Loss on drying | 75 | 4 | 4 |
+| #9.1 – #9.5 | microbiology | 76 | 14 | 32 |
+| #10.2 | Aflatoxins Σ | 98 | 30 | **0 — a real zero** |
+| #10.1 · #10.3 | Aflatoxin B1, ochratoxin A | 54 | 1 | 0 — thin |
+| #11.1 – #11.4 | Pb, Cd, As, Hg | 45 | **0** | **nothing to compare** |
+| #12 | Pesticides | 46 | 1 | 0 — thin |
+
+**No lot on file carries a second heavy-metal certificate.** Not one, over 93 blocks. So a
+sweep of #11 can only ever return zero, and its silence is a gap in the record rather than
+a clean result: every certificate of quality that prints Pb, Cd, As or Hg rests on a single
+laboratory document, because the retest campaigns — 197-, 220-, 227- — re-ran the assay and
+the mycotoxins and never the metals. Total aflatoxins, by contrast, were comparable on 30
+lots and nothing contradicts; Total CBN on 12 and Salmonella and *E. coli* on 14 each, the
+same. Those are zeros worth having.
+
+Of 89 comparisons, 39 contradict, and they split in two:
+
+* **8 are not defects.** Every one is a *release* certificate citing the *release* result
+  while a later retest sits on file — the owner's ruling of 10.09.2026 working exactly as
+  written: the earliest result for a parameter is the release result, and a later one
+  belongs to a retest certificate, not to this one. CoQ-PP_26-007 (P050022) prints 23.79 %
+  from ППК25139 of 22.05.2025 although ППК25174 of 10.07.2025 reads 23.19 %; that is the
+  release certificate doing its job.
+* **31 are OI-38, and OI-38 is wider than it was.** These are reissues carrying a
+  determination forward from the initial testing because the campaign they rest on did not
+  retest it (the ruling of 15.09.2026). 29 rows on twelve certificates are the campaign
+  microbiology OI-38 already described; **two more are loss on drying** — CoQ-PP_26-093
+  (P050022) carries 7.21 % where ППК25174 reads 6.51 %, and CoQ-PP_26-150 (J31112501)
+  carries 8.4 % where 100-1-GS/26 of 09.04.2026 reads 7.6 %. The item now asks the general
+  question: when a reissue carries a determination forward, does *forward* mean the initial
+  result or the latest on file?
+
+**A stability timepoint never supersedes anything.** It measures the lot ageing; it is not
+release or retest testing and no certificate of quality prints it. All three checks skip
+the rows the register marks. Without that, the 05.03.2026 and 11.05.2026 stability pulls on
+the two Grape Pie lots alone raise 30 findings that are not findings — CBN rising from
+0.02 % to 2.35 % is a stability study reporting what it exists to report.
+
+## Two register blocks carry two sublots — OI-39
+
+The second check looks for a block holding two certificates of the **same testing** on the
+**same day** that report **different results**. Over 93 blocks there are two, and the
+documents themselves say what they are.
+
+**J31122501** (Jokerz 31, P060262) holds three such pairs. The microbiology of 07.04.2026:
+`231/0394/26` names its sample *Рачно тримиран цвет* — hand-trimmed flower — and reads TAMC
+850, while `230/0393/26` names *Тримиран цвет* and reads 1900. The Farmahem cannabinoids of
+09.04.2026: `100-2-К/26` at 19.84 % against `100-3-К/26` at 21.84 %. The IJZ mycotoxins and
+metals of 23.04.2026: `1628/2026` against `1625/2026`. **JD112501** (Jelly Donutz, P060212)
+holds one: `ППК26063` at 19.64 % total THC against `ППК26065` at 13.93 % — six percentage
+points apart, which is not one sample read twice.
+
+The owner's batch list gives each cultivation batch exactly one P lot, so the register has
+no second number to file the second sublot under. `testing_series.rounds()` treats two
+documents of one day as one testing period — which is right when they describe one sample —
+so both sit in the release round and the certificate prints the first. The tracker shows
+**both** as separate testing instances, so nothing is hidden anywhere the desk shows its
+working. What the certificate of quality does not say is which sublot it certifies. That is
+OI-39.
+
+## Results on file that no certificate of quality prints
+
+The third check is the mirror of the first: 128 results, over 20 lots. 70 are the campaign
+microbiology of OI-38; 32 are in-house documents with no document number; **26 are ordinary
+laboratory certificates on five lots** — `ППК25174` (P050022), `1155/2056/25` (P050202),
+`100-1-K/26` and `100-1-GS/26` (J31112501), `230/0393/26`, `100-3-К/26`, `100-3-ГС/26` and
+`1625/2026` (J31122501), `ППК26065` (JD112501). Each is either an intermediate retest round
+that no certificate rests on, or the second sublot of OI-39. The count is a consequence of
+the two open items, not a third finding; it is on the tab so the owner can see the whole of
+what a ruling would move.
+
+| | v34 | v35 |
+| --- | ---: | ---: |
+| determinations swept for supersession | 5 (microbiology) | **17** |
+| total aflatoxins over 30 comparable lots | not asked | **0 contradictions** |
+| lots carrying a second heavy-metal certificate | not asked | **0 — #11 cannot be swept** |
+| contradictions settled by the ruling of 10.09.2026 | — | **8** |
+| contradictions open on OI-38 | 26 rows, 12 certificates | **31 rows, 14 certificates** |
+| register blocks carrying two sublots | not asked | **2** (OI-39) |
+| open items | 38 | **39** |
+| `verify_workbook` / `verify_prose` findings | 0 / 0 | **0 / 0** |
+| truth check findings | 21 | **21** (the same items) |
+
+## Reproducing
+
+    python3 deliverables/qc_gap_analysis/result_supersession.py
+    python3 deliverables/qc_gap_analysis/result_supersession.py --dets 10,11 --check superseded
+    python3 deliverables/qc_gap_analysis/result_supersession.py \
+        --md tracker/RESULT_SUPERSESSION_2026-09-16.md
+    python3 deliverables/qc_gap_analysis/tracker/build_tracker_v8.py \
+        --v9 --version=35 --icoa --cells --mikro=CoQ_Analysis_Master_v13.xlsx \
+        --build-date=15.09.2026 --legacy-icoa=03.06.2026 --legacy-coq=06.06.2026 --t3-issue=21.09.2026
+
+## The parallel desk's audit, answered
+
+The Head of QC passed on `HANDOVER_to_ClaudeCode.md`: an audit of the 127 rendered
+certificates in `Final_Docs/xCOAs/CoX_DES/`, built from v27/v29 and asking this desk to
+confirm or refute seven findings. The point-by-point answer is
+`tracker/HANDOVER_RESPONSE_2026-09-16.md`. In summary:
+
+| finding | verdict |
+| --- | --- |
+| 2.1 · 41 documents have no in-house QC row | **confirmed** as a document defect, **refuted** as a builder defect — 82 certificates over 44 lots, and all 172 cite an internal certificate (OI-41) |
+| 2.2 · certificate codes carrying analysis tags | **confirmed**, and the page settles the spelling — `ГС`, not `GS` or `LoD` |
+| 2.3 · two attribution mismatches | **refuted** — 0 of 172 external rows credited with no result |
+| 2.4 · one grade-token mismatch | **refuted** — 0 of 172 |
+| 2.5 · four banner potencies out of window | **refuted** — 120 compared, 0 outside |
+| 2.6 · loss on drying 76.07 % | **confirmed** — already OUT OF SPECIFICATION (OI-06, OI-35) |
+| 2.7 · three document-code conflicts | **refuted** — no code sits on two lots |
+
+**The one repair it produced: `document_codes.py`.** Farmahem numbers a report
+`<campaign>-<item>-<analysis>/<year>` and the analysis letter is Macedonian — `К` for
+канабиноиди, `М` for микотоксини, **`ГС` for губитоци при сушење**. Two pages were read on
+16.09.2026 and both settle it:
+
+    020326_051-1-LoD-26_FHM_J31102501-P060152.pdf → Извештај број: 051-1-ГС/26
+    110226_031-2-LoD-26_FHM_PUM102501-P060112.pdf → Извештај број: 031-2-ГС/26
+
+both titled «Извештај од анализа на **губитоци при сушење** во цвет од канабис». So `GS` is
+a Latin transliteration and `LoD` an English abbreviation, and the owner's standing rule —
+Cyrillic `К`/`М` in laboratory codes are genuine, do not transliterate — covers `ГС` too.
+Both spellings reached the desk honestly: the scans' own file names carry `LoD`, an earlier
+Farmahem extraction carries `GS`, and the register already spelled `100-2-ГС/26` correctly,
+which is what made the inconsistency visible. `document_codes.py` does for codes what
+`result_vocabulary.py` does for results — one spelling, applied on the way out of the
+exporter — and it also takes a reader's OCR note out of the code field, so no certificate
+prints `2156/2025 (microbiology sub-report lab-ref not distinctly captured in OCR text)` as
+a document code.
+
+It deliberately does **not** touch the six composites of the form
+`PP CoA #027 / ППК25370`. Reading the register turned that from a spelling question into a
+records one: each of the six also exists as a bare `ППК` row on the same lot, with an
+earlier date and no results, so the results sit on the composite row and the row naming the
+external certificate alone is empty. Which row is the certificate is the owner's — OI-40.
+
+**Why 2.5 is worth reading twice.** The audit's four out-of-window banners are not random
+numbers: 19.14 % is P060152's result, 11.53 % is P060182's and 19.64 % is P060212's — each
+document carries the *previous* lot's assay, while its window is v35's own. The grades are
+right and the assay values are one row out. It is the row-alignment trap the handover's own
+§1 warns about, and it is on the document side, not in the master.
