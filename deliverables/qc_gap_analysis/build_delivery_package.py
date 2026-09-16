@@ -110,6 +110,10 @@ def _items():
          "Does any certificate print a result the record has replaced? The sweep over all "
          "seventeen determinations — READ THE COVERAGE TABLE FIRST: no lot on file carries a "
          "second heavy-metal certificate, so #11 could not be compared at all"),
+        ("docs/FLEET_FINDINGS_2026-09-16.md", os.path.join(TRACKER, "FLEET_FINDINGS_2026-09-16.md"),
+         "What twelve agents found reading the primary records on 16.09.2026, sorted into "
+         "defect (fixed, or named as not fixed and why), question for the owner, and "
+         "no action — including two claims that did not survive checking"),
         ("docs/HANDOVER_RESPONSE_2026-09-16.md",
          os.path.join(TRACKER, "HANDOVER_RESPONSE_2026-09-16.md"),
          "The parallel desk's audit of the 127 rendered certificates, answered finding by "

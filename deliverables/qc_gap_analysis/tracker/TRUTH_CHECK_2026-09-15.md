@@ -47,6 +47,16 @@ with the long tab's 3,956 rows agreeing with the wide one cell for cell and the 
 carrying the same rows as the files. **No finding.** Separately, all 1,497 results printed on
 the 73 compiled drafts were compared with the compilation: no difference.
 
+**Re-run on v37 (16.09.2026, on the recalculated workbook): 21 findings, the same items —
+no new one.** The build took the April-2026 IJZ release panel into the register (18
+certificates over nine lots) and joined the starred spellings, so the populations grew — T3
+compares 1,709 results where it compared 1,557, T5 reads 1,649 rows where it read 1,497, T7
+1,631 cells over 165 certificates where it read 1,551 over 161 — and nothing new failed. T1
+still names `227-15-K/26` and `227-21-K/26`: the certificate prints P060312 and P060302 while
+the register block's own LABEL row carries no P number. That is the owner's register, not the
+join — the join was repaired on 16.09.2026 (OI-28), and the label cell is one entry on the
+sheet away from agreeing with it.
+
 **Re-run on v35 (16.09.2026): 21 findings, the same items — no new one.** Three things in
 the build moved the counts and nothing moved the verdicts. The comparison is smaller because
 thirteen release certificates stopped citing an IJZ-MB microbiology certificate issued after

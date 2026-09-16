@@ -1342,6 +1342,106 @@ document carries the *previous* lot's assay, while its window is v35's own. The 
 right and the assay values are one row out. It is the row-alignment trap the handover's own
 §1 warns about, and it is on the document side, not in the master.
 
+# v37 — the April release panel in the register, the star joined, 16.09.2026
+
+## Eighteen certificates that were on file and in no register
+
+The Institute of Public Health tested the nine lots sampled on **21.04.2026** twice over: the
+microbiology `304/0548/26` … `312/0556/26`, issued 28.04.2026, and the contaminants
+`2357/2026` … `2365/2026`, issued 29/30.04.2026 — total aflatoxins, Pb, Cd, As, Hg and a
+29-line pesticide panel. Seventeen of the eighteen have been in the two-read corpus since
+04.09.2026 and **all eighteen are on the Head of QC's own tracker**.
+
+**Not one was a row of the release register**, which is the one source the certificates of
+quality are compiled from. So eight release certificates printed
+
+    not tested — no certificate covers it
+
+for #9, #10 and #11 with the documents on file five weeks before them. `CoQ-PP_26-057`
+(JD112501 / P060212, issued 06.06.2026) printed it eleven times while `307/0551/26` and
+`2361/2026` sat in the corpus with every value read twice. It is the gap the IJZ-MB intake
+closed for the August campaign, one sampling earlier, and the same class: ingested, tracked,
+never a row of the register.
+
+`intake_IJZ0426_2026-09-16` writes them through the same two-read gate: **17 rows into
+existing blocks, and the row the owner had opened for `305/0549/26` and left empty, filled in
+place** rather than duplicated. Four certificates disagreed between their reads and each was
+settled by a third read of the page:
+
+| certificate | line | read A | read B | the page |
+| --- | --- | --- | --- | --- |
+| `307/0551/26` | bile-tolerant GNB | `< 10¹ – 10²` | `< 10³ и >10²` | **`<10³ и>10²`** — B |
+| `304/0548/26` | bile-tolerant GNB | `< 10^2` | `< 10² и >10` | **`<10² и>10`** — B |
+| `305/0549/26` | bile-tolerant GNB | `<10³ x10²` | `< 10³ и >10²` | **`< 10³ и >10²`** — B |
+| `2361/2026` | pesticide lines | 29, all н.д. | 28, all н.д. | **29** — A |
+
+Three of the four are the same defect the IJZ-MB intake found four times: a read stopping at
+one bound where the page carries the range. That is **OI-36 with three more instances**, and
+the Head of QC's own tracker holds two of those lines as *held for review* — the third read
+settles them. `310/0554/26`, which the runner never read, took the RAGflow OCR and the Head of
+QC's transcription as its two reads and the scan as its third.
+
+**The starred sample stays out of the certificates and in the record.** `306/0550/26` and
+`2365/2026` print `JD112501*`; they go into the JD112501 block and onto
+`testing_series.EXPERIMENTAL`, so the values are in the register and in every statistic and no
+certificate cites them. One consequence the Head of QC should see: the 09.09 pass cited
+`306-0550-26` — the **starred** sample's microbiology — for JD112501's #9, and the ruling of a
+week later says the starred sample does not certify, so the desk now cites `307/0551/26`. Both
+results conform. It is on OI-12 and one word reverses it.
+
+## The star, joined — as data, not as a rule
+
+`icoa_register.py` looked each lot's packaging date and P number up by the cultivation code the
+**register block** carries while the **batch list** writes the starred spelling, so
+`iCoA-PP_26-087` (GG012601, P060302) and `-088` (JD012601, P060312) had no testing date and
+their release certificates stood at `— at issue —`, **withheld over a glyph**.
+
+The ruling of 16.09.2026 is now recorded where `batch_id.py`'s own docstring says such a ruling
+belongs: `ingestion/ecoa_runner/identity_decisions.tsv` carries a `batch_alias` row for
+`JD112501*` (the Head of QC's words) and for `GG012601*`, `JD012601*`, `SCR012601*` and
+`FB012602*` (the desk, as its consequence — **each row says which it is**). `batch_key` applies
+them after normalising, so the two spellings key alike everywhere at once, and **the rule itself
+is unchanged**: a star nobody has ruled on still keeps its mark.
+
+| | v36 | v37 |
+| --- | ---: | ---: |
+| certificates of quality numbered | 133 | **135** |
+| Tranche 3 codes allocated | 28 | **30** |
+| not yet issuable | 13 (8 initial, 5 retest) | **7** (5 initial, 2 retest) |
+| issuable rows the register could not number | 2 (P060302\|I, P060312\|I) | **0** |
+| blank printed lines, release drafts | 51 | **39** |
+
+The owner's tracker row `JD112501＊`, which the ruling says is not a lot, folds into P060212 on
+both the Parameter Tracker and Batch Coverage; its documents stay there as testing instances,
+marked **experimental** rather than merely uncredited.
+
+## Two things the desk was asserting without a record
+
+* **39 reissues printed `Conforms`** for identification A, identification B and foreign matter,
+  citing **their own campaign's** internal certificate, while the row's own status still read
+  *to be performed*. The value came from the 09.09 pass, which states what the **release**
+  round's certificate carries. A certificate may not assert a result for a round nobody has
+  recorded: the pass now fills a release certificate only, and **the reissue blanks went from
+  230 to 320 lines across 51 documents**. The desk got more honest and less complete at the
+  same time, and that is the right direction.
+* **One lot the pass names differently.** `CC012601/1 / P060332` is CITED, `Conforms`, in the
+  pass; the register block is labelled by the P number alone and the lookup found nothing, so
+  two certificates printed `—` where a record exists. The pass is keyed by its P lot now too.
+
+## Two read-backs that were reading nothing
+
+The `<title>` fix of v36 lived in the bulk driver, so a certificate **printed from the desk**
+still carried the master's `CoQ-PP-2026-0005 — Amsterdam Amnesia — Batch P060052`. It is
+written in `fillCoq` now, so both paths carry it. And the Section 01 read-back queried `.l` and
+`.v` — classes the master has never had — so it read nothing on all 73 documents; it reads
+`.lk-lbl` / `.lk-val`, and the build reports any document whose Section 01 does not print its
+own P lot, a potency and a specification reference. **73 of 73 now pass both.**
+
+## Reproducing
+
+    python3 deliverables/qc_gap_analysis/intake_IJZ0426_2026-09-16/apply_IJZ0426.py --register <register>
+    python3 deliverables/qc_gap_analysis/tracker/build_tracker_v8.py --v9 --version=37 --icoa --cells ...
+
 # v36 — the starred-sample ruling, and a title that named another lot, 16.09.2026
 
 ## The asterisk, ruled

@@ -4,7 +4,7 @@ Every finding the desk has raised and cannot itself settle, with the evidence
 behind it and the decision being asked for. Built by `open_items.py`; the same
 register is the **Open Items** sheet of the workbook.
 
-**31 open · 3 marked on the certificate**
+**32 open · 3 marked on the certificate**
 
 ## Specification
 
@@ -268,15 +268,15 @@ register is the **Open Items** sheet of the workbook.
 
 ## Document content
 
-### OI-41 · Eighty-two certificates print no result for the three determinations done in-house
+### OI-41 · Eighty-two certificates print no result for the three determinations done in-house — and the ninety that do rest on the same record
 
-*State:* **open** · *Evidence:* 44 lots, 82 certificates, 246 determination rows; build_coq_schedule.ST_ICOA; tracker/HANDOVER_RESPONSE_2026-09-16.md §2.1
+*State:* **open** · *Evidence:* 44 lots, 82 certificates, 246 determination rows; build_coq_schedule.ST_ICOA; export_coq_artifact_data.py (the 09.09 pass fill); tracker/FLEET_FINDINGS_2026-09-16.md (audit B); tracker/HANDOVER_RESPONSE_2026-09-16.md §2.1
 
-**Found.** Determinations #1 Identification A, #2 Identification B and #7 Foreign matter are performed in the Purely Plant laboratory on every batch. On 82 of the 172 certificates — 44 lots — all three print nothing: the row cites the lot's internal certificate and the laboratory, and the result reads "—" with the status "to be performed — see route". The other 90 certificates print Conforms. The desk is not failing to find the internal certificate (it cites one on all 172); it has no RECORD OF THE RESULT for those 44 lots, and rule six forbids printing a result that has not been certified. The audit of 16.09.2026 read the same 82 as a builder fault and counted 41 of them; it is not a builder fault and it is 82.
+**Found.** Determinations #1 Identification A, #2 Identification B and #7 Foreign matter are performed in the Purely Plant laboratory on every batch. On 82 of the 172 certificates — 44 lots — all three print nothing: the row cites the lot's internal certificate and the laboratory, and the result reads "—" with the status "to be performed — see route". The other 90 print Conforms. The audit of 16.09.2026 established what separates them, and it is not the kind of evidence: 78 of the 90 print Conforms because the owner's 09.09.2026 pass wrote Conforms against a then-unissued internal certificate and the exporter copies that statement into the cell once the certificate is issued; the other 12 take a CNP Ph. Eur. certificate that covers identity. So the line between 90 and 82 is 09.09-PASS COVERAGE, not a record one group has and the other lacks. Of the 44 blank lots: 12 have an in-house QCCoA scan on Drive that no desk record holds (OI-43), 6 are ones the pass itself marks "NOTHING ON FILE — no document anywhere", 19 are outside every record the desk or the owner holds, and the rest are the predicted reissues of CNP-covered lots, blank by the routing.
 
-**The desk.** Printed as the desk holds it: the determination named, the internal certificate cited, the result blank and the route stated. Nothing is asserted that no record supports.
+**The desk.** Printed as the desk holds it: the determination named, the internal certificate cited, the result blank and the route stated. Nothing is asserted that no record supports. One thing did change on 16.09.2026: a REISSUE no longer prints the pass's release-round statement against its own campaign's certificate — 39 certificates were asserting a retest result that no round had recorded.
 
-**Needed.** Either the in-house results for the 44 lots are recorded somewhere the desk has not been given — in which case, where — or the testing is on the internal certificate without a separate written result, in which case may the certificate of quality print Conforms on the strength of the internal certificate alone?
+**Needed.** Three answers are wanted, and they are different questions. (a) For the 12 lots with a QCCoA scan on Drive: may the desk read those scans in and print what they state? (OI-43.) (b) For the 39 lots already printing Conforms from the pass: is the internal certificate alone sufficient authority for that word, given the cell's own status still says the testing is to be performed? (c) For the 6 lots the pass marks NOTHING ON FILE and the 19 outside every record: is the in-house result written anywhere the desk has not been given, or is the blank simply correct?
 
 ## Record integrity
 
@@ -299,6 +299,18 @@ register is the **Open Items** sheet of the workbook.
 **The desk.** Nothing read, nothing written: an in-house scan reaches the desk through the same two-read gate as a laboratory certificate, and the desk holds no read of any of the 28.
 
 **Needed.** May the desk take the QCCoA 001 scans in as the record of the in-house results, so that the certificates of those twelve lots print what the form states for #1, #2 and #7 and cite the internal certificate that carries it? If yes, OI-41 shrinks from 44 lots to 32.
+
+## Specification
+
+### OI-44 · The grade numerals were assigned against the desk's own rule, and 69 certificates cite a code that used to mean something else
+
+*State:* **open** · *Evidence:* potency_grades.py number(); potency_grades_2026-09-15.csv; product_specifications_QCSP001.json; tracker/FLEET_FINDINGS_2026-09-16.md (audit C)
+
+**Found.** potency_grades.number() states that a numeral is "assigned once for a strain and a nominal and never renumbered". Its first numbering seeded itself from nothing and sorted by nominal, so it ignored the numerals the ISSUED QCSP 001 v.01 documents already carry. The codes therefore changed meaning under the same name: QCSP_001_GP-IV_v.01 named GP_THC20 (18.00–22.00 %) on the issued document and names GP_THC16 (14.40–17.59 %) on the certificate; QCSP_001_CJ-III_v.01 was CJ_THC24 (23.00–25.00 %) and is CJ_THC20 (18.40–21.59 %). Over the export 69 certificates on 20 codes carry a product-code change under an unchanged code, 54 on 17 codes change the window only, and 32 on 19 codes are new codes.
+
+**The desk.** Nothing hidden and nothing renumbered a second time. Every affected certificate's record prints spec_status — "for review — replaces the issued QCSP_001_GP-IV_v.01 (was GP_THC20 : CBD1, 18.00 – 22.00 %); now GP_THC16 : CBD1 14.40 – 17.59 %" — and 88 certificates carry the conflict sentence beside it. The ladder is used exactly as the potency specification of 15.09.2026 prints it, which is the ruling of that date.
+
+**Needed.** Two rulings meet here and only one can hold. Either the potency specification of 15.09.2026 is used exactly as it prints (15.09.2026) and the issued v.01 documents are superseded numeral and all — in which case the 69 codes are correct and the issued documents are reissued under their new meaning — or a numeral once issued is never reused, in which case the ladder must be renumbered around the issued set and the new grades take fresh numerals. Which?
 
 ## Tracker scope
 
