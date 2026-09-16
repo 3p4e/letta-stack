@@ -44,7 +44,7 @@ ROWS = [
     ("P060422", "JD012603/02V", "406/0789/26", "24.06.2026", MICRO, {"J": "5.1×10³", "K": "4.7×10³", "L": "< 10", "M": "Отсутна", "N": "Отсутна"}),
     ("P060362", "JD012603/01",  "365/0695/26", "01.06.2026", MICRO, {"J": "2×10²", "K": "1×10²", "L": "< 10", "M": "Отсутна", "N": "Отсутна"}),
     ("P060372", "CC012603",     "363/0693/26", "01.06.2026", MICRO, {"J": "2.7×10³", "K": "1.6×10¹", "L": "< 10", "M": "Отсутна", "N": "Отсутна"}),
-    ("P060382", "SCR012603",    "364/0694/26", "01.06.2026", MICRO, {"J": "5.4×10⁴", "L": "< 10", "M": "Отсутна", "N": "Отсутна"}),
+    ("P060382", "SCR012603",    "364/0694/26", "01.06.2026", MICRO, {"J": "5.4×10⁴", "K": "1.8×10⁴", "L": "< 10", "M": "Отсутна", "N": "Отсутна"}),
     ("P060152", "J31102501",    "1056/2026",   "09.03.2026", PANEL, {"O": "<2",  "R": "0.061", "S": "N.D.", "T": "N.D.",    "U": "N.D.",   "V": "N.D."}),
     ("P060232", "PM112501",     "1059/2026",   "09.03.2026", PANEL, {"O": "2.2", "R": "N.D.",  "S": "N.D.", "T": "N.D.",    "U": "N.D.",   "V": "N.D."}),
     ("P060172", "KC102501",     "1058/2026",   "09.03.2026", PANEL, {"O": "2.8", "R": "N.D.",  "S": "N.D.", "T": "N.D.",    "U": "N.D.",   "V": "N.D."}),
@@ -72,22 +72,33 @@ def main(argv):
     for b in data["reg"]:
         for k in {key(b.get("pn")), key(b.get("cb"))} - {""}:
             by.setdefault(k, b)
-    added, skipped, missing = 0, 0, []
+    added, skipped, missing, merged = 0, 0, [], []
     for pn, cb, code, date, fam, vals in ROWS:
         block = by.get(key(pn)) or by.get(key(cb))
         if block is None:
             missing.append((pn, cb, code))
             continue
-        if any(str(c.get("code") or "").strip() == code for c in block["certs"]):
-            skipped += 1
+        have = [c for c in block["certs"] if str(c.get("code") or "").strip() == code]
+        if have:
+            # idempotent, and additive: a value the register already carries is never
+            # rewritten, a value it lacks is added. That is what lets a figure held for a
+            # second read be taken in later without touching the twenty-two around it.
+            gained = {k: v for k, v in vals.items() if k not in (have[0].get("vals") or {})}
+            if gained:
+                have[0].setdefault("vals", {}).update(gained)
+                merged.append((code, ",".join(sorted(gained))))
+            else:
+                skipped += 1
             continue
         block["certs"].append({"code": code, "date": date, "lab": IPH, "fam": fam,
                                "stab": False, "vals": vals, "flags": {}})
         added += 1
     print("certificates written into the register: %d   already there: %d" % (added, skipped))
+    for code, cols in merged:
+        print("   %s gained column(s) %s" % (code, cols))
     for pn, cb, code in missing:
         print("   NO BLOCK for %s / %s — %s not written" % (pn, cb, code))
-    if not a.dry_run and added:
+    if not a.dry_run and (added or merged):
         with open(a.src, "w", encoding="utf-8") as fh:
             json.dump(data, fh, ensure_ascii=False, separators=(",", ":"))
         print("written:", a.src)

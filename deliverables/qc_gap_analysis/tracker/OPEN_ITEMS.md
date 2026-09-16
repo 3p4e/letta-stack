@@ -428,15 +428,15 @@ I, II and III; CJ082501/2 is grade IV. Grape Pie and Orange Punch Mimosa stop at
 
 **Needed.** Confirm the non-conformity with CNP and open the deviation, or obtain a corrected certificate.
 
-### OI-17 · Five microbiological counts exceed the Ph. Eur. 5.1.4 band and four sit inside it
+### OI-17 · Five microbiological counts exceed the Ph. Eur. 5.1.4 band and five sit inside it — and one word about the #9.2 criterion would settle every one of them
 
-*State:* **open** · *Evidence:* Ph. Eur. 5.1.4; 9 lots
+*State:* **open** · *Evidence:* Ph. Eur. 5.1.4; 10 lots; QCSP 001 #9.2; mark_microbial_band.py
 
-**Found.** Judged as the desk judges a counted limit — ≤ 10ⁿ against 2 × 10ⁿ — GG1024_01, OPM052501, GP052501, HPA052501 and CJ062501/2 are out of specification on TYMC; GG1024_02, HPA1024_01, GP0824_03 and CJ052501/01 are in the undetermined band.
+**Found.** Judged as the desk judges a counted limit — ≤ 10ⁿ against 2 × 10ⁿ — GG1024_01, OPM052501, GP052501, HPA052501 and CJ062501/2 are out of specification on TYMC; GG1024_02, HPA1024_01, GP0824_03, CJ052501/01 and now SCR012603 (P060382, 1.8 × 10⁴ on 364/0694/26, taken in from the certificate database on 16.09.2026) are in the undetermined band. Every one of the ten is TYMC against the ≤ 10⁴ CFU/g that all 172 certificates print for #9.2, and every laboratory that issued them declared the sample conforms. The Head of QC observed on 16.09.2026 that the printed specification may be 10⁵. If it is, all ten clear at once with margin, the red and amber marking lifts, and P060132's held TYMC reading (3.9 × 10⁴, OI-46) becomes an ordinary in-specification result. The register has been carrying the question in its own words for some time: four of these cells state “UNDETERMINED — pending the QCSP 001 reading”.
 
-**The desk.** Printed red bold and amber bold respectively, and named in each lot's STATUS.
+**The desk.** Printed red bold and amber bold respectively, and named in each lot's STATUS. mark_microbial_band.py now states the rule over every counted row rather than leaving it to the row that happened to raise it, and it defers to the desk's own word where the register already calls a cell out of specification or undetermined. Nothing about the criterion was changed: the certificate prints what QCSP 001 says, ≤ 10⁴.
 
-**Needed.** Each out-of-specification count needs an investigation record; the four undetermined need a disposition.
+**Needed.** Is the #9.2 (TYMC) criterion in QCSP 001 10⁴ or 10⁵ CFU/g? That single answer closes this item either way. If 10⁴ stands, each out-of-specification count needs an investigation record and the five undetermined need a disposition.
 
 ## Document content
 
