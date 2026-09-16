@@ -169,10 +169,25 @@ function printOpaqueLayer(doc) {
 // treatment uses (38px, the gold rules' margin). The right column returns to 132px, the
 // title returns to the release certificate's own -14px, the header height does not move
 // and no page grows. Nothing is reworded, resized or moved to another row.
-const HB_SUP_LAYER = '<style id="__owner-hb-sup-place">\n' +
-  'html body div.page div.header-bar{position:relative}\n' +
-  'html body div.page div.header-bar div.hb-right .hb-sup{position:absolute;' +
-  'right:var(--MARGIN-H);top:6px;white-space:nowrap}\n</style>';
+const HB_SUP_LAYER = '<style id="__owner-header-and-cells">\n' +
+  '/* Owner, 16.09.2026, three corrections in one layer.\n' +
+  '   1 The supersedes line sits BENEATH the document code and its date of issue, small,\n' +
+  '     grey and legible, and takes no width of its own: .hb-sup is a class coq_apply.js\n' +
+  '     writes and nothing in the package ever styles, so as an inline span it widened the\n' +
+  '     header right column from 132px to 277px and carried the centred title 87px left.\n' +
+  '   2 A result and its Macedonian half both align to the right page margin, the margin\n' +
+  '     the package already sets for the column (38.4px).\n' +
+  '   3 In a sub-row the Macedonian half drops beneath the result instead of running on\n' +
+  '     after it, at 4.8px on a 5.2px line — measured, the sub-row height does not move. */\n' +
+  'html body div.page div.header-bar div.hb-right .hb-sup{position:static;display:block;' +
+  'margin-top:2px;white-space:nowrap;font-family:\'Montserrat\',sans-serif;font-size:5.6px;' +
+  'font-style:italic;font-weight:500;letter-spacing:.1px;line-height:6.2px;color:#93A3B5}\n' +
+  'html body div.page div.tbl-wrap table.results tbody td.r-cell{text-align:right}\n' +
+  'html body div.page div.tbl-wrap table.results tbody td.r-cell .r-val{display:block;text-align:right}\n' +
+  'html body div.page div.tbl-wrap table.results tbody tr.sub-row td.r-cell .r-val.r-conform .mk{' +
+  'display:block !important;margin-left:0 !important;font-size:4.8px;line-height:5.2px;text-align:right}\n' +
+  'html body div.page div.tbl-wrap table.results tbody tr.sub-row td.r-cell .r-val.r-conform .mk::before{' +
+  'content:"" !important}\n</style>';
 
 const PRINT_ZEBRA_LAYER = printOpaqueLayer(base);
 console.log('print-opaque: %d gradient rule(s) converted for print',
