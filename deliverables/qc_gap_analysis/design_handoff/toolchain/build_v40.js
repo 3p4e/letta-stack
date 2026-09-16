@@ -189,6 +189,27 @@ const HB_SUP_LAYER = '<style id="__owner-header-and-cells">\n' +
   'html body div.page div.tbl-wrap table.results tbody tr.sub-row td.r-cell .r-val.r-conform .mk::before{' +
   'content:"" !important}\n</style>';
 
+const EDGE_FADE_LAYER = '<style id="__owner-edge-fade">\n' +
+  '/* Owner, 16.09.2026: the section bars and the two Section 01 bands ran to the sheet\n' +
+  '   edge at full strength. Measured on the rendered page: .sec-label read rgb(232,239,246)\n' +
+  '   at x=1 of 793, .pb-main rgb(248,250,252), .selrow rgb(252,253,254) — no fade at all,\n' +
+  '   while .gridrow and the table zebra were already white at x=0 and correct. @page margin\n' +
+  '   is 0, so a band with no fade is printed to the physical edge of the sheet.\n' +
+  '   Each band now reaches white by the sheet edge and full colour by the typographic\n' +
+  '   margin, in the package\'s own edge geometry. It is built from OPAQUE stops: the 56th\n' +
+  '   layer switches -webkit-mask-image off (mask-image:none !important) and the print layer\n' +
+  '   flattens alpha, so neither a mask nor an alpha veil survives to print here.\n' +
+  '   The vertical shading is not lost: the original gradient is kept as the upper layer,\n' +
+  '   painted from 10mm to 100%-10mm, and the ramp beneath carries that gradient\'s own\n' +
+  '   mid-height colour, so the two meet in the same tone. Nothing is resized or reworded. */\n' +
+  'html body div.page .sec-label{background-color:#fff !important;background-image:linear-gradient(rgb(172,191,210) 0%,rgb(172,191,210) 1.4%,rgb(218,229,238) 4.5%,rgb(250,252,254) 9%,rgb(246,250,253) 18%,rgb(246,250,253) 28%,rgb(240,245,250) 39%,rgb(233,240,247) 50%,rgb(225,234,242) 61%,rgb(218,229,238) 72%,rgb(213,225,236) 82%,rgb(217,227,238) 92%,rgb(224,233,241) 100%),linear-gradient(90deg,#fff 0,#fff 3mm,#E9F0F7 10mm,#E9F0F7 calc(100% - 10mm),#fff calc(100% - 3mm),#fff 100%) !important;' +
+  'background-size:calc(100% - 20mm) 100%,100% 100% !important;background-position:10mm top,left top !important;background-repeat:no-repeat,no-repeat !important}\n' +
+  'html body div.page .pb-main{background-color:#fff !important;background-image:linear-gradient(rgb(242,245,249) 0%,rgb(249,251,253) 55%,rgb(255,255,255) 100%),linear-gradient(90deg,#fff 0,#fff 3mm,#F9FBFD 10mm,#F9FBFD calc(100% - 10mm),#fff calc(100% - 3mm),#fff 100%) !important;' +
+  'background-size:calc(100% - 20mm) 100%,100% 100% !important;background-position:10mm top,left top !important;background-repeat:no-repeat,no-repeat !important}\n' +
+  'html body div.page .selrow{background-color:#fff !important;background-image:linear-gradient(90deg,#fff 0,#fff 3mm,#FCFDFE 10mm,#FCFDFE calc(100% - 10mm),#fff calc(100% - 3mm),#fff 100%) !important;' +
+  'background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important}\n' +
+'</style>';
+
 const PRINT_ZEBRA_LAYER = printOpaqueLayer(base);
 console.log('print-opaque: %d gradient rule(s) converted for print',
             PRINT_ZEBRA_LAYER.split('\n').length - 3);
@@ -207,7 +228,7 @@ for (const c of data.coqs) {
   if (html.indexOf(UN) < 0) throw new Error('Section 04 conformity chip not found');
   html = html.replace(UN, SEL);
   // append the owner layer as the new last layer (the package's own mechanism)
-  html = html.replace(/<\/head>/, OWNER_LAYER + '\n' + HB_SUP_LAYER + '\n' + PRINT_ZEBRA_LAYER + '\n</head>');
+  html = html.replace(/<\/head>/, OWNER_LAYER + '\n' + HB_SUP_LAYER + '\n' + PRINT_ZEBRA_LAYER + '\n' + EDGE_FADE_LAYER + '\n</head>');
   const dir = r.series === 'reissue' ? path.join(OUT, 'REISSUE', tranche[r.lot] ? 'T' + String(tranche[r.lot]).replace(/\D/g, '') : 'T3') : path.join(OUT, 'ISSUE_COQ');
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, out.filename), html);

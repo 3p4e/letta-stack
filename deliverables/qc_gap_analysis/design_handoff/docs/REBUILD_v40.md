@@ -38,7 +38,7 @@ Eighty-nine release certificates and eighty-three 12-month reissues. Every one c
 the **Section 04 conformity decision ticked**, as ordered on 16.09.2026, and none
 carries a DRAFT stamp.
 
-## 3 · The three corrections of 16.09.2026
+## 3 · The four corrections of 16.09.2026
 
 **The conformity result is bilingual, and the row does not grow.** `Conforms` keeps its
 size and its green; `Одговара` sits with it at the template's own `.r-conform .mk` size
@@ -58,6 +58,28 @@ alpha-to-transparent gradient with its opaque-against-white equivalent inside
 resolution and the page prints with banding and grey haloes. With the package's own
 layer stack the cream-and-gold header wash, the heavenly-blue zebra fading to nothing
 at both page edges and the gold rules print as drawn.
+
+**Every band fades to white before the sheet edge.** The owner read the printed set and
+found that the bars and washes of Section 01 — the bar carrying the section number, the
+band with the production batch number and the strain name, and the phenotype / chemotype
+row — ran to the physical edge of the paper at full strength instead of fading out at the
+page margin, and asked for the section bars and the Section 01 and Section 02 zebras to
+fade to white and blend with it. Measured on the rendered page at print media, the three
+bands read `rgb(232,239,246)`, `rgb(248,250,252)` and `rgb(252,253,254)` at the first pixel
+of 793 — no fade at all. `@page` sets `margin:0`, so a band with no fade is printed to the
+edge of the sheet. The table zebra and `.gridrow` were already correct, white at x = 0, so
+the complaint resolves to those three bands.
+
+A new last layer, `<style id="__owner-edge-fade">`, gives each of them the package's own
+edge geometry: white at the sheet edge, full colour by the typographic margin. It is built
+from **opaque stops**. The package defines an edge fade as a `-webkit-mask-image`, but the
+56th layer switches masks off (`mask-image:none !important`) and `__print-opaque` flattens
+fractional alpha against white for print — so neither a mask nor an alpha veil survives to
+print, and a fade written either way would do nothing. The vertical shading of the section
+bar and of the batch band is not lost: the original gradient is kept as the upper layer,
+painted from 10 mm to 100 % − 10 mm, over a horizontal ramp carrying that gradient's own
+mid-height colour, so the two meet in the same tone. Nothing is resized, reworded or
+re-coloured; the masthead and the footer keep their full-bleed by design.
 
 ## 4 · Four defects the rebuild exposed, and what was done
 
