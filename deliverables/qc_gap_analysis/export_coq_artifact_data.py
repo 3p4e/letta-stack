@@ -509,8 +509,15 @@ def main(out):
         for _r in _CR.load():
             _no = _CR.det_no(_r.get("Determination", ""))
             _v = _CR.pieces(_r.get("What the document prints", ""))
-            if _no and len(_v) == 1:
-                _pass[(CQ.BI.batch_key(_r["Batch"]), _no)] = _v[0]
+            if not (_no and len(_v) == 1):
+                continue
+            _pass[(CQ.BI.batch_key(_r["Batch"]), _no)] = _v[0]
+            # A register block named by its P number alone finds the pass's row by that
+            # number: the pass writes CC012601/1 where the block is labelled P060332, and
+            # keying on the cultivation batch alone lost that lot's three in-house cells.
+            _pp = (_r.get("P lot") or "").strip()
+            if re.match(r"^P\d{6}$", _pp):
+                _pass.setdefault((CQ.BI.batch_key(_pp), _no), _v[0])
         _cited, _filled, _carried = 0, 0, 0
 
         def _icoa_row(_c, _kind):
@@ -557,8 +564,17 @@ def main(out):
                 _rr["dd"] = _row["issued"]
                 _rr["lab"] = "Purely Plant GmbH (in-house)"
                 _cited += 1
+                # The 09.09 pass states what the RELEASE round's internal certificate
+                # carries, so it fills a release certificate's cell and never a reissue's:
+                # a reissue that cites its own campaign's internal certificate would
+                # otherwise print that campaign's identity result from the release round's
+                # record — asserting a retest that the row itself still calls
+                # "to be performed". A reissue carries the release row or stays blank.
+                if _kind != "initial release":
+                    continue
                 if (_rr.get("res") or "\u2014") == "\u2014":
-                    _val = _pass.get((CQ.BI.batch_key(_c["cb"]), _rr["no"]))
+                    _val = _pass.get((CQ.BI.batch_key(_c["cb"]), _rr["no"])) \
+                        or (_pass.get((CQ.BI.batch_key(_c["pp"]), _rr["no"])) if _c.get("pp") else None)
                     if _val:
                         _rr["res"] = _val
                         _filled += 1

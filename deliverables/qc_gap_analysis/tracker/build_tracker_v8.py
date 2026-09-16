@@ -1934,13 +1934,24 @@ def patch_coverage(wb):
     def rowkey(cu, p):
         return (re.sub(r"[＊*]", "", cu).strip(), "— not assigned —" if p.startswith("N/A") else p.strip())
 
-    rows, _dups = {}, []
+    rows, _dups, _starred = {}, [], []
     for r in range(2, last + 1):
-        k = rowkey(str(cov.cell(r, 1).value or ""), str(cov.cell(r, 2).value or ""))
+        _cu0 = str(cov.cell(r, 1).value or "")
+        k = rowkey(_cu0, str(cov.cell(r, 2).value or ""))
         if k in rows:
             _dups.append(r)                 # the owner's re-analysis row of a lot the tracker already merged
         else:
             rows[k] = r
+        # A starred row with no P batch beside an unstarred row that has one is not a
+        # second lot: it is the same lot's second sample (owner, 16.09.2026), and the
+        # tracker folds it the same way. rowkey strips the star but keeps the P lot, so
+        # the two do not collide on their own.
+        if re.search(r"[＊*]", _cu0) and k[1] == "— not assigned —":
+            _starred.append((r, k[0]))
+    for r, _base in _starred:
+        if any(kc == _base and kp != "— not assigned —" for kc, kp in rows):
+            _dups.append(r)
+            print(f"coverage: starred row {_base}＊ folded into the {_base} row — one lot, two samples")
 
     def recount(r):
         # ○ is the owner's own third mark, from Batch Coverage v19: a certificate
