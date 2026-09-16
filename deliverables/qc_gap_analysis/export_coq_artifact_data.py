@@ -9,6 +9,7 @@ build_coq_schedule.schedule() / icoa_plan() and build_document_registers
 load_register() / verified_map() — so the artifact cannot drift from the
 deliverables. No value is retyped here.
 """
+import datetime as _DT
 import json
 import re
 import os
@@ -659,6 +660,80 @@ def main(out):
                 if not _pending.startswith(CQ.ST_CARRIED):
                     _rr["st"] = "%s (%s) — %s" % (CQ.ST_CARRIED, _rid, _pending)
                 _carried_res += 1
+
+        # ------------------------------------------------------------------------
+        # A reissue may cite its OWN campaign's certificate where the initial round
+        # has nothing to carry.
+        #
+        # The ruling of 15.09.2026 sends a determination the retest did not run back
+        # to the initial testing. For ten lots the initial testing has no microbiology
+        # at all — the only microbiology on file is the IJZ-MB campaign's, and v35
+        # rightly stops a RELEASE certificate resting on a document issued after it.
+        # So the carry reached for an initial result that does not exist and the cell
+        # stayed empty on both rounds, while the certificate sat in the register:
+        # CoQ-PP_26-160 printed nothing for #9.1-#9.5 with 539/1070/26 of 31.08.2026
+        # on file and the reissue itself dated 21.09.2026.
+        #
+        # A reissue is dated after its campaign, so the objection that stops the
+        # release certificate does not apply to it. Where a carried row is still
+        # empty and the release register holds a document for that determination
+        # ISSUED ON OR BEFORE the reissue's own date, the reissue prints it and cites
+        # it. Nothing is invented and no date runs backwards; this only stops a
+        # result the desk holds from appearing on no certificate at all (OI-38).
+        _COL_DET = {"E": "4", "G": "5", "H": "6", "I": "8", "J": "9.1", "K": "9.2",
+                    "L": "9.3", "M": "9.4", "N": "9.5", "O": "10.2", "P": "10.1",
+                    "Q": "10.3", "R": "11.1", "S": "11.2", "T": "11.3", "U": "11.4",
+                    "V": "12"}
+
+        def _day(v):
+            try:
+                return _DT.datetime.strptime(str(v).strip(), "%d.%m.%Y").date()
+            except Exception:
+                return None
+
+        _have = {}
+        for _b in reg:
+            for _cert in (_b.get("certs") or []):
+                if _cert.get("stab"):
+                    continue
+                _dd = _day(_cert.get("date"))
+                for _col, _v in (_cert.get("vals") or {}).items():
+                    _det = _COL_DET.get(_col)
+                    if not _det or _dd is None:
+                        continue
+                    for _k in {str(_b.get("cb") or "").strip(),
+                               str(_b.get("pn") or "").strip()} - {""}:
+                        _have.setdefault(_k, {}).setdefault(_det, []).append(
+                            (_dd, _cert.get("code"), _cert.get("lab"), _v))
+        _campaign = 0
+        for _c in coqs:
+            if not _c["t"].startswith("additional"):
+                continue
+            _iss = _day(_c.get("issue"))
+            if _iss is None:
+                continue
+            _pool = (_have.get(str(_c.get("pp") or "").strip())
+                     or _have.get(str(_c.get("cb") or "").strip()) or {})
+            for _rr in _c["rows"]:
+                if str(_rr.get("res") or "\u2014").strip() not in ("", "\u2014"):
+                    continue
+                _cands = [x for x in _pool.get(_rr["no"], []) if x[0] <= _iss]
+                if not _cands:
+                    continue
+                _dd, _code, _lab, _val = max(_cands)          # the latest that may be cited
+                _val = str(_val or "").strip()
+                if not _val or _val == "\u2014":
+                    continue
+                _rr["res"] = _val
+                _rr["doc"] = _code or "\u2014"
+                _rr["dd"] = _dd.strftime("%d.%m.%Y")
+                _rr["lab"] = _lab or "\u2014"
+                _rr["st"] = CQ.ST_OK
+                _campaign += 1
+        if _campaign:
+            print("Campaign result on the reissue: %d determination(s) the initial round "
+                  "never covered now print the campaign certificate the register holds "
+                  "(OI-38)" % _campaign)
         if _carried_res:
             print("Carried to the reissue: %d determination(s) the retest did not run now "
                   "print the release round's result, document and date (owner, 15.09.2026)"
