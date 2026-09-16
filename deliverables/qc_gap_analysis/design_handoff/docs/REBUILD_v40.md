@@ -101,7 +101,7 @@ Montserrat. Noted here rather than fixed, because fixing it means adding a fourt
 family to the stack, which is the template's decision and not the desk's.
 
 
-### 4.3 · Determinations 9 to 12 printed grey down both page edges
+### 4.3 · Grey down both page edges — determinations 9 to 12, then Section 01
 
 The Head of QC saw it before any measurement did: rows 1 to 8 clean, the 9-to-12 block
 grey at the left and right edges of the page. One defect, one cause.
@@ -122,13 +122,22 @@ as well, so determinations 9 to 12 carried the transparent gradient into the PDF
 banded grey exactly where the fade sits, while 1 to 8 printed clean. Same design, two
 code paths, one of them converted.
 
-`build_v40.js` now reads every rule in the base that still paints the alpha stripe and
-re-emits it — **verbatim selector and all** — inside `@media print` with the opaque
-gradient the package itself uses. Same selector means same specificity, and last in
-source wins, so the conversion lands on exactly the rules it missed without inventing a
-selector, a colour, a geometry or a row height. Three rules converted. The substitution
-is the package's own: `rgba(247,249,252,a)` over white is `rgb(C + (255 - C)(1 - a))`,
-so `.55` is `rgb(251,252,253)` and `.92` is `rgb(248,249,252)`.
+The first fix named the rules it converted, so it repaired the block that had been
+pointed at and left the next one: `.gridrow.lk-inline`, the attribute strips of Section
+01, are the same construction — a cream fill fading to transparent at both edges — and
+printed the same grey.
+
+So the conversion is done **by rule, not by name**. `build_v40.js` reads every rule in
+the base whose background is a gradient carrying a partial alpha and re-emits it —
+verbatim selector and all — inside `@media print`, with each `rgba(C,a)` replaced by
+`rgb(C + (255 - C)(1 - a))`, that colour composited over white, and each declaration
+marked `!important` to match the originals. Same selector means same specificity, and
+last in source wins, so the conversion lands exactly where the original did without
+inventing a selector, a colour, a geometry or a row height. Masks are left alone: they
+are the package's business and it already neutralises the ones it draws.
+
+Verified by walking every element of a built certificate under print emulation — two
+elements carried an alpha gradient before, **none do now**.
 
 Measured on the printed page at 150 dpi, 17 mm in from the left edge of a sub-row:
 
@@ -138,6 +147,7 @@ Measured on the printed page at 150 dpi, 17 mm in from the left edge of a sub-ro
 | at 13.5 mm | 228,228,228 | 254,254,254 | 254,254,254 |
 | at 17 mm | 207,208,208 | 253,253,254 | 253,253,254 |
 | mid-page | 245,247,250 | 247,249,251 | 247,249,251 |
+| Section 01 strip, 6.8 mm | 193,193,192 | 255,254,252 | — |
 
 Swept over every page of the Tranche 1 document afterwards: no neutral grey anywhere in
 either fade zone.
