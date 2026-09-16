@@ -203,6 +203,17 @@ EXTRACT = r"""
       lk: lk, blanks: blanks, over: over, band: band, html: html,
       tall: tall,
       labs: doc.querySelectorAll("table.labref tbody tr").length,
+      /* Section 03 read back as printed: the laboratory name of every row, so a
+         laboratory that appears twice — one institution the export spells two
+         ways, its parameters split between the rows — is reported at build time
+         rather than shipped on 20 of 73 certificates unnoticed. */
+      labrows: Array.from(doc.querySelectorAll("table.labref tbody tr")).map(tr => {
+        const td = tr.querySelectorAll("td");
+        const nm = tr.querySelector(".lr-lab");
+        return { lab: nm ? (nm.firstChild ? nm.firstChild.textContent : nm.textContent).trim() : "",
+                 codes: td[1] ? td[1].textContent.trim() : "",
+                 nos: td[2] ? td[2].textContent.trim() : "" };
+      }),
     });
   }
   return out;
@@ -327,6 +338,22 @@ def main():
           % (len(docs) - len(badtitle), len(docs)))
     for d in badtitle:
         print("    %-12s title reads %r" % (d["p_lot"], d.get("title", "")))
+    # Section 03 read back: one laboratory, one row. The export spells an
+    # institution more than one way and the compiler used to key on the spelling,
+    # so 20 of 73 certificates printed the same laboratory twice — 14 of them with
+    # the identical code and date on both rows and the parameters it covers split
+    # between them.
+    duplab = []
+    for d in docs:
+        names = [r.get("lab", "") for r in (d.get("labrows") or []) if r.get("lab")]
+        for n in sorted(set(names)):
+            if names.count(n) > 1:
+                duplab.append((d.get("p_lot"), n, names.count(n)))
+    print("%d of %d print each laboratory on one row of Section 03"
+          % (len(docs) - len({x[0] for x in duplab}), len(docs)))
+    for lot, n, k in duplab:
+        print("    %-12s %s on %d rows" % (lot, n[:56], k))
+
     # Section 01, read back off the page the same way: the production batch the
     # lockup prints must be the document's own P lot, and the potency and the
     # specification reference must be there at all. Until 16.09.2026 this read-back

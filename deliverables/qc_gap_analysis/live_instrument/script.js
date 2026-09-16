@@ -2717,16 +2717,29 @@ function fillCoq(c){
     });
     if (dropped.length) doc.body.setAttribute("data-untested", dropped.join(" "));
   }
-  /* section 03 — from the citations themselves */
-  var labs = {};
+  /* section 03 — from the citations themselves.
+
+     Keyed on the laboratory as the certificate PRINTS it, not on the spelling the
+     row happens to carry. The export names one institution more than one way —
+     "UKIM Faculty of Pharmacy — Center for Natural Products" and "CNP", "Farmahem"
+     and "FHM" — and labMeta resolves every one of them to the same printed name and
+     accreditation. Keyed on the raw string, those spellings opened two map entries,
+     so 20 of 73 certificates printed ONE laboratory on two rows, 14 of them with the
+     identical certificate code and date on both, and the parameters it covers split
+     between them ("3–5, 8" on one row, "6" on the other). A reader cannot tell that
+     from two laboratories. The key is the resolved identity now, so one laboratory
+     is one row and its parameter list is whole. */
+  var labs = {}, labName = {};
   c.rows.forEach(function(r){
     if (!r.doc || r.doc === "—") return;
-    var L = labs[r.lab] || (labs[r.lab] = { codes: {}, nos: [] });
+    var key = labMeta(r.lab)[0] || r.lab;
+    if (!labs[key]) { labs[key] = { codes: {}, nos: [] }; labName[key] = r.lab; }
+    var L = labs[key];
     L.codes[r.doc] = r.dd || "";
     L.nos.push(groupNo(r.no));
   });
-  q("table.labref tbody").innerHTML = Object.keys(labs).map(function(lab){
-    var m = labMeta(lab), L = labs[lab];
+  q("table.labref tbody").innerHTML = Object.keys(labs).map(function(key){
+    var lab = labName[key], m = labMeta(lab), L = labs[key];
     var codes = Object.keys(L.codes).map(function(cd){
       return esc(cd) + (L.codes[cd] ? ", " + esc(L.codes[cd]) : "");
     }).join(" · ");
