@@ -107,49 +107,55 @@ function rec(c) {
 }
 fs.rmSync(OUT, { recursive: true, force: true });
 const stats = { n: 0, warn: 0, findings: 0, hard: 0, byDir: {} }, report = [];
-// ---- the grey edges of determinations 9 to 12 -----------------------------------
-// The package's __print-opaque layer exists because Chromium flattens a transparency
-// group at raster resolution: an alpha-to-transparent gradient prints as grey banding,
-// not as a fade to white. That layer converts every zebra stripe to its opaque
-// equivalent — but only for the selectors it names, and the package's own comment says
-// why that is not all of them: "the sub-rows kept the long band only because their
-// sibling selector outranks those." The 642-character sibling chain that stripes the
-// sub-rows of a group outranks the print layer too, so determinations 9 to 12 printed
-// their fade as grey down both page edges while 1 to 8 printed clean.
+// ---- the grey edges ---------------------------------------------------------------
+// Chromium flattens a transparency group at raster resolution, so an alpha gradient
+// prints as grey banding rather than as a fade to white. The package ships
+// __print-opaque for exactly this: inside @media print every fading fill is replaced by
+// the opaque colour it would have over white. It converts the rules it names, and the
+// package's own comment says why that is not all of them — "the sub-rows kept the long
+// band only because their sibling selector outranks those". Two families outranked or
+// outlived it: the sibling chain that stripes a group's sub-rows (determinations 9 to
+// 12) and .gridrow.lk-inline, the attribute strips of Section 01. Both printed grey down
+// the page edges while everything around them printed clean.
 //
-// This finds every rule in the base that still paints the alpha stripe and re-emits it,
-// verbatim selector and all, inside @media print with the opaque gradient. Same
-// selector means same specificity, and last in source wins — so the conversion reaches
-// exactly the rules it missed, with no new selector, colour, geometry or row height.
-// rgba(247,249,252,a) over white is rgb(C + (255-C)(1-a)), which is the package's own
-// substitution: .55 -> 251,252,253 and .92 -> 248,249,252.
-const ZEBRA_ALPHA = /rgba\(247,\s*249,\s*252/;
-const OPAQUE_ZEBRA =
-  'background-color:transparent !important;background-image:linear-gradient(90deg,' +
-  '#fff 0,#fff 38px,rgb(251,252,253) 92px,rgb(248,249,252) 150px,rgb(247,249,252) 50%,' +
-  'rgb(248,249,252) calc(100% - 150px),rgb(251,252,253) calc(100% - 92px),' +
-  '#fff calc(100% - 38px),#fff 100%) !important;background-size:100% 100% !important;' +
-  'background-position:top left !important;background-repeat:no-repeat !important';
+// So the conversion is done by rule rather than by name. Every rule in the base whose
+// background is a gradient with a partial alpha is re-emitted inside @media print with
+// the SAME selector — same specificity, last in source, so it lands exactly where the
+// original did — and every rgba(C,a) replaced by rgb(C + (255 - C)(1 - a)), which is
+// that colour composited over white. Nothing else changes: no selector is invented, no
+// colour is chosen, no geometry or row height moves.
+const ALPHA_STOP = /rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([01]?(?:\.\d+)?)\s*\)/g;
+function overWhite(css) {
+  return css.replace(ALPHA_STOP, (m, r, g, b, a) => {
+    const f = parseFloat(a);
+    const mix = c => Math.round(Number(c) + (255 - Number(c)) * (1 - f));
+    return 'rgb(' + mix(r) + ',' + mix(g) + ',' + mix(b) + ')';
+  });
+}
+function important(body) {                       // the originals carry !important; match it
+  return body.split(';').map(d => d.trim()).filter(Boolean)
+    .map(d => /!important$/.test(d) ? d : d + ' !important').join(';');
+}
 function printOpaqueLayer(doc) {
   const seen = new Set(), rules = [];
   const re = /([^{}]+)\{([^{}]*)\}/g;
   let m;
   while ((m = re.exec(doc))) {
     const body = m[2];
-    if (!ZEBRA_ALPHA.test(body) || body.indexOf('linear-gradient(90deg') < 0) continue;
-    // the selector as written, with any comment before it stripped off
+    if (body.indexOf('linear-gradient') < 0) continue;
+    if (!/rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*0?\.\d+\s*\)/.test(body)) continue;
+    if (body.indexOf('mask') >= 0) continue;      // a mask is the package's business
     const sel = m[1].replace(/\/\*[\s\S]*?\*\//g, '').replace(/<[^>]*>/g, '').trim();
-    if (!sel || seen.has(sel)) continue;
+    if (!sel || sel.indexOf('@') === 0 || seen.has(sel)) continue;
     seen.add(sel);
-    rules.push(sel + '{' + OPAQUE_ZEBRA + '}');
+    rules.push(sel + '{' + important(overWhite(body)) + '}');
   }
-  if (!rules.length) throw new Error('no alpha zebra rule found to convert');
-  return '<style id="__print-opaque-zebra-rest">\n@media print{\n' +
-         rules.join('\n') + '\n}</style>';
+  if (!rules.length) throw new Error('no alpha gradient found to convert');
+  return '<style id="__print-opaque-rest">\n@media print{\n' + rules.join('\n') + '\n}</style>';
 }
 const PRINT_ZEBRA_LAYER = printOpaqueLayer(base);
-console.log('print-opaque: %d zebra rule(s) converted for print',
-            (PRINT_ZEBRA_LAYER.match(/\}/g) || []).length - 2);
+console.log('print-opaque: %d gradient rule(s) converted for print',
+            PRINT_ZEBRA_LAYER.split('\n').length - 3);
 
 for (const c of data.coqs) {
   const r = rec(c);
