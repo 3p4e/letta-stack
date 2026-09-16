@@ -39,7 +39,7 @@ RULINGS = [
 # Spellings that differ from the canonical form ONLY by spacing or case. Repairing these
 # decides nothing, so it is done here rather than left for a person.
 _SPACING_ONLY = ["Gorilla Glue", "Fat Bastard", "Grape Pie", "Blue Gelato", "Motor Breath",
-                 "Blue Sunset Sherbet", "High Pro Amnesia", "Orange Punch Mimosa",
+                 "Blue Sunset Sherbet", "High Pro Amnesia", "Orange Punch Mimosa", "Cash Cow", "Jelly Donutz",
                  "Grapes and Cream", "Amnesia Core Cut", "Chem Flyer", "Kush Crasher",
                  "Pure Michigen", "Wedding Cake", "Jokerz 31", "CashCow", "Scrambler",
                  "Clemosa", "GG4"]

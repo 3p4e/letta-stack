@@ -71,6 +71,7 @@ nav.tabs button:focus-visible,button:focus-visible,input:focus-visible,select:fo
 .toolbar label{display:flex;gap:6px;align-items:center;color:var(--muted)}
 .scroll{overflow-x:auto;border:1px solid var(--line);background:var(--surface)}
 table{border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
+.note{white-space:normal;color:#4a5568;font-size:.86em;line-height:1.45;padding:8px 10px}
 th,td{border:1px solid var(--line);padding:4px 7px;text-align:left;vertical-align:top;white-space:nowrap}
 th{background:var(--head);font-weight:500;position:sticky;top:0;z-index:2}
 td.c,th.c{text-align:center}
@@ -126,11 +127,11 @@ footer{color:var(--muted);font-size:12.5px;margin-top:40px;max-width:80ch}
   <button role="tab" aria-selected="true" data-view="overview">Batch Coverage</button>
   <button role="tab" aria-selected="false" data-view="checklist">Checklist</button>
   <button role="tab" aria-selected="false" data-view="tracker">CoQ Parameter Tracker</button>
-  <button role="tab" aria-selected="false" data-view="icoa">iCoA Issuance</button>
   <button role="tab" aria-selected="false" data-view="register">iCoA Register</button>
   <button role="tab" aria-selected="false" data-view="coqreg">CoQ Register</button>
   <button role="tab" aria-selected="false" data-view="delivery">Delivery T1–T3</button>
   <button role="tab" aria-selected="false" data-view="imb">ImB Register</button>
+  <button role="tab" aria-selected="false" data-view="recon">Reconciliation 09.09</button>
 </nav>
 
 <section id="overview">
@@ -177,20 +178,14 @@ footer{color:var(--muted);font-size:12.5px;margin-top:40px;max-width:80ch}
   <div id="lots"></div>
 </section>
 
-<section id="icoa" hidden>
-  <p class="sub">One iCoA per P lot (identification A and B and foreign matter), in the order of packaging: the iCoA is dated on the first day of packaging (the Head of QC’s list of 04.09.2026), the day the issuance plan uses as the CoQ basis. Each carries identification A, identification B and foreign matter, tested at Purely Plant at packaging, and is issued no earlier than the last day of packaging (Packaging complete). Identification C is covered by the cannabinoid-assay certificate named in the last column, cited on the CoQ directly.</p>
-  <div class="toolbar"><input id="ic-q" type="search" placeholder="Filter by batch, number, strain, certificate…" aria-label="Filter iCoA rows"><span id="ic-n" class="label"></span></div>
-  <div class="scroll"><table id="ic-table"></table></div>
-</section>
-
 <section id="register" hidden>
-  <p class="sub">Preliminary iCoA issuance register (Head of QC, 05.09.2026). One iCoA per P lot for identification A, B and foreign matter, tested at packaging. Codes iCoA-PP_26-nnn in the order of issue: the legacy lots (packed before the SOP floor of 11.05.2026, or holding an old in-house certificate) are all issued on 15.05.2026 in chronological order of packaging; the post-SOP lots follow, each on the first working day 5 days after its packaging. A row that cannot be issued yet carries no number: the retest iCoAs await the retest sampling, whose date is not on the desk. The plan’s references of 31.08.2026 are superseded and kept beside the codes. In the workbook the number, the code and the dates are formulas, so a row inserted between two certificates renumbers every row beneath it; this page shows the computed values.</p>
+  <p class="sub" id="rg-note"></p>
   <div class="toolbar"><input id="rg-q" type="search" placeholder="Filter by code, batch, strain, date…" aria-label="Filter register rows"><span id="rg-n" class="label"></span></div>
   <div class="scroll"><table id="rg-table"></table></div>
 </section>
 
 <section id="coqreg" hidden>
-  <p class="sub">Preliminary CoQ issuance register (Head of QC, 05.09.2026). Codes CoQ-PP_26-nnn in the order of issue: the legacy lots (packed before the SOP floor of 11.05.2026, or holding an old in-house QCCoA 001 certificate, which the CoQ supersedes) are all issued on 27.05.2026 in chronological order of packaging; the post-SOP lots follow on the first working day 7 days after the latest eCoA the CoQ cites, never before 27.05.2026. Every CoQ cites its lot’s iCoA and reports identification C as Conforms, referenced to the eCoA that covers Total THC. No number is reserved for a CoQ that cannot be issued yet: an uncertified determination (named in Status), a missing packaging date, every retest CoQ. Adherence flags are listed under the table.</p>
+  <p class="sub" id="cq-note"></p>
   <div class="toolbar"><input id="cq-q" type="search" placeholder="Filter by code, batch, strain, date…" aria-label="Filter CoQ register rows"><span id="cq-n" class="label"></span></div>
   <div class="scroll"><table id="cq-table"></table></div>
   <p class="sub" id="cq-flags"></p>
@@ -208,6 +203,12 @@ footer{color:var(--muted);font-size:12.5px;margin-top:40px;max-width:80ch}
   <div class="scroll"><table id="ib-table"></table></div>
 </section>
 
+<section id="recon" hidden>
+  <p class="sub">The owner’s pass of 09.09.2026 over the 387 certificates in <code>eCoA_DATABASE</code>, put beside the desk cell by cell. It closed 84 parameters this workbook had marked ✗ — those now read ○, which is not coverage: a certificate is on file and the tracker does not name it, so nothing can be cited on a certificate of quality until the desk records the document. It also disagrees with the desk about 46 cells, and none of those is resolved here. And it settles why identification A, identification B and foreign matter are blank almost everywhere: the iCoA that carries them has not been issued.</p>
+  <div class="toolbar"><input id="rc-q" type="search" placeholder="Filter…" aria-label="Filter reconciliation rows"><span id="rc-n" class="label"></span></div>
+  <div class="scroll"><table id="rc-table"></table></div>
+</section>
+
 <footer>One two-row block per testing instance: the result on the top row, the certificate that carries it on the bottom. Parameters 9–11 print each determination in its own column. Conformance is judged on release results only, against the acceptance criteria on the Parameters sheet (counted limits ≤10ⁿ judged against 2×10ⁿ, Ph. Eur. 2.6.12). Built from <code>CoQ_Analysis_Master_v10.xlsx</code>, 04.09.2026: the 30 IJZ-MB microbiology certificates of 31.08/01.09.2026 are included as testing instances.</footer>
 </div>
 
@@ -221,13 +222,13 @@ const lsGet = k => { try { return JSON.parse(localStorage.getItem(k)||'{}'); } c
 const lsSet = (k,v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} };
 
 document.getElementById('subline').textContent =
-  `v11 · 05.09.2026 · ${S.lots} lots · 12 parameters · ${S.instances} testing instances · ${S.gaps} parameter gaps · ${S.oos} out of specification · ${S.und} undetermined · ${S.stab} stability exceedances`;
+  `v__VER__ · ${D.built || ''} · ${S.lots} lots · 12 parameters · ${S.instances} testing instances · ${S.gaps} parameter gaps · ${S.oos} out of specification · ${S.und} undetermined · ${S.stab} stability exceedances`;
 
 /* ---------- tabs ---------- */
 const tabs = [...document.querySelectorAll('nav.tabs button')];
 function show(view){
   tabs.forEach(b => b.setAttribute('aria-selected', String(b.dataset.view===view)));
-  ['overview','checklist','tracker','icoa','register','coqreg','delivery','imb'].forEach(v => { const el = document.getElementById(v); if (el) el.hidden = v!==view; });
+  ['overview','checklist','tracker','register','coqreg','delivery','imb','recon'].forEach(v => { const el = document.getElementById(v); if (el) el.hidden = v!==view; });
   try { localStorage.setItem('coq9.view', view); } catch(e){}
 }
 tabs.forEach(b => b.addEventListener('click', () => show(b.dataset.view)));
@@ -374,25 +375,12 @@ function renderTracker(){
 document.getElementById('tr-q').addEventListener('input', renderTracker);
 document.getElementById('tr-flag').addEventListener('change', renderTracker);
 
-/* ---------- iCoA issuance ---------- */
-function renderIcoa(){
-  const rows = D.icoa || [];
-  const q = document.getElementById('ic-q').value.trim().toLowerCase();
-  const cols = rows.length ? Object.keys(rows[0]) : [];
-  let n = 0;
-  const body = rows.filter(r => !q || Object.values(r).join(' ').toLowerCase().includes(q)).map(r => { n++;
-    return '<tr>' + cols.map(c => {
-      const v = r[c] || '';
-      const cls = (c === 'Seq') ? ' class="c"' : (c === 'iCoA' || c === 'CoQ' || c === 'CU Batch' || c === 'P Batch' || c.startsWith('Ident C')) ? ' class="mono"' : '';
-      const pill = v === 'held for review' ? `<span class="pill p-warn">${esc(v)}</span>` : (v.startsWith('—') ? `<span class="pill p-bad">${esc(v)}</span>` : esc(v));
-      return `<td${cls}>${pill}</td>`;
-    }).join('') + '</tr>'; }).join('');
-  document.getElementById('ic-table').innerHTML = '<thead><tr>' + cols.map(c => `<th>${esc(c)}</th>`).join('') + '</tr></thead><tbody>' + body + '</tbody>';
-  document.getElementById('ic-n').textContent = `${n} of ${rows.length} iCoAs`;
-}
-document.getElementById('ic-q').addEventListener('input', renderIcoa);
-
 /* ---------- iCoA register ---------- */
+/* The note under each register is the workbook's own, not a sentence kept here: this
+   page once stated 15.05.2026 and 27.05.2026 for the legacy series while the sheets
+   issued on 03.06.2026 and 06.06.2026. */
+document.getElementById('rg-note').textContent = D.register_note || '';
+document.getElementById('cq-note').textContent = D.coq_note || '';
 function renderRegister(){
   const rows = D.register || [];
   const q = document.getElementById('rg-q').value.trim().toLowerCase();
@@ -473,10 +461,32 @@ function renderImb(){
 }
 document.getElementById('ib-q').addEventListener('input', renderImb);
 
-renderOverview(); renderChecklist(); renderTracker(); renderIcoa(); renderRegister(); renderCoqReg();
-renderDelivery(); renderImb();
+/* ---------- reconciliation ---------- */
+/* The sheet is sectioned rather than tabular: a row with only its first cell
+   filled, in capitals, opens a section; everything else is a row of that
+   section. Rendered the same way so the page and the sheet read alike. */
+function renderRecon(){
+  const q = (document.getElementById('rc-q').value || '').toLowerCase();
+  const all = D.reconciliation || [];
+  const rows = all.filter(r => !q || r.join(' ').toLowerCase().includes(q));
+  document.getElementById('rc-n').textContent = rows.length + ' of ' + all.length + ' rows';
+  /* a row with only its first cell filled spans the table: in capitals it opens
+     a section, otherwise it is one of the sheet's notes. Left as an ordinary
+     cell it would stretch column one to the width of the note. */
+  const alone = r => r[0] && !r.slice(1).some(c => c && c.trim());
+  document.getElementById('rc-table').innerHTML = '<tbody>' + rows.map(r =>
+    alone(r) ? (r[0] === r[0].toUpperCase()
+        ? `<tr><th colspan="5" style="text-align:left">${esc(r[0])}</th></tr>`
+        : `<tr><td colspan="5" class="note">${esc(r[0])}</td></tr>`)
+      : '<tr>' + r.map((c, i) => `<td${i === 0 ? ' class="mono"' : ''}>${esc(c)}</td>`).join('') + '</tr>'
+  ).join('') + '</tbody>';
+}
+document.getElementById('rc-q').addEventListener('input', renderRecon);
+
+renderOverview(); renderChecklist(); renderTracker(); renderRegister(); renderCoqReg();
+renderDelivery(); renderImb(); renderRecon();
 let v = 'overview'; try { v = localStorage.getItem('coq9.view') || v; } catch(e){}
-show(['overview','checklist','tracker','icoa','register','coqreg','delivery','imb'].includes(v) ? v : 'overview');
+show(['overview','checklist','tracker','register','coqreg','delivery','imb','recon'].includes(v) ? v : 'overview');
 })();
 </script>
 '''

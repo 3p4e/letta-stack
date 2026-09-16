@@ -1,0 +1,2 @@
+# Run logs. The receipt for a build is docs/REBUILD_v40.md, not a console capture.
+*.log

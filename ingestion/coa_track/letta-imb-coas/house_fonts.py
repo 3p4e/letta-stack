@@ -39,9 +39,17 @@ SUBSETS = ("latin", "cyrillic")
 # request no italic axis, so a browser fakes it by slanting the upright face and the
 # headless renderer gives up and reaches for Liberation Sans Italic instead. Requesting
 # the real italics costs six more faces and removes both problems. Only the weights that
-# are actually set in italic are asked for.
+# are actually set in italic are asked for — and EVERY weight that is, which is a
+# stricter requirement than it looks. `.ap-cred` on the certificate sets
+# `font-weight:600; font-style:italic`, and italic 600 was missing from this list, so
+# Chromium picked the nearest real italic (500) and emboldened it. A synthesised face
+# has no outlines to embed: Skia rasterises it into Type 3 glyph procedures, which is
+# why 39 faces in the Tranche 1 PDF and 27 in Tranche 2 were Type 3 while the same
+# family embedded as TrueType elsewhere in the same document. Pinning the variable
+# axes fixed the faces the page asks for by name; it could not fix one the page never
+# asked for. When a rule sets an italic weight, that weight belongs here.
 FAMILIES = (
-    ("Montserrat", "Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,700"),
+    ("Montserrat", "Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700"),
     ("Roboto Mono", "Roboto+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500"),
 )
 
@@ -50,7 +58,7 @@ FAMILIES = (
 ALWAYS = "TARGETNEW0123456789.,:;()[]/|-–—·%°±×≤≥<>&#@№µΔ⁹⁴⁵₁₂ "
 
 
-def _fetch(family_spec):
+def _fetch(family_spec, subsets=SUBSETS):
     """Upstream woff2 for one family: [(weight, style, subset, path)], cached on disk."""
     os.makedirs(CACHE, exist_ok=True)
     url = "https://fonts.googleapis.com/css2?family=%s&display=swap" % family_spec
@@ -59,10 +67,17 @@ def _fetch(family_spec):
     out = []
     for subset, block in re.findall(r"/\*\s*([a-z-]+)\s*\*/\s*(@font-face\s*\{.*?\})",
                                     css, re.S):
-        if subset not in SUBSETS:
+        if subset not in subsets:
             continue
         src = re.search(r"url\((https://[^)]+\.woff2)\)", block)
         weight = re.search(r"font-weight:\s*(\d+)", block)
+        # Google states the range each slice covers. It has to travel with the face:
+        # several slices share one family/weight/style, and @font-face rules that
+        # agree on those three and carry no unicode-range do not combine — the last
+        # one parsed wins outright. Without the range the Latin slice (served last)
+        # silenced the Cyrillic and Greek ones, and every Н, Њ, № and Δ fell to a
+        # system font. See REBUILD_v40.md.
+        rng = re.search(r"unicode-range:\s*([^;}]+)", block)
         if not src:
             continue
         w = weight.group(1) if weight else "400"
@@ -74,7 +89,7 @@ def _fetch(family_spec):
             open(path, "wb").write(urllib.request.urlopen(
                 urllib.request.Request(src.group(1), headers={"User-Agent": UA}),
                 timeout=30).read())
-        out.append((w, style, subset, path))
+        out.append((w, style, subset, path, rng.group(1).strip() if rng else ""))
     return out
 
 
@@ -101,6 +116,21 @@ def _subset(path, text, family="", weight="400", slant="normal"):
     from fontTools.ttLib import TTFont
 
     font = TTFont(path)
+    # Google serves these families as VARIABLE fonts, and a variable font cannot
+    # be embedded in a PDF: Skia rasterises each instance into Type 3 glyph
+    # procedures instead, which are an order of magnitude heavier than outlines
+    # and which some viewers render poorly. Pinning the weight axis first turns
+    # the face into an ordinary static font that embeds as TrueType.
+    if "fvar" in font:
+        from fontTools.varLib import instancer
+        axes = {a.axisTag: a for a in font["fvar"].axes}
+        loc = {}
+        if "wght" in axes:
+            w = float(weight)
+            loc["wght"] = min(max(w, axes["wght"].minValue), axes["wght"].maxValue)
+        for tag, axis in axes.items():
+            loc.setdefault(tag, axis.defaultValue)
+        font = instancer.instantiateVariableFont(font, loc, inplace=True, updateFontNames=False)
     cmap = set()
     for table in font["cmap"].tables:
         cmap |= set(table.cmap)
@@ -129,12 +159,19 @@ def _subset(path, text, family="", weight="400", slant="normal"):
     return buf.getvalue()
 
 
-def font_face_css(text):
-    """An @font-face block covering `text`, with every face inlined as a data URI."""
+def font_face_css(text, families=FAMILIES, subsets=SUBSETS):
+    """An @font-face block covering `text`, with every face inlined as a data URI.
+
+    `families` and `subsets` default to the QCSP 001 specifications' own — two
+    families, Latin and Cyrillic. A document that sets a third face or reaches
+    outside those two scripts passes its own: the certificate of quality sets its
+    banner in Orbitron and prints "Total Δ⁹-THC", and a Δ that is not in the
+    embedded subset is a Δ the renderer substitutes.
+    """
     chars = set(text) | set(ALWAYS)
     blocks, raw, embedded = [], 0, 0
-    for family, spec in FAMILIES:
-        for weight, style, subset, path in _fetch(spec):
+    for family, spec in families:
+        for weight, style, subset, path, rng in _fetch(spec, subsets):
             data = _subset(path, "".join(chars), family, weight, style)
             if not data:
                 continue
@@ -142,8 +179,9 @@ def font_face_css(text):
             embedded += len(data)
             blocks.append(
                 "@font-face{font-family:'%s';font-style:%s;font-weight:%s;"
-                "font-display:block;src:url(data:font/woff2;base64,%s) format('woff2');}"
-                % (family, style, weight, base64.b64encode(data).decode()))
+                "font-display:block;src:url(data:font/woff2;base64,%s) format('woff2');%s}"
+                % (family, style, weight, base64.b64encode(data).decode(),
+                   "unicode-range:%s;" % rng if rng else ""))
     return "\n".join(blocks), raw, embedded
 
 

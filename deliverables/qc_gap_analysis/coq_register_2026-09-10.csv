@@ -1,0 +1,173 @@
+key,cu_batch,p_batch,series,coq_code,issue_date,rule_date,icoa_ref,icoa_issue_date,issuable
+CJ1024|I,CJ1024,N/A — no P batch assigned,initial release,CoQ-PP_26-001,06.06.2026,06.06.2026,iCoA-PP_26-001,03.06.2026,yes
+BSS1024|I,BSS1024,N/A — no P batch assigned,initial release,CoQ-PP_26-002,06.06.2026,06.06.2026,iCoA-PP_26-002,03.06.2026,yes
+BG1024|I,BG1024,N/A — no P batch assigned,initial release,CoQ-PP_26-003,06.06.2026,06.06.2026,iCoA-PP_26-003,03.06.2026,yes
+GG1024|I,GG1024,N/A — no P batch assigned,initial release,CoQ-PP_26-004,06.06.2026,06.06.2026,iCoA-PP_26-004,03.06.2026,yes
+HPA1024|I,HPA1024,N/A — no P batch assigned,initial release,CoQ-PP_26-005,06.06.2026,06.06.2026,iCoA-PP_26-005,03.06.2026,yes
+OPM1024|I,OPM1024,N/A — no P batch assigned,initial release,CoQ-PP_26-006,06.06.2026,06.06.2026,iCoA-PP_26-006,03.06.2026,yes
+P050022|I,GP0824_02,P050022,initial release,CoQ-PP_26-007,06.06.2026,06.06.2026,iCoA-PP_26-007,03.06.2026,yes
+P050012|I,GG1024_02,P050012,initial release,CoQ-PP_26-008,06.06.2026,06.06.2026,iCoA-PP_26-008,03.06.2026,yes
+P050032|I,MB0824_04,P050032,initial release,CoQ-PP_26-009,06.06.2026,06.06.2026,iCoA-PP_26-009,03.06.2026,yes
+P050042|I,OMP1024_01,P050042,initial release,CoQ-PP_26-010,06.06.2026,06.06.2026,iCoA-PP_26-090,03.06.2026,yes
+P050052|I,HPA1024_01,P050052,initial release,CoQ-PP_26-011,06.06.2026,06.06.2026,iCoA-PP_26-010,03.06.2026,yes
+P050062|I,OPM1024_02,P050062,initial release,CoQ-PP_26-012,06.06.2026,06.06.2026,iCoA-PP_26-011,03.06.2026,yes
+P050072|I,GP0824_03,P050072,initial release,CoQ-PP_26-013,06.06.2026,06.06.2026,iCoA-PP_26-012,03.06.2026,yes
+P050082|I,OPM1024_03,P050082,initial release,CoQ-PP_26-014,06.06.2026,06.06.2026,iCoA-PP_26-013,03.06.2026,yes
+P050092|I,GG1024_01,P050092,initial release,CoQ-PP_26-015,06.06.2026,06.06.2026,iCoA-PP_26-014,03.06.2026,yes
+P050102|I,GP0824_01,P050102,initial release,CoQ-PP_26-016,06.06.2026,06.06.2026,iCoA-PP_26-015,03.06.2026,yes
+P050112|I,MB0824_05,P050112,initial release,CoQ-PP_26-017,06.06.2026,06.06.2026,iCoA-PP_26-016,03.06.2026,yes
+P050122|I,BSS1024_01/1,P050122,initial release,CoQ-PP_26-018,06.06.2026,06.06.2026,iCoA-PP_26-087,03.06.2026,yes
+P050132|I,OPM052501,P050132,initial release,CoQ-PP_26-019,06.06.2026,06.06.2026,iCoA-PP_26-017,03.06.2026,yes
+P050152|I,GP052501,P050152,initial release,CoQ-PP_26-020,06.06.2026,06.06.2026,iCoA-PP_26-018,03.06.2026,yes
+P050142|I,BSS1024_01/2,P050142,initial release,CoQ-PP_26-021,06.06.2026,06.06.2026,iCoA-PP_26-019,03.06.2026,yes
+P050162|I,CJ052501/01,P050162,initial release,CoQ-PP_26-022,06.06.2026,06.06.2026,iCoA-PP_26-020,03.06.2026,yes
+P050172|I,CJ052501/02,P050172,initial release,CoQ-PP_26-023,06.06.2026,06.06.2026,iCoA-PP_26-021,03.06.2026,yes
+P050182|I,HPA052501,P050182,initial release,CoQ-PP_26-024,06.06.2026,06.06.2026,iCoA-PP_26-022,03.06.2026,yes
+P050192|I,BSS052501,P050192,initial release,CoQ-PP_26-025,06.06.2026,06.06.2026,iCoA-PP_26-023,03.06.2026,yes
+P050202|I,GP062501,P050202,initial release,CoQ-PP_26-026,06.06.2026,06.06.2026,iCoA-PP_26-024,03.06.2026,yes
+P050212|I,CJ062501/2,P050212,initial release,CoQ-PP_26-027,06.06.2026,06.06.2026,iCoA-PP_26-025,03.06.2026,yes
+P050222|I,CJ062501/1,P050222,initial release,CoQ-PP_26-028,06.06.2026,06.06.2026,iCoA-PP_26-026,03.06.2026,yes
+P050252|I,CJ072501,P050252,initial release,CoQ-PP_26-029,06.06.2026,06.06.2026,iCoA-PP_26-027,03.06.2026,yes
+P050262|I,WC072501,P050262,initial release,CoQ-PP_26-030,06.06.2026,06.06.2026,iCoA-PP_26-028,03.06.2026,yes
+P050272|I,PM072501,P050272,initial release,CoQ-PP_26-031,06.06.2026,06.06.2026,iCoA-PP_26-029,03.06.2026,yes
+P050282|I,CLE072501,P050282,initial release,CoQ-PP_26-032,06.06.2026,06.06.2026,iCoA-PP_26-030,03.06.2026,yes
+P050292|I,GP072501/1,P050292,initial release,CoQ-PP_26-033,06.06.2026,06.06.2026,iCoA-PP_26-031,03.06.2026,yes
+P050302|I,GP072501/2,P050302,initial release,CoQ-PP_26-034,06.06.2026,06.06.2026,iCoA-PP_26-032,03.06.2026,yes
+P050312|I,GP082501/1,P050312,initial release,CoQ-PP_26-035,06.06.2026,06.06.2026,iCoA-PP_26-033,03.06.2026,yes
+P050322|I,GP082501/2,P050322,initial release,CoQ-PP_26-036,06.06.2026,06.06.2026,iCoA-PP_26-034,03.06.2026,yes
+P060012|I,WC082501,P060012,initial release,CoQ-PP_26-037,06.06.2026,06.06.2026,iCoA-PP_26-035,03.06.2026,yes
+P060022|I,CJ082501/1,P060022,initial release,CoQ-PP_26-038,06.06.2026,06.06.2026,iCoA-PP_26-036,03.06.2026,yes
+P060032|I,CJ082501/2,P060032,initial release,CoQ-PP_26-039,06.06.2026,06.06.2026,iCoA-PP_26-037,03.06.2026,yes
+P060042|I,OPM092501,P060042,initial release,CoQ-PP_26-040,06.06.2026,06.06.2026,iCoA-PP_26-038,03.06.2026,yes
+P060052|I,AB092501,P060052,initial release,CoQ-PP_26-041,06.06.2026,06.06.2026,iCoA-PP_26-039,03.06.2026,yes
+P060062|I,PM092501,P060062,initial release,CoQ-PP_26-042,06.06.2026,06.06.2026,iCoA-PP_26-040,03.06.2026,yes
+P060072|I,CJ092501,P060072,initial release,CoQ-PP_26-043,06.06.2026,06.06.2026,iCoA-PP_26-041,03.06.2026,yes
+P060082|I,SJ0925021,P060082,initial release,CoQ-PP_26-044,06.06.2026,06.06.2026,iCoA-PP_26-042,03.06.2026,yes
+P060092|I,GP092501,P060092,initial release,CoQ-PP_26-045,06.06.2026,06.06.2026,iCoA-PP_26-043,03.06.2026,yes
+P060102|I,WED102501,P060102,initial release,CoQ-PP_26-046,06.06.2026,06.06.2026,iCoA-PP_26-044,03.06.2026,yes
+P060112|I,PUM102501,P060112,initial release,CoQ-PP_26-047,06.06.2026,06.06.2026,iCoA-PP_26-045,03.06.2026,yes
+P060122|I,ACC102501,P060122,initial release,CoQ-PP_26-048,06.06.2026,06.06.2026,iCoA-PP_26-046,03.06.2026,yes
+P060132|I,CF102501,P060132,initial release,CoQ-PP_26-049,06.06.2026,06.06.2026,iCoA-PP_26-047,03.06.2026,yes
+P060142|I,GRC102501,P060142,initial release,CoQ-PP_26-050,06.06.2026,06.06.2026,iCoA-PP_26-048,03.06.2026,yes
+P060152|I,J31102501,P060152,initial release,CoQ-PP_26-051,06.06.2026,06.06.2026,iCoA-PP_26-052,03.06.2026,yes
+P060162|I,SJ102501,P060162,initial release,CoQ-PP_26-052,06.06.2026,06.06.2026,iCoA-PP_26-053,03.06.2026,yes
+P060172|I,KC102501,P060172,initial release,CoQ-PP_26-053,06.06.2026,06.06.2026,iCoA-PP_26-054,03.06.2026,yes
+P060182|I,GRC102501,P060182,initial release,CoQ-PP_26-054,06.06.2026,06.06.2026,iCoA-PP_26-055,03.06.2026,yes
+P060192|I,SJ112501,P060192,initial release,CoQ-PP_26-055,06.06.2026,06.06.2026,iCoA-PP_26-056,03.06.2026,yes
+P060202|I,J31112501,P060202,initial release,CoQ-PP_26-056,06.06.2026,06.06.2026,iCoA-PP_26-057,03.06.2026,yes
+P060212|I,JD112501,P060212,initial release,CoQ-PP_26-057,06.06.2026,06.06.2026,iCoA-PP_26-058,03.06.2026,yes
+P060222|I,OPM112501,P060222,initial release,CoQ-PP_26-058,06.06.2026,06.06.2026,iCoA-PP_26-059,03.06.2026,yes
+P060232|I,PM112501,P060232,initial release,CoQ-PP_26-059,06.06.2026,06.06.2026,iCoA-PP_26-060,03.06.2026,yes
+P060242|I,OPM122501,P060242,initial release,CoQ-PP_26-060,06.06.2026,06.06.2026,iCoA-PP_26-061,03.06.2026,yes
+P060252|I,GG112501,P060252,initial release,CoQ-PP_26-061,06.06.2026,06.06.2026,iCoA-PP_26-062,03.06.2026,yes
+P060262|I,J31122501,P060262,initial release,CoQ-PP_26-062,06.06.2026,06.06.2026,iCoA-PP_26-070,03.06.2026,yes
+P060272|I,CC112501,P060272,initial release,CoQ-PP_26-063,06.06.2026,06.06.2026,iCoA-PP_26-071,03.06.2026,yes
+P060282|I,SCR112501,P060282,initial release,CoQ-PP_26-064,06.06.2026,06.06.2026,iCoA-PP_26-072,03.06.2026,yes
+P060292|I,FB112501,P060292,initial release,CoQ-PP_26-065,06.06.2026,06.06.2026,iCoA-PP_26-073,03.06.2026,yes
+P060302|I,GG012601＊,P060302,initial release,CoQ-PP_26-066,06.06.2026,06.06.2026,iCoA-PP_26-074,03.06.2026,yes
+P060312|I,JD012601＊,P060312,initial release,CoQ-PP_26-067,06.06.2026,06.06.2026,iCoA-PP_26-075,03.06.2026,yes
+P060332|I,CC012601/1,P060332,initial release,CoQ-PP_26-068,06.06.2026,06.06.2026,iCoA-PP_26-077,03.06.2026,yes
+P060322|I,FB012601_1,P060322,initial release,CoQ-PP_26-069,06.06.2026,06.06.2026,iCoA-PP_26-076,03.06.2026,yes
+P060352|I,FB012602*,P060352,initial release,CoQ-PP_26-070,06.06.2026,06.06.2026,iCoA-PP_26-081,03.06.2026,yes
+P060362|I,JD012603,P060362,initial release,CoQ-PP_26-071,06.06.2026,06.06.2026,iCoA-PP_26-080,03.06.2026,yes
+P060372|I,CC012603,P060372,initial release,CoQ-PP_26-072,06.06.2026,06.06.2026,iCoA-PP_26-082,03.06.2026,yes
+P060342|I,SCR012601*,P060342,initial release,CoQ-PP_26-073,06.06.2026,06.06.2026,iCoA-PP_26-086,03.06.2026,yes
+P060382|I,SCR012603,P060382,initial release,CoQ-PP_26-074,06.06.2026,06.06.2026,iCoA-PP_26-085,03.06.2026,yes
+P060392|I,FB012603V,P060392,initial release,CoQ-PP_26-075,07.07.2026,07.07.2026,iCoA-PP_26-078,03.06.2026,yes
+P060422|I,JD012603,P060422,initial release,CoQ-PP_26-076,07.07.2026,07.07.2026,iCoA-PP_26-079,03.06.2026,yes
+P060402|I,GG012603,P060402,initial release,CoQ-PP_26-077,07.07.2026,07.07.2026,iCoA-PP_26-083,03.06.2026,yes
+P060412|I,JD012603,P060412,initial release,CoQ-PP_26-078,07.07.2026,07.07.2026,iCoA-PP_26-084,03.06.2026,yes
+P060432|I,FB012603,P060432,initial release,CoQ-PP_26-079,07.07.2026,07.07.2026,iCoA-PP_26-091,15.06.2026,yes
+P060442|I,SCR022601,P060442,initial release,CoQ-PP_26-080,13.07.2026,13.07.2026,iCoA-PP_26-092,18.06.2026,yes
+P060452|I,FB032601,P060452,initial release,CoQ-PP_26-081,28.07.2026,28.07.2026,iCoA-PP_26-093,29.06.2026,yes
+P060462|I,GG032601,P060462,initial release,CoQ-PP_26-082,28.07.2026,28.07.2026,iCoA-PP_26-097,16.07.2026,yes
+P060482|I,JD022601,P060482,initial release,CoQ-PP_26-083,05.08.2026,07.07.2026,iCoA-PP_26-119,05.08.2026,yes
+P060492|I,JD042601,P060492,initial release,CoQ-PP_26-084,13.08.2026,06.06.2026,iCoA-PP_26-120,13.08.2026,yes
+BG1024|R,BG1024,N/A — no P batch assigned,retest — Tranche 1 (sampled 21–24.07.2026),CoQ-PP_26-085,17.08.2026,17.08.2026,iCoA-PP_26-098,27.07.2026,yes
+BSS1024|R,BSS1024,N/A — no P batch assigned,retest — Tranche 1 (sampled 21–24.07.2026),CoQ-PP_26-086,17.08.2026,17.08.2026,iCoA-PP_26-099,27.07.2026,yes
+P060332|R,CC012601/1,P060332,retest — Tranche 1 (sampled 21–24.07.2026),CoQ-PP_26-087,17.08.2026,17.08.2026,iCoA-PP_26-103,27.07.2026,yes
+P050162|R,CJ052501/01,P050162,retest — Tranche 1 (sampled 21–24.07.2026),CoQ-PP_26-088,17.08.2026,17.08.2026,iCoA-PP_26-100,27.07.2026,yes
+P050212|R,CJ062501/2,P050212,retest — Tranche 1 (sampled 21–24.07.2026),CoQ-PP_26-089,17.08.2026,17.08.2026,iCoA-PP_26-101,27.07.2026,yes
+P060032|R,CJ082501/2,P060032,retest — Tranche 1 (sampled 21–24.07.2026),CoQ-PP_26-090,17.08.2026,17.08.2026,iCoA-PP_26-102,27.07.2026,yes
+P060352|R,FB012602*,P060352,retest — Tranche 1 (sampled 21–24.07.2026),CoQ-PP_26-091,17.08.2026,17.08.2026,iCoA-PP_26-107,27.07.2026,yes
+P060402|R,GG012603,P060402,retest — Tranche 1 (sampled 21–24.07.2026),CoQ-PP_26-092,17.08.2026,17.08.2026,iCoA-PP_26-108,27.07.2026,yes
+P050092|R,GG1024_01,P050092,retest — Tranche 1 (sampled 21–24.07.2026),CoQ-PP_26-093,17.08.2026,17.08.2026,iCoA-PP_26-104,27.07.2026,yes
+P050152|R,GP052501,P050152,retest — Tranche 1 (sampled 21–24.07.2026),CoQ-PP_26-094,17.08.2026,17.08.2026,iCoA-PP_26-105,27.07.2026,yes
+P050022|R5,GP0824_02,P050022,retest — Tranche 1 (sampled 21–24.07.2026),CoQ-PP_26-095,17.08.2026,17.08.2026,iCoA-PP_26-106,27.07.2026,yes
+P050322|R,GP082501/2,P050322,retest — Tranche 1 (sampled 21–24.07.2026),CoQ-PP_26-096,17.08.2026,17.08.2026,iCoA-PP_26-109,27.07.2026,yes
+HPA1024|R,HPA1024,N/A — no P batch assigned,retest — Tranche 1 (sampled 21–24.07.2026),CoQ-PP_26-097,17.08.2026,17.08.2026,iCoA-PP_26-110,27.07.2026,yes
+P050052|R,HPA1024_01,P050052,retest — Tranche 1 (sampled 21–24.07.2026),CoQ-PP_26-098,17.08.2026,17.08.2026,iCoA-PP_26-111,27.07.2026,yes
+P060152|R,J31102501,P060152,retest — Tranche 1 (sampled 21–24.07.2026),CoQ-PP_26-099,17.08.2026,17.08.2026,iCoA-PP_26-112,27.07.2026,yes
+P060212|R,JD112501,P060212,retest — Tranche 1 (sampled 21–24.07.2026),CoQ-PP_26-100,17.08.2026,17.08.2026,iCoA-PP_26-113,27.07.2026,yes
+OPM1024|R,OPM1024,N/A — no P batch assigned,retest — Tranche 1 (sampled 21–24.07.2026),CoQ-PP_26-101,17.08.2026,17.08.2026,iCoA-PP_26-114,27.07.2026,yes
+P050062|R,OPM1024_02,P050062,retest — Tranche 1 (sampled 21–24.07.2026),CoQ-PP_26-102,17.08.2026,17.08.2026,iCoA-PP_26-115,27.07.2026,yes
+P060242|R,OPM122501,P060242,retest — Tranche 1 (sampled 21–24.07.2026),CoQ-PP_26-103,17.08.2026,17.08.2026,iCoA-PP_26-116,27.07.2026,yes
+P060062|R,PM092501,P060062,retest — Tranche 1 (sampled 21–24.07.2026),CoQ-PP_26-104,17.08.2026,17.08.2026,iCoA-PP_26-118,27.07.2026,yes
+P060382|R,SCR012603,P060382,retest — Tranche 1 (sampled 21–24.07.2026),CoQ-PP_26-105,17.08.2026,17.08.2026,iCoA-PP_26-117,27.07.2026,yes
+P060122|R,ACC102501,P060122,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-106,18.09.2026,18.09.2026,iCoA-PP_26-121,17.08.2026,yes
+P050192|R,BSS052501,P050192,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-107,18.09.2026,18.09.2026,iCoA-PP_26-122,17.08.2026,yes
+P060372|R,CC012603,P060372,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-108,18.09.2026,18.09.2026,iCoA-PP_26-143,17.08.2026,yes
+P060132|R,CF102501,P060132,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-109,18.09.2026,18.09.2026,iCoA-PP_26-123,17.08.2026,yes
+P050222|R,CJ062501/1,P050222,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-110,18.09.2026,18.09.2026,iCoA-PP_26-124,17.08.2026,yes
+P060022|R,CJ082501/1,P060022,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-111,18.09.2026,18.09.2026,iCoA-PP_26-125,17.08.2026,yes
+P060072|R,CJ092501,P060072,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-112,18.09.2026,18.09.2026,iCoA-PP_26-126,17.08.2026,yes
+P050282|R,CLE072501,P050282,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-113,18.09.2026,18.09.2026,iCoA-PP_26-127,17.08.2026,yes
+P060322|R,FB012601_1,P060322,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-114,18.09.2026,18.09.2026,iCoA-PP_26-128,17.08.2026,yes
+GG1024|R,GG1024,N/A — no P batch assigned,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-115,18.09.2026,18.09.2026,iCoA-PP_26-129,17.08.2026,yes
+P050302|R,GP072501/2,P050302,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-116,18.09.2026,18.09.2026,iCoA-PP_26-130,17.08.2026,yes
+P050072|R4,GP0824_03,P050072,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-117,18.09.2026,18.09.2026,iCoA-PP_26-131,17.08.2026,yes
+P050312|R,GP082501/1,P050312,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-118,18.09.2026,18.09.2026,iCoA-PP_26-132,17.08.2026,yes
+P060092|R,GP092501,P060092,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-119,18.09.2026,18.09.2026,iCoA-PP_26-133,17.08.2026,yes
+P060182|R,GRC102501,P060182,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-120,18.09.2026,18.09.2026,iCoA-PP_26-134,17.08.2026,yes
+P050182|R,HPA052501,P050182,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-121,18.09.2026,18.09.2026,iCoA-PP_26-135,17.08.2026,yes
+P060362|R,JD012603,P060362,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-122,18.09.2026,18.09.2026,iCoA-PP_26-138,17.08.2026,yes
+P060412|R,JD012603,P060412,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-123,18.09.2026,18.09.2026,iCoA-PP_26-136,17.08.2026,yes
+P060422|R,JD012603,P060422,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-124,18.09.2026,18.09.2026,iCoA-PP_26-137,17.08.2026,yes
+P060492|R,JD042601,P060492,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-125,18.09.2026,18.09.2026,iCoA-PP_26-146,17.08.2026,yes
+P060172|R,KC102501,P060172,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-126,18.09.2026,18.09.2026,iCoA-PP_26-139,17.08.2026,yes
+P050112|R,MB0824_05,P050112,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-127,18.09.2026,18.09.2026,iCoA-PP_26-140,17.08.2026,yes
+P050042|R,OMP1024_01,P050042,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-128,18.09.2026,18.09.2026,iCoA-PP_26-142,17.08.2026,yes
+P060042|R,OPM092501,P060042,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-129,18.09.2026,18.09.2026,iCoA-PP_26-141,17.08.2026,yes
+P050082|R,OPM1024_03,P050082,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-130,18.09.2026,18.09.2026,iCoA-PP_26-147,17.08.2026,yes
+P060232|R,PM112501,P060232,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-131,18.09.2026,18.09.2026,iCoA-PP_26-148,17.08.2026,yes
+P060112|R,PUM102501,P060112,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-132,18.09.2026,18.09.2026,iCoA-PP_26-149,17.08.2026,yes
+P060282|R,SCR112501,P060282,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-133,18.09.2026,18.09.2026,iCoA-PP_26-150,17.08.2026,yes
+P060082|R,SJ0925021,P060082,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-134,18.09.2026,18.09.2026,iCoA-PP_26-151,17.08.2026,yes
+P060012|R,WC082501,P060012,retest — Tranche 2 (sampled 12–14.08.2026),CoQ-PP_26-135,18.09.2026,18.09.2026,iCoA-PP_26-152,17.08.2026,yes
+P060052|R2,AB092501,P060052,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-136,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-173,24.08.2026,allocated
+P050122|R2,BSS1024_01/1,P050122,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-137,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-174,24.08.2026,allocated
+P050142|R2,BSS1024_01/2,P050142,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-138,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-153,24.08.2026,allocated
+P060272|R2,CC112501,P060272,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-139,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-175,24.08.2026,allocated
+P050172|R2,CJ052501/02,P050172,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-140,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-176,24.08.2026,allocated
+P050252|R2,CJ072501,P050252,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-141,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-177,24.08.2026,allocated
+CJ1024|R2,CJ1024,N/A — no P batch assigned,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-142,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-178,24.08.2026,allocated
+P060432|R2,FB012603,P060432,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-143,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-179,24.08.2026,allocated
+P060392|R2,FB012603V,P060392,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-144,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-180,24.08.2026,allocated
+P060292|R2,FB112501,P060292,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-145,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-181,24.08.2026,allocated
+P060302|R2,GG012601＊,P060302,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-146,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-182,24.08.2026,allocated
+P050012|R2,GG1024_02,P050012,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-147,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-163,24.08.2026,allocated
+P060252|R2,GG112501,P060252,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-148,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-164,24.08.2026,allocated
+P050202|R5,GP062501,P050202,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-149,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-165,24.08.2026,allocated
+P050292|R2,GP072501/1,P050292,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-150,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-166,24.08.2026,allocated
+P050102|R2,GP0824_01,P050102,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-151,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-154,24.08.2026,allocated
+P060142|R2,GRC102501,P060142,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-152,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-167,24.08.2026,allocated
+P060202|R2,J31112501,P060202,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-153,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-168,24.08.2026,allocated
+P060262|R2,J31122501,P060262,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-154,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-169,24.08.2026,allocated
+P060312|R2,JD012601＊,P060312,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-155,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-170,24.08.2026,allocated
+P050032|R2,MB0824_04,P050032,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-156,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-171,24.08.2026,allocated
+P050132|R2,OPM052501,P050132,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-157,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-172,24.08.2026,allocated
+P060222|R2,OPM112501,P060222,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-158,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-155,24.08.2026,allocated
+P050272|R2,PM072501,P050272,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-159,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-156,24.08.2026,allocated
+P060342|R2,SCR012601*,P060342,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-160,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-157,24.08.2026,allocated
+P060442|R2,SCR022601,P060442,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-161,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-158,24.08.2026,allocated
+P060162|R2,SJ102501,P060162,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-162,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-159,24.08.2026,allocated
+P060192|R,SJ112501,P060192,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-163,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-160,24.08.2026,allocated
+P050262|R2,WC072501,P050262,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-164,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-161,24.08.2026,allocated
+P060102|R2,WED102501,P060102,retest — Tranche 3 (sampled 19–21.08.2026),CoQ-PP_26-165,21.09.2026,"— the owner's date for all of Tranche 3 (15.09.2026), the 227-М certificates expected by 18.09.2026; provisional —",iCoA-PP_26-162,24.08.2026,allocated
+P160012|I,— not recorded — (P160012),P160012,initial release,— at issue —,,13.07.2026,iCoA-PP_26-094,06.07.2026,no
+P160022|I,— not recorded — (P160022),P160022,initial release,— at issue —,,13.07.2026,iCoA-PP_26-095,06.07.2026,no
+P160032|I,— not recorded — (P160032),P160032,initial release,— at issue —,,13.07.2026,iCoA-PP_26-096,06.07.2026,no
+CC042601|I,CC042601,N/A — no P batch assigned,initial release,— at issue —,,06.06.2026,iCoA-PP_26-088,03.06.2026,no
+CC042601|R,CC042601,N/A — no P batch assigned,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-144,17.08.2026,no
+FB042601|I,FB042601,N/A — no P batch assigned,initial release,— at issue —,,06.06.2026,iCoA-PP_26-089,03.06.2026,no
+FB042601|R,FB042601,N/A — no P batch assigned,retest — Tranche 2 (sampled 12–14.08.2026),— at issue —,,18.09.2026,iCoA-PP_26-145,17.08.2026,no

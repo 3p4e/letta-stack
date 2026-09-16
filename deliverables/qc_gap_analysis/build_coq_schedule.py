@@ -84,6 +84,12 @@ PLAN_J = os.path.join(HERE, "coq_issue_plan.json")
 INHOUSE_TSV = os.path.join(ROOT, "ingestion", "coa_track", "letta-imb-coas",
                            "exports", "master_coa_table.tsv")
 BATCH_ID = os.path.join(ROOT, "ingestion", "common", "batch_id.py")
+if HERE not in sys.path:
+    sys.path.insert(0, HERE)
+import cell_resolution as CR                                        # noqa: E402
+import cnp_methods as CM                                             # noqa: E402
+import potency_grading as PGR                                        # noqa: E402
+
 OUT_X = os.path.join(HERE, "PP_CoQ_Parameter_Schedule_2026-08-31.xlsx")
 OUT_C = os.path.join(HERE, "coq_parameter_schedule_2026-08-31.csv")
 VALIDATOR = os.path.join(ROOT, "ingestion", "ragflow", "validate_ecoa_limits.py")
@@ -107,6 +113,14 @@ ST_ICOA = "to be performed — see route"
 ST_NONE = "not tested — no certificate covers it"
 ST_REQ = "upon request — not required for release"
 ST_BLOCK = "BLOCKED — declared out of specification by the laboratory"
+# Owner, 15.09.2026: "the written certificate of quality should contain all
+# parameter results — the retested parameter results, and all of the parameter
+# results that were not tested will be taken from the initial quality control
+# testing." A reissue therefore prints, for every determination outside its
+# retest scope, exactly what the batch's initial certificate prints — result,
+# document, date, laboratory — and says so. The initial certificate's own status
+# for that determination travels with it, so a release-time finding stays visible.
+ST_CARRIED = "carried from the initial testing"
 ST_NOSPEC = "no product specification on file — criterion cannot be stated"
 
 # ---------------------------------------------------------------------------------
@@ -321,9 +335,14 @@ def family(code):
         return "IPH mycotoxins, metals, pesticides"
     if c.startswith("ППК") or c.startswith("PP CoA"):
         return "UKIM CNP potency"
-    if re.match(r"^197-.*[КK]/26$", c):
+    # The re-analysis label follows REANALYSIS_SERIES, the one list of which series
+    # are post-release re-analysis. It used to name 197- alone, so when the owner
+    # ruled on 10.09.2026 that 220- is the same series, is_reanalysis() knew and
+    # this label did not — and the tracker, which files a document as a retest
+    # by this label, rendered none of the 32 Tranche 2 mycotoxin certificates.
+    if c.startswith(REANALYSIS_SERIES) and re.search(r"-[КK]/\d\d$", c):
         return "Farmahem re-analysis — cannabinoids"
-    if re.match(r"^197-.*[МM]/26$", c):
+    if c.startswith(REANALYSIS_SERIES) and re.search(r"-[МM]/\d\d$", c):
         return "Farmahem re-analysis — mycotoxins"
     if re.search(r"(ГС|GS)/\d\d$", c):
         return "Farmahem — loss on drying"
@@ -336,13 +355,16 @@ def family(code):
     return "other"
 
 
-def is_reanalysis(code):
-    """True for a Farmahem 197-series certificate — the re-analysis a reissue rests on.
-
-    >>> is_reanalysis("197-11-К/26"), is_reanalysis("ППК25174")
-    (True, False)
-    """
-    return clean(code).startswith("197-")
+# Post-release re-analysis series. 197- was the only one the desk knew; the owner
+# ruled on 10.09.2026 that 220- is the same thing, which moves every 220 result off
+# the initial-release certificate and onto the retest that rests on it, and on
+# 12.09.2026 that the Tranche 3 227-K/26 potency certificates are retests too.
+# The list and the test live in testing_series.py since 15.09.2026, because the
+# testing rounds have to know them as well: a campaign certificate is a retest
+# round of its own, never the release round, whatever the dates say. One
+# definition; family() above and pick() below read it from there.
+from testing_series import (REANALYSIS_SERIES, is_reanalysis,       # noqa: E402
+                            is_retest_only, is_experimental)
 
 
 def sort_date(d):
@@ -670,15 +692,57 @@ def schedule():
     covered = {BI.batch_key(PLAN_CB_ALIASES.get(x["cb"], x["cb"])) for x in plan}
     covered |= set(pp_alias)
     stubs = []
+    # A stub's packaged lot is the one its register block names (the Head of QC's
+    # list), so the tracker finds the lot by its P number where the cultivation
+    # batch is spelled with a sub-lot on one side and without on the other —
+    # BSS1024_01 on the 31.08 list, BSS1024_01/1 (P050122) on the batch list —
+    # which is how one Tranche 3 lot had no reissue row until 15.09.2026.
+    _pp_taken = {BI.batch_key(x["pp"]) for x in plan if x["pp"]}
+    def _block_lot(name):
+        b = reg_by_key.get(BI.batch_key(name))
+        pn = batches[b]["pnumber"] if b else ""
+        if not pn or BI.batch_key(pn) in _pp_taken or BI.batch_key(pn) == BI.batch_key(name):
+            return ""
+        _pp_taken.add(BI.batch_key(pn))
+        return pn
     for key, r in icoa.items():
         if key in covered:
             continue
-        stub = {"pp": "", "cb": r["batch"], "nm": r["strain"], "grade": "",
+        stub = {"pp": _block_lot(r["batch"]), "cb": r["batch"], "nm": r["strain"], "grade": "",
                 "cls": "", "nom": "", "tol": "", "lo": "", "hi": "", "thc": "",
                 "md": "", "pk": "", "id": NO_NUMBER, "ic": NO_NUMBER,
                 "issue": r["release_date"], "retest": ""}
         stubs.append(stub)
         coqs.append({"date": r["release_date"], "type": "initial release — predicted",
+                     "plan": stub, "number": NO_NUMBER, "issued": False})
+
+    # Register blocks the 31.08 iCoA list never carried — lots the later intakes
+    # opened on the record (JD042601 / P060492 on 09.09; the sub-lot blocks
+    # BSS1024_01/2, WED102501, SCR012601, GRC102501/1 with their 227-K
+    # re-analyses on 11.09). Every batch on record gets its place in the
+    # schedule (owner, 31.08.2026); their release date is the packaging date of
+    # the batch list, the same basis the registers use. Found 15.09.2026: five
+    # blocks with certificates on file and no CoQ in the schedule at all.
+    packed = {}
+    _bd = os.path.join(HERE, "tracker", "batch_dates.csv")
+    if os.path.exists(_bd):
+        with open(_bd, encoding="utf-8") as fh:
+            for r in csv.DictReader(fh):
+                packed[BI.batch_key(r["cu_batch"])] = r["packaging_to"] or r["packaging_from"]
+                if r["p_batch"]:
+                    packed.setdefault(BI.batch_key(r["p_batch"]), r["packaging_to"] or r["packaging_from"])
+    for b in order:
+        bk = BI.batch_key(b)
+        if bk in covered or bk in icoa or bk in pp_alias:
+            continue
+        pn = batches[b]["pnumber"]
+        stub = {"pp": pn, "cb": b, "nm": batches[b]["strain"], "grade": "",
+                "cls": "", "nom": "", "tol": "", "lo": "", "hi": "", "thc": "",
+                "md": "", "pk": packed.get(bk, ""), "id": NO_NUMBER, "ic": NO_NUMBER,
+                "issue": packed.get(bk, ""), "retest": ""}
+        stubs.append(stub)
+        covered.add(bk)
+        coqs.append({"date": stub["issue"], "type": "initial release — predicted",
                      "plan": stub, "number": NO_NUMBER, "issued": False})
 
     def plus_year(d):
@@ -695,20 +759,36 @@ def schedule():
     for i, x in enumerate([x for x in plan if x.get("retest")]):
         coqs.append({"date": x["retest"], "type": "additional testing (12-month)",
                      "plan": x, "number": f"CoQ-PP-2026-{27 + i:04d}", "issued": True})
+    def campaign_on_file(name, pp=""):
+        """A campaign re-analysis certificate in the lot's register block (or the block
+        keyed by its packaged lot) — the mark of a batch the QP had retested."""
+        for nm in (PLAN_CB_ALIASES.get(name, name), pp):
+            b = reg_by_key.get(BI.batch_key(nm)) if nm else None
+            if b and any(is_reanalysis(c["code"]) for lst in batches[b]["cells"].values() for c in lst):
+                return True
+        return False
     for x in plan:
-        if not x.get("retest"):
+        if not x.get("retest") and campaign_on_file(x["cb"], x["pp"]):
             coqs.append({"date": plus_year(x["issue"]),
                          "type": "additional testing (12-month) — predicted",
                          "plan": x, "number": NO_NUMBER, "issued": False})
 
-    # The retest programme is universal: every batch past Tranche 02 gets a
-    # predicted reissue a year after release, in record order.
+    # The retest programme is the QP's, not universal (owner, 15.09.2026): only the
+    # batches of Tranches 1, 2 and 3 are for sale, so only they were sampled for
+    # re-analysis and get a reissued certificate of quality. Every other batch —
+    # under production, under testing, or on no tranche list — gets its release
+    # certificate and nothing more. A lot is in a tranche when a campaign
+    # re-analysis certificate (197-, 220-, 227- series) is on file in its block.
     for stub in stubs:
+        if not campaign_on_file(stub["cb"]):
+            continue
         coqs.append({"date": plus_year(stub["issue"]),
                      "type": "additional testing (12-month) — predicted",
                      "plan": stub, "number": NO_NUMBER, "issued": False})
 
     rows, per_coq = [], []
+    # the initial certificate's rows per batch, for the reissue to carry forward
+    initial_rows = {}
     for n, coq in enumerate(coqs, 1):
         x = coq["plan"]
         cb = reg_by_key.get(BI.batch_key(
@@ -720,30 +800,52 @@ def schedule():
         additional = coq["type"].startswith("additional")
         blocked = cb == "FB032601"
 
-        thc_criterion = (f"{x['lo']} – {x['hi']} %  (grade {x['grade']}, class "
-                         f"THC {x['cls']}, nominal {x['nom']} ± {x['tol']})"
-                         if x["lo"] else
-                         "Per target grade — no packaged lot or grade assigned in "
-                         "the master spec yet")
-        # The plan writes the top of the range as nominal + tolerance − 0.01 (an
-        # inclusive endpoint: 24.00 ± 2.40 → 21.60–26.39) where the QCSP PDF writes
-        # 21.60–26.40. That is one range in two conventions, not a conflict; only a
-        # difference beyond 0.01 on either endpoint is one.
+        # Owner, 15.09.2026: the grade, nominal, tolerance and range on a certificate
+        # are the potency specification's of 15.09.2026 — never the issue plan's and
+        # never the issued QCSP 001 v.01's, which are old and potentially wrong. The
+        # grade is the window the certificate's OWN Total THC result falls in (the
+        # release result on the release certificate, the re-analysis on the reissue),
+        # decided below once the assay certificate is chosen; the product code and the
+        # specification document code follow from it (potency_grading.py). What the
+        # issued v.01 document printed is recorded beside it, not used.
+        thc_criterion = "Per grade of the potency specification of 15.09.2026 — no Total THC result on file"
         conflict = ""
-        if sp:
-            m = re.findall(r"[\d.]+", sp["thc_criterion"])
-            if len(m) >= 2:
-                lo_s, hi_s = float(m[0]), float(m[1])
-                if abs(lo_s - float(x["lo"])) > 0.011 or \
-                        abs(hi_s - float(x["hi"])) > 0.011:
-                    conflict = (f"QCSP 001 prints {sp['thc_criterion']} for this lot; "
-                                f"the issue plan's grade range is {x['lo']} – {x['hi']} %. "
-                                f"Recorded, not resolved.")
+        grading = {}
 
         inhouse = {} if cb else inhouse_cells(x["cb"])
+        # The owner's 09.09.2026 pass over eCoA_DATABASE: for a determination the
+        # register block does not answer, the result a document on file prints.
+        # It is consulted last and only where nothing else answered, it never
+        # overrules the desk, and cell_resolution.py's three rules decide what it
+        # is allowed to hand back at all — an unissued certificate and an
+        # unlabelled list of analyte values both hand back nothing.
+        # Owner's ruling, 10.09.2026: the first result a parameter has is release
+        # testing and every later one is a retest. The pass is consulted only for a
+        # release certificate, and it hands back whatever document it found — which
+        # on some batches is the post-release re-analysis. `pick` already refuses
+        # those for a release CoQ; this path bypassed `pick` entirely, so a
+        # 25.08.2026 certificate was filling the release cell of a lot packed in
+        # May. A re-analysis result belongs to the retest that rests on it, and if
+        # that leaves the release cell blank then the honest answer is that the
+        # parameter was not determined at release.
+        read0909 = {} if additional else {
+            no: rec for no, rec in CR.results(x["cb"]).items()
+            if not is_reanalysis(rec.get("code", ""))
+        }
         codes, counts = OrderedDict(), defaultdict(int)
         start = len(rows)
         assay = pick(reg["cells"].get("E", []), additional)[0]
+        grading = PGR.grading(x["cb"] or x["pp"], x["nm"], assay["value"] if assay else "")
+        if grading.get("grade"):
+            thc_criterion = (f"{grading['window']}  (grade {grading['roman']}, nominal "
+                             f"{grading['nominal']:.2f} ± {grading['tol']:.2f})")
+        elif grading.get("thc") is not None and grading.get("note"):
+            thc_criterion = "Per grade of the potency specification of 15.09.2026 — " + grading["note"]
+        if grading.get("grade"):
+            if sp and not grading["spec_status"].startswith("issued"):
+                conflict = (f"QCSP 001 {sp['spec_doc_code']} printed {sp['thc_criterion']} ({sp['product_code']}) "
+                            f"for this lot; the potency specification of 15.09.2026 gives {grading['window']} "
+                            f"({grading['product_code']}) — {grading['spec_status']}.")
         cnp = assay if assay and assay["family"] == "UKIM CNP potency" else \
             (pick([c for c in reg["cells"].get("E", [])
                    if c["family"] == "UKIM CNP potency"], False)[0])
@@ -761,24 +863,58 @@ def schedule():
 
         for det in dets:
             col = det["column"]
-            cands = reg["cells"].get(col, []) if col else []
+            # A starred sample is a second sample of the same packaged lot, sent for a
+            # limited panel outside the release testing, and it never sources a
+            # certificate of quality — the owner's ruling of 16.09.2026. It is dropped
+            # here, before the release/reissue split, because it certifies NEITHER: the
+            # certificate takes the unstarred certificate's value for that determination.
+            # The result itself is untouched everywhere else; the ruling is explicit that
+            # it stays in the record and in every statistic.
+            cands = [c for c in (reg["cells"].get(col, []) if col else [])
+                     if not is_experimental(c.get("code", ""))]
             if additional:
                 # an additional-testing CoQ certifies the additional testing: only a
                 # post-release (197-series) certificate may stand behind a result on it
                 cands = [c for c in cands if is_reanalysis(c["code"])]
                 chosen, others = pick(cands, True)
             else:
-                chosen, others = pick(cands, False)
+                # A certificate of the IJZ-MB delivery of 25/26.08.2026 is a RETEST
+                # document by the owner's ruling of 10.09.2026 — "one campaign sampling
+                # and every certificate in it is a retest document, for the post-SOP lots
+                # too" — whatever its code series says. testing_series.rounds() has held
+                # that since v34; this branch did not, so wherever the delivery was the
+                # ONLY microbiology a lot had, it stood behind the lot's RELEASE result.
+                # Thirteen release certificates were citing a document issued 31.08 or
+                # 01.09.2026 while dated 06.06, 07.07 or 13.07.2026 — a controlled
+                # document resting on one that did not yet exist. They now print nothing
+                # for #9.1-#9.5, which is what the record supports: no microbiology was
+                # certified for those lots at release. Where the campaign result should
+                # then appear is OI-38.
+                chosen, others = pick([c for c in cands
+                                       if not is_retest_only(c.get("code", ""))], False)
             lim = limits.get(col)
 
             if det["no"] in ICOA_FIELD and not additional:
                 if ic_row.get(ICOA_FIELD[det["no"]], "required") != "required" and cnp:
-                    chosen, others = dict(cnp, value="Conforms | Соодветствува"), []
+                    chosen, others = dict(cnp, value="Conforms"), []
             if det["no"] == "3" and chosen is None and ident_c_cert is not None:
-                chosen, others = dict(
-                    ident_c_cert,
-                    value="Conforms — cannabinoids identified and quantified by HPLC | "
-                          "Соодветствува — идентификација и квантификација со HPLC"), []
+                # "Conforms", not "Conforms — cannabinoids identified and
+                # quantified by HPLC". The gloss restated the METHOD column two
+                # cells to its left on the very same row — "HPLC/HPTLC Ph. Eur.
+                # 2.2.29 (3028)" — and a sentence does not fit a 110 px results
+                # column: measured with the embedded fonts, that one cell stood
+                # 85 px tall against 18 px for a normal row, and div.page clips
+                # at A4, so three certificates were losing their second
+                # signature date off the bottom of the sheet. A redundant gloss
+                # is not worth a signature. The basis for Identification C is
+                # recorded where a basis belongs — the citation in Section 03 —
+                # and OI-24 asks the owner whether they want it back on the face
+                # of the document, which would need a wider column.
+                #
+                # The Macedonian half is added on the export path, from
+                # result_vocabulary.MK — one word for the assertion, the
+                # master's own (Одговара), not a second one invented here.
+                chosen, others = dict(ident_c_cert, value="Conforms"), []
 
             criterion = det["criterion"]
             if det.get("per_batch_criterion"):
@@ -796,22 +932,69 @@ def schedule():
                 st = ST_SCAN if chosen.get("inhouse") else \
                     (ST_OFFREG if status_of(det, chosen, lim, cb, blocked) == ST_OK
                      else status_of(det, chosen, lim, cb, blocked))
+            if chosen is None and not additional and det["no"] in read0909:
+                chosen, others = read0909[det["no"]], []
+                st = status_of(det, chosen, lim, cb, blocked)
+            also_override = None
             if additional and chosen is None:
-                if det["no"] in ICOA_FIELD:
-                    st = ST_ICOA
-                elif det["no"] in RETEST_K:
-                    st = ST_AWAIT_K
-                elif det["no"] in RETEST_M:
-                    st = ST_AWAIT_M
-                elif det["no"] in ("9.6", "9.7"):
-                    st = ST_REQ
+                # The ruling of 15.09.2026 is unconditional — "all of the parameter
+                # results that were not tested will be taken from the initial quality
+                # control testing" — so the carry is attempted FIRST, for every
+                # determination the retest campaign did not run. Until v40 four classes
+                # short-circuited it and printed nothing: the three the Purely Plant
+                # laboratory performs (#1, #2, #7), the cannabinoids, the mycotoxins and
+                # the two microbiological determinations that are tested on request. A
+                # reissue therefore showed an empty red cell for a parameter its own
+                # release certificate had certified months earlier, on 66 lots.
+                #
+                # What is carried is the INITIAL round's row, whole: its result, the
+                # document that certifies it — the internal certificate of analysis for
+                # #1/#2/#7, an external laboratory's certificate otherwise — that
+                # document's date of issue and its laboratory. It is never the reissue
+                # campaign's own internal certificate: a certificate of quality may not
+                # cite a testing round nobody performed, which was the defect found on
+                # 16.09.2026. The pending status travels with the value, so a sheet that
+                # carries a release result while a re-analysis is outstanding says both.
+                initial_id = (x["id"] if x["id"] != NO_NUMBER else
+                              "the batch's initial CoQ (number assigned on issue)")
+                prior = None
+                for _k in filter(None, (x["cb"], PLAN_CB_ALIASES.get(x["cb"]), x["pp"])):
+                    prior = initial_rows.get(BI.batch_key(_k), {}).get(det["no"])
+                    if prior is not None:
+                        break
+                pending = (ST_ICOA if det["no"] in ICOA_FIELD else
+                           ST_AWAIT_K if det["no"] in RETEST_K else
+                           ST_AWAIT_M if det["no"] in RETEST_M else
+                           ST_REQ if det["no"] in ("9.6", "9.7") else None)
+                carried = (prior is not None
+                           and str(prior["Source document"]).strip() not in ("", "—")
+                           and str(prior["Result"]).strip() not in ("", "—"))
+                if carried:
+                    chosen = {"value": prior["Result"], "code": prior["Source document"],
+                              "date": prior["Document date"], "lab": prior["Issuing institution"],
+                              "family": prior["Report series"], "flag": "",
+                              "stability": False, "inhouse": False}
+                    also_override = prior["Also on file"]
+                    st = f"{ST_CARRIED} ({initial_id}) — {prior['Status']}"
+                elif pending is not None:
+                    st = pending
+                elif prior is not None:
+                    st = f"{ST_CARRIED} ({initial_id}) — {prior['Status']}"
                 else:
-                    st = ST_OUTSIDE.format(
-                        initial=x["id"] if x["id"] != NO_NUMBER else
-                        "the batch's initial CoQ (number assigned on issue)")
+                    st = ST_OUTSIDE.format(initial=initial_id)
             counts[st] += 1
             if chosen:
                 codes.setdefault(chosen["code"], chosen["lab"])
+
+            # Owner, 15.09.2026: the method reference names the method the cited
+            # certificate actually used. CNP ran the cannabinoid assay and loss on
+            # drying by the DAB monograph until it accredited Ph. Eur. 3028
+            # (cnp_methods.py reads which off each certificate). Decided after
+            # every fallback above has chosen the document, so it holds whichever
+            # path found the certificate.
+            method = det["method"]
+            if chosen and det["no"] in CM.DAB_METHOD and CM.method_of(chosen.get("code")) == "DAB":
+                method = CM.DAB_METHOD[det["no"]]
 
             route = ""
             if det["no"] in ICOA_FIELD and st == ST_ICOA:
@@ -827,7 +1010,7 @@ def schedule():
                 ("iCoA reference", x["ic"]),
                 ("№", det["no"]), ("Group", det["group"]),
                 ("Parameter", det["en"]), ("Параметар", det["mk"]),
-                ("Method / reference", det["method"]),
+                ("Method / reference", method),
                 ("Acceptance criterion", criterion),
                 ("Result", chosen["value"] if chosen else "—"),
                 ("Source document", chosen["code"] if chosen else "—"),
@@ -836,9 +1019,13 @@ def schedule():
                 ("Report series", chosen["family"] if chosen else ""),
                 ("Status", st),
                 ("Performed by", route),
-                ("Also on file", "; ".join(f"{o['value']} ({o['code']})"
-                                           for o in others)),
+                ("Also on file", also_override if also_override is not None else
+                 "; ".join(f"{o['value']} ({o['code']})" for o in others)),
             ]))
+        if not additional:
+            _mine = {r2["№"]: r2 for r2 in rows[start:]}
+            for _k in filter(None, (x["cb"], PLAN_CB_ALIASES.get(x["cb"]), x["pp"])):
+                initial_rows.setdefault(BI.batch_key(_k), _mine)
 
         # The printed issue date is set at issue, and may be no earlier than the
         # latest of the SOP in-use date (11.05.2026) and the newest document the
@@ -847,9 +1034,12 @@ def schedule():
         # file, the due date stops being a floor (Farmahem ran several lots
         # early: J31102501's 197-16 pair is dated 10 months after packaging).
         bound = (sort_date(SOP_EFFECTIVE), SOP_EFFECTIVE)
+        # A carried row is the initial certificate's evidence, not this
+        # certificate's: it neither dates a reissue nor lifts the 12-month floor.
         cited_dates = [r2["Document date"] for r2 in rows[start:]
                        if r2["Source document"] not in ("", "—")
                        and r2["Document date"]
+                       and not str(r2["Status"]).startswith(ST_CARRIED)
                        and sort_date(r2["Document date"]) != "9999"]
         for dd in cited_dates:
             bound = max(bound, (sort_date(dd), dd))
@@ -863,11 +1053,17 @@ def schedule():
             "coq": n, "number": coq["number"], "type": coq["type"],
             "date": "≥ " + bound[1], "basis": coq["date"] or "—",
             "issued": coq["issued"], "pp": x["pp"], "cb": x["cb"],
-            "in_register": bool(cb), "strain": x["nm"], "grade": x["grade"],
-            "cls": x["cls"], "icoa_ref": x["ic"], "banner_thc": x["thc"],
+            "in_register": bool(cb), "strain": x["nm"],
+            "grade": grading.get("roman") or "",
+            "cls": (int(round(grading["nominal"])) if grading.get("grade") else ""),
+            "icoa_ref": x["ic"],
+            "banner_thc": (("%.2f" % grading["thc"]) if grading.get("thc") is not None else ""),
             "md": x["md"], "pk": x["pk"], "thc": thc_criterion,
             "spec_conflict": conflict,
-            "spec_doc": sp["spec_doc_code"] if sp else "",
+            "spec_doc": grading.get("spec_code") or "",
+            "spec_status": grading.get("spec_status") or "",
+            "pcode": grading.get("product_code") or "",
+            "issued_spec": sp["spec_doc_code"] if sp else "",
             "codes": list(codes), "counts": counts,
             "outstanding": sorted(
                 d["no"] for d in dets if d["no"] in ICOA_FIELD

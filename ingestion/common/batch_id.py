@@ -40,10 +40,25 @@ is a different record from `JD012603/2`.
      question this function may answer: it is a fact about the floor, and it is
      recorded in ingestion/ecoa_runner/identity_decisions.tsv when a person rules.
 
+     A person has ruled. Head of QC, 16.09.2026, on JD112501 / JD112501*: "if both THC
+     results are assigned with the same P number production batch, that means it is the
+     same batch, but two samples have been sent for the parameter" — a starred
+     cultivation batch is a second SAMPLE of one packaged lot, not a second lot. The
+     ruling is data, not code: identity_decisions.tsv rows with field `batch_alias`
+     name each starred spelling and the lot it is a sample of, and batch_key applies
+     them after normalising, so `JD112501*` and `JD112501` key alike — and so do
+     `GG012601*`, `JD012601*`, `SCR012601*` and `FB012602*`, each the only spelling its
+     P lot has on the batch list, applied by the desk as a consequence of the same
+     ruling (their rows say so, and OI-28 asks for the word that confirms it). A star on
+     a spelling NOT in that file still keeps the mark: the rule has not changed, the
+     rulings have been recorded.
+
 Anything reading batch codes out of documents — ingestion, cross-checks, the gap
 analysis — must key through here rather than re-deriving the rule, so that a change
 to it changes every consumer at once.
 """
+import csv
+import os
 import re
 
 __all__ = ["batch_key", "spelling_variants"]
@@ -68,11 +83,44 @@ def batch_key(raw):
     ('JD012603/2V', 'JD012603/2')
     >>> batch_key("PO60052")          # letter O printed for the zero of a P-number
     'P060052'
-    >>> batch_key("SCR012601＊") == batch_key("SCR012601*")   # fullwidth star folded
+    >>> batch_key("XX000001＊") == batch_key("XX000001*")     # fullwidth star folded
     True
-    >>> batch_key("SCR012601*") == batch_key("SCR012601")     # the mark itself is kept
+    >>> batch_key("XX000001*") == batch_key("XX000001")       # the mark itself is kept …
     False
+    >>> batch_key("SCR012601*") == batch_key("SCR012601")     # … unless a person has ruled
+    True
+    >>> batch_key("JD112501＊")                                # (identity_decisions.tsv, batch_alias)
+    'JD112501'
     """
+    k = _raw_key(raw)
+    if k is None:
+        return None
+    return _aliases().get(k, k)
+
+
+_DECISIONS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ecoa_runner",
+                          "identity_decisions.tsv")
+_ALIASES = None
+
+
+def _aliases():
+    """The rulings: a starred spelling -> the lot it is a sample of, keyed both ways through
+    _raw_key so that any star glyph and any separator spelling reaches the same ruling."""
+    global _ALIASES
+    if _ALIASES is None:
+        _ALIASES = {}
+        try:
+            with open(_DECISIONS, encoding="utf-8") as fh:
+                for row in csv.DictReader(fh, delimiter="\t"):
+                    if (row.get("field") or "").strip() == "batch_alias":
+                        _ALIASES[_raw_key(row["was"])] = _raw_key(row["confirmed_value"])
+        except FileNotFoundError:
+            pass
+    return _ALIASES
+
+
+def _raw_key(raw):
+    """batch_key before the rulings: the spelling rules alone."""
     if raw is None:
         return None
     s = str(raw).strip().upper().replace(" ", "")
