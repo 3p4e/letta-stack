@@ -153,6 +153,27 @@ function printOpaqueLayer(doc) {
   if (!rules.length) throw new Error('no alpha gradient found to convert');
   return '<style id="__print-opaque-rest">\n@media print{\n' + rules.join('\n') + '\n}</style>';
 }
+// ---- the title, pushed off centre by a class the package never styles ------------
+// coq_apply.js emits the supersedes line as <span class="hb-sup">, and nothing in
+// cox.css or the 56 layers ever styles .hb-sup — the class is written and never read.
+// So on a reissue it lays out as an unstyled inline span beside the document code,
+// widening the header's right column from the package's own min-width of 132px to
+// 277px. The header is a grid of auto | 1fr | auto and .hb-center centres inside the
+// MIDDLE column, so a wider right column moves that column's centre: measured, the
+// title sat 87px left of the page centre on all 83 reissues and 14px left on a release
+// certificate, which is the package's own baseline (a 104px logo against a 132px code
+// block). The owner saw it as the title moved to the left, and it was.
+//
+// The correction takes the line out of the width computation rather than restyling the
+// header: positioned against the header, one line, at the inset the package's own edge
+// treatment uses (38px, the gold rules' margin). The right column returns to 132px, the
+// title returns to the release certificate's own -14px, the header height does not move
+// and no page grows. Nothing is reworded, resized or moved to another row.
+const HB_SUP_LAYER = '<style id="__owner-hb-sup-place">\n' +
+  'html body div.page div.header-bar{position:relative}\n' +
+  'html body div.page div.header-bar div.hb-right .hb-sup{position:absolute;' +
+  'right:var(--MARGIN-H);top:6px;white-space:nowrap}\n</style>';
+
 const PRINT_ZEBRA_LAYER = printOpaqueLayer(base);
 console.log('print-opaque: %d gradient rule(s) converted for print',
             PRINT_ZEBRA_LAYER.split('\n').length - 3);
@@ -171,7 +192,7 @@ for (const c of data.coqs) {
   if (html.indexOf(UN) < 0) throw new Error('Section 04 conformity chip not found');
   html = html.replace(UN, SEL);
   // append the owner layer as the new last layer (the package's own mechanism)
-  html = html.replace(/<\/head>/, OWNER_LAYER + '\n' + PRINT_ZEBRA_LAYER + '\n</head>');
+  html = html.replace(/<\/head>/, OWNER_LAYER + '\n' + HB_SUP_LAYER + '\n' + PRINT_ZEBRA_LAYER + '\n</head>');
   const dir = r.series === 'reissue' ? path.join(OUT, 'REISSUE', tranche[r.lot] ? 'T' + String(tranche[r.lot]).replace(/\D/g, '') : 'T3') : path.join(OUT, 'ISSUE_COQ');
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, out.filename), html);

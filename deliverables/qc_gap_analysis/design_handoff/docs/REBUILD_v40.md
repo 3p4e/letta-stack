@@ -59,7 +59,7 @@ resolution and the page prints with banding and grey haloes. With the package's 
 layer stack the cream-and-gold header wash, the heavenly-blue zebra fading to nothing
 at both page edges and the gold rules print as drawn.
 
-## 4 · Three defects the rebuild exposed, and what was done
+## 4 · Four defects the rebuild exposed, and what was done
 
 ### 4.1 · A register status was hiding results the desk holds
 
@@ -152,6 +152,27 @@ Measured on the printed page at 150 dpi, 17 mm in from the left edge of a sub-ro
 Swept over every page of the Tranche 1 document afterwards: no neutral grey anywhere in
 either fade zone.
 
+
+### 4.4 · The title sat left of centre on every reissue
+
+`coq_apply.js` writes the supersedes line as `<span class="hb-sup">`, and **nothing in
+`cox.css` or the 56 layers ever styles `.hb-sup`** — the class is written and never read.
+So on a reissue it lays out as an unstyled inline span beside the document code and
+widens the header's right column from the package's own `min-width:132px` to 277 px. The
+header is a grid of `auto | 1fr | auto` and `.hb-center` centres inside the **middle
+column**, so a wider right column moves that column's centre with it.
+
+Measured against the page centre: the title sat **87 px left** on all 83 reissues, and
+14 px left on a release certificate — which is the package's own baseline, a 104 px logo
+against a 132 px code block, and is left alone.
+
+The correction takes the line out of the width computation rather than restyling the
+header: positioned against the header, one line, at the 38 px inset the package's own
+edge treatment uses for the gold rules. Measured after: the right column is 132 px
+again, the title is at −14 px on reissue and release alike, the header height does not
+move (122 px both ways), the line clears the title by 21 px and the document-ID label by
+29 px, and no page overflows.
+
 ## 5 · What the certificates do not carry, and why
 
 The Head of QC asked directly whether parameters were missing. They are, in the record
@@ -172,6 +193,16 @@ Across the 172 documents, by determination:
 | 10.3 | Ochratoxin A | **88** | 30 |
 | 11.1–11.4 | Heavy metals | 36 each | 30 each |
 | 12 | Pesticide residues | 25 | 19 |
+
+**Every one of these is a determination the desk holds no result for.** Checked cell by
+cell against the record, 172 of 172 documents matched: of 3,612 result cells, 1,213 print
+the withheld token, and **four** of those print it while the desk holds a result —
+determination #3 on `CoQ-PP_26-005`, `26-006`, `26-025` and `26-026`, where what the desk
+holds as the document is a sentence (*"In-house HPLC cross-check"*, *"n/a — Purely Plant
+in-house"*) rather than a certificate code, so assertion A15 refuses to credit a result to
+a laboratory that cannot be named. Those four need either a document code or a ruling that
+the in-house cross-check may be cited. The rest are not a drawing defect and no build can
+close them.
 
 The line that stands out is the mycotoxins. For **88 of the 89 release certificates**
 no document on file reports Aflatoxin B₁ or Ochratoxin A separately — the laboratory
