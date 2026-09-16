@@ -123,6 +123,12 @@ def _items():
         ("tables/Batch_Parameter_Sources_v%s_long.csv" % VER,
          os.path.join(TRACKER, "Batch_Parameter_Sources_v%s_long.csv" % VER),
          "The same table, one row per batch, certificate and determination"),
+        ("docs/COMMUNICATION_CoQ_RELEASE_2026-09-16.md",
+         os.path.join(HERE, "COMMUNICATION_CoQ_RELEASE_2026-09-16.md"),
+         "The internal announcement of the prepared set, to the executive and the department "
+         "managers — Macedonian first, then the same text in English: what is issuable, how the "
+         "potency ranges were set, what the internal certificates of analysis carry, and which "
+         "certificates are still waiting on a laboratory document"),
         ("docs/FLEET_FINDINGS_2026-09-16.md", os.path.join(TRACKER, "FLEET_FINDINGS_2026-09-16.md"),
          "What twelve agents found reading the primary records on 16.09.2026, sorted into "
          "defect (fixed, or named as not fixed and why), question for the owner, and "

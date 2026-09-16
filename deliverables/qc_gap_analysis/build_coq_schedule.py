@@ -937,35 +937,51 @@ def schedule():
                 st = status_of(det, chosen, lim, cb, blocked)
             also_override = None
             if additional and chosen is None:
-                if det["no"] in ICOA_FIELD:
-                    st = ST_ICOA
-                elif det["no"] in RETEST_K:
-                    st = ST_AWAIT_K
-                elif det["no"] in RETEST_M:
-                    st = ST_AWAIT_M
-                elif det["no"] in ("9.6", "9.7"):
-                    st = ST_REQ
+                # The ruling of 15.09.2026 is unconditional — "all of the parameter
+                # results that were not tested will be taken from the initial quality
+                # control testing" — so the carry is attempted FIRST, for every
+                # determination the retest campaign did not run. Until v40 four classes
+                # short-circuited it and printed nothing: the three the Purely Plant
+                # laboratory performs (#1, #2, #7), the cannabinoids, the mycotoxins and
+                # the two microbiological determinations that are tested on request. A
+                # reissue therefore showed an empty red cell for a parameter its own
+                # release certificate had certified months earlier, on 66 lots.
+                #
+                # What is carried is the INITIAL round's row, whole: its result, the
+                # document that certifies it — the internal certificate of analysis for
+                # #1/#2/#7, an external laboratory's certificate otherwise — that
+                # document's date of issue and its laboratory. It is never the reissue
+                # campaign's own internal certificate: a certificate of quality may not
+                # cite a testing round nobody performed, which was the defect found on
+                # 16.09.2026. The pending status travels with the value, so a sheet that
+                # carries a release result while a re-analysis is outstanding says both.
+                initial_id = (x["id"] if x["id"] != NO_NUMBER else
+                              "the batch's initial CoQ (number assigned on issue)")
+                prior = None
+                for _k in filter(None, (x["cb"], PLAN_CB_ALIASES.get(x["cb"]), x["pp"])):
+                    prior = initial_rows.get(BI.batch_key(_k), {}).get(det["no"])
+                    if prior is not None:
+                        break
+                pending = (ST_ICOA if det["no"] in ICOA_FIELD else
+                           ST_AWAIT_K if det["no"] in RETEST_K else
+                           ST_AWAIT_M if det["no"] in RETEST_M else
+                           ST_REQ if det["no"] in ("9.6", "9.7") else None)
+                carried = (prior is not None
+                           and str(prior["Source document"]).strip() not in ("", "—")
+                           and str(prior["Result"]).strip() not in ("", "—"))
+                if carried:
+                    chosen = {"value": prior["Result"], "code": prior["Source document"],
+                              "date": prior["Document date"], "lab": prior["Issuing institution"],
+                              "family": prior["Report series"], "flag": "",
+                              "stability": False, "inhouse": False}
+                    also_override = prior["Also on file"]
+                    st = f"{ST_CARRIED} ({initial_id}) — {prior['Status']}"
+                elif pending is not None:
+                    st = pending
+                elif prior is not None:
+                    st = f"{ST_CARRIED} ({initial_id}) — {prior['Status']}"
                 else:
-                    # Outside the retest scope: the reissue prints the initial
-                    # certificate's row for this determination (owner, 15.09.2026).
-                    initial_id = (x["id"] if x["id"] != NO_NUMBER else
-                                  "the batch's initial CoQ (number assigned on issue)")
-                    prior = None
-                    for _k in filter(None, (x["cb"], PLAN_CB_ALIASES.get(x["cb"]), x["pp"])):
-                        prior = initial_rows.get(BI.batch_key(_k), {}).get(det["no"])
-                        if prior is not None:
-                            break
-                    if prior is not None and prior["Source document"] not in ("", "—"):
-                        chosen = {"value": prior["Result"], "code": prior["Source document"],
-                                  "date": prior["Document date"], "lab": prior["Issuing institution"],
-                                  "family": prior["Report series"], "flag": "",
-                                  "stability": False, "inhouse": False}
-                        also_override = prior["Also on file"]
-                        st = f"{ST_CARRIED} ({initial_id}) — {prior['Status']}"
-                    elif prior is not None:
-                        st = f"{ST_CARRIED} ({initial_id}) — {prior['Status']}"
-                    else:
-                        st = ST_OUTSIDE.format(initial=initial_id)
+                    st = ST_OUTSIDE.format(initial=initial_id)
             counts[st] += 1
             if chosen:
                 codes.setdefault(chosen["code"], chosen["lab"])

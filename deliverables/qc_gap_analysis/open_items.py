@@ -502,10 +502,11 @@ ITEMS = [
      "tracker/HANDOVER_RESPONSE_2026-09-16.md §2.2"),
 
     ("OI-41", "Document content", "open",
-     "Eighty-two certificates print no result for the three determinations done in-house — and the ninety that do rest on the same record",
+     "Forty-eight certificates print no result for the three determinations done in-house — and what remains is documents, not routing",
      "Determinations #1 Identification A, #2 Identification B and #7 Foreign matter are "
-     "performed in the Purely Plant laboratory on every batch. On 82 of the 172 certificates "
-     "— 44 lots — all three print nothing: the row cites the lot's internal certificate and "
+     "performed in the Purely Plant laboratory on every batch. On **48** of the 172 "
+     "certificates — 24 lots — all three print nothing: the row cites the lot's internal "
+     "certificate and "
      "the laboratory, and the result reads \"—\" with the status \"to be performed — see "
      "route\". The other 90 print Conforms. The audit of 16.09.2026 established what "
      "separates them, and it is not the kind of evidence: 78 of the 90 print Conforms "
@@ -519,9 +520,18 @@ ITEMS = [
      "rest are the predicted reissues of CNP-covered lots, blank by the routing.",
      "Printed as the desk holds it: the determination named, the internal certificate cited, "
      "the result blank and the route stated. Nothing is asserted that no record supports. "
-     "One thing did change on 16.09.2026: a REISSUE no longer prints the pass's release-round "
-     "statement against its own campaign's certificate — 39 certificates were asserting a "
-     "retest result that no round had recorded.",
+     "Two things changed on 16.09.2026, and between them the item halved — from 82 certificates "
+     "over 44 lots to 48 over 24. First, a REISSUE no longer prints the pass's release-round "
+     "statement against its own campaign's certificate: 39 certificates were asserting a retest "
+     "result that no round had recorded. Second, and in the other direction, a reissue now "
+     "CARRIES the release round's row for #1, #2 and #7 — the release result, the RELEASE "
+     "round's internal certificate of analysis, its code and its date of issue — because the "
+     "ruling of 15.09.2026 says every determination the retest did not run takes the initial "
+     "testing's result, and the desk had been honouring that for every determination except "
+     "these three. The distinction is the whole of it: the reissue states what the release round "
+     "found and names the document that found it, rather than asserting a round of its own. "
+     "What is left is 24 lots for which no in-house record has been read on either round, which "
+     "is a document question (OI-43), not a routing one.",
      "Three answers are wanted, and they are different questions. (a) For the 12 lots with a "
      "QCCoA scan on Drive: may the desk read those scans in and print what they state? "
      "(OI-43.) (b) For the 39 lots already printing Conforms from the pass: is the internal "

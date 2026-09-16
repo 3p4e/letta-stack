@@ -86,7 +86,20 @@ def status_word(st):
         return "outside the retest scope"
     if st.startswith("in-house CoA only"):
         return "in-house record only"
-    return st[:60] if st else "—"
+    if st.startswith("carried from the initial testing"):
+        # "carried from the initial testing (CoQ-PP_26-004) — not tested — no
+        # certificate covers it" is a sentence, not a result. The cell says what the
+        # reissue did — it carried the release round — and then, in the release
+        # round's own controlled word, what the release round found. The certificate
+        # number stays in the Status column, where the whole sentence is kept.
+        tail = st.split(") — ", 1)[1] if ") — " in st else ""
+        inner = status_word(tail) if tail else ""
+        return "carried from the initial testing" + (
+            " — %s" % inner if inner and inner != "—" else "")
+    if not st:
+        return "—"
+    # A result cell is never a truncated sentence. Trim on a word boundary and say so.
+    return st if len(st) <= 60 else st[:59].rsplit(" ", 1)[0] + "…"
 
 
 def build(src=None, codes=None, batch_dates=None):

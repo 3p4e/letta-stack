@@ -599,6 +599,70 @@ def main(out):
                     if _val:
                         _rr["res"] = _val
                         _filled += 1
+        # ------------------------------------------------------------------------
+        # The ruling of 15.09.2026, applied where the values actually resolve.
+        #
+        # "The written certificate of quality should contain all parameter results —
+        # the retested parameter results, and all of the parameter results that were
+        # not tested will be taken from the initial quality control testing."
+        #
+        # build_coq_schedule carries the initial row for everything outside the retest
+        # scope, but it cannot carry what it does not yet hold: #1, #2 and #7 take their
+        # value here, from the 09.09 pass and from the company's own certificates of
+        # analysis, long after the schedule has been written. So a reissue printed an
+        # empty red cell for a determination its own release certificate certifies —
+        # 66 lots, on determinations the batch was never going to be retested for.
+        #
+        # This pass closes it at the only layer that can see both rounds. For every
+        # reissue row still without a result, the release round's row is copied WHOLE:
+        # the result, the document that certifies it, that document's date of issue and
+        # its laboratory. For #1, #2 and #7 that document is the RELEASE round's
+        # internal certificate of analysis — its code and its date — which is what the
+        # desk must cite, because an in-house record is never referenced directly on a
+        # certificate of quality and the reissue campaign's own internal certificate
+        # would assert a retest nobody performed. The reissue's pending status is kept
+        # behind the carry note, so a sheet that carries a release result while a
+        # re-analysis is outstanding states both facts rather than one of them.
+        _rel_rows, _carried_res = {}, 0
+        for _c in coqs:
+            if _c["t"].startswith("additional"):
+                continue
+            _m = {_r["no"]: _r for _r in _c["rows"]}
+            for _nm in filter(None, (_c.get("pp"), _c.get("cb"))):
+                _rel_rows.setdefault(CQ.BI.batch_key(_nm), (_c, _m))
+        for _c in coqs:
+            if not _c["t"].startswith("additional"):
+                continue
+            _hit = None
+            for _nm in filter(None, (_c.get("pp"), _c.get("cb"))):
+                _hit = _rel_rows.get(CQ.BI.batch_key(_nm))
+                if _hit:
+                    break
+            if not _hit:
+                continue
+            _rc, _rmap = _hit
+            _rid = _rc.get("regcode") or "the batch's initial certificate of quality"
+            for _rr in _c["rows"]:
+                if str(_rr.get("res") or "\u2014").strip() not in ("", "\u2014"):
+                    continue
+                _src = _rmap.get(_rr["no"])
+                if _src is None:
+                    continue
+                _v = str(_src.get("res") or "\u2014").strip()
+                if _v in ("", "\u2014"):
+                    continue
+                _pending = str(_rr.get("st") or "")
+                _rr["res"] = _v
+                _rr["doc"] = _src.get("doc") or "\u2014"
+                _rr["dd"] = _src.get("dd") or "\u2014"
+                _rr["lab"] = _src.get("lab") or "\u2014"
+                if not _pending.startswith(CQ.ST_CARRIED):
+                    _rr["st"] = "%s (%s) — %s" % (CQ.ST_CARRIED, _rid, _pending)
+                _carried_res += 1
+        if _carried_res:
+            print("Carried to the reissue: %d determination(s) the retest did not run now "
+                  "print the release round's result, document and date (owner, 15.09.2026)"
+                  % _carried_res)
         print("Internal CoA: %d determination(s) now cite one, %d result(s) unblocked "
               "(%d from the company's own certificate of analysis, %d lots on file), "
               "%d carried row(s) re-cited to the release round's certificate"
