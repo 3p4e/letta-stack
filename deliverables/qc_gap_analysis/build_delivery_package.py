@@ -220,7 +220,8 @@ def human(n):
 
 
 def manifest(items, no_pdf=False):
-    lines = ["# Purely Plant — QC package, %s%s" % (STAMP, " (no PDFs)" if no_pdf else ""), "",
+    lines = ["# Purely Plant — QC package, %s — workbook v%s%s"
+             % (STAMP, VER, " (no PDFs)" if no_pdf else ""), "",
              "Everything the QC desk has produced, as it stands. Every certificate in",
              "here is a **DRAFT**: watermarked, unsigned, its conformity statement",
              "unticked, and every field the desk cannot stand behind bracketed in red.",
@@ -269,7 +270,10 @@ def main():
         print("excluded %d compiled PDF(s): %s"
               % (len(dropped), ", ".join(os.path.basename(a) for a in dropped)))
     os.makedirs(OUT_DIR, exist_ok=True)
-    out = os.path.join(OUT_DIR, "PP_QC_Package_%s%s.zip" % (STAMP, suffix))
+    # The archive names the workbook VERSION it carries as well as the day: two builds on
+    # one day — v35 and v36 both on 16.09.2026 — would otherwise overwrite each other under
+    # one name, and a person holding the file could not tell which they had.
+    out = os.path.join(OUT_DIR, "PP_QC_Package_%s_v%s%s.zip" % (STAMP, VER, suffix))
     with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as z:
         z.writestr("MANIFEST.md", manifest(items, no_pdf))
         for arc, src, _ in items:
