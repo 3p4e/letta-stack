@@ -21,7 +21,7 @@ Nothing is invented and no certificate rests on a document that did not yet exis
 only stops a result the desk holds from appearing on no certificate at all, which is
 OI-38. A stability timepoint is never a source: it measures the lot ageing.
 """
-import argparse, datetime as dt, json, os, sys
+import argparse, datetime as dt, json, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -32,6 +32,10 @@ COL_DET = {"E": "4", "G": "5", "H": "6", "I": "8", "J": "9.1", "K": "9.2", "L": 
            "M": "9.4", "N": "9.5", "O": "10.2", "P": "10.1", "Q": "10.3", "R": "11.1",
            "S": "11.2", "T": "11.3", "U": "11.4", "V": "12"}
 BLANK = ("", "—")
+# "<10^2 >10" — an upper bound then a lower one with no word between them. The pages
+# the desk holds write the pair three ways; this gives the third the connector the
+# other two print, so one controlled rule reads all of them.
+_BARE_RANGE = re.compile(r"(<\s*10\S*)\s+(>\s*10\S*)")
 
 
 def day(v):
@@ -68,9 +72,48 @@ def register_index(reg):
     return out
 
 
+def listing_index(path=None):
+    """The Head of QC's own eCoA spec listing: lot -> determination -> the citable rows.
+
+    PP_Spec_Parameter_Listing.xlsx carries the determination number in its own № column —
+    the desk's numbering exactly, 1 … 9.1 … 11.4 … 12 — so a result is placed by the
+    listing's own mapping and never by a pattern read off the parameter's prose name.
+    """
+    import openpyxl
+    path = path or os.path.join(
+        os.path.dirname(os.path.dirname(HERE)), "ingestion", "coa_track",
+        "letta-imb-coas", "exports", "PP_Spec_Parameter_Listing.xlsx")
+    if not os.path.exists(path):
+        return {}
+    wb = openpyxl.load_workbook(path, read_only=True)
+    rows = list(wb["Spec parameter listing"].iter_rows(min_row=3, values_only=True))
+    wb.close()
+    bad = {"", "\u2014", "-", "n/a", "none", "missing / not tested", "not tested", "missing"}
+    out = {}
+    for r in rows:
+        batch, pn, no = str(r[2] or "").strip(), str(r[3] or "").strip(), str(r[8] or "").strip()
+        res, code = str(r[10] or "").strip(), str(r[12] or "").strip()
+        iss, lab = str(r[13] or "").strip(), str(r[14] or "").strip()
+        if res.lower() in bad or code.lower() in bad:
+            continue
+        # An in-house result carries no certificate number on its page. The desk already
+        # issues an internal certificate of analysis for exactly that, and every #1, #2
+        # and #7 on every certificate cites one — so the row is kept and marked, and the
+        # citation becomes the batch's own iCoA when it is written.
+        inhouse = code.lower().startswith("n/a") or "in-house" in code.lower()
+        d = day(iss)
+        if d is None:
+            continue
+        for k in {batch, pn} - {""}:
+            out.setdefault(k, {}).setdefault(no, []).append(
+                (d, "\u0000iCoA" if inhouse else code, lab, res))
+    return out
+
+
 def apply(data, log=None):
     """Fill every reissue row the register can cite. Returns the rows changed."""
     have = register_index(data["reg"])
+    listing = listing_index()
     changed = []
     for c in data["coqs"]:
         if not str(c.get("t") or "").startswith("additional"):
@@ -85,12 +128,29 @@ def apply(data, log=None):
                 continue
             cands = [x for x in pool.get(r["no"], []) if x[0] <= iss]
             if not cands:
+                # the Head of QC's own eCoA listing, where the register has nothing
+                lp = (listing.get(str(c.get("pp") or "").strip())
+                      or listing.get(str(c.get("cb") or "").strip()) or {})
+                cands = [x for x in lp.get(r["no"], []) if x[0] <= iss]
+            if not cands:
                 continue
             d, code, lab, val = max(cands)          # the latest that may be cited
+            if code == "\u0000iCoA":                   # an in-house result cites the iCoA
+                code = str(c.get("icoa_code") or "").strip()
+                lab = "Purely Plant GmbH (in-house)"
+                if not code:
+                    continue
             # the register holds the laboratory's own spelling — 5.2×10^2 CFU/g,
             # Одговара, < 10² и > 10 — and a certificate prints the desk's controlled
             # word for it, which is what every other row on the page has been through.
-            val = RV.bilingual(RV.canon(str(val or "").strip(), r["no"]), r["no"])
+            # A microbiology range is written three ways on the pages the desk holds:
+            # "< 10² и > 10", "< 10² and > 10" and, on the in-house sheets, a bare
+            # "<10^2 >10" with the connector left out. The first two the controlled
+            # vocabulary already reads; the third is given the connector the other two
+            # print so it goes down the same path, rather than a fourth spelling.
+            raw = str(val or "").strip()
+            raw = _BARE_RANGE.sub("\\1 и \\2", raw)
+            val = RV.bilingual(RV.canon(raw, r["no"]), r["no"])
             if str(val).strip() in BLANK:
                 continue
             r["res"] = val
