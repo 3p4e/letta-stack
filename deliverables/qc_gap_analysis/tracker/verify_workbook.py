@@ -653,13 +653,69 @@ for r, d in regv.items():
         bad2("iCoA Register", f"a legacy iCoA not on the legacy day {_reg_day}", f"{d['P Batch']}: {a}")
 
 # ---- 13. Mikro CoQ Parameter against the tracker
-if "Mikro CoQ Parameter" in WB.sheetnames:
-    mk = WV["Mikro CoQ Parameter"]
-    seen_lots = {str(mk.cell(r, 1).value) for r in range(5, mk.max_row + 1) if mk.cell(r, 1).value}
-    for cu, p in LOTS:
-        pass
-    if not seen_lots:
+# This check did nothing. Its body was `for cu, p in LOTS: pass`, and it was guarded on a
+# SHEET name that stopped existing when the fold of 14.09.2026 made the sheet a section of
+# Reference — so from v26 to v33 it was skipped entirely while appearing to pass. Found
+# 16.09.2026. It now does what it says: every value the owner's microbiology sheet prints
+# is compared with the tracker's cell for the same lot and determination.
+_MIK = {10: "9.1", 11: "9.2", 12: "9.3", 13: "9.4", 14: "9.5",
+        16: "10.1", 17: "10.2", 18: "10.3", 20: "11.1", 21: "11.2", 22: "11.3", 23: "11.4"}
+_REFLINE = re.compile(r"^.+,\s*\(\d{2}\.\d{2}\.\d{4}\)\s*\[")   # a reference, not a result
+
+
+def _not_a_value(v):
+    """The sheet writes each group's REFERENCE in the first sub-column of the block's second
+    row — a citation where one exists, else a placeholder. Neither is a result, and a
+    placeholder on the value side ("— MISSING —") is the absence of one."""
+    s = str(v or "").strip()
+    return (not s) or s.startswith("\u2014") or _REFLINE.match(s) is not None
+try:
+    _mk = sheet_or_section(WV, "Mikro CoQ Parameter")
+except Exception:
+    _mk = None
+if _mk is None:
+    bad2("Mikro CoQ Parameter", "neither a sheet nor a Reference section", "")
+else:
+    _trk = {}
+    for (_cu, _p), _lot in LOTS.items():
+        _k = T.batch_key(_p) if _p and not _p.startswith(("N/A", "\u2014")) else T.cu_key(_cu)
+        _a = _lot["row"]
+        for _n, (_s0, _e) in PCOL.items():
+            _subs = T.GROUPS.get(_n) or [str(_n)]
+            _single = (_e - _s0) <= 2
+            for _r in range(_a, _a + 40, 2):
+                if _r > WV[TRACKER].max_row:
+                    break
+                for _j, _sub in enumerate(_subs):
+                    _v = WV[TRACKER].cell(_r, _s0 + (0 if _single else _j)).value
+                    if _not_a_value(_v):
+                        continue
+                    _trk.setdefault((_k, _sub), set()).add(str(_v).strip())
+    _anch = [r for r in range(5, _mk.max_row + 1) if _mk.cell(r, 1).value]
+    _seen = _diff = 0
+    for _i, _a in enumerate(_anch):
+        _nxt = _anch[_i + 1] if _i + 1 < len(_anch) else _mk.max_row + 1
+        _cu = str(_mk.cell(_a, 1).value or "")
+        _p = str(_mk.cell(_a, 2).value or "")
+        _k = T.batch_key(_p) if _p and not _p.startswith(("N/A", "\u2014")) else T.cu_key(_cu)
+        for _r in range(_a, _nxt):
+            for _c, _det in _MIK.items():
+                _v = _mk.cell(_r, _c).value
+                if _not_a_value(_v):
+                    continue
+                _seen += 1
+                _have = _trk.get((_k, _det))
+                if not _have:
+                    _diff += 1
+                    bad2("Mikro CoQ Parameter", "a value the tracker has no cell for (#%s)" % _det,
+                         "%s/%s: %r" % (_cu, _p, str(_v)[:30]))
+                elif str(_v).strip() not in _have:
+                    _diff += 1
+                    bad2("Mikro CoQ Parameter", "differs from the tracker (#%s)" % _det,
+                         "%s/%s: sheet %r, tracker %s" % (_cu, _p, str(_v)[:24], sorted(_have)[:2]))
+    if not _anch:
         bad2("Mikro CoQ Parameter", "no lots on the sheet", "")
+    print("   Mikro CoQ Parameter: %d value(s) compared with the tracker, %d differing" % (_seen, _diff))
 
 print()
 print(f"deeper checks: {checked} printed result(s) compared with the certificate records; {len(FIND2)} finding(s)")

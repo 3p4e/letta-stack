@@ -69,17 +69,17 @@ the recalculated workbook (tracker and CoQ Register), the references table and e
 | T1 results | 282 |
 | T2 instances | 94 |
 | T2 results | 282 |
-| T3 cited rows | 1866 |
+| T3 cited rows | 2016 |
 | T3 column map entries | 17 |
-| T3 results compared | 1557 |
+| T3 results compared | 1707 |
 | T4 results compared | 1414 |
 | T4 tracker citations | 1964 |
 | T5 certificates with no tracker lot | 15 |
-| T5 rows | 1497 |
+| T5 rows | 1637 |
 | T6 cited documents | 359 |
 | T6 drafts | 73 |
 | T6 results compared | 1497 |
-| T7 cells | 1549 |
+| T7 cells | 1575 |
 | T7 certificates | 161 |
 | T8 numbered rows | 161 |
 | T9 certificates | 172 |
@@ -95,22 +95,22 @@ the recalculated workbook (tracker and CoQ Register), the references table and e
 
 ### T3 · the primary records disagree among themselves (#4) — 3
 
-* HPA1024: 197-13-К/26 prints '17.31'; agrees with ['register row 358', 'corpus']; not with ["09.09 pass (one read) '19.68 %w/w'"]
-* P060352: 197-7-К/26 prints '18.86'; agrees with ['register row 348', 'corpus']; not with ["09.09 pass (one read) '24.09 %w/w'"]
-* P060332: 197-6-К/26 prints '17.67'; agrees with ['register row 345', 'corpus']; not with ["09.09 pass (one read) '23.29 %w/w'"]
+* HPA1024: 197-13-К/26 prints '17.31'; agrees with ['register row 383', 'corpus']; not with ["09.09 pass (one read) '19.68 %w/w'"]
+* P060352: 197-7-К/26 prints '18.86'; agrees with ['register row 373', 'corpus']; not with ["09.09 pass (one read) '24.09 %w/w'"]
+* P060332: 197-6-К/26 prints '17.67'; agrees with ['register row 370', 'corpus']; not with ["09.09 pass (one read) '23.29 %w/w'"]
 
 ### T3 · the primary records disagree among themselves (#5) — 1
 
-* P060352: 197-7-К/26 prints '0.22'; agrees with ['register row 348', 'corpus']; not with ["09.09 pass (one read) '< LOQ %w/w'"]
+* P060352: 197-7-К/26 prints '0.22'; agrees with ['register row 373', 'corpus']; not with ["09.09 pass (one read) '< LOQ %w/w'"]
 
 ### T3 · the primary records disagree among themselves (#6) — 1
 
-* HPA1024: 197-13-К/26 prints '0.36'; agrees with ['register row 358', 'corpus']; not with ["09.09 pass (one read) '< LOQ %w/w'"]
+* HPA1024: 197-13-К/26 prints '0.36'; agrees with ['register row 383', 'corpus']; not with ["09.09 pass (one read) '< LOQ %w/w'"]
 
 ### T3 · the primary records disagree among themselves (#9.1) — 2
 
-* P060092: 5/0008/26 prints '1 × 10²'; agrees with ['register row 228']; not with ["corpus '< 1 x 10² CFU/g'"]
-* P060092: 5/0008/26 prints '1 × 10²'; agrees with ['register row 228']; not with ["corpus '< 1 x 10² CFU/g'"]
+* P060092: 5/0008/26 prints '1 × 10²'; agrees with ['register row 241']; not with ["corpus '< 1 x 10² CFU/g'"]
+* P060092: 5/0008/26 prints '1 × 10²'; agrees with ['register row 241']; not with ["corpus '< 1 x 10² CFU/g'"]
 
 ### T5 · certificate cites a document the tracker does not cite for the lot (#5) — 1
 

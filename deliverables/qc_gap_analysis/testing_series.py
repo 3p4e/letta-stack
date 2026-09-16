@@ -61,6 +61,73 @@ _REAN_RX = re.compile(r"^\s*(%s)(\d{1,3})-[КKМM](?:[/-]\d\d)?\s*$"
                       % "|".join(re.escape(s) for s in REANALYSIS_SERIES))
 
 
+# The IJZ-MB campaign delivery of 25/26.08.2026 — the owner's ruling of 10.09.2026, on the
+# CoQ Register's note since: "the IJZ-MB delivery of 25/26.08.2026 (certificates of 31.08
+# and 01.09.2026, 68 to 436 days after packaging) is one campaign sampling and every
+# certificate in it is a retest document, for the post-SOP lots too".
+#
+# It is named by its certificates and not by a series, which is the exception to the rule
+# `sampling_dates` states — a campaign is identified by its certificate series, never by a
+# delivery list. This laboratory's codes are its own running numbers and carry no series,
+# so there is nothing else to name it by. Nor is it a CAMPAIGN in `sampling_dates`: its
+# certificates issue over TWO days, five and six days after the sampling, which the
+# calendar's invariant for the three Farmahem campaigns (one issue day, two or three days
+# after the last sampling day) does not admit. So it is exactly what the ruling says and
+# no more: these certificates are RETEST documents, and none of them certifies a release
+# certificate of quality.
+#
+# Frozen from intake_IJZMB_2026-09-16/reads_IJZMB.json on 16.09.2026; the 30 codes are the
+# laboratory numbers on the pages, whose SHA-256 the split manifest records.
+RETEST_ONLY = frozenset((
+    "536/1067/26",
+    "537/1068/26",
+    "538/1069/26",
+    "539/1070/26",
+    "540/1071/26",
+    "541/1072/26",
+    "542/1073/26",
+    "543/1074/26",
+    "544/1075/26",
+    "545/1076/26",
+    "546/1077/26",
+    "547/1078/26",
+    "548/1079/26",
+    "549/1080/26",
+    "550/1081/26",
+    "551/1082/26",
+    "552/1083/26",
+    "553/1084/26",
+    "554/1085/26",
+    "555/1086/26",
+    "556/1087/26",
+    "557/1088/26",
+    "558/1089/26",
+    "559/1090/26",
+    "560/1091/26",
+    "561/1092/26",
+    "562/1093/26",
+    "563/1094/26",
+    "564/1095/26",
+    "565/1096/26",
+))
+
+
+def is_retest_only(code):
+    """True for a certificate the owner has ruled a retest document although its code
+    carries no re-analysis series — the IJZ-MB delivery of 25/26.08.2026.
+
+    >>> is_retest_only("548/1079/26"), is_retest_only("548-1079-26")
+    (True, True)
+    >>> is_retest_only("1157/2058/25"), is_retest_only(""), is_retest_only(None)
+    (False, False, False)
+    """
+    c = re.sub(r"[\s\-/_.]+", "/", str(code or "").strip()).strip("/")
+    return c in _RETEST_ONLY_KEYS
+
+
+_RETEST_ONLY_KEYS = frozenset(re.sub(r"[\s\-/_.]+", "/", c).strip("/") for c in RETEST_ONLY)
+
+
 def is_reanalysis(code):
     """True for a post-release re-analysis certificate — what a reissue rests on.
 
@@ -237,7 +304,16 @@ def rounds(cells_by_param):
         for c in cells:
             if is_reanalysis(c.get("code", "")):
                 campaigns.setdefault(series_of(c["code"]), {}).setdefault(param, []).append(c)
+        # A certificate of the IJZ-MB delivery of 25/26.08.2026 is a retest document by the
+        # owner's ruling, whatever its position in the parameter's history: for a lot whose
+        # block holds no earlier microbiology it would otherwise BE the release result and
+        # date the release certificate after it — which is what put P060342's release CoQ on
+        # 31.08.2026 in the first v34 build.
+        forced = [c for c in own if is_retest_only(c.get("code", ""))]
+        if forced:
+            own = [c for c in own if not is_retest_only(c.get("code", ""))]
         rel, ret = split(own)
+        ret = sorted(ret + forced, key=lambda c: key(c.get("date", "")))
         for i, group in enumerate([rel] + [[c] for c in ret]):
             if not group:
                 continue

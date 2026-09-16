@@ -127,7 +127,9 @@ def norm(v):
     t = low
     t = re.sub(r"(cfu/g|[µμ]g/kg|ug/kg|mg/kg|%\s*w/w|% ?w/w|%|w/w)", "", t).strip()
     t = t.replace(",", ".").replace(" и ", " and ")
-    t = re.sub(r"\s*[×x·]\s*10\s*\^?\s*(-?\d+)", lambda m: "e" + m.group(1), t)
+    # the multiplication sign is written ×, x and — on the IPH pages the corpus read —
+    # the CYRILLIC х (U+0445), which is a different character from the Latin x
+    t = re.sub(r"\s*[×x\u0445\u0425·]\s*10\s*\^?\s*(-?\d+)", lambda m: "e" + m.group(1), t)
     t = re.sub(r"\s*10\s*\^\s*(-?\d+)", lambda m: "1e" + m.group(1), t)
     t = t.replace(" and ", " ")
     m = re.match(r"^([<≤>≥])\s*([0-9.]+(?:e-?\d+)?)$", t)

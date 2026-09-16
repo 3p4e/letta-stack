@@ -4,7 +4,7 @@ Every finding the desk has raised and cannot itself settle, with the evidence
 behind it and the decision being asked for. Built by `open_items.py`; the same
 register is the **Open Items** sheet of the workbook.
 
-**27 open · 3 marked on the certificate**
+**28 open · 3 marked on the certificate**
 
 ## Specification
 
@@ -208,15 +208,39 @@ register is the **Open Items** sheet of the workbook.
 
 ## Register scope
 
-### OI-34 · The IJZ-MB campaign microbiology is on the tracker and not in the release register
+### OI-34 · The IJZ-MB campaign microbiology was on the tracker and not in the release register
 
-*State:* **open** · *Evidence:* tracker/new_instances.json (the 30 IJZ-MB instances); tracker/split_manifest_IJZ-MB_2026-09-01.csv; build_coq_schedule.py ST_CARRIED
+*State:* **ruled** · *Evidence:* tracker/new_instances.json (the 30 IJZ-MB instances); tracker/split_manifest_IJZ-MB_2026-09-01.csv; build_coq_schedule.py ST_CARRIED
 
 **Found.** The thirty IJZ-MB certificates of the campaign sampling of 25/26.08.2026 (issued 31.08 and 01.09.2026) are testing instances on the tracker since 04.09.2026 and are not rows of the release register, which is the one source the certificates of quality are compiled from. Since 15.09.2026 a reissue prints, for every determination it did not retest, the initial certificate's result — so for a lot whose microbiology WAS retested in that campaign the reissue would print the release microbiology while a newer result sits on the tracker. No Tranche 1 lot is affected (none was in that delivery). Since v30 (15.09.2026) the thirty Tranche 2 reissues ARE numbered, planned 18.09.2026, so a Tranche 2 lot in that delivery would print its release microbiology; the Tranche 3 reissues still wait for their mycotoxin certificates.
 
-**The desk.** Flagged, not written: entering thirty certificates into the register is an intake of its own, with the two-read gate the 220-М and 227-К intakes used.
+**The desk.** CLOSED 16.09.2026 by intake_IJZMB_2026-09-16. The sweep of that day measured the harm the item had predicted: 24 certificates of quality printed microbiology a newer certificate for the same lot contradicted, twelve of them reissues, and not by a little — P050012 printed TAMC 2.1 × 10⁴ where the campaign certificate reads < 10. 29 of the 30 certificates are now rows of the release register, through the same two-read gate the 220-М, 227-К and 220-К intakes used, with four value disagreements settled by a third read of the page (OI-36's defect class, four more instances). One is held back: 548/1079/26, whose lot is in doubt — OI-37.
 
-**Needed.** Whether the desk should write the IJZ-MB campaign certificates into the release register (columns TAMC, TYMC, bile-tolerant GNB, Salmonella, E. coli) before the Tranche 2 and 3 reissues are compiled.
+**Needed.** Nothing further, unless the owner rules on OI-37 (the held certificate) or on OI-13 (the expanded panel this same delivery reports).
+
+## Batch identity
+
+### OI-37 · One campaign microbiology certificate names a strain that is not its filed lot's
+
+*State:* **open** · *Evidence:* the scan 310826_548-1079-26_IJZ-MB_BSS052501-P050192.pdf in eCoA_DATABASE; tracker/split_manifest_IJZ-MB_2026-09-01.csv; intake_IJZMB_2026-09-16/reads_IJZMB.json
+
+**Found.** 548/1079/26 of 31.08.2026 is filed under P050192 — BSS052501, Blue Sunset Sherbet — because its typed serial reads PO50192, which canonicalises to P050192. But the page prints the sample as "Сув цвет од канабис сорта Sleepy Joe" and carries a HANDWRITTEN P060192 beneath the typed serial; P060192 is SJ112501, whose strain the release register gives as Sleepy Joy. The printed strain and the handwriting agree with each other and disagree with the typed serial. Read on the page of 16.09.2026. P060192 has no campaign microbiology certificate of its own on file; P050192 would have this one. Three other campaign certificates print a strain the register spells differently (Cap Junky against the register's Cup Junky, on 556/1087/26, 558/1089/26 and 565/1096/26) — that is a spelling, not a different strain, and is not this.
+
+**The desk.** The certificate is NOT written into the release register: a microbiology result on the wrong lot's certificate of quality is worse than a missing one. The other 29 of the delivery are written. P050192's certificates therefore still print its release microbiology, and its reissue will say so.
+
+**Needed.** Which lot 548/1079/26 belongs to: P050192, as the typed serial reads, or P060192, as the printed strain and the handwritten correction say?
+
+## Certificate content
+
+### OI-38 · Twelve reissues carry the initial microbiology while a later campaign result is on file
+
+*State:* **open** · *Evidence:* intake_IJZMB_2026-09-16/carried_microbiology_2026-09-16.csv (26 rows, 12 reissues); build_coq_schedule.py ST_CARRIED; the ruling of 15.09.2026
+
+**Found.** Since 16.09.2026 the IJZ-MB campaign certificates of 25/26.08.2026 are rows of the release register (intake_IJZMB_2026-09-16), so the desk now holds, for 29 lots, a microbiology result LATER than the release one. A reissue rests on its Farmahem campaign (220- or 227-), whose scope is the assay and the mycotoxins; microbiology is outside that scope, so the reissue carries the initial certificate's result — the owner's ruling of 15.09.2026, correctly applied. The consequence is that twelve reissues will print a microbiology result that a newer certificate for the same lot contradicts, and not narrowly: CoQ-PP_26-144 (P050012) carries TAMC 2.1 × 10⁴ where 561/1092/26 of 01.09.2026 reads < 10, and CoQ-PP_26-153 (P050132) carries TYMC 3.3 × 10⁴ where 560/1091/26 reads < 10. The 26 rows are listed in intake_IJZMB_2026-09-16/carried_microbiology_2026-09-16.csv. The twelve RELEASE certificates that print the same release values are not in question: a release certificate states the release testing, and a later retest does not belong on it.
+
+**The desk.** Nothing on the certificates. The campaign results are in the register, on the tracker and in the compilation, so the newer result is visible everywhere the desk shows its working; what a controlled document prints is the owner's to rule, not a defect to repair silently. The IJZ-MB delivery is also a different sampling from the tranche it would be printed on — 25/26.08.2026 against 12–14.08 (Tranche 2) and 19–21.08 (Tranche 3) — so it is not simply 'the same campaign, later certificate'.
+
+**Needed.** Should a 12-month reissue print the LATEST microbiology on file — the IJZ-MB campaign of 25/26.08.2026 — instead of carrying the initial result, given that the microbiology was sampled on a different day from the Farmahem campaign the reissue rests on? And if it should, does the reissue then cite two samplings on one certificate?
 
 ## Tracker scope
 
@@ -244,15 +268,15 @@ register is the **Open Items** sheet of the workbook.
 
 ## Panel scope
 
-### OI-13 · Two optional test panels have never been exercised
+### OI-13 · The expanded microbiology panel HAS been run and no certificate says so
 
 *State:* **open** · *Evidence:* Ph. Eur. 2.8.13; Ph. Eur. 2.6.13 expanded panel
 
-**Found.** The pesticide panel offers a Ph. Eur. 2.8.13 option and a CUMCS-equivalency option, and none of the lots was tested to equivalency. The expanded microbiology option (P. aeruginosa, S. aureus) has never been run.
+**Found.** Corrected 16.09.2026. This item said until today that the expanded microbiology option (P. aeruginosa, S. aureus) "has never been run" and that "neither is claimed on any certificate". That was false, and it had been shipped in OPEN_ITEMS.md and in the workbook since 11.09.2026. Thirty-one certificates on file report the panel — every one of the thirty IJZ-MB campaign certificates of 31.08/01.09.2026 and 1221/2172/25 of 01.12.2025 — and all report both organisms ABSENT. What remains true of the other panel: the pesticide option offers Ph. Eur. 2.8.13 and a CUMCS equivalency, and no lot was tested to equivalency. Determinations #9.6 and #9.7 print nothing on all 172 certificates of quality, marked "upon request — not required for release", while a result exists for 31 of them.
 
-**The desk.** Neither is claimed on any certificate.
+**The desk.** The panel results are kept in intake_IJZMB_2026-09-16/reads_IJZMB.json. They are NOT written into the owner's release register, which has no column for either organism, and the certificates are not changed: what a controlled document claims is the owner's to decide, not a defect to repair silently.
 
-**Needed.** Should the certificates record that the option exists and was not exercised, or stay silent on it?
+**Needed.** Should a certificate of quality print #9.6 and #9.7 where the laboratory reported them (31 lots, both absent) — and should the register gain a column for each so the result lives beside the other five? And, unchanged: should the certificates record that the pesticide equivalency option exists and was not exercised, or stay silent on it?
 
 ## Document content
 

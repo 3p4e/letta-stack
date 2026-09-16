@@ -1081,3 +1081,95 @@ an unnumbered certificate carries, and only the batch and the lot tell them apar
     python3 deliverables/qc_gap_analysis/tracker/build_tracker_v8.py \
         --v9 --version=33 --icoa --cells --mikro=CoQ_Analysis_Master_v13.xlsx \
         --build-date=15.09.2026 --legacy-icoa=03.06.2026 --legacy-coq=06.06.2026 --t3-issue=21.09.2026
+
+# v34 — the campaign microbiology in the register, and two checks that were not checking, 16.09.2026
+
+The owner reported that another reviewer saw inconsistencies in the heavy-metal,
+microbiology and mycotoxin values for some batches, and asked whether something had been
+lost across thirty-odd versions of the workbook.
+
+**Nothing was lost.** A cross-version sweep read the tracker of every master workbook on
+disk — v3 … v33, twenty with a tracker sheet — and compared each with v33 per lot and
+determination, semantically rather than by spelling. Over the three families the only
+substantive differences in the whole history are the **four page-read corrections of v32**
+and the **n.r. → not reported ruling** of the same build; every other difference is the
+controlled vocabulary rewriting notation on purpose (`<2` → `< 2`, `н.д.` → `ND`), which is
+why the first, string-comparing pass reported 371 differences and the semantic pass
+reported 4.
+
+**The inconsistency was real and it was somewhere else.** The thirty IJZ-MB certificates of
+the campaign sampling of 25/26.08.2026 (issued 31.08 and 01.09.2026) had been testing
+instances on the tracker since 04.09.2026 and were **never rows of the release register**,
+which is the one source the certificates of quality are compiled from. `OI-34` had recorded
+the risk; the sweep measured it: **24 certificates of quality printed microbiology that a
+newer certificate for the same lot contradicts.** P050012's printed TAMC 2.1 × 10⁴ where
+the campaign certificate reads < 10; P050132's printed TYMC 3.3 × 10⁴ against < 10.
+
+`intake_IJZMB_2026-09-16/` takes them in, through the same two-read gate as the 220-М,
+227-К and 220-К intakes. **29 of the 30 are written** into the register, no block opened.
+Four certificates disagreed between their two reads — every one on the bile-tolerant
+gram-negative line, one read stopping at `< 10²` where the other carried `< 10² и > 10` —
+and each was settled by a **third read of the page**: the fuller read was right all four
+times, which is `OI-36`'s defect class with four more instances. Four more differed only in
+how the laboratory spells absence (Отсутна, Отсуства, Отсуствa, Отсуствува), which the
+standing vocabulary ruling already treats as one assertion.
+
+**One certificate is held back.** `548/1079/26` is filed under P050192 (Blue Sunset
+Sherbet) because its typed serial reads `PO50192`, but the page prints the strain **Sleepy
+Joe** and carries a handwritten **P060192** — SJ112501, Sleepy Joy. Which lot it belongs to
+is the Head of QC's to settle (`OI-37`), and a microbiology result on the wrong lot's
+certificate is worse than a missing one.
+
+**A ruling the intake exposed rather than made.** A reissue rests on its Farmahem campaign,
+whose scope is the assay and the mycotoxins, so it carries the initial microbiology — the
+ruling of 15.09.2026, correctly applied. Now that a later result exists, twelve reissues
+will print a value a newer certificate contradicts. The twelve *release* certificates that
+print the same values are not in question: a release certificate states the release
+testing. The 26 rows are listed in `carried_microbiology_2026-09-16.csv` and the question —
+should a reissue print the latest microbiology, sampled on a different day from the
+campaign it rests on? — is `OI-38`.
+
+**Two checks were not checking.**
+
+* `verify_workbook`'s **check 13** claimed to compare the owner's microbiology sheet with
+  the tracker. Its body was `for cu, p in LOTS: pass` — it did nothing — and it was guarded
+  on a SHEET name that the fold of 14.09.2026 turned into a Reference section, so from v26
+  to v33 it was skipped entirely while appearing to pass. It now compares every value the
+  sheet prints against the tracker's cell for the same lot and determination and reports
+  the count: **197 values compared, 0 differing**.
+* **OI-13** stated that the expanded microbiology panel "has never been run" and that
+  "neither is claimed on any certificate". That was false and had shipped since 11.09.2026:
+  **31 certificates on file report P. aeruginosa and S. aureus**, all absent, the earliest
+  from 01.12.2025. Determinations #9.6 and #9.7 print nothing on all 172 certificates. The
+  item is rewritten and the question of what the certificate should print is put to the
+  owner.
+
+**One defect the intake itself caused, and the ruling that fixes it.** With the campaign
+rows in the register, a lot whose block held no earlier microbiology took the campaign
+certificate as its *release* result — which dated P060342's release certificate 31.08.2026
+and broke the numbering's chronology. The owner's ruling already covers this, on the CoQ
+Register's own note since 10.09.2026: the IJZ-MB delivery "is one campaign sampling and
+every certificate in it is a retest document, for the post-SOP lots too". `testing_series`
+now holds that delivery as `RETEST_ONLY` — its thirty codes frozen from the intake — and
+`rounds()` never places one in the release round. It is **not** modelled as a campaign in
+`sampling_dates`: its certificates issue over two days, five and six days after the
+sampling, which the calendar's invariant for the three Farmahem campaigns does not admit,
+and the ruling says only that they are retest documents.
+
+| | v33 | v34 |
+| --- | ---: | ---: |
+| IJZ-MB campaign certificates in the release register | 0 | **29** (1 held, OI-37) |
+| internal certificates numbered | 184 | **211** (89 release, 122 retest) |
+| certificates of quality numbered / allocated | 133 / 28 | **133 / 28** (unchanged) |
+| `verify_workbook` check 13 | skipped since v26 | **197 values compared, 0 differing** |
+| `verify_workbook` / `verify_prose` findings | 0 / 0 | **0 / 0** |
+| truth check findings | 21 | **21** (the same items; no new one) |
+
+## Reproducing
+
+    python3 deliverables/qc_gap_analysis/intake_IJZMB_2026-09-16/apply_IJZMB.py --register <register>
+    python3 deliverables/qc_gap_analysis/build_coq_schedule.py
+    python3 deliverables/qc_gap_analysis/export_coq_artifact_data.py
+    python3 deliverables/qc_gap_analysis/tracker/build_tracker_v8.py \
+        --v9 --version=34 --icoa --cells --mikro=CoQ_Analysis_Master_v13.xlsx \
+        --build-date=15.09.2026 --legacy-icoa=03.06.2026 --legacy-coq=06.06.2026 --t3-issue=21.09.2026
