@@ -27,9 +27,42 @@ for (const [f, t] of [['coq_reissue_scope_2026-09-15.csv', null], ['coq_draft_sc
 // after the pipe; this wraps it so the half is emitted inside the .r-conform span,
 // where the template's own rule styles it. Nothing else in the cell changes.
 const MK = { conforms: 'Одговара', absent: 'Отсутна' };
+// A register status is the desk's word about the DETERMINATION; a result cell is the
+// package's word about the RESULT. The package's vocabulary prints [ — ] for "to be
+// performed", "upon request", "not tested", "in-house CoA only" and [pending] for
+// "awaiting" — all of which say *no result is on file*. Where the desk now holds a
+// result and the document that certifies it, that sentence is no longer true of the
+// cell: #1, #2 and #7 keep the route's wording ("to be performed — see route") in the
+// register long after the internal certificate of analysis has issued and carried
+// them, and the 15.09 carry copies a release result onto a reissue row whose own
+// status still names the outstanding re-analysis. Printed as written, those two put a
+// red [ — ] over 1568 cells the desk can certify.
+//
+// So for the CELL only, a status that claims no result is dropped when a result is
+// present — and every status that COLOURS a present value is kept, because that is a
+// statement about the value itself: OUT OF SPECIFICATION, BLOCKED, UNDETERMINED, and
+// the carry note, which says where the value came from. The register, the tracker and
+// Section 03's citation keep the desk's full wording.
+const ST_KEEP = /^(carried from the initial testing|covered|OUT OF SPECIFICATION|BLOCKED|UNDETERMINED)/i;
+const ST_NO_RESULT = /^(to be performed|upon request|not tested|in-house CoA only|awaiting|see route|outside the retest scope)/i;
+//
+// The result is not enough on its own: a value with no document behind it is a value
+// the certificate cannot attribute, and assertion A15 is right to refuse it. So the
+// status is set aside only where the row also carries a code-shaped source document;
+// otherwise the desk's word stands and the cell prints the withheld token.
+let CURRENT = null;                                   // the record being applied
+function cellStatus(det, res, st) {
+  const r = String(res || '').trim();
+  if (!CoQ.codeShaped(String((CURRENT && CURRENT.doc[det]) || '').trim())) return st;
+  if (!r || r === '\u2014') return st;                       // no result: the status stands
+  const parts = String(st || '').split(' \u2014 ');
+  if (!parts.some(p => ST_NO_RESULT.test(p.trim()))) return st;
+  const kept = parts.filter(p => ST_KEEP.test(p.trim()));
+  return kept.length ? kept.join(' \u2014 ') : 'covered';
+}
 const cell0 = CoQ.cell;
 CoQ.cell = function (det, res, st) {
-  let h = cell0(det, res, st);
+  let h = cell0(det, res, cellStatus(det, res, st));
   if (h.indexOf('r-conform') >= 0) {
     const half = String(res || '').split('|')[1];
     const mk = half ? half.trim() : (/>Absent</.test(h) ? MK.absent : MK.conforms);
@@ -76,6 +109,7 @@ fs.rmSync(OUT, { recursive: true, force: true });
 const stats = { n: 0, warn: 0, findings: 0, hard: 0, byDir: {} }, report = [];
 for (const c of data.coqs) {
   const r = rec(c);
+  CURRENT = r;
   const code = (r.cb || '').match(/^[A-Za-z]+/); const strainCode = code ? code[0].toUpperCase() : 'XX';
   const out = applier.apply(base, r, strainCode);
   let html = out.html;

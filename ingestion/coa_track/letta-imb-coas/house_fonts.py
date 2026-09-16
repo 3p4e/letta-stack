@@ -71,6 +71,13 @@ def _fetch(family_spec, subsets=SUBSETS):
             continue
         src = re.search(r"url\((https://[^)]+\.woff2)\)", block)
         weight = re.search(r"font-weight:\s*(\d+)", block)
+        # Google states the range each slice covers. It has to travel with the face:
+        # several slices share one family/weight/style, and @font-face rules that
+        # agree on those three and carry no unicode-range do not combine — the last
+        # one parsed wins outright. Without the range the Latin slice (served last)
+        # silenced the Cyrillic and Greek ones, and every Н, Њ, № and Δ fell to a
+        # system font. See REBUILD_v40.md.
+        rng = re.search(r"unicode-range:\s*([^;}]+)", block)
         if not src:
             continue
         w = weight.group(1) if weight else "400"
@@ -82,7 +89,7 @@ def _fetch(family_spec, subsets=SUBSETS):
             open(path, "wb").write(urllib.request.urlopen(
                 urllib.request.Request(src.group(1), headers={"User-Agent": UA}),
                 timeout=30).read())
-        out.append((w, style, subset, path))
+        out.append((w, style, subset, path, rng.group(1).strip() if rng else ""))
     return out
 
 
@@ -164,7 +171,7 @@ def font_face_css(text, families=FAMILIES, subsets=SUBSETS):
     chars = set(text) | set(ALWAYS)
     blocks, raw, embedded = [], 0, 0
     for family, spec in families:
-        for weight, style, subset, path in _fetch(spec, subsets):
+        for weight, style, subset, path, rng in _fetch(spec, subsets):
             data = _subset(path, "".join(chars), family, weight, style)
             if not data:
                 continue
@@ -172,8 +179,9 @@ def font_face_css(text, families=FAMILIES, subsets=SUBSETS):
             embedded += len(data)
             blocks.append(
                 "@font-face{font-family:'%s';font-style:%s;font-weight:%s;"
-                "font-display:block;src:url(data:font/woff2;base64,%s) format('woff2');}"
-                % (family, style, weight, base64.b64encode(data).decode()))
+                "font-display:block;src:url(data:font/woff2;base64,%s) format('woff2');%s}"
+                % (family, style, weight, base64.b64encode(data).decode(),
+                   "unicode-range:%s;" % rng if rng else ""))
     return "\n".join(blocks), raw, embedded
 
 
