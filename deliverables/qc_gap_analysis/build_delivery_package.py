@@ -110,6 +110,19 @@ def _items():
          "Does any certificate print a result the record has replaced? The sweep over all "
          "seventeen determinations — READ THE COVERAGE TABLE FIRST: no lot on file carries a "
          "second heavy-metal certificate, so #11 could not be compared at all"),
+        ("tables/Batch_Parameter_Sources_v%s.xlsx" % VER,
+         os.path.join(TRACKER, "Batch_Parameter_Sources_v%s.xlsx" % VER),
+         "Asked for on 16.09.2026: one row per batch, one column per determination #1 to "
+         "#12, and in the cell the document that certifies it with its date of issue — "
+         "[internal] where the citation is the company's own certificate of analysis, and "
+         "both the release and the reissue citation where they differ. Second sheet: the "
+         "same one row per batch, certificate and determination"),
+        ("tables/Batch_Parameter_Sources_v%s.csv" % VER,
+         os.path.join(TRACKER, "Batch_Parameter_Sources_v%s.csv" % VER),
+         "The same table as text, one row per batch"),
+        ("tables/Batch_Parameter_Sources_v%s_long.csv" % VER,
+         os.path.join(TRACKER, "Batch_Parameter_Sources_v%s_long.csv" % VER),
+         "The same table, one row per batch, certificate and determination"),
         ("docs/FLEET_FINDINGS_2026-09-16.md", os.path.join(TRACKER, "FLEET_FINDINGS_2026-09-16.md"),
          "What twelve agents found reading the primary records on 16.09.2026, sorted into "
          "defect (fixed, or named as not fixed and why), question for the owner, and "
