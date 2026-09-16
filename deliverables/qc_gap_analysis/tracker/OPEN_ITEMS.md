@@ -1,18 +1,26 @@
-# Open items — awaiting the owner
-
-Every finding the desk has raised and cannot itself settle, with the evidence
-behind it and the decision being asked for. Built by `open_items.py`; the same
-register is the **Open Items** sheet of the workbook.
-
-**33 open · 3 marked on the certificate**
-
-## Specification
-
-### OI-01 · A lot graded IV or V whose strain has no specification at that grade
-
-*State:* **marked** · *Evidence:* spec_attributes_2026-09-10.csv; CJ082501/2, GP082501/2, OPM122501
-
-**Found.** The QCSP 001 specification is issued per strain AND per grade. Cap Junky is on file at grades I, II and III; CJ082501/2 is grade IV. Grape Pie and Orange Punch Mimosa stop at IV and each has a grade V lot. Exactly one grade V specification exists in the whole issued set (Clemosa).
+# Open items — awaiwrote /home/user/letta-stack/deliverables/qc_gap_analysis/tracker/OPEN_ITEMS.md
+open items: 47 (35 open, 3 marked on the certificate)
+   Batch identity   9
+   Document content 5
+   Specification    4
+   Document identity 4
+   Result reading   3
+   Record integrity 3
+   Result           3
+   Reference        2
+   Method status    2
+   Document rendering 2
+   Reconciliation   1
+   Issuance         1
+   Register scope   1
+   Certificate content 1
+   Register cell    1
+   Result read      1
+   Ingestion        1
+   Tracker scope    1
+   Panel scope      1
+   Desk status      1
+I, II and III; CJ082501/2 is grade IV. Grape Pie and Orange Punch Mimosa stop at IV and each has a grade V lot. Exactly one grade V specification exists in the whole issued set (Clemosa).
 
 **The desk.** The phenotype, chemotype, processing and packaging pills are left unticked and the band is marked, on 3 lots.
 
@@ -323,6 +331,30 @@ register is the **Open Items** sheet of the workbook.
 **The desk.** Nothing was corrected in place. The desk does not rewrite a figure on the company's own certificate of analysis, and the certificate prints the cell as the register states it rather than a reading the desk prefers. The two documents carry the assertion finding so the pair travels with them.
 
 **Needed.** Is the intended reading “< 10³ and > 10²” — the same pair as every other block, with the bounds transposed in transcription? One word corrects the register cell and both certificates with it.
+
+## Result read
+
+### OI-46 · Ten microbiology cells were read once from the certificate database and are held until a page is read twice
+
+*State:* **open** · *Evidence:* intake_ijz_2026-09-16/reads_microbiology.json; tracker/DRIVE_DATABASE_INTAKE_2026-09-16.md; apply_ijz_intake.py
+
+**Found.** The intake of 16.09.2026 took twenty-three Institute of Public Health certificates out of the Head of QC's Drive folder 1SmOicCRa8KEqoB-YlCojdap161YMQ-Di and into the release register — documents that the register, master_coa_table.tsv, the spec parameter listing, the RAGFlow corpus and the RAGFlow container all lacked. It filled 145 cells that had been printing a red [ — ]. It is ONE read of the page, not the desk's usual two, because the owner asked for the fastest route that still tells the truth. Eight cells did not render unambiguously — an exponent or a bound lost — and two more read as figures that would put a released batch out of specification while the laboratory's own verdict on the same page is conforms: 73/0116/26 (P060132) #9.2 as 3.9 × 10⁴, and 364/0694/26 (P060382) #9.2 as 1.8 × 10⁴.
+
+**The desk.** None of the ten is written. The desk does not put a figure on a certificate of quality on one read of a page it could not render, and never one that would take a released batch out of specification against that page's own conclusion. Every held cell, with the reason, is in intake_ijz_2026-09-16/reads_microbiology.json under _held.
+
+**Needed.** Read the ten cells a second time — or tell the desk the figures, which is faster. The two contested counts are the ones that matter: if 3.9 × 10⁴ and 1.8 × 10⁴ are what the pages say, P060132 and P060382 have a conformity question, not a transcription one.
+
+## Ingestion
+
+### OI-47 · Twenty-three certificates in the owner's database folder were never ingested, and every desk file recorded their absence as a coverage gap
+
+*State:* **open** · *Evidence:* ingestion/coa_track/letta-imb-coas/ingest_coa_database_2026.py; exports/master_coa_table.tsv; tracker/DRIVE_DATABASE_INTAKE_2026-09-16.md
+
+**Found.** master_coa_table.tsv prints “[COVERAGE GAP] — No record found in RAG for … Heavy metals (Cd/Pb/Hg/As), Pesticides” against P060152, P060332, P060352 and others, and PP_eCoA_Master_Database.xlsx repeats it as a QC exception. For nineteen of those lots the certificate exists, in the owner's own folder, and has since 09.09.2026. The gap was in the ingestion, not in the record: every downstream file faithfully reported an absence that was not real.
+
+**The desk.** The twenty-three documents are now in the release register, and the certificates print from them. The ingestion itself is untouched — the same folder may hold more that the corpus lacks, and nothing in the pipeline would say so.
+
+**Needed.** Should the desk re-run the CoA_DATABASE_2026 ingestion against the whole folder and reconcile it against the register, so that a coverage gap means the document does not exist rather than that it was not fetched?
 
 ## Tracker scope
 

@@ -644,6 +644,46 @@ ITEMS = [
      "coq_artifact_data.json reg[OPM1024]; design_handoff/out/_build_report.txt; "
      "design_handoff/toolchain/coq_check.js A11"),
 
+    ("OI-46", "Result read", "open",
+     "Ten microbiology cells were read once from the certificate database and are held until a page is read twice",
+     "The intake of 16.09.2026 took twenty-three Institute of Public Health certificates out of "
+     "the Head of QC's Drive folder 1SmOicCRa8KEqoB-YlCojdap161YMQ-Di and into the release "
+     "register \u2014 documents that the register, master_coa_table.tsv, the spec parameter "
+     "listing, the RAGFlow corpus and the RAGFlow container all lacked. It filled 145 cells that "
+     "had been printing a red [ \u2014 ]. It is ONE read of the page, not the desk's usual two, "
+     "because the owner asked for the fastest route that still tells the truth. Eight cells did "
+     "not render unambiguously \u2014 an exponent or a bound lost \u2014 and two more read as "
+     "figures that would put a released batch out of specification while the laboratory's own "
+     "verdict on the same page is conforms: 73/0116/26 (P060132) #9.2 as 3.9 \u00d7 10\u2074, "
+     "and 364/0694/26 (P060382) #9.2 as 1.8 \u00d7 10\u2074.",
+     "None of the ten is written. The desk does not put a figure on a certificate of quality on "
+     "one read of a page it could not render, and never one that would take a released batch out "
+     "of specification against that page's own conclusion. Every held cell, with the reason, is "
+     "in intake_ijz_2026-09-16/reads_microbiology.json under _held.",
+     "Read the ten cells a second time \u2014 or tell the desk the figures, which is faster. The "
+     "two contested counts are the ones that matter: if 3.9 \u00d7 10\u2074 and 1.8 \u00d7 "
+     "10\u2074 are what the pages say, P060132 and P060382 have a conformity question, not a "
+     "transcription one.",
+     "intake_ijz_2026-09-16/reads_microbiology.json; tracker/DRIVE_DATABASE_INTAKE_2026-09-16.md; "
+     "apply_ijz_intake.py"),
+
+    ("OI-47", "Ingestion", "open",
+     "Twenty-three certificates in the owner's database folder were never ingested, and every desk file recorded their absence as a coverage gap",
+     "master_coa_table.tsv prints \u201c[COVERAGE GAP] \u2014 No record found in RAG for \u2026 "
+     "Heavy metals (Cd/Pb/Hg/As), Pesticides\u201d against P060152, P060332, P060352 and others, "
+     "and PP_eCoA_Master_Database.xlsx repeats it as a QC exception. For nineteen of those lots "
+     "the certificate exists, in the owner's own folder, and has since 09.09.2026. The gap was "
+     "in the ingestion, not in the record: every downstream file faithfully reported an absence "
+     "that was not real.",
+     "The twenty-three documents are now in the release register, and the certificates print "
+     "from them. The ingestion itself is untouched \u2014 the same folder may hold more that the "
+     "corpus lacks, and nothing in the pipeline would say so.",
+     "Should the desk re-run the CoA_DATABASE_2026 ingestion against the whole folder and "
+     "reconcile it against the register, so that a coverage gap means the document does not "
+     "exist rather than that it was not fetched?",
+     "ingestion/coa_track/letta-imb-coas/ingest_coa_database_2026.py; "
+     "exports/master_coa_table.tsv; tracker/DRIVE_DATABASE_INTAKE_2026-09-16.md"),
+
     ("OI-35", "Tracker scope", "open",
      "The tracker does not carry the documents of the 09.09 pass that eleven certificates print from",
      "The truth check of 15.09.2026 (tracker/truth_check_2026-09-15.py) compared every row of "
@@ -928,7 +968,7 @@ def items(state=None, area=None):
     """The register, optionally narrowed.
 
     >>> len(items())
-    45
+    47
     >>> [i[0] for i in items(area="Specification")]
     ['OI-01', 'OI-02', 'OI-03', 'OI-44']
     >>> sorted({i[2] for i in items()})

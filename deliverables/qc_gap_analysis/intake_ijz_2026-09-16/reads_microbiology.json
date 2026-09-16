@@ -1,0 +1,216 @@
+{
+ "_source": "Drive folder 1SmOicCRa8KEqoB-YlCojdap161YMQ-Di — the Head of QC's certificate database",
+ "_read": "one read, 16.09.2026, of the Drive text layer; a value the page did not render unambiguously is left null and listed in _held",
+ "_lab": "IPH — Institute of Public Health, Skopje (Оддел за микробиологија)",
+ "certs": [
+  {
+   "pn": "P060152",
+   "cb": "J31102501",
+   "code": "133-0230-26",
+   "date": "06.03.2026",
+   "vals": {
+    "J": "1,6 x 10^2 CFU/g",
+    "K": "1,9 x 10^2 CFU/g",
+    "L": "< 10 CFU/g",
+    "M": "Одговара",
+    "N": "Одговара"
+   }
+  },
+  {
+   "pn": "P060232",
+   "cb": "PM112501",
+   "code": "135-0232-26",
+   "date": "06.03.2026",
+   "vals": {
+    "L": "< 10 CFU/g",
+    "M": "Одговара",
+    "N": "Одговара"
+   }
+  },
+  {
+   "pn": "P060122",
+   "cb": "ACC102501",
+   "code": "77-0120-26",
+   "date": "09.02.2026",
+   "vals": {
+    "J": "1 x 10^3 CFU/g",
+    "K": "1,6 x 10^3 CFU/g",
+    "L": "< 10 CFU/g",
+    "M": "Одговара",
+    "N": "Одговара"
+   }
+  },
+  {
+   "pn": "P060182",
+   "cb": "GRC102501/2",
+   "code": "76-0119-26",
+   "date": "09.02.2026",
+   "vals": {
+    "K": "1 x 10^2 CFU/g",
+    "L": "< 10 CFU/g",
+    "M": "Одговара",
+    "N": "Одговара"
+   }
+  },
+  {
+   "pn": "P060112",
+   "cb": "PUM102501",
+   "code": "74-0117-26",
+   "date": "09.02.2026",
+   "vals": {
+    "L": "< 10 CFU/g",
+    "M": "Одговара",
+    "N": "Одговара"
+   }
+  },
+  {
+   "pn": "P060132",
+   "cb": "CF102501",
+   "code": "73-0116-26",
+   "date": "09.02.2026",
+   "vals": {
+    "M": "Одговара",
+    "N": "Одговара"
+   }
+  },
+  {
+   "pn": "P060172",
+   "cb": "KC102501",
+   "code": "129-0226-26",
+   "date": "06.03.2026",
+   "vals": {
+    "J": "3,8 x 10^3 CFU/g",
+    "K": "6,8 x 10^3 CFU/g",
+    "M": "Одговара",
+    "N": "Одговара"
+   }
+  },
+  {
+   "pn": "P060402",
+   "cb": "GG012603",
+   "code": "404-0787-26",
+   "date": "24.06.2026",
+   "vals": {
+    "J": "5 x 10^3 CFU/g",
+    "K": "4,1 x 10^3 CFU/g",
+    "L": "< 10 CFU/g",
+    "M": "Отсутна",
+    "N": "Отсутна"
+   }
+  },
+  {
+   "pn": "P060412",
+   "cb": "JD012603/02",
+   "code": "405-0788-26",
+   "date": "24.06.2026",
+   "vals": {
+    "J": "6,3 x 10^3 CFU/g",
+    "K": "4,4 x 10^3 CFU/g",
+    "L": "< 10 CFU/g",
+    "M": "Отсутна",
+    "N": "Отсутна"
+   }
+  },
+  {
+   "pn": "P060422",
+   "cb": "JD012603/02V",
+   "code": "406-0789-26",
+   "date": "24.06.2026",
+   "vals": {
+    "J": "5,1 x 10^3 CFU/g",
+    "K": "4,7 x 10^3 CFU/g",
+    "L": "< 10 CFU/g",
+    "M": "Отсутна",
+    "N": "Отсутна"
+   }
+  },
+  {
+   "pn": "P060362",
+   "cb": "JD012603/01",
+   "code": "365-0695-26",
+   "date": "01.06.2026",
+   "vals": {
+    "J": "2 x 10^2 CFU/g",
+    "K": "1 x 10^2 CFU/g",
+    "L": "< 10 CFU/g",
+    "M": "Отсутна",
+    "N": "Отсутна"
+   }
+  },
+  {
+   "pn": "P060372",
+   "cb": "CC012603",
+   "code": "363-0693-26",
+   "date": "01.06.2026",
+   "vals": {
+    "J": "2,7 x 10^3 CFU/g",
+    "K": "1,6 x 10^1 CFU/g",
+    "L": "< 10 CFU/g",
+    "M": "Отсутна",
+    "N": "Отсутна"
+   }
+  },
+  {
+   "pn": "P060382",
+   "cb": "SCR012603",
+   "code": "364-0694-26",
+   "date": "01.06.2026",
+   "vals": {
+    "J": "5,4 x 10^4 CFU/g",
+    "L": "< 10 CFU/g",
+    "M": "Отсутна",
+    "N": "Отсутна"
+   }
+  }
+ ],
+ "_held": [
+  {
+   "pn": "P060232",
+   "code": "135-0232-26",
+   "det": "9.1, 9.2",
+   "why": "the page renders the TAMC and TYMC results as '10 CFU/g  < 10 CFU/g' with the first bound lost — a second read of the page is wanted before either figure is printed"
+  },
+  {
+   "pn": "P060182",
+   "code": "76-0119-26",
+   "det": "9.1",
+   "why": "TAMC reads '9 x 10' CFU/g' — the exponent did not render"
+  },
+  {
+   "pn": "P060112",
+   "code": "74-0117-26",
+   "det": "9.1, 9.2",
+   "why": "both read '5 x 10' CFU/g' — the exponents did not render"
+  },
+  {
+   "pn": "P060132",
+   "code": "73-0116-26",
+   "det": "9.1, 9.3",
+   "why": "TAMC reads '3,1 x 10% CFU/g'; the bile-tolerant range reads '<10^3 и 10^2 CFU/g' with the second bound's sign lost"
+  },
+  {
+   "pn": "P060172",
+   "code": "129-0226-26",
+   "det": "9.3",
+   "why": "the bile-tolerant range reads '< 10 и >10^2 CFU/g' — the first bound's exponent did not render"
+  },
+  {
+   "pn": "P060352",
+   "code": "366-0696-26",
+   "det": "9.1 – 9.5",
+   "why": "the page's batch is FB012602＊ — a starred sample. Under the Head of QC's ruling of 16.09.2026 a starred sample is real data that never sources a certificate of quality. No unstarred microbiology exists for P060352, so the desk holds the whole panel for the owner's word rather than printing an experimental arm's result."
+  },
+  {
+   "pn": "P060132",
+   "code": "73-0116-26",
+   "det": "9.2",
+   "why": "the page reads TYMC '3,9 x 104 CFU/g'. Written as 3.9 × 10⁴ it is ABOVE the specification the certificate prints for #9.2, while the laboratory's own conclusion on the same page is ОДГОВАРА — conforms. The desk does not print a figure that would put a released batch out of specification on one read of a page whose own verdict contradicts it."
+  },
+  {
+   "pn": "P060382",
+   "code": "364-0694-26",
+   "det": "9.2",
+   "why": "the page reads TYMC '1,8 x 104 CFU/g'. Written as 1.8 × 10⁴ it falls in the Ph.Eur. 5.1.4 undetermined band while the laboratory's own conclusion is СЕ ВО СОГЛАСНОСТ — conforms. Held for the same reason as P060132 #9.2."
+  }
+ ]
+}
