@@ -59,7 +59,7 @@ resolution and the page prints with banding and grey haloes. With the package's 
 layer stack the cream-and-gold header wash, the heavenly-blue zebra fading to nothing
 at both page edges and the gold rules print as drawn.
 
-## 4 · Two defects the rebuild exposed, and what was done
+## 4 · Three defects the rebuild exposed, and what was done
 
 ### 4.1 · A register status was hiding results the desk holds
 
@@ -99,6 +99,48 @@ Six characters still fall outside every slice Google serves for these three fami
 file is self-contained and prints the same everywhere; they are simply not set in
 Montserrat. Noted here rather than fixed, because fixing it means adding a fourth
 family to the stack, which is the template's decision and not the desk's.
+
+
+### 4.3 · Determinations 9 to 12 printed grey down both page edges
+
+The Head of QC saw it before any measurement did: rows 1 to 8 clean, the 9-to-12 block
+grey at the left and right edges of the page. One defect, one cause.
+
+The zebra stripe is a blue that fades to **transparent** at both page edges. Chromium
+does not print a transparency the way it shows one — it flattens the transparency group
+at raster resolution, and a mid-alpha fade comes out as grey banding rather than a fade
+to white. The package ships `__print-opaque` for exactly this: inside `@media print` it
+replaces every fading stripe with the opaque colour that stripe would have over white.
+
+It reaches the parameter rows. It does not reach the sub-rows, and the package's own
+comment in the stylesheet says why:
+
+> the sub-rows kept the long band only because their sibling selector outranks those
+
+The 642-character sibling chain that stripes a group's sub-rows outranks the print layer
+as well, so determinations 9 to 12 carried the transparent gradient into the PDF and
+banded grey exactly where the fade sits, while 1 to 8 printed clean. Same design, two
+code paths, one of them converted.
+
+`build_v40.js` now reads every rule in the base that still paints the alpha stripe and
+re-emits it — **verbatim selector and all** — inside `@media print` with the opaque
+gradient the package itself uses. Same selector means same specificity, and last in
+source wins, so the conversion lands on exactly the rules it missed without inventing a
+selector, a colour, a geometry or a row height. Three rules converted. The substitution
+is the package's own: `rgba(247,249,252,a)` over white is `rgb(C + (255 - C)(1 - a))`,
+so `.55` is `rgb(251,252,253)` and `.92` is `rgb(248,249,252)`.
+
+Measured on the printed page at 150 dpi, 17 mm in from the left edge of a sub-row:
+
+| | before | after | rows 1–8 |
+| --- | --- | --- | --- |
+| at 11 mm | 249,249,249 | 254,254,254 | 254,254,254 |
+| at 13.5 mm | 228,228,228 | 254,254,254 | 254,254,254 |
+| at 17 mm | 207,208,208 | 253,253,254 | 253,253,254 |
+| mid-page | 245,247,250 | 247,249,251 | 247,249,251 |
+
+Swept over every page of the Tranche 1 document afterwards: no neutral grey anywhere in
+either fade zone.
 
 ## 5 · What the certificates do not carry, and why
 
@@ -153,9 +195,23 @@ python3 design_handoff/toolchain/print_v40.py           # every document, four m
 python3 design_handoff/toolchain/merge_tranches_v40.py  # one document per tranche
 ```
 
-`merge_tranches_v40.py` prints any document that has no page yet, then writes
-`CoQ_Tranche_1.pdf` and `CoQ_Tranche_2.pdf` — the release certificates in register
-order, then the reissues in register order, each page bookmarked with the certificate
-it carries — and a `_flat.pdf` beside each, every page a 300 dpi lossless raster so a
-printer resolves no gradient of its own. Six documents belong to no tranche in either
-scope file and are named in the run's output rather than dropped quietly.
+`merge_tranches_v40.py` prints any document that has no page yet, then merges by tranche,
+each page bookmarked with the certificate it carries and a `_flat.pdf` beside each — every
+page a 300 dpi lossless raster, so a printer resolves no gradient of its own.
+
+`--series` says which round the tranche document carries. **`reissue` is what the Head of
+QC asked for on 16.09.2026** — the 12-month retest certificate is the document that travels
+with the batch, and the release certificate is the record of the round that released it.
+`release` is that record alone; `both`, the default, writes the complete file, release round
+then retest.
+
+| file | pages |
+| --- | ---: |
+| `CoQ_Tranche_1_Retest.pdf` | 21 |
+| `CoQ_Tranche_2_Retest.pdf` | 32 |
+| `CoQ_Tranche_1.pdf` — release then retest | 42 |
+| `CoQ_Tranche_2.pdf` — release then retest | 64 |
+
+Six documents belong to no tranche in either scope file — `FB032601`, `GG032601`,
+`JD022601` and the three unrecorded `P160012/22/32` — and are named in the run's output
+rather than dropped quietly.
