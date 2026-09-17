@@ -12,7 +12,7 @@ python3 design_handoff/toolchain/merge_tranches_v40.py --no-print --no-flatten -
 ```
 
 python3 design_handoff/toolchain/export_docx_v40.py                             # one .docx per certificate
-python3 design_handoff/toolchain/package_v40.py                                 # the four archives below
+python3 design_handoff/toolchain/package_v40.py --single                        # ONE archive of the whole folder tree, in parts under 95 MB
 ```
 
 `package_v40.py` refuses a stale build: every page must be newer than its HTML and every
@@ -28,21 +28,17 @@ inset stripes. No image is placed on the page: the signature boxes carry their l
 the space above it, and the certificate is signed by hand once printed (Head of QC,
 17.09.2026).
 
-## The archives
+## The archive
 
-One per tranche, each carrying **every certificate as HTML, vector PDF and Word (.docx)**,
-plus the merged tranche documents; and one by testing round.
-
-| archive | contents |
-| --- | --- |
-| `PP_CoQ_Tranche_1_2026-09-17.zip` | `HTML/`, `PDF/` and `DOCX/` for the 21 release + 21 retest certificates · `CoQ_Tranche_1.pdf` (42 pp) · `CoQ_Tranche_1_Retest.pdf` (21 pp) |
-| `PP_CoQ_Tranche_2_2026-09-17.zip` | the 32 + 32 · `CoQ_Tranche_2.pdf` (64 pp) · `CoQ_Tranche_2_Retest.pdf` (32 pp) |
-| `PP_CoQ_Tranche_3_2026-09-17.zip` | the 30 + 30 · `CoQ_Tranche_3.pdf` (60 pp) · `CoQ_Tranche_3_Retest.pdf` (30 pp) |
-| `PP_CoQ_By_testing_round_2026-09-17.zip` | `CoQ_ISSUE_COQ.pdf` (89 pp) · `CoQ_REISSUE_T1/T2/T3.pdf` (21 / 32 / 30 pp) · `Not_in_a_tranche/` — HTML, PDF and DOCX of the six release certificates that belong to no tranche (FB032601, GG032601, JD022601, P160012, P160022, P160032), so every one of the 172 documents is delivered individually in exactly one archive |
-
-An HTML certificate is self-contained — brand mark, stylesheet, fonts by link — and opens
-in any browser; printing it from the browser at A4, margins 0,
-background graphics on, gives the same page as its PDF.
+One archive, `PP_CoQ_Package_2026-09-17.zip`, written in parts of at most 95 MB (`.z01`, `.z02` …)
+because GitHub refuses any file over 100 MB. Inside it, the whole folder tree: `01_Merged_PDF/`
+(the tranche documents, release round then retest, and the retest rounds alone, then the
+by-round documents), `02_Certificates/` (every certificate as HTML, vector PDF and Word by
+tranche and round, the six outside the tranches under `Not_in_a_tranche/`), `03_Lists/`,
+`04_Internal_CoA/`, `05_Master_Workbook/`, `06_Specifications/`, `07_Records/`, and this
+README. `package_v40.py --single` refuses a stale build: every page must be newer than its HTML
+and every Word file newer than its page. Without `--single` it still writes the four
+per-tranche archives of before.
 
 ## The Word documents
 

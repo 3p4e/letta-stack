@@ -348,6 +348,19 @@ QCSP_001_WED-I_v.01 where it printed nothing. The other 170 already matched; no 
 outside its strain's windows. Wedding Cake still has no issued specification for its product
 attributes — OI-50.
 
+## 3i · The laboratory's own name (17.09.2026)
+
+The Head of QC, on a comment received: where the certificates reference our laboratory, print
+"Purely Plant QC Department · In-house | Пјурли Плант — Сектор за КК · In-house · Kojlija 1043,
+Petrovec-Skopje, MK" in place of "Purely Plant — QC Department · In-house QC Laboratory · MK GMP
+Certified / Пјурли Плант — Оддел за КК · Интерна лабораторија за КК". Changed at the source on
+every certificate that references the laboratory: the certificate of quality's laboratory table
+(`coq_build.js`, LABS.PP — line 1 English, line 2 Macedonian with the address), the internal
+certificate of analysis (`icoa_handoff/base`: the header line, the department line under the
+code and the footer; the builder's "Sampled by"), and the live instrument's laboratory
+dictionary. 172 certificates of quality and 154 internal certificates rebuilt; no page carries
+the old wording.
+
 ## 4 · Four defects the rebuild exposed, and what was done
 
 ### 4.1 · A register status was hiding results the desk holds

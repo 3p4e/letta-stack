@@ -148,7 +148,7 @@ def sample_grid(rep, scope, det_by_no, issued):
         ("Sample Description", "Dried cannabis inflorescence", "sm"),
         ("Sample Received", DASH, ""),
         ("Receipt Conditions", DASH, "sm"),
-        ("Sampled by", "Purely Plant QC Department (in-house)", "sm"),
+        ("Sampled by", "Purely Plant QC Department · In-house", "sm"),
         ("Sample Mass", DASH, ""),
         ("Requested Tests", "%s (%d)" % (names or DASH, len(scope)), "sm"),
         ("Storage During Analysis", DASH, "sm"),

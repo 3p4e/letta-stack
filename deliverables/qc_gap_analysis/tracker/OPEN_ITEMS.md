@@ -4,7 +4,7 @@ Every finding the desk has raised and cannot itself settle, with the evidence
 behind it and the decision being asked for. Built by `open_items.py`; the same
 register is the **Open Items** sheet of the workbook.
 
-**37 open · 3 marked on the certificate**
+**38 open · 3 marked on the certificate**
 
 ## Specification
 
@@ -583,4 +583,16 @@ register is the **Open Items** sheet of the workbook.
 **The desk.** Grade, code, window and attributes print; the dominance is not guessed.
 
 **Needed.** The dominance (indica : sativa) of Wedding Cake, and confirmation that QCSP_001_WED-I_v.01 at 26.00 ± 2.60 % is the first specification of the new series and supersedes the four issued WED documents.
+
+## Register cell
+
+### OI-51 · Six release-register blocks file a CNP certificate under the in-house CoA's number and date
+
+*State:* **open** · *Evidence:* check_thc_consistency.py; apply_lab_attribution.py (R5); ingestion/ragflow/cache
+
+**Found.** The blocks of P050282, P050292, P050302, P050312, P050322 and P060052 hold the CNP potency certificate as 'PP CoA #nnn / ППКnnnnn' dated 21.01.2026 — the company's in-house CoA number and date, not the CNP certificate's. The certificates now cite the CNP document alone with its own date (ППК25370 · 28.11.2025 from the 09.09 pass; ППК25378 · 12.12.2025 and ППК26005 · 21.01.2026 from the certificates' own pages in the page-text cache). check_thc_consistency.py (17.09.2026) confirms every figure agrees and names these five as the only date differences between a certificate and the register.
+
+**The desk.** The certificates print the CNP date; the register still prints the combined name and the in-house date.
+
+**Needed.** Whether to correct the six register cells to the CNP code and its issue date (apply_register_corrections.py is the mechanism).
 

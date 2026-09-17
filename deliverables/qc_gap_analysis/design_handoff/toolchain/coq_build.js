@@ -7,7 +7,7 @@ const UNIT = {'4':' %','5':' %','6':' %','8':' %','9.1':' CFU/g','9.2':' CFU/g',
 // `ac` is the accreditation id, held apart from the EN name so it can print on the second
 // line beside the Macedonian text rather than running the first line long.
 const LABS = {
-  PP:  {en:'Purely Plant — QC Department · In-house QC Laboratory · MK GMP Certified', ac:'', mk:'Пјурли Плант — Оддел за КК · Интерна лабораторија за КК', ad:'Kojlija 1043, Petrovec-Skopje, MK'},
+  PP:  {en:'Purely Plant QC Department · In-house', ac:'', mk:'Пјурли Плант — Сектор за КК · In-house', ad:'Kojlija 1043, Petrovec-Skopje, MK'},
   CNP: {en:'UKIM Faculty of Pharmacy — Center for Natural Products · ISO/IEC 17025:2017', ac:'LT-083 (IARM)', mk:'УКИМ ФФ — Центар за Природни Производи', ad:'Mother Theresa 47, 1000 Skopje, MK'},
   IPH: {en:'JZU Institute for Public Health (IPH Skopje) · ISO/IEC 17025:2017', ac:'LT-005 (IARM)', mk:'ЈЗУ Институт за јавно здравје (ИЈЗ Скопје)', ad:'50ta Divizija 6, 1000 Skopje, MK'},
   FHM: {en:'Farmahem DOOEL — Laboratory for Instrumental Analysis · ISO/IEC 17025:2017', ac:'LT-020 (IARM)', mk:'Фармахем ДООЕЛ — Лаборатoрија за инструментална анализа', ad:'Kisela Voda, 1000 Skopje, MK'},

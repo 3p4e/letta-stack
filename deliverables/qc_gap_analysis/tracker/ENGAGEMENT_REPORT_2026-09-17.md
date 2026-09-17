@@ -9,12 +9,12 @@ Every step of this work was committed the moment it was made, with its time, and
 | --- | ---: |
 | calendar span | 40 days (09.08 – 17.09.2026) |
 | days with committed work | 26 |
-| commits | 289 |
+| commits | 290 |
 | commits between 22:00 and 07:00 | 61 |
 | commits on Saturdays and Sundays | 22 |
 | sum of the working days' first-to-last-commit spans | 156 h |
 | pull requests raised · merged · open | 20 · 16 · 4 |
-| open items on the register (marked 3 · open 37 · ruled 10) | 50 |
+| open items on the register (marked 3 · open 38 · ruled 10) | 51 |
 
 The span counts only the hours between a day's first and last commit; work before the first commit and after the last is not in it, so it understates the time.
 
@@ -99,14 +99,14 @@ Each pull request is one stage, raised when the stage was reviewable and merged 
 | 11.09 Fri | 26 | 09:11 – 16:10 | 7.0 h | 0 | The internal CoA's testing window is the packaging window; The internal CoA is dated on the first day of packaging; the rulings written into the workbook's own formulas; The package index named v21 while the archive carried v22; … |
 | 12.09 Sat | 1 | 00:05 – 00:05 | 0.0 h | 1 | today's Farmahem 227-K/26 retest transcriptions, not yet live |
 
-### Week 38 · 14.09 – 20.09.2026 · 4 working days · 91 commits · 34 h in span
+### Week 38 · 14.09 – 20.09.2026 · 4 working days · 92 commits · 34 h in span
 
 | day | commits | first – last | span | night | what was done |
 | --- | ---: | --- | ---: | ---: | --- |
 | 14.09 Mon | 5 | 11:00 – 16:31 | 5.5 h | 0 | v26; the registers never asked strains.py; 32 Farmahem 220-M/26 certificates read, packaged as one write; the 32 Tranche 2 mycotoxin certificates reach the tracker; two definitions made one; … |
 | 15.09 Tue | 12 | 11:27 – 19:48 | 8.4 h | 0 | one row per certificate of quality, one column per determination; the retest sampling dated, the retest series issued, Tranche 3 potency taken in; the CoQ references and the potency grades inside the workbook; potency grading and the superseded certificate on the CoQ Register; … |
 | 16.09 Wed | 64 | 04:22 – 21:53 | 17.5 h | 6 | **PR #19 merged, PR #20 opened** — the IJZ-MB campaign microbiology into the register, and two checks that were not checking; the supersession sweep over every determination, and the parallel desk's audit answered; CoQ_Analysis_Master_v35.xlsx, the Result Supersession tab, and the repaired certificates; 21 findings, the same items, no new one; … |
-| 17.09 Thu | 10 | 11:23 – 13:34 | 2.2 h | 0 | Fix the signature block overflowing the footer on every certificate; Build the internal certificates of analysis the CoQs cite (work in progress); Retest certificates cite the retest iCoA; GG1024 loss on drying 7.8 %; no signatures; Word copies and archives; Section 03 cites the laboratory that made each determination; the engagement report; … |
+| 17.09 Thu | 11 | 11:23 – 13:35 | 2.2 h | 0 | Fix the signature block overflowing the footer on every certificate; Build the internal certificates of analysis the CoQs cite (work in progress); Retest certificates cite the retest iCoA; GG1024 loss on drying 7.8 %; no signatures; Word copies and archives; Section 03 cites the laboratory that made each determination; the engagement report; … |
 
 ## Every commit
 
@@ -479,6 +479,7 @@ The full record, oldest first. A commit is a unit of work finished and saved; it
 * 13:13 · `704ca34` · The release certificate list: each tranche 1–3 release certificate with the retest that supersedes it
 * 13:24 · `f6ad155` · Potency grades from the owner's specification PDF, on every certificate
 * 13:34 · `09f923d` · The master workbook follows the series to v42 with every decision of 17.09.2026
+* 13:35 · `b3387a0` · Reprinted set after the potency and Wedding Cake passes; archives, lists and engagement report regenerated
 
 ## What exists today
 
@@ -487,7 +488,7 @@ The full record, oldest first. A commit is a unit of work finished and saved; it
 | Certificates of quality — each as HTML, vector PDF and Word | 172 |
 | Internal certificates of analysis | 154 |
 | CoQ Analysis Master workbook versions in the tracker | 31 |
-| Desk scripts | 98 |
+| Desk scripts | 99 |
 | Desk records and reports (Markdown) | 45 |
 | Controlled registers and flat data (csv, tsv, json) | 22 |
 

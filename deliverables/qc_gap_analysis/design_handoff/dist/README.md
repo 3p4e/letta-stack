@@ -8,21 +8,24 @@ certificate is signed by hand once printed (Head of QC, 17.09.2026).
 
 ## What is in this archive
 
-| folder | file | pages | what it is |
-| --- | --- | ---: | --- |
-| `Tranche_1/` | `CoQ_Tranche_1.pdf` | 42 | tranche 1, release round then 12-month retest |
-| | `CoQ_Tranche_1_Retest.pdf` | 21 | tranche 1, the 12-month retest alone — the document that travels with the batch |
-| `Tranche_2/` | `CoQ_Tranche_2.pdf` | 64 | tranche 2, both rounds |
-| | `CoQ_Tranche_2_Retest.pdf` | 32 | tranche 2, retest alone |
-| `Tranche_3/` | `CoQ_Tranche_3.pdf` | 60 | tranche 3, both rounds |
-| | `CoQ_Tranche_3_Retest.pdf` | 30 | tranche 3, retest alone |
-| `By_testing_round/` | `CoQ_ISSUE_COQ.pdf` | 89 | every release certificate, in register order |
-| | `CoQ_REISSUE_T1/T2/T3.pdf` | 21 / 32 / 30 | the reissues, split by tranche |
-| | `Not_in_a_tranche/` | 6 × 3 | the six release certificates outside the three tranches (FB032601, GG032601, JD022601, P160012, P160022, P160032) as HTML, PDF and DOCX |
-| `HTML/`, `PDF/`, `DOCX/` (per tranche) | 172 × 3 | 1 each | every certificate as a self-contained HTML page, a vector PDF, and a Word document (the printed page, not editable text) |
+One archive, the whole folder tree. It is written in parts of at most 95 MB
+(`PP_CoQ_Package_2026-09-17.zip` with `.z01`, `.z02` …) because GitHub refuses any file over
+100 MB; 7-Zip, WinRAR, The Unarchiver, or `zip -s 0 PP_CoQ_Package_2026-09-17.zip --out joined.zip`
+open the parts as one file. Keep all parts in one folder.
+
+| folder | what it holds |
+| --- | --- |
+| `01_Merged_PDF/` | `CoQ_Tranche_1.pdf` (42 pp), `CoQ_Tranche_2.pdf` (64 pp), `CoQ_Tranche_3.pdf` (60 pp) — release round then 12-month retest, ready for print; `CoQ_Tranche_N_Retest.pdf` — the retest round alone (21 / 32 / 30 pp); `By_testing_round/` — every release certificate in register order (89 pp) and the reissues by tranche |
+| `02_Certificates/Tranche_N/Release · Retest/HTML · PDF · DOCX/` | every certificate as a self-contained HTML page, a vector PDF and a Word document (the printed page, not editable text); `Not_in_a_tranche/` — the six release certificates outside the tranches |
+| `03_Lists/` | the 83 retest certificates and the 83 release certificates they supersede, with batch, strain, product type, grade, window and results — xlsx, csv, md |
+| `04_Internal_CoA/` | the 154 internal certificates of analysis the certificates cite (HTML) |
+| `05_Master_Workbook/` | the CoQ Analysis Master, latest version, verified |
+| `06_Specifications/` | the Head of QC's potency specification of 17.09.2026 and its parsed table |
+| `07_Records/` | the open-items register, the rebuild record, the build notes, the engagement report |
 
 Every page of the merged documents is bookmarked with its certificate code and P lot.
-All PDFs are **vector** — fonts embedded, gradients opaque, no blend modes — prepared for a laser printer rather than flattened to a raster.
+All PDFs are **vector** — fonts embedded, gradients opaque, no blend modes, no signature scans (the
+boxes are signed by hand) — prepared for a laser printer. Print at A4, actual size, no scaling.
 
 ## How to read a result cell
 

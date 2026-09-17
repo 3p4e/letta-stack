@@ -2117,8 +2117,8 @@ function tplDoc(id){
 }
 function serializeDoc(doc){ return "<!DOCTYPE html>\n" + doc.documentElement.outerHTML; }
 var LAB_META = {
-  "Purely": ['Purely Plant — QC Department · In-house QC Laboratory · MK GMP Certified',
-             'Пјурли Плант — Оддел за КК · Интерна лабораторија за КК · МК ДПП сертифицирана',
+  "Purely": ['Purely Plant QC Department · In-house',
+             'Пјурли Плант — Сектор за КК · In-house · МК ДПП сертифицирана',
              'Kojlija 1043, Petrovec-Skopje, MK'],
   "UKIM":   ['UKIM Faculty of Pharmacy — Center for Natural Products · ISO/IEC 17025:2017 · LT-083 (IARM)',
              'УКИМ ФФ — Центар за Природни Производи', 'Mother Theresa 47, 1000 Skopje, MK'],
@@ -2140,11 +2140,11 @@ var LAB_META = {
              'ЈЗУ Институт за јавно здравје (ИЈЗ Скопје)', '50ta Divizija 6, 1000 Skopje, MK'],
   "FHM":    ['Farmahem — Laboratorija za zivotna sredina · ISO/IEC 17025:2017',
              'Фармахем — Лабораторија за животна средина', 'Skopje, MK'],
-  "NGP":    ['Purely Plant — QC Department · In-house QC Laboratory · MK GMP Certified',
-             'Пјурли Плант — Оддел за КК · Интерна лабораторија за КК · МК ДПП сертифицирана',
+  "NGP":    ['Purely Plant QC Department · In-house',
+             'Пјурли Плант — Сектор за КК · In-house · МК ДПП сертифицирана',
              'Kojlija 1043, Petrovec-Skopje, MK'],
-  "PP":     ['Purely Plant — QC Department · In-house QC Laboratory · MK GMP Certified',
-             'Пјурли Плант — Оддел за КК · Интерна лабораторија за КК · МК ДПП сертифицирана',
+  "PP":     ['Purely Plant QC Department · In-house',
+             'Пјурли Плант — Сектор за КК · In-house · МК ДПП сертифицирана',
              'Kojlija 1043, Petrovec-Skopje, MK'],
   "DFL":    ['State Phytosanitary Laboratory', 'Државна фитосанитарна лабораторија', 'Skopje, MK']
 };

@@ -1054,6 +1054,21 @@ ITEMS = [
      "issued WED documents.",
      "specs/Potency_specifications_25_2026-09-17.pdf; apply_potency_grades.py; "
      "spec_attributes_2026-09-10.csv"),
+
+    ("OI-51", "Register cell", "open",
+     "Six release-register blocks file a CNP certificate under the in-house CoA's number and date",
+     "The blocks of P050282, P050292, P050302, P050312, P050322 and P060052 hold the CNP potency "
+     "certificate as 'PP CoA #nnn / ППКnnnnn' dated 21.01.2026 — the company's in-house CoA "
+     "number and date, not the CNP certificate's. The certificates now cite the CNP document "
+     "alone with its own date (ППК25370 · 28.11.2025 from the 09.09 pass; ППК25378 · 12.12.2025 "
+     "and ППК26005 · 21.01.2026 from the certificates' own pages in the page-text cache). "
+     "check_thc_consistency.py (17.09.2026) confirms every figure agrees and names these five as "
+     "the only date differences between a certificate and the register.",
+     "The certificates print the CNP date; the register still prints the combined name and the "
+     "in-house date.",
+     "Whether to correct the six register cells to the CNP code and its issue date "
+     "(apply_register_corrections.py is the mechanism).",
+     "check_thc_consistency.py; apply_lab_attribution.py (R5); ingestion/ragflow/cache"),
 ]
 
 STATES = {"open", "marked", "ruled"}
@@ -1065,7 +1080,7 @@ def items(state=None, area=None):
     """The register, optionally narrowed.
 
     >>> len(items())
-    50
+    51
     >>> [i[0] for i in items(area="Specification")]
     ['OI-01', 'OI-02', 'OI-03', 'OI-44', 'OI-50']
     >>> sorted({i[2] for i in items()})
