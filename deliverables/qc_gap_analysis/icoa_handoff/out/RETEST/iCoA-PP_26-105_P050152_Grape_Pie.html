@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>iCoA-PP_26-105 · P050152 · Grape Pie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 0; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  /* iCoA — Internal Certificate of Analysis (Navy & Gold, Variation F).
+     ALL testing performed in-house by Purely Plant QC personnel — NO outsourced
+     eCoA references. Structure aligned to the validated analytical Test-Report
+     format (general info · method/system-suitability · validation · results
+     with one-or-more results per parameter · measurement uncertainty ·
+     statement of conformity · notes · 3-tier internal approval). */
+  :root {
+    --navy:#1B3A5C; --navy-deep:#0F2540; --navy-mid:#2C5282; --navy-soft:#3B6BA5;
+    --gold:#A67C2E; --gold-bright:#C9A227; --gold-deep:#7A5C1E; --gold-tint:#FBF6E9;
+    --bronze:#8C6B3F; --bronze-bg:#F3ECE0;
+    --zebra:#F4F7FB; --zebra-head:#EEF3F9; --zebra-soft:#FCFDFE; --zebra-soft-head:#F4F8FD;
+    --paper:#FFFFFF; --surface:#F8FAFC;
+    --ink:#0F172A; --text:#1E293B; --text-sec:#475569; --text-ter:#8C9BB0;
+    --border:#C9D4E3; --border-light:#EDF1F7;
+    --green:#15803D; --green-bg:#E7F5EC;
+    --MARGIN-H: 0.4in;  /* horizontal text-safe boundary */
+    --PAD-V:    0.4in;  /* vertical safe zone (top header / bottom footer) */
+  }
+  body { font-family:'Montserrat','Helvetica Neue',Arial,sans-serif; background:#64748B; color:var(--text); display:flex; justify-content:center; padding:20px; }
+  .page { width:210mm; min-height:297mm; background:var(--paper); position:relative; overflow:hidden; box-shadow:0 8px 60px rgba(15,37,64,.25); display:flex; flex-direction:column; }
+
+  .header-bar { background:var(--navy); padding:var(--PAD-V) var(--MARGIN-H) 4mm; display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid var(--gold); }
+  .hb-brand { font-size:21px; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:#FFF; }
+  .hb-brand span { font-weight:300; color:var(--gold-bright); }
+  .hb-center { text-align:center; }
+  .hb-title { font-size:14px; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:#FFF; }
+  .hb-sub { font-size:8.5px; font-weight:400; letter-spacing:2px; color:var(--gold-bright); text-transform:uppercase; margin-top:2px; }
+  .hb-right { text-align:right; }
+  .hb-code { font-size:12px; font-weight:700; color:var(--gold-bright); font-family:'Roboto Mono',monospace; }
+  .hb-dept { font-size:8.5px; color:rgba(255,255,255,.6); margin-top:2px; }
+
+  /* Analytical ribbon */
+  .ribbon { display:flex; align-items:stretch; background:var(--bronze-bg); border-bottom:2px solid var(--navy); }
+  .ribbon-main { flex:1; padding:4px var(--MARGIN-H); }
+  .ribbon-title { font-size:8.5px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--bronze); }
+  .ribbon-mono { font-size:11px; font-weight:700; color:var(--ink); font-family:'Roboto Mono',monospace; margin-top:1px; }
+  .ribbon-mono small { font-family:'Montserrat',sans-serif; font-weight:500; color:var(--text-sec); font-size:9px; }
+  .ribbon-types { margin-top:3px; display:flex; gap:6px; }
+  .rt-pill { font-size:8px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; padding:1px 7px; border-radius:9px; }
+  .rt-pill.botanical { background:var(--navy); color:#FFF; }
+  .rt-pill.chemo { background:var(--gold-tint); color:var(--gold-deep); border:1px solid var(--gold); }
+  .ribbon-stamp { background:var(--bronze); color:#FFF; padding:4px var(--MARGIN-H) 4px 22px; text-align:center; display:flex; flex-direction:column; justify-content:center; flex-shrink:0; border-left:3px solid var(--gold); }
+  .ribbon-stamp-label { font-size:8px; opacity:.85; letter-spacing:1.5px; text-transform:uppercase; }
+  .ribbon-stamp-val { font-size:13px; font-weight:800; font-family:'Roboto Mono',monospace; margin-top:1px; }
+
+  /* Sample grid (General Information) */
+  .sample-grid { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; margin:0 var(--MARGIN-H); border-bottom:1px solid var(--border); }
+  .sg-cell { padding:3px 12px 2px; border-right:1px solid var(--border-light); border-bottom:1px solid var(--border-light); vertical-align:middle; }
+  .sg-cell:nth-child(4n) { border-right:none; }
+  .sg-cell.primary { background:var(--gold-tint); }
+  .sg-cell.primary .sg-label { color:var(--gold-deep); }
+  .sg-label { font-size:8.5px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--text-ter); margin-bottom:1px; }
+  .sg-val { font-size:10.5px; font-weight:600; color:var(--ink); line-height:1.25; font-family:'Roboto Mono',monospace; }
+  .sg-val.sm { font-size:9.5px; font-weight:500; font-family:'Montserrat',sans-serif; }
+  .sg-val.lg { font-size:11.5px; font-weight:700; color:var(--navy); }
+
+  .sec-label { font-size:9.5px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:#FFF; background:var(--navy); padding:2px var(--MARGIN-H); border-bottom:2px solid var(--gold); display:flex; align-items:baseline; gap:10px; }
+  .sec-label .sec-no { font-family:'Roboto Mono',monospace; color:var(--gold-bright); font-size:11px; }
+  .sec-label span.note { font-weight:400; color:rgba(255,255,255,.6); letter-spacing:.5px; font-size:8.5px; text-transform:none; }
+
+  .tbl-wrap { padding:0 var(--MARGIN-H); }
+  table.methods { width:100%; border-collapse:collapse; }
+  table.methods thead th { background:var(--zebra-soft-head); font-size:8.5px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; color:var(--navy); padding:3px 6px; text-align:left; border-bottom:2px solid var(--navy); }
+  table.methods thead th:first-child { width:22px; text-align:center; }
+  table.methods thead th.col-ac { width:170px; }
+  table.methods thead th.col-result { width:130px; }
+  table.methods thead th.col-val { width:92px; text-align:center; }
+  table.methods tbody td { padding:1px 6px; border-bottom:1px solid var(--border-light); font-size:9px; line-height:1.15; vertical-align:middle; }
+  table.methods tbody tr:nth-child(even) td:not(.row-group-cell) { background:var(--zebra-soft); }
+  table.methods tbody td:first-child { text-align:center; font-family:'Roboto Mono',monospace; font-weight:700; color:var(--navy-soft); }
+  .m-name { font-weight:700; color:var(--ink); font-size:9.5px; }
+  .m-ref { font-size:8.5px; color:var(--gold-deep); font-family:'Roboto Mono',monospace; }
+  .m-method { display:block; font-size:8px; color:var(--text-sec); margin-top:1px; line-height:1.3; }
+  .m-ac { font-size:9px; color:var(--text); font-family:'Roboto Mono',monospace; }
+  .m-result { font-weight:700; font-size:9.5px; font-family:'Roboto Mono',monospace; color:var(--green); }
+  .m-result .reps { display:block; font-weight:500; font-size:8px; color:var(--text-sec); line-height:1.25; margin-top:1px; }
+  .m-result.nd { color:var(--text-ter); }
+  .m-result.fail { color:var(--red, #B91C1C); }
+
+  /* Method-validation-status column */
+  .m-val { text-align:center; }
+  .val-pill { display:inline-block; font-size:7.5px; font-weight:800; letter-spacing:.5px; padding:1px 6px; border-radius:9px; line-height:1.4; font-family:'Roboto Mono',monospace; }
+  .val-pill.validated { background:var(--green-bg); color:var(--green); border:1px solid var(--green); }
+  .val-pill.compendial { background:var(--gold-tint); color:var(--gold-deep); border:1px solid var(--gold); }
+  .val-pill.visual { background:#EEF2F7; color:var(--navy-soft); border:1px solid var(--border); }
+  .val-sub { display:block; font-size:7px; color:var(--text-ter); font-family:'Roboto Mono',monospace; line-height:1.2; margin-top:1px; }
+  .row-group td { padding-top:3px; background:var(--gold-tint); }
+  .row-group .row-group-cell { background:var(--gold-tint) !important; color:var(--gold-deep); }
+  .sub-row td { padding-left:14px; }
+  .sub-row td:first-child { border-bottom-color:transparent; color:var(--text-ter); }
+
+  /* Section 02 — Method Validation / System Suitability / Uncertainty */
+  .val-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px; padding:3px var(--MARGIN-H) 0; }
+  .val-block { background:var(--zebra-soft); border-left:3px solid var(--navy); padding:2px 9px; font-size:8.5px; line-height:1.3; }
+  .val-block.gold { border-left-color:var(--gold); background:var(--gold-tint); }
+  .val-title { font-size:8px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--navy); margin-bottom:1px; }
+  .val-block.gold .val-title { color:var(--gold-deep); }
+  .val-block b { color:var(--navy); font-weight:700; }
+
+  /* Statement of conformity */
+  .conform-stmt { margin:3px var(--MARGIN-H) 1px; padding:3px 16px; background:var(--green-bg); border:1px solid var(--green); border-left:5px solid var(--green); display:flex; align-items:center; gap:12px; }
+  .cs-badge { font-size:9px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:#FFF; background:var(--green); padding:2px 10px; border-radius:3px; white-space:nowrap; }
+  .cs-body { font-size:9px; color:var(--text); line-height:1.4; }
+  .cs-body strong { color:var(--navy); }
+  .cs-body .linked-coq { display:inline-block; padding:1px 6px; background:var(--navy); color:#FFF; font-family:'Roboto Mono',monospace; font-weight:700; border-radius:2px; font-size:9px; }
+
+  /* Notes */
+  .notes { margin:2px var(--MARGIN-H) 0; padding:2px 14px 3px; }
+  .notes-title { font-size:8px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--gold-deep); margin-bottom:1px; }
+  .notes ul { margin:0; padding-left:14px; }
+  .notes li { font-size:7.5px; color:var(--text-sec); line-height:1.4; }
+  .notes li strong { color:var(--navy); }
+
+  /* 3-tier approval */
+  .sig-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:18px; padding:2px var(--MARGIN-H) 1px; margin-top:1px; }
+  .sig-block { text-align:center; position:relative; }
+  .sig-role { font-size:8.5px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--gold-deep); margin-bottom:2px; }
+  .sig-sign { position:relative; height:34px; margin-bottom:1px; }
+  .sig-sign .sig-line { position:absolute; left:0; right:0; bottom:0; border-bottom:1px solid var(--navy); }
+  .sig-img { position:absolute; left:50%; max-width:78%; transform:translateX(-50%) rotate(-3deg); pointer-events:none; bottom:2px; max-height:34px; mix-blend-mode:multiply; }
+  .sig-title { font-size:10px; font-weight:700; color:var(--navy); }
+  .sig-name { font-size:9px; color:var(--text-sec); margin-top:1px; }
+  .sig-cred { font-size:7.5px; color:var(--text-ter); margin-top:0; font-family:'Roboto Mono',monospace; }
+  .sig-date-row { margin-top:2px; display:flex; justify-content:center; align-items:center; gap:5px; }
+  .sig-date-label { font-size:8px; font-weight:600; color:var(--text-ter); text-transform:uppercase; }
+  .sig-date-val { font-size:9px; font-weight:700; color:var(--ink); font-family:'Roboto Mono',monospace; }
+
+  .footer { margin-top:auto; padding:4mm var(--MARGIN-H) var(--PAD-V); background:var(--navy); color:#FFF; border-top:3px solid var(--gold); display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  .foot-left { font-size:8px; color:rgba(255,255,255,.7); line-height:1.25; text-align:left; flex:1; }
+  .foot-center { text-align:center; flex:0 0 auto; }
+  .foot-brand { font-size:12px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:#FFF; line-height:1; }
+  .foot-brand span { font-weight:300; color:var(--gold-bright); }
+  .foot-motto { font-size:8px; letter-spacing:2px; text-transform:uppercase; color:var(--gold-bright); line-height:1; margin-top:1px; }
+  .foot-right { font-size:8px; color:rgba(255,255,255,.7); line-height:1.25; text-align:right; flex:1; }
+
+  @media print { body { background:white; padding:0; } .page { box-shadow:none; } }
+</style>
+<style id="__desk-icoa">
+/* One navy ink in the results column, as the Head of QC asked for the certificate of
+   quality on 16.09.2026, and the Method Validation column dropped with Section 02. */
+html body div.page table.methods tbody td.m-result,
+html body div.page table.methods tbody td.m-result.nd,
+html body div.page table.methods tbody td.m-result.fail{color:#1B3A5C !important}
+html body div.page table.methods thead th.col-result{width:222px}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header-bar">
+    <div class="hb-brand">Purely<span>Plant</span></div>
+    <div class="hb-center"><div class="hb-title">Internal Certificate of Analysis</div><div class="hb-sub">iCoA · In-house QC Laboratory · Ph. Eur. 11.5 Mon. 3028</div></div>
+    <div class="hb-right"><div class="hb-code">iCoA-PP_26-105</div><div class="hb-dept">QC Analytical Laboratory</div></div>
+  </div>
+
+  <div class="ribbon">
+    <div class="ribbon-main">
+      <div class="ribbon-title">Analytical Record · In-house QC Test Session · 12-month retest</div>
+      <div class="ribbon-mono">P050152 <small>(Production)</small> · GP052501 <small>(Cultivation)</small> · Grape Pie <small>· GP_THC20 : CBD1 · Grade III</small></div>
+      <div class="ribbon-types"><span class="rt-pill botanical">Hybrid</span><span class="rt-pill chemo">THC-dominant chemotype (Ph. Eur. type)</span></div>
+    </div>
+    <div class="ribbon-stamp"><div class="ribbon-stamp-label">Issued</div><div class="ribbon-stamp-val">27.07.2026</div></div>
+  </div>
+
+  <div class="sample-grid">
+    <div class="sg-cell primary"><div class="sg-label">Lab Sample ID</div><div class="sg-val lg">—</div></div>
+    <div class="sg-cell"><div class="sg-label">Sample Description</div><div class="sg-val sm">Dried cannabis inflorescence</div></div>
+    <div class="sg-cell"><div class="sg-label">Sample Received</div><div class="sg-val">—</div></div>
+    <div class="sg-cell"><div class="sg-label">Receipt Conditions</div><div class="sg-val sm">—</div></div>
+    <div class="sg-cell"><div class="sg-label">Sampled by</div><div class="sg-val sm">Purely Plant QC Department (in-house)</div></div>
+    <div class="sg-cell"><div class="sg-label">Sample Mass</div><div class="sg-val">—</div></div>
+    <div class="sg-cell"><div class="sg-label">Requested Tests</div><div class="sg-val sm">Identification A, Appearance, Identification B, Foreign Matter (3)</div></div>
+    <div class="sg-cell"><div class="sg-label">Storage During Analysis</div><div class="sg-val sm">—</div></div>
+    <div class="sg-cell"><div class="sg-label">Analysis Started</div><div class="sg-val">27.07.2026</div></div>
+    <div class="sg-cell"><div class="sg-label">Analysis Completed</div><div class="sg-val">27.07.2026</div></div>
+    <div class="sg-cell"><div class="sg-label">Specification Ref.</div><div class="sg-val sm">QCSP_001_GP-III_v.01</div></div>
+    <div class="sg-cell"><div class="sg-label">Linked CoQ</div><div class="sg-val sm">CoQ-PP_26-094</div></div>
+  </div>
+
+  <div class="sec-label"><span class="sec-no">01</span> Analytical Methods &amp; Results <span class="note">— Ph. Eur. 11.5 Monograph 3028 · one or more results per parameter</span></div>
+  <div class="tbl-wrap">
+    <table class="methods">
+      <thead><tr><th>№</th><th>Parameter · Method Details</th><th class="col-ac">Acceptance Criteria</th><th class="col-result">Result(s)</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><span class="m-name">Identification A, Appearance · Macroscopic</span><span class="m-method">Ph. Eur. mon. 3028</span></td><td class="m-ac">Conforms to the monograph for Cannabis flos (07/2024:3028) in Ph. Eur. 11.0</td><td class="m-result">Conforms</td></tr>
+        <tr><td>2</td><td><span class="m-name">Identification B · Microscopic</span><span class="m-method">Ph. Eur. 2.8.23 (microscopy)</span></td><td class="m-ac">Conforms to the monograph for Cannabis flos (07/2024:3028) in Ph. Eur. 11.0</td><td class="m-result">Conforms</td></tr>
+        <tr><td>7</td><td><span class="m-name">Foreign Matter</span><span class="m-method">Ph. Eur. 2.8.2 · In-house · интерна</span></td><td class="m-ac">≤ 2.0% / 25–50 g · &lt; 1 cm leaves</td><td class="m-result">Conforms</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  
+
+  <div class="conform-stmt">
+    <div class="cs-badge">Conforms</div>
+    <div class="cs-body"><strong>Result:</strong> The tested sample <strong>conforms</strong> to the product specification <strong>QCSP_001_GP-III_v.01</strong> for the 3 determinations within the scope of this record — Identification A, Appearance, Identification B and Foreign Matter. This record reports the in-house analytical results only; the remaining determinations of Ph. Eur. 11.5 Monograph 3028 are certified by the laboratories named in the linked Certificate of Quality &nbsp;<span class="linked-coq">CoQ-PP_26-094</span>, where the batch release is documented.</div>
+  </div>
+
+  <div class="notes">
+    <div class="notes-title">Notes</div>
+    <ul>
+      <li>These results relate <strong>only to the tested sample(s)</strong> as received in the QC Laboratory.</li>
+      <li><strong>No part of this report may be reproduced</strong> except in full, without prior written permission of the QC Laboratory.</li>
+      <li>The determinations within the scope of this record were performed <strong>in-house</strong> by Purely Plant QC personnel within the <strong>MK GMP</strong> facility, before final release sampling.</li>
+      <li>Determinations outside this scope are reported on the certificates of the external laboratories named in the linked Certificate of Quality, and are not asserted here.</li>
+    </ul>
+  </div>
+
+  <div class="sig-row">
+    <div class="sig-block">
+      <div class="sig-role">Analysis Performed by</div>
+      <div class="sig-sign"><div class="sig-line"></div></div>
+      <div class="sig-title">Analyst · QC Laboratory</div>
+      <div class="sig-name">&nbsp;</div>
+      <div class="sig-cred">&nbsp;</div>
+      <div class="sig-date-row"><span class="sig-date-label">Date</span><span class="sig-date-val">&nbsp;</span></div>
+    </div>
+    <div class="sig-block">
+      <div class="sig-role">Reviewed by</div>
+      <div class="sig-sign"><div class="sig-line"></div></div>
+      <div class="sig-title">Senior Analyst · QC Laboratory</div>
+      <div class="sig-name">&nbsp;</div>
+      <div class="sig-cred">&nbsp;</div>
+      <div class="sig-date-row"><span class="sig-date-label">Date</span><span class="sig-date-val">&nbsp;</span></div>
+    </div>
+    <div class="sig-block">
+      <div class="sig-role">Approved by</div>
+      <div class="sig-sign"><div class="sig-line"></div></div>
+      <div class="sig-title">Head of QC Laboratory</div>
+      <div class="sig-name">&nbsp;</div>
+      <div class="sig-cred">&nbsp;</div>
+      <div class="sig-date-row"><span class="sig-date-label">Date</span><span class="sig-date-val">&nbsp;</span></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="foot-left">Purely Plant DOOEL · QC Analytical Laboratory · Industriska ulica 9, br. 9, s. Kojlija 1043 · Petrovec-Skopje, North Macedonia</div>
+    <div class="foot-center"><div class="foot-brand">Purely<span>Plant</span></div><div class="foot-motto">Analytical Excellence</div></div>
+    <div class="foot-right">MK GMP Certified Facility<br>iCoA-PP_26-105 · Page 1 of 1</div>
+  </div>
+</div>
+</body>
+</html>

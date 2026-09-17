@@ -13,15 +13,16 @@ python3 icoa_handoff/build_icoa_v1.py --only retest
 
 ## What is here
 
-`out/INITIAL/` (77) and `out/RETEST/` (38) — **115 documents**, one per in-house iCoA code
+`out/INITIAL/` (77) and `out/RETEST/` (77) — **154 documents**, one per in-house iCoA code
 the certificates actually cite. `out/_build_report.tsv` lists each with its round, lot,
 scope and the certificates it serves.
 
-* **95** cover Identification A + B + Foreign matter (`#1 #2 #7`), **13** cover
-  Identification B alone, the rest are the legacy full/part-panel in-house records.
-* **INITIAL** holds the identity iCoAs issued once at packaging (26 cited only at release,
-  51 also carried to the reissue). **RETEST** holds the 38 records a retest certificate is
-  the first to cite.
+* **145** cover Identification A + B + Foreign matter (`#1 #2 #7`); the rest are the
+  legacy full/part-panel in-house records.
+* **INITIAL** holds the 77 identity iCoAs issued at packaging, cited by the release
+  certificates. **RETEST** holds the 77 issued on the re-sampling for retesting, cited by
+  the reissues — the Head of QC's ruling of 17.09.2026 that a retest certificate cites the
+  retest iCoA for #1, #2 and #7, applied by `apply_retest_icoa.py`.
 
 ## Why the certificate is the source, not a register
 

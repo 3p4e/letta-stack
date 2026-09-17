@@ -1,8 +1,10 @@
 # Certificates of Quality — Purely Plant GmbH
-### Intermediate bulk · dry cannabis flower for medical use · 16.09.2026
+### Intermediate bulk · dry cannabis flower for medical use · 17.09.2026
 
 172 certificates, drawn by the Claude Design package `PP_CoQ_Handoff_2026-09-16`.
 One A4 page each, fonts embedded, no draft stamp, Section 04 conformity decision ticked.
+The signature boxes carry no scan: each keeps its line and the space above it, and the
+certificate is signed by hand once printed (Head of QC, 17.09.2026).
 
 ## What is in this archive
 
@@ -16,9 +18,11 @@ One A4 page each, fonts embedded, no draft stamp, Section 04 conformity decision
 | | `CoQ_Tranche_3_Retest.pdf` | 30 | tranche 3, retest alone |
 | `By_testing_round/` | `CoQ_ISSUE_COQ.pdf` | 89 | every release certificate, in register order |
 | | `CoQ_REISSUE_T1/T2/T3.pdf` | 21 / 32 / 30 | the reissues, split by tranche |
-| `Per_certificate/` | 172 files | 1 each | one certificate per file, for sending a single batch |
+| | `Not_in_a_tranche/` | 6 × 3 | the six release certificates outside the three tranches (FB032601, GG032601, JD022601, P160012, P160022, P160032) as HTML, PDF and DOCX |
+| `HTML/`, `PDF/`, `DOCX/` (per tranche) | 172 × 3 | 1 each | every certificate as a self-contained HTML page, a vector PDF, and a Word document (the printed page, not editable text) |
 
 Every page of the merged documents is bookmarked with its certificate code and P lot.
+All PDFs are **vector** — fonts embedded, gradients opaque, no blend modes — prepared for a laser printer rather than flattened to a raster.
 
 ## How to read a result cell
 

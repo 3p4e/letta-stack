@@ -1,2 +1,6 @@
 # Run logs. The receipt for a build is docs/REBUILD_v40.md, not a console capture.
 *.log
+
+# Word copies of the pages, one per certificate (export_docx_v40.py). Like pdf/pages/ they
+# travel inside the dist/ archives, not as 172 tracked binaries.
+docx/

@@ -183,6 +183,106 @@ Build unchanged: 172 documents, apply warnings 0, assertion findings 48 (hard 2)
 panels, all policy checks pass. Every document reprinted and each merged document flattened at
 300 dpi for press.
 
+## 3c · The final inspection of 17.09.2026
+
+A last pass over all three tranches, initial and retest, run as an automated sweep of every
+one of the 172 documents plus a visual check of a retest certificate from each tranche.
+
+**What the sweep found and what was corrected.**
+
+* **The signature block ran into the footer** on 56 certificates (worst −33 px): the
+  second-pass layout had grown the lower stack. The signature block and Section 03 rows were
+  compacted, keeping the three-line laboratory layout, and the result-row padding halved.
+* **The Section 03 `PARAM. №` column wrapped** onto two or three lines on 100 certificates —
+  `3, 4, 5, 6, 10` on the 71 where Farmahem covers five parameters — because the column's
+  right page-margin padding ate most of its width. It is widened to 172 px with the room
+  taken from the CoA-code column, which had spare, and set not to wrap.
+* **Every faded horizontal separator that was 2 px is a hairline**: the gold rules of
+  Section 01 and above the signatures, the signature lines, both table header rules and every
+  table bottom rule.
+
+* **The heading bars printed with a distorted gradient.** The package opens each bar with a
+  dark stop, a 1 px inset white highlight and a dark bottom inset — a dark/bright/dark stripe
+  along the top that a laser printer renders as banding. Each bar is now one smooth two-stop
+  vertical fill in the same tone, no inset shadows, one hairline along its bottom, still full
+  bleed.
+* **Vector, not flattened.** The Head of QC's call: the deliverable is the vector PDF, which
+  a laser printer renders crisply; the 300 dpi rasters are retired. The documents are
+  prepared for print instead — fonts embedded, every gradient opaque, the signatures placed
+  as transparent images with **no blend mode** (a blend mode is a PDF transparency group that
+  laser RIPs rasterise badly). Measured in the vector PDF at 600 dpi: the bar is a single
+  monotonic gradient with no reversal, and the page carries no blend-mode operator.
+* **Every certificate ships as both HTML and vector PDF**, per tranche, alongside the merged
+  tranche documents.
+
+**The sweep after the corrections, over all 172:** page and edge overflow 0, footer
+clearance 13–14 px on every certificate, parameter cells wrapping 0, laboratory cells over
+three lines 0, both signatures present on every document. Build unchanged: apply warnings 0,
+assertion findings 48 (hard 2), 0 partial panels, all policy checks pass. Every document
+reprinted as vector, the four download archives rebuilt with HTML and PDF per certificate.
+
+## 3d · The data pass of 17.09.2026 — retest iCoAs, potency truth-check, loss on drying
+
+**A retest certificate cites the retest iCoA.** The Head of QC: the initial certificate
+cites the in-house iCoA issued at packaging, and the retest certificate cites *the internal
+certificate of analysis for parameters 1, 2 and 7 on the re-sampling for retesting*. Before
+this, 40 reissues cited only the initial iCoA for the three and 11 cited it for some — the
+15.09 carry applied to determinations that are in fact repeated. `apply_retest_icoa.py`
+re-pointed **142 cells on 51 reissues** to the certificate's own retest `icoa_code`, dated
+from the register the certificates' numbering follows, with the verdict read from the
+master's iCoA Register **by lot and series** (its codes sit +1/+2 off the certificates'
+numbering, so a join by code would read the wrong lot). 24 reissues already cited the retest
+iCoA; 8 whose #1/#2/#7 the master assigns to an external CNP certificate keep it. Nothing
+held; assertion findings unchanged at 48 (hard 2). The iCoA set rebuilt on the corrected
+citations is **154 documents, 77 initial and 77 retest**.
+
+**Potency, every certificate against `CoQ_Analysis_Master_v41`.** Master figure, banner
+figure and row-4 result agree on **158 certificates**; 13 have no potency on either side
+(the lots with no assay certificate on file); **0 conflicts.** (Six unassigned-code
+certificates were re-checked by lot after a first pass matched them all to the master's one
+"— at issue —" row.)
+
+**Loss on drying (#8) — what is cited, and is it really tested there.** Every certificate
+that prints #8 cites a laboratory that determines it: CNP's ППК reports (DAB 2.2.32) on 61
+release certificates, Farmahem's separate **ГС** loss-on-drying series on 18, an in-house
+iCoA on 2 — and in every case #8 is listed against that laboratory in Section 03 (0 orphaned
+pairs). On the 56 reissues #8 is carried from the initial CNP certificate: the Farmahem K
+report is cannabinoids only, and **no ГС certificate exists for the 197 / 220 / 227 retest
+campaigns**, so loss on drying was not re-determined at retest. Two things for the Head of
+QC: 14 release lots have no loss-on-drying certificate at all (HPA1024, OPM1024, P050142,
+P060102, P060142, P060332, P060342, P060352, P060362, P060372, P060382, P060492, FB042601,
+CC042601); and **CoQ-PP_26-004 (GG1024) printed loss on drying 76.07 % flagged OOS, citing
+ППК25008** — a value that is physically impossible for loss on drying and a certificate that
+is not in the register database. The figure had stood in the desk's own tables since v31 and
+in the 09.09 resolution pass; the desk left it as recorded and named it as an open item. On
+17.09.2026 the Head of QC ruled it a typo and set the value to **7.8 %** — see §3e.
+
+**Every certificate as a Word document.** `export_docx_v40.py` writes one .docx per
+certificate carrying the page exactly as it prints — the vector PDF page at 300 dpi, edge to
+edge on an A4 page with zero margins — so it opens, previews, prints and forwards in Word and
+cannot drift from the PDF it is made from. The text inside is not editable in Word; the
+editable source of every certificate is its HTML, which the package also carries, and the
+controlled record is the PDF.
+
+## 3e · The two instructions of 17.09.2026
+
+**Loss on drying, GG1024.** The Head of QC ruled the 76.07 % of ППК25008 a typo and set the
+value to **7.8 %**. A pinpoint edit: the two GG1024 rows (#8 on CoQ-PP_26-004 and on its
+retest CoQ-PP_26-115, which carries the initial determination) now print 7.8 % within the
+≤ 12.0 % limit, the OUT OF SPECIFICATION mark is gone from both, and the 09.09 resolution
+pass (`cell_resolution_2026-09-09.tsv`, the reading the certificate printed from) carries
+the corrected value so a rebuild of the data does not bring 76.07 back. OI-06 and OI-35 in
+`open_items.py` say so. The tracker's compiled tables (`tracker/*_long.csv`, the master's
+Reconciliation 09.09 sheet) still show 76.07 until the tracker is next rebuilt; they are
+snapshots, not sources.
+
+**No signatures.** "Remove all signatures from all certificates of quality." The builder no
+longer places the two managers' scans; the `assets/` PNGs are gone with the code that used
+them, and the build refuses a page that carries a signature image. Each signature box keeps
+its line and the 32 px above it, to be signed by hand on the printed page. Section 04 is
+otherwise unchanged: names, credentials, roles and dates print as before. 172 documents
+rebuilt, printed as vector PDF, exported to Word and re-archived.
+
 ## 4 · Four defects the rebuild exposed, and what was done
 
 ### 4.1 · A register status was hiding results the desk holds
@@ -361,8 +461,8 @@ python3 design_handoff/toolchain/merge_tranches_v40.py  # one document per tranc
 ```
 
 `merge_tranches_v40.py` prints any document that has no page yet, then merges by tranche,
-each page bookmarked with the certificate it carries and a `_flat.pdf` beside each — every
-page a 300 dpi lossless raster, so a printer resolves no gradient of its own.
+each page bookmarked with the certificate it carries. Since §3c the pages are vector and no
+`_flat.pdf` is written (`--no-flatten`): a laser printer renders the vector page itself.
 
 `--series` says which round the tranche document carries. **`reissue` is what the Head of
 QC asked for on 16.09.2026** — the 12-month retest certificate is the document that travels

@@ -92,8 +92,12 @@ ITEMS = [
     ("OI-06", "Reconciliation", "open",
      "Forty-six disagreements between the desk and the owner's 09.09 pass",
      "Put side by side on the Reconciliation 09.09 sheet: 218 determinations agree, 46 do "
-     "not. One is a loss on drying of 76.07 % read on GG1024 against a 12.0 % limit.",
-     "None is resolved by the desk. Both readings are shown with their sources.",
+     "not. One was a loss on drying of 76.07 % read on GG1024 against a 12.0 % limit: the "
+     "Head of QC ruled it a typo on 17.09.2026 and set the value to 7.8 % (ППК25008), so "
+     "both GG1024 certificates now print 7.8 % within the limit; the pass file carries the "
+     "corrected value. The other 45 stand.",
+     "One of the 46 is resolved by the Head of QC's ruling. The rest are not resolved by the "
+     "desk; both readings are shown with their sources.",
      "A person reads the page for each of the 46 and says which reading stands.",
      "Reconciliation 09.09 sheet; 46 rows"),
 
@@ -712,14 +716,15 @@ ITEMS = [
      "every certificate with the tracker's cells for the lot. Twenty rows on eleven certificates "
      "cite a document the tracker holds nowhere: the 17 documents the owner's 09.09.2026 pass "
      "over eCoA_DATABASE recorded (cell_resolution_2026-09-09.tsv) and the two-read pipeline "
-     "never ingested — ППК25008 and 748/2025 (GG1024: the loss on drying of 76.07 % and the "
+     "never ingested — ППК25008 and 748/2025 (GG1024: the loss on drying — 7.8 % since the "
+     "Head of QC's correction of 17.09.2026, 76.07 % before it — and the "
      "pesticides), 031-2/4/5-К/26 and 031-2/4/5-LoD/26 (P060112, P060122, P060132: the Farmahem "
      "cannabinoid and loss-on-drying certificates of 10.02.2026), 326/327/330/2026, "
      "1056/1058/1059/1060/2026 and 3659/3660/3662/2026 (the IJZ pesticide certificates of "
      "P060112, P060122, P060132, P060152, P060172, P060182, P060232, P060402, P060412, "
      "P060422). Each rests on one page read. The tracker's document pool is the desk's index "
      "plus the intake instances, so its cell for GG1024 #8 reads '— MISSING —' while the "
-     "certificate prints 76.07 % from ППК25008, and J31122501 #8 cites the cannabinoid "
+     "certificate prints 7.8 % from ППК25008, and J31122501 #8 cites the cannabinoid "
      "certificates where the certificate cites the loss-on-drying certificate 100-2-ГС/26.",
      "Recorded, not built: the 17 documents need the two-read intake the 220-М, 227-К and "
      "220-К certificates had before the tracker credits them, and the certificate rows that "

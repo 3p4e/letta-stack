@@ -12,16 +12,9 @@ const base = fs.readFileSync(path.join(HANDOFF, 'base', 'CoQ-PP_26-013_P050072_G
 const data = JSON.parse(fs.readFileSync(path.join(GAP, 'coq_artifact_data.json'), 'utf8'));
 const OUT = path.join(HANDOFF, 'out');
 
-// The two authentic handwritten signature scans, vendored under assets/ as trimmed,
-// downscaled transparent PNGs (crisp at print, ~40 KB and ~20 KB). They are the same
-// scans the internal certificates of analysis carry: Blagoj Nikolov, QC Manager, tilted
-// -1.5deg, and Jovana Romevska Cvetkovski, QA Manager, tilted +2deg — the tilts the
-// package already used. Embedded as data URIs so each certificate stays self-contained
-// through download and PDF export, as the package embeds its logo.
-const SIG = {
-  qc: 'data:image/png;base64,' + fs.readFileSync(path.join(HANDOFF, 'assets', 'sig_qc_manager.png')).toString('base64'),
-  qa: 'data:image/png;base64,' + fs.readFileSync(path.join(HANDOFF, 'assets', 'sig_qa_manager.png')).toString('base64'),
-};
+// No signature scans. The Head of QC, 17.09.2026: "remove all signatures from all
+// certificates of quality." Each signature box keeps its line and the space above it, to
+// be signed by hand on the printed page; nothing is placed there by the build.
 
 // tranche of a reissue, from the desk's scope files
 const tranche = {};
@@ -222,14 +215,28 @@ const EDGE_FADE_LAYER = '<style id="__owner-edges">\n' +
      'linear-gradient(90deg,#fff 0,#9EACBA 12mm,#9EACBA calc(100% - 12mm),#fff 100%),' +
      'linear-gradient(90deg,#fff 0,#9EACBA 12mm,#9EACBA calc(100% - 12mm),#fff 100%),' +
      'linear-gradient(90deg,#fff 0,#F2F5F9 12mm,#F2F5F9 calc(100% - 12mm),#fff 100%) !important;' +
-     'background-size:100% 2px,100% 2px,100% calc(100% - 4px) !important;' +
-     'background-position:top left,bottom left,left top 2px !important;background-repeat:no-repeat !important}\n' +
+     'background-size:100% 1px,100% 1px,100% calc(100% - 2px) !important;' +
+     'background-position:top left,bottom left,left top 1px !important;background-repeat:no-repeat !important}\n' +
   'html body div.page div.tbl-wrap table.labref tbody tr:last-child{background-color:transparent !important;background-image:' +
      'linear-gradient(90deg,#fff 0,#9EACBA 12mm,#9EACBA calc(100% - 12mm),#fff 100%) !important;' +
-     'background-size:100% 2px !important;background-position:bottom left !important;background-repeat:no-repeat !important}\n' +
+     'background-size:100% 1px !important;background-position:bottom left !important;background-repeat:no-repeat !important}\n' +
   'html body div.page div.tbl-wrap table.labref tbody tr:nth-child(even){background-color:transparent !important;background-image:' +
      'linear-gradient(90deg,#fff 0,rgb(247,249,252) 12mm,rgb(247,249,252) calc(100% - 12mm),#fff 100%) !important;' +
      'background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important}\n' +
+  '/* Owner, 17.09.2026: the heading bars printed with a distorted gradient. The package\n' +
+  '   opens each bar with a dark stop, a 1px inset white highlight and a dark bottom inset —\n' +
+  '   a dark/bright/dark stripe along the top that a laser printer renders as banding. The\n' +
+  '   bar is now one smooth two-stop vertical gradient in the same tone, no inset shadows,\n' +
+  '   one clean hairline along its bottom — full bleed, edge to edge, as asked. */\n' +
+  'html body div.page .sec-label{box-shadow:none !important;background-color:#E6EDF5 !important;' +
+     'background-image:linear-gradient(180deg,rgb(238,243,248) 0%,rgb(222,231,240) 100%) !important;' +
+     'background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important;' +
+     'border-bottom:1px solid rgb(168,188,209) !important}\n' +
+  '/* Owner, 17.09.2026: every faded horizontal separator that was 2px is a hairline. */\n' +
+  'html body div.page div.goldrule{height:1px !important}\n' +
+  'html body div.page div.approval-grid .ap-line{height:1px !important}\n' +
+  'html body div.page div.tbl-wrap table.results tbody tr.last-row,\n' +
+  'html body div.page div.tbl-wrap table.labref tbody{background-size:100% 1px !important}\n' +
 '</style>';
 
 const INK_LAYER = '<style id="__owner-uniform-result-ink">\n' +
@@ -279,14 +286,14 @@ const S34_LAYER = '<style id="__owner-align-s1-s4">\n' +
   '   centred on the row, parameter numbers to the right page margin, headers following\n' +
   '   their columns, issue dates smaller and grey. */\n' +
   'html body div.page div.tbl-wrap table.labref{table-layout:fixed !important}\n' +
-  'html body div.page div.tbl-wrap table.labref colgroup col:nth-child(2){width:286px !important}\n' +
-  'html body div.page div.tbl-wrap table.labref colgroup col:nth-child(3){width:104px !important}\n' +
+  'html body div.page div.tbl-wrap table.labref colgroup col:nth-child(2){width:218px !important}\n' +
+  'html body div.page div.tbl-wrap table.labref colgroup col:nth-child(3){width:172px !important}\n' +
   'html body div.page div.tbl-wrap table.labref thead th:first-child,\n' +
   'html body div.page div.tbl-wrap table.labref tbody td:first-child{text-align:left !important;padding-left:var(--MARGIN-H) !important}\n' +
   'html body div.page div.tbl-wrap table.labref thead th:nth-child(2),\n' +
   'html body div.page div.tbl-wrap table.labref tbody td.lr-mono:not(.pcell){text-align:center !important;vertical-align:middle !important}\n' +
   'html body div.page div.tbl-wrap table.labref thead th:nth-child(3),\n' +
-  'html body div.page div.tbl-wrap table.labref tbody td.pcell{text-align:right !important;vertical-align:middle !important;padding-right:var(--MARGIN-H) !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td.pcell{text-align:right !important;vertical-align:middle !important;padding-right:var(--MARGIN-H) !important;white-space:nowrap !important}\n' +
   'html body div.page div.tbl-wrap table.labref tbody td .lr-lab{display:block !important;line-height:1.32 !important;text-align:left !important}\n' +
   'html body div.page div.tbl-wrap table.labref tbody td .lr-lab .bisep{display:none !important}\n' +
   'html body div.page div.tbl-wrap table.labref tbody td .lr-lab .mk{display:block !important;margin-left:0 !important;margin-top:1px !important;white-space:normal !important;line-height:1.25 !important}\n' +
@@ -313,7 +320,6 @@ const S34_LAYER = '<style id="__owner-align-s1-s4">\n' +
   'html body div.page div.disp-row .grp .chip-un{flex:0 0 auto !important;align-self:stretch !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;text-align:center !important;margin:0 !important}\n' +
   'html body div.page div.approval-grid .ap-role{padding-top:4px !important}\n' +
   'html body div.page div.approval-grid .ap-sign{height:32px !important}\n' +
-  'html body div.page div.approval-grid .ap-img.handwritten{position:absolute !important;left:50% !important;bottom:0px !important;max-height:38px !important;max-width:92% !important;mix-blend-mode:multiply !important;z-index:6 !important;pointer-events:none !important}\n' +
   '/* Owner, 17.09.2026: on content-heavy certificates the lower stack (Section 03\'s three\n' +
   '   laboratory lines and the signature block) reached into the footer. The block and the\n' +
   '   lower sections are compacted so every certificate clears the footer, with no page\n' +
@@ -359,17 +365,9 @@ for (const c of data.coqs) {
   // done here in the desk's adapter, not in the package's builder.
   html = html.replace(/(<span class="cert"><b>[^<]*<\/b>)\s*·\s*([^<]*)<\/span>/g,
                       '$1 <i class="cd">· $2</i></span>');
-  // The two managers' signatures are placed into their signature boxes: the QC Manager's
-  // scan into "Prepared & Approved by", the QA Manager's into "Reviewed by". Each is set
-  // just before the signature line, with the tilt the package used.
-  const sigImg = (src, deg) => '<img class="ap-img handwritten" style="transform:translateX(-50%) rotate(' + deg + ')" alt="" src="' + src + '">';
-  const putSig = (h, role, src, deg) => {
-    const anchor = '<div class="ap-sign"><div class="ap-line"></div></div><div class="ap-title">' + role;
-    if (h.indexOf(anchor) < 0) throw new Error('Section 04 signature anchor not found: ' + role);
-    return h.replace(anchor, '<div class="ap-sign">' + sigImg(src, deg) + '<div class="ap-line"></div></div><div class="ap-title">' + role);
-  };
-  html = putSig(html, 'QC Manager', SIG.qc, '-1.5deg');
-  html = putSig(html, 'QA Manager', SIG.qa, '2deg');
+  // The signature boxes carry no scan (Head of QC, 17.09.2026): the page is signed by
+  // hand. The build refuses a document that would carry one.
+  if (/class="ap-img/.test(html)) throw new Error('a signature image reached the page: ' + c.regcode);
   // Owner, 16.09.2026: "in cases when you have actually a parameter that's not tested —
   // and that is in the initial quality control testing of all tranche batches — you will
   // put NT as the analysis result, and also put it in brackets." Aflatoxin B1 (#10.1) and
