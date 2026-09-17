@@ -12,7 +12,7 @@ python3 design_handoff/toolchain/merge_tranches_v40.py --no-print --no-flatten -
 ```
 
 python3 design_handoff/toolchain/export_docx_v40.py                             # one .docx per certificate
-python3 design_handoff/toolchain/package_v40.py --single                        # ONE archive of the whole folder tree, in parts under 95 MB
+python3 design_handoff/toolchain/package_v40.py                                 # the four archives below
 ```
 
 `package_v40.py` refuses a stale build: every page must be newer than its HTML and every
@@ -28,17 +28,17 @@ inset stripes. No image is placed on the page: the signature boxes carry their l
 the space above it, and the certificate is signed by hand once printed (Head of QC,
 17.09.2026).
 
-## The archive
+## The archives
 
-One archive, `PP_CoQ_Package_2026-09-17.zip`, written in parts of at most 95 MB (`.z01`, `.z02` …)
-because GitHub refuses any file over 100 MB. Inside it, the whole folder tree: `01_Merged_PDF/`
-(the tranche documents, release round then retest, and the retest rounds alone, then the
-by-round documents), `02_Certificates/` (every certificate as HTML, vector PDF and Word by
-tranche and round, the six outside the tranches under `Not_in_a_tranche/`), `03_Lists/`,
-`04_Internal_CoA/`, `05_Master_Workbook/`, `06_Specifications/`, `07_Records/`, and this
-README. `package_v40.py --single` refuses a stale build: every page must be newer than its HTML
-and every Word file newer than its page. Without `--single` it still writes the four
-per-tranche archives of before.
+Four whole archives, each under GitHub's 100 MB limit, nothing split: one per tranche — the
+merged tranche document and the retest-only document, then every certificate of the tranche
+as HTML, vector PDF and Word by round — and `PP_CoQ_Package_2026-09-17.zip` with everything
+shared: the merged documents of all three tranches and the by-round documents
+(`01_Merged_PDF/`), the six certificates outside the tranches (`02_Certificates/`), the two
+certificate lists (`03_Lists/`), the 154 internal certificates (`04_Internal_CoA/`), the master
+workbook (`05_Master_Workbook/`), the potency specification (`06_Specifications/`) and the
+desk's records (`07_Records/`). `package_v40.py` refuses a stale build: every page must be
+newer than its HTML and every Word file newer than its page.
 
 ## The Word documents
 

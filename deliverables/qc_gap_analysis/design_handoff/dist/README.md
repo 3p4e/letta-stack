@@ -6,26 +6,22 @@ One A4 page each, fonts embedded, no draft stamp, Section 04 conformity decision
 The signature boxes carry no scan: each keeps its line and the space above it, and the
 certificate is signed by hand once printed (Head of QC, 17.09.2026).
 
-## What is in this archive
+## What is in the package
 
-One archive, the whole folder tree. It is written in parts of at most 95 MB
-(`PP_CoQ_Package_2026-09-17.zip` with `.z01`, `.z02` …) because GitHub refuses any file over
-100 MB; 7-Zip, WinRAR, The Unarchiver, or `zip -s 0 PP_CoQ_Package_2026-09-17.zip --out joined.zip`
-open the parts as one file. Keep all parts in one folder.
+Four whole archives, each under 100 MB, nothing split.
 
-| folder | what it holds |
+| archive | what it holds |
 | --- | --- |
-| `01_Merged_PDF/` | `CoQ_Tranche_1.pdf` (42 pp), `CoQ_Tranche_2.pdf` (64 pp), `CoQ_Tranche_3.pdf` (60 pp) — release round then 12-month retest, ready for print; `CoQ_Tranche_N_Retest.pdf` — the retest round alone (21 / 32 / 30 pp); `By_testing_round/` — every release certificate in register order (89 pp) and the reissues by tranche |
-| `02_Certificates/Tranche_N/Release · Retest/HTML · PDF · DOCX/` | every certificate as a self-contained HTML page, a vector PDF and a Word document (the printed page, not editable text); `Not_in_a_tranche/` — the six release certificates outside the tranches |
-| `03_Lists/` | the 83 retest certificates and the 83 release certificates they supersede, with batch, strain, product type, grade, window and results — xlsx, csv, md |
-| `04_Internal_CoA/` | the 154 internal certificates of analysis the certificates cite (HTML) |
-| `05_Master_Workbook/` | the CoQ Analysis Master, latest version, verified |
-| `06_Specifications/` | the Head of QC's potency specification of 17.09.2026 and its parsed table |
-| `07_Records/` | the open-items register, the rebuild record, the build notes, the engagement report |
+| `PP_CoQ_Tranche_1_2026-09-17.zip` | `CoQ_Tranche_1.pdf` (42 pp, release round then 12-month retest, ready for print) · `CoQ_Tranche_1_Retest.pdf` (21 pp, the retest round alone) · `HTML/`, `PDF/`, `DOCX/` — every certificate of the tranche, by round |
+| `PP_CoQ_Tranche_2_2026-09-17.zip` | the same for tranche 2 (64 pp · 32 pp) |
+| `PP_CoQ_Tranche_3_2026-09-17.zip` | the same for tranche 3 (60 pp · 30 pp) |
+| `PP_CoQ_Package_2026-09-17.zip` | `01_Merged_PDF/` — the merged documents of all three tranches and, under `By_testing_round/`, every release certificate in register order (89 pp) and the reissues by tranche · `02_Certificates/Not_in_a_tranche/` — the six release certificates outside the tranches as HTML, PDF and DOCX · `03_Lists/` — the 83 retest certificates and the 83 release certificates they supersede (xlsx, csv, md) · `04_Internal_CoA/` — the 154 internal certificates of analysis · `05_Master_Workbook/` — the CoQ Analysis Master, latest version, verified · `06_Specifications/` — the potency specification of 17.09.2026 · `07_Records/` — open items, rebuild record, build notes, engagement report |
 
-Every page of the merged documents is bookmarked with its certificate code and P lot.
-All PDFs are **vector** — fonts embedded, gradients opaque, no blend modes, no signature scans (the
-boxes are signed by hand) — prepared for a laser printer. Print at A4, actual size, no scaling.
+An HTML certificate is self-contained and opens in any browser; a Word document carries the
+certificate as the page exactly as it prints (not editable text). Every page of the merged
+documents is bookmarked with its certificate code and P lot. All PDFs are **vector** — fonts
+embedded, gradients opaque, no blend modes, no signature scans (the boxes are signed by hand)
+— prepared for a laser printer. Print at A4, actual size, no scaling.
 
 ## How to read a result cell
 
