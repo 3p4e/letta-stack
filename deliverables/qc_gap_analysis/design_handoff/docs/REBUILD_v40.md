@@ -401,6 +401,31 @@ have no loss-on-drying report anywhere** and keep "not tested", which is `OI-53`
 has both laboratories, so the ranking decides nothing yet and stands for the next one that does.
 `tracker/LOSS_ON_DRYING_RULING_2026-09-17.md`; the census is `lod_check.py`.
 
+## 3m · The three pinpoint corrections, and the release round (17.09.2026)
+
+The Head of QC named three lots. **P050212** needed `534/1065/26` ingested and cited — §3k, and
+the reissue's date moved with it. **P050022** turned out to be a citation defect, not a reading
+one: the release certificate was printing the *retest* of both #9 and #11, so arsenic read 0.047
+where the release report `2471/2025` says N.D. `apply_release_round.py` states the owner's own
+rule of 10.09.2026 as something the compilation applies — **a release certificate prints the
+FIRST document on file for each determination**, the printed part of a group moving together,
+campaign and in-house documents never candidates. Two of the eighty-nine were in that position:
+`CoQ-PP_26-007` and `CoQ-PP_26-010`. Three register cells the pages disagreed with were corrected
+(`intake_release_round_2026-09-17`). **P060382** has no heavy-metal, pesticide or loss-on-drying
+report anywhere — `197-21-М/26` was read at full resolution and carries mycotoxins only; that is
+`OI-55`. `tracker/PINPOINT_CORRECTIONS_2026-09-17.md`.
+
+## 3n · Loss on drying by tranche, and every citation checked (17.09.2026)
+
+`lod_tranche_census.py` answers the Head of QC's census — per tranche, how many batches have a
+Farmahem ГС report, how many only a Center ППК page, how many only the in-house sheet and how
+many nothing — and prints the document each certificate of both rounds actually cites, so it is
+the citation check as well. Of the 89 batches: **12 Farmahem, 62 CNP only, 2 in-house only, 13
+nothing**, and no lot has both laboratories. A separate sweep of all 172 certificates found **0
+findings** on #8: every result carries a document, a date and a laboratory, none postdates its
+certificate, and no certificate cites a document without a result.
+`tracker/LoD_By_Tranche_2026-09-17.md`.
+
 ## 4 · Four defects the rebuild exposed, and what was done
 
 ### 4.1 · A register status was hiding results the desk holds

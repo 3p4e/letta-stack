@@ -1127,6 +1127,58 @@ ITEMS = [
      "thirteen in a single submission.",
      "apply_lod_source.py; lod_check.py; tracker/LoD_Check_2026-09-17.md; "
      "intake_LoD031_2026-09-17; OI-42"),
+
+    ("OI-54", "Result", "ruled",
+     "Two release certificates were printing the retest of a determination instead of the release testing",
+     "The Head of QC, 17.09.2026, on P050022: \u201cat parameter 9 correct and check TAMC and BT, "
+     "and parameter 11 \u2014 in the eCOA for heavy metals all parameters are ND and in the CoQ "
+     "there is an actual value inserted.\u201d Both are one defect, and it was the CITATION, not "
+     "the reading. P050022 has two microbiology certificates and two contaminant reports: "
+     "471-0862-25 of 22.05.2025 (TAMC 700, TYMC < 10, bile-tolerant < 10\u00b2 \u0438 > 10) against "
+     "627/1128/25 of 02.07.2025 (all < 10); and 2471/2025 of 30.05.2025 (aflatoxins \u03a3 < 2, "
+     "Pb/Cd/As/Hg all \u043d.\u0434., pesticides \u043d.\u0434.) against 3176/2025 of 26.06.2025 (As 0.047). "
+     "**The release certificate was printing the later document of each pair** \u2014 which is why "
+     "arsenic read 0.047 where the report the Head of QC was reading says N.D. A sweep of all "
+     "eighty-nine release certificates found exactly two in this position: CoQ-PP_26-007 "
+     "(P050022) and CoQ-PP_26-010 (P050042, #9 only \u2014 2156/2025 of 07.05.2025 where "
+     "407-0745-25 of 05.05.2025 is the release page, TAMC 10 against < 10).",
+     "apply_release_round.py states the rule the owner gave on 10.09.2026 \u2014 the first result "
+     "is the release testing, every later one a retest \u2014 as something the compilation applies: "
+     "a release certificate prints the FIRST document on file for each determination, the "
+     "printed part of a group moving together, campaign and in-house documents never "
+     "candidates. Both pages were read twice at full resolution "
+     "(intake_release_round_2026-09-17) and three register cells the page disagreed with were "
+     "corrected: 471-0862-25 TYMC 10 \u2192 < 10, 2471/2025 pesticides < LOQ \u2192 N.D., and the "
+     "aflatoxin column 2471/2025 never had \u2192 < 2. CoQ-PP_26-007 now prints heavy metals all "
+     "ND and TAMC 700; its reissue CoQ-PP_26-095 keeps the retest, which is what a reissue "
+     "states.",
+     "Nothing \u2014 the Head of QC named the defect and the rule that fixes it is his own of "
+     "10.09.2026. Recorded so the next reader knows why two certificates changed.",
+     "apply_release_round.py; intake_release_round_2026-09-17; the reads of 471-0862-25 and "
+     "2471/2025 of 17.09.2026"),
+
+    ("OI-55", "Result", "open",
+     "P060382 has no heavy-metal, pesticide or loss-on-drying determination \u2014 searched again on 17.09.2026",
+     "The Head of QC, 17.09.2026: \u201cP060382, check all the heavy metals parameters because in "
+     "the COQ there is no values and NT is entered and I\u2019m sure there is an eCOA for it; for "
+     "P060382 also in the COQ there is no LoD tested and it says NT.\u201d The desk searched again, "
+     "everywhere it can reach: the release register block (three documents \u2014 364/0694/26 "
+     "microbiology, 197-21-\u041a/26 cannabinoids, 197-21-\u041c/26 mycotoxins), the Head of QC\u2019s own "
+     "09.09 resolution pass (which records \u201cNOTHING ON FILE \u2014 no document anywhere\u201d for #8 "
+     "and for the contaminants), the eCoA spec listing (\u201cMissing / not tested\u201d), RAGflow, and "
+     "the owner\u2019s Drive by lot folder, by title and by full text. The lot folder holds the two "
+     "Farmahem reports and nothing else, and **197-21-\u041c/26 was read at full resolution on "
+     "17.09.2026: its own \u041f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u0438 line reads \u2018\u0418\u0434\u0435\u043d\u0442\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u0458\u0430 \u0438 \u043a\u0432\u0430\u043d\u0442\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u0458\u0430 \u043d\u0430 "
+     "\u043c\u0438\u043a\u043e\u0442\u043e\u043a\u0441\u0438\u043d\u0438\u2019 and it reports aflatoxins B1, B2, G1, G2 and nothing else** \u2014 no metals, no "
+     "pesticides, no loss on drying.",
+     "Nothing written. The certificate prints \u201cnot tested \u2014 no certificate covers it\u201d for #8, "
+     "#11 and #12 because that is the truth of the record.",
+     "Either the reports exist somewhere the desk cannot see \u2014 in which case one scan into "
+     "eCoA_DATABASE closes it \u2014 or P060382 was never sent for metals, pesticides or loss on "
+     "drying and needs to be, or released explicitly without them. The same question as OI-53 "
+     "for loss on drying, and the same lot.",
+     "197-21-\u041c/26 read 17.09.2026; cell_resolution_2026-09-09.tsv; PP_Spec_Parameter_Listing.xlsx; "
+     "Drive lot folder P060382_SCR012603; OI-53"),
 ]
 
 STATES = {"open", "marked", "ruled"}
@@ -1138,7 +1190,7 @@ def items(state=None, area=None):
     """The register, optionally narrowed.
 
     >>> len(items())
-    53
+    55
     >>> [i[0] for i in items(area="Specification")]
     ['OI-01', 'OI-02', 'OI-03', 'OI-44', 'OI-50']
     >>> sorted({i[2] for i in items()})

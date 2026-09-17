@@ -19,7 +19,7 @@
 | CoQ-PP_26-006 | OPM1024 | release | #6 | n/t |
 | CoQ-PP_26-006 | OPM1024 | release | #8 | n/t |
 | CoQ-PP_26-006 | OPM1024 | release | #10 | iCoA-PP_26-006 03.06.26 PP; also 197-17-М/26; n/t 10.1,10.3 |
-| CoQ-PP_26-007 | P050022 (GP0824_02) | release | #10 | 3176/2025 26.06.25 IJZ; also 197-11-М/26; n/t 10.1,10.3 |
+| CoQ-PP_26-007 | P050022 (GP0824_02) | release | #10 | 2471-2025 30.05.25 IJZ; also 197-11-М/26; n/t 10.1,10.3 |
 | CoQ-PP_26-008 | P050012 (GG1024_02) | release (predicted) | #6 | n/t |
 | CoQ-PP_26-008 | P050012 (GG1024_02) | release (predicted) | #10 | 2472/2025 30.05.25 IJZ; n/t 10.1,10.3 |
 | CoQ-PP_26-009 | P050032 (MB0824_04) | release (predicted) | #6 | n/t |

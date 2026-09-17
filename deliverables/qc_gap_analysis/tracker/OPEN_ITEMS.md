@@ -4,7 +4,7 @@ Every finding the desk has raised and cannot itself settle, with the evidence
 behind it and the decision being asked for. Built by `open_items.py`; the same
 register is the **Open Items** sheet of the workbook.
 
-**40 open · 3 marked on the certificate**
+**41 open · 3 marked on the certificate**
 
 ## Specification
 
@@ -617,4 +617,24 @@ register is the **Open Items** sheet of the workbook.
 **The desk.** The two Wedding Cake certificates now print 6,8 % and cite 031-3-ГС/26. The other 26 certificates keep “not tested — no certificate covers it”, which is the truth of them. apply_lod_source.py is the standing rule and lod_check.py the census that shows it.
 
 **Needed.** These thirteen lots need loss on drying determined — or a ruling that they are released without it. Farmahem’s ГС report is one parameter on one page and would close all thirteen in a single submission.
+
+### OI-54 · Two release certificates were printing the retest of a determination instead of the release testing
+
+*State:* **ruled** · *Evidence:* apply_release_round.py; intake_release_round_2026-09-17; the reads of 471-0862-25 and 2471/2025 of 17.09.2026
+
+**Found.** The Head of QC, 17.09.2026, on P050022: “at parameter 9 correct and check TAMC and BT, and parameter 11 — in the eCOA for heavy metals all parameters are ND and in the CoQ there is an actual value inserted.” Both are one defect, and it was the CITATION, not the reading. P050022 has two microbiology certificates and two contaminant reports: 471-0862-25 of 22.05.2025 (TAMC 700, TYMC < 10, bile-tolerant < 10² и > 10) against 627/1128/25 of 02.07.2025 (all < 10); and 2471/2025 of 30.05.2025 (aflatoxins Σ < 2, Pb/Cd/As/Hg all н.д., pesticides н.д.) against 3176/2025 of 26.06.2025 (As 0.047). **The release certificate was printing the later document of each pair** — which is why arsenic read 0.047 where the report the Head of QC was reading says N.D. A sweep of all eighty-nine release certificates found exactly two in this position: CoQ-PP_26-007 (P050022) and CoQ-PP_26-010 (P050042, #9 only — 2156/2025 of 07.05.2025 where 407-0745-25 of 05.05.2025 is the release page, TAMC 10 against < 10).
+
+**The desk.** apply_release_round.py states the rule the owner gave on 10.09.2026 — the first result is the release testing, every later one a retest — as something the compilation applies: a release certificate prints the FIRST document on file for each determination, the printed part of a group moving together, campaign and in-house documents never candidates. Both pages were read twice at full resolution (intake_release_round_2026-09-17) and three register cells the page disagreed with were corrected: 471-0862-25 TYMC 10 → < 10, 2471/2025 pesticides < LOQ → N.D., and the aflatoxin column 2471/2025 never had → < 2. CoQ-PP_26-007 now prints heavy metals all ND and TAMC 700; its reissue CoQ-PP_26-095 keeps the retest, which is what a reissue states.
+
+**Needed.** Nothing — the Head of QC named the defect and the rule that fixes it is his own of 10.09.2026. Recorded so the next reader knows why two certificates changed.
+
+### OI-55 · P060382 has no heavy-metal, pesticide or loss-on-drying determination — searched again on 17.09.2026
+
+*State:* **open** · *Evidence:* 197-21-М/26 read 17.09.2026; cell_resolution_2026-09-09.tsv; PP_Spec_Parameter_Listing.xlsx; Drive lot folder P060382_SCR012603; OI-53
+
+**Found.** The Head of QC, 17.09.2026: “P060382, check all the heavy metals parameters because in the COQ there is no values and NT is entered and I’m sure there is an eCOA for it; for P060382 also in the COQ there is no LoD tested and it says NT.” The desk searched again, everywhere it can reach: the release register block (three documents — 364/0694/26 microbiology, 197-21-К/26 cannabinoids, 197-21-М/26 mycotoxins), the Head of QC’s own 09.09 resolution pass (which records “NOTHING ON FILE — no document anywhere” for #8 and for the contaminants), the eCoA spec listing (“Missing / not tested”), RAGflow, and the owner’s Drive by lot folder, by title and by full text. The lot folder holds the two Farmahem reports and nothing else, and **197-21-М/26 was read at full resolution on 17.09.2026: its own Параметри line reads ‘Идентификација и квантификација на микотоксини’ and it reports aflatoxins B1, B2, G1, G2 and nothing else** — no metals, no pesticides, no loss on drying.
+
+**The desk.** Nothing written. The certificate prints “not tested — no certificate covers it” for #8, #11 and #12 because that is the truth of the record.
+
+**Needed.** Either the reports exist somewhere the desk cannot see — in which case one scan into eCoA_DATABASE closes it — or P060382 was never sent for metals, pesticides or loss on drying and needs to be, or released explicitly without them. The same question as OI-53 for loss on drying, and the same lot.
 

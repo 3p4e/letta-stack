@@ -291,15 +291,15 @@ P050022,GP0824_02,Grape Pie,CoQ-PP_26-007,release,06.06.2026,7,Foreign Matter,Co
 P050022,GP0824_02,Grape Pie,CoQ-PP_26-095,reissue — 12-month retest,17.08.2026,7,Foreign Matter,Conforms | Одговара,iCoA-PP_26-106,27.07.2026,Purely Plant GmbH (in-house),yes,covered
 P050022,GP0824_02,Grape Pie,CoQ-PP_26-007,release,06.06.2026,8,Loss on Drying,7.21,ППК25139,22.05.2025,UKIM Faculty of Pharmacy — Center for Natural Products,,covered
 P050022,GP0824_02,Grape Pie,CoQ-PP_26-095,reissue — 12-month retest,17.08.2026,8,Loss on Drying,7.21,ППК25139,22.05.2025,UKIM Faculty of Pharmacy — Center for Natural Products,,carried from the initial testing (CoQ-PP-2025-0006) — covered
-P050022,GP0824_02,Grape Pie,CoQ-PP_26-007,release,06.06.2026,9.1,TAMC,< 10,627/1128/25,02.07.2025,IPH — Institute of Public Health,,covered
+P050022,GP0824_02,Grape Pie,CoQ-PP_26-007,release,06.06.2026,9.1,TAMC,700,471-0862-25,22.05.2025,IPH — Institute of Public Health,,covered
 P050022,GP0824_02,Grape Pie,CoQ-PP_26-095,reissue — 12-month retest,17.08.2026,9.1,TAMC,< 10,627/1128/25,02.07.2025,IPH — Institute of Public Health,,carried from the initial testing (CoQ-PP-2025-0006) — covered
-P050022,GP0824_02,Grape Pie,CoQ-PP_26-007,release,06.06.2026,9.2,TYMC,< 10,627/1128/25,02.07.2025,IPH — Institute of Public Health,,covered
+P050022,GP0824_02,Grape Pie,CoQ-PP_26-007,release,06.06.2026,9.2,TYMC,< 10,471-0862-25,22.05.2025,IPH — Institute of Public Health,,covered
 P050022,GP0824_02,Grape Pie,CoQ-PP_26-095,reissue — 12-month retest,17.08.2026,9.2,TYMC,< 10,627/1128/25,02.07.2025,IPH — Institute of Public Health,,carried from the initial testing (CoQ-PP-2025-0006) — covered
-P050022,GP0824_02,Grape Pie,CoQ-PP_26-007,release,06.06.2026,9.3,Bile-tolerant gram-neg.,< 10,627/1128/25,02.07.2025,IPH — Institute of Public Health,,covered
+P050022,GP0824_02,Grape Pie,CoQ-PP_26-007,release,06.06.2026,9.3,Bile-tolerant gram-neg.,< 10² and > 10,471-0862-25,22.05.2025,IPH — Institute of Public Health,,covered
 P050022,GP0824_02,Grape Pie,CoQ-PP_26-095,reissue — 12-month retest,17.08.2026,9.3,Bile-tolerant gram-neg.,< 10,627/1128/25,02.07.2025,IPH — Institute of Public Health,,carried from the initial testing (CoQ-PP-2025-0006) — covered
-P050022,GP0824_02,Grape Pie,CoQ-PP_26-007,release,06.06.2026,9.4,Salmonella,Absent | Отсутна,627/1128/25,02.07.2025,IPH — Institute of Public Health,,covered
+P050022,GP0824_02,Grape Pie,CoQ-PP_26-007,release,06.06.2026,9.4,Salmonella,Absent | Отсутна,471-0862-25,22.05.2025,IPH — Institute of Public Health,,covered
 P050022,GP0824_02,Grape Pie,CoQ-PP_26-095,reissue — 12-month retest,17.08.2026,9.4,Salmonella,Absent | Отсутна,627/1128/25,02.07.2025,IPH — Institute of Public Health,,carried from the initial testing (CoQ-PP-2025-0006) — covered
-P050022,GP0824_02,Grape Pie,CoQ-PP_26-007,release,06.06.2026,9.5,Escherichia coli,Absent | Отсутна,627/1128/25,02.07.2025,IPH — Institute of Public Health,,covered
+P050022,GP0824_02,Grape Pie,CoQ-PP_26-007,release,06.06.2026,9.5,Escherichia coli,Absent | Отсутна,471-0862-25,22.05.2025,IPH — Institute of Public Health,,covered
 P050022,GP0824_02,Grape Pie,CoQ-PP_26-095,reissue — 12-month retest,17.08.2026,9.5,Escherichia coli,Absent | Отсутна,627/1128/25,02.07.2025,IPH — Institute of Public Health,,carried from the initial testing (CoQ-PP-2025-0006) — covered
 P050022,GP0824_02,Grape Pie,CoQ-PP_26-007,release,06.06.2026,9.6,Pseudomonas aeruginosa,upon request — not required for release,—,—,—,,upon request — not required for release
 P050022,GP0824_02,Grape Pie,CoQ-PP_26-095,reissue — 12-month retest,17.08.2026,9.6,Pseudomonas aeruginosa,upon request — not required for release,—,—,—,,upon request — not required for release
@@ -307,19 +307,19 @@ P050022,GP0824_02,Grape Pie,CoQ-PP_26-007,release,06.06.2026,9.7,Staphylococcus 
 P050022,GP0824_02,Grape Pie,CoQ-PP_26-095,reissue — 12-month retest,17.08.2026,9.7,Staphylococcus aureus,upon request — not required for release,—,—,—,,upon request — not required for release
 P050022,GP0824_02,Grape Pie,CoQ-PP_26-007,release,06.06.2026,10.1,Aflatoxin B₁,not tested,—,—,—,,not tested — no certificate covers it
 P050022,GP0824_02,Grape Pie,CoQ-PP_26-095,reissue — 12-month retest,17.08.2026,10.1,Aflatoxin B₁,ND,197-11-М/26,10.08.2026,Farmahem,,covered
-P050022,GP0824_02,Grape Pie,CoQ-PP_26-007,release,06.06.2026,10.2,Aflatoxins ∑,< 2,3176/2025,26.06.2025,IPH — Institute of Public Health,,covered
+P050022,GP0824_02,Grape Pie,CoQ-PP_26-007,release,06.06.2026,10.2,Aflatoxins ∑,< 2,2471-2025,30.05.2025,IPH — Institute of Public Health,,covered
 P050022,GP0824_02,Grape Pie,CoQ-PP_26-095,reissue — 12-month retest,17.08.2026,10.2,Aflatoxins ∑,ND,197-11-М/26,10.08.2026,Farmahem,,covered
 P050022,GP0824_02,Grape Pie,CoQ-PP_26-007,release,06.06.2026,10.3,Ochratoxin A,not tested,—,—,—,,not tested — no certificate covers it
 P050022,GP0824_02,Grape Pie,CoQ-PP_26-095,reissue — 12-month retest,17.08.2026,10.3,Ochratoxin A,ND,197-11-М/26,10.08.2026,Farmahem,,covered
-P050022,GP0824_02,Grape Pie,CoQ-PP_26-007,release,06.06.2026,11.1,Lead (Pb),ND,3176/2025,26.06.2025,IPH — Institute of Public Health,,covered
+P050022,GP0824_02,Grape Pie,CoQ-PP_26-007,release,06.06.2026,11.1,Lead (Pb),ND,2471-2025,30.05.2025,IPH — Institute of Public Health,,covered
 P050022,GP0824_02,Grape Pie,CoQ-PP_26-095,reissue — 12-month retest,17.08.2026,11.1,Lead (Pb),ND,3176/2025,26.06.2025,IPH — Institute of Public Health,,carried from the initial testing (CoQ-PP-2025-0006) — covered
-P050022,GP0824_02,Grape Pie,CoQ-PP_26-007,release,06.06.2026,11.2,Cadmium (Cd),ND,3176/2025,26.06.2025,IPH — Institute of Public Health,,covered
+P050022,GP0824_02,Grape Pie,CoQ-PP_26-007,release,06.06.2026,11.2,Cadmium (Cd),ND,2471-2025,30.05.2025,IPH — Institute of Public Health,,covered
 P050022,GP0824_02,Grape Pie,CoQ-PP_26-095,reissue — 12-month retest,17.08.2026,11.2,Cadmium (Cd),ND,3176/2025,26.06.2025,IPH — Institute of Public Health,,carried from the initial testing (CoQ-PP-2025-0006) — covered
-P050022,GP0824_02,Grape Pie,CoQ-PP_26-007,release,06.06.2026,11.3,Arsenic (As),0.047,3176/2025,26.06.2025,IPH — Institute of Public Health,,covered
+P050022,GP0824_02,Grape Pie,CoQ-PP_26-007,release,06.06.2026,11.3,Arsenic (As),ND,2471-2025,30.05.2025,IPH — Institute of Public Health,,covered
 P050022,GP0824_02,Grape Pie,CoQ-PP_26-095,reissue — 12-month retest,17.08.2026,11.3,Arsenic (As),0.047,3176/2025,26.06.2025,IPH — Institute of Public Health,,carried from the initial testing (CoQ-PP-2025-0006) — covered
-P050022,GP0824_02,Grape Pie,CoQ-PP_26-007,release,06.06.2026,11.4,Mercury (Hg),ND,3176/2025,26.06.2025,IPH — Institute of Public Health,,covered
+P050022,GP0824_02,Grape Pie,CoQ-PP_26-007,release,06.06.2026,11.4,Mercury (Hg),ND,2471-2025,30.05.2025,IPH — Institute of Public Health,,covered
 P050022,GP0824_02,Grape Pie,CoQ-PP_26-095,reissue — 12-month retest,17.08.2026,11.4,Mercury (Hg),ND,3176/2025,26.06.2025,IPH — Institute of Public Health,,carried from the initial testing (CoQ-PP-2025-0006) — covered
-P050022,GP0824_02,Grape Pie,CoQ-PP_26-007,release,06.06.2026,12,Pesticide Residues,ND,3176/2025,26.06.2025,IPH — Institute of Public Health,,covered
+P050022,GP0824_02,Grape Pie,CoQ-PP_26-007,release,06.06.2026,12,Pesticide Residues,ND,2471-2025,30.05.2025,IPH — Institute of Public Health,,covered
 P050022,GP0824_02,Grape Pie,CoQ-PP_26-095,reissue — 12-month retest,17.08.2026,12,Pesticide Residues,ND,3176/2025,26.06.2025,IPH — Institute of Public Health,,carried from the initial testing (CoQ-PP-2025-0006) — covered
 P050012,GG1024_02,Gorilla Glue,CoQ-PP_26-008,release,06.06.2026,1,"Identification A, Appearance · Macroscopic",Conforms | Одговара,iCoA-PP_26-008,03.06.2026,Purely Plant GmbH (in-house),yes,to be performed — see route
 P050012,GG1024_02,Gorilla Glue,CoQ-PP_26-147,reissue — 12-month retest,21.09.2026,1,"Identification A, Appearance · Macroscopic",Conforms | Одговара,iCoA-PP_26-163,24.08.2026,Purely Plant GmbH (in-house),yes,covered
@@ -429,15 +429,15 @@ P050042,OMP1024_01,Orange Punch Mimosa,CoQ-PP_26-010,release,06.06.2026,7,Foreig
 P050042,OMP1024_01,Orange Punch Mimosa,CoQ-PP_26-128,reissue — 12-month retest,18.09.2026,7,Foreign Matter,Conforms | Одговара,iCoA-PP_26-142,17.08.2026,Purely Plant GmbH (in-house),yes,covered
 P050042,OMP1024_01,Orange Punch Mimosa,CoQ-PP_26-010,release,06.06.2026,8,Loss on Drying,5.86,ППК25117,06.05.2025,UKIM Faculty of Pharmacy — Center for Natural Products,,covered
 P050042,OMP1024_01,Orange Punch Mimosa,CoQ-PP_26-128,reissue — 12-month retest,18.09.2026,8,Loss on Drying,5.86,ППК25117,06.05.2025,UKIM Faculty of Pharmacy — Center for Natural Products,,carried from the initial testing (CoQ-PP-2025-0007) — covered
-P050042,OMP1024_01,Orange Punch Mimosa,CoQ-PP_26-010,release,06.06.2026,9.1,TAMC,< 10,2156/2025,07.05.2025,IPH — Institute of Public Health,,covered
+P050042,OMP1024_01,Orange Punch Mimosa,CoQ-PP_26-010,release,06.06.2026,9.1,TAMC,10,407-0745-25,05.05.2025,IPH — Institute of Public Health,,covered
 P050042,OMP1024_01,Orange Punch Mimosa,CoQ-PP_26-128,reissue — 12-month retest,18.09.2026,9.1,TAMC,< 10,2156/2025,07.05.2025,IPH — Institute of Public Health,,carried from the initial testing (CoQ-PP-2025-0007) — covered
-P050042,OMP1024_01,Orange Punch Mimosa,CoQ-PP_26-010,release,06.06.2026,9.2,TYMC,< 10,2156/2025,07.05.2025,IPH — Institute of Public Health,,covered
+P050042,OMP1024_01,Orange Punch Mimosa,CoQ-PP_26-010,release,06.06.2026,9.2,TYMC,< 10,407-0745-25,05.05.2025,IPH — Institute of Public Health,,covered
 P050042,OMP1024_01,Orange Punch Mimosa,CoQ-PP_26-128,reissue — 12-month retest,18.09.2026,9.2,TYMC,< 10,2156/2025,07.05.2025,IPH — Institute of Public Health,,carried from the initial testing (CoQ-PP-2025-0007) — covered
-P050042,OMP1024_01,Orange Punch Mimosa,CoQ-PP_26-010,release,06.06.2026,9.3,Bile-tolerant gram-neg.,< 10² and > 10,2156/2025,07.05.2025,IPH — Institute of Public Health,,covered
+P050042,OMP1024_01,Orange Punch Mimosa,CoQ-PP_26-010,release,06.06.2026,9.3,Bile-tolerant gram-neg.,< 10² and > 10,407-0745-25,05.05.2025,IPH — Institute of Public Health,,covered
 P050042,OMP1024_01,Orange Punch Mimosa,CoQ-PP_26-128,reissue — 12-month retest,18.09.2026,9.3,Bile-tolerant gram-neg.,< 10² and > 10,2156/2025,07.05.2025,IPH — Institute of Public Health,,carried from the initial testing (CoQ-PP-2025-0007) — covered
-P050042,OMP1024_01,Orange Punch Mimosa,CoQ-PP_26-010,release,06.06.2026,9.4,Salmonella,Absent | Отсутна,2156/2025,07.05.2025,IPH — Institute of Public Health,,covered
+P050042,OMP1024_01,Orange Punch Mimosa,CoQ-PP_26-010,release,06.06.2026,9.4,Salmonella,Absent | Отсутна,407-0745-25,05.05.2025,IPH — Institute of Public Health,,covered
 P050042,OMP1024_01,Orange Punch Mimosa,CoQ-PP_26-128,reissue — 12-month retest,18.09.2026,9.4,Salmonella,Absent | Отсутна,2156/2025,07.05.2025,IPH — Institute of Public Health,,carried from the initial testing (CoQ-PP-2025-0007) — covered
-P050042,OMP1024_01,Orange Punch Mimosa,CoQ-PP_26-010,release,06.06.2026,9.5,Escherichia coli,Absent | Отсутна,2156/2025,07.05.2025,IPH — Institute of Public Health,,covered
+P050042,OMP1024_01,Orange Punch Mimosa,CoQ-PP_26-010,release,06.06.2026,9.5,Escherichia coli,Absent | Отсутна,407-0745-25,05.05.2025,IPH — Institute of Public Health,,covered
 P050042,OMP1024_01,Orange Punch Mimosa,CoQ-PP_26-128,reissue — 12-month retest,18.09.2026,9.5,Escherichia coli,Absent | Отсутна,2156/2025,07.05.2025,IPH — Institute of Public Health,,carried from the initial testing (CoQ-PP-2025-0007) — covered
 P050042,OMP1024_01,Orange Punch Mimosa,CoQ-PP_26-010,release,06.06.2026,9.6,Pseudomonas aeruginosa,upon request — not required for release,—,—,—,,upon request — not required for release
 P050042,OMP1024_01,Orange Punch Mimosa,CoQ-PP_26-128,reissue — 12-month retest,18.09.2026,9.6,Pseudomonas aeruginosa,upon request — not required for release,—,—,—,,upon request — not required for release
