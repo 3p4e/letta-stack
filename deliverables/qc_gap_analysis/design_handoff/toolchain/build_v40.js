@@ -271,7 +271,7 @@ const S34_LAYER = '<style id="__owner-align-s1-s4">\n' +
   '/* -- Section 02 -- acceptance criteria reads left, centred on the row; the result\n' +
   '   reads to the right page margin, centred on the row; the parameter and number cells\n' +
   '   read left off the margin, centred on the row, keeping the sub-row indents of #9/#10/#11. */\n' +
-  'html body div.page div.tbl-wrap table.results tbody td{vertical-align:middle !important;padding-bottom:1px !important}\n' +
+  'html body div.page div.tbl-wrap table.results tbody td{vertical-align:middle !important;padding-bottom:0.5px !important}\n' +
   'html body div.page div.tbl-wrap table.results tbody td:nth-child(4){text-align:left !important;vertical-align:middle !important}\n' +
   'html body div.page div.tbl-wrap table.results tbody td.r-cell{text-align:right !important;vertical-align:middle !important;padding-right:var(--MARGIN-H) !important}\n' +
   'html body div.page div.tbl-wrap table.results tbody td.r-cell .r-val{text-align:right !important}\n' +
@@ -311,10 +311,21 @@ const S34_LAYER = '<style id="__owner-align-s1-s4">\n' +
   'html body div.page div.disp-row .grp .disp-batch + *{margin-left:0 !important}\n' +
   'html body div.page div.disp-row .grp .chip-sel,\n' +
   'html body div.page div.disp-row .grp .chip-un{flex:0 0 auto !important;align-self:stretch !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;text-align:center !important;margin:0 !important}\n' +
-  'html body div.page div.approval-grid .ap-role{padding-top:12px !important}\n' +
-  'html body div.page div.approval-grid .ap-sign{height:52px !important}\n' +
-  'html body div.page div.approval-grid .ap-title{padding-top:3px !important}\n' +
-  'html body div.page div.approval-grid .ap-img.handwritten{position:absolute !important;left:50% !important;bottom:1px !important;max-height:52px !important;max-width:92% !important;mix-blend-mode:multiply !important;z-index:6 !important;pointer-events:none !important}\n' +
+  'html body div.page div.approval-grid .ap-role{padding-top:4px !important}\n' +
+  'html body div.page div.approval-grid .ap-sign{height:32px !important}\n' +
+  'html body div.page div.approval-grid .ap-img.handwritten{position:absolute !important;left:50% !important;bottom:0px !important;max-height:38px !important;max-width:92% !important;mix-blend-mode:multiply !important;z-index:6 !important;pointer-events:none !important}\n' +
+  '/* Owner, 17.09.2026: on content-heavy certificates the lower stack (Section 03\'s three\n' +
+  '   laboratory lines and the signature block) reached into the footer. The block and the\n' +
+  '   lower sections are compacted so every certificate clears the footer, with no page\n' +
+  '   growth and the three-line laboratory layout kept. */\n' +
+  'html body div.page div.approval-grid{padding-top:0 !important}\n' +
+  'html body div.page div.approval-grid .ap-name{margin-top:1px !important}\n' +
+  'html body div.page div.approval-grid .ap-cred{margin-top:0 !important}\n' +
+  'html body div.page div.approval-grid .ap-date-row{margin-top:1px !important}\n' +
+  'html body div.page div.tbl-wrap + div.sec-label,html body div.page div.disp-row + div.goldrule{margin-top:5px !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td{padding-top:0 !important;padding-bottom:0 !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td .lr-lab{line-height:1.2 !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td .lr-lab small{font-size:6px !important;line-height:1.08 !important}\n' +
   '</style>';
 
 const PRINT_ZEBRA_LAYER = printOpaqueLayer(base);
