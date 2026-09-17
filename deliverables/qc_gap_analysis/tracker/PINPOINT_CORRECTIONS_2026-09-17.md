@@ -31,8 +31,8 @@ block. **`CoQ-PP_26-089` (the 12-month reissue) now prints:**
 | 9.1 | TAMC | 2.2 × 10⁴ | **6,2 × 10³** |
 | 9.2 | TYMC | 4.9 × 10⁴ · OUT OF SPECIFICATION | **2,3 × 10²** |
 | 9.3 | bile-tolerant gram-neg. | < 10⁴ and > 10³ | < 10⁴ and > 10³ |
-| 9.4 | *Salmonella* | Absent \| Отсутна | Absent \| Отсутна |
-| 9.5 | *E. coli* | Absent \| Отсутна | Absent \| Отсутна |
+| 9.4 | *Salmonella* | Absent · Отсутна | Absent · Отсутна |
+| 9.5 | *E. coli* | Absent · Отсутна | Absent · Отсутна |
 
 The certificate's **date of issue moved with the document**, by the Head of QC's own ruling of
 the same day: the new page is dated after the certificate was, so the standing issuance rule
