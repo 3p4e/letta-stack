@@ -309,6 +309,29 @@ certificates OI-49 names. The same pass checked the certificate codes: 165 numbe
 release certificate with the register's code and date, the pages print it, no release
 certificate prints one, and no row cites a document dated after its certificate.
 
+## 3g · Section 03 in two lines, the documents inline, and the bar tops (17.09.2026)
+
+The Head of QC: "make the laboratory credentials two rows each; the document codes and their
+issue dates in one row, in line; distribute the table so it takes the least height, and use the
+room to lighten the cramped spaces." And on the heading bars: "the top border is lost against
+the bright background — give it a little contrast."
+
+`__owner-s03-compact`, the last desk layer. Each laboratory prints on two lines: the laboratory
+and its accreditation standard, bold; beneath it, small and grey, its Macedonian name, the
+accreditation number and the address, separated by middle dots. The line break is the
+package's own `|` separator, collapsed to zero height, so the markup is untouched. The
+certificates flow inline in the middle column, each code kept with its date, a light bar
+between documents; two documents fit one line (column 248 px, the code at 7 px and the date at
+6.2 px), three wrap to a second. Measured over the 172 pages: every laboratory on exactly two
+lines (Farmahem's second line, the longest, ends 9 px inside its cell), 505 of 516 document
+cells on one line and the eleven three-document cells on two, parameter lists unwrapped, no
+overflow. Rows went from 24–42 px to 25–30 px; the room goes to 3 px of air in every table
+row, 8 px between the sections and the bars, and a taller signature space (34 px).
+
+The heading bars carry a hairline along the top edge (`rgb(186,201,218)`, a shade lighter than
+the bottom one) and their top stop is a touch deeper (`rgb(233,239,246)`), so the bar's upper
+edge reads against the white above it. Still one opaque two-stop gradient, still full bleed.
+
 ## 4 · Four defects the rebuild exposed, and what was done
 
 ### 4.1 · A register status was hiding results the desk holds

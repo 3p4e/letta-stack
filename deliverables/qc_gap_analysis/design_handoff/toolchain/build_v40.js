@@ -229,9 +229,11 @@ const EDGE_FADE_LAYER = '<style id="__owner-edges">\n' +
   '   bar is now one smooth two-stop vertical gradient in the same tone, no inset shadows,\n' +
   '   one clean hairline along its bottom — full bleed, edge to edge, as asked. */\n' +
   'html body div.page .sec-label{box-shadow:none !important;background-color:#E6EDF5 !important;' +
-     'background-image:linear-gradient(180deg,rgb(238,243,248) 0%,rgb(222,231,240) 100%) !important;' +
+     'background-image:linear-gradient(180deg,rgb(233,239,246) 0%,rgb(221,230,240) 100%) !important;' +
      'background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important;' +
-     'border-bottom:1px solid rgb(168,188,209) !important}\n' +
+     'border-top:1px solid rgb(186,201,218) !important;border-bottom:1px solid rgb(168,188,209) !important}\n' +
+  '/* Owner, 17.09.2026: the top of the bar was lost against the white above it — a hairline\n' +
+  '   along the top edge, a shade lighter than the bottom one, and the top stop a touch deeper. */\n' +
   '/* Owner, 17.09.2026: every faded horizontal separator that was 2px is a hairline. */\n' +
   'html body div.page div.goldrule{height:1px !important}\n' +
   'html body div.page div.approval-grid .ap-line{height:1px !important}\n' +
@@ -356,7 +358,35 @@ for (const c of data.coqs) {
   // at the end of the body, not in the head — so a desk layer in the head loses to them at
   // equal specificity. Placing the desk's layers right before </body>, after everything
   // the package appended, is the package's own "new last layer" mechanism done correctly.
-  const DESK_LAYERS = OWNER_LAYER + '\n' + HB_SUP_LAYER + '\n' + PRINT_ZEBRA_LAYER + '\n' + EDGE_FADE_LAYER + '\n' + INK_LAYER + '\n' + S34_LAYER + '\n';
+// Section 03 in two lines per laboratory and one line of documents (Head of QC, 17.09.2026):
+// "make the laboratory credentials two rows each, the document codes and dates in one row,
+// in line, so the reference table takes the least height — and use the room to lighten the
+// cramped spaces." Line 1 is the laboratory and its accreditation standard; line 2 its
+// Macedonian name, accreditation number and address, small and grey. The certificates flow
+// inline, each code with its date kept together, a light bar between documents.
+const S03_LAYER = '<style id="__owner-s03-compact">\n' +
+  'html body div.page div.tbl-wrap table.labref colgroup col:nth-child(2){width:248px !important}\n' +
+  'html body div.page div.tbl-wrap table.labref colgroup col:nth-child(3){width:172px !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td{padding-top:3px !important;padding-bottom:3px !important;vertical-align:middle !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td:first-child{padding-right:6px !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td .lr-lab{display:block !important;line-height:1.22 !important;text-align:left !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td .lr-lab .bisep{display:block !important;height:0 !important;font-size:0 !important;line-height:0 !important;overflow:hidden !important;margin:0 !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td .lr-lab .mk{display:inline !important;margin:0 !important;white-space:normal !important;line-height:1.25 !important;font-size:5.9px !important;color:#6E7D92 !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td .lr-lab .mk .lr-ac{margin-left:2px !important;font-size:5.9px !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td .lr-lab small{display:inline !important;margin:0 !important;white-space:normal !important;line-height:1.25 !important;font-size:5.9px !important;color:#7C8FA6 !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td .lr-lab small::before{content:" · " !important;color:#B3BFCC !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td.lr-mono:not(.pcell){line-height:1.55 !important;padding-left:4px !important;padding-right:4px !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td.lr-mono:not(.pcell) .cert{display:inline-block !important;margin:0 !important;white-space:nowrap !important;vertical-align:baseline !important;font-size:7px !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td.lr-mono:not(.pcell) .cert + .cert{margin-top:0 !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td.lr-mono:not(.pcell) .cert + .cert::before{content:"|" !important;color:#C6D4E2 !important;font-weight:400 !important;margin:0 3px !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td.lr-mono .cert .cd{font-size:6.2px !important}\n' +
+  '/* the room the table gives back goes to air between the sections and around the signatures */\n' +
+  'html body div.page div.tbl-wrap + div.sec-label,html body div.page div.disp-row + div.goldrule{margin-top:8px !important}\n' +
+  'html body div.page div.approval-grid{padding-top:3px !important}\n' +
+  'html body div.page div.approval-grid .ap-sign{height:34px !important}\n' +
+  '</style>';
+
+  const DESK_LAYERS = OWNER_LAYER + '\n' + HB_SUP_LAYER + '\n' + PRINT_ZEBRA_LAYER + '\n' + EDGE_FADE_LAYER + '\n' + INK_LAYER + '\n' + S34_LAYER + '\n' + S03_LAYER + '\n';
   if (html.indexOf('</body>') < 0) throw new Error('no </body> to append the desk layers before');
   html = html.replace('</body>', DESK_LAYERS + '</body>');
   // Owner, 16.09.2026 (second pass): the issue date in the Section 03 code column is

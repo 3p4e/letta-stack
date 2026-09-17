@@ -990,7 +990,9 @@ html body div.page div.tbl-wrap table.labref tbody tr:nth-child(even){background
    a dark/bright/dark stripe along the top that a laser printer renders as banding. The
    bar is now one smooth two-stop vertical gradient in the same tone, no inset shadows,
    one clean hairline along its bottom — full bleed, edge to edge, as asked. */
-html body div.page .sec-label{box-shadow:none !important;background-color:#E6EDF5 !important;background-image:linear-gradient(180deg,rgb(238,243,248) 0%,rgb(222,231,240) 100%) !important;background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important;border-bottom:1px solid rgb(168,188,209) !important}
+html body div.page .sec-label{box-shadow:none !important;background-color:#E6EDF5 !important;background-image:linear-gradient(180deg,rgb(233,239,246) 0%,rgb(221,230,240) 100%) !important;background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important;border-top:1px solid rgb(186,201,218) !important;border-bottom:1px solid rgb(168,188,209) !important}
+/* Owner, 17.09.2026: the top of the bar was lost against the white above it — a hairline
+   along the top edge, a shade lighter than the bottom one, and the top stop a touch deeper. */
 /* Owner, 17.09.2026: every faded horizontal separator that was 2px is a hairline. */
 html body div.page div.goldrule{height:1px !important}
 html body div.page div.approval-grid .ap-line{height:1px !important}
@@ -1084,6 +1086,27 @@ html body div.page div.tbl-wrap + div.sec-label,html body div.page div.disp-row 
 html body div.page div.tbl-wrap table.labref tbody td{padding-top:0 !important;padding-bottom:0 !important}
 html body div.page div.tbl-wrap table.labref tbody td .lr-lab{line-height:1.2 !important}
 html body div.page div.tbl-wrap table.labref tbody td .lr-lab small{font-size:6px !important;line-height:1.08 !important}
+</style>
+<style id="__owner-s03-compact">
+html body div.page div.tbl-wrap table.labref colgroup col:nth-child(2){width:248px !important}
+html body div.page div.tbl-wrap table.labref colgroup col:nth-child(3){width:172px !important}
+html body div.page div.tbl-wrap table.labref tbody td{padding-top:3px !important;padding-bottom:3px !important;vertical-align:middle !important}
+html body div.page div.tbl-wrap table.labref tbody td:first-child{padding-right:6px !important}
+html body div.page div.tbl-wrap table.labref tbody td .lr-lab{display:block !important;line-height:1.22 !important;text-align:left !important}
+html body div.page div.tbl-wrap table.labref tbody td .lr-lab .bisep{display:block !important;height:0 !important;font-size:0 !important;line-height:0 !important;overflow:hidden !important;margin:0 !important}
+html body div.page div.tbl-wrap table.labref tbody td .lr-lab .mk{display:inline !important;margin:0 !important;white-space:normal !important;line-height:1.25 !important;font-size:5.9px !important;color:#6E7D92 !important}
+html body div.page div.tbl-wrap table.labref tbody td .lr-lab .mk .lr-ac{margin-left:2px !important;font-size:5.9px !important}
+html body div.page div.tbl-wrap table.labref tbody td .lr-lab small{display:inline !important;margin:0 !important;white-space:normal !important;line-height:1.25 !important;font-size:5.9px !important;color:#7C8FA6 !important}
+html body div.page div.tbl-wrap table.labref tbody td .lr-lab small::before{content:" · " !important;color:#B3BFCC !important}
+html body div.page div.tbl-wrap table.labref tbody td.lr-mono:not(.pcell){line-height:1.55 !important;padding-left:4px !important;padding-right:4px !important}
+html body div.page div.tbl-wrap table.labref tbody td.lr-mono:not(.pcell) .cert{display:inline-block !important;margin:0 !important;white-space:nowrap !important;vertical-align:baseline !important;font-size:7px !important}
+html body div.page div.tbl-wrap table.labref tbody td.lr-mono:not(.pcell) .cert + .cert{margin-top:0 !important}
+html body div.page div.tbl-wrap table.labref tbody td.lr-mono:not(.pcell) .cert + .cert::before{content:"|" !important;color:#C6D4E2 !important;font-weight:400 !important;margin:0 3px !important}
+html body div.page div.tbl-wrap table.labref tbody td.lr-mono .cert .cd{font-size:6.2px !important}
+/* the room the table gives back goes to air between the sections and around the signatures */
+html body div.page div.tbl-wrap + div.sec-label,html body div.page div.disp-row + div.goldrule{margin-top:8px !important}
+html body div.page div.approval-grid{padding-top:3px !important}
+html body div.page div.approval-grid .ap-sign{height:34px !important}
 </style>
 </body>
 </html>
