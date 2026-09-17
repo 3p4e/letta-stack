@@ -4,7 +4,7 @@ Every finding the desk has raised and cannot itself settle, with the evidence
 behind it and the decision being asked for. Built by `open_items.py`; the same
 register is the **Open Items** sheet of the workbook.
 
-**36 open · 3 marked on the certificate**
+**37 open · 3 marked on the certificate**
 
 ## Specification
 
@@ -571,4 +571,16 @@ register is the **Open Items** sheet of the workbook.
 **The desk.** Kept as the 10.09 ruling says, with one date per document; the internal certificates of those four lots list the parameters they cover.
 
 **Needed.** Whether the reading of 17.09.2026 — the in-house laboratory's analyses are 1, 2 and 7 — reaches these four lots. If so, the 54 rows print not tested (the rule of 02.09.2026: a value no certificate of analysis certifies cannot be on a release certificate) and the four internal certificates shrink to 1, 2 and 7.
+
+## Specification
+
+### OI-50 · Wedding Cake has a potency grade but no issued specification, so its certificate prints no product attributes
+
+*State:* **open** · *Evidence:* specs/Potency_specifications_25_2026-09-17.pdf; apply_potency_grades.py; spec_attributes_2026-09-10.csv
+
+**Found.** The Head of QC's Potency_specifications_25.pdf (specs/, 17.09.2026) grades Wedding Cake at 26.00 ± 2.60 % (23.40 – 28.59 %), a strain the desk's table had not carried; apply_potency_grades.py added it and CoQ-PP_26-165 (P060102, 25.15 %) now prints grade I, WED_THC26 : CBD1 and QCSP_001_WED-I_v.01. The same pass corrected Amnesia Core Cut's tolerance to ± 1.20 (10.80 – 13.19 %) on CoQ-PP_26-106; the other 22 strains matched the PDF to the digit and no result of the 172 certificates falls outside its strain's windows. But no QCSP 001 specification for Wedding Cake is on file (spec_attributes_2026-09-10.csv holds none), so Section 01 of CoQ-PP_26-165 marks no phenotype, chemotype or processing and prints no primary packaging.
+
+**The desk.** The grade, code and window print; the attribute pills stay unmarked rather than guessed.
+
+**Needed.** The phenotype, chemotype, processing and packaging of Wedding Cake — or the issued QCSP_001_WED specification they are read from.
 

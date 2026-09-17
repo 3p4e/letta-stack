@@ -1,0 +1,488 @@
+{
+ "AB": {
+  "strain": "Apple and Banana",
+  "basis": "all results",
+  "grades": [
+   [
+    18.0,
+    1.8,
+    16.2,
+    19.79
+   ],
+   [
+    22.0,
+    2.2,
+    19.8,
+    24.19
+   ]
+  ]
+ },
+ "ACC": {
+  "strain": "Amnesia Core Cut",
+  "basis": "all results",
+  "grades": [
+   [
+    12.0,
+    1.2,
+    10.8,
+    13.19
+   ]
+  ]
+ },
+ "BG": {
+  "strain": "Blue Gelato",
+  "basis": "all results",
+  "grades": [
+   [
+    22.0,
+    2.2,
+    19.8,
+    24.19
+   ],
+   [
+    26.0,
+    1.8,
+    24.2,
+    27.79
+   ]
+  ]
+ },
+ "BSS": {
+  "strain": "Blue Sunset Sherbet",
+  "basis": "all results",
+  "grades": [
+   [
+    20.0,
+    1.89,
+    18.11,
+    21.88
+   ],
+   [
+    24.0,
+    2.11,
+    21.89,
+    26.1
+   ],
+   [
+    28.0,
+    1.93,
+    26.07,
+    29.92
+   ]
+  ]
+ },
+ "CC": {
+  "strain": "Cash Cow",
+  "basis": "all results",
+  "grades": [
+   [
+    14.0,
+    1.35,
+    12.65,
+    15.34
+   ],
+   [
+    17.0,
+    1.65,
+    15.35,
+    18.64
+   ]
+  ]
+ },
+ "CF": {
+  "strain": "Chem Flyer",
+  "basis": "all results",
+  "grades": [
+   [
+    10.0,
+    1.0,
+    9.0,
+    10.99
+   ]
+  ]
+ },
+ "CJ": {
+  "strain": "Cap Junky",
+  "basis": "all results",
+  "grades": [
+   [
+    14.0,
+    1.4,
+    12.6,
+    15.39
+   ],
+   [
+    17.0,
+    1.4,
+    15.6,
+    18.39
+   ],
+   [
+    20.0,
+    1.6,
+    18.4,
+    21.59
+   ],
+   [
+    24.0,
+    2.4,
+    21.6,
+    26.39
+   ],
+   [
+    28.0,
+    1.6,
+    26.4,
+    29.59
+   ]
+  ]
+ },
+ "CLE": {
+  "strain": "Clemosa A Bud",
+  "basis": "all results",
+  "grades": [
+   [
+    8.0,
+    0.8,
+    7.2,
+    8.79
+   ]
+  ]
+ },
+ "FB": {
+  "strain": "Fat Bastard",
+  "basis": "all results",
+  "grades": [
+   [
+    12.0,
+    1.2,
+    10.8,
+    13.19
+   ],
+   [
+    15.0,
+    1.2,
+    13.8,
+    16.19
+   ],
+   [
+    18.0,
+    1.8,
+    16.2,
+    19.79
+   ],
+   [
+    22.0,
+    2.2,
+    19.8,
+    24.19
+   ]
+  ]
+ },
+ "GG": {
+  "strain": "Gorilla Glue",
+  "basis": "all results",
+  "grades": [
+   [
+    15.0,
+    1.23,
+    13.77,
+    16.22
+   ],
+   [
+    18.0,
+    1.77,
+    16.23,
+    19.76
+   ]
+  ]
+ },
+ "GP": {
+  "strain": "Grape Pie",
+  "basis": "initial results forward",
+  "grades": [
+   [
+    16.0,
+    1.6,
+    14.4,
+    17.59
+   ],
+   [
+    20.0,
+    2.0,
+    18.0,
+    21.99
+   ],
+   [
+    24.0,
+    2.0,
+    22.0,
+    25.99
+   ],
+   [
+    28.0,
+    2.0,
+    26.0,
+    29.99
+   ]
+  ]
+ },
+ "GRC": {
+  "strain": "Grapes And Cream",
+  "basis": "all results",
+  "grades": [
+   [
+    8.0,
+    0.8,
+    7.2,
+    8.79
+   ],
+   [
+    10.0,
+    1.0,
+    9.0,
+    10.99
+   ],
+   [
+    12.0,
+    1.0,
+    11.0,
+    12.99
+   ]
+  ]
+ },
+ "HPA": {
+  "strain": "High Pro Amnesia",
+  "basis": "all results",
+  "grades": [
+   [
+    15.0,
+    1.2,
+    13.8,
+    16.19
+   ],
+   [
+    18.0,
+    1.8,
+    16.2,
+    19.79
+   ],
+   [
+    22.0,
+    2.2,
+    19.8,
+    24.19
+   ]
+  ]
+ },
+ "J31": {
+  "strain": "Jokerz 31",
+  "basis": "all results",
+  "grades": [
+   [
+    18.0,
+    1.8,
+    16.2,
+    19.79
+   ],
+   [
+    22.0,
+    2.2,
+    19.8,
+    24.19
+   ],
+   [
+    26.0,
+    1.8,
+    24.2,
+    27.79
+   ]
+  ]
+ },
+ "JD": {
+  "strain": "Jelly Donuts",
+  "basis": "all results",
+  "grades": [
+   [
+    15.0,
+    1.2,
+    13.8,
+    16.19
+   ],
+   [
+    18.0,
+    1.8,
+    16.2,
+    19.79
+   ],
+   [
+    22.0,
+    2.2,
+    19.8,
+    24.19
+   ]
+  ]
+ },
+ "KC": {
+  "strain": "Kush Crasher",
+  "basis": "all results",
+  "grades": [
+   [
+    18.0,
+    1.8,
+    16.2,
+    19.79
+   ]
+  ]
+ },
+ "MB": {
+  "strain": "Motor Breath",
+  "basis": "all results",
+  "grades": [
+   [
+    18.0,
+    1.8,
+    16.2,
+    19.79
+   ]
+  ]
+ },
+ "OPM": {
+  "strain": "Orange Punch Mimosa",
+  "basis": "retests forward",
+  "grades": [
+   [
+    8.0,
+    0.8,
+    7.2,
+    8.79
+   ],
+   [
+    10.0,
+    1.0,
+    9.0,
+    10.99
+   ],
+   [
+    14.0,
+    1.4,
+    12.6,
+    15.39
+   ],
+   [
+    17.0,
+    1.6,
+    15.4,
+    18.59
+   ],
+   [
+    20.0,
+    1.4,
+    18.6,
+    21.39
+   ]
+  ]
+ },
+ "PM": {
+  "strain": "Permanent Marker",
+  "basis": "all results",
+  "grades": [
+   [
+    10.0,
+    1.0,
+    9.0,
+    10.99
+   ],
+   [
+    12.0,
+    1.0,
+    11.0,
+    12.99
+   ],
+   [
+    14.0,
+    1.0,
+    13.0,
+    14.99
+   ]
+  ]
+ },
+ "PUM": {
+  "strain": "Pure Michigen",
+  "basis": "all results",
+  "grades": [
+   [
+    14.0,
+    1.4,
+    12.6,
+    15.39
+   ]
+  ]
+ },
+ "SCR": {
+  "strain": "Scrambler",
+  "basis": "all results",
+  "grades": [
+   [
+    18.0,
+    1.8,
+    16.2,
+    19.79
+   ],
+   [
+    22.0,
+    2.2,
+    19.8,
+    24.19
+   ]
+  ]
+ },
+ "SJ": {
+  "strain": "Sleepy Joe",
+  "basis": "all results",
+  "grades": [
+   [
+    10.0,
+    1.0,
+    9.0,
+    10.99
+   ],
+   [
+    12.0,
+    1.0,
+    11.0,
+    12.99
+   ]
+  ]
+ },
+ "WC": {
+  "strain": "Wedding Crusher",
+  "basis": "all results",
+  "grades": [
+   [
+    22.0,
+    1.4,
+    20.6,
+    23.39
+   ],
+   [
+    26.0,
+    2.6,
+    23.4,
+    28.59
+   ]
+  ]
+ },
+ "WED": {
+  "strain": "Wedding Cake",
+  "basis": "all results",
+  "grades": [
+   [
+    26.0,
+    2.6,
+    23.4,
+    28.59
+   ]
+  ]
+ }
+}

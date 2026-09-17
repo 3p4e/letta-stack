@@ -332,6 +332,22 @@ The heading bars carry a hairline along the top edge (`rgb(186,201,218)`, a shad
 the bottom one) and their top stop is a touch deeper (`rgb(233,239,246)`), so the bar's upper
 edge reads against the white above it. Still one opaque two-stop gradient, still full bleed.
 
+## 3h · Potency grades from the owner's specification PDF (17.09.2026)
+
+The Head of QC, with `Potency_specifications_25.pdf`: "the potency and specification nominals
+and ranges in accordance with the new specification distribution and grades — to all CoQs."
+The PDF (kept in `specs/`, generated 17.09.2026 from the potency specification of 15.09.2026)
+was parsed grade by grade into `specs/potency_specifications_25_2026-09-17.json` and set against
+the desk's table `potency_grades_2026-09-15.csv`: 22 of 24 strains identical to the digit; two
+not — Amnesia Core Cut (PDF ± 1.20, 10.80 – 13.19; desk ± 0.95, 11.05 – 12.94) and Wedding Cake
+(PDF 26.00 ± 2.60, 23.40 – 28.59; absent from the desk's table). The table is corrected and
+`apply_potency_grades.py` re-grades all 172 certificates through the same `potency_grading` the
+schedule uses. Two certificates moved: CoQ-PP_26-106 (Amnesia Core Cut, 12.09 %) prints the
+wider window; CoQ-PP_26-165 (Wedding Cake, 25.15 %) prints grade I, WED_THC26 : CBD1 and
+QCSP_001_WED-I_v.01 where it printed nothing. The other 170 already matched; no result falls
+outside its strain's windows. Wedding Cake still has no issued specification for its product
+attributes — OI-50.
+
 ## 4 · Four defects the rebuild exposed, and what was done
 
 ### 4.1 · A register status was hiding results the desk holds

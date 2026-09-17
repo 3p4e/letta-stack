@@ -1028,6 +1028,23 @@ ITEMS = [
      "four internal certificates shrink to 1, 2 and 7.",
      "apply_lab_attribution.py; icoa_register_2026-09-10.csv (covers_in_house); "
      "design_handoff/docs/REBUILD_v40.md §3f"),
+
+    ("OI-50", "Specification", "open",
+     "Wedding Cake has a potency grade but no issued specification, so its certificate prints no product attributes",
+     "The Head of QC's Potency_specifications_25.pdf (specs/, 17.09.2026) grades Wedding Cake at "
+     "26.00 ± 2.60 % (23.40 – 28.59 %), a strain the desk's table had not carried; "
+     "apply_potency_grades.py added it and CoQ-PP_26-165 (P060102, 25.15 %) now prints grade I, "
+     "WED_THC26 : CBD1 and QCSP_001_WED-I_v.01. The same pass corrected Amnesia Core Cut's "
+     "tolerance to ± 1.20 (10.80 – 13.19 %) on CoQ-PP_26-106; the other 22 strains matched the "
+     "PDF to the digit and no result of the 172 certificates falls outside its strain's windows. "
+     "But no QCSP 001 specification for Wedding Cake is on file (spec_attributes_2026-09-10.csv "
+     "holds none), so Section 01 of CoQ-PP_26-165 marks no phenotype, chemotype or processing "
+     "and prints no primary packaging.",
+     "The grade, code and window print; the attribute pills stay unmarked rather than guessed.",
+     "The phenotype, chemotype, processing and packaging of Wedding Cake — or the issued "
+     "QCSP_001_WED specification they are read from.",
+     "specs/Potency_specifications_25_2026-09-17.pdf; apply_potency_grades.py; "
+     "spec_attributes_2026-09-10.csv"),
 ]
 
 STATES = {"open", "marked", "ruled"}
@@ -1039,9 +1056,9 @@ def items(state=None, area=None):
     """The register, optionally narrowed.
 
     >>> len(items())
-    49
+    50
     >>> [i[0] for i in items(area="Specification")]
-    ['OI-01', 'OI-02', 'OI-03', 'OI-44']
+    ['OI-01', 'OI-02', 'OI-03', 'OI-44', 'OI-50']
     >>> sorted({i[2] for i in items()})
     ['marked', 'open', 'ruled']
     >>> all(len(i) == len(HEAD) for i in items())
