@@ -572,7 +572,11 @@ ITEMS = [
      "certificate\" is a register gap, not a testing fact. The reverse direction is clean: "
      "every laboratory code the desk holds has a scan (0 of 403 missing).",
      "The eighteen of 21.04.2026 whose two reads existed were taken in on 16.09.2026 "
-     "(intake_IJZ0426_2026-09-16). The remaining 44 + 58 have no read on the desk yet; each "
+     "(intake_IJZ0426_2026-09-16), and 534/1065/26 and 535/1066/26 on 17.09.2026 "
+     "(intake_IJZMB2_2026-09-17) \u2014 two reads each, agreeing on all seven lines of both "
+     "pages, written into the P050212 and P050222 blocks and added to "
+     "testing_series.RETEST_ONLY as the campaign documents they are. That leaves 44 + 56. "
+     "The remaining ones have no read on the desk yet; each "
      "needs the two-read gate before it is written, and until then the certificates named "
      "above print \"not tested\" where a document exists. Nothing is written from a listing.",
      "Nothing to decide for the intake itself — it is the desk's next work. Three lots on "
@@ -834,7 +838,13 @@ ITEMS = [
      "mark_microbial_band.py states the rule over every counted row and defers to the "
      "register's own word where it already calls a cell out of specification or "
      "undetermined. Nothing about the criterion was changed: the certificate prints what "
-     "QCSP 001 says.",
+     "QCSP 001 says. **Three of the thirteen are resolved on their reissue by the ruling "
+     "of 17.09.2026** (apply_microbiology_retest.py): the IJZ-MB campaign retested them and "
+     "the reissue prints the retest \u2014 P050212 4.9 \u00d7 10\u2074 \u2192 2,3 \u00d7 10\u00b2 "
+     "(534/1065/26), P050132 3.3 \u00d7 10\u2074 \u2192 < 10 (560/1091/26), P050012 1.9 \u00d7 10\u2074 "
+     "\u2192 < 10 (564/1095/26). The release certificate of each still states the round that "
+     "released the lot, marked as it was. The other ten lots have no campaign microbiology, so "
+     "the question below still decides them.",
      "Is the #9.2 (TYMC) criterion in QCSP 001 10\u2074 or 10\u2075 CFU/g? A specification that "
      "thirteen batches fail on one parameter and nothing else, against thirteen laboratory "
      "declarations of conformity, is more likely a criterion transcribed one power out than "
@@ -1069,6 +1079,54 @@ ITEMS = [
      "Whether to correct the six register cells to the CNP code and its issue date "
      "(apply_register_corrections.py is the mechanism).",
      "check_thc_consistency.py; apply_lab_attribution.py (R5); ingestion/ragflow/cache"),
+
+    ("OI-52", "Result", "open",
+     "Loss on drying: seven reissues cite an older document than the newest one on file for the lot",
+     "The ruling of 17.09.2026 \u2014 a newer external certificate for a parameter means that "
+     "parameter was retested, so the reissue cites it \u2014 was given for microbiological purity "
+     "and applied there (21 reissues re-pointed, 0 left). The same sweep over every other "
+     "determination group finds potency, mycotoxins, heavy metals and pesticides clean and "
+     "**seven reissues on loss on drying**. Five are not really seven: P050282, P050302, "
+     "P050312, P050322 and P050292 differ only because the register files the CNP certificate "
+     "under the in-house CoA\u2019s number and date, which is OI-51, so the \u2018newer document\u2019 "
+     "is the same document under a second name. **Two are genuine**: CoQ-PP_26-095 (P050022) "
+     "prints \u041f\u041f\u041a25139 of 22.05.2025 where \u041f\u041f\u041a25174 of 10.07.2025 is on file, and "
+     "CoQ-PP_26-153 (J31112501) prints 051-5-\u0413\u0421/26 of 02.03.2026 where 100-1-\u0413\u0421/26 of "
+     "09.04.2026 is. Both newer documents PREDATE their certificate, so under the same rule the "
+     "citation would move and the date of issue would not.",
+     "Nothing changed. The Head of QC ruled on the microbiological-purity certificate, and the "
+     "desk applied the ruling to microbiological purity. Extending it to a second parameter "
+     "family is the Head of QC\u2019s to say, and five of the seven cannot be acted on at all "
+     "until OI-51 is settled.",
+     "Does the ruling of 17.09.2026 reach loss on drying \u2014 should CoQ-PP_26-095 cite "
+     "\u041f\u041f\u041a25174 and CoQ-PP_26-153 cite 100-1-\u0413\u0421/26? And does it reach every "
+     "determination, as a standing rule, rather than being asked family by family?",
+     "apply_microbiology_retest.py; tracker/LoD_Check_2026-09-17.md; OI-51"),
+
+    ("OI-53", "Result", "open",
+     "Thirteen lots have no loss-on-drying determination at all — 26 certificates print \u201cnot tested\u201d",
+     "The Head of QC ruled on 17.09.2026 that every certificate of quality, for every production "
+     "batch, prints a loss-on-drying value and cites the certificate behind it \u2014 from the Center "
+     "for Natural Products or from Farmahem, Farmahem\u2019s where a lot has both. The desk swept the "
+     "release register, the 09.09 resolution pass, the eCoA spec listing and the whole of the owner\u2019s "
+     "Drive for every lot printing nothing. **One document was found**: Farmahem 031-3-\u0413\u0421/26 of "
+     "12.02.2026, Wedding Cake WED102501 / P060102, loss on drying 6,8 % \u00b1 0,2 against < 12 \u2014 one "
+     "of the 44 scans OI-42 enumerated, in no record of the desk until now. It was taken in "
+     "(intake_LoD031_2026-09-17) and CoQ-PP_26-046 and CoQ-PP_26-165 now print it. For the remaining "
+     "**thirteen lots there is no loss-on-drying report anywhere**: HPA1024, OPM1024, P050142 "
+     "(BSS1024_01/2), P060142 (GRC102501/1), P060332 (CC012601-1), P060342 (SCR012601), P060352 "
+     "(FB012602), P060362 (JD012603/01), P060372 (CC012603), P060382 (SCR012603), P060492 (JD042601), "
+     "FB042601 and CC042601. The 09.09 pass had already reached the same verdict for five of them "
+     "(\u201cNOTHING ON FILE \u2014 no document anywhere\u201d) and marked HPA1024 and OPM1024 as having only "
+     "an in-house scan.",
+     "The two Wedding Cake certificates now print 6,8 % and cite 031-3-\u0413\u0421/26. The other 26 "
+     "certificates keep \u201cnot tested \u2014 no certificate covers it\u201d, which is the truth of them. "
+     "apply_lod_source.py is the standing rule and lod_check.py the census that shows it.",
+     "These thirteen lots need loss on drying determined \u2014 or a ruling that they are released "
+     "without it. Farmahem\u2019s \u0413\u0421 report is one parameter on one page and would close all "
+     "thirteen in a single submission.",
+     "apply_lod_source.py; lod_check.py; tracker/LoD_Check_2026-09-17.md; "
+     "intake_LoD031_2026-09-17; OI-42"),
 ]
 
 STATES = {"open", "marked", "ruled"}
@@ -1080,7 +1138,7 @@ def items(state=None, area=None):
     """The register, optionally narrowed.
 
     >>> len(items())
-    51
+    53
     >>> [i[0] for i in items(area="Specification")]
     ['OI-01', 'OI-02', 'OI-03', 'OI-44', 'OI-50']
     >>> sorted({i[2] for i in items()})

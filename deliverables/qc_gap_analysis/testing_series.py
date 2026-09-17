@@ -77,8 +77,15 @@ _REAN_RX = re.compile(r"^\s*(%s)(\d{1,3})-[КKМM](?:[/-]\d\d)?\s*$"
 # certificate of quality.
 #
 # Frozen from intake_IJZMB_2026-09-16/reads_IJZMB.json on 16.09.2026; the 30 codes are the
-# laboratory numbers on the pages, whose SHA-256 the split manifest records.
+# laboratory numbers on the pages, whose SHA-256 the split manifest records. Two more were
+# added on 17.09.2026 — 534/1065/26 and 535/1066/26, the P050212 and P050222 pages of the same
+# delivery (same letter 03-500/1 of 24.08.2026, requests 325 and 326/2026 beside this
+# intake's 324/2026), which fell outside the 536-565 range the first intake was scoped to and
+# came in through intake_IJZMB2_2026-09-17. They are the same campaign, so they are the same
+# kind of document: retest, never release.
 RETEST_ONLY = frozenset((
+    "534/1065/26",
+    "535/1066/26",
     "536/1067/26",
     "537/1068/26",
     "538/1069/26",

@@ -4,7 +4,7 @@ Every finding the desk has raised and cannot itself settle, with the evidence
 behind it and the decision being asked for. Built by `open_items.py`; the same
 register is the **Open Items** sheet of the workbook.
 
-**38 open · 3 marked on the certificate**
+**40 open · 3 marked on the certificate**
 
 ## Specification
 
@@ -286,7 +286,7 @@ register is the **Open Items** sheet of the workbook.
 
 **Found.** The audit of 16.09.2026 enumerated the owner's eCoA_DATABASE on Drive (490 scans: 449 laboratory, 41 in-house) and held it against every desk record — the ingested corpus, the release register and the 09.09 resolution pass. Forty-four laboratory scans are in NONE of them: 20 IJZ contaminant reports (mycotoxins, metals, pesticides — 329/2026 WED102501, 1057/2026 J31112501, 1061/2026 SJ112501, 1062/2026 OPM112501, 1065/2026 SJ102501, 3654–3658/2026 P160032, P160022, P160012, SCR022601, JD022601, 3661/2026 FB012603, 3663/2026 FB012603V, 3924/2026 FB032601, 3925/2026 GG032601, 4374/2026 JD032601, and the five of 29–30.04.2026 taken in the same day), 22 IJZ-MB microbiology reports (319/0586/25 GP0824_01; 75/0118/26 WED102501; 130–137/02xx/26 SJ112501, J31112501, SJ102501, OPM112501; the five of 28.04.2026 taken in the same day; 362/0692/26 SCR012601; 402–411/07xx/26 JD022601, SCR022601, FB012603V, FB012603, P160012, P160032, P160022; 433/0847/26 and 434/0848/26 FB032601; 477/0929/26 JD032601) and the two Farmahem certificates 031-3-К/26 and 031-3-ГС/26 of WED102501. A further 58 scans are cited in the 09.09 pass and never reached the register or the corpus — among them the whole Farmahem 031 campaign of February 2026 and 534/1065/26 and 535/1066/26 of the 31.08.2026 IJZ-MB delivery, which fall outside the 536–565 range the IJZ-MB intake took. For every one of the 20 IJZ reports the lot's register block holds NO metals, mycotoxin or pesticide document at all, so the certificate of quality prints "not tested — no certificate covers it" for #10–#12 while the report sits on Drive, dated before the certificate — and the sweep's "no lot carries a second heavy-metal certificate" is a register gap, not a testing fact. The reverse direction is clean: every laboratory code the desk holds has a scan (0 of 403 missing).
 
-**The desk.** The eighteen of 21.04.2026 whose two reads existed were taken in on 16.09.2026 (intake_IJZ0426_2026-09-16). The remaining 44 + 58 have no read on the desk yet; each needs the two-read gate before it is written, and until then the certificates named above print "not tested" where a document exists. Nothing is written from a listing.
+**The desk.** The eighteen of 21.04.2026 whose two reads existed were taken in on 16.09.2026 (intake_IJZ0426_2026-09-16), and 534/1065/26 and 535/1066/26 on 17.09.2026 (intake_IJZMB2_2026-09-17) — two reads each, agreeing on all seven lines of both pages, written into the P050212 and P050222 blocks and added to testing_series.RETEST_ONLY as the campaign documents they are. That leaves 44 + 56. The remaining ones have no read on the desk yet; each needs the two-read gate before it is written, and until then the certificates named above print "not tested" where a document exists. Nothing is written from a listing.
 
 **Needed.** Nothing to decide for the intake itself — it is the desk's next work. Three lots on the batch list need a word: JD032601 (P060472) has an IJZ-MB and an IJZ report on Drive and no release-register block and no CNP potency certificate anywhere — is it a production lot? SC062501 (P050242) and GOG062501 (P050232) have no document on Drive at all — were they ever tested?
 
@@ -438,7 +438,7 @@ register is the **Open Items** sheet of the workbook.
 
 **Found.** Judged as the desk judges a counted limit, ≤ 10ⁿ against 2 × 10ⁿ (Ph. Eur. 5.1.4): **eight lots are out of specification** — P050092 4.2 × 10⁴, P050212 4.9 × 10⁴, P060132 3.9 × 10⁴, P050152 3.6 × 10⁴, P050132 3.3 × 10⁴, P050182 2.6 × 10⁴, P060332 and P060352 2.2 × 10⁴ — and **five are in the undetermined band**: P050012 1.9 × 10⁴, P060382 1.8 × 10⁴, P050162 1.7 × 10⁴, P050052 1.5 × 10⁴, P050072 1.2 × 10⁴. Thirteen lots, and **every one is #9.2 (TYMC) against the ≤ 10⁴ CFU/g all 172 certificates print**. Across 3,956 determination cells no other parameter exceeds its criterion anywhere — not TAMC against ≤ 10⁵, not the bile-tolerant count, not a metal, not a mycotoxin, not a pesticide. Every laboratory that issued the thirteen declared the sample conforms. The Head of QC observed on 16.09.2026 that the printed specification may be 10⁵; at 10⁵ the maximum acceptable count is 2 × 10⁵ and all thirteen clear with a fourfold margin. Four of the register cells have been saying “UNDETERMINED — pending the QCSP 001 reading” for some time.
 
-**The desk.** Printed red bold and amber bold respectively, and named in each lot's STATUS. mark_microbial_band.py states the rule over every counted row and defers to the register's own word where it already calls a cell out of specification or undetermined. Nothing about the criterion was changed: the certificate prints what QCSP 001 says.
+**The desk.** Printed red bold and amber bold respectively, and named in each lot's STATUS. mark_microbial_band.py states the rule over every counted row and defers to the register's own word where it already calls a cell out of specification or undetermined. Nothing about the criterion was changed: the certificate prints what QCSP 001 says. **Three of the thirteen are resolved on their reissue by the ruling of 17.09.2026** (apply_microbiology_retest.py): the IJZ-MB campaign retested them and the reissue prints the retest — P050212 4.9 × 10⁴ → 2,3 × 10² (534/1065/26), P050132 3.3 × 10⁴ → < 10 (560/1091/26), P050012 1.9 × 10⁴ → < 10 (564/1095/26). The release certificate of each still states the round that released the lot, marked as it was. The other ten lots have no campaign microbiology, so the question below still decides them.
 
 **Needed.** Is the #9.2 (TYMC) criterion in QCSP 001 10⁴ or 10⁵ CFU/g? A specification that thirteen batches fail on one parameter and nothing else, against thirteen laboratory declarations of conformity, is more likely a criterion transcribed one power out than thirteen excursions — but that is the Head of QC's to say, not the desk's. If 10⁴ stands, each of the eight needs an investigation record and the five need a disposition.
 
@@ -595,4 +595,26 @@ register is the **Open Items** sheet of the workbook.
 **The desk.** The certificates print the CNP date; the register still prints the combined name and the in-house date.
 
 **Needed.** Whether to correct the six register cells to the CNP code and its issue date (apply_register_corrections.py is the mechanism).
+
+## Result
+
+### OI-52 · Loss on drying: seven reissues cite an older document than the newest one on file for the lot
+
+*State:* **open** · *Evidence:* apply_microbiology_retest.py; tracker/LoD_Check_2026-09-17.md; OI-51
+
+**Found.** The ruling of 17.09.2026 — a newer external certificate for a parameter means that parameter was retested, so the reissue cites it — was given for microbiological purity and applied there (21 reissues re-pointed, 0 left). The same sweep over every other determination group finds potency, mycotoxins, heavy metals and pesticides clean and **seven reissues on loss on drying**. Five are not really seven: P050282, P050302, P050312, P050322 and P050292 differ only because the register files the CNP certificate under the in-house CoA’s number and date, which is OI-51, so the ‘newer document’ is the same document under a second name. **Two are genuine**: CoQ-PP_26-095 (P050022) prints ППК25139 of 22.05.2025 where ППК25174 of 10.07.2025 is on file, and CoQ-PP_26-153 (J31112501) prints 051-5-ГС/26 of 02.03.2026 where 100-1-ГС/26 of 09.04.2026 is. Both newer documents PREDATE their certificate, so under the same rule the citation would move and the date of issue would not.
+
+**The desk.** Nothing changed. The Head of QC ruled on the microbiological-purity certificate, and the desk applied the ruling to microbiological purity. Extending it to a second parameter family is the Head of QC’s to say, and five of the seven cannot be acted on at all until OI-51 is settled.
+
+**Needed.** Does the ruling of 17.09.2026 reach loss on drying — should CoQ-PP_26-095 cite ППК25174 and CoQ-PP_26-153 cite 100-1-ГС/26? And does it reach every determination, as a standing rule, rather than being asked family by family?
+
+### OI-53 · Thirteen lots have no loss-on-drying determination at all — 26 certificates print “not tested”
+
+*State:* **open** · *Evidence:* apply_lod_source.py; lod_check.py; tracker/LoD_Check_2026-09-17.md; intake_LoD031_2026-09-17; OI-42
+
+**Found.** The Head of QC ruled on 17.09.2026 that every certificate of quality, for every production batch, prints a loss-on-drying value and cites the certificate behind it — from the Center for Natural Products or from Farmahem, Farmahem’s where a lot has both. The desk swept the release register, the 09.09 resolution pass, the eCoA spec listing and the whole of the owner’s Drive for every lot printing nothing. **One document was found**: Farmahem 031-3-ГС/26 of 12.02.2026, Wedding Cake WED102501 / P060102, loss on drying 6,8 % ± 0,2 against < 12 — one of the 44 scans OI-42 enumerated, in no record of the desk until now. It was taken in (intake_LoD031_2026-09-17) and CoQ-PP_26-046 and CoQ-PP_26-165 now print it. For the remaining **thirteen lots there is no loss-on-drying report anywhere**: HPA1024, OPM1024, P050142 (BSS1024_01/2), P060142 (GRC102501/1), P060332 (CC012601-1), P060342 (SCR012601), P060352 (FB012602), P060362 (JD012603/01), P060372 (CC012603), P060382 (SCR012603), P060492 (JD042601), FB042601 and CC042601. The 09.09 pass had already reached the same verdict for five of them (“NOTHING ON FILE — no document anywhere”) and marked HPA1024 and OPM1024 as having only an in-house scan.
+
+**The desk.** The two Wedding Cake certificates now print 6,8 % and cite 031-3-ГС/26. The other 26 certificates keep “not tested — no certificate covers it”, which is the truth of them. apply_lod_source.py is the standing rule and lod_check.py the census that shows it.
+
+**Needed.** These thirteen lots need loss on drying determined — or a ruling that they are released without it. Farmahem’s ГС report is one parameter on one page and would close all thirteen in a single submission.
 

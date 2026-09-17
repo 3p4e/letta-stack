@@ -779,7 +779,13 @@ if ICOA_RULE:
             _rt_issuable = bool(c_rt and m_rt and _camp and _rt and _D_(_rt.get("issue", ""))
                                 and TS.series_of(c_rt.split(", (")[0]) == _camp == TS.series_of(m_rt.split(", (")[0]))
             _rt_coq_issue = max(_D_(_rt["issue"]), _cmd) if (_rt_issuable and _cmd) else (_D_(_rt["issue"]) if _rt_issuable else None)
-            _rt_scope_docs = [_rt_docs[n] for n in (3, 4, 5, 6, 10) if n in _rt_docs]
+            # Which retest documents the reissue actually cites, and therefore which one its
+            # date must follow. #9 joined the list on 17.09.2026, when the Head of QC ruled
+            # that a newer external microbiological-purity certificate means the parameter was
+            # retested — so the reissue cites it, and "5 to 10 days after the last external
+            # certificate it cites" now has to see it. Before the ruling the reissue carried
+            # the initial microbiology forward and #9 was rightly not in this set.
+            _rt_scope_docs = [_rt_docs[n] for n in (3, 4, 5, 6, 9, 10) if n in _rt_docs]
             _rt_latest_cited = max(_rt_scope_docs, key=lambda x: str(T.date_key(x[1]))) if _rt_scope_docs else None
             if _rt_only:
                 _docs_txt = " / ".join(dict.fromkeys(_rt_docs[n][0] + " of " + _rt_docs[n][1] for n in _rt_only))

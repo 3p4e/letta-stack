@@ -373,6 +373,34 @@ first row, 26 for a three-document row), the table at most 108 px where it was 1
 heading bar carries 5 px of margin beneath it and the Section 01 banner 3 px more. Measured over
 the 172 pages: no overflow, footer gap unchanged, every laboratory still on two lines.
 
+## 3k · The microbiological retest ruling (17.09.2026)
+
+The Head of QC: if the external laboratory's microbiological-purity certificate carries a newer
+date, the parameter was retested, and the certificate of quality's date of issue is adjusted
+accordingly. Two IJZ-MB certificates outside the first intake's range came in first —
+`534/1065/26` (P050212) and `535/1066/26` (P050222), both 31.08.2026, two reads each
+(`intake_IJZMB2_2026-09-17`). **Twenty-one reissues** now cite the retest campaign for
+#9.1–#9.5, the five lines moving together as a panel does. **One certificate was re-dated**:
+`CoQ-PP_26-089`, 17.08.2026 → **07.09.2026**, because its new microbiology of 31.08.2026
+postdates the page as it stood; the other twenty already postdated theirs and keep the date the
+register gave them. Eighty-nine release certificates are untouched — a campaign certificate is a
+retest document and no release certificate rests on one. Three of the thirteen TYMC excursions
+`OI-17` lists clear on their reissue as a result. `tracker/MICROBIOLOGY_RETEST_2026-09-17.md`.
+
+## 3l · Loss on drying: one rule for the source (17.09.2026)
+
+The Head of QC: every certificate, for every production batch, prints a loss-on-drying value and
+cites the certificate behind it — from the Center for Natural Products or from Farmahem, and
+Farmahem's where a lot has both. `apply_lod_source.py` holds the ranking (Farmahem, then the
+Center, then the in-house sheet) and takes the highest-ranked laboratory a lot has. A sweep of
+the register, the 09.09 pass, the eCoA listing and the owner's Drive for the twenty-eight
+certificates printing nothing turned up **one** document — Farmahem `031-3-ГС/26` of 12.02.2026,
+Wedding Cake P060102, 6,8 % ± 0,2 — taken in through the two-read gate
+(`intake_LoD031_2026-09-17`); `CoQ-PP_26-046` and `CoQ-PP_26-165` now print it. **Thirteen lots
+have no loss-on-drying report anywhere** and keep "not tested", which is `OI-53`. No lot today
+has both laboratories, so the ranking decides nothing yet and stands for the next one that does.
+`tracker/LOSS_ON_DRYING_RULING_2026-09-17.md`; the census is `lod_check.py`.
+
 ## 4 · Four defects the rebuild exposed, and what was done
 
 ### 4.1 · A register status was hiding results the desk holds
