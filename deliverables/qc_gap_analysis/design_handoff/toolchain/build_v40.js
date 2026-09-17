@@ -367,15 +367,19 @@ for (const c of data.coqs) {
 const S03_LAYER = '<style id="__owner-s03-compact">\n' +
   'html body div.page div.tbl-wrap table.labref colgroup col:nth-child(2){width:248px !important}\n' +
   'html body div.page div.tbl-wrap table.labref colgroup col:nth-child(3){width:172px !important}\n' +
-  'html body div.page div.tbl-wrap table.labref tbody td{padding-top:3px !important;padding-bottom:3px !important;vertical-align:middle !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td{padding-top:1px !important;padding-bottom:1px !important;vertical-align:middle !important}\n' +
   'html body div.page div.tbl-wrap table.labref tbody td:first-child{padding-right:6px !important}\n' +
-  'html body div.page div.tbl-wrap table.labref tbody td .lr-lab{display:block !important;line-height:1.22 !important;text-align:left !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td .lr-lab{display:block !important;line-height:1.12 !important;text-align:left !important}\n' +
   'html body div.page div.tbl-wrap table.labref tbody td .lr-lab .bisep{display:block !important;height:0 !important;font-size:0 !important;line-height:0 !important;overflow:hidden !important;margin:0 !important}\n' +
-  'html body div.page div.tbl-wrap table.labref tbody td .lr-lab .mk{display:inline !important;margin:0 !important;white-space:normal !important;line-height:1.25 !important;font-size:5.9px !important;color:#6E7D92 !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td .lr-lab .mk{display:inline !important;margin:0 !important;white-space:normal !important;line-height:1.15 !important;font-size:5.9px !important;color:#6E7D92 !important}\n' +
   'html body div.page div.tbl-wrap table.labref tbody td .lr-lab .mk .lr-ac{margin-left:2px !important;font-size:5.9px !important}\n' +
-  'html body div.page div.tbl-wrap table.labref tbody td .lr-lab small{display:inline !important;margin:0 !important;white-space:normal !important;line-height:1.25 !important;font-size:5.9px !important;color:#7C8FA6 !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td .lr-lab small{display:inline !important;margin:0 !important;white-space:normal !important;line-height:1.15 !important;font-size:5.9px !important;color:#7C8FA6 !important}\n' +
   'html body div.page div.tbl-wrap table.labref tbody td .lr-lab small::before{content:" · " !important;color:#B3BFCC !important}\n' +
-  'html body div.page div.tbl-wrap table.labref tbody td.lr-mono:not(.pcell){line-height:1.55 !important;padding-left:4px !important;padding-right:4px !important}\n' +
+  'html body div.page div.tbl-wrap table.labref tbody td.lr-mono:not(.pcell){line-height:1.3 !important;padding-left:4px !important;padding-right:4px !important}\n' +
+  '/* Head of QC, 17.09.2026: the laboratory table was taking too much height — rows tight; the room\n' +
+  '   goes to air after every heading bar, and a little more under the first one. */\n' +
+  'html body div.page div.sec-label{margin-bottom:5px !important}\n' +
+  'html body div.page div.sec-label + div.pb-main,html body div.page div.sec-label + .pb-main{margin-top:3px !important}\n' +
   'html body div.page div.tbl-wrap table.labref tbody td.lr-mono:not(.pcell) .cert{display:inline-block !important;margin:0 !important;white-space:nowrap !important;vertical-align:baseline !important;font-size:7px !important}\n' +
   'html body div.page div.tbl-wrap table.labref tbody td.lr-mono:not(.pcell) .cert + .cert{margin-top:0 !important}\n' +
   'html body div.page div.tbl-wrap table.labref tbody td.lr-mono:not(.pcell) .cert + .cert::before{content:"|" !important;color:#C6D4E2 !important;font-weight:400 !important;margin:0 3px !important}\n' +

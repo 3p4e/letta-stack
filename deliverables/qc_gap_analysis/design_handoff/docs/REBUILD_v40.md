@@ -361,6 +361,18 @@ code and the footer; the builder's "Sampled by"), and the live instrument's labo
 dictionary. 172 certificates of quality and 154 internal certificates rebuilt; no page carries
 the old wording.
 
+## 3j · The laboratory table tightened, air under the bars (17.09.2026)
+
+The Head of QC, on the last set: the laboratory reference table takes too much height — the
+spacing between the credentials is too great — make it compact and spend the room on space
+between the sections, a little more under the Section 01 bar before the first text and a little
+under every shading bar before what follows, keeping A4 and nothing into the footer. Rows of
+the Section 03 table now carry 1 px of padding, the laboratory line at line-height 1.12, its
+second line at 1.15, the document line at 1.3: rows are 19 px where they were 25 (24 for the
+first row, 26 for a three-document row), the table at most 108 px where it was 127. Every
+heading bar carries 5 px of margin beneath it and the Section 01 banner 3 px more. Measured over
+the 172 pages: no overflow, footer gap unchanged, every laboratory still on two lines.
+
 ## 4 · Four defects the rebuild exposed, and what was done
 
 ### 4.1 · A register status was hiding results the desk holds
