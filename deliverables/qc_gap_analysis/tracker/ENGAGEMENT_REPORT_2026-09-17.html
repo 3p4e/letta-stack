@@ -1,0 +1,455 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Engagement Report</title><meta name="description" content="What was initiated, progressed and completed on the Purely Plant QC desk, read from the repository record.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600&family=Source+Sans+3:wght@400;600&display=swap">
+<style>
+:root{--ink:#1B2A3F;--muted:#5D6B7E;--rule:#D9E0E8;--paper:#FBFCFD;--card:#FFFFFF;--accent:#8A6A1F;--navy:#1B3A5C;--bar:#2F5A8A;--night:#8A6A1F}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--ink:#E6ECF3;--muted:#A5B1C0;--rule:#2C3947;--paper:#0F1620;--card:#162031;--accent:#D5B25C;--navy:#BFD3EA;--bar:#6E9AD0;--night:#D5B25C}}
+:root[data-theme="dark"]{--ink:#E6ECF3;--muted:#A5B1C0;--rule:#2C3947;--paper:#0F1620;--card:#162031;--accent:#D5B25C;--navy:#BFD3EA;--bar:#6E9AD0;--night:#D5B25C}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 "Source Sans 3","Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-variant-numeric:tabular-nums}
+main{max-width:1040px;margin:0 auto;padding:32px 16px 64px}
+h1{font-family:"Source Serif 4",Georgia,"Times New Roman",serif;font-weight:600;font-size:30px;line-height:1.15;margin:0 0 6px;text-wrap:balance;color:var(--navy)}
+h2{font-family:"Source Serif 4",Georgia,serif;font-weight:600;font-size:21px;margin:40px 0 12px;color:var(--navy);border-bottom:1px solid var(--rule);padding-bottom:6px}
+h3{font-size:15px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:var(--muted);margin:26px 0 8px}
+p.lead{color:var(--muted);max-width:70ch;margin:0 0 20px}
+.sub{color:var(--muted);font-size:14px;margin:0 0 18px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0 8px}
+.tile{background:var(--card);border:1px solid var(--rule);border-radius:6px;padding:12px 14px}
+.tile b{display:block;font-size:26px;font-weight:600;color:var(--navy);line-height:1.1}
+.tile span{font-size:12.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.chart{background:var(--card);border:1px solid var(--rule);border-radius:6px;padding:14px 14px 8px;overflow-x:auto}
+.chart svg{display:block;min-width:720px;width:100%;height:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px;background:var(--card)}
+th,td{border-bottom:1px solid var(--rule);padding:6px 8px;vertical-align:top;text-align:left}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600}
+td.n,th.n{text-align:right;white-space:nowrap}td.d{white-space:nowrap}
+.wrap{overflow-x:auto;border:1px solid var(--rule);border-radius:6px}
+.pr{color:var(--accent);font-weight:600}
+details{margin:10px 0}summary{cursor:pointer;color:var(--navy);font-weight:600}
+ul.log{list-style:none;padding:0;margin:6px 0 0}ul.log li{padding:2px 0;border-bottom:1px dotted var(--rule);font-size:13.5px}
+ul.log code{font:12.5px ui-monospace,Menlo,Consolas,monospace;color:var(--muted);margin:0 6px}
+.day{font-weight:600;margin-top:14px;color:var(--navy)}
+footer{margin-top:40px;color:var(--muted);font-size:13px}
+@media print{body{font-size:12px}main{padding:0}h2{margin-top:22px;break-after:avoid}.wrap{border:0}details{display:block}details>*{display:block}summary{display:none}.chart svg{min-width:0}}
+</style></head><body><main>
+<h1>Engagement report — Purely Plant QC desk</h1>
+<p class="sub">09.08.2026 to 17.09.2026 · written 17.09.2026 from the repository&#8217;s own record · times Europe/Skopje</p>
+<p class="lead">Every step of this work was committed the moment it was made, with its time, and every stage was raised as a pull request. This page is read from that record by <code>engagement_report.py</code>; it can be regenerated on any day and depends on no one&#8217;s memory.</p>
+<div class="tiles"><div class="tile"><b>40</b><span>calendar days</span></div><div class="tile"><b>26</b><span>days with committed work</span></div><div class="tile"><b>282</b><span>commits</span></div><div class="tile"><b>155 h</b><span>first-to-last span, summed</span></div><div class="tile"><b>61</b><span>commits 22:00–07:00</span></div><div class="tile"><b>22</b><span>commits on weekends</span></div><div class="tile"><b>20 · 16</b><span>pull requests · merged</span></div><div class="tile"><b>49</b><span>open items on the register</span></div></div>
+<p class="sub">The span counts only the hours between a day&#8217;s first and last commit; work before the first and after the last is not in it, so it understates the time.</p>
+<h2>Commits per day</h2><div class="chart"><svg viewBox="0 0 1000 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="commits per day"><rect x="33" y="101" width="18" height="9" rx="2" fill="var(--night)"><title>Sun 09.08 · 6 commits · 01:18–04:23 · 3.1 h</title></rect><text x="42" y="97" font-size="9" text-anchor="middle" fill="var(--muted)">6</text><rect x="30" y="8" width="24" height="104" fill="var(--rule)" opacity=".35"/><text x="66" y="128" font-size="10" text-anchor="middle" fill="var(--muted)">10.08</text><rect x="81" y="106" width="18" height="4" rx="2" fill="var(--night)"><title>Tue 11.08 · 3 commits · 06:14–07:06 · 0.9 h</title></rect><text x="90" y="102" font-size="9" text-anchor="middle" fill="var(--muted)">3</text><rect x="105" y="107" width="18" height="3" rx="2" fill="var(--bar)"><title>Wed 12.08 · 2 commits · 10:51–10:53 · 0.0 h</title></rect><text x="114" y="103" font-size="9" text-anchor="middle" fill="var(--muted)">2</text><rect x="129" y="107" width="18" height="3" rx="2" fill="var(--night)"><title>Thu 13.08 · 1 commits · 22:56–22:56 · 0.0 h</title></rect><text x="138" y="103" font-size="9" text-anchor="middle" fill="var(--muted)">1</text><rect x="153" y="90" width="18" height="20" rx="2" fill="var(--bar)"><title>Fri 14.08 · 13 commits · 06:29–14:26 · 7.9 h</title></rect><text x="162" y="86" font-size="9" text-anchor="middle" fill="var(--muted)">13</text><rect x="174" y="8" width="24" height="104" fill="var(--rule)" opacity=".35"/><rect x="198" y="8" width="24" height="104" fill="var(--rule)" opacity=".35"/><rect x="225" y="84" width="18" height="26" rx="2" fill="var(--bar)"><title>Mon 17.08 · 17 commits · 14:09–23:57 · 9.8 h</title></rect><text x="234" y="80" font-size="9" text-anchor="middle" fill="var(--muted)">17</text><text x="234" y="128" font-size="10" text-anchor="middle" fill="var(--muted)">17.08</text><rect x="249" y="84" width="18" height="26" rx="2" fill="var(--bar)"><title>Tue 18.08 · 17 commits · 00:44–11:09 · 10.4 h</title></rect><text x="258" y="80" font-size="9" text-anchor="middle" fill="var(--muted)">17</text><rect x="273" y="100" width="18" height="10" rx="2" fill="var(--bar)"><title>Wed 19.08 · 7 commits · 11:54–22:50 · 10.9 h</title></rect><text x="282" y="96" font-size="9" text-anchor="middle" fill="var(--muted)">7</text><rect x="297" y="107" width="18" height="3" rx="2" fill="var(--night)"><title>Thu 20.08 · 1 commits · 01:38–01:38 · 0.0 h</title></rect><text x="306" y="103" font-size="9" text-anchor="middle" fill="var(--muted)">1</text><rect x="342" y="8" width="24" height="104" fill="var(--rule)" opacity=".35"/><rect x="366" y="8" width="24" height="104" fill="var(--rule)" opacity=".35"/><text x="402" y="128" font-size="10" text-anchor="middle" fill="var(--muted)">24.08</text><rect x="441" y="107" width="18" height="3" rx="2" fill="var(--bar)"><title>Wed 26.08 · 1 commits · 18:21–18:21 · 0.0 h</title></rect><text x="450" y="103" font-size="9" text-anchor="middle" fill="var(--muted)">1</text><rect x="510" y="8" width="24" height="104" fill="var(--rule)" opacity=".35"/><rect x="537" y="101" width="18" height="9" rx="2" fill="var(--night)"><title>Sun 30.08 · 6 commits · 20:57–23:57 · 3.0 h</title></rect><text x="546" y="97" font-size="9" text-anchor="middle" fill="var(--muted)">6</text><rect x="534" y="8" width="24" height="104" fill="var(--rule)" opacity=".35"/><rect x="561" y="71" width="18" height="39" rx="2" fill="var(--night)"><title>Mon 31.08 · 25 commits · 00:08–09:31 · 9.4 h</title></rect><text x="570" y="67" font-size="9" text-anchor="middle" fill="var(--muted)">25</text><text x="570" y="128" font-size="10" text-anchor="middle" fill="var(--muted)">31.08</text><rect x="609" y="87" width="18" height="23" rx="2" fill="var(--bar)"><title>Wed 02.09 · 15 commits · 09:49–17:35 · 7.8 h</title></rect><text x="618" y="83" font-size="9" text-anchor="middle" fill="var(--muted)">15</text><rect x="633" y="104" width="18" height="6" rx="2" fill="var(--bar)"><title>Thu 03.09 · 4 commits · 11:27–11:50 · 0.4 h</title></rect><text x="642" y="100" font-size="9" text-anchor="middle" fill="var(--muted)">4</text><rect x="657" y="89" width="18" height="21" rx="2" fill="var(--bar)"><title>Fri 04.09 · 14 commits · 13:20–19:35 · 6.3 h</title></rect><text x="666" y="85" font-size="9" text-anchor="middle" fill="var(--muted)">14</text><rect x="681" y="103" width="18" height="7" rx="2" fill="var(--bar)"><title>Sat 05.09 · 5 commits · 15:26–20:53 · 5.4 h</title></rect><text x="690" y="99" font-size="9" text-anchor="middle" fill="var(--muted)">5</text><rect x="678" y="8" width="24" height="104" fill="var(--rule)" opacity=".35"/><rect x="705" y="104" width="18" height="6" rx="2" fill="var(--night)"><title>Sun 06.09 · 4 commits · 01:58–23:59 · 22.0 h</title></rect><text x="714" y="100" font-size="9" text-anchor="middle" fill="var(--muted)">4</text><rect x="702" y="8" width="24" height="104" fill="var(--rule)" opacity=".35"/><rect x="729" y="95" width="18" height="15" rx="2" fill="var(--bar)"><title>Mon 07.09 · 10 commits · 09:05–16:54 · 7.8 h</title></rect><text x="738" y="91" font-size="9" text-anchor="middle" fill="var(--muted)">10</text><text x="738" y="128" font-size="10" text-anchor="middle" fill="var(--muted)">07.09</text><rect x="777" y="107" width="18" height="3" rx="2" fill="var(--night)"><title>Wed 09.09 · 2 commits · 05:10–05:12 · 0.0 h</title></rect><text x="786" y="103" font-size="9" text-anchor="middle" fill="var(--muted)">2</text><rect x="801" y="82" width="18" height="28" rx="2" fill="var(--bar)"><title>Thu 10.09 · 18 commits · 11:30–21:26 · 9.9 h</title></rect><text x="810" y="78" font-size="9" text-anchor="middle" fill="var(--muted)">18</text><rect x="825" y="70" width="18" height="40" rx="2" fill="var(--bar)"><title>Fri 11.09 · 26 commits · 09:11–16:10 · 7.0 h</title></rect><text x="834" y="66" font-size="9" text-anchor="middle" fill="var(--muted)">26</text><rect x="849" y="107" width="18" height="3" rx="2" fill="var(--night)"><title>Sat 12.09 · 1 commits · 00:05–00:05 · 0.0 h</title></rect><text x="858" y="103" font-size="9" text-anchor="middle" fill="var(--muted)">1</text><rect x="846" y="8" width="24" height="104" fill="var(--rule)" opacity=".35"/><rect x="870" y="8" width="24" height="104" fill="var(--rule)" opacity=".35"/><rect x="897" y="103" width="18" height="7" rx="2" fill="var(--bar)"><title>Mon 14.09 · 5 commits · 11:00–16:31 · 5.5 h</title></rect><text x="906" y="99" font-size="9" text-anchor="middle" fill="var(--muted)">5</text><text x="906" y="128" font-size="10" text-anchor="middle" fill="var(--muted)">14.09</text><rect x="921" y="92" width="18" height="18" rx="2" fill="var(--bar)"><title>Tue 15.09 · 12 commits · 11:27–19:48 · 8.4 h</title></rect><text x="930" y="88" font-size="9" text-anchor="middle" fill="var(--muted)">12</text><rect x="945" y="10" width="18" height="100" rx="2" fill="var(--bar)"><title>Wed 16.09 · 64 commits · 04:22–21:53 · 17.5 h</title></rect><text x="954" y="6" font-size="9" text-anchor="middle" fill="var(--muted)">64</text><rect x="969" y="106" width="18" height="4" rx="2" fill="var(--bar)"><title>Thu 17.09 · 3 commits · 11:23–12:26 · 1.1 h</title></rect><text x="978" y="102" font-size="9" text-anchor="middle" fill="var(--muted)">3</text><line x1="30" y1="112" x2="990" y2="112" stroke="var(--rule)"/></svg></div><p class="sub">Gold bars: more than half the day&#8217;s commits fell between 22:00 and 07:00. Shaded columns are Saturdays and Sundays.</p>
+<h2>Stages — the pull requests</h2><div class="wrap"><table><thead><tr><th class="n">PR</th><th>raised</th><th>merged</th><th>stage</th></tr></thead><tbody>
+<tr><td class="n"><span class="pr">#1</span></td><td class="d">09.08.2026 03:27</td><td class="d">09.08.2026 03:39</td><td>Consolidate all Purely Plant Letta technology (Drive recovery-layer rebuild)</td></tr>
+<tr><td class="n"><span class="pr">#2</span></td><td class="d">09.08.2026 04:22</td><td class="d">09.08.2026 04:23</td><td>Pre-approve git operations for Claude Code sessions</td></tr>
+<tr><td class="n"><span class="pr">#3</span></td><td class="d">10.08.2026 21:21</td><td class="d">11.08.2026 06:14</td><td>Record 2026-08-10 CoA ingestion; correct stale status and embedding model</td></tr>
+<tr><td class="n"><span class="pr">#4</span></td><td class="d">11.08.2026 06:27</td><td class="d">11.08.2026 06:27</td><td>Add the Letta-host OCR tool for scanned certificates</td></tr>
+<tr><td class="n"><span class="pr">#5</span></td><td class="d">11.08.2026 07:05</td><td class="d">11.08.2026 07:06</td><td>Coverage audit, recovered CoA references, and the Cap Junky spelling</td></tr>
+<tr><td class="n"><span class="pr">#6</span></td><td class="d">11.08.2026 11:00</td><td class="d">12.08.2026 10:51</td><td>QCSP 001 v.02 — extended potency ladders, Tranche 1 potency, and the spec inventory</td></tr>
+<tr><td class="n"><span class="pr">#7</span></td><td class="d">12.08.2026 10:52</td><td class="d">12.08.2026 10:53</td><td>Document the 2026-08-12 archival-memory outage and recovery</td></tr>
+<tr><td class="n"><span class="pr">#8</span></td><td class="d">12.08.2026 13:24</td><td class="d">13.08.2026 22:56</td><td>Live runtime audit of the Letta host (2026-08-12)</td></tr>
+<tr><td class="n"><span class="pr">#9</span></td><td class="d">14.08.2026 06:29</td><td class="d">14.08.2026 07:05</td><td>A4 PDF renders of the Final_Docs deliverable tree (351 files)</td></tr>
+<tr><td class="n"><span class="pr">#10</span></td><td class="d">14.08.2026 08:52</td><td class="d">18.08.2026 10:06</td><td>QC deliverables: Final_Docs PDF tree, QC weekly report, Strain Potency Study + Atlas, potency workbook</td></tr>
+<tr><td class="n"><span class="pr">#11</span></td><td class="d">18.08.2026 10:15</td><td class="d">20.08.2026 01:38</td><td>Original-strain grades, RAGFlow ingestion policy, and the reissue-replacement tooling</td></tr>
+<tr><td class="n"><span class="pr">#12</span></td><td class="d">21.08.2026 10:32</td><td class="d">07.09.2026 14:14</td><td>QC coverage analysis, independent cross-check, batch identity, host audits, two films</td></tr>
+<tr><td class="n"><span class="pr">#13</span></td><td class="d">30.08.2026 20:57</td><td class="d">31.08.2026 09:22</td><td>eCoA database: two-pass extraction over the full corpus, CoQ compiler and register</td></tr>
+<tr><td class="n"><span class="pr">#14</span></td><td class="d">31.08.2026 09:31</td><td class="d">31.08.2026 09:31</td><td>Confirmation queue: classify the held rows, resolve what is mechanical, close the loop</td></tr>
+<tr><td class="n"><span class="pr">#15</span></td><td class="d">31.08.2026 10:18</td><td class="d">open (draft)</td><td>In-house iCoA issuance register (Identification A/B/C, Foreign Matter)</td></tr>
+<tr><td class="n"><span class="pr">#16</span></td><td class="d">01.09.2026 14:07</td><td class="d">open (draft)</td><td>qc: cultivation-batch ↔ production-batch cross-reference</td></tr>
+<tr><td class="n"><span class="pr">#17</span></td><td class="d">02.09.2026 16:09</td><td class="d">open (draft)</td><td>CoQ compiler + tracker: derived cannabinoid totals; a certificate is never &quot;no result on file&quot;</td></tr>
+<tr><td class="n"><span class="pr">#18</span></td><td class="d">07.09.2026 16:55</td><td class="d">09.09.2026 05:12</td><td>Strain ruling (Cap Junky), the ImB certificate register, and v13</td></tr>
+<tr><td class="n"><span class="pr">#19</span></td><td class="d">10.09.2026 11:31</td><td class="d">16.09.2026 18:17</td><td>Certificates of quality — the record reconciled, the certificate database taken in, Tranches 1 and 2 issued</td></tr>
+<tr><td class="n"><span class="pr">#20</span></td><td class="d">16.09.2026 18:46</td><td class="d">open (draft)</td><td>A panel determined on one sample prints whole, or it does not print at all</td></tr>
+</tbody></table></div>
+<h2>Week by week</h2>
+<h3>Week 32 · 03.08 – 09.08.2026 · 1 working days · 6 commits · 3 h in span</h3>
+<div class="wrap"><table><thead><tr><th>day</th><th class="n">commits</th><th>first – last</th><th class="n">span</th><th class="n">night</th><th>what was done</th></tr></thead><tbody>
+<tr><td class="d">09.08 Sun</td><td class="n">6</td><td class="d">01:18 – 04:23</td><td class="n">3.1 h</td><td class="n">6</td><td><span class="pr">PR #1 opened, PR #1 merged, PR #2 opened, PR #2 merged</span> — Initial commit; Consolidate all Purely Plant Letta technology per the Drive recovery layer; Baseline live-config manifest export 2026-08-09; Merge pull request #1 from 3p4e/claude/google-drive-links-d932ku; …</td></tr>
+</tbody></table></div>
+<h3>Week 33 · 10.08 – 16.08.2026 · 4 working days · 19 commits · 9 h in span</h3>
+<div class="wrap"><table><thead><tr><th>day</th><th class="n">commits</th><th>first – last</th><th class="n">span</th><th class="n">night</th><th>what was done</th></tr></thead><tbody>
+<tr><td class="d">11.08 Tue</td><td class="n">3</td><td class="d">06:14 – 07:06</td><td class="n">0.9 h</td><td class="n">2</td><td><span class="pr">PR #3 merged, PR #4 opened, PR #4 merged, PR #5 opened, PR #5 merged, PR #6 opened</span> — Reconcile the CoA register against the control sheets and the certificates (#3); Add the Letta-host OCR tool for scanned certificates (#4); Coverage audit, recovered CoA references, and the Cap Junky spelling (#5)</td></tr>
+<tr><td class="d">12.08 Wed</td><td class="n">2</td><td class="d">10:51 – 10:53</td><td class="n">0.0 h</td><td class="n">0</td><td><span class="pr">PR #6 merged, PR #7 opened, PR #7 merged, PR #8 opened</span> — QCSP 001 v.02 specs, eCoA register, and QC activity reports (#6); Document the 2026-08-12 archival-memory outage and recovery (#7)</td></tr>
+<tr><td class="d">13.08 Thu</td><td class="n">1</td><td class="d">22:56 – 22:56</td><td class="n">0.0 h</td><td class="n">1</td><td><span class="pr">PR #8 merged</span> — Letta host audit + QCSP 001 spec data suite (listing, matrix, tranches, CoQ/iCoA plans) (#8)</td></tr>
+<tr><td class="d">14.08 Fri</td><td class="n">13</td><td class="d">06:29 – 14:26</td><td class="n">7.9 h</td><td class="n">2</td><td><span class="pr">PR #9 opened, PR #9 merged, PR #10 opened</span> — A4 PDF renders of the Final_Docs deliverable tree (351 files); Split ZIP bundles of the Final_Docs PDF tree for direct download; A4 PDF renders of the Final_Docs deliverable tree + download bundles (#9); QC activity timeline (11-14 Aug); …</td></tr>
+</tbody></table></div>
+<h3>Week 34 · 17.08 – 23.08.2026 · 4 working days · 42 commits · 31 h in span</h3>
+<div class="wrap"><table><thead><tr><th>day</th><th class="n">commits</th><th>first – last</th><th class="n">span</th><th class="n">night</th><th>what was done</th></tr></thead><tbody>
+<tr><td class="d">17.08 Mon</td><td class="n">17</td><td class="d">14:09 – 23:57</td><td class="n">9.8 h</td><td class="n">5</td><td>default to the light theme; whole-number nominal grades + renamed-spec range board; Potency grades declared as whole-number nominal ± fitted tolerance; Fix coverage bug + single governing declaration; propagate to Word study; …</td></tr>
+<tr><td class="d">18.08 Tue</td><td class="n">17</td><td class="d">00:44 – 11:09</td><td class="n">10.4 h</td><td class="n">7</td><td><span class="pr">PR #10 merged, PR #11 opened</span> — strongest tier full ±10%, lower tiers extend down; Add per-strain top-nominal override; set Grape Pie=24, Motor Breath=18; drop dead feasible_nominals() mirrors, fix stale solve_chain docstring; surveyor&#x27;s-atlas visual identity; …</td></tr>
+<tr><td class="d">19.08 Wed</td><td class="n">7</td><td class="d">11:54 – 22:50</td><td class="n">10.9 h</td><td class="n">1</td><td>RAGFlow on KVM4 is the pipeline; Exclude Letta as a RAG engine; record the clean-start wipe; Correct the framing on the three re-authored QC records; Add the RAGFlow reissue-replacement tool; …</td></tr>
+<tr><td class="d">20.08 Thu</td><td class="n">1</td><td class="d">01:38 – 01:38</td><td class="n">0.0 h</td><td class="n">1</td><td><span class="pr">PR #11 merged</span> — Original-strain grades, RAGFlow ingestion policy, and reissue-replacement tooling (#11)</td></tr>
+</tbody></table></div>
+<h3>Week 35 · 24.08 – 30.08.2026 · 2 working days · 7 commits · 3 h in span</h3>
+<div class="wrap"><table><thead><tr><th>day</th><th class="n">commits</th><th>first – last</th><th class="n">span</th><th class="n">night</th><th>what was done</th></tr></thead><tbody>
+<tr><td class="d">26.08 Wed</td><td class="n">1</td><td class="d">18:21 – 18:21</td><td class="n">0.0 h</td><td class="n">0</td><td>Add August 2026 total THC re-test comparative report</td></tr>
+<tr><td class="d">30.08 Sun</td><td class="n">6</td><td class="d">20:57 – 23:57</td><td class="n">3.0 h</td><td class="n">4</td><td><span class="pr">PR #13 opened</span> — Add two-pass eCoA extraction runner and typed-record table; Add CoQ compiler and readiness index; Add controlled vocabularies; rule the max acceptable count at 5x; Date-bound acceptance criteria; canonicalise units; …</td></tr>
+</tbody></table></div>
+<h3>Week 36 · 31.08 – 06.09.2026 · 6 working days · 67 commits · 51 h in span</h3>
+<div class="wrap"><table><thead><tr><th>day</th><th class="n">commits</th><th>first – last</th><th class="n">span</th><th class="n">night</th><th>what was done</th></tr></thead><tbody>
+<tr><td class="d">31.08 Mon</td><td class="n">25</td><td class="d">00:08 – 09:31</td><td class="n">9.4 h</td><td class="n">19</td><td><span class="pr">PR #13 merged, PR #14 opened, PR #14 merged, PR #15 opened</span> — R4 self-check, E5 guard, stability rule; Add EP_GEMINI_API to the read-B rotation; Add spend safeguards to the runner and a LiteLLM fallback kit for KVM4; Add consolidated corpus-run plan; …</td></tr>
+<tr><td class="d">02.09 Wed</td><td class="n">15</td><td class="d">09:49 – 17:35</td><td class="n">7.8 h</td><td class="n">0</td><td><span class="pr">PR #17 opened</span> — the HPLC cannabinoid certificate discharges it; the CoQ desk as a batch × parameter tracker; expandable cells, document links, completion meters, global criteria enforced; only an eCoA or iCoA is coverage; one document per line, glued sub-lot prefixes stripped; …</td></tr>
+<tr><td class="d">03.09 Thu</td><td class="n">4</td><td class="d">11:27 – 11:50</td><td class="n">0.4 h</td><td class="n">0</td><td>every decision-bearing value verified against the page; ППК26033 Total CBD confirmed 0.05 % from the page; 472/0863/25 TYMC confirmed 1,9 × 10⁴ from the page; v9 build</td></tr>
+<tr><td class="d">04.09 Fri</td><td class="n">14</td><td class="d">13:20 – 19:35</td><td class="n">6.3 h</td><td class="n">0</td><td>fold the letter O that IJZ prints for the zero of a P-number; PO50022 and PO50202 were the letter-O spellings of P050022 and P050202; ingest driver, post-ingest fixes, and the tracker takes new testing instances; &#x27;отсуствува&#x27; is the verb form of absent; …</td></tr>
+<tr><td class="d">05.09 Sat</td><td class="n">5</td><td class="d">15:26 – 20:53</td><td class="n">5.4 h</td><td class="n">0</td><td>preliminary iCoA issuance register; two certificates per P lot, formula-driven numbering; pre-SOP certificates issued together on 13.05.2026; the ruling of 05.09.2026; …</td></tr>
+<tr><td class="d">06.09 Sun</td><td class="n">4</td><td class="d">01:58 – 23:59</td><td class="n">22.0 h</td><td class="n">4</td><td>every dated lot keeps its planned CoQ and number; the IJZ-MB delivery of 25/26.08.2026 is campaign sampling for every lot; adopt the owner&#x27;s edits from the Drive copies of v9 and v10; truth check of the workbook&#x27;s own statements and figures</td></tr>
+</tbody></table></div>
+<h3>Week 37 · 07.09 – 13.09.2026 · 5 working days · 57 commits · 25 h in span</h3>
+<div class="wrap"><table><thead><tr><th>day</th><th class="n">commits</th><th>first – last</th><th class="n">span</th><th class="n">night</th><th>what was done</th></tr></thead><tbody>
+<tr><td class="d">07.09 Mon</td><td class="n">10</td><td class="d">09:05 – 16:54</td><td class="n">7.8 h</td><td class="n">0</td><td><span class="pr">PR #12 merged, PR #18 opened</span> — verify_workbook.py, and the three defects it found in v11; one definition of covered, and verify_prose.py behind it; nothing further is carried over from v9; 197-9-K/M-26 confirmed on the page as GG1024_01; …</td></tr>
+<tr><td class="d">09.09 Wed</td><td class="n">2</td><td class="d">05:10 – 05:12</td><td class="n">0.0 h</td><td class="n">2</td><td><span class="pr">PR #18 merged</span> — the page printed; Strain ruling (Cap Junky), the ImB certificate register, and v13 (#18)</td></tr>
+<tr><td class="d">10.09 Thu</td><td class="n">18</td><td class="d">11:30 – 21:26</td><td class="n">9.9 h</td><td class="n">0</td><td><span class="pr">PR #19 opened</span> — Draft the Tranche 1 and 2 certificates, and stop printing numbered as issued; Reconcile the owner&#x27;s v20 workbook, and build v21 from it; Ignore the artifact-page intermediate the extractor writes; Mark what the desk does not hold, in red brackets on the face of the document; …</td></tr>
+<tr><td class="d">11.09 Fri</td><td class="n">26</td><td class="d">09:11 – 16:10</td><td class="n">7.0 h</td><td class="n">0</td><td>The internal CoA&#x27;s testing window is the packaging window; The internal CoA is dated on the first day of packaging; the rulings written into the workbook&#x27;s own formulas; The package index named v21 while the archive carried v22; …</td></tr>
+<tr><td class="d">12.09 Sat</td><td class="n">1</td><td class="d">00:05 – 00:05</td><td class="n">0.0 h</td><td class="n">1</td><td>today&#x27;s Farmahem 227-K/26 retest transcriptions, not yet live</td></tr>
+</tbody></table></div>
+<h3>Week 38 · 14.09 – 20.09.2026 · 4 working days · 84 commits · 32 h in span</h3>
+<div class="wrap"><table><thead><tr><th>day</th><th class="n">commits</th><th>first – last</th><th class="n">span</th><th class="n">night</th><th>what was done</th></tr></thead><tbody>
+<tr><td class="d">14.09 Mon</td><td class="n">5</td><td class="d">11:00 – 16:31</td><td class="n">5.5 h</td><td class="n">0</td><td>v26; the registers never asked strains.py; 32 Farmahem 220-M/26 certificates read, packaged as one write; the 32 Tranche 2 mycotoxin certificates reach the tracker; two definitions made one; …</td></tr>
+<tr><td class="d">15.09 Tue</td><td class="n">12</td><td class="d">11:27 – 19:48</td><td class="n">8.4 h</td><td class="n">0</td><td>one row per certificate of quality, one column per determination; the retest sampling dated, the retest series issued, Tranche 3 potency taken in; the CoQ references and the potency grades inside the workbook; potency grading and the superseded certificate on the CoQ Register; …</td></tr>
+<tr><td class="d">16.09 Wed</td><td class="n">64</td><td class="d">04:22 – 21:53</td><td class="n">17.5 h</td><td class="n">6</td><td><span class="pr">PR #19 merged, PR #20 opened</span> — the IJZ-MB campaign microbiology into the register, and two checks that were not checking; the supersession sweep over every determination, and the parallel desk&#x27;s audit answered; CoQ_Analysis_Master_v35.xlsx, the Result Supersession tab, and the repaired certificates; 21 findings, the same items, no new one; …</td></tr>
+<tr><td class="d">17.09 Thu</td><td class="n">3</td><td class="d">11:23 – 12:26</td><td class="n">1.1 h</td><td class="n">0</td><td>Fix the signature block overflowing the footer on every certificate; Build the internal certificates of analysis the CoQs cite (work in progress); Retest certificates cite the retest iCoA; GG1024 loss on drying 7.8 %; no signatures; Word copies and archives</td></tr>
+</tbody></table></div>
+<h2>Every commit</h2><details><summary>The full record, 282 commits, oldest first</summary>
+<div class="day">09.08.2026 Sunday</div><ul class="log">
+<li>01:18<code>0e9f9a6</code>Initial commit</li>
+<li>03:26<code>da12dbe</code>Consolidate all Purely Plant Letta technology per the Drive recovery layer</li>
+<li>03:27<code>9e69799</code>Baseline live-config manifest export 2026-08-09</li>
+<li>03:39<code>1e69f6b</code>Merge pull request #1 from 3p4e/claude/google-drive-links-d932ku</li>
+<li>04:22<code>9f48602</code>Pre-approve git operations for Claude Code sessions</li>
+<li>04:23<code>cacafff</code>Merge pull request #2 from 3p4e/claude/google-drive-links-d932ku</li>
+</ul>
+<div class="day">11.08.2026 Tuesday</div><ul class="log">
+<li>06:14<code>428d7a4</code>Reconcile the CoA register against the control sheets and the certificates (#3)</li>
+<li>06:27<code>1e9ec44</code>Add the Letta-host OCR tool for scanned certificates (#4)</li>
+<li>07:06<code>cb67ea2</code>Coverage audit, recovered CoA references, and the Cap Junky spelling (#5)</li>
+</ul>
+<div class="day">12.08.2026 Wednesday</div><ul class="log">
+<li>10:51<code>d539746</code>QCSP 001 v.02 specs, eCoA register, and QC activity reports (#6)</li>
+<li>10:53<code>ebab85c</code>Document the 2026-08-12 archival-memory outage and recovery (#7)</li>
+</ul>
+<div class="day">13.08.2026 Thursday</div><ul class="log">
+<li>22:56<code>60fbdd9</code>Letta host audit + QCSP 001 spec data suite (listing, matrix, tranches, CoQ/iCoA plans) (#8)</li>
+</ul>
+<div class="day">14.08.2026 Friday</div><ul class="log">
+<li>06:29<code>db1cd68</code>A4 PDF renders of the Final_Docs deliverable tree (351 files)</li>
+<li>06:34<code>4b0e950</code>Split ZIP bundles of the Final_Docs PDF tree for direct download</li>
+<li>07:05<code>1ec3e08</code>A4 PDF renders of the Final_Docs deliverable tree + download bundles (#9)</li>
+<li>07:34<code>c01db41</code>QC activity timeline (11-14 Aug) — house-style docx with hour-ruler band</li>
+<li>08:12<code>5ade30d</code>QC activity timeline — rebuilt with per-task chunks (width = time spent)</li>
+<li>08:47<code>5a8a6ab</code>QC Weekly Plan/Report Issue 01 (10-14 Aug) + consolidated four-session time band</li>
+<li>09:24<code>593e7f7</code>Fix Macedonian glyph rendering, scope time band to PP content, drop QMS doc codes from the weekly report</li>
+<li>12:03<code>a2c9a14</code>Strain Potency Study: all-time Total THC results per strain + degradation-aware grade ranges</li>
+<li>13:20<code>9c44e40</code>Potency Atlas: creative self-contained HTML edition of the potency study</li>
+<li>14:01<code>572b70a</code>Potency Atlas: Потенција wording, rename annotations, per-strain rename correlation</li>
+<li>14:17<code>2cfaede</code>Potency Atlas: redesigned renames section — our statistical ranges vs the Portfolio Master</li>
+<li>14:20<code>703891a</code>Potency Atlas: final definitive grade-range board closes the document</li>
+<li>14:26<code>e9a450b</code>Potency Atlas: light theme toggle + print/PDF export</li>
+</ul>
+<div class="day">17.08.2026 Monday</div><ul class="log">
+<li>14:09<code>9c73033</code>Potency Atlas: default to the light theme</li>
+<li>14:16<code>5fda364</code>Potency Atlas: whole-number nominal grades + renamed-spec range board</li>
+<li>14:27<code>52e6f04</code>Potency grades declared as whole-number nominal ± fitted tolerance</li>
+<li>15:07<code>7ccd666</code>Fix coverage bug + single governing declaration; propagate to Word study</li>
+<li>15:18<code>60538eb</code>Add Potency_Specs_and_Results.xlsx — specs, renames and results in one workbook</li>
+<li>16:09<code>b6f6645</code>Enforce ±10% tolerance ceiling on every declared potency grade</li>
+<li>16:26<code>1624359</code>Remove methodology, key-findings and degradation-evidence sections per owner</li>
+<li>16:30<code>9b0e85a</code>Correct false claim about the renamed specification names</li>
+<li>16:47<code>39de53d</code>Atlas readability pass: larger type, darker grays, 0.0-30.0% marked scale</li>
+<li>18:36<code>5f869e0</code>Rename W-tiers to Pot.-tiers, tighten percent formatting</li>
+<li>20:15<code>07b86f0</code>Non-overlapping potency tiers; batch-first rename rows; drop summary statistics</li>
+<li>20:40<code>b8ae49e</code>Plan each strain&#x27;s whole tier ladder at once — every tier at full ±10%</li>
+<li>22:55<code>f0cc952</code>Rebuild potency tier ladder as contiguous — no blind gaps between grades</li>
+<li>23:05<code>35bbf6d</code>Fix bare 10% to 10.00% in gap-note prose (house 2-decimal rule)</li>
+<li>23:11<code>c0176c6</code>Remove the &#x27;4 134 passages swept&#x27; chip from the Atlas hero header</li>
+<li>23:36<code>f3c2b6a</code>Fix tolerance allocation: give the last tier of each segment full 10% cap</li>
+<li>23:57<code>506d587</code>Widen nominal grid to half-percent steps (nn.00% or nn.50%)</li>
+</ul>
+<div class="day">18.08.2026 Tuesday</div><ul class="log">
+<li>00:44<code>1d06339</code>Declare tiers top-down: strongest tier full ±10%, lower tiers extend down</li>
+<li>01:05<code>efa5f52</code>Add per-strain top-nominal override; set Grape Pie=24, Motor Breath=18</li>
+<li>03:10<code>d52923b</code>Audit pass: drop dead feasible_nominals() mirrors, fix stale solve_chain docstring</li>
+<li>03:53<code>fb92ffd</code>Redesign Potency Atlas: surveyor&#x27;s-atlas visual identity</li>
+<li>04:08<code>5bafb7b</code>Revert &quot;Redesign Potency Atlas: surveyor&#x27;s-atlas visual identity&quot;</li>
+<li>04:40<code>1fa16c4</code>Polish original Atlas design: formatting fixes + typo corrections</li>
+<li>06:34<code>575c3a9</code>Atlas: merge final boards into one 3-column board; add sign-off block</li>
+<li>07:10<code>3b1c7b5</code>Add shareable Word edition of the Potency Atlas</li>
+<li>07:15<code>1036265</code>Workbook: add Specs × Batches sheets (spec limits -&gt; matching batches)</li>
+<li>08:21<code>b1977c0</code>Atlas: fill in the sign-off block with the actual QC/QA managers</li>
+<li>08:56<code>cc34ab8</code>Add Potency by Strain workbook, sourced from the corrected release register</li>
+<li>09:05<code>f72aa11</code>State the grade rule once, not under every strain</li>
+<li>09:37<code>94cccd2</code>Give Potency_Specs_and_Results.xlsx to the register+Atlas build</li>
+<li>10:04<code>44be9c0</code>Distribute every tranche batch over the export classes</li>
+<li>10:06<code>f490167</code>QC deliverables: potency study + Atlas, register-sourced workbook, export-class distribution (#10)</li>
+<li>10:14<code>c532055</code>Key every declared grade to the original strain name</li>
+<li>11:09<code>6e66a58</code>Pair export-list batches on the declared value too, not only the anchor</li>
+</ul>
+<div class="day">19.08.2026 Wednesday</div><ul class="log">
+<li>11:54<code>85d6945</code>Record the owner&#x27;s ingestion rule: RAGFlow on KVM4 is the pipeline</li>
+<li>13:18<code>c032c92</code>Exclude Letta as a RAG engine; record the clean-start wipe</li>
+<li>14:04<code>2b5e3d1</code>Correct the framing on the three re-authored QC records</li>
+<li>18:55<code>9770aa6</code>Add the RAGFlow reissue-replacement tool</li>
+<li>19:01<code>d63c9d3</code>Identify reports by content, not filename, and handle scanned copies</li>
+<li>19:05<code>99798d0</code>Read scanned reports with the policy vision chain, not tesseract</li>
+<li>22:50<code>b5ab546</code>Record the eCOA_INGEST repair: 385 of 389 searchable</li>
+</ul>
+<div class="day">20.08.2026 Thursday</div><ul class="log">
+<li>01:38<code>165e594</code>Original-strain grades, RAGFlow ingestion policy, and reissue-replacement tooling (#11)</li>
+</ul>
+<div class="day">26.08.2026 Wednesday</div><ul class="log">
+<li>18:21<code>dcb6bc3</code>Add August 2026 total THC re-test comparative report</li>
+</ul>
+<div class="day">30.08.2026 Sunday</div><ul class="log">
+<li>20:57<code>094523c</code>Add two-pass eCoA extraction runner and typed-record table</li>
+<li>21:27<code>d38a627</code>Add CoQ compiler and readiness index</li>
+<li>22:52<code>1c6a311</code>Add controlled vocabularies; rule the max acceptable count at 5x</li>
+<li>23:49<code>1a54062</code>Date-bound acceptance criteria; canonicalise units</li>
+<li>23:53<code>7ab0309</code>Capture the document code and the non-accredited method marker</li>
+<li>23:57<code>37be399</code>Store laboratory accreditation on the certificate; verified ППК25050</li>
+</ul>
+<div class="day">31.08.2026 Monday</div><ul class="log">
+<li>00:08<code>b02ef4a</code>Adopt the legacy-corpus rectifications: R4 self-check, E5 guard, stability rule</li>
+<li>00:32<code>c11c322</code>Add EP_GEMINI_API to the read-B rotation</li>
+<li>00:47<code>87ba8b5</code>Add spend safeguards to the runner and a LiteLLM fallback kit for KVM4</li>
+<li>00:49<code>e285573</code>Add consolidated corpus-run plan</li>
+<li>00:59<code>74d2981</code>Plan: corpus is 291; record graphrag/raptor and canvas-drift traps; doc alignment</li>
+<li>01:24<code>b5f71c1</code>Plan: sideways-scan trap and remedy; non-accredited marker non-blocking</li>
+<li>01:32<code>75ab067</code>Plan: QCCoA 001/001v02 excluded from dataset and pipeline entirely (ruling 16)</li>
+<li>01:33<code>f75a81d</code>Plan: CoQ production queue - one per retired QCCoA batch, reissue per retest</li>
+<li>01:43<code>373e8eb</code>Add corpus driver and Head-of-QC priority batch manifest</li>
+<li>01:47<code>afd5205</code>Spend alert at every $1 of OpenAI use</li>
+<li>01:52<code>556464b</code>Add UC_GEMINI_API as fifth key in the Gemini rotation</li>
+<li>01:52<code>7c7378b</code>Ignore the corpus driver&#x27;s transient outputs</li>
+<li>02:24<code>2534d8c</code>Reconcile per field and pair rows across key/marker differences</li>
+<li>02:31<code>49d3ea4</code>Parallel dual reads and ingest-ahead tranches</li>
+<li>02:37<code>7aa07f9</code>OpenRouter backstop for read B when the Google free tier exhausts</li>
+<li>02:41<code>2c6f413</code>CometAPI as second relay in read B&#x27;s Gemini chain</li>
+<li>02:43<code>8fe32b6</code>Load late-added API keys from a root-only keyfile at runner start</li>
+<li>05:00<code>3375535</code>Read A: same-model OpenRouter fallback; per-pool persistent spend meters</li>
+<li>05:12<code>499b5f8</code>Poll retried ingests to terminal state before gating</li>
+<li>08:21<code>c4f5a32</code>Corpus run: 221 records, plus two identity defects only scale revealed</li>
+<li>09:00<code>7089828</code>Corpus run complete: all 253 documents extracted</li>
+<li>09:11<code>608f594</code>CoQ register, confirmation queue, and a false-flag fix</li>
+<li>09:22<code>9cf46ac</code>eCoA database: two-pass extraction over the full corpus, CoQ compiler and register (#13)</li>
+<li>09:31<code>87dff8d</code>Initiate the confirmation queue: classify, reduce, and close the loop</li>
+<li>09:31<code>b4a603b</code>Confirmation queue: classify the held rows, resolve what is mechanical, close the loop (#14)</li>
+</ul>
+<div class="day">02.09.2026 Wednesday</div><ul class="log">
+<li>09:49<code>1201c0b</code>Identification C on a certificate basis: the HPLC cannabinoid certificate discharges it</li>
+<li>10:12<code>c598215</code>Quality Desk: the CoQ desk as a batch × parameter tracker</li>
+<li>10:33<code>61e72f9</code>Tracker: expandable cells, document links, completion meters, global criteria enforced; only an eCoA or iCoA is coverage</li>
+<li>11:23<code>1f16325</code>Tracker workbook v3: one document per line, glued sub-lot prefixes stripped</li>
+<li>11:31<code>6a17fc2</code>Tracker workbook v4: one certificate per row, result | reference per parameter, print-fitted</li>
+<li>11:41<code>34e207b</code>Tracker workbook v5: ✓/✗ per certificate row, results and references on every sheet where they apply</li>
+<li>12:03<code>8287214</code>Tracker workbook v6: flat tables, no merged data cells, one value per cell</li>
+<li>14:58<code>c07cfc5</code>Tracker v7: batch blocks with the acceptance criteria enforced</li>
+<li>15:03<code>bfdfb8d</code>Tracker: keep the line-for-line rule when a certificate holds no result</li>
+<li>15:54<code>2345440</code>Tracker v7: one two-row block per testing instance, joined on the lot</li>
+<li>16:09<code>186e546</code>CoQ compiler: derive cannabinoid totals so a CNP certificate printing CBN is never &#x27;no result on file&#x27;</li>
+<li>16:34<code>3cb4bcb</code>Tracker v7: name why a credited certificate is silent, and audit every case</li>
+<li>16:53<code>b95a1ec</code>v8: the database readings in the block layout, with the criteria enforced</li>
+<li>17:25<code>c9887dd</code>v8: apply the two credit corrections, and issue the work order for the rest</li>
+<li>17:35<code>33c305f</code>CoQ compiler: a total derived from the free form alone is a lower bound</li>
+</ul>
+<div class="day">03.09.2026 Thursday</div><ul class="log">
+<li>11:27<code>ebfbcdb</code>v8 truth check: every decision-bearing value verified against the page</li>
+<li>11:31<code>b5f7965</code>Truth check: ППК26033 Total CBD confirmed 0.05 % from the page</li>
+<li>11:34<code>d6a9f4f</code>Truth check closed: 472/0863/25 TYMC confirmed 1,9 × 10⁴ from the page</li>
+<li>11:50<code>3bd618c</code>tracker: v9 build — v8 verified and slimmed for Drive</li>
+</ul>
+<div class="day">04.09.2026 Friday</div><ul class="log">
+<li>13:20<code>0f311d1</code>Batch identity: fold the letter O that IJZ prints for the zero of a P-number</li>
+<li>13:21<code>397a9e0</code>Batch spellings: PO50022 and PO50202 were the letter-O spellings of P050022 and P050202</li>
+<li>13:52<code>1038a34</code>eCoA run 2 tooling: ingest driver, post-ingest fixes, and the tracker takes new testing instances</li>
+<li>14:04<code>378715e</code>Controlled vocabulary: &#x27;отсуствува&#x27; is the verb form of absent</li>
+<li>14:17<code>576b49a</code>CoQ Analysis Master v9.1: the 30 IJZ-MB certificates of 31.08/01.09.2026 as testing instances</li>
+<li>14:19<code>a39b66e</code>CoQ Analysis Master v10: the build carries its version in the file, the sheet and the Read Me</li>
+<li>14:39<code>38f2afb</code>CoQ Analysis Master v10: one iCoA per batch for identification A, B and foreign matter; Ident C on the assay certificate</li>
+<li>14:45<code>52e1f85</code>CoQ Analysis Master v10: chronological iCoA issuance list with the Ident C certificate per batch</li>
+<li>14:50<code>e3937a9</code>CoQ Analysis Master v10: CNP document codes for identification and foreign matter; retest series of iCoAs</li>
+<li>14:55<code>05ae460</code>iCoA issuance: the retest rows name the new assay and mycotoxin certificates; a retest iCoA takes a new number</li>
+<li>15:05<code>5f6274b</code>Tracker v10: fold the laboratory&#x27;s &#x27;Отсуствува&#x27;/&#x27;Отсуства&#x27; to &#x27;absent&#x27;</li>
+<li>15:58<code>6671f1c</code>eCoA corpus: P060432 bile-tolerant gram-negative ruled &lt; 10² и &gt; 10 CFU/g</li>
+<li>15:58<code>1681924</code>CoQ Analysis Master v10: harvest and packaging dates date the iCoA instances</li>
+<li>19:35<code>62dc71a</code>CoQ Analysis Master v10: one iCoA per P lot, packaging-complete date</li>
+</ul>
+<div class="day">05.09.2026 Saturday</div><ul class="log">
+<li>15:26<code>aa90b5b</code>CoQ Analysis Master v11: preliminary iCoA issuance register</li>
+<li>15:38<code>57ea0a0</code>iCoA register: two certificates per P lot, formula-driven numbering</li>
+<li>15:42<code>3676fab</code>iCoA register: pre-SOP certificates issued together on 13.05.2026</li>
+<li>17:25<code>e7e9ea9</code>Issuance registers: the ruling of 05.09.2026 — legacy and post-SOP series</li>
+<li>20:53<code>5b7f229</code>Issuance registers: retest-campaign certificates never certify the initial CoQ</li>
+</ul>
+<div class="day">06.09.2026 Sunday</div><ul class="log">
+<li>01:58<code>e7e5be0</code>CoQ register: every dated lot keeps its planned CoQ and number</li>
+<li>04:08<code>7ecaa6a</code>CoQ register: the IJZ-MB delivery of 25/26.08.2026 is campaign sampling for every lot</li>
+<li>22:01<code>52f3c33</code>Tracker: adopt the owner&#x27;s edits from the Drive copies of v9 and v10</li>
+<li>23:59<code>2e12dbb</code>Tracker v11: truth check of the workbook&#x27;s own statements and figures</li>
+</ul>
+<div class="day">07.09.2026 Monday</div><ul class="log">
+<li>09:05<code>6fbbde2</code>Tracker: verify_workbook.py, and the three defects it found in v11</li>
+<li>09:38<code>5f04a41</code>Tracker: one definition of covered, and verify_prose.py behind it</li>
+<li>09:39<code>ddcdb15</code>Tracker: nothing further is carried over from v9</li>
+<li>10:23<code>b2192cd</code>eCoA corpus: 197-9-K/M-26 confirmed on the page as GG1024_01</li>
+<li>10:42<code>b46ad34</code>Read the certificate pages: five results kept less than the page says</li>
+<li>10:57<code>219bdf3</code>Read the pages with the policy vision chain, not Tesseract</li>
+<li>12:05<code>0e12a38</code>Reconcile the three delivery tranches against the desk</li>
+<li>14:14<code>b4ba87e</code>QC coverage analysis, batch identity, delivery reconciliation, host audits (#12)</li>
+<li>16:51<code>e92ae0d</code>Rule the strain name, and read the customer&#x27;s certificate register</li>
+<li>16:54<code>06590d2</code>Give the artifact the two new sheets, and its own version number</li>
+</ul>
+<div class="day">09.09.2026 Wednesday</div><ul class="log">
+<li>05:10<code>28fd9a6</code>Write the dash, not its escape: the page printed — to the reader</li>
+<li>05:12<code>83db54e</code>Strain ruling (Cap Junky), the ImB certificate register, and v13 (#18)</li>
+</ul>
+<div class="day">10.09.2026 Thursday</div><ul class="log">
+<li>11:30<code>4f12765</code>Draft the Tranche 1 and 2 certificates, and stop printing numbered as issued</li>
+<li>12:07<code>0ef66ba</code>Reconcile the owner&#x27;s v20 workbook, and build v21 from it</li>
+<li>12:09<code>966e8ce</code>Ignore the artifact-page intermediate the extractor writes</li>
+<li>12:49<code>b962e13</code>Mark what the desk does not hold, in red brackets on the face of the document</li>
+<li>12:57<code>35af7d9</code>Mark the assay that misses the band printed beside it</li>
+<li>13:14<code>509e0c2</code>The master is the document: write only the fields the owner named</li>
+<li>13:28<code>c5cd06b</code>The owner&#x27;s README, and one number for the potency</li>
+<li>13:38<code>636ddb5</code>The date of issue is the register&#x27;s, and the certificate prints it</li>
+<li>14:08<code>e15fa56</code>The pills come from the specification, not the master&#x27;s specimen</li>
+<li>14:47<code>170a1af</code>The Tranche 1 and 2 drafts as two merged PDFs, fonts embedded</li>
+<li>16:17<code>ab13c15</code>Nothing runs off the sheet, and it is one A4 page</li>
+<li>17:37<code>5cb0a42</code>The first result is release testing; every later one is a retest</li>
+<li>18:33<code>80e6440</code>Rebuild every deliverable on the 10.09 rulings, and stop back-dating evidence</li>
+<li>18:35<code>651b639</code>Record the 18 back-dated result cells in the issuance rules</li>
+<li>18:49<code>fbedff4</code>One consolidated package, and a front door for it</li>
+<li>19:46<code>5d9f3f4</code>Issue the internal certificates of analysis, and cite them</li>
+<li>20:51<code>814df4b</code>The mycotoxin sub-parameters, and four lots the reading decides</li>
+<li>21:26<code>db28b8c</code>One notation for a not-detected result, and it is ND</li>
+</ul>
+<div class="day">11.09.2026 Friday</div><ul class="log">
+<li>09:11<code>38db1ad</code>The internal CoA&#x27;s testing window is the packaging window</li>
+<li>09:32<code>9929185</code>The internal CoA is dated on the first day of packaging</li>
+<li>10:39<code>7c0b030</code>v22: the rulings written into the workbook&#x27;s own formulas</li>
+<li>10:40<code>3baf990</code>The package index named v21 while the archive carried v22</li>
+<li>12:57<code>354674f</code>One spelling per assertion, and a verdict the desk could not read</li>
+<li>12:59<code>e5cea2e</code>Tranche 1 re-rendered on the controlled vocabulary</li>
+<li>13:05<code>5557370</code>Embed the italic weight the certificate actually sets</li>
+<li>13:05<code>161419b</code>Tranche 2 re-rendered on the controlled vocabulary</li>
+<li>13:06<code>a953626</code>Define the derived workbook version before FRESH uses it</li>
+<li>13:09<code>75bae2a</code>The package, on v23 and Type 3 free</li>
+<li>13:22<code>460d9f3</code>An analyte that was never tested does not get a line</li>
+<li>13:52<code>903951c</code>One Macedonian word for one assertion, and the master&#x27;s own convention</li>
+<li>13:58<code>6317f4b</code>Sub-rows pair inline, and the builder now watches the page height</li>
+<li>14:17<code>3164270</code>Measure the A4 page the way it actually prints, and make it fit</li>
+<li>14:22<code>5c3ce83</code>Both signature dates are on every certificate again</li>
+<li>14:45<code>53adc76</code>The iCoA number is defined twice, and the two disagree on every row</li>
+<li>14:48<code>1673fbb</code>A verifier that cannot fail is a report, not a check</li>
+<li>14:50<code>15810ea</code>The gate failed on a missing dependency, not on what it watches</li>
+<li>14:53<code>6b6d35d</code>Derive the repo root; an absolute path is one machine&#x27;s truth</li>
+<li>15:10<code>5073408</code>One definition of the internal-CoA number, and two defects behind it</li>
+<li>15:13<code>0abceb9</code>The numbering is closed; the coverage is not</li>
+<li>15:16<code>83c1273</code>Tranche 1 on the corrected iCoA codes</li>
+<li>15:18<code>96884e0</code>Tranche 2 and the package, on the corrected series</li>
+<li>15:46<code>8658cd0</code>The register is the series, not a second opinion about it</li>
+<li>15:46<code>ee0136e</code>v24, and a schedule that was 183 rows behind its own code</li>
+<li>16:10<code>e9a5242</code>v25 — the workbook says what has been ruled</li>
+</ul>
+<div class="day">12.09.2026 Saturday</div><ul class="log">
+<li>00:05<code>7393bc4</code>Checkpoint: today&#x27;s Farmahem 227-K/26 retest transcriptions, not yet live</li>
+</ul>
+<div class="day">14.09.2026 Monday</div><ul class="log">
+<li>11:00<code>39cab0e</code>v26 — seven tabs, not sixteen, and a checker that had never run</li>
+<li>11:33<code>23087b4</code>Truth check of the fold: the registers never asked strains.py</li>
+<li>15:06<code>0a99ee5</code>Tranche 2 mycotoxin intake: 32 Farmahem 220-M/26 certificates read, packaged as one write</li>
+<li>16:28<code>9635869</code>v27: the 32 Tranche 2 mycotoxin certificates reach the tracker; two definitions made one</li>
+<li>16:31<code>48fd575</code>v27 workbook delivered with the intake it comes from</li>
+</ul>
+<div class="day">15.09.2026 Tuesday</div><ul class="log">
+<li>11:27<code>80e8211</code>CoQ references: one row per certificate of quality, one column per determination</li>
+<li>12:41<code>c187d09</code>v28: the retest sampling dated, the retest series issued, Tranche 3 potency taken in</li>
+<li>13:03<code>4f55df7</code>v29: the CoQ references and the potency grades inside the workbook</li>
+<li>13:12<code>56c0f3b</code>v29: potency grading and the superseded certificate on the CoQ Register</li>
+<li>13:42<code>7c46751</code>v29 rebuilt: the potency specification of 15.09.2026 used exactly, everywhere</li>
+<li>13:51<code>9198899</code>v29: every specification document code is v.01, for review</li>
+<li>14:27<code>c46876c</code>v29: sequential grade numerals, register audit, the supersedes line on reissued CoQs</li>
+<li>15:55<code>e06eaee</code>v30: the Tranche 2 potency certificates taken in, thirty Tranche 2 reissues numbered</li>
+<li>16:43<code>925f86f</code>v31: Tranche 3 codes allocated on the owner&#x27;s date, the retest programme the QP&#x27;s</li>
+<li>17:54<code>2850cf5</code>v32: truth check of the results and cited documents; 103 tracker cells corrected</li>
+<li>18:10<code>94baacf</code>v33: the CoQ compilation inside the workbook — the owner&#x27;s first request</li>
+<li>19:48<code>49c318c</code>Truth check: gate the CoQ compilation too (T9)</li>
+</ul>
+<div class="day">16.09.2026 Wednesday</div><ul class="log">
+<li>04:22<code>2171ae5</code>v34: the IJZ-MB campaign microbiology into the register, and two checks that were not checking</li>
+<li>05:06<code>fd5cb97</code>v35 sources: the supersession sweep over every determination, and the parallel desk&#x27;s audit answered</li>
+<li>05:12<code>f546b52</code>v35 build: CoQ_Analysis_Master_v35.xlsx, the Result Supersession tab, and the repaired certificates</li>
+<li>05:18<code>29b0482</code>Truth check re-run on v35: 21 findings, the same items, no new one</li>
+<li>06:18<code>06947cb</code>Delivery package for v35, and the workbook&#x27;s own build date corrected to 16.09.2026</li>
+<li>06:19<code>a7637f1</code>A no-PDF delivery package: --no-pdf on the package builder</li>
+<li>07:50<code>1887696</code>v36 sources: the starred-sample ruling, and a title that named another lot on all 73 drafts</li>
+<li>07:55<code>b485ad4</code>v36 build: every certificate names itself, and no certificate rests on a starred sample</li>
+<li>07:59<code>a2d2601</code>A starred sample is not a sublot: the sweep stops asking a question the ruling answered</li>
+<li>08:31<code>9d85d98</code>Package workbook v36: re-stamped build date, versioned archive names</li>
+<li>09:06<code>e554d4c</code>v37 sources: the April-2026 release panel, the starred spellings joined, two read-backs repaired</li>
+<li>09:09<code>a75e2f7</code>Two defects the export carried: a reissue asserting a retest it has not had, and a lot the pass names differently</li>
+<li>09:36<code>fb2004d</code>v37 build: the April panel in the register, the star joined, and the fleets&#x27; findings consolidated</li>
+<li>09:40<code>4f17098</code>A table cell that carried a pipe: the docs gate reads it as two columns</li>
+<li>10:10<code>e27eeb1</code>The company&#x27;s own certificates of analysis, read from page text the desk already held</li>
+<li>10:14<code>ea22145</code>One laboratory, one row: Section 03 printed the same institution twice on 20 of 73 certificates</li>
+<li>10:18<code>eaff8ca</code>v38 build: the company&#x27;s own certificates read, and one laboratory to a row</li>
+<li>10:21<code>bca5614</code>What certifies which parameter, batch by batch — asked for on 16.09.2026</li>
+<li>11:33<code>de66e05</code>v39: the cannabinoid letter folded to the Cyrillic the pages print</li>
+<li>12:04<code>1b7e183</code>v40: the reissue carries the release round&#x27;s result on everything the retest did not run</li>
+<li>12:06<code>787f844</code>The announcement&#x27;s build marker names the shipped version</li>
+<li>12:12<code>336edc1</code>One document per tranche, flattened for the printer</li>
+<li>12:39<code>f82a293</code>Vendor the Claude Design results-table skeleton from the handoff package</li>
+<li>13:14<code>7cfc9f1</code>Vendor the Claude Design stylesheet and toolchain from the handoff package</li>
+<li>13:26<code>7eaa9e5</code>The certificate set built through the Claude Design toolchain, from v40</li>
+<li>13:57<code>14a29ea</code>Tranche 1 and Tranche 2 as one document each, from the current build</li>
+<li>14:14<code>564e58c</code>The grey edges of determinations 9 to 12, and the tranche retest documents</li>
+<li>14:15<code>05a70ec</code>Keep every build log out of the tree, not only the *_run.log ones</li>
+<li>14:22<code>d9166b7</code>The complete tranche documents, Tranche 3, and a shorter announcement</li>
+<li>14:24<code>0ab4c84</code>The set as it is built: one PDF per output folder</li>
+<li>14:31<code>6f529e5</code>The Section 01 strips printed grey too: convert by rule, not by name</li>
+<li>14:33<code>7862de9</code>The receipt records the conversion as it is now done: by rule, not by name</li>
+<li>14:37<code>4c8ec00</code>Every tranche document re-exported on the by-rule conversion</li>
+<li>14:38<code>f5cabb0</code>The four folder PDFs, re-printed on the same pages</li>
+<li>14:56<code>3c97a4b</code>The title sat left of centre on every reissue: a class the package never styles</li>
+<li>15:03<code>49a0135</code>Every document re-exported on the header fix</li>
+<li>15:14<code>76abc9d</code>Three corrections of 16.09.2026, in one appended layer</li>
+<li>15:27<code>aaec313</code>A reissue may cite its own campaign&#x27;s certificate where the initial has none</li>
+<li>15:48<code>b0e03a2</code>The Head of QC is right: the results are on the desk and not in the register</li>
+<li>15:55<code>2317351</code>GG1024&#x27;s microbiology and metals were on the in-house sheet, with no number to cite</li>
+<li>15:58<code>c6f8bd5</code>The in-house rule reaches the release round too</li>
+<li>16:08<code>246ea05</code>The container was asked directly, and it holds nothing the desk does not</li>
+<li>16:30<code>9b8b39e</code>The certificate database held the microbiology and the metals the desk was missing</li>
+<li>16:32<code>1ad1332</code>The email says what every page says, not more</li>
+<li>16:34<code>1864dca</code>Reprint the four folder documents from the filled certificates</li>
+<li>17:24<code>393eaa6</code>A counted result above its criterion is marked by Ph. Eur. 5.1.4, on every row</li>
+<li>17:27<code>d2d2b0b</code>#1, #2 and #7 cite the internal certificate the master already assigned them</li>
+<li>17:28<code>0a7d990</code>The tranche documents reprinted with the iCoA parameters and the band marking</li>
+<li>17:29<code>a77e5e8</code>The ISSUE_COQ and T1 folder documents reprinted from the same data</li>
+<li>17:31<code>ff0d122</code>The four folder documents reprinted from the same data</li>
+<li>18:17<code>e46bd23</code>Certificates of quality — the record reconciled, the certificate database taken in, Tranches 1 and 2 issued (#19)</li>
+<li>18:45<code>ef2c34a</code>A panel determined on one sample prints whole, or it does not print at all</li>
+<li>18:46<code>1559e14</code>A panel determined on one sample prints whole, or it does not print at all</li>
+<li>18:57<code>756e86a</code>A document is compared by the desk&#x27;s fold, not by how the page spelled it</li>
+<li>18:59<code>755f838</code>The master workbook follows the series to v41</li>
+<li>19:57<code>c45900e</code>The Tranche 3 mycotoxin re-analysis, read and taken in</li>
+<li>19:58<code>139d47b</code>The tranche documents and ISSUE_COQ reprinted with the Tranche 3 mycotoxins</li>
+<li>19:59<code>c7b5d78</code>The T1 folder document reprinted</li>
+<li>20:00<code>1965656</code>The T1, T2 and T3 folder documents reprinted</li>
+<li>20:18<code>ebee478</code>Section bars and Section 01 bands fade to white before the sheet edge</li>
+<li>20:25<code>9aa7a0b</code>Reprint the whole set with the edge fade</li>
+<li>20:43<code>f7f9ba2</code>One navy ink in the results column, [NT] for a determination not performed</li>
+<li>21:01<code>a72d114</code>The finished certificate set, packaged for sending on</li>
+<li>21:53<code>baa0926</code>Second alignment pass on the certificates: edges, Sections 01-04, signatures</li>
+</ul>
+<div class="day">17.09.2026 Thursday</div><ul class="log">
+<li>11:23<code>e10aed1</code>Fix the signature block overflowing the footer on every certificate</li>
+<li>11:27<code>1f2b569</code>Build the internal certificates of analysis the CoQs cite (work in progress)</li>
+<li>12:26<code>44f6ff5</code>Retest certificates cite the retest iCoA; GG1024 loss on drying 7.8 %; no signatures; Word copies and archives</li>
+</ul></details>
+<h2>What exists today</h2><div class="wrap"><table><thead><tr><th>deliverable</th><th class="n">count</th></tr></thead><tbody>
+<tr><td>Certificates of quality — each as HTML, vector PDF and Word</td><td class="n">172</td></tr>
+<tr><td>Internal certificates of analysis</td><td class="n">154</td></tr>
+<tr><td>CoQ Analysis Master workbook versions in the tracker</td><td class="n">30</td></tr>
+<tr><td>Desk scripts</td><td class="n">96</td></tr>
+<tr><td>Desk records and reports (Markdown)</td><td class="n">43</td></tr>
+<tr><td>Controlled registers and flat data (csv, tsv, json)</td><td class="n">22</td></tr>
+</tbody></table></div>
+<footer>The certificates are in <code>design_handoff/dist/</code> as four archives; the internal certificates in <code>icoa_handoff/out/</code>; the master workbook and every desk record in <code>tracker/</code>; the open-items register in <code>tracker/OPEN_ITEMS.md</code>.</footer>
+</main></body></html>

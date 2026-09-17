@@ -1003,6 +1003,31 @@ ITEMS = [
      "Each is carried on the Work Order sheet with what it needs; none reaches a certificate.",
      "Nothing — these are desk work, listed so the count is visible.",
      "Work Order sheet"),
+
+    ("OI-49", "Document identity", "open",
+     "Eight certificates still credit the in-house certificate beyond identification A, identification B and foreign matter",
+     "The Head of QC, 17.09.2026, reading Section 03 of CoQ-PP_26-004 (GG1024): the internal "
+     "certificate was cited under one code with two dates and credited with parameters 1 to 11 "
+     "where the Institute and CNP had determined 8 to 12. apply_lab_attribution.py put that "
+     "right on every certificate — 19 rows re-pointed to the Institute's 166/0274/25 and "
+     "748/2025 on the two GG1024 certificates, 7 rows with no certificate behind them now not "
+     "tested (GG1024's release assay of 13.34 % from the company's CoA of 23.04.2025, which the "
+     "desk's own gate had refused to corroborate; Identification C on HPA1024, OPM1024, P050192 "
+     "and P050202), 4 in-house CoA numbers replaced by the internal certificate, 30 "
+     "'PP CoA #nnn / ППКnnnnn' citations reduced to the CNP certificate alone. What remains: "
+     "on HPA1024 and OPM1024 (CoQ-PP_26-005/006 and their retests 097/101) the internal "
+     "certificate covers #4, #5, #9, #10.2, #11 and #12 from the company's Report of Analysis, "
+     "and on P050192 and P050202 (025/026 and 107/149) #4, #5 and #8 from the in-house "
+     "cross-check — 54 rows on 8 certificates, under the ruling of 10.09.2026 that one internal "
+     "certificate covers any determination whose only result in the round is an in-house record.",
+     "Kept as the 10.09 ruling says, with one date per document; the internal certificates of "
+     "those four lots list the parameters they cover.",
+     "Whether the reading of 17.09.2026 — the in-house laboratory's analyses are 1, 2 and 7 — "
+     "reaches these four lots. If so, the 54 rows print not tested (the rule of 02.09.2026: a "
+     "value no certificate of analysis certifies cannot be on a release certificate) and the "
+     "four internal certificates shrink to 1, 2 and 7.",
+     "apply_lab_attribution.py; icoa_register_2026-09-10.csv (covers_in_house); "
+     "design_handoff/docs/REBUILD_v40.md §3f"),
 ]
 
 STATES = {"open", "marked", "ruled"}
@@ -1014,7 +1039,7 @@ def items(state=None, area=None):
     """The register, optionally narrowed.
 
     >>> len(items())
-    48
+    49
     >>> [i[0] for i in items(area="Specification")]
     ['OI-01', 'OI-02', 'OI-03', 'OI-44']
     >>> sorted({i[2] for i in items()})

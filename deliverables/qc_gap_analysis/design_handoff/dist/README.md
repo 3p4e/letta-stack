@@ -38,7 +38,7 @@ the 12-month retest, on every batch of all three tranches.
 `[ — ]` appears only in Section 01 and in the Section 03 work-order row, where it means a
 **document** has not been located — a different statement from a determination not performed.
 
-## One thing still outstanding
+## Two things still outstanding
 
 **`CoQ-PP_26-149`** (P050202 · GP Grape Pie Grade II, tranche 3 retest) is the only
 certificate in the set still printing `[NT]` on Aflatoxin B₁ and Ochratoxin A. Its source,
@@ -47,3 +47,12 @@ desk's extraction nor the Head of QC's own pass returned text for it. The other 
 retests carry the full mycotoxin panel from that same 16.09.2026 intake.
 
 Open `227-18-М/26` by hand and the certificate completes. It is registered as **OI-48**.
+
+**Section 03 on eight certificates** (CoQ-PP_26-005, 006, 025, 026 and their retests 097, 101, 107,
+149) still credits the in-house certificate beyond identification A, identification B and foreign
+matter — microbiology, mycotoxins, metals and pesticides on HPA1024 and OPM1024 from the company's
+Report of Analysis, assay and loss on drying on P050192 and P050202 from the in-house cross-check —
+under the ruling of 10.09.2026 that one internal certificate covers a determination whose only
+result is an in-house record. Every other certificate now cites the outside laboratory that made
+the determination, and no document carries two dates. It is registered as **OI-49**, with the
+question whether those 54 rows should instead print not tested.

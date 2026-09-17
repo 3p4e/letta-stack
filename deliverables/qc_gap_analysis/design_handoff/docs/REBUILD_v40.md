@@ -283,6 +283,32 @@ its line and the 32 px above it, to be signed by hand on the printed page. Secti
 otherwise unchanged: names, credentials, roles and dates print as before. 172 documents
 rebuilt, printed as vector PDF, exported to Word and re-archived.
 
+## 3f · Section 03 — every determination cites the laboratory that made it (17.09.2026)
+
+The Head of QC, on CoQ-PP_26-004 (GG1024): the internal certificate cited twice under one code
+with two dates, and credited with parameters 1 to 11 where the two outside laboratories were
+credited only with 8 and 12. The company's in-house CoA of 23.04.2025 had copied the Institute's
+microbiology and metals, and the desk had routed that copy through the internal certificate with
+the copy's date. `apply_lab_attribution.py` applies five rules to every row of every certificate
+(one document, one date; the outside laboratory cited where the 09.09 pass names one; no
+document, no citation; an in-house CoA never cited by its own number; one outside certificate,
+one name) and reports what it changed:
+
+| rule | rows | certificates |
+| --- | ---: | --- |
+| R2 · re-pointed to the Institute's 166/0274/25 and 748/2025 | 19 | CoQ-PP_26-004, 115 |
+| R3 · no certificate behind the figure — now not tested, figure kept in `also` | 7 | 004 (#3/#4/#5), 005, 006, 025, 026 (#3) |
+| R4 · `PP CoA #026` → the round's internal certificate | 4 | 031, 159 |
+| R5 · `PP CoA #nnn / ППКnnnnn` → the CNP certificate alone, its own date (from the register, the 09.09 pass, or the certificate's own page in the page-text cache: ППК25378 · 12.12.2025, ППК26005 · 21.01.2026) | 30 | 032–036, 041 and their retests 096, 113, 116, 118, 136, 150 |
+| kept under the 10.09 ruling (`covers_in_house`) — OI-49 | 54 | 005, 006, 025, 026, 097, 101, 107, 149 |
+
+After it: no document code carries two dates anywhere in the set, no in-house record is cited
+by its own name, and the in-house laboratory is credited beyond 1, 2 and 7 only on the eight
+certificates OI-49 names. The same pass checked the certificate codes: 165 numbered (release
+001–084, retest 085–165), seven at issue; every retest's *supersedes* line names its lot's
+release certificate with the register's code and date, the pages print it, no release
+certificate prints one, and no row cites a document dated after its certificate.
+
 ## 4 · Four defects the rebuild exposed, and what was done
 
 ### 4.1 · A register status was hiding results the desk holds
