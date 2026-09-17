@@ -1030,19 +1030,28 @@ ITEMS = [
      "design_handoff/docs/REBUILD_v40.md §3f"),
 
     ("OI-50", "Specification", "open",
-     "Wedding Cake has a potency grade but no issued specification, so its certificate prints no product attributes",
+     "Wedding Cake: one result, a first specification of 26.00 ± 2.60 %, four older issued WED documents it supersedes, dominance still to be determined",
      "The Head of QC's Potency_specifications_25.pdf (specs/, 17.09.2026) grades Wedding Cake at "
      "26.00 ± 2.60 % (23.40 – 28.59 %), a strain the desk's table had not carried; "
      "apply_potency_grades.py added it and CoQ-PP_26-165 (P060102, 25.15 %) now prints grade I, "
      "WED_THC26 : CBD1 and QCSP_001_WED-I_v.01. The same pass corrected Amnesia Core Cut's "
      "tolerance to ± 1.20 (10.80 – 13.19 %) on CoQ-PP_26-106; the other 22 strains matched the "
      "PDF to the digit and no result of the 172 certificates falls outside its strain's windows. "
-     "But no QCSP 001 specification for Wedding Cake is on file (spec_attributes_2026-09-10.csv "
-     "holds none), so Section 01 of CoQ-PP_26-165 marks no phenotype, chemotype or processing "
-     "and prints no primary packaging.",
-     "The grade, code and window print; the attribute pills stay unmarked rather than guessed.",
-     "The phenotype, chemotype, processing and packaging of Wedding Cake — or the issued "
-     "QCSP_001_WED specification they are read from.",
+     "The Head of QC, 17.09.2026: one result, 25.15 %, and this is the strain's first "
+     "specification. The desk holds exactly that one result (Farmahem 227-4-К/26, 11.09.2026, "
+     "the retest); the release certificate CoQ-PP_26-046 has none, and the Farmahem certificate "
+     "031-3-К/26 of WED102501 that would carry the release-round assay is on Drive and unread "
+     "(OI-42). The product attributes were on the desk after all — spec_attributes_2026-09-10.csv "
+     "carries four issued Wedding Cake documents, QCSP_001_WED-I…IV_v.01 (BASE_SPCs), the old "
+     "ladder 28.50 ± 1.50 / 24.95 ± 1.95 / 19.45 ± 3.45 / 10.45 ± 5.45 — so CoQ-PP_26-165 now "
+     "prints HYBRID · THC · MACHINE TRIMMED and the Triplex Alu Bag from them, with the strain's "
+     "dominance still TO BE DETERMINED as those documents print it. Under the rule of 15.09.2026 "
+     "the new single grade replaces that ladder and keeps the code QCSP_001_WED-I_v.01; the "
+     "status beside it records what the issued WED-I printed.",
+     "Grade, code, window and attributes print; the dominance is not guessed.",
+     "The dominance (indica : sativa) of Wedding Cake, and confirmation that QCSP_001_WED-I_v.01 "
+     "at 26.00 ± 2.60 % is the first specification of the new series and supersedes the four "
+     "issued WED documents.",
      "specs/Potency_specifications_25_2026-09-17.pdf; apply_potency_grades.py; "
      "spec_attributes_2026-09-10.csv"),
 ]
