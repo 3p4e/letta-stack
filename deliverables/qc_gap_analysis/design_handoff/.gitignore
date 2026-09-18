@@ -4,3 +4,8 @@
 # Word copies of the pages, one per certificate (export_docx_v40.py). Like pdf/pages/ they
 # travel inside the dist/ archives, not as 172 tracked binaries.
 docx/
+
+# The Word copies grouped for sending (word_archives.py). Every one of them is already
+# inside a dist/ archive; these are transport-sized duplicates for a 30 MiB attachment
+# ceiling, and 160 MiB of them in the history would be paid for on every clone.
+dist/word/
