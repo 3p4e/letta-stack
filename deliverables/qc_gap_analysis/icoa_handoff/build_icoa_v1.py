@@ -275,7 +275,7 @@ def build(only=None):
         scope = sorted(info["rows"].keys(), key=dnum)
         issued = (info["rows"][scope[0]].get("dd") or "").strip() or DASH
         carried = cls == "initial" and any(round_of(c["t"]) == "retest" for c in info["coqs"])
-        series_label = ("12-month retest" if cls == "retest"
+        series_label = ("retest" if cls == "retest"
                         else ("initial release · carried to reissue" if carried else "initial release"))
 
         doc = tpl

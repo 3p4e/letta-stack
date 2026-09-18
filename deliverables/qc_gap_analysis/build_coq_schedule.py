@@ -6,8 +6,8 @@
 
 The numbered CoQs are the owner's, not a prediction. The ISSUE_COQ folder in Drive
 holds the approved master template, 48 rendered initial-release CoQs numbered
-`CoQ-PP-{year}-{NNNN}` sequentially by packaging date, and 13 additional-testing CoQs
-(`CoQ-PP-2026-0027 … 0039`) for the lots whose 12-month retest fell due — one CoQ per
+`CoQ-PP-{year}-{NNNN}` sequentially by packaging date, and 13 retest CoQs
+(`CoQ-PP-2026-0027 … 0039`) for the lots that had been retested — one CoQ per
 **packaged lot**, each carrying an `iCoA-PP-{year}-{NNNN}` reference. Its issue plan is
 committed beside this file as `coq_issue_plan.json`; the conventions are in
 `ISSUE_COQ_CONVENTIONS.md`.
@@ -15,17 +15,24 @@ committed beside this file as `coq_issue_plan.json`; the conventions are in
 The universe those 61 sit in is the owner's ruling of 31.08.2026: **one initial CoQ
 for every batch on record, first to last** — the 48 numbered lots are Tranche 01 (19)
 and Tranche 02 (29) only, and every batch past them gets a PREDICTED initial CoQ —
-**and a 12-month cannabinoid + mycotoxin reissue for every batch**, starting from the
-beginning of Tranche 01/02: 13 reissues carry numbers (0027…0039), the other 35 of
-the 48 are predicted at packaging + 12 months, and every later batch is predicted at
-release + 12 months. A predicted CoQ carries no number — numbers are copied from the
+**and a cannabinoid + mycotoxin retest reissue for every batch**, starting from the
+beginning of Tranche 01/02: 13 reissues carry numbers (0027…0039) and the other 35
+are predicted. A predicted CoQ carries no number — numbers are copied from the
 issuance record at issue, never computed in advance.
+
+**There is no 12-month certificate** (Head of QC, 18.09.2026): *"there is no such
+thing as a 12 month reissue certificate, only the retests."* A second certificate of
+quality exists because the lot was RETESTED on a campaign — 197-, 220- or 227-series —
+and it is named for that, never for an annual schedule. The +12-month arithmetic below
+survives only as the ORDERING placeholder for a retest whose certificate has not been
+numbered yet; it dates no issued certificate, and none of the 165 rendered documents
+carries it. Where a retest CoQ is issued, its date is its campaign's.
 
 Dating: **the CoQ SOP was put in use on 11.05.2026** (owner, 31.08.2026). No CoQ may
 print an earlier issue date. The plan's per-CoQ dates are packaging dates — the basis
 of the numbering series (`CoQ-PP-2025-…` is the 2025 packaging series), never issue
 dates. Each schedule row therefore shows the basis date and the earliest permissible
-issue date: the SOP date, the newest document the CoQ cites, or the 12-month due
+issue date: the SOP date, the newest document the CoQ cites, or the retest placeholder
 date, whichever is latest. QC sets the real date at issue.
 
 The plan deliberately leaves controlled blanks — every result the master spec does not
@@ -247,7 +254,7 @@ def icoa_plan(per_coq):
             # releases down the retest route, where Farmahem covers identity, and
             # silently dropped 26 Ident A + B certificates the schedule's own rows
             # say the in-house laboratory owes.
-            typ = "reissue" if p["type"].startswith("additional") else "initial release"
+            typ = "reissue" if p["type"].startswith("retest") else "initial release"
             owed = [n for n in nos if n in p["outstanding"]
                     and route_for(typ, n).startswith("Purely Plant laboratory")]
             if not owed:
@@ -414,8 +421,9 @@ IN_HOUSE_LAB = "Purely Plant"
 ST_OFFREG = ("covered — certificate on file, but the release register has no block "
              "for this cultivation batch")
 
-# The retest programme is universal — every batch has a 12-month re-analysis of the
-# CANNABINOIDS and the MYCOTOXINS and gets a CoQ reissue for it (owner, 31.08.2026).
+# Every batch that is retested has its CANNABINOIDS and its MYCOTOXINS re-analysed and
+# gets a CoQ reissue for it (owner, 31.08.2026; narrowed 15.09.2026 to tranches 1-3,
+# and named a RETEST rather than a 12-month anything, Head of QC 18.09.2026).
 # Identity is redone by Farmahem together with the assay, foreign matter by the
 # in-house laboratory. Everything else is not retested: on a reissue those
 # determinations stand on the initial CoQ, and saying "owed" for them — as an earlier
@@ -590,7 +598,7 @@ def outstanding_of(det, icoa_row, reg, reissue, blocked):
 
     **Release-time coverage does not carry to a reissue.** Twelve batches have identity
     and foreign matter covered by their CNP Ph. Eur. 11.5 certificate *at release*. A
-    12-month CoQ certifies the material as it is at that date: the owner's routing of
+    retest CoQ certifies the material as it is at the retest date: the owner's routing of
     31.08.2026 sends identity to Farmahem with the assay and leaves foreign matter to
     the in-house laboratory, on every batch. A certificate from the release round
     cannot stand behind a determination on a document dated a year later — the same
@@ -631,7 +639,7 @@ def schedule():
     verbatim from the ISSUE_COQ folder, which generates it from
     PP_Potency_MASTER_Spec.xlsx — lists **48 packaged lots with issued CoQ numbers**
     (`CoQ-PP-{year}-{NNNN}`, sequential by packaging date) **plus 13 additional-testing
-    CoQs** (`CoQ-PP-2026-0027 … 0039`) for the lots whose 12-month retest fell due.
+    CoQs** (`CoQ-PP-2026-0027 … 0039`) for the lots that had been retested.
     Each carries an `iCoA-PP-{year}-{NNNN}` reference, the lot's cultivation batch, the
     grade acceptance range and the issue date. See ISSUE_COQ_CONVENTIONS.md.
 
@@ -639,7 +647,7 @@ def schedule():
     lot**, and 61 carry numbers. The universe around them is the owner's ruling of
     31.08.2026: one initial CoQ per batch on record, a reissue for all 48 Tranche
     01 + 02 lots (19 + 29), and a predicted reissue a year after release for every
-    batch past them — the 12-month cannabinoid + mycotoxin retest programme is
+    batch past them — the cannabinoid + mycotoxin retest programme is
     universal.
 
     What the ISSUE_COQ folder leaves as controlled blanks — every result the master
@@ -659,7 +667,7 @@ def schedule():
     plan.sort(key=lambda x: (sort_date(x["pk"]), x["id"]))
 
     # Six register blocks are keyed by a packaged-lot P-number and hold the
-    # Farmahem 12-month re-analyses OF plan lots (the register's "197-only"
+    # Farmahem re-analyses OF plan lots (the register's "197-only"
     # rows: P060152 is J31102501, P060212 is JD112501, P060242 is OPM122501,
     # P060352 is FB012602, P060382 is SCR012603, P060402 is GG012603 — matched
     # by the plan's own packaged-lot number). Same material, second analysis:
@@ -754,10 +762,10 @@ def schedule():
     # reissue. The 13 already due carry ordinary sequential numbers, 0027…0039,
     # in packaging-date order — confirmed against the rendered files in
     # ISSUE_COQ (CoQ-PP-2026-0034 is P050052, 0038 is P050092, 0039 is
-    # P050112). The other 35 are PREDICTED at packaging + 12 months, in plan
+    # P050112). The other 35 are PREDICTED on the ordering placeholder, in plan
     # order — from the beginning.
     for i, x in enumerate([x for x in plan if x.get("retest")]):
-        coqs.append({"date": x["retest"], "type": "additional testing (12-month)",
+        coqs.append({"date": x["retest"], "type": "retest",
                      "plan": x, "number": f"CoQ-PP-2026-{27 + i:04d}", "issued": True})
     def campaign_on_file(name, pp=""):
         """A campaign re-analysis certificate in the lot's register block (or the block
@@ -770,7 +778,7 @@ def schedule():
     for x in plan:
         if not x.get("retest") and campaign_on_file(x["cb"], x["pp"]):
             coqs.append({"date": plus_year(x["issue"]),
-                         "type": "additional testing (12-month) — predicted",
+                         "type": "retest — predicted",
                          "plan": x, "number": NO_NUMBER, "issued": False})
 
     # The retest programme is the QP's, not universal (owner, 15.09.2026): only the
@@ -783,7 +791,7 @@ def schedule():
         if not campaign_on_file(stub["cb"]):
             continue
         coqs.append({"date": plus_year(stub["issue"]),
-                     "type": "additional testing (12-month) — predicted",
+                     "type": "retest — predicted",
                      "plan": stub, "number": NO_NUMBER, "issued": False})
 
     rows, per_coq = [], []
@@ -797,7 +805,7 @@ def schedule():
                                "cells": defaultdict(list)})
         ic_row = icoa.get(BI.batch_key(x["cb"]), {})
         sp = specs.get(x["pp"]) if x["pp"] else None
-        additional = coq["type"].startswith("additional")
+        additional = coq["type"].startswith("retest")
         blocked = cb == "FB032601"
 
         # Owner, 15.09.2026: the grade, nominal, tolerance and range on a certificate
@@ -1030,12 +1038,12 @@ def schedule():
         # The printed issue date is set at issue, and may be no earlier than the
         # latest of the SOP in-use date (11.05.2026) and the newest document the
         # CoQ cites. An additional-testing CoQ that cites nothing yet cannot
-        # precede its 12-month due date either — but once the re-analysis is on
+        # precede its retest placeholder date either — but once the re-analysis is on
         # file, the due date stops being a floor (Farmahem ran several lots
         # early: J31102501's 197-16 pair is dated 10 months after packaging).
         bound = (sort_date(SOP_EFFECTIVE), SOP_EFFECTIVE)
         # A carried row is the initial certificate's evidence, not this
-        # certificate's: it neither dates a reissue nor lifts the 12-month floor.
+        # certificate's: it neither dates a reissue nor lifts the retest placeholder floor.
         cited_dates = [r2["Document date"] for r2 in rows[start:]
                        if r2["Source document"] not in ("", "—")
                        and r2["Document date"]
@@ -1120,7 +1128,7 @@ def write_workbook(rows, per_coq, dets):
     ws = wb.create_sheet("CoQ Parameter Schedule")
     COLS = [("Seq", 6, ""), ("CoQ number", 17, "ISSUE_COQ numbering"),
             ("CoQ type", 20, ""),
-            ("Basis date", 12, "packaging / 12-month due"),
+            ("Basis date", 12, "packaging / retest placeholder"),
             ("Issue date", 13,
              "set on the day of issue — no earlier than shown, never post-dated"),
             ("Packaged lot", 12, ""), ("Cultivation batch", 14, ""),
@@ -1137,9 +1145,9 @@ def write_workbook(rows, per_coq, dets):
     _band(ws, COLS, "Purely Plant GmbH — Certificate of Quality parameter schedule",
           "The full CoQ universe of 31.08.2026: one initial CoQ per batch on record "
           "(48 numbered by the ISSUE_COQ plan — Tranche 01 + 02 — the rest predicted) "
-          "and a 12-month cannabinoid + mycotoxin reissue for every batch, starting "
+          "and a cannabinoid + mycotoxin retest reissue for every batch, starting "
           "from the beginning of Tranche 01/02 (13 numbered, 35 predicted; later "
-          "batches at release + 12 months). Every determination QCSP 001 v.03 "
+          "batches on the ordering placeholder). Every determination QCSP 001 v.03 "
           "requires, with the document that certifies it. The CoQ SOP is in use "
           "since 11.05.2026: no CoQ prints an earlier issue date, and a predicted "
           "CoQ's number is copied from the issuance record at issue. This is the "
@@ -1338,8 +1346,8 @@ def report(rows, per_coq, dets):
     print(f"  CoQ documents            {len(per_coq):>5}")
     by_type = Counter(p["type"] for p in per_coq)
     for t in ("initial release", "initial release — predicted",
-              "additional testing (12-month)",
-              "additional testing (12-month) — predicted"):
+              "retest",
+              "retest — predicted"):
         if by_type.get(t):
             print(f"    {by_type[t]:>5}  {t}")
     print(f"  determinations each      {len(dets):>5}  "
@@ -1351,7 +1359,7 @@ def report(rows, per_coq, dets):
     print()
     # Dating rule: the CoQ SOP is in use since 11.05.2026 — no CoQ prints an
     # earlier issue date, and none may print a date earlier than the newest
-    # document it cites (or its 12-month due date). Every row shows the bound.
+    # document it cites (or its retest placeholder date). Every row shows the bound.
     viol = [r for r in rows if r["Source document"] not in ("", "—")
             and sort_date(r["Document date"]) != "9999"
             and sort_date(r["Document date"]) >
@@ -1366,7 +1374,7 @@ def report(rows, per_coq, dets):
           f"2025/2026 dates are packaging dates (the numbering series), not issue "
           f"dates. {len(per_coq) - len(later)} CoQs have no date constraint beyond "
           f"the SOP floor; {len(later)} are bound later by a cited document or a "
-          f"12-month due date.")
+          f"retest placeholder date.")
     ready = [p for p in per_coq
              if not (p["counts"][ST_ICOA] + p["counts"][ST_NONE] + p["counts"][ST_SCAN]
                      + p["counts"][ST_AWAIT_K] + p["counts"][ST_AWAIT_M]
@@ -1381,7 +1389,7 @@ def report(rows, per_coq, dets):
           f"signed, never post-dated, so every printed date lies in "
           f"[{SOP_EFFECTIVE} … the day of issue]. As of {AS_OF}, "
           f"{len(per_coq) - len(closed)} CoQs have an open dating window and "
-          f"{len(closed)} have none at all — their floor (a 12-month due date) "
+          f"{len(closed)} have none at all — their floor (a retest placeholder date) "
           f"lies in the future, and they cannot yet be issued on any date.")
     print()
     # The plan's banner THC is supposed to be the lot's actual assay. Where a register
@@ -1425,7 +1433,7 @@ def report(rows, per_coq, dets):
         print()
     if reanalysed:
         print(f"  {len(reanalysed):>5}  INITIAL-release CoQs whose banner THC is the "
-              f"12-month RE-ANALYSIS, not a release assay")
+              f"campaign RE-ANALYSIS, not a release assay")
         for m in reanalysed:
             print(f"         {m[0]} {m[1]}: banner {m[2]} ({m[4]}) vs release assay "
                   f"{m[3]}")
@@ -1439,7 +1447,7 @@ def report(rows, per_coq, dets):
     # blank on a signed document: the plan records the retest date, but the
     # Farmahem certificate never reached the file.
     ghost = [p for p in per_coq
-             if p["type"] == "additional testing (12-month)"
+             if p["type"] == "retest"
              and not any(c.startswith("197-") for c in p["codes"])]
     if ghost:
         print(f"  {len(ghost):>5}  ISSUED additional-testing CoQs cite NO re-analysis "
@@ -1449,14 +1457,14 @@ def report(rows, per_coq, dets):
             print(f"         {p['number']} {p['cb']} — retest per plan {p['basis']}")
         print()
     early = [p for p in per_coq
-             if p["type"].endswith("predicted") and p["type"].startswith("additional")
+             if p["type"].endswith("predicted") and p["type"].startswith("retest")
              and any(c.startswith("197-") for c in p["codes"])]
     # P060332 is re-analysed but cannot be queued: its cultivation batch, CC012601/1
     # per the certificate table, is in no register and in no issue plan. A certificate
     # of quality cannot be issued for material whose identity is unresolved.
     unresolved = [p for p in early if not p["pp"] and p["cb"].startswith("P0")]
     early = [p for p in early if p not in unresolved]
-    print(f"  {len(early):>5}  batches re-analysed ahead of their 12-month date — the "
+    print(f"  {len(early):>5}  batches re-analysed ahead of their placeholder date — the "
           f"197-series pair is on file, so the cannabinoid and mycotoxin half of the "
           f"reissue is already certified.")
     print("         NOT issuable on that alone. The 197 series carries the assay, "

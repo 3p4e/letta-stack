@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""The lists of the certificates of quality of tranches 1, 2 and 3 — the 12-month retests, and
+"""The lists of the certificates of quality of tranches 1, 2 and 3 — the retests, and
 the release certificates they supersede.
 
     python3 deliverables/qc_gap_analysis/retest_list.py
@@ -60,11 +60,11 @@ def initial_rows():
     that supersedes it — joined on the retest's own supersedes line, and on the lot for the two
     pairs not yet numbered."""
     d = json.load(io.open(SRC, encoding="utf-8")); tr = tranche_of(); out = []
-    retests = [c for c in d["coqs"] if "additional" in (c.get("t") or "")]
+    retests = [c for c in d["coqs"] if str(c.get("t") or "").startswith("retest")]
     by_code = {(c.get("supersedes") or {}).get("code"): c for c in retests if (c.get("supersedes") or {}).get("code", "").startswith("CoQ-PP")}
     by_lot = {lotkey(c): c for c in retests}
     for c in d["coqs"]:
-        if "additional" in (c.get("t") or ""):
+        if str(c.get("t") or "").startswith("retest"):
             continue
         rt = by_code.get(c.get("regcode")) or by_lot.get(lotkey(c))
         if not rt:
@@ -97,7 +97,7 @@ def initial_rows():
 def rows():
     d = json.load(io.open(SRC, encoding="utf-8")); tr = tranche_of(); out = []
     for c in d["coqs"]:
-        if "additional" not in (c.get("t") or ""):
+        if not str(c.get("t") or "").startswith("retest"):
             continue
         r4 = next((r for r in c["rows"] if r["no"] == "4"), {})
         r5 = next((r for r in c["rows"] if r["no"] == "5"), {}); r6 = next((r for r in c["rows"] if r["no"] == "6"), {})
@@ -125,7 +125,7 @@ def rows():
     return sorted(out, key=key)
 
 
-def write(R, base, COLS=COLS, title="Certificates of quality — 12-month retest, tranches 1, 2 and 3", sheetname="Retest CoQs — all"):
+def write(R, base, COLS=COLS, title="Certificates of quality — retests, tranches 1, 2 and 3", sheetname="Retest CoQs — all"):
     with io.open(base + ".csv", "w", encoding="utf-8", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=COLS); w.writeheader(); w.writerows(R)
     L = ["# " + title, "",

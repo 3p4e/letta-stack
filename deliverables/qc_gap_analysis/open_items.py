@@ -196,7 +196,7 @@ ITEMS = [
      "which is EXACTLY the number of certificates of quality\". They are not, and the reason "
      "is that the two registers count different things. icoa_register.py counts rounds the "
      "testing record SHOWS: 102 over 76 lots. The certificate-of-quality model counts "
-     "certificates it PLANS: exactly two per lot — one release and one 12-month retest — 164 "
+     "certificates it PLANS: exactly two per lot — one release and one retest — 164 "
      "over 82 lots, 103 of them predicted. Across the 76 lots both carry, the counts agree on "
      "14 and differ on 62. GP0824_02 has six testing rounds and two certificates of quality; "
      "GP062501 has five; GP0824_03 has four.",
@@ -987,7 +987,7 @@ ITEMS = [
      "Nothing. Recorded because it is the boundary of the ND ruling: n.r. printed by a "
      "laboratory as a result means ND, and an analyte absent from the panel is not a result "
      "at all.",
-     "BG1024 release vs 12-month retest, verified through fillCoq in headless Chromium"),
+     "BG1024 release vs retest, verified through fillCoq in headless Chromium"),
 
     ("OI-21", "Document rendering", "ruled",
      "Sixty-six faces in the tranche PDFs embedded as Type 3 rather than outlines",

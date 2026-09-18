@@ -106,7 +106,7 @@ function rec(c) {
     phenotype: spc.pheno || '', dominance: spc.dominance || '', chemotype: spc.chemo || '', processing: spc.proc || '',
     productCode: c.pcode || '—', window: w.window, nominal: w.nominal, tol: w.tol, specCode: c.spec || '—',
     packaging: spc.pack || '—', manufDate: c.md || '', packDate: c.pk || '', supersedes: sup,
-    series: (c.t || '').indexOf('additional') === 0 ? 'reissue' : 'initial',
+    series: (c.t || '').indexOf('retest') === 0 ? 'reissue' : 'initial',
   };
 }
 fs.rmSync(OUT, { recursive: true, force: true });
@@ -410,7 +410,7 @@ const S03_LAYER = '<style id="__owner-s03-compact">\n' +
   // and that is in the initial quality control testing of all tranche batches — you will
   // put NT as the analysis result, and also put it in brackets." Aflatoxin B1 (#10.1) and
   // Ochratoxin A (#10.3) are the pair he named: not determined at release, determined at
-  // the 12-month retest on every batch of tranches 1, 2 and 3.
+  // the retest on every batch of tranches 1, 2 and 3.
   // The package prints [ — ] for a determination that was not performed — no result on
   // file, to be performed, upon request, in-house CoA only. Every one of those is "not
   // tested", so in the RESULT column of Section 02 it now reads [NT]. Nowhere else:

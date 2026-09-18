@@ -88,13 +88,13 @@ def icoa_index():
 
 def rows():
     d = json.load(io.open(SRC, encoding="utf-8")); tr = tranche_of(); ico = icoa_index()
-    retests = [c for c in d["coqs"] if "additional" in (c.get("t") or "")]
+    retests = [c for c in d["coqs"] if str(c.get("t") or "").startswith("retest")]
     by_super = {(c.get("supersedes") or {}).get("code"): c for c in retests
                 if str((c.get("supersedes") or {}).get("code") or "").startswith("CoQ-PP")}
     by_lot = {lotkey(c): c for c in retests}
     out = []
     for c in d["coqs"]:
-        ret = "additional" in (c.get("t") or "")
+        ret = str(c.get("t") or "").startswith("retest")
         r4 = next((r for r in c["rows"] if r["no"] == "4"), {})
         r5 = next((r for r in c["rows"] if r["no"] == "5"), {}); r6 = next((r for r in c["rows"] if r["no"] == "6"), {})
         spc = c.get("spc") or {}
@@ -107,7 +107,7 @@ def rows():
         ic = ico.get(str(c.get("icoa_code") or "").strip(), {})
         out.append({
             "CoQ code": c.get("regcode") or "",
-            "Testing round": "12-month retest (reissue)" if ret else "Initial release",
+            "Testing round": (ic.get("round") or "retest").capitalize() if ret else "Initial release",
             "Issued": c.get("issue") or "",
             "Register status": STATUS.get((c.get("reg_issuable") or "").strip(), c.get("reg_issuable") or ""),
             "Legacy code": c.get("n") or "",
