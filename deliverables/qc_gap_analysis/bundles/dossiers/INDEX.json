@@ -514,20 +514,20 @@
   "lot": "P060122",
   "round": "initial",
   "tranche": "2",
-  "pages": 11,
+  "pages": 12,
   "externals": 4,
   "file": "bundles/dossiers/T2/initial/P060122_ACC102501_CoQ-PP_26-048_initial.pdf",
-  "specification": ""
+  "specification": "QCSP_001_ACC-I_v.01"
  },
  {
   "coq": "CoQ-PP_26-049",
   "lot": "P060132",
   "round": "initial",
   "tranche": "2",
-  "pages": 11,
+  "pages": 12,
   "externals": 4,
   "file": "bundles/dossiers/T2/initial/P060132_CF102501_CoQ-PP_26-049_initial.pdf",
-  "specification": ""
+  "specification": "QCSP_001_CF-I_v.01"
  },
  {
   "coq": "CoQ-PP_26-059",
