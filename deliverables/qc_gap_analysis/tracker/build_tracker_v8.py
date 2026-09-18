@@ -389,11 +389,21 @@ ICOA_RULE = "--icoa" in sys.argv
 # at the top, before any work is done.
 if not ICOA_RULE:
     raise SystemExit(
-        "build_tracker_v8.py requires --icoa.\n"
+        "build_tracker_v8.py requires --icoa, and --icoa alone is not the build.\n"
         "  The iCoA block binds the date helpers and the legacy issue days that the CoQ and\n"
-        "  iCoA register notes read further down, so the workbook cannot be built without it.\n"
-        "  The build that produced v44 and v45:\n"
-        "      python3 tracker/build_tracker_v8.py --icoa --version=45")
+        "  iCoA register notes read further down, so nothing can be built without it. But a\n"
+        "  workbook built with --icoa alone VERIFIES WITH FINDINGS and must not be shipped:\n"
+        "  without --cells it is short of results, without --mikro the Mikro CoQ Parameter\n"
+        "  section is missing, and without the two legacy days it dates the legacy series on\n"
+        "  the defaults rather than on the days the series actually issued. --mikro must name\n"
+        "  a master that still carries the RAW sheet (v10-v13, v21-v23); from v24 on it is\n"
+        "  folded into Reference and cannot be read back out.\n"
+        "  The whole build, which is what produced v44 and v45:\n"
+        "      python3 deliverables/qc_gap_analysis/tracker/build_tracker_v8.py \\\n"
+        "          --v9 --version=<N> --icoa --cells \\\n"
+        "          --mikro=deliverables/qc_gap_analysis/tracker/CoQ_Analysis_Master_v13.xlsx \\\n"
+        "          --build-date=<DD.MM.YYYY> --legacy-icoa=03.06.2026 --legacy-coq=06.06.2026\n"
+        "  Then ALWAYS: tracker/verify_workbook.py, which must report no findings.")
 # --cells absorbs the owner's 09.09.2026 pass over eCoA_DATABASE: the coverage it
 # closes on Batch Coverage, and the Reconciliation sheet that says what the two
 # records of those certificates agree and disagree about.

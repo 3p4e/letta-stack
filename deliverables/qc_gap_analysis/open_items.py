@@ -1232,11 +1232,17 @@ ITEMS = [
      "names are never bound, and the register notes 2,000 lines below that read them "
      "unconditionally fail. The builder was never broken; it was invoked without the "
      "flag that v44 had been built with.",
-     "Built with the flag on 18.09.2026: CoQ_Analysis_Master_v45.xlsx, 12 tabs, 86 "
-     "batches, 184 two-row blocks. A guard now sits beside ICOA_RULE so a run without "
-     "--icoa stops at once and names the flag and the full invocation instead of dying "
-     "2,400 lines later on a name nobody can place. The eight naming rulings of "
-     "18.09.2026 are in tracker/strains.py, and the workbook carries them.",
+     "Built on 18.09.2026: CoQ_Analysis_Master_v45.xlsx, 12 tabs, 86 batches, 184 "
+     "two-row blocks, verify_workbook with NO findings. It took two attempts, and the "
+     "second is the lesson: --icoa alone builds a workbook that LOOKS right and "
+     "verifies with 7 findings — short of results without --cells, missing the Mikro "
+     "CoQ Parameter section without --mikro, and dating the legacy series on the "
+     "defaults rather than on 03.06/06.06.2026. CI caught it. --mikro must name a "
+     "master that still carries the RAW sheet (v10-v13, v21-v23); from v24 it is "
+     "folded into Reference and cannot be read back out. The guard beside ICOA_RULE "
+     "now prints the WHOLE build and says to run verify_workbook after it, because a "
+     "guard that names half the command is how this went wrong the first time. The "
+     "eight naming rulings of 18.09.2026 are in tracker/strains.py.",
      "Nothing. The diagnosis was wrong and is corrected here so the record does not "
      "keep a working builder marked broken.",
      "tracker/build_tracker_v8.py:382 (the guard), :428 (`if ICOA_RULE:`), :2432; "
