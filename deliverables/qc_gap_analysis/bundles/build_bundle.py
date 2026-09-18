@@ -1,52 +1,58 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""One documentation bundle per production batch.
+"""One documentation bundle per production batch, per testing round.
 
     certificate of quality  ->  internal certificate of analysis  ->  every external
-    certificate it cites, oldest first by issue date
+    certificate that certificate of quality cites, oldest first by issue date
 
-The certificate of quality and the internal certificate are OUR OWN latest print — never
-a copy found in Drive (Head of QC, 18.09.2026). The external certificates are the
-laboratories' own documents, fetched as issued.
+A lot gets a bundle for EACH round it has: one for the initial release certificate and
+one for the retest certificate. They are different bundles — a different certificate of
+quality on page 1, a different internal certificate behind it, and a different set of
+external certificates, because the two rounds cite different documents. Every stamp in a
+bundle bears THAT bundle's certificate code and issue date (Head of QC, 18.09.2026).
 
-Every page of every EXTERNAL certificate is marked with the certificate of quality it
-belongs to, its issue date, the true-copy certification and the Head of QC's signature.
-The internal certificate is NOT marked: it names its own certificate of quality on its
-face, and the Head of QC excluded it.
+The certificate of quality and the internal certificate are OUR OWN latest print, never a
+copy found in Drive. The external certificates are the laboratories' own documents.
 
-NOTHING ON A LABORATORY PAGE IS COVERED. Measuring the corners of a real bundle showed
-8 of 9 pages have no empty corner — these reports run edge to edge — so the stamp is not
-laid over the page at all. The page is scaled down a little, anchored to the top, and the
-stamp goes in the clean strip that opens at the foot. The original is complete and
-untouched; it simply prints a few per cent smaller.
+THE PAGE IS NOT TOUCHED. Pages are copied verbatim — no scaling, no re-rendering — so a
+page keeps its size, its orientation and its text layer. The microbiology certificate of
+the first pilot is a landscape page carrying /Rotate=270, and re-rendering it turned it on
+its side; copying it does not. The stamp is laid over the page as a layer on top. Overlap
+is accepted by the Head of QC's ruling of 18.09.2026: anything under it is a footer line
+or a page number, and the stamp says the document is checked, accredited and approved.
+
+The signature rotates through all 19 of the Head of QC's iterations, and the impression is
+turned and offset like a stamp pressed by hand — both DERIVED from the certificate code,
+the document and the page number, so every page differs and every rebuild is identical.
 """
-import argparse, io, os, sys
+import argparse, glob, io, os, sys
 import pymupdf
 from PIL import Image, ImageDraw, ImageFont
 
+HERE = os.path.dirname(os.path.abspath(__file__))
 DPI = 300; MM = DPI / 25.4; PT = 72 / 25.4
 DEJA  = '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'
 DEJAB = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'
 def F(pt, b=False): return ImageFont.truetype(DEJAB if b else DEJA, max(1, int(pt*DPI/72)))
 INK=(27,58,107,255); INK_M=(27,58,107,180); GOLD=(160,124,48,150)
 
-W_MM, H_MM = 40.0, 14.5          # variant D, one point up on every line (18.09.2026)
+W_MM, H_MM = 40.0, 14.5
 SIG_H, SIG_A, SIG_DX = 8.6, 0.55, 2.0
-STRIP_MM = 19.0                  # the clean band opened at the foot of the page
-
-# A rubber stamp is pressed by a hand, not laid by a machine. Each impression is turned a
-# degree or two and set down a millimetre or so off true. The wobble is DERIVED from the
-# document and the page number, so it is different on every page and identical on every
-# rebuild — a bundle regenerates byte for byte, and no two pages look stamped by a robot.
-TILT_DEG, JIT_MM = 2.6, 1.6
+TILT_DEG, JIT_MM, PAD_MM = 2.6, 1.6, 5.0
+SIGS = sorted(glob.glob(os.path.join(HERE, '_signatures', 'qc_*.png')))
 
 
-def _wobble(key):
+def _hash(key):
     h = 0
     for ch in key:
         h = (h * 131 + ord(ch)) & 0xFFFFFFFF
-    f = lambda n: ((h >> n) & 0xFFFF) / 0xFFFF * 2 - 1      # -1 .. +1
-    return f(0) * TILT_DEG, f(11) * JIT_MM, f(21) * JIT_MM
+    return h
+
+
+def _wobble(key):
+    h = _hash(key)
+    f = lambda n: ((h >> n) & 0xFFFF) / 0xFFFF * 2 - 1
+    return f(0)*TILT_DEG, f(11)*JIT_MM, f(21)*JIT_MM, SIGS[(h >> 7) % len(SIGS)]
 
 
 def make_stamp(coq, issued, sig_path):
@@ -68,57 +74,54 @@ def make_stamp(coq, issued, sig_path):
     return im
 
 
-def stamped(src, coq, issued, sig_path, doc_code=''):
-    """Every page of `src`, shrunk to open a clean strip, with the stamp in the strip."""
-    base = make_stamp(coq, issued, sig_path)
-    old = pymupdf.open(src); out = pymupdf.open()
-    strip = STRIP_MM * PT
-    for page in old:
-        R = page.rect
-        new = out.new_page(width=R.width, height=R.height)
-        k = (R.height - strip) / R.height                      # anchored to the top
-        box = pymupdf.Rect(R.x0 + (R.width - R.width*k)/2, R.y0,
-                           R.x0 + (R.width + R.width*k)/2, R.y0 + R.height*k)
-        new.show_pdf_page(box, old, page.number)
-        tilt, dx, dy = _wobble('%s|%s|%d' % (coq, doc_code, page.number))
-        turned = base.rotate(tilt, resample=Image.BICUBIC, expand=True)
-        buf = io.BytesIO(); turned.save(buf, 'PNG'); png = buf.getvalue()
-        w_pt = turned.width / MM * PT; h_pt = turned.height / MM * PT
-        pad = 4.0 * PT
-        x1 = R.x1 - pad + dx*PT; y1 = R.y1 - pad + dy*PT
-        new.insert_image(pymupdf.Rect(x1-w_pt, y1-h_pt, x1, y1), stream=png, overlay=True)
-    old.close()
-    return out
+def mark(page, coq, issued, key):
+    """Lay the stamp over this page, bottom-right of what the reader actually sees."""
+    tilt, dx, dy, sig = _wobble(key)
+    img = make_stamp(coq, issued, sig).rotate(tilt, resample=Image.BICUBIC, expand=True)
+    buf = io.BytesIO(); img.save(buf, 'PNG'); png = buf.getvalue()
+    w_pt = img.width/MM*PT; h_pt = img.height/MM*PT
+    R = page.rect                                  # the VISIBLE box, rotation applied
+    pad = PAD_MM*PT
+    x1, y1 = R.x1 - pad + dx*PT, R.y1 - pad + dy*PT
+    box = pymupdf.Rect(x1-w_pt, y1-h_pt, x1, y1)
+    # insert_image works in UNROTATED space, so the box is derotated and the picture is
+    # pre-turned by the page's own rotation — not against it. Turning it the other way
+    # put the stamp upside down on the landscape microbiology certificate; this was
+    # settled by rendering all four compensations and looking at them.
+    page.insert_image(box * page.derotation_matrix, stream=png,
+                      rotate=page.rotation % 360, overlay=True)
 
 
-def build(coq_pdf, icoa_pdf, externals, coq, issued, sig_path, dest):
-    """externals: [(path, code, date)] already in chronological order."""
+def build(coq_pdf, icoa_pdf, externals, coq, issued, dest):
+    """externals: [(path, code, date)] in chronological order."""
     book = pymupdf.open()
     for p in (coq_pdf, icoa_pdf):
         d = pymupdf.open(p); book.insert_pdf(d); d.close()
-    marks = [('%s — certificate of quality' % coq, 1),
-             ('internal certificate of analysis', book.page_count)]
+    toc = [[1, '%s — certificate of quality' % coq, 1],
+           [1, 'internal certificate of analysis', book.page_count]]
     for path, code, date in externals:
-        s = stamped(path, coq, issued, sig_path, code)
-        marks.append(('%s · %s' % (code, date), book.page_count + 1))
-        book.insert_pdf(s); s.close()
-    book.set_toc([[1, t, p] for t, p in marks])
-    book.save(dest, deflate=True)
+        first = book.page_count + 1
+        d = pymupdf.open(path); book.insert_pdf(d); n = d.page_count; d.close()
+        for i in range(n):
+            mark(book[first-1+i], coq, issued, '%s|%s|%d' % (coq, code, i))
+        toc.append([1, '%s · %s' % (code, date), first])
+    book.set_toc(toc)
+    book.save(dest, deflate=True, garbage=3)
     n = book.page_count; book.close()
-    return n, marks
+    return n, toc
 
 
 if __name__ == '__main__':
-    G = '/home/user/letta-stack/deliverables/qc_gap_analysis'
-    B = '/tmp/claude-0/bundle'
+    G = os.path.dirname(HERE); B = '/tmp/claude-0/bundle'
     coq, issued = 'CoQ-PP_26-111', '25.08.2026'
     ext = [(B+'/8-0011-26.pdf',  '8/0011/26',  '20.01.2026'),
            (B+'/81-2026.pdf',    '81/2026',    '02.02.2026'),
            (B+'/220-4-K-26.pdf', '220-4-К/26', '25.08.2026'),
            (B+'/220-4-M-26.pdf', '220-4-М/26', '11.09.2026')]
-    dest = G + '/bundles/CJ082501-1_P060022_T2_batch_documentation.pdf'
-    n, marks = build(G+'/design_handoff/pdf/pages/CoQ-PP_26-111_P060022_CJ_Cap_Junky_Grade_I.pdf',
-                     G+'/icoa_handoff/v3/pdf/pages/iCoA-PP_26-127_P060022_CJ_Cap_Junky_Retest_1.pdf',
-                     ext, coq, issued, '/tmp/claude-0/sig_page_01.png', dest)
-    print('%s  —  %d pages, %.1f MiB' % (os.path.basename(dest), n, os.path.getsize(dest)/1048576))
-    for t, p in marks: print('   p%-3d %s' % (p, t))
+    dest = HERE + '/CJ082501-1_P060022_T2_retest_batch_documentation.pdf'
+    n, toc = build(G+'/design_handoff/pdf/pages/CoQ-PP_26-111_P060022_CJ_Cap_Junky_Grade_I.pdf',
+                   G+'/icoa_handoff/v3/pdf/pages/iCoA-PP_26-127_P060022_CJ_Cap_Junky_Retest_1.pdf',
+                   ext, coq, issued, dest)
+    print('%s\n  %d pages, %.1f MiB, %d signature iterations in rotation'
+          % (os.path.basename(dest), n, os.path.getsize(dest)/1048576, len(SIGS)))
+    for _, t, p in toc: print('   p%-3d %s' % (p, t))
