@@ -345,10 +345,15 @@ html body div.page div.tbl-wrap table.results.rt tbody td{padding-top:0 !importa
    the child beats an inherited value, so row 2's Macedonian gloss still wrapped and that row was
    21px against 18px. Set nowrap on the child itself, at matching specificity. */
 html body div.page div.tbl-wrap table.results.rt tbody td .p-name,html body div.page div.tbl-wrap table.results.rt tbody td .p-name .mk,html body div.page div.tbl-wrap table.results.rt tbody td .p-sub,html body div.page div.tbl-wrap table.results.rt tbody td .p-method,html body div.page div.tbl-wrap table.results.rt tbody td .p-spec{white-space:nowrap !important}
-/* the parameter column needs ~202px on one line; the method column's longest string is 156px, so
-   the width comes from there rather than from the criterion. */
-html body div.page div.tbl-wrap table.results.rt colgroup col:nth-child(2){width:210px !important}
-html body div.page div.tbl-wrap table.results.rt colgroup col:nth-child(3){width:162px !important}
+/* The parameter column was sized at 210px from an ESTIMATE of ~202px. Measured, row 2 —
+   "Identification B · Microscopy / Идентиф. Б · Микроскопија", the longest of the three — needs
+   213px, so its Macedonian gloss ran 3px past the cell and, with nowrap above and overflow
+   visible, printed ON TOP of the method column on all 215 certificates (Head of QC, 18.09.2026).
+   Measured again rather than estimated: the parameter column takes 218px, five clear of the
+   longest line, and the method column gives them up — its longest string measures 144.5px, so at
+   154px it still keeps nine and a half of slack. The criterion column is untouched. */
+html body div.page div.tbl-wrap table.results.rt colgroup col:nth-child(2){width:218px !important}
+html body div.page div.tbl-wrap table.results.rt colgroup col:nth-child(3){width:154px !important}
 
 /* With every cell now a single line, `height` on a table cell acts as a MINIMUM — so this sets a
    uniform row rhythm rather than masking wrapped content as the earlier rule did. */
@@ -639,3 +644,18 @@ html body div.page div.selrow span.chip-un{
 html body div.page div.selrow span.chip-sel > span.bx{font-size:10.6px !important}
 html body div.page div.selrow span.chip-un > span.bx{font-size:9.6px !important}
 html body div.page div.selrow span.grp > span.stack{gap:7px !important}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   6 · Section 02, the acceptance criterion of #7 (Head of QC, 18.09.2026).
+   Fixing the parameter column above showed the same fault one column further
+   right, and worse: "≤ 2.0% / 25–50 g · < 1 cm leaves, no seeds" measures 193 px
+   in a 146 px column, so with nowrap it printed UNDER the disposition chip and
+   the page lost "no seeds" — an acceptance criterion missing half its condition.
+   The column cannot simply be widened: across the row the content needs 207 + 139
+   + 193 + 81 px and the table is 678 px, so there is nothing to take. The text is
+   not shortened either, because the criterion is the criterion. That one cell
+   wraps instead, and only that one — every other cell in the table stays on its
+   single line, so no other row moves. */
+html body div.page div.tbl-wrap table.results.rt tbody td:nth-child(4),
+html body div.page div.tbl-wrap table.results.rt tbody td:nth-child(4) .p-spec{
+  white-space:normal !important;line-height:1.12 !important}
