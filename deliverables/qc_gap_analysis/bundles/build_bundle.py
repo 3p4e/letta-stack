@@ -30,9 +30,23 @@ DEJAB = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'
 def F(pt, b=False): return ImageFont.truetype(DEJAB if b else DEJA, max(1, int(pt*DPI/72)))
 INK=(27,58,107,255); INK_M=(27,58,107,180); GOLD=(160,124,48,150)
 
-W_MM, H_MM = 36.0, 13.0          # variant D (Head of QC, 18.09.2026)
-SIG_H, SIG_A, SIG_DX = 8.0, 0.55, 1.8
-STRIP_MM = 16.0                  # the clean band opened at the foot of the page
+W_MM, H_MM = 40.0, 14.5          # variant D, one point up on every line (18.09.2026)
+SIG_H, SIG_A, SIG_DX = 8.6, 0.55, 2.0
+STRIP_MM = 19.0                  # the clean band opened at the foot of the page
+
+# A rubber stamp is pressed by a hand, not laid by a machine. Each impression is turned a
+# degree or two and set down a millimetre or so off true. The wobble is DERIVED from the
+# document and the page number, so it is different on every page and identical on every
+# rebuild — a bundle regenerates byte for byte, and no two pages look stamped by a robot.
+TILT_DEG, JIT_MM = 2.6, 1.6
+
+
+def _wobble(key):
+    h = 0
+    for ch in key:
+        h = (h * 131 + ord(ch)) & 0xFFFFFFFF
+    f = lambda n: ((h >> n) & 0xFFFF) / 0xFFFF * 2 - 1      # -1 .. +1
+    return f(0) * TILT_DEG, f(11) * JIT_MM, f(21) * JIT_MM
 
 
 def make_stamp(coq, issued, sig_path):
@@ -42,11 +56,11 @@ def make_stamp(coq, issued, sig_path):
     k = int(0.9*MM)
     d.rounded_rectangle([k,k,w-k,h-k], radius=int(0.7*MM), outline=(27,58,107,95), width=int(0.13*MM))
     y = m*0.90
-    d.text((m,y),'ВЕРОДОСТОЈНО НА ОРИГИНАЛОТ',font=F(4.6,True),fill=INK); y += 2.05*MM
-    d.text((m,y),'TRUE COPY OF THE ORIGINAL',font=F(3.65),fill=INK_M);    y += 2.10*MM
-    d.line([(m,y),(w-m,y)],fill=GOLD,width=int(0.16*MM));                 y += 0.80*MM
-    d.text((m,y), coq, font=F(5.4,True), fill=INK)
-    d.text((m,y+2.75*MM), 'издаден · issued  '+issued, font=F(3.75), fill=INK_M)
+    d.text((m,y),'ВЕРОДОСТОЈНО НА ОРИГИНАЛОТ',font=F(5.6,True),fill=INK); y += 2.35*MM
+    d.text((m,y),'TRUE COPY OF THE ORIGINAL',font=F(4.5),fill=INK_M);     y += 2.40*MM
+    d.line([(m,y),(w-m,y)],fill=GOLD,width=int(0.17*MM));                 y += 0.85*MM
+    d.text((m,y), coq, font=F(6.6,True), fill=INK)
+    d.text((m,y+3.15*MM), 'издаден · issued  '+issued, font=F(4.6), fill=INK_M)
     s = Image.open(sig_path).convert('RGBA')
     hh = int(SIG_H*MM); s = s.resize((int(s.width*hh/s.height), hh), Image.LANCZOS)
     s.putalpha(s.getchannel('A').point(lambda v: int(v*SIG_A)))
@@ -54,9 +68,9 @@ def make_stamp(coq, issued, sig_path):
     return im
 
 
-def stamped(src, coq, issued, sig_path):
+def stamped(src, coq, issued, sig_path, doc_code=''):
     """Every page of `src`, shrunk to open a clean strip, with the stamp in the strip."""
-    png = io.BytesIO(); make_stamp(coq, issued, sig_path).save(png, 'PNG'); png = png.getvalue()
+    base = make_stamp(coq, issued, sig_path)
     old = pymupdf.open(src); out = pymupdf.open()
     strip = STRIP_MM * PT
     for page in old:
@@ -66,10 +80,13 @@ def stamped(src, coq, issued, sig_path):
         box = pymupdf.Rect(R.x0 + (R.width - R.width*k)/2, R.y0,
                            R.x0 + (R.width + R.width*k)/2, R.y0 + R.height*k)
         new.show_pdf_page(box, old, page.number)
-        w_pt, h_pt = W_MM*PT, H_MM*PT
+        tilt, dx, dy = _wobble('%s|%s|%d' % (coq, doc_code, page.number))
+        turned = base.rotate(tilt, resample=Image.BICUBIC, expand=True)
+        buf = io.BytesIO(); turned.save(buf, 'PNG'); png = buf.getvalue()
+        w_pt = turned.width / MM * PT; h_pt = turned.height / MM * PT
         pad = 4.0 * PT
-        new.insert_image(pymupdf.Rect(R.x1-pad-w_pt, R.y1-pad-h_pt, R.x1-pad, R.y1-pad),
-                         stream=png, overlay=True)
+        x1 = R.x1 - pad + dx*PT; y1 = R.y1 - pad + dy*PT
+        new.insert_image(pymupdf.Rect(x1-w_pt, y1-h_pt, x1, y1), stream=png, overlay=True)
     old.close()
     return out
 
@@ -82,7 +99,7 @@ def build(coq_pdf, icoa_pdf, externals, coq, issued, sig_path, dest):
     marks = [('%s — certificate of quality' % coq, 1),
              ('internal certificate of analysis', book.page_count)]
     for path, code, date in externals:
-        s = stamped(path, coq, issued, sig_path)
+        s = stamped(path, coq, issued, sig_path, code)
         marks.append(('%s · %s' % (code, date), book.page_count + 1))
         book.insert_pdf(s); s.close()
     book.set_toc([[1, t, p] for t, p in marks])
