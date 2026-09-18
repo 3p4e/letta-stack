@@ -394,7 +394,34 @@ const S03_LAYER = '<style id="__owner-s03-compact">\n' +
   'html body div.page div.approval-grid .ap-sign{height:34px !important}\n' +
   '</style>';
 
-  const DESK_LAYERS = OWNER_LAYER + '\n' + HB_SUP_LAYER + '\n' + PRINT_ZEBRA_LAYER + '\n' + EDGE_FADE_LAYER + '\n' + INK_LAYER + '\n' + S34_LAYER + '\n' + S03_LAYER + '\n';
+// Head of QC, 18.09.2026, after the processing group came off Section 01: "distribute
+// the other items in the same row equally and align them suitably to the column
+// distribution ... because there will be more space in that row you can increase the size
+// of the parameter and the placeholder value."
+// The row was flex with justify-content:space-between. Right for three groups, wrong for
+// two - it throws Phenotype against the left page margin and Chemotype against the right
+// with a hole between them. It becomes a three-track grid on the same 38.4 px margin the
+// rows beneath it use: two columns of equal width, each group reading from its own
+// column's left border rather than from a page edge (Head of QC, 18.09.2026 - "that first
+// row will be in two columns ... the second column should have its content aligned to the
+// left border"). The width the third group gave back is spent on type -
+// the label, its Macedonian line and the option chips all rise about 17 %, the step the
+// type took in Sections 03 and 04. The results table is not touched.
+const S01_LAYER = '<style id="__owner-s01-selrow">\n' +
+  'html body div.page div.selrow{display:grid !important;grid-template-columns:repeat(2,minmax(0,1fr)) !important;justify-content:stretch !important;justify-items:start !important;align-items:center !important;column-gap:12px !important;row-gap:0 !important}\n' +
+  'html body div.page div.selrow > span.grp{display:inline-flex !important;align-items:center !important;gap:9px !important;min-width:0 !important;white-space:nowrap !important;flex:0 0 auto !important}\n' +
+  'html body div.page div.selrow > span.grp:first-child{grid-column:1 !important}\n' +
+  'html body div.page div.selrow > span.grp:last-child{grid-column:2 !important}\n' +
+  'html body div.page div.selrow span.lk-lbl{font-size:8.4px !important;letter-spacing:.34px !important;line-height:1.12 !important}\n' +
+  'html body div.page div.selrow span.lk-lbl > span.mk{font-size:6.9px !important;line-height:1.08 !important}\n' +
+  'html body div.page div.selrow span.chip-sel{font-size:8.6px !important;padding:1.8px 6.5px 1.8px 5px !important;border-radius:9px !important}\n' +
+  'html body div.page div.selrow span.chip-un{font-size:7.5px !important;padding:1.3px 6px !important;border-radius:9px !important}\n' +
+  'html body div.page div.selrow span.chip-sel > span.bx{font-size:10.6px !important}\n' +
+  'html body div.page div.selrow span.chip-un > span.bx{font-size:9.6px !important}\n' +
+  'html body div.page div.selrow span.grp > span.stack{gap:7px !important}\n' +
+  '</style>';
+
+  const DESK_LAYERS = OWNER_LAYER + '\n' + HB_SUP_LAYER + '\n' + PRINT_ZEBRA_LAYER + '\n' + EDGE_FADE_LAYER + '\n' + INK_LAYER + '\n' + S34_LAYER + '\n' + S03_LAYER + '\n' + S01_LAYER + '\n';
   if (html.indexOf('</body>') < 0) throw new Error('no </body> to append the desk layers before');
   html = html.replace('</body>', DESK_LAYERS + '</body>');
   // Owner, 16.09.2026 (second pass): the issue date in the Section 03 code column is

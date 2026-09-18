@@ -299,9 +299,9 @@ function build(rec,meta){
   const ph=String(meta.phenotype||'').toUpperCase();
   const knownPh=/INDICA|SATIVA|HYBRID/.test(ph);
   const isInd=/INDICA/.test(ph),isSat=/SATIVA/.test(ph),isHyb=knownPh&&/HYBRID/.test(ph);
-  const proc=String(meta.processing||'').toUpperCase();
-  const knownProc=/MACHINE|HAND/.test(proc);
-  const isMach=knownProc&&/MACHINE/.test(proc),isHand=knownProc&&!isMach;
+  // Head of QC, 18.09.2026: the processing parameter comes off the internal certificate
+  // too - "from all of them, initial and retest". Trimming is a production attribute, not
+  // a determination this certificate makes. `meta.processing` stays in the record.
   const tested=rec.tested||'';
   // product specification code, from the cultivar's batch record; blank where none is on file
   const rawSpec=String(meta.specCode||'').trim();
@@ -332,7 +332,7 @@ function build(rec,meta){
 +'<div class="pb-main"><span class="pb-name"><span style="font-family:\'Roboto Mono\',monospace">'+esc(lot||cult)+'</span> <i class="bisep" style="font-size:.7em">|</i> <span style="font-weight:800;text-transform:uppercase">'+esc(rec.strain)+'</span></span>'+'</div>\n'
 +'<div class="selrow">\n<span class="grp"><span class="lk-lbl">Phenotype <span class="mk">\u0424\u0435\u043d\u043e\u0442\u0438\u043f</span></span>'+chip(isHyb,'Hybrid')+'<span class="stack">'+chip(isInd,'Indica')+chip(isSat,'Sativa')+'</span></span>\n'
 +'<span class="grp"><span class="lk-lbl">Chemotype <span class="mk">\u0425\u0435\u043c\u043e\u0442\u0438\u043f</span></span><span class="stack">'+chip(true,'THC')+chip(false,'CBD')+'</span></span>\n'
-+'<span class="grp"><span class="lk-lbl">Processing <span class="mk">\u041e\u0431\u0440\u0430\u0431\u043e\u0442\u043a\u0430</span></span><span class="stack">'+chip(isMach,'Machine','\u041c\u0430\u0448\u0438\u043d\u0441\u043a\u0430')+chip(isHand,'Hand')+'</span></span>\n</div>\n'
++'</div>\n'
 +'<div class="goldrule"></div>\n'
 +'<div class="gridrow lk-inline g3">\n'
 +'<span class="lk"><span class="lk-lbl">Production Batch \u2116<span class="mk">\u041f\u0440\u043e\u0438\u0437\u0432\u043e\u0434\u043d\u0430 \u0441\u0435\u0440\u0438\u0458\u0430 \u2116</span></span><span class="lk-val">'+esc(lot||'\u2014')+'</span></span>\n'

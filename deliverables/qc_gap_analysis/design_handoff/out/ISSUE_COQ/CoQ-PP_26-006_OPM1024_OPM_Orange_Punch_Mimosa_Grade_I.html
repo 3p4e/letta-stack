@@ -441,7 +441,6 @@ table.labref tbody tr:last-child{background-image:linear-gradient(90deg,rgba(158
   <div class="selrow">
     <span class="grp"><span class="lk-lbl">Phenotype <span class="mk">Фенотип</span></span><span class="chip-un"><span class="bx">☐</span> Hybrid</span><span class="stack"><span class="chip-sel"><span class="bx">☒</span> Indica</span><span class="chip-un"><span class="bx">☐</span> Sativa</span></span></span>
     <span class="grp"><span class="lk-lbl">Chemotype <span class="mk">Хемотип</span></span><span class="stack"><span class="chip-sel"><span class="bx">☒</span> THC</span><span class="chip-un"><span class="bx">☐</span> CBD</span></span></span>
-    <span class="grp"><span class="lk-lbl">Processing <span class="mk">Обработка</span></span><span class="stack"><span class="chip-sel"><span class="bx">☒</span> Machine <span class="mk">Машинска</span></span><span class="chip-un"><span class="bx">☐</span> Hand</span></span></span>
   </div>
   <div class="goldrule"></div>
   <div class="gridrow lk-inline" style="padding-top:8px">
@@ -1109,6 +1108,19 @@ html body div.page div.tbl-wrap table.labref tbody td.lr-mono .cert .cd{font-siz
 html body div.page div.tbl-wrap + div.sec-label,html body div.page div.disp-row + div.goldrule{margin-top:8px !important}
 html body div.page div.approval-grid{padding-top:3px !important}
 html body div.page div.approval-grid .ap-sign{height:34px !important}
+</style>
+<style id="__owner-s01-selrow">
+html body div.page div.selrow{display:grid !important;grid-template-columns:repeat(2,minmax(0,1fr)) !important;justify-content:stretch !important;justify-items:start !important;align-items:center !important;column-gap:12px !important;row-gap:0 !important}
+html body div.page div.selrow > span.grp{display:inline-flex !important;align-items:center !important;gap:9px !important;min-width:0 !important;white-space:nowrap !important;flex:0 0 auto !important}
+html body div.page div.selrow > span.grp:first-child{grid-column:1 !important}
+html body div.page div.selrow > span.grp:last-child{grid-column:2 !important}
+html body div.page div.selrow span.lk-lbl{font-size:8.4px !important;letter-spacing:.34px !important;line-height:1.12 !important}
+html body div.page div.selrow span.lk-lbl > span.mk{font-size:6.9px !important;line-height:1.08 !important}
+html body div.page div.selrow span.chip-sel{font-size:8.6px !important;padding:1.8px 6.5px 1.8px 5px !important;border-radius:9px !important}
+html body div.page div.selrow span.chip-un{font-size:7.5px !important;padding:1.3px 6px !important;border-radius:9px !important}
+html body div.page div.selrow span.chip-sel > span.bx{font-size:10.6px !important}
+html body div.page div.selrow span.chip-un > span.bx{font-size:9.6px !important}
+html body div.page div.selrow span.grp > span.stack{gap:7px !important}
 </style>
 </body>
 </html>

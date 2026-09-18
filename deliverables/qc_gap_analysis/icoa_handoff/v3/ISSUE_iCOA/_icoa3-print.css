@@ -587,3 +587,55 @@ html body div.page div.tbl-wrap table.results.rt thead th .mk{font-size:6.4px !i
    pushing it away from all of them, and because the page ground is white while the header
    carries its own gradient, the 11 px read as an empty strip. The band goes back flush. */
 html body div.page div.header-bar{margin-bottom:0 !important}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   5 · Section 01 identification row, after the processing group came off
+   (Head of QC, 18.09.2026): "distribute the other items in the same row equally
+   and align them suitably ... because there will be more space in that row you
+   can increase the size of the parameter and the placeholder value."
+
+   The row was a flex row with justify-content:space-between. That is right for
+   three groups and wrong for two — it pushes Phenotype and Chemotype to opposite
+   page edges with a hole between them. It becomes a TWO-column grid of equal
+   width on the same 38 px page margin the rows beneath it use, each group reading
+   from its own column's left border.
+
+   The width the third group gave back is spent on type: the label and its
+   Macedonian line, and the option chips, all rise about 17 %, the same step the
+   type took in Sections 03 and 04. Every rule here carries the full
+   html body div.page ... chain, and a span. where the layer beneath qualifies by
+   class, so it wins the cascade on specificity and not only on load order.
+   ───────────────────────────────────────────────────────────────────────────── */
+html body div.page div.selrow{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  justify-content:stretch !important;
+  justify-items:start !important;
+  align-items:center !important;
+  column-gap:12px !important;row-gap:0 !important;   /* 12px + 38px margin = the g3 row's own 218px tracks */
+  padding-left:38px !important;padding-right:38px !important}
+html body div.page div.selrow > span.grp{
+  display:inline-flex !important;align-items:center !important;
+  gap:9px !important;min-width:0 !important;white-space:nowrap !important}
+/* Head of QC, 18.09.2026: "that first row will be in two columns ... the second
+   column should have its content aligned to the left border." So each group owns
+   one half of the row and both read from their own column's left border —
+   justify-items:start above does that; neither is centred and neither is pushed
+   to a page edge. */
+html body div.page div.selrow > span.grp:first-child{grid-column:1 !important}
+html body div.page div.selrow > span.grp:last-child{grid-column:2 !important}
+
+/* the parameter label, and its Macedonian line */
+html body div.page div.selrow span.lk-lbl{
+  font-size:8.4px !important;letter-spacing:.34px !important;line-height:1.12 !important}
+html body div.page div.selrow span.lk-lbl > span.mk{
+  font-size:6.9px !important;line-height:1.08 !important}
+
+/* the placeholder values — the ticked and open option chips */
+html body div.page div.selrow span.chip-sel{
+  font-size:8.6px !important;padding:1.8px 6.5px 1.8px 5px !important;border-radius:9px !important}
+html body div.page div.selrow span.chip-un{
+  font-size:7.5px !important;padding:1.3px 6px !important;border-radius:9px !important}
+html body div.page div.selrow span.chip-sel > span.bx{font-size:10.6px !important}
+html body div.page div.selrow span.chip-un > span.bx{font-size:9.6px !important}
+html body div.page div.selrow span.grp > span.stack{gap:7px !important}
