@@ -81,3 +81,54 @@ helpers defined inside a function several hundred lines earlier. The break is in
 predates this work and has nothing to do with it, but it means `CoQ_Analysis_Master_v45`
 cannot be produced until it is repaired. v44 stands, and is now behind the certificates on
 these 54 cells. This is **OI-58**.
+
+---
+
+# A document code with a note on it still cites
+
+**18.09.2026, later the same day.** The Head of QC asked whether Farmahem is cited on the
+five certificates in the photographs. It is — every one of them is a reissue, and each
+carries a Farmahem row for identification C, Total THC, Total CBD, Total CBN and the
+mycotoxins (`220-14/16/17/18/29-К/26` and the matching `-М/26`); P060182 takes its loss on
+drying from Farmahem too, on `051-6-ГС/26`. The photographs are simply cropped above that
+row.
+
+A sweep of the whole set then confirmed the general case: across all 172 certificates
+there is **no** laboratory with a printed result and no row in Section 03. Farmahem
+appears on 94, the Institute on 144, the Center for Natural Products on 116, Purely Plant
+on 149 and the Phytosanitary Laboratory on 2.
+
+The sweep did turn up one certificate, and it has been fixed.
+
+## What was wrong
+
+`CoQ-PP_26-062` (J31122501) credits five microbiological determinations to the Institute's
+`231/0394/26 (Racno trimiran cvet)`. The citation filter rejected any document string
+containing a bracket — the rule that keeps OCR prose out of the CoA Doc. Code column — and
+so the whole citation was dropped. The five results fell to the red **Certificate to be
+located · Work Order** row while the Institute was already cited on the same page for
+parameters 10, 11 and 12.
+
+The parenthetical is not prose. It names **which product** the certificate covers, and
+that is the distinction OI-39 turns on: the laboratory's own pages give J31122501 two
+products, *Рачно тримиран цвет* against *Тримиран цвет*. Throwing it away was not an
+option, and neither was letting it suppress the code.
+
+## What changed
+
+`coq_build.js` now tests the **code**, not the raw string. `docCode()` strips a trailing
+parenthetical and `docNote()` keeps it; `codeShaped()` applies its existing guards —
+length, `n/a`, `in-house`, a bracket anywhere else — to what `docCode()` returns. Section
+03 prints the code and sets the note beneath it in the reference column's own face, so the
+citation reads as a code and the product qualifier is still on the page.
+
+Checked against the strings the filter is there to refuse: `n/a — Purely Plant in-house
+CoA (see route)` is still rejected, and so is the OCR sentence *identity by the HPLC
+cannabinoid profile on this certificate*. `231/0394/26 (Racno trimiran cvet)` is the only
+document in the whole set the old rule was rejecting.
+
+## Result
+
+`CoQ-PP_26-062` now credits the Institute with parameters **9, 10, 11, 12** and carries no
+Work Order row. Every format rebuilt and checked, on the page and in the PDF text layer.
+Nothing else moved: of 172 documents, 171 differ only by the one new style rule.

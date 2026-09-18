@@ -25,8 +25,24 @@ function collapseParams(ds) {
 }
 // A citable document is a CODE, not prose. v35 carries four OCR sentences in the document
 // field (OI-08 / addendum 2.2); a sentence cannot stand in the CoA Doc. Code column.
+//
+// But a code may carry a trailing parenthetical that says WHICH product the certificate
+// covers. IPH issued 231/0394/26 for J31122501 as "231/0394/26 (Racno trimiran cvet)",
+// and that note is the distinction OI-39 turns on — the laboratory's own pages name two
+// products for that lot — so it cannot be thrown away. The bracket rule read the whole
+// string as prose and dropped the citation: five microbiological results on CoQ-PP_26-062
+// fell to the red "Certificate to be located · Work Order" row while the Institute was
+// already cited on the same page for other parameters. The test therefore applies to the
+// CODE, and the note travels beside it as a qualifier rather than suppressing it.
+function docCode(d) {
+  return String(d || '').replace(/\s*\([^()]*\)\s*$/, '').trim();
+}
+function docNote(d) {
+  const m = String(d || '').match(/\(([^()]*)\)\s*$/);
+  return m ? m[1].trim() : '';
+}
 function codeShaped(d) {
-  d = String(d || '').trim();
+  d = docCode(d);
   if (!d || d === '—') return false;
   if (d.length > 28) return false;
   if (/^n\/a/i.test(d)) return false;
@@ -104,15 +120,16 @@ function section03(rec) {
     if (!lab || !codeShaped(doc)) continue;
     const g = groups[lab] = groups[lab] || { certs: new Map(), params: [] };
     g.params.push(d);
-    const k = doc + '|' + iss;
-    if (!g.certs.has(k)) g.certs.set(k, { doc: doc, iss: iss });
+    const k = docCode(doc) + '|' + iss;
+    if (!g.certs.has(k)) g.certs.set(k, { doc: docCode(doc), note: docNote(doc), iss: iss });
   }
   const rows = [];
   for (const key of ORDER) {
     const g = groups[key]; if (!g) continue;
     const L = LABS[key];
     const certs = [...g.certs.values()].map(c =>
-      '<span class="cert"><b>' + esc(c.doc) + '</b> · ' + esc(c.iss || '—') + '</span>').join('');
+      '<span class="cert"><b>' + esc(c.doc) + '</b> · ' + esc(c.iss || '—') +
+      (c.note ? '<i class="cert-note">' + esc(c.note) + '</i>' : '') + '</span>').join('');
     rows.push('<tr><td><span class="lr-lab">' + L.en + ' <i class="bisep">|</i> <span class="mk" style="display:inline">' +
       L.mk + (L.ac ? ' <span class="lr-ac">' + L.ac + '</span>' : '') + '</span><small>' + L.ad +
       '</small></span></td><td class="lr-mono">' + certs +
@@ -197,5 +214,5 @@ function section01(rec) {
 '  </div>\n' +
 '  <div class="goldrule"></div>\n\n  ';
 }
-return { RED, AMBER, DETS, UNIT, LABS, ORDER, canonLab, codeShaped, collapseParams, parseCSV, esc, mmyyyy, strip, red, cell, section03, section01, chip };
+return { RED, AMBER, DETS, UNIT, LABS, ORDER, canonLab, codeShaped, docCode, docNote, collapseParams, parseCSV, esc, mmyyyy, strip, red, cell, section03, section01, chip };
 })();

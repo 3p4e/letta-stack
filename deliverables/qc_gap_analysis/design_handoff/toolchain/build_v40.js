@@ -365,6 +365,10 @@ for (const c of data.coqs) {
 // Macedonian name, accreditation number and address, small and grey. The certificates flow
 // inline, each code with its date kept together, a light bar between documents.
 const S03_LAYER = '<style id="__owner-s03-compact">\n' +
+  // A certificate whose code carries a product note prints the note under the code, in
+  // the reference column's own mono face at the size the Macedonian half uses. It is a
+  // qualifier on the citation, not part of the code, so it never reads as one.
+  'html body div.page div.tbl-wrap table.labref tbody td .cert .cert-note{display:block;font-style:italic;font-weight:500;font-size:5.9px;line-height:1.1;color:#6E7D92;letter-spacing:0}\n' +
   'html body div.page div.tbl-wrap table.labref colgroup col:nth-child(2){width:248px !important}\n' +
   'html body div.page div.tbl-wrap table.labref colgroup col:nth-child(3){width:172px !important}\n' +
   'html body div.page div.tbl-wrap table.labref tbody td{padding-top:1px !important;padding-bottom:1px !important;vertical-align:middle !important}\n' +
