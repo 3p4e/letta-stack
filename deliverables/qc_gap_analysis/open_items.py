@@ -1179,6 +1179,28 @@ ITEMS = [
      "for loss on drying, and the same lot.",
      "197-21-\u041c/26 read 17.09.2026; cell_resolution_2026-09-09.tsv; PP_Spec_Parameter_Listing.xlsx; "
      "Drive lot folder P060382_SCR012603; OI-53"),
+
+    ("OI-56", "Scope", "open",
+     "The new tranche grouping of 18.09.2026 disagrees with the laboratory campaign for seven lots",
+     "The Head of QC regrouped the delivery tranches on Drive (BY_P_FOLDERS/T1, T2, T3), read "
+     "on 18.09.2026: 20 / 26 / 31 batches against the 21 / 32 / 30 the desk held. CC012601_1 "
+     "(P060332) is pushed from Tranche 1 to Tranche 3, and six batches leave the tranches "
+     "altogether \u2014 CLE072501 (P050282), OPM092501 (P060042), SJ092501 (P060082), JD042601 "
+     "(P060492), FB042601 and CC042601, all of them formerly Tranche 2. But every one of the "
+     "seven carries a Farmahem campaign certificate that says otherwise: CC012601_1 carries "
+     "**197-6**, the sixth certificate of the FIRST campaign, and the six removed lots carry "
+     "220-7, 220-22, 220-27, 220-30, 220-31 and 220-32, the second.",
+     "The delivery grouping is recorded and followed (tranche_assignment_2026-09-18.csv). "
+     "Nothing has been re-dated. sampling_dates.py keys the campaign on the certificate series, "
+     "as it always has, so the retest sampling days and the reissue issue dates are unchanged.",
+     "Two questions, and the desk will not answer either by itself. Does the move of P060332 to "
+     "Tranche 3 mean its retest was sampled 19\u201321.08.2026 and its reissue issues 24.08.2026, "
+     "against a certificate the laboratory numbered 197-6 and a sampling day of 21.07.2026? And "
+     "are the six removed lots withdrawn from the issue set, or issued outside the tranche "
+     "packages? A folder cannot overwrite a date taken from a laboratory\u2019s own certificate, so "
+     "the desk has left both alone.",
+     "Drive BY_P_FOLDERS T1/T2/T3 read 18.09.2026; tracker/TRANCHE_ASSIGNMENT_2026-09-18.md; "
+     "tranche_assignment_2026-09-18.csv; sampling_dates.py; coq_reissue_scope_2026-09-15.csv"),
 ]
 
 STATES = {"open", "marked", "ruled"}
@@ -1190,7 +1212,7 @@ def items(state=None, area=None):
     """The register, optionally narrowed.
 
     >>> len(items())
-    55
+    56
     >>> [i[0] for i in items(area="Specification")]
     ['OI-01', 'OI-02', 'OI-03', 'OI-44', 'OI-50']
     >>> sorted({i[2] for i in items()})
