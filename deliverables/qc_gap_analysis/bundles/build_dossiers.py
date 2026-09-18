@@ -211,13 +211,32 @@ def main(argv):
         why = collections.Counter(s[1].split(":")[0] for s in skipped)
         for k, v in why.most_common():
             print("   %-34s %d" % (k, v))
-    json.dump([{"coq": m[0], "lot": m[1], "round": m[2], "tranche": m[3], "pages": m[4],
-                "externals": m[5], "file": os.path.relpath(m[6], GAP), "specification": m[7]}
-               for m in made],
-              open(os.path.join(a.out, "INDEX.json"), "w", encoding="utf-8"),
+    # The index is the whole shelf, not this run. A run may cover one tranche or one
+    # round, and an index that forgot the rest would misdescribe what is on disk.
+    ipath = os.path.join(a.out, "INDEX.json")
+    shelf = {}
+    if os.path.exists(ipath):
+        for r in json.load(open(ipath, encoding="utf-8")):
+            shelf[r["file"]] = r
+    for m in made:
+        rel = os.path.relpath(m[6], GAP)
+        shelf[rel] = {"coq": m[0], "lot": m[1], "round": m[2], "tranche": m[3],
+                      "pages": m[4], "externals": m[5], "file": rel, "specification": m[7]}
+    for rel in list(shelf):
+        if not os.path.exists(os.path.join(GAP, rel)):
+            del shelf[rel]
+    json.dump([shelf[k] for k in sorted(shelf)], open(ipath, "w", encoding="utf-8"),
               ensure_ascii=False, indent=1)
-    json.dump([{"coq": s[0], "why": s[1]} for s in skipped],
-              open(os.path.join(a.out, "NOT_BUILT.json"), "w", encoding="utf-8"),
+    npath = os.path.join(a.out, "NOT_BUILT.json")
+    held = {}
+    if os.path.exists(npath):
+        for r in json.load(open(npath, encoding="utf-8")):
+            held[r["coq"]] = r
+    for k in [m[0] for m in made]:
+        held.pop(k, None)
+    for s in skipped:
+        held[s[0]] = {"coq": s[0], "why": s[1]}
+    json.dump([held[k] for k in sorted(held)], open(npath, "w", encoding="utf-8"),
               ensure_ascii=False, indent=1)
     return 0
 
