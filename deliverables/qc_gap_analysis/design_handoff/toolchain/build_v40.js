@@ -11,10 +11,14 @@ const skeleton = fs.readFileSync(path.join(HERE, 'tbody_skeleton.txt'), 'utf8');
 const base = fs.readFileSync(path.join(HANDOFF, 'base', 'CoQ-PP_26-013_P050072_GP_Grape_Pie_Grade_II.html'), 'utf8');
 const data = JSON.parse(fs.readFileSync(path.join(GAP, 'coq_artifact_data.json'), 'utf8'));
 const OUT = path.join(HANDOFF, 'out');
+const SIGN = require(path.join(GAP, 'sign_block.js'));
 
-// No signature scans. The Head of QC, 17.09.2026: "remove all signatures from all
-// certificates of quality." Each signature box keeps its line and the space above it, to
-// be signed by hand on the printed page; nothing is placed there by the build.
+// Two sets, from one build. The Head of QC, 17.09.2026: "remove all signatures from all
+// certificates of quality" - so by default each signature box keeps its line and the
+// space above it, to be signed by hand on the printed page, and nothing is placed there.
+// The Head of QC, 18.09.2026, asked for the deposited hands to be applied as well and for
+// both sets to exist side by side; PP_SIGNATURES=1 builds the signed one. See
+// sign_block.js.
 
 // tranche of a reissue, from the desk's scope files
 const tranche = {};
@@ -421,7 +425,20 @@ const S01_LAYER = '<style id="__owner-s01-selrow">\n' +
   'html body div.page div.selrow span.grp > span.stack{gap:7px !important}\n' +
   '</style>';
 
-  const DESK_LAYERS = OWNER_LAYER + '\n' + HB_SUP_LAYER + '\n' + PRINT_ZEBRA_LAYER + '\n' + EDGE_FADE_LAYER + '\n' + INK_LAYER + '\n' + S34_LAYER + '\n' + S03_LAYER + '\n' + S01_LAYER + '\n';
+
+// The white band under the section 01 bar (Head of QC, 18.09.2026: "expand the background
+// that is in that section"). Measured on the page: the bar ends at 154.80 and the product
+// row begins at 162.80 - 8 px of page-white between the bar's blue and the row's gradient,
+// from 5 px of margin below the bar and 3 px above the row. Both go to zero and the row
+// takes the 8 px into its own padding-top, so its gradient fills the gap and NOTHING below
+// moves: the row's first line of type sits at 174.80 either way. Only the bar that follows
+// the masthead is scoped - the other three section labels keep their spacing, the page
+// around them being white in any case.
+const S01_BAND_LAYER = '<style id="__owner-s01-band">\n' +
+  'html body div.page div.header-bar + div.sec-label{margin-bottom:0 !important}\n' +
+  'html body div.page div.sec-label + div.pb-main,html body div.page div.sec-label + .pb-main{margin-top:0 !important;padding-top:12px !important}\n' +
+  '</style>';
+  const DESK_LAYERS = OWNER_LAYER + '\n' + HB_SUP_LAYER + '\n' + PRINT_ZEBRA_LAYER + '\n' + EDGE_FADE_LAYER + '\n' + INK_LAYER + '\n' + S34_LAYER + '\n' + S03_LAYER + '\n' + S01_LAYER + '\n' + S01_BAND_LAYER + '\n';
   if (html.indexOf('</body>') < 0) throw new Error('no </body> to append the desk layers before');
   html = html.replace('</body>', DESK_LAYERS + '</body>');
   // Owner, 16.09.2026 (second pass): the issue date in the Section 03 code column is
@@ -430,9 +447,24 @@ const S01_LAYER = '<style id="__owner-s01-selrow">\n' +
   // done here in the desk's adapter, not in the package's builder.
   html = html.replace(/(<span class="cert"><b>[^<]*<\/b>)\s*·\s*([^<]*)<\/span>/g,
                       '$1 <i class="cd">· $2</i></span>');
-  // The signature boxes carry no scan (Head of QC, 17.09.2026): the page is signed by
-  // hand. The build refuses a document that would carry one.
-  if (/class="ap-img/.test(html)) throw new Error('a signature image reached the page: ' + c.regcode);
+  // The signature boxes (Head of QC, 17.09.2026 and 18.09.2026). Unsigned, each box is a
+  // rule with clear space above it, to be signed by hand on the printed page, and the
+  // build refuses a document that would carry a scan. Signed - PP_SIGNATURES=1 - the two
+  // deposited hands are applied over the rule, one iteration of nineteen per certificate,
+  // tilted and offset from the same hash so a reprint is identical and the fleet is not
+  // nineteen copies of one press. Nothing else on the page moves either way.
+  // The house fallback chain (Head of QC, 18.09.2026: "you have not rendered and used the
+  // fonts that are there and I explicitly want those fonts used in our certificates").
+  // Orbitron is a Latin display face: it carries no Cyrillic, no \u2116 and no \u0394. It sets the
+  // approval roles and titles, the section labels and the badges, so every Macedonian word
+  // inside one of them left the house set and was drawn by the renderer's own Liberation
+  // Sans - visible in the printed PDF as LiberationSans-Bold on "\u0418\u0417\u0413\u041e\u0422\u0412\u0418\u041b \u0418 \u041e\u0414\u041e\u0411\u0420\u0418\u041b" and
+  // "\u041c\u0415\u041d\u0410\u040f\u0415\u0420 \u0417\u0410 \u041a\u041a". Naming Montserrat after Orbitron changes no Latin glyph - Chromium
+  // falls through a stack per GLYPH, not per element - and puts the rest in the house face.
+  html = html.replace(/font-family:'Orbitron',sans-serif/g, "font-family:'Orbitron','Montserrat',sans-serif")
+             .replace(/font-family:'Orbitron',monospace/g, "font-family:'Orbitron','Montserrat',monospace");
+  if (SIGN.enabled()) html = SIGN.sign(html, c.regcode || out.filename, { h: 60, dy: -10 });
+  else if (/class="ap-img/.test(html)) throw new Error('a signature image reached the page: ' + c.regcode);
   // Owner, 16.09.2026: "in cases when you have actually a parameter that's not tested —
   // and that is in the initial quality control testing of all tranche batches — you will
   // put NT as the analysis result, and also put it in brackets." Aflatoxin B1 (#10.1) and

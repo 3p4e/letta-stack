@@ -38,7 +38,7 @@ INK=(27,58,107,255); INK_M=(27,58,107,180); GOLD=(160,124,48,150)
 
 W_MM, H_MM = 40.0, 14.5
 SIG_H, SIG_A, SIG_DX = 8.6, 0.55, 2.0
-TILT_DEG, JIT_MM, PAD_MM = 2.6, 1.6, 5.0
+TILT_DEG, JIT_MM, PAD_MM = 5.5, 3.0, 5.0
 SIGS = sorted(glob.glob(os.path.join(HERE, '_signatures', 'qc_*.png')))
 
 

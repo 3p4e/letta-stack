@@ -37,19 +37,21 @@ DOCX = os.path.join(HANDOFF, "docx")
 def package_date(dist=DIST):
     """The date of the newest set of tranche archives in dist/."""
     dates = sorted({m.group(1) for f in os.listdir(dist)
-                    for m in [re.match(r"PP_CoQ_(?:Tranche_[123]|Package)_(\d{4}-\d{2}-\d{2})\.zip$", f)]
+                    for m in [re.match(r"PP_CoQ_(?:Tranche_[123]|Package)(?:_Signed)?_(\d{4}-\d{2}-\d{2})\.zip$", f)]
                     if m})
     if not dates:
         raise SystemExit("no PP_CoQ_*.zip in " + dist + " — run package_v40.py first")
     return dates[-1]
 
 
+# The set this run belongs to, exactly as package_v40.py names it.
+SET = "_Signed" if os.environ.get("PP_SIGNATURES") == "1" else ""
 DATE = package_date()
 # the archive each tranche's certificates are packaged in, and the label for this one
-SOURCES = (("PP_CoQ_Tranche_1_%s.zip" % DATE, "Tranche_1"),
-           ("PP_CoQ_Tranche_2_%s.zip" % DATE, "Tranche_2"),
-           ("PP_CoQ_Tranche_3_%s.zip" % DATE, "Tranche_3"),
-           ("PP_CoQ_Package_%s.zip" % DATE, "No_tranche"))
+SOURCES = (("PP_CoQ_Tranche_1%s_%s.zip" % (SET, DATE), "Tranche_1"),
+           ("PP_CoQ_Tranche_2%s_%s.zip" % (SET, DATE), "Tranche_2"),
+           ("PP_CoQ_Tranche_3%s_%s.zip" % (SET, DATE), "Tranche_3"),
+           ("PP_CoQ_Package%s_%s.zip" % (SET, DATE), "No_tranche"))
 
 
 def membership(dist=DIST):
@@ -120,7 +122,7 @@ def main(argv):
         runs = parts(groups[(label, rnd)], sizes, limit)
         for i, run in enumerate(runs, 1):
             tail = "" if len(runs) == 1 else "_part_%d_of_%d" % (i, len(runs))
-            name = "PP_CoQ_Word_%s_%s%s_%s.zip" % (label, rnd, tail, DATE)
+            name = "PP_CoQ_Word%s_%s_%s%s_%s.zip" % (SET, label, rnd, tail, DATE)
             path = os.path.join(a.out, name)
             with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as zf:
                 for f in run:

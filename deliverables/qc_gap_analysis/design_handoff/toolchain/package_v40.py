@@ -28,6 +28,12 @@ PAGES = os.path.join(PDF, "pages"); DOCX = os.path.join(HANDOFF, "docx")
 DIST = os.path.join(HANDOFF, "dist"); README = os.path.join(DIST, "README.md"); GAP = os.path.dirname(HANDOFF)
 FOLDER_DOCS = ["CoQ_ISSUE_COQ.pdf", "CoQ_REISSUE_T1.pdf", "CoQ_REISSUE_T2.pdf", "CoQ_REISSUE_T3.pdf"]
 
+# The desk issues the same fleet twice (Head of QC, 18.09.2026): "one complete set with the
+# signatures applied and one complete set without the signatures applied". One switch drives
+# the whole pipeline - PP_SIGNATURES=1 builds the signed fleet - and the same switch names its
+# archives, so the two sets sit side by side in dist/ and neither can be mistaken for the other.
+SET = "_Signed" if os.environ.get("PP_SIGNATURES") == "1" else ""
+
 
 def triple(html):
     """(html, page pdf, docx) for one document, or a named refusal."""
@@ -63,7 +69,7 @@ def build(date):
             os.remove(old); print("removed", os.path.relpath(old, HANDOFF))
     written = []
     for t in ("1", "2", "3"):
-        root = "PP_CoQ_Tranche_%s_%s" % (t, date); mine = [r for r in rows if str(r[0]) == t]
+        root = "PP_CoQ_Tranche_%s%s_%s" % (t, SET, date); mine = [r for r in rows if str(r[0]) == t]
         with zipfile.ZipFile(os.path.join(DIST, root + ".zip"), "w", zipfile.ZIP_DEFLATED, compresslevel=9) as z:
             add_docs(z, root, mine)
             for fn in ("CoQ_Tranche_%s.pdf" % t, "CoQ_Tranche_%s_Retest.pdf" % t):
@@ -71,7 +77,7 @@ def build(date):
             z.write(README, root + "/README.md")
             n = len(z.namelist())
         written.append((root, len(mine), n))
-    root = "PP_CoQ_Package_%s" % date; loose = [r for r in rows if not str(r[0])]
+    root = "PP_CoQ_Package%s_%s" % (SET, date); loose = [r for r in rows if not str(r[0])]
     with zipfile.ZipFile(os.path.join(DIST, root + ".zip"), "w", zipfile.ZIP_DEFLATED, compresslevel=9) as z:
         for t in ("1", "2", "3"):
             for fn in ("CoQ_Tranche_%s.pdf" % t, "CoQ_Tranche_%s_Retest.pdf" % t):
