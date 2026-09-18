@@ -151,6 +151,24 @@ def optline(en_, mk_, opts):
             % (esc(en_), esc(mk_), "".join(chip(o) for o in opts)))
 
 
+def itemline(en_, mk_, opts, result):
+    """A determination whose every item carries a result of its own.
+
+    Foreign matter is the one: each category of Ph. Eur. 2.8.2 is either found or it is
+    not. The Head of QC, 18.09.2026 — each is absent, which is what makes the
+    determination conform. So the category is not a box to tick but a line that states
+    what the examination found against it.
+    """
+    en_r, mk_r = result
+    cells = "".join(
+        '<span class="fm-item"><span class="fm-n">%s<span class="mk">%s</span></span>'
+        '<span class="fm-r">%s<span class="mk">%s</span></span></span>'
+        % (esc(o.en), esc(o.mk), esc(en_r), esc(mk_r)) for o in opts)
+    return ('<div class="optline"><span class="opt-lbl">%s<span class="mk">%s</span></span>'
+            '<span class="fm-list">%s</span></div>'
+            % (esc(en_), esc(mk_), cells))
+
+
 def fill(width=58, unit=""):
     return ('<span class="fillin" style="min-width:%dpx"></span>%s'
             % (width, ('<span class="fu">%s</span>' % esc(unit)) if unit else ""))
@@ -165,13 +183,239 @@ def fm_measure():
     return '<div class="fm-row">%s</div>' % "".join(cells)
 
 
-def card(det, extra=""):
+def dispo(det, rows):
+    """The two sentences an analysis states about itself: what it found, and what that
+    means against the specification.
+
+    The Head of QC, 18.09.2026, gave the words — `Absent` then `Conforms` on foreign
+    matter, `Conforms` on both identifications. Whether this determination happened at
+    all is the certificate of quality's word, not the ruling's, so where the certificate
+    carries no result for it the record says so rather than asserting a verdict over an
+    analysis nobody performed.
+    """
+    res = str((rows.get(det) or {}).get("res") or "").strip()
+    if not res or res == DASH or "not tested" in res.lower():
+        held = '<span class="dp-v" style="%s">[ %s ]</span>' % (RED, DASH)
+        return ('<span class="dp"><span class="dp-k">Analysis Result<span class="mk">'
+                '\u0420\u0435\u0437\u0443\u043b\u0442\u0430\u0442</span></span>%s</span>'
+                '<span class="dp"><span class="dp-k">Disposition<span class="mk">'
+                '\u0414\u0438\u0441\u043f\u043e\u0437\u0438\u0446\u0438\u0458\u0430</span></span>%s</span>'
+                % (held, held))
+    ar, dp = FO.ANALYSIS_RESULT[det], FO.DISPOSITION[det]
+    return ('<span class="dp"><span class="dp-k">Analysis Result<span class="mk">'
+            '\u0420\u0435\u0437\u0443\u043b\u0442\u0430\u0442</span></span>'
+            '<span class="dp-v">%s<span class="mk">%s</span></span></span>'
+            '<span class="dp"><span class="dp-k">Disposition<span class="mk">'
+            '\u0414\u0438\u0441\u043f\u043e\u0437\u0438\u0446\u0438\u0458\u0430</span></span>'
+            '<span class="dp-v ok">%s<span class="mk">%s</span></span></span>'
+            % (esc(ar[0]), esc(ar[1]), esc(dp[0]), esc(dp[1])))
+
+
+def card(det, rows, extra=""):
     ttl_en, ttl_mk, meth = FO.TITLES[det]
-    body = "".join(optline(a, b, opts) for a, b, opts in FO.BY_DET[det]) + extra
+    stated = FO.ITEM_RESULT.get(det)
+    res = str((rows.get(det) or {}).get("res") or "").strip()
+    live = bool(res) and res != DASH and "not tested" not in res.lower()
+    body = "".join(
+        (itemline(a, b, opts, stated) if (stated and live) else optline(a, b, opts))
+        for a, b, opts in FO.BY_DET[det]) + extra
     return ('<div class="ic-card">\n'
             '    <div class="ic-title"><span>%s <span class="ic-no">#%s</span>'
-            '<span class="mk">%s</span></span><span class="ic-meth">%s</span></div>\n'
-            '    %s\n  </div>' % (esc(ttl_en), det, esc(ttl_mk), esc(meth), body))
+            '<span class="mk">%s</span></span><span class="ic-dispo">%s</span>'
+            '<span class="ic-meth">%s</span></div>\n'
+            '    %s\n  </div>' % (esc(ttl_en), det, esc(ttl_mk), dispo(det, rows),
+                                  esc(meth), body))
+
+
+# ------------------------------------------------------------------- the results table
+def result_cell(res):
+    v = (res or "").strip()
+    if not v or v == DASH:
+        return '<td class="r-cell"><span class="r-val" style="%s">[ %s ]</span></td>' % (RED, DASH)
+    e, m = en(v), mk(v)
+    conform = bool(re.match(r"^(conforms|absent)", e, re.I))
+    return ('<td class="r-cell"><span class="r-val%s">%s%s</span></td>'
+            % (" r-conform" if conform else "", esc(e),
+               ('<span class="mk">%s</span>' % esc(m)) if m else ""))
+
+
+def results_table(det_by_no, rows, scope):
+    body = []
+    for n in scope:
+        d, r = det_by_no.get(n), rows.get(n)
+        if not d or not r:
+            continue
+        name_en, _, name_tail = d["en"].partition("·")
+        meth = (r.get("mth") or d.get("method") or "").split("·")
+        crit = SHORT_CRIT.get(n) or en(r.get("crit") or d.get("crit") or "")
+        body.append(
+            '        <tr><td>%s</td><td><span class="p-name">%s <span class="mk">%s</span>'
+            '</span></td><td><span class="p-method">%s%s</span></td>'
+            '<td><span class="p-spec">%s</span></td>%s</tr>'
+            % (esc(n), esc(name_en.strip()), esc(d.get("mk") or ""), esc(meth[0].strip()),
+               ('<span class="p-meth-eq">%s</span>' % esc("·".join(meth[1:]).strip()))
+               if len(meth) > 1 else "",
+               esc(crit), result_cell(r.get("res"))))
+    return ('<div class="tbl-wrap">\n    <table class="results">\n'
+            '      <colgroup><col style="width:30px"><col style="width:266px">'
+            '<col style="width:146px"><col style="width:158px"><col></colgroup>\n'
+            '      <thead><tr><th>№</th><th>Parameter <i class="bisep">|</i> '
+            '<span class="mk">Параметар</span></th>'
+            '<th>Method <i class="bisep">|</i> <span class="mk">Метод</span></th>'
+            '<th>Acc. Criteria <i class="bisep">|</i> <span class="mk">Критериум</span></th>'
+            '<th style="text-align:right">Result <i class="bisep">|</i> '
+            '<span class="mk">Резултат</span></th></tr></thead>\n'
+            '      <tbody>\n%s\n      </tbody>\n    </table>\n  </div>' % "\n".join(body))
+
+
+# ------------------------------------------------------------------------- the timeline
+def flow(reg, dates, coqs):
+    tested = window(reg.get("tested_from"), reg.get("tested_to"))
+    pk = dates.get("packaging_from"), dates.get("packaging_to")
+    retest = reg.get("round", "").startswith("retest")
+    steps = [
+        ("Harvest", "Берба",
+         window(dates.get("harvest_from"), dates.get("harvest_to")), "cultivation"),
+        ("Analysis · In-house", "Анализа · интерна",
+         tested, "campaign sampling day" if retest else "first day of packaging"),
+        ("Packaging", "Пакување",
+         window(*pk), "batch packed"),
+        ("Record issued", "Издаден",
+         reg.get("issued") or DASH, "this document"),
+        ("Cited by CoQ", "Цитиран во СзК",
+         ", ".join(sorted(c["regcode"] for c in coqs)), "batch release"),
+    ]
+    out = []
+    for i, (a, b, v, note) in enumerate(steps):
+        v = (v or "").strip() or DASH
+        cls = "fl-step" + (" fl-here" if i == 1 else "") + (" fl-wide" if i == 4 else "")
+        out.append('<div class="%s"><span class="fl-k">%s<span class="mk">%s</span></span>'
+                   '<span class="fl-v">%s</span><span class="fl-n">%s</span></div>'
+                   % (cls, esc(a), esc(b), esc(v), esc(note)))
+    return '<div class="flow">%s</div>' % "".join(out)
+
+
+# ----------------------------------------------------------------------------- the page
+def chips_sel(on, label, mkl=""):
+    return ('<span class="chip-%s"><span class="bx">%s</span> %s%s</span>'
+            % ("sel" if on else "un", "☒" if on else BOX, label,
+               ('<span class="mk">%s</span>' % esc(mkl)) if mkl else ""))
+
+
+def section01(rep, scope):
+    spc = rep.get("spc") or {}
+    ph = (spc.get("pheno") or "").upper()
+    pheno = (chips_sel(ph == "HYBRID", "Hybrid") +
+             '<span class="stack">' + chips_sel(ph == "INDICA", "Indica") +
+             chips_sel(ph == "SATIVA", "Sativa") + "</span>")
+    chem = ('<span class="stack">' + chips_sel(spc.get("chemo") == "THC", "THC") +
+            chips_sel(spc.get("chemo") == "CBD", "CBD") + "</span>")
+    proc = (spc.get("proc") or "").upper()
+    prc = ('<span class="stack">' +
+           chips_sel("MACHINE" in proc, "Machine", "Машинска") +
+           chips_sel("HAND" in proc, "Hand") + "</span>")
+    badge = ('<span class="pbp-lbl">Scope</span>'
+             + " ".join("#" + n for n in scope))
+    return (
+        '<div class="pb-main">\n'
+        '    <span class="pb-name"><span style="font-family:\'Roboto Mono\',monospace">%s</span> '
+        '<i class="bisep" style="font-size:.7em">|</i> '
+        '<span style="font-weight:800;text-transform:uppercase">%s</span></span>\n'
+        '    <span class="pb-potency"><span class="pbp-val">%s</span></span>\n'
+        '  </div>\n'
+        '  <div class="goldrule"></div>\n'
+        '  <div class="selrow">\n'
+        '    <span class="grp"><span class="lk-lbl">Phenotype <span class="mk">'
+        'Фенотип</span></span>%s</span>\n'
+        '    <span class="grp"><span class="lk-lbl">Chemotype <span class="mk">'
+        'Хемотип</span></span>%s</span>\n'
+        '    <span class="grp"><span class="lk-lbl">Processing <span class="mk">'
+        'Обработка</span></span>%s</span>\n'
+        '  </div>\n'
+        '  <div class="goldrule"></div>\n'
+        '  <div class="gridrow lk-inline" style="padding-top:6px">\n'
+        '    <span class="lk"><span class="lk-lbl">Production Batch №<span class="mk">'
+        'Производна серија №</span></span>'
+        '<span class="lk-val">%s</span></span>\n'
+        '    <span class="lk"><span class="lk-lbl">Cultivation Batch №<span class="mk">'
+        'Серија од одгледување №</span></span>'
+        '<span class="lk-val">%s</span></span>\n'
+        '    <span class="lk"><span class="lk-lbl">Product Code<span class="mk">'
+        'Код на производ</span></span>'
+        '<span class="lk-val sm">%s</span></span>\n'
+        '    <span class="lk"><span class="lk-lbl">Specification Ref.<span class="mk">'
+        'Референца на спецификација</span></span>'
+        '<span class="lk-val sm">%s</span></span>\n'
+        '  </div>\n'
+        '  <div class="goldrule"></div>'
+        % (esc(rep.get("pp") or rep.get("cb") or DASH), esc(rep.get("strain") or DASH),
+           badge,
+           pheno, chem, prc,
+           esc(rep.get("pp") or DASH), esc(rep.get("cb") or DASH),
+           esc((rep.get("pcode") or DASH) + (" · Grade %s" % rep["grade"] if rep.get("grade") else "")),
+           esc(rep.get("spec") or DASH)))
+
+
+LEGEND = (
+    '<div class="pot-note"><strong>How to read this record.</strong> Each analysis in '
+    'Section 04 states two things of its own: the <b>analysis result</b>, which is what '
+    'the examination found, and the <b>disposition</b>, which is what that means against '
+    'the specification. On foreign matter they are not the same word \u2014 every category of '
+    'Ph. Eur. 2.8.2 is reported <b>Absent</b>, and because none was found the '
+    'determination <b>conforms</b>. The option menus under the two identifications '
+    'describe rather than detect, so they are printed unticked and are marked and '
+    'initialled by hand at the time of analysis, beside the signature lines; a deviation '
+    'from the expected finding carries the warning tint. The determinations are performed '
+    'in-house prior to final release sampling, before packaging starts (QCSOP 005 v.02). '
+    '<i class="bisep">|</i> <span class="mk">\u041c\u0435\u043d\u0438\u0442\u0435 '
+    '\u0441\u043e \u043e\u043f\u0446\u0438\u0438 \u0441\u0435 '
+    '\u043f\u043e\u043f\u043e\u043b\u043d\u0443\u0432\u0430\u0430\u0442 '
+    '\u0440\u0430\u0447\u043d\u043e \u043f\u0440\u0438 '
+    '\u0430\u043d\u0430\u043b\u0438\u0437\u0430\u0442\u0430.</span></div>')
+
+
+def dispo(det, rows):
+    """The two sentences an analysis states about itself: what it found, and what that
+    means against the specification.
+
+    The Head of QC, 18.09.2026, gave the words — `Absent` then `Conforms` on foreign
+    matter, `Conforms` on both identifications. Whether this determination happened at
+    all is the certificate of quality's word, not the ruling's, so where the certificate
+    carries no result for it the record says so rather than asserting a verdict over an
+    analysis nobody performed.
+    """
+    res = str((rows.get(det) or {}).get("res") or "").strip()
+    if not res or res == DASH or "not tested" in res.lower():
+        held = '<span class="dp-v" style="%s">[ %s ]</span>' % (RED, DASH)
+        return ('<span class="dp"><span class="dp-k">Analysis Result<span class="mk">'
+                '\u0420\u0435\u0437\u0443\u043b\u0442\u0430\u0442</span></span>%s</span>'
+                '<span class="dp"><span class="dp-k">Disposition<span class="mk">'
+                '\u0414\u0438\u0441\u043f\u043e\u0437\u0438\u0446\u0438\u0458\u0430</span></span>%s</span>'
+                % (held, held))
+    ar, dp = FO.ANALYSIS_RESULT[det], FO.DISPOSITION[det]
+    return ('<span class="dp"><span class="dp-k">Analysis Result<span class="mk">'
+            '\u0420\u0435\u0437\u0443\u043b\u0442\u0430\u0442</span></span>'
+            '<span class="dp-v">%s<span class="mk">%s</span></span></span>'
+            '<span class="dp"><span class="dp-k">Disposition<span class="mk">'
+            '\u0414\u0438\u0441\u043f\u043e\u0437\u0438\u0446\u0438\u0458\u0430</span></span>'
+            '<span class="dp-v ok">%s<span class="mk">%s</span></span></span>'
+            % (esc(ar[0]), esc(ar[1]), esc(dp[0]), esc(dp[1])))
+
+
+def card(det, rows, extra=""):
+    ttl_en, ttl_mk, meth = FO.TITLES[det]
+    stated = FO.ITEM_RESULT.get(det)
+    res = str((rows.get(det) or {}).get("res") or "").strip()
+    live = bool(res) and res != DASH and "not tested" not in res.lower()
+    body = "".join(
+        (itemline(a, b, opts, stated) if (stated and live) else optline(a, b, opts))
+        for a, b, opts in FO.BY_DET[det]) + extra
+    return ('<div class="ic-card">\n'
+            '    <div class="ic-title"><span>%s <span class="ic-no">#%s</span>'
+            '<span class="mk">%s</span></span><span class="ic-dispo">%s</span>'
+            '<span class="ic-meth">%s</span></div>\n'
+            '    %s\n  </div>' % (esc(ttl_en), det, esc(ttl_mk), dispo(det, rows),
+                                  esc(meth), body))
 
 
 # ------------------------------------------------------------------- the results table
@@ -375,6 +619,22 @@ html body div.page div.ic-card .ic-title{display:flex;justify-content:space-betw
 html body div.page div.ic-card .ic-title>span:first-child{font-family:'Orbitron',sans-serif;font-size:8.4px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--navy)}
 html body div.page div.ic-card .ic-title .ic-no{font-family:'Roboto Mono',monospace;font-size:8px;font-weight:700;color:#8A5E12;margin-left:5px}
 html body div.page div.ic-card .ic-title .mk{display:inline;font-size:6.2px;margin-left:6px;letter-spacing:normal;text-transform:none}
+/* the two sentences each analysis states about itself (Head of QC, 18.09.2026) */
+html body div.page div.ic-card .ic-title{gap:6px}
+html body div.page div.ic-card .ic-dispo{margin-left:auto;display:inline-flex;align-items:baseline;gap:10px}
+html body div.page div.ic-card .dp{display:inline-flex;align-items:baseline;gap:4px}
+html body div.page div.ic-card .dp-k{font-family:'Orbitron',sans-serif;font-size:5.8px;font-weight:700;letter-spacing:.35px;text-transform:uppercase;color:var(--gold-deep)}
+html body div.page div.ic-card .dp-k .mk{display:inline;font-size:5px;margin-left:3px;letter-spacing:normal;text-transform:none}
+html body div.page div.ic-card .dp-v{font-size:7.6px;font-weight:800;letter-spacing:.2px;color:var(--navy)}
+html body div.page div.ic-card .dp-v.ok{color:var(--green)}
+html body div.page div.ic-card .dp-v .mk{display:inline;font-size:5.4px;margin-left:3px}
+/* foreign matter: a category is a line with a result, not a box to tick */
+html body div.page div.ic-card .fm-list{display:grid;grid-template-columns:repeat(3,1fr);column-gap:8px;row-gap:1px}
+html body div.page div.ic-card .fm-item{display:flex;align-items:baseline;justify-content:space-between;gap:6px;border-bottom:1px dotted #E1E8F0;padding:.6px 0}
+html body div.page div.ic-card .fm-n{font-family:'Montserrat',sans-serif;font-size:6.3px;font-weight:600;color:#5D7186}
+html body div.page div.ic-card .fm-n .mk{display:inline;font-size:5.2px;margin-left:3px;color:#93A3B6}
+html body div.page div.ic-card .fm-r{font-family:'Montserrat',sans-serif;font-size:6.4px;font-weight:800;color:var(--navy);white-space:nowrap}
+html body div.page div.ic-card .fm-r .mk{display:inline;font-size:5.2px;margin-left:2px;color:#6E7F94}
 html body div.page div.ic-card .ic-meth{font-family:'Roboto Mono',monospace;font-size:6.4px;font-weight:600;letter-spacing:.2px;color:var(--gold-deep);white-space:nowrap}
 html body div.page div.ic-card .optline{display:grid;grid-template-columns:78px 1fr;column-gap:7px;align-items:start;padding:1.2px 0}
 html body div.page div.ic-card .optline + .optline{border-top:1px solid var(--border-light)}
@@ -470,7 +730,7 @@ def build(only=None):
 
         series = ("%s · %s" % (r.get("round", "").title(), r["tranche"])
                   if r.get("tranche") else (r.get("round") or "release round").title())
-        cards = "".join(card(d, fm_measure() if d == "7" else "")
+        cards = "".join(card(d, info["rows"], fm_measure() if d == "7" else "")
                         for d in ("1", "2", "7") if d in scope)
         extra = [n for n in scope if n not in ("1", "2", "7")]
 

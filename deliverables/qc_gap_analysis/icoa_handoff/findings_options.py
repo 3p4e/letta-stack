@@ -180,8 +180,7 @@ MICROSCOPY = [
 # #7 · Foreign matter · Ph. Eur. 2.8.2 · in-house
 # ---------------------------------------------------------------------------
 FOREIGN_MATTER = [
-    ("Categories found", "Најдени категории", [
-        O("None detected", "Не е откриено"),
+    ("Categories examined", "Испитани категории", [
         D("Leaves > 1 cm", "Листови > 1 cm"),
         D("Stems and stalks", "Стебла и стебленца"),
         D("Seeds", "Семки"),
@@ -202,6 +201,37 @@ FM_MEASURE = [
     ("Result", "Резултат", "% m/m", ""),
     ("Limit", "Граница", "", "≤ 2.0 %"),
 ]
+
+# ---------------------------------------------------------------------------
+# The disposition, stated per analysis
+# ---------------------------------------------------------------------------
+# The Head of QC, 18.09.2026:
+#
+# > "You also would have to add an individual per analysis result disposition, and
+# > especially in foreign matter — as an analysis result you will put absent in all of
+# > them, and as parameter disposition, conforms. And for all other parameters, like
+# > macroscopic and microscopic identification, also conforms."
+#
+# So the record no longer carries one verdict at its foot for all three determinations.
+# Each analysis states two things of its own: what was FOUND (the analysis result) and
+# what that means against the specification (the disposition). They are not the same
+# sentence and on foreign matter they are not even the same word — nothing was found, so
+# the result is `Absent`, and because nothing was found the determination conforms.
+#
+# Foreign matter is the one analysis whose items each carry a result: every category of
+# Ph. Eur. 2.8.2 is either found or it is not, and the ruling is that each is absent. The
+# macroscopic and microscopic examinations describe rather than detect — a colour is not
+# present or absent — so their items stay a menu for the analyst and the disposition is
+# stated for the determination.
+CONFORMS = ("Conforms", "\u041e\u0434\u0433\u043e\u0432\u0430\u0440\u0430")
+ABSENT = ("Absent", "\u041e\u0442\u0441\u0443\u0442\u043d\u0430")
+
+# what the analysis found
+ANALYSIS_RESULT = {"1": CONFORMS, "2": CONFORMS, "7": ABSENT}
+# what it means against the specification
+DISPOSITION = {"1": CONFORMS, "2": CONFORMS, "7": CONFORMS}
+# the determinations whose every item carries a result of its own, and which result
+ITEM_RESULT = {"7": ABSENT}
 
 # Which menu belongs to which determination of the certificate of quality.
 BY_DET = {"1": MACROSCOPY, "2": MICROSCOPY, "7": FOREIGN_MATTER}
