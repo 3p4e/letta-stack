@@ -508,3 +508,82 @@ html body div.page div.fa-grid div.fc div.fc-opts > span.ck{max-width:none !impo
 html body div.page div.fnd div.fa-grid.six{grid-template-columns:repeat(6,minmax(0,1fr)) !important;column-gap:6px !important;row-gap:0 !important}
 html body div.page div.fnd div.fa-grid.six div.fc div.fc-opts.n2{grid-template-columns:minmax(0,1fr) !important;row-gap:2px !important}
 html body div.page div.fnd div.fa-grid.six div.fc div.fc-attr{white-space:normal !important;line-height:1.1 !important}
+
+/* ===== Head of QC, 18.09.2026 ====================================================
+   Three changes, all inside this block so they can be read and reverted as one.
+
+   1 · §03 text enlarged for legibility, section height and arrangement unchanged.
+       The tick boxes carry two stacked lines (English over the Macedonian gloss) and
+       a ballot glyph beside them, so the box height is max(glyph, two text lines).
+       Type goes up; the vertical padding, leading and grid gaps come down by the
+       same amount, so §03 occupies the height it occupied before.
+
+   2 · §04 content enlarged, every row still ONE line. All five cells nowrap on the
+       child elements and the gloss stays inline after the English.
+
+   3 · The 01/02/03/04 band no longer prints hard lines. Cause: the authored band
+       crammed three stops into its top 2.16 px of a 24 px bar - #ACBFD2 -> #DAE5EE
+       -> #FAFCFE, a jump of ~78 per channel across gaps of 0.34, 0.74 and 1.08 px.
+       On screen the browser anti-aliases that into a soft bevel; at print resolution
+       each stop resolves as its own edge, and print-color-adjust:exact stops anything
+       smoothing them. The cap is a top RULE drawn as gradient stops, so it is drawn
+       as one here - anchored in px, not per cent, so it cannot go sub-pixel - and the
+       panel below it runs as a single even ramp.
+       The authored rule also stacked a SECOND 13-stop gradient underneath the first.
+       Both layers are fully opaque, so the lower one never rendered at all; it is not
+       carried forward. No rgba, no shadow, no sub-1 opacity is introduced.
+   ================================================================================ */
+
+/* 3 · section bands */
+html body div.page div.sec-label{
+  background-color:#EEF3F8 !important;
+  background-image:linear-gradient(180deg,
+      #A9BCCF 0,#A9BCCF 1px,
+      #E8F0F7 1px,#F7FAFD 6px,
+      #F2F7FB 45%,#E7EFF6 72%,#DFE9F1 100%) !important;
+  background-size:100% 100% !important;background-repeat:no-repeat !important;
+  box-shadow:none !important;text-shadow:none !important}
+html body div.page div.sec-label .sec-no,html body div.page div.sec-label .mk{text-shadow:none !important}
+
+/* 1 · §03 - type up, leading and padding down by the same measure */
+html body div.page div.fnd div.fa-grid div.fc div.fc-attr{font-size:7.4px !important;line-height:1.04 !important}
+html body div.page div.fnd div.fa-grid div.fc div.fc-attr .mk{font-size:6.5px !important;line-height:1.02 !important}
+html body div.page div.fnd div.fa-grid div.fc div.fc-opts > span.ck{font-size:7px !important;padding:0 2.5px !important;gap:1.5px !important}
+html body div.page div.fnd div.fa-grid div.fc div.fc-opts > span.ck > span.ck-t{font-size:7px !important;line-height:1.02 !important}
+html body div.page div.fnd div.fa-grid div.fc div.fc-opts > span.ck span.mk{font-size:6.2px !important;line-height:1 !important}
+html body div.page div.fnd div.fa-grid div.fc div.fc-opts > span.ck > span.bx{font-size:7.6px !important;line-height:1.16 !important}
+html body div.page div.fnd div.fa-head span.fa-t{font-size:8.2px !important}
+html body div.page div.fnd div.fa-head span.fa-idx{font-size:7.3px !important}
+html body div.page div.fnd div.fa-head span.fa-ref{font-size:6.5px !important}
+html body div.page div.fnd div.fa-head > span.mk{font-size:6.5px !important}
+html body div.page div.fnd div.fa-head span.fa-disp-l{font-size:6.2px !important}
+html body div.page div.fnd div.fa-head span.fa-disp-l .mk{font-size:6.2px !important}
+html body div.page div.fnd div.fa-head span.fa-disp{font-size:7.1px !important}
+html body div.page div.fnd div.fa-head span.fa-disp .mk{font-size:6.2px !important}
+html body div.page div.fnd div.fc-mass span.fc-mass-lbl{font-size:7.5px !important}
+html body div.page div.fnd div.fc-mass span.fc-mass-lbl .mk{font-size:6.4px !important}
+html body div.page div.fnd div.fc-mass span.fc-mass-lbl span.fc-unit{font-size:6.4px !important}
+html body div.page div.fnd div.fc-mass span.fc-mass-opts > span.ck{font-size:6.7px !important}
+/* height given back */
+html body div.page div.fnd div.fa-grid div.fc{padding:1px 6px 1.5px !important}
+html body div.page div.fnd div.fa-grid div.fc div.fc-opts{margin-top:1px !important;gap:1px 5px !important}
+html body div.page div.fnd div.fa-grid{row-gap:3px !important}
+
+/* 2 · §04 - content up, one line per row */
+html body div.page div.tbl-wrap table.results.rt tbody td{padding:1px 6px !important;line-height:1.14 !important;white-space:nowrap !important}
+html body div.page div.tbl-wrap table.results.rt tbody td .p-name{font-size:8.3px !important}
+html body div.page div.tbl-wrap table.results.rt tbody td .p-name .mk{font-size:6.6px !important}
+html body div.page div.tbl-wrap table.results.rt tbody td .p-method{font-size:7.2px !important}
+html body div.page div.tbl-wrap table.results.rt tbody td .p-spec{font-size:7.6px !important}
+html body div.page div.tbl-wrap table.results.rt tbody td .pp-res{font-size:7.2px !important;padding:.5px 5px !important;line-height:1.24 !important}
+html body div.page div.tbl-wrap table.results.rt tbody td .pp-res .mk{font-size:6.6px !important}
+html body div.page div.tbl-wrap table.results.rt thead th{font-size:7.6px !important}
+html body div.page div.tbl-wrap table.results.rt thead th .mk{font-size:6.4px !important}
+
+/* 4 · the white strip between the header and the 01 band.
+   _icoa3-print.css:463 puts margin-bottom:11px on .header-bar, and line 464 immediately
+   sets the band's margin-top to 0 - as do _icoa.css:254 and _coq-rules.css:216. Three
+   layers intend the band flush under the header; the header's own bottom margin was
+   pushing it away from all of them, and because the page ground is white while the header
+   carries its own gradient, the 11 px read as an empty strip. The band goes back flush. */
+html body div.page div.header-bar{margin-bottom:0 !important}
