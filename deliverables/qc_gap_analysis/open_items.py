@@ -1268,6 +1268,25 @@ ITEMS = [
      "Re-scan the three certificates from the paper originals, or ask the Institute of "
      "Public Health for a fresh copy. Three lots' heavy metals depend on it.",
      "intake_contaminants_2026-09-18/two_read_result.json; apply_contaminants.py"),
+    ("OI-60", "Document", "open",
+     "Eleven lots have no heavy-metal, mycotoxin or pesticide panel in the archive at all",
+     "After the contaminant intake of 18.09.2026 — 58 Institute of Public Health panels read "
+     "twice, 1927 values, no disagreement — the certificates of quality still printing \"not "
+     "tested\" for heavy metals fall to 25, on 13 lots. Two are the certificates OI-59 names, "
+     "with the metals page missing from the scan. The other eleven have NO contaminant panel "
+     "in eCoA_DATABASE for the lot: eight have none at all — CC042601, FB042601, P060332 "
+     "(CC012601/1), P060342 (SCR012601), P060352 (FB012602), P060372 (CC012603), P060382 "
+     "(SCR012603), P060492 (JD042601) — and three have only a SIBLING sub-lot's panel, which "
+     "does not certify them: P050142 (BSS1024_01/2; 3177/2025 is BSS1024_01, P050122), "
+     "P060142 (GRC102501/1; 328/2026 and 1060/2026 are GRC102501/2, P060182), P060362 "
+     "(JD012603/01; 3660/2026 and 3662/2026 are /02 and /02V). Eight of the eleven are the "
+     "same lots OI-42 found with no loss-on-drying report anywhere: it is one gap, not two.",
+     "Nothing entered. A sibling sub-lot's certificate is not this lot's certificate, and the "
+     "desk does not print a heavy-metal result no document reports. The certificates say so.",
+     "Either the panels were run and never filed — then the paper needs finding and scanning — "
+     "or these lots were never sent for contaminant testing, and the Head of QC decides what "
+     "a release certificate without heavy metals means for them.",
+     "intake_contaminants_2026-09-18/INTAKE_2026-09-18.md; apply_contaminants.py"),
 ]
 
 STATES = {"open", "marked", "ruled"}
@@ -1279,7 +1298,7 @@ def items(state=None, area=None):
     """The register, optionally narrowed.
 
     >>> len(items())
-    59
+    60
     >>> [i[0] for i in items(area="Specification")]
     ['OI-01', 'OI-02', 'OI-03', 'OI-44', 'OI-50']
     >>> sorted({i[2] for i in items()})

@@ -4,7 +4,7 @@ Every finding the desk has raised and cannot itself settle, with the evidence
 behind it and the decision being asked for. Built by `open_items.py`; the same
 register is the **Open Items** sheet of the workbook.
 
-**44 open · 3 marked on the certificate**
+**45 open · 3 marked on the certificate**
 
 ## Specification
 
@@ -689,4 +689,14 @@ It is not a download fault. Each local copy is byte for byte the size of the fil
 **The desk.** Read twice, by two readers who did not see each other's work, and both reported the same missing page independently. Nothing is entered for those three lots' metals or aflatoxins: a determination with no page to read is not a result, and the certificates keep saying so.
 
 **Needed.** Re-scan the three certificates from the paper originals, or ask the Institute of Public Health for a fresh copy. Three lots' heavy metals depend on it.
+
+### OI-60 · Eleven lots have no heavy-metal, mycotoxin or pesticide panel in the archive at all
+
+*State:* **open** · *Evidence:* intake_contaminants_2026-09-18/INTAKE_2026-09-18.md; apply_contaminants.py
+
+**Found.** After the contaminant intake of 18.09.2026 — 58 Institute of Public Health panels read twice, 1927 values, no disagreement — the certificates of quality still printing "not tested" for heavy metals fall to 25, on 13 lots. Two are the certificates OI-59 names, with the metals page missing from the scan. The other eleven have NO contaminant panel in eCoA_DATABASE for the lot: eight have none at all — CC042601, FB042601, P060332 (CC012601/1), P060342 (SCR012601), P060352 (FB012602), P060372 (CC012603), P060382 (SCR012603), P060492 (JD042601) — and three have only a SIBLING sub-lot's panel, which does not certify them: P050142 (BSS1024_01/2; 3177/2025 is BSS1024_01, P050122), P060142 (GRC102501/1; 328/2026 and 1060/2026 are GRC102501/2, P060182), P060362 (JD012603/01; 3660/2026 and 3662/2026 are /02 and /02V). Eight of the eleven are the same lots OI-42 found with no loss-on-drying report anywhere: it is one gap, not two.
+
+**The desk.** Nothing entered. A sibling sub-lot's certificate is not this lot's certificate, and the desk does not print a heavy-metal result no document reports. The certificates say so.
+
+**Needed.** Either the panels were run and never filed — then the paper needs finding and scanning — or these lots were never sent for contaminant testing, and the Head of QC decides what a release certificate without heavy metals means for them.
 

@@ -48,7 +48,9 @@ def key_of(rec):
 def params(rec):
     out = collections.OrderedDict()
     for i, p in enumerate(rec.get("parameters") or []):
-        name = fold(p.get("name"))
+        # The form's "*" marks a non-accredited method; one reader kept it on the name
+        # and the other did not. It is a marker, not part of the analyte's name.
+        name = fold(re.sub(r"^\s*\*+\s*|\s*\*+\s*$", "", str(p.get("name") or "")))
         k = (name, out and sum(1 for x in out if x[0] == name) or 0)
         while k in out:
             k = (name, k[1] + 1)
@@ -61,6 +63,8 @@ def load(pass_letter):
     for f in sorted(glob.glob(os.path.join(READS, "read%s_*.json" % pass_letter))):
         for rec in json.load(open(f, encoding="utf-8")):
             k = key_of(rec)
+            if not rec.get("parameters"):      # a reader that stopped before this scan
+                continue
             if k in recs:                      # the same scan reached two slices
                 continue
             recs[k] = rec
