@@ -68,11 +68,17 @@ const FM_MASS_PCT=['Absent','\u2014','&gt; 2.0 %'];
 // single conforming outcome. Microscopy and foreign matter are identical on every batch.
 //   colour: 0 deep green–brown · 1 mid-green, amber · 2 green with purple bracts
 //   odour:  0 sweet/fruity–berry · 1 citrus/sharp · 2 earthy/fuel/pungent
-const AROMA_SWEET=['BLUE SUNSET SHERBET','BLUE GELATO','GRAPE PIE','JELLY DONUTZ','WEDDING CAKE','CASH COW','APPLE AND BANANA','GRAPS AND CREME','CLEMOSA','PERMANENT MARKET','JOKERZ 31','SCRAMBLER','SLEEPY JOY','JOKERZ'];
+// The cultivar names were aligned to the finished-specification distribution of
+// 16.09.2026 on 18.09.2026 (Head of QC). These lists match on the NAME, so the
+// canonical spellings are added beside the older ones rather than replacing them:
+// a list that knew only the old spelling would silently drop its cultivar to the
+// default descriptor the moment the record was renamed, which is the defect the
+// ampersand fix already cost us once. Both spellings resolve; neither asserts.
+const AROMA_SWEET=['BLUE SUNSET SHERBET','BLUE GELATO','GRAPE PIE','JELLY DONUTZ','WEDDING CAKE','CASH COW','APPLE AND BANANA','GRAPS AND CREME','CLEMOSA','PERMANENT MARKET','JOKERZ 31','SCRAMBLER','SLEEPY JOY','JOKERZ','JELLY DONUTS','GRAPES AND CREAM','PERMANENT MARKER','SLEEPY JOE'];
 const AROMA_CITRUS=['ORANGE PUNCH MIMOSA','HIGH PRO AMNESIA','AMNESIA CORE CUT','PURE MICHIGEN'];
-const AROMA_EARTH=['GORILLA GLUE','MOTOR BREATH','CHEM FLYER','FAT BASTARD','CAP JUNKY','CUP JUNKY','KUSH CRASHER','WEDDING CRASHER'];
+const AROMA_EARTH=['GORILLA GLUE','MOTOR BREATH','CHEM FLYER','FAT BASTARD','CAP JUNKY','CUP JUNKY','KUSH CRASHER','WEDDING CRASHER','WEDDING CRUSHER'];
 // Anthocyanin-expressing lineages show purple bracts at harvest; the rest read deep green–brown.
-const ANTHOCYANIN=['BLUE SUNSET SHERBET','BLUE GELATO','GRAPE PIE','GRAPS AND CREME','PERMANENT MARKET','PURE MICHIGEN'];
+const ANTHOCYANIN=['BLUE SUNSET SHERBET','BLUE GELATO','GRAPE PIE','GRAPS AND CREME','PERMANENT MARKET','PURE MICHIGEN','GRAPES AND CREAM','PERMANENT MARKER'];
 // Cultivar matching is substring, case-insensitive, and normalises the ampersand the
 // register writes into the word the lists use: 'Graps & Creme' must reach GRAPS AND CREME.
 // Without it that cultivar matched no list and fell to the silent default (colour 0), which
