@@ -29,11 +29,13 @@ OUT = os.path.join(HANDOFF, "out"); DOCX = os.path.join(HANDOFF, "docx"); PDF = 
 
 def build():
     rows = M.collect()
+    import measure_page as MP
+    measured = MP.measure_many([r[3] for r in rows])
     n = 0
     for _t, _series, stem, html in sorted(rows, key=lambda r: r[2]):
         folder = os.path.relpath(os.path.dirname(html), OUT)
         dest = os.path.join(DOCX, folder); os.makedirs(dest, exist_ok=True)
-        H.convert(html, os.path.join(dest, stem + ".docx")); n += 1
+        H.convert(html, os.path.join(dest, stem + ".docx"), measured=measured[html]); n += 1
     print("docx written: %d  -> %s" % (n, os.path.relpath(DOCX)))
     order = {"release": 0, "reissue": 1}
     for t in ("1", "2", "3"):
@@ -41,7 +43,7 @@ def build():
         if not group:
             continue
         out = os.path.join(PDF, "CoQ_Tranche_%s.docx" % t)
-        k = H.convert_many([r[3] for r in group], out, "Tranche %s — certificates of quality" % t)
+        k = H.convert_many([r[3] for r in group], out, "Tranche %s — certificates of quality" % t, measured=measured)
         print("  Tranche %s  %3d certificate(s)  %s (%.1f MiB)" % (t, k, os.path.basename(out), os.path.getsize(out) / 1048576))
     return n
 

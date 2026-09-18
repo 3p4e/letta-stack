@@ -22,14 +22,17 @@ ISSUE = os.path.join(HERE, "ISSUE_iCOA"); DOCX = os.path.join(HERE, "docx"); PDF
 
 
 def build():
+    import measure_page as MP
     n = 0
     stems = {}
-    for rnd in ("INITIAL", "RETEST"):
-        for html in sorted(glob.glob(os.path.join(ISSUE, rnd, "*.html"))):
-            stem = os.path.splitext(os.path.basename(html))[0]
-            stems[stem] = html
-            dest = os.path.join(DOCX, rnd); os.makedirs(dest, exist_ok=True)
-            H.convert(html, os.path.join(dest, stem + ".docx")); n += 1
+    htmls = [h for rnd in ("INITIAL", "RETEST") for h in sorted(glob.glob(os.path.join(ISSUE, rnd, "*.html")))]
+    measured = MP.measure_many(htmls)
+    for html in htmls:
+        rnd = os.path.basename(os.path.dirname(html))
+        stem = os.path.splitext(os.path.basename(html))[0]
+        stems[stem] = html
+        dest = os.path.join(DOCX, rnd); os.makedirs(dest, exist_ok=True)
+        H.convert(html, os.path.join(dest, stem + ".docx"), measured=measured[html]); n += 1
     print("docx written: %d  -> %s" % (n, os.path.relpath(DOCX, HERE)))
     # the merged retest sets follow merge_tranche_retests.py's own membership and order
     sys.path.insert(0, HERE)
@@ -41,7 +44,7 @@ def build():
         if not htmls:
             continue
         out = os.path.join(PDF, "iCoA_Retest_Tranche_%s.docx" % name)
-        k = H.convert_many(htmls, out, "Tranche %s — internal certificates of analysis, retest round" % name)
+        k = H.convert_many(htmls, out, "Tranche %s — internal certificates of analysis, retest round" % name, measured=measured)
         print("  Tranche %s  %3d certificate(s)  %s (%.1f MiB)" % (name, k, os.path.basename(out), os.path.getsize(out) / 1048576))
     return n
 

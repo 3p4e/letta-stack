@@ -86,10 +86,29 @@ def membership(dist=DIST):
 
 
 def on_disk(roots=(DOCX, ICOA_DOCX)):
-    """Word file name -> its path in the build, across both fleets."""
+    """Word file name -> its path in the build, across both fleets (unused: see in_archives)."""
     return {f: os.path.join(dp, f)
             for root in roots
             for dp, _, fs in os.walk(root) for f in fs if f.endswith(".docx")}
+
+
+def in_archives(dist=DIST):
+    """Word file name -> (archive path, member name), read out of the packaged archives.
+
+    The build directory holds one set at a time — whichever was exported last — while
+    the archives hold both, so the Word copies are taken from the archive they are
+    grouped by. Membership and bytes then come from one place and cannot disagree.
+    """
+    out = {}
+    for name, _label in SOURCES:
+        path = os.path.join(dist, name)
+        if not os.path.exists(path):
+            continue
+        with zipfile.ZipFile(path) as zf:
+            for n in zf.namelist():
+                if n.endswith(".docx") and "/DOCX/" in n:
+                    out.setdefault(os.path.basename(n), (path, n))
+    return out
 
 
 def parts(files, sizes, limit):
@@ -120,24 +139,28 @@ def main(argv):
     a = ap.parse_args(argv[1:])
     limit = int(a.limit_mib * 1024 * 1024)
 
-    groups, src = membership(a.dist), on_disk()
+    groups, src = membership(a.dist), in_archives(a.dist)
     missing = sorted({f for v in groups.values() for f in v} - set(src))
     if missing:
         for f in missing[:8]:
-            print("   no Word copy on disk for %s" % f)
-        print("refusing to write a partial set — run export_docx_v40.py "
-              "and export_docx_icoa.py first")
+            print("   no Word copy in the archives for %s" % f)
+        print("refusing to write a partial set — run package_v40.py first")
         return 1
 
     # Clear THIS set's archives only. Emptying the folder wiped the other set's — the
     # desk issues a signed fleet and an unsigned one, and they live here side by side.
     os.makedirs(a.out, exist_ok=True)
+    # With SET empty the first pattern below used to match EVERY archive, signed ones
+    # included, and the unsigned run deleted the signed Word archives on 18.09.2026.
+    mine = (re.compile(r"PP_(?:CoQ|iCoA)_Word_Signed_.*_%s\.zip$" % re.escape(DATE)) if SET
+            else re.compile(r"PP_(?:CoQ|iCoA)_Word_(?!Signed_).*_%s\.zip$" % re.escape(DATE)))
     for f in os.listdir(a.out):
-        if re.match(r"PP_(?:CoQ|iCoA)_Word%s_.*_%s\.zip$" % (re.escape(SET), re.escape(DATE)), f):
+        if mine.match(f):
             os.remove(os.path.join(a.out, f))
-        elif SET == "" and re.match(r"PP_(?:CoQ|iCoA)_Word_(?!Signed).*_%s\.zip$" % re.escape(DATE), f):
-            os.remove(os.path.join(a.out, f))
-    sizes = {f: os.path.getsize(p) for f, p in src.items()}
+    sizes = {}
+    for f, (arc, member) in src.items():
+        with zipfile.ZipFile(arc) as zf:
+            sizes[f] = zf.getinfo(member).file_size
     total = 0
     for (fam, label, rnd) in sorted(groups):
         runs = parts(groups[(fam, label, rnd)], sizes, limit)
@@ -147,7 +170,9 @@ def main(argv):
             path = os.path.join(a.out, name)
             with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as zf:
                 for f in run:
-                    zf.write(src[f], "%s/%s" % (os.path.splitext(name)[0], f))
+                    arc, member = src[f]
+                    with zipfile.ZipFile(arc) as za:
+                        zf.writestr("%s/%s" % (os.path.splitext(name)[0], f), za.read(member))
             total += len(run)
             print("%-56s %3d docs  %5.1f MiB"
                   % (name, len(run), os.path.getsize(path) / 1048576))

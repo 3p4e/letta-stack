@@ -4,3 +4,4 @@
 # Word copies of the pages, one per certificate (export_docx_v40.py). Like pdf/pages/ they
 # travel inside the dist/ archives, not as 172 tracked binaries.
 docx/
+toolchain/.fontcache_ttf/
