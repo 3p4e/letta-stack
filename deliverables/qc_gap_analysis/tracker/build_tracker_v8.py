@@ -1400,8 +1400,92 @@ def ecoa_line(code, date, lab):
     return f"{code}, ({date}) [{lab}]"
 
 
+# --------------------------------------------------------------------------- this block is
+# A batch with two testing series used to be two blocks that look identical: the same
+# parameters, the same shape, and nothing on the row saying which series it is. The reader
+# had to trace each parameter's own reference line to work it out, and with three
+# certificates of analysis on one batch that is not reading, it is detective work (Head of
+# QC, 18.09.2026). So every block now names itself: which instance it is, what round of
+# testing the documents on it belong to, and which certificate of analysis and certificate
+# of quality carry them.
+
+def _cert_rounds():
+    """lot -> [{coq, icoa, round, issue, keys}] — what each certificate of quality cites.
+
+    Read from coq_artifact_data.json, which is what the certificates were printed from, so
+    the sheet and the certificate cannot disagree about which document belongs to which
+    round.
+    """
+    path = os.path.join(os.path.dirname(HERE), "coq_artifact_data.json")
+    out = {}
+    if not os.path.exists(path):
+        return out
+    for c in json.load(open(path, encoding="utf-8"))["coqs"]:
+        entry = {"coq": (c.get("regcode") or "").strip(),
+                 "icoa": (c.get("icoa_code") or "").strip(),
+                 "round": "retest" if str(c.get("t") or "").startswith("retest") else "initial release",
+                 "issue": str(c.get("issue") or ""),
+                 "keys": {T.nkey(r.get("doc")) for r in c.get("rows", []) if r.get("doc")}}
+        for lot in (c.get("pp"), c.get("cb")):
+            if lot:
+                out.setdefault(str(lot).strip(), []).append(entry)
+    return out
+
+
+CERT_ROUNDS = _cert_rounds()
+
+
+def round_label(pairs):
+    """What round of testing the documents on one block belong to, in the desk's words."""
+    out = []
+    for code, _date in pairs:
+        if TS.is_experimental(code):
+            w = "experimental — starred sample"
+        elif TS.is_retest_only(code):
+            w = "re-test campaign (IJZ-MB)"
+        elif TS.is_reanalysis(code):
+            w = "re-analysis %s" % (TS.series_of(code) or "")
+        else:
+            w = "release testing"
+        if w not in out:
+            out.append(w)
+    return " + ".join(out)
+
+
+def cert_label(b, keys):
+    """The certificate of analysis and certificate of quality that carry this block.
+
+    Matched on the documents themselves — a certificate is named here only when it cites a
+    document that is actually on this block — so the join is the record's, not a guess from
+    the block's position.
+    """
+    ents, seen_coq = [], set()
+    for lot in (b.get("p"), b.get("cu")):
+        for e in CERT_ROUNDS.get(str(lot or "").strip(), []):
+            if id(e) not in seen_coq:
+                seen_coq.add(id(e))
+                ents.append(e)
+    # A retest certificate cites the initial round's documents too, for the determinations
+    # it did not repeat, so matching on any shared document names both certificates on
+    # every block. The one that belongs to a block is the one that BRINGS it: walk the
+    # rounds in order and keep a certificate only where it is the first to cite something
+    # on this block.
+    ents.sort(key=lambda e: (e["round"] != "initial release", e["issue"]))
+    covered, out = set(), []
+    for e in ents:
+        fresh = (keys & e["keys"]) - covered
+        if not fresh:
+            continue
+        covered |= fresh
+        line = "%s\n%s · %s" % (e["icoa"] or "iCoA — at issue",
+                                e["coq"] or "CoQ — at issue", e["round"])
+        if line not in out:
+            out.append(line)
+    return "\n".join(out) if out else "no certificate of quality cites this block"
+
+
 # --------------------------------------------------------------------------- layout
-cols, col = [], 4
+cols, col = [], 7
 for p in T.PARAMS:
     p["start"] = col
     subs = T.GROUPS[p["n"]]
@@ -1432,6 +1516,8 @@ ws = wb.create_sheet(SHEET, wb.sheetnames.index("Batch Coverage") + 1)
 # ---- header rows 1–4
 put(ws, 1, 1, "BATCH IDENTIFICATION", FW, NAVY)
 ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=3)
+ws.merge_cells(start_row=1, start_column=4, end_row=1, end_column=6)
+put(ws, 1, 4, "THIS BLOCK", FW, NAVY)
 g, gstart = None, 0
 for i, p in enumerate(T.PARAMS):
     if p["group"] != g:
@@ -1442,7 +1528,9 @@ for i, p in enumerate(T.PARAMS):
     if i == len(T.PARAMS) - 1:
         ws.merge_cells(start_row=1, start_column=gstart, end_row=1, end_column=p["end"])
         put(ws, 1, gstart, g, FW, NAVY)
-for c, t in ((1, "CU Batch"), (2, "P Batch"), (3, "STATUS")):
+for c, t in ((1, "CU Batch"), (2, "P Batch"), (3, "STATUS"),
+             (4, "Testing\ninstance"), (5, "Round / campaign"),
+             (6, "Certificate of analysis\nCertificate of quality")):
     ws.merge_cells(start_row=2, start_column=c, end_row=4, end_column=c)
     put(ws, 2, c, t, FWS, NAVY)
 for p in T.PARAMS:
@@ -1547,6 +1635,22 @@ for b in batches:
     for i in range(K):
         top, bot = first + 2 * i, first + 2 * i + 1
         top_lines = bot_lines = 1
+        block_docs, block_keys = [], set()
+        for _p in T.PARAMS:
+            _dl = docs[_p["n"]]
+            if i < len(_dl):
+                _c, _d, _l, _cr = _dl[i]
+                if (_c, _d) not in block_docs:
+                    block_docs.append((_c, _d))
+                block_keys.add(T.nkey(_c))
+        for _c_, _v_, _f_ in ((4, "%d of %d" % (i + 1, K), FWS),
+                              (5, round_label(block_docs), F7B),
+                              (6, cert_label(b, block_keys), F6)):
+            ws.merge_cells(start_row=top, start_column=_c_, end_row=bot, end_column=_c_)
+            put(ws, top, _c_, _v_, _f_ if _c_ != 4 else FWS,
+                NAVY if _c_ == 4 else GREY, CEN if _c_ == 4 else TOPC)
+            fill_range(ws, top, _c_, bot, _c_, NAVY if _c_ == 4 else GREY)
+        bot_lines = max(bot_lines, nlines(cert_label(b, block_keys), 24) - 1)
         for p in T.PARAMS:
             dlist = docs[p["n"]]
             here = dlist[i] if i < len(dlist) else None
@@ -1714,7 +1818,11 @@ key = ("KEY — ✓ green: certificate on file AND its result on the desk (relea
        "BLOCK RULE: one TESTING INSTANCE = one block of two rows — result(s) on the top row, the certificate that reports them on "
        "the bottom row. A batch holds as many blocks as it has testing instances, and a parameter's certificates are taken in "
        "ascending date order, so the n-th block is the n-th round of testing; a parameter tested once has an empty cell in the "
-       "later blocks. For #9, #10 and #11 each sub-determination has its own column on the top row. \"not reported\" = that sub-determination "
+       "later blocks. READING A BATCH WITH MORE THAN ONE SERIES: every block names itself in the three columns after STATUS — "
+       "which instance of how many, which round or re-analysis campaign the documents on it belong to, and the certificate of "
+       "analysis and certificate of quality that carry them. Those three are read from the certificates' own source, so a block "
+       "and the certificate printed from it cannot disagree; where a block is named \"no certificate of quality cites this "
+       "block\", the documents on it are on file and are not carried by any released certificate. For #9, #10 and #11 each sub-determination has its own column on the top row. \"not reported\" = that sub-determination "
        "is not reported on that certificate; \"no result on file\" = the certificate is credited here but the desk holds no result "
        "from it. RED BOLD result = OUT OF SPECIFICATION against the criterion in row 3; AMBER BOLD result = UNDETERMINED, in the "
        "Ph. Eur. band between a printed count limit and twice it. The check follows the Quality Desk exactly: a counted "
@@ -1729,7 +1837,7 @@ put(ws, krow, 1, key, F6I, GREY, Alignment(horizontal="left", vertical="top", wr
 ws.row_dimensions[krow].height = 62
 
 # ---- widths, panes, print
-for c, w in ((1, 13), (2, 15), (3, 20)):
+for c, w in ((1, 13), (2, 15), (3, 20), (4, 8), (5, 19), (6, 26)):
     ws.column_dimensions[L(c)].width = w
 for c, p, kindc in cols:
     if kindc == "check":
@@ -1741,7 +1849,7 @@ for c, p, kindc in cols:
     else:
         w = 8 if kindc in ("9.4", "9.5") else 8.6
     ws.column_dimensions[L(c)].width = w
-ws.freeze_panes = "D5"
+ws.freeze_panes = "G5"
 ws.print_title_rows = "1:4"
 ws.page_setup.orientation = "landscape"
 ws.page_setup.paperSize = ws.PAPERSIZE_A3
@@ -3540,7 +3648,16 @@ if NEW:
     _last = patch_coverage(wb)
     patch_dashboard(wb, _last)
     _mikro = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--mikro=")), None)
-    if _mikro and os.path.exists(_mikro):
+    if _mikro:
+        # A path that is not there used to be skipped in silence, and the microbiology
+        # sheet simply vanished from the build; the workbook verified clean except for one
+        # line saying the sheet was neither a sheet nor a Reference section. Say so here.
+        if not os.path.exists(_mikro):
+            _alt = os.path.join(HERE, os.path.basename(_mikro))
+            if os.path.exists(_alt):
+                _mikro = _alt
+            else:
+                raise SystemExit("--mikro names a workbook that is not there: " + _mikro)
         add_mikro(wb, _mikro)
     if ICOA_RULE:
         add_icoa_sheet(wb)

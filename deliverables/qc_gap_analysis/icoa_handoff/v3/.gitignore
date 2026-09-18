@@ -1,0 +1,7 @@
+# Run logs. The receipt for a build is the acceptance note, not a console capture.
+*.log
+
+# Word copies of the pages, one per internal certificate (export_docx_icoa.py). The same
+# rule the certificates of quality follow: they travel inside the dist/ archives, not as
+# 172 tracked binaries.
+docx/

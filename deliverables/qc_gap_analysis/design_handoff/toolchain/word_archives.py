@@ -4,9 +4,10 @@
 
     python3 design_handoff/toolchain/word_archives.py [--limit-mib 29] [--out dist/word]
 
-`package_v40.py` builds the four archives the desk delivers, and each of them carries its
+`package_v40.py` builds the archives the desk delivers, and each of them carries its
 certificates in all three formats — PDF, HTML and Word. That is the package, and it stays the
-package. But a chat attachment is capped at 30 MiB and every Word file is about a megabyte (the
+package. Both fleets are covered here: the certificates of quality and the internal
+certificates of analysis behind them. But a chat attachment is capped at 30 MiB and every Word file is about a megabyte (the
 export places the vector page as a 300 dpi image), so the Tranche 2 archive alone is 89 MiB and
 cannot be sent that way.
 
@@ -22,13 +23,15 @@ of that in the history would be paid for on every clone; this script is the chea
 import argparse
 import os
 import re
-import shutil
 import zipfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 HANDOFF = os.path.dirname(HERE)
 DIST = os.path.join(HANDOFF, "dist")
 DOCX = os.path.join(HANDOFF, "docx")
+# The internal certificates are exported beside their own fleet, not beside the
+# certificates of quality, so a Word copy is looked for under the root of ITS family.
+ICOA_DOCX = os.path.join(os.path.dirname(HANDOFF), "icoa_handoff", "v3", "docx")
 # The package's own date, discovered rather than written down. It was pinned to
 # 2026-09-17 and the next repackaging silently produced nothing: the script looked for
 # archives that no longer existed, found no membership, and emptied dist/word. The whole
@@ -48,16 +51,22 @@ def package_date(dist=DIST):
 SET = "_Signed" if os.environ.get("PP_SIGNATURES") == "1" else ""
 DATE = package_date()
 # the archive each tranche's certificates are packaged in, and the label for this one
-SOURCES = (("PP_CoQ_Tranche_1%s_%s.zip" % (SET, DATE), "Tranche_1"),
-           ("PP_CoQ_Tranche_2%s_%s.zip" % (SET, DATE), "Tranche_2"),
-           ("PP_CoQ_Tranche_3%s_%s.zip" % (SET, DATE), "Tranche_3"),
-           ("PP_CoQ_Package%s_%s.zip" % (SET, DATE), "No_tranche"))
+SOURCES = tuple([("PP_CoQ_Tranche_%s%s_%s.zip" % (t, SET, DATE), "Tranche_%s" % t) for t in "123"]
+                + [("PP_iCoA_Tranche_%s%s_%s.zip" % (t, SET, DATE), "Tranche_%s" % t) for t in "123"]
+                + [("PP_CoQ_Package%s_%s.zip" % (SET, DATE), "No_tranche")])
+
+
+def family(stem):
+    """Which fleet a Word file belongs to, from its own name."""
+    return "iCoA" if stem.startswith("iCoA-") else "CoQ"
 
 
 def membership(dist=DIST):
-    """(label, round) -> [Word file name], read back out of the packaged archives.
+    """(family, label, round) -> [Word file name], read back out of the packaged archives.
 
-    Reading it back is the point: the grouping cannot drift from the package's own.
+    Reading it back is the point: the grouping cannot drift from the package's own. The
+    Package archive carries both fleets, so the family is read off each file's own name
+    rather than off the archive it came in.
     """
     out = {}
     for name, label in SOURCES:
@@ -66,15 +75,20 @@ def membership(dist=DIST):
             continue
         with zipfile.ZipFile(path) as zf:
             for n in zf.namelist():
-                if n.endswith(".docx"):
+                # only the per-certificate copies, which the package files under DOCX/;
+                # a merged tranche set is one Word document of many certificates and is
+                # not something to regroup into sendable parts.
+                if n.endswith(".docx") and "/DOCX/" in n:
+                    base = os.path.basename(n)
                     rnd = "Retest" if "/Retest/" in n else "Release"
-                    out.setdefault((label, rnd), []).append(os.path.basename(n))
-    return {k: sorted(v) for k, v in out.items()}
+                    out.setdefault((family(base), label, rnd), []).append(base)
+    return {k: sorted(set(v)) for k, v in out.items()}
 
 
-def on_disk(root=DOCX):
-    """Word file name -> its path in the build."""
+def on_disk(roots=(DOCX, ICOA_DOCX)):
+    """Word file name -> its path in the build, across both fleets."""
     return {f: os.path.join(dp, f)
+            for root in roots
             for dp, _, fs in os.walk(root) for f in fs if f.endswith(".docx")}
 
 
@@ -111,18 +125,25 @@ def main(argv):
     if missing:
         for f in missing[:8]:
             print("   no Word copy on disk for %s" % f)
-        print("refusing to write a partial set — run export_docx_v40.py first")
+        print("refusing to write a partial set — run export_docx_v40.py "
+              "and export_docx_icoa.py first")
         return 1
 
-    shutil.rmtree(a.out, ignore_errors=True)
-    os.makedirs(a.out)
+    # Clear THIS set's archives only. Emptying the folder wiped the other set's — the
+    # desk issues a signed fleet and an unsigned one, and they live here side by side.
+    os.makedirs(a.out, exist_ok=True)
+    for f in os.listdir(a.out):
+        if re.match(r"PP_(?:CoQ|iCoA)_Word%s_.*_%s\.zip$" % (re.escape(SET), re.escape(DATE)), f):
+            os.remove(os.path.join(a.out, f))
+        elif SET == "" and re.match(r"PP_(?:CoQ|iCoA)_Word_(?!Signed).*_%s\.zip$" % re.escape(DATE), f):
+            os.remove(os.path.join(a.out, f))
     sizes = {f: os.path.getsize(p) for f, p in src.items()}
     total = 0
-    for (label, rnd) in sorted(groups):
-        runs = parts(groups[(label, rnd)], sizes, limit)
+    for (fam, label, rnd) in sorted(groups):
+        runs = parts(groups[(fam, label, rnd)], sizes, limit)
         for i, run in enumerate(runs, 1):
             tail = "" if len(runs) == 1 else "_part_%d_of_%d" % (i, len(runs))
-            name = "PP_CoQ_Word%s_%s_%s%s_%s.zip" % (SET, label, rnd, tail, DATE)
+            name = "PP_%s_Word%s_%s_%s%s_%s.zip" % (fam, SET, label, rnd, tail, DATE)
             path = os.path.join(a.out, name)
             with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as zf:
                 for f in run:
