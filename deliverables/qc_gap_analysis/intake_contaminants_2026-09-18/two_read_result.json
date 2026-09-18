@@ -1,0 +1,7832 @@
+{
+ "read_twice": 31,
+ "read_once": [
+  "1056/2026",
+  "1057/2026",
+  "1061/2026",
+  "1062/2026",
+  "1065/2026",
+  "1625/2026",
+  "1628/2026",
+  "2358/2026",
+  "2359/2026",
+  "2361/2026",
+  "2362/2026",
+  "2364/2026",
+  "2365/2026",
+  "3176/2025",
+  "327/2026",
+  "3654/2026",
+  "3655/2026",
+  "3658/2026",
+  "3659/2026",
+  "3663/2026",
+  "4762/2025",
+  "5661/2025",
+  "5697/2025",
+  "751/2025",
+  "84/2026",
+  "87/2026",
+  "88/2026"
+ ],
+ "documents": {
+  "1058/2026": {
+   "doc_code": "1058/2026",
+   "issue_date": "09.03.2026",
+   "receipt_date": "23.02.2026",
+   "batch": "KC102501",
+   "sample": "KUSH CRASHER-сув цвет од медицински канабис",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија, Ул. „50 Дивизија\" бр.6 1000 Скопје",
+   "scan": "090326_1058-2026_IJZ_KC102501-P060172.pdf",
+   "verdict": "Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph.Eur 2.8.13 / Ph. Eur. 2. 4. 27 / Ph. Eur. 2.8.18",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos-methyl",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Metoxychlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "0,5",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 13806:2002"
+    },
+    {
+     "name": "арсен",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 14627"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "2,8",
+     "unit": "µg/kg",
+     "method": "AflaTest"
+    }
+   ]
+  },
+  "1059/2026": {
+   "doc_code": "1059/2026",
+   "issue_date": "09.03.2026",
+   "receipt_date": "23.02.2026",
+   "batch": "PM112501",
+   "sample": "PERMANENT MARKET-сув цвет од медицински канабис",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија - Скопје",
+   "scan": "090326_1059-2026_IJZ_PM112501-P060232.pdf",
+   "verdict": "Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph.Eur 2.8.13 / Ph. Eur. 2. 4. 27 / Ph. Eur. 2.8.18",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos-methyl",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Metoxychlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "0,5",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 13806:2002"
+    },
+    {
+     "name": "арсен",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 14627"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "2,2",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "1060/2026": {
+   "doc_code": "1060/2026",
+   "issue_date": "09.03.2026",
+   "receipt_date": "23.02.2026",
+   "batch": "GRC102501/2",
+   "sample": "GRAPS&CREME-сув цвет од медицински канабис",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија - Скопје",
+   "scan": "090326_1060-2026_IJZ_GRC102501-2-P060182.pdf",
+   "verdict": "Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph.Eur 2.8.13 / Ph. Eur. 2. 4. 27 / Ph. Eur. 2.8.18",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos-methyl",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Metoxychlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "0,5",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 13806:2002"
+    },
+    {
+     "name": "арсен",
+     "limit": "0,2",
+     "result": "0,0013",
+     "unit": "mg/kg(l)",
+     "method": "EN 14627"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "< 2",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "1627/2026": {
+   "doc_code": "1627/2026",
+   "issue_date": "23.04.2026",
+   "receipt_date": "27.03.2026",
+   "batch": "OPM122501",
+   "sample": "ORANGE PUNCH MIMOSA-сув цвет од медицински канабис",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија - Скопје",
+   "scan": "230426_1627-2026_IJZ_OPM122501-P060242.pdf",
+   "verdict": "Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на: Ph.Eur 2.8.13 (пестициди); Ph. Eur. 2. 4. 27 (метали); Ph. Eur. 2.8.18 (микотоксини)",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos-methyl",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Metoxychlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "0,5",
+     "result": "0,049",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 13806:2002"
+    },
+    {
+     "name": "арсен",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 14627"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "0,3",
+     "result": "0,165",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "2,2",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "2357/2026": {
+   "doc_code": "2357/2026",
+   "issue_date": "29.04.2026",
+   "receipt_date": "21.04.2026",
+   "batch": "FB112501",
+   "sample": "FAT BASTARD-сув цвет од медицински канабис",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија, Ул. „50 Дивизија“ бр.6 1000 Скопје",
+   "scan": "290426_2357-2026_IJZ_FB112501-P060292.pdf",
+   "verdict": "Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на: Ph.Eur 2.8.13 (пестициди); Ph. Eur. 2. 4. 27 (метали); Ph. Eur. 2.8.18 (микотоксини)",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos-methyl",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Metoxychlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "0,5",
+     "result": "0,0215",
+     "unit": "mg/kg",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "0,3",
+     "result": "0,0108",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "арсен",
+     "limit": "0,2",
+     "result": "0,0199",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "0,0078",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "< 2",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "2360/2026": {
+   "doc_code": "2360/2026",
+   "issue_date": "29.04.2026",
+   "receipt_date": "21.04.2026",
+   "batch": "SCR112501",
+   "sample": "SCRAMBLER-сув цвет од медицински канабис",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија - Скопје",
+   "scan": "290426_2360-2026_IJZ_SCR112501-P060282.pdf",
+   "verdict": "Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на: Ph.Eur 2.8.13 (пестициди); Ph. Eur. 2. 4. 27 (метали); Ph. Eur. 2.8.18 (микотоксини)",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos-methyl",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Metoxychlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "0,5",
+     "result": "0,0299",
+     "unit": "mg/kg",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "0,3",
+     "result": "0,0136",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "арсен",
+     "limit": "0,2",
+     "result": "0,0154",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "0,017",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "< 2",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "2363/2026": {
+   "doc_code": "2363/2026",
+   "issue_date": "30.04.2026",
+   "receipt_date": "21.04.2026",
+   "batch": "JD012601*",
+   "sample": "JELLY DONUTZ-сув цвет од медицински канабис",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија, Ул. „50 Дивизија“ бр.6 1000 Скопје",
+   "scan": "300426_2363-2026_IJZ_JD012601＊-P060312.pdf",
+   "verdict": "Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на: Ph.Eur 2.8.13 (пестициди); Ph. Eur. 2. 4. 27 (метали); Ph. Eur. 2.8.18 (микотоксини)",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos-methyl",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Metoxychlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "0,5",
+     "result": "0,0739",
+     "unit": "mg/kg",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "0,3",
+     "result": "0,0166",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "арсен",
+     "limit": "0,2",
+     "result": "0,0136",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "0,0322",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "< 2",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "326/2026": {
+   "doc_code": "326/2026",
+   "issue_date": "11.02.2026",
+   "receipt_date": "30.01.2026",
+   "batch": "ACC102501",
+   "sample": "AMNESIA CORE CUT-сув цвет од медицински канабис",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија - Скопје",
+   "scan": "110226_326-2026_IJZ_ACC102501-P060122.pdf",
+   "verdict": "Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph.Eur 2.8.13 (пестициди); Ph. Eur. 2. 4. 27 (метали); Ph. Eur. 2.8.18 (микотоксини)",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos-methyl",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Metoxychlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "0,5",
+     "result": "0,078",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 13806:2002"
+    },
+    {
+     "name": "арсен",
+     "limit": "0,2",
+     "result": "0,022",
+     "unit": "mg/kg(l)",
+     "method": "EN 14627"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "2,3",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "328/2026": {
+   "doc_code": "328/2026",
+   "issue_date": "11.02.2026",
+   "receipt_date": "30.01.2026",
+   "batch": "GRC102501",
+   "sample": "GRAPS & CREME-сув цвет од медицински канабис",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија - Скопје",
+   "scan": "110226_328-2026_IJZ_GRC102501-P060182.pdf",
+   "verdict": "Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph.Eur 2.8.13 (пестициди); Ph. Eur. 2. 4. 27 (метали); Ph. Eur. 2.8.18 (микотоксини)",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos-methyl",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Metoxychlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "0,5",
+     "result": "0,084",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 13806:2002"
+    },
+    {
+     "name": "арсен",
+     "limit": "0,2",
+     "result": "0,095",
+     "unit": "mg/kg(l)",
+     "method": "EN 14627"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "2,2",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "329/2026": {
+   "doc_code": "329/2026",
+   "issue_date": "11.02.2026",
+   "receipt_date": "30.01.2026",
+   "batch": "WED102501",
+   "sample": "WEDDING CAKE-сув цвет од медицински канабис",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија, Ул. „50 Дивизија“ бр.6 1000 Скопје",
+   "scan": "110226_329-2026_IJZ_WED102501-P060102.pdf",
+   "verdict": "Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph.Eur 2.8.13 (пестициди); Ph. Eur. 2. 4. 27 (метали); Ph. Eur. 2.8.18 (микотоксини)",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos-methyl",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Metoxychlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "0,5",
+     "result": "0,078",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "арсен",
+     "limit": "0,2",
+     "result": "0,087",
+     "unit": "mg/kg(l)",
+     "method": "EN 14627"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "< 2",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "330/2026": {
+   "doc_code": "330/2026",
+   "issue_date": "11.02.2026",
+   "receipt_date": "30.01.2026",
+   "batch": "CF102501",
+   "sample": "CHEM FLYER-сув цвет од медицински канабис",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија - Скопје",
+   "scan": "110226_330-2026_IJZ_CF102501-P060132.pdf",
+   "verdict": "Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph.Eur 2.8.13 (пестициди); Ph. Eur. 2. 4. 27 (метали); Правилник за општите барања за безбедност на храната во однос на максималните нивоа на одделни контаминенти, Прилог, дел 1 (Сл.весник на РСМ бр.143/2024, 183/2024) (микотоксини)",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos-methyl",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Metoxychlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "0,5",
+     "result": "0,07",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "арсен",
+     "limit": "0,2",
+     "result": "0,0942",
+     "unit": "mg/kg(l)",
+     "method": "EN 14627"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "2,1",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "3656/2026": {
+   "doc_code": "3656/2026",
+   "issue_date": "22.06.2026",
+   "receipt_date": "17.06.2026",
+   "batch": "P160012",
+   "sample": "GRAPA PIE-сув цвет од медицински канабис",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија - Скопје",
+   "scan": "220626_3656-2026_IJZ_P160012.pdf",
+   "verdict": "Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на: Ph.Eur 2.8.13 (пестициди); Ph. Eur. 2. 4. 27 (метали); Ph. Eur. 2.8.18 (микотоксини)",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Methoxychlor",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos",
+     "limit": "0,2",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos-methyl",
+     "limit": "0,1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "0,5",
+     "result": "0,11",
+     "unit": "mg/kg",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "0,3",
+     "result": "0,009",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "арсен",
+     "limit": "0,2",
+     "result": "0,045",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "0,027",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "< 2",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "3657/2026": {
+   "doc_code": "3657/2026",
+   "issue_date": "22.06.2026",
+   "receipt_date": "17.06.2026",
+   "batch": "SCR022601",
+   "sample": "SCRAMBLER-сув цвет од медицински канабис",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија, Ул. „50 Дивизија“ бр.6 1000 Скопје",
+   "scan": "220626_3657-2026_IJZ_SCR022601-P060442.pdf",
+   "verdict": "Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на: Ph.Eur 2.8.13 (пестициди); Ph. Eur. 2. 4. 27 (метали); Ph. Eur. 2.8.18 (микотоксини)",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Methoxychlor",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos",
+     "limit": "0,2",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos-methyl",
+     "limit": "0,1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "0,5",
+     "result": "0,054",
+     "unit": "mg/kg",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "0,3",
+     "result": "0,035",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "арсен",
+     "limit": "0,2",
+     "result": "0,058",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "0,009",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "< 2",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "3660/2026": {
+   "doc_code": "3660/2026",
+   "issue_date": "22.06.2026",
+   "receipt_date": "17.06.2026",
+   "batch": "JD012603/02",
+   "sample": "JELLY DONUTZ-сув цвет од медицински канабис",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија - Скопје",
+   "scan": "220626_3660-2026_IJZ_JD012603-02-P060412.pdf",
+   "verdict": "Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на: Ph.Eur 2.8.13 (пестициди); Ph. Eur. 2. 4. 27 (метали); Ph. Eur. 2.8.18 (микотоксини)",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Methoxychlor",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos",
+     "limit": "0,2",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos-methyl",
+     "limit": "0,1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "0,5",
+     "result": "0,085",
+     "unit": "mg/kg",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "0,3",
+     "result": "0,044",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "арсен",
+     "limit": "0,2",
+     "result": "0,042",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "0,042",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "< 2",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "3661/2026": {
+   "doc_code": "3661/2026",
+   "issue_date": "22.06.2026",
+   "receipt_date": "17.06.2026",
+   "batch": "FB012603",
+   "sample": "FAT BASTARD-сув цвет од медицински канабис",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија, Ул. „50 Дивизија“ бр.6 1000 Скопје",
+   "scan": "220626_3661- 2026_IJZ_FB012603-P060432.pdf",
+   "verdict": "Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на: Ph.Eur 2.8.13 (пестициди); Ph. Eur. 2. 4. 27 (метали); Ph. Eur. 2.8.18 (микотоксини)",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Methoxychlor",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos",
+     "limit": "0,2",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos-methyl",
+     "limit": "0,1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "0,5",
+     "result": "0,234",
+     "unit": "mg/kg",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "0,3",
+     "result": "0,04",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "арсен",
+     "limit": "0,2",
+     "result": "0,056",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "0,034",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "< 2",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "3662/2026": {
+   "doc_code": "3662/2026",
+   "issue_date": "22.06.2026",
+   "receipt_date": "17.06.2026",
+   "batch": "JD012603/02V",
+   "sample": "JELLY DONUTZ-сув цвет од медицински канабис",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија - Скопје",
+   "scan": "220626_3662-2026_IJZ_JD012603-02V-P060422.pdf",
+   "verdict": "Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на: Ph.Eur 2.8.13 / Ph. Eur. 2. 4. 27 / Ph. Eur. 2.8.18",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Methoxychlor",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos",
+     "limit": "0,2",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos-methyl",
+     "limit": "0,1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "0,5",
+     "result": "0,06",
+     "unit": "mg/kg",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "0,3",
+     "result": "0,03",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "арсен",
+     "limit": "0,2",
+     "result": "0,045",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "0,013",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "< 2",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "3924/2026": {
+   "doc_code": "3924/2026",
+   "issue_date": "20.07.2026",
+   "receipt_date": "02.07.2026",
+   "batch": "FB032601",
+   "sample": "FAT BASTARD-сув цвет од медицински канабис",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија - Скопје",
+   "scan": "200726_3924-2026_IJZ_FB032601.pdf",
+   "verdict": "Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на: Ph.Eur 2.8.13 (пестициди); Ph. Eur. 2. 4. 27 (метали); Ph. Eur. 2.8.18 (микотоксини)",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Methoxychlor",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos",
+     "limit": "0,2",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos-methyl",
+     "limit": "0,1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "0,5",
+     "result": "0,036",
+     "unit": "mg/kg",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "0,3",
+     "result": "0,015",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "арсен",
+     "limit": "0,2",
+     "result": "0",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "0,043",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "< 2",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "3925/2026": {
+   "doc_code": "3925/2026",
+   "issue_date": "20.07.2026",
+   "receipt_date": "02.07.2026",
+   "batch": "GG032601",
+   "sample": "GORILLA GLUE-сув цвет од медицински канабис",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија, Ул. „50 Дивизија“ бр.6 1000 Скопје",
+   "scan": "200726_3925-2026_IJZ_GG032601.pdf",
+   "verdict": "Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на: Ph. Eur. 2.8.18 (микотоксини)",
+   "pages_read": 3,
+   "unreadable": [
+    "page 3 of 4 of the certificate is missing from the supplied renders (the three rendered images are pages 1, 2 and 4 of 4) - the tail of the ПЕСТИЦИДИ table after 'Heptachlor', the pesticide conformity statement, and the entire МЕТАЛИ / ТЕШКИ МЕТАЛИ (heavy metals) table including олово/кадмиум/арсен/жива could not be read",
+    "parameters: тешки метали (олово, жива, арсен, кадмиум) - не се читливи/не се присутни во скенот",
+    "verdict for пестициди and метали blocks (on the missing page)",
+    "verdict: изјава за сообразност за пестициди и за метали - не е присутна во скенот",
+    "Целата физичка страна 3 од 4 на сертификатот недостасува од скенот (PDF има само 3 страни, со футери 'Страна 1 од 4', 'Страна 2 од 4', 'Страна 4 од 4'). Затоа недостасуваат: крајот на табелата ПЕСТИЦИДИ (по 'Heptachlor', веројатно 'Endosulfan sulfate'), изјавата за сообразност за пестициди, целата табела МЕТАЛИ / ТЕШКИ МЕТАЛИ (олово, жива, арсен, кадмиум) со нејзината изјава за сообразност, и заглавието на МИКОТОКСИНИ."
+   ],
+   "parameters": [
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Methoxychlor",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "< 0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "< 2",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "4157/2025": {
+   "doc_code": "4157/2025",
+   "issue_date": "29.08.2025",
+   "receipt_date": "25.08.2025",
+   "batch": "OPM 052501",
+   "sample": "ORANGE PUNCH MIMOSA-сув цвет  / DF0012_04",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија - Скопје",
+   "scan": "290825_4157-2025_IJZ_OPM052501-P050132.pdf",
+   "verdict": "Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph.Eur 2.8.13 (пестициди); Ph. Eur. 2. 4. 27 (метали); Ph. Eur. 2.8.18 (микотоксини)",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyriphos-methyl",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Metoxychlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "5",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "арсен",
+     "limit": "2",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "2,1",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "4348/2025": {
+   "doc_code": "4348/2025",
+   "issue_date": "15.09.2025",
+   "receipt_date": "05.09.2025",
+   "batch": "GP 052501",
+   "sample": "GRAPE PIE-сув цвет од медицински канабис/ DF 0013",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија, Ул. „50 Дивизија“ бр.6 1000 Скопје",
+   "scan": "150925_4348-2025_IJZ_GP052501-P050152.pdf",
+   "verdict": "Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph.Eur 2.8.13 (пестициди); Ph. Eur. 2. 4. 27 (метали); Ph. Eur. 2.8.18 (микотоксини)",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyriphos-methyl",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Metoxychlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "5",
+     "result": "0,06",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 13806:2002"
+    },
+    {
+     "name": "арсен",
+     "limit": "2",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 14627"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "< 2",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "4352/2025": {
+   "doc_code": "4352/2025",
+   "issue_date": "15.09.2025",
+   "receipt_date": "05.09.2025",
+   "batch": "HPA 052501",
+   "sample": "HIGH PRO AMNESIA DF008-01-сув цвет од медицински канабис",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија, Ул. „50 Дивизија“ бр.6 1000 Скопје",
+   "scan": "150925_4352-2025_IJZ_HPA052501-P050182.pdf",
+   "verdict": "Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph.Eur 2.8.13 (пестициди); Ph. Eur. 2. 4. 27 (метали); Ph. Eur. 2.8.18 (микотоксини)",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyriphos-methyl",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Metoxychlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "5",
+     "result": "0,034",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 13806:2002"
+    },
+    {
+     "name": "арсен",
+     "limit": "2",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 14627"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "< 2",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "5698/2025": {
+   "doc_code": "5698/2025",
+   "issue_date": "02.12.2025",
+   "receipt_date": "24.11.2025",
+   "batch": "PM072501",
+   "sample": "PERMANENT MARKET сув цвет од медицински канабис",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија - Скопје",
+   "scan": "021225_5698-2025_IJZ_PM072501-P050272.pdf",
+   "verdict": "Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph.Eur 2.8.13 (пестициди); Ph. Eur. 2. 4. 27 (метали); Ph. Eur. 2.8.18 (микотоксини)",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos-methyl",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Metoxychlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "0,5",
+     "result": "0,021",
+     "unit": "mg/kg",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "0,3",
+     "result": "0,001",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "арсен",
+     "limit": "0,2",
+     "result": "0,012",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "0,003",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "< 2",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "5699/2025": {
+   "doc_code": "5699/2025",
+   "issue_date": "02.12.2025",
+   "receipt_date": "24.11.2025",
+   "batch": "WC072501",
+   "sample": "WEDDING CRASHER сув цвет од медицински канабис",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија, Ул. „50 Дивизија“ бр.6 1000 Скопје",
+   "scan": "021225_5699-2025_IJZ_WC072501-P050262.pdf",
+   "verdict": "Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph.Eur 2.8.13 (пестициди); Ph. Eur. 2. 4. 27 (метали); Ph. Eur. 2.8.18 (микотоксини)",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos-methyl",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Metoxychlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "0,5",
+     "result": "0,023",
+     "unit": "mg/kg",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "0,3",
+     "result": "0,005",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "арсен",
+     "limit": "0,2",
+     "result": "0,006",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "0,01",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "< 2",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "5700/2025": {
+   "doc_code": "5700/2025",
+   "issue_date": "02.12.2025",
+   "receipt_date": "24.11.2025",
+   "batch": "CLE072501",
+   "sample": "CLEMOSA A BUD сув цвет од медицински канабис",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија, Ул. „50 Дивизија“ бр.6 1000 Скопје",
+   "scan": "021225_5700-2025_IJZ_CLE072501-P050282.pdf",
+   "verdict": "Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph.Eur 2.8.13 (пестициди); Ph. Eur. 2. 4. 27 (метали); Ph. Eur. 2.8.18 (микотоксини)",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos-methyl",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Metoxychlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "0,5",
+     "result": "0,032",
+     "unit": "mg/kg",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "0,3",
+     "result": "0,002",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "арсен",
+     "limit": "0,2",
+     "result": "0,013",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "0,021",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "2,2",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "748/2025": {
+   "doc_code": "748/2025",
+   "issue_date": "04.03.2025",
+   "receipt_date": "13.02.2025",
+   "batch": "GG 1024",
+   "sample": "GORILLA GLUE-сув цвет",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија - Скопје",
+   "scan": "040325_748-2025_IJZ_GG1024.pdf",
+   "verdict": "Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph.Eur 2.8.13 (пестициди); Ph. Eur. 2. 4. 27 (метали); Ph. Eur. 2.8.18 (микотоксини)",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Chlorpyriphos-methyl",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos ethyl",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Metoxychlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "5",
+     "result": "0,052",
+     "unit": "mg/kg",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "1",
+     "result": "0,016",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "арсен",
+     "limit": "2",
+     "result": "0,04",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "0,004",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "< 2",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "750/2025": {
+   "doc_code": "750/2025",
+   "issue_date": "27.02.2025",
+   "receipt_date": "13.02.2025",
+   "batch": "CJ 1024",
+   "sample": "CUP JUNKIE-сув цвет",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија - Скопје",
+   "scan": "270225_750-2025_IJZ_CJ1024.pdf",
+   "verdict": "Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph.Eur 2.8.13 (пестициди); Ph. Eur. 2. 4. 27 (метали); Ph. Eur. 2.8.18 (микотоксини)",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Chlorpyriphos-methyl",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos ethyl",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Metoxychlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "5",
+     "result": "0,036",
+     "unit": "mg/kg",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "1",
+     "result": "0,013",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "арсен",
+     "limit": "2",
+     "result": "0,063",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "0,006",
+     "unit": "mg/kg(l)",
+     "method": "MKC EN 17851:2023"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "< 2",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "752/2025": {
+   "doc_code": "752/2025",
+   "issue_date": "27.02.2025",
+   "receipt_date": "13.02.2025",
+   "batch": "BG 1024",
+   "sample": "BLUE GELATO-сув цвет",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија, Ул. „50 Дивизија“ бр.6 1000 Скопје",
+   "scan": "270225_752-2025_IJZ_BG1024.pdf",
+   "verdict": "Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph.Eur 2.8.13 (пестициди); Ph. Eur. 2. 4. 27 (метали); Ph. Eur. 2.8.18 (микотоксини)",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Chlorpyriphos-methyl",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos ethyl",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Metoxychlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "5",
+     "result": "0,01",
+     "unit": "mg/kg",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "1",
+     "result": "0,016",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "арсен",
+     "limit": "2",
+     "result": "0,014",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "0,005",
+     "unit": "mg/kg(l)",
+     "method": "МКС EN 17851:2023"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "< 2",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "80/2026": {
+   "doc_code": "80/2026",
+   "issue_date": "02.02.2026",
+   "receipt_date": "08.01.2026",
+   "batch": "WC082501",
+   "sample": "WEDDING CRASHER-сув цвет од медицински канабис",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија, Ул. „50 Дивизија“ бр.6 1000 Скопје",
+   "scan": "020226_80-2026_IJZ_WC082501-P060012.pdf",
+   "verdict": "Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph.Eur 2.8.13 (пестициди); Ph. Eur. 2. 4. 27 (метали); Ph. Eur. 2.8.18 (микотоксини)",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos-methyl",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Metoxychlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "0,5",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 13806:2002"
+    },
+    {
+     "name": "арсен",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 14627"
+    },
+    {
+     "name": "бакар",
+     "limit": "",
+     "result": "1,859",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "< 2",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "83/2026": {
+   "doc_code": "83/2026",
+   "issue_date": "02.02.2026",
+   "receipt_date": "08.01.2026",
+   "batch": "PM092501",
+   "sample": "PERMANENT MARKET-сув цвет од медицински канабис",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија, Ул. „50 Дивизија“ бр.6 1000 Скопје",
+   "scan": "020226_83-2026_IJZ_PM092501-P060062.pdf",
+   "verdict": "Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph.Eur 2.8.13 (пестициди); Ph. Eur. 2. 4. 27 (метали); Ph. Eur. 2.8.18 (микотоксини)",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos-methyl",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Metoxychlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "0,5",
+     "result": "0,03",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 13806:2002"
+    },
+    {
+     "name": "арсен",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 14627"
+    },
+    {
+     "name": "бакар",
+     "limit": "",
+     "result": "2,196",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "< 2",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "85/2026": {
+   "doc_code": "85/2026",
+   "issue_date": "02.02.2026",
+   "receipt_date": "08.01.2026",
+   "batch": "SJ092501",
+   "sample": "SLEEPY JOY-сув цвет од медицински канабис",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија - Скопје",
+   "scan": "020226_85-2026_IJZ_SJ092501-P060082.pdf",
+   "verdict": "Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph.Eur 2.8.13 (пестициди); Ph. Eur. 2. 4. 27 (метали); Ph. Eur. 2.8.18 (микотоксини)",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos-methyl",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Metoxychlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "MKC EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "0,5",
+     "result": "0,08",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "0,003",
+     "unit": "mg/kg(l)",
+     "method": "EN 13806:2002"
+    },
+    {
+     "name": "арсен",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 14627"
+    },
+    {
+     "name": "бакар",
+     "limit": "",
+     "result": "3,341",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "2",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  },
+  "86/2026": {
+   "doc_code": "86/2026",
+   "issue_date": "02.02.2026",
+   "receipt_date": "08.01.2026",
+   "batch": "CJ092501",
+   "sample": "CAP JUNKY-сув цвет од медицински канабис",
+   "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија, Ул. „50 Дивизија“ бр.6 1000 Скопје",
+   "scan": "020226_86-2026_IJZ_CJ092501-P060072.pdf",
+   "verdict": "Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph.Eur 2.8.13 (пестициди); Ph. Eur. 2. 4. 27 (метали); Ph. Eur. 2.8.18 (микотоксини)",
+   "pages_read": 4,
+   "unreadable": [],
+   "parameters": [
+    {
+     "name": "Lindan ( Gama HCH )",
+     "limit": "0,6",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Aldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin и Aldrin (expressed as Dieldrin)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "HCB",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDE",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDD",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "4,4 ' DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "vkupno DDT",
+     "limit": "1",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "delta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta HCH",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos-methyl",
+     "limit": "0,1",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlorpyrifos",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/Kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan (alpha, beta and endosulfan sulfat)",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Deltamethrin",
+     "limit": "0,5",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Chlordane (sum of cis- and trans-chlordane)",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Metoxychlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor epoxide",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin aldehyde",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "alpha Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "beta Endosulfan",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endrin keton",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "trans- Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "cis-Chlordane",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Dieldrin",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Heptachlor",
+     "limit": "0,05",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "Endosulfan sulfate",
+     "limit": "3",
+     "result": "н.д.",
+     "unit": "mg/kg",
+     "method": "МКС EN 15662:2020"
+    },
+    {
+     "name": "олово",
+     "limit": "0,5",
+     "result": "0,04",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "жива",
+     "limit": "0,1",
+     "result": "0,004",
+     "unit": "mg/kg(l)",
+     "method": "EN 13806:2002"
+    },
+    {
+     "name": "арсен",
+     "limit": "0,2",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 14627"
+    },
+    {
+     "name": "бакар",
+     "limit": "",
+     "result": "3,388",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "кадмиум",
+     "limit": "0,3",
+     "result": "н.д.",
+     "unit": "mg/kg(l)",
+     "method": "EN 14084 (14083)"
+    },
+    {
+     "name": "Вкупни афлатоксини (во сув цвет од канабис)",
+     "limit": "4",
+     "result": "< 2",
+     "unit": "µg/kg",
+     "method": "AflaTest Флуорометриски метод"
+    }
+   ]
+  }
+ },
+ "held": []
+}

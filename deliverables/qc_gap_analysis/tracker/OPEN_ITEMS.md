@@ -4,7 +4,7 @@ Every finding the desk has raised and cannot itself settle, with the evidence
 behind it and the decision being asked for. Built by `open_items.py`; the same
 register is the **Open Items** sheet of the workbook.
 
-**41 open · 3 marked on the certificate**
+**44 open · 3 marked on the certificate**
 
 ## Specification
 
@@ -144,7 +144,7 @@ register is the **Open Items** sheet of the workbook.
 
 *State:* **open** · *Evidence:* icoa_register.py 102 rounds / 76 lots vs coq_artifact_data.json 164 records / 82 lots; 3 lots with 4, 5 and 6 rounds
 
-**Found.** The ruling of 10.09.2026 says the internal certificates are "one per testing round, which is EXACTLY the number of certificates of quality". They are not, and the reason is that the two registers count different things. icoa_register.py counts rounds the testing record SHOWS: 102 over 76 lots. The certificate-of-quality model counts certificates it PLANS: exactly two per lot — one release and one 12-month retest — 164 over 82 lots, 103 of them predicted. Across the 76 lots both carry, the counts agree on 14 and differ on 62. GP0824_02 has six testing rounds and two certificates of quality; GP062501 has five; GP0824_03 has four.
+**Found.** The ruling of 10.09.2026 says the internal certificates are "one per testing round, which is EXACTLY the number of certificates of quality". They are not, and the reason is that the two registers count different things. icoa_register.py counts rounds the testing record SHOWS: 102 over 76 lots. The certificate-of-quality model counts certificates it PLANS: exactly two per lot — one release and one retest — 164 over 82 lots, 103 of them predicted. Across the 76 lots both carry, the counts agree on 14 and differ on 62. GP0824_02 has six testing rounds and two certificates of quality; GP062501 has five; GP0824_03 has four.
 
 **The desk.** Nothing renumbered. The internal register was brought to one row per round on 11.09.2026 because that is what the ruling says it is; the CoQ series was left exactly as it stands, because renumbering controlled documents the owner has already seen is not a change to make on a reading. No certificate loses a code to this today: no lot has more than one non-initial certificate of quality, so the single |R row still resolves for every one of them.
 
@@ -528,7 +528,7 @@ register is the **Open Items** sheet of the workbook.
 
 ### OI-22 · An analyte the laboratory never tested was printing a line on the certificate
 
-*State:* **ruled** · *Evidence:* BG1024 release vs 12-month retest, verified through fillCoq in headless Chromium
+*State:* **ruled** · *Evidence:* BG1024 release vs retest, verified through fillCoq in headless Chromium
 
 **Found.** The initial testing of a batch often runs only part of a parameter's panel: mycotoxins assayed for total aflatoxins alone, with Aflatoxin B1 and Ochratoxin A not tested. The certificate printed a bracketed blank for each untested analyte, which in a results column reads as a finding still to come; before the ND ruling was scoped it would have printed ND, asserting the analyte was measured and absent.
 
@@ -637,4 +637,56 @@ register is the **Open Items** sheet of the workbook.
 **The desk.** Nothing written. The certificate prints “not tested — no certificate covers it” for #8, #11 and #12 because that is the truth of the record.
 
 **Needed.** Either the reports exist somewhere the desk cannot see — in which case one scan into eCoA_DATABASE closes it — or P060382 was never sent for metals, pesticides or loss on drying and needs to be, or released explicitly without them. The same question as OI-53 for loss on drying, and the same lot.
+
+## Scope
+
+### OI-56 · The new tranche grouping of 18.09.2026 disagrees with the laboratory campaign for seven lots
+
+*State:* **open** · *Evidence:* Drive BY_P_FOLDERS T1/T2/T3 read 18.09.2026; tracker/TRANCHE_ASSIGNMENT_2026-09-18.md; tranche_assignment_2026-09-18.csv; sampling_dates.py; coq_reissue_scope_2026-09-15.csv
+
+**Found.** The Head of QC regrouped the delivery tranches on Drive (BY_P_FOLDERS/T1, T2, T3), read on 18.09.2026: 20 / 26 / 31 batches against the 21 / 32 / 30 the desk held. CC012601_1 (P060332) is pushed from Tranche 1 to Tranche 3, and six batches leave the tranches altogether — CLE072501 (P050282), OPM092501 (P060042), SJ092501 (P060082), JD042601 (P060492), FB042601 and CC042601, all of them formerly Tranche 2. But every one of the seven carries a Farmahem campaign certificate that says otherwise: CC012601_1 carries **197-6**, the sixth certificate of the FIRST campaign, and the six removed lots carry 220-7, 220-22, 220-27, 220-30, 220-31 and 220-32, the second.
+
+**The desk.** The delivery grouping is recorded and followed (tranche_assignment_2026-09-18.csv). Nothing has been re-dated. sampling_dates.py keys the campaign on the certificate series, as it always has, so the retest sampling days and the reissue issue dates are unchanged.
+
+**Needed.** Two questions, and the desk will not answer either by itself. Does the move of P060332 to Tranche 3 mean its retest was sampled 19–21.08.2026 and its reissue issues 24.08.2026, against a certificate the laboratory numbered 197-6 and a sampling day of 21.07.2026? And are the six removed lots withdrawn from the issue set, or issued outside the tranche packages? A folder cannot overwrite a date taken from a laboratory’s own certificate, so the desk has left both alone.
+
+## Document
+
+### OI-57 · P060372 and P060362 — loss on drying, heavy metals and pesticides marked by hand with no certificate behind them
+
+*State:* **open** · *Evidence:* Photographs of 18.09.2026; cell_resolution_2026-09-09.tsv; Drive folders CC012603_P060372 and JD012603_P060362; tracker/HANDMARKED_CORRECTIONS_2026-09-18.md
+
+**Found.** The Head of QC marked five certificates by hand on 18.09.2026. Three lots went through: every figure agreed with his own 09.09 resolution pass, which names the document, and 54 cells that had been printing [NT] now print the result. Two did not. P060372 carries loss on drying 6,42 and lead 0,006, cadmium 0,007, arsenic 0,006, mercury 0,001, pesticides 0; P060362 carries 6,95 and 0,008, 0,011, 0,01, 0,002, 0. For both, the resolution pass says NOTHING ON FILE — no document anywhere — for #8, #11 and #12, and the Drive lot folders hold only the Farmahem potency pair and the microbiology certificate. Their siblings’ IJZ panels are 3660/2026 and 3662/2026 of 22.06.2026, and 3661/2026 of that day belongs to FB012603 / P060432, so no certificate of that run is missing from the count.
+
+**The desk.** The figures are recorded in intake_handmarked_2026-09-18/reads_handmarked.json and are NOT printed. The certificates keep [NT] for those three determinations.
+
+**Needed.** One scan into eCoA_DATABASE closes it. Otherwise the two lots were never sent for loss on drying, metals or pesticides and need to be, or released explicitly without them — the same question as OI-53 and OI-55, on two more lots.
+
+## Desk status
+
+### OI-58 · The master workbook was said to be unbuildable. It was a missing flag
+
+*State:* **ruled** · *Evidence:* tracker/build_tracker_v8.py:382 (the guard), :428 (`if ICOA_RULE:`), :2432; tracker/HANDMARKED_CORRECTIONS_2026-09-18.md
+
+**Found.** Recorded on 18.09.2026 as a NameError in HEAD: build_tracker_v8.py reaching line 2432 and raising ‘_F_ is not defined’, with the helpers thought to be trapped inside a function. They are not. The enclosing block at :428 is `if ICOA_RULE:` — a module-level CONDITIONAL, not a function — and ICOA_RULE is `--icoa in sys.argv`. Without the flag the block never runs, so the names are never bound, and the register notes 2,000 lines below that read them unconditionally fail. The builder was never broken; it was invoked without the flag that v44 had been built with.
+
+**The desk.** Built on 18.09.2026: CoQ_Analysis_Master_v45.xlsx, 12 tabs, 86 batches, 184 two-row blocks, verify_workbook with NO findings. It took two attempts, and the second is the lesson: --icoa alone builds a workbook that LOOKS right and verifies with 7 findings — short of results without --cells, missing the Mikro CoQ Parameter section without --mikro, and dating the legacy series on the defaults rather than on 03.06/06.06.2026. CI caught it. --mikro must name a master that still carries the RAW sheet (v10-v13, v21-v23); from v24 it is folded into Reference and cannot be read back out. The guard beside ICOA_RULE now prints the WHOLE build and says to run verify_workbook after it, because a guard that names half the command is how this went wrong the first time. The eight naming rulings of 18.09.2026 are in tracker/strains.py.
+
+**Needed.** Nothing. The diagnosis was wrong and is corrected here so the record does not keep a working builder marked broken.
+
+## Document
+
+### OI-59 · Three certificates in the archive are missing their page 3 — the heavy metals
+
+*State:* **open** · *Evidence:* intake_contaminants_2026-09-18/two_read_result.json; apply_contaminants.py
+
+**Found.** The Institute of Public Health issues its contaminant panel over four pages, and page 3 carries the whole ТЕШКИ МЕТАЛИ table — lead, cadmium, arsenic, mercury — the last three pesticide residues and the total-aflatoxin row. On three certificates the archive holds only three pages, and the page that is gone is page 3. The pages that are there print their own footers: Страна 1 од 4, Страна 2 од 4, Страна 4 од 4.
+    1065/2026   SJ102501   P060162
+    1625/2026   J31122501  P060262
+    3925/2026   GG032601   —
+It is not a download fault. Each local copy is byte for byte the size of the file in eCoA_DATABASE (1,573,779 / 869,003 / 1,619,812), so the scan in the company's own archive is the one that is short a page.
+
+**The desk.** Read twice, by two readers who did not see each other's work, and both reported the same missing page independently. Nothing is entered for those three lots' metals or aflatoxins: a determination with no page to read is not a result, and the certificates keep saying so.
+
+**Needed.** Re-scan the three certificates from the paper originals, or ask the Institute of Public Health for a fresh copy. Three lots' heavy metals depend on it.
 

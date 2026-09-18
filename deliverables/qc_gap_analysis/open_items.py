@@ -1247,6 +1247,27 @@ ITEMS = [
      "keep a working builder marked broken.",
      "tracker/build_tracker_v8.py:382 (the guard), :428 (`if ICOA_RULE:`), :2432; "
      "tracker/HANDMARKED_CORRECTIONS_2026-09-18.md"),
+    ("OI-59", "Document", "open",
+     "Three certificates in the archive are missing their page 3 — the heavy metals",
+     "The Institute of Public Health issues its contaminant panel over four pages, and "
+     "page 3 carries the whole ТЕШКИ МЕТАЛИ table — lead, cadmium, arsenic, mercury — "
+     "the last three pesticide residues and the total-aflatoxin row. On three "
+     "certificates the archive holds only three pages, and the page that is gone is "
+     "page 3. The pages that are there print their own footers: Страна 1 од 4, "
+     "Страна 2 од 4, Страна 4 од 4.\n"
+     "    1065/2026   SJ102501   P060162\n"
+     "    1625/2026   J31122501  P060262\n"
+     "    3925/2026   GG032601   —\n"
+     "It is not a download fault. Each local copy is byte for byte the size of the file "
+     "in eCoA_DATABASE (1,573,779 / 869,003 / 1,619,812), so the scan in the company's "
+     "own archive is the one that is short a page.",
+     "Read twice, by two readers who did not see each other's work, and both reported "
+     "the same missing page independently. Nothing is entered for those three lots' "
+     "metals or aflatoxins: a determination with no page to read is not a result, and "
+     "the certificates keep saying so.",
+     "Re-scan the three certificates from the paper originals, or ask the Institute of "
+     "Public Health for a fresh copy. Three lots' heavy metals depend on it.",
+     "intake_contaminants_2026-09-18/two_read_result.json; apply_contaminants.py"),
 ]
 
 STATES = {"open", "marked", "ruled"}
@@ -1258,7 +1279,7 @@ def items(state=None, area=None):
     """The register, optionally narrowed.
 
     >>> len(items())
-    58
+    59
     >>> [i[0] for i in items(area="Specification")]
     ['OI-01', 'OI-02', 'OI-03', 'OI-44', 'OI-50']
     >>> sorted({i[2] for i in items()})
