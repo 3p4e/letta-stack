@@ -380,6 +380,20 @@ if NEW:
 # except where an outsourced certificate reports otherwise (FB032601, ППК26127: 0.08 %,
 # Не одговара) — that lot's foreign matter is held for the Head of QC.
 ICOA_RULE = "--icoa" in sys.argv
+# --icoa is not optional, and the failure without it was a puzzle rather than a message.
+# `if ICOA_RULE:` several hundred lines below binds _D_, _F_, LEGACY_ICOA and LEGACY_COQ
+# at MODULE level, and the register notes further down use them unconditionally — so a run
+# without the flag got 2,400 lines in and died with "NameError: name '_F_' is not defined".
+# That was read as a broken builder and recorded as OI-58 on 18.09.2026, and it is why
+# CoQ_Analysis_Master_v45 was said to be unbuildable. It was a missing flag. Say so here,
+# at the top, before any work is done.
+if not ICOA_RULE:
+    raise SystemExit(
+        "build_tracker_v8.py requires --icoa.\n"
+        "  The iCoA block binds the date helpers and the legacy issue days that the CoQ and\n"
+        "  iCoA register notes read further down, so the workbook cannot be built without it.\n"
+        "  The build that produced v44 and v45:\n"
+        "      python3 tracker/build_tracker_v8.py --icoa --version=45")
 # --cells absorbs the owner's 09.09.2026 pass over eCoA_DATABASE: the coverage it
 # closes on Batch Coverage, and the Reconciliation sheet that says what the two
 # records of those certificates agree and disagree about.
@@ -3218,7 +3232,10 @@ def add_imb_register_sheet(wb):
         ruled = ST.canonical(printed)
         note = ""
         if ruled != printed:
-            note = "strain ruled Cap Junky; the register prints " + printed
+            _r = ST.ruling_for(printed)
+            note = ("strain ruled %s (%s); the register prints %s"
+                    % (_r[0], _r[2], printed)) if _r else \
+                   ("strain read as %s; the register prints %s" % (ruled, printed))
         elif ST.conflict(printed):
             note = "strain unresolved: " + ST.conflict(printed)[0] + " vs " + ST.conflict(printed)[1]
         vals = (e["cert_no"] or "\u2014 not read \u2014", printed, ruled, b, e["manufactured"] or "\u2014",

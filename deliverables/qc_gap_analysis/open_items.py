@@ -1222,20 +1222,25 @@ ITEMS = [
      "Photographs of 18.09.2026; cell_resolution_2026-09-09.tsv; Drive folders "
      "CC012603_P060372 and JD012603_P060362; tracker/HANDMARKED_CORRECTIONS_2026-09-18.md"),
 
-    ("OI-58", "Desk status", "open",
-     "The master workbook cannot be rebuilt \u2014 build_tracker_v8.py stops with a NameError",
-     "tracker/build_tracker_v8.py runs to line 2432 and then raises NameError: name "
-     "\u2018_F_\u2019 is not defined. The statement is at module level; _F_, _D_, LEGACY_ICOA and "
-     "LEGACY_COQ are all defined inside a function several hundred lines earlier, so the "
-     "module-level REG_NOTE.format(icoa=_F_(LEGACY_ICOA)) can never resolve them. The "
-     "break is in HEAD and predates the corrections of 18.09.2026.",
-     "Nothing written. CoQ_Analysis_Master_v44.xlsx stands and is now behind the "
-     "certificates on the 54 cells corrected on 18.09.2026 \u2014 the certificates, their "
-     "PDFs, Word copies and archives are all current.",
-     "Hoisting the helpers and the two legacy dates to module scope is probably the whole "
-     "repair, but the enclosing function is long and the scoping was not obviously "
-     "accidental, so it wants a proper look rather than a blind patch.",
-     "tracker/build_tracker_v8.py:514-560, :2432; tracker/HANDMARKED_CORRECTIONS_2026-09-18.md"),
+    ("OI-58", "Desk status", "ruled",
+     "The master workbook was said to be unbuildable. It was a missing flag",
+     "Recorded on 18.09.2026 as a NameError in HEAD: build_tracker_v8.py reaching line "
+     "2432 and raising \u2018_F_ is not defined\u2019, with the helpers thought to be "
+     "trapped inside a function. They are not. The enclosing block at :428 is "
+     "`if ICOA_RULE:` \u2014 a module-level CONDITIONAL, not a function \u2014 and "
+     "ICOA_RULE is `--icoa in sys.argv`. Without the flag the block never runs, so the "
+     "names are never bound, and the register notes 2,000 lines below that read them "
+     "unconditionally fail. The builder was never broken; it was invoked without the "
+     "flag that v44 had been built with.",
+     "Built with the flag on 18.09.2026: CoQ_Analysis_Master_v45.xlsx, 12 tabs, 86 "
+     "batches, 184 two-row blocks. A guard now sits beside ICOA_RULE so a run without "
+     "--icoa stops at once and names the flag and the full invocation instead of dying "
+     "2,400 lines later on a name nobody can place. The eight naming rulings of "
+     "18.09.2026 are in tracker/strains.py, and the workbook carries them.",
+     "Nothing. The diagnosis was wrong and is corrected here so the record does not "
+     "keep a working builder marked broken.",
+     "tracker/build_tracker_v8.py:382 (the guard), :428 (`if ICOA_RULE:`), :2432; "
+     "tracker/HANDMARKED_CORRECTIONS_2026-09-18.md"),
 ]
 
 STATES = {"open", "marked", "ruled"}

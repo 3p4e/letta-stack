@@ -34,6 +34,79 @@ RULINGS = [
      "The ImB certificate register of 04.09.2026 prints the strain three ways — Cap Junky "
      "(cert 041), Cap Junkie (cert 028) and Cup Junkie (the P050162 entry) — and the "
      "delivery sheet prints Cap Junkie. Cap Junky is correct."),
+
+    ("Sleepy Joe",
+     ["Sleepy Joy", "SleepyJoe", "SleepyJoy"],
+     "Head of QC (azu.sozon@gmail.com)", "18.09.2026",
+     "Ruled from the department's own Purely_Plant_Finished_Specifications_2026-09-16.pdf, "
+     "which carries ONE spelling per cultivar across its 23 strains, and confirmed in words "
+     "on 18.09.2026: \"yes align the 38 names\". That document outranks the analysis "
+     "workbook's Strain column and the ImB certificate register, both of which disagree "
+     "with it and with each other. The certificate register printed Sleepy Joy; the "
+     "specification distribution prints Sleepy Joe, and it is the newer document and the "
+     "one the grades are read from."),
+
+    ("Permanent Marker",
+     ["Permanent Market", "PermanentMarker", "PermanentMarket"],
+     "Head of QC (azu.sozon@gmail.com)", "18.09.2026",
+     "Ruled from the department's own Purely_Plant_Finished_Specifications_2026-09-16.pdf, "
+     "which carries ONE spelling per cultivar across its 23 strains, and confirmed in words "
+     "on 18.09.2026: \"yes align the 38 names\". That document outranks the analysis "
+     "workbook's Strain column and the ImB certificate register, both of which disagree "
+     "with it and with each other. This one runs AGAINST the analysis workbook, which prints "
+     "Permanent Market: the distribution prints Permanent Marker, which is also the "
+     "cultivar\'s real name, so the workbook carries the transcription error."),
+
+    ("Wedding Crusher",
+     ["Wedding Crasher", "WeddingCrusher", "WeddingCrasher"],
+     "Head of QC (azu.sozon@gmail.com)", "18.09.2026",
+     "Ruled from the department's own Purely_Plant_Finished_Specifications_2026-09-16.pdf, "
+     "which carries ONE spelling per cultivar across its 23 strains, and confirmed in words "
+     "on 18.09.2026: \"yes align the 38 names\". That document outranks the analysis "
+     "workbook's Strain column and the ImB certificate register, both of which disagree "
+     "with it and with each other. The certificate register printed Wedding Crasher. Distinct "
+     "from Wedding Cake (WED), which is a different cultivar on a different lot."),
+
+    ("Jelly Donuts",
+     ["Jelly Donutz", "JellyDonutz", "JellyDonuts", "Jelly Donut"],
+     "Head of QC (azu.sozon@gmail.com)", "18.09.2026",
+     "Ruled from the department's own Purely_Plant_Finished_Specifications_2026-09-16.pdf, "
+     "which carries ONE spelling per cultivar across its 23 strains, and confirmed in words "
+     "on 18.09.2026: \"yes align the 38 names\". That document outranks the analysis "
+     "workbook's Strain column and the ImB certificate register, both of which disagree "
+     "with it and with each other. The desk\'s own record carried Jelly Donutz."),
+
+    ("Grapes And Cream",
+     ["Grapes and Cream", "Graps & Creme", "Graps and Creme", "Grapes & Cream",
+      "GrapesAndCream", "Graps Creme"],
+     "Head of QC (azu.sozon@gmail.com)", "18.09.2026",
+     "Ruled from the department's own Purely_Plant_Finished_Specifications_2026-09-16.pdf, "
+     "which carries ONE spelling per cultivar across its 23 strains, and confirmed in words "
+     "on 18.09.2026: \"yes align the 38 names\". That document outranks the analysis "
+     "workbook's Strain column and the ImB certificate register, both of which disagree "
+     "with it and with each other. The capital And is the distribution\'s own spelling, kept "
+     "verbatim even though the same document writes Apple and Banana with a lowercase and. "
+     "That inconsistency is the department\'s to settle; the desk does not silently "
+     "normalise a name it was given."),
+
+    ("Clemosa A Bud",
+     ["Clemosa a bud", "Clemosa a Bud", "Clemosa A bud", "Clemosa", "ClemosaABud"],
+     "Head of QC (azu.sozon@gmail.com)", "18.09.2026",
+     "Ruled from the department's own Purely_Plant_Finished_Specifications_2026-09-16.pdf, "
+     "which carries ONE spelling per cultivar across its 23 strains, and confirmed in words "
+     "on 18.09.2026: \"yes align the 38 names\". That document outranks the analysis "
+     "workbook's Strain column and the ImB certificate register, both of which disagree "
+     "with it and with each other. The delivery sheet printed the bare Clemosa and the "
+     "certificate register Clemosa a Bud; the distribution gives the full name."),
+
+    ("Apple and Banana",
+     ["Appels & Bananas", "Appel and Banana", "Appels and Bananas", "AppleAndBanana"],
+     "Head of QC (azu.sozon@gmail.com)", "18.09.2026",
+     "Ruled from the department's own Purely_Plant_Finished_Specifications_2026-09-16.pdf, "
+     "which carries ONE spelling per cultivar across its 23 strains, and confirmed in words "
+     "on 18.09.2026: \"yes align the 38 names\". That document outranks the analysis "
+     "workbook's Strain column and the ImB certificate register, both of which disagree "
+     "with it and with each other. The delivery sheet printed Appels & Bananas."),
 ]
 
 # Spellings that differ from the canonical form ONLY by spacing or case. Repairing these
@@ -46,21 +119,7 @@ _SPACING_ONLY = ["Gorilla Glue", "Fat Bastard", "Grape Pie", "Blue Gelato", "Mot
 
 # Where two of the company's own documents disagree in their LETTERS. Not decided here.
 # strain as the desk holds it -> (the delivery sheet, the ImB certificate register)
-CONFLICTS = {
-    "Sleepy Joe":       ("Sleepy Joe (delivery sheet)", "Sleepy Joy (certificate register, P060082)"),
-    "Sleepy Joy":       ("Sleepy Joe (delivery sheet)", "Sleepy Joy (certificate register, P060082)"),
-    "Permanent Marker": ("Permanent Marker (delivery sheet)", "Permanent Market (certificate register, P060062 and P050272)"),
-    "Permanent Market": ("Permanent Marker (delivery sheet)", "Permanent Market (certificate register, P060062 and P050272)"),
-    "Wedding Crusher":  ("Wedding Crusher (delivery sheet)", "Wedding Crasher (certificate register, P060012 and P050262)"),
-    "Wedding Crasher":  ("Wedding Crusher (delivery sheet)", "Wedding Crasher (certificate register, P060012 and P050262)"),
-    "Appels & Bananas": ("Appels & Bananas (delivery sheet)", "Apple and Banana (certificate register, P060052)"),
-    "Appel and Banana": ("Appels & Bananas (delivery sheet)", "Apple and Banana (certificate register, P060052)"),
-    "Apple and Banana": ("Appels & Bananas (delivery sheet)", "Apple and Banana (certificate register, P060052)"),
-    "Jelly Donuts":     ("Jelly Donuts (delivery sheet)", "Jelly Donutz (the desk's own record)"),
-    "Jelly Donutz":     ("Jelly Donuts (delivery sheet)", "Jelly Donutz (the desk's own record)"),
-    "Clemosa a Bud":    ("Clemosa (delivery sheet)", "Clemosa a Bud (certificate register, P050282)"),
-    "Clemosa a bud":    ("Clemosa (delivery sheet)", "Clemosa a Bud (certificate register, P050282)"),
-}
+CONFLICTS = {}
 
 
 def _squash(s):
@@ -86,6 +145,19 @@ def ruled(name):
     """True when canonical(name) is a ruling rather than the name it was handed."""
     n = str(name or "").strip()
     return bool(n) and canonical(n) != n
+
+
+def ruling_for(name):
+    """The ruling that settled this name: (canonical, who, when), or None.
+
+    The audit sheet used to name Cap Junky on every ruled row, because for a while it was
+    the only ruling there was. There are now eight, so the row has to say which one it is.
+    """
+    c = canonical(name)
+    for _canon, _alts, _who, _when, _why in RULINGS:
+        if _canon == c:
+            return (_canon, _who, _when)
+    return None
 
 
 def conflict(name):
