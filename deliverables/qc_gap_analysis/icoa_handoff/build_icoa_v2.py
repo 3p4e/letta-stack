@@ -80,6 +80,16 @@ import findings_options as FO                                        # noqa: E40
 DASH = "—"
 BOX = "☐"
 RED = "color:#B91C1C;font-weight:700"
+# The criterion in the short form the certificate of quality itself prints in its
+# `p-spec` cell. The register carries the long monograph sentence, which wrapped each
+# of these three rows onto three lines and cost the page the foot it needs for the
+# approval grid; on a page whose whole subject is these three determinations the short
+# form says the same thing in one line, and says it in the same words as the CoQ.
+SHORT_CRIT = {
+    "1": "Conforms to monograph",
+    "2": "Conforms to monograph",
+    "7": "≤ 2.0% / 25–50 g · < 1 cm leaves, no seeds",
+}
 
 
 def esc(s):
@@ -184,7 +194,7 @@ def results_table(det_by_no, rows, scope):
             continue
         name_en, _, name_tail = d["en"].partition("·")
         meth = (r.get("mth") or d.get("method") or "").split("·")
-        crit = en(r.get("crit") or d.get("crit") or "")
+        crit = SHORT_CRIT.get(n) or en(r.get("crit") or d.get("crit") or "")
         body.append(
             '        <tr><td>%s</td><td><span class="p-name">%s <span class="mk">%s</span>'
             '</span></td><td><span class="p-method">%s%s</span></td>'
@@ -295,17 +305,16 @@ def section01(rep, scope):
 
 LEGEND = (
     '<div class="pot-note"><strong>How to read this record.</strong> The <b>Result</b> '
-    'column is the determination\'s verdict as it is certified on the linked certificate '
-    'of quality. The option menus below are the <b>bench observation record</b>: they are '
-    'printed unticked and are marked and initialled by hand by the analyst at the time of '
-    'analysis, together with the signature lines. An unticked menu records that the '
-    'observation detail is entered on the signed paper copy, not that the determination '
-    'was not performed. <i class="bisep">|</i> <span class="mk">Мените '
-    'со опции се пополнуваат '
-    'рачно при анализата.</span>'
-    '<br>The determinations in this record are performed in-house prior to final release '
-    'sampling, before packaging starts (QCSOP 005 v.02); deviations from the expected '
-    'finding are marked <span class="opt dev leg">●</span> in the menu.</div>')
+    'column is the verdict as it is certified on the linked certificate of quality; the '
+    'menus in Section 04 are the <b>bench observation record</b>, printed unticked and '
+    'marked and initialled by hand at the time of analysis, beside the signature lines. An '
+    'unticked menu records that the observation detail is entered on the signed paper copy, '
+    'not that the determination was not performed; a deviation from the expected finding '
+    'carries the warning tint. The determinations are performed in-house prior to final '
+    'release sampling, before packaging starts (QCSOP 005 v.02). <i class="bisep">|</i> '
+    '<span class="mk">Мените со опции '
+    'се пополнуваат рачно '
+    'при анализата.</span></div>')
 
 
 def approval(reg, retest):
@@ -389,6 +398,17 @@ html body div.page div.fm-row .fm-pre{font-family:'Roboto Mono',monospace;font-s
 html body div.page div.ident-row{display:flex;gap:16px;align-items:baseline;padding:2px var(--MARGIN-H) 0}
 html body div.page div.ident-row .opt-lbl{font-family:'Orbitron',sans-serif;font-size:6.4px;font-weight:700;letter-spacing:.35px;text-transform:uppercase;color:var(--gold-deep)}
 html body div.page div.ident-row .opt-lbl .mk{display:inline;font-size:5.4px;margin-left:4px;letter-spacing:normal;text-transform:none}
+/* the identification strip borrowed .fl-v and .fl-n from the timeline band, where they
+   are sized for a date and a three-word note; here they carry a round name and a
+   sentence, and at the band's size the strip alone took 60px of the foot the approval
+   grid needs. Sized for this strip's own content. */
+html body div.page div.ident-row .fl-v{font-size:8.4px;line-height:10px;white-space:nowrap}
+html body div.page div.ident-row .fl-n{font-size:6.6px;line-height:8px;font-style:italic}
+/* a batch number is one token: the package's __h01-shrink-fit lets a cell shrink below
+   its content and P050082 broke as 'P050 082'. The values of this row never wrap. */
+html body div.page div.gridrow.lk-inline{flex-wrap:wrap !important;row-gap:3px !important}
+html body div.page div.gridrow.lk-inline>*{flex:0 0 auto !important}
+html body div.page div.gridrow.lk-inline .lk-val,html body div.page div.gridrow.lk-inline .lk-val.sm{white-space:nowrap !important;max-width:none !important}
 
 /* three signatories, the in-house laboratory's own chain */
 html body div.page div.approval-grid.cols-3{grid-template-columns:repeat(3,1fr);column-gap:16px}

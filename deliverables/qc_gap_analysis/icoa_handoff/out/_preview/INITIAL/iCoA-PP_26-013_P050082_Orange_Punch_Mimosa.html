@@ -463,13 +463,13 @@ table.labref tbody tr:last-child{background-image:linear-gradient(90deg,rgba(158
       <colgroup><col style="width:30px"><col style="width:266px"><col style="width:146px"><col style="width:158px"><col></colgroup>
       <thead><tr><th>№</th><th>Parameter <i class="bisep">|</i> <span class="mk">Параметар</span></th><th>Method <i class="bisep">|</i> <span class="mk">Метод</span></th><th>Acc. Criteria <i class="bisep">|</i> <span class="mk">Критериум</span></th><th style="text-align:right">Result <i class="bisep">|</i> <span class="mk">Резултат</span></th></tr></thead>
       <tbody>
-        <tr><td>1</td><td><span class="p-name">Identification A, Appearance <span class="mk">Идентиф. A, Изглед, Макроскопски</span></span></td><td><span class="p-method">Ph. Eur. mon. 3028</span></td><td><span class="p-spec">Conforms to the monograph for Cannabis flos (07/2024:3028) in Ph. Eur. 11.0</span></td><td class="r-cell"><span class="r-val r-conform">Conforms<span class="mk">Одговара</span></span></td></tr>
-        <tr><td>2</td><td><span class="p-name">Identification B <span class="mk">Идентиф. Б · Микроскопски</span></span></td><td><span class="p-method">Ph. Eur. 2.8.23 (microscopy)</span></td><td><span class="p-spec">Conforms to the monograph for Cannabis flos (07/2024:3028) in Ph. Eur. 11.0</span></td><td class="r-cell"><span class="r-val r-conform">Conforms<span class="mk">Одговара</span></span></td></tr>
-        <tr><td>7</td><td><span class="p-name">Foreign Matter <span class="mk">Страни материи</span></span></td><td><span class="p-method">Ph. Eur. 2.8.2<span class="p-meth-eq">In-house · интерна</span></span></td><td><span class="p-spec">≤ 2.0% / 25–50 g · &lt; 1 cm leaves</span></td><td class="r-cell"><span class="r-val r-conform">Conforms<span class="mk">Одговара</span></span></td></tr>
+        <tr><td>1</td><td><span class="p-name">Identification A, Appearance <span class="mk">Идентиф. A, Изглед, Макроскопски</span></span></td><td><span class="p-method">Ph. Eur. mon. 3028</span></td><td><span class="p-spec">Conforms to monograph</span></td><td class="r-cell"><span class="r-val r-conform">Conforms<span class="mk">Одговара</span></span></td></tr>
+        <tr><td>2</td><td><span class="p-name">Identification B <span class="mk">Идентиф. Б · Микроскопски</span></span></td><td><span class="p-method">Ph. Eur. 2.8.23 (microscopy)</span></td><td><span class="p-spec">Conforms to monograph</span></td><td class="r-cell"><span class="r-val r-conform">Conforms<span class="mk">Одговара</span></span></td></tr>
+        <tr><td>7</td><td><span class="p-name">Foreign Matter <span class="mk">Страни материи</span></span></td><td><span class="p-method">Ph. Eur. 2.8.2<span class="p-meth-eq">In-house · интерна</span></span></td><td><span class="p-spec">≤ 2.0% / 25–50 g · &lt; 1 cm leaves, no seeds</span></td><td class="r-cell"><span class="r-val r-conform">Conforms<span class="mk">Одговара</span></span></td></tr>
       </tbody>
     </table>
   </div>
-  <div class="pot-note"><strong>How to read this record.</strong> The <b>Result</b> column is the determination's verdict as it is certified on the linked certificate of quality. The option menus below are the <b>bench observation record</b>: they are printed unticked and are marked and initialled by hand by the analyst at the time of analysis, together with the signature lines. An unticked menu records that the observation detail is entered on the signed paper copy, not that the determination was not performed. <i class="bisep">|</i> <span class="mk">Мените со опции се пополнуваат рачно при анализата.</span><br>The determinations in this record are performed in-house prior to final release sampling, before packaging starts (QCSOP 005 v.02); deviations from the expected finding are marked <span class="opt dev leg">●</span> in the menu.</div>
+  <div class="pot-note"><strong>How to read this record.</strong> The <b>Result</b> column is the verdict as it is certified on the linked certificate of quality; the menus in Section 04 are the <b>bench observation record</b>, printed unticked and marked and initialled by hand at the time of analysis, beside the signature lines. An unticked menu records that the observation detail is entered on the signed paper copy, not that the determination was not performed; a deviation from the expected finding carries the warning tint. The determinations are performed in-house prior to final release sampling, before packaging starts (QCSOP 005 v.02). <i class="bisep">|</i> <span class="mk">Мените со опции се пополнуваат рачно при анализата.</span></div>
 
   <div class="sec-label" style="margin-top:6px"><span class="sec-no">04</span> Observation Record <span class="mk">Запис на наодите</span></div>
   <div class="ic-cards">
@@ -935,6 +935,17 @@ html body div.page div.fm-row .fm-pre{font-family:'Roboto Mono',monospace;font-s
 html body div.page div.ident-row{display:flex;gap:16px;align-items:baseline;padding:2px var(--MARGIN-H) 0}
 html body div.page div.ident-row .opt-lbl{font-family:'Orbitron',sans-serif;font-size:6.4px;font-weight:700;letter-spacing:.35px;text-transform:uppercase;color:var(--gold-deep)}
 html body div.page div.ident-row .opt-lbl .mk{display:inline;font-size:5.4px;margin-left:4px;letter-spacing:normal;text-transform:none}
+/* the identification strip borrowed .fl-v and .fl-n from the timeline band, where they
+   are sized for a date and a three-word note; here they carry a round name and a
+   sentence, and at the band's size the strip alone took 60px of the foot the approval
+   grid needs. Sized for this strip's own content. */
+html body div.page div.ident-row .fl-v{font-size:8.4px;line-height:10px;white-space:nowrap}
+html body div.page div.ident-row .fl-n{font-size:6.6px;line-height:8px;font-style:italic}
+/* a batch number is one token: the package's __h01-shrink-fit lets a cell shrink below
+   its content and P050082 broke as 'P050 082'. The values of this row never wrap. */
+html body div.page div.gridrow.lk-inline{flex-wrap:wrap !important;row-gap:3px !important}
+html body div.page div.gridrow.lk-inline>*{flex:0 0 auto !important}
+html body div.page div.gridrow.lk-inline .lk-val,html body div.page div.gridrow.lk-inline .lk-val.sm{white-space:nowrap !important;max-width:none !important}
 
 /* three signatories, the in-house laboratory's own chain */
 html body div.page div.approval-grid.cols-3{grid-template-columns:repeat(3,1fr);column-gap:16px}
