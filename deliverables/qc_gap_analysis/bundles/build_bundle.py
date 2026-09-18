@@ -92,8 +92,15 @@ def mark(page, coq, issued, key):
                       rotate=page.rotation % 360, overlay=True)
 
 
-def build(coq_pdf, icoa_pdf, externals, coq, issued, dest):
-    """externals: [(path, code, date)] in chronological order."""
+def build(coq_pdf, icoa_pdf, externals, coq, issued, dest, spec_pdf=None, spec_code=""):
+    """externals: [(path, code, date)] in chronological order.
+
+    spec_pdf is the intermediate bulk product specification for the strain and grade the
+    certificate names — the last page of the bundle (Head of QC, 18.09.2026). Like the
+    certificate of quality and the internal certificate it is OURS, so it carries no
+    true-copy stamp: the stamp says a laboratory's document has been checked against its
+    original, and there is no original elsewhere for a document we issue.
+    """
     book = pymupdf.open()
     for p in (coq_pdf, icoa_pdf):
         d = pymupdf.open(p); book.insert_pdf(d); d.close()
@@ -105,6 +112,10 @@ def build(coq_pdf, icoa_pdf, externals, coq, issued, dest):
         for i in range(n):
             mark(book[first-1+i], coq, issued, '%s|%s|%d' % (coq, code, i))
         toc.append([1, '%s · %s' % (code, date), first])
+    if spec_pdf:
+        first = book.page_count + 1
+        d = pymupdf.open(spec_pdf); book.insert_pdf(d); d.close()
+        toc.append([1, '%s — product specification' % (spec_code or 'QCSP 001'), first])
     book.set_toc(toc)
     book.save(dest, deflate=True, garbage=3)
     n = book.page_count; book.close()

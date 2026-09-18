@@ -10,6 +10,8 @@ One PDF per production batch PER TESTING ROUND (Head of QC, 18.09.2026):
     page 2   the internal certificate of analysis behind it
     then     every external laboratory certificate that certificate of quality cites,
              in chronological order of issue
+    last     the intermediate bulk product specification for that strain and grade -
+             the sheet the certificate itself cites, at QCSP 001 v.04
 
 The certificate of quality and the internal certificate are OUR OWN latest print — never a
 copy found in Drive ("it's mandatory that you use our latest iteration and print off the
@@ -39,6 +41,7 @@ from build_bundle import build, SIGS                                     # noqa:
 
 COQ_PAGES = os.path.join(GAP, "design_handoff", "pdf", "pages")
 ICOA_PAGES = os.path.join(GAP, "icoa_handoff", "v3", "pdf", "pages")
+SPEC_PAGES = os.path.join(GAP, "specs", "QCSP_001_v04", "pdf", "pages")
 CACHE_DIRS = ("/tmp/claude-0/ecoa_cache", "/tmp/claude-0/contaminants")
 OUT = os.path.join(GAP, "bundles", "dossiers")
 
@@ -170,6 +173,16 @@ def main(argv):
             skipped.append((code, "our certificate is not printed")); continue
         if not icoa_pdf:
             skipped.append((code, "no internal certificate (%s)" % (icoa or "none cited"))); continue
+        speccode = (c.get("spec") or "").strip()
+        spec_pdf = None
+        if speccode:
+            hits = [f for f in os.listdir(SPEC_PAGES) if f.startswith(speccode + "_")] \
+                if os.path.isdir(SPEC_PAGES) else []
+            spec_pdf = os.path.join(SPEC_PAGES, hits[0]) if len(hits) == 1 else None
+        # A lot with no Total THC result has no grade, so there is no grade-specific sheet
+        # to append. The bundle is still that batch's documentation and is built without
+        # one; the index records which those are rather than the desk choosing a grade.
+        nospec = None if spec_pdf else (speccode or "no grade assigned")
         ext, missing = [], []
         for doccode, date, _dets in citations(c):
             hit = find(idx, doccode)
@@ -183,8 +196,9 @@ def main(argv):
         os.makedirs(d, exist_ok=True)
         name = "%s_%s_%s_%s.pdf" % (lot, (c.get("cb") or "").replace("/", "-"), code, rnd)
         dest = os.path.join(d, re.sub(r"[^A-Za-z0-9_.\-]", "_", name))
-        n, _toc = build(coq_pdf, icoa_pdf, ext, code, c.get("issue") or "", dest)
-        made.append((code, lot, rnd, t, n, len(ext), dest))
+        n, _toc = build(coq_pdf, icoa_pdf, ext, code, c.get("issue") or "", dest,
+                        spec_pdf=spec_pdf, spec_code=speccode)
+        made.append((code, lot, rnd, t, n, len(ext), dest, speccode if spec_pdf else ""))
         if a.limit and len(made) >= a.limit:
             break
 
@@ -198,7 +212,8 @@ def main(argv):
         for k, v in why.most_common():
             print("   %-34s %d" % (k, v))
     json.dump([{"coq": m[0], "lot": m[1], "round": m[2], "tranche": m[3], "pages": m[4],
-                "externals": m[5], "file": os.path.relpath(m[6], GAP)} for m in made],
+                "externals": m[5], "file": os.path.relpath(m[6], GAP), "specification": m[7]}
+               for m in made],
               open(os.path.join(a.out, "INDEX.json"), "w", encoding="utf-8"),
               ensure_ascii=False, indent=1)
     json.dump([{"coq": s[0], "why": s[1]} for s in skipped],
