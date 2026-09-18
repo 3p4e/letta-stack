@@ -1,0 +1,61 @@
+{
+  "_source": "Five certificates of quality marked by hand in blue ink by the Head of QC and photographed, sent 18.09.2026. Each handwritten figure stands beside a cell the certificate prints as [NT].",
+  "_read": "Two reads. FIRST: the photographs, cropped to the result column and enlarged, read 18.09.2026. SECOND: cell_resolution_2026-09-09.tsv, the Head of QC's own reading pass over the scans, which names the document, its issue date and the laboratory for each determination. A value is applied only where the two agree AND the resolution pass names a citable document; where the pass says NOTHING ON FILE the figure is recorded here and NOT printed.",
+  "_labs": {"IJZ-MB": "IPH — Institute of Public Health", "IJZ": "IPH — Institute of Public Health"},
+  "_columns": {"J": "9.1 TAMC", "K": "9.2 TYMC", "L": "9.3 bile-tolerant gram-negative", "M": "9.4 Salmonella", "N": "9.5 Escherichia coli", "R": "11.1 lead", "S": "11.2 cadmium", "T": "11.3 arsenic", "U": "11.4 mercury"},
+
+  "apply": [
+    {
+      "pn": "P060182", "cb": "GRC102501/2", "strain": "Grapes and Cream",
+      "groups": [
+        {"det": "9", "code": "136/0233/26", "date": "06.03.2026", "lab": "IPH — Institute of Public Health",
+         "hand": "2,3 x 10² CFU/g; 1,3 x 10² CFU/g; < 10 CFU/g; Absent; Absent",
+         "pass": "2,3 x 10² CFU/g; 1,3 x 10² CFU/g; < 10 CFU/g; Одговара; Одговара",
+         "vals": {"9.1": "2.3 × 10²", "9.2": "1.3 × 10²", "9.3": "< 10", "9.4": "Absent | Отсутна", "9.5": "Absent | Отсутна"}},
+        {"det": "11", "code": "1060/2026", "date": "09.03.2026", "lab": "IPH — Institute of Public Health",
+         "hand": "ND; ND; 0,0013; ND",
+         "pass": "н.д.; н.д.; 0,0013; н.д.",
+         "vals": {"11.1": "ND", "11.2": "ND", "11.3": "0.0013", "11.4": "ND"}}
+      ]
+    },
+    {
+      "pn": "P060412", "cb": "JD012603/02", "strain": "Jelly Donuts",
+      "groups": [
+        {"det": "9", "code": "405/0788/26", "date": "24.06.2026", "lab": "IPH — Institute of Public Health",
+         "hand": "6,3 x 10³ CFU/g; 4,4 x 10³ CFU/g; < 10 CFU/g; Absent; Absent",
+         "pass": "6,3 x 10³ CFU/g; 4,4 x 10³ CFU/g; < 10 CFU/g; Отсутна; Отсутна",
+         "vals": {"9.1": "6.3 × 10³", "9.2": "4.4 × 10³", "9.3": "< 10", "9.4": "Absent | Отсутна", "9.5": "Absent | Отсутна"}},
+        {"det": "11", "code": "3660/2026", "date": "22.06.2026", "lab": "IPH — Institute of Public Health",
+         "hand": "0,0?5 (middle digit not legible in the photograph); 0,044; 0,042; 0,042",
+         "pass": "0,085 mg/kg; 0,044 mg/kg; 0,042 mg/kg; 0,042 mg/kg",
+         "vals": {"11.1": "0.085", "11.2": "0.044", "11.3": "0.042", "11.4": "0.042"}}
+      ]
+    },
+    {
+      "pn": "P060422", "cb": "JD012603/02V", "strain": "Jelly Donuts",
+      "groups": [
+        {"det": "9", "code": "406/0789/26", "date": "24.06.2026", "lab": "IPH — Institute of Public Health",
+         "hand": "5,1 x 10³ CFU/g; 4,7 x 10³ CFU/g; < 10 CFU/g; Absent; Absent",
+         "pass": "5,1 x 10³ CFU/g; 4,7 x 10³ CFU/g; < 10 CFU/g; Отсутна; Отсутна",
+         "vals": {"9.1": "5.1 × 10³", "9.2": "4.7 × 10³", "9.3": "< 10", "9.4": "Absent | Отсутна", "9.5": "Absent | Отсутна"}},
+        {"det": "11", "code": "3662/2026", "date": "22.06.2026", "lab": "IPH — Institute of Public Health",
+         "hand": "0,06; 0,03; 0,045; 0,013",
+         "pass": "0,06 mg/kg; 0,03 mg/kg; 0,045 mg/kg; 0,013 mg/kg",
+         "vals": {"11.1": "0.06", "11.2": "0.03", "11.3": "0.045", "11.4": "0.013"}}
+      ]
+    }
+  ],
+
+  "held": [
+    {
+      "pn": "P060372", "cb": "CC012603", "strain": "Cash Cow",
+      "hand": {"8": "6,42", "11.1": "0,006", "11.2": "0,007", "11.3": "0,006", "11.4": "0,001", "12": "0"},
+      "why": "cell_resolution_2026-09-09.tsv records loss on drying, heavy metals and pesticide residues for this lot as NOTHING ON FILE — 'no document anywhere'. The Drive lot folder CC012603_P060372 holds 220-29-K/26, 220-29-M/26 and 363-0693-26 and nothing else; there is no IJZ panel certificate for it. The figures are recorded here and are NOT printed: the desk cannot attribute a value to a document it does not have."
+    },
+    {
+      "pn": "P060362", "cb": "JD012603/01", "strain": "Jelly Donuts",
+      "hand": {"8": "6,95", "11.1": "0,008", "11.2": "0,011", "11.3": "0,01", "11.4": "0,002", "12": "0"},
+      "why": "the same. The resolution pass says NOTHING ON FILE for #8, #11 and #12, and the Drive lot folder JD012603_P060362 holds 220-16-K/26, 220-16-M/26 and 365-0695-26 only. Its two siblings have IJZ panels 3660/2026 and 3662/2026 of 22.06.2026 and 3661/2026 of the same day belongs to FB012603/P060432, so no 36xx certificate is unaccounted for."
+    }
+  ]
+}

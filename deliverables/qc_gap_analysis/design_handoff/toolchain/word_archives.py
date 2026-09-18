@@ -29,7 +29,22 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 HANDOFF = os.path.dirname(HERE)
 DIST = os.path.join(HANDOFF, "dist")
 DOCX = os.path.join(HANDOFF, "docx")
-DATE = "2026-09-17"
+# The package's own date, discovered rather than written down. It was pinned to
+# 2026-09-17 and the next repackaging silently produced nothing: the script looked for
+# archives that no longer existed, found no membership, and emptied dist/word. The whole
+# point of reading membership back out of the archives is that it cannot drift from the
+# package, and a hard-coded date is the same drift wearing a different hat.
+def package_date(dist=DIST):
+    """The date of the newest set of tranche archives in dist/."""
+    dates = sorted({m.group(1) for f in os.listdir(dist)
+                    for m in [re.match(r"PP_CoQ_(?:Tranche_[123]|Package)_(\d{4}-\d{2}-\d{2})\.zip$", f)]
+                    if m})
+    if not dates:
+        raise SystemExit("no PP_CoQ_*.zip in " + dist + " — run package_v40.py first")
+    return dates[-1]
+
+
+DATE = package_date()
 # the archive each tranche's certificates are packaged in, and the label for this one
 SOURCES = (("PP_CoQ_Tranche_1_%s.zip" % DATE, "Tranche_1"),
            ("PP_CoQ_Tranche_2_%s.zip" % DATE, "Tranche_2"),

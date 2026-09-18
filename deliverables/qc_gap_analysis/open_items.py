@@ -1201,6 +1201,41 @@ ITEMS = [
      "the desk has left both alone.",
      "Drive BY_P_FOLDERS T1/T2/T3 read 18.09.2026; tracker/TRANCHE_ASSIGNMENT_2026-09-18.md; "
      "tranche_assignment_2026-09-18.csv; sampling_dates.py; coq_reissue_scope_2026-09-15.csv"),
+
+    ("OI-57", "Document", "open",
+     "P060372 and P060362 \u2014 loss on drying, heavy metals and pesticides marked by hand with no certificate behind them",
+     "The Head of QC marked five certificates by hand on 18.09.2026. Three lots went "
+     "through: every figure agreed with his own 09.09 resolution pass, which names the "
+     "document, and 54 cells that had been printing [NT] now print the result. Two did "
+     "not. P060372 carries loss on drying 6,42 and lead 0,006, cadmium 0,007, arsenic "
+     "0,006, mercury 0,001, pesticides 0; P060362 carries 6,95 and 0,008, 0,011, 0,01, "
+     "0,002, 0. For both, the resolution pass says NOTHING ON FILE \u2014 no document "
+     "anywhere \u2014 for #8, #11 and #12, and the Drive lot folders hold only the Farmahem "
+     "potency pair and the microbiology certificate. Their siblings\u2019 IJZ panels are "
+     "3660/2026 and 3662/2026 of 22.06.2026, and 3661/2026 of that day belongs to "
+     "FB012603 / P060432, so no certificate of that run is missing from the count.",
+     "The figures are recorded in intake_handmarked_2026-09-18/reads_handmarked.json and "
+     "are NOT printed. The certificates keep [NT] for those three determinations.",
+     "One scan into eCoA_DATABASE closes it. Otherwise the two lots were never sent for "
+     "loss on drying, metals or pesticides and need to be, or released explicitly without "
+     "them \u2014 the same question as OI-53 and OI-55, on two more lots.",
+     "Photographs of 18.09.2026; cell_resolution_2026-09-09.tsv; Drive folders "
+     "CC012603_P060372 and JD012603_P060362; tracker/HANDMARKED_CORRECTIONS_2026-09-18.md"),
+
+    ("OI-58", "Desk status", "open",
+     "The master workbook cannot be rebuilt \u2014 build_tracker_v8.py stops with a NameError",
+     "tracker/build_tracker_v8.py runs to line 2432 and then raises NameError: name "
+     "\u2018_F_\u2019 is not defined. The statement is at module level; _F_, _D_, LEGACY_ICOA and "
+     "LEGACY_COQ are all defined inside a function several hundred lines earlier, so the "
+     "module-level REG_NOTE.format(icoa=_F_(LEGACY_ICOA)) can never resolve them. The "
+     "break is in HEAD and predates the corrections of 18.09.2026.",
+     "Nothing written. CoQ_Analysis_Master_v44.xlsx stands and is now behind the "
+     "certificates on the 54 cells corrected on 18.09.2026 \u2014 the certificates, their "
+     "PDFs, Word copies and archives are all current.",
+     "Hoisting the helpers and the two legacy dates to module scope is probably the whole "
+     "repair, but the enclosing function is long and the scoping was not obviously "
+     "accidental, so it wants a proper look rather than a blind patch.",
+     "tracker/build_tracker_v8.py:514-560, :2432; tracker/HANDMARKED_CORRECTIONS_2026-09-18.md"),
 ]
 
 STATES = {"open", "marked", "ruled"}
@@ -1212,7 +1247,7 @@ def items(state=None, area=None):
     """The register, optionally narrowed.
 
     >>> len(items())
-    56
+    58
     >>> [i[0] for i in items(area="Specification")]
     ['OI-01', 'OI-02', 'OI-03', 'OI-44', 'OI-50']
     >>> sorted({i[2] for i in items()})
