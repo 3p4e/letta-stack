@@ -4,36 +4,12 @@
   "why": "no register code"
  },
  {
-  "coq": "CoQ-PP_26-001",
-  "why": "scan not cached: 750/2025"
- },
- {
-  "coq": "CoQ-PP_26-008",
-  "why": "scan not cached: 472/0863/25, 2472/2025"
- },
- {
   "coq": "CoQ-PP_26-009",
   "why": "scan not cached: 406/0744/25"
  },
  {
-  "coq": "CoQ-PP_26-010",
-  "why": "scan not cached: 407-0745-25"
- },
- {
   "coq": "CoQ-PP_26-016",
   "why": "scan not cached: 318/0585/25"
- },
- {
-  "coq": "CoQ-PP_26-018",
-  "why": "scan not cached: 3177/2025, 626/1127/25"
- },
- {
-  "coq": "CoQ-PP_26-019",
-  "why": "scan not cached: 4157/2025, 904/1589/25"
- },
- {
-  "coq": "CoQ-PP_26-023",
-  "why": "scan not cached: 4349/2025, 947/1685/25"
  },
  {
   "coq": "CoQ-PP_26-025",
@@ -44,92 +20,16 @@
   "why": "scan not cached: 4762/2025"
  },
  {
-  "coq": "CoQ-PP_26-027",
-  "why": "scan not cached: 1032/1851/25"
- },
- {
-  "coq": "CoQ-PP_26-028",
-  "why": "scan not cached: 1217/2168/25"
- },
- {
-  "coq": "CoQ-PP_26-029",
-  "why": "scan not cached: 5697/2025"
- },
- {
-  "coq": "CoQ-PP_26-030",
-  "why": "scan not cached: 5699/2025"
- },
- {
-  "coq": "CoQ-PP_26-031",
-  "why": "scan not cached: 5698/2025"
- },
- {
-  "coq": "CoQ-PP_26-032",
-  "why": "scan not cached: 1219/2170/25"
- },
- {
   "coq": "CoQ-PP_26-033",
   "why": "scan not cached: 5886/2025"
- },
- {
-  "coq": "CoQ-PP_26-040",
-  "why": "scan not cached: 2/0005/26"
- },
- {
-  "coq": "CoQ-PP_26-041",
-  "why": "scan not cached: 7/0010/26, 84/2026"
- },
- {
-  "coq": "CoQ-PP_26-051",
-  "why": "scan not cached: 051-1-К/26"
- },
- {
-  "coq": "CoQ-PP_26-052",
-  "why": "scan not cached: 051-3-К/26"
- },
- {
-  "coq": "CoQ-PP_26-053",
-  "why": "scan not cached: 051-4-ГС/26, 051-4-К/26"
- },
- {
-  "coq": "CoQ-PP_26-054",
-  "why": "scan not cached: 051-6-ГС/26, 051-6-К/26, 136/0233/26"
- },
- {
-  "coq": "CoQ-PP_26-055",
-  "why": "scan not cached: 051-2-К/26"
- },
- {
-  "coq": "CoQ-PP_26-056",
-  "why": "scan not cached: 051-5-К/26"
  },
  {
   "coq": "CoQ-PP_26-060",
   "why": "scan not cached: 100-4-ГС/26, 100-4-К/26"
  },
  {
-  "coq": "CoQ-PP_26-061",
-  "why": "scan not cached: 2358/2026"
- },
- {
   "coq": "CoQ-PP_26-062",
-  "why": "scan not cached: 231/0394/26 (Racno trimiran cvet), 100-2-К/26"
- },
- {
-  "coq": "CoQ-PP_26-063",
-  "why": "scan not cached: 311/0555/26, 2359/2026"
- },
- {
-  "coq": "CoQ-PP_26-065",
-  "why": "scan not cached: 312/0556/26, 2357/2026"
- },
- {
-  "coq": "CoQ-PP_26-066",
-  "why": "scan not cached: 310/0554/26, 2364/2026"
- },
- {
-  "coq": "CoQ-PP_26-067",
-  "why": "scan not cached: 309/0553/26, 2363/2026"
+  "why": "scan not cached: 231/0394/26 (Racno trimiran cvet)"
  },
  {
   "coq": "CoQ-PP_26-103",
@@ -140,132 +40,12 @@
   "why": "scan not cached: 10802_2845/2"
  },
  {
-  "coq": "CoQ-PP_26-113",
-  "why": "scan not cached: 1219/2170/25, 220-7-М/26"
- },
- {
-  "coq": "CoQ-PP_26-120",
-  "why": "scan not cached: 051-6-ГС/26, 136/0233/26"
- },
- {
-  "coq": "CoQ-PP_26-125",
-  "why": "scan not cached: 220-30-М/26"
- },
- {
-  "coq": "CoQ-PP_26-126",
-  "why": "scan not cached: 051-4-ГС/26"
- },
- {
-  "coq": "CoQ-PP_26-129",
-  "why": "scan not cached: 2/0005/26, 220-22-М/26"
- },
- {
-  "coq": "CoQ-PP_26-134",
-  "why": "scan not cached: 220-27-М/26"
- },
- {
-  "coq": "CoQ-PP_26-136",
-  "why": "scan not cached: 84/2026, 552/1083/26"
- },
- {
-  "coq": "CoQ-PP_26-137",
-  "why": "scan not cached: 3177/2025, 561/1092/26"
- },
- {
-  "coq": "CoQ-PP_26-138",
-  "why": "scan not cached: 559/1090/26"
- },
- {
-  "coq": "CoQ-PP_26-139",
-  "why": "scan not cached: 2359/2026, 543/1074/26"
- },
- {
-  "coq": "CoQ-PP_26-140",
-  "why": "scan not cached: 4349/2025, 558/1089/26"
- },
- {
-  "coq": "CoQ-PP_26-141",
-  "why": "scan not cached: 5697/2025, 556/1087/26"
- },
- {
-  "coq": "CoQ-PP_26-142",
-  "why": "scan not cached: 750/2025, 565/1096/26"
- },
- {
-  "coq": "CoQ-PP_26-144",
-  "why": "scan not cached: 538/1069/26"
- },
- {
-  "coq": "CoQ-PP_26-145",
-  "why": "scan not cached: 2357/2026"
- },
- {
-  "coq": "CoQ-PP_26-146",
-  "why": "scan not cached: 2364/2026, 541/1072/26"
- },
- {
-  "coq": "CoQ-PP_26-147",
-  "why": "scan not cached: 2472/2025, 564/1095/26"
- },
- {
-  "coq": "CoQ-PP_26-148",
-  "why": "scan not cached: 2358/2026, 545/1076/26"
- },
- {
   "coq": "CoQ-PP_26-149",
-  "why": "scan not cached: 4762/2025, 557/1088/26"
+  "why": "scan not cached: 4762/2025"
  },
  {
   "coq": "CoQ-PP_26-150",
-  "why": "scan not cached: 5886/2025, 553/1084/26"
- },
- {
-  "coq": "CoQ-PP_26-151",
-  "why": "scan not cached: 562/1093/26"
- },
- {
-  "coq": "CoQ-PP_26-152",
-  "why": "scan not cached: 550/1081/26"
- },
- {
-  "coq": "CoQ-PP_26-155",
-  "why": "scan not cached: 2363/2026, 540/1071/26"
- },
- {
-  "coq": "CoQ-PP_26-156",
-  "why": "scan not cached: 563/1094/26"
- },
- {
-  "coq": "CoQ-PP_26-157",
-  "why": "scan not cached: 4157/2025, 560/1091/26"
- },
- {
-  "coq": "CoQ-PP_26-158",
-  "why": "scan not cached: 546/1077/26"
- },
- {
-  "coq": "CoQ-PP_26-159",
-  "why": "scan not cached: 5698/2025, 554/1085/26, 227-9-К/26, 227-9-М/26"
- },
- {
-  "coq": "CoQ-PP_26-160",
-  "why": "scan not cached: 539/1070/26, 227-8-К/26, 227-8-М/26"
- },
- {
-  "coq": "CoQ-PP_26-161",
-  "why": "scan not cached: 536/1067/26"
- },
- {
-  "coq": "CoQ-PP_26-162",
-  "why": "scan not cached: 549/1080/26"
- },
- {
-  "coq": "CoQ-PP_26-164",
-  "why": "scan not cached: 5699/2025, 555/1086/26"
- },
- {
-  "coq": "CoQ-PP_26-165",
-  "why": "scan not cached: 551/1082/26"
+  "why": "scan not cached: 5886/2025"
  },
  {
   "coq": "FB042601",
