@@ -70,6 +70,17 @@ def dmy(s):
     return (int(m.group(3)), int(m.group(2)), int(m.group(1))) if m else (9999, 99, 99)
 
 
+# A laboratory that issues one report in two languages files it as two scans under the one
+# document number. They are one certificate, so both travel with the bundle, original
+# first; they are not two candidates to choose between.
+LANG = re.compile(r"(?<![A-Za-z])(EN|ENG|MK|MKD)(?![A-Za-z])", re.I)
+
+# A citation may carry the desk's own qualifier in brackets, to tell apart two certificates
+# the laboratory numbered a day apart for two products of one lot. The qualifier is a note
+# to the reader, not part of the document number, so it is dropped before matching.
+QUALIFIER = re.compile(r"\s*\([^)]*\)\s*$")
+
+
 def index_cache(dirs=None):
     """Every cached scan, by the normalised code in its file name.
 
@@ -88,19 +99,28 @@ def index_cache(dirs=None):
                 parts = stem.split("_")
                 if len(parts) > 1:
                     idx[norm(parts[1])].append(path)
-                stems.append((norm(stem), path))
+                stems.append((norm(stem), norm(LANG.sub("", stem)), path))
     idx["__stems__"] = stems
     return idx
 
 
 def find(idx, code):
-    """The scan for a cited code, or None. Exact on the code field, else by containment."""
-    k = norm(code)
+    """Every scan for a cited code, oldest spelling first - or an empty list.
+
+    Exact on the code field, else by containment of the whole stem. Containment accepts
+    more than one scan only when the several are the same document in another language,
+    which is what the stems say when they are identical with the language token removed.
+    """
+    k = norm(QUALIFIER.sub("", str(code)))
     hit = idx.get(k)
     if hit:
-        return hit[0]
-    cand = [p for st, p in idx["__stems__"] if k and k in st]
-    return cand[0] if len(cand) == 1 else None
+        return sorted(hit)
+    cand = [(nl, p) for st, nl, p in idx["__stems__"] if k and k in st]
+    if len(cand) == 1:
+        return [cand[0][1]]
+    if cand and len(set(nl for nl, _p in cand)) == 1:
+        return sorted(p for _nl, p in cand)
+    return []
 
 
 def page_of(directory, code):
@@ -157,9 +177,12 @@ def main(argv):
     made, skipped = [], []
     for c in data["coqs"]:
         code = (c.get("regcode") or "").strip()
-        if not code.startswith("CoQ-PP_26-"):
-            skipped.append((c.get("pp") or c.get("cb"), "no register code")); continue
         rnd = "retest" if str(c.get("t") or "").startswith("retest") else "initial"
+        if not code.startswith("CoQ-PP_26-"):
+            # A certificate still at issue has no number, so no page of it can be stamped
+            # with one. It is held by name and round, not silently folded into its lot.
+            skipped.append(("%s %s" % (c.get("pp") or c.get("cb"), rnd),
+                            "no register code")); continue
         if a.round != "both" and rnd != a.round:
             continue
         lot = c.get("pp") or c.get("cb")
@@ -185,9 +208,9 @@ def main(argv):
         nospec = None if spec_pdf else (speccode or "no grade assigned")
         ext, missing = [], []
         for doccode, date, _dets in citations(c):
-            hit = find(idx, doccode)
-            if hit:
-                ext.append((hit, doccode, date))
+            hits = find(idx, doccode)
+            if hits:
+                ext.extend((h, doccode, date) for h in hits)
             else:
                 missing.append(doccode)
         if missing:

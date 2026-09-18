@@ -10,7 +10,7 @@ is blocked at the network layer for the run — a renderer with no route to Goog
 silently, and a controlled document that changes appearance depending on whether Google is
 reachable is not one to hand a regulator.
 """
-import glob, os, sys
+import glob, json, os, sys
 HERE = os.path.dirname(os.path.abspath(__file__)); GAP = os.path.dirname(HERE)
 ROOT = os.path.dirname(os.path.dirname(GAP))
 sys.path.insert(0, os.path.join(GAP, "live_instrument"))
@@ -20,6 +20,32 @@ from print_coq_pdfs import FAMILIES, SUBSETS, page_text, render, merge   # noqa:
 
 OUT = os.path.join(HERE, "QCSP_001_v04")
 PAGES = os.path.join(OUT, "pdf", "pages")
+
+
+def bookmarks(book, made):
+    """Name every sheet in the bound specification, so 57 pages can be navigated.
+
+    The whole specification travels with the bundles as its own document, and a reader
+    looking for one strain's window should not have to page through the rest of them.
+    """
+    import pymupdf
+    ix = {s["code"]: s for s in
+          json.load(open(os.path.join(OUT, "INDEX.json"), encoding="utf-8"))["sheets"]}
+    doc = pymupdf.open(book)
+    toc = []
+    for i, f in enumerate(made):
+        stem = os.path.basename(f).rsplit(".", 1)[0]
+        hit = next((c for c in ix if stem.startswith(c)), None)
+        s = ix.get(hit) or {}
+        label = "%s — %s, Grade %s  (%s)" % (hit or stem, s.get("strain", ""),
+                                             s.get("grade", ""), s.get("window", ""))
+        toc.append([1, label if hit else stem, i + 1])
+    doc.set_toc(toc)
+    doc.saveIncr() if doc.can_save_incrementally() else doc.save(book + ".tmp")
+    doc.close()
+    if os.path.exists(book + ".tmp"):
+        os.replace(book + ".tmp", book)
+    return toc
 
 
 def main():
@@ -34,6 +60,7 @@ def main():
     made = render(pages, PAGES, chromium, css)
     book = os.path.join(OUT, "pdf", "QCSP_001_v04.pdf")
     merge(made, book)
+    bookmarks(book, made)
     print("  %d sheet(s)  %s (%.1f MiB)" % (len(made), os.path.basename(book),
                                             os.path.getsize(book) / 1048576.0))
 

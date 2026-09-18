@@ -144,8 +144,8 @@
   "lot": "P060152",
   "round": "initial",
   "tranche": "1",
-  "pages": 12,
-  "externals": 4,
+  "pages": 16,
+  "externals": 5,
   "file": "bundles/dossiers/T1/initial/P060152_J31102501_CoQ-PP_26-051_initial.pdf",
   "specification": "QCSP_001_J31-III_v.01"
  },
@@ -158,6 +158,16 @@
   "externals": 2,
   "file": "bundles/dossiers/T1/initial/P060212_JD112501_CoQ-PP_26-057_initial.pdf",
   "specification": "QCSP_001_JD-II_v.01"
+ },
+ {
+  "coq": "CoQ-PP_26-060",
+  "lot": "P060242",
+  "round": "initial",
+  "tranche": "1",
+  "pages": 13,
+  "externals": 4,
+  "file": "bundles/dossiers/T1/initial/P060242_OPM122501_CoQ-PP_26-060_initial.pdf",
+  "specification": "QCSP_001_OPM-V_v.01"
  },
  {
   "coq": "CoQ-PP_26-068",
@@ -194,8 +204,8 @@
   "lot": "P060402",
   "round": "initial",
   "tranche": "1",
-  "pages": 8,
-  "externals": 2,
+  "pages": 12,
+  "externals": 3,
   "file": "bundles/dossiers/T1/initial/P060402_GG012603_CoQ-PP_26-077_initial.pdf",
   "specification": "QCSP_001_GG-I_v.01"
  },
@@ -344,8 +354,8 @@
   "lot": "P060152",
   "round": "retest",
   "tranche": "1",
-  "pages": 14,
-  "externals": 5,
+  "pages": 18,
+  "externals": 6,
   "file": "bundles/dossiers/T1/retest/P060152_J31102501_CoQ-PP_26-099_retest.pdf",
   "specification": "QCSP_001_J31-III_v.01"
  },
@@ -358,6 +368,16 @@
   "externals": 4,
   "file": "bundles/dossiers/T1/retest/P060212_JD112501_CoQ-PP_26-100_retest.pdf",
   "specification": "QCSP_001_JD-I_v.01"
+ },
+ {
+  "coq": "CoQ-PP_26-103",
+  "lot": "P060242",
+  "round": "retest",
+  "tranche": "1",
+  "pages": 15,
+  "externals": 5,
+  "file": "bundles/dossiers/T1/retest/P060242_OPM122501_CoQ-PP_26-103_retest.pdf",
+  "specification": "QCSP_001_OPM-V_v.01"
  },
  {
   "coq": "CoQ-PP_26-087",
@@ -394,8 +414,8 @@
   "lot": "P060402",
   "round": "retest",
   "tranche": "1",
-  "pages": 12,
-  "externals": 4,
+  "pages": 16,
+  "externals": 5,
   "file": "bundles/dossiers/T1/retest/P060402_GG012603_CoQ-PP_26-092_retest.pdf",
   "specification": "QCSP_001_GG-I_v.01"
  },
@@ -458,6 +478,16 @@
   "externals": 2,
   "file": "bundles/dossiers/T2/initial/P050182_HPA052501_CoQ-PP_26-024_initial.pdf",
   "specification": "QCSP_001_HPA-I_v.01"
+ },
+ {
+  "coq": "CoQ-PP_26-025",
+  "lot": "P050192",
+  "round": "initial",
+  "tranche": "2",
+  "pages": 14,
+  "externals": 5,
+  "file": "bundles/dossiers/T2/initial/P050192_BSS052501_CoQ-PP_26-025_initial.pdf",
+  "specification": "QCSP_001_BSS-III_v.01"
  },
  {
   "coq": "CoQ-PP_26-028",
@@ -594,8 +624,8 @@
   "lot": "P060172",
   "round": "initial",
   "tranche": "2",
-  "pages": 12,
-  "externals": 4,
+  "pages": 16,
+  "externals": 5,
   "file": "bundles/dossiers/T2/initial/P060172_KC102501_CoQ-PP_26-053_initial.pdf",
   "specification": "QCSP_001_KC-I_v.01"
  },
@@ -604,8 +634,8 @@
   "lot": "P060182",
   "round": "initial",
   "tranche": "2",
-  "pages": 12,
-  "externals": 4,
+  "pages": 16,
+  "externals": 5,
   "file": "bundles/dossiers/T2/initial/P060182_GRC102501-2_CoQ-PP_26-054_initial.pdf",
   "specification": "QCSP_001_GRC-I_v.01"
  },
@@ -614,8 +644,8 @@
   "lot": "P060232",
   "round": "initial",
   "tranche": "2",
-  "pages": 8,
-  "externals": 2,
+  "pages": 12,
+  "externals": 3,
   "file": "bundles/dossiers/T2/initial/P060232_PM112501_CoQ-PP_26-059_initial.pdf",
   "specification": "QCSP_001_PM-I_v.01"
  },
@@ -664,8 +694,8 @@
   "lot": "P060412",
   "round": "initial",
   "tranche": "2",
-  "pages": 8,
-  "externals": 2,
+  "pages": 12,
+  "externals": 3,
   "file": "bundles/dossiers/T2/initial/P060412_JD012603-02_CoQ-PP_26-078_initial.pdf",
   "specification": "QCSP_001_JD-I_v.01"
  },
@@ -674,8 +704,8 @@
   "lot": "P060422",
   "round": "initial",
   "tranche": "2",
-  "pages": 8,
-  "externals": 2,
+  "pages": 12,
+  "externals": 3,
   "file": "bundles/dossiers/T2/initial/P060422_JD012603-02V_CoQ-PP_26-076_initial.pdf",
   "specification": "QCSP_001_JD-III_v.01"
  },
@@ -748,6 +778,16 @@
   "externals": 4,
   "file": "bundles/dossiers/T2/retest/P050182_HPA052501_CoQ-PP_26-121_retest.pdf",
   "specification": "QCSP_001_HPA-II_v.01"
+ },
+ {
+  "coq": "CoQ-PP_26-107",
+  "lot": "P050192",
+  "round": "retest",
+  "tranche": "2",
+  "pages": 16,
+  "externals": 6,
+  "file": "bundles/dossiers/T2/retest/P050192_BSS052501_CoQ-PP_26-107_retest.pdf",
+  "specification": "QCSP_001_BSS-III_v.01"
  },
  {
   "coq": "CoQ-PP_26-110",
@@ -884,8 +924,8 @@
   "lot": "P060172",
   "round": "retest",
   "tranche": "2",
-  "pages": 14,
-  "externals": 5,
+  "pages": 18,
+  "externals": 6,
   "file": "bundles/dossiers/T2/retest/P060172_KC102501_CoQ-PP_26-126_retest.pdf",
   "specification": "QCSP_001_KC-I_v.01"
  },
@@ -894,8 +934,8 @@
   "lot": "P060182",
   "round": "retest",
   "tranche": "2",
-  "pages": 14,
-  "externals": 5,
+  "pages": 18,
+  "externals": 6,
   "file": "bundles/dossiers/T2/retest/P060182_GRC102501-2_CoQ-PP_26-120_retest.pdf",
   "specification": "QCSP_001_GRC-II_v.01"
  },
@@ -904,8 +944,8 @@
   "lot": "P060232",
   "round": "retest",
   "tranche": "2",
-  "pages": 12,
-  "externals": 4,
+  "pages": 16,
+  "externals": 5,
   "file": "bundles/dossiers/T2/retest/P060232_PM112501_CoQ-PP_26-131_retest.pdf",
   "specification": "QCSP_001_PM-III_v.01"
  },
@@ -954,8 +994,8 @@
   "lot": "P060412",
   "round": "retest",
   "tranche": "2",
-  "pages": 12,
-  "externals": 4,
+  "pages": 16,
+  "externals": 5,
   "file": "bundles/dossiers/T2/retest/P060412_JD012603-02_CoQ-PP_26-123_retest.pdf",
   "specification": "QCSP_001_JD-III_v.01"
  },
@@ -964,8 +1004,8 @@
   "lot": "P060422",
   "round": "retest",
   "tranche": "2",
-  "pages": 12,
-  "externals": 4,
+  "pages": 16,
+  "externals": 5,
   "file": "bundles/dossiers/T2/retest/P060422_JD012603-02V_CoQ-PP_26-124_retest.pdf",
   "specification": "QCSP_001_JD-II_v.01"
  },
@@ -1060,6 +1100,16 @@
   "specification": "QCSP_001_J31-I_v.01"
  },
  {
+  "coq": "CoQ-PP_26-062",
+  "lot": "J31122501",
+  "round": "initial",
+  "tranche": "3",
+  "pages": 13,
+  "externals": 4,
+  "file": "bundles/dossiers/T3/initial/J31122501_J31122501_CoQ-PP_26-062_initial.pdf",
+  "specification": "QCSP_001_J31-II_v.01"
+ },
+ {
   "coq": "CoQ-PP_26-067",
   "lot": "JD012601",
   "round": "initial",
@@ -1088,6 +1138,26 @@
   "externals": 2,
   "file": "bundles/dossiers/T3/initial/P050012_GG1024_02_CoQ-PP_26-008_initial.pdf",
   "specification": "QCSP_001_GG-II_v.01"
+ },
+ {
+  "coq": "CoQ-PP_26-009",
+  "lot": "P050032",
+  "round": "initial",
+  "tranche": "3",
+  "pages": 8,
+  "externals": 2,
+  "file": "bundles/dossiers/T3/initial/P050032_MB0824_04_CoQ-PP_26-009_initial.pdf",
+  "specification": "QCSP_001_MB-I_v.01"
+ },
+ {
+  "coq": "CoQ-PP_26-016",
+  "lot": "P050102",
+  "round": "initial",
+  "tranche": "3",
+  "pages": 8,
+  "externals": 2,
+  "file": "bundles/dossiers/T3/initial/P050102_GP0824_01_CoQ-PP_26-016_initial.pdf",
+  "specification": "QCSP_001_GP-III_v.01"
  },
  {
   "coq": "CoQ-PP_26-018",
@@ -1130,6 +1200,16 @@
   "specification": "QCSP_001_CJ-V_v.01"
  },
  {
+  "coq": "CoQ-PP_26-026",
+  "lot": "P050202",
+  "round": "initial",
+  "tranche": "3",
+  "pages": 8,
+  "externals": 2,
+  "file": "bundles/dossiers/T3/initial/P050202_GP062501_CoQ-PP_26-026_initial.pdf",
+  "specification": "QCSP_001_GP-II_v.01"
+ },
+ {
   "coq": "CoQ-PP_26-029",
   "lot": "P050252",
   "round": "initial",
@@ -1158,6 +1238,16 @@
   "externals": 2,
   "file": "bundles/dossiers/T3/initial/P050272_PM072501_CoQ-PP_26-031_initial.pdf",
   "specification": "QCSP_001_PM-III_v.01"
+ },
+ {
+  "coq": "CoQ-PP_26-033",
+  "lot": "P050292",
+  "round": "initial",
+  "tranche": "3",
+  "pages": 8,
+  "externals": 2,
+  "file": "bundles/dossiers/T3/initial/P050292_GP072501-1_CoQ-PP_26-033_initial.pdf",
+  "specification": "QCSP_001_GP-III_v.01"
  },
  {
   "coq": "CoQ-PP_26-041",
@@ -1410,6 +1500,16 @@
   "specification": "QCSP_001_CJ-III_v.01"
  },
  {
+  "coq": "CoQ-PP_26-149",
+  "lot": "P050202",
+  "round": "retest",
+  "tranche": "3",
+  "pages": 10,
+  "externals": 3,
+  "file": "bundles/dossiers/T3/retest/P050202_GP062501_CoQ-PP_26-149_retest.pdf",
+  "specification": "QCSP_001_GP-II_v.01"
+ },
+ {
   "coq": "CoQ-PP_26-141",
   "lot": "P050252",
   "round": "retest",
@@ -1438,6 +1538,16 @@
   "externals": 4,
   "file": "bundles/dossiers/T3/retest/P050272_PM072501_CoQ-PP_26-159_retest.pdf",
   "specification": "QCSP_001_PM-II_v.01"
+ },
+ {
+  "coq": "CoQ-PP_26-150",
+  "lot": "P050292",
+  "round": "retest",
+  "tranche": "3",
+  "pages": 12,
+  "externals": 4,
+  "file": "bundles/dossiers/T3/retest/P050292_GP072501-1_CoQ-PP_26-150_retest.pdf",
+  "specification": "QCSP_001_GP-I_v.01"
  },
  {
   "coq": "CoQ-PP_26-136",

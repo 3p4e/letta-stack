@@ -1,66 +1,30 @@
 [
  {
-  "coq": "CC042601",
+  "coq": "CC042601 initial",
   "why": "no register code"
  },
  {
-  "coq": "CoQ-PP_26-009",
-  "why": "scan not cached: 406/0744/25"
- },
- {
-  "coq": "CoQ-PP_26-016",
-  "why": "scan not cached: 318/0585/25"
- },
- {
-  "coq": "CoQ-PP_26-025",
-  "why": "scan not cached: 10802_2845/2, 276-31-М/25"
- },
- {
-  "coq": "CoQ-PP_26-026",
-  "why": "scan not cached: 4762/2025"
- },
- {
-  "coq": "CoQ-PP_26-033",
-  "why": "scan not cached: 5886/2025"
- },
- {
-  "coq": "CoQ-PP_26-060",
-  "why": "scan not cached: 100-4-ГС/26, 100-4-К/26"
- },
- {
-  "coq": "CoQ-PP_26-062",
-  "why": "scan not cached: 231/0394/26 (Racno trimiran cvet)"
- },
- {
-  "coq": "CoQ-PP_26-103",
-  "why": "scan not cached: 100-4-ГС/26"
- },
- {
-  "coq": "CoQ-PP_26-107",
-  "why": "scan not cached: 10802_2845/2"
- },
- {
-  "coq": "CoQ-PP_26-149",
-  "why": "scan not cached: 4762/2025"
- },
- {
-  "coq": "CoQ-PP_26-150",
-  "why": "scan not cached: 5886/2025"
- },
- {
-  "coq": "FB042601",
+  "coq": "CC042601 retest",
   "why": "no register code"
  },
  {
-  "coq": "P160012",
+  "coq": "FB042601 initial",
   "why": "no register code"
  },
  {
-  "coq": "P160022",
+  "coq": "FB042601 retest",
   "why": "no register code"
  },
  {
-  "coq": "P160032",
+  "coq": "P160012 initial",
+  "why": "no register code"
+ },
+ {
+  "coq": "P160022 initial",
+  "why": "no register code"
+ },
+ {
+  "coq": "P160032 initial",
   "why": "no register code"
  }
 ]
