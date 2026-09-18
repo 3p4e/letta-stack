@@ -16,7 +16,7 @@ family name: "Montserrat" (400/700 and the italics), "Montserrat Medium" (500),
 the same for Orbitron and Roboto Mono. html_to_docx.py names runs accordingly.
 
 The faces are static instances cut from Google's variable fonts (fontTools instancer),
-obfuscated as OOXML requires (the first 32 bytes XORed with the font key), and written as
+cut to the Latin and Cyrillic alphabets plus the document's own characters, obfuscated as OOXML requires (the first 32 bytes XORed with the font key), and written as
 word/fonts/*.odttf with the fontTable, its relationships, the content types and the
 embedTrueTypeFonts setting.
 """
@@ -30,6 +30,7 @@ import tempfile
 import uuid
 import zipfile
 
+from fontTools import subset
 from fontTools.ttLib import TTFont
 from fontTools.varLib import instancer
 
@@ -90,6 +91,51 @@ def instance(family, weight, italic):
     return out
 
 
+# What an embedded face carries. A whole Montserrat weight is 375 KB and a certificate
+# names some twenty faces, which made each Word file 1.8 MB and pushed the Tranche 1
+# archive over the 95 MiB it may be. The page itself uses a few hundred glyphs, so each
+# face is cut down to the alphabets the desk writes in — Latin with its accented letters,
+# Cyrillic, the punctuation and symbols a certificate prints — plus whatever else the
+# document actually contains. Editing in either alphabet stays possible; a glyph outside
+# this set would fall back to a substitute face, which is why the document's own
+# characters are always added to it.
+KEEP = (set(range(0x20, 0x7F)) | set(range(0xA0, 0x180)) | set(range(0x400, 0x460))
+        | {0x2013, 0x2014, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2026, 0x2030, 0x20AC,
+           0x2122, 0x2190, 0x2192, 0x2212, 0x2260, 0x2264, 0x2265, 0x25CF, 0x2713, 0x2717,
+           # Greek Delta, superscripts and subscripts, the numero sign, the sum, the check boxes
+           # and the fullwidth star the batch list uses
+           0x0394, 0x2116, 0x2211, 0x2610, 0x2611, 0x2612, 0xFF0A}
+        | set(range(0x2070, 0x2090)))
+SUBSET_CACHE = os.path.join(CACHE, "subset")
+
+
+def subset_face(path, extra=frozenset()):
+    """The face at `path` cut to KEEP plus `extra`; cached when `extra` adds nothing."""
+    need = set(extra) - KEEP
+    if not need:
+        os.makedirs(SUBSET_CACHE, exist_ok=True)
+        out = os.path.join(SUBSET_CACHE, os.path.basename(path))
+        if os.path.exists(out):
+            return open(out, "rb").read()
+    font = TTFont(path)
+    opt = subset.Options()
+    opt.layout_features = ["*"]
+    opt.notdef_outline = True
+    opt.name_IDs = ["*"]
+    opt.name_legacy = True
+    opt.hinting = False
+    opt.desubroutinize = True
+    sub = subset.Subsetter(opt)
+    sub.populate(unicodes=sorted(KEEP | need))
+    sub.subset(font)
+    buf = io.BytesIO()
+    font.save(buf)
+    data = buf.getvalue()
+    if not need:
+        open(out, "wb").write(data)
+    return data
+
+
 def obfuscate(data, guid):
     """OOXML font obfuscation: XOR the first 32 bytes with the GUID's bytes, reversed."""
     key = bytes.fromhex(guid.replace("{", "").replace("}", "").replace("-", ""))[::-1]
@@ -119,6 +165,9 @@ def embed(docx_path):
         z.extractall(tmp)
     doc_xml = open(os.path.join(tmp, "word", "document.xml"), encoding="utf-8").read()
     used = faces_used(doc_xml)
+    # every character the document sets, so no glyph is left out of its face
+    chars = frozenset(ord(c) for t in re.findall(r"<w:t[^>]*>(.*?)</w:t>", doc_xml, flags=re.S)
+                      for c in re.sub(r"&[a-z#0-9]+;", "&", t))
     by_name = {}
     for fam, bold, ital in used:
         by_name.setdefault(fam, set()).add((bold, ital))
@@ -143,7 +192,7 @@ def embed(docx_path):
             guid = "{%s}" % str(uuid.uuid4()).upper()
             rid = "rIdFont%d" % n
             fn = "font%d.odttf" % n
-            open(os.path.join(fonts_dir, fn), "wb").write(obfuscate(open(path, "rb").read(), guid))
+            open(os.path.join(fonts_dir, fn), "wb").write(obfuscate(subset_face(path, chars), guid))
             rels.append('<Relationship Id="%s" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/font" Target="fonts/%s"/>' % (rid, fn))
             slot = "embedBoldItalic" if bold and ital else "embedBold" if bold else "embedItalic" if ital else "embedRegular"
             slots.append('<w:%s r:id="%s" w:fontKey="%s"/>' % (slot, rid, guid))
