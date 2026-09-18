@@ -300,8 +300,17 @@ for name, rows, code_col, prefix in (("iCoA Register", regv, "iCoA code", "iCoA-
     for r, d in rows.items():
         if d["Issuable"] == "yes" and not d["No."]:
             bad(name, "issuable row without a number", f"row {r} {d.get('Key')}")
-        if d["Issuable"] not in ("yes", "allocated") and d["No."]:
+        if d["Issuable"] not in ("yes", "allocated", "ruled") and d["No."]:
             bad(name, "number on a row that is not issuable", f"row {r} {d.get('Key')}")
+        # a ruled row (Head of QC, 18.09.2026) carries its code and no date: the list
+        # holds no packaging date for the lot, and the number was the only thing withheld
+        if d["Issuable"] == "ruled":
+            if not d["No."]:
+                bad(name, "ruled row without a number", f"row {r} {d.get('Key')}")
+            if fmt(d["Issue date (planned)"]):
+                bad(name, "ruled row carries a planned date", f"row {r} {d.get('Key')}")
+            if "no packaging date" not in str(d.get("Status", "")) and "packaging date" not in str(d.get("Status", "")):
+                bad(name, "ruled row is not one the list lacks a packaging date for", f"row {r} {d.get('Key')}")
         # an allocated row (CoQ Register, Tranche 3, owner 15.09.2026) carries its code
         # and no date — the date follows the mycotoxin certificate
         if d["Issuable"] == "allocated":

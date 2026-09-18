@@ -1209,6 +1209,29 @@ if ICOA_RULE:
                                "18.09.2026, provisional until they exist" % _F_(r["coq_issue"])) if r["coq_issue"] else
                               "issued on the owner's date once the 227-М certificate exists",
                               _MOD_CODE.get(f"{T.batch_key(_kb)}|{_ks}", "the campaign iCoA"), _F_(r["rt_icoa_day"])))
+    # Head of QC, 18.09.2026: "assign codes if they're missing." The rows the register
+    # withheld for want of a packaging date on the list — and nothing else — take their
+    # numbers now, after the last allocated code, in the order the series gives them:
+    # the release certificates first, then their reissues. Issuable reads "ruled": the
+    # code is the register's, the date still follows the packaging date the list does
+    # not hold. A row held for any other reason (a held result, a missing internal
+    # certificate, no certificate on file) is not touched by the ruling.
+    _RULED_WHY = "no packaging date on the list"
+    _ruled_lots = {(r["cu"], r["p"]) for r in _cq_later
+                   if r["series"] == "initial release" and r.get("why") == _RULED_WHY}
+    _cq_ruled = ([r for r in _cq_later if r["series"] == "initial release" and (r["cu"], r["p"]) in _ruled_lots]
+                 + [r for r in _cq_later if r["series"] != "initial release" and (r["cu"], r["p"]) in _ruled_lots
+                    and r.get("why") == "its initial certificate is not yet issuable"])
+    _cq_ruled.sort(key=lambda r: (0 if r["series"] == "initial release" else 1, r["cu"], r["p"]))
+    _cq_later = [r for r in _cq_later if r not in _cq_ruled]
+    for _j, r in enumerate(_cq_ruled, len(_cq_ok) + len(_cq_alloc) + 1):
+        r["code"], r["issuable"] = f"CoQ-PP_26-{_j:03d}", "ruled"
+        r["reg_status"] = ("ruled — numbered on the Head of QC's instruction of 18.09.2026 (\"assign codes if "
+                           "they're missing\"); the list holds no packaging date for the lot, so the register "
+                           "could not date the certificate and had withheld the number; the date follows "
+                           "the packaging date once the list carries it"
+                           + ("" if r["series"] == "initial release" else
+                              "; a reissue, numbered after its release certificate — " + r.get("rt_status", "")))
     for r in _cq_later:
         r["code"], r["issuable"] = "— at issue —", "no"
         r["reg_status"] = "not yet issuable — " + r["why"]
@@ -1224,7 +1247,7 @@ if ICOA_RULE:
         if r["series"] == "initial release":
             _d = r["sortdate"] or r["basis"]
             _lot_day[(r["cu"], r["p"])] = str(T.date_key(_d)) if _d else "9"
-    COQ_REGISTER = _cq_ok + _cq_alloc + sorted(_cq_later, key=lambda r: (_lot_day.get((r["cu"], r["p"]), "9"), r["cu"], r["p"],
+    COQ_REGISTER = _cq_ok + _cq_alloc + _cq_ruled + sorted(_cq_later, key=lambda r: (_lot_day.get((r["cu"], r["p"]), "9"), r["cu"], r["p"],
                                                                          0 if r["series"] == "initial release" else 1))
     # The register sheet is the series, so it is the series that is counted here.
     # This line used to report the planning rows it numbered — 60 — while the
@@ -1241,7 +1264,7 @@ if ICOA_RULE:
     print(f"CoQ register: {len(_cq_ok)} numbered (CoQ-PP_26-001 … {_cq_ok[-1]['code'][-3:] if _cq_ok else '—'}; "
           f"{sum(1 for r in _cq_ok if r['group'] == 'legacy' and not r['coq_flag'])} legacy on 27.05.2026, "
           f"{sum(1 for r in _cq_ok if r['group'] == 'legacy' and r['coq_flag'])} legacy moved, "
-          f"{sum(1 for r in _cq_ok if r['group'] != 'legacy')} post-SOP), {len(_cq_alloc)} allocated in advance (Tranche 3: code reserved, planned {_F_(_D_(T3_ISSUE)) if T3_ISSUE else 'undated'}, provisional), {len(_cq_later)} not yet issuable "
+          f"{sum(1 for r in _cq_ok if r['group'] != 'legacy')} post-SOP), {len(_cq_alloc)} allocated in advance (Tranche 3: code reserved, planned {_F_(_D_(T3_ISSUE)) if T3_ISSUE else 'undated'}, provisional), {len(_cq_ruled)} ruled (18.09.2026: numbered without a packaging date), {len(_cq_later)} not yet issuable "
           f"({sum(1 for r in _cq_later if r['series'] == 'initial release')} initial: "
           f"{sum(1 for r in _cq_ok if r['gaps'])} numbered with an initial certificate to locate; "
           f"{sum(1 for r in _cq_later if r['series'] != 'initial release')} retest)")
@@ -2541,7 +2564,9 @@ COQ_NOTE = ("Head of QC, 05.09.2026: preliminary CoQ issuance register — codes
             "in advance, by the owner's ruling. After the numbered and the allocated "
             "rows, the batches the tranches do not cover — under production, under testing, or on no tranche list — are listed lot by lot; such a batch carries "
             "its release certificate and no retest row, because only the tranche batches are for sale and only they were retested at the QP's request "
-            "(owner, 15.09.2026). FORMULAS: No. counts the rows whose Issuable is 'yes' or 'allocated'; No. and the code as on the iCoA Register; Rule date is {coq} for a legacy row "
+            "(owner, 15.09.2026). RULED (Head of QC, 18.09.2026, \"assign codes if they're missing\"): the rows the register had withheld only for want of a packaging date on the list "
+            "— CC042601 and FB042601, release and reissue, and P160012, P160022, P160032 — take their codes after the last allocated one, release certificates first, with Issuable reading 'ruled' and "
+            "no planned date until the list carries the packaging date. FORMULAS: No. counts the rows whose Issuable is 'yes', 'allocated' or 'ruled'; No. and the code as on the iCoA Register; Rule date is {coq} for a legacy row "
             "whose latest eCoA is on or before it, else the first working day 7 days after the latest eCoA (not before {coq}); the planned date is the "
             "latest of the rule date, the iCoA's date and the lot's last day of packaging; iCoA (register) and its date are looked up on the iCoA Register by Key. "
             "SUPERSEDES (initial CoQ): a reissue names the initial certificate of the same lot by the register's own code, looked up by Key, so it follows a "
@@ -2669,7 +2694,7 @@ def _fill_coq_register(sh):
     sh.row_dimensions[1].height = 22
     _r = 2
     for r in COQ_REGISTER:
-        f_no = f'=IF(OR(C{_r}="yes",C{_r}="allocated"),COUNT(A$1:A{_r - 1})+1,"")'
+        f_no = f'=IF(OR(C{_r}="yes",C{_r}="allocated",C{_r}="ruled"),COUNT(A$1:A{_r - 1})+1,"")'
         f_code = f'=IF(A{_r}<>"","CoQ-PP_26-"&TEXT(A{_r},"000"),"— at issue —")'
         # Owner, 10.09.2026: five to ten days after the last external certificate
         # the sheet cites, floored to the blanket day. LAG_DAYS is 7 in
@@ -2682,7 +2707,9 @@ def _fill_coq_register(sh):
         _pkc = f"INDEX('iCoA Register'!$F:$F,MATCH(S{_r},'iCoA Register'!${REG_KEY_COL}:${REG_KEY_COL},0))"
         # an allocated row (Tranche 3, 15.09.2026) carries its code and no date: the date
         # is 7 days after the mycotoxin certificate, which does not exist yet
-        f_issue = (f'=IF(OR(A{_r}="",C{_r}="allocated"),"",MAX(E{_r},IF(ISNUMBER(I{_r}),I{_r},0),'
+        # a ruled row (18.09.2026) likewise: numbered, and dated only once the list
+        # carries the lot's packaging date
+        f_issue = (f'=IF(OR(A{_r}="",C{_r}="allocated",C{_r}="ruled"),"",MAX(E{_r},IF(ISNUMBER(I{_r}),I{_r},0),'
                    f'IFERROR(IF(ISNUMBER({_pkc}),{_pkc},0),0)))')
         latest_d = _date(r["latest"][1]) if r["latest"] else None
         status = r["reg_status"]
@@ -2706,7 +2733,7 @@ def _fill_coq_register(sh):
         for _i, v in enumerate(cells, 1):
             c = put(sh, _r, _i, v, F7B if _i in (2, 12) else F7,
                     FILL["green"] if (_i == 20 and str(v).startswith("registered")) or (_i == 3 and v == "yes") else
-                    FILL["orange"] if (_i == 20 and str(v).startswith("allocated")) or (_i == 3 and v == "allocated") else
+                    FILL["orange"] if (_i == 20 and str(v).startswith(("allocated", "ruled"))) or (_i == 3 and v in ("allocated", "ruled")) else
                     FILL["amber"] if (_i == 20 and str(v).startswith("not yet")) or (_i == 3 and v == "no")
                     or (_i in (15, 16) and str(v).startswith("—")) or (_i == 29 and v) or (_i == 28 and "replaces" in str(v)) else None,
                     CEN if _i not in (20, 28, 29) else Alignment(horizontal="left", vertical="center", wrap_text=True))
