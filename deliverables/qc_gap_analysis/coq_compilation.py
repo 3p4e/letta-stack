@@ -64,8 +64,8 @@ NAVY, RED, AMBER, GREY = "1F3864", "F4B6B6", "FDE9D9", "EDEDED"
 
 
 def series(t):
-    if t.startswith("additional"):
-        return "reissue — 12-month retest"
+    if t.startswith("retest"):
+        return "reissue — retest"
     return "release"
 
 
@@ -123,7 +123,7 @@ def build(src=None, codes=None, batch_dates=None):
     wide, long_ = [], []
     for c in d["coqs"]:
         code = c.get("regcode") if str(c.get("regcode", "")).startswith("CoQ-PP_26-") else ""
-        sfx = "R" if c["t"].startswith("additional") else "I"
+        sfx = "R" if c["t"].startswith("retest") else "I"
         if codes:
             for name in (c.get("pp"), c.get("cb")):
                 if name and (T.batch_key(name), sfx) in codes:

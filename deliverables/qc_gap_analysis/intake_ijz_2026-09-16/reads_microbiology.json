@@ -169,43 +169,51 @@
    "pn": "P060232",
    "code": "135-0232-26",
    "det": "9.1, 9.2",
-   "why": "the page renders the TAMC and TYMC results as '10 CFU/g  < 10 CFU/g' with the first bound lost — a second read of the page is wanted before either figure is printed"
+   "why": "the page renders the TAMC and TYMC results as '10 CFU/g  < 10 CFU/g' with the first bound lost — a second read of the page is wanted before either figure is printed",
+   "resolved": "filled from cell_resolution_2026-09-09.tsv on 16.09.2026"
   },
   {
    "pn": "P060182",
    "code": "76-0119-26",
    "det": "9.1",
-   "why": "TAMC reads '9 x 10' CFU/g' — the exponent did not render"
+   "why": "TAMC reads '9 x 10' CFU/g' — the exponent did not render",
+   "resolved": "filled from cell_resolution_2026-09-09.tsv on 16.09.2026"
   },
   {
    "pn": "P060112",
    "code": "74-0117-26",
    "det": "9.1, 9.2",
-   "why": "both read '5 x 10' CFU/g' — the exponents did not render"
+   "why": "both read '5 x 10' CFU/g' — the exponents did not render",
+   "resolved": "filled from cell_resolution_2026-09-09.tsv on 16.09.2026"
   },
   {
    "pn": "P060132",
    "code": "73-0116-26",
    "det": "9.1, 9.3",
-   "why": "TAMC reads '3,1 x 10% CFU/g'; the bile-tolerant range reads '<10^3 и 10^2 CFU/g' with the second bound's sign lost"
+   "why": "TAMC reads '3,1 x 10% CFU/g'; the bile-tolerant range reads '<10^3 и 10^2 CFU/g' with the second bound's sign lost",
+   "resolved": "filled from cell_resolution_2026-09-09.tsv on 16.09.2026"
   },
   {
    "pn": "P060172",
    "code": "129-0226-26",
    "det": "9.3",
-   "why": "the bile-tolerant range reads '< 10 и >10^2 CFU/g' — the first bound's exponent did not render"
+   "why": "the bile-tolerant range reads '< 10 и >10^2 CFU/g' — the first bound's exponent did not render",
+   "resolved": "filled from cell_resolution_2026-09-09.tsv on 16.09.2026"
   },
   {
    "pn": "P060352",
    "code": "366-0696-26",
    "det": "9.1 – 9.5",
-   "why": "the page's batch is FB012602＊ — a starred sample. Under the Head of QC's ruling of 16.09.2026 a starred sample is real data that never sources a certificate of quality. No unstarred microbiology exists for P060352, so the desk holds the whole panel for the owner's word rather than printing an experimental arm's result."
+   "why": "the page's batch is FB012602＊ — a starred sample. Under the Head of QC's ruling of 16.09.2026 a starred sample is real data that never sources a certificate of quality. No unstarred microbiology exists for P060352, so the desk holds the whole panel for the owner's word rather than printing an experimental arm's result.",
+   "resolved": "the pass cites an unstarred document for this lot, so the starred sample is no longer the only microbiology on file"
   },
   {
    "pn": "P060132",
    "code": "73-0116-26",
    "det": "9.2",
-   "why": "the page reads TYMC '3,9 x 104 CFU/g'. The certificate prints ≤ 10⁴ CFU/g for #9.2, and Ph. Eur. 5.1.4 puts the maximum acceptable count for a 10⁴ criterion at 2 × 10⁴ = 20 000. 3.9 × 10⁴ is 39 000 — out of specification — while the laboratory's own conclusion on the same page is ОДГОВАРА. It conforms only if the criterion for #9.2 is 10⁵ rather than 10⁴, which is what #9.1 carries. Held until the exponent or the criterion is confirmed."
+   "why": "the page reads TYMC '3,9 x 104 CFU/g'. The certificate prints ≤ 10⁴ CFU/g for #9.2, and Ph. Eur. 5.1.4 puts the maximum acceptable count for a 10⁴ criterion at 2 × 10⁴ = 20 000. 3.9 × 10⁴ is 39 000 — out of specification — while the laboratory's own conclusion on the same page is ОДГОВАРА. It conforms only if the criterion for #9.2 is 10⁵ rather than 10⁴, which is what #9.1 carries. Held until the exponent or the criterion is confirmed.",
+   "resolved": "filled from cell_resolution_2026-09-09.tsv on 16.09.2026"
   }
- ]
+ ],
+ "_superseded": "16.09.2026 — the Head of QC objected that a batch cannot have one microbiological purity parameter and not the other four. He is right: the report determines all five on one sample. cell_resolution_2026-09-09.tsv — his own reading pass — carries all five for every lot here, and it is now the source (apply_resolution_pass.py); this file's single read of the scan became the cross-check. Where the two can be compared they agree, including on the two figures this file had held as contested: the pass reads 73/0116/26 TYMC as 3,9 x 10^4 and gives 129/0226/26 exactly the counts read here. Every cell listed under _held below is now filled from the pass except where noted."
 }

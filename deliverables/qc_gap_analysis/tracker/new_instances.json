@@ -2786,5 +2786,67 @@
   "document": "260826_220-32-K-26_FHM_CC042601.pdf",
   "doc_id": "1SOiEuGBBHjdz0vqiEDalrrDAhmoXJ6hw",
   "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P050212",
+  "cu": "CJ062501/2",
+  "strain": "Cap Junky",
+  "code": "534-1065-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "6.2×10³",
+   "9.2": "2.3×10²",
+   "9.3": "<10⁴ и >10³",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "310826_534-1065-26_IJZ-MB_P050212.pdf",
+  "doc_id": "54bf8f004b825f6b75b495273fb45b4567e3dc50d2812389edf6a414ce7c3fac",
+  "source": "intake_IJZMB2_2026-09-17 · two reads of the page, agreeing"
+ },
+ {
+  "p": "P050222",
+  "cu": "CJ062501/1",
+  "strain": "Cap Junky",
+  "code": "535-1066-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "4.2×10³",
+   "9.2": "<10",
+   "9.3": "<10⁴ и >10³",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "310826_535-1066-26_IJZ-MB_CJ062501-1-P050222.pdf",
+  "doc_id": "fa36513c6b50fd5d3b703359c043cbd45fff128678d85fd52cded7ea53af1fca",
+  "source": "intake_IJZMB2_2026-09-17 · two reads of the page, agreeing"
+ },
+ {
+  "p": "P060102",
+  "cu": "WED102501",
+  "strain": "Wedding Cake",
+  "code": "031-3-ГС-26",
+  "date": "12.02.2026",
+  "lab": "FHM",
+  "params": [
+   8
+  ],
+  "vals": {
+   "8": "6,8 %"
+  },
+  "held": [],
+  "document": "120226_031-3-LoD-26_FHM_WED102501-P060102.pdf",
+  "doc_id": "cb01a7758252e2c5a8b8c2af49098c9781712d72ff92fd16602a57e47af200b0",
+  "source": "intake_LoD031_2026-09-17 · two reads of the page, agreeing"
  }
 ]

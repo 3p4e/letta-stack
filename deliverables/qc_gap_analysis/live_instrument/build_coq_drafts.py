@@ -57,7 +57,7 @@ EXTRACT = r"""
        cultivation batch, so a reissue is matched on either name. */
     const reissue = lot.series === "reissue";
     const i = COQ.findIndex(c => reissue
-      ? (c.t.indexOf("additional") === 0 && (c.pp === lot.p_lot || (!c.pp && c.cb === lot.p_lot)))
+      ? (c.t.indexOf("retest") === 0 && (c.pp === lot.p_lot || (!c.pp && c.cb === lot.p_lot)))
       : (c.pp === lot.p_lot && c.t === "initial release"));
     if (i < 0) { out.push({ p_lot: lot.p_lot, error: reissue ? "no reissue record" : "no initial-release record" }); continue; }
     const c = COQ[i];

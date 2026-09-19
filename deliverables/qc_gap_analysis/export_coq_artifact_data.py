@@ -299,7 +299,7 @@ def main(out):
         for _c in coqs:
             # a reissue's register row is the CAMPAIGN round's: |R for most lots,
             # |R4 or |R5 for a lot with earlier in-house re-tests (15.09.2026)
-            _sfxs = ("R", "R2", "R3", "R4", "R5") if _c["t"].startswith("additional") else ("I",)
+            _sfxs = ("R", "R2", "R3", "R4", "R5") if _c["t"].startswith("retest") else ("I",)
             _row = None
             for _sfx in _sfxs:
                 _cand = (_byk.get((CQ.BI.batch_key(_c["pp"]), _sfx)) if _c["pp"] else None) \
@@ -332,12 +332,12 @@ def main(out):
     # nothing to supersede.
     _initial = {}
     for _c in coqs:
-        if not _c["t"].startswith("additional"):
+        if not _c["t"].startswith("retest"):
             for _nm in filter(None, (_c.get("pp"), _c.get("cb"))):
                 _initial.setdefault(CQ.BI.batch_key(_nm), _c)
     _sup = 0
     for _c in coqs:
-        if not _c["t"].startswith("additional"):
+        if not _c["t"].startswith("retest"):
             continue
         _i = next((_initial[CQ.BI.batch_key(_nm)] for _nm in filter(None, (_c.get("pp"), _c.get("cb")))
                    if CQ.BI.batch_key(_nm) in _initial), None)
@@ -441,7 +441,7 @@ def main(out):
                     _tested[_k] = (_r["tested"], _r["icoa_issue"], _r.get("campaign", ""))
         _n = 0
         for _c in coqs:
-            _kind = "additional" if _c["t"].startswith("additional") else "initial release"
+            _kind = "additional" if _c["t"].startswith("retest") else "initial release"
             # The date is computed from the documents THIS certificate cites, not
             # from everything the batch has on file. The two are not the same since
             # a release certificate stopped citing the post-release re-analysis:
@@ -535,7 +535,7 @@ def main(out):
             return None
 
         for _c in coqs:
-            _kind = "additional" if _c["t"].startswith("additional") else "initial release"
+            _kind = "additional" if _c["t"].startswith("retest") else "initial release"
             _row = _icoa_row(_c, _kind)
             # A reissue carries the initial certificate's rows for what it did not
             # retest (owner, 15.09.2026). Where such a row rests on an in-house
@@ -626,13 +626,13 @@ def main(out):
         # re-analysis is outstanding states both facts rather than one of them.
         _rel_rows, _carried_res = {}, 0
         for _c in coqs:
-            if _c["t"].startswith("additional"):
+            if _c["t"].startswith("retest"):
                 continue
             _m = {_r["no"]: _r for _r in _c["rows"]}
             for _nm in filter(None, (_c.get("pp"), _c.get("cb"))):
                 _rel_rows.setdefault(CQ.BI.batch_key(_nm), (_c, _m))
         for _c in coqs:
-            if not _c["t"].startswith("additional"):
+            if not _c["t"].startswith("retest"):
                 continue
             _hit = None
             for _nm in filter(None, (_c.get("pp"), _c.get("cb"))):
@@ -707,7 +707,7 @@ def main(out):
                             (_dd, _cert.get("code"), _cert.get("lab"), _v))
         _campaign = 0
         for _c in coqs:
-            if not _c["t"].startswith("additional"):
+            if not _c["t"].startswith("retest"):
                 continue
             _iss = _day(_c.get("issue"))
             if _iss is None:

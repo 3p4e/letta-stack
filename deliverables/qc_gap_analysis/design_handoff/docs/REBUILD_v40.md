@@ -38,7 +38,7 @@ Eighty-nine release certificates and eighty-three 12-month reissues. Every one c
 the **Section 04 conformity decision ticked**, as ordered on 16.09.2026, and none
 carries a DRAFT stamp.
 
-## 3 · The three corrections of 16.09.2026
+## 3 · The seven corrections of 16.09.2026
 
 **The conformity result is bilingual, and the row does not grow.** `Conforms` keeps its
 size and its green; `Одговара` sits with it at the template's own `.r-conform .mk` size
@@ -58,6 +58,373 @@ alpha-to-transparent gradient with its opaque-against-white equivalent inside
 resolution and the page prints with banding and grey haloes. With the package's own
 layer stack the cream-and-gold header wash, the heavenly-blue zebra fading to nothing
 at both page edges and the gold rules print as drawn.
+
+**Every band fades to white before the sheet edge.** The owner read the printed set and
+found that the bars and washes of Section 01 — the bar carrying the section number, the
+band with the production batch number and the strain name, and the phenotype / chemotype
+row — ran to the physical edge of the paper at full strength instead of fading out at the
+page margin, and asked for the section bars and the Section 01 and Section 02 zebras to
+fade to white and blend with it. Measured on the rendered page at print media, the three
+bands read `rgb(232,239,246)`, `rgb(248,250,252)` and `rgb(252,253,254)` at the first pixel
+of 793 — no fade at all. `@page` sets `margin:0`, so a band with no fade is printed to the
+edge of the sheet. The table zebra and `.gridrow` were already correct, white at x = 0, so
+the complaint resolves to those three bands.
+
+A new last layer, `<style id="__owner-edge-fade">`, gives each of them the package's own
+edge geometry: white at the sheet edge, full colour by the typographic margin. It is built
+from **opaque stops**. The package defines an edge fade as a `-webkit-mask-image`, but the
+56th layer switches masks off (`mask-image:none !important`) and `__print-opaque` flattens
+fractional alpha against white for print — so neither a mask nor an alpha veil survives to
+print, and a fade written either way would do nothing. The vertical shading of the section
+bar and of the batch band is not lost: the original gradient is kept as the upper layer,
+painted from 10 mm to 100 % − 10 mm, over a horizontal ramp carrying that gradient's own
+mid-height colour, so the two meet in the same tone. Nothing is resized, reworded or
+re-coloured; the masthead and the footer keep their full-bleed by design.
+
+**The RESULT column is one ink.** The Head of QC asked that the analysis-results column of
+Section 02 be a single dark navy and that no colour mark an edge case:
+
+> "Make all certificates of quality analysis results column in heading 2 be one colour dark
+> navy blue and do not use any other colour indicating edge cases of the analysis results,
+> or reds, or any other colour than the uniform navy blue."
+
+`<style id="__owner-uniform-result-ink">` sets every result cell — both halves of a
+bilingual one — to `--navy` `#1B3A5C`, which is the colour `.r-val` carries by default. That
+covers the 738 red cells, the 10 amber and the green `Conforms`. Measured on the rendered
+page, the RESULT column now computes one colour, `rgb(27, 58, 92)`, and nothing else.
+
+The inline colour is deliberately **left in the markup**. Assertion A12 reads it to prove
+that a result above its own criterion was marked, so stripping it would quietly disarm the
+desk's own check; overriding it in the last layer changes the ink on the page and nothing
+else. One consequence worth naming: a result above its criterion no longer announces itself
+by colour. It is still printed beside its own `ACC. CRITERIA`, the desk's register still
+carries the word, and Section 04 still carries the conformity decision — but the page no
+longer flags it.
+
+**A determination that was not performed reads `[NT]`.** The Head of QC named the pair:
+
+> "Mostly in the initial certificates of quality two parameters are not tested in
+> mycotoxins, which is aflatoxin B₁ and ochratoxin — not tested, and included and tested in
+> the retest for every batch, for tranches 1, 2 and 3. So in cases when you have a parameter
+> that is not tested in the initial quality control testing, you will put NT as the analysis
+> result, and also put it in brackets."
+
+The package prints `[ — ]` in a result cell for a determination that was not performed — no
+result on file, *to be performed*, *upon request*, *in-house CoA only*. Every one of those is
+"not tested", so in the RESULT column of Section 02 the cell now reads `[NT]`: **720 cells**,
+of which the Aflatoxin B₁ `#10.1` and Ochratoxin A `#10.3` rows of the release certificates
+are the pair he named. Nowhere else changes — Section 01 and the Section 03 work-order row
+keep `[ — ]` in **276** places, because that is a statement about a missing *document*, not
+about a determination.
+
+`[NT]` is four characters against five, so no cell changes its length class and no column
+moves. The document is **checked** in its package-conformant form, exactly as the owner's
+Macedonian half already is: the assertions know the package's closed vocabulary, and the
+substitution is made on the document that is written.
+
+**The note under Section 02 names no procedure and no document code.**
+
+> "Below the table for analysis results in heading 2, in the asterisk text, please remove
+> all references to SOPs and procedures and remove the references with the codes — only the
+> explanation about the assay; and where NT is used as an abbreviation you can explain the
+> meaning for those."
+
+The note carried two sentences. The first is the `*` that rows 4, 5 and 6 of Section 02 point
+at — how total THC, CBD and CBN are computed — and it stays exactly as the package wrote it.
+The second was procedural, and carried the only document code on the line:
+
+> ~~Parameter attribution to the issuing laboratory is given in Section 03 by Param. №;
+> in-house parameters are performed prior to final release sampling, before packaging starts
+> (QCSOP 005 v.02).~~
+
+It is gone from all 172 documents. In its place, and **only on the 114 documents that
+actually print `[NT]`**, the abbreviation is glossed in the note's own bilingual form:
+`[NT] not tested — the determination was not performed in this testing round | не е
+тестирано — определувањето не е извршено во овој круг на испитување.` The other 58 carry the
+assay sentence alone. The build fails loudly if the sentence it is told to remove is not
+found, so the note can never be left half-rewritten.
+
+## 3b · The alignment and signature pass of 16.09.2026
+
+A second round of the Head of QC's corrections, all appended as two new last layers
+(`__owner-edges`, `__owner-align-s1-s4`) placed at the **end of the body**, after the
+package's own trailing correction layers — a desk layer in the head loses to those at equal
+specificity, which is why the first attempt did not take.
+
+**Edges.** The four section heading bars (01–04) go **edge to edge, full bleed** — the desk
+no longer touches `.sec-label`, so each prints as the package draws it, a full-width bar on a
+page with a zero printer margin. The bands and rows beneath fade to **pure white through the
+page margin**, so no row colour reaches the sheet edge, and every fade is a single straight
+ramp — white at the edge, full colour by ~11–12 mm — with no flat-then-ramp kink to read as a
+hard transition.
+
+**Section 01.** The label and value of each info row centre on the row; the manufacturer's
+Macedonian line is smaller and its cell content reads left.
+
+**Section 02.** Acceptance criteria reads left, centred on the row; the result reads to the
+right page margin, centred on the row; the parameter and number cells read left off the
+margin, centred, keeping the sub-row indents of #9/#10/#11.
+
+**Section 03.** The laboratory column is laid out as clean lines — English name and
+accreditation, then the Macedonian name and the LT code, then the address, small and grey —
+off the left page margin. The CoA document codes sit centred, each on its own line, with the
+issue date smaller and grey; the parameter numbers hug the right page margin; the header cells
+follow their columns.
+
+**Section 04.** The conformity row packs to the left: the label (two lines), then the batch
+number in a bordered box as tall as the label with its value centred, then the two verdict
+pills beside it, their content centred. The role lines are given air below the gold rule. The
+two managers' **signatures are reapplied** — Blagoj Nikolov, QC Manager, and Jovana Romevska
+Cvetkovski, QA Manager — the same authentic scans and tilts the internal certificates carry,
+vendored under `assets/` as trimmed transparent PNGs and embedded so each certificate stays
+self-contained through PDF export.
+
+Build unchanged: 172 documents, apply warnings 0, assertion findings 48 (hard 2), 0 partial
+panels, all policy checks pass. Every document reprinted and each merged document flattened at
+300 dpi for press.
+
+## 3c · The final inspection of 17.09.2026
+
+A last pass over all three tranches, initial and retest, run as an automated sweep of every
+one of the 172 documents plus a visual check of a retest certificate from each tranche.
+
+**What the sweep found and what was corrected.**
+
+* **The signature block ran into the footer** on 56 certificates (worst −33 px): the
+  second-pass layout had grown the lower stack. The signature block and Section 03 rows were
+  compacted, keeping the three-line laboratory layout, and the result-row padding halved.
+* **The Section 03 `PARAM. №` column wrapped** onto two or three lines on 100 certificates —
+  `3, 4, 5, 6, 10` on the 71 where Farmahem covers five parameters — because the column's
+  right page-margin padding ate most of its width. It is widened to 172 px with the room
+  taken from the CoA-code column, which had spare, and set not to wrap.
+* **Every faded horizontal separator that was 2 px is a hairline**: the gold rules of
+  Section 01 and above the signatures, the signature lines, both table header rules and every
+  table bottom rule.
+
+* **The heading bars printed with a distorted gradient.** The package opens each bar with a
+  dark stop, a 1 px inset white highlight and a dark bottom inset — a dark/bright/dark stripe
+  along the top that a laser printer renders as banding. Each bar is now one smooth two-stop
+  vertical fill in the same tone, no inset shadows, one hairline along its bottom, still full
+  bleed.
+* **Vector, not flattened.** The Head of QC's call: the deliverable is the vector PDF, which
+  a laser printer renders crisply; the 300 dpi rasters are retired. The documents are
+  prepared for print instead — fonts embedded, every gradient opaque, the signatures placed
+  as transparent images with **no blend mode** (a blend mode is a PDF transparency group that
+  laser RIPs rasterise badly). Measured in the vector PDF at 600 dpi: the bar is a single
+  monotonic gradient with no reversal, and the page carries no blend-mode operator.
+* **Every certificate ships as both HTML and vector PDF**, per tranche, alongside the merged
+  tranche documents.
+
+**The sweep after the corrections, over all 172:** page and edge overflow 0, footer
+clearance 13–14 px on every certificate, parameter cells wrapping 0, laboratory cells over
+three lines 0, both signatures present on every document. Build unchanged: apply warnings 0,
+assertion findings 48 (hard 2), 0 partial panels, all policy checks pass. Every document
+reprinted as vector, the four download archives rebuilt with HTML and PDF per certificate.
+
+## 3d · The data pass of 17.09.2026 — retest iCoAs, potency truth-check, loss on drying
+
+**A retest certificate cites the retest iCoA.** The Head of QC: the initial certificate
+cites the in-house iCoA issued at packaging, and the retest certificate cites *the internal
+certificate of analysis for parameters 1, 2 and 7 on the re-sampling for retesting*. Before
+this, 40 reissues cited only the initial iCoA for the three and 11 cited it for some — the
+15.09 carry applied to determinations that are in fact repeated. `apply_retest_icoa.py`
+re-pointed **142 cells on 51 reissues** to the certificate's own retest `icoa_code`, dated
+from the register the certificates' numbering follows, with the verdict read from the
+master's iCoA Register **by lot and series** (its codes sit +1/+2 off the certificates'
+numbering, so a join by code would read the wrong lot). 24 reissues already cited the retest
+iCoA; 8 whose #1/#2/#7 the master assigns to an external CNP certificate keep it. Nothing
+held; assertion findings unchanged at 48 (hard 2). The iCoA set rebuilt on the corrected
+citations is **154 documents, 77 initial and 77 retest**.
+
+**Potency, every certificate against `CoQ_Analysis_Master_v41`.** Master figure, banner
+figure and row-4 result agree on **158 certificates**; 13 have no potency on either side
+(the lots with no assay certificate on file); **0 conflicts.** (Six unassigned-code
+certificates were re-checked by lot after a first pass matched them all to the master's one
+"— at issue —" row.)
+
+**Loss on drying (#8) — what is cited, and is it really tested there.** Every certificate
+that prints #8 cites a laboratory that determines it: CNP's ППК reports (DAB 2.2.32) on 61
+release certificates, Farmahem's separate **ГС** loss-on-drying series on 18, an in-house
+iCoA on 2 — and in every case #8 is listed against that laboratory in Section 03 (0 orphaned
+pairs). On the 56 reissues #8 is carried from the initial CNP certificate: the Farmahem K
+report is cannabinoids only, and **no ГС certificate exists for the 197 / 220 / 227 retest
+campaigns**, so loss on drying was not re-determined at retest. Two things for the Head of
+QC: 14 release lots have no loss-on-drying certificate at all (HPA1024, OPM1024, P050142,
+P060102, P060142, P060332, P060342, P060352, P060362, P060372, P060382, P060492, FB042601,
+CC042601); and **CoQ-PP_26-004 (GG1024) printed loss on drying 76.07 % flagged OOS, citing
+ППК25008** — a value that is physically impossible for loss on drying and a certificate that
+is not in the register database. The figure had stood in the desk's own tables since v31 and
+in the 09.09 resolution pass; the desk left it as recorded and named it as an open item. On
+17.09.2026 the Head of QC ruled it a typo and set the value to **7.8 %** — see §3e.
+
+**Every certificate as a Word document.** `export_docx_v40.py` writes one .docx per
+certificate carrying the page exactly as it prints — the vector PDF page at 300 dpi, edge to
+edge on an A4 page with zero margins — so it opens, previews, prints and forwards in Word and
+cannot drift from the PDF it is made from. The text inside is not editable in Word; the
+editable source of every certificate is its HTML, which the package also carries, and the
+controlled record is the PDF.
+
+## 3e · The two instructions of 17.09.2026
+
+**Loss on drying, GG1024.** The Head of QC ruled the 76.07 % of ППК25008 a typo and set the
+value to **7.8 %**. A pinpoint edit: the two GG1024 rows (#8 on CoQ-PP_26-004 and on its
+retest CoQ-PP_26-115, which carries the initial determination) now print 7.8 % within the
+≤ 12.0 % limit, the OUT OF SPECIFICATION mark is gone from both, and the 09.09 resolution
+pass (`cell_resolution_2026-09-09.tsv`, the reading the certificate printed from) carries
+the corrected value so a rebuild of the data does not bring 76.07 back. OI-06 and OI-35 in
+`open_items.py` say so. The tracker's compiled tables (`tracker/*_long.csv`, the master's
+Reconciliation 09.09 sheet) still show 76.07 until the tracker is next rebuilt; they are
+snapshots, not sources.
+
+**No signatures.** "Remove all signatures from all certificates of quality." The builder no
+longer places the two managers' scans; the `assets/` PNGs are gone with the code that used
+them, and the build refuses a page that carries a signature image. Each signature box keeps
+its line and the 32 px above it, to be signed by hand on the printed page. Section 04 is
+otherwise unchanged: names, credentials, roles and dates print as before. 172 documents
+rebuilt, printed as vector PDF, exported to Word and re-archived.
+
+## 3f · Section 03 — every determination cites the laboratory that made it (17.09.2026)
+
+The Head of QC, on CoQ-PP_26-004 (GG1024): the internal certificate cited twice under one code
+with two dates, and credited with parameters 1 to 11 where the two outside laboratories were
+credited only with 8 and 12. The company's in-house CoA of 23.04.2025 had copied the Institute's
+microbiology and metals, and the desk had routed that copy through the internal certificate with
+the copy's date. `apply_lab_attribution.py` applies five rules to every row of every certificate
+(one document, one date; the outside laboratory cited where the 09.09 pass names one; no
+document, no citation; an in-house CoA never cited by its own number; one outside certificate,
+one name) and reports what it changed:
+
+| rule | rows | certificates |
+| --- | ---: | --- |
+| R2 · re-pointed to the Institute's 166/0274/25 and 748/2025 | 19 | CoQ-PP_26-004, 115 |
+| R3 · no certificate behind the figure — now not tested, figure kept in `also` | 7 | 004 (#3/#4/#5), 005, 006, 025, 026 (#3) |
+| R4 · `PP CoA #026` → the round's internal certificate | 4 | 031, 159 |
+| R5 · `PP CoA #nnn / ППКnnnnn` → the CNP certificate alone, its own date (from the register, the 09.09 pass, or the certificate's own page in the page-text cache: ППК25378 · 12.12.2025, ППК26005 · 21.01.2026) | 30 | 032–036, 041 and their retests 096, 113, 116, 118, 136, 150 |
+| kept under the 10.09 ruling (`covers_in_house`) — OI-49 | 54 | 005, 006, 025, 026, 097, 101, 107, 149 |
+
+After it: no document code carries two dates anywhere in the set, no in-house record is cited
+by its own name, and the in-house laboratory is credited beyond 1, 2 and 7 only on the eight
+certificates OI-49 names. The same pass checked the certificate codes: 165 numbered (release
+001–084, retest 085–165), seven at issue; every retest's *supersedes* line names its lot's
+release certificate with the register's code and date, the pages print it, no release
+certificate prints one, and no row cites a document dated after its certificate.
+
+## 3g · Section 03 in two lines, the documents inline, and the bar tops (17.09.2026)
+
+The Head of QC: "make the laboratory credentials two rows each; the document codes and their
+issue dates in one row, in line; distribute the table so it takes the least height, and use the
+room to lighten the cramped spaces." And on the heading bars: "the top border is lost against
+the bright background — give it a little contrast."
+
+`__owner-s03-compact`, the last desk layer. Each laboratory prints on two lines: the laboratory
+and its accreditation standard, bold; beneath it, small and grey, its Macedonian name, the
+accreditation number and the address, separated by middle dots. The line break is the
+package's own `|` separator, collapsed to zero height, so the markup is untouched. The
+certificates flow inline in the middle column, each code kept with its date, a light bar
+between documents; two documents fit one line (column 248 px, the code at 7 px and the date at
+6.2 px), three wrap to a second. Measured over the 172 pages: every laboratory on exactly two
+lines (Farmahem's second line, the longest, ends 9 px inside its cell), 505 of 516 document
+cells on one line and the eleven three-document cells on two, parameter lists unwrapped, no
+overflow. Rows went from 24–42 px to 25–30 px; the room goes to 3 px of air in every table
+row, 8 px between the sections and the bars, and a taller signature space (34 px).
+
+The heading bars carry a hairline along the top edge (`rgb(186,201,218)`, a shade lighter than
+the bottom one) and their top stop is a touch deeper (`rgb(233,239,246)`), so the bar's upper
+edge reads against the white above it. Still one opaque two-stop gradient, still full bleed.
+
+## 3h · Potency grades from the owner's specification PDF (17.09.2026)
+
+The Head of QC, with `Potency_specifications_25.pdf`: "the potency and specification nominals
+and ranges in accordance with the new specification distribution and grades — to all CoQs."
+The PDF (kept in `specs/`, generated 17.09.2026 from the potency specification of 15.09.2026)
+was parsed grade by grade into `specs/potency_specifications_25_2026-09-17.json` and set against
+the desk's table `potency_grades_2026-09-15.csv`: 22 of 24 strains identical to the digit; two
+not — Amnesia Core Cut (PDF ± 1.20, 10.80 – 13.19; desk ± 0.95, 11.05 – 12.94) and Wedding Cake
+(PDF 26.00 ± 2.60, 23.40 – 28.59; absent from the desk's table). The table is corrected and
+`apply_potency_grades.py` re-grades all 172 certificates through the same `potency_grading` the
+schedule uses. Two certificates moved: CoQ-PP_26-106 (Amnesia Core Cut, 12.09 %) prints the
+wider window; CoQ-PP_26-165 (Wedding Cake, 25.15 %) prints grade I, WED_THC26 : CBD1 and
+QCSP_001_WED-I_v.01 where it printed nothing. The other 170 already matched; no result falls
+outside its strain's windows. Wedding Cake still has no issued specification for its product
+attributes — OI-50.
+
+## 3i · The laboratory's own name (17.09.2026)
+
+The Head of QC, on a comment received: where the certificates reference our laboratory, print
+"Purely Plant QC Department · In-house | Пјурли Плант — Сектор за КК · In-house · Kojlija 1043,
+Petrovec-Skopje, MK" in place of "Purely Plant — QC Department · In-house QC Laboratory · MK GMP
+Certified / Пјурли Плант — Оддел за КК · Интерна лабораторија за КК". Changed at the source on
+every certificate that references the laboratory: the certificate of quality's laboratory table
+(`coq_build.js`, LABS.PP — line 1 English, line 2 Macedonian with the address), the internal
+certificate of analysis (`icoa_handoff/base`: the header line, the department line under the
+code and the footer; the builder's "Sampled by"), and the live instrument's laboratory
+dictionary. 172 certificates of quality and 154 internal certificates rebuilt; no page carries
+the old wording.
+
+## 3j · The laboratory table tightened, air under the bars (17.09.2026)
+
+The Head of QC, on the last set: the laboratory reference table takes too much height — the
+spacing between the credentials is too great — make it compact and spend the room on space
+between the sections, a little more under the Section 01 bar before the first text and a little
+under every shading bar before what follows, keeping A4 and nothing into the footer. Rows of
+the Section 03 table now carry 1 px of padding, the laboratory line at line-height 1.12, its
+second line at 1.15, the document line at 1.3: rows are 19 px where they were 25 (24 for the
+first row, 26 for a three-document row), the table at most 108 px where it was 127. Every
+heading bar carries 5 px of margin beneath it and the Section 01 banner 3 px more. Measured over
+the 172 pages: no overflow, footer gap unchanged, every laboratory still on two lines.
+
+## 3k · The microbiological retest ruling (17.09.2026)
+
+The Head of QC: if the external laboratory's microbiological-purity certificate carries a newer
+date, the parameter was retested, and the certificate of quality's date of issue is adjusted
+accordingly. Two IJZ-MB certificates outside the first intake's range came in first —
+`534/1065/26` (P050212) and `535/1066/26` (P050222), both 31.08.2026, two reads each
+(`intake_IJZMB2_2026-09-17`). **Twenty-one reissues** now cite the retest campaign for
+#9.1–#9.5, the five lines moving together as a panel does. **One certificate was re-dated**:
+`CoQ-PP_26-089`, 17.08.2026 → **07.09.2026**, because its new microbiology of 31.08.2026
+postdates the page as it stood; the other twenty already postdated theirs and keep the date the
+register gave them. Eighty-nine release certificates are untouched — a campaign certificate is a
+retest document and no release certificate rests on one. Three of the thirteen TYMC excursions
+`OI-17` lists clear on their reissue as a result. `tracker/MICROBIOLOGY_RETEST_2026-09-17.md`.
+
+## 3l · Loss on drying: one rule for the source (17.09.2026)
+
+The Head of QC: every certificate, for every production batch, prints a loss-on-drying value and
+cites the certificate behind it — from the Center for Natural Products or from Farmahem, and
+Farmahem's where a lot has both. `apply_lod_source.py` holds the ranking (Farmahem, then the
+Center, then the in-house sheet) and takes the highest-ranked laboratory a lot has. A sweep of
+the register, the 09.09 pass, the eCoA listing and the owner's Drive for the twenty-eight
+certificates printing nothing turned up **one** document — Farmahem `031-3-ГС/26` of 12.02.2026,
+Wedding Cake P060102, 6,8 % ± 0,2 — taken in through the two-read gate
+(`intake_LoD031_2026-09-17`); `CoQ-PP_26-046` and `CoQ-PP_26-165` now print it. **Thirteen lots
+have no loss-on-drying report anywhere** and keep "not tested", which is `OI-53`. No lot today
+has both laboratories, so the ranking decides nothing yet and stands for the next one that does.
+`tracker/LOSS_ON_DRYING_RULING_2026-09-17.md`; the census is `lod_check.py`.
+
+## 3m · The three pinpoint corrections, and the release round (17.09.2026)
+
+The Head of QC named three lots. **P050212** needed `534/1065/26` ingested and cited — §3k, and
+the reissue's date moved with it. **P050022** turned out to be a citation defect, not a reading
+one: the release certificate was printing the *retest* of both #9 and #11, so arsenic read 0.047
+where the release report `2471/2025` says N.D. `apply_release_round.py` states the owner's own
+rule of 10.09.2026 as something the compilation applies — **a release certificate prints the
+FIRST document on file for each determination**, the printed part of a group moving together,
+campaign and in-house documents never candidates. Two of the eighty-nine were in that position:
+`CoQ-PP_26-007` and `CoQ-PP_26-010`. Three register cells the pages disagreed with were corrected
+(`intake_release_round_2026-09-17`). **P060382** has no heavy-metal, pesticide or loss-on-drying
+report anywhere — `197-21-М/26` was read at full resolution and carries mycotoxins only; that is
+`OI-55`. `tracker/PINPOINT_CORRECTIONS_2026-09-17.md`.
+
+## 3n · Loss on drying by tranche, and every citation checked (17.09.2026)
+
+`lod_tranche_census.py` answers the Head of QC's census — per tranche, how many batches have a
+Farmahem ГС report, how many only a Center ППК page, how many only the in-house sheet and how
+many nothing — and prints the document each certificate of both rounds actually cites, so it is
+the citation check as well. Of the 89 batches: **12 Farmahem, 62 CNP only, 2 in-house only, 13
+nothing**, and no lot has both laboratories. A separate sweep of all 172 certificates found **0
+findings** on #8: every result carries a document, a date and a laboratory, none postdates its
+certificate, and no certificate cites a document without a result.
+`tracker/LoD_By_Tranche_2026-09-17.md`.
 
 ## 4 · Four defects the rebuild exposed, and what was done
 
@@ -237,8 +604,8 @@ python3 design_handoff/toolchain/merge_tranches_v40.py  # one document per tranc
 ```
 
 `merge_tranches_v40.py` prints any document that has no page yet, then merges by tranche,
-each page bookmarked with the certificate it carries and a `_flat.pdf` beside each — every
-page a 300 dpi lossless raster, so a printer resolves no gradient of its own.
+each page bookmarked with the certificate it carries. Since §3c the pages are vector and no
+`_flat.pdf` is written (`--no-flatten`): a laser printer renders the vector page itself.
 
 `--series` says which round the tranche document carries. **`reissue` is what the Head of
 QC asked for on 16.09.2026** — the 12-month retest certificate is the document that travels

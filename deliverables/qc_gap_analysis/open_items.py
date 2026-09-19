@@ -92,8 +92,12 @@ ITEMS = [
     ("OI-06", "Reconciliation", "open",
      "Forty-six disagreements between the desk and the owner's 09.09 pass",
      "Put side by side on the Reconciliation 09.09 sheet: 218 determinations agree, 46 do "
-     "not. One is a loss on drying of 76.07 % read on GG1024 against a 12.0 % limit.",
-     "None is resolved by the desk. Both readings are shown with their sources.",
+     "not. One was a loss on drying of 76.07 % read on GG1024 against a 12.0 % limit: the "
+     "Head of QC ruled it a typo on 17.09.2026 and set the value to 7.8 % (ППК25008), so "
+     "both GG1024 certificates now print 7.8 % within the limit; the pass file carries the "
+     "corrected value. The other 45 stand.",
+     "One of the 46 is resolved by the Head of QC's ruling. The rest are not resolved by the "
+     "desk; both readings are shown with their sources.",
      "A person reads the page for each of the 46 and says which reading stands.",
      "Reconciliation 09.09 sheet; 46 rows"),
 
@@ -192,7 +196,7 @@ ITEMS = [
      "which is EXACTLY the number of certificates of quality\". They are not, and the reason "
      "is that the two registers count different things. icoa_register.py counts rounds the "
      "testing record SHOWS: 102 over 76 lots. The certificate-of-quality model counts "
-     "certificates it PLANS: exactly two per lot — one release and one 12-month retest — 164 "
+     "certificates it PLANS: exactly two per lot — one release and one retest — 164 "
      "over 82 lots, 103 of them predicted. Across the 76 lots both carry, the counts agree on "
      "14 and differ on 62. GP0824_02 has six testing rounds and two certificates of quality; "
      "GP062501 has five; GP0824_03 has four.",
@@ -568,7 +572,11 @@ ITEMS = [
      "certificate\" is a register gap, not a testing fact. The reverse direction is clean: "
      "every laboratory code the desk holds has a scan (0 of 403 missing).",
      "The eighteen of 21.04.2026 whose two reads existed were taken in on 16.09.2026 "
-     "(intake_IJZ0426_2026-09-16). The remaining 44 + 58 have no read on the desk yet; each "
+     "(intake_IJZ0426_2026-09-16), and 534/1065/26 and 535/1066/26 on 17.09.2026 "
+     "(intake_IJZMB2_2026-09-17) \u2014 two reads each, agreeing on all seven lines of both "
+     "pages, written into the P050212 and P050222 blocks and added to "
+     "testing_series.RETEST_ONLY as the campaign documents they are. That leaves 44 + 56. "
+     "The remaining ones have no read on the desk yet; each "
      "needs the two-read gate before it is written, and until then the certificates named "
      "above print \"not tested\" where a document exists. Nothing is written from a listing.",
      "Nothing to decide for the intake itself — it is the desk's next work. Three lots on "
@@ -644,28 +652,30 @@ ITEMS = [
      "coq_artifact_data.json reg[OPM1024]; design_handoff/out/_build_report.txt; "
      "design_handoff/toolchain/coq_check.js A11"),
 
-    ("OI-46", "Result read", "open",
-     "Ten microbiology cells were read once from the certificate database and are held until a page is read twice",
-     "The intake of 16.09.2026 took twenty-three Institute of Public Health certificates out of "
-     "the Head of QC's Drive folder 1SmOicCRa8KEqoB-YlCojdap161YMQ-Di and into the release "
-     "register \u2014 documents that the register, master_coa_table.tsv, the spec parameter "
-     "listing, the RAGFlow corpus and the RAGFlow container all lacked. It filled 145 cells that "
-     "had been printing a red [ \u2014 ]. It is ONE read of the page, not the desk's usual two, "
-     "because the owner asked for the fastest route that still tells the truth. Eight cells did "
-     "not render unambiguously \u2014 an exponent or a bound lost \u2014 and two more read as "
-     "figures that would put a released batch out of specification while the laboratory's own "
-     "verdict on the same page is conforms: 73/0116/26 (P060132) #9.2 as 3.9 \u00d7 10\u2074, "
-     "and 364/0694/26 (P060382) #9.2 as 1.8 \u00d7 10\u2074.",
-     "None of the ten is written. The desk does not put a figure on a certificate of quality on "
-     "one read of a page it could not render, and never one that would take a released batch out "
-     "of specification against that page's own conclusion. Every held cell, with the reason, is "
-     "in intake_ijz_2026-09-16/reads_microbiology.json under _held.",
-     "Read the ten cells a second time \u2014 or tell the desk the figures, which is faster. The "
-     "two contested counts are the ones that matter: if 3.9 \u00d7 10\u2074 and 1.8 \u00d7 "
-     "10\u2074 are what the pages say, P060132 and P060382 have a conformity question, not a "
-     "transcription one.",
-     "intake_ijz_2026-09-16/reads_microbiology.json; tracker/DRIVE_DATABASE_INTAKE_2026-09-16.md; "
-     "apply_ijz_intake.py"),
+    ("OI-46", "Result read", "ruled",
+     "Ten microbiology cells were read once and held; the Head of QC's own pass had all five "
+     "values for every one of them",
+     "The intake of 16.09.2026 read twenty-three Institute of Public Health certificates off "
+     "the scans and held ten cells whose figures the page did not render \u2014 an exponent or a "
+     "bound lost. That left certificates printing two or three of the five microbiological "
+     "purity parameters and leaving the rest blank. The Head of QC objected the same day: a "
+     "report determines all five on one sample, so a batch cannot have one and not the "
+     "others. He was right, and the values were already on the desk \u2014 "
+     "cell_resolution_2026-09-09.tsv, his own reading pass, carries all five for every lot, "
+     "with the document, its date and its laboratory.",
+     "apply_resolution_pass.py makes the pass the source and the scan the cross-check rather "
+     "than the other way round: 66 certificates written into the release register and 39 "
+     "columns added to certificates already there, taking #9 (five values), #11 (four \u2014 the "
+     "order confirmed against the register's own long-standing 752/2025 row) and #12 (one "
+     "determination over a uniform panel). #10 is not taken, because its rows carry one, "
+     "three or five values and a mapping that is not certain is not a mapping. Where the two "
+     "readings can be compared they agree, including on the figure this desk had held as "
+     "contested: the pass reads 73/0116/26 TYMC as 3,9 \u00d7 10\u2074 too. **No certificate prints a "
+     "partial panel now**, and verify_panels.py is the standing check that none may.",
+     "Nothing. Two rows of the pass are still held and named in the script's output: "
+     "305-0549-26 carries ten values where five are wanted, and 85/2026 five where four are.",
+     "cell_resolution_2026-09-09.tsv; apply_resolution_pass.py; verify_panels.py; "
+     "intake_ijz_2026-09-16/reads_microbiology.json"),
 
     ("OI-47", "Ingestion", "open",
      "Twenty-three certificates in the owner's database folder were never ingested, and every desk file recorded their absence as a coverage gap",
@@ -684,20 +694,41 @@ ITEMS = [
      "ingestion/coa_track/letta-imb-coas/ingest_coa_database_2026.py; "
      "exports/master_coa_table.tsv; tracker/DRIVE_DATABASE_INTAKE_2026-09-16.md"),
 
+    ("OI-48", "Document", "open",
+     "One Tranche 3 mycotoxin certificate has not been read by anyone, and one lot's #10 waits on it",
+     "The thirty Farmahem reports 227-1-\u041c/26 \u2026 227-30-\u041c/26 of 16.09.2026 were read twice "
+     "and independently \u2014 by this desk and by the Head of QC \u2014 and the two readers failed on "
+     "DIFFERENT certificates, so the blank page is a property of the reader and not of the "
+     "scan. This desk could not extract 227-13, 227-18, 227-20 and 227-30 in three attempts "
+     "each; the Head of QC could not extract 227-2, 227-7, 227-16, 227-18, 227-23 and "
+     "227-27, five of which this desk read in full. Between the two reads 29 of the 30 are "
+     "read and no certificate is read differently by the two. **227-18-\u041c/26 (GP062501, "
+     "P050202) is the one nobody has read.**",
+     "The 29 are in the release register and their certificates print them. P050202's #10.1 "
+     "and #10.3 stay empty \u2014 the desk does not print a result from a page nobody has seen, "
+     "and it will not take the value from the twenty-nine siblings that were all ND, because "
+     "a batch's own mycotoxin result is not a property of the campaign it was submitted in.",
+     "Open 227-18-\u041c/26 by hand and tell the desk the five analytes. It is the only "
+     "certificate of the thirty that needs it \u2014 the six the Head of QC flagged on "
+     "16.09.2026 were flagged from one reader's failures, and five of those six are read.",
+     "intake_227M_2026-09-16/reads.json; tracker/T3_MYCOTOXIN_INTAKE_2026-09-16.md; "
+     "apply_227M_intake.py"),
+
     ("OI-35", "Tracker scope", "open",
      "The tracker does not carry the documents of the 09.09 pass that eleven certificates print from",
      "The truth check of 15.09.2026 (tracker/truth_check_2026-09-15.py) compared every row of "
      "every certificate with the tracker's cells for the lot. Twenty rows on eleven certificates "
      "cite a document the tracker holds nowhere: the 17 documents the owner's 09.09.2026 pass "
      "over eCoA_DATABASE recorded (cell_resolution_2026-09-09.tsv) and the two-read pipeline "
-     "never ingested — ППК25008 and 748/2025 (GG1024: the loss on drying of 76.07 % and the "
+     "never ingested — ППК25008 and 748/2025 (GG1024: the loss on drying — 7.8 % since the "
+     "Head of QC's correction of 17.09.2026, 76.07 % before it — and the "
      "pesticides), 031-2/4/5-К/26 and 031-2/4/5-LoD/26 (P060112, P060122, P060132: the Farmahem "
      "cannabinoid and loss-on-drying certificates of 10.02.2026), 326/327/330/2026, "
      "1056/1058/1059/1060/2026 and 3659/3660/3662/2026 (the IJZ pesticide certificates of "
      "P060112, P060122, P060132, P060152, P060172, P060182, P060232, P060402, P060412, "
      "P060422). Each rests on one page read. The tracker's document pool is the desk's index "
      "plus the intake instances, so its cell for GG1024 #8 reads '— MISSING —' while the "
-     "certificate prints 76.07 % from ППК25008, and J31122501 #8 cites the cannabinoid "
+     "certificate prints 7.8 % from ППК25008, and J31122501 #8 cites the cannabinoid "
      "certificates where the certificate cites the loss-on-drying certificate 100-2-ГС/26.",
      "Recorded, not built: the 17 documents need the two-read intake the 220-М, 227-К and "
      "220-К certificates had before the tracker credits them, and the certificate rows that "
@@ -788,29 +819,39 @@ ITEMS = [
      "FB032601; ППК26127, 21.07.2026 [CNP]"),
 
     ("OI-17", "Result", "open",
-     "Five microbiological counts exceed the Ph. Eur. 5.1.4 band and five sit inside it — "
-     "and one word about the #9.2 criterion would settle every one of them",
-     "Judged as the desk judges a counted limit — ≤ 10ⁿ against 2 × 10ⁿ — GG1024_01, "
-     "OPM052501, GP052501, HPA052501 and CJ062501/2 are out of specification on TYMC; "
-     "GG1024_02, HPA1024_01, GP0824_03, CJ052501/01 and now SCR012603 (P060382, 1.8 × 10⁴ "
-     "on 364/0694/26, taken in from the certificate database on 16.09.2026) are in the "
-     "undetermined band. Every one of the ten is TYMC against the ≤ 10⁴ CFU/g that all 172 "
-     "certificates print for #9.2, and every laboratory that issued them declared the "
-     "sample conforms. The Head of QC observed on 16.09.2026 that the printed "
-     "specification may be 10⁵. If it is, all ten clear at once with margin, the red and "
-     "amber marking lifts, and P060132's held TYMC reading (3.9 × 10⁴, OI-46) becomes an "
-     "ordinary in-specification result. The register has been carrying the question in its "
-     "own words for some time: four of these cells state \u201cUNDETERMINED — pending the "
-     "QCSP 001 reading\u201d.",
+     "Thirteen lots exceed a criterion — every one of them on #9.2, and on nothing else in "
+     "the whole set",
+     "Judged as the desk judges a counted limit, \u2264 10\u207f against 2 \u00d7 10\u207f (Ph. Eur. 5.1.4): "
+     "**eight lots are out of specification** \u2014 P050092 4.2 \u00d7 10\u2074, P050212 4.9 \u00d7 10\u2074, "
+     "P060132 3.9 \u00d7 10\u2074, P050152 3.6 \u00d7 10\u2074, P050132 3.3 \u00d7 10\u2074, P050182 2.6 \u00d7 10\u2074, "
+     "P060332 and P060352 2.2 \u00d7 10\u2074 \u2014 and **five are in the undetermined band**: P050012 "
+     "1.9 \u00d7 10\u2074, P060382 1.8 \u00d7 10\u2074, P050162 1.7 \u00d7 10\u2074, P050052 1.5 \u00d7 10\u2074, P050072 "
+     "1.2 \u00d7 10\u2074. Thirteen lots, and **every one is #9.2 (TYMC) against the \u2264 10\u2074 CFU/g all "
+     "172 certificates print**. Across 3,956 determination cells no other parameter exceeds "
+     "its criterion anywhere \u2014 not TAMC against \u2264 10\u2075, not the bile-tolerant count, not a "
+     "metal, not a mycotoxin, not a pesticide. Every laboratory that issued the thirteen "
+     "declared the sample conforms. The Head of QC observed on 16.09.2026 that the printed "
+     "specification may be 10\u2075; at 10\u2075 the maximum acceptable count is 2 \u00d7 10\u2075 and all "
+     "thirteen clear with a fourfold margin. Four of the register cells have been saying "
+     "\u201cUNDETERMINED \u2014 pending the QCSP 001 reading\u201d for some time.",
      "Printed red bold and amber bold respectively, and named in each lot's STATUS. "
-     "mark_microbial_band.py now states the rule over every counted row rather than leaving "
-     "it to the row that happened to raise it, and it defers to the desk's own word where "
-     "the register already calls a cell out of specification or undetermined. Nothing about "
-     "the criterion was changed: the certificate prints what QCSP 001 says, ≤ 10⁴.",
-     "Is the #9.2 (TYMC) criterion in QCSP 001 10⁴ or 10⁵ CFU/g? That single answer closes "
-     "this item either way. If 10⁴ stands, each out-of-specification count needs an "
-     "investigation record and the five undetermined need a disposition.",
-     "Ph. Eur. 5.1.4; 10 lots; QCSP 001 #9.2; mark_microbial_band.py"),
+     "mark_microbial_band.py states the rule over every counted row and defers to the "
+     "register's own word where it already calls a cell out of specification or "
+     "undetermined. Nothing about the criterion was changed: the certificate prints what "
+     "QCSP 001 says. **Three of the thirteen are resolved on their reissue by the ruling "
+     "of 17.09.2026** (apply_microbiology_retest.py): the IJZ-MB campaign retested them and "
+     "the reissue prints the retest \u2014 P050212 4.9 \u00d7 10\u2074 \u2192 2,3 \u00d7 10\u00b2 "
+     "(534/1065/26), P050132 3.3 \u00d7 10\u2074 \u2192 < 10 (560/1091/26), P050012 1.9 \u00d7 10\u2074 "
+     "\u2192 < 10 (564/1095/26). The release certificate of each still states the round that "
+     "released the lot, marked as it was. The other ten lots have no campaign microbiology, so "
+     "the question below still decides them.",
+     "Is the #9.2 (TYMC) criterion in QCSP 001 10\u2074 or 10\u2075 CFU/g? A specification that "
+     "thirteen batches fail on one parameter and nothing else, against thirteen laboratory "
+     "declarations of conformity, is more likely a criterion transcribed one power out than "
+     "thirteen excursions \u2014 but that is the Head of QC's to say, not the desk's. If 10\u2074 "
+     "stands, each of the eight needs an investigation record and the five need a "
+     "disposition.",
+     "Ph. Eur. 5.1.4; 13 lots, all #9.2; QCSP 001; mark_microbial_band.py"),
 
     ("OI-18", "Document content", "ruled",
      "The same assertion printed bilingually on some certificates and in English on others",
@@ -946,7 +987,7 @@ ITEMS = [
      "Nothing. Recorded because it is the boundary of the ND ruling: n.r. printed by a "
      "laboratory as a result means ND, and an analyte absent from the panel is not a result "
      "at all.",
-     "BG1024 release vs 12-month retest, verified through fillCoq in headless Chromium"),
+     "BG1024 release vs retest, verified through fillCoq in headless Chromium"),
 
     ("OI-21", "Document rendering", "ruled",
      "Sixty-six faces in the tranche PDFs embedded as Type 3 rather than outlines",
@@ -972,6 +1013,280 @@ ITEMS = [
      "Each is carried on the Work Order sheet with what it needs; none reaches a certificate.",
      "Nothing — these are desk work, listed so the count is visible.",
      "Work Order sheet"),
+
+    ("OI-49", "Document identity", "open",
+     "Eight certificates still credit the in-house certificate beyond identification A, identification B and foreign matter",
+     "The Head of QC, 17.09.2026, reading Section 03 of CoQ-PP_26-004 (GG1024): the internal "
+     "certificate was cited under one code with two dates and credited with parameters 1 to 11 "
+     "where the Institute and CNP had determined 8 to 12. apply_lab_attribution.py put that "
+     "right on every certificate — 19 rows re-pointed to the Institute's 166/0274/25 and "
+     "748/2025 on the two GG1024 certificates, 7 rows with no certificate behind them now not "
+     "tested (GG1024's release assay of 13.34 % from the company's CoA of 23.04.2025, which the "
+     "desk's own gate had refused to corroborate; Identification C on HPA1024, OPM1024, P050192 "
+     "and P050202), 4 in-house CoA numbers replaced by the internal certificate, 30 "
+     "'PP CoA #nnn / ППКnnnnn' citations reduced to the CNP certificate alone. What remains: "
+     "on HPA1024 and OPM1024 (CoQ-PP_26-005/006 and their retests 097/101) the internal "
+     "certificate covers #4, #5, #9, #10.2, #11 and #12 from the company's Report of Analysis, "
+     "and on P050192 and P050202 (025/026 and 107/149) #4, #5 and #8 from the in-house "
+     "cross-check — 54 rows on 8 certificates, under the ruling of 10.09.2026 that one internal "
+     "certificate covers any determination whose only result in the round is an in-house record.",
+     "Kept as the 10.09 ruling says, with one date per document; the internal certificates of "
+     "those four lots list the parameters they cover.",
+     "Whether the reading of 17.09.2026 — the in-house laboratory's analyses are 1, 2 and 7 — "
+     "reaches these four lots. If so, the 54 rows print not tested (the rule of 02.09.2026: a "
+     "value no certificate of analysis certifies cannot be on a release certificate) and the "
+     "four internal certificates shrink to 1, 2 and 7.",
+     "apply_lab_attribution.py; icoa_register_2026-09-10.csv (covers_in_house); "
+     "design_handoff/docs/REBUILD_v40.md §3f"),
+
+    ("OI-50", "Specification", "open",
+     "Wedding Cake: one result, a first specification of 26.00 ± 2.60 %, four older issued WED documents it supersedes, dominance still to be determined",
+     "The Head of QC's Potency_specifications_25.pdf (specs/, 17.09.2026) grades Wedding Cake at "
+     "26.00 ± 2.60 % (23.40 – 28.59 %), a strain the desk's table had not carried; "
+     "apply_potency_grades.py added it and CoQ-PP_26-165 (P060102, 25.15 %) now prints grade I, "
+     "WED_THC26 : CBD1 and QCSP_001_WED-I_v.01. The same pass corrected Amnesia Core Cut's "
+     "tolerance to ± 1.20 (10.80 – 13.19 %) on CoQ-PP_26-106; the other 22 strains matched the "
+     "PDF to the digit and no result of the 172 certificates falls outside its strain's windows. "
+     "The Head of QC, 17.09.2026: one result, 25.15 %, and this is the strain's first "
+     "specification. The desk holds exactly that one result (Farmahem 227-4-К/26, 11.09.2026, "
+     "the retest); the release certificate CoQ-PP_26-046 has none, and the Farmahem certificate "
+     "031-3-К/26 of WED102501 that would carry the release-round assay is on Drive and unread "
+     "(OI-42). The product attributes were on the desk after all — spec_attributes_2026-09-10.csv "
+     "carries four issued Wedding Cake documents, QCSP_001_WED-I…IV_v.01 (BASE_SPCs), the old "
+     "ladder 28.50 ± 1.50 / 24.95 ± 1.95 / 19.45 ± 3.45 / 10.45 ± 5.45 — so CoQ-PP_26-165 now "
+     "prints HYBRID · THC · MACHINE TRIMMED and the Triplex Alu Bag from them, with the strain's "
+     "dominance still TO BE DETERMINED as those documents print it. Under the rule of 15.09.2026 "
+     "the new single grade replaces that ladder and keeps the code QCSP_001_WED-I_v.01; the "
+     "status beside it records what the issued WED-I printed.",
+     "Grade, code, window and attributes print; the dominance is not guessed.",
+     "The dominance (indica : sativa) of Wedding Cake, and confirmation that QCSP_001_WED-I_v.01 "
+     "at 26.00 ± 2.60 % is the first specification of the new series and supersedes the four "
+     "issued WED documents.",
+     "specs/Potency_specifications_25_2026-09-17.pdf; apply_potency_grades.py; "
+     "spec_attributes_2026-09-10.csv"),
+
+    ("OI-51", "Register cell", "open",
+     "Six release-register blocks file a CNP certificate under the in-house CoA's number and date",
+     "The blocks of P050282, P050292, P050302, P050312, P050322 and P060052 hold the CNP potency "
+     "certificate as 'PP CoA #nnn / ППКnnnnn' dated 21.01.2026 — the company's in-house CoA "
+     "number and date, not the CNP certificate's. The certificates now cite the CNP document "
+     "alone with its own date (ППК25370 · 28.11.2025 from the 09.09 pass; ППК25378 · 12.12.2025 "
+     "and ППК26005 · 21.01.2026 from the certificates' own pages in the page-text cache). "
+     "check_thc_consistency.py (17.09.2026) confirms every figure agrees and names these five as "
+     "the only date differences between a certificate and the register.",
+     "The certificates print the CNP date; the register still prints the combined name and the "
+     "in-house date.",
+     "Whether to correct the six register cells to the CNP code and its issue date "
+     "(apply_register_corrections.py is the mechanism).",
+     "check_thc_consistency.py; apply_lab_attribution.py (R5); ingestion/ragflow/cache"),
+
+    ("OI-52", "Result", "open",
+     "Loss on drying: seven reissues cite an older document than the newest one on file for the lot",
+     "The ruling of 17.09.2026 \u2014 a newer external certificate for a parameter means that "
+     "parameter was retested, so the reissue cites it \u2014 was given for microbiological purity "
+     "and applied there (21 reissues re-pointed, 0 left). The same sweep over every other "
+     "determination group finds potency, mycotoxins, heavy metals and pesticides clean and "
+     "**seven reissues on loss on drying**. Five are not really seven: P050282, P050302, "
+     "P050312, P050322 and P050292 differ only because the register files the CNP certificate "
+     "under the in-house CoA\u2019s number and date, which is OI-51, so the \u2018newer document\u2019 "
+     "is the same document under a second name. **Two are genuine**: CoQ-PP_26-095 (P050022) "
+     "prints \u041f\u041f\u041a25139 of 22.05.2025 where \u041f\u041f\u041a25174 of 10.07.2025 is on file, and "
+     "CoQ-PP_26-153 (J31112501) prints 051-5-\u0413\u0421/26 of 02.03.2026 where 100-1-\u0413\u0421/26 of "
+     "09.04.2026 is. Both newer documents PREDATE their certificate, so under the same rule the "
+     "citation would move and the date of issue would not.",
+     "Nothing changed. The Head of QC ruled on the microbiological-purity certificate, and the "
+     "desk applied the ruling to microbiological purity. Extending it to a second parameter "
+     "family is the Head of QC\u2019s to say, and five of the seven cannot be acted on at all "
+     "until OI-51 is settled.",
+     "Does the ruling of 17.09.2026 reach loss on drying \u2014 should CoQ-PP_26-095 cite "
+     "\u041f\u041f\u041a25174 and CoQ-PP_26-153 cite 100-1-\u0413\u0421/26? And does it reach every "
+     "determination, as a standing rule, rather than being asked family by family?",
+     "apply_microbiology_retest.py; tracker/LoD_Check_2026-09-17.md; OI-51"),
+
+    ("OI-53", "Result", "open",
+     "Thirteen lots have no loss-on-drying determination at all — 26 certificates print \u201cnot tested\u201d",
+     "The Head of QC ruled on 17.09.2026 that every certificate of quality, for every production "
+     "batch, prints a loss-on-drying value and cites the certificate behind it \u2014 from the Center "
+     "for Natural Products or from Farmahem, Farmahem\u2019s where a lot has both. The desk swept the "
+     "release register, the 09.09 resolution pass, the eCoA spec listing and the whole of the owner\u2019s "
+     "Drive for every lot printing nothing. **One document was found**: Farmahem 031-3-\u0413\u0421/26 of "
+     "12.02.2026, Wedding Cake WED102501 / P060102, loss on drying 6,8 % \u00b1 0,2 against < 12 \u2014 one "
+     "of the 44 scans OI-42 enumerated, in no record of the desk until now. It was taken in "
+     "(intake_LoD031_2026-09-17) and CoQ-PP_26-046 and CoQ-PP_26-165 now print it. For the remaining "
+     "**thirteen lots there is no loss-on-drying report anywhere**: HPA1024, OPM1024, P050142 "
+     "(BSS1024_01/2), P060142 (GRC102501/1), P060332 (CC012601-1), P060342 (SCR012601), P060352 "
+     "(FB012602), P060362 (JD012603/01), P060372 (CC012603), P060382 (SCR012603), P060492 (JD042601), "
+     "FB042601 and CC042601. The 09.09 pass had already reached the same verdict for five of them "
+     "(\u201cNOTHING ON FILE \u2014 no document anywhere\u201d) and marked HPA1024 and OPM1024 as having only "
+     "an in-house scan.",
+     "The two Wedding Cake certificates now print 6,8 % and cite 031-3-\u0413\u0421/26. The other 26 "
+     "certificates keep \u201cnot tested \u2014 no certificate covers it\u201d, which is the truth of them. "
+     "apply_lod_source.py is the standing rule and lod_check.py the census that shows it.",
+     "These thirteen lots need loss on drying determined \u2014 or a ruling that they are released "
+     "without it. Farmahem\u2019s \u0413\u0421 report is one parameter on one page and would close all "
+     "thirteen in a single submission.",
+     "apply_lod_source.py; lod_check.py; tracker/LoD_Check_2026-09-17.md; "
+     "intake_LoD031_2026-09-17; OI-42"),
+
+    ("OI-54", "Result", "ruled",
+     "Two release certificates were printing the retest of a determination instead of the release testing",
+     "The Head of QC, 17.09.2026, on P050022: \u201cat parameter 9 correct and check TAMC and BT, "
+     "and parameter 11 \u2014 in the eCOA for heavy metals all parameters are ND and in the CoQ "
+     "there is an actual value inserted.\u201d Both are one defect, and it was the CITATION, not "
+     "the reading. P050022 has two microbiology certificates and two contaminant reports: "
+     "471-0862-25 of 22.05.2025 (TAMC 700, TYMC < 10, bile-tolerant < 10\u00b2 \u0438 > 10) against "
+     "627/1128/25 of 02.07.2025 (all < 10); and 2471/2025 of 30.05.2025 (aflatoxins \u03a3 < 2, "
+     "Pb/Cd/As/Hg all \u043d.\u0434., pesticides \u043d.\u0434.) against 3176/2025 of 26.06.2025 (As 0.047). "
+     "**The release certificate was printing the later document of each pair** \u2014 which is why "
+     "arsenic read 0.047 where the report the Head of QC was reading says N.D. A sweep of all "
+     "eighty-nine release certificates found exactly two in this position: CoQ-PP_26-007 "
+     "(P050022) and CoQ-PP_26-010 (P050042, #9 only \u2014 2156/2025 of 07.05.2025 where "
+     "407-0745-25 of 05.05.2025 is the release page, TAMC 10 against < 10).",
+     "apply_release_round.py states the rule the owner gave on 10.09.2026 \u2014 the first result "
+     "is the release testing, every later one a retest \u2014 as something the compilation applies: "
+     "a release certificate prints the FIRST document on file for each determination, the "
+     "printed part of a group moving together, campaign and in-house documents never "
+     "candidates. Both pages were read twice at full resolution "
+     "(intake_release_round_2026-09-17) and three register cells the page disagreed with were "
+     "corrected: 471-0862-25 TYMC 10 \u2192 < 10, 2471/2025 pesticides < LOQ \u2192 N.D., and the "
+     "aflatoxin column 2471/2025 never had \u2192 < 2. CoQ-PP_26-007 now prints heavy metals all "
+     "ND and TAMC 700; its reissue CoQ-PP_26-095 keeps the retest, which is what a reissue "
+     "states.",
+     "Nothing \u2014 the Head of QC named the defect and the rule that fixes it is his own of "
+     "10.09.2026. Recorded so the next reader knows why two certificates changed.",
+     "apply_release_round.py; intake_release_round_2026-09-17; the reads of 471-0862-25 and "
+     "2471/2025 of 17.09.2026"),
+
+    ("OI-55", "Result", "open",
+     "P060382 has no heavy-metal, pesticide or loss-on-drying determination \u2014 searched again on 17.09.2026",
+     "The Head of QC, 17.09.2026: \u201cP060382, check all the heavy metals parameters because in "
+     "the COQ there is no values and NT is entered and I\u2019m sure there is an eCOA for it; for "
+     "P060382 also in the COQ there is no LoD tested and it says NT.\u201d The desk searched again, "
+     "everywhere it can reach: the release register block (three documents \u2014 364/0694/26 "
+     "microbiology, 197-21-\u041a/26 cannabinoids, 197-21-\u041c/26 mycotoxins), the Head of QC\u2019s own "
+     "09.09 resolution pass (which records \u201cNOTHING ON FILE \u2014 no document anywhere\u201d for #8 "
+     "and for the contaminants), the eCoA spec listing (\u201cMissing / not tested\u201d), RAGflow, and "
+     "the owner\u2019s Drive by lot folder, by title and by full text. The lot folder holds the two "
+     "Farmahem reports and nothing else, and **197-21-\u041c/26 was read at full resolution on "
+     "17.09.2026: its own \u041f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u0438 line reads \u2018\u0418\u0434\u0435\u043d\u0442\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u0458\u0430 \u0438 \u043a\u0432\u0430\u043d\u0442\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u0458\u0430 \u043d\u0430 "
+     "\u043c\u0438\u043a\u043e\u0442\u043e\u043a\u0441\u0438\u043d\u0438\u2019 and it reports aflatoxins B1, B2, G1, G2 and nothing else** \u2014 no metals, no "
+     "pesticides, no loss on drying.",
+     "Nothing written. The certificate prints \u201cnot tested \u2014 no certificate covers it\u201d for #8, "
+     "#11 and #12 because that is the truth of the record.",
+     "Either the reports exist somewhere the desk cannot see \u2014 in which case one scan into "
+     "eCoA_DATABASE closes it \u2014 or P060382 was never sent for metals, pesticides or loss on "
+     "drying and needs to be, or released explicitly without them. The same question as OI-53 "
+     "for loss on drying, and the same lot.",
+     "197-21-\u041c/26 read 17.09.2026; cell_resolution_2026-09-09.tsv; PP_Spec_Parameter_Listing.xlsx; "
+     "Drive lot folder P060382_SCR012603; OI-53"),
+
+    ("OI-56", "Scope", "open",
+     "The new tranche grouping of 18.09.2026 disagrees with the laboratory campaign for seven lots",
+     "The Head of QC regrouped the delivery tranches on Drive (BY_P_FOLDERS/T1, T2, T3), read "
+     "on 18.09.2026: 20 / 26 / 31 batches against the 21 / 32 / 30 the desk held. CC012601_1 "
+     "(P060332) is pushed from Tranche 1 to Tranche 3, and six batches leave the tranches "
+     "altogether \u2014 CLE072501 (P050282), OPM092501 (P060042), SJ092501 (P060082), JD042601 "
+     "(P060492), FB042601 and CC042601, all of them formerly Tranche 2. But every one of the "
+     "seven carries a Farmahem campaign certificate that says otherwise: CC012601_1 carries "
+     "**197-6**, the sixth certificate of the FIRST campaign, and the six removed lots carry "
+     "220-7, 220-22, 220-27, 220-30, 220-31 and 220-32, the second.",
+     "The delivery grouping is recorded and followed (tranche_assignment_2026-09-18.csv). "
+     "Nothing has been re-dated. sampling_dates.py keys the campaign on the certificate series, "
+     "as it always has, so the retest sampling days and the reissue issue dates are unchanged.",
+     "Two questions, and the desk will not answer either by itself. Does the move of P060332 to "
+     "Tranche 3 mean its retest was sampled 19\u201321.08.2026 and its reissue issues 24.08.2026, "
+     "against a certificate the laboratory numbered 197-6 and a sampling day of 21.07.2026? And "
+     "are the six removed lots withdrawn from the issue set, or issued outside the tranche "
+     "packages? A folder cannot overwrite a date taken from a laboratory\u2019s own certificate, so "
+     "the desk has left both alone.",
+     "Drive BY_P_FOLDERS T1/T2/T3 read 18.09.2026; tracker/TRANCHE_ASSIGNMENT_2026-09-18.md; "
+     "tranche_assignment_2026-09-18.csv; sampling_dates.py; coq_reissue_scope_2026-09-15.csv"),
+
+    ("OI-57", "Document", "open",
+     "P060372 and P060362 \u2014 loss on drying, heavy metals and pesticides marked by hand with no certificate behind them",
+     "The Head of QC marked five certificates by hand on 18.09.2026. Three lots went "
+     "through: every figure agreed with his own 09.09 resolution pass, which names the "
+     "document, and 54 cells that had been printing [NT] now print the result. Two did "
+     "not. P060372 carries loss on drying 6,42 and lead 0,006, cadmium 0,007, arsenic "
+     "0,006, mercury 0,001, pesticides 0; P060362 carries 6,95 and 0,008, 0,011, 0,01, "
+     "0,002, 0. For both, the resolution pass says NOTHING ON FILE \u2014 no document "
+     "anywhere \u2014 for #8, #11 and #12, and the Drive lot folders hold only the Farmahem "
+     "potency pair and the microbiology certificate. Their siblings\u2019 IJZ panels are "
+     "3660/2026 and 3662/2026 of 22.06.2026, and 3661/2026 of that day belongs to "
+     "FB012603 / P060432, so no certificate of that run is missing from the count.",
+     "The figures are recorded in intake_handmarked_2026-09-18/reads_handmarked.json and "
+     "are NOT printed. The certificates keep [NT] for those three determinations.",
+     "One scan into eCoA_DATABASE closes it. Otherwise the two lots were never sent for "
+     "loss on drying, metals or pesticides and need to be, or released explicitly without "
+     "them \u2014 the same question as OI-53 and OI-55, on two more lots.",
+     "Photographs of 18.09.2026; cell_resolution_2026-09-09.tsv; Drive folders "
+     "CC012603_P060372 and JD012603_P060362; tracker/HANDMARKED_CORRECTIONS_2026-09-18.md"),
+
+    ("OI-58", "Desk status", "ruled",
+     "The master workbook was said to be unbuildable. It was a missing flag",
+     "Recorded on 18.09.2026 as a NameError in HEAD: build_tracker_v8.py reaching line "
+     "2432 and raising \u2018_F_ is not defined\u2019, with the helpers thought to be "
+     "trapped inside a function. They are not. The enclosing block at :428 is "
+     "`if ICOA_RULE:` \u2014 a module-level CONDITIONAL, not a function \u2014 and "
+     "ICOA_RULE is `--icoa in sys.argv`. Without the flag the block never runs, so the "
+     "names are never bound, and the register notes 2,000 lines below that read them "
+     "unconditionally fail. The builder was never broken; it was invoked without the "
+     "flag that v44 had been built with.",
+     "Built on 18.09.2026: CoQ_Analysis_Master_v45.xlsx, 12 tabs, 86 batches, 184 "
+     "two-row blocks, verify_workbook with NO findings. It took two attempts, and the "
+     "second is the lesson: --icoa alone builds a workbook that LOOKS right and "
+     "verifies with 7 findings — short of results without --cells, missing the Mikro "
+     "CoQ Parameter section without --mikro, and dating the legacy series on the "
+     "defaults rather than on 03.06/06.06.2026. CI caught it. --mikro must name a "
+     "master that still carries the RAW sheet (v10-v13, v21-v23); from v24 it is "
+     "folded into Reference and cannot be read back out. The guard beside ICOA_RULE "
+     "now prints the WHOLE build and says to run verify_workbook after it, because a "
+     "guard that names half the command is how this went wrong the first time. The "
+     "eight naming rulings of 18.09.2026 are in tracker/strains.py.",
+     "Nothing. The diagnosis was wrong and is corrected here so the record does not "
+     "keep a working builder marked broken.",
+     "tracker/build_tracker_v8.py:382 (the guard), :428 (`if ICOA_RULE:`), :2432; "
+     "tracker/HANDMARKED_CORRECTIONS_2026-09-18.md"),
+    ("OI-59", "Document", "open",
+     "Three certificates in the archive are missing their page 3 — the heavy metals",
+     "The Institute of Public Health issues its contaminant panel over four pages, and "
+     "page 3 carries the whole ТЕШКИ МЕТАЛИ table — lead, cadmium, arsenic, mercury — "
+     "the last three pesticide residues and the total-aflatoxin row. On three "
+     "certificates the archive holds only three pages, and the page that is gone is "
+     "page 3. The pages that are there print their own footers: Страна 1 од 4, "
+     "Страна 2 од 4, Страна 4 од 4.\n"
+     "    1065/2026   SJ102501   P060162\n"
+     "    1625/2026   J31122501  P060262\n"
+     "    3925/2026   GG032601   —\n"
+     "It is not a download fault. Each local copy is byte for byte the size of the file "
+     "in eCoA_DATABASE (1,573,779 / 869,003 / 1,619,812), so the scan in the company's "
+     "own archive is the one that is short a page.",
+     "Read twice, by two readers who did not see each other's work, and both reported "
+     "the same missing page independently. Nothing is entered for those three lots' "
+     "metals or aflatoxins: a determination with no page to read is not a result, and "
+     "the certificates keep saying so.",
+     "Re-scan the three certificates from the paper originals, or ask the Institute of "
+     "Public Health for a fresh copy. Three lots' heavy metals depend on it.",
+     "intake_contaminants_2026-09-18/two_read_result.json; apply_contaminants.py"),
+    ("OI-60", "Document", "open",
+     "Eleven lots have no heavy-metal, mycotoxin or pesticide panel in the archive at all",
+     "After the contaminant intake of 18.09.2026 — 58 Institute of Public Health panels read "
+     "twice, 1927 values, no disagreement — the certificates of quality still printing \"not "
+     "tested\" for heavy metals fall to 25, on 13 lots. Two are the certificates OI-59 names, "
+     "with the metals page missing from the scan. The other eleven have NO contaminant panel "
+     "in eCoA_DATABASE for the lot: eight have none at all — CC042601, FB042601, P060332 "
+     "(CC012601/1), P060342 (SCR012601), P060352 (FB012602), P060372 (CC012603), P060382 "
+     "(SCR012603), P060492 (JD042601) — and three have only a SIBLING sub-lot's panel, which "
+     "does not certify them: P050142 (BSS1024_01/2; 3177/2025 is BSS1024_01, P050122), "
+     "P060142 (GRC102501/1; 328/2026 and 1060/2026 are GRC102501/2, P060182), P060362 "
+     "(JD012603/01; 3660/2026 and 3662/2026 are /02 and /02V). Eight of the eleven are the "
+     "same lots OI-42 found with no loss-on-drying report anywhere: it is one gap, not two.",
+     "Nothing entered. A sibling sub-lot's certificate is not this lot's certificate, and the "
+     "desk does not print a heavy-metal result no document reports. The certificates say so.",
+     "Either the panels were run and never filed — then the paper needs finding and scanning — "
+     "or these lots were never sent for contaminant testing, and the Head of QC decides what "
+     "a release certificate without heavy metals means for them.",
+     "intake_contaminants_2026-09-18/INTAKE_2026-09-18.md; apply_contaminants.py"),
 ]
 
 STATES = {"open", "marked", "ruled"}
@@ -983,9 +1298,9 @@ def items(state=None, area=None):
     """The register, optionally narrowed.
 
     >>> len(items())
-    47
+    60
     >>> [i[0] for i in items(area="Specification")]
-    ['OI-01', 'OI-02', 'OI-03', 'OI-44']
+    ['OI-01', 'OI-02', 'OI-03', 'OI-44', 'OI-50']
     >>> sorted({i[2] for i in items()})
     ['marked', 'open', 'ruled']
     >>> all(len(i) == len(HEAD) for i in items())

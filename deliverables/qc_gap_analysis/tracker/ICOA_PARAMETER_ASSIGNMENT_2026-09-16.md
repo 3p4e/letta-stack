@@ -5,7 +5,7 @@ continue and assign the certificate of analysis from Purely Plant — basically 
 certificate of analysis — covering parameters one, two and seven, with dates and every
 other information already present there."*
 
-It was already there. `CoQ_Analysis_Master_v40.xlsx`, sheet **iCoA Register**, carries one
+It was already there. `CoQ_Analysis_Master_v41.xlsx` (the script resolves the newest on disk), sheet **iCoA Register**, carries one
 row per internal certificate of analysis with its code, its issue date, its basis date,
 the batch it belongs to and its own verdict in the columns `#1 Ident. A`, `#2 Ident. B`
 and `#7 Foreign matter`. 211 codes, and every certificate that was short on those three

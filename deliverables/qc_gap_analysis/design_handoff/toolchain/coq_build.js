@@ -7,7 +7,7 @@ const UNIT = {'4':' %','5':' %','6':' %','8':' %','9.1':' CFU/g','9.2':' CFU/g',
 // `ac` is the accreditation id, held apart from the EN name so it can print on the second
 // line beside the Macedonian text rather than running the first line long.
 const LABS = {
-  PP:  {en:'Purely Plant — QC Department · In-house QC Laboratory · MK GMP Certified', ac:'', mk:'Пјурли Плант — Оддел за КК · Интерна лабораторија за КК', ad:'Kojlija 1043, Petrovec-Skopje, MK'},
+  PP:  {en:'Purely Plant QC Department · In-house', ac:'', mk:'Пјурли Плант — Сектор за КК · In-house', ad:'Kojlija 1043, Petrovec-Skopje, MK'},
   CNP: {en:'UKIM Faculty of Pharmacy — Center for Natural Products · ISO/IEC 17025:2017', ac:'LT-083 (IARM)', mk:'УКИМ ФФ — Центар за Природни Производи', ad:'Mother Theresa 47, 1000 Skopje, MK'},
   IPH: {en:'JZU Institute for Public Health (IPH Skopje) · ISO/IEC 17025:2017', ac:'LT-005 (IARM)', mk:'ЈЗУ Институт за јавно здравје (ИЈЗ Скопје)', ad:'50ta Divizija 6, 1000 Skopje, MK'},
   FHM: {en:'Farmahem DOOEL — Laboratory for Instrumental Analysis · ISO/IEC 17025:2017', ac:'LT-020 (IARM)', mk:'Фармахем ДООЕЛ — Лаборатoрија за инструментална анализа', ad:'Kisela Voda, 1000 Skopje, MK'},
@@ -25,8 +25,24 @@ function collapseParams(ds) {
 }
 // A citable document is a CODE, not prose. v35 carries four OCR sentences in the document
 // field (OI-08 / addendum 2.2); a sentence cannot stand in the CoA Doc. Code column.
+//
+// But a code may carry a trailing parenthetical that says WHICH product the certificate
+// covers. IPH issued 231/0394/26 for J31122501 as "231/0394/26 (Racno trimiran cvet)",
+// and that note is the distinction OI-39 turns on — the laboratory's own pages name two
+// products for that lot — so it cannot be thrown away. The bracket rule read the whole
+// string as prose and dropped the citation: five microbiological results on CoQ-PP_26-062
+// fell to the red "Certificate to be located · Work Order" row while the Institute was
+// already cited on the same page for other parameters. The test therefore applies to the
+// CODE, and the note travels beside it as a qualifier rather than suppressing it.
+function docCode(d) {
+  return String(d || '').replace(/\s*\([^()]*\)\s*$/, '').trim();
+}
+function docNote(d) {
+  const m = String(d || '').match(/\(([^()]*)\)\s*$/);
+  return m ? m[1].trim() : '';
+}
 function codeShaped(d) {
-  d = String(d || '').trim();
+  d = docCode(d);
   if (!d || d === '—') return false;
   if (d.length > 28) return false;
   if (/^n\/a/i.test(d)) return false;
@@ -104,15 +120,16 @@ function section03(rec) {
     if (!lab || !codeShaped(doc)) continue;
     const g = groups[lab] = groups[lab] || { certs: new Map(), params: [] };
     g.params.push(d);
-    const k = doc + '|' + iss;
-    if (!g.certs.has(k)) g.certs.set(k, { doc: doc, iss: iss });
+    const k = docCode(doc) + '|' + iss;
+    if (!g.certs.has(k)) g.certs.set(k, { doc: docCode(doc), note: docNote(doc), iss: iss });
   }
   const rows = [];
   for (const key of ORDER) {
     const g = groups[key]; if (!g) continue;
     const L = LABS[key];
     const certs = [...g.certs.values()].map(c =>
-      '<span class="cert"><b>' + esc(c.doc) + '</b> · ' + esc(c.iss || '—') + '</span>').join('');
+      '<span class="cert"><b>' + esc(c.doc) + '</b> · ' + esc(c.iss || '—') +
+      (c.note ? '<i class="cert-note">' + esc(c.note) + '</i>' : '') + '</span>').join('');
     rows.push('<tr><td><span class="lr-lab">' + L.en + ' <i class="bisep">|</i> <span class="mk" style="display:inline">' +
       L.mk + (L.ac ? ' <span class="lr-ac">' + L.ac + '</span>' : '') + '</span><small>' + L.ad +
       '</small></span></td><td class="lr-mono">' + certs +
@@ -149,9 +166,11 @@ function section01(rec) {
   const pheno = chip(isH, 'Hybrid', isH ? ratio : '') +
     '<span class="stack">' + chip(isI, 'Indica') + chip(isS, 'Sativa') + '</span>';
   const chem = '<span class="stack">' + chip(rec.chemotype === 'THC', 'THC') + chip(rec.chemotype === 'CBD', 'CBD') + '</span>';
-  const proc = (rec.processing || '').toUpperCase();
-  const prc = '<span class="stack">' + chip(/MACHINE/.test(proc), 'Machine <span class="mk">Машинска</span>') +
-    chip(/HAND/.test(proc), 'Hand') + '</span>';
+  // Head of QC, 18.09.2026: "remove the parameter processing and remove the machine or
+  // hand processing" - from every certificate of quality, release and retest alike. How the
+  // flower was trimmed is a production attribute, not a quality determination, and the
+  // certificate asserts only what was determined. The record keeps `rec.processing`; the
+  // page no longer speaks it.
 
   const pcode = rec.productCode && rec.productCode !== '—'
     ? esc(rec.productCode.replace(/\s*:\s*/, ':')) : red('[ — ]');
@@ -175,7 +194,6 @@ function section01(rec) {
 '  <div class="selrow">\n' +
 '    <span class="grp"><span class="lk-lbl">Phenotype <span class="mk">Фенотип</span></span>' + pheno + '</span>\n' +
 '    <span class="grp"><span class="lk-lbl">Chemotype <span class="mk">Хемотип</span></span>' + chem + '</span>\n' +
-'    <span class="grp"><span class="lk-lbl">Processing <span class="mk">Обработка</span></span>' + prc + '</span>\n' +
 '  </div>\n' +
 '  <div class="goldrule"></div>\n' +
 '  <div class="gridrow lk-inline" style="padding-top:8px">\n' +
@@ -197,5 +215,5 @@ function section01(rec) {
 '  </div>\n' +
 '  <div class="goldrule"></div>\n\n  ';
 }
-return { RED, AMBER, DETS, UNIT, LABS, ORDER, canonLab, codeShaped, collapseParams, parseCSV, esc, mmyyyy, strip, red, cell, section03, section01, chip };
+return { RED, AMBER, DETS, UNIT, LABS, ORDER, canonLab, codeShaped, docCode, docNote, collapseParams, parseCSV, esc, mmyyyy, strip, red, cell, section03, section01, chip };
 })();

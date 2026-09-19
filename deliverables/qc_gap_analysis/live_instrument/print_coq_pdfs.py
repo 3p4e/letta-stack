@@ -98,6 +98,16 @@ def page_text(paths):
         # first so a base64 blob never reaches the character set
         html = re.sub(r"<(script|style)[\s\S]*?</\1>", " ", html)
         chars |= set(re.sub(r"<[^>]+>", " ", html))
+    # What the page PRINTS is not what its source holds. Almost every label on these
+    # documents is set with text-transform:uppercase, so the source carries
+    # "\u041a\u043e\u0434 \u043d\u0430 \u0434\u043e\u043a\u0443\u043c\u0435\u043d\u0442" and the renderer asks for \u041d, which was never in the
+    # subset and fell to Liberation Sans - one substituted letter inside an otherwise
+    # Montserrat word, on nearly every Macedonian label of the fleet. The same took "V"
+    # out of Orbitron in "CULTIVAR". Both cases of every character are kept, so a
+    # transform can only ask for a glyph the face already carries.
+    # Head of QC, 18.09.2026: "I explicitly want those fonts used in our certificates."
+    chars |= {c.upper() for c in chars} | {c.lower() for c in chars}
+    chars = {c for c in chars if len(c) == 1}
     return "".join(sorted(chars))
 
 

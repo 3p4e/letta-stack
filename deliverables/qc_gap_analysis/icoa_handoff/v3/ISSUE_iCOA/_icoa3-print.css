@@ -1,0 +1,706 @@
+/* Orbitron carries no Cyrillic, no № and no Δ. Montserrat stands behind it so the
+   Macedonian half, the number sign and the delta are set in the house face rather than
+   in whatever the renderer substitutes. The Latin is unchanged: Chromium falls through
+   the stack per glyph, not per element. Head of QC, 18.09.2026. */
+/* iCoA (Ident. A · Ident. B · Foreign Matter) — check-sheet styles + print/PDF layer.
+   Loaded after _icoa.css and _coq-rules.css, so the full CoQ design system applies and this
+   file only adds Section 03's check-sheet and owns page geometry + print flattening. */
+
+
+/* ── Section 02 · parameter panels ──────────────────────────────────
+   One panel per parameter, carrying its method, principle, sample, conditions/equipment,
+   acceptance criterion and result — so nothing is stated twice on the page.
+
+   The glass look is built ONLY from opaque gradient stops composited against white: a bright
+   top highlight, a faint heavenly-blue body, a darker bevel line at the head/body seam and a
+   pale reflection along the foot. No rgba, no box-shadow, no filter — so the panel prints and
+   exports to PDF exactly as it renders, with no transparency group to flatten. */
+.pp-cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:7px;margin:4px 38px;flex:0 0 auto}
+.pp{min-width:0;overflow:hidden;display:flex;flex-direction:column;border:1px solid #BFD4E8;border-radius:2px;background-color:#F4F9FD;background-image:linear-gradient(180deg,#FFF 0,#FBFDFF 3px,#F6FAFE 10px,#EFF5FC 55%,#E9F1F9 88%,#F7FBFE 97%,#FFF 100%)}
+.pp-head{display:flex;align-items:center;gap:5px;padding:2.5px 7px 3px;border-bottom:1px solid #C3D7E9;background-image:linear-gradient(180deg,#FFF 0,#F7FBFE 2px,#EAF2FB 48%,#DEEAF6 92%,#D2E1F0 100%)}
+.pp-no{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border:1px solid #9FBBD6;border-radius:2px;background-image:linear-gradient(180deg,#FFF 0,#F2F8FD 55%,#E2EDF7 100%);font-family:'Roboto Mono',monospace;font-size:7.6px;font-weight:700;color:#1B4C7E}
+.pp-name{min-width:0;flex:1 1 auto;font-family:'Orbitron','Montserrat',sans-serif;font-size:7.5px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:#14314F;line-height:1.14}
+.pp-name .mk{display:block;font-family:Montserrat,sans-serif;font-size:5.9px;font-weight:500;font-style:italic;letter-spacing:0;text-transform:uppercase;color:#5A6E84}
+.pp-res{flex:0 0 auto;padding:1px 4.5px;border-radius:2px;font-family:'Roboto Mono',monospace;font-size:7px;font-weight:700;white-space:nowrap;line-height:1.2;text-align:center}
+.pp-res .mk{display:block;font-family:Montserrat,sans-serif;font-size:5.6px;font-weight:500;font-style:italic;letter-spacing:0}
+.pp-res-ok{border:1px solid #7FAF92;color:#1F6B43;background-image:linear-gradient(180deg,#FFF 0,#F2FAF5 60%,#E7F5EE 100%)}
+.pp-res-val{border:1px solid #C7A758;color:#7A5C1E;background-image:linear-gradient(180deg,#FFF 0,#FEFBF3 60%,#FBF4E3 100%)}
+.pp-res-open{border:1px solid #D99A9A;color:#B91C1C;background-image:linear-gradient(180deg,#FFF 0,#FEF5F5 100%)}
+.pp-ref{display:flex;align-items:baseline;justify-content:space-between;gap:5px;padding:1.5px 7px 2px;border-bottom:1px solid #DCE8F3;background-image:linear-gradient(180deg,#FBFDFF 0,#F4F9FD 100%)}
+.pp-ref-m{font-family:'Roboto Mono',monospace;font-size:6.4px;font-weight:700;color:#1B4C7E;white-space:nowrap}
+.pp-ref-s{font-family:'Roboto Mono',monospace;font-size:6px;font-weight:600;color:#5A6E84;white-space:nowrap}
+.pp-grid{flex:1 1 auto;display:grid;grid-template-columns:58px 1fr;column-gap:7px;row-gap:2.5px;padding:4px 8px}
+.pp-l{font-family:'Orbitron','Montserrat',sans-serif;font-size:5.9px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:#1B4C7E;line-height:1.2}
+.pp-l .mk{display:block;font-family:Montserrat,sans-serif;font-size:5.6px;font-weight:500;font-style:italic;letter-spacing:0;text-transform:none;color:#5A6E84;line-height:1.1}
+.pp-v{font-size:6.8px;line-height:1.22;color:#1E293B}
+.pp-v b{color:#14314F}
+.pp-crit{display:flex;align-items:baseline;gap:6px;padding:2.5px 7px 3px;border-top:1px solid #C3D7E9;background-image:linear-gradient(180deg,#F1F7FC 0,#E8F1F9 60%,#F8FBFE 100%)}
+.pp-crit-l{flex:0 0 96px;font-family:'Orbitron','Montserrat',sans-serif;font-size:5.9px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:#1B4C7E;line-height:1.18}
+.pp-crit-l .mk{display:block;font-family:Montserrat,sans-serif;font-size:5.6px;font-weight:500;font-style:italic;letter-spacing:0;text-transform:none;color:#5A6E84;line-height:1.1}
+.pp-crit-v{font-family:'Roboto Mono',monospace;font-size:6.6px;font-weight:600;line-height:1.22;color:#14314F}
+html body div.page div.pp-cols + div.sec-label{margin-top:7px !important}
+
+/* ── Section 03 · findings, one grid per analysis ───────────────────
+   Each analysis (A, B, C) gets a head strip and its own three-column × two-row grid of
+   attribute cells; a cell holds the parameter name, its MK gloss and its full option set.
+   Foreign matter adds the extracted-mass value strip beneath its grid, because that is a
+   measurement rather than an observation. Inset to the page's 38px content margin. */
+.fnd{margin:3px 38px 0}
+.fa-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 6px;padding:1.5px 7px;margin-top:4px;border:1px solid #DFE6EE;border-bottom:none;background-image:linear-gradient(90deg,#FEFBF4 0,#FDF8EC 55%,#FEFCF7 100%)}
+.fa-head:first-child{margin-top:0}
+.fa-idx{display:inline-flex;align-items:center;justify-content:center;width:13px;height:10px;flex:0 0 auto;border:1px solid #D8C79A;background:#FFF;font-family:'Roboto Mono',monospace;font-size:6.6px;font-weight:700;color:#7A5C1E}
+.fa-t{font-family:'Orbitron','Montserrat',sans-serif;font-size:7.4px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#16324F;white-space:nowrap}
+.fa-head .mk{font-family:Montserrat,sans-serif;font-size:5.9px;font-weight:500;font-style:italic;letter-spacing:0;color:#4E5E74;white-space:nowrap}
+.fa-ref{margin-left:auto;flex:0 0 auto;font-family:'Roboto Mono',monospace;font-size:5.9px;font-weight:600;color:#5A6E84;white-space:nowrap}
+.fa-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid #DFE6EE;background:#FFF}
+.fc{min-width:0;padding:2px 6px 2.5px;border-right:1px solid #EDF1F6;border-top:1px solid #EDF1F6}
+.fc:nth-child(-n+3){border-top:none}
+.fc:nth-child(3n){border-right:none}
+.fc-attr{font-family:Montserrat,sans-serif;font-size:6.6px;font-weight:700;line-height:1.12;color:#1E293B}
+.fc-attr .mk{font-size:5.9px;font-weight:500;font-style:italic;letter-spacing:.05px;color:#5A6E84}
+.fc-opts{display:flex;flex-wrap:wrap;gap:1px;margin-top:1.5px}
+.ck{display:inline-flex;align-items:flex-start;gap:2px;padding:1px 3px;font-family:Montserrat,sans-serif;font-size:6.2px;line-height:1.12;white-space:nowrap}
+.ck-t{display:block;line-height:1.1}
+.ck .mk{display:block;font-size:5.6px;font-weight:500;font-style:italic;letter-spacing:0;line-height:1.08;color:#5A6E84}
+.ck-on .mk{color:#3D5570}
+.ck .bx{font-family:'Roboto Mono',monospace;font-size:7px;line-height:1.35;flex:0 0 auto}
+.ck-on{font-weight:700;color:#16324F;background:#F0F4F9;border:1px solid #5D7185}
+.ck-on .bx{color:#2C5282}
+.ck-off{font-weight:500;color:#5A6E84;background:#FFF;border:1px solid #C2D2E0}
+.ck-off .bx{color:#AFBAC6}
+/* extracted-mass value strip — monospaced and gold-keyed: it reports a measurement */
+.fc-mass{display:flex;align-items:center;gap:8px;padding:2px 7px;border:1px solid #E2CE96;border-top:none;background-image:linear-gradient(90deg,#FEFCF7 0,#FDFAF1 50%,#FEFCF7 100%)}
+.fc-mass-lbl{flex:0 0 132px;font-family:Montserrat,sans-serif;font-size:6.9px;font-weight:700;line-height:1.14;color:#16324F}
+.fc-mass-lbl .mk{display:block;font-size:5.9px;font-weight:500;font-style:italic;color:#5A6E84;line-height:1.12}
+.fc-unit{margin-left:4px;font-family:'Roboto Mono',monospace;font-size:5.9px;font-weight:600;color:#7A5C1E}
+.fc-mass-opts{display:flex;flex-wrap:wrap;gap:1.5px 3px;align-items:center}
+.fc-mass-opts .ck{font-family:'Roboto Mono',monospace;font-size:6px}
+.fc-mass-opts .ck-on{border-color:#A67C2E;background:#FFF;color:#7A5C1E}
+.fc-mass-opts .ck-on .bx{color:#A67C2E}
+
+/* Section 02 method cell: reference, conditions, then attribution — three tiers, descending. */
+html body div.page div.tbl-wrap table.results td .p-meth-src{display:block;font-family:'Roboto Mono',monospace;font-size:5.9px;line-height:1.1;color:#8C9BB0}
+html body div.page div.tbl-wrap table.results td .p-meth-eq{display:block;font-size:6.2px;line-height:1.12;color:#5A6E84}
+
+/* ── Section 02 column geometry ─────────────────────────────────────
+   _coq-rules.css pins the CoQ's own five column widths (sized for its 12-parameter table)
+   at html body div.page div.tbl-wrap specificity. This table has three rows and longer
+   method/criteria strings, so the widths are re-proportioned here — otherwise the
+   Method / Reference head overflows its cell by ~50px into Acceptance Criteria. */
+html body div.page div.tbl-wrap table.results colgroup col:nth-child(1){width:56px !important}
+html body div.page div.tbl-wrap table.results colgroup col:nth-child(2){width:198px !important}
+html body div.page div.tbl-wrap table.results colgroup col:nth-child(3){width:186px !important}
+html body div.page div.tbl-wrap table.results colgroup col:nth-child(4){width:auto !important}
+html body div.page div.tbl-wrap table.results colgroup col:nth-child(5){width:104px !important}
+html body div.page div.tbl-wrap table.results thead th{white-space:normal !important;overflow:hidden !important;vertical-align:bottom !important}
+
+/* ── page geometry ──────────────────────────────────────────────────
+   The page is a flex column: content flows from the top, the signature block pins to the
+   bottom with real separation from the footer, and nothing exceeds A4. */
+html body div.page{display:flex;flex-direction:column}
+html body div.page div.approval-grid{margin-top:auto;padding-top:7px;padding-bottom:12px}
+html body div.page div.eor{margin-top:0;padding-top:6px}
+html body div.page div.footer{position:relative;flex:0 0 auto;margin-top:2px}
+/* _icoa.css carries div.page div.sec-label:not(:first-of-type){margin-top:auto !important} — the
+   "airy" tier, which pushes ALL spare page height into the FIRST section boundary; that is what
+   opened the 48px void between Section 01's footnote and the Section 02 band. Its :not() outranks
+   a plain .sec-label rule, so the override carries :not() too. Spare height is collected once,
+   above the signature block, where it belongs. */
+html body div.page div.sec-label,html body div.page div.sec-label:not(:first-of-type){margin-top:7px !important}
+html body div.page div.tbl-wrap + div.sec-label,html body div.page div.pot-note + div.sec-label,html body div.page div.goldrule + div.sec-label{margin-top:7px !important}
+html body div.page div.header-bar + div.sec-label{margin-top:0 !important}
+html body div.page div.pot-note{line-height:1.3;margin-top:4px}
+html body div.page div.disp-note{line-height:1.34}
+
+/* ── print & PDF: every gradient composited against white, every shadow removed ──
+   No transparency group survives into the PDF, so a 2px gold rule prints as a 2px gold rule.
+   Re-emitted at the specificity _coq-rules.css uses (html body div.page div.tbl-wrap …),
+   otherwise its own !important alpha gradients win. */
+.goldrule,.ap-line{background:linear-gradient(90deg,#FFF 0%,#ECE8DF 12%,#D6CEBB 32%,#C6B99F 50%,#D6CEBB 68%,#ECE8DF 88%,#FFF 100%) !important}
+html body div.page div.gridrow,html body div.page div.lockrow{background-color:transparent !important;background-image:linear-gradient(90deg,#FFF 0,#FFFEFC 30px,#FEFDF9 48px,#FEFDF9 calc(100% - 48px),#FFFEFC calc(100% - 30px),#FFF 100%) !important}
+html body div.page div.tbl-wrap table.results thead tr,table.results thead tr{background-color:transparent !important;background-image:linear-gradient(90deg,#FFF 0%,#D3DAE0 8%,#9EACBA 22%,#9EACBA 78%,#D3DAE0 92%,#FFF 100%),linear-gradient(90deg,#FFF 0%,#D3DAE0 8%,#9EACBA 22%,#9EACBA 78%,#D3DAE0 92%,#FFF 100%),linear-gradient(#F2F5F9,#F2F5F9) !important;background-size:100% 2px,100% 2px,100% calc(100% - 4px) !important;background-position:top left,bottom left,left top 2px !important;background-repeat:no-repeat !important}
+html body div.page div.tbl-wrap table.results tbody tr:nth-of-type(even),table.results tbody tr:nth-of-type(even){background-color:transparent !important;background-image:linear-gradient(90deg,#FFF 0,#FFF 38px,#FBFCFE 92px,#F8FAFC 150px,#F7F9FC 50%,#F8FAFC calc(100% - 150px),#FBFCFE calc(100% - 92px),#FFF calc(100% - 38px),#FFF 100%) !important}
+html body div.page div.tbl-wrap table.results tbody tr.last-row,table.results tbody tr.last-row{background-image:linear-gradient(90deg,#FFF 38px,#CED6DD 90px,#9EACBA 160px,#9EACBA calc(100% - 160px),#CED6DD calc(100% - 90px),#FFF calc(100% - 38px)) !important;background-size:100% 2px !important;background-position:bottom left !important;background-repeat:no-repeat !important}
+.pb-main{background-image:linear-gradient(180deg,#F2F5F9 0%,#F9FBFD 55%,#FFF 100%) !important}
+.disp-row{background-image:linear-gradient(180deg,#FFF 0%,#FCFDFE 100%) !important}
+.page *,.page *::before,.page *::after{text-shadow:none !important;box-shadow:none !important}
+.page{box-shadow:0 8px 60px rgba(99,113,131,.25)}
+.chip-sel{border:1px solid #5D7185 !important}
+.chip-un{border:1px solid #CBD9E6 !important}
+.pb-grade{border:1px solid #7E8C9C !important;white-space:nowrap !important}
+html body div.page div.header-bar .hb-sub,html body div.page div.header-bar .hb-issue{border-color:#E5DDCB !important}
+html body div.page .bisep{color:#A3B0BF !important;opacity:1 !important}
+html body div.page div.footer span[style*="opacity"]{opacity:1 !important;color:#B9C4D0 !important}
+
+html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact;color-adjust:exact}
+.page{width:210mm !important;max-width:210mm !important;height:297mm !important;max-height:297mm !important;overflow:hidden !important}
+@page{size:A4 portrait;margin:0}
+@media print{
+  html,body{width:210mm;height:297mm;background:#FFF !important;padding:0 !important;margin:0 !important}
+  body{display:block !important}
+  .page{margin:0 !important;box-shadow:none !important;page-break-inside:avoid;break-inside:avoid;page-break-after:avoid;break-after:avoid}
+  a{color:inherit !important;text-decoration:none !important}
+}
+
+
+/* final A4 fit: the identity rows, method values and end-of-report line give up the last
+   30px so the whole record — five sections plus signatures — lands inside one A4 page. */
+html body div.page div.gridrow{padding-top:2px !important;padding-bottom:2px !important}
+html body div.page div.method-panel .mg-v{font-size:5.95px !important;line-height:1.16 !important}
+html body div.page div.eor{padding-top:3px !important;font-size:6.4px !important}
+html body div.page div.approval-grid{padding-top:6px !important;padding-bottom:11px !important}
+
+/* _coq-rules.css sets .ap-sign to 60px to clear a handwritten signature PNG. These certificates
+   sign on a ruled line rather than an ink image, so 60px of empty box is 34px of wasted page —
+   enough on its own to push the record off A4. A 26px ruled space is right for a wet signature. */
+html body div.page div.approval-grid .ap-sign{height:26px !important;margin-bottom:1px !important;position:relative !important}
+
+/* ── presentation polish ────────────────────────────────────────────
+   The identity banner, classification chips and disposition row get the same restrained
+   glass treatment as the parameter panels — opaque stops only, so print stays faithful. */
+html body div.page div.pb-main{background-image:linear-gradient(180deg,#FFF 0,#F7FBFE 18%,#EFF5FC 62%,#F9FCFE 100%) !important;border-top:1px solid #DDE8F2;border-bottom:1px solid #D4E2EF}
+html body div.page div.disp-row{background-image:linear-gradient(180deg,#FFF 0,#F8FBFE 55%,#F1F7FC 100%) !important;border-top:1px solid #E2EBF4;border-bottom:1px solid #DCE8F3}
+/* chip-sel keeps its navy fill — its label is white, so a light gradient made the text vanish */
+html body div.page .chip-un{background-image:linear-gradient(180deg,#FFF 0,#FAFCFE 100%) !important}
+html body div.page div.gridrow{background-image:linear-gradient(180deg,#FFF 0,#FCFDFF 100%) !important}
+html body div.page div.eor{color:#7C93AB}
+
+/* blank fill-in field inside an unticked option — an empty ruled space, never a zero */
+.ck .bl{display:inline-block;min-width:16px;border-bottom:1px solid #A9B8C7;font-style:normal;line-height:1}
+.ck-on .bl{border-bottom-color:#7A5C1E}
+
+/* _icoa.css pins the section band to a fixed 24px with overflow:hidden, which shaves ~1px off
+   the descenders of every band title (scrollHeight 26 vs clientHeight 24). Two more pixels and
+   the glyphs sit whole. Same for the header title. */
+html body div.page div.sec-label{height:auto !important;min-height:26px !important;overflow:visible !important}
+html body div.page div.header-bar .hb-title{line-height:1.24 !important;height:auto !important;overflow:visible !important}
+
+/* spacing pass: air above and below every section band, a real gap between the band number
+   and its title, and separation between the three analyses so they read as distinct examinations. */
+html body div.page div.sec-label,html body div.page div.sec-label:not(:first-of-type){margin-top:12px !important;margin-bottom:5px !important;gap:11px !important}
+html body div.page div.tbl-wrap + div.sec-label,html body div.page div.pot-note + div.sec-label,html body div.page div.goldrule + div.sec-label,html body div.page div.pp-cols + div.sec-label{margin-top:12px !important}
+html body div.page div.header-bar + div.sec-label{margin-top:0 !important;margin-bottom:5px !important}
+html body div.page div.sec-label .sec-no{margin-right:4px}
+html body div.page div.fnd .fa-head{margin-top:9px !important}
+html body div.page div.fnd .fa-head:first-child{margin-top:0 !important}
+html body div.page div.fc{padding:3px 7px 3.5px !important}
+html body div.page div.fc-opts{gap:2px !important;margin-top:2.5px !important}
+html body div.page div.fc-mass{padding:3px 7px !important}
+
+/* §01 identity rows: three equal fields per row, inset to the page's 38px content margin,
+   so the labels sit on the same vertical lines as the panels and findings grid below. */
+html body div.page div.gridrow.lk-inline.g3{display:grid !important;grid-template-columns:repeat(3,minmax(0,1fr)) !important;gap:0 18px !important;padding:3px 38px !important}
+html body div.page div.gridrow.lk-inline.g3 .lk{display:flex !important;flex-direction:row !important;align-items:baseline !important;gap:8px !important;min-width:0}
+html body div.page div.gridrow.lk-inline.g3 .lk-lbl{flex:0 0 auto}
+html body div.page div.gridrow.lk-inline.g3 .lk-val{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* bilingual tick boxes are two lines tall, so the findings block gives back the height by
+   tightening its own frame rather than shrinking any type below the 5.6px floor. */
+html body div.page div.fnd .fa-head{margin-top:7px !important;padding:1.5px 7px !important}
+html body div.page div.fc{padding:2.5px 6px 3px !important}
+html body div.page div.fc-opts{gap:1.5px !important;margin-top:2px !important}
+html body div.page div.fc-mass{padding:2.5px 7px !important}
+html body div.page div.method-cols,html body div.page div.pp-cols{margin-top:3px !important;margin-bottom:3px !important}
+html body div.page div.pp-grid{row-gap:1.5px !important;padding:3px 7px !important}
+html body div.page div.disp-note{line-height:1.3 !important}
+
+/* final A4 fit with bilingual tick boxes — taken from box and row padding, panel leading and the
+   signature rule, never from type size: nothing goes below the 5.6px floor the CoQ fleet uses. */
+html body div.page div.pp-grid{row-gap:1px !important;padding:2.5px 7px !important}
+html body div.page div.pp-grid .pp-v{font-size:6.6px !important;line-height:1.15 !important}
+html body div.page div.pp-grid .pp-l{line-height:1.14 !important}
+html body div.page div.pp-grid .pp-l .mk{line-height:1.05 !important}
+html body div.page div.pp-crit{padding:2px 7px !important}
+html body div.page div.fc{padding:2px 6px 2.5px !important}
+html body div.page div.fc-attr{line-height:1.08 !important}
+html body div.page .ck{padding:.5px 2.5px !important;gap:1.5px !important}
+html body div.page .ck .ck-t{line-height:1.06 !important}
+html body div.page .ck .mk{line-height:1.02 !important}
+html body div.page div.fnd .fa-head{margin-top:6px !important}
+html body div.page div.gridrow{padding-top:1.5px !important;padding-bottom:1.5px !important}
+html body div.page div.approval-grid .ap-sign{height:20px !important}
+html body div.page div.disp-note{line-height:1.24 !important}
+html body div.page div.disp-row{padding-top:2px !important;padding-bottom:2px !important}
+
+/* per-analysis disposition, and foreign matter's own analysis result — both ride in rows that
+   already exist (the analysis head and the extracted-mass strip), so neither adds page height. */
+.fa-disp-l{flex:0 0 auto;margin-left:8px;font-family:'Orbitron','Montserrat',sans-serif;font-size:5.6px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:#1B4C7E;line-height:1.1;text-align:right}
+.fa-disp-l .mk{display:block;font-family:Montserrat,sans-serif;font-size:5.6px;font-weight:500;font-style:italic;letter-spacing:0;text-transform:none;color:#5A6E84;line-height:1.05}
+.fa-head .fa-ref{margin-left:auto}
+.fa-disp,.fa-res{flex:0 0 auto;margin-left:5px;font-size:6.4px !important;padding:.5px 4px !important;line-height:1.1 !important}
+.fa-disp .mk,.fa-res .mk{font-size:5.6px !important}
+.fc-mass{flex-wrap:nowrap}
+.fc-mass .fc-mass-opts{flex:1 1 auto;min-width:0}
+
+/* the per-analysis badges make each head two lines tall; the 17px that costs comes from head
+   padding, panel leading and the disposition paragraph — no type below the 5.6px floor. */
+html body div.page div.fnd .fa-head{padding:1px 7px !important;margin-top:5px !important}
+html body div.page div.fnd .fa-head .fa-t{line-height:1.08 !important}
+html body div.page div.fa-disp-l{line-height:1.02 !important}
+html body div.page div.fnd .fa-disp,html body div.page div.fnd .fa-res{line-height:1.02 !important;padding:0 4px !important}
+html body div.page div.pp-grid{row-gap:0.5px !important;padding:2px 7px !important}
+html body div.page div.pp-head{padding:2px 7px !important}
+html body div.page div.pp-ref{padding:1px 7px 1.5px !important}
+html body div.page div.disp-note{line-height:1.2 !important}
+html body div.page div.pb-main{padding-top:4px !important;padding-bottom:4px !important}
+html body div.page div.approval-grid{padding-bottom:10px !important}
+
+/* .fc-opts is a GRID, not a wrapping flex row: the column count is fixed per option set, so a
+   single box can never be stranded on a last row no matter how long either language runs. */
+html body div.page div.fc-opts{display:grid !important;gap:1.5px 2px !important;align-items:stretch !important}
+html body div.page div.fc-opts .ck{width:100% !important;box-sizing:border-box !important;white-space:normal !important}
+html body div.page div.fc-opts .ck .ck-t{white-space:normal !important;word-break:normal;overflow-wrap:break-word}
+/* the mass strip keeps its single flex row */
+html body div.page div.fc-mass .fc-mass-opts{display:flex !important;flex-wrap:wrap !important}
+
+/* last 16px for the grid-based option rows — from box and cell padding only */
+html body div.page div.fc-opts{gap:1px 2px !important;margin-top:1.5px !important}
+html body div.page div.fc-opts .ck{padding:0 3px !important}
+html body div.page div.fc{padding:1.5px 6px 2px !important}
+html body div.page div.pp-crit{padding:1.5px 7px !important}
+html body div.page div.selrow{padding-top:2px !important;padding-bottom:2px !important}
+
+/* ── flatten pass 2 · outranking _coq-rules.css ─────────────────────
+   The gold rules and signature rules were still carrying their authored alpha ramp
+   (rgba(160,124,48,0) → rgb(160,124,48)) — six live transparency groups on the page. The
+   flatten above used a plain .goldrule / .ap-line selector at (0,2,0), while _coq-rules.css
+   sets the same property at html body div.page div.goldrule (0,2,4) with !important, so the
+   qualified rule won. Re-emitted here at matching specificity with opaque stops composited
+   against white, same as the table-head flatten. */
+html body div.page div.goldrule,html body div.page .goldrule,html body div.page div.approval-grid .ap-line,html body div.page .ap-line{background-color:transparent !important;background-image:linear-gradient(90deg,#FFF 0%,#F6F3EC 8%,#ECE8DF 18%,#DCD5C4 32%,#C6B99F 50%,#DCD5C4 68%,#ECE8DF 82%,#F6F3EC 92%,#FFF 100%) !important}
+/* the footer's inset highlight is opaque, but the flatten layer claims every shadow is gone —
+   _icoa.css sets it at html body div.page div.footer (0,2,4), so it needs the same reach. */
+html body div.page div.footer,html body div.page div.header-bar,html body div.page div.pb-main,html body div.page div.sec-label{box-shadow:none !important}
+
+/* boxes hug their text: content-sized tracks, packed left, no stretching. The earlier
+   width:100% on .ck is what left empty space inside every box. */
+html body div.page div.fc-opts{display:grid !important;justify-content:start !important;align-content:start !important;gap:1px 3px !important}
+html body div.page div.fc-opts .ck{width:max-content !important;max-width:100% !important;white-space:nowrap !important}
+html body div.page div.fc-opts .ck .ck-t{white-space:nowrap !important}
+
+/* Boxes fill their proportional track, so no spare cell width is left blank beside them and no
+   short label sits in a conspicuously wide box — padding scales with the label instead. */
+html body div.page div.fc-opts{display:grid !important;justify-content:stretch !important;align-content:start !important;gap:1px 3px !important}
+html body div.page div.fc-opts .ck{width:auto !important;min-width:0 !important;max-width:none !important;justify-content:flex-start !important}
+html body div.page div.fc-opts .ck .ck-t{min-width:0;overflow:hidden;text-overflow:ellipsis}
+
+/* ── §04 results table ──────────────────────────────────────────────
+   Three rows: parameter, acceptance criterion, result and disposition. §02 keeps only how each
+   analysis was performed, so nothing is stated twice. */
+html body div.page div.tbl-wrap table.results.rt tbody td{padding:1.5px 6px !important;line-height:1.16 !important;vertical-align:middle !important}
+html body div.page div.tbl-wrap table.results.rt tbody td.c{text-align:center !important}
+html body div.page div.tbl-wrap table.results.rt tbody td .p-name{font-size:7.4px !important;line-height:1.14 !important;font-weight:700}
+html body div.page div.tbl-wrap table.results.rt tbody td .p-name .mk{display:block;font-size:5.6px !important;font-weight:500;font-style:italic;line-height:1.06 !important;color:#5A6E84}
+html body div.page div.tbl-wrap table.results.rt tbody td .p-spec{font-size:6.8px !important;line-height:1.16 !important}
+html body div.page div.tbl-wrap table.results.rt tbody td .pp-res{display:inline-block;font-size:6.6px !important;padding:.5px 4px !important;line-height:1.1 !important}
+html body div.page div.tbl-wrap table.results.rt tbody td .pp-res .mk{display:block;font-size:5.6px !important;font-weight:500;font-style:italic;line-height:1.04 !important}
+html body div.page div.tbl-wrap table.results.rt thead th{padding-top:2px !important;padding-bottom:2px !important}
+
+/* the certificate-level conformity chip rides inline at the head of the statement instead of
+   occupying its own full-width row — §04's table already carries the per-parameter disposition */
+.disp-lead{float:left;margin:0 6px 0 0}
+html body div.page div.disp-note{line-height:1.16 !important;padding-top:2px !important}
+html body div.page div.pp-grid{row-gap:0 !important;padding:2px 7px 2.5px !important}
+html body div.page div.pp-ref{padding:1px 7px !important}
+html body div.page div.fnd .fa-head{padding:0.5px 7px !important;margin-top:4px !important}
+html body div.page div.approval-grid{padding-top:5px !important;padding-bottom:8px !important}
+html body div.page div.tbl-wrap table.results.rt tbody td{padding:1px 6px !important}
+
+/* Four section bands now instead of three: the band itself gets more compact so the extra
+   heading costs almost nothing — 22px bar, 8px of air above, glyphs still uncut. */
+html body div.page div.sec-label{min-height:22px !important;height:auto !important;overflow:visible !important;padding-top:3px !important;padding-bottom:3px !important;font-size:9.8px !important}
+html body div.page div.sec-label .sec-no{font-size:12.4px !important}
+html body div.page div.sec-label .mk{font-size:7.6px !important}
+html body div.page div.sec-label,html body div.page div.sec-label:not(:first-of-type){margin-top:8px !important;margin-bottom:4px !important}
+html body div.page div.tbl-wrap + div.sec-label,html body div.page div.pot-note + div.sec-label,html body div.page div.goldrule + div.sec-label,html body div.page div.pp-cols + div.sec-label{margin-top:8px !important}
+html body div.page div.header-bar + div.sec-label{margin-top:0 !important;margin-bottom:4px !important}
+
+/* ── flatten pass 3 · matching the full qualifier chain ─────────────
+   §04 added a second table.results, which re-introduced the zebra row the earlier flatten did
+   not reach: _coq-rules.css qualifies it as
+   ...table.results tbody tr:not(.row-group):not(.sub-row):not(.last-row):nth-of-type(2n)
+   — specificity (0,7,7) — while the flatten was written at (0,4,7) and lost. Matched here
+   :not() for :not(), with opaque stops composited against white. Same reach given to the odd
+   rows and the last-row rule, which carry the same qualifiers. */
+html body div.page div.tbl-wrap table.results tbody tr:not(.row-group):not(.sub-row):not(.last-row):nth-of-type(2n){background-color:transparent !important;background-image:linear-gradient(90deg,#FFF 0,#FFF 38px,#FBFCFE 92px,#F8FAFC 150px,#F7F9FC 50%,#F8FAFC calc(100% - 150px),#FBFCFE calc(100% - 92px),#FFF calc(100% - 38px),#FFF 100%) !important}
+html body div.page div.tbl-wrap table.results tbody tr:not(.row-group):not(.sub-row):not(.last-row):nth-of-type(2n+1){background-color:#FFF !important;background-image:none !important}
+html body div.page div.tbl-wrap table.results tbody tr.last-row,html body div.page div.tbl-wrap table.results tbody tr.last-row td{background-color:#FFF !important;background-image:linear-gradient(90deg,#FFF 38px,#CED6DD 90px,#9EACBA 160px,#9EACBA calc(100% - 160px),#CED6DD calc(100% - 90px),#FFF calc(100% - 38px)) !important;background-size:100% 2px !important;background-position:bottom left !important;background-repeat:no-repeat !important}
+html body div.page div.tbl-wrap table.results tbody tr:not(.row-group):not(.sub-row) td{background-color:transparent !important}
+
+/* §04 rows sit on ONE line each: the parameter's Macedonian gloss runs inline after the English
+   rather than wrapping beneath it, the method and criterion stay on their single line, and the
+   disposition badge is single-line — so all five cells share one baseline. */
+html body div.page div.tbl-wrap table.results.rt tbody td{white-space:nowrap !important;vertical-align:middle !important}
+html body div.page div.tbl-wrap table.results.rt tbody td .p-name{display:inline !important;font-size:7.4px !important;font-weight:700}
+html body div.page div.tbl-wrap table.results.rt tbody td .p-name .mk{display:inline !important;font-size:5.9px !important;font-weight:500;font-style:italic;color:#5A6E84}
+html body div.page div.tbl-wrap table.results.rt tbody td .p-method{display:inline !important;font-family:'Roboto Mono',monospace;font-size:6.4px !important;font-weight:600;color:#1B4C7E}
+html body div.page div.tbl-wrap table.results.rt tbody td .p-spec{display:inline !important;font-size:6.8px !important}
+html body div.page div.tbl-wrap table.results.rt tbody td .pp-res{display:inline-block;font-size:6.4px !important;padding:.5px 5px !important;line-height:1.3 !important;white-space:nowrap}
+html body div.page div.tbl-wrap table.results.rt tbody td .pp-res .mk{display:inline !important;font-size:5.9px !important;font-weight:500;font-style:italic}
+html body div.page div.tbl-wrap table.results.rt thead th{white-space:nowrap !important;vertical-align:bottom !important}
+html body div.page div.tbl-wrap table.results.rt thead th .mk{display:inline !important}
+
+/* uniform row height so the three rows read as one aligned block */
+html body div.page div.tbl-wrap table.results.rt tbody td{padding-top:0 !important;padding-bottom:0 !important;line-height:1.2 !important}
+
+/* ── §04 single-line rows · targeting the child, not the cell ───────
+   nowrap on the td only reached .p-name by INHERITANCE, and _coq-rules.css sets
+   `...table.results tbody .p-name{white-space:normal !important}` — an !important declaration on
+   the child beats an inherited value, so row 2's Macedonian gloss still wrapped and that row was
+   21px against 18px. Set nowrap on the child itself, at matching specificity. */
+html body div.page div.tbl-wrap table.results.rt tbody td .p-name,html body div.page div.tbl-wrap table.results.rt tbody td .p-name .mk,html body div.page div.tbl-wrap table.results.rt tbody td .p-sub,html body div.page div.tbl-wrap table.results.rt tbody td .p-method,html body div.page div.tbl-wrap table.results.rt tbody td .p-spec{white-space:nowrap !important}
+/* The parameter column was sized at 210px from an ESTIMATE of ~202px. Measured, row 2 —
+   "Identification B · Microscopy / Идентиф. Б · Микроскопија", the longest of the three — needs
+   213px, so its Macedonian gloss ran 3px past the cell and, with nowrap above and overflow
+   visible, printed ON TOP of the method column on all 215 certificates (Head of QC, 18.09.2026).
+   Measured again rather than estimated: the parameter column takes 218px, five clear of the
+   longest line, and the method column gives them up — its longest string measures 144.5px, so at
+   154px it still keeps nine and a half of slack. The criterion column is untouched. */
+html body div.page div.tbl-wrap table.results.rt colgroup col:nth-child(2){width:218px !important}
+html body div.page div.tbl-wrap table.results.rt colgroup col:nth-child(3){width:154px !important}
+
+/* With every cell now a single line, `height` on a table cell acts as a MINIMUM — so this sets a
+   uniform row rhythm rather than masking wrapped content as the earlier rule did. */
+html body div.page div.tbl-wrap table.results.rt tbody td{height:17px !important}
+html body div.page div.tbl-wrap table.results.rt tbody td .pp-res{vertical-align:middle}
+
+/* §04's table sat full-bleed (the CoQ tables are designed edge to edge with fade-outs) while
+   every other block is inset to the page's 38px content margin. Inset it to match, so the №
+   column starts on the same vertical line as the identity labels, panels and findings grid. */
+html body div.page div.tbl-wrap:has(table.results.rt){margin-left:38px !important;margin-right:38px !important}
+html body div.page div.tbl-wrap table.results.rt{width:100% !important}
+html body div.page div.tbl-wrap table.results.rt thead th:first-child,html body div.page div.tbl-wrap table.results.rt tbody td:first-child{padding-left:4px !important}
+html body div.page div.tbl-wrap table.results.rt thead th:last-child,html body div.page div.tbl-wrap table.results.rt tbody td:last-child{padding-right:4px !important}
+/* the head band and zebra fades were drawn for a full-bleed table — re-inset their stops */
+html body div.page div.tbl-wrap table.results.rt thead tr{background-image:linear-gradient(90deg,#9EACBA 0,#9EACBA 100%),linear-gradient(90deg,#9EACBA 0,#9EACBA 100%),linear-gradient(#F2F5F9,#F2F5F9) !important;background-size:100% 2px,100% 2px,100% calc(100% - 4px) !important;background-position:top left,bottom left,left top 2px !important;background-repeat:no-repeat !important}
+html body div.page div.tbl-wrap table.results.rt tbody tr:not(.row-group):not(.sub-row):not(.last-row):nth-of-type(2n){background-image:linear-gradient(90deg,#F7F9FC 0,#F7F9FC 100%) !important}
+html body div.page div.tbl-wrap table.results.rt tbody tr.last-row,html body div.page div.tbl-wrap table.results.rt tbody tr.last-row td{background-image:linear-gradient(90deg,#9EACBA 0,#9EACBA 100%) !important;background-size:100% 2px !important;background-position:bottom left !important;background-repeat:no-repeat !important}
+
+/* ── §04 closing separator ──────────────────────────────────────────
+   The table's closing rule was a hard 2px bar butted straight against the disposition
+   statement. It now reads as the design system's engraved rule: a 1.5px band that tapers to
+   white at both ends (opaque stops, so print is unaffected), with real air above and below —
+   the last row gets bottom padding, and the statement is pushed clear of the line. */
+html body div.page div.tbl-wrap table.results.rt tbody tr.last-row td{padding-bottom:5px !important;height:21px !important}
+html body div.page div.tbl-wrap table.results.rt tbody tr.last-row,html body div.page div.tbl-wrap table.results.rt tbody tr.last-row td{background-image:linear-gradient(90deg,#FFF 0,#E4EAF1 6%,#C3D0DC 18%,#9EACBA 50%,#C3D0DC 82%,#E4EAF1 94%,#FFF 100%) !important;background-size:100% 1.5px !important;background-position:bottom left !important;background-repeat:no-repeat !important}
+html body div.page div.tbl-wrap:has(table.results.rt){margin-bottom:0 !important}
+html body div.page div.tbl-wrap table.results.rt + *,html body div.page div.tbl-wrap:has(table.results.rt) + div.disp-note{margin-top:7px !important;padding-top:3px !important}
+
+/* signature space +50% — 20px → 30px of ruled room above each line, per the owner. The grid is
+   bottom-anchored with margin-top:auto, so the extra height is taken out of the spare margin
+   above it rather than pushing the footer. */
+html body div.page div.approval-grid .ap-sign{height:30px !important}
+
+/* §01 labels are spelled out in full, so the label column takes a touch more of each cell and the
+   gap tightens — values there are short codes and dates and have room to spare. */
+html body div.page div.gridrow.lk-inline.g3{gap:0 12px !important}
+html body div.page div.gridrow.lk-inline.g3 .lk{gap:6px !important}
+html body div.page div.gridrow.lk-inline.g3 .lk-lbl{white-space:normal !important;line-height:1.08 !important}
+
+/* ── §04 closing separator · drawn ONCE ─────────────────────────────
+   The tapered rule had been set on the row AND on every cell. Cell backgrounds paint above the
+   row's, and each cell restarted the gradient across its own width — so the single rule rendered
+   as five separate fades, reading as a broken hairline. The cells are now transparent and the
+   row paints the rule across the full table width, in one continuous pass. */
+html body div.page div.tbl-wrap table.results.rt tbody tr.last-row td{background-image:none !important;background-color:transparent !important}
+html body div.page div.tbl-wrap table.results.rt tbody tr.last-row{background-color:transparent !important;background-image:linear-gradient(90deg,#FFF 0,#DDE5EE 4%,#B4C4D2 14%,#8E9FAF 40%,#8E9FAF 60%,#B4C4D2 86%,#DDE5EE 96%,#FFF 100%) !important;background-size:100% 2px !important;background-position:left bottom !important;background-repeat:no-repeat !important}
+
+/* §01 cells stack now: the fully spelled-out labels need 35–86px more than a side-by-side row
+   leaves them, which was silently clipping the values (the ellipsis is invisible at 8px). Label
+   on its own line, value beneath it — both get the full cell width, nothing truncates. */
+html body div.page div.gridrow.lk-inline.g3 .lk{display:flex !important;flex-direction:column !important;align-items:flex-start !important;gap:0 !important}
+html body div.page div.gridrow.lk-inline.g3 .lk-lbl{white-space:normal !important;line-height:1.06 !important;max-width:100% !important}
+html body div.page div.gridrow.lk-inline.g3 .lk-val{overflow:visible !important;text-overflow:clip !important;white-space:nowrap !important;margin-top:1px !important}
+html body div.page div.gridrow.lk-inline.g3{padding-top:2.5px !important;padding-bottom:2.5px !important}
+
+/* §01 keeps its TWO rows. Columns 1–2 stack their spelled-out label over the value; the third
+   column runs INLINE — label then value on one line — and is centred across the two-line height
+   of its row, so the block reads as two even bands. Everything stays inside the 38px margins. */
+/* EVERY §01 cell is exactly TWO rows: the English label on line 1, its Macedonian gloss on
+   line 2 — the English no longer wraps its № onto a line of its own, which was what pushed the
+   value down to a third row. The value then sits INLINE to the right of that two-line block,
+   stretched to its full height and vertically centred, so each cell reads as one item and each
+   row as one even band. Nothing leaves the 38px margins. */
+html body div.page div.gridrow.lk-inline.g3{align-items:stretch !important}
+html body div.page div.gridrow.lk-inline.g3 span.lk{flex-direction:row !important;align-items:stretch !important;justify-content:flex-start !important;gap:6px !important;align-self:stretch !important}
+html body div.page div.gridrow.lk-inline.g3 span.lk > span.lk-lbl{display:flex !important;flex-direction:column !important;justify-content:center !important;flex:0 0 auto !important;max-width:none !important;white-space:nowrap !important;line-height:1.18 !important}
+html body div.page div.gridrow.lk-inline.g3 span.lk > span.lk-lbl > span.mk{white-space:nowrap !important}
+html body div.page div.gridrow.lk-inline.g3 span.lk > span.lk-val{display:flex !important;align-items:center !important;margin-top:0 !important;flex:1 1 auto !important;min-width:0 !important;white-space:nowrap !important;overflow:hidden !important;text-overflow:clip !important}
+
+/* Tick boxes hug their label again — the proportional-fr fill was stretching a two-word option
+   like "Absent" across 380px of empty rule. Boxes are now content-width and the cell's leftover
+   width goes into the SPACE BETWEEN them (space-between), so the first box is flush with the
+   cell's left edge, the last flush with its right, and no box carries dead air inside it.
+   Neither stretched boxes nor a blank block at the right. Needs (0,4,2) to beat _icoa3's own
+   grid rule, and the row-2 selector is re-stated so wrapped rows spread the same way. */
+/* two boxes on a row must not drift to the extremes of a very wide cell: cap the spread by
+   letting the gap grow only to 34px, then the pair sits left-aligned with normal air between */
+
+/* Tick boxes hug their label. The inline grid-template-columns the generator emits made every
+   box in a column the same width, so a two-word option like "Absent" carried ~100px of empty
+   rule. Boxes are now content-width, packed from the left with a 6px gap; the cell's leftover
+   width is plain background between/after them rather than empty space INSIDE a box.
+   Selector matches the real chain — div.fnd > div.fa-grid > div.fc > div.fc-opts. */
+html body div.page div.fa-grid div.fc div.fc-opts{display:flex !important;flex-wrap:wrap !important;justify-content:flex-start !important;align-content:flex-start !important;gap:2px 6px !important;grid-template-columns:none !important}
+html body div.page div.fa-grid div.fc div.fc-opts > span.ck{flex:0 0 auto !important;width:auto !important;max-width:100% !important;min-width:0 !important}
+html body div.page div.fc-mass span.fc-mass-opts{display:flex !important;flex-wrap:wrap !important;justify-content:flex-start !important;gap:2px 8px !important;grid-template-columns:none !important}
+html body div.page div.fc-mass span.fc-mass-opts > span.ck{flex:0 0 auto !important;width:auto !important;min-width:0 !important}
+
+
+/* Fit as many boxes per row as the row can hold before wrapping. The three analysis columns are
+   no longer equal thirds — each cell's column is sized to what its widest row of boxes actually
+   needs (auto tracks over a fixed 3-column grid), so the vertical rules shift per parameter and
+   a four-option set stays on ONE line wherever its labels allow. Boxes keep hugging their text;
+   the wrap is the only thing that changed. */
+html body div.page div.fnd div.fa-grid{grid-template-columns:repeat(3,minmax(0,1fr)) !important;column-gap:10px !important}
+html body div.page div.fa-grid div.fc{min-width:0 !important}
+html body div.page div.fa-grid div.fc div.fc-opts{flex-wrap:wrap !important;gap:2px 5px !important}
+html body div.page div.fa-grid div.fc div.fc-opts > span.ck{max-width:100% !important}
+/* labels must not wrap inside a box — a wrapped box is what makes a row look ragged */
+html body div.page div.fa-grid div.fc div.fc-opts > span.ck > span.ck-t{white-space:nowrap !important}
+
+/* Columns are EVENLY distributed — three equal thirds on every analysis of every certificate,
+   so the two vertical rules land at the same x on all 215 and the grid reads as a grid. The
+   content-sized tracks tried before made the rules jump per parameter, which is what looked
+   ragged. Boxes still hug their labels inside each third; only the column split is fixed. */
+html body div.page div.fnd div.fa-grid{grid-template-columns:repeat(3,minmax(0,1fr)) !important}
+html body div.page div.fa-grid div.fc{min-width:0 !important;max-width:100% !important}
+
+/* More air under the header block before the §01 bar. Taken from the page's own slack, not from
+   any section's content — the signature block is bottom-pinned, so the extra room simply moves
+   down with it. */
+html body div.page div.header-bar{padding-bottom:9px !important;margin-bottom:11px !important}
+html body div.page div.header-bar + div.sec-label{margin-top:0 !important}
+
+/* §03 — designer's pass (18.09.2026). Plates, tick boxes and the bilingual pairing are kept
+   exactly as they are. Only the field around them changes: the two separators drop to a hairline
+   that fades top and bottom, so an unequal run of boxes no longer looks like a broken table cell,
+   and the unticked options lighten so the ticked one reads as the figure against them.
+   (An earlier attempt also restyled the attribute label as an inline-block with its own underline
+   — that collided with the plate's RESULT badge and clipped the box labels; reverted.) */
+html body div.page div.fnd div.fa-grid{column-gap:10px !important;row-gap:6px !important}
+html body div.page div.fa-grid div.fc{border-left:0 !important;border-right:0 !important;position:relative !important}
+html body div.page div.fa-grid div.fc:not(:nth-child(3n+1))::before{content:"" !important;position:absolute !important;left:-5px !important;top:2px !important;bottom:2px !important;width:1px !important;background:linear-gradient(180deg,#FFF 0%,#E4E9EF 22%,#E4E9EF 78%,#FFF 100%) !important}
+html body div.page div.fa-grid div.fc span.ck.ck-off{border-color:#DCE5EE !important}
+/* The unticked alternatives are what an analyst reads to hand-tick a printed record, at the
+   smallest type on the page — they stay at the design system's secondary-text token (~5.0:1).
+   Figure/ground is carried by the ticked box's weight and border, not by dropping these below
+   the 4.5:1 floor. An earlier pass took them to 3.44:1 and 2.42:1; reverted. */
+html body div.page div.fa-grid div.fc span.ck.ck-off span.ck-t{color:#5A6E84 !important}
+html body div.page div.fa-grid div.fc span.ck.ck-off span.ck-t span.mk{color:#5A6E84 !important}
+
+/* the graded three-option sets cost 4px over A4 — taken back from the plate rhythm, not the type */
+html body div.page div.fnd div.fa-grid{row-gap:5px !important}
+html body div.page div.fnd div.fa{margin-bottom:4px !important}
+
+/* ── flatten pass 4 · the selrow gold fades and the footer's inset highlight ──
+   Same specificity trap, fourth time: passes 2 and 3 covered .goldrule, .ap-line and the table
+   rows but never .selrow's pseudo-elements or the footer's overlay, so their authored alpha
+   survived into the PDF. Re-emitted opaque at the real chain. Audit must return []. */
+html body div.page div.selrow::before,html body div.page div.selrow::after{background-image:linear-gradient(90deg,#FFF 0%,#EDE5D2 18%,#D8C89F 50%,#EDE5D2 82%,#FFF 100%) !important;background-color:transparent !important;opacity:1 !important}
+html body div.page div.footer::before{opacity:1 !important;background-color:#F2F5F9 !important;background-image:none !important}
+html body div.page div.footer::after{opacity:1 !important;background-image:linear-gradient(180deg,#FDFEFF 0%,#FAFCFE 100%) !important}
+
+/* ── §03 box distribution (owner's instruction) ────────────────
+   Boxes are distributed EQUALLY within a parameter, and the parameters equally within their
+   column — an even field rather than boxes of ragged width. The option count rides on the
+   .fc-opts class (n2 / n3 / n4) so the track count is structural, not measured. */
+html body div.page div.fa-grid div.fc div.fc-opts{display:grid !important;align-items:stretch !important}
+html body div.page div.fa-grid div.fc div.fc-opts.n2{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+html body div.page div.fa-grid div.fc div.fc-opts.n3{grid-template-columns:repeat(3,minmax(0,1fr)) !important}
+html body div.page div.fa-grid div.fc div.fc-opts.n4{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+html body div.page div.fa-grid div.fc div.fc-opts > span.ck{max-width:none !important;width:auto !important;justify-content:flex-start !important}
+
+/* Identification B — six two-option attributes in ONE row of SIX columns. At 1/6 of the content
+   width a pair cannot sit side by side, so each attribute's two boxes stack and every box gets
+   the full column: English on the first line, the Macedonian gloss on the second beneath it. */
+html body div.page div.fnd div.fa-grid.six{grid-template-columns:repeat(6,minmax(0,1fr)) !important;column-gap:6px !important;row-gap:0 !important}
+html body div.page div.fnd div.fa-grid.six div.fc div.fc-opts.n2{grid-template-columns:minmax(0,1fr) !important;row-gap:2px !important}
+html body div.page div.fnd div.fa-grid.six div.fc div.fc-attr{white-space:normal !important;line-height:1.1 !important}
+
+/* ===== Head of QC, 18.09.2026 ====================================================
+   Three changes, all inside this block so they can be read and reverted as one.
+
+   1 · §03 text enlarged for legibility, section height and arrangement unchanged.
+       The tick boxes carry two stacked lines (English over the Macedonian gloss) and
+       a ballot glyph beside them, so the box height is max(glyph, two text lines).
+       Type goes up; the vertical padding, leading and grid gaps come down by the
+       same amount, so §03 occupies the height it occupied before.
+
+   2 · §04 content enlarged, every row still ONE line. All five cells nowrap on the
+       child elements and the gloss stays inline after the English.
+
+   3 · The 01/02/03/04 band no longer prints hard lines. Cause: the authored band
+       crammed three stops into its top 2.16 px of a 24 px bar - #ACBFD2 -> #DAE5EE
+       -> #FAFCFE, a jump of ~78 per channel across gaps of 0.34, 0.74 and 1.08 px.
+       On screen the browser anti-aliases that into a soft bevel; at print resolution
+       each stop resolves as its own edge, and print-color-adjust:exact stops anything
+       smoothing them. The cap is a top RULE drawn as gradient stops, so it is drawn
+       as one here - anchored in px, not per cent, so it cannot go sub-pixel - and the
+       panel below it runs as a single even ramp.
+       The authored rule also stacked a SECOND 13-stop gradient underneath the first.
+       Both layers are fully opaque, so the lower one never rendered at all; it is not
+       carried forward. No rgba, no shadow, no sub-1 opacity is introduced.
+   ================================================================================ */
+
+/* 3 · section bands */
+html body div.page div.sec-label{
+  background-color:#EEF3F8 !important;
+  background-image:linear-gradient(180deg,
+      #A9BCCF 0,#A9BCCF 1px,
+      #E8F0F7 1px,#F7FAFD 6px,
+      #F2F7FB 45%,#E7EFF6 72%,#DFE9F1 100%) !important;
+  background-size:100% 100% !important;background-repeat:no-repeat !important;
+  box-shadow:none !important;text-shadow:none !important}
+html body div.page div.sec-label .sec-no,html body div.page div.sec-label .mk{text-shadow:none !important}
+
+/* 1 · §03 - type up, leading and padding down by the same measure */
+html body div.page div.fnd div.fa-grid div.fc div.fc-attr{font-size:7.4px !important;line-height:1.04 !important}
+html body div.page div.fnd div.fa-grid div.fc div.fc-attr .mk{font-size:6.5px !important;line-height:1.02 !important}
+html body div.page div.fnd div.fa-grid div.fc div.fc-opts > span.ck{font-size:7px !important;padding:0 2.5px !important;gap:1.5px !important}
+html body div.page div.fnd div.fa-grid div.fc div.fc-opts > span.ck > span.ck-t{font-size:7px !important;line-height:1.02 !important}
+html body div.page div.fnd div.fa-grid div.fc div.fc-opts > span.ck span.mk{font-size:6.2px !important;line-height:1 !important}
+html body div.page div.fnd div.fa-grid div.fc div.fc-opts > span.ck > span.bx{font-size:7.6px !important;line-height:1.16 !important}
+html body div.page div.fnd div.fa-head span.fa-t{font-size:8.2px !important}
+html body div.page div.fnd div.fa-head span.fa-idx{font-size:7.3px !important}
+html body div.page div.fnd div.fa-head span.fa-ref{font-size:6.5px !important}
+html body div.page div.fnd div.fa-head > span.mk{font-size:6.5px !important}
+html body div.page div.fnd div.fa-head span.fa-disp-l{font-size:6.2px !important}
+html body div.page div.fnd div.fa-head span.fa-disp-l .mk{font-size:6.2px !important}
+html body div.page div.fnd div.fa-head span.fa-disp{font-size:7.1px !important}
+html body div.page div.fnd div.fa-head span.fa-disp .mk{font-size:6.2px !important}
+html body div.page div.fnd div.fc-mass span.fc-mass-lbl{font-size:7.5px !important}
+html body div.page div.fnd div.fc-mass span.fc-mass-lbl .mk{font-size:6.4px !important}
+html body div.page div.fnd div.fc-mass span.fc-mass-lbl span.fc-unit{font-size:6.4px !important}
+html body div.page div.fnd div.fc-mass span.fc-mass-opts > span.ck{font-size:6.7px !important}
+/* height given back */
+html body div.page div.fnd div.fa-grid div.fc{padding:1px 6px 1.5px !important}
+html body div.page div.fnd div.fa-grid div.fc div.fc-opts{margin-top:1px !important;gap:1px 5px !important}
+html body div.page div.fnd div.fa-grid{row-gap:3px !important}
+
+/* 2 · §04 - content up, one line per row */
+html body div.page div.tbl-wrap table.results.rt tbody td{padding:1px 6px !important;line-height:1.14 !important;white-space:nowrap !important}
+html body div.page div.tbl-wrap table.results.rt tbody td .p-name{font-size:8.3px !important}
+html body div.page div.tbl-wrap table.results.rt tbody td .p-name .mk{font-size:6.6px !important}
+html body div.page div.tbl-wrap table.results.rt tbody td .p-method{font-size:7.2px !important}
+html body div.page div.tbl-wrap table.results.rt tbody td .p-spec{font-size:7.6px !important}
+html body div.page div.tbl-wrap table.results.rt tbody td .pp-res{font-size:7.2px !important;padding:.5px 5px !important;line-height:1.24 !important}
+html body div.page div.tbl-wrap table.results.rt tbody td .pp-res .mk{font-size:6.6px !important}
+html body div.page div.tbl-wrap table.results.rt thead th{font-size:7.6px !important}
+html body div.page div.tbl-wrap table.results.rt thead th .mk{font-size:6.4px !important}
+
+/* 4 · the white strip between the header and the 01 band.
+   _icoa3-print.css:463 puts margin-bottom:11px on .header-bar, and line 464 immediately
+   sets the band's margin-top to 0 - as do _icoa.css:254 and _coq-rules.css:216. Three
+   layers intend the band flush under the header; the header's own bottom margin was
+   pushing it away from all of them, and because the page ground is white while the header
+   carries its own gradient, the 11 px read as an empty strip. The band goes back flush. */
+html body div.page div.header-bar{margin-bottom:0 !important}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   5 · Section 01 identification row, after the processing group came off
+   (Head of QC, 18.09.2026): "distribute the other items in the same row equally
+   and align them suitably ... because there will be more space in that row you
+   can increase the size of the parameter and the placeholder value."
+
+   The row was a flex row with justify-content:space-between. That is right for
+   three groups and wrong for two — it pushes Phenotype and Chemotype to opposite
+   page edges with a hole between them. It becomes a TWO-column grid of equal
+   width on the same 38 px page margin the rows beneath it use, each group reading
+   from its own column's left border.
+
+   The width the third group gave back is spent on type: the label and its
+   Macedonian line, and the option chips, all rise about 17 %, the same step the
+   type took in Sections 03 and 04. Every rule here carries the full
+   html body div.page ... chain, and a span. where the layer beneath qualifies by
+   class, so it wins the cascade on specificity and not only on load order.
+   ───────────────────────────────────────────────────────────────────────────── */
+html body div.page div.selrow{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  justify-content:stretch !important;
+  justify-items:start !important;
+  align-items:center !important;
+  column-gap:12px !important;row-gap:0 !important;   /* 12px + 38px margin = the g3 row's own 218px tracks */
+  padding-left:38px !important;padding-right:38px !important}
+html body div.page div.selrow > span.grp{
+  display:inline-flex !important;align-items:center !important;
+  gap:9px !important;min-width:0 !important;white-space:nowrap !important}
+/* Head of QC, 18.09.2026: "that first row will be in two columns ... the second
+   column should have its content aligned to the left border." So each group owns
+   one half of the row and both read from their own column's left border —
+   justify-items:start above does that; neither is centred and neither is pushed
+   to a page edge. */
+html body div.page div.selrow > span.grp:first-child{grid-column:1 !important}
+html body div.page div.selrow > span.grp:last-child{grid-column:2 !important}
+
+/* the parameter label, and its Macedonian line */
+html body div.page div.selrow span.lk-lbl{
+  font-size:8.4px !important;letter-spacing:.34px !important;line-height:1.12 !important}
+html body div.page div.selrow span.lk-lbl > span.mk{
+  font-size:6.9px !important;line-height:1.08 !important}
+
+/* the placeholder values — the ticked and open option chips */
+html body div.page div.selrow span.chip-sel{
+  font-size:8.6px !important;padding:1.8px 6.5px 1.8px 5px !important;border-radius:9px !important}
+html body div.page div.selrow span.chip-un{
+  font-size:7.5px !important;padding:1.3px 6px !important;border-radius:9px !important}
+html body div.page div.selrow span.chip-sel > span.bx{font-size:10.6px !important}
+html body div.page div.selrow span.chip-un > span.bx{font-size:9.6px !important}
+html body div.page div.selrow span.grp > span.stack{gap:7px !important}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   6 · Section 02, the acceptance criterion of #7 (Head of QC, 18.09.2026).
+   Fixing the parameter column above showed the same fault one column further
+   right, and worse: "≤ 2.0% / 25–50 g · < 1 cm leaves, no seeds" measures 193 px
+   in a 146 px column, so with nowrap it printed UNDER the disposition chip and
+   the page lost "no seeds" — an acceptance criterion missing half its condition.
+   The column cannot simply be widened: across the row the content needs 207 + 139
+   + 193 + 81 px and the table is 678 px, so there is nothing to take. The text is
+   not shortened either, because the criterion is the criterion. That one cell
+   wraps instead, and only that one — every other cell in the table stays on its
+   single line, so no other row moves. */
+html body div.page div.tbl-wrap table.results.rt tbody td:nth-child(4),
+html body div.page div.tbl-wrap table.results.rt tbody td:nth-child(4) .p-spec{
+  white-space:normal !important;line-height:1.12 !important}
+
+/* The white band under the section 01 bar (Head of QC, 18.09.2026: "expand the background
+   that is in that section"). The bar carried 4 px of margin below it, and those 4 px were
+   page-white between two coloured bands. The margin goes to zero and the product row takes
+   the 4 px into its own padding, so the row's own gradient fills the gap and nothing below
+   moves - its first line of type sits exactly where it did. Scoped to the bar that follows
+   the masthead: the other section labels keep their spacing, the page around them being
+   white in any case. Measured, not estimated: gap 4.00 px, padding-top 4 -> 8 px. */
+html body div.page div.header-bar + div.sec-label{margin-bottom:0 !important}
+html body div.page div.pb-main{margin-top:0 !important;padding-top:8px !important}
+
+/* Section 04, re-measured against the house faces (Head of QC, 18.09.2026). With the
+   Macedonian set in Montserrat rather than in the renderer's Liberation Sans the parameter
+   column ran 21.7 px over and the acceptance-criteria header 13.3 px over - measured over
+   all 215 pages, not sampled. The number column was holding 56 px for 19 px of content, so
+   the width comes out of it and out of the two columns with a little to spare. Every figure
+   is the measured maximum plus a margin, and the table's total width is unchanged at 678 px:
+   21 + 244 + 151 + 160 + 102. */
+html body div.page div.tbl-wrap table.results.rt colgroup col:nth-child(1){width:21px !important}
+html body div.page div.tbl-wrap table.results.rt colgroup col:nth-child(2){width:244px !important}
+html body div.page div.tbl-wrap table.results.rt colgroup col:nth-child(3){width:151px !important}
+html body div.page div.tbl-wrap table.results.rt colgroup col:nth-child(4){width:160px !important}
+html body div.page div.tbl-wrap table.results.rt colgroup col:nth-child(5){width:102px !important}
+
+/* The specification reference in Section 01 is the longest value the row carries -
+   QCSP_001_OPM-III_v.01 needs 22 px more than the cell gave it, and the cell clips. The
+   value keeps its own line rather than shrinking: the label column above it is narrower
+   than the value beneath, which is what the row was built to allow. */
+html body div.page div.gridrow.lk-inline.g3 span.lk > span.lk-val{overflow:visible !important;text-overflow:clip !important}
+html body div.page div.gridrow.lk-inline.g3 span.lk > span.lk-val.sm{font-size:8.4px !important;letter-spacing:.1px !important}
+
+/* The check-sheet option labels (Head of QC, 18.09.2026, with the house faces in place).
+   Each option is a fixed cell in the Section 03 grid and its label stacks the English over
+   the Macedonian, ellipsised when it will not fit. With the Macedonian set in Montserrat
+   rather than in the renderer's Liberation Sans nine of the options began to clip - the
+   worst, "Whole organisms | Цели", by 11 px, which takes the tail off a word the analyst
+   has to read before ticking a box. The type comes down from 7.0 px to 6.4 px, which is
+   the smallest step that clears the longest label measured over all 215 pages; nothing
+   else in Section 03 moves, because the cells are sized by the grid and not by the type. */
+html body div.page div.fnd div.fa-grid div.fc div.fc-opts > span.ck > span.ck-t{font-size:6.05px !important;letter-spacing:-0.05px !important;line-height:1.02 !important}
+html body div.page div.fnd div.fa-grid div.fc div.fc-opts > span.ck > span.ck-t > span.mk{font-size:5.6px !important;letter-spacing:0 !important}

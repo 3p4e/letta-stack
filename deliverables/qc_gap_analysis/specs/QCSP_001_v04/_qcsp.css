@@ -1,0 +1,23 @@
+/* The product specification's own table: four columns, not the five the certificates use.
+   The house stylesheet sizes `table.results` columns with !important, so the specification
+   states its own at the same weight — but it had picked its own proportions instead of the
+   certificate's, giving Method and Acceptance Criteria less room than the certificate gives
+   them and wrapping their Ph. Eur. citations tighter than it should. № and Parameter now
+   carry the certificate's own widths (56 + 198); Method carries the certificate's own width
+   too (186); the certificate lets Acceptance Criteria take whatever is left over, and with
+   no Result column here to share it with, that remainder is larger: 678 - 56 - 198 - 186 =
+   238, the width every other table on these documents has. */
+html body div.page div.tbl-wrap table.results.spec4 colgroup col:nth-child(1){width:56px !important}
+html body div.page div.tbl-wrap table.results.spec4 colgroup col:nth-child(2){width:198px !important}
+html body div.page div.tbl-wrap table.results.spec4 colgroup col:nth-child(3){width:186px !important}
+html body div.page div.tbl-wrap table.results.spec4 colgroup col:nth-child(4){width:238px !important}
+html body div.page div.tbl-wrap table.results.spec4 tbody td{padding-top:1.1px !important;padding-bottom:1.1px !important}
+html body div.page div.tbl-wrap table.results.spec4 tbody td .p-spec,
+html body div.page div.tbl-wrap table.results.spec4 tbody td .p-name{white-space:normal !important;line-height:1.1 !important}
+html body div.page div.pb-main span.pb-pot{font-family:'Orbitron','Montserrat',sans-serif;font-weight:800;color:#8A6A28;margin-left:10px}
+html body div.page div.qcsp-note{padding:3px 38px 0;font-family:'Montserrat',sans-serif;font-size:6.6px;line-height:1.25;color:#4A5B70}
+
+/* The packaging line is a hundred characters and cannot share a third of a row, so it has
+   a full-width row of its own and wraps there. */
+html body div.page div.gridrow.lk-inline:not(.g3) span.lk{display:flex !important;align-items:baseline !important;gap:8px !important;width:100% !important}
+html body div.page div.gridrow.lk-inline:not(.g3) span.lk > span.lk-val{white-space:normal !important;line-height:1.15 !important}

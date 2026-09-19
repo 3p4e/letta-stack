@@ -380,6 +380,30 @@ if NEW:
 # except where an outsourced certificate reports otherwise (FB032601, ППК26127: 0.08 %,
 # Не одговара) — that lot's foreign matter is held for the Head of QC.
 ICOA_RULE = "--icoa" in sys.argv
+# --icoa is not optional, and the failure without it was a puzzle rather than a message.
+# `if ICOA_RULE:` several hundred lines below binds _D_, _F_, LEGACY_ICOA and LEGACY_COQ
+# at MODULE level, and the register notes further down use them unconditionally — so a run
+# without the flag got 2,400 lines in and died with "NameError: name '_F_' is not defined".
+# That was read as a broken builder and recorded as OI-58 on 18.09.2026, and it is why
+# CoQ_Analysis_Master_v45 was said to be unbuildable. It was a missing flag. Say so here,
+# at the top, before any work is done.
+if not ICOA_RULE:
+    raise SystemExit(
+        "build_tracker_v8.py requires --icoa, and --icoa alone is not the build.\n"
+        "  The iCoA block binds the date helpers and the legacy issue days that the CoQ and\n"
+        "  iCoA register notes read further down, so nothing can be built without it. But a\n"
+        "  workbook built with --icoa alone VERIFIES WITH FINDINGS and must not be shipped:\n"
+        "  without --cells it is short of results, without --mikro the Mikro CoQ Parameter\n"
+        "  section is missing, and without the two legacy days it dates the legacy series on\n"
+        "  the defaults rather than on the days the series actually issued. --mikro must name\n"
+        "  a master that still carries the RAW sheet (v10-v13, v21-v23); from v24 on it is\n"
+        "  folded into Reference and cannot be read back out.\n"
+        "  The whole build, which is what produced v44 and v45:\n"
+        "      python3 deliverables/qc_gap_analysis/tracker/build_tracker_v8.py \\\n"
+        "          --v9 --version=<N> --icoa --cells \\\n"
+        "          --mikro=deliverables/qc_gap_analysis/tracker/CoQ_Analysis_Master_v13.xlsx \\\n"
+        "          --build-date=<DD.MM.YYYY> --legacy-icoa=03.06.2026 --legacy-coq=06.06.2026\n"
+        "  Then ALWAYS: tracker/verify_workbook.py, which must report no findings.")
 # --cells absorbs the owner's 09.09.2026 pass over eCoA_DATABASE: the coverage it
 # closes on Batch Coverage, and the Reconciliation sheet that says what the two
 # records of those certificates agree and disagree about.
@@ -779,7 +803,13 @@ if ICOA_RULE:
             _rt_issuable = bool(c_rt and m_rt and _camp and _rt and _D_(_rt.get("issue", ""))
                                 and TS.series_of(c_rt.split(", (")[0]) == _camp == TS.series_of(m_rt.split(", (")[0]))
             _rt_coq_issue = max(_D_(_rt["issue"]), _cmd) if (_rt_issuable and _cmd) else (_D_(_rt["issue"]) if _rt_issuable else None)
-            _rt_scope_docs = [_rt_docs[n] for n in (3, 4, 5, 6, 10) if n in _rt_docs]
+            # Which retest documents the reissue actually cites, and therefore which one its
+            # date must follow. #9 joined the list on 17.09.2026, when the Head of QC ruled
+            # that a newer external microbiological-purity certificate means the parameter was
+            # retested — so the reissue cites it, and "5 to 10 days after the last external
+            # certificate it cites" now has to see it. Before the ruling the reissue carried
+            # the initial microbiology forward and #9 was rightly not in this set.
+            _rt_scope_docs = [_rt_docs[n] for n in (3, 4, 5, 6, 9, 10) if n in _rt_docs]
             _rt_latest_cited = max(_rt_scope_docs, key=lambda x: str(T.date_key(x[1]))) if _rt_scope_docs else None
             if _rt_only:
                 _docs_txt = " / ".join(dict.fromkeys(_rt_docs[n][0] + " of " + _rt_docs[n][1] for n in _rt_only))
@@ -1179,6 +1209,29 @@ if ICOA_RULE:
                                "18.09.2026, provisional until they exist" % _F_(r["coq_issue"])) if r["coq_issue"] else
                               "issued on the owner's date once the 227-М certificate exists",
                               _MOD_CODE.get(f"{T.batch_key(_kb)}|{_ks}", "the campaign iCoA"), _F_(r["rt_icoa_day"])))
+    # Head of QC, 18.09.2026: "assign codes if they're missing." The rows the register
+    # withheld for want of a packaging date on the list — and nothing else — take their
+    # numbers now, after the last allocated code, in the order the series gives them:
+    # the release certificates first, then their reissues. Issuable reads "ruled": the
+    # code is the register's, the date still follows the packaging date the list does
+    # not hold. A row held for any other reason (a held result, a missing internal
+    # certificate, no certificate on file) is not touched by the ruling.
+    _RULED_WHY = "no packaging date on the list"
+    _ruled_lots = {(r["cu"], r["p"]) for r in _cq_later
+                   if r["series"] == "initial release" and r.get("why") == _RULED_WHY}
+    _cq_ruled = ([r for r in _cq_later if r["series"] == "initial release" and (r["cu"], r["p"]) in _ruled_lots]
+                 + [r for r in _cq_later if r["series"] != "initial release" and (r["cu"], r["p"]) in _ruled_lots
+                    and r.get("why") == "its initial certificate is not yet issuable"])
+    _cq_ruled.sort(key=lambda r: (0 if r["series"] == "initial release" else 1, r["cu"], r["p"]))
+    _cq_later = [r for r in _cq_later if r not in _cq_ruled]
+    for _j, r in enumerate(_cq_ruled, len(_cq_ok) + len(_cq_alloc) + 1):
+        r["code"], r["issuable"] = f"CoQ-PP_26-{_j:03d}", "ruled"
+        r["reg_status"] = ("ruled — numbered on the Head of QC's instruction of 18.09.2026 (\"assign codes if "
+                           "they're missing\"); the list holds no packaging date for the lot, so the register "
+                           "could not date the certificate and had withheld the number; the date follows "
+                           "the packaging date once the list carries it"
+                           + ("" if r["series"] == "initial release" else
+                              "; a reissue, numbered after its release certificate — " + r.get("rt_status", "")))
     for r in _cq_later:
         r["code"], r["issuable"] = "— at issue —", "no"
         r["reg_status"] = "not yet issuable — " + r["why"]
@@ -1194,7 +1247,7 @@ if ICOA_RULE:
         if r["series"] == "initial release":
             _d = r["sortdate"] or r["basis"]
             _lot_day[(r["cu"], r["p"])] = str(T.date_key(_d)) if _d else "9"
-    COQ_REGISTER = _cq_ok + _cq_alloc + sorted(_cq_later, key=lambda r: (_lot_day.get((r["cu"], r["p"]), "9"), r["cu"], r["p"],
+    COQ_REGISTER = _cq_ok + _cq_alloc + _cq_ruled + sorted(_cq_later, key=lambda r: (_lot_day.get((r["cu"], r["p"]), "9"), r["cu"], r["p"],
                                                                          0 if r["series"] == "initial release" else 1))
     # The register sheet is the series, so it is the series that is counted here.
     # This line used to report the planning rows it numbered — 60 — while the
@@ -1211,7 +1264,7 @@ if ICOA_RULE:
     print(f"CoQ register: {len(_cq_ok)} numbered (CoQ-PP_26-001 … {_cq_ok[-1]['code'][-3:] if _cq_ok else '—'}; "
           f"{sum(1 for r in _cq_ok if r['group'] == 'legacy' and not r['coq_flag'])} legacy on 27.05.2026, "
           f"{sum(1 for r in _cq_ok if r['group'] == 'legacy' and r['coq_flag'])} legacy moved, "
-          f"{sum(1 for r in _cq_ok if r['group'] != 'legacy')} post-SOP), {len(_cq_alloc)} allocated in advance (Tranche 3: code reserved, planned {_F_(_D_(T3_ISSUE)) if T3_ISSUE else 'undated'}, provisional), {len(_cq_later)} not yet issuable "
+          f"{sum(1 for r in _cq_ok if r['group'] != 'legacy')} post-SOP), {len(_cq_alloc)} allocated in advance (Tranche 3: code reserved, planned {_F_(_D_(T3_ISSUE)) if T3_ISSUE else 'undated'}, provisional), {len(_cq_ruled)} ruled (18.09.2026: numbered without a packaging date), {len(_cq_later)} not yet issuable "
           f"({sum(1 for r in _cq_later if r['series'] == 'initial release')} initial: "
           f"{sum(1 for r in _cq_ok if r['gaps'])} numbered with an initial certificate to locate; "
           f"{sum(1 for r in _cq_later if r['series'] != 'initial release')} retest)")
@@ -1370,8 +1423,92 @@ def ecoa_line(code, date, lab):
     return f"{code}, ({date}) [{lab}]"
 
 
+# --------------------------------------------------------------------------- this block is
+# A batch with two testing series used to be two blocks that look identical: the same
+# parameters, the same shape, and nothing on the row saying which series it is. The reader
+# had to trace each parameter's own reference line to work it out, and with three
+# certificates of analysis on one batch that is not reading, it is detective work (Head of
+# QC, 18.09.2026). So every block now names itself: which instance it is, what round of
+# testing the documents on it belong to, and which certificate of analysis and certificate
+# of quality carry them.
+
+def _cert_rounds():
+    """lot -> [{coq, icoa, round, issue, keys}] — what each certificate of quality cites.
+
+    Read from coq_artifact_data.json, which is what the certificates were printed from, so
+    the sheet and the certificate cannot disagree about which document belongs to which
+    round.
+    """
+    path = os.path.join(os.path.dirname(HERE), "coq_artifact_data.json")
+    out = {}
+    if not os.path.exists(path):
+        return out
+    for c in json.load(open(path, encoding="utf-8"))["coqs"]:
+        entry = {"coq": (c.get("regcode") or "").strip(),
+                 "icoa": (c.get("icoa_code") or "").strip(),
+                 "round": "retest" if str(c.get("t") or "").startswith("retest") else "initial release",
+                 "issue": str(c.get("issue") or ""),
+                 "keys": {T.nkey(r.get("doc")) for r in c.get("rows", []) if r.get("doc")}}
+        for lot in (c.get("pp"), c.get("cb")):
+            if lot:
+                out.setdefault(str(lot).strip(), []).append(entry)
+    return out
+
+
+CERT_ROUNDS = _cert_rounds()
+
+
+def round_label(pairs):
+    """What round of testing the documents on one block belong to, in the desk's words."""
+    out = []
+    for code, _date in pairs:
+        if TS.is_experimental(code):
+            w = "experimental — starred sample"
+        elif TS.is_retest_only(code):
+            w = "re-test campaign (IJZ-MB)"
+        elif TS.is_reanalysis(code):
+            w = "re-analysis %s" % (TS.series_of(code) or "")
+        else:
+            w = "release testing"
+        if w not in out:
+            out.append(w)
+    return " + ".join(out)
+
+
+def cert_label(b, keys):
+    """The certificate of analysis and certificate of quality that carry this block.
+
+    Matched on the documents themselves — a certificate is named here only when it cites a
+    document that is actually on this block — so the join is the record's, not a guess from
+    the block's position.
+    """
+    ents, seen_coq = [], set()
+    for lot in (b.get("p"), b.get("cu")):
+        for e in CERT_ROUNDS.get(str(lot or "").strip(), []):
+            if id(e) not in seen_coq:
+                seen_coq.add(id(e))
+                ents.append(e)
+    # A retest certificate cites the initial round's documents too, for the determinations
+    # it did not repeat, so matching on any shared document names both certificates on
+    # every block. The one that belongs to a block is the one that BRINGS it: walk the
+    # rounds in order and keep a certificate only where it is the first to cite something
+    # on this block.
+    ents.sort(key=lambda e: (e["round"] != "initial release", e["issue"]))
+    covered, out = set(), []
+    for e in ents:
+        fresh = (keys & e["keys"]) - covered
+        if not fresh:
+            continue
+        covered |= fresh
+        line = "%s\n%s · %s" % (e["icoa"] or "iCoA — at issue",
+                                e["coq"] or "CoQ — at issue", e["round"])
+        if line not in out:
+            out.append(line)
+    return "\n".join(out) if out else "no certificate of quality cites this block"
+
+
 # --------------------------------------------------------------------------- layout
-cols, col = [], 4
+cols, col = [], 7
 for p in T.PARAMS:
     p["start"] = col
     subs = T.GROUPS[p["n"]]
@@ -1402,6 +1539,8 @@ ws = wb.create_sheet(SHEET, wb.sheetnames.index("Batch Coverage") + 1)
 # ---- header rows 1–4
 put(ws, 1, 1, "BATCH IDENTIFICATION", FW, NAVY)
 ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=3)
+ws.merge_cells(start_row=1, start_column=4, end_row=1, end_column=6)
+put(ws, 1, 4, "THIS BLOCK", FW, NAVY)
 g, gstart = None, 0
 for i, p in enumerate(T.PARAMS):
     if p["group"] != g:
@@ -1412,7 +1551,9 @@ for i, p in enumerate(T.PARAMS):
     if i == len(T.PARAMS) - 1:
         ws.merge_cells(start_row=1, start_column=gstart, end_row=1, end_column=p["end"])
         put(ws, 1, gstart, g, FW, NAVY)
-for c, t in ((1, "CU Batch"), (2, "P Batch"), (3, "STATUS")):
+for c, t in ((1, "CU Batch"), (2, "P Batch"), (3, "STATUS"),
+             (4, "Testing\ninstance"), (5, "Round / campaign"),
+             (6, "Certificate of analysis\nCertificate of quality")):
     ws.merge_cells(start_row=2, start_column=c, end_row=4, end_column=c)
     put(ws, 2, c, t, FWS, NAVY)
 for p in T.PARAMS:
@@ -1517,6 +1658,22 @@ for b in batches:
     for i in range(K):
         top, bot = first + 2 * i, first + 2 * i + 1
         top_lines = bot_lines = 1
+        block_docs, block_keys = [], set()
+        for _p in T.PARAMS:
+            _dl = docs[_p["n"]]
+            if i < len(_dl):
+                _c, _d, _l, _cr = _dl[i]
+                if (_c, _d) not in block_docs:
+                    block_docs.append((_c, _d))
+                block_keys.add(T.nkey(_c))
+        for _c_, _v_, _f_ in ((4, "%d of %d" % (i + 1, K), FWS),
+                              (5, round_label(block_docs), F7B),
+                              (6, cert_label(b, block_keys), F6)):
+            ws.merge_cells(start_row=top, start_column=_c_, end_row=bot, end_column=_c_)
+            put(ws, top, _c_, _v_, _f_ if _c_ != 4 else FWS,
+                NAVY if _c_ == 4 else GREY, CEN if _c_ == 4 else TOPC)
+            fill_range(ws, top, _c_, bot, _c_, NAVY if _c_ == 4 else GREY)
+        bot_lines = max(bot_lines, nlines(cert_label(b, block_keys), 24) - 1)
         for p in T.PARAMS:
             dlist = docs[p["n"]]
             here = dlist[i] if i < len(dlist) else None
@@ -1684,7 +1841,11 @@ key = ("KEY — ✓ green: certificate on file AND its result on the desk (relea
        "BLOCK RULE: one TESTING INSTANCE = one block of two rows — result(s) on the top row, the certificate that reports them on "
        "the bottom row. A batch holds as many blocks as it has testing instances, and a parameter's certificates are taken in "
        "ascending date order, so the n-th block is the n-th round of testing; a parameter tested once has an empty cell in the "
-       "later blocks. For #9, #10 and #11 each sub-determination has its own column on the top row. \"not reported\" = that sub-determination "
+       "later blocks. READING A BATCH WITH MORE THAN ONE SERIES: every block names itself in the three columns after STATUS — "
+       "which instance of how many, which round or re-analysis campaign the documents on it belong to, and the certificate of "
+       "analysis and certificate of quality that carry them. Those three are read from the certificates' own source, so a block "
+       "and the certificate printed from it cannot disagree; where a block is named \"no certificate of quality cites this "
+       "block\", the documents on it are on file and are not carried by any released certificate. For #9, #10 and #11 each sub-determination has its own column on the top row. \"not reported\" = that sub-determination "
        "is not reported on that certificate; \"no result on file\" = the certificate is credited here but the desk holds no result "
        "from it. RED BOLD result = OUT OF SPECIFICATION against the criterion in row 3; AMBER BOLD result = UNDETERMINED, in the "
        "Ph. Eur. band between a printed count limit and twice it. The check follows the Quality Desk exactly: a counted "
@@ -1699,7 +1860,7 @@ put(ws, krow, 1, key, F6I, GREY, Alignment(horizontal="left", vertical="top", wr
 ws.row_dimensions[krow].height = 62
 
 # ---- widths, panes, print
-for c, w in ((1, 13), (2, 15), (3, 20)):
+for c, w in ((1, 13), (2, 15), (3, 20), (4, 8), (5, 19), (6, 26)):
     ws.column_dimensions[L(c)].width = w
 for c, p, kindc in cols:
     if kindc == "check":
@@ -1711,7 +1872,7 @@ for c, p, kindc in cols:
     else:
         w = 8 if kindc in ("9.4", "9.5") else 8.6
     ws.column_dimensions[L(c)].width = w
-ws.freeze_panes = "D5"
+ws.freeze_panes = "G5"
 ws.print_title_rows = "1:4"
 ws.page_setup.orientation = "landscape"
 ws.page_setup.paperSize = ws.PAPERSIZE_A3
@@ -2403,7 +2564,9 @@ COQ_NOTE = ("Head of QC, 05.09.2026: preliminary CoQ issuance register — codes
             "in advance, by the owner's ruling. After the numbered and the allocated "
             "rows, the batches the tranches do not cover — under production, under testing, or on no tranche list — are listed lot by lot; such a batch carries "
             "its release certificate and no retest row, because only the tranche batches are for sale and only they were retested at the QP's request "
-            "(owner, 15.09.2026). FORMULAS: No. counts the rows whose Issuable is 'yes' or 'allocated'; No. and the code as on the iCoA Register; Rule date is {coq} for a legacy row "
+            "(owner, 15.09.2026). RULED (Head of QC, 18.09.2026, \"assign codes if they're missing\"): the rows the register had withheld only for want of a packaging date on the list "
+            "— CC042601 and FB042601, release and reissue, and P160012, P160022, P160032 — take their codes after the last allocated one, release certificates first, with Issuable reading 'ruled' and "
+            "no planned date until the list carries the packaging date. FORMULAS: No. counts the rows whose Issuable is 'yes', 'allocated' or 'ruled'; No. and the code as on the iCoA Register; Rule date is {coq} for a legacy row "
             "whose latest eCoA is on or before it, else the first working day 7 days after the latest eCoA (not before {coq}); the planned date is the "
             "latest of the rule date, the iCoA's date and the lot's last day of packaging; iCoA (register) and its date are looked up on the iCoA Register by Key. "
             "SUPERSEDES (initial CoQ): a reissue names the initial certificate of the same lot by the register's own code, looked up by Key, so it follows a "
@@ -2531,7 +2694,7 @@ def _fill_coq_register(sh):
     sh.row_dimensions[1].height = 22
     _r = 2
     for r in COQ_REGISTER:
-        f_no = f'=IF(OR(C{_r}="yes",C{_r}="allocated"),COUNT(A$1:A{_r - 1})+1,"")'
+        f_no = f'=IF(OR(C{_r}="yes",C{_r}="allocated",C{_r}="ruled"),COUNT(A$1:A{_r - 1})+1,"")'
         f_code = f'=IF(A{_r}<>"","CoQ-PP_26-"&TEXT(A{_r},"000"),"— at issue —")'
         # Owner, 10.09.2026: five to ten days after the last external certificate
         # the sheet cites, floored to the blanket day. LAG_DAYS is 7 in
@@ -2544,7 +2707,9 @@ def _fill_coq_register(sh):
         _pkc = f"INDEX('iCoA Register'!$F:$F,MATCH(S{_r},'iCoA Register'!${REG_KEY_COL}:${REG_KEY_COL},0))"
         # an allocated row (Tranche 3, 15.09.2026) carries its code and no date: the date
         # is 7 days after the mycotoxin certificate, which does not exist yet
-        f_issue = (f'=IF(OR(A{_r}="",C{_r}="allocated"),"",MAX(E{_r},IF(ISNUMBER(I{_r}),I{_r},0),'
+        # a ruled row (18.09.2026) likewise: numbered, and dated only once the list
+        # carries the lot's packaging date
+        f_issue = (f'=IF(OR(A{_r}="",C{_r}="allocated",C{_r}="ruled"),"",MAX(E{_r},IF(ISNUMBER(I{_r}),I{_r},0),'
                    f'IFERROR(IF(ISNUMBER({_pkc}),{_pkc},0),0)))')
         latest_d = _date(r["latest"][1]) if r["latest"] else None
         status = r["reg_status"]
@@ -2568,7 +2733,7 @@ def _fill_coq_register(sh):
         for _i, v in enumerate(cells, 1):
             c = put(sh, _r, _i, v, F7B if _i in (2, 12) else F7,
                     FILL["green"] if (_i == 20 and str(v).startswith("registered")) or (_i == 3 and v == "yes") else
-                    FILL["orange"] if (_i == 20 and str(v).startswith("allocated")) or (_i == 3 and v == "allocated") else
+                    FILL["orange"] if (_i == 20 and str(v).startswith(("allocated", "ruled"))) or (_i == 3 and v in ("allocated", "ruled")) else
                     FILL["amber"] if (_i == 20 and str(v).startswith("not yet")) or (_i == 3 and v == "no")
                     or (_i in (15, 16) and str(v).startswith("—")) or (_i == 29 and v) or (_i == 28 and "replaces" in str(v)) else None,
                     CEN if _i not in (20, 28, 29) else Alignment(horizontal="left", vertical="center", wrap_text=True))
@@ -2773,7 +2938,7 @@ SHEET_ABOUT = {
     "CoQ Compilation": "The owner's first request (31.08.2026): one row per certificate of quality — release and reissue, every batch — with the template's header fields (code, date of issue, the certificate it supersedes, batch, P lot, strain, harvest and packaging, the internal certificate, Total THC and its certificate, grade, potency window, product and specification codes, the specification's bands) and, for every determination #1 to #12 with its sub-determinations (23), four columns: the result the certificate prints, the document it rests on, that document's date of issue and its laboratory. A determination the certificate prints no result for shows why (not tested, upon request, to be performed in house, awaiting a certificate). The code is the CoQ Register's.",
     "CoQ Compilation (long)": "The same compilation one row per certificate of quality and determination (172 × 23), with the method, the acceptance criterion, the laboratory's receipt date of the sample, the desk's status for the row, the route where nothing is on file yet, and the other documents on file that also carry the result.",
     "Result Supersession": "The sweep of 16.09.2026 (result_supersession.py), one row per finding, filterable on CHECK. \u0022cited as covering\u0022 \u2014 a RELEASE certificate citing the release result while a later retest is on file, which is the owner\u0027s ruling of 10.09.2026 working as written and is not a defect. \u0022carried forward\u0022 \u2014 a reissue carrying a determination forward from the initial testing because its campaign did not retest it, while a later result for the same lot is on file: the rows OI-38 decides. \u0022cited after the issue date\u0022 \u2014 a certificate resting on a document issued AFTER it, which is a defect and not a question. \u0022two sublots in one block\u0022 \u2014 two certificates of the same testing on the same day reporting different results in one register block, where the certificate of quality prints one of the pair and does not say which sublot it certifies (OI-39). \u0022on file, on no certificate\u0022 \u2014 a result in the release register that no certificate of quality for that lot cites, listed so the owner can see the whole of what a ruling would move. A stability timepoint is excluded throughout: it measures the lot ageing and no certificate of quality prints it. The tab is read with the coverage table in tracker/RESULT_SUPERSESSION_2026-09-16.md: no lot on file carries a second heavy-metal certificate, so the sweep is blind on #11 and its silence there is a gap in the record, not a clean result.",
-    "Potency Grades": "The potency grades per strain — grade nominal, tolerance and specification window (nominal ± tolerance) — as the Head of QC's potency specification of 15.09.2026 prints them (Potency_specifications_233.pdf; starting nominals QCSP 001 v.03, results CoQ_Analysis_Master_v25), one row per strain and grade, with the measured Total Δ9-THC results each page rests on. Built from potency_grades_2026-09-15.csv by potency_grades.py.",
+    "Potency Grades": "The potency grades per strain — grade nominal, tolerance and specification window (nominal ± tolerance) — as the Head of QC's potency specification of 15.09.2026 prints them (Potency_specifications_233.pdf; starting nominals QCSP 001 v.03, results CoQ_Analysis_Master_v25 — confirmed grade by grade against the owner's Potency_specifications_25.pdf of 17.09.2026, which corrected Amnesia Core Cut's tolerance to ± 1.20 and added Wedding Cake at 26.00 ± 2.60), one row per strain and grade, with the measured Total Δ9-THC results each page rests on. Built from potency_grades_2026-09-15.csv by potency_grades.py.",
     "Not Tested Review": "Every n/t cell of the CoQ References tab — certificate, batch, series, determination, the cell as printed — for the owner's check (owner, 15.09.2026: legitimate only where nothing was ever tested — aflatoxin B1 and ochratoxin A beside an IJZ total-aflatoxin result, and the upon-request organisms and pesticide panel).",
     "Open Items": "The standing register of what the desk cannot decide: every finding raised and left to the owner, with what was found, what the desk did with it, the decision being asked for, and the evidence behind it. STATE is open (waiting, nothing printed), marked (the certificate prints the field bracketed in red and unticked) or ruled (kept for the record with the ruling). Built from open_items.py, which also writes OPEN_ITEMS.md.",
     "iCoA Issuance": "One row per P lot and series (initial release, retest): what its iCoA carries, the CNP references, the cannabinoid-assay eCoA that covers identification C, the codes and planned dates looked up on the registers.",
@@ -3212,7 +3377,10 @@ def add_imb_register_sheet(wb):
         ruled = ST.canonical(printed)
         note = ""
         if ruled != printed:
-            note = "strain ruled Cap Junky; the register prints " + printed
+            _r = ST.ruling_for(printed)
+            note = ("strain ruled %s (%s); the register prints %s"
+                    % (_r[0], _r[2], printed)) if _r else \
+                   ("strain read as %s; the register prints %s" % (ruled, printed))
         elif ST.conflict(printed):
             note = "strain unresolved: " + ST.conflict(printed)[0] + " vs " + ST.conflict(printed)[1]
         vals = (e["cert_no"] or "\u2014 not read \u2014", printed, ruled, b, e["manufactured"] or "\u2014",
@@ -3352,6 +3520,7 @@ def write_read_me(wb):
     line("v23", "One controlled spelling per result (result_vocabulary.py): 175 non-canonical not-detected spellings to 0, the 'Одговара'/'Не одговара' confusion that read a laboratory's non-conformity as a pass (FB032601) corrected, untested analytes removed from certificates entirely, every conformity result made bilingual, the A4 page fit measured with the fonts it prints in and repaired (5 of 22 losing content → 0).")
     line("v24", "The internal-CoA number and the internal-CoA register unified on one definition: icoa_register.py is the standing series (a certificate a person can look up by code), and both the number and the row set on the iCoA Register sheet are taken from it rather than computed from a row's position — 95 of 95 series codes now on the sheet, up from 60.")
     line("v25", "The Read Me sheet's own version history and rulings-in-force brought forward from v11 / 05.09.2026 to this build — nine versions and six days of rulings that were built and verified but never written down here. Two findings promoted from doc prose that had never reached the standing register: OI-30 (the Loss on Drying method line is uniform across every lot and the desk holds no per-certificate method text to check it against) and OI-31 (six batches silently filed under one strain name, 'Gorilla Glue', where the delivery sheet keeps 'GG4' apart — never ruled, never tracked).")
+    line("v42", "The decisions of 17.09.2026, on every certificate of quality. LOSS ON DRYING, GG1024: the 76.07 % of ППК25008 ruled a typo and set to 7.8 % — a pinpoint edit of both GG1024 certificates and of the 09.09 resolution pass they print from; the out-of-specification mark is gone. NO SIGNATURES: the certificates carry no signature scan; each box keeps its line for signing by hand. THE RETEST CERTIFICATE CITES THE RETEST INTERNAL CERTIFICATE for identification A, identification B and foreign matter (apply_retest_icoa.py: 142 cells on 51 reissues, 8 master-assigned CNP citations kept); the internal certificates rebuilt from the citations, 154 documents. EVERY DETERMINATION CITES THE LABORATORY THAT MADE IT (apply_lab_attribution.py, five rules): the internal certificate was cited under one code with two dates and credited with parameters 1 to 11 on GG1024 where the Institute had determined 9 to 12 and CNP 8 — 19 rows re-pointed to 166/0274/25 and 748/2025, 7 rows with no certificate behind them now not tested, 4 in-house CoA numbers replaced by the internal certificate, 30 'PP CoA #nnn / ППКnnnnn' citations reduced to the CNP certificate with its own date; 54 rows on eight certificates keep the internal certificate beyond 1, 2 and 7 under the ruling of 10.09.2026 (OI-49, decision wanted). POTENCY GRADES from the owner's Potency_specifications_25.pdf (17.09.2026), set grade by grade against potency_grades_2026-09-15.csv: 22 of 24 strains identical; Amnesia Core Cut's tolerance corrected to ± 1.20 (10.80 – 13.19), Wedding Cake added at 26.00 ± 2.60 (23.40 – 28.59) as the first specification of the new series, QCSP_001_WED-I_v.01, superseding the four issued WED documents (OI-50: dominance to be determined); every certificate re-graded through potency_grading, two moved (CoQ-PP_26-106, CoQ-PP_26-165), none outside its strain's windows; the status beside 149 specification codes now records the issued document each replaces. Checked the same day: potency of every certificate against the master (158 agree, 13 no potency, 0 conflicts); certificate codes and supersedes lines against the CoQ Register (0 mismatches); loss on drying cited only to laboratories that determined it. Two lists for the Head of QC (retest_list.py): the 83 retest certificates and the 83 release certificates they supersede. The engagement report (engagement_report.py) reads the repository's own record. The registers' rows and every laboratory result are otherwise v41's.")
     line("v26", "Seven tabs, not sixteen (owner, 14.09.2026). The iCoA Issuance sheet is gone — one row per batch and round, which is what the iCoA Register is, so its eleven columns are register columns and nothing looked it up by formula. Ten sheets are sections of one Reference sheet, each section's row range recorded as a defined name so a reader never guesses where it ends. verify_prose.py — what the sheets say about themselves — had never run against a shipping workbook (its default was v11, and it was not in CI); against v25 it found eleven false sentences, three the workbook's (a note and the register Status strings naming 27.05.2026 and 15.05.2026 for a legacy series that issues on 06.06 and 03.06; an uncredited in-house reference printed without its 'on file, not credited'), eight the checker's own. All fixed and the check is in CI. OI-32: thirty Tranche 3 Farmahem 227-K/26 potency retests found on file and none in the record — twenty-five prepared and not written, five held on batch identity.")
     line("v34", "The IJZ-MB campaign microbiology written into the release register (intake_IJZMB_2026-09-16), and two checks that were not checking. A cross-version sweep of every master workbook on disk (v3 … v33) found nothing lost along the way: across twenty builds the only substantive changes to microbiology, mycotoxins and heavy metals are the four page-read corrections of v32 and the n.r.-to-not-reported ruling — everything else was the controlled vocabulary rewriting notation. The inconsistency was elsewhere, and it was real: the thirty IJZ-MB certificates of the campaign sampling of 25/26.08.2026 (issued 31.08 and 01.09.2026) had been testing instances on the tracker since 04.09.2026 and were never rows of the RELEASE REGISTER, which is the one source the certificates of quality are compiled from — so 24 certificates printed microbiology a newer certificate for the same lot contradicted, twelve of them reissues, P050012 printing TAMC 2.1 × 10⁴ where the campaign certificate reads < 10 (OI-34, now closed). 29 of the 30 are written into the register through the two-read gate; four value disagreements, every one the bile-tolerant gram-negative line where one read stopped at < 10² and the other carried < 10² и > 10, were settled by a third read of the page on 16.09.2026 and the fuller read was right all four times (OI-36's class). One is held back: 548/1079/26 prints the strain Sleepy Joe and a handwritten P060192 while its typed serial reads PO50192, so which lot it belongs to is the Head of QC's to settle (OI-37) and a result on the wrong lot is worse than a missing one. Two checks were repaired: verify_workbook's check 13, which claimed to compare the owner's microbiology sheet with the tracker, had the body `for cu, p in LOTS: pass` and was guarded on a sheet name the fold of 14.09.2026 removed, so it had been skipped entirely since v26 — it now compares every value and reports the count; and OI-13 stated that the expanded microbiology panel had never been run when 31 certificates on file report P. aeruginosa and S. aureus, all absent, which is corrected with the question of what #9.6 and #9.7 should print put to the owner. The registers, the potency and the compilation are v33's.")
     line("v35", "The supersession sweep, generalised to every determination (result_supersession.py, and the Result Supersession tab). The Head of QC reports that a second desk flags heavy metals, microbiology and mycotoxins. The microbiology defect v34 repaired was found by asking whether a certificate prints a result that a LATER certificate for the SAME lot — already on file the day it issues — contradicts; that question was asked of microbiology alone, so it is now asked of all seventeen determinations the release register carries, over 172 certificates and 93 register blocks. The sweep prints its COVERAGE beside every zero, because a zero over nothing is not a result: **no lot on file carries a second heavy-metal certificate at all** (#11.1 to #11.4 — 45 documents, 0 lots with two), so the sweep is blind there and says nothing about metals; every certificate that prints Pb, Cd, As or Hg rests on one document, because the retest campaigns never re-ran them. Aflatoxin B1, ochratoxin A and the pesticide panel were comparable on one lot each. Where the comparison was genuinely available and returned nothing it is a real zero: total aflatoxins over 30 lots, Total CBN over 12, Salmonella and E. coli over 14 each. Of 89 comparisons, 39 contradict: 8 are release certificates citing the release result while a later retest sits on file, which is the ruling of 10.09.2026 working as written and is not a defect; 31 are reissues carrying a determination forward from the initial testing because their campaign did not retest it, which widens OI-38 from twelve microbiology reissues to fourteen certificates — the two new ones are loss on drying (CoQ-PP_26-093 on P050022, CoQ-PP_26-150 on J31112501). A stability timepoint is excluded throughout: it measures the lot ageing, it is not release or retest testing, and counting it raises 30 findings on the two Grape Pie lots alone that are not findings. Two further checks come with it. **Two register blocks carry two sublots each** (OI-39): J31122501 holds the 07.04.2026 microbiology of the hand-trimmed and the trimmed flower (TAMC 850 against 1900), the 09.04.2026 Farmahem pair 100-2-К/26 at 19.84 % against 100-3-К/26 at 21.84 %, and the 23.04.2026 IJZ pair 1628/2026 against 1625/2026; JD112501 holds ППК26063 at 19.64 % against ППК26065 at 13.93 %. The certificate of quality prints one of each pair and does not say which sublot it certifies. And 128 results are on file that no certificate of quality cites — 70 the campaign microbiology of OI-38, 32 in-house documents with no document number, 26 laboratory certificates on five lots. Also in v35, the answer to the parallel desk's audit of the 127 rendered certificates (tracker/HANDOVER_RESPONSE_2026-09-16.md), which reached the Head of QC as HANDOVER_to_ClaudeCode.md. Of its seven findings, four are REFUTED against this master: no certificate's grade disagrees with its own specification code (0 of 172); no register code sits on two lots; no external laboratory is credited for a determination with no result (0 of 172); and every printed Total THC is inside its own strain-and-grade window (120 compared against the Potency Grades ladder, 0 outside) — the four banner potencies the audit flags each carry the PREVIOUS lot's assay, a row-alignment slip on the document side. Three are CONFIRMED. The loss-on-drying 76.07 % on GG1024 is real and both its certificates already carry OUT OF SPECIFICATION (OI-06, OI-35). The Farmahem analysis tag IS part of the code and it is Macedonian — the pages of 051-1 and 031-2 print Извештај број: 051-1-ГС/26 and 031-2-ГС/26, губитоци при сушење, so GS is a transliteration and LoD an English abbreviation; document_codes.py now gives one spelling per document code the way result_vocabulary.py gives one per result, and it also takes a reader's OCR note out of the code field (2156/2025). And the in-house determinations #1, #2 and #7 print nothing on 82 certificates over 44 lots — confirmed as a document defect, refuted as a builder defect, because all 172 cite an internal certificate and what is missing is the RESULT (OI-41). Two questions the audit raised go to the owner rather than being settled here: the six PP CoA #nnn / ППКnnnnn composites, where the bare ППК row on the same lot is empty and earlier (OI-40), and the two sublots in one block (OI-39). One defect the sweep's fourth check found and v35 repairs: THIRTEEN release certificates were citing a microbiology certificate of 31.08 or 01.09.2026 while dated 06.06, 07.07 or 13.07.2026 — a controlled document resting on one that did not yet exist. The cause was v34's intake meeting a gap in build_coq_schedule: testing_series.rounds() has held since v34 that every certificate of the IJZ-MB delivery is a retest document (the owner's ruling of 10.09.2026), but the schedule's release branch did not, so wherever the delivery was the only microbiology a lot had, it stood behind that lot's release result. The release branch now excludes a retest-only document, those thirteen certificates print nothing for #9.1-#9.5, and where the campaign result should appear instead is OI-38 — which now records that for those thirteen lots a ruling of CARRY THE INITIAL leaves the lot with no microbiology on any certificate at all. Otherwise nothing in the tracker, the registers, the certificates or the compilation changed: v35 adds the sweep, the answer, the document-code spellings and that one repair.")
@@ -3506,7 +3675,16 @@ if NEW:
     _last = patch_coverage(wb)
     patch_dashboard(wb, _last)
     _mikro = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--mikro=")), None)
-    if _mikro and os.path.exists(_mikro):
+    if _mikro:
+        # A path that is not there used to be skipped in silence, and the microbiology
+        # sheet simply vanished from the build; the workbook verified clean except for one
+        # line saying the sheet was neither a sheet nor a Reference section. Say so here.
+        if not os.path.exists(_mikro):
+            _alt = os.path.join(HERE, os.path.basename(_mikro))
+            if os.path.exists(_alt):
+                _mikro = _alt
+            else:
+                raise SystemExit("--mikro names a workbook that is not there: " + _mikro)
         add_mikro(wb, _mikro)
     if ICOA_RULE:
         add_icoa_sheet(wb)

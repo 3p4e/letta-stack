@@ -18,7 +18,7 @@ function dash(s){ return (s == null || s === "" || s === "—") ? '<span class="
 /* ---------- the desk overlay, applied to the baseline before anything renders ----------
    The baseline JSON is the build's output and is never modified; everything the desk
    records lives in OV and is re-applied here on every load. */
-function coqKey(c){ return c.cb + "|" + (c.t.indexOf("additional") === 0 ? "R" : "I"); }
+function coqKey(c){ return c.cb + "|" + (c.t.indexOf("retest") === 0 ? "R" : "I"); }
 OV.batches.forEach(function(b){
   var due = plusYear(b.date);
   var mkRows = function(reissue){
@@ -58,7 +58,7 @@ OV.batches.forEach(function(b){
     t: "initial release — predicted", basis: b.date, issue: "≥ " + laterOf(D.sop_effective, b.date),
     issued: false, rows: mkRows(false) }));
   D.coqs.push(Object.assign({}, base, { n: "(assigned on issue)",
-    t: "additional testing (12-month) — predicted", basis: due,
+    t: "retest — predicted", basis: due,
     issue: "≥ " + laterOf(D.sop_effective, due), issued: false, rows: mkRows(true) }));
   D.icoa_plan.push({ pp: b.pn || "", cb: b.cb, strain: b.strain,
     number: "(assigned on issue)", icoa_ref: "(assigned on issue)",
@@ -70,7 +70,7 @@ OV.batches.forEach(function(b){
     scope: "Foreign matter", determinations: "7", desk: true });
   D.icoa_plan.push({ pp: b.pn || "", cb: b.cb, strain: b.strain,
     number: "(assigned on issue)", icoa_ref: "(assigned on issue)",
-    coq_type: "additional testing (12-month) — predicted",
+    coq_type: "retest — predicted",
     date: "≥ " + laterOf(D.sop_effective, due),
     scope: "Foreign matter", determinations: "7", desk: true });
   D.reg.push({ cb: b.cb, pn: b.pn || "", strain: b.strain, certs: [], desk: true });
@@ -218,7 +218,7 @@ function matchParam(params, det){
 function deriveCoqFacts(){
   D.coqs.forEach(function(c, i){
     c.i = i;
-    c.reissue = c.t.indexOf("additional") === 0;
+    c.reissue = c.t.indexOf("retest") === 0;
     c.key = coqKey(c);
     var att = OV.attach[c.key] || {};
     c.rows.forEach(function(r){
@@ -304,7 +304,7 @@ function deriveCoqFacts(){
 function deriveIcoaFacts(){
   D.icoa_plan.forEach(function(p, i){
     p.i = i;
-    p.reissue = p.coq_type.indexOf("additional") === 0;
+    p.reissue = p.coq_type.indexOf("retest") === 0;
     p.hay = [p.number, p.pp, p.cb, p.strain, p.icoa_ref, p.scope, p.coq_type].join(" ").toLowerCase();
   });
 }
@@ -1108,7 +1108,7 @@ function lk(l, v){
   return '<span class="lk"><span class="l">' + esc(l) + '</span><span class="v">' + esc(v) + '</span></span>';
 }
 function icoaKey(p){
-  return p.cb + "|" + p.scope + "|" + (p.coq_type.indexOf("additional") === 0 ? "R" : "I");
+  return p.cb + "|" + p.scope + "|" + (p.coq_type.indexOf("retest") === 0 ? "R" : "I");
 }
 function renderIcoa(){
   var list = ICO.filter(passIcoa);
@@ -2117,8 +2117,8 @@ function tplDoc(id){
 }
 function serializeDoc(doc){ return "<!DOCTYPE html>\n" + doc.documentElement.outerHTML; }
 var LAB_META = {
-  "Purely": ['Purely Plant — QC Department · In-house QC Laboratory · MK GMP Certified',
-             'Пјурли Плант — Оддел за КК · Интерна лабораторија за КК · МК ДПП сертифицирана',
+  "Purely": ['Purely Plant QC Department · In-house',
+             'Пјурли Плант — Сектор за КК · In-house · МК ДПП сертифицирана',
              'Kojlija 1043, Petrovec-Skopje, MK'],
   "UKIM":   ['UKIM Faculty of Pharmacy — Center for Natural Products · ISO/IEC 17025:2017 · LT-083 (IARM)',
              'УКИМ ФФ — Центар за Природни Производи', 'Mother Theresa 47, 1000 Skopje, MK'],
@@ -2140,11 +2140,11 @@ var LAB_META = {
              'ЈЗУ Институт за јавно здравје (ИЈЗ Скопје)', '50ta Divizija 6, 1000 Skopje, MK'],
   "FHM":    ['Farmahem — Laboratorija za zivotna sredina · ISO/IEC 17025:2017',
              'Фармахем — Лабораторија за животна средина', 'Skopje, MK'],
-  "NGP":    ['Purely Plant — QC Department · In-house QC Laboratory · MK GMP Certified',
-             'Пјурли Плант — Оддел за КК · Интерна лабораторија за КК · МК ДПП сертифицирана',
+  "NGP":    ['Purely Plant QC Department · In-house',
+             'Пјурли Плант — Сектор за КК · In-house · МК ДПП сертифицирана',
              'Kojlija 1043, Petrovec-Skopje, MK'],
-  "PP":     ['Purely Plant — QC Department · In-house QC Laboratory · MK GMP Certified',
-             'Пјурли Плант — Оддел за КК · Интерна лабораторија за КК · МК ДПП сертифицирана',
+  "PP":     ['Purely Plant QC Department · In-house',
+             'Пјурли Плант — Сектор за КК · In-house · МК ДПП сертифицирана',
              'Kojlija 1043, Petrovec-Skopje, MK'],
   "DFL":    ['State Phytosanitary Laboratory', 'Државна фитосанитарна лабораторија', 'Skopje, MK']
 };
