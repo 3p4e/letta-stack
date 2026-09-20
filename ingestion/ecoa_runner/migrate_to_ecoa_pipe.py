@@ -69,12 +69,11 @@ def all_docs(dataset_id):
     return docs
 
 
-def already_ingested_keys():
-    """(identity key) -> the eCOA_DB document name it came from, for every
-    document eCOA_DB already holds. A name this module cannot parse is
-    reported, never silently dropped from the comparison."""
+def keys_of(dataset_id):
+    """(identity key) -> document name, for every document a dataset holds.
+    A name this module cannot parse is reported, never silently dropped."""
     have, unparsed = {}, []
-    for d in all_docs(DS_OLD):
+    for d in all_docs(dataset_id):
         ident = parse_name(d["name"])
         if ident is None:
             unparsed.append(d["name"])
@@ -83,13 +82,48 @@ def already_ingested_keys():
     return have, unparsed
 
 
+def already_ingested_keys():
+    """What eCOA_INGEST — the DESTINATION — already holds.
+
+    This used to read eCOA_DB instead, and that was wrong in a way the gate
+    would have caught only after a wasted run. eCOA_INGEST is not a top-up of
+    eCOA_DB, it is the dataset that REPLACES it: verify_ecoa_ingest.py's first
+    check is that every eCOA_DB document has a match in eCOA_INGEST, and the
+    owner's condition for deleting eCOA_DB is that the new set holds everything
+    the old one did. Skipping a file because eCOA_DB already has it would have
+    ingested only the 239 genuinely-new certificates, left the other 281 out of
+    the replacement, and then failed completeness on all 281.
+
+    So the whole renamed corpus goes in, and the dedup is against the
+    destination — which is what makes a re-run safe: an interrupted or repeated
+    run ingests only what is genuinely missing, however many times it is run.
+    """
+    return keys_of(DS_NEW)
+
+
 def candidate_files():
-    return sorted(n for n in os.listdir(PDFDIR) if n.lower().endswith(".pdf"))
+    """The renamed corpus on disk. This script is meant to be run on the machine
+    that holds eCoA_DATABASE, so a wrong ECOA_PDF_DIR is the most likely way a
+    run goes wrong — it says so plainly rather than raising a traceback, and an
+    empty directory is called out too, because "0 to ingest" on a silent empty
+    folder reads exactly like "already done"."""
+    if not os.path.isdir(PDFDIR):
+        raise SystemExit(
+            "ECOA_PDF_DIR is not a directory: %r\n"
+            "Point it at the renamed eCoA_DATABASE folder, e.g.\n"
+            '  set ECOA_PDF_DIR=C:\\Users\\Agent Zero\\My Drive\\1. PP\\DATA_B\\QC_eCoA\\eCoA_DATABASE'
+            % PDFDIR)
+    pdfs = sorted(n for n in os.listdir(PDFDIR) if n.lower().endswith(".pdf"))
+    if not pdfs:
+        raise SystemExit("no PDFs in ECOA_PDF_DIR (%r) — nothing to ingest, which is "
+                         "not the same as everything being ingested already." % PDFDIR)
+    return pdfs
 
 
 def plan(names=None):
     have, unparsed = already_ingested_keys()
-    say("eCOA_DB: %d documents, %d unparsed by ecoa_identity" % (len(have) + len(unparsed), len(unparsed)))
+    say("eCOA_INGEST (destination) already holds: %d document(s), %d unparsed by ecoa_identity"
+        % (len(have) + len(unparsed), len(unparsed)))
     for n in unparsed:
         say("  UNPARSED (cannot be deduped against, needs a human look): %s" % n)
 
@@ -106,14 +140,31 @@ def plan(names=None):
         else:
             to_ingest.append(n)
 
-    say("candidates: %d  ->  %d already in eCOA_DB (skip)  |  %d new (ingest)  |  %d unparsed"
+    say("candidates: %d  ->  %d already in eCOA_INGEST (skip)  |  %d to ingest  |  %d unparsed"
         % (len(names), len(dupes), len(to_ingest), len(bad)))
     for n, matched in dupes[:20]:
-        say("  SKIP  %s  (matches eCOA_DB: %s)" % (n, matched))
+        say("  SKIP  %s  (already in eCOA_INGEST as: %s)" % (n, matched))
     if len(dupes) > 20:
         say("  ... and %d more skips" % (len(dupes) - 20))
     for n in bad:
         say("  UNPARSED candidate (needs a human look, not auto-skipped or auto-ingested): %s" % n)
+
+    # eCOA_DB's overlap is reported, never acted on. It is the retirement story —
+    # how much of the dataset being replaced this corpus actually covers — and
+    # anything of eCOA_DB's that the corpus does NOT cover is the thing that will
+    # block deletion later, so it is worth seeing now rather than at the gate.
+    old, old_unparsed = keys_of(DS_OLD)
+    corpus = {identity_key(parse_name(n)) for n in names if parse_name(n)}
+    uncovered = [v for k, v in old.items() if k not in corpus]
+    say("eCOA_DB (to be retired): %d document(s); %d of them are NOT in this corpus%s"
+        % (len(old) + len(old_unparsed), len(uncovered),
+           " and would block deletion" if uncovered else ""))
+    for n in uncovered[:20]:
+        say("  NOT COVERED by the renamed corpus: %s" % n)
+    if len(uncovered) > 20:
+        say("  ... and %d more" % (len(uncovered) - 20))
+    for n in old_unparsed:
+        say("  eCOA_DB name unparsed, so coverage unknown: %s" % n)
     return to_ingest, dupes, bad
 
 
