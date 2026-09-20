@@ -387,9 +387,28 @@ ICOA_RULE = "--icoa" in sys.argv
 # That was read as a broken builder and recorded as OI-58 on 18.09.2026, and it is why
 # CoQ_Analysis_Master_v45 was said to be unbuildable. It was a missing flag. Say so here,
 # at the top, before any work is done.
-if not ICOA_RULE:
+_WHOLE_BUILD = [
+    ("--icoa", "the iCoA block binds the date helpers and the legacy issue days the register notes read"),
+    ("--cells", "without it the workbook is short of the owner's 09.09.2026 results"),
+    ("--mikro=", "without it the Mikro CoQ Parameter section is missing"),
+    ("--legacy-icoa=", "without it the legacy iCoA series is dated on the default, not the day it issued"),
+    ("--legacy-coq=", "without it the legacy CoQ series is dated on the default, not the day it issued"),
+]
+# The guard used to check --icoa and nothing else, while its own text below named four
+# more requirements and said a build missing them "VERIFIES WITH FINDINGS and must not
+# be shipped". So it documented the whole build and enforced a fifth of it — and on
+# 20.09.2026 a rebuild run with --icoa alone produced exactly the findings the text
+# predicts (the legacy days on their defaults, Mikro CoQ Parameter absent), which cost
+# a full build and a verify before the text was read. A checker that knows the answer
+# and does not apply it is a comment. Every flag the text names is now required.
+_absent = [f for f, _ in _WHOLE_BUILD if not any(a.startswith(f) for a in sys.argv)]
+if _absent:
     raise SystemExit(
-        "build_tracker_v8.py requires --icoa, and --icoa alone is not the build.\n"
+        "build_tracker_v8.py is missing %d of the flags that make the build: %s\n"
+        % (len(_absent), " ".join(_absent))
+        + "".join("    %-16s %s\n" % (f, why) for f, why in _WHOLE_BUILD if f in _absent)
+        + "  --icoa alone is not the build, and a workbook built short of these\n"
+          "  VERIFIES WITH FINDINGS and must not be shipped.\n"
         "  The iCoA block binds the date helpers and the legacy issue days that the CoQ and\n"
         "  iCoA register notes read further down, so nothing can be built without it. But a\n"
         "  workbook built with --icoa alone VERIFIES WITH FINDINGS and must not be shipped:\n"
@@ -2507,9 +2526,20 @@ COQ_COLS = [("No.", 6), ("CoQ code", 18), ("Issuable", 9), ("Issue date (planned
             ("Supersedes (initial CoQ)", 20), ("Total THC (%)", 11), ("THC certificate", 20),
             ("Grade nominal ± tol. (numeral)", 20), ("Grade window", 16), ("Product code", 18),
             ("Specification code", 22), ("Specification status", 34), ("Grading note", 36)]
-REG_NOTE = ("THE STANDING REGISTER OF INTERNAL CERTIFICATES OF ANALYSIS. Head of QC, 10.09.2026: \"the register encompasses every "
-            "internal certificate that exists or ever will\" — ONE PER TESTING ROUND, not one per lot and not only the ones the "
-            "drafted certificates happen to need. Each carries identification A, identification B and foreign matter ALWAYS "
+REG_NOTE = ("THE STANDING REGISTER OF INTERNAL CERTIFICATES OF ANALYSIS. Owner, 20.09.2026: \"there should be one iCOA per COQ, "
+            "retest and initial\" — ONE PER CERTIFICATE OF QUALITY, so the series is 172 and matches the CoQ series one for one. "
+            "This REPLACES the ruling of 10.09.2026 (\"the register encompasses every internal certificate that exists or ever "
+            "will\" — one per testing round, whether or not a certificate of quality followed), under which the series was 215. "
+            "The 43 rows withdrawn were every non-campaign retest and nothing else: all 89 release rounds and all 83 campaign "
+            "retests were already cited by a certificate of quality, and all 43 of the rest by none, so the two descriptions pick "
+            "out the same set. None of the 43 was ever printed — the issued fleet was 172 before this change and is 172 after. "
+            "They were not the old in-house Certificates of Analysis, which are the 41 QCCoA 001/001v02 scans of "
+            "19.03.2025–20.02.2026 in _IN-HOUSE_PP, share no testing date with any of the 43, and are superseded through the CoQ "
+            "Register's own \"Supersedes (old in-house CoA)\" column. 31 of the 43 were rounds raised by an external laboratory's "
+            "certificate arriving on 31.08 or 01.09.2026, which is why their \"retest 1\" was dated AFTER the Tranche 3 "
+            "\"retest 2\" of 19–21.08.2026 on the same lot, in 32 rows; that contradiction is gone with them, as are the 5 rows "
+            "that gave one testing round several certificates under different labels. Each certificate carries identification A, "
+            "identification B and foreign matter ALWAYS "
             "(performed in house, on the first day of packaging for the release round and at its own sampling for a retest), plus "
             "any determination whose only result in that round is an in-house record. Codes iCoA-PP_26-nnn, one series for the "
             "year of issue, in the order of issue: by issue date, then by when the work was done, then by batch — {icoa} for "
