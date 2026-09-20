@@ -3594,6 +3594,13 @@ def add_methodology_sheet(wb):
     line("Release round",
          "The FIRST day of packaging (owner, 11.09.2026). The Batch Dates sheet carries a packaging window and 26 "
          "batches were packaged over more than one day; the certificate is dated on the day packaging started.")
+    line("Where in the day",
+         "On the BULK, before primary packaging and before the sample for release testing is drawn "
+         "(SP-COA-COQ, the specimen internal certificate of 02.06.2026: \"Examination performed prior to sampling "
+         "for release testing, before primary packaging\"; \"examined on the date of packaging on the bulk prior to "
+         "filling\"). So the sequence of a release round is: examine the bulk in house -> fill -> draw the sample "
+         "for release testing -> the external laboratories report -> the certificate of quality issues. The internal "
+         "certificate is the FIRST document of the round, not a later addition to it.")
     line("Campaign retest",
          "The day that batch was sampled — not the day the campaign started. See the calendar below.")
     line("Order within a campaign",
@@ -3708,6 +3715,28 @@ def add_methodology_sheet(wb):
          "Lots the series does not carry: a retest planned but not yet sampled, a lot with no production record, and the "
          "starred lots whose star is deliberately kept because whether GG012601＊ is GG012601 is the Head of QC's to "
          "rule. They sit below the numbered rows, unnumbered, and say why.")
+    gap()
+
+    head("THE SITE PROCEDURES BEHIND THE INTERNAL CERTIFICATE")
+    line("Why they are named",
+         "Owner, 10.09.2026: the internal certificate \"must state the status of the method used.\" A compendial "
+         "chapter alone does not state a status \u2014 it names the method. The status is that the site has verified "
+         "that method under its own procedure, so the certificate prints both: COMPENDIAL \u00b7 VERIFIED \u00b7 and "
+         "the QCSOP. Read off SP-COA-COQ, the specimen internal certificate.")
+    line("QCSOP 021 v.01", "Macroscopic examination \u2014 determination #1, identification A (appearance). "
+                           "Ph. Eur. mon. 3028, Description.")
+    line("QCSOP 022 v.01", "Microscopic examination \u2014 determination #2, identification B. Ph. Eur. 2.8.23.")
+    line("QCSOP 005 v.02", "Gravimetric examination \u2014 determination #7, foreign matter. Ph. Eur. 2.8.2.")
+    line("QCSOP 011 v.02", "The internal certificate of analysis itself \u2014 the controlled form. It prints in the "
+                           "footer of every one of the 172.")
+    line("QCSOP 014", "Out-of-specification handling. Named on the certificate rather than described, so a reader "
+                      "knows which procedure governs a result that fails.")
+    line("QCSOP 009 / Annex 8", "The retention sample. Annex 8 is the annex that travels with QCSOP 009; the "
+                                "certificate states that a retention sample is held under it.")
+    line("Not printed, and why",
+         "The specimen also carries a main laboratory book reference (042_\u0413\u041a_26) and LIMS run references "
+         "(QCL-RUN-26-0342 / -0348). Those are per-batch values and the desk holds them for no lot, so they are left "
+         "off rather than invented. They go on as soon as the laboratory supplies them.")
     gap()
 
     head("WHAT THE INTERNAL CERTIFICATE CERTIFIES")
