@@ -3449,6 +3449,360 @@ def add_imb_register_sheet(wb):
           % (len(rows), sum(1 for e in rows if e["cert_no"]), ", ".join(gaps) or "none"))
 
 
+def add_methodology_sheet(wb):
+    """How a certificate of quality and an internal certificate of analysis come to be:
+    the order of issuing, the date the work was done, and the date of issue.
+
+    Every rule here is already enforced somewhere — testing_series.py decides what a
+    round is, sampling_dates.py holds the campaign calendar, issuance_schedule.py
+    computes the dates, icoa_register.py is the iCoA series, and the two register
+    notes state the whole of it in two paragraphs. That is the problem this sheet
+    solves: the methodology is true in five modules and readable in none of them, so
+    a person who has to answer "why is this certificate dated this day" reads a
+    run-on note or reads Python. It is written out here in the order the work
+    actually happens, so the workbook can be handed to someone who was not here.
+
+    It carries no data and no formula. Nothing downstream reads it — it states what
+    the other sheets do, and if it ever disagrees with them THEY are right, because
+    they are the ones that run.
+    """
+    sh = wb.create_sheet("Issuance Methodology")
+    sh.column_dimensions["A"].width = 22
+    sh.column_dimensions["B"].width = 118
+    r = 1
+
+    def head(t, size=12):
+        nonlocal r
+        c = sh.cell(r, 1, t)
+        c.font = Font(name="Calibri", size=size, bold=True, color=NAVY)
+        c.alignment = Alignment(vertical="top")
+        r += 1
+
+    def line(label, text):
+        nonlocal r
+        c0 = sh.cell(r, 1, label)
+        c0.font = Font(name="Calibri", size=9, bold=True)
+        c0.alignment = Alignment(vertical="top", wrap_text=True)
+        c1 = sh.cell(r, 2, text)
+        c1.font = Font(name="Calibri", size=9)
+        c1.alignment = Alignment(vertical="top", wrap_text=True)
+        sh.row_dimensions[r].height = 13 * (len(text) // 150 + 1)
+        r += 1
+
+    def gap():
+        nonlocal r
+        r += 1
+
+    head(f"ISSUANCE METHODOLOGY — how the certificates are ordered, tested and dated (v{VER}, built {BUILD_DATE})", 14)
+    line("What this is",
+         "The method behind every date and every number on the two certificate series, written out in the order the work "
+         "happens: which testing counts as a round, which rounds get a certificate, when the work was done, when the "
+         "certificate issues, and in what order the codes are given out. It is a reading of the rules the workbook already "
+         "enforces — it adds none of its own. Where this sheet and a register disagree, the register is right: the "
+         "registers are what the certificates print from.")
+    line("Who ruled what",
+         "Each rule below names the person who gave it and the date they gave it. Nothing here is the desk's invention; "
+         "where a rule replaced an earlier one, both are shown, because a certificate issued under the old rule was not "
+         "wrong when it was issued.")
+    gap()
+
+    head("THE TWO DOCUMENTS, AND WHY THERE ARE TWO")
+    line("Certificate of Quality",
+         "CoQ-PP_26-nnn. The release document for a production lot: every determination of the specification, the result, "
+         "the document each result rests on, and the disposition. It is the certificate that leaves the site.")
+    line("Internal CoA",
+         "iCoA-PP_26-nnn. Purely Plant's own laboratory certificate. It carries identification A (appearance), "
+         "identification B (microscopy) and foreign matter — the three determinations performed in house on every batch — "
+         "and states the status of the method used for each.")
+    line("Why both exist",
+         "Owner, 10.09.2026: in-house results are NEVER referenced directly on a certificate of quality. They are carried "
+         "on an internal certificate of analysis, and the certificate of quality cites that internal certificate. So "
+         "wherever the desk's only source for a determination is an in-house record, the CoQ cites the iCoA and the "
+         "in-house record sits behind it. This is why an iCoA exists even for a lot whose external laboratory also "
+         "reported those three: the in-house laboratory performed them whatever anyone else did, so the certificate "
+         "exists and is registered. Which document the CoQ then CITES for them is a separate question.")
+    line("One for one",
+         "Owner, 20.09.2026: \"there should be one iCOA per COQ, retest and initial.\" The two series are therefore the "
+         "same length — 172 and 172 — and every certificate of quality names exactly one internal certificate.")
+    gap()
+
+    head("STEP 1 — WHICH TESTING IS A ROUND")
+    line("The rule",
+         "Owner, 10.09.2026: \"the first value of a parameter obtained would be counted as an initial quality control "
+         "testing, and every other point of testing for any of the parameters from a batch will be considered as a "
+         "retest.\" This is a rule about DATES, not about document codes. Per batch, per parameter, the earliest result on "
+         "file is the release result; every later one belongs to a retest.")
+    line("What it replaced",
+         "The desk had been reading the series a certificate's number belongs to — 197- and 220- meant post-release, "
+         "everything else meant release. That is a proxy, and a proxy fails wherever the numbering does.")
+    line("Ties are release",
+         "Where two certificates carry the same parameter on the same date, neither is after the other, so both are "
+         "initial and neither creates a retest. A laboratory splitting one day's work across two documents is not a "
+         "second testing period.")
+    line("A retest exists only if",
+         "some parameter was actually tested twice. A batch tested once has exactly one certificate of quality. This is "
+         "not a rule anyone had to write down — it falls out of the record.")
+    line("A retest round holds",
+         "only the parameters that were retested. Nothing is copied forward INTO the round. What the reissued certificate "
+         "then PRINTS for the parameters the retest did not cover is a separate rule — see WHAT A REISSUED CERTIFICATE "
+         "CARRIES below.")
+    line("The campaign exception",
+         "Farmahem's 197-, 220- and 227- series are the QP's retest campaigns (owner: 10.09.2026 for 220-, 12.09.2026 for "
+         "227-, 15.09.2026 for the sampling dates). A campaign certificate is NEVER release testing, even where it "
+         "happens to be a parameter's first result on file — so each campaign forms a round of its own, after the rounds "
+         "the rest of the record makes. Without this, a batch whose only mycotoxin result is its Tranche 2 certificate "
+         "would have had no retest round at all.")
+    line("The IJZ-MB exception",
+         "Owner, 10.09.2026: the IJZ-MB delivery of 25/26.08.2026 — certificates dated 31.08 and 01.09.2026, between 68 "
+         "and 436 days after packaging — is ONE campaign sampling, and every certificate in it is a retest document, for "
+         "the post-SOP lots too. It is named by its certificates rather than by a series, which is the one exception to "
+         "\"a campaign is identified by its certificate series.\"")
+    gap()
+
+    head("STEP 2 — WHICH ROUNDS GET A CERTIFICATE")
+    line("The ruling in force",
+         "Owner, 20.09.2026: one internal certificate per certificate of quality, retest and initial. A round that no "
+         "certificate of quality follows issues no internal certificate.")
+    line("What it replaced",
+         "Owner, 10.09.2026: \"the register encompasses every internal certificate that exists or ever will\" — one per "
+         "testing round, whether or not a certificate of quality followed. Under that rule the series was 215.")
+    line("The 43 withdrawn",
+         "Every non-campaign retest, and nothing else. Of the 215 rows the old rule produced, 172 were citable by a "
+         "certificate of quality and 43 were not — and all 43 were non-campaign retests, while all 89 release rounds and "
+         "all 83 campaign retests were cited. \"Has a certificate of quality\" and \"is a release round or a campaign "
+         "retest\" pick out the same set.")
+    line("What the 43 were",
+         "Checked, not assumed. 31 of them are dated 31.08 or 01.09.2026 — rounds raised by the IJZ-MB certificates "
+         "arriving on those days — which is why their \"retest 1\" fell AFTER the Tranche 3 \"retest 2\" of "
+         "19–21.08.2026 on the same lot, in 32 rows. That contradiction went with them. Another 5 gave one testing round "
+         "several certificates under different labels. None of the 43 was ever printed: the issued fleet was 172 before "
+         "the change and is 172 after.")
+    line("What they were NOT",
+         "They are not the old in-house Certificates of Analysis. Those are the 41 QCCoA 001 / 001 v.02 scans of "
+         "19.03.2025–20.02.2026 held in _IN-HOUSE_PP; none shares a testing date with any of the 43, and they are "
+         "superseded through the CoQ Register's own \"Supersedes (old in-house CoA)\" column.")
+    line("The arithmetic",
+         "89 release rounds + 83 campaign retests = 172 internal certificates, one per certificate of quality, "
+         "numbered contiguously 001–172.")
+    gap()
+
+    head("STEP 3 — WHEN THE WORK WAS DONE (the testing date)")
+    line("The principle",
+         "Owner, 15.09.2026: identification A, identification B and foreign matter are performed in house on EVERY batch "
+         "— at packaging for the release round, at sampling for a retest. The internal certificate's start and end of "
+         "testing are therefore one and the same day.")
+    line("Release round",
+         "The FIRST day of packaging (owner, 11.09.2026). The Batch Dates sheet carries a packaging window and 26 "
+         "batches were packaged over more than one day; the certificate is dated on the day packaging started.")
+    line("Campaign retest",
+         "The day that batch was sampled — not the day the campaign started. See the calendar below.")
+    line("Order within a campaign",
+         "The batches take the sampling days in the order of the LABORATORY's certificate numbers: 197-1 … 197-6 on the "
+         "first day, 197-7 … 197-11 on the second, and so on. That running number is a fact the certificate carries and "
+         "the laboratory assigned it in the order the samples were logged. A batch's К (cannabinoids) and М (mycotoxins) "
+         "certificates share one number, so a batch has one sampling day.")
+    line("Retest outside a campaign",
+         "Has no sampling date on file and is dated at its own certificate. Since 20.09.2026 such a round issues no "
+         "internal certificate at all.")
+    line("No packaging date on file",
+         "The certificate is still issued and still numbered (owner, 15.09.2026: the three determinations are performed "
+         "on every batch, so the certificate exists), and it states that its testing date is not stated. The desk will "
+         "not put an unrelated laboratory's date in its place.")
+    gap()
+
+    head("THE SAMPLING CALENDAR (owner, 15.09.2026)")
+    line("How it was set",
+         "The QP's retest campaign was sampled in three campaigns, one per delivery tranche. Tranche 1 was sampled "
+         "across the week of 25.07.2026, Tuesday to Friday, \"almost evenly but not so.\" Tranches 2 and 3 were sampled "
+         "\"a couple of days before the date of admission of the sample\" at Farmahem — the receipt date every 220- and "
+         "227-series certificate prints — three days of the week before each receipt, Wednesday to Friday, so the sample "
+         "leaves the site after the last sampling day.")
+    line("Tranche 1 · 197-",
+         "Sampled 21–24.07.2026 (Tue–Fri), 6 / 5 / 5 / 5 batches across the four days, 21 certificates. Farmahem "
+         "received the cannabinoid samples 27.07.2026 and the mycotoxin samples 29.07.2026. Internal certificates issued "
+         "27.07.2026.")
+    line("Tranche 2 · 220-",
+         "Sampled 12–14.08.2026 (Wed–Fri), 11 / 11 / 10, 32 certificates. Received by Farmahem 17.08.2026. Internal "
+         "certificates issued 17.08.2026.")
+    line("Tranche 3 · 227-",
+         "Sampled 19–21.08.2026 (Wed–Fri), 10 / 10 / 10, 30 certificates. Received by Farmahem 24.08.2026. Internal "
+         "certificates issued 24.08.2026.")
+    line("Self-checked",
+         "The calendar refuses to load unless it is internally consistent: the days ascend, every day is a weekday, the "
+         "per-day split sums to the campaign's certificate count, the issue day is 2 or 3 days after the last sampling "
+         "day, and the issue day is itself a weekday. Sampling precedes the laboratory's receipt date in all three, as "
+         "it must.")
+    line("A campaign is identified by",
+         "its certificate series, never by a delivery list. The tranche lists are delivery groupings and the laboratory "
+         "tested batches that appear on none of them.")
+    line("The laboratory's letters",
+         "Farmahem numbers a report <campaign>-<item>-<analysis>/<year>, and the analysis letter is Macedonian: К for "
+         "канабиноиди (cannabinoids), М for микотоксини (mycotoxins), ГС for губитоци при сушење (loss on drying). They "
+         "are Cyrillic and are never transliterated.")
+    gap()
+
+    head("STEP 4 — WHEN THE INTERNAL CERTIFICATE ISSUES")
+    line("Release round",
+         "On its testing date — the first day of packaging.")
+    line("Campaign retest",
+         "On the campaign's own issue day, ONE day for the whole campaign, two or three days after that campaign's last "
+         "sampling day: 27.07.2026, 17.08.2026 and 24.08.2026 respectively.")
+    line("The floor",
+         f"The specification SOP took effect 01.06.2026, and nothing controlled by it can be dated before it existed. "
+         f"Anything that would otherwise fall earlier is issued with the backlog on {_F_(LEGACY_ICOA)} — one day for all "
+         f"of it, ordered within that day by packaging.")
+    gap()
+
+    head("STEP 5 — WHEN THE CERTIFICATE OF QUALITY ISSUES")
+    line("The rule",
+         "Five to ten days after the last external certificate it cites. The owner put it as a question rather than a "
+         "rule on 10.09.2026 — \"how can a certificate of quality be dated earlier than the last certificate of analysis "
+         "obtained for that batch\" — and it holds for release and retest alike. The register uses 7 days, the middle of "
+         "the range, because a register cannot hold a range; it is one constant, and it rolls to the first working day.")
+    line("Never before its iCoA",
+         "A certificate of quality cannot predate the internal certificate it cites.")
+    line("Never before packaging finished",
+         "The lot must exist in its container. This term is not decoration: JD022601's last external certificate is "
+         "dated 30.06.2026 and the lot was still being packed on 05.08.2026, so the lag rule alone would have dated its "
+         "certificate of quality a month before the material it certifies existed.")
+    line("Legacy and post-SOP",
+         f"A lot packed before the SOP floor of 11.05.2026, or holding an old in-house QCCoA 001 certificate that the "
+         f"CoQ supersedes, is LEGACY: it issues with the backlog on {_F_(LEGACY_COQ)}, in chronological order of "
+         f"packaging, so the legacy series keeps 001 onward. A lot packed after the floor is POST-SOP and takes the "
+         f"5–10 day rule, never earlier than {_F_(LEGACY_COQ)}.")
+    line("The adherence flag",
+         f"A certificate never precedes a document it cites — so a legacy lot whose latest external certificate is dated "
+         f"after {_F_(LEGACY_COQ)} takes the post-SOP rule instead and is flagged in Status. The flags are printed under "
+         f"the CoQ Register table.")
+    line("Missing initial certificate",
+         "Head of QC, 05.09.2026 (evening): a production lot whose initial certificate for a determination is not on "
+         "file keeps its planned certificate of quality and its number — the initial testing exists at the Faculty of "
+         "Pharmacy's Center for Natural Products (microbiology: Institute of Public Health) and the certificate is to be "
+         "located. The Work Order lists it and Status names the determination.")
+    line("Working days",
+         "Monday to Friday. Public holidays are not applied. Nothing is dated on a weekend.")
+    gap()
+
+    head("STEP 6 — THE ORDER OF ISSUING, AND THE NUMBERS")
+    line("Both series",
+         "are numbered in the ORDER OF ISSUE, one series per year of issue. The code is a position in that order, not an "
+         "identifier a batch carries around.")
+    line("Internal certificates",
+         "iCoA-PP_26-nnn, ordered by issue date, then by the day the work was done within a shared issue date, then by "
+         "batch. The backlog shares one issue date, so within it the order is the order the batches were packaged — "
+         "which is how the certificate-of-quality series is ordered too.")
+    line("Certificates of quality",
+         "CoQ-PP_26-nnn, legacy lots first in chronological order of packaging, then the post-SOP lots each on its own "
+         "rule date. A reissue is numbered in date order WITH the release series, not in a series of its own.")
+    line("The numbers are literals",
+         "Not computed from a row's position. Both things were once decided twice and disagreed: the number used to be a "
+         "formula over the sheet's own row order, so the first physical row took iCoA-PP_26-001 while its own certificate "
+         "cited iCoA-PP_26-066, and none of the 49 comparable rows agreed. The sheet now RENDERS icoa_register.py, which "
+         "is the series, and writes its numbers as values. Inserting a row renumbers nothing, and verify_workbook.py "
+         "compares sheet against series on every run.")
+    line("Renumbering",
+         "When the ruling of 20.09.2026 cut the series from 215 to 172, the remaining rows were renumbered contiguously "
+         "001–172 rather than left with gaps. The print fleet was re-bound to the new numbering by IDENTITY — lot and "
+         "round — and not by code, because a code's meaning moved.")
+    line("Rows below the series",
+         "Lots the series does not carry: a retest planned but not yet sampled, a lot with no production record, and the "
+         "starred lots whose star is deliberately kept because whether GG012601＊ is GG012601 is the Head of QC's to "
+         "rule. They sit below the numbered rows, unnumbered, and say why.")
+    gap()
+
+    head("WHAT THE INTERNAL CERTIFICATE CERTIFIES")
+    line("Always",
+         "Determination #1 identification A (appearance), #2 identification B (microscopy) and #7 foreign matter — "
+         "performed in house, on the first day of packaging for a release round and at its own sampling for a retest.")
+    line("Plus",
+         "Any determination whose ONLY result in that round is an in-house record. Owner, 10.09.2026: \"let's make it "
+         "one certificate of analysis for all of the missing parameters that Purely Plant needs to issue\" — so a round "
+         "has exactly one internal certificate, whatever it has to cover.")
+    line("Never",
+         "A determination with no result at all is covered by nothing. An internal certificate can only certify what was "
+         "tested, and inventing coverage for an untested parameter is the failure this work exists to prevent.")
+    gap()
+
+    head("WHAT A REISSUED CERTIFICATE OF QUALITY CARRIES")
+    line("Retested determinations",
+         "The retest result and the document that reports it — cannabinoids with identification C by Farmahem, and "
+         "mycotoxins.")
+    line("Not retested",
+         "The INITIAL certificate's result and its document (owner, 15.09.2026), marked \"(initial)\" on the CoQ "
+         "References tab so a reader can see which rows were carried rather than re-measured.")
+    line("Supersession",
+         "A reissue names the initial certificate of the same lot by the REGISTER's own code, looked up by key, so it "
+         "follows a renumbering rather than freezing a number that has moved. An initial certificate reads n/a.")
+    line("Identification C",
+         "Reported as Conforms, referenced to the external certificate that covers Total THC.")
+    line("Who is retested at all",
+         "Owner, 15.09.2026: only the tranche batches are for sale and only they were retested at the QP's request. A "
+         "batch on no tranche list carries its release certificate and no retest row.")
+    gap()
+
+    head("ISSUABLE — WHAT EACH STATE MEANS")
+    line("yes",
+         "Issued, or issuable now: the certificate has a code, a date, and every document it rests on.")
+    line("allocated",
+         "The code is reserved and the date is provisional. Tranche 3 (owner, 15.09.2026, evening): every Tranche 3 "
+         "retest parameter is tested at Farmahem and its certificates all issue on one date, so the Tranche 3 reissues "
+         "take their codes in advance — the one code computed before the documents exist, by the owner's ruling.")
+    line("ruled",
+         "Numbered without a packaging date. Head of QC, 18.09.2026, \"assign codes if they're missing\": the rows the "
+         "register had withheld only for want of a packaging date take their codes after the last allocated one, release "
+         "certificates first, with no planned date until the list carries the packaging date.")
+    line("no",
+         "Not yet issuable. The row says what is missing.")
+    gap()
+
+    head("WHERE EACH RULE ACTUALLY LIVES")
+    line("testing_series.py",
+         "Which testing is a release and which a retest; the re-analysis series; the IJZ-MB campaign.")
+    line("sampling_dates.py",
+         "The three campaigns: sampling days, the per-day split, the receipt dates and the one issue day each. "
+         "Self-checking.")
+    line("issuance_schedule.py",
+         "The dates: the SOP floor, the backlog days, the 5–10 day lag, and the three terms a certificate of quality "
+         "can never precede.")
+    line("icoa_register.py",
+         "The internal-certificate series itself — the rows, the order, the codes. The iCoA Register sheet renders it.")
+    line("coq_master_register.py",
+         "The certificate-of-quality register by document code, with its lineage and its references.")
+    line("verify_workbook.py",
+         "Compares the sheets against the series on every run, so the two cannot drift apart unnoticed.")
+    line("This section",
+         "Carries no data and no formula. It states what those modules do. If it ever disagrees with them, THEY are "
+         "right — they are the ones that run.")
+    gap()
+
+    head("THE RULINGS, IN THE ORDER THEY WERE GIVEN")
+    line("04.09.2026", "Head of QC: the harvest and packaging dates per batch (the Batch Dates sheet). One iCoA per P lot "
+                       "for identification A, B and foreign matter.")
+    line("05.09.2026", "Head of QC: the preliminary CoQ issuance register — CoQ-PP_26-nnn, one series for the year of "
+                       "issue, in the order of issue. Evening: a lot whose initial certificate is not on file keeps its "
+                       "planned certificate and number.")
+    line("10.09.2026", "Owner: the first result of a parameter is release testing and every later one is a retest. "
+                       "In-house results are never referenced on a certificate of quality. One internal certificate per "
+                       "testing round, covering all the missing parameters. A certificate of quality is issued 5–10 days "
+                       "after the last external certificate it cites. The 220- series is a retest campaign; the IJZ-MB "
+                       "delivery of 25/26.08.2026 is one campaign sampling.")
+    line("11.09.2026", "Owner: the release round's testing date is the FIRST day of the packaging window.")
+    line("12.09.2026", "Owner: the Tranche 3 227- potency certificates are retests too.")
+    line("14.09.2026", "Owner: six tabs, not sixteen — the leaf sheets fold onto one Reference sheet. This section is one "
+                       "of them.")
+    line("15.09.2026", "Owner: the three campaigns' sampling days and their single issue days. A reissued certificate "
+                       "carries the initial result for every determination not retested. Only the tranche batches were "
+                       "retested. A round with no packaging date is certified all the same. The potency grades of the "
+                       "Head of QC's specification. Evening: Tranche 3 takes its codes in advance.")
+    line("17.09.2026", "Head of QC: one register ordered by the certificate's own document code, carrying the supersession "
+                       "and the internal certificate each one cites. The potency tolerance corrections.")
+    line("18.09.2026", "Head of QC: \"assign codes if they're missing\" — the rows withheld only for want of a packaging "
+                       "date take their codes. The tranche grouping as it now stands.")
+    line("20.09.2026", "Owner: one internal certificate per certificate of quality, retest and initial. This REPLACES the "
+                       "ruling of 10.09.2026 and cut the series from 215 to 172, renumbered contiguously 001–172.")
+    return sh
+
+
 def write_read_me(wb):
     """The Read Me describes the workbook as it is: the sheets it holds, what the marks mean, the
     rulings in force, the version history — regenerated on every build, never inherited."""
@@ -3538,6 +3892,7 @@ def write_read_me(wb):
     line("11.09.2026 · packaging date", "A batch packaged over more than one day is tested — and its internal certificate dated — on the FIRST day of that window, not the day packaging completed.")
     r += 1
     head("VERSION HISTORY")
+    line("v50", "The Issuance Methodology section of Reference: how a certificate of quality and an internal certificate of analysis come to be — which testing counts as a round, which rounds get a certificate, when the work was done, when each document issues, and in what order the codes are given out — with the owner's and the Head of QC's rulings in the order they were given. It restates what testing_series.py, sampling_dates.py, issuance_schedule.py and icoa_register.py enforce; it carries no data and no formula, and nothing reads it. Added through the builder's own fold machinery rather than written into a built workbook: a sheet added from outside shifts the fixed-bounds sections beneath it and breaks the deeper checks, which is what happened on 20.09.2026 when the eCoA Coverage Audit was tried as a thirteenth tab.")
     line("v7", "The two-row block tracker: one lot per block, certificates stacked in date order, sub-determinations in their own columns, acceptance criteria in row 3 and enforced, out-of-specification results in red and named in STATUS.")
     line("v9", "Verified and slimmed to live in Drive: every decision-bearing value checked against the filed page (review/V8_TRUTH_CHECK_2026-09-02.md); three sheets of v8 (a flat results register, a flat tracker, a document index) were retired to the repository.")
     line("v10", "The 30 IJZ-MB certificates of 31.08 and 01.09.2026 as testing instances credited to #9; the iCoA rule; the Head of QC's harvest and packaging dates (Batch Dates); one iCoA per P lot; the iCoA Issuance sheet.")
@@ -3619,7 +3974,7 @@ def fix_parameters(wb):
 # of a controlled record is the one direction that cannot be undone from inside
 # the workbook. Deleting the one sheet they now share is a keystroke if the owner
 # decides otherwise.
-FOLD_INTO_REFERENCE = ["Read Me", "Delivery T1–T3", "ImB Register", "Mikro CoQ Parameter",
+FOLD_INTO_REFERENCE = ["Read Me", "Issuance Methodology", "Delivery T1–T3", "ImB Register", "Mikro CoQ Parameter",
                        "Reconciliation 09.09", "Credit Audit", "Credit Corrections",
                        "Work Order", "Open Items", "Not Tested Review", "Summary Dashboard"]
 
@@ -3724,6 +4079,7 @@ if NEW:
         add_potency_sheet(wb)
         add_dates_sheet(wb)
         write_register_file(os.path.join(HERE, "Issuance_Registers_prelim.xlsx"))
+        add_methodology_sheet(wb)
     add_delivery_sheet(wb)
     if CELLS_0909:
         add_reconciliation_sheet(wb)

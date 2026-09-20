@@ -507,6 +507,71 @@ try:
         bad("iCoA Register", "a certificate is registered on more than one row", ", ".join(_twice[:6]))
     if _alien:
         bad("iCoA Register", "a code on the sheet is not in the series", ", ".join(_alien[:6]))
+    # The register sheet can be right about the series while the sheets that CITE
+    # it are wrong, and on 20.09.2026 that is exactly what shipped. v49 was built
+    # at 07:49 and coq_artifact_data.json — which carries the citation each
+    # certificate of quality prints — was rewritten at 07:51 by the renumbering to
+    # 001-172. So v49's iCoA Register carried the new numbers while its CoQ
+    # References, CoQ Compilation and Parameter Tracker carried the old ones: 147
+    # of 172 certificates of quality named an internal certificate belonging to a
+    # different lot, CoQ-PP_26-007 (P050022) citing iCoA-PP_26-008 (P050012) and so
+    # on down the series, offsets of 1, 4, 5 and 12. Nothing caught it. The check
+    # above compares the REGISTER against the module and both were right; the
+    # printed fleet was right too. Only the citing sheets were stale, and no check
+    # read them.
+    #
+    # So the citation is checked the way verify_icoa_citations.py checks the
+    # printed certificates: the internal certificate a certificate of quality
+    # names must belong to the SAME LOT, and to the same kind of round. A code is
+    # not merely a number here — it identifies a document about one batch — so a
+    # citation that resolves to another batch's certificate is the defect,
+    # whatever the numeric offset.
+    _lot_codes, _lot_kind = {}, {}
+    for _row in _IR.build():
+        _kind = "I" if _row["round"] == "initial release" else "R"
+        for _base in filter(None, (_row["p_lot"], _row["batch"])):
+            _lot_codes.setdefault(_bk(_base), set()).add(_row["code"])
+            _lot_kind[_row["code"]] = _kind
+    _refs = sheet_or_section(WB, "CoQ References")
+    _n_ref, _wrong_lot, _wrong_round, _unresolved = 0, 0, 0, 0
+    for _r in range(2, _refs.max_row + 1):
+        _coq = str(_refs.cell(_r, 1).value or "")
+        if not _coq.startswith("CoQ-PP"):
+            continue
+        _m = re.search(r"iCoA-PP_26-\d{3}", str(_refs.cell(_r, 7).value or ""))
+        if not _m:
+            continue
+        _cited, _n_ref = _m.group(0), _n_ref + 1
+        # "P050022 (GP0824_02)" names the lot twice; either spelling may be the one
+        # the series carries, so both are tried before a row is called unresolved.
+        _names = [_x for _x in re.split(r"[()]", str(_refs.cell(_r, 2).value or "")) if _x.strip()]
+        _own = set()
+        for _nm in _names:
+            _own |= _lot_codes.get(_bk(_nm.strip()), set())
+        if not _own:
+            _unresolved += 1
+        elif _cited not in _own:
+            _wrong_lot += 1
+            if _wrong_lot <= 5:
+                bad("CoQ References", "cites another lot's internal certificate",
+                    "%s (%s) cites %s; this lot's are %s"
+                    % (_coq, _refs.cell(_r, 2).value, _cited, ", ".join(sorted(_own))))
+        else:
+            _want_kind = "R" if str(_refs.cell(_r, 3).value or "").startswith("retest") else "I"
+            if _lot_kind.get(_cited) != _want_kind:
+                _wrong_round += 1
+                if _wrong_round <= 5:
+                    bad("CoQ References", "cites the internal certificate of the other round",
+                        "%s is %s and cites %s, which is the lot's %s certificate"
+                        % (_coq, "a retest" if _want_kind == "R" else "an initial release", _cited,
+                           "initial release" if _lot_kind.get(_cited) == "I" else "retest"))
+    if _wrong_lot or _wrong_round:
+        bad("CoQ References", "the citing sheets are stale against the internal-certificate series",
+            "%d of %d citation(s) name another lot, %d name the other round — rebuild after "
+            "regenerating coq_artifact_data.json, not before" % (_wrong_lot, _n_ref, _wrong_round))
+    if _unresolved:
+        bad("CoQ References", "a cited lot is not in the internal-certificate series",
+            "%d row(s) could not be resolved to a lot the series carries" % _unresolved)
 except Exception as _e:
     bad("iCoA Register", "could not be checked against icoa_register.py", str(_e))
 
