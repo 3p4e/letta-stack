@@ -3595,12 +3595,22 @@ def add_methodology_sheet(wb):
          "The FIRST day of packaging (owner, 11.09.2026). The Batch Dates sheet carries a packaging window and 26 "
          "batches were packaged over more than one day; the certificate is dated on the day packaging started.")
     line("Where in the day",
-         "On the BULK, before primary packaging and before the sample for release testing is drawn "
-         "(SP-COA-COQ, the specimen internal certificate of 02.06.2026: \"Examination performed prior to sampling "
-         "for release testing, before primary packaging\"; \"examined on the date of packaging on the bulk prior to "
-         "filling\"). So the sequence of a release round is: examine the bulk in house -> fill -> draw the sample "
-         "for release testing -> the external laboratories report -> the certificate of quality issues. The internal "
-         "certificate is the FIRST document of the round, not a later addition to it.")
+         "On the BULK, on the packing date, immediately before filling (SP-COA-COQ, the specimen internal certificate: "
+         "\"examined on the date of packaging on the bulk prior to filling\"). Owner, 20.09.2026: a complete "
+         "organoleptic and visual inspection of the batch is performed alongside the foreign-matter analysis and the "
+         "macroscopic and microscopic identification \u2014 all three on the date of packaging, and the certificate "
+         "issues that day.")
+    line("The order of the round",
+         "Harvest \u2192 dry \u2192 the BULK is sampled for release testing and goes to the external laboratories "
+         "\u2192 their certificates come back \u2192 the lot is packed, and the three in-house determinations are "
+         "made that day \u2192 the certificate of quality issues. The external panel therefore normally PRECEDES "
+         "packaging, because it is performed on the bulk and the bulk may be held: measured on this build, between 63% "
+         "and 79% of every external determination is certified before packing begins, against 10% of the in-house "
+         "three. The specimen\u2019s phrase \"prior to sampling for release testing\" describes a lot packed "
+         "promptly after drying and does not generalise; it is why a certificate of quality carries a term forbidding "
+         "it to precede the end of packing (issuance_schedule.py: JD022601\u2019s last external certificate is dated "
+         "30.06.2026 and the lot was still being packed on 05.08.2026), and why the packaging dates on Batch Dates "
+         "falling after an external certificate is the normal case rather than a defect.")
     line("Campaign retest",
          "The day that batch was sampled — not the day the campaign started. See the calendar below.")
     line("Order within a campaign",
