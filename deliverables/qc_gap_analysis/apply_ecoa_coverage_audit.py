@@ -15,10 +15,29 @@ its own first pass (a citation with a trailing Macedonian annotation that broke 
 exact-string match, and a Reference-sheet mention applied to four sibling
 certificates but missed on a fifth, both corrected here rather than carried over).
 
-Adds one new sheet ("eCoA Coverage Audit"), one Open Item, one SHEETS entry and one
-VERSION HISTORY line to the existing workbook. Touches no other sheet, no other
-cell — this is an audit addition, not a rebuild, and does not go through
-build_tracker_v8.py's from-scratch assembly.
+This writes a STANDALONE companion workbook and deliberately does not modify
+CoQ_Analysis_Master. Two attempts at modifying it established why:
+
+  * Inserting the SHEETS / VERSION HISTORY / OPEN ITEMS lines into their proper
+    blocks shifted every section beneath them by two rows and broke 38 of
+    verify_workbook.py's deeper checks, on a master that verifies clean — exactly
+    as the master's own CONVENTIONS section warns ("insert a row and every code
+    beneath moves by one"). A pure openpyxl round-trip with no edits verifies
+    clean, so the hazard is moving rows, not the round-trip.
+  * Appending them below those blocks shifts nothing and keeps the deeper checks
+    clean, but then verify_workbook's Read Me check fails: every sheet in the
+    master must be described inside the Read Me section, and that section is a
+    FIXED-BOUNDS block (rows 2-83, from the `_fold_Read_Me` defined name written
+    by fold_reference_sheet). It is full — its only free rows are the blank
+    gutters between its subsections — and Open Items (846-905) has no free row
+    at all. A thirteenth sheet cannot be added from outside without growing those
+    ranges, and the only thing that grows them coherently is
+    build_tracker_v8.py's own fold machinery.
+
+So the master keeps its twelve sheets and its clean verification, and the audit
+ships beside it. Folding this into the master properly is a build_tracker_v8.py
+change plus a full rebuild — worth doing, but it is a rebuild of a controlled
+record and not something to bolt on from outside.
 """
 import datetime as dt
 import json
@@ -30,8 +49,8 @@ from openpyxl.utils import get_column_letter
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, "tracker", "CoQ_Analysis_Master_v48.xlsx")
-OUT = os.path.join(HERE, "tracker", "CoQ_Analysis_Master_v49.xlsx")
-DATA = "/tmp/claude-0/ecoa_coverage_status_full.json"
+OUT = os.path.join(HERE, "tracker", "eCoA_Coverage_Audit_2026-09-20.xlsx")
+DATA = os.path.join(HERE, "tracker", "ecoa_coverage_status_2026-09-20.json")
 
 HEADER_FILL = PatternFill("solid", fgColor="1F3864")
 HEADER_FONT = Font(bold=True, color="FFFFFF")
@@ -97,95 +116,117 @@ def find_row(ws, col0_value):
     return None
 
 
-def insert_after(ws, after_row, values):
-    ws.insert_rows(after_row + 1)
-    for i, v in enumerate(values, 1):
-        ws.cell(row=after_row + 1, column=i, value=v)
+def read_me(wb, rows, c, master):
+    """This companion's own Read Me: what the audit sheet is, and the three entries
+    the master's Reference sheet should carry once build_tracker_v8.py folds this
+    finding in — drafted here so the next rebuild has text to place rather than
+    text to write."""
+    ws = wb.create_sheet("Read Me", 0)
 
-
-def update_reference(wb, rows, c):
-    ws = wb["Reference"]
-
-    # 1) SHEETS entry, right after "CoQ Compilation (long)"'s row
-    after = find_row(ws, "CoQ Compilation (long)")
     sheets_text = (
         "One row per external (non-in-house) laboratory certificate in the renamed "
         "eCoA_DATABASE (%d certificates, the 41 in-house reports excluded), held against "
-        "this workbook: whether it is cited as a Certificate of Quality's source (Document "
-        "column, CoQ Compilation (long)), listed only under Also on file, mentioned only "
-        "in another sheet, or absent from the workbook entirely. %d cited, %d also on "
-        "file, %d mentioned elsewhere only, %d absent — see OI-60. Checked twice: an "
-        "independent second pass against the first found and corrected two "
-        "misclassifications (a citation whose cell carried a trailing Macedonian "
-        "annotation, and a Reference-sheet mention applied to four sibling certificates "
-        "but missed on a fifth) before either number was written here."
+        "CoQ_Analysis_Master_v48: whether it is cited as a Certificate of Quality's source "
+        "(Document column, CoQ Compilation (long)), listed only under Also on file, mentioned "
+        "only in another sheet, or absent from that workbook entirely. %d cited, %d also on file, %d "
+        "mentioned elsewhere only, %d absent. Checked twice: an independent second pass "
+        "against the first found and corrected two misclassifications (a citation whose cell "
+        "carried a trailing Macedonian annotation, and a Reference-sheet mention applied to "
+        "four sibling certificates but missed on a fifth) before either number was written here."
     ) % (len(rows), c.get("cited", 0), c.get("also_on_file", 0),
          c.get("other_sheet_only", 0), c.get("absent", 0))
-    insert_after(ws, after, ["eCoA Coverage Audit", sheets_text, None])
 
-    # 2) Open Item — OI-60, Area "Record integrity" (matching OI-42, which this updates)
-    oi_header = find_row(ws, "Ref")
-    # highest existing OI number, scanned from the Open Items block
+    # highest existing OI number, so the new one continues the series
     max_n = 0
-    for row in ws.iter_rows(min_row=oi_header):
+    for row in master["Reference"].iter_rows():
         v = row[0].value
         if isinstance(v, str) and v.startswith("OI-"):
             try:
                 max_n = max(max_n, int(v.split("-")[1]))
-            except ValueError:
+            except (ValueError, IndexError):
                 pass
     n = max_n + 1
+
     absent = [r for r in rows if r["status"] == "absent"]
-    absent_list = "; ".join(sorted("%s %s (%s, %s)" % (r["lab"], r["doc_code"], r["cu_batch"] or r["p_batch"], r["date"])
-                                    for r in absent))
+    absent_list = "; ".join(sorted(
+        "%s %s (%s, %s)" % (r["lab"], r["doc_code"], r["cu_batch"] or r["p_batch"], r["date"])
+        for r in absent))
     what_found = (
-        "OI-42's count (44 unrecorded, of a 490-scan pre-rename corpus) refreshed against "
-        "the 20.09.2026 renamed eCoA_DATABASE (520 files, 479 external): %d of those 479 "
-        "do not appear anywhere in CoQ_Analysis_Master_v49, checked certificate by "
-        "certificate against every sheet, not the Document column alone. %d are cited as "
-        "a CoQ's source, %d are on file but not credited, %d are named only in passing "
-        "(Reference, the Tracker or Result Supersession). OI-42's own worked total for "
-        "the same corpus had counted 20 absent; two of those twenty are demonstrably "
-        "present on closer reading (one cited five times with a trailing Macedonian "
-        "annotation on the cell, one named in Reference's own OI-42 text for a sibling "
-        "certificate but not this one) and are not repeated here."
+        "OI-42's count (44 unrecorded, of a 490-scan pre-rename corpus) refreshed against the "
+        "20.09.2026 renamed eCoA_DATABASE (520 files, 479 external): %d of those 479 do not "
+        "appear anywhere in CoQ_Analysis_Master_v48, checked certificate by certificate against "
+        "all twelve of its sheets, not the Document column alone. %d are cited as a CoQ's source, %d are on file "
+        "but not credited, %d are named only in passing. An earlier pass over the same corpus "
+        "counted 20 absent; two of those twenty are demonstrably present on closer reading "
+        "(one cited five times with a trailing Macedonian annotation on the cell, one named in "
+        "Reference's own OI-42 text for a sibling certificate but not this one) and are not "
+        "repeated here."
     ) % (len(absent), c.get("cited", 0), c.get("also_on_file", 0), c.get("other_sheet_only", 0))
     what_desk_did = (
-        "Every one of the %d absent certificates identified by laboratory doc code, "
-        "cross-checked against the Document column, the Also on file column, and every "
-        "other sheet (107,000+ cells) rather than assumed absent from one column's silence. "
-        "Full per-certificate result on the eCoA Coverage Audit sheet."
+        "Every one of the %d identified by laboratory doc code and cross-checked against the "
+        "Document column, the Also on file column, and every other sheet, rather than assumed "
+        "absent from one column's silence. Full per-certificate result on the eCoA Coverage "
+        "Audit sheet, one row each, filterable on Status."
     ) % len(absent)
     what_needed = (
-        "For each of the %d: either it was replaced by a later retest and belongs in "
-        "Result Supersession, or it is a result nobody has reviewed and needs a word from "
-        "the Head of QC before the batches it belongs to can be called evaluated. The "
-        "largest single group (7 of %d) is Institute of Public Health microbiology from "
-        "24.06.2026 — microbiology is where this workbook's other findings also concentrate."
+        "For each of the %d: either it was replaced by a later retest and belongs in Result "
+        "Supersession, or it is a result nobody has reviewed and needs a word from the Head of "
+        "QC before the batches it belongs to can be called evaluated. The largest single group "
+        "(7 of %d) is Institute of Public Health microbiology of 24.06.2026 — microbiology is "
+        "where the master's other findings also concentrate."
     ) % (len(absent), len(absent))
-    row = ["OI-%d" % n, "Record integrity", "open",
-           "%d of 479 external eCoA certificates are on Drive and in no record of the desk (OI-42, refreshed)" % len(absent),
-           what_found, what_desk_did, what_needed,
-           "eCoA Coverage Audit sheet; /tmp/claude-0/external_ecoas_479.json; " + absent_list[:400]]
-    # append after the last existing OI row
-    last_oi_row = oi_header
-    for row_cells in ws.iter_rows(min_row=oi_header):
-        if isinstance(row_cells[0].value, str) and row_cells[0].value.startswith("OI-"):
-            last_oi_row = row_cells[0].row
-    insert_after(ws, last_oi_row, row)
 
-    # 3) VERSION HISTORY line
-    vh = find_row(ws, "VERSION HISTORY")
     vh_text = (
-        "The eCoA Coverage Audit sheet: the 479 external certificates in the 20.09.2026 "
-        "renamed eCoA_DATABASE held against this workbook, one row each — %d cited as a "
-        "CoQ's source, %d on file but not credited, %d mentioned elsewhere only, %d in no "
-        "record of the desk (OI-60, refreshing OI-42's count for the grown corpus). "
-        "Checked twice before being written: a first pass, then an independent second "
-        "pass against the first that found and corrected two misclassifications. Nothing "
-        "else on the workbook was touched — no other sheet, no other cell."
-    ) % (c.get("cited", 0), c.get("also_on_file", 0), c.get("other_sheet_only", 0), c.get("absent", 0))
-    insert_after(ws, vh, ["v49", vh_text])
+        "The eCoA Coverage Audit: the 479 external certificates in the 20.09.2026 renamed "
+        "eCoA_DATABASE held against CoQ_Analysis_Master_v48, one row each — %d cited as a CoQ's "
+        "source, %d on file but not credited, %d mentioned elsewhere only, %d in no record of "
+        "the desk (OI-%d). Carried in a companion workbook, not as a thirteenth sheet of the "
+        "master: the master's Read Me and Open Items blocks are fixed-bounds ranges written by "
+        "fold_reference_sheet, both full, and growing them from outside either shifts every "
+        "section beneath (38 of verify_workbook.py's deeper checks broke that way) or leaves the "
+        "new sheet undescribed. The three entries here are drafted for build_tracker_v8.py to "
+        "place at the next rebuild."
+    ) % (c.get("cited", 0), c.get("also_on_file", 0), c.get("other_sheet_only", 0),
+         len(absent), n)
+
+    # Column A carries the key and column B the text — the same shape the master's
+    # own Reference blocks use, so these three entries can be lifted across as they
+    # stand when build_tracker_v8.py folds this finding in.
+    ws.append([None])
+    ws.append([None])
+    ws.append(["ECOA COVERAGE AUDIT — %s" % dt.date.today().strftime("%d.%m.%Y")])
+    ws.append([None, "A companion to CoQ_Analysis_Master_v48.xlsx, which this audit reads and "
+                     "does not modify. The three entries below are drafted for the master's "
+                     "SHEETS, VERSION HISTORY and OPEN ITEMS blocks and are written in those "
+                     "blocks' own shape, ready to be placed by build_tracker_v8.py at the next "
+                     "rebuild. They are not in the master today: those blocks are fixed-bounds "
+                     "ranges (Read Me rows 2-83, Open Items 846-905, from the _fold_* defined "
+                     "names) with no free row, and the master's own CONVENTIONS section warns "
+                     "that inserting one moves every code beneath it — which is exactly what "
+                     "broke 38 of verify_workbook.py's deeper checks on the first attempt."])
+    ws.append([None])
+    ws.append(["eCoA Coverage Audit", sheets_text])          # for the master's SHEETS block
+    ws.append([None])
+    # No version number: the master stays at v48 and this ships beside it, so
+    # naming a v49 here would claim a workbook that does not exist. The line
+    # belongs to whichever version first carries the sheet.
+    ws.append(["(next master version)", vh_text])            # for the master's VERSION HISTORY block
+    ws.append([None])
+    ws.append(["Ref", "Area", "State", "Item", "What was found",
+               "What the desk did", "What is needed", "Evidence"])
+    ws.append(["OI-%d" % n, "Record integrity", "open",
+               "%d of 479 external eCoA certificates are on Drive and in no record of the "
+               "desk (OI-42, refreshed)" % len(absent),
+               what_found, what_desk_did, what_needed,
+               "eCoA Coverage Audit sheet; tracker/ecoa_coverage_status_2026-09-20.json; "
+               + absent_list[:400]])
+
+    ws.column_dimensions["A"].width = 24
+    ws.column_dimensions["B"].width = 120
+    for row in ws.iter_rows():
+        for cell in row:
+            cell.alignment = Alignment(wrap_text=True, vertical="top")
+    ws["A3"].font = Font(bold=True, size=12)
 
 
 def main():
@@ -196,13 +237,19 @@ def main():
     if bad:
         raise SystemExit("unrecognised status on %d rows: %r" % (len(bad), bad[:3]))
 
-    wb = openpyxl.load_workbook(SRC)
+    # the master is opened read-only, only to read the highest OI number off it,
+    # so the new Open Item continues that series rather than restarting it
+    master = openpyxl.load_workbook(SRC, read_only=True, data_only=True)
     c = counts(rows)
     print("counts:", c, "sum:", sum(c.values()))
+
+    wb = openpyxl.Workbook()
+    wb.remove(wb.active)
     build_sheet(wb, rows)
-    update_reference(wb, rows, c)
+    read_me(wb, rows, c, master)
     wb.save(OUT)
     print("wrote", OUT, os.path.getsize(OUT), "bytes")
+    print("CoQ_Analysis_Master_v48.xlsx: not modified")
 
 
 if __name__ == "__main__":

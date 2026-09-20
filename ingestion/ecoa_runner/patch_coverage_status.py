@@ -14,7 +14,7 @@ ecoa_identity.py, content-keyed, not filename-keyed) matches one of the 479
 external certificates in /tmp/claude-0/ecoa_coverage_status_full.json, with:
 
     coverage_status         "cited" | "also_on_file" | "other_sheet_only" | "absent"
-    coverage_evidence       where in CoQ_Analysis_Master_v49 it was found
+    coverage_evidence       where in CoQ_Analysis_Master_v48 it was found
     coverage_evidence_detail  which parameter(s)/result(s) it sources, where known
     coverage_checked_date    the date of this audit
 
