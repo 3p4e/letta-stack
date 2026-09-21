@@ -33,6 +33,7 @@ import argparse
 import collections
 import json
 import os
+import re
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -44,6 +45,30 @@ ICOA_RECS = os.path.join(HERE, "icoa_handoff", "v3", "icoa_v44_recs.json")
 CONFORMS = "Conforms | \u041e\u0434\u0433\u043e\u0432\u0430\u0440\u0430"
 FIELD = {"1": "identA", "2": "identB", "7": "fm"}
 CNP_LAB = "UKIM Faculty of Pharmacy \u2014 Center for Natural Products"
+INHOUSE_ST = "in-house CoA only"
+
+
+def _scope(rec):
+    """The determinations an internal certificate of analysis actually certifies.
+
+    Most iCoA carry the three the Purely Plant laboratory performs. Four lots have no
+    outsourced certificate at all (HPA1024, OPM1024, P050192, P050202), and for those the
+    iCoA was widened to carry the determinations the company's own certificate of analysis
+    reports \u2014 the route built on 05.09.2026 so an in-house record is referenced through a
+    numbered certificate rather than cited raw. The register states the widened scope per
+    certificate, so it is read, never assumed.
+    """
+    txt = str(rec.get("scope") or "")
+    out = set(re.findall(r"#(\d+(?:\.\d+)?)", txt))
+    if "Ident A" in txt:
+        out.add("1")
+    if "Ident B" in txt:
+        out.add("2")
+    if "Ident C" in txt:
+        out.add("3")
+    if "Foreign matter" in txt:
+        out.add("7")
+    return out
 
 
 def main(argv):
@@ -90,6 +115,37 @@ def main(argv):
             lifted[r["no"]] += 1
             lift_certs.add(c["regcode"])
 
+    # The same stale status, in its other spelling. ST_INHOUSE reads "in-house CoA only \u2014
+    # not an eCoA or an iCoA: a value no certificate certifies". For four lots that was
+    # true when the schedule was written and is false now: their iCoA was issued with a
+    # WIDENED scope covering exactly these determinations, and the row already cites it.
+    # A value an issued internal certificate certifies is covered \u2014 the page has been
+    # printing the figure all along while the record called it uncertified, so this makes
+    # the two agree rather than changing what anyone reads.
+    inh = collections.Counter()
+    inh_certs = set()
+    for c in data["coqs"]:
+        for r in c["rows"]:
+            st = str(r.get("st") or "")
+            if INHOUSE_ST not in st:
+                continue
+            doc = str(r.get("doc") or "").strip()
+            res = str(r.get("res") or "").strip()
+            rec = icoa.get(doc)
+            if not rec or not res or res == "\u2014":
+                continue
+            if r["no"] not in _scope(rec):
+                continue
+            if st.startswith(CQ.ST_CARRIED):
+                # A reissue states what the release round found and repeats that round's
+                # status after the carry note. The note stays; only the stale tail moves.
+                head = st.split("\u2014")[0].rstrip()
+                r["st"] = "%s \u2014 %s" % (head, CQ.ST_OK)
+            else:
+                r["st"] = CQ.ST_OK
+            inh[r["no"]] += 1
+            inh_certs.add(c["regcode"])
+
     done = collections.Counter()
     waiting = collections.Counter()
     certs = set()
@@ -112,6 +168,11 @@ def main(argv):
                 waiting[(rnd, r["no"])] += 1
 
     print("OI-41 — a determination its issued iCoA certifies is covered, not pending")
+    if inh:
+        print("   in-house CoA only \u2192 covered, where the cited iCoA's own scope carries the\n"
+              "      determination: %d cell(s) on %d certificate(s) \u2014 %s"
+              % (sum(inh.values()), len(inh_certs),
+                 ", ".join("#%s %d" % (k, inh[k]) for k in sorted(inh, key=lambda s: [float(x) for x in s.split(".")]))))
     if lifted:
         print("   lifted from the iCoA register: %d result(s) on %d certificate(s) - %s"
               % (sum(lifted.values()), len(lift_certs),

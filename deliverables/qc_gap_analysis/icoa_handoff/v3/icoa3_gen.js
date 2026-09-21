@@ -368,7 +368,7 @@ function build(rec,meta){
 +'<div><div class="ap-role">Approved by <span class="mk">\u041e\u0434\u043e\u0431\u0440\u0438\u043b</span></div><div class="ap-sign"><div class="ap-line"></div></div><div class="ap-title">QC Manager <span class="mk">\u041c\u0435\u043d\u0430\u045f\u0435\u0440 \u0437\u0430 \u041a\u041a</span></div><div class="ap-name">Blagoj Nikolov</div><div class="ap-cred">M.Pharm \u00b7 Drug Quality Control Specialist</div><div class="ap-date-row"><span class="ap-date-label">Date \u00b7 \u0414\u0430\u0442\u0443\u043c</span><span class="ap-date-val">'+esc(rec.issued)+'</span></div></div>\n'
 +'</div>\n'
 
-+'<div class="footer">\n<div class="foot-left">Purely Plant DOOEL \u00b7 Industriska ulica 9, br. 9,<br>Kojlija 1043 \u00b7 Petrovec-Skopje, North Macedonia</div>\n<div class="foot-center-num">1 <span style="opacity:.6">|</span> 1</div>\n<div class="foot-right">QCSOP 011 v.02</div>\n</div>\n</div>\n</body>\n</html>\n';
++'<div class="footer">\n<div class="foot-left">Purely Plant DOOEL \u00b7 Industriska ulica 9, br. 9,<br>Kojlija 1043 \u00b7 Petrovec-Skopje, North Macedonia<br>MK GMP Certified Facility</div>\n<div class="foot-center-num">1 <span style="opacity:.6">|</span> 1</div>\n<div class="foot-right">QCSOP 011 v.02</div>\n</div>\n</div>\n</body>\n</html>\n';
   const safe=s=>String(s||'').replace(/&/g,'and').replace(/[\/\\:*?"<>|]/g,'-').replace(/\s+/g,'_');
   const dir=/initial/i.test(rec.series)?'INITIAL':'RETEST';
   const sc=String(meta.strainCode||rec.strain.split(/\s+/).map(function(w){return w[0]}).join('')).toUpperCase();

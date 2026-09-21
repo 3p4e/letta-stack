@@ -2,10 +2,12 @@
 globalThis.CoQCheck = (function () {
 const SUP = { '⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9' };
 const desup = s => String(s).replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]/g, c => SUP[c]);
-// Owner, 21.09.2026: a determination with no result prints nothing. The old not-tested
-// and empty-dash markers are no longer written by the builder, so they are no longer a
-// legal spelling here — if one reappears it is off the whitelist and the check says so.
-const TOKENS = ['Conforms','Absent','Does not conform','ND','< LOQ','[pending]'];
+// The closed token set of the design system's own specimen card
+// (guidelines/rules-coq-result-cells.html): a result cell prints one of these eight
+// tokens or a figure with its unit, and nothing else. Source spellings are normalised
+// INTO the set, never the reverse — every extra spelling of one fact is a
+// discrepancy an inspector will raise against the register.
+const TOKENS = ['Conforms','Absent','Does not conform','ND','< LOQ','n/t','[ — ]','[pending]'];
 const ROMAN = /^(I|II|III|IV|V|VI|VII|VIII|IX|X)$/;
 
 // numeric upper bound implied by a printed result, or null if non-numeric
@@ -91,22 +93,21 @@ function check(file, html, rec) {
 
   // -- 11 grammar whitelist + length
   const DETS_ORDER = ['1','2','3','4','5','6','7','8','9.1','9.2','9.3','9.4','9.5','10.1','10.2','10.3','11.1','11.2','11.3','11.4','12'];
-  // An EMPTY cell is now a deliberate state (owner, 21.09.2026), and it has to earn it:
-  // the record must say there is no result for that determination. A cell empty while the
-  // record holds a figure is a LOST RESULT, which is the failure this replaces the old
-  // 'A11 empty result cell' with. And #1, #2 and #7 — identification A, identification B
-  // and foreign matter, which the Purely Plant laboratory performs and the batch's own
-  // internal certificate of analysis certifies — may never be empty on any certificate
-  // (owner: "Ident A and Ident B and even the Foreign Matter parameters are contained in
-  // the iCoA for each CoQ, this is known").
+  // Owner, 21.09.2026: "there will be no empty space ... all parameter results must be
+  // filled in". A result cell is therefore NEVER blank — it carries a value or it
+  // carries the token that states what is absent. Three assertions, strongest first.
   const NORESULT = /not tested|upon request|to be performed|in-house CoA only/i;
   cells.forEach((c, i) => {
-    if (c.val) return;
     const d = DETS_ORDER[i];
-    if (['1', '2', '7'].includes(d)) {
+    if (c.val) return;
+    // (a) nothing may print empty, on any determination.
+    F.push('A11 #' + d + ' prints an EMPTY cell — every cell carries a value or a token');
+    // (b) #1, #2 and #7 are performed in house and the batch's iCoA certifies all three
+    //     (owner: "Ident A and Ident B and even the Foreign Matter parameters are
+    //     contained in the iCoA for each CoQ, this is known"), so they are never absent.
+    if (['1', '2', '7'].includes(d))
       F.push('A11 in-house determination #' + d + ' prints nothing — its iCoA certifies it');
-      return;
-    }
+    // (c) a cell empty while the record holds a figure is a LOST RESULT, not an absence.
     if (!rec) return;
     const res = String(rec.res[d] || '').trim(), st = String(rec.st[d] || '');
     if (res && res !== '—' && !NORESULT.test(st) && !NORESULT.test(res))
@@ -176,7 +177,7 @@ function check(file, html, rec) {
   const DETS = DETS_ORDER;
   cells.forEach((c, i) => {
     const d = DETS[i];
-    const hasResult = c.val !== '' && c.val !== '[pending]';
+    const hasResult = !['n/t', '[ — ]', '[pending]'].includes(c.val);
     if (hasResult && !allP.includes(d) && !allP.includes(String(d).split('.')[0])) F.push('A15 param ' + d + ' prints "' + c.val + '" but is credited to no laboratory');
   });
 

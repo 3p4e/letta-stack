@@ -87,25 +87,28 @@ const red = t => '<span style="' + RED + '">' + t + '</span>';
 function cell(det, res, status) {
   res = (res || '').trim(); const st = (status || '');
   let txt, cls = '', style = '', conform = false;
-  // Owner, 21.09.2026: "Lift any parameter results; empty results should not be included.
-  // There should be no 'not tested' results in the retest CoQs."
+  // Owner, 21.09.2026: "There will be no empty space in the certificate of quality nor the
+  // certificate of analysis — all parameter results must be filled in, especially in the
+  // certificate of quality. The only exclusion is from the initial certificates of quality
+  // for the parameter mycotoxins: only one sub-parameter mycotoxin has been tested; the
+  // other two — the complete panel has been tested during the recent campaign for reissue."
   //
-  // A determination with no result prints NOTHING — no [ — ], no n/t, no marker of any
-  // kind. The ROW stays: the table is the specification's twenty-one determinations in
-  // their fixed order, and dropping a row would renumber the ones below it and break the
-  // criterion column beside it. What goes is the assertion in the result cell, because a
-  // marker that says "not tested" is a claim the certificate has no business making about
-  // material it is releasing. The workbook keeps `n/t` as the desk's audit view; the
-  // certificate of quality does not.
+  // So a cell is never blank. The design system says the same thing in its own words —
+  // guidelines/rules-coq-result-cells.html, "absence of evidence is stated, never implied
+  // by a blank" — and fixes the vocabulary that states it: a CLOSED SET of eight tokens,
+  // plus a figure with its unit. Nothing else may appear in this column, and a source
+  // spelling is normalised INTO the set, never the reverse.
   //
-  // [pending] survives on its own: "awaiting" names a re-analysis that is running and
-  // whose result is coming, which is a different statement from having no result.
-  if (!res || res === '—')                                    { txt = '' }
-  else if (/not tested/i.test(st) || /^not tested$/i.test(res)) { txt = '' }
-  else if (/to be performed/i.test(st) || /to be performed/i.test(res)) { txt = '' }
+  // A blank was tried on the morning of 21.09.2026 and is withdrawn: it read as "nothing
+  // to say here" for a determination no certificate covers, which is the one thing a
+  // release document must not imply. The work the owner is asking for is to FILL these —
+  // which is a question for the record, not for the renderer.
+  if (!res || res === '—')                                    { txt = '[ — ]'; style = RED }
+  else if (/not tested/i.test(st) || /^not tested$/i.test(res)) { txt = 'n/t'; style = RED }
+  else if (/to be performed/i.test(st) || /to be performed/i.test(res)) { txt = '[ — ]'; style = RED }
   else if (/awaiting/i.test(st))                              { txt = '[pending]'; style = AMBER }
-  else if (/in-house CoA only/i.test(st))                     { txt = '' }
-  else if (/upon request/i.test(res))                         { txt = '' }
+  else if (/in-house CoA only/i.test(st))                     { txt = '[ — ]'; style = RED }
+  else if (/upon request/i.test(res))                         { txt = '[ — ]'; style = RED }
   else {
     let v = norm(strip(res).split('|')[0].trim());
     if (/^conforms/i.test(v))      { txt = 'Conforms'; conform = true }
