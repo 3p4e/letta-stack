@@ -5,7 +5,17 @@ Fifty-seven sheets, one per specification code, each filled onto the owner's own
 
     SHEETS/   the sheet as HTML, the editable source
     PDF/      the same sheet printed, vector, fonts embedded
+    DOCX/     the same sheet as Word, made from the PDF beside it
     INDEX.json what each sheet carries, for checking without opening it
+
+The Word sheets are not a second drawing of the specification. They carry the PDF's own
+graphics as the page and every line of text as a real, editable Word run pinned to the
+coordinates the sheet gives it, with the house faces embedded — the method the owner asked
+for on 21.09.2026, after an HTML export came out as *"a totally different file, different
+design, different structure, different everything"*. Measured against the printed sheet,
+151 runs matched on `QCSP_001_AB-I`: each starts within 0.024 pt of where it belongs, sits
+within 0.049 pt of its own line and ends within 0.577 pt at worst. The method and the
+measurements are in `../../tracker/PDF_TO_WORD_2026-09-21.md`.
 
 ## What was filled, and what was not
 
