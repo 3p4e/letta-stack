@@ -57,11 +57,22 @@ NAMES = {
     "cert": "DOCUMENT CITED", "cd": "DOCUMENT DATE", "lk-val": "VALUE",
     "lr-lab": "LABORATORY", "lr-mono": "PARAMETERS COVERED", "lr-ac": "ACCREDITATION",
     "ap-date-val": "APPROVAL DATE", "mk": "MACEDONIAN", "r-val": "RESULT",
-    "pp-v": "VALUE", "lk-lbl": "LABEL", "sec-label": "SECTION", "fc": "OBSERVATION",
-    # the observation record: a box that is ticked and the finding beside it
-    "bx": "TICK", "ck-t": "OBSERVATION", "ck": "TICK", "title": "DOCUMENT TITLE",
+    "pp-v": "VALUE", "lk-lbl": "LABEL", "sec-label": "SECTION",
+    # The observation record: a box that is ticked and the finding beside it. `fc` and
+    # `ck-t` are deliberately NOT named here — their group already names them Colour,
+    # Odour, Texture & resin, and a descriptor reading OBSERVATION 12 tells the analyst
+    # nothing about what belongs in the chip.
+    "bx": "TICK", "ck": "TICK", "title": "DOCUMENT TITLE",
     "chip-un": "UNIT", "pb-potency": "POTENCY", "pcr-val": "VALUE",
 }
+
+# Named by what they are, never by the group they sit in: these carry no value of their
+# own, so a caption above them describes their neighbours rather than them.
+STRUCTURAL = {"bx", "ck", "title"}
+
+# The tick itself, and the empty box the certificate says a blank one prints.
+TICKS = {"bx"}
+UNTICKED = "\u2610"
 
 
 # The headline and the conformity line are set in display type; a descriptor as long as
@@ -73,6 +84,31 @@ SHORT = {
     "SPECIFICATION REFERENCE": "SPEC REF", "PRODUCT SPECIFICATION \u2116": "SPEC \u2116",
     "FINAL QC TESTING FOR BATCH": "BATCH", "DOCUMENT ID": "DOC ID", "DOCUMENT ID 2": "ISSUE DATE",
 }
+
+
+def clip_words(label, n):
+    """`label` cut to at most `n` characters, on a word boundary.
+
+    Cutting at the character left `CYSTOLITHS \u00b7 HCL R TES` and
+    `COVERING TRICHOMES \u2014 D` on the page — a descriptor that ends mid-word reads as a
+    mistake rather than as a name. A whole word short is better than a broken one.
+
+    >>> clip_words("CYSTOLITHS \u00b7 HCL R TEST", 22)
+    'CYSTOLITHS \u00b7 HCL R'
+    >>> clip_words("FOREIGN TISSUE OR MOULD", 22)
+    'FOREIGN TISSUE OR'
+    >>> clip_words("COLOUR", 22)
+    'COLOUR'
+    >>> clip_words("SUPERCALIFRAGILISTICEXPIALIDOCIOUS", 22)
+    'SUPERCALIFRAGILISTICEX'
+    """
+    label = label.strip()
+    if len(label) <= n:
+        return label
+    cut = label[:n + 1]
+    space = cut.rfind(" ")
+    out = (cut[:space] if space > 0 else label[:n]).rstrip(" \u00b7|\u2014-")
+    return out or label[:n]
 
 
 def shorten(label):
@@ -87,13 +123,13 @@ def shorten(label):
     'BATCH'
     >>> shorten("SPECIFICATION REFERENCE")
     'SPEC REF'
-    >>> shorten("SOMETHING NOBODY HAS SHORTENED AT ALL")
-    'SOMETHING NOBODY HAS S'
+    >>> shorten("SOMETHING NOBODY HAS SHORTENED AT ALL")   # cut on a word boundary
+    'SOMETHING NOBODY HAS'
     """
     for key in (label, re.sub(r"[\s\u2116.:·—-]+$", "", label)):
         if key in SHORT:
             return SHORT[key][:22]
-    return label[:22]
+    return clip_words(label, 22)
 
 
 def addr(el):
@@ -141,7 +177,7 @@ def nearest_label(el):
     def cap(node):
         for sib in node.itersiblings(preceding=True):
             c = (sib.get("class") or "")
-            if re.search(r"(^|[\s-])(lbl|label)", c) and "sec" not in c:
+            if re.search(r"(^|[\s-])(lbl|label|attr)($|[\s-])", c) and "sec" not in c:
                 t = " ".join(x.strip() for x in sib.itertext() if x.strip())
                 # the caption is bilingual; the English half is enough for a descriptor
                 t = re.split(r"[\u0400-\u04FF]", t)[0].strip(" ·|—-")
@@ -149,7 +185,12 @@ def nearest_label(el):
                     return t
         return ""
     n = el
-    for _ in range(2):            # the field itself, then the little panel it sits in
+    # Three, not two. The observation chip sits in `.ck` inside `.fc-opts`, and the group
+    # caption — `<div class="fc-attr">Colour</div>` — is the sibling of that third one. A
+    # shorter climb named all twenty-three of them OBSERVATION after their class instead.
+    # The `sec` exclusion is what keeps the climb off the section bars, which is the fault
+    # that made this two in the first place.
+    for _ in range(3):            # the field, the panel it sits in, and that panel's group
         if n is None:
             break
         t = cap(n)
@@ -238,7 +279,22 @@ def build(name, specimen, fleet):
         if a not in variable:
             continue
         cls = leaf_class(a)
-        label = nearest_label(el) or NAMES.get(cls, (cls or "VALUE").replace("-", " ").upper())
+        if cls in TICKS:
+            # A tick is a state, not a value, and the certificate says how a blank one
+            # prints: the menus are "printed unticked and marked and initialled by hand
+            # at the time of analysis". So the box is drawn empty rather than given a
+            # descriptor. Twenty-five of the internal certificate's sixty placeholders
+            # were [TICK n] standing where one glyph belongs, and they were wide enough
+            # to push the descriptor beside them out of its own chip.
+            el.text = UNTICKED
+            continue
+        # The caption the page prints beside a value names it best, except where the
+        # element is not a value at all. A tick box is a tick whatever group it sits in,
+        # and letting the caption reach it made every box in the observation record read
+        # [COLOUR] or [ODOUR]. Those few classes are named by what they ARE.
+        label = (NAMES[cls] if cls in STRUCTURAL
+                 else nearest_label(el)
+                 or NAMES.get(cls, (cls or "VALUE").replace("-", " ").upper()))
         label = re.sub(r"\s+", " ", label).strip().upper()
         label = shorten(label)
         num = row_number(el)
@@ -269,6 +325,132 @@ def build(name, specimen, fleet):
     return n
 
 
+LADDER_SPLIT = re.compile(r"[\s\u00b7\u2014/&-]+")
+PH_TEXT = re.compile(r"^\[(.*?)(?:\s+(#?\d+))?\]$")
+
+
+def ladder(text):
+    """Progressively shorter forms of a placeholder, each still naming its field.
+
+    The number is the field's identity — `[COLOUR 3]` is not `[COLOUR 2]` — so it is
+    never dropped; only the words give way, and only as far as the box demands.
+
+    >>> list(ladder("[COLOUR 3]"))
+    ['[COLOUR 3]', '[COL 3]', '[C 3]', '[3]']
+    >>> list(ladder("[BRACTS & STIGMAS]"))
+    ['[BRACTS & STIGMAS]', '[BRA STI]', '[BS]', '[\u00b7]']
+    >>> list(ladder("[nn]"))               # no number to keep, so the word itself gives way
+    ['[nn]', '[n]', '[\u00b7]']
+    >>> next(ladder("plain text"))         # not a placeholder: left alone
+    'plain text'
+    """
+    m = PH_TEXT.match(text.strip())
+    if not m:
+        yield text
+        return
+    label, num = (m.group(1) or "").strip(), m.group(2)
+    words = [w for w in LADDER_SPLIT.split(label) if w]
+    forms = [label, " ".join(w[:3] for w in words), "".join(w[:1] for w in words), ""]
+    seen = set()
+    for f in forms:
+        if f in seen:
+            continue
+        seen.add(f)
+        if f and num:
+            out = "[%s %s]" % (f, num)
+        elif f:
+            out = "[%s]" % f
+        elif num:
+            out = "[%s]" % num
+        else:
+            out = "[\u00b7]"                     # a field with nowhere to put its name
+        yield out
+
+
+def fit_placeholders(paths, css, chromium):
+    """Shorten any placeholder the page would cut off, until it fits its own box.
+
+    The chips of the observation record are `overflow:hidden; text-overflow:ellipsis`,
+    and they are not all the same width — the widest held `[OBSERVATION` and the
+    narrowest only `[OBS`, so fifteen of the internal certificate's sixty placeholders
+    printed with their number cut off and could not be told apart. No abbreviation chosen
+    in advance fits them all, so each one is measured in the layout that will be printed
+    and shortened only as far as its own box demands.
+    """
+    import sys as _sys
+    _sys.path.insert(0, os.path.join(HERE, "live_instrument"))
+    from print_coq_pdfs import render
+    from playwright.sync_api import sync_playwright
+
+    # A placeholder is an inline <span>, and scrollWidth on an inline element measures
+    # nothing — the first attempt reported every template clean while the chips were
+    # visibly cut off. What clips is the BOX around it: the nearest ancestor that hides
+    # its horizontal overflow. Ask that one whether its content is wider than itself.
+    OVERFLOW = """() => Array.from(document.querySelectorAll('.ph')).map(e => {
+        for (let n = e; n && n !== document.body; n = n.parentElement) {
+          const o = getComputedStyle(n).overflowX;
+          if ((o === 'hidden' || o === 'clip') && n.scrollWidth > n.clientWidth + 0.5)
+            return {i: +e.dataset.phi, t: e.textContent};
+        }
+        return null;
+      }).filter(Boolean)"""
+    changed = {}
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch(executable_path=chromium) if chromium \
+            else pw.chromium.launch()
+        page = browser.new_page()
+        for src in paths:
+            tree = LH.parse(src, parser=PARSER).getroot()
+            phs = [e for e in tree.iter() if "ph" in (e.get("class") or "").split()]
+            for i, e in enumerate(phs):
+                e.set("data-phi", str(i))
+            tmp = src + ".fit.html"
+            open(tmp, "w", encoding="utf-8").write(
+                LH.tostring(tree, encoding="unicode", doctype="<!DOCTYPE html>"))
+            try:
+                page.goto("file://" + os.path.abspath(tmp))
+                if css:
+                    page.add_style_tag(content=css)
+                page.evaluate("() => document.fonts.ready")
+                page.emulate_media(media="print")
+                rungs = {}
+                for _ in range(6):
+                    over = page.evaluate(OVERFLOW)
+                    if not over:
+                        break
+                    moved = False
+                    for o in over:
+                        i = o["i"]
+                        if i not in rungs:
+                            rungs[i] = list(ladder(o["t"]))[1:]
+                        if not rungs[i]:
+                            continue
+                        nxt = rungs[i].pop(0)
+                        page.evaluate(
+                            "([i, t]) => { document.querySelector('[data-phi=\"'+i+'\"]')"
+                            ".textContent = t; }", [i, nxt])
+                        changed[(src, i)] = nxt
+                        moved = True
+                    if not moved:
+                        break
+                left = page.evaluate(OVERFLOW)
+            finally:
+                os.remove(tmp)
+            for i, e in enumerate(phs):
+                if (src, i) in changed:
+                    e.text = changed[(src, i)]
+                e.attrib.pop("data-phi", None)
+            open(src, "w", encoding="utf-8").write(
+                LH.tostring(tree, encoding="unicode", doctype="<!DOCTYPE html>"))
+            n = sum(1 for k in changed if k[0] == src)
+            print("%-44s %3d shortened to fit, %d still cut off"
+                  % (os.path.basename(src), n, len(left)))
+            if left:
+                raise SystemExit("a placeholder is still cut off: %s"
+                                 % [x["t"] for x in left][:4])
+        browser.close()
+
+
 def main():
     build("CoQ_BLANK_TEMPLATE.html",
           os.path.join(HERE, "design_handoff/out/ISSUE_COQ/CoQ-PP_26-013_P050072_GP_Grape_Pie_Grade_II.html"),
@@ -287,6 +469,18 @@ def main():
     n = open(dst, encoding="utf-8").read().count('class="ph"')
     print("%-44s %4s %s %3d placeholder(s)"
           % ("ImB_Specification_BLANK_TEMPLATE.html", "—", "from the owner's own blank,",  n))
+
+    # Last, and on all three: a descriptor nobody can read is worse than none. Measured
+    # in the layout that will be printed, never guessed.
+    import glob as _glob
+    import sys as _sys
+    _sys.path.insert(0, os.path.join(HERE, "live_instrument"))
+    from print_coq_pdfs import FAMILIES, SUBSETS, page_text                  # noqa: E402
+    import house_fonts                                                       # noqa: E402
+    sheets = sorted(_glob.glob(os.path.join(OUT, "*.html")))
+    css, _, _ = house_fonts.font_face_css(page_text(sheets), FAMILIES, SUBSETS)
+    chromium = (_glob.glob("/opt/pw-browsers/chromium*/chrome-linux/chrome") or [None])[0]
+    fit_placeholders(sheets, css, chromium)
     return 0
 
 

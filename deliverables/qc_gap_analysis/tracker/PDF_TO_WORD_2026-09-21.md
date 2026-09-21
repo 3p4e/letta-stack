@@ -161,9 +161,8 @@ applied, which is what made `02` illegible.
 | ImB specification | 279 | **13/13** | median 0.010 pt | median 0.013 pt |
 | iCoA | 445 | 45/60 | median 0.013 pt | median 0.013 pt |
 
-The fifteen are placeholders the page itself truncates to `[OBS...`, because the
-descriptors are longer than the observation chips that hold them. The Word file carries
-what the page prints.
+The fifteen were placeholders the page itself truncated to `[OBS...`. They are closed —
+see *A descriptor nobody can read*, below.
 
 **The 344 certificates are untouched.** Field grouping runs only when a field map is
 given; without one the converter behaves exactly as it did, and re-measuring
@@ -218,3 +217,60 @@ planned; it is not done.
 
 The 344 certificates and 57 specification sheets already committed keep their doubled
 boxes until they are re-converted, which needs more disk than this session holds.
+
+## A descriptor nobody can read
+
+Fifteen of the internal certificate's sixty placeholders were cut off on the page:
+`[OBSERVATION 12]` printed as `[OBS...`, and a descriptor that has lost its number cannot
+be told from the one beside it. Three faults under it.
+
+**Named after a stylesheet, not a field.** The chips live in `<span class="ck-t">` and the
+builder named a field by its class before its caption, so all twenty-three read
+`OBSERVATION`. They are the colour and odour descriptor menus of Section 03 — each slot
+holds one of the same four options in an order that changes with the cultivar — and the
+group already names them. The caption search now climbs one level further, to the group
+`fc-attr` that holds them, and they read `[COLOUR 2]`, `[ODOUR 3]`,
+`[PLANT FIBRES & VESSELS]`. Two classes are exempt and named by what they *are*: a tick is
+a tick whatever group it sits in, and letting the caption reach it made every box read
+`[COLOUR]`.
+
+**A tick is not a value.** Twenty-five placeholders stood where a single `☐` belongs. The
+certificate's own text says how a blank one prints — the menus are *"printed unticked and
+marked and initialled by hand at the time of analysis"* — so the box is drawn empty. That
+alone took the internal certificate from 60 placeholders to 35, and it was those boxes,
+not the descriptors, that were pushing the chips over.
+
+**Nothing measured whether it fits.** `.ck-t` is `overflow:hidden; text-overflow:ellipsis`,
+and the chips are not all the same width — the widest held `[OBSERVATION` and the narrowest
+only `[OBS`, so no abbreviation chosen in advance fits them all. Each placeholder is now
+measured in the layout that will be printed and shortened along a ladder that keeps the
+number, because the number is the field's identity:
+
+    [COLOUR 3] → [COL 3] → [C 3] → [3]
+
+stopping at the first rung that fits. Eight of the internal certificate's needed it. A
+caption is also cut on a word boundary now rather than at the character, which is what left
+`[CYSTOLITHS · HCL R TES]` and `[COVERING TRICHOMES — D]` reading as mistakes.
+
+**The measurement had to be made on the right element.** A placeholder is an inline
+`<span>`, and `scrollWidth` on an inline element measures nothing: the first attempt
+reported all three templates clean while the chips were visibly cut off. What clips is the
+box around it, so the question is put to the nearest ancestor that hides its horizontal
+overflow.
+
+**And one more shadow twin.** `[INDICA %]` and `[SATIVA %]` were still arriving twice. A
+synthesised oblique is embedded as a Type3 font and *each draw gets its own object*, so the
+pair came back as `Type3 (109 0 R)` and `Type3 (110 0 R)` and a rule that compared faces let
+them through. The face is no longer part of the identity; the type size is.
+
+| | boxes | placeholders, all whole | cut off |
+| --- | ---: | ---: | ---: |
+| CoQ | 276 | 48 | **0** |
+| internal certificate | 444 | 35 | **0** |
+| specification | 253 | 11 | **0** |
+
+No placeholder is truncated, none carries an ellipsis, and none shares a descriptor with
+another — the two approval dates of the specification are `[QC DATE]` and `[QA DATE]` now
+rather than `[DD.MM.YYYY]` twice, and the phenotype ratio is `[INDICA %] : [SATIVA %]`
+rather than `[nn] : [nn]`. Placement is unchanged: left edge median 0.010–0.015 pt, top
+0.012–0.016 pt.

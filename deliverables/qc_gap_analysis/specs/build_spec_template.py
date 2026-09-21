@@ -70,7 +70,7 @@ def main():
     # the three tick pills — the box stays, the ratio becomes two descriptors
     h = one(h, 'INDICA<span class="pn">00</span> : SATIVA<span class="pn">00</span>',
             'INDICA<span class="pn">%s</span> : SATIVA<span class="pn">%s</span>'
-            % (ph("nn"), ph("nn")), "phenotype ratio")
+            % (ph("INDICA %"), ph("SATIVA %")), "phenotype ratio")
 
     h = one(h, '<span class="pcr-val">XX_THC00 : CBD1</span>',
             '<span class="pcr-val">%s</span>' % ph("PRODUCT CODE"), "Product Code")
@@ -79,11 +79,19 @@ def main():
     h = one(h, '<span class="pcr-val">QCSP_001_XX-I_v.03</span>',
             '<span class="pcr-val">%s</span>' % ph("SPEC DOC CODE"), "Spec. doc. code")
 
-    n = h.count('<span class="ap-date-val tpl">DD.MM.YYYY</span>')
+    # The two approval dates are not interchangeable — the first is the QC Manager's and
+    # the second the QA Manager's — so they are named apart. Calling both DD.MM.YYYY left
+    # two fields in the template that nobody could tell from each other.
+    DATE = '<span class="ap-date-val tpl">DD.MM.YYYY</span>'
+    n = h.count(DATE)
     if n != 2:
         raise SystemExit("template has %d approval dates, expected 2" % n)
-    h = h.replace('<span class="ap-date-val tpl">DD.MM.YYYY</span>',
-                  '<span class="ap-date-val">%s</span>' % ph("DD.MM.YYYY"))
+    first, second = h.find(DATE), h.rfind(DATE)
+    if not (h.rfind("QC Manager", 0, first) > h.rfind("QA Manager", 0, first)
+            and h.rfind("QA Manager", 0, second) > h.rfind("QC Manager", 0, second)):
+        raise SystemExit("the approval grid is not QC then QA; the date labels would lie")
+    for who in ("QC DATE", "QA DATE"):
+        h = h.replace(DATE, '<span class="ap-date-val">%s</span>' % ph(who), 1)
 
     # the owner, 21.09.2026: no document code in the bottom right corner
     h = one(h, '<div class="foot-right">QCSP 001 v.03</div>',

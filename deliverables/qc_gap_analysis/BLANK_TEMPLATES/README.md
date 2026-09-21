@@ -87,11 +87,18 @@ page already prints, so a longer value wraps inside the field instead of running
 the page. Where the page itself wraps a cell, the box keeps that width and wraps there
 too.
 
-**One thing for the owner on the internal certificate.** Fifteen of its placeholders are
-too long for the observation chips that hold them, so the page truncates them —
-`[OBSERVATION 12]` prints as `[OBS...`. The Word file carries what the page prints,
-because a converter may not invent text. Shortening those descriptors in
-`build_blank_templates.py` would fix it at source.
+**Nothing is cut off, and the descriptors say what they are.** The observation record's
+chips used to read `[OBSERVATION 12]` — named after their CSS class — and fifteen of them
+were wider than the chip, so the page truncated them to `[OBS...` and nobody could tell one
+from the next. They are now named by their own group, `[COLOUR 2]`, `[ODOUR 3]`,
+`[PLANT FIBRES & VESSELS]`, and each is measured in the layout that will be printed and
+shortened only as far as its own box demands — `[BRACTS & STIGMAS 2]` becomes `[BRA STI 2]`
+where the chip is narrow, and stays whole where it is not.
+
+**The tick boxes print empty.** Twenty-five of the internal certificate's placeholders
+stood where a single `\u2610` belongs, which is both meaningless and wide enough to push the
+descriptor beside it out of the chip. The certificate says how a blank one prints: the
+menus are *"printed unticked and marked and initialled by hand at the time of analysis"*.
 
 **No label is boxed twice.** The design gives its tick-chips and section bands a CSS text
 shadow, and Chromium draws a text shadow in a PDF by printing the glyphs a second time —

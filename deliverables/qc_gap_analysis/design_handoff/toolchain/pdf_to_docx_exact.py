@@ -621,12 +621,16 @@ def shadow_twins(spans):
     other behind. The twin is not redacted — it stays in the page image, so the emboss
     still prints — it simply does not also become a box.
 
-    The pair is identified exactly rather than by tolerance: same text, same face, the
-    same left edge to a tenth of a point, three quarters of a point lower, and a
-    different colour. The internal certificate sets no text shadow and none is found.
+    The pair is identified exactly rather than by tolerance: same text, same type size,
+    the same left edge to a tenth of a point, three quarters of a point lower, and a
+    different colour. The FACE is deliberately not part of it — a synthesised oblique is
+    embedded as a Type3 font and each draw gets its own object, so the blue placeholders
+    of the templates came back as `Type3 (109 0 R)` and `Type3 (110 0 R)` and a rule that
+    compared faces let every one of them through. The internal certificate sets no text
+    shadow and none is found, which is the check that this is still precise.
 
-    >>> a = {"text": "HYBRID", "font": "MontserratBold", "bbox": (10, 20, 40, 28), "color": 0xffffff}
-    >>> b = {"text": "HYBRID", "font": "MontserratBold", "bbox": (10, 20.75, 40, 28.75), "color": 0}
+    >>> a = {"text": "HYBRID", "size": 8.0, "bbox": (10, 20, 40, 28), "color": 0xffffff}
+    >>> b = {"text": "HYBRID", "size": 8.0, "bbox": (10, 20.75, 40, 28.75), "color": 0}
     >>> shadow_twins([a, b]) == {id(b)}
     True
     >>> shadow_twins([a]) == set()
@@ -634,13 +638,15 @@ def shadow_twins(spans):
     """
     by = {}
     for s in spans:
-        by.setdefault((s["text"].strip(), s["font"], round(s["bbox"][0], 1)), []).append(s)
+        by.setdefault((s["text"].strip(), round(s["bbox"][0], 1)), []).append(s)
     twins = set()
     for group in by.values():
         for i, a in enumerate(group):
             for b in group[i + 1:]:
                 dy = b["bbox"][1] - a["bbox"][1]
-                if SHADOW_DY[0] < abs(dy) < SHADOW_DY[1] and a.get("color") != b.get("color"):
+                if (SHADOW_DY[0] < abs(dy) < SHADOW_DY[1]
+                        and abs(a["size"] - b["size"]) < 0.05
+                        and a.get("color") != b.get("color")):
                     twins.add(id(b if dy > 0 else a))       # the lower one is the shadow
     return twins
 
