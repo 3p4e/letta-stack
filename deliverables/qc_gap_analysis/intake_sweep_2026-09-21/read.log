@@ -41,3 +41,79 @@ read A: 15 of 15 pages
     "status": "PERMISSION
    read B ok: 031-1-К-26.pdf
    gemini key 1 rate-limited (429), trying next key
+   read B ok: 362-0692-26.pdf
+   gemini key 1 rate-limited (429), trying next key
+   read B ok: 227-18-М-26.pdf
+   gemini key 1 rate-limited (429), trying next key
+   read B ok: 328-2026.pdf
+   gemini key 1 rate-limited (429), trying next key
+   gemini key 2 rate-limited (503), trying next key
+   read B 403-0786-26.pdf attempt 1/3 failed: HTTPError {
+  "error": {
+    "code": 403,
+    "message": "Your API key was reported as leaked. Please use another API key.",
+    "status": "PERMISSION
+   gemini key 2 rate-limited (503), trying next key
+   read B 407-0790-26.pdf attempt 1/3 failed: HTTPError {
+  "error": {
+    "code": 403,
+    "message": "Your API key was reported as leaked. Please use another API key.",
+    "status": "PERMISSION
+   gemini key 2 rate-limited (503), trying next key
+   read B 408-0791-26.pdf attempt 1/3 failed: HTTPError {
+  "error": {
+    "code": 403,
+    "message": "Your API key was reported as leaked. Please use another API key.",
+    "status": "PERMISSION
+   gemini key 1 rate-limited (429), trying next key
+   gemini key 1 rate-limited (429), trying next key
+   gemini key 2 rate-limited (429), trying next key
+   read B 407-0790-26.pdf attempt 2/3 failed: HTTPError {
+  "error": {
+    "code": 403,
+    "message": "Your API key was reported as leaked. Please use another API key.",
+    "status": "PERMISSION
+   gemini key 2 rate-limited (503), trying next key
+   read B 403-0786-26.pdf attempt 2/3 failed: HTTPError {
+  "error": {
+    "code": 403,
+    "message": "Your API key was reported as leaked. Please use another API key.",
+    "status": "PERMISSION
+   gemini key 1 rate-limited (429), trying next key
+   gemini key 2 rate-limited (503), trying next key
+   read B 408-0791-26.pdf attempt 2/3 failed: HTTPError {
+  "error": {
+    "code": 403,
+    "message": "Your API key was reported as leaked. Please use another API key.",
+    "status": "PERMISSION
+   gemini key 1 rate-limited (429), trying next key
+   gemini key 1 rate-limited (429), trying next key
+   gemini key 2 rate-limited (429), trying next key
+   read B 408-0791-26.pdf attempt 3/3 failed: HTTPError {
+  "error": {
+    "code": 403,
+    "message": "Your API key was reported as leaked. Please use another API key.",
+    "status": "PERMISSION
+   read B FAILED: 408-0791-26.pdf — HTTP Error 403: Forbidden
+   gemini key 1 rate-limited (429), trying next key
+   gemini key 2 rate-limited (429), trying next key
+   read B 434-0848-26.pdf attempt 1/3 failed: HTTPError {
+  "error": {
+    "code": 403,
+    "message": "Your API key was reported as leaked. Please use another API key.",
+    "status": "PERMISSION
+   gemini key 2 rate-limited (503), trying next key
+   read B 403-0786-26.pdf attempt 3/3 failed: HTTPError {
+  "error": {
+    "code": 403,
+    "message": "Your API key was reported as leaked. Please use another API key.",
+    "status": "PERMISSION
+   read B FAILED: 403-0786-26.pdf — HTTP Error 403: Forbidden
+   gemini key 1 rate-limited (429), trying next key
+   gemini key 2 rate-limited (429), trying next key
+   read B ok: 407-0790-26.pdf
+   read B 475-0927-26.pdf attempt 1/3 failed: HTTPError {
+  "error": {
+    "code": 403,
+    "message": "Your API key was reported as leaked. Please use another API key.",
+    "status": "PERMISSION
