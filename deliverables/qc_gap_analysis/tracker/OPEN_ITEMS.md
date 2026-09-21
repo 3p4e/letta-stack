@@ -4,7 +4,7 @@ Every finding the desk has raised and cannot itself settle, with the evidence
 behind it and the decision being asked for. Built by `open_items.py`; the same
 register is the **Open Items** sheet of the workbook.
 
-**45 open · 3 marked on the certificate**
+**46 open · 3 marked on the certificate**
 
 ## Specification
 
@@ -733,4 +733,16 @@ It is not a download fault. Each local copy is byte for byte the size of the fil
 **The desk.** The whole panel is held, not four fifths of it. A microbiological panel is one determination on one sample and prints whole or not at all — the owner's ruling that verify_panels.py enforces — so taking the four sound lines would have printed exactly the shape that ruling forbids. CoQ-PP_26-046 therefore still states that no certificate covers #9.1-#9.5 for this lot. Nothing is guessed and nothing is printed that the page does not support.
 
 **Needed.** One line from the Institute of Public Health: whether the bile-tolerant result on 75/0118/26 is `< 10³ и >10² CFU/g`. Every reading of it conforms to the ≤ 10⁴ criterion, so the answer releases four sound values and costs the lot nothing; it is the assertion, not the verdict, that is missing.
+
+## Record integrity
+
+### OI-64 · 434/0848/26 names a Gorilla Glue sample under a Fat Bastard lot number, and the two cannot both be right
+
+*State:* **open** · *Evidence:* intake_sweep_2026-09-21/reads_B.json header_read; intake_sweep_2026-09-21/reads_C.json 434-0848-26.pdf; apply_gaps_2026-09-21.py (433/0847/26); OI-42; OI-63; the pages themselves, page 1 header and signature block
+
+**Found.** The desk read the header of `434/0848/26` off a 300 dpi crop on 21.09.2026, after the first pass had taken its identity from the file name rather than the page. The page prints, on consecutive lines: *Примерок за тестирање: Сув цвет од медицински канабис Gorilla Glue, 33,34 g* and *Серија: FB032601*. FB is this record's Fat Bastard prefix and GG its Gorilla Glue one, so the sample line and the lot line name two different lots, both of which exist: FB032601 is CoQ-PP_26-081 and GG032601 is CoQ-PP_26-082. Three things sit around it. The immediately preceding laboratory number, `433/0847/26`, was issued the same day, names Fat Bastard, carries FB032601, and already fills #9.1-#9.5 on CoQ-PP_26-081. Its counts differ from 434's (TAMC 3,7 × 10³ against 4,5 × 10³, TYMC 1,6 × 10³ against 5,4 × 10³), so the two reports are two samples, not one report twice. And CoQ-PP_26-082, the Gorilla Glue lot, is the one of the pair whose microbiology panel is wholly empty.
+
+**The desk.** Nothing is applied from this page. Reading it onto FB032601 would put a second, conflicting panel on a lot already covered by 433/0847/26; reading it onto GG032601 would mean overruling the laboratory's own Серија line on the strength of its sample description, and a laboratory's record is not the desk's to repair — the same rule that holds 75/0118/26 under OI-63. CoQ-PP_26-082 therefore still states that no certificate covers #9.1-#9.5. The five values are read, agreed by two readers and waiting on one line.
+
+**Needed.** One line from the Institute of Public Health: whether `434/0848/26` certifies GG032601 (Gorilla Glue, as its sample line says) or FB032601 (as its Серија line says). If Gorilla Glue, a complete microbiology panel closes on CoQ-PP_26-082 with no further testing. Noted on the same delivery and needing the same letter: `75/0118/26` and `76/0119/26` both print *Дата на прием: 02.02.2025 год.* while their laboratory numbers end /26 and both are signed 09.02.2026 — the receipt year is a year out on both pages of that pair.
 

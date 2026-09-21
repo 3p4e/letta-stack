@@ -81,7 +81,13 @@ V = _validator()
 _MALFORMED = ("the page prints '< 10\u00b3 \u0438 10\u00b2 CFU/g' for the bile-tolerant count \u2014 the "
               "laboratory omitted the '>' and the range states nothing; a panel determined on one "
               "sample prints whole or not at all, so the other four are held with it")
+_TWO_LOTS = ("the page names a Gorilla Glue sample and a Fat Bastard lot number "
+             "(\u0421\u0435\u0440\u0438\u0458\u0430: FB032601) on consecutive lines, and both lots exist \u2014 "
+             "FB032601 is CoQ-PP_26-081, GG032601 is CoQ-PP_26-082. Which lot the page "
+             "certifies is a question for the laboratory, not a choice for the desk (OI-64)")
 WITHHOLD = {("75/0118/26", n): _MALFORMED for n in ("9.1", "9.2", "9.3", "9.4", "9.5")}
+WITHHOLD.update({("434/0848/26", n): _TWO_LOTS
+                 for n in ("9.1", "9.2", "9.3", "9.4", "9.5")})
 GATE = os.path.join(HERE, "intake_sweep_2026-09-21", "two_read_result.json")
 IDS = os.path.join(HERE, "intake_sweep_2026-09-21", "drive_ids.json")
 IPH = "IPH — Institute of Public Health"
@@ -203,6 +209,7 @@ def main(argv):
         v.sort(key=lambda t: t[0] != "initial")
 
     applied, agreed, differ, nolot, nodet = [], [], [], [], []
+    covered = []
     skipped_initial, flagged, withheld_vals = [], [], set()
     for scan, doc in sorted(gate["documents"].items()):
         if scan not in meta:
@@ -248,7 +255,11 @@ def main(argv):
                             or re.search("not tested|to be performed|in-house CoA only", st, re.I))
                 if not withheld:
                     same = str(r.get("doc") or "").strip() == str(doc["doc_code"]).strip()
-                    if same and dot(have) != dot(take[no]):
+                    if not same:
+                        # Another document already covers this determination. Nothing was
+                        # compared, so this is not agreement and must not be counted as it.
+                        covered.append((c["regcode"], no, r.get("doc"), doc["doc_code"]))
+                    elif dot(have) != dot(take[no]):
                         differ.append((c["regcode"], no, have, take[no], doc["doc_code"]))
                     else:
                         agreed.append((c["regcode"], no, have, take[no], doc["doc_code"]))
@@ -290,6 +301,11 @@ def main(argv):
         print("read by both and still NOT printed \u2014 the page itself is malformed:")
         for k in sorted(withheld_vals):
             print("   %s #%s \u2014 %s" % (k[0], k[1], WITHHOLD[k]))
+    if covered:
+        print("the cell is already covered by ANOTHER document, so nothing was "
+              "compared: %d" % len(covered))
+        for k in sorted({(x[0], str(x[2]), x[3]) for x in covered}):
+            print("   %-16s carries %-14s the sweep read %s" % k)
     print("already printed, and the new reading agrees: %d" % len(agreed))
     print("already printed, and the new reading DIFFERS: %d" % len(differ))
     for d in differ[:20]:

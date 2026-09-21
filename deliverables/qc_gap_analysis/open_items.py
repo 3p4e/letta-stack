@@ -1345,6 +1345,37 @@ ITEMS = [
      "the assertion, not the verdict, that is missing.",
      "intake_sweep_2026-09-21/two_read_result.json; apply_sweep_2026-09-21.py WITHHOLD; "
      "verify_panels.py; the page itself, page 1"),
+    ("OI-64", "Record integrity", "open",
+     "434/0848/26 names a Gorilla Glue sample under a Fat Bastard lot number, and the two cannot both be right",
+     "The desk read the header of `434/0848/26` off a 300 dpi crop on 21.09.2026, after the "
+     "first pass had taken its identity from the file name rather than the page. The page "
+     "prints, on consecutive lines: *\u041f\u0440\u0438\u043c\u0435\u0440\u043e\u043a \u0437\u0430 \u0442\u0435\u0441\u0442\u0438\u0440\u0430\u045a\u0435: \u0421\u0443\u0432 \u0446\u0432\u0435\u0442 \u043e\u0434 \u043c\u0435\u0434\u0438\u0446\u0438\u043d\u0441\u043a\u0438 \u043a\u0430\u043d\u0430\u0431\u0438\u0441 "
+     "Gorilla Glue, 33,34 g* and *\u0421\u0435\u0440\u0438\u0458\u0430: FB032601*. FB is this record's Fat Bastard "
+     "prefix and GG its Gorilla Glue one, so the sample line and the lot line name two "
+     "different lots, both of which exist: FB032601 is CoQ-PP_26-081 and GG032601 is "
+     "CoQ-PP_26-082. Three things sit around it. The immediately preceding laboratory "
+     "number, `433/0847/26`, was issued the same day, names Fat Bastard, carries FB032601, "
+     "and already fills #9.1-#9.5 on CoQ-PP_26-081. Its counts differ from 434's "
+     "(TAMC 3,7 \u00d7 10\u00b3 against 4,5 \u00d7 10\u00b3, TYMC 1,6 \u00d7 10\u00b3 against 5,4 \u00d7 10\u00b3), so the "
+     "two reports are two samples, not one report twice. And CoQ-PP_26-082, the Gorilla "
+     "Glue lot, is the one of the pair whose microbiology panel is wholly empty.",
+     "Nothing is applied from this page. Reading it onto FB032601 would put a second, "
+     "conflicting panel on a lot already covered by 433/0847/26; reading it onto GG032601 "
+     "would mean overruling the laboratory's own \u0421\u0435\u0440\u0438\u0458\u0430 line on the strength of its "
+     "sample description, and a laboratory's record is not the desk's to repair \u2014 the same "
+     "rule that holds 75/0118/26 under OI-63. CoQ-PP_26-082 therefore still states that no "
+     "certificate covers #9.1-#9.5. The five values are read, agreed by two readers and "
+     "waiting on one line.",
+     "One line from the Institute of Public Health: whether `434/0848/26` certifies "
+     "GG032601 (Gorilla Glue, as its sample line says) or FB032601 (as its \u0421\u0435\u0440\u0438\u0458\u0430 line "
+     "says). If Gorilla Glue, a complete microbiology panel closes on CoQ-PP_26-082 with no "
+     "further testing. Noted on the same delivery and needing the same letter: `75/0118/26` "
+     "and `76/0119/26` both print *\u0414\u0430\u0442\u0430 \u043d\u0430 \u043f\u0440\u0438\u0435\u043c: 02.02.2025 \u0433\u043e\u0434.* while their "
+     "laboratory numbers end /26 and both are signed 09.02.2026 \u2014 the receipt year is a "
+     "year out on both pages of that pair.",
+     "intake_sweep_2026-09-21/reads_B.json header_read; intake_sweep_2026-09-21/reads_C.json "
+     "434-0848-26.pdf; apply_gaps_2026-09-21.py (433/0847/26); OI-42; OI-63; the pages "
+     "themselves, page 1 header and signature block"),
 ]
 
 STATES = {"open", "marked", "ruled"}
@@ -1356,7 +1387,7 @@ def items(state=None, area=None):
     """The register, optionally narrowed.
 
     >>> len(items())
-    63
+    64
     >>> [i[0] for i in items(area="Specification")]
     ['OI-01', 'OI-02', 'OI-03', 'OI-44', 'OI-50']
     >>> sorted({i[2] for i in items()})

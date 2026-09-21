@@ -184,6 +184,36 @@
   }
  },
  {
+  "scan": "403-0786-26.pdf",
+  "sha256": "84afcc106ecbd74e213cfc962844f226276d5fe023fe35a82d15a67632aafdec",
+  "pages": 1,
+  "raw": "{\"batch_printed\": \"SCR022601\", \"batch_canonical\": \"SCR022601\", \"cert_code\": \"403/0786/26\", \"date_of_issue\": \"24.06.2026\", \"lab\": \"ЈЗУ Институт за јавно здравје — Оддел за микробиологија\", \"letter\": \"03-364/2 од 17.06.2026 / Барање бр.: 162/2026\", \"parameters\": [{\"parameter\": null, \"parameter_printed\": \"Вкупен број аеробни бактерии-ТАМС\", \"result_printed\": \"5,4 x 10² CFU/g\"}, {\"parameter\": null, \"parameter_printed\": \"Вкупен број габи и мувли-ТҮМС\", \"result_printed\": \"1,4 x 10³ CFU/g\"}, {\"parameter\": null, \"parameter_printed\": \"На жолчка толерантни грам-негативни бактерии\", \"result_printed\": \"< 10 CFU/g\"}, {\"parameter\": null, \"parameter_printed\": \"Escherichia coli\", \"result_printed\": \"Отсутна\"}, {\"parameter\": null, \"parameter_printed\": \"Salmonella\", \"result_printed\": \"Отсутна\"}], \"date_of_receipt\": \"18.06.2026\"}",
+  "usage": {
+   "served_by": "desk read — the page at 300 dpi, 21.09.2026",
+   "why": "Google's free tier retired a key mid-run (403, 'reported as leaked') and rate-limited the rest, so no second VENDOR read was available for these five. The desk is the second reader, as it was on 16.09.2026 (four bile-tolerant lines) and 18.09.2026 (page 4 of 87/2026). Read before read A's answer for these pages was looked at."
+  },
+  "header_read": {
+   "when": "21.09.2026",
+   "crops": {
+    "header": "page 1, 300 dpi, y 0.05–0.40",
+    "footer": "page 1, 300 dpi, y 0.62–0.72"
+   },
+   "why": "The first desk pass cropped the parameter table and the letter line but not the lab-number line or the signature block, and filled cert_code, batch and date_of_issue from the file name. A file name is not a page. These three fields are now read off the header and footer crops named above.",
+   "was": {
+    "cert_code": "403/0786/26",
+    "batch_printed": "SCR022601",
+    "batch_canonical": "SCR022601",
+    "date_of_issue": "24.06.2026"
+   },
+   "now": {
+    "cert_code": "403/0786/26",
+    "batch_printed": "SCR022601",
+    "batch_canonical": "SCR022601",
+    "date_of_issue": "24.06.2026"
+   }
+  }
+ },
+ {
   "scan": "407-0790-26.pdf",
   "sha256": "f58219259ef6ff497a5fed780826e42e2918d6879f1baa03b416bf8ab972810c",
   "pages": 1,
@@ -207,6 +237,96 @@
   }
  },
  {
+  "scan": "408-0791-26.pdf",
+  "sha256": "1e75306f1fd4457739506bdf692c531f039bfd0f1cf5c7ae67b67bb883010ef7",
+  "pages": 1,
+  "raw": "{\"batch_printed\": \"FB012603\", \"batch_canonical\": \"FB012603\", \"cert_code\": \"408/0791/26\", \"date_of_issue\": \"24.06.2026\", \"lab\": \"ЈЗУ Институт за јавно здравје — Оддел за микробиологија\", \"letter\": \"03-365/3 од 17.06.2026 / Барање бр.: 158/2026\", \"parameters\": [{\"parameter\": null, \"parameter_printed\": \"Вкупен број аеробни бактерии-ТАМС\", \"result_printed\": \"9,2 x 10³ CFU/g\"}, {\"parameter\": null, \"parameter_printed\": \"Вкупен број габи и мувли-ТҮМС\", \"result_printed\": \"7 x 10³ CFU/g\"}, {\"parameter\": null, \"parameter_printed\": \"На жолчка толерантни грам-негативни бактерии\", \"result_printed\": \"< 10³ и > 10² CFU/g\"}, {\"parameter\": null, \"parameter_printed\": \"Escherichia coli\", \"result_printed\": \"Отсутна\"}, {\"parameter\": null, \"parameter_printed\": \"Salmonella\", \"result_printed\": \"Отсутна\"}], \"date_of_receipt\": \"18.06.2026\"}",
+  "usage": {
+   "served_by": "desk read — the page at 300 dpi, 21.09.2026",
+   "why": "Google's free tier retired a key mid-run (403, 'reported as leaked') and rate-limited the rest, so no second VENDOR read was available for these five. The desk is the second reader, as it was on 16.09.2026 (four bile-tolerant lines) and 18.09.2026 (page 4 of 87/2026). Read before read A's answer for these pages was looked at."
+  },
+  "header_read": {
+   "when": "21.09.2026",
+   "crops": {
+    "header": "page 1, 300 dpi, y 0.05–0.40",
+    "footer": "page 1, 300 dpi, y 0.62–0.72"
+   },
+   "why": "The first desk pass cropped the parameter table and the letter line but not the lab-number line or the signature block, and filled cert_code, batch and date_of_issue from the file name. A file name is not a page. These three fields are now read off the header and footer crops named above.",
+   "was": {
+    "cert_code": "408/0791/26",
+    "batch_printed": "FB012603",
+    "batch_canonical": "FB012603",
+    "date_of_issue": "24.06.2026"
+   },
+   "now": {
+    "cert_code": "408/0791/26",
+    "batch_printed": "FB012603",
+    "batch_canonical": "FB012603",
+    "date_of_issue": "24.06.2026"
+   }
+  }
+ },
+ {
+  "scan": "434-0848-26.pdf",
+  "sha256": "60c048b688ab5c974abbc6edfec330603ecb365dc7c17a71eb9883d53de02ed0",
+  "pages": 1,
+  "raw": "{\"batch_printed\": \"FB032601\", \"batch_canonical\": \"FB032601\", \"cert_code\": \"434/0848/26\", \"date_of_issue\": \"10.07.2026\", \"lab\": \"ЈЗУ Институт за јавно здравје — Оддел за микробиологија\", \"letter\": \"03-398/2 од 02.07.2026 / Барање бр.: 191/2026\", \"parameters\": [{\"parameter\": null, \"parameter_printed\": \"Вкупен број аеробни бактерии-ТАМС\", \"result_printed\": \"4,5 x 10³ CFU/g\"}, {\"parameter\": null, \"parameter_printed\": \"Вкупен број габи и мувли-ТҮМС\", \"result_printed\": \"5,4 x 10³ CFU/g\"}, {\"parameter\": null, \"parameter_printed\": \"На жолчка толерантни грам-негативни бактерии\", \"result_printed\": \"< 10 CFU/g\"}, {\"parameter\": null, \"parameter_printed\": \"Escherichia coli\", \"result_printed\": \"Отсутна\"}, {\"parameter\": null, \"parameter_printed\": \"Salmonella\", \"result_printed\": \"Отсутна\"}], \"date_of_receipt\": \"02.07.2026\"}",
+  "usage": {
+   "served_by": "desk read — the page at 300 dpi, 21.09.2026",
+   "why": "Google's free tier retired a key mid-run (403, 'reported as leaked') and rate-limited the rest, so no second VENDOR read was available for these five. The desk is the second reader, as it was on 16.09.2026 (four bile-tolerant lines) and 18.09.2026 (page 4 of 87/2026). Read before read A's answer for these pages was looked at."
+  },
+  "header_read": {
+   "when": "21.09.2026",
+   "crops": {
+    "header": "page 1, 300 dpi, y 0.05–0.40",
+    "footer": "page 1, 300 dpi, y 0.62–0.72"
+   },
+   "why": "The first desk pass cropped the parameter table and the letter line but not the lab-number line or the signature block, and filled cert_code, batch and date_of_issue from the file name. A file name is not a page. These three fields are now read off the header and footer crops named above.",
+   "was": {
+    "cert_code": "434/0848/26",
+    "batch_printed": "FB032601",
+    "batch_canonical": "FB032601",
+    "date_of_issue": "10.07.2026"
+   },
+   "now": {
+    "cert_code": "434/0848/26",
+    "batch_printed": "FB032601",
+    "batch_canonical": "FB032601",
+    "date_of_issue": "10.07.2026"
+   }
+  }
+ },
+ {
+  "scan": "475-0927-26.pdf",
+  "sha256": "39375f0a065a8ef10c5aa0c86e859ff111963b3964834684f090dda906ab9bfc",
+  "pages": 1,
+  "raw": "{\"batch_printed\": \"P050022\", \"batch_canonical\": \"P050022\", \"cert_code\": \"475/0927/26\", \"date_of_issue\": \"04.08.2026\", \"lab\": \"ЈЗУ Институт за јавно здравје — Оддел за микробиологија\", \"letter\": \"03-434/3 од 27.07.2026 / Барање бр.: 203/2026\", \"parameters\": [{\"parameter\": null, \"parameter_printed\": \"Вкупен број аеробни бактерии-ТАМС\", \"result_printed\": \"< 10 CFU/g\"}, {\"parameter\": null, \"parameter_printed\": \"Вкупен број габи и мувли-ТҮМС\", \"result_printed\": \"< 10 CFU/g\"}, {\"parameter\": null, \"parameter_printed\": \"На жолчка толерантни грам-негативни бактерии\", \"result_printed\": \"< 10 CFU/g\"}, {\"parameter\": null, \"parameter_printed\": \"Escherichia coli\", \"result_printed\": \"Отсутна\"}, {\"parameter\": null, \"parameter_printed\": \"Salmonella\", \"result_printed\": \"Отсутна\"}], \"date_of_receipt\": \"28.07.2026\"}",
+  "usage": {
+   "served_by": "desk read — the page at 300 dpi, 21.09.2026",
+   "why": "Google's free tier retired a key mid-run (403, 'reported as leaked') and rate-limited the rest, so no second VENDOR read was available for these five. The desk is the second reader, as it was on 16.09.2026 (four bile-tolerant lines) and 18.09.2026 (page 4 of 87/2026). Read before read A's answer for these pages was looked at."
+  },
+  "header_read": {
+   "when": "21.09.2026",
+   "crops": {
+    "header": "page 1, 300 dpi, y 0.05–0.40",
+    "footer": "page 1, 300 dpi, y 0.62–0.72"
+   },
+   "why": "The first desk pass cropped the parameter table and the letter line but not the lab-number line or the signature block, and filled cert_code, batch and date_of_issue from the file name. A file name is not a page. These three fields are now read off the header and footer crops named above.",
+   "was": {
+    "cert_code": "475/0927/26",
+    "batch_printed": "GP0824-02",
+    "batch_canonical": "GP0824-02",
+    "date_of_issue": "04.08.2026"
+   },
+   "now": {
+    "cert_code": "475/0927/26",
+    "batch_printed": "P050022",
+    "batch_canonical": "P050022",
+    "date_of_issue": "04.08.2026"
+   }
+  }
+ },
+ {
   "scan": "75-0118-26.pdf",
   "sha256": "2a3210a99cfe51bd191cd64075e518d7b584b3b6941487513c210a190f13f73e",
   "pages": 1,
@@ -227,6 +347,36 @@
    ],
    "thoughtsTokenCount": 4682,
    "serviceTier": "standard"
+  }
+ },
+ {
+  "scan": "76-0119-26.pdf",
+  "sha256": "5836cb9942062986039af31524908fc9f08c9f6ada5fd8873ed7da75979b1ec4",
+  "pages": 1,
+  "raw": "{\"batch_printed\": \"GRC102501\", \"batch_canonical\": \"GRC102501\", \"cert_code\": \"76/0119/26\", \"date_of_issue\": \"09.02.2026\", \"lab\": \"ЈЗУ Институт за јавно здравје — Оддел за микробиологија\", \"letter\": \"Сл. (Барање бр.: 038/2026) од 30.01.2026\", \"parameters\": [{\"parameter\": null, \"parameter_printed\": \"Вкупен број аеробни бактерии-ТАМС\", \"result_printed\": \"9 x 10¹ CFU/g\"}, {\"parameter\": null, \"parameter_printed\": \"Вкупен број габи и мувли-ТҮМС\", \"result_printed\": \"1 x 10² CFU/g\"}, {\"parameter\": null, \"parameter_printed\": \"На жолчка толерантни грам-негативни бактерии\", \"result_printed\": \"< 10 CFU/g\"}, {\"parameter\": null, \"parameter_printed\": \"Escherichia coli\", \"result_printed\": \"Одговара\"}, {\"parameter\": null, \"parameter_printed\": \"Salmonella\", \"result_printed\": \"Одговара\"}], \"date_of_receipt\": \"02.02.2025\"}",
+  "usage": {
+   "served_by": "desk read — the page at 300 dpi, 21.09.2026",
+   "why": "Google's free tier retired a key mid-run (403, 'reported as leaked') and rate-limited the rest, so no second VENDOR read was available for these five. The desk is the second reader, as it was on 16.09.2026 (four bile-tolerant lines) and 18.09.2026 (page 4 of 87/2026). Read before read A's answer for these pages was looked at."
+  },
+  "header_read": {
+   "when": "21.09.2026",
+   "crops": {
+    "header": "page 1, 300 dpi, y 0.05–0.40",
+    "footer": "page 1, 300 dpi, y 0.62–1.00"
+   },
+   "why": "The first desk pass cropped the parameter table and the letter line but not the lab-number line or the signature block, and filled cert_code, batch and date_of_issue from the file name. A file name is not a page. These three fields are now read off the header and footer crops named above.",
+   "was": {
+    "cert_code": "76/0119/26",
+    "batch_printed": "GRC102501",
+    "batch_canonical": "GRC102501",
+    "date_of_issue": null
+   },
+   "now": {
+    "cert_code": "76/0119/26",
+    "batch_printed": "GRC102501",
+    "batch_canonical": "GRC102501",
+    "date_of_issue": "09.02.2026"
+   }
   }
  }
 ]

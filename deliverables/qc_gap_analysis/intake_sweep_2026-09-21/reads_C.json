@@ -37,5 +37,19 @@
    "_region": "page 2, 45–80 % of the height — the pesticide residue table",
    "_note": "Two rows the two readers labelled differently while reporting the same result (н.д.). The page prints 'vkupno DDT', in Latin transliteration, and 'Endosulfan (alpha, beta and endosulfan sulfat)' — so read B is right on both and read A silently normalised the laboratory's own spelling: it rendered the transliteration back into Cyrillic and corrected 'sulfat' to 'sulfate'. That is precisely what the desk's standing rule forbids, because a laboratory's record is not ours to tidy. The first spelling listed in each pair is the page's; the rest are the readings folded onto it so the two reads can be compared row for row. No result is touched."
   }
+ },
+ "434-0848-26.pdf": {
+  "cert_code": {
+   "settled": "434/0848/26",
+   "agrees_with": "B",
+   "region": "page 1, 5–40 % of the height — the lab-number line",
+   "note": "Read A returned nothing for this field. The page prints 'Лабораториски број: 434/0848/26' beside 'Дата на прием: 02.07.2026 год.'"
+  },
+  "batch_canonical": {
+   "settled": "FB032601",
+   "agrees_with": "B",
+   "region": "page 1, 5–40 % of the height — the 'Серија:' line of the sample block",
+   "note": "Read A gave 'FD032601'. The page prints 'Серија: FB032601' under the sample line 'Сув цвет од медицински канабис Gorilla Glue, 33,34 g'. FB is Fat Bastard's prefix and FD is no prefix this record uses, so a B read as a D is the likelier slip; the crop settles it either way."
+  }
  }
 }
