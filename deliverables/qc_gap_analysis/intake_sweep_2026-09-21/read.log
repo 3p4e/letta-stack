@@ -3,3 +3,41 @@ warning: The `fitz` API is deprecated and will be removed in future. Use `import
    read A ok: 031-1-К-26.pdf
    read A ok: 031-1-ГС-26.pdf
    read A ok: 131-0228-26.pdf
+   read A ok: 227-18-М-26.pdf
+   read A ok: 132-0229-26.pdf
+   read A ok: 137-0234-26.pdf
+   read A ok: 403-0786-26.pdf
+   $$ SPEND ALERT: openai pool $1.04 of $5.50 (15 calls)
+   read A ok: 362-0692-26.pdf
+   read A ok: 328-2026.pdf
+   read A ok: 407-0790-26.pdf
+   read A ok: 434-0848-26.pdf
+   read A ok: 408-0791-26.pdf
+   read A ok: 475-0927-26.pdf
+   read A ok: 75-0118-26.pdf
+   read A ok: 76-0119-26.pdf
+read A: 15 of 15 pages
+   gemini key 1 rate-limited (503), trying next key
+   gemini key 1 rate-limited (503), trying next key
+   read B ok: 031-1-ГС-26.pdf
+   gemini key 1 rate-limited (503), trying next key
+   gemini key 2 rate-limited (503), trying next key
+   read B 031-1-К-26.pdf attempt 1/3 failed: HTTPError {
+  "error": {
+    "code": 403,
+    "message": "Your API key was reported as leaked. Please use another API key.",
+    "status": "PERMISSION
+   read B ok: 131-0228-26.pdf
+   read B ok: 132-0229-26.pdf
+   gemini key 1 rate-limited (503), trying next key
+   gemini key 1 rate-limited (429), trying next key
+   gemini key 1 rate-limited (503), trying next key
+   read B ok: 137-0234-26.pdf
+   gemini key 2 rate-limited (503), trying next key
+   read B 227-18-М-26.pdf attempt 1/3 failed: HTTPError {
+  "error": {
+    "code": 403,
+    "message": "Your API key was reported as leaked. Please use another API key.",
+    "status": "PERMISSION
+   read B ok: 031-1-К-26.pdf
+   gemini key 1 rate-limited (429), trying next key
