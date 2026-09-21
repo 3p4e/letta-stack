@@ -65,8 +65,13 @@ def instance(family, weight, italic):
     out = os.path.join(CACHE, "%s-%d%s.ttf" % (family.replace(" ", ""), weight, "-Italic" if italic else ""))
     if os.path.exists(out):
         return out
-    src = os.path.join(SRC, VARIABLE.get((family, italic), ""))
-    if not os.path.exists(src):
+    # A family with no variable source mapped — Orbitron has no italic, for one — used to
+    # join an EMPTY name onto SRC, which is the cache DIRECTORY. os.path.exists() says yes
+    # to a directory, so the miss sailed past this guard and fontTools was handed a folder
+    # to open. Ask for the name first, and require a file.
+    name = VARIABLE.get((family, italic))
+    src = os.path.join(SRC, name) if name else ""
+    if not name or not os.path.isfile(src):
         if italic:
             return instance(family, weight, False)
         return None
