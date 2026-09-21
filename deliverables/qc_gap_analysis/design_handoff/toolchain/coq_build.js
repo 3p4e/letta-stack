@@ -14,14 +14,39 @@ const LABS = {
   PHY: {en:'State Phytosanitary Laboratory · ISO/IEC 17025:2017', ac:'LT-034 (IARM)', mk:'Државна фитосанитарна лабораторија', ad:'Aleksandar Makedonski bb, 1000 Skopje, MK'}
 };
 const ORDER = ['PP','CNP','IPH','FHM','PHY'];
-// Param. № column cites the DETERMINATION, not its sub-parts: 10.1/10.2/10.3 -> "10".
-// Safe unconditionally here because no dotted family spans two laboratories on any document
-// in the set (checked); if one ever did, the family would have to stay dotted on both rows or
-// the same determination would read as credited twice.
-function collapseParams(ds) {
+// The Param № column cites the DETERMINATION, not its sub-parts: 10.1, 10.2 and 10.3 on
+// one laboratory's row read as a single 10, because Section 02 already enumerates the
+// sub-parts against their own criteria and repeating them here spends the column's width
+// restating the panel rather than attributing it.
+//
+// `split` carries the families that must NOT collapse. The design system states the one
+// condition (guidelines/rules-coq-compile.html, rule 5): collapsing is safe only while
+// every sub-part of a family sits with the SAME laboratory. When a family splits across
+// two, the parent number appears on both rows and the same determination reads as credited
+// twice — which is assertion A15, and which CoQ-PP_26-149 raised the moment 227-18-М/26
+// filled its aflatoxin B1 and ochratoxin A while the Institute still carried its total
+// aflatoxins. A split family therefore stays dotted on both rows.
+function collapseParams(ds, split) {
   const out = [];
-  for (const d of ds) { const f = String(d).split('.')[0]; if (!out.includes(f)) out.push(f) }
+  for (const d of ds) {
+    const f = String(d).split('.')[0];
+    const k = (split && split.has(f)) ? String(d) : f;
+    if (!out.includes(k)) out.push(k);
+  }
   return out;
+}
+
+// Which dotted families are shared by more than one laboratory on this certificate.
+function splitFamilies(rec) {
+  const labsOf = {};
+  for (const d of DETS) {
+    if (String(d).indexOf('.') < 0) continue;
+    const lab = canonLab(rec.lab[d]), doc = (rec.doc[d] || '').trim();
+    if (!lab || !codeShaped(doc)) continue;
+    const f = String(d).split('.')[0];
+    (labsOf[f] = labsOf[f] || new Set()).add(lab);
+  }
+  return new Set(Object.keys(labsOf).filter(f => labsOf[f].size > 1));
 }
 // A citable document is a CODE, not prose. v35 carries four OCR sentences in the document
 // field (OI-08 / addendum 2.2); a sentence cannot stand in the CoA Doc. Code column.
@@ -130,6 +155,7 @@ function cell(det, res, status) {
 
 // ---- Section 03 ------------------------------------------------------------
 function section03(rec) {
+  const split = splitFamilies(rec);
   const groups = {};
   for (const d of DETS) {
     const lab = canonLab(rec.lab[d]), doc = (rec.doc[d] || '').trim(), iss = (rec.iss[d] || '').trim();
@@ -149,7 +175,7 @@ function section03(rec) {
     rows.push('<tr><td><span class="lr-lab">' + L.en + ' <i class="bisep">|</i> <span class="mk" style="display:inline">' +
       L.mk + (L.ac ? ' <span class="lr-ac">' + L.ac + '</span>' : '') + '</span><small>' + L.ad +
       '</small></span></td><td class="lr-mono">' + certs +
-      '</td><td class="lr-mono pcell">' + collapseParams(g.params).join(', ') + '</td></tr>');
+      '</td><td class="lr-mono pcell">' + collapseParams(g.params, split).join(', ') + '</td></tr>');
   }
   // rule 10 — a result with no citable certificate goes to the Work Order row
   const orphan = DETS.filter(d => {
@@ -161,7 +187,7 @@ function section03(rec) {
   if (orphan.length) rows.push('<tr><td><span class="lr-lab" style="' + RED +
     '">Certificate to be located · Work Order <i class="bisep">|</i> <span class="mk" style="display:inline;' + RED +
     '">Сертификатот да се пронајде · Работен налог</span><small>result on file, no citable certificate</small></span></td><td class="lr-mono">' +
-    red('[ — ]') + '</td><td class="lr-mono pcell">' + collapseParams(orphan).join(', ') + '</td></tr>');
+    red('[ — ]') + '</td><td class="lr-mono pcell">' + collapseParams(orphan, split).join(', ') + '</td></tr>');
   return '<tbody>\n' + rows.join('\n') + '\n</tbody>';
 }
 

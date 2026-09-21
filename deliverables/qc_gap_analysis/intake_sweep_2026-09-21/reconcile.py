@@ -28,8 +28,12 @@ import re
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+# Cyrillic letters that are drawn like Latin ones. A laboratory writes TAMC and TYMC in a
+# Macedonian sentence and either alphabet's letters may come back from a reader — Ү (U+04AE)
+# for Y is the one that cost six holds on the microbiology panels of 21.09.2026.
 CYR = {"А": "A", "В": "B", "Е": "E", "К": "K", "М": "M", "Н": "H", "О": "O", "Р": "P",
-       "С": "C", "Т": "T", "У": "Y", "Х": "X", "Ј": "J", "І": "I"}
+       "С": "C", "Т": "T", "У": "Y", "Х": "X", "Ј": "J", "І": "I",
+       "Ү": "Y", "ү": "y", "Ѕ": "S", "ѕ": "s", "Ғ": "F", "Һ": "H"}
 SUP = {"⁰": "0", "¹": "1", "²": "2", "³": "3", "⁴": "4", "⁵": "5",
        "⁶": "6", "⁷": "7", "⁸": "8", "⁹": "9"}
 
@@ -60,10 +64,65 @@ def fold(v):
     return re.sub(r"\s+", " ", s).strip().lower()
 
 
-def rows(rec):
+# The Macedonian alphabet to Latin, for a parameter's NAME only. A laboratory prints
+# "вкупно DDT" and one reader copies the Cyrillic while the other transliterates it; both
+# mean the same row of the same table. This is never applied to a result or to a document
+# code — the desk's standing rule is that a laboratory's code is printed exactly as its
+# register holds it, and transliterating one would be a claim about someone else's record.
+MK2LAT = {"а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "ѓ": "g", "е": "e", "ж": "z",
+          "з": "z", "ѕ": "s", "и": "i", "ј": "j", "к": "k", "л": "l", "љ": "l", "м": "m",
+          "н": "n", "њ": "n", "о": "o", "п": "p", "р": "r", "с": "s", "т": "t", "ќ": "k",
+          "у": "u", "ф": "f", "х": "h", "ц": "c", "ч": "c", "џ": "d", "ш": "s"}
+
+
+def name_key(v):
+    """A parameter's IDENTITY, folded harder than its value.
+
+    fold() is the gate's comparison for a RESULT and must stay strict: "< 10²" and
+    "< 10^1" are different assertions. A parameter NAME is not an assertion, it is which
+    row of the page this is, and the two vendors transcribe it with small differences that
+    say nothing — "Вкупно Δ9-Tetrahydrocannabinol" against "Вкупно Δ9- Tetrahydrocannabinol",
+    "4,4' DDE" against "4.4' DDE". Matching rows on that punctuation makes a hold out of a
+    space. So the name key drops every space and separator; the value it carries is still
+    compared character for character.
+    """
+    t = re.sub(r"[\s.,'\u2019\u02bc/()\-\u2010\u2011\u2012\u2013\u2014\u2212]+", "", fold(v))
+    return "".join(MK2LAT.get(c, c) for c in t)
+
+
+def rows(rec, alias=None):
+    """Index a read's parameters by the name the PAGE prints.
+
+    The runner gives every row two names: `parameter_printed`, transcribed from the page,
+    and `parameter`, a normalised key from its own controlled list. Keying on the
+    normalised key made a disagreement out of nothing on 328/2026 — one vendor filed the
+    Institute's 29 residues under `pesticide_residues` and the other under `other`, while
+    both transcribed the same 28 printed names and, on every one of them, the same result.
+    Sixty-one holds, not one of which was about a value.
+
+    So the index is the printed name, which is what this gate compares everywhere else and
+    what the page can actually be held against. The normalised key is a reader's opinion
+    about which determination a row belongs to; that mapping is the desk's to make, once,
+    in the apply — not something two readers must agree on before a figure can be taken.
+    """
     out = collections.OrderedDict()
     for p in rec.get("parameters") or []:
-        name = fold(re.sub(r"^\s*\*+|\*+\s*$", "", str(p.get("parameter") or p.get("parameter_printed") or "")))
+        # A row with NO result in this read contributes nothing and cannot be reconciled
+        # against anything: it is not a figure one reader has and the other missed, it is
+        # a label. Both vendors raised three such rows out of the Farmahem report's title
+        # ("Идентификација и квантификација на канабиноиди") with a null result, and
+        # holding them made six findings out of a page the two read identically.
+        if str(p.get("result_printed") or "").strip() in ("", "None", "null"):
+            continue
+        printed = str(p.get("parameter_printed") or "").strip()
+        # The page prints some names bilingually — "Вкупен Cannabidiol / Total CBD". One
+        # reader transcribed both halves and the other only the first, which is a
+        # difference in how much of the label was copied, not in what was measured. The
+        # key is the first half. The separator must be a spaced slash, so a name that
+        # carries one inside itself ("Идентификација C (HPLC/DAD)") is left whole.
+        printed = re.split(r"\s+/\s+", printed)[0].strip() or printed
+        name = name_key(re.sub(r"^\s*\*+|\*+\s*$", "", printed or str(p.get("parameter") or "")))
+        name = (alias or {}).get(name, name)
         k, n = name, 0
         while k in out:
             n += 1
@@ -100,7 +159,18 @@ def main():
                 settled += 1
             else:
                 held.append({"doc": scan, "field": f, "read_A": a.get(f), "read_B": b.get(f)})
-        ra, rb = rows(a), rows(b)
+        # A third read may settle that two differently-spelled labels are the same row of
+        # the same table, naming the page's own spelling first. Applied to the index only:
+        # it decides WHICH ROW this is, never what the row says.
+        alias = {}
+        for canon, spellings in ((C.get(scan) or {}).get("name_aliases") or {}).items():
+            if canon.startswith("_"):
+                continue
+            for sp in spellings:
+                alias[name_key(sp)] = name_key(canon)
+        ra, rb = rows(a, alias), rows(b, alias)
+        if alias:
+            settled += 1
         taken = []
         thirds = C.get(scan) or {}
         dropped = {p.strip() for key, v in thirds.items() if key.startswith("parameter ")

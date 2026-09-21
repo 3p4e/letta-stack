@@ -1,1 +1,41 @@
-{"_": "Third reads of the sweep of 21.09.2026 — the desk on the page, after the two vendor reads disagreed. Each entry names one field of one document, what the page supports, which read it agrees with, and the region the crop was taken from so it can be re-cut and disputed."}
+{
+ "_": "Third reads of the sweep of 21.09.2026 — the desk on the page, after the two vendor reads disagreed. Each entry names one field of one document, what the page supports, which read it agrees with, and the region the crop was taken from so it can be re-cut and disputed.",
+ "131-0228-26.pdf": {
+  "hazolckatolerantnigramnegativnibakterii · result": {
+   "settled": "< 10² и >10 CFU/g",
+   "agrees_with": "B",
+   "region": "page 1, 40–72 % of the height — the parameter table",
+   "note": "Read A gave '< 10^1 и >10'; the page prints '< 10² и >10 CFU/g'. An exponent read wrong is a microbiological result wrong by a factor of ten, which is the whole reason this gate compares the printed string and holds a disagreement rather than choosing."
+  }
+ },
+ "132-0229-26.pdf": {
+  "hazolckatolerantnigramnegativnibakterii · result": {
+   "settled": "< 10² и >10 CFU/g",
+   "agrees_with": "B",
+   "region": "page 1, 40–72 % of the height — the parameter table",
+   "note": "Read A gave '<10^1 и >10'; the page prints '< 10² и >10 CFU/g'. Noted on the same crop: this lot's TYMC reads 1,1 x 10⁴ CFU/g against a ≤ 10⁴ specification — inside the Ph. Eur. 5.1.4 undetermined band, which the certificate's own A12 assertion marks amber when the value is applied."
+  }
+ },
+ "227-18-М-26.pdf": {
+  "batch_canonical": {
+   "settled": "P050202",
+   "agrees_with": "B",
+   "region": "page 2, 10–62 % of the height — section 2, 'Опис на примероците'",
+   "note": "The page prints 'P05022' — SIX digits where every production lot in this record carries seven, so the laboratory's own line is short a digit. The laboratory's record is not the desk's to rewrite; which lot it certifies is a question of evidence, and five lines of it agree. The 227-М series runs 1 to 30 and maps one to one onto the thirty Tranche 3 retest certificates CoQ-PP_26-136 … 165. Twenty-nine of those numbers are already cited; the only one unused is 227-18. Exactly one certificate in that range carries no mycotoxin document at all: CoQ-PP_26-149, P050202, GP062501. The page names the strain Grape Pie, and GP062501 is Grape Pie. The only other Grape Pie lot a six-digit 'P05022' could be truncating is P050022, whose two certificates are numbered 007 and 095 and so lie outside this campaign entirely. The scan's own file name and the Drive audit of 20.09.2026 both read P050202 (GP062501). This is also the one certificate of the thirty that NOBODY could extract on 16.09.2026 — both readers failed on it then and both read it today."
+  }
+ },
+ "328-2026.pdf": {
+  "name_aliases": {
+   "vkupno DDT": [
+    "vkupno DDT",
+    "вкупно DDT"
+   ],
+   "Endosulfan (alpha, beta and endosulfan sulfat)": [
+    "Endosulfan (alpha, beta and endosulfan sulfat)",
+    "Endosulfan (alpha, beta and endosulfan sulfate)"
+   ],
+   "_region": "page 2, 45–80 % of the height — the pesticide residue table",
+   "_note": "Two rows the two readers labelled differently while reporting the same result (н.д.). The page prints 'vkupno DDT', in Latin transliteration, and 'Endosulfan (alpha, beta and endosulfan sulfat)' — so read B is right on both and read A silently normalised the laboratory's own spelling: it rendered the transliteration back into Cyrillic and corrected 'sulfat' to 'sulfate'. That is precisely what the desk's standing rule forbids, because a laboratory's record is not ours to tidy. The first spelling listed in each pair is the page's; the rest are the readings folded onto it so the two reads can be compared row for row. No result is touched."
+  }
+ }
+}

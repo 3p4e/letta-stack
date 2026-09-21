@@ -1320,6 +1320,31 @@ ITEMS = [
      "together, with a check that no old-shape code survives anywhere.",
      "FIN_SP-COA-COQ/readme.md and SKILL.md, locked business rule 6; SP-COA-COQ.pdf; "
      "coq_master_register.py; icoa_register.py; the owner's decision of 21.09.2026"),
+
+    ("OI-63", "Result reading", "open",
+     "75/0118/26 prints a bile-tolerant range with no lower bound, and its whole panel is held on that one line",
+     "The sweep of 21.09.2026 read `75/0118/26` \u2014 the Institute's microbiology for "
+     "P060102 / WED102501, 09.02.2026 \u2014 through the two-read gate. Both vendors agreed on "
+     "every line, and one of them is malformed on the PAGE: the bile-tolerant gram-negative "
+     "count reads **`< 10\u00b3 \u0438 10\u00b2 CFU/g`**, with no `>` before the lower figure. Its "
+     "siblings print the same determination as `< 10\u00b2 \u0438 >10 CFU/g` and `< 10\u00b3 \u0438 >10\u00b2 "
+     "CFU/g`, so the omission is the laboratory's typing rather than a reading: the desk "
+     "confirmed it on a 300 dpi crop of the page. As printed the range asserts nothing \u2014 a "
+     "count cannot be both below 10\u00b3 and equal to 10\u00b2 \u2014 and the desk does not repair "
+     "another laboratory's record. The other four determinations on the page are "
+     "unambiguous: TAMC 3 \u00d7 10\u00b3, TYMC 2 \u00d7 10\u00b9, E. coli and Salmonella both \u041e\u0434\u0433\u043e\u0432\u0430\u0440\u0430.",
+     "The whole panel is held, not four fifths of it. A microbiological panel is one "
+     "determination on one sample and prints whole or not at all \u2014 the owner's ruling that "
+     "verify_panels.py enforces \u2014 so taking the four sound lines would have printed exactly "
+     "the shape that ruling forbids. CoQ-PP_26-046 therefore still states that no certificate "
+     "covers #9.1-#9.5 for this lot. Nothing is guessed and nothing is printed that the page "
+     "does not support.",
+     "One line from the Institute of Public Health: whether the bile-tolerant result on "
+     "75/0118/26 is `< 10\u00b3 \u0438 >10\u00b2 CFU/g`. Every reading of it conforms to the \u2264 10\u2074 "
+     "criterion, so the answer releases four sound values and costs the lot nothing; it is "
+     "the assertion, not the verdict, that is missing.",
+     "intake_sweep_2026-09-21/two_read_result.json; apply_sweep_2026-09-21.py WITHHOLD; "
+     "verify_panels.py; the page itself, page 1"),
 ]
 
 STATES = {"open", "marked", "ruled"}
@@ -1331,7 +1356,7 @@ def items(state=None, area=None):
     """The register, optionally narrowed.
 
     >>> len(items())
-    62
+    63
     >>> [i[0] for i in items(area="Specification")]
     ['OI-01', 'OI-02', 'OI-03', 'OI-44', 'OI-50']
     >>> sorted({i[2] for i in items()})

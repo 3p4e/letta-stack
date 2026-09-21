@@ -4,7 +4,7 @@ Every finding the desk has raised and cannot itself settle, with the evidence
 behind it and the decision being asked for. Built by `open_items.py`; the same
 register is the **Open Items** sheet of the workbook.
 
-**44 open · 3 marked on the certificate**
+**45 open · 3 marked on the certificate**
 
 ## Specification
 
@@ -721,4 +721,16 @@ It is not a download fault. Each local copy is byte for byte the size of the fil
 **The desk.** Nothing changed. The owner ruled on 21.09.2026: **keep the short form for now.** It is what the issued and allocated registers, the Master Register, the bundles and the 17.09 lists on the owner's Drive all carry. The document NUMBER is not in question — 013 is 013 either way — only its printed shape.
 
 **Needed.** If the long form is to govern, it is a deliberate pass of its own: every register cross-link, filename, Word export, bundle and citing workbook sheet regenerates together, with a check that no old-shape code survives anywhere.
+
+## Result reading
+
+### OI-63 · 75/0118/26 prints a bile-tolerant range with no lower bound, and its whole panel is held on that one line
+
+*State:* **open** · *Evidence:* intake_sweep_2026-09-21/two_read_result.json; apply_sweep_2026-09-21.py WITHHOLD; verify_panels.py; the page itself, page 1
+
+**Found.** The sweep of 21.09.2026 read `75/0118/26` — the Institute's microbiology for P060102 / WED102501, 09.02.2026 — through the two-read gate. Both vendors agreed on every line, and one of them is malformed on the PAGE: the bile-tolerant gram-negative count reads **`< 10³ и 10² CFU/g`**, with no `>` before the lower figure. Its siblings print the same determination as `< 10² и >10 CFU/g` and `< 10³ и >10² CFU/g`, so the omission is the laboratory's typing rather than a reading: the desk confirmed it on a 300 dpi crop of the page. As printed the range asserts nothing — a count cannot be both below 10³ and equal to 10² — and the desk does not repair another laboratory's record. The other four determinations on the page are unambiguous: TAMC 3 × 10³, TYMC 2 × 10¹, E. coli and Salmonella both Одговара.
+
+**The desk.** The whole panel is held, not four fifths of it. A microbiological panel is one determination on one sample and prints whole or not at all — the owner's ruling that verify_panels.py enforces — so taking the four sound lines would have printed exactly the shape that ruling forbids. CoQ-PP_26-046 therefore still states that no certificate covers #9.1-#9.5 for this lot. Nothing is guessed and nothing is printed that the page does not support.
+
+**Needed.** One line from the Institute of Public Health: whether the bile-tolerant result on 75/0118/26 is `< 10³ и >10² CFU/g`. Every reading of it conforms to the ≤ 10⁴ criterion, so the answer releases four sound values and costs the lot nothing; it is the assertion, not the verdict, that is missing.
 
