@@ -118,3 +118,53 @@ HTML they belong to:
 The HTML and the PDF are unchanged. Only the Word files are rebuilt, and they are rebuilt
 from the PDF sitting next to them — so a Word file and its PDF are the same page by
 construction, not by care.
+
+## One box per field, for the templates
+
+> *"is it possible that the individual text boxes follow some logical wholeness? not just
+> with 3 or 5 words"* — the owner, 21.09.2026
+
+A box per PDF span is right for a certificate and wrong for a template, for the reason
+above: a span is what the renderer drew, not what the field is.
+
+**Merging by position was measured and rejected.** Taking same-baseline neighbours cut the
+certificate of quality's 378 spans to 256 boxes and joined two separate tick pills into
+`HYBRIDINDICA`. Tightening it — never across a symbol, only within one of PyMuPDF's own
+lines — stopped that and left the median box at two words, which is the complaint again.
+PyMuPDF's `blocks` are no help either: one of them spans 21 unrelated rows of the
+heavy-metals table.
+
+**The HTML knows.** The field map is read off the laid-out document in the pass that
+prints it — `render(..., probe=)` in `print_coq_pdfs.py` — and the PDF still places every
+run. Three faults had to be found on the way:
+
+* **The probe saw 4 of 49 placeholders.** It looked at a leaf's direct children only, so
+  every nested `<span class="ph">` was invisible to it.
+* **46 of the 51 placeholder spans are `Type3`.** The blue italic is a weight Montserrat
+  has no true italic for, so the renderer synthesises the slant and embeds it as a font
+  with no family name. `face_of` rejects them, so the very fields the owner types into
+  were being left in the page image. The DOM's computed face rescues them.
+* **A frame the width of its DOM element wraps what the page prints flat.** A design lets
+  text overflow its box; `02` broke into `0` and `2`, and every cell of the RESULT column
+  wrapped into the row beneath. A frame is now never narrower than its own text — except
+  where the page itself wraps the cell, since widening those pushed `[PRODUCTION BATCH]`
+  across the manufacture date beside it.
+
+Two smaller ones: a gap between runs was being bridged by letter-spacing the preceding
+word, which distorted it and still fell 6 pt short — it is a measured space now; and a
+correction of more than a quarter of the type size per character is refused rather than
+applied, which is what made `02` illegible.
+
+| | boxes | placeholders whole | left edge | top edge |
+| --- | ---: | ---: | ---: | ---: |
+| CoQ | 291 | **48/48** | median 0.015 pt | median 0.016 pt |
+| ImB specification | 279 | **13/13** | median 0.010 pt | median 0.013 pt |
+| iCoA | 445 | 45/60 | median 0.013 pt | median 0.013 pt |
+
+The fifteen are placeholders the page itself truncates to `[OBS...`, because the
+descriptors are longer than the observation chips that hold them. The Word file carries
+what the page prints.
+
+**The 344 certificates are untouched.** Field grouping runs only when a field map is
+given; without one the converter behaves exactly as it did, and re-measuring
+`CoQ-PP_26-013` after the change returned the same 0.025 / 0.047 / 0.718 pt.

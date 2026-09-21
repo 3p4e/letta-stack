@@ -111,8 +111,15 @@ def page_text(paths):
     return "".join(sorted(chars))
 
 
-def render(paths, outdir, chromium=None, css=""):
-    """One A4 PDF per document, returned in the order given."""
+def render(paths, outdir, chromium=None, css="", probe=None):
+    """One A4 PDF per document, returned in the order given.
+
+    `probe`, when given, is called as probe(src, page) with the laid-out Playwright page
+    just before it is printed, and whatever it returns is ignored. It exists so a caller
+    can read the DOM's own geometry in the very pass that prints the page — the only
+    moment the two are guaranteed to agree. Passing nothing leaves this printer behaving
+    exactly as it did, which matters: both certificate fleets print through it.
+    """
     from playwright.sync_api import sync_playwright
     made = []
     with sync_playwright() as pw:
@@ -126,6 +133,8 @@ def render(paths, outdir, chromium=None, css=""):
             if css:
                 page.add_style_tag(content=css)
             page.evaluate("() => document.fonts.ready")
+            if probe is not None:
+                probe(src, page)
             dst = os.path.join(outdir, os.path.basename(src)[:-5] + ".pdf")
             page.pdf(path=dst, prefer_css_page_size=True, print_background=True)
             made.append(dst)

@@ -208,6 +208,17 @@ def float_behind(run_picture, width_pt, height_pt, z):
     drawing.append(anchor)
 
 
+def natural_width(text, size, face):
+    """How wide the embedded face sets `text` with no correction applied."""
+    font = metric_font(*face) if face else None
+    if not font or not text:
+        return 0.0
+    try:
+        return font.text_length(text, fontsize=size)
+    except Exception:
+        return 0.0
+
+
 _METRIC = {}
 
 
@@ -247,7 +258,14 @@ def tracking(text, size, want_pt, family, weight, italic):
         return 0
     if have <= 0:
         return 0
-    return int(round((want_pt - have) * TWIP_PER_PT))
+    delta = want_pt - have
+    # A correction that would squeeze or stretch a run by a quarter of its type size per
+    # character is not a correction, it is a sign the target width belongs to something
+    # else — the section number `02` was asked to give back four and a half points a
+    # character and came out illegible. Refuse it and leave the run at its natural width.
+    if len(text) > 1 and abs(delta) / max(1, len(text) - 1) > 0.25 * size:
+        return 0
+    return int(round(delta * TWIP_PER_PT))
 
 
 def split_tracking(total_twips, n):
@@ -279,54 +297,40 @@ def split_tracking(total_twips, n):
     return k + (1 if r else 0), r
 
 
-def add_span(doc, span, page_w_pt):
-    """One PDF text span as a Word paragraph frozen at the PDF's own coordinates."""
-    face = face_of(span["font"])
+def style_of(span, face=None):
+    """(embedded family name, bold, italic, size, colour) for a span, or None.
+
+    `face` overrides what the PDF names. It exists because the renderer draws a
+    synthesised oblique as a Type3 font, which carries no family at all: the blue
+    placeholders of the blank templates — 46 of their 51 spans — are Type3, and without
+    the DOM's own computed face every one of them would stay in the page image instead of
+    becoming a box the owner can type into.
+    """
+    face = face or face_of(span["font"])
     if face is None:
-        return False
+        return None
     family, weight, italic = face
     try:
         from embed_fonts import face_name
         fam, bold, ital = face_name(family, weight, italic)
     except Exception:                                     # the mapping is the same shape
         fam, bold, ital = family, weight >= 700, italic
-
-    x0, y0, x1, y1 = span["bbox"]
     # Word measures type in HALF-points and nothing finer, so the PDF's 15.975 pt is a
     # size Word cannot hold. python-docx truncated it to 15.5 and every run came out
     # three per cent narrow — the right-hand column ended 9 pt short of its own edge.
     # Round to the nearest half-point and then measure against THAT, so the width the
     # tracking corrects to is the width Word will actually set.
     size = max(0.5, round(span["size"] * 2) / 2.0)
-    p = doc.add_paragraph()
-    pPr = p._p.get_or_add_pPr()
+    return fam, bold, ital, size, int(span.get("color", 0))
 
-    # The frame: anchored to the page, positioned in twips, taking part in no flow.
-    # Width is the span's own, with a point of slack; clamped so Word never pulls a
-    # frame back inside the page and takes the right-hand column with it.
-    w = min(max(x1 - x0 + 2.0, 4.0), max(page_w_pt - x0 - 0.5, 4.0))
-    track = tracking(span["text"], size, x1 - x0, family, weight, italic)
-    pPr.append(_el("framePr", w=int(round(w * TWIP_PER_PT)),
-                   hRule="auto", wrap="none", vAnchor="page", hAnchor="page",
-                   x=int(round((x0 + FRAME_DX) * TWIP_PER_PT)),
-                   y=int(round((y0 + FRAME_DY_A
-                                 + FRAME_DY_B.get(family, FRAME_DY_B_DEFAULT) * size)
-                                * TWIP_PER_PT))))
-    # CT_PPr is a sequence too, and its order is framePr, spacing, ind, jc — not the
-    # order they were written in. Word refuses a document whose pPr children are out of
-    # order outright, with nothing more helpful than "unreadable content".
-    _sub(pPr, "spacing", before=0, after=0,
-         line=int(round(size * TWIP_PER_PT)), lineRule="exact")
-    _sub(pPr, "ind", left=0, right=0, firstLine=0)
-    _sub(pPr, "jc", val="left")
 
-    text = span["text"]
+def emit_run(p, text, style, track):
+    """`text` as one or two runs in `p`, tracked so it is exactly as wide as the page's."""
+    fam, bold, ital, size, colour = style
     hi, r = split_tracking(track, len(text)) if abs(track) >= 3 else (0, 0)
     lo = hi - 1 if r else hi
     parts = [(text[:r], hi), (text[r:], lo)] if 0 < r < len(text) else [(text, hi)]
-
-    c = int(span.get("color", 0))
-    colour = RGBColor((c >> 16) & 255, (c >> 8) & 255, c & 255)
+    rgb = RGBColor((colour >> 16) & 255, (colour >> 8) & 255, colour & 255)
     for chunk, sp in parts:
         if not chunk:
             continue
@@ -334,7 +338,7 @@ def add_span(doc, span, page_w_pt):
         run.font.name = fam
         run.font.bold = bold
         run.font.italic = ital
-        run.font.color.rgb = colour
+        run.font.color.rgb = rgb
         rPr = run._r.get_or_add_rPr()
         rf = rPr.find(qn("w:rFonts"))
         if rf is None:
@@ -349,10 +353,198 @@ def add_span(doc, span, page_w_pt):
         # Kerning off: the width was measured from the face's plain advances, and Word's
         # kerning would pull the run in again under the correction just applied.
         rpr_set(rPr, "kern", val=0)
+
+
+def frame(doc, x0, y0, family, size, width_pt, page_w_pt, line_pt=None):
+    """An empty paragraph pinned to the page at (x0, y0), ready for runs."""
+    p = doc.add_paragraph()
+    pPr = p._p.get_or_add_pPr()
+    # The frame: anchored to the page, positioned in twips, taking part in no flow.
+    # Clamped so Word never pulls a frame back inside the page and takes the right-hand
+    # column with it.
+    w = min(max(width_pt, 4.0), max(page_w_pt - x0 - 0.5, 4.0))
+    pPr.append(_el("framePr", w=int(round(w * TWIP_PER_PT)),
+                   hRule="auto", wrap="none", vAnchor="page", hAnchor="page",
+                   x=int(round((x0 + FRAME_DX) * TWIP_PER_PT)),
+                   y=int(round((y0 + FRAME_DY_A
+                                 + FRAME_DY_B.get(family, FRAME_DY_B_DEFAULT) * size)
+                                * TWIP_PER_PT))))
+    # CT_PPr is a sequence too, and its order is framePr, spacing, ind, jc — not the
+    # order they were written in. Word refuses a document whose pPr children are out of
+    # order outright, with nothing more helpful than "unreadable content".
+    _sub(pPr, "spacing", before=0, after=0,
+         line=int(round((line_pt if line_pt else size) * TWIP_PER_PT)), lineRule="exact")
+    _sub(pPr, "ind", left=0, right=0, firstLine=0)
+    _sub(pPr, "jc", val="left")
+    return p
+
+
+def add_span(doc, span, page_w_pt, face=None):
+    """One PDF text span as a Word paragraph frozen at the PDF's own coordinates."""
+    style = style_of(span, face)
+    if style is None:
+        return False
+    face = face or face_of(span["font"])
+    x0, y0, x1, _ = span["bbox"]
+    size = style[3]
+    w = max(x1 - x0 + 2.0, natural_width(span["text"], size, face) + 4.0)
+    p = frame(doc, x0, y0, face[0], size, w, page_w_pt)
+    emit_run(p, span["text"], style, tracking(span["text"], size, x1 - x0, *face))
     return True
 
 
-def convert_page(page, doc, dpi, first):
+def squash(text):
+    """Whitespace collapsed, ends trimmed.
+
+    >>> squash("  PRODUCTION \\n BATCH  \\u2116 ")
+    'PRODUCTION BATCH \\u2116'
+    """
+    return re.sub(r"\s+", " ", text or "").strip()
+
+
+def same_text(spans, dom_text):
+    """Whether the element's text says exactly what its spans print.
+
+    The element's text is preferred because it is whole, but preferring it is only safe
+    while it agrees with the page. The two are allowed to differ in WHITESPACE alone —
+    that difference is the line break itself, which is the thing being repaired — and in
+    nothing else. Anything further and the spans are used, because a converter may put a
+    broken word back together and may not put a word there that the page does not print.
+
+    >>> same_text([{"text": "[MANUFACTUR"}, {"text": "E DATE]"}], "[MANUFACTURE DATE]")
+    True
+    >>> same_text([{"text": "TRIPLEX ALU BAG "}, {"text": "\\u0422\\u0420\\u0418\\u041f\\u041b\\u0415\\u041a\\u0421"}], "TRIPLEX ALU BAG \\u0422\\u0420\\u0418\\u041f\\u041b\\u0415\\u041a\\u0421")
+    True
+    >>> same_text([{"text": "HYBRID"}], "HYBRID INDICA SATIVA")
+    False
+    """
+    if not dom_text or not dom_text.strip():
+        return False
+    joined = squash("".join(s["text"] for s in spans))
+    want = squash(dom_text)
+    return joined == want or joined.replace(" ", "") == want.replace(" ", "")
+
+
+def add_field(doc, spans, page_w_pt, dom_text=None, box_w_pt=None, face=None):
+    """A whole field — every span of one element of the page — in ONE Word text box.
+
+    Emitting a box per PDF span is right for a certificate nobody edits and wrong for a
+    template somebody types into: a span is whatever the renderer happened to draw, so
+    `[MANUFACTURE DATE]` arrives as `[MANUFACTUR` and `E DATE]`, and the owner cannot
+    type a date into two boxes. The caller supplies the spans of one DOM element and,
+    where it has it, that element's own text and width.
+
+    Three cases, because they need different things:
+
+    * **one line, one style** — the ordinary field. One run carrying the element's own
+      text, tracked to the width the page gives it.
+    * **one line, several styles** — `Assay — Total Δ⁹-THC*`, where a superscript makes
+      the renderer start a new span. One box, a run per span, and the gap between spans
+      folded into the preceding run's width so the next begins where the page has it.
+    * **several lines** — a wrapped cell. Uniform styling lets the element's own text go
+      in whole and Word re-wrap it inside the box, which is what makes the field typable
+      and repairs a break made mid-word. Mixed styling over several lines is left to the
+      caller to emit line by line: joining those safely would mean guessing where a word
+      ended, and a template is not a place to guess.
+
+    Returns the number of boxes written, or 0 if the caller should fall back.
+    """
+    spans = [s for s in spans
+             if s["text"].strip() and (face or face_of(s["font"]))]
+    if not spans:
+        return 0
+    lines = {}
+    for s in spans:
+        lines.setdefault(round(s["origin"][1], 1), []).append(s)
+    ys = sorted(lines)
+    for y in ys:
+        lines[y].sort(key=lambda s: s["bbox"][0])
+
+    styles = {style_of(s, face) for s in spans}
+    first_line = lines[ys[0]]
+    x0 = min(s["bbox"][0] for s in first_line)
+    y0 = min(s["bbox"][1] for s in first_line)
+    family = (face or face_of(first_line[0]["font"]))[0]
+    style = style_of(first_line[0], face)
+    size = style[3]
+    ink_w = max(s["bbox"][2] for s in first_line) - x0
+    # Room to type, but never less room than the page already uses. Taking the element's
+    # own width on its own looked right and was not: a design lets text overflow its box,
+    # so Word wrapped lines the page prints flat — the section number `02` broke into `0`
+    # and `2`, the headline fell onto the phenotype row, and every cell of the RESULT
+    # column wrapped into the row beneath it. The wider of the two is the one that leaves
+    # the page as printed and still has somewhere for a longer value to go.
+    widest = max(max(s["bbox"][2] for s in lines[y]) - min(s["bbox"][0] for s in lines[y])
+                 for y in ys)
+    # ...and never narrower than the text needs at its own natural width, so Word cannot
+    # wrap a line the page prints flat. A frame paints nothing, so extra width is free.
+    # ...but ONLY where the page itself sets the field on one line. A cell the page
+    # wraps is wrapped because its column is that wide, and widening it to fit on one
+    # line pushed `[PRODUCTION BATCH]` straight across the manufacture date beside it.
+    natural = 0.0
+    if len(ys) == 1:
+        natural = natural_width(squash(dom_text) if same_text(spans, dom_text)
+                                else "".join(s["text"] for s in first_line),
+                                size, face or face_of(first_line[0]["font"]))
+    width = max(ink_w + 2.0, widest + 2.0, natural + 4.0, box_w_pt or 0.0)
+    # A wrapped cell's second line sits where the page's leading puts it, not where a
+    # line of its own type size would fall, so the leading is measured off the page.
+    lead = (ys[1] - ys[0]) if len(ys) > 1 else None
+
+    # Anything this cannot render WHOLE goes back to the caller unclaimed, so it is
+    # emitted line by line rather than silently losing every line but the first.
+    if len(ys) > 1 and not (len(styles) == 1 and same_text(spans, dom_text)):
+        return 0
+
+    p = frame(doc, x0, y0, family, size, width, page_w_pt, line_pt=lead)
+
+    if len(styles) == 1 and same_text(spans, dom_text):
+        # The element's own text is the truth: it is whole where the rendered spans are
+        # in pieces, and it carries the word the renderer broke in half. It is used only
+        # where `same_text` has confirmed it says what the page says — a converter may
+        # repair a break, never introduce a word.
+        text = squash(dom_text)
+        want = ink_w if len(ys) == 1 else None
+        emit_run(p, text, style,
+                 tracking(text, size, want, *(face or face_of(first_line[0]["font"])))
+                 if want else 0)
+        return 1
+
+    for i, s in enumerate(first_line):
+        st = style_of(s, face)
+        sf = face or face_of(s["font"])
+        sx0, _, sx1, _ = s["bbox"]
+        emit_run(p, s["text"], st, tracking(s["text"], st[3], sx1 - sx0, *sf))
+        if i + 1 < len(first_line):
+            # The page leaves a gap before the next span — sometimes a real one, where
+            # a symbol it does not convert sits between them. Bridging it by stretching
+            # the word just written is what the first attempt did, and it both distorted
+            # the word and fell six points short of the column. A space of exactly the
+            # gap's width carries the next run to where the page starts it, and leaves
+            # the words alone.
+            gap = first_line[i + 1]["bbox"][0] - sx1
+            if gap > 0.3:
+                emit_gap(p, st, gap, sf)
+    return 1
+
+
+def emit_gap(p, style, gap_pt, face):
+    """A single space whose advance is exactly `gap_pt`.
+
+    `split_tracking` spreads a correction over the gaps BETWEEN characters, and one
+    character has none — so a spacer sent through it came out unspaced and the column
+    still started four points early. A lone space needs its `w:spacing` set outright:
+    that spacing is what carries the next run along, even though it adds no visible
+    width of its own at the end of a line.
+    """
+    font = metric_font(*face)
+    space = font.text_length(" ", fontsize=style[3]) if font else style[3] * 0.3
+    emit_run(p, " ", style, 0)
+    rPr = p.runs[-1]._r.get_or_add_rPr()
+    rpr_set(rPr, "spacing", val=int(round((gap_pt - space) * TWIP_PER_PT)))
+
+
+def convert_page(page, doc, dpi, first, fields=None):
     """Redact the house-font text out of the page, print what is left, replace the text."""
     spans, keep = [], []
     for block in page.get_text("dict", flags=TEXT_FLAGS)["blocks"]:
@@ -362,7 +554,11 @@ def convert_page(page, doc, dpi, first):
             for s in line["spans"]:
                 if not s["text"].strip():
                     continue
-                (spans if face_of(s["font"]) else keep).append(s)
+                # A span the PDF names a house face for is always ours. One it does not
+                # may still be ours if the DOM covering it names a house face — that is
+                # what rescues the synthesised-oblique placeholders, which the PDF files
+                # under a Type3 font with no family at all.
+                (spans if (face_of(s["font"]) or covering_face(s, fields)) else keep).append(s)
 
     # Take only the spans that will come back as runs. A redaction removes any glyph
     # whose box meets the rectangle, and the symbol fallbacks sit flush against their
@@ -389,16 +585,61 @@ def convert_page(page, doc, dpi, first):
     pic = run.add_picture(io.BytesIO(png), width=Emu(int(round(rect.width * EMU_PER_PT))))
     float_behind(pic, rect.width, rect.height, 1 + page.number)
 
-    n = sum(1 for s in spans if add_span(doc, s, rect.width))
+    if fields:
+        n = emit_fields(doc, spans, fields, rect.width)
+    else:
+        n = sum(1 for s in spans if add_span(doc, s, rect.width))
     return n, len(keep)
 
 
-def convert(src, out, dpi=300, fonts=True, quiet=False):
+def in_field(span, f):
+    """Whether the span's centre falls inside the field's box."""
+    cx = (span["bbox"][0] + span["bbox"][2]) / 2.0
+    cy = (span["bbox"][1] + span["bbox"][3]) / 2.0
+    return (f["x"] - 0.6 <= cx <= f["x"] + f["w"] + 0.6
+            and f["y"] - 0.6 <= cy <= f["y"] + f["h"] + 0.6)
+
+
+def covering_face(span, fields):
+    """The house face the DOM gives this span, where the PDF gives none."""
+    for f in fields or ():
+        if f.get("face") and in_field(span, f):
+            return tuple(f["face"])
+    return None
+
+
+def emit_fields(doc, spans, fields, page_w_pt):
+    """Group the page's spans by the element of the DOM that drew them, then emit."""
+    boxed = set()
+    n = 0
+    for f in fields:
+        w = f["w"]
+        mine = [s for s in spans if id(s) not in boxed and in_field(s, f)]
+        if not mine:
+            continue
+        face = f.get("face")
+        face = tuple(face) if face else None
+        # The DOM's face is used only where the PDF names none; where it names one, the
+        # PDF is the page and wins.
+        wrote = add_field(doc, mine, page_w_pt, f.get("text"), w, face)
+        if wrote:
+            n += wrote
+            boxed.update(id(s) for s in mine)
+    # Anything the DOM did not claim — and any mixed-style wrapped cell `add_field`
+    # declined — keeps the span-by-span treatment, which is exact and always available.
+    for s in spans:
+        if id(s) not in boxed and add_span(doc, s, page_w_pt, covering_face(s, fields)):
+            n += 1
+    return n
+
+
+def convert(src, out, dpi=300, fonts=True, quiet=False, fields=None):
     doc = Document()
     pdf = pymupdf.open(src)
     placed = kept = 0
     for i, page in enumerate(pdf):
-        a, b = convert_page(page, doc, dpi, i == 0)
+        a, b = convert_page(page, doc, dpi, i == 0,
+                            fields.get(page.number) if fields else None)
         placed += a
         kept += b
     # The redactions are made on the in-memory page and the document is closed without
@@ -556,6 +797,15 @@ def verify(src, dpi=150, worst=6):
         shutil.rmtree(tmp, ignore_errors=True)
 
 
+def load_fields(path):
+    """The print pass's field map, keyed by page number."""
+    if not path:
+        return None
+    import json
+    raw = json.load(open(path, encoding="utf-8"))
+    return {int(k): v for k, v in raw.items()}
+
+
 def _spans(path):
     d = pymupdf.open(path)
     out = [s for p in d for b in p.get_text("dict", flags=TEXT_FLAGS)["blocks"] if b["type"] == 0
@@ -575,6 +825,8 @@ def main(argv=None):
     ap.add_argument("--verify", action="store_true",
                     help="convert, render back to PDF and report where each run landed")
     ap.add_argument("--force", action="store_true", help="batch: rewrite existing outputs")
+    ap.add_argument("--fields", help="JSON field map from the print pass: one box per "
+                                     "element of the page instead of one per PDF span")
     a = ap.parse_args(argv)
     if a.calibrate:
         return calibrate(a.src, a.dpi)
@@ -590,7 +842,7 @@ def main(argv=None):
             convert(os.path.join(a.src, n), dst, a.dpi, not a.no_fonts, quiet=True)
             print("[%d/%d] %s" % (i, len(names), n), flush=True)
         return
-    convert(a.src, a.out, a.dpi, not a.no_fonts)
+    convert(a.src, a.out, a.dpi, not a.no_fonts, fields=load_fields(a.fields))
 
 
 if __name__ == "__main__":

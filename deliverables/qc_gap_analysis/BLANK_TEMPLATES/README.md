@@ -60,3 +60,35 @@ its logo by relative path, which resolve beside the fleet and nowhere else; move
 folder the page lost every rule it had and printed over three A4 pages with a broken image
 where the mark belongs. Stylesheets and images are now folded into the file, so a template
 is one file that opens anywhere.
+
+## As Word
+
+`DOCX/` holds each template as a Word document, built the way the certificates are —
+HTML to PDF, PDF to Word — so the page is the approved page and not a re-drawing of it.
+`build_template_docx.py` makes them.
+
+**One text box per whole field.** A certificate is a record nobody edits, so the converter
+gives it one box per PDF text span, and a span is whatever the renderer happened to draw.
+A template is a document somebody types into, and there `[MANUFACTURE DATE]` arriving as
+`[MANUFACTUR` and `E DATE]` is useless. The owner asked for boxes with "some logical
+wholeness, not just with 3 or 5 words", and the boundaries now come from the template's
+own HTML — every `<span class="ph">` and every leaf element is one box — while the PDF
+still says where the ink goes. Merging by position was tried first and is not safe: it
+joined two separate tick pills into `HYBRIDINDICA`.
+
+| | boxes | placeholders in one whole box |
+| --- | ---: | ---: |
+| `CoQ_BLANK_TEMPLATE.docx` | 291 | **48 of 48** |
+| `ImB_Specification_BLANK_TEMPLATE.docx` | 279 | **13 of 13** |
+| `iCoA_BLANK_TEMPLATE.docx` | 445 | 45 of 60 |
+
+**Typing into one.** A box is as wide as its field, and never narrower than the text the
+page already prints, so a longer value wraps inside the field instead of running across
+the page. Where the page itself wraps a cell, the box keeps that width and wraps there
+too.
+
+**One thing for the owner on the internal certificate.** Fifteen of its placeholders are
+too long for the observation chips that hold them, so the page truncates them —
+`[OBSERVATION 12]` prints as `[OBS...`. The Word file carries what the page prints,
+because a converter may not invent text. Shortening those descriptors in
+`build_blank_templates.py` would fix it at source.
