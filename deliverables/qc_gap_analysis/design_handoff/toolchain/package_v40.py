@@ -199,7 +199,11 @@ def build(date):
                    "It is one document for both sets, signed and unsigned, so it is not\n"
                    "copied into either of them (Head of QC, 18.09.2026 — a separate folder\n"
                    "with the entire specification).\n" % date)
+        # The sweep record names, certificate by certificate, every determination that
+        # still prints a marker and why — the reader of an archive should not have to
+        # go back to the repository to learn what the tokens on the page mean.
         for rel in ("tracker/OPEN_ITEMS.md", "design_handoff/docs/REBUILD_v40.md", "design_handoff/dist/BUILD.md",
+                    "tracker/SWEEP_AND_SIGNED_PRINT_%s.md" % date,
                     "tracker/ENGAGEMENT_REPORT_%s.md" % date, "tracker/ENGAGEMENT_REPORT_%s.html" % date):
             f = os.path.join(GAP, rel)
             if os.path.exists(f):
