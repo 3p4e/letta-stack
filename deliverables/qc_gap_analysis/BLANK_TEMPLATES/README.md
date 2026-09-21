@@ -43,3 +43,20 @@ option in the markup when filling.
 ## Rebuilding
 
     python3 deliverables/qc_gap_analysis/build_blank_templates.py
+
+## As PDF
+
+`PDF/` holds each template printed to one A4 page, fonts embedded — the form to convert to
+Word from, or to hand to anyone who only needs to see what a filled document will look
+like. The same printer the certificates use prints them, so a template prints as the
+document it is a template for.
+
+    PDF/CoQ_BLANK_TEMPLATE.pdf                  1 page    49 placeholders
+    PDF/iCoA_BLANK_TEMPLATE.pdf                 1 page    60 placeholders
+    PDF/ImB_Specification_BLANK_TEMPLATE.pdf    1 page    12 placeholders
+
+**The HTML is self-contained.** The internal certificate carried its three stylesheets and
+its logo by relative path, which resolve beside the fleet and nowhere else; moved into this
+folder the page lost every rule it had and printed over three A4 pages with a broken image
+where the mark belongs. Stylesheets and images are now folded into the file, so a template
+is one file that opens anywhere.

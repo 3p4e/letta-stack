@@ -20,6 +20,7 @@ the design exactly as it was, which is the same rule the certificates follow: a 
 visual layer is added to, never edited.
 """
 import collections
+import base64
 import glob
 import html as H
 import os
@@ -72,6 +73,27 @@ SHORT = {
     "SPECIFICATION REFERENCE": "SPEC REF", "PRODUCT SPECIFICATION \u2116": "SPEC \u2116",
     "FINAL QC TESTING FOR BATCH": "BATCH", "DOCUMENT ID": "DOC ID", "DOCUMENT ID 2": "ISSUE DATE",
 }
+
+
+def shorten(label):
+    """A descriptor short enough for the box it has to sit in.
+
+    The lookup is forgiving about the tail of a caption, because a caption's tail is
+    decoration: `FINAL QC TESTING FOR BATCH \u2116` is the same field as
+    `FINAL QC TESTING FOR BATCH`, and matching only the exact string let it through at
+    full length, where it ran out of its pill and across the conformity chip.
+
+    >>> shorten("FINAL QC TESTING FOR BATCH \u2116")
+    'BATCH'
+    >>> shorten("SPECIFICATION REFERENCE")
+    'SPEC REF'
+    >>> shorten("SOMETHING NOBODY HAS SHORTENED AT ALL")
+    'SOMETHING NOBODY HAS S'
+    """
+    for key in (label, re.sub(r"[\s\u2116.:·—-]+$", "", label)):
+        if key in SHORT:
+            return SHORT[key][:22]
+    return label[:22]
 
 
 def addr(el):
@@ -151,6 +173,48 @@ def row_number(el):
     return s if re.match(r"^\d+(\.\d+)?$", s) else ""
 
 
+def self_contained(html, base):
+    """Fold every relative stylesheet and image into the document.
+
+    A template is a file somebody opens on its own, and the internal certificate carried
+    three stylesheets and its logo by relative path — `../_icoa.css` and its companions,
+    `../_logo.svg` — which resolve beside the fleet and nowhere else. Moved into
+    `BLANK_TEMPLATES/` the page lost every rule it had and printed over three A4 pages
+    with a broken image where the mark belongs. The certificate of quality never showed
+    it, because its own design carries both inline already.
+    """
+    def css(m):
+        href = m.group(1)
+        if "//" in href:                       # Google Fonts and the like stay as they are
+            return m.group(0)
+        return "<style data-from=\"%s\">\n%s\n</style>" % (
+            os.path.basename(href), read_asset(base, href).decode("utf-8"))
+
+    def img(m):
+        src = m.group(1)
+        if "//" in src or src.startswith("data:"):
+            return m.group(0)
+        kind = MEDIA.get(os.path.splitext(src)[1].lower())
+        if not kind:
+            raise SystemExit("template image of unknown type: %s" % src)
+        data = base64.b64encode(read_asset(base, src)).decode("ascii")
+        return m.group(0).replace(src, "data:%s;base64,%s" % (kind, data))
+
+    html = re.sub(r'<link[^>]*rel="stylesheet"[^>]*href="([^"]+)"[^>]*>', css, html)
+    return re.sub(r'<img[^>]*src="([^"]+)"[^>]*>', img, html)
+
+
+MEDIA = {".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg",
+         ".jpeg": "image/jpeg", ".gif": "image/gif", ".webp": "image/webp"}
+
+
+def read_asset(base, href):
+    path = os.path.normpath(os.path.join(base, href))
+    if not os.path.isfile(path):
+        raise SystemExit("template asset not found: %s" % path)
+    return open(path, "rb").read()
+
+
 def build(name, specimen, fleet):
     files = sorted(sum([glob.glob(g) for g in fleet], []))
     if not files:
@@ -176,7 +240,7 @@ def build(name, specimen, fleet):
         cls = leaf_class(a)
         label = nearest_label(el) or NAMES.get(cls, (cls or "VALUE").replace("-", " ").upper())
         label = re.sub(r"\s+", " ", label).strip().upper()
-        label = SHORT.get(label, label)[:22]
+        label = shorten(label)
         num = row_number(el)
         if num:
             label = "%s #%s" % (label, num)
@@ -184,6 +248,8 @@ def build(name, specimen, fleet):
             used[label] += 1
             if used[label] > 1:
                 label = "%s %d" % (label, used[label])
+        if el.tag in ("title", "style", "script"):
+            continue                           # not a field; a span here is markup, not text
         span = etree.Element("span")
         span.set("class", "ph")
         span.text = "[%s]" % label
@@ -194,6 +260,7 @@ def build(name, specimen, fleet):
 
     out = LH.tostring(root, encoding="unicode", doctype="<!DOCTYPE html>")
     out = out.replace("</body>", STYLE + "</body>", 1)
+    out = self_contained(out, os.path.dirname(specimen))
     os.makedirs(OUT, exist_ok=True)
     dest = os.path.join(OUT, name)
     open(dest, "w", encoding="utf-8").write(out)
