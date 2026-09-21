@@ -1281,6 +1281,45 @@ ITEMS = [
      "or these lots were never sent for contaminant testing, and the Head of QC decides what "
      "a release certificate without heavy metals means for them.",
      "intake_contaminants_2026-09-18/INTAKE_2026-09-18.md; apply_contaminants.py"),
+
+    ("OI-61", "Document identity", "ruled",
+     "The finished design system names three iCoA signatories the deposited signatures are not; the owner keeps the deposited ones",
+     "`FIN_SP-COA-COQ` reached Drive on 21.09.2026 and carries the design system whole \u2014 "
+     "tokens, components, the five-document family, and fourteen locked business rules. Its "
+     "**rule 4** fixes the internal certificate's three-tier signoff as **Stojanka Pavlova "
+     "\u2192 Marija Trajkovska \u2192 Blagoj Nikolov**. All 172 internal certificates this desk "
+     "prints carry **Hristina Cekikj (Analyst) \u2192 Jovana Romevska Cvetkovski (QA Manager) "
+     "\u2192 Blagoj Nikolov (QC Manager)** \u2014 the people whose signature images the owner "
+     "deposited on 18.09.2026 and which the signed print run applies. Two of the three "
+     "positions disagree.",
+     "Nothing changed. The owner ruled on 21.09.2026: **keep ours.** A signatory is an "
+     "attestation by a named person, not a layout choice, and the desk holds no deposited "
+     "signature for Pavlova or Trajkovska \u2014 adopting the design system's names would "
+     "produce a set that cannot be signed. The divergence is recorded here rather than "
+     "resolved silently in either direction.",
+     "Nothing, unless the owner later wants the design system's names to govern. That would "
+     "need Pavlova's and Trajkovska's deposited signatures first, or the signed fleet cannot "
+     "be reproduced.",
+     "FIN_SP-COA-COQ/readme.md and SKILL.md, locked business rule 4; sign_block.js; "
+     "icoa_handoff/v3/icoa3_gen.js; the owner's decision of 21.09.2026"),
+
+    ("OI-62", "Document identity", "ruled",
+     "The design system requires CoQ-PP-YYYY-NNNN; the desk prints CoQ-PP_26-nnn, and the owner keeps the short form",
+     "**Rule 6** of the design system fixes document numbering as `CoQ-PP-YYYY-NNNN`, "
+     "`iCoA-PP-YYYY-NNNN`, `eCoA-PP-YYYY-NNNN`, monotonic per type per year. The desk prints "
+     "`CoQ-PP_26-013` and `iCoA-PP_26-070` \u2014 584 occurrences across the rendered set, and "
+     "the same shape in every register, cross-link, filename, bundle and workbook sheet. The "
+     "specimen `SP-COA-COQ.pdf` of 17.09.2026 used the long form too (`iCoA-PP-2026-0121`), "
+     "which was put to the owner on 20.09.2026.",
+     "Nothing changed. The owner ruled on 21.09.2026: **keep the short form for now.** It is "
+     "what the issued and allocated registers, the Master Register, the bundles and the "
+     "17.09 lists on the owner's Drive all carry. The document NUMBER is not in question \u2014 "
+     "013 is 013 either way \u2014 only its printed shape.",
+     "If the long form is to govern, it is a deliberate pass of its own: every register "
+     "cross-link, filename, Word export, bundle and citing workbook sheet regenerates "
+     "together, with a check that no old-shape code survives anywhere.",
+     "FIN_SP-COA-COQ/readme.md and SKILL.md, locked business rule 6; SP-COA-COQ.pdf; "
+     "coq_master_register.py; icoa_register.py; the owner's decision of 21.09.2026"),
 ]
 
 STATES = {"open", "marked", "ruled"}
@@ -1292,7 +1331,7 @@ def items(state=None, area=None):
     """The register, optionally narrowed.
 
     >>> len(items())
-    60
+    62
     >>> [i[0] for i in items(area="Specification")]
     ['OI-01', 'OI-02', 'OI-03', 'OI-44', 'OI-50']
     >>> sorted({i[2] for i in items()})

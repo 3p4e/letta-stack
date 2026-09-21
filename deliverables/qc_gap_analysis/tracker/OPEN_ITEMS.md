@@ -700,3 +700,25 @@ It is not a download fault. Each local copy is byte for byte the size of the fil
 
 **Needed.** Either the panels were run and never filed — then the paper needs finding and scanning — or these lots were never sent for contaminant testing, and the Head of QC decides what a release certificate without heavy metals means for them.
 
+## Document identity
+
+### OI-61 · The finished design system names three iCoA signatories the deposited signatures are not; the owner keeps the deposited ones
+
+*State:* **ruled** · *Evidence:* FIN_SP-COA-COQ/readme.md and SKILL.md, locked business rule 4; sign_block.js; icoa_handoff/v3/icoa3_gen.js; the owner's decision of 21.09.2026
+
+**Found.** `FIN_SP-COA-COQ` reached Drive on 21.09.2026 and carries the design system whole — tokens, components, the five-document family, and fourteen locked business rules. Its **rule 4** fixes the internal certificate's three-tier signoff as **Stojanka Pavlova → Marija Trajkovska → Blagoj Nikolov**. All 172 internal certificates this desk prints carry **Hristina Cekikj (Analyst) → Jovana Romevska Cvetkovski (QA Manager) → Blagoj Nikolov (QC Manager)** — the people whose signature images the owner deposited on 18.09.2026 and which the signed print run applies. Two of the three positions disagree.
+
+**The desk.** Nothing changed. The owner ruled on 21.09.2026: **keep ours.** A signatory is an attestation by a named person, not a layout choice, and the desk holds no deposited signature for Pavlova or Trajkovska — adopting the design system's names would produce a set that cannot be signed. The divergence is recorded here rather than resolved silently in either direction.
+
+**Needed.** Nothing, unless the owner later wants the design system's names to govern. That would need Pavlova's and Trajkovska's deposited signatures first, or the signed fleet cannot be reproduced.
+
+### OI-62 · The design system requires CoQ-PP-YYYY-NNNN; the desk prints CoQ-PP_26-nnn, and the owner keeps the short form
+
+*State:* **ruled** · *Evidence:* FIN_SP-COA-COQ/readme.md and SKILL.md, locked business rule 6; SP-COA-COQ.pdf; coq_master_register.py; icoa_register.py; the owner's decision of 21.09.2026
+
+**Found.** **Rule 6** of the design system fixes document numbering as `CoQ-PP-YYYY-NNNN`, `iCoA-PP-YYYY-NNNN`, `eCoA-PP-YYYY-NNNN`, monotonic per type per year. The desk prints `CoQ-PP_26-013` and `iCoA-PP_26-070` — 584 occurrences across the rendered set, and the same shape in every register, cross-link, filename, bundle and workbook sheet. The specimen `SP-COA-COQ.pdf` of 17.09.2026 used the long form too (`iCoA-PP-2026-0121`), which was put to the owner on 20.09.2026.
+
+**The desk.** Nothing changed. The owner ruled on 21.09.2026: **keep the short form for now.** It is what the issued and allocated registers, the Master Register, the bundles and the 17.09 lists on the owner's Drive all carry. The document NUMBER is not in question — 013 is 013 either way — only its printed shape.
+
+**Needed.** If the long form is to govern, it is a deliberate pass of its own: every register cross-link, filename, Word export, bundle and citing workbook sheet regenerates together, with a check that no old-shape code survives anywhere.
+
