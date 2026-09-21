@@ -544,21 +544,34 @@ def emit_gap(p, style, gap_pt, face):
     rpr_set(rPr, "spacing", val=int(round((gap_pt - space) * TWIP_PER_PT)))
 
 
-def convert_page(page, doc, dpi, first, fields=None):
+def convert_page(page, doc, dpi, first, fields=None, drop_shadows=True):
     """Redact the house-font text out of the page, print what is left, replace the text."""
+    # Read the page ONCE. Every call to get_text builds fresh dictionaries, so a second
+    # read would return different objects and the shadow twins found in the first could
+    # never be matched against them.
+    drawn = [s for block in page.get_text("dict", flags=TEXT_FLAGS)["blocks"]
+             if block["type"] == 0
+             for line in block["lines"] for s in line["spans"] if s["text"].strip()]
+    twins = shadow_twins(drawn) if drop_shadows else set()
+    # Dropping a shadow may never drop a word. Every twin removed has to leave its own
+    # text still on the page in the span it was shadowing; if it does not, the pair was
+    # not a shadow and the page would lose content silently.
+    if twins:
+        left = set(s["text"].strip() for s in drawn if id(s) not in twins)
+        lost = sorted(set(s["text"].strip() for s in drawn if id(s) in twins) - left)
+        if lost:
+            raise SystemExit("shadow detection would drop text that appears nowhere "
+                             "else on page %d: %s" % (page.number + 1, lost[:5]))
+
     spans, keep = [], []
-    for block in page.get_text("dict", flags=TEXT_FLAGS)["blocks"]:
-        if block["type"] != 0:
-            continue
-        for line in block["lines"]:
-            for s in line["spans"]:
-                if not s["text"].strip():
-                    continue
-                # A span the PDF names a house face for is always ours. One it does not
-                # may still be ours if the DOM covering it names a house face — that is
-                # what rescues the synthesised-oblique placeholders, which the PDF files
-                # under a Type3 font with no family at all.
-                (spans if (face_of(s["font"]) or covering_face(s, fields)) else keep).append(s)
+    for s in drawn:
+        if id(s) in twins:
+            continue          # a shadow: left in the page image, never redacted or boxed
+        # A span the PDF names a house face for is always ours. One it does not may still
+        # be ours if the DOM covering it names a house face — that is what rescues the
+        # synthesised-oblique placeholders, which the PDF files under a Type3 font with
+        # no family at all.
+        (spans if (face_of(s["font"]) or covering_face(s, fields)) else keep).append(s)
 
     # Take only the spans that will come back as runs. A redaction removes any glyph
     # whose box meets the rectangle, and the symbol fallbacks sit flush against their
@@ -590,6 +603,46 @@ def convert_page(page, doc, dpi, first, fields=None):
     else:
         n = sum(1 for s in spans if add_span(doc, s, rect.width))
     return n, len(keep)
+
+
+# A CSS text-shadow is drawn, in a PDF, by printing the glyphs a SECOND time. Every rule
+# in this design offsets downwards by one CSS pixel — 0.75 pt — so the twin is always the
+# lower of the pair, and always in the shadow's own colour.
+SHADOW_DY = (0.5, 1.1)
+
+
+def shadow_twins(spans):
+    """The ids of spans that are a text-shadow's copy of another span.
+
+    `text-shadow: 0 1px 1px` on the tick-chips and section bands (design system §6.4)
+    means nineteen labels on a certificate of quality, and twenty-four on a specification
+    sheet, exist twice in the text layer. Converted span by span that is two Word boxes
+    on top of each other: selecting `Hybrid` gives it doubled, and editing one leaves the
+    other behind. The twin is not redacted — it stays in the page image, so the emboss
+    still prints — it simply does not also become a box.
+
+    The pair is identified exactly rather than by tolerance: same text, same face, the
+    same left edge to a tenth of a point, three quarters of a point lower, and a
+    different colour. The internal certificate sets no text shadow and none is found.
+
+    >>> a = {"text": "HYBRID", "font": "MontserratBold", "bbox": (10, 20, 40, 28), "color": 0xffffff}
+    >>> b = {"text": "HYBRID", "font": "MontserratBold", "bbox": (10, 20.75, 40, 28.75), "color": 0}
+    >>> shadow_twins([a, b]) == {id(b)}
+    True
+    >>> shadow_twins([a]) == set()
+    True
+    """
+    by = {}
+    for s in spans:
+        by.setdefault((s["text"].strip(), s["font"], round(s["bbox"][0], 1)), []).append(s)
+    twins = set()
+    for group in by.values():
+        for i, a in enumerate(group):
+            for b in group[i + 1:]:
+                dy = b["bbox"][1] - a["bbox"][1]
+                if SHADOW_DY[0] < abs(dy) < SHADOW_DY[1] and a.get("color") != b.get("color"):
+                    twins.add(id(b if dy > 0 else a))       # the lower one is the shadow
+    return twins
 
 
 def in_field(span, f):

@@ -168,3 +168,53 @@ what the page prints.
 **The 344 certificates are untouched.** Field grouping runs only when a field map is
 given; without one the converter behaves exactly as it did, and re-measuring
 `CoQ-PP_26-013` after the change returned the same 0.025 / 0.047 / 0.718 pt.
+
+## The shadow twin
+
+Building the templates turned up something that is not about templates. Every tick-chip
+and section number on a certificate of quality exists **twice** in the PDF's text layer,
+0.75 pt apart. Selecting `Hybrid` gives it doubled; editing one Word box leaves the other
+behind; searching the PDF finds two hits.
+
+The HTML says `Hybrid` once. The cause is `text-shadow: 0 1px 1px` on `.chip-sel`,
+`.chip-un`, `.sec-label`, `.sec-no`, `.mk`, `.pb-grade` and `.stmt .badge` — design system
+§6.4 — because **Chromium draws a text shadow in a PDF by printing the glyphs a second
+time.**
+
+| | spans | drawn twice |
+| --- | ---: | ---: |
+| CoQ certificate | 383 | **19** |
+| Specification sheet | 345 | **22** |
+| internal certificate | 484 | **0** — it sets no text shadow |
+
+**The converter no longer makes a box out of a shadow.** `shadow_twins()` identifies the
+pair exactly rather than by tolerance — same text, same face, the same left edge to a
+tenth of a point, three quarters of a point lower, and a different colour — and the lower
+one is left in the page image, never redacted and never boxed. The emboss still prints;
+it is simply not also a second text box. The internal certificate is untouched, which is
+the check that the rule is precise and not a heuristic.
+
+Dropping a shadow may never drop a word, so the conversion asserts it: every twin removed
+must leave its own text still on the page in the span it was shadowing, or the run fails.
+On the three fleets, **19, 0 and 22 twins removed and no text lost**.
+
+    CoQ template     291 boxes -> 276      specification  279 -> 255
+    internal cert    445 boxes -> 445      (nothing to remove)
+
+**A defect of the desk's own print layer, found on the way.** `printOpaqueLayer` in
+`build_v40.js` re-emits every rule whose background is an alpha gradient with each
+`rgba(C,a)` replaced by that colour over white. It was doing that to *every* rgba in the
+declaration, including `text-shadow` — which is not a background fill. `.chip-sel`'s
+shadow, authored as `rgba(9,22,38,.45)`, a soft dark shade, printed as `rgb(144,150,157)`,
+an opaque grey haze on a dark blue chip. Shadows, text colour and border colour now carry
+through as the design wrote them; only what paints the page behind them is converted.
+
+**Still open, and the owner's to decide.** None of this removes the doubling from the
+*issued PDFs* — any text shadow doubles the glyphs, and only dropping `text-shadow` in
+print would stop it. That would take the 1 px emboss off the tick-chips and section bands
+of 172 certificates of quality and 57 specification sheets and mean reprinting them, so it
+is a change to an approved look rather than a repair. The owner has asked for it to be
+planned; it is not done.
+
+The 344 certificates and 57 specification sheets already committed keep their doubled
+boxes until they are re-converted, which needs more disk than this session holds.

@@ -133,12 +133,23 @@ const stats = { n: 0, warn: 0, findings: 0, hard: 0, byDir: {} }, report = [];
 // that colour composited over white. Nothing else changes: no selector is invented, no
 // colour is chosen, no geometry or row height moves.
 const ALPHA_STOP = /rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([01]?(?:\.\d+)?)\s*\)/g;
+// The conversion is "this colour composited over WHITE", which is true of a fill that
+// sits on the page and false of anything that sits on top of something else. A
+// text-shadow lies under white glyphs on a dark blue chip: .chip-sel authors it as
+// rgba(9,22,38,.45), a soft dark shade, and compositing it over white printed it as
+// rgb(144,150,157) — an opaque grey haze on a dark chip. Shadows, text colour and border
+// colour are carried through as the design wrote them; only what paints the page behind
+// them is converted.
+const KEEP_AS_AUTHORED = /^\s*(text-shadow|box-shadow|color|border(-[a-z]+)?-color|outline-color|caret-color)\s*:/i;
 function overWhite(css) {
-  return css.replace(ALPHA_STOP, (m, r, g, b, a) => {
-    const f = parseFloat(a);
-    const mix = c => Math.round(Number(c) + (255 - Number(c)) * (1 - f));
-    return 'rgb(' + mix(r) + ',' + mix(g) + ',' + mix(b) + ')';
-  });
+  return css.split(';').map(decl => {
+    if (!decl.trim() || KEEP_AS_AUTHORED.test(decl)) return decl;
+    return decl.replace(ALPHA_STOP, (m, r, g, b, a) => {
+      const f = parseFloat(a);
+      const mix = c => Math.round(Number(c) + (255 - Number(c)) * (1 - f));
+      return 'rgb(' + mix(r) + ',' + mix(g) + ',' + mix(b) + ')';
+    });
+  }).join(';');
 }
 function important(body) {                       // the originals carry !important; match it
   return body.split(';').map(d => d.trim()).filter(Boolean)

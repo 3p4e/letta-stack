@@ -78,8 +78,8 @@ joined two separate tick pills into `HYBRIDINDICA`.
 
 | | boxes | placeholders in one whole box |
 | --- | ---: | ---: |
-| `CoQ_BLANK_TEMPLATE.docx` | 291 | **48 of 48** |
-| `ImB_Specification_BLANK_TEMPLATE.docx` | 279 | **13 of 13** |
+| `CoQ_BLANK_TEMPLATE.docx` | 276 | **48 of 48** |
+| `ImB_Specification_BLANK_TEMPLATE.docx` | 255 | **13 of 13** |
 | `iCoA_BLANK_TEMPLATE.docx` | 445 | 45 of 60 |
 
 **Typing into one.** A box is as wide as its field, and never narrower than the text the
@@ -92,3 +92,9 @@ too long for the observation chips that hold them, so the page truncates them â€
 `[OBSERVATION 12]` prints as `[OBS...`. The Word file carries what the page prints,
 because a converter may not invent text. Shortening those descriptors in
 `build_blank_templates.py` would fix it at source.
+
+**No label is boxed twice.** The design gives its tick-chips and section bands a CSS text
+shadow, and Chromium draws a text shadow in a PDF by printing the glyphs a second time â€”
+so `Hybrid` used to arrive as two Word boxes on top of each other. The shadow copy is now
+left in the page image where it belongs: the emboss still prints, and the text layer
+carries each label once.
