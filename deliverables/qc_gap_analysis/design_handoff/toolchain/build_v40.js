@@ -465,37 +465,20 @@ const S01_BAND_LAYER = '<style id="__owner-s01-band">\n' +
              .replace(/font-family:'Orbitron',monospace/g, "font-family:'Orbitron','Montserrat',monospace");
   if (SIGN.enabled()) html = SIGN.sign(html, c.regcode || out.filename, { h: 60, dy: -10 });
   else if (/class="ap-img/.test(html)) throw new Error('a signature image reached the page: ' + c.regcode);
-  // Owner, 16.09.2026: "in cases when you have actually a parameter that's not tested —
-  // and that is in the initial quality control testing of all tranche batches — you will
-  // put NT as the analysis result, and also put it in brackets." Aflatoxin B1 (#10.1) and
-  // Ochratoxin A (#10.3) are the pair he named: not determined at release, determined at
-  // the retest on every batch of tranches 1, 2 and 3.
-  // The package prints [ — ] for a determination that was not performed — no result on
-  // file, to be performed, upon request, in-house CoA only. Every one of those is "not
-  // tested", so in the RESULT column of Section 02 it now reads [NT]. Nowhere else:
-  // Section 01 and the Section 03 work-order row keep [ — ], which is a different
-  // statement about a missing document rather than about a determination.
-  // [NT] is 4 characters against 5, so no cell changes its length class and no column
-  // moves. The document is CHECKED in its package-conformant form, below, exactly as the
-  // owner's Macedonian half is — the assertions know the package's closed vocabulary.
-  let htmlOut = html.replace(
-    /(<td class="r-cell[^"]*"><span class="r-val"(?:\s[^>]*)?>)\[ \u2014 \]<\/span>/g, '$1[NT]</span>');
-  // Owner, 16.09.2026: "below the table for analysis results in heading 2, in the asterisk
-  // text, please remove all references to SOPs and procedures and remove the references
-  // with the codes — only the explanation about the assay; and where NT is used as an
-  // abbreviation you can explain the meaning for those."
-  // The note's second sentence is the procedural one and carries the only document code on
-  // the line, so it goes. The assay sentence — the * that Section 02 rows 4, 5 and 6 point
-  // at — stays exactly as the package wrote it. In its place, and ONLY on a document that
-  // actually prints [NT], the abbreviation is glossed, bilingually, in the note's own form.
-  const NT_NOTE = '<br><strong>[NT]</strong> not tested \u2014 the determination was not ' +
-    'performed in this testing round <i class="bisep">|</i> <span class="mk">\u043d\u0435 \u0435 ' +
-    '\u0442\u0435\u0441\u0442\u0438\u0440\u0430\u043d\u043e \u2014 \u043e\u043f\u0440\u0435\u0434\u0435\u043b\u0443\u0432\u0430\u045a\u0435\u0442\u043e \u043d\u0435 \u0435 ' +
-    '\u0438\u0437\u0432\u0440\u0448\u0435\u043d\u043e \u0432\u043e \u043e\u0432\u043e\u0458 \u043a\u0440\u0443\u0433 \u043d\u0430 \u0438\u0441\u043f\u0438\u0442\u0443\u0432\u0430\u045a\u0435.</span>';
+  // Owner, 21.09.2026: "empty results should not be included. There should be no
+  // 'not tested' results in the retest CoQs."
+  //
+  // Until today every empty result cell was rewritten here from [ — ] to [NT] and the
+  // Section 02 note glossed the abbreviation bilingually. Both are gone. A determination
+  // with no result now prints an empty cell (coq_build.js `cell()`), and there is no
+  // abbreviation left to gloss. The row itself stays — twenty-one determinations in the
+  // specification's order — and so does the assay note the * on rows 4, 5 and 6 points at.
+  // What is removed from the note is only the procedural sentence the owner struck on
+  // 16.09.2026, which carried the only document code on the line.
+  let htmlOut = html;
   const OLD_NOTE = /<br>Parameter attribution to the issuing laboratory[^<]*<\/div>/;
   if (!OLD_NOTE.test(htmlOut)) throw new Error('Section 02 note sentence not found');
-  htmlOut = htmlOut.replace(OLD_NOTE,
-    (htmlOut.indexOf('>[NT]</span>') >= 0 ? NT_NOTE : '') + '</div>');
+  htmlOut = htmlOut.replace(OLD_NOTE, '</div>');
   const dir = r.series === 'reissue' ? path.join(OUT, 'REISSUE', tranche[r.lot] ? 'T' + String(tranche[r.lot]).replace(/\D/g, '') : 'T3') : path.join(OUT, 'ISSUE_COQ');
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, out.filename), htmlOut);

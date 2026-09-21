@@ -2848,5 +2848,1325 @@
   "document": "120226_031-3-LoD-26_FHM_WED102501-P060102.pdf",
   "doc_id": "cb01a7758252e2c5a8b8c2af49098c9781712d72ff92fd16602a57e47af200b0",
   "source": "intake_LoD031_2026-09-17 · two reads of the page, agreeing"
+ },
+ {
+  "p": "P060332",
+  "cu": "CC012601/1",
+  "strain": "Cash Cow",
+  "code": "361-0691-26",
+  "date": "01.06.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "7.8×10⁴",
+   "9.2": "2.2×10⁴",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "(CC012601-1)_IJZ-MB_361-0691-26_01.06.2026.pdf",
+  "doc_id": "1veeIfBmTRJQm_UuAYHbnttcaUMlIRLrE",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060352",
+  "cu": "FB012602*",
+  "strain": "Fat Bastard",
+  "code": "366-0696-26",
+  "date": "01.06.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "6.3×10⁴",
+   "9.2": "2.2×10⁴",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P060352 (FB012602＊)_IJZ-MB_366-0696-26_01.06.2026.pdf",
+  "doc_id": "1ZXW6EAogqOHaBNnz_X1n8pfE9hx40W3p",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060432",
+  "cu": "FB012603",
+  "strain": "Fat Bastard",
+  "code": "3661-2026",
+  "date": "22.06.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.234",
+   "11.2": "0.04",
+   "11.3": "0.056",
+   "11.4": "0.034",
+   "12": "< 0,01 mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060432 (FB012603)_IJZ_3661-2026_22.06.2026.pdf",
+  "doc_id": "1mcrHpCLPANLSzog_VlJMk81OyyBGEF27",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060392",
+  "cu": "FB012603V",
+  "strain": "Fat Bastard",
+  "code": "3663-2026",
+  "date": "22.06.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.029",
+   "11.2": "0.038",
+   "11.3": "0.044",
+   "11.4": "0.012",
+   "12": "< 0,01 mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060392 (FB012603V)_IJZ_3663-2026_22.06.2026.pdf",
+  "doc_id": "1s1vtKiFmsBzcT6fm_Pq9XP6vyE0810nZ",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060452",
+  "cu": "FB032601",
+  "strain": "Fat Bastard",
+  "code": "3924-2026",
+  "date": "20.07.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.036",
+   "11.2": "0.015",
+   "11.3": "0",
+   "11.4": "0.043",
+   "12": "< 0,01 mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "(FB032601)_IJZ_3924-2026_20.07.2026.pdf",
+  "doc_id": "1GB_wheV2Jz6moE-7mG0HsFFkzL3W6UTi",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060402",
+  "cu": "GG012603",
+  "strain": "Gorilla Glue",
+  "code": "404-0787-26",
+  "date": "24.06.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "5×10³",
+   "9.2": "4.1×10³",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P060402 (GG012603)_IJZ-MB_404-0787-26_24.06.2026.pdf",
+  "doc_id": "1bab8EB8sK-9JeMssLs9z_enJ3Yllwi6b",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060402",
+  "cu": "GG012603",
+  "strain": "Gorilla Glue",
+  "code": "3659-2026",
+  "date": "22.06.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.059",
+   "11.2": "0.03",
+   "11.3": "0.05",
+   "11.4": "0.015",
+   "12": "< 0,01 mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060402 (GG012603)_IJZ_3659-2026_22.06.2026.pdf",
+  "doc_id": "1KYtLJGkTNkXlax2UOHOXweF7iWM8U8Dy",
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026; IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060462",
+  "cu": "GG032601",
+  "strain": "Gorilla Glue",
+  "code": "3925-2026",
+  "date": "20.07.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "12": "< 0,01 mg/kg — all 26 residues"
+  },
+  "held": [],
+  "document": "(GG032601)_IJZ_3925-2026_20.07.2026.pdf",
+  "doc_id": "1hazmIULJSttchA-L_rrPdzeP0Db1nwIG",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "",
+  "cu": "GG1024",
+  "strain": "Gorilla Glue",
+  "code": "ППК25008",
+  "date": "29.01.2025",
+  "lab": "CNP",
+  "params": [
+   8
+  ],
+  "vals": {
+   "8": "7.8"
+  },
+  "held": [],
+  "document": "(GG1024)_CNP_ППК25008_29.01.2025.pdf",
+  "doc_id": "1NyeLMI8sCdbzSaRy_lYgC-f-ESFcz1Gb",
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "",
+  "cu": "GG1024",
+  "strain": "Gorilla Glue",
+  "code": "166-0274-25",
+  "date": "24.02.2025",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "1.1×10⁴",
+   "9.2": "<10",
+   "9.3": "<10² и >10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "(GG1024)_IJZ-MB_166-0274-25_24.02.2025.pdf",
+  "doc_id": "1QEpB_c8TGNJZNMOfLrKWFWZmXmc3MeTK",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "",
+  "cu": "GG1024",
+  "strain": "Gorilla Glue",
+  "code": "748-2025",
+  "date": "04.03.2025",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.052",
+   "11.2": "0.016",
+   "11.3": "0.04",
+   "11.4": "0.004",
+   "12": "ND mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "(GG1024)_IJZ_748-2025_04.03.2025.pdf",
+  "doc_id": "1gkrB_6Nw6-viQPBvezGKgu-ieajsCZk5",
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026; IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060182",
+  "cu": "GRC102501",
+  "strain": "Grapes And Cream",
+  "code": "1060-2026",
+  "date": "09.03.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "ND",
+   "11.2": "ND",
+   "11.3": "0.0013",
+   "11.4": "ND",
+   "12": "ND mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060182 (GRC102501-2)_IJZ_1060-2026_09.03.2026.pdf",
+  "doc_id": "1vwm84FqyxnN4Nce6_fmfm06x4YXFhqIV",
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026; IPH — Institute of Public Health; IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060152",
+  "cu": "J31102501",
+  "strain": "Jokerz 31",
+  "code": "133-0230-26",
+  "date": "06.03.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "1.6×10²",
+   "9.2": "1.9×10²",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P060152 (J31102501)_IJZ-MB_133-0230-26_06.03.2026.pdf",
+  "doc_id": "1UQ9_Gm9ZtDilITTRAlbSBP-CULo6f-dn",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060152",
+  "cu": "J31102501",
+  "strain": "Jokerz 31",
+  "code": "1056-2026",
+  "date": "09.03.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.061",
+   "11.2": "ND",
+   "11.3": "ND",
+   "11.4": "ND",
+   "12": "ND mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060152 (J31102501)_IJZ_1056-2026_09.03.2026.pdf",
+  "doc_id": "1VaRgikQ9CQZSh0fKJkow3q5Gv6i-s1IX",
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026; IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060202",
+  "cu": "J31112501",
+  "strain": "Jokerz 31",
+  "code": "1057-2026",
+  "date": "09.03.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "2.1",
+   "11.1": "ND",
+   "11.2": "ND",
+   "11.3": "ND",
+   "11.4": "ND",
+   "12": "ND mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060202 (J31112501)_IJZ_1057-2026_09.03.2026.pdf",
+  "doc_id": "1HPcjueR8-_su0mWEHEsLKvPJhGZB6FMP",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060362",
+  "cu": "JD012603",
+  "strain": "Jelly Donuts",
+  "code": "365-0695-26",
+  "date": "01.06.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "2×10²",
+   "9.2": "1×10²",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P060362 (JD012603-1)_IJZ-MB_365-0695-26_01.06.2026.pdf",
+  "doc_id": "1C1WmzNjVsq4524j8qWaCBnM9ql63AHSQ",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060412",
+  "cu": "JD012603",
+  "strain": "Jelly Donuts",
+  "code": "405-0788-26",
+  "date": "24.06.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "6.3×10³",
+   "9.2": "4.4×10³",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P060412 (JD012603-02)_IJZ-MB_405-0788-26_24.06.2026.pdf",
+  "doc_id": "1yy9dw_OkqOuXjVk8XvT_Q87emTbox5gc",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060422",
+  "cu": "JD012603",
+  "strain": "Jelly Donuts",
+  "code": "406-0789-26",
+  "date": "24.06.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "5.1×10³",
+   "9.2": "4.7×10³",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P060422 (JD012603-02V)_IJZ-MB_406-0789-26_24.06.2026.pdf",
+  "doc_id": "11Cz95GLPHTPCo1p2KgTQYkE0KDet9C9v",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060412",
+  "cu": "JD012603",
+  "strain": "Jelly Donuts",
+  "code": "3660-2026",
+  "date": "22.06.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.085",
+   "11.2": "0.044",
+   "11.3": "0.042",
+   "11.4": "0.042",
+   "12": "< 0,01 mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060412 (JD012603-02)_IJZ_3660-2026_22.06.2026.pdf",
+  "doc_id": "1WN8-aprd7KVpu5eRyCQmsJhmlmzl1UdC",
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026; IPH — Institute of Public Health; IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060422",
+  "cu": "JD012603",
+  "strain": "Jelly Donuts",
+  "code": "3662-2026",
+  "date": "22.06.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.06",
+   "11.2": "0.03",
+   "11.3": "0.045",
+   "11.4": "0.013",
+   "12": "< 0,01 mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060422 (JD012603-02V)_IJZ_3662-2026_22.06.2026.pdf",
+  "doc_id": "1zjpyGbJ5LlRz4UYt65Da6otgiWGFojKk",
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026; IPH — Institute of Public Health; IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060482",
+  "cu": "JD022601",
+  "strain": "Jelly Donuts",
+  "code": "3658-2026",
+  "date": "22.06.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.066",
+   "11.2": "0.029",
+   "11.3": "0.052",
+   "11.4": "0.013",
+   "12": "< 0,01 mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "(JD022601)_IJZ_3658-2026_22.06.2026.pdf",
+  "doc_id": "1KqtgV5i2OfG2oGKvtAEk4hQ8oATG_6eV",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060172",
+  "cu": "KC102501",
+  "strain": "Kush Crasher",
+  "code": "129-0226-26",
+  "date": "06.03.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "3.8×10³",
+   "9.2": "6.8×10³",
+   "9.3": "<10³ и >10²",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P060172 (KC102501)_IJZ-MB_129-0226-26_06.03.2026.pdf",
+  "doc_id": "1cGs3dW87EDlRDhsBRR-fS-mo4Xe7n5ea",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060172",
+  "cu": "KC102501",
+  "strain": "Kush Crasher",
+  "code": "1058-2026",
+  "date": "09.03.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "2.8",
+   "11.1": "ND",
+   "11.2": "ND",
+   "11.3": "ND",
+   "11.4": "ND",
+   "12": "ND mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060172 (KC102501)_IJZ_1058-2026_09.03.2026.pdf",
+  "doc_id": "1H3ue5bpFg5zcBhxlkoVatrqg8zCJV0ly",
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026; IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060222",
+  "cu": "OPM112501",
+  "strain": "Orange Punch Mimosa",
+  "code": "1062-2026",
+  "date": "11.03.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "2",
+   "11.1": "ND",
+   "11.2": "ND",
+   "11.3": "ND",
+   "11.4": "ND",
+   "12": "ND mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060222 (OPM112501)_IJZ_1062-2026_11.03.2026.pdf",
+  "doc_id": "1VOKekPjB63GVC9tdbe0SHCtnCfh7-eBY",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060232",
+  "cu": "PM112501",
+  "strain": "Permanent Marker",
+  "code": "135-0232-26",
+  "date": "06.03.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "10",
+   "9.2": "<10",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P060232 (PM112501)_IJZ-MB_135-0232-26_06.03.2026.pdf",
+  "doc_id": "1Hest7Mv78CbVMVVMtCRzFTbbiWbQuegI",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060232",
+  "cu": "PM112501",
+  "strain": "Permanent Marker",
+  "code": "1059-2026",
+  "date": "09.03.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "2.2",
+   "11.1": "ND",
+   "11.2": "ND",
+   "11.3": "ND",
+   "11.4": "ND",
+   "12": "ND mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060232 (PM112501)_IJZ_1059-2026_09.03.2026.pdf",
+  "doc_id": "1R6ZFAi_15rKArzGz3EFZpcZgtKuJK-UR",
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026; IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060382",
+  "cu": "SCR012603",
+  "strain": "Scrambler",
+  "code": "364-0694-26",
+  "date": "01.06.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "5.4×10⁴",
+   "9.2": "1.8×10⁴",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P060382 (SCR012603)_IJZ-MB_364-0694-26_01.06.2026.pdf",
+  "doc_id": "1WAQk0oOuKzJYJAezNMNaSLiGnKbQIBPV",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060442",
+  "cu": "SCR022601",
+  "strain": "Scrambler",
+  "code": "3657-2026",
+  "date": "22.06.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.054",
+   "11.2": "0.035",
+   "11.3": "0.058",
+   "11.4": "0.009",
+   "12": "< 0,01 mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060442 (SCR022601)_IJZ_3657-2026_22.06.2026.pdf",
+  "doc_id": "1bsrDTcGPzg-MKY43aLsjeFGN-j27Whu8",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060162",
+  "cu": "SJ102501",
+  "strain": "Sleepy Joe",
+  "code": "1065-2026",
+  "date": "11.03.2026",
+  "lab": "IJZ",
+  "params": [
+   12
+  ],
+  "vals": {
+   "12": "ND mg/kg — all 26 residues"
+  },
+  "held": [],
+  "document": "P060162 (SJ102501)_IJZ_1065-2026_11.03.2026.pdf",
+  "doc_id": "1yVAW0WsDyly7XaRiYW-NuP7E3XPM9K3-",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060192",
+  "cu": "SJ112501",
+  "strain": "Sleepy Joe",
+  "code": "1061-2026",
+  "date": "09.03.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "ND",
+   "11.2": "ND",
+   "11.3": "ND",
+   "11.4": "ND",
+   "12": "ND mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060192 (SJ112501)_IJZ_1061-2026_09.03.2026.pdf",
+  "doc_id": "1K0J2vaEFvtqXG5u1dgBL6zZ_Uu2jsgO3",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060102",
+  "cu": "WED102501",
+  "strain": "Wedding Cake",
+  "code": "329-2026",
+  "date": "11.02.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.078",
+   "11.2": "ND",
+   "11.3": "0.087",
+   "11.4": "ND",
+   "12": "ND mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060102 (WED102501)_IJZ_329-2026_11.02.2026.pdf",
+  "doc_id": "1xEWCbSRCL20ANfTYxVPedIL56IeF6Co7",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P160012",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "3656-2026",
+  "date": "22.06.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.11",
+   "11.2": "0.009",
+   "11.3": "0.045",
+   "11.4": "0.027",
+   "12": "< 0,01 mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P160012_IJZ_3656-2026_22.06.2026.pdf",
+  "doc_id": "1YahVoBYNWU4thnnmz5QgOLz5ueiuoomk",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P160022",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "3655-2026",
+  "date": "22.06.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.1",
+   "11.2": "0.01",
+   "11.3": "0.043",
+   "11.4": "0.014",
+   "12": "< 0,01 mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P160022_IJZ_3655-2026_22.06.2026.pdf",
+  "doc_id": "1UV4XwXMddQy81lSPh9LQyt1s8WhrhJgh",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P160032",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "3654-2026",
+  "date": "22.06.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.093",
+   "11.2": "0.008",
+   "11.3": "0.045",
+   "11.4": "0.03",
+   "12": "< 0,01 mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P160032_IJZ_3654-2026_22.06.2026.pdf",
+  "doc_id": "1x91aStkR9ehtAND5uY16mi0QVti9uRSJ",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060372",
+  "cu": "CC012603",
+  "strain": "Cash Cow",
+  "code": "363-0693-26",
+  "date": "01.06.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "2.7×10³",
+   "9.2": "1.6×10¹",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P060372 (CC012603)_IJZ-MB_363-0693-26_01.06.2026.pdf",
+  "doc_id": "1yskWRE09aqTufGBqCizisfc34ZhuR2uD",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P050042",
+  "cu": "OPM1024-01",
+  "strain": "Orange Punch Mimosa",
+  "code": "2156-2025",
+  "date": "07.05.2025",
+  "lab": "IJZ",
+  "params": [
+   9,
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "9.1": "<10",
+   "9.2": "<10",
+   "9.3": "<10² и >10",
+   "9.4": "absent",
+   "9.5": "absent",
+   "10.2": "<2",
+   "11.1": "0.031",
+   "11.2": "0.004",
+   "11.3": "0.01",
+   "11.4": "0.001",
+   "12": "ND"
+  },
+  "held": [],
+  "document": "(OPM1024-01)_IJZ_2156-2025_07.05.2025.pdf",
+  "doc_id": null,
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides; other) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P050042",
+  "cu": "OPM1024-01",
+  "strain": "Orange Punch Mimosa",
+  "code": "407-0745-25",
+  "date": "05.05.2025",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "10",
+   "9.2": "<10",
+   "9.3": "<10² и >10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "(OPM1024-01)_IJZ-MB_407-0745-25_05.05.2025.pdf",
+  "doc_id": null,
+  "source": "cited on the certificates (coq_artifact_data.json, other) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P050042",
+  "cu": "OPM1024-01",
+  "strain": "Orange Punch Mimosa",
+  "code": "ППК25117",
+  "date": "06.05.2025",
+  "lab": "CNP",
+  "params": [
+   3,
+   4,
+   5,
+   6,
+   8
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "15.38",
+   "5": "0.04",
+   "6": "0.01",
+   "8": "5.86"
+  },
+  "held": [],
+  "document": "(OPM1024-01)_CNP_ППК25117_06.05.2025.pdf",
+  "doc_id": null,
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026; UKIM CNP potency) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060132",
+  "cu": "CF102501",
+  "strain": "Chem Flyer",
+  "code": "031-4-К-26",
+  "date": "10.02.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "9.83",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "P060132 (CF102501)_FHM_031-4-K-26_10.02.2026.pdf",
+  "doc_id": "1sq-pjJDsD3XGPn_BBEIAiA5S2EQYgN0d",
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026; Farmahem — cannabinoids) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060132",
+  "cu": "CF102501",
+  "strain": "Chem Flyer",
+  "code": "031-4-ГС-26",
+  "date": "12.02.2026",
+  "lab": "FHM",
+  "params": [
+   8
+  ],
+  "vals": {
+   "8": "5,6 %"
+  },
+  "held": [],
+  "document": "P060132 (CF102501)_FHM_031-4-LoD-26_12.02.2026.pdf",
+  "doc_id": null,
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060132",
+  "cu": "CF102501",
+  "strain": "Chem Flyer",
+  "code": "330-2026",
+  "date": "11.02.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "2.1",
+   "11.1": "0.07",
+   "11.2": "ND",
+   "11.3": "0.0942",
+   "11.4": "ND",
+   "12": "ND mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060132 (CF102501)_IJZ_330-2026_11.02.2026.pdf",
+  "doc_id": null,
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026; IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060132",
+  "cu": "CF102501",
+  "strain": "Chem Flyer",
+  "code": "73-0116-26",
+  "date": "09.02.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "3.1×10⁴",
+   "9.2": "3.9×10⁴",
+   "9.3": "<10³ и >10²",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P060132 (CF102501)_IJZ-MB_73-0116-26_09.02.2026.pdf",
+  "doc_id": null,
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060112",
+  "cu": "PUM102501",
+  "strain": "Pure Michigen",
+  "code": "031-2-К-26",
+  "date": "10.02.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "P060112 (PUM102501)_FHM_031-2-K-26_10.02.2026.pdf",
+  "doc_id": "1IU3E-V8PmEX6tf_OCIVooPgn_gRrU0ht",
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060112",
+  "cu": "PUM102501",
+  "strain": "Pure Michigen",
+  "code": "031-2-ГС-26",
+  "date": "11.02.2026",
+  "lab": "FHM",
+  "params": [
+   8
+  ],
+  "vals": {
+   "8": "6,4 %"
+  },
+  "held": [],
+  "document": "P060112 (PUM102501)_FHM_031-2-LoD-26_11.02.2026.pdf",
+  "doc_id": null,
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060112",
+  "cu": "PUM102501",
+  "strain": "Pure Michigen",
+  "code": "327-2026",
+  "date": "11.02.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.078",
+   "11.2": "ND",
+   "11.3": "0.0187",
+   "11.4": "ND",
+   "12": "ND mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060112 (PUM102501)_IJZ_327-2026_11.02.2026.pdf",
+  "doc_id": null,
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026; IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060112",
+  "cu": "PUM102501",
+  "strain": "Pure Michigen",
+  "code": "74-0117-26",
+  "date": "09.02.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "5×10¹",
+   "9.2": "5×10¹",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P060112 (PUM102501)_IJZ-MB_74-0117-26_09.02.2026.pdf",
+  "doc_id": null,
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060122",
+  "cu": "ACC102501",
+  "strain": "Amnesia Core Cut",
+  "code": "031-5-К-26",
+  "date": "10.02.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "12.91",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "P060122 (ACC102501)_FHM_031-5-K-26_10.02.2026.pdf",
+  "doc_id": "1CIALM-yPNHbiFKRu_JPTr4OOqdQFIdPw",
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026; Farmahem — cannabinoids) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060122",
+  "cu": "ACC102501",
+  "strain": "Amnesia Core Cut",
+  "code": "031-5-ГС-26",
+  "date": "12.02.2026",
+  "lab": "FHM",
+  "params": [
+   8
+  ],
+  "vals": {
+   "8": "7,1 %"
+  },
+  "held": [],
+  "document": "P060122 (ACC102501)_FHM_031-5-LoD-26_12.02.2026.pdf",
+  "doc_id": null,
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060122",
+  "cu": "ACC102501",
+  "strain": "Amnesia Core Cut",
+  "code": "326-2026",
+  "date": "11.02.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "2.3",
+   "11.1": "0.078",
+   "11.2": "ND",
+   "11.3": "0.022",
+   "11.4": "ND",
+   "12": "ND mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060122 (ACC102501)_IJZ_326-2026_11.02.2026.pdf",
+  "doc_id": null,
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026; IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060122",
+  "cu": "ACC102501",
+  "strain": "Amnesia Core Cut",
+  "code": "77-0120-26",
+  "date": "09.02.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "1×10³",
+   "9.2": "1.6×10³",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P060122 (ACC102501)_IJZ-MB_77-0120-26_09.02.2026.pdf",
+  "doc_id": null,
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060452",
+  "cu": "FB032601",
+  "strain": "Fat Bastard",
+  "code": "433-0847-26",
+  "date": "10.07.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "3.7×10³",
+   "9.2": "1.6×10³",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "(FB032601)_IJZ-MB_433-0847-26_10.07.2026.pdf",
+  "doc_id": "1rBadOq2ozb3sbjHrLYh7vWMa-TZT4bBr",
+  "source": "cited on the certificates (coq_artifact_data.json, IJZ-MB microbiology) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060482",
+  "cu": "JD022601",
+  "strain": "Jelly Donuts",
+  "code": "402-0785-26",
+  "date": "24.06.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "2.2×10³",
+   "9.2": "2.4×10³",
+   "9.3": "<10² и >10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "(JD022601)_IJZ-MB_402-0785-26_24.06.2026.pdf",
+  "doc_id": "1Jboohxkf_yBlyagIEgcvwsHbEORlXh-g",
+  "source": "cited on the certificates (coq_artifact_data.json, IJZ-MB microbiology) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060192",
+  "cu": "SJ112501",
+  "strain": "Sleepy Joe",
+  "code": "130-0227-26",
+  "date": "06.03.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "3.3×10²",
+   "9.2": "3.4×10²",
+   "9.3": "<10² и >10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P060192 (SJ112501)_IJZ-MB_130-0227-26_06.03.2026.pdf",
+  "doc_id": "1uiEkH5mXX_HRd06v9vIYPl1uOuTtTJMO",
+  "source": "cited on the certificates (coq_artifact_data.json, IJZ-MB microbiology) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060102",
+  "cu": "WED102501",
+  "strain": "Wedding Cake",
+  "code": "031-3-К-26",
+  "date": "10.02.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "22.05",
+   "5": "<LOQ**",
+   "6": "<LOQ**"
+  },
+  "held": [],
+  "document": "P060102 (WED102501)_FHM_031-3-K-26_10.02.2026.pdf",
+  "doc_id": "1LAdEkqBkzs4ONHeb2Czd8ggv0teRNPdr",
+  "source": "cited on the certificates (coq_artifact_data.json, Farmahem — cannabinoids) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P160012",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "409-0792-26",
+  "date": "24.06.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "<10",
+   "9.2": "<10",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P160012_IJZ-MB_409-0792-26_24.06.2026.pdf",
+  "doc_id": "183h-2huDN6YeSBkOd5C0845tsYSk_D31",
+  "source": "cited on the certificates (coq_artifact_data.json, IJZ-MB microbiology) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P160022",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "411-0794-26",
+  "date": "24.06.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "3×10¹",
+   "9.2": "9×10¹",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P160022_IJZ-MB_411-0794-26_24.06.2026.pdf",
+  "doc_id": "1r52GBo3YQdmNjAC9bzL1hg0Wzmmimupm",
+  "source": "cited on the certificates (coq_artifact_data.json, IJZ-MB microbiology) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P160032",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "410-0793-26",
+  "date": "24.06.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "1×10¹",
+   "9.2": "<10",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P160032_IJZ-MB_410-0793-26_24.06.2026.pdf",
+  "doc_id": "1qGAJ1ygkVrz4NKm-Hx4ZEaR3oTP7JT4v",
+  "source": "cited on the certificates (coq_artifact_data.json, IJZ-MB microbiology) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
  }
 ]

@@ -1,0 +1,39 @@
+{
+ "_": "Third reads of 21.09.2026 — the desk itself, on the page, after the two reads disagreed. Each one is a crop of the page at 260 dpi, read visually; the crop is beside the PDF in the session scratchpad and the region is named here so it can be re-cut.",
+ "402-0785-26_JD022601.pdf": {
+  "bile_tolerant_gram_negative · result": {
+   "settled": "< 10² и > 10 CFU/g",
+   "agrees_with": "B",
+   "region": "page 1, 42–98 % of the height — the parameter table and the conclusion",
+   "note": "The fifth instance of the OI-36 class and the fifth time the FULLER read was right: read A stopped at the bound '< 10²' where the page carries the whole assertion '< 10² и > 10 CFU/g'. Four of these were settled the same way on 16.09.2026 (537/1068/26, 542/1073/26, 544/1075/26, 547/1078/26). A reader that truncates a range loses the lower bound, which is the half that says the count is not zero."
+  }
+ },
+ "433-0847-26_FB032601.pdf": {
+  "batch_canonical": {
+   "settled": "FB032601",
+   "agrees_with": "B",
+   "region": "page 1, 20–45 % of the height — the sample block, line 'Серија:'",
+   "note": "Read A gave 'FBD32601': the zero of the lot code read as a Latin D. The page prints FB032601, and so do the scan's own file name, the 09.09 coverage update and the Drive audit of 20.09."
+  }
+ },
+ "031-3-K-26_WED102501.pdf": {
+  "parameter identification_a_macroscopic": {
+   "settled": "not on the page",
+   "agrees_with": "A",
+   "region": "page 2, section 3 — 'Резултати од анализа на примероци'",
+   "note": "Read B raised three identification rows out of the report's TITLE ('Идентификација и квантификација на канабиноиди во цвет од канабис'). The result table has three rows and they are the three cannabinoids: Вкупен Cannabidiol, Вкупен Cannabinol, Вкупно Δ9-Tetrahydrocannabinol. A title is not a determination. What this report does certify for #3 Identification C is the desk's own standing rule for a Farmahem cannabinoid report — the identity of the cannabinoid profile by HPLC, as its three sibling reports 031-2, 031-4 and 031-5-К/26 are already cited on their certificates — and that is a rule, not a reading of this page."
+  },
+  "parameter identification_b_microscopic": {
+   "settled": "not on the page",
+   "agrees_with": "A",
+   "region": "page 2, section 3 — 'Резултати од анализа на примероци'",
+   "note": "Read B raised three identification rows out of the report's TITLE ('Идентификација и квантификација на канабиноиди во цвет од канабис'). The result table has three rows and they are the three cannabinoids: Вкупен Cannabidiol, Вкупен Cannabinol, Вкупно Δ9-Tetrahydrocannabinol. A title is not a determination. What this report does certify for #3 Identification C is the desk's own standing rule for a Farmahem cannabinoid report — the identity of the cannabinoid profile by HPLC, as its three sibling reports 031-2, 031-4 and 031-5-К/26 are already cited on their certificates — and that is a rule, not a reading of this page."
+  },
+  "parameter identification_c_hplc": {
+   "settled": "not on the page",
+   "agrees_with": "A",
+   "region": "page 2, section 3 — 'Резултати од анализа на примероци'",
+   "note": "Read B raised three identification rows out of the report's TITLE ('Идентификација и квантификација на канабиноиди во цвет од канабис'). The result table has three rows and they are the three cannabinoids: Вкупен Cannabidiol, Вкупен Cannabinol, Вкупно Δ9-Tetrahydrocannabinol. A title is not a determination. What this report does certify for #3 Identification C is the desk's own standing rule for a Farmahem cannabinoid report — the identity of the cannabinoid profile by HPLC, as its three sibling reports 031-2, 031-4 and 031-5-К/26 are already cited on their certificates — and that is a rule, not a reading of this page."
+  }
+ }
+}
