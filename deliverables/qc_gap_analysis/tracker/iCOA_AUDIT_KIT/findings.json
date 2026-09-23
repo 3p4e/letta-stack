@@ -1,0 +1,137 @@
+[
+  {
+    "sheet": "CoQ Compilation (long)",
+    "what": "result stated without provenance",
+    "detail": "CoQ-PP_26-021 #3 Identification C · HPLC/HPTLC · status 'to be performed — see route'"
+  },
+  {
+    "sheet": "CoQ Compilation (long)",
+    "what": "result stated without provenance",
+    "detail": "CoQ-PP_26-050 #3 Identification C · HPLC/HPTLC · status 'to be performed — see route'"
+  },
+  {
+    "sheet": "CoQ Compilation (long)",
+    "what": "result stated without provenance",
+    "detail": "CoQ-PP_26-069 #3 Identification C · HPLC/HPTLC · status 'to be performed — see route'"
+  },
+  {
+    "sheet": "CoQ Compilation (long)",
+    "what": "result stated without provenance",
+    "detail": "CoQ-PP_26-070 #3 Identification C · HPLC/HPTLC · status 'to be performed — see route'"
+  },
+  {
+    "sheet": "CoQ Compilation (long)",
+    "what": "result stated without provenance",
+    "detail": "CoQ-PP_26-071 #3 Identification C · HPLC/HPTLC · status 'to be performed — see route'"
+  },
+  {
+    "sheet": "CoQ Compilation (long)",
+    "what": "result stated without provenance",
+    "detail": "CoQ-PP_26-072 #3 Identification C · HPLC/HPTLC · status 'to be performed — see route'"
+  },
+  {
+    "sheet": "CoQ Compilation (long)",
+    "what": "result stated without provenance",
+    "detail": "CoQ-PP_26-073 #3 Identification C · HPLC/HPTLC · status 'to be performed — see route'"
+  },
+  {
+    "sheet": "CoQ Compilation (long)",
+    "what": "result stated without provenance",
+    "detail": "CoQ-PP_26-074 #3 Identification C · HPLC/HPTLC · status 'to be performed — see route'"
+  },
+  {
+    "sheet": "CoQ Compilation (long)",
+    "what": "result stated without provenance",
+    "detail": "CoQ-PP_26-084 #3 Identification C · HPLC/HPTLC · status 'to be performed — see route'"
+  },
+  {
+    "sheet": "CoQ Compilation (long)",
+    "what": "result stated without provenance",
+    "detail": "CoQ-PP_26-166 #3 Identification C · HPLC/HPTLC · status 'to be performed — see route'"
+  },
+  {
+    "sheet": "CoQ Compilation (long)",
+    "what": "result stated without provenance",
+    "detail": "CoQ-PP_26-167 #3 Identification C · HPLC/HPTLC · status 'to be performed — see route'"
+  },
+  {
+    "sheet": "CoQ Compilation (long)",
+    "what": "laboratory under two names",
+    "detail": "'IJZ' on 22 row(s) is 'IPH — Institute of Public Health', which 1559 row(s) spell in full · CoQ-PP_26-004, CoQ-PP_26-047, CoQ-PP_26-048, CoQ-PP_26-049, CoQ-PP_26-051, CoQ-PP_26-053…"
+  },
+  {
+    "sheet": "CoQ Compilation (long)",
+    "what": "laboratory under two names",
+    "detail": "'CNP' on 52 row(s) is 'UKIM Faculty of Pharmacy — Center for Natural Products', which 365 row(s) spell in full · CoQ-PP_26-002, CoQ-PP_26-003, CoQ-PP_26-004, CoQ-PP_26-010, CoQ-PP_26-011, CoQ-PP_26-012…"
+  },
+  {
+    "sheet": "CoQ Compilation (long)",
+    "what": "laboratory under two names",
+    "detail": "'FHM' on 11 row(s) is 'Farmahem', which 642 row(s) spell in full · CoQ-PP_26-047, CoQ-PP_26-048, CoQ-PP_26-049, CoQ-PP_26-106, CoQ-PP_26-109, CoQ-PP_26-132"
+  },
+  {
+    "sheet": "CoQ Compilation (long)",
+    "what": "the method text claims a date boundary the dates do not have",
+    "detail": "the DAB string reads \"before its Ph. Eur. 3028 accreditation\", but 41 row(s) of the same laboratories carry the Ph. Eur. method with an issue date earlier than the last DAB row (2026-05-11)"
+  },
+  {
+    "sheet": "CoQ Compilation (long)",
+    "what": "an external laboratory with no sample-receipt date on any result",
+    "detail": "IJZ — all 22 stated results"
+  },
+  {
+    "sheet": "CoQ Compilation (long)",
+    "what": "an external laboratory with no sample-receipt date on any result",
+    "detail": "FHM — all 11 stated results"
+  },
+  {
+    "sheet": "CoQ Compilation (long)",
+    "what": "an external laboratory with no sample-receipt date on any result",
+    "detail": "State Phytosanitary Laboratory — all 2 stated results"
+  },
+  {
+    "sheet": "iCoA Register",
+    "what": "an iCoA cannot be compiled without Basis date",
+    "detail": "iCoA-PP_26-078"
+  },
+  {
+    "sheet": "iCoA Register",
+    "what": "an iCoA cannot be compiled without Basis date",
+    "detail": "iCoA-PP_26-079"
+  },
+  {
+    "sheet": "iCoA Register",
+    "what": "an iCoA cannot be compiled without Basis date",
+    "detail": "iCoA-PP_26-134"
+  },
+  {
+    "sheet": "iCoA Register",
+    "what": "an iCoA cannot be compiled without Basis date",
+    "detail": "iCoA-PP_26-135"
+  },
+  {
+    "sheet": "iCoA Register",
+    "what": "an iCoA whose scope is wider than the other 168",
+    "detail": "iCoA-PP_26-005 (HPA1024|I) · Ident A + Ident B + #4 + #5 + Foreign matter + #9.1 + #9.2 + #9.3 + #9.4 + #9.5 + #10.2 + #11.1 + #11.2 + #11.3 + #11.4 + #12"
+  },
+  {
+    "sheet": "iCoA Register",
+    "what": "an iCoA whose scope is wider than the other 168",
+    "detail": "iCoA-PP_26-006 (OPM1024|I) · Ident A + Ident B + #4 + #5 + Foreign matter + #9.1 + #9.2 + #9.3 + #9.4 + #9.5 + #10.2 + #11.1 + #11.2 + #11.3 + #11.4 + #12"
+  },
+  {
+    "sheet": "iCoA Register",
+    "what": "an iCoA whose scope is wider than the other 168",
+    "detail": "iCoA-PP_26-023 (P050192|I) · Ident A + Ident B + #4 + #5 + Foreign matter + #8"
+  },
+  {
+    "sheet": "iCoA Register",
+    "what": "an iCoA whose scope is wider than the other 168",
+    "detail": "iCoA-PP_26-024 (P050202|I) · Ident A + Ident B + #4 + #5 + Foreign matter + #8"
+  },
+  {
+    "sheet": "CoQ Register",
+    "what": "a retest round with no lower round on file",
+    "detail": "P050022 I/R5 · P050072 I/R4 · P050202 I/R5 — if the round is a campaign label this is expected; if it counts this lot's retests, the earlier ones are missing"
+  }
+]

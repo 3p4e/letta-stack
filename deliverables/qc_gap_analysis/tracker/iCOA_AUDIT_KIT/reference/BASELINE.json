@@ -1,0 +1,50 @@
+{
+  "workbook": "CoQ_Analysis_Master_v56.xlsx",
+  "measured": "2026-09-23",
+  "compilation_long_rows": 3956,
+  "certificates": 172,
+  "determinations_per_certificate": [
+    [
+      23,
+      172
+    ]
+  ],
+  "blank_result_cells": 0,
+  "results_stated": 3175,
+  "absence_markers": {
+    "upon request — not required for release": 344,
+    "not tested": 350,
+    "carried from the initial testing — not tested": 87
+  },
+  "provenance_complete": 3164,
+  "method_stated": 3175,
+  "criterion_stated": 3175,
+  "receipt_date_missing": 1177,
+  "laboratories": {
+    "Purely Plant GmbH (in-house)": 511,
+    "UKIM Faculty of Pharmacy — Center for Natural Products": 365,
+    "IPH — Institute of Public Health": 1559,
+    "CNP": 52,
+    "IJZ": 22,
+    "—": 11,
+    "Farmahem": 642,
+    "State Phytosanitary Laboratory": 2,
+    "FHM": 11
+  },
+  "icoa_rows": 207,
+  "icoa_issuable": 172,
+  "coq_numbered": 172,
+  "icoa_to_coq_matched": 172,
+  "rounds": {
+    "I": 89,
+    "R": 48,
+    "R2": 32,
+    "R5": 2,
+    "R4": 1
+  },
+  "icoa_scopes": {
+    "Ident A + Ident B + Foreign matter": 168,
+    "Ident A + Ident B + #4 + #5 + Foreign matter + #9.1 + #9.2 + #9.3 + #9.4 + #9.5 + #10.2 + #11.1 + #11.2 + #11.3 + #11.4 + #12": 2,
+    "Ident A + Ident B + #4 + #5 + Foreign matter + #8": 2
+  }
+}
