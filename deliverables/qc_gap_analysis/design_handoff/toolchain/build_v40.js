@@ -114,7 +114,7 @@ function rec(c) {
   };
 }
 fs.rmSync(OUT, { recursive: true, force: true });
-const stats = { n: 0, warn: 0, findings: 0, hard: 0, byDir: {} }, report = [];
+const stats = { n: 0, warn: 0, findings: 0, hard: 0, byDir: {} }, report = [], every = [];
 // ---- the grey edges ---------------------------------------------------------------
 // Chromium flattens a transparency group at raster resolution, so an alpha gradient
 // prints as grey banding rather than as a fade to white. The package ships
@@ -501,8 +501,15 @@ const S01_BAND_LAYER = '<style id="__owner-s01-band">\n' +
   const hard = chk.findings.filter(f => !/^OI-/.test(f));
   stats.findings += chk.findings.length; stats.hard += hard.length;
   if (hard.length) report.push(out.filename + ' :: ' + hard.join(' | '));
+  // the OI- findings are observations the register already carries — an out-of-spec figure the
+  // owner has marked, an assay outside its window, a determination credited to an external
+  // certificate. They do not stop a document, but a gate whose soft half is invisible cannot
+  // be audited, so every finding is written out as well, hard and soft alike.
+  for (const f of chk.findings) every.push(out.filename + ' :: ' + f);
 }
 fs.writeFileSync(path.join(OUT, '_build_report.txt'), report.join('\n'));
+fs.writeFileSync(path.join(OUT, '_findings_all.txt'), every.join('\n'));
 console.log('documents written: %d  %j', stats.n, stats.byDir);
 console.log('apply warnings: %d   assertion findings: %d (hard %d)', stats.warn, stats.findings, stats.hard);
 console.log('report: out/_build_report.txt (%d lines)', report.length);
+console.log('every finding: out/_findings_all.txt (%d lines)', every.length);

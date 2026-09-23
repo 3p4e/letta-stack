@@ -37,3 +37,7 @@ deliverables/qc_gap_analysis/drafts/.pages/
 # from the issued documents, and reproducible from them. ~600 KB a file because the subset
 # fonts travel inside each one, so the set is not carried in the repository.
 deliverables/qc_gap_analysis/SELFCONTAINED/
+
+# The applier keeps one safety copy of the register beside it; it is not a deliverable
+deliverables/qc_gap_analysis/*.json.bak
+deliverables/qc_gap_analysis/design_handoff/out/_findings_all.txt
