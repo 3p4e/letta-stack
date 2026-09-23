@@ -308,3 +308,58 @@ certificate number, lot and internal certificate.
 The same 53 files already in `CoQ_retest_T1/` and `CoQ_retest_T2/`. Each opens in Word from
 the desktop with nothing fetched from anywhere — no script, no stylesheet, no font, no image
 off the machine.
+
+---
+
+# The internal certificates of the same batches, as Word
+
+| file | what is in it |
+| --- | --- |
+| `iCoA_retest_T1_WORD.zip` | 21 Word internal certificates |
+| `iCoA_retest_T2_WORD.zip` | 32 Word internal certificates |
+| `iCoA_retest_T1_T2_HTML.zip` | the same 53 as self-contained HTML |
+
+Same route as the certificates of quality — certificate → PDF → Word, the printed page as
+one anchored image behind the text, every span a real Word run at the PDF's own coordinates,
+house faces embedded. Each one pairs with the certificate of quality of the same number.
+
+## Editable means one box per value, and it already was
+
+The blank templates needed a second pass for this: `pdf_to_docx_exact.py` boxes one PDF
+**span** at a time, and on a blank template a placeholder set in a synthesised italic came
+through as `[MANUFACTUR` + `E DATE]` — two boxes nobody can type a date into. So
+`BLANK_TEMPLATES/build_template_docx.py` reads the field boundaries off the **DOM** in the
+print pass and boxes one whole field instead.
+
+That pass was built for this fleet too — `design_handoff/toolchain/build_editable_docx.py`,
+with the probe lifted into `build_template_fields.py` so both use one rule — and then
+**measured, and it is the wrong tool here**:
+
+| | boxes | median words per box | boxes of ≤ 3 characters |
+| --- | ---: | ---: | ---: |
+| one box per span | 419 | 2 | 42 |
+| one box per DOM field | **441** | 2 | **94** |
+
+It made the page *more* fragmented, not less. The reason is Section 03: the check-sheet's
+hundred-odd tick chips are each their own element, so boxing by field separates every `☐`
+and `☒` from the words beside it. The per-field pass exists for a template whose fields are
+placeholders; a populated certificate's values are set in real house faces and already come
+through whole.
+
+Checked on all 53, against the register, case as printed:
+
+| value | arrives as one editable box |
+| --- | --- |
+| internal certificate code | 53 of 53 |
+| P lot | 50 of 53 — three have no P batch on record |
+| cultivation batch | 53 of 53 |
+| product specification code | 53 of 53 |
+| strain | 53 of 53 |
+
+**0 findings** besides: each opens as a valid document, is one page, carries its page as an
+image and its text as positioned runs, and embeds the house type. Nothing is split across
+two boxes.
+
+    python3 design_handoff/toolchain/build_editable_docx.py \
+        DELIVER_2026-09-23/iCoA_retest_T1 --docx OUT --pdf PDF        # per DOM field
+    python3 design_handoff/toolchain/pdf_to_docx_exact.py --batch PDF OUT   # per span — used
