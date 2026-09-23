@@ -129,3 +129,30 @@ assert something nobody recorded.
 
     node icoa_handoff/v3/build_from_register.js
     python3 build_selfcontained.py <staged retest dir> --out DELIVER_2026-09-23/iCoA_retest_T1
+
+---
+
+# The ImB product specifications of the same batches — 39 sheets, HTML
+
+`ImB_Spec_T1_T2/` — the specification sheet every one of the 53 T1 and T2 retest batches
+cites, and nothing else. **None is missing.** Thirty-nine rather than fifty-three because a
+specification is a product's, not a batch's: three Cap Junky Grade II lots share
+`QCSP 001_CJ-II_v.01`. `ImB_Spec_T1_T2_map.json` lists which batches each sheet serves.
+
+These are the sheets already built on the canonical template (`specs/QCSP_001_ImB/SHEETS`,
+57 in all), self-contained here the same way. Checked on all 39: the header code is the one
+the batch's certificate of quality cites, the bottom-right corner is **empty** — the
+template has no document code there, as you said — and each opens on its own.
+
+    python3 build_selfcontained.py <staged sheets> --out DELIVER_2026-09-23/ImB_Spec_T1_T2
+
+## What is delivered so far
+
+| folder | documents |
+| --- | --- |
+| `CoQ_retest_T1` · `CoQ_retest_T2` | 53 certificates of quality |
+| `iCoA_retest_T1` · `iCoA_retest_T2` | 53 internal certificates, numbered alike |
+| `ImB_Spec_T1_T2` | 39 product specifications, covering all 53 |
+
+145 documents. Next, in your order: the initial-release internal certificates and
+certificates of quality, then Tranche 3 — retests, then initials.
