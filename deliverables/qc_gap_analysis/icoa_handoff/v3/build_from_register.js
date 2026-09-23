@@ -18,9 +18,45 @@
 //
 // The generator itself is untouched: `icoa3_gen.js` is the design system and is called
 // exactly as `build_fleet.js` calls it. Only the records come from somewhere else.
+//
+// Three options, all off by default so a plain run prints exactly what it printed before:
+//
+//   --retest             only the retest series, in certificate-number order
+//   --sig-scale 1.20     the deposited hands 20 % larger, so they cross the rule instead of
+//                        sitting on it (Head of QC, 23.09.2026: "increase the signatures to
+//                        overflow the horizontal signature line ... 15 % or 20 % bigger").
+//                        PP_SIGNATURES=1 must also be set; signing stays opt-in.
+//   --print-flat         the page made print-safe before it is printed, rather than leaving
+//                        a RIP to flatten it: every fading fill replaced by the opaque
+//                        colour it would have over white (the same printOpaqueLayer the
+//                        certificates of quality use), text-shadow and box-shadow off, and
+//                        the signature's multiply blend set to normal. Chromium flattens a
+//                        transparency group at raster resolution, which is what prints as
+//                        grey banding; and it draws a text-shadow by painting the glyphs a
+//                        SECOND time, which is what doubles every chip in the text layer.
+//                        Nothing moves and no colour is chosen: only what paints the page
+//                        behind the ink is converted, and the two shadow families are off.
 const fs = require('fs'), path = require('path');
 const HERE = __dirname, GAP = path.resolve(HERE, '../..');
 const SIGN = require(path.join(GAP, 'sign_block.js'));
+const { printOpaqueLayer } = require(path.join(GAP, 'design_handoff', 'toolchain', 'print_opaque.js'));
+
+const argv = process.argv.slice(2);
+const flag = n => argv.indexOf(n) >= 0;
+const val = (n, d) => { const i = argv.indexOf(n); return i >= 0 ? argv[i + 1] : d };
+const RETEST_ONLY = flag('--retest');
+const SIG_SCALE = parseFloat(val('--sig-scale', '1')) || 1;
+const PRINT_FLAT = flag('--print-flat');
+
+// The print-safe layer, appended last so it outranks the document's own rules. A blanket
+// selector rather than a list of them: the owner's planned source fix names
+// .chip-sel/.chip-un/.sec-label/.sec-no/.mk/.pb-grade/.stmt .badge, and a blanket rule
+// cannot miss the one that was not on the list.
+const FLAT_CSS =
+  '<style id="__print-flat">\n@media print{\n' +
+  '*,*::before,*::after{text-shadow:none !important;box-shadow:none !important}\n' +
+  '.ap-sign img.ap-img{mix-blend-mode:normal !important}\n' +
+  '}</style>';
 const build = new Function('return (' + fs.readFileSync(path.join(HERE, 'icoa3_gen.js'), 'utf8') + ')')();
 
 const data = JSON.parse(fs.readFileSync(path.join(GAP, 'coq_artifact_data.json'), 'utf8'));
@@ -32,10 +68,24 @@ const meta = {};
 for (const p of plan) if (!meta[p.rec.cult])
   meta[p.rec.cult] = { strainCode: p.strainCode, phenotype: p.rec.phenotype, processing: p.rec.processing };
 
-const out = process.argv[2] || path.join(HERE, 'build_register');
+const positional = argv.filter((a, i) => a.indexOf('--') !== 0 &&
+  !(i > 0 && argv[i - 1] === '--sig-scale'));
+// The internal certificate links its three stylesheets rather than carrying them, so the
+// gradients printOpaqueLayer converts live in the sheets and not in the document. The layer
+// is therefore built once from the sheets in the order the page links them, and appended to
+// every document — which is also true after build_selfcontained.py folds those same sheets
+// in, because the layer comes last either way.
+const SHEETS = ['_icoa.css', '_coq-rules.css', '_icoa3-print.css'];
+const OPAQUE = PRINT_FLAT ? printOpaqueLayer(SHEETS.map(n =>
+  fs.readFileSync(path.join(HERE, 'ISSUE_iCOA', n), 'utf8')).join('\n')) : '';
+
+const out = positional[0] || path.join(HERE, 'build_register');
 const rows = [];
 let noPheno = 0;
-for (const c of data.coqs) {
+const wanted = data.coqs
+  .filter(c => !RETEST_ONLY || !/^initial release/.test(String(c.t || '')))
+  .sort((a, b) => String(a.regcode).localeCompare(String(b.regcode)));
+for (const c of wanted) {
   const r = {}; for (const x of c.rows || []) r[String(x.no)] = x;
   const initial = /^initial release/.test(String(c.t || ''));
   const m = meta[String(c.cb)] || {};
@@ -48,7 +98,11 @@ for (const c of data.coqs) {
     identA: (r['1'] || {}).res || '', identB: (r['2'] || {}).res || '', fm: (r['7'] || {}).res || '',
   };
   const o = build(rec, Object.assign({ grade: c.grade, specCode: c.spec }, m));
-  o.html = SIGN.sign(o.html, rec.code, { h: 52, dy: -9 });
+  o.html = SIGN.sign(o.html, rec.code, { h: 52 * SIG_SCALE, dy: -9 });
+  if (PRINT_FLAT) {
+    o.html = o.html.replace('</body>', OPAQUE + '\n' + FLAT_CSS + '\n</body>');
+    if (o.html.indexOf('__print-flat') < 0) throw new Error('the print-safe layer did not land on ' + rec.code);
+  }
   const f = path.join(out, o.path);
   fs.mkdirSync(path.dirname(f), { recursive: true });
   fs.writeFileSync(f, o.html);
@@ -59,7 +113,11 @@ for (const c of data.coqs) {
 fs.mkdirSync(out, { recursive: true });
 fs.writeFileSync(path.join(out, '_built.tsv'),
   'icoa\tcoq\tcu\tp\tstrain\tdir\tseries\ttested\tissued\tconforms\tsource\tpath\n' + rows.join('\n') + '\n');
-console.log('internal certificates built from the register: %d', rows.length);
+console.log('internal certificates built from the register: %d%s', rows.length,
+            RETEST_ONLY ? ' (the retest series only)' : '');
+console.log('  signatures: %s   size: %d%% of nominal   print-safe layer: %s',
+            SIGN.enabled() ? 'applied' : 'off (set PP_SIGNATURES=1)',
+            Math.round(SIG_SCALE * 100), PRINT_FLAT ? 'yes' : 'no');
 console.log('  conforming: %d   open: %d', rows.filter(r => r.includes('\tconforms\t')).length,
             rows.filter(r => r.includes('\topen\t')).length);
 console.log('  no cultivar record on file (boxes stay open): %d', noPheno);

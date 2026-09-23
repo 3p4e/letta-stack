@@ -363,3 +363,71 @@ two boxes.
     python3 design_handoff/toolchain/build_editable_docx.py \
         DELIVER_2026-09-23/iCoA_retest_T1 --docx OUT --pdf PDF        # per DOM field
     python3 design_handoff/toolchain/pdf_to_docx_exact.py --batch PDF OUT   # per span — used
+
+---
+
+# The retest internal certificates, all three tranches, merged and signed
+
+`iCoA_RETEST_ALL_signed_merged.zip` — **5.9 MB**, holding
+
+* `iCoA_RETEST_T1-T2-T3_signed.pdf` — **83 pages**, one certificate per page, in
+  certificate-number order `iCoA-PP_26-085` … `172`;
+* `CONTENTS.txt` — page → certificate → lot → strain.
+
+    PP_SIGNATURES=1 node icoa_handoff/v3/build_from_register.js OUT \
+        --retest --sig-scale 1.20 --print-flat
+
+## The signatures
+
+All three deposited hands, on every one of the 83: **Hristina Cekikj** (Analyst),
+**Jovana Romevska Cvetkovski** (QA Manager), **Blagoj Nikolov** (QC Manager). Her hand was
+already on file — the single photograph sent on 18.09.2026 — so nothing was drawn that was
+not given.
+
+They are **20 % larger**, so they cross the rule instead of resting on it. Measured on
+BG1024, the same lot printed on 21.09 and now:
+
+| | signature heights |
+| --- | --- |
+| issued 21.09.2026 | 35.4 · 36.6 · 37.2 pt |
+| now | 42.9 · 44.3 · 45.7 pt |
+
+— **+21.7 %**. The size is an argument to the builder, not an edit to `sign_block.js`, so the
+default stays where it was and 15 % is `--sig-scale 1.15`.
+
+**A defect found on the way.** `sign_block.js` means to vary each hand's size by ±9 % —
+`hh = h * (1 + f(23) * 0.09)` — but `f(n)` reads `(x >>> n) & 0xFFFF`, and at a shift of 23
+only nine bits of a 32-bit hash are left, so the factor is always ≈ −0.98. Every signature
+in every fleet has therefore printed at a constant 0.910 of nominal rather than varying.
+It is cosmetic and it does not affect this delivery — a 20 % scale is 20 % either way — but
+the same reasoning skews `dy` at a shift of 17. Not touched: fixing it changes the height of
+every signature on all 344 certificates.
+
+## What "flattened for print" means here, and what it does not
+
+The flattening is done **on the page before it is printed**, not left to a RIP, and there is
+no Ghostscript in this container to do it afterwards. Three things, all inside `@media print`:
+
+* every fading fill replaced by the opaque colour it would have over white — **31 gradient
+  rules**, by the same `printOpaqueLayer` the certificates of quality use, now lifted into
+  `design_handoff/toolchain/print_opaque.js` so there is one implementation rather than two.
+  Chromium flattens a transparency group at raster resolution, which is what prints as grey
+  banding down a page edge;
+* **`text-shadow: none`** on everything. Chromium draws a CSS text-shadow by painting the
+  glyphs a *second* time, which is what doubled every chip in the text layer of the issued
+  PDFs. Measured on all 83 pages of this document: **0 duplicated text spans**;
+* **`box-shadow: none`**, and the signature's `mix-blend-mode` set to `normal`. Measured:
+  **0 non-Normal blend modes** in the file.
+
+**What is still there, stated plainly.** 747 constant-alpha fills and the alpha masks of the
+three signature PNGs remain. Converting a flat `rgba()` fill to opaque is only correct when
+it sits on the page and not on top of another fill, and deciding that rule by rule is a
+change to an approved look — so it was not done unasked. A signature's alpha mask is normal
+and prints correctly. Say the word and the flat fills go the same way as the gradients.
+
+## Size
+
+`pdfunite` gives 41.2 MB because each of the 83 pages carries its own copy of the same
+subset faces. Deduplicating the object store — lossless, nothing re-rendered — gives
+**6.5 MB**, and the document was re-checked afterwards: 83 pages, in order, three hands and
+three names on every one, every lot named, 0 duplicated spans.
