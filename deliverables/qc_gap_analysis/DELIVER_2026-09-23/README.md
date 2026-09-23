@@ -216,3 +216,46 @@ transcription one.
 
 Nothing was invented on any of the 89. Where no certificate exists the cell stays empty and
 the certificate is named above.
+
+---
+
+# Tranche 3 — 30 retest certificates of quality and 30 internal certificates
+
+| | |
+| --- | --- |
+| `CoQ_retest_T3/` | 30 certificates of quality |
+| `iCoA_retest_T3/` | 30 internal certificates, numbered alike |
+
+All 30 pairs print side by side. **Twenty-five of the 30 read exactly as the ruling sets it
+out**; five carry something to settle, and all five are the same upstream gap:
+
+| certificate | what is open |
+| --- | --- |
+| CoQ-PP_26-138 | heavy metals, pesticides, loss on drying — no document on the initial to carry |
+| CoQ-PP_26-149 | mycotoxins absent; loss on drying attributed in house |
+| CoQ-PP_26-152 | heavy metals, pesticides, loss on drying — no document on the initial |
+| CoQ-PP_26-160 | heavy metals, pesticides, loss on drying — no document on the initial |
+| CoQ-PP_26-162 | heavy metals — no document on the initial |
+
+**The Tranche 3 initial certificates are already delivered**: `CoQ_initial/` and
+`iCoA_initial/` hold all 89 initial-release documents, Tranche 1, 2 and 3 together, because
+the initial series is numbered as one run and not split by tranche.
+
+---
+
+# Everything delivered
+
+| folder | documents |
+| --- | --- |
+| `CoQ_retest_T1` · `T2` · `T3` | 83 retest certificates of quality |
+| `iCoA_retest_T1` · `T2` · `T3` | 83 retest internal certificates |
+| `CoQ_initial` | 89 initial-release certificates of quality |
+| `iCoA_initial` | 89 initial-release internal certificates |
+| `ImB_Spec_T1_T2` | 39 product specifications |
+
+**383 documents.** The full fleet is 172 certificates of quality and 172 internal
+certificates — one each, numbered alike, all 172 pairs — plus the specifications.
+
+Against the attribution ruling: **123 of the 172 certificates of quality are complete**, and
+49 carry something to settle. Every one of the 49 is named in this note with what is open
+and what is on file for it. Nothing was invented anywhere.
