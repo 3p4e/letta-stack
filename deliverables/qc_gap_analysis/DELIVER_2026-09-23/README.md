@@ -259,3 +259,48 @@ certificates — one each, numbered alike, all 172 pairs — plus the specificat
 Against the attribution ruling: **123 of the 172 certificates of quality are complete**, and
 49 carry something to settle. Every one of the 49 is named in this note with what is open
 and what is on file for it. Nothing was invented anywhere.
+
+---
+
+# The T1 and T2 retests as Word, and the HTML as a zip
+
+| file | what is in it |
+| --- | --- |
+| `CoQ_retest_T1_T2_WORD.zip` | 53 Word certificates — `COMPLETE/` 42, `OPEN_ITEM/` 11 |
+| `CoQ_retest_T1_T2_HTML.zip` | the same 53 as self-contained HTML, `CoQ_retest_T1/` and `CoQ_retest_T2/` |
+
+**The 42 that are complete are in `COMPLETE/`.** The other 11 are in `OPEN_ITEM/` rather than
+held back — they are the certificates tabled earlier in this note, and you should have them
+in front of you when you rule on what is missing. Nothing separates the two folders but that
+table.
+
+## How the Word file was made, and why it is the page
+
+Certificate → PDF → Word, never HTML → Word. An HTML-to-Word writer re-flows the document:
+it decides where lines break and how tall a row is, and the page that comes out is a page
+nobody approved. Here the printed page is the page — its graphics are one anchored image
+behind the text, and every text span is a real Word run positioned at the PDF's own
+coordinates, with the house faces embedded.
+
+Converted back to PDF and measured against the original, run by run, on 208 runs:
+
+| | median | p95 | max |
+| --- | ---: | ---: | ---: |
+| left edge | 0.010 pt | 0.023 | **0.025 pt** |
+| top edge | 0.012 pt | 0.027 | **0.047 pt** |
+
+A point is a third of a millimetre, so every run starts within a hundredth of one. The one
+larger figure in the report is the footer page number `1 | 1`, whose measured **right** edge
+moves 8.55 pt — it starts in exactly the right place (+0.01, −0.03) and only its trailing
+advance differs. That is not new: the same measurement on the issued `SIGNED_2026-09-21`
+certificate gives the identical numbers, to three decimals.
+
+Checked on all 53 Word files: each opens as a valid document, carries its page as an image
+and its text as positioned runs, embeds the house type, is one page, and names its own
+certificate number, lot and internal certificate.
+
+## The HTML zip
+
+The same 53 files already in `CoQ_retest_T1/` and `CoQ_retest_T2/`. Each opens in Word from
+the desktop with nothing fetched from anywhere — no script, no stylesheet, no font, no image
+off the machine.
