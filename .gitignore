@@ -41,3 +41,7 @@ deliverables/qc_gap_analysis/SELFCONTAINED/
 # The applier keeps one safety copy of the register beside it; it is not a deliverable
 deliverables/qc_gap_analysis/*.json.bak
 deliverables/qc_gap_analysis/design_handoff/out/_findings_all.txt
+
+# The self-contained delivery folders rebuild from source in seconds; the HTML is not a source
+deliverables/qc_gap_analysis/DELIVER_*/CoQ_*/
+deliverables/qc_gap_analysis/DELIVER_*/iCoA_*/
