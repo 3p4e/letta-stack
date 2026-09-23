@@ -45,3 +45,6 @@ deliverables/qc_gap_analysis/design_handoff/out/_findings_all.txt
 # The self-contained delivery folders rebuild from source in seconds; the HTML is not a source
 deliverables/qc_gap_analysis/DELIVER_*/CoQ_*/
 deliverables/qc_gap_analysis/DELIVER_*/iCoA_*/
+
+# The internal certificates rebuild from the register in a second; the manifest is the record
+deliverables/qc_gap_analysis/icoa_handoff/v3/build_register/Final_Docs/

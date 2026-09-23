@@ -80,3 +80,52 @@ reports 27 findings, down from 46 this morning:
 
 The nineteen OI-27 findings — determinations 1, 2 and 7 credited to the Center for Natural
 Products — are gone, because you ruled they are ours.
+
+---
+
+# The internal certificates of the same batches — 53 documents, HTML
+
+| | |
+| --- | --- |
+| `iCoA_retest_T1/` | 21 internal certificates |
+| `iCoA_retest_T2/` | 32 internal certificates |
+
+Same rule as the certificates of quality: every file opens on its own, no script, nothing
+fetched from anywhere, the house type carried inside.
+
+Each one carries **its certificate of quality's number** — `CoQ-PP_26-085` ↔
+`iCoA-PP_26-085` — names that certificate's own lot and cultivation batch, is labelled a
+retest, and certifies **Identification A, Identification B and foreign matter in house**,
+which is the scope you set.
+
+## Why these were rebuilt rather than reprinted
+
+The fleet was being printed from `icoa_v44_recs.json`, a record file the register has moved
+past. Against the certificates of quality that cite them, **six of the 172 numbers named the
+same lot**. Three fleets on disk disagree pairwise about `iCoA-PP_26-085` alone:
+
+| where | what it says `iCoA-PP_26-085` is |
+| --- | --- |
+| `icoa_v44_recs.json` | GG012603 · P060402 · Gorilla Glue |
+| `icoa_handoff/out/INITIAL/` | P060382 · Scrambler |
+| `SIGNED_2026-09-21/iCoA/Initial/` | P160022 · Grape Pie |
+
+A number that names three lots is not a number, and this predates today — it is not a
+consequence of the renumbering. So the fleet is now built from the one record the
+certificates actually cite: `icoa_handoff/v3/build_from_register.js` synthesises each
+internal certificate from the certificate of quality that names it — its lot, strain,
+series, tested and issue dates, and the results its own rows 1, 2 and 7 carry. The lot is
+the lot by construction instead of by a lookup that can drift. **The generator itself is
+untouched**: `icoa3_gen.js` is the design system and is called exactly as before; only the
+records come from somewhere else.
+
+Checked on all 172: every number pairs with its certificate of quality, every lot is that
+certificate's lot, all 172 conform, and none is carried from an external laboratory any
+more — which is your ruling that Identification A and B are ours.
+
+Nineteen batches have no cultivar record on file (phenotype, processing). On those the
+generator leaves the boxes open rather than ticking Hybrid and Hand, because that would
+assert something nobody recorded.
+
+    node icoa_handoff/v3/build_from_register.js
+    python3 build_selfcontained.py <staged retest dir> --out DELIVER_2026-09-23/iCoA_retest_T1
