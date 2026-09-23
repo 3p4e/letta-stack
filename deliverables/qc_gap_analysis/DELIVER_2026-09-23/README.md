@@ -156,3 +156,63 @@ template has no document code there, as you said — and each opens on its own.
 
 145 documents. Next, in your order: the initial-release internal certificates and
 certificates of quality, then Tranche 3 — retests, then initials.
+
+---
+
+# The initial release — 89 certificates of quality and 89 internal certificates
+
+| | |
+| --- | --- |
+| `CoQ_initial/` | 89 certificates of quality |
+| `iCoA_initial/` | 89 internal certificates, each carrying its certificate's number |
+
+All 89 pairs print side by side. Same self-containment: nothing fetched from anywhere, no
+script, the house type inside the file.
+
+**Fifty-six of the 89 read exactly as the ruling sets it out.** Thirty-three carry
+something to settle, and they fall into three groups.
+
+## 1 · Twelve lots that Farmahem tested and the Center for Natural Products never saw
+
+`CoQ-PP_26-046, 047, 048, 049, 051, 052, 053, 054, 055, 056, 060, 062` print **Farmahem**
+for Identification C and the three assays, where the ruling says the Center for Natural
+Products on an initial certificate. Checked against the receipt register, lot by lot:
+
+| certificate | batch | what is on file for the assays and Identification C |
+| --- | --- | --- |
+| 046 · 047 · 048 · 049 · 060 | WED102501 · PUM102501 · ACC102501 · CF102501 · OPM122501 | **nothing** |
+| 051 · 052 · 053 · 054 · 055 · 056 · 062 | J31102501 · SJ102501 · KC102501 · GRC102501/2 · SJ112501 · J31112501 · J31122501 | Farmahem only — the 051-K/26 campaign, and later rounds |
+
+**There is no Center for Natural Products certificate for any of the twelve.** The page is
+therefore reporting who actually measured the batch. Two ways to settle it, both yours: the
+ruling has an exception for the 051-K/26 release campaign, or those twelve need a certificate
+from the Center for Natural Products before they can read that way.
+
+## 2 · Four lots whose release panel was routed in house
+
+`CoQ-PP_26-005` (HPA1024), `006` (OPM1024), `025` (BSS052501), `026` (GP062501) attribute
+assays — and on 005 and 006 also microbiology, mycotoxins, heavy metals and pesticides — to
+the in-house laboratory. External certificates exist for most of it:
+
+| certificate | on file, not yet on the page |
+| --- | --- |
+| 005 HPA1024 | IPH 587/1066/25 (microbiology) · IPH 2995/2025 (metals, pesticides, mycotoxins) · CNP ППК25155 (assays, loss on drying, Ident C) |
+| 006 OPM1024 | IPH 2156/2025 (microbiology, metals, pesticides, mycotoxins) · CNP ППК25117 (assays, loss on drying, Ident C) |
+| 025 BSS052501 | IPH 1157/2058/25 · IPH 5661/2025 · Farmahem 276-31-М/25 — no CNP certificate for Identification C |
+| 026 GP062501 | CNP ППК26036, but that is a **stability timepoint** (month 3, 25 °C / 60 % RH), not the release test |
+
+Five of these are page-verified reads already held in `review/` and can be transcribed onto
+the certificates on your word. `025` and `026` cannot be closed for Identification C without
+a release certificate.
+
+## 3 · Seventeen lots with no certificate on file for a whole panel
+
+`CoQ-PP_26-004, 009, 019, 021, 031, 046, 050, 052, 058, 068, 070, 071, 072, 073, 074, 082,
+084, 166, 167`. On `021` a page read exists for every panel (IPH 626/1127/25, IPH 3177/2025,
+CNP ППК25176) and it can be closed. On `004` the assays and Identification C are on
+CNP ППК25104. **The rest have nothing on file at all** — eleven lots with no external
+certificate in the receipt register, which is a document-supply question rather than a
+transcription one.
+
+Nothing was invented on any of the 89. Where no certificate exists the cell stays empty and
+the certificate is named above.
