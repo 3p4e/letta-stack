@@ -266,8 +266,12 @@ and what is on file for it. Nothing was invented anywhere.
 
 | file | what is in it |
 | --- | --- |
-| `CoQ_retest_T1_T2_WORD.zip` | 53 Word certificates — `COMPLETE/` 42, `OPEN_ITEM/` 11 |
+| `CoQ_retest_T1_WORD.zip` | 21 Word certificates — `COMPLETE/` 16, `OPEN_ITEM/` 5 |
+| `CoQ_retest_T2_WORD.zip` | 32 Word certificates — `COMPLETE/` 26, `OPEN_ITEM/` 6 |
 | `CoQ_retest_T1_T2_HTML.zip` | the same 53 as self-contained HTML, `CoQ_retest_T1/` and `CoQ_retest_T2/` |
+
+The Word set is split by tranche only because one archive of all 53 came to 41 MB and the
+delivery limit here is 30 MB. `WORD_CoQ_retest_T1_T2/` on disk holds all 53 in one place.
 
 **The 42 that are complete are in `COMPLETE/`.** The other 11 are in `OPEN_ITEM/` rather than
 held back — they are the certificates tabled earlier in this note, and you should have them
