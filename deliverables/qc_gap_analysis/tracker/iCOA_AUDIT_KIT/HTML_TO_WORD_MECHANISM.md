@@ -147,10 +147,17 @@ not the descriptors, that were pushing the chips over
 
 | function | line | what it does |
 | --- | --- | --- |
-| `clip_words(label, n)` | `:89-111` | cuts to ≤ `n` chars **on a word boundary**, then strips trailing ` ·|—-`. Cutting at the character left `[CYSTOLITHS · HCL R TES]` and `[COVERING TRICHOMES — D]` reading as mistakes. |
+| `clip_words(label, n)` | `:89-111` | cuts to ≤ `n` chars **on a word boundary**, then strips the trailing separators given under this table. Cutting at the character left `[CYSTOLITHS · HCL R TES]` and `[COVERING TRICHOMES — D]` reading as mistakes. |
 | `shorten(label)` | `:114-132` | looks the label up in `SHORT` (`:80-86`) twice — as given, and with a trailing `[\s№.:·—-]+` stripped, so `FINAL QC TESTING FOR BATCH №` matches `FINAL QC TESTING FOR BATCH` → `BATCH`. Otherwise `clip_words(label, 22)`. **22 characters** is the cap in both branches. |
 | `ladder(text)` | `:332-367` | yields progressively shorter forms, **always keeping the number**, because the number is the field's identity. Splits on `LADDER_SPLIT = [\s·—/&-]+` (`:328`), parsed by `PH_TEXT = ^\[(.*?)(?:\s+(#?\d+))?\]$` (`:329`). Forms: full label → first 3 chars of each word → first letter of each word → number alone → `[·]`. `[COLOUR 3]` → `[COL 3]` → `[C 3]` → `[3]`. |
 | `fit_placeholders(paths, css, chromium)` | `:370-451` | measures the **printed** layout and walks the ladder only as far as each box demands. |
+
+The trailing separators `clip_words` strips, verbatim — quoted in a block because a table
+cell may not hold a bare vertical bar:
+
+```
+ ·|—-
+```
 
 `fit_placeholders` is where the measurement is actually made correctly. A `.ph` is an inline
 `<span>`, and `scrollWidth` on an inline element measures nothing — the first attempt
@@ -296,8 +303,14 @@ Two different subsetters, two different jobs.
 | pin the variable axes | `:124-133` | `instancer.instantiateVariableFont(...)`. A variable font **cannot** be embedded in a PDF; Skia rasterises each instance into Type 3 glyph procedures. Pinning `wght` first makes it an ordinary static font that embeds as TrueType. |
 | rename | `:100-110` | Google's slices all carry the *Thin* name table whatever their weight; name IDs 1, 2, 4, 6, 16, 17 are rewritten. |
 | subset | `:142-150` | `flavor="woff2"`, `desubroutinize=True`, `layout_features=["kern","liga","locl"]`, `notdef_outline=False`, `drop_tables += ["GSUB","GPOS"]`. |
-| always-include set | `:58` | `ALWAYS = "TARGETNEW0123456789.,:;()[]/|-–—·%°±×≤≥<>&#@№µΔ⁹⁴⁵₁₂ "` — CSS `::after` content and badge glyphs that never appear in the HTML source as text. |
+| always-include set | `:58` | the always-include set, given under this table — CSS `::after` content and badge glyphs that never appear in the HTML source as text. |
 | emit | `:180-184` | `@font-face{font-family:'X';font-style:…;font-weight:…;font-display:block;src:url(data:font/woff2;base64,…) format('woff2');unicode-range:…;}` |
+
+The always-include set, verbatim:
+
+```
+ALWAYS = "TARGETNEW0123456789.,:;()[]/|-–—·%°±×≤≥<>&#@№µΔ⁹⁴⁵₁₂ "
+```
 
 The module's own defaults (`SUBSETS` = latin + cyrillic at `:36`; two families at `:51-54`)
 are the QCSP 001 specification's. **The certificate pipeline overrides both** by passing
@@ -1065,7 +1078,7 @@ against the built files.
 | claim in the record | what the code does |
 | --- | --- |
 | `tracker/PDF_TO_WORD_2026-09-21.md:48-50` lists *"`w:xAlign` beats `w:x`"* as the first of the four things to get right | **Historical.** `frame()` (`:366-371`) writes only `w`, `hRule`, `wrap`, `vAnchor`, `hAnchor`, `x`, `y` — the alignment attributes are gone, as that note itself says. Verified: no `w:xAlign` or `w:yAlign` in any built template. The four things that matter **now** are the ones in §6.4. |
-| `tracker/PDF_TO_WORD_2026-09-21.md:190-192` says the shadow pair is identified by *"same text, **same face**, the same left edge…"* | **Wrong, and the same file corrects itself at `:261-264`.** `shadow_twins()` (`:614-651`) deliberately excludes the face: *"The FACE is deliberately not part of it."* The identity is text + left edge + `0.5 < |dy| < 1.1` + size within 0.05 + different colour. |
+| `tracker/PDF_TO_WORD_2026-09-21.md:190-192` says the shadow pair is identified by *"same text, **same face**, the same left edge…"* | **Wrong, and the same file corrects itself at `:261-264`.** `shadow_twins()` (`:614-651`) deliberately excludes the face: *"The FACE is deliberately not part of it."* The identity is text + left edge + `0.5 < abs(dy) < 1.1` + size within 0.05 + different colour. |
 | `BLANK_TEMPLATES/README.md:79-83` gives CoQ 276 / spec 255 / iCoA 445 boxes, with 48/48, 13/13, 45/60 placeholders | **Stale — a mix of the before and after states.** The shipped files measure 276 / 253 / 444 boxes with 48 / 11 / 35 placeholders, all whole, none cut off, which matches the tracker's later table at `:266-270`. |
 | `BLANK_TEMPLATES/README.md:6-8` gives 50 / 61 / 12 placeholders per template, and `:54-56` gives 49 / 60 / 12 in the PDFs | **Stale for the iCoA.** The shipped HTML carries 49 / **35** / 12 `.ph` spans; 35 is the post-tick-fix number the tracker records at `:240`. The CoQ difference (50 recorded vs 49 on disk) is not explained by anything in the code — treat the on-disk count as the figure and re-derive it after any rebuild. |
 | `tracker/PDF_TO_WORD_2026-09-21.md:184-188` gives the CoQ 383 spans with 19 twins and the specification 345 / 22 | Those are the **certificate** documents. The **template** PDFs on disk measure 378 / 15 and 356 / 26. Both are right; they are different documents. Do not quote one for the other. |
