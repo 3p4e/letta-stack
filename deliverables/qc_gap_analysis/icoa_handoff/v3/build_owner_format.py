@@ -34,7 +34,47 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 GAP = os.path.dirname(os.path.dirname(HERE))
-BASE = os.path.join(HERE, 'ISSUE_iCOA', '_owner_format', 'iCoA-PP_26-110_LOD_base.html')
+OWN = os.path.join(HERE, 'ISSUE_iCOA', '_owner_format')
+# One base per scope, each the Head of QC's own document with its signatures lifted off. The
+# 1, 2, 7 page is not derived from the loss-on-drying one: he sent it on 24.09.2026 and it differs
+# in ways a derivation would not find — a third, empty half-table balancing the row, a 100 px
+# first column where the loss-on-drying page uses 106, one spacer row after the foreign-matter
+# total rather than two, and an Analyst date that is the test date rather than the issue date.
+BASES = {
+    'lod': (os.path.join(OWN, 'iCoA-PP_26-110_LOD_base.html'), {
+        'code': '<div class="hb-code">iCoA-PP_26-110</div>',
+        'issued': 'Issued · Издаден <b>27.07.2026</b>',
+        'headline': '<span style="font-family:\'Roboto Mono\',monospace">HPA1024</span>',
+        'strain': '<span style="font-weight:800;text-transform:uppercase">High Pro Amnesia</span>',
+        'pcode': '<span class="lk-val">HPA_THC18:CBD1</span>',
+        'spec': '<span class="lk-val sm">QCSP_001_HPA-II_v.03</span>',
+        'testdate': '<span class="lk-val sm">22.07 – 27.07.2026</span>',
+        'production': '<span class="lk-val">—</span>',
+        'processing': '<span class="lk-val">HPA1024</span>',
+        'packaging': '<span class="lk-val sm">11.04.2025</span>',
+        'analyst_date': '<span class="ap-date-val">27.07.2026</span>',
+        'approver_date': '<span class="ap-date-val">27.07.2026</span>',
+        'title': '<title>Purely Plant — iCoA — iCoA-PP_26-110 — HPA1024 High Pro Amnesia — '
+                 'Appearance · Identification A+B · Foreign Matter · Loss on Drying</title>',
+        'analyst_is_testdate': False,
+    }),
+    '127': (os.path.join(OWN, 'iCoA-PP_26-050_127_base.html'), {
+        'code': '<div class="hb-code">iCoA-PP_26-050</div>',
+        'issued': 'Issued · Издаден <b>03.06.2026</b>',
+        'headline': '<span style="font-family:\'Roboto Mono\',monospace">P050022</span>',
+        'strain': '<span style="font-weight:800;text-transform:uppercase">Grape Pie</span>',
+        'pcode': '<span class="lk-val">GP_THC24:CBD1</span>',
+        'spec': '<span class="lk-val sm">QCSP_001_GP-II_v.03</span>',
+        'testdate': '<span class="lk-val sm">05.03.2026</span>',
+        'production': '<span class="lk-val">P050022</span>',
+        'processing': '<span class="lk-val">GP0824_02</span>',
+        'packaging': '<span class="lk-val sm">03.06.2025</span>',
+        'analyst_date': '<span class="ap-date-val">05.03.2026</span>',
+        'approver_date': '<span class="ap-date-val">03.06.2026</span>',
+        'title': None,
+        'analyst_is_testdate': True,
+    }),
+}
 
 MK_PHENO = {'HYBRID': 'Хибрид', 'INDICA': 'Индика', 'SATIVA': 'Сатива'}
 SUB_LOD_EN = 'Appearance · Identification A + B · Foreign Matter · Loss on Drying'
@@ -72,67 +112,61 @@ def drop_rows(html, start_marker, end_marker, what):
     return html[:a] + html[b + len('</tr>'):]
 
 
-def build(base, f, lod):
-    h = base
-    h = one(h, '<div class="hb-code">iCoA-PP_26-110</div>',
-            '<div class="hb-code">%s</div>' % f['code'], 'document code')
-    h = one(h, 'Issued · Издаден <b>27.07.2026</b>',
-            'Issued · Издаден <b>%s</b>' % f['issued'], 'issue date')
-    h = one(h, '<span style="font-family:\'Roboto Mono\',monospace">HPA1024</span>',
+def build(scope, f):
+    """Fill the base that belongs to this scope. The 1, 2, 7 page is his own, not a derivation;
+    only P060362, which carries neither foreign matter nor loss on drying, is cut down further."""
+    lod = '8' in scope
+    key = 'lod' if lod else '127'
+    path, A = BASES[key]
+    h = open(path, encoding='utf-8').read()
+
+    h = one(h, A['code'], '<div class="hb-code">%s</div>' % f['code'], 'document code')
+    h = one(h, A['issued'], 'Issued · Издаден <b>%s</b>' % f['issued'], 'issue date')
+    h = one(h, A['headline'],
             '<span style="font-family:\'Roboto Mono\',monospace">%s</span>' % f['headline'], 'headline batch')
-    h = one(h, '<span style="font-weight:800;text-transform:uppercase">High Pro Amnesia</span>',
+    h = one(h, A['strain'],
             '<span style="font-weight:800;text-transform:uppercase">%s</span>' % f['strain'], 'strain')
 
     for en in ('Hybrid', 'Indica', 'Sativa'):
         pat = re.compile(r'<span class="chip-(?:sel|un)">\s*<span class="bx">[☒☐]</span>\s*'
-                         + en + r'(?:\s*<span class="mk">[^<]*</span>)?\s*</span>')
-        found = pat.findall(h)
-        if len(found) != 1:
-            raise SystemExit('phenotype %s: %d chips, not one' % (en, len(found)))
+                         + en + r'[^<]*(?:<span class="mk">[^<]*</span>)?\s*</span>')
+        if len(pat.findall(h)) != 1:
+            raise SystemExit('phenotype %s: %d chips, not one' % (en, len(pat.findall(h))))
         h = pat.sub(lambda m: chip(en, MK_PHENO[en.upper()], f['pheno'] == en.upper()), h, count=1)
 
-    h = one(h, '<span class="lk-val">HPA_THC18:CBD1</span>',
-            '<span class="lk-val">%s</span>' % f['pcode'], 'product code')
-    h = one(h, '<span class="lk-val sm">QCSP_001_HPA-II_v.03</span>',
-            '<span class="lk-val sm">%s</span>' % f['spec'], 'specification reference')
-    h = one(h, '<span class="lk-val sm">22.07 – 27.07.2026</span>',
-            '<span class="lk-val sm">%s</span>' % f['testdate'], 'test date')
-    h = one(h, '<span class="lk-val">—</span>',
-            '<span class="lk-val">%s</span>' % f['production'], 'production batch')
-    h = one(h, '<span class="lk-val">HPA1024</span>',
-            '<span class="lk-val">%s</span>' % f['processing'], 'processing batch')
-    h = one(h, '<span class="lk-val sm">11.04.2025</span>',
-            '<span class="lk-val sm">%s</span>' % f['packaging'], 'packaging date')
-    h = h.replace('<span class="ap-date-val">27.07.2026</span>',
-                  '<span class="ap-date-val">%s</span>' % f['issued'])
+    h = one(h, A['pcode'], '<span class="lk-val">%s</span>' % f['pcode'], 'product code')
+    h = one(h, A['spec'], '<span class="lk-val sm">%s</span>' % f['spec'], 'specification reference')
+    h = one(h, A['testdate'], '<span class="lk-val sm">%s</span>' % f['testdate'], 'test date')
+    h = one(h, A['production'], '<span class="lk-val">%s</span>' % f['production'], 'production batch')
+    h = one(h, A['processing'], '<span class="lk-val">%s</span>' % f['processing'], 'processing batch')
+    h = one(h, A['packaging'], '<span class="lk-val sm">%s</span>' % f['packaging'], 'packaging date')
+
+    # his two conventions, each kept as he wrote it: on the loss-on-drying page both boxes carry
+    # the issue date; on the 1, 2, 7 page the Analyst dates the analysis and the QC Manager the
+    # approval.
+    analyst = f['testdate'] if A['analyst_is_testdate'] else f['issued']
+    if A['analyst_date'] == A['approver_date']:
+        h = h.replace(A['analyst_date'], '<span class="ap-date-val">%s</span>' % f['issued'])
+    else:
+        h = one(h, A['analyst_date'], '<span class="ap-date-val">%s</span>' % analyst, 'analyst date')
+        h = one(h, A['approver_date'], '<span class="ap-date-val">%s</span>' % f['issued'], 'approver date')
 
     sub = 'Appearance · Identification A+B · Foreign Matter' + (' · Loss on Drying' if lod else '')
-    h = one(h, '<title>Purely Plant — iCoA — iCoA-PP_26-110 — HPA1024 High Pro Amnesia — '
-               'Appearance · Identification A+B · Foreign Matter · Loss on Drying</title>',
-            '<title>Purely Plant — iCoA — %s — %s %s — %s</title>'
-            % (f['code'], f['headline'], f['strain'], sub), 'title')
+    if A['title']:
+        h = one(h, A['title'], '<title>Purely Plant — iCoA — %s — %s %s — %s</title>'
+                % (f['code'], f['headline'], f['strain'], sub), 'title')
+    else:
+        h = re.sub(r'<title>[^<]*</title>',
+                   '<title>Purely Plant — iCoA — %s — %s %s — %s</title>'
+                   % (f['code'], f['headline'], f['strain'], sub), h, count=1)
 
     if lod:
         h = h.replace('22.07.2026 – 27.07.2026', f['lodwindow'])
         h = h.replace('7.9%', f['lod'])
-    else:
-        h = one(h, SUB_LOD_EN, SUB_EN, 'header subtitle')
-        h = one(h, SUB_LOD_MK, SUB_MK, 'header subtitle, Macedonian')
-        h = drop_rows(h, '<span class="gn">02.4</span>', 'Total Loss on Drying', 'the 02.4 group')
-        h = drop_rows(h, '<span class="en">Loss on Drying</span>', '<span class="en">Loss on Drying</span>',
-                      'the section 04 loss-on-drying row')
-        for en, mk in (
-            ('Tested <strong>in-house</strong>; loss on drying 22.07.2026 – 27.07.2026.',
-             'Tested <strong>in-house</strong> on the packaging date.'),
-            ('Испитано интерно; губиток при сушење 22.07.2026 – 27.07.2026.',
-             'Испитано интерно на датумот на пакување.')):
-            h = one(h, en, mk, 'disposition note')
-        if 'Loss on Drying' in h or 'Губиток при сушење' in h:
-            raise SystemExit('%s: loss on drying survives the removal' % f['code'])
 
-    if '7' not in f['scope'].split(','):
-        # Foreign matter is not on this certificate either: the whole 02.3 table, the note that
-        # belongs to it, the section 04 row, and the third term of the header subtitle come off.
+    if '7' not in scope:
+        # P060362 alone: neither foreign matter nor loss on drying. The 02.3 table, the note that
+        # belongs to it and the section 04 row come off, and the subtitle loses its third term.
         i = h.find('<div class="zr-wrap zr-fm">')
         j = h.find('</div>', h.find('</table>', i))
         if i < 0 or j < 0:
@@ -144,7 +178,7 @@ def build(base, f, lod):
         h = drop_rows(h, '<span class="en">Foreign Matter</span>', '<span class="en">Foreign Matter</span>',
                       'the section 04 foreign-matter row')
         h = one(h, SUB_EN, 'Appearance · Identification A + B', 'header subtitle without foreign matter')
-        h = one(h, SUB_MK, 'Изглед · идентификација А + Б', 'header subtitle without foreign matter, Macedonian')
+        h = one(h, SUB_MK, 'Изглед · идентификација А + Б', 'header subtitle, Macedonian')
         h = one(h, 'Appearance · Identification A+B · Foreign Matter',
                 'Appearance · Identification A+B', 'title without foreign matter')
         if 'Foreign Matter' in h or 'Страни материи' in h:
@@ -217,7 +251,6 @@ def main(argv):
     ap.add_argument('--only', default=None)
     ap.add_argument('--selftest', action='store_true')
     a = ap.parse_args(argv[1:])
-    base = open(BASE, encoding='utf-8').read()
 
     if a.selftest:
         # Build OPM1024 from the HPA1024 base and hold it against the Head of QC's own document.
@@ -228,7 +261,7 @@ def main(argv):
         want = re.sub(r'<img class="ap-img handwritten"[^>]*>', '', want)
         fields, _ = load(a.list)
         f = [x for x in fields if x['batch'] == 'OPM1024'][0]
-        got = build(base, f, lod=True)
+        got = build('1,2,7,8'.split(','), f)
         d = [l for l in difflib.unified_diff(want.split('\n'), got.split('\n'), 'his', 'built', n=0, lineterm='')
              if l[:1] in '+-' and l[:3] not in ('---', '+++')]
         print('self-test — OPM1024 built from the HPA1024 base, against his own document:')
@@ -243,8 +276,7 @@ def main(argv):
     os.makedirs(a.out, exist_ok=True)
     made = []
     for f in fields:
-        lod = '8' in f['scope'].split(',')
-        html = build(base, f, lod)
+        html = build(f['scope'].split(','), f)
         name = '%s_%s_%s.html' % (f['code'], f['headline'],
                                   re.sub(r'[^A-Za-z0-9]+', '_', f['strain']).strip('_'))
         open(os.path.join(a.out, name), 'w', encoding='utf-8').write(html)
