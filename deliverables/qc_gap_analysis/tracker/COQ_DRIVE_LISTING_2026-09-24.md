@@ -90,12 +90,23 @@ The parameter numbers are the certificate's own numbering in section 02:
 **4.1 — The internal certificate is cited by an old number on all 44 pages that cite one.**
 The date is right on every one of them; the number is from the sequence that was in use before the
 renumbering of 23.09.2026. `BG1024` prints `iCoA-PP_26-098` where the register now says
-`iCoA-PP_26-085`; `P060012` prints `iCoA-PP_26-152` where the register says `iCoA-PP_26-135`. The
-offset is not constant — it runs from +2 to +17 — so it cannot be corrected by arithmetic, only by
-reprinting from the register. Held against the v44 internal-certificate fleet, the printed numbers
-decode to **other lots**: `iCoA-PP_26-098`, the number `BG1024` cites, belongs to `P060402` in that
-fleet. Only two citations decode to the lot that cites them — `P050192 → iCoA-PP_26-023` and
-`P050212 → iCoA-PP_26-091`.
+`iCoA-PP_26-085`; `P060012` prints `iCoA-PP_26-152` where the register says `iCoA-PP_26-135`.
+
+*Corrected 24.09.2026, on the Head of QC's challenge.* This first read against the **current**
+register, where the difference looks arbitrary. Against the register as it stood **before** the
+renumbering of 23.09 — the state `tracker/ICOA_RENUMBER_2026-09-23.md` records in its *was* column —
+it is a constant:
+
+| the certificate of quality's issue date | pages | the printed internal number, against the pre-23.09 register |
+| --- | ---: | --- |
+| 17.08.2026 | 18 | **+10** |
+| 18.09.2026 | 25 | **+10** |
+| 07.09.2026 | 1 | **+0** — `P050212`, `iCoA-PP_26-091`, exactly the register's value |
+
+The initial-release block is unshifted as well, which is why the carried-forward citation
+`iCoA-PP_26-023` on `P050192` needs no offset. So the printed numbers are not drift: they are one
+coherent earlier state of the sequence, in which ten internal certificates stood ahead of the
+retest block that no longer stand there. Only the retest block ever needed moving.
 
 **4.2 — Two certificates cite no internal certificate of analysis at all.**
 `P060402` (`CoQ-PP_26-092`) and `P060412` (`CoQ-PP_26-123`) have no in-house row in section 03.
