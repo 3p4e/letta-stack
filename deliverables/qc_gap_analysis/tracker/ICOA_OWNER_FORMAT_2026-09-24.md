@@ -147,3 +147,53 @@ their three blocks carries the same date.
 Measured over the build: 41 documents with three dated blocks, 2 with four, 1 (`P060362`, neither
 foreign matter nor loss on drying) with two — **every block dated, 0 findings**, and on the printed
 pages the issue date no longer ends any testing window.
+
+## The test date is anchored to the issue date — Head of QC, 24.09.2026
+
+He corrected the dating again, and the correction is the stronger one. `CoQ-PP_26-101`, the
+certificate of quality already with the customer, cites `iCoA-PP_26-114` as **issued 27.07.2026**.
+The internal certificate must therefore state that issue date, and for it to be sound the loss on
+drying — a twenty-four hour determination — has to have been set up at least the day before:
+
+> *"the sampling or the start date of testing for the loss on drying analysis has to be initiated
+> one day earlier at least … I suggest that you add from 26-27.07.2026, and for HPA accordingly."*
+
+My previous pass anchored the window to the register's **examination** date, which is why HPA1024
+closed on 23.07 and OPM1024 on 24.07 — three and four days before the certificates were issued.
+`testing_dates()` now anchors it to the **issue** date: the window ends on the issue date and opens
+the day before.
+
+| | `iCoA-PP_26-110` HPA1024 | `iCoA-PP_26-114` OPM1024 |
+| --- | --- | --- |
+| issued, per the approved certificate of quality | 27.07.2026 | 27.07.2026 |
+| section 01 test date | **26.07 – 27.07.2026** | **26.07 – 27.07.2026** |
+| 02.1 macroscopy · 02.2 microscopy · 02.3 foreign matter | 27.07.2026 | 27.07.2026 |
+| 02.4 loss on drying | **26.07.2026 – 27.07.2026** | **26.07.2026 – 27.07.2026** |
+
+### And the general rule, which needed no change
+
+> *"All of internal certificates of analysis [carry] one test date in the document ID section 01 and
+> one testing date for all of the analysis; the exception is only on the certificates of analysis
+> that have loss on drying tested."*
+
+Checked against the 42 certificates without loss on drying: **every one already carries a single
+date in section 01 and that same single date on each analysis block**, and none prints a span. So
+the rule holds across the fleet and only the two loss-on-drying pages moved.
+
+### Printed and read back
+
+`icoa_handoff/v3/print_owner_format.py` — new, and committed rather than run by hand, so the print
+is reproducible. It renders through the printer both fleets already use and merges each page into
+its tranche as it is made, deleting the page PDF immediately; the container has very little free
+disk and holding 44 page PDFs beside two merged ones is what exhausted it before.
+
+| | |
+| --- | --- |
+| `iCoA_T1_retest_owner_format_2026-09-24.pdf` | 19 certificates, 1.7 MiB |
+| `iCoA_T2_retest_owner_format_2026-09-24.pdf` | 25 certificates, 2.0 MiB |
+| `iCoA_T1_retest_owner_format_HTML_2026-09-24.zip` | 19 sources, 7.6 MiB |
+| `iCoA_T2_retest_owner_format_HTML_2026-09-24.zip` | 25 sources, 10.0 MiB |
+
+Read back off the printed pages: **44 pages, all 44 codes the list names and no other, both
+loss-on-drying spans reading 26.07 – 27.07.2026, no QA Manager, and no trace of any earlier
+window — 0 findings.**

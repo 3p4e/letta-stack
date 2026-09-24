@@ -129,25 +129,26 @@ def _s(d):
     return '%02d.%02d.%04d' % (d.day, d.month, d.year)
 
 
-def testing_dates(examined, lod):
+def testing_dates(examined, lod, issued):
     """When each analysis ran.
 
-    Head of QC, 24.09.2026: every analysis block carries its own test date — one date where the
-    work is done in a day, a start and an end where it is not — and section 01 carries the whole
-    span.
+    Head of QC, 24.09.2026: every internal certificate carries **one** test date in section 01 and
+    that same one date on every analysis. The only exception is a certificate that has loss on
+    drying tested.
 
-    Macroscopy, microscopy and foreign matter are same-day work and carry the examination date.
-    Loss on drying is a **24 hour** run: the oven is set the day before and the loss is weighed on
-    the examination day, which is exactly the start his own two documents print. Only their end
-    date was wrong — it carried the certificate's issue date, so a 24 hour determination read as
-    five days.
+    Head of QC, 24.09.2026, on those: the certificate of quality already with the customer cites
+    the internal certificate as issued on a stated day, so the work must close on that day. Loss on
+    drying is a 24 hour run, so it has to start at least the day before — *"I suggest that you add
+    from 26-27.07.2026, and for HPA accordingly"*. The window is therefore anchored to the **issue
+    date**, not to the register's examination date, which is what produced a determination closing
+    three and four days before the certificate was issued.
     """
-    e = _d(examined)
     if not lod:
         return {'same': examined, 'lod': None, 'span': examined}
-    start = e.fromordinal(e.toordinal() - 1)
-    return {'same': examined, 'lod': '%s – %s' % (_s(start), examined),
-            'span': '%02d.%02d – %s' % (start.day, start.month, examined)}
+    end = _d(issued)
+    start = end.fromordinal(end.toordinal() - 1)
+    return {'same': issued, 'lod': '%s – %s' % (_s(start), issued),
+            'span': '%02d.%02d – %s' % (start.day, start.month, issued)}
 
 
 def build(scope, f):
@@ -175,7 +176,7 @@ def build(scope, f):
 
     h = one(h, A['pcode'], '<span class="lk-val">%s</span>' % f['pcode'], 'product code')
     h = one(h, A['spec'], '<span class="lk-val sm">%s</span>' % f['spec'], 'specification reference')
-    D = testing_dates(f['examined'], lod)
+    D = testing_dates(f['examined'], lod, f['issued'])
     h = one(h, A['testdate'], '<span class="lk-val sm">%s</span>' % D['span'], 'test date')
     h = one(h, A['production'], '<span class="lk-val">%s</span>' % f['production'], 'production batch')
     h = one(h, A['processing'], '<span class="lk-val">%s</span>' % f['processing'], 'processing batch')
