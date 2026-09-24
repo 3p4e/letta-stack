@@ -77,3 +77,40 @@ drying and foreign matter present exactly where the list puts them and nowhere e
 `iCoA-PP_26-100` there against `-098` on the list, `HPA1024` is `-112` against `-110`, and
 `iCoA-PP_26-110` in that archive belongs to `P060402`. The two documents he fixed on 24.09 follow
 the list, not the archive. Nothing was taken from the archive for this build.
+
+---
+
+## Rebuilt 24.09.2026, on three further rulings
+
+**The 1, 2, 7 page is his, not a derivation.** He sent
+`iCoA-PP_26-050_P050022_GP_Grape_Pie_Retest_1.html` and asked whether the derived ones matched it.
+They did not, in five ways a derivation could not have found: the half-table first column is 100 px
+and not 106; his page carries a **third, empty half-table** balancing the row; **one** spacer row
+follows the foreign-matter total, not two; the Analyst box is dated with the **test date**, the QC
+Manager's with the issue date; and he had added `__sig-v2` (the Analyst's hand at `bottom:-29px`,
+both at `z-index:20`) and `__zh-v2` (the half-tables' Macedonian on its own line). His page is now
+the base for that scope. Both bases keep his own signatures, so nothing is re-signed.
+
+**Метод, not Метода.** The Macedonian for the heading is `Метод`. Corrected wherever it appears —
+the three or four method rows of section 02 and the section 04 column head.
+
+**The disposition note comes off.** *"all information there is contained in the information above"*
+— the sentence under Results vs Specification, from *The sample conforms…* to the end, in both
+languages, is removed from every internal certificate.
+
+**Phenotype from the approved scans, not from any template.** All forty-six read. 38 agree with the
+cultivar record, **0 disagree**, and the 8 the record cannot answer are settled by the scan. The
+ticked chip now carries the split the approved certificate of quality carries, copied verbatim in
+English; the Macedonian keeps the plain word his design prints. **11 of the 44 carry a split** —
+Cap Junky `INDICA60 : SATIVA40`, Cash Cow and Jokerz 31 `INDICA70 : SATIVA30`, Jelly Donuts
+`SATIVA60 : INDICA40`.
+
+Read back off the printed pages: **44 pages, all 44 list codes, 11 splits, 0 findings** — no
+disposition note, no `Метода`, two hands and both signatories on every page, and every phenotype
+chip identical to its approved certificate of quality.
+
+| | |
+| --- | --- |
+| `iCoA_T1_retest_owner_format_2026-09-24.pdf` | 19 pages, 1.7 MiB |
+| `iCoA_T2_retest_owner_format_2026-09-24.pdf` | 25 pages, 2.0 MiB |
+| HTML | `…_T1_…_HTML_….zip` 7.6 MiB · `…_T2_…_HTML_….zip` 10.0 MiB |

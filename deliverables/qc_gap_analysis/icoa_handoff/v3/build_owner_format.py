@@ -91,10 +91,17 @@ def one(html, old, new, what):
     return html.replace(old, new, 1)
 
 
-def chip(en, mk, on):
-    if on:
-        return '<span class="chip-sel"><span class="bx">☒</span> %s <span class="mk">%s</span></span>' % (en, mk)
-    return '<span class="chip-un"><span class="bx">☐</span> %s</span>' % en
+def chip(en, mk, on, split=''):
+    """The ticked chip carries the split where the approved certificate of quality carries one.
+
+    Head of QC, 24.09.2026: a hybrid says which way it leans, and the numbers when they are known.
+    The English is copied verbatim from the scan of the approved certificate — `INDICA60 : SATIVA40`
+    — rather than reworded here; the Macedonian keeps the plain word his design already prints.
+    """
+    if not on:
+        return '<span class="chip-un"><span class="bx">☐</span> %s</span>' % en
+    label = '%s %s' % (en, split) if split else en
+    return '<span class="chip-sel"><span class="bx">☒</span> %s <span class="mk">%s</span></span>' % (label, mk)
 
 
 def drop_rows(html, start_marker, end_marker, what):
@@ -132,7 +139,8 @@ def build(scope, f):
                          + en + r'[^<]*(?:<span class="mk">[^<]*</span>)?\s*</span>')
         if len(pat.findall(h)) != 1:
             raise SystemExit('phenotype %s: %d chips, not one' % (en, len(pat.findall(h))))
-        h = pat.sub(lambda m: chip(en, MK_PHENO[en.upper()], f['pheno'] == en.upper()), h, count=1)
+        h = pat.sub(lambda m: chip(en, MK_PHENO[en.upper()], f['pheno'] == en.upper(),
+                                   f.get('split', '') if f['pheno'] == en.upper() else ''), h, count=1)
 
     h = one(h, A['pcode'], '<span class="lk-val">%s</span>' % f['pcode'], 'product code')
     h = one(h, A['spec'], '<span class="lk-val sm">%s</span>' % f['spec'], 'specification reference')
@@ -164,6 +172,24 @@ def build(scope, f):
         h = h.replace('22.07.2026 – 27.07.2026', f['lodwindow'])
         h = h.replace('7.9%', f['lod'])
 
+    # Head of QC, 24.09.2026: in Macedonian the heading is Метод, not Метода.
+    n = h.count('<span class="mk">Метода</span>')
+    if not n:
+        raise SystemExit('%s: no Метода to correct' % f['code'])
+    h = h.replace('<span class="mk">Метода</span>', '<span class="mk">Метод</span>')
+
+    # Head of QC, 24.09.2026: the sentence under Results vs Specification says nothing the table
+    # above it has not already said. It comes off every internal certificate.
+    i = h.find('<div class="disp-note">')
+    if i < 0:
+        raise SystemExit('%s: no disposition note to remove' % f['code'])
+    j = h.find('</div>', i)
+    if j < 0:
+        raise SystemExit('%s: the disposition note is unterminated' % f['code'])
+    h = h[:i] + h[j + len('</div>'):]
+    if '<div class="disp-note"' in h:
+        raise SystemExit('%s: a disposition note survives' % f['code'])
+
     if '7' not in scope:
         # P060362 alone: neither foreign matter nor loss on drying. The 02.3 table, the note that
         # belongs to it and the section 04 row come off, and the subtitle loses its third term.
@@ -194,8 +220,16 @@ LOD_ONLY = {
 }
 
 
+SCANS = os.path.join(GAP, 'tracker', 'COQ_SCAN_PHENOTYPE_2026-09-24.tsv')
+
+
 def load(list_tsv):
     import csv
+    # Head of QC, 24.09.2026: the scans he shared are the current and approved certificates, so the
+    # phenotype and its split are read from them and from nothing else. 38 of the 46 agree with the
+    # cultivar record, none disagrees, and the 8 the record cannot answer are settled by the scan.
+    scan = {r['batch']: (r['pheno'], r['split'])
+            for r in csv.DictReader(open(SCANS, encoding='utf-8'), delimiter='\t')}
     reg = json.load(open(os.path.join(GAP, 'coq_artifact_data.json'), encoding='utf-8'))
     coqs = reg['coqs'] if isinstance(reg, dict) and 'coqs' in reg else reg
     by = {str(c['regcode']): c for c in coqs}
@@ -214,13 +248,15 @@ def load(list_tsv):
         c = by[r['coq']]
         cu = str(c.get('cb') or '')
         m = meta.get(cu, {})
-        pheno = str(m.get('phenotype') or '').strip()
-        if not pheno or pheno == '—':
-            cand = sorted(bycode.get(str(m.get('strainCode') or ''), []))
-            if len(cand) != 1:
-                raise SystemExit('%s: the strain code gives %d phenotypes, not one' % (r['batch'], len(cand)))
-            pheno = cand[0]
-            derived.append((r['batch'], str(m.get('strainCode')), pheno))
+        if r['batch'] not in scan:
+            raise SystemExit('%s: no approved scan to read the phenotype from' % r['batch'])
+        pheno, split = scan[r['batch']]
+        rec = str(m.get('phenotype') or '').strip()
+        if rec and rec != '—' and rec != pheno:
+            raise SystemExit('%s: the scan says %s, the cultivar record says %s — refusing to guess'
+                             % (r['batch'], pheno, rec))
+        if not rec or rec == '—':
+            derived.append((r['batch'], 'the scan', pheno + (' ' + split if split else '')))
         pp = str(c.get('pp') or '')
         has_p = bool(re.match(r'^[PJ]\d{5,6}$', pp))
         spec = str(c.get('spec') or '')
@@ -230,7 +266,7 @@ def load(list_tsv):
             'issued': str(c.get('icoa_issue') or ''),
             'headline': pp if has_p else cu,
             'strain': str(c.get('strain') or ''),
-            'pheno': pheno,
+            'pheno': pheno, 'split': split,
             'pcode': str(c.get('pcode') or '').replace(' : ', ':'),
             'spec': spec,
             'testdate': str(c.get('icoa_tested') or ''),
@@ -259,9 +295,17 @@ def main(argv):
         want = open(U + '4135386d-iCoA-PP_26-114_OPM1024_OPM_Orange_Punch_Mimosa_Retest_1_LOD.html',
                     encoding='utf-8').read()
         want = re.sub(r'<img class="ap-img handwritten"[^>]*>', '', want)
+        # his document predates the rulings of 24.09, so apply them to it before comparing
+        want = want.replace('<span class="mk">Метода</span>', '<span class="mk">Метод</span>')
+        i = want.find('<div class="disp-note">')
+        want = want[:i] + want[want.find('</div>', i) + len('</div>'):]
         fields, _ = load(a.list)
         f = [x for x in fields if x['batch'] == 'OPM1024'][0]
         got = build('1,2,7,8'.split(','), f)
+        # the test is of the fields, not of the ink or the sizing rule the base carries
+        strip = lambda x: re.sub(r'<style id="__sig-v2">[\s\S]*?</style>', '',
+                                 re.sub(r'<img class="ap-img handwritten"[^>]*>', '', x))
+        want, got = strip(want), strip(got)
         d = [l for l in difflib.unified_diff(want.split('\n'), got.split('\n'), 'his', 'built', n=0, lineterm='')
              if l[:1] in '+-' and l[:3] not in ('---', '+++')]
         print('self-test — OPM1024 built from the HPA1024 base, against his own document:')
@@ -284,8 +328,8 @@ def main(argv):
     print('internal certificates built in the Head of QC\'s format: %d' % len(made))
     print('  loss on drying: %s' % ', '.join(f['batch'] for f in fields if '8' in f['scope'].split(',')))
     if derived:
-        print('  phenotype taken from the strain code (%d): %s'
-              % (len(derived), ', '.join('%s %s→%s' % t for t in derived)))
+        print('  phenotype the cultivar record could not answer, read off the scan (%d): %s'
+              % (len(derived), ', '.join('%s → %s' % (t[0], t[2]) for t in derived)))
     return 0
 
 
