@@ -119,6 +119,37 @@ def drop_rows(html, start_marker, end_marker, what):
     return html[:a] + html[b + len('</tr>'):]
 
 
+def _d(s):
+    from datetime import date
+    dd, mm, yy = str(s).split('.')
+    return date(int(yy), int(mm), int(dd))
+
+
+def _s(d):
+    return '%02d.%02d.%04d' % (d.day, d.month, d.year)
+
+
+def testing_dates(examined, lod):
+    """When each analysis ran.
+
+    Head of QC, 24.09.2026: every analysis block carries its own test date — one date where the
+    work is done in a day, a start and an end where it is not — and section 01 carries the whole
+    span.
+
+    Macroscopy, microscopy and foreign matter are same-day work and carry the examination date.
+    Loss on drying is a **24 hour** run: the oven is set the day before and the loss is weighed on
+    the examination day, which is exactly the start his own two documents print. Only their end
+    date was wrong — it carried the certificate's issue date, so a 24 hour determination read as
+    five days.
+    """
+    e = _d(examined)
+    if not lod:
+        return {'same': examined, 'lod': None, 'span': examined}
+    start = e.fromordinal(e.toordinal() - 1)
+    return {'same': examined, 'lod': '%s – %s' % (_s(start), examined),
+            'span': '%02d.%02d – %s' % (start.day, start.month, examined)}
+
+
 def build(scope, f):
     """Fill the base that belongs to this scope. The 1, 2, 7 page is his own, not a derivation;
     only P060362, which carries neither foreign matter nor loss on drying, is cut down further."""
@@ -144,7 +175,8 @@ def build(scope, f):
 
     h = one(h, A['pcode'], '<span class="lk-val">%s</span>' % f['pcode'], 'product code')
     h = one(h, A['spec'], '<span class="lk-val sm">%s</span>' % f['spec'], 'specification reference')
-    h = one(h, A['testdate'], '<span class="lk-val sm">%s</span>' % f['testdate'], 'test date')
+    D = testing_dates(f['examined'], lod)
+    h = one(h, A['testdate'], '<span class="lk-val sm">%s</span>' % D['span'], 'test date')
     h = one(h, A['production'], '<span class="lk-val">%s</span>' % f['production'], 'production batch')
     h = one(h, A['processing'], '<span class="lk-val">%s</span>' % f['processing'], 'processing batch')
     h = one(h, A['packaging'], '<span class="lk-val sm">%s</span>' % f['packaging'], 'packaging date')
@@ -169,8 +201,22 @@ def build(scope, f):
                    % (f['code'], f['headline'], f['strain'], sub), h, count=1)
 
     if lod:
-        h = h.replace('22.07.2026 – 27.07.2026', f['lodwindow'])
+        h = h.replace('22.07.2026 – 27.07.2026', D['lod'])
         h = h.replace('7.9%', f['lod'])
+
+    # 02.1, 02.2 and 02.3 are a day's work and say so; 02.4 already carries its window
+    n = 0
+    def stamp(m):
+        nonlocal n
+        if '2026' in m.group(2) or '2025' in m.group(2):
+            return m.group(0)                      # a block that already states its dates
+        n += 1
+        return m.group(1) + m.group(2) + ' · ' + D['same'] + m.group(3)
+    # the Македонски heading is corrected further down, so accept either spelling here
+    h = re.sub(r'(<span class="mi-l">Method<span class="mk">Метода?</span></span>)([^<]*)(<i class="bisep">)',
+               stamp, h)
+    if n < 3:
+        raise SystemExit('%s: only %d analysis blocks were dated' % (f['code'], n))
 
     # Head of QC, 24.09.2026: in Macedonian the heading is Метод, not Метода.
     n = h.count('<span class="mk">Метода</span>')
@@ -215,8 +261,10 @@ def build(scope, f):
 # ── the data ────────────────────────────────────────────────────────────────────────────
 LOD_ONLY = {
     # the two the Head of QC issued himself, with the figures his own pages carry
-    'HPA1024': {'lod': '7.9%', 'lodwindow': '22.07.2026 – 27.07.2026', 'testdate': '22.07 – 27.07.2026'},
-    'OPM1024': {'lod': '7.15%', 'lodwindow': '23.07.2026 – 27.07.2026', 'testdate': '23.07 – 27.07.2026'},
+    # only the loss-on-drying figure is his; the dates are now computed from the examination date,
+    # because the ones his two pages carry end on the certificate's issue date
+    'HPA1024': {'lod': '7.9%'},
+    'OPM1024': {'lod': '7.15%'},
 }
 
 
@@ -270,6 +318,7 @@ def load(list_tsv):
             'pcode': str(c.get('pcode') or '').replace(' : ', ':'),
             'spec': spec,
             'testdate': str(c.get('icoa_tested') or ''),
+            'examined': str(c.get('icoa_tested') or ''),
             'production': pp if has_p else '—',
             'processing': cu,
             'packaging': str(c.get('pk') or '—'),

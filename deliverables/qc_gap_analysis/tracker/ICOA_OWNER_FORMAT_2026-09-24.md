@@ -114,3 +114,36 @@ chip identical to its approved certificate of quality.
 | `iCoA_T1_retest_owner_format_2026-09-24.pdf` | 19 pages, 1.7 MiB |
 | `iCoA_T2_retest_owner_format_2026-09-24.pdf` | 25 pages, 2.0 MiB |
 | HTML | `…_T1_…_HTML_….zip` 7.6 MiB · `…_T2_…_HTML_….zip` 10.0 MiB |
+
+## The test dates, per analysis — 24.09.2026
+
+He asked how a test date can run from 23.07 to 27.07 when nothing on the certificate takes more
+than twenty-four hours. It cannot, and the range was not derived: it is printed on the two
+documents he sent, and this desk carried it through rather than questioning it. The same line
+contradicted itself — *"vacuum oven 40 °C, **24 h**, 15–25 mbar · 23.07.2026 – 27.07.2026"*.
+
+What produced it was *examination date − 1 → **issue date***. The issue date is the wrong end
+point: 27.07.2026 is when the certificate was issued, not when the analysis finished.
+
+**The rule now applied to every internal certificate.** Each analysis block carries its own date
+where his design already puts one, at the end of the method row:
+
+* **02.1 macroscopic, 02.2 microscopic, 02.3 foreign matter** — a day's work, so one date: the
+  examination date.
+* **02.4 loss on drying** — a twenty-four hour run, so a start and an end: the oven is set the day
+  before and the loss weighed on the examination day. That start is exactly what his own two pages
+  print; only the end was wrong.
+* **Section 01 `Test Date`** carries the whole span — one date where every analysis is same-day, the
+  start-to-end range where one is not.
+
+| | examined | section 01 was | section 01 now | 02.4 now |
+| --- | --- | --- | --- | --- |
+| `iCoA-PP_26-110` HPA1024 | 23.07.2026 | 22.07 – 27.07.2026 | **22.07 – 23.07.2026** | 22.07.2026 – 23.07.2026 |
+| `iCoA-PP_26-114` OPM1024 | 24.07.2026 | 23.07 – 27.07.2026 | **23.07 – 24.07.2026** | 23.07.2026 – 24.07.2026 |
+
+The other forty-two have no drying run: section 01 carries the single examination date and each of
+their three blocks carries the same date.
+
+Measured over the build: 41 documents with three dated blocks, 2 with four, 1 (`P060362`, neither
+foreign matter nor loss on drying) with two — **every block dated, 0 findings**, and on the printed
+pages the issue date no longer ends any testing window.
