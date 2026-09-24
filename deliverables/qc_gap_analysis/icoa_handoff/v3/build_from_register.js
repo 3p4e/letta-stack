@@ -57,6 +57,52 @@ const FLAT_CSS =
   '*,*::before,*::after{text-shadow:none !important;box-shadow:none !important}\n' +
   '.ap-sign img.ap-img{mix-blend-mode:normal !important}\n' +
   '}</style>';
+// The Head of QC, 24.09.2026: "from all iCOA please remove the QA manager signature ... and
+// arrange the two remaining signatures like in the COQs."
+//
+// The internal certificate of analysis is a QC laboratory record: the Analyst performs it and
+// the QC Manager approves it. The QA Manager's review belongs on the certificate of quality,
+// and her block comes off this family entirely — role line, name, credential, date and rule.
+//
+// The two that remain then take the certificate of quality's own geometry. Nothing in the
+// design system is edited to do it: `.approval-grid.cols-2` is already defined in _icoa.css,
+// `1fr 1fr` with a 110 px gap, the same rule the certificate of quality uses. The grid is
+// simply told it has two columns instead of three.
+//
+// The blocks are found by balancing the grid's own <div>s rather than by a pattern over the
+// whole document, and the reviewer by the NAME printed beneath the rule — the same rule
+// sign_block.js follows. A grid that does not hold exactly three blocks, or that holds no
+// reviewer, stops the build: a signature panel is not something to repair by guesswork.
+const REVIEWER = 'Jovana Romevska Cvetkovski';
+function dropReviewer(html, code) {
+  const open = html.indexOf('<div class="approval-grid cols-3">');
+  if (open < 0) throw new Error('no three-column approval grid on ' + code);
+  const bodyAt = html.indexOf('>', open) + 1;
+  // walk the grid's children, balancing <div> against </div>
+  const kids = [];
+  let i = bodyAt, depth = 0, start = -1;
+  const tag = /<\/?div\b[^>]*>/g;
+  tag.lastIndex = bodyAt;
+  let m;
+  while ((m = tag.exec(html))) {
+    if (m[0][1] !== '/') { if (depth === 0) start = m.index; depth++; }
+    else {
+      depth--;
+      if (depth === 0) kids.push([start, tag.lastIndex]);
+      if (depth < 0) { i = m.index; break; }          // the grid's own closing tag
+    }
+  }
+  if (kids.length !== 3) throw new Error('the approval grid on ' + code + ' holds ' + kids.length + ' blocks, not 3');
+  const which = kids.findIndex(k => html.slice(k[0], k[1]).indexOf('>' + REVIEWER + '<') >= 0);
+  if (which < 0) throw new Error('no reviewer block on ' + code);
+  const kept = kids.filter((_, n) => n !== which).map(k => html.slice(k[0], k[1]));
+  const grid = '<div class="approval-grid cols-2">\n' + kept.join('\n') + '\n</div>';
+  const out = html.slice(0, open) + grid + html.slice(i + '</div>'.length);
+  if (out.indexOf(REVIEWER) >= 0) throw new Error('the reviewer is still named on ' + code);
+  if (out.indexOf('approval-grid cols-3') >= 0) throw new Error('a three-column grid survived on ' + code);
+  return out;
+}
+
 const build = new Function('return (' + fs.readFileSync(path.join(HERE, 'icoa3_gen.js'), 'utf8') + ')')();
 
 const data = JSON.parse(fs.readFileSync(path.join(GAP, 'coq_artifact_data.json'), 'utf8'));
@@ -98,6 +144,7 @@ for (const c of wanted) {
     identA: (r['1'] || {}).res || '', identB: (r['2'] || {}).res || '', fm: (r['7'] || {}).res || '',
   };
   const o = build(rec, Object.assign({ grade: c.grade, specCode: c.spec }, m));
+  o.html = dropReviewer(o.html, rec.code);   // the ruling of 24.09.2026, before any ink is laid
   o.html = SIGN.sign(o.html, rec.code, { h: 52 * SIG_SCALE, dy: -9 });
   if (PRINT_FLAT) {
     o.html = o.html.replace('</body>', OPAQUE + '\n' + FLAT_CSS + '\n</body>');
