@@ -63,7 +63,25 @@ Three of those notes matter and are now visible without opening anything:
 | cited internal certificate **agrees** with the register | **0** |
 | **disagrees** | **46** |
 
-The offset is systematic, +13 or +14, never random:
+### Correction, 25.09 — the offset is *not* systematic
+
+I first reported this offset as *"systematic, +13 or +14, never random"*, from a five-row sample.
+Computed over all 44 citing scans it is **nine distinct offsets spanning +2 to +35**:
+
+| offset | +2 | +11 | +12 | **+13** | **+14** | +15 | +16 | +17 | +35 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| scans | 1 | 3 | 3 | **13** | **14** | 2 | 2 | 5 | 1 |
+
+`+13/+14` is 27 of 44 — the bulk, but not the rule. `P050212` is `+2` and `P060372` is `+35`. The
+audit of 24.09 had already recorded it correctly as *"offset +2 to +17, not correctable by
+arithmetic"*, and my sample contradicted its own source.
+
+**The consequence is the opposite of what the first wording implied.** A single offset would have
+meant one permutation could repair every citation. Nine offsets mean there is no arithmetic repair at
+all: each pair resolves only from its own scan. That is why this is a ruling to be asked for and not
+a script to be run.
+
+The bulk case, for illustration only:
 
 | batch | certificate of quality | the scan cites | the register says |
 | --- | --- | --- | --- |
