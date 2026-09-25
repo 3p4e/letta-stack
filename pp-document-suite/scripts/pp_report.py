@@ -316,24 +316,6 @@ def swap_header(d,title_mk_prefix,title_code,title_en,code_prefix,code_suffix_a,
     c2=h.cell(0,2).paragraphs[2].runs
     c2[0].text=code_prefix; c2[2].text=code_suffix_a; c2[3].text=code_suffix_b
 
-def informal_header(d,title_mk,title_en,tag_mk="Неформален документ",tag_en="Informal document"):
-    """Header variant for documents that are NOT under document control: the doc-code /
-       version box (right column) is replaced by a plain MK|EN tag instead of a code, and
-       the title column carries no code between the MK and EN title lines. Use this instead
-       of swap_header() whenever the document has no QCxxx/PP-xxx doc code and no version —
-       an informal management submission, a working export, a draft for review, etc."""
-    h=d.sections[0].header.tables[0]
-    c1=h.cell(0,1).paragraphs[1].runs
-    c1[0].text=title_mk; c1[2].text=""; c1[5].text=title_en
-    c2p=h.cell(0,2).paragraphs
-    for p in c2p[:3]:
-        for r in p.runs: r.text=""
-    r0=c2p[0].runs
-    if r0: r0[0].text=tag_mk
-    r1=c2p[1].runs
-    if r1: r1[0].text=tag_en
-    for r in h.cell(1,2).paragraphs[0].runs: r.text=""   # clear the "Верзија | Ver : x.x" row too
-
 def wipe_body(d):
     bodyel=d.element.body; sectPr=bodyel.find(qn('w:sectPr'))
     for ch in list(bodyel):
@@ -535,12 +517,11 @@ def _cover_header_footer(sec):
 
 def cover_page(d, title_mk, title_en, info_rows, kind_mk="", kind_en="", study_mk=None, study_en=None,
                approval_rows=None, approval_qp="Одобрил (Раководител КК) | Approved (QC Manager)",
-               approval_qp_name="B. Nikolov, M.Pharm.", controlled=True):
+               approval_qp_name="B. Nikolov, M.Pharm.",
+               status="draft", version="1.0", effective_date=None):
     """Distinct, UNNUMBERED cover page (different-first-page): wordmark + big bilingual title +
        method INFORMATION block + APPROVAL block. Followed by a page break (TOC goes on page 2).
-       Cover title is centered (NOT justified). Use once, first thing, in every report/protocol.
-       controlled=False drops the "Controlled document" footer line — use for informal
-       submissions that carry no doc code/version (pair with informal_header(), not swap_header())."""
+       Cover title is centered (NOT justified). Use once, first thing, in every report/protocol."""
     _cover_header_footer(d.sections[0])   # cover keeps the standard running header (logo+name+code); page 1 unnumbered, footer resumes p.2
     if kind_mk:
         p=d.add_paragraph(); p.alignment=WD_ALIGN_PARAGRAPH.CENTER; sp(p,40,2); rin(p,kind_mk,13,GREY,bold=True)
@@ -552,6 +533,23 @@ def cover_page(d, title_mk, title_en, info_rows, kind_mk="", kind_en="", study_m
         if study_en: rin(p,"  |  ",10,GREY); rin(p,study_en,10,GREY,ital=True)
     else:
         p=d.add_paragraph(); sp(p,0,12)
+    # ---- Document-control status band (same lifecycle rule as SOPs/annexes) ----
+    # A controlled version + effective date appear ONLY when status == 'approved'; otherwise the
+    # document is a draft / in review: it is NOT for use and carries no effective date.
+    _st=(status or "draft").strip().lower().replace("-","_").replace(" ","_")
+    if _st not in ("draft","in_review","approved"): _st="draft"
+    _appr=_st=="approved"
+    _lbl={"draft":("РАБОТНА ВЕРЗИЈА — НЕ ЗА УПОТРЕБА","DRAFT — NOT FOR USE"),
+          "in_review":("ЗА ПРЕГЛЕД И ОДОБРУВАЊЕ — НЕ ЗА УПОТРЕБА","IN REVIEW / FOR APPROVAL — NOT FOR USE"),
+          "approved":("ОДОБРЕНО ЗА УПОТРЕБА","APPROVED FOR USE")}[_st]
+    _hv=("v%s"%version) if _appr else ("DRAFT" if _st=="draft" else "IN REVIEW")
+    _eff=(effective_date or "____.____.______") if _appr else "—"
+    _tb=d.add_table(rows=1,cols=1); _tb.alignment=WD_TABLE_ALIGNMENT.CENTER
+    _c=_tb.cell(0,0); cellfmt(_c,"%s | %s"%_lbl,None,11,(GREEN if _appr else RED),bold=True,fill=(GREENF if _appr else REDF))
+    _p2=_c.add_paragraph(); _p2.alignment=WD_ALIGN_PARAGRAPH.CENTER
+    rin(_p2,"Верзија | Version: %s     ·     Датум на важност | Effective date: %s"%(_hv,_eff),10,BLACK,bold=True)
+    fixed(_tb); borders(_tb)
+    d.add_paragraph()
     minilabel(d,"Информации за документот | Document information",None)
     _info_table(d, info_rows)
     minilabel(d,"Одобрување | Approval",None)
@@ -565,11 +563,7 @@ def cover_page(d, title_mk, title_en, info_rows, kind_mk="", kind_en="", study_m
         cellfmt(t.cell(i,0),a,None,10,BLACK); cellfmt(t.cell(i,1),n,None,10,BLACK)
         cellfmt(t.cell(i,2),"",None,10,BLACK); cellfmt(t.cell(i,3),"",None,10,BLACK)
     fixed(t,[5.0,5.46,3.5,4.5]); borders(t)
-    if controlled:
-        p=d.add_paragraph(); p.alignment=WD_ALIGN_PARAGRAPH.CENTER; sp(p,10,0); rin(p,"Контролиран документ | Controlled document",8,GREY,ital=True)
-    else:
-        p=d.add_paragraph(); p.alignment=WD_ALIGN_PARAGRAPH.CENTER; sp(p,10,0)
-        rin(p,"Неформален работен документ — не е контролиран запис | Informal working document — not a controlled record",8,GREY,ital=True)
+    p=d.add_paragraph(); p.alignment=WD_ALIGN_PARAGRAPH.CENTER; sp(p,10,0); rin(p,"Контролиран документ | Controlled document",8,GREY,ital=True)
     d.add_page_break()
 
 def _toc_field(d, placeholder="Десен-клик → Ажурирај поле (Update Field) | Right-click → Update Field"):

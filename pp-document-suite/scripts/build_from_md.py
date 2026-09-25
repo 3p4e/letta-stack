@@ -218,11 +218,13 @@ def build_annex(hd, blocks, out):
     # ≈ 27.16 cm (both at the base-template 1.27 cm margins). The whole layout brain keys off this.
     PAGE_W = 27.16 if land else 18.46
     pr.PAGE_W = PAGE_W
+    status=hd.get('status','draft'); eff=hd.get('effective_date')
     d=pf.new_annex(code=hd.get('code',''), version=hd.get('version','01'),
                    mk_title=hd.get('mk_title',''), en_title=hd.get('en_title',''),
-                   orient='landscape' if land else 'portrait')
+                   orient='landscape' if land else 'portrait', status=status)
     pf.annex_title_block(d, hd.get('code',''), hd.get('mk_title',''), hd.get('en_title',''),
-                         hd.get('parent', hd.get('code','')))
+                         hd.get('parent', hd.get('code','')),
+                         status=status, version=hd.get('version','01'), effective_date=eff)
     if hd.get('supersedes'):
         pr.note(d, "Заменува: "+hd['supersedes'], "Supersedes: "+hd['supersedes'])
     for b in blocks:
@@ -238,9 +240,14 @@ def build_annex(hd, blocks, out):
 
 # =========================== SOP ===========================
 def build_sop(hd, blocks, out):
-    d=pf.new_sop(code=hd.get('code',''), version=hd.get('version','01'),
-                 mk_title=hd.get('mk_title',''), en_title=hd.get('en_title',''))
-    pf.sop_titlepage(d, hd.get('code','')+" · v"+hd.get('version','01'), hd.get('mk_title',''), hd.get('en_title',''))
+    status=hd.get('status','draft'); ver=hd.get('version','01')
+    eff=hd.get('effective_date'); rev=hd.get('review_date')
+    d=pf.new_sop(code=hd.get('code',''), version=ver,
+                 mk_title=hd.get('mk_title',''), en_title=hd.get('en_title',''), status=status)
+    # Title-page code line carries a controlled 'vNN' only once approved (see pf.header_version).
+    pf.sop_titlepage(d, hd.get('code','')+" · "+pf.header_version(status, ver),
+                     hd.get('mk_title',''), hd.get('en_title',''),
+                     status=status, version=ver, effective_date=eff, review_date=rev)
     pf.sop_toc(d)
     t=None
     def ensure():
