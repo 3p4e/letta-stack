@@ -1,0 +1,32 @@
+coq_code	lot	cultivation_batch	strain	grade	thc_pct	specification	icoa_code_now	icoa_verdict	icoa_free_number	issuable	issued	icoa_issue_date
+CoQ-PP_26-087		P060332	Cash Cow	I	17.67	QCSP_001_CC-I_v.01	iCoA-PP_26-087	clear — number not used by any delivered page		yes	False	27.07.2026
+CoQ-PP_26-136	P060052	AB092501	Apple and Banana	I	22.97	QCSP_001_AB-I_v.01	iCoA-PP_26-136	clear — number not used by any delivered page		allocated	False	24.08.2026
+CoQ-PP_26-137	P050122	BSS1024_01	Blue Sunset Sherbet	I	26.10	QCSP_001_BSS-I_v.01	iCoA-PP_26-137	BLOCKED — iCoA-PP_26-137 is already with the customer as P060422	iCoA-PP_26-093	allocated	False	24.08.2026
+CoQ-PP_26-138	P050142	BSS1024_01/2	Blue Sunset Sherbet	I	26.69	QCSP_001_BSS-I_v.01	iCoA-PP_26-138	BLOCKED — iCoA-PP_26-138 is already with the customer as P060362	iCoA-PP_26-094	allocated	False	24.08.2026
+CoQ-PP_26-139		CC112501	Cash Cow	I	16.36	QCSP_001_CC-I_v.01	iCoA-PP_26-139	BLOCKED — iCoA-PP_26-139 is already with the customer as P060172	iCoA-PP_26-095	allocated	False	24.08.2026
+CoQ-PP_26-140	P050172	CJ052501-2	Cap Junky	III	21.30	QCSP_001_CJ-III_v.01	iCoA-PP_26-140	BLOCKED — iCoA-PP_26-140 is already with the customer as P050112	iCoA-PP_26-096	allocated	False	24.08.2026
+CoQ-PP_26-141	P050252	CJ072501	Cap Junky	I	28.18	QCSP_001_CJ-I_v.01	iCoA-PP_26-141	clear — number not used by any delivered page		allocated	False	24.08.2026
+CoQ-PP_26-142		CJ1024	Cap Junky	I	28.12	QCSP_001_CJ-I_v.01	iCoA-PP_26-142	BLOCKED — iCoA-PP_26-142 is already with the customer as P050042	iCoA-PP_26-097	allocated	False	24.08.2026
+CoQ-PP_26-143		FB012603	Fat Bastard	I	20.00	QCSP_001_FB-I_v.01	iCoA-PP_26-143	BLOCKED — iCoA-PP_26-143 is already with the customer as P060372	iCoA-PP_26-101	allocated	False	24.08.2026
+CoQ-PP_26-144		FB012603V	Fat Bastard	II	19.31	QCSP_001_FB-II_v.01	iCoA-PP_26-144	clear — number not used by any delivered page		allocated	False	24.08.2026
+CoQ-PP_26-145		FB112501	Fat Bastard	II	18.75	QCSP_001_FB-II_v.01	iCoA-PP_26-145	clear — number not used by any delivered page		allocated	False	24.08.2026
+CoQ-PP_26-146		GG012601	Gorilla Glue	I	19.16	QCSP_001_GG-I_v.01	iCoA-PP_26-146	clear — number not used by any delivered page		allocated	False	24.08.2026
+CoQ-PP_26-147	P050012	GG1024_02	Gorilla Glue	I	17.76	QCSP_001_GG-I_v.01	iCoA-PP_26-147	BLOCKED — iCoA-PP_26-147 is already with the customer as P050082	iCoA-PP_26-103	allocated	False	24.08.2026
+CoQ-PP_26-148		GG112501	Gorilla Glue	I	18.64	QCSP_001_GG-I_v.01	iCoA-PP_26-148	BLOCKED — iCoA-PP_26-148 is already with the customer as P060232	iCoA-PP_26-108	allocated	False	24.08.2026
+CoQ-PP_26-149	P050202	GP062501	Grape Pie	II	25.97	QCSP_001_GP-II_v.01	iCoA-PP_26-149	BLOCKED — iCoA-PP_26-149 is already with the customer as P060112	iCoA-PP_26-119	allocated	False	24.08.2026
+CoQ-PP_26-150	P050292	GP072501-1	Grape Pie	I	26.54	QCSP_001_GP-I_v.01	iCoA-PP_26-150	BLOCKED — iCoA-PP_26-150 is already with the customer as P060282	iCoA-PP_26-120	allocated	False	24.08.2026
+CoQ-PP_26-151	P050102	GP0824_01	Grape Pie	I	28.68	QCSP_001_GP-I_v.01	iCoA-PP_26-151	clear — number not used by any delivered page		allocated	False	24.08.2026
+CoQ-PP_26-152	P060142	GRC102501/1	Grapes And Cream	III	7.50	QCSP_001_GRC-III_v.01	iCoA-PP_26-152	BLOCKED — iCoA-PP_26-152 is already with the customer as P060012	iCoA-PP_26-127	allocated	False	24.08.2026
+CoQ-PP_26-153		J31112501	Jokerz 31	II	23.85	QCSP_001_J31-II_v.01	iCoA-PP_26-153	clear — number not used by any delivered page		allocated	False	24.08.2026
+CoQ-PP_26-154		J31122501	Jokerz 31	I	24.48	QCSP_001_J31-I_v.01	iCoA-PP_26-154	clear — number not used by any delivered page		allocated	False	24.08.2026
+CoQ-PP_26-155		JD012601	Jelly Donuts	I	19.99	QCSP_001_JD-I_v.01	iCoA-PP_26-155	clear — number not used by any delivered page		allocated	False	24.08.2026
+CoQ-PP_26-156	P050032	MB0824_04	Motor Breath	I	17.57	QCSP_001_MB-I_v.01	iCoA-PP_26-156	clear — number not used by any delivered page		allocated	False	24.08.2026
+CoQ-PP_26-157	P050132	OPM052501	Orange Punch Mimosa	II	17.83	QCSP_001_OPM-II_v.01	iCoA-PP_26-157	clear — number not used by any delivered page		allocated	False	24.08.2026
+CoQ-PP_26-158		OPM112501	Orange Punch Mimosa	IV	9.73	QCSP_001_OPM-IV_v.01	iCoA-PP_26-158	clear — number not used by any delivered page		allocated	False	24.08.2026
+CoQ-PP_26-159	P050272	PM072501	Permanent Marker	II	12.77	QCSP_001_PM-II_v.01	iCoA-PP_26-159	clear — number not used by any delivered page		allocated	False	24.08.2026
+CoQ-PP_26-160	P060342	SCR012601	Scrambler	I	22.40	QCSP_001_SCR-I_v.01	iCoA-PP_26-160	clear — number not used by any delivered page		allocated	False	24.08.2026
+CoQ-PP_26-161		SCR022601	Scrambler	II	16.68	QCSP_001_SCR-II_v.01	iCoA-PP_26-161	clear — number not used by any delivered page		allocated	False	24.08.2026
+CoQ-PP_26-162		SJ102501	Sleepy Joe	II	10.61	QCSP_001_SJ-II_v.01	iCoA-PP_26-162	clear — number not used by any delivered page		allocated	False	24.08.2026
+CoQ-PP_26-163		SJ112501	Sleepy Joe	I	11.27	QCSP_001_SJ-I_v.01	iCoA-PP_26-163	clear — number not used by any delivered page		allocated	False	24.08.2026
+CoQ-PP_26-164	P050262	WC072501	Wedding Crusher	I	25.37	QCSP_001_WC-I_v.01	iCoA-PP_26-164	clear — number not used by any delivered page		allocated	False	24.08.2026
+CoQ-PP_26-165	P060102	WED102501	Wedding Cake	I	25.15	QCSP_001_WED-I_v.01	iCoA-PP_26-165	clear — number not used by any delivered page		allocated	False	24.08.2026
