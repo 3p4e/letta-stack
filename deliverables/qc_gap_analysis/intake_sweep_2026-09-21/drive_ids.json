@@ -1,0 +1,92 @@
+{
+ "362/0692/26": {
+  "file_id": "15J9R-2vqQndli68C-monq-abKipC2-Na",
+  "p": "P060342",
+  "cu": "SCR012601*",
+  "lab": "IJZ-MB"
+ },
+ "403/0786/26": {
+  "file_id": "1b8TbKQDr8oUuv6xsfy9J824dUa9dgP6t",
+  "p": "P060442",
+  "cu": "SCR022601",
+  "lab": "IJZ-MB"
+ },
+ "408/0791/26": {
+  "file_id": "1Xf_QJIzIMFhIQxK-TdTMk0s4_8FQ0m-M",
+  "p": "P060432",
+  "cu": "FB012603",
+  "lab": "IJZ-MB"
+ },
+ "407/0790/26": {
+  "file_id": "1nh6BeThyJ1yScqJNHpCA3RjsNcQsc2fF",
+  "p": "P060392",
+  "cu": "FB012603V",
+  "lab": "IJZ-MB"
+ },
+ "137/0234/26": {
+  "file_id": "1d366YI5TFHZQqGBwvPbLnp4lxCXG8Zey",
+  "p": "P060222",
+  "cu": "OPM112501",
+  "lab": "IJZ-MB"
+ },
+ "131/0228/26": {
+  "file_id": "1Up3Vubry_mp-2XnoRB5497WHDxoXK9ZG",
+  "p": "P060202",
+  "cu": "J31112501",
+  "lab": "IJZ-MB"
+ },
+ "76/0119/26": {
+  "file_id": "1SfWivK2NobC7VT3nkaYTEpaBiHXflxPp",
+  "p": "P060182",
+  "cu": "GRC102501",
+  "lab": "IJZ-MB"
+ },
+ "132/0229/26": {
+  "file_id": "1dnx2t7jJmicFrhpPI_hHzLVprSsdOIeJ",
+  "p": "P060162",
+  "cu": "SJ102501",
+  "lab": "IJZ-MB"
+ },
+ "75/0118/26": {
+  "file_id": "1YPCs2gIFW3mC95KuyM4l7FRNOO7H3qXb",
+  "p": "P060102",
+  "cu": "WED102501",
+  "lab": "IJZ-MB"
+ },
+ "434/0848/26": {
+  "file_id": "1SkEDPuHwLTP_Fsjb8qt7-F6-SEM_BhLC",
+  "p": "P060452",
+  "cu": "FB032601",
+  "lab": "IJZ-MB"
+ },
+ "475/0927/26": {
+  "file_id": "1Fyj9KOxnT9W_pQ_yVVEi2jNxc1vwRm3O",
+  "p": "P050022",
+  "cu": "GP0824-02",
+  "lab": "IJZ-MB"
+ },
+ "031-1-К/26": {
+  "file_id": "1Kd9aAxp7KB9tN8u9Hq8rHqHk0NGsfhhr",
+  "p": "P060182",
+  "cu": "GRC102501",
+  "lab": "FHM"
+ },
+ "031-1-ГС/26": {
+  "file_id": "1ut0F8iUg_lX8DuraoIu-ZU6c3hss9NsZ",
+  "p": "P060182",
+  "cu": "GRC102501",
+  "lab": "FHM"
+ },
+ "328/2026": {
+  "file_id": "1pXti2jSM0-T91F5zmXG-9aNZcWmMMOWz",
+  "p": "P060182",
+  "cu": "GRC102501",
+  "lab": "IJZ"
+ },
+ "227-18-М/26": {
+  "file_id": "17A8kFN3_i-NmuRzbEUEhJhEAFnoqn56O",
+  "p": "P050202",
+  "cu": "GP062501",
+  "lab": "FHM-M"
+ }
+}

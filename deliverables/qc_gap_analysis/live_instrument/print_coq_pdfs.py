@@ -98,11 +98,28 @@ def page_text(paths):
         # first so a base64 blob never reaches the character set
         html = re.sub(r"<(script|style)[\s\S]*?</\1>", " ", html)
         chars |= set(re.sub(r"<[^>]+>", " ", html))
+    # What the page PRINTS is not what its source holds. Almost every label on these
+    # documents is set with text-transform:uppercase, so the source carries
+    # "\u041a\u043e\u0434 \u043d\u0430 \u0434\u043e\u043a\u0443\u043c\u0435\u043d\u0442" and the renderer asks for \u041d, which was never in the
+    # subset and fell to Liberation Sans - one substituted letter inside an otherwise
+    # Montserrat word, on nearly every Macedonian label of the fleet. The same took "V"
+    # out of Orbitron in "CULTIVAR". Both cases of every character are kept, so a
+    # transform can only ask for a glyph the face already carries.
+    # Head of QC, 18.09.2026: "I explicitly want those fonts used in our certificates."
+    chars |= {c.upper() for c in chars} | {c.lower() for c in chars}
+    chars = {c for c in chars if len(c) == 1}
     return "".join(sorted(chars))
 
 
-def render(paths, outdir, chromium=None, css=""):
-    """One A4 PDF per document, returned in the order given."""
+def render(paths, outdir, chromium=None, css="", probe=None):
+    """One A4 PDF per document, returned in the order given.
+
+    `probe`, when given, is called as probe(src, page) with the laid-out Playwright page
+    just before it is printed, and whatever it returns is ignored. It exists so a caller
+    can read the DOM's own geometry in the very pass that prints the page — the only
+    moment the two are guaranteed to agree. Passing nothing leaves this printer behaving
+    exactly as it did, which matters: both certificate fleets print through it.
+    """
     from playwright.sync_api import sync_playwright
     made = []
     with sync_playwright() as pw:
@@ -116,6 +133,8 @@ def render(paths, outdir, chromium=None, css=""):
             if css:
                 page.add_style_tag(content=css)
             page.evaluate("() => document.fonts.ready")
+            if probe is not None:
+                probe(src, page)
             dst = os.path.join(outdir, os.path.basename(src)[:-5] + ".pdf")
             page.pdf(path=dst, prefer_css_page_size=True, print_background=True)
             made.append(dst)

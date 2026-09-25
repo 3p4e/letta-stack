@@ -29,7 +29,23 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import result_vocabulary as RV
 SRC = os.path.join(HERE, "coq_artifact_data.json")
-BOOK = os.path.join(HERE, "tracker", "CoQ_Analysis_Master_v40.xlsx")
+def newest_master(folder=None):
+    """The highest-numbered CoQ Analysis Master on disk.
+
+    Pinning a version here goes stale the moment the workbook is rebuilt, and a script
+    reading v40 while the desk ships v41 reads a record that no longer exists.
+    """
+    import glob, re as _re
+    folder = folder or os.path.join(HERE, "tracker")
+    found = []
+    for path in glob.glob(os.path.join(folder, "CoQ_Analysis_Master_v*.xlsx")):
+        m = _re.search(r"_v(\d+)\.xlsx$", path)
+        if m:
+            found.append((int(m.group(1)), path))
+    return max(found)[1] if found else os.path.join(folder, "CoQ_Analysis_Master_v40.xlsx")
+
+
+BOOK = newest_master()
 SHEET = "iCoA Register"
 PARAMS = ("1", "2", "7")
 COLS = {"1": "#1 Ident. A", "2": "#2 Ident. B", "7": "#7 Foreign matter"}

@@ -1,0 +1,61 @@
+{
+  "probes": {
+    "p_lot_only": [
+      "536-1067-26",
+      "P060442_536-1067-26, 31.08.2026_IJZ-MB.pdf"
+    ],
+    "plain": [
+      "537-1068-26",
+      "P060432_537-1068-26, 31.08.2026_IJZ-MB.pdf"
+    ],
+    "cyrillic": [
+      "ППК26069",
+      "eCoA_DATABASE/SCR112501_ППК26069, 11.05.2026_CNP.pdf"
+    ],
+    "star": [
+      "ППК26065",
+      "eCoA_DATABASE/JD112501＊_ППК26065, 11.05.2026_CNP.pdf"
+    ],
+    "sublot": [
+      "ППК26113",
+      "eCoA_DATABASE/JD012603_02_ППК26113, 30.06.2026_CNP.pdf"
+    ]
+  },
+  "recall": {
+    "p_lot_only": {
+      "doc_code": "536-1067-26",
+      "document": "P060442_536-1067-26, 31.08.2026_IJZ-MB.pdf",
+      "hit": true,
+      "returned": 10,
+      "note": "filed under the P lot, no cultivation batch on the page"
+    },
+    "plain": {
+      "doc_code": "537-1068-26",
+      "document": "P060432_537-1068-26, 31.08.2026_IJZ-MB.pdf",
+      "hit": true,
+      "returned": 10,
+      "note": "an ordinary certificate, as a control"
+    },
+    "cyrillic": {
+      "doc_code": "ППК26069",
+      "document": "eCoA_DATABASE/SCR112501_ППК26069, 11.05.2026_CNP.pdf",
+      "hit": true,
+      "returned": 10,
+      "note": "Cyrillic control-book number"
+    },
+    "star": {
+      "doc_code": "ППК26065",
+      "document": "eCoA_DATABASE/JD112501＊_ППК26065, 11.05.2026_CNP.pdf",
+      "hit": true,
+      "returned": 10,
+      "note": "a trailing asterisk is part of the batch code"
+    },
+    "sublot": {
+      "doc_code": "ППК26113",
+      "document": "eCoA_DATABASE/JD012603_02_ППК26113, 30.06.2026_CNP.pdf",
+      "hit": true,
+      "returned": 10,
+      "note": "a sub-lot separator carries no meaning"
+    }
+  }
+}

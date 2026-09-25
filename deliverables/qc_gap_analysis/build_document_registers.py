@@ -407,25 +407,25 @@ def main(out):
          "the rest predicted — issue dates from 11.05.2026 (SOP in use) onward"),
         ("  issued — numbered by the ISSUE_COQ plan",
          sum(1 for x in coq if x["issued"]),
-         "48 initial (Tranche 01: 19, Tranche 02: 29) + 13 additional testing"),
+         "48 initial (Tranche 01: 19, Tranche 02: 29) + 13 retests"),
         ("  predicted initial — batches past Tranche 02",
          sum(1 for x in coq if x["type"] == "initial release — predicted"),
          "no packaged lot or grade assigned yet; number copied at issue"),
         ("  predicted reissue — the remaining Tranche 01/02 lots",
-         sum(1 for x in coq if x["type"].startswith("additional")
+         sum(1 for x in coq if x["type"].startswith("retest")
              and not x["issued"] and x["pp"]),
          "every one of the 48 retests cannabinoids and mycotoxins"),
         ("  predicted reissue — batches past Tranche 02",
-         sum(1 for x in coq if x["type"].startswith("additional")
+         sum(1 for x in coq if x["type"].startswith("retest")
              and not x["issued"] and not x["pp"]),
-         "release + 12 months"),
+         "retested on a campaign, certificate not yet numbered"),
         ("  carrying an out-of-specification determination",
          sum(1 for x in coq if x["counts"][CQ.ST_OOS] + x["counts"][CQ.ST_BLOCK]), ""),
         ("  no eCoA on file for the cultivation batch",
          sum(1 for x in coq if not x["in_register"]),
          "locate the physical certificates, scan and upload"),
-        ("  re-analysed ahead of the 12-month date",
-         sum(1 for x in coq if x["type"].startswith("additional") and not x["issued"]
+        ("  re-analysed, certificate not yet numbered",
+         sum(1 for x in coq if x["type"].startswith("retest") and not x["issued"]
              and x["counts"][CQ.ST_OK] + x["counts"][CQ.ST_FINDING]
              + x["counts"][CQ.ST_OOS] + x["counts"][CQ.ST_UNDET]),
          "the 197-series pair is on file — cannabinoids and mycotoxins certified; "

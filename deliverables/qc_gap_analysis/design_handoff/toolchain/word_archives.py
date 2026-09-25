@@ -1,0 +1,188 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""The Word copies alone, in groups small enough to send.
+
+    python3 design_handoff/toolchain/word_archives.py [--limit-mib 29] [--out dist/word]
+
+`package_v40.py` builds the archives the desk delivers, and each of them carries its
+certificates in all three formats — PDF, HTML and Word. That is the package, and it stays the
+package. Both fleets are covered here: the certificates of quality and the internal
+certificates of analysis behind them. But a chat attachment is capped at 30 MiB and every Word file is about a megabyte (the
+export places the vector page as a 300 dpi image), so the Tranche 2 archive alone is 89 MiB and
+cannot be sent that way.
+
+This writes the Word copies on their own, grouped **exactly as the tranche archives group
+them** — the membership is read back out of those archives rather than re-derived, so a
+certificate can never land in a different tranche here than it does there. A group that would
+still exceed the limit is split into numbered parts, and each part is a whole archive that opens
+on its own: nothing is spanned, nothing needs reassembling.
+
+The output is not committed. It duplicates content the four archives already carry, and 160 MiB
+of that in the history would be paid for on every clone; this script is the cheaper record.
+"""
+import argparse
+import os
+import re
+import zipfile
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+HANDOFF = os.path.dirname(HERE)
+DIST = os.path.join(HANDOFF, "dist")
+DOCX = os.path.join(HANDOFF, "docx")
+# The internal certificates are exported beside their own fleet, not beside the
+# certificates of quality, so a Word copy is looked for under the root of ITS family.
+ICOA_DOCX = os.path.join(os.path.dirname(HANDOFF), "icoa_handoff", "v3", "docx")
+# The package's own date, discovered rather than written down. It was pinned to
+# 2026-09-17 and the next repackaging silently produced nothing: the script looked for
+# archives that no longer existed, found no membership, and emptied dist/word. The whole
+# point of reading membership back out of the archives is that it cannot drift from the
+# package, and a hard-coded date is the same drift wearing a different hat.
+def package_date(dist=DIST):
+    """The date of the newest set of tranche archives in dist/."""
+    dates = sorted({m.group(1) for f in os.listdir(dist)
+                    for m in [re.match(r"PP_CoQ_(?:Tranche_[123]|Package)(?:_Signed)?_(\d{4}-\d{2}-\d{2})\.zip$", f)]
+                    if m})
+    if not dates:
+        raise SystemExit("no PP_CoQ_*.zip in " + dist + " — run package_v40.py first")
+    return dates[-1]
+
+
+# The set this run belongs to, exactly as package_v40.py names it.
+SET = "_Signed" if os.environ.get("PP_SIGNATURES") == "1" else ""
+DATE = package_date()
+# the archive each tranche's certificates are packaged in, and the label for this one
+SOURCES = tuple([("PP_CoQ_Tranche_%s%s_%s.zip" % (t, SET, DATE), "Tranche_%s" % t) for t in "123"]
+                + [("PP_iCoA_Tranche_%s%s_%s.zip" % (t, SET, DATE), "Tranche_%s" % t) for t in "123"]
+                + [("PP_CoQ_Package%s_%s.zip" % (SET, DATE), "No_tranche")])
+
+
+def family(stem):
+    """Which fleet a Word file belongs to, from its own name."""
+    return "iCoA" if stem.startswith("iCoA-") else "CoQ"
+
+
+def membership(dist=DIST):
+    """(family, label, round) -> [Word file name], read back out of the packaged archives.
+
+    Reading it back is the point: the grouping cannot drift from the package's own. The
+    Package archive carries both fleets, so the family is read off each file's own name
+    rather than off the archive it came in.
+    """
+    out = {}
+    for name, label in SOURCES:
+        path = os.path.join(dist, name)
+        if not os.path.exists(path):
+            continue
+        with zipfile.ZipFile(path) as zf:
+            for n in zf.namelist():
+                # only the per-certificate copies, which the package files under DOCX/;
+                # a merged tranche set is one Word document of many certificates and is
+                # not something to regroup into sendable parts.
+                if n.endswith(".docx") and "/DOCX/" in n:
+                    base = os.path.basename(n)
+                    rnd = "Retest" if "/Retest/" in n else "Release"
+                    out.setdefault((family(base), label, rnd), []).append(base)
+    return {k: sorted(set(v)) for k, v in out.items()}
+
+
+def on_disk(roots=(DOCX, ICOA_DOCX)):
+    """Word file name -> its path in the build, across both fleets (unused: see in_archives)."""
+    return {f: os.path.join(dp, f)
+            for root in roots
+            for dp, _, fs in os.walk(root) for f in fs if f.endswith(".docx")}
+
+
+def in_archives(dist=DIST):
+    """Word file name -> (archive path, member name), read out of the packaged archives.
+
+    The build directory holds one set at a time — whichever was exported last — while
+    the archives hold both, so the Word copies are taken from the archive they are
+    grouped by. Membership and bytes then come from one place and cannot disagree.
+    """
+    out = {}
+    for name, _label in SOURCES:
+        path = os.path.join(dist, name)
+        if not os.path.exists(path):
+            continue
+        with zipfile.ZipFile(path) as zf:
+            for n in zf.namelist():
+                if n.endswith(".docx") and "/DOCX/" in n:
+                    out.setdefault(os.path.basename(n), (path, n))
+    return out
+
+
+def parts(files, sizes, limit):
+    """Split a group into runs that each fit under the limit, in certificate order.
+
+    >>> parts(["a", "b", "c"], {"a": 4, "b": 4, "c": 4}, 9)
+    [['a', 'b'], ['c']]
+    >>> parts(["a"], {"a": 99}, 9)
+    [['a']]
+    """
+    out, cur, size = [], [], 0
+    for f in files:
+        if cur and size + sizes[f] > limit:
+            out.append(cur)
+            cur, size = [], 0
+        cur.append(f)
+        size += sizes[f]
+    if cur:
+        out.append(cur)
+    return out
+
+
+def main(argv):
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--limit-mib", type=float, default=29.0)
+    ap.add_argument("--out", default=os.path.join(DIST, "word"))
+    ap.add_argument("--dist", default=DIST)
+    a = ap.parse_args(argv[1:])
+    limit = int(a.limit_mib * 1024 * 1024)
+
+    groups, src = membership(a.dist), in_archives(a.dist)
+    missing = sorted({f for v in groups.values() for f in v} - set(src))
+    if missing:
+        for f in missing[:8]:
+            print("   no Word copy in the archives for %s" % f)
+        print("refusing to write a partial set — run package_v40.py first")
+        return 1
+
+    # Clear THIS set's archives only. Emptying the folder wiped the other set's — the
+    # desk issues a signed fleet and an unsigned one, and they live here side by side.
+    os.makedirs(a.out, exist_ok=True)
+    # With SET empty the first pattern below used to match EVERY archive, signed ones
+    # included, and the unsigned run deleted the signed Word archives on 18.09.2026.
+    mine = (re.compile(r"PP_(?:CoQ|iCoA)_Word_Signed_.*_%s\.zip$" % re.escape(DATE)) if SET
+            else re.compile(r"PP_(?:CoQ|iCoA)_Word_(?!Signed_).*_%s\.zip$" % re.escape(DATE)))
+    for f in os.listdir(a.out):
+        if mine.match(f):
+            os.remove(os.path.join(a.out, f))
+    sizes = {}
+    for f, (arc, member) in src.items():
+        with zipfile.ZipFile(arc) as zf:
+            sizes[f] = zf.getinfo(member).file_size
+    total = 0
+    for (fam, label, rnd) in sorted(groups):
+        runs = parts(groups[(fam, label, rnd)], sizes, limit)
+        for i, run in enumerate(runs, 1):
+            tail = "" if len(runs) == 1 else "_part_%d_of_%d" % (i, len(runs))
+            name = "PP_%s_Word%s_%s_%s%s_%s.zip" % (fam, SET, label, rnd, tail, DATE)
+            path = os.path.join(a.out, name)
+            with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as zf:
+                for f in run:
+                    arc, member = src[f]
+                    with zipfile.ZipFile(arc) as za:
+                        zf.writestr("%s/%s" % (os.path.splitext(name)[0], f), za.read(member))
+            total += len(run)
+            print("%-56s %3d docs  %5.1f MiB"
+                  % (name, len(run), os.path.getsize(path) / 1048576))
+    print("Word documents packaged: %d   (the build holds %d)" % (total, len(src)))
+    return 0 if total == len(src) else 1
+
+
+if __name__ == "__main__":
+    import doctest
+    import sys
+    f, t = doctest.testmod()
+    print("%d/%d doctests passed" % (t - f, t))
+    raise SystemExit(main(sys.argv) if not f else 1)

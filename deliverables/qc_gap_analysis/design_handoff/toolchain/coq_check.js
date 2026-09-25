@@ -2,6 +2,11 @@
 globalThis.CoQCheck = (function () {
 const SUP = { '⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9' };
 const desup = s => String(s).replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]/g, c => SUP[c]);
+// The closed token set of the design system's own specimen card
+// (guidelines/rules-coq-result-cells.html): a result cell prints one of these eight
+// tokens or a figure with its unit, and nothing else. Source spellings are normalised
+// INTO the set, never the reverse — every extra spelling of one fact is a
+// discrepancy an inspector will raise against the register.
 const TOKENS = ['Conforms','Absent','Does not conform','ND','< LOQ','n/t','[ — ]','[pending]'];
 const ROMAN = /^(I|II|III|IV|V|VI|VII|VIII|IX|X)$/;
 
@@ -87,8 +92,29 @@ function check(file, html, rec) {
   }
 
   // -- 11 grammar whitelist + length
+  const DETS_ORDER = ['1','2','3','4','5','6','7','8','9.1','9.2','9.3','9.4','9.5','10.1','10.2','10.3','11.1','11.2','11.3','11.4','12'];
+  // Owner, 21.09.2026: "there will be no empty space ... all parameter results must be
+  // filled in". A result cell is therefore NEVER blank — it carries a value or it
+  // carries the token that states what is absent. Three assertions, strongest first.
+  const NORESULT = /not tested|upon request|to be performed|in-house CoA only/i;
+  cells.forEach((c, i) => {
+    const d = DETS_ORDER[i];
+    if (c.val) return;
+    // (a) nothing may print empty, on any determination.
+    F.push('A11 #' + d + ' prints an EMPTY cell — every cell carries a value or a token');
+    // (b) #1, #2 and #7 are performed in house and the batch's iCoA certifies all three
+    //     (owner: "Ident A and Ident B and even the Foreign Matter parameters are
+    //     contained in the iCoA for each CoQ, this is known"), so they are never absent.
+    if (['1', '2', '7'].includes(d))
+      F.push('A11 in-house determination #' + d + ' prints nothing — its iCoA certifies it');
+    // (c) a cell empty while the record holds a figure is a LOST RESULT, not an absence.
+    if (!rec) return;
+    const res = String(rec.res[d] || '').trim(), st = String(rec.st[d] || '');
+    if (res && res !== '—' && !NORESULT.test(st) && !NORESULT.test(res))
+      F.push('A11 #' + d + ' prints nothing but the record holds "' + res + '" (' + st.slice(0, 40) + ')');
+  });
   for (const c of cells) {
-    if (!c.val) { F.push('A11 empty result cell'); continue }
+    if (!c.val) continue;
     if (c.val.length > 26) F.push('A11 cell too long (' + c.val.length + '): ' + c.val);
     const ok = TOKENS.includes(c.val) ||
       /^[\d.]+\s*(%|CFU\/g|µg\/kg|mg\/kg)$/.test(c.val) ||
@@ -148,10 +174,10 @@ function check(file, html, rec) {
   const allP = lrows.flatMap(m => txtOf(m[3]).split(/,\s*/)).filter(Boolean);
   const dupP = allP.filter((x, i) => allP.indexOf(x) !== i);
   if (dupP.length) F.push('A15 param credited twice: ' + [...new Set(dupP)].join(','));
-  const DETS = ['1','2','3','4','5','6','7','8','9.1','9.2','9.3','9.4','9.5','10.1','10.2','10.3','11.1','11.2','11.3','11.4','12'];
+  const DETS = DETS_ORDER;
   cells.forEach((c, i) => {
     const d = DETS[i];
-    const hasResult = !['n/t','[ — ]','[pending]'].includes(c.val);
+    const hasResult = !['n/t', '[ — ]', '[pending]'].includes(c.val);
     if (hasResult && !allP.includes(d) && !allP.includes(String(d).split('.')[0])) F.push('A15 param ' + d + ' prints "' + c.val + '" but is credited to no laboratory');
   });
 

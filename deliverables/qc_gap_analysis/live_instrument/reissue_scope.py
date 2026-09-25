@@ -28,7 +28,7 @@ def rows(src):
     d = json.load(open(src, encoding="utf-8"))
     out = []
     for c in d["coqs"]:
-        if not c["t"].startswith("additional"):
+        if not c["t"].startswith("retest"):
             continue
         code = c.get("regcode") or ""
         numbered = code.startswith("CoQ-PP_26-")

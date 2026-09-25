@@ -55,7 +55,7 @@ def sd(dd):
 
 def series(t):
     return {'initial release': 'release', 'initial release — predicted': 'release (predicted)',
-            'additional testing (12-month)': 'retest', 'additional testing (12-month) — predicted': 'retest (predicted)'}[t]
+            'retest': 'retest', 'retest — predicted': 'retest (predicted)'}[t]
 
 
 def build_rows(src=None, instances=None, codes=None):
@@ -116,7 +116,7 @@ def build_rows(src=None, instances=None, codes=None):
     for c in d['coqs']:
         code = c.get('regcode') or c.get('n') or '—'
         if codes:
-            sfx = 'R' if c['t'].startswith('additional') else 'I'
+            sfx = 'R' if c['t'].startswith('retest') else 'I'
             for name in (c.get('pp'), c.get('cb')):
                 if name and (T.batch_key(name), sfx) in codes:
                     code = codes[(T.batch_key(name), sfx)]; break

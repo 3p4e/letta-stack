@@ -7,7 +7,7 @@
     python3 design_handoff/toolchain/merge_tranches_v40.py --no-flatten
 
 `print_v40.py` prints the set the way it is **built** — the release certificates in
-one folder, the 12-month reissues split by tranche. The Head of QC asked on
+one folder, the retest reissues split by tranche. The Head of QC asked on
 16.09.2026 for the set the way a tranche is **read**: "two PDF files, tranche one and
 tranche two, that will contain all of the certificates of quality for the respective
 tranche into one file as merged certificates document."
@@ -16,7 +16,7 @@ So a tranche document holds both rounds for its own lots — the release certifi
 first, in register order, then the reissues, in register order. That is the order the
 rounds happened in, which is how a batch file reads.
 
-`--series reissue` writes the tranche's **12-month retest certificates alone**, which is
+`--series reissue` writes the tranche's **retest certificates alone**, which is
 what the Head of QC asked for on 16.09.2026: the reissue is the document that travels with
 the batch, and the release certificate is the record of the round that released it.
 `--series both` (the default) keeps the complete file, release round then retest.
@@ -130,7 +130,7 @@ def main(argv):
     ap.add_argument("--tranche", action="append", default=None,
                     help="restrict to these tranches (default: 1 and 2)")
     ap.add_argument("--series", choices=("reissue", "release", "both"), default="both",
-                    help="reissue: the 12-month retest certificates only, which is the "
+                    help="reissue: the retest certificates only, which is the "
                          "document that travels with the batch (owner, 16.09.2026); "
                          "release: the release round only; both: release then reissue")
     ap.add_argument("--no-print", action="store_true",

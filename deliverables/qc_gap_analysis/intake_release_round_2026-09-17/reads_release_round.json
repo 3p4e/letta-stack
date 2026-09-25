@@ -1,0 +1,62 @@
+{
+  "471-0862-25": {
+    "batch_canonical": "P050022",
+    "cultivation_batch": "GP0824_02",
+    "batch_printed": "GP0824-02",
+    "cert_code": "471-0862-25",
+    "date_of_issue": "22.05.2025",
+    "lab": "IJZ-MB",
+    "laboratory": "IPH — Institute of Public Health",
+    "letter_no": "Сл. (Барање бр.: 044/2025) од 13.05.2025",
+    "produced": "23.04.2025",
+    "purpose": "микробиолошка чистота",
+    "method": "Ph.Eur. 5.1.8 – Kat. C / 2.6.12, 2.6.31",
+    "overall_conclusion": "ОДГОВАРА — Ph.Eur. монографија 04/2019:50108",
+    "drive_file_id": "1f6Q_gJCFw0sK46_YcS6xI5uHtdz41fF8",
+    "file": "220525_471-0862-25_IJZ-MB_GP0824_02-P050022.pdf",
+    "sha256": "a6a9de9b9558b420ea298bcf2fe97ff7141e5e6342f67de2fa8f1755fa50c942",
+    "read_A": {"9.1": "700 CFU/g", "9.2": "< 10 CFU/g", "9.3": "< 10² и > 10 CFU/g",
+               "9.4": "Одговара", "9.5": "Одговара"},
+    "read_B": {"9.1": "700 CFU/g", "9.2": "< 10 CFU/g", "9.3": "< 10^2 и > 10 CFU/g",
+               "9.4": "Одговара", "9.5": "Одговара"},
+    "reads_agree_flag": true,
+    "results": {"9.1": "700", "9.2": "< 10", "9.3": "< 10² и > 10",
+                "9.4": "Одговара", "9.5": "Одговара"},
+    "register_correction": {
+      "K": ["10", "< 10"]
+    },
+    "notes": [
+      "the register's TYMC cell read a bare 10; the page prints < 10 CFU/g — corrected here",
+      "this page carries only E. coli and Salmonella beside the three counts; it does not report P. aeruginosa or S. aureus"
+    ]
+  },
+  "2471/2025": {
+    "batch_canonical": "P050022",
+    "cultivation_batch": "GP0824_02",
+    "cert_code": "2471/2025",
+    "date_of_issue": "30.05.2025",
+    "lab": "IJZ",
+    "laboratory": "IPH — Institute of Public Health",
+    "completed": {"pesticides": "22.05.2025", "metals": "30.05.2025", "mycotoxins": "16.05.2025"},
+    "conformity": ["Ph. Eur. 2.8.13 (pesticides)", "Ph. Eur. 2.4.27 (metals)", "Ph. Eur. 2.8.18 (mycotoxins)"],
+    "drive_file_id": "1svW7Ois0gQVJopJZW7e2SQo6Np_yrVhb",
+    "file": "300525_2471-2025_IJZ_GP0824_02-P050022.pdf",
+    "sha256_note": "downloaded 17.09.2026; 4 pages, no text layer (scanned)",
+    "read_A": {"10.2": "< 2 µg/kg", "11.1": "н.д.", "11.2": "н.д.", "11.3": "н.д.",
+               "11.4": "н.д.", "12": "н.д. — every residue on the list"},
+    "read_B": {"10.2": "< 2", "11.1": "н.д.", "11.2": "н.д.", "11.3": "н.д.",
+               "11.4": "н.д.", "12": "н.д."},
+    "reads_agree_flag": true,
+    "results": {"10.2": "<2", "11.1": "N.D.", "11.2": "N.D.", "11.3": "N.D.",
+                "11.4": "N.D.", "12": "N.D."},
+    "register_correction": {
+      "O": [null, "<2"],
+      "V": ["< LOQ", "N.D."]
+    },
+    "notes": [
+      "the page prints олово, жива, арсен and кадмиум each as н.д., which is what the Head of QC named on 17.09.2026 — 'in the eCOA for Heavy Metals all parameters are ND'",
+      "Вкупни афлатоксини < 2 µg/kg against a maximum of 4 — the register row had no aflatoxin column at all; added here",
+      "every pesticide on the list reads н.д.; the register cell said < LOQ, which is a different word for the same finding but not the page's — corrected to N.D."
+    ]
+  }
+}

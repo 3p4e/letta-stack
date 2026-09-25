@@ -249,12 +249,33 @@ for name, rows in (("iCoA Register", icn), ("CoQ Register", cqn)):
     # names is the row's planned issue date or the sentence is false. The builder
     # wrote this day as a literal too, so a register could issue on 06.06.2026 and
     # say 27.05.2026 in the same row.
+    #
+    # A Status is a semicolon-joined list of clauses, and not every clause speaks
+    # about this row's own certificate: a retest row ends "...; iCoA tested
+    # 14.08.2026, issued 17.08.2026", which dates the INTERNAL certificate of
+    # analysis, a different document the register dates in its own iCoA issue date
+    # column. Reading the whole Status as one sentence made that clause answer for
+    # the row, and it reported CoQ-PP_26-171 and -172 as false when both are true —
+    # they are two of the seven the register withheld on 18.09.2026, so they
+    # genuinely carry no planned issue day yet, while their iCoA issue date column
+    # holds exactly the 17.08.2026 the clause names. So: read clause by clause, and
+    # hold an iCoA clause against the iCoA column rather than skipping it, because
+    # a clause nothing checks is how the wrong date gets in.
     for d in rows:
-        said = re.search(r"issued (?:with the legacy series on )?(\d{2}\.\d{2}\.\d{4})", str(d.get("Status") or ""))
-        if said and said.group(1) != fmt(d["Issue date (planned)"]):
-            bad(name, "Status names an issue day that is not the row's",
-                "%s: Status says %s, row issues %s" % (d.get("iCoA code") or d.get("CoQ code"),
-                                                        said.group(1), fmt(d["Issue date (planned)"])))
+        for clause in str(d.get("Status") or "").split(";"):
+            said = re.search(r"issued (?:with the legacy series on )?(\d{2}\.\d{2}\.\d{4})", clause)
+            if not said:
+                continue
+            about_icoa = "iCoA" in clause and name != "iCoA Register"
+            col = "iCoA issue date" if about_icoa else "Issue date (planned)"
+            if col not in d:
+                continue
+            if said.group(1) != fmt(d[col]):
+                bad(name,
+                    "Status names an iCoA issue day that is not the row's" if about_icoa
+                    else "Status names an issue day that is not the row's",
+                    "%s: Status says %s, row's %s is %s"
+                    % (d.get("iCoA code") or d.get("CoQ code"), said.group(1), col, fmt(d[col])))
 
 # ---------------------------------------------------------------- 7. Batch Dates against the list as it was sent
 raw = os.path.join(HERE, "batch_dates_raw_2026-09-04.tsv")
@@ -287,3 +308,16 @@ if os.path.exists(raw):
 print(f"\n{len(F)} finding(s)")
 for s, w, d in F:
     print(f"  [{s}] {w}" + (f" — {d}" if d else ""))
+
+# This pass had no exit code, so it printed its findings and returned 0 — and the
+# workflow step that runs it passed no matter what it found. That is the same flaw
+# the workflow's own comment records for verify_workbook.py ("a verifier that
+# cannot fail is a report, not a check"), fixed there and never here: two findings
+# on v48 rode a green CI, and both turned out to be the checker misreading a
+# clause rather than the register lying, which is exactly the kind of thing that
+# only gets looked at once something fails.
+if F:
+    print(f"\nFAILED: {len(F)} finding(s) on what the sheets say about themselves")
+    sys.exit(1)
+print("\nprose verified: no findings")
+sys.exit(0)

@@ -1,5 +1,5 @@
 strain,abbr,status,results_n,results_range,grades_n,basis,numeral,nominal,tolerance,window_low,window_high,measured
-Amnesia Core Cut,ACC,FINISHED,1,12.09–12.09,1,all results,I,12.00,0.95,11.05,12.94,12.09
+Amnesia Core Cut,ACC,FINISHED,1,12.09–12.09,1,all results,I,12.00,1.20,10.80,13.19,12.09
 Apple and Banana,AB,FINISHED,2,16.93–22.97,2,all results,II,18.00,1.80,16.20,19.79,16.93 22.97
 Apple and Banana,AB,FINISHED,2,16.93–22.97,2,all results,I,22.00,2.20,19.80,24.19,16.93 22.97
 Blue Gelato,BG,FINISHED,2,21.80–26.14,2,all results,II,22.00,2.20,19.80,24.19,21.80 26.14
@@ -55,3 +55,4 @@ Sleepy Joe,SJ,FINISHED,5,9.20–11.27,2,all results,II,10.00,1.00,9.00,10.99,9.2
 Sleepy Joe,SJ,FINISHED,5,9.20–11.27,2,all results,I,12.00,1.00,11.00,12.99,9.20 10.61 10.96 11.20 11.27
 Wedding Crusher,WC,FINISHED,4,21.67–25.37,2,all results,II,22.00,1.40,20.60,23.39,21.67 22.11 23.48 25.37
 Wedding Crusher,WC,FINISHED,4,21.67–25.37,2,all results,I,26.00,2.60,23.40,28.59,21.67 22.11 23.48 25.37
+Wedding Cake,WED,FINISHED,1,25.15–25.15,1,all results,I,26.00,2.60,23.40,28.59,25.15

@@ -231,6 +231,32 @@ def build(path=DATA):
                 # campaign's day; any other retest is dated at its own certificate
                 frm = to = sampled or last
                 campaign = campaign if sampled else ""
+                # Owner, 20.09.2026: "there should be one iCOA per COQ, retest and
+                # initial." This REPLACES the ruling of 10.09.2026 that the register
+                # "encompasses every internal certificate that exists or ever will",
+                # under which a retest round issued a certificate whether or not a
+                # certificate of quality followed. It no longer does.
+                #
+                # A retest outside the sampling campaigns is exactly that case, and
+                # checking it is not a matter of taste: of the 215 rows the old rule
+                # produced, 172 were citable by a certificate of quality and 43 were
+                # not, and all 43 were non-campaign retests while all 83 campaign
+                # retests and all 89 release rounds were cited. So "has a certificate
+                # of quality" and "is a release round or a campaign retest" are the
+                # same set, and this is that set.
+                #
+                # What the 43 were, checked rather than assumed: 31 of them are dated
+                # 31.08 or 01.09.2026 — rounds raised by an external laboratory's
+                # certificate arriving on those days (the IJZ-MB 536-1067-26 /
+                # 565-1096-26 series), which is why their "retest 1" is dated AFTER
+                # the Tranche 3 "retest 2" of 19–21.08.2026 on the same lot, in 32
+                # rows. They are not the old in-house Certificates of Analysis: those
+                # 41 scans in _IN-HOUSE_PP are QCCoA 001/001v02 forms dated
+                # 19.03.2025–20.02.2026, none of which shares a testing date with any
+                # of the 43, and they are already superseded by CoQ-025..045 through
+                # the register's own "Supersedes (old in-house CoA)" column.
+                if not campaign:
+                    continue
             tested = frm
             params = scope(round_, col2det)
             extra = [p for p in params if p not in ALWAYS]
@@ -266,16 +292,28 @@ def build(path=DATA):
     #
     # The row named by the cultivation batch wins: a bare P number is the name
     # the desk fell back to when the certificate gave it nothing else.
+    # The key is the ROUND — the lot and the day the work was done — not the round's
+    # label. It used to be (batch, label), which cannot enforce the rule it exists to
+    # enforce: two rows for one testing day with different labels ("retest 1" and
+    # "retest 3") are two certificates for one round, and a label-keyed check waves
+    # them both through. Four rounds were doing exactly that, carrying 9 certificates
+    # between them — GP062501/P050202 on 11.05.2026 held retest 1, 3 and 4, identical
+    # in lot, strain, testing date, issue date, parameters and source certificate, and
+    # differing only in the word. The one-per-CoQ filter above now removes those rows
+    # for a different reason, which would leave this bug latent and waiting for a
+    # CAMPAIGN round to acquire two labels on one day. So it is keyed correctly here.
+    def _round_key(r):
+        return (_bi().batch_key(r["p_lot"] or r["batch"]), r["tested_from"], r["tested_to"])
+
     _seen = {}
     for r in rows:
-        k = (_bi().batch_key(r["p_lot"] or r["batch"]), r["round"])
+        k = _round_key(r)
         keep = _seen.get(k)
         if keep is None:
             _seen[k] = r
         elif keep["batch"] == keep["p_lot"] and r["batch"] != r["p_lot"]:
             _seen[k] = r          # the cultivation-batch row replaces the P-number one
-    rows = [r for r in rows if _seen.get(
-        (_bi().batch_key(r["p_lot"] or r["batch"]), r["round"])) is r]
+    rows = [r for r in rows if _seen.get(_round_key(r)) is r]
 
     # the order of issuing: the issue date, then when the work was done, then the
     # batch, so a shared issue date orders by packaging as the CoQ series does

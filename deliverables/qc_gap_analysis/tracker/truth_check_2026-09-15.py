@@ -708,7 +708,7 @@ def t6_drafts(root, export):
     """Every compiled draft against the export record it was compiled from."""
     by_lot = defaultdict(dict)
     for c in export["coqs"]:
-        series = "reissue" if c["t"].startswith("additional") else "initial"
+        series = "reissue" if c["t"].startswith("retest") else "initial"
         for nm in (c.get("pp"), c.get("cb")):
             if nm:
                 by_lot[nkey(nm)].setdefault(series, c)
@@ -855,7 +855,7 @@ def t9_compilation(root, export, wb_values):
 
     def key(code, t, cb, pp):
         return (code or "— at issue —",
-                "reissue — 12-month retest" if t.startswith("additional") else "release",
+                "reissue — retest" if t.startswith("retest") else "release",
                 cb or "—", pp or "— no P lot assigned —")
     idx = {}
     for r in wide:

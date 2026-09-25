@@ -1,8 +1,4 @@
 pages/
-# The per-folder flattened prints are working output: 164 MiB for the four, and every
-# one of them is one command away (toolchain/print_v40.py). The flattened documents the
-# owner asked for are the tranche files, and those stay tracked.
-CoQ_ISSUE_COQ_flat.pdf
-CoQ_REISSUE_T1_flat.pdf
-CoQ_REISSUE_T2_flat.pdf
-CoQ_REISSUE_T3_flat.pdf
+# Flattened rasters are no longer produced: the deliverable is the vector PDF, which a
+# laser printer renders crisply. print_v40.py --no-flatten / merge_tranches_v40.py --no-flatten.
+*_flat.pdf
