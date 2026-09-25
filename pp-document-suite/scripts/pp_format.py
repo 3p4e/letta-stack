@@ -258,11 +258,23 @@ def sop_titlepage(d, code, mk_title, en_title, status="draft", version="1.0",
     fixed_widths(t, [4.7, 4.7, 4.7, 4.7]); table_borders(t, 4, "000000")
     d.add_page_break()
 
+def set_update_fields_on_open(d):
+    """Add <w:updateFields w:val="true"/> to settings.xml so Word AND LibreOffice refresh ALL
+    fields (native TOC, Page X of Y) when the document is opened — which also makes a headless
+    `soffice --convert-to pdf` populate the TOC instead of leaving it blank. Idempotent."""
+    try:
+        s = d.settings.element
+        if s.find(qn('w:updateFields')) is None:
+            uf = OxmlElement('w:updateFields'); uf.set(qn('w:val'), 'true'); s.insert(0, uf)
+    except Exception:
+        pass
+
 def sop_toc(d):
     p = d.add_paragraph(); run(p, "СОДРЖИНА | TABLE OF CONTENTS", 14, NAVY, bold=True)
     par = d.add_paragraph(); fld = OxmlElement('w:fldSimple')
     fld.set(qn('w:instr'), r'TOC \o "1-3" \h \z \u'); par._p.append(fld)
-    note = d.add_paragraph(); run(note, "(Update field after opening: right-click → Update Field)", 8, GREY, ital=True)
+    note = d.add_paragraph(); run(note, "(TOC updates automatically on open; or right-click → Update Field)", 8, GREY, ital=True)
+    set_update_fields_on_open(d)
     d.add_page_break()
 
 def sop_table(d):
