@@ -39,6 +39,47 @@ A_ALT     = "F7FAFC"     # annex alternating row
 A_WARM    = "FEF9E7"; A_ROSE = "FDEDEC"; A_MINT = "EAFAF1"
 BORDER_GRAY = "B0BEC5"
 FONT = "Calibri"
+RED   = RGBColor(0xC0, 0x00, 0x00)   # document-control status (draft / not-for-use)
+GREEN = RGBColor(0x37, 0x56, 0x23)   # approved-for-use status
+DRAFT_FILL    = "FDEDEC"             # rose band behind a DRAFT / IN-REVIEW status line
+APPROVED_FILL = "EAFAF1"             # mint band behind an APPROVED status line
+
+# ============================ Document-control lifecycle ============================
+# House rule (all engine documents — SOPs, annexes, reports, certificates):
+#   A document being edited is a DRAFT: it is NOT a controlled version and has NO effective
+#   date; it may be revised freely. Only when concluded is it submitted for review/approval;
+#   once APPROVED it becomes a controlled version (vNN) WITH an effective date. Any later
+#   change returns it to draft and repeats the cycle. So the controlled version number and the
+#   effective date are shown ONLY when status == "approved"; drafts are visibly marked and
+#   carry neither. `status` defaults to "draft" — nothing is treated as approved unless said so.
+def norm_status(status):
+    s = (status or "draft").strip().lower().replace("-", "_").replace(" ", "_")
+    return s if s in ("draft", "in_review", "approved") else "draft"
+
+def is_approved(status):
+    return norm_status(status) == "approved"
+
+def status_label(status):
+    """Bilingual (MK, EN) status caption for the title/cover band."""
+    return {
+        "draft":     ("РАБОТНА ВЕРЗИЈА — НЕ ЗА УПОТРЕБА", "DRAFT — NOT FOR USE"),
+        "in_review": ("ЗА ПРЕГЛЕД И ОДОБРУВАЊЕ — НЕ ЗА УПОТРЕБА", "IN REVIEW / FOR APPROVAL — NOT FOR USE"),
+        "approved":  ("ОДОБРЕНО ЗА УПОТРЕБА", "APPROVED FOR USE"),
+    }[norm_status(status)]
+
+def header_version(status, version):
+    """Running-header version cell: a controlled 'vNN' only once approved; otherwise DRAFT/REVIEW.
+    The intended controlled version is retained in `version` and surfaces when approved."""
+    st = norm_status(status)
+    if st == "approved":
+        return "v%s" % version
+    return "DRAFT" if st == "draft" else "IN REVIEW"
+
+def effective_display(status, effective_date):
+    """Effective date exists only for an approved document; drafts show a not-approved marker."""
+    if is_approved(status):
+        return effective_date or "____.____.______"
+    return "—"
 
 # ---------- mandatory PP base template (header + logo + footer + page geometry) ----------
 import os
@@ -124,10 +165,12 @@ def wipe_body(d):
     d._pp_sectpr = sect
     return sect
 
-def apply_pp_header(d, mk_name, code, en_name, version="1.0"):
+def apply_pp_header(d, mk_name, code, en_name, version="1.0", status="draft"):
     """Stamp the base-template running header: bilingual Document name, Code of document, Version.
     Header is a 2x3 table: [leaf logo+wordmark] | [Document name MK/EN] | [Code of document / Ver].
-    Only the value runs are overwritten; the labels and the logo are preserved from the template."""
+    Only the value runs are overwritten; the labels and the logo are preserved from the template.
+    The Version cell shows a controlled 'vNN' only when status == 'approved'; a draft/in-review
+    document shows DRAFT / IN REVIEW instead (document-control lifecycle, see top of module)."""
     try:
         h = d.sections[0].header.tables[0]
     except (IndexError, AttributeError):
@@ -136,18 +179,21 @@ def apply_pp_header(d, mk_name, code, en_name, version="1.0"):
         if i < len(runs):
             runs[i].text = t
     nm = h.cell(0, 1).paragraphs[1].runs
-    setrun(nm, 0, mk_name + " "); setrun(nm, 2, code); setrun(nm, 5, en_name)
+    # Document-name cell shows ONLY the title (MK over EN). The document code is NOT repeated here —
+    # it lives in the right-hand 'Code of document' cell. Clear the old code + ' | ' + newline runs
+    # so the cell reads: <mk_title> \n <en_title>.
+    setrun(nm, 0, mk_name); setrun(nm, 2, ""); setrun(nm, 3, ""); setrun(nm, 4, ""); setrun(nm, 5, en_name)
     cd = h.cell(0, 2).paragraphs[2].runs
     setrun(cd, 0, code); setrun(cd, 2, ""); setrun(cd, 3, "")
     vr = h.cell(1, 2).paragraphs[0].runs
     if vr:
-        vr[-1].text = version
+        vr[-1].text = header_version(status, version)
     return True
 
 # ============================ SOP (two-column) ============================
 def new_sop(margin_cm=1.27, from_template=True, code=None,
             mk_name="СТАНДАРДНА ОПЕРАТИВНА ПРОЦЕДУРА", en_name=None, version="1.0", template=None,
-            mk_title=None, en_title=None):
+            mk_title=None, en_title=None, status="draft"):
     """SOP document. By DEFAULT starts FROM the mandatory PP base template so the running header
     (logo + bilingual doc name + code + version), the 'Page X of Y' footer and the A4 page geometry
     are present on every page.
@@ -159,19 +205,43 @@ def new_sop(margin_cm=1.27, from_template=True, code=None,
     hdr_en = en_title or en_name or ("STANDARD OPERATING PROCEDURE — %s" % (code or ""))
     if from_template and os.path.exists(tpl):
         d = Document(tpl)
-        apply_pp_header(d, hdr_mk, code or "", hdr_en, version)
+        apply_pp_header(d, hdr_mk, code or "", hdr_en, version, status)
         wipe_body(d)
         _normal(d)
         return d
     d = Document(); _page(d, "portrait", margin_cm); _normal(d); return d
 
-def sop_titlepage(d, code, mk_title, en_title):
+def status_band(d, status="draft", version="1.0", effective_date=None, review_date=None):
+    """Render the document-control status line (DRAFT / IN REVIEW / APPROVED) with the controlled
+    version and effective date shown ONLY when approved. Call on every title page / cover."""
+    st = norm_status(status); mk, en = status_label(st)
+    col = GREEN if st == "approved" else RED
+    fill = APPROVED_FILL if st == "approved" else DRAFT_FILL
+    t = d.add_table(rows=1, cols=1); t.alignment = WD_TABLE_ALIGNMENT.CENTER
+    c = t.cell(0, 0); shade(c, fill); cell_margins(c, top=46, bottom=46, left=86, right=86)
+    p = c.paragraphs[0]; p.alignment = WD_ALIGN_PARAGRAPH.CENTER; sp(p, 1, 1)
+    run(p, "%s | %s" % (mk, en), 12, col, bold=True)
+    p2 = c.add_paragraph(); p2.alignment = WD_ALIGN_PARAGRAPH.CENTER; sp(p2, 1, 1)
+    run(p2, "Верзија | Version: %s" % header_version(st, version), 10, BLACK, bold=True)
+    run(p2, "     ", 10, GREY)
+    run(p2, "Датум на важност | Effective date: %s" % effective_display(st, effective_date), 10, BLACK, bold=True)
+    if review_date and st == "approved":
+        run(p2, "     ", 10, GREY)
+        run(p2, "Датум на преглед | Review date: %s" % review_date, 10, GREY)
+    fixed_widths(t, [18.0]); table_borders(t, 4, "B0BEC5")
+    return st
+
+def sop_titlepage(d, code, mk_title, en_title, status="draft", version="1.0",
+                  effective_date=None, review_date=None):
     for txt, sz, col, bold in [("СТАНДАРДНА ОПЕРАТИВНА ПРОЦЕДУРА", 24, NAVY, True),
                                ("STANDARD OPERATING PROCEDURE", 14, GREY, False),
                                (code, 18, NAVY, True)]:
         p = d.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER; sp(p, 6, 4); run(p, txt, sz, col, bold=bold)
-    p = d.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER; sp(p, 4, 12)
+    p = d.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER; sp(p, 4, 8)
     run(p, mk_title, 12, BLACK, bold=True); run(p, " | ", 10, GREY); run(p, en_title, 12, GREY, bold=True)
+    st = status_band(d, status, version, effective_date, review_date)
+    d.add_paragraph()
+    approved = (st == "approved")
     t = d.add_table(rows=4, cols=4); t.alignment = WD_TABLE_ALIGNMENT.CENTER
     hdr = [("Дејство", "Action"), ("Позиција", "Position"), ("Име", "Name"), ("Датум/Потпис", "Date/Sign")]
     for j, (mk, en) in enumerate(hdr):
@@ -182,6 +252,9 @@ def sop_titlepage(d, code, mk_title, en_title):
     for i, (act, name) in enumerate(rows, 1):
         t.cell(i, 0).paragraphs[0].text = ''; run(t.cell(i, 0).paragraphs[0], act, 10)
         run(t.cell(i, 2).paragraphs[0], name, 10)
+        # Date/Sign: blank on an approved doc (wet-signed), 'Pending' while still draft/in-review
+        if not approved:
+            run(t.cell(i, 3).paragraphs[0], "Во тек | Pending", 9, GREY, ital=True)
     fixed_widths(t, [4.7, 4.7, 4.7, 4.7]); table_borders(t, 4, "000000")
     d.add_page_break()
 
@@ -206,13 +279,18 @@ def _set_heading(p, level=1):
         pass
 
 def sop_section_row(t, num, mk, en, level=1):
-    """Two-column section header. level controls the TOC depth (1=1.0, 2=1.1, 3=1.1.1)."""
+    """Two-column section header. level controls the TOC depth (1=1.0, 2=1.1, 3=1.1.1) and the
+    visual weight: level 1 (main X.0 sections) is a 12 pt bold gray band; level >= 2 sub-sections
+    are the lighter 11 pt bold style with NO fill, so a nested SOP does not become a wall of gray
+    bands. All levels keep a Heading style so the native TOC field still populates."""
     L, R = t.add_row().cells
-    for c in (L, R):
-        shade(c, SOP_GRAY)
+    size = 12 if level <= 1 else 11
+    if level <= 1:
+        for c in (L, R):
+            shade(c, SOP_GRAY)
     cell_borders(L, ('right',)); cell_borders(R, ('left',))
-    L.paragraphs[0].text = ''; _set_heading(L.paragraphs[0], level); run(L.paragraphs[0], f"{num} {mk}", 12, BLACK, bold=True)
-    R.paragraphs[0].text = ''; run(R.paragraphs[0], f"{num} {en}", 12, GREY, bold=True)
+    L.paragraphs[0].text = ''; _set_heading(L.paragraphs[0], level); run(L.paragraphs[0], f"{num} {mk}", size, BLACK, bold=True)
+    R.paragraphs[0].text = ''; run(R.paragraphs[0], f"{num} {en}", size, GREY, bold=True)
 
 def sop_body_row(t, mk, en, bold=False):
     L, R = t.add_row().cells
@@ -239,7 +317,7 @@ def sop_block_table(d, headers, rows, widths_cm, header_bg=SOP_BLUE):
 # ============================ Annex (inline) ============================
 def new_annex(orient="portrait", from_template=True, code=None,
               mk_name="АНЕКС", en_name=None, version="1.0", template=None,
-              mk_title=None, en_title=None):
+              mk_title=None, en_title=None, status="draft"):
     """Annex document. Like new_sop, by DEFAULT starts FROM the PP base template so the mandatory
     header, logo and 'Page X of Y' footer are present (required on all annexes).
     The header 'Document name' shows the ACTUAL annex title (mk_title | en_title); the generic
@@ -249,7 +327,7 @@ def new_annex(orient="portrait", from_template=True, code=None,
     hdr_en = en_title or en_name or ("ANNEX — %s" % (code or ""))
     if from_template and os.path.exists(tpl):
         d = Document(tpl)
-        apply_pp_header(d, hdr_mk, code or "", hdr_en, version)
+        apply_pp_header(d, hdr_mk, code or "", hdr_en, version, status)
         wipe_body(d)
         _normal(d)
         if orient == "landscape":
@@ -258,11 +336,18 @@ def new_annex(orient="portrait", from_template=True, code=None,
         return d
     d = Document(); _page(d, orient, 2.54 if orient == "portrait" else 1.27); _normal(d); return d
 
-def annex_title_block(d, code, mk_title, en_title, parent_sop):
+def annex_title_block(d, code, mk_title, en_title, parent_sop,
+                      status="draft", version="1.0", effective_date=None):
     p = d.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER; sp(p, 2, 3); run(p, code, 12, NAVY, bold=True)
     p = d.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER; sp(p, 0, 3)
     run(p, mk_title, 14, BLACK, bold=True); run(p, " | ", 10, GREY); run(p, en_title, 10, GREY, bold=True)
-    p = d.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER; sp(p, 0, 8); run(p, f"({parent_sop})", 10, GREY, ital=True)
+    p = d.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER; sp(p, 0, 4); run(p, f"({parent_sop})", 10, GREY, ital=True)
+    # Document-control status line: controlled version + effective date only when approved.
+    st = norm_status(status); mk, en = status_label(st); col = GREEN if st == "approved" else RED
+    p = d.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER; sp(p, 0, 8)
+    run(p, "%s | %s" % (mk, en), 9, col, bold=True)
+    run(p, "   —   Верзија | Version: %s   ·   Датум на важност | Effective date: %s"
+        % (header_version(st, version), effective_display(st, effective_date)), 8, GREY)
 
 def annex_table(d, widths_cm):
     t = d.add_table(rows=0, cols=len(widths_cm)); t.alignment = WD_TABLE_ALIGNMENT.CENTER
