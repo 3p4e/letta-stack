@@ -81,11 +81,14 @@ def main(argv):
     ap = argparse.ArgumentParser()
     ap.add_argument('--apply', action='store_true')
     ap.add_argument('--check', action='store_true')
+    ap.add_argument('--tranche', default='T3')
+    ap.add_argument('--reg', default=REG, help='register to read and write (a scratch copy for a dry run)')
+    ap.add_argument('--outdir', default=HERE, help='where the laboratory request list goes')
     a = ap.parse_args(argv[1:])
     if not (a.apply or a.check):
         ap.error('pass --check or --apply')
 
-    reg = json.load(open(REG, encoding='utf-8'))
+    reg = json.load(open(a.reg, encoding='utf-8'))
     tm = A.tranche_map()
 
     def tranche(c):
@@ -93,7 +96,7 @@ def main(argv):
             if k and k in tm:
                 return tm[k]
 
-    t3 = [c for c in reg['coqs'] if tranche(c) == 'T3']
+    t3 = [c for c in reg['coqs'] if tranche(c) == a.tranche]
     ini = [c for c in t3 if 'retest' not in c['t']]
     corpus = json.load(open(os.path.join(ROOT, 'ingestion', 'ecoa_runner', 'records_corpus.json'), encoding='utf-8'))
     log = collections.defaultdict(list)
@@ -173,11 +176,11 @@ def main(argv):
         print('--check: nothing written')
         return 0
 
-    with open(REG, 'w', encoding='utf-8') as fh:
+    with open(a.reg, 'w', encoding='utf-8') as fh:
         json.dump(reg, fh, ensure_ascii=False, indent=1)
 
     # the laboratory requests, rebuilt from the register as it now stands
-    out = os.path.join(HERE, 'LAB_REQUESTS_T3_2026-09-26.tsv')
+    out = os.path.join(a.outdir, 'LAB_REQUESTS_%s_2026-09-26.tsv' % a.tranche)
     req = collections.OrderedDict()
     for c in sorted(t3, key=lambda c: c['regcode']):
         for r in c['rows']:

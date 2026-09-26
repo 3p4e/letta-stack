@@ -86,11 +86,13 @@ def main(argv):
     ap.add_argument('--tranche', default='T3')
     ap.add_argument('--apply', action='store_true')
     ap.add_argument('--check', action='store_true')
+    ap.add_argument('--reg', default=REG, help='register to read and write (a scratch copy for a dry run)')
+    ap.add_argument('--outdir', default=HERE, help='where the laboratory request list goes')
     a = ap.parse_args(argv[1:])
     if not (a.apply or a.check):
         ap.error('pass --check or --apply')
 
-    reg = json.load(open(REG, encoding='utf-8'))
+    reg = json.load(open(a.reg, encoding='utf-8'))
     tm = A.tranche_map()
 
     def tranche(c):
@@ -168,12 +170,10 @@ def main(argv):
         print('--check: nothing written')
         return 0
 
-    shutil.copy2(REG, REG + '.bak')
-    with open(REG, 'w', encoding='utf-8') as fh:
+    with open(a.reg, 'w', encoding='utf-8') as fh:
         json.dump(reg, fh, ensure_ascii=False, indent=1)
-    os.remove(REG + '.bak')
 
-    out = os.path.join(HERE, 'LAB_REQUESTS_%s_2026-09-26.tsv' % a.tranche)
+    out = os.path.join(a.outdir, 'LAB_REQUESTS_%s_2026-09-26.tsv' % a.tranche)
     rows = collections.OrderedDict()
     for c, no in requests:
         k2 = (c.get('pp') or '', c.get('cb') or '', LAB_FOR.get(no, '?'))
