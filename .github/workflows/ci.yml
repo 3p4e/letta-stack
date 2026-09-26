@@ -398,8 +398,10 @@ jobs:
         run: |
           python3 deliverables/qc_gap_analysis/tracker/verify_prose.py
       # Head of QC, 26.09.2026: no silent blank on a certificate. Fails while a
-      # Tranche 3 result is empty although a same-lot, same-round certificate
+      # T1, T2 or T3 result is empty although a same-lot, same-round certificate
       # reports it (see CLAUDE.md, section 5).
       - name: No certificate result is empty while a certificate reports it
         run: |
-          python3 deliverables/qc_gap_analysis/tracker/audit_empty_results.py --tranche T3 --strict
+          for t in T1 T2 T3; do
+            python3 deliverables/qc_gap_analysis/tracker/audit_empty_results.py --tranche $t --strict
+          done

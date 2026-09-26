@@ -22,6 +22,12 @@ Where the value comes from: the **same lot's retest record** — same P lot, sam
 whose rows already carry the campaign certificates (`197-`, `220-`, `227-К/М/26`) with their dates.
 A row the retest record itself only *carries from the initial testing* is not a source.
 
+**Tranches 1 and 2 are different** (Head of QC, 26.09.2026): their retest certificates are with the
+customer, and each names the initial it supersedes with the initial's date, 06.06.2026. So a
+Tranche 1 or 2 initial is never re-dated. A result measured only in the retest round prints `n/t` on
+it, *not tested at release*, and the status names the retest certificate that carries the value. The
+retest records themselves are not touched.
+
 One case is not filled, on purpose: where the release round already holds results for the row and
 they disagree, printing the later campaign's value would hide them. `CoQ-PP_26-026` Total CBN is the
 instance — four UKIM results of 0.05, 1.09, 0.04 and 2.05 %, two above the ≤ 1.0 % limit. It is set
@@ -55,6 +61,9 @@ LAB_FOR = {  # who is asked for what, by the laboratory that reports it elsewher
     '11.4': 'IPH contaminants (IJZ)', '12': 'IPH contaminants (IJZ)',
 }
 EMPTY = ('—', '', 'None')
+IPH_ROWS = ('10.2', '11.1', '11.2', '11.3', '11.4', '12')   # an initial's source is IPH, never the retest round
+NT_LATER = ('not tested at release — measured in the retest round, %s of %s, and printed on the retest '
+            'certificate %s (Head of QC, ' + STAMP + ')')
 
 
 def empty(row):
@@ -108,7 +117,8 @@ def main(argv):
         raise SystemExit('initial and retest records do not pair one to one: %s'
                          % sorted(set(ini) ^ set(ret)))
 
-    filled, pending, untested, redated, requests = [], [], [], [], []
+    frozen = a.tranche in A.RETEST_WITH_CUSTOMER      # the retests are with the customer
+    filled, later, pending, untested, redated, requests = [], [], [], [], [], []
     for k in sorted(ini, key=lambda k: ini[k]['regcode']):
         c, r = ini[k], ret[k]
         rr = {x['no']: x for x in r['rows']}
@@ -123,7 +133,11 @@ def main(argv):
                              "disagree: %s" % (len(conflict), '; '.join(conflict)))
                 pending.append((c['regcode'], row['no'], '; '.join(conflict)))
                 continue
-            if src and not empty(src) and 'carried' not in str(src.get('st')) and dt(src.get('dd')):
+            usable = src and not empty(src) and 'carried' not in str(src.get('st')) and dt(src.get('dd'))
+            if usable and frozen and row['no'] not in IPH_ROWS:
+                row['st'] = NT_LATER % (src['doc'], src['dd'], r['regcode'])
+                later.append((c['regcode'], row['no'], src['res'], src['doc'], src['dd']))
+            elif usable and not frozen:
                 for f in ('res', 'doc', 'dd', 'lab', 'fam', 'route'):
                     if f in src:
                         row[f] = src[f]
@@ -137,6 +151,7 @@ def main(argv):
                 untested.append((c['regcode'], row['no']))
                 requests.append((c, row['no']))
         if cited:
+            assert not frozen, c['regcode']
             new = max(cited)
             old = dt(c.get('issue'))
             if not old or new > old:
@@ -144,7 +159,7 @@ def main(argv):
                 c['issue'] = '%02d.%02d.%04d' % (new.day, new.month, new.year)
                 redated.append((c['regcode'], c['issue_before_redating'], c['issue']))
         # the retest record: what it carries from an initial that has nothing is untested
-        for row in r['rows']:
+        for row in r['rows'] if not frozen else []:
             if empty(row) and row['no'] not in ('9.6', '9.7'):
                 row['st'] = ('not tested — no certificate for this lot; requested from the laboratory '
                              '(Head of QC, %s)' % STAMP)
@@ -158,8 +173,8 @@ def main(argv):
         if dt(c['issue']) < dt(dd):
             raise SystemExit('%s row %s: the certificate is dated before %s (%s)' % (code, no, doc, dd))
 
-    print('%s: filled %d cells from the same lot\'s retest campaign, %d await a ruling, %d not tested'
-          % (a.tranche, len(filled), len(pending), len(untested)))
+    print('%s: filled %d cells from the same lot\'s retest campaign, %d not tested at release (value on the '
+          'retest), %d await a ruling, %d not tested' % (a.tranche, len(filled), len(later), len(pending), len(untested)))
     by = collections.Counter(no for _, no, *_ in filled)
     print('  filled by row: %s' % ', '.join('%s×%d' % (n, k) for n, k in sorted(by.items(), key=lambda x: [float(y) for y in x[0].split('.')[:1]] + [x[0]])))
     print('  initial CoQs re-dated: %d  (%s)' % (len(redated), ', '.join(sorted({'%s→%s' % (o, n) for _, o, n in redated}))))

@@ -31,7 +31,12 @@ His words, taken point by point:
   internal certificate for rows 1, 2 and 7.
 
 After the mycotoxin values come off, each initial certificate's date is recomputed: on or after the
-last result it still cites from a later campaign, or back to its own date where none remains.
+last result it still cites from a later campaign, or back to its own date where none remains. The
+retest that supersedes it names that date, so the retest's `supersedes` line moves with it.
+
+The same rulings hold in every tranche (`--tranche T1`, `--tranche T2`), with one difference: the
+Tranche 1 and 2 retests are with the customer and name their initial's date, so a Tranche 1 or 2
+initial is never re-dated — the run stops if it would be.
 """
 import argparse
 import collections
@@ -159,8 +164,19 @@ def main(argv):
         later = [dt(r.get('dd')) for r in c['rows'] if str(r.get('st', '')).startswith(CAMPAIGN_NOTE) and dt(r.get('dd'))]
         new = max([base] + later)
         if ds(new) != c.get('issue'):
+            if a.tranche in A.RETEST_WITH_CUSTOMER:
+                raise SystemExit('%s: would move from %s to %s, but its retest is with the customer and names '
+                                 'the initial of %s' % (c['regcode'], c.get('issue'), ds(new), c.get('issue')))
             log['initial CoQ re-dated'].append((c['regcode'], c.get('issue'), ds(new)))
             c['issue'] = ds(new)
+        for r in t3:                          # the retest that supersedes it names its date
+            s = r.get('supersedes') or {}
+            if s.get('code') == c['regcode'] and s.get('date') != c['issue']:
+                if a.tranche in A.RETEST_WITH_CUSTOMER:
+                    raise SystemExit('%s names %s of %s; the initial is dated %s'
+                                     % (r['regcode'], c['regcode'], s.get('date'), c['issue']))
+                log['retest supersedes line re-dated'].append((r['regcode'], c['regcode'], s.get('date'), c['issue']))
+                s['date'] = c['issue']
         if new == base and 'issue_before_redating' in c:
             del c['issue_before_redating']
         for r in c['rows']:

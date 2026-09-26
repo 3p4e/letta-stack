@@ -72,16 +72,26 @@ folders without re-uploading it, which is how a superseded document goes to `OLD
 
 ## 5. No silent blank on a certificate
 
+**What is with the customer** (Head of QC, 26.09.2026): only the **Tranche 1 and 2 retest** CoQs.
+Every initial CoQ, T1/T2 included, and all of Tranche 3 are drafts. The register's `issued` flag
+means a code was allocated, not that the customer holds the document — never read it as that.
+
 Head of QC, 26.09.2026: *"they're missing values for many of the parameters and there must not be
 a case like that."* A result cell printed `[ — ]` for weeks without anyone saying why.
 
 - **Before any certificate build, run `python3 deliverables/qc_gap_analysis/tracker/audit_empty_results.py
   --tranche T3 --strict`** (and the tranche you are building). It classifies every empty result and
-  exits 1 while any is a **WIRED-MISS**: a certificate for the same lot, dated on or before the CoQ,
-  reports the parameter and the register did not print it. CI runs it for Tranche 3.
+  exits 1 while any is a **WIRED-MISS** — a certificate for the same lot, dated on or before the CoQ,
+  reports the parameter and the register did not print it — or while a retest's *supersedes* line
+  names a date its initial no longer carries. CI runs it for T1, T2 and T3. The company's in-house
+  records (lab `PURELYPLANT`, no code) are not certificates: ruling of 17.09 (R3), `n/t`.
 - **The rulings of 26.09.2026**, applied by `tracker/apply_empty_results_ruling_2026-09-26.py` and `tracker/apply_t3_source_rulings_2026-09-26.py`:
   1. **A later result is printed and the certificate re-dated** on or after the last result it
      cites. The source is the same lot's retest record, whose rows carry the campaign certificates.
+     The retest's *supersedes* line moves with the new date. **Except Tranches 1 and 2**: their
+     retests are with the customer and name the initial *of 06.06.2026*, so a T1/T2 initial is never
+     re-dated — a result measured only in the retest round prints `n/t`, "not tested at release",
+     naming the retest that carries it. The T1/T2 retest records are never changed.
   2. **Never another lot's certificate — sub-lots included.** *"They are separate lots."* `BSS1024`
      is not `BSS1024_01/2`; `GRC102501/2` is not `GRC102501/1`.
   3. **Mycotoxins are the same case in every tranche.** On an **initial** CoQ, total aflatoxins come

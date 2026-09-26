@@ -21,6 +21,10 @@ and until this audit they were indistinguishable on the page:
 * **OTHER-LOT** — only a parent batch or a sibling sub-lot reports it (`BSS1024` for `BSS1024_01/2`,
   `GRC102501/2` for `GRC102501/1`). Head of QC, 26.09.2026: never a source — *"they are separate
   lots"* — so these print `n/t` and go on the laboratory request list.
+* **IN-HOUSE-ONLY** — the only release result is the company's own record (the in-house CoA of
+  23.04.2025 for GG1024, HPA1024 and OPM1024; the register's `also` note "in-house record …, no
+  certificate"). Head of QC, 17.09.2026 (`apply_lab_attribution.py`, R3): an in-house record without a
+  certificate is not cited, so the cell prints `n/t`. Not a miss.
 * **UNTESTED** — no certificate anywhere in the repository reports it for this lot or any relative.
 * **PENDING** — the register records what the cell is waiting for: the Head of QC's choice between
   release results that disagree, or the missing page of a certificate that exists (IPH 1065/2026,
@@ -65,6 +69,9 @@ MK = {'олово': 'lead', 'кадмиум': 'cadmium', 'арсен': 'arsenic'
       'вкупни афлатоксини': 'aflatoxins_total'}
 
 
+INHOUSE = 'in-house record, no certificate'
+
+
 def N(s):
     return re.sub(r'[\s_\-/*＊]', '', str(s or '')).upper()
 
@@ -95,7 +102,10 @@ def certificates():
         vals = {p['parameter']: p.get('result_printed') for p in r.get('parameters', [])
                 if str(p.get('result_printed') or '').strip()}
         ids = {N(r.get('batch_canonical')), N(r.get('p_number'))}
-        out.append((ids, r.get('cert_code'), r.get('date_of_issue'), vals))
+        code = r.get('cert_code')
+        if 'PURELY' in str(r.get('lab') or '').upper():
+            code = INHOUSE                    # the company's own record, not a certificate
+        out.append((ids, code, r.get('date_of_issue'), vals))
     gate = json.load(open(os.path.join(GAP, 'intake_contaminants_2026-09-18', 'two_read_result.json'),
                           encoding='utf-8'))['documents']
     have = {c for _, c, _, _ in out}
@@ -145,6 +155,26 @@ def code_dates(certs):
 # (11–16.09) — are the twelve-month retest round, whatever a given certificate's own date field holds.
 CAMPAIGN = re.compile(r'^(197|220|227)-\d+-[КKМM]/26$')
 
+# Head of QC, 26.09.2026: only the Tranche 1 and 2 *retest* certificates are with the customer; every
+# initial certificate, and all of Tranche 3, is a draft. Each of those retests names the initial it
+# supersedes *with the initial's date*, so a Tranche 1 or 2 initial keeps that date: a result measured
+# only in the retest round prints `n/t` on it ("not tested at release") and is carried by the retest the
+# customer holds. Their retest records are never changed. (The register's `issued` flag means a code was
+# allocated, not that the customer holds the document.)
+RETEST_WITH_CUSTOMER = {'T1', 'T2'}
+
+
+def supersedes_mismatches(recs):
+    """Retests whose 'supersedes' line names a date its initial no longer carries."""
+    ini = {c['regcode']: c for c in recs if 'retest' not in c['t']}
+    out = []
+    for r in recs:
+        s = r.get('supersedes') or {}
+        i = ini.get(s.get('code'))
+        if i and s.get('date') and s['date'] != i.get('issue'):
+            out.append((r['regcode'], s['code'], s['date'], i.get('issue')))
+    return out
+
 
 def also_values(row):
     """The register's `also` field: other results the desk found for this lot, `value (CODE)`."""
@@ -162,7 +192,7 @@ def classify(c, no, certs, row=None, dates=None):
     for val, code in also_values(row or {}):
         code = code.strip()
         if 'in-house record' in code or 'no certificate' in code:
-            hits.append(('exact', False, 'in-house record, no certificate', '', val.strip()))
+            hits.append(('in-house', False, INHOUSE, '', val.strip()))
             continue
         later = bool(CAMPAIGN.match(code)) or bool(issue and dt((dates or {}).get(code)) and
                                                     dt((dates or {}).get(code)) > issue)
@@ -174,17 +204,21 @@ def classify(c, no, certs, row=None, dates=None):
         rel = 'exact' if ids & exact else 'parent' if ids & parents else None
         if not rel:
             continue
+        if code == INHOUSE:
+            rel = 'in-house' if rel == 'exact' else rel
         later = bool(issue and dt(date) and dt(date) > issue)
         hits.append((rel, later, code, date, vals[k]))
     if any(r == 'exact' and not l for r, l, *_ in hits):
         cat = 'WIRED-MISS'
     elif any(r == 'exact' for r, *_ in hits):
         cat = 'LATER-ROUND'
+    elif any(r == 'in-house' for r, *_ in hits):
+        cat = 'IN-HOUSE-ONLY'
     elif hits:
         cat = 'OTHER-LOT'
     else:
         cat = 'UNTESTED'
-    hits.sort(key=lambda h: (h[0] != 'exact', h[1], str(h[2] or '')))
+    hits.sort(key=lambda h: (h[0] != 'exact', h[0] != 'in-house', h[1], str(h[2] or '')))
     return cat, hits
 
 
@@ -230,7 +264,11 @@ def main(argv):
         print('  %-8s %-12s %4d' % (ser, cat, k))
     print('written: %s' % os.path.relpath(out, GAP))
     miss = sum(k for (_, cat), k in tally.items() if cat == 'WIRED-MISS')
-    return 1 if (a.strict and miss) else 0
+    # a re-dated initial must carry its new date onto the retest that supersedes it
+    sup = supersedes_mismatches(recs)
+    for x in sup:
+        print('  SUPERSEDES  %s names %s of %s — the initial is dated %s' % x)
+    return 1 if (a.strict and (miss or sup)) else 0
 
 
 if __name__ == '__main__':
