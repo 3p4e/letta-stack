@@ -70,7 +70,114 @@ folders without re-uploading it, which is how a superseded document goes to `OLD
 - **Attribution.** No approved scan credits microbiology, mycotoxins, heavy metals or pesticides to
   an in-house internal certificate. Where a register row claims more than its scan, the scan governs.
 
-## 5. Git
+## 5. No silent blank on a certificate
+
+**Tranches 1 and 2 are not touched.** Head of QC, 26.09.2026: *"Don't touch T1 and T2 — they are
+already issued and sent to the customer."* For every T1 and T2 lot the release testing was **CNP**
+(potency) and **IPH** (mycotoxins) and the retest testing **Farmahem**, whether or not the release
+certificate is in our files. No apply script writes a T1 or T2 record (they refuse, `A.FROZEN`), and
+the audit runs on Tranche 3. On 26.09 their records were restored to the state of `f161da1` after
+the desk had changed them twice.
+
+**The latest ruling governs.** Head of QC, 26.09.2026: *"how many rulings can I give you since the
+10th of September and you're still invoking some old rule."* Decide a case by the newest ruling that
+covers it. Do not reach back to an older one (the 10.09 "first value of a parameter", say) to
+override it, and do not extend a ruling to a tranche it was not given for.
+
+**Tranche 3: where Farmahem is the only testing on record, it is the release testing** (Head of QC,
+26.09.2026 — *"I'm not sure about all of the T3 initial release CoQs"*). Applied by
+`tracker/apply_first_testing_ruling_2026-09-26.py`, decided per lot by
+`audit_empty_results.release_family`:
+
+- **Cannabinoids** (Identification C with them): no CNP result on record and only Farmahem's → *"the
+  Farmahem testing is the initial release testing and there will be no reissuance for those CoQ"* —
+  the Farmahem values print on the initial. A CNP result on record → Farmahem is the retest, and the
+  initial takes the CNP certificate's own value where it reports one.
+- **Mycotoxins**: IPH total aflatoxins on record → the Farmahem panel is the retest (initial: IPH
+  total, B1/OTA `n/t`). Only the Farmahem panel on record → *"the testing in Farmahem for mycotoxins
+  is part of initial release testing"*: all three print on the initial.
+- **No reissuance**: the retest drafts of such lots are withdrawn — `-087`, `-138`, `-152`
+  (`withdrawn` in the register; nothing built; numbers left free). **Except** where a parameter was
+  tested again well after the first: *"the second certificate for microbiology is going to enter the
+  CoQ, and if the initial testing was way before, then it is definitely a retest and the reissuing
+  of the CoQ"* — `-160` (P060342: IPH 539/1070/26 of 31.08 after 362/0692/26 of 01.06) is kept, and
+  carries the Farmahem release results as carried from `-073`.
+- **Dates**: on or after the last result the initial cites (ruling 1 below), at the desk's usual
+  seven days (`audit_empty_results.initial_issue`), never after the lot's own retest.
+
+Head of QC, 26.09.2026: *"they're missing values for many of the parameters and there must not be
+a case like that."* A result cell printed `[ — ]` for weeks without anyone saying why.
+
+- **Before any certificate build, run `python3 deliverables/qc_gap_analysis/tracker/audit_empty_results.py
+  --tranche T3 --strict`**. CI runs it for Tranche 3. It exits 1
+  on a **WIRED-MISS** (a same-lot certificate on or before the CoQ reports the parameter, unprinted), a
+  **FIRST-TESTING** cell (the lot's first testing sits only on the retest), a **RETEST-ON-INITIAL**
+  value, a **BARE** cell (a status the renderer cannot turn into `n/t` or `[pending]` — it must contain
+  "not tested" or "awaiting"), or a draft retest whose *supersedes* date its initial no longer carries.
+  It reads the CNP release certificates in the RAGflow page-text cache as well as the corpus: on
+  26.09 four T3 initials printed a retest CBN while their own CNP certificate reported it (ППК25118,
+  ППК25257, ППК25368, ППК26031). The company's in-house records (lab `PURELYPLANT`, no code) are not
+  certificates: ruling of 17.09 (R3), `n/t`.
+- **The rulings of 26.09.2026**, applied by `tracker/apply_empty_results_ruling_2026-09-26.py` and `tracker/apply_t3_source_rulings_2026-09-26.py`:
+  1. **A later result is printed and the certificate re-dated** (Tranche 3) — *only* where that
+     later result is the lot's release testing (above); a retest value never goes on an initial. The
+     source is the same lot's retest record. A draft retest's *supersedes* line moves with the date.
+  2. **Never another lot's certificate — sub-lots included.** *"They are separate lots."* `BSS1024`
+     is not `BSS1024_01/2`; `GRC102501/2` is not `GRC102501/1`.
+  3. **Mycotoxins are the same case in every tranche.** Where IPH tested total aflatoxins at release,
+     the **initial** prints the IPH total and B1/OTA `n/t`, and the **retest** prints all three from
+     **Farmahem** (`197-М`, `220-М`, `227-М`) — every T1, T2 and T3 retest has the full Farmahem panel.
+     In Tranche 3, where only the Farmahem panel is on record, it is the release testing and prints on
+     the initial. B1 is never derived from a total.
+  4. **What no certificate covers prints `n/t`** and goes on `tracker/LAB_REQUESTS_<tranche>_*.tsv`.
+     A bare `[ — ]` on a result is a defect. Release results that disagree print `[pending]` until
+     the Head of QC chooses — a later value must never paper over them.
+  5. **Heavy metals come from IPH**, on the initial and the retest CoQ alike (the retest carries the
+     initial's). Where IPH has no certificate for the lot, the cell is `n/t` and IPH is asked.
+  6. **Identification A, identification B and foreign matter cite the internal certificate**, unless a
+     CNP (`ППК`) certificate for the same lot tests them explicitly — then the CNP certificate is the
+     source (FB012603 `ППК26112`, FB012603V `ППК26110`, SCR022601 `ППК26116`). `coq_check.js` OI-27
+     accepts exactly that case. The CNP certificate texts in the RAGflow cache are read as well as the
+     corpus (ППК26116 is only there). **An internal certificate covers exactly what its own CoQ
+     credits to it**, as in the approved scans: 1, 2, 7, plus 8 only where loss on drying was done
+     in-house (`-026`, like HPA1024/OPM1024); where CNP tested 1, 2, 7 and 8 there is **no** internal
+     certificate (`-075`, `-079`, `-080`, like the scans' `-092`, `-123`). Loss on drying in Tranche 3
+     is CNP's or Farmahem's (`-ГС`), in-house only for `-026`, and untested for `-021`, `-050`, `-068`,
+     `-073`. `T3_CoQ_Latest_*.pdf` is each lot's current certificate: the retest, or the initial where
+     there is no reissue. *"Where needed for the parameters that are not covered by other outsource
+     laboratory an iCOA will be issued containing those parameters tested"* (Head of QC, 26.09.2026).
+     **Identification C is never one of them.** It is discharged by the certificate that tested the
+     cannabinoids and cites the same certificate as the Total THC row — the owner's ruling of
+     02.09.2026 (`README.md`, "Identification C"), which has not changed; on 26.09 the desk put it on
+     `-026`'s iCoA as in-house and was corrected. `-026` (P050202): its release cannabinoids were tested
+     by **New Garden Pharma**, an external laboratory — analysis test report `NGP/QCG/SOP-024 F3` of
+     28.11.2025 (Total THC 24.89 %, CBD 0.17 %, LoD 8.19 %, read from the page) — so rows 3, 4, 5 cite
+     it; NGP is not in-house, whatever older tables call it. Its loss on drying stays on the iCoA, as
+     the approved scan of `-107` credits the sister NGP lot's. CNP's `ППК26036/37/57/58` for P050202
+     are **stability time points**, never release results.
+  7. **Specification, product code and grade** come from the newest potency grades
+     (`potency_grades_2026-09-15.csv`, corrected to `Potency_specifications_25.pdf` of 17.09.2026) via
+     `apply_potency_grades.py`: the grade is the window the printed Total THC falls in. A result in no
+     window is reported for a new grade, never forced into the nearest one. **The latest potency
+     builder is deployed on KVM4** — `https://specs.srv1231216.hstgr.cloud` (`potency-spec-service`;
+     read `GET /api/specs`, `/api/specs/<ABBR>`); check it, and only it, for a strain's current grades,
+     then carry a new one into `potency_grades_2026-09-15.csv`. WED-II (22.00 ± 1.40, 20.60–23.39 %)
+     came from there on 26.09.2026 and grades `-046`.
+  8. **A certificate whose scan is incomplete** prints `[pending]` for what the missing page holds —
+     IPH `1065/2026` (SJ102501) holds pages 1, 2 and 4 of 4 in every copy; page 3 carries its metals,
+     total aflatoxins and three pesticides. Obtain the page; do not read around it.
+
+- **Why `[ — ]` persisted**: `coq_build.js` tested the empty value before the status, and an
+  untested determination has an empty value, so the "not tested" status never reached the page.
+  The status is read first now; keep it that way.
+- Search the register row's own `also` field first — it holds results the desk found and did not
+  print — then the same lot's retest record, then every intake's two-read file, then RAGflow
+  `eCOA_DB` by P lot and batch. **The eCoA corpus alone is not proof of "untested"**: it lacks many
+  UKIM `ППК` certificates and the `227-М` series, and holds some with a blank batch.
+- Known fact, so it is not rediscovered: IPH contaminant certificates (AflaTest) report **total
+  aflatoxins only**.
+
+## 6. Git
 
 Work on the branch the task names; never push to another without being asked. `git gc` in this
 container must be given headroom first — it writes the new pack **before** deleting the loose

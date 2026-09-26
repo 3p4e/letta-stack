@@ -165,9 +165,14 @@ function check(file, html, rec) {
   }
   const pp = lrows.find(m => /Purely Plant/.test(m[1]));
   if (pp && !/iCoA-PP_/.test(pp[2])) F.push('A14 in-house row does not cite an iCoA: ' + txtOf(pp[2]));
+  // Head of QC, 26.09.2026: #1, #2 and #7 cite the internal certificate unless the Center for
+  // Natural Products tested them explicitly — then the CNP certificate is the source, and a page
+  // with no in-house row is correct. Any other external credit is still a finding.
   if (!pp) {
     const ext = creditOf('1')[0];
-    F.push('OI-27 #1/#2/#7 credited externally to ' + (ext ? txtOf(ext[1]).split(' · ')[0] : '?') + ', no in-house row');
+    const lab = ext ? txtOf(ext[1]).split(' · ')[0] : '?';
+    if (!/Center for Natural Products/i.test(lab))
+      F.push('OI-27 #1/#2/#7 credited externally to ' + lab + ', no in-house row');
   }
 
   // -- 15 every param credited exactly once

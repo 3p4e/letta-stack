@@ -11,9 +11,11 @@ const LABS = {
   CNP: {en:'UKIM Faculty of Pharmacy — Center for Natural Products · ISO/IEC 17025:2017', ac:'LT-083 (IARM)', mk:'УКИМ ФФ — Центар за Природни Производи', ad:'Mother Theresa 47, 1000 Skopje, MK'},
   IPH: {en:'JZU Institute for Public Health (IPH Skopje) · ISO/IEC 17025:2017', ac:'LT-005 (IARM)', mk:'ЈЗУ Институт за јавно здравје (ИЈЗ Скопје)', ad:'50ta Divizija 6, 1000 Skopje, MK'},
   FHM: {en:'Farmahem DOOEL — Laboratory for Instrumental Analysis · ISO/IEC 17025:2017', ac:'LT-020 (IARM)', mk:'Фармахем ДООЕЛ — Лаборатoрија за инструментална анализа', ad:'Kisela Voda, 1000 Skopje, MK'},
-  PHY: {en:'State Phytosanitary Laboratory · ISO/IEC 17025:2017', ac:'LT-034 (IARM)', mk:'Државна фитосанитарна лабораторија', ad:'Aleksandar Makedonski bb, 1000 Skopje, MK'}
+  PHY: {en:'State Phytosanitary Laboratory · ISO/IEC 17025:2017', ac:'LT-034 (IARM)', mk:'Државна фитосанитарна лабораторија', ad:'Aleksandar Makedonski bb, 1000 Skopje, MK'},
+  // P050202: the release cannabinoids (Head of QC, 26.09.2026 — identification C goes with them)
+  NGP: {en:'New Garden Pharma — QC Laboratory', ac:'', mk:'Њу Гарден Фарма — Лабораторија за КК', ad:'Analysis test report · cannabinoids by HPLC (DAB)'}
 };
-const ORDER = ['PP','CNP','IPH','FHM','PHY'];
+const ORDER = ['PP','CNP','IPH','FHM','PHY','NGP'];
 // The Param № column cites the DETERMINATION, not its sub-parts: 10.1, 10.2 and 10.3 on
 // one laboratory's row read as a single 10, because Section 02 already enumerates the
 // sub-parts against their own criteria and repeating them here spends the column's width
@@ -83,6 +85,7 @@ function canonLab(s) {
   if (/^IJZ$/i.test(s) || /institute of public health|institute for public health/i.test(s)) return 'IPH';
   if (/^FHM$/i.test(s) || /farmahem/i.test(s)) return 'FHM';
   if (/phytosanitary/i.test(s)) return 'PHY';
+  if (/new garden pharma/i.test(s)) return 'NGP';
   return null;
 }
 function parseCSV(t) {
@@ -128,10 +131,13 @@ function cell(det, res, status) {
   // to say here" for a determination no certificate covers, which is the one thing a
   // release document must not imply. The work the owner is asking for is to FILL these —
   // which is a question for the record, not for the renderer.
-  if (!res || res === '—')                                    { txt = '[ — ]'; style = RED }
-  else if (/not tested/i.test(st) || /^not tested$/i.test(res)) { txt = 'n/t'; style = RED }
-  else if (/to be performed/i.test(st) || /to be performed/i.test(res)) { txt = '[ — ]'; style = RED }
+  // Head of QC, 26.09.2026: a cell states WHY it has no result. The status is read before the
+  // empty value, because an untested determination has an empty value too — checking the value
+  // first is what printed a bare [ — ] over every "not tested" cell since the first build.
+  if (/not tested/i.test(st) || /^not tested$/i.test(res))    { txt = 'n/t'; style = RED }
   else if (/awaiting/i.test(st))                              { txt = '[pending]'; style = AMBER }
+  else if (!res || res === '—')                               { txt = '[ — ]'; style = RED }
+  else if (/to be performed/i.test(st) || /to be performed/i.test(res)) { txt = '[ — ]'; style = RED }
   else if (/in-house CoA only/i.test(st))                     { txt = '[ — ]'; style = RED }
   else if (/upon request/i.test(res))                         { txt = '[ — ]'; style = RED }
   else {

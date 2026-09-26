@@ -113,7 +113,7 @@ def main(argv):
     for x in ungraded: print("   ", x)
     if not a.dry_run and changed:
         with io.open(SRC, "w", encoding="utf-8") as fh:
-            json.dump(data, fh, ensure_ascii=False, separators=(",", ":"))
+            json.dump(data, fh, ensure_ascii=False, indent=1)   # the layout every other writer uses
         print("written:", os.path.relpath(SRC))
     return 0
 
