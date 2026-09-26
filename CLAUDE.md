@@ -70,7 +70,36 @@ folders without re-uploading it, which is how a superseded document goes to `OLD
 - **Attribution.** No approved scan credits microbiology, mycotoxins, heavy metals or pesticides to
   an in-house internal certificate. Where a register row claims more than its scan, the scan governs.
 
-## 5. Git
+## 5. No silent blank on a certificate
+
+Head of QC, 26.09.2026: *"they're missing values for many of the parameters and there must not be
+a case like that."* A result cell printed `[ — ]` for weeks without anyone saying why.
+
+- **Before any certificate build, run `python3 deliverables/qc_gap_analysis/tracker/audit_empty_results.py
+  --tranche T3 --strict`** (and the tranche you are building). It classifies every empty result and
+  exits 1 while any is a **WIRED-MISS**: a certificate for the same lot, dated on or before the CoQ,
+  reports the parameter and the register did not print it. CI runs it for Tranche 3.
+- **The rulings of 26.09.2026**, applied by `tracker/apply_empty_results_ruling_2026-09-26.py`:
+  1. **A later result is printed and the certificate re-dated** on or after the last result it
+     cites. The source is the same lot's retest record, whose rows carry the campaign certificates.
+  2. **Never another lot's certificate — sub-lots included.** *"They are separate lots."* `BSS1024`
+     is not `BSS1024_01/2`; `GRC102501/2` is not `GRC102501/1`.
+  3. **Mycotoxins are the same case in every tranche**: total aflatoxins from IPH at release, B1 and
+     ochratoxin A from the Farmahem campaigns (`197-М`, `220-М`, `227-М`). B1 is never derived from the total.
+  4. **What no certificate covers prints `n/t`** and goes on `tracker/LAB_REQUESTS_<tranche>_*.tsv`.
+     A bare `[ — ]` on a result is a defect. Release results that disagree print `[pending]` until
+     the Head of QC chooses — a later value must never paper over them.
+- **Why `[ — ]` persisted**: `coq_build.js` tested the empty value before the status, and an
+  untested determination has an empty value, so the "not tested" status never reached the page.
+  The status is read first now; keep it that way.
+- Search the register row's own `also` field first — it holds results the desk found and did not
+  print — then the same lot's retest record, then every intake's two-read file, then RAGflow
+  `eCOA_DB` by P lot and batch. **The eCoA corpus alone is not proof of "untested"**: it lacks many
+  UKIM `ППК` certificates and the `227-М` series, and holds some with a blank batch.
+- Known fact, so it is not rediscovered: IPH contaminant certificates (AflaTest) report **total
+  aflatoxins only**.
+
+## 6. Git
 
 Work on the branch the task names; never push to another without being asked. `git gc` in this
 container must be given headroom first — it writes the new pack **before** deleting the loose

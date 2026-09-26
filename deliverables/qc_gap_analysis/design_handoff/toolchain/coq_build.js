@@ -128,10 +128,13 @@ function cell(det, res, status) {
   // to say here" for a determination no certificate covers, which is the one thing a
   // release document must not imply. The work the owner is asking for is to FILL these —
   // which is a question for the record, not for the renderer.
-  if (!res || res === '—')                                    { txt = '[ — ]'; style = RED }
-  else if (/not tested/i.test(st) || /^not tested$/i.test(res)) { txt = 'n/t'; style = RED }
-  else if (/to be performed/i.test(st) || /to be performed/i.test(res)) { txt = '[ — ]'; style = RED }
+  // Head of QC, 26.09.2026: a cell states WHY it has no result. The status is read before the
+  // empty value, because an untested determination has an empty value too — checking the value
+  // first is what printed a bare [ — ] over every "not tested" cell since the first build.
+  if (/not tested/i.test(st) || /^not tested$/i.test(res))    { txt = 'n/t'; style = RED }
   else if (/awaiting/i.test(st))                              { txt = '[pending]'; style = AMBER }
+  else if (!res || res === '—')                               { txt = '[ — ]'; style = RED }
+  else if (/to be performed/i.test(st) || /to be performed/i.test(res)) { txt = '[ — ]'; style = RED }
   else if (/in-house CoA only/i.test(st))                     { txt = '[ — ]'; style = RED }
   else if (/upon request/i.test(res))                         { txt = '[ — ]'; style = RED }
   else {
