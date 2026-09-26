@@ -101,6 +101,8 @@ def main(argv):
     if not (a.apply or a.check):
         ap.error('pass --check or --apply')
 
+    if a.tranche in A.FROZEN:
+        raise SystemExit('Tranche %s is issued and with the customer: not touched (Head of QC, 26.09.2026)' % a.tranche)
     reg = json.load(open(a.reg, encoding='utf-8'))
     tm = A.tranche_map()
 

@@ -28,7 +28,7 @@ and until this audit they were indistinguishable on the page:
 * **UNTESTED** — no certificate anywhere in the repository reports it for this lot or any relative.
 * **FIRST-TESTING** — a LATER-ROUND cell on an initial whose family the release round never tested:
   the later certificate is the lot's first testing, so it *is* the release testing and must print on
-  the initial (Head of QC, 10.09 and 26.09.2026). A miss; `--strict` fails on it.
+  the initial (Head of QC, 26.09.2026). A miss; `--strict` fails on it.
 * **PENDING** — the register records what the cell is waiting for: the Head of QC's choice between
   release results that disagree, or the missing page of a certificate that exists (IPH 1065/2026,
   page 3 of 4). Prints `[pending]`; not a miss, because nothing on file can fill it.
@@ -189,19 +189,19 @@ def code_dates(certs):
 # (11–16.09) — are the twelve-month retest round, whatever a given certificate's own date field holds.
 CAMPAIGN = re.compile(r'^(197|220|227)-\d+-[КKМM]/26$')
 
-# Head of QC, 26.09.2026: only the Tranche 1 and 2 *retest* certificates are with the customer; every
-# initial certificate, and all of Tranche 3, is a draft. Those retests are never changed — not their
-# results, not the date they print for the initial they supersede. (The register's `issued` flag means a
-# code was allocated, not that the customer holds the document.)
+# Head of QC, 26.09.2026: "Don't touch T1 and T2 — they are already issued and sent to the customer."
+# Their release testing was CNP (potency) and IPH (mycotoxins) and their retest testing Farmahem, for
+# every lot, whether or not the release certificate is in our files. No apply script writes a T1 or T2
+# record, and the audit is run on Tranche 3.
 RETEST_WITH_CUSTOMER = {'T1', 'T2'}
+FROZEN = {'T1', 'T2'}
 
-# Which testing is the release testing — the Head of QC, 10.09.2026: "the first value of a parameter
-# obtained would be counted as an initial quality control testing, and every other point of testing ...
-# will be considered as a retest"; and 26.09.2026, by family: where IPH reported total aflatoxins at
-# release, the Farmahem mycotoxin panel is the retest; where it did not, "the testing in Farmahem for
-# mycotoxins is part of initial release testing". Where no cannabinoid certificate exists from CNP and
-# only Farmahem's does, "the Farmahem testing is the initial release testing and there will be no
-# reissuance". Identification C is cited from the cannabinoid certificate (ruling of 10.09.2026).
+# Which testing is the release testing, Tranche 3 — the Head of QC, 26.09.2026: where IPH reported
+# total aflatoxins, the Farmahem mycotoxin panel is the retest; where only the Farmahem panel is on
+# record, "the testing in Farmahem for mycotoxins is part of initial release testing". Where no
+# cannabinoid result from CNP is on record and only Farmahem's is, "the Farmahem testing is the
+# initial release testing and there will be no reissuance for those CoQ". Identification C goes with
+# the cannabinoids.
 K_ROWS = ('3', '4', '5', '6')
 M_ROWS = ('10.1', '10.2', '10.3')
 
@@ -215,7 +215,7 @@ def release_family(c):
 
     A release certificate is any certificate the initial cites for the family that is not one of the
     August–September 2026 Farmahem campaigns — CNP, IPH, an earlier Farmahem series (031-, 051-,
-    100-К; 276-М/25), or the internal certificate the 10.09 ruling lets carry an in-house assay — or a
+    100-К; 276-М/25), or the internal certificate that carries an in-house release assay — or a
     release result the Head of QC has been asked to choose between, or a certificate whose missing page
     is awaited.
     """
@@ -366,7 +366,7 @@ def main(argv):
                 if cat in ('UNTESTED', 'OTHER-LOT', 'IN-HOUSE-ONLY'):
                     cat = 'LATER-ROUND'
             # the campaign is this lot's first testing of the family: it is the release testing and
-            # belongs on the initial (Head of QC, 10.09 and 26.09.2026)
+            # belongs on the initial (Head of QC, 26.09.2026)
             if cat == 'LATER-ROUND' and ser == 'initial' and not (rel_k if r['no'] in K_ROWS else
                                                                    rel_m if r['no'] in M_ROWS else False):
                 cat = 'FIRST-TESTING'

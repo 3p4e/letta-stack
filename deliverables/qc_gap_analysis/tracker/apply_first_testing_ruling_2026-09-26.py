@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""A lot's first testing is its release testing — the Head of QC, 26.09.2026 (third ruling of the day).
+"""Tranche 3: where Farmahem is the only testing on record, it is the release testing — the Head of
+QC, 26.09.2026 (third ruling of the day). Tranche 3 only.
 
     python3 tracker/apply_first_testing_ruling_2026-09-26.py --check     # writes nothing
-    python3 tracker/apply_first_testing_ruling_2026-09-26.py --apply     # T1, T2 and T3
+    python3 tracker/apply_first_testing_ruling_2026-09-26.py --apply
 
-It restates the ruling of 10.09.2026 — *"the first value of a parameter obtained would be counted as
-an initial quality control testing, and every other point of testing ... will be considered as a
-retest"* — which the desk had set aside for four lots (ISSUANCE_RULES_2026-09-10.md §3a) and set aside
-again this morning with `n/t` "not tested at release". His words today:
+**Tranches 1 and 2 are not touched** (Head of QC, 26.09.2026): *"they are already issued and sent to
+the customer"*; their release testing was CNP (potency) and IPH (mycotoxins) and their retest
+testing Farmahem, for every lot. The script refuses them.
+
+His words today:
 
 * *"All retest certificates for all T1, T2 and T3 have all 3 parameters for mycotoxins (B1, total
   aflatoxins, OTA) tested in Farmahem."* Where IPH reported total aflatoxins at release, the Farmahem
@@ -23,33 +25,19 @@ again this morning with `n/t` "not tested at release". His words today:
 
 What the run does, lot by lot (`audit_empty_results.release_family` decides the family):
 
-1. **Cannabinoids** (Identification C with them — it is cited from the cannabinoid certificate, ruling
-   of 10.09.2026). No release certificate → the Farmahem campaign values print on the initial. A
-   release certificate → the campaign is the retest: a campaign value on the initial comes off, and the
-   cell takes the release certificate's own value where it reports one. CNP reported CBN for P050032,
-   P050132, P050272 and OPM112501 (ППК25118, ППК25257, ППК25368, ППК26031 — the page text is in the
-   RAGflow cache); the register had never printed it, and this morning's run filled those four cells
-   from the retest campaign instead.
-2. **Mycotoxins.** No IPH total aflatoxins and no Farmahem release panel → the campaign panel (B1,
-   total, OTA) prints on the initial. P050192's release panel is Farmahem 276-31-М/25 of 04.12.2025,
-   which prints B1, B2, G1 and G2 all ND and OTA < LOQ; its total aflatoxins is therefore ND from that
-   certificate, as every retest's is from its own panel.
-3. **The date** of each initial — `audit_empty_results.initial_issue`, the standing rule of
-   `issuance_schedule.coq_issue`: seven days after the last external certificate it cites. *"How can a
-   certificate of quality be dated on a date that is earlier than the last certificate of analysis
-   obtained from external lab for that batch testing? Regardless, is it initial testing or a retesting
-   period?"* This morning's re-dating put the date *on* the certificate's date; that is corrected too.
-   An initial is never dated after its own retest: where seven days would put it there (`-073`, whose
-   microbiology was retested), it takes the retest's date, within the owner's five-to-ten.
-4. **No reissuance.** A lot whose campaign was its first testing of both families, and whose retest
-   carries nothing the corrected initial does not, has one certificate. Tranche 3's retest drafts for
-   such lots are withdrawn (`withdrawn` in the register; nothing is built for them), with their numbers
-   left free. Tranche 1 and 2 retests are with the customer and are never changed: where the rule says
-   such a lot should have had no reissue, or where a corrected initial now carries a date other than the
-   one the customer's retest names, the run lists it for the Head of QC.
-5. **`-047`** (P060112) Total THC: its release result is 15.63 % (Farmahem 031-2-К/26 of 10.02.2026),
-   outside every Pure Michigen grade window; it has been held for the Head of QC since 18.09.2026
-   (`apply_031_assay.py`). It prints `[pending]`, not `n/t`.
+1. **Cannabinoids** (Identification C with them). No CNP result on record → the Farmahem values
+   print on the initial. A CNP result on record → Farmahem is the retest: a Farmahem value on the
+   initial comes off, and the cell takes the CNP certificate's own value where it reports one. CNP
+   reported CBN for P050032, P050132, P050272 and OPM112501 (ППК25118, ППК25257, ППК25368, ППК26031 —
+   the page text is in the RAGflow cache); the register had never printed it, and this morning's run
+   filled those four cells from the retest campaign instead.
+2. **Mycotoxins.** No IPH total aflatoxins on record → the Farmahem panel (B1, total, OTA) prints on
+   the initial.
+3. **The date** of each initial (`audit_empty_results.initial_issue`): on or after the last result it
+   cites — ruling 1 of 26.09.2026 — at the desk's usual seven days (`issuance_schedule.coq_issue`),
+   and never after the lot's own retest (then the retest's date).
+4. **No reissuance** — *"there will be no reissuance for those CoQ."* The retest drafts of such lots
+   are withdrawn (`withdrawn` in the register; nothing is built for them; their numbers stay free).
 """
 import argparse
 import collections
@@ -66,19 +54,14 @@ import audit_empty_results as A                                    # noqa: E402
 
 REG = os.path.join(GAP, 'coq_artifact_data.json')
 STAMP = '26.09.2026'
-RULING = 'Head of QC, 10.09 and %s' % STAMP
+RULING = 'Head of QC, %s' % STAMP
 FIRST = 'covered — the lot\'s first testing, %s of %s, is its release testing (' + RULING + ')'
 # prints `n/t`: coq_build.js reads "not tested" in the status (CLAUDE.md §5)
 NOT_AT_RELEASE = ('not tested by a release certificate — the release round\'s cannabinoid certificate '
                   '(%s) does not carry it; the retest round determined it: %s of %s, on %s (' + RULING + ')')
 RELEASE_CNP = 'covered — %s reports it at release; it had not been printed (' + RULING + ')'
-HELD = {('CoQ-PP_26-047', '4'): ("awaiting the Head of QC's ruling — the release result 15.63 % (031-2-К/26 of "
-                                 "10.02.2026) lies outside every Pure Michigen grade window (held since 18.09.2026)")}
-# P050192's release mycotoxin panel: cell_resolution_2026-09-09.tsv, line 275 —
-# "276-31-M-25 04.12.2025 ... ND; ND; ND; ND; <LOQ" (B1, B2, G1, G2, OTA)
-PANEL_TOTAL = {'CoQ-PP_26-025': ('ND', '276-31-М/25', '04.12.2025',
-                                 'covered — the total of aflatoxins B1, B2, G1 and G2, each ND on the release panel '
-                                 '276-31-М/25 of 04.12.2025 (' + RULING + ')')}
+HELD = {}
+PANEL_TOTAL = {}
 WITHDRAWN = ('no reissuance — the Farmahem campaign was this lot\'s first testing, so it is the release testing '
              'and the lot has one certificate, %s (' + RULING + ')')
 
@@ -127,7 +110,7 @@ def main(argv):
                 return tm[k]
 
     lot = lambda c: (str(c.get('pp') or ''), str(c.get('cb') or ''))
-    recs = [c for c in reg['coqs'] if tranche(c) in ('T1', 'T2', 'T3')]
+    recs = [c for c in reg['coqs'] if tranche(c) == 'T3']            # T1 and T2: never (A.FROZEN)
     ini = {lot(c): c for c in recs if 'retest' not in c['t']}
     ret = {lot(c): c for c in recs if 'retest' in c['t']}
     cnp = cnp_release()
@@ -234,7 +217,7 @@ def main(argv):
         json.dump(reg, fh, ensure_ascii=False, indent=1)
 
     # the laboratory requests, rebuilt from the register as it now stands
-    for t in ('T1', 'T2', 'T3'):
+    for t in ('T3',):
         out = os.path.join(a.outdir, 'LAB_REQUESTS_%s_2026-09-26.tsv' % t)
         req = collections.OrderedDict()
         for c in sorted([c for c in recs if tranche(c) == t and not c.get('withdrawn')], key=lambda c: c['regcode']):

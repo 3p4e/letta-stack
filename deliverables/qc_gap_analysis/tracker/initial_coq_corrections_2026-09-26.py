@@ -1,19 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Every cell the rulings of 26.09.2026 changed on an initial certificate of quality, before and after.
+"""Every cell the rulings of 26.09.2026 changed on a Tranche 3 initial certificate, before and after.
 
     python3 tracker/initial_coq_corrections_2026-09-26.py
 
-Before is the register as it stood ahead of each tranche's correction: `8b39495` for Tranche 3,
-`f161da1` for Tranches 1 and 2. After is the register now. A result cell with no value printed
-`[ — ]` on every page before 26.09 (the renderer tested the value before the status), so that is
-what "before" shows for it.
+Before is the register at `8b39495`, ahead of the Tranche 3 correction; after is the register now. A
+result cell with no value printed `[ — ]` on every page before 26.09 (the renderer tested the value
+before the status), so that is what "before" shows for it.
 
-All three tranches' initials are drafts; only the Tranche 1 and 2 retests are with the customer,
-and they are not in this table because they do not change. The third ruling of the day — a lot's
-first testing is its release testing (`apply_first_testing_ruling_2026-09-26.py`) — is in it: a
-Farmahem campaign value on an initial is that lot's release result, and the Tranche 3 retests that
-ruling withdrew are listed at the end of the run.
+Tranches 1 and 2 are issued and with the customer and are not touched (Head of QC, 26.09.2026). The
+Tranche 3 retests withdrawn for no reissuance are listed at the end of the run.
 """
 import collections
 import csv
@@ -27,7 +23,7 @@ GAP = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 import audit_empty_results as A                                    # noqa: E402
 
-BEFORE = {'T1': 'f161da1', 'T2': 'f161da1', 'T3': '8b39495'}
+BEFORE = {'T3': '8b39495'}
 OUT = os.path.join(HERE, 'INITIAL_COQ_CORRECTIONS_2026-09-26.tsv')
 
 
