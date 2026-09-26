@@ -79,16 +79,31 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
   --tranche T3 --strict`** (and the tranche you are building). It classifies every empty result and
   exits 1 while any is a **WIRED-MISS**: a certificate for the same lot, dated on or before the CoQ,
   reports the parameter and the register did not print it. CI runs it for Tranche 3.
-- **The rulings of 26.09.2026**, applied by `tracker/apply_empty_results_ruling_2026-09-26.py`:
+- **The rulings of 26.09.2026**, applied by `tracker/apply_empty_results_ruling_2026-09-26.py` and `tracker/apply_t3_source_rulings_2026-09-26.py`:
   1. **A later result is printed and the certificate re-dated** on or after the last result it
      cites. The source is the same lot's retest record, whose rows carry the campaign certificates.
   2. **Never another lot's certificate — sub-lots included.** *"They are separate lots."* `BSS1024`
      is not `BSS1024_01/2`; `GRC102501/2` is not `GRC102501/1`.
-  3. **Mycotoxins are the same case in every tranche**: total aflatoxins from IPH at release, B1 and
-     ochratoxin A from the Farmahem campaigns (`197-М`, `220-М`, `227-М`). B1 is never derived from the total.
+  3. **Mycotoxins are the same case in every tranche.** On an **initial** CoQ, total aflatoxins come
+     from **IPH** and aflatoxin B1 and ochratoxin A print `n/t` — not tested at release, and not a
+     defect or a lab request. On a **retest** CoQ all three come from **Farmahem** (`197-М`, `220-М`,
+     `227-М`). A Farmahem value is never carried onto an initial, and B1 is never derived from a total.
   4. **What no certificate covers prints `n/t`** and goes on `tracker/LAB_REQUESTS_<tranche>_*.tsv`.
      A bare `[ — ]` on a result is a defect. Release results that disagree print `[pending]` until
      the Head of QC chooses — a later value must never paper over them.
+  5. **Heavy metals come from IPH**, on the initial and the retest CoQ alike (the retest carries the
+     initial's). Where IPH has no certificate for the lot, the cell is `n/t` and IPH is asked.
+  6. **Identification A, identification B and foreign matter cite the internal certificate**, unless a
+     CNP (`ППК`) certificate for the same lot tests them explicitly — then the CNP certificate is the
+     source (FB012603 `ППК26112`, FB012603V `ППК26110`). `coq_check.js` OI-27 accepts exactly that case.
+  7. **Specification, product code and grade** come from the newest potency grades
+     (`potency_grades_2026-09-15.csv`, corrected to `Potency_specifications_25.pdf` of 17.09.2026) via
+     `apply_potency_grades.py`: the grade is the window the printed Total THC falls in. A result in no
+     window is reported for a new grade, never forced into the nearest one.
+  8. **A certificate whose scan is incomplete** prints `[pending]` for what the missing page holds —
+     IPH `1065/2026` (SJ102501) holds pages 1, 2 and 4 of 4 in every copy; page 3 carries its metals,
+     total aflatoxins and three pesticides. Obtain the page; do not read around it.
+
 - **Why `[ — ]` persisted**: `coq_build.js` tested the empty value before the status, and an
   untested determination has an empty value, so the "not tested" status never reached the page.
   The status is read first now; keep it that way.

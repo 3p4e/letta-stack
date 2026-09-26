@@ -136,7 +136,11 @@ def main():
             if not src:
                 raise SystemExit('%s: build_v40.js wrote no page for it' % c['regcode'])
             # the page must cite the internal certificate the register now assigns
-            if c['icoa_code'] not in open(src, encoding='utf-8').read():
+            # Head of QC, 26.09.2026: where CNP tested #1, #2 and #7 explicitly, the CoQ cites CNP and
+            # not the internal certificate; everywhere else it must cite the internal certificate.
+            cnp = {str(r.get('doc') or '') for r in c['rows'] if r['no'] in ('1', '2', '7')}
+            cnp_only = len(cnp) == 1 and next(iter(cnp)).startswith('ППК')
+            if not cnp_only and c['icoa_code'] not in open(src, encoding='utf-8').read():
                 raise SystemExit('%s: the CoQ page does not cite %s — rerun build_v40.js'
                                  % (c['regcode'], c['icoa_code']))
             dst = os.path.join(cdir, os.path.basename(src))

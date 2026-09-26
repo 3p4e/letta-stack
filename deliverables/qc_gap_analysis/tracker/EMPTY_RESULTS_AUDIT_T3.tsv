@@ -1,35 +1,101 @@
 coq	series	p_lot	cultivation_batch	row	parameter	class	carried_from_initial	register_status	certificates_that_report_it
+CoQ-PP_26-001	initial		CJ1024	10.1	Aflatoxin B1	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-001	initial		CJ1024	10.3	Ochratoxin A	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-008	initial	P050012	GG1024_02	10.1	Aflatoxin B1	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-008	initial	P050012	GG1024_02	10.3	Ochratoxin A	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-009	initial	P050032	MB0824_04	10.1	Aflatoxin B1	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-009	initial	P050032	MB0824_04	10.3	Ochratoxin A	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-016	initial	P050102	GP0824_01	10.1	Aflatoxin B1	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-016	initial	P050102	GP0824_01	10.3	Ochratoxin A	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-018	initial	P050122	BSS1024_01	10.1	Aflatoxin B1	OTHER-LOT		not tested at release — the IPH certificate reports total aflatoxins o	parent 197-2-М/26 10.08.2026 = ND (after the CoQ)
+CoQ-PP_26-018	initial	P050122	BSS1024_01	10.3	Ochratoxin A	OTHER-LOT		not tested at release — the IPH certificate reports total aflatoxins o	parent 197-2-М/26 10.08.2026 = ND (after the CoQ)
+CoQ-PP_26-019	initial	P050132	OPM052501	10.1	Aflatoxin B1	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-019	initial	P050132	OPM052501	10.3	Ochratoxin A	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
 CoQ-PP_26-021	initial	P050142	BSS1024_01/2	8	Loss on drying	OTHER-LOT		not tested — no certificate for this lot; requested from the laborator	parent ППК25051 26.02.2025 = 5.99 | parent ППК25176 10.07.2025 = 6.38
+CoQ-PP_26-021	initial	P050142	BSS1024_01/2	10.1	Aflatoxin B1	OTHER-LOT		not tested at release — the IPH certificate reports total aflatoxins o	parent 197-2-М/26 10.08.2026 = ND
+CoQ-PP_26-021	initial	P050142	BSS1024_01/2	10.2	Aflatoxins total	OTHER-LOT		not tested — no certificate for this lot; requested from the laborator	parent 3177/2025 26.06.2025 = < 2 | parent 751/2025 27.02.2025 = < 2
+CoQ-PP_26-021	initial	P050142	BSS1024_01/2	10.3	Ochratoxin A	OTHER-LOT		not tested at release — the IPH certificate reports total aflatoxins o	parent 197-2-М/26 10.08.2026 = ND
 CoQ-PP_26-021	initial	P050142	BSS1024_01/2	11.1	Lead	OTHER-LOT		not tested — no certificate for this lot; requested from the laborator	parent 3177/2025 26.06.2025 = Н.Д. | parent 751/2025 27.02.2025 = 0,071
 CoQ-PP_26-021	initial	P050142	BSS1024_01/2	11.2	Cadmium	OTHER-LOT		not tested — no certificate for this lot; requested from the laborator	parent 3177/2025 26.06.2025 = Н.Д. | parent 751/2025 27.02.2025 = 0,014
 CoQ-PP_26-021	initial	P050142	BSS1024_01/2	11.3	Arsenic	OTHER-LOT		not tested — no certificate for this lot; requested from the laborator	parent 3177/2025 26.06.2025 = 0,112 | parent 751/2025 27.02.2025 = 0,081
 CoQ-PP_26-021	initial	P050142	BSS1024_01/2	11.4	Mercury	OTHER-LOT		not tested — no certificate for this lot; requested from the laborator	parent 3177/2025 26.06.2025 = Н.Д. | parent 751/2025 27.02.2025 = 0,014
 CoQ-PP_26-021	initial	P050142	BSS1024_01/2	12	Pesticide residues	OTHER-LOT		not tested — no certificate for this lot; requested from the laborator	parent 3177/2025 26.06.2025 = Н.Д. | parent 751/2025 27.02.2025 = Н.Д.
-CoQ-PP_26-026	initial	P050202	GP062501	6	Total CBN	PENDING-RULING		awaiting the Head of QC's ruling — the release round holds 4 results t	exact ППК26036 05.03.2026 = 0.05 | exact ППК26037 05.03.2026 = 1.09 | exact ППК26057 11.05.2026 = 0.04
-CoQ-PP_26-026	initial	P050202	GP062501	10.1	Aflatoxin B1	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
-CoQ-PP_26-026	initial	P050202	GP062501	10.3	Ochratoxin A	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
+CoQ-PP_26-023	initial	P050172	CJ052501-2	10.1	Aflatoxin B1	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-023	initial	P050172	CJ052501-2	10.3	Ochratoxin A	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-026	initial	P050202	GP062501	6	Total CBN	PENDING		awaiting the Head of QC's ruling — the release round holds 4 results t	exact ППК26036 05.03.2026 = 0.05 | exact ППК26037 05.03.2026 = 1.09 | exact ППК26057 11.05.2026 = 0.04
+CoQ-PP_26-026	initial	P050202	GP062501	10.1	Aflatoxin B1	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-026	initial	P050202	GP062501	10.3	Ochratoxin A	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-029	initial	P050252	CJ072501	10.1	Aflatoxin B1	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-029	initial	P050252	CJ072501	10.3	Ochratoxin A	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-030	initial	P050262	WC072501	10.1	Aflatoxin B1	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-030	initial	P050262	WC072501	10.3	Ochratoxin A	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-031	initial	P050272	PM072501	10.1	Aflatoxin B1	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-031	initial	P050272	PM072501	10.3	Ochratoxin A	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-033	initial	P050292	GP072501-1	10.1	Aflatoxin B1	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-033	initial	P050292	GP072501-1	10.3	Ochratoxin A	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-041	initial	P060052	AB092501	10.1	Aflatoxin B1	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-041	initial	P060052	AB092501	10.3	Ochratoxin A	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-046	initial	P060102	WED102501	10.1	Aflatoxin B1	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-046	initial	P060102	WED102501	10.3	Ochratoxin A	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
 CoQ-PP_26-050	initial	P060142	GRC102501/1	8	Loss on drying	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
+CoQ-PP_26-050	initial	P060142	GRC102501/1	10.1	Aflatoxin B1	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-050	initial	P060142	GRC102501/1	10.2	Aflatoxins total	OTHER-LOT		not tested — no certificate for this lot; requested from the laborator	parent 328/2026 11.02.2026 = 2,2
+CoQ-PP_26-050	initial	P060142	GRC102501/1	10.3	Ochratoxin A	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
 CoQ-PP_26-050	initial	P060142	GRC102501/1	11.1	Lead	OTHER-LOT		not tested — no certificate for this lot; requested from the laborator	parent 328/2026 11.02.2026 = 0,084
 CoQ-PP_26-050	initial	P060142	GRC102501/1	11.2	Cadmium	OTHER-LOT		not tested — no certificate for this lot; requested from the laborator	parent 328/2026 11.02.2026 = н.д.
 CoQ-PP_26-050	initial	P060142	GRC102501/1	11.3	Arsenic	OTHER-LOT		not tested — no certificate for this lot; requested from the laborator	parent 328/2026 11.02.2026 = 0,095
 CoQ-PP_26-050	initial	P060142	GRC102501/1	11.4	Mercury	OTHER-LOT		not tested — no certificate for this lot; requested from the laborator	parent 328/2026 11.02.2026 = н.д.
 CoQ-PP_26-050	initial	P060142	GRC102501/1	12	Pesticide residues	OTHER-LOT		not tested — no certificate for this lot; requested from the laborator	parent 328/2026 11.02.2026 = н.д. — all 29
-CoQ-PP_26-052	initial		SJ102501	11.1	Lead	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
-CoQ-PP_26-052	initial		SJ102501	11.2	Cadmium	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
-CoQ-PP_26-052	initial		SJ102501	11.3	Arsenic	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
-CoQ-PP_26-052	initial		SJ102501	11.4	Mercury	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
+CoQ-PP_26-052	initial		SJ102501	10.1	Aflatoxin B1	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-052	initial		SJ102501	10.2	Aflatoxins total	PENDING		awaiting the complete scan of IPH 1065/2026 — every copy holds pages 1	
+CoQ-PP_26-052	initial		SJ102501	10.3	Ochratoxin A	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-052	initial		SJ102501	11.1	Lead	PENDING		awaiting the complete scan of IPH 1065/2026 — every copy holds pages 1	
+CoQ-PP_26-052	initial		SJ102501	11.2	Cadmium	PENDING		awaiting the complete scan of IPH 1065/2026 — every copy holds pages 1	
+CoQ-PP_26-052	initial		SJ102501	11.3	Arsenic	PENDING		awaiting the complete scan of IPH 1065/2026 — every copy holds pages 1	
+CoQ-PP_26-052	initial		SJ102501	11.4	Mercury	PENDING		awaiting the complete scan of IPH 1065/2026 — every copy holds pages 1	
+CoQ-PP_26-052	initial		SJ102501	12	Pesticide residues	PENDING		awaiting the complete scan of IPH 1065/2026 — every copy holds pages 1	exact 1065/2026 11.03.2026 = н.д. — all 26
+CoQ-PP_26-055	initial		SJ112501	10.1	Aflatoxin B1	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-055	initial		SJ112501	10.3	Ochratoxin A	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-056	initial		J31112501	10.1	Aflatoxin B1	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-056	initial		J31112501	10.3	Ochratoxin A	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-058	initial		OPM112501	10.1	Aflatoxin B1	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-058	initial		OPM112501	10.3	Ochratoxin A	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-061	initial		GG112501	10.1	Aflatoxin B1	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-061	initial		GG112501	10.3	Ochratoxin A	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-062	initial		J31122501	10.1	Aflatoxin B1	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-062	initial		J31122501	10.3	Ochratoxin A	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-063	initial		CC112501	10.1	Aflatoxin B1	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-063	initial		CC112501	10.3	Ochratoxin A	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-065	initial		FB112501	10.1	Aflatoxin B1	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-065	initial		FB112501	10.3	Ochratoxin A	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-066	initial		GG012601	10.1	Aflatoxin B1	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-066	initial		GG012601	10.3	Ochratoxin A	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-067	initial		JD012601	10.1	Aflatoxin B1	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-067	initial		JD012601	10.3	Ochratoxin A	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
 CoQ-PP_26-068	initial		P060332	8	Loss on drying	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
+CoQ-PP_26-068	initial		P060332	10.1	Aflatoxin B1	LATER-ROUND		not tested at release — the IPH certificate reports total aflatoxins o	exact 197-6-М/26 10.08.2026 = ND (after the CoQ) | exact 197-6-М/26 10.08.2026 = ND (after the CoQ)
+CoQ-PP_26-068	initial		P060332	10.2	Aflatoxins total	LATER-ROUND		not tested — no certificate for this lot; requested from the laborator	exact 197-6-М/26 10.08.2026 = ND (after the CoQ)
+CoQ-PP_26-068	initial		P060332	10.3	Ochratoxin A	LATER-ROUND		not tested at release — the IPH certificate reports total aflatoxins o	exact 197-6-М/26 10.08.2026 = ND (after the CoQ) | exact 197-6-М/26 10.08.2026 = ND (after the CoQ)
 CoQ-PP_26-068	initial		P060332	11.1	Lead	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
 CoQ-PP_26-068	initial		P060332	11.2	Cadmium	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
 CoQ-PP_26-068	initial		P060332	11.3	Arsenic	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
 CoQ-PP_26-068	initial		P060332	11.4	Mercury	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
 CoQ-PP_26-068	initial		P060332	12	Pesticide residues	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
 CoQ-PP_26-073	initial	P060342	SCR012601	8	Loss on drying	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
+CoQ-PP_26-073	initial	P060342	SCR012601	10.1	Aflatoxin B1	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-073	initial	P060342	SCR012601	10.2	Aflatoxins total	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
+CoQ-PP_26-073	initial	P060342	SCR012601	10.3	Ochratoxin A	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
 CoQ-PP_26-073	initial	P060342	SCR012601	11.1	Lead	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
 CoQ-PP_26-073	initial	P060342	SCR012601	11.2	Cadmium	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
 CoQ-PP_26-073	initial	P060342	SCR012601	11.3	Arsenic	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
 CoQ-PP_26-073	initial	P060342	SCR012601	11.4	Mercury	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
 CoQ-PP_26-073	initial	P060342	SCR012601	12	Pesticide residues	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
+CoQ-PP_26-075	initial		FB012603V	10.1	Aflatoxin B1	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-075	initial		FB012603V	10.3	Ochratoxin A	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-079	initial		FB012603	10.1	Aflatoxin B1	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-079	initial		FB012603	10.3	Ochratoxin A	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-080	initial		SCR022601	10.1	Aflatoxin B1	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
+CoQ-PP_26-080	initial		SCR022601	10.3	Ochratoxin A	UNTESTED		not tested at release — the IPH certificate reports total aflatoxins o	
 CoQ-PP_26-087	retest		P060332	8	Loss on drying	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
 CoQ-PP_26-087	retest		P060332	11.1	Lead	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
 CoQ-PP_26-087	retest		P060332	11.2	Cadmium	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
@@ -54,7 +120,7 @@ CoQ-PP_26-160	retest	P060342	SCR012601	11.2	Cadmium	UNTESTED		not tested — no 
 CoQ-PP_26-160	retest	P060342	SCR012601	11.3	Arsenic	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
 CoQ-PP_26-160	retest	P060342	SCR012601	11.4	Mercury	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
 CoQ-PP_26-160	retest	P060342	SCR012601	12	Pesticide residues	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
-CoQ-PP_26-162	retest		SJ102501	11.1	Lead	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
-CoQ-PP_26-162	retest		SJ102501	11.2	Cadmium	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
-CoQ-PP_26-162	retest		SJ102501	11.3	Arsenic	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
-CoQ-PP_26-162	retest		SJ102501	11.4	Mercury	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
+CoQ-PP_26-162	retest		SJ102501	11.1	Lead	PENDING		awaiting the complete scan of IPH 1065/2026 — every copy holds pages 1	
+CoQ-PP_26-162	retest		SJ102501	11.2	Cadmium	PENDING		awaiting the complete scan of IPH 1065/2026 — every copy holds pages 1	
+CoQ-PP_26-162	retest		SJ102501	11.3	Arsenic	PENDING		awaiting the complete scan of IPH 1065/2026 — every copy holds pages 1	
+CoQ-PP_26-162	retest		SJ102501	11.4	Mercury	PENDING		awaiting the complete scan of IPH 1065/2026 — every copy holds pages 1	

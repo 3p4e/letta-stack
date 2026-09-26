@@ -22,8 +22,9 @@ and until this audit they were indistinguishable on the page:
   `GRC102501/2` for `GRC102501/1`). Head of QC, 26.09.2026: never a source — *"they are separate
   lots"* — so these print `n/t` and go on the laboratory request list.
 * **UNTESTED** — no certificate anywhere in the repository reports it for this lot or any relative.
-* **PENDING-RULING** — the register records that the Head of QC must choose (release results that
-  disagree). Prints `[pending]`; not a miss, because the choice is his.
+* **PENDING** — the register records what the cell is waiting for: the Head of QC's choice between
+  release results that disagree, or the missing page of a certificate that exists (IPH 1065/2026,
+  page 3 of 4). Prints `[pending]`; not a miss, because nothing on file can fill it.
 
 The certificates searched: the eCoA corpus (`ingestion/ecoa_runner/records_corpus.json`, 283 double-read
 certificates) and the contaminant intake of 18.09 (58 double-read IPH certificates, several of which
@@ -210,8 +211,8 @@ def main(argv):
             if str(r.get('res')).strip() not in ('—', '', 'None') or r['no'] in ('9.6', '9.7'):
                 continue
             cat, hits = classify(c, r['no'], certs, r, dates)
-            if str(r.get('st') or '').startswith("awaiting the Head of QC's ruling"):
-                cat = 'PENDING-RULING'            # a recorded decision, not a miss
+            if str(r.get('st') or '').startswith('awaiting'):
+                cat = 'PENDING'                   # recorded: a ruling or a missing page, not a miss
             carried = 'carried' in str(r.get('st'))
             tally[(ser, cat)] += 1
             rows.append([c['regcode'], ser, c.get('pp') or '', c.get('cb') or '', r['no'], NAME.get(r['no'], ''),
