@@ -318,6 +318,10 @@ console.log('print-opaque: %d gradient rule(s) converted for print',
             PRINT_ZEBRA_LAYER.split('\n').length - 3);
 
 for (const c of data.coqs) {
+  // Head of QC, 26.09.2026: a lot whose Farmahem campaign was its first testing has one certificate,
+  // not two — "there will be no reissuance". Its retest draft stays in the register, withdrawn, and
+  // nothing is built for it.
+  if (c.withdrawn) { stats.withdrawn = (stats.withdrawn || 0) + 1; continue; }
   const r = rec(c);
   CURRENT = r;
   const code = (r.cb || '').match(/^[A-Za-z]+/); const strainCode = code ? code[0].toUpperCase() : 'XX';

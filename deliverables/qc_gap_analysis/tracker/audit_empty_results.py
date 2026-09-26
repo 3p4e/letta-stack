@@ -26,13 +26,30 @@ and until this audit they were indistinguishable on the page:
   certificate"). Head of QC, 17.09.2026 (`apply_lab_attribution.py`, R3): an in-house record without a
   certificate is not cited, so the cell prints `n/t`. Not a miss.
 * **UNTESTED** — no certificate anywhere in the repository reports it for this lot or any relative.
+* **FIRST-TESTING** — a LATER-ROUND cell on an initial whose family the release round never tested:
+  the later certificate is the lot's first testing, so it *is* the release testing and must print on
+  the initial (Head of QC, 10.09 and 26.09.2026). A miss; `--strict` fails on it.
 * **PENDING** — the register records what the cell is waiting for: the Head of QC's choice between
   release results that disagree, or the missing page of a certificate that exists (IPH 1065/2026,
   page 3 of 4). Prints `[pending]`; not a miss, because nothing on file can fill it.
 
 The certificates searched: the eCoA corpus (`ingestion/ecoa_runner/records_corpus.json`, 283 double-read
-certificates) and the contaminant intake of 18.09 (58 double-read IPH certificates, several of which
-the corpus lacks). The register's own attribution is not trusted here — it is what is being audited.
+certificates), the contaminant intake of 18.09 (58 double-read IPH certificates, several of which
+the corpus lacks), and the CNP release certificates in the RAGflow page-text cache
+(`ingestion/ragflow/cache/all_cert_texts_2026-08-30.json`) — the corpus lacks many of them, and on
+26.09.2026 four Tranche 3 initials were found printing a retest CBN while their own CNP release
+certificate reported it. The register's own attribution is not trusted here — it is what is being
+audited.
+
+Two more checks, on cells that are *not* empty, fail `--strict` as well:
+
+* **RETEST-ON-INITIAL** — an initial prints a Farmahem campaign value (197-, 220-, 227-К/М/26) for
+  a family the release round already tested (`release_family`): that value belongs to the retest.
+* **BARE** — an empty result whose status the renderer cannot turn into `n/t` or `[pending]`: it
+  would print a bare `[ — ]`, which CLAUDE.md §5 calls a defect.
+* **SUPERSEDES** — a draft retest names its initial with a date the initial no longer carries. A
+  Tranche 1 or 2 retest is the customer's document and is never changed, so its mismatches are
+  listed, not failed.
 """
 import argparse
 import collections
@@ -70,6 +87,11 @@ MK = {'олово': 'lead', 'кадмиум': 'cadmium', 'арсен': 'arsenic'
 
 
 INHOUSE = 'in-house record, no certificate'
+CACHE = os.path.join(ROOT, 'ingestion', 'ragflow', 'cache', 'all_cert_texts_2026-08-30.json')
+# the CNP cannabinoid table: "Вкупно Δ9-THC | / | 18.67", "Содржина на CBN | ≤ 1.00 | 0.03"
+CNP_LINES = {'total_thc': r'Вкупно\s*Δ9-THC\**\s*\|[^|\n]*\|\s*([^\n|]+)',
+             'total_cbd': r'Вкупно\s*CBD\**\s*\|[^|\n]*\|\s*([^\n|]+)',
+             'total_cbn': r'Содржина на CBN\s*\|[^|\n]*\|\s*([^\n|]+)'}
 
 
 def N(s):
@@ -125,6 +147,18 @@ def certificates():
         scan = doc.get('scan', '')
         ids = {N(doc.get('batch'))} | {N(x) for x in re.findall(r'P\d{6}', scan)}
         out.append((ids, code, doc.get('issue_date'), vals))
+    have = {c for _, c, _, _ in out}
+    for x in json.load(open(CACHE, encoding='utf-8')):
+        m = x.get('meta') or {}
+        if m.get('lab') != 'CNP' or m.get('test_type') != 'RELEASE' or m.get('cert_code') in have:
+            continue
+        vals = {}
+        for key, pat in CNP_LINES.items():
+            hit = re.search(pat, x.get('text') or '')
+            if hit:
+                vals[key] = hit.group(1).strip()
+        if vals:
+            out.append(({N(m.get('batch_canonical'))}, m.get('cert_code'), m.get('date_of_issue'), vals))
     return out
 
 
@@ -156,12 +190,74 @@ def code_dates(certs):
 CAMPAIGN = re.compile(r'^(197|220|227)-\d+-[КKМM]/26$')
 
 # Head of QC, 26.09.2026: only the Tranche 1 and 2 *retest* certificates are with the customer; every
-# initial certificate, and all of Tranche 3, is a draft. Each of those retests names the initial it
-# supersedes *with the initial's date*, so a Tranche 1 or 2 initial keeps that date: a result measured
-# only in the retest round prints `n/t` on it ("not tested at release") and is carried by the retest the
-# customer holds. Their retest records are never changed. (The register's `issued` flag means a code was
-# allocated, not that the customer holds the document.)
+# initial certificate, and all of Tranche 3, is a draft. Those retests are never changed — not their
+# results, not the date they print for the initial they supersede. (The register's `issued` flag means a
+# code was allocated, not that the customer holds the document.)
 RETEST_WITH_CUSTOMER = {'T1', 'T2'}
+
+# Which testing is the release testing — the Head of QC, 10.09.2026: "the first value of a parameter
+# obtained would be counted as an initial quality control testing, and every other point of testing ...
+# will be considered as a retest"; and 26.09.2026, by family: where IPH reported total aflatoxins at
+# release, the Farmahem mycotoxin panel is the retest; where it did not, "the testing in Farmahem for
+# mycotoxins is part of initial release testing". Where no cannabinoid certificate exists from CNP and
+# only Farmahem's does, "the Farmahem testing is the initial release testing and there will be no
+# reissuance". Identification C is cited from the cannabinoid certificate (ruling of 10.09.2026).
+K_ROWS = ('3', '4', '5', '6')
+M_ROWS = ('10.1', '10.2', '10.3')
+
+
+def _has(row):
+    return str(row.get('res')).strip() not in ('—', '', 'None')
+
+
+def release_family(c):
+    """(cannabinoids, mycotoxins): does the initial hold a release-round certificate for the family?
+
+    A release certificate is any certificate the initial cites for the family that is not one of the
+    August–September 2026 Farmahem campaigns — CNP, IPH, an earlier Farmahem series (031-, 051-,
+    100-К; 276-М/25), or the internal certificate the 10.09 ruling lets carry an in-house assay — or a
+    release result the Head of QC has been asked to choose between, or a certificate whose missing page
+    is awaited.
+    """
+    rows = {r['no']: r for r in c['rows']}
+
+    def release(nos):
+        for no in nos:
+            r = rows.get(no) or {}
+            st = str(r.get('st') or '')
+            if _has(r) and not CAMPAIGN.match(str(r.get('doc') or '').strip()):
+                return True
+            if st.startswith('awaiting'):
+                return True
+        return False
+    return release(('4', '5', '6')), release(M_ROWS)
+
+
+def initial_issue(c, retest=None):
+    """An initial certificate's date under the standing rule (issuance_schedule.coq_issue): seven days
+    after the last external certificate it cites, never before the internal certificate, never before
+    its own scheduled date. *"How can a certificate of quality be dated on a date that is earlier than
+    the last certificate of analysis obtained from external lab for that batch testing?"*
+
+    The owner's rule is five to ten days; seven is the desk's one number. Where seven would date the
+    initial after the retest that supersedes it, the initial takes the retest's date, provided that is
+    still at least five days after its last certificate — otherwise the run stops."""
+    if GAP not in sys.path:
+        sys.path.insert(0, GAP)
+    import issuance_schedule as IS
+    base = dt(c.get('issue_before_redating') or c.get('issue'))
+    ext = [dt(r.get('dd')) for r in c['rows'] if _has(r) and str(r.get('doc') or '').strip() not in ('', '—')
+           and not str(r.get('doc')).startswith('iCoA') and dt(r.get('dd'))]
+    icoa = next((r.get('dd') for r in c['rows'] if str(r.get('doc') or '').startswith('iCoA')), None)
+    new = dt(IS.coq_issue('%02d.%02d.%04d' % (max(ext).day, max(ext).month, max(ext).year), icoa)) if ext else None
+    out = max(d for d in (base, new) if d)
+    rd = dt((retest or {}).get('issue')) if retest and not retest.get('withdrawn') else None
+    if rd and rd < out and new and out == new:
+        if (rd - max(ext)).days < 5:
+            raise SystemExit('%s: its retest %s of %s is less than five days after %s'
+                             % (c['regcode'], retest['regcode'], retest['issue'], max(ext)))
+        out = rd
+    return '%02d.%02d.%04d' % (out.day, out.month, out.year)
 
 
 def supersedes_mismatches(recs):
@@ -171,8 +267,22 @@ def supersedes_mismatches(recs):
     for r in recs:
         s = r.get('supersedes') or {}
         i = ini.get(s.get('code'))
-        if i and s.get('date') and s['date'] != i.get('issue'):
+        if i and s.get('date') and s['date'] != i.get('issue') and not r.get('withdrawn'):
             out.append((r['regcode'], s['code'], s['date'], i.get('issue')))
+    return out
+
+
+def retest_on_initial(recs):
+    """Initial cells that print a retest-campaign value although the family was tested at release."""
+    out = []
+    for c in recs:
+        if 'retest' in c['t'] or c.get('withdrawn'):
+            continue
+        k, m = release_family(c)
+        for r in c['rows']:
+            fam = k if r['no'] in K_ROWS else m if r['no'] in M_ROWS else None
+            if fam and _has(r) and CAMPAIGN.match(str(r.get('doc') or '').strip()):
+                out.append((c['regcode'], r['no'], r.get('doc')))
     return out
 
 
@@ -237,14 +347,29 @@ def main(argv):
             if k and k in tm:
                 return tm[k]
 
-    recs = [c for c in reg['coqs'] if a.tranche == 'all' or tranche(c) == a.tranche]
+    recs = [c for c in reg['coqs'] if (a.tranche == 'all' or tranche(c) == a.tranche) and not c.get('withdrawn')]
     rows, tally = [], collections.Counter()
+    # the same lot's retest record carries the campaign certificates the corpus lacks (227-М, ...)
+    lot = lambda c: (str(c.get('pp') or ''), str(c.get('cb') or ''))
+    retest_of = {lot(c): c for c in reg['coqs'] if 'retest' in c['t']}
     for c in sorted(recs, key=lambda c: c['regcode']):
         ser = 'retest' if 'retest' in c['t'] else 'initial'
+        rel_k, rel_m = release_family(c)
+        twin = {x['no']: x for x in (retest_of.get(lot(c)) or {}).get('rows', [])} if ser == 'initial' else {}
         for r in c['rows']:
             if str(r.get('res')).strip() not in ('—', '', 'None') or r['no'] in ('9.6', '9.7'):
                 continue
             cat, hits = classify(c, r['no'], certs, r, dates)
+            t = twin.get(r['no']) or {}
+            if _has(t) and 'carried' not in str(t.get('st')) and CAMPAIGN.match(str(t.get('doc') or '').strip()):
+                hits.append(('exact', True, t.get('doc'), t.get('dd'), str(t.get('res')).split('|')[0].strip()))
+                if cat in ('UNTESTED', 'OTHER-LOT', 'IN-HOUSE-ONLY'):
+                    cat = 'LATER-ROUND'
+            # the campaign is this lot's first testing of the family: it is the release testing and
+            # belongs on the initial (Head of QC, 10.09 and 26.09.2026)
+            if cat == 'LATER-ROUND' and ser == 'initial' and not (rel_k if r['no'] in K_ROWS else
+                                                                   rel_m if r['no'] in M_ROWS else False):
+                cat = 'FIRST-TESTING'
             if str(r.get('st') or '').startswith('awaiting'):
                 cat = 'PENDING'                   # recorded: a ruling or a missing page, not a miss
             carried = 'carried' in str(r.get('st'))
@@ -263,12 +388,26 @@ def main(argv):
     for (ser, cat), k in sorted(tally.items()):
         print('  %-8s %-12s %4d' % (ser, cat, k))
     print('written: %s' % os.path.relpath(out, GAP))
-    miss = sum(k for (_, cat), k in tally.items() if cat == 'WIRED-MISS')
-    # a re-dated initial must carry its new date onto the retest that supersedes it
-    sup = supersedes_mismatches(recs)
+    miss = sum(k for (_, cat), k in tally.items() if cat in ('WIRED-MISS', 'FIRST-TESTING'))
+    # a re-dated initial must carry its new date onto the draft retest that supersedes it
+    sup, fail_sup = supersedes_mismatches(recs), []
     for x in sup:
-        print('  SUPERSEDES  %s names %s of %s — the initial is dated %s' % x)
-    return 1 if (a.strict and (miss or sup)) else 0
+        customer = tranche(next(c for c in recs if c['regcode'] == x[0])) in RETEST_WITH_CUSTOMER
+        print('  SUPERSEDES  %s names %s of %s — the initial is dated %s%s'
+              % (x + ('  (the customer\'s document: listed, not changed)' if customer else '',)))
+        if not customer:
+            fail_sup.append(x)
+    # a result cell the renderer would print as a bare [ — ]: coq_build.js prints n/t only when the
+    # status says "not tested", and [pending] only when it says "awaiting" (CLAUDE.md §5)
+    bare = [(c['regcode'], r['no'], str(r.get('st') or '')[:60]) for c in recs for r in c['rows']
+            if not _has(r) and r['no'] not in ('9.6', '9.7')
+            and not re.search(r'not tested|awaiting', str(r.get('st') or ''), re.I)]
+    for x in bare:
+        print('  BARE  %s row %s would print [ — ]: %s' % x)
+    roi = retest_on_initial(recs)
+    for x in roi:
+        print('  RETEST-ON-INITIAL  %s row %s cites %s, but the family was tested at release' % x)
+    return 1 if (a.strict and (miss or fail_sup or roi or bare)) else 0
 
 
 if __name__ == '__main__':

@@ -74,30 +74,59 @@ folders without re-uploading it, which is how a superseded document goes to `OLD
 
 **What is with the customer** (Head of QC, 26.09.2026): only the **Tranche 1 and 2 retest** CoQs.
 Every initial CoQ, T1/T2 included, and all of Tranche 3 are drafts. The register's `issued` flag
-means a code was allocated, not that the customer holds the document — never read it as that.
+means a code was allocated, not that the customer holds the document — never read it as that. The
+T1/T2 retest records are never changed.
+
+**A lot's first testing is its release testing** — the ruling of 10.09.2026 (*"the first value of a
+parameter obtained would be counted as an initial quality control testing, and every other point of
+testing ... will be considered as a retest"*), restated on 26.09.2026 after the desk set it aside
+twice (ISSUANCE_RULES §3a; this morning's "not tested at release"). Applied by
+`tracker/apply_first_testing_ruling_2026-09-26.py`, decided per lot by
+`audit_empty_results.release_family`:
+
+- **Cannabinoids** (Identification C with them): no release cannabinoid certificate for the lot (CNP,
+  an earlier Farmahem series, or the in-house route of 10.09) → the Farmahem campaign (197-/220-/227-К)
+  *is* the release testing and prints on the initial. A release certificate exists → the campaign is
+  the retest, and the initial takes the release certificate's own value where it reports one.
+- **Mycotoxins**: IPH total aflatoxins at release → the Farmahem panel is the retest (initial: IPH
+  total, B1/OTA `n/t`). No IPH total and only the Farmahem panel → *"the testing in Farmahem for
+  mycotoxins is part of initial release testing"*: all three print on the initial.
+- **No reissuance**: *"there will be no reissuance for those CoQ."* A lot whose campaign was its first
+  testing, and whose retest adds nothing else, has one certificate. Tranche 3 retests withdrawn so:
+  `-087`, `-138`, `-152` (`withdrawn` in the register; nothing built; numbers left free).
+- **Dates**: `audit_empty_results.initial_issue` = `issuance_schedule.coq_issue` — seven days after
+  the last external certificate cited, never before the certificate's own date, never after its own
+  retest (then the retest's date, within the owner's 5–10 days). *"How can a certificate of quality
+  be dated on a date that is earlier than the last certificate of analysis ... Regardless, is it
+  initial testing or a retesting period?"* This applies to T1/T2 initials too. Where a customer's
+  retest names its initial with another date, the audit lists it — the customer's document is not
+  changed.
+- Never write "not tested at release" for a value that was the lot's first testing. It is untrue.
 
 Head of QC, 26.09.2026: *"they're missing values for many of the parameters and there must not be
 a case like that."* A result cell printed `[ — ]` for weeks without anyone saying why.
 
 - **Before any certificate build, run `python3 deliverables/qc_gap_analysis/tracker/audit_empty_results.py
-  --tranche T3 --strict`** (and the tranche you are building). It classifies every empty result and
-  exits 1 while any is a **WIRED-MISS** — a certificate for the same lot, dated on or before the CoQ,
-  reports the parameter and the register did not print it — or while a retest's *supersedes* line
-  names a date its initial no longer carries. CI runs it for T1, T2 and T3. The company's in-house
-  records (lab `PURELYPLANT`, no code) are not certificates: ruling of 17.09 (R3), `n/t`.
+  --tranche T3 --strict`** (and the tranche you are building). CI runs it for T1, T2 and T3. It exits 1
+  on a **WIRED-MISS** (a same-lot certificate on or before the CoQ reports the parameter, unprinted), a
+  **FIRST-TESTING** cell (the lot's first testing sits only on the retest), a **RETEST-ON-INITIAL**
+  value, a **BARE** cell (a status the renderer cannot turn into `n/t` or `[pending]` — it must contain
+  "not tested" or "awaiting"), or a draft retest whose *supersedes* date its initial no longer carries.
+  It reads the CNP release certificates in the RAGflow page-text cache as well as the corpus: on
+  26.09 four T3 initials printed a retest CBN while their own CNP certificate reported it (ППК25118,
+  ППК25257, ППК25368, ППК26031). The company's in-house records (lab `PURELYPLANT`, no code) are not
+  certificates: ruling of 17.09 (R3), `n/t`.
 - **The rulings of 26.09.2026**, applied by `tracker/apply_empty_results_ruling_2026-09-26.py` and `tracker/apply_t3_source_rulings_2026-09-26.py`:
-  1. **A later result is printed and the certificate re-dated** on or after the last result it
-     cites. The source is the same lot's retest record, whose rows carry the campaign certificates.
-     The retest's *supersedes* line moves with the new date. **Except Tranches 1 and 2**: their
-     retests are with the customer and name the initial *of 06.06.2026*, so a T1/T2 initial is never
-     re-dated — a result measured only in the retest round prints `n/t`, "not tested at release",
-     naming the retest that carries it. The T1/T2 retest records are never changed.
+  1. **A later result is printed and the certificate re-dated** — *only* where that later result is
+     the lot's first testing of the family (above); a retest value never goes on an initial. The
+     source is the same lot's retest record. A draft retest's *supersedes* line moves with the date.
   2. **Never another lot's certificate — sub-lots included.** *"They are separate lots."* `BSS1024`
      is not `BSS1024_01/2`; `GRC102501/2` is not `GRC102501/1`.
-  3. **Mycotoxins are the same case in every tranche.** On an **initial** CoQ, total aflatoxins come
-     from **IPH** and aflatoxin B1 and ochratoxin A print `n/t` — not tested at release, and not a
-     defect or a lab request. On a **retest** CoQ all three come from **Farmahem** (`197-М`, `220-М`,
-     `227-М`). A Farmahem value is never carried onto an initial, and B1 is never derived from a total.
+  3. **Mycotoxins are the same case in every tranche.** Where IPH tested total aflatoxins at release,
+     the **initial** prints the IPH total and B1/OTA `n/t`, and the **retest** prints all three from
+     **Farmahem** (`197-М`, `220-М`, `227-М`) — every T1, T2 and T3 retest has the full Farmahem panel.
+     Where IPH did not, the Farmahem panel is the release testing and prints on the initial. B1 is
+     never derived from a total; a total is the sum of B1, B2, G1 and G2 on one panel.
   4. **What no certificate covers prints `n/t`** and goes on `tracker/LAB_REQUESTS_<tranche>_*.tsv`.
      A bare `[ — ]` on a result is a defect. Release results that disagree print `[pending]` until
      the Head of QC chooses — a later value must never paper over them.

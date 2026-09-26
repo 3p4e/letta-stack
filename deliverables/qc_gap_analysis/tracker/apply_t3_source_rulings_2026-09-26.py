@@ -106,9 +106,13 @@ def main(argv):
     corpus = json.load(open(os.path.join(ROOT, 'ingestion', 'ecoa_runner', 'records_corpus.json'), encoding='utf-8'))
     log = collections.defaultdict(list)
 
-    # 1 · mycotoxins on the initial certificates
+    # 1 · mycotoxins on the initial certificates — only where the release round tested the family:
+    # where it did not, the Farmahem panel is the lot's release testing and stays (third ruling of
+    # 26.09.2026, apply_first_testing_ruling_2026-09-26.py)
     for c in ini:
         rows = {r['no']: r for r in c['rows']}
+        if not A.release_family(c)[1]:
+            continue
         for no in ('10.1', '10.3'):
             r = rows[no]
             if FARMAHEM_M.match(str(r.get('doc') or '')):
@@ -158,27 +162,26 @@ def main(argv):
                     if src and f in src:
                         r[f] = src[f]
 
-    # 4 · re-date each initial against what it still cites from a later campaign
+    # 4 · date each initial by the standing rule (audit_empty_results.initial_issue): seven days after
+    # the last external certificate it cites, never after its own retest
     for c in ini:
-        base = dt(c.get('issue_before_redating') or c.get('issue'))
-        later = [dt(r.get('dd')) for r in c['rows'] if str(r.get('st', '')).startswith(CAMPAIGN_NOTE) and dt(r.get('dd'))]
-        new = max([base] + later)
-        if ds(new) != c.get('issue'):
-            if a.tranche in A.RETEST_WITH_CUSTOMER:
-                raise SystemExit('%s: would move from %s to %s, but its retest is with the customer and names '
-                                 'the initial of %s' % (c['regcode'], c.get('issue'), ds(new), c.get('issue')))
-            log['initial CoQ re-dated'].append((c['regcode'], c.get('issue'), ds(new)))
-            c['issue'] = ds(new)
-        for r in t3:                          # the retest that supersedes it names its date
-            s = r.get('supersedes') or {}
-            if s.get('code') == c['regcode'] and s.get('date') != c['issue']:
-                if a.tranche in A.RETEST_WITH_CUSTOMER:
-                    raise SystemExit('%s names %s of %s; the initial is dated %s'
-                                     % (r['regcode'], c['regcode'], s.get('date'), c['issue']))
-                log['retest supersedes line re-dated'].append((r['regcode'], c['regcode'], s.get('date'), c['issue']))
+        rt = next((r for r in t3 if 'retest' in r['t'] and (r.get('supersedes') or {}).get('code') == c['regcode']), None)
+        base = c.get('issue_before_redating') or c.get('issue')
+        c.pop('issue_before_redating', None)
+        c['issue'] = base
+        new = A.initial_issue(c, rt)
+        if new != base:
+            c['issue_before_redating'] = base
+            c['issue'] = new
+            log['initial CoQ dated after its last certificate'].append((c['regcode'], base, new))
+        s = (rt or {}).get('supersedes') or {}
+        if rt and s.get('date') != c['issue']:
+            if a.tranche in A.RETEST_WITH_CUSTOMER:     # the customer's document: listed, never changed
+                log["customer's retest names the initial with another date"].append(
+                    (rt['regcode'], c['regcode'], s.get('date'), c['issue']))
+            else:
+                log['retest supersedes line re-dated'].append((rt['regcode'], c['regcode'], s.get('date'), c['issue']))
                 s['date'] = c['issue']
-        if new == base and 'issue_before_redating' in c:
-            del c['issue_before_redating']
         for r in c['rows']:
             if dt(r.get('dd')) and dt(r['dd']) > dt(c['issue']):
                 raise SystemExit('%s row %s: cites %s of %s, after the certificate'

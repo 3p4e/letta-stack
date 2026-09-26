@@ -10,7 +10,10 @@ Before is the register as it stood ahead of each tranche's correction: `8b39495`
 what "before" shows for it.
 
 All three tranches' initials are drafts; only the Tranche 1 and 2 retests are with the customer,
-and they are not in this table because they do not change.
+and they are not in this table because they do not change. The third ruling of the day — a lot's
+first testing is its release testing (`apply_first_testing_ruling_2026-09-26.py`) — is in it: a
+Farmahem campaign value on an initial is that lot's release result, and the Tranche 3 retests that
+ruling withdrew are listed at the end of the run.
 """
 import collections
 import csv
@@ -44,20 +47,26 @@ def show(r, before):
     return v, str(r.get('doc') or '')
 
 
-def kind(no, after, st):
+def kind(no, after, st, src=''):
     if no in ('10.1', '10.3') and after == 'n/t':
-        return 'B1 / OTA → n/t (not tested at release; IPH reports total aflatoxins only)'
+        return 'B1 / OTA → n/t (IPH tested total aflatoxins at release; the Farmahem panel is the retest)'
     if no in ('1', '2', '7'):
         return 'Ident A / Ident B / foreign matter → the CNP certificate that tested them'
     if no in ('grade', 'spec', 'pcode'):
         return 'grade / specification / product code assigned'
     if after == '[pending]':
         return '→ [pending] (a missing page, or results awaiting a ruling)'
-    if after == 'n/t' and st.startswith('not tested at release — measured in the retest round'):
-        return '→ n/t (not tested at release; measured in the retest round, on the retest CoQ)'
+    if after == 'n/t' and st.startswith('not tested by a release certificate'):
+        return '→ n/t (the family was tested at release, but no release certificate carries this parameter)'
     if after == 'n/t':
         return '→ n/t (no certificate for the lot; requested from the laboratory)'
-    return '→ value from the lot\'s own later certificate (CoQ re-dated)'
+    if A.CAMPAIGN.match(src):
+        return '→ Farmahem value: the lot\'s first testing, so its release testing (CoQ dated after it)'
+    if src.startswith('ППК'):
+        return '→ the CNP release certificate\'s own value, never printed before'
+    if src == '276-31-М/25':
+        return '→ total aflatoxins from the Farmahem release panel of 2025'
+    return '→ the lot\'s first testing of the parameter (CoQ dated after it)'
 
 
 def main():
@@ -90,7 +99,7 @@ def main():
             if str(c0.get(f) or '') != str(c1.get(f) or ''):
                 ch.append((f, f, (c0.get(f) or '—', ''), (c1.get(f) or '—', ''), ''))
         for no, nm, x0, x1, st in ch:
-            k = kind(no, x1[0], st)
+            k = kind(no, x1[0], st, x1[1])
             tally[(t, k)] += 1
             rows.append([t, c1['regcode'], c1.get('pp') or '', c1.get('cb') or '', c0.get('issue'), c1.get('issue'),
                          no, nm, x0[0], x1[0], x1[1], k, st])
@@ -107,6 +116,9 @@ def main():
                 print('    %4d  %s' % (v, k))
         red = sorted({(r[1], r[4], r[5]) for r in rows if r[0] == t and r[4] != r[5]})
         print('    re-dated: %s' % (', '.join('%s %s→%s' % x for x in red) or 'none'))
+    gone = sorted((tr(c), c['regcode'], c.get('icoa_code'), c['withdrawn']) for c in now.values() if c.get('withdrawn'))
+    for x in gone:
+        print('withdrawn: %s %s (%s) — %s' % (x[0], x[1], x[2], x[3][:90]))
     print('written %s (%d rows)' % (os.path.relpath(OUT, GAP), len(rows)))
 
 

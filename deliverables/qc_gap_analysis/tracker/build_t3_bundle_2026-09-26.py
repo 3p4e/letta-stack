@@ -114,11 +114,14 @@ def main():
                 return tm[k]
 
     t3 = [c for c in reg['coqs'] if tranche(c) == 'T3']
+    gone = sorted(c['regcode'] for c in t3 if c.get('withdrawn'))   # no reissuance (Head of QC, 26.09.2026)
+    t3 = [c for c in t3 if not c.get('withdrawn')]
     series = {'Initial': sorted([c for c in t3 if 'retest' not in c['t']], key=lambda c: c['regcode']),
               'Retest': sorted([c for c in t3 if 'retest' in c['t']], key=lambda c: c['regcode'])}
-    if (len(series['Initial']), len(series['Retest'])) != (31, 31):
-        raise SystemExit('expected 31 + 31 Tranche 3 records, found %d + %d'
-                         % (len(series['Initial']), len(series['Retest'])))
+    if (len(series['Initial']), len(series['Retest']) + len(gone)) != (31, 31):
+        raise SystemExit('expected 31 + 31 Tranche 3 records less the withdrawn, found %d + %d (+%d withdrawn)'
+                         % (len(series['Initial']), len(series['Retest']), len(gone)))
+    print('withdrawn, not built: %s' % (', '.join(gone) or 'none'))
     codes = [c['icoa_code'] for c in t3]
     if len(set(codes)) != len(codes):
         raise SystemExit('two Tranche 3 records share an internal-certificate number')

@@ -22,11 +22,11 @@ Where the value comes from: the **same lot's retest record** — same P lot, sam
 whose rows already carry the campaign certificates (`197-`, `220-`, `227-К/М/26`) with their dates.
 A row the retest record itself only *carries from the initial testing* is not a source.
 
-**Tranches 1 and 2 are different** (Head of QC, 26.09.2026): their retest certificates are with the
-customer, and each names the initial it supersedes with the initial's date, 06.06.2026. So a
-Tranche 1 or 2 initial is never re-dated. A result measured only in the retest round prints `n/t` on
-it, *not tested at release*, and the status names the retest certificate that carries the value. The
-retest records themselves are not touched.
+**Superseded in part by the third ruling of the day** (`apply_first_testing_ruling_2026-09-26.py`,
+which runs after this one and decides): a lot's first testing is its release testing. A Farmahem
+value belongs on an initial only where the release round never tested that family; where it did, the
+value is the retest's. The Tranche 1 and 2 retest records are the customer's and are never touched
+here. Rows that ruling has settled — "not tested by a release certificate", "awaiting" — are left alone.
 
 One case is not filled, on purpose: where the release round already holds results for the row and
 they disagree, printing the later campaign's value would hide them. `CoQ-PP_26-026` Total CBN is the
@@ -126,6 +126,8 @@ def main(argv):
         for row in c['rows']:
             if not empty(row) or row['no'] in ('9.6', '9.7'):
                 continue
+            if str(row.get('st') or '').startswith(('not tested by a release certificate', 'awaiting')):
+                continue                      # settled by the first-testing ruling, or held for a ruling
             src = rr.get(row['no'])
             conflict = release_conflict(c, row)
             if conflict:
@@ -134,6 +136,9 @@ def main(argv):
                 pending.append((c['regcode'], row['no'], '; '.join(conflict)))
                 continue
             usable = src and not empty(src) and 'carried' not in str(src.get('st')) and dt(src.get('dd'))
+            fam = 0 if row['no'] in A.K_ROWS else 1 if row['no'] in A.M_ROWS else None
+            if usable and fam is not None and A.release_family(c)[fam] and A.CAMPAIGN.match(str(src.get('doc') or '')):
+                continue                      # tested at release: the campaign value is the retest's
             if usable and frozen and row['no'] not in IPH_ROWS:
                 row['st'] = NT_LATER % (src['doc'], src['dd'], r['regcode'])
                 later.append((c['regcode'], row['no'], src['res'], src['doc'], src['dd']))
@@ -155,7 +160,7 @@ def main(argv):
             new = max(cited)
             old = dt(c.get('issue'))
             if not old or new > old:
-                c['issue_before_redating'] = c.get('issue')
+                c.setdefault('issue_before_redating', c.get('issue'))
                 c['issue'] = '%02d.%02d.%04d' % (new.day, new.month, new.year)
                 redated.append((c['regcode'], c['issue_before_redating'], c['issue']))
         # the retest record: what it carries from an initial that has nothing is untested

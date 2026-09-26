@@ -2,6 +2,6 @@ p_lot	cultivation_batch	laboratory	parameters	certificates waiting on it
 HPA1024	HPA1024	Farmahem (LoD, loss on drying)	Loss on drying	CoQ-PP_26-005
 OPM1024	OPM1024	Farmahem (LoD, loss on drying)	Loss on drying	CoQ-PP_26-006
 P060352	FB012602	Farmahem (LoD, loss on drying)	Loss on drying	CoQ-PP_26-070
-P060352	FB012602	IPH contaminants (IJZ)	Aflatoxins total, Lead, Cadmium, Arsenic, Mercury, Pesticide residues	CoQ-PP_26-070
+P060352	FB012602	IPH contaminants (IJZ)	Lead, Cadmium, Arsenic, Mercury, Pesticide residues	CoQ-PP_26-070
 P060382	SCR012603	Farmahem (LoD, loss on drying)	Loss on drying	CoQ-PP_26-074
-P060382	SCR012603	IPH contaminants (IJZ)	Aflatoxins total, Lead, Cadmium, Arsenic, Mercury, Pesticide residues	CoQ-PP_26-074
+P060382	SCR012603	IPH contaminants (IJZ)	Lead, Cadmium, Arsenic, Mercury, Pesticide residues	CoQ-PP_26-074
