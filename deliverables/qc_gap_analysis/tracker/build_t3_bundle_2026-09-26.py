@@ -182,19 +182,38 @@ def main():
         w.writerow(['section', 'document'])
         w.writerows((s, l) for s, l, _ in docs)
 
-    zpath = os.path.join(GAP, 'T3_CoQ_iCoA_bundle_%s.zip' % STAMP)
-    with zipfile.ZipFile(zpath, 'w', zipfile.ZIP_DEFLATED) as z:
-        for dp, _, fs in os.walk(OUT):
-            for fn in sorted(fs):
-                p = os.path.join(dp, fn)
-                z.write(p, os.path.relpath(p, os.path.dirname(OUT)))
-    shutil.move(zpath, os.path.join(OUT, os.path.basename(zpath)))
+    # Each page PDF embeds its fonts whole; subsetting them is pixel-identical and takes ~40% off.
+    for pdf in pdf_of.values():
+        d = pymupdf.open(pdf)
+        d.subset_fonts()
+        d.save(pdf + '.tmp', garbage=4, deflate=True, deflate_fonts=True)
+        d.close()
+        os.replace(pdf + '.tmp', pdf)
+
+    # The app delivers files up to 30 MiB, so the bundle is four zips, each under that.
+    parts = [('1of4_CoQ_PDF', ['CoQ/Initial/PDF', 'CoQ/Retest/PDF', 'CONTENTS.tsv', 'REGISTER_GAPS.tsv']),
+             ('2of4_iCoA_Initial_PDF', ['iCoA/Initial/PDF']),
+             ('3of4_iCoA_Retest_PDF', ['iCoA/Retest/PDF']),
+             ('4of4_HTML', ['CoQ/Initial/HTML', 'CoQ/Retest/HTML', 'iCoA/Initial/HTML', 'iCoA/Retest/HTML'])]
+    zips = []
+    for tag, members in parts:
+        zpath = os.path.join(OUT, 'T3_bundle_%s_%s.zip' % (tag, STAMP))
+        with zipfile.ZipFile(zpath, 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as z:
+            for m in members:
+                p = os.path.join(OUT, m)
+                for fp in ([p] if os.path.isfile(p) else sorted(glob.glob(os.path.join(p, '*')))):
+                    z.write(fp, os.path.join('T3_%s' % STAMP, os.path.relpath(fp, OUT)))
+        mib = os.path.getsize(zpath) / 1048576.0
+        if mib >= 30:
+            raise SystemExit('%s is %.1f MiB — over the 30 MiB the app will deliver' % (zpath, mib))
+        zips.append((os.path.relpath(zpath, GAP), mib))
 
     n = {k: sum(1 for s, _, _ in docs if s == k) for k in dict.fromkeys(s for s, _, _ in docs)}
     print('documents: %s' % ', '.join('%s %d' % kv for kv in n.items()))
-    print('merged PDF: %s — %d pages' % (os.path.relpath(one, GAP), pages))
-    print('zip: %s (%.1f MiB)' % (os.path.relpath(os.path.join(OUT, os.path.basename(zpath)), GAP),
-                                   os.path.getsize(os.path.join(OUT, os.path.basename(zpath))) / 1048576.0))
+    print('merged PDF: %s — %d pages (%.1f MiB)' % (os.path.relpath(one, GAP), pages,
+                                                   os.path.getsize(one) / 1048576.0))
+    for z, mib in zips:
+        print('zip: %s (%.1f MiB)' % (z, mib))
     print('register gaps printed as "—": %d' % len(gaps))
     for g in gaps:
         print('   %s  %s  %s' % g)
