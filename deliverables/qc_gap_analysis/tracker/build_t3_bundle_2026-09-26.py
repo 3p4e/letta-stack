@@ -171,6 +171,25 @@ def main():
                          'producer': 'Purely Plant Quality Desk'})
     merged.save(one, garbage=4, deflate=True)
     pages = merged.page_count
+
+    # Head of QC, 26.09.2026: the initial CoQs as one document and the retest CoQs as another.
+    # Cut from the merged file along its section bookmarks, so no page is rendered twice.
+    heads = [(i, t, p) for i, (lvl, t, p) in enumerate(toc) if lvl == 1]
+    per_section = []
+    for k, (i, sec, first) in enumerate(heads):
+        last_page = (heads[k + 1][2] - 1) if k + 1 < len(heads) else pages
+        part = pymupdf.open()
+        part.insert_pdf(merged, from_page=first - 1, to_page=last_page - 1)
+        sub = [[1, t, p - first + 1] for lvl, t, p in toc[i + 1:] if lvl == 2 and first <= p <= last_page]
+        part.set_toc(sub)
+        part.set_metadata({'title': 'Purely Plant — Tranche 3 — %s' % sec,
+                           'producer': 'Purely Plant Quality Desk'})
+        dest = os.path.join(OUT, 'T3_%s_%s.pdf' % (sec.replace(' ', '_'), STAMP))
+        part.save(dest, garbage=4, deflate=True)
+        if part.page_count != len(sub):
+            raise SystemExit('%s: %d pages but %d certificates' % (dest, part.page_count, len(sub)))
+        per_section.append((os.path.relpath(dest, GAP), part.page_count, os.path.getsize(dest) / 1048576.0))
+        part.close()
     merged.close()
 
     with open(os.path.join(OUT, 'REGISTER_GAPS.tsv'), 'w', encoding='utf-8', newline='') as fh:
@@ -212,6 +231,8 @@ def main():
     print('documents: %s' % ', '.join('%s %d' % kv for kv in n.items()))
     print('merged PDF: %s — %d pages (%.1f MiB)' % (os.path.relpath(one, GAP), pages,
                                                    os.path.getsize(one) / 1048576.0))
+    for p, n_, mib in per_section:
+        print('section PDF: %s — %d pages (%.1f MiB)' % (p, n_, mib))
     for z, mib in zips:
         print('zip: %s (%.1f MiB)' % (z, mib))
     print('register gaps printed as "—": %d' % len(gaps))
