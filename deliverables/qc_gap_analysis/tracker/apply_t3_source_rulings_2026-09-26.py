@@ -221,7 +221,7 @@ def main(argv):
     # the laboratory requests, rebuilt from the register as it now stands
     out = os.path.join(a.outdir, 'LAB_REQUESTS_%s_2026-09-26.tsv' % a.tranche)
     req = collections.OrderedDict()
-    for c in sorted(t3, key=lambda c: c['regcode']):
+    for c in sorted([c for c in t3 if not c.get('withdrawn')], key=lambda c: c['regcode']):   # a withdrawn retest waits on nothing
         for r in c['rows']:
             st = str(r.get('st') or '')
             if st.startswith('not tested — no certificate') or st.startswith('awaiting the complete scan'):
