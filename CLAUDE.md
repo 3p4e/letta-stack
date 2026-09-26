@@ -136,7 +136,15 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
      initial's). Where IPH has no certificate for the lot, the cell is `n/t` and IPH is asked.
   6. **Identification A, identification B and foreign matter cite the internal certificate**, unless a
      CNP (`ППК`) certificate for the same lot tests them explicitly — then the CNP certificate is the
-     source (FB012603 `ППК26112`, FB012603V `ППК26110`). `coq_check.js` OI-27 accepts exactly that case.
+     source (FB012603 `ППК26112`, FB012603V `ППК26110`, SCR022601 `ППК26116`). `coq_check.js` OI-27
+     accepts exactly that case. The CNP certificate texts in the RAGflow cache are read as well as the
+     corpus (ППК26116 is only there). **An internal certificate covers exactly what its own CoQ
+     credits to it**, as in the approved scans: 1, 2, 7, plus 8 only where loss on drying was done
+     in-house (`-026`, like HPA1024/OPM1024); where CNP tested 1, 2, 7 and 8 there is **no** internal
+     certificate (`-075`, `-079`, `-080`, like the scans' `-092`, `-123`). Loss on drying in Tranche 3
+     is CNP's or Farmahem's (`-ГС`), in-house only for `-026`, and untested for `-021`, `-050`, `-068`,
+     `-073`. `T3_CoQ_Latest_*.pdf` is each lot's current certificate: the retest, or the initial where
+     there is no reissue.
   7. **Specification, product code and grade** come from the newest potency grades
      (`potency_grades_2026-09-15.csv`, corrected to `Potency_specifications_25.pdf` of 17.09.2026) via
      `apply_potency_grades.py`: the grade is the window the printed Total THC falls in. A result in no

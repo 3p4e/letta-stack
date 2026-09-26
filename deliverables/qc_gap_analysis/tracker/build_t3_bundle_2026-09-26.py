@@ -13,8 +13,15 @@ the PDFs into one document."
   `P` lot and on the cultivation batch, over `coq_artifact_data.json`: 31 initial + 31 retest.
 * **Certificates of quality** — the pages `build_v40.js` writes from the current register, so they
   carry the internal-certificate numbers of the 25.09 renumbering.
-* **Internal certificates** — the Head of QC's own page, filled by `build_owner_format.build`,
-  scope `1, 2, 7` for every one: no approved scan credits loss on drying to a Tranche 3 lot.
+* **Internal certificates** — the Head of QC's own page, filled by `build_owner_format.build`. Its
+  scope is what its own CoQ credits to it, as in the approved scans: identification A and B and
+  foreign matter (`1, 2, 7`), plus loss on drying (`8`) only where that was done in-house (`-026`).
+  Where CNP tested 1, 2, 7 and 8 explicitly (`-075`, `-079`, `-080`), the CoQ cites CNP and there is
+  no internal certificate — the scans' `-092` and `-123`. A row credited to the internal certificate
+  that its page cannot print (`-026`'s in-house assay) is listed in `REGISTER_GAPS.tsv`.
+* **Latest** — `T3_CoQ_Latest_<date>.pdf`: each lot's current certificate, the retest where there is
+  one and otherwise the initial (`-021`, `-050`, `-068`, whose Farmahem testing of August–September
+  2026 is their release testing and which have no reissue).
 * **No approved scan covers Tranche 3.** Every value on these pages is register-sourced, and the
   fields the register cannot supply print as "—" and are listed in `REGISTER_GAPS.tsv`, never guessed.
   Phenotype comes from the register's specification record (`spc.pheno`), the split only where it is
@@ -63,7 +70,17 @@ def split_of(dom):
     return '%s%s : %s%s' % m.groups() if m else ''
 
 
-def fields(c, gaps):
+IN_PAGE = ('1', '2', '7', '8')          # what the internal-certificate page prints
+
+
+def scope_of(c):
+    """The rows this CoQ credits to its own internal certificate: (printable, not printable)."""
+    own = [r['no'] for r in c['rows'] if str(r.get('doc') or '') == c.get('icoa_code')
+           and str(r.get('res')).strip() not in ('—', '', 'None')]
+    return [n for n in IN_PAGE if n in own], [n for n in own if n not in IN_PAGE]
+
+
+def fields(c, gaps, scope=('1', '2', '7')):
     rc = c['regcode']
     pp = str(c.get('pp') or '')
     cb = str(c.get('cb') or '')
@@ -94,7 +111,9 @@ def fields(c, gaps):
         'production': pp if has_p else '—',
         'processing': cb or '—',
         'packaging': str(c.get('pk') or '—'),
-        'scope': '1,2,7',
+        'scope': ','.join(scope),
+        'lod': next((re.sub(r'\s*\(.*$', '', str(r.get('res'))).strip().rstrip('%') + '%'
+                     for r in c['rows'] if r['no'] == '8' and '8' in scope), ''),
     }
 
 
@@ -129,7 +148,7 @@ def main():
     coq_html = {os.path.basename(p)[:13]: p for p in glob.glob(os.path.join(COQ_OUT, '**', '*.html'),
                                                                recursive=True)}
     shutil.rmtree(OUT, ignore_errors=True)
-    gaps, docs = [], []                     # docs: (section, label, html path)
+    gaps, docs, no_icoa = [], [], []        # docs: (section, label, html path)
     for s, recs in series.items():
         cdir = os.path.join(OUT, 'CoQ', s, 'HTML')
         idir = os.path.join(OUT, 'iCoA', s, 'HTML')
@@ -138,19 +157,24 @@ def main():
             src = coq_html.get(c['regcode'])
             if not src:
                 raise SystemExit('%s: build_v40.js wrote no page for it' % c['regcode'])
-            # the page must cite the internal certificate the register now assigns
-            # Head of QC, 26.09.2026: where CNP tested #1, #2 and #7 explicitly, the CoQ cites CNP and
-            # not the internal certificate; everywhere else it must cite the internal certificate.
-            cnp = {str(r.get('doc') or '') for r in c['rows'] if r['no'] in ('1', '2', '7')}
-            cnp_only = len(cnp) == 1 and next(iter(cnp)).startswith('ППК')
-            if not cnp_only and c['icoa_code'] not in open(src, encoding='utf-8').read():
+            # the page cites its internal certificate exactly when it credits it with something
+            scope, extra = scope_of(c)
+            if scope and c['icoa_code'] not in open(src, encoding='utf-8').read():
                 raise SystemExit('%s: the CoQ page does not cite %s — rerun build_v40.js'
                                  % (c['regcode'], c['icoa_code']))
             dst = os.path.join(cdir, os.path.basename(src))
             shutil.copy2(src, dst)
             docs.append(('CoQ %s' % s, os.path.basename(src)[:-5], dst))
         for c in recs:
-            f = fields(c, gaps)
+            scope, extra = scope_of(c)
+            if not scope:                    # CNP tested 1, 2, 7 (and 8): no internal certificate
+                cited = sorted({str(r.get('doc')) for r in c['rows'] if r['no'] in ('1', '2', '7')})
+                no_icoa.append((c['regcode'], c['icoa_code'], ', '.join(cited)))
+                continue
+            if extra:
+                gaps.append((c['regcode'], c['icoa_code'], 'rows %s credited to the internal certificate, '
+                             'which has no section for them' % ', '.join(extra)))
+            f = fields(c, gaps, scope)
             dst = os.path.join(idir, name_of(f))
             open(dst, 'w', encoding='utf-8').write(own.build(f['scope'].split(','), f))
             docs.append(('iCoA %s' % s, name_of(f)[:-5], dst))
@@ -199,6 +223,34 @@ def main():
         part.close()
     merged.close()
 
+    # each lot's current certificate: the retest where there is one, otherwise the initial
+    by_lot = {}
+    for c in series['Initial'] + series['Retest']:
+        by_lot[(c.get('pp') or '', c.get('cb') or '')] = c          # a retest replaces its initial
+    html_of = {os.path.basename(h)[:13]: h for s_, _, h in docs if s_.startswith('CoQ')}
+    latest = sorted(by_lot.values(), key=lambda c: next(i['regcode'] for i in series['Initial']
+                                                        if (i.get('pp'), i.get('cb')) == (c.get('pp'), c.get('cb'))))
+    lat, ltoc = pymupdf.open(), []
+    for c in latest:
+        ltoc.append([1, os.path.basename(html_of[c['regcode']])[:-5], lat.page_count + 1])
+        d = pymupdf.open(pdf_of[html_of[c['regcode']]])
+        lat.insert_pdf(d)
+        d.close()
+    lat.set_toc(ltoc)
+    lat.set_metadata({'title': 'Purely Plant — Tranche 3 — the current certificate of quality of each lot',
+                      'producer': 'Purely Plant Quality Desk'})
+    latest_pdf = os.path.join(OUT, 'T3_CoQ_Latest_%s.pdf' % STAMP)
+    lat.save(latest_pdf, garbage=4, deflate=True)
+    per_section.append((os.path.relpath(latest_pdf, GAP), lat.page_count, os.path.getsize(latest_pdf) / 1048576.0))
+    if lat.page_count != 31:
+        raise SystemExit('the latest set has %d certificates, not one per lot (31)' % lat.page_count)
+    lat.close()
+
+    with open(os.path.join(OUT, 'NO_INTERNAL_CERTIFICATE.tsv'), 'w', encoding='utf-8', newline='') as fh:
+        w = csv.writer(fh, delimiter='\t')
+        w.writerow(['coq', 'internal certificate number not issued', 'rows 1, 2, 7 cite'])
+        w.writerows(no_icoa)
+
     with open(os.path.join(OUT, 'REGISTER_GAPS.tsv'), 'w', encoding='utf-8', newline='') as fh:
         w = csv.writer(fh, delimiter='\t')
         w.writerow(['coq', 'icoa', 'field the register does not hold — printed as "—"'])
@@ -217,7 +269,8 @@ def main():
         os.replace(pdf + '.tmp', pdf)
 
     # The app delivers files up to 30 MiB, so the bundle is four zips, each under that.
-    parts = [('1of4_CoQ_PDF', ['CoQ/Initial/PDF', 'CoQ/Retest/PDF', 'CONTENTS.tsv', 'REGISTER_GAPS.tsv']),
+    parts = [('1of4_CoQ_PDF', ['CoQ/Initial/PDF', 'CoQ/Retest/PDF', 'CONTENTS.tsv', 'REGISTER_GAPS.tsv',
+                               'NO_INTERNAL_CERTIFICATE.tsv']),
              ('2of4_iCoA_Initial_PDF', ['iCoA/Initial/PDF']),
              ('3of4_iCoA_Retest_PDF', ['iCoA/Retest/PDF']),
              ('4of4_HTML', ['CoQ/Initial/HTML', 'CoQ/Retest/HTML', 'iCoA/Initial/HTML', 'iCoA/Retest/HTML'])]
@@ -242,6 +295,7 @@ def main():
         print('section PDF: %s — %d pages (%.1f MiB)' % (p, n_, mib))
     for z, mib in zips:
         print('zip: %s (%.1f MiB)' % (z, mib))
+    print('no internal certificate (CNP tested 1, 2, 7): %s' % ', '.join('%s (%s)' % (a, b) for a, _, b in no_icoa))
     print('register gaps printed as "—": %d' % len(gaps))
     for g in gaps:
         print('   %s  %s  %s' % g)

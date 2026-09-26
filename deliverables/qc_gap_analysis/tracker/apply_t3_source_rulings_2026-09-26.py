@@ -141,11 +141,29 @@ def main(argv):
                 r.update({'res': '—', 'st': PAGE3})
                 log['SJ102501 awaiting page 3 of 1065/2026'].append((c['regcode'], '12 (three pesticides on page 3)'))
 
-    # 3 · identification A, B and foreign matter from a CNP certificate that tests them explicitly
+    # 3 · identification A, B and foreign matter from a CNP certificate that tests them explicitly.
+    # The corpus lacks many ППК certificates (ППК26116 for SCR022601, 06.07.2026, among them), so the
+    # CNP release certificates in the RAGflow page-text cache are read too.
+    cnp_recs = [r for r in corpus if str(r.get('cert_code') or '').startswith('ППК')]
+    have = {r.get('cert_code') for r in cnp_recs}
+    for x in json.load(open(A.CACHE, encoding='utf-8')):
+        m = x.get('meta') or {}
+        if m.get('lab') != 'CNP' or m.get('test_type') != 'RELEASE' or m.get('cert_code') in have:
+            continue
+        t = x.get('text') or ''
+        params = []
+        for key, word in (('identification_a_macroscopic', 'Макроскопија'), ('identification_b_microscopic', 'Микроскопија'),
+                          ('foreign_matter', 'Страни материи')):
+            hit = re.search(word + r'\s*\|[^|\n]*\|\s*([^|\n]+)', t)
+            if hit:
+                params.append({'parameter': key, 'result_printed': hit.group(1).strip()})
+        if params:
+            cnp_recs.append({'cert_code': m.get('cert_code'), 'batch_canonical': m.get('batch_canonical'),
+                             'p_number': None, 'date_of_issue': m.get('date_of_issue'), 'parameters': params})
     for c in ini:
         ids = {A.N(c.get('pp')), A.N(c.get('cb'))} - {''}
         rows = {r['no']: r for r in c['rows']}
-        for rec in corpus:
+        for rec in cnp_recs:
             code = str(rec.get('cert_code') or '')
             if not code.startswith('ППК') or not ({A.N(rec.get('batch_canonical')), A.N(rec.get('p_number'))} & ids):
                 continue
