@@ -37,7 +37,12 @@ What the run does, lot by lot (`audit_empty_results.release_family` decides the 
    cites — ruling 1 of 26.09.2026 — at the desk's usual seven days (`issuance_schedule.coq_issue`),
    and never after the lot's own retest (then the retest's date).
 4. **No reissuance** — *"there will be no reissuance for those CoQ."* The retest drafts of such lots
-   are withdrawn (`withdrawn` in the register; nothing is built for them; their numbers stay free).
+   are withdrawn (`withdrawn` in the register; nothing is built for them; their numbers stay free) —
+   unless a parameter was tested a second time, well after the first: *"the second certificate for
+   microbiology is going to enter the CoQ, and if the initial testing was way before, then it is
+   definitely a retest and the reissuing of the CoQ"* (Head of QC, 26.09.2026, on `-160`, P060342:
+   IPH 539/1070/26 of 31.08.2026 after 362/0692/26 of 01.06.2026). Such a reissue is kept, and the
+   rows it did not retest are marked as carried from the initial.
 """
 import argparse
 import collections
@@ -198,6 +203,17 @@ def main(argv):
 
         if not r:
             continue
+        # a kept reissue carries the release testing it did not repeat: on -160 (P060342) the
+        # cannabinoids and mycotoxins are -073's Farmahem release results, and only the microbiology is
+        # the retest — "the second certificate for microbiology is going to enter the CoQ, and if the
+        # initial testing was way before, then it is definitely a retest and the reissuing of the CoQ"
+        if not r.get('withdrawn'):
+            for x in r['rows']:
+                if x['no'] in A.K_ROWS + A.M_ROWS and has(x) and x.get('doc') == rows[x['no']].get('doc') \
+                        and not str(x.get('st') or '').startswith('carried') \
+                        and not (rel_k if x['no'] in A.K_ROWS else rel_m):
+                    x['st'] = 'carried from the initial testing (%s) — covered' % c['regcode']
+                    log['reissue carries the release testing it did not repeat'].append((t, r['regcode'], x['no'], x['doc']))
         s = r.get('supersedes') or {}
         if s.get('code') == c['regcode'] and s.get('date') != c['issue']:
             if t in A.RETEST_WITH_CUSTOMER:

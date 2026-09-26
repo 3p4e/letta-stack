@@ -97,7 +97,11 @@ override it, and do not extend a ruling to a tranche it was not given for.
   total, B1/OTA `n/t`). Only the Farmahem panel on record → *"the testing in Farmahem for mycotoxins
   is part of initial release testing"*: all three print on the initial.
 - **No reissuance**: the retest drafts of such lots are withdrawn — `-087`, `-138`, `-152`
-  (`withdrawn` in the register; nothing built; numbers left free).
+  (`withdrawn` in the register; nothing built; numbers left free). **Except** where a parameter was
+  tested again well after the first: *"the second certificate for microbiology is going to enter the
+  CoQ, and if the initial testing was way before, then it is definitely a retest and the reissuing
+  of the CoQ"* — `-160` (P060342: IPH 539/1070/26 of 31.08 after 362/0692/26 of 01.06) is kept, and
+  carries the Farmahem release results as carried from `-073`.
 - **Dates**: on or after the last result the initial cites (ruling 1 below), at the desk's usual
   seven days (`audit_empty_results.initial_issue`), never after the lot's own retest.
 
