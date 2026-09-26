@@ -21,6 +21,8 @@ the PDFs into one document."
   certificate: it cites the certificate that tested the cannabinoids, as the Total THC row does (owner's
   ruling of 02.09.2026) — for `-026` New Garden Pharma's NGP/QCG/SOP-024 F3. A row credited to the
   internal certificate that its page cannot print is listed in `REGISTER_GAPS.tsv`.
+* **All internal certificates** — `T3_iCoA_Initial_Retest_<date>.pdf`: the initial section, then the
+  retest section, one bookmark per certificate.
 * **Latest** — `T3_CoQ_Latest_<date>.pdf`: each lot's current certificate, the retest where there is
   one and otherwise the initial (`-021`, `-050`, `-068`, whose Farmahem testing of August–September
   2026 is their release testing and which have no reissue).
@@ -209,6 +211,7 @@ def main():
     # Cut from the merged file along its section bookmarks, so no page is rendered twice.
     heads = [(i, t, p) for i, (lvl, t, p) in enumerate(toc) if lvl == 1]
     per_section = []
+    ico, itoc = pymupdf.open(), []       # every internal certificate, initial then retest
     for k, (i, sec, first) in enumerate(heads):
         last_page = (heads[k + 1][2] - 1) if k + 1 < len(heads) else pages
         part = pymupdf.open()
@@ -222,8 +225,19 @@ def main():
         if part.page_count != len(sub):
             raise SystemExit('%s: %d pages but %d certificates' % (dest, part.page_count, len(sub)))
         per_section.append((os.path.relpath(dest, GAP), part.page_count, os.path.getsize(dest) / 1048576.0))
+        if sec.startswith('iCoA'):
+            itoc += [[1, sec, ico.page_count + 1]] + [[2, t, n + ico.page_count] for _, t, n in sub]
+            ico.insert_pdf(part)
         part.close()
     merged.close()
+    # Head of QC, 26.09.2026: the Tranche 3 internal certificates, initial and retest, as one document
+    ico.set_toc(itoc)
+    ico.set_metadata({'title': 'Purely Plant — Tranche 3 — internal certificates of analysis, initial and retest',
+                      'producer': 'Purely Plant Quality Desk'})
+    ico_pdf = os.path.join(OUT, 'T3_iCoA_Initial_Retest_%s.pdf' % STAMP)
+    ico.save(ico_pdf, garbage=4, deflate=True)
+    per_section.append((os.path.relpath(ico_pdf, GAP), ico.page_count, os.path.getsize(ico_pdf) / 1048576.0))
+    ico.close()
 
     # each lot's current certificate: the retest where there is one, otherwise the initial
     by_lot = {}
