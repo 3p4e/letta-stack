@@ -67,6 +67,8 @@ NOT_AT_RELEASE = ('not tested by a release certificate — the release round\'s 
 RELEASE_CNP = 'covered — %s reports it at release; it had not been printed (' + RULING + ')'
 HELD = {}
 PANEL_TOTAL = {}
+INHOUSE = ('covered — tested in-house (in-house record of %s); a parameter no outsourced laboratory covers is '
+           'issued on the internal certificate (' + RULING + ')')
 WITHDRAWN = ('no reissuance — the Farmahem campaign was this lot\'s first testing, so it is the release testing '
              'and the lot has one certificate, %s (' + RULING + ')')
 
@@ -145,6 +147,19 @@ def main(argv):
                 continue
             if str(row.get('st') or '').startswith('awaiting'):
                 continue                      # held for the Head of QC's ruling, or a missing page
+            # a parameter no outsourced laboratory covered, tested in-house: it goes on the lot's own
+            # internal certificate — "where needed, for the parameters that are not covered by other
+            # outsourced laboratory, an iCoA will be issued containing those parameters tested"
+            ih = re.search(r'([^;()]+?)\s*\(in-house record of [^)]*\)', str(row.get('also') or ''))
+            own = next((x for x in c['rows'] if x.get('doc') == c.get('icoa_code') and x['no'] in ('4', '5')), None)
+            if fam == 'K' and not has(row) and ih and own:
+                row.update({'res': ih.group(1).strip(), 'doc': c['icoa_code'], 'dd': own.get('dd'),
+                            'st': INHOUSE % re.search(r'in-house record of ([^,)]*)', row['also']).group(1)})
+                for f in ('lab', 'fam', 'route'):
+                    if f in own:
+                        row[f] = own[f]
+                log['in-house result on the internal certificate'].append((t, c['regcode'], no, c['icoa_code']))
+                continue
             if fam == 'K' and (campaign(row) or not has(row)) and has(src) and campaign(src):
                 # tested at release: the campaign value is the retest's; the release certificate's own
                 # value, where it reports one, is the release result

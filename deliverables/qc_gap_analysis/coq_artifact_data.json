@@ -28410,12 +28410,12 @@
     {
      "no": "3",
      "crit": "Conforms to the monograph for Cannabis flos (07/2024:3028) in Ph. Eur. 11.0 | Согласно монографија за Cannabis flos (07/2024:3028) во Ph. Eur. 11.0",
-     "res": "—",
-     "doc": "—",
-     "dd": "",
-     "lab": "Farmahem",
-     "fam": "Farmahem re-analysis — cannabinoids",
-     "st": "not tested by a release certificate — the release round's cannabinoid certificate (iCoA-PP_26-026) does not carry it; the retest round determined it: 227-18-К/26 of 11.09.2026, on CoQ-PP_26-149 (Head of QC, 26.09.2026)",
+     "res": "Conforms | Одговара",
+     "doc": "iCoA-PP_26-026",
+     "dd": "03.06.2026",
+     "lab": "Purely Plant GmbH (in-house)",
+     "fam": "Purely Plant in-house",
+     "st": "covered — tested in-house (in-house record of 28.11.2025); a parameter no outsourced laboratory covers is issued on the internal certificate (Head of QC, 26.09.2026)",
      "route": "",
      "also": "Conforms | Одговара (in-house record of 28.11.2025, no certificate)"
     },

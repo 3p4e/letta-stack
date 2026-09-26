@@ -144,7 +144,11 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
      certificate (`-075`, `-079`, `-080`, like the scans' `-092`, `-123`). Loss on drying in Tranche 3
      is CNP's or Farmahem's (`-ГС`), in-house only for `-026`, and untested for `-021`, `-050`, `-068`,
      `-073`. `T3_CoQ_Latest_*.pdf` is each lot's current certificate: the retest, or the initial where
-     there is no reissue.
+     there is no reissue. *"Where needed for the parameters that are not covered by other outsource
+     laboratory an iCOA will be issued containing those parameters tested"* (Head of QC, 26.09.2026):
+     a parameter tested only in-house goes on the internal certificate, never `n/t`. Today that is
+     `-026` alone — identification C, THC, CBD and loss on drying (in-house record of 28.11.2025) —
+     so its iCoA has a 02.5 group and prints on two sheets (`build_owner_format.add_assay`).
   7. **Specification, product code and grade** come from the newest potency grades
      (`potency_grades_2026-09-15.csv`, corrected to `Potency_specifications_25.pdf` of 17.09.2026) via
      `apply_potency_grades.py`: the grade is the window the printed Total THC falls in. A result in no

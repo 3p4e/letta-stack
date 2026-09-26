@@ -192,7 +192,9 @@ def build(scope, f):
         h = one(h, A['analyst_date'], '<span class="ap-date-val">%s</span>' % analyst, 'analyst date')
         h = one(h, A['approver_date'], '<span class="ap-date-val">%s</span>' % f['issued'], 'approver date')
 
-    sub = 'Appearance · Identification A+B · Foreign Matter' + (' · Loss on Drying' if lod else '')
+    h = add_assay(h, scope, f, D['same'])
+    sub = ('Appearance · Identification A+B · Foreign Matter' + (' · Loss on Drying' if lod else '')
+           + (' · Identification C · Assay' if set(scope) & {'3', '4', '5'} else ''))
     if A['title']:
         h = one(h, A['title'], '<title>Purely Plant — iCoA — %s — %s %s — %s</title>'
                 % (f['code'], f['headline'], f['strain'], sub), 'title')
@@ -256,6 +258,92 @@ def build(scope, f):
                 'Appearance · Identification A+B', 'title without foreign matter')
         if 'Foreign Matter' in h or 'Страни материи' in h:
             raise SystemExit('%s: foreign matter survives the removal' % f['code'])
+    return h
+
+
+def _block(h, start, what):
+    """The element that opens at `start`, through its matching </div>."""
+    i = h.find(start)
+    if i < 0 or h.find(start, i + 1) >= 0:
+        raise SystemExit('%s: not exactly one' % what)
+    d, j = 0, i
+    while True:
+        o, c = h.find('<div', j), h.find('</div>', j)
+        if c < 0:
+            raise SystemExit('%s: unterminated' % what)
+        if 0 <= o < c:
+            d, j = d + 1, o + 4
+            continue
+        d, j = d - 1, c + 6
+        if not d:
+            return h[i:j]
+
+
+def add_assay(h, scope, f, day):
+    """Identification C and the assay, where the lot's own certificate of quality credits them to
+    this internal certificate. Head of QC, 26.09.2026: *"where needed, for the parameters that are
+    not covered by other outsourced laboratory, an iCoA will be issued containing those parameters
+    tested."* Only `-026` (P050202, the in-house cross-check) needs it today.
+
+    Laid out as loss on drying is: a numbered group in section 02, one row per parameter in section
+    03. Seven parameters do not fit one sheet with the signatures clear of the footer, so section 03,
+    the disposition and the signatures go to a second page under the same header bar."""
+    rows = [n for n in ('3', '4', '5') if n in scope]
+    if not rows:
+        return h
+    a = f.get('assay') or {}
+    NAME = {'3': ('Identification C — HPLC', 'Идентификација Ц — HPLC'),
+            '4': ('Total Δ⁹-THC', 'Вкупен Δ⁹-THC'), '5': ('Total CBD', 'Вкупен CBD')}
+    CRIT = {'3': ('Conforms to monograph', 'одговара на монографијата'),
+            '4': (f.get('thc_window') or 'per specification', 'во граница на спецификацијата'),
+            '5': ('≤ 1.0% w/w', 'граница ≤ 1.0%')}
+
+    def res(n):
+        v = str(a.get(n) or '—').split('|')[0].strip()
+        return 'Conforms' if n == '3' else '%s%% w/w' % v
+    SHORT = {'3': ('Identification C', 'Идентификација Ц')}       # the group title already says HPLC
+    gn = '02.%d' % (h.count('<span class="gn">02.') + 1)
+    grp = ['<tr class="row-group"><td colspan="3"><span class="gn">%s</span><span class="gt">Identification C '
+           'and Assay — HPLC<span class="mk">Идентификација Ц и анализа — HPLC</span></span></td></tr>' % gn,
+           '<tr class="mi"><td colspan="3"><span class="mi-l">Method<span class="mk">Метод</span></span>'
+           'Ph. Eur. 2.2.29 · HPLC · in-house, %s · %s<i class="bisep">|</i><span class="mk">интерна '
+           'проверка</span></td></tr>' % (f.get('assay_ref') or '', day)]
+    for i, n in enumerate(rows):
+        grp.append('<tr class="it%s"><td><span class="p-name"><span class="en">%s</span><span class="mk">%s</span>'
+                   '</span></td><td class="ob">%s<span class="mk b">%s</span></td><td class="rv">Conforms'
+                   '<span class="mk">Одговара</span></td></tr>'
+                   % ((' z' if i % 2 else '',) + SHORT.get(n, NAME[n])
+                      + (('' if n == '3' else res(n) + ' · ') + CRIT[n][0], CRIT[n][1])))
+    grp.append('<tr class="st"><td>Subtotal<span class="mk">Меѓузбир</span></td><td>Conforms to specification'
+               '<span class="mk">одговара на спецификацијата</span></td><td class="rv">PASS</td></tr>'
+               '<tr class="sp"><td colspan="3"></td></tr>')
+    h = one(h, '</tbody></table></div>\n<div class="pot-note">',
+            '\n'.join(grp) + '\n</tbody></table></div>\n<div class="pot-note">', 'assay group')
+    summ = []
+    for i, n in enumerate(rows):
+        summ.append('<tr class="it%s"><td><span class="p-name"><span class="en">%s</span><span class="mk b">%s</span>'
+                    '</span></td><td class="pm">Ph. Eur. 2.2.29</td><td class="ob">%s<span class="mk b">%s</span></td>'
+                    '<td class="ob">%s</td><td class="rv">Conforms<span class="mk">Одговара</span></td></tr>'
+                    % (' z' if i % 2 else '', NAME[n][0], NAME[n][1], CRIT[n][0], CRIT[n][1], res(n)))
+    h = one(h, '<tr class="st"><td colspan="2">Overall Analytical Disposition',
+            '\n'.join(summ) + '\n<tr class="st"><td colspan="2">Overall Analytical Disposition', 'assay summary')
+
+    # the second sheet: the same header bar and footer, numbered 1 | 2 and 2 | 2
+    head = _block(h, '<div class="header-bar">', 'header bar')
+    foot = _block(h, '<div class="footer">', 'footer')
+    num = '<div class="foot-center-num">1 <span style="color:#B9C4D0">|</span> 1</div>'
+    if foot.count(num) != 1:
+        raise SystemExit('footer: no page number 1 | 1')
+    f1, f2 = (foot.replace(num, num.replace('1 <span', '%d <span' % k).replace('</span> 1', '</span> 2'))
+              for k in (1, 2))
+    h = one(h, foot, f2, 'footer, page 2')
+    h = one(h, '<div class="sec-label"><span class="sec-no">03</span>',
+            f1 + '\n</div>\n<div class="page">\n' + head + '\n<div class="sec-label"><span class="sec-no">03</span>',
+            'page break before section 03')
+    # the body lays the base's one sheet out as a flex row; two sheets stack, and print one a page
+    h = one(h, '</head>', '<style>body{flex-direction:column;align-items:center;gap:20px}'
+            '@media print{body{display:block}.page{break-after:page}.page:last-of-type{break-after:auto}}'
+            '</style>\n</head>', 'two-sheet layout')
     return h
 
 
