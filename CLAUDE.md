@@ -154,7 +154,12 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
      28.11.2025 (Total THC 24.89 %, CBD 0.17 %, LoD 8.19 %, read from the page) — so rows 3, 4, 5 cite
      it; NGP is not in-house, whatever older tables call it. Its loss on drying stays on the iCoA, as
      the approved scan of `-107` credits the sister NGP lot's. CNP's `ППК26036/37/57/58` for P050202
-     are **stability time points**, never release results.
+     are **stability time points**, never release results. Head of QC, 26.09.2026: New Garden Pharma
+     is cited for **nothing else**. The certificates it obtained from external laboratories (IPH
+     `1155/2056/25`, `1157/2058/25`, `5661/2025`, Farmahem `276-31-М/25`, State Phytosanitary
+     `10802_2845/2`) were obtained in our name and are cited under the laboratory that issued them.
+     What NGP tested itself stands only on an **initial** release CoQ; a reissue is always tested by
+     an accredited external laboratory.
   7. **Specification, product code and grade** come from the newest potency grades
      (`potency_grades_2026-09-15.csv`, corrected to `Potency_specifications_25.pdf` of 17.09.2026) via
      `apply_potency_grades.py`: the grade is the window the printed Total THC falls in. A result in no
