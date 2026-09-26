@@ -145,10 +145,16 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
      is CNP's or Farmahem's (`-ГС`), in-house only for `-026`, and untested for `-021`, `-050`, `-068`,
      `-073`. `T3_CoQ_Latest_*.pdf` is each lot's current certificate: the retest, or the initial where
      there is no reissue. *"Where needed for the parameters that are not covered by other outsource
-     laboratory an iCOA will be issued containing those parameters tested"* (Head of QC, 26.09.2026):
-     a parameter tested only in-house goes on the internal certificate, never `n/t`. Today that is
-     `-026` alone — identification C, THC, CBD and loss on drying (in-house record of 28.11.2025) —
-     so its iCoA has a 02.5 group and prints on two sheets (`build_owner_format.add_assay`).
+     laboratory an iCOA will be issued containing those parameters tested"* (Head of QC, 26.09.2026).
+     **Identification C is never one of them.** It is discharged by the certificate that tested the
+     cannabinoids and cites the same certificate as the Total THC row — the owner's ruling of
+     02.09.2026 (`README.md`, "Identification C"), which has not changed; on 26.09 the desk put it on
+     `-026`'s iCoA as in-house and was corrected. `-026` (P050202): its release cannabinoids were tested
+     by **New Garden Pharma**, an external laboratory — analysis test report `NGP/QCG/SOP-024 F3` of
+     28.11.2025 (Total THC 24.89 %, CBD 0.17 %, LoD 8.19 %, read from the page) — so rows 3, 4, 5 cite
+     it; NGP is not in-house, whatever older tables call it. Its loss on drying stays on the iCoA, as
+     the approved scan of `-107` credits the sister NGP lot's. CNP's `ППК26036/37/57/58` for P050202
+     are **stability time points**, never release results.
   7. **Specification, product code and grade** come from the newest potency grades
      (`potency_grades_2026-09-15.csv`, corrected to `Potency_specifications_25.pdf` of 17.09.2026) via
      `apply_potency_grades.py`: the grade is the window the printed Total THC falls in. A result in no

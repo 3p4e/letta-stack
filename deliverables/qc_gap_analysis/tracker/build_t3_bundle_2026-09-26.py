@@ -15,14 +15,12 @@ the PDFs into one document."
   carry the internal-certificate numbers of the 25.09 renumbering.
 * **Internal certificates** — the Head of QC's own page, filled by `build_owner_format.build`. Its
   scope is what its own CoQ credits to it, as in the approved scans: identification A and B and
-  foreign matter (`1, 2, 7`), plus loss on drying (`8`) only where that was done in-house, and
-  identification C and the assay (`3, 4, 5`) where those were — *"where needed, for the parameters
-  that are not covered by other outsourced laboratory, an iCoA will be issued containing those
-  parameters tested"* (Head of QC, 26.09.2026). Only `-026` (P050202) carries either.
+  foreign matter (`1, 2, 7`), plus loss on drying (`8`) only where that was done in-house (`-026`).
   Where CNP tested 1, 2, 7 and 8 explicitly (`-075`, `-079`, `-080`), the CoQ cites CNP and there is
-  no internal certificate — the scans' `-092` and `-123`. A row credited to the internal certificate
-  that its page cannot print is listed in `REGISTER_GAPS.tsv`. `-026`'s seven parameters take two
-  sheets: sections 01–02 on the first, section 03 and the signatures on the second.
+  no internal certificate — the scans' `-092` and `-123`. Identification C never goes on an internal
+  certificate: it cites the certificate that tested the cannabinoids, as the Total THC row does (owner's
+  ruling of 02.09.2026) — for `-026` New Garden Pharma's NGP/QCG/SOP-024 F3. A row credited to the
+  internal certificate that its page cannot print is listed in `REGISTER_GAPS.tsv`.
 * **Latest** — `T3_CoQ_Latest_<date>.pdf`: each lot's current certificate, the retest where there is
   one and otherwise the initial (`-021`, `-050`, `-068`, whose Farmahem testing of August–September
   2026 is their release testing and which have no reissue).
@@ -74,7 +72,7 @@ def split_of(dom):
     return '%s%s : %s%s' % m.groups() if m else ''
 
 
-IN_PAGE = ('1', '2', '3', '4', '5', '7', '8')   # what the internal-certificate page prints
+IN_PAGE = ('1', '2', '7', '8')          # what the internal-certificate page prints
 
 
 def scope_of(c):
@@ -118,12 +116,6 @@ def fields(c, gaps, scope=('1', '2', '7')):
         'scope': ','.join(scope),
         'lod': next((re.sub(r'\s*\(.*$', '', str(r.get('res'))).strip().rstrip('%') + '%'
                      for r in c['rows'] if r['no'] == '8' and '8' in scope), ''),
-        # in-house identification C and assay (Head of QC, 26.09.2026: what no outsourced laboratory
-        # covers goes on the internal certificate)
-        'assay': {r['no']: str(r.get('res')).split('|')[0].strip() for r in c['rows'] if r['no'] in ('3', '4', '5')
-                  and r['no'] in scope},
-        'thc_window': (re.findall(r'(\d+\.\d+ – \d+\.\d+ %)', str(c.get('spec_status') or '')) or [''])[-1],
-        'assay_ref': 'NGP-QCG-SOP-024 F3' if set(scope) & {'3', '4', '5'} else '',
     }
 
 
@@ -196,10 +188,9 @@ def main():
         os.makedirs(pdir, exist_ok=True)
         srcs = [h for _, _, h in docs if os.path.dirname(h) == hdir]
         pdf_of.update(zip(srcs, render(srcs, pdir)))            # one browser session per folder
-    merged, toc, last, sheets = pymupdf.open(), [], None, {}
+    merged, toc, last = pymupdf.open(), [], None
     for sec, label, html in docs:
         d = pymupdf.open(pdf_of[html])
-        sheets[sec] = sheets.get(sec, 0) + d.page_count
         if sec != last:
             toc.append([1, sec, merged.page_count + 1])
             last = sec
@@ -228,9 +219,8 @@ def main():
                            'producer': 'Purely Plant Quality Desk'})
         dest = os.path.join(OUT, 'T3_%s_%s.pdf' % (sec.replace(' ', '_'), STAMP))
         part.save(dest, garbage=4, deflate=True)
-        if part.page_count != sheets[sec]:
-            raise SystemExit('%s: %d pages but its %d certificates print %d' % (dest, part.page_count, len(sub),
-                                                                             sheets[sec]))
+        if part.page_count != len(sub):
+            raise SystemExit('%s: %d pages but %d certificates' % (dest, part.page_count, len(sub)))
         per_section.append((os.path.relpath(dest, GAP), part.page_count, os.path.getsize(dest) / 1048576.0))
         part.close()
     merged.close()

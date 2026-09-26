@@ -67,8 +67,21 @@ NOT_AT_RELEASE = ('not tested by a release certificate — the release round\'s 
 RELEASE_CNP = 'covered — %s reports it at release; it had not been printed (' + RULING + ')'
 HELD = {}
 PANEL_TOTAL = {}
-INHOUSE = ('covered — tested in-house (in-house record of %s); a parameter no outsourced laboratory covers is '
-           'issued on the internal certificate (' + RULING + ')')
+# Identification C is discharged by the certificate that tested the cannabinoids, and cites the same
+# certificate as the Total THC row (owner's ruling of 02.09.2026, README "Identification C"; restated by
+# the Head of QC on 26.09.2026: identification C is credited to the certificate of the external laboratory
+# that tests the cannabinoids and the potency). P050202's release cannabinoids were tested by New Garden
+# Pharma, whose analysis test report NGP/QCG/SOP-024 F3 of 28.11.2025 prints Total THC 24.89 % and Total
+# CBD 0.17 % (read from the page, 26.09.2026). The desk had routed them through the internal certificate
+# as in-house. Loss on drying stays there, as the approved scan of -107 has it for the sister NGP lot.
+EXTERNAL_K = {'P050202': {'doc': 'NGP/QCG/SOP-024 F3', 'dd': '28.11.2025', 'lab': 'New Garden Pharma',
+                          'fam': 'New Garden Pharma potency', 'rows': ('3', '4', '5'),
+                          'held': {'6': 'awaiting the Head of QC — Total CBN on the release certificate (New Garden '
+                                        'Pharma NGP/QCG/SOP-024 F3, 28.11.2025) is held for review: its two reads '
+                                        'disagree. ППК26036, ППК26037, ППК26057 and ППК26058 are stability time '
+                                        'points (months 3 and 6), not release results'}}}
+EXTERNAL_ST = ('covered — %s is the certificate that tested the cannabinoids at release; identification C cites '
+               'it with the assay (owner\'s ruling of 02.09.2026; ' + RULING + ')')
 WITHDRAWN = ('no reissuance — the Farmahem campaign was this lot\'s first testing, so it is the release testing '
              'and the lot has one certificate, %s (' + RULING + ')')
 
@@ -128,6 +141,19 @@ def main(argv):
         twin = {x['no']: x for x in (r or {}).get('rows', [])}
         rel_k, rel_m = A.release_family(c)
         keys = {A.N(c.get('pp')), A.N(c.get('cb'))} - {''}
+        ext = EXTERNAL_K.get(c.get('pp'))
+        for no in (ext or {}).get('rows', ()):
+            x = rows[no]
+            if (x.get('doc'), x.get('dd'), x.get('lab')) != (ext['doc'], ext['dd'], ext['lab']):
+                x.update({f: ext[f] for f in ('doc', 'dd', 'lab', 'fam')}, st=EXTERNAL_ST % ext['doc'], route='')
+                if no == '3':
+                    x['res'] = 'Conforms | Одговара'
+                log['cannabinoids and identification C on the external certificate'].append(
+                    (t, c['regcode'], no, ext['doc']))
+        for no, st in (ext or {}).get('held', {}).items():
+            if rows[no].get('st') != st:
+                rows[no].update({'res': '—', 'doc': '—', 'dd': '', 'st': st})
+                log['held for the Head of QC'].append((t, c['regcode'], no))
         for no, row in rows.items():
             fam = 'K' if no in A.K_ROWS else 'M' if no in A.M_ROWS else None
             src = twin.get(no) or {}
@@ -147,19 +173,6 @@ def main(argv):
                 continue
             if str(row.get('st') or '').startswith('awaiting'):
                 continue                      # held for the Head of QC's ruling, or a missing page
-            # a parameter no outsourced laboratory covered, tested in-house: it goes on the lot's own
-            # internal certificate — "where needed, for the parameters that are not covered by other
-            # outsourced laboratory, an iCoA will be issued containing those parameters tested"
-            ih = re.search(r'([^;()]+?)\s*\(in-house record of [^)]*\)', str(row.get('also') or ''))
-            own = next((x for x in c['rows'] if x.get('doc') == c.get('icoa_code') and x['no'] in ('4', '5')), None)
-            if fam == 'K' and not has(row) and ih and own:
-                row.update({'res': ih.group(1).strip(), 'doc': c['icoa_code'], 'dd': own.get('dd'),
-                            'st': INHOUSE % re.search(r'in-house record of ([^,)]*)', row['also']).group(1)})
-                for f in ('lab', 'fam', 'route'):
-                    if f in own:
-                        row[f] = own[f]
-                log['in-house result on the internal certificate'].append((t, c['regcode'], no, c['icoa_code']))
-                continue
             if fam == 'K' and (campaign(row) or not has(row)) and has(src) and campaign(src):
                 # tested at release: the campaign value is the retest's; the release certificate's own
                 # value, where it reports one, is the release result
