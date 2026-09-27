@@ -97,6 +97,26 @@ said were meant for another chat. § references are to `CLAUDE.md`.
 PROCESS 14, SOURCE 13, SCOPE 13, DATING 10, GRADING 9, OTHER 3, FROZEN 3, SUPERSEDED 2.
 The rules in §4 below are now in `CLAUDE.md` §7.
 
+## Review, 27.09.2026 — what the desk found in its own work
+
+Asked to "review your work in depth … fix every issue found". Found and fixed, in the order found:
+
+| # | defect | cause | fixed by |
+| --- | --- | --- | --- |
+| R1 | iCoA Macedonian labels and "№" printed in Liberation Sans | Orbitron has no Cyrillic; the font guard read only CoQs | `house_stack` puts Montserrat behind Orbitron; `assert_house_fonts` reads every print |
+| R2 | every T3 and out-of-tranche iCoA printed `…_v.03` under a CoQ printing `…_v.01` | a `_v.03` rewrite copied from the 24.09 owner-format builder | the register's reference; `check_pair` refuses a mismatch |
+| R3 | `-018`'s iCoA test date "—" with its packaging date on record | the date fill filled packaging, not the test date that follows from it | `apply_batch_dates` sets an initial iCoA's test date from its packaging date |
+| R4 | 29 certificates printed the cultivation batch as production batch; their iCoA "—" | no P number on the register although the owner's workbook gives one | `apply_batch_dates` fills an empty P lot from the workbook, refusing any clash |
+| R5 | CoQ header gaps (manufacture, packaging) were listed nowhere | `REGISTER_GAPS.tsv` covered iCoA fields only | the CoQ's own header fields are listed too |
+| R6 | the issuance-order list stale (two withdrawn numbers on it, three re-dated ones wrong) | written by hand, no generator | `issuance_order_check.py`, reproduces the old file exactly; CI keeps it current |
+| R7 | `icoa_register.py` disagreed with the certificates on 156 of 167 lots | it kept the 10.09 issue-order numbering after the 23.09/25.09 rulings | it takes each code from the register; a code claimed twice is settled by the approved scan |
+| R8 | master v56 gave 23 CoQ codes to the wrong lot, 132 CoQs the wrong iCoA, 16 wrong dates, 5 withdrawn numbers live | nothing after 21.09 was carried into it; CI checked it against R7's stale module | master v57 (`sync_master_v57.py`); `verify_workbook` checks against the register |
+| R9 | 28 older apply scripts can write a T1/T2 record | only the 26.09 scripts refuse | `check_frozen_records.py` in CI holds all 92 records and pages |
+| R10 | `coq_references.py` and the master builder could not run | the 25.09 deletion removed master v3, v6 and the owner's v20 as "superseded" — they are inputs | restored; CLAUDE.md §7: grep before deleting |
+
+Reported, not changed (Tranches 1 and 2 are issued): `-123`'s register record cites `iCoA-PP_26-123`,
+its approved scan none; the 24.09 T1/T2 iCoAs print `…_v.03`.
+
 ## 1. Every correction and ruling
 
 | # | date | msg | quote | what the desk did wrong | the rule | class | repeated? | in CLAUDE.md? |

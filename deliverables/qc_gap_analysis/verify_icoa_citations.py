@@ -78,7 +78,10 @@ def main(argv):
         initial = str(c.get("t") or "").startswith("initial release")
 
         own = by_code.get(str(c.get("icoa_code") or "").strip())
-        if own is None:
+        cited = any(str(r.get("doc") or "") == str(c.get("icoa_code") or "") for r in c.get("rows", []))
+        if own is None and not cited:
+            pass        # no row cites it: there is no internal certificate (CNP tested 1, 2, 7)
+        elif own is None:
             bad.append((c.get("regcode"), "icoa_code", c.get("icoa_code"),
                         "no such row in the register"))
         else:

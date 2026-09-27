@@ -282,7 +282,9 @@ Standing rules the corrections produced (message numbers are in the record):
   issued T1/T2 iCoAs of 24.09 print `_v.03` and are not touched.
 - **Dates on every certificate not yet issued** come from the owner's workbook
   (`tracker/apply_batch_dates_2026-09-27.py`: exact batch or P lot, recorded star aliases, empty fields
-  only; an initial iCoA with no test date takes the packaging date). A date field the register cannot
+  only; an initial iCoA with no test date takes the packaging date; an empty P lot takes the
+  workbook's `p_batch` — 29 T3 and out-of-tranche certificates printed their cultivation batch as the
+  production batch until 27.09.2026). A date field the register cannot
   fill prints "—" **and** is listed in `REGISTER_GAPS.tsv` — the CoQ's own header fields (manufacture,
   packaging, product code, specification) as well as the iCoA's.
 - **One A4 page.** Nothing crosses the margins or runs into header or footer; look at the rendered page
@@ -296,6 +298,18 @@ Standing rules the corrections produced (message numbers are in the record):
   since 27.09.2026 — before that it kept the 10.09 issue-order numbering, disagreed with 156 of 167
   live lots, and the master workbook and CI's workbook check, built on it, agreed with each other and
   not with the certificates.
+- **The master is v57** (`tracker/sync_master_v57.py`): v56's register sheets rewritten from the
+  register as values, in number order, withdrawn numbers marked; References, both Compilations, Result
+  Supersession and Potency Grades rebuilt by their own builders. `verify_workbook.py` accepts an
+  out-of-order CoQ number only if the order list names it, and no longer holds the iCoA series to date
+  order (the 25.09 first-free-number rule and the sent scans make it not chronological). Any change to
+  the register is carried into the master by rerunning the sync — the builder `build_tracker_v8.py`
+  cannot reproduce v56 (its build command was never recorded).
+- **"Superseded" is a newer version of the same thing, never an input a script reads.** The 25.09
+  deletion took `CoQ_Analysis_Master_v3.xlsx` (the owner's original tracker, read by
+  `tracker_data.load_owner`, which `coq_references.py` needs), `v6` (the master builder's base) and
+  `v20_owner` (the workbook the Head of QC sent on 10.09.2026); all three were restored on 27.09.2026.
+  Before deleting a file, grep the scripts for its name.
 - **Specifications are all v.01**; a strain's grade numerals are sequential by creation and say nothing
   about higher or lower potency.
 - **Dates.** Packaging and manufacturing dates come from the master workbook (`batch_dates_2026-09-10.csv`);
@@ -328,7 +342,11 @@ Standing rules the corrections produced (message numbers are in the record):
 
 **Open with the Head of QC (27.09.2026):** *"I need the -087, -138 and -152. In too."* — `-152` is
 reinstated; `-087` and `-138` are still withdrawn under the 26.09 no-reissuance ruling. Ask; do not
-decide.
+decide. From the review of 27.09.2026, also his to decide: the issued Tranche 2 record of `-123` cites
+`iCoA-PP_26-123` although its approved scan cites no iCoA (the number is `-109`'s); the issued T1/T2
+iCoAs of 24.09 print `…_v.03`; the CoQ footer's "QCSOP 012 v.03" (his template) against our empty slot;
+`-021`'s manufacture date (the workbook says "not given"); packaging dates for CC042601, FB042601 and
+the three P160 lots; the 11 numbers out of date order.
 
 ## 8. Git
 

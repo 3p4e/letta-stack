@@ -23,6 +23,13 @@ day, packaging = the first packaging day.
   for the iCoA test date.
 * Tranches 1 and 2 are issued and not touched; withdrawn records are skipped.
 * A record the workbook does not cover is listed, never guessed.
+* **The P lot.** Found in the same review: 30 certificates outside Tranches 1 and 2 had no P number on
+  the register although the workbook gives one (SJ102501 → P060162 …). Their CoQ printed the
+  cultivation batch as "Production Batch №" and their iCoA "—", so the two disagreed and the iCoA
+  carried a silent blank. The workbook is the authority for which P number a cultivation batch is
+  (ruling 2 of 26.09.2026, P060332 = CC012601/1), so an empty `pp` takes the workbook's `p_batch` for
+  the record's exact batch (or recorded star alias) — refused if another live record of the same
+  kind already holds that P number, or if it would move the lot to another tranche.
 """
 import argparse, csv, json, os, re, sys
 
@@ -44,6 +51,39 @@ def aliases():
             if r.get('field') == 'batch_alias' and r.get('confirmed_value') and r.get('was'):
                 out[r['confirmed_value'].strip()] = r['was'].strip()
     return out
+
+
+def p_lots(reg, rows, star, tranche):
+    """Fill an empty P lot from the workbook's p_batch for the record's exact (or starred) batch."""
+    by_batch = {}
+    for r in rows:
+        if r['batch']:
+            by_batch.setdefault(r['batch'], []).append(r)
+    held = {}
+    for c in reg['coqs']:
+        if c.get('pp') and not c.get('withdrawn'):
+            held.setdefault((c['pp'], 'retest' in c['t']), c['regcode'])
+    filled, refused = [], []
+    for c in reg['coqs']:
+        if c.get('pp') or c.get('withdrawn') or tranche(c) in A.FROZEN:
+            continue
+        cb = str(c.get('cb') or '')
+        cand = by_batch.get(cb, []) + by_batch.get(star.get(cb, '\0'), [])
+        ps = {r['p_batch'].strip() for r in cand if re.match(r'^P\d{6}$', r['p_batch'].strip())}
+        if len(ps) != 1:
+            continue
+        pp = ps.pop()
+        other = held.get((pp, 'retest' in c['t']))
+        before = tranche(c)
+        c['pp'] = pp
+        if other or tranche(c) != before:
+            c['pp'] = ''
+            refused.append('%s %s → %s: %s' % (c['regcode'], cb, pp, 'held by ' + other if other
+                                                else 'tranche %s → %s' % (before, tranche(c))))
+            continue
+        held[(pp, 'retest' in c['t'])] = c['regcode']
+        filled.append((c['regcode'], cb, pp))
+    return filled, refused
 
 
 def tested(c, filled):
@@ -70,6 +110,7 @@ def main(argv):
                 return tm[k]
 
     rows = list(csv.DictReader(open(os.path.join(GAP, 'batch_dates_2026-09-10.csv'), encoding='utf-8')))
+    plot_filled, plot_refused = p_lots(reg, rows, aliases(), tranche)
     byb, byp = {}, {}
     for r in rows:
         if r['batch']:
@@ -112,7 +153,12 @@ def main(argv):
     print('not in the workbook — still "—": %d' % len(missing))
     for x in missing:
         print('   %s  %s  %s' % x)
-    if clash:
+    print('P lots filled from the workbook: %d' % len(plot_filled))
+    for x in plot_filled:
+        print('   %s  %-13s pp = %s' % x)
+    for x in plot_refused:
+        print('   refused  %s' % x)
+    if clash or plot_refused:
         print('refused — two workbook rows match: %s' % ', '.join(x[0] for x in clash))
         return 1
     if a.check:

@@ -346,7 +346,8 @@ def register_codes(rows, data):
 
     A release round takes its lot's initial certificate's code; a lot's retest certificate goes to
     its campaign round, or its first retest where it has none — the round `by_batch_round` resolves
-    "additional" to. A round no live certificate cites takes no code: it is not issued.
+    "additional" to. A round no live certificate cites takes no code: it is not issued — nor does a
+    number the register holds for a certificate whose rows cite none (`-075`, `-079`, `-080`).
 
     Where two live records claim one code, the approved scan decides (CLAUDE.md §1): the record
     whose scan cites the code keeps it. `iCoA-PP_26-123` is `-109`'s on its scan; `-123`'s scan cites
@@ -361,7 +362,10 @@ def register_codes(rows, data):
     claims = {}
     for c in data.get("coqs", []):
         ic = str(c.get("icoa_code") or "")
-        if not c.get("withdrawn") and ic.startswith(PREFIX):
+        # a number no row of the certificate cites is not issued: where CNP tested 1, 2, 7 and 8
+        # there is no internal certificate (-075, -079, -080; Head of QC, 26.09.2026)
+        if (not c.get("withdrawn") and ic.startswith(PREFIX)
+                and any(str(r.get("doc") or "") == ic for r in c.get("rows", []))):
             claims.setdefault(ic, []).append(c)
     want = {}
     for ic, cs in claims.items():
