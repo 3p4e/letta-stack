@@ -131,10 +131,21 @@ def main(argv):
 
     lot = lambda c: (str(c.get('pp') or ''), str(c.get('cb') or ''))
     recs = [c for c in reg['coqs'] if tranche(c) == 'T3']            # T1 and T2: never (A.FROZEN)
+    log = collections.defaultdict(list)
+    # A lot whose record holds its P number where the cultivation batch belongs prints no production
+    # batch on its internal certificate and its P number as the processing batch. The cultivation batch
+    # comes from the owner's analysis workbook ("Batch Dates", batch_dates_2026-09-10.csv). P060332 is
+    # CC012601/1 — not CC012603, which is P060372 (ruling 2: separate lots).
+    cult = {r['p_batch']: r['batch'] for r in csv.DictReader(open(os.path.join(GAP, 'batch_dates_2026-09-10.csv'),
+                                                                   encoding='utf-8'))}
+    for c in recs:
+        pp, cb = str(c.get('pp') or ''), str(c.get('cb') or '')
+        if not pp and re.match(r'^[PJ]\d{5,6}$', cb) and cult.get(cb):
+            c['pp'], c['cb'] = cb, cult[cb]
+            log['cultivation batch from the owner\'s workbook'].append((c['regcode'], cb, cult[cb]))
     ini = {lot(c): c for c in recs if 'retest' not in c['t']}
     ret = {lot(c): c for c in recs if 'retest' in c['t']}
     cnp = cnp_release()
-    log = collections.defaultdict(list)
     for k in sorted(ini, key=lambda k: ini[k]['regcode']):
         c, r, t = ini[k], ret.get(k), tranche(ini[k])
         rows = {x['no']: x for x in c['rows']}

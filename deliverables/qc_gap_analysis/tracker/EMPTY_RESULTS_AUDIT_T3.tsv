@@ -66,12 +66,12 @@ CoQ-PP_26-066	initial		GG012601	10.1	Aflatoxin B1	LATER-ROUND		not tested at rel
 CoQ-PP_26-066	initial		GG012601	10.3	Ochratoxin A	LATER-ROUND		not tested at release — the IPH certificate reports total aflatoxins o	exact 227-21-М/26 16.09.2026 = ND (after the CoQ)
 CoQ-PP_26-067	initial		JD012601	10.1	Aflatoxin B1	LATER-ROUND		not tested at release — the IPH certificate reports total aflatoxins o	exact 227-15-М/26 16.09.2026 = ND (after the CoQ)
 CoQ-PP_26-067	initial		JD012601	10.3	Ochratoxin A	LATER-ROUND		not tested at release — the IPH certificate reports total aflatoxins o	exact 227-15-М/26 16.09.2026 = ND (after the CoQ)
-CoQ-PP_26-068	initial		P060332	8	Loss on drying	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
-CoQ-PP_26-068	initial		P060332	11.1	Lead	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
-CoQ-PP_26-068	initial		P060332	11.2	Cadmium	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
-CoQ-PP_26-068	initial		P060332	11.3	Arsenic	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
-CoQ-PP_26-068	initial		P060332	11.4	Mercury	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
-CoQ-PP_26-068	initial		P060332	12	Pesticide residues	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
+CoQ-PP_26-068	initial	P060332	CC012601/1	8	Loss on drying	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
+CoQ-PP_26-068	initial	P060332	CC012601/1	11.1	Lead	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
+CoQ-PP_26-068	initial	P060332	CC012601/1	11.2	Cadmium	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
+CoQ-PP_26-068	initial	P060332	CC012601/1	11.3	Arsenic	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
+CoQ-PP_26-068	initial	P060332	CC012601/1	11.4	Mercury	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
+CoQ-PP_26-068	initial	P060332	CC012601/1	12	Pesticide residues	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
 CoQ-PP_26-073	initial	P060342	SCR012601	8	Loss on drying	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
 CoQ-PP_26-073	initial	P060342	SCR012601	11.1	Lead	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
 CoQ-PP_26-073	initial	P060342	SCR012601	11.2	Cadmium	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
