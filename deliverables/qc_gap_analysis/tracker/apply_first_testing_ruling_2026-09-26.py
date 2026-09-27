@@ -56,6 +56,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 GAP = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 import audit_empty_results as A                                    # noqa: E402
+sys.path.insert(0, GAP)
+import potency_grading as PGR                                      # noqa: E402
 
 REG = os.path.join(GAP, 'coq_artifact_data.json')
 STAMP = '26.09.2026'
@@ -81,6 +83,38 @@ EXTERNAL_K = {'P050202': {'doc': 'NGP/QCG/SOP-024 F3', 'dd': '28.11.2025', 'lab'
                                         'disagree. ППК26036, ППК26037, ППК26057 and ППК26058 are stability time '
                                         'points (months 3 and 6), not release results'}}}
 DATES_FOR = ('BSS1024_01/2', 'GRC102501/1', 'CC012601/1')
+# GRC102501/1 (P060142): its release testing. Four certificates of 30.01-12.02.2026 print only the
+# parent code "GRC102501" and were filed on Drive under the sister lot P060182, whose own certificates
+# (GRC102501/2, received 23.02.2026) are a separate set; no CoQ cited them. The sale list to Versa
+# (VERSA_UVOZ-IZVOZ_KONOPLJA3.xlsx) gives GRC102501/1 · P060142 at 7.05 %, which is 031-1-К/26. Head of
+# QC, 27.09.2026: "you can't tell me that we don't have any eCoA for those". Each value passed two
+# reads (intake_GRC102501_2026-09-27/). The Farmahem and IPH testing of September 2026 is then this
+# lot's retest, and -152 is reinstated.
+RS = 'covered — release testing of GRC102501/1; the certificate prints "GRC102501" (Head of QC, 27.09.2026)'
+_F = ('Farmahem', 'Farmahem — cannabinoids')
+_I = ('IPH — Institute of Public Health', '')
+_C = ('IPH — Institute of Public Health', 'IPH mycotoxins, metals, pesticides')
+RELEASE_SET = {'P060142': {
+    '3': ('Conforms | Одговара', '031-1-К/26', '10.02.2026') + _F,
+    '4': ('7.05', '031-1-К/26', '10.02.2026') + _F,
+    '5': ('< LOQ (<0.20)', '031-1-К/26', '10.02.2026') + _F,
+    '6': ('< LOQ', '031-1-К/26', '10.02.2026') + _F,
+    '8': ('7.2', '031-1-ГС/26', '12.02.2026', 'Farmahem', 'Farmahem — loss on drying'),
+    '9.1': ('9 × 10¹', '76/0119/26', '09.02.2026') + _I,
+    '9.2': ('1 × 10²', '76/0119/26', '09.02.2026') + _I,
+    '9.3': ('< 10', '76/0119/26', '09.02.2026') + _I,
+    '9.4': ('Absent | Отсутна', '76/0119/26', '09.02.2026') + _I,
+    '9.5': ('Absent | Отсутна', '76/0119/26', '09.02.2026') + _I,
+    '10.2': ('2.2', '328/2026', '11.02.2026') + _C,
+    '11.1': ('0.084', '328/2026', '11.02.2026') + _C,
+    '11.2': ('ND', '328/2026', '11.02.2026') + _C,
+    '11.3': ('0.095', '328/2026', '11.02.2026') + _C,
+    '11.4': ('ND', '328/2026', '11.02.2026') + _C,
+    '12': ('ND mg/kg — all 29 residues', '328/2026', '11.02.2026') + _C,
+}}
+NT_B1_OTA = ('not tested at release — the IPH certificate reports total aflatoxins only; aflatoxin B1 and '
+             'ochratoxin A are tested in the retest round, by Farmahem (Head of QC, 26.09.2026)')
+CARRY = ('8', '11.1', '11.2', '11.3', '11.4', '12')      # what the retest did not repeat
 EXTERNAL_ST = ('covered — %s is the certificate that tested the cannabinoids at release; identification C cites '
                'it with the assay (owner\'s ruling of 02.09.2026; ' + RULING + ')')
 WITHDRAWN = ('no reissuance — the Farmahem campaign was this lot\'s first testing, so it is the release testing '
@@ -163,6 +197,29 @@ def main(argv):
         c, r, t = ini[k], ret.get(k), tranche(ini[k])
         rows = {x['no']: x for x in c['rows']}
         twin = {x['no']: x for x in (r or {}).get('rows', [])}
+        rs = RELEASE_SET.get(c.get('pp'))
+        for no, (res, doc, dd, lab, fam_) in (rs or {}).items():
+            want = {'res': res, 'doc': doc, 'dd': dd, 'lab': lab, 'fam': fam_, 'route': '', 'st': RS}
+            if any(rows[no].get(f) != v for f, v in want.items()):
+                rows[no].update(want)
+                log['release testing of GRC102501/1 on the initial'].append((t, c['regcode'], no, doc))
+        for no in ('10.1', '10.3') if rs else ():
+            if rows[no].get('st') != NT_B1_OTA:
+                rows[no].update({'res': '—', 'doc': '—', 'dd': '', 'lab': '', 'fam': '', 'route': '', 'st': NT_B1_OTA})
+        for no in CARRY if rs and r else ():
+            x, want = twin[no], {f: rows[no].get(f) for f in ('res', 'doc', 'dd', 'lab', 'fam')}
+            if any(x.get(f) != v for f, v in want.items()):
+                x.update(want, route='', st='carried from the initial testing (%s) — covered' % c['regcode'])
+                log['retest carries what it did not repeat'].append((t, r['regcode'], no, want['doc']))
+        if rs:
+            g = PGR.grading(c.get('cb') or c.get('pp') or '', c.get('strain') or '', rows['4']['res'])
+            if not g.get('grade') and c.get('grade'):
+                # ruling 7: a result in no window is reported for a new grade, never forced into one
+                c.update({'grade': '', 'cls': '', 'pcode': '', 'spec': '',
+                          'spec_status': 'for review — Total THC %s %% falls in no window of the %s specification '
+                          '(deployed potency builder, 27.09.2026): a new grade is needed' % (rows['4']['res'], g.get('abbr') or c.get('strain'))})
+                rows['4']['crit'] = 'Per grade of the potency specification — %s %% falls in no window; a new grade is pending' % rows['4']['res']
+                log['no grade: the result falls in no window'].append((t, c['regcode'], rows['4']['res']))
         rel_k, rel_m = A.release_family(c)
         keys = {A.N(c.get('pp')), A.N(c.get('cb'))} - {''}
         ext = EXTERNAL_K.get(c.get('pp'))
@@ -240,6 +297,10 @@ def main(argv):
                     elif not r.get('withdrawn'):
                         r['withdrawn'] = WITHDRAWN % c['regcode']
                         log['Tranche 3 retest withdrawn — no reissuance'].append((t, r['regcode'], r.get('icoa_code'), c['regcode']))
+            elif str(r.get('withdrawn') or '').startswith('no reissuance'):
+                # the lot's release testing is on record after all: the campaign is its retest
+                r.pop('withdrawn')
+                log['retest reinstated — the release testing is on record'].append((t, r['regcode'], c['regcode']))
         # the date: seven days after the last external certificate cited, never before its own date
         base = c.get('issue_before_redating') or c.get('issue')
         c.pop('issue_before_redating', None)

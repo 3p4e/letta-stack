@@ -34,12 +34,8 @@ CoQ-PP_26-041	initial	P060052	AB092501	10.1	Aflatoxin B1	LATER-ROUND		not tested
 CoQ-PP_26-041	initial	P060052	AB092501	10.3	Ochratoxin A	LATER-ROUND		not tested at release — the IPH certificate reports total aflatoxins o	exact 227-30-М/26 16.09.2026 = ND (after the CoQ)
 CoQ-PP_26-046	initial	P060102	WED102501	10.1	Aflatoxin B1	LATER-ROUND		not tested at release — the IPH certificate reports total aflatoxins o	exact 227-4-М/26 16.09.2026 = ND (after the CoQ)
 CoQ-PP_26-046	initial	P060102	WED102501	10.3	Ochratoxin A	LATER-ROUND		not tested at release — the IPH certificate reports total aflatoxins o	exact 227-4-М/26 16.09.2026 = ND (after the CoQ)
-CoQ-PP_26-050	initial	P060142	GRC102501/1	8	Loss on drying	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
-CoQ-PP_26-050	initial	P060142	GRC102501/1	11.1	Lead	OTHER-LOT		not tested — no certificate for this lot; requested from the laborator	parent 328/2026 11.02.2026 = 0,084
-CoQ-PP_26-050	initial	P060142	GRC102501/1	11.2	Cadmium	OTHER-LOT		not tested — no certificate for this lot; requested from the laborator	parent 328/2026 11.02.2026 = н.д.
-CoQ-PP_26-050	initial	P060142	GRC102501/1	11.3	Arsenic	OTHER-LOT		not tested — no certificate for this lot; requested from the laborator	parent 328/2026 11.02.2026 = 0,095
-CoQ-PP_26-050	initial	P060142	GRC102501/1	11.4	Mercury	OTHER-LOT		not tested — no certificate for this lot; requested from the laborator	parent 328/2026 11.02.2026 = н.д.
-CoQ-PP_26-050	initial	P060142	GRC102501/1	12	Pesticide residues	OTHER-LOT		not tested — no certificate for this lot; requested from the laborator	parent 328/2026 11.02.2026 = н.д. — all 29
+CoQ-PP_26-050	initial	P060142	GRC102501/1	10.1	Aflatoxin B1	LATER-ROUND		not tested at release — the IPH certificate reports total aflatoxins o	exact 227-16-М/26 16.09.2026 = ND (after the CoQ)
+CoQ-PP_26-050	initial	P060142	GRC102501/1	10.3	Ochratoxin A	LATER-ROUND		not tested at release — the IPH certificate reports total aflatoxins o	exact 227-16-М/26 16.09.2026 = ND (after the CoQ)
 CoQ-PP_26-052	initial		SJ102501	10.1	Aflatoxin B1	LATER-ROUND		not tested at release — the IPH certificate reports total aflatoxins o	exact 227-6-М/26 16.09.2026 = ND (after the CoQ)
 CoQ-PP_26-052	initial		SJ102501	10.2	Aflatoxins total	PENDING		awaiting the complete scan of IPH 1065/2026 — every copy holds pages 1	exact 227-6-М/26 16.09.2026 = ND (after the CoQ)
 CoQ-PP_26-052	initial		SJ102501	10.3	Ochratoxin A	LATER-ROUND		not tested at release — the IPH certificate reports total aflatoxins o	exact 227-6-М/26 16.09.2026 = ND (after the CoQ)

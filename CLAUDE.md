@@ -84,6 +84,15 @@ the desk had changed them twice.
 covers it. Do not reach back to an older one (the 10.09 "first value of a parameter", say) to
 override it, and do not extend a ruling to a tranche it was not given for.
 
+**Every lot is issued, for sale or not.** Head of QC, 27.09.2026: a lot absent from the sale list
+(`VERSA_UVOZ-IZVOZ_KONOPLJA3.xlsx` on Drive, the list to Versa) *"is not meant for sale. But that does
+not mean that you should not issue any certificate or not include it into the issuance list. You
+should. And it should be issued chronologically, regardless if it's in a tranche or not."* The
+tranche moves are already recorded — `tracker/TRANCHE_ASSIGNMENT_2026-09-18.md`,
+`tranche_assignment_2026-09-18.csv` (P060332 moved T1 → T3; CLE072501, OPM092501, SJ092501,
+JD042601, FB042601, CC042601 out of the tranches) — read them before asking. Not on the sale list:
+BSS1024_01/2 (P050142), CC012601/1 (P060332).
+
 **Tranche 3: where Farmahem is the only testing on record, it is the release testing** (Head of QC,
 26.09.2026 — *"I'm not sure about all of the T3 initial release CoQs"*). Applied by
 `tracker/apply_first_testing_ruling_2026-09-26.py`, decided per lot by
@@ -96,8 +105,12 @@ override it, and do not extend a ruling to a tranche it was not given for.
 - **Mycotoxins**: IPH total aflatoxins on record → the Farmahem panel is the retest (initial: IPH
   total, B1/OTA `n/t`). Only the Farmahem panel on record → *"the testing in Farmahem for mycotoxins
   is part of initial release testing"*: all three print on the initial.
-- **No reissuance**: the retest drafts of such lots are withdrawn — `-087`, `-138`, `-152`
-  (`withdrawn` in the register; nothing built; numbers left free). **Except** where a parameter was
+- **No reissuance**: the retest drafts of such lots are withdrawn — `-087`, `-138`
+  (`withdrawn` in the register; nothing built; numbers left free). `-152` was withdrawn too until
+  27.09.2026, when GRC102501/1's release testing of February 2026 was found filed under the parent
+  code "GRC102501" (`intake_GRC102501_2026-09-27/`): it is reinstated as the lot's retest. Look for a
+  lot's release certificates under its parent code and its sister sub-lot's Drive folder before
+  concluding the campaign was its first testing. **Except** where a parameter was
   tested again well after the first: *"the second certificate for microbiology is going to enter the
   CoQ, and if the initial testing was way before, then it is definitely a retest and the reissuing
   of the CoQ"* — `-160` (P060342: IPH 539/1070/26 of 31.08 after 362/0692/26 of 01.06) is kept, and

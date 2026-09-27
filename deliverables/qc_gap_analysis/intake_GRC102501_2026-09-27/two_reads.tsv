@@ -1,0 +1,17 @@
+certificate	laboratory	issued	sample (as printed)	received	parameter	read 1 (Drive text layer)	read 2 (page image)	agree	register row
+031-1-К/26	Farmahem	10.02.2026	Graps & Creme GRC102501 (CF-41/26)	30.01.2026	Total Δ9-THC	7.05 (U 0.43)	7.05 (U 0.43)	yes	4
+031-1-К/26	Farmahem	10.02.2026	Graps & Creme GRC102501 (CF-41/26)	30.01.2026	Total CBD	<LOQ	<LOQ (<0.20 %)	yes	5
+031-1-К/26	Farmahem	10.02.2026	Graps & Creme GRC102501 (CF-41/26)	30.01.2026	Total CBN	<LOQ	<LOQ (<0.20 %)	yes	6
+031-1-К/26	Farmahem	10.02.2026	Graps & Creme GRC102501 (CF-41/26)	30.01.2026	Identification (HPLC/DAD, Ph. Eur. 3028)	identification and quantification of cannabinoids	same	yes	3
+031-1-ГС/26	Farmahem	12.02.2026	Graps & Creme GRC102501 (CF-41/26)	30.01.2026	Loss on drying	7,2 ± 0,2	7,2 ± 0,2	yes	8
+76/0119/26	IPH microbiology	09.02.2026	Grapes & Creme GRC102501, 44 g	02.02.2025 (sic; request 038/2026 of 30.01.2026)	TAMC	9 x 10' CFU/g	9 × 10¹ CFU/g	yes	9.1
+76/0119/26	IPH microbiology	09.02.2026	Grapes & Creme GRC102501, 44 g	02.02.2025 (sic)	TYMC	1 x 10² CFU/g	1 × 10² CFU/g	yes	9.2
+76/0119/26	IPH microbiology	09.02.2026	Grapes & Creme GRC102501, 44 g	02.02.2025 (sic)	Bile-tolerant gram-negative bacteria	< 10 CFU/g	< 10 CFU/g	yes	9.3
+76/0119/26	IPH microbiology	09.02.2026	Grapes & Creme GRC102501, 44 g	02.02.2025 (sic)	Escherichia coli	Одговара	Одговара (absent/g)	yes	9.4
+76/0119/26	IPH microbiology	09.02.2026	Grapes & Creme GRC102501, 44 g	02.02.2025 (sic)	Salmonella	Одговара	Одговара (absent/25 g)	yes	9.5
+328/2026	IPH	11.02.2026	GRAPS & CREME GRC102501, 30 g	30.01.2026	Total aflatoxins	2,2 µg/kg	2,2 µg/kg (AflaTest, completed 03.02.2026)	yes	10.2
+328/2026	IPH	11.02.2026	GRAPS & CREME GRC102501, 30 g	30.01.2026	Lead	0,084 mg/kg	0,084 mg/kg (EN 14084)	yes	11.1
+328/2026	IPH	11.02.2026	GRAPS & CREME GRC102501, 30 g	30.01.2026	Cadmium	н.д.	н.д. (EN 14084)	yes	11.2
+328/2026	IPH	11.02.2026	GRAPS & CREME GRC102501, 30 g	30.01.2026	Arsenic	0,095 mg/kg	0,095 mg/kg (EN 14627; marked * non-accredited method)	yes	11.3
+328/2026	IPH	11.02.2026	GRAPS & CREME GRC102501, 30 g	30.01.2026	Mercury	н.д.	н.д. (EN 13806:2002)	yes	11.4
+328/2026	IPH	11.02.2026	GRAPS & CREME GRC102501, 30 g	30.01.2026	Pesticides (29 residues, MKC EN 15662:2020)	all н.д.	all н.д.; conforms to Ph. Eur. 2.8.13	yes	12
