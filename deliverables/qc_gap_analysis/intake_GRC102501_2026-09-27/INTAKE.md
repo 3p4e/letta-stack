@@ -20,8 +20,8 @@ under the sister lot `P060182 (GRC102501)_…` and no certificate of quality cit
 | `328/2026` | IPH | 11.02.2026 | #10.2 (2.2 µg/kg), #11.1–#11.4, #12 |
 
 Every value passed two reads (`two_reads.tsv`): the Drive text layer, and the page image read on
-27.09.2026. `76/0119/26` prints its receipt date as **02.02.2025** against a request of 30.01.2026 —
-the same slip as open item 51.
+27.09.2026. `76/0119/26` prints its receipt date as **02.02.2025** against a request of 30.01.2026;
+the Head of QC ruled on 27.09.2026 that the year is a misprint for 2026 — received **02.02.2026**.
 
 **Consequences** (applied by `tracker/apply_first_testing_ruling_2026-09-26.py`, `RELEASE_SET`):
 `-050` prints this set and keeps 06.06.2026; B1 and OTA print n/t (IPH reports the total only).
