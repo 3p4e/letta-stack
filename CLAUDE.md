@@ -223,7 +223,75 @@ the laboratory line (17.09.2026).
   can still change. Tranches 1 and 2 are issued and keep the line as sent
   (`design_handoff/toolchain/build_v40.js` `FROZEN_LOT`); every other certificate is built without it.
 
-## 7. Git
+## 7. What the Head of QC has had to say more than once
+
+The full record — 185 corrections, 07.09–27.09.2026, each quoted — is
+`deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
+(`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
+ruling governs (§5). The most repeated, in order:
+
+1. **It is on file.** Never report a result, certificate or eCoA as missing, not found or "not
+   available" before searching the eCoA database folder and its Excel indexes, the latest master
+   workbook, every intake's two-read file, the parent code and the sister sub-lot's Drive folder, and
+   RAGflow `eCOA_DB` (said 14 times).
+2. **Apply the rulings already given.** Read them here first; do not reopen, forget or reach back past
+   them (13 times).
+3. **Carry every change into every deliverable** and every sheet of the latest master; a version
+   number proves nothing, only a check against every ruling does (11 times).
+4. **Potency grades come only from the Head of QC** — the KVM4 potency builder (§5 ruling 7), never an
+   older table, never "a missing specification" (11 times).
+5. **iCoAs.** One per CoQ, and a retest CoQ cites only its own retest iCoA — except where an outside
+   laboratory (CNP) tested everything an iCoA would hold: then there is none (`-075`, `-079`, `-080`;
+   26.09.2026, §5 ruling 6) (10 times).
+6. **Be short and do not waste tokens**: no re-OCR, no page images in Word, no long reports (10 times).
+7. **The deliverable asked for comes first** — the merged PDF when a merged PDF is asked for (9 times).
+8. **Templates are fixed.** Change only the values: never parameter names, acceptance criteria,
+   columns or layout. The design system governs layout only (§6) (8 times).
+9. **No missing values on a certificate** (§5) (7 times).
+10. **Mycotoxins** (§5 ruling 3) (7 times).
+
+Standing rules the corrections produced (message numbers are in the record):
+
+- **One A4 page.** Nothing crosses the margins or runs into header or footer; look at the rendered page
+  after every layout change.
+- **Numbering.** Simple and chronological, no empty code rows; a code on a sent scan never moves;
+  Tranche 3 takes the first free numbers. The 27.09.2026 order check
+  (`tracker/ISSUANCE_ORDER_CHECK_2026-09-27.tsv`) is with the Head of QC — renumber nothing without him.
+- **Specifications are all v.01**; a strain's grade numerals are sequential by creation and say nothing
+  about higher or lower potency.
+- **Dates.** Packaging and manufacturing dates come from the master workbook (`batch_dates_2026-09-10.csv`);
+  where a batch has several packaging dates, the first. The label is "manufacturing date"; no harvest
+  date on an iCoA; a sampling or CNP certificate date is not a packaging date. An initial iCoA is tested
+  on the packaging date, a retest iCoA on the retest sampling date, one date on every analysis (§4).
+- **Retest CoQ** = the retested parameters plus every other parameter carried from the initial with its
+  original citation; no "not tested" on a retest CoQ.
+- **Wording.** ND is a *not detected* result; a parameter not tested is `n/t`, never ND. One Macedonian
+  "Conforms" (Одговара); Macedonian "метод", not "метода". Phenotype "Hybrid, Indica/Sativa dominant"
+  when the split is unknown, "Hybrid, Indica 80, Sativa 20" when known — the same everywhere.
+- **Removed, and not to come back:** the processing (machine/hand trimmed) parameter on CoQs; the
+  bottom commentary sentence on iCoAs; the bottom-right document code on specifications; "MK GMP
+  Certified" anywhere (§6).
+- **In-house laboratory citation:** "Purely Plant QC Department · In-house | Пјурли Плант — Сектор за
+  КК · In-house · Kojlija 1043, Petrovec-Skopje, MK".
+- **Supersedes line** directly beneath the current CoQ code and issue date, very small and greyed.
+- **Look.** No grey; zebra rows kept; heading bars run edge to edge; table rows fade to white by the
+  page margins, with no hard lines in a gradient; graphics flattened for print.
+- **Signatures** from `_sig/` only, rotated: Christina Cekic far left, the other two on the right, the
+  QC Manager's 15–20 % larger and crossing the line; a signed and an unsigned set.
+- **Bundles.** Each page of an attached external certificate carries a ~1.5 cm stamp with the CoQ code
+  and date and the Head of QC's signature only, laid over the page without shrinking it, upright.
+- **Word** files are exact, editable copies of the page — never page images, never a re-layout.
+- **Nothing invented.** No category, statement or reason that no ruling or document supports (there
+  is no "12-month reissue"; only a retest reissues a CoQ).
+- **Working.** Fix a defect instead of listing it; nothing from memory, check every value; explain a
+  proposed correction plainly and briefly; clickable download links, one per package; delete
+  superseded versions when told.
+
+**Open with the Head of QC (27.09.2026):** *"I need the -087, -138 and -152. In too."* — `-152` is
+reinstated; `-087` and `-138` are still withdrawn under the 26.09 no-reissuance ruling. Ask; do not
+decide.
+
+## 8. Git
 
 Work on the branch the task names; never push to another without being asked. `git gc` in this
 container must be given headroom first — it writes the new pack **before** deleting the loose
