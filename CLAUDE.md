@@ -182,7 +182,9 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
      builder is deployed on KVM4** — `https://specs.srv1231216.hstgr.cloud` (`potency-spec-service`;
      read `GET /api/specs`, `/api/specs/<ABBR>`); check it, and only it, for a strain's current grades,
      then carry a new one into `potency_grades_2026-09-15.csv`. WED-II (22.00 ± 1.40, 20.60–23.39 %)
-     came from there on 26.09.2026 and grades `-046`.
+     came from there on 26.09.2026 and grades `-046`. GRC-IV (7.00 ± 0.70, 6.30–7.69 %) was set by the
+     Head of QC on 27.09.2026 for `-050` (7.05 %), which no grade covered; it overlaps GRC-III
+     (7.20–8.79 %), and `potency_grading` tries the higher nominal first, so `-152` (7.50 %) stays III.
   8. **A certificate whose scan is incomplete** prints `[pending]` for what the missing page holds —
      IPH `1065/2026` (SJ102501) holds pages 1, 2 and 4 of 4 in every copy; page 3 carries its metals,
      total aflatoxins and three pesticides. Obtain the page; do not read around it.

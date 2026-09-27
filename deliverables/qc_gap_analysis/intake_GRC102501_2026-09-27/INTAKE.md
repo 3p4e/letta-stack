@@ -27,6 +27,8 @@ the Head of QC ruled on 27.09.2026 that the year is a misprint for 2026 — rece
 `-050` prints this set and keeps 06.06.2026; B1 and OTA print n/t (IPH reports the total only).
 The September 2026 testing (`227-16-К/26`, `227-16-М/26`, `550/1081/26`) is the lot's retest, so
 `-152` is reinstated, dated 21.09.2026, superseding `-050`, and carries the loss on drying, metals and
-pesticides it did not repeat. **Grade:** 7.05 % falls in no window of the GRC specification (7.20–8.79,
-9.00–10.99, 11.00–12.99 in the deployed builder, 27.09.2026), so `-050` is ungraded until the Head of
-QC defines one (ruling 7).
+pesticides it did not repeat. **Grade:** 7.05 % fell in no window of the GRC specification (7.20–8.79,
+9.00–10.99, 11.00–12.99 in the deployed builder, 27.09.2026). The Head of QC set a new grade the same
+day, *"7 % plus minus 10 % of nominal value … 7 % plus minus 0.7"*: **GRC-IV**, 7.00 ± 0.70
+(6.30–7.69 %), product code `GRC_THC7 : CBD1`, specification `QCSP_001_GRC-IV_v.01`. `-050` is GRC-IV;
+`-152` (7.50 %) stays GRC-III.
