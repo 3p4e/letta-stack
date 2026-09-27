@@ -263,6 +263,17 @@ ruling governs (§5). The most repeated, in order:
 
 Standing rules the corrections produced (message numbers are in the record):
 
+- **The templates and the fonts** (Head of QC, 27.09.2026: *"The font is all wrong."*). The CoQ page is
+  his `FIN_SP-COA-COQ/templates/coq/Certificate_of_Quality_CoQ.html` with the adjustments he asked for on
+  16–17.09 (`design_handoff/base/`); the iCoA is his own format of 24.09 (`iCoA-PP_26-050 … Retest_1`,
+  and `-110 … LOD` where loss on drying is in-house). Both are set in **Montserrat, Roboto Mono and
+  Orbitron**. The CoQ page loads them from Google, which the printer blocks, so every CoQ print inlines
+  them first (`print_v40.py`; `house_css` in the bundle scripts). A CoQ PDF carrying Liberation or DejaVu
+  is a defect and the bundle refuses it (`assert_house_fonts`). Check a printed page's fonts with
+  `pdffonts` before sending it.
+- **Dates on every certificate not yet issued** come from the owner's workbook
+  (`tracker/apply_batch_dates_2026-09-27.py`: exact batch or P lot, recorded star aliases, empty fields
+  only). A date field the register cannot fill prints "—" **and** is listed in `REGISTER_GAPS.tsv`.
 - **One A4 page.** Nothing crosses the margins or runs into header or footer; look at the rendered page
   after every layout change.
 - **Numbering.** Simple and chronological, no empty code rows; a code on a sent scan never moves;

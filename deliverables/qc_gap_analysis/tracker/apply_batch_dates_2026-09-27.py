@@ -1,0 +1,107 @@
+#!/usr/bin/env python3
+"""Manufacture and packaging dates from the owner's workbook, for every certificate not yet issued.
+
+    python3 tracker/apply_batch_dates_2026-09-27.py --check     # writes nothing
+    python3 tracker/apply_batch_dates_2026-09-27.py --apply
+
+Found on 27.09.2026, looking at the rebuilt Tranche 3 pages: 60 certificates of quality outside
+Tranches 1 and 2 printed "—" for both the manufacture date and the packaging date, and their internal
+certificates "—" for the packaging date, although the owner's workbook ("Batch Dates" sheet,
+batch_dates_2026-09-10.csv) holds them. No gap list reported it. The standing rule (CLAUDE.md §7):
+packaging and manufacturing dates come from the master workbook — manufacture = the first harvest
+day, packaging = the first packaging day.
+
+* A record takes the workbook row whose batch is its cultivation batch, or whose P number is its P
+  lot — exactly; never a sister sub-lot (ruling 2). A starred spelling on the workbook is the same lot
+  as the register's unstarred label only where the alias is recorded as a ruling
+  (ingestion/ecoa_runner/identity_decisions.tsv, `batch_alias`, OI-28): GG012601* = GG012601,
+  JD012601* = JD012601, SCR012601* = SCR012601, FB012602* = FB012602.
+* Only an empty field is filled; a date already on the record is never overwritten.
+* Tranches 1 and 2 are issued and not touched; withdrawn records are skipped.
+* A record the workbook does not cover is listed, never guessed.
+"""
+import argparse, csv, json, os, re, sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+GAP = os.path.dirname(HERE)
+ROOT = os.path.dirname(os.path.dirname(GAP))
+REG = os.path.join(GAP, 'coq_artifact_data.json')
+sys.path.insert(0, HERE)
+import audit_empty_results as A                                    # noqa: E402
+
+FULL = re.compile(r'^\d\d\.\d\d\.\d{4}$')
+
+
+def aliases():
+    """unstarred label -> starred workbook spelling, from the recorded rulings."""
+    out = {}
+    with open(os.path.join(ROOT, 'ingestion', 'ecoa_runner', 'identity_decisions.tsv'), encoding='utf-8') as fh:
+        for r in csv.DictReader(fh, delimiter='\t'):
+            if r.get('field') == 'batch_alias' and r.get('confirmed_value') and r.get('was'):
+                out[r['confirmed_value'].strip()] = r['was'].strip()
+    return out
+
+
+def main(argv):
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--apply', action='store_true')
+    ap.add_argument('--check', action='store_true')
+    a = ap.parse_args(argv[1:])
+    if not (a.apply or a.check):
+        ap.error('pass --check or --apply')
+    reg = json.load(open(REG, encoding='utf-8'))
+    tm = A.tranche_map()
+
+    def tranche(c):
+        for k in (c.get('pp'), c.get('cb'), (c.get('cb') or '').replace('＊', '')):
+            if k and k in tm:
+                return tm[k]
+
+    rows = list(csv.DictReader(open(os.path.join(GAP, 'batch_dates_2026-09-10.csv'), encoding='utf-8')))
+    byb, byp = {}, {}
+    for r in rows:
+        if r['batch']:
+            byb.setdefault(r['batch'], []).append(r)
+        if r['p_batch']:
+            byp.setdefault(r['p_batch'], []).append(r)
+    star = aliases()
+    filled, missing, clash = [], [], []
+    for c in reg['coqs']:
+        if tranche(c) in A.FROZEN or c.get('withdrawn'):
+            continue
+        if c.get('md') and c.get('pk'):
+            continue
+        cb, pp = str(c.get('cb') or ''), str(c.get('pp') or '')
+        cand = byb.get(cb, []) + byb.get(star.get(cb, '\0'), []) + byp.get(pp, [])
+        uniq = {id(r): r for r in cand}
+        if len(uniq) > 1:
+            clash.append((c['regcode'], pp, cb))
+            continue
+        if not uniq:
+            missing.append((c['regcode'], pp or '—', cb))
+            continue
+        r = next(iter(uniq.values()))
+        for f, col in (('md', 'harvest_from'), ('pk', 'packaging_from')):
+            v = r[col].strip()
+            if not c.get(f) and FULL.match(v):
+                c[f] = v
+                filled.append((c['regcode'], cb, f, v, r['batch']))
+    print('fields filled from the workbook: %d (on %d certificates)' % (len(filled), len({x[0] for x in filled})))
+    for x in filled:
+        print('   %s  %-13s %s = %s   (workbook row %s)' % x)
+    print('not in the workbook — still "—": %d' % len(missing))
+    for x in missing:
+        print('   %s  %s  %s' % x)
+    if clash:
+        print('refused — two workbook rows match: %s' % ', '.join(x[0] for x in clash))
+        return 1
+    if a.check:
+        print('--check: nothing written')
+        return 0
+    with open(REG, 'w', encoding='utf-8') as fh:
+        json.dump(reg, fh, ensure_ascii=False, indent=1)
+    return 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(main(sys.argv))

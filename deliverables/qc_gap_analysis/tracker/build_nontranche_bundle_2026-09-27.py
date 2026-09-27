@@ -89,11 +89,16 @@ def main():
             docs.append(('iCoA %s' % s, T3.name_of(f)[:-5], dst))
 
     pdf_of = {}
+    coq_css = T3.house_css([h for s_, _, h in docs if s_.startswith('CoQ')])
     for hdir in dict.fromkeys(os.path.dirname(h) for _, _, h in docs):
         pdir = os.path.join(os.path.dirname(hdir), 'PDF')
         os.makedirs(pdir, exist_ok=True)
         srcs = [h for _, _, h in docs if os.path.dirname(h) == hdir]
-        pdf_of.update(zip(srcs, T3.render(srcs, pdir)))
+        css = coq_css if os.sep + 'CoQ' + os.sep in hdir else ''
+        pdf_of.update(zip(srcs, T3.render(srcs, pdir, None, css)))
+    for h, pdf in pdf_of.items():
+        if os.sep + 'CoQ' + os.sep in h:
+            T3.assert_house_fonts(pdf)
     for pdf in pdf_of.values():
         d = pymupdf.open(pdf)
         d.subset_fonts()

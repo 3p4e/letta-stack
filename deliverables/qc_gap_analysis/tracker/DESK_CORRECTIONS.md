@@ -52,6 +52,34 @@ locked rule with a real gap"*, wrote the line into the CoQ base page and the iCo
 Until it is struck there, any tool that reads it may bring the line back — the check above is what
 catches it here.
 
+## Correction, 27.09.2026 — "The font is all wrong"
+
+> *"The font is all wrong. You are not using the exact certificate of quality template HTML that I gave
+> you previous week. Nor you're using, probably not using the correct template for the internal
+> certificate of analysis."* — Head of QC, 27.09.2026
+
+**What was wrong.** Every certificate of quality the desk delivered on 26–27.09 (the Tranche 3 bundle
+and the out-of-tranche set) was printed in **Liberation Sans and DejaVu Sans Mono**, not the house
+Montserrat, Roboto Mono and Orbitron. The page loads its fonts from Google Fonts; the printer blocks
+Google; `print_v40.py` inlines the fonts before printing for exactly that reason, but the two bundle
+scripts the desk wrote on 26–27.09 called the bare printer and inlined nothing. Nobody looked at the
+fonts of the PDFs before they were sent.
+
+**The templates, checked.** The CoQ page is the Head of QC's `FIN_SP-COA-COQ` template: every style
+block of `templates/coq/Certificate_of_Quality_CoQ.html` is in `design_handoff/base/`, with `cox.css`
+inlined and the adjustments he asked for on 16–17.09 layered on top. Its one printed difference is the
+bottom-right footer, which his template gives as "QCSOP 012 v.03" and the desk's page leaves empty —
+put to him. The internal certificates are his own format of 24.09: printed side by side with his
+`iCoA-PP_26-050 … Retest_1.html`, a Tranche 3 iCoA is the same page.
+
+**Found on the way.** 60 CoQs outside Tranches 1 and 2 printed "—" for the manufacture and packaging
+dates, and their iCoAs "—" for the packaging date, although the owner's workbook holds them; no gap
+list reported it. Filled from the workbook (`tracker/apply_batch_dates_2026-09-27.py`); five lots are
+not in it (P160012, P160022, P160032, FB042601, CC042601) and stay listed.
+
+**Guards.** The bundle scripts inline the house fonts and refuse a CoQ PDF that carries a substitute
+face; a date the register cannot fill is listed in `REGISTER_GAPS.tsv`. `CLAUDE.md` §7 records both.
+
 ---
 
 # The full log, 07.09–27.09.2026

@@ -46,7 +46,51 @@ ROOT = os.path.dirname(os.path.dirname(GAP))
 sys.path.insert(0, os.path.join(GAP, 'icoa_handoff', 'v3'))
 sys.path.insert(0, os.path.join(GAP, 'live_instrument'))
 import build_owner_format as own                                     # noqa: E402
-from print_coq_pdfs import render                                    # noqa: E402
+from print_coq_pdfs import FAMILIES, SUBSETS, page_text, render     # noqa: E402
+sys.path.insert(0, os.path.join(ROOT, 'ingestion', 'coa_track', 'letta-imb-coas'))
+import house_fonts                                                   # noqa: E402
+
+
+def house_css(paths):
+    """Montserrat, Roboto Mono and Orbitron inlined, as print_v40.py prints the CoQ set.
+
+    Head of QC, 27.09.2026: "The font is all wrong." The CoQ page loads its faces from Google
+    Fonts by <link>; the printer blocks Google, so without this every CoQ printed in Liberation
+    Sans and DejaVu Sans Mono. The internal certificate carries its own @font-face and needs none.
+    """
+    css, _, _ = house_fonts.font_face_css(page_text(paths), FAMILIES, SUBSETS)
+    if css.count('@font-face') < 3:
+        raise SystemExit('house fonts not built — refusing to print CoQs in a substitute face')
+    return css
+
+
+SUBSTITUTE = ('Liberation', 'DejaVu', 'Arial', 'Helvetica', 'Times', 'Nimbus')
+
+
+WORD = re.compile(r'[A-Za-z0-9\u0400-\u04FF]')
+
+
+def assert_house_fonts(pdf):
+    """Every letter and digit of a printed CoQ is set in a house face.
+
+    Montserrat, Roboto Mono and Orbitron have no glyph for a handful of symbols the page uses
+    (≤ ☒ ☐ ∑ Δ ⁹ ₁), and those fall back per glyph exactly as they do in the Head of QC's own
+    templates. A letter or a digit in a substitute face means the fonts were not inlined.
+    """
+    import pymupdf
+    d = pymupdf.open(pdf)
+    bad = {}
+    for page in d:
+        for b in page.get_text('dict')['blocks']:
+            for ln in b.get('lines', []):
+                for sp in ln['spans']:
+                    if sp['font'].startswith(SUBSTITUTE):
+                        for ch in WORD.findall(sp['text']):
+                            bad.setdefault(sp['font'], set()).add(ch)
+    d.close()
+    if bad:
+        raise SystemExit('%s printed letters in a substitute face: %s' % (
+            os.path.basename(pdf), '; '.join('%s %s' % (f, ''.join(sorted(c))) for f, c in bad.items())))
 
 STAMP = '2026-09-26'
 OUT = os.path.join(GAP, 'DELIVER_%s_T3' % STAMP)
@@ -114,7 +158,7 @@ def fields(c, gaps, scope=('1', '2', '7')):
         'examined': str(c.get('icoa_tested') or '').strip() or '—',
         'production': pp if has_p else '—',
         'processing': cb or '—',
-        'packaging': str(c.get('pk') or '—'),
+        'packaging': val('pk', 'packaging date'),
         'scope': ','.join(scope),
         'lod': next((re.sub(r'\s*\(.*$', '', str(r.get('res'))).strip().rstrip('%') + '%'
                      for r in c['rows'] if r['no'] == '8' and '8' in scope), ''),
@@ -185,11 +229,16 @@ def main():
 
     # print every page, keep it, and merge in section order with a bookmark per certificate
     pdf_of = {}
+    coq_css = house_css([h for s_, _, h in docs if s_.startswith('CoQ')])
     for hdir in dict.fromkeys(os.path.dirname(h) for _, _, h in docs):
         pdir = os.path.join(os.path.dirname(hdir), 'PDF')
         os.makedirs(pdir, exist_ok=True)
         srcs = [h for _, _, h in docs if os.path.dirname(h) == hdir]
-        pdf_of.update(zip(srcs, render(srcs, pdir)))            # one browser session per folder
+        css = coq_css if os.sep + 'CoQ' + os.sep in hdir else ''
+        pdf_of.update(zip(srcs, render(srcs, pdir, None, css)))  # one browser session per folder
+    for h, pdf in pdf_of.items():
+        if os.sep + 'CoQ' + os.sep in h:
+            assert_house_fonts(pdf)
     merged, toc, last = pymupdf.open(), [], None
     for sec, label, html in docs:
         d = pymupdf.open(pdf_of[html])
