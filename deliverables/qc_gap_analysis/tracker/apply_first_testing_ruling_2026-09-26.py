@@ -82,7 +82,8 @@ EXTERNAL_K = {'P050202': {'doc': 'NGP/QCG/SOP-024 F3', 'dd': '28.11.2025', 'lab'
                                         'Pharma NGP/QCG/SOP-024 F3, 28.11.2025) is held for review: its two reads '
                                         'disagree. ППК26036, ППК26037, ППК26057 and ППК26058 are stability time '
                                         'points (months 3 and 6), not release results'}}}
-DATES_FOR = ('BSS1024_01/2', 'GRC102501/1', 'CC012601/1')
+DATES_FOR = ('BSS1024_01/2', 'GRC102501/1', 'CC012601/1', 'JD042601')
+OUTSIDE_SAME_AS_T3 = ('JD042601', 'CC042601', 'FB042601')
 # GRC102501/1 (P060142): its release testing. Four certificates of 30.01-12.02.2026 print only the
 # parent code "GRC102501" and were filed on Drive under the sister lot P060182, whose own certificates
 # (GRC102501/2, received 23.02.2026) are a separate set; no CoQ cited them. The sale list to Versa
@@ -165,7 +166,11 @@ def main(argv):
                 return tm[k]
 
     lot = lambda c: (str(c.get('pp') or ''), str(c.get('cb') or ''))
-    recs = [c for c in reg['coqs'] if tranche(c) == 'T3']            # T1 and T2: never (A.FROZEN)
+    # Head of QC, 27.09.2026, for three lots outside every tranche whose only testing on record is the
+    # Farmahem campaign of 26.08/11.09 (220-30/31/32-К and -М/26; JD042601 packaged 13.08.2026):
+    # "same as Tranche 3" — the campaign is their release testing, and there is no reissuance.
+    recs = [c for c in reg['coqs'] if tranche(c) == 'T3'              # T1 and T2: never (A.FROZEN)
+            or (tranche(c) is None and str(c.get('cb') or '') in OUTSIDE_SAME_AS_T3)]
     log = collections.defaultdict(list)
     # A lot whose record holds its P number where the cultivation batch belongs prints no production
     # batch on its internal certificate and its P number as the processing batch. The cultivation batch
@@ -346,8 +351,8 @@ def main(argv):
         json.dump(reg, fh, ensure_ascii=False, indent=1)
 
     # the laboratory requests, rebuilt from the register as it now stands
-    for t in ('T3',):
-        out = os.path.join(a.outdir, 'LAB_REQUESTS_%s_2026-09-26.tsv' % t)
+    for t, name in (('T3', 'LAB_REQUESTS_T3_2026-09-26.tsv'), (None, 'LAB_REQUESTS_NoTranche_2026-09-27.tsv')):
+        out = os.path.join(a.outdir, name)
         req = collections.OrderedDict()
         for c in sorted([c for c in recs if tranche(c) == t and not c.get('withdrawn')], key=lambda c: c['regcode']):
             for x in c['rows']:

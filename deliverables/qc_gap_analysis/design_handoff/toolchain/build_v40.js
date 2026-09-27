@@ -40,11 +40,11 @@ for (const r of CoQ.parseCSV(fs.readFileSync(path.join(GAP, 'intake_tranches_202
   const head = f.replace(/_P\d{6}$/, '').replace(/_+$/, '').replace(/\uFF0A/g, '');
   if (!(head in TR18)) TR18[head] = t;
 }
-// A lot built as Tranche 1 or 2 before the 18.09 regrouping (the six that left the tranches:
-// CLE072501, OPM092501, SJ092501, JD042601, CC042601, FB042601) keeps its pages as built too.
+// The six lots that left the tranches on 18.09 (CLE072501, OPM092501, SJ092501, JD042601,
+// CC042601, FB042601) were built as Tranche 2 before that, but none of their certificates was
+// issued — not among the 46 approved scans, not among the 44 pages of 24.09 — so they are not frozen.
 function FROZEN_LOT(c) {
   for (const k of [c.pp, c.cb, String(c.cb || '').replace(/\uFF0A/g, '')]) if (k && k in TR18) return /^T[12]$/.test(TR18[k]);
-  for (const k of [c.pp, c.cb]) if (k && /^[12]$/.test(String(tranche[k] || '').replace(/\D/g, ''))) return true;
   return false;
 }
 

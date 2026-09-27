@@ -110,7 +110,11 @@ BSS1024_01/2 (P050142), CC012601/1 (P060332).
   27.09.2026, when GRC102501/1's release testing of February 2026 was found filed under the parent
   code "GRC102501" (`intake_GRC102501_2026-09-27/`): it is reinstated as the lot's retest. Look for a
   lot's release certificates under its parent code and its sister sub-lot's Drive folder before
-  concluding the campaign was its first testing. **Except** where a parameter was
+  concluding the campaign was its first testing. **The same, outside the tranches** (Head of QC,
+  27.09.2026, "same as Tranche 3"): JD042601 (P060492), CC042601 and FB042601 have only Farmahem
+  220-30/31/32-К and -М/26 on record, so that is their release testing — initials `-084`, `-166`,
+  `-167` print it (dated 18.09.2026) and `-125`, `-171`, `-172` are withdrawn
+  (`OUTSIDE_SAME_AS_T3` in the script). **Except** where a parameter was
   tested again well after the first: *"the second certificate for microbiology is going to enter the
   CoQ, and if the initial testing was way before, then it is definitely a retest and the reissuing
   of the CoQ"* — `-160` (P060342: IPH 539/1070/26 of 31.08 after 362/0692/26 of 01.06) is kept, and
@@ -220,8 +224,15 @@ the laboratory line (17.09.2026).
 - Before adopting any rule from a document that is not a ruling, check it against the rulings —
   the newest governs — and ask when they differ.
 - `tracker/check_certificate_claims.py` fails the build and CI on such a claim in any page a build
-  can still change. Tranches 1 and 2 are issued and keep the line as sent
-  (`design_handoff/toolchain/build_v40.js` `FROZEN_LOT`); every other certificate is built without it.
+  can still change. Tranches 1 and 2 of the 18.09 grouping are issued and keep the line as sent
+  (`design_handoff/toolchain/build_v40.js` `FROZEN_LOT`); every other certificate is built without it —
+  including the six lots that left the tranches on 18.09, none of whose certificates was ever issued.
+
+**Lots outside every tranche** are delivered by `tracker/build_nontranche_bundle_2026-09-27.py`
+(`DELIVER_2026-09-27_NoTranche/`). Four of them held internal-certificate numbers that sent T1/T2 pages
+carry; with the Head of QC's approval (27.09.2026) the 25.09 rule moved them to the first free numbers
+(`tracker/apply_nontranche_icoa_moves_2026-09-27.py`): CLE072501 → `iCoA-PP_26-103`, OPM092501 → `-108`,
+SJ092501 → `-119`, JD042601 → `-120` (its retest since withdrawn). `-127` is the one number left free.
 
 ## 7. What the Head of QC has had to say more than once
 

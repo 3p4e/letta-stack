@@ -37,7 +37,7 @@ def printed_text(src):
 
 
 def frozen_lots():
-    """Lots whose pages are issued (T1/T2), read as the page builder reads them."""
+    """Lots whose pages are issued: Tranches 1 and 2 of the 18.09 grouping, as the page builder reads them."""
     tr18 = {}
     with open(os.path.join(GAP, "intake_tranches_2026-09-18", "drive_folders_2026-09-18.tsv"), encoding="utf-8") as fh:
         for r in csv.DictReader(fh, delimiter="\t"):
@@ -47,19 +47,12 @@ def frozen_lots():
                 tr18[tail] = t
             tr18[f] = t
             tr18.setdefault(re.sub(r"_P\d{6}$", "", f).rstrip("_").replace("＊", ""), t)
-    scope = {}
-    for name in ("coq_reissue_scope_2026-09-15.csv", "coq_draft_scope_2026-09-10.csv"):
-        p = os.path.join(HERE, name)
-        if os.path.exists(p):
-            for r in csv.DictReader(open(p, encoding="utf-8")):
-                if r.get("p_lot"):
-                    scope.setdefault(r["p_lot"], r.get("tranche", ""))
 
     def frozen(c):
         for k in (c.get("pp"), c.get("cb"), (c.get("cb") or "").replace("＊", "")):
             if k and k in tr18:
                 return tr18[k] in ("T1", "T2")
-        return any(re.sub(r"\D", "", str(scope.get(k, ""))) in ("1", "2") for k in (c.get("pp"), c.get("cb")) if k)
+        return False
     return frozen
 
 
