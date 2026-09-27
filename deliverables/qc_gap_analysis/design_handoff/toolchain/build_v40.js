@@ -29,6 +29,25 @@ for (const [f, t] of [['coq_reissue_scope_2026-09-15.csv', null], ['coq_draft_sc
   for (const r of rows.slice(1)) if (r[iL]) tranche[r[iL]] = tranche[r[iL]] || r[iT];
 }
 
+// Tranches 1 and 2 are issued and with the customer (Head of QC, 26.09.2026): the tranche of
+// each lot as the 18.09.2026 grouping files it, read as tracker/audit_empty_results.py reads it.
+const TR18 = {};
+for (const r of CoQ.parseCSV(fs.readFileSync(path.join(GAP, 'intake_tranches_2026-09-18', 'drive_folders_2026-09-18.tsv'), 'utf8').replace(/\t/g, ',')).slice(1)) {
+  const [t, f] = r; if (!f) continue;
+  const tail = f.split('_').pop();
+  if (/^[PJ]\d{5,6}$/.test(tail)) TR18[tail] = t;
+  TR18[f] = t;
+  const head = f.replace(/_P\d{6}$/, '').replace(/_+$/, '').replace(/\uFF0A/g, '');
+  if (!(head in TR18)) TR18[head] = t;
+}
+// A lot built as Tranche 1 or 2 before the 18.09 regrouping (the six that left the tranches:
+// CLE072501, OPM092501, SJ092501, JD042601, CC042601, FB042601) keeps its pages as built too.
+function FROZEN_LOT(c) {
+  for (const k of [c.pp, c.cb, String(c.cb || '').replace(/\uFF0A/g, '')]) if (k && k in TR18) return /^T[12]$/.test(TR18[k]);
+  for (const k of [c.pp, c.cb]) if (k && /^[12]$/.test(String(tranche[k] || '').replace(/\D/g, ''))) return true;
+  return false;
+}
+
 // --- the owner's instruction of 16.09.2026: the Macedonian half of a conformity
 // result stacks beneath the English, at the size the template already sets for it
 // (.r-conform .mk — 6.8px, 79 % of the cell). The package's cell() drops the half
@@ -453,6 +472,15 @@ const S01_BAND_LAYER = '<style id="__owner-s01-band">\n' +
   // What is removed from the note is only the procedural sentence the owner struck on
   // 16.09.2026, which carried the only document code on the line.
   let htmlOut = html;
+  // Head of QC, 27.09.2026, on the footer's "MK GMP Certified Facility": "hell no". It came
+  // with the Claude Design package's base page; the 17.09.2026 ruling had already taken
+  // "MK GMP Certified" off the laboratory line. It leaves every certificate outside
+  // Tranches 1 and 2, which are issued and with the customer and are not touched.
+  const GMP_FOOT = '<div class="foot-right">MK GMP Certified Facility</div>';
+  if (!FROZEN_LOT(c)) {
+    if (htmlOut.split(GMP_FOOT).length !== 2) throw new Error('footer GMP line not found once: ' + c.regcode);
+    htmlOut = htmlOut.replace(GMP_FOOT, '<div class="foot-right"></div>');
+  }
   const OLD_NOTE = /<br>Parameter attribution to the issuing laboratory[^<]*<\/div>/;
   if (!OLD_NOTE.test(htmlOut)) throw new Error('Section 02 note sentence not found');
   htmlOut = htmlOut.replace(OLD_NOTE, '</div>');

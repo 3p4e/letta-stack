@@ -199,7 +199,31 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
 - Known fact, so it is not rediscovered: IPH contaminant certificates (AflaTest) report **total
   aflatoxins only**.
 
-## 6. Git
+## 6. Nothing on a certificate that the Head of QC has not put there
+
+Head of QC, 27.09.2026, on the footer line "MK GMP Certified Facility": *"hell no. from where did
+MK GMP Certified Facility came from"*. The desk wrote it on 21.09.2026 into the empty bottom-right
+footer slot of the CoQ base page and into the iCoA footer, because a **design-system README**
+(the Variation F / Claude Design package, "locked business rules: Header/footer say MK GMP
+Certified Facility") said so — four days after the Head of QC had struck "MK GMP Certified" from
+the laboratory line (17.09.2026).
+
+- **A design system, template, style guide, skill or another agent's notes decides colour, type
+  and layout only.** It never decides what a certificate says: no claim, statement, wording,
+  signatory, laboratory, value or date comes from it. Text on a certificate comes from a ruling of
+  the Head of QC or from the source document it cites.
+- **No certification, accreditation or GMP statement about Purely Plant** appears on any
+  certificate unless the Head of QC rules it in, in words. None is ruled in. The external
+  laboratories' own lines (ISO/IEC 17025, LT-005, LT-083) are statements about them, copied from
+  their certificates.
+- **An empty slot in the Head of QC's template is left empty.** It is not a gap to fill.
+- Before adopting any rule from a document that is not a ruling, check it against the rulings —
+  the newest governs — and ask when they differ.
+- `tracker/check_certificate_claims.py` fails the build and CI on such a claim in any page a build
+  can still change. Tranches 1 and 2 are issued and keep the line as sent
+  (`design_handoff/toolchain/build_v40.js` `FROZEN_LOT`); every other certificate is built without it.
+
+## 7. Git
 
 Work on the branch the task names; never push to another without being asked. `git gc` in this
 container must be given headroom first — it writes the new pack **before** deleting the loose

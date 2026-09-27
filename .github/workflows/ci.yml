@@ -403,3 +403,10 @@ jobs:
       - name: No certificate result is empty while a certificate reports it
         run: |
           python3 deliverables/qc_gap_analysis/tracker/audit_empty_results.py --tranche T3 --strict
+      # Head of QC, 27.09.2026: "hell no. from where did MK GMP Certified Facility came from".
+      # The desk had written a certification claim into the footer from a design-system
+      # README. No page a build can still change may state a certification the Head of QC
+      # has not ruled in.
+      - name: No certificate states an unauthorised certification
+        run: |
+          python3 deliverables/qc_gap_analysis/tracker/check_certificate_claims.py
