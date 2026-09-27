@@ -56,7 +56,7 @@ def house_css(paths):
 
     Head of QC, 27.09.2026: "The font is all wrong." The CoQ page loads its faces from Google
     Fonts by <link>; the printer blocks Google, so without this every CoQ printed in Liberation
-    Sans and DejaVu Sans Mono. The internal certificate carries its own @font-face and needs none.
+    Sans and DejaVu Sans Mono. The internal certificate carries its own @font-face (see house_stack).
     """
     css, _, _ = house_fonts.font_face_css(page_text(paths), FAMILIES, SUBSETS)
     if css.count('@font-face') < 3:
@@ -64,18 +64,42 @@ def house_css(paths):
     return css
 
 
+ORBITRON_STACK = (("font-family:'Orbitron',sans-serif", "font-family:'Orbitron','Montserrat',sans-serif"),
+                  ("font-family:'Orbitron',monospace", "font-family:'Orbitron','Montserrat',monospace"))
+
+
+def house_stack(page):
+    """The internal certificate with Montserrat behind Orbitron, for the letters Orbitron lacks.
+
+    Orbitron has no Cyrillic and no "№". On the Head of QC's iCoA page the Macedonian words of the
+    Orbitron labels ("Анализирал", "Изготвил и одобрил", "Аналитичар за КК", "Менаџер за КК") and the
+    "№" of "Production Batch №" therefore fell through to the browser's generic sans-serif — Liberation
+    Sans in print — while the CoQ sets its Macedonian in Montserrat. Latin text is unchanged: Orbitron
+    still comes first. Found in the review of 27.09.2026, after "The font is all wrong."
+    """
+    for a, b in ORBITRON_STACK:
+        page = page.replace(a, b)
+    rules = re.sub(r'@font-face\s*\{[^}]*\}', '', page)
+    left = [v for v in re.findall(r'font-family:\s*([^;}"]+)', rules)
+            if v.strip().strip('\'"').startswith('Orbitron') and 'Montserrat' not in v]
+    if left:
+        raise SystemExit('Orbitron without Montserrat behind it (%s) — the page changed; update ORBITRON_STACK'
+                         % ', '.join(sorted(set(left))))
+    return page
+
+
 SUBSTITUTE = ('Liberation', 'DejaVu', 'Arial', 'Helvetica', 'Times', 'Nimbus')
 
 
-WORD = re.compile(r'[A-Za-z0-9\u0400-\u04FF]')
+WORD = re.compile(r'[A-Za-z0-9\u0400-\u04FF\u2116]')
 
 
 def assert_house_fonts(pdf):
-    """Every letter and digit of a printed CoQ is set in a house face.
+    """Every letter and digit of a printed certificate — CoQ or iCoA — is set in a house face.
 
     Montserrat, Roboto Mono and Orbitron have no glyph for a handful of symbols the page uses
     (≤ ☒ ☐ ∑ Δ ⁹ ₁), and those fall back per glyph exactly as they do in the Head of QC's own
-    templates. A letter or a digit in a substitute face means the fonts were not inlined.
+    templates. A letter, a digit or "№" in a substitute face means a house face is missing.
     """
     import pymupdf
     d = pymupdf.open(pdf)
@@ -153,7 +177,7 @@ def fields(c, gaps, scope=('1', '2', '7')):
         'strain': val('strain', 'strain'),
         'pheno': pheno, 'split': split_of(spc.get('dominance')) if pheno else '',
         'pcode': val('pcode', 'product code', lambda v: v.replace(' : ', ':')),
-        'spec': val('spec', 'specification reference', lambda v: re.sub(r'_v\.\d+$', '_v.03', v)),
+        'spec': val('spec', 'specification reference'),
         'testdate': val('icoa_tested', 'test date'),
         'examined': str(c.get('icoa_tested') or '').strip() or '—',
         'production': pp if has_p else '—',
@@ -163,6 +187,29 @@ def fields(c, gaps, scope=('1', '2', '7')):
         'lod': next((re.sub(r'\s*\(.*$', '', str(r.get('res'))).strip().rstrip('%') + '%'
                      for r in c['rows'] if r['no'] == '8' and '8' in scope), ''),
     }
+
+
+COQ_HEAD = (('md', 'manufacture date'), ('pk', 'packaging date'), ('pcode', 'product code'),
+            ('spec', 'specification reference'))
+
+
+def coq_gaps(c, gaps):
+    """The CoQ's own header fields the register cannot fill — the page prints "—" for them."""
+    for key, what in COQ_HEAD:
+        if not str(c.get(key) or '').strip():
+            gaps.append((c['regcode'], c.get('icoa_code'), '%s (CoQ)' % what))
+
+
+def check_pair(f, coq_page):
+    """An internal certificate states what its CoQ states: the same product code and specification.
+
+    On 27.09.2026 every Tranche 3 iCoA printed its specification as "…_v.03" while its CoQ printed
+    "…_v.01" (the only issued version — Head of QC, 15.09.2026: "All of them are version one").
+    """
+    text = re.sub(r'<[^>]+>', ' ', coq_page)
+    for key in ('spec', 'pcode'):
+        if f[key] != '—' and f[key] not in text:
+            raise SystemExit('%s: its CoQ %s does not print %s %s' % (f['code'], f['coq'], key, f[key]))
 
 
 def name_of(f):
@@ -213,6 +260,7 @@ def main():
             dst = os.path.join(cdir, os.path.basename(src))
             shutil.copy2(src, dst)
             docs.append(('CoQ %s' % s, os.path.basename(src)[:-5], dst))
+            coq_gaps(c, gaps)
         for c in recs:
             scope, extra = scope_of(c)
             if not scope:                    # CNP tested 1, 2, 7 (and 8): no internal certificate
@@ -223,8 +271,9 @@ def main():
                 gaps.append((c['regcode'], c['icoa_code'], 'rows %s credited to the internal certificate, '
                              'which has no section for them' % ', '.join(extra)))
             f = fields(c, gaps, scope)
+            check_pair(f, open(coq_html[c['regcode']], encoding='utf-8').read())
             dst = os.path.join(idir, name_of(f))
-            open(dst, 'w', encoding='utf-8').write(own.build(f['scope'].split(','), f))
+            open(dst, 'w', encoding='utf-8').write(house_stack(own.build(f['scope'].split(','), f)))
             docs.append(('iCoA %s' % s, name_of(f)[:-5], dst))
 
     # print every page, keep it, and merge in section order with a bookmark per certificate
@@ -236,9 +285,8 @@ def main():
         srcs = [h for _, _, h in docs if os.path.dirname(h) == hdir]
         css = coq_css if os.sep + 'CoQ' + os.sep in hdir else ''
         pdf_of.update(zip(srcs, render(srcs, pdir, None, css)))  # one browser session per folder
-    for h, pdf in pdf_of.items():
-        if os.sep + 'CoQ' + os.sep in h:
-            assert_house_fonts(pdf)
+    for pdf in pdf_of.values():
+        assert_house_fonts(pdf)
     merged, toc, last = pymupdf.open(), [], None
     for sec, label, html in docs:
         d = pymupdf.open(pdf_of[html])

@@ -17,6 +17,10 @@ day, packaging = the first packaging day.
   (ingestion/ecoa_runner/identity_decisions.tsv, `batch_alias`, OI-28): GG012601* = GG012601,
   JD012601* = JD012601, SCR012601* = SCR012601, FB012602* = FB012602.
 * Only an empty field is filled; a date already on the record is never overwritten.
+* An initial internal certificate is tested on the packaging date (CLAUDE.md §7, "Dates"), so an
+  initial record whose iCoA test date is empty takes its packaging date. Found in the review of
+  27.09.2026: `-018` had its packaging date (01.09.2025) filled from the workbook and still printed "—"
+  for the iCoA test date.
 * Tranches 1 and 2 are issued and not touched; withdrawn records are skipped.
 * A record the workbook does not cover is listed, never guessed.
 """
@@ -42,6 +46,14 @@ def aliases():
     return out
 
 
+def tested(c, filled):
+    """An initial iCoA with no test date takes the packaging date — it is tested on that day."""
+    if 'retest' in c['t'] or c.get('icoa_tested') or not FULL.match(str(c.get('pk') or '')):
+        return
+    c['icoa_tested'] = c['pk']
+    filled.append((c['regcode'], c.get('cb') or '', 'icoa_tested', c['pk'], 'its packaging date'))
+
+
 def main(argv):
     ap = argparse.ArgumentParser()
     ap.add_argument('--apply', action='store_true')
@@ -65,11 +77,12 @@ def main(argv):
         if r['p_batch']:
             byp.setdefault(r['p_batch'], []).append(r)
     star = aliases()
-    filled, missing, clash = [], [], []
+    filled, missing, clash, blank = [], [], [], []
     for c in reg['coqs']:
         if tranche(c) in A.FROZEN or c.get('withdrawn'):
             continue
         if c.get('md') and c.get('pk'):
+            tested(c, filled)
             continue
         cb, pp = str(c.get('cb') or ''), str(c.get('pp') or '')
         cand = byb.get(cb, []) + byb.get(star.get(cb, '\0'), []) + byp.get(pp, [])
@@ -79,16 +92,23 @@ def main(argv):
             continue
         if not uniq:
             missing.append((c['regcode'], pp or '—', cb))
+            tested(c, filled)
             continue
         r = next(iter(uniq.values()))
         for f, col in (('md', 'harvest_from'), ('pk', 'packaging_from')):
             v = r[col].strip()
+            if not c.get(f) and not FULL.match(v):
+                blank.append((c['regcode'], cb, f, v or 'empty', r['batch']))
             if not c.get(f) and FULL.match(v):
                 c[f] = v
-                filled.append((c['regcode'], cb, f, v, r['batch']))
-    print('fields filled from the workbook: %d (on %d certificates)' % (len(filled), len({x[0] for x in filled})))
+                filled.append((c['regcode'], cb, f, v, 'workbook row ' + r['batch']))
+        tested(c, filled)
+    print('fields filled: %d (on %d certificates)' % (len(filled), len({x[0] for x in filled})))
     for x in filled:
-        print('   %s  %-13s %s = %s   (workbook row %s)' % x)
+        print('   %s  %-13s %s = %s   (%s)' % x)
+    print('in the workbook without a date — still "—": %d' % len(blank))
+    for x in blank:
+        print('   %s  %-13s %s: the workbook gives "%s" (row %s)' % x)
     print('not in the workbook — still "—": %d' % len(missing))
     for x in missing:
         print('   %s  %s  %s' % x)

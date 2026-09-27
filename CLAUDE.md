@@ -75,9 +75,11 @@ folders without re-uploading it, which is how a superseded document goes to `OLD
 **Tranches 1 and 2 are not touched.** Head of QC, 26.09.2026: *"Don't touch T1 and T2 — they are
 already issued and sent to the customer."* For every T1 and T2 lot the release testing was **CNP**
 (potency) and **IPH** (mycotoxins) and the retest testing **Farmahem**, whether or not the release
-certificate is in our files. No apply script writes a T1 or T2 record (they refuse, `A.FROZEN`), and
-the audit runs on Tranche 3. On 26.09 their records were restored to the state of `f161da1` after
-the desk had changed them twice.
+certificate is in our files. The 26.09 apply scripts refuse a T1 or T2 record (`A.FROZEN`); 28 older
+ones (`apply_icoa_citations.py`, `apply_lab_attribution.py` …) do not, so
+`tracker/check_frozen_records.py` holds every T1/T2 record and page against the restored state
+(`FROZEN_T1_T2_2026-09-26.json`) and CI fails on any change. The audit runs on Tranche 3. On 26.09
+their records were restored to the state of `f161da1` after the desk had changed them twice.
 
 **The latest ruling governs.** Head of QC, 26.09.2026: *"how many rulings can I give you since the
 10th of September and you're still invoking some old rule."* Decide a case by the newest ruling that
@@ -268,17 +270,32 @@ Standing rules the corrections produced (message numbers are in the record):
   16–17.09 (`design_handoff/base/`); the iCoA is his own format of 24.09 (`iCoA-PP_26-050 … Retest_1`,
   and `-110 … LOD` where loss on drying is in-house). Both are set in **Montserrat, Roboto Mono and
   Orbitron**. The CoQ page loads them from Google, which the printer blocks, so every CoQ print inlines
-  them first (`print_v40.py`; `house_css` in the bundle scripts). A CoQ PDF carrying Liberation or DejaVu
-  is a defect and the bundle refuses it (`assert_house_fonts`). Check a printed page's fonts with
-  `pdffonts` before sending it.
+  them first (`print_v40.py`; `house_css` in the bundle scripts). Orbitron has no Cyrillic and no "№",
+  so on the iCoA the Macedonian words of its Orbitron labels fell to Liberation Sans until the review of
+  27.09.2026; the bundles now put Montserrat behind Orbitron (`house_stack`), as the CoQ sets its
+  Macedonian. A letter, digit or "№" in Liberation or DejaVu on **either** certificate is a defect and
+  the bundle refuses it (`assert_house_fonts`); only symbols the house faces lack (≤ ☒ ☐ ∑ Δ) fall back.
+  Check a printed page's fonts with `pdffonts` before sending it.
+- **An iCoA states what its CoQ states.** Same product code, same specification reference — the
+  register's, `…_v.01`. Until 27.09.2026 every T3 iCoA printed `…_v.03` (a rewrite copied from the 24.09
+  owner-format builder) under a CoQ printing `…_v.01`; `check_pair` in the bundle now refuses that. The
+  issued T1/T2 iCoAs of 24.09 print `_v.03` and are not touched.
 - **Dates on every certificate not yet issued** come from the owner's workbook
   (`tracker/apply_batch_dates_2026-09-27.py`: exact batch or P lot, recorded star aliases, empty fields
-  only). A date field the register cannot fill prints "—" **and** is listed in `REGISTER_GAPS.tsv`.
+  only; an initial iCoA with no test date takes the packaging date). A date field the register cannot
+  fill prints "—" **and** is listed in `REGISTER_GAPS.tsv` — the CoQ's own header fields (manufacture,
+  packaging, product code, specification) as well as the iCoA's.
 - **One A4 page.** Nothing crosses the margins or runs into header or footer; look at the rendered page
   after every layout change.
 - **Numbering.** Simple and chronological, no empty code rows; a code on a sent scan never moves;
-  Tranche 3 takes the first free numbers. The 27.09.2026 order check
-  (`tracker/ISSUANCE_ORDER_CHECK_2026-09-27.tsv`) is with the Head of QC — renumber nothing without him.
+  Tranche 3 takes the first free numbers. The order check (`tracker/issuance_order_check.py` →
+  `tracker/ISSUANCE_ORDER_CHECK_2026-09-27.tsv`; 167 live numbers, 11 out of date order) is with the
+  Head of QC — renumber nothing without him. CI fails when the list no longer matches the register.
+- **One source for every code.** The register (`coq_artifact_data.json`), which the 46 approved scans
+  confirm, numbers the CoQ and its iCoA. `icoa_register.py` takes its codes from it (`register_codes`)
+  since 27.09.2026 — before that it kept the 10.09 issue-order numbering, disagreed with 156 of 167
+  live lots, and the master workbook and CI's workbook check, built on it, agreed with each other and
+  not with the certificates.
 - **Specifications are all v.01**; a strain's grade numerals are sequential by creation and say nothing
   about higher or lower potency.
 - **Dates.** Packaging and manufacturing dates come from the master workbook (`batch_dates_2026-09-10.csv`);

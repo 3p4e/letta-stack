@@ -74,6 +74,7 @@ def main():
             dst = os.path.join(cdir, os.path.basename(src))
             shutil.copy2(src, dst)
             docs.append(('CoQ %s' % s, os.path.basename(src)[:-5], dst))
+            T3.coq_gaps(c, gaps)
         for c in rs:
             scope, extra = T3.scope_of(c)
             if not scope:
@@ -84,8 +85,9 @@ def main():
                 gaps.append((c['regcode'], c['icoa_code'], 'rows %s credited to the internal certificate, '
                              'which has no section for them' % ', '.join(extra)))
             f = T3.fields(c, gaps, scope)
+            T3.check_pair(f, open(coq_html[c['regcode']], encoding='utf-8').read())
             dst = os.path.join(idir, T3.name_of(f))
-            open(dst, 'w', encoding='utf-8').write(T3.own.build(f['scope'].split(','), f))
+            open(dst, 'w', encoding='utf-8').write(T3.house_stack(T3.own.build(f['scope'].split(','), f)))
             docs.append(('iCoA %s' % s, T3.name_of(f)[:-5], dst))
 
     pdf_of = {}
@@ -96,9 +98,8 @@ def main():
         srcs = [h for _, _, h in docs if os.path.dirname(h) == hdir]
         css = coq_css if os.sep + 'CoQ' + os.sep in hdir else ''
         pdf_of.update(zip(srcs, T3.render(srcs, pdir, None, css)))
-    for h, pdf in pdf_of.items():
-        if os.sep + 'CoQ' + os.sep in h:
-            T3.assert_house_fonts(pdf)
+    for pdf in pdf_of.values():
+        T3.assert_house_fonts(pdf)
     for pdf in pdf_of.values():
         d = pymupdf.open(pdf)
         d.subset_fonts()

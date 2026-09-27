@@ -410,3 +410,16 @@ jobs:
       - name: No certificate states an unauthorised certification
         run: |
           python3 deliverables/qc_gap_analysis/tracker/check_certificate_claims.py
+      # Head of QC, 26.09.2026: "Don't touch T1 and T2 — they are already issued and sent to
+      # the customer." The 26.09 apply scripts refuse them; 28 older ones do not. So every
+      # Tranche 1 and 2 record and page is held against the snapshot of the restored state.
+      - name: Tranches 1 and 2 are unchanged
+        run: |
+          python3 deliverables/qc_gap_analysis/tracker/check_frozen_records.py
+      # Head of QC, 27.09.2026: certificates are issued chronologically. The list of numbers
+      # out of date order is with him; it is regenerated from the register, so it cannot go
+      # stale behind a re-dating or a withdrawal.
+      - name: The issuance-order list is current
+        run: |
+          cd deliverables/qc_gap_analysis
+          python3 tracker/issuance_order_check.py --stdout | diff - "$(ls tracker/ISSUANCE_ORDER_CHECK_*.tsv | sort | tail -1)"
