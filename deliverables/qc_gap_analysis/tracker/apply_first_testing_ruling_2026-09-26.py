@@ -80,6 +80,7 @@ EXTERNAL_K = {'P050202': {'doc': 'NGP/QCG/SOP-024 F3', 'dd': '28.11.2025', 'lab'
                                         'Pharma NGP/QCG/SOP-024 F3, 28.11.2025) is held for review: its two reads '
                                         'disagree. ППК26036, ППК26037, ППК26057 and ППК26058 are stability time '
                                         'points (months 3 and 6), not release results'}}}
+DATES_FOR = ('BSS1024_01/2', 'GRC102501/1', 'CC012601/1')
 EXTERNAL_ST = ('covered — %s is the certificate that tested the cannabinoids at release; identification C cites '
                'it with the assay (owner\'s ruling of 02.09.2026; ' + RULING + ')')
 WITHDRAWN = ('no reissuance — the Farmahem campaign was this lot\'s first testing, so it is the release testing '
@@ -136,13 +137,25 @@ def main(argv):
     # batch on its internal certificate and its P number as the processing batch. The cultivation batch
     # comes from the owner's analysis workbook ("Batch Dates", batch_dates_2026-09-10.csv). P060332 is
     # CC012601/1 — not CC012603, which is P060372 (ruling 2: separate lots).
-    cult = {r['p_batch']: r['batch'] for r in csv.DictReader(open(os.path.join(GAP, 'batch_dates_2026-09-10.csv'),
-                                                                   encoding='utf-8'))}
+    wb = list(csv.DictReader(open(os.path.join(GAP, 'batch_dates_2026-09-10.csv'), encoding='utf-8')))
+    cult = {r['p_batch']: r['batch'] for r in wb}
     for c in recs:
         pp, cb = str(c.get('pp') or ''), str(c.get('cb') or '')
         if not pp and re.match(r'^[PJ]\d{5,6}$', cb) and cult.get(cb):
             c['pp'], c['cb'] = cb, cult[cb]
             log['cultivation batch from the owner\'s workbook'].append((c['regcode'], cb, cult[cb]))
+    # Manufacture and packaging dates from the same sheet, as the register carries them for the other
+    # lots: the first harvest day and the first packaging day (Head of QC, 27.09.2026, for these three
+    # lots). A date the sheet does not give stays "—" — never a sister sub-lot's (ruling 2).
+    dated = {r['batch']: r for r in wb if r['batch'] in DATES_FOR}
+    for c in recs:
+        r = dated.get(str(c.get('cb') or ''))
+        for f, col in (('md', 'harvest_from'), ('pk', 'packaging_from')) if r else ():
+            v = r[col] if re.match(r'^\d\d\.\d\d\.\d{4}$', r[col]) else ''
+            if v and c.get(f) != v:
+                log['%s from the owner\'s workbook' % ('manufacture date' if f == 'md' else 'packaging date')].append(
+                    (c['regcode'], c['cb'], c.get(f) or '—', v))
+                c[f] = v
     ini = {lot(c): c for c in recs if 'retest' not in c['t']}
     ret = {lot(c): c for c in recs if 'retest' in c['t']}
     cnp = cnp_release()
