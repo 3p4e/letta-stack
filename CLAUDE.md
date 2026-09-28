@@ -269,7 +269,7 @@ Standing rules the corrections produced (message numbers are in the record):
   his `FIN_SP-COA-COQ/templates/coq/Certificate_of_Quality_CoQ.html` with the adjustments he asked for on
   16–17.09 (`design_handoff/base/`); the iCoA is his own format of 24.09 (`iCoA-PP_26-050 … Retest_1`,
   and `-110 … LOD` where loss on drying is in-house). Both are set in **Montserrat, Roboto Mono and
-  Orbitron**. The CoQ page loads them from Google, which the printer blocks, so every CoQ print inlines
+  Orbitron**, plus **Roboto Condensed** for the document codes of the CoQ's section 03 (28.09.2026). The CoQ page loads them from Google, which the printer blocks, so every CoQ print inlines
   them first (`print_v40.py`; `house_css` in the bundle scripts). Orbitron has no Cyrillic and no "№",
   so on the iCoA the Macedonian words of its Orbitron labels fell to Liberation Sans until the review of
   27.09.2026; the bundles now put Montserrat behind Orbitron (`house_stack`), as the CoQ sets its
@@ -288,9 +288,14 @@ Standing rules the corrections produced (message numbers are in the record):
   fill prints "—" **and** is listed in `REGISTER_GAPS.tsv` — the CoQ's own header fields (manufacture,
   packaging, product code, specification) as well as the iCoA's.
 - **One A4 page.** Nothing crosses the margins or runs into header or footer; look at the rendered page
-  after every layout change. Section 03 of the CoQ: each laboratory on **two rows, inline** — English name and
-  accreditation; Macedonian name, LT code and address (Head of QC, 28.09.2026). The bundles refuse a
-  CoQ whose laboratory entry runs to a third row or whose page passes 1123 px (`layout_probe`).
+  after every layout change. Section 03 of the CoQ (Head of QC, 28.09.2026), on every certificate not yet issued
+  (`build_v40.js`, `labref-grid`): each laboratory on **two rows, inline** — English name and
+  accreditation; Macedonian name, LT code and address; **"UKIM FF"**, not the full name; **fixed column
+  widths** (codes 190 px, parameters 84 px), the same on every certificate, everything **left-aligned**;
+  document codes in **Roboto Condensed** (the narrow face he asked for, inlined at print like the house
+  faces); document codes and parameter numbers **always on a two-row grid filled column by column** —
+  one item in row 1; two, one per row; a third back in row 1, and so on. The bundles refuse a CoQ whose
+  laboratory entry runs to a third row or whose page passes 1123 px (`layout_probe`).
 - **Numbering.** Simple and chronological, no empty code rows; a code on a sent scan never moves;
   Tranche 3 takes the first free numbers. The order check (`tracker/issuance_order_check.py` →
   `tracker/ISSUANCE_ORDER_CHECK_2026-09-27.tsv`; 167 live numbers, 11 out of date order) is with the

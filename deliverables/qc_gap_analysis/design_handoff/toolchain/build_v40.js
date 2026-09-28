@@ -480,22 +480,56 @@ const S01_BAND_LAYER = '<style id="__owner-s01-band">\n' +
   if (!FROZEN_LOT(c)) {
     if (htmlOut.split(GMP_FOOT).length !== 2) throw new Error('footer GMP line not found once: ' + c.regcode);
     htmlOut = htmlOut.replace(GMP_FOOT, '<div class="foot-right"></div>');
-    // Head of QC, 28.09.2026: "The laboratory accreditation references ... make them in two rows
-    // and inline; they're going into three rows and it's pushing the page down." Section 03's
-    // second row (the Macedonian name, the LT accreditation and the address) wrapped to a third
-    // on 74 of 75 unissued certificates and pushed 24 of them past A4. The row is held to one
-    // line, set 0.3px smaller, and the parameter column gives the laboratory column the width
-    // Farmahem's address needs ("1, 2, 3, 4, 5, 6, 7, 8" on -075/-079/-080 still fits). The rules
-    // go last, after the desk layers, and outrank the layers' white-space:normal and column widths.
-    const LABREF_TWO_ROWS = '<style id="labref-two-rows">'
-      + 'html body div.page div.tbl-wrap table.labref tbody tr td .lr-lab .mk,'
-      + 'html body div.page div.tbl-wrap table.labref tbody tr td .lr-lab small'
-      + '{white-space:nowrap !important;font-size:5.6px !important}'
-      + 'html body div.page div.tbl-wrap table.labref tbody tr td .lr-lab .mk .lr-ac{font-size:5.6px !important}'
-      + 'html body div.page div.tbl-wrap table.labref colgroup col:nth-child(3):nth-child(3){width:142px !important}'
+    // Section 03, the laboratory block — Head of QC, 28.09.2026:
+    //  * "make them in two rows and inline; they're going into three rows and it's pushing the
+    //    page down" — each laboratory on two lines: English name and accreditation; Macedonian
+    //    name, LT code and address, held to one line;
+    //  * "UKIM FF instead of the full name";
+    //  * "arrange the vertical borders ... fixed ... not movable", "everything aligned to the
+    //    left" — fixed column widths, the same on every certificate, all left-aligned;
+    //  * "for the document code use some narrow font" — Roboto Condensed (inlined at print by
+    //    house_fonts, like the other house faces);
+    //  * "always put the parameter numbers in two rows and always put the certificates' document
+    //    codes in two rows ... one reference in the first row, two: one in the first, one in the
+    //    second, a third in the first row, and so on" — a two-row grid filled column by column.
+    // It went to 74 of 75 unissued certificates three rows deep and pushed 24 past A4. The rules go
+    // last, after the desk layers, and outrank their white-space, alignment and column widths.
+    const L0 = htmlOut.indexOf('<table class="labref">');
+    const L1 = htmlOut.indexOf('</table>', L0);
+    if (L0 < 0 || L1 < 0) throw new Error('no laboratory table: ' + c.regcode);
+    let lab = htmlOut.slice(L0, L1);
+    lab = lab.split('UKIM Faculty of Pharmacy — Center for Natural Products').join('UKIM FF — Center for Natural Products');
+    lab = lab.replace(/<td class="lr-mono">((?:<span class="cert">[\s\S]*?<\/span>\s*)+)<\/td>/g,
+      (m, certs) => '<td class="lr-mono"><span class="g2">' + certs + '</span></td>');
+    lab = lab.replace(/<td class="lr-mono pcell">([^<]*)<\/td>/g, (m, t) => {
+      const items = t.split(/\s*,\s*/).map(s => s.trim()).filter(Boolean);
+      return '<td class="lr-mono pcell"><span class="g2">' + items.map(n => '<span class="pn">' + n + '</span>').join('') + '</span></td>';
+    });
+    if (/<td class="lr-mono">(?!<span class="g2">)/.test(lab) || /<td class="lr-mono pcell">(?!<span class="g2">)/.test(lab))
+      throw new Error('a laboratory-block cell was not put on the two-row grid: ' + c.regcode);
+    htmlOut = htmlOut.slice(0, L0) + lab + htmlOut.slice(L1);
+    const LB = 'html body div.page div.tbl-wrap table.labref';
+    const LABREF_GRID = '<style id="labref-grid">'
+      + "@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');"
+      + LB + ' colgroup col:nth-child(2):nth-child(2){width:190px !important}'
+      + LB + ' colgroup col:nth-child(3):nth-child(3){width:84px !important}'
+      + LB + ' thead tr th.c.c.c,' + LB + ' thead tr th:nth-child(n):nth-child(n),'
+      + LB + ' tbody tr td.lr-mono.lr-mono.lr-mono,' + LB + ' tbody tr td.lr-mono.pcell.pcell,' + LB + ' tbody tr td:nth-child(n):nth-child(n)'
+      + '{text-align:left !important;vertical-align:middle !important;justify-content:flex-start !important}'
+      + LB + ' tbody tr td:nth-child(n):nth-child(n){padding-top:1px !important;padding-bottom:1px !important}'
+      + LB + ' tbody tr td .lr-lab,' + LB + ' tbody tr td .lr-lab .mk,' + LB + ' tbody tr td .lr-lab small{white-space:nowrap !important}'
+      + LB + ' tbody tr td .g2{display:inline-grid !important;grid-template-rows:repeat(2,8px);grid-auto-flow:column;'
+      + 'grid-auto-columns:max-content;column-gap:9px;justify-items:start;align-items:center;vertical-align:middle}'
+      + LB + ' tbody tr td .g2 .cert{display:block !important;margin:0 !important;text-align:left !important;white-space:nowrap !important;'
+      + "font-family:'Roboto Condensed',sans-serif !important;font-size:7.4px !important;line-height:8px !important}"
+      + LB + " tbody tr td .g2 .cert b{font-family:'Roboto Condensed',sans-serif !important;font-weight:600 !important}"
+      + LB + " tbody tr td .g2 .cert .cd{font-family:'Roboto Condensed',sans-serif !important;font-size:6.4px !important}"
+      + LB + ' tbody tr td.lr-mono.lr-mono:not(.pcell) .g2 .cert + .cert::before{content:none !important;margin:0 !important;display:none !important}'
+      + LB + ' tbody tr td.lr-mono.lr-mono:not(.pcell) .g2 .cert{margin:0 !important;padding:0 !important}'
+      + LB + " tbody tr td .g2 .pn{font-family:'Roboto Mono',monospace;font-size:7.4px;font-weight:600;line-height:8px}"
       + '</style>';
     if (htmlOut.split('</body>').length !== 2) throw new Error('no single </body>: ' + c.regcode);
-    htmlOut = htmlOut.replace('</body>', LABREF_TWO_ROWS + '</body>');
+    htmlOut = htmlOut.replace('</body>', LABREF_GRID + '</body>');
   }
   const OLD_NOTE = /<br>Parameter attribution to the issuing laboratory[^<]*<\/div>/;
   if (!OLD_NOTE.test(htmlOut)) throw new Error('Section 02 note sentence not found');
