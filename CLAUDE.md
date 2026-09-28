@@ -152,7 +152,13 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
      the initial. B1 is never derived from a total.
   4. **What no certificate covers prints `n/t`** and goes on `tracker/LAB_REQUESTS_<tranche>_*.tsv`.
      A bare `[ — ]` on a result is a defect. Release results that disagree print `[pending]` until
-     the Head of QC chooses — a later value must never paper over them.
+     the Head of QC chooses — a later value must never paper over them. A **retest** must not print a value its
+     initial holds pending, nor read a full-panel result around a missing page: on 28.09.2026
+     `-162`'s pesticides printed "ND — all 26 residues" from IPH `1065/2026` while page 3 (three of the
+     residues and the pesticide conformity statement) is missing and its initial `-052` held them
+     pending — now `[pending]` on both. And a retest's mycotoxins are the **Farmahem retest panel**,
+     not "carried from the initial" (23 rows had the value from Farmahem but a stale carried status).
+     `tracker/check_carry_provenance.py` (CI) fails on either.
   5. **Heavy metals come from IPH**, on the initial and the retest CoQ alike (the retest carries the
      initial's). Where IPH has no certificate for the lot, the cell is `n/t` and IPH is asked.
   6. **Identification A, identification B and foreign matter cite the internal certificate**, unless a

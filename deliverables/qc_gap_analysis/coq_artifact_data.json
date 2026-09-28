@@ -51447,7 +51447,7 @@
      "dd": "16.09.2026",
      "lab": "Farmahem",
      "fam": "IPH mycotoxins, metals, pesticides",
-     "st": "carried from the initial testing (the batch's initial CoQ (number assigned on issue)) — covered",
+     "st": "covered — measured in the retest campaign",
      "route": "",
      "also": ""
     },
@@ -51771,7 +51771,7 @@
      "dd": "16.09.2026",
      "lab": "Farmahem",
      "fam": "IPH mycotoxins, metals, pesticides",
-     "st": "carried from the initial testing (the batch's initial CoQ (number assigned on issue)) — covered",
+     "st": "covered — measured in the retest campaign",
      "route": "",
      "also": ""
     },
@@ -52095,7 +52095,7 @@
      "dd": "16.09.2026",
      "lab": "Farmahem",
      "fam": "IPH mycotoxins, metals, pesticides",
-     "st": "carried from the initial testing (the batch's initial CoQ (number assigned on issue)) — covered",
+     "st": "covered — measured in the retest campaign",
      "route": "",
      "also": ""
     },
@@ -52419,7 +52419,7 @@
      "dd": "16.09.2026",
      "lab": "Farmahem",
      "fam": "IPH mycotoxins, metals, pesticides",
-     "st": "carried from the initial testing (the batch's initial CoQ (number assigned on issue)) — covered",
+     "st": "covered — measured in the retest campaign",
      "route": "",
      "also": ""
     },
@@ -52743,7 +52743,7 @@
      "dd": "16.09.2026",
      "lab": "Farmahem",
      "fam": "IPH mycotoxins, metals, pesticides",
-     "st": "carried from the initial testing (the batch's initial CoQ (number assigned on issue)) — covered",
+     "st": "covered — measured in the retest campaign",
      "route": "",
      "also": ""
     },
@@ -53067,7 +53067,7 @@
      "dd": "16.09.2026",
      "lab": "Farmahem",
      "fam": "IPH mycotoxins, metals, pesticides",
-     "st": "carried from the initial testing (the batch's initial CoQ (number assigned on issue)) — covered",
+     "st": "covered — measured in the retest campaign",
      "route": "",
      "also": ""
     },
@@ -53391,7 +53391,7 @@
      "dd": "16.09.2026",
      "lab": "Farmahem",
      "fam": "IPH mycotoxins, metals, pesticides",
-     "st": "carried from the initial testing (the batch's initial CoQ (number assigned on issue)) — covered",
+     "st": "covered — measured in the retest campaign",
      "route": "",
      "also": ""
     },
@@ -53715,7 +53715,7 @@
      "dd": "16.09.2026",
      "lab": "Farmahem",
      "fam": "IPH mycotoxins, metals, pesticides",
-     "st": "carried from the initial testing (the batch's initial CoQ (number assigned on issue)) — covered",
+     "st": "covered — measured in the retest campaign",
      "route": "",
      "also": ""
     },
@@ -54039,7 +54039,7 @@
      "dd": "16.09.2026",
      "lab": "Farmahem",
      "fam": "IPH mycotoxins, metals, pesticides",
-     "st": "carried from the initial testing (the batch's initial CoQ (number assigned on issue)) — covered",
+     "st": "covered — measured in the retest campaign",
      "route": "",
      "also": ""
     },
@@ -54363,7 +54363,7 @@
      "dd": "16.09.2026",
      "lab": "Farmahem",
      "fam": "IPH mycotoxins, metals, pesticides",
-     "st": "carried from the initial testing (the batch's initial CoQ (number assigned on issue)) — covered",
+     "st": "covered — measured in the retest campaign",
      "route": "",
      "also": ""
     },
@@ -54686,7 +54686,7 @@
      "dd": "16.09.2026",
      "lab": "Farmahem",
      "fam": "IPH mycotoxins, metals, pesticides",
-     "st": "carried from the initial testing (the batch's initial CoQ (number assigned on issue)) — covered",
+     "st": "covered — measured in the retest campaign",
      "route": "",
      "also": ""
     },
@@ -55333,7 +55333,7 @@
      "dd": "16.09.2026",
      "lab": "Farmahem",
      "fam": "IPH mycotoxins, metals, pesticides",
-     "st": "carried from the initial testing (the batch's initial CoQ (number assigned on issue)) — covered",
+     "st": "covered — measured in the retest campaign",
      "route": "",
      "also": ""
     },
@@ -55723,12 +55723,12 @@
     {
      "no": "12",
      "crit": "≤ LOQ as per Ph. Eur. 2.8.13 · ≤ LOQ as per CUMCS Equivalency",
-     "res": "ND mg/kg — all 26 residues",
+     "res": "—",
      "doc": "1065/2026",
      "dd": "11.03.2026",
      "lab": "IPH — Institute of Public Health",
      "fam": "IPH mycotoxins, metals, pesticides",
-     "st": "carried from the initial testing (CoQ-PP_26-052) — covered",
+     "st": "awaiting the complete scan of IPH 1065/2026 — every copy holds pages 1, 2 and 4 of 4; page 3 (heavy metals, total aflatoxins, the last three pesticides) is missing (Head of QC, 26.09.2026)",
      "route": "",
      "also": ""
     }
@@ -56949,7 +56949,7 @@
      "dd": "16.09.2026",
      "lab": "Farmahem",
      "fam": "IPH mycotoxins, metals, pesticides",
-     "st": "carried from the initial testing (the batch's initial CoQ (number assigned on issue)) — covered",
+     "st": "covered — measured in the retest campaign",
      "route": "",
      "also": "COMPLIES (numeric value not present in captured source excerpt for report 1625/2026 — see Bundle cross-reference) (1625/2026)"
     },
@@ -57260,7 +57260,7 @@
      "dd": "16.09.2026",
      "lab": "Farmahem",
      "fam": "Farmahem — mycotoxins",
-     "st": "carried from the initial testing (CoQ-PP_26-026) — covered",
+     "st": "covered — measured in the retest campaign",
      "route": "",
      "also": ""
     },
@@ -57284,7 +57284,7 @@
      "dd": "16.09.2026",
      "lab": "Farmahem",
      "fam": "Farmahem — mycotoxins",
-     "st": "carried from the initial testing (CoQ-PP_26-026) — covered",
+     "st": "covered — measured in the retest campaign",
      "route": "",
      "also": ""
     },
@@ -57596,7 +57596,7 @@
      "dd": "16.09.2026",
      "lab": "Farmahem",
      "fam": "IPH mycotoxins, metals, pesticides",
-     "st": "carried from the initial testing (the batch's initial CoQ (number assigned on issue)) — covered",
+     "st": "covered — measured in the retest campaign",
      "route": "",
      "also": ""
     },
@@ -57920,7 +57920,7 @@
      "dd": "16.09.2026",
      "lab": "Farmahem",
      "fam": "IPH mycotoxins, metals, pesticides",
-     "st": "carried from the initial testing (the batch's initial CoQ (number assigned on issue)) — covered",
+     "st": "covered — measured in the retest campaign",
      "route": "",
      "also": ""
     },
@@ -58244,7 +58244,7 @@
      "dd": "16.09.2026",
      "lab": "Farmahem",
      "fam": "IPH mycotoxins, metals, pesticides",
-     "st": "carried from the initial testing (the batch's initial CoQ (number assigned on issue)) — covered",
+     "st": "covered — measured in the retest campaign",
      "route": "",
      "also": ""
     },
@@ -58568,7 +58568,7 @@
      "dd": "16.09.2026",
      "lab": "Farmahem",
      "fam": "IPH mycotoxins, metals, pesticides",
-     "st": "carried from the initial testing (the batch's initial CoQ (number assigned on issue)) — covered",
+     "st": "covered — measured in the retest campaign",
      "route": "",
      "also": ""
     },
@@ -58892,7 +58892,7 @@
      "dd": "16.09.2026",
      "lab": "Farmahem",
      "fam": "IPH mycotoxins, metals, pesticides",
-     "st": "carried from the initial testing (the batch's initial CoQ (number assigned on issue)) — covered",
+     "st": "covered — measured in the retest campaign",
      "route": "",
      "also": ""
     },

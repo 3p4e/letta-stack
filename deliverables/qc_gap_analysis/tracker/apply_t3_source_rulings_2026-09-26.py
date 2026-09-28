@@ -128,6 +128,20 @@ def main(argv):
             r.update({'res': '—', 'doc': '—', 'dd': ''})
             r['st'] = PAGE3 if is_sj(c) else NT_REQUEST
 
+    # 1b · a retest's mycotoxins are the Farmahem retest panel, not carried from the initial (ruling 3
+    # of 26.09.2026). The retest CoQ is built by carrying every parameter from the initial and then
+    # overwriting the retested ones; on 23 rows the value and document were overwritten with the
+    # Farmahem 227-М certificate but the status string stayed "carried from the initial", which mis-tags
+    # them "(initial)" on the References sheet. Where a retest mycotoxin row rests on a Farmahem panel,
+    # its provenance is the retest campaign (found 28.09.2026).
+    ret = [c for c in reg['coqs'] if tranche(c) == a.tranche and 'retest' in c['t'] and not c.get('withdrawn')]
+    for c in ret:
+        for r in c['rows']:
+            if (r['no'] in ('10.1', '10.2', '10.3') and FARMAHEM_M.match(str(r.get('doc') or ''))
+                    and str(r.get('st') or '').startswith('carried from the initial')):
+                r['st'] = CAMPAIGN_NOTE
+                log['retest mycotoxin provenance corrected to the Farmahem campaign'].append((c['regcode'], r['no'], r['doc']))
+
     # 2 · SJ102501: the IPH certificate exists, its page 3 does not
     for c in t3:
         if not is_sj(c):
@@ -137,7 +151,14 @@ def main(argv):
                 if r.get('res') in ('—', '') or str(r.get('st', '')).startswith('not tested'):
                     r.update({'res': '—', 'doc': '—', 'st': PAGE3})
                     log['SJ102501 awaiting page 3 of 1065/2026'].append((c['regcode'], r['no']))
-            if r['no'] == '12' and '1065/2026' in str(r.get('doc')) and 'retest' not in c['t']:
+            # Pesticides — the initial AND the retest. Page 3 of 1065/2026 carries three of the
+            # residues (Dieldrin, Heptachlor, Endosulfan sulfate) and the pesticide conformity
+            # statement (Ph. Eur. 2.8.13), so the panel is not fully read on either round. Farmahem
+            # re-tested only the mycotoxins, so the retest still rests on 1065/2026 and stays pending
+            # too — a full-panel ND must not be printed around the missing page (Head of QC, ruling 8
+            # of 26.09.2026; the retest exclusion, which had let CoQ-PP_26-162 print "ND — all 26
+            # residues", was removed on 28.09.2026).
+            if r['no'] == '12' and '1065/2026' in str(r.get('doc')):
                 r.update({'res': '—', 'st': PAGE3})
                 log['SJ102501 awaiting page 3 of 1065/2026'].append((c['regcode'], '12 (three pesticides on page 3)'))
 

@@ -429,3 +429,9 @@ jobs:
       - name: Every cited internal certificate is the right document
         run: |
           python3 deliverables/qc_gap_analysis/tracker/check_icoa_references.py
+      # Head of QC, 28.09.2026: a retest must not print a result the initial does not hold,
+      # nor read a value around a missing certificate page. A "carried from the initial" row
+      # must match the initial's row, and may not print a value the initial holds pending.
+      - name: A carried result really is the initial's
+        run: |
+          python3 deliverables/qc_gap_analysis/tracker/check_carry_provenance.py
