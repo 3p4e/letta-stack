@@ -502,7 +502,15 @@ const S01_BAND_LAYER = '<style id="__owner-s01-band">\n' +
     lab = lab.replace(/<td class="lr-mono">((?:<span class="cert">[\s\S]*?<\/span>\s*)+)<\/td>/g,
       (m, certs) => '<td class="lr-mono"><span class="g2">' + certs + '</span></td>');
     lab = lab.replace(/<td class="lr-mono pcell">([^<]*)<\/td>/g, (m, t) => {
-      const items = t.split(/\s*,\s*/).map(s => s.trim()).filter(Boolean);
+      // Head of QC, 28.09.2026: "why not 2-4 instead of 2,3,4" — a run of three or more
+      // consecutive parameter numbers is printed as a range
+      const raw = t.split(/\s*,\s*/).map(s => s.trim()).filter(Boolean);
+      const items = [];
+      for (let i = 0; i < raw.length;) {
+        let j = i;
+        while (j + 1 < raw.length && /^\d+$/.test(raw[j]) && /^\d+$/.test(raw[j + 1]) && +raw[j + 1] === +raw[j] + 1) j++;
+        if (j - i >= 2) { items.push(raw[i] + '\u2013' + raw[j]); i = j + 1; } else { items.push(raw[i]); i++; }
+      }
       return '<td class="lr-mono pcell"><span class="g2">' + items.map(n => '<span class="pn">' + n + '</span>').join('') + '</span></td>';
     });
     if (/<td class="lr-mono">(?!<span class="g2">)/.test(lab) || /<td class="lr-mono pcell">(?!<span class="g2">)/.test(lab))
@@ -516,6 +524,14 @@ const S01_BAND_LAYER = '<style id="__owner-s01-band">\n' +
       + LB + ' thead tr th.c.c.c,' + LB + ' thead tr th:nth-child(n):nth-child(n),'
       + LB + ' tbody tr td.lr-mono.lr-mono.lr-mono,' + LB + ' tbody tr td.lr-mono.pcell.pcell,' + LB + ' tbody tr td:nth-child(n):nth-child(n)'
       + '{text-align:left !important;vertical-align:middle !important;justify-content:flex-start !important}'
+      // Head of QC, 28.09.2026: the external laboratories' documents centred in their column;
+      // the parameter numbers to the right border of their cell, on the page margin
+      + LB + ' thead tr th:nth-child(2):nth-child(2):nth-child(2),' + LB + ' tbody tr td.lr-mono.lr-mono.lr-mono:nth-child(2)'
+      + '{text-align:center !important}'
+      + LB + ' thead tr th:nth-child(3):nth-child(3):nth-child(3),' + LB + ' tbody tr td.lr-mono.pcell.pcell:nth-child(3)'
+      + '{text-align:right !important}'
+      + LB + ' tbody tr td.lr-mono.lr-mono.lr-mono:nth-child(2) .g2{justify-items:center !important}'
+      + LB + ' tbody tr td.lr-mono.pcell.pcell:nth-child(3) .g2{justify-items:end !important}'
       + LB + ' tbody tr td:nth-child(n):nth-child(n){padding-top:1px !important;padding-bottom:1px !important}'
       + LB + ' tbody tr td .lr-lab,' + LB + ' tbody tr td .lr-lab .mk,' + LB + ' tbody tr td .lr-lab small{white-space:nowrap !important}'
       + LB + ' tbody tr td .g2{display:inline-grid !important;grid-template-rows:repeat(2,8px);grid-auto-flow:column;'

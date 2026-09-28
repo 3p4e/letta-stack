@@ -291,7 +291,9 @@ Standing rules the corrections produced (message numbers are in the record):
   after every layout change. Section 03 of the CoQ (Head of QC, 28.09.2026), on every certificate not yet issued
   (`build_v40.js`, `labref-grid`): each laboratory on **two rows, inline** — English name and
   accreditation; Macedonian name, LT code and address; **"UKIM FF"**, not the full name; **fixed column
-  widths** (codes 190 px, parameters 84 px), the same on every certificate, everything **left-aligned**;
+  widths** (codes 190 px, parameters 84 px), the same on every certificate; laboratories left-aligned,
+  document codes **centred** in their column, parameter numbers **right-aligned** on the page margin, and
+  three or more consecutive parameter numbers written as a **range** ("2–4", not "2, 3, 4");
   document codes in **Roboto Condensed** (the narrow face he asked for, inlined at print like the house
   faces); document codes and parameter numbers **always on a two-row grid filled column by column** —
   one item in row 1; two, one per row; a third back in row 1, and so on. The bundles refuse a CoQ whose
