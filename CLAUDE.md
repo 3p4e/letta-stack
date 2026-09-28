@@ -234,7 +234,12 @@ the laboratory line (17.09.2026).
 (`DELIVER_2026-09-27_NoTranche/`). Four of them held internal-certificate numbers that sent T1/T2 pages
 carry; with the Head of QC's approval (27.09.2026) the 25.09 rule moved them to the first free numbers
 (`tracker/apply_nontranche_icoa_moves_2026-09-27.py`): CLE072501 → `iCoA-PP_26-103`, OPM092501 → `-108`,
-SJ092501 → `-119`, JD042601 → `-120` (its retest since withdrawn). `-127` is the one number left free.
+SJ092501 → `-119`, JD042601 → `-120` (its retest since withdrawn). On 28.09.2026 the same rule, held
+against the **approved scans** as well (`tracker/apply_scan_icoa_moves_2026-09-28.py`), moved the unissued
+T3 initial `-023` (P050172) from `iCoA-PP_26-023` — which the sent scan of `-107` cites for P050192 — to
+`-127`, the last free number. `tracker/check_icoa_references.py` (CI) holds every delivered CoQ's iCoA
+citation against the iCoA page: code, issue date, lot, specification, test date, the sections for the rows
+credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 

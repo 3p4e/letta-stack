@@ -423,3 +423,9 @@ jobs:
         run: |
           cd deliverables/qc_gap_analysis
           python3 tracker/issuance_order_check.py --stdout | diff - "$(ls tracker/ISSUANCE_ORDER_CHECK_*.tsv | sort | tail -1)"
+      # Head of QC, 28.09.2026: check the references of the internal certificates the
+      # certificates of quality cite. Every delivered CoQ's iCoA citation is held against
+      # the iCoA page itself, and no number may be one an approved scan gives another lot.
+      - name: Every cited internal certificate is the right document
+        run: |
+          python3 deliverables/qc_gap_analysis/tracker/check_icoa_references.py
