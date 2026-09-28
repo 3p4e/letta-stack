@@ -348,7 +348,14 @@ Standing rules the corrections produced (message numbers are in the record):
   КК · In-house · Kojlija 1043, Petrovec-Skopje, MK".
 - **Supersedes line** directly beneath the current CoQ code and issue date, very small and greyed.
 - **Look.** No grey; zebra rows kept; heading bars run edge to edge; table rows fade to white by the
-  page margins, with no hard lines in a gradient; graphics flattened for print.
+  page margins, with no hard lines in a gradient; graphics flattened for print. **Widen the fades**
+  (Head of QC, 28.09.2026): every coloured band and rule is solid only across the centre and eases
+  to absolute white well before the left/right margins — a centre plateau ramping to white at each
+  margin, not solid across the width with a short edge ramp (which read as a hard stop of colour into
+  white). `build_v40.js` `WIDE_FADE_LAYER` (CoQ) and the iCoA base templates' `__owner-wide-fade`
+  block carry it; the plateau lives in one place so it is tuned once. It governs the reprints only —
+  the CoQ layer is gated `!FROZEN_LOT`, so the issued Tranche 1/2 pages `check_frozen_records.py`
+  holds are untouched — and the full-bleed heading bars and footer are left edge to edge.
 - **Signatures** from `_sig/` only, rotated: Christina Cekic far left, the other two on the right, the
   QC Manager's 15–20 % larger and crossing the line; a signed and an unsigned set.
 - **Bundles.** Each page of an attached external certificate carries a ~1.5 cm stamp with the CoQ code

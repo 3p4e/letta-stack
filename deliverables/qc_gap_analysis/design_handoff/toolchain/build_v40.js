@@ -237,6 +237,42 @@ const EDGE_FADE_LAYER = '<style id="__owner-edges">\n' +
   'html body div.page div.tbl-wrap table.labref tbody{background-size:100% 1px !important}\n' +
 '</style>';
 
+// Head of QC, 28.09.2026: "widen the fades." The coloured bands and rules were solid across the
+// page with a short ramp to white only at the very edge — read as a hard stop of colour into white.
+// Now every fading band and rule is SOLID ONLY ACROSS THE CENTRE and eases to absolute white long
+// before the left/right page margins: a centre plateau (FADE_A..FADE_B) that ramps to #fff at each
+// margin. One layer, appended LAST and inside @media print, so it governs the print without touching
+// the screen design, the full-bleed heading bars (.sec-label) or the footer, which the Head of QC
+// keeps edge to edge. The geometry lives in one place so it can be tuned once.
+const FADE_A = '34%', FADE_B = '66%';
+const wideFade = c => 'linear-gradient(90deg,#fff 0,' + c + ' ' + FADE_A + ',' + c + ' ' + FADE_B + ',#fff 100%)';
+const WIDE_FADE_LAYER = '<style id="__owner-wide-fade">\n@media print{\n' +
+  'html body div.page .pb-main{background-color:#fff !important;background-image:' + wideFade('rgb(244,247,251)') +
+     ' !important;background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important}\n' +
+  'html body div.page .selrow{background-color:#fff !important;background-image:' + wideFade('rgb(250,252,254)') +
+     ' !important;background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important}\n' +
+  'html body div.page div.gridrow,html body div.page div.lockrow{background-color:transparent !important;background-image:' + wideFade('rgb(254,253,249)') +
+     ' !important;background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important}\n' +
+  'html body div.page div.tbl-wrap table.results thead tr,\n' +
+  'html body div.page div.tbl-wrap table.labref thead tr{background-color:transparent !important;background-image:' +
+     wideFade('#9EACBA') + ',' + wideFade('#9EACBA') + ',' + wideFade('#F2F5F9') + ' !important;' +
+     'background-size:100% 1px,100% 1px,100% calc(100% - 2px) !important;background-position:top left,bottom left,left top 1px !important;background-repeat:no-repeat !important}\n' +
+  'html body div.page div.tbl-wrap table.results tbody tr:not(.row-group):not(.sub-row):not(.last-row):nth-of-type(even),\n' +
+  'html body div.page div.tbl-wrap table.labref tbody tr:nth-child(even){background-color:transparent !important;background-image:' + wideFade('rgb(247,249,252)') +
+     ' !important;background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important}\n' +
+  'html body div.page div.tbl-wrap table.results tbody tr.last-row,\n' +
+  'html body div.page div.tbl-wrap table.labref tbody tr:last-child{background-color:transparent !important;background-image:' + wideFade('#9EACBA') +
+     ' !important;background-size:100% 1px !important;background-position:bottom left !important;background-repeat:no-repeat !important}\n' +
+  'html body div.page div.goldrule{background-image:' + wideFade('rgb(160,124,48)') +
+     ' !important;background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important}\n' +
+  'html body div.page .ap-line{background-image:' + wideFade('rgb(160,124,48)') +
+     ' !important;background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important}\n' +
+  'html body div.page div.selrow::before,html body div.page div.selrow::after{background-image:' + wideFade('rgb(160,124,48)') +
+     ' !important;background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important}\n' +
+  'html body div.page div.pb-attrs::after{background-image:' + wideFade('rgb(189,174,143)') +
+     ' !important;background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important}\n' +
+  '}</style>';
+
 const INK_LAYER = '<style id="__owner-uniform-result-ink">\n' +
   '/* Owner, 16.09.2026: "make all certificates of quality analysis results column in\n' +
   '   heading 2 be one colour dark navy blue and do not use any other colour indicating\n' +
@@ -434,7 +470,10 @@ const S01_BAND_LAYER = '<style id="__owner-s01-band">\n' +
   'html body div.page div.header-bar + div.sec-label{margin-bottom:0 !important}\n' +
   'html body div.page div.sec-label + div.pb-main,html body div.page div.sec-label + .pb-main{margin-top:0 !important;padding-top:12px !important}\n' +
   '</style>';
-  const DESK_LAYERS = OWNER_LAYER + '\n' + HB_SUP_LAYER + '\n' + PRINT_ZEBRA_LAYER + '\n' + EDGE_FADE_LAYER + '\n' + INK_LAYER + '\n' + S34_LAYER + '\n' + S03_LAYER + '\n' + S01_LAYER + '\n' + S01_BAND_LAYER + '\n';
+  // WIDE_FADE_LAYER only on certificates that are not yet issued. Tranches 1 and 2 are with the
+  // customer and are held byte-for-byte by check_frozen_records.py; the widen-the-fades ruling of
+  // 28.09.2026 governs the reprints (Tranche 3 and the lots outside the tranches), never the sent set.
+  const DESK_LAYERS = OWNER_LAYER + '\n' + HB_SUP_LAYER + '\n' + PRINT_ZEBRA_LAYER + '\n' + EDGE_FADE_LAYER + '\n' + INK_LAYER + '\n' + S34_LAYER + '\n' + S03_LAYER + '\n' + S01_LAYER + '\n' + S01_BAND_LAYER + '\n' + (FROZEN_LOT(c) ? '' : WIDE_FADE_LAYER + '\n');
   if (html.indexOf('</body>') < 0) throw new Error('no </body> to append the desk layers before');
   html = html.replace('</body>', DESK_LAYERS + '</body>');
   // Owner, 16.09.2026 (second pass): the issue date in the Section 03 code column is
