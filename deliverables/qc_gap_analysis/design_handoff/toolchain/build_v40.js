@@ -480,6 +480,22 @@ const S01_BAND_LAYER = '<style id="__owner-s01-band">\n' +
   if (!FROZEN_LOT(c)) {
     if (htmlOut.split(GMP_FOOT).length !== 2) throw new Error('footer GMP line not found once: ' + c.regcode);
     htmlOut = htmlOut.replace(GMP_FOOT, '<div class="foot-right"></div>');
+    // Head of QC, 28.09.2026: "The laboratory accreditation references ... make them in two rows
+    // and inline; they're going into three rows and it's pushing the page down." Section 03's
+    // second row (the Macedonian name, the LT accreditation and the address) wrapped to a third
+    // on 74 of 75 unissued certificates and pushed 24 of them past A4. The row is held to one
+    // line, set 0.3px smaller, and the parameter column gives the laboratory column the width
+    // Farmahem's address needs ("1, 2, 3, 4, 5, 6, 7, 8" on -075/-079/-080 still fits). The rules
+    // go last, after the desk layers, and outrank the layers' white-space:normal and column widths.
+    const LABREF_TWO_ROWS = '<style id="labref-two-rows">'
+      + 'html body div.page div.tbl-wrap table.labref tbody tr td .lr-lab .mk,'
+      + 'html body div.page div.tbl-wrap table.labref tbody tr td .lr-lab small'
+      + '{white-space:nowrap !important;font-size:5.6px !important}'
+      + 'html body div.page div.tbl-wrap table.labref tbody tr td .lr-lab .mk .lr-ac{font-size:5.6px !important}'
+      + 'html body div.page div.tbl-wrap table.labref colgroup col:nth-child(3):nth-child(3){width:142px !important}'
+      + '</style>';
+    if (htmlOut.split('</body>').length !== 2) throw new Error('no single </body>: ' + c.regcode);
+    htmlOut = htmlOut.replace('</body>', LABREF_TWO_ROWS + '</body>');
   }
   const OLD_NOTE = /<br>Parameter attribution to the issuing laboratory[^<]*<\/div>/;
   if (!OLD_NOTE.test(htmlOut)) throw new Error('Section 02 note sentence not found');

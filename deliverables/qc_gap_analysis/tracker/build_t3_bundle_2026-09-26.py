@@ -116,6 +116,33 @@ def assert_house_fonts(pdf):
         raise SystemExit('%s printed letters in a substitute face: %s' % (
             os.path.basename(pdf), '; '.join('%s %s' % (f, ''.join(sorted(c))) for f, c in bad.items())))
 
+LAYOUT = []
+LAYOUT_JS = """() => {
+  const lines = el => { const r = document.createRange(); r.selectNodeContents(el);
+    const ys = [...r.getClientRects()].filter(x => x.width > 0.5).map(x => x.top + x.height / 2).sort((a, b) => a - b);
+    let n = 0, last = -99; for (const y of ys) { if (y - last > 4) { n++; last = y; } } return n; };
+  const page = document.querySelector('.page');
+  return { h: page ? page.scrollHeight : 0,
+           lab: [...document.querySelectorAll('table.labref tbody td .lr-lab')].map(lines) };
+}"""
+
+
+def layout_probe(src, page):
+    """Head of QC, 28.09.2026: each laboratory in section 03 on two rows, and one A4 page."""
+    if os.sep + 'CoQ' + os.sep not in src:
+        return
+    got = page.evaluate(LAYOUT_JS)
+    if got['h'] > 1123:
+        LAYOUT.append('%s: page is %d px, past A4 (1123)' % (os.path.basename(src), got['h']))
+    if any(n > 2 for n in got['lab']):
+        LAYOUT.append('%s: a laboratory entry runs to %d rows' % (os.path.basename(src), max(got['lab'])))
+
+
+def assert_layout():
+    if LAYOUT:
+        raise SystemExit('layout refused:\n  ' + '\n  '.join(LAYOUT))
+
+
 STAMP = '2026-09-26'
 OUT = os.path.join(GAP, 'DELIVER_%s_T3' % STAMP)
 COQ_OUT = os.path.join(GAP, 'design_handoff', 'out')
@@ -284,7 +311,8 @@ def main():
         os.makedirs(pdir, exist_ok=True)
         srcs = [h for _, _, h in docs if os.path.dirname(h) == hdir]
         css = coq_css if os.sep + 'CoQ' + os.sep in hdir else ''
-        pdf_of.update(zip(srcs, render(srcs, pdir, None, css)))  # one browser session per folder
+        pdf_of.update(zip(srcs, render(srcs, pdir, None, css, layout_probe)))  # one browser session per folder
+    assert_layout()
     for pdf in pdf_of.values():
         assert_house_fonts(pdf)
     merged, toc, last = pymupdf.open(), [], None

@@ -97,7 +97,8 @@ def main():
         os.makedirs(pdir, exist_ok=True)
         srcs = [h for _, _, h in docs if os.path.dirname(h) == hdir]
         css = coq_css if os.sep + 'CoQ' + os.sep in hdir else ''
-        pdf_of.update(zip(srcs, T3.render(srcs, pdir, None, css)))
+        pdf_of.update(zip(srcs, T3.render(srcs, pdir, None, css, T3.layout_probe)))
+    T3.assert_layout()
     for pdf in pdf_of.values():
         T3.assert_house_fonts(pdf)
     for pdf in pdf_of.values():

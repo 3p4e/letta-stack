@@ -288,7 +288,9 @@ Standing rules the corrections produced (message numbers are in the record):
   fill prints "—" **and** is listed in `REGISTER_GAPS.tsv` — the CoQ's own header fields (manufacture,
   packaging, product code, specification) as well as the iCoA's.
 - **One A4 page.** Nothing crosses the margins or runs into header or footer; look at the rendered page
-  after every layout change.
+  after every layout change. Section 03 of the CoQ: each laboratory on **two rows, inline** — English name and
+  accreditation; Macedonian name, LT code and address (Head of QC, 28.09.2026). The bundles refuse a
+  CoQ whose laboratory entry runs to a third row or whose page passes 1123 px (`layout_probe`).
 - **Numbering.** Simple and chronological, no empty code rows; a code on a sent scan never moves;
   Tranche 3 takes the first free numbers. The order check (`tracker/issuance_order_check.py` →
   `tracker/ISSUANCE_ORDER_CHECK_2026-09-27.tsv`; 167 live numbers, 11 out of date order) is with the
