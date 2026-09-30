@@ -211,6 +211,7 @@ def fields(c, gaps, scope=('1', '2', '7')):
         'processing': cb or '—',
         'packaging': val('pk', 'packaging date'),
         'scope': ','.join(scope),
+        'proc_method': str(spc.get('proc') or '').upper(),
         'lod': next((re.sub(r'\s*\(.*$', '', str(r.get('res'))).strip().rstrip('%') + '%'
                      for r in c['rows'] if r['no'] == '8' and '8' in scope), ''),
     }

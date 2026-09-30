@@ -15,11 +15,11 @@ Sources, each the current/authoritative one for its family, matched to the batch
     (DELIVER_2026-09-24, its signed_LOD for the two loss-on-drying ones), rendered to PDF unchanged.
   * iCoA T1/T2 initial — regenerated in the current owner format from the (frozen) register; these were
     never issued to the customer, so there is no sent version to keep.
-Two lots have no sent retest iCoA for their own batch and are regenerated from the register instead:
-P060402 (CoQ-092) was never issued a retest certificate, and P060412 (CoQ-123) cites iCoA-PP_26-123,
-a number the sent set carries for a different lot (P060132) — the discrepancy the Head of QC has open.
-Three Tranche-3 lots (-075, -079, -080) have no internal certificate — CNP tested those parameters —
-so their file is the certificate of quality alone.
+No internal certificate — CNP tested those parameters — so the file is the certificate of quality alone:
+the Tranche-3 lots -075, -079, -080, and (per the approved scans of 25.09) the retests P060402 (CoQ-092)
+and P060412 (CoQ-123), whose scans carry no iCoA row and credit 1,2,7,8 to CNP.
+Signatures: every certificate is signed except the Tranche-3 retest, per the Head of QC (29.09.2026) —
+the T3-retest iCoA is rendered here from the owner-format pages with the signature images stripped.
 
 Every pairing asserts the internal certificate's batch equals the certificate of quality's batch.
 """
@@ -32,9 +32,13 @@ STAMP = '2026-09-29'
 OUT = os.path.join(GAP, 'DELIVER_%s_Paired' % STAMP)
 PAGES = os.path.join(GAP, 'design_handoff', 'pdf', 'pages')
 T3 = os.path.join(GAP, 'DELIVER_2026-09-26_T3', 'iCoA')
+T3_RET_UNSIGNED = '/tmp/claude-0/pair/ico_t3ret_unsigned'   # T3 retest iCoA, signatures stripped
 SENT_RET = ['/tmp/claude-0/pair/ico_t12ret', os.path.join(GAP, 'DELIVER_2026-09-24', 'signed_LOD')]
 REGEN_RET = '/tmp/claude-0/pair/ico_t12ret_regen'
 INI_T12 = '/tmp/claude-0/pair/ico_t12init'
+# The approved scans (SCAN_INDEX 2026-09-25) carry no iCoA for these lots — 1,2,7,8 credited to CNP —
+# so the file is the certificate of quality alone. P060402=CoQ-092 (GG012603), P060412=CoQ-123 (JD012603/02).
+CNP_NO_ICOA = {'CoQ-PP_26-092', 'CoQ-PP_26-123'}
 PLOT = re.compile(r'^P\d{6}$')
 BATCH = re.compile(r'^(?:CoQ|iCoA)-PP_26-\d{3}_([A-Za-z0-9]+)_')
 
@@ -77,8 +81,10 @@ def icoa_pdf(tr, series, code, keys):
     if tr == 'T3':
         if not code:
             return None
-        sub = 'Retest' if series == 'retest' else 'Initial'
-        g = glob.glob(os.path.join(T3, sub, 'PDF', code + '_*.pdf'))
+        if series == 'retest':                               # unsigned T3 retest (Head of QC: no signature)
+            g = glob.glob(os.path.join(T3_RET_UNSIGNED, code + '_*.pdf'))
+            return g[0] if g else None
+        g = glob.glob(os.path.join(T3, 'Initial', 'PDF', code + '_*.pdf'))
         return g[0] if g else None
     if series == 'retest':                                   # T1/T2 sent retest, anchored on the batch
         return by_batch(SENT_RET, keys) or (glob.glob(os.path.join(REGEN_RET, code + '_*.pdf')) or [None])[0]
@@ -119,11 +125,11 @@ def main():
         coq = coq_pdf(rc)
         if not coq:
             raise SystemExit('%s: no CoQ page in %s' % (rc, PAGES))
-        ico = icoa_pdf(t, s, code, keys)
+        ico = None if rc in CNP_NO_ICOA else icoa_pdf(t, s, code, keys)
         # every pairing must be the same lot on both pages
         if ico and batch_of(ico) and batch_of(ico) not in keys:
             raise SystemExit('%s: iCoA %s is batch %s, not %s' % (rc, os.path.basename(ico), batch_of(ico), keys))
-        if not ico and not (t == 'T3' and code and s in ('initial', 'retest')):
+        if not ico and rc not in CNP_NO_ICOA and not (t == 'T3' and code and s in ('initial', 'retest')):
             raise SystemExit('%s: no iCoA resolved (code %s)' % (rc, code))
 
         base = os.path.basename(coq)[:-4]
@@ -132,10 +138,12 @@ def main():
         os.makedirs(d, exist_ok=True)
         name = base + ('__%s' % code if ico else '__no-iCoA_CNP-tested') + '.pdf'
         pages = merge(coq, ico, os.path.join(d, name))
-        src = ('T3 delivery' if t == 'T3' else
-               'sent 24.09' if (s == 'retest' and ico and REGEN_RET not in ico) else
-               'regenerated' if ico else 'none — CNP')
-        rows.append({'coq': rc, 'icoa': code or '', 'tranche': t, 'series': s,
+        src = ('none — CNP' if not ico else
+               'T3 retest (unsigned)' if (t == 'T3' and s == 'retest') else
+               'T3 delivery' if t == 'T3' else
+               'sent 24.09' if (s == 'retest' and REGEN_RET not in ico) else
+               'regenerated')
+        rows.append({'coq': rc, 'icoa': (code if ico else ''), 'tranche': t, 'series': s,
                      'batch': c.get('pp') or c.get('cb'), 'strain': c.get('strain') or '',
                      'grade': c.get('grade') or '', 'coq_issue': c.get('issue') or '',
                      'icoa_issue': c.get('icoa_issue') or '', 'pages': pages, 'icoa_source': src})

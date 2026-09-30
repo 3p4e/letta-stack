@@ -214,11 +214,13 @@ function section01(rec) {
   const pheno = chip(isH, 'Hybrid', isH ? ratio : '') +
     '<span class="stack">' + chip(isI, 'Indica') + chip(isS, 'Sativa') + '</span>';
   const chem = '<span class="stack">' + chip(rec.chemotype === 'THC', 'THC') + chip(rec.chemotype === 'CBD', 'CBD') + '</span>';
-  // Head of QC, 18.09.2026: "remove the parameter processing and remove the machine or
-  // hand processing" - from every certificate of quality, release and retest alike. How the
-  // flower was trimmed is a production attribute, not a quality determination, and the
-  // certificate asserts only what was determined. The record keeps `rec.processing`; the
-  // page no longer speaks it.
+  // Head of QC, 30.09.2026: restore the processing pill. The approved scans sent to the
+  // customer carry it (e.g. BG1024 / CoQ-PP_26-085 - MACHINE selected), so by the scan-is-
+  // authority rule it belongs on every certificate; the 18.09 removal is superseded. The
+  // value is the register's `rec.processing` - never re-read from the scan.
+  const proc = (rec.processing || '').toUpperCase();
+  const prc = '<span class="stack">' + chip(/MACHINE/.test(proc), 'Machine <span class="mk">Машинска</span>') +
+    chip(/HAND/.test(proc), 'Hand') + '</span>';
 
   const pcode = rec.productCode && rec.productCode !== '—'
     ? esc(rec.productCode.replace(/\s*:\s*/, ':')) : red('[ — ]');
@@ -242,6 +244,7 @@ function section01(rec) {
 '  <div class="selrow">\n' +
 '    <span class="grp"><span class="lk-lbl">Phenotype <span class="mk">Фенотип</span></span>' + pheno + '</span>\n' +
 '    <span class="grp"><span class="lk-lbl">Chemotype <span class="mk">Хемотип</span></span>' + chem + '</span>\n' +
+'    <span class="grp"><span class="lk-lbl">Processing <span class="mk">Обработка</span></span>' + prc + '</span>\n' +
 '  </div>\n' +
 '  <div class="goldrule"></div>\n' +
 '  <div class="gridrow lk-inline" style="padding-top:8px">\n' +

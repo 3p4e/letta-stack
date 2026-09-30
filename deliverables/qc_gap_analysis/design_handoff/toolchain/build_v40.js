@@ -443,20 +443,10 @@ const S03_LAYER = '<style id="__owner-s03-compact">\n' +
 // left border"). The width the third group gave back is spent on type -
 // the label, its Macedonian line and the option chips all rise about 17 %, the step the
 // type took in Sections 03 and 04. The results table is not touched.
-const S01_LAYER = '<style id="__owner-s01-selrow">\n' +
-  'html body div.page div.selrow{display:grid !important;grid-template-columns:repeat(2,minmax(0,1fr)) !important;justify-content:stretch !important;justify-items:start !important;align-items:center !important;column-gap:12px !important;row-gap:0 !important}\n' +
-  'html body div.page div.selrow > span.grp{display:inline-flex !important;align-items:center !important;gap:9px !important;min-width:0 !important;white-space:nowrap !important;flex:0 0 auto !important}\n' +
-  'html body div.page div.selrow > span.grp:first-child{grid-column:1 !important}\n' +
-  'html body div.page div.selrow > span.grp:last-child{grid-column:2 !important}\n' +
-  'html body div.page div.selrow span.lk-lbl{font-size:8.4px !important;letter-spacing:.34px !important;line-height:1.12 !important}\n' +
-  'html body div.page div.selrow span.lk-lbl > span.mk{font-size:6.9px !important;line-height:1.08 !important}\n' +
-  'html body div.page div.selrow span.chip-sel{font-size:8.6px !important;padding:1.8px 6.5px 1.8px 5px !important;border-radius:9px !important}\n' +
-  'html body div.page div.selrow span.chip-un{font-size:7.5px !important;padding:1.3px 6px !important;border-radius:9px !important}\n' +
-  'html body div.page div.selrow span.chip-sel > span.bx{font-size:10.6px !important}\n' +
-  'html body div.page div.selrow span.chip-un > span.bx{font-size:9.6px !important}\n' +
-  'html body div.page div.selrow span.grp > span.stack{gap:7px !important}\n' +
-  '</style>';
-
+// Head of QC, 30.09.2026: the processing pill is restored to Section 01 (see coq_build.js),
+// so the row carries three groups again as the approved scans show. The 18.09 two-column grid
+// (S01_LAYER) was for two groups only and is removed; the row returns to the base template's
+// flex space-between, the layout the sent certificates were printed in.
 
 // The white band under the section 01 bar (Head of QC, 18.09.2026: "expand the background
 // that is in that section"). Measured on the page: the bar ends at 154.80 and the product
@@ -473,7 +463,7 @@ const S01_BAND_LAYER = '<style id="__owner-s01-band">\n' +
   // WIDE_FADE_LAYER only on certificates that are not yet issued. Tranches 1 and 2 are with the
   // customer and are held byte-for-byte by check_frozen_records.py; the widen-the-fades ruling of
   // 28.09.2026 governs the reprints (Tranche 3 and the lots outside the tranches), never the sent set.
-  const DESK_LAYERS = OWNER_LAYER + '\n' + HB_SUP_LAYER + '\n' + PRINT_ZEBRA_LAYER + '\n' + EDGE_FADE_LAYER + '\n' + INK_LAYER + '\n' + S34_LAYER + '\n' + S03_LAYER + '\n' + S01_LAYER + '\n' + S01_BAND_LAYER + '\n' + (FROZEN_LOT(c) ? '' : WIDE_FADE_LAYER + '\n');
+  const DESK_LAYERS = OWNER_LAYER + '\n' + HB_SUP_LAYER + '\n' + PRINT_ZEBRA_LAYER + '\n' + EDGE_FADE_LAYER + '\n' + INK_LAYER + '\n' + S34_LAYER + '\n' + S03_LAYER + '\n' + S01_BAND_LAYER + '\n' + (FROZEN_LOT(c) ? '' : WIDE_FADE_LAYER + '\n');
   if (html.indexOf('</body>') < 0) throw new Error('no </body> to append the desk layers before');
   html = html.replace('</body>', DESK_LAYERS + '</body>');
   // Owner, 16.09.2026 (second pass): the issue date in the Section 03 code column is
