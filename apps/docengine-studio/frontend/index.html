@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1f5c3a">
+<title>DocEngine Studio</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<!--
+  DocEngine Studio - vanilla-JS ESM single page app.
+  No build step, no framework: consistent with the GrowFlow (WWF) PWA the
+  owner standardised on. All state is fetched from /api/*; the client never
+  invents document codes, progress percentages or verdicts.
+-->
+<div id="app">
+  <aside class="rail" aria-label="Primary">
+    <div class="brand"><span class="leaf"></span><b>DocEngine</b><small>Studio</small></div>
+    <nav id="nav"></nav>
+    <div class="rail-foot">
+      <div id="lane-badge" class="badge" title="Verification lanes"></div>
+      <button id="me-btn" class="ghost">Identity</button>
+    </div>
+  </aside>
+  <main>
+    <header class="topbar">
+      <h1 id="view-title">Overview</h1>
+      <div class="top-actions">
+        <input id="global-search" type="search" placeholder="Search registry, certificates..." autocomplete="off">
+        <span id="conn" class="conn" title="Studio gateway"></span>
+      </div>
+    </header>
+    <section id="view" class="view" aria-live="polite"></section>
+  </main>
+</div>
+<div id="toast" class="toast" role="status"></div>
+<script type="module" src="app.js"></script>
+</body>
+</html>

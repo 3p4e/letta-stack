@@ -1,0 +1,43 @@
+# DocEngine Studio - joins the existing WWF internal network so it can reach the
+# Line B DocEngine by container name. It publishes no port of its own; Traefik
+# (already running on this host) fronts it, matching every other WWF service.
+services:
+  studio:
+    build: .
+    image: docengine-studio:0.1.0
+    container_name: docengine-studio
+    restart: unless-stopped
+    environment:
+      DOCENGINE_ENDPOINT: "http://wwf-docengine:8000"
+      DOCENGINE_API_KEY: "${DOCENGINE_API_KEY:?set DOCENGINE_API_KEY in .env}"
+      LETTA_ENDPOINT: "http://letta-6ou3-letta-1:8283"
+      LETTA_API_KEY: "${LETTA_API_KEY:-}"
+      LETTA_ADVISORY_AGENT: "${LETTA_ADVISORY_AGENT:-gf_app_assistant}"
+      RAGFLOW_ENDPOINT: "${RAGFLOW_ENDPOINT:-}"
+      RAGFLOW_API_KEY: "${RAGFLOW_API_KEY:-}"
+      STUDIO_API_KEY: "${STUDIO_API_KEY:-}"
+      STUDIO_TRUST_HEADERS: "1"
+      STUDIO_MODEL_PROVIDER_READY: "${STUDIO_MODEL_PROVIDER_READY:-0}"
+    volumes:
+      - ./data:/data
+    networks:
+      - weekly_weed_flow_internal
+      - ai-net
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.docstudio.entrypoints: "websecure"
+      traefik.http.routers.docstudio.rule: "Host(`studio.${KVM4_REVERSE_DNS:-localhost}`)"
+      traefik.http.routers.docstudio.tls.certresolver: "letsencrypt"
+      traefik.http.services.docstudio.loadbalancer.server.port: "8080"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8080/api/health',timeout=4).status==200 else 1)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+networks:
+  weekly_weed_flow_internal:
+    external: true
+  ai-net:
+    external: true
