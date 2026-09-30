@@ -70,19 +70,19 @@ CoQ-PP_26-071	iCoA-PP_26-071	T2	initial	P060362	Jelly Donuts		06.06.2026	03.06.2
 CoQ-PP_26-072	iCoA-PP_26-072	T2	initial	P060372	Cash Cow		06.06.2026	03.06.2026	2	regenerated
 CoQ-PP_26-073	iCoA-PP_26-073	T3	initial	P060342	Scrambler	I	21.09.2026	03.06.2026	2	T3 delivery
 CoQ-PP_26-074	iCoA-PP_26-074	T1	initial	P060382	Scrambler		06.06.2026	03.06.2026	2	regenerated
-CoQ-PP_26-075	iCoA-PP_26-075	T3	initial	P060392	Fat Bastard	II	07.07.2026	03.06.2026	1	T3 delivery
+CoQ-PP_26-075		T3	initial	P060392	Fat Bastard	II	07.07.2026	03.06.2026	1	none — CNP
 CoQ-PP_26-076	iCoA-PP_26-076	T2	initial	P060422	Jelly Donuts	III	07.07.2026	03.06.2026	2	regenerated
 CoQ-PP_26-077	iCoA-PP_26-077	T1	initial	P060402	Gorilla Glue	I	07.07.2026	03.06.2026	2	regenerated
 CoQ-PP_26-078	iCoA-PP_26-078	T2	initial	P060412	Jelly Donuts	I	07.07.2026	03.06.2026	2	regenerated
-CoQ-PP_26-079	iCoA-PP_26-079	T3	initial	P060432	Fat Bastard	I	07.07.2026	15.06.2026	1	T3 delivery
-CoQ-PP_26-080	iCoA-PP_26-080	T3	initial	P060442	Scrambler	I	13.07.2026	18.06.2026	1	T3 delivery
+CoQ-PP_26-079		T3	initial	P060432	Fat Bastard	I	07.07.2026	15.06.2026	1	none — CNP
+CoQ-PP_26-080		T3	initial	P060442	Scrambler	I	13.07.2026	18.06.2026	1	none — CNP
 CoQ-PP_26-085	iCoA-PP_26-098	T1	retest	BG1024	Blue Gelato	I	17.08.2026	27.07.2026	2	sent 24.09
 CoQ-PP_26-086	iCoA-PP_26-099	T1	retest	BSS1024	Blue Sunset Sherbet	II	17.08.2026	27.07.2026	2	sent 24.09
 CoQ-PP_26-088	iCoA-PP_26-100	T1	retest	P050162	Cap Junky	II	17.08.2026	27.07.2026	2	sent 24.09
 CoQ-PP_26-089	iCoA-PP_26-091	T1	retest	P050212	Cap Junky	III	07.09.2026	27.07.2026	2	sent 24.09
 CoQ-PP_26-090	iCoA-PP_26-102	T1	retest	P060032	Cap Junky	IV	17.08.2026	27.07.2026	2	sent 24.09
 CoQ-PP_26-091	iCoA-PP_26-107	T1	retest	P060352	Fat Bastard	II	17.08.2026	27.07.2026	2	sent 24.09
-CoQ-PP_26-092	iCoA-PP_26-092	T1	retest	P060402	Gorilla Glue	I	17.08.2026	27.07.2026	2	regenerated
+CoQ-PP_26-092		T1	retest	P060402	Gorilla Glue	I	17.08.2026	27.07.2026	1	none — CNP
 CoQ-PP_26-093	iCoA-PP_26-104	T1	retest	P050092	Gorilla Glue	I	17.08.2026	27.07.2026	2	sent 24.09
 CoQ-PP_26-094	iCoA-PP_26-105	T1	retest	P050152	Grape Pie	III	17.08.2026	27.07.2026	2	sent 24.09
 CoQ-PP_26-095	iCoA-PP_26-106	T1	retest	P050022	Grape Pie	II	17.08.2026	27.07.2026	2	sent 24.09
@@ -112,7 +112,7 @@ CoQ-PP_26-119	iCoA-PP_26-133	T2	retest	P060092	Grape Pie	II	18.09.2026	17.08.202
 CoQ-PP_26-120	iCoA-PP_26-134	T2	retest	P060182	Grapes And Cream	II	18.09.2026	17.08.2026	2	sent 24.09
 CoQ-PP_26-121	iCoA-PP_26-135	T2	retest	P050182	High Pro Amnesia	II	18.09.2026	17.08.2026	2	sent 24.09
 CoQ-PP_26-122	iCoA-PP_26-138	T2	retest	P060362	Jelly Donuts	I	18.09.2026	17.08.2026	2	sent 24.09
-CoQ-PP_26-123	iCoA-PP_26-123	T2	retest	P060412	Jelly Donuts	III	18.09.2026	17.08.2026	2	regenerated
+CoQ-PP_26-123		T2	retest	P060412	Jelly Donuts	III	18.09.2026	17.08.2026	1	none — CNP
 CoQ-PP_26-124	iCoA-PP_26-137	T2	retest	P060422	Jelly Donuts	II	18.09.2026	17.08.2026	2	sent 24.09
 CoQ-PP_26-126	iCoA-PP_26-139	T2	retest	P060172	Kush Crasher	I	18.09.2026	17.08.2026	2	sent 24.09
 CoQ-PP_26-127	iCoA-PP_26-140	T2	retest	P050112	Motor Breath	I	18.09.2026	17.08.2026	2	sent 24.09
@@ -122,32 +122,32 @@ CoQ-PP_26-131	iCoA-PP_26-148	T2	retest	P060232	Permanent Marker	III	18.09.2026	1
 CoQ-PP_26-132	iCoA-PP_26-149	T2	retest	P060112	Pure Michigen	I	18.09.2026	17.08.2026	2	sent 24.09
 CoQ-PP_26-133	iCoA-PP_26-150	T2	retest	P060282	Scrambler	II	18.09.2026	17.08.2026	2	sent 24.09
 CoQ-PP_26-135	iCoA-PP_26-152	T2	retest	P060012	Wedding Crusher	I	18.09.2026	17.08.2026	2	sent 24.09
-CoQ-PP_26-136	iCoA-PP_26-136	T3	retest	P060052	Apple and Banana	I	21.09.2026	24.08.2026	2	T3 delivery
-CoQ-PP_26-137	iCoA-PP_26-086	T3	retest	P050122	Blue Sunset Sherbet	I	21.09.2026	24.08.2026	2	T3 delivery
-CoQ-PP_26-139	iCoA-PP_26-096	T3	retest	P060272	Cash Cow	I	21.09.2026	24.08.2026	2	T3 delivery
-CoQ-PP_26-140	iCoA-PP_26-090	T3	retest	P050172	Cap Junky	III	21.09.2026	24.08.2026	2	T3 delivery
-CoQ-PP_26-141	iCoA-PP_26-141	T3	retest	P050252	Cap Junky	I	21.09.2026	24.08.2026	2	T3 delivery
-CoQ-PP_26-142	iCoA-PP_26-089	T3	retest	CJ1024	Cap Junky	I	21.09.2026	24.08.2026	2	T3 delivery
-CoQ-PP_26-143	iCoA-PP_26-101	T3	retest	P060432	Fat Bastard	I	21.09.2026	24.08.2026	2	T3 delivery
-CoQ-PP_26-144	iCoA-PP_26-144	T3	retest	P060392	Fat Bastard	II	21.09.2026	24.08.2026	2	T3 delivery
-CoQ-PP_26-145	iCoA-PP_26-145	T3	retest	P060292	Fat Bastard	II	21.09.2026	24.08.2026	2	T3 delivery
-CoQ-PP_26-146	iCoA-PP_26-146	T3	retest	P060302	Gorilla Glue	I	21.09.2026	24.08.2026	2	T3 delivery
-CoQ-PP_26-147	iCoA-PP_26-085	T3	retest	P050012	Gorilla Glue	I	21.09.2026	24.08.2026	2	T3 delivery
-CoQ-PP_26-148	iCoA-PP_26-097	T3	retest	P060252	Gorilla Glue	I	21.09.2026	24.08.2026	2	T3 delivery
-CoQ-PP_26-149	iCoA-PP_26-093	T3	retest	P050202	Grape Pie	II	21.09.2026	24.08.2026	2	T3 delivery
-CoQ-PP_26-150	iCoA-PP_26-094	T3	retest	P050292	Grape Pie	I	21.09.2026	24.08.2026	2	T3 delivery
-CoQ-PP_26-151	iCoA-PP_26-151	T3	retest	P050102	Grape Pie	I	21.09.2026	24.08.2026	2	T3 delivery
-CoQ-PP_26-152	iCoA-PP_26-095	T3	retest	P060142	Grapes And Cream	III	21.09.2026	24.08.2026	2	T3 delivery
-CoQ-PP_26-153	iCoA-PP_26-153	T3	retest	P060202	Jokerz 31	II	21.09.2026	24.08.2026	2	T3 delivery
-CoQ-PP_26-154	iCoA-PP_26-154	T3	retest	P060262	Jokerz 31	I	21.09.2026	24.08.2026	2	T3 delivery
-CoQ-PP_26-155	iCoA-PP_26-155	T3	retest	P060312	Jelly Donuts	I	21.09.2026	24.08.2026	2	T3 delivery
-CoQ-PP_26-156	iCoA-PP_26-156	T3	retest	P050032	Motor Breath	I	21.09.2026	24.08.2026	2	T3 delivery
-CoQ-PP_26-157	iCoA-PP_26-157	T3	retest	P050132	Orange Punch Mimosa	II	21.09.2026	24.08.2026	2	T3 delivery
-CoQ-PP_26-158	iCoA-PP_26-158	T3	retest	P060222	Orange Punch Mimosa	IV	21.09.2026	24.08.2026	2	T3 delivery
-CoQ-PP_26-159	iCoA-PP_26-159	T3	retest	P050272	Permanent Marker	II	21.09.2026	24.08.2026	2	T3 delivery
-CoQ-PP_26-160	iCoA-PP_26-160	T3	retest	P060342	Scrambler	I	21.09.2026	24.08.2026	2	T3 delivery
-CoQ-PP_26-161	iCoA-PP_26-161	T3	retest	P060442	Scrambler	II	21.09.2026	24.08.2026	2	T3 delivery
-CoQ-PP_26-162	iCoA-PP_26-162	T3	retest	P060162	Sleepy Joe	II	21.09.2026	24.08.2026	2	T3 delivery
-CoQ-PP_26-163	iCoA-PP_26-163	T3	retest	P060192	Sleepy Joe	I	21.09.2026	24.08.2026	2	T3 delivery
-CoQ-PP_26-164	iCoA-PP_26-164	T3	retest	P050262	Wedding Crusher	I	21.09.2026	24.08.2026	2	T3 delivery
-CoQ-PP_26-165	iCoA-PP_26-165	T3	retest	P060102	Wedding Cake	I	21.09.2026	24.08.2026	2	T3 delivery
+CoQ-PP_26-136	iCoA-PP_26-136	T3	retest	P060052	Apple and Banana	I	21.09.2026	24.08.2026	2	T3 retest (unsigned)
+CoQ-PP_26-137	iCoA-PP_26-086	T3	retest	P050122	Blue Sunset Sherbet	I	21.09.2026	24.08.2026	2	T3 retest (unsigned)
+CoQ-PP_26-139	iCoA-PP_26-096	T3	retest	P060272	Cash Cow	I	21.09.2026	24.08.2026	2	T3 retest (unsigned)
+CoQ-PP_26-140	iCoA-PP_26-090	T3	retest	P050172	Cap Junky	III	21.09.2026	24.08.2026	2	T3 retest (unsigned)
+CoQ-PP_26-141	iCoA-PP_26-141	T3	retest	P050252	Cap Junky	I	21.09.2026	24.08.2026	2	T3 retest (unsigned)
+CoQ-PP_26-142	iCoA-PP_26-089	T3	retest	CJ1024	Cap Junky	I	21.09.2026	24.08.2026	2	T3 retest (unsigned)
+CoQ-PP_26-143	iCoA-PP_26-101	T3	retest	P060432	Fat Bastard	I	21.09.2026	24.08.2026	2	T3 retest (unsigned)
+CoQ-PP_26-144	iCoA-PP_26-144	T3	retest	P060392	Fat Bastard	II	21.09.2026	24.08.2026	2	T3 retest (unsigned)
+CoQ-PP_26-145	iCoA-PP_26-145	T3	retest	P060292	Fat Bastard	II	21.09.2026	24.08.2026	2	T3 retest (unsigned)
+CoQ-PP_26-146	iCoA-PP_26-146	T3	retest	P060302	Gorilla Glue	I	21.09.2026	24.08.2026	2	T3 retest (unsigned)
+CoQ-PP_26-147	iCoA-PP_26-085	T3	retest	P050012	Gorilla Glue	I	21.09.2026	24.08.2026	2	T3 retest (unsigned)
+CoQ-PP_26-148	iCoA-PP_26-097	T3	retest	P060252	Gorilla Glue	I	21.09.2026	24.08.2026	2	T3 retest (unsigned)
+CoQ-PP_26-149	iCoA-PP_26-093	T3	retest	P050202	Grape Pie	II	21.09.2026	24.08.2026	2	T3 retest (unsigned)
+CoQ-PP_26-150	iCoA-PP_26-094	T3	retest	P050292	Grape Pie	I	21.09.2026	24.08.2026	2	T3 retest (unsigned)
+CoQ-PP_26-151	iCoA-PP_26-151	T3	retest	P050102	Grape Pie	I	21.09.2026	24.08.2026	2	T3 retest (unsigned)
+CoQ-PP_26-152	iCoA-PP_26-095	T3	retest	P060142	Grapes And Cream	III	21.09.2026	24.08.2026	2	T3 retest (unsigned)
+CoQ-PP_26-153	iCoA-PP_26-153	T3	retest	P060202	Jokerz 31	II	21.09.2026	24.08.2026	2	T3 retest (unsigned)
+CoQ-PP_26-154	iCoA-PP_26-154	T3	retest	P060262	Jokerz 31	I	21.09.2026	24.08.2026	2	T3 retest (unsigned)
+CoQ-PP_26-155	iCoA-PP_26-155	T3	retest	P060312	Jelly Donuts	I	21.09.2026	24.08.2026	2	T3 retest (unsigned)
+CoQ-PP_26-156	iCoA-PP_26-156	T3	retest	P050032	Motor Breath	I	21.09.2026	24.08.2026	2	T3 retest (unsigned)
+CoQ-PP_26-157	iCoA-PP_26-157	T3	retest	P050132	Orange Punch Mimosa	II	21.09.2026	24.08.2026	2	T3 retest (unsigned)
+CoQ-PP_26-158	iCoA-PP_26-158	T3	retest	P060222	Orange Punch Mimosa	IV	21.09.2026	24.08.2026	2	T3 retest (unsigned)
+CoQ-PP_26-159	iCoA-PP_26-159	T3	retest	P050272	Permanent Marker	II	21.09.2026	24.08.2026	2	T3 retest (unsigned)
+CoQ-PP_26-160	iCoA-PP_26-160	T3	retest	P060342	Scrambler	I	21.09.2026	24.08.2026	2	T3 retest (unsigned)
+CoQ-PP_26-161	iCoA-PP_26-161	T3	retest	P060442	Scrambler	II	21.09.2026	24.08.2026	2	T3 retest (unsigned)
+CoQ-PP_26-162	iCoA-PP_26-162	T3	retest	P060162	Sleepy Joe	II	21.09.2026	24.08.2026	2	T3 retest (unsigned)
+CoQ-PP_26-163	iCoA-PP_26-163	T3	retest	P060192	Sleepy Joe	I	21.09.2026	24.08.2026	2	T3 retest (unsigned)
+CoQ-PP_26-164	iCoA-PP_26-164	T3	retest	P050262	Wedding Crusher	I	21.09.2026	24.08.2026	2	T3 retest (unsigned)
+CoQ-PP_26-165	iCoA-PP_26-165	T3	retest	P060102	Wedding Cake	I	21.09.2026	24.08.2026	2	T3 retest (unsigned)
