@@ -2,8 +2,8 @@
 """Collect all CoQ and iCoA PDFs into organised folders for delivery.
 
 Output: DELIVER_2026-09-30_All/
-  CoQ/{Initial,Retest}/{T1,T2,T3}/<code>_<batch>_<strain>.pdf
-  iCoA/{Initial,Retest}/{T1,T2,T3}/<code>_<batch>_<strain>.pdf
+  CoQ/{Initial,Retest}/{T1,T2,T3,NoTranche}/<code>_<batch>_<strain>.pdf
+  iCoA/{Initial,Retest}/{T1,T2,T3,NoTranche}/<code>_<batch>_<strain>.pdf
   CoQ_all_2026-09-30.zip
   iCoA_all_2026-09-30.zip
 """
@@ -21,6 +21,8 @@ T3_RET    = '/tmp/claude-0/pair/ico_t3ret_unsigned'
 T12_RET   = ['/tmp/claude-0/pair/ico_t12ret',
              os.path.join(GAP, 'DELIVER_2026-09-24', 'signed_LOD')]
 T12_INI   = '/tmp/claude-0/pair/ico_t12init'
+NT_INI    = os.path.join(GAP, 'DELIVER_2026-09-27_NoTranche', 'iCoA', 'Initial', 'PDF')
+NT_RET    = os.path.join(GAP, 'DELIVER_2026-09-27_NoTranche', 'iCoA', 'Retest', 'PDF')
 
 CNP_NO_ICOA = {'CoQ-PP_26-092', 'CoQ-PP_26-123'}
 PLOT  = re.compile(r'^P\d{6}$')
@@ -63,6 +65,12 @@ def by_batch(dirs, keys):
 
 
 def icoa_pdf(tr, series, code, keys):
+    if tr is None:
+        if not code:
+            return None
+        src = NT_RET if series == 'retest' else NT_INI
+        g = glob.glob(os.path.join(src, code + '_*.pdf'))
+        return g[0] if g else None
     if tr == 'T3':
         if not code:
             return None
@@ -97,18 +105,28 @@ def main():
 
     for c in sorted(reg, key=lambda c: int(c['regcode'].split('-')[-1])):
         t = tr(c)
-        if t not in ('T1', 'T2', 'T3') or c.get('withdrawn'):
+        if c.get('withdrawn'):
+            continue
+        if t not in ('T1', 'T2', 'T3', None):
             continue
         s, rc, code = ser(c), c['regcode'], c.get('icoa_code')
         keys = {str(c.get('pp')), str(c.get('cb')),
                 str(c.get('cb') or '').replace('＊', '')}
         section = 'Retest' if s == 'retest' else 'Initial'
+        tfolder = t if t else 'NoTranche'
 
         # --- CoQ ---
         coq = coq_pdf(rc)
         if not coq:
-            raise SystemExit('%s: no CoQ page in %s' % (rc, PAGES))
-        d = os.path.join(OUT, 'CoQ', section, t)
+            # non-tranche lots may live in the NoTranche delivery folder
+            nt_path = os.path.join(GAP, 'DELIVER_2026-09-27_NoTranche',
+                                   'CoQ', section, 'PDF', rc + '_*.pdf')
+            g = glob.glob(nt_path)
+            if g:
+                coq = newest(g)
+            else:
+                raise SystemExit('%s: no CoQ page in %s' % (rc, PAGES))
+        d = os.path.join(OUT, 'CoQ', section, tfolder)
         os.makedirs(d, exist_ok=True)
         dst = os.path.join(d, os.path.basename(coq))
         shutil.copy2(coq, dst)
@@ -124,7 +142,7 @@ def main():
         if batch_of(ico) and batch_of(ico) not in keys:
             raise SystemExit('%s: iCoA batch mismatch %s vs %s' % (
                 rc, batch_of(ico), keys))
-        d = os.path.join(OUT, 'iCoA', section, t)
+        d = os.path.join(OUT, 'iCoA', section, tfolder)
         os.makedirs(d, exist_ok=True)
         dst = os.path.join(d, os.path.basename(ico))
         shutil.copy2(ico, dst)
@@ -149,10 +167,10 @@ def main():
     cnt = collections.Counter()
     for c in reg:
         t = tr(c)
-        if t in ('T1','T2','T3') and not c.get('withdrawn'):
-            cnt[(t, ser(c))] += 1
+        if not c.get('withdrawn') and t in ('T1','T2','T3',None):
+            cnt[(t or 'NoTranche', ser(c))] += 1
     for k in sorted(cnt):
-        print('  %-3s %-8s %d' % (k[0], k[1], cnt[k]))
+        print('  %-10s %-8s %d' % (k[0], k[1], cnt[k]))
     return 0
 
 
