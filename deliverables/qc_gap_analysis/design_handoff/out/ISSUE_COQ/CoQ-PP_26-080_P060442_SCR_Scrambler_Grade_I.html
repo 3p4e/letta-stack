@@ -986,10 +986,9 @@ html body div.page div.tbl-wrap table.labref tbody tr:nth-child(even){background
 /* Owner, 17.09.2026: the heading bars printed with a distorted gradient. The package
    opens each bar with a dark stop, a 1px inset white highlight and a dark bottom inset —
    a dark/bright/dark stripe along the top that a laser printer renders as banding. The
-   original complex 12-stop/2-layer gradient is replaced with a single smooth 3-stop
-   rgb() gradient (no alpha, no multi-layer): darker top, bright mid highlight, medium
-   bottom — a clear visible gradient with no inset shadows. Full bleed, edge to edge. */
-html body div.page .sec-label{box-shadow:none !important;background-color:#D7E4F0 !important;background-image:linear-gradient(180deg,rgb(186,205,224) 0%,rgb(230,239,249) 45%,rgb(210,223,237) 100%) !important;background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important;border-top:1px solid rgb(157,181,207) !important;border-bottom:1px solid rgb(148,172,198) !important}
+   bar is now one smooth two-stop vertical gradient in the same tone, no inset shadows,
+   one clean hairline along its bottom — full bleed, edge to edge, as asked. */
+html body div.page .sec-label{box-shadow:none !important;background-color:#E6EDF5 !important;background-image:linear-gradient(180deg,rgb(233,239,246) 0%,rgb(221,230,240) 100%) !important;background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important;border-top:1px solid rgb(186,201,218) !important;border-bottom:1px solid rgb(168,188,209) !important}
 /* Owner, 17.09.2026: the top of the bar was lost against the white above it — a hairline
    along the top edge, a shade lighter than the bottom one, and the top stop a touch deeper. */
 /* Owner, 17.09.2026: every faded horizontal separator that was 2px is a hairline. */
@@ -1115,6 +1114,9 @@ html body div.page div.approval-grid .ap-sign{height:34px !important}
 <style id="__owner-s01-band">
 html body div.page div.header-bar + div.sec-label{margin-bottom:0 !important}
 html body div.page div.sec-label + div.pb-main,html body div.page div.sec-label + .pb-main{margin-top:0 !important;padding-top:12px !important}
+</style>
+<style id="__owner-sec-bevel">
+html body div.page .sec-label{background-color:#D7E4F0 !important;background-image:linear-gradient(180deg,rgb(186,205,224) 0%,rgb(230,239,249) 45%,rgb(210,223,237) 100%) !important;border-top:1px solid rgb(157,181,207) !important;border-bottom:1px solid rgb(148,172,198) !important}
 </style>
 <style id="__owner-wide-fade">
 @media print{

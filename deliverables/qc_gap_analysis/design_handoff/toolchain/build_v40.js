@@ -222,13 +222,12 @@ const EDGE_FADE_LAYER = '<style id="__owner-edges">\n' +
   '/* Owner, 17.09.2026: the heading bars printed with a distorted gradient. The package\n' +
   '   opens each bar with a dark stop, a 1px inset white highlight and a dark bottom inset —\n' +
   '   a dark/bright/dark stripe along the top that a laser printer renders as banding. The\n' +
-  '   original complex 12-stop/2-layer gradient is replaced with a single smooth 3-stop\n' +
-  '   rgb() gradient (no alpha, no multi-layer): darker top, bright mid highlight, medium\n' +
-  '   bottom — a clear visible gradient with no inset shadows. Full bleed, edge to edge. */\n' +
-  'html body div.page .sec-label{box-shadow:none !important;background-color:#D7E4F0 !important;' +
-     'background-image:linear-gradient(180deg,rgb(186,205,224) 0%,rgb(230,239,249) 45%,rgb(210,223,237) 100%) !important;' +
+  '   bar is now one smooth two-stop vertical gradient in the same tone, no inset shadows,\n' +
+  '   one clean hairline along its bottom — full bleed, edge to edge, as asked. */\n' +
+  'html body div.page .sec-label{box-shadow:none !important;background-color:#E6EDF5 !important;' +
+     'background-image:linear-gradient(180deg,rgb(233,239,246) 0%,rgb(221,230,240) 100%) !important;' +
      'background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important;' +
-     'border-top:1px solid rgb(157,181,207) !important;border-bottom:1px solid rgb(148,172,198) !important}\n' +
+     'border-top:1px solid rgb(186,201,218) !important;border-bottom:1px solid rgb(168,188,209) !important}\n' +
   '/* Owner, 17.09.2026: the top of the bar was lost against the white above it — a hairline\n' +
   '   along the top edge, a shade lighter than the bottom one, and the top stop a touch deeper. */\n' +
   '/* Owner, 17.09.2026: every faded horizontal separator that was 2px is a hairline. */\n' +
@@ -236,6 +235,17 @@ const EDGE_FADE_LAYER = '<style id="__owner-edges">\n' +
   'html body div.page div.approval-grid .ap-line{height:1px !important}\n' +
   'html body div.page div.tbl-wrap table.results tbody tr.last-row,\n' +
   'html body div.page div.tbl-wrap table.labref tbody{background-size:100% 1px !important}\n' +
+'</style>';
+
+// Head of QC, 01.10.2026: the 2-stop gradient above (233,239,246 → 221,230,240) is only 12
+// RGB units apart and renders as a flat bar. On certificates not yet issued, a 3-stop bevel
+// gradient replaces it: darker top, bright mid-highlight, medium bottom — ~44-unit contrast,
+// clearly visible. Frozen T1/T2 keep the 2-stop rule above so their pages stay byte-for-byte
+// against the snapshot; the bevel layer is appended last for !FROZEN_LOT and wins by cascade.
+const SEC_LABEL_BEVEL_LAYER = '<style id="__owner-sec-bevel">\n' +
+  'html body div.page .sec-label{background-color:#D7E4F0 !important;' +
+     'background-image:linear-gradient(180deg,rgb(186,205,224) 0%,rgb(230,239,249) 45%,rgb(210,223,237) 100%) !important;' +
+     'border-top:1px solid rgb(157,181,207) !important;border-bottom:1px solid rgb(148,172,198) !important}\n' +
 '</style>';
 
 // Head of QC, 28.09.2026: "widen the fades." The coloured bands and rules were solid across the
@@ -464,7 +474,7 @@ const S01_BAND_LAYER = '<style id="__owner-s01-band">\n' +
   // WIDE_FADE_LAYER only on certificates that are not yet issued. Tranches 1 and 2 are with the
   // customer and are held byte-for-byte by check_frozen_records.py; the widen-the-fades ruling of
   // 28.09.2026 governs the reprints (Tranche 3 and the lots outside the tranches), never the sent set.
-  const DESK_LAYERS = OWNER_LAYER + '\n' + HB_SUP_LAYER + '\n' + PRINT_ZEBRA_LAYER + '\n' + EDGE_FADE_LAYER + '\n' + INK_LAYER + '\n' + S34_LAYER + '\n' + S03_LAYER + '\n' + S01_BAND_LAYER + '\n' + (FROZEN_LOT(c) ? '' : WIDE_FADE_LAYER + '\n');
+  const DESK_LAYERS = OWNER_LAYER + '\n' + HB_SUP_LAYER + '\n' + PRINT_ZEBRA_LAYER + '\n' + EDGE_FADE_LAYER + '\n' + INK_LAYER + '\n' + S34_LAYER + '\n' + S03_LAYER + '\n' + S01_BAND_LAYER + '\n' + (FROZEN_LOT(c) ? '' : SEC_LABEL_BEVEL_LAYER + '\n' + WIDE_FADE_LAYER + '\n');
   if (html.indexOf('</body>') < 0) throw new Error('no </body> to append the desk layers before');
   html = html.replace('</body>', DESK_LAYERS + '</body>');
   // Owner, 16.09.2026 (second pass): the issue date in the Section 03 code column is
