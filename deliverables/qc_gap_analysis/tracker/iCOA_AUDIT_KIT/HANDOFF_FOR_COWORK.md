@@ -219,8 +219,10 @@ decision.
 | iCoA is "all testing in house, **never** external" | true for the results themselves, but the iCoA **cites an external eCoA for Identification C**, and the register carries that citation per lot |
 | iCoA scope, generally | **168 of 172** are Ident A + Ident B + Foreign matter; **4 are wider** (§4). The `icoa-single` and `icoa-ident-ab-fm` template variants are consistent with this — pick the variant from the register's `iCoA scope`, never by assumption |
 
-Agreements worth keeping explicit, because they are easy to break: **"MK GMP Certified Facility",
-never "EU GMP"** on flower documents; navy `#1B3A5C` with gold `#A67C2E`/`#C9A227` and bronze
+Agreements worth keeping explicit, because they are easy to break: **no certification or GMP
+statement at all** on a certificate — the Head of QC struck "MK GMP Certified" from the laboratory
+line on 17.09.2026 and the footer's "MK GMP Certified Facility" on 27.09.2026 (the design system's
+own rule saying otherwise does not govern content; `CLAUDE.md` §6); navy `#1B3A5C` with gold `#A67C2E`/`#C9A227` and bronze
 `#8C6B3F`; Montserrat + Roboto Mono with Orbitron for strain names and document codes; exactly one
 A4 page; and *decoration bleeds, text does not* — bands and rules run to the page edge, text never
 enters the 0.3 in safe frame.

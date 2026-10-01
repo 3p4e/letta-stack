@@ -66,12 +66,22 @@ def main(argv):
     with open(DATA, encoding="utf-8") as fh:
         certs = json.load(fh)["coqs"]
 
+    sys.path.insert(0, os.path.join(HERE, "tracker"))
+    from check_certificate_claims import frozen_lots
+    frozen = frozen_lots()
+    kept = []
     for c in certs:
+        # a withdrawn number has no internal certificate (Head of QC, 26–27.09.2026)
+        if c.get("withdrawn"):
+            continue
         names = {clean(c.get("pp")), clean(c.get("cb"))} - {""}
         initial = str(c.get("t") or "").startswith("initial release")
 
         own = by_code.get(str(c.get("icoa_code") or "").strip())
-        if own is None:
+        cited = any(str(r.get("doc") or "") == str(c.get("icoa_code") or "") for r in c.get("rows", []))
+        if own is None and not cited:
+            pass        # no row cites it: there is no internal certificate (CNP tested 1, 2, 7)
+        elif own is None:
             bad.append((c.get("regcode"), "icoa_code", c.get("icoa_code"),
                         "no such row in the register"))
         else:
@@ -119,11 +129,21 @@ def main(argv):
                     bad.append((code, "rendered", ic,
                                 "belongs to %s" % " / ".join(sorted(lots_of(row)))))
 
+    # Tranches 1 and 2 are issued and with the customer (Head of QC, 26.09.2026): what their records
+    # say is reported, never repaired — the approved scans are what was sent.
+    reg_by = {c.get("regcode"): c for c in certs}
+    sent = [x for x in bad if reg_by.get(x[0]) and frozen(reg_by[x[0]])]
+    bad = [x for x in bad if x not in sent]
+    if sent:
+        print("%d citation(s) on issued Tranche 1/2 records (not touched; with the Head of QC):" % len(sent))
+        for x in sent:
+            print("   %-16s %-10s %-16s %s" % x)
     if bad:
         print("%d citation(s) name another lot's internal certificate:" % len(bad))
         for x in bad:
             print("   %-16s %-10s %-16s %s" % x)
-        print("\nrepair: python3 apply_icoa_citations.py")
+        print("\nrepair: python3 apply_icoa_citations.py — it does not refuse Tranches 1 and 2; "
+              "tracker/check_frozen_records.py will fail if it changes one")
         return 1
     print("%d record(s) read - every internal-certificate citation names its own lot"
           % read)

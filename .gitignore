@@ -52,3 +52,8 @@ deliverables/qc_gap_analysis/DELIVER_*/ImB_Spec_*/
 deliverables/qc_gap_analysis/DELIVER_*/*.zip
 deliverables/qc_gap_analysis/DELIVER_*/WORD_*/
 deliverables/qc_gap_analysis/DELIVER_*/WORD_iCoA_*/
+
+# Tranche 3 bundle, 26.09: the unpacked copy. The zip beside it carries every file;
+# tracker/build_t3_bundle_2026-09-26.py rebuilds both.
+deliverables/qc_gap_analysis/DELIVER_2026-09-26_T3/CoQ/
+deliverables/qc_gap_analysis/DELIVER_2026-09-26_T3/iCoA/

@@ -174,6 +174,16 @@ def build(scope, f):
         h = pat.sub(lambda m: chip(en, MK_PHENO[en.upper()], f['pheno'] == en.upper(),
                                    f.get('split', '') if f['pheno'] == en.upper() else ''), h, count=1)
 
+    # processing pill — Head of QC, 30.09.2026: restore. The approved scans carry it.
+    proc = f.get('proc_method', '')
+    for en, mk in (('Machine', 'Машинска'), ('Hand', '')):
+        on = en.upper() in proc
+        pat = re.compile(r'<span class="chip-(?:sel|un)">\s*<span class="bx">[☒☐]</span>\s*'
+                         + en + r'[^<]*(?:<span class="mk">[^<]*</span>)?\s*</span>')
+        if len(pat.findall(h)) != 1:
+            raise SystemExit('processing %s: %d chips, not one' % (en, len(pat.findall(h))))
+        h = pat.sub(chip(en, mk, on), h, count=1)
+
     h = one(h, A['pcode'], '<span class="lk-val">%s</span>' % f['pcode'], 'product code')
     h = one(h, A['spec'], '<span class="lk-val sm">%s</span>' % f['spec'], 'specification reference')
     D = testing_dates(f['examined'], lod, f['issued'])
@@ -310,6 +320,7 @@ def load(list_tsv):
         has_p = bool(re.match(r'^[PJ]\d{5,6}$', pp))
         spec = str(c.get('spec') or '')
         spec = re.sub(r'_v\.\d+$', '_v.03', spec)
+        proc_raw = str((c.get('spc') or {}).get('proc') or '').upper()
         f = {
             'batch': r['batch'], 'coq': r['coq'], 'code': r['icoa'],
             'issued': str(c.get('icoa_issue') or ''),
@@ -324,6 +335,7 @@ def load(list_tsv):
             'processing': cu,
             'packaging': str(c.get('pk') or '—'),
             'scope': r['scope'],
+            'proc_method': proc_raw,
         }
         f.update(LOD_ONLY.get(r['batch'], {}))
         out.append(f)

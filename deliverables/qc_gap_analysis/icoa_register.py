@@ -331,6 +331,68 @@ def build(path=DATA):
             r["code"] = code(n)
         else:
             r["code"] = ""
+    return register_codes(rows, data)
+
+
+def register_codes(rows, data):
+    """Each round takes the code its certificate of quality cites, from the register.
+
+    The issue-order numbering above is the ruling of 10.09.2026. It was replaced: one internal
+    certificate per certificate of quality under the CoQ's own number (Head of QC, 23.09.2026), the
+    renumbering of 25.09.2026 and the moves of 27.09.2026. The codes the certificates print — and the
+    46 approved scans confirm — are `coq_artifact_data.json`'s `icoa_code`. Until 27.09.2026 this
+    module kept the old numbering, and 156 of 167 live lots disagreed with their certificates while
+    the master workbook and CI's check, both built on this module, agreed with each other.
+
+    A release round takes its lot's initial certificate's code; a lot's retest certificate goes to
+    its campaign round, or its first retest where it has none — the round `by_batch_round` resolves
+    "additional" to. A round no live certificate cites takes no code: it is not issued — nor does a
+    number the register holds for a certificate whose rows cite none (`-075`, `-079`, `-080`).
+
+    Where two live records claim one code, the approved scan decides (CLAUDE.md §1): the record
+    whose scan cites the code keeps it. `iCoA-PP_26-123` is `-109`'s on its scan; `-123`'s scan cites
+    no internal certificate, and its register rows are Tranche 2's, frozen as sent.
+    """
+    bi = _bi()
+    scan = {}
+    idx = os.path.join(HERE, "tracker", "SCAN_INDEX_2026-09-25.tsv")
+    if os.path.exists(idx):
+        for s_ in csv.DictReader(open(idx, encoding="utf-8"), delimiter="\t"):
+            scan[s_["coq_code"]] = s_.get("icoa_cited") or ""
+    claims = {}
+    for c in data.get("coqs", []):
+        ic = str(c.get("icoa_code") or "")
+        # a number no row of the certificate cites is not issued: where CNP tested 1, 2, 7 and 8
+        # there is no internal certificate (-075, -079, -080; Head of QC, 26.09.2026)
+        if (not c.get("withdrawn") and ic.startswith(PREFIX)
+                and any(str(r.get("doc") or "") == ic for r in c.get("rows", []))):
+            claims.setdefault(ic, []).append(c)
+    want = {}
+    for ic, cs in claims.items():
+        if len(cs) > 1:
+            by_scan = [c for c in cs if ic in scan.get(c["regcode"], "")]
+            if len(by_scan) != 1:
+                raise SystemExit("%s is claimed by %s and no single approved scan settles it"
+                                 % (ic, ", ".join(c["regcode"] for c in cs)))
+            cs = by_scan
+        c = cs[0]
+        kind = "R" if str(c.get("t", "")).startswith("retest") else "I"
+        for name in filter(None, (c.get("pp"), c.get("cb"))):
+            want.setdefault((bi.batch_key(name), kind), ic)
+    chosen = {}
+    for r in rows:
+        kind = "I" if r["round"] == "initial release" else "R"
+        k = next(((bi.batch_key(nm), kind) for nm in filter(None, (r["batch"], r["p_lot"]))
+                  if (bi.batch_key(nm), kind) in want), None)
+        if k is None:
+            continue
+        held = chosen.get(k)
+        if held is None or (kind == "R" and r["campaign"] and not held["campaign"]):
+            chosen[k] = r
+    for r in rows:
+        r["code"] = ""
+    for k, r in chosen.items():
+        r["code"] = want[k]
     return rows
 
 

@@ -267,6 +267,21 @@ for _, d in bd:
         if got != want:
             bad("Batch Dates", f"{col} for {k}", f"sheet {got!r}, csv {want!r}")
 
+def _order_listed():
+    import glob as _g
+    _f = sorted(_g.glob(os.path.join(HERE, "ISSUANCE_ORDER_CHECK_*.tsv")))
+    if not _f:
+        return set()
+    with open(_f[-1], encoding="utf-8") as _fh:
+        return {int(r["number"].lstrip("-")) for r in csv.DictReader(_fh, delimiter="\t")}
+
+
+def _frozen_records():
+    """Tranches 1 and 2 — issued, sent, not touched (tracker/check_frozen_records.py)."""
+    _p = os.path.join(HERE, "FROZEN_T1_T2_2026-09-26.json")
+    return set(json.load(open(_p, encoding="utf-8"))["records"]) if os.path.exists(_p) else set()
+
+
 # ---------------------------------------------------------------- 5. the two registers
 regv = {r: d for r, d in table(WV, "iCoA Register")}
 regf = {r: d for r, d in table(WB, "iCoA Register")}
@@ -293,10 +308,22 @@ for name, rows, code_col, prefix in (("iCoA Register", regv, "iCoA code", "iCoA-
     dup = [k for k, c in collections.Counter(keys).items() if c > 1]
     if dup:
         bad(name, "duplicate key", str(dup[:5]))
-    dates = [fmt(d["Issue date (planned)"]) for _, d in sorted(nums)]
-    ds = [x[6:] + x[3:5] + x[:2] for x in dates if x]
-    if ds != sorted(ds):
-        bad(name, "planned issue dates are not in the numbering order", f"{dates[:8]} …")
+    # Head of QC, 27.09.2026: issued chronologically. The numbers out of date order are listed in
+    # the latest tracker/ISSUANCE_ORDER_CHECK_*.tsv, which is with him (renumber nothing without
+    # him); CI regenerates that list from the register. Any OTHER number out of order is a finding.
+    # The iCoA series is not in date order by ruling: the 25.09.2026 renumbering gave Tranche 3 "the
+    # first free numbers", and the approved scans already sent cite retest iCoAs whose numbers are not
+    # their CoQs' (-107 cites iCoA-PP_26-122). The 10.09 rule this check enforced — codes in the order of
+    # issuing — is replaced for the iCoA series; what still holds is checked below: no CoQ dated before
+    # its iCoA, and every certificate of the series once on the sheet.
+    _listed = _order_listed()
+    dated = [(int(d["No."]), fmt(d["Issue date (planned)"])) for _, d in sorted(nums)
+             if fmt(d["Issue date (planned)"]) and int(d["No."]) not in _listed]
+    ds = [x[6:] + x[3:5] + x[:2] for _, x in dated]
+    if name != "iCoA Register" and ds != sorted(ds):
+        _off = [n for (n, _), a, b in zip(dated, ds, ds[1:]) if b < a]
+        bad(name, "planned issue dates are not in the numbering order (beyond the list with the Head of QC)",
+            ", ".join("-%03d" % n for n in _off[:8]))
     for r, d in rows.items():
         if d["Issuable"] == "yes" and not d["No."]:
             bad(name, "issuable row without a number", f"row {r} {d.get('Key')}")
@@ -550,6 +577,10 @@ try:
             _own |= _lot_codes.get(_bk(_nm.strip()), set())
         if not _own:
             _unresolved += 1
+        elif _cited not in _own and _coq in _frozen_records():
+            # an issued Tranche 1/2 certificate: reported, never repaired (Head of QC, 26.09.2026)
+            print("  note [CoQ References] issued %s (%s) cites %s, which the series gives to another lot"
+                  " — frozen, with the Head of QC" % (_coq, _refs.cell(_r, 2).value, _cited))
         elif _cited not in _own:
             _wrong_lot += 1
             if _wrong_lot <= 5:

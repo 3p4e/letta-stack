@@ -1369,10 +1369,10 @@ ITEMS = [
      "One line from the Institute of Public Health: whether `434/0848/26` certifies "
      "GG032601 (Gorilla Glue, as its sample line says) or FB032601 (as its \u0421\u0435\u0440\u0438\u0458\u0430 line "
      "says). If Gorilla Glue, a complete microbiology panel closes on CoQ-PP_26-082 with no "
-     "further testing. Noted on the same delivery and needing the same letter: `75/0118/26` "
-     "and `76/0119/26` both print *\u0414\u0430\u0442\u0430 \u043d\u0430 \u043f\u0440\u0438\u0435\u043c: 02.02.2025 \u0433\u043e\u0434.* while their "
-     "laboratory numbers end /26 and both are signed 09.02.2026 \u2014 the receipt year is a "
-     "year out on both pages of that pair.",
+     "further testing. Settled, and no longer for the letter: `75/0118/26` and `76/0119/26` "
+     "both print *\u0414\u0430\u0442\u0430 \u043d\u0430 \u043f\u0440\u0438\u0435\u043c: 02.02.2025 \u0433\u043e\u0434.* while their laboratory "
+     "numbers end /26 and both are signed 09.02.2026; the Head of QC ruled on 27.09.2026 that "
+     "the year is a misprint for 2026, so the receipt date is 02.02.2026.",
      "intake_sweep_2026-09-21/reads_B.json header_read; intake_sweep_2026-09-21/reads_C.json "
      "434-0848-26.pdf; apply_gaps_2026-09-21.py (433/0847/26); OI-42; OI-63; the pages "
      "themselves, page 1 header and signature block"),
