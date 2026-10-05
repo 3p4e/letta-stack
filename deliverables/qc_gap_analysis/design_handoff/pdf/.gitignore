@@ -1,4 +1,0 @@
-pages/
-# Flattened rasters are no longer produced: the deliverable is the vector PDF, which a
-# laser printer renders crisply. print_v40.py --no-flatten / merge_tranches_v40.py --no-flatten.
-*_flat.pdf

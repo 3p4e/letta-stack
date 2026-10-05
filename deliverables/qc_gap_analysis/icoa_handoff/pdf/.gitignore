@@ -1,6 +1,0 @@
-# The per-document A4 pages, one per internal certificate (print_icoa_v2.py). The merged
-# iCoA_INITIAL.pdf and iCoA_RETEST.pdf carry every one of them and are the deliverable;
-# 154 tracked binaries of the same pages are paid for on every clone. Same rule as
-# design_handoff/pdf/pages/.
-pages/
-preview/

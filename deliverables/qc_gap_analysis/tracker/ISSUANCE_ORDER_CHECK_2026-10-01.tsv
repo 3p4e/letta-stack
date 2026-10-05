@@ -1,0 +1,12 @@
+number	tranche	p_lot	batch	type	issue	issue_before_redating	chronologically_after	chronologically_before	status
+-021	3	P050142	BSS1024_01/2	initial release — predicted	23.09.2026	06.06.2026	after -165 (21.09.2026)	last	free to renumber
+-046	3	P060102	WED102501	initial release — predicted	08.09.2026	06.06.2026	after -105 (17.08.2026)	before -106 (18.09.2026)	free to renumber
+-068	3	P060332	CC012601/1	initial release — predicted	17.08.2026	06.06.2026	after -105 (17.08.2026)	before -106 (18.09.2026)	free to renumber
+-073	3	P060342	SCR012601	initial release — predicted	21.09.2026	06.06.2026	after -165 (21.09.2026)	last	free to renumber
+-084	—	P060492	JD042601	initial release — predicted	18.09.2026	13.08.2026	after -135 (18.09.2026)	before -136 (21.09.2026)	free to renumber
+-089	1	P050212	CJ062501-2	retest — predicted	07.09.2026		after -105 (17.08.2026)	before -106 (18.09.2026)	frozen (T1/T2, issued)
+-166	—	CC042601		initial release — predicted	18.09.2026	≥ 11.05.2026	after -135 (18.09.2026)	before -136 (21.09.2026)	free to renumber
+-167	—	FB042601		initial release — predicted	18.09.2026	≥ 11.05.2026	after -135 (18.09.2026)	before -136 (21.09.2026)	free to renumber
+-168	—	P160012		initial release — predicted	13.07.2026		after -080 (13.07.2026)	before -081 (28.07.2026)	free to renumber
+-169	—	P160022		initial release — predicted	13.07.2026		after -080 (13.07.2026)	before -081 (28.07.2026)	free to renumber
+-170	—	P160032		initial release — predicted	13.07.2026		after -080 (13.07.2026)	before -081 (28.07.2026)	free to renumber

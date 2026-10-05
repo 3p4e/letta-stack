@@ -397,3 +397,41 @@ jobs:
       - name: The workbook's sentences agree with its tables
         run: |
           python3 deliverables/qc_gap_analysis/tracker/verify_prose.py
+      # Head of QC, 26.09.2026: no silent blank on a certificate. Fails while a
+      # Tranche 3 result is empty although a same-lot certificate reports it
+      # (see CLAUDE.md, section 5). Tranches 1 and 2 are issued and not touched.
+      - name: No certificate result is empty while a certificate reports it
+        run: |
+          python3 deliverables/qc_gap_analysis/tracker/audit_empty_results.py --tranche T3 --strict
+      # Head of QC, 27.09.2026: "hell no. from where did MK GMP Certified Facility came from".
+      # The desk had written a certification claim into the footer from a design-system
+      # README. No page a build can still change may state a certification the Head of QC
+      # has not ruled in.
+      - name: No certificate states an unauthorised certification
+        run: |
+          python3 deliverables/qc_gap_analysis/tracker/check_certificate_claims.py
+      # Head of QC, 26.09.2026: "Don't touch T1 and T2 — they are already issued and sent to
+      # the customer." The 26.09 apply scripts refuse them; 28 older ones do not. So every
+      # Tranche 1 and 2 record and page is held against the snapshot of the restored state.
+      - name: Tranches 1 and 2 are unchanged
+        run: |
+          python3 deliverables/qc_gap_analysis/tracker/check_frozen_records.py
+      # Head of QC, 27.09.2026: certificates are issued chronologically. The list of numbers
+      # out of date order is with him; it is regenerated from the register, so it cannot go
+      # stale behind a re-dating or a withdrawal.
+      - name: The issuance-order list is current
+        run: |
+          cd deliverables/qc_gap_analysis
+          python3 tracker/issuance_order_check.py --stdout | diff - "$(ls tracker/ISSUANCE_ORDER_CHECK_*.tsv | sort | tail -1)"
+      # Head of QC, 28.09.2026: check the references of the internal certificates the
+      # certificates of quality cite. Every delivered CoQ's iCoA citation is held against
+      # the iCoA page itself, and no number may be one an approved scan gives another lot.
+      - name: Every cited internal certificate is the right document
+        run: |
+          python3 deliverables/qc_gap_analysis/tracker/check_icoa_references.py
+      # Head of QC, 28.09.2026: a retest must not print a result the initial does not hold,
+      # nor read a value around a missing certificate page. A "carried from the initial" row
+      # must match the initial's row, and may not print a value the initial holds pending.
+      - name: A carried result really is the initial's
+        run: |
+          python3 deliverables/qc_gap_analysis/tracker/check_carry_provenance.py

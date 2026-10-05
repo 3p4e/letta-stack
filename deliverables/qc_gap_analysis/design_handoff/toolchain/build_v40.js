@@ -29,6 +29,25 @@ for (const [f, t] of [['coq_reissue_scope_2026-09-15.csv', null], ['coq_draft_sc
   for (const r of rows.slice(1)) if (r[iL]) tranche[r[iL]] = tranche[r[iL]] || r[iT];
 }
 
+// Tranches 1 and 2 are issued and with the customer (Head of QC, 26.09.2026): the tranche of
+// each lot as the 18.09.2026 grouping files it, read as tracker/audit_empty_results.py reads it.
+const TR18 = {};
+for (const r of CoQ.parseCSV(fs.readFileSync(path.join(GAP, 'intake_tranches_2026-09-18', 'drive_folders_2026-09-18.tsv'), 'utf8').replace(/\t/g, ',')).slice(1)) {
+  const [t, f] = r; if (!f) continue;
+  const tail = f.split('_').pop();
+  if (/^[PJ]\d{5,6}$/.test(tail)) TR18[tail] = t;
+  TR18[f] = t;
+  const head = f.replace(/_P\d{6}$/, '').replace(/_+$/, '').replace(/\uFF0A/g, '');
+  if (!(head in TR18)) TR18[head] = t;
+}
+// The six lots that left the tranches on 18.09 (CLE072501, OPM092501, SJ092501, JD042601,
+// CC042601, FB042601) were built as Tranche 2 before that, but none of their certificates was
+// issued — not among the 46 approved scans, not among the 44 pages of 24.09 — so they are not frozen.
+function FROZEN_LOT(c) {
+  for (const k of [c.pp, c.cb, String(c.cb || '').replace(/\uFF0A/g, '')]) if (k && k in TR18) return /^T[12]$/.test(TR18[k]);
+  return false;
+}
+
 // --- the owner's instruction of 16.09.2026: the Macedonian half of a conformity
 // result stacks beneath the English, at the size the template already sets for it
 // (.r-conform .mk — 6.8px, 79 % of the cell). The package's cell() drops the half
@@ -218,6 +237,53 @@ const EDGE_FADE_LAYER = '<style id="__owner-edges">\n' +
   'html body div.page div.tbl-wrap table.labref tbody{background-size:100% 1px !important}\n' +
 '</style>';
 
+// Head of QC, 01.10.2026: the 2-stop gradient above (233,239,246 → 221,230,240) is only 12
+// RGB units apart and renders as a flat bar. On certificates not yet issued, a 3-stop bevel
+// gradient replaces it: darker top, bright mid-highlight, medium bottom — ~44-unit contrast,
+// clearly visible. Frozen T1/T2 keep the 2-stop rule above so their pages stay byte-for-byte
+// against the snapshot; the bevel layer is appended last for !FROZEN_LOT and wins by cascade.
+const SEC_LABEL_BEVEL_LAYER = '<style id="__owner-sec-bevel">\n' +
+  'html body div.page .sec-label{background-color:#D7E4F0 !important;' +
+     'background-image:linear-gradient(180deg,rgb(186,205,224) 0%,rgb(230,239,249) 45%,rgb(210,223,237) 100%) !important;' +
+     'border-top:1px solid rgb(157,181,207) !important;border-bottom:1px solid rgb(148,172,198) !important}\n' +
+'</style>';
+
+// Head of QC, 28.09.2026: "widen the fades." The coloured bands and rules were solid across the
+// page with a short ramp to white only at the very edge — read as a hard stop of colour into white.
+// Now every fading band and rule is SOLID ONLY ACROSS THE CENTRE and eases to absolute white long
+// before the left/right page margins: a centre plateau (FADE_A..FADE_B) that ramps to #fff at each
+// margin. One layer, appended LAST and inside @media print, so it governs the print without touching
+// the screen design, the full-bleed heading bars (.sec-label) or the footer, which the Head of QC
+// keeps edge to edge. The geometry lives in one place so it can be tuned once.
+const FADE_A = '34%', FADE_B = '66%';
+const wideFade = c => 'linear-gradient(90deg,#fff 0,' + c + ' ' + FADE_A + ',' + c + ' ' + FADE_B + ',#fff 100%)';
+const WIDE_FADE_LAYER = '<style id="__owner-wide-fade">\n@media print{\n' +
+  'html body div.page .pb-main{background-color:#fff !important;background-image:' + wideFade('rgb(244,247,251)') +
+     ' !important;background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important}\n' +
+  'html body div.page .selrow{background-color:#fff !important;background-image:' + wideFade('rgb(250,252,254)') +
+     ' !important;background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important}\n' +
+  'html body div.page div.gridrow,html body div.page div.lockrow{background-color:transparent !important;background-image:' + wideFade('rgb(254,253,249)') +
+     ' !important;background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important}\n' +
+  'html body div.page div.tbl-wrap table.results thead tr,\n' +
+  'html body div.page div.tbl-wrap table.labref thead tr{background-color:transparent !important;background-image:' +
+     wideFade('#9EACBA') + ',' + wideFade('#9EACBA') + ',' + wideFade('#F2F5F9') + ' !important;' +
+     'background-size:100% 1px,100% 1px,100% calc(100% - 2px) !important;background-position:top left,bottom left,left top 1px !important;background-repeat:no-repeat !important}\n' +
+  'html body div.page div.tbl-wrap table.results tbody tr:not(.row-group):not(.sub-row):not(.last-row):nth-of-type(even),\n' +
+  'html body div.page div.tbl-wrap table.labref tbody tr:nth-child(even){background-color:transparent !important;background-image:' + wideFade('rgb(247,249,252)') +
+     ' !important;background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important}\n' +
+  'html body div.page div.tbl-wrap table.results tbody tr.last-row,\n' +
+  'html body div.page div.tbl-wrap table.labref tbody tr:last-child{background-color:transparent !important;background-image:' + wideFade('#9EACBA') +
+     ' !important;background-size:100% 1px !important;background-position:bottom left !important;background-repeat:no-repeat !important}\n' +
+  'html body div.page div.goldrule{background-image:' + wideFade('rgb(160,124,48)') +
+     ' !important;background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important}\n' +
+  'html body div.page .ap-line{background-image:' + wideFade('rgb(160,124,48)') +
+     ' !important;background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important}\n' +
+  'html body div.page div.selrow::before,html body div.page div.selrow::after{background-image:' + wideFade('rgb(160,124,48)') +
+     ' !important;background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important}\n' +
+  'html body div.page div.pb-attrs::after{background-image:' + wideFade('rgb(189,174,143)') +
+     ' !important;background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important}\n' +
+  '}</style>';
+
 const INK_LAYER = '<style id="__owner-uniform-result-ink">\n' +
   '/* Owner, 16.09.2026: "make all certificates of quality analysis results column in\n' +
   '   heading 2 be one colour dark navy blue and do not use any other colour indicating\n' +
@@ -318,6 +384,10 @@ console.log('print-opaque: %d gradient rule(s) converted for print',
             PRINT_ZEBRA_LAYER.split('\n').length - 3);
 
 for (const c of data.coqs) {
+  // Head of QC, 26.09.2026: a lot whose Farmahem campaign was its first testing has one certificate,
+  // not two — "there will be no reissuance". Its retest draft stays in the register, withdrawn, and
+  // nothing is built for it.
+  if (c.withdrawn) { stats.withdrawn = (stats.withdrawn || 0) + 1; continue; }
   const r = rec(c);
   CURRENT = r;
   const code = (r.cb || '').match(/^[A-Za-z]+/); const strainCode = code ? code[0].toUpperCase() : 'XX';
@@ -384,20 +454,10 @@ const S03_LAYER = '<style id="__owner-s03-compact">\n' +
 // left border"). The width the third group gave back is spent on type -
 // the label, its Macedonian line and the option chips all rise about 17 %, the step the
 // type took in Sections 03 and 04. The results table is not touched.
-const S01_LAYER = '<style id="__owner-s01-selrow">\n' +
-  'html body div.page div.selrow{display:grid !important;grid-template-columns:repeat(2,minmax(0,1fr)) !important;justify-content:stretch !important;justify-items:start !important;align-items:center !important;column-gap:12px !important;row-gap:0 !important}\n' +
-  'html body div.page div.selrow > span.grp{display:inline-flex !important;align-items:center !important;gap:9px !important;min-width:0 !important;white-space:nowrap !important;flex:0 0 auto !important}\n' +
-  'html body div.page div.selrow > span.grp:first-child{grid-column:1 !important}\n' +
-  'html body div.page div.selrow > span.grp:last-child{grid-column:2 !important}\n' +
-  'html body div.page div.selrow span.lk-lbl{font-size:8.4px !important;letter-spacing:.34px !important;line-height:1.12 !important}\n' +
-  'html body div.page div.selrow span.lk-lbl > span.mk{font-size:6.9px !important;line-height:1.08 !important}\n' +
-  'html body div.page div.selrow span.chip-sel{font-size:8.6px !important;padding:1.8px 6.5px 1.8px 5px !important;border-radius:9px !important}\n' +
-  'html body div.page div.selrow span.chip-un{font-size:7.5px !important;padding:1.3px 6px !important;border-radius:9px !important}\n' +
-  'html body div.page div.selrow span.chip-sel > span.bx{font-size:10.6px !important}\n' +
-  'html body div.page div.selrow span.chip-un > span.bx{font-size:9.6px !important}\n' +
-  'html body div.page div.selrow span.grp > span.stack{gap:7px !important}\n' +
-  '</style>';
-
+// Head of QC, 30.09.2026: the processing pill is restored to Section 01 (see coq_build.js),
+// so the row carries three groups again as the approved scans show. The 18.09 two-column grid
+// (S01_LAYER) was for two groups only and is removed; the row returns to the base template's
+// flex space-between, the layout the sent certificates were printed in.
 
 // The white band under the section 01 bar (Head of QC, 18.09.2026: "expand the background
 // that is in that section"). Measured on the page: the bar ends at 154.80 and the product
@@ -411,7 +471,10 @@ const S01_BAND_LAYER = '<style id="__owner-s01-band">\n' +
   'html body div.page div.header-bar + div.sec-label{margin-bottom:0 !important}\n' +
   'html body div.page div.sec-label + div.pb-main,html body div.page div.sec-label + .pb-main{margin-top:0 !important;padding-top:12px !important}\n' +
   '</style>';
-  const DESK_LAYERS = OWNER_LAYER + '\n' + HB_SUP_LAYER + '\n' + PRINT_ZEBRA_LAYER + '\n' + EDGE_FADE_LAYER + '\n' + INK_LAYER + '\n' + S34_LAYER + '\n' + S03_LAYER + '\n' + S01_LAYER + '\n' + S01_BAND_LAYER + '\n';
+  // WIDE_FADE_LAYER only on certificates that are not yet issued. Tranches 1 and 2 are with the
+  // customer and are held byte-for-byte by check_frozen_records.py; the widen-the-fades ruling of
+  // 28.09.2026 governs the reprints (Tranche 3 and the lots outside the tranches), never the sent set.
+  const DESK_LAYERS = OWNER_LAYER + '\n' + HB_SUP_LAYER + '\n' + PRINT_ZEBRA_LAYER + '\n' + EDGE_FADE_LAYER + '\n' + INK_LAYER + '\n' + S34_LAYER + '\n' + S03_LAYER + '\n' + S01_BAND_LAYER + '\n' + (FROZEN_LOT(c) ? '' : SEC_LABEL_BEVEL_LAYER + '\n' + WIDE_FADE_LAYER + '\n');
   if (html.indexOf('</body>') < 0) throw new Error('no </body> to append the desk layers before');
   html = html.replace('</body>', DESK_LAYERS + '</body>');
   // Owner, 16.09.2026 (second pass): the issue date in the Section 03 code column is
@@ -449,6 +512,81 @@ const S01_BAND_LAYER = '<style id="__owner-s01-band">\n' +
   // What is removed from the note is only the procedural sentence the owner struck on
   // 16.09.2026, which carried the only document code on the line.
   let htmlOut = html;
+  // Head of QC, 27.09.2026, on the footer's "MK GMP Certified Facility": "hell no". It came
+  // with the Claude Design package's base page; the 17.09.2026 ruling had already taken
+  // "MK GMP Certified" off the laboratory line. It leaves every certificate outside
+  // Tranches 1 and 2, which are issued and with the customer and are not touched.
+  const GMP_FOOT = '<div class="foot-right">MK GMP Certified Facility</div>';
+  if (!FROZEN_LOT(c)) {
+    if (htmlOut.split(GMP_FOOT).length !== 2) throw new Error('footer GMP line not found once: ' + c.regcode);
+    htmlOut = htmlOut.replace(GMP_FOOT, '<div class="foot-right"></div>');
+    // Section 03, the laboratory block — Head of QC, 28.09.2026:
+    //  * "make them in two rows and inline; they're going into three rows and it's pushing the
+    //    page down" — each laboratory on two lines: English name and accreditation; Macedonian
+    //    name, LT code and address, held to one line;
+    //  * "UKIM FF instead of the full name";
+    //  * "arrange the vertical borders ... fixed ... not movable", "everything aligned to the
+    //    left" — fixed column widths, the same on every certificate, all left-aligned;
+    //  * "for the document code use some narrow font" — Roboto Condensed (inlined at print by
+    //    house_fonts, like the other house faces);
+    //  * "always put the parameter numbers in two rows and always put the certificates' document
+    //    codes in two rows ... one reference in the first row, two: one in the first, one in the
+    //    second, a third in the first row, and so on" — a two-row grid filled column by column.
+    // It went to 74 of 75 unissued certificates three rows deep and pushed 24 past A4. The rules go
+    // last, after the desk layers, and outrank their white-space, alignment and column widths.
+    const L0 = htmlOut.indexOf('<table class="labref">');
+    const L1 = htmlOut.indexOf('</table>', L0);
+    if (L0 < 0 || L1 < 0) throw new Error('no laboratory table: ' + c.regcode);
+    let lab = htmlOut.slice(L0, L1);
+    lab = lab.split('UKIM Faculty of Pharmacy — Center for Natural Products').join('UKIM FF — Center for Natural Products');
+    lab = lab.replace(/<td class="lr-mono">((?:<span class="cert">[\s\S]*?<\/span>\s*)+)<\/td>/g,
+      (m, certs) => '<td class="lr-mono"><span class="g2">' + certs + '</span></td>');
+    lab = lab.replace(/<td class="lr-mono pcell">([^<]*)<\/td>/g, (m, t) => {
+      // Head of QC, 28.09.2026: "why not 2-4 instead of 2,3,4" — a run of three or more
+      // consecutive parameter numbers is printed as a range
+      const raw = t.split(/\s*,\s*/).map(s => s.trim()).filter(Boolean);
+      const items = [];
+      for (let i = 0; i < raw.length;) {
+        let j = i;
+        while (j + 1 < raw.length && /^\d+$/.test(raw[j]) && /^\d+$/.test(raw[j + 1]) && +raw[j + 1] === +raw[j] + 1) j++;
+        if (j - i >= 2) { items.push(raw[i] + '\u2013' + raw[j]); i = j + 1; } else { items.push(raw[i]); i++; }
+      }
+      return '<td class="lr-mono pcell"><span class="g2">' + items.map(n => '<span class="pn">' + n + '</span>').join('') + '</span></td>';
+    });
+    if (/<td class="lr-mono">(?!<span class="g2">)/.test(lab) || /<td class="lr-mono pcell">(?!<span class="g2">)/.test(lab))
+      throw new Error('a laboratory-block cell was not put on the two-row grid: ' + c.regcode);
+    htmlOut = htmlOut.slice(0, L0) + lab + htmlOut.slice(L1);
+    const LB = 'html body div.page div.tbl-wrap table.labref';
+    const LABREF_GRID = '<style id="labref-grid">'
+      + "@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');"
+      + LB + ' colgroup col:nth-child(2):nth-child(2){width:190px !important}'
+      + LB + ' colgroup col:nth-child(3):nth-child(3){width:84px !important}'
+      + LB + ' thead tr th.c.c.c,' + LB + ' thead tr th:nth-child(n):nth-child(n),'
+      + LB + ' tbody tr td.lr-mono.lr-mono.lr-mono,' + LB + ' tbody tr td.lr-mono.pcell.pcell,' + LB + ' tbody tr td:nth-child(n):nth-child(n)'
+      + '{text-align:left !important;vertical-align:middle !important;justify-content:flex-start !important}'
+      // Head of QC, 28.09.2026: the external laboratories' documents centred in their column;
+      // the parameter numbers to the right border of their cell, on the page margin
+      + LB + ' thead tr th:nth-child(2):nth-child(2):nth-child(2),' + LB + ' tbody tr td.lr-mono.lr-mono.lr-mono:nth-child(2)'
+      + '{text-align:center !important}'
+      + LB + ' thead tr th:nth-child(3):nth-child(3):nth-child(3),' + LB + ' tbody tr td.lr-mono.pcell.pcell:nth-child(3)'
+      + '{text-align:right !important}'
+      + LB + ' tbody tr td.lr-mono.lr-mono.lr-mono:nth-child(2) .g2{justify-items:center !important}'
+      + LB + ' tbody tr td.lr-mono.pcell.pcell:nth-child(3) .g2{justify-items:end !important}'
+      + LB + ' tbody tr td:nth-child(n):nth-child(n){padding-top:1px !important;padding-bottom:1px !important}'
+      + LB + ' tbody tr td .lr-lab,' + LB + ' tbody tr td .lr-lab .mk,' + LB + ' tbody tr td .lr-lab small{white-space:nowrap !important}'
+      + LB + ' tbody tr td .g2{display:inline-grid !important;grid-template-rows:repeat(2,8px);grid-auto-flow:column;'
+      + 'grid-auto-columns:max-content;column-gap:9px;justify-items:start;align-items:center;vertical-align:middle}'
+      + LB + ' tbody tr td .g2 .cert{display:block !important;margin:0 !important;text-align:left !important;white-space:nowrap !important;'
+      + "font-family:'Roboto Condensed',sans-serif !important;font-size:7.4px !important;line-height:8px !important}"
+      + LB + " tbody tr td .g2 .cert b{font-family:'Roboto Condensed',sans-serif !important;font-weight:600 !important}"
+      + LB + " tbody tr td .g2 .cert .cd{font-family:'Roboto Condensed',sans-serif !important;font-size:6.4px !important}"
+      + LB + ' tbody tr td.lr-mono.lr-mono:not(.pcell) .g2 .cert + .cert::before{content:none !important;margin:0 !important;display:none !important}'
+      + LB + ' tbody tr td.lr-mono.lr-mono:not(.pcell) .g2 .cert{margin:0 !important;padding:0 !important}'
+      + LB + " tbody tr td .g2 .pn{font-family:'Roboto Mono',monospace;font-size:7.4px;font-weight:600;line-height:8px}"
+      + '</style>';
+    if (htmlOut.split('</body>').length !== 2) throw new Error('no single </body>: ' + c.regcode);
+    htmlOut = htmlOut.replace('</body>', LABREF_GRID + '</body>');
+  }
   const OLD_NOTE = /<br>Parameter attribution to the issuing laboratory[^<]*<\/div>/;
   if (!OLD_NOTE.test(htmlOut)) throw new Error('Section 02 note sentence not found');
   htmlOut = htmlOut.replace(OLD_NOTE, '</div>');
