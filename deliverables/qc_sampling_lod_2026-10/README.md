@@ -1,24 +1,39 @@
 # PP-QC-SP-002/26 — in-house loss on drying before shipment, Tranches 1 and 2
 
-Three documents, bilingual Macedonian / English, built with the Purely Plant document engine
-(`pp-document-suite/`, python-docx) from committed records only. Head of QC, 05.10.2026: *one
-execution document per sampling day, all the batches of that day together* — so the set is the
-plan plus two daily execution records, not a form per batch. Head of QC, 06.10.2026: the execution
-records are delivered as their own package, separate from the plan.
+Three separate document packages, bilingual Macedonian / English, built from committed records only.
+Head of QC, 06.10.2026: the sampling of the bags and the loss-on-drying analysis are separate
+documentation packages, on the company's own SOP forms. The forms reproduce the July 2026 layouts
+field for field (QCT 024 v01, QCSOP 011_A03 v7.0, QCT 021 v01, QASOP_031_A05_v1, QASOP_031_A07);
+only the values are prefilled. Each sampling form carries every batch of its day (Head of QC,
+05.10.2026), except A03, whose layout is one batch per form.
 
-| File (`out/`) | What it is |
+| Package (`out/`) | Contents |
 |---|---|
-| `PP-QC-SP-002_26_Sampling_Plan_LoD_T1_T2.docx` / `.pdf` | Sampling Plan & Execution Protocol — purpose, basis, formulas, per-batch plan (46 lots), day groups, conditions, homogenisation, the LoD method, schedule, record map, references, open items |
-| `PP-QC-SP-002_26-ER-01_Execution_Record_Day1.docx` / `.pdf` | Execution record for every Day-1 batch: batch table, handover warehouse to QC, per-batch execution, per-bag inventory (493 prefilled rows), return, LoD determinations (44 prefilled rows), deviations, sign-offs |
-| `PP-QC-SP-002_26-ER-02_Execution_Record_Day2.docx` / `.pdf` | The same for Day 2 (492 bag rows, 44 LoD rows) |
-| `PACKET_PP-QC-SP-002_26_Execution_Records_ER-01_ER-02.pdf` | ER-01 and ER-02 merged, a bookmark per record (40 pages) |
-| `PP-QC-SP-002_26_EXECUTION_RECORDS_DOCX_PDF.zip` | The execution-record package: ER-01 and ER-02 as DOCX and PDF plus the merged execution-records packet |
-| `PP-QC-SP-002_26_PLAN_DOCX_PDF.zip` | The plan package: the sampling plan as DOCX and PDF |
-| `PACKET_PP-QC-SP-002_26_Plan_ER-01_ER-02.pdf` | The three PDFs merged, a bookmark per document (50 pages) |
+| `1_PLAN/`, `PP-QC-SP-002_26_PACKAGE-1_PLAN.zip` | Sampling Plan and Execution Protocol (10 pages) |
+| `2_SAMPLING_EXECUTION/`, `PP-QC-SP-002_26_PACKAGE-2_SAMPLING_EXECUTION.zip` | Package index, then per sampling day the seven documents below |
+| `3_LOD_ANALYSIS_EXECUTION/`, `PP-QC-SP-002_26_PACKAGE-3_LOD_ANALYSIS_EXECUTION.zip` | LOD-01 (Day-1 samples) and LOD-02 (Day-2 samples), one execution record each for all batches analysed together |
 
-Data behind every number: `SAMPLING_PLAN_T1_T2_2026-10.tsv` (one row per lot), `bag_selection.tsv`
-(one row per selected bag), `DATA_NOTES.md` (the two data notes), `BUILD_LOG.md` (verify results,
-page counts, SHA-256 of every file).
+Package 2, per sampling day, in order of use:
+
+| Step | Document | Form | Record No. |
+|---|---|---|---|
+| 1 | Transfer, secure warehouse to sampling room: selected bags K#B#, net 400.0 g, gross at receipt | QCT 024 v01 | `PP-QC-SP-002/26-D1-RCPT` (D2) |
+| 2 | Visual inspection on opening, one form per batch, bags prefilled | QCSOP 011_A03 v7.0 | from the A03 register |
+| 3 | Before, sampled and after per bag; composite sample code and net per batch; waste, loss, gain | QCT 021 v01 | MLR number from its register |
+| 4 | SAMPLED bag labels, 52.5 x 33 mm, one per sampled bag (493 and 492) | QASOP_031_A05_v1 | none |
+| 5 | Composite sample labels, A4 4 x 2, one per batch (23 and 23) | QASOP_031_A07 | none |
+| 6 | Transfer, sampling room to secure warehouse: the same bags, new net and gross from QCT 021 | QCT 024 v01 | `PP-QC-SP-002/26-D1-RET` (D2) |
+| 7 | Transfer, sampling room to QC laboratory: one composite per batch | QCT 024 v01 | `PP-QC-SP-002/26-D1-SMP` (D2) |
+
+Package 3, the LoD execution record: A receipt of the samples (from step 7), B equipment and
+conditions, C homogenisation and test portions, D weighings to constant mass per test portion (44
+prefilled rows each), E results per batch, F deviations and OOS, G sign-offs.
+
+Each package folder holds every DOCX and PDF and a merged packet PDF with a bookmark per document.
+The label sheets are in the folder and the zip but not in the packet: they print on perforated
+stock. Data behind every number: `SAMPLING_PLAN_T1_T2_2026-10.tsv` (one row per lot),
+`bag_selection.tsv` (one row per selected bag), `DATA_NOTES.md`, `BUILD_LOG.md` (pp_verify result,
+page count and SHA-256 of every file).
 
 ## What the campaign does
 
@@ -55,7 +70,8 @@ page counts, SHA-256 of every file).
 - Master v57 Reference E216 (GG1024_01); KC102501 kg; documented bag counts at retrieval.
 - k rule vs the SOP duplicate; oven capacity (44 bottles per night).
 - The additional drying period for the second weighing (SAM_a02.2 or his instruction).
-- Codes for the daily records (PP-QC-SP-002/26-ER-01/-02, or QCT 025); RQS registration before sampling.
+- Record numbers: D1/D2-RCPT, -RET, -SMP for the QCT 024 transfers and LOD-01/-02 for the analysis
+  (or QCT 025); A03 and QCT 021 numbers from their registers; RQS registration before sampling.
 - HMA pairing on the composites for the method-verification work (5 to 12 % range) — entered before
   approval if the verification agent asks for it.
 
@@ -63,9 +79,12 @@ page counts, SHA-256 of every file).
 
 ```
 python3 campaign_data.py --test && python3 campaign_data.py      # data -> TSVs
-python3 build_campaign_docs.py                                    # DOCX, pp_verify PASS required
-cd out && for f in *.docx; do soffice --headless --convert-to pdf --outdir . "$f"; done
-cd .. && python3 package.py                                       # packets, the two zips, BUILD_LOG.md
+python3 build_campaign_docs.py                                    # package 1, pp_verify PASS required
+python3 build_execution_packages.py                               # packages 2 and 3 (forms, LoD records)
+python3 build_labels.py                                           # QASOP_031 label sheets
+for f in out/1_PLAN out/2_SAMPLING_EXECUTION out/3_LOD_ANALYSIS_EXECUTION; do
+  (cd $f && soffice --headless --convert-to pdf --outdir . *.docx); done
+python3 package.py                                                # packets, zips, BUILD_LOG.md
 ```
 
 Fonts: copy `pp-document-suite/assets/fonts/*.ttf` to `~/.local/share/fonts` and run `fc-cache -f`

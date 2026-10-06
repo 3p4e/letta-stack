@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Build PP-QC-SP-002/26 — the sampling plan and the two daily execution records — with the
-Purely Plant document engine (pp-document-suite, python-docx). Every number printed here is read
-from SAMPLING_PLAN_T1_T2_2026-10.tsv and bag_selection.tsv (campaign_data.py); the engine owns the
+"""Build PP-QC-SP-002/26 — the sampling plan (package 1) — with the Purely Plant document engine
+(pp-document-suite, python-docx), and hold the helpers the execution packages share
+(build_execution_packages.py, build_labels.py). Every number printed here is read from
+SAMPLING_PLAN_T1_T2_2026-10.tsv and bag_selection.tsv (campaign_data.py); the engine owns the
 appearance. Each output is passed through pp_verify.py and the build fails on anything but PASS.
 
-    python3 build_campaign_docs.py            # -> out/*.docx
+    python3 build_campaign_docs.py            # -> out/1_PLAN/*.docx
 """
 import csv
 import os
@@ -22,6 +23,7 @@ import pp_assets            # noqa: E402
 from docx.enum.table import WD_TABLE_ALIGNMENT  # noqa: E402
 
 OUT = os.path.join(HERE, "out")
+OUT_P = os.path.join(OUT, "1_PLAN")
 PLAN_TSV = os.path.join(HERE, "SAMPLING_PLAN_T1_T2_2026-10.tsv")
 BAGS_TSV = os.path.join(HERE, "bag_selection.tsv")
 
@@ -146,6 +148,13 @@ def verify(path):
     return ok
 
 
+def chapter(d, num_, mk, en):
+    """Engine chapter heading kept on the page of what follows it (no heading alone at a page foot)."""
+    p = pr.chapter(d, num_, mk, en)
+    p.paragraph_format.keep_with_next = True
+    return p
+
+
 def contents_page(d, chapters):
     """Static contents list. A native TOC field stays empty under headless LibreOffice (fields are
     not updated on conversion), so the chapter list is printed as text."""
@@ -198,7 +207,7 @@ def build_plan(lots):
     contents_page(d, PLAN_CHAPTERS)
 
     # 1
-    pr.chapter(d, "1", "ЦЕЛ И ОПФАТ", "Purpose & Scope")
+    chapter(d, "1", "ЦЕЛ И ОПФАТ", "Purpose & Scope")
     pr.body(d, "Овој документ го пропишува земањето репрезентативен примерок од секоја од 46-те производни серии "
                "од Транша 1 (20 серии) и Транша 2 (26 серии), складирани во сеф-магацинот како готов производ во троен "
                "фолиски кеси од 400 g (10 кеси по нумериран картон), и интерното определување на губиток при сушење "
@@ -219,7 +228,7 @@ def build_plan(lots):
             "PP-QC-SP-003/26 on the same procedure.")
 
     # 2
-    pr.chapter(d, "2", "ПРИНЦИП И ОСНОВА", "Principle & Basis")
+    chapter(d, "2", "ПРИНЦИП И ОСНОВА", "Principle & Basis")
     pr.bullet(d, "Единица за земање е фолиската кеса од 400 g (примарен затворен сад); картонот со 10 кеси е секундарно "
                  "пакување и не е единица за земање.",
               "The sampling unit is the 400 g foil bag (primary sealed container); the 10-bag carton is secondary "
@@ -248,7 +257,7 @@ def build_plan(lots):
             "QC's rule of 05.10.2026 applies (section 11).")
 
     # 3
-    pr.chapter(d, "3", "ФОРМУЛИ", "Formulas")
+    chapter(d, "3", "ФОРМУЛИ", "Formulas")
     table(d, ["Величина | Quantity", "Формула | Formula", "Забелешка | Note"], [
         ["Број на кеси во серијата | Bags in the batch", "N = kg ÷ 0,400, заокружено нагоре | N = kg ÷ 0.400, rounded up",
          "kg од мастер v57 (Reference, „DELIVERY T1–T3“); документираниот број кеси во магацинот има предност | "
@@ -273,7 +282,7 @@ def build_plan(lots):
             "The composite mass is approximately n × (1–3 g) per flower; k × 1.000 g test portions are needed.")
 
     # 4
-    pr.chapter(d, "4", "ПЛАН ПО СЕРИЈА", "Per-Batch Plan")
+    chapter(d, "4", "ПЛАН ПО СЕРИЈА", "Per-Batch Plan")
     ordered = sorted(lots, key=lambda l: (l["tranche"], l["batch"]))
     idx = {l["batch"]: i for i, l in enumerate(ordered, start=1)}
     pr.subsec(d, "4a", "Идентитет и количина", "Identity and quantity")
@@ -303,10 +312,10 @@ def build_plan(lots):
     table(d, ["№", "Серија | Batch", "N", "n", "k", "i", "r", "Картони | Cartons", "Збирен g | Composite g",
               "Порции g | Portions g", "Последен ГпС на запис | Last LoD on record", "Ден | Day"], rows, sz=7)
     pr.note(d, "N е изведено од kg (кеси од 400 g); ако документираниот број кеси во магацинот се разликува, тој важи и n се "
-               "пресметува повторно на извршниот запис. „Последен ГпС на запис“ е информативен: вредноста, лабораторијата и "
+               "пресметува повторно на QCT 024 (прием). „Последен ГпС на запис“ е информативен: вредноста, лабораторијата и "
                "датумот од регистарот на сертификати (coq_artifact_data.json).",
             "N is derived from kg (400 g bags); if the warehouse's documented bag count differs, it governs and n is recomputed "
-            "on the execution record. “Last LoD on record” is informative: value, laboratory and date from the certificate "
+            "on QCT 024 (receipt). “Last LoD on record” is informative: value, laboratory and date from the certificate "
             "register (coq_artifact_data.json).")
 
     pr.subsec(d, "4.1", "Групирање по ден на земање", "Grouping by sampling day")
@@ -322,11 +331,11 @@ def build_plan(lots):
     pr.body(d, "Балансот е по Σn (кеси за отворање — кесата е единицата на работа), со цели серии; поголемите серии се "
                "распоредуваат први. Во рамки на денот редоследот на повлекување следи по магацин (E66 → E46/47 → F131 → "
                "Sec.Pack), па по транша и серија. Групирањето е индикативно — серија што не е подготвена се одложува за "
-               "наредниот ден и се забележува на извршниот запис.",
+               "наредниот ден и се забележува на QCT 024 (прием) на денот.",
             "Balance is by Σn (bags to open — the bag is the unit of work), with whole batches; larger batches are placed "
             "first. Within a day the retrieval order follows the warehouse (E66 → E46/47 → F131 → Sec.Pack), then tranche "
             "and batch. The grouping is indicative — a batch that is not ready is deferred to the next day and noted on "
-            "the execution record.")
+            "that day's QCT 024 (receipt).")
     pr.note(d, "Предлог за работна сила (не е правило): околу 490 кеси на ден со три лица и околу 2,5 минути по кеса "
                "(отворање, инспекција, мерење пред/по, еден цвет, етикета) се околу 7 работни часа. Оптоварување на "
                "печката: %d сада за мерење првата ноќ, %d втората." % (sum(l["k"] for l in by_day[1]), sum(l["k"] for l in by_day[2])),
@@ -335,36 +344,36 @@ def build_plan(lots):
             "%d weighing bottles the first night, %d the second." % (sum(l["k"] for l in by_day[1]), sum(l["k"] for l in by_day[2])))
 
     # 5
-    pr.chapter(d, "5", "УСЛОВИ, ИЗБОР НА КЕСИ И СЛЕДЛИВОСТ", "Conditions, Bag Selection & Traceability")
+    chapter(d, "5", "УСЛОВИ, ИЗБОР НА КЕСИ И СЛЕДЛИВОСТ", "Conditions, Bag Selection & Traceability")
     for mk, en in [
         ("Чист и сув прибор од нерѓосувачки челик, ракавици; нема барање за асептична техника (физичко-хемиска крајна "
          "точка). Времето надвор од складиште се минимизира; кесата се затвора веднаш по земањето.",
          "Clean, dry stainless-steel tools and gloves; no aseptic requirement (physico-chemical endpoint). Time out of "
          "storage is minimised; the bag is closed immediately after sampling."),
         ("Систематски избор со случаен почеток r (поглавје 3), генериран со seed 20261005 и отпечатен во 4b; избраните "
-         "кеси се однапред внесени во извршниот запис со ознаката K{картон}B{кеса}. Истата ознака се користи на секој запис "
+         "кеси се однапред внесени на обрасците за земање со ознаката K{картон}B{кеса}. Истата ознака се користи на секој запис "
          "и етикета за таа кеса (единствен клуч по кеса, како во PP-QC-SP-001/26).",
          "Systematic selection with a random start r (section 3), generated with seed 20261005 and printed in 4b; the "
-         "selected bags are pre-entered on the execution record with the key K{carton}B{bag}. The same key is used on "
+         "selected bags are pre-entered on the sampling forms with the key K{carton}B{bag}. The same key is used on "
          "every record and label for that bag (single per-bag key, as in PP-QC-SP-001/26)."),
         ("По кеса: визуелна инспекција при отворање според критериумите на QCSOP 011_A03 (боја/мирис, мувла, штетници, "
-         "страни материи/семки, оштетено пакување) — „не одговара“ → карантин и отстапување; мерење бруто пред отворање; "
-         "земање на ЕДЕН цвет, најголемиот видлив; мерење бруто по затворање; двете маси се внесуваат во записот (дел D).",
+         "страни материи/семки, оштетено пакување) — „не одговара“ → карантин и отстапување; бруто се мери при прием (QCT 024); "
+         "се зема ЕДЕН цвет, најголемиот видлив; бруто се мери по затворање; пред, мострирано и после се на QCT 021.",
          "Per bag: visual inspection on opening against the QCSOP 011_A03 criteria (colour/odour, mould, pests, foreign "
-         "matter/seeds, pack damage) — “does not conform” → quarantine and deviation; gross weighed before opening; ONE "
-         "flower taken, the largest visible; gross weighed after closing; both masses entered on the record (section D)."),
+         "matter/seeds, pack damage) — “does not conform” → quarantine and deviation; gross weighed at receipt (QCT 024); ONE "
+         "flower taken, the largest visible; gross weighed after closing; before, sampled and after are on QCT 021."),
         ("Извор на вистина за масите: нето = етикетата на примарното пакување (400,0 g, се препишува); бруто = го мери КК; "
-         "земено = бруто пред − бруто по. Отворените кеси се ре-етикетираат „ЗЕМЕН ПРИМЕРОК | SAMPLED“ со ново нето/бруто "
-         "(етикети по QASOP_031; по серија се потребни n етикети ЗЕМЕН, n етикети нето/бруто и 1 етикета за збирниот примерок).",
+         "мострирано = пред − после (QCT 021). Отворените кеси се означуваат „МОСТРИРАНО“ (QASOP_031_A05_v1, n по серија); "
+         "збирниот примерок добива етикета QASOP_031_A07; новото нето/бруто е на QCT 021 и QCT 024 (враќање).",
          "Mass source of truth: net = the primary-pack label (400.0 g, transcribed); gross = weighed by QC; sampled = gross "
-         "before − gross after. Opened bags are re-labelled “SAMPLED” with the new net/gross (labels per QASOP_031; per batch "
-         "n SAMPLED labels, n net/gross labels and 1 composite-sample label are needed)."),
+         "before − after (QCT 021). Opened bags are labelled “SAMPLED” (QASOP_031_A05_v1, n per batch); the composite gets a "
+         "QASOP_031_A07 label; the new net/gross is on QCT 021 and QCT 024 (return)."),
         ("Збирниот примерок на секоја серија се собира во еден чист затворен сад означен со шифрата на примерокот "
-         "([NNN/26_SFR]-PC-[бр.], QCSOP 011 v03 §6.2.1) и се пренесува во КК лабораторијата истиот ден; преносот се "
-         "потпишува во делот B/E на извршниот запис.",
+         "([NNN/26_SFR]-PC-[бр.], QCSOP 011 v03 §6.2.1) и се пренесува во КК лабораторијата истиот ден на QCT 024 "
+         "(примероци).",
          "Each batch's composite is collected in one clean closed container labelled with the sample code "
-         "([NNN/26_SFR]-PC-[no.], QCSOP 011 v03 §6.2.1) and taken to the QC laboratory the same day; the transfer is signed "
-         "in sections B/E of the execution record."),
+         "([NNN/26_SFR]-PC-[no.], QCSOP 011 v03 §6.2.1) and taken to the QC laboratory the same day on QCT 024 "
+         "(samples)."),
         ("Документација: истовремено, со трајно сино мастило, без празни полиња („N/A“), поправки со една линија, "
          "иницијали и датум (ALCOA+; EU GMP Annex 11; СОП за работа со аналитичка документација).",
          "Documentation: contemporaneous, permanent blue ink, no blank fields (“N/A”), single-line corrections with "
@@ -373,10 +382,12 @@ def build_plan(lots):
         pr.bullet(d, mk, en)
 
     # 6
-    pr.chapter(d, "6", "ЗБИРЕН ПРИМЕРОК, ХОМОГЕНИЗАЦИЈА И ТЕСТ ПОРЦИИ", "Composite, Homogenisation & Test Portions")
+    chapter(d, "6", "ЗБИРЕН ПРИМЕРОК, ХОМОГЕНИЗАЦИЈА И ТЕСТ ПОРЦИИ", "Composite, Homogenisation & Test Portions")
     for mk, en in [
-        ("Истиот ден, во КК лабораторијата: збирниот примерок се мери (маса на збирен примерок, дел C).",
-         "The same day, in the QC laboratory: the composite is weighed (composite mass, section C)."),
+        ("Истиот ден, во КК лабораторијата, на записот за анализа (LOD-01/-02, делови A и C): масата на збирниот примерок "
+         "се препишува од QCT 021.",
+         "The same day, in the QC laboratory, on the analysis record (LOD-01/-02, sections A and C): the composite mass is "
+         "transcribed from QCT 021."),
         ("Сите цветови се сечат грубо со чисти ножици од нерѓосувачки челик на чиста подлога и се мешаат со "
          "четвртирање (материјалот се израмнува, се дели на четири четвртини, спротивните четвртини се спојуваат; "
          "двапати).",
@@ -392,7 +403,7 @@ def build_plan(lots):
         pr.bullet(d, mk, en)
 
     # 7
-    pr.chapter(d, "7", "ОПРЕДЕЛУВАЊЕ НА ГУБИТОК ПРИ СУШЕЊЕ (SAM_a02.2)", "Loss on Drying Determination (SAM_a02.2)")
+    chapter(d, "7", "ОПРЕДЕЛУВАЊЕ НА ГУБИТОК ПРИ СУШЕЊЕ (SAM_a02.2)", "Loss on Drying Determination (SAM_a02.2)")
     table(d, ["Параметар | Parameter", "Вредност | Value"], [
         ["Метод | Method", "Ph. Eur. 2.2.32 (монографија 3028) · интерен метод SAM_a02.2 | Ph. Eur. 2.2.32 (monograph 3028) · in-house method SAM_a02.2"],
         ["Опрема | Equipment", "вакуумска печка · аналитичка вага (читливост според квалификацијата) · ексикатор | vacuum oven · analytical balance (readability as qualified) · desiccator"],
@@ -408,41 +419,42 @@ def build_plan(lots):
     ], sz=8, label_first=True)
 
     # 8
-    pr.chapter(d, "8", "РАСПОРЕД", "Schedule")
+    chapter(d, "8", "РАСПОРЕД", "Schedule")
     table(d, ["Ден | Day", "Активности | Activities"], [
-        ["Ден 1 | Day 1", "Повлекување на картоните за групата Ден 1 (дел B) · отворање, инспекција, мерење и земање по кеса (дел D) · враќање (дел E) · збирни примероци, хомогенизација, k тест порции · влез во печка (дел F, време на влез) | "
-         "Retrieval of the Day-1 cartons (section B) · opening, inspection, weighing and sampling per bag (section D) · return (section E) · composites, homogenisation, k test portions · into the oven (section F, time in)"],
-        ["Ден 2 | Day 2", "Мерење на порциите од Ден 1 по 24 h, дополнителен период и второ мерење до константна маса, пресметка и резултати (дел F на ER-01) · повлекување, земање и влез во печка за групата Ден 2 (ER-02) | "
-         "Weighing of the Day-1 portions after 24 h, additional period and second weighing to constant mass, calculation and results (section F of ER-01) · retrieval, sampling and oven-in for the Day-2 group (ER-02)"],
-        ["Ден 3 | Day 3", "Мерење на порциите од Ден 2 по 24 h, второ мерење до константна маса, резултати (дел F на ER-02) · комплетирање, проверка од второ лице и одобрување на двата записа | "
-         "Weighing of the Day-2 portions after 24 h, second weighing to constant mass, results (section F of ER-02) · completion, second-person check and approval of both records"],
+        ["Ден 1 | Day 1", "Пакет 2, Ден 1: прием (QCT 024 D1-RCPT) · инспекција (A03) и мерење пред/после (QCT 021) · етикети · враќање (D1-RET) · примероци во КК (D1-SMP) — Пакет 3: LOD-01 делови A–C, влез во печка | "
+         "Package 2, Day 1: receipt (QCT 024 D1-RCPT) · inspection (A03) and before/after weighing (QCT 021) · labels · return (D1-RET) · samples to QC (D1-SMP) — Package 3: LOD-01 sections A–C, into the oven"],
+        ["Ден 2 | Day 2", "LOD-01: мерење по 24 h, дополнителен период и второ мерење до константна маса, резултати (делови D–E) · Пакет 2, Ден 2 и LOD-02 делови A–C, влез во печка | "
+         "LOD-01: weighing after 24 h, additional period and second weighing to constant mass, results (sections D–E) · Package 2, Day 2 and LOD-02 sections A–C, into the oven"],
+        ["Ден 3 | Day 3", "LOD-02: мерење по 24 h, второ мерење до константна маса, резултати · проверка од второ лице и одобрување на сите записи | "
+         "LOD-02: weighing after 24 h, second weighing to constant mass, results · second-person check and approval of all records"],
     ], sz=8, label_first=True)
-    pr.note(d, "Датумите се внесуваат ex tempore на извршните записи; деновите не се фиксирани во овој протокол.",
-            "Dates are entered ex tempore on the execution records; the days are not fixed in this protocol.")
+    pr.note(d, "Датумите се внесуваат ex tempore на записите; деновите не се фиксирани во овој протокол.",
+            "Dates are entered ex tempore on the records; the days are not fixed in this protocol.")
 
     # 9
-    pr.chapter(d, "9", "ЗАПИСИ", "Records")
-    pr.body(d, "Извршувањето се документира на ЕДЕН извршен запис по ден на земање — PP-QC-SP-002/26-ER-01 (Ден 1) и "
-               "-ER-02 (Ден 2) — кој ги носи сите серии од тој ден (Раководител на КК, 05.10.2026). Полињата на обрасците "
-               "за пренос (QCT 024), визуелна инспекција (QCSOP 011_A03) и порамнување на количини (QCT 021) се вградени во "
-               "неговите делови, така што постои еден извор на вистина по податок.",
-            "Execution is documented on ONE execution record per sampling day — PP-QC-SP-002/26-ER-01 (Day 1) and -ER-02 "
-            "(Day 2) — carrying every batch of that day (Head of QC, 05.10.2026). The fields of the transfer record "
-            "(QCT 024), the visual inspection form (QCSOP 011_A03) and the quantity reconciliation (QCT 021) are embedded "
-            "in its sections, so there is one source of truth per data point.")
-    table(d, ["Чекор | Step", "Дел од записот | Record section"], [
-        ["Серии на денот (N, n, k, картони) | Batches of the day (N, n, k, cartons)", "A"],
-        ["Повлекување и предавање магацин → КК | Retrieval and handover warehouse → QC", "B"],
-        ["Извршување по серија: картони, инспекција, збирен примерок, шифра | Per-batch execution: cartons, inspection, composite, sample code", "C"],
-        ["Попис по кеса: ID, нето, бруто пред/по, земено, инспекција | Per-bag inventory: ID, net, gross before/after, sampled, inspection", "D"],
-        ["Враќање КК → магацин, ре-етикетирање ЗЕМЕН | Return QC → warehouse, SAMPLED re-labelling", "E"],
-        ["Губиток при сушење: опрема, услови, мерења, резултати | Loss on drying: equipment, conditions, weighings, results", "F"],
-        ["Отстапувања / OOS | Deviations / OOS", "G"],
-        ["Потписи по чекор и заклучни потписи | Per-step and closing sign-offs", "H"],
+    chapter(d, "9", "ЗАПИСИ", "Records")
+    pr.body(d, "Извршувањето е во два посебни пакети (Раководител на КК, 06.10.2026), на контролираните обрасци на QCSOP 011 и "
+               "QASOP_031: Пакет 2 — земање примероци, еден комплет по ден на земање, сите серии на денот на секој образец "
+               "(Раководител на КК, 05.10.2026); Пакет 3 — анализа на губиток при сушење, еден извршен запис за сите серии "
+               "анализирани заедно. Секој податок се внесува еднаш, на неговиот изворен образец.",
+            "Execution is in two separate packages (Head of QC, 06.10.2026), on the controlled QCSOP 011 and QASOP_031 forms: "
+            "Package 2 — sampling, one set per sampling day, every batch of the day on each form (Head of QC, 05.10.2026); "
+            "Package 3 — loss-on-drying analysis, one execution record for all batches analysed together. Each data point is "
+            "entered once, on its source form.")
+    table(d, ["Чекор | Step", "Образец | Form", "Запис | Record"], [
+        ["Пренос сеф-магацин → просторија за земање | Transfer secure warehouse → sampling room", "QCT 024 v01", CODE + "-D1/D2-RCPT"],
+        ["Визуелна инспекција при отворање, по серија | Visual inspection on opening, per batch", "QCSOP 011_A03 v7.0", "QCSOP 011_A03-___/26"],
+        ["Пред, мострирано и после, по кеса | Before, sampled and after, per bag", "QCT 021 v01", "MLR № ___"],
+        ["Етикета „МОСТРИРАНО“ по кеса | “SAMPLED” label per bag", "QASOP_031_A05_v1", "—"],
+        ["Етикета на збирниот примерок | Composite sample label", "QASOP_031_A07", "—"],
+        ["Враќање во сеф-магацин | Return to the secure warehouse", "QCT 024 v01", CODE + "-D1/D2-RET"],
+        ["Примероци → КК лабораторија | Samples → QC laboratory", "QCT 024 v01", CODE + "-D1/D2-SMP"],
+        ["Губиток при сушење: прием, опрема, хомогенизација, мерења, резултати | Loss on drying: receipt, equipment, homogenisation, weighings, results",
+         "Пакет 3 | Package 3", CODE + "-LOD-01/-02"],
     ], sz=8, label_first=True)
 
     # 10
-    pr.chapter(d, "10", "РЕФЕРЕНТНИ ДОКУМЕНТИ", "References")
+    chapter(d, "10", "РЕФЕРЕНТНИ ДОКУМЕНТИ", "References")
     for mk, en in [
         ("QCSOP 011 v03 — Мострирање на примероци, ракување и документација (SP-12; §5 r-план; §6.2.1 шифра на примерок).",
          "QCSOP 011 v03 — QC Sampling, Handling and Documentation (SP-12; §5 r-plan; §6.2.1 sample code)."),
@@ -458,15 +470,15 @@ def build_plan(lots):
          "QCSP 001 — product specification (loss on drying ≤ 12.0 % w/w); QCSP-RMI-P0005 — bag specification (net 400.0 g ± 3 %)."),
         ("EudraLex Vol. 4: Поглавје 6 (контрола на квалитет), Annex 8 (земање примероци), Annex 11 (ALCOA+); ICH Q9(R1).",
          "EudraLex Vol. 4: Chapter 6 (quality control), Annex 8 (sampling), Annex 11 (ALCOA+); ICH Q9(R1)."),
-        ("QCSOP 014 (OOS); QASOP_031 (етикети); QCSOP 011_A03 (визуелна инспекција); QCT 024 / QCT 021 (пренос и порамнување — полиња вградени во извршниот запис).",
-         "QCSOP 014 (OOS); QASOP_031 (labels); QCSOP 011_A03 (visual inspection); QCT 024 / QCT 021 (transfer and reconciliation — fields embedded in the execution record)."),
+        ("QCSOP 014 (OOS); QASOP_031_A05_v1 и A07 (етикети); QCSOP 011_A03 v7.0 (визуелна инспекција); QCT 024 v01 (пренос); QCT 021 v01 (преглед на количини пред и после мострирање).",
+         "QCSOP 014 (OOS); QASOP_031_A05_v1 and A07 (labels); QCSOP 011_A03 v7.0 (visual inspection); QCT 024 v01 (transfer); QCT 021 v01 (quantity review before and after sampling)."),
         ("Извори на податоци: tranche_assignment_2026-09-18.csv; CoQ_Analysis_Master_v57.xlsx (Reference); quantities_table.tsv (10–11.08.2026); coq_artifact_data.json; batch_dates_2026-09-10.csv.",
          "Data sources: tranche_assignment_2026-09-18.csv; CoQ_Analysis_Master_v57.xlsx (Reference); quantities_table.tsv (10–11.08.2026); coq_artifact_data.json; batch_dates_2026-09-10.csv."),
     ]:
         pr.bullet(d, mk, en)
 
     # 11
-    pr.chapter(d, "11", "ОТВОРЕНИ ТОЧКИ ЗА РАКОВОДИТЕЛОТ НА КК", "Open Items for the Head of QC")
+    chapter(d, "11", "ОТВОРЕНИ ТОЧКИ ЗА РАКОВОДИТЕЛОТ НА КК", "Open Items for the Head of QC")
     for mk, en in [
         ("Мастер v57, Reference E216 (GG1024_01 = 0,87 kg) бара поправка; KC102501 — 21,67 kg (мастер) наспроти 16,000 kg (залиха); документираниот број кеси по серија при повлекувањето.",
          "Master v57, Reference E216 (GG1024_01 = 0.87 kg) needs correction; KC102501 — 21.67 kg (master) vs 16.000 kg (stock); the documented bag count per batch at retrieval."),
@@ -474,8 +486,8 @@ def build_plan(lots):
          "The k = 1/2/3 rule by bag count against the duplicate in QCSOP 011 v03 §5; oven capacity for %d and %d bottles per night." % (sum(l["k"] for l in by_day[1]), sum(l["k"] for l in by_day[2]))),
         ("Дополнителниот период на сушење за второто мерење (според SAM_a02.2 или по негова одлука).",
          "The additional drying period for the second weighing (per SAM_a02.2 or by his decision)."),
-        ("Ознаки: PP-QC-SP-002/26-ER-01/-02 за дневните извршни записи (или QCT 025, следната слободна QC ознака); регистрација на RQS пред земање (QCSOP 011 v03 §6.1.1).",
-         "Codes: PP-QC-SP-002/26-ER-01/-02 for the daily execution records (or QCT 025, the next free QC template code); RQS registration before sampling (QCSOP 011 v03 §6.1.1)."),
+        ("Ознаки: PP-QC-SP-002/26-D1/D2-RCPT/-RET/-SMP за преносите на QCT 024 и PP-QC-SP-002/26-LOD-01/-02 за анализата (или QCT 025, следната слободна QC ознака); броевите на A03 и QCT 021 се од нивните регистри; регистрација на RQS пред земање (QCSOP 011 v03 §6.1.1).",
+         "Codes: PP-QC-SP-002/26-D1/D2-RCPT/-RET/-SMP for the QCT 024 transfers and PP-QC-SP-002/26-LOD-01/-02 for the analysis (or QCT 025, the next free QC template code); the A03 and QCT 021 numbers come from their registers; RQS registration before sampling (QCSOP 011 v03 §6.1.1)."),
         ("Спарување со халогенскиот анализатор (SAM_a02.1) на истите збирни примероци за верификација на методот во опсегот 5–12 % — ако агентот за верификација побара дупликатни HMA мерења или k = 2 на подгрупа, се внесува пред одобрување.",
          "Pairing with the halogen moisture analyser (SAM_a02.1) on the same composites for the method verification in the 5–12 % range — if the verification agent asks for duplicate HMA runs or k = 2 on a subset, it is entered before approval."),
         ("Транша 3 (31 серии) како PP-QC-SP-003/26 по истата постапка; по одобрување овој документ се издава како v1.0 со датум на важност.",
@@ -488,175 +500,17 @@ def build_plan(lots):
     return d
 
 
-# ----------------------------------------------------------------------------- the daily records
-def build_record(day, lots, bags):
-    ls = [l for l in lots if l["day"] == day]
-    bs = [b for b in bags if int(b["day"]) == day]
-    sum_n = sum(l["n"] for l in ls)
-    sum_k = sum(l["k"] for l in ls)
-    code = "%s-ER-%02d" % (CODE, day)
-    whs = []
-    for l in ls:
-        if l["warehouse"] not in whs:
-            whs.append(l["warehouse"])
-
-    d = new_doc(code, "ИЗВРШЕН ЗАПИС — ЗЕМАЊЕ ПРИМЕРОЦИ И ГУБИТОК ПРИ СУШЕЊЕ — ДЕН %d" % day,
-                "EXECUTION RECORD — SAMPLING AND LOSS ON DRYING — DAY %d" % day)
-    cover(d, "Извршен запис — земање примероци и губиток при сушење, Ден %d" % day,
-          "Execution record — sampling and loss on drying, Day %d" % day,
-          [("Запис бр. | Record No.", code),
-           ("План | Plan", CODE + " · Транша 1 и 2 | Tranches 1 and 2"),
-           ("Серии на денот | Batches of the day", "%d" % len(ls)),
-           ("Кеси за отворање Σn | Bags to open Σn", "%d" % sum_n),
-           ("Тест порции Σk | Test portions Σk", "%d" % sum_k),
-           ("Магацини | Warehouses", " · ".join(whs)),
-           ("Датум на земање (од–до) | Sampling date (from–to)", "%s – %s" % (BLANK, BLANK)),
-           ("Влез во печка / мерење 24 h / второ мерење | Oven in / 24-h weighing / second weighing", "%s / %s / %s" % (BLANK, BLANK, BLANK)),
-           ("Аналитичар | Analyst", ANALYST),
-           ("RQS бр. | RQS No.", BLANK)],
-          "ИЗВРШЕН ЗАПИС | EXECUTION RECORD", "Sampling & Loss on Drying — Day %d" % day,
-          "Еден запис за сите серии на денот", "One record for all batches of the day")
-
-    # A
-    pr.chapter(d, "A", "СЕРИИ НА ДЕНОТ", "Batches of the Day")
-    rows = []
-    for l in ls:
-        rows.append([l["seq"], "T%d" % l["tranche"], l["batch"], l["p_lot"], "%s · %s" % (l["strain"], l["grade"] or "—"),
-                     l["warehouse"], num(l["kg_used"]), l["N"], l["n"], l["k"], len(l["carton_list"])])
-    rows.append(["", "", "ВКУПНО | TOTAL", "", "%d серии | batches" % len(ls), "", num(sum(l["kg_used"] for l in ls)),
-                 sum(l["N"] for l in ls), sum_n, sum_k, sum(len(l["carton_list"]) for l in ls)])
-    table(d, ["№", "Т | T", "Серија | Batch", "P лот | P lot", "Сорта · класа | Strain · grade", "Магацин | Warehouse",
-              "kg", "N", "n", "k", "Картони | Cartons"], rows, sz=7)
-    pr.note(d, "N од kg на планот; ако документираниот број кеси во магацинот се разликува, се внесува тука и n = 1,5·√N "
-               "(заокружено нагоре) се пресметува повторно пред изборот на кесите. Серија што не е подготвена се одложува "
-               "(забелешка во дел G).",
-            "N from the plan's kg; if the warehouse's documented bag count differs, it is entered here and n = 1.5·√N "
-            "(rounded up) is recomputed before the bags are selected. A batch that is not ready is deferred (note in section G).")
-
-    # B
-    pr.chapter(d, "B", "ПОВЛЕКУВАЊЕ И ПРЕДАВАЊЕ: СЕФ-МАГАЦИН → КК", "Retrieval and Handover: Secure Warehouse → QC")
-    pr.body(d, "Картоните наведени по серија во дел C се повлекуваат од сеф-магацинот и се предаваат на КК за земање "
-               "примероци на еден датум (референца: %s, овој запис). Нето по кеса = етикетата на примарното пакување "
-               "(400,0 g); бруто го мери КК при отворање (дел D)." % CODE,
-            "The cartons listed per batch in section C are retrieved from the secure warehouse and handed over to QC for "
-            "sampling on a single date (reference: %s, this record). Net per bag = the primary-pack label (400.0 g); gross "
-            "is weighed by QC on opening (section D)." % CODE)
-    kv_table(d, [("Од | From", "Сеф-магацин · Магацин · Складирање | Secure warehouse · Store · Storage"),
-                 ("До | To", "Контрола на квалитет · Просторија за земање примероци · Земање | Quality Control · Sampling room · Sampling"),
-                 ("Датум и час на предавање | Handover date and time", BLANK),
-                 ("Вкупно картони / кеси за отворање | Total cartons / bags to open", "%d / %d" % (sum(len(l["carton_list"]) for l in ls), sum_n)),
-                 ("Забелешка | Note", "")])
-    sign_table(d, ["Издал — сеф-магацин | Issued — warehouse", "Примил — КК | Received — QC"])
-
-    # C
-    pr.chapter(d, "C", "ИЗВРШУВАЊЕ ПО СЕРИЈА", "Per-Batch Execution")
-    rows = []
-    for i, l in enumerate(ls, start=1):
-        rows.append([l["seq"], l["batch"], l["p_lot"], ranges(l["carton_list"]), l["n"],
-                     "[ ] сите одговараат | all conform   [ ] отстапување → G | deviation → G",
-                     "", "____/26_SFR-PC-%d%02d" % (day, i), ""])
-    table(d, ["№", "Серија | Batch", "P лот | P lot", "Картони (бр.) | Cartons (nos.)", "n",
-              "Инспекција при отворање | Inspection on opening", "Збирен примерок g | Composite g",
-              "Шифра на примерок | Sample code", "Иниц./час | Init./time"], rows, sz=7)
-    pr.note(d, "Избраните кеси по серија се во дел D (ознака K{картон}B{кеса}). Шифрата на примерокот го носи бројот на "
-               "регистрираниот SFR (QCSOP 011 v03 §6.2.1); PC = физичко-хемиски примерок.",
-            "The selected bags per batch are in section D (key K{carton}B{bag}). The sample code carries the registered "
-            "SFR number (QCSOP 011 v03 §6.2.1); PC = physico-chemical sample.")
-    pr.step_signoff(d, "Потпис за делови A–C | Sign-off for sections A–C", None)
-
-    # D
-    pr.chapter(d, "D", "ПОПИС ПО КЕСА — ИНСПЕКЦИЈА, МЕРЕЊЕ, ЗЕМАЊЕ", "Per-Bag Inventory — Inspection, Weighing, Sampling")
-    pr.note(d, "Еден ред по избрана кеса, однапред внесен. Бруто пред отворање и бруто по затворање ги мери КК; "
-               "земено = разлика. Инспекција: [ ] = одговара по сите критериуми на QCSOP 011_A03; „не одговара“ → карантин, "
-               "запис во дел G. Кесата се ре-етикетира ЗЕМЕН ПРИМЕРОК со новото нето (= 400,0 g − земено) и новото бруто.",
-            "One row per selected bag, pre-entered. Gross before opening and gross after closing are weighed by QC; sampled = "
-            "difference. Inspection: [ ] = conforms to all QCSOP 011_A03 criteria; “does not conform” → quarantine, entry in "
-            "section G. The bag is re-labelled SAMPLED with the new net (= 400.0 g − sampled) and the new gross.")
-    rows = []
-    r = 0
-    for l in ls:
-        for b in [x for x in bs if x["batch"] == l["batch"]]:
-            r += 1
-            rows.append([r, l["batch"], b["bag_id"], "400,0", "", "", "", "[ ]", ""])
-    table(d, ["№", "Серија | Batch", "Кеса | Bag", "Нето етикета g | Net label g", "Бруто пред g | Gross before g",
-              "Бруто по g | Gross after g", "Земено g | Sampled g", "Инсп. | Insp.", "Иниц. | Init."], rows, sz=7,
-          weights=[0.9, 2.6, 1.7, 2.0, 2.4, 2.4, 2.2, 1.6, 2.66])
-    pr.step_signoff(d, "Потпис за делот D (земање примероци) | Sign-off for section D (sampling)", None)
-
-    # E
-    pr.chapter(d, "E", "ВРАЌАЊЕ: КК → СЕФ-МАГАЦИН", "Return: QC → Secure Warehouse")
-    rows = [[l["seq"], l["batch"], l["n"], "", ""] for l in ls]
-    rows.append(["", "ВКУПНО | TOTAL", sum_n, "", ""])
-    table(d, ["№", "Серија | Batch", "Кеси вратени (ре-етикетирани ЗЕМЕН) | Bags returned (re-labelled SAMPLED)",
-              "Σ земено g | Σ sampled g", "Забелешка | Remark"], rows, sz=8)
-    kv_table(d, [("Од | From", "Контрола на квалитет · Просторија за земање примероци | Quality Control · Sampling room"),
-                 ("До | To", "Сеф-магацин · Магацин · Складирање | Secure warehouse · Store · Storage"),
-                 ("Датум и час на враќање | Return date and time", BLANK),
-                 ("Етикети | Labels", "ЗЕМЕН ПРИМЕРОК + ново нето/бруто по кеса (QASOP_031); ново нето од дел D | "
-                                      "SAMPLED + new net/gross per bag (QASOP_031); new net from section D")])
-    sign_table(d, ["Вратил — КК | Returned — QC", "Примил назад — магацин | Received back — warehouse"])
-
-    # F
-    pr.chapter(d, "F", "ГУБИТОК ПРИ СУШЕЊЕ (SAM_a02.2)", "Loss on Drying (SAM_a02.2)")
-    pr.subsec(d, "F.1", "Опрема и услови", "Equipment and conditions")
-    kv_table(d, [("Вакуумска печка — ID / статус на квалификација | Vacuum oven — ID / qualification status", BLANK + " / " + BLANK),
-                 ("Поставени услови | Set conditions", "40 °C · 15–25 mbar · 24 h   (постигнато | achieved: ____ °C · ____ mbar)"),
-                 ("Аналитичка вага — ID / калибрација важи до / дневна проверка | Analytical balance — ID / calibration valid until / daily check", BLANK + " / " + BLANK + " / [ ]"),
-                 ("Ексикатор / садови за мерење | Desiccator / weighing bottles", BLANK),
-                 ("Влез во печка (датум, час) | Oven in (date, time)", BLANK),
-                 ("Мерење по 24 h (датум, час) | Weighing after 24 h (date, time)", BLANK),
-                 ("Дополнителен период до константна маса (h) | Additional period to constant mass (h)", BLANK + "  (SAM_a02.2 / Раководител на КК | Head of QC)"),
-                 ("Второ мерење (датум, час) | Second weighing (date, time)", BLANK),
-                 ("Амбиентални услови (°C, % RH) | Ambient conditions (°C, % RH)", BLANK)])
-    pr.subsec(d, "F.2", "Мерења и резултати по тест порција", "Weighings and results per test portion")
-    rows = []
-    r = 0
-    for l in ls:
-        for p in range(1, l["k"] + 1):
-            r += 1
-            rows.append([r, l["batch"], "%d/%d" % (p, l["k"]), "", "", "", "", "", "", "", "" if p < l["k"] else "", "[ ]"])
-    table(d, ["№", "Серија | Batch", "Порција | Portion", "Сад бр. | Bottle No.", "m0 g", "G1 g", "G2 (24 h) g",
-              "G2 (второ) g | G2 (second) g", "Δ mg", "ГпС % | LoD %", "Средно % | Mean %", "≤ 12,0 % | ≤ 12.0 %"],
-          rows, sz=7, weights=[0.8, 2.3, 1.3, 1.3, 1.6, 1.6, 1.7, 1.9, 1.2, 1.6, 1.6, 1.56])
-    pr.note(d, "ГпС % = (G1 − G2) ÷ (G1 − m0) × 100 по порција, со G2 = последното мерење до константна маса "
-               "(две последователни мерења се разликуваат за не повеќе од 0,5 mg; Δ = разлика помеѓу 24-часовното и "
-               "второто мерење). Средната вредност од k порции е резултатот на серијата; критериум ≤ 12,0 % w/w (QCSP 001). "
-               "Резултат надвор од спецификација → QCSOP 014 и дел G.",
-            "LoD % = (G1 − G2) ÷ (G1 − m0) × 100 per portion, with G2 = the last weighing to constant mass (two consecutive "
-            "weighings differ by not more than 0.5 mg; Δ = difference between the 24-h and the second weighing). The mean of k "
-            "portions is the batch result; criterion ≤ 12.0 % w/w (QCSP 001). An out-of-specification result → QCSOP 014 and "
-            "section G.")
-    pr.step_signoff(d, "Потпис за делот F (определување) | Sign-off for section F (determination)", None)
-
-    # G
-    pr.chapter(d, "G", "ОТСТАПУВАЊА / OOS", "Deviations / OOS")
-    table(d, ["№", "Серија / кеса | Batch / bag", "Опис | Description", "Дејство | Action", "Иниц./датум | Init./date"],
-          [[i, "", "", "", ""] for i in range(1, 7)], sz=8)
-    pr.note(d, "„Нема отстапувања | No deviations“ се запишува ако табелата останува празна. Отстапувањата се водат по "
-               "PP-QA-SOP-003; OOS по QCSOP 014.",
-            "“No deviations” is written if the table stays empty. Deviations follow PP-QA-SOP-003; OOS follows QCSOP 014.")
-
-    # H
-    d.add_page_break()
-    pr.chapter(d, "H", "ЗАКЛУЧНИ ПОТПИСИ", "Closing Sign-offs")
-    pr.execution_signoff(d, mk_exec="Извршил (КК аналитичар) | Executed (QC Analyst)", reviewer="J. Romevska",
-                         approver="B. Nikolov, M.Pharm. (Раководител на КК оддел | QC Department Manager)")
-    return d
-
-
 # ----------------------------------------------------------------------------- main
 def main():
-    os.makedirs(OUT, exist_ok=True)
+    os.makedirs(OUT_P, exist_ok=True)
     lots, bags = load()
     docs = [
         ("PP-QC-SP-002_26_Sampling_Plan_LoD_T1_T2.docx", build_plan(lots)),
-        ("PP-QC-SP-002_26-ER-01_Execution_Record_Day1.docx", build_record(1, lots, bags)),
-        ("PP-QC-SP-002_26-ER-02_Execution_Record_Day2.docx", build_record(2, lots, bags)),
     ]
     ok = True
     for name, d in docs:
         glyph_audit(d)
-        path = os.path.join(OUT, name)
+        path = os.path.join(OUT_P, name)
         pf.save(d, path)
         ok = verify(path) and ok
     if not ok:
