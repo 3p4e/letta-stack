@@ -16,7 +16,7 @@ r-plan, the k = 1/2/3 rule and the two-day split of the draft of 05.10.2026.
 |---|---|
 | `1_PLAN/`, `PP-QC-SP-002_26_PACKAGE-1_PLAN.zip` | Sampling Plan and Execution Protocol, as amended 06.10.2026 (9 pages) |
 | `2_SAMPLING_EXECUTION/`, `PP-QC-SP-002_26_PACKAGE-2_SAMPLING_EXECUTION.zip` | Package index, then the seven documents of the one sampling day below |
-| `3_LOD_ANALYSIS_EXECUTION/`, `PP-QC-SP-002_26_PACKAGE-3_LOD_ANALYSIS_EXECUTION.zip` | LOD-01, one execution record for all 46 batches in one oven run |
+| `3_LOD_ANALYSIS_EXECUTION/`, `PP-QC-SP-002_26_PACKAGE-3_LOD_ANALYSIS_EXECUTION.zip` | LOD-01, one execution record for all 46 batches in one oven run; its Attachment 1 (weighings on two balances) and deviation DEV-01 |
 
 Package 2, in order of use:
 
@@ -33,6 +33,12 @@ Package 2, in order of use:
 Package 3, the LoD execution record: A receipt of the samples (from step 7), B equipment and
 conditions, C homogenisation and test portions, D weighings to constant mass, one test portion per
 batch (46 prefilled rows), E results per batch (the one portion's LoD), F deviations and OOS, G sign-offs.
+
+**DEV-01 (06.10.2026):** G1 was weighed on a precision balance (d = 1 mg) instead of the AUW220D. G2 is
+weighed on the same precision balance (the result pair, so the balances' offset cancels) and straight
+after on the AUW220D (constant mass), on Attachment 1. With U about 0.3 % w/w (k = 2), set before any
+result: 11.7 % or less conforms; 11.8 to 12.3 % is repeated in full on the AUW220D from the sample
+remainder; above 12.3 % is OOS per QCSOP 014.
 
 Each package folder holds every DOCX and PDF and a merged packet PDF with a bookmark per document.
 The label sheets are in the folder and the zip but not in the packet: they print on perforated

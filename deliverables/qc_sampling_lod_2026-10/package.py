@@ -6,7 +6,8 @@
   2  SAMPLING EXECUTION        the one sampling day (one bag per batch, 06.10.2026): QCT 024 receipt,
                                QCSOP 011_A03, QCT 021, the QASOP_031 label sheets, QCT 024 return,
                                QCT 024 samples -> QC lab
-  3  LOD ANALYSIS EXECUTION    one loss-on-drying execution record, all 46 batches in one oven run
+  3  LOD ANALYSIS EXECUTION    one loss-on-drying execution record, all 46 batches in one oven run, with its
+                               Attachment 1 (weighings on two balances) and deviation DEV-01
 
 Each package is a folder under out/ holding every DOCX and PDF, a merged packet PDF with a bookmark
 per document (label sheets excluded: they print on perforated stock), and a zip of the folder.
@@ -58,7 +59,11 @@ PACKAGES = [
      [("0. Содржина на пакетот | Package index", "S0_Package_Index_Sampling_Execution", True)] + day_docs(1)),
     ("3_LOD_ANALYSIS_EXECUTION", "PP-QC-SP-002_26_PACKAGE-3_LOD_ANALYSIS_EXECUTION", [
         ("PP-QC-SP-002/26-LOD-01 — губиток при сушење, сите 46 серии | loss on drying, all 46 batches",
-         "PP-QC-SP-002_26-LOD-01_LoD_Execution_Record_T1_T2", True)]),
+         "PP-QC-SP-002_26-LOD-01_LoD_Execution_Record_T1_T2", True),
+        ("PP-QC-SP-002/26-LOD-01 Прилог 1 — мерења на две ваги | Attachment 1 — weighings on two balances",
+         "PP-QC-SP-002_26-LOD-01_Attachment-1_Two_Balance_Weighings", True),
+        ("PP-QC-SP-002/26-DEV-01 — отстапување, G1 на прецизна вага | deviation, G1 on a precision balance",
+         "PP-QC-SP-002_26-DEV-01_Deviation_Precision_Balance_LOD-01", True)]),
 ]
 
 

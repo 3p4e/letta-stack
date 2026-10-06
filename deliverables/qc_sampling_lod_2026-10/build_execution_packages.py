@@ -656,6 +656,140 @@ def build_lod_att1(lots):
     return d
 
 
+
+# ----------------------------------------------------------------------------- DEV-01
+def build_dev01(lots):
+    """Deviation report for the G1 weighings of LOD-01 (Head of QC, 06.10.2026). Only the facts he gave are
+    printed; who, when, the balance ID, the cause and the classification are written in."""
+    ls = day_lots(lots, 1)
+    code, lod = dev_code(), lod_code(1)
+    d = bc.new_doc(code, "ИЗВЕШТАЈ ЗА ОТСТАПУВАЊЕ — МЕРЕЊЕ G1, LOD-01",
+                   "DEVIATION REPORT — G1 WEIGHING, LOD-01")
+    bc.cover(d, "Извештај за отстапување — G1 измерено на прецизна вага",
+             "Deviation report — G1 weighed on a precision balance",
+             [("Отстапување бр. | Deviation No.", code + " · регистар | register PP-QA-SOP-003: " + BLANK),
+              ("Запис | Record", lod + " · Прилог 1 | Attachment 1"),
+              ("Метод | Method", "a02.2 · Ph. Eur. 2.2.32 (3028) · VO29 · Shimadzu AUW220D"),
+              ("Опфат | Scope", "%d серии, Транша 1 и 2, по една тест порција | %d batches, Tranches 1 and 2, one test portion each"
+               % (len(ls), len(ls))),
+              ("Откриено | Found", "06.10.2026, за време на сушењето, пред мерењето по 24 h | during drying, before the 24-h weighing"),
+              ("Откриено од / час | Found by / time", BLANK + " / " + BLANK)],
+             "ИЗВЕШТАЈ ЗА ОТСТАПУВАЊЕ | DEVIATION REPORT", "Loss on Drying — Tranches 1 and 2",
+             "Мерење на почетната маса", "Weighing of the initial mass")
+
+    chapter(d, "A", "ОПИС", "Description")
+    pr.body(d, "Масата G1 (садот со тест порцијата пред сушење) за сите %d порции на %s е измерена на прецизна вага со "
+               "d = 0,001 g (ID %s) наместо на аналитичката вага Shimadzu AUW220D (d = 0,01 mg) што ја пропишува методот a02.2 "
+               "(QCWI 016). Празниот сад m_B е измерен на: [ ] истата прецизна вага  [ ] AUW220D. Отстапувањето е откриено на "
+               "06.10.2026, за време на сушењето, пред мерењето по 24 h и пред секоја пресметка на резултат."
+            % (len(ls), lod, BLANK),
+            "The mass G1 (bottle with the test portion before drying) of all %d portions of %s was weighed on a precision "
+            "balance with d = 0.001 g (ID %s) instead of the Shimadzu AUW220D analytical balance (d = 0.01 mg) that method "
+            "a02.2 requires (QCWI 016). The empty bottle m_B was weighed on: [ ] the same precision balance  [ ] the AUW220D. "
+            "The deviation was found on 06.10.2026, during drying, before the 24-h weighing and before any result was "
+            "calculated." % (len(ls), lod, BLANK))
+
+    chapter(d, "B", "ВЕДНАШНО ДЕЈСТВО", "Immediate Action")
+    for mk, en in [
+        ("G2 и секое следно мерење се мерат на истата прецизна вага како G1 — оваа двојка го дава резултатот; разликата "
+         "меѓу двете ваги така се поништува.",
+         "G2 and every further weighing are made on the same precision balance as G1 — this pair gives the result, so any "
+         "offset between the two balances cancels."),
+        ("Веднаш потоа истиот сад се мери и на AUW220D: константната маса (Δ ≤ 0,5 mg) се оценува само таму, затоа што "
+         "вага со d = 1 mg не може да покаже разлика од 0,5 mg.",
+         "Straight after, the same bottle is weighed on the AUW220D: constant mass (Δ ≤ 0.5 mg) is judged only there, since a "
+         "balance with d = 1 mg cannot show a 0.5 mg difference."),
+        ("Садовите се мерат затворени, по ист редослед, со запишан час; контролен тег се мери на двете ваги пред првото "
+         "мерење. Сè се запишува во Прилог 1 кон %s." % lod,
+         "The bottles are weighed stoppered, in the same order, with the time written; a check weight is weighed on both "
+         "balances before the first weighing. Everything is recorded on Attachment 1 to %s." % lod),
+        ("Остатоците од примероците се чуваат затворени и означени до затворање на ова отстапување.",
+         "The sample remainders are kept closed and labelled until this deviation is closed."),
+        ("Ова отстапување и правилото за одлука (дел D) се запишани пред пресметката на резултатите; делот F на %s "
+         "упатува на %s." % (lod, code),
+         "This deviation and the decision rule (section D) are recorded before any result is calculated; section F of %s "
+         "refers to %s." % (lod, code)),
+    ]:
+        pr.bullet(d, mk, en)
+
+    chapter(d, "C", "ПРОЦЕНА НА ВЛИЈАНИЕТО", "Impact Assessment")
+    for mk, en in [
+        ("Губитокот L = G1 − G2 е околу 50–125 mg на m₀ ≈ 1,000 g. Со двете мерења на иста вага, отстапувањето на вагата "
+         "се поништува; остануваат читливоста d = 1 mg (u = d ÷ √12 по читање) и повторливоста s на вагата.",
+         "The loss L = G1 − G2 is about 50–125 mg on m₀ ≈ 1.000 g. With both weighings on one balance its offset cancels; "
+         "what remains is the readability d = 1 mg (u = d ÷ √12 per reading) and the balance repeatability s."),
+        ("Проширена неизвесност на резултатот (k = 2): U = 2 · √2 · √(s² + d² ÷ 12) ÷ m₀ × 100 (% w/w, апсолутно).",
+         "Expanded uncertainty of the result (k = 2): U = 2 · √2 · √(s² + d² ÷ 12) ÷ m₀ × 100 (% w/w, absolute)."),
+        ("m₀ е под влијание само околу 0,1 % релативно — занемарливо; Ph. Eur. дозволува вистинската маса да отстапува до "
+         "10 % од наведените 1,000 g.",
+         "m₀ is affected by only about 0.1 % relative — negligible; Ph. Eur. allows the actual quantity to differ by up to "
+         "10 % from the 1.000 g stated."),
+        ("Мерењето не го исполнува методот (вага). Според правилото за минимална маса (USP <41> / Ph. Eur. 2.1.7: 2 · s ÷ m "
+         "≤ 0,10 %, s не помало од 0,41 · d), вага со d = 1 mg има минимална маса од најмалку 0,82 g, а 2 g за s = 1 mg: "
+         "порцијата од 1,000 g е на или под неа.",
+         "The weighing does not meet the method (balance). Under the minimum-weight rule (USP <41> / Ph. Eur. 2.1.7: 2 · s ÷ m "
+         "≤ 0.10 %, s not less than 0.41 · d), a balance with d = 1 mg has a minimum weight of at least 0.82 g, and 2 g for "
+         "s = 1 mg: the 1.000 g portion is at or below it."),
+        ("Влијание врз производот: нема. Влијанието е само врз неизвесноста на резултатот; резултатите далеку под 12,0 % "
+         "одговараат и со таа неизвесност.",
+         "Impact on the product: none. The impact is on the uncertainty of the result only; results well below 12.0 % "
+         "conform even with that uncertainty."),
+    ]:
+        pr.bullet(d, mk, en)
+    grid(d, [6.2, 4.0, 4.0, 4.26], [
+        [(x, 1, "h") for x in ["Повторливост s | Repeatability s", "√(s² + d²÷12) mg", "U (k = 2) mg", "U % w/w (m₀ = 1,000 g)"]],
+        ["0,5 mg", "0,58", "1,63", "0,16"],
+        ["1,0 mg (претпоставено | assumed)", "1,04", "2,94", "0,29 → 0,3"],
+        ["од сертификатот | from the certificate: " + BLANK, BLANK, BLANK, BLANK],
+    ], sz=8)
+    pr.note(d, "Правилото во делот D користи U = 0,3 % (s = 1 mg). Ако сертификатот за калибрација на прецизната вага "
+               "дава s > 1 mg, U се пресметува повторно и опсезите се прошируваат пред да се пресмета кој било резултат.",
+            "The rule in section D uses U = 0.3 % (s = 1 mg). If the precision balance's calibration certificate gives "
+            "s > 1 mg, U is recomputed and the bands widened before any result is calculated.")
+
+    chapter(d, "D", "ПРАВИЛО ЗА ОДЛУКА (утврдено пред резултатите)", "Decision Rule (fixed before the results)")
+    grid(d, [4.2, 14.26], [
+        [("ГпС % (прецизна вага) | LoD % (precision balance)", 1, "h"), ("Одлука | Decision", 1, "h")],
+        [("≤ 11,7", 1, "b"), ("Одговара (≤ 12,0 % и со U = 0,3 %). | Conforms (≤ 12.0 % even with U = 0.3 %).", 1, "n")],
+        [("11,8 – 12,3", 1, "b"), ("Без одлука: повторување во целост по a02.2 на AUW220D од остатокот на примерокот (m_B, G1 и G2 "
+                                    "на AUW220D); се известува повторениот резултат, двата остануваат во записот. | No decision: "
+                                    "full repeat per a02.2 on the AUW220D from the sample remainder (m_B, G1 and G2 on the "
+                                    "AUW220D); the repeat is reported, both stay in the record.", 1, "n")],
+        [("> 12,3", 1, "b"), ("OOS по QCSOP 014: грешката на вагата не може да ја објасни разликата. | OOS per QCSOP 014: the "
+                               "balance error cannot explain the difference.", 1, "n")],
+    ], sz=8)
+    pr.note(d, "Правилото важи непроменето за сите %d серии." % len(ls),
+            "The rule applies unchanged to all %d batches." % len(ls))
+
+    chapter(d, "E", "ПРИЧИНА", "Root Cause")
+    grid(d, [18.46], [[("Утврдува QA | Determined by QA", 1, "h")]] + [[""] for _ in range(4)], sz=8,
+         heights={i: 0.8 for i in range(1, 5)})
+
+    chapter(d, "F", "КОРЕКТИВНИ И ПРЕВЕНТИВНИ ДЕЈСТВА (предлог)", "Corrective and Preventive Actions (proposed)")
+    grid(d, [9.2, 3.6, 2.8, 2.86], [
+        [(x, 1, "h") for x in ["Дејство | Action", "Одговорен | Responsible", "Рок | Due", "Иниц. | Init."]],
+        [("[ ] Работна картичка за a02.2 на работното место што ја именува AUW220D | Bench card for a02.2 naming the AUW220D",
+          1, "n"), "", "", ""],
+        [("[ ] Ознака на прецизната вага: не за аналитичко мерење | Label on the precision balance: not for analytical "
+          "weighing", 1, "n"), "", "", ""],
+        [("[ ] Обука за a02.2 и QCWI 016 | Training on a02.2 and QCWI 016", 1, "n"), "", "", ""],
+        [("[ ] Друго | Other: " + BLANK, 1, "n"), "", "", ""],
+    ], sz=8, heights={i: 0.8 for i in range(1, 5)})
+
+    chapter(d, "G", "КЛАСИФИКАЦИЈА И ЗАТВОРАЊЕ", "Classification and Closure")
+    bc.kv_table(d, [
+        ("Класификација (QA) | Classification (QA)", "[ ] мало | minor   [ ] големо | major   [ ] критично | critical"),
+        ("Резултати по правилото во делот D | Results under the rule in section D",
+         "одговара | conform: ____   повторени | repeated: ____   OOS: ____"),
+        ("Затворено — датум | Closed — date", BLANK),
+    ])
+
+    chapter(d, "H", "ПОТПИСИ", "Sign-offs")
+    pr.execution_signoff(d, mk_exec="Пријавил (КК аналитичар) | Reported (QC Analyst)", reviewer="J. Romevska",
+                         approver="B. Nikolov, M.Pharm. (Раководител на КК оддел | QC Department Manager)")
+    return d
+
+
 # ----------------------------------------------------------------------------- main
 SAMPLING_DOCS = [  # (step, stem template, builder)
     ("1", "S%d-1_QCT024_Transfer_Warehouse_to_Sampling_Day%d", lambda day, lots, bags: build_receipt(day, lots, bags)),
@@ -667,6 +801,7 @@ SAMPLING_DOCS = [  # (step, stem template, builder)
 INDEX_STEM = "S0_Package_Index_Sampling_Execution"
 LOD_STEM = "PP-QC-SP-002_26-LOD-01_LoD_Execution_Record_T1_T2"
 ATT1_STEM = "PP-QC-SP-002_26-LOD-01_Attachment-1_Two_Balance_Weighings"
+DEV_STEM = "PP-QC-SP-002_26-DEV-01_Deviation_Precision_Balance_LOD-01"
 DAYS = (1,)          # Head of QC, 06.10.2026: all 46 batches sampled on one day, one oven run
 
 
@@ -676,7 +811,8 @@ def main():
     lots, bags = bc.load()
     lod_only = "--lod-only" in sys.argv
     docs = [(os.path.join(OUT_L, LOD_STEM + ".docx"), build_lod(1, lots)),
-            (os.path.join(OUT_L, ATT1_STEM + ".docx"), build_lod_att1(lots))]
+            (os.path.join(OUT_L, ATT1_STEM + ".docx"), build_lod_att1(lots)),
+            (os.path.join(OUT_L, DEV_STEM + ".docx"), build_dev01(lots))]
     if not lod_only:
         docs.append((os.path.join(OUT_S, INDEX_STEM + ".docx"), build_index(lots)))
         for day in DAYS:
