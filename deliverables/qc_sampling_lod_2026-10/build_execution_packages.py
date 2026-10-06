@@ -451,6 +451,12 @@ def build_index(lots):
 
 
 # ----------------------------------------------------------------------------- LoD execution record
+def analysis_id(l):
+    """AM02.2 analysis ID as on the July AM02.2 moisture record: ddmmyy_AM02.2_<P lot>, the batch where
+    there is no P lot; the date is written at receipt."""
+    return "______ _AM02.2_%s" % (l["batch"] if l["p_lot"] in ("", "—", None) else l["p_lot"])
+
+
 def build_lod(day, lots):
     ls = day_lots(lots, day)
     code = lod_code(day)
@@ -463,7 +469,7 @@ def build_lod(day, lots):
               ("План | Plan", CODE + " · Транша 1 и 2 | Tranches 1 and 2"),
               ("Примероци | Samples", "QCT 024 %s · %d збирни примероци | %d composite samples" % (rec(day, "SMP"), len(ls), len(ls))),
               ("Тест порции Σk | Test portions Σk", "%d" % sum_k),
-              ("Метод | Method", "Ph. Eur. 2.2.32 (3028) · SAM_a02.2 · 40 °C · 15–25 mbar · 24 h"),
+              ("Метод | Method", "Ph. Eur. 2.2.32 (3028) · a02.2 · 40 °C · 20 ± 2 mbar · 24 h · молекуларно сито R | molecular sieve R"),
               ("Критериум | Criterion", "≤ 12,0 % w/w (QCSP 001) | ≤ 12.0 % w/w (QCSP 001)"),
               ("Влез во печка / мерење 24 h / второ мерење | Oven in / 24-h weighing / second weighing",
                "%s / %s / %s" % (BLANK, BLANK, BLANK)),
@@ -473,26 +479,33 @@ def build_lod(day, lots):
 
     chapter(d, "A", "ПРИЕМ НА ПРИМЕРОЦИТЕ", "Receipt of the Samples")
     rows = [["№", "Серија | Batch", "P лот | P lot", "Сорта | Strain", "Шифра на примерок | Sample code",
-             "Збирен g (QCT 021) | Composite g", "k", "Состојба | Condition", "Иниц./час | Init./time"]]
+             "AM02.2 ознака | AM02.2 analysis ID", "Збирен g (QCT 021) | Composite g", "k", "Состојба | Condition",
+             "Иниц./час | Init./time"]]
     rows = [[(x, 1, "h") for x in rows[0]]]
     for i, l in enumerate(ls, start=1):
-        rows.append([str(i), (l["batch"], 1, "b"), l["p_lot"], l["strain"], SID, "", str(l["k"]),
+        rows.append([str(i), (l["batch"], 1, "b"), l["p_lot"], l["strain"], SID, analysis_id(l), "", str(l["k"]),
                      "[ ] затворен, означен | closed, labelled", ""])
-    grid(d, [0.8, 2.4, 1.7, 2.6, 3.0, 2.0, 0.9, 3.0, 2.06], rows, sz=7, head=1)
-    pr.note(d, "Примероците се примени на QCT 024 %s. Масата на збирниот примерок се препишува од QCT 021 (ВКУПНО по серија)."
-            % rec(day, "SMP"),
-            "The samples are received on QCT 024 %s. The composite mass is transcribed from QCT 021 (TOTAL per batch)."
-            % rec(day, "SMP"))
+    grid(d, [0.7, 2.2, 1.5, 2.0, 2.4, 2.9, 1.6, 0.7, 2.6, 1.86], rows, sz=7, head=1)
+    pr.note(d, "Примероците се примени на QCT 024 %s. Масата на збирниот примерок се препишува од QCT 021 (ВКУПНО по серија). "
+               "Шифрата на примерокот е од етикетата (QCSOP 011); AM02.2 ознаката е аналитичката ознака на записите за AM02.2, "
+               "со датумот на прием (ддммгг)." % rec(day, "SMP"),
+            "The samples are received on QCT 024 %s. The composite mass is transcribed from QCT 021 (TOTAL per batch). The "
+            "sample code is the label's (QCSOP 011); the AM02.2 analysis ID is the analytical ID of the AM02.2 records, with the "
+            "date of receipt (ddmmyy)." % rec(day, "SMP"))
     pr.step_signoff(d, "Потпис за делот A (прием) | Sign-off for section A (receipt)", None)
 
     chapter(d, "B", "ОПРЕМА, МАТЕРИЈАЛИ И УСЛОВИ", "Equipment, Materials and Conditions")
     bc.kv_table(d, [
-        ("Вакуумска печка — ID / статус на квалификација | Vacuum oven — ID / qualification status", BLANK + " / " + BLANK),
-        ("Поставени услови | Set conditions", "40 °C · 15–25 mbar · 24 h   (постигнато | achieved: ____ °C · ____ mbar)"),
+        ("Вакуумска печка — ID / статус на квалификација | Vacuum oven — ID / qualification status",
+         "VO29 (QCWI 018 · дневник | logbook QCLB 017) / " + BLANK),
+        ("Поставени услови | Set conditions", "40 °C · 20 ± 2 mbar · 24 h   (постигнато | achieved: ____ °C · ____ mbar)"),
+        ("Молекуларно сито R во печката, околу 100 g, активно | Molecular sieve R in the oven, about 100 g, active", "[ ]"),
         ("Аналитичка вага — ID / калибрација до / дневна проверка | Analytical balance — ID / calibration until / daily check",
-         BLANK + " / " + BLANK + " / [ ]"),
+         "Shimadzu AUW220D, d = 0,01 mg (QCWI 016 · дневник | logbook QCLB 008) / " + BLANK + " / [ ]"),
         ("Контролен тег — номинално / измерено | Check weight — nominal / found", BLANK + " / " + BLANK),
         ("Ексикатор / ексикант | Desiccator / desiccant", BLANK + " / [ ] активен | active"),
+        ("Ладење во ексикатор пред секое мерење, најмалку 30 min | Cooling in the desiccator before every weighing, at least 30 min",
+         "[ ]"),
         ("Садови за мерење — бр. / претходно исушени под условите на методот | Weighing bottles — nos. / previously dried "
          "under the method conditions", BLANK + " / [ ]"),
         ("Прибор за сечење / подлога | Cutting tools / tray", "нерѓосувачки челик, чисти и суви [ ] | stainless steel, clean and dry [ ]"),
@@ -506,10 +519,10 @@ def build_lod(day, lots):
          "(израмнување, четири четвртини, спротивните четвртини се спојуваат).",
          "All flowers of the batch are coarsely cut with clean scissors on a clean tray and mixed by quartering, twice "
          "(flatten, four quarters, opposite quarters recombined)."),
-        ("Од различни четвртини се земаат k тест порции од околу 1,000 g во претходно исушени тарирани садови (m0) и веднаш "
-         "се мерат (G1).",
-         "From different quarters, k test portions of about 1.000 g are taken into previously dried, tared bottles (m0) and "
-         "weighed at once (G1)."),
+        ("Од различни четвртини се земаат k тест порции од 1,000 g сецкана, несеана дрога во претходно исушени тарирани "
+         "садови (m_B) и веднаш се мерат (G1).",
+         "From different quarters, k test portions of 1.000 g of the cut, unsieved drug are taken into previously dried, "
+         "tared bottles (m_B) and weighed at once (G1)."),
         ("Остатокот се чува затворен и означен до одобрувањето на овој запис.",
          "The remainder is kept closed and labelled until this record is approved."),
     ]:
@@ -523,21 +536,30 @@ def build_lod(day, lots):
     pr.step_signoff(d, "Потпис за делот C | Sign-off for section C", None)
 
     chapter(d, "D", "МЕРЕЊА И РЕЗУЛТАТИ ПО ТЕСТ ПОРЦИЈА", "Weighings and Results per Test Portion")
-    rows = [[(x, 1, "h") for x in ["№", "Серија | Batch", "Порција | Portion", "Сад бр. | Bottle No.", "m0 g", "G1 g",
-                                   "G2 (24 h) g", "G2 (второ) g | G2 (second) g", "Δ mg", "ГпС % | LoD %",
-                                   "Средно % | Mean %", "≤ 12,0 % | ≤ 12.0 %"]]]
+    rows = [[(x, 1, "h") for x in ["№", "Серија | Batch", "Порција | Portion", "Сад бр. | Bottle No.", "m_B g", "G1 g",
+                                   "m₀ g", "G2 (24 h) g", "G2 (следно) | G2 (next) g", "Δ mg", "m₁ g", "ГпС % | LoD %",
+                                   "Средно % | Mean %"]]]
     r = 0
     for l in ls:
         for p in range(1, l["k"] + 1):
             r += 1
-            rows.append([str(r), (l["batch"], 1, "b"), "%d/%d" % (p, l["k"]), "", "", "", "", "", "", "", "", "[ ]"])
-    grid(d, [0.8, 2.3, 1.3, 1.3, 1.6, 1.6, 1.7, 1.9, 1.2, 1.6, 1.6, 1.56], rows, sz=7, head=1)
-    pr.note(d, "ГпС % = (G1 − G2) ÷ (G1 − m0) × 100 по порција, со G2 = последното мерење до константна маса (две последователни "
-               "мерења се разликуваат за не повеќе од 0,5 mg; Δ = разлика помеѓу 24-часовното и второто мерење). Средната вредност "
-               "од k порции е резултатот на серијата. Резултат надвор од спецификација → QCSOP 014 и дел F.",
-            "LoD % = (G1 − G2) ÷ (G1 − m0) × 100 per portion, with G2 = the last weighing to constant mass (two consecutive "
-            "weighings differ by not more than 0.5 mg; Δ = difference between the 24-h and the second weighing). The mean of k "
-            "portions is the batch result. An out-of-specification result → QCSOP 014 and section F.")
+            rows.append([str(r), (l["batch"], 1, "b"), "%d/%d" % (p, l["k"]), "", "", "", "", "", "", "", "", "", ""])
+    grid(d, [0.7, 2.0, 1.1, 1.1, 1.4, 1.4, 1.4, 1.5, 1.5, 1.0, 1.4, 1.4, 1.56], rows, sz=7, head=1)
+    pr.note(d, "m_B = празен претходно исушен сад; G1 = сад + примерок пред сушење; m₀ = G1 − m_B; G2 = сад + примерок по сушење "
+               "(40 °C · 20 ± 2 mbar над молекуларно сито R, ладење најмалку 30 min во ексикатор пред секое мерење); "
+               "m₁ = G2 − m_B со последното G2; ГпС % = (m₀ − m₁) ÷ m₀ × 100. Константна маса: две последователни мерења се "
+               "разликуваат за не повеќе од 0,5 mg (Δ); ако не, сушењето продолжува и мерењата се внесуваат во табелата подолу. "
+               "Средната вредност од k порции е резултатот на серијата. Резултат надвор од спецификација → QCSOP 014 и дел F.",
+            "m_B = empty, previously dried bottle; G1 = bottle + sample before drying; m₀ = G1 − m_B; G2 = bottle + sample after "
+            "drying (40 °C · 20 ± 2 mbar over molecular sieve R, cooled at least 30 min in the desiccator before every weighing); "
+            "m₁ = G2 − m_B with the last G2; LoD % = (m₀ − m₁) ÷ m₀ × 100. Constant mass: two consecutive weighings differ by "
+            "not more than 0.5 mg (Δ); if not, drying continues and the weighings go in the table below. The mean of k portions "
+            "is the batch result. An out-of-specification result → QCSOP 014 and section F.")
+    rows = [[("Дополнителни мерења до константна маса | Further weighings to constant mass", 6, "h")],
+            [(x, 1, "l") for x in ["№", "Порција № (табела D) | Portion No. (table D)", "G2 g", "Δ mg",
+                                   "Датум и час | Date and time", "Иниц. | Init."]]]
+    rows += [[str(i), "", "", "", "", ""] for i in range(1, 11)]
+    grid(d, [0.8, 4.0, 3.4, 2.6, 4.4, 3.26], rows, sz=8, head=2)
     pr.step_signoff(d, "Потпис за делот D (определување) | Sign-off for section D (determination)", None)
 
     chapter(d, "E", "РЕЗУЛТАТИ ПО СЕРИЈА", "Results per Batch")

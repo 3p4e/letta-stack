@@ -44,9 +44,10 @@ page count and SHA-256 of every file).
   systematic selection with a seeded random start (seed 20261005), one flower — the largest — per
   bag, all n flowers of a batch into ONE composite, k = 1 / 2 / 3 determinations by bag count
   (N up to 100 / 101 to 400 / above 400), about 1.000 g each.
-- Method SAM_a02.2 (Ph. Eur. 2.2.32, monograph 3028): vacuum oven 40 degC, 15 to 25 mbar, 24 h,
-  weigh, back into the oven for an additional period, weigh again until constant mass; criterion
-  12.0 % w/w maximum (QCSP 001).
+- Method a02.2 (Ph. Eur. 2.2.32, monograph 3028): vacuum oven VO29 at 40 degC, 20 +/- 2 mbar, 24 h, over
+  about 100 g molecular sieve R; 1.000 g cut, unsieved, in a pre-dried tared bottle; cool at least 30 min in
+  the desiccator, weigh on the Shimadzu AUW220D, back into the oven and weigh again until constant mass
+  (two weighings within 0.5 mg); LoD % = (m0 - m1) / m0 x 100; criterion 12.0 % w/w maximum (QCSP 001).
 - Two sampling days balanced by bags to open (Day 1: 23 lots, 493 bags, 44 portions; Day 2: 23 lots,
   492 bags, 44 portions); Day-1 results read on Day 2, Day-2 results on Day 3.
 
@@ -69,7 +70,7 @@ page count and SHA-256 of every file).
 
 - Master v57 Reference E216 (GG1024_01); KC102501 kg; documented bag counts at retrieval.
 - k rule vs the SOP duplicate; oven capacity (44 bottles per night).
-- The additional drying period for the second weighing (SAM_a02.2 or his instruction).
+- The additional drying period for the second weighing (a02.2 or his instruction).
 - Record numbers: D1/D2-RCPT, -RET, -SMP for the QCT 024 transfers and LOD-01/-02 for the analysis
   (or QCT 025); A03 and QCT 021 numbers from their registers; RQS registration before sampling.
 - HMA pairing on the composites for the method-verification work (5 to 12 % range) — entered before

@@ -171,7 +171,7 @@ PLAN_CHAPTERS = [
     ("3", "ФОРМУЛИ", "Formulas"), ("4", "ПЛАН ПО СЕРИЈА (4a, 4b, 4.1)", "Per-Batch Plan (4a, 4b, 4.1)"),
     ("5", "УСЛОВИ, ИЗБОР НА КЕСИ И СЛЕДЛИВОСТ", "Conditions, Bag Selection & Traceability"),
     ("6", "ЗБИРЕН ПРИМЕРОК, ХОМОГЕНИЗАЦИЈА И ТЕСТ ПОРЦИИ", "Composite, Homogenisation & Test Portions"),
-    ("7", "ОПРЕДЕЛУВАЊЕ НА ГУБИТОК ПРИ СУШЕЊЕ (SAM_a02.2)", "Loss on Drying Determination (SAM_a02.2)"),
+    ("7", "ОПРЕДЕЛУВАЊЕ НА ГУБИТОК ПРИ СУШЕЊЕ (a02.2)", "Loss on Drying Determination (a02.2)"),
     ("8", "РАСПОРЕД", "Schedule"), ("9", "ЗАПИСИ", "Records"), ("10", "РЕФЕРЕНТНИ ДОКУМЕНТИ", "References"),
     ("11", "ОТВОРЕНИ ТОЧКИ ЗА РАКОВОДИТЕЛОТ НА КК", "Open Items for the Head of QC"),
 ]
@@ -195,8 +195,8 @@ def build_plan(lots):
            ("Производ | Product", "Сув цвет од канабис, готов производ · кеса 400 g (10 кеси/картон) | "
                                   "Dry cannabis flower, finished product · 400 g bag (10 bags/carton)"),
            ("Серии | Batches", "46 — Транша 1: 20 · Транша 2: 26 | 46 — Tranche 1: 20 · Tranche 2: 26"),
-           ("Намена | Purpose", "Губиток при сушење, Ph. Eur. 2.2.32 (3028), интерен метод SAM_a02.2 · критериум ≤ 12,0 % w/w | "
-                                "Loss on drying, Ph. Eur. 2.2.32 (3028), in-house method SAM_a02.2 · criterion ≤ 12.0 % w/w"),
+           ("Намена | Purpose", "Губиток при сушење, Ph. Eur. 2.2.32 (3028), метод a02.2 · критериум ≤ 12,0 % w/w | "
+                                "Loss on drying, Ph. Eur. 2.2.32 (3028), method a02.2 · criterion ≤ 12.0 % w/w"),
            ("Основа | Basis", "QCSOP 011 v03 (SP-12) · WHO TRS 929 Annex 4, r-план n = 1,5·√N | r-plan n = 1.5·√N"),
            ("Земање | Sampling", "2 дена · %d кеси · 1 цвет по кеса | 2 days · %d bags · 1 flower per bag" % (tot_n, tot_n)),
            ("Резултати | Results", "Ден 2 и Ден 3 (24 h сушење + второ мерење до константна маса) | "
@@ -211,12 +211,12 @@ def build_plan(lots):
     pr.body(d, "Овој документ го пропишува земањето репрезентативен примерок од секоја од 46-те производни серии "
                "од Транша 1 (20 серии) и Транша 2 (26 серии), складирани во сеф-магацинот како готов производ во троен "
                "фолиски кеси од 400 g (10 кеси по нумериран картон), и интерното определување на губиток при сушење "
-               "(Ph. Eur. 2.2.32; монографија 3028 Cannabis flos; интерен метод SAM_a02.2) пред испорака, за да се потврди "
+               "(Ph. Eur. 2.2.32; монографија 3028 Cannabis flos; метод a02.2) пред испорака, за да се потврди "
                "дека нивото на влага на производот одговара на спецификацијата QCSP 001 (≤ 12,0 % w/w).",
             "This document prescribes the representative sampling of each of the 46 production batches of Tranche 1 "
             "(20 batches) and Tranche 2 (26 batches), stored in the secure warehouse as finished product in 400 g "
             "triple-foil bags (10 bags per numbered carton), and the in-house determination of loss on drying "
-            "(Ph. Eur. 2.2.32; monograph 3028 Cannabis flos; in-house method SAM_a02.2) before shipment, to confirm "
+            "(Ph. Eur. 2.2.32; monograph 3028 Cannabis flos; method a02.2) before shipment, to confirm "
             "that the product's moisture level meets specification QCSP 001 (≤ 12.0 % w/w).")
     pr.body(d, "Точка на земање: SP-12 — готов производ во магацин (QCSOP 011 v03). Крајната точка е физичко-хемиска, "
                "па не се бара асептична техника. Земањето се изведува во два дена со по околу половина од кесите за "
@@ -272,9 +272,9 @@ def build_plan(lots):
         ["Избрани кеси | Selected bags", "r, r + i, r + 2i, … (n кеси) · ознака K{картон}B{кеса} | "
          "r, r + i, r + 2i, … (n bags) · key K{carton}B{bag}", "K1B1 = картон 1, кеса 1 | carton 1, bag 1"],
         ["Определувања | Determinations", "k = 1 (N ≤ 100) · 2 (101–400) · 3 (> 400)", "по збирен примерок | per composite"],
-        ["Тест порција | Test portion", "≈ 1,000 g во таран сад за мерење | ≈ 1.000 g in a tared weighing bottle", "SAM_a02.2"],
-        ["Губиток при сушење | Loss on drying", "ГпС % = (G1 − G2) ÷ (G1 − m0) × 100 | LoD % = (G1 − G2) ÷ (G1 − m0) × 100",
-         "m0 = сад | bottle; G1 = пред | before; G2 = по сушење до константна маса | after drying to constant mass"],
+        ["Тест порција | Test portion", "1,000 g во претходно исушен тариран сад (m_B) | 1.000 g in a previously dried tared bottle (m_B)", "a02.2"],
+        ["Губиток при сушење | Loss on drying", "ГпС % = (m₀ − m₁) ÷ m₀ × 100 | LoD % = (m₀ − m₁) ÷ m₀ × 100",
+         "m₀ = G1 − m_B пред сушење | before drying; m₁ = G2 − m_B по сушење до константна маса | after drying to constant mass"],
         ["Резултат на серија | Batch result", "средна вредност од k определувања | mean of k determinations",
          "критериум ≤ 12,0 % w/w | criterion ≤ 12.0 % w/w"],
     ], sz=8)
@@ -393,26 +393,26 @@ def build_plan(lots):
          "двапати).",
          "All flowers are coarsely cut with clean stainless-steel scissors on a clean tray and mixed by quartering (the "
          "material is flattened, divided into four quarters, opposite quarters recombined; twice)."),
-        ("Од различни четвртини се земаат k тест порции од околу 1,000 g во тарирани, претходно исушени садови за "
-         "мерење (m0) и веднаш се мерат (G1), за да се ограничи размената на влага.",
-         "From different quarters, k test portions of about 1.000 g are taken into tared, pre-dried weighing bottles "
-         "(m0) and weighed immediately (G1), to limit moisture exchange."),
+        ("Од различни четвртини се земаат k тест порции од 1,000 g сецкана, несеана дрога во тарирани, претходно исушени "
+         "садови за мерење (m_B) и веднаш се мерат (G1), за да се ограничи размената на влага.",
+         "From different quarters, k test portions of 1.000 g of the cut, unsieved drug are taken into tared, pre-dried "
+         "weighing bottles (m_B) and weighed immediately (G1), to limit moisture exchange."),
         ("Остатокот од збирниот примерок се чува затворен и означен до одобрувањето на извршниот запис.",
          "The remainder of the composite is kept closed and labelled until the execution record is approved."),
     ]:
         pr.bullet(d, mk, en)
 
     # 7
-    chapter(d, "7", "ОПРЕДЕЛУВАЊЕ НА ГУБИТОК ПРИ СУШЕЊЕ (SAM_a02.2)", "Loss on Drying Determination (SAM_a02.2)")
+    chapter(d, "7", "ОПРЕДЕЛУВАЊЕ НА ГУБИТОК ПРИ СУШЕЊЕ (a02.2)", "Loss on Drying Determination (a02.2)")
     table(d, ["Параметар | Parameter", "Вредност | Value"], [
-        ["Метод | Method", "Ph. Eur. 2.2.32 (монографија 3028) · интерен метод SAM_a02.2 | Ph. Eur. 2.2.32 (monograph 3028) · in-house method SAM_a02.2"],
-        ["Опрема | Equipment", "вакуумска печка · аналитичка вага (читливост според квалификацијата) · ексикатор | vacuum oven · analytical balance (readability as qualified) · desiccator"],
-        ["Услови | Conditions", "40 °C · 15–25 mbar · 24 h"],
-        ["Тест порција | Test portion", "≈ 1,000 g во таран сад (m0); G1 пред сушење | ≈ 1.000 g in a tared bottle (m0); G1 before drying"],
-        ["Мерење по 24 h | Weighing after 24 h", "ладење во ексикатор, мерење G2 | cool in a desiccator, weigh G2"],
-        ["Константна маса | Constant mass", "садовите се враќаат во печката за дополнителен период (SAM_a02.2 / Раководител на КК, поглавје 11) и се мерат повторно; две последователни мерења се разликуваат за не повеќе од 0,5 mg (Ph. Eur. Општи одредби — формулацијата да се потврди во контролираното издание); инаку сушењето продолжува | "
-         "the bottles return to the oven for an additional period (SAM_a02.2 / Head of QC, section 11) and are weighed again; two consecutive weighings differ by not more than 0.5 mg (Ph. Eur. General Notices — wording to be confirmed in the controlled edition); otherwise drying continues"],
-        ["Пресметка | Calculation", "ГпС % = (G1 − G2) ÷ (G1 − m0) × 100 по порција; резултат на серија = средна вредност од k | LoD % = (G1 − G2) ÷ (G1 − m0) × 100 per portion; batch result = mean of k"],
+        ["Метод | Method", "Ph. Eur. 2.2.32 (монографија 3028) · метод a02.2 (вакуумска печка) | Ph. Eur. 2.2.32 (monograph 3028) · method a02.2 (vacuum oven)"],
+        ["Опрема | Equipment", "вакуумска печка VO29 (QCWI 018, QCLB 017) · аналитичка вага Shimadzu AUW220D, d = 0,01 mg (QCWI 016, QCLB 008) · ексикатор со активен сушач | vacuum oven VO29 (QCWI 018, QCLB 017) · analytical balance Shimadzu AUW220D, d = 0.01 mg (QCWI 016, QCLB 008) · desiccator with active desiccant"],
+        ["Услови | Conditions", "40 °C · 20 ± 2 mbar · 24 h · над околу 100 g молекуларно сито R | 40 °C · 20 ± 2 mbar · 24 h · over about 100 g molecular sieve R"],
+        ["Тест порција | Test portion", "1,000 g сецкана, несеана дрога во претходно исушен тариран сад (m_B); G1 пред сушење | 1.000 g of the cut, unsieved drug in a previously dried tared bottle (m_B); G1 before drying"],
+        ["Мерење по 24 h | Weighing after 24 h", "ладење најмалку 30 min во ексикатор, мерење G2 | cool at least 30 min in a desiccator, weigh G2"],
+        ["Константна маса | Constant mass", "садовите се враќаат во печката за дополнителен период (поглавје 11) и се мерат повторно по ладење; две последователни мерења се разликуваат за не повеќе од 0,5 mg; инаку сушењето продолжува | "
+         "the bottles return to the oven for an additional period (section 11) and are weighed again after cooling; two consecutive weighings differ by not more than 0.5 mg; otherwise drying continues"],
+        ["Пресметка | Calculation", "m₀ = G1 − m_B; m₁ = G2 − m_B со последното G2; ГпС % = (m₀ − m₁) ÷ m₀ × 100 по порција; резултат на серија = средна вредност од k | m₀ = G1 − m_B; m₁ = G2 − m_B with the last G2; LoD % = (m₀ − m₁) ÷ m₀ × 100 per portion; batch result = mean of k"],
         ["Критериум | Criterion", "≤ 12,0 % w/w (QCSP 001) | ≤ 12.0 % w/w (QCSP 001)"],
         ["Надвор од спецификација | Out of specification", "QCSOP 014 (OOS); резултатот не се заменува со подоцнежна вредност | QCSOP 014 (OOS); the result is never papered over by a later value"],
         ["Известување | Reporting", "резултатот и датумите на сушење влегуваат во регистарот на сертификати по правилата на бирото за сертификати | the result and the drying dates enter the certificate register under the certificate desk's rules"],
@@ -464,8 +464,8 @@ def build_plan(lots):
          "WHO Technical Report Series No. 929 (2005), Annex 4 — Guidelines for sampling of pharmaceutical products and related materials (r-plan, r = 1.5·√N)."),
         ("European Pharmacopoeia: 2.2.32 Loss on drying; 2.8.20 Herbal drugs: sampling and sample preparation; монографија 3028 Cannabis flos; Општи одредби (константна маса).",
          "European Pharmacopoeia: 2.2.32 Loss on drying; 2.8.20 Herbal drugs: sampling and sample preparation; monograph 3028 Cannabis flos; General Notices (constant mass)."),
-        ("SAM_a02.2 — интерен метод за губиток при сушење (вакуумска печка 40 °C, 15–25 mbar, 24 h); PP AMVR a02.1-001/2026 (студија за споредба HMA наспроти Ph. Eur. 2.2.32).",
-         "SAM_a02.2 — in-house loss-on-drying method (vacuum oven 40 °C, 15–25 mbar, 24 h); PP AMVR a02.1-001/2026 (HMA vs Ph. Eur. 2.2.32 comparison study)."),
+        ("a02.2 — губиток при сушење, Ph. Eur. 2.2.32 во вакуумска печка VO29 (40 °C, 20 ± 2 mbar, 24 h, над молекуларно сито R), STPa02 според QCSOP 009.",
+         "a02.2 — loss on drying, Ph. Eur. 2.2.32 in vacuum oven VO29 (40 °C, 20 ± 2 mbar, 24 h, over molecular sieve R), STPa02 under QCSOP 009."),
         ("QCSP 001 — спецификација на производот (губиток при сушење ≤ 12,0 % w/w); QCSP-RMI-P0005 — спецификација на кесата (нето 400,0 g ± 3 %).",
          "QCSP 001 — product specification (loss on drying ≤ 12.0 % w/w); QCSP-RMI-P0005 — bag specification (net 400.0 g ± 3 %)."),
         ("EudraLex Vol. 4: Поглавје 6 (контрола на квалитет), Annex 8 (земање примероци), Annex 11 (ALCOA+); ICH Q9(R1).",
@@ -484,8 +484,8 @@ def build_plan(lots):
          "Master v57, Reference E216 (GG1024_01 = 0.87 kg) needs correction; KC102501 — 21.67 kg (master) vs 16.000 kg (stock); the documented bag count per batch at retrieval."),
         ("Правилото k = 1/2/3 по број на кеси наспроти дупликатот од QCSOP 011 v03 §5; капацитет на печката за %d и %d сада на ноќ." % (sum(l["k"] for l in by_day[1]), sum(l["k"] for l in by_day[2])),
          "The k = 1/2/3 rule by bag count against the duplicate in QCSOP 011 v03 §5; oven capacity for %d and %d bottles per night." % (sum(l["k"] for l in by_day[1]), sum(l["k"] for l in by_day[2]))),
-        ("Дополнителниот период на сушење за второто мерење (според SAM_a02.2 или по негова одлука).",
-         "The additional drying period for the second weighing (per SAM_a02.2 or by his decision)."),
+        ("Дополнителниот период на сушење за второто мерење (според a02.2 или по негова одлука).",
+         "The additional drying period for the second weighing (per a02.2 or by his decision)."),
         ("Ознаки: PP-QC-SP-002/26-D1/D2-RCPT/-RET/-SMP за преносите на QCT 024 и PP-QC-SP-002/26-LOD-01/-02 за анализата (или QCT 025, следната слободна QC ознака); броевите на A03 и QCT 021 се од нивните регистри; регистрација на RQS пред земање (QCSOP 011 v03 §6.1.1).",
          "Codes: PP-QC-SP-002/26-D1/D2-RCPT/-RET/-SMP for the QCT 024 transfers and PP-QC-SP-002/26-LOD-01/-02 for the analysis (or QCT 025, the next free QC template code); the A03 and QCT 021 numbers come from their registers; RQS registration before sampling (QCSOP 011 v03 §6.1.1)."),
         ("Спарување со халогенскиот анализатор (SAM_a02.1) на истите збирни примероци за верификација на методот во опсегот 5–12 % — ако агентот за верификација побара дупликатни HMA мерења или k = 2 на подгрупа, се внесува пред одобрување.",
