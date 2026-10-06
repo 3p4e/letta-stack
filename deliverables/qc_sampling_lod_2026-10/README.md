@@ -16,7 +16,7 @@ r-plan, the k = 1/2/3 rule and the two-day split of the draft of 05.10.2026.
 |---|---|
 | `1_PLAN/`, `PP-QC-SP-002_26_PACKAGE-1_PLAN.zip` | Sampling Plan and Execution Protocol, as amended 06.10.2026 (9 pages) |
 | `2_SAMPLING_EXECUTION/`, `PP-QC-SP-002_26_PACKAGE-2_SAMPLING_EXECUTION.zip` | Package index, then the seven documents of the one sampling day below |
-| `3_LOD_ANALYSIS_EXECUTION/`, `PP-QC-SP-002_26_PACKAGE-3_LOD_ANALYSIS_EXECUTION.zip` | LOD-01, one execution record for all 46 batches in one oven run; its Attachment 1 (weighings on two balances) and deviation DEV-01 |
+| `3_LOD_ANALYSIS_EXECUTION/`, `PP-QC-SP-002_26_PACKAGE-3_LOD_ANALYSIS_EXECUTION.zip` | LOD-01 (run 1, invalidated), its Attachment 1 (weighings on two balances), deviation DEV-01, and LOD-01R, the repeat of all 46 batches on the AUW220D |
 
 Package 2, in order of use:
 
@@ -34,11 +34,12 @@ Package 3, the LoD execution record: A receipt of the samples (from step 7), B e
 conditions, C homogenisation and test portions, D weighings to constant mass, one test portion per
 batch (46 prefilled rows), E results per batch (the one portion's LoD), F deviations and OOS, G sign-offs.
 
-**DEV-01 (06.10.2026):** m_B and the 1 g test portion (G1) were weighed on a precision balance (d = 1 mg)
-instead of the AUW220D. G2 is weighed on the same precision balance, so every quantity in the result
-comes from one balance, and straight after on the AUW220D (constant mass), on Attachment 1. With U about 0.3 % w/w (k = 2), set before any
-result: 11.7 % or less conforms; 11.8 to 12.3 % is repeated in full on the AUW220D from the sample
-remainder; above 12.3 % is OOS per QCSOP 014.
+**DEV-01 (06.10.2026):** in run 1, m_B and the 1 g test portion (G1) were weighed on a precision balance
+(d = 1 mg) instead of the AUW220D; G2 was weighed on both balances (Attachment 1). The method needs a
+balance reading at least 4 decimals, and no later weighing can correct G1, so the Head of QC invalidated
+run 1 and all 46 batches are repeated from the sample remainders under **LOD-01R**, every weighing on the
+AUW220D. The repeat is reported for every batch; run 1 stays in the record, not reported. The band rule
+first written in DEV-01 is kept there as superseded.
 
 Each package folder holds every DOCX and PDF and a merged packet PDF with a bookmark per document.
 The label sheets are in the folder and the zip but not in the packet: they print on perforated

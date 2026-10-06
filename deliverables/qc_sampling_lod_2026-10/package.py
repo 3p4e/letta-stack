@@ -7,7 +7,8 @@
                                QCSOP 011_A03, QCT 021, the QASOP_031 label sheets, QCT 024 return,
                                QCT 024 samples -> QC lab
   3  LOD ANALYSIS EXECUTION    one loss-on-drying execution record, all 46 batches in one oven run, with its
-                               Attachment 1 (weighings on two balances) and deviation DEV-01
+                               Attachment 1 (weighings on two balances), deviation DEV-01 and the repeat
+                               LOD-01R (all 46 on the AUW220D)
 
 Each package is a folder under out/ holding every DOCX and PDF, a merged packet PDF with a bookmark
 per document (label sheets excluded: they print on perforated stock), and a zip of the folder.
@@ -63,7 +64,9 @@ PACKAGES = [
         ("PP-QC-SP-002/26-LOD-01 Прилог 1 — мерења на две ваги | Attachment 1 — weighings on two balances",
          "PP-QC-SP-002_26-LOD-01_Attachment-1_Two_Balance_Weighings", True),
         ("PP-QC-SP-002/26-DEV-01 — отстапување, мерења пред сушење на прецизна вага | deviation, pre-drying weighings on a precision balance",
-         "PP-QC-SP-002_26-DEV-01_Deviation_Precision_Balance_LOD-01", True)]),
+         "PP-QC-SP-002_26-DEV-01_Deviation_Precision_Balance_LOD-01", True),
+        ("PP-QC-SP-002/26-LOD-01R — повторување, сите 46 серии на AUW220D | repeat, all 46 batches on the AUW220D",
+         "PP-QC-SP-002_26-LOD-01R_LoD_Repeat_AUW220D_T1_T2", True)]),
 ]
 
 
