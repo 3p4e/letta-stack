@@ -663,10 +663,10 @@ def build_dev01(lots):
     printed; who, when, the balance ID, the cause and the classification are written in."""
     ls = day_lots(lots, 1)
     code, lod = dev_code(), lod_code(1)
-    d = bc.new_doc(code, "ИЗВЕШТАЈ ЗА ОТСТАПУВАЊЕ — МЕРЕЊЕ G1, LOD-01",
-                   "DEVIATION REPORT — G1 WEIGHING, LOD-01")
-    bc.cover(d, "Извештај за отстапување — G1 измерено на прецизна вага",
-             "Deviation report — G1 weighed on a precision balance",
+    d = bc.new_doc(code, "ИЗВЕШТАЈ ЗА ОТСТАПУВАЊЕ — МЕРЕЊА ПРЕД СУШЕЊЕ, LOD-01",
+                   "DEVIATION REPORT — PRE-DRYING WEIGHINGS, LOD-01")
+    bc.cover(d, "Извештај за отстапување — мерења пред сушење на прецизна вага",
+             "Deviation report — pre-drying weighings on a precision balance",
              [("Отстапување бр. | Deviation No.", code + " · регистар | register PP-QA-SOP-003: " + BLANK),
               ("Запис | Record", lod + " · Прилог 1 | Attachment 1"),
               ("Метод | Method", "a02.2 · Ph. Eur. 2.2.32 (3028) · VO29 · Shimadzu AUW220D"),
@@ -678,27 +678,27 @@ def build_dev01(lots):
              "Мерење на почетната маса", "Weighing of the initial mass")
 
     chapter(d, "A", "ОПИС", "Description")
-    pr.body(d, "Масата G1 (садот со тест порцијата пред сушење) за сите %d порции на %s е измерена на прецизна вага со "
-               "d = 0,001 g (ID %s) наместо на аналитичката вага Shimadzu AUW220D (d = 0,01 mg) што ја пропишува методот a02.2 "
-               "(QCWI 016). Празниот сад m_B е измерен на: [ ] истата прецизна вага  [ ] AUW220D. Отстапувањето е откриено на "
-               "06.10.2026, за време на сушењето, пред мерењето по 24 h и пред секоја пресметка на резултат."
-            % (len(ls), lod, BLANK),
-            "The mass G1 (bottle with the test portion before drying) of all %d portions of %s was weighed on a precision "
-            "balance with d = 0.001 g (ID %s) instead of the Shimadzu AUW220D analytical balance (d = 0.01 mg) that method "
-            "a02.2 requires (QCWI 016). The empty bottle m_B was weighed on: [ ] the same precision balance  [ ] the AUW220D. "
-            "The deviation was found on 06.10.2026, during drying, before the 24-h weighing and before any result was "
-            "calculated." % (len(ls), lod, BLANK))
+    pr.body(d, "Мерењата пред сушење за сите %d порции на %s — празниот сад m_B и тест порцијата од 1,000 g сецкана, "
+               "измешана дрога (G1, или m₀ отчитано по тарирање на садот) — се направени на прецизна вага со d = 0,001 g "
+               "(ID %s), со три децимали, наместо на аналитичката вага Shimadzu AUW220D (d = 0,01 mg) што ја пропишува "
+               "методот a02.2 (QCWI 016). Отстапувањето е откриено на 06.10.2026, за време на сушењето, пред мерењето по "
+               "24 h и пред секоја пресметка на резултат." % (len(ls), lod, BLANK),
+            "The pre-drying weighings of all %d portions of %s — the empty bottle m_B and the 1.000 g test portion of cut, "
+            "blended drug (G1, or m₀ read after taring the bottle) — were made on a precision balance with d = 0.001 g "
+            "(ID %s), to three decimals, instead of the Shimadzu AUW220D analytical balance (d = 0.01 mg) that method a02.2 "
+            "requires (QCWI 016). The deviation was found on 06.10.2026, during drying, before the 24-h weighing and before "
+            "any result was calculated." % (len(ls), lod, BLANK))
 
     chapter(d, "B", "ВЕДНАШНО ДЕЈСТВО", "Immediate Action")
     for mk, en in [
-        ("G2 и секое следно мерење се мерат на истата прецизна вага како G1 — оваа двојка го дава резултатот; разликата "
-         "меѓу двете ваги така се поништува.",
-         "G2 and every further weighing are made on the same precision balance as G1 — this pair gives the result, so any "
-         "offset between the two balances cancels."),
-        ("Веднаш потоа истиот сад се мери и на AUW220D: константната маса (Δ ≤ 0,5 mg) се оценува само таму, затоа што "
-         "вага со d = 1 mg не може да покаже разлика од 0,5 mg.",
-         "Straight after, the same bottle is weighed on the AUW220D: constant mass (Δ ≤ 0.5 mg) is judged only there, since a "
-         "balance with d = 1 mg cannot show a 0.5 mg difference."),
+        ("G2 и секое следно мерење се мерат на истата прецизна вага. Така сите величини во резултатот (m_B, G1 или m₀, "
+         "G2) се од една вага и разликата меѓу двете ваги не влегува во резултатот.",
+         "G2 and every further weighing are made on the same precision balance. Every quantity in the result (m_B, G1 or "
+         "m₀, G2) then comes from one balance, so the offset between the two balances never enters the result."),
+        ("Веднаш потоа истиот сад се мери и на AUW220D, само за константната маса (Δ ≤ 0,5 mg), затоа што вага со "
+         "d = 1 mg не може да покаже разлика од 0,5 mg.",
+         "Straight after, the same bottle is weighed on the AUW220D, for constant mass only (Δ ≤ 0.5 mg), since a balance "
+         "with d = 1 mg cannot show a 0.5 mg difference."),
         ("Садовите се мерат затворени, по ист редослед, со запишан час; контролен тег се мери на двете ваги пред првото "
          "мерење. Сè се запишува во Прилог 1 кон %s." % lod,
          "The bottles are weighed stoppered, in the same order, with the time written; a check weight is weighed on both "
@@ -714,16 +714,16 @@ def build_dev01(lots):
 
     chapter(d, "C", "ПРОЦЕНА НА ВЛИЈАНИЕТО", "Impact Assessment")
     for mk, en in [
-        ("Губитокот L = G1 − G2 е околу 50–125 mg на m₀ ≈ 1,000 g. Со двете мерења на иста вага, отстапувањето на вагата "
+        ("Губитокот L = G1 − G2 е околу 50–125 mg на m₀ ≈ 1,000 g. Со сите мерења на иста вага, отстапувањето на вагата "
          "се поништува; остануваат читливоста d = 1 mg (u = d ÷ √12 по читање) и повторливоста s на вагата.",
-         "The loss L = G1 − G2 is about 50–125 mg on m₀ ≈ 1.000 g. With both weighings on one balance its offset cancels; "
+         "The loss L = G1 − G2 is about 50–125 mg on m₀ ≈ 1.000 g. With every weighing on one balance its offset cancels; "
          "what remains is the readability d = 1 mg (u = d ÷ √12 per reading) and the balance repeatability s."),
         ("Проширена неизвесност на резултатот (k = 2): U = 2 · √2 · √(s² + d² ÷ 12) ÷ m₀ × 100 (% w/w, апсолутно).",
          "Expanded uncertainty of the result (k = 2): U = 2 · √2 · √(s² + d² ÷ 12) ÷ m₀ × 100 (% w/w, absolute)."),
-        ("m₀ е под влијание само околу 0,1 % релативно — занемарливо; Ph. Eur. дозволува вистинската маса да отстапува до "
-         "10 % од наведените 1,000 g.",
-         "m₀ is affected by only about 0.1 % relative — negligible; Ph. Eur. allows the actual quantity to differ by up to "
-         "10 % from the 1.000 g stated."),
+        ("Тест порцијата од 1,000 g е измерена на 1 mg: m₀ е под влијание само околу 0,1 % релативно — занемарливо и веќе "
+         "опфатено со U; Ph. Eur. дозволува вистинската маса да отстапува до 10 % од наведените 1,000 g.",
+         "The 1.000 g test portion was weighed to 1 mg: m₀ is affected by only about 0.1 % relative — negligible and already "
+         "within U; Ph. Eur. allows the actual quantity to differ by up to 10 % from the 1.000 g stated."),
         ("Мерењето не го исполнува методот (вага). Според правилото за минимална маса (USP <41> / Ph. Eur. 2.1.7: 2 · s ÷ m "
          "≤ 0,10 %, s не помало од 0,41 · d), вага со d = 1 mg има минимална маса од најмалку 0,82 g, а 2 g за s = 1 mg: "
          "порцијата од 1,000 g е на или под неа.",

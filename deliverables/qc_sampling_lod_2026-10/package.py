@@ -62,7 +62,7 @@ PACKAGES = [
          "PP-QC-SP-002_26-LOD-01_LoD_Execution_Record_T1_T2", True),
         ("PP-QC-SP-002/26-LOD-01 Прилог 1 — мерења на две ваги | Attachment 1 — weighings on two balances",
          "PP-QC-SP-002_26-LOD-01_Attachment-1_Two_Balance_Weighings", True),
-        ("PP-QC-SP-002/26-DEV-01 — отстапување, G1 на прецизна вага | deviation, G1 on a precision balance",
+        ("PP-QC-SP-002/26-DEV-01 — отстапување, мерења пред сушење на прецизна вага | deviation, pre-drying weighings on a precision balance",
          "PP-QC-SP-002_26-DEV-01_Deviation_Precision_Balance_LOD-01", True)]),
 ]
 

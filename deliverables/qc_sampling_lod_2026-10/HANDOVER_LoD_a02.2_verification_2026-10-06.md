@@ -116,8 +116,8 @@ trending, not batch release (release via accredited external laboratory, §6.6, 
   run. There are **no replicates**: the campaign gives one determination per lot, so no within-lot
   precision. The draft of 05.10.2026 (composites from 1.5·√N bags, k = 1/2/3, 88 portions, two days) was
   not executed.
-- Deviation DEV-01 (06.10.2026): G1 of all 46 portions was weighed on a precision balance (d = 1 mg), not the
-  AUW220D. The results come from G1 and G2 on that balance (U about ±0.3 % w/w, k = 2); constant mass is read
+- Deviation DEV-01 (06.10.2026): m_B and the 1 g portion (G1) of all 46 were weighed on a precision balance
+  (d = 1 mg), not the AUW220D. The results come from G1 and G2 on that balance (U about ±0.3 % w/w, k = 2); constant mass is read
   on the AUW220D. These data are therefore not fit for the verification's precision or uncertainty estimates;
   lots at 11.8–12.3 % are repeated in full on the AUW220D, and those repeats are a02.2-conform.
 - Expected range: certificate values on record 5.6–8.6 % (40 lots); July in-house 24 h values up to 12.3 %.

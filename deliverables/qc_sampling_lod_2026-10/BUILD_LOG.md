@@ -1,6 +1,6 @@
 # Build log — PP-QC-SP-002/26 (in-house loss on drying before shipment, Tranches 1 and 2)
 
-Built 2026-10-06 12:38 UTC on repository head `ac3498d`.
+Built 2026-10-06 14:58 UTC on repository head `fcc6e11`.
 Engine: `pp-document-suite/scripts` (python-docx), last engine commit `8c7d5e6 2026-09-25`; base template `assets/PP_BASE_TEMPLATE.docx`. Label sheets are plain python-docx on A4 perforated stock (no running header).
 Render: LibreOffice Writer (`soffice --headless --convert-to pdf`), Carlito for Calibri.
 Status printed on every engine document: IN REVIEW — NOT FOR USE; rebuilt as v1.0 with an effective date only on the Head of QC's approval.
@@ -11,8 +11,8 @@ Status printed on every engine document: IN REVIEW — NOT FOR USE; rebuilt as v
 |---|---|---|---|
 | `1_PLAN/PP-QC-SP-002_26_Sampling_Plan_LoD_T1_T2.docx` | PASS |  | `c6bebb2381370177de503498437b20de93123ab3abbc054fe9d0de7db5242484` |
 | `1_PLAN/PP-QC-SP-002_26_Sampling_Plan_LoD_T1_T2.pdf` |  | 9 | `4b2844761bb3791d03024461570bbfb43c1e03b9b57914949beeee0f0f846ee3` |
-| `1_PLAN/PACKET_PP-QC-SP-002_26_PACKAGE-1_PLAN.pdf` | | 9 | `93835dededa168a9c2a4e805f9a16f5c0bdb0ab9bf636bac94aece82f61b134d` |
-| `PP-QC-SP-002_26_PACKAGE-1_PLAN.zip` | | | `970c13bf82c18a3f5248323102f978d983b3477eeefe7263250663dea10a2602` |
+| `1_PLAN/PACKET_PP-QC-SP-002_26_PACKAGE-1_PLAN.pdf` | | 9 | `366b6740f99ff33157846d8aae40041b099c55c5d1686eb68d84b3e3b436c186` |
+| `PP-QC-SP-002_26_PACKAGE-1_PLAN.zip` | | | `b728c19b9f7db3ce788f80d4490658fbfa732ecbfbcaeebf8a5086baa40f9e92` |
 
 ## PP-QC-SP-002_26_PACKAGE-2_SAMPLING_EXECUTION
 
@@ -34,8 +34,8 @@ Status printed on every engine document: IN REVIEW — NOT FOR USE; rebuilt as v
 | `2_SAMPLING_EXECUTION/S1-6_QCT024_Transfer_Return_to_Warehouse_Day1.pdf` |  | 3 | `6d42a8832ff47ae98f9bb5bb9210a46b8f9276df0d5033bab6edb82c4b754781` |
 | `2_SAMPLING_EXECUTION/S1-7_QCT024_Transfer_Samples_to_QC_Lab_Day1.docx` | PASS |  | `f9f1135a4aba72cc9212398da7db0cf5bba6b2db1d3c88d1b7bdac1688013bed` |
 | `2_SAMPLING_EXECUTION/S1-7_QCT024_Transfer_Samples_to_QC_Lab_Day1.pdf` |  | 2 | `c785489ab0b0da17454e78ae9b9f327ec75ade41c07b9437c15a7c0b377c3e2d` |
-| `2_SAMPLING_EXECUTION/PACKET_PP-QC-SP-002_26_PACKAGE-2_SAMPLING_EXECUTION.pdf` | | 58 | `90604bc1e067248381c92c4a2f1e9b9b70c97ebd7add8c9f4a0660049e0d1fef` |
-| `PP-QC-SP-002_26_PACKAGE-2_SAMPLING_EXECUTION.zip` | | | `43144f23b67abe5c83ce1f268e2d1a1bb31c095df83f65032dae5aaecc5a648d` |
+| `2_SAMPLING_EXECUTION/PACKET_PP-QC-SP-002_26_PACKAGE-2_SAMPLING_EXECUTION.pdf` | | 58 | `12cc92c8a867c91112648d3d8942692ca42c4efd49c6a978e29bf743082c2079` |
+| `PP-QC-SP-002_26_PACKAGE-2_SAMPLING_EXECUTION.zip` | | | `fb069f424a1ba8045c9e7fc0d02c5c0a1986ba0c16585cc559046c56fb789719` |
 
 ## PP-QC-SP-002_26_PACKAGE-3_LOD_ANALYSIS_EXECUTION
 
@@ -45,9 +45,9 @@ Status printed on every engine document: IN REVIEW — NOT FOR USE; rebuilt as v
 | `3_LOD_ANALYSIS_EXECUTION/PP-QC-SP-002_26-LOD-01_LoD_Execution_Record_T1_T2.pdf` |  | 11 | `df8daf21ec83514104d51e3155fd613c528c2e108b525ac02c4ec25361da299c` |
 | `3_LOD_ANALYSIS_EXECUTION/PP-QC-SP-002_26-LOD-01_Attachment-1_Two_Balance_Weighings.docx` | PASS |  | `520e4735795a7cb73e6868c2e495dfc303ba48e1afdd4cd0a5ad10bfc3e99552` |
 | `3_LOD_ANALYSIS_EXECUTION/PP-QC-SP-002_26-LOD-01_Attachment-1_Two_Balance_Weighings.pdf` |  | 4 | `8dcc57cb84ccf6ee36e653922b15e5a6462ebcce94ffcc160d9a12a1de53f562` |
-| `3_LOD_ANALYSIS_EXECUTION/PP-QC-SP-002_26-DEV-01_Deviation_Precision_Balance_LOD-01.docx` | PASS |  | `fb196394efa8c257bd0016b444bf32a2f17ae7c4b91b7dd52c75bc114d046a69` |
-| `3_LOD_ANALYSIS_EXECUTION/PP-QC-SP-002_26-DEV-01_Deviation_Precision_Balance_LOD-01.pdf` |  | 4 | `0ddd6b10086f8a5c504a4ac29450bcfce25c8c9d89a1f80ffb0ad8aef012f05f` |
-| `3_LOD_ANALYSIS_EXECUTION/PACKET_PP-QC-SP-002_26_PACKAGE-3_LOD_ANALYSIS_EXECUTION.pdf` | | 19 | `70b8b637cb78c22023cd69b28fad5c3af93c4722c613ba168d86bd772e1e40e4` |
-| `PP-QC-SP-002_26_PACKAGE-3_LOD_ANALYSIS_EXECUTION.zip` | | | `bfe7c2d482a8d2573c8b71041a41ffa6ada6d2e1b364e14c8b70fcf009525aa0` |
+| `3_LOD_ANALYSIS_EXECUTION/PP-QC-SP-002_26-DEV-01_Deviation_Precision_Balance_LOD-01.docx` | PASS |  | `c636532a84e8f4c1bea31baed574e059e1481037a92ee29b17e40f62161f3126` |
+| `3_LOD_ANALYSIS_EXECUTION/PP-QC-SP-002_26-DEV-01_Deviation_Precision_Balance_LOD-01.pdf` |  | 4 | `c95b071ccb1a14ffe183c3c7efaafbc72a262fa84c1e75fc5e40659bb9beaacc` |
+| `3_LOD_ANALYSIS_EXECUTION/PACKET_PP-QC-SP-002_26_PACKAGE-3_LOD_ANALYSIS_EXECUTION.pdf` | | 19 | `59aefe8c5bdb606494a89118fa2c5f42716916c8e02d46e4165015e8464cb2f1` |
+| `PP-QC-SP-002_26_PACKAGE-3_LOD_ANALYSIS_EXECUTION.zip` | | | `87074e78f2aa966a8482065c12ae9a805536654931715da38b2cfe9a2eea6104` |
 
 Data: `SAMPLING_PLAN_T1_T2_2026-10.tsv` (`1e8b8634e801b514c666e574b8be5667c4ee9ea76db3c513c098e5a746f8e09f`), `bag_selection.tsv` (`7d9bec08ce42bb7879d6a5ba40855b9e392799652d0da04575bc8543fecc4e8f`); notes in `DATA_NOTES.md`.
