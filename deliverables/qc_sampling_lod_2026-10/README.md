@@ -3,15 +3,18 @@
 Three documents, bilingual Macedonian / English, built with the Purely Plant document engine
 (`pp-document-suite/`, python-docx) from committed records only. Head of QC, 05.10.2026: *one
 execution document per sampling day, all the batches of that day together* — so the set is the
-plan plus two daily execution records, not a form per batch.
+plan plus two daily execution records, not a form per batch. Head of QC, 06.10.2026: the execution
+records are delivered as their own package, separate from the plan.
 
 | File (`out/`) | What it is |
 |---|---|
 | `PP-QC-SP-002_26_Sampling_Plan_LoD_T1_T2.docx` / `.pdf` | Sampling Plan & Execution Protocol — purpose, basis, formulas, per-batch plan (46 lots), day groups, conditions, homogenisation, the LoD method, schedule, record map, references, open items |
 | `PP-QC-SP-002_26-ER-01_Execution_Record_Day1.docx` / `.pdf` | Execution record for every Day-1 batch: batch table, handover warehouse to QC, per-batch execution, per-bag inventory (493 prefilled rows), return, LoD determinations (44 prefilled rows), deviations, sign-offs |
 | `PP-QC-SP-002_26-ER-02_Execution_Record_Day2.docx` / `.pdf` | The same for Day 2 (492 bag rows, 44 LoD rows) |
-| `PACKET_PP-QC-SP-002_26_Plan_ER-01_ER-02.pdf` | The three PDFs merged, a bookmark per document |
-| `PP-QC-SP-002_26_DOCX_PDF.zip` | Everything above in one archive |
+| `PACKET_PP-QC-SP-002_26_Execution_Records_ER-01_ER-02.pdf` | ER-01 and ER-02 merged, a bookmark per record (40 pages) |
+| `PP-QC-SP-002_26_EXECUTION_RECORDS_DOCX_PDF.zip` | The execution-record package: ER-01 and ER-02 as DOCX and PDF plus the merged execution-records packet |
+| `PP-QC-SP-002_26_PLAN_DOCX_PDF.zip` | The plan package: the sampling plan as DOCX and PDF |
+| `PACKET_PP-QC-SP-002_26_Plan_ER-01_ER-02.pdf` | The three PDFs merged, a bookmark per document (50 pages) |
 
 Data behind every number: `SAMPLING_PLAN_T1_T2_2026-10.tsv` (one row per lot), `bag_selection.tsv`
 (one row per selected bag), `DATA_NOTES.md` (the two data notes), `BUILD_LOG.md` (verify results,
@@ -62,7 +65,7 @@ page counts, SHA-256 of every file).
 python3 campaign_data.py --test && python3 campaign_data.py      # data -> TSVs
 python3 build_campaign_docs.py                                    # DOCX, pp_verify PASS required
 cd out && for f in *.docx; do soffice --headless --convert-to pdf --outdir . "$f"; done
-cd .. && python3 package.py                                       # packet PDF, zip, BUILD_LOG.md
+cd .. && python3 package.py                                       # packets, the two zips, BUILD_LOG.md
 ```
 
 Fonts: copy `pp-document-suite/assets/fonts/*.ttf` to `~/.local/share/fonts` and run `fc-cache -f`

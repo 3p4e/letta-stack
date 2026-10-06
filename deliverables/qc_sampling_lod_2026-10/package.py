@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Package the campaign documents: one merged packet PDF with a bookmark per document, one zip of
-the DOCX + PDF set, and BUILD_LOG.md with the engine version, the verify results and a SHA-256 per
-delivered file. Run after build_campaign_docs.py and the DOCX -> PDF conversion.
+"""Package the campaign documents: two packages (the plan on its own; the execution records ER-01 and
+ER-02 with their merged packet), the full three-document packet PDF with a bookmark per document, and
+BUILD_LOG.md with the engine version, the verify results and a SHA-256 per delivered file. Run after
+build_campaign_docs.py and the DOCX -> PDF conversion.
 
     python3 package.py
 """
@@ -24,8 +25,13 @@ DOCS = [
     ("PP-QC-SP-002/26-ER-01 — Execution record, Day 1", "PP-QC-SP-002_26-ER-01_Execution_Record_Day1"),
     ("PP-QC-SP-002/26-ER-02 — Execution record, Day 2", "PP-QC-SP-002_26-ER-02_Execution_Record_Day2"),
 ]
-PACKET = os.path.join(OUT, "PACKET_PP-QC-SP-002_26_Plan_ER-01_ER-02.pdf")
-ZIP = os.path.join(OUT, "PP-QC-SP-002_26_DOCX_PDF.zip")
+PLAN_DOCS = DOCS[:1]
+ER_DOCS = DOCS[1:]
+# Two separate packages (Head of QC, 06.10.2026): the plan on its own, the execution records on their own.
+PACKET_ALL = os.path.join(OUT, "PACKET_PP-QC-SP-002_26_Plan_ER-01_ER-02.pdf")
+PACKET_ER = os.path.join(OUT, "PACKET_PP-QC-SP-002_26_Execution_Records_ER-01_ER-02.pdf")
+ZIP_PLAN = os.path.join(OUT, "PP-QC-SP-002_26_PLAN_DOCX_PDF.zip")
+ZIP_ER = os.path.join(OUT, "PP-QC-SP-002_26_EXECUTION_RECORDS_DOCX_PDF.zip")
 
 
 def sha(path):
@@ -36,26 +42,36 @@ def sha(path):
     return h.hexdigest()
 
 
-def main():
+def merge(docs, target):
     merged = pymupdf.open()
     toc = []
-    for title, stem in DOCS:
-        pdf = os.path.join(OUT, stem + ".pdf")
-        src = pymupdf.open(pdf)
+    for title, stem in docs:
+        src = pymupdf.open(os.path.join(OUT, stem + ".pdf"))
         toc.append([1, title, merged.page_count + 1])
         merged.insert_pdf(src)
         src.close()
     merged.set_toc(toc)
-    merged.save(PACKET, garbage=3, deflate=True)
+    merged.save(target, garbage=3, deflate=True)
     merged.close()
 
+
+def zip_docs(docs, extra, target):
     files = []
-    for _, stem in DOCS:
+    for _, stem in docs:
         files += [stem + ".docx", stem + ".pdf"]
-    files.append(os.path.basename(PACKET))
-    with zipfile.ZipFile(ZIP, "w", zipfile.ZIP_DEFLATED) as z:
+    files += extra
+    with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as z:
         for f in files:
             z.write(os.path.join(OUT, f), f)
+    return files
+
+
+def main():
+    merge(DOCS, PACKET_ALL)
+    merge(ER_DOCS, PACKET_ER)
+    plan_files = zip_docs(PLAN_DOCS, [], ZIP_PLAN)
+    er_files = zip_docs(ER_DOCS, [os.path.basename(PACKET_ER)], ZIP_ER)
+    files = plan_files + er_files + [os.path.basename(PACKET_ALL), os.path.basename(ZIP_PLAN), os.path.basename(ZIP_ER)]
 
     verify = {}
     for _, stem in DOCS:
@@ -79,8 +95,10 @@ def main():
             p = os.path.join(OUT, stem + ext)
             pages = pymupdf.open(p).page_count if ext == ".pdf" else ""
             lines.append("| `%s` | %s | %s | `%s` |" % (stem + ext, verify[stem] if ext == ".docx" else "", pages, sha(p)))
-    lines.append("| `%s` | | %d | `%s` |" % (os.path.basename(PACKET), pymupdf.open(PACKET).page_count, sha(PACKET)))
-    lines.append("| `%s` | | | `%s` |" % (os.path.basename(ZIP), sha(ZIP)))
+    lines.append("| `%s` | | %d | `%s` |" % (os.path.basename(PACKET_ER), pymupdf.open(PACKET_ER).page_count, sha(PACKET_ER)))
+    lines.append("| `%s` | | %d | `%s` |" % (os.path.basename(PACKET_ALL), pymupdf.open(PACKET_ALL).page_count, sha(PACKET_ALL)))
+    lines.append("| `%s` | | | `%s` |" % (os.path.basename(ZIP_PLAN), sha(ZIP_PLAN)))
+    lines.append("| `%s` | | | `%s` |" % (os.path.basename(ZIP_ER), sha(ZIP_ER)))
     lines += ["", "Data: `SAMPLING_PLAN_T1_T2_2026-10.tsv` (`%s`), `bag_selection.tsv` (`%s`); notes in `DATA_NOTES.md`."
               % (sha(os.path.join(HERE, "SAMPLING_PLAN_T1_T2_2026-10.tsv")), sha(os.path.join(HERE, "bag_selection.tsv")))]
     with open(os.path.join(HERE, "BUILD_LOG.md"), "w", encoding="utf-8") as fh:
