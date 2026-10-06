@@ -31,7 +31,9 @@ prefilled rows each), E results per batch, F deviations and OOS, G sign-offs.
 
 Each package folder holds every DOCX and PDF and a merged packet PDF with a bookmark per document.
 The label sheets are in the folder and the zip but not in the packet: they print on perforated
-stock. Data behind every number: `SAMPLING_PLAN_T1_T2_2026-10.tsv` (one row per lot),
+stock. `HANDOVER_LoD_a02.2_verification_2026-10-06.md` is the brief for the method-verification chat (Ph. Eur.
+2.2.32, monograph 3028, the a02.2 package and what this campaign can add); it is not part of the packages.
+Data behind every number: `SAMPLING_PLAN_T1_T2_2026-10.tsv` (one row per lot),
 `bag_selection.tsv` (one row per selected bag), `DATA_NOTES.md`, `BUILD_LOG.md` (pp_verify result,
 page count and SHA-256 of every file).
 
