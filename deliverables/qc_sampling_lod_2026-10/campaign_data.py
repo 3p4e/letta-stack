@@ -14,11 +14,13 @@ Sources (all in this repository):
                                               warehouse)
   coq_artifact_data.json                      strain, grade, packaging date, last loss-on-drying result
 
-Rules (QCSOP 011 v03 / PP-QC-SP-001/26):
-  N = ceil(kg / 0.400)             400 g bags, 10 per carton; a documented bag count governs
-  n = ceil(1.5 * sqrt(N))          WHO TRS 929 Annex 4 r-plan
-  k = 1 (N <= 100) | 2 (101-400) | 3 (> 400)   determinations per composite (Head of QC, 05.10.2026)
-  systematic selection: random start r, then every ceil(N/n)-th bag; bag key K{carton}B{bag}
+Rules as executed (Head of QC, 06.10.2026, amending the draft of 05.10.2026):
+  N = ceil(kg / 0.400)             400 g bags, 10 per carton; informative (bags in the batch)
+  n = 1                            one bag per batch, chosen at sampling and written as K{carton}B{bag}
+  k = 1                            one test portion per batch
+  day = 1                          all 46 batches sampled on one day and dried in one oven run
+The draft's r-plan helpers (n = ceil(1.5 * sqrt(N)), k = 1/2/3 by N, systematic selection) are kept below
+with their doctests; build() no longer uses them.
 
 >>> n_from_N(560), n_from_N(103), n_from_N(55), n_from_N(49), n_from_N(23)   # the July values
 (36, 16, 12, 11, 8)
@@ -56,6 +58,9 @@ BATCH_DATES_CSV = os.path.join(GAP, "batch_dates_2026-09-10.csv")   # owner's wo
 
 BAG_KG = 0.400          # net per primary bag (QCSP-RMI-P0005 Triplex Alu bag, 400.0 g +/- 3 %)
 BAGS_PER_CARTON = 10
+N_BAGS_EXECUTED = 1           # Head of QC, 06.10.2026: one bag per batch
+K_PORTIONS_EXECUTED = 1       # one test portion per batch
+BAG_WRITE_IN = "K___B___"     # the bag is chosen at sampling and written on the forms
 SEED = 20261005         # fixed and printed on the plan, so the selection is reproducible
 # Where a master kg is implausible against the owner's stock table (below one tenth of it), the
 # stock value is used and the master cell is reported for correction. One lot: GG1024_01, 0.87 kg
@@ -245,8 +250,8 @@ def build(seed=SEED, verbose=True):
                          "the plan uses the stock figure (N %d) and the master cell needs correction."
                          % (m["batch"], m["row"], kg_master, kg_stock, N_from_kg(kg_stock)))
         N = N_from_kg(kg_used)
-        n = n_from_N(N)
-        k = k_from_N(N)
+        n = N_BAGS_EXECUTED
+        k = K_PORTIONS_EXECUTED
         rec0 = sorted(recs, key=lambda r: _date_key(r.get("issue") or ""))[-1] if recs else {}
         strain = (rec0.get("strain") or m["strain"] or "").strip()
         pk = (rec0.get("pk") or "").strip() or (dates_p.get(lot["p_lot"]) if lot["p_lot"] else None) \
@@ -260,39 +265,29 @@ def build(seed=SEED, verbose=True):
             ("packaging_date", pk),
             ("warehouse", s["warehouse"] if s else "—"),
             ("kg_master", kg_master), ("kg_stock", kg_stock), ("kg_used", kg_used), ("kg_source", kg_source),
-            ("N", N), ("n", n), ("k", k), ("interval", interval(N, n)),
-            ("composite_g_low", round(n * FLOWER_G_LOW, 1)), ("composite_g_high", round(n * FLOWER_G_HIGH, 1)),
+            ("N", N), ("n", n), ("k", k), ("interval", ""),
+            ("composite_g_low", ""), ("composite_g_high", ""),
             ("test_portions_g", round(k * TEST_PORTION_G, 3)),
             ("last_lod", last_lod(recs)),
         ]))
     assert len(out) == 46, len(out)
 
-    # systematic selection with a seeded random start per lot (deterministic, reproducible)
-    rng = random.Random(seed)
-    for lot in sorted(out, key=lambda x: (x["tranche"], x["batch"])):
-        lot["start"] = rng.randint(1, max_start(lot["N"], lot["n"]))
-        lot["bags"] = select_bags(lot["N"], lot["n"], lot["start"])
-        assert len(lot["bags"]) == lot["n"]
-        lot["cartons"] = sorted({int(b[1:b.index("B")]) for b in lot["bags"]})
-
-    # two days balanced by bags to open; large lots placed first, Tranche 1 preferred on ties
-    days = {1: [], 2: []}
-    for lot in sorted(out, key=lambda x: (-x["n"], x["tranche"], x["batch"])):
-        d = 1 if sum(l["n"] for l in days[1]) <= sum(l["n"] for l in days[2]) else 2
-        lot["day"] = d
-        days[d].append(lot)
+    # as executed (Head of QC, 06.10.2026): one bag per batch, chosen at sampling (a write-in), one day
+    for lot in out:
+        lot["start"] = ""
+        lot["bags"] = [BAG_WRITE_IN]
+        lot["cartons"] = []
+        lot["day"] = 1
+    days = {1: list(out)}
     worder = {w: i for i, w in enumerate(WAREHOUSE_ORDER)}
-    for d in days:
-        days[d].sort(key=lambda x: (worder.get(x["warehouse"], 9), x["tranche"], x["batch"]))
-        for i, lot in enumerate(days[d], start=1):
-            lot["seq"] = i
+    days[1].sort(key=lambda x: (worder.get(x["warehouse"], 9), x["tranche"], x["batch"]))
+    for i, lot in enumerate(days[1], start=1):
+        lot["seq"] = i
     out.sort(key=lambda x: (x["day"], x["seq"]))
 
     if verbose:
-        for d in (1, 2):
-            print("Day %d: %d lots, bags to open %d, test portions %d, cartons %d"
-                  % (d, len(days[d]), sum(l["n"] for l in days[d]), sum(l["k"] for l in days[d]),
-                     sum(len(l["cartons"]) for l in days[d])))
+        print("Day 1: %d lots, bags opened %d, test portions %d (one bag and one portion per batch)"
+              % (len(days[1]), sum(l["n"] for l in days[1]), sum(l["k"] for l in days[1])))
         for note in notes:
             print("NOTE:", note)
     return out, notes
@@ -321,11 +316,11 @@ def write_tsv(lots, notes):
         w.writerow(["day", "batch", "p_lot", "N", "n", "interval", "start", "pick", "bag_no", "bag_id", "carton", "bag_in_carton"])
         for l in lots:
             for j, bid in enumerate(l["bags"], start=1):
-                b = l["start"] + (j - 1) * l["interval"]
-                w.writerow([l["day"], l["batch"], l["p_lot"], l["N"], l["n"], l["interval"], l["start"], j, b, bid,
-                            (b - 1) // BAGS_PER_CARTON + 1, (b - 1) % BAGS_PER_CARTON + 1])
+                w.writerow([l["day"], l["batch"], l["p_lot"], l["N"], l["n"], "", "", j, "", bid, "", ""])
     with open(os.path.join(HERE, "DATA_NOTES.md"), "w", encoding="utf-8") as fh:
-        fh.write("# Data notes — PP-QC-SP-002/26\n\nSeed %d. Bag mass %.3f kg, %d bags per carton.\n\n" % (SEED, BAG_KG, BAGS_PER_CARTON))
+        fh.write("# Data notes — PP-QC-SP-002/26\n\nAs executed (Head of QC, 06.10.2026): one bag per batch, chosen at "
+                 "sampling and written on the forms; one test portion per batch; all 46 batches on one day, one oven run. "
+                 "Bag mass %.3f kg, %d bags per carton.\n\n" % (BAG_KG, BAGS_PER_CARTON))
         for note in notes:
             fh.write("- %s\n" % note)
     return plan, sel

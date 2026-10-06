@@ -461,35 +461,35 @@ def build_lod(day, lots):
     ls = day_lots(lots, day)
     code = lod_code(day)
     sum_k = sum(l["k"] for l in ls)
-    d = bc.new_doc(code, "ИЗВРШЕН ЗАПИС — ГУБИТОК ПРИ СУШЕЊЕ — ПРИМЕРОЦИ ОД ДЕН %d" % day,
-                   "EXECUTION RECORD — LOSS ON DRYING — SAMPLES OF DAY %d" % day)
-    bc.cover(d, "Извршен запис — губиток при сушење, примероци од ден на земање %d" % day,
-             "Execution record — loss on drying, samples of sampling day %d" % day,
+    d = bc.new_doc(code, "ИЗВРШЕН ЗАПИС — ГУБИТОК ПРИ СУШЕЊЕ — ТРАНША 1 И 2",
+                   "EXECUTION RECORD — LOSS ON DRYING — TRANCHES 1 AND 2")
+    bc.cover(d, "Извршен запис — губиток при сушење, Транша 1 и 2, едно сушење",
+             "Execution record — loss on drying, Tranches 1 and 2, one oven run",
              [("Запис бр. | Record No.", code),
               ("План | Plan", CODE + " · Транша 1 и 2 | Tranches 1 and 2"),
-              ("Примероци | Samples", "QCT 024 %s · %d збирни примероци | %d composite samples" % (rec(day, "SMP"), len(ls), len(ls))),
-              ("Тест порции Σk | Test portions Σk", "%d" % sum_k),
+              ("Примероци | Samples", "QCT 024 %s · %d примероци, по еден за серија | %d samples, one per batch" % (rec(day, "SMP"), len(ls), len(ls))),
+              ("Тест порции | Test portions", "%d — по една за серија, сите во едно сушење | one per batch, all in one oven run" % sum_k),
               ("Метод | Method", "Ph. Eur. 2.2.32 (3028) · a02.2 · 40 °C · 20 ± 2 mbar · 24 h · молекуларно сито R | molecular sieve R"),
               ("Критериум | Criterion", "≤ 12,0 % w/w (QCSP 001) | ≤ 12.0 % w/w (QCSP 001)"),
               ("Влез во печка / мерење 24 h / второ мерење | Oven in / 24-h weighing / second weighing",
                "%s / %s / %s" % (BLANK, BLANK, BLANK)),
               ("Аналитичар | Analyst", bc.ANALYST)],
-             "ИЗВРШЕН ЗАПИС | EXECUTION RECORD", "Loss on Drying — samples of sampling Day %d" % day,
-             "Сите серии анализирани заедно", "All batches analysed together")
+             "ИЗВРШЕН ЗАПИС | EXECUTION RECORD", "Loss on Drying — Tranches 1 and 2",
+             "Сите 46 серии анализирани заедно", "All 46 batches analysed together")
 
     chapter(d, "A", "ПРИЕМ НА ПРИМЕРОЦИТЕ", "Receipt of the Samples")
     rows = [["№", "Серија | Batch", "P лот | P lot", "Сорта | Strain", "Шифра на примерок | Sample code",
-             "AM02.2 ознака | AM02.2 analysis ID", "Збирен g (QCT 021) | Composite g", "k", "Состојба | Condition",
+             "AM02.2 ознака | AM02.2 analysis ID", "Примерок g (QCT 021) | Sample g", "k", "Состојба | Condition",
              "Иниц./час | Init./time"]]
     rows = [[(x, 1, "h") for x in rows[0]]]
     for i, l in enumerate(ls, start=1):
         rows.append([str(i), (l["batch"], 1, "b"), l["p_lot"], l["strain"], SID, analysis_id(l), "", str(l["k"]),
                      "[ ] затворен, означен | closed, labelled", ""])
     grid(d, [0.7, 2.2, 1.5, 2.0, 2.4, 2.9, 1.6, 0.7, 2.6, 1.86], rows, sz=7, head=1)
-    pr.note(d, "Примероците се примени на QCT 024 %s. Масата на збирниот примерок се препишува од QCT 021 (ВКУПНО по серија). "
+    pr.note(d, "Примероците се примени на QCT 024 %s. Масата на примерокот се препишува од QCT 021. "
                "Шифрата на примерокот е од етикетата (QCSOP 011); AM02.2 ознаката е аналитичката ознака на записите за AM02.2, "
                "со датумот на прием (ддммгг)." % rec(day, "SMP"),
-            "The samples are received on QCT 024 %s. The composite mass is transcribed from QCT 021 (TOTAL per batch). The "
+            "The samples are received on QCT 024 %s. The sample mass is transcribed from QCT 021. The "
             "sample code is the label's (QCSOP 011); the AM02.2 analysis ID is the analytical ID of the AM02.2 records, with the "
             "date of receipt (ddmmyy)." % rec(day, "SMP"))
     pr.step_signoff(d, "Потпис за делот A (прием) | Sign-off for section A (receipt)", None)
@@ -503,7 +503,7 @@ def build_lod(day, lots):
         ("Аналитичка вага — ID / калибрација до / дневна проверка | Analytical balance — ID / calibration until / daily check",
          "Shimadzu AUW220D, d = 0,01 mg (QCWI 016 · дневник | logbook QCLB 008) / " + BLANK + " / [ ]"),
         ("Контролен тег — номинално / измерено | Check weight — nominal / found", BLANK + " / " + BLANK),
-        ("Ексикатор / ексикант | Desiccator / desiccant", BLANK + " / [ ] активен | active"),
+        ("Ексикатор / сушач | Desiccator / desiccant", BLANK + " / молекуларно сито [ ] активно | molecular sieve [ ] active"),
         ("Ладење во ексикатор пред секое мерење, најмалку 30 min | Cooling in the desiccator before every weighing, at least 30 min",
          "[ ]"),
         ("Садови за мерење — бр. / претходно исушени под условите на методот | Weighing bottles — nos. / previously dried "
@@ -515,55 +515,49 @@ def build_lod(day, lots):
 
     chapter(d, "C", "ХОМОГЕНИЗАЦИЈА И ТЕСТ ПОРЦИИ", "Homogenisation and Test Portions")
     for mk, en in [
-        ("Сите цветови на серијата се сечат грубо со чисти ножици на чиста подлога и се мешаат со четвртирање, двапати "
-         "(израмнување, четири четвртини, спротивните четвртини се спојуваат).",
-         "All flowers of the batch are coarsely cut with clean scissors on a clean tray and mixed by quartering, twice "
-         "(flatten, four quarters, opposite quarters recombined)."),
-        ("Од различни четвртини се земаат k тест порции од 1,000 g сецкана, несеана дрога во претходно исушени тарирани "
-         "садови (m_B) и веднаш се мерат (G1).",
-         "From different quarters, k test portions of 1.000 g of the cut, unsieved drug are taken into previously dried, "
-         "tared bottles (m_B) and weighed at once (G1)."),
+        ("Примерокот на серијата (од една кеса) се сече грубо со чисти ножици на чиста подлога и се меша.",
+         "The batch sample (from one bag) is coarsely cut with clean scissors on a clean tray and mixed."),
+        ("Се зема една тест порција од 1,000 g сецкана, несеана дрога во претходно исушен тариран сад (m_B) и веднаш "
+         "се мери (G1).",
+         "One test portion of 1.000 g of the cut, unsieved drug is taken into a previously dried, tared bottle (m_B) and "
+         "weighed at once (G1)."),
         ("Остатокот се чува затворен и означен до одобрувањето на овој запис.",
          "The remainder is kept closed and labelled until this record is approved."),
     ]:
         pr.bullet(d, mk, en)
-    rows = [[(x, 1, "h") for x in ["№", "Серија | Batch", "Сечење | Cutting", "Четвртирање ×2 | Quartering ×2",
-                                   "Порции k | Portions k", "Остаток затворен, означен | Remainder closed, labelled",
+    rows = [[(x, 1, "h") for x in ["№", "Серија | Batch", "Сечење и мешање | Cut and mixed",
+                                   "Сад бр. | Bottle No.", "Остаток затворен, означен | Remainder closed, labelled",
                                    "Иниц./час | Init./time"]]]
     for i, l in enumerate(ls, start=1):
-        rows.append([str(i), (l["batch"], 1, "b"), "[ ]", "[ ]", str(l["k"]), "[ ]", ""])
-    grid(d, [0.8, 2.8, 2.2, 3.0, 2.2, 4.4, 3.06], rows, sz=8, head=1)
+        rows.append([str(i), (l["batch"], 1, "b"), "[ ]", "", "[ ]", ""])
+    grid(d, [0.8, 3.2, 3.4, 2.8, 4.8, 3.46], rows, sz=8, head=1)
     pr.step_signoff(d, "Потпис за делот C | Sign-off for section C", None)
 
     chapter(d, "D", "МЕРЕЊА И РЕЗУЛТАТИ ПО ТЕСТ ПОРЦИЈА", "Weighings and Results per Test Portion")
-    rows = [[(x, 1, "h") for x in ["№", "Серија | Batch", "Порција | Portion", "Сад бр. | Bottle No.", "m_B g", "G1 g",
-                                   "m₀ g", "G2 (24 h) g", "G2 (следно) | G2 (next) g", "Δ mg", "m₁ g", "ГпС % | LoD %",
-                                   "Средно % | Mean %"]]]
-    r = 0
-    for l in ls:
-        for p in range(1, l["k"] + 1):
-            r += 1
-            rows.append([str(r), (l["batch"], 1, "b"), "%d/%d" % (p, l["k"]), "", "", "", "", "", "", "", "", "", ""])
-    grid(d, [0.7, 2.0, 1.1, 1.1, 1.4, 1.4, 1.4, 1.5, 1.5, 1.0, 1.4, 1.4, 1.56], rows, sz=7, head=1)
+    rows = [[(x, 1, "h") for x in ["№", "Серија | Batch", "Сад бр. | Bottle No.", "m_B g", "G1 g",
+                                   "m₀ g", "G2 (24 h) g", "G2 (следно) | G2 (next) g", "Δ mg", "m₁ g", "ГпС % | LoD %"]]]
+    for r, l in enumerate(ls, start=1):
+        rows.append([str(r), (l["batch"], 1, "b"), "", "", "", "", "", "", "", "", ""])
+    grid(d, [0.7, 2.4, 1.3, 1.65, 1.65, 1.65, 1.8, 1.8, 1.2, 1.65, 2.66], rows, sz=7, head=1)
     pr.note(d, "m_B = празен претходно исушен сад; G1 = сад + примерок пред сушење; m₀ = G1 − m_B; G2 = сад + примерок по сушење "
                "(40 °C · 20 ± 2 mbar над молекуларно сито R, ладење најмалку 30 min во ексикатор пред секое мерење); "
                "m₁ = G2 − m_B со последното G2; ГпС % = (m₀ − m₁) ÷ m₀ × 100. Константна маса: две последователни мерења се "
                "разликуваат за не повеќе од 0,5 mg (Δ); ако не, сушењето продолжува и мерењата се внесуваат во табелата подолу. "
-               "Средната вредност од k порции е резултатот на серијата. Резултат надвор од спецификација → QCSOP 014 и дел F.",
+               "Една порција по серија: нејзиниот ГпС е резултатот на серијата. Резултат надвор од спецификација → QCSOP 014 и дел F.",
             "m_B = empty, previously dried bottle; G1 = bottle + sample before drying; m₀ = G1 − m_B; G2 = bottle + sample after "
             "drying (40 °C · 20 ± 2 mbar over molecular sieve R, cooled at least 30 min in the desiccator before every weighing); "
             "m₁ = G2 − m_B with the last G2; LoD % = (m₀ − m₁) ÷ m₀ × 100. Constant mass: two consecutive weighings differ by "
-            "not more than 0.5 mg (Δ); if not, drying continues and the weighings go in the table below. The mean of k portions "
-            "is the batch result. An out-of-specification result → QCSOP 014 and section F.")
+            "not more than 0.5 mg (Δ); if not, drying continues and the weighings go in the table below. One portion per batch: "
+            "its LoD is the batch result. An out-of-specification result → QCSOP 014 and section F.")
     rows = [[("Дополнителни мерења до константна маса | Further weighings to constant mass", 6, "h")],
-            [(x, 1, "l") for x in ["№", "Порција № (табела D) | Portion No. (table D)", "G2 g", "Δ mg",
+            [(x, 1, "l") for x in ["№", "Ред № во табела D | Row No. in table D", "G2 g", "Δ mg",
                                    "Датум и час | Date and time", "Иниц. | Init."]]]
-    rows += [[str(i), "", "", "", "", ""] for i in range(1, 11)]
+    rows += [[str(i), "", "", "", "", ""] for i in range(1, 21)]
     grid(d, [0.8, 4.0, 3.4, 2.6, 4.4, 3.26], rows, sz=8, head=2)
     pr.step_signoff(d, "Потпис за делот D (определување) | Sign-off for section D (determination)", None)
 
     chapter(d, "E", "РЕЗУЛТАТИ ПО СЕРИЈА", "Results per Batch")
-    rows = [[(x, 1, "h") for x in ["№", "Серија | Batch", "P лот | P lot", "k", "Средно ГпС % | Mean LoD %",
+    rows = [[(x, 1, "h") for x in ["№", "Серија | Batch", "P лот | P lot", "k", "ГпС % | LoD %",
                                    "Критериум | Criterion", "Одговара | Conforms", "Сушење од–до | Drying from–to",
                                    "Иниц. | Init."]]]
     for i, l in enumerate(ls, start=1):
@@ -597,18 +591,21 @@ SAMPLING_DOCS = [  # (step, stem template, builder)
     ("7", "S%d-7_QCT024_Transfer_Samples_to_QC_Lab_Day%d", lambda day, lots, bags: build_sample_transfer(day, lots)),
 ]
 INDEX_STEM = "S0_Package_Index_Sampling_Execution"
-LOD_STEM = "PP-QC-SP-002_26-LOD-%02d_LoD_Execution_Record_Day%d_Samples"
+LOD_STEM = "PP-QC-SP-002_26-LOD-01_LoD_Execution_Record_T1_T2"
+DAYS = (1,)          # Head of QC, 06.10.2026: all 46 batches sampled on one day, one oven run
 
 
 def main():
     os.makedirs(OUT_S, exist_ok=True)
     os.makedirs(OUT_L, exist_ok=True)
     lots, bags = bc.load()
-    docs = [(os.path.join(OUT_S, INDEX_STEM + ".docx"), build_index(lots))]
-    for day in (1, 2):
-        for _, stem, fn in SAMPLING_DOCS:
-            docs.append((os.path.join(OUT_S, (stem % (day, day)) + ".docx"), fn(day, lots, bags)))
-        docs.append((os.path.join(OUT_L, (LOD_STEM % (day, day)) + ".docx"), build_lod(day, lots)))
+    lod_only = "--lod-only" in sys.argv
+    docs = [(os.path.join(OUT_L, LOD_STEM + ".docx"), build_lod(1, lots))]
+    if not lod_only:
+        docs.append((os.path.join(OUT_S, INDEX_STEM + ".docx"), build_index(lots)))
+        for day in DAYS:
+            for _, stem, fn in SAMPLING_DOCS:
+                docs.append((os.path.join(OUT_S, (stem % (day, day)) + ".docx"), fn(day, lots, bags)))
     ok = True
     for path, d in docs:
         bc.glyph_audit(d)
@@ -616,7 +613,7 @@ def main():
         ok = bc.verify(path) and ok
     if not ok:
         raise SystemExit("pp_verify FAIL")
-    print("written:", OUT_S, OUT_L)
+    print("written:", OUT_L if lod_only else (OUT_S, OUT_L))
 
 
 if __name__ == "__main__":

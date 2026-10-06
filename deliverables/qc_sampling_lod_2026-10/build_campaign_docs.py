@@ -42,8 +42,10 @@ BLANK = "____________"
 def load():
     lots = list(csv.DictReader(open(PLAN_TSV, encoding="utf-8"), delimiter="\t"))
     for l in lots:
-        for k in ("day", "seq", "tranche", "N", "n", "k", "interval", "start"):
+        for k in ("day", "seq", "tranche", "N", "n", "k"):
             l[k] = int(l[k])
+        for k in ("interval", "start"):            # empty since the 06.10.2026 amendment (one bag per batch)
+            l[k] = int(l[k]) if l[k] else None
         for k in ("kg_master", "kg_stock", "kg_used", "composite_g_low", "composite_g_high", "test_portions_g"):
             l[k] = float(l[k]) if l[k] not in ("", None) else None
         l["bag_list"] = l["bags"].split()
