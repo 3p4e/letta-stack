@@ -199,12 +199,21 @@ def qct024(record, caption_mk, caption_en, frm, to, ref, batch_lot, note, items,
 
 
 def bag_items(ls, bags, day, net, remark=""):
+    """One row per bag. Since the 06.10.2026 amendment each batch has one bag, chosen at sampling, so the
+    row carries the batch and the bag number is a write-in."""
     items, i = [], 0
     for l in ls:
+        bl = [x for x in bags if int(x["day"]) == day and x["batch"] == l["batch"]]
+        if len(bl) == 1:
+            i += 1
+            items.append([str(i), ("%s · %s · %s · магацин/store %s · кеса/bag %s"
+                                   % (batch_lot(l), l["strain"], l["grade"] or "—", l["warehouse"], bl[0]["bag_id"]), 1, "n"),
+                          net, "", remark])
+            continue
         items.append([("%s · %s · %s · магацин/store %s · картони/cartons %s · n = %d"
                        % (batch_lot(l), l["strain"], l["grade"] or "—", l["warehouse"],
                           ranges(l["carton_list"]), l["n"]), 5, "s")])
-        for b in [x for x in bags if int(x["day"]) == day and x["batch"] == l["batch"]]:
+        for b in bl:
             i += 1
             items.append([str(i), b["bag_id"], net, "", remark])
     return items, i
@@ -222,12 +231,10 @@ def build_receipt(day, lots, bags):
         (QC, SAMPLING_ROOM, "Земање примероци | Sampling"),
         "%s · PP-QC-MHR-___/26" % CODE,
         "%d серии | %d batches" % (len(ls), len(ls)),
-        "Картоните на секоја серија се повлекуваат; избраните кеси (K{картон}B{кеса}, план 4b) се попишани поединечно. "
-        "Нето = етикетата на примарното пакување (400,0 g); бруто го мери КК при прием. Ако документираниот број кеси се "
-        "разликува од N на планот, се запишува тука и изборот се пресметува повторно пред отворање. | The cartons of each "
-        "batch are retrieved; the selected bags (K{carton}B{bag}, plan 4b) are listed one by one. Net = the primary-pack "
-        "label (400.0 g); gross is weighed by QC at receipt. If the documented bag count differs from the plan's N, it is "
-        "written here and the selection is recomputed before opening.",
+        "Една кеса по серија (Раководител на КК, 06.10.2026); бројот на кесата K{картон}B{кеса} се запишува при "
+        "повлекувањето. Нето = етикетата на примарното пакување (400,0 g); бруто го мери КК при прием. | One bag per "
+        "batch (Head of QC, 06.10.2026); the bag number K{carton}B{bag} is written at retrieval. Net = the primary-pack "
+        "label (400.0 g); gross is weighed by QC at receipt.",
         items,
         [("ВКУПНО | TOTAL", 2, "t"), (num(nb * 400, 1), 1, "t"), ("", 1, "t"), ("%d кеси / bags" % nb, 1, "t")],
         confirm=("Доставено од (магацин) | Delivered by (warehouse)", "Прием од (КК) | Receipt by (QC)"))
@@ -258,7 +265,7 @@ def build_sample_transfer(day, lots):
     items = []
     for i, l in enumerate(ls, start=1):
         items.append([str(i), "%s · %s" % (l["batch"], SID), "", "",
-                      "k = %d · %d цвета / flowers" % (l["k"], l["n"])])
+                      "k = %d · %d кеса / bag" % (l["k"], l["n"])])
     return qct024(
         rec(day, "SMP"),
         "ПРИМЕРОЦИ — Ден %d: просторија за земање примероци → КК лабораторија" % day,
@@ -267,10 +274,10 @@ def build_sample_transfer(day, lots):
         (QC, QC_LAB, "Губиток при сушење | Loss on drying"),
         "%s · QCT 021 Ден | Day %d → %s" % (CODE, day, lod_code(day)),
         "%d серии | %d batches" % (len(ls), len(ls)),
-        "Збирни примероци, по еден за серија (сите n цвета на серијата), во затворени чисти сади означени по "
-        "QASOP_031_A07; нето = Σ мострирано на серијата од QCT 021. Се анализираат заедно на %s. | Composite samples, one "
-        "per batch (all n flowers of the batch), in closed clean containers labelled per QASOP_031_A07; net = the batch's "
-        "Σ sampled from QCT 021. They are analysed together on %s." % (lod_code(day), lod_code(day)),
+        "Примероци, по еден за серија (од една кеса), во затворени чисти сади означени по QASOP_031_A07; нето = "
+        "мострирано од QCT 021. Се анализираат заедно на %s. | Samples, one per batch (from one bag), in closed clean "
+        "containers labelled per QASOP_031_A07; net = sampled from QCT 021. They are analysed together on %s."
+        % (lod_code(day), lod_code(day)),
         items,
         [("ВКУПНО | TOTAL", 2, "t"), ("", 1, "t"), ("", 1, "t"), ("%d примероци / samples" % len(ls), 1, "t")],
         confirm=("Доставено од (земање) | Delivered by (sampling)", "Прием од (КК лабораторија) | Receipt by (QC laboratory)"))
@@ -360,6 +367,11 @@ def build_qct021(day, lots, bags):
     nb = 0
     for l in ls:
         bl = [b for b in bags if int(b["day"]) == day and b["batch"] == l["batch"]]
+        if len(bl) == 1:                 # one bag per batch (06.10.2026): the sample code sits on the bag's row
+            nb += 1
+            rows.append([batch_lot(l), (bl[0]["bag_id"], 1, "b"), "400,0", "", SID, "", "", "ГпС / LoD",
+                         (bl[0]["bag_id"], 1, "b"), "", ""])
+            continue
         for b in bl:
             nb += 1
             rows.append([l["batch"], (b["bag_id"], 1, "b"), "400,0", "", "→ збирен / composite", "", "", "ГпС / LoD",
@@ -369,17 +381,17 @@ def build_qct021(day, lots, bags):
                      ("ГпС / LoD · k = %d" % l["k"], 1, "t"), ("%d кеси / bags" % len(bl), 1, "t"), ("", 1, "t"),
                      ("", 1, "t")])
     rows.append([("ВКУПНО (g) | TOTAL (g)", 2, "t"), (num(nb * 400, 1), 1, "t"), ("", 1, "t"),
-                 ("%d збирни примероци / composite samples" % len(ls), 1, "t"), ("", 1, "t"), ("", 1, "t"), ("", 1, "t"),
+                 ("%d примероци / samples" % len(ls), 1, "t"), ("", 1, "t"), ("", 1, "t"), ("", 1, "t"),
                  ("%d кеси / bags" % nb, 1, "t"), ("", 1, "t"), ("", 1, "t")])
     grid(d, W, rows, sz=7, head=2)
-    pr.note(d, "Пред: нето и бруто се препишуваат од QCT 024 (прием). Мострирано: еден цвет по кеса, најголемиот, во збирниот "
-               "примерок на серијата; по серија редот ВКУПНО ја носи шифрата на збирниот примерок и неговото нето. После: бруто "
-               "се мери по затворање на кесата; нето после = нето пред − мострирано. Каде кесата има картон за кеса "
-               "(PO_SOP_007_A14-02), мострирањето се запишува и таму (дејство 01).",
-            "Before: net and gross transcribed from QCT 024 (receipt). Sampled: one flower per bag, the largest, into the "
-            "batch composite; per batch the TOTAL row carries the composite's sample code and its net. After: gross weighed "
-            "after the bag is closed; net after = net before − sampled. Where the bag carries its bag card "
-            "(PO_SOP_007_A14-02), the sampling is entered there too (action 01).")
+    pr.note(d, "Една кеса по серија (Раководител на КК, 06.10.2026); бројот на кесата K{картон}B{кеса} се запишува. Пред: нето "
+               "и бруто се препишуваат од QCT 024 (прием). Мострирано: примерокот на серијата од таа кеса, во затворен означен сад "
+               "(шифра на примерок). После: бруто се мери по затворање на кесата; нето после = нето пред − мострирано. Каде кесата "
+               "има картон за кеса (PO_SOP_007_A14-02), мострирањето се запишува и таму (дејство 01).",
+            "One bag per batch (Head of QC, 06.10.2026); the bag number K{carton}B{bag} is written. Before: net and gross "
+            "transcribed from QCT 024 (receipt). Sampled: the batch sample from that bag, in a closed labelled container "
+            "(sample code). After: gross weighed after the bag is closed; net after = net before − sampled. Where the bag "
+            "carries its bag card (PO_SOP_007_A14-02), the sampling is entered there too (action 01).")
     grid(d, [7.0, 4.0, 6.0], [
         [("Параметар | Parameter", 1, "l"), ("m (g)", 1, "l"), ("Потпис | Signature", 1, "l")],
         [("Отпад | Waste", 1, "l"), "", ""],
@@ -399,48 +411,50 @@ def build_qct021(day, lots, bags):
 
 # ----------------------------------------------------------------------------- package index
 def build_index(lots):
+    ls = day_lots(lots, 1)
     d = new_form(CODE + "-SMP", bc.VERSION, "Пакет за извршување — земање примероци",
                  "Execution package — sampling")
     chapter(d, "1", "СОДРЖИНА НА ПАКЕТОТ", "Package Contents")
     pr.body(d, "Овој пакет го документира земањето примероци на Транша 1 и 2 според %s, на обрасците на QCSOP 011 и "
-               "QASOP_031, по еден комплет за секој ден на земање. Анализата за губиток при сушење е посебен пакет (%s, %s)."
-               % (CODE, lod_code(1), lod_code(2)),
-            "This package documents the sampling of Tranches 1 and 2 under %s, on the QCSOP 011 and QASOP_031 forms, one set "
-            "per sampling day. The loss-on-drying analysis is a separate package (%s, %s)." % (CODE, lod_code(1), lod_code(2)))
+               "QASOP_031: сите %d серии во еден ден, една кеса по серија (Раководител на КК, 06.10.2026). Анализата за "
+               "губиток при сушење е посебен пакет (%s)." % (CODE, len(ls), lod_code(1)),
+            "This package documents the sampling of Tranches 1 and 2 under %s, on the QCSOP 011 and QASOP_031 forms: all "
+            "%d batches on one day, one bag per batch (Head of QC, 06.10.2026). The loss-on-drying analysis is a separate "
+            "package (%s)." % (CODE, len(ls), lod_code(1)))
     rows = [[("Чекор | Step", 1, "h"), ("Документ | Document", 1, "h"), ("Образец | Form", 1, "h"),
-             ("Запис бр. Ден 1 | Record No. Day 1", 1, "h"), ("Запис бр. Ден 2 | Record No. Day 2", 1, "h")]]
+             ("Запис бр. | Record No.", 1, "h")]]
     steps = [
         ("1", "Пренос сеф-магацин → просторија за земање | Transfer secure warehouse → sampling room", "QCT 024 v01",
-         rec(1, "RCPT"), rec(2, "RCPT")),
+         rec(1, "RCPT")),
         ("2", "Визуелна инспекција при отворање, по серија | Visual inspection on opening, per batch", "QCSOP 011_A03 v7.0",
-         "QCSOP 011_A03-___/26 × %d" % len(day_lots(lots, 1)), "QCSOP 011_A03-___/26 × %d" % len(day_lots(lots, 2))),
+         "QCSOP 011_A03-___/26 × %d" % len(ls)),
         ("3", "Мерење пред и после мострирање, по кеса | Weighing before and after sampling, per bag", "QCT 021 v01",
-         "MLR № ___ (Ден | Day 1)", "MLR № ___ (Ден | Day 2)"),
+         "MLR № ___"),
         ("4", "Етикети „МОСТРИРАНО“ на кесите | “SAMPLED” labels on the bags", "QASOP_031_A05_v1",
-         "%d" % sum(l["n"] for l in day_lots(lots, 1)), "%d" % sum(l["n"] for l in day_lots(lots, 2))),
-        ("5", "Етикети на збирните примероци | Labels on the composite samples", "QASOP_031_A07",
-         "%d" % len(day_lots(lots, 1)), "%d" % len(day_lots(lots, 2))),
+         "%d" % sum(l["n"] for l in ls)),
+        ("5", "Етикети на примероците | Labels on the samples", "QASOP_031_A07", "%d" % len(ls)),
         ("6", "Враќање на кесите во сеф-магацин | Return of the bags to the secure warehouse", "QCT 024 v01",
-         rec(1, "RET"), rec(2, "RET")),
+         rec(1, "RET")),
         ("7", "Пренос на примероците во КК лабораторија | Transfer of the samples to the QC laboratory", "QCT 024 v01",
-         rec(1, "SMP"), rec(2, "SMP")),
+         rec(1, "SMP")),
     ]
-    rows += [[s, (doc, 1, "n"), f, r1, r2] for s, doc, f, r1, r2 in steps]
-    grid(d, [1.3, 6.6, 3.0, 3.78, 3.78], rows, sz=8, head=1)
+    rows += [[s_, (doc, 1, "n"), f, r1] for s_, doc, f, r1 in steps]
+    grid(d, [1.3, 8.4, 3.4, 5.36], rows, sz=8, head=1)
     chapter(d, "2", "РЕДОСЛЕД НА РАБОТА", "Order of Work")
     for mk, en in [
         ("Пред земање: RQS е регистриран (QCSOP 011 v03 §6.1.1); просторијата и приборот се чисти и суви; вагата е проверена.",
          "Before sampling: the RQS is registered (QCSOP 011 v03 §6.1.1); the room and tools are clean and dry; the balance is checked."),
-        ("Картоните на серијата се примаат на QCT 024 (прием) со бруто по избрана кеса. Кесата се отвора, се прегледува на A03, "
-         "се зема еден цвет, најголемиот, во збирниот сад на серијата, кесата се затвора и се мери (QCT 021).",
-         "The batch cartons are received on QCT 024 (receipt) with the gross of each selected bag. The bag is opened, inspected "
-         "on A03, one flower, the largest, goes into the batch's composite container, and the bag is closed and weighed (QCT 021)."),
-        ("Секоја мострирана кеса добива етикета „МОСТРИРАНО | SAMPLED“; збирниот сад добива етикета QASOP_031_A07 со шифрата "
+        ("За секоја серија се повлекува една кеса и се прима на QCT 024 (прием) со бројот K{картон}B{кеса} и бруто. Кесата се "
+         "отвора, се прегледува на A03, примерокот се зема во затворен сад, кесата се затвора и се мери (QCT 021).",
+         "For each batch one bag is retrieved and received on QCT 024 (receipt) with its number K{carton}B{bag} and gross. "
+         "The bag is opened, inspected on A03, the sample goes into a closed container, and the bag is closed and weighed "
+         "(QCT 021)."),
+        ("Секоја мострирана кеса добива етикета „МОСТРИРАНО“; садот со примерокот добива етикета QASOP_031_A07 со шифрата "
          "на примерокот. Кесите се враќаат на QCT 024 (враќање), примероците одат во КК лабораторија на QCT 024 (примероци).",
-         "Each sampled bag gets a “SAMPLED” label; the composite container gets a QASOP_031_A07 label with the sample code. "
+         "Each sampled bag gets a “SAMPLED” label; the sample container gets a QASOP_031_A07 label with the sample code. "
          "The bags go back on QCT 024 (return); the samples go to the QC laboratory on QCT 024 (samples)."),
-        ("Истиот ден примероците влегуваат во анализата %s (Ден 1) или %s (Ден 2)." % (lod_code(1), lod_code(2)),
-         "The same day the samples enter analysis %s (Day 1) or %s (Day 2)." % (lod_code(1), lod_code(2))),
+        ("Истиот ден примероците влегуваат во анализата %s, сите во едно сушење." % lod_code(1),
+         "The same day the samples enter analysis %s, all in one oven run." % lod_code(1)),
         ("Документација: истовремено, трајно сино мастило, без празни полиња („N/A“), поправка со една линија, иницијали и "
          "датум (ALCOA+).",
          "Documentation: contemporaneous, permanent blue ink, no blank fields (“N/A”), single-line corrections with initials "
