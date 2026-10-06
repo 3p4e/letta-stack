@@ -596,6 +596,66 @@ def build_lod(day, lots):
     return d
 
 
+
+# ----------------------------------------------------------------------------- LOD-01 attachment 1
+def dev_code():
+    return "%s-DEV-01" % CODE
+
+
+def build_lod_att1(lots):
+    """Head of QC, 06.10.2026: G1 was weighed on a precision balance (d = 1 mg) instead of the AUW220D.
+    The result pair stays on that balance; each bottle is also weighed on the AUW220D for constant mass."""
+    ls = day_lots(lots, 1)
+    code = lod_code(1)
+    d = new_form(code + "/A1", bc.VERSION, "Прилог 1 кон LOD-01 — мерења на две ваги",
+                 "Attachment 1 to LOD-01 — weighings on two balances", orient="landscape")
+    caption(d, "ПРИЛОГ 1 кон %s · %d серии · отстапување %s" % (code, len(ls), dev_code()),
+            "ATTACHMENT 1 to %s · %d batches · deviation %s" % (code, len(ls), dev_code()))
+    grid(d, [5.2, 3.6, 2.4, 3.0, 3.4, 3.2, 3.2, 3.16], [
+        [("Прецизна вага — ID | Precision balance — ID", 1, "l"), BLANK, ("d", 1, "l"), "0,001 g",
+         ("Калибрирана до | Calibrated until", 1, "l"), BLANK, ("Дневна проверка | Daily check", 1, "l"), "[ ]"],
+        [("Аналитичка вага | Analytical balance", 1, "l"), "Shimadzu AUW220D", ("d", 1, "l"), "0,01 mg",
+         ("Калибрирана до | Calibrated until", 1, "l"), BLANK, ("Дневна проверка | Daily check", 1, "l"), "[ ]"],
+        [("m_B измерено на | m_B weighed on", 1, "l"),
+         ("[ ] прецизна вага | precision balance      [ ] AUW220D", 3, "v"),
+         ("G1 измерено на | G1 weighed on", 1, "l"), ("прецизна вага (ID погоре) | precision balance (ID above)", 3, "v")],
+        [("Контролен тег — номинално | Check weight — nominal", 1, "l"), BLANK, ("на прецизна | on precision", 1, "l"), BLANK,
+         ("на AUW220D | on AUW220D", 1, "l"), BLANK, ("Датум и час | Date and time", 1, "l"), BLANK],
+    ], sz=8, heights={i: 0.7 for i in range(4)})
+    pr.note(d, "Секој сад се мери затворен: прво на прецизната вага, веднаш потоа на AUW220D, по ист редослед за сите "
+               "садови; часот се запишува. Контролниот тег (близу масата на садот со примерок) се мери на двете ваги пред "
+               "првото мерење.",
+            "Every bottle is weighed stoppered: first on the precision balance, straight after on the AUW220D, in the same "
+            "order for all bottles; the time is written. The check weight (close to the mass of bottle and sample) is weighed "
+            "on both balances before the first weighing.")
+    rows = [[(x, 1, "h") for x in [
+        "№", "Серија | Batch", "Сад бр. | Bottle No.", "G2 24 h прецизна | precision g", "G2 24 h AUW220D g",
+        "Час | Time", "G2 следно прецизна | next, precision g", "G2 следно AUW220D | next, AUW220D g", "Час | Time",
+        "Δ mg (AUW220D)", "Иниц. | Init."]]]
+    for r, l in enumerate(ls, start=1):
+        rows.append([str(r), (l["batch"], 1, "b"), "", "", "", "", "", "", "", "", ""])
+    grid(d, [0.8, 3.4, 1.9, 3.1, 3.3, 1.9, 3.1, 3.3, 1.9, 2.2, 2.26], rows, sz=8, head=1,
+         heights={i: 0.62 for i in range(1, len(rows))})
+    rows = [[("Дополнителни мерења до константна маса | Further weighings to constant mass", 7, "h")],
+            [(x, 1, "l") for x in ["№", "Ред № | Row No.", "G2 прецизна | precision g", "G2 AUW220D g",
+                                   "Δ mg (AUW220D)", "Датум и час | Date and time", "Иниц. | Init."]]]
+    rows += [[str(i), "", "", "", "", "", ""] for i in range(1, 13)]
+    grid(d, [0.8, 3.6, 4.0, 4.0, 3.2, 6.0, 5.56], rows, sz=8, head=2,
+         heights={i: 0.62 for i in range(2, len(rows))})
+    pr.note(d, "Резултатот е од истата прецизна вага: m₀ = G1 − m_B; m₁ = G2 (последно, прецизна) − m_B; ГпС % = (m₀ − m₁) "
+               "÷ m₀ × 100 = (G1 − G2) ÷ m₀ × 100. Во табела D на LOD-01 колоните G2 ги носат мерењата на прецизната вага; "
+               "Δ се препишува од овој прилог. Константна маса се оценува на AUW220D: две последователни мерења се "
+               "разликуваат за не повеќе од 0,5 mg. Одлука по {dev}: ≤ 11,7 % одговара; 11,8–12,3 % повторување во целост "
+               "на AUW220D од остатокот на примерокот; > 12,3 % OOS по QCSOP 014.".replace("{dev}", dev_code()),
+            "The result is from the same precision balance: m₀ = G1 − m_B; m₁ = G2 (last, precision) − m_B; LoD % = (m₀ − m₁) "
+            "÷ m₀ × 100 = (G1 − G2) ÷ m₀ × 100. In table D of LOD-01 the G2 columns carry the precision-balance readings; Δ is "
+            "transcribed from this attachment. Constant mass is judged on the AUW220D: two consecutive weighings differ by not "
+            "more than 0.5 mg. Decision per {dev}: ≤ 11.7 % conforms; 11.8–12.3 % full repeat on the AUW220D from the sample "
+            "remainder; > 12.3 % OOS per QCSOP 014.".replace("{dev}", dev_code()))
+    pr.step_signoff(d, "Потпис за прилог 1 | Sign-off for attachment 1", None)
+    return d
+
+
 # ----------------------------------------------------------------------------- main
 SAMPLING_DOCS = [  # (step, stem template, builder)
     ("1", "S%d-1_QCT024_Transfer_Warehouse_to_Sampling_Day%d", lambda day, lots, bags: build_receipt(day, lots, bags)),
@@ -606,6 +666,7 @@ SAMPLING_DOCS = [  # (step, stem template, builder)
 ]
 INDEX_STEM = "S0_Package_Index_Sampling_Execution"
 LOD_STEM = "PP-QC-SP-002_26-LOD-01_LoD_Execution_Record_T1_T2"
+ATT1_STEM = "PP-QC-SP-002_26-LOD-01_Attachment-1_Two_Balance_Weighings"
 DAYS = (1,)          # Head of QC, 06.10.2026: all 46 batches sampled on one day, one oven run
 
 
@@ -614,7 +675,8 @@ def main():
     os.makedirs(OUT_L, exist_ok=True)
     lots, bags = bc.load()
     lod_only = "--lod-only" in sys.argv
-    docs = [(os.path.join(OUT_L, LOD_STEM + ".docx"), build_lod(1, lots))]
+    docs = [(os.path.join(OUT_L, LOD_STEM + ".docx"), build_lod(1, lots)),
+            (os.path.join(OUT_L, ATT1_STEM + ".docx"), build_lod_att1(lots))]
     if not lod_only:
         docs.append((os.path.join(OUT_S, INDEX_STEM + ".docx"), build_index(lots)))
         for day in DAYS:
