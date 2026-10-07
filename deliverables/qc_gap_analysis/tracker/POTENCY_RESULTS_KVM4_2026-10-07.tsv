@@ -1,0 +1,211 @@
+strain	batch	p_lot	total_thc	kind	sources	certificates	builder_ranges_covering	in_builder_data	builder_status	note
+AB	AB092501	P060052	16.93	release	builder,corpus,register	ППК26005	II 18 (16.20 – 19.79)	yes	finished	
+AB	AB092501	P060052	22.97	retest	builder,intake,register,register-also	227-30-K-26, 227-30-К/26	I 22 (19.80 – 24.19)	yes	finished	
+ACC	ACC102501	P060122	12.09	retest	builder,intake,register,register-also	220-1-K-26, 220-1-K/26, 220-1-К/26	I 12 (10.80 – 13.19)	yes	finished	
+ACC	ACC102501	P060122	12.91	release	register	031-5-К/26	I 12 (10.80 – 13.19)	no	finished	
+BG	BG1024	BG1024	21.80	release	builder,corpus,register	ППК25050	II 22 (19.80 – 24.19)	yes	finished	
+BG	BG1024	BG1024	26.14	retest	builder,corpus,register,register-also	197-1-K-26, 197-1-К/26	I 26 (24.20 – 27.79)	yes	finished	
+BSS	BSS052501	P050192	20.39	release	register	iCoA-PP_26-025	III 20 (18.11 – 21.88)	yes	finished	
+BSS	BSS052501	P050192	20.39	standalone	corpus	2025/	III 20 (18.11 – 21.88)	yes	finished	
+BSS	BSS052501	P050192	20.39	release	builder	iCoA (at issue)	III 20 (18.11 – 21.88)	yes	finished	
+BSS	BSS052501	P050192	20.39	retest	builder	NGP-QCG-SOP-024 F3	III 20 (18.11 – 21.88)	yes	finished	
+BSS	BSS052501	P050192	20.52	retest	builder,intake,register,register-also	220-2-K-26, 220-2-K/26, 220-2-К/26	III 20 (18.11 – 21.88)	yes	finished	
+BSS	BSS1024	BSS1024	21.03	release	builder,cnp-cache,corpus,register	ППК25051	III 20 (18.11 – 21.88)	yes	finished	
+BSS	BSS1024	BSS1024	25.01	retest	builder,register,register-also	197-2-K-26, 197-2-К/26	II 24 (21.89 – 26.10)	yes	finished	
+BSS	BSS1024		25.01	standalone	corpus		II 24 (21.89 – 26.10)	yes	finished	
+BSS	BSS1024_01	P050122	23.42	release	builder,cnp-cache,corpus,register	ППК25176	II 24 (21.89 – 26.10)	yes	finished	
+BSS	BSS1024_01	P050122	26.10	retest	builder,intake,register,register-also	227-29-K-26, 227-29-К/26	I 28 (26.07 – 29.92) / II 24 (21.89 – 26.10)	yes	finished	
+BSS	BSS1024_01/2	P050142	26.69	release	builder,intake,register,register-also	227-1-K-26, 227-1-К/26	I 28 (26.07 – 29.92)	yes	finished	
+CC	CC012601/1	P060332	17.67	release	builder,corpus,register,register-also	197-6-K-26, 197-6-К/26	I 17 (15.35 – 18.64)	yes	finished	
+CC	CC012603	P060372	14.76	retest	builder,intake,register,register-also	220-29-K-26, 220-29-K/26, 220-29-К/26	II 14 (12.65 – 15.34)	yes	finished	
+CC	CC042601		14.90	release	builder,intake,register,register-also	220-32-K-26, 220-32-K/26, 220-32-К/26	II 14 (12.65 – 15.34)	yes	finished	
+CC	CC112501	P060272	13.35	release	builder,cnp-cache,corpus,register	ППК26068	II 14 (12.65 – 15.34)	yes	finished	
+CC	CC112501	P060272	16.36	retest	builder,intake,register,register-also	227-25-K-26, 227-25-К/26	I 17 (15.35 – 18.64)	yes	finished	
+CF	CF102501	P060132	9.55	retest	builder,intake,register,register-also	220-6-K-26, 220-6-K/26, 220-6-К/26	I 10 (9.00 – 10.99)	yes	finished	
+CF	CF102501	P060132	9.83	release	register	031-4-К/26	I 10 (9.00 – 10.99)	no	finished	
+CJ	CJ052501-2	P050172	14.93	release	builder,cnp-cache,corpus,register	ППК25281	V 14 (12.60 – 15.39)	yes	finished	
+CJ	CJ052501-2	P050172	21.30	retest	builder,intake,register,register-also	227-28-K-26, 227-28-К/26	III 20 (18.40 – 21.59)	yes	finished	
+CJ	CJ052501/01	P050162	20.29	release	builder,cnp-cache,register	ППК25280	III 20 (18.40 – 21.59)	yes	finished	
+CJ	CJ052501/01	P050162	24.05	retest	builder,register,register-also	197-3-K-26, 197-3-К/26	II 24 (21.60 – 26.39)	yes	finished	
+CJ	CJ052501/01	P050162	24.05	standalone	corpus		II 24 (21.60 – 26.39)	yes	finished	
+CJ	CJ052501_1		20.29	standalone	corpus		III 20 (18.40 – 21.59)	yes	finished	
+CJ	CJ062501-2	P050212	16.56	release	builder,cnp-cache,corpus,register	ППК25322	IV 17 (15.60 – 18.39)	yes	finished	
+CJ	CJ062501-2	P050212	18.91	retest	builder,register,register-also	197-4-K-26, 197-4-К/26	III 20 (18.40 – 21.59)	yes	finished	
+CJ	CJ062501-2	P050212	18.91	standalone	corpus		III 20 (18.40 – 21.59)	yes	finished	
+CJ	CJ062501/1	P050222	21.51	release	builder,cnp-cache,corpus,register	ППК25321	III 20 (18.40 – 21.59)	yes	finished	
+CJ	CJ062501/1	P050222	24.80	retest	builder,intake,register,register-also	220-3-K-26, 220-3-K/26, 220-3-К/26	II 24 (21.60 – 26.39)	yes	finished	
+CJ	CJ072501	P050252	23.70	release	builder,corpus,register	ППК25367	II 24 (21.60 – 26.39)	yes	finished	
+CJ	CJ072501	P050252	28.18	retest	builder,intake,register,register-also	227-27-K-26, 227-27-К/26	I 28 (26.40 – 29.59)	yes	finished	
+CJ	CJ082501/1	P060022	24.96	release	builder,cnp-cache,corpus,register	ППК26002	II 24 (21.60 – 26.39)	yes	finished	
+CJ	CJ082501/1	P060022	28.34	retest	builder,intake,register,register-also	220-4-K-26, 220-4-K/26, 220-4-К/26	I 28 (26.40 – 29.59)	yes	finished	
+CJ	CJ082501/2	P060032	18.29	retest	builder,register,register-also	197-5-K-26, 197-5-К/26	IV 17 (15.60 – 18.39)	yes	finished	
+CJ	CJ082501/2	P060032	18.29	standalone	corpus		IV 17 (15.60 – 18.39)	yes	finished	
+CJ	CJ082501/2	P060032	20.84	release	builder,corpus,register	ППК26003	III 20 (18.40 – 21.59)	yes	finished	
+CJ	CJ092501	P060072	22.30	release	builder,cnp-cache,corpus,register	ППК26007	II 24 (21.60 – 26.39)	yes	finished	
+CJ	CJ092501	P060072	25.65	retest	builder,intake,register,register-also	220-5-K-26, 220-5-K/26, 220-5-К/26	II 24 (21.60 – 26.39)	yes	finished	
+CJ	CJ1024		23.00	release	builder,corpus,register	ППК25052	II 24 (21.60 – 26.39)	yes	finished	
+CJ	CJ1024		28.12	retest	builder,intake,register,register-also	227-26-K-26, 227-26-К/26	I 28 (26.40 – 29.59)	yes	finished	
+CLE	CLE072501	P050282	8.02	release	builder,corpus,register	ППК25370	I 8 (7.20 – 8.79)	yes	finished	
+CLE	CLE072501	P050282	8.65	retest	builder,intake,register,register-also	220-7-K-26, 220-7-K/26, 220-7-К/26	I 8 (7.20 – 8.79)	yes	finished	
+FB	FB012601/1	P060322	14.68	release	builder,cnp-cache,corpus,register	ППК26067	III 15 (13.80 – 16.19)	yes	finished	
+FB	FB012601/1	P060322	17.99	retest	builder,intake,register,register-also	220-8-K-26, 220-8-K/26, 220-8-К/26	II 18 (16.20 – 19.79)	yes	finished	
+FB	FB012602	P060352	18.86	retest	builder,register,register-also	197-7-K-26, 197-7-К/26	II 18 (16.20 – 19.79)	yes	finished	
+FB	FB012602	P060352	18.86	standalone	corpus		II 18 (16.20 – 19.79)	yes	finished	
+FB	FB012603	P060432	20.00	retest	builder,intake,register,register-also	227-24-K-26, 227-24-K/26, 227-24-К/26	I 22 (19.80 – 24.19)	yes	finished	
+FB	FB012603	P060432	20.83	release	builder,corpus,register	ППК26112	I 22 (19.80 – 24.19)	yes	finished	
+FB	FB012603V	P060392	18.29	release	builder,corpus,register	ППК26110	II 18 (16.20 – 19.79)	yes	finished	
+FB	FB012603V	P060392	19.31	retest	builder,intake,register,register-also	227-23-K-26, 227-23-K/26, 227-23-К/26	II 18 (16.20 – 19.79)	yes	finished	
+FB	FB032601	P060452	12.39	release	builder,cnp-cache,corpus,register	ППК26127	IV 12 (10.80 – 13.19)	yes	finished	
+FB	FB042601		14.99	release	builder,intake,register,register-also	220-31-K-26, 220-31-K/26, 220-31-К/26	III 15 (13.80 – 16.19)	yes	finished	
+FB	FB112501	P060292	16.69	release	builder,cnp-cache,corpus,register	ППК26066	II 18 (16.20 – 19.79)	yes	finished	
+FB	FB112501	P060292	18.75	retest	builder,intake,register,register-also	227-22-K-26, 227-22-K/26, 227-22-К/26	II 18 (16.20 – 19.79)	yes	finished	
+GG	GG012601	P060302	15.35	release	builder,cnp-cache,corpus,register	ППК26062	II 15 (13.77 – 16.22)	yes	finished	
+GG	GG012601	P060302	19.16	retest	builder,intake,register,register-also	227-21-K-26, 227-21-K/26, 227-21-К/26	I 18 (16.23 – 19.76)	yes	finished	
+GG	GG012603	P060402	16.70	retest	builder,corpus,register,register-also	197-8-K-26, 197-8-К/26	I 18 (16.23 – 19.76)	yes	finished	
+GG	GG012603	P060402	17.59	release	builder,corpus,register	ППК26114	I 18 (16.23 – 19.76)	yes	finished	
+GG	GG032601	P060462	18.98	release	builder,cnp-cache,corpus,register	ППК26128	I 18 (16.23 – 19.76)	yes	finished	
+GG	GG1024	GG1024	13.34	standalone	corpus,register-also	in-house record of 23.04.2025, no certificate	IN NO RANGE	no	finished	
+GG	GG1024	GG1024	15.51	retest	builder,intake,register,register-also	220-9-K-26, 220-9-K/26, 220-9-К/26	II 15 (13.77 – 16.22)	yes	finished	
+GG	GG1024_01	P050092	17.22	release	builder,cnp-cache,corpus,register	ППК25104	I 18 (16.23 – 19.76)	yes	finished	
+GG	GG1024_01	P050092	18.67	retest	builder,register,register-also	197-9-K-26, 197-9-К/26	I 18 (16.23 – 19.76)	yes	finished	
+GG	GG1024_01	P050092	18.67	standalone	corpus		I 18 (16.23 – 19.76)	yes	finished	
+GG	GG1024_02	P050012	15.95	release	builder,corpus,register	ППК25140	II 15 (13.77 – 16.22)	yes	finished	
+GG	GG1024_02	P050012	17.76	retest	builder,intake,register,register-also	227-19-K-26, 227-19-K/26, 227-19-К/26	I 18 (16.23 – 19.76)	yes	finished	
+GG	GG112501	P060252	17.94	release	builder,cnp-cache,corpus,register	ППК26061	I 18 (16.23 – 19.76)	yes	finished	
+GG	GG112501	P060252	18.64	retest	builder,intake,register,register-also	227-20-K-26, 227-20-K/26, 227-20-К/26	I 18 (16.23 – 19.76)	yes	finished	
+GP		P160032	24.78	release	corpus,register	ППК26119	II 24 (22.00 – 25.99)	no	finished	
+GP		P160022	25.72	release	corpus,register	ППК26118	II 24 (22.00 – 25.99)	no	finished	
+GP		P160012	26.32	release	cnp-cache,corpus,register	ППК26117	I 28 (26.00 – 29.99)	no	finished	
+GP	GP052501	P050152	18.52	retest	builder,register,register-also	197-10-K-26, 197-10-К/26	III 20 (18.00 – 21.99)	yes	finished	
+GP	GP052501	P050152	18.52	standalone	corpus		III 20 (18.00 – 21.99)	yes	finished	
+GP	GP052501	P050152	18.98	release	builder,cnp-cache,corpus,register	ППК25279	III 20 (18.00 – 21.99)	yes	finished	
+GP	GP062501	P050202	17.05	stability	builder,corpus,register-also	ППК26058	IV 16 (14.40 – 17.59)	yes	finished	
+GP	GP062501	P050202	18.62	stability	builder,corpus,register-also	ППК26037	III 20 (18.00 – 21.99)	yes	finished	
+GP	GP062501	P050202	22.83	stability	builder,cnp-cache,corpus,register-also	ППК26036	II 24 (22.00 – 25.99)	yes	finished	
+GP	GP062501	P050202	24.51	stability	builder,corpus,register-also	ППК26057	II 24 (22.00 – 25.99)	yes	finished	
+GP	GP062501	P050202	24.89	release	builder,register	NGP-QCG-SOP-024 F3, NGP/QCG/SOP-024 F3	II 24 (22.00 – 25.99)	yes	finished	
+GP	GP062501	P050202	24.89	standalone	corpus	NGP/QCG/SOP-024-Ver02 F3-Ver.02	II 24 (22.00 – 25.99)	yes	finished	
+GP	GP062501	P050202	24.89	release	builder	iCoA (at issue)	II 24 (22.00 – 25.99)	yes	finished	
+GP	GP062501	P050202	25.97	retest	builder,intake,register,register-also	227-18-K-26, 227-18-K/26, 227-18-К/26	II 24 (22.00 – 25.99)	yes	finished	
+GP	GP072501-1	P050292	21.36	release	builder,cnp-cache,corpus,register	ППК25378	III 20 (18.00 – 21.99)	yes	finished	
+GP	GP072501-1	P050292	26.54	retest	builder,intake,register,register-also	227-17-K-26, 227-17-K/26, 227-17-К/26	I 28 (26.00 – 29.99)	yes	finished	
+GP	GP072501/2	P050302	18.29	retest	builder,intake,register,register-also	220-10-K-26, 220-10-K/26, 220-10-К/26	III 20 (18.00 – 21.99)	yes	finished	
+GP	GP072501/2	P050302	19.81	release	builder,cnp-cache,corpus,register	ППК25379	III 20 (18.00 – 21.99)	yes	finished	
+GP	GP0824_01	P050102	20.79	release	builder,cnp-cache,corpus,register	ППК25105	III 20 (18.00 – 21.99)	yes	finished	
+GP	GP0824_01	P050102	28.68	retest	builder,intake,register,register-also	227-2-K-26, 227-2-К/26	I 28 (26.00 – 29.99)	yes	finished	
+GP	GP0824_02	P050022	13.16	stability	builder,cnp-cache,corpus,register-also	ППК26033	IN NO RANGE	yes	finished	
+GP	GP0824_02	P050022	21.31	stability	builder,cnp-cache,corpus,register-also	ППК26032	III 20 (18.00 – 21.99)	yes	finished	
+GP	GP0824_02	P050022	22.61	retest	builder,corpus,register,register-also	197-11-K-26, 197-11-К/26	II 24 (22.00 – 25.99)	yes	finished	
+GP	GP0824_02	P050022	23.08	stability	builder,corpus,register-also	ППК26059	II 24 (22.00 – 25.99)	yes	finished	
+GP	GP0824_02	P050022	23.19	release	builder,cnp-cache,corpus,register-also	ППК25174	II 24 (22.00 – 25.99)	yes	finished	
+GP	GP0824_02	P050022	23.79	release	builder,cnp-cache,corpus,register	ППК25139	II 24 (22.00 – 25.99)	yes	finished	the certificate prints total Δ9-THC 23.79; its own Δ9-THC 0.53 + 0.877 × Δ9-THCA 0.52 = 0.99
+GP	GP0824_03	P050072	14.99	stability	builder,corpus,register-also	ППК26035	IV 16 (14.40 – 17.59)	yes	finished	
+GP	GP0824_03	P050072	24.62	stability	builder,cnp-cache,corpus,register-also	ППК26034	II 24 (22.00 – 25.99)	yes	finished	
+GP	GP0824_03	P050072	25.45	release	builder,cnp-cache,corpus,register	ППК25175	II 24 (22.00 – 25.99)	yes	finished	
+GP	GP0824_03	P050072	25.98	stability	builder,register-also	ППК26060	II 24 (22.00 – 25.99)	yes	finished	
+GP	GP0824_03	P050072	25.98	stability	corpus		II 24 (22.00 – 25.99)	yes	finished	
+GP	GP0824_03	P050072	28.03	retest	builder	assay THC % on the Versa specification sheet — the latest value on record, no certificate on the tracker	I 28 (26.00 – 29.99)	yes	finished	
+GP	GP0824_03	P050072	28.30	retest	builder,intake,register,register-also	220-11-K-26, 220-11-K/26, 220-11-К/26	I 28 (26.00 – 29.99)	yes	finished	
+GP	GP082501/1	P050312	21.29	release	builder,cnp-cache,corpus,register	ППК25380	III 20 (18.00 – 21.99)	yes	finished	
+GP	GP082501/1	P050312	25.13	retest	builder,intake,register,register-also	220-12-K-26, 220-12-K/26, 220-12-К/26	II 24 (22.00 – 25.99)	yes	finished	
+GP	GP082501/2	P050322	14.83	release	builder,cnp-cache,corpus,register	ППК25381	IV 16 (14.40 – 17.59)	yes	finished	
+GP	GP082501/2	P050322	15.70	retest	builder,register,register-also	197-12-K-26, 197-12-К/26	IV 16 (14.40 – 17.59)	yes	finished	
+GP	GP082501/2	P050322	15.70	standalone	corpus		IV 16 (14.40 – 17.59)	yes	finished	
+GP	GP092501	P060092	25.24	retest	builder,intake,register,register-also	220-13-K-26, 220-13-K/26, 220-13-К/26	II 24 (22.00 – 25.99)	yes	finished	
+GP	GP092501	P060092	25.73	release	builder,cnp-cache,corpus,register	ППК26009	II 24 (22.00 – 25.99)	yes	finished	
+GRC	GRC102501/1	P060142	7.05	release	intake,register	031-1-К/26	IV 7 (6.38 – 7.61)	no	draft	
+GRC	GRC102501/1	P060142	7.50	retest	builder,intake,register,register-also	227-16-K-26, 227-16-K/26, 227-16-К/26	III 8 (7.20 – 8.79) / IV 7 (6.38 – 7.61)	yes	draft	
+GRC	GRC102501/2	P060182	9.80	retest	builder,intake,register,register-also	220-14-K-26, 220-14-K/26, 220-14-К/26	II 10 (9.00 – 10.99)	yes	draft	
+GRC	GRC102501/2	P060182	11.53	release	builder,register	051-6-K-26, 051-6-К/26	I 12 (11.00 – 12.99)	yes	draft	
+GRC	GRC102501_2	P060182	11.53	standalone	corpus		I 12 (11.00 – 12.99)	yes	draft	
+HPA	HPA052501	P050182	19.69	retest	builder,intake,register,register-also	220-15-K-26, 220-15-K/26, 220-15-К/26	II 18 (16.20 – 19.79)	yes	finished	
+HPA	HPA052501	P050182	20.39	release	builder,cnp-cache,corpus,register	ППК25278	I 22 (19.80 – 24.19)	yes	finished	
+HPA	HPA1024	HPA1024	14.97	release	register	iCoA-PP_26-005	III 15 (13.80 – 16.19)	yes	finished	
+HPA	HPA1024		14.97	standalone	corpus		III 15 (13.80 – 16.19)	yes	finished	
+HPA	HPA1024		14.97	release	builder	iCoA (at issue)	III 15 (13.80 – 16.19)	yes	finished	
+HPA	HPA1024	HPA1024	17.31	retest	builder,corpus,register,register-also	197-13-K-26, 197-13-К/26	II 18 (16.20 – 19.79)	yes	finished	
+HPA	HPA1024_01	P050052	21.61	retest	builder,register,register-also	197-14-K-26, 197-14-К/26	I 22 (19.80 – 24.19)	yes	finished	
+HPA	HPA1024_01	P050052	21.61	standalone	corpus		I 22 (19.80 – 24.19)	yes	finished	
+HPA	HPA1024_01	P050052	22.43	release	builder,cnp-cache,register	ППК25155	I 22 (19.80 – 24.19)	yes	finished	
+HPA	HPA1024_01	P050052	22.43	standalone	corpus		I 22 (19.80 – 24.19)	yes	finished	
+J31	J31102501	P060152	17.32	retest	builder,register,register-also	197-16-K-26, 197-16-К/26	III 18 (16.20 – 19.79)	yes	finished	
+J31	J31102501	P060152	17.32	standalone	corpus		III 18 (16.20 – 19.79)	yes	finished	
+J31	J31102501	P060152	19.14	release	builder,corpus,register	051-1-K-26, 051-1-К/26	III 18 (16.20 – 19.79)	yes	finished	
+J31	J31112501	P060202	20.21	retest	builder,corpus,register-also	100-1-K-26, 100-1-K/26, 100-1-К/26	II 22 (19.80 – 24.19)	yes	finished	
+J31	J31112501	P060202	23.85	retest	builder,intake,register,register-also	227-14-K-26, 227-14-K/26, 227-14-К/26	II 22 (19.80 – 24.19)	yes	finished	
+J31	J31112501	P060202	25.27	release	builder,register	051-5-K-26, 051-5-К/26	I 26 (24.20 – 27.79)	yes	finished	
+J31	J31112501	P060202	25.27	standalone	corpus		I 26 (24.20 – 27.79)	yes	finished	
+J31	J31122501	P060262	19.84	release	builder,register	100-2-K-26, 100-2-К/26	II 22 (19.80 – 24.19)	yes	finished	
+J31	J31122501	P060262	21.84	retest	builder,register-also	100-3-K-26, 100-3-К/26	II 22 (19.80 – 24.19)	yes	finished	
+J31	J31122501	P060262	24.48	retest	builder,intake,register,register-also	227-13-K-26, 227-13-K/26, 227-13-К/26	I 26 (24.20 – 27.79)	yes	finished	
+JD	JD012601	P060312	18.16	release	builder,cnp-cache,corpus,register	ППК26064	II 18 (16.20 – 19.79)	yes	finished	
+JD	JD012601	P060312	19.99	retest	builder,intake,register,register-also	227-15-K-26, 227-15-K/26, 227-15-К/26	I 22 (19.80 – 24.19)	yes	finished	
+JD	JD012603/01	P060362	21.01	retest	builder,intake,register,register-also	220-16-K-26, 220-16-K/26, 220-16-К/26	I 22 (19.80 – 24.19)	yes	finished	
+JD	JD012603/02	P060412	14.43	retest	builder,intake,register,register-also	220-17-K-26, 220-17-K/26, 220-17-К/26	III 15 (13.80 – 16.19)	yes	finished	
+JD	JD012603/02	P060412	20.54	release	builder,corpus,register	ППК26113	I 22 (19.80 – 24.19)	yes	finished	
+JD	JD012603/02V	P060422	15.16	release	builder,cnp-cache,corpus,register	ППК26111	III 15 (13.80 – 16.19)	yes	finished	
+JD	JD012603/02V	P060422	17.09	retest	builder,intake,register,register-also	220-18-K-26, 220-18-K/26, 220-18-К/26	II 18 (16.20 – 19.79)	yes	finished	
+JD	JD022601	P060482	18.58	release	builder,corpus,register	ППК26115	II 18 (16.20 – 19.79)	yes	finished	
+JD	JD042601	P060492	14.89	release	builder,intake,register,register-also	220-30-K-26, 220-30-K/26, 220-30-К/26	III 15 (13.80 – 16.19)	yes	finished	
+JD	JD112501	P060212	19.64	release	builder,cnp-cache,corpus,register	ППК26063	II 18 (16.20 – 19.79)	yes	finished	
+JD	JD112501	P060212	20.32	retest	builder,register,register-also	197-15-K-26, 197-15-К/26	I 22 (19.80 – 24.19)	yes	finished	
+JD	JD112501	P060212	20.32	standalone	corpus		I 22 (19.80 – 24.19)	yes	finished	
+JD	JD112501*	P060212	13.93	release	cnp-cache,corpus	ППК26065	III 15 (13.80 – 16.19)	no	finished	
+KC	KC102501	P060172	17.04	release	builder,corpus,register	051-4-K-26, 051-4-К/26	I 18 (16.20 – 19.79)	yes	finished	
+KC	KC102501	P060172	17.06	retest	builder,intake,register,register-also	220-19-K-26, 220-19-K/26, 220-19-К/26	I 18 (16.20 – 19.79)	yes	finished	
+MB	MB0824_04	P050032	17.57	retest	builder,intake,register,register-also	227-12-K-26, 227-12-К/26	I 18 (16.20 – 19.79)	yes	finished	
+MB	MB0824_04	P050032	18.67	release	builder,cnp-cache,register	ППК25118	I 18 (16.20 – 19.79)	yes	finished	
+MB	MB0824_05	P050112	16.82	release	builder,cnp-cache,register	ППК25211	I 18 (16.20 – 19.79)	yes	finished	
+MB	MB0824_05	P050112	16.82	standalone	corpus		I 18 (16.20 – 19.79)	yes	finished	
+MB	MB0824_05	P050112	17.93	retest	builder,intake,register,register-also	220-20-K-26, 220-20-K/26, 220-20-К/26	I 18 (16.20 – 19.79)	yes	finished	
+OPM	OMP1024_01	P050042	15.38	release	builder,corpus,register	ППК25117	III 14 (12.60 – 15.39)	yes	finished	
+OPM	OMP1024_01	P050042	18.14	retest	builder,intake,register,register-also	220-21-K-26, 220-21-K/26, 220-21-К/26	II 17 (15.40 – 18.59)	yes	finished	
+OPM	OMP1024_01	P050042	18.99	retest	builder	assay THC % on the Versa specification sheet — the latest value on record, no certificate on the tracker	I 20 (18.60 – 21.39)	yes	finished	
+OPM	OPM052501	P050132	14.16	release	builder,cnp-cache,register	ППК25257	III 14 (12.60 – 15.39)	yes	finished	
+OPM	OPM052501	P050132	17.83	retest	builder,intake,register,register-also	227-11-K-26, 227-11-К/26	II 17 (15.40 – 18.59)	yes	finished	
+OPM	OPM092501	P060042	9.43	release	builder,cnp-cache,corpus,register	ППК26008	IV 10 (9.00 – 10.99)	yes	finished	
+OPM	OPM092501	P060042	10.18	retest	builder,intake,register,register-also	220-22-K-26, 220-22-K/26, 220-22-К/26	IV 10 (9.00 – 10.99)	yes	finished	
+OPM	OPM1024	OPM1024	19.96	release	register	iCoA-PP_26-006	I 20 (18.60 – 21.39)	yes	finished	
+OPM	OPM1024		19.96	standalone	corpus		I 20 (18.60 – 21.39)	yes	finished	
+OPM	OPM1024		19.96	release	builder	iCoA (at issue)	I 20 (18.60 – 21.39)	yes	finished	
+OPM	OPM1024	OPM1024	20.03	retest	builder,register,register-also	197-17-K-26, 197-17-К/26	I 20 (18.60 – 21.39)	yes	finished	
+OPM	OPM1024		20.03	standalone	corpus		I 20 (18.60 – 21.39)	yes	finished	
+OPM	OPM1024_02	P050062	1.87	release	cnp-cache	ППК25154	IN NO RANGE	no	finished	the certificate prints total Δ9-THC 1.87; its own Δ9-THC 0.41 + 0.877 × Δ9-THCA 20.37 = 18.27
+OPM	OPM1024_02	P050062	18.04	retest	builder,register,register-also	197-18-K-26, 197-18-К/26	II 17 (15.40 – 18.59)	yes	finished	
+OPM	OPM1024_02	P050062	18.04	standalone	corpus		II 17 (15.40 – 18.59)	yes	finished	
+OPM	OPM1024_02	P050062	18.27	release	builder,corpus,register	ППК25154	II 17 (15.40 – 18.59)	yes	finished	
+OPM	OPM1024_03	P050082	16.55	release	builder,cnp-cache,corpus,register	ППК25210	II 17 (15.40 – 18.59)	yes	finished	
+OPM	OPM1024_03	P050082	19.30	retest	builder,intake,register,register-also	220-23-K-26, 220-23-K/26, 220-23-К/26	I 20 (18.60 – 21.39)	yes	finished	
+OPM	OPM112501	P060222	8.00	release	builder,cnp-cache,register	ППК26031	V 8 (7.20 – 8.79)	yes	finished	
+OPM	OPM112501	P060222	9.73	retest	builder,intake,register,register-also	227-10-K-26, 227-10-К/26	IV 10 (9.00 – 10.99)	yes	finished	
+OPM	OPM122501	P060242	7.91	retest	builder,register,register-also	197-19-K-26, 197-19-К/26	V 8 (7.20 – 8.79)	yes	finished	
+OPM	OPM122501	P060242	7.91	standalone	corpus		V 8 (7.20 – 8.79)	yes	finished	
+OPM	OPM122501	P060242	8.09	release	builder,corpus,register	100-4-K-26, 100-4-К/26	V 8 (7.20 – 8.79)	yes	finished	
+PM	PM072501	P050272	10.01	release	builder,cnp-cache,register	ППК25368	III 10 (9.00 – 10.99)	yes	finished	
+PM	PM072501	P050272	12.77	retest	builder,intake,register,register-also	227-9-K-26, 227-9-К/26	II 12 (11.00 – 12.99)	yes	finished	
+PM	PM092501	P060062	12.25	retest	builder,register,register-also	197-20-K-26, 197-20-К/26	II 12 (11.00 – 12.99)	yes	finished	
+PM	PM092501	P060062	12.25	standalone	corpus		II 12 (11.00 – 12.99)	yes	finished	
+PM	PM092501	P060062	14.06	release	builder,cnp-cache,register	ППК26004	I 14 (13.00 – 14.99)	yes	finished	
+PM	PM112501	P060232	10.80	retest	builder,intake,register,register-also	220-24-K-26, 220-24-K/26, 220-24-К/26	III 10 (9.00 – 10.99)	yes	finished	
+PM	PM112501	P060232	13.33	release	builder,cnp-cache,corpus,register	ППК26030	I 14 (13.00 – 14.99)	yes	finished	
+PUM	PUM102501	P060112	13.95	retest	builder,intake,register,register-also	220-25-K-26, 220-25-K/26, 220-25-К/26	I 14 (12.60 – 15.39)	yes	finished	
+SCR	SCR012601	P060342	22.40	release	builder,intake,register,register-also	227-8-K-26, 227-8-К/26	I 22 (19.80 – 24.19)	yes	finished	
+SCR	SCR012603	P060382	17.84	retest	builder,register,register-also	197-21-K-26, 197-21-К/26	II 18 (16.20 – 19.79)	yes	finished	
+SCR	SCR012603	P060382	17.84	standalone	corpus		II 18 (16.20 – 19.79)	yes	finished	
+SCR	SCR022601	P060442	16.68	retest	builder,intake,register,register-also	227-7-K-26, 227-7-К/26	II 18 (16.20 – 19.79)	yes	finished	
+SCR	SCR022601	P060442	21.92	release	builder,register	ППК26116	I 22 (19.80 – 24.19)	yes	finished	
+SCR	SCR112501	P060282	17.13	release	builder,corpus,register	ППК26069	II 18 (16.20 – 19.79)	yes	finished	
+SCR	SCR112501	P060282	19.73	retest	builder,intake,register,register-also	220-26-K-26, 220-26-K/26, 220-26-К/26	II 18 (16.20 – 19.79)	yes	finished	
+SJ			9.20	standalone	corpus		II 10 (9.00 – 10.99)	yes	finished	
+SJ	SJ092501	P060082	10.39	retest	builder,intake,register,register-also	220-27-K-26, 220-27-K/26, 220-27-К/26	II 10 (9.00 – 10.99)	yes	finished	
+SJ	SJ092501	P060082	10.96	release	builder,cnp-cache,corpus,register	ППК26006	II 10 (9.00 – 10.99)	yes	finished	
+SJ	SJ102501	P060162	10.61	retest	builder,intake,register,register-also	227-6-K-26, 227-6-К/26	II 10 (9.00 – 10.99)	yes	finished	
+SJ	SJ102501	P060162	11.20	release	builder,corpus,register	051-3-K-26, 051-3-К/26	I 12 (11.00 – 12.99)	yes	finished	
+SJ	SJ112501	P060192	9.20	release	builder,register	051-2-K-26, 051-2-К/26	II 10 (9.00 – 10.99)	yes	finished	
+SJ	SJ112501	P060192	11.27	retest	builder,intake,register,register-also	227-5-K-26, 227-5-К/26	I 12 (11.00 – 12.99)	yes	finished	
+WC	WC072501	P050262	22.11	release	builder,cnp-cache,corpus,register	ППК25369	II 22 (20.60 – 23.39)	yes	finished	
+WC	WC072501	P050262	25.37	retest	builder,intake,register,register-also	227-3-K-26, 227-3-К/26	I 26 (23.40 – 28.59)	yes	finished	
+WC	WC082501	P060012	21.67	release	builder,cnp-cache,corpus,register	ППК26001	II 22 (20.60 – 23.39)	yes	finished	
+WC	WC082501	P060012	23.48	retest	builder,intake,register,register-also	220-28-K-26, 220-28-K/26, 220-28-К/26	I 26 (23.40 – 28.59)	yes	finished	
+WED	WED102501	P060102	22.05	release	intake,register	031-3-К/26	II 22 (20.60 – 23.39)	yes	finished	
+WED	WED102501	P060102	25.15	retest	builder,intake,register,register-also	227-4-K-26, 227-4-К/26	I 26 (23.40 – 28.59)	yes	finished	

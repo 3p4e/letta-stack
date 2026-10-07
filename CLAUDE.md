@@ -197,6 +197,11 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
      came from there on 26.09.2026 and grades `-046`. GRC-IV (7.00 ± 0.70, 6.30–7.69 %) was set by the
      Head of QC on 27.09.2026 for `-050` (7.05 %), which no grade covered; it overlaps GRC-III
      (7.20–8.79 %), and `potency_grading` tries the higher nominal first, so `-152` (7.50 %) stays III.
+     The builder page also embeds the results it rests on (`const DATA`). The audit
+     `tracker/audit_potency_kvm4_2026-10-07.py` (`--fetch` refreshes `KVM4_POTENCY_SNAPSHOT_*.json`) checks
+     two things against the builder: every CoQ's grade, window, specification code and product code, and every
+     THC result on file, wherever it came from. On 07.10.2026 every Tranche 3 and out-of-tranche CoQ agreed
+     except `-050`: the builder holds GRC 7 % as a draft, ±0.62 (6.38–7.61 %), and adds GRC 14 % (open).
   8. **A certificate whose scan is incomplete** prints `[pending]` for what the missing page holds —
      IPH `1065/2026` (SJ102501) holds pages 1, 2 and 4 of 4 in every copy; page 3 carries its metals,
      total aflatoxins and three pesticides. Obtain the page; do not read around it.

@@ -1,0 +1,5612 @@
+{
+ "url": "https://specs.srv1231216.hstgr.cloud/",
+ "version": "2026.09.16-28",
+ "specs": [
+  {
+   "id": "AB",
+   "name": "Apple and Banana",
+   "custom": false,
+   "versa": false,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "18": 1.8,
+    "22": 2.2
+   },
+   "ranges": [
+    {
+     "nominal": 18,
+     "tol": 1.8,
+     "lo": 16.2,
+     "hi": 19.79
+    },
+    {
+     "nominal": 22,
+     "tol": 2.2,
+     "lo": 19.8,
+     "hi": 24.19
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-11T15:46:41.078412+00:00",
+   "updated_at": "2026-09-15T01:50:58.864866+00:00",
+   "finished_at": "2026-09-15T01:50:58.505418+00:00"
+  },
+  {
+   "id": "ACC",
+   "name": "Amnesia Core Cut",
+   "custom": false,
+   "versa": false,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "12": 1.2
+   },
+   "ranges": [
+    {
+     "nominal": 12,
+     "tol": 1.2,
+     "lo": 10.8,
+     "hi": 13.19
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-11T15:46:41.073712+00:00",
+   "updated_at": "2026-09-15T11:40:43.164576+00:00",
+   "finished_at": "2026-09-15T11:40:42.800081+00:00"
+  },
+  {
+   "id": "BG",
+   "name": "Blue Gelato",
+   "custom": false,
+   "versa": false,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "22": 2.2,
+    "26": 1.8
+   },
+   "ranges": [
+    {
+     "nominal": 22,
+     "tol": 2.2,
+     "lo": 19.8,
+     "hi": 24.19
+    },
+    {
+     "nominal": 26,
+     "tol": 1.8,
+     "lo": 24.2,
+     "hi": 27.79
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-11T15:46:41.086047+00:00",
+   "updated_at": "2026-09-15T01:50:24.272849+00:00",
+   "finished_at": "2026-09-15T01:50:23.919313+00:00"
+  },
+  {
+   "id": "BSS",
+   "name": "Blue Sunset Sherbet",
+   "custom": false,
+   "versa": false,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "20": 1.89,
+    "24": 2.11,
+    "28": 1.93
+   },
+   "ranges": [
+    {
+     "nominal": 20,
+     "tol": 1.89,
+     "lo": 18.11,
+     "hi": 21.88
+    },
+    {
+     "nominal": 24,
+     "tol": 2.11,
+     "lo": 21.89,
+     "hi": 26.1
+    },
+    {
+     "nominal": 28,
+     "tol": 1.93,
+     "lo": 26.07,
+     "hi": 29.92
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-11T15:46:41.091496+00:00",
+   "updated_at": "2026-09-15T02:08:26.818673+00:00",
+   "finished_at": "2026-09-15T02:08:26.468704+00:00"
+  },
+  {
+   "id": "CB",
+   "name": "Crimson Blaze",
+   "custom": true,
+   "versa": false,
+   "status": "draft",
+   "view": "all",
+   "tol": {
+    "20": 2,
+    "24": 2,
+    "28": 2
+   },
+   "ranges": [
+    {
+     "nominal": 20,
+     "tol": 2,
+     "lo": 18,
+     "hi": 21.99
+    },
+    {
+     "nominal": 24,
+     "tol": 2,
+     "lo": 22,
+     "hi": 25.99
+    },
+    {
+     "nominal": 28,
+     "tol": 2,
+     "lo": 26,
+     "hi": 29.99
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-26T21:25:53.476282+00:00",
+   "updated_at": "2026-09-26T21:26:54.950802+00:00",
+   "finished_at": null
+  },
+  {
+   "id": "CC",
+   "name": "Cash Cow",
+   "custom": false,
+   "versa": false,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "14": 1.35,
+    "17": 1.65
+   },
+   "ranges": [
+    {
+     "nominal": 14,
+     "tol": 1.35,
+     "lo": 12.65,
+     "hi": 15.34
+    },
+    {
+     "nominal": 17,
+     "tol": 1.65,
+     "lo": 15.35,
+     "hi": 18.64
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-11T15:46:41.101561+00:00",
+   "updated_at": "2026-09-15T10:29:06.113391+00:00",
+   "finished_at": "2026-09-15T10:29:05.777890+00:00"
+  },
+  {
+   "id": "CF",
+   "name": "Chem Flyer",
+   "custom": false,
+   "versa": false,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "10": 1
+   },
+   "ranges": [
+    {
+     "nominal": 10,
+     "tol": 1,
+     "lo": 9,
+     "hi": 10.99
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-11T15:46:41.108401+00:00",
+   "updated_at": "2026-09-15T10:29:31.001631+00:00",
+   "finished_at": "2026-09-15T10:29:30.641376+00:00"
+  },
+  {
+   "id": "CJ",
+   "name": "Cap Junky",
+   "custom": false,
+   "versa": false,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "14": 1.4,
+    "17": 1.4,
+    "20": 1.6,
+    "24": 2.4,
+    "28": 1.6
+   },
+   "ranges": [
+    {
+     "nominal": 14,
+     "tol": 1.4,
+     "lo": 12.6,
+     "hi": 15.39
+    },
+    {
+     "nominal": 17,
+     "tol": 1.4,
+     "lo": 15.6,
+     "hi": 18.39
+    },
+    {
+     "nominal": 20,
+     "tol": 1.6,
+     "lo": 18.4,
+     "hi": 21.59
+    },
+    {
+     "nominal": 24,
+     "tol": 2.4,
+     "lo": 21.6,
+     "hi": 26.39
+    },
+    {
+     "nominal": 28,
+     "tol": 1.6,
+     "lo": 26.4,
+     "hi": 29.59
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-11T15:46:41.097325+00:00",
+   "updated_at": "2026-09-15T10:27:32.198926+00:00",
+   "finished_at": "2026-09-15T10:27:31.843757+00:00"
+  },
+  {
+   "id": "CLE",
+   "name": "Clemosa A Bud",
+   "custom": false,
+   "versa": false,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "8": 0.8
+   },
+   "ranges": [
+    {
+     "nominal": 8,
+     "tol": 0.8,
+     "lo": 7.2,
+     "hi": 8.79
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-11T15:46:41.112127+00:00",
+   "updated_at": "2026-09-15T10:29:42.773279+00:00",
+   "finished_at": "2026-09-15T10:29:42.418522+00:00"
+  },
+  {
+   "id": "FB",
+   "name": "Fat Bastard",
+   "custom": false,
+   "versa": false,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "12": 1.2,
+    "15": 1.2,
+    "18": 1.8,
+    "22": 2.2
+   },
+   "ranges": [
+    {
+     "nominal": 12,
+     "tol": 1.2,
+     "lo": 10.8,
+     "hi": 13.19
+    },
+    {
+     "nominal": 15,
+     "tol": 1.2,
+     "lo": 13.8,
+     "hi": 16.19
+    },
+    {
+     "nominal": 18,
+     "tol": 1.8,
+     "lo": 16.2,
+     "hi": 19.79
+    },
+    {
+     "nominal": 22,
+     "tol": 2.2,
+     "lo": 19.8,
+     "hi": 24.19
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-11T15:46:41.119599+00:00",
+   "updated_at": "2026-09-15T10:35:08.113509+00:00",
+   "finished_at": "2026-09-15T10:35:07.742228+00:00"
+  },
+  {
+   "id": "GG",
+   "name": "Gorilla Glue",
+   "custom": false,
+   "versa": false,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "15": 1.23,
+    "18": 1.77
+   },
+   "ranges": [
+    {
+     "nominal": 15,
+     "tol": 1.23,
+     "lo": 13.77,
+     "hi": 16.22
+    },
+    {
+     "nominal": 18,
+     "tol": 1.77,
+     "lo": 16.23,
+     "hi": 19.76
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-11T15:46:41.133395+00:00",
+   "updated_at": "2026-09-15T10:36:12.938487+00:00",
+   "finished_at": "2026-09-15T10:36:12.590241+00:00"
+  },
+  {
+   "id": "GP",
+   "name": "Grape Pie",
+   "custom": false,
+   "versa": false,
+   "status": "finished",
+   "view": "initial",
+   "tol": {
+    "16": 1.6,
+    "20": 2,
+    "24": 2,
+    "28": 2
+   },
+   "ranges": [
+    {
+     "nominal": 16,
+     "tol": 1.6,
+     "lo": 14.4,
+     "hi": 17.59
+    },
+    {
+     "nominal": 20,
+     "tol": 2,
+     "lo": 18,
+     "hi": 21.99
+    },
+    {
+     "nominal": 24,
+     "tol": 2,
+     "lo": 22,
+     "hi": 25.99
+    },
+    {
+     "nominal": 28,
+     "tol": 2,
+     "lo": 26,
+     "hi": 29.99
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-11T15:46:41.139523+00:00",
+   "updated_at": "2026-09-15T02:04:51.585342+00:00",
+   "finished_at": "2026-09-15T02:04:51.226700+00:00"
+  },
+  {
+   "id": "GRC",
+   "name": "Grapes And Cream",
+   "custom": false,
+   "versa": false,
+   "status": "draft",
+   "view": "retest",
+   "tol": {
+    "7": 0.62,
+    "8": 0.8,
+    "10": 1,
+    "12": 1,
+    "14": 1.4
+   },
+   "ranges": [
+    {
+     "nominal": 7,
+     "tol": 0.62,
+     "lo": 6.38,
+     "hi": 7.61
+    },
+    {
+     "nominal": 8,
+     "tol": 0.8,
+     "lo": 7.2,
+     "hi": 8.79
+    },
+    {
+     "nominal": 10,
+     "tol": 1,
+     "lo": 9,
+     "hi": 10.99
+    },
+    {
+     "nominal": 12,
+     "tol": 1,
+     "lo": 11,
+     "hi": 12.99
+    },
+    {
+     "nominal": 14,
+     "tol": 1.4,
+     "lo": 12.6,
+     "hi": 15.39
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-11T15:46:41.147739+00:00",
+   "updated_at": "2026-09-27T03:02:09.108542+00:00",
+   "finished_at": null
+  },
+  {
+   "id": "HPA",
+   "name": "High Pro Amnesia",
+   "custom": false,
+   "versa": false,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "15": 1.2,
+    "18": 1.8,
+    "22": 2.2
+   },
+   "ranges": [
+    {
+     "nominal": 15,
+     "tol": 1.2,
+     "lo": 13.8,
+     "hi": 16.19
+    },
+    {
+     "nominal": 18,
+     "tol": 1.8,
+     "lo": 16.2,
+     "hi": 19.79
+    },
+    {
+     "nominal": 22,
+     "tol": 2.2,
+     "lo": 19.8,
+     "hi": 24.19
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-11T15:46:41.152376+00:00",
+   "updated_at": "2026-09-15T10:37:23.374516+00:00",
+   "finished_at": "2026-09-15T10:37:23.025352+00:00"
+  },
+  {
+   "id": "J31",
+   "name": "Jokerz 31",
+   "custom": false,
+   "versa": false,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "18": 1.8,
+    "22": 2.2,
+    "26": 1.8
+   },
+   "ranges": [
+    {
+     "nominal": 18,
+     "tol": 1.8,
+     "lo": 16.2,
+     "hi": 19.79
+    },
+    {
+     "nominal": 22,
+     "tol": 2.2,
+     "lo": 19.8,
+     "hi": 24.19
+    },
+    {
+     "nominal": 26,
+     "tol": 1.8,
+     "lo": 24.2,
+     "hi": 27.79
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-11T15:46:41.161196+00:00",
+   "updated_at": "2026-09-15T10:43:09.089310+00:00",
+   "finished_at": "2026-09-15T10:43:08.740179+00:00"
+  },
+  {
+   "id": "JD",
+   "name": "Jelly Donuts",
+   "custom": false,
+   "versa": false,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "15": 1.2,
+    "18": 1.8,
+    "22": 2.2
+   },
+   "ranges": [
+    {
+     "nominal": 15,
+     "tol": 1.2,
+     "lo": 13.8,
+     "hi": 16.19
+    },
+    {
+     "nominal": 18,
+     "tol": 1.8,
+     "lo": 16.2,
+     "hi": 19.79
+    },
+    {
+     "nominal": 22,
+     "tol": 2.2,
+     "lo": 19.8,
+     "hi": 24.19
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-11T15:46:41.157248+00:00",
+   "updated_at": "2026-09-15T10:39:21.617093+00:00",
+   "finished_at": "2026-09-15T10:39:21.263832+00:00"
+  },
+  {
+   "id": "KC",
+   "name": "Kush Crasher",
+   "custom": false,
+   "versa": false,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "18": 1.8
+   },
+   "ranges": [
+    {
+     "nominal": 18,
+     "tol": 1.8,
+     "lo": 16.2,
+     "hi": 19.79
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-11T15:46:41.165040+00:00",
+   "updated_at": "2026-09-15T10:43:36.021046+00:00",
+   "finished_at": "2026-09-15T10:43:35.613208+00:00"
+  },
+  {
+   "id": "MB",
+   "name": "Motor Breath",
+   "custom": false,
+   "versa": false,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "18": 1.8
+   },
+   "ranges": [
+    {
+     "nominal": 18,
+     "tol": 1.8,
+     "lo": 16.2,
+     "hi": 19.79
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-11T15:46:41.168642+00:00",
+   "updated_at": "2026-09-15T10:43:48.514710+00:00",
+   "finished_at": "2026-09-15T10:43:48.160688+00:00"
+  },
+  {
+   "id": "OPM",
+   "name": "Orange Punch Mimosa",
+   "custom": false,
+   "versa": false,
+   "status": "finished",
+   "view": "retest",
+   "tol": {
+    "8": 0.8,
+    "10": 1,
+    "14": 1.4,
+    "17": 1.6,
+    "20": 1.4
+   },
+   "ranges": [
+    {
+     "nominal": 8,
+     "tol": 0.8,
+     "lo": 7.2,
+     "hi": 8.79
+    },
+    {
+     "nominal": 10,
+     "tol": 1,
+     "lo": 9,
+     "hi": 10.99
+    },
+    {
+     "nominal": 14,
+     "tol": 1.4,
+     "lo": 12.6,
+     "hi": 15.39
+    },
+    {
+     "nominal": 17,
+     "tol": 1.6,
+     "lo": 15.4,
+     "hi": 18.59
+    },
+    {
+     "nominal": 20,
+     "tol": 1.4,
+     "lo": 18.6,
+     "hi": 21.39
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-11T15:46:41.172374+00:00",
+   "updated_at": "2026-09-17T03:05:58.401632+00:00",
+   "finished_at": "2026-09-15T10:47:05.162563+00:00"
+  },
+  {
+   "id": "PM",
+   "name": "Permanent Marker",
+   "custom": false,
+   "versa": false,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "10": 1,
+    "12": 1,
+    "14": 1
+   },
+   "ranges": [
+    {
+     "nominal": 10,
+     "tol": 1,
+     "lo": 9,
+     "hi": 10.99
+    },
+    {
+     "nominal": 12,
+     "tol": 1,
+     "lo": 11,
+     "hi": 12.99
+    },
+    {
+     "nominal": 14,
+     "tol": 1,
+     "lo": 13,
+     "hi": 14.99
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-11T15:46:41.178963+00:00",
+   "updated_at": "2026-09-15T10:48:08.226730+00:00",
+   "finished_at": "2026-09-15T10:48:07.876149+00:00"
+  },
+  {
+   "id": "PUM",
+   "name": "Pure Michigen",
+   "custom": false,
+   "versa": false,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "14": 1.4
+   },
+   "ranges": [
+    {
+     "nominal": 14,
+     "tol": 1.4,
+     "lo": 12.6,
+     "hi": 15.39
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-11T15:46:41.183765+00:00",
+   "updated_at": "2026-09-15T10:48:21.547409+00:00",
+   "finished_at": "2026-09-15T10:48:21.160326+00:00"
+  },
+  {
+   "id": "SCR",
+   "name": "Scrambler",
+   "custom": false,
+   "versa": false,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "18": 1.8,
+    "22": 2.2
+   },
+   "ranges": [
+    {
+     "nominal": 18,
+     "tol": 1.8,
+     "lo": 16.2,
+     "hi": 19.79
+    },
+    {
+     "nominal": 22,
+     "tol": 2.2,
+     "lo": 19.8,
+     "hi": 24.19
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-11T15:46:41.188145+00:00",
+   "updated_at": "2026-09-15T10:48:33.212444+00:00",
+   "finished_at": "2026-09-15T10:48:32.851369+00:00"
+  },
+  {
+   "id": "SJ",
+   "name": "Sleepy Joe",
+   "custom": false,
+   "versa": false,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "10": 1,
+    "12": 1
+   },
+   "ranges": [
+    {
+     "nominal": 10,
+     "tol": 1,
+     "lo": 9,
+     "hi": 10.99
+    },
+    {
+     "nominal": 12,
+     "tol": 1,
+     "lo": 11,
+     "hi": 12.99
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-11T15:46:41.191630+00:00",
+   "updated_at": "2026-09-15T10:49:15.215553+00:00",
+   "finished_at": "2026-09-15T10:49:14.787029+00:00"
+  },
+  {
+   "id": "V_AB",
+   "name": "Appels & Bananas",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "22": 2.2
+   },
+   "ranges": [
+    {
+     "nominal": 22,
+     "tol": 2.2,
+     "lo": 19.8,
+     "hi": 24.19
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.277583+00:00",
+   "updated_at": "2026-09-17T02:49:37.466361+00:00",
+   "finished_at": "2026-09-17T02:49:37.094287+00:00"
+  },
+  {
+   "id": "V_AC",
+   "name": "Amnesia Core CUT",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "12": 1.2
+   },
+   "ranges": [
+    {
+     "nominal": 12,
+     "tol": 1.2,
+     "lo": 10.8,
+     "hi": 13.19
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.244353+00:00",
+   "updated_at": "2026-09-17T02:41:38.056408+00:00",
+   "finished_at": "2026-09-17T02:41:37.692109+00:00"
+  },
+  {
+   "id": "V_BG",
+   "name": "Blue Gelato",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "26": 2.6
+   },
+   "ranges": [
+    {
+     "nominal": 26,
+     "tol": 2.6,
+     "lo": 23.4,
+     "hi": 28.59
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.174975+00:00",
+   "updated_at": "2026-09-16T07:01:43.950359+00:00",
+   "finished_at": "2026-09-16T02:24:49.601802+00:00"
+  },
+  {
+   "id": "V_CAL",
+   "name": "Calmino",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "retest",
+   "tol": {
+    "12": 1.2
+   },
+   "ranges": [
+    {
+     "nominal": 12,
+     "tol": 1.2,
+     "lo": 10.8,
+     "hi": 13.19
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.292617+00:00",
+   "updated_at": "2026-09-17T02:51:04.811725+00:00",
+   "finished_at": "2026-09-17T02:51:04.400094+00:00"
+  },
+  {
+   "id": "V_CB",
+   "name": "Citrus Bloom",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "8": 0.8,
+    "15": 1.5,
+    "18": 1.5
+   },
+   "ranges": [
+    {
+     "nominal": 8,
+     "tol": 0.8,
+     "lo": 7.2,
+     "hi": 8.79
+    },
+    {
+     "nominal": 15,
+     "tol": 1.5,
+     "lo": 13.5,
+     "hi": 16.49
+    },
+    {
+     "nominal": 18,
+     "tol": 1.5,
+     "lo": 16.5,
+     "hi": 19.49
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.232357+00:00",
+   "updated_at": "2026-09-16T02:46:01.791103+00:00",
+   "finished_at": "2026-09-16T02:46:01.435897+00:00"
+  },
+  {
+   "id": "V_CHC",
+   "name": "Cherry Chocolate",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "18": 1.8
+   },
+   "ranges": [
+    {
+     "nominal": 18,
+     "tol": 1.8,
+     "lo": 16.2,
+     "hi": 19.79
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.280345+00:00",
+   "updated_at": "2026-09-17T02:49:42.680559+00:00",
+   "finished_at": "2026-09-17T02:49:42.310743+00:00"
+  },
+  {
+   "id": "V_CK",
+   "name": "Cookie Kush",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "retest",
+   "tol": {
+    "18": 1.8,
+    "26": 2.6
+   },
+   "ranges": [
+    {
+     "nominal": 18,
+     "tol": 1.8,
+     "lo": 16.2,
+     "hi": 19.79
+    },
+    {
+     "nominal": 26,
+     "tol": 2.6,
+     "lo": 23.4,
+     "hi": 28.59
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.183571+00:00",
+   "updated_at": "2026-09-17T02:09:16.035856+00:00",
+   "finished_at": "2026-09-17T02:09:15.673450+00:00"
+  },
+  {
+   "id": "V_DW",
+   "name": "Daywalker",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "retest",
+   "tol": {
+    "18": 1.8,
+    "22": 2.2
+   },
+   "ranges": [
+    {
+     "nominal": 18,
+     "tol": 1.8,
+     "lo": 16.2,
+     "hi": 19.79
+    },
+    {
+     "nominal": 22,
+     "tol": 2.2,
+     "lo": 19.8,
+     "hi": 24.19
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.253773+00:00",
+   "updated_at": "2026-09-17T02:45:33.497650+00:00",
+   "finished_at": "2026-09-17T02:45:33.109957+00:00"
+  },
+  {
+   "id": "V_F1",
+   "name": "Formula 1",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "retest",
+   "tol": {
+    "10": 1,
+    "12": 1,
+    "14": 1
+   },
+   "ranges": [
+    {
+     "nominal": 10,
+     "tol": 1,
+     "lo": 9,
+     "hi": 10.99
+    },
+    {
+     "nominal": 12,
+     "tol": 1,
+     "lo": 11,
+     "hi": 12.99
+    },
+    {
+     "nominal": 14,
+     "tol": 1,
+     "lo": 13,
+     "hi": 14.99
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.236519+00:00",
+   "updated_at": "2026-09-17T02:41:26.817715+00:00",
+   "finished_at": "2026-09-17T02:41:26.445141+00:00"
+  },
+  {
+   "id": "V_FS",
+   "name": "Fat Sofa",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "18": 1.8
+   },
+   "ranges": [
+    {
+     "nominal": 18,
+     "tol": 1.8,
+     "lo": 16.2,
+     "hi": 19.79
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.190636+00:00",
+   "updated_at": "2026-09-16T02:28:41.497064+00:00",
+   "finished_at": "2026-09-16T02:28:41.139883+00:00"
+  },
+  {
+   "id": "V_GG",
+   "name": "Gorilla Gang",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "latest",
+   "tol": {
+    "18": 1.8
+   },
+   "ranges": [
+    {
+     "nominal": 18,
+     "tol": 1.8,
+     "lo": 16.2,
+     "hi": 19.79
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.197250+00:00",
+   "updated_at": "2026-09-16T02:32:15.815055+00:00",
+   "finished_at": "2026-09-16T02:32:15.462501+00:00"
+  },
+  {
+   "id": "V_GG4",
+   "name": "GG4",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "latest",
+   "tol": {
+    "18": 1.8
+   },
+   "ranges": [
+    {
+     "nominal": 18,
+     "tol": 1.8,
+     "lo": 16.2,
+     "hi": 19.79
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.193642+00:00",
+   "updated_at": "2026-09-16T02:30:35.290651+00:00",
+   "finished_at": "2026-09-16T02:30:34.935666+00:00"
+  },
+  {
+   "id": "V_GP",
+   "name": "Grape Pie",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "latest",
+   "tol": {
+    "22": 1.41,
+    "26": 2.59
+   },
+   "ranges": [
+    {
+     "nominal": 22,
+     "tol": 1.41,
+     "lo": 20.59,
+     "hi": 23.4
+    },
+    {
+     "nominal": 26,
+     "tol": 2.59,
+     "lo": 23.41,
+     "hi": 28.58
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.204768+00:00",
+   "updated_at": "2026-09-16T02:33:36.493536+00:00",
+   "finished_at": "2026-09-16T02:33:36.135962+00:00"
+  },
+  {
+   "id": "V_HD",
+   "name": "Hazy Daze",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "latest",
+   "tol": {
+    "20": 2
+   },
+   "ranges": [
+    {
+     "nominal": 20,
+     "tol": 2,
+     "lo": 18,
+     "hi": 21.99
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.211906+00:00",
+   "updated_at": "2026-09-16T02:36:54.296745+00:00",
+   "finished_at": "2026-09-16T02:36:53.930471+00:00"
+  },
+  {
+   "id": "V_HPA",
+   "name": "High Pro Amnesia",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "latest",
+   "tol": {
+    "18": 1.8
+   },
+   "ranges": [
+    {
+     "nominal": 18,
+     "tol": 1.8,
+     "lo": 16.2,
+     "hi": 19.79
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.208735+00:00",
+   "updated_at": "2026-09-16T02:34:15.658298+00:00",
+   "finished_at": "2026-09-16T02:34:15.304552+00:00"
+  },
+  {
+   "id": "V_JD",
+   "name": "Jelly Donuts",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "latest",
+   "tol": {
+    "20": 2
+   },
+   "ranges": [
+    {
+     "nominal": 20,
+     "tol": 2,
+     "lo": 18,
+     "hi": 21.99
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.215218+00:00",
+   "updated_at": "2026-09-16T02:37:25.073003+00:00",
+   "finished_at": "2026-09-16T02:37:24.721664+00:00"
+  },
+  {
+   "id": "V_JOZ",
+   "name": "Jokerz 31",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "retest",
+   "tol": {
+    "18": 1.8,
+    "22": 2.2,
+    "26": 1.8
+   },
+   "ranges": [
+    {
+     "nominal": 18,
+     "tol": 1.8,
+     "lo": 16.2,
+     "hi": 19.79
+    },
+    {
+     "nominal": 22,
+     "tol": 2.2,
+     "lo": 19.8,
+     "hi": 24.19
+    },
+    {
+     "nominal": 26,
+     "tol": 1.8,
+     "lo": 24.2,
+     "hi": 27.79
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.218855+00:00",
+   "updated_at": "2026-09-17T02:38:58.726701+00:00",
+   "finished_at": "2026-09-17T02:38:58.362688+00:00"
+  },
+  {
+   "id": "V_KC",
+   "name": "Kush Crasher",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "18": 1.8
+   },
+   "ranges": [
+    {
+     "nominal": 18,
+     "tol": 1.8,
+     "lo": 16.2,
+     "hi": 19.79
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.265224+00:00",
+   "updated_at": "2026-09-17T02:47:21.599309+00:00",
+   "finished_at": "2026-09-17T02:47:21.247264+00:00"
+  },
+  {
+   "id": "V_LG",
+   "name": "Lifeguard",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "14": 1.4
+   },
+   "ranges": [
+    {
+     "nominal": 14,
+     "tol": 1.4,
+     "lo": 12.6,
+     "hi": 15.39
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.271735+00:00",
+   "updated_at": "2026-09-17T02:47:33.537719+00:00",
+   "finished_at": "2026-09-17T02:47:32.852097+00:00"
+  },
+  {
+   "id": "V_NYD",
+   "name": "NY Diesel",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "retest",
+   "tol": {
+    "18": 1.8
+   },
+   "ranges": [
+    {
+     "nominal": 18,
+     "tol": 1.8,
+     "lo": 16.2,
+     "hi": 19.79
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.268997+00:00",
+   "updated_at": "2026-09-17T02:47:28.468737+00:00",
+   "finished_at": "2026-09-17T02:47:28.102473+00:00"
+  },
+  {
+   "id": "V_OD",
+   "name": "Orange Dream",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "latest",
+   "tol": {
+    "22": 2.2
+   },
+   "ranges": [
+    {
+     "nominal": 22,
+     "tol": 2.2,
+     "lo": 19.8,
+     "hi": 24.19
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.223034+00:00",
+   "updated_at": "2026-09-16T02:34:58.716569+00:00",
+   "finished_at": "2026-09-16T02:34:58.361891+00:00"
+  },
+  {
+   "id": "V_OGB",
+   "name": "OG Banana's",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "retest",
+   "tol": {
+    "20": 2,
+    "24": 2
+   },
+   "ranges": [
+    {
+     "nominal": 20,
+     "tol": 2,
+     "lo": 18,
+     "hi": 21.99
+    },
+    {
+     "nominal": 24,
+     "tol": 2,
+     "lo": 22,
+     "hi": 25.99
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.187573+00:00",
+   "updated_at": "2026-09-17T02:10:38.269709+00:00",
+   "finished_at": "2026-09-17T02:10:37.914660+00:00"
+  },
+  {
+   "id": "V_PDY",
+   "name": "Payday",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "13": 1.3,
+    "16": 1.6
+   },
+   "ranges": [
+    {
+     "nominal": 13,
+     "tol": 1.3,
+     "lo": 11.7,
+     "hi": 14.29
+    },
+    {
+     "nominal": 16,
+     "tol": 1.6,
+     "lo": 14.4,
+     "hi": 17.59
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.247487+00:00",
+   "updated_at": "2026-09-17T02:44:48.590341+00:00",
+   "finished_at": "2026-09-17T02:44:48.236930+00:00"
+  },
+  {
+   "id": "V_PT",
+   "name": "Plum Tarte",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "8": 0.8,
+    "10": 1
+   },
+   "ranges": [
+    {
+     "nominal": 8,
+     "tol": 0.8,
+     "lo": 7.2,
+     "hi": 8.79
+    },
+    {
+     "nominal": 10,
+     "tol": 1,
+     "lo": 9,
+     "hi": 10.99
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.257490+00:00",
+   "updated_at": "2026-09-17T02:45:57.393882+00:00",
+   "finished_at": "2026-09-17T02:45:57.035672+00:00"
+  },
+  {
+   "id": "V_RS",
+   "name": "Rainbow Sherbet",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "retest",
+   "tol": {
+    "16": 1.6
+   },
+   "ranges": [
+    {
+     "nominal": 16,
+     "tol": 1.6,
+     "lo": 14.4,
+     "hi": 17.59
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.286408+00:00",
+   "updated_at": "2026-09-17T02:50:46.229462+00:00",
+   "finished_at": "2026-09-17T02:50:45.807449+00:00"
+  },
+  {
+   "id": "V_SC",
+   "name": "Strawberry Cupcakes",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "22": 2.2
+   },
+   "ranges": [
+    {
+     "nominal": 22,
+     "tol": 2.2,
+     "lo": 19.8,
+     "hi": 24.19
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.260767+00:00",
+   "updated_at": "2026-09-17T02:47:14.410746+00:00",
+   "finished_at": "2026-09-17T02:47:14.046291+00:00"
+  },
+  {
+   "id": "V_SCB",
+   "name": "Soft Citrus Bloom",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "retest",
+   "tol": {
+    "10": 1
+   },
+   "ranges": [
+    {
+     "nominal": 10,
+     "tol": 1,
+     "lo": 9,
+     "hi": 10.99
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.283844+00:00",
+   "updated_at": "2026-09-17T02:49:47.513562+00:00",
+   "finished_at": "2026-09-17T02:49:47.143529+00:00"
+  },
+  {
+   "id": "V_SCR",
+   "name": "Scrambler",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "18": 1.8,
+    "22": 2.2
+   },
+   "ranges": [
+    {
+     "nominal": 18,
+     "tol": 1.8,
+     "lo": 16.2,
+     "hi": 19.79
+    },
+    {
+     "nominal": 22,
+     "tol": 2.2,
+     "lo": 19.8,
+     "hi": 24.19
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.240147+00:00",
+   "updated_at": "2026-09-16T06:16:22.265899+00:00",
+   "finished_at": "2026-09-16T06:16:21.908333+00:00"
+  },
+  {
+   "id": "V_SJ",
+   "name": "Sleepy Joe",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "10": 1
+   },
+   "ranges": [
+    {
+     "nominal": 10,
+     "tol": 1,
+     "lo": 9,
+     "hi": 10.99
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.289549+00:00",
+   "updated_at": "2026-09-17T02:50:56.597449+00:00",
+   "finished_at": "2026-09-17T02:50:56.181643+00:00"
+  },
+  {
+   "id": "V_ST",
+   "name": "Shark Tank",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "10": 1
+   },
+   "ranges": [
+    {
+     "nominal": 10,
+     "tol": 1,
+     "lo": 9,
+     "hi": 10.99
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.250340+00:00",
+   "updated_at": "2026-09-17T02:44:54.658368+00:00",
+   "finished_at": "2026-09-17T02:44:54.285675+00:00"
+  },
+  {
+   "id": "V_SUN",
+   "name": "Sunset Sherbet",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "retest",
+   "tol": {
+    "22": 1.81,
+    "26": 2.19
+   },
+   "ranges": [
+    {
+     "nominal": 22,
+     "tol": 1.81,
+     "lo": 20.19,
+     "hi": 23.8
+    },
+    {
+     "nominal": 26,
+     "tol": 2.19,
+     "lo": 23.81,
+     "hi": 28.18
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.179207+00:00",
+   "updated_at": "2026-09-16T07:01:15.936250+00:00",
+   "finished_at": "2026-09-16T07:01:15.583048+00:00"
+  },
+  {
+   "id": "V_TC",
+   "name": "Tropic Cake",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "initial",
+   "tol": {
+    "26": 2.6
+   },
+   "ranges": [
+    {
+     "nominal": 26,
+     "tol": 2.6,
+     "lo": 23.4,
+     "hi": 28.59
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.295335+00:00",
+   "updated_at": "2026-09-17T02:51:15.343758+00:00",
+   "finished_at": "2026-09-17T02:51:14.951414+00:00"
+  },
+  {
+   "id": "V_TQ",
+   "name": "Tangie Queen",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "latest",
+   "tol": {
+    "18": 1.8
+   },
+   "ranges": [
+    {
+     "nominal": 18,
+     "tol": 1.8,
+     "lo": 16.2,
+     "hi": 19.79
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.228225+00:00",
+   "updated_at": "2026-09-16T02:43:32.572061+00:00",
+   "finished_at": "2026-09-16T02:43:32.217379+00:00"
+  },
+  {
+   "id": "V_VG",
+   "name": "Vanilla Grapes",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "retest",
+   "tol": {
+    "15": 1.2,
+    "18": 1.8,
+    "26": 2.13,
+    "30": 1.87
+   },
+   "ranges": [
+    {
+     "nominal": 15,
+     "tol": 1.2,
+     "lo": 13.8,
+     "hi": 16.19
+    },
+    {
+     "nominal": 18,
+     "tol": 1.8,
+     "lo": 16.2,
+     "hi": 19.79
+    },
+    {
+     "nominal": 26,
+     "tol": 2.13,
+     "lo": 23.87,
+     "hi": 28.12
+    },
+    {
+     "nominal": 30,
+     "tol": 1.87,
+     "lo": 28.13,
+     "hi": 31.86
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.201045+00:00",
+   "updated_at": "2026-09-17T02:36:54.790235+00:00",
+   "finished_at": "2026-09-17T02:36:54.407952+00:00"
+  },
+  {
+   "id": "V_WC",
+   "name": "Wedding Crusher",
+   "custom": false,
+   "versa": true,
+   "status": "finished",
+   "view": "retest",
+   "tol": {
+    "24": 2.4
+   },
+   "ranges": [
+    {
+     "nominal": 24,
+     "tol": 2.4,
+     "lo": 21.6,
+     "hi": 26.39
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-14T07:16:29.274402+00:00",
+   "updated_at": "2026-09-17T02:48:24.098007+00:00",
+   "finished_at": "2026-09-17T02:48:23.725518+00:00"
+  },
+  {
+   "id": "WC",
+   "name": "Wedding Crusher",
+   "custom": false,
+   "versa": false,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "22": 1.4,
+    "26": 2.6
+   },
+   "ranges": [
+    {
+     "nominal": 22,
+     "tol": 1.4,
+     "lo": 20.6,
+     "hi": 23.39
+    },
+    {
+     "nominal": 26,
+     "tol": 2.6,
+     "lo": 23.4,
+     "hi": 28.59
+    }
+   ],
+   "results_entered": [],
+   "results_excluded": [],
+   "created_at": "2026-09-11T15:46:41.195187+00:00",
+   "updated_at": "2026-09-15T10:50:57.301734+00:00",
+   "finished_at": "2026-09-15T10:50:56.925284+00:00"
+  },
+  {
+   "id": "WED",
+   "name": "Wedding Cake",
+   "custom": false,
+   "versa": false,
+   "status": "finished",
+   "view": "all",
+   "tol": {
+    "22": 1.4,
+    "26": 2.6
+   },
+   "ranges": [
+    {
+     "nominal": 22,
+     "tol": 1.4,
+     "lo": 20.6,
+     "hi": 23.39
+    },
+    {
+     "nominal": 26,
+     "tol": 2.6,
+     "lo": 23.4,
+     "hi": 28.59
+    }
+   ],
+   "results_entered": [
+    25.15,
+    22.05
+   ],
+   "results_excluded": [],
+   "created_at": "2026-09-15T12:04:58.826028+00:00",
+   "updated_at": "2026-09-26T17:34:59.140679+00:00",
+   "finished_at": "2026-09-26T17:34:58.793759+00:00"
+  }
+ ],
+ "data": [
+  [
+   "AB",
+   "Apple and Banana",
+   [
+    [
+     16.93,
+     "AB092501",
+     "ППК26005",
+     {
+      "k": "initial",
+      "p": "P060052",
+      "d": "2026-01-21",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "CAYN AB 22/1",
+      "vp": "P060052",
+      "vn": "Appels & Bananas",
+      "tr": 3
+     }
+    ],
+    [
+     22.97,
+     "AB092501",
+     "227-30-K-26",
+     {
+      "k": "retest",
+      "p": "P060052",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "CAYN AB 22/1",
+      "vp": "P060052",
+      "vn": "Appels & Bananas",
+      "tr": 3
+     }
+    ]
+   ],
+   [
+    [
+     18.0,
+     1.8
+    ],
+    [
+     22.0,
+     2.2
+    ]
+   ],
+   [
+    [
+     "CAYN AB 22/1",
+     22,
+     3,
+     "AB092501",
+     "P060052",
+     22.97,
+     "Appels & Bananas"
+    ]
+   ]
+  ],
+  [
+   "ACC",
+   "Amnesia Core Cut",
+   [
+    [
+     12.09,
+     "ACC102501",
+     "220-1-K-26",
+     {
+      "k": "initial",
+      "p": "P060122",
+      "d": "2026-08-25",
+      "lab": "FHM-K",
+      "sq": 1,
+      "code": "STEADY Amnesia Core 12/1",
+      "vp": "P060122",
+      "vn": "Amnesia Core CUT",
+      "tr": 2
+     }
+    ]
+   ],
+   [
+    [
+     12.0,
+     0.95
+    ]
+   ],
+   [
+    [
+     "STEADY Amnesia Core 12/1",
+     12,
+     2,
+     "ACC102501",
+     "P060122",
+     12.09,
+     "Amnesia Core CUT"
+    ]
+   ]
+  ],
+  [
+   "BG",
+   "Blue Gelato",
+   [
+    [
+     21.8,
+     "BG1024",
+     "ППК25050",
+     {
+      "k": "initial",
+      "d": "2025-02-26",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "STEADY BG 26/1",
+      "vp": "BG1024",
+      "vn": "Blue Gelato",
+      "tr": 1
+     }
+    ],
+    [
+     26.14,
+     "BG1024",
+     "197-1-K-26",
+     {
+      "k": "retest",
+      "d": "2026-08-07",
+      "lab": "FHM-K",
+      "sq": 2,
+      "reg": 1,
+      "code": "STEADY BG 26/1",
+      "vp": "BG1024",
+      "vn": "Blue Gelato",
+      "tr": 1
+     }
+    ]
+   ],
+   [
+    [
+     22.0,
+     2.2
+    ],
+    [
+     26.0,
+     1.8
+    ]
+   ],
+   [
+    [
+     "STEADY BG 26/1",
+     26,
+     1,
+     "BG1024",
+     "BG1024",
+     26.14,
+     "Blue Gelato"
+    ]
+   ]
+  ],
+  [
+   "BSS",
+   "Blue Sunset Sherbet",
+   [
+    [
+     20.39,
+     "BSS052501",
+     "iCoA (at issue)",
+     {
+      "k": "initial",
+      "p": "P050192",
+      "d": "2025-10-10",
+      "lab": "PP",
+      "sq": 1,
+      "reg": 1,
+      "cr": 0,
+      "code": "STEADY SUN 20/1",
+      "vp": "P050192",
+      "vn": "Sunset Sherbet",
+      "tr": 2
+     }
+    ],
+    [
+     20.39,
+     "BSS052501",
+     "NGP-QCG-SOP-024 F3",
+     {
+      "k": "retest",
+      "p": "P050192",
+      "d": "2025-11-28",
+      "lab": "NGP",
+      "sq": 2,
+      "code": "STEADY SUN 20/1",
+      "vp": "P050192",
+      "vn": "Sunset Sherbet",
+      "tr": 2
+     }
+    ],
+    [
+     20.52,
+     "BSS052501",
+     "220-2-K-26",
+     {
+      "k": "retest",
+      "p": "P050192",
+      "d": "2026-08-25",
+      "lab": "FHM-K",
+      "sq": 3,
+      "code": "STEADY SUN 20/1",
+      "vp": "P050192",
+      "vn": "Sunset Sherbet",
+      "tr": 2
+     }
+    ],
+    [
+     21.03,
+     "BSS1024",
+     "ППК25051",
+     {
+      "k": "initial",
+      "d": "2025-02-26",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "STEADY SUN 24/1",
+      "vp": "BSS1024",
+      "vn": "Sunset Sherbet",
+      "tr": 1
+     }
+    ],
+    [
+     23.42,
+     "BSS1024_01/1",
+     "ППК25176",
+     {
+      "k": "initial",
+      "p": "P050122",
+      "d": "2025-07-10",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "STEADY SUN 26/1",
+      "vp": "P050122",
+      "vn": "Sunset Sherbet",
+      "tr": 3
+     }
+    ],
+    [
+     25.01,
+     "BSS1024",
+     "197-2-K-26",
+     {
+      "k": "retest",
+      "d": "2026-08-07",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "STEADY SUN 24/1",
+      "vp": "BSS1024",
+      "vn": "Sunset Sherbet",
+      "tr": 1
+     }
+    ],
+    [
+     26.1,
+     "BSS1024_01/1",
+     "227-29-K-26",
+     {
+      "k": "retest",
+      "p": "P050122",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "STEADY SUN 26/1",
+      "vp": "P050122",
+      "vn": "Sunset Sherbet",
+      "tr": 3
+     }
+    ],
+    [
+     26.69,
+     "BSS1024_01/2",
+     "227-1-K-26",
+     {
+      "k": "initial",
+      "p": "P050142",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 1
+     }
+    ]
+   ],
+   [
+    [
+     20.0,
+     1.89
+    ],
+    [
+     24.0,
+     2.11
+    ],
+    [
+     28.0,
+     1.93
+    ]
+   ],
+   [
+    [
+     "STEADY SUN 24/1",
+     24,
+     1,
+     "BSS1024",
+     "BSS1024",
+     25.01,
+     "Sunset Sherbet"
+    ],
+    [
+     "STEADY SUN 20/1",
+     20,
+     2,
+     "BSS052501",
+     "P050192",
+     20.52,
+     "Sunset Sherbet"
+    ],
+    [
+     "STEADY SUN 26/1",
+     26,
+     3,
+     "BSS1024_01/1",
+     "P050122",
+     26.1,
+     "Sunset Sherbet"
+    ]
+   ]
+  ],
+  [
+   "CC",
+   "Cash Cow",
+   [
+    [
+     13.35,
+     "CC112501",
+     "ППК26068",
+     {
+      "k": "initial",
+      "p": "P060272",
+      "d": "2026-05-11",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "STEADY PDY 16/1",
+      "vp": "P060272",
+      "vn": "Payday",
+      "tr": 3
+     }
+    ],
+    [
+     14.76,
+     "CC012603",
+     "220-29-K-26",
+     {
+      "k": "initial",
+      "p": "P060372",
+      "d": "2026-08-26",
+      "lab": "FHM-K",
+      "sq": 1,
+      "code": "STEADY PDY 14/1",
+      "vp": "P060372",
+      "vn": "Payday",
+      "tr": 2
+     }
+    ],
+    [
+     14.9,
+     "CC042601",
+     "220-32-K-26",
+     {
+      "k": "initial",
+      "d": "2026-08-26",
+      "lab": "FHM-K",
+      "sq": 1
+     }
+    ],
+    [
+     16.36,
+     "CC112501",
+     "227-25-K-26",
+     {
+      "k": "retest",
+      "p": "P060272",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "STEADY PDY 16/1",
+      "vp": "P060272",
+      "vn": "Payday",
+      "tr": 3
+     }
+    ],
+    [
+     17.67,
+     "CC012601/1",
+     "197-6-K-26",
+     {
+      "k": "initial",
+      "p": "P060332",
+      "d": "2026-08-07",
+      "lab": "FHM-K",
+      "sq": 1,
+      "reg": 1
+     }
+    ]
+   ],
+   [
+    [
+     14.0,
+     1.35
+    ],
+    [
+     17.0,
+     1.65
+    ]
+   ],
+   [
+    [
+     "STEADY PDY 14/1",
+     14,
+     2,
+     "CC012603",
+     "P060372",
+     14.76,
+     "Payday"
+    ],
+    [
+     "STEADY PDY 16/1",
+     16,
+     3,
+     "CC112501",
+     "P060272",
+     16.36,
+     "Payday"
+    ]
+   ]
+  ],
+  [
+   "CF",
+   "Chem Flyer",
+   [
+    [
+     9.55,
+     "CF102501",
+     "220-6-K-26",
+     {
+      "k": "initial",
+      "p": "P060132",
+      "d": "2026-08-25",
+      "lab": "FHM-K",
+      "sq": 1,
+      "code": "STEADY ST 10/1",
+      "vp": "P060132",
+      "vn": "Shark Tank",
+      "tr": 2
+     }
+    ]
+   ],
+   [
+    [
+     10.0,
+     1.0
+    ]
+   ],
+   [
+    [
+     "STEADY ST 10/1",
+     10,
+     2,
+     "CF102501",
+     "P060132",
+     9.55,
+     "Shark Tank"
+    ]
+   ]
+  ],
+  [
+   "CJ",
+   "Cap Junky",
+   [
+    [
+     14.93,
+     "CJ052501/02",
+     "ППК25281",
+     {
+      "k": "initial",
+      "p": "P050172",
+      "d": "2025-09-17",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "STEADY OGB 22/1",
+      "vp": "P050172",
+      "vn": "OG Banana's",
+      "tr": 3
+     }
+    ],
+    [
+     16.56,
+     "CJ062501/2",
+     "ППК25322",
+     {
+      "k": "initial",
+      "p": "P050212",
+      "d": "2025-10-23",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "STEADY OGB 18/1",
+      "vp": "P050212",
+      "vn": "OG Banana's",
+      "tr": 1
+     }
+    ],
+    [
+     18.29,
+     "CJ082501/2",
+     "197-5-K-26",
+     {
+      "k": "retest",
+      "p": "P060032",
+      "d": "2026-08-07",
+      "lab": "FHM-K",
+      "sq": 2,
+      "reg": 1,
+      "code": "CAYN CK 18/1",
+      "vp": "P060032",
+      "vn": "Cookie Kush",
+      "tr": 1
+     }
+    ],
+    [
+     18.91,
+     "CJ062501/2",
+     "197-4-K-26",
+     {
+      "k": "retest",
+      "p": "P050212",
+      "d": "2026-08-07",
+      "lab": "FHM-K",
+      "sq": 2,
+      "reg": 1,
+      "code": "STEADY OGB 18/1",
+      "vp": "P050212",
+      "vn": "OG Banana's",
+      "tr": 1
+     }
+    ],
+    [
+     20.29,
+     "CJ052501/01",
+     "ППК25280",
+     {
+      "k": "initial",
+      "p": "P050162",
+      "d": "2025-09-17",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "CAYN CK 24/1",
+      "vp": "P050162",
+      "vn": "Cookie Kush",
+      "tr": 1
+     }
+    ],
+    [
+     20.84,
+     "CJ082501/2",
+     "ППК26003",
+     {
+      "k": "initial",
+      "p": "P060032",
+      "d": "2026-01-21",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "CAYN CK 18/1",
+      "vp": "P060032",
+      "vn": "Cookie Kush",
+      "tr": 1
+     }
+    ],
+    [
+     21.3,
+     "CJ052501/02",
+     "227-28-K-26",
+     {
+      "k": "retest",
+      "p": "P050172",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "STEADY OGB 22/1",
+      "vp": "P050172",
+      "vn": "OG Banana's",
+      "tr": 3
+     }
+    ],
+    [
+     21.51,
+     "CJ062501/1",
+     "ППК25321",
+     {
+      "k": "initial",
+      "p": "P050222",
+      "d": "2025-10-23",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "STEADY OGB 24/1",
+      "vp": "P050222",
+      "vn": "OG Banana's",
+      "tr": 2
+     }
+    ],
+    [
+     22.3,
+     "CJ092501",
+     "ППК26007",
+     {
+      "k": "initial",
+      "p": "P060072",
+      "d": "2026-01-21",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "CAYN CK 26/1",
+      "vp": "P060072",
+      "vn": "Cookie Kush",
+      "tr": 2
+     }
+    ],
+    [
+     23.0,
+     "CJ1024",
+     "ППК25052",
+     {
+      "k": "initial",
+      "d": "2025-02-26",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "CAYN CK 28/1",
+      "vp": "CJ1024",
+      "vn": "Cookie Kush",
+      "tr": 3
+     }
+    ],
+    [
+     23.7,
+     "CJ072501",
+     "ППК25367",
+     {
+      "k": "initial",
+      "p": "P050252",
+      "d": "2025-11-28",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "CAYN CK 28/1",
+      "vp": "P050252",
+      "vn": "Cookie Kush",
+      "tr": 3
+     }
+    ],
+    [
+     24.05,
+     "CJ052501/01",
+     "197-3-K-26",
+     {
+      "k": "retest",
+      "p": "P050162",
+      "d": "2026-08-07",
+      "lab": "FHM-K",
+      "sq": 2,
+      "reg": 1,
+      "code": "CAYN CK 24/1",
+      "vp": "P050162",
+      "vn": "Cookie Kush",
+      "tr": 1
+     }
+    ],
+    [
+     24.8,
+     "CJ062501/1",
+     "220-3-K-26",
+     {
+      "k": "retest",
+      "p": "P050222",
+      "d": "2026-08-25",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "STEADY OGB 24/1",
+      "vp": "P050222",
+      "vn": "OG Banana's",
+      "tr": 2
+     }
+    ],
+    [
+     24.96,
+     "CJ082501/1",
+     "ППК26002",
+     {
+      "k": "initial",
+      "p": "P060022",
+      "d": "2026-01-21",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "CAYN CK 28/1",
+      "vp": "P060022",
+      "vn": "Cookie Kush",
+      "tr": 2
+     }
+    ],
+    [
+     25.65,
+     "CJ092501",
+     "220-5-K-26",
+     {
+      "k": "retest",
+      "p": "P060072",
+      "d": "2026-08-25",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "CAYN CK 26/1",
+      "vp": "P060072",
+      "vn": "Cookie Kush",
+      "tr": 2
+     }
+    ],
+    [
+     28.12,
+     "CJ1024",
+     "227-26-K-26",
+     {
+      "k": "retest",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "CAYN CK 28/1",
+      "vp": "CJ1024",
+      "vn": "Cookie Kush",
+      "tr": 3
+     }
+    ],
+    [
+     28.18,
+     "CJ072501",
+     "227-27-K-26",
+     {
+      "k": "retest",
+      "p": "P050252",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "CAYN CK 28/1",
+      "vp": "P050252",
+      "vn": "Cookie Kush",
+      "tr": 3
+     }
+    ],
+    [
+     28.34,
+     "CJ082501/1",
+     "220-4-K-26",
+     {
+      "k": "retest",
+      "p": "P060022",
+      "d": "2026-08-25",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "CAYN CK 28/1",
+      "vp": "P060022",
+      "vn": "Cookie Kush",
+      "tr": 2
+     }
+    ]
+   ],
+   [
+    [
+     14.0,
+     1.4
+    ],
+    [
+     17.0,
+     1.4
+    ],
+    [
+     20.0,
+     1.6
+    ],
+    [
+     24.0,
+     2.4
+    ],
+    [
+     28.0,
+     1.6
+    ]
+   ],
+   [
+    [
+     "CAYN CK 24/1",
+     24,
+     1,
+     "CJ052501/01",
+     "P050162",
+     24.05,
+     "Cookie Kush"
+    ],
+    [
+     "STEADY OGB 18/1",
+     18,
+     1,
+     "CJ062501/2",
+     "P050212",
+     18.91,
+     "OG Banana's"
+    ],
+    [
+     "CAYN CK 18/1",
+     18,
+     1,
+     "CJ082501/2",
+     "P060032",
+     18.29,
+     "Cookie Kush"
+    ],
+    [
+     "STEADY OGB 24/1",
+     24,
+     2,
+     "CJ062501/1",
+     "P050222",
+     24.8,
+     "OG Banana's"
+    ],
+    [
+     "CAYN CK 28/1",
+     28,
+     2,
+     "CJ082501/1",
+     "P060022",
+     28.34,
+     "Cookie Kush"
+    ],
+    [
+     "CAYN CK 26/1",
+     26,
+     2,
+     "CJ092501",
+     "P060072",
+     25.65,
+     "Cookie Kush"
+    ],
+    [
+     "STEADY OGB 22/1",
+     22,
+     3,
+     "CJ052501/02",
+     "P050172",
+     21.3,
+     "OG Banana's"
+    ],
+    [
+     "CAYN CK 28/1",
+     28,
+     3,
+     "CJ072501",
+     "P050252",
+     28.18,
+     "Cookie Kush"
+    ],
+    [
+     "CAYN CK 28/1",
+     28,
+     3,
+     "CJ1024",
+     "CJ1024",
+     28.12,
+     "Cookie Kush"
+    ]
+   ]
+  ],
+  [
+   "CLE",
+   "Clemosa A Bud",
+   [
+    [
+     8.02,
+     "CLE072501",
+     "ППК25370",
+     {
+      "k": "initial",
+      "p": "P050282",
+      "d": "2025-11-28",
+      "lab": "CNP",
+      "sq": 1
+     }
+    ],
+    [
+     8.65,
+     "CLE072501",
+     "220-7-K-26",
+     {
+      "k": "retest",
+      "p": "P050282",
+      "d": "2026-08-25",
+      "lab": "FHM-K",
+      "sq": 2
+     }
+    ]
+   ],
+   [
+    [
+     8.0,
+     0.8
+    ]
+   ],
+   []
+  ],
+  [
+   "FB",
+   "Fat Bastard",
+   [
+    [
+     12.39,
+     "FB032601",
+     "ППК26127",
+     {
+      "k": "initial",
+      "p": "P060452",
+      "d": "2026-07-21",
+      "lab": "CNP",
+      "sq": 1
+     }
+    ],
+    [
+     14.68,
+     "FB012601_1",
+     "ППК26067",
+     {
+      "k": "initial",
+      "p": "P060322",
+      "d": "2026-05-11",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "CAYN DW 18/1",
+      "vp": "P060322",
+      "vn": "Daywalker",
+      "tr": 2
+     }
+    ],
+    [
+     14.99,
+     "FB042601",
+     "220-31-K-26",
+     {
+      "k": "initial",
+      "d": "2026-08-26",
+      "lab": "FHM-K",
+      "sq": 1
+     }
+    ],
+    [
+     16.69,
+     "FB112501",
+     "ППК26066",
+     {
+      "k": "initial",
+      "p": "P060292",
+      "d": "2026-05-11",
+      "lab": "CNP",
+      "sq": 1
+     }
+    ],
+    [
+     17.99,
+     "FB012601_1",
+     "220-8-K-26",
+     {
+      "k": "retest",
+      "p": "P060322",
+      "d": "2026-08-25",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "CAYN DW 18/1",
+      "vp": "P060322",
+      "vn": "Daywalker",
+      "tr": 2
+     }
+    ],
+    [
+     18.29,
+     "FB012603V",
+     "ППК26110",
+     {
+      "k": "initial",
+      "p": "P060392",
+      "d": "2026-06-30",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "CAYN DW 20/1",
+      "vp": "P060392",
+      "vn": "Daywalker",
+      "tr": 3
+     }
+    ],
+    [
+     18.75,
+     "FB112501",
+     "227-22-K-26",
+     {
+      "k": "retest",
+      "p": "P060292",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 2
+     }
+    ],
+    [
+     18.86,
+     "FB012602",
+     "197-7-K-26",
+     {
+      "k": "initial",
+      "p": "P060352",
+      "d": "2026-08-07",
+      "lab": "FHM-K",
+      "sq": 1,
+      "reg": 1,
+      "code": "CAYN FS 18/1",
+      "vp": "P060352",
+      "vn": "Fat Sofa",
+      "tr": 1
+     }
+    ],
+    [
+     19.31,
+     "FB012603V",
+     "227-23-K-26",
+     {
+      "k": "retest",
+      "p": "P060392",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "CAYN DW 20/1",
+      "vp": "P060392",
+      "vn": "Daywalker",
+      "tr": 3
+     }
+    ],
+    [
+     20.0,
+     "FB012603",
+     "227-24-K-26",
+     {
+      "k": "retest",
+      "p": "P060432",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "CAYN DW 20/1",
+      "vp": "P060432",
+      "vn": "Daywalker",
+      "tr": 3
+     }
+    ],
+    [
+     20.83,
+     "FB012603",
+     "ППК26112",
+     {
+      "k": "initial",
+      "p": "P060432",
+      "d": "2026-06-30",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "CAYN DW 20/1",
+      "vp": "P060432",
+      "vn": "Daywalker",
+      "tr": 3
+     }
+    ]
+   ],
+   [
+    [
+     12.0,
+     1.2
+    ],
+    [
+     15.0,
+     1.2
+    ],
+    [
+     18.0,
+     1.8
+    ],
+    [
+     22.0,
+     2.2
+    ]
+   ],
+   [
+    [
+     "CAYN FS 18/1",
+     18,
+     1,
+     "FB012602",
+     "P060352",
+     18.86,
+     "Fat Sofa"
+    ],
+    [
+     "CAYN DW 18/1",
+     18,
+     2,
+     "FB012601/1",
+     "P060322",
+     17.99,
+     "Daywalker"
+    ],
+    [
+     "CAYN DW 20/1",
+     20,
+     3,
+     "FB012603",
+     "P060432",
+     20.0,
+     "Daywalker"
+    ],
+    [
+     "CAYN DW 20/1",
+     20,
+     3,
+     "FB012603V",
+     "P060392",
+     19.31,
+     "Daywalker"
+    ]
+   ]
+  ],
+  [
+   "GG",
+   "Gorilla Glue",
+   [
+    [
+     15.35,
+     "GG012601＊",
+     "ППК26062",
+     {
+      "k": "initial",
+      "p": "P060302",
+      "d": "2026-05-11",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "STEADY GG4 20/1",
+      "vp": "P060302",
+      "vn": "GG4",
+      "tr": 3
+     }
+    ],
+    [
+     15.51,
+     "GG1024",
+     "220-9-K-26",
+     {
+      "k": "initial",
+      "d": "2026-08-25",
+      "lab": "FHM-K",
+      "sq": 1,
+      "code": "STEADY GG 16/1",
+      "vp": "GG1024",
+      "vn": "Gorilla Gang",
+      "tr": 2
+     }
+    ],
+    [
+     15.95,
+     "GG1024_02",
+     "ППК25140",
+     {
+      "k": "initial",
+      "p": "P050012",
+      "d": "2025-05-22",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "STEADY GG 18/1",
+      "vp": "P050012",
+      "vn": "Gorilla Gang",
+      "tr": 3
+     }
+    ],
+    [
+     16.7,
+     "GG012603",
+     "197-8-K-26",
+     {
+      "k": "retest",
+      "p": "P060402",
+      "d": "2026-08-07",
+      "lab": "FHM-K",
+      "sq": 2,
+      "reg": 1,
+      "code": "STEADY GG4 16/1",
+      "vp": "P060402",
+      "vn": "GG4",
+      "tr": 1
+     }
+    ],
+    [
+     17.22,
+     "GG1024_01",
+     "ППК25104",
+     {
+      "k": "initial",
+      "p": "P050092",
+      "d": "2025-04-17",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "STEADY GG 18/1",
+      "vp": "P050092",
+      "vn": "Gorilla Gang",
+      "tr": 1
+     }
+    ],
+    [
+     17.59,
+     "GG012603",
+     "ППК26114",
+     {
+      "k": "initial",
+      "p": "P060402",
+      "d": "2026-06-30",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "STEADY GG4 16/1",
+      "vp": "P060402",
+      "vn": "GG4",
+      "tr": 1
+     }
+    ],
+    [
+     17.76,
+     "GG1024_02",
+     "227-19-K-26",
+     {
+      "k": "retest",
+      "p": "P050012",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "STEADY GG 18/1",
+      "vp": "P050012",
+      "vn": "Gorilla Gang",
+      "tr": 3
+     }
+    ],
+    [
+     17.94,
+     "GG112501",
+     "ППК26061",
+     {
+      "k": "initial",
+      "p": "P060252",
+      "d": "2026-05-11",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "CAYN CC 18/1",
+      "vp": "P060252",
+      "vn": "Cherry Chocolate",
+      "tr": 3
+     }
+    ],
+    [
+     18.64,
+     "GG112501",
+     "227-20-K-26",
+     {
+      "k": "retest",
+      "p": "P060252",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "CAYN CC 18/1",
+      "vp": "P060252",
+      "vn": "Cherry Chocolate",
+      "tr": 3
+     }
+    ],
+    [
+     18.67,
+     "GG1024_01",
+     "197-9-K-26",
+     {
+      "k": "retest",
+      "p": "P050092",
+      "d": "2026-08-07",
+      "lab": "FHM-K",
+      "sq": 2,
+      "reg": 1,
+      "code": "STEADY GG 18/1",
+      "vp": "P050092",
+      "vn": "Gorilla Gang",
+      "tr": 1
+     }
+    ],
+    [
+     18.98,
+     "GG032601",
+     "ППК26128",
+     {
+      "k": "initial",
+      "p": "P060462",
+      "d": "2026-07-21",
+      "lab": "CNP",
+      "sq": 1
+     }
+    ],
+    [
+     19.16,
+     "GG012601＊",
+     "227-21-K-26",
+     {
+      "k": "retest",
+      "p": "P060302",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "STEADY GG4 20/1",
+      "vp": "P060302",
+      "vn": "GG4",
+      "tr": 3
+     }
+    ]
+   ],
+   [
+    [
+     15.0,
+     1.23
+    ],
+    [
+     18.0,
+     1.77
+    ]
+   ],
+   [
+    [
+     "STEADY GG4 16/1",
+     16,
+     1,
+     "GG012603",
+     "P060402",
+     16.7,
+     "GG4"
+    ],
+    [
+     "STEADY GG 18/1",
+     18,
+     1,
+     "GG1024_01",
+     "P050092",
+     18.67,
+     "Gorilla Gang"
+    ],
+    [
+     "STEADY GG 16/1",
+     16,
+     2,
+     "GG1024",
+     "GG1024",
+     15.51,
+     "Gorilla Gang"
+    ],
+    [
+     "STEADY GG4 20/1",
+     20,
+     3,
+     "GG012601",
+     "P060302",
+     19.16,
+     "GG4"
+    ],
+    [
+     "CAYN CC 18/1",
+     18,
+     3,
+     "GG112501",
+     "P060252",
+     18.64,
+     "Cherry Chocolate"
+    ],
+    [
+     "STEADY GG 18/1",
+     18,
+     3,
+     "GG1024_02",
+     "P050012",
+     17.76,
+     "Gorilla Gang"
+    ]
+   ]
+  ],
+  [
+   "GP",
+   "Grape Pie",
+   [
+    [
+     13.16,
+     "GP0824_02",
+     "ППК26033",
+     {
+      "k": "stability",
+      "p": "P050022",
+      "d": "2026-03-05",
+      "lab": "CNP",
+      "cond": "6 m · 40 °C/75 % RH",
+      "code": "STEADY GP 24/1",
+      "vp": "P050022",
+      "vn": "Grape Pie",
+      "tr": 1
+     }
+    ],
+    [
+     14.83,
+     "GP082501/2",
+     "ППК25381",
+     {
+      "k": "initial",
+      "p": "P050322",
+      "d": "2025-12-12",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "CAYN VG 16/1",
+      "vp": "P050322",
+      "vn": "Vanilla Grapes",
+      "tr": 1
+     }
+    ],
+    [
+     14.99,
+     "GP0824_03",
+     "ППК26035",
+     {
+      "k": "stability",
+      "p": "P050072",
+      "d": "2026-03-05",
+      "lab": "CNP",
+      "cond": "6 m · 40 °C/75 % RH",
+      "code": "STEADY GP 28/1",
+      "vp": "P050072",
+      "vn": "Grape Pie",
+      "tr": 2
+     }
+    ],
+    [
+     15.7,
+     "GP082501/2",
+     "197-12-K-26",
+     {
+      "k": "retest",
+      "p": "P050322",
+      "d": "2026-08-07",
+      "lab": "FHM-K",
+      "sq": 2,
+      "reg": 1,
+      "code": "CAYN VG 16/1",
+      "vp": "P050322",
+      "vn": "Vanilla Grapes",
+      "tr": 1
+     }
+    ],
+    [
+     17.05,
+     "GP062501",
+     "ППК26058",
+     {
+      "k": "stability",
+      "p": "P050202",
+      "d": "2026-05-11",
+      "lab": "CNP",
+      "cond": "6 m · 40 °C/75 % RH",
+      "code": "CAYN VG 26/1",
+      "vp": "P050202",
+      "vn": "Vanilla Grapes",
+      "tr": 3
+     }
+    ],
+    [
+     18.29,
+     "GP072501/2",
+     "220-10-K-26",
+     {
+      "k": "retest",
+      "p": "P050302",
+      "d": "2026-08-25",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "CAYN VG 18/1",
+      "vp": "P050302",
+      "vn": "Vanilla Grapes",
+      "tr": 2
+     }
+    ],
+    [
+     18.52,
+     "GP052501",
+     "197-10-K-26",
+     {
+      "k": "retest",
+      "p": "P050152",
+      "d": "2026-08-07",
+      "lab": "FHM-K",
+      "sq": 2,
+      "reg": 1,
+      "code": "CAYN VG 18/1",
+      "vp": "P050152",
+      "vn": "Vanilla Grapes",
+      "tr": 1
+     }
+    ],
+    [
+     18.62,
+     "GP062501",
+     "ППК26037",
+     {
+      "k": "stability",
+      "p": "P050202",
+      "d": "2026-03-05",
+      "lab": "CNP",
+      "cond": "3 m · 40 °C/75 % RH",
+      "code": "CAYN VG 26/1",
+      "vp": "P050202",
+      "vn": "Vanilla Grapes",
+      "tr": 3
+     }
+    ],
+    [
+     18.98,
+     "GP052501",
+     "ППК25279",
+     {
+      "k": "initial",
+      "p": "P050152",
+      "d": "2025-09-19",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "CAYN VG 18/1",
+      "vp": "P050152",
+      "vn": "Vanilla Grapes",
+      "tr": 1
+     }
+    ],
+    [
+     19.81,
+     "GP072501/2",
+     "ППК25379",
+     {
+      "k": "initial",
+      "p": "P050302",
+      "d": "2025-12-12",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "CAYN VG 18/1",
+      "vp": "P050302",
+      "vn": "Vanilla Grapes",
+      "tr": 2
+     }
+    ],
+    [
+     20.79,
+     "GP0824_01",
+     "ППК25105",
+     {
+      "k": "initial",
+      "p": "P050102",
+      "d": "2025-04-17",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "THC 28/1 · no code",
+      "vp": "P050102",
+      "vn": "Vanilla Grapes"
+     }
+    ],
+    [
+     21.29,
+     "GP082501/1",
+     "ППК25380",
+     {
+      "k": "initial",
+      "p": "P050312",
+      "d": "2025-12-12",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "CAYN VG 26/1",
+      "vp": "P050312",
+      "vn": "Vanilla Grapes",
+      "tr": 2
+     }
+    ],
+    [
+     21.31,
+     "GP0824_02",
+     "ППК26032",
+     {
+      "k": "stability",
+      "p": "P050022",
+      "d": "2026-03-05",
+      "lab": "CNP",
+      "cond": "6 m · 25 °C/60 % RH",
+      "code": "STEADY GP 24/1",
+      "vp": "P050022",
+      "vn": "Grape Pie",
+      "tr": 1
+     }
+    ],
+    [
+     21.36,
+     "GP072501/1",
+     "ППК25378",
+     {
+      "k": "initial",
+      "p": "P050292",
+      "d": "2025-12-12",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "CAYN VG 26/1",
+      "vp": "P050292",
+      "vn": "Vanilla Grapes",
+      "tr": 3
+     }
+    ],
+    [
+     22.61,
+     "GP0824_02",
+     "197-11-K-26",
+     {
+      "k": "retest",
+      "p": "P050022",
+      "d": "2026-08-07",
+      "lab": "FHM-K",
+      "sq": 3,
+      "reg": 1,
+      "code": "STEADY GP 24/1",
+      "vp": "P050022",
+      "vn": "Grape Pie",
+      "tr": 1
+     }
+    ],
+    [
+     22.83,
+     "GP062501",
+     "ППК26036",
+     {
+      "k": "stability",
+      "p": "P050202",
+      "d": "2026-03-05",
+      "lab": "CNP",
+      "cond": "3 m · 25 °C/60 % RH",
+      "code": "CAYN VG 26/1",
+      "vp": "P050202",
+      "vn": "Vanilla Grapes",
+      "tr": 3
+     }
+    ],
+    [
+     23.08,
+     "GP0824_02",
+     "ППК26059",
+     {
+      "k": "stability",
+      "p": "P050022",
+      "d": "2026-05-11",
+      "lab": "CNP",
+      "cond": "9 m · 25 °C/60 % RH",
+      "code": "STEADY GP 24/1",
+      "vp": "P050022",
+      "vn": "Grape Pie",
+      "tr": 1
+     }
+    ],
+    [
+     23.19,
+     "GP0824_02",
+     "ППК25174",
+     {
+      "k": "retest",
+      "p": "P050022",
+      "d": "2025-07-10",
+      "lab": "CNP",
+      "sq": 2,
+      "code": "STEADY GP 24/1",
+      "vp": "P050022",
+      "vn": "Grape Pie",
+      "tr": 1
+     }
+    ],
+    [
+     23.79,
+     "GP0824_02",
+     "ППК25139",
+     {
+      "k": "initial",
+      "p": "P050022",
+      "d": "2025-05-22",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "STEADY GP 24/1",
+      "vp": "P050022",
+      "vn": "Grape Pie",
+      "tr": 1
+     }
+    ],
+    [
+     24.51,
+     "GP062501",
+     "ППК26057",
+     {
+      "k": "stability",
+      "p": "P050202",
+      "d": "2026-05-11",
+      "lab": "CNP",
+      "cond": "6 m · 25 °C/60 % RH",
+      "code": "CAYN VG 26/1",
+      "vp": "P050202",
+      "vn": "Vanilla Grapes",
+      "tr": 3
+     }
+    ],
+    [
+     24.62,
+     "GP0824_03",
+     "ППК26034",
+     {
+      "k": "stability",
+      "p": "P050072",
+      "d": "2026-03-05",
+      "lab": "CNP",
+      "cond": "6 m · 25 °C/60 % RH",
+      "code": "STEADY GP 28/1",
+      "vp": "P050072",
+      "vn": "Grape Pie",
+      "tr": 2
+     }
+    ],
+    [
+     24.89,
+     "GP062501",
+     "iCoA (at issue)",
+     {
+      "k": "initial",
+      "p": "P050202",
+      "d": "2025-10-30",
+      "lab": "PP",
+      "sq": 1,
+      "reg": 1,
+      "cr": 0,
+      "code": "CAYN VG 26/1",
+      "vp": "P050202",
+      "vn": "Vanilla Grapes",
+      "tr": 3
+     }
+    ],
+    [
+     24.89,
+     "GP062501",
+     "NGP-QCG-SOP-024 F3",
+     {
+      "k": "retest",
+      "p": "P050202",
+      "d": "2025-11-28",
+      "lab": "NGP",
+      "sq": 2,
+      "code": "CAYN VG 26/1",
+      "vp": "P050202",
+      "vn": "Vanilla Grapes",
+      "tr": 3
+     }
+    ],
+    [
+     25.13,
+     "GP082501/1",
+     "220-12-K-26",
+     {
+      "k": "retest",
+      "p": "P050312",
+      "d": "2026-08-25",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "CAYN VG 26/1",
+      "vp": "P050312",
+      "vn": "Vanilla Grapes",
+      "tr": 2
+     }
+    ],
+    [
+     25.24,
+     "GP092501",
+     "220-13-K-26",
+     {
+      "k": "retest",
+      "p": "P060092",
+      "d": "2026-08-25",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "STEADY GP 26/1",
+      "vp": "P060092",
+      "vn": "Grape Pie",
+      "tr": 2
+     }
+    ],
+    [
+     25.45,
+     "GP0824_03",
+     "ППК25175",
+     {
+      "k": "initial",
+      "p": "P050072",
+      "d": "2025-07-10",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "STEADY GP 28/1",
+      "vp": "P050072",
+      "vn": "Grape Pie",
+      "tr": 2
+     }
+    ],
+    [
+     25.73,
+     "GP092501",
+     "ППК26009",
+     {
+      "k": "initial",
+      "p": "P060092",
+      "d": "2026-01-21",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "STEADY GP 26/1",
+      "vp": "P060092",
+      "vn": "Grape Pie",
+      "tr": 2
+     }
+    ],
+    [
+     25.97,
+     "GP062501",
+     "227-18-K-26",
+     {
+      "k": "retest",
+      "p": "P050202",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 3,
+      "code": "CAYN VG 26/1",
+      "vp": "P050202",
+      "vn": "Vanilla Grapes",
+      "tr": 3
+     }
+    ],
+    [
+     25.98,
+     "GP0824_03",
+     "ППК26060",
+     {
+      "k": "stability",
+      "p": "P050072",
+      "d": "2026-05-11",
+      "lab": "CNP",
+      "cond": "9 m · 25 °C/60 % RH",
+      "code": "STEADY GP 28/1",
+      "vp": "P050072",
+      "vn": "Grape Pie",
+      "tr": 2
+     }
+    ],
+    [
+     26.54,
+     "GP072501/1",
+     "227-17-K-26",
+     {
+      "k": "retest",
+      "p": "P050292",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "CAYN VG 26/1",
+      "vp": "P050292",
+      "vn": "Vanilla Grapes",
+      "tr": 3
+     }
+    ],
+    [
+     28.03,
+     "GP0824_03",
+     "assay THC % on the Versa specification sheet — the latest value on record, no certificate on the tracker",
+     {
+      "k": "retest",
+      "sq": 3,
+      "nc": 1,
+      "reg": 1,
+      "code": "STEADY GP 28/1",
+      "vp": "P050072",
+      "vn": "Grape Pie",
+      "p": "P050072",
+      "tr": 2
+     }
+    ],
+    [
+     28.3,
+     "GP0824_03",
+     "220-11-K-26",
+     {
+      "k": "retest",
+      "p": "P050072",
+      "d": "2026-08-25",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "STEADY GP 28/1",
+      "vp": "P050072",
+      "vn": "Grape Pie",
+      "tr": 2
+     }
+    ],
+    [
+     28.68,
+     "GP0824_01",
+     "227-2-K-26",
+     {
+      "k": "retest",
+      "p": "P050102",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "THC 28/1 · no code",
+      "vp": "P050102",
+      "vn": "Vanilla Grapes"
+     }
+    ]
+   ],
+   [
+    [
+     16.0,
+     1.6
+    ],
+    [
+     20.0,
+     2.0
+    ],
+    [
+     24.0,
+     2.0
+    ],
+    [
+     28.0,
+     2.0
+    ]
+   ],
+   [
+    [
+     "CAYN VG 18/1",
+     18,
+     1,
+     "GP052501",
+     "P050152",
+     18.52,
+     "Vanilla Grapes"
+    ],
+    [
+     "STEADY GP 24/1",
+     24,
+     1,
+     "GP0824_02",
+     "P050022",
+     22.61,
+     "Grape Pie"
+    ],
+    [
+     "CAYN VG 16/1",
+     16,
+     1,
+     "GP082501/2",
+     "P050322",
+     15.7,
+     "Vanilla Grapes"
+    ],
+    [
+     "CAYN VG 18/1",
+     18,
+     2,
+     "GP072501/2",
+     "P050302",
+     18.29,
+     "Vanilla Grapes"
+    ],
+    [
+     "STEADY GP 28/1",
+     28,
+     2,
+     "GP0824_03",
+     "P050072",
+     28.03,
+     "Grape Pie"
+    ],
+    [
+     "CAYN VG 26/1",
+     26,
+     2,
+     "GP082501/1",
+     "P050312",
+     25.13,
+     "Vanilla Grapes"
+    ],
+    [
+     "STEADY GP 26/1",
+     26,
+     2,
+     "GP092501",
+     "P060092",
+     25.24,
+     "Grape Pie"
+    ],
+    [
+     "CAYN VG 26/1",
+     26,
+     3,
+     "GP062501",
+     "P050202",
+     25.97,
+     "Vanilla Grapes"
+    ],
+    [
+     "CAYN VG 26/1",
+     26,
+     3,
+     "GP072501/1",
+     "P050292",
+     26.54,
+     "Vanilla Grapes"
+    ],
+    [
+     "THC 28/1 · no code",
+     28,
+     0,
+     "GP0824_01",
+     "P050102",
+     28.68,
+     "Vanilla Grapes"
+    ]
+   ]
+  ],
+  [
+   "GRC",
+   "Grapes And Cream",
+   [
+    [
+     7.5,
+     "GRC102501",
+     "227-16-K-26",
+     {
+      "k": "retest",
+      "p": "P060142 / P060182",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 3
+     }
+    ],
+    [
+     9.8,
+     "GRC102501",
+     "220-14-K-26",
+     {
+      "k": "retest",
+      "p": "P060142 / P060182",
+      "d": "2026-08-25",
+      "lab": "FHM-K",
+      "sq": 2
+     }
+    ],
+    [
+     11.53,
+     "GRC102501",
+     "051-6-K-26",
+     {
+      "k": "initial",
+      "p": "P060142 / P060182",
+      "d": "2026-03-04",
+      "lab": "FHM-K",
+      "sq": 1,
+      "reg": 1
+     }
+    ]
+   ],
+   [
+    [
+     8.0,
+     0.8
+    ],
+    [
+     10.0,
+     1.0
+    ],
+    [
+     12.0,
+     1.0
+    ]
+   ],
+   [
+    [
+     "STEADY PT 10/1",
+     10,
+     2,
+     "GRC102501/2",
+     "P060182",
+     9.8,
+     "Plum Tarte"
+    ],
+    [
+     "STEADY PT 8/1",
+     8,
+     3,
+     "GRC102501/1",
+     "P060142",
+     7.5,
+     "Plum Tarte"
+    ]
+   ]
+  ],
+  [
+   "HPA",
+   "High Pro Amnesia",
+   [
+    [
+     14.97,
+     "HPA1024",
+     "iCoA (at issue)",
+     {
+      "k": "initial",
+      "d": "2025-04-11",
+      "lab": "PP",
+      "sq": 1,
+      "reg": 1,
+      "cr": 0,
+      "code": "STEADY HPA 18/1",
+      "vp": "HPA1024",
+      "vn": "High Pro Amnesia",
+      "tr": 1
+     }
+    ],
+    [
+     17.31,
+     "HPA1024",
+     "197-13-K-26",
+     {
+      "k": "retest",
+      "d": "2026-08-07",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "STEADY HPA 18/1",
+      "vp": "HPA1024",
+      "vn": "High Pro Amnesia",
+      "tr": 1
+     }
+    ],
+    [
+     19.69,
+     "HPA052501",
+     "220-15-K-26",
+     {
+      "k": "retest",
+      "p": "P050182",
+      "d": "2026-08-25",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "CAYN HD 20/1",
+      "vp": "P050182",
+      "vn": "Hazy Daze",
+      "tr": 2
+     }
+    ],
+    [
+     20.39,
+     "HPA052501",
+     "ППК25278",
+     {
+      "k": "initial",
+      "p": "P050182",
+      "d": "2025-09-19",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "CAYN HD 20/1",
+      "vp": "P050182",
+      "vn": "Hazy Daze",
+      "tr": 2
+     }
+    ],
+    [
+     21.61,
+     "HPA1024_01",
+     "197-14-K-26",
+     {
+      "k": "retest",
+      "p": "P050052",
+      "d": "2026-08-07",
+      "lab": "FHM-K",
+      "sq": 2,
+      "reg": 1,
+      "code": "CAYN HD 22/1",
+      "vp": "P050052",
+      "vn": "Hazy Daze",
+      "tr": 1
+     }
+    ],
+    [
+     22.43,
+     "HPA1024_01",
+     "ППК25155",
+     {
+      "k": "initial",
+      "p": "P050052",
+      "d": "2025-06-24",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "CAYN HD 22/1",
+      "vp": "P050052",
+      "vn": "Hazy Daze",
+      "tr": 1
+     }
+    ]
+   ],
+   [
+    [
+     15.0,
+     1.2
+    ],
+    [
+     18.0,
+     1.8
+    ],
+    [
+     22.0,
+     2.2
+    ]
+   ],
+   [
+    [
+     "STEADY HPA 18/1",
+     18,
+     1,
+     "HPA1024",
+     "HPA1024",
+     17.31,
+     "High Pro Amnesia"
+    ],
+    [
+     "CAYN HD 22/1",
+     22,
+     1,
+     "HPA1024_01",
+     "P050052",
+     21.61,
+     "Hazy Daze"
+    ],
+    [
+     "CAYN HD 20/1",
+     20,
+     2,
+     "HPA052501",
+     "P050182",
+     19.69,
+     "Hazy Daze"
+    ]
+   ]
+  ],
+  [
+   "J31",
+   "Jokerz 31",
+   [
+    [
+     17.32,
+     "J31102501",
+     "197-16-K-26",
+     {
+      "k": "retest",
+      "p": "P060152",
+      "d": "2026-08-07",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "CAYN JOZ 18/1",
+      "vp": "P060152",
+      "vn": "Jokerz 31",
+      "tr": 1
+     }
+    ],
+    [
+     19.14,
+     "J31102501",
+     "051-1-K-26",
+     {
+      "k": "initial",
+      "p": "P060152",
+      "d": "2026-03-04",
+      "lab": "FHM-K",
+      "sq": 1,
+      "reg": 1,
+      "code": "CAYN JOZ 18/1",
+      "vp": "P060152",
+      "vn": "Jokerz 31",
+      "tr": 1
+     }
+    ],
+    [
+     19.84,
+     "J31122501",
+     "100-2-K-26",
+     {
+      "k": "initial",
+      "p": "P060262",
+      "d": "2026-04-09",
+      "lab": "FHM-K",
+      "sq": 1,
+      "reg": 1,
+      "code": "CAYN JOZ 24/1",
+      "vp": "P060262",
+      "vn": "Jokerz 31",
+      "tr": 3
+     }
+    ],
+    [
+     20.21,
+     "J31112501",
+     "100-1-K-26",
+     {
+      "k": "retest",
+      "p": "P060202",
+      "d": "2026-04-09",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "STEADY Jokerz 31 24/1",
+      "vp": "P060202",
+      "vn": "Jokerz 31",
+      "tr": 3
+     }
+    ],
+    [
+     21.84,
+     "J31122501",
+     "100-3-K-26",
+     {
+      "k": "retest",
+      "p": "P060262",
+      "d": "2026-04-09",
+      "lab": "FHM-K",
+      "sq": 2,
+      "reg": 1,
+      "code": "CAYN JOZ 24/1",
+      "vp": "P060262",
+      "vn": "Jokerz 31",
+      "tr": 3
+     }
+    ],
+    [
+     23.85,
+     "J31112501",
+     "227-14-K-26",
+     {
+      "k": "retest",
+      "p": "P060202",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 3,
+      "code": "STEADY Jokerz 31 24/1",
+      "vp": "P060202",
+      "vn": "Jokerz 31",
+      "tr": 3
+     }
+    ],
+    [
+     24.48,
+     "J31122501",
+     "227-13-K-26",
+     {
+      "k": "retest",
+      "p": "P060262",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 3,
+      "code": "CAYN JOZ 24/1",
+      "vp": "P060262",
+      "vn": "Jokerz 31",
+      "tr": 3
+     }
+    ],
+    [
+     25.27,
+     "J31112501",
+     "051-5-K-26",
+     {
+      "k": "initial",
+      "p": "P060202",
+      "d": "2026-03-04",
+      "lab": "FHM-K",
+      "sq": 1,
+      "reg": 1,
+      "code": "STEADY Jokerz 31 24/1",
+      "vp": "P060202",
+      "vn": "Jokerz 31",
+      "tr": 3
+     }
+    ]
+   ],
+   [
+    [
+     18.0,
+     1.8
+    ],
+    [
+     22.0,
+     2.2
+    ],
+    [
+     26.0,
+     1.8
+    ]
+   ],
+   [
+    [
+     "CAYN JOZ 18/1",
+     18,
+     1,
+     "J31102501",
+     "P060152",
+     17.32,
+     "Jokerz 31"
+    ],
+    [
+     "STEADY Jokerz 31 24/1",
+     24,
+     3,
+     "J31112501",
+     "P060202",
+     23.85,
+     "Jokerz 31"
+    ],
+    [
+     "CAYN JOZ 24/1",
+     24,
+     3,
+     "J31122501",
+     "P060262",
+     24.48,
+     "Jokerz 31"
+    ]
+   ]
+  ],
+  [
+   "JD",
+   "Jelly Donuts",
+   [
+    [
+     14.43,
+     "JD012603",
+     "220-17-K-26",
+     {
+      "k": "retest",
+      "p": "P060362 / P060412 / P060422",
+      "d": "2026-08-26",
+      "lab": "FHM-K",
+      "sq": 4
+     }
+    ],
+    [
+     14.89,
+     "JD042601",
+     "220-30-K-26",
+     {
+      "k": "initial",
+      "p": "P060492",
+      "d": "2026-08-26",
+      "lab": "FHM-K",
+      "sq": 1
+     }
+    ],
+    [
+     15.16,
+     "JD012603",
+     "ППК26111",
+     {
+      "k": "initial",
+      "p": "P060362 / P060412 / P060422",
+      "d": "2026-06-30",
+      "lab": "CNP",
+      "sq": 1
+     }
+    ],
+    [
+     17.09,
+     "JD012603",
+     "220-18-K-26",
+     {
+      "k": "retest",
+      "p": "P060362 / P060412 / P060422",
+      "d": "2026-08-26",
+      "lab": "FHM-K",
+      "sq": 5
+     }
+    ],
+    [
+     18.16,
+     "JD012601＊",
+     "ППК26064",
+     {
+      "k": "initial",
+      "p": "P060312",
+      "d": "2026-05-11",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "CAYN JD 20/1",
+      "vp": "P060312",
+      "vn": "Jelly Donuts",
+      "tr": 3
+     }
+    ],
+    [
+     18.58,
+     "JD022601",
+     "ППК26115",
+     {
+      "k": "initial",
+      "p": "P060482",
+      "d": "2026-06-30",
+      "lab": "CNP",
+      "sq": 1
+     }
+    ],
+    [
+     19.64,
+     "JD112501",
+     "ППК26063",
+     {
+      "k": "initial",
+      "p": "P060212",
+      "d": "2026-05-11",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "CAYN JD 20/1",
+      "vp": "P060212",
+      "vn": "Jelly Donuts",
+      "tr": 1
+     }
+    ],
+    [
+     19.99,
+     "JD012601＊",
+     "227-15-K-26",
+     {
+      "k": "retest",
+      "p": "P060312",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "CAYN JD 20/1",
+      "vp": "P060312",
+      "vn": "Jelly Donuts",
+      "tr": 3
+     }
+    ],
+    [
+     20.32,
+     "JD112501",
+     "197-15-K-26",
+     {
+      "k": "retest",
+      "p": "P060212",
+      "d": "2026-08-07",
+      "lab": "FHM-K",
+      "sq": 2,
+      "reg": 1,
+      "code": "CAYN JD 20/1",
+      "vp": "P060212",
+      "vn": "Jelly Donuts",
+      "tr": 1
+     }
+    ],
+    [
+     20.54,
+     "JD012603",
+     "ППК26113",
+     {
+      "k": "retest",
+      "p": "P060362 / P060412 / P060422",
+      "d": "2026-06-30",
+      "lab": "CNP",
+      "sq": 2
+     }
+    ],
+    [
+     21.01,
+     "JD012603",
+     "220-16-K-26",
+     {
+      "k": "retest",
+      "p": "P060362 / P060412 / P060422",
+      "d": "2026-08-25",
+      "lab": "FHM-K",
+      "sq": 3
+     }
+    ]
+   ],
+   [
+    [
+     15.0,
+     1.2
+    ],
+    [
+     18.0,
+     1.8
+    ],
+    [
+     22.0,
+     2.2
+    ]
+   ],
+   [
+    [
+     "CAYN JD 20/1",
+     20,
+     1,
+     "JD112501",
+     "P060212",
+     20.32,
+     "Jelly Donuts"
+    ],
+    [
+     "STEADY SC 20/1",
+     20,
+     2,
+     "JD012603/01",
+     "P060362",
+     21.01,
+     "Strawberry Cupcakes"
+    ],
+    [
+     "CAYN JD 14/1",
+     14,
+     2,
+     "JD012603/02",
+     "P060412",
+     14.43,
+     "Jelly Donuts"
+    ],
+    [
+     "CAYN JD 16/1",
+     16,
+     2,
+     "JD012603/02V",
+     "P060422",
+     17.09,
+     "Jelly Donuts"
+    ],
+    [
+     "CAYN JD 20/1",
+     20,
+     3,
+     "JD012601",
+     "P060312",
+     19.99,
+     "Jelly Donuts"
+    ]
+   ]
+  ],
+  [
+   "KC",
+   "Kush Crasher",
+   [
+    [
+     17.04,
+     "KC102501",
+     "051-4-K-26",
+     {
+      "k": "initial",
+      "p": "P060172",
+      "d": "2026-03-04",
+      "lab": "FHM-K",
+      "sq": 1,
+      "reg": 1,
+      "code": "CAYN KC 18/1",
+      "vp": "P060172",
+      "vn": "Kush Crasher",
+      "tr": 2
+     }
+    ],
+    [
+     17.06,
+     "KC102501",
+     "220-19-K-26",
+     {
+      "k": "retest",
+      "p": "P060172",
+      "d": "2026-08-26",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "CAYN KC 18/1",
+      "vp": "P060172",
+      "vn": "Kush Crasher",
+      "tr": 2
+     }
+    ]
+   ],
+   [
+    [
+     18.0,
+     1.8
+    ]
+   ],
+   [
+    [
+     "CAYN KC 18/1",
+     18,
+     2,
+     "KC102501",
+     "P060172",
+     17.06,
+     "Kush Crasher"
+    ]
+   ]
+  ],
+  [
+   "MB",
+   "Motor Breath",
+   [
+    [
+     16.82,
+     "MB0824_05",
+     "ППК25211",
+     {
+      "k": "initial",
+      "p": "P050112",
+      "d": "2025-07-28",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "CAYN NYD 18/1",
+      "vp": "P050112",
+      "vn": "NY Diesel",
+      "tr": 2
+     }
+    ],
+    [
+     17.57,
+     "MB0824_04",
+     "227-12-K-26",
+     {
+      "k": "retest",
+      "p": "P050032",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "CAYN NYD 18/1",
+      "vp": "P050032",
+      "vn": "NY Diesel",
+      "tr": 3
+     }
+    ],
+    [
+     17.93,
+     "MB0824_05",
+     "220-20-K-26",
+     {
+      "k": "retest",
+      "p": "P050112",
+      "d": "2026-08-26",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "CAYN NYD 18/1",
+      "vp": "P050112",
+      "vn": "NY Diesel",
+      "tr": 2
+     }
+    ],
+    [
+     18.67,
+     "MB0824_04",
+     "ППК25118",
+     {
+      "k": "initial",
+      "p": "P050032",
+      "d": "2025-05-06",
+      "lab": "CNP",
+      "sq": 1,
+      "reg": 1,
+      "code": "CAYN NYD 18/1",
+      "vp": "P050032",
+      "vn": "NY Diesel",
+      "tr": 3
+     }
+    ]
+   ],
+   [
+    [
+     18.0,
+     1.8
+    ]
+   ],
+   [
+    [
+     "CAYN NYD 18/1",
+     18,
+     2,
+     "MB0824_05",
+     "P050112",
+     17.93,
+     "NY Diesel"
+    ],
+    [
+     "CAYN NYD 18/1",
+     18,
+     3,
+     "MB0824_04",
+     "P050032",
+     17.57,
+     "NY Diesel"
+    ]
+   ]
+  ],
+  [
+   "OPM",
+   "Orange Punch Mimosa",
+   [
+    [
+     7.91,
+     "OPM122501",
+     "197-19-K-26",
+     {
+      "k": "retest",
+      "p": "P060242",
+      "d": "2026-08-07",
+      "lab": "FHM-K",
+      "sq": 2,
+      "reg": 1,
+      "code": "STEADY CB 8/1",
+      "vp": "P060242",
+      "vn": "Citrus Bloom",
+      "tr": 1
+     }
+    ],
+    [
+     8.0,
+     "OPM112501",
+     "ППК26031",
+     {
+      "k": "initial",
+      "p": "P060222",
+      "d": "2026-03-05",
+      "lab": "CNP",
+      "sq": 1,
+      "reg": 1,
+      "code": "STEADY SCB 10/1",
+      "vp": "P060222",
+      "vn": "Soft Citrus Bloom",
+      "tr": 3
+     }
+    ],
+    [
+     8.09,
+     "OPM122501",
+     "100-4-K-26",
+     {
+      "k": "initial",
+      "p": "P060242",
+      "d": "2026-04-09",
+      "lab": "FHM-K",
+      "sq": 1,
+      "reg": 1,
+      "code": "STEADY CB 8/1",
+      "vp": "P060242",
+      "vn": "Citrus Bloom",
+      "tr": 1
+     }
+    ],
+    [
+     9.43,
+     "OPM092501",
+     "ППК26008",
+     {
+      "k": "initial",
+      "p": "P060042",
+      "d": "2026-01-21",
+      "lab": "CNP",
+      "sq": 1
+     }
+    ],
+    [
+     9.73,
+     "OPM112501",
+     "227-10-K-26",
+     {
+      "k": "retest",
+      "p": "P060222",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "STEADY SCB 10/1",
+      "vp": "P060222",
+      "vn": "Soft Citrus Bloom",
+      "tr": 3
+     }
+    ],
+    [
+     10.18,
+     "OPM092501",
+     "220-22-K-26",
+     {
+      "k": "retest",
+      "p": "P060042",
+      "d": "2026-08-26",
+      "lab": "FHM-K",
+      "sq": 2
+     }
+    ],
+    [
+     14.16,
+     "OPM052501",
+     "ППК25257",
+     {
+      "k": "initial",
+      "p": "P050132",
+      "d": "2025-09-05",
+      "lab": "CNP",
+      "sq": 1,
+      "reg": 1,
+      "code": "STEADY CB 18/1",
+      "vp": "P050132",
+      "vn": "Citrus Bloom",
+      "tr": 3
+     }
+    ],
+    [
+     15.38,
+     "OMP1024_01",
+     "ППК25117",
+     {
+      "k": "initial",
+      "p": "P050042",
+      "d": "2025-05-06",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "STEADY CB 18/1",
+      "vp": "P050042",
+      "vn": "Citrus Bloom",
+      "tr": 2
+     }
+    ],
+    [
+     16.55,
+     "OPM1024_03",
+     "ППК25210",
+     {
+      "k": "initial",
+      "p": "P050082",
+      "d": "2025-07-28",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "CAYN TQ 18/1",
+      "vp": "P050082",
+      "vn": "Tangie Queen",
+      "tr": 2
+     }
+    ],
+    [
+     17.83,
+     "OPM052501",
+     "227-11-K-26",
+     {
+      "k": "retest",
+      "p": "P050132",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "STEADY CB 18/1",
+      "vp": "P050132",
+      "vn": "Citrus Bloom",
+      "tr": 3
+     }
+    ],
+    [
+     18.04,
+     "OPM1024_02",
+     "197-18-K-26",
+     {
+      "k": "retest",
+      "p": "P050062",
+      "d": "2026-08-07",
+      "lab": "FHM-K",
+      "sq": 2,
+      "reg": 1,
+      "code": "CAYN TQ 18/1",
+      "vp": "P050062",
+      "vn": "Tangie Queen",
+      "tr": 1
+     }
+    ],
+    [
+     18.14,
+     "OMP1024_01",
+     "220-21-K-26",
+     {
+      "k": "retest",
+      "p": "P050042",
+      "d": "2026-08-26",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "STEADY CB 18/1",
+      "vp": "P050042",
+      "vn": "Citrus Bloom",
+      "tr": 2
+     }
+    ],
+    [
+     18.27,
+     "OPM1024_02",
+     "ППК25154",
+     {
+      "k": "initial",
+      "p": "P050062",
+      "d": "2025-06-24",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "CAYN TQ 18/1",
+      "vp": "P050062",
+      "vn": "Tangie Queen",
+      "tr": 1
+     }
+    ],
+    [
+     18.99,
+     "OMP1024_01",
+     "assay THC % on the Versa specification sheet — the latest value on record, no certificate on the tracker",
+     {
+      "k": "retest",
+      "sq": 3,
+      "nc": 1,
+      "reg": 1,
+      "code": "STEADY CB 18/1",
+      "vp": "P050042",
+      "vn": "Citrus Bloom",
+      "p": "P050042",
+      "tr": 2
+     }
+    ],
+    [
+     19.3,
+     "OPM1024_03",
+     "220-23-K-26",
+     {
+      "k": "retest",
+      "p": "P050082",
+      "d": "2026-08-26",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "CAYN TQ 18/1",
+      "vp": "P050082",
+      "vn": "Tangie Queen",
+      "tr": 2
+     }
+    ],
+    [
+     19.96,
+     "OPM1024",
+     "iCoA (at issue)",
+     {
+      "k": "initial",
+      "d": "2025-04-24",
+      "lab": "PP",
+      "sq": 1,
+      "reg": 1,
+      "cr": 0,
+      "code": "CAYN OD 22/1",
+      "vp": "OPM1024",
+      "vn": "Orange Dream",
+      "tr": 1
+     }
+    ],
+    [
+     20.03,
+     "OPM1024",
+     "197-17-K-26",
+     {
+      "k": "retest",
+      "d": "2026-08-07",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "CAYN OD 22/1",
+      "vp": "OPM1024",
+      "vn": "Orange Dream",
+      "tr": 1
+     }
+    ]
+   ],
+   [
+    [
+     8.0,
+     0.8
+    ],
+    [
+     10.0,
+     1.0
+    ],
+    [
+     14.0,
+     1.4
+    ],
+    [
+     17.0,
+     1.6
+    ],
+    [
+     20.0,
+     1.4
+    ]
+   ],
+   [
+    [
+     "CAYN OD 22/1",
+     22,
+     1,
+     "OPM1024",
+     "OPM1024",
+     20.03,
+     "Orange Dream"
+    ],
+    [
+     "CAYN TQ 18/1",
+     18,
+     1,
+     "OPM1024_02",
+     "P050062",
+     18.04,
+     "Tangie Queen"
+    ],
+    [
+     "STEADY CB 8/1",
+     8,
+     1,
+     "OPM122501",
+     "P060242",
+     7.91,
+     "Citrus Bloom"
+    ],
+    [
+     "STEADY CB 18/1",
+     18,
+     2,
+     "OMP1024_01",
+     "P050042",
+     18.99,
+     "Citrus Bloom"
+    ],
+    [
+     "CAYN TQ 18/1",
+     18,
+     2,
+     "OPM1024_03",
+     "P050082",
+     19.3,
+     "Tangie Queen"
+    ],
+    [
+     "STEADY CB 18/1",
+     18,
+     3,
+     "OPM052501",
+     "P050132",
+     17.83,
+     "Citrus Bloom"
+    ],
+    [
+     "STEADY SCB 10/1",
+     10,
+     3,
+     "OPM112501",
+     "P060222",
+     9.73,
+     "Soft Citrus Bloom"
+    ]
+   ]
+  ],
+  [
+   "PM",
+   "Permanent Marker",
+   [
+    [
+     10.01,
+     "PM072501",
+     "ППК25368",
+     {
+      "k": "initial",
+      "p": "P050272",
+      "d": "2025-11-28",
+      "lab": "CNP",
+      "sq": 1,
+      "reg": 1,
+      "code": "STEADY F1 12/1",
+      "vp": "P050272",
+      "vn": "Formula 1",
+      "tr": 3
+     }
+    ],
+    [
+     10.8,
+     "PM112501",
+     "220-24-K-26",
+     {
+      "k": "retest",
+      "p": "P060232",
+      "d": "2026-08-26",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "STEADY F1 10/1",
+      "vp": "P060232",
+      "vn": "Formula 1",
+      "tr": 2
+     }
+    ],
+    [
+     12.25,
+     "PM092501",
+     "197-20-K-26",
+     {
+      "k": "retest",
+      "p": "P060062",
+      "d": "2026-08-07",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "STEADY F1 12/1",
+      "vp": "P060062",
+      "vn": "Formula 1",
+      "tr": 1
+     }
+    ],
+    [
+     12.77,
+     "PM072501",
+     "227-9-K-26",
+     {
+      "k": "retest",
+      "p": "P050272",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "STEADY F1 12/1",
+      "vp": "P050272",
+      "vn": "Formula 1",
+      "tr": 3
+     }
+    ],
+    [
+     13.33,
+     "PM112501",
+     "ППК26030",
+     {
+      "k": "initial",
+      "p": "P060232",
+      "d": "2026-03-05",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "STEADY F1 10/1",
+      "vp": "P060232",
+      "vn": "Formula 1",
+      "tr": 2
+     }
+    ],
+    [
+     14.06,
+     "PM092501",
+     "ППК26004",
+     {
+      "k": "initial",
+      "p": "P060062",
+      "d": "2026-01-21",
+      "lab": "CNP",
+      "sq": 1,
+      "reg": 1,
+      "code": "STEADY F1 12/1",
+      "vp": "P060062",
+      "vn": "Formula 1",
+      "tr": 1
+     }
+    ]
+   ],
+   [
+    [
+     10.0,
+     1.0
+    ],
+    [
+     12.0,
+     1.0
+    ],
+    [
+     14.0,
+     1.0
+    ]
+   ],
+   [
+    [
+     "STEADY F1 12/1",
+     12,
+     1,
+     "PM092501",
+     "P060062",
+     12.25,
+     "Formula 1"
+    ],
+    [
+     "STEADY F1 10/1",
+     10,
+     2,
+     "PM112501",
+     "P060232",
+     10.79,
+     "Formula 1"
+    ],
+    [
+     "STEADY F1 12/1",
+     12,
+     3,
+     "PM072501",
+     "P050272",
+     12.77,
+     "Formula 1"
+    ]
+   ]
+  ],
+  [
+   "PUM",
+   "Pure Michigen",
+   [
+    [
+     13.95,
+     "PUM102501",
+     "220-25-K-26",
+     {
+      "k": "initial",
+      "p": "P060112",
+      "d": "2026-08-26",
+      "lab": "FHM-K",
+      "sq": 1,
+      "code": "STEADY LG 14/1",
+      "vp": "P060112",
+      "vn": "Lifeguard",
+      "tr": 2
+     }
+    ]
+   ],
+   [
+    [
+     14.0,
+     1.4
+    ]
+   ],
+   [
+    [
+     "STEADY LG 14/1",
+     14,
+     2,
+     "PUM102501",
+     "P060112",
+     13.95,
+     "Lifeguard"
+    ]
+   ]
+  ],
+  [
+   "SCR",
+   "Scrambler",
+   [
+    [
+     16.68,
+     "SCR022601",
+     "227-7-K-26",
+     {
+      "k": "retest",
+      "p": "P060442",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "STEADY RS 16/1",
+      "vp": "P060442",
+      "vn": "Rainbow Sherbet",
+      "tr": 3
+     }
+    ],
+    [
+     17.13,
+     "SCR112501",
+     "ППК26069",
+     {
+      "k": "initial",
+      "p": "P060282",
+      "d": "2026-05-11",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "CAYN SCR 18/1",
+      "vp": "P060282",
+      "vn": "Scrambler",
+      "tr": 2
+     }
+    ],
+    [
+     17.84,
+     "SCR012603",
+     "197-21-K-26",
+     {
+      "k": "initial",
+      "p": "P060382",
+      "d": "2026-08-07",
+      "lab": "FHM-K",
+      "sq": 1,
+      "reg": 1,
+      "code": "CAYN SCR 18/1",
+      "vp": "P060382",
+      "vn": "Scrambler",
+      "tr": 1
+     }
+    ],
+    [
+     19.73,
+     "SCR112501",
+     "220-26-K-26",
+     {
+      "k": "retest",
+      "p": "P060282",
+      "d": "2026-08-26",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "CAYN SCR 18/1",
+      "vp": "P060282",
+      "vn": "Scrambler",
+      "tr": 2
+     }
+    ],
+    [
+     21.92,
+     "SCR022601",
+     "ППК26116",
+     {
+      "k": "initial",
+      "p": "P060442",
+      "d": "2026-07-06",
+      "lab": "CNP",
+      "sq": 1,
+      "reg": 1,
+      "code": "STEADY RS 16/1",
+      "vp": "P060442",
+      "vn": "Rainbow Sherbet",
+      "tr": 3
+     }
+    ],
+    [
+     22.4,
+     "SCR012601",
+     "227-8-K-26",
+     {
+      "k": "initial",
+      "p": "P060342",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 1,
+      "code": "CAYN SCR 12/1",
+      "vp": "P060342",
+      "vn": "Scrambler",
+      "tr": 3
+     }
+    ]
+   ],
+   [
+    [
+     18.0,
+     1.8
+    ],
+    [
+     22.0,
+     2.2
+    ]
+   ],
+   [
+    [
+     "CAYN SCR 18/1",
+     18,
+     1,
+     "SCR012603",
+     "P060382",
+     17.84,
+     "Scrambler"
+    ],
+    [
+     "CAYN SCR 18/1",
+     18,
+     2,
+     "SCR112501",
+     "P060282",
+     19.73,
+     "Scrambler"
+    ],
+    [
+     "CAYN SCR 12/1",
+     12,
+     3,
+     "SCR012601",
+     "P060342",
+     22.4,
+     "Scrambler"
+    ],
+    [
+     "STEADY RS 16/1",
+     16,
+     3,
+     "SCR022601",
+     "P060442",
+     16.68,
+     "Rainbow Sherbet"
+    ]
+   ]
+  ],
+  [
+   "SJ",
+   "Sleepy Joe",
+   [
+    [
+     9.2,
+     "SJ112501",
+     "051-2-K-26",
+     {
+      "k": "initial",
+      "p": "P060192",
+      "d": "2026-03-04",
+      "lab": "FHM-K",
+      "sq": 1,
+      "reg": 1,
+      "code": "CAYN CAL 12/1",
+      "vp": "P060192",
+      "vn": "Calmino",
+      "tr": 3
+     }
+    ],
+    [
+     10.39,
+     "SJ0925021",
+     "220-27-K-26",
+     {
+      "k": "retest",
+      "p": "P060082",
+      "d": "2026-08-26",
+      "lab": "FHM-K",
+      "sq": 2
+     }
+    ],
+    [
+     10.61,
+     "SJ102501",
+     "227-6-K-26",
+     {
+      "k": "retest",
+      "p": "P060162",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "STEADY SJ 10/1",
+      "vp": "P060162",
+      "vn": "Sleepy Joe",
+      "tr": 3
+     }
+    ],
+    [
+     10.96,
+     "SJ0925021",
+     "ППК26006",
+     {
+      "k": "initial",
+      "p": "P060082",
+      "d": "2026-01-21",
+      "lab": "CNP",
+      "sq": 1
+     }
+    ],
+    [
+     11.2,
+     "SJ102501",
+     "051-3-K-26",
+     {
+      "k": "initial",
+      "p": "P060162",
+      "d": "2026-03-04",
+      "lab": "FHM-K",
+      "sq": 1,
+      "reg": 1,
+      "code": "STEADY SJ 10/1",
+      "vp": "P060162",
+      "vn": "Sleepy Joe",
+      "tr": 3
+     }
+    ],
+    [
+     11.27,
+     "SJ112501",
+     "227-5-K-26",
+     {
+      "k": "retest",
+      "p": "P060192",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "CAYN CAL 12/1",
+      "vp": "P060192",
+      "vn": "Calmino",
+      "tr": 3
+     }
+    ]
+   ],
+   [
+    [
+     10.0,
+     1.0
+    ],
+    [
+     12.0,
+     1.0
+    ]
+   ],
+   [
+    [
+     "STEADY SJ 10/1",
+     10,
+     3,
+     "SJ102501",
+     "P060162",
+     10.61,
+     "Sleepy Joe"
+    ],
+    [
+     "CAYN CAL 12/1",
+     12,
+     3,
+     "SJ112501",
+     "P060192",
+     11.27,
+     "Calmino"
+    ]
+   ]
+  ],
+  [
+   "WC",
+   "Wedding Crusher",
+   [
+    [
+     21.67,
+     "WC082501",
+     "ППК26001",
+     {
+      "k": "initial",
+      "p": "P060012",
+      "d": "2026-01-21",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "CAYN WC 22/1",
+      "vp": "P060012",
+      "vn": "Wedding Crusher",
+      "tr": 2
+     }
+    ],
+    [
+     22.11,
+     "WC072501",
+     "ППК25369",
+     {
+      "k": "initial",
+      "p": "P050262",
+      "d": "2025-11-28",
+      "lab": "CNP",
+      "sq": 1,
+      "code": "CAYN Wedding Crusher 26/1",
+      "vp": "P050262",
+      "vn": "Wedding Crusher",
+      "tr": 3
+     }
+    ],
+    [
+     23.48,
+     "WC082501",
+     "220-28-K-26",
+     {
+      "k": "retest",
+      "p": "P060012",
+      "d": "2026-08-26",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "CAYN WC 22/1",
+      "vp": "P060012",
+      "vn": "Wedding Crusher",
+      "tr": 2
+     }
+    ],
+    [
+     25.37,
+     "WC072501",
+     "227-3-K-26",
+     {
+      "k": "retest",
+      "p": "P050262",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 2,
+      "code": "CAYN Wedding Crusher 26/1",
+      "vp": "P050262",
+      "vn": "Wedding Crusher",
+      "tr": 3
+     }
+    ]
+   ],
+   [
+    [
+     22.0,
+     1.4
+    ],
+    [
+     26.0,
+     2.6
+    ]
+   ],
+   [
+    [
+     "CAYN WC 22/1",
+     22,
+     2,
+     "WC082501",
+     "P060012",
+     23.48,
+     "Wedding Crusher"
+    ],
+    [
+     "CAYN Wedding Crusher 26/1",
+     26,
+     3,
+     "WC072501",
+     "P050262",
+     25.37,
+     "Wedding Crusher"
+    ]
+   ]
+  ],
+  [
+   "WED",
+   "Wedding Cake",
+   [
+    [
+     25.15,
+     "WED102501",
+     "227-4-K-26",
+     {
+      "k": "initial",
+      "p": "P060102",
+      "d": "2026-09-11",
+      "lab": "FHM-K",
+      "sq": 1,
+      "code": "STEADY Tropic Cake 26/1",
+      "vp": "P060102",
+      "vn": "Tropic Cake",
+      "tr": 3
+     }
+    ]
+   ],
+   [],
+   [
+    [
+     "STEADY Tropic Cake 26/1",
+     26,
+     3,
+     "WED102501",
+     "P060102",
+     25.15,
+     "Tropic Cake"
+    ]
+   ]
+  ]
+ ]
+}
