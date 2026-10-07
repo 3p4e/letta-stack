@@ -124,12 +124,18 @@ def main():
         if r['abbr'] and r['n'] is not None and r['kind'] == 'specification' and not r['ne']:
             qa_by[r['abbr']].append(r)
 
+    # remarks QA's documents share, said once in the summary rather than on every grade
+    COMMON = (r'footer', r'TEMPLATE', r'mixes precision', r'v03', r'v\.03')
+    for r in rows:
+        r['qa_flags'] = [f for f in r['qa_flags'] if not any(re.search(c, f) for c in COMMON)]
+
     def checks(r):
         """What is wrong with a QA grade on its own terms and against the results on file."""
         out = []
         n, t, lo, hi = r['n'], r['t'], r['lo'], r['hi']
-        if n is not None and t is not None and abs(t - round(0.1 * n, 2)) > 0.005:
-            out.append('tolerance %.2f is not 10 %% of %.2f (%.2f)' % (t, n, 0.1 * n))
+        # the builder allows a tolerance up to 10 % of the nominal (solveTolerances, maxTol)
+        if n is not None and t is not None and t > round(0.1 * n, 2) + 0.005:
+            out.append('tolerance %.2f is more than 10 %% of %.2f (%.2f)' % (t, n, 0.1 * n))
         if None not in (n, t, lo) and abs(lo - (n - t)) > 0.006:
             out.append('low %.2f is not %.2f − %.2f' % (lo, n, t))
         if None not in (n, t, hi) and abs(hi - (n + t)) > 0.006 and abs(hi - (n + t - 0.01)) > 0.006:
@@ -155,7 +161,8 @@ def main():
                 diff.append('tolerance %.2f vs ours %.2f' % (r['t'], g['tol']))
             if r['lo'] is not None and abs(g['low'] - r['lo']) > 0.005:
                 diff.append('low %.2f vs ours %.2f' % (r['lo'], g['low']))
-            if r['hi'] is not None and abs(g['high'] - r['hi']) > 0.005:
+            # QA closes a range at nominal + tolerance, we at nominal + tolerance - 0.01: the same grade
+            if r['hi'] is not None and abs(g['high'] - r['hi']) > 0.005 and abs(g['high'] + 0.01 - r['hi']) > 0.005:
                 diff.append('high %.2f vs ours %.2f' % (r['hi'], g['high']))
             if r['pcode'] and re.sub(r'\s', '', r['pcode']) != re.sub(r'\s', '', g['pcode']):
                 diff.append('product code %s vs ours %s' % (r['pcode'], g['pcode']))
@@ -242,38 +249,59 @@ def write(rows, our_rows, t3_rows, strain_notes, qa):
         ws.append([ab, '\n'.join(strain_notes[ab]) or '—'])
     wb.save(STEM + '.xlsx')
 
-    spec = [r for r in rows if r['kind'] == 'specification']
-    same = [r for r in spec if r['vs_ours'] == 'same nominal, tolerance and range']
-    diff = [r for r in spec if r['ours'] and r not in same]
-    new = [r for r in spec if not r['ours']]
-    probs = [r for r in spec if r['problems']]
-    lines = ['# QA\'s proposed specifications against ours — potency grades and ranges', '',
-             'Read only: nothing of ours was changed. QA folder `1TY-W5G2G8l7I6dLS1ITXH0e5WHcfruQW`; ours: the 58 sheets '
-             '(`potency_grades_2026-09-15.csv`), of which the Tranche 3 PDF holds 37.', '',
-             '- QA documents read: %d (%d specifications, %d grades)' % (len(qa['files']), len({r['file'] for r in spec}), len(spec)),
-             '- same nominal, tolerance and range as ours: %d' % len(same),
-             '- same nominal as ours, different tolerance, range or product code: %d' % len(diff),
-             '- a nominal we have no grade for: %d' % len(new),
-             '- with a problem of their own (arithmetic, tolerance, empty range, internal inconsistency): %d' % len(probs),
-             '- Tranche 3 certificates whose Total THC falls in a QA range of the same nominal as ours: %d of %d' % (
-                 sum(r['same_nominal'] == 'yes' for r in t3_rows), len(t3_rows)), '']
-    lines += ['## Where QA differs from ours', '', '| QA document | strain | QA nominal ± tol | QA range | ours | difference / problem |',
-              '|---|---|---|---|---|---|']
-    for r in sorted(diff + new, key=lambda r: (r['abbr'], r['n'] or 0)):
-        lines.append('| %s | %s | %s ± %s | %s – %s | %s | %s |' % (
-            r['file'], r['abbr'], f2(r['n']), f2(r['t']), f2(r['lo']), f2(r['hi']), r['ours'] or '—',
-            '; '.join([r['vs_ours']] + r['problems']).replace('|', '/')))
-    lines += ['', '## Per strain', '']
-    for ab in sorted(strain_notes):
-        if strain_notes[ab]:
-            lines.append('- **%s**: %s' % (ab, ' · '.join(strain_notes[ab])))
+    live = [r for r in rows if r['kind'] == 'specification' and not r['ne'] and r['abbr']]
+    ne = [r for r in rows if r['kind'] == 'specification' and r['ne']]
+    same = [r for r in live if r['vs_ours'] == 'same nominal, tolerance and range']
+    diff = [r for r in live if r['ours'] and r not in same]
+    new = [r for r in live if not r['ours']]
+    empty = [r for r in live if any(p.startswith('EMPTY') for p in r['problems'])]
+    missing = [o for o in our_rows if o['qa'] == '—']
+    t3_same = sum(r['same_nominal'] == 'yes' for r in t3_rows)
+    t3_none = sum(r['qa'] == 'no QA range' for r in t3_rows)
+    g = lambda r: '%s ± %s (%s – %s)' % (f2(r['n']), f2(r['t']), f2(r['lo']), f2(r['hi']))
+    abbr = lambda code: code.split('_')[2].split('-')[0]
+    lines = ['# QA\'s proposed specifications against ours — potency grades, nominals and ranges', '',
+             'Read only: nothing of ours changed. QA: folder `1TY-W5G2G8l7I6dLS1ITXH0e5WHcfruQW`, %d documents, each read '
+             'twice by independent agents. Ours: the 58 sheets on `potency_grades_2026-09-15.csv` (KVM4 builder); the '
+             'Tranche 3 PDF holds 37 of them. Detail: `QA_SPEC_COMPARISON_2026-10-07.xlsx`.' % len(qa['files']), '',
+             '## In short', '',
+             '- QA proposes **%d grades** in %d documents, plus %d in the two documents marked "NE".' % (
+                 len(live), len({r['file'] for r in live}), len(ne)),
+             '- **%d** are our grade exactly. QA writes the upper limit as nominal + tolerance and we write it as nominal '
+             '+ tolerance - 0.01; that counts as the same grade.' % len(same),
+             '- **%d** share a nominal with ours but not its tolerance or range.' % len(diff),
+             '- **%d** are nominals we have no grade for, and **%d** of our 58 grades have no QA document.' % (
+                 len(new), len(missing)),
+             '- **%d** QA grades would hold no Total THC result on file (an empty range).' % len(empty),
+             '- QA\'s ranges are closed at both ends and set side by side, so neighbouring grades share a boundary value '
+             '(17.00 is in both GG 16 and GG 18).',
+             '- Every QA document prints the code `…_v.01` with the footer `QCSP 001v03`, and most say "TEMPLATE" in '
+             'the header.',
+             '- Of the 60 Tranche 3 certificates:',
+             '  - **%d** fall in a QA grade of the same nominal as ours;' % t3_same,
+             '  - **%d** fall in a QA grade of a different nominal;' % (len(t3_rows) - t3_same - t3_none),
+             '  - **%d** fall in no QA range.' % t3_none,
+             '', '## Per strain — ours | QA\'s', '']
+    for ab in sorted({r['abbr'] for r in live} | {abbr(o['code']) for o in our_rows}):
+        o = sorted([x for x in our_rows if abbr(x['code']) == ab], key=lambda x: -x['nominal'])
+        q = sorted([r for r in live if r['abbr'] == ab], key=lambda r: r['n'] or 0)
+        ours_txt = '; '.join('%s %.2f ± %.2f (%.2f – %.2f)%s' % (x['code'].split('_')[2], x['nominal'], x['tol'], x['low'],
+                                                                x['high'], ' ·T3' if x['in_t3_pdf'] else '') for x in o)
+        qa_txt = '; '.join(g(r) + (' — same' if r['vs_ours'] == 'same nominal, tolerance and range' and not r['problems']
+                                   else ' — ' + '; '.join([r['vs_ours']] + r['problems'])) for r in q)
+        lines.append('- **%s** — ours: %s | QA: %s' % (ab, ours_txt or '—', qa_txt or 'no document'))
+        if strain_notes.get(ab):
+            lines.append('  - ' + ' · '.join(strain_notes[ab]))
+    lines += ['', '## The two documents marked "NE" (read, not counted above)', '']
+    for r in sorted(ne, key=lambda r: (r['abbr'], r['n'] or 0)):
+        lines.append('- %s: %s %s%s' % (r['file'], r['abbr'], g(r), (' — ' + '; '.join(r['problems'])) if r['problems'] else ''))
     if qa.get('disagreements'):
-        lines += ['', '## Where the two readings of QA\'s documents disagreed (the second reading is used)', '']
+        lines += ['', '## Where the second reading corrected the first (%d fields; the second is used)' % len(qa['disagreements']), '']
         for d in qa['disagreements']:
             lines.append('- %s — %s: first %r, second %r' % (d.get('file_title') or d['file_id'], d['field'],
-                                                             d['first_read'], d['second_read']))
+                                                             str(d['first_read'])[:80], str(d['second_read'])[:80]))
     open(STEM + '.md', 'w', encoding='utf-8').write('\n'.join(lines) + '\n')
-    print('\n'.join(lines[:12]))
+    print('\n'.join(lines[:20]))
 
 
 if __name__ == '__main__':
