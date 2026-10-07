@@ -202,6 +202,18 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
      two things against the builder: every CoQ's grade, window, specification code and product code, and every
      THC result on file, wherever it came from. On 07.10.2026 every Tranche 3 and out-of-tranche CoQ agreed
      except `-050`: the builder holds GRC 7 % as a draft, ±0.62 (6.38–7.61 %), and adds GRC 14 % (open).
+     **No empty potency range** (Head of QC, 07.10.2026, on GRC): *"check all results of that strain in total
+     from all batches and distribute them in suitable number of potency ranges. And of course, no empty potency
+     ranges."* The builder's own generator (`searchLadder`) puts GRC's four results (7.05, 7.50, 9.80, 11.53)
+     into three ranges:
+     - 7.00 ± 0.70 (GRC-IV);
+     - 10.00 ± 1.00 (GRC-II);
+     - 12.00 ± 1.00 (GRC-I).
+
+     GRC-III (8.00 ± 0.80) holds nothing and left the table. `-152` (7.50 %) and its iCoA-PP_26-095 are
+     GRC-IV, `GRC_THC7 : CBD1`. The builder's draft 14 % holds nothing and is not adopted. The builder's GRC
+     draft still reads 7 ± 0.62 with 8 % and 14 %, so it disagrees with the table until it is set to these
+     three ranges. Every finished strain's ranges each hold at least one result.
   8. **A certificate whose scan is incomplete** prints `[pending]` for what the missing page holds —
      IPH `1065/2026` (SJ102501) holds pages 1, 2 and 4 of 4 in every copy; page 3 carries its metals,
      total aflatoxins and three pesticides. Obtain the page; do not read around it.
@@ -266,7 +278,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 190 corrections, 07.09.2026–07.10.2026, each quoted — is
+The full record — 194 corrections, 07.09.2026–07.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:
@@ -365,9 +377,23 @@ Standing rules the corrections produced (message numbers are in the record):
 - **Wording.** ND is a *not detected* result; a parameter not tested is `n/t`, never ND. One Macedonian
   "Conforms" (Одговара); Macedonian "метод", not "метода". Phenotype "Hybrid, Indica/Sativa dominant"
   when the split is unknown, "Hybrid, Indica 80, Sativa 20" when known — the same everywhere.
-- **Removed, and not to come back:** the processing (machine/hand trimmed) parameter on CoQs; the
-  bottom commentary sentence on iCoAs; the bottom-right document code on specifications; "MK GMP
-  Certified" anywhere (§6).
+- **Phenotype, Tranche 3** (Head of QC, 07.10.2026):
+  - *"wherever it says indica or sativa as only selected option … mark it as hybrid"*, with its leaning or its
+    percentages where known, *"also correct in the iCoAs"*.
+  - `tracker/apply_t3_phenotype_ruling_2026-10-07.py`: the 13 Tranche 3 records that ticked Indica alone
+    (every GG, BSS and OPM lot) are Hybrid, Indica dominant. Every scan and specification for these strains says
+    Indica, and none gives a split.
+  - A Tranche 3 hybrid with a known leaning and no split prints "HYBRID · INDICA DOMINANT" on the CoQ
+    (`coq_build.js` section 01, `rec.t3`) and the iCoA (`build_t3_bundle.leaning_of`). A known split prints as
+    before, e.g. INDICA60 : SATIVA40.
+  - Tranches 1/2 and the lots outside the tranches are unchanged.
+- **Processing field** (Machine/Hand): restored on the CoQ and the iCoA by the Head of QC on 30.09.2026 (the
+  approved scans carry it), superseding its removal of 18.09. On 07.10.2026: *"include the processing pill into
+  the iCoA as in the CoQs and format it suitably"*. The iCoA row had run past the right margin and cut off the
+  Hand chip. Both iCoA bases now carry `__owner-selrow-fit`, the CoQ's chip scale, and on every iCoA not yet
+  issued the row ends level with the values below.
+- **Removed, and not to come back:** the bottom commentary sentence on iCoAs; the bottom-right document
+  code on specifications; "MK GMP Certified" anywhere (§6).
 - **In-house laboratory citation:** "Purely Plant QC Department · In-house | Пјурли Плант — Сектор за
   КК · In-house · Kojlija 1043, Petrovec-Skopje, MK".
 - **Supersedes line** directly beneath the current CoQ code and issue date, very small and greyed.

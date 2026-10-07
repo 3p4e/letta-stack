@@ -114,7 +114,7 @@ GP	GP082501/2	P050322	15.70	standalone	corpus		IV 16 (14.40 – 17.59)	yes	finis
 GP	GP092501	P060092	25.24	retest	builder,intake,register,register-also	220-13-K-26, 220-13-K/26, 220-13-К/26	II 24 (22.00 – 25.99)	yes	finished	
 GP	GP092501	P060092	25.73	release	builder,cnp-cache,corpus,register	ППК26009	II 24 (22.00 – 25.99)	yes	finished	
 GRC	GRC102501/1	P060142	7.05	release	intake,register	031-1-К/26	IV 7 (6.38 – 7.61)	no	draft	
-GRC	GRC102501/1	P060142	7.50	retest	builder,intake,register,register-also	227-16-K-26, 227-16-K/26, 227-16-К/26	III 8 (7.20 – 8.79) / IV 7 (6.38 – 7.61)	yes	draft	
+GRC	GRC102501/1	P060142	7.50	retest	builder,intake,register,register-also	227-16-K-26, 227-16-K/26, 227-16-К/26	(none) 8 (7.20 – 8.79) / IV 7 (6.38 – 7.61)	yes	draft	
 GRC	GRC102501/2	P060182	9.80	retest	builder,intake,register,register-also	220-14-K-26, 220-14-K/26, 220-14-К/26	II 10 (9.00 – 10.99)	yes	draft	
 GRC	GRC102501/2	P060182	11.53	release	builder,register	051-6-K-26, 051-6-К/26	I 12 (11.00 – 12.99)	yes	draft	
 GRC	GRC102501_2	P060182	11.53	standalone	corpus		I 12 (11.00 – 12.99)	yes	draft	

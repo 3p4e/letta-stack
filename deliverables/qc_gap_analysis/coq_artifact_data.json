@@ -23875,11 +23875,11 @@
    "spc": {
     "code": "QCSP_001_GG-II_v.01",
     "attributes_from": "QCSP_001_GG-II_v.01",
-    "pheno": "INDICA",
+    "pheno": "HYBRID",
     "chemo": "THC",
     "proc": "MACHINE TRIMMED",
-    "dominance": "",
-    "dom": "",
+    "dominance": "INDICA-DOMINANT",
+    "dom": "Indica dom.",
     "pack": "Triplex Alu Bag | Триплекс Aлу Kеса, PET 12 · ALU 7 · PE 80, 300 × 500 mm, net. 400.0 g ±3%"
    },
    "icoa_issue": "03.06.2026",
@@ -24198,11 +24198,11 @@
    "spc": {
     "code": "QCSP_001_BSS-II_v.01",
     "attributes_from": "QCSP_001_BSS-II_v.01",
-    "pheno": "INDICA",
+    "pheno": "HYBRID",
     "chemo": "THC",
     "proc": "MACHINE TRIMMED",
-    "dominance": "",
-    "dom": "",
+    "dominance": "INDICA-DOMINANT",
+    "dom": "Indica dom.",
     "pack": "Triplex Alu Bag | Триплекс Aлу Kеса, PET 12 · ALU 7 · PE 80, 300 × 500 mm, net. 400.0 g ±3%"
    },
    "icoa_issue": "03.06.2026",
@@ -24520,11 +24520,11 @@
    "spc": {
     "code": "QCSP_001_OPM-III_v.01",
     "attributes_from": "QCSP_001_OPM-III_v.01",
-    "pheno": "INDICA",
+    "pheno": "HYBRID",
     "chemo": "THC",
     "proc": "MACHINE TRIMMED",
-    "dominance": "",
-    "dom": "",
+    "dominance": "INDICA-DOMINANT",
+    "dom": "Indica dom.",
     "pack": "Triplex Alu Bag | Триплекс Aлу Kеса, PET 12 · ALU 7 · PE 80, 300 × 500 mm, net. 400.0 g ±3%"
    },
    "icoa_issue": "03.06.2026",
@@ -27730,11 +27730,11 @@
    "spc": {
     "code": "QCSP_001_OPM-V_v.01",
     "attributes_from": "QCSP_001_OPM-III_v.01",
-    "pheno": "INDICA",
+    "pheno": "HYBRID",
     "chemo": "THC",
     "proc": "MACHINE TRIMMED",
-    "dominance": "",
-    "dom": "",
+    "dominance": "INDICA-DOMINANT",
+    "dom": "Indica dom.",
     "pack": "Triplex Alu Bag | Триплекс Aлу Kеса, PET 12 · ALU 7 · PE 80, 300 × 500 mm, net. 400.0 g ±3%"
    },
    "icoa_issue": "03.06.2026",
@@ -29653,11 +29653,11 @@
    "spc": {
     "code": "QCSP_001_GG-II_v.01",
     "attributes_from": "QCSP_001_GG-II_v.01",
-    "pheno": "INDICA",
+    "pheno": "HYBRID",
     "chemo": "THC",
     "proc": "MACHINE TRIMMED",
-    "dominance": "",
-    "dom": "",
+    "dominance": "INDICA-DOMINANT",
+    "dom": "Indica dom.",
     "pack": "Triplex Alu Bag | Триплекс Aлу Kеса, PET 12 · ALU 7 · PE 80, 300 × 500 mm, net. 400.0 g ±3%"
    },
    "icoa_issue": "03.06.2026",
@@ -29976,11 +29976,11 @@
    "spc": {
     "code": "QCSP_001_GG-I_v.01",
     "attributes_from": "QCSP_001_GG-I_v.01",
-    "pheno": "INDICA",
+    "pheno": "HYBRID",
     "chemo": "THC",
     "proc": "MACHINE TRIMMED",
-    "dominance": "",
-    "dom": "",
+    "dominance": "INDICA-DOMINANT",
+    "dom": "Indica dom.",
     "pack": "Triplex Alu Bag | Триплекс Aлу Kеса, PET 12 · ALU 7 · PE 80, 300 × 500 mm, net. 400.0 g ±3%"
    },
    "icoa_issue": "03.06.2026",
@@ -34750,11 +34750,11 @@
    "spc": {
     "code": "QCSP_001_BSS-I_v.01",
     "attributes_from": "QCSP_001_BSS-I_v.01",
-    "pheno": "INDICA",
+    "pheno": "HYBRID",
     "chemo": "THC",
     "proc": "MACHINE TRIMMED",
-    "dominance": "",
-    "dom": "",
+    "dominance": "INDICA-DOMINANT",
+    "dom": "Indica dom.",
     "pack": "Triplex Alu Bag | Триплекс Aлу Kеса, PET 12 · ALU 7 · PE 80, 300 × 500 mm, net. 400.0 g ±3%"
    },
    "issue_before_redating": "06.06.2026"
@@ -52525,11 +52525,11 @@
    "spc": {
     "code": "QCSP_001_GG-I_v.01",
     "attributes_from": "QCSP_001_GG-I_v.01",
-    "pheno": "INDICA",
+    "pheno": "HYBRID",
     "chemo": "THC",
     "proc": "MACHINE TRIMMED",
-    "dominance": "",
-    "dom": "",
+    "dominance": "INDICA-DOMINANT",
+    "dom": "Indica dom.",
     "pack": "Triplex Alu Bag | Триплекс Aлу Kеса, PET 12 · ALU 7 · PE 80, 300 × 500 mm, net. 400.0 g ±3%"
    },
    "icoa_issue": "24.08.2026",
@@ -52849,11 +52849,11 @@
    "spc": {
     "code": "QCSP_001_BSS-I_v.01",
     "attributes_from": "QCSP_001_BSS-I_v.01",
-    "pheno": "INDICA",
+    "pheno": "HYBRID",
     "chemo": "THC",
     "proc": "MACHINE TRIMMED",
-    "dominance": "",
-    "dom": "",
+    "dominance": "INDICA-DOMINANT",
+    "dom": "Indica dom.",
     "pack": "Triplex Alu Bag | Триплекс Aлу Kеса, PET 12 · ALU 7 · PE 80, 300 × 500 mm, net. 400.0 g ±3%"
    },
    "icoa_issue": "24.08.2026",
@@ -53173,11 +53173,11 @@
    "spc": {
     "code": "QCSP_001_OPM-II_v.01",
     "attributes_from": "QCSP_001_OPM-II_v.01",
-    "pheno": "INDICA",
+    "pheno": "HYBRID",
     "chemo": "THC",
     "proc": "MACHINE TRIMMED",
-    "dominance": "",
-    "dom": "",
+    "dominance": "INDICA-DOMINANT",
+    "dom": "Indica dom.",
     "pack": "Triplex Alu Bag | Триплекс Aлу Kеса, PET 12 · ALU 7 · PE 80, 300 × 500 mm, net. 400.0 g ±3%"
    },
    "icoa_issue": "24.08.2026",
@@ -56409,11 +56409,11 @@
    "spc": {
     "code": "QCSP_001_OPM-IV_v.01",
     "attributes_from": "QCSP_001_OPM-IV_v.01",
-    "pheno": "INDICA",
+    "pheno": "HYBRID",
     "chemo": "THC",
     "proc": "MACHINE TRIMMED",
-    "dominance": "",
-    "dom": "",
+    "dominance": "INDICA-DOMINANT",
+    "dom": "Indica dom.",
     "pack": "Triplex Alu Bag | Триплекс Aлу Kеса, PET 12 · ALU 7 · PE 80, 300 × 500 mm, net. 400.0 g ±3%"
    },
    "icoa_issue": "24.08.2026",
@@ -58350,11 +58350,11 @@
    "spc": {
     "code": "QCSP_001_GG-I_v.01",
     "attributes_from": "QCSP_001_GG-I_v.01",
-    "pheno": "INDICA",
+    "pheno": "HYBRID",
     "chemo": "THC",
     "proc": "MACHINE TRIMMED",
-    "dominance": "",
-    "dom": "",
+    "dominance": "INDICA-DOMINANT",
+    "dom": "Indica dom.",
     "pack": "Triplex Alu Bag | Триплекс Aлу Kеса, PET 12 · ALU 7 · PE 80, 300 × 500 mm, net. 400.0 g ±3%"
    },
    "icoa_issue": "24.08.2026",
@@ -58674,11 +58674,11 @@
    "spc": {
     "code": "QCSP_001_GG-I_v.01",
     "attributes_from": "QCSP_001_GG-I_v.01",
-    "pheno": "INDICA",
+    "pheno": "HYBRID",
     "chemo": "THC",
     "proc": "MACHINE TRIMMED",
-    "dominance": "",
-    "dom": "",
+    "dominance": "INDICA-DOMINANT",
+    "dom": "Indica dom.",
     "pack": "Triplex Alu Bag | Триплекс Aлу Kеса, PET 12 · ALU 7 · PE 80, 300 × 500 mm, net. 400.0 g ±3%"
    },
    "icoa_issue": "24.08.2026",
@@ -62252,18 +62252,18 @@
    "pp": "P060142",
    "cb": "GRC102501/1",
    "strain": "Grapes And Cream",
-   "grade": "III",
-   "cls": 8,
+   "grade": "IV",
+   "cls": 7,
    "ic": "(assigned on issue)",
    "thc": "7.50",
-   "spec": "QCSP_001_GRC-III_v.01",
+   "spec": "QCSP_001_GRC-IV_v.01",
    "conflict": "",
    "reg": true,
    "issued": false,
    "md": "09.01.2026",
    "pk": "23.02.2026",
-   "pcode": "GRC_THC8 : CBD1",
-   "spec_status": "for review — replaces the issued QCSP_001_GRC-III_v.01 (was GRC_THC17.5:CBD1, 17.50% ± 2.50%); now GRC_THC8 : CBD1 7.20 – 8.79 %",
+   "pcode": "GRC_THC7 : CBD1",
+   "spec_status": "for review — replaces the issued QCSP_001_GRC-IV_v.01 (was GRC_THC12.5:CBD1, 12.50% ± 2.50%); now GRC_THC7 : CBD1 6.30 – 7.69 %",
    "issued_spec": "",
    "rows": [
     {
@@ -62304,7 +62304,7 @@
     },
     {
      "no": "4",
-     "crit": "7.20 – 8.79 %  (grade III, nominal 8.00 ± 0.80)",
+     "crit": "6.30 – 7.69 %  (grade IV, nominal 7.00 ± 0.70)",
      "res": "7.50",
      "doc": "227-16-К/26",
      "dd": "11.09.2026",
@@ -62552,7 +62552,7 @@
     "issued": true
    },
    "spc": {
-    "code": "QCSP_001_GRC-III_v.01",
+    "code": "QCSP_001_GRC-IV_v.01",
     "attributes_from": "QCSP_001_GRC-III_v.01",
     "pheno": "HYBRID",
     "chemo": "THC",

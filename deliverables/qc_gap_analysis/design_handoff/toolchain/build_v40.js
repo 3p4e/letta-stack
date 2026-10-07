@@ -47,6 +47,10 @@ function FROZEN_LOT(c) {
   for (const k of [c.pp, c.cb, String(c.cb || '').replace(/\uFF0A/g, '')]) if (k && k in TR18) return /^T[12]$/.test(TR18[k]);
   return false;
 }
+function T3_LOT(c) {
+  for (const k of [c.pp, c.cb, String(c.cb || '').replace(/\uFF0A/g, '')]) if (k && k in TR18) return TR18[k] === 'T3';
+  return false;
+}
 
 // --- the owner's instruction of 16.09.2026: the Macedonian half of a conformity
 // result stacks beneath the English, at the size the template already sets for it
@@ -131,6 +135,7 @@ function rec(c) {
     packaging: spc.pack || '—', manufDate: c.md || '', packDate: c.pk || '', supersedes: sup,
     series: (c.t || '').indexOf('retest') === 0 ? 'reissue' : 'initial',
     frozen: FROZEN_LOT(c),     // issued Tranche 1/2: section 03 prints the laboratory lines as sent
+    t3: T3_LOT(c),             // Tranche 3: a hybrid's known leaning is spelled out (Head of QC, 07.10.2026)
   };
 }
 fs.rmSync(OUT, { recursive: true, force: true });

@@ -169,6 +169,23 @@ def split_of(dom):
     return '%s%s : %s%s' % m.groups() if m else ''
 
 
+_TM = []
+
+
+def leaning_of(c, dom):
+    """Head of QC, 07.10.2026, Tranche 3: a hybrid states which way it leans where that is known and its split
+    is not — `· Indica dominant`, as the certificate of quality prints it beside `Хибрид`. Lots outside
+    Tranche 3 keep the 24.09 rule (the split or nothing)."""
+    m = re.match(r'^\s*(INDICA|SATIVA)-DOMINANT\s*$', str(dom or ''), re.I)
+    if not m:
+        return ''
+    if not _TM:
+        _TM.append(tranche_map())
+    if not any(_TM[0].get(k) == 'T3' for k in (c.get('pp'), c.get('cb'), str(c.get('cb') or '').replace('＊', '')) if k):
+        return ''
+    return '· %s dominant' % m.group(1).capitalize()
+
+
 IN_PAGE = ('1', '2', '7', '8')          # what the internal-certificate page prints
 
 
@@ -202,7 +219,7 @@ def fields(c, gaps, scope=('1', '2', '7')):
         'issued': val('icoa_issue', 'internal-certificate issue date'),
         'headline': pp if has_p else cb,
         'strain': val('strain', 'strain'),
-        'pheno': pheno, 'split': split_of(spc.get('dominance')) if pheno else '',
+        'pheno': pheno, 'split': (split_of(spc.get('dominance')) or leaning_of(c, spc.get('dominance'))) if pheno else '',
         'pcode': val('pcode', 'product code', lambda v: v.replace(' : ', ':')),
         'spec': val('spec', 'specification reference'),
         'testdate': val('icoa_tested', 'test date'),

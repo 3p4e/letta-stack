@@ -244,6 +244,11 @@ function section01(rec) {
   if (dm) ratio = ' <span class="ratio" style="font-size:.86em;letter-spacing:.3px">' + dm[1].toUpperCase() +
     '<b style="color:#FFD98A;font-weight:800">' + dm[2] + '</b> : ' + dm[3].toUpperCase() +
     '<b style="color:#FFD98A;font-weight:800">' + dm[4] + '</b></span>';
+  // Head of QC, 07.10.2026, Tranche 3: a hybrid states which way it leans where that is known and the
+  // split is not; the split, where known, prints as above.
+  const dl = dom.match(/^(INDICA|SATIVA)-DOMINANT$/i);
+  if (!dm && dl && rec.t3) ratio = ' <span class="ratio" style="font-size:.86em;letter-spacing:.3px">· ' +
+    dl[1].toUpperCase() + ' <b style="color:#FFD98A;font-weight:800">DOMINANT</b></span>';
   const isH = ph === 'HYBRID', isI = ph === 'INDICA', isS = ph === 'SATIVA';
   const pheno = chip(isH, 'Hybrid', isH ? ratio : '') +
     '<span class="stack">' + chip(isI, 'Indica') + chip(isS, 'Sativa') + '</span>';
