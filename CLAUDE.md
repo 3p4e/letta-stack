@@ -284,7 +284,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 209 corrections, 07.09.2026–07.10.2026, each quoted — is
+The full record — 210 corrections, 07.09.2026–07.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:
@@ -342,7 +342,7 @@ Standing rules the corrections produced (message numbers are in the record):
   three or more consecutive parameter numbers written as a **range** ("2–4", not "2, 3, 4"); **each certificate's
   parameter numbers on that certificate's own line, together, right-aligned on the page margin** (Head of QC,
   07.10.2026: *"1,2,7 inline with the eCOA … 3-6, 8 inline with the eCOA code and date"*; `coq_build.js`
-  `section03Certs`);
+  `section03Certs`) — header and numbers ending on the margin, which the print checks (`layout_probe`);
   document codes in **Roboto Condensed** (the narrow face he asked for, inlined at print like the house
   faces); document codes and parameter numbers **always on a two-row grid filled column by column** —
   one item in row 1; two, one per row; a third back in row 1, and so on. The bundles refuse a CoQ whose

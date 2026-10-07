@@ -639,6 +639,12 @@ const S01_BAND_LAYER = '<style id="__owner-s01-band">\n' +
       + LB + ' tbody tr td.lr-mono.lr-mono:not(.pcell) .g2 .cert + .cert::before{content:none !important;margin:0 !important;display:none !important}'
       + LB + ' tbody tr td.lr-mono.lr-mono:not(.pcell) .g2 .cert{margin:0 !important;padding:0 !important}'
       + LB + " tbody tr td .g2 .pn{font-family:'Roboto Mono',monospace;font-size:7.4px;font-weight:600;line-height:8px;white-space:nowrap}"
+      // Head of QC, 07.10.2026: "the parameter numbers ... are not aligned to the right page margin". The numbers were;
+      // the header over them, "PARAM. \u2116", is 44.5 px in a 40.6 px text area and right-aligned text that does not fit
+      // runs out to the right — 3.9 px past the margin on every page. The column keeps its 84 px; its left padding
+      // goes, so header and numbers end together on the margin.
+      + LB + ' thead tr th:nth-child(3):nth-child(3):nth-child(3):nth-child(3),' + LB + ' tbody tr td.lr-mono.pcell.pcell.pcell:nth-child(3)'
+      + '{padding-left:0 !important}'
       + '</style>';
     if (htmlOut.split('</body>').length !== 2) throw new Error('no single </body>: ' + c.regcode);
     htmlOut = htmlOut.replace('</body>', LABREF_GRID + '</body>');

@@ -206,7 +206,13 @@ LAYOUT_JS = """() => {
     const ys = [...r.getClientRects()].filter(x => x.width > 0.5).map(x => x.top + x.height / 2).sort((a, b) => a - b);
     let n = 0, last = -99; for (const y of ys) { if (y - last > 4) { n++; last = y; } } return n; };
   const page = document.querySelector('.page');
-  return { h: page ? page.scrollHeight : 0,
+  // section 03's parameter column: the header and every number line end on the right page margin (0.4 in)
+  let right = 0; const pg = page ? page.getBoundingClientRect() : null;
+  const th = document.querySelector('table.labref thead th:nth-child(3)');
+  if (pg && th) { const r = document.createRange(); r.selectNodeContents(th);
+    for (const b of [...r.getClientRects(), ...[...document.querySelectorAll('table.labref .pn')].map(e => e.getBoundingClientRect())])
+      right = Math.max(right, b.right - pg.left); }
+  return { h: page ? page.scrollHeight : 0, right: right, width: pg ? pg.width : 0,
            lab: [...document.querySelectorAll('table.labref tbody td .lr-lab')].map(lines) };
 }"""
 
@@ -218,6 +224,9 @@ def layout_probe(src, page):
     got = page.evaluate(LAYOUT_JS)
     if got['h'] > 1123:
         LAYOUT.append('%s: page is %d px, past A4 (1123)' % (os.path.basename(src), got['h']))
+    if got['right'] > got['width'] - 38.4 + 0.5:
+        LAYOUT.append('%s: section 03 parameter column ends %.1f px past the right margin' % (
+            os.path.basename(src), got['right'] - (got['width'] - 38.4)))
     if any(n > 2 for n in got['lab']):
         LAYOUT.append('%s: a laboratory entry runs to %d rows' % (os.path.basename(src), max(got['lab'])))
 
