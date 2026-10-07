@@ -235,7 +235,12 @@ the laboratory line (17.09.2026).
   LT-036; UKIM FF Mother Teresa 47; IPH 50 Divizija 6. Until then section 03 printed Farmahem as
   "Laboratory for Instrumental Analysis · LT-020 · Kisela Voda" and the Phytosanitary laboratory as
   LT-034 — the desk's lines of 21.09.2026, from no certificate. `coq_build.js` `LABS`; `LABS_SENT` keeps
-  the lines the issued Tranche 1/2 pages carry, unchanged.
+  the lines the issued Tranche 1/2 pages carry, unchanged. Head of QC, 07.10.2026: *"Correct T1 and T2
+  also but they stay as sent to the outside party"*. The 90 Tranche 1/2 pages that carry an old line
+  have a corrected copy, `DELIVER_2026-10-07_T1_T2_LabLines_Corrected/`
+  (`tracker/build_t1_t2_lab_lines_corrected_2026-10-07.py`), in which only the laboratory lines change.
+  The pages as sent, the register and `check_frozen_records.py` are untouched. Whether the customer is
+  asked to replace the certificates is his decision.
 - Before adopting any rule from a document that is not a ruling, check it against the rulings —
   the newest governs — and ask when they differ.
 - `tracker/check_certificate_claims.py` fails the build and CI on such a claim in any page a build
@@ -387,7 +392,9 @@ decide. From the review of 27.09.2026, also his to decide: the issued Tranche 2 
 `iCoA-PP_26-123` although its approved scan cites no iCoA (the number is `-109`'s); the issued T1/T2
 iCoAs of 24.09 print `…_v.03`; the CoQ footer's "QCSOP 012 v.03" (his template) against our empty slot;
 `-021`'s manufacture date (the workbook says "not given"); packaging dates for CC042601, FB042601 and
-the three P160 lots; the 11 numbers out of date order.
+the three P160 lots; the 11 numbers out of date order. From 07.10.2026: whether the corrected Tranche 1/2
+copies replace the certificates the customer holds, and whether that copy also drops the "MK GMP Certified
+Facility" footer line the sent pages carry (§6).
 
 ## 8. Git
 
