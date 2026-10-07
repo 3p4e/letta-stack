@@ -16,8 +16,8 @@ folder must name the same grades with the same nominal and tolerance. A grade th
 (GRC-III, deleted 07.10.2026) must not be on file.
 
 Output: `specs/QCSP_001_ImB/_zip/QCSP_001_ImB_by_strain_2026-10-07.zip`, one file per strain,
-`QCSP_001_{abbr}_v.01_{Strain}_all_grades.pdf`. The set's own zip (`QCSP_001_ImB_2026-10-07.zip`) takes the PDFs now
-on disk as well; every other entry in it is kept byte for byte.
+`QCSP_001_{abbr}_v.01_{Strain}_all_grades.pdf`. The set's own zip (`QCSP_001_ImB_2026-10-07.zip`) is rebuilt as the 58
+sheet PDFs only (no Word, no HTML).
 """
 import csv
 import glob
@@ -44,24 +44,21 @@ def safe(s):
 
 
 def refresh_set_zip():
-    """The set's zip with each PDF/ entry replaced by the sheet now on disk; every other entry kept as it is."""
+    """The set as one download of PDFs only: the 58 sheets now on disk, nothing else.
+
+    Head of QC, 07.10.2026: *"Don't prepare the word documents in the bundle for download, I need only the PDF
+    bundles that I ordered"*. The Word and HTML copies stay in the repository (DOCX/, SHEETS/), not in the zip."""
     path = os.path.join(SET, '_zip', 'QCSP_001_ImB_%s.zip' % STAMP)
-    n = 0
-    with zipfile.ZipFile(path) as zin, zipfile.ZipFile(path + '.part', 'w', zipfile.ZIP_DEFLATED) as zout:
-        for info in zin.infolist():
-            parts = info.filename.split('/')
-            if len(parts) == 3 and parts[1] == 'PDF' and parts[2]:
-                src = os.path.join(PDF, parts[2])
-                if not os.path.exists(src):
-                    raise SystemExit('%s: %s is not on disk' % (os.path.basename(path), parts[2]))
-                zout.write(src, info.filename)
-                n += 1
-            else:
-                zout.writestr(info, zin.read(info.filename))
-    if n != len(glob.glob(os.path.join(PDF, '*.pdf'))):
-        raise SystemExit('%s holds %d PDFs, the folder %d' % (os.path.basename(path), n, len(glob.glob(os.path.join(PDF, '*.pdf')))))
+    pdfs = sorted(glob.glob(os.path.join(PDF, '*.pdf')))
+    with zipfile.ZipFile(path + '.part', 'w', zipfile.ZIP_DEFLATED) as z:
+        for src in pdfs:
+            z.write(src, 'QCSP_001_ImB_%s/%s' % (STAMP, os.path.basename(src)))
+    with zipfile.ZipFile(path + '.part') as z:
+        other = [n for n in z.namelist() if not n.endswith('.pdf')]
+    if other or len(pdfs) != 58:
+        raise SystemExit('the set zip must hold the 58 sheet PDFs only: %d PDFs, other entries %s' % (len(pdfs), other))
     os.replace(path + '.part', path)
-    print('%s — %d PDFs renewed (%.1f MiB)' % (os.path.relpath(path, GAP), n, os.path.getsize(path) / 1048576.0))
+    print('%s — %d PDFs, nothing else (%.1f MiB)' % (os.path.relpath(path, GAP), len(pdfs), os.path.getsize(path) / 1048576.0))
 
 
 def main(argv=()):
