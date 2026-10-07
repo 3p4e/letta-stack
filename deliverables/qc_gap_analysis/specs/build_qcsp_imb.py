@@ -144,16 +144,20 @@ SEL_BLOCK = re.compile(r'<div class="pb-sel-inline">.*?</div>\s*</div>(?=\s*<div
 # background colours"). Colours read off QA's ImB_Specification_KC18.docx as it renders (its stored pictures, the
 # white veils QA laid over them, its table shading), region by region at 144 dpi. Colour and shading only: every box
 # keeps its size and place, every word its value. The CoQ's pills (ruled the same day) are left as they are.
-WORD = os.environ.get("QCSP_WORD", "0") == "1"
+# Approved on the KC-I sample and carried to every sheet (Head of QC, 07.10.2026: "the header and footer and horizontal
+# separators are all okay and also the table backgrounds"); QCSP_WORD=0 builds the earlier look.
+WORD = os.environ.get("QCSP_WORD", "1") == "1"
 W = "html:not(#_w1):not(#_w2):not(#_w3):not(#_w4):not(#_w5):not(#_w6) body .page "
 NONE = "{background:none !important;box-shadow:none !important}"
 WORD_LAYER = ('<style id="__qa-word-2026-10-07">\n'
     # header: white, its gold rule under the title kept
     + W + '.header-bar{background:#FFFFFF !important;box-shadow:none !important}\n'
-    # section bars: warm near-white, #FDFCFC to #F4F3F2, a #EFEFED line along the top
-    + W + '.sec-label{background-color:#F8F7F6 !important;background-image:linear-gradient(180deg,#FDFCFC 0%,#FBFBFA 30%,'
-          '#F7F6F5 60%,#F4F3F2 85%,#F6F6F5 100%) !important;border-top:1px solid #EFEFED !important;'
-          'border-bottom:0 !important;box-shadow:none !important}\n'
+    # section bars: the Word sample's warm near-white, deepened so the bar reads (Head of QC, 07.10.2026: "just and
+    # only for the heading chapter bars … make them a little bit more visible, maybe apply some contrast") — the same
+    # warm hue, #FCFBF9 to #E6E1D8, a #DDD7CC line along the top and a #CFC7B8 line along the foot
+    + W + '.sec-label{background-color:#EFEBE5 !important;background-image:linear-gradient(180deg,#FCFBF9 0%,#F5F2EE 30%,'
+          '#EDE9E2 60%,#E6E1D8 85%,#E9E5DE 100%) !important;border-top:1px solid #DDD7CC !important;'
+          'border-bottom:1px solid #CFC7B8 !important;box-shadow:none !important}\n'
     # the product, codes and packaging bands: white
     + W + '.pb-wash,' + W + '.product-banner,' + W + '.spec-panel' + NONE + '\n'
     + W + '.pb-sel-inline,' + W + '.pb-codes-row,' + W + '.pb-attrs{background-color:#FFFFFF !important;'
@@ -177,6 +181,9 @@ WORD_LAYER = ('<style id="__qa-word-2026-10-07">\n'
           'border-bottom:0 !important;box-sizing:border-box !important}\n'
     + W + '.footer::before,' + W + '.footer::after,' + W + '.footer .foot-bleed' + NONE + '\n'
     + '</style>\n')
+AP_BOXES = re.compile(r'(<div class="approval-grid">\s*)(<div class="ap-block"><div class="ap-role">Prepared &amp; Approved by.*?'
+                      r'<span class="ap-date-val">[^<]*</span></div></div>)(\s*)(<div class="ap-block"><div class="ap-role">'
+                      r'Reviewed by.*?<span class="ap-date-val">[^<]*</span></div></div>)', re.S)
 # the pill row sits in the spec's own selection band, which already carries the page margin
 PILLS_HOST = ('<style id="__pp-pills-host">\n'
               'html:not(#_h1):not(#_h2):not(#_h3):not(#_h4):not(#_h5) body .page .pb-sel-inline.pp-pills{display:block !important}\n'
@@ -215,6 +222,11 @@ def sheet(tpl, r):
         raise SystemExit("template has %d approval dates, expected 2" % n)
     h = h.replace('<span class="ap-date-val tpl">DD.MM.YYYY</span>',
                   '<span class="ap-date-val">%s</span>' % SIGNED)
+    # Head of QC, 07.10.2026: the QC Manager on the right of every document, the QA Manager ("Reviewed by") on the
+    # left — the template sets the QC Manager's box first
+    if len(AP_BOXES.findall(h)) != 1:
+        raise SystemExit("template: the two approval boxes are not found once, in the template's order")
+    h = AP_BOXES.sub(lambda m: m.group(1) + m.group(4) + m.group(3) + m.group(2), h, count=1)
     # the owner, 21.09.2026: no document code in the bottom right corner
     h = one(h, '<div class="foot-right">QCSP 001 v.03</div>',
             '<div class="foot-right"></div>', ".foot-right")

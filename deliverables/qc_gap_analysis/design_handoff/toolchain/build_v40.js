@@ -547,6 +547,12 @@ const S01_BAND_LAYER = '<style id="__owner-s01-band">\n' +
   if (!FROZEN_LOT(c)) {
     if (htmlOut.split(GMP_FOOT).length !== 2) throw new Error('footer GMP line not found once: ' + c.regcode);
     htmlOut = htmlOut.replace(GMP_FOOT, '<div class="foot-right"></div>');
+    // Head of QC, 07.10.2026: "the QC manager of all these three documents be on the right side of the
+    // page and on the left side ... the QA manager, as reviewed by, on the certificates of quality". The
+    // base page sets the QC Manager's box first; on every certificate not yet issued the boxes change places.
+    const AP = /(<div class="approval-grid cols-2">\s*)(<div><div class="ap-role">Prepared &amp; Approved by[\s\S]*?<span class="ap-date-val">[^<]*<\/span><\/div><\/div>)(\s*)(<div><div class="ap-role">Reviewed by[\s\S]*?<span class="ap-date-val">[^<]*<\/span><\/div><\/div>)/;
+    if (!AP.test(htmlOut)) throw new Error('approval boxes not found in the base order: ' + c.regcode);
+    htmlOut = htmlOut.replace(AP, '$1$4$3$2');
     // Section 03, the laboratory block — Head of QC, 28.09.2026:
     //  * "make them in two rows and inline; they're going into three rows and it's pushing the
     //    page down" — each laboratory on two lines: English name and accreditation; Macedonian

@@ -23,6 +23,22 @@ Two things make a pill or a bar look the way it does:
   scoped to the pill row and the heading bars and out-ranks their own rules, so each draws as the CoQ does. The
   iCoA's pill row was also zoomed to 106 %; the kit sets it to 100 %, as on the CoQ.
 
+Later the same day (*"the pills are not consistent with the rest of the pills"*, *"use the same fonts for the same
+class of text … in all depths on all documents"*, *"edit the signature block and make the content there be the same
+formatting, size, font choices, colours … as it is on the certificates of quality"*) the kit took three more parts,
+read the same way off the same CoQ:
+
+* **DISP** — the iCoA's *Result vs Specification* row is the CoQ's section 04 row (`.disp-row`, same classes): its
+  chips draw as the CoQ's. The iCoA's unticked chip carries Macedonian the CoQ's does not; it takes the CoQ's
+  Macedonian face in the unticked chip's colour.
+* **SIGN** — the signature block: every box, role, line, title, name, credential and date as the CoQ sets them, the
+  block as tall as its boxes and set down at the foot of the page, as on the CoQ. Which box stands where is the builders' (QC Manager on
+  the right: `build_v40.js`, `build_qcsp_imb.py`; the iCoA's base has it there already).
+* **TYPE** — text of the same role, set as the CoQ sets it: face, size, weight, slant, spacing, case and colour.
+  `TYPE` names each iCoA or specification element beside the CoQ element of the same role (the header, the
+  section 01 labels and values, the table head, parameter, method, criterion and result, the notes, the footer). A
+  text the CoQ has no counterpart for (the iCoA's subtotal rows, the specification's ± tolerance) keeps its own.
+
 What the kit leaves alone: the spacing between sections (margins), the page geometry, and every other element.
 The CoQ itself is the source and is not touched.
 """
@@ -57,6 +73,83 @@ PILLS = ['.selrow .grp', '.selrow .lk-lbl', '.selrow .lk-lbl .mk', '.selrow .chi
          '.selrow .chip-sel .mk', '.selrow .chip-sel .ratio', '.selrow .chip-sel .ratio b', '.selrow .stack',
          '.selrow .chip-un', '.selrow .chip-un .bx']
 BARS = ['.sec-label', '.sec-label .sec-no', '.sec-label .mk']
+# the conformity row: the CoQ's section 04, the iCoA's "Result vs Specification"
+DISP = ['.disp-row .grp', '.disp-row .lk-lbl', '.disp-row .lk-lbl .mk', '.disp-row .lk-lbl .bisep', '.disp-row .chip-sel',
+        '.disp-row .chip-sel .bx', '.disp-row .chip-sel .mk', '.disp-row .chip-un', '.disp-row .chip-un .bx']
+
+# the signature block: the grid's columns and its place at the foot of the page, then each box and its parts. Its
+# bottom margin stays the document's own: the specification's footer is drawn over the page foot (position:absolute)
+# and the template's margin keeps the block above it
+GRID = ['display', 'grid-template-columns', 'column-gap', 'row-gap', 'padding-left', 'padding-right', 'padding-top',
+        'padding-bottom', 'margin-left', 'margin-right', 'position', 'top', 'box-sizing', 'width', 'text-align',
+        'justify-items', 'align-items']
+SIGN_PROPS = [p for p in ALL if p not in ('height', 'min-height')] + [
+    'flex-direction', 'position', 'margin-top', 'margin-bottom', 'text-align']
+SIGN = [('.approval-grid > div', SIGN_PROPS), ('.approval-grid .ap-role', SIGN_PROPS),
+        ('.approval-grid .ap-role .mk', SIGN_PROPS), ('.approval-grid .ap-sign', SIGN_PROPS + ['height']),
+        ('.approval-grid .ap-line', SIGN_PROPS + ['height', 'width']), ('.approval-grid .ap-title', SIGN_PROPS),
+        ('.approval-grid .ap-title .mk', SIGN_PROPS), ('.approval-grid .ap-name', SIGN_PROPS),
+        ('.approval-grid .ap-cred', SIGN_PROPS), ('.approval-grid .ap-date-row', SIGN_PROPS),
+        ('.approval-grid .ap-date-label', SIGN_PROPS), ('.approval-grid .ap-date-val', SIGN_PROPS)]
+
+# text of the same role: (on the iCoA or specification, on the CoQ). A target starting "> " is a child of .page.
+FONT = ['font-family', 'font-size', 'font-weight', 'font-style', 'letter-spacing', 'text-transform', 'color']
+LBL, LBL_MK = '.gridrow .lk > .lk-lbl', '.gridrow .lk > .lk-lbl > .mk'
+VAL, VAL_SM = '.gridrow .lk > .lk-val:not(.sm)', '.gridrow .lk > .lk-val.sm'
+ATTR, ATTR_MK, ATTR_MONO = '.gridrow .lk > .attr-val', '.gridrow .attr-val > .mk', '.gridrow .attr-val > .attr-mono'
+TH, TH_MK, TH_BISEP = 'table.results thead th', 'table.results thead th .mk', 'table.results thead th .bisep'
+NO = 'table.results tbody tr:not(.row-group):not(.sub-row) > td:first-child'
+NAME, NAME_MK, NAME_SUP = 'table.results tbody td > .p-name', 'table.results .p-name > .mk', 'table.results .p-name > sup'
+SUB, SUB_MK = 'table.results tbody td > .p-sub', 'table.results .p-sub > .mk'
+SUB_SUB, SUB_BISEP = 'table.results .p-sub > sub', 'table.results .p-sub > .bisep'
+METH, METH_EQ = 'table.results tbody td > .p-method', 'table.results .p-method > .p-meth-eq'
+SPEC, SPEC_MK = 'table.results tbody td > .p-spec', 'table.results .p-spec > .mk'
+SPEC_SUP, SPEC_BISEP = 'table.results .p-spec > sup', 'table.results .p-spec > .bisep'
+RES, RES_MK = 'table.results .r-cell > .r-val', 'table.results .r-val > .mk'
+NUM, NUM_SEP = '.footer .foot-center-num', '.footer .foot-center-num > span'
+TYPE = [
+    # the header
+    ('.header-bar .hb-title', '.header-bar .hb-title'), ('.header-bar .hb-mk-title', '.header-bar .hb-mk-title'),
+    ('.header-bar .hb-sub', '.header-bar .hb-sub'), ('.header-bar .hb-mk-sub', '.header-bar .hb-mk-sub'),
+    ('.header-bar .hb-code-lbl', '.header-bar .hb-code-lbl'), ('.header-bar .hb-code-lbl .mk', '.header-bar .hb-code-lbl .mk'),
+    ('.header-bar .hb-code', '.header-bar .hb-code'), ('.header-bar .hb-issue', '.header-bar .hb-issue'),
+    ('.header-bar .hb-issue b', '.header-bar .hb-issue b'),
+    # section 01: the batch line (iCoA), the cultivar and potency (specification), the labels and values
+    ('> .pb-main > .pb-name', '.pb-main > .pb-name'), ('> .pb-main > .pb-name > .bisep', '.pb-main > .pb-name > .bisep'),
+    ('.product-banner .pb-main > .pb-name', '.pb-main > .pb-name > span:last-child'),
+    ('.product-banner .pbp-val', '.pb-main .pbp-val > span'),
+    ('.gridrow .lk > .lk-lbl', LBL), ('.gridrow .lk > .lk-lbl > .mk', LBL_MK),
+    ('.gridrow .lk > .lk-val:not(.sm)', VAL), ('.gridrow .lk > .lk-val.sm', VAL_SM),
+    ('.pb-code-item > .pcr-lbl', LBL), ('.pb-code-item > .pcr-lbl > .mk', LBL_MK), ('.pb-code-item > .pcr-val', VAL),
+    ('.ig-cell > .ig-label', LBL), ('.ig-cell > .ig-label > .mk', LBL_MK), ('.ig-cell > .ig-val', ATTR),
+    ('.ig-cell > .ig-val[style*="Roboto Mono"]', ATTR_MONO), ('.ig-cell > .ig-val > span:not(.mk)', ATTR_MONO),
+    ('.ig-cell > .ig-val .mk', ATTR_MK),
+    # the table head
+    ('table.zr thead th', TH), ('table.zr thead th .mk', TH_MK),
+    ('table.params thead th', TH), ('table.params thead th .mk', TH_MK), ('table.params thead th .bisep', TH_BISEP),
+    # the rows: number, parameter, method, criterion, result
+    ('table.zr .row-group .gn', NO), ('table.params tbody td:first-child', NO),
+    ('table.zr .row-group .gt', NAME), ('table.zr .row-group .gt > .mk', NAME_MK),
+    ('table.zr .p-name > .en', NAME), ('table.zr .p-name > .mk', NAME_MK),
+    ('table.params tbody td > .p-name', NAME), ('table.params .p-name .mk', NAME_MK),
+    ('table.params .p-name .p-tag', NAME_MK), ('table.params .p-name sup', NAME_SUP),
+    ('table.params tbody td > .p-sub', SUB), ('table.params .p-sub .mk', SUB_MK), ('table.params .p-sub sub', SUB_SUB),
+    ('table.params .p-sub .bisep', SUB_BISEP),
+    ('table.zr td.pm', METH), ('table.zr tr.mi > td', METH), ('table.zr tr.mi .mi-l', LBL),
+    ('table.zr tr.mi .mi-l > .mk', LBL_MK), ('table.zr tr.mi td > .mk', NAME_MK),
+    ('table.params tbody td > .p-method', METH), ('table.params .p-method > .p-meth-eq', METH_EQ),
+    ('table.zr td.ob', SPEC), ('table.zr td.ob > .mk', SPEC_MK),
+    ('table.params tbody td > .p-spec', SPEC), ('table.params .p-spec .mk', SPEC_MK), ('table.params .p-spec sup', SPEC_SUP),
+    ('table.params .p-spec .bisep', SPEC_BISEP),
+    ('table.zr td.rv', RES), ('table.zr td.rv > .mk', RES_MK),
+    # the note under the results, the footer
+    ('> .pot-note', '.pot-note'), ('> .pot-note > .mk', '.pot-note > .mk'), ('> .pot-note > .bisep', '.pot-note > .bisep'),
+    ('.footer .foot-left', '.footer .foot-left'), ('.footer .foot-center-num', NUM),
+    ('.footer .foot-center-num > span', NUM_SEP, FONT + ['opacity']),
+    ('.footer .foot-center-num > .fcn-cur', NUM, FONT + ['opacity']), ('.footer .foot-center-num > .fcn-tot', NUM, FONT + ['opacity']),
+    # the iCoA's unticked "Does not conform" carries Macedonian; the CoQ's Macedonian face, the unticked chip's colour
+    ('.disp-row .chip-un .mk', '.disp-row .chip-sel .mk'), ('.disp-row .chip-un .mk', '.disp-row .chip-un', ['color']),
+]
 
 JS = """([items]) => { const out = [];
   for (const [sel, pseudo, props] of items) {
@@ -121,13 +214,28 @@ def reference():
     return got[0]
 
 
+def plan():
+    """[target, CoQ element, pseudo, properties] for every rule of the kit, in the kit's order."""
+    items = []
+    for s in PILLS + BARS + DISP:
+        items.append([s, s, None, ALL])
+        items += [[s, s, '::before', PSEUDO], [s, s, '::after', PSEUDO]]
+    items.append(['.selrow', '.selrow', None, ROW])
+    # the CoQ's section 04 row stands on the page margin by its own margins, not by padding
+    items.append(['.disp-row', '.disp-row', None, ROW + ['margin-left', 'margin-right']])
+    items.append(['.approval-grid', '.approval-grid', None, GRID])
+    items.append(['.approval-grid ~ .footer', '.approval-grid ~ .footer', None, ['margin-top']])
+    for s, props in SIGN:
+        items.append([s, s, None, props])
+        items += [[s, s, '::before', PSEUDO], [s, s, '::after', PSEUDO]]
+    for t in TYPE:
+        items.append([t[0], t[1], None, t[2] if len(t) > 2 else FONT])
+    return items
+
+
 def computed(path):
     from playwright.sync_api import sync_playwright
-    items = []
-    for s in PILLS + BARS:
-        items.append([s, None, ALL])
-        items += [[s, '::before', PSEUDO], [s, '::after', PSEUDO]]
-    items.append(['.selrow', None, ROW])
+    items = plan()
     with sync_playwright() as pw:
         b = pw.chromium.launch()
         p = b.new_page()
@@ -135,25 +243,36 @@ def computed(path):
             p.route(pat, lambda r: r.abort())
         p.goto('file://' + os.path.abspath(path))
         p.evaluate('() => document.fonts.ready')
-        out = p.evaluate(JS, [items])
+        got = p.evaluate(JS, [[[src, ps, props] for _, src, ps, props in items]])
         b.close()
-    missing = [s for s, ps, o in out if o is None and ps is None]
+    missing = [src for (_, src, ps, _), (_, _, o) in zip(items, got) if o is None and ps is None]
     if missing:
         raise SystemExit('the reference CoQ has no %s' % ', '.join(missing))
-    return out
+    return [(t, ps, o) for (t, _, ps, _), (_, _, o) in zip(items, got)]
 
 
 def css_of(out, source):
     lines = ['/* house kit — generated by tracker/house_kit.py --generate from %s.' % os.path.basename(source),
-             '   The computed style of the CoQ pill row and heading bars; do not edit by hand. */']
+             '   The computed style of the CoQ pill row, heading bars, conformity row, signature block and text roles;',
+             '   do not edit by hand. */']
     for sel, pseudo, o in out:
         if o is None:
             continue
+        at = SCOPE[:-1] + ' > ' + sel[2:] if sel.startswith('> ') else SCOPE + sel
         if pseudo and o.get('content') in ('none', 'normal', ''):
-            lines.append('%s%s%s{content:none !important;display:none !important}' % (SCOPE, sel, pseudo))
+            lines.append('%s%s{content:none !important;display:none !important}' % (at, pseudo))
             continue
+        o = dict(o)
+        cols = o.get('grid-template-columns', '').split()
+        if len(cols) > 1 and len(set(cols)) == 1:
+            # equal columns, as the CoQ declares them (1fr 1fr), not the pixels its page resolved them to
+            o['grid-template-columns'] = 'repeat(%d,minmax(0,1fr))' % len(cols)
+        if sel == '.approval-grid':
+            o['width'] = 'auto'       # the block spans its page, whatever the page's own width rule
+            o['margin-top'] = 'auto'  # and stands at the foot of the page, on the footer, as on the CoQ
+            o['height'] = 'auto'      # as tall as its boxes (the specification template fixed it at 144 px)
         decl = ';'.join('%s:%s !important' % (k, v) for k, v in o.items() if v not in ('',))
-        lines.append('%s%s%s{%s}' % (SCOPE, sel, pseudo or '', decl))
+        lines.append('%s%s{%s}' % (at, pseudo or '', decl))
     return '\n'.join(lines) + '\n'
 
 

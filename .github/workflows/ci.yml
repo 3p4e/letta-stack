@@ -440,3 +440,8 @@ jobs:
       - name: The pills agree on the CoQ, the iCoA and the specification
         run: |
           python3 deliverables/qc_gap_analysis/tracker/check_pill_rows.py
+      # Head of QC, 07.10.2026: the QC Manager on the right of every CoQ, iCoA and specification
+      # not yet issued, and their signature block, pills, bars and text set as the CoQ sets them.
+      - name: The QC Manager signs on the right, in the CoQ's formatting
+        run: |
+          python3 deliverables/qc_gap_analysis/tracker/check_signature_side.py

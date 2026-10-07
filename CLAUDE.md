@@ -284,7 +284,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 202 corrections, 07.09.2026–07.10.2026, each quoted — is
+The full record — 206 corrections, 07.09.2026–07.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:
@@ -404,6 +404,19 @@ Standing rules the corrections produced (message numbers are in the record):
   house_kit_2026-10-07.css`, `--generate` from the CoQ's computed style, `--check`) draws the pills and the heading
   bars as the CoQ draws them — the bar is the 01.10.2026 bevel — on every iCoA (`build_t3_bundle.icoa_page`) and
   specification (`build_qcsp_imb.py`) not yet issued. Change the look on the CoQ, then regenerate the kit.
+  Later that day the kit took three more parts, read off the same CoQ: the iCoA's *Result vs Specification* chips as
+  the CoQ's section 04 (DISP); the signature block (SIGN); and **text of the same role in the CoQ's face, size,
+  weight, spacing, case and colour** (TYPE: *"use the same fonts for the same class of text … in all depths on all
+  documents"*): header, section 01 labels and values, table head, number, parameter, method, criterion, result,
+  notes, footer. Text the CoQ has no counterpart for keeps its own.
+- **Signature block: the QC Manager on the right** (Head of QC, 07.10.2026, *"mandatory"*), on every CoQ, iCoA and
+  specification not yet issued; on the left the QA Manager (*Reviewed by*) on the CoQ and the specification, the QC
+  Analyst on the iCoA. The block is set as on the CoQ (`house_kit` SIGN). `build_v40.js` swaps the CoQ's boxes
+  (`!FROZEN_LOT`; Tranches 1/2 as sent), `build_qcsp_imb.py` the specification's; the iCoA base had it already.
+  `tracker/check_signature_side.py` (CI) holds the order and the kit on every page.
+- **Specifications in QA's Word look** (Head of QC, 07.10.2026, approved on the KC-I sample: *"the header and footer
+  and horizontal separators are all okay and also the table backgrounds"*): `build_qcsp_imb.py` `WORD_LAYER`, the
+  default on all 58 sheets, its section bars deepened (*"a little bit more visible … some contrast"*).
 - **Processing field** (Machine/Hand): restored on the CoQ and the iCoA by the Head of QC on 30.09.2026 (the
   approved scans carry it), superseding its removal of 18.09. On 07.10.2026: *"include the processing pill into
   the iCoA as in the CoQs and format it suitably"*. The iCoA row had run past the right margin and cut off the

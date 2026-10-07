@@ -73,6 +73,12 @@ Head of QC, 07.10.2026:
   groups per sheet, which a printer short of memory drops as a white page. Each sheet is now one opaque 300 dpi
   background under its vector text, with no transparency left (`print_qcsp_imb.py`, two passes over the same layout;
   each sheet checked against the plain print). The files are a third of the size. `--vector` prints the old way.
+- **QA's Word look, the CoQ's text and signatures** (07.10.2026, later). The colours of QA's Word sheets, approved
+  on the KC-I sample (*"the header and footer and horizontal separators are all okay and also the table
+  backgrounds"*), are on every sheet; only the section bars were deepened, *"a little bit more visible"*. Text
+  of the same role is set in the CoQ's face, size, weight and colour (`tracker/house_kit.py` TYPE), and the
+  signature block as the CoQ's, with the **QC Manager on the right** and the QA Manager (*Reviewed by*) on the
+  left — the template had them the other way round.
 - **One file per strain.** *"individual PDF files per strain, all grades merged into one document"*:
   `_zip/QCSP_001_ImB_by_strain_2026-10-07.zip`, 24 files, the strain's sheets in grade order with a
   bookmark per grade (`specs/merge_qcsp_by_strain.py`; the pages are joined, not reprinted).
