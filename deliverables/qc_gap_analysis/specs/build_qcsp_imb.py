@@ -139,6 +139,36 @@ def records():
 # the COQs, with that design and formatting"). The spec's own chips stacked in two rows and never marked the ticked
 # option (its "selected" style keyed on a class the filling never wrote), so the chosen box read as unticked.
 SEL_BLOCK = re.compile(r'<div class="pb-sel-inline">.*?</div>\s*</div>(?=\s*<div class="pb-codes-row)', re.S)
+# QA's Word template (Head of QC, 07.10.2026: "adopt the visuals, the colour schemes, the shadings, the background colours
+# … to look just like the Word documents … almost white"). Read off QA's ImB_Specification_KC18.docx: its header is a
+# white image washed further (Word brightness +20 %, contrast −40 %), its product, codes and packaging bands are white
+# (Word's Photocopy effect on our gradient images), its section bar the pale gloss strip below (image4.png, sampled
+# down its middle), its table rows #F5F5F5 shading, its footer the light cream-to-blue band (image18.png). Colour and
+# shading only: no text, value, rule of content or layout changes. Off until the Head of QC approves the sample.
+QA_LIGHT = os.environ.get("QCSP_LIGHT") == "1"
+Q = "html:not(#_q1):not(#_q2):not(#_q3):not(#_q4):not(#_q5):not(#_q6) body .page "
+LIGHT_LAYER = ('<style id="__qa-light-2026-10-07">\n'
+    + Q + '.header-bar{background:#FFFFFF !important;box-shadow:none !important}\n'
+    + Q + '.header-bar::before,' + Q + '.header-bar::after{background:none !important;box-shadow:none !important}\n'
+    + Q + '.sec-label{background-color:#E7EEF5 !important;background-image:linear-gradient(180deg,#C2D1DF 0,#C2D1DF 1px,'
+          '#F1F5F9 6%,#F5FAFD 15%,#F2F7FB 30%,#E7EEF5 50%,#D9E4ED 70%,#D6E1EC 85%,#DFE8F0 100%) !important;'
+          'border-top:0 !important;border-bottom:1px solid #D6E1EC !important;box-shadow:none !important}\n'
+    + Q + '.pb-wash,' + Q + '.product-banner,' + Q + '.spec-panel{background:#FFFFFF !important;box-shadow:none !important}\n'
+    + Q + '.pb-sel-inline,' + Q + '.pb-codes-row,' + Q + '.pb-attrs{background-color:#FFFFFF !important;'
+          'background-image:none !important}\n'
+    + Q + '.pp-pills .selrow{background:none !important}\n'
+    + Q + '.tbl-wrap table.params thead tr{background-color:#FFFFFF !important;background-image:'
+          'linear-gradient(90deg,#fff 0,#C9D3DD 38px,#C9D3DD calc(100% - 38px),#fff 100%),'
+          'linear-gradient(90deg,#fff 0,#C9D3DD 38px,#C9D3DD calc(100% - 38px),#fff 100%) !important;'
+          'background-size:100% 1px,100% 1px !important;background-position:top left,bottom left !important;'
+          'background-repeat:no-repeat !important}\n'
+    + Q + '.tbl-wrap table.params thead th::before,' + Q + '.tbl-wrap table.params thead th::after{background:none !important}\n'
+    + Q + '.tbl-wrap table.params tbody tr{background-color:#FFFFFF !important;background-image:none !important}\n'
+    + Q + '.tbl-wrap table.params tbody tr:nth-child(even){background-image:linear-gradient(90deg,#fff 0,#fff 38px,'
+          '#F5F5F5 38px,#F5F5F5 calc(100% - 38px),#fff calc(100% - 38px)) !important}\n'
+    + Q + '.footer{background:linear-gradient(90deg,#F4EBD5 0%,#FAF5E8 30%,#F9F9F5 50%,#F0F4F8 70%,#DAE5F1 100%) !important;'
+          'box-shadow:none !important}\n'
+    + '</style>\n')
 # the pill row sits in the spec's own selection band, which already carries the page margin
 PILLS_HOST = ('<style id="__pp-pills-host">\n'
               'html:not(#_h1):not(#_h2):not(#_h3):not(#_h4):not(#_h5) body .page .pb-sel-inline.pp-pills{display:block !important}\n'
@@ -186,7 +216,7 @@ def sheet(tpl, r):
     # the CoQ's look for the pills and the heading bars, read off the CoQ itself (tracker/house_kit.py)
     if h.count("</body>") != 1:
         raise SystemExit("template: no single </body>")
-    h = h.replace("</body>", house_kit.kit_style() + PILLS_HOST + "</body>", 1)
+    h = h.replace("</body>", house_kit.kit_style() + PILLS_HOST + (LIGHT_LAYER if QA_LIGHT else "") + "</body>", 1)
     for a, b in ORBITRON_STACK:
         h = h.replace(a, b)
     rules = re.sub(r"@font-face\s*\{[^}]*\}", "", h)

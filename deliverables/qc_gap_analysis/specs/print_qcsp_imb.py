@@ -59,8 +59,9 @@ def pages_of(pdf):
     return 0
 
 
-# a selector no stylesheet of the sheet out-ranks: the design's own rules carry !important at class specificity
-HI = '*' + ':not(#_)' * 6
+# a selector no stylesheet of the sheet out-ranks: the design's own rules carry !important at class specificity, and
+# the desk's layers over it (house kit, pill host, QA-light) as many as six ids; the passes take twelve
+HI = '*' + ':not(#_)' * 12
 ALL = '%s,%s::before,%s::after,%s::marker' % (HI, HI, HI, HI)
 NO_TEXT = ALL + '{color:transparent!important;-webkit-text-fill-color:transparent!important;' \
                 'text-decoration-color:transparent!important}'
@@ -69,7 +70,7 @@ TEXT_ONLY = ALL + '{background:none!important;background-color:transparent!impor
                   'text-shadow:none!important;-webkit-mask-image:none!important;mask-image:none!important;' \
                   '-webkit-mask:none!important;mask:none!important;filter:none!important;backdrop-filter:none!important;' \
                   'opacity:1!important;mix-blend-mode:normal!important}' + \
-            ','.join(t + ':not(#_)' * 7 for t in ('img', 'svg', 'canvas')) + '{visibility:hidden!important}'
+            ','.join(t + ':not(#_)' * 13 for t in ('img', 'svg', 'canvas')) + '{visibility:hidden!important}'
 # a text colour with alpha, blended onto the nearest opaque background behind it (white if none)
 OPAQUE_TEXT = """() => { let n = 0;
   const parse = c => { const m = c.match(/rgba?\\(([^)]+)\\)/); if (!m) return null;
@@ -137,7 +138,10 @@ def print_safe(chosen, css, chromium):
         want_text = ''.join(tx[0].get_text().split())
         a = vec[0].get_pixmap(dpi=100, alpha=False).samples
         b = got[0].get_pixmap(dpi=100, alpha=False).samples
-        mean = sum(abs(x - y) for x, y in zip(a, b)) / float(len(a))
+        d = [abs(x - y) for x, y in zip(a, b)]
+        mean = sum(d) / float(len(d))
+        # a mean hides a small element lost whole (a logo, a pill): no more than 0.5 % of the page may differ visibly
+        lost = sum(1 for x in d if x > 64) / float(len(d))
         if left:
             bad.append('%s still carries %s' % (name, ', '.join(left)))
         if ''.join(got[0].get_text().split()) != want_text:
@@ -150,8 +154,9 @@ def print_safe(chosen, css, chromium):
         missing = {w for w in {once(w) for w in words(vec[0].get_text())} - have if not any(w in h for h in have)}
         if missing:
             bad.append('%s: words of the plain print missing: %s' % (name, ' '.join(sorted(missing))[:200]))
-        if mean > 2.0:
-            bad.append('%s differs from the plain print (mean %.2f / 255)' % (name, mean))
+        if mean > 2.0 or lost > 0.005:
+            bad.append('%s differs from the plain print (mean %.2f / 255, %.2f %% of the page visibly)' % (
+                name, mean, 100 * lost))
         got.close()
         for d in (vec, bg, tx):
             d.close()
