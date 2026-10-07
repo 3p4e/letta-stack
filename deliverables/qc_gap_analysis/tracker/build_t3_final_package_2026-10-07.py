@@ -33,6 +33,8 @@ Output, `DELIVER_2026-10-07_T3_Final/`:
 | `T3_CoQ+iCoA+Spec_Initial_by_batch_2026-10-07.zip` | one PDF per initial CoQ: the CoQ, its iCoA, then the specification sheet its Total THC falls in, named `{batch}_{product code}_Initial_{CoQ}+{iCoA}+{specification}.pdf` |
 | `T3_CoQ+iCoA+Spec_Retest_by_batch_2026-10-07.zip` | the same for each retest CoQ (two zips, each under GitHub's 100 MB file limit) |
 | `T3_CoQ+iCoA+Spec_all_2026-10-07.pdf` | all of them in one file, in CoQ order |
+| `T3_CoQ+iCoA+Spec_Initial_merged_2026-10-07.pdf` | the initials alone, as one merged file |
+| `T3_CoQ+iCoA+Spec_Retest_merged_2026-10-07.pdf` | the retests alone, as one merged file |
 | `CONTENTS.tsv` | the list of all of the above |
 
 Head of QC, 07.10.2026, on the third set: *"one more deliverable for each production batch … the certificate of
@@ -42,7 +44,9 @@ stops unless the CoQ prints that code and that product code, the sheet prints th
 lies in the sheet's window (`potency_grades_2026-09-15.csv`).
 
 Each merged PDF has a bookmark per certificate or sheet. `--specs` rebuilds the specifications file alone,
-`--with-spec` the three CoQ + iCoA + specification files and `CONTENTS.tsv` alone.
+`--with-spec` the CoQ + iCoA + specification files and `CONTENTS.tsv` alone, `--by-series` only the initial and
+retest merged files (Head of QC, 07.10.2026: *"the retest only as merged doc pdf and the initials merged alone as
+one pdf"*).
 """
 import csv
 import glob
@@ -153,8 +157,8 @@ def spec_sheet(code):
     return got[0], grade
 
 
-def with_spec(rows, pages):
-    """Per CoQ: the CoQ, its iCoA, then the specification sheet its Total THC falls in. Two zips and one merged file."""
+def spec_rows(rows, pages):
+    """Each row's specification sheet, held against its CoQ: same code, same product code, THC in the window."""
     import pymupdf
     bad = []
     for r in rows:
@@ -178,6 +182,40 @@ def with_spec(rows, pages):
     if bad:
         raise SystemExit('refused:\n  ' + '\n  '.join(bad))
 
+
+def append(book, toc, r, pages):
+    """The CoQ, its iCoA and its specification sheet onto `book`, bookmarked under the CoQ."""
+    import pymupdf
+    toc.append([1, '%s · %s · %s · %s' % (r['coq'], r['batch'], r['pcode'], r['spec']), book.page_count + 1])
+    for label, src in ((r['coq'], pages[r['coq']]), (r['icoa'], pages.get(r['icoa'])), (r['spec'], r['_sheet'])):
+        if src:
+            with pymupdf.open(src) as d:
+                toc.append([2, label, book.page_count + 1])
+                book.insert_pdf(d)
+
+
+def by_series(rows, pages):
+    """The initials alone and the retests alone, each as one merged PDF: CoQ, iCoA, specification per certificate."""
+    import pymupdf
+    for series, title in (('Initial', 'initial'), ('Retest', 'retest')):
+        book, toc = pymupdf.open(), []
+        for r in rows:
+            if r['series'] == series:
+                append(book, toc, r, pages)
+        book.set_toc(toc)
+        book.set_metadata({'title': 'Purely Plant — Tranche 3 — the %s certificates of quality, each with its internal '
+                                    'certificate of analysis and its product specification' % title,
+                           'producer': 'Purely Plant Quality Desk'})
+        dest = os.path.join(OUT, 'T3_CoQ+iCoA+Spec_%s_merged_%s.pdf' % (series, STAMP))
+        book.save(dest, garbage=4, deflate=True)
+        print('%s — %d certificates, %d pages (%.1f MiB)' % (os.path.basename(dest), sum(1 for t in toc if t[0] == 1),
+                                                            book.page_count, os.path.getsize(dest) / 1048576.0))
+        book.close()
+
+
+def with_spec(rows, pages):
+    """Per CoQ: the CoQ, its iCoA, then the specification sheet its Total THC falls in. Two zips and one merged file."""
+    import pymupdf
     tmp = tempfile.mkdtemp(prefix='t3spec_')
     book, toc = pymupdf.open(), []
     made = []
@@ -189,17 +227,9 @@ def with_spec(rows, pages):
                 if r['series'] != series:
                     continue
                 one, sub = pymupdf.open(), []
-                toc.append([1, '%s · %s · %s · %s' % (r['coq'], r['batch'], r['pcode'], r['spec']), book.page_count + 1])
-                for kind, src in (('CoQ', pages[r['coq']]), ('iCoA', pages.get(r['icoa'])), ('spec', r['_sheet'])):
-                    if not src:
-                        continue
-                    label = {'CoQ': r['coq'], 'iCoA': r['icoa'], 'spec': r['spec']}[kind]
-                    with pymupdf.open(src) as d:
-                        sub.append([1, label, one.page_count + 1])
-                        toc.append([2, label, book.page_count + 1])
-                        one.insert_pdf(d)
-                        book.insert_pdf(d)
-                one.set_toc(sub)
+                append(one, sub, r, pages)
+                append(book, toc, r, pages)
+                one.set_toc([[1, t[1], t[2]] for t in sub if t[0] == 2])
                 one.set_metadata({'title': 'Purely Plant — %s — %s, %s and %s' % (
                     r['batch'], r['coq'], r['icoa'] or 'no iCoA', r['spec']), 'producer': 'Purely Plant Quality Desk'})
                 p = os.path.join(tmp, r['file_with_spec'])
@@ -220,11 +250,10 @@ def with_spec(rows, pages):
     for name, n, b in made:
         print('%s — %d files (%.1f MiB)' % (name, n, b / 1048576.0))
     shutil.rmtree(tmp, ignore_errors=True)
-    for r in rows:
-        r.pop('_sheet', None)
 
 
 def write_contents(rows):
+    rows = [{k: v for k, v in r.items() if not k.startswith('_')} for r in rows]
     with open(os.path.join(OUT, 'CONTENTS.tsv'), 'w', encoding='utf-8', newline='') as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0]), delimiter='\t', lineterminator='\n')
         w.writeheader()
@@ -280,8 +309,11 @@ def main(argv=()):
     if '--specs' in argv:
         specs(rows)
         return 0
-    if '--with-spec' in argv:
-        with_spec(rows, pages)
+    if '--with-spec' in argv or '--by-series' in argv:
+        spec_rows(rows, pages)
+        if '--with-spec' in argv:
+            with_spec(rows, pages)
+        by_series(rows, pages)
         write_contents(rows)
         return 0
     print('%d Tranche 3 CoQs (%d initial, %d retest), %d with an iCoA; every printed Total THC is the master\'s '
@@ -332,7 +364,9 @@ def main(argv=()):
         made.append((os.path.basename(dest), doc.page_count, os.path.getsize(dest) / 1048576.0))
         doc.close()
     specs(rows)
+    spec_rows(rows, pages)
     with_spec(rows, pages)
+    by_series(rows, pages)
     write_contents(rows)
     shutil.rmtree(tmp, ignore_errors=True)
     for n, pg, mib in made:
