@@ -41,6 +41,12 @@ run 1 and all 46 batches are repeated from the sample remainders under **LOD-01R
 AUW220D. The repeat is reported for every batch; run 1 stays in the record, not reported. The band rule
 first written in DEV-01 is kept there as superseded.
 
+**INF-01 (07.10.2026):** `build_exec_memo.py` builds the Head of QC's official information note to the CEO and
+executive management, `out/3_LOD_ANALYSIS_EXECUTION/PP-QC-SP-002_26-INF-01_Information_Note_LoD_Deviation_Repeat.pdf`
+(3 pages + a 1-page annex of the 46 run-1 values): the deviation, the measures before the 24-h weighing, what the
+run-1 values show and the cautions with their criteria, and the repeat of all 46 under LOD-01R. PDF only (Head of
+QC: no Word files): the DOCX is built in a folder outside the repository. It is not in package 3's packet or zip.
+
 **Run 1, for information** (`run1_LOD-01_2026-10-05/`): the laboratory's workbook and `check_run1.py`,
 which recalculates every row from its raw weighings into `RUN1_CHECK.tsv`. The workbook's LoD agrees on
 all 46 rows, and no value exceeds 11.7 %. For DEV-01 section D, G2 on the AUW220D minus G2 on the precision
@@ -104,6 +110,7 @@ python3 build_labels.py                                           # QASOP_031 la
 for f in out/1_PLAN out/2_SAMPLING_EXECUTION out/3_LOD_ANALYSIS_EXECUTION; do
   (cd $f && soffice --headless --convert-to pdf --outdir . *.docx); done
 python3 package.py                                                # packets, zips, BUILD_LOG.md
+python3 build_exec_memo.py                                        # INF-01 note to management, PDF only
 ```
 
 Fonts: copy `pp-document-suite/assets/fonts/*.ttf` to `~/.local/share/fonts` and run `fc-cache -f`
