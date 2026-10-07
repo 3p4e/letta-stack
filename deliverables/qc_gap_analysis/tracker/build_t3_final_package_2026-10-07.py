@@ -53,8 +53,10 @@ SRC = os.path.join(GAP, 'DELIVER_2026-09-26_T3')
 # A result the CoQ prints from a certificate found after the master's tracker sheet was last written. Each is
 # named here with its source, and listed for the master; the build stops on any other disagreement.
 NOT_YET_IN_MASTER = {
-    'CoQ-PP_26-050': ('7.05', '031-1-К/26', 'intake_GRC102501_2026-09-27 (two reads; the Versa sale list prints '
-                                           '7.05 %); the tracker sheet\'s GRC102501 block has 11.53, 9.80, 7.50 only'),
+    # read twice off the certificate itself (intake_GRC102501_2026-09-27/two_reads.tsv); the Versa sale list is no
+    # source for THC (Head of QC, 07.10.2026: it may not carry the retest values)
+    'CoQ-PP_26-050': ('7.05', '031-1-К/26', 'intake_GRC102501_2026-09-27, two reads of the certificate; the tracker '
+                                           'sheet\'s GRC102501 block has 11.53, 9.80, 7.50 only'),
 }
 MASTER = os.path.join(HERE, 'CoQ_Analysis_Master_v57.xlsx')
 STAMP = '2026-10-07'
