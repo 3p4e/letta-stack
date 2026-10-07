@@ -23,12 +23,29 @@ const UNIT = {'4':' %','5':' %','6':' %','8':' %','9.1':' CFU/g','9.2':' CFU/g',
   '10.1':' µg/kg','10.2':' µg/kg','10.3':' µg/kg','11.1':' mg/kg','11.2':' mg/kg','11.3':' mg/kg','11.4':' mg/kg','7':' %','12':' mg/kg'};
 // `ac` is the accreditation id, held apart from the EN name so it can print on the second
 // line beside the Macedonian text rather than running the first line long.
-const LABS = {
+const LABS_SENT = {
   PP:  {en:'Purely Plant QC Department · In-house', ac:'', mk:'Пјурли Плант — Сектор за КК · In-house', ad:'Kojlija 1043, Petrovec-Skopje, MK'},
   CNP: {en:'UKIM Faculty of Pharmacy — Center for Natural Products · ISO/IEC 17025:2017', ac:'LT-083 (IARM)', mk:'УКИМ ФФ — Центар за Природни Производи', ad:'Mother Theresa 47, 1000 Skopje, MK'},
   IPH: {en:'JZU Institute for Public Health (IPH Skopje) · ISO/IEC 17025:2017', ac:'LT-005 (IARM)', mk:'ЈЗУ Институт за јавно здравје (ИЈЗ Скопје)', ad:'50ta Divizija 6, 1000 Skopje, MK'},
   FHM: {en:'Farmahem DOOEL — Laboratory for Instrumental Analysis · ISO/IEC 17025:2017', ac:'LT-020 (IARM)', mk:'Фармахем ДООЕЛ — Лаборатoрија за инструментална анализа', ad:'Kisela Voda, 1000 Skopje, MK'},
   PHY: {en:'State Phytosanitary Laboratory · ISO/IEC 17025:2017', ac:'LT-034 (IARM)', mk:'Државна фитосанитарна лабораторија', ad:'Aleksandar Makedonski bb, 1000 Skopje, MK'},
+  // P050202: the release cannabinoids (Head of QC, 26.09.2026 — identification C goes with them)
+  NGP: {en:'New Garden Pharma — QC Laboratory', ac:'', mk:'Њу Гарден Фарма — Лабораторија за КК', ad:'Analysis test report · cannabinoids by HPLC (DAB)'}
+};
+// Head of QC, 07.10.2026: each laboratory's line is what the laboratory prints on its own
+// certificates (CLAUDE.md §6), read from the committed reads (ingestion/ecoa_runner/records_corpus.json,
+// the RAGflow page cache): Farmahem's 62 reports - potency -К, mycotoxins -М, loss on drying -ГС - all
+// come from "Фармахем Лабораторија за животна средина", ЛТ-017, ул. „Шар Планина" бр. 20, Скопје (the
+// 21.09.2026 line, "Laboratory for Instrumental Analysis · LT-020 · Kisela Voda", came from no
+// certificate); the State Phytosanitary Laboratory prints LT-036; UKIM "Mother Teresa St., No. 47";
+// IPH "ул. 50 Дивизија бр. 6". LABS_SENT keeps the lines exactly as the issued Tranche 1 and 2 pages
+// carry them (Head of QC, 26.09.2026: not touched); every other certificate prints LABS.
+const LABS = {
+  PP:  {en:'Purely Plant QC Department · In-house', ac:'', mk:'Пјурли Плант — Сектор за КК · In-house', ad:'Kojlija 1043, Petrovec-Skopje, MK'},
+  CNP: {en:'UKIM Faculty of Pharmacy — Center for Natural Products · ISO/IEC 17025:2017', ac:'LT-083 (IARM)', mk:'УКИМ ФФ — Центар за Природни Производи', ad:'Mother Teresa 47, 1000 Skopje, MK'},
+  IPH: {en:'JZU Institute for Public Health (IPH Skopje) · ISO/IEC 17025:2017', ac:'LT-005 (IARM)', mk:'ЈЗУ Институт за јавно здравје (ИЈЗ Скопје)', ad:'50 Divizija 6, 1000 Skopje, MK'},
+  FHM: {en:'Farmahem — Laboratory for the Environment · ISO/IEC 17025:2017', ac:'LT-017 (IARM)', mk:'Фармахем — Лабораторија за животна средина', ad:'Shar Planina 20, Skopje, MK'},
+  PHY: {en:'State Phytosanitary Laboratory · ISO/IEC 17025:2017', ac:'LT-036 (IARM)', mk:'Државна фитосанитарна лабораторија', ad:'Aleksandar Makedonski bb, 1000 Skopje, MK'},
   // P050202: the release cannabinoids (Head of QC, 26.09.2026 — identification C goes with them)
   NGP: {en:'New Garden Pharma — QC Laboratory', ac:'', mk:'Њу Гарден Фарма — Лабораторија за КК', ad:'Analysis test report · cannabinoids by HPLC (DAB)'}
 };
@@ -191,7 +208,7 @@ function section03(rec) {
   const rows = [];
   for (const key of ORDER) {
     const g = groups[key]; if (!g) continue;
-    const L = LABS[key];
+    const L = (rec.frozen ? LABS_SENT : LABS)[key];
     const certs = [...g.certs.values()].map(c =>
       '<span class="cert"><b>' + esc(c.doc) + '</b> · ' + esc(c.iss || '—') +
       (c.note ? '<i class="cert-note">' + esc(c.note) + '</i>' : '') + '</span>').join('');
@@ -283,5 +300,5 @@ function section01(rec) {
 '  </div>\n' +
 '  <div class="goldrule"></div>\n\n  ';
 }
-return { RED, AMBER, DETS, PANEL_EXTRA, EXTRA_ROWS, hasExtra, detsOf, UNIT, LABS, ORDER, canonLab, codeShaped, docCode, docNote, collapseParams, parseCSV, esc, mmyyyy, strip, red, cell, section03, section01, chip };
+return { RED, AMBER, DETS, LABS_SENT, PANEL_EXTRA, EXTRA_ROWS, hasExtra, detsOf, UNIT, LABS, ORDER, canonLab, codeShaped, docCode, docNote, collapseParams, parseCSV, esc, mmyyyy, strip, red, cell, section03, section01, chip };
 })();

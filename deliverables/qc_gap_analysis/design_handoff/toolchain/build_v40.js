@@ -130,6 +130,7 @@ function rec(c) {
     productCode: c.pcode || '—', window: w.window, nominal: w.nominal, tol: w.tol, specCode: c.spec || '—',
     packaging: spc.pack || '—', manufDate: c.md || '', packDate: c.pk || '', supersedes: sup,
     series: (c.t || '').indexOf('retest') === 0 ? 'reissue' : 'initial',
+    frozen: FROZEN_LOT(c),     // issued Tranche 1/2: section 03 prints the laboratory lines as sent
   };
 }
 fs.rmSync(OUT, { recursive: true, force: true });

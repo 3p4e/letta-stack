@@ -229,6 +229,13 @@ the laboratory line (17.09.2026).
   laboratories' own lines (ISO/IEC 17025, LT-005, LT-083) are statements about them, copied from
   their certificates.
 - **An empty slot in the Head of QC's template is left empty.** It is not a gap to fill.
+- **Each laboratory's line in section 03 is that laboratory's own**, read from its certificates (Head
+  of QC, 07.10.2026, "check the real addresses of the labs"): Farmahem *Laboratory for the Environment*
+  (Лабораторија за животна средина), LT-017, Shar Planina 20, Skopje; State Phytosanitary Laboratory
+  LT-036; UKIM FF Mother Teresa 47; IPH 50 Divizija 6. Until then section 03 printed Farmahem as
+  "Laboratory for Instrumental Analysis · LT-020 · Kisela Voda" and the Phytosanitary laboratory as
+  LT-034 — the desk's lines of 21.09.2026, from no certificate. `coq_build.js` `LABS`; `LABS_SENT` keeps
+  the lines the issued Tranche 1/2 pages carry, unchanged.
 - Before adopting any rule from a document that is not a ruling, check it against the rulings —
   the newest governs — and ask when they differ.
 - `tracker/check_certificate_claims.py` fails the build and CI on such a claim in any page a build
@@ -249,7 +256,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 189 corrections, 07.09.2026–07.10.2026, each quoted — is
+The full record — 190 corrections, 07.09.2026–07.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:
