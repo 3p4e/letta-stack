@@ -41,6 +41,12 @@ run 1 and all 46 batches are repeated from the sample remainders under **LOD-01R
 AUW220D. The repeat is reported for every batch; run 1 stays in the record, not reported. The band rule
 first written in DEV-01 is kept there as superseded.
 
+**Run 1, for information** (`run1_LOD-01_2026-10-05/`): the laboratory's workbook and `check_run1.py`,
+which recalculates every row from its raw weighings into `RUN1_CHECK.tsv`. The workbook's LoD agrees on
+all 46 rows, and no value exceeds 11.7 %. For DEV-01 section D, G2 on the AUW220D minus G2 on the precision
+balance gives mean +0.03 mg and SD 0.53 mg (n = 46). Seven portions fall outside 0.900–1.100 g
+(Ph. Eur. ±10 % on 1.000 g).
+
 Each package folder holds every DOCX and PDF and a merged packet PDF with a bookmark per document.
 The label sheets are in the folder and the zip but not in the packet: they print on perforated
 stock. `HANDOVER_LoD_a02.2_verification_2026-10-06.md` is the brief for the method-verification chat (Ph. Eur.
