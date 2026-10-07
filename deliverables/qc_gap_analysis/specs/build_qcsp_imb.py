@@ -139,6 +139,44 @@ def records():
 # the COQs, with that design and formatting"). The spec's own chips stacked in two rows and never marked the ticked
 # option (its "selected" style keyed on a class the filling never wrote), so the chosen box read as unticked.
 SEL_BLOCK = re.compile(r'<div class="pb-sel-inline">.*?</div>\s*</div>(?=\s*<div class="pb-codes-row)', re.S)
+# QA's Word specifications, exactly (Head of QC, 07.10.2026: "look exactly like the editable Word documents … without
+# disturbing the layout placements or the organisation of the content, just the visual looks: shading, colours,
+# background colours"). Colours read off QA's ImB_Specification_KC18.docx as it renders (its stored pictures, the
+# white veils QA laid over them, its table shading), region by region at 144 dpi. Colour and shading only: every box
+# keeps its size and place, every word its value. The CoQ's pills (ruled the same day) are left as they are.
+WORD = os.environ.get("QCSP_WORD", "0") == "1"
+W = "html:not(#_w1):not(#_w2):not(#_w3):not(#_w4):not(#_w5):not(#_w6) body .page "
+NONE = "{background:none !important;box-shadow:none !important}"
+WORD_LAYER = ('<style id="__qa-word-2026-10-07">\n'
+    # header: white, its gold rule under the title kept
+    + W + '.header-bar{background:#FFFFFF !important;box-shadow:none !important}\n'
+    # section bars: warm near-white, #FDFCFC to #F4F3F2, a #EFEFED line along the top
+    + W + '.sec-label{background-color:#F8F7F6 !important;background-image:linear-gradient(180deg,#FDFCFC 0%,#FBFBFA 30%,'
+          '#F7F6F5 60%,#F4F3F2 85%,#F6F6F5 100%) !important;border-top:1px solid #EFEFED !important;'
+          'border-bottom:0 !important;box-shadow:none !important}\n'
+    # the product, codes and packaging bands: white
+    + W + '.pb-wash,' + W + '.product-banner,' + W + '.spec-panel' + NONE + '\n'
+    + W + '.pb-sel-inline,' + W + '.pb-codes-row,' + W + '.pb-attrs{background-color:#FFFFFF !important;'
+          'background-image:none !important}\n'
+    + W + '.pp-pills .selrow{background:none !important}\n'
+    # table head: white between a #CDD8E4 and a #D7E0E9 line; no column ticks
+    + W + '.tbl-wrap table.params thead tr{background-color:#FFFFFF !important;background-image:'
+          'linear-gradient(#CDD8E4,#CDD8E4),linear-gradient(#D7E0E9,#D7E0E9) !important;'
+          'background-size:calc(100% - 76.8px) 1px,calc(100% - 76.8px) 1px !important;'
+          'background-position:38.4px 0,38.4px 100% !important;background-repeat:no-repeat !important}\n'
+    + W + '.tbl-wrap table.params thead th::before,' + W + '.tbl-wrap table.params thead th::after' + NONE + '\n'
+    # rows: white, every other one #F5F5F5 across the table's width
+    + W + '.tbl-wrap table.params tbody tr{background-color:#FFFFFF !important;background-image:none !important}\n'
+    + W + '.tbl-wrap table.params tbody tr:nth-child(even){background-image:linear-gradient(#F5F5F5,#F5F5F5) !important;'
+          'background-size:calc(100% - 76.8px) 100% !important;background-position:38.4px 0 !important;'
+          'background-repeat:no-repeat !important}\n'
+    # signature lines: solid #B6AA92
+    + W + '.approval-grid .ap-line{background:#B6AA92 !important;-webkit-mask-image:none !important;mask-image:none !important}\n'
+    # footer: #FDFDFD in a #C6D9F1 frame
+    + W + '.footer{background:#FDFDFD !important;box-shadow:none !important;border:1px solid #C6D9F1 !important;'
+          'border-bottom:0 !important;box-sizing:border-box !important}\n'
+    + W + '.footer::before,' + W + '.footer::after,' + W + '.footer .foot-bleed' + NONE + '\n'
+    + '</style>\n')
 # the pill row sits in the spec's own selection band, which already carries the page margin
 PILLS_HOST = ('<style id="__pp-pills-host">\n'
               'html:not(#_h1):not(#_h2):not(#_h3):not(#_h4):not(#_h5) body .page .pb-sel-inline.pp-pills{display:block !important}\n'
@@ -186,7 +224,7 @@ def sheet(tpl, r):
     # the CoQ's look for the pills and the heading bars, read off the CoQ itself (tracker/house_kit.py)
     if h.count("</body>") != 1:
         raise SystemExit("template: no single </body>")
-    h = h.replace("</body>", house_kit.kit_style() + PILLS_HOST + "</body>", 1)
+    h = h.replace("</body>", house_kit.kit_style() + PILLS_HOST + (WORD_LAYER if WORD else "") + "</body>", 1)
     for a, b in ORBITRON_STACK:
         h = h.replace(a, b)
     rules = re.sub(r"@font-face\s*\{[^}]*\}", "", h)
