@@ -16,7 +16,8 @@ folder must name the same grades with the same nominal and tolerance. A grade th
 (GRC-III, deleted 07.10.2026) must not be on file.
 
 Output: `specs/QCSP_001_ImB/_zip/QCSP_001_ImB_by_strain_2026-10-07.zip`, one file per strain,
-`QCSP_001_{abbr}_v.01_{Strain}_all_grades.pdf`.
+`QCSP_001_{abbr}_v.01_{Strain}_all_grades.pdf`. The set's own zip (`QCSP_001_ImB_2026-10-07.zip`) takes the PDFs now
+on disk as well; every other entry in it is kept byte for byte.
 """
 import csv
 import glob
@@ -40,6 +41,27 @@ ROMAN = {'I': 1, 'II': 2, 'III': 3, 'IV': 4, 'V': 5, 'VI': 6, 'VII': 7, 'VIII': 
 
 def safe(s):
     return re.sub(r'[^A-Za-z0-9_.-]+', '_', s).strip('_')
+
+
+def refresh_set_zip():
+    """The set's zip with each PDF/ entry replaced by the sheet now on disk; every other entry kept as it is."""
+    path = os.path.join(SET, '_zip', 'QCSP_001_ImB_%s.zip' % STAMP)
+    n = 0
+    with zipfile.ZipFile(path) as zin, zipfile.ZipFile(path + '.part', 'w', zipfile.ZIP_DEFLATED) as zout:
+        for info in zin.infolist():
+            parts = info.filename.split('/')
+            if len(parts) == 3 and parts[1] == 'PDF' and parts[2]:
+                src = os.path.join(PDF, parts[2])
+                if not os.path.exists(src):
+                    raise SystemExit('%s: %s is not on disk' % (os.path.basename(path), parts[2]))
+                zout.write(src, info.filename)
+                n += 1
+            else:
+                zout.writestr(info, zin.read(info.filename))
+    if n != len(glob.glob(os.path.join(PDF, '*.pdf'))):
+        raise SystemExit('%s holds %d PDFs, the folder %d' % (os.path.basename(path), n, len(glob.glob(os.path.join(PDF, '*.pdf')))))
+    os.replace(path + '.part', path)
+    print('%s — %d PDFs renewed (%.1f MiB)' % (os.path.relpath(path, GAP), n, os.path.getsize(path) / 1048576.0))
 
 
 def main(argv=()):
@@ -99,6 +121,7 @@ def main(argv=()):
         print('%-62s %d grade%s  %.1f MiB' % (n, pg, '' if pg == 1 else 's', b / 1048576.0))
     print('%s — %d strains, %d sheets (%.1f MiB)' % (os.path.relpath(ZIP, GAP), len(made), sum(m[1] for m in made),
                                                     os.path.getsize(ZIP) / 1048576.0))
+    refresh_set_zip()
     return 0
 
 

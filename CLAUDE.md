@@ -284,7 +284,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 198 corrections, 07.09.2026–07.10.2026, each quoted — is
+The full record — 200 corrections, 07.09.2026–07.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:
@@ -412,8 +412,19 @@ Standing rules the corrections produced (message numbers are in the record):
   block carry it; the plateau lives in one place so it is tuned once. It governs the reprints only —
   the CoQ layer is gated `!FROZEN_LOT`, so the issued Tranche 1/2 pages `check_frozen_records.py`
   holds are untouched — and the full-bleed heading bars and footer are left edge to edge.
-- **Signatures** from `_sig/` only, rotated: Christina Cekic far left, the other two on the right, the
-  QC Manager's 15–20 % larger and crossing the line; a signed and an unsigned set.
+- **Print-safe PDFs** (Head of QC, 07.10.2026: *"The printer is printing white pages when printing the
+  specifications"*). Transparency in a PDF (soft masks, transparency groups, alpha, blend modes) is what a
+  printer short of memory drops as a white page. The specification sheet carried 58 page-sized soft-masked images
+  per page, so `specs/print_qcsp_imb.py` prints each sheet in two passes over one layout — an opaque 300 dpi
+  background under its vector text — and refuses a sheet with transparency left (`transparency()`). The iCoA
+  carries none. The CoQ carries its edge fades as about 40 small soft masks per page; the same treatment applies to
+  it if a CoQ prints white.
+- **Signatures: none, signed in person** (Head of QC, 07.10.2026: *"remove the signatures … we will sign them in
+  person now"*). Every CoQ, iCoA and specification not yet issued goes out with empty signature lines.
+  `build_t3_bundle.unsigned` strips the analyst's (Christina Cekic) and the QC Manager's hands from the iCoA
+  base and refuses a page that keeps one; `build_v40.js` builds the CoQ unsigned (no `PP_SIGNATURES`); the
+  specification sheets carry none. The issued Tranche 1/2 pages are as sent. Before 07.10.2026: hands from
+  `_sig/` only, rotated, a signed and an unsigned set.
 - **Bundles.** Each page of an attached external certificate carries a ~1.5 cm stamp with the CoQ code
   and date and the Head of QC's signature only, laid over the page without shrinking it, upright.
 - **Word** files are exact, editable copies of the page — never page images, never a re-layout.

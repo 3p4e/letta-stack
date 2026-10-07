@@ -68,6 +68,11 @@ Head of QC, 07.10.2026:
   in a house face; only ≤ ☒ ☐ ∑ Δ ⁹ fall back.
 - **Reprint.** All 58 sheets are reprinted with the current printer (Playwright's own browser), and the Word
   copies are remade from them.
+- **Print-safe.** *"The printer is printing white pages when printing the specifications."* The design's fades
+  (CSS masks and opacities) printed as transparency: 58 page-sized images, 29 soft masks and 78 transparency
+  groups per sheet, which a printer short of memory drops as a white page. Each sheet is now one opaque 300 dpi
+  background under its vector text, with no transparency left (`print_qcsp_imb.py`, two passes over the same layout;
+  each sheet checked against the plain print). The files are a third of the size. `--vector` prints the old way.
 - **One file per strain.** *"individual PDF files per strain, all grades merged into one document"*:
   `_zip/QCSP_001_ImB_by_strain_2026-10-07.zip`, 24 files, the strain's sheets in grade order with a
   bookmark per grade (`specs/merge_qcsp_by_strain.py`; the pages are joined, not reprinted).

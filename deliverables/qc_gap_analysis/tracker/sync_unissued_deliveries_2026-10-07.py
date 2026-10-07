@@ -10,7 +10,7 @@ Run after `node design_handoff/toolchain/build_v40.js`, `tracker/build_t3_bundle
 register, and the Tranche 3 and out-of-tranche bundles with them. The 29.09 Paired and 30.09 All deliveries
 cannot be rebuilt: their builders read /tmp folders that no longer exist. So their pages are replaced in place.
 
-Three rulings of the Head of QC, 07.10.2026, change those pages:
+Four rulings of the Head of QC, 07.10.2026, change those pages:
 
 1. **Grapes And Cream** (`apply_potency_grades.py`, `potency_grades_2026-09-15.csv`):
    * the four GRC results fill three ranges, none of them empty:
@@ -27,6 +27,8 @@ Three rulings of the Head of QC, 07.10.2026, change those pages:
 3. **Processing field on the iCoA** (`__owner-selrow-fit` in both iCoA bases):
    * the row of 30.09.2026 ran past the right margin and cut off the Hand chip;
    * it now takes the CoQ's chip scale and ends level with the values below.
+4. **No signatures** (`build_t3_bundle.unsigned`): *"we will sign them in person now"*. The analyst's and the QC
+   Manager's hands come off every iCoA not yet issued; the signature lines stay.
 
 The rebuilt bundles' own page PDFs are the source (`DELIVER_2026-09-26_T3/{CoQ,iCoA}/*/PDF`,
 `DELIVER_2026-09-27_NoTranche/{CoQ,iCoA}/*/PDF`). In every PDF of the two deliveries:

@@ -68,6 +68,24 @@ ORBITRON_STACK = (("font-family:'Orbitron',sans-serif", "font-family:'Orbitron',
                   ("font-family:'Orbitron',monospace", "font-family:'Orbitron','Montserrat',monospace"))
 
 
+SIG_IMG = re.compile(r'<img class="ap-img[^"]*"[^>]*>')
+
+
+def unsigned(page):
+    """The internal certificate with no signature on it: each box keeps its line, to be signed in person.
+
+    Head of QC, 07.10.2026: *"remove the signatures from Christina and the QC Manager from the certificates of
+    quality and internal certificates of analysis, and the QA Manager's. We will sign them in person now."* The
+    Head of QC's iCoA base carries the analyst's and the QC Manager's hands (`ap-img handwritten`); they come off
+    every certificate not yet issued. The CoQ is built unsigned already (`build_v40.js`, no `PP_SIGNATURES`)."""
+    page, n = SIG_IMG.subn('', page)
+    if n != 2:
+        raise SystemExit('expected the two signatures of the iCoA base, found %d' % n)
+    if 'ap-img' in re.sub(r'<style[\s\S]*?</style>', '', page):
+        raise SystemExit('a signature image is still on the page')
+    return page
+
+
 def house_stack(page):
     """The internal certificate with Montserrat behind Orbitron, for the letters Orbitron lacks.
 
@@ -318,7 +336,7 @@ def main():
             f = fields(c, gaps, scope)
             check_pair(f, open(coq_html[c['regcode']], encoding='utf-8').read())
             dst = os.path.join(idir, name_of(f))
-            open(dst, 'w', encoding='utf-8').write(house_stack(own.build(f['scope'].split(','), f)))
+            open(dst, 'w', encoding='utf-8').write(house_stack(unsigned(own.build(f['scope'].split(','), f))))
             docs.append(('iCoA %s' % s, name_of(f)[:-5], dst))
 
     # print every page, keep it, and merge in section order with a bookmark per certificate
