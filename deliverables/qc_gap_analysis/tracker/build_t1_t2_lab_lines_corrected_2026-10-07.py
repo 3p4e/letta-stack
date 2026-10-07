@@ -29,8 +29,8 @@ The issued pages stay as sent. `design_handoff/out` and the register are not tou
 * **The PDF check:** each new PDF's text is compared with the PDF as delivered
   (`DELIVER_2026-09-30_All/CoQ`). They must differ only in the laboratory lines.
 
-Output: one PDF per certificate, `CoQ/{Initial,Retest}/{T1,T2}/`, collected in a zip; one merged PDF
-with a bookmark per certificate; `CHANGES.tsv` listing each page's replaced lines.
+Output: one merged PDF, the initials and then the retests in code order, with a bookmark per certificate
+(a zip in `DELIVER_*` is ignored by the repository); `CHANGES.tsv` listing each page's replaced lines.
 """
 import argparse
 import csv
@@ -44,7 +44,6 @@ import shutil
 import subprocess
 import sys
 import tempfile
-import zipfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 GAP = os.path.dirname(HERE)
@@ -215,10 +214,7 @@ def main(argv):
         merged.set_toc(toc)
         merged.save(os.path.join(OUT, NAME + '.pdf'), garbage=3, deflate=True)
         merged.close()
-        with zipfile.ZipFile(os.path.join(OUT, NAME + '.zip'), 'w', zipfile.ZIP_DEFLATED) as z:
-            for rel in order:
-                z.write(os.path.join(OUT, 'CoQ', rel), rel)
-        shutil.rmtree(os.path.join(OUT, 'CoQ'))           # the zip and the merged file carry them
+        shutil.rmtree(os.path.join(OUT, 'CoQ'))           # the merged file carries them, one bookmark each
         with open(os.path.join(OUT, 'CHANGES.tsv'), 'w', encoding='utf-8', newline='') as fh:
             w = csv.writer(fh, delimiter='\t', lineterminator='\n')
             w.writerow(['certificate', 'series', 'page', 'lines replaced (laboratory field ×count)'])
