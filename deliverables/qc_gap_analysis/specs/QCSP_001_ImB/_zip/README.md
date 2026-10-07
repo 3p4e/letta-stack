@@ -14,4 +14,7 @@ The template travels with the set so the design can be held against it without g
 to Drive: Section 02 in every sheet is byte-identical to the template's, the footer carries
 no document code, and the document is QCSP 001 v.03.
 
+`QCSP_001_ImB_by_strain_2026-10-07.zip` — the same 58 PDF sheets as 24 files, one per strain, each with all of
+the strain's grades in grade order and a bookmark per grade (`../../merge_qcsp_by_strain.py`).
+
 To download: open the zip on GitHub and use the **Download raw file** button.

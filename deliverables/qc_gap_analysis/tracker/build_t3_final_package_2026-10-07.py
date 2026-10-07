@@ -30,9 +30,19 @@ Output, `DELIVER_2026-10-07_T3_Final/`:
 | `T3_iCoA_all_2026-10-07.pdf` | every iCoA, in the order of its CoQ |
 | `T3_CoQ_with_iCoA_2026-10-07.pdf` | each CoQ followed by its iCoA |
 | `T3_Specifications_2026-10-07.pdf` | every specification sheet a Tranche 3 CoQ cites (`specs/QCSP_001_ImB/PDF`, rebuilt 07.10.2026), in code order |
+| `T3_CoQ+iCoA+Spec_Initial_by_batch_2026-10-07.zip` | one PDF per initial CoQ: the CoQ, its iCoA, then the specification sheet its Total THC falls in, named `{batch}_{product code}_Initial_{CoQ}+{iCoA}+{specification}.pdf` |
+| `T3_CoQ+iCoA+Spec_Retest_by_batch_2026-10-07.zip` | the same for each retest CoQ (two zips, each under GitHub's 100 MB file limit) |
+| `T3_CoQ+iCoA+Spec_all_2026-10-07.pdf` | all of them in one file, in CoQ order |
 | `CONTENTS.tsv` | the list of all of the above |
 
-Each merged PDF has a bookmark per certificate or sheet. `--specs` rebuilds the specifications file alone.
+Head of QC, 07.10.2026, on the third set: *"one more deliverable for each production batch … the certificate of
+quality followed by the internal certificate of analysis followed by the corresponding product specification by
+the potency value of the certificate, as one merged PDF document"*. The sheet is the one the CoQ cites; the build
+stops unless the CoQ prints that code and that product code, the sheet prints them too, and the printed Total THC
+lies in the sheet's window (`potency_grades_2026-09-15.csv`).
+
+Each merged PDF has a bookmark per certificate or sheet. `--specs` rebuilds the specifications file alone,
+`--with-spec` the three CoQ + iCoA + specification files and `CONTENTS.tsv` alone.
 """
 import csv
 import glob
@@ -51,6 +61,7 @@ import audit_empty_results as A                                    # noqa: E402
 
 SRC = os.path.join(GAP, 'DELIVER_2026-09-26_T3')
 SPEC_PDF = os.path.join(GAP, 'specs', 'QCSP_001_ImB', 'PDF')
+GRADES = os.path.join(GAP, 'potency_grades_2026-09-15.csv')
 # A result the CoQ prints from a certificate found after the master's tracker sheet was last written. Each is
 # named here with its source, and listed for the master; the build stops on any other disagreement.
 NOT_YET_IN_MASTER = {
@@ -129,6 +140,97 @@ def specs(rows):
     book.close()
 
 
+def spec_sheet(code):
+    """The one printed sheet for a specification code, and its row of the grade table."""
+    got = glob.glob(os.path.join(SPEC_PDF, code + '_*.pdf'))
+    if len(got) != 1:
+        raise SystemExit('%s: %d specification sheets on file' % (code, len(got)))
+    m = re.match(r'^QCSP_001_([A-Z0-9]+)-([IVX]+)_v\.01$', code)
+    grade = next((g for g in csv.DictReader(open(GRADES, encoding='utf-8'))
+                  if m and (g['abbr'], g['numeral']) == m.groups()), None)
+    if not grade:
+        raise SystemExit('%s: no such grade in %s' % (code, os.path.basename(GRADES)))
+    return got[0], grade
+
+
+def with_spec(rows, pages):
+    """Per CoQ: the CoQ, its iCoA, then the specification sheet its Total THC falls in. Two zips and one merged file."""
+    import pymupdf
+    bad = []
+    for r in rows:
+        sheet, g = spec_sheet(r['spec'])
+        val = float(re.match(r'^\s*(\d+[.,]\d+)', r['thc']).group(1).replace(',', '.'))
+        if not float(g['window_low']) <= val <= float(g['window_high']):
+            bad.append('%s prints %.2f %%; %s holds %s–%s %%' % (r['coq'], val, r['spec'], g['window_low'], g['window_high']))
+        with pymupdf.open(pages[r['coq']]) as d:
+            t = ''.join(d[0].get_text().split())
+        with pymupdf.open(sheet) as d:
+            if d.page_count != 1:
+                bad.append('%s prints %d pages' % (r['spec'], d.page_count))
+            st = ''.join(d[0].get_text().split())
+        for what, txt in (('the CoQ', t), ('the sheet', st)):
+            for need in (r['spec'], (r['pcode'] or '').replace(' ', '')):
+                if need not in txt:
+                    bad.append('%s: %s does not print %s' % (r['coq'], what, need))
+        r['spec_window'] = '%s–%s' % (g['window_low'], g['window_high'])
+        r['file_with_spec'] = r['file'][:-4] + '+' + r['spec'] + '.pdf'
+        r['_sheet'] = sheet
+    if bad:
+        raise SystemExit('refused:\n  ' + '\n  '.join(bad))
+
+    tmp = tempfile.mkdtemp(prefix='t3spec_')
+    book, toc = pymupdf.open(), []
+    made = []
+    for series in ('Initial', 'Retest'):
+        zpath = os.path.join(OUT, 'T3_CoQ+iCoA+Spec_%s_by_batch_%s.zip' % (series, STAMP))
+        n = 0
+        with zipfile.ZipFile(zpath + '.part', 'w', zipfile.ZIP_DEFLATED) as z:
+            for r in rows:
+                if r['series'] != series:
+                    continue
+                one, sub = pymupdf.open(), []
+                toc.append([1, '%s · %s · %s · %s' % (r['coq'], r['batch'], r['pcode'], r['spec']), book.page_count + 1])
+                for kind, src in (('CoQ', pages[r['coq']]), ('iCoA', pages.get(r['icoa'])), ('spec', r['_sheet'])):
+                    if not src:
+                        continue
+                    label = {'CoQ': r['coq'], 'iCoA': r['icoa'], 'spec': r['spec']}[kind]
+                    with pymupdf.open(src) as d:
+                        sub.append([1, label, one.page_count + 1])
+                        toc.append([2, label, book.page_count + 1])
+                        one.insert_pdf(d)
+                        book.insert_pdf(d)
+                one.set_toc(sub)
+                one.set_metadata({'title': 'Purely Plant — %s — %s, %s and %s' % (
+                    r['batch'], r['coq'], r['icoa'] or 'no iCoA', r['spec']), 'producer': 'Purely Plant Quality Desk'})
+                p = os.path.join(tmp, r['file_with_spec'])
+                one.save(p, garbage=4, deflate=True)
+                one.close()
+                z.write(p, r['file_with_spec'])
+                os.remove(p)
+                n += 1
+        os.replace(zpath + '.part', zpath)
+        made.append((os.path.basename(zpath), n, os.path.getsize(zpath)))
+    book.set_toc(toc)
+    book.set_metadata({'title': 'Purely Plant — Tranche 3 — each certificate of quality, its internal certificate '
+                                'of analysis and its product specification', 'producer': 'Purely Plant Quality Desk'})
+    dest = os.path.join(OUT, 'T3_CoQ+iCoA+Spec_all_%s.pdf' % STAMP)
+    book.save(dest, garbage=4, deflate=True)
+    print('%s — %d pages (%.1f MiB)' % (os.path.basename(dest), book.page_count, os.path.getsize(dest) / 1048576.0))
+    book.close()
+    for name, n, b in made:
+        print('%s — %d files (%.1f MiB)' % (name, n, b / 1048576.0))
+    shutil.rmtree(tmp, ignore_errors=True)
+    for r in rows:
+        r.pop('_sheet', None)
+
+
+def write_contents(rows):
+    with open(os.path.join(OUT, 'CONTENTS.tsv'), 'w', encoding='utf-8', newline='') as fh:
+        w = csv.DictWriter(fh, fieldnames=list(rows[0]), delimiter='\t', lineterminator='\n')
+        w.writeheader()
+        w.writerows(rows)
+
+
 def main(argv=()):
     import pymupdf
     reg = json.load(open(os.path.join(GAP, 'coq_artifact_data.json'), encoding='utf-8'))
@@ -178,6 +280,10 @@ def main(argv=()):
     if '--specs' in argv:
         specs(rows)
         return 0
+    if '--with-spec' in argv:
+        with_spec(rows, pages)
+        write_contents(rows)
+        return 0
     print('%d Tranche 3 CoQs (%d initial, %d retest), %d with an iCoA; every printed Total THC is the master\'s '
           '(same batch, same certificate) but the %d named above' % (
               len(rows), sum(r['series'] == 'Initial' for r in rows), sum(r['series'] == 'Retest' for r in rows),
@@ -226,10 +332,8 @@ def main(argv=()):
         made.append((os.path.basename(dest), doc.page_count, os.path.getsize(dest) / 1048576.0))
         doc.close()
     specs(rows)
-    with open(os.path.join(OUT, 'CONTENTS.tsv'), 'w', encoding='utf-8', newline='') as fh:
-        w = csv.DictWriter(fh, fieldnames=list(rows[0]), delimiter='\t', lineterminator='\n')
-        w.writeheader()
-        w.writerows(rows)
+    with_spec(rows, pages)
+    write_contents(rows)
     shutil.rmtree(tmp, ignore_errors=True)
     for n, pg, mib in made:
         print('%s — %d pages (%.1f MiB)' % (n, pg, mib))

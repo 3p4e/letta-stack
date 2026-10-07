@@ -68,6 +68,9 @@ Head of QC, 07.10.2026:
   in a house face; only ≤ ☒ ☐ ∑ Δ ⁹ fall back.
 - **Reprint.** All 58 sheets are reprinted with the current printer (Playwright's own browser), and the Word
   copies are remade from them.
+- **One file per strain.** *"individual PDF files per strain, all grades merged into one document"*:
+  `_zip/QCSP_001_ImB_by_strain_2026-10-07.zip`, 24 files, the strain's sheets in grade order with a
+  bookmark per grade (`specs/merge_qcsp_by_strain.py`; the pages are joined, not reprinted).
 
 **One thing for the owner to note.** The sheets are signed **01.06.2026** and versioned
 **v.03**, as the template has them, but the windows are the 17.09.2026 ones — which are not
