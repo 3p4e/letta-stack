@@ -284,7 +284,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 206 corrections, 07.09.2026–07.10.2026, each quoted — is
+The full record — 209 corrections, 07.09.2026–07.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:
@@ -339,7 +339,10 @@ Standing rules the corrections produced (message numbers are in the record):
   accreditation; Macedonian name, LT code and address; **"UKIM FF"**, not the full name; **fixed column
   widths** (codes 190 px, parameters 84 px), the same on every certificate; laboratories left-aligned,
   document codes **centred** in their column, parameter numbers **right-aligned** on the page margin, and
-  three or more consecutive parameter numbers written as a **range** ("2–4", not "2, 3, 4");
+  three or more consecutive parameter numbers written as a **range** ("2–4", not "2, 3, 4"); **each certificate's
+  parameter numbers on that certificate's own line, together, right-aligned on the page margin** (Head of QC,
+  07.10.2026: *"1,2,7 inline with the eCOA … 3-6, 8 inline with the eCOA code and date"*; `coq_build.js`
+  `section03Certs`);
   document codes in **Roboto Condensed** (the narrow face he asked for, inlined at print like the house
   faces); document codes and parameter numbers **always on a two-row grid filled column by column** —
   one item in row 1; two, one per row; a third back in row 1, and so on. The bundles refuse a CoQ whose
@@ -451,7 +454,15 @@ Standing rules the corrections produced (message numbers are in the record):
   `_sig/` only, rotated, a signed and an unsigned set.
 - **Bundles.** Each page of an attached external certificate carries a ~1.5 cm stamp with the CoQ code
   and date and the Head of QC's signature only, laid over the page without shrinking it, upright.
-- **Word** files are exact, editable copies of the page — never page images, never a re-layout.
+- **Word** files are exact, editable copies of the page — never page images, never a re-layout:
+  `design_handoff/toolchain/pdf_to_docx_exact.py` from the delivered PDF (samples of 07.10.2026 in
+  `DELIVER_2026-10-07_Word_Samples/`). It needs the house variable fonts in `PP_FONT_SRC` (from github.com/google/fonts)
+  and refuses without them. No certificate prints a Type 3 font (`assert_house_fonts` refuses it): the iCoA prints in
+  the CoQ's static house faces in place of its base's variable ones (`build_t3_bundle.print_copies`), and every
+  italic weight the pages set is in `print_coq_pdfs.FAMILIES`.
+- **Heading bars, CoQ and iCoA** (Head of QC, 07.10.2026: *"way too intensive in color … more white … without
+  having to increase the color intensity"*): near-white with its shading, held by a top and a deeper foot hairline
+  (`build_v40.js` `SEC_LABEL_BEVEL_LAYER`, unissued only; the iCoA through the house kit).
 - **Nothing invented.** No category, statement or reason that no ruling or document supports (there
   is no "12-month reissue"; only a retest reissues a CoQ).
 - **Working.** Fix a defect instead of listing it; nothing from memory, check every value; explain a

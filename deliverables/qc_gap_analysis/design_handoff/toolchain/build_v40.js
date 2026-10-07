@@ -245,10 +245,15 @@ const EDGE_FADE_LAYER = '<style id="__owner-edges">\n' +
 // gradient replaces it: darker top, bright mid-highlight, medium bottom — ~44-unit contrast,
 // clearly visible. Frozen T1/T2 keep the 2-stop rule above so their pages stay byte-for-byte
 // against the snapshot; the bevel layer is appended last for !FROZEN_LOT and wins by cascade.
+// Head of QC, 07.10.2026: "the chapter heading bars are way too intensive in color ... more white but still
+// gradiented with shading, and maybe a little bit of contrast so that they are more noticeable without having to
+// increase the color intensity". The fill goes most of the way to white (deepest stop 219,229,240, was 186,205,224),
+// keeps its shading — a light top, a near-white band, a soft shade to the foot — and the bar is held by its edges:
+// a hairline along the top and a deeper one along the foot. No inset shadows (17.09.2026: they band in print).
 const SEC_LABEL_BEVEL_LAYER = '<style id="__owner-sec-bevel">\n' +
-  'html body div.page .sec-label{background-color:#D7E4F0 !important;' +
-     'background-image:linear-gradient(180deg,rgb(186,205,224) 0%,rgb(230,239,249) 45%,rgb(210,223,237) 100%) !important;' +
-     'border-top:1px solid rgb(157,181,207) !important;border-bottom:1px solid rgb(148,172,198) !important}\n' +
+  'html body div.page .sec-label{background-color:#EEF3F8 !important;' +
+     'background-image:linear-gradient(180deg,rgb(229,236,244) 0%,rgb(248,250,253) 40%,rgb(240,245,250) 72%,rgb(219,229,240) 100%) !important;' +
+     'border-top:1px solid rgb(170,190,212) !important;border-bottom:1px solid rgb(118,146,177) !important}\n' +
 '</style>';
 
 // Head of QC, 28.09.2026: "widen the fades." The coloured bands and rules were solid across the
@@ -574,17 +579,35 @@ const S01_BAND_LAYER = '<style id="__owner-s01-band">\n' +
     lab = lab.split('UKIM Faculty of Pharmacy — Center for Natural Products').join('UKIM FF — Center for Natural Products');
     lab = lab.replace(/<td class="lr-mono">((?:<span class="cert">[\s\S]*?<\/span>\s*)+)<\/td>/g,
       (m, certs) => '<td class="lr-mono"><span class="g2">' + certs + '</span></td>');
-    lab = lab.replace(/<td class="lr-mono pcell">([^<]*)<\/td>/g, (m, t) => {
-      // Head of QC, 28.09.2026: "why not 2-4 instead of 2,3,4" — a run of three or more
-      // consecutive parameter numbers is printed as a range
-      const raw = t.split(/\s*,\s*/).map(s => s.trim()).filter(Boolean);
+    // Head of QC, 07.10.2026: the parameter numbers right-aligned on the page margin, and each certificate's
+    // numbers on that certificate's own line — "1, 2, 7" beside the iCoA, "3–6, 8" beside the CNP certificate.
+    // The codes fill the two-row grid column by column, so certificate i stands on line i % 2; the numbers of
+    // the certificates on a line are written together, in parameter order.
+    // Head of QC, 28.09.2026: "why not 2-4 instead of 2,3,4" — a run of three or more consecutive parameter
+    // numbers is printed as a range.
+    const ranges = raw => {
       const items = [];
       for (let i = 0; i < raw.length;) {
         let j = i;
         while (j + 1 < raw.length && /^\d+$/.test(raw[j]) && /^\d+$/.test(raw[j + 1]) && +raw[j + 1] === +raw[j] + 1) j++;
         if (j - i >= 2) { items.push(raw[i] + '\u2013' + raw[j]); i = j + 1; } else { items.push(raw[i]); i++; }
       }
-      return '<td class="lr-mono pcell"><span class="g2">' + items.map(n => '<span class="pn">' + n + '</span>').join('') + '</span></td>';
+      return items;
+    };
+    const perCert = CoQ.section03Certs(r);
+    let labRow = 0;
+    lab = lab.replace(/<td class="lr-mono pcell">([^<]*)<\/td>/g, (m, t) => {
+      const all = t.split(/\s*,\s*/).map(s => s.trim()).filter(Boolean);
+      const certs = perCert[labRow++];
+      let lines = [all];
+      if (certs) {
+        lines = [[], []];
+        certs.forEach((ps, i) => { for (const p of ps) if (!lines[i % 2].includes(p)) lines[i % 2].push(p); });
+        lines = lines.filter(l => l.length).map(l => l.sort((a, b) => parseFloat(a) - parseFloat(b) || (a < b ? -1 : 1)));
+        const got = [...new Set(lines.flat())].sort().join(','), want = [...new Set(all)].sort().join(',');
+        if (got !== want) throw new Error('section 03 parameters per certificate ' + got + ' differ from the row ' + want + ': ' + c.regcode);
+      }
+      return '<td class="lr-mono pcell"><span class="g2">' + lines.map(l => '<span class="pn">' + ranges(l).join(', ') + '</span>').join('') + '</span></td>';
     });
     if (/<td class="lr-mono">(?!<span class="g2">)/.test(lab) || /<td class="lr-mono pcell">(?!<span class="g2">)/.test(lab))
       throw new Error('a laboratory-block cell was not put on the two-row grid: ' + c.regcode);
@@ -615,7 +638,7 @@ const S01_BAND_LAYER = '<style id="__owner-s01-band">\n' +
       + LB + " tbody tr td .g2 .cert .cd{font-family:'Roboto Condensed',sans-serif !important;font-size:6.4px !important}"
       + LB + ' tbody tr td.lr-mono.lr-mono:not(.pcell) .g2 .cert + .cert::before{content:none !important;margin:0 !important;display:none !important}'
       + LB + ' tbody tr td.lr-mono.lr-mono:not(.pcell) .g2 .cert{margin:0 !important;padding:0 !important}'
-      + LB + " tbody tr td .g2 .pn{font-family:'Roboto Mono',monospace;font-size:7.4px;font-weight:600;line-height:8px}"
+      + LB + " tbody tr td .g2 .pn{font-family:'Roboto Mono',monospace;font-size:7.4px;font-weight:600;line-height:8px;white-space:nowrap}"
       + '</style>';
     if (htmlOut.split('</body>').length !== 2) throw new Error('no single </body>: ' + c.regcode);
     htmlOut = htmlOut.replace('</body>', LABREF_GRID + '</body>');

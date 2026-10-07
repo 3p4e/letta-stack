@@ -97,6 +97,57 @@ def icoa_page(scope, f, c):
     return house_stack(house_kit.apply(unsigned(own.build(scope, f)), row))
 
 
+FONT_FACE = re.compile(r'@font-face\s*\{[^}]*\}\s*')
+# Latin, Latin-1, the Macedonian Cyrillic and the punctuation the certificates set: cut once, not once per page
+# (24 s an iCoA). A page with a character outside it gets its own cut.
+BASE_CHARS = frozenset(chr(c) for c in list(range(0x20, 0x7F)) + list(range(0xA0, 0x100)) + list(range(0x400, 0x460)) +
+                       [0x490, 0x491, 0x301, 0x2013, 0x2014, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2026,
+                        0x2116, 0x2212, 0x2264, 0x2265])
+_FACES = {}
+
+
+def faces_for(chars):
+    key = BASE_CHARS if chars <= BASE_CHARS else frozenset(chars | BASE_CHARS)
+    if key not in _FACES:
+        _FACES[key] = house_fonts.font_face_css(''.join(sorted(key)), FAMILIES, SUBSETS)[0]
+    return _FACES[key]
+
+
+def print_copies(paths):
+    """Copies of the iCoA pages for the printer, each with `static_faces`. The delivered HTML keeps its own (variable)
+    faces: the static set is twice the size and took the HTML zip past what the app delivers."""
+    import tempfile
+    d = tempfile.mkdtemp(prefix='icoa_print_')
+    out = []
+    for p in paths:
+        q = os.path.join(d, os.path.basename(p))
+        open(q, 'w', encoding='utf-8').write(static_faces(open(p, encoding='utf-8').read()))
+        out.append(q)
+    return out
+
+
+def static_faces(page):
+    """The page's variable @font-face rules replaced by the static house faces the CoQ prints with, for the printer.
+
+    The Head of QC's iCoA base embeds Montserrat, Roboto Mono and Orbitron as variable fonts. Chromium prints a
+    variable face at any weight but its default as a Type 3 font, named "Montserrat-Thin" whatever the weight:
+    the letters print, but no Word converter, text tool or printer driver sees a real font (07.10.2026, found
+    making the Word copy). The static faces are Google's instances of the same fonts, so no glyph changes."""
+    n = len(FONT_FACE.findall(page))
+    if not n:
+        raise SystemExit('the iCoA base carries no @font-face to replace')
+    text = re.sub(r'<(script|style)[\s\S]*?</\1>', ' ', page)
+    chars = set(re.sub(r'<[^>]+>', ' ', text))
+    chars |= {c.upper() for c in chars} | {c.lower() for c in chars}   # text-transform asks for the other case
+    css = faces_for({c for c in chars if len(c) == 1})
+    if css.count('@font-face') < 3:
+        raise SystemExit('house fonts not built — refusing an iCoA in a substitute face')
+    page = FONT_FACE.sub('', page)
+    if '</head>' not in page:
+        raise SystemExit('no </head> to carry the house faces')
+    return page.replace('</head>', '<style id="__house-faces">\n' + css + '</style>\n</head>', 1)
+
+
 def house_stack(page):
     """The internal certificate with Montserrat behind Orbitron, for the letters Orbitron lacks.
 
@@ -132,6 +183,10 @@ def assert_house_fonts(pdf):
     """
     import pymupdf
     d = pymupdf.open(pdf)
+    t3 = sum(1 for p in d for f in p.get_fonts() if f[2] == 'Type3')
+    if t3:
+        raise SystemExit('%s printed %d Type 3 fonts: a variable @font-face reached the printer (see static_faces)'
+                         % (os.path.basename(pdf), t3))
     bad = {}
     for page in d:
         for b in page.get_text('dict')['blocks']:
@@ -358,7 +413,8 @@ def main():
         os.makedirs(pdir, exist_ok=True)
         srcs = [h for _, _, h in docs if os.path.dirname(h) == hdir]
         css = coq_css if os.sep + 'CoQ' + os.sep in hdir else ''
-        pdf_of.update(zip(srcs, render(srcs, pdir, None, css, layout_probe)))  # one browser session per folder
+        prints = srcs if css else print_copies(srcs)       # the iCoA prints in the static house faces
+        pdf_of.update(zip(srcs, render(prints, pdir, None, css, layout_probe)))  # one browser session per folder
     assert_layout()
     for pdf in pdf_of.values():
         assert_house_fonts(pdf)

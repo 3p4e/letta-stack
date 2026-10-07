@@ -231,6 +231,23 @@ function section03(rec) {
   return '<tbody>\n' + rows.join('\n') + '\n</tbody>';
 }
 
+// The certificates of each section 03 row, in the order section03 prints rows and certificates, each with the
+// parameters it reports (Head of QC, 07.10.2026: "place all the numbers that are correlated to the corresponding
+// external certificate ... in the same line as the certificate"). build_v40.js lays them out on unissued pages.
+function section03Certs(rec) {
+  const split = splitFamilies(rec);
+  const groups = {};
+  for (const d of detsOf(rec)) {
+    const lab = canonLab(rec.lab[d]), doc = (rec.doc[d] || '').trim(), iss = (rec.iss[d] || '').trim();
+    if (!lab || !codeShaped(doc)) continue;
+    const g = groups[lab] = groups[lab] || new Map();
+    const k = docCode(doc) + '|' + iss;
+    if (!g.has(k)) g.set(k, []);
+    g.get(k).push(d);
+  }
+  return ORDER.filter(k => groups[k]).map(k => [...groups[k].values()].map(ds => collapseParams(ds, split)));
+}
+
 // ---- Section 01 ------------------------------------------------------------
 function chip(on, label, extra) {
   return '<span class="chip-' + (on ? 'sel' : 'un') + '"><span class="bx">' + (on ? '☒' : '☐') + '</span> ' +
@@ -305,5 +322,5 @@ function section01(rec) {
 '  </div>\n' +
 '  <div class="goldrule"></div>\n\n  ';
 }
-return { RED, AMBER, DETS, LABS_SENT, PANEL_EXTRA, EXTRA_ROWS, hasExtra, detsOf, UNIT, LABS, ORDER, canonLab, codeShaped, docCode, docNote, collapseParams, parseCSV, esc, mmyyyy, strip, red, cell, section03, section01, chip };
+return { RED, AMBER, DETS, LABS_SENT, PANEL_EXTRA, EXTRA_ROWS, hasExtra, detsOf, UNIT, LABS, ORDER, canonLab, codeShaped, docCode, docNote, collapseParams, parseCSV, esc, mmyyyy, strip, red, cell, section03, section03Certs, section01, chip };
 })();

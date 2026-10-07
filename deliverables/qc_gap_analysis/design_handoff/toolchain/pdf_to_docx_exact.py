@@ -85,15 +85,17 @@ FRAME_DX = -0.100
 FRAME_DY_A = 0.014
 # Per family, because Word seats a line inside a box it sizes from the face's own ascent:
 # the same type size drops Orbitron and Roboto Mono differently from Montserrat.
-FRAME_DY_B = {"Montserrat": 0.3058, "Orbitron": 0.2083, "Roboto Mono": 0.2439}
+FRAME_DY_B = {"Montserrat": 0.3058, "Orbitron": 0.2083, "Roboto Mono": 0.2439, "Roboto Condensed": 0.2439}
 FRAME_DY_B_DEFAULT = 0.2165
 
 # The PDF names a face per weight; Word knows four styles per family name, so
 # embed_fonts.face_name() gives each weight its own family. Map one to the other.
-_FACE = re.compile(r"^(Montserrat|RobotoMono|Orbitron)"
+_FACE = re.compile(r"^(Montserrat|RobotoMono|RobotoCondensed|Orbitron)"
                    r"(Thin|ExtraLight|Light|Regular|Medium|SemiBold|Bold|ExtraBold|Black|\d{3})?"
                    r"(Italic)?$")
-_FAMILY = {"Montserrat": "Montserrat", "RobotoMono": "Roboto Mono", "Orbitron": "Orbitron"}
+# Roboto Condensed: the CoQ's section 03 document codes (Head of QC, 28.09.2026)
+_FAMILY = {"Montserrat": "Montserrat", "RobotoMono": "Roboto Mono", "RobotoCondensed": "Roboto Condensed",
+           "Orbitron": "Orbitron"}
 _WEIGHT = {"Thin": 100, "ExtraLight": 200, "Light": 300, "Regular": 400, "Medium": 500,
            "SemiBold": 600, "Bold": 700, "ExtraBold": 800, "Black": 900, None: 400, "": 400}
 
@@ -263,7 +265,9 @@ def tracking(text, size, want_pt, family, weight, italic):
     # character is not a correction, it is a sign the target width belongs to something
     # else — the section number `02` was asked to give back four and a half points a
     # character and came out illegible. Refuse it and leave the run at its natural width.
-    if len(text) > 1 and abs(delta) / max(1, len(text) - 1) > 0.25 * size:
+    # The bound is 0.30 of the size: the CoQ's "DOCUMENT ID" (7 px Orbitron, letter-spaced 1.4 px) asks 0.255 and
+    # stood 13 pt short of its place at 0.25 (07.10.2026); `02` asked 0.45.
+    if len(text) > 1 and abs(delta) / max(1, len(text) - 1) > 0.30 * size:
         return 0
     return int(round(delta * TWIP_PER_PT))
 
@@ -387,10 +391,23 @@ def add_span(doc, span, page_w_pt, face=None):
     face = face or face_of(span["font"])
     x0, y0, x1, _ = span["bbox"]
     size = style[3]
+    track = tracking(span["text"], size, x1 - x0, *face)
+    parts = WIDE_GAP.split(span["text"].strip())
+    if len(parts) == 2 and not track and natural_width(span["text"], size, face) < x1 - x0 - 2.0:
+        # Two words the page draws apart, with something else between them in a span of its own — the iCoA's
+        # page number "1 | 1", whose bar is another colour (07.10.2026). One run cannot be tracked that wide, so
+        # each word takes its own place: the first where the span starts, the last ending where it ends.
+        for text, left in ((parts[0], x0), (parts[1], x1 - natural_width(parts[1], size, face))):
+            p = frame(doc, left, y0, face[0], size, natural_width(text, size, face) + 4.0, page_w_pt)
+            emit_run(p, text, style, 0)
+        return True
     w = max(x1 - x0 + 2.0, natural_width(span["text"], size, face) + 4.0)
     p = frame(doc, x0, y0, face[0], size, w, page_w_pt)
-    emit_run(p, span["text"], style, tracking(span["text"], size, x1 - x0, *face))
+    emit_run(p, span["text"], style, track)
     return True
+
+
+WIDE_GAP = re.compile(r"\s{2,}")
 
 
 def squash(text):
@@ -693,6 +710,12 @@ def emit_fields(doc, spans, fields, page_w_pt):
 
 
 def convert(src, out, dpi=300, fonts=True, quiet=False, fields=None):
+    # Without the variable sources (embed_fonts.SRC) no face can be measured or embedded: every run then keeps its
+    # natural width and a letter-spaced title ends up to 67 pt short of where the page ends it (07.10.2026). Refuse.
+    from embed_fonts import SRC, VARIABLE, instance
+    if fonts and not all(instance(f, 400, it) for f, it in VARIABLE):
+        raise SystemExit("the house variable fonts are not in %s (%s) — fetch them from github.com/google/fonts "
+                         "or set PP_FONT_SRC" % (SRC, ", ".join(sorted(set(VARIABLE.values())))))
     doc = Document()
     pdf = pymupdf.open(src)
     placed = kept = 0
