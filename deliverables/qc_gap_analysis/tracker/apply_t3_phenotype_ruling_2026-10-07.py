@@ -24,8 +24,13 @@ Where the register holds the split (`INDICA 60 : SATIVA 40` …), the pages prin
 only the leaning, the Tranche 3 pages now say it as well (`coq_build.js` section 01, `build_t3_bundle_2026-09-26.fields`).
 Before this, a known leaning printed as a bare Hybrid.
 
-**Tranches 1 and 2 are not touched** (Head of QC, 26.09.2026); the script refuses them. Lots outside the tranches
-are not in this ruling. A withdrawn number is skipped.
+**Lots outside the tranches** (Head of QC, 07.10.2026, later the same day: *"check if everywhere there is Hybrid :
+Indica Dom. or suitable applied, as well as on the CoQ and iCoA and the corresponding specification"*). They share
+their specification sheets with Tranche 3 lots, which now say Hybrid, Indica dominant; three of them still ticked
+Indica alone (OPM, GG). They follow the same rule.
+
+**Tranches 1 and 2 are not touched** (Head of QC, 26.09.2026); the script refuses them. A withdrawn number is
+skipped.
 """
 import argparse
 import json
@@ -51,10 +56,8 @@ def run(reg, apply):
 
     done = []
     for c in reg['coqs']:
-        if c.get('withdrawn') or tranche(c) != 'T3':
+        if c.get('withdrawn') or tranche(c) in A.FROZEN:
             continue
-        if tranche(c) in A.FROZEN:
-            raise SystemExit('%s is in an issued tranche' % c['regcode'])
         spc = c.get('spc') or {}
         ph = str(spc.get('pheno') or '').strip().upper()
         if ph not in LEAN:
@@ -80,7 +83,7 @@ def main(argv):
     done = run(reg, a.apply)
     for x in done:
         print('PHENOTYPE %s %-14s %-20s %s -> %s' % x)
-    print('%d Tranche 3 certificates: Indica or Sativa alone -> Hybrid with its leaning' % len(done))
+    print('%d certificates not yet issued: Indica or Sativa alone -> Hybrid with its leaning' % len(done))
     if a.apply and done:
         with open(REG, 'w', encoding='utf-8') as fh:
             json.dump(reg, fh, ensure_ascii=False, indent=1)

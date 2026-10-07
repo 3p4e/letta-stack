@@ -284,7 +284,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 200 corrections, 07.09.2026–07.10.2026, each quoted — is
+The full record — 202 corrections, 07.09.2026–07.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:
@@ -392,7 +392,18 @@ Standing rules the corrections produced (message numbers are in the record):
   - A Tranche 3 hybrid with a known leaning and no split prints "HYBRID · INDICA DOMINANT" on the CoQ
     (`coq_build.js` section 01, `rec.t3`) and the iCoA (`build_t3_bundle.leaning_of`). A known split prints as
     before, e.g. INDICA60 : SATIVA40.
-  - Tranches 1/2 and the lots outside the tranches are unchanged.
+  - **Everywhere** (Head of QC, 07.10.2026, later: *"check if everywhere there is Hybrid : Indica Dom. … on the CoQ
+    and iCoA and the corresponding specification"*): the lots outside the tranches follow the same rule (three ticked
+    Indica alone: -040, -082, -129), and the leaning prints on every certificate not yet issued (`build_v40.js`
+    `t3: !FROZEN_LOT`). `tracker/check_pill_rows.py` (CI) holds CoQ = iCoA = specification for all 75. Tranches 1/2
+    are unchanged.
+- **Pills and heading bars: the CoQ's, on every document** (Head of QC, 07.10.2026: *"make all pills … the same as
+  they are on the COQs with that design and formatting"*; *"the heading bars in all documents need to be the same
+  visuals and same effects in full"*). `tracker/house_kit.py`: `selrow()` writes the CoQ's pill row from the register
+  (its words, the leaning or split, the Macedonian only on Machine), and the kit (`design_handoff/toolchain/
+  house_kit_2026-10-07.css`, `--generate` from the CoQ's computed style, `--check`) draws the pills and the heading
+  bars as the CoQ draws them — the bar is the 01.10.2026 bevel — on every iCoA (`build_t3_bundle.icoa_page`) and
+  specification (`build_qcsp_imb.py`) not yet issued. Change the look on the CoQ, then regenerate the kit.
 - **Processing field** (Machine/Hand): restored on the CoQ and the iCoA by the Head of QC on 30.09.2026 (the
   approved scans carry it), superseding its removal of 18.09. On 07.10.2026: *"include the processing pill into
   the iCoA as in the CoQs and format it suitably"*. The iCoA row had run past the right margin and cut off the

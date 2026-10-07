@@ -86,6 +86,17 @@ def unsigned(page):
     return page
 
 
+def icoa_page(scope, f, c):
+    """The internal certificate as it goes out: built on the Head of QC's base, unsigned, its pill row the CoQ's and
+    drawn as the CoQ draws it, with the heading bars of the CoQ (`house_kit`, Head of QC 07.10.2026), and Montserrat
+    behind Orbitron."""
+    import house_kit
+    spc = c.get('spc') or {}
+    # the leaning on every certificate not yet issued — Tranche 3 and, "everywhere", the lots outside the tranches
+    row = house_kit.selrow(spc.get('pheno'), spc.get('dominance'), spc.get('chemo'), spc.get('proc'), True)
+    return house_stack(house_kit.apply(unsigned(own.build(scope, f)), row))
+
+
 def house_stack(page):
     """The internal certificate with Montserrat behind Orbitron, for the letters Orbitron lacks.
 
@@ -336,7 +347,7 @@ def main():
             f = fields(c, gaps, scope)
             check_pair(f, open(coq_html[c['regcode']], encoding='utf-8').read())
             dst = os.path.join(idir, name_of(f))
-            open(dst, 'w', encoding='utf-8').write(house_stack(unsigned(own.build(f['scope'].split(','), f))))
+            open(dst, 'w', encoding='utf-8').write(icoa_page(f['scope'].split(','), f, c))
             docs.append(('iCoA %s' % s, name_of(f)[:-5], dst))
 
     # print every page, keep it, and merge in section order with a bookmark per certificate

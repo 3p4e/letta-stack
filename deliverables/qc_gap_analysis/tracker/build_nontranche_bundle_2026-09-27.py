@@ -87,7 +87,7 @@ def main():
             f = T3.fields(c, gaps, scope)
             T3.check_pair(f, open(coq_html[c['regcode']], encoding='utf-8').read())
             dst = os.path.join(idir, T3.name_of(f))
-            open(dst, 'w', encoding='utf-8').write(T3.house_stack(T3.unsigned(T3.own.build(f['scope'].split(','), f))))
+            open(dst, 'w', encoding='utf-8').write(T3.icoa_page(f['scope'].split(','), f, c))
             docs.append(('iCoA %s' % s, T3.name_of(f)[:-5], dst))
 
     pdf_of = {}

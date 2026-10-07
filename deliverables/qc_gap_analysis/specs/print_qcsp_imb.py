@@ -29,6 +29,7 @@ transparent sheets instead.
 """
 import glob
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -142,9 +143,11 @@ def print_safe(chosen, css, chromium):
         if ''.join(got[0].get_text().split()) != want_text:
             bad.append('%s: the text layer did not survive the join' % name)
         # a text shadow prints its glyphs twice, and the plain print's extraction can split the copy off as a word
-        # of its own ("SATIVA60" and "60"); a word found inside another is not missing
-        have = set(words(got[0].get_text()))
-        missing = {w for w in set(words(vec[0].get_text())) - have if not any(w in h for h in have)}
+        # of its own ("SATIVA60" and "60") or run it into the word ("☒☒HYBRID"); so runs of one character are
+        # collapsed on both sides, and a word found inside another is not missing
+        once = lambda w: re.sub(r'(.)\1+', r'\1', w)
+        have = {once(w) for w in words(got[0].get_text())}
+        missing = {w for w in {once(w) for w in words(vec[0].get_text())} - have if not any(w in h for h in have)}
         if missing:
             bad.append('%s: words of the plain print missing: %s' % (name, ' '.join(sorted(missing))[:200]))
         if mean > 2.0:

@@ -43,6 +43,8 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 GAP = os.path.dirname(HERE)
+sys.path.insert(0, os.path.join(GAP, "tracker"))
+import house_kit                                                      # noqa: E402
 TEMPLATE = os.path.join(HERE, "base", "Product_Specification_ImB.html")
 OUT = os.path.join(HERE, "QCSP_001_ImB")
 SHEETS = os.path.join(OUT, "SHEETS")
@@ -55,7 +57,6 @@ SIGNED = "01.06.2026"                  # the date v.03 carries
 BASIS = "potency_grades_2026-09-15.csv (17.09.2026; WED-II 26.09.2026; GRC 07.10.2026)"
 GRADES = os.path.join(GAP, "potency_grades_2026-09-15.csv")
 ROM = {"I": 1, "II": 2, "III": 3, "IV": 4, "V": 5, "VI": 6}
-BOX, TICK = "&#9744;", "&#9746;"
 
 
 def one(hay, needle, repl, what):
@@ -125,7 +126,7 @@ def records():
     for code, r in sorted(codes.items()):
         first = min(r["by"])
         g = r.pop("by")[first]
-        r["t3"] = first == 0
+        r["t3"] = first in (0, 1)     # the leaning prints where the attributes come from certificates not yet issued
         for k in ("pcode", "pheno", "chemo", "proc", "dominance"):
             if len(g[k]) > 1:
                 raise SystemExit("%s: its lots disagree about %s — %s" % (code, k, sorted(g[k])))
@@ -134,59 +135,16 @@ def records():
 
 
 # ---------------------------------------------------------------------- the pills
-PHENO = ('<span class="var-opt">%s Hybrid <span class="vo-dom">INDICA<span class="pn">00</span>'
-         ' : SATIVA<span class="pn">00</span></span></span><span class="var-stack">'
-         '<span class="var-opt">%s Indica</span><span class="var-opt">%s Sativa</span></span>'
-         % (BOX, BOX, BOX))
-CHEMO = ('<span class="chem-stack"><span class="var-opt">%s THC</span>'
-         '<span class="var-opt">%s CBD</span></span>' % (BOX, BOX))
-PROC = ('<span class="proc-stack"><span class="var-opt">%s Machine <span class="mk">Машинска</span></span>'
-        '<span class="var-opt">%s Hand <span class="mk">Рачна</span></span></span>' % (BOX, BOX))
-
-
-def pheno_pill(pheno, dominance, lean=False):
-    """Tick one of Hybrid / Indica / Sativa, and carry a ratio only if one is stated.
-
-    The record's dominance is sometimes a ratio (INDICA 60 : SATIVA 40) and sometimes a
-    word — INDICA-DOMINANT, BALANCED, TO BE DETERMINED. A word is not a ratio: BALANCED is
-    not written as 50 : 50 here, because that would be this desk asserting a number the
-    record does not carry. Where no ratio is stated the Hybrid option carries no figures.
-    """
-    p = (pheno or "").upper()
-    hy, ind, sat = (TICK if p == "HYBRID" else BOX), (TICK if p == "INDICA" else BOX), \
-                   (TICK if p == "SATIVA" else BOX)
-    m = re.search(r"INDICA\s*(\d+)\s*:\s*SATIVA\s*(\d+)", dominance or "", re.I)
-    if not m:
-        m2 = re.search(r"SATIVA\s*(\d+)\s*:\s*INDICA\s*(\d+)", dominance or "", re.I)
-        dom = ('<span class="vo-dom">INDICA<span class="pn">%s</span> : SATIVA<span class="pn">%s</span></span>'
-               % (m2.group(2), m2.group(1))) if m2 else ""
-        # Head of QC, 07.10.2026, Tranche 3: a hybrid whose leaning is known and whose split is not says which way
-        # it leans, as its certificate of quality does
-        m3 = re.match(r"^\s*(INDICA|SATIVA)-DOMINANT\s*$", dominance or "", re.I)
-        if not dom and m3 and lean:
-            dom = '<span class="vo-dom">· %s <span class="pn">DOMINANT</span></span>' % m3.group(1).upper()
-    else:
-        dom = ('<span class="vo-dom">INDICA<span class="pn">%s</span> : SATIVA<span class="pn">%s</span></span>'
-               % (m.group(1), m.group(2)))
-    hybrid = '<span class="var-opt">%s Hybrid%s</span>' % (hy, (" " + dom) if dom else "")
-    return ('%s<span class="var-stack"><span class="var-opt">%s Indica</span>'
-            '<span class="var-opt">%s Sativa</span></span>' % (hybrid, ind, sat))
-
-
-def chemo_pill(chemo):
-    c = (chemo or "").upper()
-    return ('<span class="chem-stack"><span class="var-opt">%s THC</span>'
-            '<span class="var-opt">%s CBD</span></span>'
-            % (TICK if c == "THC" else BOX, TICK if c == "CBD" else BOX))
-
-
-def proc_pill(proc):
-    p = (proc or "").upper()
-    machine = TICK if "MACHINE" in p else BOX
-    hand = TICK if "HAND" in p else BOX
-    return ('<span class="proc-stack"><span class="var-opt">%s Machine <span class="mk">Машинска</span></span>'
-            '<span class="var-opt">%s Hand <span class="mk">Рачна</span></span></span>'
-            % (machine, hand))
+# The selection block: the CoQ's own pill row (Head of QC, 07.10.2026: "make all pills … the same as they are on
+# the COQs, with that design and formatting"). The spec's own chips stacked in two rows and never marked the ticked
+# option (its "selected" style keyed on a class the filling never wrote), so the chosen box read as unticked.
+SEL_BLOCK = re.compile(r'<div class="pb-sel-inline">.*?</div>\s*</div>(?=\s*<div class="pb-codes-row)', re.S)
+# the pill row sits in the spec's own selection band, which already carries the page margin
+PILLS_HOST = ('<style id="__pp-pills-host">\n'
+              'html:not(#_h1):not(#_h2):not(#_h3):not(#_h4):not(#_h5) body .page .pb-sel-inline.pp-pills{display:block !important}\n'
+              'html:not(#_h1):not(#_h2):not(#_h3):not(#_h4):not(#_h5) body .page .pp-pills .selrow{width:100% !important;'
+              'box-sizing:border-box !important;padding-left:0 !important;padding-right:0 !important;background:none !important}\n'
+              '</style>\n')
 
 
 # ---------------------------------------------------------------------- the filling
@@ -203,9 +161,10 @@ def sheet(tpl, r):
     h = one(h, '<span class="pbp-val">00.00%</span><span class="pbp-tol">± 0.00%</span>',
             '<span class="pbp-val">%.2f%%</span><span class="pbp-tol">± %.2f%%</span>'
             % (r["nominal"], r["tol"]), ".pbp-val/.pbp-tol")
-    h = one(h, PHENO, pheno_pill(r["pheno"], r["dominance"], r.get("t3")), "Phenotype pill")
-    h = one(h, CHEMO, chemo_pill(r["chemo"]), "Chemotype pill")
-    h = one(h, PROC, proc_pill(r["proc"]), "Processing pill")
+    if len(SEL_BLOCK.findall(h)) != 1:
+        raise SystemExit("template: the selection block is not found once")
+    row = house_kit.selrow(r["pheno"], r["dominance"], r["chemo"], r["proc"], r.get("t3"))
+    h = SEL_BLOCK.sub(lambda m: '<div class="pb-sel-inline pp-pills">' + row + '</div>', h, count=1)
     h = one(h, '<span class="pcr-val">XX_THC00 : CBD1</span>',
             '<span class="pcr-val">%s</span>' % esc(r["pcode"]), "Product Code")
     h = one(h, '<span class="pcr-val">00.00 &ndash; 00.00 %</span>',
@@ -224,6 +183,10 @@ def sheet(tpl, r):
     # Orbitron has no Cyrillic: the Macedonian of every Orbitron label fell through to Liberation Sans in print.
     # Montserrat goes behind Orbitron, as on the iCoA since 27.09.2026 (build_t3_bundle_2026-09-26.house_stack);
     # Latin text keeps Orbitron.
+    # the CoQ's look for the pills and the heading bars, read off the CoQ itself (tracker/house_kit.py)
+    if h.count("</body>") != 1:
+        raise SystemExit("template: no single </body>")
+    h = h.replace("</body>", house_kit.kit_style() + PILLS_HOST + "</body>", 1)
     for a, b in ORBITRON_STACK:
         h = h.replace(a, b)
     rules = re.sub(r"@font-face\s*\{[^}]*\}", "", h)

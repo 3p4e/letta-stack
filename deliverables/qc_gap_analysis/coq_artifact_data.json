@@ -15587,11 +15587,11 @@
    "spc": {
     "code": "QCSP_001_OPM-IV_v.01",
     "attributes_from": "QCSP_001_OPM-IV_v.01",
-    "pheno": "INDICA",
+    "pheno": "HYBRID",
     "chemo": "THC",
     "proc": "MACHINE TRIMMED",
-    "dominance": "",
-    "dom": "",
+    "dominance": "INDICA-DOMINANT",
+    "dom": "Indica dom.",
     "pack": "Triplex Alu Bag | Триплекс Aлу Kеса, PET 12 · ALU 7 · PE 80, 300 × 500 mm, net. 400.0 g ±3%"
    },
    "icoa_issue": "03.06.2026",
@@ -33158,11 +33158,11 @@
    "spc": {
     "code": "QCSP_001_GG-I_v.01",
     "attributes_from": "QCSP_001_GG-I_v.01",
-    "pheno": "INDICA",
+    "pheno": "HYBRID",
     "chemo": "THC",
     "proc": "MACHINE TRIMMED",
-    "dominance": "",
-    "dom": "",
+    "dominance": "INDICA-DOMINANT",
+    "dom": "Indica dom.",
     "pack": "Triplex Alu Bag | Триплекс Aлу Kеса, PET 12 · ALU 7 · PE 80, 300 × 500 mm, net. 400.0 g ±3%"
    },
    "icoa_issue": "16.07.2026",
@@ -44115,11 +44115,11 @@
    "spc": {
     "code": "QCSP_001_OPM-IV_v.01",
     "attributes_from": "QCSP_001_OPM-IV_v.01",
-    "pheno": "INDICA",
+    "pheno": "HYBRID",
     "chemo": "THC",
     "proc": "MACHINE TRIMMED",
-    "dominance": "",
-    "dom": "",
+    "dominance": "INDICA-DOMINANT",
+    "dom": "Indica dom.",
     "pack": "Triplex Alu Bag | Триплекс Aлу Kеса, PET 12 · ALU 7 · PE 80, 300 × 500 mm, net. 400.0 g ±3%"
    },
    "icoa_issue": "17.08.2026",
