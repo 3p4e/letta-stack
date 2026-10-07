@@ -39,18 +39,26 @@ def pages_of(pdf):
     return 0
 
 
-def main():
+def main(argv=()):
+    """Print every sheet, or only the sheets named (file names under SHEETS/): a rebuild that changes a few
+    sheets reprints those and leaves every other PDF as it is. The font subset is always cut from the whole set."""
     sheets = sorted(glob.glob(os.path.join(SHEETS, "*.html")))
     if not sheets:
         raise SystemExit("no sheets — run build_qcsp_imb.py first")
+    want = [os.path.basename(a) for a in argv]
+    chosen = [s for s in sheets if not want or os.path.basename(s) in want]
+    if len(chosen) != (len(want) or len(sheets)):
+        raise SystemExit("not every named sheet exists: %s" % sorted(set(want) - {os.path.basename(s) for s in sheets}))
     os.makedirs(PAGES, exist_ok=True)
     css, raw, small = house_fonts.font_face_css(page_text(sheets), FAMILIES, SUBSETS)
     print("fonts: %d faces, %.0f KB upstream -> %.0f KB subset"
           % (css.count("@font-face"), raw / 1024.0, small / 1024.0))
-    chromium = (glob.glob("/opt/pw-browsers/chromium*/chrome-linux/chrome") or [None])[0]
-    made = render(sheets, PAGES, chromium, css)
+    # Playwright's own browser, as the certificate printer uses; a fixed /opt/pw-browsers build can be one the
+    # installed Playwright no longer drives (chromium-1194 exits on launch under Playwright 1.56)
+    chromium = None
+    made = render(chosen, PAGES, chromium, css)
     book = os.path.join(OUT, "QCSP_001_ImB.pdf")
-    merge(made, book)
+    merge(sorted(glob.glob(os.path.join(PAGES, "*.pdf"))), book)
     bad = [(os.path.basename(f), pages_of(f)) for f in made if pages_of(f) != 1]
     print("printed %d sheet(s) -> %s" % (len(made), os.path.relpath(PAGES)))
     print("  merged: %s (%.1f MiB)" % (os.path.basename(book),
@@ -61,4 +69,4 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(sys.argv[1:]))

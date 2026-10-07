@@ -29,10 +29,10 @@ Output, `DELIVER_2026-10-07_T3_Final/`:
 | `T3_CoQ_all_2026-10-07.pdf` | every CoQ |
 | `T3_iCoA_all_2026-10-07.pdf` | every iCoA, in the order of its CoQ |
 | `T3_CoQ_with_iCoA_2026-10-07.pdf` | each CoQ followed by its iCoA |
+| `T3_Specifications_2026-10-07.pdf` | every specification sheet a Tranche 3 CoQ cites (`specs/QCSP_001_ImB/PDF`, rebuilt 07.10.2026), in code order |
 | `CONTENTS.tsv` | the list of all of the above |
 
-Each merged PDF has a bookmark per certificate. The specifications follow separately once their documents print
-the current grades.
+Each merged PDF has a bookmark per certificate or sheet. `--specs` rebuilds the specifications file alone.
 """
 import csv
 import glob
@@ -50,6 +50,7 @@ sys.path.insert(0, HERE)
 import audit_empty_results as A                                    # noqa: E402
 
 SRC = os.path.join(GAP, 'DELIVER_2026-09-26_T3')
+SPEC_PDF = os.path.join(GAP, 'specs', 'QCSP_001_ImB', 'PDF')
 # A result the CoQ prints from a certificate found after the master's tracker sheet was last written. Each is
 # named here with its source, and listed for the master; the build stops on any other disagreement.
 NOT_YET_IN_MASTER = {
@@ -101,7 +102,34 @@ def safe(s):
     return re.sub(r'[^A-Za-z0-9_+.-]+', '-', str(s)).strip('-')
 
 
-def main():
+def specs(rows):
+    """Every specification sheet the Tranche 3 CoQs cite, merged in code order, one bookmark per sheet."""
+    import pymupdf
+    cited = {}
+    for r in rows:
+        cited.setdefault(r['spec'], []).append(r['coq'])
+    book, toc = pymupdf.open(), []
+    for code in sorted(cited):
+        got = glob.glob(os.path.join(SPEC_PDF, code + '_*.pdf'))
+        if len(got) != 1:
+            raise SystemExit('%s: %d specification sheets on file' % (code, len(got)))
+        with pymupdf.open(got[0]) as d:
+            if d.page_count != 1:
+                raise SystemExit('%s prints %d pages' % (code, d.page_count))
+            if code not in d[0].get_text():
+                raise SystemExit('%s: the sheet does not print its own code' % code)
+            toc.append([1, '%s · cited by %s' % (code, ', '.join(c[-3:] for c in sorted(cited[code]))), book.page_count + 1])
+            book.insert_pdf(d)
+    book.set_toc(toc)
+    book.set_metadata({'title': 'Purely Plant — Tranche 3 — the product specifications its certificates of quality cite',
+                       'producer': 'Purely Plant Quality Desk'})
+    dest = os.path.join(OUT, 'T3_Specifications_%s.pdf' % STAMP)
+    book.save(dest, garbage=4, deflate=True)
+    print('%s — %d sheets (%.1f MiB)' % (os.path.basename(dest), book.page_count, os.path.getsize(dest) / 1048576.0))
+    book.close()
+
+
+def main(argv=()):
     import pymupdf
     reg = json.load(open(os.path.join(GAP, 'coq_artifact_data.json'), encoding='utf-8'))
     tm = A.tranche_map()
@@ -147,6 +175,9 @@ def main():
                      'thc_cert': r4.get('doc'), 'file': name})
     if bad:
         raise SystemExit('refused:\n  ' + '\n  '.join(bad))
+    if '--specs' in argv:
+        specs(rows)
+        return 0
     print('%d Tranche 3 CoQs (%d initial, %d retest), %d with an iCoA; every printed Total THC is the master\'s '
           '(same batch, same certificate) but the %d named above' % (
               len(rows), sum(r['series'] == 'Initial' for r in rows), sum(r['series'] == 'Retest' for r in rows),
@@ -194,6 +225,7 @@ def main():
         doc.save(dest, garbage=4, deflate=True)
         made.append((os.path.basename(dest), doc.page_count, os.path.getsize(dest) / 1048576.0))
         doc.close()
+    specs(rows)
     with open(os.path.join(OUT, 'CONTENTS.tsv'), 'w', encoding='utf-8', newline='') as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0]), delimiter='\t', lineterminator='\n')
         w.writeheader()
@@ -206,4 +238,4 @@ def main():
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    sys.exit(main(sys.argv[1:]))

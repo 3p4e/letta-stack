@@ -35703,7 +35703,7 @@
    "icoa_campaign": "",
    "spc": {
     "code": "QCSP_001_GRC-IV_v.01",
-    "attributes_from": "QCSP_001_GRC-III_v.01",
+    "attributes_from": "QCSP_001_GRC-IV_v.01",
     "pheno": "HYBRID",
     "chemo": "THC",
     "proc": "MACHINE TRIMMED",
@@ -62553,7 +62553,7 @@
    },
    "spc": {
     "code": "QCSP_001_GRC-IV_v.01",
-    "attributes_from": "QCSP_001_GRC-III_v.01",
+    "attributes_from": "QCSP_001_GRC-IV_v.01",
     "pheno": "HYBRID",
     "chemo": "THC",
     "proc": "MACHINE TRIMMED",

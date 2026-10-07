@@ -1,9 +1,11 @@
 # The specification as one download
 
-`QCSP_001_ImB_2026-09-21.zip` — the whole package in a single file, 45 MB.
+`QCSP_001_ImB_2026-10-07.zip` — the whole package in a single file. It replaces the 21.09.2026 zip: GRC-IV and
+WED-II added, GRC-III deleted, the Tranche 3 phenotype, and Montserrat behind Orbitron (see ../README.md).
 
-    PDF/                                     57 sheets, one A4 page each, vector
-    SHEETS/                                  the same 57 as HTML, the editable source
+    PDF/                                     58 sheets, one A4 page each, vector
+    DOCX/                                    the same 58 as Word, made from the PDF
+    SHEETS/                                  the same 58 as HTML, the editable source
     INDEX.json                               what each sheet carries, for checking
     README.md                                what was filled and what was not
     _TEMPLATE_Product_Specification_ImB.html the owner's blank template, for comparison

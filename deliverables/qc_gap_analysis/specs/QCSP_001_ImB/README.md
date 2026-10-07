@@ -1,6 +1,6 @@
 # QCSP 001 v.03 — the intermediate-bulk product specification
 
-Fifty-seven sheets, one per specification code, each filled onto the owner's own template
+Fifty-eight sheets, one per specification code, each filled onto the owner's own template
 (`../base/Product_Specification_ImB.html`) and printed to one A4 page.
 
     SHEETS/   the sheet as HTML, the editable source
@@ -38,10 +38,36 @@ cite; bumping it would move 344 documents to say nothing new.
 
 ## The numbers
 
-The nominal, tolerance and window come from the potency decision of **17.09.2026** — the
-same figures all 172 certificates of quality print. That is the Head of QC's instruction of
-18.09.2026: *"update the actual product specification that we built according to this new
-and latest decisions regarding ranges."*
+The nominal, tolerance and window come from the current grade table,
+`../../potency_grades_2026-09-15.csv`. That is the potency decision of **17.09.2026**, plus the
+grades set since:
+- WED-II, 22.00 ± 1.40, set on the KVM4 builder on 26.09.2026;
+- GRC-IV, 7.00 ± 0.70, set on 27.09.2026;
+- Grapes And Cream as three ranges with no empty one (7, 10, 12), 07.10.2026. GRC-III left the table, its
+  sheet is deleted, and the KVM4 builder holds the same three ranges as finished.
+
+These are the figures the certificates of quality print. That is the Head of QC's instruction of 18.09.2026:
+*"update the actual product specification that we built according to this new and latest decisions regarding
+ranges."* The numeral is the table's, read off the code; it is not a rank by nominal, because numerals are
+sequential by creation.
+
+## 07.10.2026
+
+Head of QC, 07.10.2026:
+- **Grades.** GRC-IV and WED-II now have sheets, and GRC-III is gone. `build_qcsp_imb.py` reads the grade
+  table, not the 17.09 JSON, which had neither grade.
+- **Phenotype.** *"Don't concern yourself with tranche one and tranche 2 batches since they're already sent"*.
+  A sheet takes its attributes from its Tranche 3 lots, then from the lots outside the tranches, and from
+  Tranche 1/2 only when nothing else cites it.
+  - So the eight BSS, GG and OPM sheets that Tranche 3 cites read Hybrid, Indica dominant, like their
+    certificates (ruling of 07.10.2026 for Tranche 3).
+  - A Tranche 3 hybrid whose leaning is known and whose split is not prints `· INDICA DOMINANT`, in the style
+    of the split.
+- **Fonts.** Montserrat now stands behind Orbitron. The Macedonian of the Orbitron labels had printed in
+  Liberation Sans (Orbitron has no Cyrillic), as on the iCoA before 27.09.2026. Every letter and digit is now
+  in a house face; only ≤ ☒ ☐ ∑ Δ ⁹ fall back.
+- **Reprint.** All 58 sheets are reprinted with the current printer (Playwright's own browser), and the Word
+  copies are remade from them.
 
 **One thing for the owner to note.** The sheets are signed **01.06.2026** and versioned
 **v.03**, as the template has them, but the windows are the 17.09.2026 ones — which are not
@@ -54,11 +80,12 @@ reprint.
 
 Phenotype, chemotype and processing are read off the certificates that already print them;
 a code whose lots disagree about an attribute stops the build rather than having one chosen
-for it. The Phenotype pill carries an INDICA : SATIVA ratio only where the record states
-one — 28 of the 57 are hybrids whose record gives a word (INDICA-DOMINANT, BALANCED, TO BE
-DETERMINED) rather than figures, and no figures are invented for them.
+for it (Tranche 3 lots first, see above). The Phenotype pill carries an INDICA : SATIVA ratio only where
+the record states one. Where it gives only a word, no figures are invented: a Tranche 3 sheet prints the
+leaning (INDICA-DOMINANT), and BALANCED and TO BE DETERMINED print nothing.
 
 ## Rebuilding
 
-    python3 specs/build_qcsp_imb.py      # 57 sheets onto the template
-    python3 specs/print_qcsp_imb.py      # one A4 page each, fonts embedded
+    python3 specs/build_qcsp_imb.py      # 58 sheets onto the template
+    python3 specs/print_qcsp_imb.py      # one A4 page each, fonts embedded (or name sheets to print only those)
+    python3 design_handoff/toolchain/pdf_to_docx_exact.py --batch --force specs/QCSP_001_ImB/PDF specs/QCSP_001_ImB/DOCX

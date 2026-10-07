@@ -49,7 +49,11 @@ SHEETS = os.path.join(OUT, "SHEETS")
 
 DOC_VERSION = "QCSP 001 v.03"          # the owner, 21.09.2026 — not v.04
 SIGNED = "01.06.2026"                  # the date v.03 carries
-BASIS = "17.09.2026"                   # the potency decision the windows come from
+# Head of QC, 07.10.2026: the grades are the current table, which is the 17.09.2026 decision plus WED-II
+# (26.09), GRC-IV (27.09), and GRC as three ranges with GRC-III gone (07.10, KVM4 builder finished). The numeral is
+# the table's, read off the code; it is not a rank by nominal (numerals are sequential by creation).
+BASIS = "potency_grades_2026-09-15.csv (17.09.2026; WED-II 26.09.2026; GRC 07.10.2026)"
+GRADES = os.path.join(GAP, "potency_grades_2026-09-15.csv")
 ROM = {"I": 1, "II": 2, "III": 3, "IV": 4, "V": 5, "VI": 6}
 BOX, TICK = "&#9744;", "&#9746;"
 
@@ -68,50 +72,64 @@ def esc(s):
 
 # --------------------------------------------------------------------- the record
 def records():
-    """One record per specification code, from the decision and the certificates.
+    """One record per specification code, from the current grade table and the certificates.
 
-    Attributes are read off the certificates that already print them; a code whose lots
-    disagree about an attribute stops the build rather than having one chosen for it.
+    The grade (nominal, tolerance, window) is the table's row for the code's strain and numeral.
+    The attributes are read off the certificates that print them, Tranche 3 first. Head of QC,
+    07.10.2026: *"Don't concern yourself with tranche one and tranche 2 batches since they're
+    already sent"*. So a sheet takes its attributes from its Tranche 3 lots where it has any, then
+    from the lots outside the tranches, and from the issued Tranche 1/2 lots only when nothing else
+    cites it. Lots of the chosen group that disagree about an attribute stop the build.
     """
-    spec = json.load(open(os.path.join(HERE, "potency_specifications_25_2026-09-17.json"),
-                         encoding="utf-8"))
+    import csv
+    sys.path.insert(0, os.path.join(GAP, "tracker"))
+    import audit_empty_results as A
+    table = {}
+    with open(GRADES, encoding="utf-8") as fh:
+        for g in csv.DictReader(fh):
+            table[(g["abbr"], g["numeral"])] = (g["strain"], float(g["nominal"]), float(g["tolerance"]),
+                                                float(g["window_low"]), float(g["window_high"]))
+    tm = A.tranche_map()
+
+    def group(c):
+        for k in (c.get("pp"), c.get("cb"), (c.get("cb") or "").replace("\uff0a", "")):
+            if k and k in tm:
+                return {"T3": 0, "T1": 2, "T2": 2}.get(tm[k], 2)
+        return 1                                  # outside every tranche
+
     data = json.load(open(os.path.join(GAP, "coq_artifact_data.json"), encoding="utf-8"))
     codes = {}
     for c in data["coqs"]:
         code = (c.get("spec") or "").strip()
         m = re.match(r"QCSP_001_([A-Z0-9]+)-([IVX]+)_v\.(\d+)$", code)
-        if not m:
+        if not m or c.get("withdrawn"):
             continue
-        cult, num = m.group(1), ROM[m.group(2)]
-        s = spec.get(cult)
-        if not s:
-            raise SystemExit("%s names cultivar %s, which the decision does not carry" % (code, cult))
-        grades = sorted(s["grades"], key=lambda g: -g[0])
-        if num > len(grades):
-            raise SystemExit("%s is grade %d and the decision gives %s %d"
-                             % (code, num, cult, len(grades)))
-        nom, tol, lo, hi = grades[num - 1]
-        sp = c.get("spc") or {}
+        cult = m.group(1)
+        if (cult, m.group(2)) not in table:
+            raise SystemExit("%s: the grade table has no %s-%s" % (code, cult, m.group(2)))
+        strain, nom, tol, lo, hi = table[(cult, m.group(2))]
         r = codes.setdefault(code, {"code": code, "cult": cult, "numeral": m.group(2),
-                                    "strain": s["strain"], "nominal": nom, "tol": tol,
-                                    "lo": lo, "hi": hi, "pcode": set(), "pheno": set(),
-                                    "chemo": set(), "proc": set(), "dominance": set(),
-                                    "lots": set()})
+                                    "strain": strain, "nominal": nom, "tol": tol,
+                                    "lo": lo, "hi": hi, "by": {}, "lots": set()})
+        g = r["by"].setdefault(group(c), {k: set() for k in ("pcode", "pheno", "chemo", "proc", "dominance")})
         if c.get("pcode"):
-            r["pcode"].add(c["pcode"])
+            g["pcode"].add(c["pcode"])
+        sp = c.get("spc") or {}
         for k in ("pheno", "chemo", "proc", "dominance"):
             v = (sp.get(k) or "").strip()
             if v:
-                r[k].add(v)
+                g[k].add(v)
         lot = c.get("pp") or c.get("cb")
         if lot:
             r["lots"].add(lot)
     for code, r in sorted(codes.items()):
+        first = min(r["by"])
+        g = r.pop("by")[first]
+        r["t3"] = first == 0
         for k in ("pcode", "pheno", "chemo", "proc", "dominance"):
-            if len(r[k]) > 1:
-                raise SystemExit("%s: its lots disagree about %s — %s"
-                                 % (code, k, sorted(r[k])))
-            r[k] = sorted(r[k])[0] if r[k] else ""
+            if len(g[k]) > 1:
+                raise SystemExit("%s: its lots disagree about %s — %s" % (code, k, sorted(g[k])))
+            r[k] = sorted(g[k])[0] if g[k] else ""
     return [codes[c] for c in sorted(codes)]
 
 
@@ -126,7 +144,7 @@ PROC = ('<span class="proc-stack"><span class="var-opt">%s Machine <span class="
         '<span class="var-opt">%s Hand <span class="mk">Рачна</span></span></span>' % (BOX, BOX))
 
 
-def pheno_pill(pheno, dominance):
+def pheno_pill(pheno, dominance, lean=False):
     """Tick one of Hybrid / Indica / Sativa, and carry a ratio only if one is stated.
 
     The record's dominance is sometimes a ratio (INDICA 60 : SATIVA 40) and sometimes a
@@ -142,6 +160,11 @@ def pheno_pill(pheno, dominance):
         m2 = re.search(r"SATIVA\s*(\d+)\s*:\s*INDICA\s*(\d+)", dominance or "", re.I)
         dom = ('<span class="vo-dom">INDICA<span class="pn">%s</span> : SATIVA<span class="pn">%s</span></span>'
                % (m2.group(2), m2.group(1))) if m2 else ""
+        # Head of QC, 07.10.2026, Tranche 3: a hybrid whose leaning is known and whose split is not says which way
+        # it leans, as its certificate of quality does
+        m3 = re.match(r"^\s*(INDICA|SATIVA)-DOMINANT\s*$", dominance or "", re.I)
+        if not dom and m3 and lean:
+            dom = '<span class="vo-dom">· %s <span class="pn">DOMINANT</span></span>' % m3.group(1).upper()
     else:
         dom = ('<span class="vo-dom">INDICA<span class="pn">%s</span> : SATIVA<span class="pn">%s</span></span>'
                % (m.group(1), m.group(2)))
@@ -180,7 +203,7 @@ def sheet(tpl, r):
     h = one(h, '<span class="pbp-val">00.00%</span><span class="pbp-tol">± 0.00%</span>',
             '<span class="pbp-val">%.2f%%</span><span class="pbp-tol">± %.2f%%</span>'
             % (r["nominal"], r["tol"]), ".pbp-val/.pbp-tol")
-    h = one(h, PHENO, pheno_pill(r["pheno"], r["dominance"]), "Phenotype pill")
+    h = one(h, PHENO, pheno_pill(r["pheno"], r["dominance"], r.get("t3")), "Phenotype pill")
     h = one(h, CHEMO, chemo_pill(r["chemo"]), "Chemotype pill")
     h = one(h, PROC, proc_pill(r["proc"]), "Processing pill")
     h = one(h, '<span class="pcr-val">XX_THC00 : CBD1</span>',
@@ -198,7 +221,22 @@ def sheet(tpl, r):
     # the owner, 21.09.2026: no document code in the bottom right corner
     h = one(h, '<div class="foot-right">QCSP 001 v.03</div>',
             '<div class="foot-right"></div>', ".foot-right")
+    # Orbitron has no Cyrillic: the Macedonian of every Orbitron label fell through to Liberation Sans in print.
+    # Montserrat goes behind Orbitron, as on the iCoA since 27.09.2026 (build_t3_bundle_2026-09-26.house_stack);
+    # Latin text keeps Orbitron.
+    for a, b in ORBITRON_STACK:
+        h = h.replace(a, b)
+    rules = re.sub(r"@font-face\s*\{[^}]*\}", "", h)
+    left = sorted({v for v in re.findall(r"font-family:\s*([^;}\"]+)", rules)
+                   if v.strip().strip("'\"").startswith("Orbitron") and "Montserrat" not in v})
+    if left:
+        raise SystemExit("%s: Orbitron without Montserrat behind it (%s)" % (code, ", ".join(left)))
     return code, h
+
+
+ORBITRON_STACK = (("font-family:'Orbitron','Roboto Mono',monospace", "font-family:'Orbitron','Montserrat','Roboto Mono',monospace"),
+                  ("font-family:'Orbitron',sans-serif", "font-family:'Orbitron','Montserrat',sans-serif"),
+                  ("font-family:'Orbitron',monospace", "font-family:'Orbitron','Montserrat',monospace"))
 
 
 def main(argv):

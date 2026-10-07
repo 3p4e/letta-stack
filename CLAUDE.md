@@ -195,13 +195,12 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
      read `GET /api/specs`, `/api/specs/<ABBR>`); check it, and only it, for a strain's current grades,
      then carry a new one into `potency_grades_2026-09-15.csv`. WED-II (22.00 ± 1.40, 20.60–23.39 %)
      came from there on 26.09.2026 and grades `-046`. GRC-IV (7.00 ± 0.70, 6.30–7.69 %) was set by the
-     Head of QC on 27.09.2026 for `-050` (7.05 %), which no grade covered; it overlaps GRC-III
-     (7.20–8.79 %), and `potency_grading` tries the higher nominal first, so `-152` (7.50 %) stays III.
+     Head of QC on 27.09.2026 for `-050` (7.05 %), which no grade covered (GRC since 07.10.2026: below).
      The builder page also embeds the results it rests on (`const DATA`). The audit
      `tracker/audit_potency_kvm4_2026-10-07.py` (`--fetch` refreshes `KVM4_POTENCY_SNAPSHOT_*.json`) checks
      two things against the builder: every CoQ's grade, window, specification code and product code, and every
-     THC result on file, wherever it came from. On 07.10.2026 every Tranche 3 and out-of-tranche CoQ agreed
-     except `-050`: the builder holds GRC 7 % as a draft, ±0.62 (6.38–7.61 %), and adds GRC 14 % (open).
+     THC result on file, wherever it came from. Since the GRC write below (07.10.2026, 09:10 UTC), every
+     Tranche 3 and out-of-tranche CoQ agrees with the builder.
      **No empty potency range** (Head of QC, 07.10.2026, on GRC): *"check all results of that strain in total
      from all batches and distribute them in suitable number of potency ranges. And of course, no empty potency
      ranges."* The builder's own generator (`searchLadder`) puts GRC's four results (7.05, 7.50, 9.80, 11.53)
@@ -211,9 +210,16 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
      - 12.00 ± 1.00 (GRC-I).
 
      GRC-III (8.00 ± 0.80) holds nothing and left the table. `-152` (7.50 %) and its iCoA-PP_26-095 are
-     GRC-IV, `GRC_THC7 : CBD1`. The builder's draft 14 % holds nothing and is not adopted. The builder's GRC
-     draft still reads 7 ± 0.62 with 8 % and 14 %, so it disagrees with the table until it is set to these
-     three ranges. Every finished strain's ranges each hold at least one result.
+     GRC-IV, `GRC_THC7 : CBD1`. The builder's draft 14 % holds nothing and is not adopted. At the Head of QC's word
+     (*"You write it to KVM4"*, 07.10.2026) the desk saved these three ranges to GRC on the builder
+     (`PUT /api/specs/GRC`, then `POST …/finish`), with 7.05 entered as a result. The builder's data lacked it.
+     The state before the write is `tracker/KVM4_GRC_BEFORE_WRITE_2026-10-07.json`. Write to the builder only
+     on his word, as here. Every finished strain's ranges each hold at least one result. The specification
+     sheets follow the same table (`specs/build_qcsp_imb.py`, 58 sheets). GRC-IV and WED-II have sheets, and
+     GRC-III's sheet is deleted (*"Delete it"*).
+     **The Versa sale list is no source for THC** (Head of QC, 07.10.2026: it may not carry the retest values).
+     Each CoQ prints its own laboratory certificate. The retest CoQ, each lot's current certificate, prints the
+     retest potency, and an initial its own release result (*"Nothing, keep as is"*).
   8. **A certificate whose scan is incomplete** prints `[pending]` for what the missing page holds —
      IPH `1065/2026` (SJ102501) holds pages 1, 2 and 4 of 4 in every copy; page 3 carries its metals,
      total aflatoxins and three pesticides. Obtain the page; do not read around it.
@@ -278,7 +284,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 194 corrections, 07.09.2026–07.10.2026, each quoted — is
+The full record — 198 corrections, 07.09.2026–07.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:
