@@ -17,7 +17,8 @@ folder must name the same grades with the same nominal and tolerance. A grade th
 
 Output: `specs/QCSP_001_ImB/_zip/QCSP_001_ImB_by_strain_2026-10-07.zip`, one file per strain,
 `QCSP_001_{abbr}_v.01_{Strain}_all_grades.pdf`. The set's own zip (`QCSP_001_ImB_2026-10-07.zip`) is rebuilt as the 58
-sheet PDFs only (no Word, no HTML).
+sheet PDFs only (no Word, no HTML). And every sheet in one PDF, strain by strain:
+`DELIVER_2026-10-07_Merged/QCSP_001_ImB_all_58_specifications_2026-10-07.pdf`.
 """
 import csv
 import glob
@@ -36,6 +37,8 @@ PDF = os.path.join(SET, 'PDF')
 GRADES = os.path.join(GAP, 'potency_grades_2026-09-15.csv')
 STAMP = '2026-10-07'
 ZIP = os.path.join(SET, '_zip', 'QCSP_001_ImB_by_strain_%s.zip' % STAMP)
+# Head of QC, 07.10.2026: "give me the specifications, all of them merged as one PDF document"
+ALL = os.path.join(GAP, 'DELIVER_%s_Merged' % STAMP, 'QCSP_001_ImB_all_58_specifications_%s.pdf' % STAMP)
 ROMAN = {'I': 1, 'II': 2, 'III': 3, 'IV': 4, 'V': 5, 'VI': 6, 'VII': 7, 'VIII': 8, 'IX': 9, 'X': 10}
 
 
@@ -90,10 +93,12 @@ def main(argv=()):
 
     tmp = tempfile.mkdtemp(prefix='qcsp_strain_')
     made = []
+    every, toc_all = pymupdf.open(), []
     with zipfile.ZipFile(ZIP + '.part', 'w', zipfile.ZIP_DEFLATED) as z:
         for (abbr, strain), sheets in sorted(strains.items(), key=lambda kv: kv[0][1]):
             sheets.sort(key=lambda s: ROMAN[s['grade']])
             book, toc = pymupdf.open(), []
+            toc_all.append([1, '%s (%s)' % (strain, abbr), every.page_count + 1])
             for s in sheets:
                 with pymupdf.open(s['pdf']) as d:
                     if d.page_count != 1:
@@ -103,6 +108,9 @@ def main(argv=()):
                     toc.append([1, 'Grade %s · %.2f ± %.2f %% · %s · %s' % (
                         s['grade'], s['nominal'], s['tolerance'], s['window'], s['product_code']), book.page_count + 1])
                     book.insert_pdf(d)
+                    toc_all.append([2, '%s · Grade %s · %.2f ± %.2f %%' % (s['code'], s['grade'], s['nominal'], s['tolerance']),
+                                    every.page_count + 1])
+                    every.insert_pdf(d)
             book.set_toc(toc)
             book.set_metadata({'title': 'Purely Plant — QCSP 001 — %s (%s), all grades: %s' % (
                 strain, abbr, ', '.join(s['grade'] for s in sheets)), 'producer': 'Purely Plant Quality Desk'})
@@ -113,6 +121,17 @@ def main(argv=()):
             book.close()
             z.write(p, name)
     os.replace(ZIP + '.part', ZIP)
+    # every sheet in one document, strain by strain in name order, grades in order, a bookmark per strain and grade
+    if every.page_count != len(index):
+        raise SystemExit('the all-sheets PDF holds %d pages for %d sheets' % (every.page_count, len(index)))
+    every.set_toc(toc_all)
+    every.set_metadata({'title': 'Purely Plant — QCSP 001 — all %d specification sheets' % every.page_count,
+                        'producer': 'Purely Plant Quality Desk'})
+    os.makedirs(os.path.dirname(ALL), exist_ok=True)
+    every.save(ALL, garbage=4, deflate=True)
+    every.close()
+    print('%s — %d sheets, %d strains (%.1f MiB)' % (os.path.relpath(ALL, GAP), len(index), len(made),
+                                                     os.path.getsize(ALL) / 1048576.0))
     shutil.rmtree(tmp, ignore_errors=True)
     for n, pg, b in made:
         print('%-62s %d grade%s  %.1f MiB' % (n, pg, '' if pg == 1 else 's', b / 1048576.0))
