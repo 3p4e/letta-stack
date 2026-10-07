@@ -63,14 +63,16 @@ def pages_of(pdf):
 # the desk's layers over it (house kit, pill host, QA-light) as many as six ids; the passes take twelve
 HI = '*' + ':not(#_)' * 12
 ALL = '%s,%s::before,%s::after,%s::marker' % (HI, HI, HI, HI)
+# the logo is drawn with the text, as vector, never in the background image
+LOGO = '.hb-logo' + ':not(#_)' * 13
 NO_TEXT = ALL + '{color:transparent!important;-webkit-text-fill-color:transparent!important;' \
-                'text-decoration-color:transparent!important}'
+                'text-decoration-color:transparent!important}' + LOGO + '{visibility:hidden!important}'
 TEXT_ONLY = ALL + '{background:none!important;background-color:transparent!important;background-image:none!important;' \
                   'border-color:transparent!important;outline-color:transparent!important;box-shadow:none!important;' \
                   'text-shadow:none!important;-webkit-mask-image:none!important;mask-image:none!important;' \
                   '-webkit-mask:none!important;mask:none!important;filter:none!important;backdrop-filter:none!important;' \
                   'opacity:1!important;mix-blend-mode:normal!important}' + \
-            ','.join(t + ':not(#_)' * 13 for t in ('img', 'svg', 'canvas')) + '{visibility:hidden!important}'
+            ','.join(t + ':not(#_)' * 13 for t in ('img:not(.hb-logo)', 'svg', 'canvas')) + '{visibility:hidden!important}'
 # a text colour with alpha, blended onto the nearest opaque background behind it (white if none)
 OPAQUE_TEXT = """() => { let n = 0;
   const parse = c => { const m = c.match(/rgba?\\(([^)]+)\\)/); if (!m) return null;
@@ -82,6 +84,42 @@ OPAQUE_TEXT = """() => { let n = 0;
       el.style.setProperty('color', `rgb(${m(0)},${m(1)},${m(2)})`, 'important'); n++; } }
   return n; }"""
 DPI = 300
+# QA's Word look (Head of QC, 07.10.2026: "use the colour scheme and visuals of the Word document and apply them to the
+# design you already gave me"). QA's Word specifications are our sheets converted to Word, with Word's own picture
+# correction laid over the background images: brightness +20 %, contrast -40 % (ImB_Specification_KC18.docx, the
+# header picture: <a14:brightnessContrast bright="20000" contrast="-40000"/>). The print-safe sheet already holds the
+# whole background — every band, rule, fade and shadow, no text — as one 300 dpi image, so the same correction is
+# applied to that image, once: v' = (v - 0.5)(1 + contrast) + 0.5 + brightness. The text stays vector and as dark as
+# designed; the logo prints with the text as vector, and the pills (the CoQ's, ruled the same day) keep their own colours. QCSP_WORD_LOOK=0 prints
+# the sheet as designed.
+WORD_LOOK = os.environ.get('QCSP_WORD_LOOK', '0') == '1'
+BRIGHTNESS, CONTRAST = 0.20, -0.40
+WASH = bytes(max(0, min(255, int(round(((v / 255.0 - 0.5) * (1 + CONTRAST) + 0.5 + BRIGHTNESS) * 255))))
+             for v in range(256))
+KEEP = ['.selrow .chip-sel', '.selrow .chip-un']
+# measured in print media and relative to the page, as the sheet is printed (on screen the page sits centred, offset)
+KEEP_JS = """(sels) => { const p = document.querySelector('.page').getBoundingClientRect();
+  return sels.flatMap(s => [...document.querySelectorAll(s)].map(e => { const r = e.getBoundingClientRect();
+    return [r.left - p.left - 2, r.top - p.top - 2, r.right - p.left + 2, r.bottom - p.top + 2]; })); }"""
+
+
+def keep_of(page):
+    page.emulate_media(media='print')
+    return page.evaluate(KEEP_JS, KEEP)
+
+
+def washed(pix, keep):
+    """The background image under Word's correction, the kept rectangles (CSS px) as they were."""
+    import pymupdf
+    raw = pix.samples
+    out = bytearray(raw.translate(WASH))
+    k, n, stride = DPI / 96.0, pix.n, pix.stride
+    for x0, y0, x1, y1 in keep:
+        ix0, ix1 = max(0, int(x0 * k)), min(pix.width, int(x1 * k) + 1)
+        for y in range(max(0, int(y0 * k)), min(pix.height, int(y1 * k) + 1)):
+            a, b = y * stride + ix0 * n, y * stride + ix1 * n
+            out[a:b] = raw[a:b]
+    return pymupdf.Pixmap(pymupdf.csRGB, pix.width, pix.height, bytes(out), False)
 
 
 def transparency(doc):
@@ -111,9 +149,10 @@ def print_safe(chosen, css, chromium):
     dirs = {k: os.path.join(tmp, k) for k in ('vector', 'background', 'text')}
     for d in dirs.values():
         os.makedirs(d)
-    blended = []
+    blended, keep = [], {}
     render(chosen, dirs['vector'], chromium, css)
-    render(chosen, dirs['background'], chromium, css + NO_TEXT)
+    render(chosen, dirs['background'], chromium, css + NO_TEXT,
+           probe=lambda src, page: keep.__setitem__(os.path.basename(src)[:-5] + '.pdf', keep_of(page)))
     render(chosen, dirs['text'], chromium, css + TEXT_ONLY,
            probe=lambda src, page: blended.append(page.evaluate(OPAQUE_TEXT)))
     made, bad = [], []
@@ -124,16 +163,28 @@ def print_safe(chosen, css, chromium):
             bad.append('%s: %d/%d/%d pages' % (name, vec.page_count, bg.page_count, tx.page_count))
             continue
         r = vec[0].rect
+        base = bg[0].get_pixmap(dpi=DPI, alpha=False, colorspace=pymupdf.csRGB)
+        # the sheet as designed, held against the plain print below; the Word look is the same sheet with its
+        # background image corrected
         out = pymupdf.open()
         page = out.new_page(width=r.width, height=r.height)
-        page.insert_image(r, pixmap=bg[0].get_pixmap(dpi=DPI, alpha=False, colorspace=pymupdf.csRGB))
+        page.insert_image(r, pixmap=base)
         page.show_pdf_page(r, tx, 0)
         out.set_metadata(vec.metadata)
+        got = pymupdf.open('pdf', out.tobytes(garbage=4, deflate=True))
         dst = os.path.join(PAGES, name)
+        if WORD_LOOK:
+            if len(keep.get(name) or []) < 6:
+                bad.append('%s: the pills were not found to keep (%d)' % (name, len(keep.get(name) or [])))
+            out.close()
+            out = pymupdf.open()
+            page = out.new_page(width=r.width, height=r.height)
+            page.insert_image(r, pixmap=washed(base, keep.get(name) or []))
+            page.show_pdf_page(r, tx, 0)
+            out.set_metadata(vec.metadata)
         out.save(dst, garbage=4, deflate=True)
         out.close()
-        got = pymupdf.open(dst)
-        left = transparency(got)
+        left = transparency(pymupdf.open(dst))
         words = lambda t: sorted(t.split())
         want_text = ''.join(tx[0].get_text().split())
         a = vec[0].get_pixmap(dpi=100, alpha=False).samples
@@ -164,8 +215,8 @@ def print_safe(chosen, css, chromium):
     shutil.rmtree(tmp, ignore_errors=True)
     if bad:
         raise SystemExit('print-safe sheets refused:\n  ' + '\n  '.join(bad))
-    print('print-safe: %d sheets, one opaque %d dpi background under vector text; %d text colours with alpha blended'
-          % (len(made), DPI, sum(blended)))
+    print('print-safe: %d sheets, one opaque %d dpi background under vector text; %d text colours with alpha blended%s'
+          % (len(made), DPI, sum(blended), '; Word look (background +20 %% brightness, -40 %% contrast)' if WORD_LOOK else ''))
     return made
 
 
