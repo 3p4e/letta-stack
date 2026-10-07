@@ -249,7 +249,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 185 corrections, 07.09–27.09.2026, each quoted — is
+The full record — 189 corrections, 07.09.2026–07.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:
@@ -338,6 +338,13 @@ Standing rules the corrections produced (message numbers are in the record):
   on the packaging date, a retest iCoA on the retest sampling date, one date on every analysis (§4).
 - **Retest CoQ** = the retested parameters plus every other parameter carried from the initial with its
   original citation; no "not tested" on a retest CoQ.
+- **The microbiology panel prints as the lot's own certificate reports it** (Head of QC, 07.10.2026):
+  *"you must include all parameters tested and present in the eCOA unless explicitly told"*. Where the
+  certificate was ordered against the manufacturer's specification it also reports *P. aeruginosa* and
+  *S. aureus*; #9.6 and #9.7 then print from it (`tracker/apply_micro_panel_ruling_2026-10-07.py`, 32
+  Tranche 3 CoQs). A certificate that does not report them adds no row. *"You will not use analysis
+  results from one batch to fill in for another batch and strain"*: `548/1079/26` (OI-37) stays out. The
+  two rows fit one A4 page through `build_v40.js` `PANEL_FIT_LAYER`, written only on those pages.
 - **Wording.** ND is a *not detected* result; a parameter not tested is `n/t`, never ND. One Macedonian
   "Conforms" (Одговара); Macedonian "метод", not "метода". Phenotype "Hybrid, Indica/Sativa dominant"
   when the split is unknown, "Hybrid, Indica 80, Sativa 20" when known — the same everywhere.

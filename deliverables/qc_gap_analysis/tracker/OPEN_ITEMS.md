@@ -4,7 +4,7 @@ Every finding the desk has raised and cannot itself settle, with the evidence
 behind it and the decision being asked for. Built by `open_items.py`; the same
 register is the **Open Items** sheet of the workbook.
 
-**46 open · 3 marked on the certificate**
+**45 open · 3 marked on the certificate**
 
 ## Specification
 
@@ -386,15 +386,15 @@ register is the **Open Items** sheet of the workbook.
 
 ## Panel scope
 
-### OI-13 · The expanded microbiology panel HAS been run and no certificate says so
+### OI-13 · The full microbiology panel prints where the lot's own certificate reports it
 
-*State:* **open** · *Evidence:* Ph. Eur. 2.8.13; Ph. Eur. 2.6.13 expanded panel
+*State:* **ruled** · *Evidence:* Ph. Eur. 2.8.13; Ph. Eur. 2.6.13; intake_IJZMB_2026-09-16/reads_IJZMB.json; intake_micro_panel_2026-10-07/reads_release_panel.json
 
-**Found.** Corrected 16.09.2026. This item said until today that the expanded microbiology option (P. aeruginosa, S. aureus) "has never been run" and that "neither is claimed on any certificate". That was false, and it had been shipped in OPEN_ITEMS.md and in the workbook since 11.09.2026. Thirty-one certificates on file report the panel — every one of the thirty IJZ-MB campaign certificates of 31.08/01.09.2026 and 1221/2172/25 of 01.12.2025 — and all report both organisms ABSENT. What remains true of the other panel: the pesticide option offers Ph. Eur. 2.8.13 and a CUMCS equivalency, and no lot was tested to equivalency. Determinations #9.6 and #9.7 print nothing on all 172 certificates of quality, marked "upon request — not required for release", while a result exists for 31 of them.
+**Found.** Corrected 16.09.2026 and again 07.10.2026. This item said until 16.09.2026 that the expanded microbiology option (P. aeruginosa, S. aureus) "has never been run". That was false. Thirty-four certificates on file report the panel, every one ABSENT: the thirty IJZ-MB campaign certificates of 31.08/01.09.2026, 534/1065/26 and 535/1066/26 of the same campaign, and the release certificates 1220/2171/25 (PM072501) and 1221/2172/25 (WC072501) of 01.12.2025. Each was ordered against the manufacturer's specification (Ph. Eur. 5.1.8 cat. C и производителска спецификација / 2.6.12, 2.6.13, 2.6.31); the ordinary release certificates, ordered against Ph. Eur. 5.1.8 cat. C alone, report five tests and not these two.
 
-**The desk.** The panel results are kept in intake_IJZMB_2026-09-16/reads_IJZMB.json. They are NOT written into the owner's release register, which has no column for either organism, and the certificates are not changed: what a controlled document claims is the owner's to decide, not a defect to repair silently.
+**The desk.** Applied 07.10.2026 by tracker/apply_micro_panel_ruling_2026-10-07.py: the 32 Tranche 3 certificates of quality whose own microbiology certificate reports the panel print #9.6 and #9.7 from it (-021, -030, -031, -046 and 28 retests), with the absence wording, document, date and laboratory of #9.5. The renderer adds the two rows only where they were tested, inside one A4 page (design_handoff/toolchain, PANEL_FIT_LAYER). Not touched: -089 (Tranche 1) and -110 (Tranche 2), which are issued; -138, withdrawn; 548/1079/26, held under OI-37 and taken by no other lot.
 
-**Needed.** Should a certificate of quality print #9.6 and #9.7 where the laboratory reported them (31 lots, both absent) — and should the register gain a column for each so the result lives beside the other five? And, unchanged: should the certificates record that the pesticide equivalency option exists and was not exercised, or stay silent on it?
+**Needed.** Head of QC, 07.10.2026: "yes print all analysis results that are actualy tested, the complete Microbiological Purity Pannel"; "on that COQ for that batch, you draw the Microbiology pannel analysis rezults from a eCOA and you muist include all parametars tested and preasent iun the eCOA unless explicitly told"; "you will not use analysis rezults from one batch to fuill in for another batch and strain". Still open, unchanged: should the certificates record that the pesticide equivalency option exists and was not exercised, or stay silent on it?
 
 ## Document content
 

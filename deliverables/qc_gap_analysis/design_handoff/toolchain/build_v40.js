@@ -120,7 +120,7 @@ function winOf(crit) {
 function rec(c) {
   const byNo = {}; for (const r of c.rows) byNo[String(r.no)] = r;
   const res = {}, st = {}, doc = {}, iss = {}, lab = {};
-  for (const d of CoQ.DETS) { const r = byNo[d] || {}; res[d] = r.res || ''; st[d] = r.st || ''; doc[d] = r.doc || ''; iss[d] = r.dd || ''; lab[d] = r.lab || ''; }
+  for (const d of CoQ.DETS.concat(CoQ.PANEL_EXTRA)) { const r = byNo[d] || {}; res[d] = r.res || ''; st[d] = r.st || ''; doc[d] = r.doc || ''; iss[d] = r.dd || ''; lab[d] = r.lab || ''; }
   const spc = c.spc || {}, w = winOf((byNo['4'] || {}).crit);
   const sup = c.supersedes && c.supersedes.code ? (c.supersedes.code + (c.supersedes.date ? ' of ' + c.supersedes.date : '')) : '';
   return {
@@ -257,6 +257,26 @@ const SEC_LABEL_BEVEL_LAYER = '<style id="__owner-sec-bevel">\n' +
 // keeps edge to edge. The geometry lives in one place so it can be tuned once.
 const FADE_A = '34%', FADE_B = '66%';
 const wideFade = c => 'linear-gradient(90deg,#fff 0,' + c + ' ' + FADE_A + ',' + c + ' ' + FADE_B + ',#fff 100%)';
+// One A4 page with the full microbiology panel (Head of QC, 07.10.2026: "you need to be in A4
+// format"). Rows 9.6 and 9.7 add two 10.4-px sub-rows to section 02, 21 px. The page keeps 78 px
+// at its foot for the footer and lets the approval block take any spare room (margin-top:auto);
+// a page whose section 03 lists four laboratories has none, and went 11 px past A4 with the two
+// rows. The room comes out of page-white margins between the bands and nothing else:
+//   above the section 02, 03 and 04 labels      8, 11, 8 -> 6, 7, 6
+//   below the section 02, 03 and 04 labels      5 -> 3
+//   below the two tables                        3 -> 1
+//   above the disposition row and the rule over the signatures   8 -> 5
+// 24 px in all. Type, rules, rows and columns are untouched. The layer is written last on the
+// page, and only on a page that carries the two rows, so every other certificate is byte-for-
+// byte what it was. Measured in the printer's own Chromium on all 32 such pages.
+const PANEL_FIT_LAYER = '<style id="__owner-panel-fit">\n' +
+  'html body div.page div.goldrule + div.sec-label{margin-top:6px !important;margin-bottom:3px !important}\n' +
+  'html body div.page div.pot-note + div.sec-label{margin-top:7px !important;margin-bottom:3px !important}\n' +
+  'html body div.page div.tbl-wrap + div.sec-label{margin-top:6px !important;margin-bottom:3px !important}\n' +
+  'html body div.page div.tbl-wrap{margin-bottom:1px !important}\n' +
+  'html body div.page div.disp-row{margin-top:5px !important}\n' +
+  'html body div.page div.disp-row + div.goldrule{margin-top:5px !important}\n' +
+  '</style>';
 const WIDE_FADE_LAYER = '<style id="__owner-wide-fade">\n@media print{\n' +
   'html body div.page .pb-main{background-color:#fff !important;background-image:' + wideFade('rgb(244,247,251)') +
      ' !important;background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important}\n' +
@@ -474,6 +494,10 @@ const S01_BAND_LAYER = '<style id="__owner-s01-band">\n' +
   // WIDE_FADE_LAYER only on certificates that are not yet issued. Tranches 1 and 2 are with the
   // customer and are held byte-for-byte by check_frozen_records.py; the widen-the-fades ruling of
   // 28.09.2026 governs the reprints (Tranche 3 and the lots outside the tranches), never the sent set.
+  // Head of QC, 07.10.2026: the full microbiology panel prints where the lot's certificate reports
+  // it, and the certificate stays one A4 page. The two rows add 20 px; a page whose section 03
+  // lists three laboratories had none to spare. PANEL_FIT_LAYER takes it from white padding only.
+  const PANEL_PAGE = CoQ.PANEL_EXTRA.some(d => CoQ.hasExtra(rec(c), d));
   const DESK_LAYERS = OWNER_LAYER + '\n' + HB_SUP_LAYER + '\n' + PRINT_ZEBRA_LAYER + '\n' + EDGE_FADE_LAYER + '\n' + INK_LAYER + '\n' + S34_LAYER + '\n' + S03_LAYER + '\n' + S01_BAND_LAYER + '\n' + (FROZEN_LOT(c) ? '' : SEC_LABEL_BEVEL_LAYER + '\n' + WIDE_FADE_LAYER + '\n');
   if (html.indexOf('</body>') < 0) throw new Error('no </body> to append the desk layers before');
   html = html.replace('</body>', DESK_LAYERS + '</body>');
@@ -587,6 +611,9 @@ const S01_BAND_LAYER = '<style id="__owner-s01-band">\n' +
     if (htmlOut.split('</body>').length !== 2) throw new Error('no single </body>: ' + c.regcode);
     htmlOut = htmlOut.replace('</body>', LABREF_GRID + '</body>');
   }
+  // the A4 fit for the full microbiology panel goes in last, after every other layer, so its
+  // margins are the ones that hold (see PANEL_FIT_LAYER)
+  if (PANEL_PAGE) htmlOut = htmlOut.replace('</body>', PANEL_FIT_LAYER + '</body>');
   const OLD_NOTE = /<br>Parameter attribution to the issuing laboratory[^<]*<\/div>/;
   if (!OLD_NOTE.test(htmlOut)) throw new Error('Section 02 note sentence not found');
   htmlOut = htmlOut.replace(OLD_NOTE, '</div>');

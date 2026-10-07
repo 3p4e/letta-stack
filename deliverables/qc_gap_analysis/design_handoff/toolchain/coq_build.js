@@ -2,6 +2,23 @@
 globalThis.CoQ = (function () {
 const RED = 'color:#B91C1C;font-weight:700', AMBER = 'color:#8F5B00;font-weight:700';
 const DETS = ['1','2','3','4','5','6','7','8','9.1','9.2','9.3','9.4','9.5','10.1','10.2','10.3','11.1','11.2','11.3','11.4','12'];
+// Head of QC, 07.10.2026: "on that CoQ for that batch, you draw the Microbiology panel analysis
+// results from a eCOA and you must include all parameters tested and present in the eCOA".
+// Pseudomonas aeruginosa (9.6) and Staphylococcus aureus (9.7) are tested only where the lot's
+// certificate was ordered against the manufacturer's specification; they print, after E. coli,
+// on a certificate whose record carries a result for them, and nowhere else. Name, method and
+// criterion are QCSP 001's own (specs/QCSP_001_v04/SHEETS, rows 9.6 and 9.7).
+const PANEL_EXTRA = ['9.6','9.7'];
+const EXTRA_ROWS = {
+  '9.6': '<tr class="sub-row"><td></td><td><span class="p-sub">Pseudomonas aeruginosa</span></td><td><span class="p-method">Ph. Eur. 2.6.13 cat. C</span></td><td><span class="p-spec">Absence / 1 g</span></td>@CELL@</tr>',
+  '9.7': '<tr class="sub-row"><td></td><td><span class="p-sub">Staphylococcus aureus</span></td><td><span class="p-method">Ph. Eur. 2.6.13 cat. C</span></td><td><span class="p-spec">Absence / 1 g</span></td>@CELL@</tr>'
+};
+function hasExtra(rec, d) {
+  const r = String((rec.res || {})[d] || '').trim(), st = String((rec.st || {})[d] || '');
+  if (!r || r === '—' || /upon request|not tested|to be performed|awaiting/i.test(r + ' ' + st)) return false;
+  return codeShaped((rec.doc || {})[d]) && !!canonLab((rec.lab || {})[d]);
+}
+const detsOf = rec => DETS.concat(PANEL_EXTRA.filter(d => hasExtra(rec, d)));
 const UNIT = {'4':' %','5':' %','6':' %','8':' %','9.1':' CFU/g','9.2':' CFU/g','9.3':' CFU/g',
   '10.1':' µg/kg','10.2':' µg/kg','10.3':' µg/kg','11.1':' mg/kg','11.2':' mg/kg','11.3':' mg/kg','11.4':' mg/kg','7':' %','12':' mg/kg'};
 // `ac` is the accreditation id, held apart from the EN name so it can print on the second
@@ -41,7 +58,7 @@ function collapseParams(ds, split) {
 // Which dotted families are shared by more than one laboratory on this certificate.
 function splitFamilies(rec) {
   const labsOf = {};
-  for (const d of DETS) {
+  for (const d of detsOf(rec)) {
     if (String(d).indexOf('.') < 0) continue;
     const lab = canonLab(rec.lab[d]), doc = (rec.doc[d] || '').trim();
     if (!lab || !codeShaped(doc)) continue;
@@ -163,7 +180,7 @@ function cell(det, res, status) {
 function section03(rec) {
   const split = splitFamilies(rec);
   const groups = {};
-  for (const d of DETS) {
+  for (const d of detsOf(rec)) {
     const lab = canonLab(rec.lab[d]), doc = (rec.doc[d] || '').trim(), iss = (rec.iss[d] || '').trim();
     if (!lab || !codeShaped(doc)) continue;
     const g = groups[lab] = groups[lab] || { certs: new Map(), params: [] };
@@ -184,7 +201,7 @@ function section03(rec) {
       '</td><td class="lr-mono pcell">' + collapseParams(g.params, split).join(', ') + '</td></tr>');
   }
   // rule 10 — a result with no citable certificate goes to the Work Order row
-  const orphan = DETS.filter(d => {
+  const orphan = detsOf(rec).filter(d => {
     const r = (rec.res[d] || '').trim(), doc = (rec.doc[d] || '').trim();
     if (!r || r === '—' || /not tested|to be performed|upon request|^carried /i.test(r)) return false;
     if (/in-house CoA only|awaiting/i.test(rec.st[d] || '')) return false;
@@ -266,5 +283,5 @@ function section01(rec) {
 '  </div>\n' +
 '  <div class="goldrule"></div>\n\n  ';
 }
-return { RED, AMBER, DETS, UNIT, LABS, ORDER, canonLab, codeShaped, docCode, docNote, collapseParams, parseCSV, esc, mmyyyy, strip, red, cell, section03, section01, chip };
+return { RED, AMBER, DETS, PANEL_EXTRA, EXTRA_ROWS, hasExtra, detsOf, UNIT, LABS, ORDER, canonLab, codeShaped, docCode, docNote, collapseParams, parseCSV, esc, mmyyyy, strip, red, cell, section03, section01, chip };
 })();
