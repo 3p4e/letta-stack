@@ -23,8 +23,8 @@ must remain the same except for … the processing pill [and] the phenotype sele
   layout is worse than the page as sent.
 - **iCoA**: the sent pages' HTML is not kept, their builders are. Each sent page is rebuilt unchanged by the tree that
   printed it (initials `6f0562b`; retests `9426a22`; the two loss-on-drying retests `9db4382`) and must equal the PDF
-  as sent (same text, mean pixel difference < 0.01 at 100 dpi). The corrected page is built by the tree of 30.09.2026
-  (`6f0562b`), which carries the processing pill the retests were sent without, and must differ from the sent page
+  as sent (same text, mean pixel difference < 0.01 at 100 dpi). The corrected page is built by the same tree; a retest,
+  sent without the processing pill, takes it as the 30.09.2026 base writes it, ticked from the register. It must differ from the sent page
   only inside the phenotype row: no pixel outside it, no text outside it, and in it only the phenotype and processing
   words. A row that would pass the margin is scaled to fit, in place.
 
@@ -93,11 +93,27 @@ else:
     import build_owner_format as own
     fields, _ = own.load(os.path.join('tracker', 'ICOA_LIST_2026-09-24.tsv'))
     fb = {f['coq']: f for f in fields}
+    PROC = ('<span class="grp"><span class="lk-lbl">Processing <span class="mk">\u041e\u0431\u0440\u0430\u0431\u043e\u0442\u043a\u0430</span></span>'
+            '<span class="stack">%s%s</span></span>')
     def page(code, change):
         f = fb[code]
         if change:
             f = dict(f, **change)
-        return own.build(f['scope'].split(','), f)
+        h = own.build(f['scope'].split(','), f)
+        if change:
+            # the processing pill (Head of QC, 30.09.2026), as the 30.09 base and builder write it, ticked from the
+            # register; added to the tree that printed the page, so nothing else on it changes
+            proc = str((by[code].get('spc') or {}).get('proc') or '').upper()
+            if not any(w in proc for w in ('MACHINE', 'HAND')):
+                raise SystemExit('%s: no processing method in the register' % code)
+            grp = PROC % (own.chip('Machine', '\u041c\u0430\u0448\u0438\u043d\u0441\u043a\u0430', 'MACHINE' in proc),
+                          own.chip('Hand', '', 'HAND' in proc))
+            a = h.find('<div class="selrow">')
+            b = h.find('\n</div>', a)
+            if a < 0 or b < 0 or 'Processing <span' in h[a:b]:
+                raise SystemExit('%s: no selrow to take the processing pill' % code)
+            h = h[:b] + '\n' + grp + h[b:]
+        return h
 import re
 def chips(html, split):
     # the phenotype chips as this builder's chip() writes them: Hybrid ticked (with its split) and its Macedonian,
@@ -277,10 +293,11 @@ def main(argv):
     # carries the processing pill (Head of QC, 30.09.2026) — the sent retests predate it
     change = lambda t: {'pheno': 'HYBRID', 'split': ('· %s DOMINANT' % LEAN[t['abbr']]) if t['abbr'] in LEAN else ''}
     group = lambda t: 'retest-lod' if t['icoa'] in LOD_ICOA else t['series']
+    # the retests are corrected in the tree that printed them: the 30.09 tree also carries the wide fades of
+    # 28.09.2026, which would change their look
     JOBS = [('initial', 'initial', '6f0562b', ['sent', 'fix'], [t for t in tg if t['series'] == 'initial']),
-            ('retest', 'retest', '9426a22', ['sent'], [t for t in tg if group(t) == 'retest']),
-            ('retest-lod', 'retest', '9db4382', ['sent'], [t for t in tg if group(t) == 'retest-lod']),
-            ('retest-fix', 'retest', '6f0562b', ['fix'], [t for t in tg if t['series'] == 'retest'])]
+            ('retest', 'retest', '9426a22', ['sent', 'fix'], [t for t in tg if group(t) == 'retest']),
+            ('retest-lod', 'retest', '9db4382', ['sent', 'fix'], [t for t in tg if group(t) == 'retest-lod'])]
     sent_of, fix_of, html_of, scale_of, rev_of = {}, {}, {}, {}, {}
     for key, series, rev, tags, items in JOBS:
         tree = os.path.join(tmp, 'tree_' + rev)
