@@ -214,7 +214,7 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
 
      GRC-III (8.00 ± 0.80) holds nothing and left the table. `-152` (7.50 %) and its iCoA-PP_26-095 are
      GRC-IV, `GRC_THC7 : CBD1`. **Since 08.10.2026 GRC-IV is 8.00 ± 0.80 (7.20–8.79 %), `GRC_THC8 : CBD1`**
-     (Head of QC: *"grade 7.00% into 8.00% +-0.8%"*; KVM4 holds 8, 10, 12;
+     (Head of QC: *"grade 7.00% into 8.00% +-0.8%"*; confirmed with QA the same day against a 7.00 ± 0.70 option, which is not used; KVM4 holds 8, 10, 12;
      `tracker/apply_grc_grade_8_2026-10-08.py`). `-050` and `-152` and their iCoAs cite it; `-050`'s 7.05 % prints
      below the window, by his choice (*"both on 8.00 ± 0.80"*; the potency audit's `RULED_OUTSIDE`). The builder's draft 14 % holds nothing and is not adopted. At the Head of QC's word
      (*"You write it to KVM4"*, 07.10.2026) the desk saved these three ranges to GRC on the builder
@@ -291,7 +291,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 218 corrections, 07.09.2026–08.10.2026, each quoted — is
+The full record — 219 corrections, 07.09.2026–08.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:

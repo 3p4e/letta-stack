@@ -1,5 +1,7 @@
 # Grapes and Cream grade IV — two versions to choose from (08.10.2026)
 
+**Decided 08.10.2026 (Head of QC with QA): A, 8.00 ± 0.80 % (7.20–8.79 %).** B is kept for the record only.
+
 Head of QC, 08.10.2026: *"create additional set of documentation for GRC for 7.0% … and the COQ and iCOA with the
 same codes and all else as for the 8.00% … me and QA will decide on the final spec grade either 7 or 8.0%"*.
 

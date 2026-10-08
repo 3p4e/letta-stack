@@ -15,38 +15,22 @@ work to the t1 and t2 COQs and iCOAs"*.
 **Which.** The Tranche 1/2 CoQs whose specification is one of those grades, read from the register and the frozen
 snapshot. There are 23, with 23 iCoAs: 12 initial and 11 retest.
 
-**CoQ.** Each copy is built from the page as sent (`FROZEN_T1_T2_2026-09-26.json`, `design_handoff/out`):
-- the laboratory lines are corrected as in the copies of 07.10.2026 (`build_t1_t2_lab_lines_corrected_2026-10-07.py`);
-- in the phenotype group, Hybrid is ticked and Indica and Sativa are not (the markup the Tranche 3 pages use);
-- OPM's tick also carries "· INDICA DOMINANT".
+**What changes.** Head of QC, 08.10.2026: on Tranches 1 and 2 *"everything … especially looks, parameters and values
+must remain the same except for … the processing pill [and] the phenotype selection"*. So:
+- **CoQ**: the page as sent (`FROZEN_T1_T2_2026-09-26.json`, `design_handoff/out`) with Hybrid ticked, Indica and Sativa
+  not, OPM's tick with "· INDICA DOMINANT" — nothing else; the laboratory-line copy of 07.10.2026 is not folded in.
+  Refused if its text differs from the PDF as sent outside the phenotype group, if it runs to a second page, or if its
+  layout is worse than the page as sent.
+- **iCoA**: the sent pages' HTML is not kept, their builders are. Each sent page is rebuilt unchanged by the tree that
+  printed it (initials `6f0562b`; retests `9426a22`; the two loss-on-drying retests `9db4382`) and must equal the PDF
+  as sent (same text, mean pixel difference < 0.01 at 100 dpi). The corrected page is built by the tree of 30.09.2026
+  (`6f0562b`), which carries the processing pill the retests were sent without, and must differ from the sent page
+  only inside the phenotype row: no pixel outside it, no text outside it, and in it only the phenotype and processing
+  words. A row that would pass the margin is scaled to fit, in place.
 
-The copy is printed as on 07.10. It is refused if its text differs from the PDF as sent in anything but the laboratory
-lines and the phenotype group, if it runs to a second page, or if its layout is worse than the page as sent.
-
-**iCoA.** The sent T1/T2 iCoAs were printed from HTML that is not kept. Their builders are, so each page is rebuilt:
-- the **initials** with the tree of 30.09.2026 (`6f0562b`): `build_t3_bundle.fields` → `own.build` → `house_stack`;
-- the **retests** with the tree of 24.09.2026 (`9426a22`): `build_owner_format`;
-- both through the same `print_coq_pdfs.render`.
-
-Each page is rebuilt twice:
-- **unchanged**, it must equal the PDF as sent: the same text, and a mean pixel difference under 0.01 at 100 dpi. This
-  proves the builder.
-- **with the phenotype changed** (`pheno` HYBRID; `split` "· INDICA DOMINANT" for OPM, as the builder already prints a
-  split), it must differ from the sent page only inside the phenotype row: no pixel outside that band, and no text
-  outside the phenotype group.
-
-Output, `DELIVER_2026-10-08_T1_T2_Phenotype_Corrected/`, one folder per batch. Each certificate is there on its own,
-not merged (Head of QC, 08.10.2026: *"give only those batches' Word documents and PDF, I will merge them into one
-myself"*):
-- the CoQs and the iCoAs, under the file names they were sent with, each as PDF and Word;
-- the specification sheets they cite, as PDF and Word.
-
-`CHANGES.tsv` says what changed on each.
-
-The iCoA PDF is the corrected page as its own printer makes it: outside the phenotype row it is identical to the page
-as sent, Type 3 house faces included. Its Word copy is made from the same page printed in Google's static instances of
-those fonts, because Word cannot hold a Type 3 font as text. The text is the same, and glyph advances differ by a
-fraction of a point.
+**Output** (*"when you finish only the batches … simply merge them into one document"*; *"PDF now"*):
+`DELIVER_2026-10-08_T1_T2_Phenotype_Corrected/T1_T2_CoQ+iCoA_phenotype_corrected_2026-10-08.pdf`, by batch — initial CoQ,
+its iCoA, retest CoQ, its iCoA — and `CHANGES.tsv`, what changed on each.
 
 Nothing in the register, `design_handoff/out` or the delivered folders changes, so `check_frozen_records.py` holds.
 """
@@ -238,12 +222,11 @@ def main(argv):
     if not (a.apply or a.check):
         ap.error('pass --check or --apply')
     B = load('B', os.path.join(HERE, 'build_t3_bundle_2026-09-26.py'))
-    L = load('L', os.path.join(HERE, 'build_t1_t2_lab_lines_corrected_2026-10-07.py'))
     tg = targets()
     tmp = tempfile.mkdtemp(prefix='t12pheno_')
     rows, bad = [], []
 
-    # --- the CoQs: frozen page + laboratory lines (07.10) + phenotype; printed as on 07.10
+    # --- the CoQs: frozen page + phenotype; printed as on 07.10
     # Head of QC, 08.10.2026: on Tranches 1 and 2 "everything … must remain the same except … the processing pill
     # [and] the phenotype selection" — so the laboratory-line copy of 07.10.2026 is not folded in
     table = []
