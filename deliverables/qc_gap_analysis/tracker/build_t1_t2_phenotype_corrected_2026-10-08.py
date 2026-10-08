@@ -372,8 +372,10 @@ def main(argv):
             y0, y1 = lab[0][1] - 9, min(w[1] for w in nxt) - 2
             row = ps.width * ps.n
             k0, k1 = int(y0 / 72.0 * 100), int(y1 / 72.0 * 100) + 1
+            # a difference of one level in 255 is anti-aliasing at the row's edge, not a change anyone can see
             outside = [i for i in range(ps.height) if not k0 <= i < k1
-                       and ps.samples[i * row:(i + 1) * row] != pf.samples[i * row:(i + 1) * row]]
+                       and ps.samples[i * row:(i + 1) * row] != pf.samples[i * row:(i + 1) * row]
+                       and max(abs(x - y) for x, y in zip(ps.samples[i * row:(i + 1) * row], pf.samples[i * row:(i + 1) * row])) > 1]
             if outside:
                 i = outside[0]
                 da = [(abs(x - y), j // ps.n) for j, (x, y) in enumerate(zip(ps.samples[i * row:(i + 1) * row],
