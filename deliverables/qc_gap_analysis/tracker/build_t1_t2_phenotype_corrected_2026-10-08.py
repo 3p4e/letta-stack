@@ -153,16 +153,25 @@ for it in job['items']:
             fit.add(p)
 FIT_JS = """() => {
   const r = document.querySelector('div.page div.selrow');
-  if (!r || r.scrollWidth <= r.clientWidth + 0.5) return {k: 1};
+  if (!r) return {k: 1};
+  // the row keeps the height it has under the page's own style: the CoQ's taller pills are scaled into it, so
+  // nothing below the row moves
+  const kit = document.getElementById('__pill-kit');
+  let h0 = null;
+  if (kit) { kit.sheet.disabled = true; h0 = r.getBoundingClientRect().height; kit.sheet.disabled = false; }
+  if (h0 === null && r.scrollWidth <= r.clientWidth + 0.5) return {k: 1};
+  if (h0 !== null) { r.style.setProperty('height', h0 + 'px', 'important'); r.style.setProperty('min-height', h0 + 'px', 'important');
+                     r.style.setProperty('max-height', h0 + 'px', 'important'); r.style.setProperty('overflow', 'visible', 'important'); }
   const cs = getComputedStyle(r);
   const avail = r.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
   const w = document.createElement('div');
   w.style.cssText = 'display:flex;align-items:center;gap:' + cs.columnGap + ';flex:0 0 auto;width:max-content;transform-origin:0 50%';
   Array.from(r.children).forEach(k => w.appendChild(k));
   r.appendChild(w);
-  const k = Math.min(1, avail / w.scrollWidth);
+  const inner = h0 === null ? Infinity : h0 - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - 1;
+  const k = Math.min(1, avail / w.scrollWidth, inner / w.getBoundingClientRect().height);
   w.style.transform = 'scale(' + k + ')';
-  return {k: k, avail: avail, need: w.scrollWidth};
+  return {k: k, avail: avail, need: w.scrollWidth, h0: h0};
 }"""
 scale = {}
 out = render(srcs, job['pdf'], probe=lambda src, pg: scale.__setitem__(src, pg.evaluate(FIT_JS)) if src in fit else None)
@@ -375,7 +384,8 @@ def main(argv):
             if outside(s) != outside(f):
                 bad.append('%s: the iCoA text differs outside the phenotype row' % t['icoa'])
             words = lambda pg: [w[4] for w in sorted(pg.get_text('words', clip=pymupdf.Rect(0, y0, W, y1)), key=lambda w: (w[0], w[1]))]
-            ws_, wf_ = words(s), words(f)
+            norm = lambda ws: [w.replace('☒☒', '☒').replace('☐☐', '☐') for w in ws]
+            ws_, wf_ = norm(words(s)), norm(words(f))
             PH = ('HYBRID', 'INDICA', 'SATIVA', 'Хибрид', 'Индика', 'Сатива', 'DOMINANT', '·')
             rest = lambda ws: sorted(w for w in ws if not any(k in w for k in PH))
             lean = t['abbr'] in LEAN
@@ -385,6 +395,7 @@ def main(argv):
             got, sent_rest = rest(wf_), rest(ws_)
             extra = [w for w in got if w not in sent_rest]
             missing = [w for w in sent_rest if w not in got]
+            extra = [w for w in extra if not (w in ('THC', 'CBD') and ('☒' + w in got or '☐' + w in got))]   # the shadow's copy
             # the one change besides the phenotype: a Hand chip the page as sent cut at the page edge ("☐H"), now whole
             # the processing pill (Head of QC, 30.09.2026) on a retest sent without it, and a Hand chip the page as
             # sent cut at the edge ("☐H") now whole
