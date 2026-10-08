@@ -92,7 +92,7 @@ FRAME_DY_B_DEFAULT = 0.2165
 # embed_fonts.face_name() gives each weight its own family. Map one to the other.
 _FACE = re.compile(r"^(Montserrat|RobotoMono|RobotoCondensed|Orbitron)"
                    r"(Thin|ExtraLight|Light|Regular|Medium|SemiBold|Bold|ExtraBold|Black|\d{3})?"
-                   r"(Italic)?$")
+                   r"(Italic|Itali|Ital|Ita|It|I)?$")   # MuPDF cuts a span's font name at 24 characters
 # Roboto Condensed: the CoQ's section 03 document codes (Head of QC, 28.09.2026)
 _FAMILY = {"Montserrat": "Montserrat", "RobotoMono": "Roboto Mono", "RobotoCondensed": "Roboto Condensed",
            "Orbitron": "Orbitron"}
@@ -111,6 +111,14 @@ def face_of(pdf_font):
     ('Orbitron', 900, False)
     >>> face_of("DejaVuSansMono") is None
     True
+
+    MuPDF gives a span's font name cut to 24 characters, so "RobotoCondensedSemiBoldItalic" (the CoQ's section 03
+    dates) arrives as "RobotoCondensedSemiBoldI"; until 08.10.2026 those dates went into the page picture.
+
+    >>> face_of("RobotoCondensedSemiBoldI")
+    ('Roboto Condensed', 600, True)
+    >>> face_of("RobotoCondensedMediumIta")
+    ('Roboto Condensed', 500, True)
     """
     name = pdf_font.split("+")[-1].replace("-", "").replace(" ", "")
     m = _FACE.match(name)

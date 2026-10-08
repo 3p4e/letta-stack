@@ -120,7 +120,10 @@ BSS1024_01/2 (P050142), CC012601/1 (P060332).
   tested again well after the first: *"the second certificate for microbiology is going to enter the
   CoQ, and if the initial testing was way before, then it is definitely a retest and the reissuing
   of the CoQ"* — `-160` (P060342: IPH 539/1070/26 of 31.08 after 362/0692/26 of 01.06) is kept, and
-  carries the Farmahem release results as carried from `-073`.
+  carries the Farmahem cannabinoids as carried from `-073`. Since 08.10.2026 IPH `3160/2026` of 01.06.2026
+  (SCR012601*) is on file. It is the lot's release testing for total aflatoxins, metals and pesticides, so
+  `-073` prints it, with B1/OTA n/t, and `-160`'s Farmahem 227-8-М is its retest panel (ruling 3)
+  (`intake_IPH_2026-10-08/`).
 - **Dates**: on or after the last result the initial cites (ruling 1 below), at the desk's usual
   seven days (`audit_empty_results.initial_issue`), never after the lot's own retest.
 
@@ -156,7 +159,7 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
      initial holds pending, nor read a full-panel result around a missing page: on 28.09.2026
      `-162`'s pesticides printed "ND — all 26 residues" from IPH `1065/2026` while page 3 (three of the
      residues and the pesticide conformity statement) is missing and its initial `-052` held them
-     pending — now `[pending]` on both. And a retest's mycotoxins are the **Farmahem retest panel**,
+     pending — then `[pending]` on both, and since 08.10.2026 printed from the complete scan. And a retest's mycotoxins are the **Farmahem retest panel**,
      not "carried from the initial" (23 rows had the value from Farmahem but a stale carried status).
      `tracker/check_carry_provenance.py` (CI) fails on either.
   5. **Heavy metals come from IPH**, on the initial and the retest CoQ alike (the retest carries the
@@ -223,9 +226,10 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
      **The Versa sale list is no source for THC** (Head of QC, 07.10.2026: it may not carry the retest values).
      Each CoQ prints its own laboratory certificate. The retest CoQ, each lot's current certificate, prints the
      retest potency, and an initial its own release result (*"Nothing, keep as is"*).
-  8. **A certificate whose scan is incomplete** prints `[pending]` for what the missing page holds —
-     IPH `1065/2026` (SJ102501) holds pages 1, 2 and 4 of 4 in every copy; page 3 carries its metals,
-     total aflatoxins and three pesticides. Obtain the page; do not read around it.
+  8. **A certificate whose scan is incomplete** prints `[pending]` for what the missing page holds.
+     Obtain the page; do not read around it. IPH `1065/2026` (SJ102501) was the case: pages 1, 2 and 4 of
+     4, with page 3 carrying its metals, total aflatoxins and three pesticides. The complete scan arrived
+     on 08.10.2026, and `-052`/`-162` print it (`intake_IPH_2026-10-08/`, two reads, no disagreement).
 
 - **Why `[ — ]` persisted**: `coq_build.js` tested the empty value before the status, and an
   untested determination has an empty value, so the "not tested" status never reached the page.
@@ -287,7 +291,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 213 corrections, 07.09.2026–08.10.2026, each quoted — is
+The full record — 215 corrections, 07.09.2026–08.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:

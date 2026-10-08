@@ -212,8 +212,9 @@ def main():
     print('B pages: one A4 page each, house fonts, the same text as A but for the grade fields')
 
     # --- the sets
-    if os.path.isdir(OUT):
-        shutil.rmtree(OUT)
+    for opt in ('A_GRC-IV_8.00', 'B_GRC-IV_7.00'):          # the README beside them stays
+        if os.path.isdir(os.path.join(OUT, opt)):
+            shutil.rmtree(os.path.join(OUT, opt))
     for opt, pdfs, grade, pcode in (('A_GRC-IV_8.00', a_pdf, '8.00 ± 0.80 (7.20–8.79 %)', 'GRC_THC8-CBD1'),
                                     ('B_GRC-IV_7.00', b_pdf, '7.00 ± 0.70 (6.30–7.69 %)', 'GRC_THC7-CBD1')):
         o = os.path.join(OUT, opt)

@@ -19,3 +19,5 @@ graphics behind real, editable text in the house faces, which are embedded. One 
 
     python3 specs/merge_qcsp_by_strain.py            # the all-sheets PDF (and the per-strain and set zips)
     python3 design_handoff/toolchain/pdf_to_docx_exact.py IN.pdf OUT.docx
+
+**08.10.2026.** The two Tranche 3 Word files are remade from the current final package. They carry GRC-IV at 8.00 ± 0.80 and the IPH 1065/2026 and 3160/2026 results (`../DELIVER_2026-10-08_IPH_Updates/`).

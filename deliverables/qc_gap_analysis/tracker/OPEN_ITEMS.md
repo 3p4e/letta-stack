@@ -678,7 +678,7 @@ register is the **Open Items** sheet of the workbook.
 
 ### OI-59 · Three certificates in the archive are missing their page 3 — the heavy metals
 
-*State:* **open** · *Evidence:* intake_contaminants_2026-09-18/two_read_result.json; apply_contaminants.py
+*State:* **open** · *Evidence:* intake_contaminants_2026-09-18/two_read_result.json; apply_contaminants.py; intake_IPH_2026-10-08/
 
 **Found.** The Institute of Public Health issues its contaminant panel over four pages, and page 3 carries the whole ТЕШКИ МЕТАЛИ table — lead, cadmium, arsenic, mercury — the last three pesticide residues and the total-aflatoxin row. On three certificates the archive holds only three pages, and the page that is gone is page 3. The pages that are there print their own footers: Страна 1 од 4, Страна 2 од 4, Страна 4 од 4.
     1065/2026   SJ102501   P060162
@@ -688,17 +688,17 @@ It is not a download fault. Each local copy is byte for byte the size of the fil
 
 **The desk.** Read twice, by two readers who did not see each other's work, and both reported the same missing page independently. Nothing is entered for those three lots' metals or aflatoxins: a determination with no page to read is not a result, and the certificates keep saying so.
 
-**Needed.** Re-scan the three certificates from the paper originals, or ask the Institute of Public Health for a fresh copy. Three lots' heavy metals depend on it.
+**Needed.** Re-scan the three certificates from the paper originals, or ask the Institute of Public Health for a fresh copy. Three lots' heavy metals depend on it. 08.10.2026: the complete 1065/2026 (4 of 4 pages) is on Drive, read twice and on CoQ-PP_26-052 and -162 (intake_IPH_2026-10-08/); 1625/2026 and 3925/2026 still lack page 3.
 
 ### OI-60 · Eleven lots have no heavy-metal, mycotoxin or pesticide panel in the archive at all
 
-*State:* **open** · *Evidence:* intake_contaminants_2026-09-18/INTAKE_2026-09-18.md; apply_contaminants.py
+*State:* **open** · *Evidence:* intake_contaminants_2026-09-18/INTAKE_2026-09-18.md; apply_contaminants.py; intake_IPH_2026-10-08/
 
 **Found.** After the contaminant intake of 18.09.2026 — 58 Institute of Public Health panels read twice, 1927 values, no disagreement — the certificates of quality still printing "not tested" for heavy metals fall to 25, on 13 lots. Two are the certificates OI-59 names, with the metals page missing from the scan. The other eleven have NO contaminant panel in eCoA_DATABASE for the lot: eight have none at all — CC042601, FB042601, P060332 (CC012601/1), P060342 (SCR012601), P060352 (FB012602), P060372 (CC012603), P060382 (SCR012603), P060492 (JD042601) — and three have only a SIBLING sub-lot's panel, which does not certify them: P050142 (BSS1024_01/2; 3177/2025 is BSS1024_01, P050122), P060142 (GRC102501/1; 328/2026 and 1060/2026 are GRC102501/2, P060182), P060362 (JD012603/01; 3660/2026 and 3662/2026 are /02 and /02V). Eight of the eleven are the same lots OI-42 found with no loss-on-drying report anywhere: it is one gap, not two.
 
 **The desk.** Nothing entered. A sibling sub-lot's certificate is not this lot's certificate, and the desk does not print a heavy-metal result no document reports. The certificates say so.
 
-**Needed.** Either the panels were run and never filed — then the paper needs finding and scanning — or these lots were never sent for contaminant testing, and the Head of QC decides what a release certificate without heavy metals means for them.
+**Needed.** Either the panels were run and never filed — then the paper needs finding and scanning — or these lots were never sent for contaminant testing, and the Head of QC decides what a release certificate without heavy metals means for them. 08.10.2026: P060342 (SCR012601*) has its panel, IPH 3160/2026 of 01.06.2026, filed on Drive, read twice and on CoQ-PP_26-073 and -160 (intake_IPH_2026-10-08/).
 
 ## Document identity
 

@@ -1266,8 +1266,12 @@ ITEMS = [
      "metals or aflatoxins: a determination with no page to read is not a result, and "
      "the certificates keep saying so.",
      "Re-scan the three certificates from the paper originals, or ask the Institute of "
-     "Public Health for a fresh copy. Three lots' heavy metals depend on it.",
-     "intake_contaminants_2026-09-18/two_read_result.json; apply_contaminants.py"),
+     "Public Health for a fresh copy. Three lots' heavy metals depend on it. "
+     "08.10.2026: the complete 1065/2026 (4 of 4 pages) is on Drive, read twice and on "
+     "CoQ-PP_26-052 and -162 (intake_IPH_2026-10-08/); 1625/2026 and 3925/2026 still lack "
+     "page 3.",
+     "intake_contaminants_2026-09-18/two_read_result.json; apply_contaminants.py; "
+     "intake_IPH_2026-10-08/"),
     ("OI-60", "Document", "open",
      "Eleven lots have no heavy-metal, mycotoxin or pesticide panel in the archive at all",
      "After the contaminant intake of 18.09.2026 — 58 Institute of Public Health panels read "
@@ -1285,8 +1289,11 @@ ITEMS = [
      "desk does not print a heavy-metal result no document reports. The certificates say so.",
      "Either the panels were run and never filed — then the paper needs finding and scanning — "
      "or these lots were never sent for contaminant testing, and the Head of QC decides what "
-     "a release certificate without heavy metals means for them.",
-     "intake_contaminants_2026-09-18/INTAKE_2026-09-18.md; apply_contaminants.py"),
+     "a release certificate without heavy metals means for them. 08.10.2026: P060342 "
+     "(SCR012601*) has its panel, IPH 3160/2026 of 01.06.2026, filed on Drive, read twice and "
+     "on CoQ-PP_26-073 and -160 (intake_IPH_2026-10-08/).",
+     "intake_contaminants_2026-09-18/INTAKE_2026-09-18.md; apply_contaminants.py; "
+     "intake_IPH_2026-10-08/"),
 
     ("OI-61", "Document identity", "ruled",
      "The finished design system names three iCoA signatories the deposited signatures are not; the owner keeps the deposited ones",
