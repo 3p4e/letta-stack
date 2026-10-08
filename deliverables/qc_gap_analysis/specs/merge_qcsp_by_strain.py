@@ -15,10 +15,10 @@ Before anything is written, each sheet must print its own code, and `INDEX.json`
 folder must name the same grades with the same nominal and tolerance. A grade the table no longer holds
 (GRC-III, deleted 07.10.2026) must not be on file.
 
-Output: `specs/QCSP_001_ImB/_zip/QCSP_001_ImB_by_strain_2026-10-07.zip`, one file per strain,
-`QCSP_001_{abbr}_v.01_{Strain}_all_grades.pdf`. The set's own zip (`QCSP_001_ImB_2026-10-07.zip`) is rebuilt as the 58
+Output: `specs/QCSP_001_ImB/_zip/QCSP_001_ImB_by_strain_2026-10-08.zip`, one file per strain,
+`QCSP_001_{abbr}_v.01_{Strain}_all_grades.pdf`. The set's own zip (`QCSP_001_ImB_2026-10-08.zip`) is rebuilt as the 58
 sheet PDFs only (no Word, no HTML). And every sheet in one PDF, strain by strain:
-`DELIVER_2026-10-07_Merged/QCSP_001_ImB_all_58_specifications_2026-10-07.pdf`.
+`DELIVER_2026-10-08_Specs/QCSP_001_ImB_all_58_specifications_2026-10-08.pdf`.
 """
 import csv
 import glob
@@ -35,10 +35,10 @@ GAP = os.path.dirname(HERE)
 SET = os.path.join(HERE, 'QCSP_001_ImB')
 PDF = os.path.join(SET, 'PDF')
 GRADES = os.path.join(GAP, 'potency_grades_2026-09-15.csv')
-STAMP = '2026-10-07'
+STAMP = '2026-10-08'
 ZIP = os.path.join(SET, '_zip', 'QCSP_001_ImB_by_strain_%s.zip' % STAMP)
 # Head of QC, 07.10.2026: "give me the specifications, all of them merged as one PDF document"
-ALL = os.path.join(GAP, 'DELIVER_%s_Merged' % STAMP, 'QCSP_001_ImB_all_58_specifications_%s.pdf' % STAMP)
+ALL = os.path.join(GAP, 'DELIVER_%s_Specs' % STAMP, 'QCSP_001_ImB_all_58_specifications_%s.pdf' % STAMP)
 ROMAN = {'I': 1, 'II': 2, 'III': 3, 'IV': 4, 'V': 5, 'VI': 6, 'VII': 7, 'VIII': 8, 'IX': 9, 'X': 10}
 
 

@@ -35404,7 +35404,7 @@
    "cb": "GRC102501/1",
    "strain": "Grapes And Cream",
    "grade": "IV",
-   "cls": 7,
+   "cls": 8,
    "ic": "(assigned on issue)",
    "thc": "",
    "spec": "QCSP_001_GRC-IV_v.01",
@@ -35413,8 +35413,8 @@
    "issued": false,
    "md": "09.01.2026",
    "pk": "23.02.2026",
-   "pcode": "GRC_THC7 : CBD1",
-   "spec_status": "for review — replaces the issued QCSP_001_GRC-IV_v.01 (was GRC_THC12.5:CBD1, 12.50% ± 2.50%); now GRC_THC7 : CBD1 6.30 – 7.69 %",
+   "pcode": "GRC_THC8 : CBD1",
+   "spec_status": "for review — replaces the issued QCSP_001_GRC-IV_v.01 (was GRC_THC12.5:CBD1, 12.50% ± 2.50%); now GRC_THC8 : CBD1 7.20 – 8.79 % (8.00 ± 0.80, Head of QC 08.10.2026, KVM4)",
    "issued_spec": "",
    "rows": [
     {
@@ -35455,7 +35455,7 @@
     },
     {
      "no": "4",
-     "crit": "6.30 – 7.69 %  (grade IV, nominal 7.00 ± 0.70)",
+     "crit": "7.20 – 8.79 %  (grade IV, nominal 8.00 ± 0.80)",
      "res": "7.05",
      "doc": "031-1-К/26",
      "dd": "10.02.2026",
@@ -62253,7 +62253,7 @@
    "cb": "GRC102501/1",
    "strain": "Grapes And Cream",
    "grade": "IV",
-   "cls": 7,
+   "cls": 8,
    "ic": "(assigned on issue)",
    "thc": "7.50",
    "spec": "QCSP_001_GRC-IV_v.01",
@@ -62262,8 +62262,8 @@
    "issued": false,
    "md": "09.01.2026",
    "pk": "23.02.2026",
-   "pcode": "GRC_THC7 : CBD1",
-   "spec_status": "for review — replaces the issued QCSP_001_GRC-IV_v.01 (was GRC_THC12.5:CBD1, 12.50% ± 2.50%); now GRC_THC7 : CBD1 6.30 – 7.69 %",
+   "pcode": "GRC_THC8 : CBD1",
+   "spec_status": "for review — replaces the issued QCSP_001_GRC-IV_v.01 (was GRC_THC12.5:CBD1, 12.50% ± 2.50%); now GRC_THC8 : CBD1 7.20 – 8.79 % (8.00 ± 0.80, Head of QC 08.10.2026, KVM4)",
    "issued_spec": "",
    "rows": [
     {
@@ -62304,7 +62304,7 @@
     },
     {
      "no": "4",
-     "crit": "6.30 – 7.69 %  (grade IV, nominal 7.00 ± 0.70)",
+     "crit": "7.20 – 8.79 %  (grade IV, nominal 8.00 ± 0.80)",
      "res": "7.50",
      "doc": "227-16-К/26",
      "dd": "11.09.2026",

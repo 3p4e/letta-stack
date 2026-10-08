@@ -252,6 +252,39 @@ ORBITRON_STACK = (("font-family:'Orbitron','Roboto Mono',monospace", "font-famil
                   ("font-family:'Orbitron',monospace", "font-family:'Orbitron','Montserrat',monospace"))
 
 
+# Head of QC, 08.10.2026, on the specifications themselves: *"for OPM … phenotype … same for all OPM specs … HYBRID
+# indica dominant; and for the spec for KC THC18 change the Indica into "HYBRID", HPA THC15, HPA THC18, HPA THC22,
+# change the SATIVA into "HYBRID", change the Indica from BG THC 26 and THC22 into HYBRID and from BSS THC20 change the
+# Indica into "HYBRID"*. Asked whether the plain "HYBRID" should carry a leaning, he chose *HYBRID only*. These sheets
+# took their attributes from issued Tranche 1/2 lots (Indica or Sativa alone); the sheet now says what he ruled.
+# {(cultivar, numeral or None for every grade): (phenotype, dominance, print the leaning)}
+PHENOTYPE_RULING = {
+    ("OPM", None): ("HYBRID", "INDICA-DOMINANT", True),
+    ("KC", "I"): ("HYBRID", "", False),
+    ("HPA", "I"): ("HYBRID", "", False), ("HPA", "II"): ("HYBRID", "", False), ("HPA", "III"): ("HYBRID", "", False),
+    ("BG", "I"): ("HYBRID", "", False), ("BG", "II"): ("HYBRID", "", False),
+    ("BSS", "III"): ("HYBRID", "", False),
+}
+# the nominal each named sheet must carry, so the ruling lands on the grade he named
+RULING_NOMINAL = {("KC", "I"): 18.0, ("HPA", "III"): 15.0, ("HPA", "II"): 18.0, ("HPA", "I"): 22.0,
+                  ("BG", "I"): 26.0, ("BG", "II"): 22.0, ("BSS", "III"): 20.0}
+
+
+def phenotype_ruling(recs):
+    hit = set()
+    for r in recs:
+        for key in ((r["cult"], r["numeral"]), (r["cult"], None)):
+            if key in PHENOTYPE_RULING:
+                want = RULING_NOMINAL.get(key)
+                if want is not None and abs(float(r["nominal"]) - want) > 1e-9:
+                    raise SystemExit("%s-%s is %.2f %%, the ruling names %.2f %%" % (r["cult"], r["numeral"], r["nominal"], want))
+                r["pheno"], r["dominance"], r["t3"] = PHENOTYPE_RULING[key]
+                hit.add(key)
+    missing = set(PHENOTYPE_RULING) - hit
+    if missing:
+        raise SystemExit("the phenotype ruling names sheets the table no longer holds: %s" % sorted(missing, key=str))
+
+
 def main(argv):
     ap = argparse.ArgumentParser()
     ap.add_argument("--check", action="store_true", help="build nothing, report only")
@@ -259,6 +292,7 @@ def main(argv):
 
     tpl = open(TEMPLATE, encoding="utf-8").read()
     recs = records()
+    phenotype_ruling(recs)
     if not a.check:
         os.makedirs(SHEETS, exist_ok=True)
     made = []

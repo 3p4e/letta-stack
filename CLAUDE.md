@@ -210,7 +210,10 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
      - 12.00 ± 1.00 (GRC-I).
 
      GRC-III (8.00 ± 0.80) holds nothing and left the table. `-152` (7.50 %) and its iCoA-PP_26-095 are
-     GRC-IV, `GRC_THC7 : CBD1`. The builder's draft 14 % holds nothing and is not adopted. At the Head of QC's word
+     GRC-IV, `GRC_THC7 : CBD1`. **Since 08.10.2026 GRC-IV is 8.00 ± 0.80 (7.20–8.79 %), `GRC_THC8 : CBD1`**
+     (Head of QC: *"grade 7.00% into 8.00% +-0.8%"*; KVM4 holds 8, 10, 12;
+     `tracker/apply_grc_grade_8_2026-10-08.py`). `-050` and `-152` and their iCoAs cite it; `-050`'s 7.05 % prints
+     below the window, by his choice (*"both on 8.00 ± 0.80"*; the potency audit's `RULED_OUTSIDE`). The builder's draft 14 % holds nothing and is not adopted. At the Head of QC's word
      (*"You write it to KVM4"*, 07.10.2026) the desk saved these three ranges to GRC on the builder
      (`PUT /api/specs/GRC`, then `POST …/finish`), with 7.05 entered as a result. The builder's data lacked it.
      The state before the write is `tracker/KVM4_GRC_BEFORE_WRITE_2026-10-07.json`. Write to the builder only
@@ -284,7 +287,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 211 corrections, 07.09.2026–07.10.2026, each quoted — is
+The full record — 213 corrections, 07.09.2026–08.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:
@@ -400,6 +403,10 @@ Standing rules the corrections produced (message numbers are in the record):
     Indica alone: -040, -082, -129), and the leaning prints on every certificate not yet issued (`build_v40.js`
     `t3: !FROZEN_LOT`). `tracker/check_pill_rows.py` (CI) holds CoQ = iCoA = specification for all 75. Tranches 1/2
     are unchanged.
+- **Phenotype on the specifications** (Head of QC, 08.10.2026): every OPM grade Hybrid · INDICA DOMINANT; KC-I,
+  HPA-I/II/III, BG-I/II and BSS-III Hybrid, no leaning (`specs/build_qcsp_imb.py` `PHENOTYPE_RULING`). The CoQs and
+  iCoAs of those grades follow: Tranche 3 first; the issued Tranche 1/2 pages get corrected copies, the pages as
+  sent untouched (as with the laboratory lines of 07.10.2026).
 - **Pills and heading bars: the CoQ's, on every document** (Head of QC, 07.10.2026: *"make all pills … the same as
   they are on the COQs with that design and formatting"*; *"the heading bars in all documents need to be the same
   visuals and same effects in full"*). `tracker/house_kit.py`: `selrow()` writes the CoQ's pill row from the register

@@ -42,7 +42,7 @@ The nominal, tolerance and window come from the current grade table,
 `../../potency_grades_2026-09-15.csv`. That is the potency decision of **17.09.2026**, plus the
 grades set since:
 - WED-II, 22.00 ± 1.40, set on the KVM4 builder on 26.09.2026;
-- GRC-IV, 7.00 ± 0.70, set on 27.09.2026;
+- GRC-IV, 7.00 ± 0.70, set on 27.09.2026, and 8.00 ± 0.80 (7.20–8.79 %) since 08.10.2026;
 - Grapes And Cream as three ranges with no empty one (7, 10, 12), 07.10.2026. GRC-III left the table, its
   sheet is deleted, and the KVM4 builder holds the same three ranges as finished.
 
@@ -80,7 +80,7 @@ Head of QC, 07.10.2026:
   signature block as the CoQ's, with the **QC Manager on the right** and the QA Manager (*Reviewed by*) on the
   left — the template had them the other way round.
 - **One file per strain.** *"individual PDF files per strain, all grades merged into one document"*:
-  `_zip/QCSP_001_ImB_by_strain_2026-10-07.zip`, 24 files, the strain's sheets in grade order with a
+  `_zip/QCSP_001_ImB_by_strain_2026-10-08.zip`, 24 files, the strain's sheets in grade order with a
   bookmark per grade (`specs/merge_qcsp_by_strain.py`; the pages are joined, not reprinted).
 
 **One thing for the owner to note.** The sheets are signed **01.06.2026** and versioned
@@ -89,6 +89,18 @@ the windows the v.03 signed on 01.06.2026 carried. Two documents therefore answe
 same version and date while stating different figures. If that is to be resolved by a
 version bump rather than left as it stands, it is one line in `build_qcsp_imb.py` and a
 reprint.
+
+## 08.10.2026
+
+Head of QC, 08.10.2026, on the Word sheets: *"pinpoint edit the specification documents for OPM … HYBRID indica
+dominant"*, and KC THC18, HPA THC15/18/22, BG THC26/22 and BSS THC20 to Hybrid. `build_qcsp_imb.py`
+`PHENOTYPE_RULING` sets them, and refuses if a grade's nominal is not the one he named:
+- OPM-I → Hybrid · INDICA DOMINANT (OPM-II to V already were);
+- KC-I (18), HPA-III (15), HPA-II (18), HPA-I (22), BG-II (22), BG-I (26), BSS-III (20) → Hybrid, no leaning.
+
+GRC-IV: *"grade 7.00% into 8.00% +-0.8%"* — 8.00 ± 0.80, 7.20–8.79 %, `GRC_THC8 : CBD1`
+(`tracker/apply_grc_grade_8_2026-10-08.py`; the KVM4 builder holds the same). Nine sheets changed; only they are
+reprinted and their Word copies remade. Merged PDF and Word: `../../DELIVER_2026-10-08_Specs/`.
 
 ## Attributes
 

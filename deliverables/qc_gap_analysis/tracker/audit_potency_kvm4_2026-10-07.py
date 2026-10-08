@@ -65,6 +65,9 @@ GRADES = os.path.join(GAP, 'potency_grades_2026-09-15.csv')
 REG = os.path.join(GAP, 'coq_artifact_data.json')
 BATCH_DATES = os.path.join(GAP, 'batch_dates_2026-09-10.csv')
 CORPUS = os.path.join(ROOT, 'ingestion', 'ecoa_runner', 'records_corpus.json')
+# A certificate the Head of QC put on a grade whose window its own result lies outside. Head of QC, 08.10.2026: GRC's
+# 7.00 ± 0.70 became 8.00 ± 0.80 on KVM4; asked about the initial -050 (7.05 %), "both on 8.00 ± 0.80".
+RULED_OUTSIDE = {'CoQ-PP_26-050': ('GRC', 8.0, 'Head of QC 08.10.2026')}
 CRIT = re.compile(r'([\d.]+)\s*[–-]\s*([\d.]+)\s*%\s*\(grade\s*(\w+),\s*nominal\s*([\d.]+)\s*±\s*([\d.]+)\)')
 NUM = re.compile(r'^\s*(\d+(?:[.,]\d+)?)\s*(?:%|$|\s)')
 
@@ -253,6 +256,13 @@ def main(argv):
                c.get('pp') or '', a or '', r4.get('res') or '', c.get('grade') or '', c.get('spec') or '',
                c.get('pcode') or '', r4.get('crit') or '']
         why = []
+        ruled = RULED_OUTSIDE.get(c['regcode'][:13])
+        if ruled and thc is not None and not hit and ruled[0] == a:
+            hit = [r for r in ranges(a) if abs(float(r['nominal']) - ruled[1]) < 1e-9]
+            why.append('note: %.2f %% lies outside %g ± %g; the Head of QC ruled that it cites it (%s)'
+                       % (thc, ruled[1], hit[0]['tol'] if hit else 0, ruled[2]))
+            if not hit:
+                why.append('the ruled grade %g is not on the builder' % ruled[1])
         if thc is None:
             why.append('no Total THC printed')
         elif not hit:
