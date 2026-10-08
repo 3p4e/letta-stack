@@ -138,6 +138,14 @@ for it in job['items']:
             h = page(it['coq'], change)
             if change and job['series'] == 'initial' and chips(page(it['coq'], None), change['split']) != h:
                 raise SystemExit('%s: the chip edit is not what the builder makes' % it['icoa'])
+        if change:
+            # the CoQ's pill row, words and drawing (Head of QC, 07.10.2026: the pills on every document as on the CoQ)
+            a = h.find('<div class="selrow">')
+            b = h.find('</div>', a) + len('</div>')
+            if a < 0 or h.count('<div class="selrow">') != 1 or '</body>' not in h:
+                raise SystemExit('%s: no single pill row' % it['icoa'])
+            h = h[:a] + it['row'] + h[b:]
+            h = h.replace('</body>', '<style id="__pill-kit">\n' + job['kit'] + '</style>\n</body>', 1)
         p = os.path.join(job['html'], '%s__%s.html' % (it['icoa'], tag))
         open(p, 'w', encoding='utf-8').write(h)
         srcs.append(p)
@@ -287,6 +295,16 @@ def main(argv):
             bad.append('%s: the phenotype group reads %r, not %r' % (t['coq'], now[1], want))
         t['coq_was'], t['coq_now'], t['coq_pdf'] = was[1], now[1], pdf
 
+    # --- the pill row of the corrected iCoA: the corrected CoQ's own row, drawn with the CoQ's computed pill style
+    # (house_kit, restricted to the pill row; read off a corrected OPM copy, whose Hybrid chip carries the leaning)
+    H = load('H', os.path.join(HERE, 'house_kit.py'))
+    for t, h in zip(tg, htmls):
+        t['row'] = H.coq_selrow(open(h, encoding='utf-8').read())
+    ref = next(h for t, h in zip(tg, htmls) if t['abbr'] in LEAN)
+    H.plan = lambda: [[x, x, ps, H.PSEUDO if ps else H.ALL] for x in H.PILLS for ps in (None, '::before', '::after')] + \
+        [['.selrow', '.selrow', None, H.ROW]]
+    kit = H.css_of(H.computed(ref), ref)
+
     # --- the iCoAs: rebuilt by the builder that printed them, unchanged and corrected
     group = lambda t: 'retest-lod' if t['icoa'] in LOD_ICOA else t['series']
     # the sent page from the builder that printed it (the proof); the corrected page from the tree of 30.09.2026, which
@@ -308,7 +326,8 @@ def main(argv):
                             '--exclude=*.docx', '--exclude=*.png'], input=arch, check=True)
         job = {'series': series, 'tags': tags, 'html': os.path.join(tmp, 'icoa_html_' + key),
                'pdf': os.path.join(tmp, 'icoa_pdf_' + key), 'result': os.path.join(tmp, 'icoa_%s.json' % key),
-               'items': [{'coq': t['coq'], 'icoa': t['icoa'], 'change': change(t)} for t in items]}
+               'kit': kit, 'items': [{'coq': t['coq'], 'icoa': t['icoa'], 'change': change(t), 'row': t['row']}
+                                     for t in items]}
         os.makedirs(job['html'])
         os.makedirs(job['pdf'])
         jf = os.path.join(tmp, 'job_%s.json' % key)
@@ -360,7 +379,7 @@ def main(argv):
             PH = ('HYBRID', 'INDICA', 'SATIVA', 'Хибрид', 'Индика', 'Сатива', 'DOMINANT', '·')
             rest = lambda ws: sorted(w for w in ws if not any(k in w for k in PH))
             lean = t['abbr'] in LEAN
-            if not ('☒HYBRID' in wf_ and '☐INDICA' in wf_ and '☐SATIVA' in wf_ and 'Хибрид' in wf_
+            if not ('☒HYBRID' in wf_ and '☐INDICA' in wf_ and '☐SATIVA' in wf_
                     and '☒INDICA' not in wf_ and '☒SATIVA' not in wf_ and ('DOMINANT' in wf_) == lean):
                 bad.append('%s: the phenotype row reads %s' % (t['icoa'], ' '.join(wf_)))
             got, sent_rest = rest(wf_), rest(ws_)
