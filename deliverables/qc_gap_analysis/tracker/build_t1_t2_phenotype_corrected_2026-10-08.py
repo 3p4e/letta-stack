@@ -386,7 +386,7 @@ def main(argv):
     for t in tg:
         print('%-14s %-8s %-15s CoQ %s → %s' % (t['coq'], t['series'], t['icoa'], t['coq_was'], t['coq_now']))
         print('%-39s iCoA %s → %s · %s' % ('', t['icoa_was'], t['icoa_now'], t['proof']))
-    print('%d CoQs and %d iCoAs: one A4 page each; the CoQ text equals the page as sent but for the laboratory lines and '
+    print('%d CoQs and %d iCoAs: one A4 page each; the CoQ text equals the page as sent but for '
           'the phenotype, the iCoA builder reproduces each sent page and the corrected page differs only in its phenotype row'
           % (len(tg), len(tg)))
     if not a.apply:
