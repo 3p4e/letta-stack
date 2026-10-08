@@ -129,17 +129,19 @@ def chips(html, split):
 srcs, fit = [], set()
 for it in job['items']:
     for tag, change in (('sent', None), ('fix', it['change'])):
+        if tag not in job['tags']:
+            continue
         if it.get('src_html'):                    # a page printed from HTML that is kept: the signed LOD certificates
             h = open(it['src_html'], encoding='utf-8').read()
             h = chips(h, change['split']) if change else h
         else:
             h = page(it['coq'], change)
-            if change and chips(page(it['coq'], None), change['split']) != h:
+            if change and job['series'] == 'initial' and chips(page(it['coq'], None), change['split']) != h:
                 raise SystemExit('%s: the chip edit is not what the builder makes' % it['icoa'])
         p = os.path.join(job['html'], '%s__%s.html' % (it['icoa'], tag))
         open(p, 'w', encoding='utf-8').write(h)
         srcs.append(p)
-        if change and job['series'] == 'initial':
+        if change:
             fit.add(p)
 FIT_JS = """() => {
   const r = document.querySelector('div.page div.selrow');
@@ -242,14 +244,16 @@ def main(argv):
     rows, bad = [], []
 
     # --- the CoQs: frozen page + laboratory lines (07.10) + phenotype; printed as on 07.10
-    table = L.swaps()
+    # Head of QC, 08.10.2026: on Tranches 1 and 2 "everything … must remain the same except … the processing pill
+    # [and] the phenotype selection" — so the laboratory-line copy of 07.10.2026 is not folded in
+    table = []
     hdir = os.path.join(tmp, 'CoQ')
     odir = os.path.join(tmp, 'sent', 'CoQ')
     os.makedirs(hdir)
     os.makedirs(odir)
     htmls, origs = [], []
     for t in tg:
-        lab, done = L.correct(t['page'], table)
+        lab, done = open(t['page'], encoding='utf-8').read(), []
         new, was, now = coq_markup(lab, t)
         dst = os.path.join(hdir, os.path.basename(t['page']))
         open(dst, 'w', encoding='utf-8').write(new)
@@ -286,31 +290,43 @@ def main(argv):
 
     # --- the iCoAs: rebuilt by the builder that printed them, unchanged and corrected
     group = lambda t: 'retest-lod' if t['icoa'] in LOD_ICOA else t['series']
-    for key, rev in TREES.items():
-        series = 'retest' if key.startswith('retest') else 'initial'
-        items = [t for t in tg if group(t) == key]
-        if not items:
-            continue
+    # the sent page from the builder that printed it (the proof); the corrected page from the tree of 30.09.2026, which
+    # carries the processing pill (Head of QC, 30.09.2026) — the sent retests predate it
+    change = lambda t: {'pheno': 'HYBRID', 'split': ('· %s DOMINANT' % LEAN[t['abbr']]) if t['abbr'] in LEAN else ''}
+    group = lambda t: 'retest-lod' if t['icoa'] in LOD_ICOA else t['series']
+    JOBS = [('initial', 'initial', '6f0562b', ['sent', 'fix'], [t for t in tg if t['series'] == 'initial']),
+            ('retest', 'retest', '9426a22', ['sent'], [t for t in tg if group(t) == 'retest']),
+            ('retest-lod', 'retest', '9db4382', ['sent'], [t for t in tg if group(t) == 'retest-lod']),
+            ('retest-fix', 'retest', '6f0562b', ['fix'], [t for t in tg if t['series'] == 'retest'])]
+    sent_of, fix_of, html_of, scale_of, rev_of = {}, {}, {}, {}, {}
+    for key, series, rev, tags, items in JOBS:
         tree = os.path.join(tmp, 'tree_' + rev)
-        os.makedirs(tree)
-        arch = subprocess.run(['git', 'archive', rev] + TREE_PATHS, cwd=ROOT, check=True, capture_output=True).stdout
-        subprocess.run(['tar', '-x', '-C', tree, '--exclude=*.pdf', '--exclude=*.xlsx', '--exclude=*.zip',
-                        '--exclude=*.docx', '--exclude=*.png'], input=arch, check=True)
-        job = {'series': series, 'html': os.path.join(tmp, 'icoa_html_' + key),
+        if not os.path.isdir(tree):
+            os.makedirs(tree)
+            arch = subprocess.run(['git', 'archive', rev] + TREE_PATHS, cwd=ROOT, check=True, capture_output=True).stdout
+            subprocess.run(['tar', '-x', '-C', tree, '--exclude=*.pdf', '--exclude=*.xlsx', '--exclude=*.zip',
+                            '--exclude=*.docx', '--exclude=*.png'], input=arch, check=True)
+        job = {'series': series, 'tags': tags, 'html': os.path.join(tmp, 'icoa_html_' + key),
                'pdf': os.path.join(tmp, 'icoa_pdf_' + key), 'result': os.path.join(tmp, 'icoa_%s.json' % key),
-               'items': [{'coq': t['coq'], 'icoa': t['icoa'],
-                          'change': {'pheno': 'HYBRID', 'split': ('· %s DOMINANT' % LEAN[t['abbr']]) if t['abbr'] in LEAN else ''}}
-                         for t in items]}
+               'items': [{'coq': t['coq'], 'icoa': t['icoa'], 'change': change(t)} for t in items]}
         os.makedirs(job['html'])
         os.makedirs(job['pdf'])
         jf = os.path.join(tmp, 'job_%s.json' % key)
         json.dump(job, open(jf, 'w'))
         subprocess.run([sys.executable, '-c', RUNNER, jf], cwd=os.path.join(tree, 'deliverables', 'qc_gap_analysis'), check=True)
         got = json.load(open(job['result']))
-        res, scales = got['pdf'], got['scale']
         for t in items:
-            unchanged = res[os.path.join(job['html'], '%s__sent.html' % t['icoa'])]
-            fixed = res[os.path.join(job['html'], '%s__fix.html' % t['icoa'])]
+            if 'sent' in tags:
+                sent_of[t['icoa']] = got['pdf'][os.path.join(job['html'], '%s__sent.html' % t['icoa'])]
+                rev_of[t['icoa']] = rev
+            if 'fix' in tags:
+                h = os.path.join(job['html'], '%s__fix.html' % t['icoa'])
+                fix_of[t['icoa']], html_of[t['icoa']] = got['pdf'][h], h
+                scale_of[t['icoa']] = (got['scale'].get(h) or {}).get('k', 1)
+    for t in tg:
+        rev = rev_of[t['icoa']]
+        unchanged, fixed = sent_of[t['icoa']], fix_of[t['icoa']]
+        if True:
             sent = sent_pdf('iCoA', t)
             s, u, f = (pymupdf.open(x)[0] for x in (sent, unchanged, fixed))
             ps, pu, pf = (x.get_pixmap(dpi=100, alpha=False) for x in (s, u, f))
@@ -351,45 +367,19 @@ def main(argv):
             extra = [w for w in got if w not in sent_rest]
             missing = [w for w in sent_rest if w not in got]
             # the one change besides the phenotype: a Hand chip the page as sent cut at the page edge ("☐H"), now whole
-            if missing not in ([], ['☐H']) or any(w not in ('☐HAND', 'HAND') for w in extra):
+            # the processing pill (Head of QC, 30.09.2026) on a retest sent without it, and a Hand chip the page as
+            # sent cut at the edge ("☐H") now whole
+            PROC = ('PROCESSING', 'ОБРАБОТКА', '☒MACHINE', 'MACHINE', 'Машинска', '☐HAND', 'HAND', '☐H')
+            if missing not in ([], ['☐H']) or any(w not in PROC for w in extra):
                 bad.append('%s: chemotype/processing differ from as sent: lost %s, gained %s' % (t['icoa'], missing, extra))
             was = ['', ' '.join(w for w in ws_ if any(k in w for k in PH)), '']
             now = ['', ' '.join(w for w in wf_ if any(k in w for k in PH)), '']
             t['icoa_was'], t['icoa_now'], t['icoa_pdf'] = was[1], now[1], fixed
-            t['fix_html'] = os.path.join(job['html'], '%s__fix.html' % t['icoa'])
-            sc = (scales.get(os.path.join(job['html'], '%s__fix.html' % t['icoa'])) or {}).get('k', 1)
+            t['fix_html'] = html_of[t['icoa']]
+            sc = scale_of[t['icoa']]
             t['proof'] = '%s%s unchanged = sent (mean %.4f); corrected differs inside y %.0f–%.0f pt only%s' % (
                 rev, '', mean, y0, y1,
                 '; row fitted to the margin (scale %.3f)' % sc if sc < 1 else '')
-
-    # --- the iCoA's Word source: the corrected page printed in the static house faces. The PDF delivered is the
-    # corrected page as the old printer makes it, identical to the page as sent outside the phenotype row; its
-    # house faces are Type 3 there, which Word cannot hold as text, so the Word copy is made from the same page in
-    # Google's static instances of the same fonts (the same text; glyph advances differ by a fraction of a point)
-    fix_html = [t['fix_html'] for t in tg if 'icoa_pdf' in t]
-    prints = B.print_copies(fix_html)
-    initial = {q for q, h in zip(prints, fix_html) if '/icoa_html_initial/' in h}
-    fit_js = re.search(r'FIT_JS = """([\s\S]*?)"""', RUNNER).group(1)
-    static = dict(zip(fix_html, B.render(prints, os.path.join(tmp, 'icoa_static'), None, '',
-                                         lambda src, pg: pg.evaluate(fit_js) if src in initial else None)))
-    for t in tg:
-        if 'icoa_pdf' not in t:
-            continue
-        pdf = static[t['fix_html']]
-        with pymupdf.open(pdf) as d:
-            if d.page_count != 1:
-                bad.append('%s prints %d pages in the static faces' % (t['icoa'], d.page_count))
-            if any(x[2] == 'Type3' for x in d[0].get_fonts()):
-                bad.append('%s still prints a Type 3 font' % t['icoa'])
-            pa = d[0].get_pixmap(dpi=100, alpha=False).samples
-        with pymupdf.open(t['icoa_pdf']) as d:
-            pb = d[0].get_pixmap(dpi=100, alpha=False).samples
-        mean = sum(abs(x - y) for x, y in zip(pa, pb)) / float(len(pa))
-        if sorted(w[4] for w in pymupdf.open(pdf)[0].get_text('words')) != \
-                sorted(w[4] for w in pymupdf.open(t['icoa_pdf'])[0].get_text('words')) or mean > 6.0:
-            bad.append('%s: the static-face print is not the corrected page (mean %.3f)' % (t['icoa'], mean))
-        t['icoa_word_src'] = pdf
-        t['proof'] += '; Word from the static-face print (same text, mean %.2f)' % mean
 
     if bad:
         raise SystemExit('refused:\n  ' + '\n  '.join(bad))
@@ -404,40 +394,39 @@ def main(argv):
         print('--check: nothing written')
         return 0
 
-    # --- per batch, each certificate on its own (Head of QC: "give only those batches' Word documents and PDF, I will
-    # merge them into one myself"): the CoQs and iCoAs, and the specification sheets they cite
+    # --- one PDF (Head of QC, 08.10.2026: "only the batches … you told you to correct … simply merge them into one
+    # document"; "PDF now"): per batch, the initial CoQ and its iCoA, then the retest CoQ and its iCoA
     if os.path.isdir(OUT):
         shutil.rmtree(OUT)
     os.makedirs(OUT)
-    sheets = os.path.join(GAP, 'specs', 'QCSP_001_ImB')
-    made = []
-    for t in tg:
-        batch = re.match(r'CoQ-PP_26-\d{3}_([A-Za-z0-9]+)_', os.path.basename(sent_pdf('CoQ', t))).group(1)
-        d = os.path.join(OUT, batch)
-        os.makedirs(d, exist_ok=True)
-        for kind, src, word_src in (('CoQ', t['coq_pdf'], t['coq_pdf']), ('iCoA', t['icoa_pdf'], t['icoa_word_src'])):
-            dst = os.path.join(d, os.path.basename(sent_pdf(kind, t)))
-            shutil.copyfile(src, dst)
-            made.append((word_src, dst))
-        spec = glob.glob(os.path.join(sheets, 'PDF', t['spec'] + '_*.pdf'))
-        if len(spec) != 1:
-            raise SystemExit('%d sheets for %s' % (len(spec), t['spec']))
-        for ext, sub in (('.pdf', 'PDF'), ('.docx', 'DOCX')):
-            src = os.path.join(sheets, sub, os.path.basename(spec[0])[:-4] + ext)
-            shutil.copyfile(src, os.path.join(d, os.path.basename(src)))
-        t['folder'] = batch
-    for word_src, pdf in made:
-        subprocess.run([sys.executable, CONVERT, word_src, pdf[:-4] + '.docx'], check=True, stdout=subprocess.DEVNULL)
+    batch_of = lambda t: re.match(r'CoQ-PP_26-\d{3}_([A-Za-z0-9]+)_', os.path.basename(sent_pdf('CoQ', t))).group(1)
+    order = sorted(tg, key=lambda t: (batch_of(t), t['series'] != 'initial', t['coq']))
+    book, toc, last = pymupdf.open(), [], None
+    for t in order:
+        if batch_of(t) != last:
+            toc.append([1, batch_of(t), book.page_count + 1])
+            last = batch_of(t)
+        for name, pdf in ((t['coq'], t['coq_pdf']), (t['icoa'], t['icoa_pdf'])):
+            with pymupdf.open(pdf) as d:
+                toc.append([2, '%s (%s)' % (name, t['series']), book.page_count + 1])
+                book.insert_pdf(d)
+        t['folder'] = batch_of(t)
+    book.set_toc(toc)
+    book.set_metadata({'title': 'Purely Plant — Tranches 1 and 2, corrected copies: phenotype (and the processing pill '
+                                'on the retest iCoAs) — not issued', 'producer': 'Purely Plant Quality Desk'})
+    name = 'T1_T2_CoQ+iCoA_phenotype_corrected_%s.pdf' % STAMP
+    book.save(os.path.join(OUT, name), garbage=4, deflate=True)
+    n = book.page_count
+    book.close()
     with open(os.path.join(OUT, 'CHANGES.tsv'), 'w', encoding='utf-8', newline='') as fh:
         w = csv.writer(fh, delimiter='\t', lineterminator='\n')
-        w.writerow(['folder', 'coq', 'series', 'specification', 'coq phenotype as sent', 'coq phenotype corrected',
-                    'laboratory lines replaced', 'icoa', 'icoa phenotype as sent', 'icoa phenotype corrected', 'proof'])
-        for t in tg:
-            w.writerow([t['folder'], t['coq'], t['series'], t['spec'], t['coq_was'], t['coq_now'], t['lab_lines'],
+        w.writerow(['batch', 'coq', 'series', 'specification', 'coq phenotype as sent', 'coq phenotype corrected',
+                    'icoa', 'icoa phenotype as sent', 'icoa phenotype corrected', 'proof'])
+        for t in order:
+            w.writerow([t['folder'], t['coq'], t['series'], t['spec'], t['coq_was'], t['coq_now'],
                         t['icoa'], t['icoa_was'], t['icoa_now'], t['proof']])
     shutil.rmtree(tmp, ignore_errors=True)
-    print('written: %s — %d batch folders, %d certificates, each as PDF and Word, with the sheets they cite'
-          % (os.path.relpath(OUT, GAP), len({t['folder'] for t in tg}), len(made)))
+    print('written: %s/%s — %d batches, %d pages' % (os.path.relpath(OUT, GAP), name, len({t['folder'] for t in tg}), n))
     return 0
 
 

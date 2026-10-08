@@ -277,6 +277,16 @@ const wideFade = c => 'linear-gradient(90deg,#fff 0,' + c + ' ' + FADE_A + ',' +
 // 24 px in all. Type, rules, rows and columns are untouched. The layer is written last on the
 // page, and only on a page that carries the two rows, so every other certificate is byte-for-
 // byte what it was. Measured in the printer's own Chromium on all 32 such pages.
+// Head of QC, 08.10.2026: "the check box is miserable and not aligned middle". The ☒/☐ is a glyph the house faces
+// lack, so it fell back small and sat on the text baseline. Set in DejaVu Sans, centred in its pill, on every
+// certificate not yet issued (the house kit carries it to the iCoA and the specification).
+const CHECKBOX_LAYER = '<style id="__owner-checkbox-centre">\n' +
+  'html body div.page .selrow .chip-sel,html body div.page .selrow .chip-un,html body div.page .disp-row .chip-sel,' +
+  'html body div.page .disp-row .chip-un{display:inline-flex !important;align-items:center !important}\n' +
+  'html body div.page .chip-sel .bx,html body div.page .chip-un .bx{display:inline-flex !important;align-items:center !important;' +
+  'justify-content:center !important;line-height:1 !important;height:auto !important;vertical-align:middle !important;' +
+  "font-family:'DejaVu Sans',sans-serif !important}\n" +
+  '</style>';
 const PANEL_FIT_LAYER = '<style id="__owner-panel-fit">\n' +
   'html body div.page div.goldrule + div.sec-label{margin-top:6px !important;margin-bottom:3px !important}\n' +
   'html body div.page div.pot-note + div.sec-label{margin-top:7px !important;margin-bottom:3px !important}\n' +
@@ -506,7 +516,7 @@ const S01_BAND_LAYER = '<style id="__owner-s01-band">\n' +
   // it, and the certificate stays one A4 page. The two rows add 20 px; a page whose section 03
   // lists three laboratories had none to spare. PANEL_FIT_LAYER takes it from white padding only.
   const PANEL_PAGE = CoQ.PANEL_EXTRA.some(d => CoQ.hasExtra(rec(c), d));
-  const DESK_LAYERS = OWNER_LAYER + '\n' + HB_SUP_LAYER + '\n' + PRINT_ZEBRA_LAYER + '\n' + EDGE_FADE_LAYER + '\n' + INK_LAYER + '\n' + S34_LAYER + '\n' + S03_LAYER + '\n' + S01_BAND_LAYER + '\n' + (FROZEN_LOT(c) ? '' : SEC_LABEL_BEVEL_LAYER + '\n' + WIDE_FADE_LAYER + '\n');
+  const DESK_LAYERS = OWNER_LAYER + '\n' + HB_SUP_LAYER + '\n' + PRINT_ZEBRA_LAYER + '\n' + EDGE_FADE_LAYER + '\n' + INK_LAYER + '\n' + S34_LAYER + '\n' + S03_LAYER + '\n' + S01_BAND_LAYER + '\n' + (FROZEN_LOT(c) ? '' : SEC_LABEL_BEVEL_LAYER + '\n' + WIDE_FADE_LAYER + '\n' + CHECKBOX_LAYER + '\n');
   if (html.indexOf('</body>') < 0) throw new Error('no </body> to append the desk layers before');
   html = html.replace('</body>', DESK_LAYERS + '</body>');
   // Owner, 16.09.2026 (second pass): the issue date in the Section 03 code column is
@@ -655,6 +665,13 @@ const S01_BAND_LAYER = '<style id="__owner-s01-band">\n' +
   const OLD_NOTE = /<br>Parameter attribution to the issuing laboratory[^<]*<\/div>/;
   if (!OLD_NOTE.test(htmlOut)) throw new Error('Section 02 note sentence not found');
   htmlOut = htmlOut.replace(OLD_NOTE, '</div>');
+  // Head of QC, 08.10.2026 ("Fix Macedonian microbiology names on CoQs"): the results-table skeleton, vendored
+  // from the design package, spells E. coli 'Ешерихиџа'; his CoQ base and his specification spell it 'Ешерихија'.
+  // A design package decides layout only (CLAUDE.md §6), so his spelling prints on every certificate not yet issued.
+  if (!FROZEN_LOT(c)) {
+    if (htmlOut.split('Ешерихиџа').length !== 2) throw new Error('E. coli Macedonian name not found once: ' + c.regcode);
+    htmlOut = htmlOut.replace('Ешерихиџа', 'Ешерихија');
+  }
   const dir = r.series === 'reissue' ? path.join(OUT, 'REISSUE', tranche[r.lot] ? 'T' + String(tranche[r.lot]).replace(/\D/g, '') : 'T3') : path.join(OUT, 'ISSUE_COQ');
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, out.filename), htmlOut);

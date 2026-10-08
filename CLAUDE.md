@@ -291,7 +291,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 215 corrections, 07.09.2026–08.10.2026, each quoted — is
+The full record — 218 corrections, 07.09.2026–08.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:
@@ -388,8 +388,13 @@ Standing rules the corrections produced (message numbers are in the record):
   certificate was ordered against the manufacturer's specification it also reports *P. aeruginosa* and
   *S. aureus*; #9.6 and #9.7 then print from it (`tracker/apply_micro_panel_ruling_2026-10-07.py`, 32
   Tranche 3 CoQs). A certificate that does not report them adds no row. *"You will not use analysis
-  results from one batch to fill in for another batch and strain"*: `548/1079/26` (OI-37) stays out. The
+  results from one batch to fill in for another batch and strain"*: `548/1079/26` (OI-37) stayed out until 08.10.2026, when the Head of QC filed it as P060192's (*"the
+  P060192 has full MB panel"*; its "Серија" prints P060192): it is -163's retest microbiology, 9.1–9.7
+  (`tracker/apply_mb_548_P060192_2026-10-08.py`). The
   two rows fit one A4 page through `build_v40.js` `PANEL_FIT_LAYER`, written only on those pages.
+- **E. coli in Macedonian is 'Ешерихија коли'** (the Head of QC's base; the design skeleton's 'Ешерихиџа' is
+  corrected on every certificate not yet issued, 08.10.2026). 9.6/9.7 print their Latin names only, as his
+  specification does.
 - **Wording.** ND is a *not detected* result; a parameter not tested is `n/t`, never ND. One Macedonian
   "Conforms" (Одговара); Macedonian "метод", not "метода". Phenotype "Hybrid, Indica/Sativa dominant"
   when the split is unknown, "Hybrid, Indica 80, Sativa 20" when known — the same everywhere.
@@ -423,6 +428,9 @@ Standing rules the corrections produced (message numbers are in the record):
   weight, spacing, case and colour** (TYPE: *"use the same fonts for the same class of text … in all depths on all
   documents"*): header, section 01 labels and values, table head, number, parameter, method, criterion, result,
   notes, footer. Text the CoQ has no counterpart for keeps its own.
+- **Checkbox in the pills** (Head of QC, 08.10.2026: *"the check box is miserable and not aligned middle"*): the
+  ☒/☐ is set in DejaVu Sans, centred in its pill, on every certificate and sheet not yet issued (`build_v40.js`
+  `CHECKBOX_LAYER`, carried by the house kit). Tranches 1/2 as sent.
 - **Signature block: the QC Manager on the right** (Head of QC, 07.10.2026, *"mandatory"*), on every CoQ, iCoA and
   specification not yet issued; on the left the QA Manager (*Reviewed by*) on the CoQ and the specification, the QC
   Analyst on the iCoA. The block is set as on the CoQ (`house_kit` SIGN). `build_v40.js` swaps the CoQ's boxes
