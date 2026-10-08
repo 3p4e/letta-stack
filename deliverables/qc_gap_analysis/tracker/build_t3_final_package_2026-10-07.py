@@ -41,7 +41,8 @@ Head of QC, 07.10.2026, on the third set: *"one more deliverable for each produc
 quality followed by the internal certificate of analysis followed by the corresponding product specification by
 the potency value of the certificate, as one merged PDF document"*. The sheet is the one the CoQ cites; the build
 stops unless the CoQ prints that code and that product code, the sheet prints them too, and the printed Total THC
-lies in the sheet's window (`potency_grades_2026-09-15.csv`).
+lies in the sheet's window (`potency_grades_2026-09-15.csv`) — but for a result the Head of QC ruled onto its
+grade (`RULED_OUTSIDE`: -050, 7.05 % on GRC-IV 7.20–8.79 %, 08.10.2026).
 
 Each merged PDF has a bookmark per certificate or sheet. `--specs` rebuilds the specifications file alone,
 `--with-spec` the CoQ + iCoA + specification files and `CONTENTS.tsv` alone, `--by-series` only the initial and
@@ -157,6 +158,11 @@ def spec_sheet(code):
     return got[0], grade
 
 
+# A result outside its sheet's window that the Head of QC ruled the CoQ cites all the same (08.10.2026: GRC-IV became
+# 8.00 ± 0.80 and -050's 7.05 % stays on it, "both on 8.00 ± 0.80"; tracker/apply_grc_grade_8_2026-10-08.py).
+RULED_OUTSIDE = {('CoQ-PP_26-050', 'QCSP_001_GRC-IV_v.01'): 7.05}
+
+
 def spec_rows(rows, pages):
     """Each row's specification sheet, held against its CoQ: same code, same product code, THC in the window."""
     import pymupdf
@@ -164,7 +170,8 @@ def spec_rows(rows, pages):
     for r in rows:
         sheet, g = spec_sheet(r['spec'])
         val = float(re.match(r'^\s*(\d+[.,]\d+)', r['thc']).group(1).replace(',', '.'))
-        if not float(g['window_low']) <= val <= float(g['window_high']):
+        if not float(g['window_low']) <= val <= float(g['window_high']) and \
+                RULED_OUTSIDE.get((r['coq'], r['spec'])) != val:
             bad.append('%s prints %.2f %%; %s holds %s–%s %%' % (r['coq'], val, r['spec'], g['window_low'], g['window_high']))
         with pymupdf.open(pages[r['coq']]) as d:
             t = ''.join(d[0].get_text().split())
