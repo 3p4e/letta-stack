@@ -291,7 +291,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 219 corrections, 07.09.2026–08.10.2026, each quoted — is
+The full record — 220 corrections, 07.09.2026–08.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:
@@ -422,7 +422,7 @@ Standing rules the corrections produced (message numbers are in the record):
   (its words, the leaning or split, the Macedonian only on Machine), and the kit (`design_handoff/toolchain/
   house_kit_2026-10-07.css`, `--generate` from the CoQ's computed style, `--check`) draws the pills and the heading
   bars as the CoQ draws them — the bar is the 01.10.2026 bevel — on every iCoA (`build_t3_bundle.icoa_page`) and
-  specification (`build_qcsp_imb.py`) not yet issued. Change the look on the CoQ, then regenerate the kit.
+  specification (`build_qcsp_imb.py`) not yet issued. Change the look on the CoQ, then regenerate the kit. The Tranche 1/2 corrected copies of 08.10.2026 carry it too: on each iCoA the pill row is its corrected CoQ's, held at the sent row height (`build_t1_t2_phenotype_corrected_2026-10-08.py`).
   Later that day the kit took three more parts, read off the same CoQ: the iCoA's *Result vs Specification* chips as
   the CoQ's section 04 (DISP); the signature block (SIGN); and **text of the same role in the CoQ's face, size,
   weight, spacing, case and colour** (TYPE: *"use the same fonts for the same class of text … in all depths on all
