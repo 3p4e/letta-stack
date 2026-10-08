@@ -375,8 +375,13 @@ def main(argv):
             outside = [i for i in range(ps.height) if not k0 <= i < k1
                        and ps.samples[i * row:(i + 1) * row] != pf.samples[i * row:(i + 1) * row]]
             if outside:
-                bad.append('%s: the corrected page differs outside the phenotype row (%d pixel rows, first at %.0f pt)'
-                           % (t['icoa'], len(outside), outside[0] * 0.72))
+                i = outside[0]
+                da = [(abs(x - y), j // ps.n) for j, (x, y) in enumerate(zip(ps.samples[i * row:(i + 1) * row],
+                                                                             pf.samples[i * row:(i + 1) * row])) if x != y]
+                bad.append('%s: the corrected page differs outside the phenotype row (%d pixel rows, first at %.0f pt; '
+                           'band %.1f–%.1f pt; there %d px differ, x %d–%d px, at most %d of 255)'
+                           % (t['icoa'], len(outside), i * 0.72, y0, y1, len({x for _, x in da}), min(x for _, x in da),
+                              max(x for _, x in da), max(d for d, _ in da)))
             # text by position: above and below the row exactly as sent (a scaled row is painted as its own layer,
             # so content order is no guide); in the row, word by word
             W, H = s.rect.width, s.rect.height
