@@ -18,7 +18,6 @@ loaded automatically by new_sop()/new_annex() (from_template=True, the default),
 version are stamped by apply_pp_header(), the body is cleared by wipe_body(), and save() re-seats
 the section <w:sectPr> last so the header/footer/page-geometry apply document-wide. See formatting_specs.md.
 """
-import re
 from docx import Document
 from docx.shared import Pt, RGBColor, Cm
 from docx.enum.text import WD_ALIGN_PARAGRAPH
@@ -40,6 +39,47 @@ A_ALT     = "F7FAFC"     # annex alternating row
 A_WARM    = "FEF9E7"; A_ROSE = "FDEDEC"; A_MINT = "EAFAF1"
 BORDER_GRAY = "B0BEC5"
 FONT = "Calibri"
+RED   = RGBColor(0xC0, 0x00, 0x00)   # document-control status (draft / not-for-use)
+GREEN = RGBColor(0x37, 0x56, 0x23)   # approved-for-use status
+DRAFT_FILL    = "FDEDEC"             # rose band behind a DRAFT / IN-REVIEW status line
+APPROVED_FILL = "EAFAF1"             # mint band behind an APPROVED status line
+
+# ============================ Document-control lifecycle ============================
+# House rule (all engine documents — SOPs, annexes, reports, certificates):
+#   A document being edited is a DRAFT: it is NOT a controlled version and has NO effective
+#   date; it may be revised freely. Only when concluded is it submitted for review/approval;
+#   once APPROVED it becomes a controlled version (vNN) WITH an effective date. Any later
+#   change returns it to draft and repeats the cycle. So the controlled version number and the
+#   effective date are shown ONLY when status == "approved"; drafts are visibly marked and
+#   carry neither. `status` defaults to "draft" — nothing is treated as approved unless said so.
+def norm_status(status):
+    s = (status or "draft").strip().lower().replace("-", "_").replace(" ", "_")
+    return s if s in ("draft", "in_review", "approved") else "draft"
+
+def is_approved(status):
+    return norm_status(status) == "approved"
+
+def status_label(status):
+    """Bilingual (MK, EN) status caption for the title/cover band."""
+    return {
+        "draft":     ("РАБОТНА ВЕРЗИЈА — НЕ ЗА УПОТРЕБА", "DRAFT — NOT FOR USE"),
+        "in_review": ("ЗА ПРЕГЛЕД И ОДОБРУВАЊЕ — НЕ ЗА УПОТРЕБА", "IN REVIEW / FOR APPROVAL — NOT FOR USE"),
+        "approved":  ("ОДОБРЕНО ЗА УПОТРЕБА", "APPROVED FOR USE"),
+    }[norm_status(status)]
+
+def header_version(status, version):
+    """Running-header version cell: a controlled 'vNN' only once approved; otherwise DRAFT/REVIEW.
+    The intended controlled version is retained in `version` and surfaces when approved."""
+    st = norm_status(status)
+    if st == "approved":
+        return "v%s" % version
+    return "DRAFT" if st == "draft" else "IN REVIEW"
+
+def effective_display(status, effective_date):
+    """Effective date exists only for an approved document; drafts show a not-approved marker."""
+    if is_approved(status):
+        return effective_date or "____.____.______"
+    return "—"
 
 # ---------- mandatory PP base template (header + logo + footer + page geometry) ----------
 import os
@@ -54,6 +94,42 @@ def run(p, t, sz, color=BLACK, bold=False, ital=False, font=FONT):
 def sp(p, before=0, after=0, line=None):
     pf = p.paragraph_format; pf.space_before = Pt(before); pf.space_after = Pt(after)
     if line: pf.line_spacing = line
+
+# ---- Vertical rhythm between blocks -------------------------------------------------------
+# Adjacent tables with nothing between them fuse into one table in Word and LibreOffice, and a
+# heading row inside a table carries no space of its own. These helpers give every block its
+# breathing room and keep a heading on the same page as what it introduces.
+def spacer(d, pt=8, keep=False):
+    """Empty paragraph exactly `pt` points high between two blocks (stops tables fusing).
+    keep=True binds the gap to the block below — only where the block above must travel with it
+    (a heading or lead-in text above a table). Everywhere else it stays unbound: LibreOffice treats
+    a kept-together table as keep-with-next, and a bound gap would chain whole sections together."""
+    from docx.enum.text import WD_LINE_SPACING
+    p = d.add_paragraph(); sp(p, 0, 0)
+    p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.EXACTLY
+    p.paragraph_format.line_spacing = Pt(pt)
+    p.paragraph_format.keep_with_next = keep
+    return p
+
+def keep_row(row, with_next=True):
+    """A row never splits across pages and (by default) stays on the page of the next row."""
+    trPr = row._tr.get_or_add_trPr()
+    if trPr.find(qn('w:cantSplit')) is None:
+        trPr.append(OxmlElement('w:cantSplit'))
+    if with_next:
+        for c in row.cells:
+            for par in c.paragraphs:
+                par.paragraph_format.keep_with_next = True
+
+def sop_spacer_row(t, pt=9):
+    """Two-column SOP gap row: no fill, the vertical divider continues through it."""
+    L, R = t.add_row().cells
+    cell_borders(L, ('right',)); cell_borders(R, ('left',))
+    trPr = t.rows[-1]._tr.get_or_add_trPr()
+    h = OxmlElement('w:trHeight'); h.set(qn('w:val'), str(int(pt * 20))); h.set(qn('w:hRule'), 'exact')
+    trPr.append(h)
+    for c in (L, R):
+        sp(c.paragraphs[0], 0, 0)
 
 def shade(cell, fill):
     """Cell fill — ALWAYS w:val='clear' (never 'solid')."""
@@ -95,144 +171,14 @@ def cell_margins(cell, top=29, bottom=29, left=58, right=58):
         el = OxmlElement('w:' + side); el.set(qn('w:w'), str(val)); el.set(qn('w:type'), 'dxa'); m.append(el)
     tcPr.append(m)
 
-# ==================== intelligent table-layout brain (shared with pp_report.py) ====================
-# The single content-aware column-distribution engine (SKILL.md / formatting_specs.md: "Intelligent,
-# use-aware column distribution — AUTOMATIC (`fixed(tbl)` is the single table-layout brain)"). Canonical
-# home is HERE (pp_format.py) so both the SOP/Annex path and pp_report.py's report/record path share
-# ONE implementation — pp_report.py imports `fixed` from this module rather than redefining it.
-PAGE_W = 18.46   # A4 text width (cm) at 1.27 cm L/R margins — every table is fitted to this
-_ENTRY_TARGETS = [(('потпис', 'signature'), 3.8), (('датум', 'date'), 2.6), (('име', 'name', 'позиц', 'position'), 5.2)]
-
-def _tctext(tc):
-    return "".join((n.text or "") for n in tc.iter(qn('w:t')))
-
-def _settcw_dxa(tc, cm):
-    tcPr = tc.get_or_add_tcPr()
-    for old in tcPr.findall(qn('w:tcW')):
-        tcPr.remove(old)
-    w = OxmlElement('w:tcW'); w.set(qn('w:type'), 'dxa'); w.set(qn('w:w'), str(max(1, int(cm * 567)))); tcPr.append(w)
-
-def _gridspan(tc):
-    tcPr = tc.find(qn('w:tcPr'))
-    if tcPr is None:
-        return 1
-    gs = tcPr.find(qn('w:gridSpan'))
-    return int(gs.get(qn('w:val'))) if gs is not None else 1
-
-def _repeat_header(tbl, n=1):
-    """Mark the first n row(s) as a repeating header so they reprint atop every page the table spans."""
-    for tr in tbl._tbl.tr_lst[:n]:
-        trPr = tr.get_or_add_trPr()
-        if trPr.find(qn('w:tblHeader')) is None:
-            e = OxmlElement('w:tblHeader'); e.set(qn('w:val'), 'true'); trPr.append(e)
-
-# --- fixed(): grafted from ACME_SOP repo pp_report.py @ 2026-07-14 (overflow compression + word-boundary entry matching) per DOCENGINE-CANON ---
-def fixed(tbl, weights=None, min_cm=0.9, cap=34, mode=None, header_repeat=True):
-    """INTELLIGENT, use-aware column distribution (the skill's single table-layout brain).
-       It measures each column's real bilingual content and decides the table's *fit*:
-         • narrow 'label | value' SUMMARY tables (≤3 columns whose content fits) → COMPACT &
-           CENTERED at their natural width (no label stacked vertically, no value floating in a
-           vast empty column);
-         • wide DATA tables → fill the page width (never overflow);
-       ordinal/number columns collapse to just-enough; hand-written ENTRY columns
-       (Name/Date/Signature/Position) are purpose-sized even when blank; Role/Action take the
-       remainder. The first row is set to repeat on page breaks. Pass `weights` to force ratios,
-       or mode='compact'/'full' to override the auto fit."""
-    grid=tbl._tbl.tblGrid.gridCol_lst; ncol=len(grid)
-    if ncol==0: return tbl
-    rows=[tr for tr in tbl._tbl.tr_lst if len(tr.tc_lst)==ncol]
-    CHCM=0.176; PAD=0.42                              # ≈ cm per char (10 pt Calibri) + cell padding
-    hdr=[_tctext(rows[0].tc_lst[j]).lower().strip() if rows else "" for j in range(ncol)]
-    ent={}; forced=bool(weights and len(weights)==ncol)
-    # Per-column content measures (for use-aware sizing of compressed data tables):
-    #   data_cm = widest DATA cell — data must NEVER wrap, so this is a hard floor;
-    #   hdr_cm  = header's full inline width — its demand for space;
-    #   word_cm = header's longest single token — a header may wrap, but not below its longest word.
-    data_cm=[0.8]*ncol; hdr_cm=[0.8]*ncol; word_cm=[0.6]*ncol
-    if forced:
-        ideal=[float(w) for w in weights]
-    else:
-        ideal=[0.8]*ncol
-        for ri,tr in enumerate(rows):
-            for j,tc in enumerate(tr.tc_lst):
-                t=_tctext(tc).replace("\n"," ").strip()
-                if not t: continue
-                ps=t.split(" | ")
-                L=(len(ps[0])+3+0.8*len(ps[1])) if len(ps)==2 else len(t)   # TRUE inline bilingual width (MK + sep + smaller EN)
-                w=min(L,cap)*CHCM+PAD
-                ideal[j]=max(ideal[j], w)
-                if ri==0:
-                    hdr_cm[j]=w
-                    toks=t.replace(" | "," ").split()
-                    word_cm[j]=(max((len(x) for x in toks), default=1))*CHCM+PAD
-                else:
-                    data_cm[j]=max(data_cm[j], w)
-        for j,h in enumerate(hdr):                    # purpose-size hand-written entry columns
-            for kws,cm in _ENTRY_TARGETS:             # match at a WORD boundary (prefix ok) so e.g. the
-                if any(re.search(r'\b'+re.escape(k), h) for k in kws):  # 'име' in 'примерок' is NOT a hit
-                    ent[j]=cm; break
-        for j,cm in ent.items(): ideal[j]=cm
-    ideal_sum=sum(ideal) or 1.0
-    if   mode=="full":    compact=False
-    elif mode=="compact": compact=True
-    else: compact=(not forced) and ncol<=3 and ideal_sum<=0.86*PAGE_W and not ent
-    if compact:
-        widths=[max(w,min_cm) for w in ideal]
-    else:
-        if ent:
-            targ=sum(ent.values())
-            if targ>PAGE_W-2.0:
-                sc=(PAGE_W-2.0)/targ; ent={j:c*sc for j,c in ent.items()}; targ=sum(ent.values())
-            oth=[j for j in range(ncol) if j not in ent]; sw=sum(ideal[j] for j in oth) or 1.0; rem=PAGE_W-targ
-            widths=[(ent[j] if j in ent else ideal[j]/sw*rem) for j in range(ncol)]
-        else:
-            even=PAGE_W/ncol
-            if ncol>=4 and all(ideal[j]<=even+1e-6 for j in range(1,ncol)):  # labeled grid: data cols uniform & fit
-                c0=max(ideal[0],min_cm); rest=(PAGE_W-c0)/(ncol-1)            # col0 sized to its labels (single-line header),
-                widths=[c0]+[rest]*(ncol-1)                                   # columns 2..N split the remainder EVENLY
-            elif (not forced) and ideal_sum>PAGE_W:                           # table would OVERFLOW → intelligent compression:
-                base=[max(data_cm[j], word_cm[j]) for j in range(ncol)]       #   each column floored to its DATA (never wraps)
-                sb=sum(base)                                                  #   and its header's longest word (headers may wrap);
-                if sb>=PAGE_W:                                                #   if even the floors overflow, share proportionally,
-                    widths=[b/sb*PAGE_W for b in base]
-                else:                                                         #   else give the spare width to the LONGEST headers
-                    slack=PAGE_W-sb; hw=sum(hdr_cm) or 1.0                    #   so headers wrap least where they are longest.
-                    widths=[base[j]+slack*hdr_cm[j]/hw for j in range(ncol)]
-            else:
-                widths=[w/ideal_sum*PAGE_W for w in ideal]                    # else content-proportional
-        for _ in range(6):                            # enforce a minimum, redistribute the rest
-            below=[i for i,w in enumerate(widths) if w<min_cm-1e-6]
-            if not below: break
-            for i in below: widths[i]=min_cm
-            ab=[i for i in range(ncol) if i not in below]; rem=PAGE_W-min_cm*len(below); sab=sum(widths[i] for i in ab) or 1.0
-            for i in ab: widths[i]=widths[i]/sab*rem
-    total=sum(widths)
-    tbl.autofit=False; tbl.allow_autofit=False
-    tblPr=tbl._tbl.tblPr
-    for tag in ('w:tblLayout','w:tblW','w:tblInd','w:jc'):
-        for old in tblPr.findall(qn(tag)): tblPr.remove(old)
-    lay=OxmlElement('w:tblLayout'); lay.set(qn('w:type'),'fixed'); tblPr.append(lay)
-    tw=OxmlElement('w:tblW'); tw.set(qn('w:type'),'dxa'); tw.set(qn('w:w'),str(int(total*567))); tblPr.append(tw)
-    ti=OxmlElement('w:tblInd'); ti.set(qn('w:type'),'dxa'); ti.set(qn('w:w'),'0'); tblPr.append(ti)
-    jc=OxmlElement('w:jc'); jc.set(qn('w:val'),'center'); tblPr.append(jc)   # centre on the page (matters for compact)
-    for j,gc in enumerate(grid): gc.set(qn('w:w'), str(max(1,int(widths[j]*567))))
-    for tr in tbl._tbl.tr_lst:
-        tcs=tr.tc_lst
-        if len(tcs)==ncol:
-            for j,tc in enumerate(tcs): _settcw_dxa(tc, widths[j])
-        else:
-            gi=0
-            for tc in tcs:
-                spn=_gridspan(tc); _settcw_dxa(tc, sum(widths[gi:gi+spn]) or min_cm); gi+=spn
-    if header_repeat: _repeat_header(tbl)
-    return tbl
 def bilingual(p, mk, en, mk_sz=11, en_sz=7, bold=False, color=BLACK):
-    """Inline 'MK | EN' run group (annex + table style). Omits the separator when en is empty
-    (e.g. a data-entry cell with no English counterpart) to avoid a stray trailing ' |'."""
+    """Inline 'MK | EN' run group (annex + table style)."""
     run(p, mk, mk_sz, color, bold=bold)
-    if en:
+    # The separator only joins two halves: a cell holding a code, a number or a RACI letter has no
+    # EN half, and a dangling " | " after it reads as a defect on the printed page.
+    if (mk or "").strip() and (en or "").strip():
         run(p, " | ", en_sz, color)
-        run(p, en, en_sz, color, bold=bold)
+    run(p, en, en_sz, color, bold=bold)
 
 def _page(doc, orient="portrait", margin_cm=1.27):
     s = doc.sections[0]
@@ -258,15 +204,12 @@ def wipe_body(d):
     d._pp_sectpr = sect
     return sect
 
-def apply_pp_header(d, mk_name, code, en_name, version="1.0"):
+def apply_pp_header(d, mk_name, code, en_name, version="1.0", status="draft"):
     """Stamp the base-template running header: bilingual Document name, Code of document, Version.
     Header is a 2x3 table: [leaf logo+wordmark] | [Document name MK/EN] | [Code of document / Ver].
     Only the value runs are overwritten; the labels and the logo are preserved from the template.
-    The document CODE is stamped ONLY in the right-hand 'Code of document' cell — the template's
-    own centre-cell run layout has a middle slot (originally used for a secondary identifier) that
-    must NOT be reused for the code, or the code appears twice on the same header. That middle
-    slot (and its adjoining separator/newline runs) is cleared instead, so the centre cell shows
-    just the bilingual title on two lines: MK title, then EN title."""
+    The Version cell shows a controlled 'vNN' only when status == 'approved'; a draft/in-review
+    document shows DRAFT / IN REVIEW instead (document-control lifecycle, see top of module)."""
     try:
         h = d.sections[0].header.tables[0]
     except (IndexError, AttributeError):
@@ -275,21 +218,25 @@ def apply_pp_header(d, mk_name, code, en_name, version="1.0"):
         if i < len(runs):
             runs[i].text = t
     nm = h.cell(0, 1).paragraphs[1].runs
-    setrun(nm, 0, mk_name + " ")
-    for i in (1, 2, 3):          # clear the template's middle line + separator (was: code, duplicating the right cell)
-        setrun(nm, i, "")
-    setrun(nm, 5, en_name)
+    # Document-name cell shows ONLY the title (MK over EN). The document code is NOT repeated here —
+    # it lives in the right-hand 'Code of document' cell. Clear the old code + ' | ' + newline runs
+    # so the cell reads: <mk_title> \n <en_title>.
+    setrun(nm, 0, mk_name); setrun(nm, 2, ""); setrun(nm, 3, ""); setrun(nm, 4, ""); setrun(nm, 5, en_name)
     cd = h.cell(0, 2).paragraphs[2].runs
     setrun(cd, 0, code); setrun(cd, 2, ""); setrun(cd, 3, "")
+    # The code cell is narrow and an underscore code has no break point, so a 13-character annex
+    # code (WHSOP_003_A01, QASOP_031_A10) wrapped its last digit onto a second line at 11 pt.
+    if cd and len(code or "") > 11:
+        cd[0].font.size = Pt(9.5 if len(code) <= 14 else 8.5)
     vr = h.cell(1, 2).paragraphs[0].runs
     if vr:
-        vr[-1].text = version
+        vr[-1].text = header_version(status, version)
     return True
 
 # ============================ SOP (two-column) ============================
 def new_sop(margin_cm=1.27, from_template=True, code=None,
             mk_name="СТАНДАРДНА ОПЕРАТИВНА ПРОЦЕДУРА", en_name=None, version="1.0", template=None,
-            mk_title=None, en_title=None):
+            mk_title=None, en_title=None, status="draft"):
     """SOP document. By DEFAULT starts FROM the mandatory PP base template so the running header
     (logo + bilingual doc name + code + version), the 'Page X of Y' footer and the A4 page geometry
     are present on every page.
@@ -301,56 +248,85 @@ def new_sop(margin_cm=1.27, from_template=True, code=None,
     hdr_en = en_title or en_name or ("STANDARD OPERATING PROCEDURE — %s" % (code or ""))
     if from_template and os.path.exists(tpl):
         d = Document(tpl)
-        apply_pp_header(d, hdr_mk, code or "", hdr_en, version)
+        apply_pp_header(d, hdr_mk, code or "", hdr_en, version, status)
         wipe_body(d)
         _normal(d)
         return d
     d = Document(); _page(d, "portrait", margin_cm); _normal(d); return d
 
-def sop_titlepage(d, code, mk_title, en_title, roles=None, effective_date=True):
-    """Title/approval page. `roles`, if given, is a list of (mk_role, en_role, name) triples —
-    one signature row per approval role (e.g. Prepared/QC-Reviewed/QA-Reviewed/Approved), so any
-    number of tiers is supported without hardcoding personnel names into the engine (personnel
-    identity belongs to the document being built, never to the generator). Defaults to the
-    3-tier Prepared/Reviewed/Approved convention with blank names for the user to fill in.
-    Columns follow the house convention: Улога|Role · Име|Name · Потпис|Signature · Датум|Date.
-    Set effective_date=False to omit the trailing 'Effective Date' row."""
+def status_band(d, status="draft", version="1.0", effective_date=None, review_date=None):
+    """Render the document-control status line (DRAFT / IN REVIEW / APPROVED) with the controlled
+    version and effective date shown ONLY when approved. Call on every title page / cover."""
+    st = norm_status(status); mk, en = status_label(st)
+    col = GREEN if st == "approved" else RED
+    fill = APPROVED_FILL if st == "approved" else DRAFT_FILL
+    t = d.add_table(rows=1, cols=1); t.alignment = WD_TABLE_ALIGNMENT.CENTER
+    c = t.cell(0, 0); shade(c, fill); cell_margins(c, top=46, bottom=46, left=86, right=86)
+    p = c.paragraphs[0]; p.alignment = WD_ALIGN_PARAGRAPH.CENTER; sp(p, 1, 1)
+    run(p, "%s | %s" % (mk, en), 12, col, bold=True)
+    p2 = c.add_paragraph(); p2.alignment = WD_ALIGN_PARAGRAPH.CENTER; sp(p2, 1, 1)
+    run(p2, "Верзија | Version: %s" % header_version(st, version), 10, BLACK, bold=True)
+    run(p2, "     ", 10, GREY)
+    run(p2, "Датум на важност | Effective date: %s" % effective_display(st, effective_date), 10, BLACK, bold=True)
+    if review_date and st == "approved":
+        run(p2, "     ", 10, GREY)
+        run(p2, "Датум на преглед | Review date: %s" % review_date, 10, GREY)
+    fixed_widths(t, [18.0]); table_borders(t, 4, "B0BEC5")
+    return st
+
+def sop_titlepage(d, code, mk_title, en_title, status="draft", version="1.0",
+                  effective_date=None, review_date=None):
     for txt, sz, col, bold in [("СТАНДАРДНА ОПЕРАТИВНА ПРОЦЕДУРА", 24, NAVY, True),
                                ("STANDARD OPERATING PROCEDURE", 14, GREY, False),
                                (code, 18, NAVY, True)]:
         p = d.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER; sp(p, 6, 4); run(p, txt, sz, col, bold=bold)
-    p = d.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER; sp(p, 4, 12)
+    p = d.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER; sp(p, 4, 8)
     run(p, mk_title, 12, BLACK, bold=True); run(p, " | ", 10, GREY); run(p, en_title, 12, GREY, bold=True)
-    if roles is None:
-        roles = [("Подготвено од", "Prepared by", ""),
-                  ("Проверено од", "Reviewed by", ""),
-                  ("Одобрено од", "Approved by", "")]
-    nrows = 2 + len(roles) + (1 if effective_date else 0)
-    t = d.add_table(rows=nrows, cols=4); t.alignment = WD_TABLE_ALIGNMENT.CENTER
-    band = t.rows[0].cells
-    for c in band:
-        shade(c, SOP_BLUE); c.paragraphs[0].text = ''
-    bilingual(band[0].paragraphs[0], "ОДОБРУВАЊЕ НА ДОКУМЕНТ", "DOCUMENT APPROVAL", 11, 7, bold=True)
-    hdr = [("Улога", "Role"), ("Име", "Name"), ("Потпис", "Signature"), ("Датум", "Date")]
+    st = status_band(d, status, version, effective_date, review_date)
+    d.add_paragraph()
+    approved = (st == "approved")
+    t = d.add_table(rows=4, cols=4); t.alignment = WD_TABLE_ALIGNMENT.CENTER
+    hdr = [("Дејство", "Action"), ("Позиција", "Position"), ("Име", "Name"), ("Датум/Потпис", "Date/Sign")]
     for j, (mk, en) in enumerate(hdr):
-        c = t.cell(1, j); shade(c, SOP_BLUE); c.paragraphs[0].text = ''
-        bilingual(c.paragraphs[0], mk, en, 11, 7, bold=True)
-    for i, (mk_role, en_role, name) in enumerate(roles, 2):
-        c0 = t.cell(i, 0); c0.paragraphs[0].text = ''; bilingual(c0.paragraphs[0], mk_role, en_role, 10, 7)
-        if name:
-            run(t.cell(i, 1).paragraphs[0], name, 10)
-    if effective_date:
-        r = nrows - 1
-        c0 = t.cell(r, 0); c0.paragraphs[0].text = ''
-        bilingual(c0.paragraphs[0], "Датум на ефективност", "Effective Date", 10, 7)
+        c = t.cell(0, j); shade(c, SOP_BLUE); c.paragraphs[0].text = ''; bilingual(c.paragraphs[0], mk, en, 11, 7, bold=True)
+    rows = [("Подготвил | Prepared by", "B. Nikolov, M.Pharm."),
+            ("Проверил | Reviewed by", "J. Romevska"),
+            ("Одобрил | Approved by", "S. Petrova")]
+    for i, (act, name) in enumerate(rows, 1):
+        t.cell(i, 0).paragraphs[0].text = ''; run(t.cell(i, 0).paragraphs[0], act, 10)
+        run(t.cell(i, 2).paragraphs[0], name, 10)
+        # Date/Sign: blank on an approved doc (wet-signed), 'Pending' while still draft/in-review
+        if not approved:
+            run(t.cell(i, 3).paragraphs[0], "Во тек | Pending", 9, GREY, ital=True)
     fixed_widths(t, [4.7, 4.7, 4.7, 4.7]); table_borders(t, 4, "000000")
     d.add_page_break()
 
+def set_update_fields_on_open(d):
+    """Add <w:updateFields w:val="true"/> to settings.xml so Word AND LibreOffice refresh ALL
+    fields (native TOC, Page X of Y) when the document is opened — which also makes a headless
+    `soffice --convert-to pdf` populate the TOC instead of leaving it blank. Idempotent."""
+    try:
+        s = d.settings.element
+        if s.find(qn('w:updateFields')) is None:
+            uf = OxmlElement('w:updateFields'); uf.set(qn('w:val'), 'true'); s.insert(0, uf)
+    except Exception:
+        pass
+
 def sop_toc(d):
     p = d.add_paragraph(); run(p, "СОДРЖИНА | TABLE OF CONTENTS", 14, NAVY, bold=True)
-    par = d.add_paragraph(); fld = OxmlElement('w:fldSimple')
-    fld.set(qn('w:instr'), r'TOC \o "1-3" \h \z \u'); par._p.append(fld)
-    note = d.add_paragraph(); run(note, "(Update field after opening: right-click → Update Field)", 8, GREY, ital=True)
+    # Complex field (begin/instr/separate/end): Word and LibreOffice both read it as a TOC index;
+    # LibreOffice ignores a w:fldSimple TOC, so the SOP's contents page rendered empty.
+    par = d.add_paragraph(); r = par.add_run()
+    for kind in ("begin", "instr", "separate"):
+        if kind == "instr":
+            it = OxmlElement('w:instrText'); it.set(qn('xml:space'), 'preserve')
+            it.text = ' TOC \\o "1-3" \\h \\z \\u '; r._r.append(it)
+        else:
+            fc = OxmlElement('w:fldChar'); fc.set(qn('w:fldCharType'), kind); r._r.append(fc)
+    par.add_run(" ")
+    fe = OxmlElement('w:fldChar'); fe.set(qn('w:fldCharType'), 'end'); par.add_run()._r.append(fe)
+    note = d.add_paragraph(); run(note, "(TOC updates automatically on open; or right-click → Update Field)", 8, GREY, ital=True)
+    set_update_fields_on_open(d)
     d.add_page_break()
 
 def sop_table(d):
@@ -367,13 +343,43 @@ def _set_heading(p, level=1):
         pass
 
 def sop_section_row(t, num, mk, en, level=1):
-    """Two-column section header. level controls the TOC depth (1=1.0, 2=1.1, 3=1.1.1)."""
+    """Two-column section header. level controls the TOC depth (1=1.0, 2=1.1, 3=1.1.1) and the
+    visual weight: level 1 (main X.0 sections) is a 12 pt bold gray band; level >= 2 sub-sections
+    are the lighter 11 pt bold style with NO fill, so a nested SOP does not become a wall of gray
+    bands. All levels keep a Heading style so the native TOC field still populates."""
+    if len(t.rows) and level <= 1:
+        sop_spacer_row(t, 10)                 # a main section never butts against the text above
     L, R = t.add_row().cells
-    for c in (L, R):
-        shade(c, SOP_GRAY)
+    size = 12 if level <= 1 else 11
+    if level <= 1:
+        for c in (L, R):
+            shade(c, SOP_GRAY)
     cell_borders(L, ('right',)); cell_borders(R, ('left',))
-    L.paragraphs[0].text = ''; _set_heading(L.paragraphs[0], level); run(L.paragraphs[0], f"{num} {mk}", 12, BLACK, bold=True)
-    R.paragraphs[0].text = ''; run(R.paragraphs[0], f"{num} {en}", 12, GREY, bold=True)
+    L.paragraphs[0].text = ''; _set_heading(L.paragraphs[0], level); run(L.paragraphs[0], f"{num} {mk}", size, BLACK, bold=True)
+    R.paragraphs[0].text = ''; run(R.paragraphs[0], f"{num} {en}", size, GREY, bold=True)
+    for c in (L, R):                          # band: air above/below the title; sub-heading: gap above
+        sp(c.paragraphs[0], *((3, 3) if level <= 1 else (6, 2)))
+    keep_row(t.rows[-1])                      # heading stays with its first paragraph
+
+def sop_heading_par(d, num, mk, en, level=1):
+    """The same two-column section heading, as a PARAGRAPH (MK left, EN at the column tab), for a
+    heading that introduces a full-width table: a paragraph's keep-with-next is honoured by Word
+    and LibreOffice, so the heading is never left alone at the foot of a page above its table."""
+    from docx.enum.text import WD_TAB_ALIGNMENT
+    spacer(d, 10 if level <= 1 else 6)
+    p = d.add_paragraph(); _set_heading(p, level); sp(p, 3, 3)
+    pf_ = p.paragraph_format
+    pf_.left_indent = Cm(0.23); pf_.right_indent = Cm(0.23)   # aligned with the centred 18 cm table
+    pf_.tab_stops.add_tab_stop(Cm(9.23), WD_TAB_ALIGNMENT.LEFT)
+    pf_.keep_with_next = True
+    if level <= 1:
+        pPr = p._p.get_or_add_pPr(); shd = OxmlElement('w:shd')
+        shd.set(qn('w:val'), 'clear'); shd.set(qn('w:color'), 'auto'); shd.set(qn('w:fill'), SOP_GRAY)
+        pPr.append(shd)
+    size = 12 if level <= 1 else 11
+    run(p, f"{num} {mk}", size, BLACK, bold=True); run(p, "\t", size, BLACK)
+    run(p, f"{num} {en}", size, GREY, bold=True)
+    return p
 
 def sop_body_row(t, mk, en, bold=False):
     L, R = t.add_row().cells
@@ -385,6 +391,7 @@ def sop_body_row(t, mk, en, bold=False):
 def sop_finalize(t):
     fixed_widths(t, [9.0, 9.0])   # two equal columns within ~18.46 cm usable
 
+# Ported from the DocEngine canon-2026-07 engine (09.10.2026) so the suite is a strict superset of it.
 def sop_nested_table(t, headers, rows, widths_cm=None, mode=None, header_bg=SOP_BLUE):
     """Full-width table NESTED inside a merged SOP body row (SKILL.md / formatting_specs.md:
     'Tables nested in a full-width merged row; no divider; table text MK 11pt | EN 7pt').
@@ -414,6 +421,7 @@ def sop_nested_table(t, headers, rows, widths_cm=None, mode=None, header_bg=SOP_
             if j >= ncol:
                 break
             c = nt.cell(i, j); c.paragraphs[0].text = ''; bilingual(c.paragraphs[0], mk, en, 11, 7)
+    from pp_report import fixed   # the suite's one table-layout brain lives in pp_report
     fixed(nt, weights=widths_cm, mode=mode)
     table_borders(nt, 4, BORDER_GRAY)
     return nt
@@ -422,18 +430,23 @@ def sop_block_table(d, headers, rows, widths_cm, header_bg=SOP_BLUE):
     """Full-width multi-column bilingual table for SOP §7 Records / §8 Related Documents / §9 Revision.
     headers, and each row, are lists of (mk, en) tuples (one per column)."""
     t = d.add_table(rows=1 + len(rows), cols=len(headers)); t.alignment = WD_TABLE_ALIGNMENT.CENTER
+    n = len(headers)                          # dense tables step the type down so words do not break
+    mk_sz, en_sz = (11, 7) if n <= 4 else ((10, 7) if n <= 6 else (9, 7))
     for j, (mk, en) in enumerate(headers):
         c = t.cell(0, j); shade(c, header_bg); c.paragraphs[0].text = ''
-        bilingual(c.paragraphs[0], mk, en, 11, 7, bold=True)
+        bilingual(c.paragraphs[0], mk, en, mk_sz, en_sz, bold=True)
     for i, row in enumerate(rows, 1):
         for j, (mk, en) in enumerate(row):
-            c = t.cell(i, j); c.paragraphs[0].text = ''; bilingual(c.paragraphs[0], mk, en, 11, 7)
-    fixed_widths(t, widths_cm); table_borders(t, 4, "000000"); return t
+            c = t.cell(i, j); c.paragraphs[0].text = ''; bilingual(c.paragraphs[0], mk, en, mk_sz, en_sz)
+    fixed_widths(t, widths_cm); table_borders(t, 4, "000000")
+    from pp_report import keep_table          # small tables whole; long ones keep header + first rows
+    keep_table(t)
+    return t
 
 # ============================ Annex (inline) ============================
 def new_annex(orient="portrait", from_template=True, code=None,
               mk_name="АНЕКС", en_name=None, version="1.0", template=None,
-              mk_title=None, en_title=None):
+              mk_title=None, en_title=None, status="draft"):
     """Annex document. Like new_sop, by DEFAULT starts FROM the PP base template so the mandatory
     header, logo and 'Page X of Y' footer are present (required on all annexes).
     The header 'Document name' shows the ACTUAL annex title (mk_title | en_title); the generic
@@ -443,7 +456,7 @@ def new_annex(orient="portrait", from_template=True, code=None,
     hdr_en = en_title or en_name or ("ANNEX — %s" % (code or ""))
     if from_template and os.path.exists(tpl):
         d = Document(tpl)
-        apply_pp_header(d, hdr_mk, code or "", hdr_en, version)
+        apply_pp_header(d, hdr_mk, code or "", hdr_en, version, status)
         wipe_body(d)
         _normal(d)
         if orient == "landscape":
@@ -452,24 +465,22 @@ def new_annex(orient="portrait", from_template=True, code=None,
         return d
     d = Document(); _page(d, orient, 2.54 if orient == "portrait" else 1.27); _normal(d); return d
 
-def annex_title_block(d, code, mk_title, en_title, parent_sop):
+def annex_title_block(d, code, mk_title, en_title, parent_sop,
+                      status="draft", version="1.0", effective_date=None):
     p = d.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER; sp(p, 2, 3); run(p, code, 12, NAVY, bold=True)
     p = d.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER; sp(p, 0, 3)
     run(p, mk_title, 14, BLACK, bold=True); run(p, " | ", 10, GREY); run(p, en_title, 10, GREY, bold=True)
-    p = d.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER; sp(p, 0, 8); run(p, f"({parent_sop})", 10, GREY, ital=True)
+    p = d.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER; sp(p, 0, 4); run(p, f"({parent_sop})", 10, GREY, ital=True)
+    # Document-control status line: controlled version + effective date only when approved.
+    st = norm_status(status); mk, en = status_label(st); col = GREEN if st == "approved" else RED
+    p = d.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER; sp(p, 0, 8)
+    run(p, "%s | %s" % (mk, en), 9, col, bold=True)
+    run(p, "   —   Верзија | Version: %s   ·   Датум на важност | Effective date: %s"
+        % (header_version(st, version), effective_display(st, effective_date)), 8, GREY)
 
-def annex_table(d, widths_cm=None, ncol=None, mode=None):
-    """widths_cm given → FORCED literal column widths (unchanged legacy behaviour, exact cm values,
-    no rescaling — existing call sites are unaffected). widths_cm omitted → pass ncol instead and
-    annex_finalize() will size columns AUTOMATICALLY via fixed() (formatting_specs.md's use-aware
-    table-layout brain): compact-centred for a narrow label|value summary, content-proportional or
-    evenly-split for a wide data grid. Do not hand-compute an even split; let fixed() decide the fit."""
-    n = len(widths_cm) if widths_cm else ncol
-    if not n:
-        raise ValueError("annex_table requires either widths_cm or ncol")
-    t = d.add_table(rows=0, cols=n); t.alignment = WD_TABLE_ALIGNMENT.CENTER
+def annex_table(d, widths_cm):
+    t = d.add_table(rows=0, cols=len(widths_cm)); t.alignment = WD_TABLE_ALIGNMENT.CENTER
     t._pp_widths = widths_cm
-    t._pp_mode = mode
     return t
 
 def annex_cell(cell, mk, en, bold=False, bg=None):
@@ -495,14 +506,7 @@ def annex_row(t, values, bold_first=False, alt=False):
         annex_cell(row.cells[i], mk, en, bold=(bold_first and i == 0), bg=bg)
 
 def annex_finalize(t):
-    """FORCED widths (t._pp_widths set) → legacy literal fixed_widths(), byte-for-byte unchanged
-    for every existing caller. No forced widths (annex_table was given ncol only) → AUTO via
-    fixed(), the same content-aware brain used by sop_nested_table and pp_report.py."""
-    if t._pp_widths:
-        fixed_widths(t, t._pp_widths)
-    else:
-        fixed(t, mode=getattr(t, '_pp_mode', None))
-    table_borders(t, 1, BORDER_GRAY)
+    fixed_widths(t, t._pp_widths); table_borders(t, 1, BORDER_GRAY)
 
 def annex_signoff(d, roles=(("Изготвил (КК)", "Prepared (QC)"), ("Проверил (QA)", "Reviewed (QA)"), ("Одобрил (QP)", "Approved (QP)"))):
     w = round(18.0 / len(roles), 2)
@@ -516,7 +520,8 @@ def annex_signoff(d, roles=(("Изготвил (КК)", "Prepared (QC)"), ("Пр
     annex_finalize(t)
     return t
 
-# ============================ compact label|value layout (2026-06-30) ============================
+# ============================ save ============================
+# Ported from the DocEngine canon-2026-07 engine (09.10.2026).
 # Intelligent compact layout for annex/form metadata blocks (Head-of-QC corrections 2026-06-30):
 #   * VALUE cells sized to the EXPECTED HAND-ENTRY, never maximised (a Date/Batch needs ~2.6 cm).
 #   * LABEL ("action") cells minimal width.
@@ -587,7 +592,6 @@ def kv_block(d, sections, ncol=6, label_cm=1.9, value_cm=2.6):
     annex_finalize(t)
     return t
 
-# ============================ save ============================
 def save(d, path):
     sect = getattr(d, "_pp_sectpr", None)
     if sect is not None:

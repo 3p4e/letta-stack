@@ -32,12 +32,30 @@ PAGE_W = pr.PAGE_W  # 18.46 cm text width (base-template 1.27 cm margins)
 
 def parse(md):
     hd={}
-    m=re.search(r'<!--HEADERDATA(.*?)-->', md, re.S)
-    if m:
-        for ln in m.group(1).strip().splitlines():
+    # Line-anchored scan (ported from the DocEngine canon-2026-07 parser, 09.10.2026): the
+    # terminator is a line that IS "-->" by itself, so a value containing a literal "-->"
+    # (an informally written title) can never end the block early and leak the remaining
+    # fields into the body. A single-line block falls back to the regex.
+    all_lines=md.splitlines(); hd_start=hd_end=None
+    for idx,ln in enumerate(all_lines):
+        if ln.strip()=='<!--HEADERDATA':
+            hd_start=idx; break
+    if hd_start is not None:
+        for idx in range(hd_start+1, len(all_lines)):
+            if all_lines[idx].strip()=='-->':
+                hd_end=idx; break
+    if hd_start is not None and hd_end is not None:
+        for ln in all_lines[hd_start+1:hd_end]:
             if ':' in ln:
                 k,v=ln.split(':',1); hd[k.strip()]=v.strip()
-        md=md[m.end():]
+        md="\n".join(all_lines[hd_end+1:])
+    else:
+        m=re.search(r'<!--HEADERDATA(.*?)-->', md, re.S)
+        if m:
+            for ln in m.group(1).strip().splitlines():
+                if ':' in ln:
+                    k,v=ln.split(':',1); hd[k.strip()]=v.strip()
+            md=md[m.end():]
     blocks=[]; lines=md.splitlines(); i=0
     while i<len(lines):
         s=lines[i].strip()

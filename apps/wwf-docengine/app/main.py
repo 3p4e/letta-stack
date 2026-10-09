@@ -88,7 +88,7 @@ async def health():
         "letta": LettaClient().configured,
         # configured only: the compose healthcheck must not depend on another stack
         "ragflow": RagflowClient().configured,
-        "engine": "pp-document-suite (canon 2026-07)",
+        "engine": "pp-document-suite (synced copy, canon revision 2026-10-09)",
     }
 
 
