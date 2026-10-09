@@ -9,6 +9,7 @@ Payload shape (from the frontend):
 {
   "doctype": "ANNEX" | "SOP" | "FORM",
   "mk_title","en_title","code","version","parent","supersedes","orient",
+  "status" (draft | in_review | approved), "effective_date", "review_date",
   "sections": [
     { "num":"1","mk":"Опфат","en":"Scope","level":1,
       "blocks": [
@@ -56,8 +57,16 @@ def compose_markdown(p: dict) -> str:
         "parent": p.get("parent", "").strip(),
         "orient": (p.get("orient") or "portrait").strip(),
     }
+    # Document-control lifecycle (pp_format.status_band, read by build_from_md from
+    # HEADERDATA). A draft is the engine default, so it is not written; a controlled
+    # effective / review date exists only once the document is approved.
+    status = (p.get("status") or "draft").strip()
+    hd["status"] = "" if status == "draft" else status
+    hd["effective_date"] = (p.get("effective_date") or "").strip() if status == "approved" else ""
+    hd["review_date"] = (p.get("review_date") or "").strip() if status == "approved" else ""
     out = ["<!--HEADERDATA"]
-    for k in ("mk_title", "en_title", "code", "version", "doctype", "supersedes", "parent", "orient"):
+    for k in ("mk_title", "en_title", "code", "version", "doctype", "supersedes", "parent", "orient",
+              "status", "effective_date", "review_date"):
         if hd[k]:
             out.append(f"{k}: {hd[k]}")
     out.append("-->")

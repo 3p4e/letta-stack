@@ -6,7 +6,8 @@ One container that:
   • embeds the pp-document-suite engine → the WIZARD path builds house-style .docx in-process
     (deterministic, no LLM), verifies with pp_verify, and offers .docx / .pdf download;
   • proxies the CHAT path to a Letta agent (freeform → the agent composes + builds);
-  • serves the single-file frontend (../frontend/index.html).
+  • serves the PP Suite frontend (../frontend/suite, built from ../web) at "/", with the
+    original single-file SPA kept at /legacy (../frontend/index.html).
 
 Config (env):
   PPDOCWIZ_API_KEY  REQUIRED. Shared secret for every /api route except /api/health.
@@ -17,12 +18,16 @@ Config (env):
   LETTA_AGENT    ALLOWLIST of agents the chat proxy may reach (comma-separated,
                  default qms_docx_formatter) — not merely a default
   PPDOCWIZ_COOKIE_SECURE  "0" only for plain-HTTP loopback dev (default secure)
+  PPDOCWIZ_UI    "legacy" serves the old single-file SPA at "/" (default: the suite, when built)
+  DOCENGINE_URL / DOCENGINE_API_KEY  internal DocEngine base and its key; /api/docengine/* forwards
+                 there (Questionnaire, Jobs, Library screens). Unset => those routes 503.
 Run: uvicorn app:app --host 0.0.0.0 --port 8770
 Publish on loopback only and route via Traefik; see docker-compose.yml.
 """
-import os, sys, io, re, json, uuid, hmac, tempfile, subprocess, contextlib, shutil, urllib.request, urllib.error
-from fastapi import Depends, FastAPI
-from fastapi.responses import FileResponse, JSONResponse, HTMLResponse
+import asyncio, threading, os, sys, io, re, json, uuid, hmac, tempfile, subprocess, contextlib, shutil, urllib.request, urllib.error, urllib.parse
+from fastapi import Depends, FastAPI, Request
+from fastapi.responses import FileResponse, JSONResponse, HTMLResponse, Response
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import wizard
 import security
@@ -55,8 +60,16 @@ for extra in ("/root/.letta/pp-libs",):          # persistent deps location on t
 OUT = os.environ.get("PP_OUT_DIR") or ("/data" if os.path.isdir("/data") else tempfile.gettempdir())
 os.makedirs(OUT, exist_ok=True)
 FRONTEND = os.path.join(HERE, "..", "frontend", "index.html")
+# The suite is a Vite build (apps/ppdocwiz/web → frontend/suite). It is optional: a
+# checkout without `npm run build` still serves the legacy SPA at "/".
+SUITE_UI = os.path.join(HERE, "..", "frontend", "suite")
 
 app = FastAPI(title="PP Doc Wiz", version="1.0")
+
+# Static bundle only: hashed JS/CSS, fonts and the logo — no data, no credential.
+# Same exposure as "/" itself, which is ungated because it is the sign-in page.
+if os.path.isdir(os.path.join(SUITE_UI, "assets")):
+    app.mount("/assets", StaticFiles(directory=os.path.join(SUITE_UI, "assets")), name="suite-assets")
 
 
 class BuildReq(BaseModel):
@@ -70,6 +83,11 @@ class ChatReq(BaseModel):
 
 class SessionReq(BaseModel):
     key: str
+
+
+class RawBuildReq(BaseModel):
+    markdown: str
+    out_name: str | None = None
 
 
 def _build_from_markdown(md: str, base: str):
@@ -156,13 +174,72 @@ def build(r: BuildReq):
     except Exception as e:
         import traceback
         return JSONResponse({"ok": False, "error": traceback.format_exc()[-900:], "markdown": md}, status_code=422)
+    if not ok:
+        _discard(path)
     return {"ok": ok, "verify": verify, "doc_id": doc_id, "markdown": md,
             "download_docx": f"/api/download/{doc_id}.docx",
             "download_pdf": f"/api/download/{doc_id}.pdf"}
 
 
+def _discard(docx_path: str):
+    """A FAIL build is never served: remove the .docx (and any PDF rendered from it)."""
+    for p in (docx_path, docx_path[:-len(".docx")] + ".pdf"):
+        with contextlib.suppress(FileNotFoundError):
+            os.unlink(p)
+
+
+@app.post("/api/build", dependencies=[Depends(security.require_api_key)])
+def raw_build(r: RawBuildReq):
+    """Bilingual Markdown as typed in the Builder's Source view → the SAME engine the
+    wizard path uses. (It used to go to DocEngine POST /build, whose vendored engine
+    is the canon-2026-07 copy and printed [[BOX]] markers verbatim, among others.)"""
+    code = ((re.search(r"^code:\s*(.+)$", r.markdown, re.M) or [None, r.out_name])[1] or "").strip()
+    doc_id = _safe_name(code or "document") + "_" + uuid.uuid4().hex[:8]
+    try:
+        ok, verify, path = _build_from_markdown(r.markdown, doc_id)
+    except Exception as e:
+        return JSONResponse({"ok": False, "verify": "", "error": str(e)[:300]}, status_code=422)
+    if not ok:
+        _discard(path)
+        return JSONResponse({"ok": False, "verify": verify, "error": "verify FAILED"}, status_code=422)
+    return {"ok": True, "verify": verify, "doc_id": doc_id,
+            "download_docx": f"/api/download/{doc_id}.docx",
+            "download_pdf": f"/api/download/{doc_id}.pdf"}
+
+
+# A plain `soffice --convert-to pdf` does not update fields, so every SOP came out with an
+# EMPTY table of contents. lo_profile/ carries a minimal LibreOffice profile whose Basic
+# macro (Standard.Module1.ToPdf) refreshes fields and indexes, then exports — the same
+# render the engine's own deliverables use. Copied once to a writable place.
+LO_PROFILE_SRC = os.path.join(HERE, "lo_profile")
+# Concurrent soffice instances hang (seen in the 09.10 test even with separate profiles):
+# one render at a time; a request that waited reuses the PDF the previous one produced.
+_RENDER_LOCK = threading.Lock()
+
+
+def _render_pdf(docx: str, pdf: str):
+    """Each render gets its own throw-away profile (no lock or hand-off between concurrent
+    soffice instances, and a fix to lo_profile/ always applies) and writes to a temp file
+    that is renamed into place, so a half-written PDF is never served."""
+    with tempfile.TemporaryDirectory(prefix="ppdocwiz-lo-") as tmp:
+        part = os.path.join(tmp, "out.pdf")
+        if os.path.isdir(LO_PROFILE_SRC):
+            prof = os.path.join(tmp, "profile")
+            shutil.copytree(LO_PROFILE_SRC, prof)
+            subprocess.run(["soffice", "-env:UserInstallation=file://" + prof, "--headless",
+                            f'macro:///Standard.Module1.ToPdf("{docx}","{part}")'],
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=300)
+        if not os.path.exists(part):   # macro unavailable: plain conversion (fields not updated)
+            subprocess.run(["soffice", "-env:UserInstallation=file://" + os.path.join(tmp, "plain"), "--headless",
+                            "--convert-to", "pdf", "--outdir", tmp, docx], check=True, timeout=300)
+            part = os.path.join(tmp, os.path.basename(docx)[:-len(".docx")] + ".pdf")
+        staged = f"{pdf}.{uuid.uuid4().hex[:8]}.part"   # same directory as the target, then an atomic rename
+        shutil.move(part, staged)
+        os.replace(staged, pdf)
+
+
 @app.get("/api/download/{name}", dependencies=[Depends(security.require_api_key)])
-def download(name: str):
+def download(name: str, inline: int = 0):
     base, ext = os.path.splitext(name)
     # Extension allowlist. Previously anything that was not ".pdf" fell through
     # to the else branch and served the .docx under the requested name, so
@@ -186,8 +263,15 @@ def download(name: str):
         if not os.path.exists(pdf):
             if not shutil.which("soffice"):
                 return JSONResponse({"error": "no PDF renderer (LibreOffice not installed)"}, status_code=501)
-            subprocess.run(["soffice", "--headless", "--convert-to", "pdf", "--outdir", root, docx], check=True)
-        return FileResponse(pdf, filename=stem + ".pdf", media_type="application/pdf")
+            try:
+                with _RENDER_LOCK:
+                    if not os.path.exists(pdf):
+                        _render_pdf(docx, pdf)
+            except subprocess.TimeoutExpired:
+                return JSONResponse({"error": "PDF rendering timed out"}, status_code=504)
+        # ?inline=1 lets the suite's Preview show the PDF in a frame instead of downloading it.
+        return FileResponse(pdf, filename=stem + ".pdf", media_type="application/pdf",
+                            content_disposition_type="inline" if inline else "attachment")
     return FileResponse(docx, filename=stem + ".docx",
                         media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
 
@@ -243,8 +327,66 @@ def chat(r: ChatReq):
         return JSONResponse({"ok": False, "error": str(e)[:300]}, status_code=502)
 
 
-@app.get("/")
-def index():
+# ---------------- DocEngine proxy (same-origin, for the suite) ----------------
+# The browser holds only the ppdocwiz session cookie; the DocEngine key never leaves
+# this process. Only the DocEngine's own public routes are forwarded.
+_DE_ROUTES = {"health", "questionnaires", "workflows", "build", "documents"}
+_DE_PASS_HEADERS = ("content-type", "content-disposition", "content-length")
+
+
+@app.api_route("/api/docengine/{path:path}", methods=["GET", "POST", "HEAD"],
+               dependencies=[Depends(security.require_api_key)])
+async def docengine_proxy(path: str, request: Request):
+    if not settings.docengine_url:
+        return JSONResponse({"error": "DocEngine not configured: set DOCENGINE_URL"}, status_code=503)
+    parts = [p for p in path.split("/") if p]
+    if not parts or parts[0] not in _DE_ROUTES or any(p in (".", "..") for p in parts):
+        return JSONResponse({"error": "not found"}, status_code=404)
+    url = settings.docengine_url + "/" + "/".join(urllib.parse.quote(p, safe="") for p in parts)
+    if request.url.query:
+        url += "?" + request.url.query
+    body = await request.body() if request.method == "POST" else None
+    # DocEngine routes are GET-only; a HEAD (the Library's availability probe) is
+    # sent upstream as GET and answered without the body.
+    hdrs = {"Content-Type": request.headers.get("content-type", "application/json"),
+            "X-API-Key": settings.docengine_api_key, "User-Agent": "ppdocwiz/1.0"}
+    if request.method == "HEAD":
+        hdrs["Range"] = "bytes=0-0"          # availability probe: one byte, not the whole file
+    req = urllib.request.Request(url, data=body, method="GET" if request.method == "HEAD" else request.method, headers=hdrs)
+
+    def fetch():
+        try:
+            with urllib.request.urlopen(req, timeout=120) as r:
+                return r.status, r.headers, r.read()
+        except urllib.error.HTTPError as e:
+            return e.code, e.headers, e.read()
+
+    try:
+        # urllib blocks; off the event loop so one slow DocEngine call cannot stall every other request
+        status, headers, data = await asyncio.to_thread(fetch)
+    except Exception as e:
+        return JSONResponse({"error": "DocEngine unreachable: " + str(e)[:200]}, status_code=502)
+    if request.method == "HEAD" and status == 206:
+        status = 200
+    out = {k: headers[k] for k in _DE_PASS_HEADERS if headers.get(k) and k != "content-length"}
+    return Response(content=b"" if request.method == "HEAD" else data, status_code=status,
+                    media_type=headers.get("content-type"), headers=out)
+
+
+def _legacy():
     if os.path.exists(FRONTEND):
         return HTMLResponse(open(FRONTEND, encoding="utf-8").read())
     return HTMLResponse("<h1>PP Doc Wiz</h1><p>frontend/index.html missing</p>")
+
+
+@app.get("/")
+def index():
+    suite = os.path.join(SUITE_UI, "index.html")
+    if os.environ.get("PPDOCWIZ_UI", "").lower() != "legacy" and os.path.exists(suite):
+        return HTMLResponse(open(suite, encoding="utf-8").read())
+    return _legacy()
+
+
+@app.get("/legacy")
+def legacy():
+    return _legacy()

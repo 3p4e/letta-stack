@@ -1,0 +1,21 @@
+@font-face{font-family:Carlito;src:url(/assets/fonts/Carlito-Regular.ttf)}
+@font-face{font-family:Carlito;font-weight:700;src:url(/assets/fonts/Carlito-Bold.ttf)}
+@font-face{font-family:Montserrat;src:url(/assets/fonts/Montserrat-Regular.otf)}
+@font-face{font-family:Montserrat;font-weight:700;src:url(/assets/fonts/Montserrat-Bold.otf)}
+html,body{margin:0;height:100%;background:#0f1a26;overflow:hidden}
+*{box-sizing:border-box;scrollbar-color:#2a3c50 transparent;scrollbar-width:thin}
+a{color:#7fb2e5}a:hover{color:#fff}
+input,textarea,select,button{font:inherit}
+/* style-hover equivalents from the prototype */
+.pp-nav:hover{color:#fff!important}
+.pp-create:hover{background:#1d3550!important}
+.pp-primary:hover:not(:disabled){background:#3d6a99!important}
+.pp-primary:disabled{cursor:default}
+.pp-hover-sel:hover{background:#1d3550!important}
+.pp-hover-row:hover{background:#16253a!important}
+.pp-hover-pane:hover{background:#132131!important}
+.pp-chip:hover{border-color:#7fb2e5!important;color:#fff!important}
+.pp-zone{cursor:pointer;border:3px solid transparent}
+.pp-zone:hover{border-color:#7fb2e5;background:rgba(127,178,229,.08)}
+.pp-btn:hover:not(:disabled){background:#3d6a99!important}
+select{background:#0a131c;border:1px solid #2a3c50;border-radius:5px;padding:5px 7px;color:#fff;outline:none}

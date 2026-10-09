@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE script:module PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "module.dtd">
+<script:module xmlns:script="http://openoffice.org/2000/script" script:name="Module1" script:language="StarBasic">REM  *****  BASIC  *****
+Sub ToPdf(sIn As String, sOut As String)
+  Dim a(0) As New com.sun.star.beans.PropertyValue
+  a(0).Name = &quot;Hidden&quot; : a(0).Value = True
+  oDoc = StarDesktop.loadComponentFromURL(ConvertToURL(sIn), &quot;_blank&quot;, 0, a())
+  oDoc.getTextFields().refresh()
+  oIdx = oDoc.getDocumentIndexes()
+  For i = 0 To oIdx.getCount() - 1
+    oIdx.getByIndex(i).update()
+  Next i
+  oDoc.getTextFields().refresh()
+  Dim f(0) As New com.sun.star.beans.PropertyValue
+  f(0).Name = &quot;FilterName&quot; : f(0).Value = &quot;writer_pdf_Export&quot;
+  oDoc.storeToURL(ConvertToURL(sOut), f())
+  oDoc.close(True)
+End Sub
+</script:module>

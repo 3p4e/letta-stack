@@ -154,3 +154,73 @@ def test_frontend_escapes_every_interpolation():
     html = (Path(__file__).resolve().parents[1] / "frontend" / "index.html").read_text(encoding="utf-8")
     unescaped = [m.group(1) for m in re.finditer(r"\$\{([^}]*)\}", html) if "esc(" not in m.group(1)]
     assert not unescaped, f"unescaped interpolations: {unescaped}"
+
+
+# ---- raw-Markdown build (Builder Source view) -------------------------------------------
+GOOD_MD = """<!--HEADERDATA
+mk_title: Тест
+en_title: Test
+code: WHSOP_999_A01
+version: 01
+doctype: FORM
+orient: portrait
+-->
+
+# 1 Општо | General
+[[FORM]]
+Датум ||| Date ||| _
+[[/FORM]]
+"""
+H = {"X-API-Key": KEY}
+
+
+def test_raw_build_uses_the_pasted_code_and_offers_downloads(client):
+    r = client.post("/api/build", json={"markdown": GOOD_MD, "out_name": "something_else"}, headers=H)
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["ok"] and "RESULT: PASS" in body["verify"]
+    assert body["doc_id"].startswith("WHSOP_999_A01_")          # HEADERDATA code, not out_name
+    assert client.get(body["download_docx"], headers=H).status_code == 200
+
+
+def test_raw_build_failure_is_422_and_leaves_nothing_downloadable(client, monkeypatch):
+    def failing(md, base):
+        path = Path(app_mod.OUT) / (base + ".docx"); path.write_bytes(b"x")
+        return False, "RESULT: FAIL", str(path)
+    monkeypatch.setattr(app_mod, "_build_from_markdown", failing)
+    r = client.post("/api/build", json={"markdown": GOOD_MD}, headers=H)
+    assert r.status_code == 422 and r.json()["verify"] == "RESULT: FAIL"
+    assert not list(Path(app_mod.OUT).glob("WHSOP_999_A01_*.docx"))
+
+
+def test_raw_build_requires_a_credential(client):
+    assert client.post("/api/build", json={"markdown": GOOD_MD}).status_code == 401
+
+
+# ---- DocEngine same-origin proxy ---------------------------------------------------------
+def test_docengine_proxy_refuses_when_unconfigured(client, monkeypatch):
+    monkeypatch.setattr(settings, "docengine_url", "")
+    assert client.get("/api/docengine/health", headers=H).status_code == 503
+
+
+@pytest.mark.parametrize("path", ["admin", "documents/../../etc", "", "health/../admin"])
+def test_docengine_proxy_forwards_only_docengine_routes(client, monkeypatch, path):
+    monkeypatch.setattr(settings, "docengine_url", "http://127.0.0.1:9")
+    assert client.get(f"/api/docengine/{path}", headers=H).status_code == 404
+
+
+def test_docengine_proxy_requires_a_credential(client, monkeypatch):
+    monkeypatch.setattr(settings, "docengine_url", "http://127.0.0.1:9")
+    assert client.get("/api/docengine/health").status_code == 401
+
+
+def test_docengine_proxy_reports_unreachable_as_502(client, monkeypatch):
+    monkeypatch.setattr(settings, "docengine_url", "http://127.0.0.1:9")
+    assert client.get("/api/docengine/health", headers=H).status_code == 502
+
+
+# ---- PDF download -------------------------------------------------------------------------
+def test_pdf_inline_for_preview(client):
+    (Path(app_mod.OUT) / "D1.docx").write_bytes(b"x"); (Path(app_mod.OUT) / "D1.pdf").write_bytes(b"%PDF-1.4")
+    assert client.get("/api/download/D1.pdf?inline=1", headers=H).headers["content-disposition"].startswith("inline")
+    assert client.get("/api/download/D1.pdf", headers=H).headers["content-disposition"].startswith("attachment")
