@@ -24,7 +24,7 @@ Config (env):
 Run: uvicorn app:app --host 0.0.0.0 --port 8770
 Publish on loopback only and route via Traefik; see docker-compose.yml.
 """
-import os, sys, io, re, json, uuid, hmac, tempfile, subprocess, contextlib, shutil, urllib.request, urllib.error, urllib.parse
+import asyncio, threading, os, sys, io, re, json, uuid, hmac, tempfile, subprocess, contextlib, shutil, urllib.request, urllib.error, urllib.parse
 from fastapi import Depends, FastAPI, Request
 from fastapi.responses import FileResponse, JSONResponse, HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
@@ -193,7 +193,7 @@ def raw_build(r: RawBuildReq):
     """Bilingual Markdown as typed in the Builder's Source view → the SAME engine the
     wizard path uses. (It used to go to DocEngine POST /build, whose vendored engine
     is the canon-2026-07 copy and printed [[BOX]] markers verbatim, among others.)"""
-    code = (re.search(r"^code:\s*(.+)$", r.markdown, re.M) or [None, r.out_name])[1]
+    code = ((re.search(r"^code:\s*(.+)$", r.markdown, re.M) or [None, r.out_name])[1] or "").strip()
     doc_id = _safe_name(code or "document") + "_" + uuid.uuid4().hex[:8]
     try:
         ok, verify, path = _build_from_markdown(r.markdown, doc_id)
@@ -212,19 +212,30 @@ def raw_build(r: RawBuildReq):
 # macro (Standard.Module1.ToPdf) refreshes fields and indexes, then exports — the same
 # render the engine's own deliverables use. Copied once to a writable place.
 LO_PROFILE_SRC = os.path.join(HERE, "lo_profile")
-LO_PROFILE = os.path.join(OUT, ".lo-profile")
+# Concurrent soffice instances hang (seen in the 09.10 test even with separate profiles):
+# one render at a time; a request that waited reuses the PDF the previous one produced.
+_RENDER_LOCK = threading.Lock()
 
 
 def _render_pdf(docx: str, pdf: str):
-    if os.path.isdir(LO_PROFILE_SRC) and not os.path.isdir(LO_PROFILE):
-        shutil.copytree(LO_PROFILE_SRC, LO_PROFILE)
-    if os.path.isdir(LO_PROFILE):
-        subprocess.run(["soffice", "-env:UserInstallation=file://" + LO_PROFILE, "--headless",
-                        f'macro:///Standard.Module1.ToPdf("{docx}","{pdf}")'],
-                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=300)
-    if not os.path.exists(pdf):   # macro unavailable: plain conversion (fields not updated)
-        subprocess.run(["soffice", "--headless", "--convert-to", "pdf", "--outdir", os.path.dirname(pdf), docx],
-                       check=True, timeout=300)
+    """Each render gets its own throw-away profile (no lock or hand-off between concurrent
+    soffice instances, and a fix to lo_profile/ always applies) and writes to a temp file
+    that is renamed into place, so a half-written PDF is never served."""
+    with tempfile.TemporaryDirectory(prefix="ppdocwiz-lo-") as tmp:
+        part = os.path.join(tmp, "out.pdf")
+        if os.path.isdir(LO_PROFILE_SRC):
+            prof = os.path.join(tmp, "profile")
+            shutil.copytree(LO_PROFILE_SRC, prof)
+            subprocess.run(["soffice", "-env:UserInstallation=file://" + prof, "--headless",
+                            f'macro:///Standard.Module1.ToPdf("{docx}","{part}")'],
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=300)
+        if not os.path.exists(part):   # macro unavailable: plain conversion (fields not updated)
+            subprocess.run(["soffice", "-env:UserInstallation=file://" + os.path.join(tmp, "plain"), "--headless",
+                            "--convert-to", "pdf", "--outdir", tmp, docx], check=True, timeout=300)
+            part = os.path.join(tmp, os.path.basename(docx)[:-len(".docx")] + ".pdf")
+        staged = f"{pdf}.{uuid.uuid4().hex[:8]}.part"   # same directory as the target, then an atomic rename
+        shutil.move(part, staged)
+        os.replace(staged, pdf)
 
 
 @app.get("/api/download/{name}", dependencies=[Depends(security.require_api_key)])
@@ -252,7 +263,12 @@ def download(name: str, inline: int = 0):
         if not os.path.exists(pdf):
             if not shutil.which("soffice"):
                 return JSONResponse({"error": "no PDF renderer (LibreOffice not installed)"}, status_code=501)
-            _render_pdf(docx, pdf)
+            try:
+                with _RENDER_LOCK:
+                    if not os.path.exists(pdf):
+                        _render_pdf(docx, pdf)
+            except subprocess.TimeoutExpired:
+                return JSONResponse({"error": "PDF rendering timed out"}, status_code=504)
         # ?inline=1 lets the suite's Preview show the PDF in a frame instead of downloading it.
         return FileResponse(pdf, filename=stem + ".pdf", media_type="application/pdf",
                             content_disposition_type="inline" if inline else "attachment")
@@ -332,16 +348,26 @@ async def docengine_proxy(path: str, request: Request):
     body = await request.body() if request.method == "POST" else None
     # DocEngine routes are GET-only; a HEAD (the Library's availability probe) is
     # sent upstream as GET and answered without the body.
-    req = urllib.request.Request(url, data=body, method="GET" if request.method == "HEAD" else request.method,
-                                 headers={"Content-Type": request.headers.get("content-type", "application/json"),
-                                          "X-API-Key": settings.docengine_api_key, "User-Agent": "ppdocwiz/1.0"})
+    hdrs = {"Content-Type": request.headers.get("content-type", "application/json"),
+            "X-API-Key": settings.docengine_api_key, "User-Agent": "ppdocwiz/1.0"}
+    if request.method == "HEAD":
+        hdrs["Range"] = "bytes=0-0"          # availability probe: one byte, not the whole file
+    req = urllib.request.Request(url, data=body, method="GET" if request.method == "HEAD" else request.method, headers=hdrs)
+
+    def fetch():
+        try:
+            with urllib.request.urlopen(req, timeout=120) as r:
+                return r.status, r.headers, r.read()
+        except urllib.error.HTTPError as e:
+            return e.code, e.headers, e.read()
+
     try:
-        with urllib.request.urlopen(req, timeout=120) as r:
-            status, headers, data = r.status, r.headers, r.read()
-    except urllib.error.HTTPError as e:
-        status, headers, data = e.code, e.headers, e.read()
+        # urllib blocks; off the event loop so one slow DocEngine call cannot stall every other request
+        status, headers, data = await asyncio.to_thread(fetch)
     except Exception as e:
         return JSONResponse({"error": "DocEngine unreachable: " + str(e)[:200]}, status_code=502)
+    if request.method == "HEAD" and status == 206:
+        status = 200
     out = {k: headers[k] for k in _DE_PASS_HEADERS if headers.get(k) and k != "content-length"}
     return Response(content=b"" if request.method == "HEAD" else data, status_code=status,
                     media_type=headers.get("content-type"), headers=out)

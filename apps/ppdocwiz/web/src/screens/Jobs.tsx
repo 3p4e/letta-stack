@@ -35,10 +35,13 @@ export function Jobs() {
   const anyRunning = jobs?.some(j => j.status === 'running' || j.status === 'queued');
   useEffect(() => {
     let live = true;
-    const load = () => api.jobs().then(j => { if (live) { setJobs(j); setErr(''); } }).catch((e: ApiError) => live && setErr(`${e.status} · ${e.message}`));
+    // One round at a time: the next poll starts 1 s after the previous one finished, so slow
+    // rounds never overlap and an older list can never overwrite a newer one.
+    let t: number | undefined;
+    const load = () => api.jobs().then(j => { if (live) { setJobs(j); setErr(''); } }).catch((e: ApiError) => live && setErr(`${e.status} · ${e.message}`))
+      .finally(() => { if (live && anyRunning) t = window.setTimeout(load, 1000); });
     load();
-    const t = anyRunning ? setInterval(load, 1000) : undefined; // GET /workflows/{id} poll, 1 s
-    return () => { live = false; if (t) clearInterval(t); };
+    return () => { live = false; if (t) clearTimeout(t); };
   }, [api, dataRev, anyRunning]);
   const job = jobs?.find(j => j.id === jobSel) || jobs?.[0];
   const rerun = async () => {

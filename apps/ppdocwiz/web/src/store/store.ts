@@ -87,7 +87,7 @@ export const useApp = create<AppState>((set, get) => {
     createOpen: false, createCat: 'sop', menuX: 0, menuY: 0, sheet: null,
     bdoc: structuredClone(SAMPLE_ANNEX), bdocIsSample: true, builderMode: 'src', hlLine: 0,
     chatDraft: '', chatAgent: 'qms_docx_formatter',
-    qKey: 'sop_qc', qRound: 1,
+    qKey: 'sop_qc', qRound: 0,
     metas: {
       sop_qc: { title_mk: 'Определување потентност', title_en: 'Potency determination', code: 'QCSOP_031', version: '01', orient: 'portrait' },
       annex_form: { title_mk: 'Дневник на прием', title_en: 'Receipt log', code: 'WHSOP_002_A03', version: '01', orient: 'portrait' },

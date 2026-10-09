@@ -24,7 +24,7 @@ export function Questionnaire() {
   const start = async () => {
     if (missing.length || busy) return;
     try {
-      const r = await api.startWorkflow({ questionnaire: qKey, answers: ans, meta, requested_by: 'darko.s' });
+      const r = await api.startWorkflow({ questionnaire: qKey, answers: ans, meta, requested_by: api.mode === 'live' ? 'ppdocwiz-session' : 'darko.s' });
       go('jobs', { jobSel: r.job_id }); flash(`job ${r.job_id.slice(0, 8)} queued · polling every 1 s`);
     } catch (e) { setErr(`${(e as ApiError).status} · ${(e as Error).message}`); }
   };

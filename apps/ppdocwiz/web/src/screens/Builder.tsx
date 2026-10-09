@@ -87,7 +87,7 @@ export function Builder() {
     set({ lastBuild: { code: code || 'document', ...r, at: new Date().toLocaleTimeString() } });
   const build = async () => {
     setResult(null);
-    const code = (raw !== null && headerMeta(raw).code) || doc.code || 'document';
+    const code = ((raw !== null && headerMeta(raw).code) || doc.code || 'document').trim();
     const ok = await run(code, async () => {
       try {
         // Source view: same engine as the wizard path (ppdocwiz POST /api/build); the pasted HEADERDATA names the file.

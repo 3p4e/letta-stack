@@ -32,7 +32,8 @@ export function Library() {
   const byCode = useMemo(() => { const m: Record<string, Row[]> = {}; (rows || []).forEach(r => (m[r.code] ||= []).push(r)); Object.values(m).forEach(v => v.sort((a, b) => vnum(b.version) - vnum(a.version) || Date.parse(b.created_at) - Date.parse(a.created_at))); return m; }, [rows]);
   const list = (rows || []).filter(r => allVersions || byCode[r.code][0].id === r.id)
     .filter(r => !q || (r.code + ' ' + r.title_mk + ' ' + r.title_en + ' ' + r.doctype).toLowerCase().includes(q.toLowerCase()));
-  const sel = list.find(r => r.id === libSel) || list[0];
+  // an older version picked in the Versions tab is not in the 'latest' list: look it up in all rows
+  const sel = list.find(r => r.id === libSel) || (rows || []).find(r => r.id === libSel) || list[0];
   useEffect(() => {
     if (!sel) return; setDetail(null); setAvail(200); setCmp(null);
     api.document(sel.id).then(setDetail).catch(() => setDetail(sel));
@@ -87,7 +88,7 @@ export function Library() {
             if (api.mode !== 'live') return; e.preventDefault(); setPdfErr('');
             try { const res = await fetch(api.documentHref(r.id, 'pdf'), { credentials: 'same-origin' });
               if (!res.ok) { const j = await res.json().catch(() => ({})); setPdfErr(`${res.status} · ${(j as { detail?: string }).detail || res.statusText}`); return; }
-              const a = document.createElement('a'); a.href = URL.createObjectURL(await res.blob()); a.download = `${r.code}.pdf`; a.click(); URL.revokeObjectURL(a.href);
+              const a = document.createElement('a'); a.href = URL.createObjectURL(await res.blob()); a.download = `${r.code}.pdf`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 30000);
             } catch (x) { setPdfErr(String((x as Error).message || x)); } }}
             title="Gotenberg renders on demand: 503 when no renderer is configured, 502 when conversion fails" style={{ flex: 1, textAlign: 'center', border: `1px solid ${T.control}`, borderRadius: 6, padding: 9, color: missing ? T.faint : '#fff', textDecoration: 'none', pointerEvents: missing ? 'none' : undefined }}>PDF · Gotenberg</a></div>
         {r.job_id && <span onClick={() => go('jobs', { jobSel: r.job_id! })} style={{ textAlign: 'center', color: C.run, cursor: 'pointer', fontSize: 12.5 }}>Open source job {r.job_id.slice(0, 8)} →</span>}

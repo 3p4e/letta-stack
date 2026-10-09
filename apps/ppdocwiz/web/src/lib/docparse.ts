@@ -83,7 +83,7 @@ export function blocksToMd(blocks: RawBlock[]) {
 
 /** The `key: value` lines of a Markdown document's <!--HEADERDATA … --> block ({} when absent). */
 export function headerMeta(md: string): Record<string, string> {
-  const m = md.match(/^<!--HEADERDATA\s*\n([\s\S]*?)^-->/m), out: Record<string, string> = {};
+  const m = md.replace(/\r/g, '').match(/^<!--HEADERDATA\s*\n([\s\S]*?)^-->/m), out: Record<string, string> = {};
   for (const line of (m ? m[1] : '').split('\n')) { const i = line.indexOf(':'); if (i > 0) out[line.slice(0, i).trim()] = line.slice(i + 1).trim(); }
   return out;
 }

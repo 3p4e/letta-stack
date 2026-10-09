@@ -43,6 +43,7 @@ export function Formatter() {
     // Live mode never builds the on-screen sample: it would be registered in the real Library.
     if (api.mode === 'live' && !F && fmt === 'B') { useF.setState({ out: 'Nothing to build: load a .docx, .md or .txt, or paste text. The sample on screen is a layout example and is never built in live mode.' }); return { ok: false, failAt: 0, msg: 'no input' }; }
     if (fmt === 'C') { useF.setState({ out: api.mode === 'live' ? '501 · Mode C restyles a .docx in place (pp_format) and has no HTTP route yet; use the engine CLI.' : 'Restyled in place · every w:t preserved · RESULT: PASS' }); return api.mode === 'live' ? { ok: false, failAt: 1, msg: 'RESULT: FAIL · 501' } : { ok: true }; }
+    if (F && /…EN|…МК/.test(F.markdown)) { useF.setState({ out: 'Not built: some headings or paragraphs have only one language (marked …EN / …МК). Add the missing half in the source, then build.' }); return { ok: false, failAt: 0, msg: 'bilingual gap' }; }
     const md = F ? F.markdown : SAMPLE_MD.filter(l => !l.bg && l.t !== '…').map(l => l.t).join('\n');
     try { const r = await api.directBuild(`<!--HEADERDATA\ncode: ${stem}\ndoctype: ANNEX\n-->\n\n` + md, stem, { code: stem, source: 'build · Mode B' }); useF.setState({ out: r.verify.split('\n').pop() + ` · registered ${String(r.document_id).slice(0, 8)}` }); return { ok: true }; }
     catch (e) { useF.setState({ out: `${(e as ApiError).status} · ${(e as Error).message}` }); return { ok: false, failAt: 2, msg: `RESULT: FAIL · ${(e as ApiError).status}` }; }
