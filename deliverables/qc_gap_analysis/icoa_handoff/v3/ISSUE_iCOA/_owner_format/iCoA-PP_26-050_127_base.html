@@ -474,7 +474,26 @@ html body div.page .zr-halves{padding-top:4px !important}
 <div class="zr-halves"><table class="zr zh"><colgroup><col style="width:100px"><col><col style="width:50px"></colgroup>
 </style>
 <template id="__bundler_thumbnail" data-bg-color="#E6ECF3"><svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg"><rect width="1200" height="800" fill="#E6ECF3"></rect><rect width="1200" height="150" fill="#F0D9A4"></rect><rect y="150" width="1200" height="34" fill="#9DBAD4"></rect><rect x="120" y="260" width="960" height="20" rx="10" fill="#1B3A5C"></rect><rect x="120" y="320" width="700" height="20" rx="10" fill="#7A5C1E"></rect><rect x="120" y="420" width="960" height="12" rx="6" fill="#E4EAF1"></rect><rect x="120" y="460" width="960" height="12" rx="6" fill="#E4EAF1"></rect><rect x="120" y="500" width="960" height="12" rx="6" fill="#E4EAF1"></rect><text x="600" y="680" text-anchor="middle" font-family="sans-serif" font-weight="800" font-size="88" fill="#1B3A5C">iCoA</text></svg></template>
-<style id="__sig-v2">html body div.page .approval-grid>div:first-child .ap-img.handwritten{bottom:-29px !important;max-height:65px !important;max-width:98% !important;z-index:20 !important}html body div.page .approval-grid .ap-img.handwritten{z-index:20 !important}html body div.page .approval-grid>div{position:relative}html body div.page .approval-grid>div:first-child .ap-sign{z-index:20 !important;position:relative}html body div.page .approval-grid>div:nth-child(2) .ap-img.handwritten{max-height:65px !important}</style><style id="__zh-v2">html body div.page .zr-halves table.zr td.ob .mk{display:block !important;margin-left:0 !important}html body div.page .zr-halves table.zr td.ob .bisep{display:none !important}html body div.page .zr-halves table.zr .p-name .en{letter-spacing:-.35px !important}</style></head>
+<style id="__sig-v2">html body div.page .approval-grid>div:first-child .ap-img.handwritten{bottom:-29px !important;max-height:65px !important;max-width:98% !important;z-index:20 !important}html body div.page .approval-grid .ap-img.handwritten{z-index:20 !important}html body div.page .approval-grid>div{position:relative}html body div.page .approval-grid>div:first-child .ap-sign{z-index:20 !important;position:relative}html body div.page .approval-grid>div:nth-child(2) .ap-img.handwritten{max-height:65px !important}</style><style id="__zh-v2">html body div.page .zr-halves table.zr td.ob .mk{display:block !important;margin-left:0 !important}html body div.page .zr-halves table.zr td.ob .bisep{display:none !important}html body div.page .zr-halves table.zr .p-name .en{letter-spacing:-.35px !important}</style><style id="__owner-selrow-fit">
+/* Head of QC, 07.10.2026: "include the processing pill into the iCoA as in the CoQs and format it suitably."
+   The row of 30.09.2026 ran past the right margin: the Hand chip was cut at the page edge. The chips take
+   the certificate of quality's scale (build_v40.js: 7.3 px ticked, 6.4 px unticked), the gaps close and
+   the row's labels step down to 7.6 px, so the widest phenotype (Hybrid with its split or its leaning)
+   ends on the margin, level with the values of the rows below, on every iCoA not yet issued. Appended
+   last so it governs. */
+html body div.page div.selrow{column-gap:5px !important;flex-wrap:nowrap !important}
+html body div.page div.selrow>*{flex:0 0 auto !important;min-width:0}
+html body div.page div.selrow .grp{gap:4px !important}
+html body div.page div.selrow .grp .stack{gap:3px !important}
+html body div.page div.selrow .chip-sel{font-size:7.3px !important;padding:1.5px 5px 1.5px 4px !important}
+html body div.page div.selrow .chip-un{font-size:6.4px !important;padding:1px 4.5px !important}
+html body div.page div.selrow .chip-sel .bx{font-size:9.2px !important}
+html body div.page div.selrow .chip-un .bx{font-size:8.4px !important}
+html body div.page div.selrow .chip-sel .mk,html body div.page div.selrow .chip-un .mk{font-size:6px !important}
+html body div.page div.selrow .lk-lbl{font-size:7.6px !important;letter-spacing:.2px !important}
+html body div.page div.selrow .lk-lbl .mk{font-size:6.4px !important}
+</style>
+</head>
 <body>
 <div class="page">
 <div class="header-bar">

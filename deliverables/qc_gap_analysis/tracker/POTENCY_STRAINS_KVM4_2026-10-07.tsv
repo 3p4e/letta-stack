@@ -1,0 +1,26 @@
+strain	name	builder_status	ranges_n	ranges	batches_n	results_n	results_span	results_in_no_range	gaps_between_ranges
+AB	Apple and Banana	finished	2	I 22 ± 2.2 (19.80 – 24.19) / II 18 ± 1.8 (16.20 – 19.79)	1	2	16.93 – 22.97	all covered	—
+ACC	Amnesia Core Cut	finished	1	I 12 ± 1.2 (10.80 – 13.19)	1	2	12.09 – 12.91	all covered	—
+BG	Blue Gelato	finished	2	I 26 ± 1.8 (24.20 – 27.79) / II 22 ± 2.2 (19.80 – 24.19)	1	2	21.80 – 26.14	all covered	—
+BSS	Blue Sunset Sherbet	finished	3	I 28 ± 1.93 (26.07 – 29.92) / II 24 ± 2.11 (21.89 – 26.10) / III 20 ± 1.89 (18.11 – 21.88)	4	11	20.39 – 26.69	all covered	—
+CB	Crimson Blaze	draft	3	(none) 28 ± 2 (26.00 – 29.99) / (none) 24 ± 2 (22.00 – 25.99) / (none) 20 ± 2 (18.00 – 21.99)	0	0		all covered	—
+CC	Cash Cow	finished	2	I 17 ± 1.65 (15.35 – 18.64) / II 14 ± 1.35 (12.65 – 15.34)	4	5	13.35 – 17.67	all covered	—
+CF	Chem Flyer	finished	1	I 10 ± 1 (9.00 – 10.99)	1	2	9.55 – 9.83	all covered	—
+CJ	Cap Junky	finished	5	I 28 ± 1.6 (26.40 – 29.59) / II 24 ± 2.4 (21.60 – 26.39) / III 20 ± 1.6 (18.40 – 21.59) / IV 17 ± 1.4 (15.60 – 18.39) / V 14 ± 1.4 (12.60 – 15.39)	10	22	14.93 – 28.34	all covered	15.39 – 15.60
+CLE	Clemosa A Bud	finished	1	I 8 ± 0.8 (7.20 – 8.79)	1	2	8.02 – 8.65	all covered	—
+FB	Fat Bastard	finished	4	I 22 ± 2.2 (19.80 – 24.19) / II 18 ± 1.8 (16.20 – 19.79) / III 15 ± 1.2 (13.80 – 16.19) / IV 12 ± 1.2 (10.80 – 13.19)	7	12	12.39 – 20.83	all covered	13.19 – 13.80
+GG	Gorilla Glue	draft	2	I 18 ± 1.77 (16.23 – 19.76) / II 15 ± 1.23 (13.77 – 16.22)	7	14	13.34 – 19.16	13.34 GG1024 standalone (in-house record of 23.04.2025, no certificate)	—
+GP	Grape Pie	finished	4	I 28 ± 2 (26.00 – 29.99) / II 24 ± 2 (22.00 – 25.99) / III 20 ± 2 (18.00 – 21.99) / IV 16 ± 1.6 (14.40 – 17.59)	13	40	13.16 – 28.68	13.16 GP0824_02 stability (ППК26033)	17.59 – 18.00
+GRC	Grapes And Cream	finished	3	I 12 ± 1 (11.00 – 12.99) / II 10 ± 1 (9.00 – 10.99) / IV 8 ± 0.8 (7.20 – 8.79)	2	5	7.05 – 11.53	7.05 GRC102501/1 release (031-1-К/26)	8.79 – 9.00
+HPA	High Pro Amnesia	finished	3	I 22 ± 2.2 (19.80 – 24.19) / II 18 ± 1.8 (16.20 – 19.79) / III 15 ± 1.2 (13.80 – 16.19)	3	10	14.97 – 22.43	all covered	—
+J31	Jokerz 31	finished	3	I 26 ± 1.8 (24.20 – 27.79) / II 22 ± 2.2 (19.80 – 24.19) / III 18 ± 1.8 (16.20 – 19.79)	3	10	17.32 – 25.27	all covered	—
+JD	Jelly Donuts	finished	3	I 22 ± 2.2 (19.80 – 24.19) / II 18 ± 1.8 (16.20 – 19.79) / III 15 ± 1.2 (13.80 – 16.19)	7	13	13.93 – 21.01	all covered	—
+KC	Kush Crasher	finished	1	I 18 ± 1.8 (16.20 – 19.79)	1	2	17.04 – 17.06	all covered	—
+MB	Motor Breath	finished	1	I 18 ± 1.8 (16.20 – 19.79)	2	5	16.82 – 18.67	all covered	—
+OPM	Orange Punch Mimosa	finished	5	I 20 ± 1.4 (18.60 – 21.39) / II 17 ± 1.6 (15.40 – 18.59) / III 14 ± 1.4 (12.60 – 15.39) / IV 10 ± 1 (9.00 – 10.99) / V 8 ± 0.8 (7.20 – 8.79)	8	23	1.87 – 20.03	1.87 OPM1024_02 release (ППК25154)	8.79 – 9.00, 10.99 – 12.60
+PM	Permanent Marker	finished	3	I 14 ± 1 (13.00 – 14.99) / II 12 ± 1 (11.00 – 12.99) / III 10 ± 1 (9.00 – 10.99)	3	7	10.01 – 14.06	all covered	—
+PUM	Pure Michigen	finished	1	I 14 ± 1.4 (12.60 – 15.39)	1	1	13.95 – 13.95	all covered	—
+SCR	Scrambler	finished	2	I 22 ± 2.2 (19.80 – 24.19) / II 18 ± 1.8 (16.20 – 19.79)	4	7	16.68 – 22.40	all covered	—
+SJ	Sleepy Joe	finished	2	I 12 ± 1 (11.00 – 12.99) / II 10 ± 1 (9.00 – 10.99)	3	7	9.20 – 11.27	all covered	—
+WC	Wedding Crusher	finished	2	I 26 ± 2.6 (23.40 – 28.59) / II 22 ± 1.4 (20.60 – 23.39)	2	4	21.67 – 25.37	all covered	—
+WED	Wedding Cake	finished	2	I 26 ± 2.6 (23.40 – 28.59) / II 22 ± 1.4 (20.60 – 23.39)	1	2	22.05 – 25.15	all covered	—

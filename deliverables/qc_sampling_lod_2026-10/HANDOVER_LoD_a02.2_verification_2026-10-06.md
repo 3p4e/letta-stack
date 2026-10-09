@@ -109,32 +109,39 @@ trending, not batch release (release via accredited external laboratory, §6.6, 
   +0.43 to +1.94.
 - No paired level between 6.4 and 18 % oven LoD: the product range around the 12 % limit is interpolated.
 
-## 6. What the T1/T2 LoD campaign can give you (PP-QC-SP-002/26, records LOD-01 and LOD-02)
+## 6. What the T1/T2 LoD campaign can give you (PP-QC-SP-002/26, record LOD-01)
 
-- 46 lots, one composite each (8–44 flowers, one per opened bag), homogenised by cutting and quartering.
-  k test portions of 1.000 g: 14 lots k = 1, 22 lots k = 2, 10 lots k = 3, 88 portions in all
-  (Day 1: 23 lots, 44 portions; Day 2: 23 lots, 44 portions). 32 lots give within-composite replicates at
-  real product moisture.
+- As executed (Head of QC, 06.10.2026): 46 lots, one bag opened per lot and one sample from it, all
+  sampled on one day; one test portion of 1.000 g per lot, cut, 46 portions dried together in one oven
+  run. There are **no replicates**: the campaign gives one determination per lot, so no within-lot
+  precision. The draft of 05.10.2026 (composites from 1.5·√N bags, k = 1/2/3, 88 portions, two days) was
+  not executed.
+- Deviation DEV-01 (06.10.2026): in run 1 (LOD-01), m_B and the 1 g portion (G1) of all 46 were weighed on a
+  precision balance (d = 1 mg), not the AUW220D. The Head of QC invalidated run 1; all 46 are repeated on the
+  AUW220D from the sample remainders (LOD-01R), and only those results are reported. Run 1 is not fit for the
+  verification's precision or uncertainty work. Its 46 G2 pairs, weighed on both balances (Attachment 1), are
+  bridging data on the precision balance only.
 - Expected range: certificate values on record 5.6–8.6 % (40 lots); July in-house 24 h values up to 12.3 %.
-  Lots near the limit in July, all in T1: OPM1024_02 12.27 % (Day 1, k = 2), GP0824_02 11.90 % (Day 2,
-  k = 3), CJ052501/01 11.30 % (Day 2, k = 2), HPA1024_01 10.89 % (Day 1, k = 2).
+  Lots near the limit in July, all in T1: OPM1024_02 12.27 %, GP0824_02 11.90 %, CJ052501/01 11.30 %,
+  HPA1024_01 10.89 %.
 - Every portion records m_B, G1, G2 at 24 h, the next G2 and Δ; extra weighings until Δ ≤ 0.5 mg go in a
   further-weighings table with date and time; oven-in and weighing times are recorded per run. Each
   portion therefore gives both the 24 h value and the constant-mass value, on VO29 and the AUW220D.
-- The composite remainder is kept closed and labelled until the record is approved, so HMA or Karl Fischer
+- The sample remainder is kept closed and labelled until the record is approved, so HMA or Karl Fischer
   pairing on the same material is possible.
-- The campaign adds no verification design. Anything you need from it (e.g. n ≥ 6 portions on one
-  composite near 12 %, HMA duplicates per composite, KF on a subset, intermediate weighing times) must
-  reach the sampling chat before the records are approved, so it can be added to LOD-01/-02.
+- The campaign adds no verification design. Anything you need from it (e.g. n ≥ 6 portions from one
+  sample remainder near 12 %, HMA duplicates per remainder, KF on a subset) must reach the sampling chat
+  before the record is approved; it would be a separate run on the remainders, since the oven run
+  of 06.10.2026 is already under way.
 - Files: GitHub `3p4e/letta-stack`, branch `claude/google-drive-links-d932ku`,
-  `deliverables/qc_sampling_lod_2026-10/` (plan, `SAMPLING_PLAN_T1_T2_2026-10.tsv`, LoD records in
+  `deliverables/qc_sampling_lod_2026-10/` (plan, `SAMPLING_PLAN_T1_T2_2026-10.tsv`, the LoD record in
   `out/3_LOD_ANALYSIS_EXECUTION/`).
 
 ## 7. Decisions for the verification chat
 
 1. Endpoint: compendial 24 h, or constant mass after 24 h as a site tightening, and the additional drying
    period (the sampling plan leaves it open).
-2. The n ≥ 6 series at ~12 %: run it on a campaign composite near the limit, or separately.
+2. The n ≥ 6 series at ~12 %: run it on a campaign sample remainder near the limit, or separately.
 3. Intermediate precision with a crossed day × analyst design.
 4. Bias: Karl Fischer (2.5.32) on the matrix; equipment qualification and calibration entries.
 5. Status and use of results: VERIFIED (internal QC) vs release use, given that the T1/T2 results are

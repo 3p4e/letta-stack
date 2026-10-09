@@ -43,15 +43,20 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 GAP = os.path.dirname(HERE)
+sys.path.insert(0, os.path.join(GAP, "tracker"))
+import house_kit                                                      # noqa: E402
 TEMPLATE = os.path.join(HERE, "base", "Product_Specification_ImB.html")
 OUT = os.path.join(HERE, "QCSP_001_ImB")
 SHEETS = os.path.join(OUT, "SHEETS")
 
 DOC_VERSION = "QCSP 001 v.03"          # the owner, 21.09.2026 — not v.04
 SIGNED = "01.06.2026"                  # the date v.03 carries
-BASIS = "17.09.2026"                   # the potency decision the windows come from
+# Head of QC, 07.10.2026: the grades are the current table, which is the 17.09.2026 decision plus WED-II
+# (26.09), GRC-IV (27.09), and GRC as three ranges with GRC-III gone (07.10, KVM4 builder finished). The numeral is
+# the table's, read off the code; it is not a rank by nominal (numerals are sequential by creation).
+BASIS = "potency_grades_2026-09-15.csv (17.09.2026; WED-II 26.09.2026; GRC 07.10.2026)"
+GRADES = os.path.join(GAP, "potency_grades_2026-09-15.csv")
 ROM = {"I": 1, "II": 2, "III": 3, "IV": 4, "V": 5, "VI": 6}
-BOX, TICK = "&#9744;", "&#9746;"
 
 
 def one(hay, needle, repl, what):
@@ -68,102 +73,123 @@ def esc(s):
 
 # --------------------------------------------------------------------- the record
 def records():
-    """One record per specification code, from the decision and the certificates.
+    """One record per specification code, from the current grade table and the certificates.
 
-    Attributes are read off the certificates that already print them; a code whose lots
-    disagree about an attribute stops the build rather than having one chosen for it.
+    The grade (nominal, tolerance, window) is the table's row for the code's strain and numeral.
+    The attributes are read off the certificates that print them, Tranche 3 first. Head of QC,
+    07.10.2026: *"Don't concern yourself with tranche one and tranche 2 batches since they're
+    already sent"*. So a sheet takes its attributes from its Tranche 3 lots where it has any, then
+    from the lots outside the tranches, and from the issued Tranche 1/2 lots only when nothing else
+    cites it. Lots of the chosen group that disagree about an attribute stop the build.
     """
-    spec = json.load(open(os.path.join(HERE, "potency_specifications_25_2026-09-17.json"),
-                         encoding="utf-8"))
+    import csv
+    sys.path.insert(0, os.path.join(GAP, "tracker"))
+    import audit_empty_results as A
+    table = {}
+    with open(GRADES, encoding="utf-8") as fh:
+        for g in csv.DictReader(fh):
+            table[(g["abbr"], g["numeral"])] = (g["strain"], float(g["nominal"]), float(g["tolerance"]),
+                                                float(g["window_low"]), float(g["window_high"]))
+    tm = A.tranche_map()
+
+    def group(c):
+        for k in (c.get("pp"), c.get("cb"), (c.get("cb") or "").replace("\uff0a", "")):
+            if k and k in tm:
+                return {"T3": 0, "T1": 2, "T2": 2}.get(tm[k], 2)
+        return 1                                  # outside every tranche
+
     data = json.load(open(os.path.join(GAP, "coq_artifact_data.json"), encoding="utf-8"))
     codes = {}
     for c in data["coqs"]:
         code = (c.get("spec") or "").strip()
         m = re.match(r"QCSP_001_([A-Z0-9]+)-([IVX]+)_v\.(\d+)$", code)
-        if not m:
+        if not m or c.get("withdrawn"):
             continue
-        cult, num = m.group(1), ROM[m.group(2)]
-        s = spec.get(cult)
-        if not s:
-            raise SystemExit("%s names cultivar %s, which the decision does not carry" % (code, cult))
-        grades = sorted(s["grades"], key=lambda g: -g[0])
-        if num > len(grades):
-            raise SystemExit("%s is grade %d and the decision gives %s %d"
-                             % (code, num, cult, len(grades)))
-        nom, tol, lo, hi = grades[num - 1]
-        sp = c.get("spc") or {}
+        cult = m.group(1)
+        if (cult, m.group(2)) not in table:
+            raise SystemExit("%s: the grade table has no %s-%s" % (code, cult, m.group(2)))
+        strain, nom, tol, lo, hi = table[(cult, m.group(2))]
         r = codes.setdefault(code, {"code": code, "cult": cult, "numeral": m.group(2),
-                                    "strain": s["strain"], "nominal": nom, "tol": tol,
-                                    "lo": lo, "hi": hi, "pcode": set(), "pheno": set(),
-                                    "chemo": set(), "proc": set(), "dominance": set(),
-                                    "lots": set()})
+                                    "strain": strain, "nominal": nom, "tol": tol,
+                                    "lo": lo, "hi": hi, "by": {}, "lots": set()})
+        g = r["by"].setdefault(group(c), {k: set() for k in ("pcode", "pheno", "chemo", "proc", "dominance")})
         if c.get("pcode"):
-            r["pcode"].add(c["pcode"])
+            g["pcode"].add(c["pcode"])
+        sp = c.get("spc") or {}
         for k in ("pheno", "chemo", "proc", "dominance"):
             v = (sp.get(k) or "").strip()
             if v:
-                r[k].add(v)
+                g[k].add(v)
         lot = c.get("pp") or c.get("cb")
         if lot:
             r["lots"].add(lot)
     for code, r in sorted(codes.items()):
+        first = min(r["by"])
+        g = r.pop("by")[first]
+        r["t3"] = first in (0, 1)     # the leaning prints where the attributes come from certificates not yet issued
         for k in ("pcode", "pheno", "chemo", "proc", "dominance"):
-            if len(r[k]) > 1:
-                raise SystemExit("%s: its lots disagree about %s — %s"
-                                 % (code, k, sorted(r[k])))
-            r[k] = sorted(r[k])[0] if r[k] else ""
+            if len(g[k]) > 1:
+                raise SystemExit("%s: its lots disagree about %s — %s" % (code, k, sorted(g[k])))
+            r[k] = sorted(g[k])[0] if g[k] else ""
     return [codes[c] for c in sorted(codes)]
 
 
 # ---------------------------------------------------------------------- the pills
-PHENO = ('<span class="var-opt">%s Hybrid <span class="vo-dom">INDICA<span class="pn">00</span>'
-         ' : SATIVA<span class="pn">00</span></span></span><span class="var-stack">'
-         '<span class="var-opt">%s Indica</span><span class="var-opt">%s Sativa</span></span>'
-         % (BOX, BOX, BOX))
-CHEMO = ('<span class="chem-stack"><span class="var-opt">%s THC</span>'
-         '<span class="var-opt">%s CBD</span></span>' % (BOX, BOX))
-PROC = ('<span class="proc-stack"><span class="var-opt">%s Machine <span class="mk">Машинска</span></span>'
-        '<span class="var-opt">%s Hand <span class="mk">Рачна</span></span></span>' % (BOX, BOX))
-
-
-def pheno_pill(pheno, dominance):
-    """Tick one of Hybrid / Indica / Sativa, and carry a ratio only if one is stated.
-
-    The record's dominance is sometimes a ratio (INDICA 60 : SATIVA 40) and sometimes a
-    word — INDICA-DOMINANT, BALANCED, TO BE DETERMINED. A word is not a ratio: BALANCED is
-    not written as 50 : 50 here, because that would be this desk asserting a number the
-    record does not carry. Where no ratio is stated the Hybrid option carries no figures.
-    """
-    p = (pheno or "").upper()
-    hy, ind, sat = (TICK if p == "HYBRID" else BOX), (TICK if p == "INDICA" else BOX), \
-                   (TICK if p == "SATIVA" else BOX)
-    m = re.search(r"INDICA\s*(\d+)\s*:\s*SATIVA\s*(\d+)", dominance or "", re.I)
-    if not m:
-        m2 = re.search(r"SATIVA\s*(\d+)\s*:\s*INDICA\s*(\d+)", dominance or "", re.I)
-        dom = ('<span class="vo-dom">INDICA<span class="pn">%s</span> : SATIVA<span class="pn">%s</span></span>'
-               % (m2.group(2), m2.group(1))) if m2 else ""
-    else:
-        dom = ('<span class="vo-dom">INDICA<span class="pn">%s</span> : SATIVA<span class="pn">%s</span></span>'
-               % (m.group(1), m.group(2)))
-    hybrid = '<span class="var-opt">%s Hybrid%s</span>' % (hy, (" " + dom) if dom else "")
-    return ('%s<span class="var-stack"><span class="var-opt">%s Indica</span>'
-            '<span class="var-opt">%s Sativa</span></span>' % (hybrid, ind, sat))
-
-
-def chemo_pill(chemo):
-    c = (chemo or "").upper()
-    return ('<span class="chem-stack"><span class="var-opt">%s THC</span>'
-            '<span class="var-opt">%s CBD</span></span>'
-            % (TICK if c == "THC" else BOX, TICK if c == "CBD" else BOX))
-
-
-def proc_pill(proc):
-    p = (proc or "").upper()
-    machine = TICK if "MACHINE" in p else BOX
-    hand = TICK if "HAND" in p else BOX
-    return ('<span class="proc-stack"><span class="var-opt">%s Machine <span class="mk">Машинска</span></span>'
-            '<span class="var-opt">%s Hand <span class="mk">Рачна</span></span></span>'
-            % (machine, hand))
+# The selection block: the CoQ's own pill row (Head of QC, 07.10.2026: "make all pills … the same as they are on
+# the COQs, with that design and formatting"). The spec's own chips stacked in two rows and never marked the ticked
+# option (its "selected" style keyed on a class the filling never wrote), so the chosen box read as unticked.
+SEL_BLOCK = re.compile(r'<div class="pb-sel-inline">.*?</div>\s*</div>(?=\s*<div class="pb-codes-row)', re.S)
+# QA's Word specifications, exactly (Head of QC, 07.10.2026: "look exactly like the editable Word documents … without
+# disturbing the layout placements or the organisation of the content, just the visual looks: shading, colours,
+# background colours"). Colours read off QA's ImB_Specification_KC18.docx as it renders (its stored pictures, the
+# white veils QA laid over them, its table shading), region by region at 144 dpi. Colour and shading only: every box
+# keeps its size and place, every word its value. The CoQ's pills (ruled the same day) are left as they are.
+# Approved on the KC-I sample and carried to every sheet (Head of QC, 07.10.2026: "the header and footer and horizontal
+# separators are all okay and also the table backgrounds"); QCSP_WORD=0 builds the earlier look.
+WORD = os.environ.get("QCSP_WORD", "1") == "1"
+W = "html:not(#_w1):not(#_w2):not(#_w3):not(#_w4):not(#_w5):not(#_w6) body .page "
+NONE = "{background:none !important;box-shadow:none !important}"
+WORD_LAYER = ('<style id="__qa-word-2026-10-07">\n'
+    # header: white, its gold rule under the title kept
+    + W + '.header-bar{background:#FFFFFF !important;box-shadow:none !important}\n'
+    # section bars: the Word sample's warm near-white, deepened so the bar reads (Head of QC, 07.10.2026: "just and
+    # only for the heading chapter bars … make them a little bit more visible, maybe apply some contrast") — the same
+    # warm hue, #FCFBF9 to #E6E1D8, a #DDD7CC line along the top and a #CFC7B8 line along the foot
+    + W + '.sec-label{background-color:#EFEBE5 !important;background-image:linear-gradient(180deg,#FCFBF9 0%,#F5F2EE 30%,'
+          '#EDE9E2 60%,#E6E1D8 85%,#E9E5DE 100%) !important;border-top:1px solid #DDD7CC !important;'
+          'border-bottom:1px solid #CFC7B8 !important;box-shadow:none !important}\n'
+    # the product, codes and packaging bands: white
+    + W + '.pb-wash,' + W + '.product-banner,' + W + '.spec-panel' + NONE + '\n'
+    + W + '.pb-sel-inline,' + W + '.pb-codes-row,' + W + '.pb-attrs{background-color:#FFFFFF !important;'
+          'background-image:none !important}\n'
+    + W + '.pp-pills .selrow{background:none !important}\n'
+    # table head: white between a #CDD8E4 and a #D7E0E9 line; no column ticks
+    + W + '.tbl-wrap table.params thead tr{background-color:#FFFFFF !important;background-image:'
+          'linear-gradient(#CDD8E4,#CDD8E4),linear-gradient(#D7E0E9,#D7E0E9) !important;'
+          'background-size:calc(100% - 76.8px) 1px,calc(100% - 76.8px) 1px !important;'
+          'background-position:38.4px 0,38.4px 100% !important;background-repeat:no-repeat !important}\n'
+    + W + '.tbl-wrap table.params thead th::before,' + W + '.tbl-wrap table.params thead th::after' + NONE + '\n'
+    # rows: white, every other one #F5F5F5 across the table's width
+    + W + '.tbl-wrap table.params tbody tr{background-color:#FFFFFF !important;background-image:none !important}\n'
+    + W + '.tbl-wrap table.params tbody tr:nth-child(even){background-image:linear-gradient(#F5F5F5,#F5F5F5) !important;'
+          'background-size:calc(100% - 76.8px) 100% !important;background-position:38.4px 0 !important;'
+          'background-repeat:no-repeat !important}\n'
+    # signature lines: solid #B6AA92
+    + W + '.approval-grid .ap-line{background:#B6AA92 !important;-webkit-mask-image:none !important;mask-image:none !important}\n'
+    # footer: #FDFDFD in a #C6D9F1 frame
+    + W + '.footer{background:#FDFDFD !important;box-shadow:none !important;border:1px solid #C6D9F1 !important;'
+          'border-bottom:0 !important;box-sizing:border-box !important}\n'
+    + W + '.footer::before,' + W + '.footer::after,' + W + '.footer .foot-bleed' + NONE + '\n'
+    + '</style>\n')
+AP_BOXES = re.compile(r'(<div class="approval-grid">\s*)(<div class="ap-block"><div class="ap-role">Prepared &amp; Approved by.*?'
+                      r'<span class="ap-date-val">[^<]*</span></div></div>)(\s*)(<div class="ap-block"><div class="ap-role">'
+                      r'Reviewed by.*?<span class="ap-date-val">[^<]*</span></div></div>)', re.S)
+# the pill row sits in the spec's own selection band, which already carries the page margin
+PILLS_HOST = ('<style id="__pp-pills-host">\n'
+              'html:not(#_h1):not(#_h2):not(#_h3):not(#_h4):not(#_h5) body .page .pb-sel-inline.pp-pills{display:block !important}\n'
+              'html:not(#_h1):not(#_h2):not(#_h3):not(#_h4):not(#_h5) body .page .pp-pills .selrow{width:100% !important;'
+              'box-sizing:border-box !important;padding-left:0 !important;padding-right:0 !important;background:none !important}\n'
+              '</style>\n')
 
 
 # ---------------------------------------------------------------------- the filling
@@ -180,9 +206,10 @@ def sheet(tpl, r):
     h = one(h, '<span class="pbp-val">00.00%</span><span class="pbp-tol">± 0.00%</span>',
             '<span class="pbp-val">%.2f%%</span><span class="pbp-tol">± %.2f%%</span>'
             % (r["nominal"], r["tol"]), ".pbp-val/.pbp-tol")
-    h = one(h, PHENO, pheno_pill(r["pheno"], r["dominance"]), "Phenotype pill")
-    h = one(h, CHEMO, chemo_pill(r["chemo"]), "Chemotype pill")
-    h = one(h, PROC, proc_pill(r["proc"]), "Processing pill")
+    if len(SEL_BLOCK.findall(h)) != 1:
+        raise SystemExit("template: the selection block is not found once")
+    row = house_kit.selrow(r["pheno"], r["dominance"], r["chemo"], r["proc"], r.get("t3"))
+    h = SEL_BLOCK.sub(lambda m: '<div class="pb-sel-inline pp-pills">' + row + '</div>', h, count=1)
     h = one(h, '<span class="pcr-val">XX_THC00 : CBD1</span>',
             '<span class="pcr-val">%s</span>' % esc(r["pcode"]), "Product Code")
     h = one(h, '<span class="pcr-val">00.00 &ndash; 00.00 %</span>',
@@ -195,10 +222,67 @@ def sheet(tpl, r):
         raise SystemExit("template has %d approval dates, expected 2" % n)
     h = h.replace('<span class="ap-date-val tpl">DD.MM.YYYY</span>',
                   '<span class="ap-date-val">%s</span>' % SIGNED)
+    # Head of QC, 07.10.2026: the QC Manager on the right of every document, the QA Manager ("Reviewed by") on the
+    # left — the template sets the QC Manager's box first
+    if len(AP_BOXES.findall(h)) != 1:
+        raise SystemExit("template: the two approval boxes are not found once, in the template's order")
+    h = AP_BOXES.sub(lambda m: m.group(1) + m.group(4) + m.group(3) + m.group(2), h, count=1)
     # the owner, 21.09.2026: no document code in the bottom right corner
     h = one(h, '<div class="foot-right">QCSP 001 v.03</div>',
             '<div class="foot-right"></div>', ".foot-right")
+    # Orbitron has no Cyrillic: the Macedonian of every Orbitron label fell through to Liberation Sans in print.
+    # Montserrat goes behind Orbitron, as on the iCoA since 27.09.2026 (build_t3_bundle_2026-09-26.house_stack);
+    # Latin text keeps Orbitron.
+    # the CoQ's look for the pills and the heading bars, read off the CoQ itself (tracker/house_kit.py)
+    if h.count("</body>") != 1:
+        raise SystemExit("template: no single </body>")
+    h = h.replace("</body>", house_kit.kit_style() + PILLS_HOST + (WORD_LAYER if WORD else "") + "</body>", 1)
+    for a, b in ORBITRON_STACK:
+        h = h.replace(a, b)
+    rules = re.sub(r"@font-face\s*\{[^}]*\}", "", h)
+    left = sorted({v for v in re.findall(r"font-family:\s*([^;}\"]+)", rules)
+                   if v.strip().strip("'\"").startswith("Orbitron") and "Montserrat" not in v})
+    if left:
+        raise SystemExit("%s: Orbitron without Montserrat behind it (%s)" % (code, ", ".join(left)))
     return code, h
+
+
+ORBITRON_STACK = (("font-family:'Orbitron','Roboto Mono',monospace", "font-family:'Orbitron','Montserrat','Roboto Mono',monospace"),
+                  ("font-family:'Orbitron',sans-serif", "font-family:'Orbitron','Montserrat',sans-serif"),
+                  ("font-family:'Orbitron',monospace", "font-family:'Orbitron','Montserrat',monospace"))
+
+
+# Head of QC, 08.10.2026, on the specifications themselves: *"for OPM … phenotype … same for all OPM specs … HYBRID
+# indica dominant; and for the spec for KC THC18 change the Indica into "HYBRID", HPA THC15, HPA THC18, HPA THC22,
+# change the SATIVA into "HYBRID", change the Indica from BG THC 26 and THC22 into HYBRID and from BSS THC20 change the
+# Indica into "HYBRID"*. Asked whether the plain "HYBRID" should carry a leaning, he chose *HYBRID only*. These sheets
+# took their attributes from issued Tranche 1/2 lots (Indica or Sativa alone); the sheet now says what he ruled.
+# {(cultivar, numeral or None for every grade): (phenotype, dominance, print the leaning)}
+PHENOTYPE_RULING = {
+    ("OPM", None): ("HYBRID", "INDICA-DOMINANT", True),
+    ("KC", "I"): ("HYBRID", "", False),
+    ("HPA", "I"): ("HYBRID", "", False), ("HPA", "II"): ("HYBRID", "", False), ("HPA", "III"): ("HYBRID", "", False),
+    ("BG", "I"): ("HYBRID", "", False), ("BG", "II"): ("HYBRID", "", False),
+    ("BSS", "III"): ("HYBRID", "", False),
+}
+# the nominal each named sheet must carry, so the ruling lands on the grade he named
+RULING_NOMINAL = {("KC", "I"): 18.0, ("HPA", "III"): 15.0, ("HPA", "II"): 18.0, ("HPA", "I"): 22.0,
+                  ("BG", "I"): 26.0, ("BG", "II"): 22.0, ("BSS", "III"): 20.0}
+
+
+def phenotype_ruling(recs):
+    hit = set()
+    for r in recs:
+        for key in ((r["cult"], r["numeral"]), (r["cult"], None)):
+            if key in PHENOTYPE_RULING:
+                want = RULING_NOMINAL.get(key)
+                if want is not None and abs(float(r["nominal"]) - want) > 1e-9:
+                    raise SystemExit("%s-%s is %.2f %%, the ruling names %.2f %%" % (r["cult"], r["numeral"], r["nominal"], want))
+                r["pheno"], r["dominance"], r["t3"] = PHENOTYPE_RULING[key]
+                hit.add(key)
+    missing = set(PHENOTYPE_RULING) - hit
+    if missing:
+        raise SystemExit("the phenotype ruling names sheets the table no longer holds: %s" % sorted(missing, key=str))
 
 
 def main(argv):
@@ -208,6 +292,7 @@ def main(argv):
 
     tpl = open(TEMPLATE, encoding="utf-8").read()
     recs = records()
+    phenotype_ruling(recs)
     if not a.check:
         os.makedirs(SHEETS, exist_ok=True)
     made = []

@@ -1,0 +1,50 @@
+{
+ "1220/2171/25": {
+  "cert_code": "1220/2171/25",
+  "date_of_issue": "01.12.2025",
+  "batch_canonical": "PM072501",
+  "strain_printed": "Permanent Market",
+  "laboratory": "IPH — Institute of Public Health",
+  "lab": "IJZ-MB",
+  "method": "Ph.Eur. 5.1.8 – Кат. C и производителска спецификација/2.6.12, 2.6.13, 2.6.31",
+  "read_A": {
+   "source": "ingestion/ecoa_runner/records_corpus.json (two-read eCoA extraction); only one read succeeded",
+   "9.6": "Одговара (отсутна/g)",
+   "9.7": "Одговара (отсутна/g)"
+  },
+  "read_B": {
+   "source": "ingestion/ragflow/cache/all_cert_texts_2026-08-30.json (page text of P050272, 1220-2171-25, 01.12.2025, IJZ-MB.pdf)",
+   "9.6": "Одговара (отсутна/g)",
+   "9.7": "Одговара (отсутна/g)"
+  },
+  "reads_agree": true,
+  "results": {
+   "9.6": "Одговара (отсутна/g)",
+   "9.7": "Одговара (отсутна/g)"
+  }
+ },
+ "1221/2172/25": {
+  "cert_code": "1221/2172/25",
+  "date_of_issue": "01.12.2025",
+  "batch_canonical": "WC072501",
+  "strain_printed": "Wedding Crasher",
+  "laboratory": "IPH — Institute of Public Health",
+  "lab": "IJZ-MB",
+  "method": "Ph.Eur. 5.1.8 – Кат. C и производителска спецификација/2.6.12, 2.6.13, 2.6.31",
+  "read_A": {
+   "source": "ingestion/ecoa_runner/records_corpus.json (two-read eCoA extraction)",
+   "9.6": "Одговара (отсутна/g)",
+   "9.7": "Одговара (отсутна/g)"
+  },
+  "read_B": {
+   "source": "ingestion/ragflow/cache/all_cert_texts_2026-08-30.json (page text of P050262, 1221-2172-25, 01.12.2025, IJZ-MB.pdf)",
+   "9.6": "Одговара (отсутна/g)",
+   "9.7": "Одговара (отсутна/g)"
+  },
+  "reads_agree": true,
+  "results": {
+   "9.6": "Одговара (отсутна/g)",
+   "9.7": "Одговара (отсутна/g)"
+  }
+ }
+}

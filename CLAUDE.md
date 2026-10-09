@@ -120,7 +120,10 @@ BSS1024_01/2 (P050142), CC012601/1 (P060332).
   tested again well after the first: *"the second certificate for microbiology is going to enter the
   CoQ, and if the initial testing was way before, then it is definitely a retest and the reissuing
   of the CoQ"* — `-160` (P060342: IPH 539/1070/26 of 31.08 after 362/0692/26 of 01.06) is kept, and
-  carries the Farmahem release results as carried from `-073`.
+  carries the Farmahem cannabinoids as carried from `-073`. Since 08.10.2026 IPH `3160/2026` of 01.06.2026
+  (SCR012601*) is on file. It is the lot's release testing for total aflatoxins, metals and pesticides, so
+  `-073` prints it, with B1/OTA n/t, and `-160`'s Farmahem 227-8-М is its retest panel (ruling 3)
+  (`intake_IPH_2026-10-08/`).
 - **Dates**: on or after the last result the initial cites (ruling 1 below), at the desk's usual
   seven days (`audit_empty_results.initial_issue`), never after the lot's own retest.
 
@@ -156,7 +159,7 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
      initial holds pending, nor read a full-panel result around a missing page: on 28.09.2026
      `-162`'s pesticides printed "ND — all 26 residues" from IPH `1065/2026` while page 3 (three of the
      residues and the pesticide conformity statement) is missing and its initial `-052` held them
-     pending — now `[pending]` on both. And a retest's mycotoxins are the **Farmahem retest panel**,
+     pending — then `[pending]` on both, and since 08.10.2026 printed from the complete scan. And a retest's mycotoxins are the **Farmahem retest panel**,
      not "carried from the initial" (23 rows had the value from Farmahem but a stale carried status).
      `tracker/check_carry_provenance.py` (CI) fails on either.
   5. **Heavy metals come from IPH**, on the initial and the retest CoQ alike (the retest carries the
@@ -168,7 +171,9 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
      corpus (ППК26116 is only there). **An internal certificate covers exactly what its own CoQ
      credits to it**, as in the approved scans: 1, 2, 7, plus 8 only where loss on drying was done
      in-house (`-026`, like HPA1024/OPM1024); where CNP tested 1, 2, 7 and 8 there is **no** internal
-     certificate (`-075`, `-079`, `-080`, like the scans' `-092`, `-123`). Loss on drying in Tranche 3
+     certificate (`-075`, `-079`, `-080`, like the scans' `-092`, `-123`), and none for their retests either: `-144`,
+     `-143`, `-161` carry 1, 2, 7, 8 with the initial's CNP certificate (09.10.2026,
+     `tracker/apply_cnp_retest_no_icoa_2026-10-09.py`). Loss on drying in Tranche 3
      is CNP's or Farmahem's (`-ГС`), in-house only for `-026`, and untested for `-021`, `-050`, `-068`,
      `-073`. `T3_CoQ_Latest_*.pdf` is each lot's current certificate: the retest, or the initial where
      there is no reissue. *"Where needed for the parameters that are not covered by other outsource
@@ -195,11 +200,38 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
      read `GET /api/specs`, `/api/specs/<ABBR>`); check it, and only it, for a strain's current grades,
      then carry a new one into `potency_grades_2026-09-15.csv`. WED-II (22.00 ± 1.40, 20.60–23.39 %)
      came from there on 26.09.2026 and grades `-046`. GRC-IV (7.00 ± 0.70, 6.30–7.69 %) was set by the
-     Head of QC on 27.09.2026 for `-050` (7.05 %), which no grade covered; it overlaps GRC-III
-     (7.20–8.79 %), and `potency_grading` tries the higher nominal first, so `-152` (7.50 %) stays III.
-  8. **A certificate whose scan is incomplete** prints `[pending]` for what the missing page holds —
-     IPH `1065/2026` (SJ102501) holds pages 1, 2 and 4 of 4 in every copy; page 3 carries its metals,
-     total aflatoxins and three pesticides. Obtain the page; do not read around it.
+     Head of QC on 27.09.2026 for `-050` (7.05 %), which no grade covered (GRC since 07.10.2026: below).
+     The builder page also embeds the results it rests on (`const DATA`). The audit
+     `tracker/audit_potency_kvm4_2026-10-07.py` (`--fetch` refreshes `KVM4_POTENCY_SNAPSHOT_*.json`) checks
+     two things against the builder: every CoQ's grade, window, specification code and product code, and every
+     THC result on file, wherever it came from. Since the GRC write below (07.10.2026, 09:10 UTC), every
+     Tranche 3 and out-of-tranche CoQ agrees with the builder.
+     **No empty potency range** (Head of QC, 07.10.2026, on GRC): *"check all results of that strain in total
+     from all batches and distribute them in suitable number of potency ranges. And of course, no empty potency
+     ranges."* The builder's own generator (`searchLadder`) puts GRC's four results (7.05, 7.50, 9.80, 11.53)
+     into three ranges:
+     - 7.00 ± 0.70 (GRC-IV);
+     - 10.00 ± 1.00 (GRC-II);
+     - 12.00 ± 1.00 (GRC-I).
+
+     GRC-III (8.00 ± 0.80) holds nothing and left the table. `-152` (7.50 %) and its iCoA-PP_26-095 are
+     GRC-IV, `GRC_THC7 : CBD1`. **Since 08.10.2026 GRC-IV is 8.00 ± 0.80 (7.20–8.79 %), `GRC_THC8 : CBD1`**
+     (Head of QC: *"grade 7.00% into 8.00% +-0.8%"*; confirmed with QA the same day against a 7.00 ± 0.70 option, which is not used; KVM4 holds 8, 10, 12;
+     `tracker/apply_grc_grade_8_2026-10-08.py`). `-050` and `-152` and their iCoAs cite it; `-050`'s 7.05 % prints
+     below the window, by his choice (*"both on 8.00 ± 0.80"*; the potency audit's `RULED_OUTSIDE`). The builder's draft 14 % holds nothing and is not adopted. At the Head of QC's word
+     (*"You write it to KVM4"*, 07.10.2026) the desk saved these three ranges to GRC on the builder
+     (`PUT /api/specs/GRC`, then `POST …/finish`), with 7.05 entered as a result. The builder's data lacked it.
+     The state before the write is `tracker/KVM4_GRC_BEFORE_WRITE_2026-10-07.json`. Write to the builder only
+     on his word, as here. Every finished strain's ranges each hold at least one result. The specification
+     sheets follow the same table (`specs/build_qcsp_imb.py`, 58 sheets). GRC-IV and WED-II have sheets, and
+     GRC-III's sheet is deleted (*"Delete it"*).
+     **The Versa sale list is no source for THC** (Head of QC, 07.10.2026: it may not carry the retest values).
+     Each CoQ prints its own laboratory certificate. The retest CoQ, each lot's current certificate, prints the
+     retest potency, and an initial its own release result (*"Nothing, keep as is"*).
+  8. **A certificate whose scan is incomplete** prints `[pending]` for what the missing page holds.
+     Obtain the page; do not read around it. IPH `1065/2026` (SJ102501) was the case: pages 1, 2 and 4 of
+     4, with page 3 carrying its metals, total aflatoxins and three pesticides. The complete scan arrived
+     on 08.10.2026, and `-052`/`-162` print it (`intake_IPH_2026-10-08/`, two reads, no disagreement).
 
 - **Why `[ — ]` persisted**: `coq_build.js` tested the empty value before the status, and an
   untested determination has an empty value, so the "not tested" status never reached the page.
@@ -229,6 +261,18 @@ the laboratory line (17.09.2026).
   laboratories' own lines (ISO/IEC 17025, LT-005, LT-083) are statements about them, copied from
   their certificates.
 - **An empty slot in the Head of QC's template is left empty.** It is not a gap to fill.
+- **Each laboratory's line in section 03 is that laboratory's own**, read from its certificates (Head
+  of QC, 07.10.2026, "check the real addresses of the labs"): Farmahem *Laboratory for the Environment*
+  (Лабораторија за животна средина), LT-017, Shar Planina 20, Skopje; State Phytosanitary Laboratory
+  LT-036; UKIM FF Mother Teresa 47; IPH 50 Divizija 6. Until then section 03 printed Farmahem as
+  "Laboratory for Instrumental Analysis · LT-020 · Kisela Voda" and the Phytosanitary laboratory as
+  LT-034 — the desk's lines of 21.09.2026, from no certificate. `coq_build.js` `LABS`; `LABS_SENT` keeps
+  the lines the issued Tranche 1/2 pages carry, unchanged. Head of QC, 07.10.2026: *"Correct T1 and T2
+  also but they stay as sent to the outside party"*. The 90 Tranche 1/2 pages that carry an old line
+  have a corrected copy, `DELIVER_2026-10-07_T1_T2_LabLines_Corrected/`
+  (`tracker/build_t1_t2_lab_lines_corrected_2026-10-07.py`), in which only the laboratory lines change.
+  The pages as sent, the register and `check_frozen_records.py` are untouched. Whether the customer is
+  asked to replace the certificates is his decision.
 - Before adopting any rule from a document that is not a ruling, check it against the rulings —
   the newest governs — and ask when they differ.
 - `tracker/check_certificate_claims.py` fails the build and CI on such a claim in any page a build
@@ -249,7 +293,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 185 corrections, 07.09–27.09.2026, each quoted — is
+The full record — 222 corrections, 07.09.2026–08.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:
@@ -265,7 +309,7 @@ ruling governs (§5). The most repeated, in order:
 4. **Potency grades come only from the Head of QC** — the KVM4 potency builder (§5 ruling 7), never an
    older table, never "a missing specification" (11 times).
 5. **iCoAs.** One per CoQ, and a retest CoQ cites only its own retest iCoA — except where an outside
-   laboratory (CNP) tested everything an iCoA would hold: then there is none (`-075`, `-079`, `-080`;
+   laboratory (CNP) tested everything an iCoA would hold: then there is none, on the initial and its retest (`-075`/`-144`, `-079`/`-143`, `-080`/`-161`;
    26.09.2026, §5 ruling 6) (10 times).
 6. **Be short and do not waste tokens**: no re-OCR, no page images in Word, no long reports (10 times).
 7. **The deliverable asked for comes first** — the merged PDF when a merged PDF is asked for (9 times).
@@ -304,7 +348,10 @@ Standing rules the corrections produced (message numbers are in the record):
   accreditation; Macedonian name, LT code and address; **"UKIM FF"**, not the full name; **fixed column
   widths** (codes 190 px, parameters 84 px), the same on every certificate; laboratories left-aligned,
   document codes **centred** in their column, parameter numbers **right-aligned** on the page margin, and
-  three or more consecutive parameter numbers written as a **range** ("2–4", not "2, 3, 4");
+  three or more consecutive parameter numbers written as a **range** ("2–4", not "2, 3, 4"); **each certificate's
+  parameter numbers on that certificate's own line, together, right-aligned on the page margin** (Head of QC,
+  07.10.2026: *"1,2,7 inline with the eCOA … 3-6, 8 inline with the eCOA code and date"*; `coq_build.js`
+  `section03Certs`) — header and numbers ending on the margin, which the print checks (`layout_probe`);
   document codes in **Roboto Condensed** (the narrow face he asked for, inlined at print like the house
   faces); document codes and parameter numbers **always on a two-row grid filled column by column** —
   one item in row 1; two, one per row; a third back in row 1, and so on. The bundles refuse a CoQ whose
@@ -338,12 +385,69 @@ Standing rules the corrections produced (message numbers are in the record):
   on the packaging date, a retest iCoA on the retest sampling date, one date on every analysis (§4).
 - **Retest CoQ** = the retested parameters plus every other parameter carried from the initial with its
   original citation; no "not tested" on a retest CoQ.
+- **The microbiology panel prints as the lot's own certificate reports it** (Head of QC, 07.10.2026):
+  *"you must include all parameters tested and present in the eCOA unless explicitly told"*. Where the
+  certificate was ordered against the manufacturer's specification it also reports *P. aeruginosa* and
+  *S. aureus*; #9.6 and #9.7 then print from it (`tracker/apply_micro_panel_ruling_2026-10-07.py`, 32
+  Tranche 3 CoQs). A certificate that does not report them adds no row. *"You will not use analysis
+  results from one batch to fill in for another batch and strain"*: `548/1079/26` (OI-37) stayed out until 08.10.2026, when the Head of QC filed it as P060192's (*"the
+  P060192 has full MB panel"*; its "Серија" prints P060192): it is -163's retest microbiology, 9.1–9.7
+  (`tracker/apply_mb_548_P060192_2026-10-08.py`). The
+  two rows fit one A4 page through `build_v40.js` `PANEL_FIT_LAYER`, written only on those pages.
+- **E. coli in Macedonian is 'Ешерихија коли'** (the Head of QC's base; the design skeleton's 'Ешерихиџа' is
+  corrected on every certificate not yet issued, 08.10.2026). 9.6/9.7 print their Latin names only, as his
+  specification does.
 - **Wording.** ND is a *not detected* result; a parameter not tested is `n/t`, never ND. One Macedonian
   "Conforms" (Одговара); Macedonian "метод", not "метода". Phenotype "Hybrid, Indica/Sativa dominant"
   when the split is unknown, "Hybrid, Indica 80, Sativa 20" when known — the same everywhere.
-- **Removed, and not to come back:** the processing (machine/hand trimmed) parameter on CoQs; the
-  bottom commentary sentence on iCoAs; the bottom-right document code on specifications; "MK GMP
-  Certified" anywhere (§6).
+- **Phenotype, Tranche 3** (Head of QC, 07.10.2026):
+  - *"wherever it says indica or sativa as only selected option … mark it as hybrid"*, with its leaning or its
+    percentages where known, *"also correct in the iCoAs"*.
+  - `tracker/apply_t3_phenotype_ruling_2026-10-07.py`: the 13 Tranche 3 records that ticked Indica alone
+    (every GG, BSS and OPM lot) are Hybrid, Indica dominant. Every scan and specification for these strains says
+    Indica, and none gives a split.
+  - A Tranche 3 hybrid with a known leaning and no split prints "HYBRID · INDICA DOMINANT" on the CoQ
+    (`coq_build.js` section 01, `rec.t3`) and the iCoA (`build_t3_bundle.leaning_of`). A known split prints as
+    before, e.g. INDICA60 : SATIVA40.
+  - **Everywhere** (Head of QC, 07.10.2026, later: *"check if everywhere there is Hybrid : Indica Dom. … on the CoQ
+    and iCoA and the corresponding specification"*): the lots outside the tranches follow the same rule (three ticked
+    Indica alone: -040, -082, -129), and the leaning prints on every certificate not yet issued (`build_v40.js`
+    `t3: !FROZEN_LOT`). `tracker/check_pill_rows.py` (CI) holds CoQ = iCoA = specification for all 75. Tranches 1/2
+    are unchanged.
+- **Phenotype on the specifications** (Head of QC, 08.10.2026): every OPM grade Hybrid · INDICA DOMINANT; KC-I,
+  HPA-I/II/III, BG-I/II and BSS-III Hybrid, no leaning (`specs/build_qcsp_imb.py` `PHENOTYPE_RULING`). The CoQs and
+  iCoAs of those grades follow: Tranche 3 first; the issued Tranche 1/2 pages get corrected copies, the pages as
+  sent untouched (as with the laboratory lines of 07.10.2026).
+- **Pills and heading bars: the CoQ's, on every document** (Head of QC, 07.10.2026: *"make all pills … the same as
+  they are on the COQs with that design and formatting"*; *"the heading bars in all documents need to be the same
+  visuals and same effects in full"*). `tracker/house_kit.py`: `selrow()` writes the CoQ's pill row from the register
+  (its words, the leaning or split, the Macedonian only on Machine), and the kit (`design_handoff/toolchain/
+  house_kit_2026-10-07.css`, `--generate` from the CoQ's computed style, `--check`) draws the pills and the heading
+  bars as the CoQ draws them — the bar is the 01.10.2026 bevel — on every iCoA (`build_t3_bundle.icoa_page`) and
+  specification (`build_qcsp_imb.py`) not yet issued. Change the look on the CoQ, then regenerate the kit. The Tranche 1/2 corrected copies of 08.10.2026 carry it too: on each iCoA the pill row is its corrected CoQ's, held at the sent row height (`build_t1_t2_phenotype_corrected_2026-10-08.py`).
+  Later that day the kit took three more parts, read off the same CoQ: the iCoA's *Result vs Specification* chips as
+  the CoQ's section 04 (DISP); the signature block (SIGN); and **text of the same role in the CoQ's face, size,
+  weight, spacing, case and colour** (TYPE: *"use the same fonts for the same class of text … in all depths on all
+  documents"*): header, section 01 labels and values, table head, number, parameter, method, criterion, result,
+  notes, footer. Text the CoQ has no counterpart for keeps its own.
+- **Checkbox in the pills** (Head of QC, 08.10.2026: *"the check box is miserable and not aligned middle"*): the
+  ☒/☐ is set in DejaVu Sans, centred in its pill, on every certificate and sheet not yet issued (`build_v40.js`
+  `CHECKBOX_LAYER`, carried by the house kit). Tranches 1/2 as sent.
+- **Signature block: the QC Manager on the right** (Head of QC, 07.10.2026, *"mandatory"*), on every CoQ, iCoA and
+  specification not yet issued; on the left the QA Manager (*Reviewed by*) on the CoQ and the specification, the QC
+  Analyst on the iCoA. The block is set as on the CoQ (`house_kit` SIGN). `build_v40.js` swaps the CoQ's boxes
+  (`!FROZEN_LOT`; Tranches 1/2 as sent), `build_qcsp_imb.py` the specification's; the iCoA base had it already.
+  `tracker/check_signature_side.py` (CI) holds the order and the kit on every page.
+- **Specifications in QA's Word look** (Head of QC, 07.10.2026, approved on the KC-I sample: *"the header and footer
+  and horizontal separators are all okay and also the table backgrounds"*): `build_qcsp_imb.py` `WORD_LAYER`, the
+  default on all 58 sheets, its section bars deepened (*"a little bit more visible … some contrast"*).
+- **Processing field** (Machine/Hand): restored on the CoQ and the iCoA by the Head of QC on 30.09.2026 (the
+  approved scans carry it), superseding its removal of 18.09. On 07.10.2026: *"include the processing pill into
+  the iCoA as in the CoQs and format it suitably"*. The iCoA row had run past the right margin and cut off the
+  Hand chip. Both iCoA bases now carry `__owner-selrow-fit`, the CoQ's chip scale, and on every iCoA not yet
+  issued the row ends level with the values below.
+- **Removed, and not to come back:** the bottom commentary sentence on iCoAs; the bottom-right document
+  code on specifications; "MK GMP Certified" anywhere (§6).
 - **In-house laboratory citation:** "Purely Plant QC Department · In-house | Пјурли Плант — Сектор за
   КК · In-house · Kojlija 1043, Petrovec-Skopje, MK".
 - **Supersedes line** directly beneath the current CoQ code and issue date, very small and greyed.
@@ -356,11 +460,32 @@ Standing rules the corrections produced (message numbers are in the record):
   block carry it; the plateau lives in one place so it is tuned once. It governs the reprints only —
   the CoQ layer is gated `!FROZEN_LOT`, so the issued Tranche 1/2 pages `check_frozen_records.py`
   holds are untouched — and the full-bleed heading bars and footer are left edge to edge.
-- **Signatures** from `_sig/` only, rotated: Christina Cekic far left, the other two on the right, the
-  QC Manager's 15–20 % larger and crossing the line; a signed and an unsigned set.
+- **Print-safe PDFs** (Head of QC, 07.10.2026: *"The printer is printing white pages when printing the
+  specifications"*). Transparency in a PDF (soft masks, transparency groups, alpha, blend modes) is what a
+  printer short of memory drops as a white page. The specification sheet carried 58 page-sized soft-masked images
+  per page, so `specs/print_qcsp_imb.py` prints each sheet in two passes over one layout — an opaque 300 dpi
+  background under its vector text — and refuses a sheet with transparency left (`transparency()`). The iCoA
+  carries none. The CoQ and the iCoA carry their fades as soft masks and groups (about eight of each per page); on 09.10.2026 every
+  second page of a merged set printed blank, so every merged certificate PDF is made print-safe on the PDF itself by
+  `tracker/print_safe_pdf.py` (opaque 300 dpi background under the page's own vector text; refused if the text or the
+  look changes). Run it on any certificate PDF before it goes out to be printed.
+- **Signatures: none, signed in person** (Head of QC, 07.10.2026: *"remove the signatures … we will sign them in
+  person now"*). Every CoQ, iCoA and specification not yet issued goes out with empty signature lines.
+  `build_t3_bundle.unsigned` strips the analyst's (Christina Cekic) and the QC Manager's hands from the iCoA
+  base and refuses a page that keeps one; `build_v40.js` builds the CoQ unsigned (no `PP_SIGNATURES`); the
+  specification sheets carry none. The issued Tranche 1/2 pages are as sent. Before 07.10.2026: hands from
+  `_sig/` only, rotated, a signed and an unsigned set.
 - **Bundles.** Each page of an attached external certificate carries a ~1.5 cm stamp with the CoQ code
   and date and the Head of QC's signature only, laid over the page without shrinking it, upright.
-- **Word** files are exact, editable copies of the page — never page images, never a re-layout.
+- **Word** files are exact, editable copies of the page — never page images, never a re-layout:
+  `design_handoff/toolchain/pdf_to_docx_exact.py` from the delivered PDF (samples of 07.10.2026 in
+  `DELIVER_2026-10-07_Word_Samples/`). It needs the house variable fonts in `PP_FONT_SRC` (from github.com/google/fonts)
+  and refuses without them. No certificate prints a Type 3 font (`assert_house_fonts` refuses it): the iCoA prints in
+  the CoQ's static house faces in place of its base's variable ones (`build_t3_bundle.print_copies`), and every
+  italic weight the pages set is in `print_coq_pdfs.FAMILIES`.
+- **Heading bars, CoQ and iCoA** (Head of QC, 07.10.2026: *"way too intensive in color … more white … without
+  having to increase the color intensity"*): near-white with its shading, held by a top and a deeper foot hairline
+  (`build_v40.js` `SEC_LABEL_BEVEL_LAYER`, unissued only; the iCoA through the house kit).
 - **Nothing invented.** No category, statement or reason that no ruling or document supports (there
   is no "12-month reissue"; only a retest reissues a CoQ).
 - **Working.** Fix a defect instead of listing it; nothing from memory, check every value; explain a
@@ -373,7 +498,9 @@ decide. From the review of 27.09.2026, also his to decide: the issued Tranche 2 
 `iCoA-PP_26-123` although its approved scan cites no iCoA (the number is `-109`'s); the issued T1/T2
 iCoAs of 24.09 print `…_v.03`; the CoQ footer's "QCSOP 012 v.03" (his template) against our empty slot;
 `-021`'s manufacture date (the workbook says "not given"); packaging dates for CC042601, FB042601 and
-the three P160 lots; the 11 numbers out of date order.
+the three P160 lots; the 11 numbers out of date order. From 07.10.2026: whether the corrected Tranche 1/2
+copies replace the certificates the customer holds, and whether that copy also drops the "MK GMP Certified
+Facility" footer line the sent pages carry (§6).
 
 ## 8. Git
 

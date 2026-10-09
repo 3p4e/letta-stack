@@ -1,6 +1,6 @@
 # Build log — PP-QC-SP-002/26 (in-house loss on drying before shipment, Tranches 1 and 2)
 
-Built 2026-10-06 08:53 UTC on repository head `5a74ae4`.
+Built 2026-10-06 15:17 UTC on repository head `5845a53`.
 Engine: `pp-document-suite/scripts` (python-docx), last engine commit `8c7d5e6 2026-09-25`; base template `assets/PP_BASE_TEMPLATE.docx`. Label sheets are plain python-docx on A4 perforated stock (no running header).
 Render: LibreOffice Writer (`soffice --headless --convert-to pdf`), Carlito for Calibri.
 Status printed on every engine document: IN REVIEW — NOT FOR USE; rebuilt as v1.0 with an effective date only on the Head of QC's approval.
@@ -9,57 +9,47 @@ Status printed on every engine document: IN REVIEW — NOT FOR USE; rebuilt as v
 
 | File | pp_verify | Pages | SHA-256 |
 |---|---|---|---|
-| `1_PLAN/PP-QC-SP-002_26_Sampling_Plan_LoD_T1_T2.docx` | PASS |  | `2b4629a925f2f6dbf4114eb881ad18ff4fb491be97965b62c8e80f7abcb94423` |
-| `1_PLAN/PP-QC-SP-002_26_Sampling_Plan_LoD_T1_T2.pdf` |  | 10 | `035cd6e22828efc8ff91de709bc98c3da0b99314cddc2fb117ae8ab9d9f74460` |
-| `1_PLAN/PACKET_PP-QC-SP-002_26_PACKAGE-1_PLAN.pdf` | | 10 | `37fe60ab8370c58682996085d9fac99dbe9e1d7494618a6a42db44e97dbd775f` |
-| `PP-QC-SP-002_26_PACKAGE-1_PLAN.zip` | | | `f9f4b881ac711aa6d1eb8ec3f08b9193a4b7ff0b8bfffb5460f90b9e60694e99` |
+| `1_PLAN/PP-QC-SP-002_26_Sampling_Plan_LoD_T1_T2.docx` | PASS |  | `c6bebb2381370177de503498437b20de93123ab3abbc054fe9d0de7db5242484` |
+| `1_PLAN/PP-QC-SP-002_26_Sampling_Plan_LoD_T1_T2.pdf` |  | 9 | `4b2844761bb3791d03024461570bbfb43c1e03b9b57914949beeee0f0f846ee3` |
+| `1_PLAN/PACKET_PP-QC-SP-002_26_PACKAGE-1_PLAN.pdf` | | 9 | `8088ce6e00e5591a73a64fe0a0782f3cb084d84151963c55fcb358ea51dc16f2` |
+| `PP-QC-SP-002_26_PACKAGE-1_PLAN.zip` | | | `01dc10f9c758d92fe753327f184ac894453cb20a13370870473688b8dfa91667` |
 
 ## PP-QC-SP-002_26_PACKAGE-2_SAMPLING_EXECUTION
 
 | File | pp_verify | Pages | SHA-256 |
 |---|---|---|---|
-| `2_SAMPLING_EXECUTION/S0_Package_Index_Sampling_Execution.docx` | PASS |  | `7aa61da2e30c89c453e8abd671f9d14ee5a9321496234813b4af2aba0e707c3f` |
-| `2_SAMPLING_EXECUTION/S0_Package_Index_Sampling_Execution.pdf` |  | 1 | `8b488537ef0fbb835bbd4554a4fb5a1f26d451329fc4f7611356d67f9fdcda6c` |
-| `2_SAMPLING_EXECUTION/S1-1_QCT024_Transfer_Warehouse_to_Sampling_Day1.docx` | PASS |  | `88ae44d7139afa2411c8fe11b816eb0f8509e5a6a44748c139423103e1c4d97f` |
-| `2_SAMPLING_EXECUTION/S1-1_QCT024_Transfer_Warehouse_to_Sampling_Day1.pdf` |  | 14 | `074a17a3f9d156a3e6c975e6c653e5528b1e045b476b1a51023439291d9066d3` |
-| `2_SAMPLING_EXECUTION/S1-2_QCSOP011_A03_Visual_Inspection_Day1.docx` | PASS |  | `8d628b41fb0a83d1d973de4da6df694cce9df904e6ce672439775aa4b2e32405` |
-| `2_SAMPLING_EXECUTION/S1-2_QCSOP011_A03_Visual_Inspection_Day1.pdf` |  | 37 | `cdf1e7d73bb732950ddb039e869ad2611da36efba2599b364de697ff107d32ac` |
-| `2_SAMPLING_EXECUTION/S1-3_QCT021_Before_After_Sampling_Day1.docx` | PASS |  | `4d2db3ec1556a996ee53ce8c178b03348159046e2c18e2fbc3656a80ec8da696` |
-| `2_SAMPLING_EXECUTION/S1-3_QCT021_Before_After_Sampling_Day1.pdf` |  | 22 | `43cf9a371c3915a5c3890a37f0d377f393d5325d74e903084726bc79818b38f6` |
-| `2_SAMPLING_EXECUTION/S1-4_QASOP031_A05_SAMPLED_Bag_Labels_Day1.docx` | label sheet |  | `4e514f42d1a6d0bcbf7f4f8299548345e639301253e5fcf7444cf1fadbbc2c00` |
-| `2_SAMPLING_EXECUTION/S1-4_QASOP031_A05_SAMPLED_Bag_Labels_Day1.pdf` |  | 14 | `57ccc4565fe5116961b675786558b6f2640c825cf160bdcbd327fbff2f622299` |
-| `2_SAMPLING_EXECUTION/S1-5_QASOP031_A07_Sample_Labels_Day1.docx` | label sheet |  | `b2ffb831d0c9514728c3a02191b59b4ad5a17218b75edd5b53a5c4825da21a87` |
-| `2_SAMPLING_EXECUTION/S1-5_QASOP031_A07_Sample_Labels_Day1.pdf` |  | 3 | `9987111119930fa0afd535f9b38bb56c815d333f8692292a827fd86d89ef6f65` |
-| `2_SAMPLING_EXECUTION/S1-6_QCT024_Transfer_Return_to_Warehouse_Day1.docx` | PASS |  | `0b77283a9b56232163e40b7375a8452c80a1c38622913dc41953b8ea1ff18789` |
-| `2_SAMPLING_EXECUTION/S1-6_QCT024_Transfer_Return_to_Warehouse_Day1.pdf` |  | 14 | `309e677cc53dd6459b8b28f0e2617b1ffa1679ea9a17dde163935be8eec411d2` |
-| `2_SAMPLING_EXECUTION/S1-7_QCT024_Transfer_Samples_to_QC_Lab_Day1.docx` | PASS |  | `7bc9b9c5a44405d86d0180bff7d321fcc7dd02c184b69b4cdecdf956e98e83c8` |
-| `2_SAMPLING_EXECUTION/S1-7_QCT024_Transfer_Samples_to_QC_Lab_Day1.pdf` |  | 2 | `f3641b67a3bff41f0fb43dafb901da937a8acb44452884fe2e5d8cb69704f37e` |
-| `2_SAMPLING_EXECUTION/S2-1_QCT024_Transfer_Warehouse_to_Sampling_Day2.docx` | PASS |  | `c99a13fb0198ffa2d9b9aae9ac01cc45dca202994005d4de531939f0606bea56` |
-| `2_SAMPLING_EXECUTION/S2-1_QCT024_Transfer_Warehouse_to_Sampling_Day2.pdf` |  | 14 | `a38c1d166d993c6a85506db4a45052cad05b4f8ac640eaf5eb34cec7da36e99e` |
-| `2_SAMPLING_EXECUTION/S2-2_QCSOP011_A03_Visual_Inspection_Day2.docx` | PASS |  | `c422cf8e394fc04443127e8d8b1c68b69f488b8ac4958a9a6c6a54105dcbe184` |
-| `2_SAMPLING_EXECUTION/S2-2_QCSOP011_A03_Visual_Inspection_Day2.pdf` |  | 36 | `d177b5e5deb90f1c900ec73bbed9b262debd10709850adfb56bf827c9e977ef8` |
-| `2_SAMPLING_EXECUTION/S2-3_QCT021_Before_After_Sampling_Day2.docx` | PASS |  | `b693337846dbf0ff358904afce599cdca2d411369cc88054e5a3883129f3d87c` |
-| `2_SAMPLING_EXECUTION/S2-3_QCT021_Before_After_Sampling_Day2.pdf` |  | 22 | `fcb808956d88cbfc791448cec9d71ea0cefdcdbbb79ed5a1fd018ecf73833c98` |
-| `2_SAMPLING_EXECUTION/S2-4_QASOP031_A05_SAMPLED_Bag_Labels_Day2.docx` | label sheet |  | `83eb062b8c4cae3529ac5eb8d65cf9165446244cb4e960fdde189f0e87025eec` |
-| `2_SAMPLING_EXECUTION/S2-4_QASOP031_A05_SAMPLED_Bag_Labels_Day2.pdf` |  | 14 | `a335dfba3d045888e1560594729c04fde6fac7967a711d58f30ee1cf9f384ba3` |
-| `2_SAMPLING_EXECUTION/S2-5_QASOP031_A07_Sample_Labels_Day2.docx` | label sheet |  | `b98ae419c34d666de4c59487a963162235b56dfbdc2f1f01bf9625a0de0cad41` |
-| `2_SAMPLING_EXECUTION/S2-5_QASOP031_A07_Sample_Labels_Day2.pdf` |  | 3 | `cc0813be94e48d84576d0f3724bce9b02fa9b4e4c6584e5e56d715e25ae66932` |
-| `2_SAMPLING_EXECUTION/S2-6_QCT024_Transfer_Return_to_Warehouse_Day2.docx` | PASS |  | `77b5445e4f0f82c896d30ab4c050995d1eba68d298b5b8dd7e9a09e66e5ba884` |
-| `2_SAMPLING_EXECUTION/S2-6_QCT024_Transfer_Return_to_Warehouse_Day2.pdf` |  | 14 | `88b26f494c6145cebe26e94dccf199554d43bf0d676af64f6c6b5c1a3304015d` |
-| `2_SAMPLING_EXECUTION/S2-7_QCT024_Transfer_Samples_to_QC_Lab_Day2.docx` | PASS |  | `380a91dbb5c27f69c7f050dccebfcc0d4d19c95b6437afe7121359937f8a4e0c` |
-| `2_SAMPLING_EXECUTION/S2-7_QCT024_Transfer_Samples_to_QC_Lab_Day2.pdf` |  | 2 | `0e7a5317b20ba8bad9bb04ac2df839af66ca4e0db7ce89ca984bacd25436f7e8` |
-| `2_SAMPLING_EXECUTION/PACKET_PP-QC-SP-002_26_PACKAGE-2_SAMPLING_EXECUTION.pdf` | | 178 | `56e0f194153b05e191fd7001affe27ee628dc0dcf501b48bfea7fb318b86de5a` |
-| `PP-QC-SP-002_26_PACKAGE-2_SAMPLING_EXECUTION.zip` | | | `f29a3d443a5248c9b77629aa8c3e685ef4ab877a0db45d462fbbf86d55708410` |
+| `2_SAMPLING_EXECUTION/S0_Package_Index_Sampling_Execution.docx` | PASS |  | `01aaf58bd642d07c1451c27a28a6fc90894c000bbe9f456034a9159d3aa4e997` |
+| `2_SAMPLING_EXECUTION/S0_Package_Index_Sampling_Execution.pdf` |  | 1 | `0241af25fad9f15f91b0dc937ce36c50490c0f572b2ae627692e540df1633d8f` |
+| `2_SAMPLING_EXECUTION/S1-1_QCT024_Transfer_Warehouse_to_Sampling_Day1.docx` | PASS |  | `f809621d3aa77ab8e18224e916eff6894fba68b8e0af90707c383d6806872ac4` |
+| `2_SAMPLING_EXECUTION/S1-1_QCT024_Transfer_Warehouse_to_Sampling_Day1.pdf` |  | 3 | `60750bd0048c9d017447ff148db5baa120ba031b77354d5a066badd190795267` |
+| `2_SAMPLING_EXECUTION/S1-2_QCSOP011_A03_Visual_Inspection_Day1.docx` | PASS |  | `03b5b1745236089e6dde0ad6ccdd30f60b012407dd69ffad11a0c92eeb3ac463` |
+| `2_SAMPLING_EXECUTION/S1-2_QCSOP011_A03_Visual_Inspection_Day1.pdf` |  | 46 | `6d4aaf0416f0b00a38cccc0832da8d1b6dc15f52de51b110bfcbbe240463f1f2` |
+| `2_SAMPLING_EXECUTION/S1-3_QCT021_Before_After_Sampling_Day1.docx` | PASS |  | `7e23f5ca9896cd4f5481f94fce03707fb3fd146a2995ea4f48ca431d63079848` |
+| `2_SAMPLING_EXECUTION/S1-3_QCT021_Before_After_Sampling_Day1.pdf` |  | 3 | `106793cb7806438e2303e638e2aee6541d7c631bd14f1647d8004549c3ab54fb` |
+| `2_SAMPLING_EXECUTION/S1-4_QASOP031_A05_SAMPLED_Bag_Labels_Day1.docx` | label sheet |  | `0a0ac735c9b8992a2fbc04fabcf21b3a9e28c8b5deeb96febca7037e807f2043` |
+| `2_SAMPLING_EXECUTION/S1-4_QASOP031_A05_SAMPLED_Bag_Labels_Day1.pdf` |  | 2 | `cc72c441472a17dc15270772a5cdcb47e35cb2dbb62fa03cdac649268a8d44fe` |
+| `2_SAMPLING_EXECUTION/S1-5_QASOP031_A07_Sample_Labels_Day1.docx` | label sheet |  | `79a370562f0ab1bd9eae373f7a82ef4193e1fa0dca39c33e79dc34f60ba3e306` |
+| `2_SAMPLING_EXECUTION/S1-5_QASOP031_A07_Sample_Labels_Day1.pdf` |  | 6 | `4911a53aed26fb5c7f521e6e1ebd73129cda7eed9b6d3e5c317605f1733795bc` |
+| `2_SAMPLING_EXECUTION/S1-6_QCT024_Transfer_Return_to_Warehouse_Day1.docx` | PASS |  | `e9cbaacd315d078a3e5d958abeb28bc27b6ff9cc3a5bd053dcf37208f26bdb3e` |
+| `2_SAMPLING_EXECUTION/S1-6_QCT024_Transfer_Return_to_Warehouse_Day1.pdf` |  | 3 | `6d42a8832ff47ae98f9bb5bb9210a46b8f9276df0d5033bab6edb82c4b754781` |
+| `2_SAMPLING_EXECUTION/S1-7_QCT024_Transfer_Samples_to_QC_Lab_Day1.docx` | PASS |  | `f9f1135a4aba72cc9212398da7db0cf5bba6b2db1d3c88d1b7bdac1688013bed` |
+| `2_SAMPLING_EXECUTION/S1-7_QCT024_Transfer_Samples_to_QC_Lab_Day1.pdf` |  | 2 | `c785489ab0b0da17454e78ae9b9f327ec75ade41c07b9437c15a7c0b377c3e2d` |
+| `2_SAMPLING_EXECUTION/PACKET_PP-QC-SP-002_26_PACKAGE-2_SAMPLING_EXECUTION.pdf` | | 58 | `b9002a6340301c9866325e58cd88ebaad4db6540d669521f2e58871637a915f7` |
+| `PP-QC-SP-002_26_PACKAGE-2_SAMPLING_EXECUTION.zip` | | | `9c60a57097826d4f90528c30ee0193b25940f1a0eae4851d813233fbf27c9b22` |
 
 ## PP-QC-SP-002_26_PACKAGE-3_LOD_ANALYSIS_EXECUTION
 
 | File | pp_verify | Pages | SHA-256 |
 |---|---|---|---|
-| `3_LOD_ANALYSIS_EXECUTION/PP-QC-SP-002_26-LOD-01_LoD_Execution_Record_Day1_Samples.docx` | PASS |  | `4cab05282a27d512c953dca61a16336cb0b39a7e30c62eec7d26d2bdf1495b51` |
-| `3_LOD_ANALYSIS_EXECUTION/PP-QC-SP-002_26-LOD-01_LoD_Execution_Record_Day1_Samples.pdf` |  | 8 | `656f4d2d3707dd3d0ef4abf0069b36b883d7289434897a99c693155c4a0f6e1c` |
-| `3_LOD_ANALYSIS_EXECUTION/PP-QC-SP-002_26-LOD-02_LoD_Execution_Record_Day2_Samples.docx` | PASS |  | `7fb5212ae46214ff9afad7c17a528787472325713c5a133bf44dcc6c54d8c02a` |
-| `3_LOD_ANALYSIS_EXECUTION/PP-QC-SP-002_26-LOD-02_LoD_Execution_Record_Day2_Samples.pdf` |  | 8 | `407726320eb8efef4b88594268ac1c39644a976c57be76811ee7b2f753ff0adb` |
-| `3_LOD_ANALYSIS_EXECUTION/PACKET_PP-QC-SP-002_26_PACKAGE-3_LOD_ANALYSIS_EXECUTION.pdf` | | 16 | `3b4bb6a78cdff0cdf8e9a9fa1907473a6106a8196481ea48487d2e737f760e17` |
-| `PP-QC-SP-002_26_PACKAGE-3_LOD_ANALYSIS_EXECUTION.zip` | | | `e98dd30aec3a897f5c783d22aae68b39d40e036167d95df5a55530afb8f75b87` |
+| `3_LOD_ANALYSIS_EXECUTION/PP-QC-SP-002_26-LOD-01_LoD_Execution_Record_T1_T2.docx` | PASS |  | `5101b9441684e8df28fe5534197c269f156533dff0d64a8f1af4c1f0e00f5f3f` |
+| `3_LOD_ANALYSIS_EXECUTION/PP-QC-SP-002_26-LOD-01_LoD_Execution_Record_T1_T2.pdf` |  | 11 | `df8daf21ec83514104d51e3155fd613c528c2e108b525ac02c4ec25361da299c` |
+| `3_LOD_ANALYSIS_EXECUTION/PP-QC-SP-002_26-LOD-01_Attachment-1_Two_Balance_Weighings.docx` | PASS |  | `520e4735795a7cb73e6868c2e495dfc303ba48e1afdd4cd0a5ad10bfc3e99552` |
+| `3_LOD_ANALYSIS_EXECUTION/PP-QC-SP-002_26-LOD-01_Attachment-1_Two_Balance_Weighings.pdf` |  | 4 | `8dcc57cb84ccf6ee36e653922b15e5a6462ebcce94ffcc160d9a12a1de53f562` |
+| `3_LOD_ANALYSIS_EXECUTION/PP-QC-SP-002_26-DEV-01_Deviation_Precision_Balance_LOD-01.docx` | PASS |  | `e2cc47d7c7bc10a097ac4ab316bab8f4c3a9247bfde90615145851e9f0249924` |
+| `3_LOD_ANALYSIS_EXECUTION/PP-QC-SP-002_26-DEV-01_Deviation_Precision_Balance_LOD-01.pdf` |  | 4 | `81c5c450db7d97eafe5f58633f9a218edadaf53a713f97834fa85c191c038386` |
+| `3_LOD_ANALYSIS_EXECUTION/PP-QC-SP-002_26-LOD-01R_LoD_Repeat_AUW220D_T1_T2.docx` | PASS |  | `754defd75e4225a5e5b82ef2046851f19bbdd3a754a6eacbad555a27394060f8` |
+| `3_LOD_ANALYSIS_EXECUTION/PP-QC-SP-002_26-LOD-01R_LoD_Repeat_AUW220D_T1_T2.pdf` |  | 11 | `b1a6566176abbf5998a2339ead237a169ee721046a505e5c4b2af528ca37cf3e` |
+| `3_LOD_ANALYSIS_EXECUTION/PACKET_PP-QC-SP-002_26_PACKAGE-3_LOD_ANALYSIS_EXECUTION.pdf` | | 30 | `df0a94850ae6cc153a10f1dcc28df825db89e55c23848ae8768fa2c60ead071c` |
+| `PP-QC-SP-002_26_PACKAGE-3_LOD_ANALYSIS_EXECUTION.zip` | | | `d961a2e31e3cb9c794bdba5d9ac3afccb9564e64d40de0e2b9a111503025bf04` |
 
-Data: `SAMPLING_PLAN_T1_T2_2026-10.tsv` (`f41c233c27b5895ea24a2f076770b62c981efc071553589add7b720a930242e6`), `bag_selection.tsv` (`0117da6aef69ec8ab4063a6ed37594cdd087818cc3da665e21de90dc827c94df`); notes in `DATA_NOTES.md`.
+Data: `SAMPLING_PLAN_T1_T2_2026-10.tsv` (`1e8b8634e801b514c666e574b8be5667c4ee9ea76db3c513c098e5a746f8e09f`), `bag_selection.tsv` (`7d9bec08ce42bb7879d6a5ba40855b9e392799652d0da04575bc8543fecc4e8f`); notes in `DATA_NOTES.md`.

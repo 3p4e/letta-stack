@@ -37,13 +37,7 @@ CoQ-PP_26-046	initial	P060102	WED102501	10.3	Ochratoxin A	LATER-ROUND		not teste
 CoQ-PP_26-050	initial	P060142	GRC102501/1	10.1	Aflatoxin B1	LATER-ROUND		not tested at release — the IPH certificate reports total aflatoxins o	exact 227-16-М/26 16.09.2026 = ND (after the CoQ)
 CoQ-PP_26-050	initial	P060142	GRC102501/1	10.3	Ochratoxin A	LATER-ROUND		not tested at release — the IPH certificate reports total aflatoxins o	exact 227-16-М/26 16.09.2026 = ND (after the CoQ)
 CoQ-PP_26-052	initial	P060162	SJ102501	10.1	Aflatoxin B1	LATER-ROUND		not tested at release — the IPH certificate reports total aflatoxins o	exact 227-6-М/26 16.09.2026 = ND (after the CoQ)
-CoQ-PP_26-052	initial	P060162	SJ102501	10.2	Aflatoxins total	PENDING		awaiting the complete scan of IPH 1065/2026 — every copy holds pages 1	exact 227-6-М/26 16.09.2026 = ND (after the CoQ)
 CoQ-PP_26-052	initial	P060162	SJ102501	10.3	Ochratoxin A	LATER-ROUND		not tested at release — the IPH certificate reports total aflatoxins o	exact 227-6-М/26 16.09.2026 = ND (after the CoQ)
-CoQ-PP_26-052	initial	P060162	SJ102501	11.1	Lead	PENDING		awaiting the complete scan of IPH 1065/2026 — every copy holds pages 1	
-CoQ-PP_26-052	initial	P060162	SJ102501	11.2	Cadmium	PENDING		awaiting the complete scan of IPH 1065/2026 — every copy holds pages 1	
-CoQ-PP_26-052	initial	P060162	SJ102501	11.3	Arsenic	PENDING		awaiting the complete scan of IPH 1065/2026 — every copy holds pages 1	
-CoQ-PP_26-052	initial	P060162	SJ102501	11.4	Mercury	PENDING		awaiting the complete scan of IPH 1065/2026 — every copy holds pages 1	
-CoQ-PP_26-052	initial	P060162	SJ102501	12	Pesticide residues	PENDING		awaiting the complete scan of IPH 1065/2026 — every copy holds pages 1	exact 1065/2026 11.03.2026 = н.д. — all 26
 CoQ-PP_26-055	initial	P060192	SJ112501	10.1	Aflatoxin B1	LATER-ROUND		not tested at release — the IPH certificate reports total aflatoxins o	exact 227-5-М/26 16.09.2026 = ND (after the CoQ)
 CoQ-PP_26-055	initial	P060192	SJ112501	10.3	Ochratoxin A	LATER-ROUND		not tested at release — the IPH certificate reports total aflatoxins o	exact 227-5-М/26 16.09.2026 = ND (after the CoQ)
 CoQ-PP_26-056	initial	P060202	J31112501	10.1	Aflatoxin B1	LATER-ROUND		not tested at release — the IPH certificate reports total aflatoxins o	exact 227-14-М/26 16.09.2026 = ND (after the CoQ)
@@ -69,11 +63,8 @@ CoQ-PP_26-068	initial	P060332	CC012601/1	11.3	Arsenic	UNTESTED		not tested — n
 CoQ-PP_26-068	initial	P060332	CC012601/1	11.4	Mercury	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
 CoQ-PP_26-068	initial	P060332	CC012601/1	12	Pesticide residues	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
 CoQ-PP_26-073	initial	P060342	SCR012601	8	Loss on drying	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
-CoQ-PP_26-073	initial	P060342	SCR012601	11.1	Lead	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
-CoQ-PP_26-073	initial	P060342	SCR012601	11.2	Cadmium	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
-CoQ-PP_26-073	initial	P060342	SCR012601	11.3	Arsenic	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
-CoQ-PP_26-073	initial	P060342	SCR012601	11.4	Mercury	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
-CoQ-PP_26-073	initial	P060342	SCR012601	12	Pesticide residues	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
+CoQ-PP_26-073	initial	P060342	SCR012601	10.1	Aflatoxin B1	LATER-ROUND		not tested at release — the IPH certificate reports total aflatoxins o	exact 227-8-М/26 16.09.2026 = ND (after the CoQ)
+CoQ-PP_26-073	initial	P060342	SCR012601	10.3	Ochratoxin A	LATER-ROUND		not tested at release — the IPH certificate reports total aflatoxins o	exact 227-8-М/26 16.09.2026 = ND (after the CoQ)
 CoQ-PP_26-075	initial	P060392	FB012603V	10.1	Aflatoxin B1	LATER-ROUND		not tested at release — the IPH certificate reports total aflatoxins o	exact 227-23-М/26 16.09.2026 = ND (after the CoQ)
 CoQ-PP_26-075	initial	P060392	FB012603V	10.3	Ochratoxin A	LATER-ROUND		not tested at release — the IPH certificate reports total aflatoxins o	exact 227-23-М/26 16.09.2026 = ND (after the CoQ)
 CoQ-PP_26-079	initial	P060432	FB012603	10.1	Aflatoxin B1	LATER-ROUND		not tested at release — the IPH certificate reports total aflatoxins o	exact 227-24-М/26 16.09.2026 = ND (after the CoQ)
@@ -81,13 +72,3 @@ CoQ-PP_26-079	initial	P060432	FB012603	10.3	Ochratoxin A	LATER-ROUND		not tested
 CoQ-PP_26-080	initial	P060442	SCR022601	10.1	Aflatoxin B1	LATER-ROUND		not tested at release — the IPH certificate reports total aflatoxins o	exact 227-7-М/26 16.09.2026 = ND (after the CoQ)
 CoQ-PP_26-080	initial	P060442	SCR022601	10.3	Ochratoxin A	LATER-ROUND		not tested at release — the IPH certificate reports total aflatoxins o	exact 227-7-М/26 16.09.2026 = ND (after the CoQ)
 CoQ-PP_26-160	retest	P060342	SCR012601	8	Loss on drying	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
-CoQ-PP_26-160	retest	P060342	SCR012601	11.1	Lead	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
-CoQ-PP_26-160	retest	P060342	SCR012601	11.2	Cadmium	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
-CoQ-PP_26-160	retest	P060342	SCR012601	11.3	Arsenic	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
-CoQ-PP_26-160	retest	P060342	SCR012601	11.4	Mercury	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
-CoQ-PP_26-160	retest	P060342	SCR012601	12	Pesticide residues	UNTESTED		not tested — no certificate for this lot; requested from the laborator	
-CoQ-PP_26-162	retest	P060162	SJ102501	11.1	Lead	PENDING		awaiting the complete scan of IPH 1065/2026 — every copy holds pages 1	
-CoQ-PP_26-162	retest	P060162	SJ102501	11.2	Cadmium	PENDING		awaiting the complete scan of IPH 1065/2026 — every copy holds pages 1	
-CoQ-PP_26-162	retest	P060162	SJ102501	11.3	Arsenic	PENDING		awaiting the complete scan of IPH 1065/2026 — every copy holds pages 1	
-CoQ-PP_26-162	retest	P060162	SJ102501	11.4	Mercury	PENDING		awaiting the complete scan of IPH 1065/2026 — every copy holds pages 1	
-CoQ-PP_26-162	retest	P060162	SJ102501	12	Pesticide residues	PENDING		awaiting the complete scan of IPH 1065/2026 — every copy holds pages 1	exact 1065/2026 11.03.2026 = н.д. — all 26

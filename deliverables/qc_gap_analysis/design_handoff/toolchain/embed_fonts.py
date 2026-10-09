@@ -43,9 +43,11 @@ STYLE = {400: ("", "regular"), 700: ("", "bold")}
 WEIGHT_NAME = {300: "Light", 500: "Medium", 600: "SemiBold", 800: "ExtraBold", 900: "Black"}
 VARIABLE = {("Montserrat", False): "Montserrat[wght].ttf", ("Montserrat", True): "Montserrat-Italic[wght].ttf",
             ("Roboto Mono", False): "RobotoMono[wght].ttf", ("Roboto Mono", True): "RobotoMono-Italic[wght].ttf",
-            ("Orbitron", False): "Orbitron[wght].ttf"}
+            ("Orbitron", False): "Orbitron[wght].ttf",
+            ("Roboto Condensed", False): "RobotoCondensed[wght].ttf",
+            ("Roboto Condensed", True): "RobotoCondensed-Italic[wght].ttf"}
 WEIGHTS = {"Montserrat": (300, 400, 500, 600, 700, 800, 900), "Roboto Mono": (400, 500, 600, 700),
-           "Orbitron": (500, 600, 700, 800, 900)}
+           "Orbitron": (500, 600, 700, 800, 900), "Roboto Condensed": (400, 500, 600, 700)}
 
 
 def face_name(family, weight, italic):

@@ -87,7 +87,7 @@ def main():
             f = T3.fields(c, gaps, scope)
             T3.check_pair(f, open(coq_html[c['regcode']], encoding='utf-8').read())
             dst = os.path.join(idir, T3.name_of(f))
-            open(dst, 'w', encoding='utf-8').write(T3.house_stack(T3.own.build(f['scope'].split(','), f)))
+            open(dst, 'w', encoding='utf-8').write(T3.icoa_page(f['scope'].split(','), f, c))
             docs.append(('iCoA %s' % s, T3.name_of(f)[:-5], dst))
 
     pdf_of = {}
@@ -97,7 +97,8 @@ def main():
         os.makedirs(pdir, exist_ok=True)
         srcs = [h for _, _, h in docs if os.path.dirname(h) == hdir]
         css = coq_css if os.sep + 'CoQ' + os.sep in hdir else ''
-        pdf_of.update(zip(srcs, T3.render(srcs, pdir, None, css, T3.layout_probe)))
+        prints = srcs if css else T3.print_copies(srcs)    # the iCoA prints in the static house faces
+        pdf_of.update(zip(srcs, T3.render(prints, pdir, None, css, T3.layout_probe)))
     T3.assert_layout()
     for pdf in pdf_of.values():
         T3.assert_house_fonts(pdf)

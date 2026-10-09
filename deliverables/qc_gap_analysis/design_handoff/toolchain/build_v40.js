@@ -47,7 +47,6 @@ function FROZEN_LOT(c) {
   for (const k of [c.pp, c.cb, String(c.cb || '').replace(/\uFF0A/g, '')]) if (k && k in TR18) return /^T[12]$/.test(TR18[k]);
   return false;
 }
-
 // --- the owner's instruction of 16.09.2026: the Macedonian half of a conformity
 // result stacks beneath the English, at the size the template already sets for it
 // (.r-conform .mk — 6.8px, 79 % of the cell). The package's cell() drops the half
@@ -120,7 +119,7 @@ function winOf(crit) {
 function rec(c) {
   const byNo = {}; for (const r of c.rows) byNo[String(r.no)] = r;
   const res = {}, st = {}, doc = {}, iss = {}, lab = {};
-  for (const d of CoQ.DETS) { const r = byNo[d] || {}; res[d] = r.res || ''; st[d] = r.st || ''; doc[d] = r.doc || ''; iss[d] = r.dd || ''; lab[d] = r.lab || ''; }
+  for (const d of CoQ.DETS.concat(CoQ.PANEL_EXTRA)) { const r = byNo[d] || {}; res[d] = r.res || ''; st[d] = r.st || ''; doc[d] = r.doc || ''; iss[d] = r.dd || ''; lab[d] = r.lab || ''; }
   const spc = c.spc || {}, w = winOf((byNo['4'] || {}).crit);
   const sup = c.supersedes && c.supersedes.code ? (c.supersedes.code + (c.supersedes.date ? ' of ' + c.supersedes.date : '')) : '';
   return {
@@ -130,6 +129,10 @@ function rec(c) {
     productCode: c.pcode || '—', window: w.window, nominal: w.nominal, tol: w.tol, specCode: c.spec || '—',
     packaging: spc.pack || '—', manufDate: c.md || '', packDate: c.pk || '', supersedes: sup,
     series: (c.t || '').indexOf('retest') === 0 ? 'reissue' : 'initial',
+    frozen: FROZEN_LOT(c),     // issued Tranche 1/2: section 03 prints the laboratory lines as sent
+    // a hybrid's known leaning is spelled out on every certificate not yet issued: Tranche 3 (Head of QC, 07.10.2026)
+    // and, "everywhere", the lots outside the tranches (07.10.2026); the issued Tranche 1/2 pages stay as sent
+    t3: !FROZEN_LOT(c),
   };
 }
 fs.rmSync(OUT, { recursive: true, force: true });
@@ -242,10 +245,15 @@ const EDGE_FADE_LAYER = '<style id="__owner-edges">\n' +
 // gradient replaces it: darker top, bright mid-highlight, medium bottom — ~44-unit contrast,
 // clearly visible. Frozen T1/T2 keep the 2-stop rule above so their pages stay byte-for-byte
 // against the snapshot; the bevel layer is appended last for !FROZEN_LOT and wins by cascade.
+// Head of QC, 07.10.2026: "the chapter heading bars are way too intensive in color ... more white but still
+// gradiented with shading, and maybe a little bit of contrast so that they are more noticeable without having to
+// increase the color intensity". The fill goes most of the way to white (deepest stop 219,229,240, was 186,205,224),
+// keeps its shading — a light top, a near-white band, a soft shade to the foot — and the bar is held by its edges:
+// a hairline along the top and a deeper one along the foot. No inset shadows (17.09.2026: they band in print).
 const SEC_LABEL_BEVEL_LAYER = '<style id="__owner-sec-bevel">\n' +
-  'html body div.page .sec-label{background-color:#D7E4F0 !important;' +
-     'background-image:linear-gradient(180deg,rgb(186,205,224) 0%,rgb(230,239,249) 45%,rgb(210,223,237) 100%) !important;' +
-     'border-top:1px solid rgb(157,181,207) !important;border-bottom:1px solid rgb(148,172,198) !important}\n' +
+  'html body div.page .sec-label{background-color:#EEF3F8 !important;' +
+     'background-image:linear-gradient(180deg,rgb(229,236,244) 0%,rgb(248,250,253) 40%,rgb(240,245,250) 72%,rgb(219,229,240) 100%) !important;' +
+     'border-top:1px solid rgb(170,190,212) !important;border-bottom:1px solid rgb(118,146,177) !important}\n' +
 '</style>';
 
 // Head of QC, 28.09.2026: "widen the fades." The coloured bands and rules were solid across the
@@ -257,6 +265,36 @@ const SEC_LABEL_BEVEL_LAYER = '<style id="__owner-sec-bevel">\n' +
 // keeps edge to edge. The geometry lives in one place so it can be tuned once.
 const FADE_A = '34%', FADE_B = '66%';
 const wideFade = c => 'linear-gradient(90deg,#fff 0,' + c + ' ' + FADE_A + ',' + c + ' ' + FADE_B + ',#fff 100%)';
+// One A4 page with the full microbiology panel (Head of QC, 07.10.2026: "you need to be in A4
+// format"). Rows 9.6 and 9.7 add two 10.4-px sub-rows to section 02, 21 px. The page keeps 78 px
+// at its foot for the footer and lets the approval block take any spare room (margin-top:auto);
+// a page whose section 03 lists four laboratories has none, and went 11 px past A4 with the two
+// rows. The room comes out of page-white margins between the bands and nothing else:
+//   above the section 02, 03 and 04 labels      8, 11, 8 -> 6, 7, 6
+//   below the section 02, 03 and 04 labels      5 -> 3
+//   below the two tables                        3 -> 1
+//   above the disposition row and the rule over the signatures   8 -> 5
+// 24 px in all. Type, rules, rows and columns are untouched. The layer is written last on the
+// page, and only on a page that carries the two rows, so every other certificate is byte-for-
+// byte what it was. Measured in the printer's own Chromium on all 32 such pages.
+// Head of QC, 08.10.2026: "the check box is miserable and not aligned middle". The ☒/☐ is a glyph the house faces
+// lack, so it fell back small and sat on the text baseline. Set in DejaVu Sans, centred in its pill, on every
+// certificate not yet issued (the house kit carries it to the iCoA and the specification).
+const CHECKBOX_LAYER = '<style id="__owner-checkbox-centre">\n' +
+  'html body div.page .selrow .chip-sel,html body div.page .selrow .chip-un,html body div.page .disp-row .chip-sel,' +
+  'html body div.page .disp-row .chip-un{display:inline-flex !important;align-items:center !important}\n' +
+  'html body div.page .chip-sel .bx,html body div.page .chip-un .bx{display:inline-flex !important;align-items:center !important;' +
+  'justify-content:center !important;line-height:1 !important;height:auto !important;vertical-align:middle !important;' +
+  "font-family:'DejaVu Sans',sans-serif !important}\n" +
+  '</style>';
+const PANEL_FIT_LAYER = '<style id="__owner-panel-fit">\n' +
+  'html body div.page div.goldrule + div.sec-label{margin-top:6px !important;margin-bottom:3px !important}\n' +
+  'html body div.page div.pot-note + div.sec-label{margin-top:7px !important;margin-bottom:3px !important}\n' +
+  'html body div.page div.tbl-wrap + div.sec-label{margin-top:6px !important;margin-bottom:3px !important}\n' +
+  'html body div.page div.tbl-wrap{margin-bottom:1px !important}\n' +
+  'html body div.page div.disp-row{margin-top:5px !important}\n' +
+  'html body div.page div.disp-row + div.goldrule{margin-top:5px !important}\n' +
+  '</style>';
 const WIDE_FADE_LAYER = '<style id="__owner-wide-fade">\n@media print{\n' +
   'html body div.page .pb-main{background-color:#fff !important;background-image:' + wideFade('rgb(244,247,251)') +
      ' !important;background-size:100% 100% !important;background-position:left top !important;background-repeat:no-repeat !important}\n' +
@@ -474,7 +512,11 @@ const S01_BAND_LAYER = '<style id="__owner-s01-band">\n' +
   // WIDE_FADE_LAYER only on certificates that are not yet issued. Tranches 1 and 2 are with the
   // customer and are held byte-for-byte by check_frozen_records.py; the widen-the-fades ruling of
   // 28.09.2026 governs the reprints (Tranche 3 and the lots outside the tranches), never the sent set.
-  const DESK_LAYERS = OWNER_LAYER + '\n' + HB_SUP_LAYER + '\n' + PRINT_ZEBRA_LAYER + '\n' + EDGE_FADE_LAYER + '\n' + INK_LAYER + '\n' + S34_LAYER + '\n' + S03_LAYER + '\n' + S01_BAND_LAYER + '\n' + (FROZEN_LOT(c) ? '' : SEC_LABEL_BEVEL_LAYER + '\n' + WIDE_FADE_LAYER + '\n');
+  // Head of QC, 07.10.2026: the full microbiology panel prints where the lot's certificate reports
+  // it, and the certificate stays one A4 page. The two rows add 20 px; a page whose section 03
+  // lists three laboratories had none to spare. PANEL_FIT_LAYER takes it from white padding only.
+  const PANEL_PAGE = CoQ.PANEL_EXTRA.some(d => CoQ.hasExtra(rec(c), d));
+  const DESK_LAYERS = OWNER_LAYER + '\n' + HB_SUP_LAYER + '\n' + PRINT_ZEBRA_LAYER + '\n' + EDGE_FADE_LAYER + '\n' + INK_LAYER + '\n' + S34_LAYER + '\n' + S03_LAYER + '\n' + S01_BAND_LAYER + '\n' + (FROZEN_LOT(c) ? '' : SEC_LABEL_BEVEL_LAYER + '\n' + WIDE_FADE_LAYER + '\n' + CHECKBOX_LAYER + '\n');
   if (html.indexOf('</body>') < 0) throw new Error('no </body> to append the desk layers before');
   html = html.replace('</body>', DESK_LAYERS + '</body>');
   // Owner, 16.09.2026 (second pass): the issue date in the Section 03 code column is
@@ -520,6 +562,12 @@ const S01_BAND_LAYER = '<style id="__owner-s01-band">\n' +
   if (!FROZEN_LOT(c)) {
     if (htmlOut.split(GMP_FOOT).length !== 2) throw new Error('footer GMP line not found once: ' + c.regcode);
     htmlOut = htmlOut.replace(GMP_FOOT, '<div class="foot-right"></div>');
+    // Head of QC, 07.10.2026: "the QC manager of all these three documents be on the right side of the
+    // page and on the left side ... the QA manager, as reviewed by, on the certificates of quality". The
+    // base page sets the QC Manager's box first; on every certificate not yet issued the boxes change places.
+    const AP = /(<div class="approval-grid cols-2">\s*)(<div><div class="ap-role">Prepared &amp; Approved by[\s\S]*?<span class="ap-date-val">[^<]*<\/span><\/div><\/div>)(\s*)(<div><div class="ap-role">Reviewed by[\s\S]*?<span class="ap-date-val">[^<]*<\/span><\/div><\/div>)/;
+    if (!AP.test(htmlOut)) throw new Error('approval boxes not found in the base order: ' + c.regcode);
+    htmlOut = htmlOut.replace(AP, '$1$4$3$2');
     // Section 03, the laboratory block — Head of QC, 28.09.2026:
     //  * "make them in two rows and inline; they're going into three rows and it's pushing the
     //    page down" — each laboratory on two lines: English name and accreditation; Macedonian
@@ -541,17 +589,35 @@ const S01_BAND_LAYER = '<style id="__owner-s01-band">\n' +
     lab = lab.split('UKIM Faculty of Pharmacy — Center for Natural Products').join('UKIM FF — Center for Natural Products');
     lab = lab.replace(/<td class="lr-mono">((?:<span class="cert">[\s\S]*?<\/span>\s*)+)<\/td>/g,
       (m, certs) => '<td class="lr-mono"><span class="g2">' + certs + '</span></td>');
-    lab = lab.replace(/<td class="lr-mono pcell">([^<]*)<\/td>/g, (m, t) => {
-      // Head of QC, 28.09.2026: "why not 2-4 instead of 2,3,4" — a run of three or more
-      // consecutive parameter numbers is printed as a range
-      const raw = t.split(/\s*,\s*/).map(s => s.trim()).filter(Boolean);
+    // Head of QC, 07.10.2026: the parameter numbers right-aligned on the page margin, and each certificate's
+    // numbers on that certificate's own line — "1, 2, 7" beside the iCoA, "3–6, 8" beside the CNP certificate.
+    // The codes fill the two-row grid column by column, so certificate i stands on line i % 2; the numbers of
+    // the certificates on a line are written together, in parameter order.
+    // Head of QC, 28.09.2026: "why not 2-4 instead of 2,3,4" — a run of three or more consecutive parameter
+    // numbers is printed as a range.
+    const ranges = raw => {
       const items = [];
       for (let i = 0; i < raw.length;) {
         let j = i;
         while (j + 1 < raw.length && /^\d+$/.test(raw[j]) && /^\d+$/.test(raw[j + 1]) && +raw[j + 1] === +raw[j] + 1) j++;
         if (j - i >= 2) { items.push(raw[i] + '\u2013' + raw[j]); i = j + 1; } else { items.push(raw[i]); i++; }
       }
-      return '<td class="lr-mono pcell"><span class="g2">' + items.map(n => '<span class="pn">' + n + '</span>').join('') + '</span></td>';
+      return items;
+    };
+    const perCert = CoQ.section03Certs(r);
+    let labRow = 0;
+    lab = lab.replace(/<td class="lr-mono pcell">([^<]*)<\/td>/g, (m, t) => {
+      const all = t.split(/\s*,\s*/).map(s => s.trim()).filter(Boolean);
+      const certs = perCert[labRow++];
+      let lines = [all];
+      if (certs) {
+        lines = [[], []];
+        certs.forEach((ps, i) => { for (const p of ps) if (!lines[i % 2].includes(p)) lines[i % 2].push(p); });
+        lines = lines.filter(l => l.length).map(l => l.sort((a, b) => parseFloat(a) - parseFloat(b) || (a < b ? -1 : 1)));
+        const got = [...new Set(lines.flat())].sort().join(','), want = [...new Set(all)].sort().join(',');
+        if (got !== want) throw new Error('section 03 parameters per certificate ' + got + ' differ from the row ' + want + ': ' + c.regcode);
+      }
+      return '<td class="lr-mono pcell"><span class="g2">' + lines.map(l => '<span class="pn">' + ranges(l).join(', ') + '</span>').join('') + '</span></td>';
     });
     if (/<td class="lr-mono">(?!<span class="g2">)/.test(lab) || /<td class="lr-mono pcell">(?!<span class="g2">)/.test(lab))
       throw new Error('a laboratory-block cell was not put on the two-row grid: ' + c.regcode);
@@ -582,14 +648,30 @@ const S01_BAND_LAYER = '<style id="__owner-s01-band">\n' +
       + LB + " tbody tr td .g2 .cert .cd{font-family:'Roboto Condensed',sans-serif !important;font-size:6.4px !important}"
       + LB + ' tbody tr td.lr-mono.lr-mono:not(.pcell) .g2 .cert + .cert::before{content:none !important;margin:0 !important;display:none !important}'
       + LB + ' tbody tr td.lr-mono.lr-mono:not(.pcell) .g2 .cert{margin:0 !important;padding:0 !important}'
-      + LB + " tbody tr td .g2 .pn{font-family:'Roboto Mono',monospace;font-size:7.4px;font-weight:600;line-height:8px}"
+      + LB + " tbody tr td .g2 .pn{font-family:'Roboto Mono',monospace;font-size:7.4px;font-weight:600;line-height:8px;white-space:nowrap}"
+      // Head of QC, 07.10.2026: "the parameter numbers ... are not aligned to the right page margin". The numbers were;
+      // the header over them, "PARAM. \u2116", is 44.5 px in a 40.6 px text area and right-aligned text that does not fit
+      // runs out to the right — 3.9 px past the margin on every page. The column keeps its 84 px; its left padding
+      // goes, so header and numbers end together on the margin.
+      + LB + ' thead tr th:nth-child(3):nth-child(3):nth-child(3):nth-child(3),' + LB + ' tbody tr td.lr-mono.pcell.pcell.pcell:nth-child(3)'
+      + '{padding-left:0 !important}'
       + '</style>';
     if (htmlOut.split('</body>').length !== 2) throw new Error('no single </body>: ' + c.regcode);
     htmlOut = htmlOut.replace('</body>', LABREF_GRID + '</body>');
   }
+  // the A4 fit for the full microbiology panel goes in last, after every other layer, so its
+  // margins are the ones that hold (see PANEL_FIT_LAYER)
+  if (PANEL_PAGE) htmlOut = htmlOut.replace('</body>', PANEL_FIT_LAYER + '</body>');
   const OLD_NOTE = /<br>Parameter attribution to the issuing laboratory[^<]*<\/div>/;
   if (!OLD_NOTE.test(htmlOut)) throw new Error('Section 02 note sentence not found');
   htmlOut = htmlOut.replace(OLD_NOTE, '</div>');
+  // Head of QC, 08.10.2026 ("Fix Macedonian microbiology names on CoQs"): the results-table skeleton, vendored
+  // from the design package, spells E. coli 'Ешерихиџа'; his CoQ base and his specification spell it 'Ешерихија'.
+  // A design package decides layout only (CLAUDE.md §6), so his spelling prints on every certificate not yet issued.
+  if (!FROZEN_LOT(c)) {
+    if (htmlOut.split('Ешерихиџа').length !== 2) throw new Error('E. coli Macedonian name not found once: ' + c.regcode);
+    htmlOut = htmlOut.replace('Ешерихиџа', 'Ешерихија');
+  }
   const dir = r.series === 'reissue' ? path.join(OUT, 'REISSUE', tranche[r.lot] ? 'T' + String(tranche[r.lot]).replace(/\D/g, '') : 'T3') : path.join(OUT, 'ISSUE_COQ');
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, out.filename), htmlOut);

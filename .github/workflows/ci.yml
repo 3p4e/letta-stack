@@ -435,3 +435,13 @@ jobs:
       - name: A carried result really is the initial's
         run: |
           python3 deliverables/qc_gap_analysis/tracker/check_carry_provenance.py
+      # Head of QC, 07.10.2026: phenotype (Hybrid · Indica dominant), chemotype and processing
+      # read the same on every unissued CoQ, its iCoA and the specification it cites.
+      - name: The pills agree on the CoQ, the iCoA and the specification
+        run: |
+          python3 deliverables/qc_gap_analysis/tracker/check_pill_rows.py
+      # Head of QC, 07.10.2026: the QC Manager on the right of every CoQ, iCoA and specification
+      # not yet issued, and their signature block, pills, bars and text set as the CoQ sets them.
+      - name: The QC Manager signs on the right, in the CoQ's formatting
+        run: |
+          python3 deliverables/qc_gap_analysis/tracker/check_signature_side.py
