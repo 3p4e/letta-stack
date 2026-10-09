@@ -87,15 +87,34 @@ def as_options(rows):
     return None
 
 # =========================== ANNEX ===========================
+def _bar(d, num, mk, en, sz, col, fill):
+    """Section bar as a SHADED PARAGRAPH, not a one-row table: Word and LibreOffice both honour
+       keep-with-next on a paragraph, so a bar is never stranded at the foot of a page (a one-row
+       table's keep-with-next is ignored by LibreOffice). Same fill, border and type as before."""
+    from docx.oxml import OxmlElement
+    from docx.oxml.ns import qn
+    p=d.add_paragraph(); p.alignment=WD_ALIGN_PARAGRAPH.CENTER; pr.sp(p,0,0)
+    pPr=p._p.get_or_add_pPr()
+    bdr=OxmlElement('w:pBdr')
+    for e in ('top','left','bottom','right'):
+        el=OxmlElement('w:'+e); el.set(qn('w:val'),'single'); el.set(qn('w:sz'),'4')
+        el.set(qn('w:space'),'2' if e in ('top','bottom') else '4'); el.set(qn('w:color'),pr.BORDER); bdr.append(el)
+    pPr.append(bdr)
+    shd=OxmlElement('w:shd'); shd.set(qn('w:val'),'clear'); shd.set(qn('w:color'),'auto'); shd.set(qn('w:fill'),fill)
+    pPr.append(shd)
+    p.paragraph_format.keep_with_next=True
+    mk=(num+" "+mk).strip()
+    if mk: pr.rin(p,mk,sz,col,bold=True)
+    if en:
+        if mk: pr.rin(p," | ",max(sz-2,7),col)
+        pr.rin(p,en,max(sz-2,7),col)
+    return p
+
 def emit_banner(d, num, mk, en):
-    t=d.add_table(rows=1, cols=1); t.alignment=pr.WD_TABLE_ALIGNMENT.CENTER
-    pr.cellfmt(t.cell(0,0), (num+" "+mk).strip(), en, sz=11, col=pr.WHITE, bold=True, fill=pr.NAVYF)
-    pr.fixed(t, [PAGE_W], header_repeat=False); pr.borders(t)
+    _bar(d, num, mk, en, 11, pr.WHITE, pr.NAVYF)
 
 def emit_subbar(d, num, mk, en):
-    t=d.add_table(rows=1, cols=1); t.alignment=pr.WD_TABLE_ALIGNMENT.CENTER
-    pr.cellfmt(t.cell(0,0), (num+" "+mk).strip(), en, sz=10, col=pr.NAVY, bold=True, fill=pr.LBL)
-    pr.fixed(t, [PAGE_W], header_repeat=False); pr.borders(t)
+    _bar(d, num, mk, en, 10, pr.NAVY, pr.LBL)
 
 def _form_bulk(cell, lmk, len_, val):
     """Render a bulk-text field as a full-width stacked block: bold label heading, then the value
@@ -143,7 +162,7 @@ def emit_form(d, rows, mode=None):
             else:
                 _lbl_cell(t.cell(ri,0), f['lmk'], f['en'])
                 pr.cellfmt(t.cell(ri,1), f['val'], None, sz=10, col=pr.BLACK)
-        pr.fixed(t, weights=[lw, PAGE_W-lw], header_repeat=False); pr.borders(t)
+        pr.fixed(t, weights=[lw, PAGE_W-lw], header_repeat=False); pr.borders(t); pr.keep_table(t)
         return
 
     # GRID MODE: content-aware packing. Each field is measured on ITS OWN content — the label sized
@@ -173,16 +192,17 @@ def emit_form(d, rows, mode=None):
         cur.append(f); curw+=f['fw']
     flush()
 
+    made=[]                                                    # the form's row-tables, in order
     for pl in plans:
         if pl[0]=='bulk':
             t=d.add_table(rows=1, cols=1); t.alignment=pr.WD_TABLE_ALIGNMENT.CENTER
             _form_bulk(t.cell(0,0), pl[1]['lmk'], pl[1]['en'], pl[1]['val'])
-            pr._apply_widths(t, [PAGE_W])
+            pr._apply_widths(t, [PAGE_W]); pr.keep_table(t); made.append(t)
         elif pl[0]=='span':
             f=pl[1]; t=d.add_table(rows=1, cols=2); t.alignment=pr.WD_TABLE_ALIGNMENT.CENTER
             _lbl_cell(t.cell(0,0), f['lmk'], f['en'])
             pr.cellfmt(t.cell(0,1), f['val'], None, sz=10, col=pr.BLACK)
-            pr._apply_widths(t, [f['lw'], PAGE_W-f['lw']])
+            pr._apply_widths(t, [f['lw'], PAGE_W-f['lw']]); pr.keep_table(t); made.append(t)
         else:  # pack: N fields side by side; labels snug to content, values share the remainder
             fs=pl[1]; n=len(fs); t=d.add_table(rows=1, cols=2*n); t.alignment=pr.WD_TABLE_ALIGNMENT.CENTER
             slack=(PAGE_W-sum(f['lw'] for f in fs))/n           # each value = equal share of leftover
@@ -191,7 +211,12 @@ def emit_form(d, rows, mode=None):
                 _lbl_cell(t.cell(0,2*j), f['lmk'], f['en'])
                 pr.cellfmt(t.cell(0,2*j+1), f['val'], None, sz=10, col=pr.BLACK)
                 widths+=[f['lw'], max(slack, VMIN)]
-            pr._apply_widths(t, widths)
+            pr._apply_widths(t, widths); pr.keep_table(t); made.append(t)
+    if len(made)<=8:                                           # a short form moves as one block:
+        for t in made[:-1]:                                    # chain each row-table to the next
+            for r in t.rows:
+                for c in r.cells:
+                    for par in c.paragraphs: par.paragraph_format.keep_with_next=True
 
 def emit_table(d, rows):
     if not rows: return
@@ -208,8 +233,9 @@ def emit_table(d, rows):
             else:
                 fill=pr.LBL if (ci==0 and mk) else ("F7FAFC" if ri%2==0 else None)
                 pr.cellfmt(t.cell(ri,ci), mk, en, sz=9, col=pr.BLACK, fill=fill)
-    pr.fixed(t)                # intelligent, use-aware distribution + repeat header row
+    pr.fixed(t, mode='full')   # annex forms: every data table spans the full width, like the bars
     pr.borders(t)
+    pr.keep_table(t)
 
 def build_annex(hd, blocks, out):
     global PAGE_W
@@ -227,10 +253,26 @@ def build_annex(hd, blocks, out):
                          status=status, version=hd.get('version','01'), effective_date=eff)
     if hd.get('supersedes'):
         pr.note(d, "Заменува: "+hd['supersedes'], "Supersedes: "+hd['supersedes'])
-    for b in blocks:
+    TABLEISH=('h','form','table')
+    prev=None
+    for i,b in enumerate(blocks):
+        # Vertical rhythm: a section bar gets a clear gap above it; any two table blocks in a row
+        # get a small one (otherwise they fuse into one table); text before a table stays with it.
+        if b[0]=='h' and prev not in (None,'pagebreak'):
+            pf.spacer(d, 12 if b[1]==1 else 8)
+        elif b[0] in ('form','table') and prev in ('form','table','p','bullet'):
+            pf.spacer(d, 6)
+        elif b[0] in ('form','table') and prev=='h':
+            pf.spacer(d, 2)
+        elif b[0] in ('p','bullet') and prev in ('form','table'):
+            pf.spacer(d, 4)
+        prev=b[0]
         if b[0]=='h':
             (emit_banner if b[1]==1 else emit_subbar)(d, b[2], b[3], b[4])
-        elif b[0]=='p': pr.body(d, b[1], b[2])
+        elif b[0]=='p':
+            p=pr.body(d, b[1], b[2])
+            if i+1<len(blocks) and blocks[i+1][0] in ('form','table'):
+                p.paragraph_format.keep_with_next=True
         elif b[0]=='bullet': pr.bullet(d, b[1], b[2])
         elif b[0]=='form': emit_form(d, b[1], mode=(b[2] if len(b)>2 else None))
         elif b[0]=='table': emit_table(d, b[1])
@@ -250,12 +292,19 @@ def build_sop(hd, blocks, out):
                      status=status, version=ver, effective_date=eff, review_date=rev)
     pf.sop_toc(d)
     t=None
+    gap_after=False
     def ensure():
-        nonlocal t
-        if t is None: t=pf.sop_table(d)
+        nonlocal t, gap_after
+        if t is None:
+            if gap_after: pf.spacer(d, 6); gap_after=False   # air below a full-width table
+            t=pf.sop_table(d)
         return t
-    for b in blocks:
-        if b[0]=='h':
+    for i,b in enumerate(blocks):
+        if b[0]=='h' and i+1<len(blocks) and blocks[i+1][0] in ('table','form'):
+            if t is not None: pf.sop_finalize(t); t=None      # heading directly above a table:
+            pf.sop_heading_par(d, (b[2] or ''), b[3], b[4], level=b[1])   # keep it with that table
+            gap_after=False
+        elif b[0]=='h':
             pf.sop_section_row(ensure(), (b[2] or ''), b[3], b[4], level=b[1])
         elif b[0]=='p':
             pf.sop_body_row(ensure(), b[1], b[2])
@@ -265,10 +314,12 @@ def build_sop(hd, blocks, out):
             if t is not None: pf.sop_finalize(t); t=None      # close two-col table; table goes full width
             rows=b[1]
             if not rows: continue
+            pf.spacer(d, 6)                                    # air above; also stops the tables fusing
+            gap_after=True
             headers=[cs(c) for c in rows[0]]; data=[[cs(c) for c in r] for r in rows[1:]]
             ncol=len(headers)
             bt=pf.sop_block_table(d, headers, data, [round(PAGE_W/ncol,2)]*ncol)
-            pr.fixed(bt)                                       # intelligent widths + repeat header
+            pr.fixed(bt, mode='full')                          # full width, like the two-column body; repeat header
     if t is not None: pf.sop_finalize(t)
     pf.save(d, out)
 
