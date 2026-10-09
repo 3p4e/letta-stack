@@ -28,6 +28,7 @@ from .config import settings
 from .letta import LettaClient
 from .pipeline import run_workflow
 from .questionnaires import QUESTIONNAIRES, questionnaire_index
+from .ragflow import ECOA_NOTE, EXAMPLES_NOTE, RagflowClient, RagflowError, corpus_datasets
 from .security import require_api_key
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
@@ -85,8 +86,42 @@ async def health():
         "ok": True,
         "db": db.ready(),
         "letta": LettaClient().configured,
+        # configured only: the compose healthcheck must not depend on another stack
+        "ragflow": RagflowClient().configured,
         "engine": "pp-document-suite (synced copy, canon revision 2026-10-09)",
     }
+
+
+# ---------- knowledge (RAGFlow) ----------
+class KnowledgeIn(BaseModel):
+    corpus: str = "regulatory"          # regulatory | ecoa | examples
+    question: str = Field(min_length=2, max_length=2000)
+    top_n: int = Field(default=6, ge=1, le=30)
+    keyword: bool = False               # full-text: clause numbers, batch codes
+
+
+@app.post("/knowledge/search", dependencies=[Depends(require_api_key)])
+async def knowledge_search(body: KnowledgeIn):
+    """Search a RAGFlow knowledge base the way the pipeline does, so a user or agent can
+    check a requirement or find a certificate while writing."""
+    ids = corpus_datasets(body.corpus)
+    if body.corpus not in ("regulatory", "ecoa", "examples"):
+        raise HTTPException(404, "unknown corpus")
+    if not ids:
+        raise HTTPException(409, f"no RAGFlow dataset configured for '{body.corpus}'")
+    try:
+        passages = await RagflowClient().retrieve(body.question, ids, top_n=body.top_n, keyword=body.keyword)
+    except RagflowError as e:
+        raise HTTPException(503, str(e))
+    note = {"ecoa": ECOA_NOTE, "examples": EXAMPLES_NOTE}.get(body.corpus, "")
+    return {"corpus": body.corpus, "passages": passages, "note": note}
+
+
+@app.get("/knowledge/health", dependencies=[Depends(require_api_key)])
+async def knowledge_health():
+    rag = RagflowClient()
+    return {"configured": rag.configured, "reachable": await rag.reachable(),
+            "datasets": {c: list(corpus_datasets(c)) for c in ("regulatory", "ecoa", "examples")}}
 
 
 # ---------- questionnaires ----------
@@ -238,9 +273,12 @@ async def document_pdf(did: str):
         log.warning("PDF conversion: cannot read document %s: %s", did, e)
         raise HTTPException(404, "Document file missing") from e
     try:
-        async with httpx.AsyncClient(timeout=120) as c:
+        auth = (settings.gotenberg_user, settings.gotenberg_password) if settings.gotenberg_user else None
+        async with httpx.AsyncClient(timeout=120, auth=auth) as c:
             r = await c.post(
                 settings.gotenberg_url + "/forms/libreoffice/convert",
+                # refresh the TOC and other indexes before export (same as pp_render)
+                data={"updateIndexes": "true"},
                 files={"files": (Path(d["path"]).name, blob,
                                  "application/vnd.openxmlformats-officedocument.wordprocessingml.document")},
             )

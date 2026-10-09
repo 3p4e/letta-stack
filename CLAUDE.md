@@ -382,3 +382,12 @@ container must be given headroom first — it writes the new pack **before** del
 objects, and on a full disk it exits 0 having reclaimed nothing and leaves
 `.git/objects/pack/tmp_pack_*` behind, which must then be deleted by hand. `git reflog expire
 --expire=now --all && git prune --expire=now` frees space without writing a pack, so it goes first.
+
+## 9. Rendering PDFs
+
+Head of QC, 09.10.2026: rendering must not depend on the device (phone, laptop with or without
+Word, cloud session). Render every DOCX with `pp-document-suite/scripts/pp_render.py`
+(`python3 pp_render.py in.docx out.pdf`): it uses the shared Gotenberg service on KVM4 when
+`GOTENBERG_URL` is set and local LibreOffice (field-updating macro, `assets/lo_profile`) otherwise;
+both fill an SOP's table of contents. Never a bare `soffice --convert-to pdf` — it leaves the TOC
+empty. Server setup: `server/runbooks/docengine_knowledge_and_render.md` §2.

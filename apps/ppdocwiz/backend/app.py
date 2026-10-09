@@ -123,7 +123,7 @@ def health():
     # this endpoint is reachable without a credential, and the frontend only
     # ever reads .letta and .pdf.
     return {"ok": True, "letta": bool(os.environ.get("LETTA_BASE_URL")),
-            "pdf": bool(shutil.which("soffice"))}
+            "pdf": bool(shutil.which("soffice") or os.environ.get("GOTENBERG_URL"))}
 
 
 @app.post("/api/session")
@@ -207,35 +207,16 @@ def raw_build(r: RawBuildReq):
             "download_pdf": f"/api/download/{doc_id}.pdf"}
 
 
-# A plain `soffice --convert-to pdf` does not update fields, so every SOP came out with an
-# EMPTY table of contents. lo_profile/ carries a minimal LibreOffice profile whose Basic
-# macro (Standard.Module1.ToPdf) refreshes fields and indexes, then exports — the same
-# render the engine's own deliverables use. Copied once to a writable place.
-LO_PROFILE_SRC = os.path.join(HERE, "lo_profile")
-# Concurrent soffice instances hang (seen in the 09.10 test even with separate profiles):
-# one render at a time; a request that waited reuses the PDF the previous one produced.
+# PDFs come from pp-document-suite/scripts/pp_render.py: the shared Gotenberg service when
+# GOTENBERG_URL is set, else local LibreOffice with the field-updating macro profile, so an
+# SOP's table of contents is filled either way. Concurrent local soffice instances hang (seen
+# in the 09.10 test): one render at a time; a request that waited reuses the finished PDF.
 _RENDER_LOCK = threading.Lock()
 
 
 def _render_pdf(docx: str, pdf: str):
-    """Each render gets its own throw-away profile (no lock or hand-off between concurrent
-    soffice instances, and a fix to lo_profile/ always applies) and writes to a temp file
-    that is renamed into place, so a half-written PDF is never served."""
-    with tempfile.TemporaryDirectory(prefix="ppdocwiz-lo-") as tmp:
-        part = os.path.join(tmp, "out.pdf")
-        if os.path.isdir(LO_PROFILE_SRC):
-            prof = os.path.join(tmp, "profile")
-            shutil.copytree(LO_PROFILE_SRC, prof)
-            subprocess.run(["soffice", "-env:UserInstallation=file://" + prof, "--headless",
-                            f'macro:///Standard.Module1.ToPdf("{docx}","{part}")'],
-                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=300)
-        if not os.path.exists(part):   # macro unavailable: plain conversion (fields not updated)
-            subprocess.run(["soffice", "-env:UserInstallation=file://" + os.path.join(tmp, "plain"), "--headless",
-                            "--convert-to", "pdf", "--outdir", tmp, docx], check=True, timeout=300)
-            part = os.path.join(tmp, os.path.basename(docx)[:-len(".docx")] + ".pdf")
-        staged = f"{pdf}.{uuid.uuid4().hex[:8]}.part"   # same directory as the target, then an atomic rename
-        shutil.move(part, staged)
-        os.replace(staged, pdf)
+    import pp_render
+    pp_render.render_pdf(docx, pdf)
 
 
 @app.get("/api/download/{name}", dependencies=[Depends(security.require_api_key)])
@@ -261,14 +242,17 @@ def download(name: str, inline: int = 0):
     if ext == ".pdf":
         pdf = os.path.join(root, stem + ".pdf")
         if not os.path.exists(pdf):
-            if not shutil.which("soffice"):
-                return JSONResponse({"error": "no PDF renderer (LibreOffice not installed)"}, status_code=501)
+            if not (shutil.which("soffice") or os.environ.get("GOTENBERG_URL")):
+                return JSONResponse({"error": "no PDF renderer (set GOTENBERG_URL or install LibreOffice)"}, status_code=501)
+            import pp_render
             try:
                 with _RENDER_LOCK:
                     if not os.path.exists(pdf):
                         _render_pdf(docx, pdf)
             except subprocess.TimeoutExpired:
                 return JSONResponse({"error": "PDF rendering timed out"}, status_code=504)
+            except pp_render.RenderError as e:
+                return JSONResponse({"error": str(e)[:300]}, status_code=502)
         # ?inline=1 lets the suite's Preview show the PDF in a frame instead of downloading it.
         return FileResponse(pdf, filename=stem + ".pdf", media_type="application/pdf",
                             content_disposition_type="inline" if inline else "attachment")
@@ -330,7 +314,7 @@ def chat(r: ChatReq):
 # ---------------- DocEngine proxy (same-origin, for the suite) ----------------
 # The browser holds only the ppdocwiz session cookie; the DocEngine key never leaves
 # this process. Only the DocEngine's own public routes are forwarded.
-_DE_ROUTES = {"health", "questionnaires", "workflows", "build", "documents"}
+_DE_ROUTES = {"health", "questionnaires", "workflows", "build", "documents", "knowledge"}
 _DE_PASS_HEADERS = ("content-type", "content-disposition", "content-length")
 
 
