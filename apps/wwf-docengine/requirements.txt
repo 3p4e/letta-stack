@@ -15,3 +15,6 @@ python-docx==1.2.0
 # lxml 5.3.0 carried PYSEC-2026-87; 6.1.0 is the fixed line.
 lxml==6.1.0
 PyYAML==6.0.2
+# The engine glyph guard (engine/scripts/pp_assets.py) reads font cmaps with fontTools;
+# without it the check silently skips and Macedonian can ship as tofu.
+fonttools==4.62.1
