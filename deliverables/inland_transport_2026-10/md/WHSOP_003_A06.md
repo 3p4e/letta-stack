@@ -33,6 +33,10 @@ orient: portrait
 Вкупно~~Total |||  |||  |||  |||  ||| 
 [[/TABLE]]
 
+[[FORM:grid]]
+Ретенциони мостри вклучени во количината (број / g) ||| Retention samples included in the quantity (number / g) ||| _
+[[/FORM]]
+
 # 3 Изјава | Statement
 Со ова потврдуваме дека транспортот наведен погоре е извршен на наведениот датум, по пријавената рута, и дека пратката е предадена на примачот според приложениот ланец на надзор. ||| We hereby confirm that the transport stated above was executed on the stated date, on the notified route, and that the consignment was handed over to the consignee according to the attached chain of custody.
 [[FORM]]

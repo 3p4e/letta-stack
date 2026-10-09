@@ -97,3 +97,22 @@ C08 (само G | L only) |||  |||  |||  |||  |||
  |||  |||  |||  ||| 
  |||  |||  |||  ||| 
 [[/TABLE]]
+
+# 7 Листа на ретенциони мостри за купувачот и продавачот на мало | Retention-sample list for the buyer and the retailer
+[[FORM:grid]]
+Картон за мостри (ID) ||| Sample carton (ID) ||| TR-________-___-RS
+Безбедносна лента бр. ||| Security tape No. ||| _
+[[/FORM]]
+[[TABLE]]
+№ ||| Серија~~Batch ||| За~~For ||| Контејнер бр.~~Container No. ||| Нето маса (g)~~Net mass (g) ||| Пломба бр.~~Seal No.
+1 |||  ||| купувач~~buyer |||  |||  ||| 
+2 |||  ||| продавач на мало~~retailer |||  |||  ||| 
+3 |||  ||| купувач~~buyer |||  |||  ||| 
+4 |||  ||| продавач на мало~~retailer |||  |||  ||| 
+Вкупно~~Total |||  |||  |||  |||  ||| 
+[[/TABLE]]
+[[TABLE]]
+Улога~~Role ||| Име~~Name ||| Датум/време~~Date/time ||| Потпис~~Signature
+Подготвил (КК)~~Prepared (QC) |||  |||  ||| 
+Независно проверил~~Independently verified |||  |||  ||| 
+[[/TABLE]]

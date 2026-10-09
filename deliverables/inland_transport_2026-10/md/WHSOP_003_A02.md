@@ -53,6 +53,7 @@ orient: portrait
 [[/TABLE]]
 [[FORM:grid]]
 Број на палети (G / M) ||| Number of pallets (L / S) ||| _
+Ретенциони мостри (број / вкупна маса, g) ||| Retention samples (number / total mass, g) ||| _
 [[/FORM]]
 
 # 6 Превозник, возило и лица | Carrier, vehicle and persons

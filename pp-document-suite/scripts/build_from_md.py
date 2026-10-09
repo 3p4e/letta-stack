@@ -171,7 +171,7 @@ def emit_form(d, rows, mode=None):
             else:
                 _lbl_cell(t.cell(ri,0), f['lmk'], f['en'])
                 pr.cellfmt(t.cell(ri,1), f['val'], None, sz=10, col=pr.BLACK)
-        pr.fixed(t, weights=[lw, PAGE_W-lw], header_repeat=False); pr.borders(t); pr.keep_table(t)
+        pr.fixed(t, weights=[lw, PAGE_W-lw], header_repeat=False); pr.borders(t); pr.keep_table(t, whole_max=5)   # a long form may break between rows
         return
 
     # GRID MODE: content-aware packing. Each field is measured on ITS OWN content — the label sized
@@ -221,7 +221,7 @@ def emit_form(d, rows, mode=None):
                 pr.cellfmt(t.cell(0,2*j+1), f['val'], None, sz=10, col=pr.BLACK)
                 widths+=[f['lw'], max(slack, VMIN)]
             pr._apply_widths(t, widths); pr.keep_table(t); made.append(t)
-    if len(made)<=8:                                           # a short form moves as one block:
+    if len(made)<=5:                                           # a short form moves as one block:
         for t in made[:-1]:                                    # chain each row-table to the next
             for r in t.rows:
                 for c in r.cells:

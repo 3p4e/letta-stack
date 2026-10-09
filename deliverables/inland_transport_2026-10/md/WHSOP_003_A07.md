@@ -31,9 +31,10 @@ UTID |||  ||| TR-________-___
 9 ||| Податоците од сите логери (по палета и USB) во опсег во текот на целиот транспорт~~Data from all loggers (per pallet and USB) within range throughout |||  |||  |||  ||| 
 10 ||| Контролните јавувања ја потврдуваат одобрената рута, без непланирани застанувања~~Check-in calls confirm the approved route, no unscheduled stops |||  |||  |||  ||| 
 11 ||| Количината порамнета: палети, картони, кеси и маса~~Quantity reconciled: pallets, cartons, bags and mass |||  |||  |||  ||| 
-12 ||| Известувањето до МЗ поднесено во рок од 3 работни дена~~MoH notification submitted within 3 working days |||  |||  |||  ||| 
-13 ||| Сите отстапувања отворени и истражени~~All deviations opened and investigated |||  |||  |||  ||| 
-14 ||| Податоците од логерот додадени во трендот на рутата~~Logger data added to the lane trend |||  |||  |||  ||| 
+12 ||| Ретенционите мостри порамнети (испратени = примени, купувач и продавач на мало)~~Retention samples reconciled (dispatched = received, buyer and retailer) |||  |||  |||  ||| 
+13 ||| Известувањето до МЗ поднесено во рок од 3 работни дена~~MoH notification submitted within 3 working days |||  |||  |||  ||| 
+14 ||| Сите отстапувања отворени и истражени~~All deviations opened and investigated |||  |||  |||  ||| 
+15 ||| Податоците од логерот додадени во трендот на рутата~~Logger data added to the lane trend |||  |||  |||  ||| 
 [[/TABLE]]
 
 # 3 Податоци од логерот | Logger data

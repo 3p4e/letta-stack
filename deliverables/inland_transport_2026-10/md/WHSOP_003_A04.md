@@ -33,6 +33,12 @@ TRA (референца) ||| TRA (reference) ||| _
 6 |||  |||  |||  |||  |||  |||  |||  ||| 
 Вкупно~~Total |||  |||  |||  |||  |||  |||  |||  ||| 
 [[/TABLE]]
+[[FORM:grid]]
+Картон со ретенциони мостри (ID) ||| Retention-sample carton (ID) ||| TR-________-___-RS
+Мостри: купувач / продавач на мало ||| Samples: buyer / retailer ||| ___ / ___
+Маса на мострите (g) ||| Sample mass (g) ||| _
+Лента бр. ||| Tape No. ||| _
+[[/FORM]]
 [[TABLE]]
 Двојна проверка~~Two-person verification ||| Име~~Name ||| Датум/време~~Date/time ||| Потпис~~Signature
 Лице 1 (подготвил)~~Person 1 (prepared) |||  |||  ||| 
@@ -63,6 +69,7 @@ USB логер активиран (време) ||| USB logger started (time) |||
 [[TABLE]]
 Проверка при предавање~~Check at hand-over ||| Да~~Yes ||| Не~~No
 Бројот на палети одговара на §2~~Pallet count matches §2 |||  ||| 
+Картонот со ретенциони мостри е натоварен, лентата е цела~~Retention-sample carton loaded, tape intact |||  ||| 
 Завиткувањето и лентите се цели~~Wrapping and tapes intact |||  ||| 
 Пломбата на вратата е поставена и бројот е проверен~~Door seal applied and number verified |||  ||| 
 Документите се предадени (A04, A05, листи на пакување, картичка за итни случаи)~~Documents handed over (A04, A05, packing lists, emergency card) |||  ||| 
