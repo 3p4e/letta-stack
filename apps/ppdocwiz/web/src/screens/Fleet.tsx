@@ -8,8 +8,14 @@ import { AGENTS, HOUSE_RULES, LOG_LINES } from '../data/samples';
 import { usePrimary } from '../lib/usePrimary';
 import { useApp } from '../store/store';
 import { C, MONO, T } from '../theme';
+import { WithRibbon } from '../components/LiveViews';
 
 export function Fleet() {
+  const { api } = useApp();
+  return <WithRibbon on={api.mode === 'live'} why="The agent list and the log tail have no endpoint yet. The two health panels (GET /api/health, DocEngine /health) are live."><FleetBody /></WithRibbon>;
+}
+
+function FleetBody() {
   const { api, svc, run, dataRev, tweaks, setTweaks, setMode } = useApp();
   const [agSel, setAgSel] = useState('gf_sop_author');
   const [tab, setTab] = useState<'agent' | 'engine' | 'settings'>('agent');

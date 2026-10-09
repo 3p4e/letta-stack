@@ -12,6 +12,7 @@ import { usePrimary } from '../lib/usePrimary';
 import { ci95, consistent, mean, num, parseDataset, provenance, rsd, SAMPLE_CSV, sd, type Dataset } from '../lib/stats';
 import { useApp } from '../store/store';
 import { C, DISPLAY, MONO, PAGE, T } from '../theme';
+import { WithRibbon } from '../components/LiveViews';
 
 type BT = 'cover' | 'toc' | 'text' | 'calc' | 'entry' | 'figure' | 'exec' | 'grid' | 'databox' | 'eqn' | 'note' | 'bullet' | 'minilabel';
 interface RBlock { id: string; t: BT; fn: string; mk: string; en: string; help: string; mkText?: string; enText?: string; sub?: boolean;
@@ -46,6 +47,11 @@ const Sign = ({ rows }: { rows: string[] }) => <><div style={{ fontSize: 12, col
     {rows.map(r => <tr key={r}><td style={{ ...td, background: PAGE.label, width: '50%' }}>{r}</td><td style={td} /><td style={td} /><td style={td} /></tr>)}</tbody></table></>;
 
 export function Reports() {
+  const { api } = useApp();
+  return <WithRibbon on={api.mode === 'live'} why="There is no report route yet: pp_report.py runs from Python scripts, not from ppdocwiz or DocEngine, so Build answers 501."><ReportsBody /></WithRibbon>;
+}
+
+function ReportsBody() {
   const { api, run, repMeta, repSel, set } = useApp();
   const R = useR(), up = (p: Partial<RS>) => useR.setState(p);
   const [buildMsg, setBuildMsg] = useState<{ ok: boolean; text: string } | null>(null);

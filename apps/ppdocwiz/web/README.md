@@ -27,21 +27,28 @@ production build defaults to live; `npm run dev` defaults to mock. Mock mode sho
 `mock` tag in the top bar and can simulate every degraded state.
 
 **DocEngine is internal-only** (no published port; the WWF `/qms` proxy is its caller), so
-in live mode the Questionnaire, Jobs and Library screens need a same-origin proxy to it.
-Until one exists they show the 404 / unreachable state rather than sample data.
+in live mode the Questionnaire, Jobs and Library screens reach it through the ppdocwiz
+same-origin proxy `/api/docengine/*` (set `DOCENGINE_URL` and `DOCENGINE_API_KEY` on ppdocwiz).
+Unconfigured, they show the 503 state rather than sample data.
 
 ## Screens → backend
 
 | Screen | Calls |
 |---|---|
 | Sign-in | `POST /api/session` (401 bad key, 503 not configured) |
-| Builder (Source · Page · Blocks) | `GET /api/example`, `POST /api/wizard/preview`, `POST /api/wizard/build`, `GET /api/download/{id}`; raw Markdown → DocEngine `POST /build` |
+| Builder (Source · Page · Blocks) | `GET /api/example`, `POST /api/wizard/preview`, `POST /api/wizard/build`, `GET /api/download/{id}`; raw Markdown → `POST /api/build` (same engine as the wizard) |
 | Agent chat | `POST /api/chat` (allowlist → 400, no Letta → 503) |
 | Questionnaire | `GET /questionnaires/{key}`, `POST /workflows` |
 | Jobs | `GET /workflows/{id}`, polled every 1 s while running |
 | Library | `GET /documents`, `GET /documents/{id}`, `/download` (410), `/pdf` (502/503) |
-| Verify | `POST /build` (422 on gate fail) |
+| Verify | live: the last build of this session (its real `pp_verify` report); mock: the scripted font-floor scenario |
+| Preview | live: the last passed build's PDF (`/api/download/{id}.pdf?inline=1`); mock: sample pages |
+| Formatter | Mode B → DocEngine `POST /build`; live mode builds only a loaded or pasted file, never the on-screen sample |
 | Fleet & health | `GET /api/health`, DocEngine `GET /health` |
+
+**Live mode shows no sample data as if it were real.** Screens with a backend show only what this
+session or the server returned; Reports and the Fleet agent list / log tail have none yet and carry a
+"Sample content, not connected" ribbon. Chat starts empty and shows no simulated trace.
 
 Not yet backed by a route (live mode shows the 501 explaining so): the review decision on an
 `awaiting_review` job, report builds (`pp_report`), Formatter Mode C, and the engine

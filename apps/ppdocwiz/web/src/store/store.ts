@@ -30,6 +30,8 @@ function initialMode(): 'live' | 'mock' {
   return import.meta.env.DEV ? 'mock' : 'live';
 }
 
+export interface LastBuild { code: string; ok: boolean; verify: string; docx?: string; pdf?: string; at: string }
+
 export interface AppState {
   api: Api;
   /** bumps whenever the mock's in-memory data changes, so polling screens re-read */
@@ -37,6 +39,8 @@ export interface AppState {
   screen: Screen;
   authed: boolean | null;
   tweaks: Tweaks;
+  /** The last real build in this session (Builder wizard or Source view). Verify and Preview show it in live mode. */
+  lastBuild: LastBuild | null;
   // pipeline bar
   pipe: Status[]; pipeDoc: string; pipeMsg: string; pipeOk: boolean; busy: boolean;
   toast: string;
@@ -78,7 +82,7 @@ export const useApp = create<AppState>((set, get) => {
     tweaks,
     // mock opens on the prototype's last-run state; live starts idle until something actually builds
     ...(mode === 'mock' ? { pipe: ['ok', 'ok', 'ok', 'ok'] as Status[], pipeDoc: 'WHSOP_002_A02', pipeMsg: 'RESULT: PASS · 1.84 s' } : { pipe: ['idle', 'idle', 'idle', 'idle'] as Status[], pipeDoc: '—', pipeMsg: 'no build yet' }),
-    pipeOk: true, busy: false,
+    pipeOk: true, busy: false, lastBuild: null,
     toast: '',
     createOpen: false, createCat: 'sop', menuX: 0, menuY: 0, sheet: null,
     bdoc: structuredClone(SAMPLE_ANNEX), bdocIsSample: true, builderMode: 'src', hlLine: 0,

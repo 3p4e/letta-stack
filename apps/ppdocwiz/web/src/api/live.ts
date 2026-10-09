@@ -49,6 +49,7 @@ export function liveApi(): Api {
     example: () => call('/api/example'),
     preview: async payload => (await post<{ markdown: string }>('/api/wizard/preview', { payload })).markdown,
     build: payload => post('/api/wizard/build', { payload }),
+    rawBuild: (markdown, out_name) => post('/api/build', { markdown, out_name }),
     chat: (message, agent) => post('/api/chat', { message, agent }),
     downloadHref: (docId, ext) => `/api/download/${encodeURIComponent(docId)}.${ext}`,
 

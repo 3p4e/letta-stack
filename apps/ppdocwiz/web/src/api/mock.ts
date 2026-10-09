@@ -178,6 +178,13 @@ export function mockApi(onChange?: () => void): MockApi {
       onChange?.();
       return structuredClone(j);
     },
+    async rawBuild(markdown, outName) {
+      gate(); await wait(400);
+      const words = (markdown.match(/[\p{L}\p{N}]+/gu) || []).length, doc_id = `${(markdown.match(/^code:\s*(.+)$/m)?.[1] || outName).trim()}_${uuid().slice(0, 8)}`;
+      const verify = verifyReport(`/data/${doc_id}.docx`, { paras: markdown.split('\n').length, tables: (markdown.match(/\[\[(TABLE|FORM)/g) || []).length, words, chars: markdown.length, srcWords: words, minFont: 7 });
+      if (!verify.includes('RESULT: PASS')) throw new ApiError(422, 'verify FAILED', { verify, error: 'verify FAILED' });
+      return { ok: true, verify, doc_id, markdown, download_docx: `/api/download/${doc_id}.docx`, download_pdf: `/api/download/${doc_id}.pdf` };
+    },
     async directBuild(markdown, outName, meta) {
       store(); await wait(400);
       const words = (markdown.match(/[\p{L}\p{N}]+/gu) || []).length;

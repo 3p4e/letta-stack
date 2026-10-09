@@ -40,6 +40,8 @@ export function Formatter() {
   };
   const stem = F ? F.name.replace(/\.[^.]+$/, '') : 'WHSOP_002_A02';
   const build = () => run(stem, async () => {
+    // Live mode never builds the on-screen sample: it would be registered in the real Library.
+    if (api.mode === 'live' && !F && fmt === 'B') { useF.setState({ out: 'Nothing to build: load a .docx, .md or .txt, or paste text. The sample on screen is a layout example and is never built in live mode.' }); return { ok: false, failAt: 0, msg: 'no input' }; }
     if (fmt === 'C') { useF.setState({ out: api.mode === 'live' ? '501 · Mode C restyles a .docx in place (pp_format) and has no HTTP route yet; use the engine CLI.' : 'Restyled in place · every w:t preserved · RESULT: PASS' }); return api.mode === 'live' ? { ok: false, failAt: 1, msg: 'RESULT: FAIL · 501' } : { ok: true }; }
     const md = F ? F.markdown : SAMPLE_MD.filter(l => !l.bg && l.t !== '…').map(l => l.t).join('\n');
     try { const r = await api.directBuild(`<!--HEADERDATA\ncode: ${stem}\ndoctype: ANNEX\n-->\n\n` + md, stem, { code: stem, source: 'build · Mode B' }); useF.setState({ out: r.verify.split('\n').pop() + ` · registered ${String(r.document_id).slice(0, 8)}` }); return { ok: true }; }
@@ -48,7 +50,7 @@ export function Formatter() {
   usePrimary('Build ▸', build);
   const kb = (n: number) => n < 1024 ? n + ' B' : (n / 1024).toFixed(1) + ' KB';
   const fIn = F ? { label: `${F.name} · ${nbsp(F.words)} words · ${kb(F.size)}`, words: `${nbsp(F.words)} → ${nbsp(F.words)}`, rev: F.rev ? F.rev + (F.rev === 1 ? ' note' : ' notes') : 'none', revC: F.rev ? C.warn : C.ok, counts: `${F.heads} headings · ${F.tables} tables` }
-    : { label: 'labels_raw.docx · 1 204 words', words: '1 204 → 1 204', rev: '1 note', revC: C.warn, counts: 'sample' };
+    : { label: api.mode === 'live' ? 'sample layout · load your own file' : 'labels_raw.docx · 1 204 words', words: '1 204 → 1 204', rev: '1 note', revC: C.warn, counts: 'sample' };
   const stamps = F ? [stamp('FIDELITY', `${F.words} ≥ ${F.words} words`, 'ok', 20, '-2deg'), stamp('REVIEW', F.rev ? `${F.rev} ${F.rev === 1 ? 'note' : 'notes'} to check` : 'nothing flagged', F.rev ? 'warn' : 'ok', 110, '1.5deg'), stamp('STRUCTURE', `${F.heads} headings · ${F.tables} tables`, 'run', 200, '-1deg')]
     : [stamp('FIDELITY', '1 204 ≥ 1 204 words', 'ok', 20, '-2deg'), stamp('REVIEW', '1 note dropped?', 'warn', 110, '1.5deg'), stamp('BILINGUAL', 'MK ||| EN paired', 'ok', 200, '-1deg')];
   const lines = F ? F.md : SAMPLE_MD.map(l => ({ t: l.t, lab: l.lab || '', c: l.c || T.text, fw: l.fw || 400, lc: l.lc || C.ok, bg: l.bg || 'transparent' }));

@@ -75,6 +75,7 @@ Without a build, `/` serves the legacy SPA.
 | `LETTA_BASE_URL` | Letta REST base — **enables the Chat tab** |
 | `LETTA_TOKEN` | only if the Letta server requires auth |
 | `PPDOCWIZ_UI` | `legacy` serves the old single-file SPA at `/` even when the suite is built |
+| `DOCENGINE_URL`, `DOCENGINE_API_KEY` | internal DocEngine base and its key. `/api/docengine/*` forwards there for the Questionnaire, Jobs and Library screens; the browser never sees the DocEngine key. Unset ⇒ those routes 503. |
 | `LETTA_AGENT` | **allowlist** of agents the chat proxy may reach, comma-separated (default `qms_docx_formatter`). Not a fallback: a request naming anything else is refused with 400. |
 
 ## API
@@ -96,7 +97,9 @@ Every route except `/api/health`, `/api/session` and `/` requires a credential, 
 | GET | `/api/example` | ✔ | a ready example payload + its Markdown |
 | POST | `/api/wizard/preview` | ✔ | payload → Markdown (no build) |
 | POST | `/api/wizard/build` | ✔ | payload → `.docx` + verify (`{ok,verify,doc_id,download_*}`) |
-| GET | `/api/download/{id}.docx\|.pdf` | ✔ | download a built doc (`.docx`/`.pdf` only; name is sanitised and containment-checked) |
+| GET | `/api/download/{id}.docx\|.pdf` | ✔ | download a built doc (`.docx`/`.pdf` only; name is sanitised and containment-checked). The PDF is rendered through `backend/lo_profile` (a LibreOffice macro that updates fields, so an SOP's table of contents is filled); `?inline=1` for the Preview frame |
+| POST | `/api/build` | ✔ | `{markdown,out_name}` → raw bilingual Markdown (Builder Source view) built by the **same engine as the wizard**; file named from the HEADERDATA `code`; 422 on a FAIL, which is deleted |
+| GET/POST | `/api/docengine/{health,questionnaires,workflows,build,documents}…` | ✔ | same-origin proxy to the internal DocEngine (adds its `X-API-Key`); any other path 404 |
 | POST | `/api/chat` | ✔ | `{message,agent}` → Letta agent reply (+ built doc). `agent` must be in the `LETTA_AGENT` allowlist |
 
 ```bash

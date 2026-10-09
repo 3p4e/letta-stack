@@ -9,6 +9,7 @@ import { composeLines, composeMarkdown, lint, type Lint } from '../lib/compose';
 import { usePrimary } from '../lib/usePrimary';
 import { useApp } from '../store/store';
 import { C, MONO, T } from '../theme';
+import { headerMeta } from '../lib/docparse';
 
 const clone = <X,>(x: X): X => structuredClone(x);
 const short = (t: string) => t.split(/\s[—–-]\s/)[0];
@@ -82,24 +83,26 @@ export function Builder() {
     stamp('GLYPHS', 'ѓ ќ ѕ covered', 'ok', ((anchors[`s${doc.sections.length - 1}`]?.top ?? 300)) * k, '1deg'),
   ], gap);
 
+  const remember = (code: string, r: { ok: boolean; verify: string; docx?: string; pdf?: string }) =>
+    set({ lastBuild: { code: code || 'document', ...r, at: new Date().toLocaleTimeString() } });
   const build = async () => {
     setResult(null);
-    const ok = await run(doc.code || 'document', async () => {
+    const code = (raw !== null && headerMeta(raw).code) || doc.code || 'document';
+    const ok = await run(code, async () => {
       try {
-        if (raw !== null) {
-          const r = await api.directBuild(raw, doc.code || 'document', { code: doc.code, title_mk: doc.mk_title, title_en: doc.en_title, version: doc.version, doctype: doc.doctype });
-          setResult({ ok: true, verify: r.verify }); return { ok: true };
-        }
-        const r = await api.build(doc);
-        setResult({ ok: r.ok, verify: r.verify, docx: api.downloadHref(r.doc_id, 'docx'), pdf: api.downloadHref(r.doc_id, 'pdf') });
+        // Source view: same engine as the wizard path (ppdocwiz POST /api/build); the pasted HEADERDATA names the file.
+        const r = raw !== null ? await api.rawBuild(raw, code) : await api.build(doc);
+        const res = { ok: r.ok, verify: r.verify, docx: r.ok ? api.downloadHref(r.doc_id, 'docx') : undefined, pdf: r.ok ? api.downloadHref(r.doc_id, 'pdf') : undefined };
+        setResult(res); remember(code, res);
         return { ok: r.ok, failAt: 2, msg: r.ok ? undefined : 'RESULT: FAIL · gate' };
       } catch (e) {
-        const er = e as ApiError, body = er.body as { detail?: { verify?: string } } | undefined;
-        setResult({ ok: false, verify: body?.detail?.verify || '', err: `${er.status || ''} · ${er.message}` });
+        const er = e as ApiError, body = er.body as { verify?: string; detail?: { verify?: string } } | undefined;
+        const verify = body?.verify || body?.detail?.verify || '';
+        setResult({ ok: false, verify, err: `${er.status || ''} · ${er.message}` }); remember(code, { ok: false, verify });
         return { ok: false, failAt: er.status === 422 ? 2 : 1, msg: `RESULT: FAIL · ${er.status || 'error'}` };
       }
     });
-    if (ok) flash(`${doc.code} built · RESULT: PASS`);
+    if (ok) flash(`${code} built · RESULT: PASS`);
   };
   usePrimary('Build ▸', build);
 
@@ -133,7 +136,7 @@ export function Builder() {
           : <textarea value={raw} onChange={e => setRaw(e.target.value)} spellCheck={false} style={{ flex: 1, minHeight: 0, background: T.surface, border: `1px solid ${T.focus}`, borderRadius: 6, padding: 12, color: T.text, fontFamily: MONO, fontSize: 12.5, lineHeight: 1.75, resize: 'none', outline: 'none' }} />}
         <div style={{ display: 'flex', gap: 10, fontSize: 12, color: T.muted, alignItems: 'center' }}>
           {raw === null ? <span onClick={() => setRaw(composeMarkdown(doc))} style={{ color: C.run, cursor: 'pointer' }}>Edit raw Markdown</span>
-            : <><span onClick={() => setRaw(null)} style={{ color: C.run, cursor: 'pointer' }}>Discard raw edits, back to blocks</span><span>Raw Markdown builds through DocEngine POST /build; the wizard payload is left as it was.</span></>}
+            : <><span onClick={() => setRaw(null)} style={{ color: C.run, cursor: 'pointer' }}>Discard raw edits, back to blocks</span><span>Raw Markdown builds with the same engine as the wizard (POST /api/build); the wizard payload is left as it was.</span></>}
         </div>
         {raw === null && firstLint && sug && <div style={{ flex: 'none', background: T.surface, border: `1px solid ${T.control}`, borderRadius: 8, padding: '12px 14px', display: 'flex', gap: 14, alignItems: 'center' }}>
           <Avatar />

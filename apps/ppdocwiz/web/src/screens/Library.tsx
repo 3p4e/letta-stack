@@ -24,6 +24,7 @@ export function Library() {
   const [tab, setTab] = useState<'detail' | 'versions'>('detail');
   const [detail, setDetail] = useState<Row | null>(null);
   const [avail, setAvail] = useState(200);
+  const [pdfErr, setPdfErr] = useState('');
   const [cmp, setCmp] = useState<[string, string] | null>(null);
   const [cmpDocs, setCmpDocs] = useState<[Row, Row] | null>(null);
   useEffect(() => { api.documents().then(r => { setRows(r); setErr(''); }).catch((e: ApiError) => setErr(`${e.status} · ${e.message}`)); }, [api, dataRev]);
@@ -78,9 +79,17 @@ export function Library() {
         <div style={{ background: T.deeper, border: `1px solid ${T.hair}`, borderRadius: 6, padding: '9px 10px', fontFamily: MONO, fontSize: 10.5, lineHeight: 1.6 }}>{report.length ? report.map((l, i) => <div key={i} style={{ whiteSpace: 'pre', overflow: 'hidden', textOverflow: 'ellipsis', color: lineColor(l) }}>{l}</div>) : <span style={{ color: T.muted }}>loading…</span>}</div>
         {missing && <Banner kind="err">410 · document artifact missing. The registry row exists, but the .docx is gone from disk. Rebuild from the source Markdown.</Banner>}
         {avail === 503 && <Banner kind="err">503 · DocEngine storage unavailable</Banner>}
+        {pdfErr && <Banner kind="err">PDF → {pdfErr}</Banner>}
         <div style={{ marginTop: 'auto', display: 'flex', gap: 8 }}>
           <a href={missing ? undefined : api.documentHref(r.id, 'download')} style={{ flex: 1, textAlign: 'center', borderRadius: 6, padding: 9, fontWeight: 700, background: missing ? T.surface : T.navy, color: missing ? T.faint : '#fff', textDecoration: 'none', pointerEvents: missing ? 'none' : undefined }}>Download .docx</a>
-          <a href={missing ? undefined : api.documentHref(r.id, 'pdf')} title="Gotenberg renders on demand: 503 when no renderer is configured, 502 when conversion fails" style={{ flex: 1, textAlign: 'center', border: `1px solid ${T.control}`, borderRadius: 6, padding: 9, color: missing ? T.faint : '#fff', textDecoration: 'none', pointerEvents: missing ? 'none' : undefined }}>PDF · Gotenberg</a></div>
+          <a href={missing ? undefined : api.documentHref(r.id, 'pdf')} onClick={async e => {
+            // Probe first: on 502/503 a plain navigation would leave the app for a bare JSON error page.
+            if (api.mode !== 'live') return; e.preventDefault(); setPdfErr('');
+            try { const res = await fetch(api.documentHref(r.id, 'pdf'), { credentials: 'same-origin' });
+              if (!res.ok) { const j = await res.json().catch(() => ({})); setPdfErr(`${res.status} · ${(j as { detail?: string }).detail || res.statusText}`); return; }
+              const a = document.createElement('a'); a.href = URL.createObjectURL(await res.blob()); a.download = `${r.code}.pdf`; a.click(); URL.revokeObjectURL(a.href);
+            } catch (x) { setPdfErr(String((x as Error).message || x)); } }}
+            title="Gotenberg renders on demand: 503 when no renderer is configured, 502 when conversion fails" style={{ flex: 1, textAlign: 'center', border: `1px solid ${T.control}`, borderRadius: 6, padding: 9, color: missing ? T.faint : '#fff', textDecoration: 'none', pointerEvents: missing ? 'none' : undefined }}>PDF · Gotenberg</a></div>
         {r.job_id && <span onClick={() => go('jobs', { jobSel: r.job_id! })} style={{ textAlign: 'center', color: C.run, cursor: 'pointer', fontSize: 12.5 }}>Open source job {r.job_id.slice(0, 8)} →</span>}
       </> : <>
         <div style={{ fontSize: 12, color: T.muted, lineHeight: 1.45 }}>The registry keys on <span style={{ fontFamily: MONO }}>code</span>: every passed build of {r.code} is kept. The newest approved row is effective; older rows are superseded, never deleted.</div>

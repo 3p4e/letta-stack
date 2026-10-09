@@ -7,6 +7,7 @@ import { composeLines } from '../lib/compose';
 import { usePrimary } from '../lib/usePrimary';
 import { useApp } from '../store/store';
 import { MONO, T } from '../theme';
+import { PreviewLive } from '../components/LiveViews';
 
 const ZOOM = .58;
 const lines = composeLines(SAMPLE_SOP);
@@ -20,6 +21,12 @@ const sopZones = (m: AnchorMap): AnchorMap => {
 };
 
 export function Preview() {
+  const { api } = useApp();
+  return api.mode === 'live' ? <PreviewLive /> : <PreviewSample />;
+}
+
+/** The scripted mock-mode screen (sample document). */
+function PreviewSample() {
   const { go, set, flash, run } = useApp();
   const [lens, setLens] = useState<'mk' | 'both' | 'en'>('both');
   const [sel, setSel] = useState('s0');

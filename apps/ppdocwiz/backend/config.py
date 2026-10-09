@@ -30,6 +30,12 @@ class Settings:
     # loopback development, where a Secure cookie would never be sent back.
     cookie_secure: bool = os.environ.get("PPDOCWIZ_COOKIE_SECURE", "1") != "0"
 
+    # DocEngine (apps/wwf-docengine) is internal-only. The suite's Questionnaire,
+    # Jobs and Library screens reach it through /api/docengine/*, which this
+    # service forwards with its own X-API-Key. Unset URL => those routes 503.
+    docengine_url: str = os.environ.get("DOCENGINE_URL", "").rstrip("/")
+    docengine_api_key: str = os.environ.get("DOCENGINE_API_KEY", "")
+
     @property
     def agent_allowlist(self) -> list[str]:
         return [a.strip() for a in self.letta_agents.split(",") if a.strip()]

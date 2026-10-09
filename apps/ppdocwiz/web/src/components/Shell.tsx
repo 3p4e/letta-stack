@@ -8,6 +8,9 @@ import { Dot } from './ui';
 const NAV: [Screen, string, 'c' | 'k'][] = [['builder', 'Builder', 'c'], ['chat', 'Agent chat', 'c'], ['quest', 'Questionnaire', 'c'], ['format', 'Formatter', 'c'], ['report', 'Reports', 'c'], ['library', 'Library', 'k'], ['jobs', 'Jobs', 'k'], ['verify', 'Verify', 'k'], ['preview', 'Preview', 'k'], ['fleet', 'Fleet & health', 'k']];
 const CRUMB: Record<Screen, string> = { builder: '', chat: 'chat › allowlist › WHSOP_002_A02', quest: 'questionnaire › POST /workflows', format: 'formatter › labels_raw.docx → house style', library: 'library › docengine.documents', jobs: 'jobs › docengine.jobs', report: 'reports › QCSOP_031_A02 · pp_report', verify: 'verify › POST /build 422 · WHSOP_009_A01', preview: 'preview › QCSOP_031 · page 3 / 9', fleet: 'admin › gf_ fleet & health' };
 
+// CRUMB names the mock-mode sample documents; live mode must not show them as if they were real.
+const LIVE_CRUMB: Record<Screen, string> = { builder: '', chat: 'chat › POST /api/chat', quest: 'questionnaire › POST /workflows', format: 'formatter › Mode B · POST /build', library: 'library › docengine.documents', jobs: 'jobs › docengine.jobs', report: 'reports › not connected', verify: 'verify › last build in this session', preview: 'preview › last build in this session', fleet: 'fleet & health' };
+
 function useViewport() {
   const [v, setV] = useState({ w: window.innerWidth, h: window.innerHeight });
   useEffect(() => { const f = () => setV({ w: window.innerWidth, h: window.innerHeight }); window.addEventListener('resize', f); return () => window.removeEventListener('resize', f); }, []);
@@ -45,7 +48,7 @@ export function Shell({ children }: { children: ReactNode }) {
   const vp = useViewport();
   useHealth();
   const zoom = Math.min(1, vp.w / 1280, vp.h / 760);
-  const crumb = s.screen === 'builder' ? `builder › ${s.bdoc.code || 'untitled'} · ${s.bdoc.status.replace('_', ' ')} v${s.bdoc.version}` : CRUMB[s.screen];
+  const crumb = s.screen === 'builder' ? `builder › ${s.bdoc.code || 'untitled'} · ${s.bdoc.status.replace('_', ' ')} v${s.bdoc.version}` : (s.api.mode === 'live' ? LIVE_CRUMB : CRUMB)[s.screen];
   const radius = s.tweaks.createStyle === 'pill' ? 999 : 6;
   const toggleCreate = (e: React.MouseEvent<HTMLButtonElement>) => {
     const el = e.currentTarget, root = el.closest('[data-pp-root]') as HTMLElement, rr = root.getBoundingClientRect(), r = el.getBoundingClientRect(), k = rr.width / root.offsetWidth || 1;

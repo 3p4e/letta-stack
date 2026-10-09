@@ -47,6 +47,8 @@ export interface Api {
   jobs(): Promise<Job[]>;
   /** Not in DocEngine yet (status awaiting_review exists, no transition route). */
   reviewJob(id: string, decision: 'approve' | 'return', note: string): Promise<Job>;
+  /** Builder Source view → ppdocwiz POST /api/build: the same engine as the wizard path; 422 on a FAIL. */
+  rawBuild(markdown: string, outName: string): Promise<BuildResult>;
   directBuild(markdown: string, outName: string, meta: Record<string, string>): Promise<{ ok: true; document_id: string | null; bytes: number; verify: string }>;
   documents(): Promise<DocumentRow[]>;
   document(id: string): Promise<DocumentRow>;

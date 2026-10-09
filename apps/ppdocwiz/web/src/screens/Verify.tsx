@@ -10,6 +10,7 @@ import { usePrimary } from '../lib/usePrimary';
 import { lineColor, verifyReport } from '../lib/verify';
 import { useApp } from '../store/store';
 import { C, DISPLAY, G, MONO, T } from '../theme';
+import { VerifyLive } from '../components/LiveViews';
 
 const COLS = ['№', 'Култура~~Crop', 'Зона~~Zone', 'Штетник~~Pest', 'Праг~~Threshold', 'Наод~~Finding', 'Мерка~~Action', 'Датум~~Date', 'Потпис~~Signature'];
 const cell = (s: string) => { const [mk, en = ''] = s.split('~~'); return { mk, en }; };
@@ -27,6 +28,12 @@ const FAIL0 = verifyReport('/data/WHSOP_009_A01.docx', { paras: 22, tables: 3, w
 const useV = create<{ doc: WizardPayload; report: string; fixed: boolean; how: string }>(() => ({ doc: WIDE, report: FAIL0, fixed: false, how: '' }));
 
 export function Verify() {
+  const { api } = useApp();
+  return api.mode === 'live' ? <VerifyLive /> : <VerifySample />;
+}
+
+/** The scripted mock-mode screen (sample document). */
+function VerifySample() {
   const { api, run } = useApp();
   const { doc, report, fixed, how } = useV();
   const rebuild = async (next: WizardPayload, label: string) => {

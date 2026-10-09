@@ -35,23 +35,28 @@ export function Chat() {
   const end = useRef<HTMLDivElement>(null);
   useEffect(() => { end.current?.scrollIntoView({ block: 'end' }); }, [msgs.length]);
   const disabled = svc.note.letta?.startsWith('chat disabled');
+  const live = api.mode === 'live';
+  // The opening conversation is a mock-mode sample; live mode starts empty.
+  useEffect(() => { if (live && useChat.getState().msgs === INIT) useChat.setState({ msgs: [], denied: [] }); }, [live]);
 
   const send = async (text: string) => {
     text = text.trim(); if (!text || busy) return;
     const idx = useChat.getState().msgs.length + 2;
     set({ chatDraft: '' });
-    push({ k: 'you', text }, { k: 'trace', text: 'reasoning · resolving target in WHSOP_002_A02' }, { k: 'tool', args: `(markdown=<${text.length * 12} chars>, out_path="/data/WHSOP_002_A02.docx")`, res: 'compose → build_from_md → pp_verify → gotenberg', st: 'run', t: '' });
+    // Live mode shows only what the server returns: no simulated reasoning trace or tool row.
+    if (live) push({ k: 'you', text });
+    else push({ k: 'you', text }, { k: 'trace', text: 'reasoning · resolving target in WHSOP_002_A02' }, { k: 'tool', args: `(markdown=<${text.length * 12} chars>, out_path="/data/WHSOP_002_A02.docx")`, res: 'compose → build_from_md → pp_verify → gotenberg', st: 'run', t: '' });
     const t0 = performance.now();
-    await run('WHSOP_002_A02', async () => {
+    await run(live ? 'chat' : 'WHSOP_002_A02', async () => {
       try {
         const r = await api.chat(text, chatAgent);
-        patch(idx, { st: 'ok', res: r.built ? 'built ' + r.built.path : 'no build in this turn', t: ((performance.now() - t0) / 1000).toFixed(2) + ' s' });
+        if (!live) patch(idx, { st: 'ok', res: r.built ? 'built ' + r.built.path : 'no build in this turn', t: ((performance.now() - t0) / 1000).toFixed(2) + ' s' });
         if (r.built) { const id = String(r.built.path).split('/').pop()!.replace(/\.docx$/, ''); push({ k: 'built', path: r.built.path, docx: api.downloadHref(id, 'docx'), pdf: api.downloadHref(id, 'pdf') }); }
         push({ k: 'agent', text: r.reply });
         return { ok: true };
       } catch (e) {
         const er = e as ApiError;
-        patch(idx, { st: 'bad', res: `${er.status} · ${er.message}`, t: '' });
+        if (!live) patch(idx, { st: 'bad', res: `${er.status} · ${er.message}`, t: '' });
         push({ k: 'err', text: `POST /api/chat → ${er.status} · ${er.message}` });
         if (er.status === 400) deny(chatAgent);
         return { ok: false, failAt: 0, msg: `RESULT: FAIL · ${er.status}` };
@@ -104,7 +109,7 @@ export function Chat() {
       </div>
     </div>
     <div style={{ width: 452, flex: 'none', borderLeft: `1px solid ${T.hair}`, background: T.deep, display: 'flex', flexDirection: 'column' }}>
-      <PaneHead title="WHSOP_002_A02 · live" right={busy ? 'rebuilding…' : 'rebuilt 06:44 · PASS'} />
+      <PaneHead title={live ? 'Sample layout · not this conversation' : 'WHSOP_002_A02 · live'} right={live ? '' : busy ? 'rebuilding…' : 'rebuilt 06:44 · PASS'} />
       <div style={{ flex: 1, position: 'relative', padding: '16px 0 0 14px' }}>
         <div style={{ position: 'relative', width: 318 }}>
           <PPPage doc={doc} zoom={.4} highlights={[{ anchor: 's0b0r2', kind: 'ok' }]} />
