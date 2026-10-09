@@ -24,7 +24,7 @@ orient: portrait
 
 # 2 Материјал и опсег | Material and range
 [[FORM]]
-Материјал ||| Material ||| ☐ Готов производ / меѓупроизвод / мостри (15–25 °C, RH ≤ 60 %) | Finished product / intermediate / samples (15–25 °C, RH ≤ 60 %)   ☐ Клонови (+2 до +8 °C) | Clones (+2 to +8 °C)   ☐ Семе (5–20 °C) | Seeds (5–20 °C)
+Материјал ||| Material ||| ☐ Готов производ / меѓупроизвод (15–25 °C, RH ≤ 60 %) | Finished product / intermediate (15–25 °C, RH ≤ 60 %)   ☐ Клонови (+2 до +8 °C) | Clones (+2 to +8 °C)   ☐ Семе (5–20 °C) | Seeds (5–20 °C)
 [[/FORM]]
 [[FORM:grid]]
 Максимален товар (kg / број на кутии) ||| Maximum load (kg / boxes) ||| _

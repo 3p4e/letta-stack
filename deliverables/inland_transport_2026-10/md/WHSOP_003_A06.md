@@ -1,55 +1,52 @@
 <!--HEADERDATA
-mk_title: Барање за анализа — мостри за контрола на квалитет
-en_title: Request for Analysis — Quality Control Samples
+mk_title: Известување по транспортот до Министерството за здравство
+en_title: Post-transport Notification to the Ministry of Health
 code: WHSOP_003_A06
 version: 01
 doctype: FORM
 parent: WHSOP_003
-orient: landscape
+orient: portrait
 -->
 
-# 1 Барање | Request
-[[FORM:grid]]
-До (лабораторија) ||| To (laboratory) ||| _
-Од ||| From ||| Пјурли Плант ДООЕЛ Скопје — Сектор за КК | Purely Plant DOOEL Skopje — QC Department
-Договор / Технички договор бр. ||| Contract / Technical Agreement No. ||| _
-UTID |||  ||| TR-________-___
-Датум ||| Date ||| _
-Планиран датум на испорака ||| Planned delivery date ||| _
-Начин на транспорт ||| Transport method ||| Обезбеден транспорт преку договорна обезбедувачка компанија | Secured transport by contracted security company
-Контакт за резултати ||| Contact for results ||| _
-[[/FORM]]
-
-# 2 Мостри | Samples
-[[TABLE]]
-№ ||| Број на мостра~~Sample No. ||| Серија~~Batch ||| Сорта~~Strain ||| Вид на производ~~Product type ||| Датум на производство~~Production date ||| Нето маса (g)~~Net mass (g) ||| Бруто маса (g)~~Gross mass (g) ||| Маса при прием во лаб. (g)~~Lab receipt mass (g)
-1 |||  |||  |||  |||  |||  |||  |||  ||| 
-2 |||  |||  |||  |||  |||  |||  |||  ||| 
-3 |||  |||  |||  |||  |||  |||  |||  ||| 
-4 |||  |||  |||  |||  |||  |||  |||  ||| 
-5 |||  |||  |||  |||  |||  |||  |||  ||| 
-[[/TABLE]]
-
-# 3 Барани анализи | Analyses requested
-[[TABLE]]
-№ ||| Параметар~~Parameter ||| Метода (референца)~~Method (reference) ||| Мостри (бр.)~~Samples (No.) ||| Барано~~Requested
-1 ||| Канабиноиди (THC, THCA, CBD, CBDA)~~Cannabinoids (THC, THCA, CBD, CBDA) ||| Ph. Eur. 3028 / валидирана HPLC~~Ph. Eur. 3028 / validated HPLC |||  ||| ☐
-2 ||| Губење при сушење~~Loss on drying ||| Ph. Eur. 2.2.32 |||  ||| ☐
-3 ||| Микробиолошка чистота~~Microbiological purity ||| Ph. Eur. 2.6.12, 2.6.13, 5.1.8 |||  ||| ☐
-4 ||| Тешки метали~~Heavy metals ||| Ph. Eur. 2.4.27 |||  ||| ☐
-5 ||| Остатоци од пестициди~~Pesticide residues ||| Ph. Eur. 2.8.13 |||  ||| ☐
-6 ||| Микотоксини (афлатоксини, OTA)~~Mycotoxins (aflatoxins, OTA) ||| Ph. Eur. 2.8.18, 2.8.22 |||  ||| ☐
-7 ||| Друго~~Other |||  |||  ||| ☐
-[[/TABLE]]
+# 1 Примач на известувањето | Addressee
 [[FORM]]
-Посебни упатства ||| Special instructions ||| _
+До ||| To ||| Министерство за здравство на Република Северна Македонија | Ministry of Health of the Republic of North Macedonia
+Наш број / UTID ||| Our reference / UTID ||| TR-________-___
+Датум на поднесување (≤ 3 работни дена по транспортот) ||| Date of submission (≤ 3 working days after transport) ||| _
 [[/FORM]]
 
-# 4 Потписи и ланец на надзор | Signatures and chain of custody
+# 2 Податоци за транспортот | Transport details
+[[FORM:grid]]
+Испраќач и број на дозвола ||| Consignor and licence No. ||| Пјурли Плант ДООЕЛ Скопје, дозвола бр. ______ | Purely Plant DOOEL Skopje, licence No. ______
+Референца на известувањето до МВР (број и датум) ||| Reference of the MoIA notification (No. and date) ||| _
+Датум на извршен транспорт ||| Date transport executed ||| _
+Примач (назив и адреса) ||| Consignee (name and address) ||| _
+Намена ||| Purpose ||| _
+Превозник ||| Carrier ||| _
+[[/FORM]]
 [[TABLE]]
-Страна~~Party ||| Име и функција~~Name and title ||| Датум и време~~Date and time ||| Потпис и печат~~Signature and stamp
-Барање поднесува (Раководител КК)~~Requested by (QC Head) |||  |||  ||| 
-Предава (Пјурли Плант)~~Relinquishes (Purely Plant) |||  |||  ||| 
-Презема (лабораторија)~~Receives (laboratory) |||  |||  ||| 
+№ ||| Вид на материјал~~Material ||| Серија~~Batch ||| Испратена нето маса (g)~~Net mass dispatched (g) ||| Примена маса (g)~~Mass received (g)
+1 |||  |||  |||  ||| 
+2 |||  |||  |||  ||| 
+3 |||  |||  |||  ||| 
+Вкупно~~Total |||  |||  |||  ||| 
 [[/TABLE]]
-Примерок 1: лабораторија (во секундарното пакување). Примерок 2: Сектор за КК (враќа посадата потпишан). Примерок 3: QA. ||| Copy 1: laboratory (inside the secondary packaging). Copy 2: QC Department (returned signed by the crew). Copy 3: QA.
+
+# 3 Изјава | Statement
+Со ова потврдуваме дека транспортот наведен погоре е извршен на наведениот датум, по пријавената рута, и дека пратката е предадена на примачот според приложениот ланец на надзор. ||| We hereby confirm that the transport stated above was executed on the stated date, on the notified route, and that the consignment was handed over to the consignee according to the attached chain of custody.
+[[FORM]]
+Отстапувања при транспортот ||| Deviations during transport ||| ☐ Нема | None   ☐ Има — опис во прилог | Yes — described in attachment
+[[/FORM]]
+Прилози: копија од потврдата од МВР; WHSOP_003_A04 (ланец на надзор); GPS извештај за рутата. ||| Attachments: copy of the MoIA confirmation; WHSOP_003_A04 (chain of custody); GPS route report.
+
+# 4 Потписи | Signatures
+[[TABLE]]
+Улога~~Role ||| Име~~Name ||| Датум~~Date ||| Потпис~~Signature
+Изготвил (Раководител на Обезбедување)~~Prepared (Head of Security) |||  |||  ||| 
+GPS податоците ги проверил (Администратор на обезбедување)~~GPS data verified (Security Administrator) |||  |||  ||| 
+Одобрил и потпишал (QP)~~Approved and signed (QP) |||  |||  ||| 
+[[/TABLE]]
+[[FORM:grid]]
+Доказ за поднесување (број, заверка) ||| Proof of submission (No., stamp) ||| _
+Датум на поднесување ||| Submission date ||| _
+[[/FORM]]

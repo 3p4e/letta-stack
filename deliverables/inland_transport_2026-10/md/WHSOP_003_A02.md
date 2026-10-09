@@ -38,7 +38,7 @@ orient: portrait
 
 # 4 Количина | Quantity
 [[TABLE]]
-№ ||| Вид на материјал~~Material ||| Серија / мостра~~Batch / sample ||| Број на контејнери~~Containers ||| Нето маса (g)~~Net mass (g)
+№ ||| Вид на материјал~~Material ||| Серија~~Batch ||| Број на контејнери~~Containers ||| Нето маса (g)~~Net mass (g)
 1 |||  |||  |||  ||| 
 2 |||  |||  |||  ||| 
 3 |||  |||  |||  ||| 

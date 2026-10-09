@@ -12,13 +12,11 @@ orient: landscape
 Рута без статус QUALIFIED и важечки датум не се користи според WHSOP_003. Растојанието и времетраењето се внесуваат од TRA/A01 по мерење, не се проценуваат. ||| A lane without QUALIFIED status and a valid date is not used under WHSOP_003. Distance and duration are entered from the TRA/A01 after measurement, not estimated.
 [[TABLE]]
 Код~~Code ||| Место на прием~~Receipt point ||| Материјал / опсег~~Material / range ||| Возило / пакување~~Vehicle / packaging ||| km ||| Макс. траење~~Max. duration ||| Извештај (A05)~~Report (A05) ||| Статус~~Status ||| Важи до~~Valid until ||| Ограничувања~~Limitations
-L01 ||| UKIM FF — Центар за природни производи, Скопје~~UKIM FF — Centre for Natural Products, Skopje ||| мостри 15–25 °C~~samples 15–25 °C |||  |||  |||  |||  |||  |||  ||| 
-L02 ||| Институт за јавно здравје, Скопје~~Institute of Public Health, Skopje ||| мостри 15–25 °C~~samples 15–25 °C |||  |||  |||  |||  |||  |||  ||| 
-L03 ||| Фармахем, Скопје~~Farmahem, Skopje ||| мостри 15–25 °C~~samples 15–25 °C |||  |||  |||  |||  |||  |||  ||| 
-L04 ||| Државна фитосанитарна лабораторија~~State Phytosanitary Laboratory ||| клонови +2 до +8 °C~~clones +2 to +8 °C |||  |||  |||  |||  |||  |||  ||| 
-L05 ||| Домашен примач со дозвола~~Licensed domestic consignee ||| производ 15–25 °C~~product 15–25 °C |||  |||  |||  |||  |||  |||  ||| 
-L06 ||| Царински магацин → локација~~Bonded warehouse → site ||| клонови / семе~~clones / seeds |||  |||  |||  |||  |||  |||  ||| 
-L07 ||| Овластено место за уништување~~Authorised destruction site ||| отпад (не е критична)~~waste (not critical) |||  |||  |||  |||  |||  |||  ||| 
+L01 ||| Домашен примач со дозвола~~Licensed domestic consignee ||| производ 15–25 °C~~product 15–25 °C |||  |||  |||  |||  |||  |||  ||| 
+L02 ||| Царински магацин → локација~~Bonded warehouse → site ||| клонови / семе~~clones / seeds |||  |||  |||  |||  |||  |||  ||| 
+L03 ||| Овластено место за уништување~~Authorised destruction site ||| отпад (не е критична)~~waste (not critical) |||  |||  |||  |||  |||  |||  ||| 
+ |||  |||  |||  |||  |||  |||  |||  |||  ||| 
+ |||  |||  |||  |||  |||  |||  |||  |||  ||| 
  |||  |||  |||  |||  |||  |||  |||  |||  ||| 
 [[/TABLE]]
 Статус: PLANNED / IN QUALIFICATION / QUALIFIED / SUSPENDED / RETIRED. ||| Status: PLANNED / IN QUALIFICATION / QUALIFIED / SUSPENDED / RETIRED.

@@ -24,7 +24,7 @@ GPS-уред (сериски број) ||| GPS unit (serial No.) ||| _
 
 # 2 Содржина на пратката | Consignment contents
 [[TABLE]]
-№ ||| Серија / мостра~~Batch / sample ||| Вид~~Type ||| Контејнер / UBID~~Container / UBID ||| Нето маса (g)~~Net mass (g) ||| Пломба бр.~~Seal No. ||| Примена маса (g)~~Mass received (g)
+№ ||| Серија~~Batch ||| Вид~~Type ||| Контејнер / UBID~~Container / UBID ||| Нето маса (g)~~Net mass (g) ||| Пломба бр.~~Seal No. ||| Примена маса (g)~~Mass received (g)
 1 |||  |||  |||  |||  |||  ||| 
 2 |||  |||  |||  |||  |||  ||| 
 3 |||  |||  |||  |||  |||  ||| 
@@ -60,7 +60,7 @@ GPS-уред (сериски број) ||| GPS unit (serial No.) ||| _
 [[TABLE]]
 Проверка при предавање~~Check at hand-over ||| Да~~Yes ||| Не~~No
 Пломбата е цела и бројот е проверен~~Seal intact and number verified |||  ||| 
-Документите се предадени (A04, A06, картичка за итни случаи)~~Documents handed over (A04, A06, emergency card) |||  ||| 
+Документите се предадени (A04, картичка за итни случаи)~~Documents handed over (A04, emergency card) |||  ||| 
 Логерот работи~~Logger running |||  ||| 
 GPS активен (потврдено со диспечерот)~~GPS active (confirmed with dispatcher) |||  ||| 
 Посадата е брифирана~~Crew briefed |||  ||| 
@@ -83,7 +83,7 @@ GPS активен (потврдено со диспечерот)~~GPS active (c
 [[TABLE]]
 Страна~~Party ||| Име и функција~~Name and title ||| Организација~~Organisation ||| Датум и време~~Date and time ||| Потпис и печат~~Signature and stamp
 Предава (возач)~~Relinquishes (driver) |||  |||  |||  ||| 
-Презема (примач / лабораторија)~~Receives (consignee / laboratory) |||  |||  |||  ||| 
+Презема (примач)~~Receives (consignee) |||  |||  |||  ||| 
 [[/TABLE]]
 [[FORM]]
 Статус на приемот ||| Receipt status ||| ☐ Прифатено | Accepted   ☐ Прифатено со резерва | Accepted with reservation   ☐ Одбиено | Rejected

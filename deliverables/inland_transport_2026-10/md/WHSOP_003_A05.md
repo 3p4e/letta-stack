@@ -25,18 +25,17 @@ A2 ||| Писмена потврда од МВР примена~~Written MoIA co
 A3 ||| Известување до обезбедувањето и писмена потврда~~Security company notification and written confirmation |||  |||  |||  ||| A03
 A4 ||| TRA одобрен од QA~~TRA approved by QA |||  |||  |||  ||| A01
 A5 ||| Рутата е QUALIFIED и квалификацијата важи~~Lane QUALIFIED and qualification valid |||  |||  |||  ||| QASOP_0XX_A06
-A6 ||| Примачот / лабораторијата потврди прием~~Consignee / laboratory confirmed receipt |||  |||  |||  ||| 
-A7 ||| Материјалот е во статус ОДОБРЕНО / мострата има број~~Material APPROVED / sample numbered |||  |||  |||  ||| WHSOP 001
+A6 ||| Примачот потврди прием~~Consignee confirmed receipt |||  |||  |||  ||| 
+A7 ||| Материјалот е во статус ОДОБРЕНО~~Material APPROVED |||  |||  |||  ||| WHSOP 001
 A8 ||| Двојна проверка на идентитет и маса завршена~~Two-person identity and mass check done |||  |||  |||  ||| A04 §2
 A9 ||| Пакувањето и ознаките се според §6.4~~Packaging and labels per §6.4 |||  |||  |||  ||| 
 A10 ||| Пломбите се поставени и броевите евидентирани~~Seals applied and numbers recorded |||  |||  |||  ||| A04 §3
 A11 ||| Логерот е калибриран, активиран и поставен во центарот~~Logger calibrated, started and placed at centre |||  |||  |||  ||| A04 §3
-A12 ||| Барањето за анализа во секундарното пакување (мостри)~~Request for Analysis inside secondary packaging (samples) |||  |||  |||  ||| A06
-A13 ||| Возилото одговара на A03 и е чисто и заклучливо~~Vehicle matches A03, clean and lockable |||  |||  |||  ||| 
-A14 ||| Климатизацијата е поставена и предкондиционирана ≥ 30 мин~~Climate control set and pre-conditioned ≥ 30 min |||  |||  |||  ||| 
-A15 ||| GPS тестиран со диспечерот~~GPS tested with dispatcher |||  |||  |||  ||| 
-A16 ||| Идентитет и овластување на возачите проверени~~Drivers' identity and authorisation verified |||  |||  |||  ||| 
-A17 ||| Посадата брифирана (рута, застанувања, инциденти)~~Crew briefed (route, stops, incidents) |||  |||  |||  ||| 
+A12 ||| Возилото одговара на A03 и е чисто и заклучливо~~Vehicle matches A03, clean and lockable |||  |||  |||  ||| 
+A13 ||| Климатизацијата е поставена и предкондиционирана ≥ 30 мин~~Climate control set and pre-conditioned ≥ 30 min |||  |||  |||  ||| 
+A14 ||| GPS тестиран со диспечерот~~GPS tested with dispatcher |||  |||  |||  ||| 
+A15 ||| Идентитет и овластување на возачите проверени~~Drivers' identity and authorisation verified |||  |||  |||  ||| 
+A16 ||| Посадата брифирана (рута, застанувања, инциденти)~~Crew briefed (route, stops, incidents) |||  |||  |||  ||| 
 [[/TABLE]]
 [[TABLE]]
 Улога~~Role ||| Име~~Name ||| Датум/време~~Date/time ||| Потпис~~Signature

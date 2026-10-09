@@ -24,10 +24,10 @@ UTID |||  ||| TR-________-___
 
 # 2 Материјал | Material
 [[FORM]]
-Вид на материјал ||| Material type ||| ☐ Готов производ | Finished product   ☐ Меѓупроизвод | Intermediate   ☐ Мостри за КК | QC samples   ☐ Клонови | Clones   ☐ Семе | Seeds   ☐ Отпад | Waste
+Вид на материјал ||| Material type ||| ☐ Готов производ | Finished product   ☐ Меѓупроизвод | Intermediate   ☐ Клонови | Clones   ☐ Семе | Seeds   ☐ Отпад | Waste
 [[/FORM]]
 [[TABLE]]
-№ ||| Серија / мостра~~Batch / sample ||| Нето маса (g)~~Net mass (g) ||| Број на контејнери~~Containers ||| Услови~~Conditions
+№ ||| Серија~~Batch ||| Нето маса (g)~~Net mass (g) ||| Број на контејнери~~Containers ||| Услови~~Conditions
 1 |||  |||  |||  ||| 
 2 |||  |||  |||  ||| 
 3 |||  |||  |||  ||| 
@@ -44,7 +44,7 @@ UTID |||  ||| TR-________-___
 4 ||| Влага / кондензација~~Humidity / condensation |||  |||  |||  ||| херметично пакување, логер за RH~~airtight packaging, RH logger ||| 
 5 ||| Доцнење (сообраќај, дефект)~~Delay (traffic, breakdown) |||  |||  |||  ||| резервно возило, време на задржување од OQ~~backup vehicle, hold time from OQ ||| 
 6 ||| Оштетување на пакувањето~~Packaging damage |||  |||  |||  ||| амортизација, обезбедување на товарот~~cushioning, load securing ||| 
-7 ||| Губење/замена на мостра~~Sample loss/mix-up |||  |||  |||  ||| двојна проверка, пломби, манифест~~two-person check, seals, manifest ||| 
+7 ||| Губење/замена на материјал~~Material loss/mix-up |||  |||  |||  ||| двојна проверка, пломби, манифест~~two-person check, seals, manifest ||| 
 8 ||| Регулаторно (без потврда од МВР)~~Regulatory (no MoIA confirmation) |||  |||  |||  ||| чек-листа A05: блокира отпрема~~checklist A05 blocks dispatch ||| 
 9 ||| Друго~~Other |||  |||  |||  |||  ||| 
 [[/TABLE]]

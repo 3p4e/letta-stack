@@ -107,8 +107,8 @@ def protocol():
         c = t.add_row().cells
         for j, x in enumerate(r): pr.cellfmt(c[j], x, None, 9, pr.BLACK, fill=(pr.LBL if j == 0 else None))
     pr.fixed(t, [3.4, 11.06, 4.0]); pr.borders(t)
-    pr.note(d, "Опсег за готов производ, меѓупроизвод и мостри: 15–25 °C, RH ≤ 60 %; клонови: +2 до +8 °C; семе: 5–20 °C (WHSOP_003 §6.1).",
-            "Range for finished product, intermediate and samples: 15–25 °C, RH ≤ 60 %; clones: +2 to +8 °C; seeds: 5–20 °C (WHSOP_003 §6.1).")
+    pr.note(d, "Опсег за готов производ и меѓупроизвод: 15–25 °C, RH ≤ 60 %; клонови: +2 до +8 °C; семе: 5–20 °C (WHSOP_003 §6.1).",
+            "Range for finished product and intermediate: 15–25 °C, RH ≤ 60 %; clones: +2 to +8 °C; seeds: 5–20 °C (WHSOP_003 §6.1).")
 
     pr.chapter(d, "5", "ПРЕСМЕТКИ", "Calculations")
     equations(d)
