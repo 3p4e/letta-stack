@@ -391,6 +391,41 @@ def sop_body_row(t, mk, en, bold=False):
 def sop_finalize(t):
     fixed_widths(t, [9.0, 9.0])   # two equal columns within ~18.46 cm usable
 
+# Ported from the DocEngine canon-2026-07 engine (09.10.2026) so the suite is a strict superset of it.
+def sop_nested_table(t, headers, rows, widths_cm=None, mode=None, header_bg=SOP_BLUE):
+    """Full-width table NESTED inside a merged SOP body row (SKILL.md / formatting_specs.md:
+    'Tables nested in a full-width merged row; no divider; table text MK 11pt | EN 7pt').
+    headers, and each row, are lists of (mk, en) pairs — one per nested-table column.
+    Use for in-body tables (RACI matrices, abbreviation lists, colour-code legends, retention
+    registers, revision history) that must live INSIDE the running two-column SOP body, not as
+    a separate top-level table. Distinct from sop_block_table(), which builds a standalone
+    top-level table for §7/§8/§9 (outside the two-column flow).
+    Column widths are AUTO-DECIDED by fixed() — the skill's single use-aware table-layout brain
+    (formatting_specs.md): a 2-column abbreviation list gets a COMPACT centred fit, a wide RACI
+    matrix gets its label column sized to content with role columns split evenly, etc. Pass
+    widths_cm to force explicit ratios, or mode='compact'|'full' to override the auto fit —
+    do not hand-compute an even split; that is exactly the anti-pattern fixed() exists to avoid."""
+    outer_row = t.add_row()
+    L, R = outer_row.cells
+    merged = L.merge(R)
+    cell_borders(merged, ())  # no divider across a merged/nested-table row
+    merged.paragraphs[0].text = ''
+    ncol = len(headers)
+    nt = merged.add_table(rows=1 + len(rows), cols=ncol)
+    nt.alignment = WD_TABLE_ALIGNMENT.CENTER
+    for j, (mk, en) in enumerate(headers):
+        c = nt.cell(0, j); shade(c, header_bg); c.paragraphs[0].text = ''
+        bilingual(c.paragraphs[0], mk, en, 11, 7, bold=True)
+    for i, row in enumerate(rows, 1):
+        for j, (mk, en) in enumerate(row):
+            if j >= ncol:
+                break
+            c = nt.cell(i, j); c.paragraphs[0].text = ''; bilingual(c.paragraphs[0], mk, en, 11, 7)
+    from pp_report import fixed   # the suite's one table-layout brain lives in pp_report
+    fixed(nt, weights=widths_cm, mode=mode)
+    table_borders(nt, 4, BORDER_GRAY)
+    return nt
+
 def sop_block_table(d, headers, rows, widths_cm, header_bg=SOP_BLUE):
     """Full-width multi-column bilingual table for SOP §7 Records / §8 Related Documents / §9 Revision.
     headers, and each row, are lists of (mk, en) tuples (one per column)."""
@@ -486,6 +521,77 @@ def annex_signoff(d, roles=(("Изготвил (КК)", "Prepared (QC)"), ("Пр
     return t
 
 # ============================ save ============================
+# Ported from the DocEngine canon-2026-07 engine (09.10.2026).
+# Intelligent compact layout for annex/form metadata blocks (Head-of-QC corrections 2026-06-30):
+#   * VALUE cells sized to the EXPECTED HAND-ENTRY, never maximised (a Date/Batch needs ~2.6 cm).
+#   * LABEL ("action") cells minimal width.
+#   * Multiple label|value pairs PACK per row (default 6-col grid); long values SPAN.
+#   * Line spacing 0.8, NO space before/after in every cell (incl. label cells).
+#   * Related sections (e.g. Transfer information + Material description) merge into ONE table.
+# These are first-class pf primitives; pp_format_layout_addons.py re-exports them. See SKILL.md §6D.
+
+def cell08(cell, mk, en, mk_sz=9, en_sz=7, bold=False, bg=None, white=False, left=True):
+    """House cell, COMPACT form variant: 0.8 line spacing, zero space before/after, bilingual MK | EN.
+    Distinct from annex_cell() (centered, 11|7, 0.85 spacing) — use cell08 for packed metadata grids."""
+    if bg:
+        shade(cell, bg)
+    cell_margins(cell); cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+    p = cell.paragraphs[0]; p.text = ''
+    p.alignment = WD_ALIGN_PARAGRAPH.LEFT if left else WD_ALIGN_PARAGRAPH.CENTER
+    fmt = p.paragraph_format; fmt.line_spacing = 0.8; fmt.space_before = Pt(0); fmt.space_after = Pt(0)
+    col = WHITE if white else BLACK
+    if mk:
+        run(p, mk, mk_sz, col, bold=bold)
+    if en:
+        if mk:
+            run(p, " | ", en_sz, col)
+        run(p, en, en_sz, col, bold=False)
+
+def _merge(row, a, b):
+    """Merge cells a..b (inclusive) of a row; return the merged cell."""
+    c = row.cells[a]
+    for k in range(a + 1, b + 1):
+        c = c.merge(row.cells[k])
+    return c
+
+def value_span(input_chars, ncol=6):
+    """Map expected hand-entry length -> a sensible value-column count (1..ncol-1).
+    <=12 chars -> 1 value col (input-sized); grows for longer/checkbox values."""
+    if input_chars <= 12:
+        return 1
+    if input_chars <= 28:
+        return 2
+    if input_chars <= 48:
+        return 3
+    return ncol - 1  # full-width span (checkbox rows, long boilerplate)
+
+def kv_block(d, sections, ncol=6, label_cm=1.9, value_cm=2.6):
+    """Compact merged label|value block — the reusable metadata-layout primitive (SKILL.md §6D).
+
+    sections: list of (banner_mk, banner_en, fields);
+      fields: list of (label_mk, label_en, value_mk, value_en, input_chars).
+    Builds ONE centred table; value cells are input-sized (via value_span); short fields PACK
+    multiple pairs per row; long values SPAN; every cell uses line spacing 0.8 / no space
+    before-after. Related sections are stacked into the SAME table. Returns the table."""
+    widths = [(label_cm if i % 2 == 0 else value_cm) for i in range(ncol)]
+    t = annex_table(d, widths)
+    for bmk, ben, fields in sections:
+        r = t.add_row()
+        cell08(_merge(r, 0, ncol - 1), bmk, ben, 10, 8, bold=True, bg=A_SECTION, white=True, left=False)
+        col, r = ncol, None  # force a new row on the first field
+        for lmk, len_, vmk, ven, ichars in fields:
+            span = value_span(ichars, ncol); need = 1 + span
+            if r is None or col + need > ncol:
+                r = t.add_row(); col = 0
+            cell08(r.cells[col], lmk, len_, 9, 7, bold=True, bg=A_LABEL)
+            v = _merge(r, col + 1, col + span) if span > 1 else r.cells[col + 1]
+            cell08(v, vmk, ven, 9, 7)
+            col += need
+        if r is not None and col < ncol:  # blank-fill the tail of the last row
+            cell08(_merge(r, col, ncol - 1), "", "")
+    annex_finalize(t)
+    return t
+
 def save(d, path):
     sect = getattr(d, "_pp_sectpr", None)
     if sect is not None:

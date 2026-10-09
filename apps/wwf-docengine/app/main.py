@@ -85,7 +85,7 @@ async def health():
         "ok": True,
         "db": db.ready(),
         "letta": LettaClient().configured,
-        "engine": "pp-document-suite (canon 2026-07)",
+        "engine": "pp-document-suite (synced copy, canon revision 2026-10-09)",
     }
 
 

@@ -51,7 +51,7 @@ download; Verify and Preview of the last build; Chat error path; Fleet health pa
 
 ## Still open (decisions or missing backends, not fixed here)
 
-1. **DocEngine's engine is the canon-2026-07 copy** (`apps/wwf-docengine/engine`, "BINDING" per
+1. ~~**DocEngine's engine is the canon-2026-07 copy**~~ **Resolved 09.10.2026**: on the Head of QC's instruction the DocEngine engine is now an exact, CI-checked copy of `pp-document-suite` (canon revision in `docs/wwf_DOCENGINE-CANON-2026-07.md`). Previously: (`apps/wwf-docengine/engine`, "BINDING" per
    `docs/wwf_DOCENGINE-CANON-2026-07.md`). Formatter, questionnaire workflows and anything else built
    by DocEngine still lack this autumn's engine fixes (`[[BOX]]`, spacing, keep rules). Bringing it to
    the current `pp-document-suite` is a canon revision — the owner's decision.
