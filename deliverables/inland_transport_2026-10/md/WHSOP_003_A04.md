@@ -17,21 +17,20 @@ TRA (референца) ||| TRA (reference) ||| _
 Потврда од МВР (број) ||| MoIA confirmation (No.) ||| _
 Испраќач ||| Consignor ||| Пјурли Плант ДООЕЛ Скопје, Којлија 1043, Петровец | Purely Plant DOOEL Skopje, Kojlija 1043, Petrovec
 Примач ||| Consignee ||| _
-Превозник ||| Carrier ||| _
 Возило (регистарски број) ||| Vehicle (registration) ||| _
-GPS-уред (сериски број) ||| GPS unit (serial No.) ||| _
 [[/FORM]]
 
-# 2 Содржина на пратката | Consignment contents
+# 2 Палети во пратката | Pallets in the consignment
+Секоја палета има своја листа на пакување (WHSOP_003_A03 §5); кесите и картоните се наведени таму. ||| Each pallet has its own packing list (WHSOP_003_A03 §5); the bags and cartons are listed there.
 [[TABLE]]
-№ ||| Серија~~Batch ||| Вид~~Type ||| Контејнер / UBID~~Container / UBID ||| Нето маса (g)~~Net mass (g) ||| Пломба бр.~~Seal No. ||| Примена маса (g)~~Mass received (g)
-1 |||  |||  |||  |||  |||  ||| 
-2 |||  |||  |||  |||  |||  ||| 
-3 |||  |||  |||  |||  |||  ||| 
-4 |||  |||  |||  |||  |||  ||| 
-5 |||  |||  |||  |||  |||  ||| 
-6 |||  |||  |||  |||  |||  ||| 
-Вкупно~~Total |||  |||  |||  |||  |||  ||| 
+№ ||| ID на палета~~Pallet ID ||| Тип G/M~~Type L/S ||| Картони~~Cartons ||| Кеси~~Bags ||| Нето маса (g)~~Net mass (g) ||| Лента бр.~~Tape No. ||| Логер бр.~~Logger No. ||| Примено~~Received
+1 |||  |||  |||  |||  |||  |||  |||  ||| 
+2 |||  |||  |||  |||  |||  |||  |||  ||| 
+3 |||  |||  |||  |||  |||  |||  |||  ||| 
+4 |||  |||  |||  |||  |||  |||  |||  ||| 
+5 |||  |||  |||  |||  |||  |||  |||  ||| 
+6 |||  |||  |||  |||  |||  |||  |||  ||| 
+Вкупно~~Total |||  |||  |||  |||  |||  |||  |||  ||| 
 [[/TABLE]]
 [[TABLE]]
 Двојна проверка~~Two-person verification ||| Име~~Name ||| Датум/време~~Date/time ||| Потпис~~Signature
@@ -41,42 +40,46 @@ GPS-уред (сериски број) ||| GPS unit (serial No.) ||| _
 
 # 3 Пломби и следење на услови | Seals and condition monitoring
 [[FORM:grid]]
-Товарна / терцијарна пломба бр. ||| Cargo / tertiary seal No. ||| _
-Логер (сериски број) ||| Logger (serial No.) ||| _
+Пломба на вратата на товарниот простор бр. ||| Load-space door seal No. ||| _
+USB логер (сериски број) ||| USB logger (serial No.) ||| _
 Калибрација важи до ||| Calibration due ||| _
-Опсег на аларм ||| Alarm range ||| _
+Позиција на USB логерот (од OQ) ||| USB logger position (from OQ) ||| _
 Интервал на мерење ||| Logging interval ||| 5 мин | 5 min
-Логер активиран (време) ||| Logger started (time) ||| _
+USB логер активиран (време) ||| USB logger started (time) ||| _
+Логери за еднократна употреба (број) ||| Single-use loggers (number) ||| _
+Активна контрола на температура (поставена вредност) ||| Active temperature control (set point) ||| ☐ N/A   _
 [[/FORM]]
 
 # 4 Ланец на надзор | Chain of custody
-## 4.1 Точка 1 — Пјурли Плант → возач | Transfer 1 — Purely Plant → driver
+## 4.1 Точка 1 — Пјурли Плант → возач и придружник | Transfer 1 — Purely Plant → driver and escort person
 [[TABLE]]
-Страна~~Party ||| Име и функција~~Name and title ||| Лична карта / дозвола~~ID / licence ||| Датум и време~~Date and time ||| Потпис~~Signature
-Предава (Обезбедување / Логистика)~~Relinquishes (Security / Logistics) |||  |||  |||  ||| 
-Презема (возач 1)~~Receives (driver 1) |||  |||  |||  ||| 
-Презема (возач 2)~~Receives (driver 2) |||  |||  |||  ||| 
+Страна~~Party ||| Име и функција~~Name and title ||| Лична карта~~ID ||| Датум и време~~Date and time ||| Потпис~~Signature
+Предава (Логистика)~~Relinquishes (Logistics) |||  |||  |||  ||| 
+Презема (возач)~~Receives (driver) |||  |||  |||  ||| 
+Презема (придружник)~~Receives (escort person) |||  |||  |||  ||| 
 [[/TABLE]]
 [[TABLE]]
 Проверка при предавање~~Check at hand-over ||| Да~~Yes ||| Не~~No
-Пломбата е цела и бројот е проверен~~Seal intact and number verified |||  ||| 
-Документите се предадени (A04, картичка за итни случаи)~~Documents handed over (A04, emergency card) |||  ||| 
-Логерот работи~~Logger running |||  ||| 
-GPS активен (потврдено со диспечерот)~~GPS active (confirmed with dispatcher) |||  ||| 
-Посадата е брифирана~~Crew briefed |||  ||| 
+Бројот на палети одговара на §2~~Pallet count matches §2 |||  ||| 
+Завиткувањето и лентите се цели~~Wrapping and tapes intact |||  ||| 
+Пломбата на вратата е поставена и бројот е проверен~~Door seal applied and number verified |||  ||| 
+Документите се предадени (A04, A05, листи на пакување, картичка за итни случаи)~~Documents handed over (A04, A05, packing lists, emergency card) |||  ||| 
+Полициското придружување е присутно~~Police escort present |||  ||| 
+Лицата се брифирани~~Persons briefed |||  ||| 
 [[/TABLE]]
 [[FORM:grid]]
+Полициско придружување (единица / одговорен службеник, ако е наведен) ||| Police escort (unit / officer in charge, if stated) ||| _
 Одобрил отпрема (Раководител на Обезбедување) ||| Dispatch authorised by (Head of Security) ||| _
 Време на поаѓање ||| Departure time ||| _
 [[/FORM]]
 
 ## 4.2 Контролни јавувања во транзит | In-transit check-ins
 [[TABLE]]
-Точка~~Checkpoint ||| Време~~Time ||| Пломба цела~~Seal intact ||| Температура на дисплејот (°C)~~Display temperature (°C) ||| Забелешка~~Remark ||| Евидентирал~~Recorded by
-Поаѓање~~Departure |||  |||  |||  |||  ||| 
-Средина на рутата (> 2 h)~~Mid-route (> 2 h) |||  |||  |||  |||  ||| 
-Пред пристигнување~~Pre-arrival |||  |||  |||  |||  ||| 
-Пристигнување~~Arrival |||  |||  |||  |||  ||| 
+Точка~~Checkpoint ||| Време~~Time ||| Место~~Place ||| Пломба цела~~Seal intact ||| Температура на дисплејот (°C)~~Display temperature (°C) ||| Забелешка~~Remark ||| Евидентирал~~Recorded by
+Поаѓање~~Departure |||  |||  |||  |||  |||  ||| 
+Средина на рутата (> 2 h)~~Mid-route (> 2 h) |||  |||  |||  |||  |||  ||| 
+Пред пристигнување~~Pre-arrival |||  |||  |||  |||  |||  ||| 
+Пристигнување~~Arrival |||  |||  |||  |||  |||  ||| 
 [[/TABLE]]
 
 ## 4.3 Точка 2 — возач → примач | Transfer 2 — driver → consignee
@@ -96,11 +99,11 @@ GPS активен (потврдено со диспечерот)~~GPS active (c
  |||  |||  |||  ||| 
 [[/TABLE]]
 
-# 6 Враќање на документите | Return of documents
+# 6 Враќање на документите и логерите | Return of documents and loggers
 [[FORM:grid]]
 Документите вратени до Обезбедување (датум, време) ||| Documents returned to Security (date, time) ||| _
 Скршени пломби вратени ||| Broken seals returned ||| _
-Податоци од логерот преземени ||| Logger data downloaded ||| _
-GPS извештај генериран ||| GPS report generated ||| _
+USB логер вратен и податоците преземени (QA) ||| USB logger returned and data downloaded (QA) ||| _
+Логери за еднократна употреба / PDF вратени (број) ||| Single-use loggers / PDFs returned (number) ||| _
 Примил (Обезбедување) ||| Received by (Security) ||| _
 [[/FORM]]

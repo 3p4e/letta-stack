@@ -595,8 +595,8 @@ def cover_page(d, title_mk, title_en, info_rows, kind_mk="", kind_en="", study_m
     _c=_tb.cell(0,0); cellfmt(_c,"%s | %s"%_lbl,None,11,(GREEN if _appr else RED),bold=True,fill=(GREENF if _appr else REDF))
     _p2=_c.add_paragraph(); _p2.alignment=WD_ALIGN_PARAGRAPH.CENTER
     rin(_p2,"Верзија | Version: %s     ·     Датум на важност | Effective date: %s"%(_hv,_eff),10,BLACK,bold=True)
-    fixed(_tb); borders(_tb)
-    d.add_paragraph()
+    fixed(_tb,[min(15.0,PAGE_W)]); borders(_tb)   # explicit width: content-sizing caps a line at
+    d.add_paragraph()                              # 34 chars and squeezed the band to ~6 cm
     minilabel(d,"Информации за документот | Document information",None)
     _info_table(d, info_rows)
     minilabel(d,"Одобрување | Approval",None)

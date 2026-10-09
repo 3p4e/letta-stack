@@ -29,7 +29,7 @@ def info(lane_label):
     return [("Код на рутата | Lane code", "L__"),
             ("Место на испраќање | Dispatch point", "Којлија 1043, Петровец | Kojlija 1043, Petrovec"),
             ("Место на прием | Receipt point", ""),
-            ("Возило / пакување | Vehicle / packaging", ""),
+            ("Возило / конфигурација на палети | Vehicle / pallet configuration", ""),
             ("Опсег | Range", ""),
             ("План за валидација | Validation plan", "QASOP_0XX_A01 — ______"),
             ("Поврзана СОП | Governing SOP", "QASOP_0XX; WHSOP_003"),
@@ -77,19 +77,21 @@ def protocol():
     pr.entry_table(d, ["Предуслов | Prerequisite", "Референца | Reference", "Да | Yes", "Не | No"],
                    ["QASOP_0XX и WHSOP_003 одобрени | QASOP_0XX and WHSOP_003 approved",
                     "План за валидација и FMEA (A01) одобрени | Validation plan and FMEA (A01) approved",
-                    "Технички договор за квалитет со превозникот важечки | Technical Quality Agreement with carrier valid",
-                    "Техничка документација за климатизацијата достапна | Climate-control technical documentation available",
-                    "Логерите калибрирани (неодреденост ≤ ±0,5 °C, ≤ ±3 % RH) | Loggers calibrated (uncertainty ≤ ±0.5 °C, ≤ ±3 % RH)",
+                    "Возилото идентификувано; активна или пасивна заштита утврдена | Vehicle identified; active or passive protection established",
+                    "Техничка документација за контролата на температура (ако постои) | Temperature-control technical documentation (if fitted)",
+                    "10 USB логери калибрирани (≤ ±0,5 °C, ≤ ±3 % RH), софтверот верификуван | 10 USB loggers calibrated (≤ ±0.5 °C, ≤ ±3 % RH), software verified",
+                    "Логери за еднократна употреба: сертификат на серијата, рок на употреба | Single-use loggers: lot certificate, expiry date",
+                    "Палети, картони, стреч-фолија и термо-ќебиња во рутинската конфигурација | Pallets, cartons, stretch film and thermal blankets in the routine configuration",
                     "Тимот обучен за QASOP_0XX и WHSOP_003 | Team trained on QASOP_0XX and WHSOP_003",
-                    "Симулираниот товар дефиниран (термичка маса, конфигурација) | Simulated load defined (thermal mass, configuration)"],
+                    "Симулираниот товар дефиниран (кеси со иста маса, G 8 / M 4 картони) | Simulated load defined (bags of the same mass, L 8 / S 4 cartons)"],
                    [9.46, 4.0, 2.5, 2.5])
     roles(d)
 
     pr.chapter(d, "3", "КОНФИГУРАЦИЈА НА ЛОГЕРИТЕ", "Logger Configuration")
-    pr.body(d, "Возило: 9 логери во товарниот простор (8 агли и центар), 1 кај вратата, 1 на излезот на климатизацијата, 1 амбиент. Пасивно пакување: 5 логери (центар и 4 агли) и 1 амбиент. Интервал: 1 мин (OQ), 5 мин (PQ). Логерите се синхронизираат по време пред почетокот.",
-            "Vehicle: 9 loggers in the load space (8 corners and centre), 1 at the door, 1 at the climate-control outlet, 1 ambient. Passive packaging: 5 loggers (centre and 4 corners) and 1 ambient. Interval: 1 min (OQ), 5 min (PQ). Loggers are time-synchronised before the start.")
+    pr.body(d, "USB логери (10): P1–P8 во аглите на товарниот простор (P3, P4, P7, P8 кон вратите), P9 во центарот, P10 надвор (амбиент, во сенка); интервал 1 мин (OQ), 5 мин (PQ). Логери за еднократна употреба во тестовите со товар: по 2 во секоја палета — Е1 горен слој, аголот кон вратите; Е2 долен слој, центар (QASOP_0XX §6.4.2). Сите логери се синхронизираат по време пред почетокот.",
+            "USB loggers (10): P1–P8 at the corners of the load space (P3, P4, P7, P8 towards the doors), P9 at the centre, P10 outside (ambient, shaded); interval 1 min (OQ), 5 min (PQ). Single-use loggers in the loaded tests: 2 in every pallet — E1 top layer, corner facing the doors; E2 bottom layer, centre (QASOP_0XX §6.4.2). All loggers are time-synchronised before the start.")
     pr.entry_table(d, ["Позиција | Position", "Сериски број | Serial No.", "Калибрација важи до | Calibration due", "Синхронизиран | Synchronised"],
-                   ["P1–P4 горе | top", "P5–P8 долу | bottom", "P9 центар | centre", "P10 врата | door", "P11 излез | outlet", "P12 амбиент | ambient"],
+                   ["P1–P4 горе | top", "P5–P8 долу | bottom", "P9 центар | centre", "P10 амбиент | ambient", "Е1 по палета | E1 per pallet", "Е2 по палета | E2 per pallet"],
                    [4.5, 5.0, 4.96, 4.0])
     roles(d)
 
@@ -97,12 +99,12 @@ def protocol():
     t = d.add_table(rows=1, cols=3); t.alignment = pr.WD_TABLE_ALIGNMENT.CENTER
     for j, h in enumerate(["Тест | Test", "Критериум | Criterion", "Основа | Basis"]):
         pr.cellfmt(t.cell(0, j), h, None, 9, pr.WHITE, bold=True, fill=pr.NAVYF)
-    CRIT = [("OQ-1 Празно | Empty", "Сите точки во опсег по стабилизацијата; време до опсег евидентирано | All points within range after stabilisation; time to range recorded", "WHO TRS 961 Ann. 9 Suppl. 7"),
-            ("OQ-2 Полно | Loaded", "Сите точки во опсег ≥ 125 % од максималното времетраење; MKT во опсег | All points within range for ≥ 125 % of maximum duration; MKT within range", "Annex 15 §6; GDP 9.2"),
+    CRIT = [("OQ-1 Празно | Empty", "Профил на воздухот наспроти амбиентот; кај активна: сите точки во опсег по стабилизацијата | Air profile against ambient; with active control: all points within range after stabilisation", "WHO TRS 961 Ann. 9 Suppl. 7"),
+            ("OQ-2 Полно | Loaded", "Сите логери во палетите (Е1, Е2) во опсег ≥ 125 % од максималното времетраење; MKT во опсег | All pallet loggers (E1, E2) within range for ≥ 125 % of maximum duration; MKT within range", "Annex 15 §6; GDP 9.2"),
             ("OQ-3 Врата | Door", "Враќање во опсег ≤ 15 мин по секое отворање (2 × 5 мин) | Return to range ≤ 15 min after each opening (2 × 5 min)", "A01 FMEA"),
-            ("OQ-4 Прекин | Power off", "Време на задржување ≥ макс. предвиден прекин (≥ 60 мин) | Hold time ≥ max. foreseen interruption (≥ 60 min)", "A01 FMEA"),
-            ("OQ-5/6 Сезона | Season", "Летно (амбиент ≥ 30 °C) и зимско (≤ 0 °C) мапирање во опсег | Summer (ambient ≥ 30 °C) and winter (≤ 0 °C) mapping within range", "GDP 9.2; Suppl. 14"),
-            ("PQ-1…3", "Сите логери во опсег; времетраење ≤ квалификуваното; пломби и ланец на надзор комплетни | All loggers within range; duration ≤ qualified; seals and chain of custody complete", "Annex 15 §6; WHSOP_003")]
+            ("OQ-4 Прекин | Power off", "Само активна: време на задржување ≥ макс. предвиден прекин (≥ 60 мин) | Active only: hold time ≥ max. foreseen interruption (≥ 60 min)", "A01 FMEA"),
+            ("OQ-5/6 Сезона | Season", "Летно (амбиент ≥ 30 °C) и зимско (≤ 0 °C) мапирање: логерите во палетите во опсег | Summer (ambient ≥ 30 °C) and winter (≤ 0 °C) mapping: pallet loggers within range", "GDP 9.2; Suppl. 14"),
+            ("PQ-1…3", "Сите логери во палетите во опсег; времетраење ≤ квалификуваното; пломби, завиткување и ланец на надзор комплетни | All pallet loggers within range; duration ≤ qualified; seals, wrapping and chain of custody complete", "Annex 15 §6; WHSOP_003")]
     for r in CRIT:
         c = t.add_row().cells
         for j, x in enumerate(r): pr.cellfmt(c[j], x, None, 9, pr.BLACK, fill=(pr.LBL if j == 0 else None))
@@ -117,13 +119,13 @@ def protocol():
     pr.body(d, "Секој тест се изведува по редот, се евидентира во QASOP_0XX_A03 и се потпишува веднаш по завршувањето. Ако критериум не е исполнет, се постапува според §8.",
             "Each test is executed in order, recorded in QASOP_0XX_A03 and signed immediately on completion. If a criterion is not met, proceed per §8.")
     OQ = [("6.1", "OQ-1 Празно возило — стабилизација", "OQ-1 Empty vehicle — stabilisation",
-           "Вклучи ја климатизацијата со празен товарен простор; бележи до стабилизација и уште 60 мин.", "Start climate control with an empty load space; record until stable and a further 60 min."),
+           "Празен товарен простор, вратите затворени; кај активна контрола вклучи ја и бележи до стабилизација и уште 60 мин; кај пасивна бележи најмалку колку најдолгото патување.", "Empty load space, doors closed; with active control switch it on and record until stable and a further 60 min; with passive protection record for at least the longest journey."),
           ("6.2", "OQ-2 Полно возило", "OQ-2 Loaded vehicle",
-           "Натовари симулиран товар во максимална конфигурација; затвори; бележи ≥ 125 % од максималното времетраење од A01.", "Load the simulated load in maximum configuration; close; record for ≥ 125 % of the maximum duration from A01."),
+           "Натовари палети со симулиран товар во максималната конфигурација, завиткани како во рутина, со Е1 и Е2 во секоја палета (вклучи најмалку една мала палета); затвори; бележи ≥ 125 % од максималното времетраење од A01.", "Load pallets with the simulated load in the maximum configuration, wrapped as in routine, with E1 and E2 in every pallet (include at least one small pallet); close; record for ≥ 125 % of the maximum duration from A01."),
           ("6.3", "OQ-3 Отворање на врата", "OQ-3 Door opening",
            "При полн товар, отвори ја вратата 5 мин, затвори, почекај враќање во опсег; повтори втор пат.", "With full load, open the door for 5 min, close, wait for return to range; repeat a second time."),
-          ("6.4", "OQ-4 Прекин на напојување", "OQ-4 Power interruption",
-           "При полн товар во стабилна состојба, исклучи ја климатизацијата; бележи до првото излегување од опсегот (време на задржување); вклучи ја повторно.", "With full load at steady state, switch off climate control; record until the first point leaves the range (hold time); switch back on."),
+          ("6.4", "OQ-4 Прекин на напојување (само активна)", "OQ-4 Power interruption (active only)",
+           "При полн товар во стабилна состојба, исклучи ја контролата на температура; бележи до првото излегување од опсегот (време на задржување); вклучи ја повторно. Кај пасивна заштита — N/A (времето на задржување го даваат OQ-2, OQ-5 и OQ-6).", "With full load at steady state, switch off temperature control; record until the first point leaves the range (hold time); switch back on. With passive protection — N/A (hold time is given by OQ-2, OQ-5 and OQ-6)."),
           ("6.5", "OQ-5 Летно мапирање", "OQ-5 Summer mapping",
            "Повтори го OQ-2 при амбиент ≥ 30 °C.", "Repeat OQ-2 at ambient ≥ 30 °C."),
           ("6.6", "OQ-6 Зимско мапирање", "OQ-6 Winter mapping",
@@ -138,7 +140,7 @@ def protocol():
     pr.chapter(d, "7", "PQ — ИЗВРШУВАЊЕ", "PQ — Execution")
     pr.body(d, "PQ започнува само по писмено одобрение на OQ од QA. Секоја пратка се изведува целосно според WHSOP_003 и се евидентира во QASOP_0XX_A04; барем една пратка мора да биде во сезоната на најлош случај.",
             "PQ starts only after written QA approval of OQ. Each shipment is performed in full per WHSOP_003 and recorded in QASOP_0XX_A04; at least one shipment must fall in the worst-case season.")
-    pr.entry_table(d, ["Пратка | Shipment", "UTID", "Датум | Date", "Сезона | Season", "Мин./макс. °C | Min./max. °C", "MKT °C", "Траење | Duration", "Исполнет | Met"],
+    pr.entry_table(d, ["Пратка | Shipment", "UTID", "Датум | Date", "Палети G/M | Pallets L/S", "Палети мин./макс. °C | Pallets min./max. °C", "MKT °C", "Траење | Duration", "Исполнет | Met"],
                    ["PQ-1", "PQ-2", "PQ-3"], [2.0, 2.8, 2.0, 2.0, 2.8, 1.8, 2.2, 2.86])
     roles(d)
 
@@ -190,13 +192,14 @@ def report():
     pr.entry_table(d, ["Тест | Test", "Мин. °C / поз. | Min. °C / pos.", "Макс. °C / поз. | Max. °C / pos.", "Средна °C | Mean °C", "s", "MKT °C", "Надвор (мин) | Out (min)", "Резултат | Result"],
                    ["OQ-1", "OQ-2", "OQ-3", "OQ-4", "OQ-5", "OQ-6"], [1.6, 2.8, 2.8, 2.0, 1.4, 1.8, 2.2, 3.86])
     pr.entry_table(d, ["Параметар | Parameter", "Критериум | Criterion", "Резултат | Result", "Исполнет | Met"],
-                   ["Време до опсег (мин) | Time to range (min)", "Враќање по врата 1 / 2 (мин) | Return after door 1 / 2 (min)",
-                    "Време на задржување (мин) | Hold time (min)", "Жешка точка | Hot spot", "Студена точка | Cold spot",
-                    "Позиција на рутинскиот логер | Routine logger position"],
+                   ["Контрола на температура: активна / пасивна | Temperature control: active / passive",
+                    "Време до опсег (мин; само активна) | Time to range (min; active only)", "Враќање по врата 1 / 2 (мин) | Return after door 1 / 2 (min)",
+                    "Време на задржување (мин) | Hold time (min)", "Жешка точка: воздух / палета | Hot spot: air / pallet", "Студена точка: воздух / палета | Cold spot: air / pallet",
+                    "Рутинска позиција: USB логер | Routine position: USB logger", "Рутинска позиција: логер во палета | Routine position: pallet logger"],
                    [6.0, 5.0, 4.96, 2.5])
 
     pr.chapter(d, "5", "РЕЗУЛТАТИ — PQ", "Results — PQ")
-    pr.entry_table(d, ["Пратка | Shipment", "UTID", "Сезона | Season", "Мин. °C", "Макс. °C", "MKT °C", "Траење | Duration", "Резултат | Result"],
+    pr.entry_table(d, ["Пратка | Shipment", "UTID", "Сезона | Season", "Палети мин. °C | Pallets min. °C", "Палети макс. °C | Pallets max. °C", "MKT °C", "Траење | Duration", "Резултат | Result"],
                    ["PQ-1", "PQ-2", "PQ-3"], [2.0, 2.8, 2.0, 1.8, 1.8, 1.8, 2.4, 3.86])
 
     pr.chapter(d, "6", "ОТСТАПУВАЊА", "Deviations")
@@ -206,8 +209,9 @@ def report():
     pr.chapter(d, "7", "ЗАКЛУЧОК И СТАТУС", "Conclusion and Status")
     pr.status_grid(d, ["QUALIFIED", "QUALIFIED со ограничувања | with limitations", "NOT QUALIFIED"], selected=None, ncols=3)
     pr.entry_table(d, ["Ограничување | Limitation", "Вредност | Value"],
-                   ["Сезона | Season", "Максимално времетраење | Maximum duration", "Максимален товар | Maximum load",
-                    "Позиција на рутинскиот логер | Routine logger position", "Важи до (реквалификација) | Valid until (requalification)"],
+                   ["Сезона | Season", "Максимално времетраење | Maximum duration", "Максимален товар: палети G / M | Maximum load: pallets L / S",
+                    "Возило и заштита (активна / пасивна) | Vehicle and protection (active / passive)",
+                    "Рутински позиции на логерите (USB / палета) | Routine logger positions (USB / pallet)", "Важи до (реквалификација) | Valid until (requalification)"],
                    [8.0, 10.46])
     pr.body(d, "По одобрението, QA ја внесува рутата во QASOP_0XX_A06 и ограничувањата се пренесуваат во TRA (WHSOP_003_A01).",
             "After approval, QA enters the lane in QASOP_0XX_A06 and the limitations are carried into the TRA (WHSOP_003_A01).")

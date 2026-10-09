@@ -22,14 +22,15 @@ orient: portrait
 Датум на извршен транспорт ||| Date transport executed ||| _
 Примач (назив и адреса) ||| Consignee (name and address) ||| _
 Намена ||| Purpose ||| _
-Превозник ||| Carrier ||| _
+Возило и лица ||| Vehicle and persons ||| _
+Полициско придружување (единица) ||| Police escort (unit) ||| _
 [[/FORM]]
 [[TABLE]]
-№ ||| Вид на материјал~~Material ||| Серија~~Batch ||| Испратена нето маса (g)~~Net mass dispatched (g) ||| Примена маса (g)~~Mass received (g)
-1 |||  |||  |||  ||| 
-2 |||  |||  |||  ||| 
-3 |||  |||  |||  ||| 
-Вкупно~~Total |||  |||  |||  ||| 
+№ ||| Вид на материјал~~Material ||| Серија~~Batch ||| Палети / картони / кеси~~Pallets / cartons / bags ||| Испратена нето маса (g)~~Net mass dispatched (g) ||| Примена маса (g)~~Mass received (g)
+1 |||  |||  |||  |||  ||| 
+2 |||  |||  |||  |||  ||| 
+3 |||  |||  |||  |||  ||| 
+Вкупно~~Total |||  |||  |||  |||  ||| 
 [[/TABLE]]
 
 # 3 Изјава | Statement
@@ -37,13 +38,13 @@ orient: portrait
 [[FORM]]
 Отстапувања при транспортот ||| Deviations during transport ||| ☐ Нема | None   ☐ Има — опис во прилог | Yes — described in attachment
 [[/FORM]]
-Прилози: копија од потврдата од МВР; WHSOP_003_A04 (ланец на надзор); GPS извештај за рутата. ||| Attachments: copy of the MoIA confirmation; WHSOP_003_A04 (chain of custody); GPS route report.
+Прилози: копија од потврдата од МВР; WHSOP_003_A04 (ланец на надзор, со контролните јавувања). ||| Attachments: copy of the MoIA confirmation; WHSOP_003_A04 (chain of custody, with the check-in log).
 
 # 4 Потписи | Signatures
 [[TABLE]]
 Улога~~Role ||| Име~~Name ||| Датум~~Date ||| Потпис~~Signature
 Изготвил (Раководител на Обезбедување)~~Prepared (Head of Security) |||  |||  ||| 
-GPS податоците ги проверил (Администратор на обезбедување)~~GPS data verified (Security Administrator) |||  |||  ||| 
+Ланецот на надзор го проверил (QA)~~Chain of custody verified (QA) |||  |||  ||| 
 Одобрил и потпишал (QP)~~Approved and signed (QP) |||  |||  ||| 
 [[/TABLE]]
 [[FORM:grid]]

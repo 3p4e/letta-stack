@@ -17,24 +17,38 @@ UTID (WHSOP_003) ||| UTID (WHSOP_003) ||| TR-________-___
 Датум ||| Date ||| _
 Сезона ||| Season ||| _
 Амбиент мин./макс. (°C) ||| Ambient min./max. (°C) ||| _
+Палети G / M ||| Pallets L / S ||| _
+Полициско придружување потврдено (МВР бр.) ||| Police escort confirmed (MoIA No.) ||| _
 [[/FORM]]
 [[FORM]]
-Товар ||| Load ||| ☐ Реален производ | Real product   ☐ Симулиран товар (иста термичка маса и конфигурација) | Simulated load (same thermal mass and configuration)
+Товар ||| Load ||| ☐ Реален производ | Real product   ☐ Симулиран товар (иста маса и конфигурација на палети) | Simulated load (same mass and pallet configuration)
 [[/FORM]]
 
 # 2 Логери | Loggers
+## 2.1 USB логери | USB loggers
 [[TABLE]]
 Позиција~~Position ||| Сериски број~~Serial No. ||| Калибрација важи до~~Calibration due ||| Мин. (°C) ||| Макс. (°C) ||| MKT (°C) ||| Макс. RH (%) ||| Време надвор (мин)~~Time out (min)
-Рутинска (жешка/студена точка од OQ)~~Routine (OQ hot/cold spot) |||  |||  |||  |||  |||  |||  ||| 
-Центар на товарот~~Load centre |||  |||  |||  |||  |||  |||  ||| 
-Кај вратата~~At the door |||  |||  |||  |||  |||  |||  ||| 
-Амбиент~~Ambient |||  |||  |||  |||  |||  |||  ||| 
+Жешка точка од OQ~~OQ hot spot |||  |||  |||  |||  |||  |||  ||| 
+Студена точка од OQ~~OQ cold spot |||  |||  |||  |||  |||  |||  ||| 
+Амбиент (надвор)~~Ambient (outside) |||  |||  |||  |||  |||  |||  ||| 
+[[/TABLE]]
+
+## 2.2 Логери за еднократна употреба во палетите | Single-use loggers in the pallets
+[[TABLE]]
+ID на палета~~Pallet ID ||| Тип G/M~~Type L/S ||| Е1 сер. бр.~~E1 serial ||| Е1 мин./макс. (°C)~~E1 min./max. (°C) ||| Е2 сер. бр.~~E2 serial ||| Е2 мин./макс. (°C)~~E2 min./max. (°C) ||| Аларм~~Alarm ||| MKT (°C)
+ |||  |||  |||  |||  |||  |||  ||| 
+ |||  |||  |||  |||  |||  |||  ||| 
+ |||  |||  |||  |||  |||  |||  ||| 
+ |||  |||  |||  |||  |||  |||  ||| 
+ |||  |||  |||  |||  |||  |||  ||| 
+ |||  |||  |||  |||  |||  |||  ||| 
 [[/TABLE]]
 
 # 3 Тек на пратката | Shipment timeline
 [[TABLE]]
 Настан~~Event ||| Време~~Time ||| Забелешка~~Remark
-Предкондиционирање почнато~~Pre-conditioning started |||  ||| 
+Предкондиционирање почнато (само активна)~~Pre-conditioning started (active only) |||  ||| 
+Палетите завиткани, логерите активирани~~Pallets wrapped, loggers started |||  ||| 
 Товарање завршено, вратата затворена~~Loading complete, door closed |||  ||| 
 Поаѓање~~Departure |||  ||| 
 Застанувања (место, траење)~~Stops (place, duration) |||  ||| 
@@ -46,14 +60,14 @@ UTID (WHSOP_003) ||| UTID (WHSOP_003) ||| TR-________-___
 # 4 Критериуми за прифаќање | Acceptance criteria
 [[TABLE]]
 № ||| Критериум~~Criterion ||| Резултат~~Result ||| Да~~Yes ||| Не~~No
-1 ||| Сите логери во опсег во текот на целото патување~~All loggers within range throughout the journey |||  |||  ||| 
+1 ||| Сите логери во палетите во опсег во текот на целото патување~~All pallet loggers within range throughout the journey |||  |||  ||| 
 2 ||| MKT во опсег~~MKT within range |||  |||  ||| 
 3 ||| Макс. RH ≤ 60 % (каде е применливо)~~Max. RH ≤ 60 % (where applicable) |||  |||  ||| 
 4 ||| Времетраење ≤ квалификуваното максимално~~Duration ≤ qualified maximum |||  |||  ||| 
-5 ||| Пломбите цели, броевите одговараат~~Seals intact, numbers match |||  |||  ||| 
+5 ||| Пломбите, лентите и завиткувањето цели~~Seals, tapes and wrapping intact |||  |||  ||| 
 6 ||| Ланецот на надзор (WHSOP_003_A04) комплетен~~Chain of custody (WHSOP_003_A04) complete |||  |||  ||| 
 7 ||| Пакувањето без оштетување~~Packaging undamaged |||  |||  ||| 
-8 ||| GPS ја потврдува одобрената рута~~GPS confirms approved route |||  |||  ||| 
+8 ||| Контролните јавувања ја потврдуваат одобрената рута; придружувањето присутно~~Check-in calls confirm the approved route; escort present |||  |||  ||| 
 [[/TABLE]]
 [[FORM]]
 Отстапувања (број и опис) ||| Deviations (No. and description) ||| _
