@@ -6,7 +6,8 @@ One container that:
   • embeds the pp-document-suite engine → the WIZARD path builds house-style .docx in-process
     (deterministic, no LLM), verifies with pp_verify, and offers .docx / .pdf download;
   • proxies the CHAT path to a Letta agent (freeform → the agent composes + builds);
-  • serves the single-file frontend (../frontend/index.html).
+  • serves the PP Suite frontend (../frontend/suite, built from ../web) at "/", with the
+    original single-file SPA kept at /legacy (../frontend/index.html).
 
 Config (env):
   PPDOCWIZ_API_KEY  REQUIRED. Shared secret for every /api route except /api/health.
@@ -17,12 +18,14 @@ Config (env):
   LETTA_AGENT    ALLOWLIST of agents the chat proxy may reach (comma-separated,
                  default qms_docx_formatter) — not merely a default
   PPDOCWIZ_COOKIE_SECURE  "0" only for plain-HTTP loopback dev (default secure)
+  PPDOCWIZ_UI    "legacy" serves the old single-file SPA at "/" (default: the suite, when built)
 Run: uvicorn app:app --host 0.0.0.0 --port 8770
 Publish on loopback only and route via Traefik; see docker-compose.yml.
 """
 import os, sys, io, re, json, uuid, hmac, tempfile, subprocess, contextlib, shutil, urllib.request, urllib.error
 from fastapi import Depends, FastAPI
 from fastapi.responses import FileResponse, JSONResponse, HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import wizard
 import security
@@ -55,8 +58,16 @@ for extra in ("/root/.letta/pp-libs",):          # persistent deps location on t
 OUT = os.environ.get("PP_OUT_DIR") or ("/data" if os.path.isdir("/data") else tempfile.gettempdir())
 os.makedirs(OUT, exist_ok=True)
 FRONTEND = os.path.join(HERE, "..", "frontend", "index.html")
+# The suite is a Vite build (apps/ppdocwiz/web → frontend/suite). It is optional: a
+# checkout without `npm run build` still serves the legacy SPA at "/".
+SUITE_UI = os.path.join(HERE, "..", "frontend", "suite")
 
 app = FastAPI(title="PP Doc Wiz", version="1.0")
+
+# Static bundle only: hashed JS/CSS, fonts and the logo — no data, no credential.
+# Same exposure as "/" itself, which is ungated because it is the sign-in page.
+if os.path.isdir(os.path.join(SUITE_UI, "assets")):
+    app.mount("/assets", StaticFiles(directory=os.path.join(SUITE_UI, "assets")), name="suite-assets")
 
 
 class BuildReq(BaseModel):
@@ -243,8 +254,20 @@ def chat(r: ChatReq):
         return JSONResponse({"ok": False, "error": str(e)[:300]}, status_code=502)
 
 
-@app.get("/")
-def index():
+def _legacy():
     if os.path.exists(FRONTEND):
         return HTMLResponse(open(FRONTEND, encoding="utf-8").read())
     return HTMLResponse("<h1>PP Doc Wiz</h1><p>frontend/index.html missing</p>")
+
+
+@app.get("/")
+def index():
+    suite = os.path.join(SUITE_UI, "index.html")
+    if os.environ.get("PPDOCWIZ_UI", "").lower() != "legacy" and os.path.exists(suite):
+        return HTMLResponse(open(suite, encoding="utf-8").read())
+    return _legacy()
+
+
+@app.get("/legacy")
+def legacy():
+    return _legacy()

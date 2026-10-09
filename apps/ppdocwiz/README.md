@@ -1,8 +1,9 @@
 # PP Doc Wiz — Purely Plant Document Wizard
 
 A standalone app that puts a **front door** on the `pp-document-suite` engine and the Letta document
-agents. One container: **frontend** (single-file SPA) + **backend gateway** (FastAPI) with the engine
-**embedded**.
+agents. One container: **frontend** (the PP Suite React app in `web/`, built into `frontend/suite`;
+the original single-file SPA stays at `/legacy`) + **backend gateway** (FastAPI) with the engine
+**embedded**. Frontend details: [`web/README.md`](web/README.md).
 
 Two ways to create a document:
 - **🧩 Wizard** — deterministic (no LLM). Pick a doc type (SOP / Annex / Form), fill guided header
@@ -54,6 +55,15 @@ PPDOCWIZ_COOKIE_SECURE=0 \
 PP_SUITE_DIR=$(cd ../../pp-document-suite && pwd) uvicorn app:app --reload --port 8770
 ```
 
+Frontend (needs Node 22):
+
+```bash
+cd ppdocwiz/web && npm ci && npm run build   # → frontend/suite, served at "/" on next request
+npm run dev                                   # hot reload on :5173, /api proxied to :8770
+```
+
+Without a build, `/` serves the legacy SPA.
+
 ## Config (env)
 
 | Var | Purpose |
@@ -64,6 +74,7 @@ PP_SUITE_DIR=$(cd ../../pp-document-suite && pwd) uvicorn app:app --reload --por
 | `PP_OUT_DIR` | where built docs are written (`/data` volume in the image) |
 | `LETTA_BASE_URL` | Letta REST base — **enables the Chat tab** |
 | `LETTA_TOKEN` | only if the Letta server requires auth |
+| `PPDOCWIZ_UI` | `legacy` serves the old single-file SPA at `/` even when the suite is built |
 | `LETTA_AGENT` | **allowlist** of agents the chat proxy may reach, comma-separated (default `qms_docx_formatter`). Not a fallback: a request naming anything else is refused with 400. |
 
 ## API
