@@ -43,4 +43,20 @@ class Settings:
     )
 
 
+    # RAGFlow on KVM4 (in-stack address, e.g. http://ragflow-cpu:9380; the public
+    # https://ragflow.srv1231216.hstgr.cloud also works). Tenant API key from RAGFlow
+    # (Avatar › API). Unset => the regulatory check falls back to the Letta sources above.
+    ragflow_base: str = os.environ.get("RAGFLOW_BASE_URL", "").rstrip("/")
+    ragflow_key: str = os.environ.get("RAGFLOW_API_KEY", "")
+    # Dataset ids (not secrets). Defaults are the KVM4 instance's DB01_REG and eCOA_DB.
+    ragflow_reg_datasets: tuple = tuple(s.strip() for s in os.environ.get(
+        "RAGFLOW_REG_DATASETS", "a33b0812a3d411f1858cf58865604f65").split(",") if s.strip())
+    ragflow_ecoa_datasets: tuple = tuple(s.strip() for s in os.environ.get(
+        "RAGFLOW_ECOA_DATASETS", "dd3ea108a3fd11f1858cf58865604f65").split(",") if s.strip())
+    # Approved example documents the authors consult. Empty until that dataset exists.
+    ragflow_example_datasets: tuple = tuple(s.strip() for s in os.environ.get(
+        "RAGFLOW_EXAMPLE_DATASETS", "").split(",") if s.strip())
+    ragflow_top_n: int = int(os.environ.get("RAGFLOW_TOP_N", "6"))
+
+
 settings = Settings()

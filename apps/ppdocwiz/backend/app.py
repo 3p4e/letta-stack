@@ -330,7 +330,7 @@ def chat(r: ChatReq):
 # ---------------- DocEngine proxy (same-origin, for the suite) ----------------
 # The browser holds only the ppdocwiz session cookie; the DocEngine key never leaves
 # this process. Only the DocEngine's own public routes are forwarded.
-_DE_ROUTES = {"health", "questionnaires", "workflows", "build", "documents"}
+_DE_ROUTES = {"health", "questionnaires", "workflows", "build", "documents", "knowledge"}
 _DE_PASS_HEADERS = ("content-type", "content-disposition", "content-length")
 
 
