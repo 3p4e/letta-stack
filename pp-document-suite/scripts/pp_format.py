@@ -95,6 +95,42 @@ def sp(p, before=0, after=0, line=None):
     pf = p.paragraph_format; pf.space_before = Pt(before); pf.space_after = Pt(after)
     if line: pf.line_spacing = line
 
+# ---- Vertical rhythm between blocks -------------------------------------------------------
+# Adjacent tables with nothing between them fuse into one table in Word and LibreOffice, and a
+# heading row inside a table carries no space of its own. These helpers give every block its
+# breathing room and keep a heading on the same page as what it introduces.
+def spacer(d, pt=8, keep=False):
+    """Empty paragraph exactly `pt` points high between two blocks (stops tables fusing).
+    keep=True binds the gap to the block below — only where the block above must travel with it
+    (a heading or lead-in text above a table). Everywhere else it stays unbound: LibreOffice treats
+    a kept-together table as keep-with-next, and a bound gap would chain whole sections together."""
+    from docx.enum.text import WD_LINE_SPACING
+    p = d.add_paragraph(); sp(p, 0, 0)
+    p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.EXACTLY
+    p.paragraph_format.line_spacing = Pt(pt)
+    p.paragraph_format.keep_with_next = keep
+    return p
+
+def keep_row(row, with_next=True):
+    """A row never splits across pages and (by default) stays on the page of the next row."""
+    trPr = row._tr.get_or_add_trPr()
+    if trPr.find(qn('w:cantSplit')) is None:
+        trPr.append(OxmlElement('w:cantSplit'))
+    if with_next:
+        for c in row.cells:
+            for par in c.paragraphs:
+                par.paragraph_format.keep_with_next = True
+
+def sop_spacer_row(t, pt=9):
+    """Two-column SOP gap row: no fill, the vertical divider continues through it."""
+    L, R = t.add_row().cells
+    cell_borders(L, ('right',)); cell_borders(R, ('left',))
+    trPr = t.rows[-1]._tr.get_or_add_trPr()
+    h = OxmlElement('w:trHeight'); h.set(qn('w:val'), str(int(pt * 20))); h.set(qn('w:hRule'), 'exact')
+    trPr.append(h)
+    for c in (L, R):
+        sp(c.paragraphs[0], 0, 0)
+
 def shade(cell, fill):
     """Cell fill — ALWAYS w:val='clear' (never 'solid')."""
     tcPr = cell._tc.get_or_add_tcPr(); sh = OxmlElement('w:shd')
@@ -138,7 +174,10 @@ def cell_margins(cell, top=29, bottom=29, left=58, right=58):
 def bilingual(p, mk, en, mk_sz=11, en_sz=7, bold=False, color=BLACK):
     """Inline 'MK | EN' run group (annex + table style)."""
     run(p, mk, mk_sz, color, bold=bold)
-    run(p, " | ", en_sz, color)
+    # The separator only joins two halves: a cell holding a code, a number or a RACI letter has no
+    # EN half, and a dangling " | " after it reads as a defect on the printed page.
+    if (mk or "").strip() and (en or "").strip():
+        run(p, " | ", en_sz, color)
     run(p, en, en_sz, color, bold=bold)
 
 def _page(doc, orient="portrait", margin_cm=1.27):
@@ -185,6 +224,10 @@ def apply_pp_header(d, mk_name, code, en_name, version="1.0", status="draft"):
     setrun(nm, 0, mk_name); setrun(nm, 2, ""); setrun(nm, 3, ""); setrun(nm, 4, ""); setrun(nm, 5, en_name)
     cd = h.cell(0, 2).paragraphs[2].runs
     setrun(cd, 0, code); setrun(cd, 2, ""); setrun(cd, 3, "")
+    # The code cell is narrow and an underscore code has no break point, so a 13-character annex
+    # code (WHSOP_003_A01, QASOP_031_A10) wrapped its last digit onto a second line at 11 pt.
+    if cd and len(code or "") > 11:
+        cd[0].font.size = Pt(9.5 if len(code) <= 14 else 8.5)
     vr = h.cell(1, 2).paragraphs[0].runs
     if vr:
         vr[-1].text = header_version(status, version)
@@ -271,8 +314,17 @@ def set_update_fields_on_open(d):
 
 def sop_toc(d):
     p = d.add_paragraph(); run(p, "СОДРЖИНА | TABLE OF CONTENTS", 14, NAVY, bold=True)
-    par = d.add_paragraph(); fld = OxmlElement('w:fldSimple')
-    fld.set(qn('w:instr'), r'TOC \o "1-3" \h \z \u'); par._p.append(fld)
+    # Complex field (begin/instr/separate/end): Word and LibreOffice both read it as a TOC index;
+    # LibreOffice ignores a w:fldSimple TOC, so the SOP's contents page rendered empty.
+    par = d.add_paragraph(); r = par.add_run()
+    for kind in ("begin", "instr", "separate"):
+        if kind == "instr":
+            it = OxmlElement('w:instrText'); it.set(qn('xml:space'), 'preserve')
+            it.text = ' TOC \\o "1-3" \\h \\z \\u '; r._r.append(it)
+        else:
+            fc = OxmlElement('w:fldChar'); fc.set(qn('w:fldCharType'), kind); r._r.append(fc)
+    par.add_run(" ")
+    fe = OxmlElement('w:fldChar'); fe.set(qn('w:fldCharType'), 'end'); par.add_run()._r.append(fe)
     note = d.add_paragraph(); run(note, "(TOC updates automatically on open; or right-click → Update Field)", 8, GREY, ital=True)
     set_update_fields_on_open(d)
     d.add_page_break()
@@ -295,6 +347,8 @@ def sop_section_row(t, num, mk, en, level=1):
     visual weight: level 1 (main X.0 sections) is a 12 pt bold gray band; level >= 2 sub-sections
     are the lighter 11 pt bold style with NO fill, so a nested SOP does not become a wall of gray
     bands. All levels keep a Heading style so the native TOC field still populates."""
+    if len(t.rows) and level <= 1:
+        sop_spacer_row(t, 10)                 # a main section never butts against the text above
     L, R = t.add_row().cells
     size = 12 if level <= 1 else 11
     if level <= 1:
@@ -303,6 +357,29 @@ def sop_section_row(t, num, mk, en, level=1):
     cell_borders(L, ('right',)); cell_borders(R, ('left',))
     L.paragraphs[0].text = ''; _set_heading(L.paragraphs[0], level); run(L.paragraphs[0], f"{num} {mk}", size, BLACK, bold=True)
     R.paragraphs[0].text = ''; run(R.paragraphs[0], f"{num} {en}", size, GREY, bold=True)
+    for c in (L, R):                          # band: air above/below the title; sub-heading: gap above
+        sp(c.paragraphs[0], *((3, 3) if level <= 1 else (6, 2)))
+    keep_row(t.rows[-1])                      # heading stays with its first paragraph
+
+def sop_heading_par(d, num, mk, en, level=1):
+    """The same two-column section heading, as a PARAGRAPH (MK left, EN at the column tab), for a
+    heading that introduces a full-width table: a paragraph's keep-with-next is honoured by Word
+    and LibreOffice, so the heading is never left alone at the foot of a page above its table."""
+    from docx.enum.text import WD_TAB_ALIGNMENT
+    spacer(d, 10 if level <= 1 else 6)
+    p = d.add_paragraph(); _set_heading(p, level); sp(p, 3, 3)
+    pf_ = p.paragraph_format
+    pf_.left_indent = Cm(0.23); pf_.right_indent = Cm(0.23)   # aligned with the centred 18 cm table
+    pf_.tab_stops.add_tab_stop(Cm(9.23), WD_TAB_ALIGNMENT.LEFT)
+    pf_.keep_with_next = True
+    if level <= 1:
+        pPr = p._p.get_or_add_pPr(); shd = OxmlElement('w:shd')
+        shd.set(qn('w:val'), 'clear'); shd.set(qn('w:color'), 'auto'); shd.set(qn('w:fill'), SOP_GRAY)
+        pPr.append(shd)
+    size = 12 if level <= 1 else 11
+    run(p, f"{num} {mk}", size, BLACK, bold=True); run(p, "\t", size, BLACK)
+    run(p, f"{num} {en}", size, GREY, bold=True)
+    return p
 
 def sop_body_row(t, mk, en, bold=False):
     L, R = t.add_row().cells
@@ -318,13 +395,18 @@ def sop_block_table(d, headers, rows, widths_cm, header_bg=SOP_BLUE):
     """Full-width multi-column bilingual table for SOP §7 Records / §8 Related Documents / §9 Revision.
     headers, and each row, are lists of (mk, en) tuples (one per column)."""
     t = d.add_table(rows=1 + len(rows), cols=len(headers)); t.alignment = WD_TABLE_ALIGNMENT.CENTER
+    n = len(headers)                          # dense tables step the type down so words do not break
+    mk_sz, en_sz = (11, 7) if n <= 4 else ((10, 7) if n <= 6 else (9, 7))
     for j, (mk, en) in enumerate(headers):
         c = t.cell(0, j); shade(c, header_bg); c.paragraphs[0].text = ''
-        bilingual(c.paragraphs[0], mk, en, 11, 7, bold=True)
+        bilingual(c.paragraphs[0], mk, en, mk_sz, en_sz, bold=True)
     for i, row in enumerate(rows, 1):
         for j, (mk, en) in enumerate(row):
-            c = t.cell(i, j); c.paragraphs[0].text = ''; bilingual(c.paragraphs[0], mk, en, 11, 7)
-    fixed_widths(t, widths_cm); table_borders(t, 4, "000000"); return t
+            c = t.cell(i, j); c.paragraphs[0].text = ''; bilingual(c.paragraphs[0], mk, en, mk_sz, en_sz)
+    fixed_widths(t, widths_cm); table_borders(t, 4, "000000")
+    from pp_report import keep_table          # small tables whole; long ones keep header + first rows
+    keep_table(t)
+    return t
 
 # ============================ Annex (inline) ============================
 def new_annex(orient="portrait", from_template=True, code=None,
