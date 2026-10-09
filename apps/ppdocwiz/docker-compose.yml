@@ -23,6 +23,8 @@ services:
       # ALLOWLIST of agents the chat proxy may reach (comma-separated), not a
       # default — the agent name used to come from the request body.
       - LETTA_AGENT=${LETTA_AGENT:-qms_docx_formatter}
+      # Shared PDF renderer (pp_render): Gotenberg on the stack network; unset falls back to local LibreOffice.
+      - GOTENBERG_URL=${GOTENBERG_URL:-http://gotenberg:3000}
       # Internal DocEngine for the Questionnaire, Jobs and Library screens (forwarded at /api/docengine/*).
       - DOCENGINE_URL=${DOCENGINE_URL:-}
       - DOCENGINE_API_KEY=${DOCENGINE_API_KEY:-}

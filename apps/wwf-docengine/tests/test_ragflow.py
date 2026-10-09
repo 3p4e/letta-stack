@@ -171,3 +171,25 @@ async def test_examples_reach_the_author_only_when_configured(monkeypatch):
     await run_workflow("job-1", client=c, rag=FakeRag())
     author = [p for p in c.prompts if p.startswith("Design the")][0]
     assert "Never copy a value" in author and "[E1]" in author
+
+
+# ---- Gotenberg request from the Library PDF route --------------------------------------------
+def test_document_pdf_asks_gotenberg_to_update_indexes(api, monkeypatch, tmp_path):
+    from app import main
+    client, h = api
+    f = tmp_path / "d.docx"; f.write_bytes(b"PK fake")
+    async def doc(did):
+        return {"path": str(f)}
+    monkeypatch.setattr(main, "_doc_or_404", doc)
+    monkeypatch.setattr(settings, "gotenberg_url", "http://gotenberg:3000")
+    monkeypatch.setattr(settings, "gotenberg_user", "pp"); monkeypatch.setattr(settings, "gotenberg_password", "s")
+    seen = []
+    def handler(req):
+        seen.append(req); return httpx.Response(200, content=b"%PDF-1.7")
+    real = httpx.AsyncClient
+    monkeypatch.setattr(main.httpx, "AsyncClient", lambda **kw: real(transport=httpx.MockTransport(handler), **kw))
+    r = client.get("/documents/x/pdf", headers=h)
+    assert r.status_code == 200 and r.content == b"%PDF-1.7"
+    body = seen[0].content
+    assert b'name="updateIndexes"' in body and b"true" in body
+    assert seen[0].headers["authorization"] == "Basic cHA6cw=="

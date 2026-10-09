@@ -273,9 +273,12 @@ async def document_pdf(did: str):
         log.warning("PDF conversion: cannot read document %s: %s", did, e)
         raise HTTPException(404, "Document file missing") from e
     try:
-        async with httpx.AsyncClient(timeout=120) as c:
+        auth = (settings.gotenberg_user, settings.gotenberg_password) if settings.gotenberg_user else None
+        async with httpx.AsyncClient(timeout=120, auth=auth) as c:
             r = await c.post(
                 settings.gotenberg_url + "/forms/libreoffice/convert",
+                # refresh the TOC and other indexes before export (same as pp_render)
+                data={"updateIndexes": "true"},
                 files={"files": (Path(d["path"]).name, blob,
                                  "application/vnd.openxmlformats-officedocument.wordprocessingml.document")},
             )

@@ -42,18 +42,41 @@ in the letta stack although `GOTENBERG_URL=http://gotenberg:3000` is configured 
    name from `docker network ls | grep ragflow`). The public URL works without this, through Traefik.
 4. `docker compose up -d wwf-docengine`, then verify (§4).
 
-## 2. Gotenberg
+## 2. Gotenberg — the one PDF renderer for every service and every device
 
-On the letta stack's network (the DocEngine and the Letta sandbox both use `http://gotenberg:3000`):
+Head of QC, 09.10.2026: rendering must not depend on whether the current device has Word or
+LibreOffice (phone, laptop, cloud session). Every renderer in the repository goes through
+`pp-document-suite/scripts/pp_render.py`, which uses this service when `GOTENBERG_URL` is set and
+falls back to local LibreOffice only when it is not. Users: ppdocwiz downloads, the DocEngine
+Library "PDF", the engine CLI, and Claude sessions.
+
+On the letta stack (the DocEngine and the Letta sandbox both use `http://gotenberg:3000`), with a
+**public HTTPS route behind basic auth** so a phone, a laptop or a cloud session can render too:
 ```yaml
   gotenberg:
     image: gotenberg/gotenberg:8.<x>.<y>   # pin the exact current 8.x tag; never :latest
     restart: unless-stopped
-    command: ["gotenberg", "--api-timeout=120s"]
-    networks: [default]                    # no published port: internal only
+    command: ["gotenberg", "--api-timeout=180s", "--libreoffice-restart-after=10"]
+    networks: [default, traefik]           # no published port
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.render.rule=Host(`render.srv1231216.hstgr.cloud`)
+      - traefik.http.routers.render.entrypoints=websecure
+      - traefik.http.routers.render.tls.certresolver=letsencrypt
+      - traefik.http.routers.render.middlewares=render-auth
+      # htpasswd -nbB pp '<password>'  (double every $ in compose)
+      - traefik.http.middlewares.render-auth.basicauth.users=<pp:$$2y$$…>
+      - traefik.http.services.render.loadbalancer.server.port=3000
 ```
-DocEngine `.env`: `GOTENBERG_URL=http://gotenberg:3000` (and the DocEngine on that network).
-Check: `curl -s http://gotenberg:3000/health` from a container on the network → `{"status":"up"}`.
+In-stack services use `GOTENBERG_URL=http://gotenberg:3000` (no auth: internal network only).
+Anything outside the stack uses `GOTENBERG_URL=https://render.srv1231216.hstgr.cloud` with
+`GOTENBERG_USERNAME` / `GOTENBERG_PASSWORD`. For Claude cloud sessions, put those three in the
+environment's settings (Network secrets) and allow `render.srv1231216.hstgr.cloud` in its network
+policy; `pp_render` then renders on KVM4 with no local office suite at all.
+
+Checks: `curl -s http://gotenberg:3000/health` → `{"status":"up"}`; from outside,
+`python3 pp-document-suite/scripts/pp_render.py any.docx out.pdf` prints `rendered via gotenberg`,
+and an SOP's PDF has its table of contents filled (`updateIndexes`).
 
 ## 3. Example documents (next)
 

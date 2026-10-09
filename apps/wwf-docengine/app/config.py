@@ -31,6 +31,9 @@ class Settings:
 
     # Gotenberg for DOCX→PDF (already in the kvm4 letta stack).
     gotenberg_url: str = os.environ.get("GOTENBERG_URL", "").rstrip("/")
+    # Basic auth, when Gotenberg is reached through its public route (pp_render reads the same names).
+    gotenberg_user: str = os.environ.get("GOTENBERG_USERNAME", "")
+    gotenberg_password: str = os.environ.get("GOTENBERG_PASSWORD", "")
 
     # Regulatory sources the checker agents are bound to (names, resolved to
     # ids at fleet-ensure time). PQ1 is deliberately excluded (3072-dim outlier).
