@@ -31,7 +31,7 @@ orient: portrait
 [[/FORM]]
 [[FORM:grid]]
 Максимален товар: палети G / M ||| Maximum load: pallets L / S ||| [29 по возило (најполно возило) | 29 per vehicle (fullest vehicle)]
-Картони / кеси / маса (kg) ||| Cartons / bags / mass (kg) ||| [Т1: 373 / 3668 / 1 471,51 kg; Т2: 679 / 6677 / 2 677,36 kg]
+Картони / кеси / маса (kg) ||| Cartons / bags / mass (kg) ||| [Т1: 373 / 3669 / 1 471,51 kg; Т2: 679 / 6677 / 2 677,36 kg]
 Симулиран товар (кеси со иста маса и материјал) ||| Simulated load (bags of the same mass and material) ||| [OQ: 29 G-палети, картони со кеси од 401,0 g, завиткани како во рутина | OQ: 29 L pallets, cartons of 401.0 g bags, wrapped as in routine]
 Логери: USB (10) / за еднократна употреба (број) ||| Loggers: USB (10) / single-use (number) ||| [10 / OQ 58, PQ-1 94, PQ-2 170]
 Летен амбиентен екстрем (°C) ||| Summer ambient extreme (°C) ||| [ ]

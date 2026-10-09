@@ -67,7 +67,7 @@ def load():
     out = {"1": [], "2": []}
     for r in asg:
         cu = p2cu.get(r["p_lot"], r["batch"]) if r["p_lot"] else r["batch"]
-        m = raw.get(key(cu)) or raw.get(key(r["batch"]))
+        m = raw.get(key(cu)) or raw.get(key(cu.rstrip("*")))   # recorded star alias of the same lot only; never the parent lot
         if m is None: sys.exit("no volume for " + r["batch"])
         out[r["tranche"]].append(dict(p=r["p_lot"], cu=cu, strain=m["strain"], g=round(float(m["volume_kg"]) * 1000)))
     return out
@@ -78,13 +78,20 @@ def plan(lots, utid):
     cartons = []
     for lot in lots:
         n = max(1, round(lot["g"] / BAG_G))
-        lot["bags"], lot["avg"] = n, lot["g"] / n
+        lot["avg"] = lot["g"] / n
         lot["in_tol"] = abs(lot["avg"] - BAG_G) <= BAG_G * BAG_TOL
+        if lot["in_tol"]:
+            masses = [lot["avg"]] * n
+        else:   # full 401.0 g bags and one partial last bag, never a bag outside 401.0 g ± 3 %
+            full = int(lot["g"] // BAG_G)
+            masses = [BAG_G] * full + ([lot["g"] - full * BAG_G] if lot["g"] - full * BAG_G > 0 else [])
+            n = len(masses); lot["avg"] = lot["g"] / n
+        lot["bags"] = n
         lot["cartons"] = math.ceil(n / BAGS_PER_CARTON)
         done = 0
         for c in range(lot["cartons"]):
             nb = min(BAGS_PER_CARTON, n - c * BAGS_PER_CARTON)
-            g = round(lot["avg"] * (c * BAGS_PER_CARTON + nb)) - done; done += g
+            g = round(sum(masses[:c * BAGS_PER_CARTON + nb])) - done; done += g
             cartons.append(dict(lot=lot, first=c * BAGS_PER_CARTON + 1, last=c * BAGS_PER_CARTON + nb, bags=nb, g=g))
     pallets, i = [], 0
     while i < len(cartons):
@@ -506,6 +513,11 @@ def main():
         colour_docx(os.path.join(DOCX, f))
         r = subprocess.run([sys.executable, os.path.join(ENGINE, "pp_verify.py"), os.path.join(DOCX, f)], capture_output=True, text=True)
         print(f, r.stdout.strip().splitlines()[-1])
+    for f in sorted(os.listdir(DOCX)):   # main() clears pdf/, so it renders them again (LibreOffice macro updates TOC and fields)
+        src, out = os.path.join(DOCX, f), os.path.join(PDF, f[:-5] + ".pdf")
+        subprocess.run(["soffice", "--headless", 'macro:///Standard.Module1.ToPdf("%s","%s")' % (src, out)],
+                       check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        if not os.path.exists(out): sys.exit("PDF not rendered: " + out)
     print({k: {x: v[x] for x in ("lots", "bags", "cartons", "pallets", "veh", "samples")} for k, v in summ.items()})
 
 if __name__ == "__main__":
