@@ -64,7 +64,12 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("docx"); ap.add_argument("--source", action="append", default=[])
     ap.add_argument("--min-pt", type=float, default=6.0)
+    # From the DocEngine canon-2026-07 gate (09.10.2026): "true" makes a document missing a
+    # language FAIL instead of WARN. Default "false" keeps the suite's CLI behaviour;
+    # DocEngine's builder passes "true" (with a per-document opt-out).
+    ap.add_argument("--require-bilingual", choices=("true", "false"), default="false")
     a = ap.parse_args()
+    require_bl = a.require_bilingual == "true"
     r = analyse(a.docx); ok = True
     print(f"== VERIFY: {r['path']}")
     print(f"   paragraphs {r['paras']} · tables {r['tables']} · equations(oMath) {r['omath']} · figures {r['figures']}")
@@ -85,7 +90,8 @@ def main():
     else:
         print("   glyph coverage SKIPPED (pp_assets unavailable)")
     biling = r['cyr'] and r['lat']
-    print(f"   bilingual MK+EN {'OK' if biling else 'WARN (missing a language)'}")
+    print(f"   bilingual MK+EN {'OK' if biling else ('FAIL (missing a language)' if require_bl else 'WARN (missing a language)')}")
+    ok &= biling or not require_bl
     if a.source:
         sw = sc = 0
         for s in a.source:

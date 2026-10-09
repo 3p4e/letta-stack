@@ -164,6 +164,13 @@ def check_environment():
     return problems
 
 
+def must_cover(ch):
+    """True for characters the declared face itself must render: everything except Unicode
+       symbols (category S*), which may fall back to a symbol font — "№" excepted."""
+    import unicodedata
+    return ch == "№" or not unicodedata.category(ch).startswith("S")
+
+
 def audit_docx(path):
     """Every run in a .docx checked against the font it declares.
        Returns a list of (font, offending characters, sample text)."""
@@ -182,7 +189,10 @@ def audit_docx(path):
                 text = "".join(re.findall(r"<w:t(?: [^>]*)?>(.*?)</w:t>", run, re.S))
                 if not text.strip():
                     continue
-                miss = missing_glyphs(face, text)
+                # House rule (CLAUDE.md, certificate fonts): a letter, digit or "№" the declared
+                # face cannot render is a defect; symbols the house faces lack (☐ ☒ ✎ ≤ ∑ Δ …)
+                # are rendered by the fallback font and are not.
+                miss = "".join(ch for ch in missing_glyphs(face, text) if must_cover(ch))
                 if miss:
                     key = (face, miss)
                     bad.setdefault(key, text[:60])
