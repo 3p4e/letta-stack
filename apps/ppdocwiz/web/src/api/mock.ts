@@ -150,7 +150,7 @@ export function mockApi(onChange?: () => void): MockApi {
     },
     downloadHref: (id, ext) => `#mock-download/${id}.${ext}`,
 
-    async deHealth() { await wait(60); return { ok: true, db: !faults.storage, letta: !faults.letta, engine: 'pp-document-suite (canon 2026-07)' }; },
+    async deHealth() { await wait(60); return { ok: true, db: !faults.storage, letta: !faults.letta, engine: 'pp-document-suite (synced copy, canon revision 2026-10-09)' }; },
     async questionnaires() { gate(); return Object.entries(RAW_QUESTIONNAIRES).map(([key, q]) => ({ key, title: q.title as never, doctype: q.doctype, rounds: q.rounds.length })); },
     async questionnaire(key) { gate(); const q = RAW_QUESTIONNAIRES[key]; if (!q) throw new ApiError(404, 'unknown questionnaire'); return normalizeQuestionnaire(key, q); },
     async startWorkflow(body: WorkflowIn) {
