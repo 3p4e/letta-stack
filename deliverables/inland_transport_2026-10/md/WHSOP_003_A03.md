@@ -10,33 +10,35 @@ orient: portrait
 
 # 1 Упатство | Instructions
 Системот е целосно на хартија, без бар-кодови и скенери. За секој картон се печатат една етикета и една листа на пакување; за секоја палета — две етикети (две соседни страни) и една листа на пакување. Идентификатори: палета UTID-Pnn, картон UTID-Pnn-Cnn; кесите го задржуваат производствениот идентификатор (серија и број на кеса) и не се преозначуваат. ||| The system is entirely paper-based, without barcodes or scanners. For each carton one label and one packing list are printed; for each pallet — two labels (two adjacent sides) and one packing list. Identifiers: pallet UTID-Pnn, carton UTID-Pnn-Cnn; bags keep their production identifier (batch and bag number) and are not relabelled.
-Етикетите се пополнуваат во контролираниот образец и се печатат (палета: A5, картон: A6), со големи читливи знаци; рачно дописување на етикета не е дозволено. Погрешна етикета се поништува (прецртува, „ПОНИШТЕНО“, иницијали, датум), се чува во досието и се евидентира во §6. ||| Labels are filled in the controlled template and printed (pallet: A5, carton: A6), in large legible characters; handwritten additions on a label are not allowed. A wrong label is voided (crossed out, "VOID", initials, date), kept in the file and logged in §6.
+Етикетите се пополнуваат и се печатат од контролираниот документ — образец за етикети наведен во §2 (палета: A5, картон: A6), со големи читливи знаци; рачно дописување на етикета не е дозволено. Од секој вид етикета еден испечатен примерок се лепи во соодветното поле во §3. Погрешна етикета се поништува (прецртува, „ПОНИШТЕНО“, иницијали, датум), се чува во досието и се евидентира во §6. ||| Labels are filled in and printed from the controlled label-template document listed in §2 (pallet: A5, carton: A6), in large legible characters; handwritten additions on a label are not allowed. One printed specimen of each label type is affixed in its space in §3. A wrong label is voided (crossed out, "VOID", initials, date), kept in the file and logged in §6.
 
-# 2 Етикета на палета (образец, A5) | Pallet label (template, A5)
-[[FORM:grid]]
-UTID |||  ||| TR-________-___
-ID на палета ||| Pallet ID ||| TR-________-___-P__
-Тип ||| Type ||| ☐ G — 8 картони | L — 8 cartons   ☐ M — 4 картони | S — 4 cartons
-Палета ||| Pallet ||| ___ од | of ___
-Број на картони / кеси ||| Cartons / bags ||| ___ / ___
-Испраќач ||| Consignor ||| Пјурли Плант ДООЕЛ Скопје, Којлија 1043, Петровец | Purely Plant DOOEL Skopje, Kojlija 1043, Petrovec
-Примач ||| Consignee ||| _
-Услови на чување ||| Storage conditions ||| 15–25 °C, RH ≤ 60 %, заштита од влага | protect from moisture
-Број за итни случаи ||| Emergency number ||| _
+# 2 Образци за етикети | Label templates
+Се наведува контролираниот документ (образец) од кој се печати секој вид етикета. Ако за видот етикета не се користи посебен образец, се означува N/A и се образложува. ||| The controlled document (template) from which each label type is printed is stated. If no separate template is used for a label type, N/A is marked and justified.
+[[TABLE]]
+Вид на етикета~~Label type ||| Задолжителна содржина~~Mandatory content ||| Код на документот (образец)~~Template document code ||| Верзија~~Version ||| N/A
+Етикета на палета (A5, две страни)~~Pallet label (A5, two sides) ||| UTID, ID на палета, тип G/M, палета n од N, картони/кеси, испраќач, примач, услови, „ПРАТКА ПОД КОНТРОЛА“, итен број~~UTID, pallet ID, type L/S, pallet n of N, cartons/bags, consignor, consignee, conditions, "CONTROLLED CONSIGNMENT", emergency number |||  |||  ||| ☐
+Етикета на картон (A6)~~Carton label (A6) ||| ID на картон, картон n од N, серија, број и опсег на кеси, нето маса, лента бр., иницијали~~Carton ID, carton n of N, batch, number and range of bags, net mass, tape No., initials |||  |||  ||| ☐
+Етикета на контејнер со ретенциона мостра~~Retention-sample container label ||| серија, P серија, нето маса, за купувач / продавач на мало, датум, „РЕТЕНЦИОНА МОСТРА“~~batch, P lot, net mass, for buyer / retailer, date, "RETENTION SAMPLE" |||  |||  ||| ☐
+Етикета на картон за мостри (RS)~~Sample carton (RS) label ||| UTID-RS, број на мостри, лента бр., примач, „ПРАТКА ПОД КОНТРОЛА“~~UTID-RS, number of samples, tape No., consignee, "CONTROLLED CONSIGNMENT" |||  |||  ||| ☐
+[[/TABLE]]
+[[FORM]]
+Образложение за N/A ||| Justification for N/A ||| _
 [[/FORM]]
-ПРАТКА ПОД КОНТРОЛА — САМО ОВЛАСТЕН ТРАНСПОРТ ||| CONTROLLED CONSIGNMENT — AUTHORISED TRANSPORT ONLY
 
-# 3 Етикета на картон (образец, A6) | Carton label (template, A6)
-[[FORM:grid]]
-ID на картон ||| Carton ID ||| TR-________-___-P__-C__
-Картон ||| Carton ||| ___ од | of ___ (на палетата | on the pallet)
-Серија ||| Batch ||| _
-Број на кеси ||| Number of bags ||| 10
-Кеси бр. (од–до) ||| Bags No. (from–to) ||| _
-Нето маса (g) ||| Net mass (g) ||| _
-Безбедносна лента бр. ||| Security tape No. ||| _
-Спакувал / проверил (иницијали) ||| Packed / verified (initials) ||| _
-[[/FORM]]
+# 3 Пример-етикети | Example labels
+Во секое поле се лепи (или се печати) по еден примерок од етикетата, отпечатен од образецот во §2, за да може да се спореди со етикетите на пратката. ||| One specimen of each label, printed from the template in §2, is affixed (or printed) in its space, so the consignment labels can be compared with it.
+[[BOX:7]]
+Место за пример-етикета на палета (A5) ||| Space for an example pallet label (A5)
+[[/BOX]]
+[[BOX:5]]
+Место за пример-етикета на картон (A6) ||| Space for an example carton label (A6)
+[[/BOX]]
+[[BOX:4]]
+Место за пример-етикета на контејнер со ретенциона мостра ||| Space for an example retention-sample container label
+[[/BOX]]
+[[BOX:4]]
+Место за пример-етикета на картон за мостри (RS) ||| Space for an example sample carton (RS) label
+[[/BOX]]
 
 # 4 Листа на пакување на картон | Carton packing list
 [[FORM:grid]]

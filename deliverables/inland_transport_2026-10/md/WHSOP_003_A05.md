@@ -32,7 +32,7 @@ A9 ||| Картоните затворени со безбедносна лен�
 A10 ||| Ретенционите мостри подготвени, означени, евидентирани и спакувани во картонот RS~~Retention samples prepared, labelled, recorded and packed in the RS carton |||  |||  |||  ||| A03 §7
 A11 ||| Палетите формирани (G 8 / M 4 картони), без препуштање~~Pallets built (L 8 / S 4 cartons), no overhang |||  |||  |||  ||| §6.4.2
 A12 ||| Стреч-фолија, термо-ќебе и лента на завиткувањето потпишана~~Stretch film, thermal blanket and signed wrap tape |||  |||  |||  ||| §6.4.2
-A13 ||| Етикетите на палетите на две страни, проверени со листите~~Pallet labels on two sides, checked against the lists |||  |||  |||  ||| A03
+A13 ||| Етикетите отпечатени од образецот во A03 §2 (код и верзија запишани), примероците залепени во §3; етикетите на палетите на две страни, проверени со листите~~Labels printed from the template in A03 §2 (code and version recorded), specimens affixed in §3; pallet labels on two sides, checked against the lists |||  |||  |||  ||| A03 §2–3
 A14 ||| Логер за еднократна употреба активиран и поставен во секоја палета~~Single-use logger started and placed in every pallet |||  |||  |||  ||| A03 §5
 A15 ||| USB логер калибриран, активиран, на позицијата од OQ~~USB logger calibrated, started, at the OQ position |||  |||  |||  ||| A04 §3
 A16 ||| Возилото одговара на A02, чисто, суво и заклучливо~~Vehicle matches A02, clean, dry and lockable |||  |||  |||  ||| 

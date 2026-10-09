@@ -233,14 +233,30 @@ def transport_set(tr, lots, cartons, pallets, nv):
     # A03 labels, packing lists, retention-sample list, allocation of every carton
     md = head(tpl("WHSOP_003_A03"), *sfx)
     p1, c1 = pallets[0], pallets[0]["cartons"][0]
-    md = field(md, "UTID", utid); md = field(md, "ID на палета", B(p1["id"]))
-    if p1["type"] == "G": md = tick(md, "G — 8 картони | L — 8 cartons")
-    for lab, val in [("Палета", B("1") + " од | of " + B(len(pallets))), ("Број на картони / кеси", B("%d / %d" % (len(p1["cartons"]), p1["bags"]))),
-                     ("Примач", A(CONSIGNEE) + " · " + TBE), ("Број за итни случаи", TBE),
-                     ("ID на картон", B(c1["id"])), ("Картон", B("1") + " од | of " + B(len(p1["cartons"])) + " (на палетата | on the pallet)"),
-                     ("Серија", B(lotname(c1["lot"]))), ("Број на кеси", B(c1["bags"])), ("Кеси бр. (од–до)", B("%d–%d" % (c1["first"], c1["last"]))),
-                     ("Нето маса (g)", B(fmt_g(c1["g"]) + " (пресметано | calculated)"))]:
-        md = field(md, lab, val)
+    l1 = lots[0]
+    boxes = {
+        "Место за пример-етикета на палета (A5)": [
+            ("UTID: " + utid + " · ID: " + B(p1["id"]), "Тип | Type: " + B("G / L" if p1["type"] == "G" else "M / S") + " · палета | pallet " + B("1") + " / " + B(len(pallets))),
+            ("Картони / кеси | Cartons / bags: " + B("%d / %d" % (len(p1["cartons"]), p1["bags"])), ""),
+            ("Испраќач | Consignor: " + B("Пјурли Плант ДООЕЛ Скопје, Којлија 1043, Петровец"), ""),
+            ("Примач | Consignee: " + A(CONSIGNEE) + " · " + TBE, ""),
+            ("15–25 °C, RH ≤ 60 % · ПРАТКА ПОД КОНТРОЛА — САМО ОВЛАСТЕН ТРАНСПОРТ", "CONTROLLED CONSIGNMENT — AUTHORISED TRANSPORT ONLY"),
+            ("Број за итни случаи | Emergency number: " + TBE, "")],
+        "Место за пример-етикета на картон (A6)": [
+            ("ID: " + B(c1["id"]) + " · картон | carton " + B("1") + " / " + B(len(p1["cartons"])), ""),
+            ("Серија | Batch: " + B(lotname(c1["lot"])) + " · кеси | bags " + B("%d–%d (%d)" % (c1["first"], c1["last"], c1["bags"])), ""),
+            ("Нето маса | Net mass: " + B(fmt_g(c1["g"]) + " g") + " · лента | tape " + TBE + " · " + TBE, "")],
+        "Место за пример-етикета на контејнер со ретенциона мостра": [
+            ("РЕТЕНЦИОНА МОСТРА | RETENTION SAMPLE · " + B(lotname(l1)), ""),
+            ("За | For: " + B("купувач | buyer") + " · нето маса | net mass " + TBE + " g · датум | date " + date, "")],
+        "Место за пример-етикета на картон за мостри (RS)": [
+            ("ID: " + B(P["utid"] + "-RS") + " · мостри | samples " + B(ns) + " · лента | tape " + TBE, ""),
+            ("Примач | Consignee: " + A(CONSIGNEE) + " · ПРАТКА ПОД КОНТРОЛА | CONTROLLED CONSIGNMENT", "")],
+    }
+    for cap, lines in boxes.items():
+        k = md.index(cap); e = md.index("[[/BOX]]", k); ln_end = md.index("\n", k)
+        body = "\n".join((a + (" ||| " + b if b else "")) for a, b in lines)
+        md = md[:ln_end + 1] + body + "\n" + md[e:]
     md = re.sub(r"(# 4 Листа на пакување на картон[^\n]*\n\[\[FORM:grid\]\]\nID на картон \|\|\| Carton ID \|\|\| )[^\n]*", lambda m: m.group(1) + B(c1["id"]), md)
     md = re.sub(r"(Датум \|\|\| Date \|\|\| )_", lambda m: m.group(1) + date, md, count=1)
     md = table(md, "№ ||| Серија~~Batch ||| Број на кеса~~Bag No.",

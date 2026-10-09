@@ -44,6 +44,13 @@ def parse(md):
         if not s: i+=1; continue
         if s.startswith('[[PAGEBREAK]]') or s.startswith('[[NEWPAGE]]'):
             blocks.append(('pagebreak',)); i+=1; continue
+        if s.startswith('[[BOX'):                       # marked space: [[BOX:<min height cm>]] caption / content [[/BOX]]
+            mo=re.match(r'\[\[BOX(?::\s*([0-9.]+))?\]\]', s); h=float(mo.group(1)) if mo and mo.group(1) else 4.0
+            i+=1; rows=[]
+            while i<len(lines) and not lines[i].strip().startswith('[[/BOX'):
+                if lines[i].strip(): rows.append([c.strip() for c in lines[i].split('|||')])
+                i+=1
+            blocks.append(('box', rows, h)); i+=1; continue
         if s.startswith('[[TABLE') or s.startswith('[[FORM'):
             kind='form' if s.startswith('[[FORM') else 'table'; rows=[]
             mo=re.match(r'\[\[(?:FORM|TABLE):([^\]]+)\]\]', s); mode=mo.group(1).strip() if mo else None
@@ -227,6 +234,31 @@ def emit_form(d, rows, mode=None):
                 for c in r.cells:
                     for par in c.paragraphs: par.paragraph_format.keep_with_next=True
 
+def emit_box(d, rows, h_cm):
+    """A marked, empty-or-filled space (e.g. for an example label): one dashed-bordered cell of at
+       least h_cm height. The first row is the caption (MK ||| EN); further rows are content."""
+    from docx.oxml import OxmlElement
+    from docx.oxml.ns import qn
+    from docx.shared import Cm
+    t=d.add_table(rows=1, cols=1); t.alignment=pr.WD_TABLE_ALIGNMENT.CENTER
+    c=t.cell(0,0)
+    cap=rows[0] if rows else ["", ""]
+    p=c.paragraphs[0]; p.alignment=WD_ALIGN_PARAGRAPH.CENTER; pr.sp(p,2,4)
+    pr.rin(p,"✎ "+(cap[0] if cap else ""),9,pr.NAVY,ital=True)
+    if len(cap)>1 and cap[1]: pr.rin(p,"  |  ",8,pr.GREY); pr.rin(p,cap[1],8,pr.GREY,ital=True)
+    for r in rows[1:]:
+        q=c.add_paragraph(); q.alignment=WD_ALIGN_PARAGRAPH.LEFT; pr.sp(q,0,1)
+        pr.rin(q,r[0],10,pr.BLACK, bold=False)
+        if len(r)>1 and r[1]: pr.rin(q,"  |  ",8,pr.GREY); pr.rin(q,r[1],8,pr.GREY,ital=True)
+    pr.fixed(t,[PAGE_W],header_repeat=False)
+    tblPr=t._tbl.tblPr; b=OxmlElement('w:tblBorders')
+    for e in ('top','left','bottom','right'):
+        el=OxmlElement('w:'+e); el.set(qn('w:val'),'dashed'); el.set(qn('w:sz'),'8'); el.set(qn('w:space'),'0'); el.set(qn('w:color'),pr.BORDER); b.append(el)
+    tblPr.append(b)
+    trPr=t.rows[0]._tr.get_or_add_trPr()
+    hh=OxmlElement('w:trHeight'); hh.set(qn('w:val'),str(int(h_cm*567))); hh.set(qn('w:hRule'),'atLeast'); trPr.append(hh)
+    pr.keep_table(t)
+
 def emit_table(d, rows):
     if not rows: return
     opts=as_options(rows)
@@ -269,24 +301,25 @@ def build_annex(hd, blocks, out):
         # get a small one (otherwise they fuse into one table); text before a table stays with it.
         if b[0]=='h' and prev not in (None,'pagebreak'):
             pf.spacer(d, 12 if b[1]==1 else 8)
-        elif b[0] in ('form','table') and prev in ('form','table'):
+        elif b[0] in ('form','table','box') and prev in ('form','table','box'):
             pf.spacer(d, 6)
-        elif b[0] in ('form','table') and prev in ('p','bullet'):
+        elif b[0] in ('form','table','box') and prev in ('p','bullet'):
             pf.spacer(d, 6, keep=True)                 # lead-in text stays with its table
-        elif b[0] in ('form','table') and prev=='h':
+        elif b[0] in ('form','table','box') and prev=='h':
             pf.spacer(d, 2, keep=True)                 # a bar stays with its table
-        elif b[0] in ('p','bullet') and prev in ('form','table'):
+        elif b[0] in ('p','bullet') and prev in ('form','table','box'):
             pf.spacer(d, 4)
         prev=b[0]
         if b[0]=='h':
             (emit_banner if b[1]==1 else emit_subbar)(d, b[2], b[3], b[4])
         elif b[0]=='p':
             p=pr.body(d, b[1], b[2])
-            if i+1<len(blocks) and blocks[i+1][0] in ('form','table'):
+            if i+1<len(blocks) and blocks[i+1][0] in ('form','table','box'):
                 p.paragraph_format.keep_with_next=True
         elif b[0]=='bullet': pr.bullet(d, b[1], b[2])
         elif b[0]=='form': emit_form(d, b[1], mode=(b[2] if len(b)>2 else None))
         elif b[0]=='table': emit_table(d, b[1])
+        elif b[0]=='box': emit_box(d, b[1], b[2])
         elif b[0]=='pagebreak': d.add_page_break()
     PAGE_W = pr.PAGE_W = 18.46            # restore default for any subsequent build in-process
     pf.save(d, out)
