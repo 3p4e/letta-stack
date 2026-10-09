@@ -76,15 +76,24 @@ def bil(mk,en):
     return (mk + (" | "+en if en else "")).strip()
 
 # ---- single-select option list detection (-> status_grid) ----
-OPT = re.compile(r'☐\s*([^☐]+?)\s*(?=☐|$)')
+OPT = re.compile(r'([☐☒])\s*([^☐☒]+?)\s*(?=[☐☒]|$)')
 def as_options(rows):
-    """If a FORM/TABLE block is really one 'select one' line of ☐ options, return the option list."""
+    """If a FORM/TABLE block is really one 'select one' line of ☐ options, return the option list.
+       An option written with ☒ instead of ☐ is the selected one (filled records and examples);
+       it is returned as OPTIONS.selected."""
     flat=[c for r in rows for c in r if c.strip()]
     joined=" ".join(flat)
-    if joined.count('☐')>=2 and len(rows)<=2 and '~~' not in joined and '|||' not in joined:
-        opts=[o.strip() for o in OPT.findall(joined) if o.strip()]
-        if len(opts)>=2: return opts
+    marks=joined.count('☐')+joined.count('☒')
+    if marks>=2 and len(rows)<=2 and '~~' not in joined and '|||' not in joined:
+        found=[(m,o.strip()) for m,o in OPT.findall(joined) if o.strip()]
+        if len(found)>=2:
+            opts=_Opts(o for _,o in found)
+            opts.selected=next((o for m,o in found if m=='☒'), None)
+            return opts
     return None
+
+class _Opts(list):
+    selected=None
 
 # =========================== ANNEX ===========================
 def _bar(d, num, mk, en, sz, col, fill):
@@ -140,7 +149,7 @@ def emit_form(d, rows, mode=None):
     # single-select? -> status_grid
     opts=as_options(rows)
     if opts:
-        pr.status_grid(d, opts, selected=None, ncols=min(2, len(opts))); return
+        pr.status_grid(d, opts, selected=opts.selected, ncols=min(2, len(opts))); return
     fields=[]
     for rd in rows:
         lmk=rd[0] if len(rd)>0 else ''; len_=rd[1] if len(rd)>1 else ''; val=rd[2] if len(rd)>2 else ''
@@ -222,7 +231,7 @@ def emit_table(d, rows):
     if not rows: return
     opts=as_options(rows)
     if opts:
-        pr.status_grid(d, opts, selected=None, ncols=min(2, len(opts))); return
+        pr.status_grid(d, opts, selected=opts.selected, ncols=min(2, len(opts))); return
     ncol=max(len(r) for r in rows)
     t=d.add_table(rows=len(rows), cols=ncol); t.alignment=pr.WD_TABLE_ALIGNMENT.CENTER
     for ri,rd in enumerate(rows):
@@ -260,10 +269,12 @@ def build_annex(hd, blocks, out):
         # get a small one (otherwise they fuse into one table); text before a table stays with it.
         if b[0]=='h' and prev not in (None,'pagebreak'):
             pf.spacer(d, 12 if b[1]==1 else 8)
-        elif b[0] in ('form','table') and prev in ('form','table','p','bullet'):
+        elif b[0] in ('form','table') and prev in ('form','table'):
             pf.spacer(d, 6)
+        elif b[0] in ('form','table') and prev in ('p','bullet'):
+            pf.spacer(d, 6, keep=True)                 # lead-in text stays with its table
         elif b[0] in ('form','table') and prev=='h':
-            pf.spacer(d, 2)
+            pf.spacer(d, 2, keep=True)                 # a bar stays with its table
         elif b[0] in ('p','bullet') and prev in ('form','table'):
             pf.spacer(d, 4)
         prev=b[0]
@@ -300,6 +311,7 @@ def build_sop(hd, blocks, out):
             t=pf.sop_table(d)
         return t
     for i,b in enumerate(blocks):
+        prev_heading = i>0 and blocks[i-1][0]=='h' and t is None
         if b[0]=='h' and i+1<len(blocks) and blocks[i+1][0] in ('table','form'):
             if t is not None: pf.sop_finalize(t); t=None      # heading directly above a table:
             pf.sop_heading_par(d, (b[2] or ''), b[3], b[4], level=b[1])   # keep it with that table
@@ -314,7 +326,7 @@ def build_sop(hd, blocks, out):
             if t is not None: pf.sop_finalize(t); t=None      # close two-col table; table goes full width
             rows=b[1]
             if not rows: continue
-            pf.spacer(d, 6)                                    # air above; also stops the tables fusing
+            pf.spacer(d, 6, keep=prev_heading)                 # air above; also stops the tables fusing
             gap_after=True
             headers=[cs(c) for c in rows[0]]; data=[[cs(c) for c in r] for r in rows[1:]]
             ncol=len(headers)

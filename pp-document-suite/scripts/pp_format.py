@@ -99,13 +99,16 @@ def sp(p, before=0, after=0, line=None):
 # Adjacent tables with nothing between them fuse into one table in Word and LibreOffice, and a
 # heading row inside a table carries no space of its own. These helpers give every block its
 # breathing room and keep a heading on the same page as what it introduces.
-def spacer(d, pt=8):
-    """Empty paragraph exactly `pt` points high between two blocks (stops tables fusing)."""
+def spacer(d, pt=8, keep=False):
+    """Empty paragraph exactly `pt` points high between two blocks (stops tables fusing).
+    keep=True binds the gap to the block below — only where the block above must travel with it
+    (a heading or lead-in text above a table). Everywhere else it stays unbound: LibreOffice treats
+    a kept-together table as keep-with-next, and a bound gap would chain whole sections together."""
     from docx.enum.text import WD_LINE_SPACING
     p = d.add_paragraph(); sp(p, 0, 0)
     p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.EXACTLY
     p.paragraph_format.line_spacing = Pt(pt)
-    p.paragraph_format.keep_with_next = True  # a gap travels with the block below it, never breaks a keep chain
+    p.paragraph_format.keep_with_next = keep
     return p
 
 def keep_row(row, with_next=True):
