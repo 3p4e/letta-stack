@@ -138,7 +138,10 @@ def cell_margins(cell, top=29, bottom=29, left=58, right=58):
 def bilingual(p, mk, en, mk_sz=11, en_sz=7, bold=False, color=BLACK):
     """Inline 'MK | EN' run group (annex + table style)."""
     run(p, mk, mk_sz, color, bold=bold)
-    run(p, " | ", en_sz, color)
+    # The separator only joins two halves: a cell holding a code, a number or a RACI letter has no
+    # EN half, and a dangling " | " after it reads as a defect on the printed page.
+    if (mk or "").strip() and (en or "").strip():
+        run(p, " | ", en_sz, color)
     run(p, en, en_sz, color, bold=bold)
 
 def _page(doc, orient="portrait", margin_cm=1.27):
@@ -185,6 +188,10 @@ def apply_pp_header(d, mk_name, code, en_name, version="1.0", status="draft"):
     setrun(nm, 0, mk_name); setrun(nm, 2, ""); setrun(nm, 3, ""); setrun(nm, 4, ""); setrun(nm, 5, en_name)
     cd = h.cell(0, 2).paragraphs[2].runs
     setrun(cd, 0, code); setrun(cd, 2, ""); setrun(cd, 3, "")
+    # The code cell is narrow and an underscore code has no break point, so a 13-character annex
+    # code (WHSOP_003_A01, QASOP_031_A10) wrapped its last digit onto a second line at 11 pt.
+    if cd and len(code or "") > 11:
+        cd[0].font.size = Pt(9.5 if len(code) <= 14 else 8.5)
     vr = h.cell(1, 2).paragraphs[0].runs
     if vr:
         vr[-1].text = header_version(status, version)
@@ -271,8 +278,17 @@ def set_update_fields_on_open(d):
 
 def sop_toc(d):
     p = d.add_paragraph(); run(p, "СОДРЖИНА | TABLE OF CONTENTS", 14, NAVY, bold=True)
-    par = d.add_paragraph(); fld = OxmlElement('w:fldSimple')
-    fld.set(qn('w:instr'), r'TOC \o "1-3" \h \z \u'); par._p.append(fld)
+    # Complex field (begin/instr/separate/end): Word and LibreOffice both read it as a TOC index;
+    # LibreOffice ignores a w:fldSimple TOC, so the SOP's contents page rendered empty.
+    par = d.add_paragraph(); r = par.add_run()
+    for kind in ("begin", "instr", "separate"):
+        if kind == "instr":
+            it = OxmlElement('w:instrText'); it.set(qn('xml:space'), 'preserve')
+            it.text = ' TOC \\o "1-3" \\h \\z \\u '; r._r.append(it)
+        else:
+            fc = OxmlElement('w:fldChar'); fc.set(qn('w:fldCharType'), kind); r._r.append(fc)
+    par.add_run(" ")
+    fe = OxmlElement('w:fldChar'); fe.set(qn('w:fldCharType'), 'end'); par.add_run()._r.append(fe)
     note = d.add_paragraph(); run(note, "(TOC updates automatically on open; or right-click → Update Field)", 8, GREY, ital=True)
     set_update_fields_on_open(d)
     d.add_page_break()

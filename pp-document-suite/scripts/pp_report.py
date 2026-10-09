@@ -342,8 +342,27 @@ try:
         _OMML_XSLT=_etree.XSLT(_etree.parse(_XSLP)); _EQN_OK=True
 except Exception:
     _EQN_OK=False
+# No Office XSL (Linux/CI): pandoc writes the same native OMML from LaTeX.
+import shutil as _shutil
+_PANDOC=_shutil.which("pandoc")
+if not _EQN_OK and _PANDOC:
+    try:
+        from lxml import etree as _etree; _EQN_OK=True
+    except Exception: pass
+_OMML_CACHE={}
+def _pandoc_omml(latex):
+    if latex in _OMML_CACHE: return _etree.fromstring(_OMML_CACHE[latex])
+    import subprocess, tempfile, zipfile
+    with tempfile.TemporaryDirectory() as t:
+        out=_os.path.join(t,"m.docx")
+        subprocess.run([_PANDOC,"-f","latex","-o",out],input=("$"+latex+"$").encode("utf-8"),check=True,capture_output=True)
+        xml=zipfile.ZipFile(out).read("word/document.xml")
+    m=_etree.fromstring(xml).find(".//{http://schemas.openxmlformats.org/officeDocument/2006/math}oMath")
+    if m is None: raise ValueError("pandoc produced no math")
+    _OMML_CACHE[latex]=_etree.tostring(m); return _etree.fromstring(_OMML_CACHE[latex])
 
 def _to_omml(latex):
+    if _OMML_XSLT is None: return _pandoc_omml(latex)
     mml=_l2m.convert(latex)
     dom=_etree.fromstring(mml.encode("utf-8") if isinstance(mml,str) else mml)
     return _OMML_XSLT(dom).getroot()
