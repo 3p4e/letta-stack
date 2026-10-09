@@ -106,3 +106,27 @@ passages each section was checked against, and `knowledge.notes` is empty.
 
 Unset `RAGFLOW_BASE_URL` / `RAGFLOW_API_KEY` and restart: the regulatory check returns to the
 checker agent's attached Letta sources (`DOCENGINE_REG_SOURCES`), and every job records that it did.
+
+## Deployed — 09.10.2026 (from `main` 5ecf6a6)
+
+| Service | Where | Image | Address |
+|---|---|---|---|
+| Gotenberg | `/opt/stacks/gotenberg` | `gotenberg/gotenberg:8.37.0` | `http://gotenberg:3000` on `ai-net`; `https://render.srv1231216.hstgr.cloud` (basic auth, user `pp`, credentials in `/opt/stacks/gotenberg/credentials.env` on the host) |
+| pp-docengine | `/opt/stacks/pp-docengine` (+ own Postgres 16 `pp-docengine-db`) | `pp-docengine:5ecf6a6` (`apps/wwf-docengine`) | `http://pp-docengine:8000` on `ai-net`, no public route |
+| ppdocwiz | `/opt/stacks/ppdocwiz` | `ppdocwiz:5ecf6a6` (`apps/ppdocwiz`) | `https://docwiz.srv1231216.hstgr.cloud` |
+
+The WWF stack's `wwf-docengine` (`growflow-docengine:v26`, built from WEEKLY_WEED_FLOW) is **left
+untouched** (Head of QC, 09.10.2026): it is the WWF-integrated engine, and this one will be merged into
+WWF later. Images were built on the host from `git archive` tarballs, SHA-256 checked on both sides.
+
+Verified: Gotenberg `/health` up; public route 401 without or with a wrong password; WHSOP_003 through
+`pp_render` over the public route → "rendered via gotenberg", 15 pages, TOC 26 lines. pp-docengine
+`/health` `"ragflow": true`; `/knowledge/health` reachable; regulatory search → EU GDP §9.2/§9.1;
+eCOA `SJ102501` (keyword) → Farmahem certificates with the "not a source of values" note. ppdocwiz:
+sign-in, Builder build of WHSOP_003 (verify PASS, PDF TOC filled), Questionnaire `sop_qc` via
+`/api/docengine`, Library.
+
+Open: the questionnaire workflow end to end fails at the first Letta call — the `gf_` agents run
+`moonshot/kimi-k2.6` through LiteLLM and Moonshot answers "account suspended due to insufficient balance".
+Rerun §4's last check after the balance is restored or the model is changed. Known defect: on an empty
+database the two uvicorn workers race on `CREATE SCHEMA` at first start (one worker respawns).
