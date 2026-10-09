@@ -18,6 +18,7 @@ orient: portrait
 Растојание (km) ||| Distance (km) ||| _
 Нормално времетраење (h:min) ||| Normal duration (h:min) ||| _
 Максимално времетраење со застои (h:min) ||| Maximum duration with delays (h:min) ||| _
+Превозник ||| Carrier ||| _
 Возило (регистарски број, тип) ||| Vehicle (registration, type) ||| _
 Контрола на температура ||| Temperature control ||| ☐ Активна | Active   ☐ Пасивна (термо-ќебе) | Passive (thermal blanket)
 [[/FORM]]

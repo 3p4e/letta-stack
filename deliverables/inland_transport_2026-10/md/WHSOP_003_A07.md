@@ -22,17 +22,18 @@ UTID |||  ||| TR-________-___
 № ||| Ставка~~Item ||| Да~~Yes ||| Не~~No ||| N/A ||| Забелешка / отстапување бр.~~Remark / deviation No.
 1 ||| TRA одобрен пред известувањата~~TRA approved before notifications |||  |||  |||  ||| 
 2 ||| Потврда од МВР на досие, добиена пред отпремата~~MoIA confirmation on file, received before dispatch |||  |||  |||  ||| 
-3 ||| Полициското придружување присутно од поаѓање до прием~~Police escort present from departure to receipt |||  |||  |||  ||| 
-4 ||| Чек-листа A05 (дел А и Б) комплетна~~Checklist A05 (parts A and B) complete |||  |||  |||  ||| 
-5 ||| Манифестот A04 комплетен, сите точки потпишани~~Manifest A04 complete, all transfers signed |||  |||  |||  ||| 
-6 ||| Ланецот на надзор е непрекинат~~Chain of custody unbroken |||  |||  |||  ||| 
-7 ||| Пломбите, лентите и завиткувањето цели (или оштетувањето документирано)~~Seals, tapes and wrapping intact (or damage documented) |||  |||  |||  ||| 
-8 ||| Податоците од сите логери (по палета и USB) во опсег во текот на целиот транспорт~~Data from all loggers (per pallet and USB) within range throughout |||  |||  |||  ||| 
-9 ||| Контролните јавувања ја потврдуваат одобрената рута, без непланирани застанувања~~Check-in calls confirm the approved route, no unscheduled stops |||  |||  |||  ||| 
-10 ||| Количината порамнета: палети, картони, кеси и маса~~Quantity reconciled: pallets, cartons, bags and mass |||  |||  |||  ||| 
-11 ||| Известувањето до МЗ поднесено во рок од 3 работни дена~~MoH notification submitted within 3 working days |||  |||  |||  ||| 
-12 ||| Сите отстапувања отворени и истражени~~All deviations opened and investigated |||  |||  |||  ||| 
-13 ||| Податоците од логерот додадени во трендот на рутата~~Logger data added to the lane trend |||  |||  |||  ||| 
+3 ||| Превозникот квалификуван, Договорот за квалитет важи~~Carrier qualified, Quality Agreement valid |||  |||  |||  ||| 
+4 ||| Полициското придружување присутно од поаѓање до прием~~Police escort present from departure to receipt |||  |||  |||  ||| 
+5 ||| Чек-листа A05 (дел А и Б) комплетна~~Checklist A05 (parts A and B) complete |||  |||  |||  ||| 
+6 ||| Манифестот A04 комплетен, сите точки потпишани~~Manifest A04 complete, all transfers signed |||  |||  |||  ||| 
+7 ||| Ланецот на надзор е непрекинат~~Chain of custody unbroken |||  |||  |||  ||| 
+8 ||| Пломбите, лентите и завиткувањето цели (или оштетувањето документирано)~~Seals, tapes and wrapping intact (or damage documented) |||  |||  |||  ||| 
+9 ||| Податоците од сите логери (по палета и USB) во опсег во текот на целиот транспорт~~Data from all loggers (per pallet and USB) within range throughout |||  |||  |||  ||| 
+10 ||| Контролните јавувања ја потврдуваат одобрената рута, без непланирани застанувања~~Check-in calls confirm the approved route, no unscheduled stops |||  |||  |||  ||| 
+11 ||| Количината порамнета: палети, картони, кеси и маса~~Quantity reconciled: pallets, cartons, bags and mass |||  |||  |||  ||| 
+12 ||| Известувањето до МЗ поднесено во рок од 3 работни дена~~MoH notification submitted within 3 working days |||  |||  |||  ||| 
+13 ||| Сите отстапувања отворени и истражени~~All deviations opened and investigated |||  |||  |||  ||| 
+14 ||| Податоците од логерот додадени во трендот на рутата~~Logger data added to the lane trend |||  |||  |||  ||| 
 [[/TABLE]]
 
 # 3 Податоци од логерот | Logger data

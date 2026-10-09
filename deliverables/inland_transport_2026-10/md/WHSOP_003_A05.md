@@ -24,20 +24,21 @@ A1 ||| Барањето до МВР поднесено ≥ 24 h пред поа�
 A2 ||| Писмена потврда од МВР примена, придружувањето потврдено~~Written MoIA confirmation received, escort confirmed |||  |||  |||  ||| A02
 A3 ||| TRA одобрен од QA~~TRA approved by QA |||  |||  |||  ||| A01
 A4 ||| Рутата е QUALIFIED за ова возило и конфигурација на палети~~Lane QUALIFIED for this vehicle and pallet configuration |||  |||  |||  ||| QASOP_0XX_A06
-A5 ||| Примачот потврди прием~~Consignee confirmed receipt |||  |||  |||  ||| 
-A6 ||| Материјалот е во статус ОДОБРЕНО~~Material APPROVED |||  |||  |||  ||| WHSOP 001
-A7 ||| Листите на пакување за картоните потпишани од две лица~~Carton packing lists signed by two persons |||  |||  |||  ||| A03 §4
-A8 ||| Картоните затворени со безбедносна лента, бројот запишан~~Cartons closed with security tape, number recorded |||  |||  |||  ||| A03 §5
-A9 ||| Палетите формирани (G 8 / M 4 картони), без препуштање~~Pallets built (L 8 / S 4 cartons), no overhang |||  |||  |||  ||| §6.4.2
-A10 ||| Стреч-фолија, термо-ќебе и лента на завиткувањето потпишана~~Stretch film, thermal blanket and signed wrap tape |||  |||  |||  ||| §6.4.2
-A11 ||| Етикетите на палетите на две страни, проверени со листите~~Pallet labels on two sides, checked against the lists |||  |||  |||  ||| A03
-A12 ||| Логер за еднократна употреба активиран и поставен во секоја палета~~Single-use logger started and placed in every pallet |||  |||  |||  ||| A03 §5
-A13 ||| USB логер калибриран, активиран, на позицијата од OQ~~USB logger calibrated, started, at the OQ position |||  |||  |||  ||| A04 §3
-A14 ||| Возилото одговара на A02, чисто, суво и заклучливо~~Vehicle matches A02, clean, dry and lockable |||  |||  |||  ||| 
-A15 ||| Контрола на температура поставена и предкондиционирана ≥ 30 мин (ако постои)~~Temperature control set and pre-conditioned ≥ 30 min (if fitted) |||  |||  |||  ||| §6.5.2
-A16 ||| Палетите натоварени по распоредот од TRA и обезбедени~~Pallets loaded per the TRA arrangement and secured |||  |||  |||  ||| A01 §2
-A17 ||| Идентитет и овластување на возачот и придружникот проверени~~Identity and authorisation of driver and escort person verified |||  |||  |||  ||| 
-A18 ||| Лицата брифирани (рута, застанувања, инциденти, логери)~~Persons briefed (route, stops, incidents, loggers) |||  |||  |||  ||| 
+A5 ||| Превозникот е квалификуван, Договорот за квалитет важи~~Carrier qualified, Quality Agreement valid |||  |||  |||  ||| QAS-10-003
+A6 ||| Примачот потврди прием~~Consignee confirmed receipt |||  |||  |||  ||| 
+A7 ||| Материјалот е во статус ОДОБРЕНО~~Material APPROVED |||  |||  |||  ||| WHSOP 001
+A8 ||| Листите на пакување за картоните потпишани од две лица~~Carton packing lists signed by two persons |||  |||  |||  ||| A03 §4
+A9 ||| Картоните затворени со безбедносна лента, бројот запишан~~Cartons closed with security tape, number recorded |||  |||  |||  ||| A03 §5
+A10 ||| Палетите формирани (G 8 / M 4 картони), без препуштање~~Pallets built (L 8 / S 4 cartons), no overhang |||  |||  |||  ||| §6.4.2
+A11 ||| Стреч-фолија, термо-ќебе и лента на завиткувањето потпишана~~Stretch film, thermal blanket and signed wrap tape |||  |||  |||  ||| §6.4.2
+A12 ||| Етикетите на палетите на две страни, проверени со листите~~Pallet labels on two sides, checked against the lists |||  |||  |||  ||| A03
+A13 ||| Логер за еднократна употреба активиран и поставен во секоја палета~~Single-use logger started and placed in every pallet |||  |||  |||  ||| A03 §5
+A14 ||| USB логер калибриран, активиран, на позицијата од OQ~~USB logger calibrated, started, at the OQ position |||  |||  |||  ||| A04 §3
+A15 ||| Возилото одговара на A02, чисто, суво и заклучливо~~Vehicle matches A02, clean, dry and lockable |||  |||  |||  ||| 
+A16 ||| Контрола на температура: ☐ активна — поставена и предкондиционирана ≥ 30 мин; ☐ пасивна — термо-ќебињата цели~~Temperature control: ☐ active — set and pre-conditioned ≥ 30 min; ☐ passive — thermal blankets intact |||  |||  |||  ||| §6.5.2
+A17 ||| Палетите натоварени по распоредот од TRA и обезбедени~~Pallets loaded per the TRA arrangement and secured |||  |||  |||  ||| A01 §2
+A18 ||| Идентитет и овластување на возачот (и придружникот) проверени~~Identity and authorisation of the driver (and accompanying person) verified |||  |||  |||  ||| 
+A19 ||| Лицата брифирани (рута, застанувања, инциденти, логери)~~Persons briefed (route, stops, incidents, loggers) |||  |||  |||  ||| 
 [[/TABLE]]
 [[TABLE]]
 Улога~~Role ||| Име~~Name ||| Датум/време~~Date/time ||| Потпис~~Signature

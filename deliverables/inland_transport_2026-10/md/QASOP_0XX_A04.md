@@ -18,6 +18,8 @@ UTID (WHSOP_003) ||| UTID (WHSOP_003) ||| TR-________-___
 Сезона ||| Season ||| _
 Амбиент мин./макс. (°C) ||| Ambient min./max. (°C) ||| _
 Палети G / M ||| Pallets L / S ||| _
+Превозник / возило ||| Carrier / vehicle ||| _
+Контрола на температура ||| Temperature control ||| ☐ Активна | Active   ☐ Пасивна | Passive
 Полициско придружување потврдено (МВР бр.) ||| Police escort confirmed (MoIA No.) ||| _
 [[/FORM]]
 [[FORM]]

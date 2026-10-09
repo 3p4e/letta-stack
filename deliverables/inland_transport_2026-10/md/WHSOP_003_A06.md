@@ -22,7 +22,7 @@ orient: portrait
 Датум на извршен транспорт ||| Date transport executed ||| _
 Примач (назив и адреса) ||| Consignee (name and address) ||| _
 Намена ||| Purpose ||| _
-Возило и лица ||| Vehicle and persons ||| _
+Превозник, возило и возач ||| Carrier, vehicle and driver ||| _
 Полициско придружување (единица) ||| Police escort (unit) ||| _
 [[/FORM]]
 [[TABLE]]

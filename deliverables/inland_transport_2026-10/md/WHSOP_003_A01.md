@@ -20,8 +20,10 @@ UTID |||  ||| TR-________-___
 Примач и адреса ||| Consignee and address ||| _
 Растојание (km) ||| Distance (km) ||| _
 Планирано времетраење (h:min) ||| Planned duration (h:min) ||| _
+Превозник ||| Carrier ||| _
 Возило (регистарски број) ||| Vehicle (registration) ||| _
-Активна контрола на температура ||| Active temperature control ||| ☐ Да | Yes   ☐ Не | No
+Контрола на температура ||| Temperature control ||| ☐ Активна | Active   ☐ Пасивна (термо-ќебе) | Passive (thermal blanket)
+Придружник на Пјурли Плант ||| Purely Plant accompanying person ||| ☐ Да | Yes   ☐ Не | No
 [[/FORM]]
 
 # 2 Материјал и палети | Material and pallets
@@ -49,7 +51,7 @@ USB логер (сериски број) ||| USB logger (serial No.) ||| _
 Секој ризик се оценува со веројатност (В) и последица (П) од 1 до 3; приоритет = В × П. Приоритет ≥ 6 бара дополнителна мерка пред одобрување; приоритет 9 бара одобрение од QP. ||| Each risk is scored for likelihood (L) and consequence (C) from 1 to 3; priority = L × C. Priority ≥ 6 requires an additional measure before approval; priority 9 requires QP approval.
 [[TABLE]]
 № ||| Опасност~~Hazard ||| В~~L ||| П~~C ||| Приоритет~~Priority ||| Мерка за намалување~~Mitigation ||| Преостанат ризик~~Residual
-1 ||| Кражба / напад на возилото~~Theft / attack on the vehicle |||  |||  |||  ||| полициско придружување, две лица, неозначено возило~~police escort, two persons, unmarked vehicle ||| 
+1 ||| Кражба / напад на возилото~~Theft / attack on the vehicle |||  |||  |||  ||| полициско придружување, квалификуван превозник, неозначено возило~~police escort, qualified carrier, unmarked vehicle ||| 
 2 ||| Отстапување од рутата~~Route deviation |||  |||  |||  ||| придружување, контролни јавувања, одобрени застанувања~~escort, check-in calls, approved stops ||| 
 3 ||| Придружувањето не се појавува / доцни~~Escort does not arrive / is late |||  |||  |||  ||| потврда од МВР, отпремата се одложува~~MoIA confirmation, dispatch postponed ||| 
 4 ||| Сезонска температура надвор од опсег~~Seasonal temperature out of range |||  |||  |||  ||| термо-ќебе, квалификувано времетраење, (контрола на температура)~~thermal blanket, qualified duration, (temperature control) ||| 

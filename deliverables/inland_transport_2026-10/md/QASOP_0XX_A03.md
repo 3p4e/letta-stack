@@ -12,7 +12,7 @@ orient: landscape
 [[FORM:grid]]
 Код на рутата ||| Lane code ||| L__
 Протокол (QASOP_0XX_A02) бр. ||| Protocol (QASOP_0XX_A02) No. ||| _
-Возило (регистарски број) ||| Vehicle (registration) ||| _
+Превозник / возило (регистарски број) ||| Carrier / vehicle (registration) ||| _
 Контрола на температура ||| Temperature control ||| ☐ Активна | Active   ☐ Пасивна | Passive
 Палети G / M ||| Pallets L / S ||| _
 Сезона ||| Season ||| _

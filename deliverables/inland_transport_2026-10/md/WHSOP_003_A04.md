@@ -17,6 +17,7 @@ TRA (референца) ||| TRA (reference) ||| _
 Потврда од МВР (број) ||| MoIA confirmation (No.) ||| _
 Испраќач ||| Consignor ||| Пјурли Плант ДООЕЛ Скопје, Којлија 1043, Петровец | Purely Plant DOOEL Skopje, Kojlija 1043, Petrovec
 Примач ||| Consignee ||| _
+Превозник ||| Carrier ||| _
 Возило (регистарски број) ||| Vehicle (registration) ||| _
 [[/FORM]]
 
@@ -47,16 +48,17 @@ USB логер (сериски број) ||| USB logger (serial No.) ||| _
 Интервал на мерење ||| Logging interval ||| 5 мин | 5 min
 USB логер активиран (време) ||| USB logger started (time) ||| _
 Логери за еднократна употреба (број) ||| Single-use loggers (number) ||| _
-Активна контрола на температура (поставена вредност) ||| Active temperature control (set point) ||| ☐ N/A   _
+Контрола на температура ||| Temperature control ||| ☐ Активна | Active   ☐ Пасивна | Passive
+Поставена вредност (само активна, °C) ||| Set point (active only, °C) ||| _
 [[/FORM]]
 
 # 4 Ланец на надзор | Chain of custody
-## 4.1 Точка 1 — Пјурли Плант → возач и придружник | Transfer 1 — Purely Plant → driver and escort person
+## 4.1 Точка 1 — Пјурли Плант → превозник | Transfer 1 — Purely Plant → carrier
 [[TABLE]]
 Страна~~Party ||| Име и функција~~Name and title ||| Лична карта~~ID ||| Датум и време~~Date and time ||| Потпис~~Signature
 Предава (Логистика)~~Relinquishes (Logistics) |||  |||  |||  ||| 
-Презема (возач)~~Receives (driver) |||  |||  |||  ||| 
-Презема (придружник)~~Receives (escort person) |||  |||  |||  ||| 
+Презема (возач на превозникот)~~Receives (carrier's driver) |||  |||  |||  ||| 
+Присутен (придружник на Пјурли Плант, ако е одреден)~~Present (Purely Plant accompanying person, if designated) |||  |||  |||  ||| 
 [[/TABLE]]
 [[TABLE]]
 Проверка при предавање~~Check at hand-over ||| Да~~Yes ||| Не~~No

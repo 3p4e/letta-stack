@@ -55,12 +55,13 @@ orient: portrait
 Број на палети (G / M) ||| Number of pallets (L / S) ||| _
 [[/FORM]]
 
-# 6 Возило и лица | Vehicle and persons
+# 6 Превозник, возило и лица | Carrier, vehicle and persons
 [[FORM:grid]]
+Превозник (назив, седиште) ||| Carrier (name, seat) ||| _
 Возило (марка, тип) ||| Vehicle (make, type) ||| _
 Регистарски број ||| Registration No. ||| _
 Возач (име, лична карта) ||| Driver (name, ID) ||| _
-Придружник (име, лична карта) ||| Escort person (name, ID) ||| _
+Придружник на Пјурли Плант, ако е одреден (име, лична карта) ||| Purely Plant accompanying person, if designated (name, ID) ||| _
 Контакт телефон за време на транспортот ||| Contact phone during transport ||| _
 [[/FORM]]
 
