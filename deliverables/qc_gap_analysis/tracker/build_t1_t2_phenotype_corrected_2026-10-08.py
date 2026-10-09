@@ -455,6 +455,8 @@ def main(argv):
     book.save(os.path.join(OUT, name), garbage=4, deflate=True)
     n = book.page_count
     book.close()
+    # print-safe (Head of QC, 09.10.2026: every second page printed blank): no transparency left
+    print(load('S', os.path.join(HERE, 'print_safe_pdf.py')).flatten(os.path.join(OUT, name)))
     with open(os.path.join(OUT, 'CHANGES.tsv'), 'w', encoding='utf-8', newline='') as fh:
         w = csv.writer(fh, delimiter='\t', lineterminator='\n')
         w.writerow(['batch', 'coq', 'series', 'specification', 'coq phenotype as sent', 'coq phenotype corrected',

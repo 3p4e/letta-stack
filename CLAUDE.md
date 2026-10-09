@@ -291,7 +291,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 220 corrections, 07.09.2026–08.10.2026, each quoted — is
+The full record — 221 corrections, 07.09.2026–08.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:
@@ -463,8 +463,10 @@ Standing rules the corrections produced (message numbers are in the record):
   printer short of memory drops as a white page. The specification sheet carried 58 page-sized soft-masked images
   per page, so `specs/print_qcsp_imb.py` prints each sheet in two passes over one layout — an opaque 300 dpi
   background under its vector text — and refuses a sheet with transparency left (`transparency()`). The iCoA
-  carries none. The CoQ carries its edge fades as about 40 small soft masks per page; the same treatment applies to
-  it if a CoQ prints white.
+  carries none. The CoQ and the iCoA carry their fades as soft masks and groups (about eight of each per page); on 09.10.2026 every
+  second page of a merged set printed blank, so every merged certificate PDF is made print-safe on the PDF itself by
+  `tracker/print_safe_pdf.py` (opaque 300 dpi background under the page's own vector text; refused if the text or the
+  look changes). Run it on any certificate PDF before it goes out to be printed.
 - **Signatures: none, signed in person** (Head of QC, 07.10.2026: *"remove the signatures … we will sign them in
   person now"*). Every CoQ, iCoA and specification not yet issued goes out with empty signature lines.
   `build_t3_bundle.unsigned` strips the analyst's (Christina Cekic) and the QC Manager's hands from the iCoA

@@ -11,8 +11,10 @@ iCOAs and COQs"* — the same three files for the lots outside the tranches (`DE
 
 The pages are the bundles' own (`…/{CoQ,iCoA}/<series>/PDF`), unchanged; nothing is rebuilt. Each
 CoQ is paired with the iCoA the register gives it (`icoa_code`) and refused if that PDF is missing, if a page
-does not print its own code, or if a CoQ does not cite its iCoA. Order: CoQ number.
+does not print its own code, or if a CoQ does not cite its iCoA. Order: CoQ number. Each file is made print-safe
+(`print_safe_pdf.py`: one opaque background under vector text, no transparency).
 """
+import importlib.util
 import json
 import os
 import re
@@ -41,6 +43,9 @@ def one(kind, code):
 
 def main():
     import pymupdf
+    spec = importlib.util.spec_from_file_location('S', os.path.join(HERE, 'print_safe_pdf.py'))
+    S = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(S)
     reg = {c['regcode'][:13]: c for c in json.load(open(os.path.join(GAP, 'coq_artifact_data.json'), encoding='utf-8'))['coqs']}
     coqs = sorted(re.match(r'CoQ-PP_26-\d{3}', f).group(0) for se in SERIES
                   for f in os.listdir(os.path.join(SRC, 'CoQ', se, 'PDF')) if f.endswith('.pdf'))
@@ -76,8 +81,9 @@ def main():
         book.set_toc(toc)
         book.set_metadata({'title': 'Purely Plant — %s: %s' % (TITLE, title), 'producer': 'Purely Plant Quality Desk'})
         book.save(os.path.join(OUT, name), garbage=4, deflate=True)
-        print('%-52s %3d pages' % (name, book.page_count))
         book.close()
+        # print-safe (Head of QC, 09.10.2026: every second page printed blank): no transparency left
+        print('%-40s %s' % (name, S.flatten(os.path.join(OUT, name))), flush=True)
 
     save('%s_CoQ_all_%d_%s.pdf' % (PREFIX, len(pairs), STAMP), 'certificates of quality',
          [(c, cp) for c, cp, _, _ in pairs])
