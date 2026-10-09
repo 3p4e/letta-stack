@@ -122,6 +122,18 @@ def fixed(tbl, weights=None, min_cm=0.9, cap=34, mode=None, header_repeat=True):
                     widths=[base[j]+slack*hdr_cm[j]/hw for j in range(ncol)]
             else:
                 widths=[w/ideal_sum*PAGE_W for w in ideal]                    # else content-proportional
+        if not forced:                                # never break a header WORD mid-word: lift a column
+            for _ in range(6):                        # to its longest header word, taking the width from
+                short=[j for j in range(ncol) if widths[j]<word_cm[j]-1e-6]   # columns with room to spare
+                if not short: break
+                need=sum(word_cm[j]-widths[j] for j in short)
+                floor=[max(word_cm[j],min_cm,min(data_cm[j],2.5)) for j in range(ncol)]
+                spare={j:widths[j]-floor[j] for j in range(ncol) if j not in short and widths[j]>floor[j]}
+                tot=sum(spare.values())
+                if tot<=1e-6: break
+                take=min(need,tot)
+                for j in short: widths[j]+= (word_cm[j]-widths[j])*take/need
+                for j,v in spare.items(): widths[j]-= v*take/tot
         for _ in range(6):                            # enforce a minimum, redistribute the rest
             below=[i for i,w in enumerate(widths) if w<min_cm-1e-6]
             if not below: break
@@ -162,19 +174,34 @@ def gap(d,pt=6):
     return p
 
 # ---- house type scale ----
+def keep_table(tbl, whole_max=8, head_rows=3):
+    """Page-break discipline for a table: no row ever splits; a table of up to `whole_max` rows
+       moves to the next page as a whole; a longer one keeps its header with its first rows.
+       Works in Word and LibreOffice (both chain keep-with-next through table rows)."""
+    rows=tbl.rows; n=len(rows)
+    chain = n-1 if n<=whole_max else min(head_rows, n-1)
+    for i,r in enumerate(rows):
+        trPr=r._tr.get_or_add_trPr()
+        if trPr.find(qn('w:cantSplit')) is None: trPr.append(OxmlElement('w:cantSplit'))
+        if i<chain:
+            for c in r.cells:
+                for par in c.paragraphs: par.paragraph_format.keep_with_next=True
+    return tbl
+
 def chapter(d,num,mk,en):                       # MK20 | EN16 ; space BEFORE and AFTER ; outline lvl 0 -> TOC
     p=d.add_paragraph(); sp(p,12,7)
     rin(p,f"{num}.  {mk}",20,NAVY,bold=True); rin(p,"  |  ",18,GREY); rin(p,en,16,GREY)
-    _outline(p,0); return p
+    _outline(p,0); p.paragraph_format.keep_with_next=True; return p
 def subsec(d,num,mk,en):                         # MK16 | EN12 ; space BEFORE and AFTER
     p=d.add_paragraph(); sp(p,8,4)
     rin(p,f"{num}  {mk}",16,NAVY,bold=True)
     if en: rin(p,"  |  ",14,GREY); rin(p,en,12,GREY)
-    _outline(p,1); return p
+    _outline(p,1); p.paragraph_format.keep_with_next=True; return p
 def minilabel(d,mk,en):                          # unnumbered bold lead-in above a table
     p=d.add_paragraph(); sp(p,7,3)
     rin(p,mk,13,NAVY,bold=True)
     if en: rin(p,"  |  ",11,GREY); rin(p,en,11,GREY,ital=True)
+    p.paragraph_format.keep_with_next=True
     return p
 def note(d,mk,en):                               # small note MK10 | EN8 ; justified
     p=d.add_paragraph(); sp(p,4.5,4.5); p.alignment=WD_ALIGN_PARAGRAPH.JUSTIFY
@@ -342,8 +369,27 @@ try:
         _OMML_XSLT=_etree.XSLT(_etree.parse(_XSLP)); _EQN_OK=True
 except Exception:
     _EQN_OK=False
+# No Office XSL (Linux/CI): pandoc writes the same native OMML from LaTeX.
+import shutil as _shutil
+_PANDOC=_shutil.which("pandoc")
+if not _EQN_OK and _PANDOC:
+    try:
+        from lxml import etree as _etree; _EQN_OK=True
+    except Exception: pass
+_OMML_CACHE={}
+def _pandoc_omml(latex):
+    if latex in _OMML_CACHE: return _etree.fromstring(_OMML_CACHE[latex])
+    import subprocess, tempfile, zipfile
+    with tempfile.TemporaryDirectory() as t:
+        out=_os.path.join(t,"m.docx")
+        subprocess.run([_PANDOC,"-f","latex","-o",out],input=("$"+latex+"$").encode("utf-8"),check=True,capture_output=True)
+        xml=zipfile.ZipFile(out).read("word/document.xml")
+    m=_etree.fromstring(xml).find(".//{http://schemas.openxmlformats.org/officeDocument/2006/math}oMath")
+    if m is None: raise ValueError("pandoc produced no math")
+    _OMML_CACHE[latex]=_etree.tostring(m); return _etree.fromstring(_OMML_CACHE[latex])
 
 def _to_omml(latex):
+    if _OMML_XSLT is None: return _pandoc_omml(latex)
     mml=_l2m.convert(latex)
     dom=_etree.fromstring(mml.encode("utf-8") if isinstance(mml,str) else mml)
     return _OMML_XSLT(dom).getroot()
@@ -439,6 +485,7 @@ def step_signoff(d, mk=None, en=None, sz=9):
         p=d.add_paragraph(); sp(p,3,1)
         rin(p,(mk or "Потпис за овој запис"),9,NAVY,bold=True,ital=True)
         if en: rin(p,"  |  ",8,GREY); rin(p,en,8,GREY,ital=True)
+        p.paragraph_format.keep_with_next=True
     h=["Улога | Role","Име | Name","Датум | Date","Потпис | Signature"]
     roles=["Извршил и внел сурови податоци (оператор/аналитичар) | Executed & entered raw data (Operator/Analyst)",
            "Проверил и одобрил овој запис (Раководител на КК) | Checked & approved this record (QC Department Manager)"]
@@ -447,7 +494,7 @@ def step_signoff(d, mk=None, en=None, sz=9):
     for i,role in enumerate(roles,start=1):
         cellfmt(t.cell(i,0),role,None,sz,BLACK,fill=LBL)
         for j in (1,2,3): cellfmt(t.cell(i,j),"",None,sz,BLACK)
-    fixed(t,[9.46,3.5,2.0,3.5]); borders(t); return t
+    fixed(t,[9.46,3.5,2.0,3.5]); borders(t); keep_table(t); return t
 
 def entry_table(d, headers, rows, widths, label_mk=None, label_en=None, sz=9, signoff=False, signoff_mk=None, signoff_en=None):
     """Blank data-ENTRY table. rows = int (all blank) or list of first-column labels.
@@ -459,7 +506,7 @@ def entry_table(d, headers, rows, widths, label_mk=None, label_en=None, sz=9, si
     for i,rl in enumerate(rowlabels,start=1):
         cellfmt(t.cell(i,0),(rl if rl else ""),None,sz,(NAVY if rl else BLACK),bold=bool(rl),fill=(LBL if rl else None))
         for j in range(1,len(headers)): cellfmt(t.cell(i,j),"",None,sz,BLACK)
-    fixed(t,widths); borders(t)
+    fixed(t,widths); borders(t); keep_table(t)
     if signoff: step_signoff(d, signoff_mk, signoff_en)
     return t
 
@@ -472,7 +519,7 @@ def execution_signoff(d, mk_exec="Извршил (КК) | Executed (QC)", en_exe
     for i,(a,n) in enumerate(rws,start=1):
         cellfmt(t.cell(i,0),a,None,10,BLACK); cellfmt(t.cell(i,1),n,None,10,BLACK)
         cellfmt(t.cell(i,2),"",None,10,BLACK); cellfmt(t.cell(i,3),"",None,10,BLACK)
-    fixed(t,[5.4,4.66,3.4,5.0]); borders(t); return t
+    fixed(t,[5.4,4.66,3.4,5.0]); borders(t); keep_table(t); return t
 
 def figure(d, png_path, mk=None, en=None, width_cm=15.5):
     """Embed a chart PNG (centered) with a bilingual MK | EN caption. Pair with pp_charts.py."""
@@ -548,8 +595,8 @@ def cover_page(d, title_mk, title_en, info_rows, kind_mk="", kind_en="", study_m
     _c=_tb.cell(0,0); cellfmt(_c,"%s | %s"%_lbl,None,11,(GREEN if _appr else RED),bold=True,fill=(GREENF if _appr else REDF))
     _p2=_c.add_paragraph(); _p2.alignment=WD_ALIGN_PARAGRAPH.CENTER
     rin(_p2,"Верзија | Version: %s     ·     Датум на важност | Effective date: %s"%(_hv,_eff),10,BLACK,bold=True)
-    fixed(_tb); borders(_tb)
-    d.add_paragraph()
+    fixed(_tb,[min(15.0,PAGE_W)]); borders(_tb)   # explicit width: content-sizing caps a line at
+    d.add_paragraph()                              # 34 chars and squeezed the band to ~6 cm
     minilabel(d,"Информации за документот | Document information",None)
     _info_table(d, info_rows)
     minilabel(d,"Одобрување | Approval",None)
