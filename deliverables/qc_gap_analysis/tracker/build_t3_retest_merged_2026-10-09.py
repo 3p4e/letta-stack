@@ -2,13 +2,15 @@
 # -*- coding: utf-8 -*-
 """Tranche 3 retest certificates, merged: the CoQs, the iCoAs, and each CoQ followed by its iCoA — three PDFs.
 
-    python3 tracker/build_t3_retest_merged_2026-10-09.py
+    python3 tracker/build_t3_retest_merged_2026-10-09.py               # Tranche 3 retest
+    python3 tracker/build_t3_retest_merged_2026-10-09.py nontranche    # every lot outside the tranches, initial and retest
 
 Head of QC, 09.10.2026: *"Give me only the T3 retest iCOA and COQ as pdf merged. One file pdf with all t3 retest coqs,
-one pdf with t3 retest iCOA and one pdf with COQ and icoa one after another."*
+one pdf with t3 retest iCOA and one pdf with COQ and icoa one after another."*; then *"Give me also all out of tranche
+iCOAs and COQs"* — the same three files for the lots outside the tranches (`DELIVER_2026-09-27_NoTranche`).
 
-The pages are the bundle's own (`DELIVER_2026-09-26_T3/{CoQ,iCoA}/Retest/PDF`), unchanged; nothing is rebuilt. Each
-retest CoQ is paired with the iCoA the register gives it (`icoa_code`) and refused if that PDF is missing, if a page
+The pages are the bundles' own (`…/{CoQ,iCoA}/<series>/PDF`), unchanged; nothing is rebuilt. Each
+CoQ is paired with the iCoA the register gives it (`icoa_code`) and refused if that PDF is missing, if a page
 does not print its own code, or if a CoQ does not cite its iCoA. Order: CoQ number.
 """
 import json
@@ -18,29 +20,35 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 GAP = os.path.dirname(HERE)
-SRC = os.path.join(GAP, 'DELIVER_2026-09-26_T3')
-OUT = os.path.join(GAP, 'DELIVER_2026-10-09_T3_Retest_Merged')
 STAMP = '2026-10-09'
+# set: (source bundle, series, output folder, file prefix, title)
+SETS = {'t3-retest': ('DELIVER_2026-09-26_T3', ('Retest',), 'DELIVER_2026-10-09_T3_Retest_Merged', 'T3_Retest',
+                      'Tranche 3 retest'),
+        'nontranche': ('DELIVER_2026-09-27_NoTranche', ('Initial', 'Retest'), 'DELIVER_2026-10-09_NoTranche_Merged',
+                       'NoTranche', 'lots outside the tranches, initial and retest')}
+KEY = sys.argv[1] if len(sys.argv) > 1 else 't3-retest'
+SRC, SERIES, OUT, PREFIX, TITLE = SETS[KEY]
+SRC, OUT = os.path.join(GAP, SRC), os.path.join(GAP, OUT)
 
 
 def one(kind, code):
-    d = os.path.join(SRC, kind, 'Retest', 'PDF')
-    got = [f for f in os.listdir(d) if f.startswith(code + '_')]
+    got = [os.path.join(SRC, kind, se, 'PDF', f) for se in SERIES for f in os.listdir(os.path.join(SRC, kind, se, 'PDF'))
+           if f.startswith(code + '_')]
     if len(got) != 1:
-        raise SystemExit('%d %s retest PDFs for %s' % (len(got), kind, code))
-    return os.path.join(d, got[0])
+        raise SystemExit('%d %s PDFs for %s' % (len(got), kind, code))
+    return got[0]
 
 
 def main():
     import pymupdf
     reg = {c['regcode'][:13]: c for c in json.load(open(os.path.join(GAP, 'coq_artifact_data.json'), encoding='utf-8'))['coqs']}
-    coqs = sorted(re.match(r'CoQ-PP_26-\d{3}', f).group(0) for f in os.listdir(os.path.join(SRC, 'CoQ', 'Retest', 'PDF'))
-                  if f.endswith('.pdf'))
+    coqs = sorted(re.match(r'CoQ-PP_26-\d{3}', f).group(0) for se in SERIES
+                  for f in os.listdir(os.path.join(SRC, 'CoQ', se, 'PDF')) if f.endswith('.pdf'))
     pairs = []
     for code in coqs:
         c = reg[code]
-        if 'retest' not in c['t'] or c.get('withdrawn'):
-            raise SystemExit('%s is not a live retest' % code)
+        if c.get('withdrawn') or (SERIES == ('Retest',) and 'retest' not in c['t']):
+            raise SystemExit('%s is not a live %s certificate' % (code, TITLE))
         ic = c.get('icoa_code')
         cp = one('CoQ', code)
         ip = one('iCoA', ic) if ic else None
@@ -66,21 +74,21 @@ def main():
                 toc.append([1, label, book.page_count + 1])
                 book.insert_pdf(d)
         book.set_toc(toc)
-        book.set_metadata({'title': 'Purely Plant — Tranche 3 retest: %s' % title, 'producer': 'Purely Plant Quality Desk'})
+        book.set_metadata({'title': 'Purely Plant — %s: %s' % (TITLE, title), 'producer': 'Purely Plant Quality Desk'})
         book.save(os.path.join(OUT, name), garbage=4, deflate=True)
         print('%-52s %3d pages' % (name, book.page_count))
         book.close()
 
-    save('T3_Retest_CoQ_all_%d_%s.pdf' % (len(pairs), STAMP), 'certificates of quality',
+    save('%s_CoQ_all_%d_%s.pdf' % (PREFIX, len(pairs), STAMP), 'certificates of quality',
          [(c, cp) for c, cp, _, _ in pairs])
-    save('T3_Retest_iCoA_all_%d_%s.pdf' % (len(icoas), STAMP), 'internal certificates of analysis',
+    save('%s_iCoA_all_%d_%s.pdf' % (PREFIX, len(icoas), STAMP), 'internal certificates of analysis',
          [(i, ip) for _, _, i, ip in icoas])
     both = []
     for c, cp, i, ip in pairs:
         both.append((c, cp))
         if ip:
             both.append(('%s (%s)' % (i, c), ip))
-    save('T3_Retest_CoQ+iCoA_%s.pdf' % STAMP, 'each CoQ followed by its iCoA', both)
+    save('%s_CoQ+iCoA_%s.pdf' % (PREFIX, STAMP), 'each CoQ followed by its iCoA', both)
     none = [c for c, _, i, _ in pairs if not i]
     if none:
         print('no iCoA (an outside laboratory tested what it would hold): %s' % ', '.join(none))
