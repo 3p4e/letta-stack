@@ -171,7 +171,9 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
      corpus (ППК26116 is only there). **An internal certificate covers exactly what its own CoQ
      credits to it**, as in the approved scans: 1, 2, 7, plus 8 only where loss on drying was done
      in-house (`-026`, like HPA1024/OPM1024); where CNP tested 1, 2, 7 and 8 there is **no** internal
-     certificate (`-075`, `-079`, `-080`, like the scans' `-092`, `-123`). Loss on drying in Tranche 3
+     certificate (`-075`, `-079`, `-080`, like the scans' `-092`, `-123`), and none for their retests either: `-144`,
+     `-143`, `-161` carry 1, 2, 7, 8 with the initial's CNP certificate (09.10.2026,
+     `tracker/apply_cnp_retest_no_icoa_2026-10-09.py`). Loss on drying in Tranche 3
      is CNP's or Farmahem's (`-ГС`), in-house only for `-026`, and untested for `-021`, `-050`, `-068`,
      `-073`. `T3_CoQ_Latest_*.pdf` is each lot's current certificate: the retest, or the initial where
      there is no reissue. *"Where needed for the parameters that are not covered by other outsource
@@ -291,7 +293,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 221 corrections, 07.09.2026–08.10.2026, each quoted — is
+The full record — 222 corrections, 07.09.2026–08.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:
@@ -307,7 +309,7 @@ ruling governs (§5). The most repeated, in order:
 4. **Potency grades come only from the Head of QC** — the KVM4 potency builder (§5 ruling 7), never an
    older table, never "a missing specification" (11 times).
 5. **iCoAs.** One per CoQ, and a retest CoQ cites only its own retest iCoA — except where an outside
-   laboratory (CNP) tested everything an iCoA would hold: then there is none (`-075`, `-079`, `-080`;
+   laboratory (CNP) tested everything an iCoA would hold: then there is none, on the initial and its retest (`-075`/`-144`, `-079`/`-143`, `-080`/`-161`;
    26.09.2026, §5 ruling 6) (10 times).
 6. **Be short and do not waste tokens**: no re-OCR, no page images in Word, no long reports (10 times).
 7. **The deliverable asked for comes first** — the merged PDF when a merged PDF is asked for (9 times).

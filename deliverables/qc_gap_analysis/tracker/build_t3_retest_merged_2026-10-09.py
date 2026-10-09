@@ -55,6 +55,8 @@ def main():
         if c.get('withdrawn') or (SERIES == ('Retest',) and 'retest' not in c['t']):
             raise SystemExit('%s is not a live %s certificate' % (code, TITLE))
         ic = c.get('icoa_code')
+        if not any(r.get('doc') == ic for r in c['rows']):
+            ic = None                     # nothing credited to it: no iCoA (CNP tested 1, 2, 7, 8)
         cp = one('CoQ', code)
         ip = one('iCoA', ic) if ic else None
         flat = lambda p: ''.join(''.join(pg.get_text() for pg in pymupdf.open(p)).split())
