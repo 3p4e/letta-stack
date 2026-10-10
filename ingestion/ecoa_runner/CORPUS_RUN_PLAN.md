@@ -263,3 +263,10 @@ Direct bake-off on the pilot pages (NVIDIA account, 10.10.2026):
 Kimi K3 is the parser of eCOA_PIPE and eCOA_DB_agent and the tenant image2text default. Through the
 pipeline each certificate is one chunk, ~5 min, Cyrillic intact, each result in its row beside its limit.
 The keyword extractor is told to keep values out of keywords (a decimal comma split "5,1 x 10^4" into two).
+
+### Run 3 moves to KVM4 (10.10.2026)
+
+A cloud session's container is reclaimed when idle, which stopped the background runner after 7 of 480.
+The run is unattended on KVM4 instead: `run_ecoa_ingest_kvm4.sh` (venv + `fetch_ecoa_corpus.py`, then
+two one-at-a-time passes; log `/opt/ecoa_ingest/run.log`). It refuses to start while another ingest runs —
+two runners against one dataset could upload the same certificate twice.
