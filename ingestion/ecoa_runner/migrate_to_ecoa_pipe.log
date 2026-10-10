@@ -1,3 +1,110 @@
 07:24:36 eCOA_INGEST (destination) already holds: 0 document(s), 0 unparsed by ecoa_identity
 07:24:53 eCOA_INGEST (destination) already holds: 0 document(s), 0 unparsed by ecoa_identity
 07:24:54 eCOA_INGEST (destination) already holds: 0 document(s), 0 unparsed by ecoa_identity
+16:17:22 eCOA_INGEST (destination) already holds: 1 document(s), 0 unparsed by ecoa_identity
+16:17:22 candidates: 1  ->  0 already in eCOA_INGEST (skip)  |  1 to ingest  |  0 unparsed
+16:17:25 eCOA_DB (to be retired): 283 document(s); 282 of them are NOT in this corpus and would block deletion
+16:17:25   NOT COVERED by the renamed corpus: P060442_536-1067-26, 31.08.2026_IJZ-MB.pdf
+16:17:25   NOT COVERED by the renamed corpus: P060432_537-1068-26, 31.08.2026_IJZ-MB.pdf
+16:17:25   NOT COVERED by the renamed corpus: P060392_538-1069-26, 31.08.2026_IJZ-MB.pdf
+16:17:25   NOT COVERED by the renamed corpus: P060342_539-1070-26, 31.08.2026_IJZ-MB.pdf
+16:17:25   NOT COVERED by the renamed corpus: P060312_540-1071-26, 31.08.2026_IJZ-MB.pdf
+16:17:25   NOT COVERED by the renamed corpus: P060302_541-1072-26, 31.08.2026_IJZ-MB.pdf
+16:17:25   NOT COVERED by the renamed corpus: P060292_542-1073-26, 31.08.2026_IJZ-MB.pdf
+16:17:25   NOT COVERED by the renamed corpus: P060272_543-1074-26, 31.08.2026_IJZ-MB.pdf
+16:17:25   NOT COVERED by the renamed corpus: P060262_544-1075-26, 31.08.2026_IJZ-MB.pdf
+16:17:25   NOT COVERED by the renamed corpus: P060252_545-1076-26, 31.08.2026_IJZ-MB.pdf
+16:17:25   NOT COVERED by the renamed corpus: P060222_546-1077-26, 31.08.2026_IJZ-MB.pdf
+16:17:25   NOT COVERED by the renamed corpus: P060202_547-1078-26, 31.08.2026_IJZ-MB.pdf
+16:17:25   NOT COVERED by the renamed corpus: P060162_549-1080-26, 31.08.2026_IJZ-MB.pdf
+16:17:25   NOT COVERED by the renamed corpus: P060142_550-1081-26, 01.09.2026_IJZ-MB.pdf
+16:17:25   NOT COVERED by the renamed corpus: P060102_551-1082-26, 01.09.2026_IJZ-MB.pdf
+16:17:25   NOT COVERED by the renamed corpus: P050292_553-1084-26, 01.09.2026_IJZ-MB.pdf
+16:17:25   NOT COVERED by the renamed corpus: P050272_554-1085-26, 01.09.2026_IJZ-MB.pdf
+16:17:25   NOT COVERED by the renamed corpus: P050262_555-1086-26, 01.09.2026_IJZ-MB.pdf
+16:17:25   NOT COVERED by the renamed corpus: P050252_556-1087-26, 01.09.2026_IJZ-MB.pdf
+16:17:25   NOT COVERED by the renamed corpus: P050202_557-1088-26, 01.09.2026_IJZ-MB.pdf
+16:17:25   ... and 262 more
+16:17:27 uploaded P050092 (GG1024-01)_IJZ-MB_320-0587-25_14.04.2025.pdf -> 1580767ac4c611f1ada0ebb419a2b34a
+16:17:28 ingest queued 1 doc(s) -> {'code': 0, 'data': True, 'message': 'success'}
+16:22:26 GATE-OK  P050092 (GG1024-01)_IJZ-MB_320-0587-25_14.04.202 ok (1 chunk(s)) | 00:22:20 Page(1~100000001): Indexing done (0.94s). Task done (290.19s)
+16:22:52 eCOA_INGEST (destination) already holds: 2 document(s), 0 unparsed by ecoa_identity
+16:22:52 candidates: 1  ->  1 already in eCOA_INGEST (skip)  |  0 to ingest  |  0 unparsed
+16:22:52   SKIP  P050212 (CJ062501-2)_IJZ-MB_1032-1851-25_17.10.2025.pdf  (already in eCOA_INGEST as: P050212 (CJ062501-2)_IJZ-MB_1032-1851-25_17.10.2025.pdf)
+16:22:55 eCOA_DB (to be retired): 283 document(s); 282 of them are NOT in this corpus and would block deletion
+16:22:55   NOT COVERED by the renamed corpus: P060442_536-1067-26, 31.08.2026_IJZ-MB.pdf
+16:22:55   NOT COVERED by the renamed corpus: P060432_537-1068-26, 31.08.2026_IJZ-MB.pdf
+16:22:55   NOT COVERED by the renamed corpus: P060392_538-1069-26, 31.08.2026_IJZ-MB.pdf
+16:22:55   NOT COVERED by the renamed corpus: P060342_539-1070-26, 31.08.2026_IJZ-MB.pdf
+16:22:55   NOT COVERED by the renamed corpus: P060312_540-1071-26, 31.08.2026_IJZ-MB.pdf
+16:22:55   NOT COVERED by the renamed corpus: P060302_541-1072-26, 31.08.2026_IJZ-MB.pdf
+16:22:55   NOT COVERED by the renamed corpus: P060292_542-1073-26, 31.08.2026_IJZ-MB.pdf
+16:22:55   NOT COVERED by the renamed corpus: P060272_543-1074-26, 31.08.2026_IJZ-MB.pdf
+16:22:55   NOT COVERED by the renamed corpus: P060262_544-1075-26, 31.08.2026_IJZ-MB.pdf
+16:22:55   NOT COVERED by the renamed corpus: P060252_545-1076-26, 31.08.2026_IJZ-MB.pdf
+16:22:55   NOT COVERED by the renamed corpus: P060222_546-1077-26, 31.08.2026_IJZ-MB.pdf
+16:22:55   NOT COVERED by the renamed corpus: P060202_547-1078-26, 31.08.2026_IJZ-MB.pdf
+16:22:55   NOT COVERED by the renamed corpus: P060162_549-1080-26, 31.08.2026_IJZ-MB.pdf
+16:22:55   NOT COVERED by the renamed corpus: P060142_550-1081-26, 01.09.2026_IJZ-MB.pdf
+16:22:55   NOT COVERED by the renamed corpus: P060102_551-1082-26, 01.09.2026_IJZ-MB.pdf
+16:22:55   NOT COVERED by the renamed corpus: P050292_553-1084-26, 01.09.2026_IJZ-MB.pdf
+16:22:55   NOT COVERED by the renamed corpus: P050272_554-1085-26, 01.09.2026_IJZ-MB.pdf
+16:22:55   NOT COVERED by the renamed corpus: P050262_555-1086-26, 01.09.2026_IJZ-MB.pdf
+16:22:55   NOT COVERED by the renamed corpus: P050252_556-1087-26, 01.09.2026_IJZ-MB.pdf
+16:22:55   NOT COVERED by the renamed corpus: P050202_557-1088-26, 01.09.2026_IJZ-MB.pdf
+16:22:55   ... and 262 more
+16:22:55 nothing new to ingest
+16:22:56 eCOA_INGEST (destination) already holds: 2 document(s), 0 unparsed by ecoa_identity
+16:22:56 candidates: 1  ->  0 already in eCOA_INGEST (skip)  |  1 to ingest  |  0 unparsed
+16:22:59 eCOA_DB (to be retired): 283 document(s); 282 of them are NOT in this corpus and would block deletion
+16:22:59   NOT COVERED by the renamed corpus: P060442_536-1067-26, 31.08.2026_IJZ-MB.pdf
+16:22:59   NOT COVERED by the renamed corpus: P060432_537-1068-26, 31.08.2026_IJZ-MB.pdf
+16:22:59   NOT COVERED by the renamed corpus: P060392_538-1069-26, 31.08.2026_IJZ-MB.pdf
+16:22:59   NOT COVERED by the renamed corpus: P060342_539-1070-26, 31.08.2026_IJZ-MB.pdf
+16:22:59   NOT COVERED by the renamed corpus: P060312_540-1071-26, 31.08.2026_IJZ-MB.pdf
+16:22:59   NOT COVERED by the renamed corpus: P060302_541-1072-26, 31.08.2026_IJZ-MB.pdf
+16:22:59   NOT COVERED by the renamed corpus: P060292_542-1073-26, 31.08.2026_IJZ-MB.pdf
+16:22:59   NOT COVERED by the renamed corpus: P060272_543-1074-26, 31.08.2026_IJZ-MB.pdf
+16:22:59   NOT COVERED by the renamed corpus: P060262_544-1075-26, 31.08.2026_IJZ-MB.pdf
+16:22:59   NOT COVERED by the renamed corpus: P060252_545-1076-26, 31.08.2026_IJZ-MB.pdf
+16:22:59   NOT COVERED by the renamed corpus: P060222_546-1077-26, 31.08.2026_IJZ-MB.pdf
+16:22:59   NOT COVERED by the renamed corpus: P060202_547-1078-26, 31.08.2026_IJZ-MB.pdf
+16:22:59   NOT COVERED by the renamed corpus: P060162_549-1080-26, 31.08.2026_IJZ-MB.pdf
+16:22:59   NOT COVERED by the renamed corpus: P060142_550-1081-26, 01.09.2026_IJZ-MB.pdf
+16:22:59   NOT COVERED by the renamed corpus: P060102_551-1082-26, 01.09.2026_IJZ-MB.pdf
+16:22:59   NOT COVERED by the renamed corpus: P050292_553-1084-26, 01.09.2026_IJZ-MB.pdf
+16:22:59   NOT COVERED by the renamed corpus: P050272_554-1085-26, 01.09.2026_IJZ-MB.pdf
+16:22:59   NOT COVERED by the renamed corpus: P050262_555-1086-26, 01.09.2026_IJZ-MB.pdf
+16:22:59   NOT COVERED by the renamed corpus: P050252_556-1087-26, 01.09.2026_IJZ-MB.pdf
+16:22:59   NOT COVERED by the renamed corpus: P050202_557-1088-26, 01.09.2026_IJZ-MB.pdf
+16:22:59   ... and 262 more
+16:23:00 uploaded P050152 (GP052501)_IJZ-MB_946-1684-25_17.09.2025.pdf -> dc6eed5cc4c611f1ada0ebb419a2b34a
+16:23:01 ingest queued 1 doc(s) -> {'code': 0, 'data': True, 'message': 'success'}
+16:28:19 GATE-OK  P050152 (GP052501)_IJZ-MB_946-1684-25_17.09.2025 ok (1 chunk(s)) | 00:28:18 Page(1~100000001): Indexing done (0.16s). Task done (315.75s)
+16:28:20 eCOA_INGEST (destination) already holds: 3 document(s), 0 unparsed by ecoa_identity
+16:28:20 candidates: 1  ->  0 already in eCOA_INGEST (skip)  |  1 to ingest  |  0 unparsed
+16:28:24 eCOA_DB (to be retired): 283 document(s); 283 of them are NOT in this corpus and would block deletion
+16:28:24   NOT COVERED by the renamed corpus: P060442_536-1067-26, 31.08.2026_IJZ-MB.pdf
+16:28:24   NOT COVERED by the renamed corpus: P060432_537-1068-26, 31.08.2026_IJZ-MB.pdf
+16:28:24   NOT COVERED by the renamed corpus: P060392_538-1069-26, 31.08.2026_IJZ-MB.pdf
+16:28:24   NOT COVERED by the renamed corpus: P060342_539-1070-26, 31.08.2026_IJZ-MB.pdf
+16:28:24   NOT COVERED by the renamed corpus: P060312_540-1071-26, 31.08.2026_IJZ-MB.pdf
+16:28:24   NOT COVERED by the renamed corpus: P060302_541-1072-26, 31.08.2026_IJZ-MB.pdf
+16:28:24   NOT COVERED by the renamed corpus: P060292_542-1073-26, 31.08.2026_IJZ-MB.pdf
+16:28:24   NOT COVERED by the renamed corpus: P060272_543-1074-26, 31.08.2026_IJZ-MB.pdf
+16:28:24   NOT COVERED by the renamed corpus: P060262_544-1075-26, 31.08.2026_IJZ-MB.pdf
+16:28:24   NOT COVERED by the renamed corpus: P060252_545-1076-26, 31.08.2026_IJZ-MB.pdf
+16:28:24   NOT COVERED by the renamed corpus: P060222_546-1077-26, 31.08.2026_IJZ-MB.pdf
+16:28:24   NOT COVERED by the renamed corpus: P060202_547-1078-26, 31.08.2026_IJZ-MB.pdf
+16:28:24   NOT COVERED by the renamed corpus: P060162_549-1080-26, 31.08.2026_IJZ-MB.pdf
+16:28:24   NOT COVERED by the renamed corpus: P060142_550-1081-26, 01.09.2026_IJZ-MB.pdf
+16:28:24   NOT COVERED by the renamed corpus: P060102_551-1082-26, 01.09.2026_IJZ-MB.pdf
+16:28:24   NOT COVERED by the renamed corpus: P050292_553-1084-26, 01.09.2026_IJZ-MB.pdf
+16:28:24   NOT COVERED by the renamed corpus: P050272_554-1085-26, 01.09.2026_IJZ-MB.pdf
+16:28:24   NOT COVERED by the renamed corpus: P050262_555-1086-26, 01.09.2026_IJZ-MB.pdf
+16:28:24   NOT COVERED by the renamed corpus: P050252_556-1087-26, 01.09.2026_IJZ-MB.pdf
+16:28:24   NOT COVERED by the renamed corpus: P050202_557-1088-26, 01.09.2026_IJZ-MB.pdf
+16:28:24   ... and 263 more
+16:28:25 uploaded P050022 (GP0824-02)_CNP_PPK25139_22.05.2025.pdf -> 9dbc27b8c4c711f1ada0ebb419a2b34a
+16:28:25 ingest queued 1 doc(s) -> {'code': 0, 'data': True, 'message': 'success'}
+16:34:06 GATE-OK  P050022 (GP0824-02)_CNP_PPK25139_22.05.2025.pdf  ok (1 chunk(s)) | 00:33:44 Page(1~100000001): Indexing done (0.17s). Task done (317.60s)

@@ -215,3 +215,26 @@ lot GG1024 has no cannabinoid assay of any kind on file: no CNP certificate, no 
 retest, only the in-house Report of Analysis of 23.04.2025 (13.34 %), which is not an eCoA.
 Of the six R&D lots, four were retested (BG1024, BSS1024, HPA1024, OPM1024); GG1024 and
 CJ1024 were not.
+
+### Run 3, unblocked (10.10.2026): NVIDIA via the OpenAI-API-Compatible provider
+
+All set through the RAGflow API: `PUT /api/v1/providers {"provider_name":"OpenAI-API-Compatible"}`, then
+`POST /api/v1/providers/OpenAI-API-Compatible/instances` — instance `NVIDIA_OAI`, base URL
+`https://integrate.api.nvidia.com/v1`, the `nvapi-` key. Instance creation verifies one chat model within
+`LLM_TIMEOUT_SECONDS` = 10 s: Kimi K3 (reasoning, ~9 s, empty content at low max_tokens) fails it, so the
+instance was verified on `nvidia/nemotron-parse-2.0` (0.4 s) and the vision models added afterwards
+(`POST …/instances/NVIDIA_OAI/models`, `model_type: image2text`).
+
+Direct bake-off on the pilot pages (NVIDIA account, 10.10.2026):
+
+| model | 320/0587/25 TYMC | 1032/1851/25 | 946/1684/25 | ППК25139 THCA / total |
+|---|---|---|---|---|
+| **moonshotai/kimi-k3** | 4,2×10⁴ ✓ | 4,9×10⁴ ✓ | 3,6×10⁴ ✓ | 26.52 / 23.79 ✓ |
+| nvidia/nemotron-3-nano-omni | ✓ | ✓ | (503) | ✓ but "Д9" for "Δ9" |
+| google/gemma-4-31b-it | 4,2×10¹ ✗ | | | |
+| meta/llama-3.2-90b-vision | columns shifted ✗ | | | |
+| kimi-k2.6, gemma-3-12b, mistral-nemo | not enabled for the account (404) | | | |
+
+Kimi K3 is the parser of eCOA_PIPE and eCOA_DB_agent and the tenant image2text default. Through the
+pipeline each certificate is one chunk, ~5 min, Cyrillic intact, each result in its row beside its limit.
+The keyword extractor is told to keep values out of keywords (a decimal comma split "5,1 x 10^4" into two).
