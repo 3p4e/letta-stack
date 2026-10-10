@@ -216,6 +216,31 @@ retest, only the in-house Report of Analysis of 23.04.2025 (13.34 %), which is n
 Of the six R&D lots, four were retested (BG1024, BSS1024, HPA1024, OPM1024); GG1024 and
 CJ1024 were not.
 
+## Run 3 — 10.10.2026: eCOA_PIPE → eCOA_INGEST (prepared, blocked on vision credit)
+
+### What was found
+
+| Found | Done |
+|---|---|
+| eCOA_PIPE pointed at `gpt-5.4-mini@OPEN_AI_SERV` (key 401) and `openai-vlm` / `GEMINI_BN` (gone) | parser → `anthropic/claude-sonnet-5.5@OPENROUTER@OpenRouter`; questions + keywords → `deepseek-v4-flash@DEEPSEEK@DeepSeek` |
+| eCOA_DB_agent had been edited to `nemotron-4-340b` (NVIDIA 404), `phi-3-vision` and the deleted `OPEN_RAUT` instance | same models as eCOA_PIPE; its 2048-token chunk kept (its 283 documents were built with it) |
+| Both extractor `prompts` re-nested again (trap 2) | flattened, verified by GET |
+| OpenRouter instance `OPEN_RAUT` no longer existed | new instance `OPENROUTER` from `OPEN_ROUTER_API_KEY`; `model_info` must use `model_name` with `model_type` as a list |
+| **DeepDOC reads these certificates as Latin gibberish** ("BkyneH6poj raOu HMyBJIM" for "Вкупен број габи и мувли") and drops the exponent ("4,2x104") — measured on 320/0587/25 | DeepDOC is never the PDF parser for eCoAs; only a vision model |
+| A dataset-level `layout_recognize` VLM is silently ignored for these model ids (DeepDOC ran instead) | the VLM belongs in the pipeline Parser |
+| **NVIDIA vision models cannot parse in RAGflow v0.26.4** — dataset parser and pipeline Parser both fail with "Cannot mix str and non-str arguments" (Kimi K2.6, Kimi K3, Nemotron Parse 2.0, Llama 3.2 90B Vision). Chat through the same key works. | NVIDIA stays outside RAGflow: the runner's layered reads (`ECOA_LAYERED_OCR_DESIGN_2026-10-10.md`) call it directly |
+| OpenAI credit exhausted; OpenRouter $0.38 left of $329 (402 on the first pilot page); Moonshot quota exhausted | run blocked until a vision provider is funded |
+
+Prompts: both extractors now carry "Rules learned from this corpus" — homoglyph/separator spellings
+(К/K, ППК/PPK, ГС/GS/LoD, PO→P0), laboratory names in both languages, the closed strain list,
+values and per-row limits copied exactly with `x 10^n`, no numbers from footnotes or specification
+lines, ND ≠ not tested, stability time points named as such, nothing from an unreadable page.
+
+Corpus source: Drive `eCoA_DATABASE` (`1SmOicCRa8KEqoB-YlCojdap161YMQ-Di`), 480 ACTIVE files per
+`_eCoA_DATABASE_INDEX.xlsx` (41 redacted in-house QCCoAs and 1 superseded file excluded, ruling 16).
+File ids come from `https://drive.google.com/embeddedfolderview?id=<folder>` (one fetch, all ids);
+every download is accepted only if its SHA-256 equals the index's. Ingest one document at a time
+(`migrate_to_ecoa_pipe.py run NAME`), never the whole list in one call (no swap on KVM4).
 ### Run 3, unblocked (10.10.2026): NVIDIA via the OpenAI-API-Compatible provider
 
 All set through the RAGflow API: `PUT /api/v1/providers {"provider_name":"OpenAI-API-Compatible"}`, then

@@ -12,9 +12,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 B = os.environ['RAGFLOW_API_SERVER'].rstrip('/'); K = os.environ['RAGFLOW_API_KEY']
 DS = 'dd3ea108a3fd11f1858cf58865604f65'
 AID = 'c83609aea3fd11f1858cf58865604f65'
-VLM = 'gpt-4.1@openai-vlm@OpenAI'            # the corpus-run parser (apply_full.py, proven 30.08)
-QMODEL = 'gpt-4o-mini@openai-vlm@OpenAI'      # gpt-4.1-mini cannot be registered on this tenant (add_llm 102)
-KWMODEL = 'kimi-k2.6@MOONSHOT_API@Moonshot'    # moonshot-v1-128k now answers 'Not found the model / Permission denied' (04.09)
+VLM = 'anthropic/claude-sonnet-5.5@OPENROUTER@OpenRouter'  # 10.10.2026: openai-vlm/OPEN_AI_SERV keys dead, OpenAI credit out; DeepDOC reads Cyrillic as Latin
+QMODEL = 'deepseek-v4-flash@DEEPSEEK@DeepSeek'  # 10.10.2026: openai-vlm dead
+KWMODEL = 'deepseek-v4-flash@DEEPSEEK@DeepSeek'  # 10.10.2026: Moonshot quota exhausted
 PDFDIR = os.environ.get('ECOA_PDF_DIR', HERE + '/incoming_pdfs')
 LOG = HERE + '/ingest_new_documents.log'
 
@@ -50,7 +50,7 @@ def setup():
     changed = []
     setups = C['Parser:eCoAParse']['obj']['params']['setups']
     for kind, s in setups.items():
-        if s.get('parse_method', '').startswith(('openai/', 'gpt')) or 'OpenRouter' in str(s.get('parse_method', '')):
+        if s.get('parse_method', '').startswith(('openai/', 'gpt', 'anthropic/')) or 'OpenRouter' in str(s.get('parse_method', '')):
             if s['parse_method'] != VLM: changed.append('%s.parse_method %s -> %s' % (kind, s['parse_method'], VLM)); s['parse_method'] = VLM
         if isinstance(s.get('vlm'), dict) and s['vlm'].get('llm_id') != VLM:
             changed.append('%s.vlm %s -> %s' % (kind, s['vlm'].get('llm_id'), VLM)); s['vlm']['llm_id'] = VLM

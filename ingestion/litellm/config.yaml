@@ -1,68 +1,356 @@
-# Routing policy:
-#   - "gemini-flash" is one logical model over four free-tier keys; LiteLLM
-#     rotates and cools down a key that returns 429, so quota exhaustion on one
-#     project does not stop the run.
-#   - OpenAI models carry a max_budget; when spend crosses it the proxy refuses
-#     further OpenAI calls instead of silently overdrawing the prepaid balance.
-#   - fallbacks send a failed paid call to the Moonshot subscription (flat rate),
-#     so ingestion degrades to a working model rather than erroring the document.
-#     The two-pass runner's cross-vendor guarantee is NOT affected: it calls
-#     vendors directly and must never see a silent substitution.
+# LiteLLM gateway on KVM4 - the ONE OpenAI-compatible endpoint for RAGFlow and Letta.
+#
+# Ground rules (providers measured by direct calls on 2026-10-10):
+#   IN   OpenAI        OPENAI_API_KEY          gpt-4.1 / gpt-4.1-mini / gpt-5.1 answered 200
+#   IN   OpenRouter    OPEN_ROUTER_API_KEY     anthropic/* answered 200; 31 anthropic ids listed
+#   IN   Anthropic     ANTHROPIC_API_KEY       works ONLY with header anthropic-workspace-id (sent per
+#                                              deployment below via extra_headers - LiteLLM merges
+#                                              litellm_params.extra_headers into the outbound request)
+#   IN   Voyage        VOYAGE_API_KEY          embeddings + rerank-2.5 work
+#   OUT  Moonshot      401 on api.moonshot.ai AND api.moonshot.cn (Kimi-for-Coding keys are a different product)
+#   IN   DeepSeek      DEEPSEEK_API_KEY        new key answered v4-pro / v4-flash in RAGflow instance DEEPSEEK; the
+#                                              container env copy is still the old 401 key - put the NEW one in .env;
+#                                              order 2 in pp-reason/pp-fast/pp-format/pp-enrich (deepseek-v4.1-flash not served)
+#   OUT  CometAPI      never measured
+#   LEG  Gemini direct free-tier keys - 429 on the free tier; used only by the legacy `gemini-flash` name
+#
+# Naming rule: consumers (RAGFlow, 66 Letta agents) address ROLE names - pp-reason, pp-audit, pp-fast, ...
+# A role is a group of deployments sharing one model_name. `order` ranks them (lowest first). The router
+# sends to the lowest healthy order; when that deployment fails, cools down (allowed_fails/cooldown_time)
+# or exhausts its own budget, the router steps to the next order automatically, and only after the whole
+# group is spent does it use litellm_settings.fallbacks (another role). A dead vendor is therefore fixed
+# HERE, in one file, without re-pointing a single agent or dataset.
+#
+# Budgets (three independent walls, all in USD per rolling 30 days):
+#   1. per virtual key   -> created with /key/generate (needs the Postgres in docker-compose.yml):
+#                           pp-ragflow, pp-letta, pp-admin. One runaway consumer cannot drain the others.
+#   2. per provider      -> router_settings.provider_budget_config (counters in memory, reset on restart).
+#   3. per deployment    -> litellm_params.max_budget on the expensive tiers (opus, gpt-5.1); when spent
+#                           the router skips that tier instead of refusing the call.
+#   plus litellm_settings.max_budget = the outer proxy-wide wall (DB-enforced).
+#   All numbers below are PROPOSALS sized from list prices; adjust to the prepaid balances.
+
 model_list:
-  - model_name: gpt-5
-    litellm_params: {model: openai/gpt-5, api_key: os.environ/OPENAI_API_KEY}
+
+  # ───────────────────────────── pp-reason ─────────────────────────────
+  # audit-adjacent reasoning, orchestrators, RAG domain experts, generation (SOP/CoQ/report writing),
+  # and RAGFlow chat assistants. Long context, strong tool calling, English legal/technical prose.
+  - model_name: pp-reason
+    litellm_params: {model: deepseek/deepseek-v4-pro, api_key: os.environ/DEEPSEEK_API_KEY, order: 2}
+    model_info: {id: pp-reason-deepseek-pro}
+  - model_name: pp-reason
+    litellm_params:
+      model: anthropic/claude-sonnet-5-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+      extra_headers: {"anthropic-workspace-id": "wrkspc_01KgrPQHQPyBxATLNrmzQkPn"}
+      order: 1
+    model_info: {id: pp-reason-anthropic-sonnet}
+  - model_name: pp-reason
+    litellm_params:
+      model: openrouter/anthropic/claude-sonnet-5.5
+      api_key: os.environ/OPEN_ROUTER_API_KEY
+      order: 3
+      # OpenRouter also reports usage.cost per call and LiteLLM uses it; these list prices
+      # (openrouter.ai/api/v1/models, 2026-10-10) only back-fill /model/info.
+      input_cost_per_token: 0.000002
+      output_cost_per_token: 0.00001
+    model_info: {id: pp-reason-openrouter-sonnet}
+  - model_name: pp-reason
+    litellm_params:
+      model: openai/gpt-4.1
+      api_key: os.environ/OPENAI_API_KEY
+      order: 4
+    model_info: {id: pp-reason-openai-gpt41}
+  - model_name: pp-reason
+    litellm_params:
+      model: openai/gpt-5.1
+      api_key: os.environ/OPENAI_API_KEY
+      order: 5
+      max_budget: 10
+      budget_duration: 30d
+    model_info: {id: pp-reason-openai-gpt51}
+
+  # ───────────────────────────── pp-audit ──────────────────────────────
+  # qms_gmp_auditor, eu_gmp_compliance_expert, pp_annex_auditor, ars_devils_advocate, ars_integrity_verifier,
+  # Compliance Analysis Agent, code_reviewer, security_auditor. Strongest model first, capped.
+  - model_name: pp-audit
+    litellm_params:
+      model: anthropic/claude-opus-5-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+      extra_headers: {"anthropic-workspace-id": "wrkspc_01KgrPQHQPyBxATLNrmzQkPn"}
+      order: 1
+      max_budget: 15
+      budget_duration: 30d
+    model_info: {id: pp-audit-anthropic-opus}
+  - model_name: pp-audit
+    litellm_params:
+      model: openrouter/anthropic/claude-opus-5.5
+      api_key: os.environ/OPEN_ROUTER_API_KEY
+      order: 2
+      max_budget: 10
+      budget_duration: 30d
+      input_cost_per_token: 0.000004
+      output_cost_per_token: 0.00002
+    model_info: {id: pp-audit-openrouter-opus}
+  - model_name: pp-audit
+    litellm_params:
+      model: anthropic/claude-sonnet-5-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+      extra_headers: {"anthropic-workspace-id": "wrkspc_01KgrPQHQPyBxATLNrmzQkPn"}
+      order: 3
+    model_info: {id: pp-audit-anthropic-sonnet}
+  - model_name: pp-audit
+    litellm_params:
+      model: openai/gpt-5.1
+      api_key: os.environ/OPENAI_API_KEY
+      order: 4
+      max_budget: 10
+      budget_duration: 30d
+    model_info: {id: pp-audit-openai-gpt51}
+
+  # ────────────────────────── pp-translate-mk ──────────────────────────
+  # The ONLY place Macedonian is produced (final-output translation, GMP wording). Own name so the
+  # vendor can be changed after an MK quality check without touching pp-reason.
+  - model_name: pp-translate-mk
+    litellm_params:
+      model: anthropic/claude-sonnet-5-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+      extra_headers: {"anthropic-workspace-id": "wrkspc_01KgrPQHQPyBxATLNrmzQkPn"}
+      order: 1
+    model_info: {id: pp-translate-anthropic-sonnet}
+  - model_name: pp-translate-mk
+    litellm_params:
+      model: openrouter/anthropic/claude-sonnet-5.5
+      api_key: os.environ/OPEN_ROUTER_API_KEY
+      order: 2
+      input_cost_per_token: 0.000002
+      output_cost_per_token: 0.00001
+    model_info: {id: pp-translate-openrouter-sonnet}
+  - model_name: pp-translate-mk
+    litellm_params:
+      model: openai/gpt-4.1
+      api_key: os.environ/OPENAI_API_KEY
+      order: 3
+    model_info: {id: pp-translate-openai-gpt41}
+
+  # ───────────────────────────── pp-vision ─────────────────────────────
+  # warehouse_quarantine_ocr_agent, in-chat images, VariationF* (today gpt-4o). All three tiers accept images.
+  - model_name: pp-vision
+    litellm_params:
+      model: openai/gpt-4.1
+      api_key: os.environ/OPENAI_API_KEY
+      order: 1
+    model_info: {id: pp-vision-openai-gpt41}
+  - model_name: pp-vision
+    litellm_params:
+      model: anthropic/claude-sonnet-5-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+      extra_headers: {"anthropic-workspace-id": "wrkspc_01KgrPQHQPyBxATLNrmzQkPn"}
+      order: 2
+    model_info: {id: pp-vision-anthropic-sonnet}
+  - model_name: pp-vision
+    litellm_params:
+      model: openrouter/anthropic/claude-sonnet-5.5
+      api_key: os.environ/OPEN_ROUTER_API_KEY
+      order: 3
+      input_cost_per_token: 0.000002
+      output_cost_per_token: 0.00001
+    model_info: {id: pp-vision-openrouter-sonnet}
+
+  # ────────────────────────────── pp-fast ──────────────────────────────
+  # summarize, route, search/extraction, design, gf_*/sentinel_*/wwf_*/planner-* and every agent not in
+  # AGENT_ROLES (policy default). Cheap, four vendors deep.
+  - model_name: pp-fast
+    litellm_params: {model: deepseek/deepseek-v4-flash, api_key: os.environ/DEEPSEEK_API_KEY, order: 2}
+    model_info: {id: pp-fast-deepseek-flash}
+  - model_name: pp-fast
+    litellm_params:
+      model: anthropic/claude-haiku-5-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+      extra_headers: {"anthropic-workspace-id": "wrkspc_01KgrPQHQPyBxATLNrmzQkPn"}
+      order: 1
+    model_info: {id: pp-fast-anthropic-haiku}
+  - model_name: pp-fast
+    litellm_params:
+      model: openrouter/anthropic/claude-haiku-5.5
+      api_key: os.environ/OPEN_ROUTER_API_KEY
+      order: 3
+      input_cost_per_token: 0.0000001
+      output_cost_per_token: 0.0000005
+    model_info: {id: pp-fast-openrouter-haiku}
+  - model_name: pp-fast
+    litellm_params:
+      model: openai/gpt-4.1-mini
+      api_key: os.environ/OPENAI_API_KEY
+      order: 4
+    model_info: {id: pp-fast-openai-gpt41mini}
+  - model_name: pp-fast
+    litellm_params:
+      model: openrouter/google/gemini-3.6-flash
+      api_key: os.environ/OPEN_ROUTER_API_KEY
+      order: 5
+      input_cost_per_token: 0.00000075
+      output_cost_per_token: 0.00000375
+    model_info: {id: pp-fast-openrouter-gemini36flash}
+
+  # ───────────────────────────── pp-format ─────────────────────────────
+  # qms_docx_formatter, pharma_docx_formatter: long structured output, no judgement needed.
+  - model_name: pp-format
+    litellm_params: {model: deepseek/deepseek-v4-flash, api_key: os.environ/DEEPSEEK_API_KEY, order: 2}
+    model_info: {id: pp-format-deepseek-flash}
+  - model_name: pp-format
+    litellm_params:
+      model: anthropic/claude-haiku-5-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+      extra_headers: {"anthropic-workspace-id": "wrkspc_01KgrPQHQPyBxATLNrmzQkPn"}
+      order: 1
+    model_info: {id: pp-format-anthropic-haiku}
+  - model_name: pp-format
+    litellm_params:
+      model: openai/gpt-4.1-mini
+      api_key: os.environ/OPENAI_API_KEY
+      order: 3
+    model_info: {id: pp-format-openai-gpt41mini}
+  - model_name: pp-format
+    litellm_params:
+      model: openrouter/anthropic/claude-haiku-5.5
+      api_key: os.environ/OPEN_ROUTER_API_KEY
+      order: 4
+      input_cost_per_token: 0.0000001
+      output_cost_per_token: 0.0000005
+    model_info: {id: pp-format-openrouter-haiku}
+
+  # ───────────────────────────── pp-enrich ─────────────────────────────
+  # RAGFlow auto-keyword / auto-question enrichment (dataset Configuration -> auto-keyword model).
+  # gpt-4.1 first because that is the model verified to persist keywords correctly; the re-parse of
+  # 48 docs / 4449 chunks is ~2 calls per chunk, so the cheaper tiers are deliberately close behind.
+  - model_name: pp-enrich
+    litellm_params: {model: deepseek/deepseek-v4-flash, api_key: os.environ/DEEPSEEK_API_KEY, order: 2}
+    model_info: {id: pp-enrich-deepseek-flash}
+  - model_name: pp-enrich
+    litellm_params:
+      model: openai/gpt-4.1
+      api_key: os.environ/OPENAI_API_KEY
+      order: 1
+    model_info: {id: pp-enrich-openai-gpt41}
+  - model_name: pp-enrich
+    litellm_params:
+      model: openai/gpt-4.1-mini
+      api_key: os.environ/OPENAI_API_KEY
+      order: 3
+    model_info: {id: pp-enrich-openai-gpt41mini}
+  - model_name: pp-enrich
+    litellm_params:
+      model: anthropic/claude-haiku-5-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+      extra_headers: {"anthropic-workspace-id": "wrkspc_01KgrPQHQPyBxATLNrmzQkPn"}
+      order: 4
+    model_info: {id: pp-enrich-anthropic-haiku}
+
+  # ───────────────────── embeddings & rerank (NO fallbacks, ever) ──────────────────────
+  # An index is bound to one embedding model + dimension for its whole life; a silent fallback to a
+  # different model would corrupt it. One deployment per name, nothing in `fallbacks` points here.
+  # RAGFlow keeps calling Voyage directly (measured working); these exist for Letta, the benchmark
+  # scripts and spend accounting.
+  - model_name: text-embedding-3-small          # exact OpenAI name: Letta's OpenAI-compatible
+    litellm_params:                              # provider hard-codes this id with endpoint=base_url
+      model: openai/text-embedding-3-small
+      api_key: os.environ/OPENAI_API_KEY
+    model_info: {id: embed-openai-3-small, mode: embedding}
+  - model_name: pp-embed-voyage
+    litellm_params:
+      model: voyage/voyage-3-large
+      api_key: os.environ/VOYAGE_API_KEY
+    model_info: {id: embed-voyage-3-large, mode: embedding}
+  - model_name: pp-rerank-voyage
+    litellm_params:
+      model: voyage/rerank-2.5
+      api_key: os.environ/VOYAGE_API_KEY
+    model_info: {id: rerank-voyage-2-5, mode: rerank}
+
+  # ───────────── vendor-literal names: benchmarking / A-B only (pp-admin key) ─────────────
   - model_name: gpt-4.1
     litellm_params: {model: openai/gpt-4.1, api_key: os.environ/OPENAI_API_KEY}
   - model_name: gpt-4.1-mini
     litellm_params: {model: openai/gpt-4.1-mini, api_key: os.environ/OPENAI_API_KEY}
+  - model_name: gpt-5.1
+    litellm_params: {model: openai/gpt-5.1, api_key: os.environ/OPENAI_API_KEY}
+  - model_name: claude-haiku-5.5
+    litellm_params:
+      model: anthropic/claude-haiku-5-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+      extra_headers: {"anthropic-workspace-id": "wrkspc_01KgrPQHQPyBxATLNrmzQkPn"}
+  - model_name: claude-sonnet-5.5
+    litellm_params:
+      model: anthropic/claude-sonnet-5-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+      extra_headers: {"anthropic-workspace-id": "wrkspc_01KgrPQHQPyBxATLNrmzQkPn"}
+  - model_name: claude-opus-5.5
+    litellm_params:
+      model: anthropic/claude-opus-5-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+      extra_headers: {"anthropic-workspace-id": "wrkspc_01KgrPQHQPyBxATLNrmzQkPn"}
 
-  - model_name: kimi-k2.6
-    litellm_params: {model: openai/kimi-k2.6, api_base: https://api.moonshot.ai/v1,
-                     api_key: os.environ/MOONSHOT_API_KEY}
-  - model_name: moonshot-v1-128k
-    litellm_params: {model: openai/moonshot-v1-128k, api_base: https://api.moonshot.ai/v1,
-                     api_key: os.environ/MOONSHOT_API_KEY}
-  - model_name: moonshot-vision
-    litellm_params: {model: openai/moonshot-v1-128k-vision-preview,
-                     api_base: https://api.moonshot.ai/v1,
-                     api_key: os.environ/MOONSHOT_API_KEY}
+  # ───────────── legacy names kept from main (pre-redesign intake runs) ─────────────
+  # Scripts written against the first version of this proxy address `gemini-flash` and `gpt-5`.
+  # Kept so they keep working; new consumers use the pp-* roles. `gemini-flash` is one logical
+  # model over the free-tier keys - the router cools down whichever key answers 429 - with
+  # OpenRouter and CometAPI as separate quota pools behind them. A missing env var only
+  # disables that one deployment.
+  - model_name: gpt-5
+    litellm_params: {model: openai/gpt-5, api_key: os.environ/OPENAI_API_KEY}
+  - model_name: gemini-flash
+    litellm_params: {model: gemini/gemini-3.6-flash, api_key: os.environ/AZ_GEMINI_API_KEY, order: 1}
+  - model_name: gemini-flash
+    litellm_params: {model: gemini/gemini-3.6-flash, api_key: os.environ/BN_GEMINI_API, order: 1}
+  - model_name: gemini-flash
+    litellm_params: {model: gemini/gemini-3.6-flash, api_key: os.environ/BN_GOOGLE_GEMINI_API_KEY, order: 1}
+  - model_name: gemini-flash
+    litellm_params: {model: gemini/gemini-3.6-flash, api_key: os.environ/EP_GEMINI_API, order: 1}
+  - model_name: gemini-flash
+    litellm_params: {model: gemini/gemini-3.6-flash, api_key: os.environ/UC_GEMINI_API, order: 1}
+  - model_name: gemini-flash
+    litellm_params: {model: openrouter/google/gemini-3.6-flash, api_key: os.environ/OPEN_ROUTER_API_KEY, order: 2}
+  - model_name: gemini-flash
+    litellm_params: {model: openai/gemini-2.5-flash, api_base: "https://api.cometapi.com/v1",
+                     api_key: os.environ/COMETAPI_API_KEY, order: 3}
 
-  # One logical Gemini model, four keys - the proxy load-balances and cools down
-  # whichever key answers 429.
-  - model_name: gemini-flash
-    litellm_params: {model: gemini/gemini-3.6-flash, api_key: os.environ/AZ_GEMINI_API_KEY}
-  - model_name: gemini-flash
-    litellm_params: {model: gemini/gemini-3.6-flash, api_key: os.environ/BN_GEMINI_API}
-  - model_name: gemini-flash
-    litellm_params: {model: gemini/gemini-3.6-flash, api_key: os.environ/BN_GOOGLE_GEMINI_API_KEY}
-  - model_name: gemini-flash
-    litellm_params: {model: gemini/gemini-3.6-flash, api_key: os.environ/EP_GEMINI_API}
-  - model_name: gemini-flash
-    litellm_params: {model: gemini/gemini-3.6-flash, api_key: os.environ/UC_GEMINI_API}
-
-  # OpenRouter backstop: the same Gemini family through a separate quota pool.
-  - model_name: gemini-flash
-    litellm_params: {model: openrouter/google/gemini-3.6-flash,
-                     api_key: os.environ/OPEN_ROUTER_API_KEY}
-
-  - model_name: gemini-flash
-    litellm_params: {model: openai/gemini-2.5-flash, api_base: https://api.cometapi.com/v1,
-                     api_key: os.environ/COMETAPI_API_KEY}
+  # ───────────── parked until a key is measured working (do not enable blind) ─────────────
+  # Gemini direct free-tier keys (5 keys, 429 rotation) - not measured on 2026-10-10:
+  # - model_name: pp-fast
+  #   litellm_params: {model: gemini/gemini-3.6-flash, api_key: os.environ/AZ_GEMINI_API_KEY, order: 5}
+  #   model_info: {id: pp-fast-gemini-az}
+  # (repeat for BN_GEMINI_API, BN_GOOGLE_GEMINI_API_KEY, EP_GEMINI_API, UC_GEMINI_API)
 
 litellm_settings:
+  drop_params: true          # Letta/RAGFlow send OpenAI-only params; drop them for Anthropic/OpenRouter tiers
   num_retries: 2
   request_timeout: 600
+  # Proxy-wide outer wall. Enforced from the Postgres spend log - without DATABASE_URL this FAILS OPEN.
+  max_budget: 80
+  budget_duration: 30d
+  # Cross-role last resort, used only after every order tier of the group is unavailable.
+  fallbacks:
+    - pp-audit: [pp-reason]
+    - pp-translate-mk: [pp-reason]
+    - pp-vision: [pp-reason]
+    - pp-format: [pp-fast]
+    - pp-enrich: [pp-fast]
+    - gemini-flash: [pp-fast]   # main routed this to moonshot-vision; Moonshot is out (quota/401)
+
+router_settings:
+  routing_strategy: simple-shuffle   # within one order tier only; `order` decides the tier
   allowed_fails: 3
   cooldown_time: 60
-  # Paid model unavailable or over budget -> flat-rate subscription model.
-  fallbacks:
-    - gpt-4.1-mini: [moonshot-v1-128k]
-    - gpt-4.1: [moonshot-vision]
-    - gemini-flash: [moonshot-vision]
+  # Per-vendor caps. Counters live in the proxy's memory (single instance, no Redis) and reset on
+  # restart; the durable caps are the virtual keys and litellm_settings.max_budget.
+  provider_budget_config:
+    openai:     {budget_limit: 40, time_period: 30d}
+    anthropic:  {budget_limit: 30, time_period: 30d}
+    openrouter: {budget_limit: 30, time_period: 30d}
+    voyage:     {budget_limit: 10, time_period: 30d}
+    deepseek:   {budget_limit: 10, time_period: 30d}
 
 general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY
-  # Proxy-wide OpenAI ceiling: refuse rather than overdraw. Reset by restarting
-  # with a raised value after topping up.
-  max_budget: 5.50
-  budget_duration: 30d
+  # Virtual keys (one per consumer) are created once after boot - see README "Keys".

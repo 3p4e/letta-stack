@@ -1,32 +1,78 @@
-# LiteLLM proxy for KVM4, beside RAGFlow.
+# LiteLLM gateway for KVM4 - the single OpenAI-compatible endpoint for RAGFlow AND Letta.
 #
-# Purpose: one OpenAI-compatible endpoint that (1) enforces a hard spend ceiling
-# on the prepaid OpenAI balance, (2) rotates the free-tier Gemini keys, and
-# (3) falls back to the Moonshot subscription when a paid or rate-limited
-# provider is unavailable - so a quota event degrades the run instead of
-# corrupting it.
+# Reachability (nothing is published beyond loopback):
+#   RAGFlow  -> http://litellm:4000/v1   via the existing external network `docker_ragflow`
+#   Letta    -> http://litellm:4000/v1   via the external network `llm-gateway` (create once:
+#               `docker network create llm-gateway`, then attach letta-6ou3-letta-1 - see
+#               letta-6ou3.llm-gateway.patch.yml next to this file)
+#   ops      -> http://127.0.0.1:4000     host loopback only
+#
+# Why a database: virtual keys (one per consumer, each with its own max_budget/budget_duration) and
+# the proxy-wide litellm_settings.max_budget are enforced from Postgres spend logs; without
+# DATABASE_URL the keys cannot exist and the global budget fails open.
 #
 # Start (on KVM4, in this directory):
-#   1. cp env.example .env   and fill in the real keys (never commit .env)
-#   2. docker compose up -d
-#   3. curl -s http://localhost:4000/health -H "Authorization: Bearer $LITELLM_MASTER_KEY"
-#
-# RAGFlow: add an OpenAI-compatible provider with base_url http://litellm:4000/v1
-# (same docker network) or http://<kvm4-ip>:4000/v1, api_key = LITELLM_MASTER_KEY.
+#   1. cp env.example .env ; fill in the keys ; generate LITELLM_MASTER_KEY, LITELLM_SALT_KEY, LITELLM_DB_PASSWORD
+#      (openssl rand -hex 32 each). LITELLM_SALT_KEY must never change afterwards.
+#   2. docker network create llm-gateway        # once
+#   3. docker compose up -d
+#   4. curl -s http://127.0.0.1:4000/health/liveliness
+#   5. create the virtual keys (README "Keys") and hand pp-ragflow / pp-letta to the two consumers.
 services:
   litellm:
-    image: ghcr.io/berriai/litellm:main-stable
+    image: ghcr.io/berriai/litellm:main-stable   # pin to the exact tag `docker image inspect litellm` shows once verified
     container_name: litellm
     restart: unless-stopped
     ports:
-      - "127.0.0.1:4000:4000"   # localhost only; publish wider only behind auth
+      - "127.0.0.1:4000:4000"   # loopback only; never publish wider
     env_file: .env
+    environment:
+      DATABASE_URL: postgresql://litellm:${LITELLM_DB_PASSWORD:?set LITELLM_DB_PASSWORD in .env}@litellm-db:5432/litellm
+      STORE_MODEL_IN_DB: "False"   # models are declared in config.yaml (git), never added via UI/DB
     volumes:
       - ./config.yaml:/app/config.yaml:ro
     command: ["--config", "/app/config.yaml", "--port", "4000"]
-    networks: [ragflow]
+    depends_on:
+      litellm-db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - python3 -c "import urllib.request; urllib.request.urlopen('http://localhost:4000/health/liveliness')"
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - ragflow
+      - llm-gateway
+      - litellm-internal
+
+  litellm-db:
+    image: postgres:16
+    container_name: litellm-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: litellm
+      POSTGRES_PASSWORD: ${LITELLM_DB_PASSWORD:?set LITELLM_DB_PASSWORD in .env}
+      POSTGRES_DB: litellm
+    volumes:
+      - litellm_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U litellm -d litellm"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - litellm-internal        # no ports, reachable from the proxy only
 
 networks:
   ragflow:
     external: true
-    name: docker_ragflow    # `docker network ls` on KVM4; adjust if named differently
+    name: docker_ragflow        # RAGFlow's compose network (`docker network ls` on KVM4)
+  llm-gateway:
+    external: true              # shared with the Letta stack; `docker network create llm-gateway`
+  litellm-internal: {}          # proxy <-> its database
+
+volumes:
+  litellm_pg:
