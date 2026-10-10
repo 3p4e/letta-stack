@@ -131,6 +131,14 @@ Every call except `/health` needs the header `X-API-Key: $DOCENGINE_API_KEY`.
 - The Letta client refuses to touch any agent whose name does not start with `gf_`.
 - Each exchange runs on an ephemeral clone.
 - The model is chosen at run time. The placeholder in `fleet.yaml` is not the model.
+- **On KVM4 since 10.10.2026** all eight `gf_` agents run on `openai-proxy/nvidia/nemotron-3-ultra`:
+  - LiteLLM `nvidia_nim/nvidia/nemotron-3-ultra-550b-a55b`, router fallback `nvidia/kimi-k3`
+    (`nvidia_nim/moonshotai/kimi-k3`), `num_retries: 0` (`/opt/stacks/litellm/config.yaml`).
+  - Before: `openai-proxy/moonshot/kimi-k2.6`, whose balance ran out. The old configuration is in
+    `/opt/wwf-deploy/backups/gf_agents_llm_config_pre-nvidia_20261010.json`.
+  - The ephemeral clone copies the agent's model handle, so a new LiteLLM model is usable only after
+    the Letta provider is refreshed (`PATCH /v1/providers/{id}/refresh`). Without the refresh the clone
+    fails with "Handle … not found" (job `8e188e35`).
 
 ### 3.4 RAGFlow client (`app/ragflow.py`)
 
@@ -142,6 +150,21 @@ Every call except `/health` needs the header `X-API-Key: $DOCENGINE_API_KEY`.
 - **eCOA_DB is lookup-only.** It tells you which certificate exists for a batch. A measured value is
   never read from chunk text, because chunking drops superscripts and truncates ranges. Values come from
   the typed, double-read extraction. The search response always carries that note (`ECOA_NOTE`).
+- **What is in RAGFlow on 10.10.2026.** Another agent changed RAGFlow's pipelines and models on 10.10.
+  Read-only status of that evening:
+  - **`eCOA_INGEST`** `71b9c168b4a311f1a370a99b32e82467` is a new dataset, and DocEngine does **not** query it.
+    - Its pipeline is `eCOA_PIPE`: Kimi K3 via NVIDIA reads the PDF; DeepSeek v4 Flash writes the
+      questions and keywords; one 8192-token chunk per certificate; RAPTOR and GraphRAG on.
+    - It is embedded with **Voyage-4-large**. `eCOA_DB` is embedded with Voyage-3-large, so one
+      retrieval call cannot search both.
+    - Either `eCOA_DB` is re-parsed into the new embedding, or `RAGFLOW_ECOA_DATASETS` stays on `eCOA_DB`.
+  - **`DB01_REG`**: 48 documents are parsed and **22 failed** ("User pipeline not found", the Test Weights
+    folder, uploaded 10.10, 0 chunks).
+    - `DB01_REG`, `eCOA_DB` and `eCOA_SS` all point to the pipeline `eCOA_DB_agent`, whose prompts are
+      written for certificates.
+  - Account defaults: chat `deepseek-v4-pro`, embedding `voyage-4-large`, rerank `rerank-2.5`, image
+    `kimi-k3` (NVIDIA).
+    - Speech-to-text and text-to-speech are OpenAI, and that account has **no credits** ("429 no credits remaining").
 
 ### 3.5 Engine sync
 
@@ -197,6 +220,11 @@ the Letta URL/key and agent allowlist, `GOTENBERG_URL` (+ `GOTENBERG_USERNAME/PA
   OnlyOffice was removed.
 - **Fonts are part of the result.** A missing face changes line breaks and page count. To add a font,
   follow runbook §2: copy the file, rebuild with the next `fonts.<n>` tag, set the tag in compose.
+- **Status in Environment F (checked 10.10.2026).** The network already reaches
+  `render.srv1231216.hstgr.cloud`: it answers 401 without credentials. The three variables below are
+  **not set yet**; the values are on KVM4 in `/opt/stacks/pp-render/credentials.env`. Until the Head of QC
+  adds them, `pp_render` in a session falls back to local LibreOffice. KVM4's own services are not
+  affected, because they reach `http://gotenberg:3000` directly.
 - **Inside a Claude cloud session**: set `GOTENBERG_URL`, `GOTENBERG_USERNAME` and `GOTENBERG_PASSWORD`
   in the environment settings and allow `render.srv1231216.hstgr.cloud` in the network policy. With
   those, `pp_render` needs no local office suite.
@@ -283,6 +311,8 @@ DocEngine pins `fonttools==4.62.1`. Without fontTools the glyph guard has nothin
 | #30 | 09.10 | KVM4 deployment handoff for the Environment F session |
 | #31 | 09.10 | Runbook "Deployed": Gotenberg, pp-docengine (`/opt/stacks/pp-docengine`, own Postgres), ppdocwiz (`docwiz.srv1231216.hstgr.cloud`) live on KVM4 from `5ecf6a6` |
 | #32 | 10.10 | `pp-render` replaces the plain Gotenberg: house fonts built in; OnlyOffice rejected after the Word comparison |
+| #33 | 10.10 | This handoff |
+| — | 10.10 | Server only, KVM4, no code change: the `gf_` agents moved from Moonshot Kimi K2.6 to NVIDIA Nemotron 3 Ultra (fallback Kimi K3) (§3.3); the redundant test SOP was removed from the pp-docengine Library (0 documents registered) |
 
 ---
 
@@ -300,6 +330,7 @@ DocEngine pins `fonttools==4.62.1`. Without fontTools the glyph guard has nothin
 7. **A `pkill` pattern that matches its own shell kills the shell.** Use pid files (`wiz_start.sh`).
 8. **Postgres refuses to run as root.** Use `runuser -u postgres` with the script in `/var/tmp`.
 9. **This session's environment blocks KVM4 hosts.** KVM4 work runs from Environment F.
+10. **A model that passes in English can fail in Macedonian.** Test the Macedonian output before moving the authors and the translator to a new model. The 10.10 switch to Nemotron ran end to end and failed only at the §6A audit, 16 minutes later.
 
 ---
 
@@ -307,13 +338,17 @@ DocEngine pins `fonttools==4.62.1`. Without fontTools the glyph guard has nothin
 
 | # | item | where |
 |---|---|---|
-| 1 | Questionnaire workflow end to end on KVM4 fails at the first Letta call: the `gf_` agents' model (via LiteLLM) answered "insufficient balance". Restore the balance or change the model, then rerun runbook §4's last check | KVM4 / Letta |
+| 1 | **Updated 10.10.2026.** The "insufficient balance" stop is gone: the agents run on NVIDIA (§3.3). The questionnaire workflow now runs end to end on KVM4, including the RAGFlow regulatory check (`POST /api/v1/retrieval` → 200). Job `6d2502c0`, 16 min, still **fails the §6A audit** because Nemotron 3 Ultra writes poor Macedonian. An example from the audit: "претставена референца" for "preferred reference". Options with the Head of QC: (a) top up Moonshot and put the three Macedonian-writing agents (`gf_sop_author`, `gf_annex_author`, `gf_translator_mk_en`) on Kimi direct, with the rest staying on Nemotron; (b) Kimi K3 via NVIDIA: clean Macedonian in the 10.10 translation test, but 134–194 s per call because NVIDIA's free endpoint queues it. In the same test Nemotron wrote mixed-script words ("kvantифицираат"). Then rerun runbook §4's last check | KVM4 / Letta / LiteLLM |
 | 2 | Two uvicorn workers race on `CREATE SCHEMA` on an empty database (one respawns). Use an advisory lock or create the schema once before the workers start | `app/db.py` |
 | 3 | No backend yet for report builds (`pp_report`), the review decision on an `awaiting_review` job, Formatter Mode C, or the engine-environment check. Live mode shows 501 | ppdocwiz + DocEngine |
 | 4 | Fleet agent list and log tail, and Chat's left pane (agents, memory, sources, tools), are still sample content | `Fleet.tsx`, `Chat.tsx` |
 | 5 | `DB_EXAMPLES` RAGFlow dataset for house examples. Then set `RAGFLOW_EXAMPLE_DATASETS` | runbook §3 |
 | 6 | Jobs list survives only in session state. A server-side job list route would make it robust | DocEngine `/workflows` |
 | 7 | Merging this DocEngine into the WWF stack's `wwf-docengine` (Head of QC, later) | WEEKLY_WEED_FLOW |
+| 8 | A failed job keeps only its verdict. On a FIX audit the result is `{"qa_audit": …}` alone: the draft Markdown, `regulatory_sources` and `knowledge` are discarded. One FIX verdict ends the job, because there is no repair round. Keep the draft and the sources on failure so a failed run can be reviewed | `app/pipeline.py` (`QaAuditFailed` handler) |
+| 9 | RAGFlow after the other agent's changes (§3.4): re-run the 22 failed `DB01_REG` documents; give `DB01_REG` a regulatory pipeline instead of `eCOA_DB_agent`; choose one embedding model for the eCoA datasets; top up OpenAI or move speech to another provider; remove the 46 disabled test chats. All of these are the Head of QC's decisions | RAGFlow |
+| 10 | LiteLLM still carries dead DeepSeek, Anthropic and OpenAI keys: renew or remove them (Head of QC) | `/opt/stacks/litellm/.env` |
+| 11 | Environment F: add `GOTENBERG_URL`, `GOTENBERG_USERNAME`, `GOTENBERG_PASSWORD` (§5) | Claude environment settings |
 
 ## 11. Where to look first
 
