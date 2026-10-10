@@ -49,8 +49,7 @@ the structure (which cell is which) without reading the language; VLMs read the 
 
 ## Decisions needed
 
-- `scripts/policy_check.py` rule 1 forbids "classical OCR" (written against Tesseract). Steps 3–4
-  are neural, but the rule must be amended to name them before any run.
+- ~~`policy_check.py` rule 1 (no classical OCR)~~ — lifted by the owner on 10.10.2026.
 - A working `nvapi-` key from build.nvidia.com (Personal key with API access), placed as
   `NVIDIA_API_KEY` in the environment, then a one-page pilot on the 17 certificates with
   hand-read values (`_why.measured`) before any corpus run.
