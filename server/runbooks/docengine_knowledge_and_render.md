@@ -50,24 +50,22 @@ LibreOffice (phone, laptop, cloud session). Every renderer in the repository goe
 falls back to local LibreOffice only when it is not. Users: ppdocwiz downloads, the DocEngine
 Library "PDF", the engine CLI, and Claude sessions.
 
-On the letta stack (the DocEngine and the Letta sandbox both use `http://gotenberg:3000`), with a
-**public HTTPS route behind basic auth** so a phone, a laptop or a cloud session can render too:
-```yaml
-  gotenberg:
-    image: gotenberg/gotenberg:8.<x>.<y>   # pin the exact current 8.x tag; never :latest
-    restart: unless-stopped
-    command: ["gotenberg", "--api-timeout=180s", "--libreoffice-restart-after=10"]
-    networks: [default, traefik]           # no published port
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.render.rule=Host(`render.srv1231216.hstgr.cloud`)
-      - traefik.http.routers.render.entrypoints=websecure
-      - traefik.http.routers.render.tls.certresolver=letsencrypt
-      - traefik.http.routers.render.middlewares=render-auth
-      # htpasswd -nbB pp '<password>'  (double every $ in compose)
-      - traefik.http.middlewares.render-auth.basicauth.users=<pp:$$2y$$…>
-      - traefik.http.services.render.loadbalancer.server.port=3000
-```
+Head of QC, 10.10.2026: the service is **`pp-render`** — Gotenberg 8.37.0 (LibreOffice) with the house fonts
+built in. Definition: `server/render/` (`Dockerfile`, `compose.yaml`, `get_fonts.py`); on KVM4 `/opt/stacks/pp-render`,
+container `gotenberg` on `ai-net`, **public HTTPS route behind basic auth** (`render.srv1231216.hstgr.cloud`) so a phone,
+a laptop or a cloud session can render too. The basic-auth hash is in `/opt/stacks/pp-render/.env`, the user/password
+in `credentials.env` (both 0600, host only).
+
+**Fonts are what make the PDF match Word.** The image is built from `/opt/fonts/pp` (never from this repository):
+- `free/` — `get_fonts.py`: Microsoft core fonts (Arial, Arial Black, Times New Roman, Courier New, Verdana, Trebuchet,
+  Georgia …), the CoQ/iCoA faces (Montserrat, Orbitron, Roboto Mono, Roboto Condensed — static weights, not variable
+  fonts), Carlito, and the WWF web faces.
+- `licensed/` — copied from a licensed Windows/Office PC: Calibri (+Light), Arial Narrow, Cambria Math, Segoe UI,
+  Segoe UI Symbol, MS Gothic, Tahoma, Arial Rounded MT Bold.
+Add a font: put the file in `/opt/fonts/pp/…`, then
+`docker build -t pp-render:8.37.0-fonts.<n+1> -f /opt/stacks/pp-render/Dockerfile /opt/fonts/pp`, set the tag in
+`compose.yaml`, `docker compose up -d`. Only symbols the faces lack (✓ ✗ ★ ⟨ ⟩) may fall back to DejaVu.
+
 In-stack services use `GOTENBERG_URL=http://gotenberg:3000` (no auth: internal network only).
 Anything outside the stack uses `GOTENBERG_URL=https://render.srv1231216.hstgr.cloud` with
 `GOTENBERG_USERNAME` / `GOTENBERG_PASSWORD`. For Claude cloud sessions, put those three in the
@@ -130,3 +128,17 @@ Open: the questionnaire workflow end to end fails at the first Letta call — th
 `moonshot/kimi-k2.6` through LiteLLM and Moonshot answers "account suspended due to insufficient balance".
 Rerun §4's last check after the balance is restored or the model is changed. Known defect: on an empty
 database the two uvicorn workers race on `CREATE SCHEMA` at first start (one worker respawns).
+
+## Deployed — 10.10.2026: renderer replaced by `pp-render` (LibreOffice + house fonts)
+
+Head of QC, 10.10.2026, after a side-by-side test against Word-made PDFs (quarantine label sheet, PP-QC-SOP-017,
+QCSOP_018 A01, WHSOP_003) with the real fonts installed on both candidates: LibreOffice matched Word (23/23 and
+14/14 pages, label layout identical, Arial Narrow and Calibri used); OnlyOffice 9.4 did not (19/23 pages, right-hand
+column cut off, label title split, Arial Narrow ignored). OnlyOffice and its gateway were removed; the plain
+Gotenberg of 09.10 was replaced by `pp-render:8.37.0-fonts.1` (166 free + 20 licensed fonts). Same addresses as
+before: `http://gotenberg:3000` inside, `render.srv1231216.hstgr.cloud` outside, same credentials.
+
+Verified: public route 401 without / with a wrong password; WHSOP_003 through the public route → "rendered via
+gotenberg", 15 pages, TOC 26 lines, Calibri and Arial Narrow embedded; label, SOP-017, QCSOP_018 A01 → 1, 23, 14 pages,
+real fonts embedded; ppdocwiz Builder PDF and pp-docengine Library PDF → 15 pages, TOC 26 lines.
+
