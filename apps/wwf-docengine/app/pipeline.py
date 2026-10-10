@@ -173,6 +173,8 @@ _META = re.compile(
     r"this section (covers|is|must|should|lists|names|contains)|"
     r"section \d+(\.\d+)? (covers|is|must|should|lists|names|contains))\b", re.I)
 _LETTERS = re.compile(r"[A-Za-zЀ-ӿ]")
+# A word with Cyrillic AND Latin letters is a typo the eye cannot see ("двoстепен" with a Latin o) — found live.
+_MIXED = re.compile(r"\b(?=\w*[Ѐ-ӿ])(?=\w*[A-Za-z])\w+\b")
 
 
 def _strip_own_heading(num: str, mk: str, en: str, content: str) -> str:
@@ -193,6 +195,7 @@ def _strip_own_heading(num: str, mk: str, en: str, content: str) -> str:
 def _lint_section(content: str, sop: bool = True) -> list[str]:
     """Grammar problems a parser-level reading can prove, as instructions an author can act on."""
     pipe = h1 = 0
+    mixed = sorted(set(_MIXED.findall(content)))
     mono: list[str] = []
     meta: list[str] = []
     in_block = False
@@ -231,6 +234,9 @@ def _lint_section(content: str, sop: bool = True) -> list[str]:
     if mono:
         issues.append(f"{len(mono)} prose line(s) are not 'Macedonian ||| English', e.g. "
                       + " / ".join(f'"{x}"' for x in mono[:3]))
+    if mixed:
+        issues.append("words mixing Cyrillic and Latin letters (retype them in one alphabet): "
+                      + ", ".join(mixed[:8]))
     if meta:
         issues.append("working notes or commentary in the body (delete them), e.g. "
                       + " / ".join(f'"{x}"' for x in meta[:3]))
@@ -510,7 +516,10 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
             ctx["markdown"] = markdown
             audit = await ask("gf_qa_auditor", f"qa{rnd}",
                 f"Run the §6A review of this assembled document ({meta['code']}).\n\n"
-                f"Judge its Markdown only against this grammar — do not require constructs it does not define:\n{ENGINE_GRAMMAR}\n\n"
+                f"Judge its Markdown only against this grammar — do not require constructs it does not define:\n{ENGINE_GRAMMAR}\n"
+                "The '# N.0 MK|EN' section headings and the <!--HEADERDATA--> block in the DOCUMENT are "
+                "written by the pipeline and are correct — do not flag them; judge the authored content "
+                "under each heading.\n\n"
                 "CONTENT BRIEF (the questionnaire answers; regulatory references in it are pre-verified "
                 f"by the questionnaire and count as supported):\n{brief}\n\n"
                 "REGULATORY CHECK FINDINGS, per section ([R#] = a passage retrieved from RAGFlow DB01):\n"

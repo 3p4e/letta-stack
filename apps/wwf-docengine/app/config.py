@@ -25,7 +25,7 @@ class Settings:
     # to its author this many times; a §6A FIX verdict sends the named sections back this many rounds
     # before the job fails. 0 turns a loop off.
     lint_repair_rounds: int = int(os.environ.get("DOCENGINE_LINT_REPAIR_ROUNDS", "1"))
-    qa_repair_rounds: int = int(os.environ.get("DOCENGINE_QA_REPAIR_ROUNDS", "1"))
+    qa_repair_rounds: int = int(os.environ.get("DOCENGINE_QA_REPAIR_ROUNDS", "2"))
     # Per-section regulatory checks run concurrently, at most this many at once.
     reg_concurrency: int = max(1, int(os.environ.get("DOCENGINE_REG_CONCURRENCY", "4")))
 

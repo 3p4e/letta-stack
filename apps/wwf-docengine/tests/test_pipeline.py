@@ -397,8 +397,10 @@ def test_lint_flags_what_the_engine_cannot_read():
         "Аналитичарот ги проверува референтните стандарди пред анализата.",
         "Section 8 is a controlled cross-reference list.",
         "# 2 ПОДРАЧЈЕ|SCOPE",
+        "Преглед согласно двoстепениот синџир. ||| Review per the two-tier chain.",
     ])
     issues = _lint_section(body)
+    assert any("mixing Cyrillic and Latin" in i and "двoстепениот" in i for i in issues)
     assert any("pipe tables" in i for i in issues)
     assert any("not 'Macedonian ||| English'" in i for i in issues)
     assert any("working notes" in i for i in issues)
