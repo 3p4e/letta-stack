@@ -1,0 +1,189 @@
+#!/usr/bin/env python3
+"""Workbook -> v9_data.json for the artifact (coverage, parameters, lots with their
+two-row blocks, work order, credit audit, credit corrections). Reads the rendered
+sheet, so what the page shows is what the workbook shows."""
+import sys, json, re, os, openpyxl
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from reference_sections import sheet_or_section, has as _readable
+
+SRC = sys.argv[1]
+OUT = sys.argv[2]
+SHEET = sys.argv[3] if len(sys.argv) > 3 else 'CoQ Parameter Tracker v9'
+STATE = {'C6EFCE': 'ok', 'FCE5CD': 'stab', 'FDE9D9': 'silent', 'F4CCCC': 'missing', 'EDEDED': 'extra'}
+wb = openpyxl.load_workbook(SRC)
+
+# The register, the issuance sheet and the tracker's in-house cells are FORMULAS (the numbering
+# follows the sheet). openpyxl stores no computed values, so a copy is recalculated through
+# LibreOffice and every formula cell takes its computed value from that copy; formatting is read
+# from the original.
+import os, shutil, subprocess, tempfile
+_tmp = tempfile.mkdtemp(prefix='recalc_')
+shutil.copy(SRC, os.path.join(_tmp, 'in.xlsx'))
+subprocess.run(['soffice', '--headless', '--calc', '--convert-to', 'xlsx', '--outdir', os.path.join(_tmp, 'out'),
+                os.path.join(_tmp, 'in.xlsx')], check=True, capture_output=True, timeout=600)
+_wbv = openpyxl.load_workbook(os.path.join(_tmp, 'out', 'in.xlsx'), data_only=True)
+_n_formula = _n_err = 0
+for _name in wb.sheetnames:
+    _ws, _wv = wb[_name], _wbv[_name]
+    for _row in _ws.iter_rows():
+        for _c in _row:
+            if isinstance(_c.value, str) and _c.value.startswith('='):
+                _v = _wv.cell(_c.row, _c.column).value
+                _n_formula += 1
+                if isinstance(_v, str) and _v.startswith('#'):
+                    _n_err += 1
+                _c.value = _v
+shutil.rmtree(_tmp, ignore_errors=True)
+print(f'formulas recalculated: {_n_formula} ({_n_err} error value(s))')
+
+
+def rgb(cell):
+    c = cell.fill.fgColor.rgb if cell.fill and cell.fill.fill_type == 'solid' else None
+    return (c[-6:] if isinstance(c, str) else None)
+
+
+def fcol(cell):
+    c = cell.font.color.rgb if cell.font and cell.font.color else None
+    return (c[-6:] if isinstance(c, str) else None)
+
+
+def table(name):
+    ws = sheet_or_section(wb, name)
+    hdr = [str(ws.cell(1, c).value or '').strip() for c in range(1, ws.max_column + 1)]
+    while hdr and not hdr[-1]:
+        hdr.pop()
+    rows = []
+    for r in range(2, ws.max_row + 1):
+        vals = [ws.cell(r, c).value for c in range(1, len(hdr) + 1)]
+        if not any(v not in (None, '') for v in vals[:3]) or str(vals[0] or '').startswith(('Head of QC', 'Chronological')):
+            continue
+        if str(vals[0] or '').startswith(('These corrections', 'Chronological issuance', 'Head of QC')):
+            continue
+        d = {}
+        for h, v in zip(hdr, vals):
+            if h:
+                d[h] = v.strftime('%d.%m.%Y') if hasattr(v, 'strftime') else ('' if v is None else str(v))
+        rows.append(d)
+    return rows
+
+
+# ---- coverage
+cov = wb['Batch Coverage']
+coverage_headers = [str(c.value or '') for c in cov[1]][:20]
+coverage = []
+for r in range(2, cov.max_row + 1):
+    if not cov.cell(r, 1).value:
+        continue
+    coverage.append([('' if cov.cell(r, c).value is None else str(cov.cell(r, c).value)) for c in range(1, 21)])
+
+# ---- tracker layout
+ws = wb[SHEET]
+maxc = ws.max_column
+starts = [c for c in range(4, maxc + 1) if str(ws.cell(2, c).value or '').startswith('#')]
+params = []
+for i, s in enumerate(starts):
+    e = (starts[i + 1] - 1) if i + 1 < len(starts) else max(c for c in range(s, maxc + 1) if ws.cell(4, c).value)
+    title, method = (str(ws.cell(2, s).value) + '\n').split('\n')[:2]
+    if str(ws.cell(4, s).value or '').startswith('Result'):
+        params.append({'n': int(re.match(r'#(\d+)', title).group(1)), 'title': title.strip(), 'method': method.strip(),
+                       'single': True, 'subs': None, 'ac': str(ws.cell(3, s).value or '').replace('A.C.: ', ''),
+                       'start': s, 'end': e})
+    else:
+        subs = [str(ws.cell(4, c).value) for c in range(s, e)]
+        params.append({'n': int(re.match(r'#(\d+)', title).group(1)), 'title': title.strip(), 'method': method.strip(),
+                       'single': False, 'subs': subs,
+                       'ac': [str(ws.cell(3, c).value or '').replace('A.C.: ', '') for c in range(s, e)],
+                       'start': s, 'end': e})
+
+# ---- lots and blocks
+anchors = [r for r in range(5, ws.max_row + 1) if ws.cell(r, 1).value not in (None, '')]
+lots = []
+for i, a in enumerate(anchors):
+    last = (anchors[i + 1] - 1) if i + 1 < len(anchors) else ws.max_row
+    while last > a and not any(ws.cell(last, c).value not in (None, '') for c in range(1, maxc + 1)):
+        last -= 1
+    lot = {'cu': str(ws.cell(a, 1).value), 'p': str(ws.cell(a, 2).value or ''), 'status': str(ws.cell(a, 3).value or ''), 'blocks': []}
+    for top in range(a, last + 1, 2):
+        bot = top + 1
+        blk = []
+        for p in params:
+            s, e = p['start'], p['end']
+            if p['single']:
+                cell = ws.cell(top, s)
+                st = STATE.get(rgb(cell), 'none')
+                res = '' if cell.value is None else str(cell.value)
+                ref = '' if ws.cell(top, s + 1).value is None else str(ws.cell(top, s + 1).value)
+                mark = '' if ws.cell(top, e).value is None else str(ws.cell(top, e).value)
+                if st == 'none' and not res and not ref:
+                    blk.append({'res': '', 'ref': '', 'st': 'none', 'mark': '', 'verdict': ''}); continue
+                v = 'oos' if (st in ('ok', 'stab') and fcol(cell) == '9C0006') else ('und' if fcol(cell) == 'B45F06' else '')
+                blk.append({'res': res, 'ref': ref, 'st': st, 'mark': mark, 'verdict': v})
+            else:
+                cells = [ws.cell(top, c) for c in range(s, e)]
+                st = STATE.get(rgb(cells[0]), 'none')
+                vals = ['' if c.value is None else str(c.value) for c in cells]
+                ref = '' if ws.cell(bot, s).value is None else str(ws.cell(bot, s).value)
+                mark = '' if ws.cell(top, e).value is None else str(ws.cell(top, e).value)
+                if st == 'none' and not any(vals) and not ref:
+                    blk.append({'vals': [''] * len(vals), 'ref': '', 'st': 'none', 'mark': '', 'verdicts': [''] * len(vals)}); continue
+                verdicts = ['oos' if (st in ('ok', 'stab') and fcol(c) == '9C0006') else ('und' if fcol(c) == 'B45F06' else '') for c in cells]
+                blk.append({'vals': vals, 'ref': ref, 'st': st, 'mark': mark, 'verdicts': verdicts})
+        if any(b['st'] != 'none' for b in blk):
+            lot['blocks'].append(blk)
+    lots.append(lot)
+
+def raw_rows(name, ncol=5):
+    """A sectioned sheet as rows of strings — it has no single header row to key on."""
+    ws = sheet_or_section(wb, name)
+    out = []
+    for row in ws.iter_rows(min_col=1, max_col=ncol, values_only=True):
+        vals = ['' if v is None else str(v) for v in row]
+        if any(v.strip() for v in vals):
+            out.append(vals)
+    return out
+
+
+def _no_note(rows):
+    """Drop the merged note the builder writes under each table: one filled cell, the rest empty."""
+    return [r for r in rows if sum(1 for v in r.values() if str(v or '').strip()) > 2]
+
+
+def note_of(name):
+    """The footnote under a table: one long string in the first column, nothing beside it."""
+    ws = sheet_or_section(wb, name)
+    for row in ws.iter_rows():
+        if isinstance(row[0].value, str) and len(row[0].value) > 200 and not any(
+                c.value not in (None, '') for c in row[1:]):
+            return row[0].value
+    return ''
+
+
+data = {'coverage_headers': coverage_headers, 'coverage': coverage,
+        'register_note': note_of('iCoA Register') if _readable(wb, 'iCoA Register') else '',
+        'coq_note': note_of('CoQ Register').split(' FLAGS: ', 1)[0] if _readable(wb, 'CoQ Register') else '',
+        'params': [{k: v for k, v in p.items() if k not in ('start', 'end')} for p in params],
+        'lots': lots, 'work_order': table('Work Order'), 'credit_audit': table('Credit Audit'),
+        'corrections': table('Credit Corrections'),
+        'register': table('iCoA Register') if _readable(wb, 'iCoA Register') else [],
+        'coq_register': table('CoQ Register') if _readable(wb, 'CoQ Register') else [],
+        'delivery': _no_note(table('Delivery T1–T3')) if _readable(wb, 'Delivery T1–T3') else [],
+        'imb_register': _no_note(table('ImB Register')) if _readable(wb, 'ImB Register') else [],
+        'reconciliation': raw_rows('Reconciliation 09.09') if _readable(wb, 'Reconciliation 09.09') else []}
+# The page's own subtitle used to hard-code a version and a date; it now takes both
+# from the workbook, the way the file name already does.
+import re as _re
+_about = next((str(r[1]) for r in sheet_or_section(wb, 'Read Me').iter_rows(min_col=1, max_col=2, values_only=True)
+               if r[0] and str(r[0]).strip() == 'What it is'), '')
+_bm = _re.search(r'Built\s+(\d{2}\.\d{2}\.\d{4})', _about)
+data['built'] = _bm.group(1) if _bm else ''
+# the adherence flags the builder wrote under the CoQ Register
+data['coq_flags'] = []
+if 'CoQ Register' in wb.sheetnames:
+    for _row in wb['CoQ Register'].iter_rows(values_only=True):
+        if _row[0] and str(_row[0]).startswith('Head of QC') and 'FLAGS: ' in str(_row[0]):
+            data['coq_flags'] = str(_row[0]).split('FLAGS: ', 1)[1].split(' | ')
+json.dump(data, open(OUT, 'w'), ensure_ascii=False)
+print('lots', len(lots), 'blocks', sum(len(l['blocks']) for l in lots), 'coverage rows', len(coverage),
+      'delivery', len(data['delivery']), 'imb register', len(data['imb_register']),
+      'reconciliation', len(data['reconciliation']),
+      'work order', len(data['work_order']), 'audit', len(data['credit_audit']), 'corrections', len(data['corrections']))

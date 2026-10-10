@@ -23,11 +23,27 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-    # Optional external HTTPS route via Traefik (uncomment + set your host):
-    # labels:
+    labels:
+      # This service has NO authentication on /build, /build.docx or /build.pdf
+      # — they accept arbitrary Markdown and shell out to soffice. That is
+      # tolerable only because it publishes no ports and is reachable solely
+      # from inside the `letta` network. Declaring traefik.enable=false makes
+      # that explicit rather than incidental, so a future Traefik reconfiguration
+      # cannot pick it up by accident. Same guard the backing services use
+      # (network-shared/after/gotenberg.yml, after/qdrant.yml).
+      #
+      # Do NOT simply flip this to true: the routes must be gated first. That is
+      # a coordinated change, because the suite has registered Letta REST tools
+      # (integrations/letta_register.py, pp_tool.py) that would each need the
+      # key before an auth requirement could land.
+      - traefik.enable=false
+    # Optional external HTTPS route via Traefik — ONLY after the /build* routes
+    # are authenticated (see above). Uncomment, set your host, and note the
+    # entrypoints/certresolver pair the house pattern requires:
     #   - traefik.enable=true
     #   - traefik.http.routers.ppsuite.rule=Host(`ppsuite.srv1231216.hstgr.cloud`)
-    #   - traefik.http.routers.ppsuite.tls=true
+    #   - traefik.http.routers.ppsuite.entrypoints=websecure
+    #   - traefik.http.routers.ppsuite.tls.certresolver=letsencrypt
     #   - traefik.http.services.ppsuite.loadbalancer.server.port=8600
 
 networks:

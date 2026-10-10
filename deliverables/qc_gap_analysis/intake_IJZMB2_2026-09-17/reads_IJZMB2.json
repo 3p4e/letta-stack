@@ -1,0 +1,108 @@
+{
+  "534/1065/26": {
+    "batch_canonical": "P050212",
+    "batch_printed": "PO50212",
+    "cultivation_batch": "CJ062501-2",
+    "cert_code": "534/1065/26",
+    "date_of_issue": "31.08.2026",
+    "date_received": "25.08.2026",
+    "drive_file_id": "1862dl_aHvLPR9eSII2t3L8rk1HVCEnWp",
+    "file": "310826_534-1065-26_IJZ-MB_P050212.pdf",
+    "lab": "IJZ-MB",
+    "laboratory": "IPH — Institute of Public Health",
+    "letter_no": "03-500/1 од 24.08.2026",
+    "request_no": "326/2026",
+    "sample_printed": "Сув цвет од канабис сорта Cap Junky, 36,0 g (Просторија за завршно сушење F108)",
+    "strain_printed": "Cap Junky",
+    "purpose": "микробиолошка чистота",
+    "method": "Ph.Eur. 5.1.8, Kat.C и производителска спецификација / 2.6.12, 2.6.13, 2.6.31",
+    "overall_conclusion": "СЕ ВО СОГЛАСНОСТ — Ph.Eur. монографија 04/2019:50108 и производителска спецификација",
+    "sha256": "54bf8f004b825f6b75b495273fb45b4567e3dc50d2812389edf6a414ce7c3fac",
+    "bytes": 568171,
+    "read_A": {
+      "9.1": "6,2 x 10³ CFU/g",
+      "9.2": "2,3 x 10² CFU/g",
+      "9.3": "< 10⁴ и > 10³ CFU/g",
+      "9.4": "Отсутна/25 g",
+      "9.5": "Отсутна/g",
+      "9.6": "Отсутна/g",
+      "9.7": "Отсутна/g"
+    },
+    "read_B": {
+      "9.1": "6,2 x 10^3 CFU/g",
+      "9.2": "2,3 x 10^2 CFU/g",
+      "9.3": "< 10^4 и > 10^3 CFU/g",
+      "9.4": "Отсутна/25 g",
+      "9.5": "Отсутна/g",
+      "9.6": "Отсутна/g",
+      "9.7": "Отсутна/g"
+    },
+    "reads_agree_flag": true,
+    "results": {
+      "9.1": "6,2 x 10³ CFU/g",
+      "9.2": "2,3 x 10² CFU/g",
+      "9.3": "< 10⁴ и > 10³ CFU/g",
+      "9.4": "Отсутна/25 g",
+      "9.5": "Отсутна/g",
+      "9.6": "Отсутна/g",
+      "9.7": "Отсутна/g"
+    },
+    "notes": [
+      "the typed serial reads PO50212 with the letter O, as this laboratory's forms do; the strain Cap Junky and the lot both agree with P050212 / CJ062501-2, so there is no lot question of the kind OI-37 records for 548/1079/26",
+      "P. aeruginosa and S. aureus are reported and absent; the owner's release register has no column for either, so they are kept here and not written"
+    ]
+  },
+  "535/1066/26": {
+    "batch_canonical": "P050222",
+    "batch_printed": "PO50222",
+    "cultivation_batch": "CJ062501/1",
+    "cert_code": "535/1066/26",
+    "date_of_issue": "31.08.2026",
+    "date_received": "25.08.2026",
+    "drive_file_id": "1ux8B8m-2aij_ZGU5RjjZflG4xiun83gS",
+    "file": "310826_535-1066-26_IJZ-MB_CJ062501-1-P050222.pdf",
+    "lab": "IJZ-MB",
+    "laboratory": "IPH — Institute of Public Health",
+    "letter_no": "03-500/1 од 24.08.2026",
+    "request_no": "325/2026",
+    "sample_printed": "Сув цвет од канабис сорта Cap Junky",
+    "strain_printed": "Cap Junky",
+    "purpose": "микробиолошка чистота",
+    "method": "Ph.Eur. 5.1.8, Kat.C и производителска спецификација / 2.6.12, 2.6.13, 2.6.31",
+    "overall_conclusion": "СЕ ВО СОГЛАСНОСТ — Ph.Eur. монографија 04/2019:50108 и производителска спецификација",
+    "sha256": "fa36513c6b50fd5d3b703359c043cbd45fff128678d85fd52cded7ea53af1fca",
+    "bytes": 568601,
+    "read_A": {
+      "9.1": "4,2 x 10³ CFU/g",
+      "9.2": "< 10 CFU/g",
+      "9.3": "< 10⁴ и > 10³ CFU/g",
+      "9.4": "Отсутна/25 g",
+      "9.5": "Отсутна/g",
+      "9.6": "Отсутна/g",
+      "9.7": "Отсутна/g"
+    },
+    "read_B": {
+      "9.1": "4,2 x 10^3 CFU/g",
+      "9.2": "< 10 CFU/g",
+      "9.3": "< 10^4 и > 10^3 CFU/g",
+      "9.4": "Отсутна/25 g",
+      "9.5": "Отсутна/g",
+      "9.6": "Отсутна/g",
+      "9.7": "Отсутна/g"
+    },
+    "reads_agree_flag": true,
+    "results": {
+      "9.1": "4,2 x 10³ CFU/g",
+      "9.2": "< 10 CFU/g",
+      "9.3": "< 10⁴ и > 10³ CFU/g",
+      "9.4": "Отсутна/25 g",
+      "9.5": "Отсутна/g",
+      "9.6": "Отсутна/g",
+      "9.7": "Отсутна/g"
+    },
+    "notes": [
+      "the typed serial reads PO50222; the strain and the lot agree with P050222 / CJ062501/1",
+      "P. aeruginosa and S. aureus are reported and absent; not written, for want of a register column"
+    ]
+  }
+}

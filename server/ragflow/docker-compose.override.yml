@@ -1,0 +1,49 @@
+# /opt/stacks/ragflow/docker-compose.override.yml
+#
+# Enables RAGFlow's built-in MCP server in self-host mode, reachable only through
+# Traefik. Copy to the host, then:  docker compose up -d --no-deps ragflow-cpu
+#
+# Depends on two values already set in /opt/stacks/ragflow/.env (0600 root):
+#   SVR_MCP_PORT=127.0.0.1:9382     pins the published port to loopback
+#   MCP_HOST_API_KEY=ragflow-…      the self-host tenant key
+services:
+  ragflow-cpu:
+    # `command` replaces the image CMD outright, so the two flags already in use
+    # are carried here. MCP binds 0.0.0.0 *inside* the container; the host side is
+    # pinned to loopback by SVR_MCP_PORT, so the only route in is Traefik.
+    command:
+      - --enable-adminserver
+      - --init-model-provider-tables
+      - --enable-mcpserver
+      - --mcp-host=0.0.0.0
+      - --mcp-port=9382
+      - --mcp-base-url=http://127.0.0.1:9380
+      - --mcp-script-path=/ragflow/mcp/server/server.py
+      - --mcp-mode=self-host
+      - --mcp-host-api-key=${MCP_HOST_API_KEY}
+      - --no-transport-sse-enabled
+    environment:
+      OAUTHLIB_RELAX_TOKEN_SCOPE: "1"
+    labels:
+      - traefik.enable=true
+      # Two services on one container, so each router names its service explicitly.
+      # Without `.service=`, Traefik cannot choose and both routers break.
+      - traefik.http.routers.ragflow.rule=Host(`ragflow.srv1231216.hstgr.cloud`)
+      - traefik.http.routers.ragflow.entrypoints=websecure
+      - traefik.http.routers.ragflow.tls.certresolver=letsencrypt
+      - traefik.http.routers.ragflow.service=ragflow
+      - traefik.http.services.ragflow.loadbalancer.server.port=80
+      - traefik.http.routers.ragflow-mcp.rule=Host(`ragflow-mcp.srv1231216.hstgr.cloud`)
+      - traefik.http.routers.ragflow-mcp.entrypoints=websecure
+      - traefik.http.routers.ragflow-mcp.tls.certresolver=letsencrypt
+      - traefik.http.routers.ragflow-mcp.service=ragflow-mcp
+      - traefik.http.services.ragflow-mcp.loadbalancer.server.port=9382
+    volumes:
+      - ./llm_factories.json:/ragflow/conf/llm_factories.json:ro
+    networks:
+      - ragflow
+      - ai-net
+
+networks:
+  ai-net:
+    external: true

@@ -1,0 +1,14 @@
+/* ─────────────────────────────────────────────────────────────
+   Purely Plant Design System — Global Styles Entry Point
+   Import this single file to get all tokens + component CSS.
+   Never add rules here directly — keep as @import list only.
+   ───────────────────────────────────────────────────────────── */
+
+@import './tokens/colors.css';
+@import './tokens/typography.css';
+@import './tokens/spacing.css';
+@import './tokens/document.css';
+
+/* Opt-in named color schemes (scoped — do not affect :root) */
+@import './tokens/scheme-terran.css';
+@import './tokens/scheme-protoss.css';

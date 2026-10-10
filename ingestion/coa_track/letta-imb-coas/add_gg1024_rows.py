@@ -24,8 +24,21 @@ because HPA1024 is the same document type from the same issuer:
     perform them.
   * Certificate Code records that the document prints no number, rather than inventing one.
 
-Two things are recorded exactly as printed even though they read oddly, because they are
+Three things are recorded exactly as printed even though they read oddly, because they are
 what the paper says and the register does not correct laboratories:
+
+  * The microbial acceptance criteria: "<10^5, max 500 000 CFU/g" (TAMC) and
+    "<10^4, max 50 000 CFU/g" (TYMC). **Those maxima are wrong on the form.** Ph. Eur.
+    5.1.4, in identical harmonised wording USP <1111>, reads an enumeration criterion of
+    10^n CFU as a maximum acceptable count of 2 x 10^n — so 10^5 is 200 000 and 10^4 is
+    20 000, not 500 000 and 50 000. No pharmacopoeial text uses a x5 multiplier for
+    microbial limits. The figures stay here because this column transcribes the document;
+    they were separately copied into `build_qc_register.py` and `build_master_workbook.py`
+    as if they were the criterion, and into the batch release register's specification row,
+    where on 31.08.2026 they caused four conforming TYMC results to be flagged as
+    exceedances. Those three are corrected. **Correcting the in-house CoA form itself is a
+    QA action and is not in this script's gift.** Record:
+    `review/OOS_RECTIFICATION_2026-08-31.md`.
 
   * Bile-tolerant gram-negative bacteria: result "<10^2 >10 CFU/g" — the CoA prints both
     bounds, i.e. a count above 10 and below 100.

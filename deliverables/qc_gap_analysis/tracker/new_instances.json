@@ -1,0 +1,4172 @@
+[
+ {
+  "p": "",
+  "cu": "CJ1024",
+  "strain": "Cap Junky",
+  "code": "565-1096-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "<10",
+   "9.2": "10"
+  },
+  "held": [],
+  "document": "CJ1024_565-1096-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "006c94eaa85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P050012",
+  "cu": "",
+  "strain": "Gorilla Glue",
+  "code": "564-1095-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "<10",
+   "9.2": "<10"
+  },
+  "held": [],
+  "document": "P050012_564-1095-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "01299388a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P050032",
+  "cu": "",
+  "strain": "Motor Breath",
+  "code": "563-1094-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "<10",
+   "9.2": "<10"
+  },
+  "held": [],
+  "document": "P050032_563-1094-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "01efa712a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P050102",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "562-1093-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "<10",
+   "9.2": "50"
+  },
+  "held": [],
+  "document": "P050102_562-1093-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "02a19814a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P050122",
+  "cu": "",
+  "strain": "Blue Sunset Sherbet",
+  "code": "561-1092-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "10",
+   "9.2": "20"
+  },
+  "held": [],
+  "document": "P050122_561-1092-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "03583894a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P050132",
+  "cu": "",
+  "strain": "Orange Punch Mimosa",
+  "code": "560-1091-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "<10",
+   "9.2": "<10"
+  },
+  "held": [],
+  "document": "P050132_560-1091-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "04024baea85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P050142",
+  "cu": "",
+  "strain": "Blue Sunset Sherbet",
+  "code": "559-1090-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "<10",
+   "9.2": "<10"
+  },
+  "held": [],
+  "document": "P050142_559-1090-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "04b0094ca85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P050172",
+  "cu": "",
+  "strain": "Cap Junky",
+  "code": "558-1089-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "<10",
+   "9.2": "<10"
+  },
+  "held": [],
+  "document": "P050172_558-1089-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "0552fa26a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P050192",
+  "cu": "",
+  "strain": "Sleepy Joe",
+  "code": "548-1079-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "5.4×10²",
+   "9.2": "3.7×10²"
+  },
+  "held": [],
+  "document": "P050192_548-1079-26, 31.08.2026_IJZ-MB.pdf",
+  "doc_id": "05fcca42a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P050202",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "557-1088-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "<10",
+   "9.2": "<10"
+  },
+  "held": [],
+  "document": "P050202_557-1088-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "06a88e04a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P050252",
+  "cu": "",
+  "strain": "Cap Junky",
+  "code": "556-1087-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "<10",
+   "9.2": "<10"
+  },
+  "held": [],
+  "document": "P050252_556-1087-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "075c4ffca85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P050262",
+  "cu": "",
+  "strain": "Wedding Crusher",
+  "code": "555-1086-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "<10",
+   "9.2": "<10"
+  },
+  "held": [],
+  "document": "P050262_555-1086-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "0810644ca85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P050272",
+  "cu": "",
+  "strain": "Permanent Marker",
+  "code": "554-1085-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "<10",
+   "9.2": "<10"
+  },
+  "held": [],
+  "document": "P050272_554-1085-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "08bbda20a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P050292",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "553-1084-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "<10",
+   "9.2": "<10"
+  },
+  "held": [],
+  "document": "P050292_553-1084-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "096c3384a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060052",
+  "cu": "",
+  "strain": "Apple and Banana",
+  "code": "552-1083-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "<10",
+   "9.2": "<10"
+  },
+  "held": [],
+  "document": "P060052_552-1083-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "ce756958a84f11f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060102",
+  "cu": "",
+  "strain": "Wedding Cake",
+  "code": "551-1082-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "<10",
+   "9.2": "<10"
+  },
+  "held": [],
+  "document": "P060102_551-1082-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "0a104302a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060142",
+  "cu": "",
+  "strain": "Graps & Creme",
+  "code": "550-1081-26",
+  "date": "01.09.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "10",
+   "9.2": "<10"
+  },
+  "held": [],
+  "document": "P060142_550-1081-26, 01.09.2026_IJZ-MB.pdf",
+  "doc_id": "0ab3dac6a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060162",
+  "cu": "",
+  "strain": "Sleepy Joe",
+  "code": "549-1080-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "5.2×10²",
+   "9.2": "4.3×10²"
+  },
+  "held": [],
+  "document": "P060162_549-1080-26, 31.08.2026_IJZ-MB.pdf",
+  "doc_id": "0b5702e6a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060202",
+  "cu": "",
+  "strain": "Jokerz 31",
+  "code": "547-1078-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10² и >10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "4.4×10²",
+   "9.2": "8.6×10²"
+  },
+  "held": [],
+  "document": "P060202_547-1078-26, 31.08.2026_IJZ-MB.pdf",
+  "doc_id": "0c048498a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060222",
+  "cu": "",
+  "strain": "Orange Punch Mimosa",
+  "code": "546-1077-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "<10",
+   "9.2": "10"
+  },
+  "held": [],
+  "document": "P060222_546-1077-26, 31.08.2026_IJZ-MB.pdf",
+  "doc_id": "0cb03694a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060252",
+  "cu": "",
+  "strain": "Gorilla Glue",
+  "code": "545-1076-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10³ и >10²",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "5×10³",
+   "9.2": "1.1×10³"
+  },
+  "held": [],
+  "document": "P060252_545-1076-26, 31.08.2026_IJZ-MB.pdf",
+  "doc_id": "0d55705aa85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060262",
+  "cu": "",
+  "strain": "Jokerz 31",
+  "code": "544-1075-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10³ и >10²",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "1×10³",
+   "9.2": "1.7×10²"
+  },
+  "held": [],
+  "document": "P060262_544-1075-26, 31.08.2026_IJZ-MB.pdf",
+  "doc_id": "0e1632aea85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060272",
+  "cu": "",
+  "strain": "Cash Cow",
+  "code": "543-1074-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10³ и >10²",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "1.6×10³",
+   "9.2": "1×10³"
+  },
+  "held": [],
+  "document": "P060272_543-1074-26, 31.08.2026_IJZ-MB.pdf",
+  "doc_id": "0ee35b76a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060292",
+  "cu": "",
+  "strain": "Fat Bastard",
+  "code": "542-1073-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10² и >10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "3×10³",
+   "9.2": "5.2×10²"
+  },
+  "held": [],
+  "document": "P060292_542-1073-26, 31.08.2026_IJZ-MB.pdf",
+  "doc_id": "0f91cf94a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060302",
+  "cu": "",
+  "strain": "Gorilla Glue",
+  "code": "541-1072-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "2.2×10³",
+   "9.2": "2.1×10³"
+  },
+  "held": [],
+  "document": "P060302_541-1072-26, 31.08.2026_IJZ-MB.pdf",
+  "doc_id": "10448cc4a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060312",
+  "cu": "",
+  "strain": "Jelly Donutz",
+  "code": "540-1071-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "2.2×10³",
+   "9.2": "1.7×10³"
+  },
+  "held": [],
+  "document": "P060312_540-1071-26, 31.08.2026_IJZ-MB.pdf",
+  "doc_id": "11008b7ca85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060342",
+  "cu": "",
+  "strain": "Scrambler",
+  "code": "539-1070-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "8.3×10³",
+   "9.2": "5.3×10³"
+  },
+  "held": [],
+  "document": "P060342_539-1070-26, 31.08.2026_IJZ-MB.pdf",
+  "doc_id": "11a9a2e8a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060392",
+  "cu": "",
+  "strain": "Fat Bastard",
+  "code": "538-1069-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "2.9×10³",
+   "9.2": "2.5×10³"
+  },
+  "held": [],
+  "document": "P060392_538-1069-26, 31.08.2026_IJZ-MB.pdf",
+  "doc_id": "125d485ca85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060432",
+  "cu": "",
+  "strain": "Fat Bastard",
+  "code": "537-1068-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10² и >10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "9.8×10³",
+   "9.2": "2.5×10³"
+  },
+  "held": [],
+  "document": "P060432_537-1068-26, 31.08.2026_IJZ-MB.pdf",
+  "doc_id": "130e4ed6a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060442",
+  "cu": "",
+  "strain": "Scrambler",
+  "code": "536-1067-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.3": "<10",
+   "9.5": "absent",
+   "9.4": "absent",
+   "9.1": "1.7×10³",
+   "9.2": "5.6×10²"
+  },
+  "held": [],
+  "document": "P060442_536-1067-26, 31.08.2026_IJZ-MB.pdf",
+  "doc_id": "13bee778a85011f1a78e816a02449cdc",
+  "source": "eCOA_DB ingest 04.09.2026 · two reads reconciled"
+ },
+ {
+  "p": "P060122",
+  "cu": "",
+  "strain": "Amnesia Core Cut",
+  "code": "220-1-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-1-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P050192",
+  "cu": "",
+  "strain": "Blue Sunset Sherbet",
+  "code": "220-2-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-2-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P050222",
+  "cu": "",
+  "strain": "Cap Junkie",
+  "code": "220-3-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-3-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P060022",
+  "cu": "",
+  "strain": "Cap Junkie",
+  "code": "220-4-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-4-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P060072",
+  "cu": "",
+  "strain": "Cap Junkie",
+  "code": "220-5-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-5-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P060132",
+  "cu": "",
+  "strain": "Chem Flyer",
+  "code": "220-6-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-6-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P050282",
+  "cu": "",
+  "strain": "Clemosa a Bud",
+  "code": "220-7-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-7-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P060322",
+  "cu": "",
+  "strain": "Fat Bastard",
+  "code": "220-8-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-8-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "",
+  "cu": "GG1024",
+  "strain": "Gorilla Glue",
+  "code": "220-9-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-9-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P050302",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "220-10-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-10-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P050072",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "220-11-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-11-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P050312",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "220-12-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-12-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P060092",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "220-13-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-13-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P060182",
+  "cu": "",
+  "strain": "Grapes and Cream",
+  "code": "220-14-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-14-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P050182",
+  "cu": "",
+  "strain": "High Pro Amnesia",
+  "code": "220-15-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-15-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P060362",
+  "cu": "",
+  "strain": "Jelly Donutz",
+  "code": "220-16-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-16-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P060412",
+  "cu": "",
+  "strain": "Jelly Donutz",
+  "code": "220-17-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-17-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P060422",
+  "cu": "",
+  "strain": "Jelly Donutz",
+  "code": "220-18-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-18-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P060172",
+  "cu": "",
+  "strain": "Kush Crasher",
+  "code": "220-19-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-19-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P050112",
+  "cu": "",
+  "strain": "Motor Breath",
+  "code": "220-20-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-20-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P050042",
+  "cu": "",
+  "strain": "Orange Punch Mimosa",
+  "code": "220-21-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-21-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P060042",
+  "cu": "",
+  "strain": "Orange Punch Mimosa",
+  "code": "220-22-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-22-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P050082",
+  "cu": "",
+  "strain": "Orange Punch Mimosa",
+  "code": "220-23-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-23-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P060232",
+  "cu": "",
+  "strain": "Permanent Marker",
+  "code": "220-24-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-24-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P060112",
+  "cu": "",
+  "strain": "Pure Michigen",
+  "code": "220-25-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-25-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P060282",
+  "cu": "",
+  "strain": "Scrambler",
+  "code": "220-26-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-26-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P060082",
+  "cu": "",
+  "strain": "Sleepy Joe",
+  "code": "220-27-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-27-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P060012",
+  "cu": "",
+  "strain": "Wedding Crusher",
+  "code": "220-28-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-28-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P060372",
+  "cu": "",
+  "strain": "Cash Cow",
+  "code": "220-29-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-29-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P060492",
+  "cu": "JD042601",
+  "strain": "Jelly Donutz",
+  "code": "220-30-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-30-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "",
+  "cu": "FB042601",
+  "strain": "Fat Bastard",
+  "code": "220-31-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-31-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "",
+  "cu": "CC042601",
+  "strain": "Cash Cow",
+  "code": "220-32-M-26",
+  "date": "11.09.2026",
+  "lab": "FHM-M",
+  "params": [
+   10
+  ],
+  "vals": {
+   "10.1": "ND",
+   "10.3": "ND",
+   "10.2": "ND"
+  },
+  "held": [],
+  "document": "220-32-M-26 Pjureli Plant.pdf",
+  "doc_id": null,
+  "source": "direct read 14.09.2026 · Claude transcription of the rendered page, Gemini cross-read, every result, code, date and batch agreeing; not through the eCoA database"
+ },
+ {
+  "p": "P050142",
+  "cu": "",
+  "strain": "Blue Sunset Sherbet",
+  "code": "227-1-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "26.69",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "227-1-K-26 Pjureli Plant.pdf",
+  "doc_id": "1KO8oKw9BofFxlJG1CA53adWKPViMaTg5",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy); no second read on file — OI-32"
+ },
+ {
+  "p": "P050102",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "227-2-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "28.68",
+   "5": "<LOQ",
+   "6": "0.25"
+  },
+  "held": [],
+  "document": "227-2-K-26 Pjureli Plant.pdf",
+  "doc_id": "1Oy72HmbV-egqGZNkAKj60AmFdQmQuQC5",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy), checkpoint transcription in master_coa_table.tsv agreeing on batch, P lot, date and every result; not through the eCoA database"
+ },
+ {
+  "p": "P050262",
+  "cu": "",
+  "strain": "Wedding Crusher",
+  "code": "227-3-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "25.37",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "227-3-K-26 Pjureli Plant.pdf",
+  "doc_id": "1GfFo1LW8LxE_aQqYOJSaXZKBdcJggGlj",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy), checkpoint transcription in master_coa_table.tsv agreeing on batch, P lot, date and every result; not through the eCoA database"
+ },
+ {
+  "p": "P060102",
+  "cu": "",
+  "strain": "Wedding Cake",
+  "code": "227-4-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "25.15",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "227-4-K-26 Pjureli Plant.pdf",
+  "doc_id": "1Gb3QypKbZmA-j4DS7-vswy3M2x4cAN5E",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy); no second read on file — OI-32"
+ },
+ {
+  "p": "P060192",
+  "cu": "",
+  "strain": "Sleepy Joe",
+  "code": "227-5-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "11.27",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "227-5-K-26 Pjureli Plant.pdf",
+  "doc_id": "1WXPvkslXqdIAVa2DrFMSKM5NX0a42o1r",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy), checkpoint transcription in master_coa_table.tsv agreeing on batch, P lot, date and every result; not through the eCoA database"
+ },
+ {
+  "p": "P060162",
+  "cu": "",
+  "strain": "Sleepy Joe",
+  "code": "227-6-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "10.61",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "227-6-K-26 Pjureli Plant.pdf",
+  "doc_id": "12nfGaaNrzNoiTMWSaSquGYK6OMfJztl_",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy), checkpoint transcription in master_coa_table.tsv agreeing on batch, P lot, date and every result; not through the eCoA database"
+ },
+ {
+  "p": "P060442",
+  "cu": "",
+  "strain": "Scrambler",
+  "code": "227-7-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "16.68",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "227-7-K-26 Pjureli Plant.pdf",
+  "doc_id": "1IqO-kBlDAak5gnK_zhdBRZ3QKt1w9tdV",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy), checkpoint transcription in master_coa_table.tsv agreeing on batch, P lot, date and every result; not through the eCoA database"
+ },
+ {
+  "p": "P060342",
+  "cu": "",
+  "strain": "Scrambler",
+  "code": "227-8-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "22.40",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "227-8-K-26 Pjureli Plant.pdf",
+  "doc_id": "1pXYmAOS_JPki8wlXCAWVCkvB1IUgascu",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy); no second read on file — OI-32"
+ },
+ {
+  "p": "P050272",
+  "cu": "",
+  "strain": "Permanent Marker",
+  "code": "227-9-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "12.77",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "227-9-K-26 Pjureli Plant.pdf",
+  "doc_id": "1qbasv7yHzEnM00WogY1BzlahL8gJgGWt",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy), checkpoint transcription in master_coa_table.tsv agreeing on batch, P lot, date and every result; not through the eCoA database"
+ },
+ {
+  "p": "P060222",
+  "cu": "",
+  "strain": "Orange Punch Mimosa",
+  "code": "227-10-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "9.73",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "227-10-K-26 Pjureli Plant.pdf",
+  "doc_id": "1oLwCINneWtHMUG0bMGrhE2lEYlX17Aiw",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy), checkpoint transcription in master_coa_table.tsv agreeing on batch, P lot, date and every result; not through the eCoA database"
+ },
+ {
+  "p": "P050132",
+  "cu": "",
+  "strain": "Orange Punch Mimosa",
+  "code": "227-11-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "17.83",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "227-11-K-26 Pjureli Plant.pdf",
+  "doc_id": "1fdKMrOR6Q0mij4BDdZDRRNjHL5YQU3A6",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy), checkpoint transcription in master_coa_table.tsv agreeing on batch, P lot, date and every result; not through the eCoA database"
+ },
+ {
+  "p": "P050032",
+  "cu": "",
+  "strain": "Motor Breath",
+  "code": "227-12-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "17.57",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "227-12-K-26 Pjureli Plant.pdf",
+  "doc_id": "1xIgC2JWhjC_lGjvdZXCOHCzdraHuh-mk",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy), checkpoint transcription in master_coa_table.tsv agreeing on batch, P lot, date and every result; not through the eCoA database"
+ },
+ {
+  "p": "P060262",
+  "cu": "",
+  "strain": "Jokerz 31",
+  "code": "227-13-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "24.48",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "227-13-K-26 Pjureli Plant.pdf",
+  "doc_id": "1qWhIqDSPVox7R9zvtnQghP-B-P9UbnUa",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy), checkpoint transcription in master_coa_table.tsv agreeing on batch, P lot, date and every result; not through the eCoA database"
+ },
+ {
+  "p": "P060202",
+  "cu": "",
+  "strain": "Jokerz 31",
+  "code": "227-14-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "23.85",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "227-14-K-26 Pjureli Plant.pdf",
+  "doc_id": "1iO_SkmJcdrVKswBzIDu1Q5XzPyauOelB",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy), checkpoint transcription in master_coa_table.tsv agreeing on batch, P lot, date and every result; not through the eCoA database"
+ },
+ {
+  "p": "P060312",
+  "cu": "",
+  "strain": "Jelly Donutz",
+  "code": "227-15-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "19.99",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "227-15-K-26 Pjureli Plant.pdf",
+  "doc_id": "1KAdVAhtfGiiOJaGTThhhrskLnE619MRX",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy), checkpoint transcription in master_coa_table.tsv agreeing on batch, P lot, date and every result; not through the eCoA database"
+ },
+ {
+  "p": "P060142",
+  "cu": "",
+  "strain": "Graps & Creme",
+  "code": "227-16-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "7.50",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "227-16-K-26 Pjureli Plant.pdf",
+  "doc_id": "1wXcTBaq92Z6-nfDMMs7st2-UhSLUO4tn",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy); no second read on file — OI-32"
+ },
+ {
+  "p": "P050292",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "227-17-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "26.54",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "227-17-K-26 Pjureli Plant.pdf",
+  "doc_id": "1hCohJe8EINugosHG9FnEHwy_PVacy3es",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy), checkpoint transcription in master_coa_table.tsv agreeing on batch, P lot, date and every result; not through the eCoA database"
+ },
+ {
+  "p": "P050202",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "227-18-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "25.97",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "227-18-K-26 Pjureli Plant.pdf",
+  "doc_id": "1lkkLBkntN_KQTgB3GbThmDB_cQArAg6k",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy), checkpoint transcription in master_coa_table.tsv agreeing on batch, P lot, date and every result; not through the eCoA database"
+ },
+ {
+  "p": "P050012",
+  "cu": "",
+  "strain": "Gorilla Glue",
+  "code": "227-19-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "17.76",
+   "5": "<LOQ",
+   "6": "0.26"
+  },
+  "held": [],
+  "document": "227-19-K-26 Pjureli Plant.pdf",
+  "doc_id": "1zsKGdJDWKZixdtAnpRruHYmPPk0CBeTl",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy), checkpoint transcription in master_coa_table.tsv agreeing on batch, P lot, date and every result; not through the eCoA database"
+ },
+ {
+  "p": "P060252",
+  "cu": "",
+  "strain": "Gorilla Glue",
+  "code": "227-20-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "18.64",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "227-20-K-26 Pjureli Plant.pdf",
+  "doc_id": "1XPSEHGYIjgAje5LHZA-kkOMo6XTvprMR",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy), checkpoint transcription in master_coa_table.tsv agreeing on batch, P lot, date and every result; not through the eCoA database"
+ },
+ {
+  "p": "P060302",
+  "cu": "",
+  "strain": "Gorilla Glue",
+  "code": "227-21-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "19.16",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "227-21-K-26 Pjureli Plant.pdf",
+  "doc_id": "1ZIBewub3DC5hmRC6hdyjH89icK234j43",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy), checkpoint transcription in master_coa_table.tsv agreeing on batch, P lot, date and every result; not through the eCoA database"
+ },
+ {
+  "p": "P060292",
+  "cu": "",
+  "strain": "Fat Bastard",
+  "code": "227-22-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "18.75",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "227-22-K-26 Pjureli Plant.pdf",
+  "doc_id": "1ptS5-4wy73cM_MfEqeDGuxgcHMXCexXd",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy), checkpoint transcription in master_coa_table.tsv agreeing on batch, P lot, date and every result; not through the eCoA database"
+ },
+ {
+  "p": "P060392",
+  "cu": "",
+  "strain": "Fat Bastard",
+  "code": "227-23-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "19.31",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "227-23-K-26 Pjureli Plant.pdf",
+  "doc_id": "1u2QUrOinds9tENK5sNEfbqi6g4pd0hKb",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy), checkpoint transcription in master_coa_table.tsv agreeing on batch, P lot, date and every result; not through the eCoA database"
+ },
+ {
+  "p": "P060432",
+  "cu": "",
+  "strain": "Fat Bastard",
+  "code": "227-24-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "20.00",
+   "5": "0.21",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "227-24-K-26 Pjureli Plant.pdf",
+  "doc_id": "12_M6z1hnw8cKBC2p4rwp9pR3DZR6nmNA",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy), checkpoint transcription in master_coa_table.tsv agreeing on batch, P lot, date and every result; not through the eCoA database"
+ },
+ {
+  "p": "P060272",
+  "cu": "",
+  "strain": "Cash Cow",
+  "code": "227-25-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "16.36",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "227-25-K-26 Pjureli Plant.pdf",
+  "doc_id": "1mtQ8lDoWhSO72WnX0GOkoq4nU5gF_ABL",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy), checkpoint transcription in master_coa_table.tsv agreeing on batch, P lot, date and every result; not through the eCoA database"
+ },
+ {
+  "p": "",
+  "cu": "CJ1024",
+  "strain": "Cap Junky",
+  "code": "227-26-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "28.12",
+   "5": "<LOQ",
+   "6": "0.20"
+  },
+  "held": [],
+  "document": "227-26-K-26 Pjureli Plant.pdf",
+  "doc_id": "1mynaTanefJGJuhlVCLAAjJ-wFFqsLtjJ",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy), checkpoint transcription in master_coa_table.tsv agreeing on batch, P lot, date and every result; not through the eCoA database"
+ },
+ {
+  "p": "P050252",
+  "cu": "",
+  "strain": "Cap Junky",
+  "code": "227-27-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "28.18",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "227-27-K-26 Pjureli Plant.pdf",
+  "doc_id": "1wU8OpDO-rPbmd-U4X7Ut39UYYh13TsK6",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy), checkpoint transcription in master_coa_table.tsv agreeing on batch, P lot, date and every result; not through the eCoA database"
+ },
+ {
+  "p": "P050172",
+  "cu": "",
+  "strain": "Cap Junky",
+  "code": "227-28-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "21.30",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "227-28-K-26 Pjureli Plant.pdf",
+  "doc_id": "1im5WljiEJCDLrJN1tONNE8q6mJ2z4eT0",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy), checkpoint transcription in master_coa_table.tsv agreeing on batch, P lot, date and every result; not through the eCoA database"
+ },
+ {
+  "p": "P050122",
+  "cu": "",
+  "strain": "Blue Sunset Sherbet",
+  "code": "227-29-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "26.10",
+   "5": "<LOQ",
+   "6": "0.20"
+  },
+  "held": [],
+  "document": "227-29-K-26 Pjureli Plant.pdf",
+  "doc_id": "1faQriX-6-0AQf0Zizzn5HmDM8yFdmtBK",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy); no second read on file — OI-32"
+ },
+ {
+  "p": "P060052",
+  "cu": "",
+  "strain": "Apple and Banana",
+  "code": "227-30-K-26",
+  "date": "11.09.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "22.97",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "227-30-K-26 Pjureli Plant.pdf",
+  "doc_id": "1n56bs1Z8_RvrqJ8JmvNQpmaA4oMa4umv",
+  "source": "direct read 12.09.2026 · Claude transcription of the rendered page (ProcessedECOAs copy), checkpoint transcription in master_coa_table.tsv agreeing on batch, P lot, date and every result; not through the eCoA database"
+ },
+ {
+  "p": "P060122",
+  "cu": "",
+  "strain": "Amnesia Core Cut",
+  "code": "220-1-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "12.09",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-1-K-26_FHM_ACC102501-P060122.pdf",
+  "doc_id": "1MI6k-tSaHYNCq9bMwSB1P0mHhQ6yCIJt",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P050192",
+  "cu": "",
+  "strain": "Blue Sunset Sherbet",
+  "code": "220-2-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "20.52",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-2-K-26_FHM_BSS052501-P050192.pdf",
+  "doc_id": "1UEUpS0uQT6lAuja0oaBs7NgQtj0RqGHr",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P050222",
+  "cu": "",
+  "strain": "Cap Junkie",
+  "code": "220-3-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "24.80",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-3-K-26_FHM_CJ062501-1-P050222.pdf",
+  "doc_id": "1owRfb56cZYnA-Y020-KuMR8kAIhep4Xl",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060022",
+  "cu": "",
+  "strain": "Cap Junkie",
+  "code": "220-4-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "28.34",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-4-K-26_FHM_CJ082501-1-P060022.pdf",
+  "doc_id": "1qfreY-xYd3bcQcJu416UcdEXRptvsc1l",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060072",
+  "cu": "",
+  "strain": "Cap Junkie",
+  "code": "220-5-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "25.65",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-5-K-26_FHM_CJ092501-P060072.pdf",
+  "doc_id": "1QVgUtiuZHBtB2wYI79gPJHuhb-zzLGYH",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060132",
+  "cu": "",
+  "strain": "Chem Flyer",
+  "code": "220-6-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "9.55",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-6-K-26_FHM_CF102501-P060132.pdf",
+  "doc_id": "1QfhQHm0lUQwXtxKZhA4ESR8oIyu6oI15",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P050282",
+  "cu": "",
+  "strain": "Clemosa a Bud",
+  "code": "220-7-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "8.65",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-7-K-26_FHM_CLE072501-P050282.pdf",
+  "doc_id": "1FNzbU6TVtmO_xwyszefvqojUxbgi5fVn",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060322",
+  "cu": "",
+  "strain": "Fat Bastard",
+  "code": "220-8-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "17.99",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-8-K-26_FHM_FB012601-1-P060322.pdf",
+  "doc_id": "1xkplHaoXcn1aYL29LPi9PYXhRMGrCE26",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "",
+  "cu": "GG1024",
+  "strain": "Gorilla Glue",
+  "code": "220-9-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "15.51",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-9-K-26_FHM_GG1024.pdf",
+  "doc_id": "1jJN5EQlLyFXm6kV7BPHZN2XDmvyay9c-",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P050302",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "220-10-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "18.29",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-10-K-26_FHM_GP072501-2-P050302.pdf",
+  "doc_id": "1elibkS6xl6LsYXTJQdVyiQ7NaC-jvU6H",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P050072",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "220-11-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "28.30",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-11-K-26_FHM_GP0824_03-P050072.pdf",
+  "doc_id": "1HtcusG1aL-slRNySg38lWSjjH4pGxnn2",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P050312",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "220-12-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "25.13",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-12-K-26_FHM_GP082501-1-P050312.pdf",
+  "doc_id": "1nk36JFkKHzwfOIshyLudRjj59qO26n5d",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060092",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "220-13-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "25.24",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-13-K-26_FHM_GP092501-P060092.pdf",
+  "doc_id": "1O29KSgRneP-k8UCyCD2GrYn6F3jHhqim",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060182",
+  "cu": "",
+  "strain": "Grapes and Cream",
+  "code": "220-14-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "9.80",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-14-K-26_FHM_GRC102501-2-P060182.pdf",
+  "doc_id": "1KG-3OglvITfkz8X47kmXye7NPZpAIqbF",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P050182",
+  "cu": "",
+  "strain": "High Pro Amnesia",
+  "code": "220-15-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "19.69",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-15-K-26_FHM_HPA052501-P050182.pdf",
+  "doc_id": "1qy7D4p2HnpIvhhnmpF0FX28hrzM1A0Kl",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060362",
+  "cu": "",
+  "strain": "Jelly Donutz",
+  "code": "220-16-K-26",
+  "date": "25.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "21.01",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "250826_220-16-K-26_FHM_JD012603-01-P060362.pdf",
+  "doc_id": "14VkCqXY7thJrlKO9uDhGsOsTNFPNpyUJ",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060412",
+  "cu": "",
+  "strain": "Jelly Donutz",
+  "code": "220-17-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "14.43",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-17-K-26_FHM_JD012603-02-P060412.pdf",
+  "doc_id": "1e8vjDT5ev8CrRLGkiJ9RzCNaAtdcabDz",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060422",
+  "cu": "",
+  "strain": "Jelly Donutz",
+  "code": "220-18-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "17.09",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-18-K-26_FHM_JD012603-02V-P060422.pdf",
+  "doc_id": "14D1xjxdt9B5_b0AHH9sz13bdDUtT4Ux4",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060172",
+  "cu": "",
+  "strain": "Kush Crasher",
+  "code": "220-19-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "17.06",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-19-K-26_FHM_KC102501-P060172.pdf",
+  "doc_id": "1xnJg1PDby3P8VDHnDufvz0SrT3Be2ybc",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P050112",
+  "cu": "",
+  "strain": "Motor Breath",
+  "code": "220-20-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "17.93",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-20-K-26_FHM_MB0824_05-P050112.pdf",
+  "doc_id": "1NMq2Xu_z_UuzYCvm7vxmQs9Cr252wLWJ",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P050042",
+  "cu": "",
+  "strain": "Orange Punch Mimosa",
+  "code": "220-21-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "18.14",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-21-K-26_FHM_OMP1024_01-P050042.pdf",
+  "doc_id": "19d945xqYrxKyS3LdPZgU611wL5rLZ7iy",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060042",
+  "cu": "",
+  "strain": "Orange Punch Mimosa",
+  "code": "220-22-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "10.18",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-22-K-26_FHM_OPM092501-P060042.pdf",
+  "doc_id": "1o9_7QErac41MaCE4oakmiYM1XeccMc1r",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P050082",
+  "cu": "",
+  "strain": "Orange Punch Mimosa",
+  "code": "220-23-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "19.30",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-23-K-26_FHM_OPM1024_03-P050082.pdf",
+  "doc_id": "1SYbT-ij0xo9I3aI79ZS5uurBVI-Tb8VI",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060232",
+  "cu": "",
+  "strain": "Permanent Marker",
+  "code": "220-24-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "10.80",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-24-K-26_FHM_PM112501-P060232.pdf",
+  "doc_id": "1wHRdiczYdeixyxLzTfvfMBw6_SsIgx32",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060112",
+  "cu": "",
+  "strain": "Pure Michigen",
+  "code": "220-25-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "13.95",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-25-K-26_FHM_PUM102501-P060112.pdf",
+  "doc_id": "1JTXMk8Yc_VEU8yTveQkje6jg4t-2dP09",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060282",
+  "cu": "",
+  "strain": "Scrambler",
+  "code": "220-26-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "19.73",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-26-K-26_FHM_SCR112501-P060282.pdf",
+  "doc_id": "1z_XD50_GN0B3B7_SVL448VVahY-N2lzP",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060082",
+  "cu": "",
+  "strain": "Sleepy Joe",
+  "code": "220-27-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "10.39",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-27-K-26_FHM_SJ092501-P060082.pdf",
+  "doc_id": "1nEQGhKjjaf0VxrGMGUvSaH40GeCCvRE4",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060012",
+  "cu": "",
+  "strain": "Wedding Crusher",
+  "code": "220-28-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "23.48",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-28-K-26_FHM_WC082501-P060012.pdf",
+  "doc_id": "1ovwwWrwAQG_dqcrYAcGNW01yAgZ8gYor",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060372",
+  "cu": "",
+  "strain": "Cash Cow",
+  "code": "220-29-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "14.76",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-29-K-26_FHM_CC012603-P060372.pdf",
+  "doc_id": "1B9xPy8c8xBWqJ3Jz6IlO5hw63zAurs1E",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P060492",
+  "cu": "JD042601",
+  "strain": "Jelly Donutz",
+  "code": "220-30-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "14.89",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-30-K-26_FHM_JD042601.pdf",
+  "doc_id": "1GgHwQhy6gVJ5ToUUtGEi8hopYNpcuK7W",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "",
+  "cu": "FB042601",
+  "strain": "Fat Bastard",
+  "code": "220-31-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "14.99",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-31-K-26_FHM_FB042601.pdf",
+  "doc_id": "1PyB6ttblQ3-Pkdn491RSD3Oy2gQkUoSV",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "",
+  "cu": "CC042601",
+  "strain": "Cash Cow",
+  "code": "220-32-K-26",
+  "date": "26.08.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "14.90",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "260826_220-32-K-26_FHM_CC042601.pdf",
+  "doc_id": "1SOiEuGBBHjdz0vqiEDalrrDAhmoXJ6hw",
+  "source": "direct read 15.09.2026 · Claude transcription of the rendered page (eCoA_DATABASE copy), independent second transcription of the same pages agreeing on batch, dates, sample number and every result; not through the eCoA database pipeline"
+ },
+ {
+  "p": "P050212",
+  "cu": "CJ062501/2",
+  "strain": "Cap Junky",
+  "code": "534-1065-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "6.2×10³",
+   "9.2": "2.3×10²",
+   "9.3": "<10⁴ и >10³",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "310826_534-1065-26_IJZ-MB_P050212.pdf",
+  "doc_id": "54bf8f004b825f6b75b495273fb45b4567e3dc50d2812389edf6a414ce7c3fac",
+  "source": "intake_IJZMB2_2026-09-17 · two reads of the page, agreeing"
+ },
+ {
+  "p": "P050222",
+  "cu": "CJ062501/1",
+  "strain": "Cap Junky",
+  "code": "535-1066-26",
+  "date": "31.08.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "4.2×10³",
+   "9.2": "<10",
+   "9.3": "<10⁴ и >10³",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "310826_535-1066-26_IJZ-MB_CJ062501-1-P050222.pdf",
+  "doc_id": "fa36513c6b50fd5d3b703359c043cbd45fff128678d85fd52cded7ea53af1fca",
+  "source": "intake_IJZMB2_2026-09-17 · two reads of the page, agreeing"
+ },
+ {
+  "p": "P060102",
+  "cu": "WED102501",
+  "strain": "Wedding Cake",
+  "code": "031-3-ГС-26",
+  "date": "12.02.2026",
+  "lab": "FHM",
+  "params": [
+   8
+  ],
+  "vals": {
+   "8": "6,8 %"
+  },
+  "held": [],
+  "document": "120226_031-3-LoD-26_FHM_WED102501-P060102.pdf",
+  "doc_id": "cb01a7758252e2c5a8b8c2af49098c9781712d72ff92fd16602a57e47af200b0",
+  "source": "intake_LoD031_2026-09-17 · two reads of the page, agreeing"
+ },
+ {
+  "p": "P060332",
+  "cu": "CC012601/1",
+  "strain": "Cash Cow",
+  "code": "361-0691-26",
+  "date": "01.06.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "7.8×10⁴",
+   "9.2": "2.2×10⁴",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "(CC012601-1)_IJZ-MB_361-0691-26_01.06.2026.pdf",
+  "doc_id": "1veeIfBmTRJQm_UuAYHbnttcaUMlIRLrE",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060352",
+  "cu": "FB012602*",
+  "strain": "Fat Bastard",
+  "code": "366-0696-26",
+  "date": "01.06.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "6.3×10⁴",
+   "9.2": "2.2×10⁴",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P060352 (FB012602＊)_IJZ-MB_366-0696-26_01.06.2026.pdf",
+  "doc_id": "1ZXW6EAogqOHaBNnz_X1n8pfE9hx40W3p",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060432",
+  "cu": "FB012603",
+  "strain": "Fat Bastard",
+  "code": "3661-2026",
+  "date": "22.06.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.234",
+   "11.2": "0.04",
+   "11.3": "0.056",
+   "11.4": "0.034",
+   "12": "< 0,01 mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060432 (FB012603)_IJZ_3661-2026_22.06.2026.pdf",
+  "doc_id": "1mcrHpCLPANLSzog_VlJMk81OyyBGEF27",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060392",
+  "cu": "FB012603V",
+  "strain": "Fat Bastard",
+  "code": "3663-2026",
+  "date": "22.06.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.029",
+   "11.2": "0.038",
+   "11.3": "0.044",
+   "11.4": "0.012",
+   "12": "< 0,01 mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060392 (FB012603V)_IJZ_3663-2026_22.06.2026.pdf",
+  "doc_id": "1s1vtKiFmsBzcT6fm_Pq9XP6vyE0810nZ",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060452",
+  "cu": "FB032601",
+  "strain": "Fat Bastard",
+  "code": "3924-2026",
+  "date": "20.07.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.036",
+   "11.2": "0.015",
+   "11.3": "0",
+   "11.4": "0.043",
+   "12": "< 0,01 mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "(FB032601)_IJZ_3924-2026_20.07.2026.pdf",
+  "doc_id": "1GB_wheV2Jz6moE-7mG0HsFFkzL3W6UTi",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060402",
+  "cu": "GG012603",
+  "strain": "Gorilla Glue",
+  "code": "404-0787-26",
+  "date": "24.06.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "5×10³",
+   "9.2": "4.1×10³",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P060402 (GG012603)_IJZ-MB_404-0787-26_24.06.2026.pdf",
+  "doc_id": "1bab8EB8sK-9JeMssLs9z_enJ3Yllwi6b",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060402",
+  "cu": "GG012603",
+  "strain": "Gorilla Glue",
+  "code": "3659-2026",
+  "date": "22.06.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.059",
+   "11.2": "0.03",
+   "11.3": "0.05",
+   "11.4": "0.015",
+   "12": "< 0,01 mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060402 (GG012603)_IJZ_3659-2026_22.06.2026.pdf",
+  "doc_id": "1KYtLJGkTNkXlax2UOHOXweF7iWM8U8Dy",
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026; IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060462",
+  "cu": "GG032601",
+  "strain": "Gorilla Glue",
+  "code": "3925-2026",
+  "date": "20.07.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "12": "< 0,01 mg/kg — all 26 residues"
+  },
+  "held": [],
+  "document": "(GG032601)_IJZ_3925-2026_20.07.2026.pdf",
+  "doc_id": "1hazmIULJSttchA-L_rrPdzeP0Db1nwIG",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "",
+  "cu": "GG1024",
+  "strain": "Gorilla Glue",
+  "code": "ППК25008",
+  "date": "29.01.2025",
+  "lab": "CNP",
+  "params": [
+   8
+  ],
+  "vals": {
+   "8": "7.8"
+  },
+  "held": [],
+  "document": "(GG1024)_CNP_ППК25008_29.01.2025.pdf",
+  "doc_id": "1NyeLMI8sCdbzSaRy_lYgC-f-ESFcz1Gb",
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "",
+  "cu": "GG1024",
+  "strain": "Gorilla Glue",
+  "code": "166-0274-25",
+  "date": "24.02.2025",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "1.1×10⁴",
+   "9.2": "<10",
+   "9.3": "<10² и >10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "(GG1024)_IJZ-MB_166-0274-25_24.02.2025.pdf",
+  "doc_id": "1QEpB_c8TGNJZNMOfLrKWFWZmXmc3MeTK",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "",
+  "cu": "GG1024",
+  "strain": "Gorilla Glue",
+  "code": "748-2025",
+  "date": "04.03.2025",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.052",
+   "11.2": "0.016",
+   "11.3": "0.04",
+   "11.4": "0.004",
+   "12": "ND mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "(GG1024)_IJZ_748-2025_04.03.2025.pdf",
+  "doc_id": "1gkrB_6Nw6-viQPBvezGKgu-ieajsCZk5",
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026; IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060182",
+  "cu": "GRC102501",
+  "strain": "Grapes And Cream",
+  "code": "1060-2026",
+  "date": "09.03.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "ND",
+   "11.2": "ND",
+   "11.3": "0.0013",
+   "11.4": "ND",
+   "12": "ND mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060182 (GRC102501-2)_IJZ_1060-2026_09.03.2026.pdf",
+  "doc_id": "1vwm84FqyxnN4Nce6_fmfm06x4YXFhqIV",
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026; IPH — Institute of Public Health; IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060152",
+  "cu": "J31102501",
+  "strain": "Jokerz 31",
+  "code": "133-0230-26",
+  "date": "06.03.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "1.6×10²",
+   "9.2": "1.9×10²",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P060152 (J31102501)_IJZ-MB_133-0230-26_06.03.2026.pdf",
+  "doc_id": "1UQ9_Gm9ZtDilITTRAlbSBP-CULo6f-dn",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060152",
+  "cu": "J31102501",
+  "strain": "Jokerz 31",
+  "code": "1056-2026",
+  "date": "09.03.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.061",
+   "11.2": "ND",
+   "11.3": "ND",
+   "11.4": "ND",
+   "12": "ND mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060152 (J31102501)_IJZ_1056-2026_09.03.2026.pdf",
+  "doc_id": "1VaRgikQ9CQZSh0fKJkow3q5Gv6i-s1IX",
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026; IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060202",
+  "cu": "J31112501",
+  "strain": "Jokerz 31",
+  "code": "1057-2026",
+  "date": "09.03.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "2.1",
+   "11.1": "ND",
+   "11.2": "ND",
+   "11.3": "ND",
+   "11.4": "ND",
+   "12": "ND mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060202 (J31112501)_IJZ_1057-2026_09.03.2026.pdf",
+  "doc_id": "1HPcjueR8-_su0mWEHEsLKvPJhGZB6FMP",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060362",
+  "cu": "JD012603",
+  "strain": "Jelly Donuts",
+  "code": "365-0695-26",
+  "date": "01.06.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "2×10²",
+   "9.2": "1×10²",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P060362 (JD012603-1)_IJZ-MB_365-0695-26_01.06.2026.pdf",
+  "doc_id": "1C1WmzNjVsq4524j8qWaCBnM9ql63AHSQ",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060412",
+  "cu": "JD012603",
+  "strain": "Jelly Donuts",
+  "code": "405-0788-26",
+  "date": "24.06.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "6.3×10³",
+   "9.2": "4.4×10³",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P060412 (JD012603-02)_IJZ-MB_405-0788-26_24.06.2026.pdf",
+  "doc_id": "1yy9dw_OkqOuXjVk8XvT_Q87emTbox5gc",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060422",
+  "cu": "JD012603",
+  "strain": "Jelly Donuts",
+  "code": "406-0789-26",
+  "date": "24.06.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "5.1×10³",
+   "9.2": "4.7×10³",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P060422 (JD012603-02V)_IJZ-MB_406-0789-26_24.06.2026.pdf",
+  "doc_id": "11Cz95GLPHTPCo1p2KgTQYkE0KDet9C9v",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060412",
+  "cu": "JD012603",
+  "strain": "Jelly Donuts",
+  "code": "3660-2026",
+  "date": "22.06.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.085",
+   "11.2": "0.044",
+   "11.3": "0.042",
+   "11.4": "0.042",
+   "12": "< 0,01 mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060412 (JD012603-02)_IJZ_3660-2026_22.06.2026.pdf",
+  "doc_id": "1WN8-aprd7KVpu5eRyCQmsJhmlmzl1UdC",
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026; IPH — Institute of Public Health; IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060422",
+  "cu": "JD012603",
+  "strain": "Jelly Donuts",
+  "code": "3662-2026",
+  "date": "22.06.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.06",
+   "11.2": "0.03",
+   "11.3": "0.045",
+   "11.4": "0.013",
+   "12": "< 0,01 mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060422 (JD012603-02V)_IJZ_3662-2026_22.06.2026.pdf",
+  "doc_id": "1zjpyGbJ5LlRz4UYt65Da6otgiWGFojKk",
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026; IPH — Institute of Public Health; IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060482",
+  "cu": "JD022601",
+  "strain": "Jelly Donuts",
+  "code": "3658-2026",
+  "date": "22.06.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.066",
+   "11.2": "0.029",
+   "11.3": "0.052",
+   "11.4": "0.013",
+   "12": "< 0,01 mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "(JD022601)_IJZ_3658-2026_22.06.2026.pdf",
+  "doc_id": "1KqtgV5i2OfG2oGKvtAEk4hQ8oATG_6eV",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060172",
+  "cu": "KC102501",
+  "strain": "Kush Crasher",
+  "code": "129-0226-26",
+  "date": "06.03.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "3.8×10³",
+   "9.2": "6.8×10³",
+   "9.3": "<10³ и >10²",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P060172 (KC102501)_IJZ-MB_129-0226-26_06.03.2026.pdf",
+  "doc_id": "1cGs3dW87EDlRDhsBRR-fS-mo4Xe7n5ea",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060172",
+  "cu": "KC102501",
+  "strain": "Kush Crasher",
+  "code": "1058-2026",
+  "date": "09.03.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "2.8",
+   "11.1": "ND",
+   "11.2": "ND",
+   "11.3": "ND",
+   "11.4": "ND",
+   "12": "ND mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060172 (KC102501)_IJZ_1058-2026_09.03.2026.pdf",
+  "doc_id": "1H3ue5bpFg5zcBhxlkoVatrqg8zCJV0ly",
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026; IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060222",
+  "cu": "OPM112501",
+  "strain": "Orange Punch Mimosa",
+  "code": "1062-2026",
+  "date": "11.03.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "2",
+   "11.1": "ND",
+   "11.2": "ND",
+   "11.3": "ND",
+   "11.4": "ND",
+   "12": "ND mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060222 (OPM112501)_IJZ_1062-2026_11.03.2026.pdf",
+  "doc_id": "1VOKekPjB63GVC9tdbe0SHCtnCfh7-eBY",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060232",
+  "cu": "PM112501",
+  "strain": "Permanent Marker",
+  "code": "135-0232-26",
+  "date": "06.03.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "10",
+   "9.2": "<10",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P060232 (PM112501)_IJZ-MB_135-0232-26_06.03.2026.pdf",
+  "doc_id": "1Hest7Mv78CbVMVVMtCRzFTbbiWbQuegI",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060232",
+  "cu": "PM112501",
+  "strain": "Permanent Marker",
+  "code": "1059-2026",
+  "date": "09.03.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "2.2",
+   "11.1": "ND",
+   "11.2": "ND",
+   "11.3": "ND",
+   "11.4": "ND",
+   "12": "ND mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060232 (PM112501)_IJZ_1059-2026_09.03.2026.pdf",
+  "doc_id": "1R6ZFAi_15rKArzGz3EFZpcZgtKuJK-UR",
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026; IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060382",
+  "cu": "SCR012603",
+  "strain": "Scrambler",
+  "code": "364-0694-26",
+  "date": "01.06.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "5.4×10⁴",
+   "9.2": "1.8×10⁴",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P060382 (SCR012603)_IJZ-MB_364-0694-26_01.06.2026.pdf",
+  "doc_id": "1WAQk0oOuKzJYJAezNMNaSLiGnKbQIBPV",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060442",
+  "cu": "SCR022601",
+  "strain": "Scrambler",
+  "code": "3657-2026",
+  "date": "22.06.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.054",
+   "11.2": "0.035",
+   "11.3": "0.058",
+   "11.4": "0.009",
+   "12": "< 0,01 mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060442 (SCR022601)_IJZ_3657-2026_22.06.2026.pdf",
+  "doc_id": "1bsrDTcGPzg-MKY43aLsjeFGN-j27Whu8",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060162",
+  "cu": "SJ102501",
+  "strain": "Sleepy Joe",
+  "code": "1065-2026",
+  "date": "11.03.2026",
+  "lab": "IJZ",
+  "params": [
+   12
+  ],
+  "vals": {
+   "12": "ND mg/kg — all 26 residues"
+  },
+  "held": [],
+  "document": "P060162 (SJ102501)_IJZ_1065-2026_11.03.2026.pdf",
+  "doc_id": "1yVAW0WsDyly7XaRiYW-NuP7E3XPM9K3-",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060192",
+  "cu": "SJ112501",
+  "strain": "Sleepy Joe",
+  "code": "1061-2026",
+  "date": "09.03.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "ND",
+   "11.2": "ND",
+   "11.3": "ND",
+   "11.4": "ND",
+   "12": "ND mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060192 (SJ112501)_IJZ_1061-2026_09.03.2026.pdf",
+  "doc_id": "1K0J2vaEFvtqXG5u1dgBL6zZ_Uu2jsgO3",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060102",
+  "cu": "WED102501",
+  "strain": "Wedding Cake",
+  "code": "329-2026",
+  "date": "11.02.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.078",
+   "11.2": "ND",
+   "11.3": "0.087",
+   "11.4": "ND",
+   "12": "ND mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060102 (WED102501)_IJZ_329-2026_11.02.2026.pdf",
+  "doc_id": "1xEWCbSRCL20ANfTYxVPedIL56IeF6Co7",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P160012",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "3656-2026",
+  "date": "22.06.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.11",
+   "11.2": "0.009",
+   "11.3": "0.045",
+   "11.4": "0.027",
+   "12": "< 0,01 mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P160012_IJZ_3656-2026_22.06.2026.pdf",
+  "doc_id": "1YahVoBYNWU4thnnmz5QgOLz5ueiuoomk",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P160022",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "3655-2026",
+  "date": "22.06.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.1",
+   "11.2": "0.01",
+   "11.3": "0.043",
+   "11.4": "0.014",
+   "12": "< 0,01 mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P160022_IJZ_3655-2026_22.06.2026.pdf",
+  "doc_id": "1UV4XwXMddQy81lSPh9LQyt1s8WhrhJgh",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P160032",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "3654-2026",
+  "date": "22.06.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.093",
+   "11.2": "0.008",
+   "11.3": "0.045",
+   "11.4": "0.03",
+   "12": "< 0,01 mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P160032_IJZ_3654-2026_22.06.2026.pdf",
+  "doc_id": "1x91aStkR9ehtAND5uY16mi0QVti9uRSJ",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060372",
+  "cu": "CC012603",
+  "strain": "Cash Cow",
+  "code": "363-0693-26",
+  "date": "01.06.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "2.7×10³",
+   "9.2": "1.6×10¹",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P060372 (CC012603)_IJZ-MB_363-0693-26_01.06.2026.pdf",
+  "doc_id": "1yskWRE09aqTufGBqCizisfc34ZhuR2uD",
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P050042",
+  "cu": "OPM1024-01",
+  "strain": "Orange Punch Mimosa",
+  "code": "2156-2025",
+  "date": "07.05.2025",
+  "lab": "IJZ",
+  "params": [
+   9,
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "9.1": "<10",
+   "9.2": "<10",
+   "9.3": "<10² и >10",
+   "9.4": "absent",
+   "9.5": "absent",
+   "10.2": "<2",
+   "11.1": "0.031",
+   "11.2": "0.004",
+   "11.3": "0.01",
+   "11.4": "0.001",
+   "12": "ND"
+  },
+  "held": [],
+  "document": "(OPM1024-01)_IJZ_2156-2025_07.05.2025.pdf",
+  "doc_id": null,
+  "source": "cited on the certificates (coq_artifact_data.json, IPH mycotoxins, metals, pesticides; other) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P050042",
+  "cu": "OPM1024-01",
+  "strain": "Orange Punch Mimosa",
+  "code": "407-0745-25",
+  "date": "05.05.2025",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "10",
+   "9.2": "<10",
+   "9.3": "<10² и >10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "(OPM1024-01)_IJZ-MB_407-0745-25_05.05.2025.pdf",
+  "doc_id": null,
+  "source": "cited on the certificates (coq_artifact_data.json, other) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P050042",
+  "cu": "OPM1024-01",
+  "strain": "Orange Punch Mimosa",
+  "code": "ППК25117",
+  "date": "06.05.2025",
+  "lab": "CNP",
+  "params": [
+   3,
+   4,
+   5,
+   6,
+   8
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "15.38",
+   "5": "0.04",
+   "6": "0.01",
+   "8": "5.86"
+  },
+  "held": [],
+  "document": "(OPM1024-01)_CNP_ППК25117_06.05.2025.pdf",
+  "doc_id": null,
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026; UKIM CNP potency) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060132",
+  "cu": "CF102501",
+  "strain": "Chem Flyer",
+  "code": "031-4-К-26",
+  "date": "10.02.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "9.83",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "P060132 (CF102501)_FHM_031-4-K-26_10.02.2026.pdf",
+  "doc_id": "1sq-pjJDsD3XGPn_BBEIAiA5S2EQYgN0d",
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026; Farmahem — cannabinoids) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060132",
+  "cu": "CF102501",
+  "strain": "Chem Flyer",
+  "code": "031-4-ГС-26",
+  "date": "12.02.2026",
+  "lab": "FHM",
+  "params": [
+   8
+  ],
+  "vals": {
+   "8": "5,6 %"
+  },
+  "held": [],
+  "document": "P060132 (CF102501)_FHM_031-4-LoD-26_12.02.2026.pdf",
+  "doc_id": null,
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060132",
+  "cu": "CF102501",
+  "strain": "Chem Flyer",
+  "code": "330-2026",
+  "date": "11.02.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "2.1",
+   "11.1": "0.07",
+   "11.2": "ND",
+   "11.3": "0.0942",
+   "11.4": "ND",
+   "12": "ND mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060132 (CF102501)_IJZ_330-2026_11.02.2026.pdf",
+  "doc_id": null,
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026; IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060132",
+  "cu": "CF102501",
+  "strain": "Chem Flyer",
+  "code": "73-0116-26",
+  "date": "09.02.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "3.1×10⁴",
+   "9.2": "3.9×10⁴",
+   "9.3": "<10³ и >10²",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P060132 (CF102501)_IJZ-MB_73-0116-26_09.02.2026.pdf",
+  "doc_id": null,
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060112",
+  "cu": "PUM102501",
+  "strain": "Pure Michigen",
+  "code": "031-2-К-26",
+  "date": "10.02.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "P060112 (PUM102501)_FHM_031-2-K-26_10.02.2026.pdf",
+  "doc_id": "1IU3E-V8PmEX6tf_OCIVooPgn_gRrU0ht",
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060112",
+  "cu": "PUM102501",
+  "strain": "Pure Michigen",
+  "code": "031-2-ГС-26",
+  "date": "11.02.2026",
+  "lab": "FHM",
+  "params": [
+   8
+  ],
+  "vals": {
+   "8": "6,4 %"
+  },
+  "held": [],
+  "document": "P060112 (PUM102501)_FHM_031-2-LoD-26_11.02.2026.pdf",
+  "doc_id": null,
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060112",
+  "cu": "PUM102501",
+  "strain": "Pure Michigen",
+  "code": "327-2026",
+  "date": "11.02.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "<2",
+   "11.1": "0.078",
+   "11.2": "ND",
+   "11.3": "0.0187",
+   "11.4": "ND",
+   "12": "ND mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060112 (PUM102501)_IJZ_327-2026_11.02.2026.pdf",
+  "doc_id": null,
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026; IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060112",
+  "cu": "PUM102501",
+  "strain": "Pure Michigen",
+  "code": "74-0117-26",
+  "date": "09.02.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "5×10¹",
+   "9.2": "5×10¹",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P060112 (PUM102501)_IJZ-MB_74-0117-26_09.02.2026.pdf",
+  "doc_id": null,
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060122",
+  "cu": "ACC102501",
+  "strain": "Amnesia Core Cut",
+  "code": "031-5-К-26",
+  "date": "10.02.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "12.91",
+   "5": "<LOQ",
+   "6": "<LOQ"
+  },
+  "held": [],
+  "document": "P060122 (ACC102501)_FHM_031-5-K-26_10.02.2026.pdf",
+  "doc_id": "1CIALM-yPNHbiFKRu_JPTr4OOqdQFIdPw",
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026; Farmahem — cannabinoids) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060122",
+  "cu": "ACC102501",
+  "strain": "Amnesia Core Cut",
+  "code": "031-5-ГС-26",
+  "date": "12.02.2026",
+  "lab": "FHM",
+  "params": [
+   8
+  ],
+  "vals": {
+   "8": "7,1 %"
+  },
+  "held": [],
+  "document": "P060122 (ACC102501)_FHM_031-5-LoD-26_12.02.2026.pdf",
+  "doc_id": null,
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060122",
+  "cu": "ACC102501",
+  "strain": "Amnesia Core Cut",
+  "code": "326-2026",
+  "date": "11.02.2026",
+  "lab": "IJZ",
+  "params": [
+   10,
+   11,
+   12
+  ],
+  "vals": {
+   "10.2": "2.3",
+   "11.1": "0.078",
+   "11.2": "ND",
+   "11.3": "0.022",
+   "11.4": "ND",
+   "12": "ND mg/kg — all 29 residues"
+  },
+  "held": [],
+  "document": "P060122 (ACC102501)_IJZ_326-2026_11.02.2026.pdf",
+  "doc_id": null,
+  "source": "cited on the certificates (coq_artifact_data.json, read 09.09.2026; IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060122",
+  "cu": "ACC102501",
+  "strain": "Amnesia Core Cut",
+  "code": "77-0120-26",
+  "date": "09.02.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "1×10³",
+   "9.2": "1.6×10³",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P060122 (ACC102501)_IJZ-MB_77-0120-26_09.02.2026.pdf",
+  "doc_id": null,
+  "source": "cited on the certificates (coq_artifact_data.json, IPH — Institute of Public Health) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060452",
+  "cu": "FB032601",
+  "strain": "Fat Bastard",
+  "code": "433-0847-26",
+  "date": "10.07.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "3.7×10³",
+   "9.2": "1.6×10³",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "(FB032601)_IJZ-MB_433-0847-26_10.07.2026.pdf",
+  "doc_id": "1rBadOq2ozb3sbjHrLYh7vWMa-TZT4bBr",
+  "source": "cited on the certificates (coq_artifact_data.json, IJZ-MB microbiology) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060482",
+  "cu": "JD022601",
+  "strain": "Jelly Donuts",
+  "code": "402-0785-26",
+  "date": "24.06.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "2.2×10³",
+   "9.2": "2.4×10³",
+   "9.3": "<10² и >10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "(JD022601)_IJZ-MB_402-0785-26_24.06.2026.pdf",
+  "doc_id": "1Jboohxkf_yBlyagIEgcvwsHbEORlXh-g",
+  "source": "cited on the certificates (coq_artifact_data.json, IJZ-MB microbiology) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060192",
+  "cu": "SJ112501",
+  "strain": "Sleepy Joe",
+  "code": "130-0227-26",
+  "date": "06.03.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "3.3×10²",
+   "9.2": "3.4×10²",
+   "9.3": "<10² и >10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P060192 (SJ112501)_IJZ-MB_130-0227-26_06.03.2026.pdf",
+  "doc_id": "1uiEkH5mXX_HRd06v9vIYPl1uOuTtTJMO",
+  "source": "cited on the certificates (coq_artifact_data.json, IJZ-MB microbiology) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P060102",
+  "cu": "WED102501",
+  "strain": "Wedding Cake",
+  "code": "031-3-К-26",
+  "date": "10.02.2026",
+  "lab": "FHM-K",
+  "params": [
+   3,
+   4,
+   5,
+   6
+  ],
+  "vals": {
+   "3": "Conforms",
+   "4": "22.05",
+   "5": "<LOQ**",
+   "6": "<LOQ**"
+  },
+  "held": [],
+  "document": "P060102 (WED102501)_FHM_031-3-K-26_10.02.2026.pdf",
+  "doc_id": "1LAdEkqBkzs4ONHeb2Czd8ggv0teRNPdr",
+  "source": "cited on the certificates (coq_artifact_data.json, Farmahem — cannabinoids) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P160012",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "409-0792-26",
+  "date": "24.06.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "<10",
+   "9.2": "<10",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P160012_IJZ-MB_409-0792-26_24.06.2026.pdf",
+  "doc_id": "183h-2huDN6YeSBkOd5C0845tsYSk_D31",
+  "source": "cited on the certificates (coq_artifact_data.json, IJZ-MB microbiology) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P160022",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "411-0794-26",
+  "date": "24.06.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "3×10¹",
+   "9.2": "9×10¹",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P160022_IJZ-MB_411-0794-26_24.06.2026.pdf",
+  "doc_id": "1r52GBo3YQdmNjAC9bzL1hg0Wzmmimupm",
+  "source": "cited on the certificates (coq_artifact_data.json, IJZ-MB microbiology) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ },
+ {
+  "p": "P160032",
+  "cu": "",
+  "strain": "Grape Pie",
+  "code": "410-0793-26",
+  "date": "24.06.2026",
+  "lab": "IJZ-MB",
+  "params": [
+   9
+  ],
+  "vals": {
+   "9.1": "1×10¹",
+   "9.2": "<10",
+   "9.3": "<10",
+   "9.4": "absent",
+   "9.5": "absent"
+  },
+  "held": [],
+  "document": "P160032_IJZ-MB_410-0793-26_24.06.2026.pdf",
+  "doc_id": "1qGAJ1ygkVrz4NKm-Hx4ZEaR3oTP7JT4v",
+  "source": "cited on the certificates (coq_artifact_data.json, IJZ-MB microbiology) — registered on the tracker 21.09.2026 by new_instances_from_artifact.py; the values are the certificate's"
+ }
+]

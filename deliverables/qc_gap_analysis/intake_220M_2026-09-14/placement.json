@@ -1,0 +1,341 @@
+[
+ {
+  "n": 1,
+  "code": "220-1-М/26",
+  "batch": "P060122",
+  "block": null,
+  "new_label": "ACC102501"
+ },
+ {
+  "n": 2,
+  "code": "220-2-М/26",
+  "batch": "P050192",
+  "block": {
+   "first": 107,
+   "last": 112,
+   "label": "BSS052501",
+   "p": "P050192"
+  },
+  "new_label": null
+ },
+ {
+  "n": 3,
+  "code": "220-3-М/26",
+  "batch": "P050222",
+  "block": {
+   "first": 104,
+   "last": 106,
+   "label": "CJ062501-1",
+   "p": "P050222"
+  },
+  "new_label": null
+ },
+ {
+  "n": 4,
+  "code": "220-4-М/26",
+  "batch": "P060022",
+  "block": {
+   "first": 149,
+   "last": 152,
+   "label": "CJ082501-1",
+   "p": "P060022"
+  },
+  "new_label": null
+ },
+ {
+  "n": 5,
+  "code": "220-5-М/26",
+  "batch": "P060072",
+  "block": {
+   "first": 174,
+   "last": 177,
+   "label": "CJ092501",
+   "p": "P060072"
+  },
+  "new_label": null
+ },
+ {
+  "n": 6,
+  "code": "220-6-М/26",
+  "batch": "P060132",
+  "block": null,
+  "new_label": "CF102501"
+ },
+ {
+  "n": 7,
+  "code": "220-7-М/26",
+  "batch": "P050282",
+  "block": {
+   "first": 123,
+   "last": 126,
+   "label": "CLE072501",
+   "p": "P050282"
+  },
+  "new_label": null
+ },
+ {
+  "n": 8,
+  "code": "220-8-М/26",
+  "batch": "P060322",
+  "block": {
+   "first": 225,
+   "last": 226,
+   "label": "FB012601/1",
+   "p": ""
+  },
+  "new_label": null
+ },
+ {
+  "n": 9,
+  "code": "220-9-М/26",
+  "batch": "GG1024",
+  "block": null,
+  "new_label": "GG1024"
+ },
+ {
+  "n": 10,
+  "code": "220-10-М/26",
+  "batch": "P050302",
+  "block": {
+   "first": 131,
+   "last": 134,
+   "label": "GP072501-2",
+   "p": "P050302"
+  },
+  "new_label": null
+ },
+ {
+  "n": 11,
+  "code": "220-11-М/26",
+  "batch": "P050072",
+  "block": {
+   "first": 55,
+   "last": 60,
+   "label": "GP0824_03",
+   "p": "P050072"
+  },
+  "new_label": null
+ },
+ {
+  "n": 12,
+  "code": "220-12-М/26",
+  "batch": "P050312",
+  "block": {
+   "first": 135,
+   "last": 138,
+   "label": "GP082501-1",
+   "p": "P050312"
+  },
+  "new_label": null
+ },
+ {
+  "n": 13,
+  "code": "220-13-М/26",
+  "batch": "P060092",
+  "block": {
+   "first": 182,
+   "last": 186,
+   "label": "GP092501",
+   "p": "P060092"
+  },
+  "new_label": null
+ },
+ {
+  "n": 14,
+  "code": "220-14-М/26",
+  "batch": "P060182",
+  "block": {
+   "first": 187,
+   "last": 189,
+   "label": "GRC102501-2",
+   "p": ""
+  },
+  "new_label": null
+ },
+ {
+  "n": 15,
+  "code": "220-15-М/26",
+  "batch": "P050182",
+  "block": {
+   "first": 86,
+   "last": 88,
+   "label": "HPA052501",
+   "p": "P050182"
+  },
+  "new_label": null
+ },
+ {
+  "n": 16,
+  "code": "220-16-М/26",
+  "batch": "P060362",
+  "block": null,
+  "new_label": "JD012603/01"
+ },
+ {
+  "n": 17,
+  "code": "220-17-М/26",
+  "batch": "P060412",
+  "block": {
+   "first": 246,
+   "last": 247,
+   "label": "JD012603-02",
+   "p": ""
+  },
+  "new_label": null
+ },
+ {
+  "n": 18,
+  "code": "220-18-М/26",
+  "batch": "P060422",
+  "block": {
+   "first": 248,
+   "last": 249,
+   "label": "JD012603-02V",
+   "p": ""
+  },
+  "new_label": null
+ },
+ {
+  "n": 19,
+  "code": "220-19-М/26",
+  "batch": "P060172",
+  "block": {
+   "first": 198,
+   "last": 200,
+   "label": "KC102501",
+   "p": ""
+  },
+  "new_label": null
+ },
+ {
+  "n": 20,
+  "code": "220-20-М/26",
+  "batch": "P050112",
+  "block": {
+   "first": 67,
+   "last": 69,
+   "label": "MB0824_05",
+   "p": "P050112"
+  },
+  "new_label": null
+ },
+ {
+  "n": 21,
+  "code": "220-21-М/26",
+  "batch": "P050042",
+  "block": {
+   "first": 30,
+   "last": 32,
+   "label": "OPM1024_01",
+   "p": "P050042"
+  },
+  "new_label": null
+ },
+ {
+  "n": 22,
+  "code": "220-22-М/26",
+  "batch": "P060042",
+  "block": {
+   "first": 159,
+   "last": 162,
+   "label": "OPM092501",
+   "p": "P060042"
+  },
+  "new_label": null
+ },
+ {
+  "n": 23,
+  "code": "220-23-М/26",
+  "batch": "P050082",
+  "block": {
+   "first": 64,
+   "last": 66,
+   "label": "OPM1024_03",
+   "p": "P050082"
+  },
+  "new_label": null
+ },
+ {
+  "n": 24,
+  "code": "220-24-М/26",
+  "batch": "P060232",
+  "block": {
+   "first": 209,
+   "last": 210,
+   "label": "PM112501",
+   "p": ""
+  },
+  "new_label": null
+ },
+ {
+  "n": 25,
+  "code": "220-25-М/26",
+  "batch": "P060112",
+  "block": null,
+  "new_label": "PUM102501"
+ },
+ {
+  "n": 26,
+  "code": "220-26-М/26",
+  "batch": "P060282",
+  "block": {
+   "first": 238,
+   "last": 239,
+   "label": "SCR112501",
+   "p": ""
+  },
+  "new_label": null
+ },
+ {
+  "n": 27,
+  "code": "220-27-М/26",
+  "batch": "P060082",
+  "block": {
+   "first": 178,
+   "last": 181,
+   "label": "SJ092501",
+   "p": "P060082"
+  },
+  "new_label": null
+ },
+ {
+  "n": 28,
+  "code": "220-28-М/26",
+  "batch": "P060012",
+  "block": {
+   "first": 145,
+   "last": 148,
+   "label": "WC082501",
+   "p": "P060012"
+  },
+  "new_label": null
+ },
+ {
+  "n": 29,
+  "code": "220-29-М/26",
+  "batch": "P060372",
+  "block": null,
+  "new_label": "CC012603"
+ },
+ {
+  "n": 30,
+  "code": "220-30-М/26",
+  "batch": "JD042601",
+  "block": null,
+  "new_label": "JD042601"
+ },
+ {
+  "n": 31,
+  "code": "220-31-М/26",
+  "batch": "FB042601",
+  "block": null,
+  "new_label": "FB042601"
+ },
+ {
+  "n": 32,
+  "code": "220-32-М/26",
+  "batch": "CC042601",
+  "block": null,
+  "new_label": "CC042601"
+ }
+]

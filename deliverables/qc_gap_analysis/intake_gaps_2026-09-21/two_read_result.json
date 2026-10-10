@@ -1,0 +1,329 @@
+{
+ "read_twice": 7,
+ "read_once": [],
+ "documents": {
+  "031-3-K-26_WED102501.pdf": {
+   "scan": "031-3-K-26_WED102501.pdf",
+   "sha256": "3f99d1f6210f25d97dcc603f85d05d7508a9e30582c1b097b6777c4b9d38a39a",
+   "pages": 2,
+   "doc_code": "031-3-К/26",
+   "issue_date": "10.02.2026",
+   "receipt_date": null,
+   "batch": "WED102501",
+   "strain": "Wedding Cake",
+   "verdict": null,
+   "parameters": [
+    {
+     "parameter": "total_cbd",
+     "printed": "Вкупен Cannabidiol",
+     "result": "<LOQ**",
+     "limit_A": null,
+     "unit": "w/w%"
+    },
+    {
+     "parameter": "total_cbn",
+     "printed": "Вкупен Cannabinol",
+     "result": "<LOQ**",
+     "limit_A": null,
+     "unit": "w/w%"
+    },
+    {
+     "parameter": "total_thc",
+     "printed": "Вкупно Δ9-Tetrahydrocannabinol",
+     "result": "22.05",
+     "limit_A": null,
+     "unit": "w/w%"
+    }
+   ]
+  },
+  "130-0227-26_SJ112501.pdf": {
+   "scan": "130-0227-26_SJ112501.pdf",
+   "sha256": "7cf9a071058f29bf6fbbd8b7eec96aa89baa9c75fcab3c51ec5b6fe9178ef295",
+   "pages": 1,
+   "doc_code": "130/0227/26",
+   "issue_date": "06.03.2026",
+   "receipt_date": null,
+   "batch": "SJ112501",
+   "strain": "Sleepy Joy",
+   "verdict": "ЗАКЛУЧОК: Согласно микробиолошкиот наод, доставениот примерок за тестирање ОДГОВАРА на барањата на Ph.Eur монографија 04/2019:50108 \"Microbiological quality of herbal medicinal products for oral use and extracts used in their preparations\".",
+   "parameters": [
+    {
+     "parameter": "tamc",
+     "printed": "Вкупен број аеробни бактерии - TAMC",
+     "result": "3,3 x 10² CFU/g",
+     "limit_A": "- 10⁵ CFU/g",
+     "unit": "CFU/g"
+    },
+    {
+     "parameter": "tymc",
+     "printed": "Вкупен број габи и мувли - TYMC",
+     "result": "3,4 x 10² CFU/g",
+     "limit_A": "- 10⁴ CFU/g",
+     "unit": "CFU/g"
+    },
+    {
+     "parameter": "bile_tolerant_gram_negative",
+     "printed": "На жолчка толерантни грам-негативни бактерии",
+     "result": "< 10² и > 10 CFU/g",
+     "limit_A": "< 10⁴ CFU/g",
+     "unit": "CFU/g"
+    },
+    {
+     "parameter": "escherichia_coli",
+     "printed": "Escherichia coli",
+     "result": "Одговара",
+     "limit_A": "- отсутна/g",
+     "unit": null
+    },
+    {
+     "parameter": "salmonella",
+     "printed": "Salmonella",
+     "result": "Одговара",
+     "limit_A": "- отсутна/25 g",
+     "unit": null
+    }
+   ]
+  },
+  "402-0785-26_JD022601.pdf": {
+   "scan": "402-0785-26_JD022601.pdf",
+   "sha256": "c0705df353e837ecdea210ace570685c1904d30d42ce42e6679b9a5daa272954",
+   "pages": 1,
+   "doc_code": "402/0785/26",
+   "issue_date": "24.06.2026",
+   "receipt_date": null,
+   "batch": "JD022601",
+   "strain": "Jelly Donutz",
+   "verdict": "Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на Ph.Eur монографија 04/2019:50108 “Microbiological quality of herbal medicinal products for oral use and extracts used in their preparations”.",
+   "parameters": [
+    {
+     "parameter": "tamc",
+     "printed": "Вкупен број аеробни бактерии–ТАМС",
+     "result": "2,2 x 10³ CFU/g",
+     "limit_A": "10⁵ CFU/g",
+     "unit": "CFU/g"
+    },
+    {
+     "parameter": "tymc",
+     "printed": "Вкупен број габи и мувли–ТУМС",
+     "result": "2,4 x 10³ CFU/g",
+     "limit_A": "10⁴ CFU/g",
+     "unit": "CFU/g"
+    },
+    {
+     "parameter": "bile_tolerant_gram_negative",
+     "printed": "На жолчка толерантни грам-негативни бактерии",
+     "result": "< 10² и > 10 CFU/g",
+     "limit_A": "≤ 10⁴ CFU/g",
+     "unit": "CFU/g"
+    },
+    {
+     "parameter": "escherichia_coli",
+     "printed": "Escherichia coli",
+     "result": "Отсутна",
+     "limit_A": "отсутна/g",
+     "unit": null
+    },
+    {
+     "parameter": "salmonella",
+     "printed": "Salmonella",
+     "result": "Отсутна",
+     "limit_A": "отсутна/25 g",
+     "unit": null
+    }
+   ]
+  },
+  "409-0792-26_P160012.pdf": {
+   "scan": "409-0792-26_P160012.pdf",
+   "sha256": "a1e4baaff444dc9247e9f87ae4ac142789422dcf7ce121d8553171b2e76bcb4f",
+   "pages": 1,
+   "doc_code": "409/0792/26",
+   "issue_date": "24.06.2026",
+   "receipt_date": null,
+   "batch": "P160012",
+   "strain": "Grape Pie",
+   "verdict": "ЗАКЛУЧОК: Резултатите од испитаните параметри СЕ ВО СОГЛАСНОСТ со барањата на Ph.Eur монографија 04/2019:50108 \"Microbiological quality of herbal medicinal products for oral use and extracts used in their preparations\".",
+   "parameters": [
+    {
+     "parameter": "tamc",
+     "printed": "Вкупен број аеробни бактерии - TAMC",
+     "result": "< 10 CFU/g",
+     "limit_A": "10⁵ CFU/g",
+     "unit": "CFU/g"
+    },
+    {
+     "parameter": "tymc",
+     "printed": "Вкупен број габи и мувли - TYMC",
+     "result": "< 10 CFU/g",
+     "limit_A": "10⁴ CFU/g",
+     "unit": "CFU/g"
+    },
+    {
+     "parameter": "bile_tolerant_gram_negative",
+     "printed": "На жолчка толерантни грам-негативни бактерии",
+     "result": "< 10 CFU/g",
+     "limit_A": "10⁴ CFU/g",
+     "unit": "CFU/g"
+    },
+    {
+     "parameter": "escherichia_coli",
+     "printed": "Escherichia coli",
+     "result": "Отсутна",
+     "limit_A": "отсутна/г",
+     "unit": null
+    },
+    {
+     "parameter": "salmonella",
+     "printed": "Salmonella",
+     "result": "Отсутна",
+     "limit_A": "отсутна/25 g",
+     "unit": null
+    }
+   ]
+  },
+  "410-0793-26_P160032.pdf": {
+   "scan": "410-0793-26_P160032.pdf",
+   "sha256": "210851bc40f40902c69e3b1128fc15185de751263372931634d60178f75a6541",
+   "pages": 1,
+   "doc_code": "410/0793/26",
+   "issue_date": "24.06.2026",
+   "receipt_date": null,
+   "batch": "P160032",
+   "strain": "Grape Pie",
+   "verdict": "ЗАКЛУЧОК: Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на Ph.Eur монографија 04/2019:50108 “Microbiological quality of herbal medicinal products for oral use and extracts used in their preparations”.",
+   "parameters": [
+    {
+     "parameter": "tamc",
+     "printed": "Вкупен број аеробни бактерии - TAMC",
+     "result": "1 x 10¹ CFU/g",
+     "limit_A": "10^5 CFU/g",
+     "unit": "CFU/g"
+    },
+    {
+     "parameter": "tymc",
+     "printed": "Вкупен број габи и мувли - TYMC",
+     "result": "< 10 CFU/g",
+     "limit_A": "10^4 CFU/g",
+     "unit": "CFU/g"
+    },
+    {
+     "parameter": "bile_tolerant_gram_negative",
+     "printed": "На жолчка толерантни грам-негативни бактерии",
+     "result": "< 10 CFU/g",
+     "limit_A": "≤ 10^4 CFU/g",
+     "unit": "CFU/g"
+    },
+    {
+     "parameter": "escherichia_coli",
+     "printed": "Escherichia coli",
+     "result": "Отсутна",
+     "limit_A": "отсутна/g",
+     "unit": null
+    },
+    {
+     "parameter": "salmonella",
+     "printed": "Salmonella",
+     "result": "Отсутна",
+     "limit_A": "отсутна/25 g",
+     "unit": null
+    }
+   ]
+  },
+  "411-0794-26_P160022.pdf": {
+   "scan": "411-0794-26_P160022.pdf",
+   "sha256": "5be85ae5235d9ba336ecb6aa266f146b5b6fca1517d412156f2a9c981ebcc154",
+   "pages": 1,
+   "doc_code": "411/0794/26",
+   "issue_date": "24.06.2026",
+   "receipt_date": null,
+   "batch": "P160022",
+   "strain": "Grape Pie",
+   "verdict": "ЗАКЛУЧОК: Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на Ph.Eur монографија 04/2019:50108 “Microbiological quality of herbal medicinal products for oral use and extracts used in their preparations”.",
+   "parameters": [
+    {
+     "parameter": "tamc",
+     "printed": "Вкупен број аеробни бактерии - TAMC",
+     "result": "3 x 10¹ CFU/g",
+     "limit_A": "10⁵ CFU/g",
+     "unit": "CFU/g"
+    },
+    {
+     "parameter": "tymc",
+     "printed": "Вкупен број габи и мувли - TYMC",
+     "result": "9 x 10¹ CFU/g",
+     "limit_A": "10⁴ CFU/g",
+     "unit": "CFU/g"
+    },
+    {
+     "parameter": "bile_tolerant_gram_negative",
+     "printed": "На жолчка толерантни грам-негативни бактерии",
+     "result": "< 10 CFU/g",
+     "limit_A": "≤ 10⁴ CFU/g",
+     "unit": "CFU/g"
+    },
+    {
+     "parameter": "escherichia_coli",
+     "printed": "Escherichia coli",
+     "result": "Отсутна",
+     "limit_A": "отсутна/g",
+     "unit": null
+    },
+    {
+     "parameter": "salmonella",
+     "printed": "Salmonella",
+     "result": "Отсутна",
+     "limit_A": "отсутна/25 g",
+     "unit": null
+    }
+   ]
+  },
+  "433-0847-26_FB032601.pdf": {
+   "scan": "433-0847-26_FB032601.pdf",
+   "sha256": "d26a4df01c0feffc31d2857cfac6ec0e4ae49c6c73a390ec68d68fb24c1f4aab",
+   "pages": 1,
+   "doc_code": "433/0847/26",
+   "issue_date": "10.07.2026",
+   "receipt_date": null,
+   "batch": "FB032601",
+   "strain": "Fat Bastard",
+   "verdict": "Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на Ph.Eur монографија 04/2019:50108 “Microbiological quality of herbal medicinal products for oral use and extracts used in their preparations”.",
+   "parameters": [
+    {
+     "parameter": "tamc",
+     "printed": "Вкупен број аеробни бактерии - ТАМС",
+     "result": "3,7 x 10³ CFU/g",
+     "limit_A": "10⁵ CFU/g",
+     "unit": "CFU/g"
+    },
+    {
+     "parameter": "tymc",
+     "printed": "Вкупен број габи и мувли - ТYMC",
+     "result": "1,6 x 10³ CFU/g",
+     "limit_A": "10⁴ CFU/g",
+     "unit": "CFU/g"
+    },
+    {
+     "parameter": "bile_tolerant_gram_negative",
+     "printed": "На жолчка толерантни грам-негативни бактерии",
+     "result": "< 10 CFU/g",
+     "limit_A": "≤ 10⁴ CFU/g",
+     "unit": "CFU/g"
+    },
+    {
+     "parameter": "escherichia_coli",
+     "printed": "Escherichia coli",
+     "result": "Отсутна",
+     "limit_A": "отсутна/g",
+     "unit": null
+    },
+    {
+     "parameter": "salmonella",
+     "printed": "Salmonella",
+     "result": "Отсутна",
+     "limit_A": "отсутна/25 g",
+     "unit": null
+    }
+   ]
+  }
+ },
+ "held": []
+}

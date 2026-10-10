@@ -8,19 +8,10 @@ the bilingual MK|EN caption is added in the .docx by the figure() helper.
 Palette: navy #2B547E primary, red for fails/limits, mint/cream/rose accents (matches the doc palette).
 Each function writes a PNG and returns its path. Requires: matplotlib, numpy.
 """
-try:
-    import matplotlib
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-    import numpy as np
-except ImportError as e:
-    raise NotImplementedError(
-        "pp_charts.py requires matplotlib and numpy, which are not part of "
-        "docengine's dependencies (see requirements.txt) — the automated "
-        "weekly Plan/Report and QC certificate pipelines never call this "
-        "vendored computational-report chart module. Install matplotlib/"
-        "numpy to use it standalone."
-    ) from e
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
 
 NAVY = "#2B547E"; RED = "#C0392B"; GREEN = "#1E8449"; GREY = "#595959"
 SERIES = [NAVY, "#2980B9", "#27AE60", "#E67E22", "#8E44AD"]

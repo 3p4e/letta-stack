@@ -1,0 +1,256 @@
+"QC BATCH RELEASE RESULTS REGISTER — FINAL POTENCY GRADES (27.08.2026, rev. 2 — T1+T2 re-analysis anchors of 26.08.2026)"
+"Part 1: batch-level release results (CoQ-forming values) with assigned grade · Part 2: Specifications by Strain — every grade, range, and the results in it · Part 3: Batch -> Grade Assignments. Per-certificate detail: QC_Batch_Release_Results_Register.xlsx (letta-stack) and the eCoA Register sheet rev.5. Source: RAGFlow eCoA_DATABASE · ImB_Potency_Grade_Ranges · Potency Atlas. T2 values (Farmahem, 26.08.2026) are unofficial until the formal eCoAs are filed."
+
+PART 1 — BATCH RELEASE QC (batch level)
+No.,Batch,P-number,Strain,THC %,Grade range %,Potency grade,Spec code,CBD %,CBN %,LoD %,FM %,TAMC,TYMC,BTGNB,Salmonella,E.coli,AflaΣ,AflaB1,OTA,Pb,Cd,As,Hg,Pesticides,No. of certs,CoQ code
+1,BG1024,,Blue Gelato,26.14,23.40-28.60,I · BG_THC26:CBD1,QCSP_001_BG-I,< LOQ,0.28,5.73,Confirms,"1,6 x 10⁴",1 x 10⁴,<10^2-10,Одговара,Одговара,ND,ND,ND,0.01,0.016,0.014,0.005,н.д.,6,
+2,BSS1024,,Blue Sunset Sherbet,25.01,22.01-25.99,I · BSS_THC24:CBD1,QCSP_001_BSS-I,<LOQ,<LOQ,5.99,Confirms,"1,5 x 10⁴","2,2 x 10³",,Одговара,Одговара,< 2,ND,ND,0.071,0.014,0.081,0.014,Н.Д.,6,
+3,CJ1024,,Cap Junky,23.00,23.00-25.00,III · CJ_THC24:CBD1,QCSP_001_CJ-III,0.05,0.02,5.91,Confirms,"8,4 x 10³",<10,< 10,Одговара,Одговара,< 2,Н.д.,Н.д.,0.036,0.013,0.063,0.006,Н.д.,4,CoQ-PP-2026-0004
+4,GG1024_01,P050092,Gorilla Glue,18.67,17.01-18.99,I · GG_THC18:CBD1,QCSP_001_GG-I,< LOQ,0.20,7.54,Confirms,"5,1 х 10⁴","4,2 х 10³",< 10,Одговара,Одговара,< 2,ND,ND,0.02,0.007,0.015,0.005,Одговара,6,
+5,GP0824_01,P050102,Grape Pie,20.79,18.00-22.00,IV · GP_THC20:CBD1,QCSP_001_GP-IV,0.06,N.D.,6.73,Confirms,"5,2 x 10³ CFU/g","8,8 x 10³ CFU/g",,Одговара,Одговара,< 2,Н.Д.,Н.Д.,0.026,0.005,0.015,0.005,Н.д.,5,CoQ-PP-2026-0005
+6,GG1024,,Gorilla Glue,15.51 (Т2 неофиц.),15.00-17.00,II · GG_THC16:CBD1,QCSP_001_GG-II,0.03,,,< 2.0,1.1·10⁴,<10,,Absent,Absent,< 2,,,0.052,0.016,0.04,0.004,,1,CoQ-PP-2026-0007
+7,HPA1024,,High Pro Amnesia,17.31,17.00-19.00,III · HPA_THC18:CBD1,QCSP_001_HPA-III,<LOQ,0.36,,< 2.0,5.2•10⁴,7•10²,,Absent,Absent,< 2,ND,<LOQ,0.02,0.013,0.017,0.0026,N.D.,3,CoQ-PP-2026-0001
+8,OPM1024,,Orange Punch Mimosa,20.03,19.81-24.19,I · OPM_THC22:CBD1,QCSP_001_OPM-I,< LOQ,< LOQ,,< 2.0,1.3•10^4,7•10^2,,Absent,Absent,< 2,ND,ND,0.031,0.017,0.045,0.005,N.D.,3,CoQ-PP-2026-0008
+9,MB0824_04,P050032,Motor Breath,18.67,16.20-19.80,I · MB_THC18:CBD1,QCSP_001_MB-I,0.05,0.03,6.01,Confirms,< 10 CFU/g,< 10 CFU/g,< 10 CFU/g,Одговара,Одговара,N.D.,N.D.,N.D.,0.031,0.005,0.011,N.D.,Н.Д.,4,CoQ-PP-2026-0009
+10,OMP1024_01,P050042,Orange Punch Mimosa,18.99 (Т2 неофиц.),16.20-19.80,II · OPM_THC18:CBD1,QCSP_001_OPM-II,0.04,0.01,5.86,Confirms,10 CFU/g,< 10 CFU/g,<10^2 and >10 CFU/g,Одговара,Одговара,< 2,N.D.,N.D.,0.031,0.004,0.01,0.001,Одговара,4,
+11,GG1024_02,P050012,Gorilla Glue,15.95,15.00-17.00,II · GG_THC16:CBD1,QCSP_001_GG-II,0.06,0.01,6.88,Confirms,"2,1 x 10⁴","1,9 x 10⁴",<10,Одговара,Одговара,< 2,Н.Д.,Н.Д.,Н.Д.,Н.Д.,Н.Д.,Н.Д.,ОДГОВАРА,4,CoQ-PP-2026-0011
+12,GP0824_02,P050022,Grape Pie,22.61,22.61-25.39,III · GP_THC24:CBD1,QCSP_001_GP-III,< LOQ,0.23,6.51,Confirms,< 10 CFU/g,< 10 CFU/g,<10 CFU/g,Одговара,Одговара,< 2,ND,ND,н.д.,н.д.,0.047,н.д.,Н.д.,13,CoQ-PP-2026-0014
+13,HPA1024_01,P050052,High Pro Amnesia,21.61,21.00-23.00,I · HPA_THC22:CBD1,QCSP_001_HPA-I,<LOQ,<LOQ,6.36,Confirms,"9,6 x 10³","1,5 x 10⁴",<10,Одговара,Одговара,< 2,ND,2.06,0.059,0.014,0.037,0.008,Н.Д.,6,CoQ-PP-2026-0012
+14,OPM1024_02,P050062,Orange Punch Mimosa,18.04,16.20-19.80,II · OPM_THC18:CBD1,QCSP_001_OPM-II,< LOQ,< LOQ,6.89,Confirms,"3,4 x 10³ CFU/g","3,6 x 10³ CFU/g",< 10 CFU/g,Одговара,Одговара,< 2,ND,ND,0.052,0.011,0.028,0.061,Н.д.,6,CoQ-PP-2026-0013
+15,BSS1024_01/1,P050122,Blue Sunset Sherbet,23.42,22.01-25.99,I · BSS_THC24:CBD1,QCSP_001_BSS-I,0.06,BLQ,6.38,Confirms,< 10 CFU/g,< 10 CFU/g,<10,Одговара,Одговара,<2,Н.Д.,Н.Д.,Н.д.,Н.д.,0.112,Н.д.,Н.д.,4,
+16,GP0824_03,P050072,Grape Pie,28.03 (Т2 неофиц.),26.61-29.39,I · GP_THC28:CBD1,QCSP_001_GP-I,0.08,BLQ,6.58,Confirms,"1,1 x 10^4","1,2 x 10^4",,Одговара,Одговара,< 2,Н.Д.,Н.Д.,н.д.,н.д.,0.119,н.д.,Н.д.,7,CoQ-PP-2026-0015
+17,MB0824_05,P050112,Motor Breath,17.93 (Т2 неофиц.),16.20-19.80,I · MB_THC18:CBD1,QCSP_001_MB-I,0.06,0.02,6.56,Confirms,"3,5 x 10³",1 x 10³,<10,Одговара,Одговара,2,Н.Д.,Н.Д.,Н.Д.,Н.Д.,0.086,0.006,Н.д.,4,CoQ-PP-2026-0017
+18,OPM1024_03,P050082,Orange Punch Mimosa,19.30 (Т2 неофиц.),16.20-19.80,II · OPM_THC18:CBD1,QCSP_001_OPM-II,0.04,0.01,6.38,Confirms,2 х 10^2 CFU/g,3 х 10^2 CFU/g,< 10 CFU/g,Одговара,Одговара,2.1,Н.Д.,Н.Д.,н.д.,н.д.,0.135,0.03,Н.д.,4,CoQ-PP-2026-0018
+19,OPM052501,P050132,Orange Punch Mimosa,14.16,12.60-15.40,III · OPM_THC14:CBD1,QCSP_001_OPM-III,0.04,0.02,8.28,Confirms,"1,2 x 10⁴","3,3 x 10³",< 10,Одговара,Одговара,2.1,Н.Д.,Н.Д.,Н.Д.,Н.Д.,Н.Д.,Н.Д.,Одговара,4,CoQ-PP-2026-0019
+20,CJ052501/01,P050162,Cap Junky,24.05,23.00-25.00,III · CJ_THC24:CBD1,QCSP_001_CJ-III,0.07,< LOQ,7.93,Confirms,"2,8 x 10⁴","1,7 x 10⁴",,Одговара,Одговара,< 2,Н.Д.,Н.Д.,0.085,Н.Д.,Н.Д.,Н.Д.,Одговара,6,
+21,CJ052501/02,P050172,Cap Junky,14.93,14.40-17.60,V · CJ_THC16:CBD1,QCSP_001_CJ-V,0.10,0.02,6.63,Confirms,9 x 10^3,"6,3 x 10^3",< 10⁴CFU/g,Одговара,Одговара,< 2,Н.д.,Н.д.,0.02,Н.д.,0.042,н.д.,Н.д.,4,
+22,GP052501,P050152,Grape Pie,18.52,18.00-22.00,IV · GP_THC20:CBD1,QCSP_001_GP-IV,< LOQ,< LOQ,7.30,,"2,1 x 10^4","3,6 x 10^4",,Одговара,Одговара,< 2,ND,ND,0.06,Н.Д.,Н.Д.,Н.Д.,Одговара,5,CoQ-PP-2026-0022
+23,HPA052501,P050182,High Pro Amnesia,19.69 (Т2 неофиц.),19.01-20.99,II · HPA_THC20:CBD1,QCSP_001_HPA-II,0.09,0.02,7.29,Confirms,"2,7 x 10⁴","2,6 x 10⁴",,Одговара,Одговара,< 2,Н.Д.,Н.Д.,0.034,Н.Д.,Н.Д.,Н.Д.,Н.Д.,4,CoQ-PP-2026-0023
+24,GP062501,P050202,Grape Pie,24.89,22.61-25.39,III · GP_THC24:CBD1,QCSP_001_GP-III,0.17,,8.19,Confirms,600,400,< 10,Одговара,Одговара,< 2,Н.Д.,Н.Д.,0.077,0.014,0.024,0.011,Н.Д.,9,CoQ-PP-2026-0025
+25,CJ062501/2,P050212,Cap Junky,18.91,18.00-22.00,IV · CJ_THC20:CBD1,QCSP_001_CJ-IV,0.14,< LOQ,6.70,Confirms,"2,2 x 10⁴","4,9 x 10³",,Одговара,Одговара,< 2,ND,ND,0.026,0.002,0.011,0.012,Н.д.,6,CoQ-PP-2026-0024
+26,CJ062501/1,P050222,Cap Junky,24.80 (Т2 неофиц.),23.00-25.00,III · CJ_THC24:CBD1,QCSP_001_CJ-III,0.07,0.02,7.77,,< 10 CFU/g,20 CFU/g,,Одговара,Одговара,< 2,Н.д.,Н.д.,0.037,0.002,0.027,0.017,ОДГОВАРА НА,3,CoQ-PP-2026-0026
+27,BSS052501,P050192,Blue Sunset Sherbet,20.52 (Т2 неофиц.),18.00-22.00,II · BSS_THC20:CBD1,QCSP_001_BSS-II,0.11,0.01,8.60,Confirms,200,200,,Одговара,Одговара,N.D.,ND,<LOQ,0.024,0.004,0.025,0.0036,≤ LOQ,7,CoQ-PP-2026-0029
+28,CJ072501,P050252,Cap Junky,23.70,23.00-25.00,III · CJ_THC24:CBD1,QCSP_001_CJ-III,0.09,,8.22,,"4,5 x 10^3 CFU/g","3,5 x 10^3 CFU/g",< 10 CFU/g,Одговара,Одговара,< 2,N.D.,N.D.,0.013,0.004,0.011,0.002,Н.д.,3,CoQ-PP-2026-0027
+29,CLE072501,P050282,Clemosa a bud,8.65 (Т2 неофиц.),7.20-8.80,I · CLE_THC8:CBD1,QCSP_001_CLE-I,0.04,≤ 1.00,9.68,Confirms,< 10 CFU/g,< 10 CFU/g,,Отсутна,< 10 CFU/g,2.2,Н.д.,Н.д.,0.032,0.002,0.013,0.021,Одговара,4,CoQ-PP-2026-0030
+30,PM072501,P050272,Permanent Marker,10.01,9.00-11.00,II · PM_THC10:CBD1,QCSP_001_PM-II,0.04,N.D,9.52,Confirms,110,200,<10,Одговара,Одговара,< 2,N.D.,N.D.,0.021,0.001,0.012,0.003,Н.д.,4,CoQ-PP-2026-0033
+31,WC072501,P050262,Wedding Crasher,22.11,19.80-24.20,I · WC_THC22:CBD1,QCSP_001_WC-I,0.06,0.01,8.94,,100 CFU/g,90 CFU/g,< 10^2 CFU/g,Одговара,Одговара,< 2,Н.Д.,Н.Д.,0.023,0.005,0.006,0.01,Н.д.,3,CoQ-PP-2026-0028
+32,GP072501/1,P050292,Grape Pie,21.36,18.00-22.00,IV · GP_THC20:CBD1,QCSP_001_GP-IV,0.11,0.02,6.62,Confirms,6 x 10³,"6,5 x 10³",< 10 CFU/g,Одговара,Одговара,< 2,Н.Д.,Н.Д.,0.028,0.003,0.03,0.025,Одговара,4,CoQ-PP-2026-0031
+33,GP072501/2,P050302,Grape Pie,18.29 (Т2 неофиц.),18.00-22.00,IV · GP_THC20:CBD1,QCSP_001_GP-IV,0.10,0.03,7.41,Confirms,2 x 10²,3 x 10²,< 10,Одговара,Одговара,< 2,Н.Д.,Н.Д.,0.017,0.0028,0.02,0.019,Н.д.,4,CoQ-PP-2026-0032
+34,GP082501/1,P050312,Grape Pie,25.13 (Т2 неофиц.),22.61-25.39,III · GP_THC24:CBD1,QCSP_001_GP-III,0.08,0.03,6.29,Confirms,"4,3 x 10^2",1 x 10^3,< 10³ and >10²,Одговара,Одговара,< 2,Н.Д.,Н.Д.,0.014,0.003,0.02,0.017,Н.Д.,4,CoQ-PP-2026-0034
+35,GP082501/2,P050322,Grape Pie,15.70,14.40-17.60,V · GP_THC16:CBD1,QCSP_001_GP-V,< LOQ,< LOQ,6.88,Confirms,"3,2 x 10³","5,8 x 10³",< 10⁴ and >10³,Одговара,Одговара,< 2,ND,ND,0.013,0.003,0.02,0.016,Н.Д.,6,CoQ-PP-2026-0035
+36,AB092501,P060052,Apple and Banana,16.93,14.40-17.60,I · AB_THC16:CBD1,QCSP_001_AB-I,0.08,ND,6.77,Confirms,< 10,< 10,<10 CFU/g,Одговара,Одговара,< 2,Н.Д.,Н.Д.,0.05,Н.Д.,Н.Д.,0.003,Н.Д.,4,CoQ-PP-2026-0037
+37,CJ082501-2,P060032,Cap Junky,18.29,18.00-22.00,IV · CJ_THC20:CBD1,QCSP_001_CJ-IV,0.08,< LOQ,7.37,Confirms,"9,5 х 10^2 CFU/g","1,2 х 10^3 CFU/g",<10,Одговара,Одговара,< 2,ND,ND,0.073,Н.Д.,н.д.,н.д.,Н.д.,6,
+38,CJ082501/1,P060022,Cap Junky,28.34 (Т2 неофиц.),27.00-29.00,I · CJ_THC28:CBD1,QCSP_001_CJ-I,0.09,0.02,7.21,Confirms,"1,5 x 10^2","1,3 x 10^2",<10,Одговара,Одговара,< 2,N.D.,N.D.,0.075,N.D.,N.D.,N.D.,N.D.,4,CoQ-PP-2026-0039
+39,CJ092501,P060072,Cap Junky,25.65 (Т2 неофиц.),25.01-26.99,II · CJ_THC26:CBD1,QCSP_001_CJ-II,0.10,ND,7.64,Confirms,< 10 CFU/g,< 10 CFU/g,,Одговара,Одговара,< 2,Н.Д.,Н.Д.,0.04,Н.д.,Н.д.,0.004,Н.д.,4,CoQ-PP-2026-0042
+40,GP092501,P060092,Grape Pie,25.24 (Т2 неофиц.),22.61-25.39,III · GP_THC24:CBD1,QCSP_001_GP-III,0.11,ND,6.91,Confirms,1 x 10²,< 10,<10,Одговара,Одговара,< 2,Н.Д.,Н.Д.,0.022,Н.Д.,Н.Д.,0.007,Н.Д.,4,CoQ-PP-2026-0038
+41,OPM092501,P060042,Orange Punch Mimosa,10.18 (Т2 неофиц.),9.00-11.00,IV · OPM_THC10:CBD1,QCSP_001_OPM-IV,BLQ,ND,7.85,Confirms,10 CFU/g,10 CFU/g,,Одговара,Одговара,2.2,Н.Д.,Н.Д.,0.022,Н.д.,Н.д.,Н.д.,Н.д.,4,CoQ-PP-2026-0043
+42,PM092501,P060062,Permanent Market,12.25,11.01-12.99,I · PM_THC12:CBD1,QCSP_001_PM-I,<LOQ,<LOQ,7.97,Confirms,2 x 10^3 CFU/g,"2,2 x 10^3 CFU/g",< 10 CFU/g,Одговара,Одговара,< 2,ND,ND,0.03,Н.Д.,Н.Д.,Н.Д.,Одговара,6,
+43,SJ092501,P060082,Sleepy Joy,10.39 (Т2 неофиц.),9.00-11.00,II · SJ_THC10:CBD1,QCSP_001_SJ-II,0.07,BLQ,8.68,Confirms,< 10 CFU/g,< 10 CFU/g,<10,– отсутна/25 g,– отсутна/g,2,Н.Д.,Н.Д.,0.08,Н.Д.,Н.Д.,0.003,Н.Д.,4,CoQ-PP-2026-0045
+44,WC082501,P060012,Wedding Crasher,23.48 (Т2 неофиц.),19.80-24.20,I · WC_THC22:CBD1,QCSP_001_WC-I,0.08,0.02,7.50,Confirms,10 CFU/g,30 CFU/g,< 10 CFU/g,Одговара,Одговара,< 2,N.D.,N.D.,н.д.,н.д.,н.д.,н.д.,н.д.,4,CoQ-PP-2026-0041
+45,GRC102501_2,P060182,Graps & Creme,9.80 (Т2 неофиц.),9.00-11.00,I · GRC_THC10:CBD1,QCSP_001_GRC-I,,<LOQ,7.7,,,,,,,,,,,,,,,2,CoQ-PP-2026-0046
+46,J31102501,P060152,Jokerz 31,17.32,16.20-19.80,II · J31_THC18:CBD1,QCSP_001_J31-II,,< LOQ,6.3,,,,,,,,,,,,,,,4,CoQ-PP-2026-0047
+47,J31112501,,Jokerz 31,20.21,19.81-24.19,I · J31_THC22:CBD1,QCSP_001_J31-I,<LOQ,<LOQ,7.6,,,,,,,,,,,,,,,6,
+48,KC102501,P060172,Kush Crasher,17.06 (Т2 неофиц.),16.20-19.80,I · KC_THC18:CBD1,QCSP_001_KC-I,,<LOQ,8.6,,,,,,,,,,,,,,,2,CoQ-PP-2026-0048
+49,SJ102501,P060162,Sleepy Joy,11.20,11.01-12.99,I · SJ_THC12:CBD1,QCSP_001_SJ-I,<LOQ,<LOQ,7.8,,,,,,,,,,,,,,,2,CoQ-PP-2026-0049
+50,SJ112501,P060192,Sleepy Joy,9.20,9.00-11.00,II · SJ_THC10:CBD1,QCSP_001_SJ-II,<LOQ,<LOQ,6.7,,,,,,,,,,,,,,,2,CoQ-PP-2026-0050
+51,OPM112501,P060222,Orange Punch Mimosa,8.00,7.20-8.80,V · OPM_THC8:CBD1,QCSP_001_OPM-V,,0.01,8.06,,,,,,,,,,,,,,,1,CoQ-PP-2026-0051
+52,PM112501,P060232,Permanent Marker,10.79 (Т2 неофиц.),9.00-11.00,II · PM_THC10:CBD1,QCSP_001_PM-II,,0.01,8.61,,,,,,,,,,,,,,,1,CoQ-PP-2026-0052
+53,J31122501 (hand-trimmed),P060262,Jokerz 31,19.84,19.81-24.19,I · J31_THC22:CBD1,QCSP_001_J31-I,<LOQ,<LOQ,,,850,370,,Отсутна,Отсуствa,2.5,н.д.,н.д.,н.д.,н.д.,н.д.,н.д.,н.д.,3,
+54,J31122501 (machine-trimmed),P060262,Jokerz 31,21.84,19.81-24.19,I · J31_THC22:CBD1,QCSP_001_J31-I,<LOQ,<LOQ,,,1900,840,,Одговара,Одговара,N.D.,N.D.,N.D.,N.D.,N.D.,N.D.,N.D.,Н.д.,3,CoQ-PP-2026-0054
+55,OPM122501,P060242,Orange Punch Mimosa,7.91,7.20-8.80,V · OPM_THC8:CBD1,QCSP_001_OPM-V,<LOQ,<LOQ,6.6,,120,100,< 10,Одговара,Одговара,2.2,ND,Н.Д.,0.049,0.165,Н.Д.,Н.Д.,Н.Д.,6,CoQ-PP-2026-0055
+56,CC112501,P060272,Cash Cow,13.35,12.60-15.40,II · CC_THC14:CBD1,QCSP_001_CC-II,0.04,BLQ,7.39,,"3,8 x 10^3","2,7 x 10^3",<10^3 и >10^2,отсутна/25,отсутна/g,< 2,N.D.,N.D.,0.0289,0.0119,0.016,0.0102,N.D.,3,CoQ-PP-2026-0056
+57,FB012601_1,P060322,Fat Bastard,17.99 (Т2 неофиц.),17.15-18.85,II · FB_THC18:CBD1,QCSP_001_FB-II,,,7.67,,2 x 10³,"2,1 x 10³",< 10,отсутна/25,отсутна/g,< 2,N.D.,N.D.,0.0114,0.017,0.0144,0.0155,Н.д.,3,CoQ-PP-2026-0061
+58,FB112501,P060292,Fat Bastard,16.69,14.86-17.14,III · FB_THC16:CBD1,QCSP_001_FB-III,,,6.09,,"3,9 x 10³ CFU/g","2,4 x 10³ CFU/g",< 10 CFU/g,отсутна/25 g,отсутна/g,< 2,Н.Д.,Н.Д.,0.0215,0.0108,0.0199,0.0078,Н.д.,3,CoQ-PP-2026-0057
+59,GG012601*,P060302,Gorilla Glue,15.35,15.00-17.00,II · GG_THC16:CBD1,QCSP_001_GG-II,,,6.13,,1 x 10⁴ CFU/g,1 x 10⁴ CFU/g,< 10 CFU/g,отсутна/25 g,отсутна/g,< 2,Н.Д.,Н.Д.,0.0227,0.0179,0.0163,0.031,Н.д.,3,
+60,GG112501,P060252,Gorilla Glue,17.94,17.01-18.99,I · GG_THC18:CBD1,QCSP_001_GG-I,0.08,,6.31,,"5,1 x 10^3","4,5 x 10^3",,отсутна/25 г,отсутен/г,< 2,Н.Д.,Н.Д.,0.033,0.0154,0.0272,0.0146,Н.Д.,3,CoQ-PP-2026-0058
+61,JD012601*,P060312,Jelly Donutz,18.16,18.00-22.00,I · JD_THC20:CBD1,QCSP_001_JD-I,0.06,BLQ,6.68,,"1,9 x 10³ CFU/g","2,4 x 10² CFU/g",,отсутна/25 g,отсутна/g,< 2,Н.Д.,Н.Д.,0.0739,0.0166,0.0136,0.0322,Н.д.,3,
+62,JD112501,P060212,Jelly Donutz,20.32,18.00-22.00,I · JD_THC20:CBD1,QCSP_001_JD-I,< LOQ,< LOQ,6.69,,"2,6 x 10^3","3,3 x 10^3",,отсутна/25,отсутна/g,< 2,ND,Н.Д.,0.022,0.0149,0.02,0.0166,Н.Д.,5,
+63,JD112501*,,Jelly Donutz,13.93,13.10-14.90,III · JD_THC14:CBD1,QCSP_001_JD-III,,,6.38,,1 x 10⁴ CFU/g,"6,7 x 10³ CFU/g",,отсутна/25 g,отсутна/g,< 2,N.D.,N.D.,0.0109,0.01287,0.0175,0.0165,Н.д.,3,
+64,SCR112501,P060282,Scrambler,19.73 (Т2 неофиц.),16.20-19.80,II · SCR_THC18:CBD1,QCSP_001_SCR-II,,,6.84,,"2,3 x 10³","4,3 x 10³",,отсутна/25 g,отсутна/g,< 2,Н.д.,Н.д.,0.0299,0.0136,0.0154,0.017,Н.д.,3,CoQ-PP-2026-0060
+65,FB012603,,Fat Bastard,20.83,18.86-21.14,I · FB_THC20:CBD1,QCSP_001_FB-I,0.21,0.06,7.04,Одговара,,,,,,,,,,,,,,1,CoQ-PP-2026-0064
+66,FB012603V,P060392,Fat Bastard,18.29,17.15-18.85,II · FB_THC18:CBD1,QCSP_001_FB-II,0.16,0.06,6.36,Одговара,,,,,,,,,,,,,,1,CoQ-PP-2026-0065
+67,GG012603,P060402,Gorilla Glue,16.70,15.00-17.00,II · GG_THC16:CBD1,QCSP_001_GG-II,< LOQ,< LOQ,6.48,0.09,,,,,,ND,ND,ND,,,,,,3,CoQ-PP-2026-0094
+68,JD012603_02,P060412,JellyDonutz,14.43 (Т2 неофиц.),13.10-14.90,III · JD_THC14:CBD1,QCSP_001_JD-III,0.05,0.05,7.52,Одговара,,,,,,,,,,,,,,1,
+69,JD012603_02V,P060422,JellyDonutz,17.09 (Т2 неофиц.),14.91-17.09,II · JD_THC16:CBD1,QCSP_001_JD-II,BLQ,0.04,7.04,Одговара,,,,,,,,,,,,,,1,
+70,JD022601,,Jelly Donutz,18.58,18.00-22.00,I · JD_THC20:CBD1,QCSP_001_JD-I,,0.05,7.73,Одговара,,,,,,,,,,,,,,1,CoQ-PP-2026-0068
+71,P160012,P160012,GrapePie,26.32,25.40-26.60,II · GP_THC26:CBD1,QCSP_001_GP-II,0.15,0.09,6.31,0.42,,,,,,,,,,,,,,1,
+72,P160022,P160022,GrapePie,25.72,25.40-26.60,II · GP_THC26:CBD1,QCSP_001_GP-II,0.15,0.10,6.67,Одговара,,,,,,,,,,,,,,1,
+73,P160032,P160032,GrapePie,24.78,22.61-25.39,III · GP_THC24:CBD1,QCSP_001_GP-III,0.06,0.08,6.78,Одговара,,,,,,,,,,,,,,1,
+74,SCR022601,,Scrambler,21.92,19.81-24.19,I · SCR_THC22:CBD1,QCSP_001_SCR-I,0.19,0.06,7.06,Одговара,,,,,,,,,,,,,,1,CoQ-PP-2026-0069
+75,FB032601,,Fat Bastard,12.39,10.80-13.20,IV · FB_THC12:CBD1,QCSP_001_FB-IV,0.06,0.04,7.77,0.08,,,,,,,,,,,,,,1,CoQ-PP-2026-0073
+76,GG032601,,Gorilla Glue,18.98,17.01-18.99,I · GG_THC18:CBD1,QCSP_001_GG-I,0.25,0.04,7.88,Одговара,,,,,,,,,,,,,,1,CoQ-PP-2026-0074
+77,CC012601/1,P060332,Cash Cow,17.67,16.20-19.80,I · CC_THC18:CBD1,QCSP_001_CC-I,<LOQ,<LOQ,,,,,,,,ND,ND,ND,,,,,,2,CoQ-PP-2026-0092
+78,FB012602,P060352,Fat Bastard,18.86,18.86-21.14,I · FB_THC20:CBD1,QCSP_001_FB-I,0.22,<LOQ,,,,,,,,,,,,,,,,2,CoQ-PP-2026-0093
+79,SCR012603,P060382,Scrambler,17.84,16.20-19.80,II · SCR_THC18:CBD1,QCSP_001_SCR-II,<LOQ,<LOQ,,,,,,,,,ND,ND,,,,,,2,CoQ-PP-2026-0095
+,ACC102501,,Amnesia Core Cut,"12.09 (Т2 26.08.2026, неофиц.)",10.80-13.20,I · ACC_THC12:CBD1,QCSP_001_ACC-I,PENDING — no eCoA on file
+,CC012603,,Cash Cow,"14.76 (Т2 26.08.2026, неофиц.)",12.60-15.40,II · CC_THC14:CBD1,QCSP_001_CC-II,PENDING — no eCoA on file
+,CF102501,,Chem Flyer,"9.55 (Т2 26.08.2026, неофиц.)",9.00-11.00,I · CF_THC10:CBD1,QCSP_001_CF-I,PENDING — no eCoA on file
+,GRC102501/1,,Graps & Creme,7.05 (declared),6.30-7.70,II · GRC_THC7:CBD1,QCSP_001_GRC-II,PENDING — no eCoA on file
+,JD012603/01,,Jelly Donutz,"21.01 (Т2 26.08.2026, неофиц.)",18.00-22.00,I · JD_THC20:CBD1,QCSP_001_JD-I,PENDING — no eCoA on file
+,PUM102501,,Pure Michigen,"13.95 (Т2 26.08.2026, неофиц.)",12.60-15.40,I · PUM_THC14:CBD1,QCSP_001_PUM-I,PENDING — no eCoA on file
+,SCR012601,,Scrambler,18.07 (declared),16.20-19.80,II · SCR_THC18:CBD1,QCSP_001_SCR-II,PENDING — no eCoA on file
+,WED102501,,Wedding Cake,22.05 (declared),19.80-24.20,I · WED_THC22:CBD1,QCSP_001_WED-I,PENDING — no eCoA on file
+
+
+PART 2 — SPECIFICATIONS BY STRAIN (all grades · ranges · results within)
+#,First result,Strain / Cultivar,Specification Code,Grade,Product Code,Range (Total Δ⁹-THC),Nominal ± tolerance,Batches in range (anchor Total Δ⁹-THC %),Other historical results in range
+1,—,Amnesia Core Cut  (ACC · 1 batches),QCSP_001_ACC,I,ACC_THC12 : CBD1,10.80 – 13.20 %,12.00% ±1.20%,ACC102501 12.09 (Т2 неофиц.),—
+2,Jan 2026,Apple and Banana  (AB · 1 batches),QCSP_001_AB,I,AB_THC16 : CBD1,14.40 – 17.60 %,16.00% ±1.60%,AB092501 16.93,—
+3,Feb 2025,Blue Gelato  (BG · 1 batches),QCSP_001_BG,I,BG_THC26 : CBD1,23.40 – 28.60 %,26.00% ±2.60%,BG1024 26.14,—
+,,,,ⓘ,"superseded, outside spec",,,"BG1024 21.80 (26.02.2025) — pre-retest values, replaced per the retest rule (R5)",
+4,Feb 2025,Blue Sunset Sherbet  (BSS · 3 batches),QCSP_001_BSS,I,BSS_THC24 : CBD1,22.01 – 25.99 %,24.00% ±1.99%,"BSS1024 25.01, BSS1024_01 23.42",—
+,,,,II,BSS_THC20 : CBD1,18.00 – 22.00 %,20.00% ±2.00%,BSS052501 20.52 (Т2 неофиц.),BSS1024 21.03 (26.02.2025); BSS052501 20.39 (28.11.2025)
+5,Feb 2025,Cap Junky  (CJ · 9 batches),QCSP_001_CJ,I,CJ_THC28 : CBD1,27.00 – 29.00 %,28.00% ±1.00%,CJ082501/1 28.34 (Т2 неофиц.),—
+,,,,II,CJ_THC26 : CBD1,25.01 – 26.99 %,26.00% ±0.99%,CJ092501 25.65 (Т2 неофиц.),—
+,,,,III,CJ_THC24 : CBD1,23.00 – 25.00 %,24.00% ±1.00%,"CJ062501/1 24.80 (Т2 неофиц.), CJ052501/01 24.05, CJ072501 23.70, CJ1024 23.00",CJ082501/1 24.96 (21.01.2026)
+,,,,⚠,documented gap,22.01 – 22.99 %,,нема резултат | no result on file — a future result here triggers a grade-set revision,
+,,,,IV,CJ_THC20 : CBD1,18.00 – 22.00 %,20.00% ±2.00%,"CJ062501/2 18.91, CJ082501/2 18.29",CJ052501/01 20.29 (17.09.2025); CJ062501/1 21.51 (23.10.2025); CJ082501/2 20.84 (21.01.2026)
+,,,,⚠,documented gap,17.61 – 17.99 %,,нема резултат | no result on file — a future result here triggers a grade-set revision,
+,,,,V,CJ_THC16 : CBD1,14.40 – 17.60 %,16.00% ±1.60%,CJ052501/02 14.93,CJ062501/2 16.56 (23.10.2025)
+,,,,ⓘ,"superseded, outside spec",,,"CJ092501 22.30 (21.01.2026) — pre-retest values, replaced per the retest rule (R5)",
+6,May 2026,Cash Cow  (CC · 3 batches),QCSP_001_CC,I,CC_THC18 : CBD1,16.20 – 19.80 %,18.00% ±1.80%,CC012601/1 17.67,—
+,,,,⚠,documented gap,15.41 – 16.19 %,,нема резултат | no result on file — a future result here triggers a grade-set revision,
+,,,,II,CC_THC14 : CBD1,12.60 – 15.40 %,14.00% ±1.40%,"CC012603 14.76 (Т2 неофиц.), CC112501 13.35",—
+7,—,Chem Flyer  (CF · 1 batches),QCSP_001_CF,I,CF_THC10 : CBD1,9.00 – 11.00 %,10.00% ±1.00%,CF102501 9.55 (Т2 неофиц.),—
+8,Jan 2026,Clemosa a bud  (CLE · 1 batches),QCSP_001_CLE,I,CLE_THC8 : CBD1,7.20 – 8.80 %,8.00% ±0.80%,CLE072501 8.65 (Т2 неофиц.),CLE072501 8.02 (21.01.2026)
+9,May 2026,Fat Bastard  (FB · 6 batches),QCSP_001_FB,I,FB_THC20 : CBD1,18.86 – 21.14 %,20.00% ±1.14%,"FB012603 20.83, FB012602 18.86",—
+,,,,II,FB_THC18 : CBD1,17.15 – 18.85 %,18.00% ±0.85%,"FB012603V 18.29, FB012601/1 17.99 (Т2 неофиц.)",—
+,,,,III,FB_THC16 : CBD1,14.86 – 17.14 %,16.00% ±1.14%,FB112501 16.69,—
+,,,,⚠,documented gap,13.21 – 14.85 %,,нема резултат | no result on file — a future result here triggers a grade-set revision,
+,,,,IV,FB_THC12 : CBD1,10.80 – 13.20 %,12.00% ±1.20%,FB032601 12.39,—
+,,,,ⓘ,"superseded, outside spec",,,"FB012601/1 14.68 (11.05.2026) — pre-retest values, replaced per the retest rule (R5)",
+10,Apr 2025,Gorilla Glue  (GG · 7 batches),QCSP_001_GG,I,GG_THC18 : CBD1,17.01 – 18.99 %,18.00% ±0.99%,"GG032601 18.98, GG1024_01 18.67, GG112501 17.94",GG1024_01 17.22 (17.04.2025); GG012603 17.59 (30.06.2026)
+,,,,II,GG_THC16 : CBD1,15.00 – 17.00 %,16.00% ±1.00%,"GG012603 16.70, GG1024_02 15.95, GG1024 15.51 (Т2 неофиц.), GG012601* 15.35",—
+,,,,ⓘ,"superseded, outside spec",,,"GG1024 13.34 (23.04.2025) — pre-retest values, replaced per the retest rule (R5)",
+11,Apr 2025,Grape Pie  (GP · 13 batches),QCSP_001_GP,I,GP_THC28 : CBD1,26.61 – 29.39 %,28.00% ±1.39%,GP0824_03 28.03 (Т2 неофиц.),—
+,,,,II,GP_THC26 : CBD1,25.40 – 26.60 %,26.00% ±0.60%,"P160012 26.32, P160022 25.72",GP0824_03 25.45 (10.07.2025); GP092501 25.73 (21.01.2026)
+,,,,III,GP_THC24 : CBD1,22.61 – 25.39 %,24.00% ±1.39%,"GP092501 25.24 (Т2 неофиц.), GP082501/1 25.13 (Т2 неофиц.), GP062501 24.89, P160032 24.78, GP0824_02 22.61",GP0824_02 23.19 (10.07.2025); GP0824_02 23.79 (22.05.2025)
+,,,,⚠,documented gap,22.01 – 22.60 %,,нема резултат | no result on file — a future result here triggers a grade-set revision,
+,,,,IV,GP_THC20 : CBD1,18.00 – 22.00 %,20.00% ±2.00%,"GP072501/1 21.36, GP0824_01 20.79, GP052501 18.52, GP072501/2 18.29 (Т2 неофиц.)",GP052501 18.98 (19.09.2025); GP072501/2 19.81 (21.01.2026); GP082501/1 21.29 (21.01.2026)
+,,,,⚠,documented gap,17.61 – 17.99 %,,нема резултат | no result on file — a future result here triggers a grade-set revision,
+,,,,V,GP_THC16 : CBD1,14.40 – 17.60 %,16.00% ±1.60%,GP082501/2 15.70,GP082501/2 14.83 (21.01.2026)
+12,Mar 2026,Graps & Creme  (GRC · 2 batches),QCSP_001_GRC,I,GRC_THC10 : CBD1,9.00 – 11.00 %,10.00% ±1.00%,GRC102501/2 9.80 (Т2 неофиц.),—
+,,,,⚠,documented gap,7.71 – 8.99 %,,нема резултат | no result on file — a future result here triggers a grade-set revision,
+,,,,II,GRC_THC7 : CBD1,6.30 – 7.70 %,7.00% ±0.70%,GRC102501/1 7.05 (декл.),—
+,,,,ⓘ,"superseded, outside spec",,,"GRC102501/2 11.53 (04.03.2026) — pre-retest values, replaced per the retest rule (R5)",
+13,Jan 2025,High Pro Amnesia  (HPA · 3 batches),QCSP_001_HPA,I,HPA_THC22 : CBD1,21.00 – 23.00 %,22.00% ±1.00%,HPA1024_01 21.61,HPA1024_01 22.43 (24.06.2025)
+,,,,II,HPA_THC20 : CBD1,19.01 – 20.99 %,20.00% ±0.99%,HPA052501 19.69 (Т2 неофиц.),HPA052501 20.39 (19.09.2025)
+,,,,III,HPA_THC18 : CBD1,17.00 – 19.00 %,18.00% ±1.00%,HPA1024 17.31,—
+,,,,ⓘ,"superseded, outside spec",,,"HPA1024 14.97 (23.01.2025) — pre-retest values, replaced per the retest rule (R5)",
+14,May 2026,Jelly Donutz  (JD · 7 batches),QCSP_001_JD,I,JD_THC20 : CBD1,18.00 – 22.00 %,20.00% ±2.00%,"JD012603/01 21.01 (Т2 неофиц.), JD112501 20.32, JD022601 18.58, JD012601* 18.16",JD112501 19.64 (11.05.2026); JD012603/02 20.54 (30.06.2026)
+,,,,⚠,documented gap,17.10 – 17.99 %,,нема резултат | no result on file — a future result here triggers a grade-set revision,
+,,,,II,JD_THC16 : CBD1,14.91 – 17.09 %,16.00% ±1.09%,JD012603/02V 17.09 (Т2 неофиц.),JD012603/02V 15.16 (30.06.2026)
+,,,,III,JD_THC14 : CBD1,13.10 – 14.90 %,14.00% ±0.90%,"JD012603/02 14.43 (Т2 неофиц.), JD112501* 13.93",—
+15,Mar 2026,Jokerz 31  (J31 · 3 batches),QCSP_001_J31,I,J31_THC22 : CBD1,19.81 – 24.19 %,22.00% ±2.19%,"J31122501 21.84, J31112501 20.21",J31122501 19.84 (09.04.2026)
+,,,,II,J31_THC18 : CBD1,16.20 – 19.80 %,18.00% ±1.80%,J31102501 17.32,J31102501 19.14 (04.03.2026)
+,,,,ⓘ,"superseded, outside spec",,,"J31112501 25.27 (04.03.2026) — pre-retest values, replaced per the retest rule (R5)",
+16,Mar 2026,Kush Crasher  (KC · 1 batches),QCSP_001_KC,I,KC_THC18 : CBD1,16.20 – 19.80 %,18.00% ±1.80%,KC102501 17.06 (Т2 неофиц.),KC102501 17.04 (04.03.2026)
+17,May 2025,Motor Breath  (MB · 2 batches),QCSP_001_MB,I,MB_THC18 : CBD1,16.20 – 19.80 %,18.00% ±1.80%,"MB0824_04 18.67, MB0824_05 17.93 (Т2 неофиц.)",MB0824_05 16.82 (28.07.2025)
+18,Apr 2025,Orange Punch Mimosa  (OPM · 8 batches),QCSP_001_OPM,I,OPM_THC22 : CBD1,19.81 – 24.19 %,22.00% ±2.19%,OPM1024 20.03,OPM1024 19.96 (23.04.2025)
+,,,,II,OPM_THC18 : CBD1,16.20 – 19.80 %,18.00% ±1.80%,"OPM1024_03 19.30 (Т2 неофиц.), OMP1024_01 18.99 (Т2 неофиц.), OPM1024_02 18.04",OPM1024_02 18.27 (24.06.2025); OPM1024_03 16.55 (28.07.2025)
+,,,,⚠,documented gap,15.41 – 16.19 %,,нема резултат | no result on file — a future result here triggers a grade-set revision,
+,,,,III,OPM_THC14 : CBD1,12.60 – 15.40 %,14.00% ±1.40%,OPM052501 14.16,OMP1024_01 15.38 (06.05.2025)
+,,,,⚠,documented gap,11.01 – 12.59 %,,нема резултат | no result on file — a future result here triggers a grade-set revision,
+,,,,IV,OPM_THC10 : CBD1,9.00 – 11.00 %,10.00% ±1.00%,OPM092501 10.18 (Т2 неофиц.),OPM092501 9.43 (21.01.2026)
+,,,,⚠,documented gap,8.81 – 8.99 %,,нема резултат | no result on file — a future result here triggers a grade-set revision,
+,,,,V,OPM_THC8 : CBD1,7.20 – 8.80 %,8.00% ±0.80%,"OPM112501 8.00, OPM122501 7.91",OPM122501 8.09 (09.04.2026)
+19,Nov 2025,Permanent Marker  (PM · 3 batches),QCSP_001_PM,I,PM_THC12 : CBD1,11.01 – 12.99 %,12.00% ±0.99%,PM092501 12.25,—
+,,,,II,PM_THC10 : CBD1,9.00 – 11.00 %,10.00% ±1.00%,"PM112501 10.79 (Т2 неофиц.), PM072501 10.01",—
+,,,,ⓘ,"superseded, outside spec",,,"PM092501 14.06 (21.01.2026); PM112501 13.33 (05.03.2026) — pre-retest values, replaced per the retest rule (R5)",
+20,—,Pure Michigen  (PUM · 1 batches),QCSP_001_PUM,I,PUM_THC14 : CBD1,12.60 – 15.40 %,14.00% ±1.40%,PUM102501 13.95 (Т2 неофиц.),—
+21,May 2026,Scrambler  (SCR · 4 batches),QCSP_001_SCR,I,SCR_THC22 : CBD1,19.81 – 24.19 %,22.00% ±2.19%,SCR022601 21.92,—
+,,,,II,SCR_THC18 : CBD1,16.20 – 19.80 %,18.00% ±1.80%,"SCR112501 19.73 (Т2 неофиц.), SCR012601 18.07 (декл.), SCR012603 17.84",SCR112501 17.13 (11.05.2026)
+22,Jan 2026,Sleepy Joy  (SJ · 3 batches),QCSP_001_SJ,I,SJ_THC12 : CBD1,11.01 – 12.99 %,12.00% ±0.99%,SJ102501 11.20,—
+,,,,II,SJ_THC10 : CBD1,9.00 – 11.00 %,10.00% ±1.00%,"SJ092501 10.39 (Т2 неофиц.), SJ112501 9.20",SJ092501 10.96 (21.01.2026)
+23,—,Wedding Cake  (WED · 1 batches),QCSP_001_WED,I,WED_THC22 : CBD1,19.80 – 24.20 %,22.00% ±2.20%,WED102501 22.05 (декл.),—
+24,Nov 2025,Wedding Crasher  (WC · 2 batches),QCSP_001_WC,I,WC_THC22 : CBD1,19.80 – 24.20 %,22.00% ±2.20%,"WC082501 23.48 (Т2 неофиц.), WC072501 22.11",WC082501 21.67 (21.01.2026)
+
+
+PART 3 — BATCH -> GRADE ASSIGNMENTS (86 batches)
+#,Batch No.,P-number,Strain,Tested Total Δ⁹-THC %,Basis,"Tested (date, lab)",Specification Code,Grade,Product Code,Range (Total Δ⁹-THC),Nominal ± tolerance,Note
+1,ACC102501,P060122,Amnesia Core Cut,12.09,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_ACC,I,ACC_THC12 : CBD1,10.80 – 13.20 %,12.00% ±1.20%,T2 re-analysis (unofficial) — formal eCoA pending
+2,AB092501,P060052,Apple and Banana,16.93,certificate,"PP CoA #037 / ППК26005, 21.01.2026, UKIM",QCSP_001_AB,I,AB_THC16 : CBD1,14.40 – 17.60 %,16.00% ±1.60%,
+3,BG1024,,Blue Gelato,26.14,certificate,"197-1-К/26, 07.08.2026, FARM",QCSP_001_BG,I,BG_THC26 : CBD1,23.40 – 28.60 %,26.00% ±2.60%,
+4,BSS1024,,Blue Sunset Sherbet,25.01,certificate,"197-2-К/26, 07.08.2026, FARM",QCSP_001_BSS,I,BSS_THC24 : CBD1,22.01 – 25.99 %,24.00% ±1.99%,
+5,BSS1024_01,,Blue Sunset Sherbet,23.42,certificate,"ППК25176, 10.07.2025, UKIM",QCSP_001_BSS,I,BSS_THC24 : CBD1,22.01 – 25.99 %,24.00% ±1.99%,
+6,BSS052501,P050192,Blue Sunset Sherbet,20.52,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_BSS,II,BSS_THC20 : CBD1,18.00 – 22.00 %,20.00% ±2.00%,T2 re-analysis (unofficial) — formal eCoA pending
+7,CJ082501/1,P060022,Cap Junky,28.34,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_CJ,I,CJ_THC28 : CBD1,27.00 – 29.00 %,28.00% ±1.00%,T2 re-analysis (unofficial) — formal eCoA pending
+8,CJ092501,P060072,Cap Junky,25.65,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_CJ,II,CJ_THC26 : CBD1,25.01 – 26.99 %,26.00% ±0.99%,T2 re-analysis (unofficial) — formal eCoA pending
+9,CJ062501/1,P050222,Cap Junky,24.80,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_CJ,III,CJ_THC24 : CBD1,23.00 – 25.00 %,24.00% ±1.00%,T2 re-analysis (unofficial) — formal eCoA pending
+10,CJ052501/01,P050162,Cap Junky,24.05,certificate,"197-3-К/26, 07.08.2026, FARM",QCSP_001_CJ,III,CJ_THC24 : CBD1,23.00 – 25.00 %,24.00% ±1.00%,
+11,CJ072501,P050252,Cap Junky,23.70,certificate,"ППК25367, 28.11.2025, UKIM",QCSP_001_CJ,III,CJ_THC24 : CBD1,23.00 – 25.00 %,24.00% ±1.00%,
+12,CJ1024,,Cap Junky,23.00,certificate,"ППК25052, 26.02.2025, UKIM",QCSP_001_CJ,III,CJ_THC24 : CBD1,23.00 – 25.00 %,24.00% ±1.00%,
+13,CJ062501/2,P050212,Cap Junky,18.91,certificate,"197-4-К/26, 07.08.2026, FARM",QCSP_001_CJ,IV,CJ_THC20 : CBD1,18.00 – 22.00 %,20.00% ±2.00%,
+14,CJ082501/2,P060032,Cap Junky,18.29,certificate,"197-5-К/26, 07.08.2026, FARM",QCSP_001_CJ,IV,CJ_THC20 : CBD1,18.00 – 22.00 %,20.00% ±2.00%,
+15,CJ052501/02,P050172,Cap Junky,14.93,certificate,"ППК25281, 17.09.2025, UKIM",QCSP_001_CJ,V,CJ_THC16 : CBD1,14.40 – 17.60 %,16.00% ±1.60%,
+16,CC012601/1,P060332,Cash Cow,17.67,certificate,"197-6-К/26, 07.08.2026, FARM",QCSP_001_CC,I,CC_THC18 : CBD1,16.20 – 19.80 %,18.00% ±1.80%,
+17,CC012603,P060372,Cash Cow,14.76,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_CC,II,CC_THC14 : CBD1,12.60 – 15.40 %,14.00% ±1.40%,T2 re-analysis (unofficial) — formal eCoA pending
+18,CC112501,P060272,Cash Cow,13.35,certificate,"ППК26068, 11.05.2026, UKIM",QCSP_001_CC,II,CC_THC14 : CBD1,12.60 – 15.40 %,14.00% ±1.40%,
+19,CF102501,P060132,Chem Flyer,9.55,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_CF,I,CF_THC10 : CBD1,9.00 – 11.00 %,10.00% ±1.00%,T2 re-analysis (unofficial) — formal eCoA pending
+20,CLE072501,P050282,Clemosa a bud,8.65,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_CLE,I,CLE_THC8 : CBD1,7.20 – 8.80 %,8.00% ±0.80%,T2 re-analysis (unofficial) — formal eCoA pending
+21,FB012603,,Fat Bastard,20.83,certificate,"ППК26112, 30.06.2026, UKIM",QCSP_001_FB,I,FB_THC20 : CBD1,18.86 – 21.14 %,20.00% ±1.14%,
+22,FB012602,P060352,Fat Bastard,18.86,certificate,"197-7-К/26, 07.08.2026, FARM",QCSP_001_FB,I,FB_THC20 : CBD1,18.86 – 21.14 %,20.00% ±1.14%,
+23,FB012603V,P060392,Fat Bastard,18.29,certificate,"ППК26110, 30.06.2026, UKIM",QCSP_001_FB,II,FB_THC18 : CBD1,17.15 – 18.85 %,18.00% ±0.85%,
+24,FB012601/1,P060322,Fat Bastard,17.99,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_FB,II,FB_THC18 : CBD1,17.15 – 18.85 %,18.00% ±0.85%,MANDATORY-CODE DEVIATION: owner code THC16 infeasible for 17.99 (max window 14.40-17.60) -> THC18
+25,FB112501,P060292,Fat Bastard,16.69,certificate,"ППК26066, 11.05.2026, UKIM",QCSP_001_FB,III,FB_THC16 : CBD1,14.86 – 17.14 %,16.00% ±1.14%,
+26,FB032601,,Fat Bastard,12.39,certificate,"ППК26127, 21.07.2026, UKIM",QCSP_001_FB,IV,FB_THC12 : CBD1,10.80 – 13.20 %,12.00% ±1.20%,
+27,GG032601,,Gorilla Glue,18.98,certificate,"ППК26128, 21.07.2026, UKIM",QCSP_001_GG,I,GG_THC18 : CBD1,17.01 – 18.99 %,18.00% ±0.99%,
+28,GG1024_01,P050092,Gorilla Glue,18.67,certificate,"197-9-К/26, 07.08.2026, FARM",QCSP_001_GG,I,GG_THC18 : CBD1,17.01 – 18.99 %,18.00% ±0.99%,
+29,GG112501,P060252,Gorilla Glue,17.94,certificate,"ППК26061, 11.05.2026, UKIM",QCSP_001_GG,I,GG_THC18 : CBD1,17.01 – 18.99 %,18.00% ±0.99%,
+30,GG012603,P060402,Gorilla Glue,16.70,certificate,"197-8-К/26, 07.08.2026, FARM",QCSP_001_GG,II,GG_THC16 : CBD1,15.00 – 17.00 %,16.00% ±1.00%,
+31,GG1024_02,P050012,Gorilla Glue,15.95,certificate,"ППК25140, 22.05.2025, UKIM",QCSP_001_GG,II,GG_THC16 : CBD1,15.00 – 17.00 %,16.00% ±1.00%,
+32,GG1024,,Gorilla Glue,15.51,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_GG,II,GG_THC16 : CBD1,15.00 – 17.00 %,16.00% ±1.00%,T2 re-analysis (unofficial) — formal eCoA pending
+33,GG012601*,P060302,Gorilla Glue,15.35,certificate,"ППК26062, 11.05.2026, UKIM",QCSP_001_GG,II,GG_THC16 : CBD1,15.00 – 17.00 %,16.00% ±1.00%,
+34,GP0824_03,P050072,Grape Pie,28.03,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_GP,I,GP_THC28 : CBD1,26.61 – 29.39 %,28.00% ±1.39%,T2 re-analysis (unofficial) — formal eCoA pending
+35,P160012,P160012,Grape Pie,26.32,certificate,"ППК26117, 06.07.2026, UKIM",QCSP_001_GP,II,GP_THC26 : CBD1,25.40 – 26.60 %,26.00% ±0.60%,
+36,P160022,P160022,Grape Pie,25.72,certificate,"ППК26118, 06.07.2026, UKIM",QCSP_001_GP,II,GP_THC26 : CBD1,25.40 – 26.60 %,26.00% ±0.60%,
+37,GP092501,P060092,Grape Pie,25.24,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_GP,III,GP_THC24 : CBD1,22.61 – 25.39 %,24.00% ±1.39%,"MANDATORY-CODE DEVIATION (unavoidable) — THC26 for 25.24 cannot coexist with the neighbouring mandatory grades (symmetric ±10%, no overlap) -> THC24"
+38,GP082501/1,P050312,Grape Pie,25.13,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_GP,III,GP_THC24 : CBD1,22.61 – 25.39 %,24.00% ±1.39%,"MANDATORY-CODE DEVIATION (unavoidable) — THC26 for 25.13 cannot coexist with the neighbouring mandatory grades (symmetric ±10%, no overlap) -> THC24"
+39,GP062501,P050202,Grape Pie,24.89,certificate,"In-house HPLC cross-check NPCCC/SCP-02, ",QCSP_001_GP,III,GP_THC24 : CBD1,22.61 – 25.39 %,24.00% ±1.39%,
+40,P160032,P160032,Grape Pie,24.78,certificate,"ППК26119, 06.07.2026, UKIM",QCSP_001_GP,III,GP_THC24 : CBD1,22.61 – 25.39 %,24.00% ±1.39%,
+41,GP0824_02,P050022,Grape Pie,22.61,certificate,"197-11-К/26, 07.08.2026, FARM",QCSP_001_GP,III,GP_THC24 : CBD1,22.61 – 25.39 %,24.00% ±1.39%,
+42,GP072501/1,P050292,Grape Pie,21.36,certificate,"PP CoA #018 / ППК25378, 21.01.2026, UKIM",QCSP_001_GP,IV,GP_THC20 : CBD1,18.00 – 22.00 %,20.00% ±2.00%,
+43,GP0824_01,P050102,Grape Pie,20.79,certificate,"ППК25105, 17.04.2025, UKIM",QCSP_001_GP,IV,GP_THC20 : CBD1,18.00 – 22.00 %,20.00% ±2.00%,
+44,GP052501,P050152,Grape Pie,18.52,certificate,"197-10-К/26, 07.08.2026, FARM",QCSP_001_GP,IV,GP_THC20 : CBD1,18.00 – 22.00 %,20.00% ±2.00%,
+45,GP072501/2,P050302,Grape Pie,18.29,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_GP,IV,GP_THC20 : CBD1,18.00 – 22.00 %,20.00% ±2.00%,T2 re-analysis (unofficial) — formal eCoA pending
+46,GP082501/2,P050322,Grape Pie,15.70,certificate,"197-12-К/26, 07.08.2026, FARM",QCSP_001_GP,V,GP_THC16 : CBD1,14.40 – 17.60 %,16.00% ±1.60%,
+47,GRC102501/2,P060182,Graps & Creme,9.80,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_GRC,I,GRC_THC10 : CBD1,9.00 – 11.00 %,10.00% ±1.00%,MANDATORY-CODE DEVIATION: owner code THC12 infeasible for 9.80 (max window 10.80-13.20) -> THC10
+48,GRC102501/1,,Graps & Creme,7.05,declared,owner-declared value,QCSP_001_GRC,II,GRC_THC7 : CBD1,6.30 – 7.70 %,7.00% ±0.70%,"declared — no eCoA yet, grade provisional"
+49,HPA1024_01,P050052,High Pro Amnesia,21.61,certificate,"197-14-К/26, 07.08.2026, FARM",QCSP_001_HPA,I,HPA_THC22 : CBD1,21.00 – 23.00 %,22.00% ±1.00%,
+50,HPA052501,P050182,High Pro Amnesia,19.69,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_HPA,II,HPA_THC20 : CBD1,19.01 – 20.99 %,20.00% ±0.99%,T2 re-analysis (unofficial) — formal eCoA pending
+51,HPA1024,,High Pro Amnesia,17.31,certificate,"197-13-К/26, 07.08.2026, FARM",QCSP_001_HPA,III,HPA_THC18 : CBD1,17.00 – 19.00 %,18.00% ±1.00%,
+52,JD012603/01,P060362,Jelly Donutz,21.01,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_JD,I,JD_THC20 : CBD1,18.00 – 22.00 %,20.00% ±2.00%,T2 re-analysis (unofficial) — formal eCoA pending
+53,JD112501,P060212,Jelly Donutz,20.32,certificate,"197-15-К/26, 07.08.2026, FARM",QCSP_001_JD,I,JD_THC20 : CBD1,18.00 – 22.00 %,20.00% ±2.00%,
+54,JD022601,,Jelly Donutz,18.58,certificate,"ППК26115, 30.06.2026, UKIM",QCSP_001_JD,I,JD_THC20 : CBD1,18.00 – 22.00 %,20.00% ±2.00%,
+55,JD012601*,P060312,Jelly Donutz,18.16,certificate,"ППК26064, 11.05.2026, UKIM",QCSP_001_JD,I,JD_THC20 : CBD1,18.00 – 22.00 %,20.00% ±2.00%,
+56,JD012603/02V,P060422,Jelly Donutz,17.09,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_JD,II,JD_THC16 : CBD1,14.91 – 17.09 %,16.00% ±1.09%,T2 re-analysis (unofficial) — formal eCoA pending
+57,JD012603/02,P060412,Jelly Donutz,14.43,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_JD,III,JD_THC14 : CBD1,13.10 – 14.90 %,14.00% ±0.90%,MANDATORY-CODE DEVIATION: owner code THC20 infeasible for 14.43 (max window 18.00-22.00) -> THC14
+58,JD112501*,,Jelly Donutz,13.93,certificate,"ППК26065, 11.05.2026, UKIM",QCSP_001_JD,III,JD_THC14 : CBD1,13.10 – 14.90 %,14.00% ±0.90%,
+59,J31122501,P060262,Jokerz 31,21.84,certificate,"machine-trimmed preparation, CoQ-forming",QCSP_001_J31,I,J31_THC22 : CBD1,19.81 – 24.19 %,22.00% ±2.19%,
+60,J31112501,,Jokerz 31,20.21,certificate,"100-1-K/26, 09.04.2026, FARM",QCSP_001_J31,I,J31_THC22 : CBD1,19.81 – 24.19 %,22.00% ±2.19%,
+61,J31102501,P060152,Jokerz 31,17.32,certificate,"197-16-К/26, 07.08.2026, FARM",QCSP_001_J31,II,J31_THC18 : CBD1,16.20 – 19.80 %,18.00% ±1.80%,
+62,KC102501,P060172,Kush Crasher,17.06,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_KC,I,KC_THC18 : CBD1,16.20 – 19.80 %,18.00% ±1.80%,T2 re-analysis (unofficial) — formal eCoA pending
+63,MB0824_04,P050032,Motor Breath,18.67,certificate,"ППК25118, 06.05.2025, UKIM",QCSP_001_MB,I,MB_THC18 : CBD1,16.20 – 19.80 %,18.00% ±1.80%,
+64,MB0824_05,P050112,Motor Breath,17.93,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_MB,I,MB_THC18 : CBD1,16.20 – 19.80 %,18.00% ±1.80%,T2 re-analysis (unofficial) — formal eCoA pending
+65,OPM1024,,Orange Punch Mimosa,20.03,certificate,"197-17-К/26, 07.08.2026, FARM",QCSP_001_OPM,I,OPM_THC22 : CBD1,19.81 – 24.19 %,22.00% ±2.19%,
+66,OPM1024_03,P050082,Orange Punch Mimosa,19.30,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_OPM,II,OPM_THC18 : CBD1,16.20 – 19.80 %,18.00% ±1.80%,T2 re-analysis (unofficial) — formal eCoA pending
+67,OMP1024_01,P050042,Orange Punch Mimosa,18.99,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_OPM,II,OPM_THC18 : CBD1,16.20 – 19.80 %,18.00% ±1.80%,T2 re-analysis (unofficial) — formal eCoA pending
+68,OPM1024_02,P050062,Orange Punch Mimosa,18.04,certificate,"197-18-К/26, 07.08.2026, FARM",QCSP_001_OPM,II,OPM_THC18 : CBD1,16.20 – 19.80 %,18.00% ±1.80%,
+69,OPM052501,P050132,Orange Punch Mimosa,14.16,certificate,"ППК52557, 05.09.2025, UKIM",QCSP_001_OPM,III,OPM_THC14 : CBD1,12.60 – 15.40 %,14.00% ±1.40%,
+70,OPM092501,P060042,Orange Punch Mimosa,10.18,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_OPM,IV,OPM_THC10 : CBD1,9.00 – 11.00 %,10.00% ±1.00%,T2 re-analysis (unofficial) — formal eCoA pending
+71,OPM112501,P060222,Orange Punch Mimosa,8.00,certificate,"ППК26031, 05.03.2026, UKIM",QCSP_001_OPM,V,OPM_THC8 : CBD1,7.20 – 8.80 %,8.00% ±0.80%,
+72,OPM122501,P060242,Orange Punch Mimosa,7.91,certificate,"197-19-К/26, 07.08.2026, FARM",QCSP_001_OPM,V,OPM_THC8 : CBD1,7.20 – 8.80 %,8.00% ±0.80%,
+73,PM092501,P060062,Permanent Marker,12.25,certificate,"197-20-К/26, 07.08.2026, FARM",QCSP_001_PM,I,PM_THC12 : CBD1,11.01 – 12.99 %,12.00% ±0.99%,
+74,PM112501,P060232,Permanent Marker,10.79,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_PM,II,PM_THC10 : CBD1,9.00 – 11.00 %,10.00% ±1.00%,MANDATORY-CODE DEVIATION: owner code THC12 infeasible for 10.79 (max window 10.80-13.20) -> THC10
+75,PM072501,P050272,Permanent Marker,10.01,certificate,"ППК25368, 28.11.2025, UKIM",QCSP_001_PM,II,PM_THC10 : CBD1,9.00 – 11.00 %,10.00% ±1.00%,
+76,PUM102501,P060112,Pure Michigen,13.95,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_PUM,I,PUM_THC14 : CBD1,12.60 – 15.40 %,14.00% ±1.40%,T2 re-analysis (unofficial) — formal eCoA pending
+77,SCR022601,,Scrambler,21.92,certificate,"ППК26116, 06.07.2026, UKIM",QCSP_001_SCR,I,SCR_THC22 : CBD1,19.81 – 24.19 %,22.00% ±2.19%,
+78,SCR112501,P060282,Scrambler,19.73,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_SCR,II,SCR_THC18 : CBD1,16.20 – 19.80 %,18.00% ±1.80%,T2 re-analysis (unofficial) — formal eCoA pending
+79,SCR012601,,Scrambler,18.07,declared,owner-declared value,QCSP_001_SCR,II,SCR_THC18 : CBD1,16.20 – 19.80 %,18.00% ±1.80%,"declared — no eCoA yet, grade provisional"
+80,SCR012603,P060382,Scrambler,17.84,certificate,"197-21-К/26, 07.08.2026, FARM",QCSP_001_SCR,II,SCR_THC18 : CBD1,16.20 – 19.80 %,18.00% ±1.80%,
+81,SJ102501,P060162,Sleepy Joy,11.20,certificate,"051-3-K/26, 04.03.2026, FARM",QCSP_001_SJ,I,SJ_THC12 : CBD1,11.01 – 12.99 %,12.00% ±0.99%,
+82,SJ092501,P060082,Sleepy Joy,10.39,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_SJ,II,SJ_THC10 : CBD1,9.00 – 11.00 %,10.00% ±1.00%,T2 re-analysis (unofficial) — formal eCoA pending
+83,SJ112501,P060192,Sleepy Joy,9.20,certificate,"051-2-K/26, 04.03.2026, FARM",QCSP_001_SJ,II,SJ_THC10 : CBD1,9.00 – 11.00 %,10.00% ±1.00%,
+84,WED102501,,Wedding Cake,22.05,declared,owner-declared value,QCSP_001_WED,I,WED_THC22 : CBD1,19.80 – 24.20 %,22.00% ±2.20%,"declared — no eCoA yet, grade provisional"
+85,WC082501,P060012,Wedding Crasher,23.48,T2 re-analysis,"Farmahem re-analysis, 26.08.2026 (unoffi",QCSP_001_WC,I,WC_THC22 : CBD1,19.80 – 24.20 %,22.00% ±2.20%,T2 re-analysis (unofficial) — formal eCoA pending
+86,WC072501,P050262,Wedding Crasher,22.11,certificate,"ППК25369, 28.11.2025, UKIM",QCSP_001_WC,I,WC_THC22 : CBD1,19.80 – 24.20 %,22.00% ±2.20%,

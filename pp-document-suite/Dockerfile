@@ -14,7 +14,12 @@ WORKDIR /opt/pp-document-suite
 COPY . /opt/pp-document-suite
 
 # Core deps always; latex2mathml enables native Word equations (falls back to text without it).
-RUN pip install --no-cache-dir python-docx lxml fastapi "uvicorn[standard]" latex2mathml
+# Pinned, not floating: an unpinned install makes the image non-reproducible and
+# hides the deployed versions from CI's advisory scan. requirements-service.txt
+# is exactly this image's set (requirements.txt additionally documents optional
+# chart extras the image does not install).
+COPY requirements-service.txt /tmp/requirements-service.txt
+RUN pip install --no-cache-dir -r /tmp/requirements-service.txt
 
 ENV PP_SUITE_DIR=/opt/pp-document-suite \
     PP_OUT_DIR=/data

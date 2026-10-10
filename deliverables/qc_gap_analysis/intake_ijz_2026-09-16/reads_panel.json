@@ -1,0 +1,16 @@
+{
+  "_source": "Drive folder 1SmOicCRa8KEqoB-YlCojdap161YMQ-Di — the Head of QC's certificate database",
+  "_read": "one read, 16.09.2026, of the Drive text layer. The metals block prints its four analytes in the order the page sets them (it is not the same order on every page); each value is taken by its position under that page's own header.",
+  "_lab": "IPH — Institute of Public Health, Skopje",
+  "_map": {"R": "11.1 lead (олово)", "S": "11.2 cadmium (кадмиум)", "T": "11.3 arsenic (арсен)", "U": "11.4 mercury (жива)", "V": "12 pesticides", "O": "10.2 total aflatoxins"},
+  "certs": [
+    {"pn": "P060152", "cb": "J31102501",   "code": "1056-2026", "date": "09.03.2026", "header": "олово, жива, арсен, кадмиум", "vals": {"R": "0.061", "U": "N.D.", "T": "N.D.", "S": "N.D.", "V": "N.D.", "O": "< 2"}},
+    {"pn": "P060232", "cb": "PM112501",    "code": "1059-2026", "date": "09.03.2026", "header": "олово, жива, арсен, кадмиум", "vals": {"R": "N.D.", "U": "N.D.", "T": "N.D.", "S": "N.D.", "V": "N.D.", "O": "2.2"}},
+    {"pn": "P060172", "cb": "KC102501",    "code": "1058-2026", "date": "09.03.2026", "header": "олово, жива, арсен, кадмиум", "vals": {"R": "N.D.", "U": "N.D.", "T": "N.D.", "S": "N.D.", "V": "N.D.", "O": "2.8"}},
+    {"pn": "P060182", "cb": "GRC102501/2", "code": "1060-2026", "date": "09.03.2026", "header": "олово, жива, арсен, кадмиум", "vals": {"R": "N.D.", "U": "N.D.", "T": "0.0013", "S": "N.D.", "V": "N.D.", "O": "< 2"}},
+    {"pn": "P060112", "cb": "PUM102501",   "code": "327-2026",  "date": "11.02.2026", "header": "олово, жива, арсен, кадмиум", "vals": {"R": "0.078", "U": "N.D.", "T": "0.0187", "S": "N.D.", "V": "N.D.", "O": "< 2"}},
+    {"pn": "P060122", "cb": "ACC102501",   "code": "326-2026",  "date": "11.02.2026", "header": "олово, жива, арсен, кадмиум", "vals": {"R": "0.078", "U": "N.D.", "T": "0.022", "S": "N.D.", "V": "N.D.", "O": "2.3"}},
+    {"pn": "P060132", "cb": "CF102501",    "code": "330-2026",  "date": "11.02.2026", "header": "олово, арсен, кадмиум, жива", "vals": {"R": "0.07", "T": "0.0942", "S": "N.D.", "U": "N.D.", "V": "N.D.", "O": "2.1"}},
+    {"pn": "P060402", "cb": "GG012603",    "code": "3659-2026", "date": "22.06.2026", "header": "олово, кадмиум, арсен, жива", "vals": {"R": "0.059", "S": "0.03", "T": "0.05", "U": "0.015", "V": "N.D.", "O": "< 2"}}
+  ]
+}

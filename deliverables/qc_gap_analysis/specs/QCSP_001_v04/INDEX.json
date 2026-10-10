@@ -1,0 +1,464 @@
+{
+ "document": "QCSP 001 v.04",
+ "issued": "18.09.2026",
+ "supersedes": "QCSP 001 v.03 of 01.06.2026",
+ "basis": "17.09.2026",
+ "sheets": [
+  {
+   "code": "QCSP_001_AB-II_v.01",
+   "strain": "Apple and Banana",
+   "grade": "II",
+   "window": "16.20 – 19.79 %",
+   "lots": 1,
+   "file": "QCSP_001_AB-II_v.01_Apple_and_Banana_Grade_II.html"
+  },
+  {
+   "code": "QCSP_001_AB-I_v.01",
+   "strain": "Apple and Banana",
+   "grade": "I",
+   "window": "19.80 – 24.19 %",
+   "lots": 1,
+   "file": "QCSP_001_AB-I_v.01_Apple_and_Banana_Grade_I.html"
+  },
+  {
+   "code": "QCSP_001_ACC-I_v.01",
+   "strain": "Amnesia Core Cut",
+   "grade": "I",
+   "window": "10.80 – 13.19 %",
+   "lots": 1,
+   "file": "QCSP_001_ACC-I_v.01_Amnesia_Core_Cut_Grade_I.html"
+  },
+  {
+   "code": "QCSP_001_BG-II_v.01",
+   "strain": "Blue Gelato",
+   "grade": "II",
+   "window": "19.80 – 24.19 %",
+   "lots": 1,
+   "file": "QCSP_001_BG-II_v.01_Blue_Gelato_Grade_II.html"
+  },
+  {
+   "code": "QCSP_001_BG-I_v.01",
+   "strain": "Blue Gelato",
+   "grade": "I",
+   "window": "24.20 – 27.79 %",
+   "lots": 1,
+   "file": "QCSP_001_BG-I_v.01_Blue_Gelato_Grade_I.html"
+  },
+  {
+   "code": "QCSP_001_BSS-III_v.01",
+   "strain": "Blue Sunset Sherbet",
+   "grade": "III",
+   "window": "18.11 – 21.88 %",
+   "lots": 2,
+   "file": "QCSP_001_BSS-III_v.01_Blue_Sunset_Sherbet_Grade_III.html"
+  },
+  {
+   "code": "QCSP_001_BSS-II_v.01",
+   "strain": "Blue Sunset Sherbet",
+   "grade": "II",
+   "window": "21.89 – 26.10 %",
+   "lots": 2,
+   "file": "QCSP_001_BSS-II_v.01_Blue_Sunset_Sherbet_Grade_II.html"
+  },
+  {
+   "code": "QCSP_001_BSS-I_v.01",
+   "strain": "Blue Sunset Sherbet",
+   "grade": "I",
+   "window": "26.07 – 29.92 %",
+   "lots": 2,
+   "file": "QCSP_001_BSS-I_v.01_Blue_Sunset_Sherbet_Grade_I.html"
+  },
+  {
+   "code": "QCSP_001_CC-II_v.01",
+   "strain": "Cash Cow",
+   "grade": "II",
+   "window": "12.65 – 15.34 %",
+   "lots": 3,
+   "file": "QCSP_001_CC-II_v.01_Cash_Cow_Grade_II.html"
+  },
+  {
+   "code": "QCSP_001_CC-I_v.01",
+   "strain": "Cash Cow",
+   "grade": "I",
+   "window": "15.35 – 18.64 %",
+   "lots": 2,
+   "file": "QCSP_001_CC-I_v.01_Cash_Cow_Grade_I.html"
+  },
+  {
+   "code": "QCSP_001_CF-I_v.01",
+   "strain": "Chem Flyer",
+   "grade": "I",
+   "window": "9.00 – 10.99 %",
+   "lots": 1,
+   "file": "QCSP_001_CF-I_v.01_Chem_Flyer_Grade_I.html"
+  },
+  {
+   "code": "QCSP_001_CJ-III_v.01",
+   "strain": "Cap Junky",
+   "grade": "III",
+   "window": "18.40 – 21.59 %",
+   "lots": 5,
+   "file": "QCSP_001_CJ-III_v.01_Cap_Junky_Grade_III.html"
+  },
+  {
+   "code": "QCSP_001_CJ-II_v.01",
+   "strain": "Cap Junky",
+   "grade": "II",
+   "window": "21.60 – 26.39 %",
+   "lots": 6,
+   "file": "QCSP_001_CJ-II_v.01_Cap_Junky_Grade_II.html"
+  },
+  {
+   "code": "QCSP_001_CJ-IV_v.01",
+   "strain": "Cap Junky",
+   "grade": "IV",
+   "window": "15.60 – 18.39 %",
+   "lots": 2,
+   "file": "QCSP_001_CJ-IV_v.01_Cap_Junky_Grade_IV.html"
+  },
+  {
+   "code": "QCSP_001_CJ-I_v.01",
+   "strain": "Cap Junky",
+   "grade": "I",
+   "window": "26.40 – 29.59 %",
+   "lots": 3,
+   "file": "QCSP_001_CJ-I_v.01_Cap_Junky_Grade_I.html"
+  },
+  {
+   "code": "QCSP_001_CJ-V_v.01",
+   "strain": "Cap Junky",
+   "grade": "V",
+   "window": "12.60 – 15.39 %",
+   "lots": 1,
+   "file": "QCSP_001_CJ-V_v.01_Cap_Junky_Grade_V.html"
+  },
+  {
+   "code": "QCSP_001_CLE-I_v.01",
+   "strain": "Clemosa A Bud",
+   "grade": "I",
+   "window": "7.20 – 8.79 %",
+   "lots": 1,
+   "file": "QCSP_001_CLE-I_v.01_Clemosa_A_Bud_Grade_I.html"
+  },
+  {
+   "code": "QCSP_001_FB-III_v.01",
+   "strain": "Fat Bastard",
+   "grade": "III",
+   "window": "13.80 – 16.19 %",
+   "lots": 2,
+   "file": "QCSP_001_FB-III_v.01_Fat_Bastard_Grade_III.html"
+  },
+  {
+   "code": "QCSP_001_FB-II_v.01",
+   "strain": "Fat Bastard",
+   "grade": "II",
+   "window": "16.20 – 19.79 %",
+   "lots": 4,
+   "file": "QCSP_001_FB-II_v.01_Fat_Bastard_Grade_II.html"
+  },
+  {
+   "code": "QCSP_001_FB-IV_v.01",
+   "strain": "Fat Bastard",
+   "grade": "IV",
+   "window": "10.80 – 13.19 %",
+   "lots": 1,
+   "file": "QCSP_001_FB-IV_v.01_Fat_Bastard_Grade_IV.html"
+  },
+  {
+   "code": "QCSP_001_FB-I_v.01",
+   "strain": "Fat Bastard",
+   "grade": "I",
+   "window": "19.80 – 24.19 %",
+   "lots": 1,
+   "file": "QCSP_001_FB-I_v.01_Fat_Bastard_Grade_I.html"
+  },
+  {
+   "code": "QCSP_001_GG-II_v.01",
+   "strain": "Gorilla Glue",
+   "grade": "II",
+   "window": "13.77 – 16.22 %",
+   "lots": 3,
+   "file": "QCSP_001_GG-II_v.01_Gorilla_Glue_Grade_II.html"
+  },
+  {
+   "code": "QCSP_001_GG-I_v.01",
+   "strain": "Gorilla Glue",
+   "grade": "I",
+   "window": "16.23 – 19.76 %",
+   "lots": 6,
+   "file": "QCSP_001_GG-I_v.01_Gorilla_Glue_Grade_I.html"
+  },
+  {
+   "code": "QCSP_001_GP-III_v.01",
+   "strain": "Grape Pie",
+   "grade": "III",
+   "window": "18.00 – 21.99 %",
+   "lots": 5,
+   "file": "QCSP_001_GP-III_v.01_Grape_Pie_Grade_III.html"
+  },
+  {
+   "code": "QCSP_001_GP-II_v.01",
+   "strain": "Grape Pie",
+   "grade": "II",
+   "window": "22.00 – 25.99 %",
+   "lots": 7,
+   "file": "QCSP_001_GP-II_v.01_Grape_Pie_Grade_II.html"
+  },
+  {
+   "code": "QCSP_001_GP-IV_v.01",
+   "strain": "Grape Pie",
+   "grade": "IV",
+   "window": "14.40 – 17.59 %",
+   "lots": 1,
+   "file": "QCSP_001_GP-IV_v.01_Grape_Pie_Grade_IV.html"
+  },
+  {
+   "code": "QCSP_001_GP-I_v.01",
+   "strain": "Grape Pie",
+   "grade": "I",
+   "window": "26.00 – 29.99 %",
+   "lots": 4,
+   "file": "QCSP_001_GP-I_v.01_Grape_Pie_Grade_I.html"
+  },
+  {
+   "code": "QCSP_001_GRC-III_v.01",
+   "strain": "Grapes And Cream",
+   "grade": "III",
+   "window": "7.20 – 8.79 %",
+   "lots": 1,
+   "file": "QCSP_001_GRC-III_v.01_Grapes_And_Cream_Grade_III.html"
+  },
+  {
+   "code": "QCSP_001_GRC-II_v.01",
+   "strain": "Grapes And Cream",
+   "grade": "II",
+   "window": "9.00 – 10.99 %",
+   "lots": 1,
+   "file": "QCSP_001_GRC-II_v.01_Grapes_And_Cream_Grade_II.html"
+  },
+  {
+   "code": "QCSP_001_GRC-I_v.01",
+   "strain": "Grapes And Cream",
+   "grade": "I",
+   "window": "11.00 – 12.99 %",
+   "lots": 1,
+   "file": "QCSP_001_GRC-I_v.01_Grapes_And_Cream_Grade_I.html"
+  },
+  {
+   "code": "QCSP_001_HPA-III_v.01",
+   "strain": "High Pro Amnesia",
+   "grade": "III",
+   "window": "13.80 – 16.19 %",
+   "lots": 1,
+   "file": "QCSP_001_HPA-III_v.01_High_Pro_Amnesia_Grade_III.html"
+  },
+  {
+   "code": "QCSP_001_HPA-II_v.01",
+   "strain": "High Pro Amnesia",
+   "grade": "II",
+   "window": "16.20 – 19.79 %",
+   "lots": 2,
+   "file": "QCSP_001_HPA-II_v.01_High_Pro_Amnesia_Grade_II.html"
+  },
+  {
+   "code": "QCSP_001_HPA-I_v.01",
+   "strain": "High Pro Amnesia",
+   "grade": "I",
+   "window": "19.80 – 24.19 %",
+   "lots": 2,
+   "file": "QCSP_001_HPA-I_v.01_High_Pro_Amnesia_Grade_I.html"
+  },
+  {
+   "code": "QCSP_001_J31-III_v.01",
+   "strain": "Jokerz 31",
+   "grade": "III",
+   "window": "16.20 – 19.79 %",
+   "lots": 1,
+   "file": "QCSP_001_J31-III_v.01_Jokerz_31_Grade_III.html"
+  },
+  {
+   "code": "QCSP_001_J31-II_v.01",
+   "strain": "Jokerz 31",
+   "grade": "II",
+   "window": "19.80 – 24.19 %",
+   "lots": 2,
+   "file": "QCSP_001_J31-II_v.01_Jokerz_31_Grade_II.html"
+  },
+  {
+   "code": "QCSP_001_J31-I_v.01",
+   "strain": "Jokerz 31",
+   "grade": "I",
+   "window": "24.20 – 27.79 %",
+   "lots": 2,
+   "file": "QCSP_001_J31-I_v.01_Jokerz_31_Grade_I.html"
+  },
+  {
+   "code": "QCSP_001_JD-III_v.01",
+   "strain": "Jelly Donuts",
+   "grade": "III",
+   "window": "13.80 – 16.19 %",
+   "lots": 3,
+   "file": "QCSP_001_JD-III_v.01_Jelly_Donuts_Grade_III.html"
+  },
+  {
+   "code": "QCSP_001_JD-II_v.01",
+   "strain": "Jelly Donuts",
+   "grade": "II",
+   "window": "16.20 – 19.79 %",
+   "lots": 4,
+   "file": "QCSP_001_JD-II_v.01_Jelly_Donuts_Grade_II.html"
+  },
+  {
+   "code": "QCSP_001_JD-I_v.01",
+   "strain": "Jelly Donuts",
+   "grade": "I",
+   "window": "19.80 – 24.19 %",
+   "lots": 4,
+   "file": "QCSP_001_JD-I_v.01_Jelly_Donuts_Grade_I.html"
+  },
+  {
+   "code": "QCSP_001_KC-I_v.01",
+   "strain": "Kush Crasher",
+   "grade": "I",
+   "window": "16.20 – 19.79 %",
+   "lots": 1,
+   "file": "QCSP_001_KC-I_v.01_Kush_Crasher_Grade_I.html"
+  },
+  {
+   "code": "QCSP_001_MB-I_v.01",
+   "strain": "Motor Breath",
+   "grade": "I",
+   "window": "16.20 – 19.79 %",
+   "lots": 2,
+   "file": "QCSP_001_MB-I_v.01_Motor_Breath_Grade_I.html"
+  },
+  {
+   "code": "QCSP_001_OPM-III_v.01",
+   "strain": "Orange Punch Mimosa",
+   "grade": "III",
+   "window": "12.60 – 15.39 %",
+   "lots": 2,
+   "file": "QCSP_001_OPM-III_v.01_Orange_Punch_Mimosa_Grade_III.html"
+  },
+  {
+   "code": "QCSP_001_OPM-II_v.01",
+   "strain": "Orange Punch Mimosa",
+   "grade": "II",
+   "window": "15.40 – 18.59 %",
+   "lots": 4,
+   "file": "QCSP_001_OPM-II_v.01_Orange_Punch_Mimosa_Grade_II.html"
+  },
+  {
+   "code": "QCSP_001_OPM-IV_v.01",
+   "strain": "Orange Punch Mimosa",
+   "grade": "IV",
+   "window": "9.00 – 10.99 %",
+   "lots": 2,
+   "file": "QCSP_001_OPM-IV_v.01_Orange_Punch_Mimosa_Grade_IV.html"
+  },
+  {
+   "code": "QCSP_001_OPM-I_v.01",
+   "strain": "Orange Punch Mimosa",
+   "grade": "I",
+   "window": "18.60 – 21.39 %",
+   "lots": 2,
+   "file": "QCSP_001_OPM-I_v.01_Orange_Punch_Mimosa_Grade_I.html"
+  },
+  {
+   "code": "QCSP_001_OPM-V_v.01",
+   "strain": "Orange Punch Mimosa",
+   "grade": "V",
+   "window": "7.20 – 8.79 %",
+   "lots": 2,
+   "file": "QCSP_001_OPM-V_v.01_Orange_Punch_Mimosa_Grade_V.html"
+  },
+  {
+   "code": "QCSP_001_PM-III_v.01",
+   "strain": "Permanent Marker",
+   "grade": "III",
+   "window": "9.00 – 10.99 %",
+   "lots": 2,
+   "file": "QCSP_001_PM-III_v.01_Permanent_Marker_Grade_III.html"
+  },
+  {
+   "code": "QCSP_001_PM-II_v.01",
+   "strain": "Permanent Marker",
+   "grade": "II",
+   "window": "11.00 – 12.99 %",
+   "lots": 2,
+   "file": "QCSP_001_PM-II_v.01_Permanent_Marker_Grade_II.html"
+  },
+  {
+   "code": "QCSP_001_PM-I_v.01",
+   "strain": "Permanent Marker",
+   "grade": "I",
+   "window": "13.00 – 14.99 %",
+   "lots": 2,
+   "file": "QCSP_001_PM-I_v.01_Permanent_Marker_Grade_I.html"
+  },
+  {
+   "code": "QCSP_001_PUM-I_v.01",
+   "strain": "Pure Michigen",
+   "grade": "I",
+   "window": "12.60 – 15.39 %",
+   "lots": 1,
+   "file": "QCSP_001_PUM-I_v.01_Pure_Michigen_Grade_I.html"
+  },
+  {
+   "code": "QCSP_001_SCR-II_v.01",
+   "strain": "Scrambler",
+   "grade": "II",
+   "window": "16.20 – 19.79 %",
+   "lots": 3,
+   "file": "QCSP_001_SCR-II_v.01_Scrambler_Grade_II.html"
+  },
+  {
+   "code": "QCSP_001_SCR-I_v.01",
+   "strain": "Scrambler",
+   "grade": "I",
+   "window": "19.80 – 24.19 %",
+   "lots": 2,
+   "file": "QCSP_001_SCR-I_v.01_Scrambler_Grade_I.html"
+  },
+  {
+   "code": "QCSP_001_SJ-II_v.01",
+   "strain": "Sleepy Joe",
+   "grade": "II",
+   "window": "9.00 – 10.99 %",
+   "lots": 3,
+   "file": "QCSP_001_SJ-II_v.01_Sleepy_Joe_Grade_II.html"
+  },
+  {
+   "code": "QCSP_001_SJ-I_v.01",
+   "strain": "Sleepy Joe",
+   "grade": "I",
+   "window": "11.00 – 12.99 %",
+   "lots": 2,
+   "file": "QCSP_001_SJ-I_v.01_Sleepy_Joe_Grade_I.html"
+  },
+  {
+   "code": "QCSP_001_WC-II_v.01",
+   "strain": "Wedding Crusher",
+   "grade": "II",
+   "window": "20.60 – 23.39 %",
+   "lots": 2,
+   "file": "QCSP_001_WC-II_v.01_Wedding_Crusher_Grade_II.html"
+  },
+  {
+   "code": "QCSP_001_WC-I_v.01",
+   "strain": "Wedding Crusher",
+   "grade": "I",
+   "window": "23.40 – 28.59 %",
+   "lots": 2,
+   "file": "QCSP_001_WC-I_v.01_Wedding_Crusher_Grade_I.html"
+  },
+  {
+   "code": "QCSP_001_WED-I_v.01",
+   "strain": "Wedding Cake",
+   "grade": "I",
+   "window": "23.40 – 28.59 %",
+   "lots": 1,
+   "file": "QCSP_001_WED-I_v.01_Wedding_Cake_Grade_I.html"
+  }
+ ]
+}

@@ -1,0 +1,34 @@
+{
+  "031-3-ГС/26": {
+    "batch_canonical": "P060102",
+    "cultivation_batch": "WED102501",
+    "batch_printed": "Wedding Cake WED102501",
+    "cert_code": "031-3-ГС/26",
+    "date_of_issue": "12.02.2026",
+    "date_received": "30.01.2026",
+    "date_of_analysis": "09.02.2026 – 10.02.2026",
+    "lab_sample_number": "CF-43/26",
+    "drive_file_id": "1K1KzMO1YCa-bMWZUVeXivfUAp1fDTHIi",
+    "file": "120226_031-3-LoD-26_FHM_WED102501-P060102.pdf",
+    "lab": "FHM",
+    "laboratory": "Farmahem — Лабораторија за животна средина, Скопје",
+    "sample_type": "Сув цвет од канабис — Цвет",
+    "packaging": "Алуминиумско пакување",
+    "mass_g": "5,86",
+    "quantity_analysed_g": "0,9967",
+    "method": "EUROPEAN PHARMACOPOEIA 11.5 Loss on Drying (2.2.32:2024) — accredited, МКС EN ISO 17025:2018, ЛТ-017",
+    "criterion_printed": "< 12",
+    "sha256": "cb01a7758252e2c5a8b8c2af49098c9781712d72ff92fd16602a57e47af200b0",
+    "bytes": 861475,
+    "pages": 2,
+    "read_A": {"8": "6,8", "8_U": "± 0,2"},
+    "read_B": {"8": "6,8", "8_U": "± 0,2"},
+    "reads_agree_flag": true,
+    "results": {"8": "6,8", "8_U": "± 0,2"},
+    "signatories": "Анализа и изработка на извештај: Христина Тришеска, дипл. инж. по хемија; Проверил: Маријан Лакс, дипл. инж. по заштита на животна средина; Одговорно лице: Јулијана Димзова, дипл. инж. технолог, Шеф на Лабораторија за животна средина — handwritten signatures and the round ФАРМАХЕМ ДООЕЛ Скопје stamp present",
+    "notes": [
+      "the page carries the cultivation batch WED102501 and no P number; P060102 comes from the scan's own file name and the Head of QC's batch list, which is how every other 031- certificate is placed",
+      "OI-42 named this certificate on 16.09.2026 as one of the 44 laboratory scans in no record of the desk"
+    ]
+  }
+}

@@ -1,0 +1,316 @@
+/* Orbitron carries no Cyrillic, no № and no Δ. Montserrat stands behind it so the
+   Macedonian half, the number sign and the delta are set in the house face rather than
+   in whatever the renderer substitutes. The Latin is unchanged: Chromium falls through
+   the stack per glyph, not per element. Head of QC, 18.09.2026. */
+
+/* CoX shared stylesheet — ImB SPC Design System (DS-QCSP001 v.01) */
+@page{size:A4;margin:0}
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--navy:#1B3A5C;--navy-deep:#0F2540;--navy-mid:#2C5282;--navy-soft:#3B6BA5;--navy-title:#16324F;
+--gold:#A67C2E;--gold-bright:#C9A227;--gold-deep:#7A5C1E;--gold-tint:#FDFBF4;--gold-label:#A8873A;--gold-dark:#8F6A1C;--cream:#F9F4E7;
+--heaven:#F2F5F9;--surface:#FCFDFE;
+--ink:#0F172A;--text:#1E293B;--text-sec:#475569;--text-ter:#8C9BB0;--mkc:#4E5E74;--border:#E4EAF1;--border-light:#F1F5F9;--green:#15803D;
+--MARGIN-H:0.4in;--PAD-V:0.4in}
+body{font-family:'Montserrat','Helvetica Neue',Arial,sans-serif;background:#B1BAC5;color:var(--text);display:flex;justify-content:center;padding:20px}
+a{color:var(--navy-mid)}a:hover{color:var(--gold-deep)}
+.page{position:relative;width:210mm;height:297mm;min-height:297mm;max-height:297mm;background:#FFF;overflow:hidden;box-shadow:0 8px 60px rgba(99,113,131,.25);display:flex;flex-direction:column}
+.mk{font-family:'Montserrat',sans-serif;font-size:7.5px;font-weight:500;font-style:italic;color:var(--mkc);letter-spacing:normal;line-height:8.4px}
+.bisep{font-style:normal;font-weight:400;font-size:.92em;color:rgba(90,110,132,.6);padding:0 1px}
+/* header */
+.header-bar{display:grid;grid-template-columns:auto 1fr auto;align-items:center;height:112px;padding:0.28in var(--MARGIN-H) 8px;background:linear-gradient(180deg, #F2F6FA 0%, #F4F8FB 10%, #F7F9FC 20%, #FAFBFD 30%, #F9F9F6 40%, #FDFBF7 50%, #FDFAF4 60%, #FEFBF6 70%, #FDFAF2 79%, #FDFBF4 88%, #F8F1DF 95%, #F4EBD4 100%)}
+.hb-logo{width:104px;height:58px;object-fit:contain;justify-self:start}
+.hb-center{justify-self:center;text-align:center;display:flex;flex-direction:column;align-items:center;gap:1px}
+.hb-title{font-family:'Orbitron','Montserrat',sans-serif;font-size:17px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--navy-title);white-space:nowrap;line-height:1.1}
+.hb-mk-title{font-size:9px;font-style:italic;color:#5A7391;letter-spacing:2px;text-transform:uppercase;margin-top:2px;white-space:nowrap}
+.hb-sub{font-size:8px;font-weight:600;letter-spacing:1.1px;text-transform:uppercase;color:#46617F;margin-top:3px;padding-top:3px;border-top:1px solid rgba(189,174,143,.4);white-space:nowrap}
+.hb-mk-sub{font-size:7.5px;font-style:italic;color:#5A7391;letter-spacing:.8px;text-transform:uppercase;margin-top:1px}
+.hb-right{justify-self:end;text-align:right}
+.hb-code{font-family:'Orbitron','Montserrat',monospace;font-size:10.5px;font-weight:700;letter-spacing:.2px;color:var(--gold-deep);white-space:nowrap}
+.hb-code-lbl{font-family:'Orbitron','Montserrat',sans-serif;font-size:7px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--gold-label);margin-bottom:2px}
+.hb-code-lbl .mk{display:block;text-transform:uppercase;font-size:6.5px}
+.hb-issue{font-size:8px;color:#5A7391;margin-top:4px;padding-top:3px;border-top:1px solid rgba(189,174,143,.4)}
+.hb-issue b{font-family:'Roboto Mono',monospace;font-weight:700;color:var(--navy);font-size:9px}
+/* metallic section band */
+.sec-label{position:relative;flex:0 0 auto;height:23px;display:flex;align-items:center;gap:7px;padding:5px var(--MARGIN-H);white-space:nowrap;overflow:hidden;font-family:'Orbitron','Montserrat',sans-serif;font-size:9.5px;font-weight:800;letter-spacing:.15px;text-transform:uppercase;color:#173654;text-shadow:0 1px 0 rgba(255,255,255,.7);background-image:linear-gradient(180deg, #ACBFD2 0%, #ACBFD2 1.4%, #DAE5EE 4.5%, #FAFCFE 9%, #F6FAFD 18%, #F6FAFD 28%, #F0F5FA 39%, #E9F0F7 50%, #E1EAF2 61%, #DAE5EE 72%, #D5E1EC 82%, #D9E3EE 92%, #E0E9F1 100%),linear-gradient(180deg,#5A7DA0 0%,#AFC6DB 1.5%,#FBFDFF 4%,#FDFEFF 8%,#F4F9FD 18%,#E6F0F9 29%,#B7CEE2 40%,#9DBAD4 54%,#86A6C4 69%,#7091B3 83%,#6D8FB1 92%,#8FACC8 97%,#A9C2D9 100%);box-shadow:inset 0 1px 0 rgba(250,253,255,.95),inset 0 -1px 0 rgba(96,134,172,.55)}
+.sec-label .sec-no{font-family:'Roboto Mono',monospace;font-size:12px;font-weight:700;color:#8A5E12;text-shadow:0 1px 0 rgba(255,244,214,.9)}
+.sec-label .mk{display:inline;font-size:7.6px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:#123A63;text-shadow:0 1px 0 rgba(232,242,251,.7)}
+.sec-label .mk::before{content:" | ";font-style:normal;color:#8C9BB0}
+/* gold engraved rule */
+.goldrule{height:2px;flex:0 0 auto;margin:0 var(--MARGIN-H);background:linear-gradient(90deg,rgba(198,185,159,0) 0%,rgba(198,185,159,.33) 12%,rgba(198,185,159,.7) 32%,#C6B99F 50%,rgba(198,185,159,.7) 68%,rgba(198,185,159,.33) 88%,rgba(198,185,159,0) 100%)}
+/* banner: cultivar + potency */
+.pb-main{display:flex;align-items:baseline;gap:12px;flex-wrap:nowrap;padding:5px var(--MARGIN-H) 2px;background:linear-gradient(180deg,#F2F5F9 0%,#F9FBFD 55%,#FFFFFF 100%)}
+.pb-name{font-family:'Orbitron','Montserrat',sans-serif;font-size:20px;font-weight:700;color:var(--navy);letter-spacing:.3px;white-space:nowrap}
+.pb-potency{font-family:'Orbitron','Montserrat',sans-serif;font-weight:700;color:var(--gold-deep);white-space:nowrap;display:inline-flex;align-items:baseline;gap:6px}
+.pb-potency .pbp-val{font-size:20px}
+.pb-potency .pbp-tol{font-size:12px;font-weight:400;color:var(--navy)}
+.pb-grade{margin-left:auto;font-family:'Orbitron','Montserrat',sans-serif;font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#FFF;background:linear-gradient(180deg,#9FB3C4 0%,#95A7BA 42%,#8D9DAE 58%,#8A97A5 100%);border-radius:9px;padding:3px 11px;box-shadow:inset 0 1px 0 rgba(255,255,255,.38),inset 0 -1px 1px rgba(9,22,38,.5),0 1.5px 2.5px rgba(21,46,74,.35);text-shadow:0 1px 1px rgba(9,22,38,.45);align-self:center}
+.pb-taxon{padding:0 var(--MARGIN-H) 3px;background:#FFF;font-size:8px;color:var(--text-sec)}
+.pb-taxon i{color:var(--navy-mid)}
+.pb-taxon .sep{color:var(--gold-label);padding:0 5px}
+/* label+value lockups */
+.lk-lbl{font-family:'Orbitron','Montserrat',sans-serif;font-size:8.2px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--gold-deep);line-height:1.15;display:inline-block}
+.lk-lbl .mk{display:block;text-transform:uppercase;font-size:7px}
+.lk-val{font-family:'Roboto Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.2px;color:var(--navy);white-space:nowrap}
+.lk-val.sm{font-size:9.3px}
+.lk-val .u{font-family:'Montserrat',sans-serif;font-size:8px;font-weight:500;color:var(--text-sec)}
+.lockrow{display:flex;justify-content:space-between;align-items:center;padding:4px var(--MARGIN-H);background:#FCFDFE;flex-wrap:nowrap;gap:12px}
+.lockrow .lk{display:inline-flex;align-items:center;gap:8px;min-width:0}
+.gridrow{display:grid;grid-template-columns:repeat(4,auto);justify-content:space-between;align-items:start;padding:4px var(--MARGIN-H);background:#FCFDFE;column-gap:14px;row-gap:6px}
+.gridrow .lk{display:flex;flex-direction:column;gap:2px}
+.gridrow.g5{grid-template-columns:repeat(5,auto)}
+/* results table */
+.tbl-wrap{flex:0 0 auto;background:#FFF}
+table.results{width:100%;border-collapse:collapse;table-layout:fixed}
+table.results thead th{font-family:'Montserrat',sans-serif;font-size:8.3px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--navy);padding:3.5px 5px;text-align:left;border-top:2px solid #9EACBA;border-bottom:2px solid #9EACBA;background:#F2F5F9}
+table.results thead th .mk{display:block;font-size:6.8px;font-weight:500;text-transform:none;letter-spacing:.1px}
+table.results thead th:first-child{text-align:center;padding-left:var(--MARGIN-H)}
+table.results thead th:last-child{padding-right:var(--MARGIN-H)}
+table.results tbody td{padding:1.5px 5px;font-size:8.6px;line-height:1.12;vertical-align:middle}
+table.results tbody td:first-child{text-align:center;font-family:'Roboto Mono',monospace;font-weight:700;color:var(--navy-soft);padding-left:var(--MARGIN-H)}
+table.results tbody td:last-child{padding-right:var(--MARGIN-H)}
+table.results tbody tr:nth-of-type(even){background:#F2F5F9}
+table.results tr.row-group{background:#FEFBF4 !important}
+table.results tr.row-group td{padding-top:1px;padding-bottom:1px}
+table.results tr.sub-row td:nth-child(2){padding-left:16px}
+table.results tr.last-row td{border-bottom:2px solid #9EACBA}
+.p-name{font-size:9px;font-weight:700;color:var(--navy-title);line-height:1.12}
+.p-name .mk{display:block;font-size:7.4px}
+.p-name .mk.inl{display:inline;margin-left:5px}
+.p-sub{display:block;font-size:8px;font-weight:600;color:#3B4E60;font-family:'Roboto Mono',monospace;line-height:1.1}
+.p-sub .mk{display:inline;font-size:7.2px}
+.p-method{font-size:8px;color:var(--text-sec);font-family:'Roboto Mono',monospace;line-height:1.15;overflow-wrap:anywhere}
+.p-meth-eq{display:block}
+.p-spec{font-size:8.4px;color:var(--text);font-family:'Roboto Mono',monospace;line-height:1.15}
+.p-spec .mk{display:inline}
+.r-val{font-family:'Roboto Mono',monospace;font-size:9px;font-weight:700;color:var(--navy);text-align:center;white-space:nowrap}
+td.r-cell{text-align:center}
+.r-conform{color:var(--green)}
+.r-conform .mk{display:block;font-size:6.8px;color:#5f8f74}
+.r-nd{color:var(--text-ter)}
+.src-tag{display:inline-block;font-family:'Orbitron','Montserrat',sans-serif;font-size:7px;font-weight:800;color:#FFF;background:linear-gradient(180deg,#9FB3C4,#8D9DAE);border-radius:2px;padding:1.5px 5px;letter-spacing:.5px;box-shadow:0 1px 1.5px rgba(21,46,74,.3)}
+.src-tag.q{background:linear-gradient(180deg,#DCC897,#BDAE8F)}
+/* SPC 3D GMP tick-chips (DS §6.4) */
+.chip-sel{display:inline-flex;align-items:center;gap:4px;font-size:8.5px;font-weight:800;letter-spacing:.2px;text-transform:uppercase;font-family:'Montserrat',sans-serif;background:linear-gradient(180deg,#7E96AC 0%,#71889F 42%,#647A90 58%,#5D7185 100%);color:#FFF;border-radius:9px;padding:2px 7px 2px 5px;box-shadow:inset 0 1px 0 rgba(255,255,255,.38),inset 0 2px 2px rgba(255,255,255,.14),inset 0 -1px 1px rgba(9,22,38,.5),0 1.5px 2.5px rgba(21,46,74,.35);text-shadow:0 1px 1px rgba(9,22,38,.45);white-space:nowrap}
+.chip-sel .bx{color:#A8F0C0;font-family:'Roboto Mono',monospace;font-size:11px;font-weight:400;text-shadow:0 1px 1px rgba(9,22,38,.5)}.chip-sel .mk{color:#E4EDF6;text-transform:none}
+.chip-un{display:inline-flex;align-items:center;gap:4px;font-size:7.3px;font-weight:600;letter-spacing:.2px;text-transform:uppercase;font-family:'Roboto Mono',monospace;background:linear-gradient(180deg,#EFF2F6 0%,#F4F7F9 30%,#F9FAFC 65%,#FCFDFE 100%);color:#7C8FA6;border:1px solid #CBD9E6;border-radius:9px;padding:1px 6.8px;box-shadow:inset 0 1px 2px rgba(74,100,128,.28),inset 0 2px 3px rgba(74,100,128,.12),inset 0 -1px 0 rgba(255,255,255,.85);text-shadow:0 1px 0 rgba(255,255,255,.7);white-space:nowrap}
+.chip-un .bx{color:#A7B4C4;font-size:10px}
+.selrow{display:flex;justify-content:space-between;align-items:center;padding:5px var(--MARGIN-H);background:#FCFDFE;gap:12px}
+.selrow .grp{display:inline-flex;align-items:center;gap:8px}
+.selrow .grp .stack{display:inline-flex;gap:6px;align-items:center}
+.disp-row{display:flex;align-items:center;gap:16px;padding:6px var(--MARGIN-H);background:linear-gradient(180deg,#FFFFFF 0%,#FCFDFE 100%)}
+.disp-row .grp{display:inline-flex;align-items:center;gap:9px}
+.disp-row .chip-sel{font-size:9.5px;padding:3px 11px 3px 7px}
+.disp-row .chip-sel .bx{font-size:12px}
+.disp-row .link{margin-left:auto;display:inline-flex;align-items:center;gap:8px}
+.disp-note{font-size:7.8px;color:var(--text-sec);padding:2px var(--MARGIN-H) 1px;line-height:1.3}
+.disp-note strong{color:var(--navy)}
+.disp-note .mk{display:inline}
+/* single-parameter iCoA: method panel + data table */
+.method-panel{margin:5px var(--MARGIN-H) 2px;padding:6px 12px;background:linear-gradient(180deg,#FDFBF6,#FBF8EF);border:1px solid rgba(220,203,157,.45)}
+.method-panel .m-head{display:flex;justify-content:space-between;align-items:center;gap:6px 12px;margin-bottom:3px;flex-wrap:wrap}
+.method-panel .m-meta{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.method-panel .m-name{font-family:'Orbitron','Montserrat',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--navy-title)}
+.method-panel .m-ref{font-family:'Roboto Mono',monospace;font-size:8.5px;font-weight:700;color:var(--gold-deep);white-space:nowrap}
+.method-panel .m-desc{font-size:8.3px;line-height:1.42;color:var(--text)}
+.method-panel .m-desc b{color:var(--navy)}
+.vp{display:inline-block;font-family:'Orbitron','Montserrat',sans-serif;font-size:6.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;padding:2px 7px;border-radius:2px;background:var(--navy);color:#fff;white-space:nowrap}
+.vp.gold{background:var(--cream);color:var(--gold-deep);border:1px solid var(--gold)}
+table.data{width:100%;border-collapse:collapse}
+table.data thead th{font-family:'Montserrat',sans-serif;font-size:8.3px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--navy);padding:4px 6px;text-align:left;border-top:2px solid #9EACBA;border-bottom:2px solid #9EACBA;background:#F2F5F9}
+table.data thead th .mk{display:block;font-size:6.8px;font-weight:500;text-transform:none;letter-spacing:.1px}
+table.data thead th:first-child{padding-left:var(--MARGIN-H)}
+table.data thead th:last-child{padding-right:var(--MARGIN-H)}
+table.data tbody td{padding:2.5px 6px;font-size:8.6px;line-height:1.25;vertical-align:middle}
+table.data tbody td:first-child{padding-left:var(--MARGIN-H)}
+table.data tbody td:last-child{padding-right:var(--MARGIN-H)}
+table.data tbody tr:nth-of-type(even){background:#F2F5F9}
+table.data tfoot td{padding:3px 6px;font-size:8.8px;border-top:2px solid #9EACBA;font-weight:800;color:var(--navy)}
+table.data tfoot td:first-child{padding-left:var(--MARGIN-H)}
+table.data tfoot td:last-child{padding-right:var(--MARGIN-H)}
+table.data .c{text-align:center}
+table.data .r{text-align:right;font-family:'Roboto Mono',monospace;font-weight:600;color:var(--navy)}
+table.data .d-name{font-weight:700;color:var(--navy-title);font-size:8.8px;display:block;line-height:1.15}
+table.data .d-sub{display:block;font-size:7.5px;color:var(--text-sec);line-height:1.2}
+table.data .ok{font-family:'Roboto Mono',monospace;font-weight:700;color:var(--green)}
+/* component/total row types for multi-analyte tables */
+table.data tr.row-comp td{color:var(--text-sec)}
+table.data tr.row-comp .d-name{font-weight:600;color:#3B4E60;font-size:8.4px}
+table.data tr.row-total{background:#FEFBF4 !important}
+table.data tr.row-total .d-name{font-weight:800;color:var(--navy)}
+table.data tr.row-total td{border-top:1px solid rgba(166,124,46,.35)}
+/* validation trio cards (Method Status / System Suitability / Uncertainty) */
+.val-trio{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:6px var(--MARGIN-H) 4px}
+.val-trio.cols-2{grid-template-columns:1fr 1fr}
+.val-card{background:#FEFDF9;border:1px solid #F3EFE4;border-top:2.5px solid var(--gold-deep);padding:6px 10px;font-size:8px;line-height:1.35;color:var(--text)}
+.val-card.gold{background:var(--gold-tint);border-color:#F1EAD4;border-top-color:var(--gold)}
+.val-card b{color:var(--navy)}
+.val-card .v-title{display:block;font-family:'Orbitron','Montserrat',sans-serif;font-size:7.6px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold-deep);border-bottom:1px solid #F1EAD4;padding-bottom:2px;margin-bottom:3px}
+.val-card .v-title .mk{display:inline;font-size:7px;text-transform:none;letter-spacing:.2px}
+.val-card .v-title .mk::before{content:" | ";font-style:normal;color:#8C9BB0}
+.eor{text-align:center;font-family:'Orbitron','Montserrat',sans-serif;font-size:6.8px;font-weight:700;letter-spacing:2.4px;text-transform:uppercase;color:var(--text-ter);padding:5px var(--MARGIN-H) 3px}
+.eor::before,.eor::after{content:" — "}
+/* notes / statements */
+.pot-note{font-size:7.6px;color:var(--text-sec);padding:2px var(--MARGIN-H) 1px;line-height:1.25}
+.pot-note strong{color:var(--navy)}
+.stmt{display:flex;align-items:center;gap:12px;margin:3px var(--MARGIN-H) 0;padding:4px 12px;background:linear-gradient(180deg,#FDFBF6,#FBF8EF);border:1px solid rgba(220,203,157,.45)}
+.stmt .badge{flex:0 0 auto;font-family:'Orbitron','Montserrat',sans-serif;font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#FFF;background:linear-gradient(180deg,#97C5AB 0%,#8FBDA3 45%,#8AC09E 60%,#87B398 100%);border-radius:9px;padding:5px 13px;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 -1px 1px rgba(6,50,24,.5),0 1.5px 2.5px rgba(6,50,24,.3);text-shadow:0 1px 1px rgba(6,50,24,.4)}
+.stmt .badge .mk{display:block;color:#D7F2E1;font-size:6.4px;text-transform:uppercase;text-align:center}
+.stmt .body{font-size:8px;line-height:1.28;color:var(--text)}
+.stmt .body strong{color:var(--navy)}
+.stmt .body .mk{display:block;margin-top:2px;font-size:7.4px;line-height:1.25}
+.notes{margin:3px var(--MARGIN-H) 0;font-size:7.5px;color:var(--text-sec);line-height:1.25}
+.notes .nt{font-family:'Orbitron','Montserrat',sans-serif;font-size:7.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--gold-label);margin-bottom:2px}
+.notes ul{margin-left:14px}
+.notes li{margin-bottom:1px}
+.notes strong{color:var(--navy)}
+/* signature grids */
+.approval-grid{display:grid;padding:3px var(--MARGIN-H) 1px;text-align:center;margin-top:auto}
+.approval-grid.cols-2{grid-template-columns:1fr 1fr;gap:110px}
+.approval-grid.cols-3{grid-template-columns:1fr 1fr 1fr;gap:44px}
+.ap-role{font-family:'Orbitron','Montserrat',sans-serif;font-size:9.5px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;color:var(--navy)}
+.ap-role .mk{display:block;font-family:'Orbitron','Montserrat',sans-serif;font-style:normal;font-weight:700;font-size:7.5px;color:var(--navy-soft);text-transform:uppercase;letter-spacing:.6px;margin-top:1px}
+.ap-sign{position:relative;height:20px;margin-bottom:2px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
+.ap-line{width:90%;height:2px;background:linear-gradient(90deg,rgba(198,185,159,0) 0%,rgba(198,185,159,.33) 12%,rgba(198,185,159,.7) 32%,#C6B99F 50%,rgba(198,185,159,.7) 68%,rgba(198,185,159,.33) 88%,rgba(198,185,159,0) 100%)}
+.ap-title{font-family:'Orbitron','Montserrat',sans-serif;font-size:8px;font-weight:800;color:var(--navy);text-transform:uppercase}
+.ap-title .mk{display:inline;font-family:'Orbitron','Montserrat',sans-serif;font-style:normal;font-weight:700;font-size:7px;color:var(--navy-soft);text-transform:uppercase}
+.ap-title .mk::before{content:" | ";color:var(--navy-soft)}
+.ap-name{font-size:11px;font-weight:700;color:var(--navy);margin-top:3px}
+.ap-cred{font-size:8px;font-weight:600;font-style:italic;letter-spacing:.3px;color:#3D5876;margin-top:1px}
+.ap-date-row{margin-top:2px;display:flex;justify-content:center;align-items:center;gap:6px}
+.ap-date-label{font-size:8px;font-weight:600;color:var(--text-ter);text-transform:uppercase}
+.ap-date-val{font-size:9.5px;font-weight:700;color:var(--ink);font-family:'Roboto Mono',monospace}
+/* footer */
+.footer{position:absolute;bottom:0;left:0;right:0;height:64px;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px var(--MARGIN-H) 8px;overflow:hidden;background-image:linear-gradient(180deg, #F2F6FA 0%, #F4F8FB 10%, #F7F9FC 20%, #FAFBFD 30%, #F9F9F6 40%, #FDFBF7 50%, #FDFAF4 60%, #FEFBF6 70%, #FDFAF2 79%, #FDFBF4 88%, #F8F1DF 95%, #F4EBD4 100%),linear-gradient(180deg, #F2F6FA 0%, #F4F8FB 10%, #F7F9FC 20%, #FAFBFD 30%, #F9F9F6 40%, #FDFBF7 50%, #FDFAF4 60%, #FEFBF6 70%, #FDFAF2 79%, #FDFBF4 88%, #F8F1DF 95%, #F4EBD4 100%)}
+.footer::before{content:'';position:absolute;left:0;right:0;top:0;height:2px;opacity:.55;background:linear-gradient(90deg,#9A7C3C 0%,#A98844 22%,#9C8F76 45%,#84909C 65%,#6C85A0 85%,#537494 100%)}
+.footer::after{content:'';position:absolute;left:0;right:0;top:2px;height:8px;pointer-events:none;background:linear-gradient(180deg,rgba(253,254,255,.85) 0%,rgba(250,253,255,.4) 55%,rgba(246,250,253,0) 100%)}
+.foot-left{font-size:8.5px;color:#5A7391;line-height:1.3;flex:1;position:relative;z-index:2}
+.foot-center-num{position:absolute;left:50%;transform:translateX(-50%);font-family:'Roboto Mono',monospace;font-weight:600;font-size:11px;letter-spacing:1px;color:#5A7391;z-index:2}
+.foot-right{font-family:'Orbitron','Montserrat',monospace;font-weight:700;font-size:10px;letter-spacing:.3px;color:#5A7391;text-align:right;flex:1;position:relative;z-index:2}
+.foot-right .mk{display:block;font-size:7px;text-transform:uppercase}
+@media print{body{background:white;padding:0}.page{box-shadow:none}}
+/* Vertical-rhythm tier "airy" (DS §02): spare page height distributes EVENLY across section boundaries via flex auto margins */
+.page.airy .sec-label{margin-top:auto}
+.page.airy .header-bar + .sec-label{margin-top:0}
+.page.airy .pb-main{padding-top:12px;padding-bottom:8px}
+.page.airy .gridrow{padding-top:8px;padding-bottom:8px}
+.page.airy .selrow{padding-top:8px;padding-bottom:8px}
+.page.airy .method-panel{margin-top:10px;margin-bottom:10px;padding:12px 16px}
+.page.airy .method-panel .m-head{margin-bottom:6px}
+.page.airy .method-panel .m-name{font-size:10.5px}
+.page.airy .method-panel .m-desc{font-size:9px;line-height:1.58}
+.page.airy .tbl-wrap{padding-top:6px}
+.page.airy table.data tbody td{padding-top:4.5px;padding-bottom:4.5px;font-size:9.2px}
+.page.airy table.data .d-name{font-size:9.4px}
+.page.airy table.data .d-sub{font-size:8px}
+.page.airy table.data thead th{padding-top:6px;padding-bottom:6px}
+.page.airy table.data tfoot td{padding-top:5px;padding-bottom:5px}
+.page.airy .pot-note{padding-top:8px;padding-bottom:6px;font-size:8.4px;line-height:1.5}
+.page.airy .disp-row{padding-top:11px;padding-bottom:11px}
+.page.airy .disp-note{padding-top:8px;padding-bottom:8px;font-size:8.4px;line-height:1.55}
+.page.airy .lk-lbl{font-size:8.8px}
+.page.airy .lk-lbl .mk{font-size:7.4px}
+.page.airy .lk-val{font-size:11px}
+.page.airy .gridrow .lk{gap:3px}
+.page.airy .approval-grid{padding-top:16px}
+.page.airy .ap-sign{height:32px}
+.page.airy .ap-name{margin-top:6px}
+.page.airy .ap-date-row{margin-top:4px}
+
+/* PRINT-FLAT L-50 harmonisation (mirrors AA-I_v.01_L-50_PRINT) */
+.sec-label,.sec-label .sec-no,.sec-label .mk{text-shadow:none !important}
+.sec-label{box-shadow:none !important;background-size:100% 100%;background-repeat:no-repeat}
+.footer::before,.footer::after{content:none !important;display:none !important}
+.header-bar,.footer{background-size:100% 100% !important;background-repeat:no-repeat !important}
+
+/* ===== SPC master sync (AA-I_v.01_Master parity) ===== */
+/* header title: bumped ~7% proportionally (size + letter-spacing + line-height) */
+.hb-title{font-size:22px !important;letter-spacing:1.1px !important;line-height:24.2px !important}
+.hb-right{min-width:132px}
+/* Section 01 content bands: golden near-white, fading to nothing at both margins */
+.gridrow,.lockrow{background-color:transparent !important;background-image:linear-gradient(90deg,rgba(254,253,249,0) 0,rgba(254,253,249,.5) 30px,rgba(254,253,249,.95) 48px,rgba(254,253,249,.95) calc(100% - 48px),rgba(254,253,249,.5) calc(100% - 30px),rgba(254,253,249,0) 100%) !important}
+/* table head: F2F5F9 panel + steel engraved rules, all fading to nothing at the margins */
+table.results thead tr,table.labref thead tr{background-image:linear-gradient(90deg,rgba(158,172,186,0) 38px,rgba(158,172,186,.5) 90px,#9EACBA 160px,#9EACBA calc(100% - 160px),rgba(158,172,186,.5) calc(100% - 90px),rgba(158,172,186,0) calc(100% - 38px)),linear-gradient(90deg,rgba(158,172,186,0) 38px,rgba(158,172,186,.5) 90px,#9EACBA 160px,#9EACBA calc(100% - 160px),rgba(158,172,186,.5) calc(100% - 90px),rgba(158,172,186,0) calc(100% - 38px)),linear-gradient(90deg,rgba(242,245,249,0) 38px,rgba(242,245,249,.5) 90px,#F2F5F9 160px,#F2F5F9 calc(100% - 160px),rgba(242,245,249,.5) calc(100% - 90px),rgba(242,245,249,0) calc(100% - 38px)) !important;background-size:100% 2px,100% 2px,100% calc(100% - 4px) !important;background-position:top left,bottom left,left top 2px !important;background-repeat:no-repeat !important}
+table.results thead th,table.labref thead th{background:transparent !important;background-image:none !important;border-top:0 !important;border-bottom:0 !important}
+/* body zebra: even rows carry the light-blue edge-fade stripe, odd rows white */
+table.results tbody tr:not(.row-group):not(.sub-row):nth-of-type(even),table.labref tbody tr:nth-of-type(even){background-color:transparent !important;background-image:linear-gradient(90deg,rgba(247,249,252,0) 0,rgba(247,249,252,0) 38px,rgba(247,249,252,.55) 92px,rgba(247,249,252,.92) 150px,rgba(247,249,252,1) 50%,rgba(247,249,252,.92) calc(100% - 150px),rgba(247,249,252,.55) calc(100% - 92px),rgba(247,249,252,0) calc(100% - 38px),rgba(247,249,252,0) 100%) !important}
+table.results tbody tr:not(.row-group):not(.sub-row):nth-of-type(odd),table.labref tbody tr:nth-of-type(odd){background-color:transparent !important;background-image:none !important}
+/* group headers white; sub-rows alternate from each group header */
+table.results tbody tr.row-group,table.results tbody tr.sub-row{background-color:transparent !important;background-image:none !important}
+table.results tbody tr.row-group td,table.results tbody tr.sub-row td{background:transparent !important;background-image:none !important}
+table.results tbody tr.row-group:nth-of-type(n) + tr.sub-row:nth-of-type(n), table.results tbody tr.row-group:nth-of-type(n) + tr.sub-row:nth-of-type(n) + tr.sub-row:nth-of-type(n) + tr.sub-row:nth-of-type(n), table.results tbody tr.row-group:nth-of-type(n) + tr.sub-row:nth-of-type(n) + tr.sub-row:nth-of-type(n) + tr.sub-row:nth-of-type(n) + tr.sub-row:nth-of-type(n) + tr.sub-row:nth-of-type(n), table.results tbody tr.row-group:nth-of-type(n) + tr.sub-row:nth-of-type(n) + tr.sub-row:nth-of-type(n) + tr.sub-row:nth-of-type(n) + tr.sub-row:nth-of-type(n) + tr.sub-row:nth-of-type(n) + tr.sub-row:nth-of-type(n) + tr.sub-row:nth-of-type(n){background-color:transparent !important;background-image:linear-gradient(90deg,rgba(247,249,252,0) 0,rgba(247,249,252,0) 38px,rgba(247,249,252,.55) 92px,rgba(247,249,252,.92) 150px,rgba(247,249,252,1) 50%,rgba(247,249,252,.92) calc(100% - 150px),rgba(247,249,252,.55) calc(100% - 92px),rgba(247,249,252,0) calc(100% - 38px),rgba(247,249,252,0) 100%) !important}
+/* terminal rule under the last parameter row, fading at both ends */
+table.results tr.last-row td{border-bottom:0 !important}
+table.results tbody tr.last-row{background-image:linear-gradient(90deg,rgba(158,172,186,0) 38px,rgba(158,172,186,.5) 90px,#9EACBA 160px,#9EACBA calc(100% - 160px),rgba(158,172,186,.5) calc(100% - 90px),rgba(158,172,186,0) calc(100% - 38px)) !important;background-size:100% 2px !important;background-position:bottom left !important;background-repeat:no-repeat !important}
+
+/* ===== CoQ-derived shared formatting (promoted 31.08.2026) ===== */
+/* 1 · brand wash: header AND footer share the 320° diagonal */
+html body div.page div.header-bar{background:linear-gradient(320deg,#D7E3F0 0%,#E2EBF4 14%,#EEF3F8 28%,#F7F9FB 42%,#FBF9F2 56%,#FAF4E6 72%,#F7EED8 86%,#F4EBD4 100%) !important;background-image:linear-gradient(320deg,#D7E3F0 0%,#E2EBF4 14%,#EEF3F8 28%,#F7F9FB 42%,#FBF9F2 56%,#FAF4E6 72%,#F7EED8 86%,#F4EBD4 100%) !important;padding-bottom:14px !important}
+html body div.page div.footer{background:linear-gradient(320deg,#D7E3F0 0%,#E2EBF4 14%,#EEF3F8 28%,#F7F9FB 42%,#FBF9F2 56%,#FAF4E6 72%,#F7EED8 86%,#F4EBD4 100%) !important;background-image:linear-gradient(320deg,#D7E3F0 0%,#E2EBF4 14%,#EEF3F8 28%,#F7F9FB 42%,#FBF9F2 56%,#FAF4E6 72%,#F7EED8 86%,#F4EBD4 100%) !important;border-top:2px solid #ACBFD2 !important;box-shadow:inset 0 1px 0 #FBFDFF !important;align-items:flex-end;padding-bottom:0.28in}
+html body div.page div.footer::before,html body div.page div.footer::after{display:none !important}
+/* 2 · no wrapping in the header title stack or field labels */
+div.page .hb-title,div.page .hb-mk-title,div.page .hb-sub,div.page .hb-mk-sub,div.page .hb-code{white-space:nowrap !important}
+div.page div.gridrow .lk-lbl,div.page div.gridrow .lk-lbl .mk{white-space:nowrap !important}
+/* 3 · section bands: enlarged № + EN title, 24px bar, flush under the header */
+div.page div.sec-label{height:24px !important;font-size:10.6px !important;padding-top:5px !important;padding-bottom:5px !important}
+div.page div.sec-label .sec-no{font-size:13.4px !important}
+div.page div.sec-label .mk{font-size:8.2px !important}
+div.page div.header-bar + div.sec-label{margin-top:0 !important}
+/* 4 · identity banner: enlarged proportionally, equal air */
+div.page div.pb-main{padding-top:6px !important;padding-bottom:6px !important}
+div.page div.pb-main .pb-name{font-size:23px !important}
+div.page div.pb-main .pbp-val{font-size:23px !important}
+div.page div.pb-main .pbp-tol{font-size:13.8px !important}
+div.page div.pb-main + div.goldrule{margin-top:0 !important}
+/* 5 · selection pills: refined scale */
+.selrow .chip-sel{font-size:7.9px !important;padding:1.5px 6px 1.5px 4.5px !important;border-radius:8px !important}
+.selrow .chip-un{font-size:6.9px !important;padding:1px 6px !important;border-radius:8px !important}
+.selrow .chip-sel .bx{font-size:10px !important}
+.selrow .chip-un .bx{font-size:9.2px !important}
+div.page div.selrow{padding-top:7px !important;padding-bottom:7px !important}
+/* 6 · Section 01 rows: 5px rhythm, inline label–value lockups */
+div.page div.gridrow.lk-inline{padding-top:5px !important;padding-bottom:5px !important}
+div.page div.gridrow.lk-inline .lk{flex-direction:row;align-items:center;gap:8px}
+/* 7 · spare height shared across section boundaries; fixed gap before signatures */
+div.page div.sec-label:not(:first-of-type){margin-top:auto !important}
+div.page div.tbl-wrap + div.sec-label{margin-top:6px !important}
+div.page div.pot-note + div.sec-label{margin-top:6px !important}
+div.page div.goldrule + div.sec-label{margin-top:12px !important}
+div.page div.approval-grid{margin-top:11px !important;padding-top:0 !important}
+/* 8 · footnote: two lines, 5px air, MK inline */
+.pot-note{line-height:1.34;padding-top:5px !important;padding-bottom:5px !important;font-size:7.3px}
+.pot-note .mk{display:inline}
+/* 9 · secondary-table closing rules fade at the margins */
+table.labref tbody tr:last-child td{border-bottom:0 !important}
+table.labref tbody tr:last-child{background-image:linear-gradient(90deg,rgba(158,172,186,0) 38px,rgba(158,172,186,.5) 90px,#9EACBA 160px,#9EACBA calc(100% - 160px),rgba(158,172,186,.5) calc(100% - 90px),rgba(158,172,186,0) calc(100% - 38px)) !important;background-size:100% 2px !important;background-position:bottom left !important;background-repeat:no-repeat !important}
+/* 10 · disposition / statement rows */
+div.page div.disp-row{padding-bottom:11px !important}
+
+
+
+/* Consolidated formatting from Certificate_of_Quality_CoQ.html */
+.hb-title{font-size:19px;font-weight:900}
+.header-bar{padding-top:var(--MARGIN-H)}
+.sec-label{margin-top:10px}
+.header-bar + .sec-label{margin-top:0}
+.pb-main{padding-top:10px}
+table.data,table.results,table.labref{margin-top:6px}
+table.data thead th,table.results thead th,table.labref thead th{background:transparent !important;border-top:none !important;border-bottom:none !important}
+table.data thead tr,table.results thead tr,table.labref thead tr{background-image:linear-gradient(90deg,rgba(158,172,186,0) 0%,rgba(158,172,186,.45) 8%,#9EACBA 22%,#9EACBA 78%,rgba(158,172,186,.45) 92%,rgba(158,172,186,0) 100%),linear-gradient(90deg,rgba(158,172,186,0) 0%,rgba(158,172,186,.45) 8%,#9EACBA 22%,#9EACBA 78%,rgba(158,172,186,.45) 92%,rgba(158,172,186,0) 100%),linear-gradient(#F2F5F9,#F2F5F9);background-size:100% 2px,100% 2px,100% calc(100% - 4px);background-position:bottom left,top left,left 2px;background-repeat:no-repeat}
+.footer{height:64px;padding-top:6px;padding-bottom:0.28in;align-items:flex-end;position:absolute !important;bottom:0;left:0;right:0;margin-top:0 !important}
+.page{padding-bottom:64px}
+.hb-mk-sub,.hb-sub{white-space:nowrap}
+.ap-sign{height:30px}
+.tbl-wrap{padding-left:var(--MARGIN-H);padding-right:var(--MARGIN-H)}
+table.data thead th:first-child,table.results thead th:first-child,table.labref thead th:first-child,table.data tbody td:first-child,table.results tbody td:first-child,table.labref tbody td:first-child{padding-left:5px}
+table.data thead th:last-child,table.results thead th:last-child,table.labref thead th:last-child,table.data tbody td:last-child,table.results tbody td:last-child,table.labref tbody td:last-child{padding-right:5px}
+.disp-row{margin-left:var(--MARGIN-H);margin-right:var(--MARGIN-H);padding-left:0;padding-right:0}
+
+
+html body div.page div.gridrow.lk-inline{display:grid;justify-content:space-between;align-items:center;padding-left:var(--MARGIN-H) !important;padding-right:var(--MARGIN-H) !important;column-gap:14px !important;row-gap:0 !important}
+html body div.page div.gridrow.lk-inline .lk{display:inline-flex !important;flex-direction:row !important;align-items:center !important;gap:8px !important;min-width:0}
+html body div.page div.gridrow.lk-inline .lk-val,html body div.page div.gridrow.lk-inline .lk-val.sm{white-space:nowrap}
+html body div.page div.gridrow.lk-inline.g5{grid-template-columns:repeat(4,auto) !important;column-gap:12px !important}
+html body div.page div.gridrow.lk-inline.g5 .lk-val,html body div.page div.gridrow.lk-inline.g5 .lk-val.sm{font-size:8.4px !important}
+html body div.page div.gridrow.lk-inline.g5 .lk-lbl{font-size:7.6px !important}
+html body div.page div.gridrow.lk-inline.g5 .lk-lbl .mk{font-size:6.2px !important}

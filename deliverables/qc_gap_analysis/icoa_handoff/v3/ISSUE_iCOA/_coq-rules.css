@@ -1,0 +1,424 @@
+/* CoQ design-rule stack, lifted verbatim from CoQ-PP_26-082 (ISSUE_COQ).
+   Loaded after _icoa.css and before _icoa-print.css so the iCoA set carries the same
+   accumulated typography, cell-fit, zebra, fade and signature rules as the CoQ fleet.
+   Layers targeting CoQ-only elements (table.labref, packaging rows) are inert here. */
+
+/* === __coq-title-size === */
+html body div.page div.header-bar div.hb-center div.hb-title{font-size:21.3px !important;letter-spacing:2.24px !important;line-height:23.4px !important}
+
+/* === __coq-sig === */
+div.page .approval-grid .ap-sign{position:relative;overflow:visible !important}
+div.page .approval-grid .ap-sign .ap-img.handwritten{position:absolute;left:50%;bottom:-18px;max-height:84px;max-width:94%;mix-blend-mode:multiply;z-index:6;pointer-events:none}
+
+/* === __apgrid-fit === */
+html body div.page div.approval-grid .ap-sign{height:16px !important}
+html body div.page div.approval-grid{margin-top:4px !important}
+
+/* === __res-navy === */
+html body div.page table.results td.r-cell{white-space:nowrap !important;overflow:hidden !important}
+html body div.page table.results td.r-cell .r-val.r-conform{color:#1B3A5C !important}
+html body div.page table.results td.r-cell .r-val.r-conform .mk{color:#4E5E74 !important}
+
+/* === __h01-fullwords === */
+html body div.page div.gridrow.lk-inline{column-gap:10px !important}
+html body div.page div.gridrow.lk-inline .lk{gap:6px !important}
+html body div.page div.gridrow.lk-inline .lk-lbl{font-size:7.6px !important;letter-spacing:.35px !important;line-height:9px !important}
+html body div.page div.gridrow.lk-inline .lk-lbl .mk{font-size:6.2px !important;line-height:7.6px !important}
+
+/* === __h01-margin-fit-v2 === */
+html body div.page div.selrow,html body div.page div.gridrow.lk-inline{display:flex !important;justify-content:space-between !important;align-items:center !important;padding-left:var(--MARGIN-H) !important;padding-right:var(--MARGIN-H) !important;column-gap:10px !important;flex-wrap:nowrap !important}
+html body div.page div.selrow>*,html body div.page div.gridrow.lk-inline>*{flex:0 0 auto !important;min-width:0}
+html body div.page div.selrow{column-gap:8px !important}
+html body div.page div.selrow .chip-sel{font-size:7.3px !important;padding:1.5px 5px 1.5px 4px !important}
+html body div.page div.selrow .chip-un{font-size:6.4px !important;padding:1px 4.5px !important}
+html body div.page div.selrow .chip-sel .bx{font-size:9.2px !important}
+html body div.page div.selrow .chip-un .bx{font-size:8.4px !important}
+html body div.page div.selrow .lk-lbl{font-size:7.2px !important}
+html body div.page div.selrow .lk-lbl .mk{font-size:5.9px !important}
+html body div.page div.gridrow.lk-inline .lk-lbl{font-size:7.2px !important;letter-spacing:.3px !important}
+html body div.page div.gridrow.lk-inline .lk-lbl .mk{font-size:5.9px !important}
+html body div.page div.gridrow.lk-inline .lk-val{font-size:9.6px !important}
+html body div.page div.gridrow.lk-inline .lk-val.sm{font-size:8.5px !important}
+html body div.page div.gridrow.lk-inline .lk{gap:5px !important}
+
+/* === __h01-shrink-fit === */
+html body div.page div.gridrow.lk-inline>*{flex:0 1 auto !important;min-width:0 !important}
+html body div.page div.gridrow.lk-inline .lk-val,html body div.page div.gridrow.lk-inline .lk-val.sm{max-width:100% !important;min-width:0 !important}
+html body div.page div.gridrow.lk-inline .lk-val div,html body div.page div.gridrow.lk-inline .lk-val>span{max-width:100% !important}
+
+/* === __sigblock-drop === */
+html body div.page div.approval-grid{margin-top:22px !important;padding-top:6px !important}
+
+/* === __cellfit-v3 === */
+html body div.page div.tbl-wrap table.results td.r-cell{padding-right:var(--MARGIN-H) !important}
+html body div.page div.gridrow.lk-inline .attr-val,html body div.page div.gridrow.lk-inline .attr-val *{max-width:100% !important;white-space:normal !important;overflow-wrap:anywhere}
+
+/* === __cellfit-v4 === */
+html body div.page div.tbl-wrap table.results td.r-cell{white-space:nowrap !important;overflow:visible !important}
+html body div.page div.tbl-wrap table.results td.r-cell .r-val{white-space:nowrap !important;display:inline;max-width:none !important}
+
+/* === __rowtrim-v5 === */
+html body div.page div.tbl-wrap table.results tbody td{padding-top:0.5px !important;padding-bottom:0.5px !important}
+
+/* === __zebra-v6 === */
+html body div.page div.tbl-wrap table.results tbody tr,html body div.page div.tbl-wrap table.labref tbody tr{background-color:transparent !important;background-image:none !important}
+html body div.page div.tbl-wrap table.results tbody tr td,html body div.page div.tbl-wrap table.labref tbody tr td{background:transparent !important;background-image:none !important}
+html body div.page div.tbl-wrap table.results tbody tr:nth-of-type(even),html body div.page div.tbl-wrap table.labref tbody tr:nth-of-type(even){background-image:linear-gradient(90deg,rgba(243,246,250,0) 0,rgba(243,246,250,0) 38px,rgba(243,246,250,.45) 76px,rgba(243,246,250,.85) 130px,#F3F6FA 190px,#F3F6FA calc(100% - 190px),rgba(243,246,250,.85) calc(100% - 130px),rgba(243,246,250,.45) calc(100% - 76px),rgba(243,246,250,0) calc(100% - 38px),rgba(243,246,250,0) 100%) !important;background-repeat:no-repeat !important}
+
+/* === __rule-drop === */
+html body div.page div.disp-row + div.goldrule,html body div.page div.disp-note + div.goldrule{margin-top:9px !important}
+html body div.page div.goldrule:last-of-type{margin-top:9px !important}
+
+/* === __sec34-space === */
+html body div.page div.tbl-wrap table.results tbody td{padding-top:0 !important;padding-bottom:0 !important}
+html body div.page div.tbl-wrap table.labref{margin-top:9px !important}
+html body div.page div.pot-note + div.sec-label,html body div.page div.tbl-wrap + div.sec-label{margin-top:11px !important}
+
+/* === __fade-tight === */
+html body div.page div.goldrule{background-image:linear-gradient(90deg,rgba(160,124,48,0) 38px,rgba(160,124,48,.35) 47px,rgba(160,124,48,.8) 54px,rgb(160,124,48) 62px,rgb(160,124,48) calc(100% - 62px),rgba(160,124,48,.8) calc(100% - 54px),rgba(160,124,48,.35) calc(100% - 47px),rgba(160,124,48,0) calc(100% - 38px)) !important;background-repeat:no-repeat !important}
+html body div.page div.pb-attrs::after{background-image:linear-gradient(90deg,rgba(189,174,143,0) 38px,rgba(189,174,143,.35) 47px,rgba(189,174,143,.8) 54px,rgb(189,174,143) 62px,rgb(189,174,143) calc(100% - 62px),rgba(189,174,143,.8) calc(100% - 54px),rgba(189,174,143,.35) calc(100% - 47px),rgba(189,174,143,0) calc(100% - 38px)) !important}
+html body div.page div.tbl-wrap table.results thead tr,html body div.page div.tbl-wrap table.labref thead tr{background-image:linear-gradient(90deg,rgba(158,172,186,0) 38px,rgba(158,172,186,.35) 47px,rgba(158,172,186,.8) 54px,rgb(158,172,186) 62px,rgb(158,172,186) calc(100% - 62px),rgba(158,172,186,.8) calc(100% - 54px),rgba(158,172,186,.35) calc(100% - 47px),rgba(158,172,186,0) calc(100% - 38px)),linear-gradient(90deg,rgba(158,172,186,0) 38px,rgba(158,172,186,.35) 47px,rgba(158,172,186,.8) 54px,rgb(158,172,186) 62px,rgb(158,172,186) calc(100% - 62px),rgba(158,172,186,.8) calc(100% - 54px),rgba(158,172,186,.35) calc(100% - 47px),rgba(158,172,186,0) calc(100% - 38px)),linear-gradient(90deg,rgba(242,245,249,0) 38px,rgba(242,245,249,.35) 47px,rgba(242,245,249,.8) 54px,rgb(242,245,249) 62px,rgb(242,245,249) calc(100% - 62px),rgba(242,245,249,.8) calc(100% - 54px),rgba(242,245,249,.35) calc(100% - 47px),rgba(242,245,249,0) calc(100% - 38px)) !important;background-size:100% 2px,100% 2px,100% calc(100% - 4px) !important;background-position:top left,bottom left,left top 2px !important;background-repeat:no-repeat !important}
+html body div.page div.tbl-wrap table.results tbody tr:nth-of-type(even),html body div.page div.tbl-wrap table.labref tbody tr:nth-of-type(even){background-image:linear-gradient(90deg,rgba(243,246,250,0) 38px,rgba(243,246,250,.35) 47px,rgba(243,246,250,.8) 54px,rgb(243,246,250) 62px,rgb(243,246,250) calc(100% - 62px),rgba(243,246,250,.8) calc(100% - 54px),rgba(243,246,250,.35) calc(100% - 47px),rgba(243,246,250,0) calc(100% - 38px)) !important;background-repeat:no-repeat !important}
+html body div.page div.tbl-wrap table.results tbody tr.last-row,html body div.page div.tbl-wrap table.labref tbody tr:last-child{background-image:linear-gradient(90deg,rgba(158,172,186,0) 38px,rgba(158,172,186,.35) 47px,rgba(158,172,186,.8) 54px,rgb(158,172,186) 62px,rgb(158,172,186) calc(100% - 62px),rgba(158,172,186,.8) calc(100% - 54px),rgba(158,172,186,.35) calc(100% - 47px),rgba(158,172,186,0) calc(100% - 38px)) !important;background-size:100% 2px !important;background-position:bottom left !important;background-repeat:no-repeat !important}
+html body div.page .ap-line{background-image:linear-gradient(90deg,rgba(160,124,48,0) 38px,rgba(160,124,48,.35) 47px,rgba(160,124,48,.8) 54px,rgb(160,124,48) 62px,rgb(160,124,48) calc(100% - 62px),rgba(160,124,48,.8) calc(100% - 54px),rgba(160,124,48,.35) calc(100% - 47px),rgba(160,124,48,0) calc(100% - 38px)) !important}
+
+/* === __thead-2line === */
+html body div.page div.tbl-wrap table.results thead th,html body div.page div.tbl-wrap table.labref thead th{white-space:nowrap !important}
+html body div.page div.tbl-wrap table.results thead th .mk,html body div.page div.tbl-wrap table.labref thead th .mk{display:block !important;white-space:nowrap !important}
+
+/* === __result-right === */
+html body div.page div.tbl-wrap table.results thead th:last-child,html body div.page div.tbl-wrap table.results tbody td.r-cell{padding-right:0 !important}
+
+/* === __coltune-v7 === */
+html body div.page div.tbl-wrap table.results tbody td{vertical-align:top !important}
+html body div.page div.tbl-wrap table.results tbody .p-name,html body div.page div.tbl-wrap table.results tbody .p-sub{white-space:normal !important}
+html body div.page div.tbl-wrap table.results tbody .p-method,html body div.page div.tbl-wrap table.results tbody .p-spec{white-space:normal !important}
+html body div.page div.tbl-wrap table.results tbody .p-name .mk,html body div.page div.tbl-wrap table.results tbody .p-sub .mk{font-size:7px !important}
+
+/* === __fade-edge === */
+html body div.page div.goldrule{margin-left:0 !important;margin-right:0 !important;background-image:linear-gradient(90deg,rgba(160,124,48,0) 0,rgba(160,124,48,.35) 12px,rgba(160,124,48,.8) 22px,rgb(160,124,48) 34px,rgb(160,124,48) calc(100% - 34px),rgba(160,124,48,.8) calc(100% - 22px),rgba(160,124,48,.35) calc(100% - 12px),rgba(160,124,48,0) 100%) !important;background-repeat:no-repeat !important}
+html body div.page div.pb-attrs::after{left:0 !important;right:0 !important;background-image:linear-gradient(90deg,rgba(189,174,143,0) 0,rgba(189,174,143,.35) 12px,rgba(189,174,143,.8) 22px,rgb(189,174,143) 34px,rgb(189,174,143) calc(100% - 34px),rgba(189,174,143,.8) calc(100% - 22px),rgba(189,174,143,.35) calc(100% - 12px),rgba(189,174,143,0) 100%) !important}
+html body div.page div.tbl-wrap table.results thead tr,html body div.page div.tbl-wrap table.labref thead tr{background-image:linear-gradient(90deg,rgba(158,172,186,0) 0,rgba(158,172,186,.35) 12px,rgba(158,172,186,.8) 22px,rgb(158,172,186) 34px,rgb(158,172,186) calc(100% - 34px),rgba(158,172,186,.8) calc(100% - 22px),rgba(158,172,186,.35) calc(100% - 12px),rgba(158,172,186,0) 100%),linear-gradient(90deg,rgba(158,172,186,0) 0,rgba(158,172,186,.35) 12px,rgba(158,172,186,.8) 22px,rgb(158,172,186) 34px,rgb(158,172,186) calc(100% - 34px),rgba(158,172,186,.8) calc(100% - 22px),rgba(158,172,186,.35) calc(100% - 12px),rgba(158,172,186,0) 100%),linear-gradient(90deg,rgba(242,245,249,0) 0,rgba(242,245,249,.35) 12px,rgba(242,245,249,.8) 22px,rgb(242,245,249) 34px,rgb(242,245,249) calc(100% - 34px),rgba(242,245,249,.8) calc(100% - 22px),rgba(242,245,249,.35) calc(100% - 12px),rgba(242,245,249,0) 100%) !important;background-size:100% 2px,100% 2px,100% calc(100% - 4px) !important;background-position:top left,bottom left,left top 2px !important;background-repeat:no-repeat !important}
+html body div.page div.tbl-wrap table.results tbody tr:nth-of-type(even),html body div.page div.tbl-wrap table.labref tbody tr:nth-of-type(even){background-image:linear-gradient(90deg,rgba(243,246,250,0) 0,rgba(243,246,250,.35) 12px,rgba(243,246,250,.8) 22px,rgb(243,246,250) 34px,rgb(243,246,250) calc(100% - 34px),rgba(243,246,250,.8) calc(100% - 22px),rgba(243,246,250,.35) calc(100% - 12px),rgba(243,246,250,0) 100%) !important;background-repeat:no-repeat !important}
+html body div.page div.tbl-wrap table.results tbody tr.last-row,html body div.page div.tbl-wrap table.labref tbody tr:last-child{background-image:linear-gradient(90deg,rgba(158,172,186,0) 0,rgba(158,172,186,.35) 12px,rgba(158,172,186,.8) 22px,rgb(158,172,186) 34px,rgb(158,172,186) calc(100% - 34px),rgba(158,172,186,.8) calc(100% - 22px),rgba(158,172,186,.35) calc(100% - 12px),rgba(158,172,186,0) 100%) !important;background-size:100% 2px !important;background-position:bottom left !important;background-repeat:no-repeat !important}
+html body div.page .ap-line{background-image:linear-gradient(90deg,rgba(160,124,48,0) 0,rgba(160,124,48,.35) 12px,rgba(160,124,48,.8) 22px,rgb(160,124,48) 34px,rgb(160,124,48) calc(100% - 34px),rgba(160,124,48,.8) calc(100% - 22px),rgba(160,124,48,.35) calc(100% - 12px),rgba(160,124,48,0) 100%) !important}
+html body div.page div.selrow::before,html body div.page div.selrow::after{left:0 !important;right:0 !important;background-image:linear-gradient(90deg,rgba(160,124,48,0) 0,rgba(160,124,48,.35) 12px,rgba(160,124,48,.8) 22px,rgb(160,124,48) 34px,rgb(160,124,48) calc(100% - 34px),rgba(160,124,48,.8) calc(100% - 22px),rgba(160,124,48,.35) calc(100% - 12px),rgba(160,124,48,0) 100%) !important}
+
+/* === __disp-fit === */
+html body div.page div.disp-row{padding-top:3px !important;padding-bottom:3px !important;gap:12px !important}
+html body div.page div.disp-row .lk-lbl{font-size:7.9px !important;line-height:1.16 !important}
+html body div.page div.disp-row .lk-lbl .mk{font-size:6.6px !important;line-height:1.14 !important}
+html body div.page div.disp-row .chip-sel,html body div.page div.disp-row .chip-un{font-size:8.4px !important;padding:2px 8px 2px 6px !important}
+html body div.page div.disp-row .chip-sel .bx,html body div.page div.disp-row .chip-un .bx{font-size:10.5px !important}
+
+/* === __disp-oneline === */
+html body div.page div.disp-row .lk-lbl .mk{display:inline !important;margin-left:5px !important}
+html body div.page div.disp-row .lk-lbl .mk::before{content:"| ";font-style:normal;color:rgba(90,110,132,.6)}
+html body div.page div.disp-row .lk-lbl{white-space:nowrap !important}
+html body div.page div.approval-grid{margin-top:13px !important}
+
+/* === __disp-pillright === */
+html body div.page div.disp-row .grp{display:flex !important;align-items:center !important;width:100% !important;gap:9px !important}
+html body div.page div.disp-row .grp .lk-lbl{margin-right:auto !important}
+
+/* === __disp-stack === */
+html body div.page div.disp-row{padding-top:2px !important;padding-bottom:2px !important}
+html body div.page div.disp-row .grp{flex-wrap:wrap !important;row-gap:3px !important}
+html body div.page div.disp-row .grp .lk-lbl{flex:0 0 100% !important;margin-right:0 !important;font-size:8.4px !important}
+html body div.page div.disp-row .grp .lk-lbl + *{margin-left:auto !important}
+html body div.page div.approval-grid{margin-top:2px !important}
+
+/* === __tbl-fullbleed === */
+html body div.page div.tbl-wrap{padding-left:0 !important;padding-right:0 !important}
+html body div.page div.tbl-wrap table.results,html body div.page div.tbl-wrap table.labref{width:100% !important;margin-left:0 !important;margin-right:0 !important}
+html body div.page div.tbl-wrap table.labref thead th:first-child,html body div.page div.tbl-wrap table.labref tbody td:first-child{padding-left:var(--MARGIN-H) !important}
+html body div.page div.tbl-wrap table.labref thead th:last-child,html body div.page div.tbl-wrap table.labref tbody td:last-child{padding-right:var(--MARGIN-H) !important}
+
+/* === __tbl-cellpad === */
+html body div.page div.tbl-wrap table.results thead th:first-child,html body div.page div.tbl-wrap table.results tbody td:first-child{padding-left:var(--MARGIN-H) !important}
+html body div.page div.tbl-wrap table.results thead th:last-child,html body div.page div.tbl-wrap table.results tbody td:last-child,html body div.page div.tbl-wrap table.results tbody td.r-cell{padding-right:var(--MARGIN-H) !important}
+
+/* === __tbl-colfix === */
+html body div.page div.tbl-wrap table.results colgroup col:first-child{width:70px !important}
+html body div.page div.tbl-wrap table.results colgroup col:last-child{width:auto !important}
+html body div.page div.tbl-wrap table.labref colgroup col:first-child{width:auto !important}
+
+/* === __disp-3col === */
+html body div.page div.disp-row .grp{display:flex !important;align-items:center !important;flex-wrap:nowrap !important;gap:10px !important}
+html body div.page div.disp-row .grp .lk-lbl{flex:0 0 auto !important;margin-right:0 !important;font-size:8.2px !important;line-height:1.22 !important;white-space:nowrap !important}
+html body div.page div.disp-row .grp .lk-lbl .mk{display:block !important;margin-left:0 !important;font-size:6.9px !important;white-space:nowrap !important}
+html body div.page div.disp-row .grp .lk-lbl .mk::before{content:none !important}
+html body div.page div.disp-row .grp .disp-batch{flex:0 0 auto;align-self:center;font-family:'Roboto Mono',monospace;font-size:11.5px;font-weight:700;color:#1B3A5C;white-space:nowrap}
+html body div.page div.disp-row .grp .disp-batch + *{margin-left:auto !important}
+
+/* === __lastrow-clear === */
+html body div.page div.tbl-wrap table.results tbody tr.last-row td{padding-bottom:5px !important}
+html body div.page div.tbl-wrap{margin-bottom:3px}
+html body div.page div.pot-note{margin-top:4px !important;position:relative;z-index:1}
+
+/* === __pname-oneline === */
+html body div.page div.tbl-wrap table.results colgroup col:nth-child(2){width:296px !important}
+html body div.page div.tbl-wrap table.results colgroup col:nth-child(3){width:134px !important}
+html body div.page div.tbl-wrap table.results colgroup col:nth-child(4){width:170px !important}
+html body div.page div.tbl-wrap table.results .p-method,html body div.page div.tbl-wrap table.results .p-spec{white-space:nowrap}
+html body div.page div.tbl-wrap table.results .p-name{white-space:nowrap}
+html body div.page div.tbl-wrap table.results .p-name .mk{display:inline !important;margin-left:5px !important}
+html body div.page div.tbl-wrap table.results .p-sub{white-space:nowrap}
+
+/* === __fit-reclaim === */
+html body div.page div.tbl-wrap table.results .p-spec{white-space:normal !important;font-size:7.3px !important;line-height:1.14 !important}
+html body div.page div.tbl-wrap table.results .p-method{font-size:7.3px !important;line-height:1.14 !important}
+html body div.page div.tbl-wrap table.results tbody td{padding-top:0.5px !important;padding-bottom:0.5px !important}
+html body div.page div.pot-note{margin-top:2px !important;padding-top:2px !important;padding-bottom:2px !important}
+html body div.page div.disp-row{padding-top:1px !important;padding-bottom:1px !important}
+html body div.page div.approval-grid{margin-top:0 !important;padding-top:0 !important}
+html body div.page div.approval-grid .ap-sign{height:12px !important}
+html body div.page div.approval-grid .ap-name{margin-top:1px !important}
+html body div.page div.approval-grid .ap-date-row{margin-top:0 !important}
+
+/* === __pot2row-pillfit === */
+html body div.page div.gridrow.lk-inline .lk-val .pot-nom{font-family:'Roboto Mono',monospace;font-size:10.5px;font-weight:700;color:#1B3A5C;white-space:nowrap}
+html body div.page div.gridrow.lk-inline .lk-val .pot-tol{font-family:'Roboto Mono',monospace;font-size:9px;font-weight:500;color:#475569;margin-left:4px;white-space:nowrap}
+html body div.page div.gridrow.lk-inline .lk-val .pot-win{display:block;font-family:'Roboto Mono',monospace;font-size:8.4px;font-weight:600;color:#5A7391;line-height:1.12;margin-top:1px;white-space:nowrap}
+html body div.page div.disp-row .grp{gap:8px !important}
+html body div.page div.disp-row .grp .lk-lbl{flex:0 1 auto !important;min-width:0 !important}
+html body div.page div.disp-row .grp .chip-sel,html body div.page div.disp-row .grp .chip-un{flex:0 0 auto !important;min-width:0 !important;font-size:7.4px !important;padding:1.5px 6px 1.5px 4.5px !important}
+html body div.page div.disp-row .grp .chip-sel .mk,html body div.page div.disp-row .grp .chip-un .mk{display:none !important}
+
+/* === __disp-compact === */
+html body div.page div.disp-row .grp{gap:8px !important}
+html body div.page div.disp-row .grp .lk-lbl{flex:0 1 auto !important;min-width:0 !important;font-size:7.6px !important}
+html body div.page div.disp-row .grp .lk-lbl .mk{font-size:6.4px !important}
+html body div.page div.disp-row .grp .disp-batch{font-size:10.5px !important}
+html body div.page div.disp-row .grp .chip-sel,html body div.page div.disp-row .grp .chip-un{flex:0 0 auto !important;min-width:0 !important;font-size:7.1px !important;padding:1.5px 6px 1.5px 4.5px !important;line-height:1.2 !important}
+html body div.page div.disp-row .grp .chip-sel .mk,html body div.page div.disp-row .grp .chip-un .mk{display:block !important;font-size:5.9px !important;margin-left:0 !important;line-height:1.1 !important;text-align:center}
+html body div.page div.disp-row .grp .chip-sel .mk::before,html body div.page div.disp-row .grp .chip-un .mk::before{content:none !important}
+
+/* === __spec-nowrap === */
+html body div.page div.tbl-wrap table.results .p-spec{white-space:nowrap !important}
+
+/* === __pkg-2row === */
+html body div.page div.gridrow.lk-inline.pkg-row{display:block !important;padding-top:4px !important;padding-bottom:2px !important}
+html body div.page div.gridrow.lk-inline.pkg-row .lk{display:flex !important;align-items:center !important;gap:8px !important;width:100%}
+html body div.page div.gridrow.lk-inline.pkg-row .lk + .lk{margin-top:3px}
+
+/* === __a4-fit-v33 === */
+html body div.page{padding-bottom:78px !important}
+html body div.page div.approval-grid{margin-top:auto !important;padding-top:0 !important;padding-bottom:0 !important}
+html body div.page div.tbl-wrap table.labref tbody td{padding-top:0.5px !important;padding-bottom:0.5px !important;font-size:7.7px !important;line-height:1.1 !important}
+html body div.page div.tbl-wrap table.labref tbody td .lr-lab{font-size:7.7px !important;line-height:1.12 !important}
+html body div.page div.tbl-wrap table.labref tbody td .lr-lab small{font-size:6.3px !important;line-height:1.05 !important}
+html body div.page div.tbl-wrap table.labref tbody td .lr-mono{font-size:7.6px !important;line-height:1.1 !important}
+html body div.page div.tbl-wrap table.labref tbody td .lr-mono span{font-size:5.6px !important;line-height:1.02 !important}
+html body div.page div.tbl-wrap table.labref thead th{padding-top:2px !important;padding-bottom:2px !important}
+html body div.page div.tbl-wrap table.results tbody td{padding-top:0.5px !important;padding-bottom:0.5px !important}
+html body div.page div.sec-label{margin-top:3px !important}
+html body div.page div.header-bar + div.sec-label{margin-top:0 !important}
+html body div.page div.disp-row{padding-top:3px !important;padding-bottom:3px !important}
+html body div.page div.disp-note{padding-top:2px !important;padding-bottom:2px !important;font-size:6.6px !important;line-height:1.22 !important}
+html body div.page div.pot-note{padding-top:1px !important;padding-bottom:1px !important;font-size:6.6px !important;line-height:1.2 !important}
+html body div.page div.approval-grid .ap-sign{height:12px !important;margin-bottom:1px !important}
+html body div.page div.approval-grid .ap-name{margin-top:1px !important;font-size:9.4px !important}
+html body div.page div.approval-grid .ap-cred{font-size:7px !important;line-height:1.1 !important}
+html body div.page div.approval-grid .ap-date-row{margin-top:0 !important}
+
+/* === __a4-fit-v33b === */
+html body div.page div.header-bar{padding-bottom:6px !important}
+html body div.page div.sec-label{margin-top:1px !important}
+html body div.page div.tbl-wrap table.results tbody td{padding-top:0 !important;padding-bottom:0 !important;line-height:1.02 !important}
+html body div.page div.tbl-wrap table.results tbody td .p-name,html body div.page div.tbl-wrap table.results tbody td .p-sub{line-height:1.04 !important}
+html body div.page div.tbl-wrap table.results thead th{padding-top:2px !important;padding-bottom:2px !important}
+html body div.page div.tbl-wrap table.labref tbody td{padding-top:0 !important;padding-bottom:0 !important}
+html body div.page div.disp-note{font-size:6.2px !important;line-height:1.16 !important;padding-top:1px !important;padding-bottom:1px !important}
+html body div.page div.pot-note{font-size:6.2px !important;line-height:1.14 !important;padding-top:0 !important;padding-bottom:0 !important}
+html body div.page div.gridrow.lk-inline{padding-top:3px !important;padding-bottom:3px !important}
+html body div.page div.pb-main{padding-top:4px !important;padding-bottom:4px !important}
+
+/* === __colfit-794 === */
+html body div.page div.tbl-wrap table.results colgroup col:nth-child(1){width:56px !important}
+html body div.page div.tbl-wrap table.results colgroup col:nth-child(2){width:272px !important}
+html body div.page div.tbl-wrap table.results colgroup col:nth-child(3){width:128px !important}
+html body div.page div.tbl-wrap table.results colgroup col:nth-child(4){width:142px !important}
+html body div.page div.tbl-wrap table.results colgroup col:nth-child(5){width:110px !important}
+
+/* === __pkgrow-align === */
+html body div.page div.gridrow.lk-inline.pkg-row{display:grid !important;grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;justify-content:space-between !important;align-items:start !important;column-gap:14px !important;padding-left:var(--MARGIN-H) !important;padding-right:var(--MARGIN-H) !important}
+html body div.page div.gridrow.lk-inline.pkg-row>.lk{display:inline-flex !important;flex-direction:row !important;align-items:flex-start !important;gap:8px !important;width:auto !important;max-width:none !important;min-width:0 !important;margin-top:0 !important;margin-bottom:0 !important}
+html body div.page div.gridrow.lk-inline.pkg-row>.lk>.lk-lbl{flex:0 0 auto !important;padding-top:0 !important}
+html body div.page div.gridrow.lk-inline.pkg-row>.lk>.attr-val{display:block !important;margin-top:0 !important;line-height:1.24 !important;flex:1 1 auto !important;width:100% !important;min-width:0 !important}
+
+/* === __rcell-long === */
+html body div.page div.tbl-wrap table.results tbody td.r-cell .r-val{white-space:nowrap}
+html body div.page div.tbl-wrap table.results tbody td.r-cell.r-long .r-val{font-size:7.5px !important;letter-spacing:-.15px !important}
+html body div.page div.tbl-wrap table.results tbody td.r-cell.r-xlong .r-val{font-size:6.9px !important;letter-spacing:-.2px !important}
+html body div.page div.tbl-wrap table.results thead th:first-child,html body div.page div.tbl-wrap table.results tbody td:first-child{text-align:left !important;padding-left:var(--MARGIN-H) !important}
+
+/* === __certcell-format === */
+html body div.page div.tbl-wrap table.labref tbody td.lr-mono{vertical-align:top !important;padding-top:3px !important;padding-bottom:3px !important}
+html body div.page div.tbl-wrap table.labref tbody td.lr-mono .cert{display:block;white-space:nowrap;line-height:1.22;font-size:7.8px !important}
+html body div.page div.tbl-wrap table.labref tbody td.lr-mono .cert+.cert{margin-top:2.5px}
+html body div.page div.tbl-wrap table.labref tbody td.lr-mono .cert b{font-weight:700;color:#1B3A5C}
+html body div.page div.tbl-wrap table.labref tbody td.lr-mono .cert i.cn{display:block;font-family:'Montserrat',sans-serif;font-style:italic;font-size:5.9px !important;font-weight:500;color:#8C9BB0;letter-spacing:0;line-height:1.15;white-space:nowrap}
+html body div.page div.tbl-wrap table.labref tbody td.lr-mono.pcell{white-space:normal;line-height:1.3 !important}
+
+/* === __labref-2line === */
+html body div.page div.tbl-wrap table.labref colgroup col:nth-child(2){width:258px !important}
+html body div.page div.tbl-wrap table.labref colgroup col:nth-child(3){width:94px !important}
+html body div.page div.tbl-wrap table.labref tbody td .lr-lab{line-height:1.18 !important}
+html body div.page div.tbl-wrap table.labref tbody td .lr-lab .bisep{display:none !important}
+html body div.page div.tbl-wrap table.labref tbody td .lr-lab .mk{display:block !important;margin-left:0 !important;line-height:1.12 !important}
+html body div.page div.tbl-wrap table.labref tbody td .lr-lab small{display:inline !important;line-height:1.12 !important}
+html body div.page div.tbl-wrap table.labref tbody td .lr-lab small::before{content:" · " !important}
+html body div.page div.tbl-wrap table.labref tbody tr:first-child td{padding-top:6px !important}
+
+/* === __labref-fit2 === */
+html body div.page div.tbl-wrap table.labref tbody td .lr-lab .mk{font-size:6.1px !important;white-space:nowrap}
+html body div.page div.tbl-wrap table.labref tbody td .lr-lab small{font-size:6.1px !important;white-space:nowrap}
+
+/* === __firstrow-clear === */
+html body div.page div.tbl-wrap table.results tbody tr:first-child td{padding-top:5px !important}
+
+/* === __thead-inline === */
+html body div.page div.tbl-wrap table.results thead th{white-space:nowrap !important;padding-top:5px !important;padding-bottom:5px !important}
+html body div.page div.tbl-wrap table.results thead th .mk{display:inline !important;font-size:6.6px !important;margin-left:0 !important}
+html body div.page div.tbl-wrap table.results thead th .bisep{font-style:normal;color:rgba(90,110,132,.6)}
+html body div.page div.tbl-wrap table.results tbody tr:first-child td{padding-top:7px !important}
+
+/* === __labref-zebra === */
+html body div.page div.tbl-wrap table.labref tbody tr:nth-child(even){background-image:linear-gradient(90deg,rgba(243,246,250,0) 0,rgba(243,246,250,.35) 12px,rgba(243,246,250,.8) 22px,rgb(243,246,250) 34px,rgb(243,246,250) calc(100% - 34px),rgba(243,246,250,.8) calc(100% - 22px),rgba(243,246,250,.35) calc(100% - 12px),rgba(243,246,250,0) 100%) !important;background-size:100% 100% !important;background-position:top left !important;background-repeat:no-repeat !important}
+html body div.page div.tbl-wrap table.labref tbody tr:nth-child(odd){background-image:none !important}
+html body div.page div.tbl-wrap table.labref tbody{background-image:linear-gradient(90deg,rgba(158,172,186,0) 0,rgba(158,172,186,.35) 12px,rgba(158,172,186,.8) 22px,rgb(158,172,186) 34px,rgb(158,172,186) calc(100% - 34px),rgba(158,172,186,.8) calc(100% - 22px),rgba(158,172,186,.35) calc(100% - 12px),rgba(158,172,186,0) 100%) !important;background-size:100% 2px !important;background-position:bottom left !important;background-repeat:no-repeat !important}
+
+/* === __labref-colbal === */
+html body div.page div.tbl-wrap table.labref colgroup col:nth-child(2){width:180px !important}
+html body div.page div.tbl-wrap table.labref colgroup col:nth-child(3){width:172px !important}
+html body div.page div.tbl-wrap table.labref tbody td.pcell{white-space:normal !important;line-height:1.28 !important}
+
+/* === __zebra-band-match === */
+/* Rows 1-8 carry the SAME stripe band as the 9-12 sub-rows, and the Section 03 rows match it:
+   zero alpha at both page edges, held clear past the 38.4px margin, then eased in over 92/150px.
+   __zebra-v6, __fade-tight and __fade-edge had flattened the plain rows to a short hard ramp
+   from 0px; the sub-rows kept the long band only because their sibling selector outranks those. */
+html body div.page div.tbl-wrap table.results tbody tr:not(.row-group):not(.sub-row):not(.last-row):nth-of-type(even){background-color:transparent !important;background-image:linear-gradient(90deg,rgba(247,249,252,0) 0,rgba(247,249,252,0) 38px,rgba(247,249,252,.55) 92px,rgba(247,249,252,.92) 150px,rgba(247,249,252,1) 50%,rgba(247,249,252,.92) calc(100% - 150px),rgba(247,249,252,.55) calc(100% - 92px),rgba(247,249,252,0) calc(100% - 38px),rgba(247,249,252,0) 100%) !important;background-size:100% 100% !important;background-position:top left !important;background-repeat:no-repeat !important}
+html body div.page div.tbl-wrap table.results tbody tr:not(.row-group):not(.sub-row):not(.last-row):nth-of-type(odd){background-color:transparent !important;background-image:none !important}
+html body div.page div.tbl-wrap table.labref tbody tr:nth-child(even){background-color:transparent !important;background-image:linear-gradient(90deg,rgba(247,249,252,0) 0,rgba(247,249,252,0) 38px,rgba(247,249,252,.55) 92px,rgba(247,249,252,.92) 150px,rgba(247,249,252,1) 50%,rgba(247,249,252,.92) calc(100% - 150px),rgba(247,249,252,.55) calc(100% - 92px),rgba(247,249,252,0) calc(100% - 38px),rgba(247,249,252,0) 100%) !important;background-size:100% 100% !important;background-position:top left !important;background-repeat:no-repeat !important}
+html body div.page div.tbl-wrap table.labref tbody tr:nth-child(odd){background-color:transparent !important;background-image:none !important}
+
+/* === __sep-inset-8mm === */
+/* Every separator keeps 8mm of clear page at each edge, whatever its colour: clear to 8mm,
+   eased to solid by 16mm, mirrored right. Supersedes the 0px ramps in __fade-tight,
+   __fade-edge and __labref-zebra.
+   TWO instruments, deliberately: a mask ONLY on the empty rule elements, because mask-image
+   also masks an element's descendants — masking a text-bearing row drops its first and last
+   glyphs to ~25% alpha. Everything that paints text is restopped via background-image instead,
+   with background-size/position preserved so the band geometry is unchanged. */
+html body div.page div.goldrule,
+html body div.page .ap-line,
+html body div.page div.footer::before,
+html body div.page div.footer::after{-webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,0) 0,rgba(0,0,0,0) 8mm,rgba(0,0,0,.35) 11mm,rgba(0,0,0,.8) 13mm,rgba(0,0,0,1) 16mm,rgba(0,0,0,1) calc(100% - 16mm),rgba(0,0,0,.8) calc(100% - 13mm),rgba(0,0,0,.35) calc(100% - 11mm),rgba(0,0,0,0) calc(100% - 8mm),rgba(0,0,0,0) 100%) !important;mask-image:linear-gradient(90deg,rgba(0,0,0,0) 0,rgba(0,0,0,0) 8mm,rgba(0,0,0,.35) 11mm,rgba(0,0,0,.8) 13mm,rgba(0,0,0,1) 16mm,rgba(0,0,0,1) calc(100% - 16mm),rgba(0,0,0,.8) calc(100% - 13mm),rgba(0,0,0,.35) calc(100% - 11mm),rgba(0,0,0,0) calc(100% - 8mm),rgba(0,0,0,0) 100%) !important;-webkit-mask-repeat:no-repeat !important;mask-repeat:no-repeat !important;-webkit-mask-size:100% 100% !important;mask-size:100% 100% !important}
+html body div.page div.tbl-wrap table.results thead tr,
+html body div.page div.tbl-wrap table.labref thead tr{background-color:transparent !important;background-image:linear-gradient(90deg,rgba(158,172,186,0) 0,rgba(158,172,186,0) 8mm,rgba(158,172,186,.35) 11mm,rgba(158,172,186,.8) 13mm,rgb(158,172,186) 16mm,rgb(158,172,186) calc(100% - 16mm),rgba(158,172,186,.8) calc(100% - 13mm),rgba(158,172,186,.35) calc(100% - 11mm),rgba(158,172,186,0) calc(100% - 8mm),rgba(158,172,186,0) 100%),linear-gradient(90deg,rgba(158,172,186,0) 0,rgba(158,172,186,0) 8mm,rgba(158,172,186,.35) 11mm,rgba(158,172,186,.8) 13mm,rgb(158,172,186) 16mm,rgb(158,172,186) calc(100% - 16mm),rgba(158,172,186,.8) calc(100% - 13mm),rgba(158,172,186,.35) calc(100% - 11mm),rgba(158,172,186,0) calc(100% - 8mm),rgba(158,172,186,0) 100%),linear-gradient(90deg,rgba(242,245,249,0) 0,rgba(242,245,249,0) 8mm,rgba(242,245,249,.35) 11mm,rgba(242,245,249,.8) 13mm,rgb(242,245,249) 16mm,rgb(242,245,249) calc(100% - 16mm),rgba(242,245,249,.8) calc(100% - 13mm),rgba(242,245,249,.35) calc(100% - 11mm),rgba(242,245,249,0) calc(100% - 8mm),rgba(242,245,249,0) 100%) !important;background-size:100% 2px,100% 2px,100% calc(100% - 4px) !important;background-position:top left,bottom left,left top 2px !important;background-repeat:no-repeat !important}
+html body div.page div.tbl-wrap table.results tbody tr.last-row,
+html body div.page div.tbl-wrap table.labref tbody,
+html body div.page div.tbl-wrap table.labref tbody tr:last-child{background-image:linear-gradient(90deg,rgba(158,172,186,0) 0,rgba(158,172,186,0) 8mm,rgba(158,172,186,.35) 11mm,rgba(158,172,186,.8) 13mm,rgb(158,172,186) 16mm,rgb(158,172,186) calc(100% - 16mm),rgba(158,172,186,.8) calc(100% - 13mm),rgba(158,172,186,.35) calc(100% - 11mm),rgba(158,172,186,0) calc(100% - 8mm),rgba(158,172,186,0) 100%) !important;background-size:100% 2px !important;background-position:bottom left !important;background-repeat:no-repeat !important}
+
+/* === __rcell-xlong-fit === */
+/* The 19-21 character counted results (e.g. "< 10² and > 10¹ CFU/g") overhung the 38.4px right
+   margin by up to 2.8px at the __rcell-long tier. Condensed one step further — the column is
+   never widened to fit one cell. */
+html body div.page div.tbl-wrap table.results tbody td.r-cell.r-xlong .r-val{font-size:6.5px !important;letter-spacing:-0.25px !important}
+
+/* === __sig-space === */
+/* The signature area was 12px tall with the rule at its foot — no room for a handwritten
+   signature — while ~70px of auto margin sat empty between the Section 04 separator and
+   "Prepared & Approved by". The grid stays bottom-anchored (margin-top:auto), so growing
+   .ap-sign consumes that empty margin upward: the role label rises toward the separator and
+   the footer clearance is unchanged. Applies to both signature blocks. */
+html body div.page div.approval-grid{margin-top:auto !important;padding-top:0 !important}
+html body div.page div.approval-grid .ap-sign{height:60px !important;margin-bottom:1px !important}
+
+/* === __labref-ac-certgrid === */
+/* Section 03, appended last. Four things:
+   1. the laboratory cell is ONE INLINE RUN again: English name · | · Macedonian name ·
+      accreditation id · address. It wraps naturally inside the column, so where the English
+      runs past one line the Macedonian continues INLINE on row 2 rather than claiming a row
+      of its own. This deliberately reverses the .mk{display:block} of __labref-2line.
+   2. the accreditation id (LT-0nn (IARM)) is its own span at the end of the Macedonian run,
+      so it lands on row 2 with it.
+   3. the CoA Doc. Code column widens 180 -> 268px; the laboratory column is auto-width and
+      yields the difference (right edge 441.7 -> 353.7px).
+   4. certificates flow TWO PER ROW in that column: two inline on row 1, the third starting
+      row 2, and so on.
+   nowrap is NOT set on the Macedonian name or the address: an unbreakable 212px run in a
+   310px column overflows the cell and breaches the margin rather than wrapping. Breaking is
+   the safe failure here. */
+html body div.page div.tbl-wrap table.labref colgroup col:nth-child(2){width:268px !important}
+html body div.page div.tbl-wrap table.labref colgroup col:nth-child(3){width:172px !important}
+html body div.page div.tbl-wrap table.labref tbody td .lr-lab{line-height:1.22 !important}
+html body div.page div.tbl-wrap table.labref tbody td .lr-lab .bisep{display:inline !important}
+html body div.page div.tbl-wrap table.labref tbody td .lr-lab .mk{display:inline !important;white-space:normal !important;margin-left:0 !important}
+html body div.page div.tbl-wrap table.labref tbody td .lr-lab small{display:inline !important;white-space:normal !important}
+html body div.page div.tbl-wrap table.labref tbody td .lr-lab .lr-ac{font-family:'Roboto Mono',monospace;font-size:5.9px !important;font-weight:600;color:#5A6E84;letter-spacing:.2px;white-space:nowrap}
+html body div.page div.tbl-wrap table.labref tbody td .lr-lab .lr-ac::before{content:"· ";color:#8C9BB0;font-weight:400}
+html body div.page div.tbl-wrap table.labref tbody td.lr-mono:not(.pcell){display:grid !important;grid-template-columns:repeat(2,minmax(0,1fr)) !important;column-gap:9px !important;row-gap:2px !important;align-content:start !important}
+html body div.page div.tbl-wrap table.labref tbody td.lr-mono:not(.pcell) .cert{display:block !important;margin-top:0 !important;min-width:0 !important;font-size:7.5px !important}
+html body div.page div.tbl-wrap table.labref tbody td.lr-mono:not(.pcell) .cert+.cert{margin-top:0 !important}
+
+/* === __print-opaque === */
+/* PRINT FIDELITY — appended last, and entirely inside @media print, so the screen design is
+   untouched.
+
+   Why this layer exists. The screen design fades every band and rule to ALPHA ZERO at the page
+   edges. On paper that is three separate risks: (a) browsers drop background images from print
+   unless print-color-adjust is exact, which would erase every band, rule and stripe; (b) an
+   alpha gradient and a mask both create a transparency group, which a PDF engine must flatten
+   — and flattening at the print raster resolution is what produces banding, grey haloes and
+   soft edges; (c) some engines drop mask-image outright, which would print the gold rules
+   FULL BLEED and silently destroy the 8mm inset.
+
+   The fix is to composite against white at author time instead of at raster time. Over a white
+   sheet, rgba(C,a) is exactly rgb(C mixed toward white by 1-a) — the same pixels, with no
+   transparency anywhere. Every stop below was computed from the screen stop, not matched by
+   eye, so print and screen are the same design and not two designs.
+
+   Consequence worth knowing: these gradients are OPAQUE WHITE at the edges, not transparent.
+   They are therefore correct on white paper only. If the sheet is ever tinted, this layer has
+   to be recomputed against the new paper colour. */
+@media print{
+  @page{size:A4;margin:0}
+  html,body{background:#fff !important;padding:0 !important;margin:0 !important;-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}
+  *,*::before,*::after{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;mix-blend-mode:normal !important}
+  html body div.page{flex:none !important;box-shadow:none !important;margin:0 !important;width:210mm !important;height:297mm !important;overflow:hidden !important}
+  /* masks off — replaced by the opaque equivalents below */
+  html body div.page div.goldrule,html body div.page .ap-line,html body div.page div.footer::before,html body div.page div.footer::after{-webkit-mask-image:none !important;mask-image:none !important}
+  html body div.page div.goldrule{background-color:transparent !important;background-image:linear-gradient(90deg,#fff 0,#fff 8mm,rgb(222,209,183) 11mm,rgb(179,150,89) 13mm,rgb(160,124,48) 16mm,rgb(160,124,48) calc(100% - 16mm),rgb(179,150,89) calc(100% - 13mm),rgb(222,209,183) calc(100% - 11mm),#fff calc(100% - 8mm),#fff 100%) !important;background-repeat:no-repeat !important;background-size:100% 100% !important}
+  html body div.page .ap-line{background-color:transparent !important;background-image:linear-gradient(90deg,#fff 0,#fff 8mm,rgb(222,209,183) 11mm,rgb(179,150,89) 13mm,rgb(160,124,48) 16mm,rgb(160,124,48) calc(100% - 16mm),rgb(179,150,89) calc(100% - 13mm),rgb(222,209,183) calc(100% - 11mm),#fff calc(100% - 8mm),#fff 100%) !important;background-repeat:no-repeat !important;background-size:100% 100% !important}
+  html body div.page div.selrow::before,html body div.page div.selrow::after{background-color:transparent !important;background-image:linear-gradient(90deg,#fff 0,#fff 8mm,rgb(222,209,183) 11mm,rgb(179,150,89) 13mm,rgb(160,124,48) 16mm,rgb(160,124,48) calc(100% - 16mm),rgb(179,150,89) calc(100% - 13mm),rgb(222,209,183) calc(100% - 11mm),#fff calc(100% - 8mm),#fff 100%) !important;background-repeat:no-repeat !important;background-size:100% 100% !important}
+  /* footer rule: the 0.55 opacity is baked into the stops so no transparency group is created */
+  html body div.page div.footer::before{opacity:1 !important;background-image:linear-gradient(90deg,rgb(202,185,157) 0%,rgb(210,196,171) 22%,rgb(203,199,189) 45%,rgb(191,196,202) 65%,rgb(180,192,205) 85%,rgb(169,186,204) 100%) !important}
+  html body div.page div.footer::after{background-image:linear-gradient(180deg,#fdfeff 0%,#fcfeff 55%,#fff 100%) !important}
+  /* table header bands: two 2px rules over a fill, all three opaque */
+  html body div.page div.tbl-wrap table.results thead tr,html body div.page div.tbl-wrap table.labref thead tr{background-color:transparent !important;background-image:linear-gradient(90deg,#fff 0,#fff 8mm,rgb(221,226,231) 11mm,rgb(177,189,200) 13mm,rgb(158,172,186) 16mm,rgb(158,172,186) calc(100% - 16mm),rgb(177,189,200) calc(100% - 13mm),rgb(221,226,231) calc(100% - 11mm),#fff calc(100% - 8mm),#fff 100%),linear-gradient(90deg,#fff 0,#fff 8mm,rgb(221,226,231) 11mm,rgb(177,189,200) 13mm,rgb(158,172,186) 16mm,rgb(158,172,186) calc(100% - 16mm),rgb(177,189,200) calc(100% - 13mm),rgb(221,226,231) calc(100% - 11mm),#fff calc(100% - 8mm),#fff 100%),linear-gradient(90deg,#fff 0,#fff 8mm,rgb(250,252,253) 11mm,rgb(245,247,250) 13mm,rgb(242,245,249) 16mm,rgb(242,245,249) calc(100% - 16mm),rgb(245,247,250) calc(100% - 13mm),rgb(250,252,253) calc(100% - 11mm),#fff calc(100% - 8mm),#fff 100%) !important;background-size:100% 2px,100% 2px,100% calc(100% - 4px) !important;background-position:top left,bottom left,left top 2px !important;background-repeat:no-repeat !important}
+  /* terminal rules */
+  html body div.page div.tbl-wrap table.results tbody tr.last-row,html body div.page div.tbl-wrap table.labref tbody,html body div.page div.tbl-wrap table.labref tbody tr:last-child{background-image:linear-gradient(90deg,#fff 0,#fff 8mm,rgb(221,226,231) 11mm,rgb(177,189,200) 13mm,rgb(158,172,186) 16mm,rgb(158,172,186) calc(100% - 16mm),rgb(177,189,200) calc(100% - 13mm),rgb(221,226,231) calc(100% - 11mm),#fff calc(100% - 8mm),#fff 100%) !important;background-size:100% 2px !important;background-position:bottom left !important;background-repeat:no-repeat !important}
+  /* zebra stripes */
+  html body div.page div.tbl-wrap table.results tbody tr:not(.row-group):not(.sub-row):not(.last-row):nth-of-type(even),html body div.page div.tbl-wrap table.labref tbody tr:nth-child(even){background-color:transparent !important;background-image:linear-gradient(90deg,#fff 0,#fff 38px,rgb(251,252,253) 92px,rgb(248,249,252) 150px,rgb(247,249,252) 50%,rgb(248,249,252) calc(100% - 150px),rgb(251,252,253) calc(100% - 92px),#fff calc(100% - 38px),#fff 100%) !important;background-size:100% 100% !important;background-position:top left !important;background-repeat:no-repeat !important}
+  html body div.page div.tbl-wrap table.results tbody tr:not(.row-group):not(.sub-row):not(.last-row):nth-of-type(odd),html body div.page div.tbl-wrap table.labref tbody tr:nth-child(odd){background-image:none !important}
+  /* the brand mark is an inline SVG data-URI: keep it vector, never resample */
+  html body div.page img.hb-logo{image-rendering:auto !important;-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}
+}
+
+/* === __lk-shrink-fit === */
+/* 15 grade-less documents carry the long "Per grade of the potency specification of
+   15.09.2026 — no Total THC result on file" string in the Potency cell. The Section 01 rows
+   are auto-track grids, so that 408px value starved the Specification Reference track: its
+   red [ — ] span rendered 26.5px inside a 16.3px cell and ended 10.2px PAST the right margin.
+   The cell box was inside the margin, which is why the box-based margin assertion passed it.
+
+   Fix: let the cells and their values shrink and wrap, so the auto tracks redistribute instead
+   of one track overflowing. No font change, no rewording of the register's string, no change
+   to the number of columns. */
+html body div.page div.gridrow.lk-inline{min-width:0 !important}
+html body div.page div.gridrow.lk-inline > .lk{min-width:0 !important}
+html body div.page div.gridrow.lk-inline > .lk > .lk-val{min-width:0 !important;white-space:normal !important;overflow-wrap:anywhere !important}
+html body div.page div.gridrow.lk-inline > .lk > .lk-val > span{white-space:normal !important;overflow-wrap:anywhere !important}

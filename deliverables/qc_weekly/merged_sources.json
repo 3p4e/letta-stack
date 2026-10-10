@@ -1,0 +1,76 @@
+{
+ "window": {
+  "start": "2026-08-11T16:00:00+02:00",
+  "end": "2026-08-14T08:00:00+02:00",
+  "span_hours": 64.0,
+  "tz": "Europe/Skopje (UTC+02:00)"
+ },
+ "scope_rule": "Only Purely Plant content work is counted. Platform/infrastructure operations are excluded; Letta host knowledgebase and memory/agent databases count as PP content.",
+ "summable": false,
+ "sources": [
+  {
+   "key": "QC",
+   "label": "Сесија за QC-податоци | QC data session",
+   "method": "транскрипт | transcript-witnessed",
+   "style": "solid",
+   "pp_hours": 4.9,
+   "source_reported_hours": 4.9,
+   "excluded_hours": 0.0,
+   "chunks": 31
+  },
+  {
+   "key": "OPS-W",
+   "label": "Letta host — засведочено | witnessed",
+   "method": "временски печати на алатки | tool timestamps",
+   "style": "solid",
+   "pp_hours": 5.3,
+   "source_reported_hours": 5.3,
+   "excluded_hours": 0.0,
+   "chunks": 1
+  },
+  {
+   "key": "OPS-C",
+   "label": "Letta host — распон по PR | checkpoint span",
+   "method": "PR отворен→споен, не е ангажман | PR open→merge, not hands-on",
+   "style": "hatch",
+   "pp_hours": 52.8,
+   "source_reported_hours": 52.8,
+   "excluded_hours": 13.8,
+   "chunks": 4
+  },
+  {
+   "key": "WWF",
+   "label": "WWF-платформа — само PP-содржина | PP content only",
+   "method": "git коммити | git commits",
+   "style": "solid",
+   "pp_hours": 1.7,
+   "source_reported_hours": 2.25,
+   "excluded_hours": 0.9,
+   "chunks": 4
+  },
+  {
+   "key": "ImB",
+   "label": "ImB спецификации | ImB spec design",
+   "method": "проценка од сесиска активност | session estimate",
+   "style": "hatch",
+   "pp_hours": 35.0,
+   "source_reported_hours": 35.0,
+   "excluded_hours": 0.0,
+   "chunks": 9
+  }
+ ],
+ "exclusions": [
+  {
+   "item": "Конфигурација и поправка на Docker/стек | container-stack configuration & repair",
+   "hours": "надвор од опфат | out of scope"
+  },
+  {
+   "item": "WWF: тест-суити и продукциски deploy (v88/v128) | test suites & production deploy",
+   "hours": "0,9 h"
+  },
+  {
+   "item": "Позадинско следење на репозиториуми без PP-содржина | background monitoring, non-PP repos",
+   "hours": "13,8 h"
+  }
+ ]
+}

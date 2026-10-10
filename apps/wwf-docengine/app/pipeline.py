@@ -14,6 +14,7 @@ import re
 from . import builder, db
 from .config import settings
 from .letta import LettaClient, LettaError
+from .ragflow import EXAMPLES_NOTE, RagflowClient, RagflowError, citations, format_passages
 from .questionnaires import QUESTIONNAIRES, apply_defaults
 
 log = logging.getLogger("docengine.pipeline")
@@ -216,10 +217,25 @@ def assemble_markdown(meta: dict, sections: list[dict]) -> str:
     return hd + "\n".join(body)
 
 
-async def run_workflow(job_id: str, client: LettaClient | None = None) -> None:
+async def run_workflow(job_id: str, client: LettaClient | None = None, rag: RagflowClient | None = None) -> None:
     """The full Mode-A + Mode-B pipeline for one job. Never raises: every
     failure lands in the job row as status=failed."""
     client = client or LettaClient()
+    rag = rag or RagflowClient()
+    knowledge = {"ragflow": rag.configured, "examples_used": 0, "notes": []}
+
+    async def examples_for(query: str) -> str:
+        # Approved house documents, when that dataset exists: structure and style only.
+        if not (rag.configured and settings.ragflow_example_datasets):
+            return ""
+        try:
+            ex = await rag.retrieve(query, settings.ragflow_example_datasets, top_n=3)
+        except RagflowError as e:
+            knowledge["notes"].append(f"examples unavailable: {e}")
+            return ""
+        knowledge["examples_used"] += len(ex)
+        return ("\n\n" + EXAMPLES_NOTE + "\n" + format_passages(ex, tag="E", max_chars=1500)) if ex else ""
+
     try:
         job = await db.job_get(job_id)
         p = job["payload"]
@@ -240,6 +256,7 @@ async def run_workflow(job_id: str, client: LettaClient | None = None) -> None:
         if doctype == "SOP":
             for num, mk, en in SOP_SECTIONS:
                 author = agents["gf_raci_specialist"] if num == "3.0" else agents["gf_sop_author"]
+                ex = await examples_for(f"SOP section {num} {en}: {meta['title_en']}")
                 text = await client.send_message(
                     author,
                     f"Draft ONLY section {num} {mk}|{en} of the SOP "
@@ -248,11 +265,12 @@ async def run_workflow(job_id: str, client: LettaClient | None = None) -> None:
                     "Return ONLY the bilingual Markdown body — no heading line, no code "
                     "fences, and NO commentary, preamble, or explanation of what you are "
                     "doing. Your entire reply is inserted verbatim into the document. "
-                    "Unknown facility specifics stay as blank fields.",
+                    "Unknown facility specifics stay as blank fields." + ex,
                 )
                 sections.append({"num": num, "mk": mk, "en": en, "content": _clean_section(text)})
                 await db.job_update(job_id, stage=f"generate {num}")
         else:
+            ex = await examples_for(f"{doctype} {meta['title_en']}")
             text = await client.send_message(
                 agents["gf_annex_author"],
                 f"Design the {doctype} '{meta['title_mk']} | {meta['title_en']}' "
@@ -260,7 +278,7 @@ async def run_workflow(job_id: str, client: LettaClient | None = None) -> None:
                 "Return ONLY the bilingual Markdown body, using [[FORM:grid]] for the "
                 "metadata block and [[TABLE]] for data grids. Blank write-in values. "
                 "NO commentary, preamble, or explanation — your entire reply is inserted "
-                "verbatim into the document.",
+                "verbatim into the document." + ex,
             )
             sections.append(
                 {"num": "1.0", "mk": "СОДРЖИНА", "en": "CONTENT",
@@ -277,18 +295,34 @@ async def run_workflow(job_id: str, client: LettaClient | None = None) -> None:
         # keeps the prompt size constant regardless of section count.
         await db.job_update(job_id, stage="regulatory-check")
         reg_findings: list[str] = []
+        reg_sources: dict[str, list] = {}
         for s in sections:
             await db.job_update(job_id, stage=f"regulatory-check {s['num']}")
             tmp_id = await spawn_ephemeral(
                 client, "gf_reg_checker", f"{job_id[:8]}_{s['num'].replace('.', '')}"
             )
+            # RAGFlow DB01 first: the checker gets the actual passages and cites them by
+            # [R#]; the job keeps which passage each [R#] was. Without RAGFlow (or if it
+            # fails) the checker searches its attached Letta sources, and the job says so.
+            passages: list[dict] = []
+            if rag.configured:
+                try:
+                    passages = await rag.retrieve(
+                        f"{meta['title_en']} — {s['en']}: {s['content'][:800]}", settings.ragflow_reg_datasets)
+                except RagflowError as e:
+                    knowledge["notes"].append(f"[{s['num']}] regulatory corpus unavailable, Letta sources used: {e}")
+            if passages:
+                prompt = (f"Check this drafted section {s['num']} of {meta['code']} against the "
+                          "regulatory passages below, retrieved from the RAGFlow DB01 library. Cite "
+                          "only these passages, as [R#] with the document and clause; say NO-FINDING "
+                          f"if none applies.\n\nPASSAGES\n{format_passages(passages)}\n\nSECTION\n{s['content']}")
+                reg_sources[s["num"]] = citations(passages)
+            else:
+                prompt = (f"Check this drafted section {s['num']} of {meta['code']} against the "
+                          f"regulatory corpus ({', '.join(settings.reg_sources)}). Cite only "
+                          f"retrieved passages; say NO-FINDING if nothing applies.\n\n{s['content']}")
             try:
-                finding = await client.send_message(
-                    tmp_id,
-                    f"Check this drafted section {s['num']} of {meta['code']} against the "
-                    f"regulatory corpus ({', '.join(settings.reg_sources)}). Cite only "
-                    f"retrieved passages; say NO-FINDING if nothing applies.\n\n{s['content']}",
-                )
+                finding = await client.send_message(tmp_id, prompt)
             finally:
                 # Broad catch on purpose: cleanup of a throwaway clone must
                 # never abort the job — delete_agent can also raise plain
@@ -350,6 +384,8 @@ async def run_workflow(job_id: str, client: LettaClient | None = None) -> None:
                 "markdown": markdown,
                 "verify": result.verify_report,
                 "regulatory": reg_findings,
+                "regulatory_sources": reg_sources,
+                "knowledge": knowledge,
                 "qa_audit": audit,
                 "bytes": result.bytes,
             },

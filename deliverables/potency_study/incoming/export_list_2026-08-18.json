@@ -1,0 +1,700 @@
+{
+ "source": {
+  "name": "THC level,qty by batch.xlsx",
+  "drive_id": "1fTUlr110qQM7_aABdhIr5EAxugRiOAby",
+  "saved": "2026-08-18 07:47",
+  "read_via": "Google Drive read_file_content",
+  "note": "* These are the initial THC levels, the THC levels for tranche one are those in the table, while for tranches 2 and 3 they will be confirmed/updated once we receive the reanalysis results, as well as the exact quantities from all tranches."
+ },
+ "classes": [
+  8,
+  10,
+  12,
+  14,
+  16,
+  18,
+  20,
+  22,
+  24,
+  26,
+  28
+ ],
+ "tranche_totals": {
+  "1": 1496.079,
+  "2": 2668.417,
+  "3": 2814.407,
+  "all": 6978.9
+ },
+ "class_quantities": {
+  "all": {
+   "8": 178.46,
+   "10": 137.98,
+   "12": 186.19,
+   "14": 427.14,
+   "16": 601.29,
+   "18": 842.46,
+   "20": 950.778,
+   "22": 1524.98,
+   "24": 1145.009,
+   "26": 560.94,
+   "28": 423.673
+  },
+  "1": {
+   "8": 103.0,
+   "10": 0,
+   "12": 19.38,
+   "14": 0,
+   "16": 22.0,
+   "18": 179.07,
+   "20": 610.66,
+   "22": 84.47,
+   "24": 330.3,
+   "26": 110.0,
+   "28": 37.2
+  },
+  "2": {
+   "8": 27.05,
+   "10": 61.37,
+   "12": 101.48,
+   "14": 124.95,
+   "16": 277.78,
+   "18": 544.11,
+   "20": 0.0,
+   "22": 923.12,
+   "24": 108.71,
+   "26": 113.39,
+   "28": 386.47
+  },
+  "3": {
+   "8": 48.42,
+   "10": 76.61,
+   "12": 65.34,
+   "14": 302.19,
+   "16": 301.52,
+   "18": 119.28,
+   "20": 340.12,
+   "22": 517.39,
+   "24": 706.0,
+   "26": 337.55,
+   "28": 0.0
+  }
+ },
+ "batches": [
+  {
+   "tranche": 1,
+   "orig": "Blue Gelato",
+   "new": "Blue Gelato",
+   "batch": "BG1024",
+   "thc": 26.14,
+   "qty": 37.2
+  },
+  {
+   "tranche": 1,
+   "orig": "Blue Sunset Sherbet",
+   "new": "Sunset Sherbet",
+   "batch": "BSS1024",
+   "thc": 25.01,
+   "qty": 46.4
+  },
+  {
+   "tranche": 1,
+   "orig": "Cap Junky",
+   "new": "Cookie Kush",
+   "batch": "P050162",
+   "thc": 24.05,
+   "qty": 63.6
+  },
+  {
+   "tranche": 1,
+   "orig": "Cap Junky",
+   "new": "Cookie Kush",
+   "batch": "P060032",
+   "thc": 18.29,
+   "qty": 13.91
+  },
+  {
+   "tranche": 1,
+   "orig": "Fat Bastard",
+   "new": "Fat Sofa",
+   "batch": "P060352",
+   "thc": 18.86,
+   "qty": 75.71
+  },
+  {
+   "tranche": 1,
+   "orig": "Gorilla Glue",
+   "new": "GG4",
+   "batch": "P060402",
+   "thc": 17.59,
+   "qty": 37.67
+  },
+  {
+   "tranche": 1,
+   "orig": "Gorilla Glue",
+   "new": "Gorilla Gang",
+   "batch": "P050092",
+   "thc": 18.67,
+   "qty": 223.73
+  },
+  {
+   "tranche": 1,
+   "orig": "Grape Pie",
+   "new": "Vanilla Grapes",
+   "batch": "P050152",
+   "thc": 18.52,
+   "qty": 148.8
+  },
+  {
+   "tranche": 1,
+   "orig": "Grape Pie",
+   "new": "Grape Pie",
+   "batch": "P050022",
+   "thc": 22.61,
+   "qty": 200.0
+  },
+  {
+   "tranche": 1,
+   "orig": "Grape Pie",
+   "new": "Vanilla Grapes",
+   "batch": "P050322",
+   "thc": 15.7,
+   "qty": 22.0
+  },
+  {
+   "tranche": 1,
+   "orig": "High Pro Amnesia",
+   "new": "High Pro Amnesia",
+   "batch": "HPA1024",
+   "thc": 17.31,
+   "qty": 39.8
+  },
+  {
+   "tranche": 1,
+   "orig": "High Pro Amnesia",
+   "new": "Hazy Daze",
+   "batch": "P050052",
+   "thc": 21.61,
+   "qty": 130.3
+  },
+  {
+   "tranche": 1,
+   "orig": "Jelly Donuts",
+   "new": "Jelly Donuts",
+   "batch": "P060212",
+   "thc": 20.32,
+   "qty": 40.67
+  },
+  {
+   "tranche": 1,
+   "orig": "Jokerz 31",
+   "new": "Jokerz 31",
+   "batch": "P060152",
+   "thc": 17.32,
+   "qty": 22.76
+  },
+  {
+   "tranche": 1,
+   "orig": "Orange Punch Mimosa",
+   "new": "Orange Dream",
+   "batch": "OPM1024",
+   "thc": 20.03,
+   "qty": 43.8
+  },
+  {
+   "tranche": 1,
+   "orig": "Orange Punch Mimosa",
+   "new": "Tangie Queen",
+   "batch": "P050062",
+   "thc": 18.04,
+   "qty": 148.5
+  },
+  {
+   "tranche": 1,
+   "orig": "Orange Punch Mimosa",
+   "new": "Citrus Bloom",
+   "batch": "P060242",
+   "thc": 7.91,
+   "qty": 103.0
+  },
+  {
+   "tranche": 1,
+   "orig": "Permanent Marker",
+   "new": "Formula 1",
+   "batch": "P060062",
+   "thc": 12.25,
+   "qty": 19.38
+  },
+  {
+   "tranche": 1,
+   "orig": "Scrambler",
+   "new": "Scrambler",
+   "batch": "P060382",
+   "thc": 17.84,
+   "qty": 78.84
+  },
+  {
+   "tranche": 2,
+   "orig": "Amnesia Core Cut",
+   "new": "Amnesia Core",
+   "batch": "P060122",
+   "thc": 12.91,
+   "qty": 37.85
+  },
+  {
+   "tranche": 2,
+   "orig": "Blue Sunset Sherbet",
+   "new": "Sunset Sherbet",
+   "batch": "P050192",
+   "thc": 20.47,
+   "qty": 342.54
+  },
+  {
+   "tranche": 2,
+   "orig": "Cap Junky",
+   "new": "OG Banana's",
+   "batch": "P050222",
+   "thc": 21.51,
+   "qty": 76.57
+  },
+  {
+   "tranche": 2,
+   "orig": "Cap Junky",
+   "new": "Cookie Kush",
+   "batch": "P060022",
+   "thc": 24.96,
+   "qty": 113.39
+  },
+  {
+   "tranche": 2,
+   "orig": "Cap Junky",
+   "new": "Cookie Kush",
+   "batch": "P060072",
+   "thc": 22.3,
+   "qty": 27.13
+  },
+  {
+   "tranche": 2,
+   "orig": "CashCow",
+   "new": "Payday",
+   "batch": "P060372",
+   "thc": 12.32,
+   "qty": 55.22
+  },
+  {
+   "tranche": 2,
+   "orig": "Chem Flyer",
+   "new": "Shark Tank",
+   "batch": "P060132",
+   "thc": 9.83,
+   "qty": 47.44
+  },
+  {
+   "tranche": 2,
+   "orig": "Clemosa A Bud",
+   "new": "Clemosa",
+   "batch": "P050282",
+   "thc": 8.02,
+   "qty": 27.05
+  },
+  {
+   "tranche": 2,
+   "orig": "Fat Bastard",
+   "new": "Daywalker",
+   "batch": "P060322",
+   "thc": 14.68,
+   "qty": 8.51
+  },
+  {
+   "tranche": 2,
+   "orig": "Gorilla Glue",
+   "new": "Gorilla Gang",
+   "batch": "GG1024",
+   "thc": 13.34,
+   "qty": 39.1
+  },
+  {
+   "tranche": 2,
+   "orig": "Grape Pie",
+   "new": "Vanilla Grapes",
+   "batch": "P050302",
+   "thc": 19.81,
+   "qty": 12.8
+  },
+  {
+   "tranche": 2,
+   "orig": "Grape Pie",
+   "new": "Grape Pie",
+   "batch": "P050072",
+   "thc": 25.45,
+   "qty": 218.75
+  },
+  {
+   "tranche": 2,
+   "orig": "Grape Pie",
+   "new": "Vanilla Grapes",
+   "batch": "P050312",
+   "thc": 21.29,
+   "qty": 197.03
+  },
+  {
+   "tranche": 2,
+   "orig": "Grape Pie",
+   "new": "Grape Pie",
+   "batch": "P060092",
+   "thc": 25.73,
+   "qty": 167.72
+  },
+  {
+   "tranche": 2,
+   "orig": "Grapes and Cream",
+   "new": "Plum Tarte",
+   "batch": "P060182",
+   "thc": 11.53,
+   "qty": 19.33
+  },
+  {
+   "tranche": 2,
+   "orig": "High Pro Amnesia",
+   "new": "Hazy Daze",
+   "batch": "P050182",
+   "thc": 20.39,
+   "qty": 247.2
+  },
+  {
+   "tranche": 2,
+   "orig": "Jelly Donuts",
+   "new": "Strawberry Cupcakes",
+   "batch": "P060362",
+   "thc": 16.71,
+   "qty": 11.29
+  },
+  {
+   "tranche": 2,
+   "orig": "Jelly Donuts",
+   "new": "Jelly Donuts",
+   "batch": "P060412",
+   "thc": 20.54,
+   "qty": 46.99
+  },
+  {
+   "tranche": 2,
+   "orig": "Jelly Donuts",
+   "new": "Jelly Donuts",
+   "batch": "P060422",
+   "thc": 15.16,
+   "qty": 10.36
+  },
+  {
+   "tranche": 2,
+   "orig": "Kush Crasher",
+   "new": "Kush Crasher",
+   "batch": "P060172",
+   "thc": 17.4,
+   "qty": 16.0
+  },
+  {
+   "tranche": 2,
+   "orig": "Motor Breath",
+   "new": "NY Diesel",
+   "batch": "P050112",
+   "thc": 16.82,
+   "qty": 239.68
+  },
+  {
+   "tranche": 2,
+   "orig": "Orange Punch Mimosa",
+   "new": "Citrus Bloom",
+   "batch": "P050042",
+   "thc": 15.38,
+   "qty": 209.95
+  },
+  {
+   "tranche": 2,
+   "orig": "Orange Punch Mimosa",
+   "new": "Soft Citrus Bloom",
+   "batch": "P060042",
+   "thc": 9.43,
+   "qty": 13.93
+  },
+  {
+   "tranche": 2,
+   "orig": "Orange Punch Mimosa",
+   "new": "Tangie Queen",
+   "batch": "P050082",
+   "thc": 16.55,
+   "qty": 254.54
+  },
+  {
+   "tranche": 2,
+   "orig": "Permanent Marker",
+   "new": "Formula 1",
+   "batch": "P060232",
+   "thc": 13.0,
+   "qty": 48.0
+  },
+  {
+   "tranche": 2,
+   "orig": "Pure Michigen",
+   "new": "Lifeguard",
+   "batch": "P060112",
+   "thc": 15.63,
+   "qty": 48.96
+  },
+  {
+   "tranche": 2,
+   "orig": "Scrambler",
+   "new": "Scrambler",
+   "batch": "P060282",
+   "thc": 17.13,
+   "qty": 22.6
+  },
+  {
+   "tranche": 2,
+   "orig": "Sleepy Joe",
+   "new": "Sleepy Joe",
+   "batch": "P060082",
+   "thc": 10.96,
+   "qty": 26.93
+  },
+  {
+   "tranche": 2,
+   "orig": "Wedding Crusher",
+   "new": "Wedding Crusher",
+   "batch": "P060012",
+   "thc": 21.67,
+   "qty": 81.58
+  },
+  {
+   "tranche": 3,
+   "orig": "Appels & Bananas",
+   "new": "Appels & Bananas",
+   "batch": "P060052",
+   "thc": 16.93,
+   "qty": 23.53
+  },
+  {
+   "tranche": 3,
+   "orig": "Blue Sunset Sherbet",
+   "new": "Sunset Sherbet",
+   "batch": "P050122",
+   "thc": 23.42,
+   "qty": 213.77
+  },
+  {
+   "tranche": 3,
+   "orig": "Cap Junky",
+   "new": "OG Banana's",
+   "batch": "P050172",
+   "thc": 14.49,
+   "qty": 43.2
+  },
+  {
+   "tranche": 3,
+   "orig": "Cap Junky",
+   "new": "Cookie Kush",
+   "batch": "P050252",
+   "thc": 23.7,
+   "qty": 38.68
+  },
+  {
+   "tranche": 3,
+   "orig": "Cap Junky",
+   "new": "Cookie Kush",
+   "batch": "CJ1024",
+   "thc": 23.0,
+   "qty": 20.0
+  },
+  {
+   "tranche": 3,
+   "orig": "CashCow",
+   "new": "Payday",
+   "batch": "P060272",
+   "thc": 13.35,
+   "qty": 13.12
+  },
+  {
+   "tranche": 3,
+   "orig": "Fat Bastard",
+   "new": "Daywalker",
+   "batch": "P060432",
+   "thc": 20.83,
+   "qty": 68.01
+  },
+  {
+   "tranche": 3,
+   "orig": "Fat Bastard",
+   "new": "Daywalker",
+   "batch": "P060392",
+   "thc": 18.29,
+   "qty": 15.59
+  },
+  {
+   "tranche": 3,
+   "orig": "Fat Bastard",
+   "new": "Fat Sofa",
+   "batch": "P060292",
+   "thc": 16.69,
+   "qty": 40.49
+  },
+  {
+   "tranche": 3,
+   "orig": "Gorilla Glue",
+   "new": "GG4",
+   "batch": "P060302",
+   "thc": 15.35,
+   "qty": 76.18
+  },
+  {
+   "tranche": 3,
+   "orig": "Gorilla Glue",
+   "new": "Cherry Chocolate",
+   "batch": "P060252",
+   "thc": 17.94,
+   "qty": 55.26
+  },
+  {
+   "tranche": 3,
+   "orig": "Gorilla Glue",
+   "new": "Gorilla Gang",
+   "batch": "P050012",
+   "thc": 15.95,
+   "qty": 182.14
+  },
+  {
+   "tranche": 3,
+   "orig": "Grape Pie",
+   "new": "Vanilla Grapes",
+   "batch": "P050202",
+   "thc": 22.89,
+   "qty": 292.96
+  },
+  {
+   "tranche": 3,
+   "orig": "Grape Pie",
+   "new": "Vanilla Grapes",
+   "batch": "P050292",
+   "thc": 21.36,
+   "qty": 226.07
+  },
+  {
+   "tranche": 3,
+   "orig": "Grapes and Cream",
+   "new": "Plum Tarte",
+   "batch": "P060142",
+   "thc": 7.05,
+   "qty": 9.77
+  },
+  {
+   "tranche": 3,
+   "orig": "Jelly Donuts",
+   "new": "Jelly Donuts",
+   "batch": "P060312",
+   "thc": 18.16,
+   "qty": 76.38
+  },
+  {
+   "tranche": 3,
+   "orig": "Jokerz 31",
+   "new": "Jokerz 31",
+   "batch": "P060202",
+   "thc": 25.0,
+   "qty": 85.1
+  },
+  {
+   "tranche": 3,
+   "orig": "Jokerz 31",
+   "new": "Jokerz 31",
+   "batch": "P060262",
+   "thc": 21.77,
+   "qty": 135.49
+  },
+  {
+   "tranche": 3,
+   "orig": "Motor Breath",
+   "new": "NY Diesel",
+   "batch": "P050032",
+   "thc": 18.67,
+   "qty": 169.29
+  },
+  {
+   "tranche": 3,
+   "orig": "Orange Punch Mimosa",
+   "new": "Citrus Bloom",
+   "batch": "P050132",
+   "thc": 14.16,
+   "qty": 289.08
+  },
+  {
+   "tranche": 3,
+   "orig": "Orange Punch Mimosa",
+   "new": "Soft Citrus Bloom",
+   "batch": "P060222",
+   "thc": 8.0,
+   "qty": 38.65
+  },
+  {
+   "tranche": 3,
+   "orig": "Permanent Marker",
+   "new": "Formula 1",
+   "batch": "P050272",
+   "thc": 10.01,
+   "qty": 25.99
+  },
+  {
+   "tranche": 3,
+   "orig": "Scrambler",
+   "new": "Scrambler",
+   "batch": "P060342",
+   "thc": 18.07,
+   "qty": 78.86
+  },
+  {
+   "tranche": 3,
+   "orig": "Scrambler",
+   "new": "Rainbow Sherbet",
+   "batch": "P060442",
+   "thc": 21.92,
+   "qty": 194.25
+  },
+  {
+   "tranche": 3,
+   "orig": "Sleepy Joe",
+   "new": "Sleepy Joe",
+   "batch": "P060162",
+   "thc": 11.2,
+   "qty": 65.34
+  },
+  {
+   "tranche": 3,
+   "orig": "Sleepy Joe",
+   "new": "Calmino",
+   "batch": "P060192",
+   "thc": 9.0,
+   "qty": 50.62
+  },
+  {
+   "tranche": 3,
+   "orig": "Wedding Cake",
+   "new": "Tropic Cake",
+   "batch": "P060102",
+   "thc": 22.05,
+   "qty": 33.48
+  },
+  {
+   "tranche": 3,
+   "orig": "Wedding Crusher",
+   "new": "Wedding Crusher",
+   "batch": "P050262",
+   "thc": 22.11,
+   "qty": 29.82
+  },
+  {
+   "tranche": 3,
+   "orig": "Grape Pie",
+   "new": "Vanilla Grapes",
+   "batch": "P050102",
+   "thc": 20.79,
+   "qty": 223.31
+  }
+ ]
+}

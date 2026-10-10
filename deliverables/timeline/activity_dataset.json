@@ -1,0 +1,223 @@
+{
+ "window": {
+  "start": "2026-08-11T16:00:00+02:00",
+  "end": "2026-08-14T08:00:00+02:00",
+  "span_hours": 64.0,
+  "tz": "Europe/Skopje (UTC+02:00)",
+  "measure": "active working time (event activity ≤20 min apart), one chunk per task request positioned at its clock time"
+ },
+ "families": [
+  {
+   "name": "Letta host live audit & docs research",
+   "active_min": 17
+  },
+  {
+   "name": "Chronological listing + fact check",
+   "active_min": 21
+  },
+  {
+   "name": "Wide-format specification matrix",
+   "active_min": 49
+  },
+  {
+   "name": "Workbook usability overhaul",
+   "active_min": 25
+  },
+  {
+   "name": "Tranche 1 & 2 workbooks",
+   "active_min": 28
+  },
+  {
+   "name": "Declared in-house iCoAs + RAG truth-check",
+   "active_min": 33
+  },
+  {
+   "name": "Per-round CoQ issuance model",
+   "active_min": 21
+  },
+  {
+   "name": "Phenotype / Chemotype strain analysis",
+   "active_min": 4
+  },
+  {
+   "name": "Potency data extraction (Letta host RAG)",
+   "active_min": 10
+  },
+  {
+   "name": "ImB spec HANDOFF + HTML→PDF conversion",
+   "active_min": 28
+  },
+  {
+   "name": "GitHub commits, reviews & merges",
+   "active_min": 25
+  },
+  {
+   "name": "Communications (email + activity timeline)",
+   "active_min": 31
+  }
+ ],
+ "chunks": [
+  {
+   "fam": "GitHub commits, reviews & merges",
+   "anchor": "2026-08-12T01:13:44.254000+02:00",
+   "min": 1.5
+  },
+  {
+   "fam": "GitHub commits, reviews & merges",
+   "anchor": "2026-08-12T10:50:50.144000+02:00",
+   "min": 1.5
+  },
+  {
+   "fam": "Letta host live audit & docs research",
+   "anchor": "2026-08-12T13:13:43.789000+02:00",
+   "min": 16.9
+  },
+  {
+   "fam": "Chronological listing + fact check",
+   "anchor": "2026-08-13T13:02:09.494000+02:00",
+   "min": 17.3
+  },
+  {
+   "fam": "Chronological listing + fact check",
+   "anchor": "2026-08-13T13:19:29.374000+02:00",
+   "min": 3.5
+  },
+  {
+   "fam": "Wide-format specification matrix",
+   "anchor": "2026-08-13T13:56:46.679000+02:00",
+   "min": 11.5
+  },
+  {
+   "fam": "Wide-format specification matrix",
+   "anchor": "2026-08-13T14:29:31.912000+02:00",
+   "min": 8.6
+  },
+  {
+   "fam": "Wide-format specification matrix",
+   "anchor": "2026-08-13T14:38:10.686000+02:00",
+   "min": 19.4
+  },
+  {
+   "fam": "Wide-format specification matrix",
+   "anchor": "2026-08-13T14:57:36.047000+02:00",
+   "min": 8.4
+  },
+  {
+   "fam": "Wide-format specification matrix",
+   "anchor": "2026-08-13T15:06:02.924000+02:00",
+   "min": 1.5
+  },
+  {
+   "fam": "Workbook usability overhaul",
+   "anchor": "2026-08-13T15:54:28.863000+02:00",
+   "min": 24.9
+  },
+  {
+   "fam": "Tranche 1 & 2 workbooks",
+   "anchor": "2026-08-13T16:19:24.486000+02:00",
+   "min": 9.2
+  },
+  {
+   "fam": "Tranche 1 & 2 workbooks",
+   "anchor": "2026-08-13T16:28:37.681000+02:00",
+   "min": 18.4
+  },
+  {
+   "fam": "Declared in-house iCoAs + RAG truth-check",
+   "anchor": "2026-08-13T16:47:00.212000+02:00",
+   "min": 11.2
+  },
+  {
+   "fam": "Declared in-house iCoAs + RAG truth-check",
+   "anchor": "2026-08-13T16:58:10.563000+02:00",
+   "min": 3.5
+  },
+  {
+   "fam": "Declared in-house iCoAs + RAG truth-check",
+   "anchor": "2026-08-13T17:01:39.805000+02:00",
+   "min": 6.7
+  },
+  {
+   "fam": "Declared in-house iCoAs + RAG truth-check",
+   "anchor": "2026-08-13T17:08:20.064000+02:00",
+   "min": 11.8
+  },
+  {
+   "fam": "Per-round CoQ issuance model",
+   "anchor": "2026-08-13T17:20:09.479000+02:00",
+   "min": 21.4
+  },
+  {
+   "fam": "Phenotype / Chemotype strain analysis",
+   "anchor": "2026-08-13T18:38:19.414000+02:00",
+   "min": 3.6
+  },
+  {
+   "fam": "GitHub commits, reviews & merges",
+   "anchor": "2026-08-13T22:55:40.685000+02:00",
+   "min": 5.4
+  },
+  {
+   "fam": "Potency data extraction (Letta host RAG)",
+   "anchor": "2026-08-14T04:04:46.347000+02:00",
+   "min": 1.5
+  },
+  {
+   "fam": "Potency data extraction (Letta host RAG)",
+   "anchor": "2026-08-14T04:05:17.185000+02:00",
+   "min": 3.8
+  },
+  {
+   "fam": "Potency data extraction (Letta host RAG)",
+   "anchor": "2026-08-14T04:09:05.460000+02:00",
+   "min": 1.5
+  },
+  {
+   "fam": "Potency data extraction (Letta host RAG)",
+   "anchor": "2026-08-14T04:58:39.608000+02:00",
+   "min": 3.5
+  },
+  {
+   "fam": "ImB spec HANDOFF + HTML→PDF conversion",
+   "anchor": "2026-08-14T06:07:21.880000+02:00",
+   "min": 11.5
+  },
+  {
+   "fam": "ImB spec HANDOFF + HTML→PDF conversion",
+   "anchor": "2026-08-14T06:18:50.155000+02:00",
+   "min": 15.0
+  },
+  {
+   "fam": "ImB spec HANDOFF + HTML→PDF conversion",
+   "anchor": "2026-08-14T06:33:47.344000+02:00",
+   "min": 1.5
+  },
+  {
+   "fam": "GitHub commits, reviews & merges",
+   "anchor": "2026-08-14T07:05:18.352000+02:00",
+   "min": 16.9
+  },
+  {
+   "fam": "Communications (email + activity timeline)",
+   "anchor": "2026-08-14T07:22:09.726000+02:00",
+   "min": 1.5
+  },
+  {
+   "fam": "Communications (email + activity timeline)",
+   "anchor": "2026-08-14T07:23:07.039000+02:00",
+   "min": 28.4
+  },
+  {
+   "fam": "Communications (email + activity timeline)",
+   "anchor": "2026-08-14T07:51:29.030000+02:00",
+   "min": 1.5
+  }
+ ],
+ "active_total_min": 293,
+ "active_total_h": 4.9,
+ "task_requests": 31,
+ "meta": {
+  "source": "/root/.claude/projects/-home-user-letta-stack/4877ce6e-ae82-551e-bf35-5698c379c3be.jsonl",
+  "sha256": "9c35bfad93f16b6d4e7fa2d2798907b4b8eb1b32bbbe0700c6d8ccdfa543b3dc"
+ }
+}

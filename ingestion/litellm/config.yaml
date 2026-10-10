@@ -10,7 +10,7 @@
 #   OUT  Moonshot      401 on api.moonshot.ai AND api.moonshot.cn (Kimi-for-Coding keys are a different product)
 #   OUT  DeepSeek      401 - block kept commented at the bottom for the replacement key
 #   OUT  CometAPI      never measured
-#   OUT  Gemini direct free-tier keys - never measured today; block kept commented, verify before enabling
+#   LEG  Gemini direct free-tier keys - 429 on the free tier; used only by the legacy `gemini-flash` name
 #
 # Naming rule: consumers (RAGFlow, 66 Letta agents) address ROLE names - pp-reason, pp-audit, pp-fast, ...
 # A role is a group of deployments sharing one model_name. `order` ranks them (lowest first). The router
@@ -277,6 +277,30 @@ model_list:
       api_key: os.environ/ANTHROPIC_API_KEY
       extra_headers: {"anthropic-workspace-id": "wrkspc_01KgrPQHQPyBxATLNrmzQkPn"}
 
+  # ───────────── legacy names kept from main (pre-redesign intake runs) ─────────────
+  # Scripts written against the first version of this proxy address `gemini-flash` and `gpt-5`.
+  # Kept so they keep working; new consumers use the pp-* roles. `gemini-flash` is one logical
+  # model over the free-tier keys - the router cools down whichever key answers 429 - with
+  # OpenRouter and CometAPI as separate quota pools behind them. A missing env var only
+  # disables that one deployment.
+  - model_name: gpt-5
+    litellm_params: {model: openai/gpt-5, api_key: os.environ/OPENAI_API_KEY}
+  - model_name: gemini-flash
+    litellm_params: {model: gemini/gemini-3.6-flash, api_key: os.environ/AZ_GEMINI_API_KEY, order: 1}
+  - model_name: gemini-flash
+    litellm_params: {model: gemini/gemini-3.6-flash, api_key: os.environ/BN_GEMINI_API, order: 1}
+  - model_name: gemini-flash
+    litellm_params: {model: gemini/gemini-3.6-flash, api_key: os.environ/BN_GOOGLE_GEMINI_API_KEY, order: 1}
+  - model_name: gemini-flash
+    litellm_params: {model: gemini/gemini-3.6-flash, api_key: os.environ/EP_GEMINI_API, order: 1}
+  - model_name: gemini-flash
+    litellm_params: {model: gemini/gemini-3.6-flash, api_key: os.environ/UC_GEMINI_API, order: 1}
+  - model_name: gemini-flash
+    litellm_params: {model: openrouter/google/gemini-3.6-flash, api_key: os.environ/OPEN_ROUTER_API_KEY, order: 2}
+  - model_name: gemini-flash
+    litellm_params: {model: openai/gemini-2.5-flash, api_base: "https://api.cometapi.com/v1",
+                     api_key: os.environ/COMETAPI_API_KEY, order: 3}
+
   # ───────────── parked until a key is measured working (do not enable blind) ─────────────
   # DeepSeek - user reports a new key with deepseek-v4-pro / deepseek-v4.1-flash; add as order 2/3
   # behind the Anthropic tiers of pp-reason / pp-fast once `curl /health` on this proxy shows them healthy.
@@ -306,6 +330,7 @@ litellm_settings:
     - pp-vision: [pp-reason]
     - pp-format: [pp-fast]
     - pp-enrich: [pp-fast]
+    - gemini-flash: [pp-fast]   # main routed this to moonshot-vision; Moonshot is out (quota/401)
 
 router_settings:
   routing_strategy: simple-shuffle   # within one order tier only; `order` decides the tier

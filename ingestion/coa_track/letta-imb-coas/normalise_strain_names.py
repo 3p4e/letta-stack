@@ -47,6 +47,11 @@ CANONICAL = {
     "capjunkie": "Cap Junky",
     "cup junkie": "Cap Junky",
     "cap junky": "Cap Junky",
+    # Permanent Marker, the Seed Junky cultivar. The register carried "Market" on all
+    # three batches; the Tranches Overview and the second List of COAs sheet both say
+    # "Marker", so here the control sheets were right and the certificates drifted.
+    "permanent market": "Permanent Marker",
+    "permanent marker": "Permanent Marker",
 }
 
 
@@ -76,8 +81,12 @@ def main():
 
     print("rows restrained to the cultivar's own name: %d" % sum(changed.values()))
     for old, n in sorted(changed.items(), key=lambda kv: -kv[1]):
-        print("   %-12s -> Cap Junky   %3d rows   %s"
-              % (old, n, ", ".join(sorted(batches[old]))))
+        # the target is looked up rather than printed as a constant: an earlier version
+        # hard-coded "Cap Junky" here and reported the Permanent Marker rows as having
+        # become Cap Junky, which was alarming and wrong — the data was always correct
+        print("   %-17s -> %-17s %3d rows   %s"
+              % (old, CANONICAL[old.lower().rstrip("*").strip()], n,
+                 ", ".join(sorted(batches[old]))))
     return 0
 
 

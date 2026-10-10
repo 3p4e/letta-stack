@@ -17,8 +17,8 @@ PROVIDERS = {
     "moonshot": {
         # NOTE: Letta 0.16.x does NOT have a "moonshot" provider type in its
         # literal whitelist. Vision OCR therefore falls back to gpt-4o for the
-        # in-Letta agent; the standalone OCR pipeline (ingest_imb_coas_v2.py)
-        # calls Moonshot directly via the OpenAI SDK with base_url override.
+        # in-Letta agent; the standalone OCR pipelines call Moonshot directly
+        # via the OpenAI SDK with a base_url override.
         "endpoint_type": "openai",
         "endpoint": "https://api.moonshot.ai/v1",
         "env_var": "MOONSHOT_API_KEY",
@@ -50,7 +50,12 @@ MODELS = {
     "kimi-k2.5":                       {"provider": "moonshot", "ctx": 256_000, "vision": False},
 }
 
-# ── OCR fallback chain (used by ingest_imb_coas_v2.py stage b) ──
+# ── OCR fallback chain ──
+# This is the policy declaration, not an implementation. Its original consumer,
+# ingest_imb_coas_v2.py stage b, was retired 29.08.2026 with the Letta source it
+# fed. The chain is implemented today in ingestion/ragflow/doc_identity.py; the
+# CoA_DATABASE_2026 driver runs a narrower OpenAI-only variant of it, and says
+# in its own docstring why (no vision-capable fallback key is confirmed).
 OCR_CHAIN = ["kimi-k2.6", "moonshot-v1-128k-vision-preview", "gpt-4o"]
 
 # ── Embedding policy (per-source — managed in source config, not agent) ──
@@ -76,8 +81,8 @@ EMBED_FALLBACK = {
 #
 # NOTE on vision: Letta 0.16.x lacks a "moonshot" provider type, so in-Letta
 # vision-capable agents must use gpt-4o for now. The standalone OCR pipeline
-# (ingest_imb_coas_v2.py stage_b) bypasses Letta and goes directly to Moonshot
-# kimi-k2.6 with OpenAI gpt-4o as fallback.
+# (ingestion/ragflow/doc_identity.py) bypasses Letta and goes directly to
+# Moonshot kimi-k2.6 with OpenAI gpt-4o as fallback.
 ROLE_TO_MODEL = {
     "vision_ocr":    "gpt-4o",             # in-Letta agent — pipeline uses kimi-k2.6 directly
     "vision_chat":   "gpt-4o",             # image-in-conversation tasks

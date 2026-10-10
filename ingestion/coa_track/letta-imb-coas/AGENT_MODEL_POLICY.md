@@ -97,9 +97,11 @@ python3 scripts/letta-imb-coas/rewire_agents.py             # apply
 
 The script prints a per-agent diff (`old_model → new_model`) and a final distribution table.
 
-### 4. New OCR pipeline (already wired into `ingest_imb_coas_v2.py`)
+### 4. OCR pipeline
 
-`stage b` now routes every page through the OCR chain: Moonshot kimi-k2.6 → moonshot-v1-128k-vision-preview → gpt-4o. First success wins. The first line of every produced `.txt` is annotated with which provider+model did the OCR, so we can audit Cyrillic quality after the run:
+The chain was first wired into `ingest_imb_coas_v2.py`, which was retired
+29.08.2026 along with the Letta source it fed. It is implemented today in
+`ingestion/ragflow/doc_identity.py`, which routes every page through the chain: Moonshot kimi-k2.6 → moonshot-v1-128k-vision-preview → gpt-4o. First success wins. The first line of every produced `.txt` is annotated with which provider+model did the OCR, so we can audit Cyrillic quality after the run:
 
 ```
 [OCR via moonshot-kimi/kimi-k2.6]

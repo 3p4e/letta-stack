@@ -1,0 +1,2120 @@
+{
+ "certs": {
+  "100-2-ГС/26": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "Loss on drying %",
+     "src": "corpus — verify on page · J31112501, 100-2-LoD-26, 09.04.2026, FHM.pdf",
+     "t": "T3",
+     "v": "10,3"
+    }
+   ]
+  },
+  "100-3-ГС/26": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "Loss on drying %",
+     "src": "corpus — verify on page · J31112501, 100-3-LoD-26, 09.04.2026, FHM.pdf",
+     "t": "T3",
+     "v": "10,3"
+    }
+   ]
+  },
+  "1032/1851/25": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "TAMC CFU/g",
+     "src": "corpus — verify on page · P050212, 1032-1851-25, 17.10.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "2,2 x 10⁴"
+    },
+    {
+     "k": "TYMC CFU/g",
+     "src": "corpus — verify on page · P050212, 1032-1851-25, 17.10.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "4,9 x 10³"
+    },
+    {
+     "k": "Salmonella /25 g",
+     "src": "corpus — verify on page · P050212, 1032-1851-25, 17.10.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "Одговара"
+    },
+    {
+     "k": "E. coli /1 g",
+     "src": "corpus — verify on page · P050212, 1032-1851-25, 17.10.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "Одговара"
+    }
+   ]
+  },
+  "1220/2171/25": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "TAMC CFU/g",
+     "src": "corpus — verify on page · P050272, 1220-2171-25, 01.12.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "110"
+    },
+    {
+     "k": "TYMC CFU/g",
+     "src": "corpus — verify on page · P050272, 1220-2171-25, 01.12.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "200"
+    },
+    {
+     "k": "Salmonella /25 g",
+     "src": "corpus — verify on page · P050272, 1220-2171-25, 01.12.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "Одговара"
+    },
+    {
+     "k": "E. coli /1 g",
+     "src": "corpus — verify on page · P050272, 1220-2171-25, 01.12.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "Одговара"
+    }
+   ]
+  },
+  "197-14-М/26": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "Aflatoxin B1 µg/kg",
+     "src": "corpus — verify on page · P050052, 197-14-M-26, 10.08.2026, FHM.pdf",
+     "t": "T3",
+     "v": "ND"
+    },
+    {
+     "k": "Ochratoxin A µg/kg",
+     "src": "corpus — verify on page · P050052, 197-14-M-26, 10.08.2026, FHM.pdf",
+     "t": "T3",
+     "v": "2.06"
+    }
+   ]
+  },
+  "197-6-К/26": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "Total Δ9-THC %",
+     "src": "corpus — verify on page · P060332, 197-6-K-26, 07.08.2026, FHM.pdf",
+     "t": "T3",
+     "v": "17.67"
+    },
+    {
+     "k": "Total CBD %",
+     "src": "corpus — verify on page · P060332, 197-6-K-26, 07.08.2026, FHM.pdf",
+     "t": "T3",
+     "v": "<LOQ"
+    },
+    {
+     "k": "Total CBN %",
+     "src": "corpus — verify on page · P060332, 197-6-K-26, 07.08.2026, FHM.pdf",
+     "t": "T3",
+     "v": "<LOQ"
+    }
+   ]
+  },
+  "197-7-К/26": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "Total Δ9-THC %",
+     "src": "corpus — verify on page · P060352, 197-7-K-26, 07.08.2026, FHM.pdf",
+     "t": "T3",
+     "v": "18.86"
+    },
+    {
+     "k": "Total CBD %",
+     "src": "corpus — verify on page · P060352, 197-7-K-26, 07.08.2026, FHM.pdf",
+     "t": "T3",
+     "v": "0.22"
+    },
+    {
+     "k": "Total CBN %",
+     "src": "corpus — verify on page · P060352, 197-7-K-26, 07.08.2026, FHM.pdf",
+     "t": "T3",
+     "v": "<LOQ"
+    }
+   ]
+  },
+  "320/0587/25": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "TAMC CFU/g",
+     "src": "corpus — verify on page · P050092, 320-0587-25, 14.04.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "5,1 х 10⁴"
+    },
+    {
+     "k": "TYMC CFU/g",
+     "src": "corpus — verify on page · P050092, 320-0587-25, 14.04.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "4,2 х 10³"
+    },
+    {
+     "k": "Bile-tolerant GNB CFU/g",
+     "src": "corpus — verify on page · P050092, 320-0587-25, 14.04.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "< 10"
+    },
+    {
+     "k": "Salmonella /25 g",
+     "src": "corpus — verify on page · P050092, 320-0587-25, 14.04.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "Одговара"
+    },
+    {
+     "k": "E. coli /1 g",
+     "src": "corpus — verify on page · P050092, 320-0587-25, 14.04.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "Одговара"
+    }
+   ]
+  },
+  "472/0863/25": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "TAMC CFU/g",
+     "src": "corpus — verify on page · P050012, 472-0863-25, 22.05.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "2,1 x 10⁴"
+    },
+    {
+     "k": "TYMC CFU/g",
+     "src": "corpus — verify on page · P050012, 472-0863-25, 22.05.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "1,9 x 10⁴"
+    },
+    {
+     "k": "Salmonella /25 g",
+     "src": "corpus — verify on page · P050012, 472-0863-25, 22.05.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "Одговара"
+    },
+    {
+     "k": "E. coli /1 g",
+     "src": "corpus — verify on page · P050012, 472-0863-25, 22.05.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "Одговара"
+    }
+   ]
+  },
+  "587/1066/25": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "TAMC CFU/g",
+     "src": "corpus — verify on page · P050052, 587-1066-25, 18.06.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "9,6 x 10³"
+    },
+    {
+     "k": "TYMC CFU/g",
+     "src": "corpus — verify on page · P050052, 587-1066-25, 18.06.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "1,5 x 10⁴"
+    },
+    {
+     "k": "Salmonella /25 g",
+     "src": "corpus — verify on page · P050052, 587-1066-25, 18.06.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "Одговара"
+    },
+    {
+     "k": "E. coli /1 g",
+     "src": "corpus — verify on page · P050052, 587-1066-25, 18.06.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "Одговара"
+    }
+   ]
+  },
+  "628/1129/25": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "TAMC CFU/g",
+     "src": "corpus — verify on page · P050072, 628-1129-25, 02.07.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "1,1 x 10^4"
+    },
+    {
+     "k": "TYMC CFU/g",
+     "src": "corpus — verify on page · P050072, 628-1129-25, 02.07.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "1,2 x 10^4"
+    },
+    {
+     "k": "Salmonella /25 g",
+     "src": "corpus — verify on page · P050072, 628-1129-25, 02.07.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "Одговара"
+    },
+    {
+     "k": "E. coli /1 g",
+     "src": "corpus — verify on page · P050072, 628-1129-25, 02.07.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "Одговара"
+    }
+   ]
+  },
+  "904/1589/25": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "TAMC CFU/g",
+     "src": "corpus — verify on page · P050132, 904-1589-25, 02.09.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "1,2 x 10⁴"
+    },
+    {
+     "k": "TYMC CFU/g",
+     "src": "corpus — verify on page · P050132, 904-1589-25, 02.09.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "3,3 x 10³"
+    },
+    {
+     "k": "Bile-tolerant GNB CFU/g",
+     "src": "corpus — verify on page · P050132, 904-1589-25, 02.09.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "< 10"
+    },
+    {
+     "k": "Salmonella /25 g",
+     "src": "corpus — verify on page · P050132, 904-1589-25, 02.09.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "Одговара"
+    },
+    {
+     "k": "E. coli /1 g",
+     "src": "corpus — verify on page · P050132, 904-1589-25, 02.09.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "Одговара"
+    }
+   ]
+  },
+  "946/1684/25": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "TAMC CFU/g",
+     "src": "corpus — verify on page · P050152, 946-1684-25, 17.09.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "2,1 x 10^4"
+    },
+    {
+     "k": "TYMC CFU/g",
+     "src": "corpus — verify on page · P050152, 946-1684-25, 17.09.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "3,6 x 10^4"
+    },
+    {
+     "k": "Salmonella /25 g",
+     "src": "corpus — verify on page · P050152, 946-1684-25, 17.09.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "Одговара"
+    },
+    {
+     "k": "E. coli /1 g",
+     "src": "corpus — verify on page · P050152, 946-1684-25, 17.09.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "Одговара"
+    }
+   ]
+  },
+  "948/1686/25": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "TAMC CFU/g",
+     "src": "corpus — verify on page · P050182, 948-1686-25, 17.09.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "2,7 x 10⁴"
+    },
+    {
+     "k": "TYMC CFU/g",
+     "src": "corpus — verify on page · P050182, 948-1686-25, 17.09.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "2,6 x 10⁴"
+    },
+    {
+     "k": "Salmonella /25 g",
+     "src": "corpus — verify on page · P050182, 948-1686-25, 17.09.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "Одговара"
+    },
+    {
+     "k": "E. coli /1 g",
+     "src": "corpus — verify on page · P050182, 948-1686-25, 17.09.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "Одговара"
+    }
+   ]
+  },
+  "949/1687/25": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "TAMC CFU/g",
+     "src": "corpus — verify on page · P050162, 949-1687-25, 17.09.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "2,8 x 10⁴"
+    },
+    {
+     "k": "TYMC CFU/g",
+     "src": "corpus — verify on page · P050162, 949-1687-25, 17.09.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "1,7 x 10⁴"
+    },
+    {
+     "k": "Salmonella /25 g",
+     "src": "corpus — verify on page · P050162, 949-1687-25, 17.09.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "Одговара"
+    },
+    {
+     "k": "E. coli /1 g",
+     "src": "corpus — verify on page · P050162, 949-1687-25, 17.09.2025, IJZ-MB.pdf",
+     "t": "T3",
+     "v": "Одговара"
+    }
+   ]
+  },
+  "In-house GC cross-check NGP/QCG/SOP-024": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "Total Δ9-THC %",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "20.39"
+    },
+    {
+     "k": "Total CBD %",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.11"
+    },
+    {
+     "k": "Total CBN %",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.01"
+    },
+    {
+     "k": "Loss on drying %",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "8.60"
+    },
+    {
+     "k": "Foreign matter",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "Ident B (microscopic)",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "TAMC CFU/g",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "200"
+    },
+    {
+     "k": "TYMC CFU/g",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "200"
+    },
+    {
+     "k": "Salmonella /25 g",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Absent"
+    },
+    {
+     "k": "E. coli /1 g",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Absent"
+    },
+    {
+     "k": "Aflatoxins Σ µg/kg",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    },
+    {
+     "k": "Pb mg/kg",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.024"
+    },
+    {
+     "k": "Cd mg/kg",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.004"
+    },
+    {
+     "k": "As mg/kg",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.025"
+    },
+    {
+     "k": "Hg mg/kg",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.0036"
+    }
+   ]
+  },
+  "In-house HPLC cross-check NPCCC/SCP-02, NGP/QCG/SOP-024": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "Total Δ9-THC %",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "24.89"
+    },
+    {
+     "k": "Total CBD %",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.17"
+    },
+    {
+     "k": "Loss on drying %",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "8.19"
+    },
+    {
+     "k": "Foreign matter",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "Ident B (microscopic)",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "Ident C (HPTLC)",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "TAMC CFU/g",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "600"
+    },
+    {
+     "k": "TYMC CFU/g",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "400"
+    },
+    {
+     "k": "Bile-tolerant GNB CFU/g",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "< 10"
+    },
+    {
+     "k": "Salmonella /25 g",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Absent"
+    },
+    {
+     "k": "E. coli /1 g",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Absent"
+    },
+    {
+     "k": "Aflatoxins Σ µg/kg",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "< 2"
+    },
+    {
+     "k": "Pb mg/kg",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.04"
+    },
+    {
+     "k": "Cd mg/kg",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.003"
+    },
+    {
+     "k": "As mg/kg",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.019"
+    },
+    {
+     "k": "Hg mg/kg",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.006"
+    },
+    {
+     "k": "Pesticides",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    }
+   ]
+  },
+  "PP CoA #016": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "Total Δ9-THC %",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "24.89"
+    },
+    {
+     "k": "Total CBD %",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.17"
+    },
+    {
+     "k": "Loss on drying %",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "8.19"
+    },
+    {
+     "k": "Foreign matter",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "Ident B (microscopic)",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "Ident C (HPTLC)",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "TAMC CFU/g",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "600"
+    },
+    {
+     "k": "TYMC CFU/g",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "400"
+    },
+    {
+     "k": "Bile-tolerant GNB CFU/g",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "< 10"
+    },
+    {
+     "k": "Salmonella /25 g",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Absent"
+    },
+    {
+     "k": "E. coli /1 g",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Absent"
+    },
+    {
+     "k": "Aflatoxins Σ µg/kg",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "< 2"
+    },
+    {
+     "k": "Pb mg/kg",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.04"
+    },
+    {
+     "k": "Cd mg/kg",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.003"
+    },
+    {
+     "k": "As mg/kg",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.019"
+    },
+    {
+     "k": "Hg mg/kg",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.006"
+    },
+    {
+     "k": "Pesticides",
+     "src": "corpus — verify on page · P050202, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050202 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    }
+   ]
+  },
+  "PP CoA #017": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "Total Δ9-THC %",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "20.39"
+    },
+    {
+     "k": "Total CBD %",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.11"
+    },
+    {
+     "k": "Total CBN %",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.01"
+    },
+    {
+     "k": "Loss on drying %",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "8.60"
+    },
+    {
+     "k": "Foreign matter",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "Ident B (microscopic)",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "TAMC CFU/g",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "200"
+    },
+    {
+     "k": "TYMC CFU/g",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "200"
+    },
+    {
+     "k": "Salmonella /25 g",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Absent"
+    },
+    {
+     "k": "E. coli /1 g",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Absent"
+    },
+    {
+     "k": "Aflatoxins Σ µg/kg",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    },
+    {
+     "k": "Pb mg/kg",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.024"
+    },
+    {
+     "k": "Cd mg/kg",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.004"
+    },
+    {
+     "k": "As mg/kg",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.025"
+    },
+    {
+     "k": "Hg mg/kg",
+     "src": "corpus — verify on page · P050192, QCCoA 001v02, 04.12.2025, PP.pdf · matched via batch P050192 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.0036"
+    }
+   ]
+  },
+  "PP CoA #026": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "Total Δ9-THC %",
+     "src": "corpus — verify on page · P050272_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050272 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "10.01"
+    },
+    {
+     "k": "Total CBD %",
+     "src": "corpus — verify on page · P050272_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050272 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.04"
+    },
+    {
+     "k": "Total CBN %",
+     "src": "corpus — verify on page · P050272_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050272 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D"
+    },
+    {
+     "k": "Loss on drying %",
+     "src": "corpus — verify on page · P050272_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050272 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "9.52"
+    },
+    {
+     "k": "Foreign matter",
+     "src": "corpus — verify on page · P050272_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050272 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "Ident B (microscopic)",
+     "src": "corpus — verify on page · P050272_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050272 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "Ident C (HPTLC)",
+     "src": "corpus — verify on page · P050272_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050272 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "TAMC CFU/g",
+     "src": "corpus — verify on page · P050272_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050272 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "110"
+    },
+    {
+     "k": "TYMC CFU/g",
+     "src": "corpus — verify on page · P050272_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050272 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "200"
+    },
+    {
+     "k": "Bile-tolerant GNB CFU/g",
+     "src": "corpus — verify on page · P050272_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050272 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "<10"
+    },
+    {
+     "k": "Salmonella /25 g",
+     "src": "corpus — verify on page · P050272_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050272 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Absent"
+    },
+    {
+     "k": "E. coli /1 g",
+     "src": "corpus — verify on page · P050272_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050272 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Absent"
+    },
+    {
+     "k": "Aflatoxins Σ µg/kg",
+     "src": "corpus — verify on page · P050272_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050272 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "<2"
+    },
+    {
+     "k": "Pb mg/kg",
+     "src": "corpus — verify on page · P050272_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050272 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.021"
+    },
+    {
+     "k": "Cd mg/kg",
+     "src": "corpus — verify on page · P050272_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050272 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.001"
+    },
+    {
+     "k": "As mg/kg",
+     "src": "corpus — verify on page · P050272_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050272 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.012"
+    },
+    {
+     "k": "Hg mg/kg",
+     "src": "corpus — verify on page · P050272_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050272 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.003"
+    },
+    {
+     "k": "Pesticides",
+     "src": "corpus — verify on page · P050272_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050272 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    }
+   ]
+  },
+  "PP CoA #028": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "Total Δ9-THC %",
+     "src": "corpus — verify on page · P050212_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050212 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "16.56"
+    },
+    {
+     "k": "Total CBD %",
+     "src": "corpus — verify on page · P050212_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050212 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.14"
+    },
+    {
+     "k": "Loss on drying %",
+     "src": "corpus — verify on page · P050212_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050212 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "6.70"
+    },
+    {
+     "k": "Foreign matter",
+     "src": "corpus — verify on page · P050212_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050212 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "TAMC CFU/g",
+     "src": "corpus — verify on page · P050212_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050212 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "2.2 x 10^4"
+    },
+    {
+     "k": "TYMC CFU/g",
+     "src": "corpus — verify on page · P050212_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050212 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "4.9 x 10^4"
+    },
+    {
+     "k": "Salmonella /25 g",
+     "src": "corpus — verify on page · P050212_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050212 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Absent"
+    },
+    {
+     "k": "E. coli /1 g",
+     "src": "corpus — verify on page · P050212_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050212 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "To be absent"
+    },
+    {
+     "k": "Aflatoxins Σ µg/kg",
+     "src": "corpus — verify on page · P050212_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050212 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "< 2 μg/kg"
+    },
+    {
+     "k": "Pb mg/kg",
+     "src": "corpus — verify on page · P050212_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050212 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.026"
+    },
+    {
+     "k": "Cd mg/kg",
+     "src": "corpus — verify on page · P050212_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050212 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.002"
+    },
+    {
+     "k": "As mg/kg",
+     "src": "corpus — verify on page · P050212_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050212 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.011"
+    },
+    {
+     "k": "Hg mg/kg",
+     "src": "corpus — verify on page · P050212_QCCoA 001v02, 21.01.2026_PP.pdf · matched via batch P050212 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.012"
+    }
+   ]
+  },
+  "PP CoA #033": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "Total Δ9-THC %",
+     "src": "corpus — verify on page · P060092_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060092 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "25.73"
+    },
+    {
+     "k": "Total CBD %",
+     "src": "corpus — verify on page · P060092_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060092 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.11"
+    },
+    {
+     "k": "Total CBN %",
+     "src": "corpus — verify on page · P060092_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060092 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.02"
+    },
+    {
+     "k": "Loss on drying %",
+     "src": "corpus — verify on page · P060092_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060092 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "6.91"
+    },
+    {
+     "k": "Foreign matter",
+     "src": "corpus — verify on page · P060092_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060092 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "Ident B (microscopic)",
+     "src": "corpus — verify on page · P060092_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060092 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "Ident C (HPTLC)",
+     "src": "corpus — verify on page · P060092_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060092 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "TAMC CFU/g",
+     "src": "corpus — verify on page · P060092_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060092 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "1x10^2"
+    },
+    {
+     "k": "TYMC CFU/g",
+     "src": "corpus — verify on page · P060092_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060092 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "<10"
+    },
+    {
+     "k": "Bile-tolerant GNB CFU/g",
+     "src": "corpus — verify on page · P060092_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060092 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "<10"
+    },
+    {
+     "k": "Salmonella /25 g",
+     "src": "corpus — verify on page · P060092_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060092 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Absent"
+    },
+    {
+     "k": "E. coli /1 g",
+     "src": "corpus — verify on page · P060092_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060092 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Absent"
+    },
+    {
+     "k": "Aflatoxins Σ µg/kg",
+     "src": "corpus — verify on page · P060092_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060092 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "<2"
+    },
+    {
+     "k": "Aflatoxin B1 µg/kg",
+     "src": "corpus — verify on page · P060092_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060092 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    },
+    {
+     "k": "Pb mg/kg",
+     "src": "corpus — verify on page · P060092_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060092 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.022"
+    },
+    {
+     "k": "Cd mg/kg",
+     "src": "corpus — verify on page · P060092_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060092 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    },
+    {
+     "k": "As mg/kg",
+     "src": "corpus — verify on page · P060092_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060092 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    },
+    {
+     "k": "Hg mg/kg",
+     "src": "corpus — verify on page · P060092_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060092 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.007"
+    },
+    {
+     "k": "Pesticides",
+     "src": "corpus — verify on page · P060092_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060092 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    }
+   ]
+  },
+  "PP CoA #034": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "Total Δ9-THC %",
+     "src": "corpus — verify on page · P060032_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060032 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "20.84"
+    },
+    {
+     "k": "Total CBD %",
+     "src": "corpus — verify on page · P060032_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060032 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.08"
+    },
+    {
+     "k": "Loss on drying %",
+     "src": "corpus — verify on page · P060032_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060032 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "7.37"
+    },
+    {
+     "k": "Foreign matter",
+     "src": "corpus — verify on page · P060032_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060032 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "Ident C (HPTLC)",
+     "src": "corpus — verify on page · P060032_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060032 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "TAMC CFU/g",
+     "src": "corpus — verify on page · P060032_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060032 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "9.5 x10²"
+    },
+    {
+     "k": "TYMC CFU/g",
+     "src": "corpus — verify on page · P060032_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060032 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "1.2 x10³"
+    },
+    {
+     "k": "Bile-tolerant GNB CFU/g",
+     "src": "corpus — verify on page · P060032_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060032 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "<10"
+    },
+    {
+     "k": "Salmonella /25 g",
+     "src": "corpus — verify on page · P060032_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060032 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Absent"
+    },
+    {
+     "k": "E. coli /1 g",
+     "src": "corpus — verify on page · P060032_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060032 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Absent"
+    },
+    {
+     "k": "Aflatoxins Σ µg/kg",
+     "src": "corpus — verify on page · P060032_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060032 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "<2"
+    },
+    {
+     "k": "Pb mg/kg",
+     "src": "corpus — verify on page · P060032_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060032 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.073"
+    },
+    {
+     "k": "Cd mg/kg",
+     "src": "corpus — verify on page · P060032_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060032 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    },
+    {
+     "k": "As mg/kg",
+     "src": "corpus — verify on page · P060032_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060032 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    },
+    {
+     "k": "Hg mg/kg",
+     "src": "corpus — verify on page · P060032_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060032 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    },
+    {
+     "k": "Pesticides",
+     "src": "corpus — verify on page · P060032_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060032 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    }
+   ]
+  },
+  "PP CoA #035": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "Total Δ9-THC %",
+     "src": "corpus — verify on page · P060012_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060012 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "21.67"
+    },
+    {
+     "k": "Total CBD %",
+     "src": "corpus — verify on page · P060012_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060012 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.08"
+    },
+    {
+     "k": "Total CBN %",
+     "src": "corpus — verify on page · P060012_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060012 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.02"
+    },
+    {
+     "k": "Loss on drying %",
+     "src": "corpus — verify on page · P060012_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060012 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "7.50"
+    },
+    {
+     "k": "Foreign matter",
+     "src": "corpus — verify on page · P060012_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060012 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "Ident B (microscopic)",
+     "src": "corpus — verify on page · P060012_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060012 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "Ident C (HPTLC)",
+     "src": "corpus — verify on page · P060012_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060012 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "TAMC CFU/g",
+     "src": "corpus — verify on page · P060012_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060012 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "10"
+    },
+    {
+     "k": "TYMC CFU/g",
+     "src": "corpus — verify on page · P060012_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060012 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "30"
+    },
+    {
+     "k": "Bile-tolerant GNB CFU/g",
+     "src": "corpus — verify on page · P060012_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060012 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Absent"
+    },
+    {
+     "k": "Salmonella /25 g",
+     "src": "corpus — verify on page · P060012_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060012 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "To be absent"
+    },
+    {
+     "k": "E. coli /1 g",
+     "src": "corpus — verify on page · P060012_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060012 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "To be absent"
+    },
+    {
+     "k": "Aflatoxins Σ µg/kg",
+     "src": "corpus — verify on page · P060012_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060012 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "< 2"
+    },
+    {
+     "k": "Pb mg/kg",
+     "src": "corpus — verify on page · P060012_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060012 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    },
+    {
+     "k": "Cd mg/kg",
+     "src": "corpus — verify on page · P060012_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060012 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    },
+    {
+     "k": "As mg/kg",
+     "src": "corpus — verify on page · P060012_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060012 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    },
+    {
+     "k": "Hg mg/kg",
+     "src": "corpus — verify on page · P060012_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060012 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    },
+    {
+     "k": "Pesticides",
+     "src": "corpus — verify on page · P060012_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060012 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    }
+   ]
+  },
+  "PP CoA #036": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "Total Δ9-THC %",
+     "src": "corpus — verify on page · P060062_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060062 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "14.06"
+    },
+    {
+     "k": "Total CBD %",
+     "src": "corpus — verify on page · P060062_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060062 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.05"
+    },
+    {
+     "k": "Total CBN %",
+     "src": "corpus — verify on page · P060062_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060062 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "BLQ"
+    },
+    {
+     "k": "Loss on drying %",
+     "src": "corpus — verify on page · P060062_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060062 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "7.97"
+    },
+    {
+     "k": "Foreign matter",
+     "src": "corpus — verify on page · P060062_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060062 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "Ident B (microscopic)",
+     "src": "corpus — verify on page · P060062_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060062 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "Ident C (HPTLC)",
+     "src": "corpus — verify on page · P060062_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060062 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "TAMC CFU/g",
+     "src": "corpus — verify on page · P060062_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060062 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "2 x 10³"
+    },
+    {
+     "k": "TYMC CFU/g",
+     "src": "corpus — verify on page · P060062_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060062 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "2.2 x 10³"
+    },
+    {
+     "k": "Bile-tolerant GNB CFU/g",
+     "src": "corpus — verify on page · P060062_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060062 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "< 10"
+    },
+    {
+     "k": "Salmonella /25 g",
+     "src": "corpus — verify on page · P060062_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060062 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Absent"
+    },
+    {
+     "k": "E. coli /1 g",
+     "src": "corpus — verify on page · P060062_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060062 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Absent"
+    },
+    {
+     "k": "Aflatoxins Σ µg/kg",
+     "src": "corpus — verify on page · P060062_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060062 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "< 2"
+    },
+    {
+     "k": "Pb mg/kg",
+     "src": "corpus — verify on page · P060062_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060062 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.03"
+    },
+    {
+     "k": "Cd mg/kg",
+     "src": "corpus — verify on page · P060062_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060062 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    },
+    {
+     "k": "As mg/kg",
+     "src": "corpus — verify on page · P060062_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060062 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    },
+    {
+     "k": "Hg mg/kg",
+     "src": "corpus — verify on page · P060062_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060062 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    },
+    {
+     "k": "Pesticides",
+     "src": "corpus — verify on page · P060062_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060062 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    }
+   ]
+  },
+  "PP CoA #037": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "Total Δ9-THC %",
+     "src": "corpus — verify on page · P060052_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060052 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "16.93"
+    },
+    {
+     "k": "Total CBD %",
+     "src": "corpus — verify on page · P060052_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060052 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.07"
+    },
+    {
+     "k": "Total CBN %",
+     "src": "corpus — verify on page · P060052_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060052 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    },
+    {
+     "k": "Loss on drying %",
+     "src": "corpus — verify on page · P060052_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060052 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "6.77"
+    },
+    {
+     "k": "Foreign matter",
+     "src": "corpus — verify on page · P060052_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060052 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "Ident B (microscopic)",
+     "src": "corpus — verify on page · P060052_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060052 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "Ident C (HPTLC)",
+     "src": "corpus — verify on page · P060052_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060052 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "TAMC CFU/g",
+     "src": "corpus — verify on page · P060052_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060052 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "<10 CFU/g"
+    },
+    {
+     "k": "TYMC CFU/g",
+     "src": "corpus — verify on page · P060052_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060052 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "<10 CFU/g"
+    },
+    {
+     "k": "Bile-tolerant GNB CFU/g",
+     "src": "corpus — verify on page · P060052_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060052 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "<10 CFU/g"
+    },
+    {
+     "k": "Salmonella /25 g",
+     "src": "corpus — verify on page · P060052_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060052 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Absent"
+    },
+    {
+     "k": "E. coli /1 g",
+     "src": "corpus — verify on page · P060052_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060052 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Absent"
+    },
+    {
+     "k": "Aflatoxins Σ µg/kg",
+     "src": "corpus — verify on page · P060052_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060052 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "<2 μg/kg"
+    },
+    {
+     "k": "Pb mg/kg",
+     "src": "corpus — verify on page · P060052_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060052 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.05"
+    },
+    {
+     "k": "Cd mg/kg",
+     "src": "corpus — verify on page · P060052_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060052 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    },
+    {
+     "k": "As mg/kg",
+     "src": "corpus — verify on page · P060052_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060052 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    },
+    {
+     "k": "Hg mg/kg",
+     "src": "corpus — verify on page · P060052_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060052 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.003"
+    },
+    {
+     "k": "Pesticides",
+     "src": "corpus — verify on page · P060052_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060052 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    }
+   ]
+  },
+  "PP CoA #038": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "Total Δ9-THC %",
+     "src": "corpus — verify on page · P060082_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060082 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "10.96"
+    },
+    {
+     "k": "Total CBD %",
+     "src": "corpus — verify on page · P060082_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060082 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.07"
+    },
+    {
+     "k": "Total CBN %",
+     "src": "corpus — verify on page · P060082_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060082 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "BLQ"
+    },
+    {
+     "k": "Loss on drying %",
+     "src": "corpus — verify on page · P060082_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060082 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "8.68"
+    },
+    {
+     "k": "Foreign matter",
+     "src": "corpus — verify on page · P060082_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060082 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "Ident B (microscopic)",
+     "src": "corpus — verify on page · P060082_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060082 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "Ident C (HPTLC)",
+     "src": "corpus — verify on page · P060082_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060082 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "TAMC CFU/g",
+     "src": "corpus — verify on page · P060082_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060082 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "<10"
+    },
+    {
+     "k": "TYMC CFU/g",
+     "src": "corpus — verify on page · P060082_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060082 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "<10"
+    },
+    {
+     "k": "Bile-tolerant GNB CFU/g",
+     "src": "corpus — verify on page · P060082_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060082 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "<10"
+    },
+    {
+     "k": "Salmonella /25 g",
+     "src": "corpus — verify on page · P060082_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060082 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Absent"
+    },
+    {
+     "k": "E. coli /1 g",
+     "src": "corpus — verify on page · P060082_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060082 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Absent"
+    },
+    {
+     "k": "Aflatoxins Σ µg/kg",
+     "src": "corpus — verify on page · P060082_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060082 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "2"
+    },
+    {
+     "k": "Pb mg/kg",
+     "src": "corpus — verify on page · P060082_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060082 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.08"
+    },
+    {
+     "k": "Cd mg/kg",
+     "src": "corpus — verify on page · P060082_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060082 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    },
+    {
+     "k": "As mg/kg",
+     "src": "corpus — verify on page · P060082_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060082 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    },
+    {
+     "k": "Hg mg/kg",
+     "src": "corpus — verify on page · P060082_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060082 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.003"
+    },
+    {
+     "k": "Pesticides",
+     "src": "corpus — verify on page · P060082_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060082 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    }
+   ]
+  },
+  "PP CoA #039": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "Total Δ9-THC %",
+     "src": "corpus — verify on page · P060072_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060072 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "22.30"
+    },
+    {
+     "k": "Total CBD %",
+     "src": "corpus — verify on page · P060072_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060072 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.10"
+    },
+    {
+     "k": "Total CBN %",
+     "src": "corpus — verify on page · P060072_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060072 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    },
+    {
+     "k": "Loss on drying %",
+     "src": "corpus — verify on page · P060072_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060072 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "7.64"
+    },
+    {
+     "k": "Foreign matter",
+     "src": "corpus — verify on page · P060072_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060072 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "TAMC CFU/g",
+     "src": "corpus — verify on page · P060072_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060072 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "< 10"
+    },
+    {
+     "k": "TYMC CFU/g",
+     "src": "corpus — verify on page · P060072_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060072 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "< 10"
+    },
+    {
+     "k": "Salmonella /25 g",
+     "src": "corpus — verify on page · P060072_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060072 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Absent"
+    },
+    {
+     "k": "E. coli /1 g",
+     "src": "corpus — verify on page · P060072_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060072 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Absent"
+    },
+    {
+     "k": "Aflatoxins Σ µg/kg",
+     "src": "corpus — verify on page · P060072_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060072 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "< 2"
+    },
+    {
+     "k": "Pb mg/kg",
+     "src": "corpus — verify on page · P060072_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060072 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.04"
+    },
+    {
+     "k": "Hg mg/kg",
+     "src": "corpus — verify on page · P060072_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060072 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.004"
+    }
+   ]
+  },
+  "PP CoA #040": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "Total Δ9-THC %",
+     "src": "corpus — verify on page · P060042_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060042 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "9.43"
+    },
+    {
+     "k": "Total CBD %",
+     "src": "corpus — verify on page · P060042_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060042 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.04"
+    },
+    {
+     "k": "Total CBN %",
+     "src": "corpus — verify on page · P060042_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060042 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    },
+    {
+     "k": "Loss on drying %",
+     "src": "corpus — verify on page · P060042_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060042 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "7.85"
+    },
+    {
+     "k": "Foreign matter",
+     "src": "corpus — verify on page · P060042_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060042 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "TAMC CFU/g",
+     "src": "corpus — verify on page · P060042_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060042 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "10"
+    },
+    {
+     "k": "TYMC CFU/g",
+     "src": "corpus — verify on page · P060042_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060042 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "10"
+    },
+    {
+     "k": "Salmonella /25 g",
+     "src": "corpus — verify on page · P060042_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060042 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Absent"
+    },
+    {
+     "k": "E. coli /1 g",
+     "src": "corpus — verify on page · P060042_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060042 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Absent"
+    },
+    {
+     "k": "Aflatoxins Σ µg/kg",
+     "src": "corpus — verify on page · P060042_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060042 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "2.2"
+    },
+    {
+     "k": "Pb mg/kg",
+     "src": "corpus — verify on page · P060042_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060042 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.022"
+    }
+   ]
+  },
+  "PP CoA #041": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "Total Δ9-THC %",
+     "src": "corpus — verify on page · P060022_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060022 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "24.96"
+    },
+    {
+     "k": "Total CBD %",
+     "src": "corpus — verify on page · P060022_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060022 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.09"
+    },
+    {
+     "k": "Total CBN %",
+     "src": "corpus — verify on page · P060022_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060022 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.02"
+    },
+    {
+     "k": "Loss on drying %",
+     "src": "corpus — verify on page · P060022_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060022 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "7.21"
+    },
+    {
+     "k": "Foreign matter",
+     "src": "corpus — verify on page · P060022_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060022 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "Ident B (microscopic)",
+     "src": "corpus — verify on page · P060022_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060022 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "Ident C (HPTLC)",
+     "src": "corpus — verify on page · P060022_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060022 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Confirms"
+    },
+    {
+     "k": "TAMC CFU/g",
+     "src": "corpus — verify on page · P060022_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060022 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "1.5x10²"
+    },
+    {
+     "k": "TYMC CFU/g",
+     "src": "corpus — verify on page · P060022_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060022 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "1.3x10²"
+    },
+    {
+     "k": "Bile-tolerant GNB CFU/g",
+     "src": "corpus — verify on page · P060022_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060022 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "<10"
+    },
+    {
+     "k": "Salmonella /25 g",
+     "src": "corpus — verify on page · P060022_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060022 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Absent"
+    },
+    {
+     "k": "E. coli /1 g",
+     "src": "corpus — verify on page · P060022_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060022 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "Absent"
+    },
+    {
+     "k": "Aflatoxins Σ µg/kg",
+     "src": "corpus — verify on page · P060022_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060022 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "< 2"
+    },
+    {
+     "k": "Pb mg/kg",
+     "src": "corpus — verify on page · P060022_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060022 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "0.075"
+    },
+    {
+     "k": "Cd mg/kg",
+     "src": "corpus — verify on page · P060022_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060022 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    },
+    {
+     "k": "As mg/kg",
+     "src": "corpus — verify on page · P060022_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060022 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    },
+    {
+     "k": "Hg mg/kg",
+     "src": "corpus — verify on page · P060022_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060022 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    },
+    {
+     "k": "Pesticides",
+     "src": "corpus — verify on page · P060022_QCCoA 001v02, 20.02.2026_PP.pdf · matched via batch P060022 (its in-house QCCoA)",
+     "t": "T3",
+     "v": "N.D."
+    }
+   ]
+  },
+  "ППК25154": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "Total Δ9-THC %",
+     "src": "corpus — verify on page · P050062, ППК25154, 24.06.2025, CNP.pdf",
+     "t": "T3",
+     "v": "1.87"
+    },
+    {
+     "k": "Total CBN %",
+     "src": "corpus — verify on page · P050062, ППК25154, 24.06.2025, CNP.pdf",
+     "t": "T3",
+     "v": "0.02"
+    },
+    {
+     "k": "Loss on drying %",
+     "src": "corpus — verify on page · P050062, ППК25154, 24.06.2025, CNP.pdf",
+     "t": "T3",
+     "v": "6.89"
+    }
+   ]
+  },
+  "ППК25155": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "Total Δ9-THC %",
+     "src": "corpus — verify on page · P050052, ППК25155, 24.06.2025, CNP.pdf",
+     "t": "T3",
+     "v": "22.43"
+    },
+    {
+     "k": "Total CBD %",
+     "src": "corpus — verify on page · P050052, ППК25155, 24.06.2025, CNP.pdf",
+     "t": "T3",
+     "v": "0.10"
+    },
+    {
+     "k": "Total CBN %",
+     "src": "corpus — verify on page · P050052, ППК25155, 24.06.2025, CNP.pdf",
+     "t": "T3",
+     "v": "0.02"
+    },
+    {
+     "k": "Loss on drying %",
+     "src": "corpus — verify on page · P050052, ППК25155, 24.06.2025, CNP.pdf",
+     "t": "T3",
+     "v": "6.36"
+    }
+   ]
+  },
+  "ППК26033": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "Total Δ9-THC %",
+     "src": "corpus — verify on page · P050022, ППК26033, 05.03.2026, CNP.pdf",
+     "t": "T3",
+     "v": "13.16"
+    },
+    {
+     "k": "Total CBN %",
+     "src": "corpus — verify on page · P050022, ППК26033, 05.03.2026, CNP.pdf",
+     "t": "T3",
+     "v": "2.35"
+    },
+    {
+     "k": "Loss on drying %",
+     "src": "corpus — verify on page · P050022, ППК26033, 05.03.2026, CNP.pdf",
+     "t": "T3",
+     "v": "5.84"
+    }
+   ]
+  },
+  "ППК26035": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "Total Δ9-THC %",
+     "src": "corpus — verify on page · P050072, ППК26035, 05.03.2026, CNP.pdf",
+     "t": "T3",
+     "v": "14.99"
+    },
+    {
+     "k": "Total CBN %",
+     "src": "corpus — verify on page · P050072, ППК26035, 05.03.2026, CNP.pdf",
+     "t": "T3",
+     "v": "2.15"
+    },
+    {
+     "k": "Loss on drying %",
+     "src": "corpus — verify on page · P050072, ППК26035, 05.03.2026, CNP.pdf",
+     "t": "T3",
+     "v": "5.52"
+    }
+   ]
+  },
+  "ППК26037": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "Total Δ9-THC %",
+     "src": "corpus — verify on page · P050202, ППК26037, 05.03.2026, CNP.pdf",
+     "t": "T3",
+     "v": "18.62"
+    },
+    {
+     "k": "Total CBD %",
+     "src": "corpus — verify on page · P050202, ППК26037, 05.03.2026, CNP.pdf",
+     "t": "T3",
+     "v": "0.05"
+    },
+    {
+     "k": "Total CBN %",
+     "src": "corpus — verify on page · P050202, ППК26037, 05.03.2026, CNP.pdf",
+     "t": "T3",
+     "v": "0.19"
+    },
+    {
+     "k": "Loss on drying %",
+     "src": "corpus — verify on page · P050202, ППК26037, 05.03.2026, CNP.pdf",
+     "t": "T3",
+     "v": "5.38"
+    }
+   ]
+  },
+  "ППК26058": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "Total Δ9-THC %",
+     "src": "corpus — verify on page · P050202, ППК26058, 11.05.2026, CNP.pdf",
+     "t": "T3",
+     "v": "17.05"
+    },
+    {
+     "k": "Total CBN %",
+     "src": "corpus — verify on page · P050202, ППК26058, 11.05.2026, CNP.pdf",
+     "t": "T3",
+     "v": "2.05"
+    },
+    {
+     "k": "Loss on drying %",
+     "src": "corpus — verify on page · P050202, ППК26058, 11.05.2026, CNP.pdf",
+     "t": "T3",
+     "v": "6.60"
+    }
+   ]
+  },
+  "ППК26127": {
+   "note": "corpus-derived — the page wins on any disagreement; promote through the remediation desk after opening the scan",
+   "params": [
+    {
+     "k": "Total Δ9-THC %",
+     "src": "corpus — verify on page · FB032601, ППК26127, 21.07.2026, CNP.pdf",
+     "t": "T3",
+     "v": "12.39"
+    },
+    {
+     "k": "Total CBD %",
+     "src": "corpus — verify on page · FB032601, ППК26127, 21.07.2026, CNP.pdf",
+     "t": "T3",
+     "v": "0.06"
+    },
+    {
+     "k": "Total CBN %",
+     "src": "corpus — verify on page · FB032601, ППК26127, 21.07.2026, CNP.pdf",
+     "t": "T3",
+     "v": "0.04"
+    },
+    {
+     "k": "Loss on drying %",
+     "src": "corpus — verify on page · FB032601, ППК26127, 21.07.2026, CNP.pdf",
+     "t": "T3",
+     "v": "7.77"
+    },
+    {
+     "k": "Foreign matter",
+     "src": "corpus — verify on page · FB032601, ППК26127, 21.07.2026, CNP.pdf",
+     "t": "T3",
+     "v": "0.08"
+    },
+    {
+     "k": "Ident B (microscopic)",
+     "src": "corpus — verify on page · FB032601, ППК26127, 21.07.2026, CNP.pdf",
+     "t": "T3",
+     "v": "Одговара"
+    }
+   ]
+  }
+ },
+ "farmahem_register_vs_page": [],
+ "generated": "31.08.2026",
+ "method": "T1 page reads carried by the exporter; this file adds the corpus tiers for entries the page campaign does not cover",
+ "no_corpus": [],
+ "spec_shape_skipped": []
+}

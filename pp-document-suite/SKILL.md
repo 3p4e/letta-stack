@@ -18,11 +18,18 @@ One skill for the whole Purely Plant document lifecycle. It merges four legacy s
 
 Plus a third capability: **format any already-drafted text/document** into the Purely Plant house style (auto-detecting SOP vs Annex).
 
-> **Engine note.** The legacy skills generated .docx with Node `docx-js`. This unified skill standardizes on **python-docx** + Microsoft Word COM (or `soffice`) for rendering — the toolchain already proven in this environment. Scripts: `scripts/pp_format.py` (SOP/annex shells), `scripts/pp_report.py` (reports/records: native equations, worked calcs, forms — §3.7), `scripts/pp_charts.py` (figures — §3.6), `scripts/pp_theme.py` (canonical colour/type tokens — one house navy `#2B547E`), `scripts/pp_verify.py` (pre-delivery QC gate — §6), `scripts/render_pdf.ps1` (Word-COM PDF).
+> **Engine note.** The legacy skills generated .docx with Node `docx-js`. This unified skill standardizes on **python-docx** + Microsoft Word COM (or `soffice`) for rendering — the toolchain already proven in this environment. Scripts: `scripts/pp_format.py` (SOP/annex shells), `scripts/pp_report.py` (reports/records: native equations, worked calcs, forms — §3.7), `scripts/pp_charts.py` (figures — §3.6), `scripts/pp_theme.py` (canonical colour/type tokens — one house navy `#2B547E`), `scripts/pp_assets.py` (brand asset registry + glyph guard — logos, bundled verified fonts, `chart_style()`, `missing_glyphs()`/`audit_docx()`/`check_environment()`; see §6D), `scripts/pp_verify.py` (pre-delivery QC gate — §6, now glyph-audited via `pp_assets`), `scripts/render_pdf.ps1` (Word-COM PDF). Brand assets live in `assets/brand/` (wordmark) and `assets/fonts/` (bundled Carlito + Montserrat, full Cyrillic coverage — see §6D for why these are bundled rather than trusting the OS font cache).
 
 ---
 
 ## 0. MASTER ROUTER — decide before doing anything
+
+> **First time in a fresh container/session:** run `bash scripts/pp_setup_fonts.sh` once
+> before building anything. It installs the full Carlito/Montserrat font packages and
+> quarantines any subset webfont copies that would otherwise silently scramble Macedonian
+> text (see §6D). `pp_verify.py` re-checks this on every build regardless, so a stale
+> environment fails the gate instead of reaching the reader — but running the setup script
+> up front avoids the failure entirely.
 
 Resolve two axes, then act:
 
@@ -233,7 +240,51 @@ Content in = content out. The formatter changes **appearance only**. Zero tolera
 - [ ] **Equations:** every formula is a **native Word equation** (`eqn`/`calc_step`), not typed text or an image (reports/records).
 - [ ] **Render:** PDF generated and visually checked.
 - [ ] **References chapter** present with full citations (DOI / clause / page where applicable).
-- [ ] **Automated gate:** `python scripts/pp_verify.py <doc.docx> [--source <src.docx>]` → PASS (font floor ≥ 6 pt, bilingual MK+EN, and — with `--source` — fidelity word/char counts ≥ source per §5A).
+- [ ] **Automated gate:** `python scripts/pp_verify.py <doc.docx> [--source <src.docx>]` → PASS (font floor ≥ 6 pt, glyph coverage — every run's declared font can render its own text, render environment free of subset-font shadowing, bilingual MK+EN, and — with `--source` — fidelity word/char counts ≥ source per §5A).
+
+---
+
+## 6D. Brand assets, the glyph guard, and informal (non-QMS) documents — `scripts/pp_assets.py`
+
+**What broke once.** A delivered report rendered with Macedonian text scrambled into
+tofu boxes and wrong characters. Root cause: `~/.fonts` held *subset* webfont copies of
+Carlito (as few as 106 glyphs, no Cyrillic) alongside the full 2 117-glyph system Carlito,
+and fontconfig's substitution picked the subset for `Calibri`/`Carlito` runs — every
+Macedonian character in the document was asked of a font that did not have it. The
+document was correct; the render environment was not, and nothing checked for it.
+
+**The fix, structurally.** `pp_assets.py` is now the single place that knows which font
+file backs each house typeface, and it can prove — before delivery, not after — that a
+font covers the text it's asked to render:
+
+- `missing_glyphs(face, text)` — resolves `face` to the actual file the renderer will use
+  and returns the characters it cannot render (`""` = clean).
+- `audit_docx(path)` — walks every run in a built `.docx` (body + header + footer) and
+  checks its declared font against its own text.
+- `check_environment()` — detects the subset-webfont trap directly: any font under
+  `~/.fonts` or `~/.local/share/fonts` with a suspiciously small glyph count that could
+  shadow a full system face.
+- `logo()`, `font_file()`, `chart_style()` — the asset registry half: wordmark path,
+  bundled font file path, and matplotlib rcParams matching the house style, so a builder
+  never hard-codes a path.
+
+`pp_verify.py` calls all three glyph checks on every run — a font/script mismatch is now
+a **FAIL** on the pre-delivery gate, not something a reader discovers in the PDF. If you
+add a new bundled face to `assets/fonts/`, register it in `pp_assets.FACES` with its
+`aliases` (the names that appear in `.docx` runs) so the guard resolves it correctly.
+
+**Informal / non-QMS documents.** Not everything this engine builds is a controlled QMS
+record — working exports, informal management submissions (e.g. a weekly plan/report),
+and drafts-for-review carry no document code and no version, and must say so rather than
+borrow SOP/Annex document-control furniture they don't have:
+
+- `informal_header(d, title_mk, title_en, tag_mk=…, tag_en=…)` — header variant that
+  replaces the doc-code/version box with a plain bilingual tag (e.g. "Неформален работен
+  документ | Informal working document"). Use instead of `swap_header()` whenever the
+  document has no `QCxxx`/`PP-xxx` code.
+- `cover_page(..., controlled=False)` — swaps the "Контролиран документ | Controlled
+  document" footer line for an explicit "Informal working document — not a controlled
+  record" line. Pair with `informal_header()`, not `swap_header()`.
 
 ---
 
@@ -289,5 +340,31 @@ Status routing by method type (§6.4): compendial → §6.6 → VERIFIED (AMVP+A
 ## 7. Activation triggers
 Develop: "write/draft an SOP", "create an annex/form/log/checklist", "what should this SOP/annex include". Format: "format this SOP/annex", "make .docx", "apply Purely Plant template/house style". Report/record: "write a validation/verification report or protocol", "build a calculation/stability/trending report", "add native equations / worked calculations / execution forms / charts" → §3.7 `pp_report.py`. Restyle: "turn this draft into our format", "reformat into PP style". Not for: label population (use pp-bag-label-populator / pp-storage-release-labels). (AM validation/verification reports are now handled HERE via `pp_report.py`, replacing the legacy external `skill_helpers.py`.)
 
+## 8. Document-control lifecycle, header & annex layout (v1.7 update)
+
+**Document-control lifecycle (MANDATORY — every document: SOP, annex, report, certificate).** A document
+being edited is a **DRAFT** — not a controlled version, no effective date, revisable freely. Only when
+*concluded* is it submitted for review/approval; once **APPROVED** it becomes a controlled version (`vNN`)
+**with an effective date**. Any later change returns it to draft and repeats the cycle. The engine carries a
+`status` field (`draft` | `in_review` | `approved`, **default `draft`**): the controlled version and effective
+date render **only when approved**; drafts are stamped `РАБОТНА ВЕРЗИЈА — НЕ ЗА УПОТРЕБА | DRAFT — NOT FOR
+USE` (red) and show effective date `—`; approved shows a green `ОДОБРЕНО ЗА УПОТРЕБА | APPROVED FOR USE` band
+with the version + effective (+ review) date. Advance a document by editing **only** its HEADERDATA (`status`,
+and on approval `effective_date` / `review_date`) and rebuilding — never fabricate an approval or effective
+date. API: `pf.new_sop/new_annex(..., status=)`, `pf.sop_titlepage(..., status=, version=, effective_date=,
+review_date=)`, `pf.annex_title_block(..., status=, version=, effective_date=)`, `pr.cover_page(..., status=,
+version=, effective_date=)`; helpers `pf.header_version()`, `pf.effective_display()`, `pf.status_band()`.
+
+**Running header.** The document-name cell shows **only the title** (MK over EN); the document **code is not
+repeated there** — it lives in the right-hand `Code of document` cell. The **logo block** (leaf over wordmark)
+is centred horizontally + vertically in its cell (never overflowing) in `PP_BASE_TEMPLATE.docx`.
+
+**SOP sub-headers.** `sop_section_row` is level-aware: main `X.0` sections keep the 12 pt bold gray band;
+`X.Y` sub-sections render lighter (11 pt bold, **no fill**) — a nested SOP is not a wall of gray bands.
+
+**Intelligent form layout.** `build_from_md.py` `emit_form` packs short label|value fields to least height
+(`[[FORM:grid]]` content-aware greedy packing; default one-up with bulk values spanning full width). One navy
+only; the sanctioned accents (mint/cream/rose/amber) are reserved for semantic roles (e.g. the status band).
+
 ---
-**Purely Plant Document Suite v1.6.2** — covers the FULL QCSOP 009 record family (AMRRF · AMVP · AMVR · QCSOP009_A04 · AMSF · QCSOP009_A02 register · QCSOP009_A03 outsourced matrix · QCSOP009_A05 trigger form; §6C). Unifies pp-content-developer + pp-template-formatter + pp-annex-content-creator + pp-annex-formatter, and absorbs the method-validation report engine (`pp_report.py`: native equations, worked calculations, execution forms, charts, `eqn_cell` in-cell formulas, **cover page + TOC + per-step two-role sign-off**) for use by all QMS teams. House rules: cover (unnumbered, keeps the running header; number suppressed only on p.1) → TOC (p.2, **only where applicable** — SOPs/reports/protocols/long annexes; omitted on status forms & short checklists) → content; body justified, **no inter-paragraph space within a logical chunk** (space only at boundaries — titles, tables, chunk breaks via `gap()`), table cells centered; body MK 11 / EN 8, tables MK ≤10 / EN ≤8 (auto-split); **intelligent, use-aware column distribution** via `fixed()` (compact-centered for "label | value" summaries, full-width for data tables; ordinals minimal; Name/Date/Signature entry columns purpose-sized; **first row repeats on page breaks**); merged single-label summary rows via `hmerge()`; per-step two-role sign-off in protocols; **table design by information role** (conclusions→`databox`/`status_grid`; headline→prominent; supporting→compact; transitory→inline) with `status_grid()` compact checkbox grids; **native math in headers/results** (`mathcell` white-on-navy header equations, `eqn_result` emphasised conclusion equations); and a MANDATORY post-generation review (§6A) before delivery; **data-driven documents are built from a bound dataset as the single source of truth** — compute → inject → assert via `pp_data` (§6B), so reported figures can never drift from the data. Engines: `pp_format` · `pp_report` · `pp_data` · `pp_charts` · `pp_theme` · `pp_verify` (python-docx). Output: bilingual MK|EN controlled .docx + PDF.
+**Purely Plant Document Suite v1.7.0** — covers the FULL QCSOP 009 record family (AMRRF · AMVP · AMVR · QCSOP009_A04 · AMSF · QCSOP009_A02 register · QCSOP009_A03 outsourced matrix · QCSOP009_A05 trigger form; §6C). Unifies pp-content-developer + pp-template-formatter + pp-annex-content-creator + pp-annex-formatter, and absorbs the method-validation report engine (`pp_report.py`: native equations, worked calculations, execution forms, charts, `eqn_cell` in-cell formulas, **cover page + TOC + per-step two-role sign-off**) for use by all QMS teams. House rules: cover (unnumbered, keeps the running header; number suppressed only on p.1) → TOC (p.2, **only where applicable** — SOPs/reports/protocols/long annexes; omitted on status forms & short checklists) → content; body justified, **no inter-paragraph space within a logical chunk** (space only at boundaries — titles, tables, chunk breaks via `gap()`), table cells centered; body MK 11 / EN 8, tables MK ≤10 / EN ≤8 (auto-split); **intelligent, use-aware column distribution** via `fixed()` (compact-centered for "label | value" summaries, full-width for data tables; ordinals minimal; Name/Date/Signature entry columns purpose-sized; **first row repeats on page breaks**); merged single-label summary rows via `hmerge()`; per-step two-role sign-off in protocols; **table design by information role** (conclusions→`databox`/`status_grid`; headline→prominent; supporting→compact; transitory→inline) with `status_grid()` compact checkbox grids; **native math in headers/results** (`mathcell` white-on-navy header equations, `eqn_result` emphasised conclusion equations); and a MANDATORY post-generation review (§6A) before delivery; **data-driven documents are built from a bound dataset as the single source of truth** — compute → inject → assert via `pp_data` (§6B), so reported figures can never drift from the data. Engines: `pp_format` · `pp_report` · `pp_data` · `pp_charts` · `pp_theme` · `pp_verify` (python-docx). Output: bilingual MK|EN controlled .docx + PDF.

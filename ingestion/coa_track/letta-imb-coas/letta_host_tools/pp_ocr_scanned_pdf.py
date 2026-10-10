@@ -71,8 +71,9 @@ def pp_ocr_scanned_pdf(pdf_url: str, pdf_b64: str, pages: str, model: str, dpi: 
     return Cyrillic "ТНС" for the Latin "THC" the document actually prints, and that is an
     OCR artefact, not the document.
 
-    Output uses the same shape as the transcriptions already in ImB_QC_COAs, so a result
-    can be uploaded to the source directly:
+    Output uses the transcription shape established by the ImB_QC_COAs corpus
+    (that Letta source was retired 19.08.2026 — do not upload to a Letta source;
+    per server/runbooks/ingestion_policy.md the target is RAGFlow):
 
         [page 1]
         ...text...

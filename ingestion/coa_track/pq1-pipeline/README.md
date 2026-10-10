@@ -29,7 +29,6 @@ parsed samples (date, SL_CPH, doc_code, 19 params)
 | `build_pq1_deliverables.py` | Builds the populated PQ1 Plan/Report DOCX (based on Annex 07 template, with narrative analysis sections modeled on the GMP example) + the Quali Rezults XLSX (16 SLs × 9 dates × 19 parameters with OOS highlights). |
 | `build_xlsx.py` | Earlier raw long-format xlsx (one row per parameter per sample). Superseded by Quali Rezults format but retained for audit. |
 | `extend_defs.py` | Post-processor: adds 20 water/sampling-specific abbreviations to Table 1 (Definitions) of the PQ1 DOCX. |
-| `fix_c71.py` | One-shot fix: renamed 6 files in the Letta source (`...RO_C71_...` → `...RO_C171_...`) after CPH confirmed the C71 typo. |
 
 ## Inputs
 
@@ -53,12 +52,20 @@ sudo apt-get install -y poppler-utils  # for pdftotext
 
 Plus a Google Drive Service Account JSON with `drive.readonly` scope and access to the PQ1 folder.
 
-## Letta source target
+## Retrieval target — retired 29.08.2026
 
-```
-Source: source-dd320361-43a1-42c1-939a-66530dfab85e
-Name:   "PQ1 Water Testing Results Report"
-Server: https://mcp-letta.srv1231216.hstgr.cloud/mcp
-```
+These builders once fed the Letta source `PQ1 Water Testing Results Report`
+(`source-dd320361-…`). **It no longer exists**: all nine Letta sources were
+deleted 19.08.2026 on the owner's instruction, and
+`server/runbooks/ingestion_policy.md` sets the standing rule that no Letta
+source may be created or uploaded to. RAGFlow on KVM4 is the retrieval engine;
+re-ingestion of the WATER_TESTING folder is listed there as an open rebuild
+path.
 
-⚠ **Security note**: the Letta MCP endpoint is currently exposed publicly without authentication. Put it behind Cloudflare Access or a bearer-token requirement before further use.
+Removed with the source: `fix_c71.py`, a one-shot that renamed six files inside
+it (`…RO_C71_…` → `…RO_C171_…`) after CPH confirmed the typo. The correction is
+already reflected in the source PDFs and in every deliverable built since; the
+script only ever patched the Letta copy. Git history retains it.
+
+The scripts above are unaffected — they read the CPH PDFs and the DOCX
+templates directly and write deliverables to disk. None of them touch Letta.

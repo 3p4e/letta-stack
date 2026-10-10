@@ -1,0 +1,156 @@
+[
+ {
+  "scan": "031-3-K-26_WED102501.pdf",
+  "sha256": "3f99d1f6210f25d97dcc603f85d05d7508a9e30582c1b097b6777c4b9d38a39a",
+  "pages": 2,
+  "raw": "{\"batch_printed\":\"WED102501\",\"batch_canonical\":\"WED102501\",\"p_number\":\"CF-43/26\",\"strain\":\"Wedding Cake\",\"cert_code\":\"031-3-К/26\",\"date_of_issue\":\"10.02.2026\",\"date_of_sampling\":null,\"lab\":\"Фармахем Лабораторија за животна средина\",\"lab_department\":null,\"lab_address\":\"ул. „Шар Планина“ бр. 20, Скопје\",\"lab_accreditation\":\"ЛТ - 017\",\"lab_accreditation_body\":\"Институт за акредитација на Република Северна Македонија\",\"lab_standard\":\"МКС EN ISO/IEC 17025\",\"signatories\":[{\"name\":\"Димитар Гушески\",\"title\":\"дипл. инж. по биологија, одговорен соработник\"},{\"name\":\"Јулијана Димзова\",\"title\":\"дипл. инж. технолош., Шеф на Лабораторија за животна средина\"}],\"test_type\":\"unknown\",\"overall_conclusion\":null,\"accreditation_note\":null,\"parameters\":[{\"parameter\":\"total_cbd\",\"parameter_printed\":\"Вкупен Cannabidiol\",\"result_printed\":\"<LOQ**\",\"result_numeric\":null,\"unit\":\"w/w%\",\"operator\":\"<\",\"limit_printed\":null,\"limit_numeric\":null,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"ИР 7.2.1-47К (в.1) HPLC/DAD метод за идентификација и квантификација на канабиноиди во цвет (CBDA, CBD, CBN, CBNA, Δ9-THC, THCA-A) Европска фармакопеја Цвет од канабис (3028) - акредитирана метода согласно МКС EN ISO 17025:2018\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"covered_by\":null,\"method_accredited\":true},{\"parameter\":\"total_cbn\",\"parameter_printed\":\"Вкупен Cannabinol\",\"result_printed\":\"<LOQ**\",\"result_numeric\":null,\"unit\":\"w/w%\",\"operator\":\"<\",\"limit_printed\":null,\"limit_numeric\":null,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"ИР 7.2.1-47К (в.1) HPLC/DAD метод за идентификација и квантификација на канабиноиди во цвет (CBDA, CBD, CBN, CBNA, Δ9-THC, THCA-A) Европска фармакопеја Цвет од канабис (3028) - акредитирана метода согласно МКС EN ISO 17025:2018\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"covered_by\":null,\"method_accredited\":true},{\"parameter\":\"total_thc\",\"parameter_printed\":\"Вкупно Δ9-Tetrahydrocannabinol\",\"result_printed\":\"22.05\",\"result_numeric\":22.05,\"unit\":\"w/w%\",\"operator\":null,\"limit_printed\":null,\"limit_numeric\":null,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"ИР 7.2.1-47К (в.1) HPLC/DAD метод за идентификација и квантификација на канабиноиди во цвет (CBDA, CBD, CBN, CBNA, Δ9-THC, THCA-A) Европска фармакопеја Цвет од канабис (3028) - акредитирана метода согласно МКС EN ISO 17025:2018\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"covered_by\":null,\"method_accredited\":true}]}",
+  "usage": {
+   "prompt_tokens": 4167,
+   "completion_tokens": 6255,
+   "total_tokens": 10422,
+   "prompt_tokens_details": {
+    "cached_tokens": 2304,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 5440,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   },
+   "cost_usd": 0.0678
+  }
+ },
+ {
+  "scan": "130-0227-26_SJ112501.pdf",
+  "sha256": "7cf9a071058f29bf6fbbd8b7eec96aa89baa9c75fcab3c51ec5b6fe9178ef295",
+  "pages": 1,
+  "raw": "{\"batch_printed\":\"SJ112501\",\"batch_canonical\":\"SJ112501\",\"p_number\":null,\"strain\":\"Sleepy Joy\",\"cert_code\":\"130/0227/26\",\"date_of_issue\":\"06.03.2026\",\"date_of_sampling\":null,\"lab\":\"ЈЗУ Институт за јавно здравје на РС Македонија\",\"lab_department\":\"Оддел за микробиологија; Одделение за микробиолошка контрола на храна и лекови\",\"lab_address\":\"ул. 50 Дивизија бр. 6, 1000 Скопје\",\"lab_accreditation\":null,\"lab_accreditation_body\":null,\"lab_standard\":null,\"signatories\":[{\"name\":\"Д-р Тања Цуцуловска\",\"title\":\"специјалист микробиолог\"},{\"name\":\"Мр сци Елизабета Јанчевска\",\"title\":\"специјалист микробиолог\"}],\"test_type\":\"unknown\",\"overall_conclusion\":\"ЗАКЛУЧОК: Согласно микробиолошкиот наод, доставениот примерок за тестирање ОДГОВАРА на барањата на Ph.Eur монографија 04/2019:50108 \\\"Microbiological quality of herbal medicinal products for oral use and extracts used in their preparations\\\".\",\"accreditation_note\":null,\"parameters\":[{\"parameter\":\"tamc\",\"parameter_printed\":\"Вкупен број аеробни бактерии - TAMC\",\"result_printed\":\"3,3 x 10² CFU/g\",\"result_numeric\":330,\"unit\":\"CFU/g\",\"operator\":null,\"limit_printed\":\"- 10⁵ CFU/g\",\"limit_numeric\":100000,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"covered_by\":null,\"method_accredited\":null},{\"parameter\":\"tymc\",\"parameter_printed\":\"Вкупен број габи и мувли - TYMC\",\"result_printed\":\"3,4 x 10² CFU/g\",\"result_numeric\":340,\"unit\":\"CFU/g\",\"operator\":null,\"limit_printed\":\"- 10⁴ CFU/g\",\"limit_numeric\":10000,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"covered_by\":null,\"method_accredited\":null},{\"parameter\":\"bile_tolerant_gram_negative\",\"parameter_printed\":\"На жолчка толерантни грам-негативни бактерии\",\"result_printed\":\"< 10² и > 10 CFU/g\",\"result_numeric\":null,\"unit\":\"CFU/g\",\"operator\":null,\"limit_printed\":\"< 10⁴ CFU/g\",\"limit_numeric\":10000,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"covered_by\":null,\"method_accredited\":null},{\"parameter\":\"escherichia_coli\",\"parameter_printed\":\"Escherichia coli\",\"result_printed\":\"Одговара\",\"result_numeric\":null,\"unit\":null,\"operator\":null,\"limit_printed\":\"- отсутна/g\",\"limit_numeric\":null,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"covered_by\":null,\"method_accredited\":null},{\"parameter\":\"salmonella\",\"parameter_printed\":\"Salmonella\",\"result_printed\":\"Одговара\",\"result_numeric\":null,\"unit\":null,\"operator\":null,\"limit_printed\":\"- отсутна/25 g\",\"limit_numeric\":null,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"covered_by\":null,\"method_accredited\":null}]}",
+  "usage": {
+   "prompt_tokens": 3257,
+   "completion_tokens": 6152,
+   "total_tokens": 9409,
+   "prompt_tokens_details": {
+    "cached_tokens": 2304,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 5184,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   },
+   "cost_usd": 0.0656
+  }
+ },
+ {
+  "scan": "402-0785-26_JD022601.pdf",
+  "sha256": "c0705df353e837ecdea210ace570685c1904d30d42ce42e6679b9a5daa272954",
+  "pages": 1,
+  "raw": "{\"batch_printed\":\"JD022601\",\"batch_canonical\":\"JD022601\",\"p_number\":\"161/2026\",\"strain\":\"Jelly Donutz\",\"cert_code\":\"402/0785/26\",\"date_of_issue\":\"24.06.2026\",\"date_of_sampling\":null,\"lab\":\"ЈЗУ ИНСТИТУТ ЗА ЈАВНО ЗДРАВЈЕ НА РС МАКЕДОНИЈА\",\"lab_department\":\"Оддел за микробиологија - Одделение за микробиолошка контрола на храна и лекови\",\"lab_address\":\"ул. 50 Дивизија бр. 6, 1000 Скопје\",\"lab_accreditation\":null,\"lab_accreditation_body\":null,\"lab_standard\":null,\"signatories\":[{\"name\":\"Д-р Тања Цуцуловска\",\"title\":\"специјалист микробиолог\"},{\"name\":\"Мр сц Елизабета Јанчевска\",\"title\":\"Раководител на Оддел за микробиологија, специјалист микробиолог\"}],\"test_type\":\"unknown\",\"overall_conclusion\":\"Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на Ph.Eur монографија 04/2019:50108 “Microbiological quality of herbal medicinal products for oral use and extracts used in their preparations”.\",\"accreditation_note\":null,\"parameters\":[{\"parameter\":\"tamc\",\"parameter_printed\":\"Вкупен број аеробни бактерии–ТАМС\",\"result_printed\":\"2,2 x 10³ CFU/g\",\"result_numeric\":2200,\"unit\":\"CFU/g\",\"operator\":null,\"limit_printed\":\"10⁵ CFU/g\",\"limit_numeric\":100000,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"covered_by\":null,\"method_accredited\":null},{\"parameter\":\"tymc\",\"parameter_printed\":\"Вкупен број габи и мувли–ТУМС\",\"result_printed\":\"2,4 x 10³ CFU/g\",\"result_numeric\":2400,\"unit\":\"CFU/g\",\"operator\":null,\"limit_printed\":\"10⁴ CFU/g\",\"limit_numeric\":10000,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"covered_by\":null,\"method_accredited\":null},{\"parameter\":\"bile_tolerant_gram_negative\",\"parameter_printed\":\"На жолчка толерантни грам-негативни бактерии\",\"result_printed\":\"< 10² CFU/g\",\"result_numeric\":null,\"unit\":\"CFU/g\",\"operator\":null,\"limit_printed\":\"≤ 10⁴ CFU/g\",\"limit_numeric\":10000,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":true,\"coverage\":\"explicit\",\"covered_by\":null,\"method_accredited\":null},{\"parameter\":\"escherichia_coli\",\"parameter_printed\":\"Escherichia coli\",\"result_printed\":\"Отсутна\",\"result_numeric\":null,\"unit\":null,\"operator\":null,\"limit_printed\":\"отсутна/g\",\"limit_numeric\":null,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"covered_by\":null,\"method_accredited\":null},{\"parameter\":\"salmonella\",\"parameter_printed\":\"Salmonella\",\"result_printed\":\"Отсутна\",\"result_numeric\":null,\"unit\":null,\"operator\":null,\"limit_printed\":\"отсутна/25 g\",\"limit_numeric\":null,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"covered_by\":null,\"method_accredited\":null}]}",
+  "usage": {
+   "prompt_tokens": 3257,
+   "completion_tokens": 6358,
+   "total_tokens": 9615,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 5376,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   },
+   "cost_usd": 0.0677
+  }
+ },
+ {
+  "scan": "409-0792-26_P160012.pdf",
+  "sha256": "a1e4baaff444dc9247e9f87ae4ac142789422dcf7ce121d8553171b2e76bcb4f",
+  "pages": 1,
+  "raw": "{\"batch_printed\":\"P160012\",\"batch_canonical\":\"P160012\",\"p_number\":null,\"strain\":\"Grape Pie\",\"cert_code\":\"409/0792/26\",\"date_of_issue\":\"24.06.2026\",\"date_of_sampling\":null,\"lab\":\"ЈЗУ ИНСТИТУТ ЗА ЈАВНО ЗДРАВЈЕ НА РС МАКЕДОНИЈА\",\"lab_department\":\"Оддел за микробиологија - Одделение за микробиолошка контрола на храна и лекови\",\"lab_address\":\"ул. 50 Дивизија бр. 6, 1000 Скопје\",\"lab_accreditation\":null,\"lab_accreditation_body\":null,\"lab_standard\":\"MKC EN ISO/IEC 17025\",\"signatories\":[{\"name\":\"Д-р Тајана Цуцуловска\",\"title\":\"специјалист микробиолог\"},{\"name\":\"Мр сц Елизабета Јанчевска\",\"title\":\"РАКОВОДИТЕЛ на Оддел за микробиологија, специјалист микробиолог\"}],\"test_type\":\"unknown\",\"overall_conclusion\":\"ЗАКЛУЧОК: Резултатите од испитаните параметри СЕ ВО СОГЛАСНОСТ со барањата на Ph.Eur монографија 04/2019:50108 \\\"Microbiological quality of herbal medicinal products for oral use and extracts used in their preparations\\\".\",\"accreditation_note\":null,\"parameters\":[{\"parameter\":\"tamc\",\"parameter_printed\":\"Вкупен број аеробни бактерии - TAMC\",\"result_printed\":\"< 10 CFU/g\",\"result_numeric\":10,\"unit\":\"CFU/g\",\"operator\":\"<\",\"limit_printed\":\"10⁵ CFU/g\",\"limit_numeric\":100000,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"covered_by\":null,\"method_accredited\":true},{\"parameter\":\"tymc\",\"parameter_printed\":\"Вкупен број габи и мувли - TYMC\",\"result_printed\":\"< 10 CFU/g\",\"result_numeric\":10,\"unit\":\"CFU/g\",\"operator\":\"<\",\"limit_printed\":\"10⁴ CFU/g\",\"limit_numeric\":10000,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"covered_by\":null,\"method_accredited\":true},{\"parameter\":\"bile_tolerant_gram_negative\",\"parameter_printed\":\"На жолчка толерантни грам-негативни бактерии\",\"result_printed\":\"< 10 CFU/g\",\"result_numeric\":10,\"unit\":\"CFU/g\",\"operator\":\"<\",\"limit_printed\":\"10⁴ CFU/g\",\"limit_numeric\":10000,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"covered_by\":null,\"method_accredited\":true},{\"parameter\":\"escherichia_coli\",\"parameter_printed\":\"Escherichia coli\",\"result_printed\":\"Отсутна\",\"result_numeric\":null,\"unit\":null,\"operator\":null,\"limit_printed\":\"отсутна/г\",\"limit_numeric\":null,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"covered_by\":null,\"method_accredited\":true},{\"parameter\":\"salmonella\",\"parameter_printed\":\"Salmonella\",\"result_printed\":\"Отсутна\",\"result_numeric\":null,\"unit\":null,\"operator\":null,\"limit_printed\":\"отсутна/25 g\",\"limit_numeric\":null,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"covered_by\":null,\"method_accredited\":true}]}",
+  "usage": {
+   "prompt_tokens": 3257,
+   "completion_tokens": 6230,
+   "total_tokens": 9487,
+   "prompt_tokens_details": {
+    "cached_tokens": 2304,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 5248,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   },
+   "cost_usd": 0.0664
+  }
+ },
+ {
+  "scan": "410-0793-26_P160032.pdf",
+  "sha256": "210851bc40f40902c69e3b1128fc15185de751263372931634d60178f75a6541",
+  "pages": 1,
+  "raw": "{\"batch_printed\":\"P160032\",\"batch_canonical\":\"P160032\",\"p_number\":null,\"strain\":\"Grape Pie\",\"cert_code\":\"410/0793/26\",\"date_of_issue\":\"24.06.2026\",\"date_of_sampling\":null,\"lab\":\"ЈЗУ ИНСТИТУТ ЗА ЈАВНО ЗДРАВЈЕ НА РЕПУБЛИКА СЕВЕРНА МАКЕДОНИЈА\",\"lab_department\":\"Оддел за микробиологија – Одделение за микробиолошка контрола на храна и лекови\",\"lab_address\":\"ул. 50 Дивизија бр. 6, 1000 Скопје\",\"lab_accreditation\":\"LT-005\",\"lab_accreditation_body\":\"Институт за акредитација на Република Северна Македонија (ИАРСМ)\",\"lab_standard\":\"MKC EN ISO/IEC 17025:2018\",\"signatories\":[{\"name\":\"Д-р Татјана Цуцуловска\",\"title\":\"специјалист микробиолог\"},{\"name\":\"Мр сци Елизабета Јанчевска\",\"title\":\"Раководител на Оддел за микробиологија; специјалист микробиолог\"}],\"test_type\":\"unknown\",\"overall_conclusion\":\"ЗАКЛУЧОК: Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на Ph.Eur монографија 04/2019:50108 “Microbiological quality of herbal medicinal products for oral use and extracts used in their preparations”.\",\"accreditation_note\":null,\"parameters\":[{\"parameter\":\"tamc\",\"parameter_printed\":\"Вкупен број аеробни бактерии - TAMC\",\"result_printed\":\"1 x 10¹ CFU/g\",\"result_numeric\":10,\"unit\":\"CFU/g\",\"operator\":null,\"limit_printed\":\"10^5 CFU/g\",\"limit_numeric\":100000,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"covered_by\":null,\"method_accredited\":true},{\"parameter\":\"tymc\",\"parameter_printed\":\"Вкупен број габи и мувли - TYMC\",\"result_printed\":\"< 10 CFU/g\",\"result_numeric\":10,\"unit\":\"CFU/g\",\"operator\":\"<\",\"limit_printed\":\"10^4 CFU/g\",\"limit_numeric\":10000,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"covered_by\":null,\"method_accredited\":true},{\"parameter\":\"bile_tolerant_gram_negative\",\"parameter_printed\":\"На жолчка толерантни грам-негативни бактерии\",\"result_printed\":\"< 10 CFU/g\",\"result_numeric\":10,\"unit\":\"CFU/g\",\"operator\":\"<\",\"limit_printed\":\"≤ 10^4 CFU/g\",\"limit_numeric\":10000,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"covered_by\":null,\"method_accredited\":true},{\"parameter\":\"escherichia_coli\",\"parameter_printed\":\"Escherichia coli\",\"result_printed\":\"Отсутна\",\"result_numeric\":null,\"unit\":null,\"operator\":null,\"limit_printed\":\"отсутна/g\",\"limit_numeric\":null,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"covered_by\":null,\"method_accredited\":true},{\"parameter\":\"salmonella\",\"parameter_printed\":\"Salmonella\",\"result_printed\":\"Отсутна\",\"result_numeric\":null,\"unit\":null,\"operator\":null,\"limit_printed\":\"отсутна/25 g\",\"limit_numeric\":null,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"covered_by\":null,\"method_accredited\":true}]}",
+  "usage": {
+   "prompt_tokens": 3257,
+   "completion_tokens": 6720,
+   "total_tokens": 9977,
+   "prompt_tokens_details": {
+    "cached_tokens": 2304,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 5696,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   },
+   "cost_usd": 0.0713
+  }
+ },
+ {
+  "scan": "411-0794-26_P160022.pdf",
+  "sha256": "5be85ae5235d9ba336ecb6aa266f146b5b6fca1517d412156f2a9c981ebcc154",
+  "pages": 1,
+  "raw": "{\"batch_printed\":\"P160022\",\"batch_canonical\":\"P160022\",\"p_number\":\"184/2026\",\"strain\":\"Grape Pie\",\"cert_code\":\"411/0794/26\",\"date_of_issue\":\"24.06.2026\",\"date_of_sampling\":null,\"lab\":\"ЈЗУ Институт за јавно здравје на РС Македонија\",\"lab_department\":\"Оддел за микробиологија – Одделение за микробиолошка контрола на храна и лекови\",\"lab_address\":\"ул. 50 Дивизија бр. 6, 1000 Скопје; Тел.: +389 2 3125 044; Факс: +389 2 3223-354; www.iph.mk\",\"lab_accreditation\":\"ЛТ-005\",\"lab_accreditation_body\":\"IARSM\",\"lab_standard\":\"MKC EN ISO/IEC 17025:2018\",\"signatories\":[{\"name\":\"Д-р Тања Цуцуловска\",\"title\":\"специјалист микробиолог\"},{\"name\":\"Мр сц. Елизабета Јанчевска\",\"title\":\"Раководител на Оддел за микробиологија; специјалист микробиолог\"}],\"test_type\":\"unknown\",\"overall_conclusion\":\"ЗАКЛУЧОК: Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на Ph.Eur монографија 04/2019:50108 “Microbiological quality of herbal medicinal products for oral use and extracts used in their preparations”.\",\"accreditation_note\":null,\"parameters\":[{\"parameter\":\"tamc\",\"parameter_printed\":\"Вкупен број аеробни бактерии - TAMC\",\"result_printed\":\"3 x 10¹ CFU/g\",\"result_numeric\":30,\"unit\":\"CFU/g\",\"operator\":null,\"limit_printed\":\"10⁵ CFU/g\",\"limit_numeric\":100000,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"covered_by\":null,\"method_accredited\":true},{\"parameter\":\"tymc\",\"parameter_printed\":\"Вкупен број габи и мувли - TYMC\",\"result_printed\":\"9 x 10¹ CFU/g\",\"result_numeric\":90,\"unit\":\"CFU/g\",\"operator\":null,\"limit_printed\":\"10⁴ CFU/g\",\"limit_numeric\":10000,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"covered_by\":null,\"method_accredited\":true},{\"parameter\":\"bile_tolerant_gram_negative\",\"parameter_printed\":\"На жолчка толерантни грам-негативни бактерии\",\"result_printed\":\"< 10 CFU/g\",\"result_numeric\":10,\"unit\":\"CFU/g\",\"operator\":\"<\",\"limit_printed\":\"≤ 10⁴ CFU/g\",\"limit_numeric\":10000,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"covered_by\":null,\"method_accredited\":true},{\"parameter\":\"escherichia_coli\",\"parameter_printed\":\"Escherichia coli\",\"result_printed\":\"Отсутна\",\"result_numeric\":null,\"unit\":null,\"operator\":null,\"limit_printed\":\"отсутна/g\",\"limit_numeric\":null,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"covered_by\":null,\"method_accredited\":true},{\"parameter\":\"salmonella\",\"parameter_printed\":\"Salmonella\",\"result_printed\":\"Отсутна\",\"result_numeric\":null,\"unit\":null,\"operator\":null,\"limit_printed\":\"отсутна/25 g\",\"limit_numeric\":null,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"covered_by\":null,\"method_accredited\":true}]}",
+  "usage": {
+   "prompt_tokens": 3257,
+   "completion_tokens": 6901,
+   "total_tokens": 10158,
+   "prompt_tokens_details": {
+    "cached_tokens": 2304,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 5888,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   },
+   "cost_usd": 0.0731
+  }
+ },
+ {
+  "scan": "433-0847-26_FB032601.pdf",
+  "sha256": "d26a4df01c0feffc31d2857cfac6ec0e4ae49c6c73a390ec68d68fb24c1f4aab",
+  "pages": 1,
+  "raw": "{\"batch_printed\":\"FBD32601\",\"batch_canonical\":\"FBD32601\",\"p_number\":\"03-998/1\",\"strain\":\"Fat Bastard\",\"cert_code\":\"433/0847/26\",\"date_of_issue\":\"10.07.2026\",\"date_of_sampling\":null,\"lab\":\"ЈЗУ ИНСТИТУТ ЗА ЈАВНО ЗДРАВЈЕ НА РСМАКЕДОНИЈА\",\"lab_department\":\"Оддел за микробиологија - Одделение за микробиолошка контрола на храна и лекови\",\"lab_address\":\"ул. 50 Дивизија бр. 6, 1000 Скопје\",\"lab_accreditation\":\"ЛТ-008\",\"lab_accreditation_body\":\"ИАРСМ\",\"lab_standard\":\"МКС EN ISO/IEC 17025\",\"signatories\":[{\"name\":\"Д-р Тања Цуцуловска\",\"title\":\"специјалист микробиолог\"},{\"name\":\"Мр сци Елизабета Ланчевска\",\"title\":\"специјалист микробиолог\"}],\"test_type\":\"unknown\",\"overall_conclusion\":\"Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на Ph.Eur монографија 04/2019:50108 “Microbiological quality of herbal medicinal products for oral use and extracts used in their preparations”.\",\"accreditation_note\":null,\"parameters\":[{\"parameter\":\"tamc\",\"parameter_printed\":\"Вкупен број аеробни бактерии - ТАМС\",\"result_printed\":\"3,7 x 10³ CFU/g\",\"result_numeric\":3700,\"unit\":\"CFU/g\",\"operator\":null,\"limit_printed\":\"10⁵ CFU/g\",\"limit_numeric\":100000,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"method_accredited\":true},{\"parameter\":\"tymc\",\"parameter_printed\":\"Вкупен број габи и мувли - ТYMC\",\"result_printed\":\"1,6 x 10³ CFU/g\",\"result_numeric\":1600,\"unit\":\"CFU/g\",\"operator\":null,\"limit_printed\":\"10⁴ CFU/g\",\"limit_numeric\":10000,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"method_accredited\":true},{\"parameter\":\"bile_tolerant_gram_negative\",\"parameter_printed\":\"На жолчка толерантни грам-негативни бактерии\",\"result_printed\":\"< 10 CFU/g\",\"result_numeric\":10,\"unit\":\"CFU/g\",\"operator\":\"<\",\"limit_printed\":\"≤ 10⁴ CFU/g\",\"limit_numeric\":10000,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"method_accredited\":true},{\"parameter\":\"escherichia_coli\",\"parameter_printed\":\"Escherichia coli\",\"result_printed\":\"Отсутна\",\"result_numeric\":null,\"unit\":null,\"operator\":null,\"limit_printed\":\"отсутна/g\",\"limit_numeric\":null,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"method_accredited\":true},{\"parameter\":\"salmonella\",\"parameter_printed\":\"Salmonella\",\"result_printed\":\"Отсутна\",\"result_numeric\":null,\"unit\":null,\"operator\":null,\"limit_printed\":\"отсутна/25 g\",\"limit_numeric\":null,\"limit_max_printed\":null,\"limit_max_numeric\":null,\"method\":\"Ph.Eur. 5.1.8 – Кат. C / 2.6.12, 2.6.31\",\"exponent_uncertain\":false,\"coverage\":\"explicit\",\"method_accredited\":true}]}",
+  "usage": {
+   "prompt_tokens": 3257,
+   "completion_tokens": 6913,
+   "total_tokens": 10170,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 5952,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   },
+   "cost_usd": 0.0732
+  }
+ }
+]

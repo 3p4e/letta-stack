@@ -1,0 +1,49 @@
+#	Inventory of the QCSP 001 per-strain product specifications held in Google Drive folder
+#	1uMIWkPotF_rs334NO0cAIelGY9e4c-Cz, checked 11.08.2026 against the CoA register
+#	(exports/master_coa_table.tsv) and the three owner control sheets.
+#
+#	"batches" is how many batches the Tranches Overview carries for that cultivar.
+#	"in_register" is whether any outsourced-laboratory certificate in the knowledgebase
+#	names it. A spec with batches but no certificates is a real cultivar awaiting CoAs;
+#	a spec with neither is catalogue-only — written ahead of production.
+#
+#	"logo" records how the document loads the Purely Plant mark. Files marked "relative"
+#	point at ../assets/logo/PP_Leaf_T2.svg, which does not exist beside them in this
+#	folder, so the header image is broken when the file is opened from here. The seven
+#	marked "embedded" carry the SVG inline as a data URI and render standalone.
+abbr	file	cultivar_on_spec	name_in_register	name_in_sheets	batches	in_register	logo
+AA	AA_Amsterdam_Amnesia.html	Amsterdam Amnesia	—	—	0	no	relative
+AB	AB_Apples_Bananas.html	Apples & Bananas	Apple and Banana	Appels & Bananas / Apples&Bannas	1	yes	embedded
+ACC	ACC_Amnesia_Core_Cut.html	Amnesia Core Cut	—	Amnesia Core Cut	1	no	relative
+BB	BB_Banana_Blaze.html	Banana Blaze	—	—	0	no	relative
+BG	BG_Blue_Gelato.html	Blue Gelato	Blue Gelato	Blue Gelato	1	yes	relative
+BSS	BSS_Blue_Sunset_Sherbet.html	Blue Sunset Sherbet	Blue Sunset Sherbet	Blue Sunset Sherbet	3	yes	relative
+CC	CC_Cash_Cow.html	Cash Cow	Cash Cow	CashCow	3	yes	relative
+CF	CF_Chem_Flyer.html	Chem Flyer	—	Chem Flyer	1	no	relative
+CHA	CHA_CBD_Charlotte_s_Angel.html	CBD Charlotte's Angel	—	—	0	no	relative
+CJ	CJ_Cap_Junky.html	Cap Junky	Cap Junky	Cap Junkie	9	yes	relative
+CLE	CLE_Clemosa.html	Clemosa	Clemosa a bud	Clemosa	1	yes	embedded
+COP	COP_Critical_Orange_Punch.html	Critical Orange Punch	—	—	0	no	relative
+FB	FB_Fat_Bastard.html	Fat Bastard	Fat Bastard	Fat Bastard	5	yes	relative
+GG	GG_Gorilla_Glue.html	Gorilla Glue	Gorilla Glue	Gorilla Glue / GG4	6	yes	relative
+GOG	GOG_Glueberry_O_G.html	Glueberry O.G.	—	—	0	no	relative
+GP	GP_Grape_Pie.html	Grape Pie	Grape Pie	Grape Pie / Grape pie	9	yes	relative
+GRC	GRC_Graps_Cr_me.html	Graps Crème	Graps & Creme	Grapes and Cream	2	yes	embedded
+HFG	HFG_HiFi_4G.html	HiFi 4G	—	—	0	no	relative
+HPA	HPA_High_Pro_Amnesia.html	High Pro Amnesia	High Pro Amnesia	High Pro Amnesia	3	yes	relative
+J31	J31_Jokerz_31.html	Jokerz 31	Jokerz 31	Jokerz 31	3	yes	relative
+JD	JD_Jelly_Donutz.html	Jelly Donutz	Jelly Donutz	Jelly Donuts	5	yes	relative
+KC	KC_Kush_Crasher.html	Kush Crasher	Kush Crasher	Kush Crasher	1	yes	embedded
+KK	KK_Kandy_Kush.html	Kandy Kush	—	—	0	no	relative
+MB	MB_Motor_Breath.html	Motor Breath	Motor Breath	Motor Breath	2	yes	embedded
+MRG	MRG_Meringe.html	Meringe	—	—	0	no	relative
+OPM	OPM_Orange_Punch_Mimosa.html	Orange Punch Mimosa	Orange Punch Mimosa	Orange Punch Mimosa	8	yes	relative
+PM	PM_Permanent_Marker.html	Permanent Marker	Permanent Marker	Permanent Marker / Permanent Market	3	yes	relative
+PUM	PUM_Pure_Michigan.html	Pure Michigan	—	Pure Michigen	1	no	relative
+RS	RS_RS_11.html	RS 11	—	—	0	no	relative
+SC	SC_Strawberry_Cough.html	Strawberry Cough	—	—	0	no	relative
+SCR	SCR_Scrambler.html	Scrambler	Scrambler	Scrambler	4	yes	relative
+SH	SH_Skywalker_Haze.html	Skywalker Haze	—	—	0	no	relative
+SJ	SJ_Sleepy_Joe.html	Sleepy Joe	Sleepy Joy	Sleepy Joe	3	yes	embedded
+WC	WC_Wedding_Crasher.html	Wedding Crasher	Wedding Crasher	Wedding Crusher	2	yes	embedded
+WED	WED_COC_Wedding_Cake.html	Wedding Cake	—	Wedding Cake / Wedding cake	1	no	relative

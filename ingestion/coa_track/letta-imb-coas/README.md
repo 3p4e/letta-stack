@@ -1,125 +1,65 @@
-# ImB_QC_COAs — Letta deployment bundle
+# ImB QC CoAs — ingestion driver and QC deliverable builders
 
-Idempotent ingestion of the **In-process / Bulk / Finished-product QC Certificates
-of Analysis** (electronic PDFs, scanned PDFs, DOCX) from outsourced laboratories
-into Letta. Mirrors the proven `scripts/letta-pq1/` pattern.
+Everything here works from the **In-process / Bulk / Finished-product Certificates
+of Analysis** issued by the outsourced laboratories (Farmahem, UKIM Center for
+Natural Products) for Purely Plant GmbH. Two kinds of code live in this
+directory: the RAGFlow ingestion path, and the builders that turn the ingested
+certificates into QC deliverables.
 
-Source folder on the user's PC (Drive-for-Desktop mount):
+## Retired 29.08.2026 — the Letta ingestion bundle
 
-```
-C:\Users\Agent Zero\My Drive\1. PP\DRAFTS_IN_PROGRESS\EQP_RO\ROPQ\ImB_QC_COAs
-```
+This directory began as a **Letta** deployment bundle: `deploy.sh` created the
+`ImB_QC_COAs` Letta source plus the `imb_qc_coa_agent`, and `ingest_imb_coas.py`
+/ `ingest_imb_coas_v2.py` walked Drive (or a local mount) and uploaded into it.
 
-Letta resources created:
+**That source no longer exists.** All nine Letta sources were deleted 19.08.2026
+on the owner's instruction, `ImB_QC_COAs` among them (263 records), and
+`server/runbooks/ingestion_policy.md` now states the standing rule: *never create
+a Letta source, and never upload a document to one.* The three scripts ingested
+into infrastructure that is gone and did the one thing the policy forbids, so
+they have been removed rather than left as a trap for someone who greps for an
+ingester and finds a working-looking one. Git history retains them.
 
-- **Source:** `ImB_QC_COAs` — embeddings **OpenAI `text-embedding-3-small`, 1536d, chunk 300**
-- **Agent:** `imb_qc_coa_agent`
+The **replacement is RAGFlow**, and it is in this directory:
+`ingest_coa_database_2026.py`. The OCR fallback chain that
+`ingest_imb_coas_v2.py` pioneered was not lost with it — it is declared as
+policy in `agent_model_policy.py` and implemented in
+`ingestion/ragflow/doc_identity.py`.
 
-> **Correction (verified against the live server, 2026-08-10):** `deploy.sh` provisions
-> the source with `voyage-3-large` (1024d), but the **live** `ImB_QC_COAs` source runs
-> **OpenAI `text-embedding-3-small` (1536d)** and the server holds **no Voyage key**.
-> Do not provision a Voyage key on the strength of this repo — check the live source
-> config first. Re-creating the source with a different embedding model would orphan
-> the existing 261 embedded files.
+## Ingestion path (current)
 
-## Two ingestion modes
+| Script | Purpose |
+|---|---|
+| `ingest_coa_database_2026.py` | Drive eCoA folder → the **RAGFlow** `CoA_DATABASE_2026` dataset (id `f29f8f58…`, voyage-3-large). The only ingester in this directory. |
+| `classify_ecoa.py` | Per-certificate classification + metadata from the certificate's own text — batch-release result vs stability-programme timepoint. |
+| `reclassify_watcher.py` | Trails RAGFlow's parse queue and repairs `test_type` on documents uploaded before the field-detection fix landed. |
+| `agent_model_policy.py`, `AGENT_MODEL_POLICY.md` | The vision/OCR model chain and the per-agent model policy. |
+| `rewire_agents.py`, `rewire_via_rest.py` | Apply `agent_model_policy` to the live Letta agents' `llm_config`. Agent models only — these touch no sources. |
 
-### Mode A — DRIVE (recommended, runs on KVM4)
+> The same RAGFlow dataset id `f29f8f58…` is called **`CoA_DATABASE_2026`** here and
+> **`eCoA_DATABASE`** in the deliverables. One dataset, two names in the repo.
 
-Mirrors the PQ1 pipeline exactly. Best long-term option: a re-run keeps Letta
-in sync with whatever the QC team drops into the Drive folder.
+## Deliverable builders
 
-1. Share the Drive folder with the service-account email (Viewer):
-   - Open the folder in Drive: right-click → Share
-   - Add the `client_email` from `/opt/letta-ingest/sa.json` (the deploy script
-     prints it before listing). Same SA already used for PQ1.
-2. Grab the Drive folder ID from its URL
-   (`drive.google.com/drive/folders/<THIS_PART>`).
-3. SSH into KVM4 and run:
+They read the certificate data and emit QC artifacts; none of them ingest
+anything.
 
-```bash
-ssh kvm4
-cd /opt/coa_track   # or wherever this repo is checked out
-git checkout claude/letta-kvm4-connectivity-Bb49s
-export IMB_DRIVE_FOLDER_ID="<paste folder id here>"
-bash scripts/letta-imb-coas/deploy.sh
-```
+| Script | Emits |
+|---|---|
+| `build_master_workbook.py`, `build_master_register_html.py`, `coa_pivot.py` | The master eCoA workbook and the published HTML register. `coa_pivot.py` is the shared classification layer both import, so a fix lands in both and they cannot disagree. |
+| `build_ecoa_register.py`, `build_qc_register.py` | eCoA and QC batch-release registers. |
+| `build_coqs.py` | Per-batch Certificates of Quality (Markdown → the PP document engine). |
+| `build_house_specs.py`, `build_spec_matrix.py`, `build_spec_param_listing.py` | QCSP 001 product specifications, the wide-format spec matrix, and the parameter listing. |
+| `build_tranche.py`, `build_tranche1_potency_pdf.py`, `build_thc_by_strain.py`, `build_pp_qc_result_table.py` | Tranche and potency summaries. |
+| `build_open_items.py`, `coverage_audit.py`, `crosscheck_sources.py`, `reconcile_master_table.py` | Integrity and coverage checks across the sources of truth. |
+| `add_*.py`, `fix_*.py`, `normalise_strain_names.py`, `restore_verbatim_cert_codes.py` | One-shot data corrections, kept for audit. |
+| `house_fonts.py` | Font resolution for the rendered artifacts. |
 
-### Mode B — LOCAL (runs wherever the files are visible)
+Supporting data lives in `sources_of_truth/`, `exports/` and `reports/`;
+`INGESTION_STATUS.md` records what has been ingested and what has not.
 
-Use when you'd rather walk the local filesystem directly — typically from the
-"Agent Zero" Windows PC via a Claude Code session that has read access to the
-Drive-for-Desktop mount, or from KVM4 if you bind-mount the folder.
+## Before ingesting anything
 
-```bash
-# from the local Claude Code session on the Windows PC (Git Bash / WSL):
-export LETTA_BASE="http://<kvm4-host>:8283"     # or the tunnel address
-export LETTA_TOKEN="${LETTA_SERVER_PASS}"
-export IMB_LOCAL_PATH="/c/Users/Agent Zero/My Drive/1. PP/DRAFTS_IN_PROGRESS/EQP_RO/ROPQ/ImB_QC_COAs"
-# point SECRETS_FILE at a file that has VOYAGEAI_API_KEY + OPENAI_API_KEY
-export SECRETS_FILE="$HOME/.letta-ingest/secrets.env"
-bash scripts/letta-imb-coas/deploy.sh
-```
-
-If you'd rather just ingest (source + agent already exist), call the worker
-directly:
-
-```bash
-export LETTA_BASE LETTA_TOKEN
-export IMB_SOURCE_ID="$(curl -fsS -H "Authorization: Bearer $LETTA_TOKEN" \
-  $LETTA_BASE/v1/sources/ | python3 -c "import json,sys;d=json.load(sys.stdin);print(next(s['id'] for s in (d if isinstance(d,list) else d['data']) if s['name']=='ImB_QC_COAs'))")"
-export IMB_LOCAL_PATH="/c/Users/Agent Zero/My Drive/1. PP/DRAFTS_IN_PROGRESS/EQP_RO/ROPQ/ImB_QC_COAs"
-python3 scripts/letta-imb-coas/ingest_imb_coas.py
-```
-
-## Prerequisites recap
-
-- KVM4 (DRIVE mode):
-  - `/opt/letta-ingest/sa.json` (the same SA used by PQ1)
-  - `/opt/letta-ingest/secrets.env` with `VOYAGEAI_API_KEY` + `OPENAI_API_KEY`
-  - Drive folder shared with `sa.json`'s `client_email`
-- LOCAL mode (any host):
-  - Python 3 + `pip install requests`
-  - A reachable Letta base URL + token
-  - A `secrets.env` (only needed if running the full `deploy.sh`; the worker
-    `ingest_imb_coas.py` only needs `LETTA_BASE`, `LETTA_TOKEN`,
-    `IMB_SOURCE_ID`, `IMB_LOCAL_PATH`)
-
-## File-type handling
-
-| Extension | Behavior |
-|-----------|----------|
-| `.pdf` (electronic, has text layer) | Uploaded as-is; Letta extracts + chunks + embeds. |
-| `.pdf` (scanned, no text layer)     | Uploaded as-is; Letta will store the file but extraction will be empty. The agent system prompt is configured to flag these so we know which need OCR re-ingest. |
-| `.docx`                             | Uploaded as-is; Letta extracts text from the OOXML. |
-
-A future enhancement is to detect scanned PDFs and OCR them with
-`ocrmypdf`/Tesseract before upload (mirrors what `OCR_PIPELINE.md` already
-does for the `QC_eCoA` flow).
-
-## Verifying after ingest
-
-```bash
-# count files in the source
-curl -fsS -H "Authorization: Bearer $LETTA_TOKEN" \
-  "$LETTA_BASE/v1/sources/$IMB_SOURCE_ID/files?limit=2000" | python3 -c \
-  "import json,sys;d=json.load(sys.stdin);print(len(d if isinstance(d,list) else d.get('data',d.get('files',[]))))"
-
-# ask the agent something
-curl -sS -H "Authorization: Bearer $LETTA_TOKEN" -H "Content-Type: application/json" \
-  -X POST "$LETTA_BASE/v1/agents/<AGENT_ID>/messages" \
-  -d '{"messages":[{"role":"user","content":"List every CoA in ImB_QC_COAs that contains an OOS result, with parameter, obtained value, A.C., and lab."}]}'
-```
-
-## Rollback
-
-```bash
-curl -X DELETE -H "Authorization: Bearer $LETTA_TOKEN" "$LETTA_BASE/v1/agents/<AGENT_ID>"
-curl -X DELETE -H "Authorization: Bearer $LETTA_TOKEN" "$LETTA_BASE/v1/sources/<SOURCE_ID>"
-```
-
-## Files in this bundle
-
-- `deploy.sh` — orchestrator (find-or-create source + agent, attach, run ingest)
-- `ingest_imb_coas.py` — file walker + uploader (DRIVE or LOCAL mode)
-- `README.md` — this file
+Follow `server/runbooks/ingestion_policy.md` — confirm the target RAGFlow
+dataset and its embedding model, diff against what it already holds, and verify
+parse status and chunk counts afterwards.

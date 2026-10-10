@@ -1,0 +1,728 @@
+{
+ "source": "deliverables/imb_spec_pdfs/SPC_FINAL_ImB_PDF/**",
+ "document": "QCSP 001 v.03",
+ "signed": {
+  "prepared_approved": "Blagoj Nikolov, QC Manager · M.Pharm, Drug Quality Control Specialist",
+  "reviewed": "Jovana Romevska Cvetkovski, QA Manager · Master Pharmacist",
+  "date": "01.06.2026"
+ },
+ "specifications": {
+  "BG1024": {
+   "file": "BG1024_BG_Blue_Gelato_Grade_I.pdf",
+   "tranche": "Tran01",
+   "strain": "Blue Gelato",
+   "product_code": "BG_THC26 : CBD1",
+   "thc_criterion": "23.40 – 28.60 %",
+   "thc_target": "26.00% ± 2.60%",
+   "spec_doc_code": "QCSP_001_BG-I_v.01"
+  },
+  "BSS1024": {
+   "file": "BSS1024_BSS_Blue_Sunset_Sherbet_Grade_I.pdf",
+   "tranche": "Tran01",
+   "strain": "Blue Sunset Sherbet",
+   "product_code": "BSS_THC24 : CBD1",
+   "thc_criterion": "22.01 – 25.99 %",
+   "thc_target": "24.00% ± 1.99%",
+   "spec_doc_code": "QCSP_001_BSS-I_v.01"
+  },
+  "HPA1024": {
+   "file": "HPA1024_HPA_High_Pro_Amnesia_Grade_III.pdf",
+   "tranche": "Tran01",
+   "strain": "High Pro Amnesia",
+   "product_code": "HPA_THC18 : CBD1",
+   "thc_criterion": "17.00 – 19.00 %",
+   "thc_target": "18.00% ± 1.00%",
+   "spec_doc_code": "QCSP_001_HPA-III_v.01"
+  },
+  "OPM1024": {
+   "file": "OPM1024_OPM_Orange_Punch_Mimosa_Grade_I.pdf",
+   "tranche": "Tran01",
+   "strain": "Orange Punch Mimosa",
+   "product_code": "OPM_THC22 : CBD1",
+   "thc_criterion": "19.81 – 24.19 %",
+   "thc_target": "22.00% ± 2.19%",
+   "spec_doc_code": "QCSP_001_OPM-I_v.01"
+  },
+  "P050022": {
+   "file": "P050022_GP_Grape_Pie_Grade_III.pdf",
+   "tranche": "Tran01",
+   "strain": "Grape Pie",
+   "product_code": "GP_THC24 : CBD1",
+   "thc_criterion": "22.61 – 25.39 %",
+   "thc_target": "24.00% ± 1.39%",
+   "spec_doc_code": "QCSP_001_GP-III_v.01"
+  },
+  "P050052": {
+   "file": "P050052_HPA_High_Pro_Amnesia_Grade_I.pdf",
+   "tranche": "Tran01",
+   "strain": "High Pro Amnesia",
+   "product_code": "HPA_THC22 : CBD1",
+   "thc_criterion": "21.00 – 23.00 %",
+   "thc_target": "22.00% ± 1.00%",
+   "spec_doc_code": "QCSP_001_HPA-I_v.01"
+  },
+  "P050062": {
+   "file": "P050062_OPM_Orange_Punch_Mimosa_Grade_II.pdf",
+   "tranche": "Tran01",
+   "strain": "Orange Punch Mimosa",
+   "product_code": "OPM_THC18 : CBD1",
+   "thc_criterion": "16.20 – 19.80 %",
+   "thc_target": "18.00% ± 1.80%",
+   "spec_doc_code": "QCSP_001_OPM-II_v.01"
+  },
+  "P050092": {
+   "file": "P050092_GG_Gorilla_Glue_Grade_I.pdf",
+   "tranche": "Tran01",
+   "strain": "Gorilla Glue",
+   "product_code": "GG_THC18 : CBD1",
+   "thc_criterion": "17.01 – 18.99 %",
+   "thc_target": "18.00% ± 0.99%",
+   "spec_doc_code": "QCSP_001_GG-I_v.01"
+  },
+  "P050152": {
+   "file": "P050152_GP_Grape_Pie_Grade_THC18.pdf",
+   "tranche": "Tran01",
+   "strain": "Grape Pie",
+   "product_code": "GP_THC18 : CBD1",
+   "thc_criterion": "16.20 – 19.80 %",
+   "thc_target": "18.00% ± 1.80%",
+   "spec_doc_code": "QCSP_001_GP-THC18_v.01"
+  },
+  "P050162": {
+   "file": "P050162_CJ_Cap_Junky_Grade_III.pdf",
+   "tranche": "Tran01",
+   "strain": "Cap Junky",
+   "product_code": "CJ_THC24 : CBD1",
+   "thc_criterion": "23.00 – 25.00 %",
+   "thc_target": "24.00% ± 1.00%",
+   "spec_doc_code": "QCSP_001_CJ-III_v.01"
+  },
+  "P050322": {
+   "file": "P050322_GP_Grape_Pie_Grade_V.pdf",
+   "tranche": "Tran01",
+   "strain": "Grape Pie",
+   "product_code": "GP_THC16 : CBD1",
+   "thc_criterion": "14.40 – 17.60 %",
+   "thc_target": "16.00% ± 1.60%",
+   "spec_doc_code": "QCSP_001_GP-V_v.01"
+  },
+  "P060032": {
+   "file": "P060032_CJ_Cap_Junky_Grade_IV.pdf",
+   "tranche": "Tran01",
+   "strain": "Cap Junky",
+   "product_code": "CJ_THC20 : CBD1",
+   "thc_criterion": "18.00 – 22.00 %",
+   "thc_target": "20.00% ± 2.00%",
+   "spec_doc_code": "QCSP_001_CJ-IV_v.01"
+  },
+  "P060062": {
+   "file": "P060062_PM_Permanent_Marker_Grade_I.pdf",
+   "tranche": "Tran01",
+   "strain": "Permanent Marker",
+   "product_code": "PM_THC12 : CBD1",
+   "thc_criterion": "11.01 – 12.99 %",
+   "thc_target": "12.00% ± 0.99%",
+   "spec_doc_code": "QCSP_001_PM-I_v.01"
+  },
+  "P060152": {
+   "file": "P060152_J31_Jokerz_31_Grade_II.pdf",
+   "tranche": "Tran01",
+   "strain": "",
+   "product_code": "J31_THC18 : CBD1",
+   "thc_criterion": "16.20 – 19.80 %",
+   "thc_target": "18.00% ± 1.80%",
+   "spec_doc_code": "QCSP_001_J31-II_v.01"
+  },
+  "P060212": {
+   "file": "P060212_JD_Jelly_Donutz_Grade_I.pdf",
+   "tranche": "Tran01",
+   "strain": "Jelly Donutz",
+   "product_code": "JD_THC20 : CBD1",
+   "thc_criterion": "18.00 – 22.00 %",
+   "thc_target": "20.00% ± 2.00%",
+   "spec_doc_code": "QCSP_001_JD-I_v.01"
+  },
+  "P060242": {
+   "file": "P060242_OPM_Orange_Punch_Mimosa_Grade_V.pdf",
+   "tranche": "Tran01",
+   "strain": "Orange Punch Mimosa",
+   "product_code": "OPM_THC8 : CBD1",
+   "thc_criterion": "7.20 – 8.80 %",
+   "thc_target": "8.00% ± 0.80%",
+   "spec_doc_code": "QCSP_001_OPM-V_v.01"
+  },
+  "P060352": {
+   "file": "P060352_FB_Fat_Bastard_Grade_II.pdf",
+   "tranche": "Tran01",
+   "strain": "Fat Bastard",
+   "product_code": "FB_THC18 : CBD1",
+   "thc_criterion": "17.15 – 18.85 %",
+   "thc_target": "18.00% ± 0.85%",
+   "spec_doc_code": "QCSP_001_FB-II_v.01"
+  },
+  "P060382": {
+   "file": "P060382_SCR_Scrambler_Grade_II.pdf",
+   "tranche": "Tran01",
+   "strain": "Scrambler",
+   "product_code": "SCR_THC18 : CBD1",
+   "thc_criterion": "16.20 – 19.80 %",
+   "thc_target": "18.00% ± 1.80%",
+   "spec_doc_code": "QCSP_001_SCR-II_v.01"
+  },
+  "P060402": {
+   "file": "P060402_GG_Gorilla_Glue_Grade_II.pdf",
+   "tranche": "Tran01",
+   "strain": "Gorilla Glue",
+   "product_code": "GG_THC16 : CBD1",
+   "thc_criterion": "15.00 – 17.00 %",
+   "thc_target": "16.00% ± 1.00%",
+   "spec_doc_code": "QCSP_001_GG-II_v.01"
+  },
+  "GG1024": {
+   "file": "GG1024_GG_Gorilla_Glue_Grade_II.pdf",
+   "tranche": "Tran02",
+   "strain": "Gorilla Glue",
+   "product_code": "GG_THC16 : CBD1",
+   "thc_criterion": "15.00 – 17.00 %",
+   "thc_target": "16.00% ± 1.00%",
+   "spec_doc_code": "QCSP_001_GG-II_v.01"
+  },
+  "P050042": {
+   "file": "P050042_OPM_Orange_Punch_Mimosa_Grade_II.pdf",
+   "tranche": "Tran02",
+   "strain": "Orange Punch Mimosa",
+   "product_code": "OPM_THC18 : CBD1",
+   "thc_criterion": "16.20 – 19.80 %",
+   "thc_target": "18.00% ± 1.80%",
+   "spec_doc_code": "QCSP_001_OPM-II_v.01"
+  },
+  "P050072": {
+   "file": "P050072_GP_Grape_Pie_Grade_I.pdf",
+   "tranche": "Tran02",
+   "strain": "Grape Pie",
+   "product_code": "GP_THC28 : CBD1",
+   "thc_criterion": "26.61 – 29.39 %",
+   "thc_target": "28.00% ± 1.39%",
+   "spec_doc_code": "QCSP_001_GP-I_v.01"
+  },
+  "P050082": {
+   "file": "P050082_OPM_Orange_Punch_Mimosa_Grade_II.pdf",
+   "tranche": "Tran02",
+   "strain": "Orange Punch Mimosa",
+   "product_code": "OPM_THC18 : CBD1",
+   "thc_criterion": "16.20 – 19.80 %",
+   "thc_target": "18.00% ± 1.80%",
+   "spec_doc_code": "QCSP_001_OPM-II_v.01"
+  },
+  "P050112": {
+   "file": "P050112_MB_Motor_Breath_Grade_I.pdf",
+   "tranche": "Tran02",
+   "strain": "Motor Breath",
+   "product_code": "MB_THC18 : CBD1",
+   "thc_criterion": "16.20 – 19.80 %",
+   "thc_target": "18.00% ± 1.80%",
+   "spec_doc_code": "QCSP_001_MB-I_v.01"
+  },
+  "P050182": {
+   "file": "P050182_HPA_High_Pro_Amnesia_Grade_II.pdf",
+   "tranche": "Tran02",
+   "strain": "High Pro Amnesia",
+   "product_code": "HPA_THC20 : CBD1",
+   "thc_criterion": "19.01 – 20.99 %",
+   "thc_target": "20.00% ± 0.99%",
+   "spec_doc_code": "QCSP_001_HPA-II_v.01"
+  },
+  "P050192": {
+   "file": "P050192_BSS_Blue_Sunset_Sherbet_Grade_II.pdf",
+   "tranche": "Tran02",
+   "strain": "Blue Sunset Sherbet",
+   "product_code": "BSS_THC20 : CBD1",
+   "thc_criterion": "18.00 – 22.00 %",
+   "thc_target": "20.00% ± 2.00%",
+   "spec_doc_code": "QCSP_001_BSS-II_v.01"
+  },
+  "P050222": {
+   "file": "P050222_CJ_Cap_Junky_Grade_III.pdf",
+   "tranche": "Tran02",
+   "strain": "Cap Junky",
+   "product_code": "CJ_THC24 : CBD1",
+   "thc_criterion": "23.00 – 25.00 %",
+   "thc_target": "24.00% ± 1.00%",
+   "spec_doc_code": "QCSP_001_CJ-III_v.01"
+  },
+  "P050282": {
+   "file": "P050282_CLE_Clemosa_a_bud_Grade_I.pdf",
+   "tranche": "Tran02",
+   "strain": "Clemosa A Bud",
+   "product_code": "CLE_THC8 : CBD1",
+   "thc_criterion": "7.20 – 8.80 %",
+   "thc_target": "8.00% ± 0.80%",
+   "spec_doc_code": "QCSP_001_CLE-I_v.01"
+  },
+  "P050302": {
+   "file": "P050302_GP_Grape_Pie_Grade_IV.pdf",
+   "tranche": "Tran02",
+   "strain": "Grape Pie",
+   "product_code": "GP_THC20 : CBD1",
+   "thc_criterion": "18.00 – 22.00 %",
+   "thc_target": "20.00% ± 2.00%",
+   "spec_doc_code": "QCSP_001_GP-IV_v.01"
+  },
+  "P050312": {
+   "file": "P050312_GP_Grape_Pie_Grade_II.pdf",
+   "tranche": "Tran02",
+   "strain": "Grape Pie",
+   "product_code": "GP_THC26 : CBD1",
+   "thc_criterion": "25.40 – 26.60 %",
+   "thc_target": "26.00% ± 0.60%",
+   "spec_doc_code": "QCSP_001_GP-II_v.01"
+  },
+  "P060012": {
+   "file": "P060012_WC_Wedding_Crasher_Grade_I.pdf",
+   "tranche": "Tran02",
+   "strain": "Wedding Crasher",
+   "product_code": "WC_THC22 : CBD1",
+   "thc_criterion": "19.80 – 24.20 %",
+   "thc_target": "22.00% ± 2.20%",
+   "spec_doc_code": "QCSP_001_WC-I_v.01"
+  },
+  "P060022": {
+   "file": "P060022_CJ_Cap_Junky_Grade_I.pdf",
+   "tranche": "Tran02",
+   "strain": "Cap Junky",
+   "product_code": "CJ_THC28 : CBD1",
+   "thc_criterion": "27.00 – 29.00 %",
+   "thc_target": "28.00% ± 1.00%",
+   "spec_doc_code": "QCSP_001_CJ-I_v.01"
+  },
+  "P060042": {
+   "file": "P060042_OPM_Orange_Punch_Mimosa_Grade_IV.pdf",
+   "tranche": "Tran02",
+   "strain": "Orange Punch Mimosa",
+   "product_code": "OPM_THC10 : CBD1",
+   "thc_criterion": "9.00 – 11.00 %",
+   "thc_target": "10.00% ± 1.00%",
+   "spec_doc_code": "QCSP_001_OPM-IV_v.01"
+  },
+  "P060072": {
+   "file": "P060072_CJ_Cap_Junky_Grade_II.pdf",
+   "tranche": "Tran02",
+   "strain": "Cap Junky",
+   "product_code": "CJ_THC26 : CBD1",
+   "thc_criterion": "25.01 – 26.99 %",
+   "thc_target": "26.00% ± 0.99%",
+   "spec_doc_code": "QCSP_001_CJ-II_v.01"
+  },
+  "P060082": {
+   "file": "P060082_SJ_Sleepy_Joy_Grade_II.pdf",
+   "tranche": "Tran02",
+   "strain": "Sleepy Joy",
+   "product_code": "SJ_THC10 : CBD1",
+   "thc_criterion": "9.00 – 11.00 %",
+   "thc_target": "10.00% ± 1.00%",
+   "spec_doc_code": "QCSP_001_SJ-II_v.01"
+  },
+  "P060092": {
+   "file": "P060092_GP_Grape_Pie_Grade_II.pdf",
+   "tranche": "Tran02",
+   "strain": "Grape Pie",
+   "product_code": "GP_THC26 : CBD1",
+   "thc_criterion": "25.40 – 26.60 %",
+   "thc_target": "26.00% ± 0.60%",
+   "spec_doc_code": "QCSP_001_GP-II_v.01"
+  },
+  "P060112": {
+   "file": "P060112_PUM_Pure_Michigen_Grade_I.pdf",
+   "tranche": "Tran02",
+   "strain": "Pure Michigen",
+   "product_code": "PUM_THC14 : CBD1",
+   "thc_criterion": "12.60 – 15.40 %",
+   "thc_target": "14.00% ± 1.40%",
+   "spec_doc_code": "QCSP_001_PUM-I_v.01"
+  },
+  "P060122": {
+   "file": "P060122_ACC_Amnesia_Core_Cut_Grade_I.pdf",
+   "tranche": "Tran02",
+   "strain": "Amnesia Core Cut",
+   "product_code": "ACC_THC12 : CBD1",
+   "thc_criterion": "10.80 – 13.20 %",
+   "thc_target": "12.00% ± 1.20%",
+   "spec_doc_code": "QCSP_001_ACC-I_v.01"
+  },
+  "P060132": {
+   "file": "P060132_CF_Chem_Flyer_Grade_I.pdf",
+   "tranche": "Tran02",
+   "strain": "Chem Flyer",
+   "product_code": "CF_THC10 : CBD1",
+   "thc_criterion": "9.00 – 11.00 %",
+   "thc_target": "10.00% ± 1.00%",
+   "spec_doc_code": "QCSP_001_CF-I_v.01"
+  },
+  "P060172": {
+   "file": "P060172_KC_Kush_Crasher_Grade_I.pdf",
+   "tranche": "Tran02",
+   "strain": "Kush Crasher",
+   "product_code": "KC_THC18 : CBD1",
+   "thc_criterion": "16.20 – 19.80 %",
+   "thc_target": "18.00% ± 1.80%",
+   "spec_doc_code": "QCSP_001_KC-I_v.01"
+  },
+  "P060182": {
+   "file": "P060182_GRC_Graps_and_Creme_Grade_THC12.pdf",
+   "tranche": "Tran02",
+   "strain": "Graps And Creme",
+   "product_code": "GRC_THC12 : CBD1",
+   "thc_criterion": "10.80 – 13.20 %",
+   "thc_target": "12.00% ± 1.20%",
+   "spec_doc_code": "QCSP_001_GRC-THC12_v.01"
+  },
+  "P060232": {
+   "file": "P060232_PM_Permanent_Marker_Grade_II.pdf",
+   "tranche": "Tran02",
+   "strain": "Permanent Marker",
+   "product_code": "PM_THC10 : CBD1",
+   "thc_criterion": "9.00 – 11.00 %",
+   "thc_target": "10.00% ± 1.00%",
+   "spec_doc_code": "QCSP_001_PM-II_v.01"
+  },
+  "P060282": {
+   "file": "P060282_SCR_Scrambler_Grade_II.pdf",
+   "tranche": "Tran02",
+   "strain": "Scrambler",
+   "product_code": "SCR_THC18 : CBD1",
+   "thc_criterion": "16.20 – 19.80 %",
+   "thc_target": "18.00% ± 1.80%",
+   "spec_doc_code": "QCSP_001_SCR-II_v.01"
+  },
+  "P060322": {
+   "file": "P060322_FB_Fat_Bastard_Grade_III.pdf",
+   "tranche": "Tran02",
+   "strain": "Fat Bastard",
+   "product_code": "FB_THC16 : CBD1",
+   "thc_criterion": "14.86 – 17.14 %",
+   "thc_target": "16.00% ± 1.14%",
+   "spec_doc_code": "QCSP_001_FB-III_v.01"
+  },
+  "P060362": {
+   "file": "P060362_JD_Jelly_Donutz_Grade_I.pdf",
+   "tranche": "Tran02",
+   "strain": "Jelly Donutz",
+   "product_code": "JD_THC20 : CBD1",
+   "thc_criterion": "18.00 – 22.00 %",
+   "thc_target": "20.00% ± 2.00%",
+   "spec_doc_code": "QCSP_001_JD-I_v.01"
+  },
+  "P060372": {
+   "file": "P060372_CC_Cash_Cow_Grade_II.pdf",
+   "tranche": "Tran02",
+   "strain": "Cash Cow",
+   "product_code": "CC_THC14 : CBD1",
+   "thc_criterion": "12.60 – 15.40 %",
+   "thc_target": "14.00% ± 1.40%",
+   "spec_doc_code": "QCSP_001_CC-II_v.01"
+  },
+  "P060412": {
+   "file": "P060412_JD_Jelly_Donutz_Grade_I.pdf",
+   "tranche": "Tran02",
+   "strain": "Jelly Donutz",
+   "product_code": "JD_THC20 : CBD1",
+   "thc_criterion": "18.00 – 22.00 %",
+   "thc_target": "20.00% ± 2.00%",
+   "spec_doc_code": "QCSP_001_JD-I_v.01"
+  },
+  "P060422": {
+   "file": "P060422_JD_Jelly_Donutz_Grade_II.pdf",
+   "tranche": "Tran02",
+   "strain": "Jelly Donutz",
+   "product_code": "JD_THC16 : CBD1",
+   "thc_criterion": "14.91 – 17.09 %",
+   "thc_target": "16.00% ± 1.09%",
+   "spec_doc_code": "QCSP_001_JD-II_v.01"
+  }
+ },
+ "determinations": [
+  {
+   "no": "1",
+   "group": "",
+   "en": "Identification A, Appearance · Macroscopic",
+   "mk": "Идентиф. A, Изглед, Макроскопски",
+   "method": "Ph. Eur. mon. 3028",
+   "criterion": "Conforms to the monograph for Cannabis flos (07/2024:3028) in Ph. Eur. 11.0 | Согласно монографија за Cannabis flos (07/2024:3028) во Ph. Eur. 11.0",
+   "column": "",
+   "source": "in_house_icoa"
+  },
+  {
+   "no": "2",
+   "group": "",
+   "en": "Identification B · Microscopic",
+   "mk": "Идентиф. Б · Микроскопски",
+   "method": "Ph. Eur. 2.8.23 (microscopy)",
+   "criterion": "Conforms to the monograph for Cannabis flos (07/2024:3028) in Ph. Eur. 11.0 | Согласно монографија за Cannabis flos (07/2024:3028) во Ph. Eur. 11.0",
+   "column": "",
+   "source": "in_house_icoa"
+  },
+  {
+   "no": "3",
+   "group": "",
+   "en": "Identification C · HPLC/HPTLC",
+   "mk": "Идентиф. Ц · HPLC/HPTLC",
+   "method": "Ph. Eur. 2.2.29 (3028)",
+   "criterion": "Conforms to the monograph for Cannabis flos (07/2024:3028) in Ph. Eur. 11.0 | Согласно монографија за Cannabis flos (07/2024:3028) во Ph. Eur. 11.0",
+   "column": "",
+   "source": "in_house_icoa"
+  },
+  {
+   "no": "4",
+   "group": "",
+   "en": "Assay — Total Δ⁹-THC",
+   "mk": "Анализа — вкупен Δ⁹-THC",
+   "method": "Ph. Eur. 2.2.29 (HPLC)",
+   "criterion": "Per target grade as per Section 01 | Според целна класа од Дел 01",
+   "column": "E",
+   "source": "outsourced_certificate",
+   "per_batch_criterion": true
+  },
+  {
+   "no": "5",
+   "group": "",
+   "en": "Assay — Total CBD",
+   "mk": "Анализа — вкупен CBD",
+   "method": "Ph. Eur. 2.2.29 (HPLC) · CBD + CBDA x 0.877",
+   "criterion": "≤ 1.0%, w/w",
+   "column": "G",
+   "source": "outsourced_certificate"
+  },
+  {
+   "no": "6",
+   "group": "",
+   "en": "Total CBN",
+   "mk": "Вкупен CBN",
+   "method": "Ph. Eur. 2.2.29 (HPLC) · CBN + CBNA x 0.876",
+   "criterion": "≤ 1.0%, w/w",
+   "column": "H",
+   "source": "outsourced_certificate"
+  },
+  {
+   "no": "7",
+   "group": "",
+   "en": "Foreign Matter",
+   "mk": "Страни материи",
+   "method": "Ph. Eur. 2.8.2 · In-house · интерна",
+   "criterion": "≤ 2.0% / 25–50 g · < 1 cm leaves | листови, no seeds | без семки",
+   "column": "",
+   "source": "in_house_icoa"
+  },
+  {
+   "no": "8",
+   "group": "",
+   "en": "Loss on Drying",
+   "mk": "Губиток при сушење",
+   "method": "Ph. Eur. 2.2.32 (3028) · at 40 °C, 24 h, 15–25 mbar",
+   "criterion": "≤ 12.0%",
+   "column": "I",
+   "source": "outsourced_certificate"
+  },
+  {
+   "no": "9.1",
+   "group": "Microbiological Purity | Микробиолошка Чистота",
+   "en": "TAMC",
+   "mk": "Вкупен аеробен микробен број",
+   "method": "Ph. Eur. 2.6.12 cat. C",
+   "criterion": "≤ 10⁵ CFU/g",
+   "column": "J",
+   "source": "outsourced_certificate"
+  },
+  {
+   "no": "9.2",
+   "group": "Microbiological Purity | Микробиолошка Чистота",
+   "en": "TYMC",
+   "mk": "Вкупен број квасци/мувли",
+   "method": "Ph. Eur. 2.6.12 cat. C",
+   "criterion": "≤ 10⁴ CFU/g",
+   "column": "K",
+   "source": "outsourced_certificate"
+  },
+  {
+   "no": "9.3",
+   "group": "Microbiological Purity | Микробиолошка Чистота",
+   "en": "Bile-tolerant gram-neg.",
+   "mk": "Жолчно-толерантни грам-нег.",
+   "method": "Ph. Eur. 2.6.31 cat. C",
+   "criterion": "≤ 10⁴ CFU/g",
+   "column": "L",
+   "source": "outsourced_certificate"
+  },
+  {
+   "no": "9.4",
+   "group": "Microbiological Purity | Микробиолошка Чистота",
+   "en": "Salmonella",
+   "mk": "Салмонела",
+   "method": "Ph. Eur. 2.6.31 cat. C",
+   "criterion": "Absence | Отсуство / 25 g",
+   "column": "M",
+   "source": "outsourced_certificate"
+  },
+  {
+   "no": "9.5",
+   "group": "Microbiological Purity | Микробиолошка Чистота",
+   "en": "Escherichia coli",
+   "mk": "Ешерихија коли",
+   "method": "Ph. Eur. 2.6.13 cat. C",
+   "criterion": "Absence | Отсуство / 1 g",
+   "column": "N",
+   "source": "outsourced_certificate"
+  },
+  {
+   "no": "9.6",
+   "group": "Microbiological Purity | Микробиолошка Чистота",
+   "en": "Pseudomonas aeruginosa",
+   "mk": "",
+   "method": "Ph. Eur. 2.6.13 cat. C",
+   "criterion": "Absence | Отсуство / 1 g",
+   "column": "",
+   "source": "upon_request"
+  },
+  {
+   "no": "9.7",
+   "group": "Microbiological Purity | Микробиолошка Чистота",
+   "en": "Staphylococcus aureus",
+   "mk": "",
+   "method": "Ph. Eur. 2.6.13 cat. C",
+   "criterion": "Absence | Отсуство / 1 g",
+   "column": "",
+   "source": "upon_request"
+  },
+  {
+   "no": "10.1",
+   "group": "Mycotoxins | Микотоксини",
+   "en": "Aflatoxin B₁",
+   "mk": "Афлатоксин B₁",
+   "method": "Ph. Eur. 2.8.18 (HPLC-FLD)",
+   "criterion": "≤ 2 µg/kg",
+   "column": "P",
+   "source": "outsourced_certificate"
+  },
+  {
+   "no": "10.2",
+   "group": "Mycotoxins | Микотоксини",
+   "en": "Aflatoxins ∑",
+   "mk": "Афлатоксини ∑ (B₁+B₂+G₁+G₂)",
+   "method": "Ph. Eur. 2.8.18 (HPLC-FLD)",
+   "criterion": "≤ 4 µg/kg",
+   "column": "O",
+   "source": "outsourced_certificate"
+  },
+  {
+   "no": "10.3",
+   "group": "Mycotoxins | Микотоксини",
+   "en": "Ochratoxin A",
+   "mk": "Охратоксин A",
+   "method": "Ph. Eur. 2.8.22 (HPLC-FLD)",
+   "criterion": "≤ 20 µg/kg",
+   "column": "Q",
+   "source": "outsourced_certificate"
+  },
+  {
+   "no": "11.1",
+   "group": "Heavy Metals | Тешки метали",
+   "en": "Lead (Pb)",
+   "mk": "Олово (Pb)",
+   "method": "Ph. Eur. 2.4.27 (ICP-MS)",
+   "criterion": "≤ 0.5 mg/kg",
+   "column": "R",
+   "source": "outsourced_certificate"
+  },
+  {
+   "no": "11.2",
+   "group": "Heavy Metals | Тешки метали",
+   "en": "Cadmium (Cd)",
+   "mk": "Кадмиум (Cd)",
+   "method": "Ph. Eur. 2.4.27 (ICP-MS)",
+   "criterion": "≤ 0.3 mg/kg",
+   "column": "S",
+   "source": "outsourced_certificate"
+  },
+  {
+   "no": "11.3",
+   "group": "Heavy Metals | Тешки метали",
+   "en": "Arsenic (As)",
+   "mk": "Арсен (As)",
+   "method": "Ph. Eur. 2.4.27 (ICP-MS)",
+   "criterion": "≤ 0.2 mg/kg",
+   "column": "T",
+   "source": "outsourced_certificate"
+  },
+  {
+   "no": "11.4",
+   "group": "Heavy Metals | Тешки метали",
+   "en": "Mercury (Hg)",
+   "mk": "Жива (Hg)",
+   "method": "Ph. Eur. 2.4.27 (ICP-MS)",
+   "criterion": "≤ 0.1 mg/kg",
+   "column": "U",
+   "source": "outsourced_certificate"
+  },
+  {
+   "no": "12",
+   "group": "",
+   "en": "Pesticide Residues",
+   "mk": "Остатоци од пестициди",
+   "method": "Ph. Eur. 2.8.13 (LC-MS/MS) · CUMCS Equivalency",
+   "criterion": "≤ LOQ as per Ph. Eur. 2.8.13 · ≤ LOQ as per CUMCS Equivalency",
+   "column": "V",
+   "source": "outsourced_certificate"
+  }
+ ],
+ "section_02_shapes": {
+  "4a10aa2e4964": [
+   "BG1024",
+   "BSS1024",
+   "GG1024",
+   "HPA1024",
+   "OPM1024",
+   "P050022",
+   "P050042",
+   "P050052",
+   "P050062",
+   "P050072",
+   "P050082",
+   "P050092",
+   "P050112",
+   "P050152",
+   "P050162",
+   "P050182",
+   "P050192",
+   "P050222",
+   "P050282",
+   "P050302",
+   "P050312",
+   "P050322",
+   "P060012",
+   "P060022",
+   "P060032",
+   "P060042",
+   "P060062",
+   "P060072",
+   "P060082",
+   "P060092",
+   "P060112",
+   "P060122",
+   "P060132",
+   "P060152",
+   "P060172",
+   "P060182",
+   "P060212",
+   "P060232",
+   "P060242",
+   "P060282",
+   "P060322",
+   "P060352",
+   "P060362",
+   "P060372",
+   "P060382",
+   "P060402",
+   "P060412",
+   "P060422"
+  ]
+ }
+}

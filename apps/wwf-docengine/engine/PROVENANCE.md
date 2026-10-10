@@ -1,21 +1,16 @@
-# docengine/engine — vendored canonical pp-document-suite
+# docengine/engine — vendored pp-document-suite
 
-Assembled per **docs/DOCENGINE-CANON-2026-07.md** (the binding per-component
-version decision). Do not edit these files ad hoc — changes go through a canon
-revision.
+**Since 09.10.2026 this directory is an exact copy of the repository's `pp-document-suite/`**
+(`scripts/` — the `.py`, `.sh` and `.ps1` files — `assets/` and `references/`). The Head of QC
+ruled that the DocEngine runs the current suite (canon revision noted at the top of
+`docs/wwf_DOCENGINE-CANON-2026-07.md`).
 
-| File | Source | Note |
-|---|---|---|
-| `scripts/pp_theme.py`, `pp_charts.py`, `pp_data.py`, `pp_verify.py` | ZIP v1.7.0 (≡ repo) | identical in both lines |
-| `scripts/pp_format.py` | ZIP v1.7.0 **+ graft** | `fixed()` replaced with the ACME_SOP repo version @ 2026-07-14 (data-driven overflow compression + word-boundary entry matching); marker comment at the graft site |
-| `scripts/pp_report.py` | ZIP v1.7.0 | imports `fixed`/`PAGE_W` from `pp_format` (one layout brain) |
-| `scripts/pp_format_layout_addons.py` | ZIP v1.7.0 | re-export shim (§6D filename reference) |
-| `scripts/build_from_md.py` | ACME_SOP repo @ 2026-07-14 | Markdown adapter incl. `[[FORM:grid]]` content-aware packing |
-| `scripts/render_pdf.ps1` | ZIP v1.7.0 | Windows-only; service uses Gotenberg instead |
-| `assets/PP_BASE_TEMPLATE.docx` | ZIP v1.7.0 | house header/footer/logo |
-| `references/formatting_specs.md`, `questionnaire_library.md`, `regulatory_and_context.md` | ZIP v1.7.0 | |
-| `references/GUIDE_bilingual_markdown.md` | ACME_SOP repo | Markdown grammar |
+- **Do not edit files here.** Change `pp-document-suite/`, then run `engine/sync_from_suite.sh`.
+- `tests/test_engine_sync.py` fails CI if this copy and the suite differ in any file.
+- The copy exists only because the DocEngine image is built from `apps/wwf-docengine/`.
 
-Origins: ZIP = `pp-document-suite_v1.7.0.zip` (owner's Drive,
-`1Kzw0aLcHGczPU4_T9yFNXGrxgy-UFbk3`); repo = `3p4e/ACME_SOP` branch
-`claude/cannabis-import-sop-docs-uju5fb` @ `2ad7be8`.
+What the previous line (canon-2026-07: ZIP v1.7.0 + ACME_SOP grafts) had that the suite lacked
+was ported into the suite before the switch, so nothing was dropped: `kv_block`, `cell08`,
+`value_span`, `_merge` and `sop_nested_table` (`pp_format.py`), the `pp_format_layout_addons.py`
+re-export shim, `pp_verify.py --require-bilingual`, and the line-anchored HEADERDATA parser in
+`build_from_md.py`. The previous line's provenance is in git history before this commit.

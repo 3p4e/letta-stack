@@ -1,0 +1,107 @@
+Read of 280426_310-0554-26_IJZ-MB_GG012601＊-P060302.pdf — Google Drive's OCR text of the scan, fetched 16.09.2026 (Drive file 16WO2J-yRSfKfGKcdH-5f5LXxdYrcVpXj). Verbatim; nothing corrected.
+
+This certificate is the one of the eighteen that the eCoA runner never read (it is absent from ingestion/ecoa_runner/records_corpus.json). Its two reads for the gate are therefore the RAGflow OCR of 30.08.2026 (read A) and the Head of QC's own transcription on the CoQ_Analysis_Master tracker, tracker/v8_values.json key "GG012601＊|310/0554/26" (read B). This Drive OCR is the third: its exponents did not survive OCR ("1 х 10 CFU/g 1 х 10% CFU/g"), so it confirms the bile-tolerant line "< 10 CFU/g" and both absences, and is silent on the exponents of TAMC and TYMC, which reads A and B give as 10⁴ and 10⁴.
+
+ЈЗУ ИНСТИТУТ ЗА ЈАВНО ЗДРАВЈЕ НА РСМАКЕДОНИЈА Оддел за микробиологија
+
+-Одделение за микробиолошка контрола на храна и лекови- ул. 50 Дивизија бр.6 1000 Скопје; Тел.: +38923125 044, Фах: 389 2 3223-354 Пошт. фах 577* Трезорска сметка 100000000066005 Народна банка Сметка на Буџетски корисник: 6602500053-531-56 Приходна шифра: 723819; ЕДБ:4030982108064 www.iph.mk
+
+Лабораториски број: 310/0554/26
+
+Дата на прием: 22.04.2026 год.
+
+Tecpane
+
+MIRC EN 150SEC 17025
+
+M
+
+Т-005 Tedre
+
+Страна: 1/1
+
+ИЗВЕШТАЈ ОД ТЕСТИРАЊЕ НА МИКРОБИОЛОШКИ КВАЛИТЕТ НА ХЕРБАЛНИ МЕДИЦИНСКИ ПРОИЗВОДИ ЗА ОРАЛНА УПОТРЕБА И ЕКСТРАКТИ КОИ СЕ КОРИСТАТ ПРИ НИВНА ПРИПРЕМА
+
+Примерок за тестирање: Сув цвет од медицински канабис Gorilla Glue, 38 g
+
+Серија:
+
+Произведено:
+
+Производител:
+
+Доставено од:
+
+Со писмо бр.:
+
+Со цел:
+
+Барање/Метода:
+
+(Просторија за завршно сушење F108)
+
+GG012601*
+
+ПЈУРЕЛИ ПЛАНТ ДООЕЛ
+
+ПЈУРЕЛИ ПЛАНТ ДООЕЛ
+
+Количество:
+
+Рок на употреба:
+
+с.Ќојлија, Петровец, РС Македонија
+
+с.Ќојлија, Петровец, РС Македонија
+
+Сл. (Барање бр.: 110/2026) од 21.04.2026 година
+
+микробиолошка чистота
+
+Ph.Eur. 5.1.8 - Kat. C /2.6.12, 2.6.31
+
+Параметар
+
+Вкупен број аеробни бактерии-ТАМС
+
+Спецификација
+
+- 10³ CFU/g
+
+- 10 CFU/g
+
+Вкупен број габи и мувли-ТҮМС
+
+На жолчка толерантни грам-негативни бактерии Escherichia coli
+
+-≤10 CFU/g - отсутна/
+
+Salmonella
+
+- отсутна/25 в
+
+Резултат
+
+1 х 10 CFU/g 1 х 10% CFU/g
+
+< 10 CFU/g отсутна/в
+
+отсутна/25
+
+ЗАКЛУЧОК: Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на Ph.Eur монографија 04/2019:50108 “Microbiological quality of herbal medicinal products for oral use and extracts used in their preparations".
+
+Дата: 28.04.2026 година
+
+Скопје
+
+Одделение за микробиолошка контрола на храна и лекови,
+
+специјалист микробиолог
+
+Д-р Татјана Цуцуловска,
+
+РАКОВОДИТЕЛ на Оддел за микробиологија
+
+Мр сци Елизабета Јанческа, специјалист микробиолог
+
+0101 ОБ 7.8.3 216 Верзија 3
