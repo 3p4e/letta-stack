@@ -8,7 +8,8 @@
 #                                              litellm_params.extra_headers into the outbound request)
 #   IN   Voyage        VOYAGE_API_KEY          embeddings + rerank-2.5 work
 #   OUT  Moonshot      401 on api.moonshot.ai AND api.moonshot.cn (Kimi-for-Coding keys are a different product)
-#   OUT  DeepSeek      401 - block kept commented at the bottom for the replacement key
+#   IN   DeepSeek      DEEPSEEK_API_KEY        deepseek-v4-pro / deepseek-v4-flash answered (new key, 2026-10-10);
+#                                              order 2 in pp-reason/pp-fast/pp-format/pp-enrich (deepseek-v4.1-flash not served)
 #   OUT  CometAPI      never measured
 #   LEG  Gemini direct free-tier keys - 429 on the free tier; used only by the legacy `gemini-flash` name
 #
@@ -34,6 +35,9 @@ model_list:
   # audit-adjacent reasoning, orchestrators, RAG domain experts, generation (SOP/CoQ/report writing),
   # and RAGFlow chat assistants. Long context, strong tool calling, English legal/technical prose.
   - model_name: pp-reason
+    litellm_params: {model: deepseek/deepseek-v4-pro, api_key: os.environ/DEEPSEEK_API_KEY, order: 2}
+    model_info: {id: pp-reason-deepseek-pro}
+  - model_name: pp-reason
     litellm_params:
       model: anthropic/claude-sonnet-5-5
       api_key: os.environ/ANTHROPIC_API_KEY
@@ -44,7 +48,7 @@ model_list:
     litellm_params:
       model: openrouter/anthropic/claude-sonnet-5.5
       api_key: os.environ/OPEN_ROUTER_API_KEY
-      order: 2
+      order: 3
       # OpenRouter also reports usage.cost per call and LiteLLM uses it; these list prices
       # (openrouter.ai/api/v1/models, 2026-10-10) only back-fill /model/info.
       input_cost_per_token: 0.000002
@@ -54,13 +58,13 @@ model_list:
     litellm_params:
       model: openai/gpt-4.1
       api_key: os.environ/OPENAI_API_KEY
-      order: 3
+      order: 4
     model_info: {id: pp-reason-openai-gpt41}
   - model_name: pp-reason
     litellm_params:
       model: openai/gpt-5.1
       api_key: os.environ/OPENAI_API_KEY
-      order: 4
+      order: 5
       max_budget: 10
       budget_duration: 30d
     model_info: {id: pp-reason-openai-gpt51}
@@ -156,6 +160,9 @@ model_list:
   # summarize, route, search/extraction, design, gf_*/sentinel_*/wwf_*/planner-* and every agent not in
   # AGENT_ROLES (policy default). Cheap, four vendors deep.
   - model_name: pp-fast
+    litellm_params: {model: deepseek/deepseek-v4-flash, api_key: os.environ/DEEPSEEK_API_KEY, order: 2}
+    model_info: {id: pp-fast-deepseek-flash}
+  - model_name: pp-fast
     litellm_params:
       model: anthropic/claude-haiku-5-5
       api_key: os.environ/ANTHROPIC_API_KEY
@@ -166,7 +173,7 @@ model_list:
     litellm_params:
       model: openrouter/anthropic/claude-haiku-5.5
       api_key: os.environ/OPEN_ROUTER_API_KEY
-      order: 2
+      order: 3
       input_cost_per_token: 0.0000001
       output_cost_per_token: 0.0000005
     model_info: {id: pp-fast-openrouter-haiku}
@@ -174,19 +181,22 @@ model_list:
     litellm_params:
       model: openai/gpt-4.1-mini
       api_key: os.environ/OPENAI_API_KEY
-      order: 3
+      order: 4
     model_info: {id: pp-fast-openai-gpt41mini}
   - model_name: pp-fast
     litellm_params:
       model: openrouter/google/gemini-3.6-flash
       api_key: os.environ/OPEN_ROUTER_API_KEY
-      order: 4
+      order: 5
       input_cost_per_token: 0.00000075
       output_cost_per_token: 0.00000375
     model_info: {id: pp-fast-openrouter-gemini36flash}
 
   # ───────────────────────────── pp-format ─────────────────────────────
   # qms_docx_formatter, pharma_docx_formatter: long structured output, no judgement needed.
+  - model_name: pp-format
+    litellm_params: {model: deepseek/deepseek-v4-flash, api_key: os.environ/DEEPSEEK_API_KEY, order: 2}
+    model_info: {id: pp-format-deepseek-flash}
   - model_name: pp-format
     litellm_params:
       model: anthropic/claude-haiku-5-5
@@ -198,13 +208,13 @@ model_list:
     litellm_params:
       model: openai/gpt-4.1-mini
       api_key: os.environ/OPENAI_API_KEY
-      order: 2
+      order: 3
     model_info: {id: pp-format-openai-gpt41mini}
   - model_name: pp-format
     litellm_params:
       model: openrouter/anthropic/claude-haiku-5.5
       api_key: os.environ/OPEN_ROUTER_API_KEY
-      order: 3
+      order: 4
       input_cost_per_token: 0.0000001
       output_cost_per_token: 0.0000005
     model_info: {id: pp-format-openrouter-haiku}
@@ -213,6 +223,9 @@ model_list:
   # RAGFlow auto-keyword / auto-question enrichment (dataset Configuration -> auto-keyword model).
   # gpt-4.1 first because that is the model verified to persist keywords correctly; the re-parse of
   # 48 docs / 4449 chunks is ~2 calls per chunk, so the cheaper tiers are deliberately close behind.
+  - model_name: pp-enrich
+    litellm_params: {model: deepseek/deepseek-v4-flash, api_key: os.environ/DEEPSEEK_API_KEY, order: 2}
+    model_info: {id: pp-enrich-deepseek-flash}
   - model_name: pp-enrich
     litellm_params:
       model: openai/gpt-4.1
@@ -223,14 +236,14 @@ model_list:
     litellm_params:
       model: openai/gpt-4.1-mini
       api_key: os.environ/OPENAI_API_KEY
-      order: 2
+      order: 3
     model_info: {id: pp-enrich-openai-gpt41mini}
   - model_name: pp-enrich
     litellm_params:
       model: anthropic/claude-haiku-5-5
       api_key: os.environ/ANTHROPIC_API_KEY
       extra_headers: {"anthropic-workspace-id": "wrkspc_01KgrPQHQPyBxATLNrmzQkPn"}
-      order: 3
+      order: 4
     model_info: {id: pp-enrich-anthropic-haiku}
 
   # ───────────────────── embeddings & rerank (NO fallbacks, ever) ──────────────────────
@@ -302,14 +315,6 @@ model_list:
                      api_key: os.environ/COMETAPI_API_KEY, order: 3}
 
   # ───────────── parked until a key is measured working (do not enable blind) ─────────────
-  # DeepSeek - user reports a new key with deepseek-v4-pro / deepseek-v4.1-flash; add as order 2/3
-  # behind the Anthropic tiers of pp-reason / pp-fast once `curl /health` on this proxy shows them healthy.
-  # - model_name: pp-reason
-  #   litellm_params: {model: deepseek/deepseek-v4-pro, api_key: os.environ/DEEPSEEK_API_KEY, order: 2}
-  #   model_info: {id: pp-reason-deepseek-v4-pro}
-  # - model_name: pp-fast
-  #   litellm_params: {model: deepseek/deepseek-v4.1-flash, api_key: os.environ/DEEPSEEK_API_KEY, order: 2}
-  #   model_info: {id: pp-fast-deepseek-v41-flash}
   # Gemini direct free-tier keys (5 keys, 429 rotation) - not measured on 2026-10-10:
   # - model_name: pp-fast
   #   litellm_params: {model: gemini/gemini-3.6-flash, api_key: os.environ/AZ_GEMINI_API_KEY, order: 5}
@@ -343,6 +348,7 @@ router_settings:
     anthropic:  {budget_limit: 30, time_period: 30d}
     openrouter: {budget_limit: 30, time_period: 30d}
     voyage:     {budget_limit: 10, time_period: 30d}
+    deepseek:   {budget_limit: 10, time_period: 30d}
 
 general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY
