@@ -152,16 +152,23 @@ Every call except `/health` needs the header `X-API-Key: $DOCENGINE_API_KEY`.
   the typed, double-read extraction. The search response always carries that note (`ECOA_NOTE`).
 - **What is in RAGFlow on 10.10.2026.** Another agent changed RAGFlow's pipelines and models on 10.10.
   Read-only status of that evening:
-  - **`eCOA_INGEST`** `71b9c168b4a311f1a370a99b32e82467` is a new dataset, and DocEngine does **not** query it.
+  - **`eCOA_INGEST`** `71b9c168b4a311f1a370a99b32e82467` was created on 20.09 as the planned replacement for
+    `eCOA_DB` (`ingestion/ecoa_runner/verify_ecoa_ingest.py`). On 10.10 it was being filled: 8 certificates
+    that evening. DocEngine does **not** query it, because its default is `eCOA_DB` and no
+    `RAGFLOW_*_DATASETS` is set on KVM4.
     - Its pipeline is `eCOA_PIPE`: Kimi K3 via NVIDIA reads the PDF; DeepSeek v4 Flash writes the
       questions and keywords; one 8192-token chunk per certificate; RAPTOR and GraphRAG on.
     - It is embedded with **Voyage-4-large**. `eCOA_DB` is embedded with Voyage-3-large, so one
       retrieval call cannot search both.
     - Either `eCOA_DB` is re-parsed into the new embedding, or `RAGFLOW_ECOA_DATASETS` stays on `eCOA_DB`.
-  - **`DB01_REG`**: 48 documents are parsed and **22 failed** ("User pipeline not found", the Test Weights
-    folder, uploaded 10.10, 0 chunks).
-    - `DB01_REG`, `eCOA_DB` and `eCOA_SS` all point to the pipeline `eCOA_DB_agent`, whose prompts are
-      written for certificates.
+  - **`DB01_REG`**: 48 documents are parsed. **22 failed** ("User pipeline not found", 0 chunks): the Test Weights
+    folder, uploaded 30.08 and re-run on 10.10.
+    - The cause is at document level. `DB01_REG`'s documents still carry pipeline `7d8aed62a6cc11f1a0f2e9fe9c0c677b`,
+      and that canvas no longer exists.
+    - At dataset level, `DB01_REG`, `eCOA_DB` and `eCOA_SS` now point to `eCOA_DB_agent`, whose prompts are
+      written for certificates. A re-run would therefore index regulatory texts with certificate questions.
+  - Chats: 3 active (`AAAA`, `zZz`, `bbb`, which are test names too). The 46 `ZZ*`/`tmp_*` probe chats are
+    already deleted: status 0 is RAGFlow's soft delete.
   - Account defaults: chat `deepseek-v4-pro`, embedding `voyage-4-large`, rerank `rerank-2.5`, image
     `kimi-k3` (NVIDIA).
     - Speech-to-text and text-to-speech are OpenAI, and that account has **no credits** ("429 no credits remaining").
@@ -347,7 +354,7 @@ DocEngine pins `fonttools==4.62.1`. Without fontTools the glyph guard has nothin
 | 6 | Jobs list survives only in session state. A server-side job list route would make it robust | DocEngine `/workflows` |
 | 7 | Merging this DocEngine into the WWF stack's `wwf-docengine` (Head of QC, later) | WEEKLY_WEED_FLOW |
 | 8 | A failed job keeps only its verdict. On a FIX audit the result is `{"qa_audit": …}` alone: the draft Markdown, `regulatory_sources` and `knowledge` are discarded. One FIX verdict ends the job, because there is no repair round. Keep the draft and the sources on failure so a failed run can be reviewed | `app/pipeline.py` (`QaAuditFailed` handler) |
-| 9 | RAGFlow after the other agent's changes (§3.4): re-run the 22 failed `DB01_REG` documents; give `DB01_REG` a regulatory pipeline instead of `eCOA_DB_agent`; choose one embedding model for the eCoA datasets; top up OpenAI or move speech to another provider; remove the 46 disabled test chats. All of these are the Head of QC's decisions | RAGFlow |
+| 9 | RAGFlow after the other agent's changes (§3.4): re-run the 22 failed `DB01_REG` documents; give `DB01_REG` (dataset and documents) a regulatory pipeline instead of the deleted canvas / `eCOA_DB_agent`; choose one embedding model for the eCoA datasets (finish `eCOA_INGEST` and point `RAGFLOW_ECOA_DATASETS` at it, or stay on `eCOA_DB`); top up OpenAI or move speech to another provider. All of these are the Head of QC's decisions | RAGFlow |
 | 10 | LiteLLM still carries dead DeepSeek, Anthropic and OpenAI keys: renew or remove them (Head of QC) | `/opt/stacks/litellm/.env` |
 | 11 | Environment F: add `GOTENBERG_URL`, `GOTENBERG_USERNAME`, `GOTENBERG_PASSWORD` (§5) | Claude environment settings |
 
