@@ -70,11 +70,20 @@ def all_docs(dataset_id):
     return docs
 
 
-def keys_of(dataset_id):
+def is_failed(d):
+    """A document RAGFlow holds but cannot search: the run failed, or it finished with no chunks
+    ("status DONE lies"). Such a document is not 'already ingested' - it is retried in place."""
+    return d.get("run") == "FAIL" or (d.get("run") == "DONE" and not d.get("chunk_count"))
+
+
+def keys_of(dataset_id, skip_failed=False):
     """(identity key) -> document name, for every document a dataset holds.
-    A name this module cannot parse is reported, never silently dropped."""
+    A name this module cannot parse is reported, never silently dropped.
+    skip_failed leaves out documents that are present but failed/empty (see is_failed)."""
     have, unparsed = {}, []
     for d in all_docs(dataset_id):
+        if skip_failed and is_failed(d):
+            continue
         ident = parse_name(d["name"])
         if ident is None:
             unparsed.append(d["name"])
@@ -99,7 +108,7 @@ def already_ingested_keys():
     destination — which is what makes a re-run safe: an interrupted or repeated
     run ingests only what is genuinely missing, however many times it is run.
     """
-    return keys_of(DS_NEW)
+    return keys_of(DS_NEW, skip_failed=True)
 
 
 def candidate_files():
@@ -210,7 +219,12 @@ def run(names=None, timeout=40 * 60):
     if not to_ingest:
         say("nothing new to ingest"); return
     ids = {}
+    failed = {d["name"]: d["id"] for d in all_docs(DS_NEW) if is_failed(d)}
     for n in to_ingest:
+        if n in failed:                      # a failed run (e.g. a 504 from the vision model): re-run in place
+            ids[n] = failed[n]
+            say("retrying failed document in place: %s -> %s" % (n, failed[n]))
+            continue
         did = upload(n)
         if did:
             ids[n] = did
