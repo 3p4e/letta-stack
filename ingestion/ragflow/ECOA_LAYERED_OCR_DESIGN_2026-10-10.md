@@ -53,3 +53,29 @@ the structure (which cell is which) without reading the language; VLMs read the 
 - A working `nvapi-` key from build.nvidia.com (Personal key with API access), placed as
   `NVIDIA_API_KEY` in the environment, then a one-page pilot on the 17 certificates with
   hand-read values (`_why.measured`) before any corpus run.
+
+## Why NVIDIA vision fails inside RAGflow v0.26.4, and the fix (10.10.2026)
+
+`rag/llm/cv_model.py` class `NvidiaCV` (the built-in "NVIDIA" provider's vision class):
+
+- line 1053: when the instance has no base URL it sets `base_url = ("https://ai.api.nvidia.com/v1/vlm",)` —
+  a **tuple** (trailing comma) — so `urljoin(base_url, ...)` raises *"Cannot mix str and non-str
+  arguments"*. That is the exact error every NVIDIA parse returned.
+- Even with a base URL, it POSTs `{"messages": ...}` with **no `model` field** to
+  `ai.api.nvidia.com/v1/vlm/<org>/<model>` — a retired route (404 for kimi-k2.6, llama-3.2-90b-vision,
+  nemotron-parse, probed 10.10.2026). NVIDIA now serves these on `integrate.api.nvidia.com/v1/chat/completions`.
+
+Fix without patching RAGflow: register NVIDIA under the **OpenAI-API-Compatible** provider. Its vision
+class `OpenAI_APICV` uses the OpenAI client (`model` + `messages`, base URL `urljoin(base,"v1")`):
+
+| field | value |
+|---|---|
+| provider | OpenAI-API-Compatible |
+| instance name | `NVIDIA_OAI` |
+| base URL | `https://integrate.api.nvidia.com/` |
+| API key | the same `nvapi-` key as the NVIDIA instance |
+
+Then add models of type image2text: `moonshotai/kimi-k2.6`, `moonshotai/kimi-k3`,
+`nvidia/nemotron-parse-2.0`, `meta/llama-3.2-90b-vision-instruct`, and select one in the pipeline Parser.
+The detection/OCR models (page-elements, table-structure, nemotron-ocr) are `ai.api.nvidia.com/v1/cv/...`
+endpoints with their own request shape; RAGflow has no client for them — they stay in the runner.
