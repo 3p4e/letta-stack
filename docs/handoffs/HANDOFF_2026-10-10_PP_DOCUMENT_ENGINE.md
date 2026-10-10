@@ -222,7 +222,8 @@ the Letta URL/key and agent allowlist, `GOTENBERG_URL` (+ `GOTENBERG_USERNAME/PA
   follow runbook §2: copy the file, rebuild with the next `fonts.<n>` tag, set the tag in compose.
 - **Status in Environment F (checked 10.10.2026).** The network already reaches
   `render.srv1231216.hstgr.cloud`: it answers 401 without credentials. The three variables below are
-  **not set yet**; the values are on KVM4 in `/opt/stacks/pp-render/credentials.env`. Until the Head of QC
+  **not set yet**. `GOTENBERG_URL` is `https://render.srv1231216.hstgr.cloud`; the username and password are on
+  KVM4 in `/opt/stacks/pp-render/credentials.env` (`GOTENBERG_USERNAME`, `GOTENBERG_PASSWORD`). Until the Head of QC
   adds them, `pp_render` in a session falls back to local LibreOffice. KVM4's own services are not
   affected, because they reach `http://gotenberg:3000` directly.
 - **Inside a Claude cloud session**: set `GOTENBERG_URL`, `GOTENBERG_USERNAME` and `GOTENBERG_PASSWORD`
