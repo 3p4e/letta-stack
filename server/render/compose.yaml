@@ -1,0 +1,23 @@
+# pp-render on KVM4: /opt/stacks/pp-render/compose.yaml. Internal http://gotenberg:3000 on ai-net (the address every
+# client already uses); public https://render.srv1231216.hstgr.cloud behind basic auth.
+# .env (0600, host only): RENDER_AUTH='pp:$2y$...'  (htpasswd -nbB; single quotes keep the $ literal)
+services:
+  gotenberg:
+    image: pp-render:8.37.0-fonts.1
+    container_name: gotenberg
+    restart: unless-stopped
+    command: ["gotenberg", "--api-timeout=180s", "--libreoffice-restart-after=10"]
+    networks:
+      ai-net:
+        aliases: [gotenberg]
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.render.rule=Host(`render.srv1231216.hstgr.cloud`)
+      - traefik.http.routers.render.entrypoints=websecure
+      - traefik.http.routers.render.tls.certresolver=letsencrypt
+      - traefik.http.routers.render.middlewares=render-auth
+      - traefik.http.middlewares.render-auth.basicauth.users=${RENDER_AUTH}
+      - traefik.http.services.render.loadbalancer.server.port=3000
+networks:
+  ai-net:
+    external: true

@@ -391,3 +391,10 @@ Word, cloud session). Render every DOCX with `pp-document-suite/scripts/pp_rende
 `GOTENBERG_URL` is set and local LibreOffice (field-updating macro, `assets/lo_profile`) otherwise;
 both fill an SOP's table of contents. Never a bare `soffice --convert-to pdf` — it leaves the TOC
 empty. Server setup: `server/runbooks/docengine_knowledge_and_render.md` §2.
+
+Head of QC, 10.10.2026: the renderer is **LibreOffice with the real house fonts** (`pp-render`, Gotenberg 8.37.0 +
+`/opt/fonts/pp` on KVM4; `server/render/`). Chosen over OnlyOffice by a side-by-side test against Word-made PDFs
+(Aspose was not tested: licence cost): with Calibri, Arial Narrow and the rest installed, LibreOffice matched Word on the label sheet and
+the SOPs; OnlyOffice did not. Fidelity comes from the fonts, so a renderer without them is not acceptable: a
+missing font is fixed by adding it to `/opt/fonts/pp` and rebuilding `pp-render`, never by accepting a substitute.
+The Microsoft fonts are licensed — they live on the server only, never in a repository.
