@@ -12,6 +12,7 @@ from app import builder, db, fleet  # noqa: E402
 from app.letta import LettaError  # noqa: E402
 from app.pipeline import (  # noqa: E402
     assemble_markdown, run_workflow, _strip_fences, _clean_section, _bilingual_gaps,
+    _qa_verdict, _lint_section, _strip_own_heading, _sections_named,
 )
 from app.questionnaires import apply_defaults  # noqa: E402
 
@@ -371,3 +372,153 @@ def test_bilingual_gaps_does_not_fail_a_short_bilingual_section():
     assert _bilingual_gaps([{"num": "2.0", "content": f"{mk}|{en}"}]) == []
     # ...and a longer section with the same lopsided ratio is still fine
     assert _bilingual_gaps([{"num": "3.0", "content": f"{mk * 3}|{en * 3}"}]) == []
+
+
+# ---- §6A verdict, grammar lint and repair rounds (10.10.2026) ----
+
+_LIVE_FIX = ("I'll review the assembled document against the house rules.\n\n---\n\n"
+             "Verdict: FIX\n\n**Issues**\n- Section 4 heading duplicated")
+
+
+def test_qa_verdict_reads_the_verdict_line_not_the_first_word():
+    """The live auditor opens with "I'll review…"; reading the first word made every reply not-PASS."""
+    assert _qa_verdict(_LIVE_FIX) == "FIX"
+    assert _qa_verdict("I'll review the document.\nNo issues.\nVERDICT: PASS") == "PASS"
+    assert _qa_verdict("PASS") == "PASS"
+    assert _qa_verdict("FIX: section 2.0 references the wrong regulation") == "FIX"
+    assert _qa_verdict("Return verdict PASS or FIX.\n…\n**Verdict: FIX**") == "FIX"
+    assert _qa_verdict("The bypass valve is fine.") == ""
+
+
+def test_lint_flags_what_the_engine_cannot_read():
+    body = "\n".join([
+        "| Параметар | Parameter |",
+        "|---|---|",
+        "Аналитичарот ги проверува референтните стандарди пред анализата.",
+        "Section 8 is a controlled cross-reference list.",
+        "# 2 ПОДРАЧЈЕ|SCOPE",
+    ])
+    issues = _lint_section(body)
+    assert any("pipe tables" in i for i in issues)
+    assert any("not 'Macedonian ||| English'" in i for i in issues)
+    assert any("working notes" in i for i in issues)
+    assert any("single-'#'" in i for i in issues)
+
+
+def test_lint_passes_the_engine_grammar():
+    body = "\n".join([
+        "## 6.1 Подготовка | Preparation",
+        "Аналитичарот ги подготвува примероците. ||| The analyst prepares the samples.",
+        "- Проверка на вагата ||| Balance check",
+        "[[TABLE]]",
+        "Параметар~~Parameter ||| Вредност~~Value",
+        "Маса на примерок~~Sample weight ||| ",
+        "[[/TABLE]]",
+        "[[FORM]]",
+        "Изработил~~Prepared by ||| ",
+        "[[/FORM]]",
+    ])
+    assert _lint_section(body) == []
+
+
+def test_strip_own_heading_drops_the_repeated_section_heading_only():
+    body = "# 2.0 ПОДРАЧЈЕ НА ПРИМЕНА|SCOPE\nТекст ||| Text\n# 2 ПОДРАЧЈЕ НА ПРИМЕНА|SCOPE\n## 2.1 Опсег | Range\nА ||| B"
+    out = _strip_own_heading("2.0", "ПОДРАЧЈЕ НА ПРИМЕНА", "SCOPE", body)
+    assert "# 2.0" not in out and "\n# 2 " not in out
+    assert "## 2.1 Опсег | Range" in out and "Текст ||| Text" in out
+
+
+def test_sections_named_by_an_audit():
+    nums = [f"{n}.0" for n in range(1, 10)]
+    assert _sections_named("Section 4 duplicates its heading; §6.3 steps lack EN; see 7.1.", nums) == ["4.0", "6.0", "7.0"]
+    assert _sections_named("The document is unclear.", nums) == nums
+
+
+@pytest.mark.asyncio
+async def test_live_shaped_pass_reaches_the_build(monkeypatch):
+    """Regression: a PASS stated on the verdict line, after a preamble, must not fail the job."""
+    updates = _patch_common(monkeypatch)
+    monkeypatch.setattr(builder, "build", lambda *a, **k: _fake_build_result())
+
+    class Live(FakeClient):
+        async def send_message(self, agent_id, prompt):
+            if "§6A" in prompt:
+                return "I'll review the document.\nNo issues found.\nVERDICT: PASS"
+            return "NO-FINDING"
+
+    await run_workflow("job-1", client=Live())
+    assert updates[-1]["status"] == "done"
+    assert updates[-1]["result"]["qa_verdict"] == "PASS"
+
+
+@pytest.mark.asyncio
+async def test_fix_verdict_sends_named_sections_back_then_passes(monkeypatch):
+    updates = _patch_common(monkeypatch, qkey="sop_qc")
+    monkeypatch.setattr(builder, "build", lambda *a, **k: _fake_build_result())
+    seen: list[str] = []
+
+    class FixThenPass(FakeClient):
+        audits = 0
+
+        async def send_message(self, agent_id, prompt):
+            seen.append(prompt)
+            if "§6A" in prompt:
+                FixThenPass.audits += 1
+                return "Verdict: FIX\n- Section 4 duplicates its heading" if FixThenPass.audits == 1 else "VERDICT: PASS"
+            if "Check this drafted section" in prompt:
+                return "NO-FINDING"
+            return "Текст на секцијата ||| Section text"
+
+    await run_workflow("job-1", client=FixThenPass())
+    assert updates[-1]["status"] == "done"
+    assert updates[-1]["result"]["qa_rounds"] == 1
+    repairs = [p for p in seen if p.startswith("REVISE section")]
+    assert len(repairs) == 1 and repairs[0].startswith("REVISE section 4.0")
+    assert any(u.get("stage") == "qa-audit repair-1" for u in updates)
+
+
+@pytest.mark.asyncio
+async def test_failed_audit_keeps_the_draft_and_findings(monkeypatch):
+    """A failed job used to keep only the verdict; the draft and sources were lost."""
+    updates = _patch_common(monkeypatch, qkey="sop_qc")
+
+    class AlwaysFix(FakeClient):
+        async def send_message(self, agent_id, prompt):
+            if "§6A" in prompt:
+                return _LIVE_FIX
+            if "Check this drafted section" in prompt:
+                return "OK [R1] EU GMP Ch. 4"
+            return "Текст на секцијата ||| Section text"
+
+    await run_workflow("job-1", client=AlwaysFix())
+    res = updates[-1]["result"]
+    assert updates[-1]["status"] == "failed" and updates[-1]["error"] == "§6A audit did not pass"
+    assert res["qa_verdict"] == "FIX" and res["qa_audit"] == _LIVE_FIX
+    assert res["markdown"].startswith("<!--HEADERDATA") and "# 9.0" in res["markdown"]
+    assert len(res["regulatory"]) == 9 and res["regulatory"][0].startswith("[1.0]")
+
+
+@pytest.mark.asyncio
+async def test_regulatory_checks_run_concurrently_and_keep_section_order(monkeypatch):
+    import asyncio
+    updates = _patch_common(monkeypatch, qkey="sop_qc")
+    monkeypatch.setattr(builder, "build", lambda *a, **k: _fake_build_result())
+    live = {"now": 0, "peak": 0}
+
+    class Slow(FakeClient):
+        async def send_message(self, agent_id, prompt):
+            if "Check this drafted section" in prompt:
+                live["now"] += 1
+                live["peak"] = max(live["peak"], live["now"])
+                await asyncio.sleep(0.02)
+                live["now"] -= 1
+                return "NO-FINDING " + prompt.split("section ", 1)[1].split(" ", 1)[0]
+            return "PASS" if "§6A" in prompt else "Текст ||| Text"
+
+    await run_workflow("job-1", client=Slow())
+    res = updates[-1]["result"]
+    assert updates[-1]["status"] == "done"
+    assert 1 < live["peak"] <= 4
+    assert [r.split("]")[0] for r in res["regulatory"]] == [f"[{n}.0" for n in range(1, 10)]
+    stages = [u["stage"] for u in updates if str(u.get("stage", "")).startswith("regulatory-check ")]
+    assert stages == [f"regulatory-check {n}.0" for n in range(1, 10)]

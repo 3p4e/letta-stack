@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react';
 import { ApiError, type Job } from '../api/types';
 import { PPPage } from '../components/PPPage';
 import { Banner, Btn, Kv } from '../components/ui';
-import { ANX_SEC, QA_PASS, SAMPLE_ANNEX, SAMPLE_SOP, SOP_SEC } from '../data/samples';
+import { ANX_SEC, SAMPLE_ANNEX, SAMPLE_SOP, SOP_SEC } from '../data/samples';
+import { readQa } from '../lib/qa';
 import { usePrimary } from '../lib/usePrimary';
 import { lineColor } from '../lib/verify';
 import { useApp } from '../store/store';
@@ -66,7 +67,7 @@ export function Jobs() {
   const stageLabel = job.status === 'done' ? 'done' : job.stage || 'queued';
   const tel = (job.result.telemetry as Tel[] | undefined) || [];
   const regs = (job.result.regulatory as Finding[] | undefined) || [];
-  const qa = job.result.qa_audit as { verdict: string; issues: string[] } | undefined;
+  const qa = readQa(job.result.qa_audit, job.result.qa_verdict, failed && !!job.error?.includes('§6A'));
   const verify = job.result.verify as string | undefined;
   const INS: Record<string, [string, string]> = { queued: ['Queued', 'POST /workflows'], generate: ['Section drafts', '_clean_section() · preamble strip'], reg: ['Regulatory findings', 'cite only retrieved passages'], bil: ['Bilingual check, per section', '_bilingual_gaps()'], qa: ['§6A audit verdict', 'gf_qa_auditor'], format: ['Verify gate report', 'builder.build()'], review: ['Review before registry', 'status awaiting_review'], done: ['Registry row', 'docengine.documents'] };
   const notRecorded = <div style={{ color: T.muted, fontSize: 13 }}>Not recorded in the job row. DocEngine stores <span style={{ fontFamily: MONO }}>result.regulatory</span>, <span style={{ fontFamily: MONO }}>qa_audit</span> and <span style={{ fontFamily: MONO }}>verify</span>; per-section drafts and letter counts are not persisted.</div>;
@@ -119,8 +120,11 @@ export function Jobs() {
             return <div key={i} style={{ display: 'grid', gridTemplateColumns: '38px 80px 80px minmax(0,1fr)', gap: 10, padding: '4px 0', borderTop: `1px solid ${T.surface}`, fontFamily: MONO, fontSize: 12 }}><span style={{ color: C.run }}>{r.num}</span><span>{r.cyr}</span><span>{r.lat}</span><span style={{ color: v === 'OK' ? C.ok : v.startsWith('skipped') ? T.muted : C.bad }}>{v}</span></div>; })}
           <div style={{ fontSize: 11.5, color: T.muted, marginTop: 6 }}>Sections under 120 letters are skipped. A language counts as present at 15+ letters. Checked per section, before assembly, because the document-wide check passes on one stray word.</div></div>
           : (job.result.bilingual_gaps ? <div style={{ fontFamily: MONO, fontSize: 12, color: T.errText }}>bilingual_gaps: {(job.result.bilingual_gaps as string[]).join(', ')}</div> : notRecorded))}
-        {reached && cur === 'qa' && stOf('qa') !== 'run' && <div style={{ fontFamily: MONO, fontSize: 12, lineHeight: 1.7, color: qa?.verdict === 'FIX' ? T.errText : T.okText }}>
-          {(qa ? (qa.verdict === 'FIX' ? ['FIX', 'issues:', ...qa.issues] : QA_PASS) : ['(no verdict stored)']).map((l, i) => <div key={i} style={{ whiteSpace: 'pre-wrap' }}>{l}</div>)}</div>}
+        {reached && cur === 'qa' && stOf('qa') !== 'run' && <div style={{ fontFamily: MONO, fontSize: 12, lineHeight: 1.7 }}>
+          {qa ? <>
+            <div style={{ color: qa.verdict === 'PASS' ? T.okText : T.errText, fontWeight: 600 }}>{qa.verdict ? `verdict ${qa.verdict}` : 'verdict not stated — treated as FIX'}{job.result.qa_rounds ? ` · after ${job.result.qa_rounds} repair round(s)` : ''}</div>
+            <div style={{ whiteSpace: 'pre-wrap', color: T.secondary, maxHeight: 420, overflow: 'auto', marginTop: 6 }}>{qa.text}</div>
+          </> : <div style={{ color: T.muted }}>(no verdict stored)</div>}</div>}
         {reached && (cur === 'format' || cur === 'review') && (verify ? <div style={{ fontFamily: MONO, fontSize: 12, lineHeight: 1.7 }}>{verify.split('\n').map((l, i) => <div key={i} style={{ whiteSpace: 'pre', color: lineColor(l) }}>{l}</div>)}</div> : <div style={{ color: T.muted, fontSize: 13 }}>Not reached yet.</div>)}
       </div>
     </div>
@@ -128,7 +132,7 @@ export function Jobs() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}><b style={{ color: '#fff', fontSize: 14 }}>Job row</b><span style={{ fontFamily: MONO, fontSize: 11, color: T.faint }}>GET /workflows/{'{id}'}</span></div>
       <Kv rows={[['job_id', job.id.slice(0, 8) + '…'], ['kind', job.kind], ['questionnaire', job.payload.questionnaire], ['status', job.status, stC(job.status)], ['stage', stageLabel], ['requested_by', job.payload.requested_by], ['updated_at', ago(job.updated_at)],
         ...(job.error ? [['error', job.error, C.bad]] as [string, string, string][] : []),
-        ...(job.status === 'done' ? [['result.document_id', String(job.result.document_id).slice(0, 8) + '…', C.ok], ['result.bytes', String(job.result.bytes)], ['result.verify', 'RESULT: PASS', C.ok]] as [string, string, string?][] : [])]} />
+        ...(job.status === 'done' ? [['result.document_id', String(job.result.document_id).slice(0, 8) + '…', C.ok], ['result.bytes', String(job.result.bytes)], ['result.verify', (verify || '').match(/RESULT\s*:?\s*(PASS|FAIL)/)?.[0] || '(not stored)', /FAIL/.test(verify || '') ? C.bad : C.ok]] as [string, string, string?][] : [])]} />
       {job.status === 'done' && <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}><div style={{ flex: 'none' }}><PPPage doc={{ ...(sop ? SAMPLE_SOP : SAMPLE_ANNEX), code: job.payload.meta.code, mk_title: job.payload.meta.title_mk, en_title: job.payload.meta.title_en }} zoom={.14} /></div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, color: T.secondary, lineHeight: 1.4 }}>Registered in docengine.documents. The verify report is stored with the row.<span onClick={() => go('library', { libSel: String(job.result.document_id) })} style={{ color: C.run, cursor: 'pointer' }}>Open in Library →</span></div></div>}
       {(job.status === 'running' || job.status === 'queued') && <div style={{ color: C.run, fontFamily: MONO, fontSize: 12 }}>● polling every 1 s · stage {stageLabel}</div>}

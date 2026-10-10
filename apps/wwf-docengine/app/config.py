@@ -21,6 +21,13 @@ class Settings:
     # background job). Connect stays short so an unreachable server fails fast.
     letta_read_timeout: float = float(os.environ.get("LETTA_READ_TIMEOUT", "300"))
     letta_connect_timeout: float = float(os.environ.get("LETTA_CONNECT_TIMEOUT", "15"))
+    # Workflow repair loops (pipeline.py). A section whose Markdown breaks the engine grammar goes back
+    # to its author this many times; a §6A FIX verdict sends the named sections back this many rounds
+    # before the job fails. 0 turns a loop off.
+    lint_repair_rounds: int = int(os.environ.get("DOCENGINE_LINT_REPAIR_ROUNDS", "1"))
+    qa_repair_rounds: int = int(os.environ.get("DOCENGINE_QA_REPAIR_ROUNDS", "1"))
+    # Per-section regulatory checks run concurrently, at most this many at once.
+    reg_concurrency: int = max(1, int(os.environ.get("DOCENGINE_REG_CONCURRENCY", "4")))
 
     # Postgres for workflow state (fixes the per-worker in-memory bug class).
     # e.g. postgresql://docengine:...@wwf-tasks-db:5432/wwf_tasks
