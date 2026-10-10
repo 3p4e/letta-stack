@@ -41,7 +41,8 @@ DS_NEW = "71b9c168b4a311f1a370a99b32e82467"   # eCOA_INGEST
 AID_NEW = "405267c4b4a311f1a370a99b32e82467"  # eCOA_PIPE
 DS_OLD = "dd3ea108a3fd11f1858cf58865604f65"   # eCOA_DB (the dedup source, read-only here)
 PDFDIR = os.environ.get("ECOA_PDF_DIR", HERE + "/incoming_pdfs")
-LOG = HERE + "/migrate_to_ecoa_pipe.log"
+# ECOA_RUN_LOG moves a long run's log out of the repository (e.g. to a scratch dir).
+LOG = os.environ.get("ECOA_RUN_LOG") or HERE + "/migrate_to_ecoa_pipe.log"
 
 
 def say(m):
