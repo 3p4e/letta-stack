@@ -8,7 +8,8 @@
 #                                              litellm_params.extra_headers into the outbound request)
 #   IN   Voyage        VOYAGE_API_KEY          embeddings + rerank-2.5 work
 #   OUT  Moonshot      401 on api.moonshot.ai AND api.moonshot.cn (Kimi-for-Coding keys are a different product)
-#   IN   DeepSeek      DEEPSEEK_API_KEY        deepseek-v4-pro / deepseek-v4-flash answered (new key, 2026-10-10);
+#   IN   DeepSeek      DEEPSEEK_API_KEY        new key answered v4-pro / v4-flash in RAGflow instance DEEPSEEK; the
+#                                              container env copy is still the old 401 key - put the NEW one in .env;
 #                                              order 2 in pp-reason/pp-fast/pp-format/pp-enrich (deepseek-v4.1-flash not served)
 #   OUT  CometAPI      never measured
 #   LEG  Gemini direct free-tier keys - 429 on the free tier; used only by the legacy `gemini-flash` name
