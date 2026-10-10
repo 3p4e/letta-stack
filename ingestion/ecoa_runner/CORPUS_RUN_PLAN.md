@@ -270,3 +270,13 @@ A cloud session's container is reclaimed when idle, which stopped the background
 The run is unattended on KVM4 instead: `run_ecoa_ingest_kvm4.sh` (venv + `fetch_ecoa_corpus.py`, then
 two one-at-a-time passes; log `/opt/ecoa_ingest/run.log`). It refuses to start while another ingest runs —
 two runners against one dataset could upload the same certificate twice.
+
+**Started 10.10.2026 17:52 UTC** as container `ecoa-ingest` on KVM4 (reached through kvm4-runner `POST /shell`
+with `RUNNER_TOKEN`; `/exec` is not the route):
+
+    docker run -d --name ecoa-ingest --restart unless-stopped --memory 1g \
+      --env-file /opt/ecoa_ingest/.env -v /opt/ecoa_ingest:/work -w /work python:3.12-slim bash /work/entry.sh
+
+`/opt/ecoa_ingest/app` = `ingestion/ecoa_runner` + `ingestion/common` (tar, SHA-256 checked on the host);
+`.env` (mode 600) holds `RAGFLOW_API_KEY`; `entry.sh` = `ecoa_ingest_container_entry.sh` — idles after writing
+`/work/ALLDONE`. Progress: `/opt/ecoa_ingest/run.log`, per-document detail `/opt/ecoa_ingest/migrate.log`.
