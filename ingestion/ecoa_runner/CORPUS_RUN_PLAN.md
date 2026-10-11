@@ -304,3 +304,13 @@ he pays for). Findings and the route:
   DeepSeek V4 Flash; tenant image2text default is the same model.
 - Measured: Sonnet/Opus/Haiku 5.5 each read 5 of 5 test pages correctly in 2–6 s ($0.001 / $0.0125 / $0.03 a
   page). `BG1024_FHM_197-1-M-26`, which failed twice under NVIDIA, ingests in 63 s.
+
+### Parser moved from Sonnet 5.5 to Haiku 5.5 (11.10.2026)
+
+Measured on the 21 certificates of `ecoa_extraction_agent.json` `acceptance_tests` (10 hand-verified TYMC values
++ 11 must-not-flag): **Haiku 5.5 and Sonnet 5.5 both reproduce all 10 ground-truth values exactly and agree on the
+other 11** (TYMC row only, microbiology certificates only; CNP potency and Farmahem mycotoxin tables are not
+covered by this test). Cost per page: Haiku $0.0009, Sonnet $0.0124. The 4.x models were not tested because they
+are dearer than their 5.5 equivalents (Sonnet 4.6 $3/$15 vs Sonnet 5.5 $2/$10; Opus 4.8 $5/$25 vs Opus 5.5 $4/$20;
+list prices). RAGFlow allows one type per model name per instance, so Haiku vision lives in its own instance
+`CLAUDE_GW_VIS` (verified with a Sonnet chat call). Sonnet and Opus stay registered for chat and as a second reader.

@@ -12,7 +12,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 B = os.environ['RAGFLOW_API_SERVER'].rstrip('/'); K = os.environ['RAGFLOW_API_KEY']
 DS = 'dd3ea108a3fd11f1858cf58865604f65'
 AID = 'c83609aea3fd11f1858cf58865604f65'
-VLM = 'claude-sonnet-5-5@CLAUDE_GW@OpenAI-API-Compatible'  # 11.10.2026: Claude on the Max-plan API credits via the KVM4 LiteLLM; NVIDIA dropped; DeepDOC reads Cyrillic as Latin
+VLM = 'claude-haiku-5-5@CLAUDE_GW_VIS@OpenAI-API-Compatible'  # 11.10.2026: Haiku 5.5 on the Max-plan API credits via the KVM4 LiteLLM; 21/21 hand-verified pages exact; DeepDOC reads Cyrillic as Latin
 QMODEL = 'deepseek-v4-flash@DEEPSEEK@DeepSeek'  # 10.10.2026: openai-vlm dead
 KWMODEL = 'deepseek-v4-flash@DEEPSEEK@DeepSeek'  # 10.10.2026: Moonshot quota exhausted
 PDFDIR = os.environ.get('ECOA_PDF_DIR', HERE + '/incoming_pdfs')
