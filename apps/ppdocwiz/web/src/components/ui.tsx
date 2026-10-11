@@ -1,5 +1,7 @@
 import type { CSSProperties, ReactNode } from 'react';
 import { C, DISPLAY, MONO, T, TINT, type Status } from '../theme';
+import { tr } from '../lib/i18n';
+import { useApp } from '../store/store';
 
 // ---- margin stamps (handoff README · Margin stamps) ----
 export interface StampSpec { t: string; d: string; s: Status; top: number; rot: string }
@@ -68,7 +70,7 @@ export function Btn({ children, onClick, primary = true, disabled, style, title 
 export const Tag = ({ children, c = T.secondary, style }: { children: ReactNode; c?: string; style?: CSSProperties }) =>
   <span style={{ fontSize: 11, whiteSpace: 'nowrap', border: `1px solid ${c === T.secondary ? T.control : c}`, borderRadius: 3, padding: '1px 6px', color: c, ...style }}>{children}</span>;
 
-export const DefTag = () => <span style={{ fontSize: 10, color: C.ok, border: `1px solid ${T.okBorder}`, borderRadius: 3, padding: '0 4px' }}>default</span>;
+export const DefTag = () => <span style={{ fontSize: 10, color: C.ok, border: `1px solid ${T.okBorder}`, borderRadius: 3, padding: '0 4px' }}>{tr(useApp(s => s.lang), 'default')}</span>;
 
 export function Banner({ kind, children, style }: { kind: 'err' | 'ok' | 'warn' | 'info'; children: ReactNode; style?: CSSProperties }) {
   const k = { err: [T.errSurface, T.errBorder, T.errText], ok: [T.okSurface, T.okBorder, T.okText], warn: [T.warnSurface, '#6b5326', '#f5d6a1'], info: [T.surface, T.control, T.secondary] }[kind];

@@ -7,6 +7,9 @@ export interface WorkflowIn {
   questionnaire: string;
   answers: Record<string, string | string[]>;
   meta: { title_mk: string; title_en: string; code: string; version?: string; orient?: string };
+  /** The requester's own brief and the sources they name (DocEngine adds both to the content brief). */
+  instructions?: string;
+  sources?: string[];
   requested_by: string;
 }
 
