@@ -63,7 +63,7 @@ export function liveApi(): Api {
       for (const id of knownJobs()) { try { out.push(await call<Job>(de + '/workflows/' + id)); } catch (e) { if ((e as ApiError).status !== 404) throw e; } }
       return out;
     },
-    reviewJob: async () => { throw new ApiError(501, 'DocEngine has no review route yet: status awaiting_review exists in docengine.jobs, but no endpoint moves a job out of it'); },
+    reviewJob: (id, decision, note) => post(de + '/workflows/' + encodeURIComponent(id) + '/review', { decision, note }),
     directBuild: (markdown, out_name, meta) => post(de + '/build', { markdown, out_name, meta }),
     documents: async () => (await call<{ documents: never[] }>(de + '/documents')).documents,
     document: id => call(de + '/documents/' + encodeURIComponent(id)),

@@ -140,6 +140,17 @@ async def job_get(jid: str) -> dict | None:
     return d
 
 
+async def job_claim(jid: str, from_status: str, to_status: str) -> bool:
+    """Move a job from one status to another only if it is still in `from_status`.
+
+    One atomic UPDATE, so two reviewers pressing Approve at once cannot both
+    register the document: the second finds the row already moved and gets False."""
+    r = await pool().fetchval(
+        "UPDATE docengine.jobs SET status = $3, updated_at = now() "
+        "WHERE id = $1 AND status = $2 RETURNING id", jid, from_status, to_status)
+    return r is not None
+
+
 async def document_create(job_id: str | None, meta: dict) -> str:
     did = str(uuid.uuid4())
     await pool().execute(

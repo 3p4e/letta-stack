@@ -113,3 +113,73 @@ def test_workflow_validates_meta(client):
         json={"questionnaire": "nope", "answers": {}, "meta": {}},
     )
     assert r.status_code == 400
+
+
+# ---- POST /workflows/{id}/review ----
+JID = "11111111-2222-4333-8444-555555555555"
+
+
+def _review_db(monkeypatch, tmp_path, status="awaiting_review", with_file=True):
+    art = tmp_path / "TEST-1.docx"
+    if with_file:
+        art.write_bytes(b"docx")
+    row = {"id": JID, "status": status, "stage": "format", "created_by": "ppdocwiz-session",
+           "payload": {"questionnaire": "sop_qc", "meta": {"title_mk": "а", "title_en": "a", "code": "TEST-1", "doctype": "SOP"}},
+           "result": {"qa_verdict": "FIX", "verify": "RESULT: PASS", "artifact": {"path": str(art), "bytes": 4}}}
+    calls = {"docs": [], "updates": []}
+
+    async def job_get(jid):
+        return dict(row)
+
+    async def job_claim(jid, frm, to):
+        if row["status"] != frm:
+            return False
+        row["status"] = to
+        return True
+
+    async def job_update(jid, **f):
+        calls["updates"].append(f)
+        row.update({k: v for k, v in f.items() if k in ("status", "stage", "error", "result")})
+
+    async def document_create(jid, meta):
+        calls["docs"].append(meta)
+        return "doc-1"
+
+    monkeypatch.setattr(db, "ready", lambda: True)
+    for n, f in (("job_get", job_get), ("job_claim", job_claim), ("job_update", job_update), ("document_create", document_create)):
+        monkeypatch.setattr(db, n, f)
+    return row, calls
+
+
+def test_review_approve_registers_once(client, monkeypatch, tmp_path):
+    row, calls = _review_db(monkeypatch, tmp_path)
+    r = client.post(f"/workflows/{JID}/review", headers=h(), json={"decision": "approve", "note": "ok", "reviewer": "QC Manager"})
+    assert r.status_code == 200 and row["status"] == "done"
+    assert len(calls["docs"]) == 1 and calls["docs"][0]["code"] == "TEST-1"
+    review = calls["updates"][-1]["result"]["review"]
+    assert review["decision"] == "approve" and review["by"] == "QC Manager" and review["qa_verdict"] == "FIX"
+    # a second approval finds the job no longer awaiting review
+    assert client.post(f"/workflows/{JID}/review", headers=h(), json={"decision": "approve"}).status_code == 409
+    assert len(calls["docs"]) == 1
+
+
+def test_review_return_requires_a_note_and_fails_the_job(client, monkeypatch, tmp_path):
+    row, calls = _review_db(monkeypatch, tmp_path)
+    assert client.post(f"/workflows/{JID}/review", headers=h(), json={"decision": "return", "note": "  "}).status_code == 422
+    r = client.post(f"/workflows/{JID}/review", headers=h(), json={"decision": "return", "note": "§3.2 RACI legend missing"})
+    assert r.status_code == 200 and row["status"] == "failed" and not calls["docs"]
+    assert calls["updates"][-1]["error"] == "returned for revision: §3.2 RACI legend missing"
+
+
+def test_review_rejects_bad_input_and_wrong_state(client, monkeypatch, tmp_path):
+    _review_db(monkeypatch, tmp_path, status="running")
+    assert client.post(f"/workflows/{JID}/review", headers=h(), json={"decision": "maybe"}).status_code == 422
+    assert client.post("/workflows/not-a-uuid/review", headers=h(), json={"decision": "approve"}).status_code == 404
+    assert client.post(f"/workflows/{JID}/review", headers=h(), json={"decision": "approve"}).status_code == 409
+    assert client.post(f"/workflows/{JID}/review", json={"decision": "approve"}).status_code == 401
+
+
+def test_review_approve_without_the_built_file_is_410(client, monkeypatch, tmp_path):
+    row, calls = _review_db(monkeypatch, tmp_path, with_file=False)
+    assert client.post(f"/workflows/{JID}/review", headers=h(), json={"decision": "approve"}).status_code == 410
+    assert row["status"] == "awaiting_review" and not calls["docs"]

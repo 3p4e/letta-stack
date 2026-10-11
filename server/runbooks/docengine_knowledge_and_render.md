@@ -142,3 +142,34 @@ Verified: public route 401 without / with a wrong password; WHSOP_003 through th
 gotenberg", 15 pages, TOC 26 lines, Calibri and Arial Narrow embedded; label, SOP-017, QCSOP_018 A01 → 1, 23, 14 pages,
 real fonts embedded; ppdocwiz Builder PDF and pp-docengine Library PDF → 15 pages, TOC 26 lines.
 
+
+## Deployed — 11.10.2026: review stage, repair rounds, Macedonian writers on DeepSeek (PR #35)
+
+| Service | Image | Rollback |
+|---|---|---|
+| pp-docengine | `pp-docengine:07125327` | `pp-docengine:ae75446a`, `d823c4d`, `8275e1b`, `5ecf6a6` (compose backups in `/opt/wwf-deploy/backups/`) |
+| ppdocwiz | `ppdocwiz:ae75446a` | `ppdocwiz:8275e1b`, `5ecf6a6` |
+
+What changed in the workflow (`app/pipeline.py`): each section is linted against the engine grammar
+(`MK ||| EN`, `[[TABLE]]`/`[[FORM]]`, no pipe tables, no working notes, no mixed-alphabet words) and sent back
+once to its author; the regulatory checks run four at a time; a §6A **FIX** sends the named sections back for up
+to two repair rounds. A FIX that survives them no longer fails the job: the `.docx` is built, `pp_verify` runs,
+and the job waits as **`awaiting_review`**. Nothing is registered until a person decides —
+`POST /workflows/{id}/review` `{"decision": "approve" | "return", "note": …}` (approve registers the document;
+return needs a note and fails the job with it). ppdocwiz Jobs shows the auditor's verdict and text and the
+Approve / Return box. A failed job keeps its draft, sources and knowledge notes.
+
+Reference rule (fleet house rules and every author prompt): cite only the brief or the passages retrieved for the
+section; anything else goes in the section's last numbered subsection **"За потврда | To be confirmed"**, which
+the auditor does not count as a finding.
+
+Models: `gf_sop_author`, `gf_annex_author`, `gf_translator_mk_en`, `gf_raci_specialist` and `gf_qa_auditor` →
+`openai-proxy/deepseek/deepseek-v4-flash`; orchestrator, reg_checker, app_assistant stay on Nemotron 3 Ultra.
+LiteLLM's `DEEPSEEK_API_KEY` is the key RAGFlow already used (`litellm.env.bak-20261010-deepseek`); agent configs
+before each switch in `gf_agents_llm_config_pre-*_20261010.json`. `LETTA_READ_TIMEOUT=900` in
+`/opt/stacks/pp-docengine/.env` (one DeepSeek turn passed 300 s). Kimi K3 via NVIDIA was tried and reverted: no
+tool calls, empty replies.
+
+Verified: job `2ddd58d1` (TEST-DEPLOY-001) → `awaiting_review`, `.docx` 82 KB, `pp_verify` PASS, no
+unsupported-citation finding, 5 minor findings left for the reviewer. Tests: DocEngine 75 passed / 7 skipped
+(Postgres tests run in CI), ppdocwiz 40, frontend 13.
