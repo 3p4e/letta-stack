@@ -173,3 +173,38 @@ tool calls, empty replies.
 Verified: job `2ddd58d1` (TEST-DEPLOY-001) → `awaiting_review`, `.docx` 82 KB, `pp_verify` PASS, no
 unsupported-citation finding, 5 minor findings left for the reviewer. Tests: DocEngine 75 passed / 7 skipped
 (Postgres tests run in CI), ppdocwiz 40, frontend 13.
+
+## Changed — 11.10.2026: every Letta agent on Claude or DeepSeek, by purpose
+
+Head of QC, 11.10.2026: "keep opus", then "set up the other Letta AI functions and stateful agents to use one of the
+Anthropic AI models and one of the DeepSeek AI models depending on the purpose". All 11 agents on letta-6ou3:
+
+| Agent | Purpose | Model (LiteLLM name) |
+|---|---|---|
+| `gf_sop_author`, `gf_annex_author`, `gf_translator_mk_en`, `gf_raci_specialist`, `gf_qa_auditor` | Macedonian writing and the §6A audit | `claude-opus-5-5` |
+| `gf_doc_orchestrator`, `wwf_coordinator` | routing, sequencing, tool calls | `claude-sonnet-5-5` |
+| `gf_reg_checker` | checks each section against retrieved regulation, ~9 calls per job | `deepseek/deepseek-v4-pro` |
+| `wwf_weekly_report`, `wwf_next_week_plan` | WWF scheduler reports and plans from cultivation data | `deepseek/deepseek-v4-pro` |
+| `gf_app_assistant` | in-app help chat, fast and frequent | `deepseek/deepseek-v4-flash` |
+
+Letta handle = `openai-proxy/` + the LiteLLM name. Claude is paid from the Max plan's monthly API credits:
+LiteLLM routes the three `claude-*-5-5` names with `ANTHROPIC_USR_KEY` and the workspace header, and drops
+`temperature` / `top_p`, which Claude 5.5 rejects. LiteLLM falls back one way only, Claude → DeepSeek
+(`claude-opus-5-5` and `claude-sonnet-5-5` → `deepseek/deepseek-v4-pro`, `claude-haiku-5-5` →
+`deepseek/deepseek-v4-flash`), so an exhausted credit does not stop an agent and a DeepSeek failure never spends the
+credit. The fallback rules are loaded; the path has not been exercised (the proxy refuses its mock-fallback test
+switch, left off on purpose). Embeddings stay on `ollama-local/nomic-embed-text` (neither provider offers one).
+
+Backups: `/opt/wwf-deploy/backups/gf_agents_llm_config_pre-claude-opus_20261011.json` (8 `gf_` agents on DeepSeek
+Flash / Nemotron), `letta_all_agents_llm_config_pre-assign_20261011.json` (all 11, before the second step),
+`litellm.config.yaml.bak-20261011-fallbacks`. Restore an agent with `PATCH /v1/agents/{id}` `{"llm_config": …}`.
+
+Why Opus for Macedonian: in the test (one translation, one SOP subsection) Opus 5.5 made the fewest errors; Sonnet 5.5
+used the Serbian "ланец" and Haiku 5.5 made gender and spelling errors. Full workflow, same brief: job `74e54add`
+(Opus) → `awaiting_review` in 18.5 min, 8,643 words, no grammar breaches left, 3 required content fixes; job
+`2ddd58d1` (DeepSeek Flash) → 7.2 min, 5,624 words, grammar breaches left. One run each: confirm on further
+questionnaires, and read the per-document cost off the Console before relying on the monthly credit.
+
+Verified: tool calls through LiteLLM on all four models; a throwaway clone of `gf_doc_orchestrator` (Sonnet),
+`gf_reg_checker` (DeepSeek Pro) and `gf_app_assistant` (DeepSeek Flash) each answered inside the Letta loop and was
+deleted. The WWF agents were not messaged (their history feeds the scheduler).
