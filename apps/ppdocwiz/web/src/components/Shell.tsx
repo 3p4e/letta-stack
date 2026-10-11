@@ -3,7 +3,8 @@ import { ApiError } from '../api/types';
 import { useApp, type Screen } from '../store/store';
 import { C, DISPLAY, G, MONO, T, UI } from '../theme';
 import { CreateMenu, NewDocSheet } from './Create';
-import { Dot } from './ui';
+import { Dot, Seg } from './ui';
+import { tr } from '../lib/i18n';
 
 const NAV: [Screen, string, 'c' | 'k'][] = [['builder', 'Builder', 'c'], ['chat', 'Agent chat', 'c'], ['quest', 'Questionnaire', 'c'], ['format', 'Formatter', 'c'], ['report', 'Reports', 'c'], ['library', 'Library', 'k'], ['jobs', 'Jobs', 'k'], ['verify', 'Verify', 'k'], ['preview', 'Preview', 'k'], ['fleet', 'Fleet & health', 'k']];
 const CRUMB: Record<Screen, string> = { builder: '', chat: 'chat › allowlist › WHSOP_002_A02', quest: 'questionnaire › POST /workflows', format: 'formatter › labels_raw.docx → house style', library: 'library › docengine.documents', jobs: 'jobs › docengine.jobs', report: 'reports › QCSOP_031_A02 · pp_report', verify: 'verify › POST /build 422 · WHSOP_009_A01', preview: 'preview › QCSOP_031 · page 3 / 9', fleet: 'admin › gf_ fleet & health' };
@@ -56,7 +57,7 @@ export function Shell({ children }: { children: ReactNode }) {
     s.set({ createOpen: !s.createOpen, menuX: ((side ? r.right + 8 : r.left) - rr.left) / k, menuY: ((side ? r.top : r.bottom + 6) - rr.top) / k });
   };
   const createBtn = (side: boolean) => <button onClick={toggleCreate} className="pp-create" style={{ display: 'flex', gap: 7, alignItems: 'center', justifyContent: side ? 'center' : undefined, width: side ? '100%' : undefined, marginBottom: side ? 10 : 0, background: T.surface, color: '#fff', border: `1px solid ${T.focus}`, borderRadius: radius, padding: side ? '8px 12px' : '6px 14px', font: 'inherit', fontSize: 13, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>
-    <span style={{ fontSize: 15, lineHeight: 1, color: C.run }}>＋</span>Create<span style={{ fontSize: 10, color: T.muted }}>{side ? '›' : '▾'}</span></button>;
+    <span style={{ fontSize: 15, lineHeight: 1, color: C.run }}>＋</span>{tr(s.lang, 'Create')}<span style={{ fontSize: 10, color: T.muted }}>{side ? '›' : '▾'}</span></button>;
   const dot = (label: string, st: keyof typeof s.svc & string) => <span title={s.svc.note[st] || (s.svc[st as 'letta'] === 'ok' ? 'ok' : 'probing…')} style={{ display: 'flex', gap: 5, alignItems: 'center' }}><Dot c={C[s.svc[st as 'letta']]} />{label}</span>;
   const pipeMsgC = s.busy ? C.run : s.pipeOk ? C.ok : C.bad;
   const STEPS = ['compose', 'build_from_md', 'pp_verify', 'gotenberg'];
@@ -70,6 +71,7 @@ export function Shell({ children }: { children: ReactNode }) {
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 14, fontFamily: MONO, fontSize: 12, color: T.muted }}>
           {s.api.mode === 'mock' && <span title="All data is sample data; switch in Fleet & health" style={{ color: C.warn, border: `1px solid ${C.warn}`, borderRadius: 3, padding: '0 6px' }}>mock</span>}
           {dot('letta', 'letta')}{dot('docengine', 'docengine')}{dot('pdf', 'pdf')}
+          <span title="Interface language — documents stay bilingual MK | EN"><Seg items={[['en', 'EN'], ['mk', 'MK']]} value={s.lang} onPick={l => s.setLang(l)} size={11.5} pad="1px 8px" /></span>
         </div>
         <button onClick={s.primary?.run} disabled={s.busy || s.primary?.disabled} className="pp-primary" style={{ background: T.navy, color: '#fff', border: `1px solid ${T.focus}`, borderRadius: 6, padding: '7px 16px', font: 'inherit', fontWeight: 700, cursor: 'pointer', opacity: s.primary ? 1 : .5 }}>{s.busy ? 'Running…' : s.primary?.label || 'Build ▸'}</button>
       </div>
@@ -77,11 +79,11 @@ export function Shell({ children }: { children: ReactNode }) {
         <nav style={{ width: 184, flex: 'none', borderRight: `1px solid ${T.hair}`, padding: '14px 10px', display: 'flex', flexDirection: 'column', gap: 2 }}>
           {s.tweaks.createPlacement === 'sidebar' && createBtn(true)}
           {(['c', 'k'] as const).map(g => <div key={g} style={{ display: 'contents' }}>
-            <div style={{ fontFamily: MONO, fontSize: 10.5, letterSpacing: '.1em', color: T.faint, padding: g === 'c' ? '4px 10px 6px' : '16px 10px 6px' }}>{g === 'c' ? 'CREATE' : 'CONTROL'}</div>
-            {NAV.filter(n => n[2] === g).map(([k, label]) => <div key={k} onClick={() => s.go(k)} className="pp-nav" style={{ padding: '8px 10px', borderRadius: 6, cursor: 'pointer', background: s.screen === k ? T.selected : 'transparent', color: s.screen === k ? '#fff' : T.secondary, fontWeight: s.screen === k ? 700 : 400 }}>{label}</div>)}
+            <div style={{ fontFamily: MONO, fontSize: 10.5, letterSpacing: '.1em', color: T.faint, padding: g === 'c' ? '4px 10px 6px' : '16px 10px 6px' }}>{tr(s.lang, g === 'c' ? 'CREATE' : 'CONTROL')}</div>
+            {NAV.filter(n => n[2] === g).map(([k, label]) => <div key={k} onClick={() => s.go(k)} className="pp-nav" style={{ padding: '8px 10px', borderRadius: 6, cursor: 'pointer', background: s.screen === k ? T.selected : 'transparent', color: s.screen === k ? '#fff' : T.secondary, fontWeight: s.screen === k ? 700 : 400 }}>{tr(s.lang, label)}</div>)}
           </div>)}
           <div style={{ marginTop: 'auto', padding: 10, fontSize: 12, color: T.faint, lineHeight: 1.5 }}>Engine 1.6.2<br />{s.api.mode === 'mock' ? 'darko.s · QA' : 'session · cookie'}
-            <div onClick={() => s.api.closeSession().then(() => s.set({ authed: false })).catch(e => s.flash(String(e.message)))} style={{ cursor: 'pointer', color: T.muted, marginTop: 4 }}>Sign out</div></div>
+            <div onClick={() => s.api.closeSession().then(() => s.set({ authed: false })).catch(e => s.flash(String(e.message)))} style={{ cursor: 'pointer', color: T.muted, marginTop: 4 }}>{tr(s.lang, 'Sign out')}</div></div>
         </nav>
         <main style={{ flex: 1, minWidth: 0, display: 'flex', minHeight: 0 }}>{children}</main>
       </div>

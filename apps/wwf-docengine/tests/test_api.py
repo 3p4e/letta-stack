@@ -69,6 +69,15 @@ def test_transport_questionnaire_answers_itself_from_defaults(client):
     assert "Written MoIA confirmation mandatory before dispatch" in filled["authorities"]
 
 
+def test_brief_carries_requester_instructions_and_sources():
+    from app.pipeline import _brief
+    b = _brief("sop_transport", {"lane": "QUALIFIED"}, "  Write for road transport only.  ",
+               ["EU GDP 2013/C 343/01", " ", "WHO TRS 961 Annex 9"])
+    assert "Requester's instructions:\nWrite for road transport only." in b
+    assert "- EU GDP 2013/C 343/01\n- WHO TRS 961 Annex 9" in b
+    assert "Sources named" not in _brief("sop_qc", {}, "", [])
+
+
 def test_direct_build_pass(client):
     md = (
         "<!--HEADERDATA\nmk_title: Тест\nen_title: Test\ncode: T-1\n"

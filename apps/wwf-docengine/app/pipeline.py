@@ -313,10 +313,15 @@ def _clean_section(text: str, structured: bool = False) -> str:
     return cleaned
 
 
-def _brief(questionnaire_key: str, answers: dict) -> str:
+def _brief(questionnaire_key: str, answers: dict, instructions: str = "", sources: list | None = None) -> str:
     lines = [f"Questionnaire: {questionnaire_key}"]
     for k, v in answers.items():
         lines.append(f"- {k}: {', '.join(v) if isinstance(v, list) else v}")
+    if (instructions or "").strip():
+        lines += ["", "Requester's instructions:", instructions.strip()]
+    srcs = [str(x).strip() for x in (sources or []) if str(x).strip()]
+    if srcs:
+        lines += ["", "Sources named by the requester (may be cited):"] + [f"- {x}" for x in srcs]
     return "\n".join(lines)
 
 
@@ -400,7 +405,7 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
         doctype = QUESTIONNAIRES[qkey]["doctype"]
         meta["doctype"] = doctype
         sop = doctype == "SOP"
-        brief = _brief(qkey, answers)
+        brief = _brief(qkey, answers, p.get("instructions", ""), p.get("sources") or [])
         await db.job_update(job_id, status="running", stage="generate")
 
         from .fleet import ensure_fleet  # late import: fleet needs live Letta
@@ -530,8 +535,9 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                 "written by the pipeline and are correct — do not flag them; judge the authored content "
                 "under each heading. A reference listed under 'За потврда | To be confirmed' is not a "
                 "finding; a reference presented as a normative basis must be in the brief or the findings.\n\n"
-                "CONTENT BRIEF (the questionnaire answers; regulatory references in it are pre-verified "
-                f"by the questionnaire and count as supported):\n{brief}\n\n"
+                "CONTENT BRIEF (the questionnaire answers, pre-verified by the questionnaire, and any "
+                "instructions and sources the requester named; references in it count as supported):\n"
+                f"{brief}\n\n"
                 "REGULATORY CHECK FINDINGS, per section ([R#] = a passage retrieved from RAGFlow DB01):\n"
                 f"{findings_txt}\n\n"
                 "List concrete, actionable issues per section. End your reply with one final line, "

@@ -1,3 +1,4 @@
+import type { Lang } from '../lib/i18n';
 import { create } from 'zustand';
 import type { Api } from '../api/client';
 import { liveApi } from '../api/live';
@@ -17,7 +18,7 @@ export interface Sheet {
 
 export interface Tweaks { createPlacement: 'topbar' | 'sidebar'; createStyle: 'pill' | 'button'; submenuOpenOn: 'hover' | 'click' }
 
-const LS = { screen: 'ppsuite.screen', api: 'ppsuite.api', tweaks: 'ppsuite.tweaks' };
+const LS = { screen: 'ppsuite.screen', api: 'ppsuite.api', tweaks: 'ppsuite.tweaks', lang: 'ppsuite.lang' };
 const read = (k: string) => { try { return localStorage.getItem(k); } catch { return null; } };
 const write = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* blocked */ } };
 
@@ -49,6 +50,8 @@ export interface AppState {
   // cross-screen document state
   bdoc: WizardPayload; bdocIsSample: boolean; builderMode: 'src' | 'page' | 'blocks'; hlLine: number;
   chatDraft: string; chatAgent: string;
+  /** Interface language; documents stay bilingual whatever it is. */
+  lang: Lang; setLang: (l: Lang) => void;
   qKey: string; qRound: number; metas: Record<string, { title_mk: string; title_en: string; code: string; version: string; orient: 'portrait' | 'landscape' }>;
   jobSel: string | null; libSel: string | null;
   fmt: 'B' | 'C';
@@ -87,6 +90,8 @@ export const useApp = create<AppState>((set, get) => {
     createOpen: false, createCat: 'sop', menuX: 0, menuY: 0, sheet: null,
     bdoc: structuredClone(SAMPLE_ANNEX), bdocIsSample: true, builderMode: 'src', hlLine: 0,
     chatDraft: '', chatAgent: 'qms_docx_formatter',
+    lang: read(LS.lang) === 'mk' ? 'mk' : 'en',
+    setLang: l => { write(LS.lang, l); set({ lang: l }); },
     qKey: 'sop_qc', qRound: 0,
     metas: {
       sop_qc: { title_mk: 'Определување потентност', title_en: 'Potency determination', code: 'QCSOP_031', version: '01', orient: 'portrait' },

@@ -144,6 +144,11 @@ class WorkflowIn(BaseModel):
     answers: dict = Field(default_factory=dict)
     meta: dict  # {title_mk, title_en, code, version?, orient?}
     requested_by: str = ""
+    # The requester's own brief and the sources they name, alongside the questionnaire answers.
+    # Free text by design: the questionnaire's options are pre-verified, these are the requester's
+    # responsibility, and the §6A audit still checks every reference against them and the findings.
+    instructions: str = Field("", max_length=12000)
+    sources: list[str] = Field(default_factory=list, max_length=40)
 
 
 @app.post("/workflows", dependencies=[Depends(require_api_key)])
