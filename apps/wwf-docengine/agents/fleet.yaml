@@ -25,7 +25,7 @@ house_rules: |
     '## N.M MK | EN' (never a single '#', never the section's own heading — the
     pipeline adds it); tables '[[TABLE]]' rows with '|||' between cells, header
     row first, 'MK~~EN' inside a cell, closed by '[[/TABLE]]'; write-in fields
-    '[[FORM]]' rows 'Label MK~~Label EN ||| value' (value blank), closed by
+    '[[FORM]]' rows 'Label MK ||| Label EN ||| value' (three cells, value blank), closed by
     '[[/FORM]]'. Markdown pipe tables (| a | b |) are NOT read by the engine.
   - A document contains only document content: no notes to yourself, no
     restating of the brief, no description of what a section is for.

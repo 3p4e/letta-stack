@@ -30,6 +30,8 @@ class Settings:
     # job as awaiting_review for a person (EU GMP Ch. 4 §4.3 — a person approves every document anyway);
     # nothing is registered until POST /workflows/{id}/review approves it. 0 fails the job instead.
     fix_to_review: bool = os.environ.get("DOCENGINE_FIX_TO_REVIEW", "1") not in ("0", "false", "no")
+    # Scales the per-section SOP word limits (pipeline.SOP_WORDS); 1.0 = about 1.25 x the approved WHSOP_003.
+    length_scale: float = float(os.environ.get("DOCENGINE_LENGTH_SCALE", "1.0"))
     # Per-section regulatory checks run concurrently, at most this many at once.
     reg_concurrency: int = max(1, int(os.environ.get("DOCENGINE_REG_CONCURRENCY", "4")))
 

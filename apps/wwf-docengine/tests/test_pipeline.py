@@ -565,3 +565,13 @@ def test_reference_rule_reaches_authors_and_repairs():
     assert "За потврда | To be confirmed" in pipeline.REFERENCE_RULE
     src = Path(pipeline.__file__).read_text(encoding="utf-8")
     assert src.count("{REFERENCE_RULE}") >= 3   # SOP draft, annex draft, QA repair
+
+
+def test_sop_sections_have_a_length_limit():
+    from app.pipeline import _length_issue, _word_limit
+    assert _word_limit("7.0") == 120 and _word_limit("1.1") is None
+    assert _length_issue("7.0", "- Записи ||| " + "record " * 100) is None
+    long = _length_issue("7.0", "- Записи ||| " + "record " * 200)
+    assert long and "limit is about 120" in long
+    assert _length_issue("6.0", "word " * 3000) is None          # within 1.3 x 2600
+    assert _length_issue("6.0", "word " * 3500)
