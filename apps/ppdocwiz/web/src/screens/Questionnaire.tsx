@@ -52,7 +52,7 @@ export function Questionnaire() {
 
   return <>
     <div style={{ width: 236, flex: 'none', borderRight: `1px solid ${T.hair}`, background: T.pane, padding: '14px 10px', display: 'flex', flexDirection: 'column', gap: 6 }}>
-      <Seg items={keys} value={qKey} onPick={k => set({ qKey: k, qRound: 0 })} size={12} pad="5px 6px" fill style={{ marginBottom: 6 }} />
+      <Seg items={keys} value={qKey} onPick={k => set({ qKey: k, qRound: 0 })} size={12} pad="5px 6px" fill style={{ marginBottom: 6, flexWrap: 'wrap', rowGap: 2 }} />
       <div style={{ padding: '0 4px 8px' }}><b style={{ color: '#fff' }}>{bank.mk}</b><div style={{ fontSize: 12, color: T.muted }}>{bank.en} · doctype {bank.doctype}</div></div>
       {bank.rounds.map((r, i) => {
         const done = r.questions.filter(q => answered(q.key)).length, cur = i === Math.min(qRound, bank.rounds.length - 1), allDone = done === r.questions.length;
@@ -73,7 +73,7 @@ export function Questionnaire() {
             <div style={{ display: 'flex', gap: 6, alignItems: 'center', flex: 'none' }}><span style={{ fontFamily: MONO, fontSize: 11, color: T.faint }}>{q.key}</span><span style={{ fontSize: 11, border: `1px solid ${T.control}`, borderRadius: 3, padding: '1px 6px', color: T.secondary }}>{q.multi ? 'multi' : 'single'}</span></div>
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, fontSize: 13 }}>{q.options.map(o => { const on = sel.includes(o.v);
-            return <span key={o.v} onClick={() => toggle(q.key, q.multi, o.v)} style={{ cursor: 'pointer', whiteSpace: 'nowrap', borderRadius: 6, padding: '6px 11px', display: 'flex', gap: 6, alignItems: 'center', background: on ? T.navy : 'transparent', color: on ? '#fff' : T.text, border: `1px solid ${on ? T.focus : T.control}` }}>{on ? '✓ ' : ''}{o.v}{o.isDefault && <DefTag />}</span>; })}</div>
+            return <span key={o.v} onClick={() => toggle(q.key, q.multi, o.v)} style={{ cursor: 'pointer', whiteSpace: 'normal', maxWidth: '100%', borderRadius: 6, padding: '6px 11px', display: 'flex', gap: 6, alignItems: 'center', background: on ? T.navy : 'transparent', color: on ? '#fff' : T.text, border: `1px solid ${on ? T.focus : T.control}` }}>{on ? '✓ ' : ''}{o.v}{o.isDefault && <DefTag />}</span>; })}</div>
           <div style={{ fontSize: 12, color: answered(q.key) ? T.muted : defs.length ? C.ok : C.warn }}>{note}</div>
         </div>;
       })}
