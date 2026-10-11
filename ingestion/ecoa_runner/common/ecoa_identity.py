@@ -145,13 +145,24 @@ def parse_name(name):
     return parse_new_name(name) or parse_old_name(name)
 
 
+_FOLD = str.maketrans({"П": "P", "К": "K", "М": "M", "А": "A", "В": "B", "Е": "E",
+                       "Н": "H", "О": "O", "Р": "P", "С": "C", "Т": "T", "Х": "X"})
+
+
+def fold_code(code):
+    """Cyrillic look-alikes -> Latin, so 'ППК26069' and 'PPK26069' (the old and
+    the renamed spelling of one certificate) share a key. Key only: the
+    stored identity keeps the spelling the file carries."""
+    return re.sub(r"[\s/_]+", "-", code.translate(_FOLD))
+
+
 def identity_key(ident):
     """The dedup/replace key: (lab, doc_code, date), with batch appended only
     where the doc code alone cannot tell two documents apart (finding: PP
     in-house reports reuse their form number across batches and dates)."""
     if ident is None:
         return None
-    key = (ident.lab, ident.doc_code, ident.date)
+    key = (ident.lab, fold_code(ident.doc_code), ident.date)
     if _GENERIC_DOC_CODE.match(ident.doc_code):
         # p_batch first: the OLD scheme often records only the P-number and never
         # the cultivation batch, while the NEW scheme almost always records both —
