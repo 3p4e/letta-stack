@@ -24,7 +24,7 @@
   "gpt-4o"
  ],
  "model_chain_source": "ingestion/coa_track/letta-imb-coas/agent_model_policy.py::OCR_CHAIN",
- "classical_ocr": "FORBIDDEN — scripts/policy_check.py rule 1. These pages are Macedonian Cyrillic mixed with Latin chemical symbols, the case Tesseract handles worst.",
+ "classical_ocr": "ALLOWED since 10.10.2026 (owner): OCR engines, incl. NVIDIA nemotron-ocr-v2 / table-structure / Nemotron Parse, are reads like any other; the agreement policy below decides what is stored. Design: ../ECOA_LAYERED_OCR_DESIGN_2026-10-10.md",
  "reads_required": 2,
  "agreement_policy": {
   "fields": [

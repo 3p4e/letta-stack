@@ -1,0 +1,24 @@
+  # ---- Claude on the Max-plan API credits (2026-10-11, Head of QC: RAGFlow vision + chat) ----
+  # ANTHROPIC_USR_KEY is a user-scoped sk-ant-usr key: Anthropic answers 400 unless the workspace id
+  # travels with every request, and RAGFlow's model clients cannot add headers - this gateway does.
+  # Claude 5.5 rejects temperature/top_p ("deprecated for this model") and RAGFlow sends both by
+  # default, so they are dropped here. Explicit entries: a wildcard cannot carry these params.
+  # The older ANTHROPIC_API_KEY / "anthropic/*" route above is left as it was.
+  - model_name: "claude-sonnet-5-5"
+    litellm_params:
+      model: "anthropic/claude-sonnet-5-5"
+      api_key: os.environ/ANTHROPIC_USR_KEY
+      extra_headers: {"anthropic-workspace-id": "wrkspc_01KgrPQHQPyBxATLNrmzQkPn"}
+      additional_drop_params: ["temperature", "top_p"]
+  - model_name: "claude-opus-5-5"
+    litellm_params:
+      model: "anthropic/claude-opus-5-5"
+      api_key: os.environ/ANTHROPIC_USR_KEY
+      extra_headers: {"anthropic-workspace-id": "wrkspc_01KgrPQHQPyBxATLNrmzQkPn"}
+      additional_drop_params: ["temperature", "top_p"]
+  - model_name: "claude-haiku-5-5"
+    litellm_params:
+      model: "anthropic/claude-haiku-5-5"
+      api_key: os.environ/ANTHROPIC_USR_KEY
+      extra_headers: {"anthropic-workspace-id": "wrkspc_01KgrPQHQPyBxATLNrmzQkPn"}
+      additional_drop_params: ["temperature", "top_p"]

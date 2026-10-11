@@ -215,3 +215,118 @@ lot GG1024 has no cannabinoid assay of any kind on file: no CNP certificate, no 
 retest, only the in-house Report of Analysis of 23.04.2025 (13.34 %), which is not an eCoA.
 Of the six R&D lots, four were retested (BG1024, BSS1024, HPA1024, OPM1024); GG1024 and
 CJ1024 were not.
+
+## Run 3 — 10.10.2026: eCOA_PIPE → eCOA_INGEST (prepared, blocked on vision credit)
+
+### What was found
+
+| Found | Done |
+|---|---|
+| eCOA_PIPE pointed at `gpt-5.4-mini@OPEN_AI_SERV` (key 401) and `openai-vlm` / `GEMINI_BN` (gone) | parser → `anthropic/claude-sonnet-5.5@OPENROUTER@OpenRouter`; questions + keywords → `deepseek-v4-flash@DEEPSEEK@DeepSeek` |
+| eCOA_DB_agent had been edited to `nemotron-4-340b` (NVIDIA 404), `phi-3-vision` and the deleted `OPEN_RAUT` instance | same models as eCOA_PIPE; its 2048-token chunk kept (its 283 documents were built with it) |
+| Both extractor `prompts` re-nested again (trap 2) | flattened, verified by GET |
+| OpenRouter instance `OPEN_RAUT` no longer existed | new instance `OPENROUTER` from `OPEN_ROUTER_API_KEY`; `model_info` must use `model_name` with `model_type` as a list |
+| **DeepDOC reads these certificates as Latin gibberish** ("BkyneH6poj raOu HMyBJIM" for "Вкупен број габи и мувли") and drops the exponent ("4,2x104") — measured on 320/0587/25 | DeepDOC is never the PDF parser for eCoAs; only a vision model |
+| A dataset-level `layout_recognize` VLM is silently ignored for these model ids (DeepDOC ran instead) | the VLM belongs in the pipeline Parser |
+| **NVIDIA vision models cannot parse in RAGflow v0.26.4** — dataset parser and pipeline Parser both fail with "Cannot mix str and non-str arguments" (Kimi K2.6, Kimi K3, Nemotron Parse 2.0, Llama 3.2 90B Vision). Chat through the same key works. | NVIDIA stays outside RAGflow: the runner's layered reads (`ECOA_LAYERED_OCR_DESIGN_2026-10-10.md`) call it directly |
+| OpenAI credit exhausted; OpenRouter $0.38 left of $329 (402 on the first pilot page); Moonshot quota exhausted | run blocked until a vision provider is funded |
+
+Prompts: both extractors now carry "Rules learned from this corpus" — homoglyph/separator spellings
+(К/K, ППК/PPK, ГС/GS/LoD, PO→P0), laboratory names in both languages, the closed strain list,
+values and per-row limits copied exactly with `x 10^n`, no numbers from footnotes or specification
+lines, ND ≠ not tested, stability time points named as such, nothing from an unreadable page.
+
+Corpus source: Drive `eCoA_DATABASE` (`1SmOicCRa8KEqoB-YlCojdap161YMQ-Di`), 480 ACTIVE files per
+`_eCoA_DATABASE_INDEX.xlsx` (41 redacted in-house QCCoAs and 1 superseded file excluded, ruling 16).
+File ids come from `https://drive.google.com/embeddedfolderview?id=<folder>` (one fetch, all ids);
+every download is accepted only if its SHA-256 equals the index's. Ingest one document at a time
+(`migrate_to_ecoa_pipe.py run NAME`), never the whole list in one call (no swap on KVM4).
+### Run 3, unblocked (10.10.2026): NVIDIA via the OpenAI-API-Compatible provider
+
+All set through the RAGflow API: `PUT /api/v1/providers {"provider_name":"OpenAI-API-Compatible"}`, then
+`POST /api/v1/providers/OpenAI-API-Compatible/instances` — instance `NVIDIA_OAI`, base URL
+`https://integrate.api.nvidia.com/v1`, the `nvapi-` key. Instance creation verifies one chat model within
+`LLM_TIMEOUT_SECONDS` = 10 s: Kimi K3 (reasoning, ~9 s, empty content at low max_tokens) fails it, so the
+instance was verified on `nvidia/nemotron-parse-2.0` (0.4 s) and the vision models added afterwards
+(`POST …/instances/NVIDIA_OAI/models`, `model_type: image2text`).
+
+Direct bake-off on the pilot pages (NVIDIA account, 10.10.2026):
+
+| model | 320/0587/25 TYMC | 1032/1851/25 | 946/1684/25 | ППК25139 THCA / total |
+|---|---|---|---|---|
+| **moonshotai/kimi-k3** | 4,2×10⁴ ✓ | 4,9×10⁴ ✓ | 3,6×10⁴ ✓ | 26.52 / 23.79 ✓ |
+| nvidia/nemotron-3-nano-omni | ✓ | ✓ | (503) | ✓ but "Д9" for "Δ9" |
+| google/gemma-4-31b-it | 4,2×10¹ ✗ | | | |
+| meta/llama-3.2-90b-vision | columns shifted ✗ | | | |
+| kimi-k2.6, gemma-3-12b, mistral-nemo | not enabled for the account (404) | | | |
+
+Kimi K3 is the parser of eCOA_PIPE and eCOA_DB_agent and the tenant image2text default. Through the
+pipeline each certificate is one chunk, ~5 min, Cyrillic intact, each result in its row beside its limit.
+The keyword extractor is told to keep values out of keywords (a decimal comma split "5,1 x 10^4" into two).
+
+### Run 3 moves to KVM4 (10.10.2026)
+
+A cloud session's container is reclaimed when idle, which stopped the background runner after 7 of 480.
+The run is unattended on KVM4 instead: `run_ecoa_ingest_kvm4.sh` (venv + `fetch_ecoa_corpus.py`, then
+two one-at-a-time passes; log `/opt/ecoa_ingest/run.log`). It refuses to start while another ingest runs —
+two runners against one dataset could upload the same certificate twice.
+
+**Started 10.10.2026 17:52 UTC** as container `ecoa-ingest` on KVM4 (reached through kvm4-runner `POST /shell`
+with `RUNNER_TOKEN`; `/exec` is not the route):
+
+    docker run -d --name ecoa-ingest --restart unless-stopped --memory 1g \
+      --env-file /opt/ecoa_ingest/.env -v /opt/ecoa_ingest:/work -w /work python:3.12-slim bash /work/entry.sh
+
+`/opt/ecoa_ingest/app` = `ingestion/ecoa_runner` + `ingestion/common` (tar, SHA-256 checked on the host);
+`.env` (mode 600) holds `RAGFLOW_API_KEY`; `entry.sh` = `ecoa_ingest_container_entry.sh` — idles after writing
+`/work/ALLDONE`. Progress: `/opt/ecoa_ingest/run.log`, per-document detail `/opt/ecoa_ingest/migrate.log`.
+
+### Run 3 on Claude (11.10.2026) — NVIDIA dropped
+
+NVIDIA's hosted Kimi K3 became the bottleneck (14 of 18 failures were 504s after 15 min; 104–143 s per page
+direct). The parser is now **Claude Sonnet 5.5 on the Max-plan API credits** (Head of QC: use the subscriptions
+he pays for). Findings and the route:
+
+- The Max plan's login cannot power a pipeline (Anthropic usage policy); its **API credits** can: $100 (Max 5x) /
+  $200 (Max 20x) a month, linked to a Console org, **expiring each billing cycle**, no payment method needed.
+- The credential is a user-scoped `sk-ant-usr` key; Anthropic answers 400 unless `anthropic-workspace-id` is sent,
+  and RAGFlow's clients cannot add headers. The shared LiteLLM on KVM4 (`/opt/stacks/litellm`, network `ai-net`,
+  also used by Letta and the WWF stack — **not** idle) now carries explicit `claude-{sonnet,opus,haiku}-5-5`
+  routes that add the header and drop `temperature`/`top_p` (Claude 5.5 rejects both, RAGFlow sends both). New
+  variable `ANTHROPIC_USR_KEY`; the older `ANTHROPIC_API_KEY` (invalid on 11.10) and the `anthropic/*` wildcard
+  are untouched. Backups `config.yaml.bak-20261011-0244-claude`, `.env.bak-20261011-0244-claude`.
+  Routes: `ingestion/litellm/DEPLOYED_CLAUDE_ROUTES_2026-10-11.yaml`.
+- RAGFlow: provider OpenAI-API-Compatible, instances `CLAUDE_GW` (vision: sonnet, opus; chat: haiku) and
+  `CLAUDE_GW_CHAT` (chat: sonnet, opus, haiku) at `http://litellm:4000/v1` (`register_claude_gateway.py` — keys are
+  read on the server, never printed). One model name = one type per instance, hence two instances; an instance
+  is verified with a chat model (RAGFlow's vision check sends a tiny image that Claude rejects).
+- eCOA_PIPE and eCOA_DB_agent parse with `claude-sonnet-5-5@CLAUDE_GW@OpenAI-API-Compatible`; extractors stay on
+  DeepSeek V4 Flash; tenant image2text default is the same model.
+- Measured: Sonnet/Opus/Haiku 5.5 each read 5 of 5 test pages correctly in 2–6 s ($0.001 / $0.0125 / $0.03 a
+  page). `BG1024_FHM_197-1-M-26`, which failed twice under NVIDIA, ingests in 63 s.
+
+### Parser moved from Sonnet 5.5 to Haiku 5.5 (11.10.2026)
+
+Measured on the 21 certificates of `ecoa_extraction_agent.json` `acceptance_tests` (10 hand-verified TYMC values
++ 11 must-not-flag): **Haiku 5.5 and Sonnet 5.5 both reproduce all 10 ground-truth values exactly and agree on the
+other 11** (TYMC row only, microbiology certificates only; CNP potency and Farmahem mycotoxin tables are not
+covered by this test). Cost per page: Haiku $0.0009, Sonnet $0.0124. The 4.x models were not tested because they
+are dearer than their 5.5 equivalents (Sonnet 4.6 $3/$15 vs Sonnet 5.5 $2/$10; Opus 4.8 $5/$25 vs Opus 5.5 $4/$20;
+list prices). RAGFlow allows one type per model name per instance, so Haiku vision lives in its own instance
+`CLAUDE_GW_VIS` (verified with a Sonnet chat call). Sonnet and Opus stay registered for chat and as a second reader.
+
+### Extractors on Haiku 5.5, and the editor trap (11.10.2026)
+
+Questions and keywords now run on `claude-haiku-5-5@CLAUDE_GW_CHAT` (was DeepSeek V4 Flash). On 8 certificates of
+every lab and type, with the pipeline's own prompts: code in every spelling in the keywords 8/8 for both; Haiku wrote
+the English *and* Macedonian name of every parameter (DeepSeek mostly Macedonian only), more keywords (33 vs 26) and
+the code in more questions (9.6 vs 8.5 of ~10); no number fragments in either. $0.0022 a certificate for both steps.
+Judged by counts and by reading two certificates, not by a retrieval test.
+
+**The editor trap.** A pipeline has two copies of each extractor's prompt: `components[...].params` (what runs) and
+`graph.nodes[...].data.form` (what the editor shows). An API edit that touches only `components` is silently reverted
+by the editor's autosave, which rebuilds `components` from the form — and re-nests `prompts`, so every ingest then
+fails with "expected string or bytes-like object, got 'list'". On 11.10.2026 an open editor tab did exactly that every
+~20 s (03:53 UTC, ingest stopped after 4 failures). Rules: edit pipelines through the API, write BOTH copies, and
+keep the editor tab closed while a load runs; before restarting a load, GET the pipeline and check prompts are FLAT.
+Haiku leaves blank lines between question pairs; the questions prompt now says not to.

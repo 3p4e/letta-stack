@@ -51,6 +51,12 @@ _NEW = re.compile(
     r"(?:\((?P<cu>.+?)\))?"
     r"_(?P<lab>[A-Za-z\-]+)_(?P<doc>.+)_(?P<date>" + _DATE + r")\.pdf$"
 )
+# Lots with no P-number were renamed on 20.09.2026 with a bare cultivation batch in
+# front ("BG1024_CNP_PPK25050_26.02.2025.pdf", "CC042601_FHM_220-32-K-26_26.08.2026.pdf").
+_BARE = re.compile(
+    r"^(?P<cu>[A-Z]{1,4}\d{4,6}(?:[-/]\d{1,3}V?)?[*＊]?)"
+    r"_(?P<lab>[A-Za-z\-]+)_(?P<doc>.+)_(?P<date>" + _DATE + r")\.pdf$"
+)
 _OLD = re.compile(
     r"^(?:.*/)?(?P<rest>.+),\s*(?P<date>" + _DATE + r")_(?P<lab>[A-Za-z\-]+)\.pdf$"
 )
@@ -99,11 +105,11 @@ def _norm_lab(lab):
 
 def parse_new_name(name):
     """Identity from a name already in the 20.09.2026 convention, or None."""
-    m = _NEW.match(name.strip())
+    m = _NEW.match(name.strip()) or _BARE.match(name.strip())
     if not m:
         return None
     return Identity(
-        p_batch=m.group("p"),
+        p_batch=m.groupdict().get("p"),
         cu_batch=(m.group("cu") or "").strip() or None,
         lab=_norm_lab(m.group("lab")),
         doc_code=_norm_doc(m.group("doc")),
@@ -168,6 +174,10 @@ if __name__ == "__main__":
          Identity("P050212", None, "IJZ-MB", "534-1065-26", "31.08.2026")),
         ("P050272 (PM072501)_PP_QCCoA 001v02_21.01.2026.pdf",
          Identity("P050272", "PM072501", "PP", "QCCOA 001V02", "21.01.2026")),
+        ("BG1024_CNP_PPK25050_26.02.2025.pdf",
+         Identity(None, "BG1024", "CNP", "PPK25050", "26.02.2025")),
+        ("CC042601_FHM_220-32-K-26_26.08.2026.pdf",
+         Identity(None, "CC042601", "FHM", "220-32-K-26", "26.08.2026")),
         ("(GG1024)_PP_NO-DOC-CODE (Report of Analysis)_23.04.2025.pdf",
          Identity(None, "GG1024", "PP", "NO-DOC-CODE (REPORT OF ANALYSIS)", "23.04.2025")),
     ]
