@@ -78,6 +78,18 @@ def test_brief_carries_requester_instructions_and_sources():
     assert "Sources named" not in _brief("sop_qc", {}, "", [])
 
 
+def test_form_row_written_mk_tilde_en_renders_as_two_labels(tmp_path):
+    """'Label MK~~Label EN ||| value' (the grammar DocEngine taught until 11.10.2026) must not print '~~'."""
+    import docx
+    from app import builder
+    md = ("<!--HEADERDATA\nmk_title: Тест\nen_title: Test\ncode: T-FORM\n"
+          "version: 1.0\ndoctype: FORM\norient: portrait\n-->\n"
+          "# 1.0 СОДРЖИНА|CONTENT\n[[FORM]]\nДатум~~Date ||| \nВерзија ||| Version ||| \n[[/FORM]]\n")
+    r = builder.build(md, tmp_path, "t-form")
+    text = "\n".join(c.text for t in docx.Document(str(r.path)).tables for row in t.rows for c in row.cells)
+    assert "~~" not in text and "Датум" in text and "Date" in text and "Version" in text
+
+
 def test_direct_build_pass(client):
     md = (
         "<!--HEADERDATA\nmk_title: Тест\nen_title: Test\ncode: T-1\n"

@@ -177,6 +177,9 @@ def emit_form(d, rows, mode=None):
         pr.status_grid(d, opts, selected=opts.selected, ncols=min(2, len(opts))); return
     fields=[]
     for rd in rows:
+        # A two-cell row 'Label MK~~Label EN ||| value' (a grammar DocEngine once taught its authors)
+        # means the same field as the three-cell 'Label MK ||| Label EN ||| value'.
+        if len(rd)==2 and '~~' in rd[0]: rd=[*cs(rd[0]), rd[1]]
         lmk=rd[0] if len(rd)>0 else ''; len_=rd[1] if len(rd)>1 else ''; val=rd[2] if len(rd)>2 else ''
         val=val if (val and val.strip()!='_') else ''
         vlen=len(val.strip())

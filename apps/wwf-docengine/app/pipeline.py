@@ -31,6 +31,38 @@ SOP_SECTIONS = [
     ("9.0", "РЕВИЗИЈА", "REVISION"),
 ]
 
+# English words per SOP section, from the approved WHSOP_003 v01 (about 1.25 x each section; 120 at least).
+# Unbounded, the authors wrote 2-8 x that (11.10.2026: 37 pages against 15). The author is told the
+# limit; a section more than 30 % over it goes back once to be shortened. DOCENGINE_LENGTH_SCALE scales all.
+SOP_WORDS = {"1.0": 190, "2.0": 300, "3.0": 550, "4.0": 280, "5.0": 570, "6.0": 2600,
+             "7.0": 120, "8.0": 120, "9.0": 120}
+SECTION_HINT = {
+    "7.0": "List the records (forms and annexes) by code and title only.",
+    "8.0": "List the related documents by code and title only.",
+    "9.0": "Give the revision history only.",
+}
+_LATIN_WORD = re.compile(r"[A-Za-z][A-Za-z'’-]*")
+
+
+def _en_words(content: str) -> int:
+    """English (Latin-script) words in a section body, structural markers excluded."""
+    return len(_LATIN_WORD.findall(re.sub(r"\[\[[^\]]*\]\]", "", content or "")))
+
+
+def _word_limit(num: str) -> int | None:
+    n = SOP_WORDS.get(num)
+    return round(n * settings.length_scale) if n else None
+
+
+def _length_issue(num: str, content: str) -> str | None:
+    lim = _word_limit(num)
+    n = _en_words(content)
+    if lim and n > lim * 1.3:
+        return (f"the section has {n} English words; the limit is about {lim} — shorten it: keep every "
+                "requirement, cut repetition, explanation and examples")
+    return None
+
+
 _MD_FENCE = re.compile(r"^```[a-zA-Z]*\n|\n```$", re.M)
 
 # Conversational lead-ins a stateful agent sometimes emits BEFORE the document
@@ -160,8 +192,8 @@ ENGINE_GRAMMAR = """ENGINE MARKDOWN (the only grammar the formatter reads):
 - Tables: a line [[TABLE]], then one row per line with cells separated by |||; the first row is the
   header; inside a cell write Macedonian~~English; close with [[/TABLE]]. Never Markdown pipe tables
   (| a | b |) and never separator rows (|---|).
-- Forms (write-in fields): [[FORM]] … [[/FORM]], one field per line: Label MK~~Label EN ||| value
-  (the value stays blank for a human).
+- Forms (write-in fields): [[FORM]] … [[/FORM]], one field per line, three cells:
+  Label MK ||| Label EN ||| value  (the value stays blank for a human; no ~~ in a form row).
 - Only document content: no notes to yourself, no restating of the brief, no explanation of what the
   section does or what you are about to do."""
 
@@ -421,20 +453,26 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
             body = _clean_section(text, structured=not sop)
             return _strip_own_heading(s["num"], s["mk"], s["en"], body) if sop else body
 
-        async def lint_and_repair(s: dict) -> None:
-            """Proven grammar problems go back to the author before anyone audits the document."""
+        def section_issues(s: dict) -> list[str]:
             issues = _lint_section(s["content"], sop)
+            too_long = _length_issue(s["num"], s["content"]) if sop else None
+            return issues + ([too_long] if too_long else [])
+
+        async def lint_and_repair(s: dict) -> None:
+            """Proven grammar and length problems go back to the author before anyone audits the document."""
+            issues = section_issues(s)
             for r in range(settings.lint_repair_rounds):
                 if not issues:
                     break
                 text = await ask(author_of(s), f"l{r + 1}_{s['num'].replace('.', '')}",
                     f"Rewrite section {s['num']} {s['mk']}|{s['en']} of '{meta['title_mk']} | {meta['title_en']}' "
-                    f"(code {meta['code']}) so that it follows the engine grammar. Problems found:\n- "
-                    + "\n- ".join(issues) + f"\n\n{ENGINE_GRAMMAR}\n\nKeep the content; change only the form. "
+                    f"(code {meta['code']}) to fix these problems:\n- "
+                    + "\n- ".join(issues) + f"\n\n{ENGINE_GRAMMAR}\n\nKeep every requirement; change only what "
+                    "the problems name. "
                     "Return ONLY the corrected section body — your reply is inserted verbatim.\n\n"
                     f"CURRENT SECTION\n{s['content']}")
                 s["content"] = tidy(s, text)
-                issues = _lint_section(s["content"], sop)
+                issues = section_issues(s)
             if issues:
                 ctx["lint"][s["num"]] = issues
 
@@ -448,6 +486,9 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                     f"Draft ONLY section {num} {mk}|{en} of the SOP "
                     f"'{meta['title_mk']} | {meta['title_en']}' (code {meta['code']}). "
                     f"Content brief:\n{brief}\n\n{ENGINE_GRAMMAR}\n\n{REFERENCE_RULE}\n\n"
+                    f"LENGTH: at most about {_word_limit(num)} English words (the Macedonian mirrors them). "
+                    f"{SECTION_HINT.get(num, '')} Every requirement once; no repetition, no explanation of "
+                    "why a rule exists unless the brief asks for it.\n\n"
                     "Return ONLY the bilingual Markdown body — no code fences, and NO commentary, "
                     "preamble, or explanation of what you are doing. Your entire reply is inserted "
                     "verbatim into the document. Unknown facility specifics stay as blank fields." + ex)
@@ -566,7 +607,8 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                     f"Content brief:\n{brief}\n\n{ENGINE_GRAMMAR}\n\n{REFERENCE_RULE}\n\n"
                     f"REGULATORY FINDINGS (retrieved passages, citable):\n{findings_txt}\n\nREVIEW\n{audit}\n\n"
                     f"CURRENT SECTION {s['num']}\n{s['content']}\n\n"
-                    "Return ONLY the corrected section body — your reply is inserted verbatim.")
+                    + (f"Stay within about {_word_limit(s['num'])} English words.\n" if sop and _word_limit(s['num']) else "")
+                    + "Return ONLY the corrected section body — your reply is inserted verbatim.")
                 s["content"] = tidy(s, text)
                 await lint_and_repair(s)
 

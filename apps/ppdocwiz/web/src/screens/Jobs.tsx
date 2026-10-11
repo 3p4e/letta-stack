@@ -15,7 +15,8 @@ type Finding = { section: string; verdict: string; citation: string; note: strin
 
 const stC = (st: string) => st === 'done' ? C.ok : st === 'failed' ? C.bad : st === 'running' ? C.run : st === 'awaiting_review' ? C.warn : T.secondary;
 const ago = (iso: string) => { const m = Math.round((Date.now() - Date.parse(iso)) / 60000); return m < 1 ? 'just now' : m < 60 ? m + ' min' : m < 1440 ? Math.round(m / 60) + ' h' : Math.round(m / 1440) + ' d'; };
-const secsOf = (j: Job) => (j.payload.meta.doctype || (j.payload.questionnaire === 'sop_qc' ? 'SOP' : 'FORM')) === 'SOP' ? SOP_SEC : ANX_SEC;
+// Every SOP questionnaire is named sop_* (sop_qc, sop_transport); the job payload need not carry a doctype.
+const secsOf = (j: Job) => (j.payload.meta.doctype || (j.payload.questionnaire.startsWith('sop_') ? 'SOP' : 'FORM')) === 'SOP' ? SOP_SEC : ANX_SEC;
 
 /** Position in the stage sequence (queued=0 … registry=2n+4), from the job row's `stage`. */
 function posOf(j: Job) {
