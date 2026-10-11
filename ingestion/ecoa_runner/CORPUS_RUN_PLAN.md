@@ -314,3 +314,19 @@ covered by this test). Cost per page: Haiku $0.0009, Sonnet $0.0124. The 4.x mod
 are dearer than their 5.5 equivalents (Sonnet 4.6 $3/$15 vs Sonnet 5.5 $2/$10; Opus 4.8 $5/$25 vs Opus 5.5 $4/$20;
 list prices). RAGFlow allows one type per model name per instance, so Haiku vision lives in its own instance
 `CLAUDE_GW_VIS` (verified with a Sonnet chat call). Sonnet and Opus stay registered for chat and as a second reader.
+
+### Extractors on Haiku 5.5, and the editor trap (11.10.2026)
+
+Questions and keywords now run on `claude-haiku-5-5@CLAUDE_GW_CHAT` (was DeepSeek V4 Flash). On 8 certificates of
+every lab and type, with the pipeline's own prompts: code in every spelling in the keywords 8/8 for both; Haiku wrote
+the English *and* Macedonian name of every parameter (DeepSeek mostly Macedonian only), more keywords (33 vs 26) and
+the code in more questions (9.6 vs 8.5 of ~10); no number fragments in either. $0.0022 a certificate for both steps.
+Judged by counts and by reading two certificates, not by a retrieval test.
+
+**The editor trap.** A pipeline has two copies of each extractor's prompt: `components[...].params` (what runs) and
+`graph.nodes[...].data.form` (what the editor shows). An API edit that touches only `components` is silently reverted
+by the editor's autosave, which rebuilds `components` from the form — and re-nests `prompts`, so every ingest then
+fails with "expected string or bytes-like object, got 'list'". On 11.10.2026 an open editor tab did exactly that every
+~20 s (03:53 UTC, ingest stopped after 4 failures). Rules: edit pipelines through the API, write BOTH copies, and
+keep the editor tab closed while a load runs; before restarting a load, GET the pipeline and check prompts are FLAT.
+Haiku leaves blank lines between question pairs; the questions prompt now says not to.

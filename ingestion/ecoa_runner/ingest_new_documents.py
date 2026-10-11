@@ -13,8 +13,8 @@ B = os.environ['RAGFLOW_API_SERVER'].rstrip('/'); K = os.environ['RAGFLOW_API_KE
 DS = 'dd3ea108a3fd11f1858cf58865604f65'
 AID = 'c83609aea3fd11f1858cf58865604f65'
 VLM = 'claude-haiku-5-5@CLAUDE_GW_VIS@OpenAI-API-Compatible'  # 11.10.2026: Haiku 5.5 on the Max-plan API credits via the KVM4 LiteLLM; 21/21 hand-verified pages exact; DeepDOC reads Cyrillic as Latin
-QMODEL = 'deepseek-v4-flash@DEEPSEEK@DeepSeek'  # 10.10.2026: openai-vlm dead
-KWMODEL = 'deepseek-v4-flash@DEEPSEEK@DeepSeek'  # 10.10.2026: Moonshot quota exhausted
+QMODEL = 'claude-haiku-5-5@CLAUDE_GW_CHAT@OpenAI-API-Compatible'  # 11.10.2026: Haiku 5.5, $0.0022/certificate for both extractors
+KWMODEL = 'claude-haiku-5-5@CLAUDE_GW_CHAT@OpenAI-API-Compatible'  # 11.10.2026: Haiku 5.5
 PDFDIR = os.environ.get('ECOA_PDF_DIR', HERE + '/incoming_pdfs')
 LOG = HERE + '/ingest_new_documents.log'
 
