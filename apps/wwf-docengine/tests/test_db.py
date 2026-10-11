@@ -130,3 +130,11 @@ async def test_document_create_and_read_back(dbpool):
     assert doc["code"] == "QCSOP-999" and doc["bytes"] == 4242
     assert doc["verify"] == "RESULT: PASS"
     assert any(d["id"] == did for d in await db.documents_list())
+
+
+async def test_job_claim_moves_a_job_only_once(dbpool):
+    """Two reviewers approving at once: only one claim moves the row out of awaiting_review."""
+    jid = await seed_job(dbpool, status="awaiting_review")
+    assert await db.job_claim(jid, "awaiting_review", "running") is True
+    assert await db.job_claim(jid, "awaiting_review", "running") is False
+    assert await status_of(dbpool, jid) == "running"

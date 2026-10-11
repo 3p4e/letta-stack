@@ -165,6 +165,14 @@ ENGINE_GRAMMAR = """ENGINE MARKDOWN (the only grammar the formatter reads):
 - Only document content: no notes to yourself, no restating of the brief, no explanation of what the
   section does or what you are about to do."""
 
+# Where a reference may come from. Authors kept naming plausible regulations no passage or brief
+# supported (GLP, ICH Q7 — an API guideline — in a finished-product SOP, Annex 11 technical claims);
+# found by the auditor in live runs 10.10.2026.
+REFERENCE_RULE = """REFERENCES: name a regulation, guideline, standard or pharmacopoeia text ONLY if it is in the
+content brief or in a regulatory finding supplied to you. Any other reference you believe applies goes in a
+separate list headed 'За потврда | To be confirmed', never presented as a normative basis. Never cite a document
+whose scope excludes this procedure (e.g. ICH Q7 covers active substances, not finished product)."""
+
 _PIPE_TABLE = re.compile(r"^\s*\|.*\|\s*$")
 _H1 = re.compile(r"^#\s")
 _HNUM = re.compile(r"^#+\s*([0-9]+)(?:\.[0-9]+)*\.?\s")
@@ -433,7 +441,7 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                 text = await ask(author_of(s), num.replace(".", ""),
                     f"Draft ONLY section {num} {mk}|{en} of the SOP "
                     f"'{meta['title_mk']} | {meta['title_en']}' (code {meta['code']}). "
-                    f"Content brief:\n{brief}\n\n{ENGINE_GRAMMAR}\n\n"
+                    f"Content brief:\n{brief}\n\n{ENGINE_GRAMMAR}\n\n{REFERENCE_RULE}\n\n"
                     "Return ONLY the bilingual Markdown body — no code fences, and NO commentary, "
                     "preamble, or explanation of what you are doing. Your entire reply is inserted "
                     "verbatim into the document. Unknown facility specifics stay as blank fields." + ex)
@@ -446,7 +454,7 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
             ex = await examples_for(f"{doctype} {meta['title_en']}")
             text = await ask("gf_annex_author", "10",
                 f"Design the {doctype} '{meta['title_mk']} | {meta['title_en']}' "
-                f"(code {meta['code']}). Content brief:\n{brief}\n\n{ENGINE_GRAMMAR}\n\n"
+                f"(code {meta['code']}). Content brief:\n{brief}\n\n{ENGINE_GRAMMAR}\n\n{REFERENCE_RULE}\n\n"
                 "Use [[FORM:grid]] for the metadata block and [[TABLE]] for data grids. Blank "
                 "write-in values. Return ONLY the bilingual Markdown body — NO commentary, preamble, "
                 "or explanation; your entire reply is inserted verbatim into the document." + ex)
@@ -519,7 +527,8 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                 f"Judge its Markdown only against this grammar — do not require constructs it does not define:\n{ENGINE_GRAMMAR}\n"
                 "The '# N.0 MK|EN' section headings and the <!--HEADERDATA--> block in the DOCUMENT are "
                 "written by the pipeline and are correct — do not flag them; judge the authored content "
-                "under each heading.\n\n"
+                "under each heading. A reference listed under 'За потврда | To be confirmed' is not a "
+                "finding; a reference presented as a normative basis must be in the brief or the findings.\n\n"
                 "CONTENT BRIEF (the questionnaire answers; regulatory references in it are pre-verified "
                 f"by the questionnaire and count as supported):\n{brief}\n\n"
                 "REGULATORY CHECK FINDINGS, per section ([R#] = a passage retrieved from RAGFlow DB01):\n"
@@ -530,7 +539,11 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
             if _qa_audit_passed(audit):
                 break
             if rnd == settings.qa_repair_rounds:
-                raise QaAuditFailed(audit)
+                if not settings.fix_to_review:
+                    raise QaAuditFailed(audit)
+                ctx["review_reason"] = (f"§6A FIX after {rnd} repair round(s): the auditor's remaining "
+                                        "issues are in qa_audit; a person decides")
+                break
             # Send the named sections back to their authors with the auditor's text.
             named = set(_sections_named(audit, [x["num"] for x in sections]))
             for s in sections:
@@ -543,19 +556,28 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                     f"issue the review raises about section {s['num']}, and anything in it a document-wide "
                     "issue affects; ignore issues that belong only to other sections; keep what was not "
                     "criticised. Facts you do not have stay as blank fields — never invent data or citations.\n\n"
-                    f"Content brief:\n{brief}\n\n{ENGINE_GRAMMAR}\n\nREVIEW\n{audit}\n\n"
+                    f"Content brief:\n{brief}\n\n{ENGINE_GRAMMAR}\n\n{REFERENCE_RULE}\n\n"
+                    f"REGULATORY FINDINGS (retrieved passages, citable):\n{findings_txt}\n\nREVIEW\n{audit}\n\n"
                     f"CURRENT SECTION {s['num']}\n{s['content']}\n\n"
                     "Return ONLY the corrected section body — your reply is inserted verbatim.")
                 s["content"] = tidy(s, text)
                 await lint_and_repair(s)
 
-        # ---- format + verify (hard gate) ----
+        # ---- format + verify (hard gate — a review never skips it) ----
         await db.job_update(job_id, stage="format")
         # H14 — builder.build is fully synchronous (docx render + verify, tens of seconds); called bare
         # it blocked the event loop, stalling every request this worker serves, including the polls.
         result = await asyncio.to_thread(
             builder.build, ctx["markdown"], settings.out_dir, meta["code"]
         )
+        if ctx.get("review_reason"):
+            # Built and verified, NOT registered: POST /workflows/{id}/review approves (registers) or returns it.
+            await db.job_update(
+                job_id, status="awaiting_review", stage="format",
+                result={**ctx, "verify": result.verify_report, "bytes": result.bytes,
+                        "artifact": {"path": str(result.path), "bytes": result.bytes}},
+            )
+            return
         did = await db.document_create(
             job_id,
             {

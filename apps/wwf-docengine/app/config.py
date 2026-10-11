@@ -23,9 +23,13 @@ class Settings:
     letta_connect_timeout: float = float(os.environ.get("LETTA_CONNECT_TIMEOUT", "15"))
     # Workflow repair loops (pipeline.py). A section whose Markdown breaks the engine grammar goes back
     # to its author this many times; a §6A FIX verdict sends the named sections back this many rounds
-    # before the job fails. 0 turns a loop off.
+    # before the job goes to review (or fails, see fix_to_review). 0 turns a loop off.
     lint_repair_rounds: int = int(os.environ.get("DOCENGINE_LINT_REPAIR_ROUNDS", "1"))
     qa_repair_rounds: int = int(os.environ.get("DOCENGINE_QA_REPAIR_ROUNDS", "2"))
+    # A §6A FIX that survives every repair round: 1 (default) builds and verifies the .docx and parks the
+    # job as awaiting_review for a person (EU GMP Ch. 4 §4.3 — a person approves every document anyway);
+    # nothing is registered until POST /workflows/{id}/review approves it. 0 fails the job instead.
+    fix_to_review: bool = os.environ.get("DOCENGINE_FIX_TO_REVIEW", "1") not in ("0", "false", "no")
     # Per-section regulatory checks run concurrently, at most this many at once.
     reg_concurrency: int = max(1, int(os.environ.get("DOCENGINE_REG_CONCURRENCY", "4")))
 

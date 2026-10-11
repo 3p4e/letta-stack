@@ -9,6 +9,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from app import builder, db, fleet  # noqa: E402
+from app.config import settings  # noqa: E402
 from app.letta import LettaError  # noqa: E402
 from app.pipeline import (  # noqa: E402
     assemble_markdown, run_workflow, _strip_fences, _clean_section, _bilingual_gaps,
@@ -190,6 +191,8 @@ async def test_generic_exception_with_blank_str_still_records_a_useful_error(mon
 
 @pytest.mark.asyncio
 async def test_qa_audit_fix_verdict_blocks_the_build(monkeypatch):
+    """Hard-gate mode (DOCENGINE_FIX_TO_REVIEW=0)."""
+    monkeypatch.setattr(settings, "fix_to_review", False)
     updates = _patch_common(monkeypatch)
     built = []
     monkeypatch.setattr(builder, "build", lambda *a, **k: built.append(1) or _fake_build_result())
@@ -482,6 +485,7 @@ async def test_fix_verdict_sends_named_sections_back_then_passes(monkeypatch):
 @pytest.mark.asyncio
 async def test_failed_audit_keeps_the_draft_and_findings(monkeypatch):
     """A failed job used to keep only the verdict; the draft and sources were lost."""
+    monkeypatch.setattr(settings, "fix_to_review", False)
     updates = _patch_common(monkeypatch, qkey="sop_qc")
 
     class AlwaysFix(FakeClient):
@@ -524,3 +528,40 @@ async def test_regulatory_checks_run_concurrently_and_keep_section_order(monkeyp
     assert [r.split("]")[0] for r in res["regulatory"]] == [f"[{n}.0" for n in range(1, 10)]
     stages = [u["stage"] for u in updates if str(u.get("stage", "")).startswith("regulatory-check ")]
     assert stages == [f"regulatory-check {n}.0" for n in range(1, 10)]
+
+
+@pytest.mark.asyncio
+async def test_fix_after_all_rounds_is_built_and_parked_for_review_not_registered(monkeypatch):
+    monkeypatch.setattr(settings, "fix_to_review", True)
+    updates = _patch_common(monkeypatch, qkey="sop_qc")
+    built, registered = [], []
+    monkeypatch.setattr(builder, "build", lambda *a, **k: built.append(1) or _fake_build_result())
+
+    async def no_register(job_id, meta):
+        registered.append(meta)
+        return "doc-x"
+    monkeypatch.setattr(db, "document_create", no_register)
+
+    class AlwaysFix(FakeClient):
+        async def send_message(self, agent_id, prompt):
+            if "§6A" in prompt:
+                return _LIVE_FIX
+            if "Check this drafted section" in prompt:
+                return "NO-FINDING"
+            return "Текст на секцијата ||| Section text"
+
+    await run_workflow("job-1", client=AlwaysFix())
+    last = updates[-1]
+    assert last["status"] == "awaiting_review" and last["stage"] == "format"
+    assert built and not registered, "built and verified, never registered before a person approves"
+    res = last["result"]
+    assert res["qa_verdict"] == "FIX" and res["qa_rounds"] == settings.qa_repair_rounds
+    assert res["artifact"]["path"] == "/tmp/x.docx" and res["verify"] == "RESULT: PASS"
+    assert "review_reason" in res and res["markdown"].startswith("<!--HEADERDATA")
+
+
+def test_reference_rule_reaches_authors_and_repairs():
+    from app import pipeline
+    assert "За потврда | To be confirmed" in pipeline.REFERENCE_RULE
+    src = Path(pipeline.__file__).read_text(encoding="utf-8")
+    assert src.count("{REFERENCE_RULE}") >= 3   # SOP draft, annex draft, QA repair

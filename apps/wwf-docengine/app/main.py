@@ -174,6 +174,54 @@ async def get_workflow(jid: str):
     return job
 
 
+class ReviewIn(BaseModel):
+    decision: str            # approve | return
+    note: str = ""
+    reviewer: str = ""
+
+
+@app.post("/workflows/{jid}/review", dependencies=[Depends(require_api_key)])
+async def review_workflow(jid: str, body: ReviewIn):
+    """A person's decision on a job parked as awaiting_review (a §6A FIX that survived the repair rounds).
+
+    approve → the built, verified .docx is registered in docengine.documents and the job is done;
+    return  → the job fails as 'returned for revision: <note>' (a note is required).
+    Either way the decision, the note, who and when are kept in result.review."""
+    if body.decision not in ("approve", "return"):
+        raise HTTPException(422, "decision must be 'approve' or 'return'")
+    if body.decision == "return" and not body.note.strip():
+        raise HTTPException(422, "a note is required to return a document for revision")
+    if not _valid_uuid(jid):
+        raise HTTPException(404, "no such job")
+    if not db.ready():
+        raise HTTPException(503, "DocEngine storage unavailable")
+    job = await db.job_get(jid)
+    if not job:
+        raise HTTPException(404, "no such job")
+    res = job.get("result") or {}
+    art = res.get("artifact") or {}
+    if job["status"] == "awaiting_review" and body.decision == "approve" and not (art.get("path") and Path(art["path"]).is_file()):
+        raise HTTPException(410, "the built document is missing; return it for revision and re-run")
+    from datetime import datetime, timezone
+    review = {"decision": body.decision, "note": body.note.strip(), "by": body.reviewer or job.get("created_by") or "reviewer",
+              "at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "qa_verdict": res.get("qa_verdict", "")}
+    # Atomic claim: of two simultaneous decisions only one moves the row out of awaiting_review.
+    if not await db.job_claim(jid, "awaiting_review", "running" if body.decision == "approve" else "failed"):
+        raise HTTPException(409, "job is not awaiting review")
+    if body.decision == "return":
+        await db.job_update(jid, status="failed", stage="format", error=f"returned for revision: {review['note']}"[:500],
+                            result={**res, "review": review})
+    else:
+        meta = job["payload"]["meta"]
+        did = await db.document_create(jid, {
+            "code": meta["code"], "doctype": meta.get("doctype") or QUESTIONNAIRES[job["payload"]["questionnaire"]]["doctype"],
+            "title_mk": meta["title_mk"], "title_en": meta["title_en"], "version": meta.get("version", "1.0"),
+            "path": art["path"], "bytes": art.get("bytes") or res.get("bytes") or 0, "verify": res.get("verify", ""),
+        })
+        await db.job_update(jid, status="done", stage="done", result={**res, "document_id": did, "review": review})
+    return await db.job_get(jid)
+
+
 # ---------- direct build (Mode B/C: caller supplies the Markdown) ----------
 class BuildIn(BaseModel):
     markdown: str = Field(min_length=20, max_length=400_000)

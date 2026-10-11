@@ -138,7 +138,9 @@ export function Jobs() {
       {(job.status === 'running' || job.status === 'queued') && <div style={{ color: C.run, fontFamily: MONO, fontSize: 12 }}>● polling every 1 s · stage {stageLabel}</div>}
       {review && <div style={{ display: 'flex', flexDirection: 'column', gap: 8, background: T.surface, border: `1px solid ${C.warn}`, borderRadius: 8, padding: 12 }}>
         <b style={{ color: C.warn, fontFamily: MONO, fontSize: 12 }}>awaiting_review</b>
-        <div style={{ color: T.secondary, lineHeight: 1.45 }}>The gate passed. A person checks the Markdown and verify report before the row reaches the registry.</div>
+        <div style={{ color: T.secondary, lineHeight: 1.45 }}>{qa?.verdict === 'FIX'
+          ? `pp_verify passed, but the §6A auditor still returned FIX after ${job.result.qa_rounds ?? 0} repair round(s). Its remaining issues are under §6A audit verdict. Approve only if they are acceptable or corrected; nothing is registered until you approve.`
+          : 'The gate passed. A person checks the Markdown and verify report before the row reaches the registry.'}</div>
         <textarea value={note} onChange={e => setNote(e.target.value)} placeholder="Reviewer note (required to return)" style={{ height: 70, background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 6, padding: 8, color: '#fff', resize: 'none', outline: 'none', fontSize: 12.5 }} />
         <div style={{ display: 'flex', gap: 8 }}><Btn onClick={() => decide('approve')} style={{ flex: 1 }}>Approve & register</Btn><Btn primary={false} disabled={!note.trim()} onClick={() => decide('return')} style={{ flex: 1 }}>Return for revision</Btn></div>
         <span onClick={() => { const md = String(job.result.markdown || ''); set({ builderMode: 'src' }); go('builder'); flash(md ? 'Markdown is in result.markdown; open it in Builder raw mode to edit' : 'no Markdown stored on this job'); }} style={{ color: C.run, cursor: 'pointer', textAlign: 'center' }}>Open Markdown in Builder →</span>
