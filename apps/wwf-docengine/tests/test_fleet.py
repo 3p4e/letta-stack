@@ -33,3 +33,15 @@ def test_reg_checker_is_declared_with_its_regulatory_sources():
     spec = load_fleet()
     ag = next(a for a in spec["agents"] if a["name"] == "gf_reg_checker")
     assert "DB1_REGULATORY" in ag["sources"]
+
+
+def test_every_agent_clone_carries_the_house_glossary():
+    import inspect
+    from app import fleet, glossary
+    text = glossary.memory_text()
+    assert "термо-ќебе" in text and "меѓупроизвод (ринфуз)" in text and "Министерство за здравство (МЗ)" in text
+    assert len(text) < fleet.GLOSSARY_LIMIT
+    for fn in (fleet.ensure_fleet, fleet.spawn_ephemeral):
+        assert '"gf_glossary_mk"' in inspect.getsource(fn)
+    for t in glossary.load()["terms"]:          # a listed term is never flagged by its own lint
+        assert glossary.term_issues(t["mk"]) == [], t["en"]

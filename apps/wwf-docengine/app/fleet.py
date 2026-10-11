@@ -15,10 +15,13 @@ from pathlib import Path
 
 import yaml
 
+from . import glossary
 from .letta import LettaClient, LettaError
 
 log = logging.getLogger("docengine.fleet")
 FLEET_FILE = Path(__file__).resolve().parents[1] / "agents" / "fleet.yaml"
+# Explicit block limit: the glossary is about 2.5k characters, and a server default could truncate it.
+GLOSSARY_LIMIT = 8000
 
 
 def load_fleet() -> dict:
@@ -70,6 +73,7 @@ async def ensure_fleet(client: LettaClient | None = None) -> dict:
             "memory_blocks": [
                 {"label": "gf_house_rules", "value": house_rules},
                 {"label": "persona", "value": ag["persona"].strip()},
+                {"label": "gf_glossary_mk", "value": glossary.memory_text(), "limit": GLOSSARY_LIMIT},
             ],
         }
         created = await client.create_agent(body)
@@ -126,6 +130,7 @@ async def spawn_ephemeral(client: LettaClient, agent_name: str, name_suffix: str
         "memory_blocks": [
             {"label": "gf_house_rules", "value": house_rules},
             {"label": "persona", "value": ag["persona"].strip()},
+            {"label": "gf_glossary_mk", "value": glossary.memory_text(), "limit": GLOSSARY_LIMIT},
         ],
     }
     created = await client.create_agent(body)

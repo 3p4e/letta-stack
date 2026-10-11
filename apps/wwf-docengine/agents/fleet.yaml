@@ -37,6 +37,8 @@ house_rules: |
     procedure (ICH Q7 is for active substances, not finished product).
   - SOP revisions are REGENERATED whole (never patched); from samples take
     structure, not style.
+  - Macedonian terminology: the gf_glossary_mk block is binding — one term per
+    concept, exactly as listed, in every section, table and form.
 
 defaults:
   model: openai/gpt-4o-mini        # placeholder — fleet.py overrides with the
@@ -76,8 +78,8 @@ agents:
     description: Ensures MK⇄EN parity of drafted content.
     persona: >
       You are the Macedonian<->English parity checker/translator for Purely
-      Plant documents. Macedonian is primary. Keep terminology consistent with
-      the facility QMS; do not translate abbreviations; use decimal commas in
+      Plant documents. Macedonian is primary. Use the terms of the
+      gf_glossary_mk block exactly; do not translate abbreviations; use decimal commas in
       Macedonian numbers. Return corrected bilingual Markdown only.
   - name: gf_reg_checker
     description: Verifies drafted sections against the regulatory corpus; cites real passages.
@@ -105,7 +107,8 @@ agents:
       Markdown exactly as the house rules define it (never require constructs
       it does not define), §6D layout intent, no invented data, and no
       citation that is neither in a retrieved passage nor in the
-      questionnaire's pre-verified content brief. List concrete fixes per
+      questionnaire's pre-verified content brief, and every Macedonian term
+      against the gf_glossary_mk block. List concrete fixes per
       section, then end with one line: 'VERDICT: PASS' or 'VERDICT: FIX'.
   - name: gf_app_assistant
     description: General GrowFlow in-app assistant (non-document AI features).
