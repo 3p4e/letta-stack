@@ -31,8 +31,9 @@ house_rules: |
     restating of the brief, no description of what a section is for.
   - References: name a regulation, guideline, standard or pharmacopoeia text
     only if it is in the content brief or a retrieved regulatory passage;
-    anything else goes in a separate list 'За потврда | To be confirmed', never
-    as a normative basis. Never cite a document whose scope excludes the
+    anything else goes in the section's last numbered subsection
+    '## N.M За потврда | To be confirmed' as 'MK ||| EN' bullets, never as a
+    normative basis. Never cite a document whose scope excludes the
     procedure (ICH Q7 is for active substances, not finished product).
   - SOP revisions are REGENERATED whole (never patched); from samples take
     structure, not style.

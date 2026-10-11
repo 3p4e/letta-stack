@@ -169,8 +169,9 @@ ENGINE_GRAMMAR = """ENGINE MARKDOWN (the only grammar the formatter reads):
 # supported (GLP, ICH Q7 — an API guideline — in a finished-product SOP, Annex 11 technical claims);
 # found by the auditor in live runs 10.10.2026.
 REFERENCE_RULE = """REFERENCES: name a regulation, guideline, standard or pharmacopoeia text ONLY if it is in the
-content brief or in a regulatory finding supplied to you. Any other reference you believe applies goes in a
-separate list headed 'За потврда | To be confirmed', never presented as a normative basis. Never cite a document
+content brief or in a regulatory finding supplied to you. Any other reference you believe applies goes in the
+section's LAST numbered subsection, '## N.M За потврда | To be confirmed', as 'MK ||| EN' bullets — never
+presented as a normative basis. Never cite a document
 whose scope excludes this procedure (e.g. ICH Q7 covers active substances, not finished product)."""
 
 _PIPE_TABLE = re.compile(r"^\s*\|.*\|\s*$")
