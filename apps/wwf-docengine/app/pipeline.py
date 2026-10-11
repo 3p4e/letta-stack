@@ -31,36 +31,16 @@ SOP_SECTIONS = [
     ("9.0", "РЕВИЗИЈА", "REVISION"),
 ]
 
-# English words per SOP section, from the approved WHSOP_003 v01 (about 1.25 x each section; 120 at least).
-# Unbounded, the authors wrote 2-8 x that (11.10.2026: 37 pages against 15). The author is told the
-# limit; a section more than 30 % over it goes back once to be shortened. DOCENGINE_LENGTH_SCALE scales all.
-SOP_WORDS = {"1.0": 190, "2.0": 300, "3.0": 550, "4.0": 280, "5.0": 570, "6.0": 2600,
-             "7.0": 120, "8.0": 120, "9.0": 120}
+# No length target. Head of QC, 11.10.2026: a page or word limit "will probably sometimes cut on very
+# important content", or pad a short procedure — length is a result of the content. What is controlled is
+# redundancy: the authors state each requirement once, and the §6A audit flags repetition and padding.
+CONCISE = ("Write only what the procedure needs: every requirement once, no repetition of another section, "
+           "no explanation of why a rule exists unless the brief asks for it, no filler.")
 SECTION_HINT = {
-    "7.0": "List the records (forms and annexes) by code and title only.",
-    "8.0": "List the related documents by code and title only.",
-    "9.0": "Give the revision history only.",
+    "7.0": "List the records (forms and annexes) by code and title.",
+    "8.0": "List the related documents by code and title.",
+    "9.0": "Give the revision history.",
 }
-_LATIN_WORD = re.compile(r"[A-Za-z][A-Za-z'’-]*")
-
-
-def _en_words(content: str) -> int:
-    """English (Latin-script) words in a section body, structural markers excluded."""
-    return len(_LATIN_WORD.findall(re.sub(r"\[\[[^\]]*\]\]", "", content or "")))
-
-
-def _word_limit(num: str) -> int | None:
-    n = SOP_WORDS.get(num)
-    return round(n * settings.length_scale) if n else None
-
-
-def _length_issue(num: str, content: str) -> str | None:
-    lim = _word_limit(num)
-    n = _en_words(content)
-    if lim and n > lim * 1.3:
-        return (f"the section has {n} English words; the limit is about {lim} — shorten it: keep every "
-                "requirement, cut repetition, explanation and examples")
-    return None
 
 
 _MD_FENCE = re.compile(r"^```[a-zA-Z]*\n|\n```$", re.M)
@@ -454,12 +434,10 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
             return _strip_own_heading(s["num"], s["mk"], s["en"], body) if sop else body
 
         def section_issues(s: dict) -> list[str]:
-            issues = _lint_section(s["content"], sop)
-            too_long = _length_issue(s["num"], s["content"]) if sop else None
-            return issues + ([too_long] if too_long else [])
+            return _lint_section(s["content"], sop)
 
         async def lint_and_repair(s: dict) -> None:
-            """Proven grammar and length problems go back to the author before anyone audits the document."""
+            """Proven grammar problems go back to the author before anyone audits the document."""
             issues = section_issues(s)
             for r in range(settings.lint_repair_rounds):
                 if not issues:
@@ -486,9 +464,7 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                     f"Draft ONLY section {num} {mk}|{en} of the SOP "
                     f"'{meta['title_mk']} | {meta['title_en']}' (code {meta['code']}). "
                     f"Content brief:\n{brief}\n\n{ENGINE_GRAMMAR}\n\n{REFERENCE_RULE}\n\n"
-                    f"LENGTH: at most about {_word_limit(num)} English words (the Macedonian mirrors them). "
-                    f"{SECTION_HINT.get(num, '')} Every requirement once; no repetition, no explanation of "
-                    "why a rule exists unless the brief asks for it.\n\n"
+                    f"{CONCISE} {SECTION_HINT.get(num, '')}\n\n"
                     "Return ONLY the bilingual Markdown body — no code fences, and NO commentary, "
                     "preamble, or explanation of what you are doing. Your entire reply is inserted "
                     "verbatim into the document. Unknown facility specifics stay as blank fields." + ex)
@@ -581,6 +557,8 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                 f"{brief}\n\n"
                 "REGULATORY CHECK FINDINGS, per section ([R#] = a passage retrieved from RAGFlow DB01):\n"
                 f"{findings_txt}\n\n"
+                "Also flag repetition (a requirement stated twice, or restating another section), padding "
+                "and explanation the procedure does not need — never ask for more text to fill space.\n\n"
                 "List concrete, actionable issues per section. End your reply with one final line, "
                 "exactly 'VERDICT: PASS' or 'VERDICT: FIX'.\n\nDOCUMENT\n" + markdown)
             ctx.update(qa_audit=audit, qa_verdict=_qa_verdict(audit), qa_rounds=rnd)
@@ -607,7 +585,7 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                     f"Content brief:\n{brief}\n\n{ENGINE_GRAMMAR}\n\n{REFERENCE_RULE}\n\n"
                     f"REGULATORY FINDINGS (retrieved passages, citable):\n{findings_txt}\n\nREVIEW\n{audit}\n\n"
                     f"CURRENT SECTION {s['num']}\n{s['content']}\n\n"
-                    + (f"Stay within about {_word_limit(s['num'])} English words.\n" if sop and _word_limit(s['num']) else "")
+                    + f"{CONCISE}\n"
                     + "Return ONLY the corrected section body — your reply is inserted verbatim.")
                 s["content"] = tidy(s, text)
                 await lint_and_repair(s)

@@ -567,11 +567,9 @@ def test_reference_rule_reaches_authors_and_repairs():
     assert src.count("{REFERENCE_RULE}") >= 3   # SOP draft, annex draft, QA repair
 
 
-def test_sop_sections_have_a_length_limit():
-    from app.pipeline import _length_issue, _word_limit
-    assert _word_limit("7.0") == 120 and _word_limit("1.1") is None
-    assert _length_issue("7.0", "- Записи ||| " + "record " * 100) is None
-    long = _length_issue("7.0", "- Записи ||| " + "record " * 200)
-    assert long and "limit is about 120" in long
-    assert _length_issue("6.0", "word " * 3000) is None          # within 1.3 x 2600
-    assert _length_issue("6.0", "word " * 3500)
+def test_no_length_target_conciseness_is_a_content_rule():
+    """Head of QC, 11.10.2026: no page or word limit; redundancy is what gets controlled."""
+    import app.pipeline as p
+    assert not hasattr(p, "SOP_WORDS") and not hasattr(p, "_length_issue")
+    assert "every requirement once" in p.CONCISE and "no filler" in p.CONCISE
+    assert p._lint_section("- Записи ||| " + "record " * 2000) == []      # length alone is never a finding
