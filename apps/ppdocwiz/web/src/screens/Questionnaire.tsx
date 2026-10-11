@@ -38,7 +38,7 @@ export function Questionnaire() {
       go('jobs', { jobSel: r.job_id }); flash(`job ${r.job_id.slice(0, 8)} queued · polling every 1 s`);
     } catch (e) { setErr(`${(e as ApiError).status} · ${(e as Error).message}`); }
   };
-  usePrimary('Start workflow ▸', start, missing.length > 0);
+  usePrimary(tr(lang, 'Start workflow ▸'), start, missing.length > 0);
   if (!bank) return <div style={{ padding: 22, color: err ? C.bad : T.muted, fontFamily: MONO, fontSize: 12 }}>{err ? `GET /questionnaires/${qKey} → ${err}` : 'loading…'}</div>;
 
   const answered = (k: string) => { const v = ans[k]; return Array.isArray(v) ? v.length > 0 : !!v; };

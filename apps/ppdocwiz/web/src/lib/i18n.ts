@@ -13,7 +13,7 @@ const MK: Record<string, string> = {
   'Creates a job and opens it in Jobs': 'Создава задача и ја отвора во Задачи',
   'answered': 'одговорено', 'selected': 'избрано', 'unanswered → default:': 'неодговорено → стандардно:',
   'unanswered → no default exists; stays open in the brief': 'неодговорено → нема стандардна опција; останува отворено',
-  'by default': 'стандардно', 'open': 'отворено',
+  'by default': 'стандардно', 'open': 'отворено', 'default': 'стандардно', 'Start workflow ▸': 'Започни работен тек ▸',
   'defaults_note': 'го пополнува секое неодговорено прашање со најусогласената опција. Опциите се претходно проверени според регулативата; никој не пишува регулаторен текст.',
 };
 const EN: Record<string, string> = {
