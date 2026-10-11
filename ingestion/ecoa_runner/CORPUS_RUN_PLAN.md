@@ -280,3 +280,27 @@ with `RUNNER_TOKEN`; `/exec` is not the route):
 `/opt/ecoa_ingest/app` = `ingestion/ecoa_runner` + `ingestion/common` (tar, SHA-256 checked on the host);
 `.env` (mode 600) holds `RAGFLOW_API_KEY`; `entry.sh` = `ecoa_ingest_container_entry.sh` — idles after writing
 `/work/ALLDONE`. Progress: `/opt/ecoa_ingest/run.log`, per-document detail `/opt/ecoa_ingest/migrate.log`.
+
+### Run 3 on Claude (11.10.2026) — NVIDIA dropped
+
+NVIDIA's hosted Kimi K3 became the bottleneck (14 of 18 failures were 504s after 15 min; 104–143 s per page
+direct). The parser is now **Claude Sonnet 5.5 on the Max-plan API credits** (Head of QC: use the subscriptions
+he pays for). Findings and the route:
+
+- The Max plan's login cannot power a pipeline (Anthropic usage policy); its **API credits** can: $100 (Max 5x) /
+  $200 (Max 20x) a month, linked to a Console org, **expiring each billing cycle**, no payment method needed.
+- The credential is a user-scoped `sk-ant-usr` key; Anthropic answers 400 unless `anthropic-workspace-id` is sent,
+  and RAGFlow's clients cannot add headers. The shared LiteLLM on KVM4 (`/opt/stacks/litellm`, network `ai-net`,
+  also used by Letta and the WWF stack — **not** idle) now carries explicit `claude-{sonnet,opus,haiku}-5-5`
+  routes that add the header and drop `temperature`/`top_p` (Claude 5.5 rejects both, RAGFlow sends both). New
+  variable `ANTHROPIC_USR_KEY`; the older `ANTHROPIC_API_KEY` (invalid on 11.10) and the `anthropic/*` wildcard
+  are untouched. Backups `config.yaml.bak-20261011-0244-claude`, `.env.bak-20261011-0244-claude`.
+  Routes: `ingestion/litellm/DEPLOYED_CLAUDE_ROUTES_2026-10-11.yaml`.
+- RAGFlow: provider OpenAI-API-Compatible, instances `CLAUDE_GW` (vision: sonnet, opus; chat: haiku) and
+  `CLAUDE_GW_CHAT` (chat: sonnet, opus, haiku) at `http://litellm:4000/v1` (`register_claude_gateway.py` — keys are
+  read on the server, never printed). One model name = one type per instance, hence two instances; an instance
+  is verified with a chat model (RAGFlow's vision check sends a tiny image that Claude rejects).
+- eCOA_PIPE and eCOA_DB_agent parse with `claude-sonnet-5-5@CLAUDE_GW@OpenAI-API-Compatible`; extractors stay on
+  DeepSeek V4 Flash; tenant image2text default is the same model.
+- Measured: Sonnet/Opus/Haiku 5.5 each read 5 of 5 test pages correctly in 2–6 s ($0.001 / $0.0125 / $0.03 a
+  page). `BG1024_FHM_197-1-M-26`, which failed twice under NVIDIA, ingests in 63 s.
