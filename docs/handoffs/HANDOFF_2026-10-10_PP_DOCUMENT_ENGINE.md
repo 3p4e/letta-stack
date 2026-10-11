@@ -346,7 +346,7 @@ DocEngine pins `fonttools==4.62.1`. Without fontTools the glyph guard has nothin
 
 | # | item | where |
 |---|---|---|
-| 1 | **Done 11.10.2026 (PR #35).** The five Macedonian-writing and audit agents run on DeepSeek v4 Flash; the workflow runs end to end and, where a §6A FIX survives two repair rounds, stops at `awaiting_review` with a verified `.docx` (job `2ddd58d1`). Runbook "Deployed — 11.10.2026". Job `2ddd58d1` waits for the Head of QC's Approve / Return | KVM4 / ppdocwiz Jobs |
+| 1 | **Done 11.10.2026 (PR #35).** The five Macedonian-writing and audit agents run on DeepSeek v4 Flash (Claude Opus 5.5 since 11.10.2026; all agents by purpose in runbook "Changed — 11.10.2026"); the workflow runs end to end and, where a §6A FIX survives two repair rounds, stops at `awaiting_review` with a verified `.docx` (job `2ddd58d1`). Runbook "Deployed — 11.10.2026". Job `2ddd58d1` waits for the Head of QC's Approve / Return | KVM4 / ppdocwiz Jobs |
 | 2 | Two uvicorn workers race on `CREATE SCHEMA` on an empty database (one respawns). Use an advisory lock or create the schema once before the workers start | `app/db.py` |
 | 3 | **Review decision done 11.10.2026 (PR #35)**: `POST /workflows/{id}/review`, wired in ppdocwiz. Still no backend for report builds (`pp_report`), Formatter Mode C or the engine-environment check (live mode shows 501) | ppdocwiz + DocEngine |
 | 4 | Fleet agent list and log tail, and Chat's left pane (agents, memory, sources, tools), are still sample content | `Fleet.tsx`, `Chat.tsx` |
