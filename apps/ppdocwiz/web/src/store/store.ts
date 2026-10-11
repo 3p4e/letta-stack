@@ -90,6 +90,7 @@ export const useApp = create<AppState>((set, get) => {
     qKey: 'sop_qc', qRound: 0,
     metas: {
       sop_qc: { title_mk: 'Определување потентност', title_en: 'Potency determination', code: 'QCSOP_031', version: '01', orient: 'portrait' },
+      sop_transport: { title_mk: 'Внатрешен (копнен) транспорт на опојни дроги — медицински канабис', title_en: 'Inland Transport of Narcotic Drugs — Medical Cannabis', code: 'WHSOP_003', version: '01', orient: 'portrait' },
       annex_form: { title_mk: 'Дневник на прием', title_en: 'Receipt log', code: 'WHSOP_002_A03', version: '01', orient: 'portrait' },
     },
     jobSel: null, libSel: null, fmt: 'B', repMeta: null, repSel: 'b5',

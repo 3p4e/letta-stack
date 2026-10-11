@@ -57,6 +57,18 @@ def test_questionnaires(client):
     assert client.get("/questionnaires/nope", headers=h()).status_code == 404
 
 
+def test_transport_questionnaire_answers_itself_from_defaults(client):
+    """sop_transport mirrors the approved WHSOP_003: every question has a default, so an
+    untouched questionnaire still yields a complete brief."""
+    from app.questionnaires import QUESTIONNAIRES, apply_defaults
+    r = client.get("/questionnaires/sop_transport", headers=h())
+    assert r.status_code == 200 and r.json()["doctype"] == "SOP"
+    filled = apply_defaults("sop_transport", {})
+    asked = [q["key"] for rnd in QUESTIONNAIRES["sop_transport"]["rounds"] for q in rnd["questions"]]
+    assert asked and all(filled.get(k) for k in asked)
+    assert "Written MoIA confirmation mandatory before dispatch" in filled["authorities"]
+
+
 def test_direct_build_pass(client):
     md = (
         "<!--HEADERDATA\nmk_title: Тест\nen_title: Test\ncode: T-1\n"

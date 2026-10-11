@@ -18,8 +18,11 @@ export function Questionnaire() {
   const { ans: all, setAns } = useAns();
   const [bank, setBank] = useState<Q | null>(null);
   const [err, setErr] = useState('');
+  // The questionnaire list comes from DocEngine; the two original banks stay as the fallback.
+  const [keys, setKeys] = useState<[string, string][]>([['sop_qc', 'sop_qc · SOP'], ['annex_form', 'annex_form']]);
+  useEffect(() => { api.questionnaires().then(l => { if (l.length) setKeys(l.map(q => [q.key, q.doctype === 'SOP' ? `${q.key} · SOP` : q.key])); }).catch(() => {}); }, [api]);
   useEffect(() => { setBank(null); setErr(''); api.questionnaire(qKey).then(setBank).catch((e: ApiError) => setErr(`${e.status} · ${e.message}`)); }, [api, qKey]);
-  const ans = all[qKey] || {}, meta = metas[qKey];
+  const ans = all[qKey] || {}, meta = metas[qKey] || { title_mk: '', title_en: '', code: '', version: '01', orient: 'portrait' as const };
   const missing = (['title_mk', 'title_en', 'code'] as const).filter(k => !(meta[k] || '').trim());
   const start = async () => {
     if (missing.length || busy) return;
@@ -49,7 +52,7 @@ export function Questionnaire() {
 
   return <>
     <div style={{ width: 236, flex: 'none', borderRight: `1px solid ${T.hair}`, background: T.pane, padding: '14px 10px', display: 'flex', flexDirection: 'column', gap: 6 }}>
-      <Seg items={[['sop_qc', 'sop_qc · SOP'], ['annex_form', 'annex_form']]} value={qKey} onPick={k => set({ qKey: k, qRound: 0 })} size={12} pad="5px 6px" fill style={{ marginBottom: 6 }} />
+      <Seg items={keys} value={qKey} onPick={k => set({ qKey: k, qRound: 0 })} size={12} pad="5px 6px" fill style={{ marginBottom: 6 }} />
       <div style={{ padding: '0 4px 8px' }}><b style={{ color: '#fff' }}>{bank.mk}</b><div style={{ fontSize: 12, color: T.muted }}>{bank.en} · doctype {bank.doctype}</div></div>
       {bank.rounds.map((r, i) => {
         const done = r.questions.filter(q => answered(q.key)).length, cur = i === Math.min(qRound, bank.rounds.length - 1), allDone = done === r.questions.length;

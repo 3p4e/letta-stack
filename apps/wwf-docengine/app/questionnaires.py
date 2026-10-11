@@ -59,6 +59,92 @@ QUESTIONNAIRES: dict[str, dict] = {
             },
         ],
     },
+    # Inland transport of narcotic drugs. Every option and default is taken from the approved
+    # WHSOP_003 v01 (deliverables/inland_transport_2026-10/md/WHSOP_003.md; section noted per question),
+    # so the questionnaire offers nothing the facility's own SOP and its references do not support.
+    "sop_transport": {
+        "title": {"en": "Transport SOP questionnaire", "mk": "Прашалник за СОП — Транспорт"},
+        "doctype": "SOP",
+        "rounds": [
+            {
+                "key": "r1_scope",
+                "title": {"en": "R1 — Scope", "mk": "Р1 — Опсег"},
+                "questions": [
+                    # WHSOP_003 §2.1 (1)-(4)
+                    {"key": "movements", "multi": True, "label": {"en": "Movements covered", "mk": "Опфатени движења"},
+                     "options": [{"v": "Intermediate (bulk in bags) and finished product to licensed domestic consignees", "default": True},
+                                 {"v": "Propagation material (clones, seeds) between sites", "default": True},
+                                 {"v": "Final leg after customs clearance to the site", "default": True},
+                                 {"v": "Cannabis waste to an authorised destruction site", "default": True}]},
+                    # §2.1, §6.1 (c)
+                    {"key": "carrier", "multi": False, "label": {"en": "Who transports", "mk": "Кој превезува"},
+                     "options": [{"v": "Contracted, qualified and licensed carrier under a Quality Agreement", "default": True}]},
+                    # §1.0 (d), §2.3
+                    {"key": "records_system", "multi": False, "label": {"en": "Record system", "mk": "Систем на записи"},
+                     "options": [{"v": "Paper-based", "default": True}, "Electronic tracking system (after change control, §2.3)"]},
+                ],
+            },
+            {
+                "key": "r2_security",
+                "title": {"en": "R2 — Security and authorities", "mk": "Р2 — Безбедност и органи"},
+                "questions": [
+                    # §6.3, §6.8, §4.1
+                    {"key": "authorities", "multi": True, "label": {"en": "Authority steps", "mk": "Чекори кон органите"},
+                     "options": [{"v": "Police escort requested from the MoIA at least 24 h before dispatch (Law on Control of Narcotic Drugs, Off. Gazette 37/16)", "default": True},
+                                 {"v": "Written MoIA confirmation mandatory before dispatch", "default": True},
+                                 {"v": "Post-transport notification to the Ministry of Health", "default": True}]},
+                    # §6.1 (a), §6.2.2
+                    {"key": "lane", "multi": False, "label": {"en": "Lane status before dispatch", "mk": "Статус на рутата пред отпрема"},
+                     "options": [{"v": "Lane QUALIFIED per QASOP_0XX, same vehicle and pallet configuration", "default": True}]},
+                    # §4.2
+                    {"key": "references", "multi": True, "label": {"en": "GMP / GDP references", "mk": "GMP / GDP референци"},
+                     "options": [{"v": "EU GDP 2013/C 343/01 Ch. 7 and Ch. 9", "default": True},
+                                 {"v": "EudraLex Vol. 4 Part I Ch. 4, Ch. 5 §5.10, Ch. 7", "default": True},
+                                 {"v": "WHO TRS 961 Annex 9", "default": True},
+                                 {"v": "ICH Q9(R1)", "default": True}]},
+                ],
+            },
+            {
+                "key": "r3_conditions",
+                "title": {"en": "R3 — Packaging and conditions", "mk": "Р3 — Пакување и услови"},
+                "questions": [
+                    # §6.1 condition matrix
+                    {"key": "packaging", "multi": True, "label": {"en": "Packaging", "mk": "Пакување"},
+                     "options": [{"v": "10 bags/carton; pallet L 8 or S 4 cartons; stretch film and thermal blanket", "default": True},
+                                 {"v": "Qualified cool box (propagation material)", "default": True},
+                                 {"v": "Airtight container", "default": True},
+                                 {"v": "Sealed sacks with a record (waste)", "default": True}]},
+                    # §6.4 (pallet label conditions), §6.6
+                    {"key": "conditions", "multi": True, "label": {"en": "Conditions and monitoring", "mk": "Услови и следење"},
+                     "options": [{"v": "15–25 °C, RH ≤ 60 %, protect from moisture", "default": True},
+                                 {"v": "Data loggers placed per the QA-approved plan", "default": True}]},
+                ],
+            },
+            {
+                "key": "r4_records",
+                "title": {"en": "R4 — Responsibilities and records", "mk": "Р4 — Одговорности и записи"},
+                "questions": [
+                    # §3.0 RACI columns
+                    {"key": "roles", "multi": True, "label": {"en": "Roles in the RACI", "mk": "Улоги во RACI"},
+                     "options": [{"v": "QC", "default": True}, {"v": "QA", "default": True}, {"v": "Security", "default": True},
+                                 {"v": "Logistics", "default": True}, {"v": "Carrier (driver)", "default": True},
+                                 {"v": "Consignee", "default": True}, {"v": "QP", "default": True}]},
+                    # §7.0 annex register
+                    {"key": "records", "multi": True, "label": {"en": "Records (annexes)", "mk": "Записи (анекси)"},
+                     "options": [{"v": "Transport Risk Assessment (TRA)", "default": True},
+                                 {"v": "Request for police escort and notification to the MoIA", "default": True},
+                                 {"v": "Pallet and carton labels and packing lists", "default": True},
+                                 {"v": "Transport manifest and chain of custody", "default": True},
+                                 {"v": "Pre-dispatch and receipt checklist", "default": True},
+                                 {"v": "Post-transport notification to the Ministry of Health", "default": True},
+                                 {"v": "Transport file review and disposition", "default": True}]},
+                    # §6.8 / EU GMP 4.11
+                    {"key": "retention", "multi": False, "label": {"en": "Retention", "mk": "Чување"},
+                     "options": [{"v": "At least 5 y or 1 y after batch expiry, whichever is longer (EU GMP 4.11)", "default": True}]},
+                ],
+            },
+        ],
+    },
     "annex_form": {
         "title": {"en": "Annex / Form questionnaire", "mk": "Прашалник за анекс / образец"},
         "doctype": "FORM",
