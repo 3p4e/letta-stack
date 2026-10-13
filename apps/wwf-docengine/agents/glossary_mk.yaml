@@ -1,4 +1,5 @@
-# House Macedonian glossary — approved by the Head of QC on 11.10.2026.
+# House Macedonian glossary — approved by the Head of QC on 11.10.2026; траса, уред за ладење/греење and
+# ID на логерот added on 13.10.2026.
 # Source: WHSOP_003 v01 §5.1 Definitions and §5.2 Abbreviations, its annexes, and the
 # Head of QC's standing wording rules. Every DocEngine agent clone carries it as the
 # gf_glossary_mk memory block (fleet.py); the section linter flags the `lint` patterns
@@ -28,6 +29,8 @@ terms:
   - {en: "Qualified Person", mk: "квалификувано лице (QP)"}
   - {en: "Transport event", mk: "транспортен настан (UTID)"}
   - {en: "Lane", mk: "рута (лента)"}
+  - {en: "Itinerary (the escorted route of one transport)", mk: "траса",
+     avoid: "рута (that word is the lane, as defined)"}
   - {en: "Pallet, large / small", mk: "палета, голема / мала — G / M in Macedonian, L / S in English",
      avoid: "Г/М; L/S in the Macedonian half"}
   - {en: "Carton", mk: "картон"}
@@ -38,8 +41,12 @@ terms:
   - {en: "Thermal blanket", mk: "термо-ќебе / термо-ќебиња", avoid: "термичко ќебе, термално ќебе",
      lint: ['терм(?:ичк|алн)\w* ќеб']}
   - {en: "Active / passive temperature control", mk: "активна / пасивна контрола на температура"}
+  - {en: "Cooling/heating unit (of the vehicle)", mk: "уред за ладење/греење",
+     avoid: "систем за ладење, „уредот“ alone"}
   - {en: "Single-use logger / USB logger", mk: "логер за еднократна употреба / USB логер", avoid: "записувач",
      lint: ['записувач']}
+  - {en: "Logger ID", mk: "ID на логерот", avoid: "сериски број на логерот",
+     lint: ['сериск\w* бро\w* на логер']}
   - {en: "Temperature excursion", mk: "температурна екскурзија",
      avoid: "отстапување (that word is reserved for a deviation)"}
   - {en: "Deviation", mk: "отстапување", avoid: "девијација",

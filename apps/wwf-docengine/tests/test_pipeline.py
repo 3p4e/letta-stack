@@ -423,7 +423,8 @@ def test_lint_passes_the_engine_grammar():
         "Изработил~~Prepared by ||| ",
         "[[/FORM]]",
     ])
-    assert _lint_section(body) == []
+    assert _lint_section(body, sop=False) == []                         # an annex may hold write-in forms
+    assert _lint_section(body.split("[[FORM]]")[0]) == []               # an SOP: the same, without the form
 
 
 def test_strip_own_heading_drops_the_repeated_section_heading_only():
@@ -611,3 +612,23 @@ def test_approved_whsop_003_reads_clean_against_the_glossary():
     for d in docs:
         text = re.sub(r"<[^>]+>", " ", zipfile.ZipFile(d).read("word/document.xml").decode("utf-8"))
         assert glossary.term_issues(text) == [], d.name
+
+
+def test_annexes_are_separate_documents_never_forms_inside_the_sop():
+    """Head of QC, 13.10.2026: the SOP names its annexes by code and title; each is its own annex job."""
+    import app.pipeline as p
+    assert "never writes a form's fields into the SOP" in p.ANNEX_RULE and "attached" in p.ANNEX_RULE
+    assert p.ANNEX_RULE in p.SECTION_HINT["7.0"] and "7.1" in p.SECTION_HINT["8.0"]
+    src = Path(p.__file__).read_text(encoding="utf-8")
+    assert "SECTION_HINT.get(num, ANNEX_RULE)" in src                    # every SOP section is told
+    assert src.count("{ANNEX_RULE") >= 2                                  # QA repair and the audit
+    form = "[[FORM]]\nИзработил~~Prepared by ||| \n[[/FORM]]"
+    assert any("[[FORM]]" in i and "separate annexes" in i for i in _lint_section(form))
+    assert not any("[[FORM]]" in i for i in _lint_section(form, sop=False))
+
+
+def test_glossary_terms_added_on_13_10():
+    from app import glossary
+    text = glossary.memory_text()
+    assert "траса" in text and "уред за ладење/греење" in text and "ID на логерот" in text
+    assert glossary.term_issues("Се запишува серискиот број на логерот.") == ["„серискиот број на логерот“ → ID на логерот"]
