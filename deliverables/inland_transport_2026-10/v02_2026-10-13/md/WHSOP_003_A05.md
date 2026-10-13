@@ -30,17 +30,17 @@ A5 ||| Превозникот е квалификуван, Договорот з
 A6 ||| Примачот потврди подготвеност за прием (датум, време, лице)~~Consignee confirmed readiness to receive (date, time, person) |||  |||  |||  ||| 
 A7 ||| Материјалот е ослободен од КК (статус ОДОБРЕНО)~~Material released by QC (status APPROVED) |||  |||  |||  ||| 
 A8 ||| Листа на пакување за секој картон потпишана од две лица; картон бр. n / N одговара на етикетата~~Packing list for every carton signed by two persons; box No. n / N matches the label |||  |||  |||  ||| A03 §4
-A9 ||| Секој картон затворен; спојот на лентата парафиран и датиран од двете лица~~Every carton closed; tape joint initialled and dated by both persons |||  |||  |||  ||| A03 §4
-A10 ||| Картонот со контра-мостри подготвен од КК, листа §7 потпишана, означен „КМ“ и ставен на палета од својата серија~~Counter-sample carton prepared by QC, list §7 signed, marked "CS" and placed on a pallet of its batch |||  |||  |||  ||| A03 §7
+A9 ||| Секој картон затворен со брендирана лента; спојот парафиран и датиран од двете лица~~Every carton closed with branded tape; joint initialled and dated by both persons |||  |||  |||  ||| A03 §4
+A10 ||| Картонот КМ подготвен од КК, листа §7 потпишана, означен „КМ“, со картон бр. во низата на серијата, на палета од својата серија~~CS carton prepared by QC, list §7 signed, marked "CS", with a box No. in the batch sequence, on a pallet of its batch |||  |||  |||  ||| A03 §7
 A11 ||| Палетите формирани (G | L 8 картони), без препуштање; мешаните палети со збир по серија~~Pallets built (L 8 cartons), no overhang; mixed pallets with a sub-total per batch |||  |||  |||  ||| A03 §5
-A12 ||| Стреч-фолија, термо-ќебе, надворешна фолија; крајот затворен со лента, парафиран и датиран~~Stretch film, thermal blanket, outer film; end closed with tape, initialled and dated |||  |||  |||  ||| A03 §5
+A12 ||| Стреч-фолија, термо-ќебе, надворешна фолија; крајот затворен со брендирана лента, парафиран и датиран~~Stretch film, thermal blanket, outer film; end closed with branded tape, initialled and dated |||  |||  |||  ||| A03 §5
 A13 ||| Етикетите отпечатени од образецот (код и верзија запишани), примероците залепени; етикетите на палетите на две страни, проверени со листите~~Labels printed from the template (code and version recorded), specimens affixed; pallet labels on two sides, checked against the lists |||  |||  |||  ||| A03 §2–3
 A14 ||| Манифестот A04 §2 пополнет: палети (2.1) = серии (2.2) = листи на пакување; двојна проверка потпишана~~Manifest A04 §2 completed: pallets (2.1) = batches (2.2) = packing lists; two-person verification signed |||  |||  |||  ||| A04 §2
-A15 ||| USB логер за температура и влага калибриран, активиран, на позицијата од OQ; ID на логерот во A04 §3~~USB temperature and humidity logger calibrated, started, at the OQ position; logger ID in A04 §3 |||  |||  |||  ||| A04 §3
+A15 ||| USB логерот на Пјурли Плант калибриран, активиран, на позицијата од OQ; логерот на превозникот активен; двата ID во A04 §3~~Purely Plant USB logger calibrated, started, at the OQ position; carrier's logger running; both IDs in A04 §3 |||  |||  |||  ||| A04 §3
 A16 ||| Возилото одговара на A02; товарниот простор чист, сув, заклучлив, без мириси и штетници~~Vehicle matches A02; load space clean, dry, lockable, free of odours and pests |||  |||  |||  ||| A02
 A17 ||| Уредот за ладење/греење поставен на 15–25 °C и предкондициониран ≥ 30 мин; дисплејот во опсег, запишан во A04 §3~~Cooling/heating unit set to 15–25 °C and pre-conditioned ≥ 30 min; display within range, recorded in A04 §3 |||  |||  |||  ||| A04 §3
 A18 ||| Палетите натоварени по распоредот од TRA, обезбедени, оддалечени од ѕидовите и вратите~~Pallets loaded per the TRA arrangement, secured, clear of the walls and doors |||  |||  |||  ||| A01 §2
-A19 ||| Натоварените палети и затворената врата (пломба, ако се користи) фотографирани~~Loaded pallets and closed door (seal, if used) photographed |||  |||  |||  ||| 
+A19 ||| Натоварените палети и затворената врата со брендирана пломба фотографирани~~Loaded pallets and the closed door with the branded seal photographed |||  |||  |||  ||| 
 A20 ||| Идентитет и овластување на возачот (и придружникот) проверени~~Identity and authorisation of the driver (and accompanying person) verified |||  |||  |||  ||| 
 A21 ||| Лицата брифирани (траса, временски прозорец, забрана за непланирани застанувања, инциденти, документи)~~Persons briefed (itinerary, time window, no unscheduled stops, incidents, documents) |||  |||  |||  ||| 
 A22 ||| Документите за предавање комплетни: A04, A05, листи на пакување на палетите, картичка за итни случаи~~Hand-over documents complete: A04, A05, pallet packing lists, emergency card |||  |||  |||  ||| A04 §4.1
@@ -57,7 +57,7 @@ A22 ||| Документите за предавање комплетни: A04, 
 [[TABLE]]
 № ||| Ставка~~Item ||| Да~~Yes ||| Не~~No ||| Резултат / забелешка~~Result / remark
 B1 ||| Лицата и регистарскиот број одговараат на A04 §1~~Persons and registration match A04 §1 |||  |||  ||| 
-B2 ||| Пломбата на вратата е цела и бројот одговара (или N/A)~~Door seal intact and number matches (or N/A) |||  |||  ||| 
+B2 ||| Брендираната пломба на вратата е цела и не е заменета~~Branded door seal intact and not replaced |||  |||  ||| 
 B3 ||| Температура на дисплејот при отворање на вратите (°C), во опсег 15–25 °C~~Display temperature at door opening (°C), within 15–25 °C |||  |||  ||| 
 B4 ||| Број на палети: очекуван (A04 2.1) / примен~~Pallets: expected (A04 2.1) / received |||  |||  ||| 
 B5 ||| Завиткување и термо-ќебе цели; парафираниот спој на секоја палета цел~~Wrapping and thermal blanket intact; initialled joint of every pallet intact |||  |||  ||| 
