@@ -36,9 +36,15 @@ SOP_SECTIONS = [
 # redundancy: the authors state each requirement once, and the §6A audit flags repetition and padding.
 CONCISE = ("Write only what the procedure needs: every requirement once, no repetition of another section, "
            "no explanation of why a rule exists unless the brief asks for it, no filler.")
+# Annexes are separate documents. Head of QC, 13.10.2026, after run 6fb3e246: one run wrote the annex forms into 7.0,
+# the next listed them and claimed they were "attached at the end" — they were not. The SOP names its annexes; each
+# annex is its own controlled document made by its own annex job (EU GMP Ch. 4 §4.1: instructions and records apart).
+ANNEX_RULE = ("Annexes (forms, logs, checklists, labels) are separate controlled documents, each made by its own "
+              "annex job: the SOP names each one by code and title, says in section 6 when it is completed, and "
+              "never writes a form's fields into the SOP nor says that annexes are attached or appended.")
 SECTION_HINT = {
-    "7.0": "List the records (forms and annexes) by code and title.",
-    "8.0": "List the related documents by code and title.",
+    "7.0": "List the records in 7.1 by code and title, with who completes and who keeps each. " + ANNEX_RULE,
+    "8.0": "List the related documents by code and title; do not repeat the annex list of 7.1.",
     "9.0": "Give the revision history.",
 }
 
@@ -247,6 +253,9 @@ def _lint_section(content: str, sop: bool = True) -> list[str]:
         if not in_block and "|||" not in s and len(_LETTERS.findall(s)) >= 15:
             mono.append(s[:90])
     issues = []
+    if sop and "[[FORM" in content:
+        issues.append("a write-in form ([[FORM]]) inside the SOP — forms are separate annexes: name the annex by "
+                      "code and title instead (keep tables as [[TABLE]])")
     if pipe:
         issues.append(f"{pipe} line(s) are Markdown pipe tables (| a | b |) — rewrite them as "
                       "[[TABLE]] … [[/TABLE]] (or [[FORM]] for write-in fields) with ||| between cells")
@@ -467,7 +476,7 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                     f"Draft ONLY section {num} {mk}|{en} of the SOP "
                     f"'{meta['title_mk']} | {meta['title_en']}' (code {meta['code']}). "
                     f"Content brief:\n{brief}\n\n{ENGINE_GRAMMAR}\n\n{REFERENCE_RULE}\n\n"
-                    f"{CONCISE} {SECTION_HINT.get(num, '')}\n\n"
+                    f"{CONCISE} {SECTION_HINT.get(num, ANNEX_RULE)}\n\n"
                     "Return ONLY the bilingual Markdown body — no code fences, and NO commentary, "
                     "preamble, or explanation of what you are doing. Your entire reply is inserted "
                     "verbatim into the document. Unknown facility specifics stay as blank fields." + ex)
@@ -562,7 +571,9 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                 f"{findings_txt}\n\n"
                 "Also flag repetition (a requirement stated twice, or restating another section), padding "
                 "and explanation the procedure does not need — never ask for more text to fill space.\n\n"
-                "List concrete, actionable issues per section. End your reply with one final line, "
+                + (f"Annexes: {ANNEX_RULE} Flag a form written into the SOP and any claim that annexes are "
+                   "attached; never ask for the annexes to be added to this document.\n\n" if sop else "")
+                + "List concrete, actionable issues per section. End your reply with one final line, "
                 "exactly 'VERDICT: PASS' or 'VERDICT: FIX'.\n\nDOCUMENT\n" + markdown)
             ctx.update(qa_audit=audit, qa_verdict=_qa_verdict(audit), qa_rounds=rnd)
             if _qa_audit_passed(audit):
@@ -588,7 +599,7 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                     f"Content brief:\n{brief}\n\n{ENGINE_GRAMMAR}\n\n{REFERENCE_RULE}\n\n"
                     f"REGULATORY FINDINGS (retrieved passages, citable):\n{findings_txt}\n\nREVIEW\n{audit}\n\n"
                     f"CURRENT SECTION {s['num']}\n{s['content']}\n\n"
-                    + f"{CONCISE}\n"
+                    + f"{CONCISE}\n{ANNEX_RULE if sop else ''}\n"
                     + "Return ONLY the corrected section body — your reply is inserted verbatim.")
                 s["content"] = tidy(s, text)
                 await lint_and_repair(s)

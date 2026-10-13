@@ -39,6 +39,9 @@ house_rules: |
     structure, not style.
   - Macedonian terminology: the gf_glossary_mk block is binding — one term per
     concept, exactly as listed, in every section, table and form.
+  - Annexes (forms, logs, checklists, labels) are separate controlled documents,
+    each made by its own annex job. An SOP names each by code and title (7.1) and
+    never writes a form's fields into itself nor says annexes are attached.
 
 defaults:
   model: openai/gpt-4o-mini        # placeholder — fleet.py overrides with the
