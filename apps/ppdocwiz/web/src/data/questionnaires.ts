@@ -11,7 +11,7 @@ export const RAW_QUESTIONNAIRES: Record<string, RawQuestionnaire> = {
         { key: 'focus', multi: false, label: { en: 'Primary testing focus', mk: 'Примарен фокус на тестирање' }, options: ['Identity (Annex 8 §2 — ALL containers)', 'Potency', 'Purity', 'Contaminants', 'Microbiology', 'Water', 'Sample management'] },
         { key: 'sample_types', multi: true, label: { en: 'Sample types', mk: 'Типови мостри' }, options: ['Raw material', 'In-process', 'Bulk', 'Finished product', 'Water', 'Environmental', 'Stability'] },
         { key: 'purpose', multi: false, label: { en: 'Batch-release vs monitoring', mk: 'Пуштање на серија или мониторинг' }, options: [d('Internal QC / IPQC / trending (release stays with accredited lab)'), 'Monitoring only'] },
-        { key: 'method_source', multi: false, label: { en: 'Method source', mk: 'Извор на метода' }, options: [d('Ph. Eur. (preferred)'), 'USP', 'In-house', 'ISO', 'Contract lab'] },
+        { key: 'method_source', multi: false, label: { en: 'Method source', mk: 'Извор на метод' }, options: [d('Ph. Eur. (preferred)'), 'USP', 'In-house', 'ISO', 'Contract lab'] },
       ] },
       { key: 'r2_technical', title: { en: 'R2 — Technical', mk: 'Р2 — Технички' }, questions: [
         { key: 'techniques', multi: true, label: { en: 'Techniques', mk: 'Техники' }, options: ['HPLC-DAD', 'GC-MS', 'ICP-MS', 'LC-MS/MS', 'Microscopy', 'LOD', 'Karl Fischer', 'Microbiological'] },

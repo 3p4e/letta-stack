@@ -187,3 +187,13 @@ async def document_get(did: str) -> dict | None:
     d["job_id"] = str(d["job_id"]) if d["job_id"] else None
     d["created_at"] = d["created_at"].isoformat()
     return d
+
+
+async def job_latest_markdown_by_code(code: str) -> str | None:
+    """The newest job whose document code is `code` and that holds assembled Markdown — the parent SOP an
+    annex job reads (Head of QC, 13.10.2026: an annex form must capture what the SOP's §6 writes into it)."""
+    r = await pool().fetchrow(
+        "SELECT result->>'markdown' AS md FROM docengine.jobs"
+        " WHERE payload->'meta'->>'code' = $1 AND result->>'markdown' IS NOT NULL"
+        " ORDER BY created_at DESC LIMIT 1", code)
+    return r["md"] if r else None

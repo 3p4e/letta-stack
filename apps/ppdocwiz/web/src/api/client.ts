@@ -10,6 +10,8 @@ export interface WorkflowIn {
   /** The requester's own brief and the sources they name (DocEngine adds both to the content brief). */
   instructions?: string;
   sources?: string[];
+  /** Annex jobs: the code of the SOP the form serves; DocEngine reads its sections 6 and 7. */
+  parent_sop?: string;
   requested_by: string;
 }
 

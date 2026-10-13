@@ -224,3 +224,22 @@ change: `/opt/wwf-deploy/backups/letta_all_agents_llm_config_pre-deepseek-out_20
 `apps/wwf-docengine/agents/glossary_mk.yaml`, approved by the Head of QC from WHSOP_003 v01 §5. Every agent clone
 carries it as the `gf_glossary_mk` memory block; the section linter flags the variants wrong in every context.
 Deployed as `pp-docengine:420528d` (compose backup `pp-docengine.compose.yaml.bak-20261011-420528d`).
+
+## Changed — 13.10.2026: transport controls, annex jobs read their parent SOP, form rules
+
+From the Head of QC's review of every transport SOP generation (`deliverables_ui_walkthrough/REVIEW_Transport_SOP_
+generations_2026-10-13.md`): the five DocEngine runs dropped the same controls in every run (reconciliation after
+delivery, escort failure and in-transit custody, loggers inside sealed cartons, calibration/download/excursion
+basis, one owner per record, identifier scheme, season, hand-over temperature, return leg), and the four DEMO
+annexes were generic forms because the generator never read WHSOP_003.
+- `questionnaires.py`: `sop_transport["controls"]` declares the eight controls; `pipeline.controls_rule()` puts
+  them into every SOP section prompt, the QA repair and the §6A audit ("a missing control is FIX"; one owner
+  per record checked across §3/RACI/§6). A questionnaire with no `controls` injects nothing.
+- `WorkflowIn.parent_sop`: an annex job names the SOP it serves; the pipeline reads that SOP's §6–§7 from its
+  newest job (`db.job_latest_markdown_by_code`) into the annex brief and the audit ("a missing field is FIX").
+  PP Doc Wiz shows a `parent` field for non-SOP questionnaires.
+- `FORM_RULE`: no "To be confirmed" section, reference list or duplicated header fields on an executable form;
+  the linter flags a "За потврда / To be confirmed" heading on a form; `assemble_markdown` no longer adds the
+  "1.0 СОДРЖИНА|CONTENT" wrapper above a form that opens with its own heading.
+- Questionnaire label „Извор на метода" → „Извор на метод" (house rule).
+

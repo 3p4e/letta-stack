@@ -646,3 +646,58 @@ def test_a_reply_that_echoes_the_request_is_never_inserted():
     assert not p._echoes_prompt(clean) and _lint_section(clean) == []
     src = Path(p.__file__).read_text(encoding="utf-8")
     assert "if _echoes_prompt(text) and s.get(\"content\"):" in src and "return s[\"content\"]" in src
+
+
+def test_transport_controls_reach_authors_repair_and_audit():
+    """Head of QC, 13.10.2026: the controls the five transport runs all dropped are declared on the questionnaire
+    and reach every SOP section prompt, the QA repair and the §6A audit, which treats a missing one as FIX."""
+    import app.pipeline as p
+    from app.questionnaires import QUESTIONNAIRES
+    ctl = QUESTIONNAIRES["sop_transport"]["controls"]
+    joined = " ".join(ctl).lower()
+    for must in ("reconciliation", "escort", "never placed inside sealed", "calibrated", "one owner per record",
+                 "identifier", "season", "annex 15", "hand-over", "return-leg"):
+        assert must in joined, must
+    rule = p.controls_rule("sop_transport")
+    assert rule.startswith("CONTROLS THIS SOP MUST CONTAIN") and rule.count("\n- ") == len(ctl)
+    assert p.controls_rule("sop_qc") == ""                       # declares none → nothing injected
+    src = Path(p.__file__).read_text(encoding="utf-8")
+    assert src.count("{controls}") >= 3                           # section prompt, QA repair, audit
+    assert "a missing control is FIX" in src and "One owner per record" in src
+
+
+def test_annex_job_reads_its_parent_sop_sections_6_and_7():
+    import app.pipeline as p
+    md = ("<!--HEADERDATA\ncode: X\n-->\n# 1.0 ЦЕЛ|PURPOSE\nцел ||| purpose\n# 6.0 ПОСТАПКА|PROCEDURE\n## 6.1 A | A\n"
+          "серискиот број се запишува во A04 ||| the serial is recorded in A04\n# 7.0 ЗАПИСИ|RECORDS\n[[TABLE]]\n"
+          "A04 ||| Манифест~~Manifest ||| Логистика~~Logistics\n[[/TABLE]]\n# 8.0 ПОВРЗАНИ|RELATED\nx ||| y\n")
+    part = p._parent_sections(md)
+    assert part.startswith("# 6.0") and "recorded in A04" in part and "# 7.0" in part
+    assert "# 8.0" not in part and "PURPOSE" not in part
+    src = Path(p.__file__).read_text(encoding="utf-8")
+    assert "job_latest_markdown_by_code(parent_code)" in src and "PARENT SOP" in src
+    from app.main import WorkflowIn
+    w = WorkflowIn(questionnaire="annex_form", meta={"title_mk": "а", "title_en": "a", "code": "X_A04"}, parent_sop="WHSOP_003")
+    assert w.parent_sop == "WHSOP_003"
+
+
+def test_form_rules_no_open_questions_on_a_form_and_no_scaffold_heading():
+    import app.pipeline as p
+    assert "no 'To be confirmed' section" in p.FORM_RULE
+    body = "# 1 Идентификација | Identification\n[[FORM:grid]]\nUTID ||| UTID ||| \n[[/FORM]]\n## 1.6 За потврда | To be confirmed\n- x ||| y"
+    assert any("To be confirmed" in i for i in _lint_section(body, sop=False))
+    clean = body.split("## 1.6")[0]
+    assert _lint_section(clean, sop=False) == []
+    meta = {"title_mk": "а", "title_en": "a", "code": "X_A04", "doctype": "FORM"}
+    out = assemble_markdown(meta, [{"num": "1.0", "mk": "СОДРЖИНА", "en": "CONTENT", "content": clean}])
+    assert "СОДРЖИНА" not in out and "\n# 1 Идентификација" in out      # the form's own heading stands alone
+    out2 = assemble_markdown(meta, [{"num": "1.0", "mk": "СОДРЖИНА", "en": "CONTENT", "content": "[[FORM:grid]]\nA ||| B ||| \n[[/FORM]]"}])
+    assert "# 1.0 СОДРЖИНА|CONTENT" in out2                        # no heading of its own → the wrapper stays
+    sop = {"title_mk": "а", "title_en": "a", "code": "X", "doctype": "SOP"}
+    assert "# 1.0 ЦЕЛ|PURPOSE" in assemble_markdown(sop, [{"num": "1.0", "mk": "ЦЕЛ", "en": "PURPOSE", "content": "# x"}])
+
+
+def test_questionnaire_label_uses_metod_not_metoda():
+    from app.questionnaires import QUESTIONNAIRES
+    import json
+    assert "метода" not in json.dumps(QUESTIONNAIRES, ensure_ascii=False)

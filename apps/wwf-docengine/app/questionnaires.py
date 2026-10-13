@@ -21,7 +21,7 @@ QUESTIONNAIRES: dict[str, dict] = {
                      "options": ["Raw material", "In-process", "Bulk", "Finished product", "Water", "Environmental", "Stability"]},
                     {"key": "purpose", "multi": False, "label": {"en": "Batch-release vs monitoring", "mk": "Пуштање на серија или мониторинг"},
                      "options": [{"v": "Internal QC / IPQC / trending (release stays with accredited lab)", "default": True}, "Monitoring only"]},
-                    {"key": "method_source", "multi": False, "label": {"en": "Method source", "mk": "Извор на метода"},
+                    {"key": "method_source", "multi": False, "label": {"en": "Method source", "mk": "Извор на метод"},
                      "options": [{"v": "Ph. Eur. (preferred)", "default": True}, "USP", "In-house", "ISO", "Contract lab"]},
                 ],
             },
@@ -65,6 +65,34 @@ QUESTIONNAIRES: dict[str, dict] = {
     "sop_transport": {
         "title": {"en": "Transport SOP questionnaire", "mk": "Прашалник за СОП — Транспорт"},
         "doctype": "SOP",
+        # Controls every inland-transport SOP must contain. Head of QC, 13.10.2026, after the review of five
+        # DocEngine runs (r1-r5): each run dropped the same controls while inventing nothing — the authors had
+        # no model of what a narcotics transport must control. Each control goes into the section it belongs
+        # to; the §6A audit treats a missing one as FIX.
+        "controls": [
+            "Reconciliation after delivery: pallets, cartons and bags counted and dispatched net mass compared with "
+            "received net mass; retention samples counted separately and included in the totals reported to the MoIA; "
+            "any difference is a deviation.",
+            "Escort failure: if the written MoIA confirmation is missing or the escort does not arrive, the transport "
+            "does not start — who postpones, who informs the MoIA, QA and the QP, what happens to the staged consignment. "
+            "In transit: the vehicle is never left unattended, stops only as approved, check-in calls recorded, incident "
+            "reporting chain with a time.",
+            "Loggers are never placed inside sealed cartons or containers: they sit where the consignee removes them "
+            "without breaking a seal; positions come from the lane qualification (QASOP_0XX); the serial of each is recorded "
+            "per pallet.",
+            "Every logger is calibrated with a valid certificate on file; the SOP names who downloads the data and with "
+            "what software, and keeps the source files unaltered; an excursion is assessed against product stability "
+            "data (MKT as supporting evidence only) and the material is not used before that assessment.",
+            "One owner per record: the role text in section 3, the RACI matrix and the steps in section 6 name the same "
+            "role for preparing, approving and submitting each record listed in 7.1 (risk assessment, MoIA request, MoH "
+            "notification, manifest, checklist, disposition).",
+            "Identifier scheme: a unique transport identifier and pallet, carton and sample-carton identifiers with their "
+            "format (or a marked blank for the format), so that labels and records can be produced from the SOP.",
+            "A lane is used only with QUALIFIED status for the vehicle, the pallet configuration and the season; cite EU GMP "
+            "Annex 15 section 6 (verification of transportation) together with GDP 2013/C 343/01 Chapter 9.",
+            "Temperature read and recorded at every hand-over (logger or vehicle display), and a return-leg rule for a "
+            "consignment rejected at receipt: it travels back under a new or extended MoIA notification and escort.",
+        ],
         "rounds": [
             {
                 "key": "r1_scope",
