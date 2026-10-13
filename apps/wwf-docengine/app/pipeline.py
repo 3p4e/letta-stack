@@ -42,6 +42,36 @@ CONCISE = ("Write only what the procedure needs: every requirement once, no repe
 ANNEX_RULE = ("Annexes (forms, logs, checklists, labels) are separate controlled documents, each made by its own "
               "annex job: the SOP names each one by code and title, says in section 6 when it is completed, and "
               "never writes a form's fields into the SOP nor says that annexes are attached or appended.")
+# Rules for an executable form (annex). 13.10.2026 review of the DEMO annexes: every generated form printed
+# its open questions and a reference list on the page that will be filled in, and duplicated the header data
+# as write-ins.
+FORM_RULE = ("An executable form carries only what is filled in or ticked: no 'To be confirmed' section, no "
+             "reference list, no explanation; the document code, version and date are in the header and are not "
+             "repeated as write-in fields; every value cell is blank; where the parent SOP uses a transport or "
+             "record identifier, the form has a field for it in the SOP's format.")
+
+
+def controls_rule(questionnaire_key: str) -> str:
+    """The controls a questionnaire declares for its SOP, as prompt text; empty when it declares none."""
+    ctl = QUESTIONNAIRES.get(questionnaire_key, {}).get("controls") or []
+    if not ctl:
+        return ""
+    return ("CONTROLS THIS SOP MUST CONTAIN — each in the section it belongs to, none omitted; where a value is "
+            "unknown write a blank and mark it to be confirmed:\n" + "\n".join(f"- {c}" for c in ctl))
+
+
+def _parent_sections(markdown: str, first: int = 6, last: int = 7, limit: int = 14000) -> str:
+    """Sections `first`..`last` of an assembled SOP (the procedure and its records), for an annex job."""
+    lines = markdown.splitlines(); out = []; keep = False
+    for ln in lines:
+        m = re.match(r"^# (\d)\.0", ln)
+        if m:
+            keep = first <= int(m.group(1)) <= last
+        if keep:
+            out.append(ln)
+    return "\n".join(out)[:limit]
+
+
 SECTION_HINT = {
     "7.0": "List the records in 7.1 by code and title, with who completes and who keeps each. " + ANNEX_RULE,
     "8.0": "List the related documents by code and title; do not repeat the annex list of 7.1.",
@@ -261,6 +291,9 @@ def _lint_section(content: str, sop: bool = True) -> list[str]:
         if not in_block and "|||" not in s and len(_LETTERS.findall(s)) >= 15:
             mono.append(s[:90])
     issues = []
+    if not sop and re.search(r"(?im)^#{1,3}.*(За потврда|To be confirmed)", content):
+        issues.append("a 'To be confirmed' section on an executable form — delete it; open points go to the requester, "
+                      "not onto the form that will be filled in")
     if _echoes_prompt(content):
         issues.append("the request text was copied into the section — delete everything that is not document content")
     if sop and "[[FORM" in content:
@@ -382,8 +415,12 @@ def assemble_markdown(meta: dict, sections: list[dict]) -> str:
     )
     body = []
     for s in sections:
-        body.append(f"# {s['num']} {s['mk']}|{s['en']}")
-        body.append(s["content"].strip())
+        content = s["content"].strip()
+        # A form that opens with its own '# ' heading needs no synthetic "1.0 СОДРЖИНА|CONTENT" above it
+        # (13.10.2026 review: a scaffolding heading on every generated form).
+        if not (meta.get("doctype") != "SOP" and content.startswith("# ")):
+            body.append(f"# {s['num']} {s['mk']}|{s['en']}")
+        body.append(content)
         body.append("")
     return hd + "\n".join(body)
 
@@ -440,6 +477,19 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
         meta["doctype"] = doctype
         sop = doctype == "SOP"
         brief = _brief(qkey, answers, p.get("instructions", ""), p.get("sources") or [])
+        controls = controls_rule(qkey)
+        # An annex job reads the SOP it serves (sections 6 and 7) so the form captures what that SOP records in it.
+        parent_code = (p.get("parent_sop") or "").strip()
+        parent_md = ""
+        if parent_code and doctype != "SOP":
+            full = await db.job_latest_markdown_by_code(parent_code)
+            if full:
+                parent_md = _parent_sections(full)
+                knowledge["parent_sop"] = parent_code
+            else:
+                knowledge["notes"].append(f"parent SOP {parent_code} not found; the form was drafted from the brief only")
+        parent_note = (f"PARENT SOP {parent_code}, sections 6 and 7 — the form must hold a field for every item these "
+                       f"sections write into this record, with the completers section 7 names:\n{parent_md}\n" if parent_md else "")
         await db.job_update(job_id, status="running", stage="generate")
 
         from .fleet import ensure_fleet  # late import: fleet needs live Letta
@@ -491,7 +541,7 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                     f"Draft ONLY section {num} {mk}|{en} of the SOP "
                     f"'{meta['title_mk']} | {meta['title_en']}' (code {meta['code']}). "
                     f"Content brief:\n{brief}\n\n{ENGINE_GRAMMAR}\n\n{REFERENCE_RULE}\n\n"
-                    f"{CONCISE} {SECTION_HINT.get(num, ANNEX_RULE)}\n\n"
+                    f"{CONCISE} {SECTION_HINT.get(num, ANNEX_RULE)}\n\n{controls}\n\n"
                     "Return ONLY the bilingual Markdown body — no code fences, and NO commentary, "
                     "preamble, or explanation of what you are doing. Your entire reply is inserted "
                     "verbatim into the document. Unknown facility specifics stay as blank fields." + ex)
@@ -506,7 +556,8 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                 f"Design the {doctype} '{meta['title_mk']} | {meta['title_en']}' "
                 f"(code {meta['code']}). Content brief:\n{brief}\n\n{ENGINE_GRAMMAR}\n\n{REFERENCE_RULE}\n\n"
                 "Use [[FORM:grid]] for the metadata block and [[TABLE]] for data grids. Blank "
-                "write-in values. Return ONLY the bilingual Markdown body — NO commentary, preamble, "
+                f"write-in values. {FORM_RULE}\n{parent_note}"
+                "Return ONLY the bilingual Markdown body — NO commentary, preamble, "
                 "or explanation; your entire reply is inserted verbatim into the document." + ex)
             s["content"] = tidy(s, text)
             await lint_and_repair(s)
@@ -587,7 +638,14 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                 "Also flag repetition (a requirement stated twice, or restating another section), padding "
                 "and explanation the procedure does not need — never ask for more text to fill space.\n\n"
                 + (f"Annexes: {ANNEX_RULE} Flag a form written into the SOP and any claim that annexes are "
-                   "attached; never ask for the annexes to be added to this document.\n\n" if sop else "")
+                   "attached; never ask for the annexes to be added to this document.\n\n" if sop else
+                   f"Form rules: {FORM_RULE} Flag each breach.\n\n")
+                + (f"{controls}\nFlag every control that is missing or incomplete — a missing control is FIX. "
+                   "One owner per record: for every record in 7.1 name its owner and check that the role text in 3, "
+                   "the RACI and the steps in 6 agree; a disagreement is FIX.\n\n" if controls else "")
+                + (f"PARENT SOP — sections 6 and 7 of {parent_code}. The form under audit must hold a field for every "
+                   "item these sections write into this record, and its completers must be those section 7 names; a "
+                   f"missing field is FIX.\n{parent_md}\n\n" if parent_md else "")
                 + "List concrete, actionable issues per section. End your reply with one final line, "
                 "exactly 'VERDICT: PASS' or 'VERDICT: FIX'.\n\nDOCUMENT\n" + markdown)
             ctx.update(qa_audit=audit, qa_verdict=_qa_verdict(audit), qa_rounds=rnd)
@@ -614,7 +672,7 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                     f"Content brief:\n{brief}\n\n{ENGINE_GRAMMAR}\n\n{REFERENCE_RULE}\n\n"
                     f"REGULATORY FINDINGS (retrieved passages, citable):\n{findings_txt}\n\nREVIEW\n{audit}\n\n"
                     f"CURRENT SECTION {s['num']}\n{s['content']}\n\n"
-                    + f"{CONCISE}\n{ANNEX_RULE if sop else ''}\n"
+                    + f"{CONCISE}\n{ANNEX_RULE if sop else FORM_RULE}\n{controls}\n"
                     + "Return ONLY the corrected section body — your reply is inserted verbatim.")
                 s["content"] = tidy(s, text)
                 await lint_and_repair(s)

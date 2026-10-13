@@ -10,18 +10,18 @@ import { C, DISPLAY, MONO, T } from '../theme';
 
 type Ans = Record<string, string | string[]>;
 // The requester's own instructions and sources, per questionnaire, sent with the answers.
-type Extra = { instructions: string; sources: string };
+type Extra = { instructions: string; sources: string; parent_sop: string };
 const useAns = create<{ ans: Record<string, Ans>; setAns: (k: string, a: Ans) => void; extra: Record<string, Extra>; setExtra: (k: string, e: Partial<Extra>) => void }>(set => ({
   ans: { sop_qc: { focus: 'Potency', sample_types: ['Bulk', 'Finished product'], techniques: ['HPLC-DAD', 'LOD'], acceptance: ['Cannabinoid ±10 % (Ph. Eur. 3028)', 'LOD NMT 12 %'] }, annex_form: { purpose: 'Recording' } },
   setAns: (k, a) => set(s => ({ ans: { ...s.ans, [k]: a } })),
   extra: {},
-  setExtra: (k, e) => set(s => ({ extra: { ...s.extra, [k]: { ...{ instructions: '', sources: '' }, ...s.extra[k], ...e } } })),
+  setExtra: (k, e) => set(s => ({ extra: { ...s.extra, [k]: { ...{ instructions: '', sources: '', parent_sop: '' }, ...s.extra[k], ...e } } })),
 }));
 
 export function Questionnaire() {
   const { api, qKey, qRound, metas, set, go, busy, flash, lang } = useApp();
   const { ans: all, setAns, extra: allExtra, setExtra } = useAns();
-  const extra = allExtra[qKey] || { instructions: '', sources: '' };
+  const extra = allExtra[qKey] || { instructions: '', sources: '', parent_sop: '' };
   const [bank, setBank] = useState<Q | null>(null);
   const [err, setErr] = useState('');
   // The questionnaire list comes from DocEngine; the two original banks stay as the fallback.
@@ -34,7 +34,7 @@ export function Questionnaire() {
     if (missing.length || busy) return;
     try {
       const sources = extra.sources.split('\n').map(x => x.trim()).filter(Boolean);
-      const r = await api.startWorkflow({ questionnaire: qKey, answers: ans, meta, requested_by: api.mode === 'live' ? 'ppdocwiz-session' : 'darko.s', instructions: extra.instructions.trim(), sources });
+      const r = await api.startWorkflow({ questionnaire: qKey, answers: ans, meta, requested_by: api.mode === 'live' ? 'ppdocwiz-session' : 'darko.s', instructions: extra.instructions.trim(), sources, parent_sop: extra.parent_sop.trim() });
       go('jobs', { jobSel: r.job_id }); flash(`job ${r.job_id.slice(0, 8)} queued · polling every 1 s`);
     } catch (e) { setErr(`${(e as ApiError).status} · ${(e as Error).message}`); }
   };
@@ -100,6 +100,8 @@ export function Questionnaire() {
         <textarea data-field="instructions" value={extra.instructions} onChange={e => setExtra(qKey, { instructions: e.target.value })} rows={6} style={{ background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 5, padding: '6px 8px', color: '#fff', outline: 'none', resize: 'vertical', font: 'inherit', fontSize: 12.5, lineHeight: 1.4 }} /></label>
       <label style={{ display: 'flex', flexDirection: 'column', gap: 5 }}><span><b style={{ color: '#fff', fontSize: 14 }}>{tr(lang, 'Sources')}</b> <span style={{ fontSize: 11.5, color: T.muted }}>· {tr(lang, 'one per line; the authors may cite them')}</span></span>
         <textarea data-field="sources" value={extra.sources} onChange={e => setExtra(qKey, { sources: e.target.value })} rows={4} style={{ background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 5, padding: '6px 8px', color: '#fff', outline: 'none', resize: 'vertical', font: 'inherit', fontSize: 12.5, lineHeight: 1.4 }} /></label>
+      {bank.doctype !== 'SOP' && <label style={{ display: 'grid', gridTemplateColumns: '76px 1fr', gap: 8, alignItems: 'center' }}><span style={mono} title={tr(lang, 'the SOP this form serves — DocEngine reads its sections 6 and 7')}>parent</span>
+        <input data-field="parent_sop" value={extra.parent_sop} onChange={e => setExtra(qKey, { parent_sop: e.target.value })} placeholder="WHSOP_003" style={{ background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 5, padding: '6px 8px', color: '#fff', outline: 'none', minWidth: 0 }} /></label>}
       <div style={{ height: 1, background: T.hair, margin: '4px 0' }} />
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}><b style={{ color: '#fff', fontSize: 14 }}>{tr(lang, 'Content brief')}</b><span style={{ fontSize: 11.5, color: T.muted }}>{brief.filter(b => b.def).length} {tr(lang, 'by default')} · {brief.filter(b => b.v === '— open').length} {tr(lang, 'open')}</span></div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 12.5 }}>{brief.map(b => <div key={b.k} style={{ display: 'grid', gridTemplateColumns: '118px 1fr', gap: 8, lineHeight: 1.35 }}><span style={{ fontFamily: MONO, fontSize: 11.5, color: T.muted }}>{b.k}</span><span style={{ color: b.c }}>{b.v}{b.def && <span style={{ marginLeft: 6 }}><DefTag /></span>}</span></div>)}</div>

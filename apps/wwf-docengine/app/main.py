@@ -149,6 +149,10 @@ class WorkflowIn(BaseModel):
     # responsibility, and the §6A audit still checks every reference against them and the findings.
     instructions: str = Field("", max_length=12000)
     sources: list[str] = Field(default_factory=list, max_length=40)
+    # For an annex job: the code of the SOP it serves. The pipeline reads that SOP's sections 6 and 7 so the
+    # form holds a field for every item the SOP writes into it (13.10.2026 review: four DEMO annexes were
+    # generic shipment forms because the generator never saw WHSOP_003).
+    parent_sop: str = Field("", max_length=80)
 
 
 @app.post("/workflows", dependencies=[Depends(require_api_key)])
