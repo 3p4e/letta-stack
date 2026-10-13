@@ -183,9 +183,9 @@ Anthropic AI models and one of the DeepSeek AI models depending on the purpose".
 |---|---|---|
 | `gf_sop_author`, `gf_annex_author`, `gf_translator_mk_en`, `gf_raci_specialist`, `gf_qa_auditor` | Macedonian writing and the §6A audit | `claude-opus-5-5` |
 | `gf_doc_orchestrator`, `wwf_coordinator` | routing, sequencing, tool calls | `claude-sonnet-5-5` |
-| `gf_reg_checker` | checks each section against retrieved regulation, ~9 calls per job | `deepseek/deepseek-v4-pro` |
-| `wwf_weekly_report`, `wwf_next_week_plan` | WWF scheduler reports and plans from cultivation data | `deepseek/deepseek-v4-pro` |
-| `gf_app_assistant` | in-app help chat, fast and frequent | `deepseek/deepseek-v4-flash` |
+| `gf_reg_checker` | checks each section against retrieved regulation, ~9 calls per job | `claude-sonnet-5-5` (DeepSeek v4 Pro until 11.10, below) |
+| `wwf_weekly_report`, `wwf_next_week_plan` | WWF scheduler reports and plans from cultivation data | `claude-sonnet-5-5` (DeepSeek v4 Pro until 11.10) |
+| `gf_app_assistant` | in-app help chat, fast and frequent | `claude-haiku-5-5` (DeepSeek v4 Flash until 11.10) |
 
 Letta handle = `openai-proxy/` + the LiteLLM name. Claude is paid from the Max plan's monthly API credits:
 LiteLLM routes the three `claude-*-5-5` names with `ANTHROPIC_USR_KEY` and the workspace header, and drops
@@ -200,7 +200,7 @@ Flash / Nemotron), `letta_all_agents_llm_config_pre-assign_20261011.json` (all 1
 `litellm.config.yaml.bak-20261011-fallbacks`. Restore an agent with `PATCH /v1/agents/{id}` `{"llm_config": …}`.
 
 Why Opus for Macedonian: in the test (one translation, one SOP subsection) Opus 5.5 made the fewest errors; Sonnet 5.5
-used the Serbian "ланец" and Haiku 5.5 made gender and spelling errors. Full workflow, same brief: job `74e54add`
+used "ланец" (flagged then as Serbian; WHSOP_003 v01 itself defines „ланец на надзор“, so the glossary keeps it) and Haiku 5.5 made gender and spelling errors. Full workflow, same brief: job `74e54add`
 (Opus) → `awaiting_review` in 18.5 min, 8,643 words, no grammar breaches left, 3 required content fixes; job
 `2ddd58d1` (DeepSeek Flash) → 7.2 min, 5,624 words, grammar breaches left. One run each: confirm on further
 questionnaires, and read the per-document cost off the Console before relying on the monthly credit.
@@ -208,3 +208,19 @@ questionnaires, and read the per-document cost off the Console before relying on
 Verified: tool calls through LiteLLM on all four models; a throwaway clone of `gf_doc_orchestrator` (Sonnet),
 `gf_reg_checker` (DeepSeek Pro) and `gf_app_assistant` (DeepSeek Flash) each answered inside the Letta loop and was
 deleted. The WWF agents were not messaged (their history feeds the scheduler).
+
+## Changed — 11.10.2026 (evening): DeepSeek out of credit, its four agents moved to Claude
+
+The DeepSeek account ran out of credit: job `bb10d0bb` failed at the regulatory check with HTTP 402
+`llm_insufficient_credits` from LiteLLM. Head of QC, 11.10.2026, chose to move the DeepSeek agents to Claude rather
+than top up: `gf_reg_checker`, `wwf_weekly_report`, `wwf_next_week_plan` → `claude-sonnet-5-5`; `gf_app_assistant`
+→ `claude-haiku-5-5`. Every agent on letta-6ou3 now runs on Claude. The LiteLLM fallbacks Claude → DeepSeek are still
+configured but lead nowhere until the DeepSeek account has credit again. Backup of all 12 agent configs before the
+change: `/opt/wwf-deploy/backups/letta_all_agents_llm_config_pre-deepseek-out_20261011.json`. A throwaway
+`gf_reg_checker` clone answered on Sonnet and was deleted.
+
+## Changed — 11.10.2026: house Macedonian glossary (PR #40)
+
+`apps/wwf-docengine/agents/glossary_mk.yaml`, approved by the Head of QC from WHSOP_003 v01 §5. Every agent clone
+carries it as the `gf_glossary_mk` memory block; the section linter flags the variants wrong in every context.
+Deployed as `pp-docengine:420528d` (compose backup `pp-docengine.compose.yaml.bak-20261011-420528d`).

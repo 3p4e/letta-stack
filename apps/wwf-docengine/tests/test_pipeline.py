@@ -573,3 +573,41 @@ def test_no_length_target_conciseness_is_a_content_rule():
     assert not hasattr(p, "SOP_WORDS") and not hasattr(p, "_length_issue")
     assert "every requirement once" in p.CONCISE and "no filler" in p.CONCISE
     assert p._lint_section("- Записи ||| " + "record " * 2000) == []      # length alone is never a finding
+
+
+def test_lint_flags_terms_outside_the_house_glossary():
+    """Head of QC, 11.10.2026: the house Macedonian glossary (from WHSOP_003 v01 §5) is binding."""
+    body = "\n".join([
+        "Палетата се завиткува со термално ќебе. ||| The pallet is wrapped in a thermal blanket.",
+        "Кесите со интермедијер се бројат. ||| The bags of intermediate are counted.",
+        "Секоја девијација се евидентира. ||| Every deviation is recorded.",
+    ])
+    issues = _lint_section(body)
+    hit = next(i for i in issues if "house glossary" in i)
+    assert "термално ќебе" in hit and "термо-ќебе" in hit
+    assert "интермедијер" in hit and "меѓупроизвод" in hit
+    assert "девијација" in hit and "отстапување" in hit
+
+
+def test_glossary_terms_and_their_legitimate_lookalikes_pass_the_lint():
+    body = "\n".join([
+        "Палетата се завиткува со стреч-фолија и термо-ќебе. ||| The pallet is wrapped in stretch film and a thermal blanket.",
+        "Секое отстапување се евидентира. ||| Every deviation is recorded.",
+        "Се пресметува стандардна девијација. ||| The standard deviation is calculated.",
+        "Отпадот се собира во вреќи. ||| Waste is collected in sacks.",
+        "Методи: метод 1 ||| Methods: method 1",
+    ])
+    assert _lint_section(body) == []
+
+
+def test_approved_whsop_003_reads_clean_against_the_glossary():
+    """The glossary was taken from WHSOP_003 v01 — its own text must never be flagged."""
+    import re
+    import zipfile
+    from app import glossary
+    docs = sorted((Path(__file__).resolve().parents[3] / "deliverables" / "inland_transport_2026-10" / "docx").glob("WHSOP_003*.docx"))
+    if not docs:
+        pytest.skip("WHSOP_003 deliverables not in this checkout")
+    for d in docs:
+        text = re.sub(r"<[^>]+>", " ", zipfile.ZipFile(d).read("word/document.xml").decode("utf-8"))
+        assert glossary.term_issues(text) == [], d.name

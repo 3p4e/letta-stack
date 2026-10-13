@@ -11,7 +11,7 @@ import asyncio
 import logging
 import re
 
-from . import builder, db
+from . import builder, db, glossary
 from .config import settings
 from .letta import LettaClient, LettaError
 from .ragflow import EXAMPLES_NOTE, RagflowClient, RagflowError, citations, format_passages
@@ -261,6 +261,9 @@ def _lint_section(content: str, sop: bool = True) -> list[str]:
     if meta:
         issues.append("working notes or commentary in the body (delete them), e.g. "
                       + " / ".join(f'"{x}"' for x in meta[:3]))
+    terms = glossary.term_issues(content)
+    if terms:
+        issues.append("Macedonian terms outside the house glossary (replace them everywhere): " + ", ".join(terms[:8]))
     return issues
 
 
