@@ -200,6 +200,14 @@ _META = re.compile(
     r"this section (covers|is|must|should|lists|names|contains)|"
     r"section \d+(\.\d+)? (covers|is|must|should|lists|names|contains))\b", re.I)
 _LETTERS = re.compile(r"[A-Za-zЀ-ӿ]")
+# Lines only our own prompts contain. Observed 13.10.2026 (transport run a142b9dd): a lint-repair reply came back as
+# the whole request, then the old section, then the new one, and all of it was inserted "verbatim" into 3.0.
+_ECHO = re.compile(r"Return ONLY the|^CURRENT SECTION\s*$|ENGINE MARKDOWN \(the only grammar|"
+                   r"^(?:Rewrite|REVISE|Draft ONLY) section \d", re.M)
+
+
+def _echoes_prompt(text: str) -> bool:
+    return bool(_ECHO.search(text or ""))
 # A word with Cyrillic AND Latin letters is a typo the eye cannot see ("двoстепен" with a Latin o) — found live.
 _MIXED = re.compile(r"\b(?=\w*[Ѐ-ӿ])(?=\w*[A-Za-z])\w+\b")
 
@@ -253,6 +261,8 @@ def _lint_section(content: str, sop: bool = True) -> list[str]:
         if not in_block and "|||" not in s and len(_LETTERS.findall(s)) >= 15:
             mono.append(s[:90])
     issues = []
+    if _echoes_prompt(content):
+        issues.append("the request text was copied into the section — delete everything that is not document content")
     if sop and "[[FORM" in content:
         issues.append("a write-in form ([[FORM]]) inside the SOP — forms are separate annexes: name the annex by "
                       "code and title instead (keep tables as [[TABLE]])")
@@ -442,6 +452,11 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
             return "gf_raci_specialist" if s["num"] == "3.0" else "gf_sop_author"
 
         def tidy(s: dict, text: str) -> str:
+            if _echoes_prompt(text) and s.get("content"):
+                # A reply that repeats the request is not a revision: keep what the section had.
+                log.warning("job %s: reply for %s echoed the prompt; kept the previous text", job_id, s["num"])
+                ctx.setdefault("echo_rejected", []).append(s["num"])
+                return s["content"]
             body = _clean_section(text, structured=not sop)
             return _strip_own_heading(s["num"], s["mk"], s["en"], body) if sop else body
 

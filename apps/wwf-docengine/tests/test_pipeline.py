@@ -632,3 +632,17 @@ def test_glossary_terms_added_on_13_10():
     text = glossary.memory_text()
     assert "траса" in text and "уред за ладење/греење" in text and "ID на логерот" in text
     assert glossary.term_issues("Се запишува серискиот број на логерот.") == ["„серискиот број на логерот“ → ID на логерот"]
+
+
+def test_a_reply_that_echoes_the_request_is_never_inserted():
+    """13.10.2026, transport run a142b9dd: a lint-repair reply came back as the request + old section + new section."""
+    import app.pipeline as p
+    echoed = ("Rewrite section 3.0 ОДГОВОРНОСТИ|RESPONSIBILITIES of 'X | Y' (code Z) to fix these problems:\n- …\n\n"
+              + p.ENGINE_GRAMMAR + "\n\nKeep every requirement. Return ONLY the corrected section body — your reply is "
+              "inserted verbatim.\n\nCURRENT SECTION\n## 3.1 Општо | General\nТекст ||| Text")
+    assert p._echoes_prompt(echoed)
+    assert any("request text was copied" in i for i in _lint_section(echoed))
+    clean = "## 3.1 Општо | General\nВратете го образецот на QA. ||| Return the form to QA.\nТековен дел ||| Current section"
+    assert not p._echoes_prompt(clean) and _lint_section(clean) == []
+    src = Path(p.__file__).read_text(encoding="utf-8")
+    assert "if _echoes_prompt(text) and s.get(\"content\"):" in src and "return s[\"content\"]" in src
