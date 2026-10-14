@@ -193,3 +193,15 @@ def test_document_pdf_asks_gotenberg_to_update_indexes(api, monkeypatch, tmp_pat
     body = seen[0].content
     assert b'name="updateIndexes"' in body and b"true" in body
     assert seen[0].headers["authorization"] == "Basic cHA6cw=="
+
+
+def test_a_non_json_200_is_a_ragflow_error_so_the_check_falls_back():
+    """A proxy or maintenance page answers 200 with HTML; that raised JSONDecodeError, which the pipeline's
+    fallback (except RagflowError) did not catch, and the whole job failed (review 14.10.2026)."""
+    import asyncio
+    t = httpx.MockTransport(lambda req: httpx.Response(200, content=b"<html>maintenance</html>"))
+    with pytest.raises(RagflowError, match="non-JSON"):
+        asyncio.run(RagflowClient("http://r", "k", transport=t).retrieve("q", ["d"]))
+    t2 = httpx.MockTransport(lambda req: httpx.Response(200, json={"code": 102, "message": None}))
+    with pytest.raises(RagflowError, match="102"):
+        asyncio.run(RagflowClient("http://r", "k", transport=t2).retrieve("q", ["d"]))

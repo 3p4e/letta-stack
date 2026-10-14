@@ -24,11 +24,11 @@ Config (env):
 Run: uvicorn app:app --host 0.0.0.0 --port 8770
 Publish on loopback only and route via Traefik; see docker-compose.yml.
 """
-import asyncio, threading, os, sys, io, re, json, uuid, hmac, tempfile, subprocess, contextlib, shutil, urllib.request, urllib.error, urllib.parse
+import asyncio, logging, threading, os, sys, io, re, json, uuid, hmac, tempfile, subprocess, contextlib, shutil, urllib.request, urllib.error, urllib.parse
 from fastapi import Depends, FastAPI, Request
 from fastapi.responses import FileResponse, JSONResponse, HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import wizard
 import security
 from config import settings
@@ -65,6 +65,7 @@ FRONTEND = os.path.join(HERE, "..", "frontend", "index.html")
 SUITE_UI = os.path.join(HERE, "..", "frontend", "suite")
 
 app = FastAPI(title="PP Doc Wiz", version="1.0")
+log = logging.getLogger("ppdocwiz")
 
 # Static bundle only: hashed JS/CSS, fonts and the logo — no data, no credential.
 # Same exposure as "/" itself, which is ungated because it is the sign-in page.
@@ -86,12 +87,35 @@ class SessionReq(BaseModel):
 
 
 class RawBuildReq(BaseModel):
-    markdown: str
+    # The same bound as DocEngine's POST /build: this is fed whole into the in-process engine.
+    markdown: str = Field(max_length=400_000)
     out_name: str | None = None
+
+
+def _compose(payload: dict):
+    """Wizard payload -> Markdown, or a 422. A null or non-text field (\"mk_title\": null, \"level\": \"x\")
+    raised inside compose_markdown and came back as a bare 500 (review 14.10.2026)."""
+    try:
+        return wizard.compose_markdown(payload), None
+    except (TypeError, ValueError, AttributeError) as e:
+        return None, JSONResponse({"ok": False, "error": f"invalid wizard payload: {type(e).__name__}"}, status_code=422)
+
+
+# One build at a time. /api/wizard/build and /api/build are sync routes, so FastAPI runs them on its thread
+# pool side by side, and a build swaps the process-wide sys.argv for pp_verify, reloads the engine modules and
+# sets the engine's page-width global. Two at once: build A's pp_verify could parse build B's argv and report
+# B's PASS for A, or a module reload could land mid-build (review 14.10.2026). DocEngine's builder has held
+# the same lock (_BUILD_LOCK) for the same reason since it was written.
+_BUILD_LOCK = threading.Lock()
 
 
 def _build_from_markdown(md: str, base: str):
     """Run the engine in-process: markdown -> .docx + verify. Returns (ok, verify, docx_path)."""
+    with _BUILD_LOCK:
+        return _build_locked(md, base)
+
+
+def _build_locked(md: str, base: str):
     out = os.path.join(OUT, base + ".docx")
     with tempfile.NamedTemporaryFile("w", suffix=".md", delete=False, encoding="utf-8") as f:
         f.write(md); src = f.name
@@ -136,7 +160,7 @@ def open_session(r: SessionReq):
     so an XSS in the frontend has no credential to steal."""
     if not settings.api_key:
         return JSONResponse({"ok": False, "error": "not configured"}, status_code=503)
-    if not hmac.compare_digest(r.key, settings.api_key):
+    if not hmac.compare_digest(r.key.encode("utf-8", "surrogateescape"), settings.api_key.encode()):
         return JSONResponse({"ok": False, "error": "bad key"}, status_code=401)
     resp = JSONResponse({"ok": True})
     resp.set_cookie(security.COOKIE, security.session_value(settings.api_key),
@@ -157,12 +181,15 @@ def example():
 
 @app.post("/api/wizard/preview", dependencies=[Depends(security.require_api_key)])
 def preview(r: BuildReq):
-    return {"markdown": wizard.compose_markdown(r.payload)}
+    md, bad = _compose(r.payload)
+    return bad or {"markdown": md}
 
 
 @app.post("/api/wizard/build", dependencies=[Depends(security.require_api_key)])
 def build(r: BuildReq):
-    md = wizard.compose_markdown(r.payload)
+    md, bad = _compose(r.payload)
+    if bad:
+        return bad
     # _safe_name, not the old two .replace() calls: those stripped "/" and " "
     # but left quotes and angle brackets intact, and this value is returned as
     # download_docx and interpolated into an href="..." by the frontend. A code
@@ -172,8 +199,9 @@ def build(r: BuildReq):
     try:
         ok, verify, path = _build_from_markdown(md, doc_id)
     except Exception as e:
-        import traceback
-        return JSONResponse({"ok": False, "error": traceback.format_exc()[-900:], "markdown": md}, status_code=422)
+        # The traceback goes to the log, not to the client: it carried container paths and engine internals.
+        log.exception("wizard build failed")
+        return JSONResponse({"ok": False, "error": f"{type(e).__name__}: {str(e)[:300]}", "markdown": md}, status_code=422)
     if not ok:
         _discard(path)
     return {"ok": ok, "verify": verify, "doc_id": doc_id, "markdown": md,
@@ -249,7 +277,7 @@ def download(name: str, inline: int = 0):
                 with _RENDER_LOCK:
                     if not os.path.exists(pdf):
                         _render_pdf(docx, pdf)
-            except subprocess.TimeoutExpired:
+            except (subprocess.TimeoutExpired, pp_render.RenderTimeout):
                 return JSONResponse({"error": "PDF rendering timed out"}, status_code=504)
             except pp_render.RenderError as e:
                 return JSONResponse({"error": str(e)[:300]}, status_code=502)

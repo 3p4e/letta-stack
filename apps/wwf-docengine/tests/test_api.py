@@ -216,3 +216,42 @@ def test_review_approve_without_the_built_file_is_410(client, monkeypatch, tmp_p
     row, calls = _review_db(monkeypatch, tmp_path, with_file=False)
     assert client.post(f"/workflows/{JID}/review", headers=h(), json={"decision": "approve"}).status_code == 410
     assert row["status"] == "awaiting_review" and not calls["docs"]
+
+
+def test_review_approve_that_cannot_register_goes_back_to_awaiting_review(client, monkeypatch, tmp_path):
+    """The claim moves the job to 'running'; a failed registration used to leave it there (review 14.10.2026)."""
+    row, calls = _review_db(monkeypatch, tmp_path)
+
+    async def boom(jid, meta):
+        raise RuntimeError("db down")
+
+    monkeypatch.setattr(db, "document_create", boom)
+    with pytest.raises(RuntimeError):
+        client.post(f"/workflows/{JID}/review", headers=h(), json={"decision": "approve"})
+    assert row["status"] == "awaiting_review"
+
+
+def test_running_service_reaps_stale_jobs_on_an_interval():
+    import inspect
+    from app import main
+    assert main.REAP_INTERVAL_S <= 15 * 60
+    assert "_reap_forever()" in inspect.getsource(main.lifespan)
+
+
+def test_non_ascii_key_is_401_not_500(client):
+    r = client.get("/questionnaires", headers={"X-API-Key": "ключ".encode()})
+    assert r.status_code == 401
+
+
+@pytest.mark.parametrize("meta", [
+    {"title_mk": "а", "title_en": "a", "code": 123},
+    {"title_mk": "а\nbilingual: no", "title_en": "a", "code": "X"},
+    {"title_mk": "а", "title_en": "a", "code": "X", "version": "01 -->"},
+])
+def test_workflow_meta_is_checked_before_any_generation(client, monkeypatch, meta):
+    """These used to fail only at assembly or build, after every section had been generated."""
+    started = []
+    monkeypatch.setattr(db, "ready", lambda: True)
+    monkeypatch.setattr("app.main.run_workflow", lambda jid: started.append(jid))
+    r = client.post("/workflows", headers=h(), json={"questionnaire": "sop_qc", "meta": meta})
+    assert r.status_code == 400 and not started

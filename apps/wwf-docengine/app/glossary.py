@@ -40,8 +40,10 @@ def _patterns() -> list[tuple[re.Pattern, str]]:
 def term_issues(content: str) -> list[str]:
     """Glossary variants found in the text, as 'found → use' pairs (first occurrence of each)."""
     found: dict[str, str] = {}
+    # One space between words, so the look-behinds ("стандардна девијација") hold across a line break.
+    text = re.sub(r"\s+", " ", content or "")
     for rx, use in _patterns():
-        m = rx.search(content or "")
+        m = rx.search(text)
         if m:
             found.setdefault(m.group(0), use)
     return [f"„{w}“ → {u}" for w, u in found.items()]

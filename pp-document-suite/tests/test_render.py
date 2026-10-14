@@ -68,3 +68,20 @@ def test_no_renderer_names_both_reasons(docx, tmp_path, monkeypatch):
     monkeypatch.setattr(pp_render.shutil, "which", lambda name: None)
     with pytest.raises(pp_render.RenderError, match="no local LibreOffice"):
         pp_render.render_pdf(docx, str(tmp_path / "o.pdf"))
+
+
+def test_a_local_timeout_is_a_render_error_and_kills_the_group(docx, tmp_path, monkeypatch):
+    """A timeout escaped as subprocess.TimeoutExpired (outside the RenderError contract) and killed only the
+    soffice wrapper, leaving soffice.bin running on a deleted profile (review 14.10.2026)."""
+    import shutil
+    import subprocess
+    fake = tmp_path / "bin"
+    fake.mkdir()
+    (fake / "soffice").write_text("#!/bin/sh\nsleep 30 &\nwait\n")
+    (fake / "soffice").chmod(0o755)
+    monkeypatch.setenv("PATH", f"{fake}{os.pathsep}{os.environ['PATH']}")
+    assert shutil.which("soffice") == str(fake / "soffice")
+    with pytest.raises(pp_render.RenderTimeout):
+        pp_render.render_local(docx, str(tmp_path / "o.pdf"), timeout=1)
+    left = subprocess.run(["pgrep", "-f", "sleep 30"], capture_output=True, text=True).stdout.split()
+    assert not left, "the renderer's child process outlived the timeout"

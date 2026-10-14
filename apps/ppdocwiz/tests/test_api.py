@@ -224,3 +224,46 @@ def test_pdf_inline_for_preview(client):
     (Path(app_mod.OUT) / "D1.docx").write_bytes(b"x"); (Path(app_mod.OUT) / "D1.pdf").write_bytes(b"%PDF-1.4")
     assert client.get("/api/download/D1.pdf?inline=1", headers=H).headers["content-disposition"].startswith("inline")
     assert client.get("/api/download/D1.pdf", headers=H).headers["content-disposition"].startswith("attachment")
+
+
+# ---------------------------------------------------------------- review 14.10.2026
+def test_non_ascii_key_is_401_not_500(client):
+    """compare_digest raises TypeError on a non-ASCII str; the gate compares bytes now."""
+    r = client.get("/api/doctypes", headers={"X-API-Key": "ключ".encode()})
+    assert r.status_code == 401
+    assert client.post("/api/session", json={"key": "ключ"}).status_code == 401
+
+
+def test_builds_run_one_at_a_time(monkeypatch):
+    """Two sync build routes run on the thread pool together and share sys.argv and the engine's globals."""
+    held = []
+    monkeypatch.setattr(app_mod, "_build_locked", lambda md, base: held.append(app_mod._BUILD_LOCK.locked()) or (True, "", ""))
+    app_mod._build_from_markdown("x", "y")
+    assert held == [True] and not app_mod._BUILD_LOCK.locked()
+
+
+def test_a_bad_wizard_payload_is_422_not_500(client):
+    h = {"X-API-Key": KEY}
+    assert client.post("/api/wizard/preview", headers=h, json={"payload": {"mk_title": None, "sections": []}}).status_code == 422
+    assert client.post("/api/wizard/build", headers=h, json={"payload": {"sections": [{"level": "x"}]}}).status_code == 422
+
+
+def test_build_errors_do_not_return_a_traceback(client, monkeypatch):
+    def boom(md, base):
+        raise RuntimeError("engine broke")
+    monkeypatch.setattr(app_mod, "_build_locked", boom)
+    r = client.post("/api/wizard/build", headers={"X-API-Key": KEY}, json={"payload": {"code": "X", "sections": []}})
+    assert r.status_code == 422 and "Traceback" not in r.text and "RuntimeError: engine broke" in r.json()["error"]
+
+
+def test_raw_markdown_is_bounded(client):
+    r = client.post("/api/build", headers={"X-API-Key": KEY}, json={"markdown": "x" * 400_001})
+    assert r.status_code == 422
+
+
+def test_jobs_rerun_carries_the_brief_and_the_parent_sop():
+    """Re-run sent only questionnaire, answers and meta: an annex re-run lost its brief and parent SOP."""
+    src = (Path(__file__).resolve().parents[1] / "web" / "src" / "screens" / "Jobs.tsx").read_text(encoding="utf-8")
+    rerun = src[src.index("const rerun"):src.index("usePrimary(")]
+    for f in ("instructions:", "sources:", "parent_sop:"):
+        assert f in rerun, f

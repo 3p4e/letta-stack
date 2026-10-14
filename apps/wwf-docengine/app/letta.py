@@ -47,7 +47,12 @@ class LettaClient:
         if not self.configured:
             raise LettaError("Letta not configured")
         async with self._client() as c:
-            r = await c.request(method, path, **kw)
+            try:
+                r = await c.request(method, path, **kw)
+            except httpx.HTTPError as e:
+                # A timeout or reset is a Letta failure like a 5xx: callers that tolerate one (attach_source in
+                # spawn_ephemeral, the job's error record) catch LettaError, and a bare httpx.ReadTimeout reads "".
+                raise LettaError(f"{method} {path} -> {type(e).__name__}: {e}") from e
             if r.status_code >= 400:
                 raise LettaError(f"{method} {path} -> {r.status_code}: {r.text[:300]}")
             if not r.content:
@@ -55,8 +60,13 @@ class LettaClient:
             return r.json()
 
     # ---- reads ----
+    # Letta pages GET /agents/; a fleet agent past the first page would look missing and be created twice.
+    LIST_LIMIT = 1000
+
     async def list_agents(self, name: str | None = None) -> list[dict]:
-        params = {"name": name} if name else None
+        params: dict = {"limit": self.LIST_LIMIT}
+        if name:
+            params["name"] = name
         out = await self._req("GET", "/agents/", params=params)
         return out or []
 

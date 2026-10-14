@@ -13,6 +13,7 @@
 #   GET  /documents/{id}/download         the .docx (only ever PASS docs)
 #   GET  /documents/{id}/pdf              Gotenberg-rendered PDF
 import asyncio
+import contextlib
 import logging
 import uuid
 from contextlib import asynccontextmanager
@@ -35,6 +36,24 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname
 log = logging.getLogger("docengine")
 
 
+# How often a running worker sweeps for jobs a killed worker left behind. The sweep used to run at startup
+# only: with two workers it must spare jobs younger than STALE_JOB_MINUTES (the other worker may be running
+# them), so a job killed by a redeploy minutes after its last update was never swept and sat at 'running'
+# forever (review 14.10.2026). Each worker sweeps on this interval; the UPDATE is idempotent.
+REAP_INTERVAL_S = 600
+
+
+async def _reap_forever() -> None:
+    while True:
+        await asyncio.sleep(REAP_INTERVAL_S)
+        try:
+            reaped = await db.reap_stale_jobs()
+            if reaped:
+                log.warning("reaped %d stale job(s) with no progress for %d minutes", reaped, db.STALE_JOB_MINUTES)
+        except Exception:  # noqa: BLE001 — a failed sweep is retried on the next interval
+            log.warning("stale-job sweep failed", exc_info=True)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await db.init()
@@ -48,7 +67,12 @@ async def lifespan(app: FastAPI):
     except Exception:
         # Never block startup on the sweep — the service must come up.
         log.warning("stale-job sweep failed at startup", exc_info=True)
+    reaper = asyncio.create_task(_reap_forever()) if db.ready() else None
     yield
+    if reaper:
+        reaper.cancel()
+        with contextlib.suppress(asyncio.CancelledError):
+            await reaper
     await db.close()
 
 
@@ -155,13 +179,31 @@ class WorkflowIn(BaseModel):
     parent_sop: str = Field("", max_length=80)
 
 
+_META_FIELDS = ("title_mk", "title_en", "code", "version", "doctype", "orient")
+
+
+def _check_meta(meta: dict, required: tuple = ()) -> None:
+    """Reject at the door what the HEADERDATA block cannot hold. These values used to be checked only when the
+    document was assembled, after every section had been generated: a non-string code crashed the build and a
+    line break wrote a HEADERDATA field of its own ("bilingual: no" switched the bilingual gate off)."""
+    for k in required:
+        if not meta.get(k):
+            raise HTTPException(400, f"meta.{k} required")
+    for k in _META_FIELDS:
+        v = meta.get(k)
+        if v is None:
+            continue
+        if not isinstance(v, str):
+            raise HTTPException(400, f"meta.{k} must be text")
+        if len(v) > 300 or "\n" in v or "\r" in v or "-->" in v:
+            raise HTTPException(400, f"meta.{k} must be one line of at most 300 characters without '-->'")
+
+
 @app.post("/workflows", dependencies=[Depends(require_api_key)])
 async def start_workflow(body: WorkflowIn):
     if body.questionnaire not in QUESTIONNAIRES:
         raise HTTPException(400, "unknown questionnaire")
-    for k in ("title_mk", "title_en", "code"):
-        if not body.meta.get(k):
-            raise HTTPException(400, f"meta.{k} required")
+    _check_meta(body.meta, ("title_mk", "title_en", "code"))
     if not db.ready():
         raise HTTPException(503, "DocEngine storage unavailable")
     if not LettaClient().configured:
@@ -222,11 +264,17 @@ async def review_workflow(jid: str, body: ReviewIn):
                             result={**res, "review": review})
     else:
         meta = job["payload"]["meta"]
-        did = await db.document_create(jid, {
-            "code": meta["code"], "doctype": meta.get("doctype") or QUESTIONNAIRES[job["payload"]["questionnaire"]]["doctype"],
-            "title_mk": meta["title_mk"], "title_en": meta["title_en"], "version": meta.get("version", "1.0"),
-            "path": art["path"], "bytes": art.get("bytes") or res.get("bytes") or 0, "verify": res.get("verify", ""),
-        })
+        try:
+            did = await db.document_create(jid, {
+                "code": meta["code"], "doctype": meta.get("doctype") or QUESTIONNAIRES[job["payload"]["questionnaire"]]["doctype"],
+                "title_mk": meta["title_mk"], "title_en": meta["title_en"], "version": meta.get("version", "1.0"),
+                "path": art["path"], "bytes": art.get("bytes") or res.get("bytes") or 0, "verify": res.get("verify", ""),
+            })
+        except Exception:
+            # The claim moved the job to 'running'. Left there, the approval is lost and the job reads as
+            # in progress until the reaper fails it an hour later; put it back so the reviewer can retry.
+            await db.job_update(jid, status="awaiting_review")
+            raise
         await db.job_update(jid, status="done", stage="done", result={**res, "document_id": did, "review": review})
     return await db.job_get(jid)
 
@@ -244,6 +292,7 @@ class BuildIn(BaseModel):
 
 @app.post("/build", dependencies=[Depends(require_api_key)])
 async def direct_build(body: BuildIn):
+    _check_meta(body.meta)
     try:
         result = await asyncio.to_thread(
             builder.build, body.markdown, settings.out_dir, body.out_name

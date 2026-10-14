@@ -190,3 +190,18 @@ def test_failed_build_cannot_delete_another_builds_document(tmp_path, monkeypatc
         builder.build(SOP_MD, tmp_path, "shared_code")     # same code, must FAIL
     assert good.path.exists(), "a failed build deleted a different build's document"
     assert good.path.stat().st_size == good.bytes
+
+
+def test_a_crash_in_verify_leaves_no_partial(tmp_path, monkeypatch):
+    """Only a FAIL removed the dot-prefixed partial; an exception inside verify left it behind (review 14.10.2026)."""
+    from app import builder
+
+    def boom(*a, **k):
+        raise RuntimeError("verify crashed")
+
+    monkeypatch.setattr(builder, "_verify_with_fidelity", boom)
+    md = "<!--HEADERDATA\nmk_title: Т\nen_title: T\ncode: X\ndoctype: FORM\n-->\n# 1 А | A\nтекст ||| text\n"
+    import pytest
+    with pytest.raises(RuntimeError):
+        builder.build(md, tmp_path, "X")
+    assert list(tmp_path.iterdir()) == []

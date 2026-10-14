@@ -18,7 +18,9 @@ Environment:
 No third-party packages: standard library only.
 """
 import base64
+import contextlib
 import os
+import signal
 import shutil
 import subprocess
 import sys
@@ -34,6 +36,10 @@ DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.docu
 
 class RenderError(RuntimeError):
     pass
+
+
+class RenderTimeout(RenderError):
+    """The renderer did not finish in time. A RenderError, so auto mode and callers handle it like any other."""
 
 
 def _multipart(fields, files):
@@ -84,9 +90,19 @@ def render_local(docx, pdf, timeout=300):
         if os.path.isdir(LO_PROFILE):
             prof = os.path.join(tmp, "profile")
             shutil.copytree(LO_PROFILE, prof)
-            subprocess.run(["soffice", "-env:UserInstallation=file://" + prof, "--headless",
-                            f'macro:///Standard.Module1.ToPdf("{docx}","{part}")'],
-                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=timeout)
+            # Own process group: /usr/bin/soffice is a wrapper, and a timeout used to kill only the wrapper,
+            # leaving soffice.bin running on a profile this function had already deleted. And the timeout
+            # escaped as subprocess.TimeoutExpired, outside the RenderError contract (review 14.10.2026).
+            proc = subprocess.Popen(["soffice", "-env:UserInstallation=file://" + prof, "--headless",
+                                     f'macro:///Standard.Module1.ToPdf("{docx}","{part}")'],
+                                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+            try:
+                proc.wait(timeout=timeout)
+            except subprocess.TimeoutExpired:
+                with contextlib.suppress(ProcessLookupError):
+                    os.killpg(proc.pid, signal.SIGKILL)
+                proc.wait()
+                raise RenderTimeout(f"local LibreOffice did not finish within {timeout} s") from None
         if not os.path.exists(part):
             raise RenderError("local LibreOffice did not produce a PDF")
         with open(part, "rb") as f:

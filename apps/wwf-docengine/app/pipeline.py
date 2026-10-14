@@ -60,16 +60,31 @@ def controls_rule(questionnaire_key: str) -> str:
             "unknown write a blank and mark it to be confirmed:\n" + "\n".join(f"- {c}" for c in ctl))
 
 
-def _parent_sections(markdown: str, first: int = 6, last: int = 7, limit: int = 14000) -> str:
-    """Sections `first`..`last` of an assembled SOP (the procedure and its records), for an annex job."""
-    lines = markdown.splitlines(); out = []; keep = False
-    for ln in lines:
+def _parent_sections(markdown: str, first: int = 6, last: int = 7, limit: int = 30000) -> str:
+    """Sections `first`..`last` of an assembled SOP (the procedure and its records), for an annex job.
+
+    Over `limit`, the earlier sections are shortened and the last (section 7, the records register the form
+    must match) is kept whole. A plain cut at 14 000 characters dropped all of section 7 from WHSOP_003, whose
+    sections 6 and 7 run to 27 000, while the prompt told the author to use "the completers section 7 names"
+    (review 14.10.2026)."""
+    parts: dict[int, list[str]] = {}
+    cur = None
+    for ln in markdown.splitlines():
         m = re.match(r"^# (\d)\.0", ln)
         if m:
-            keep = first <= int(m.group(1)) <= last
-        if keep:
-            out.append(ln)
-    return "\n".join(out)[:limit]
+            cur = int(m.group(1)) if first <= int(m.group(1)) <= last else None
+        if cur is not None:
+            parts.setdefault(cur, []).append(ln)
+    blocks = ["\n".join(parts[k]) for k in sorted(parts)]
+    if not blocks:
+        return ""
+    whole = "\n".join(blocks)
+    if len(whole) <= limit:
+        return whole
+    tail = blocks[-1][:limit]
+    room = max(0, limit - len(tail) - 80)
+    head = "\n".join(blocks[:-1])[:room]
+    return (head + "\n[… shortened for length …]\n" if head else "") + tail
 
 
 SECTION_HINT = {
@@ -79,7 +94,9 @@ SECTION_HINT = {
 }
 
 
-_MD_FENCE = re.compile(r"^```[a-zA-Z]*\n|\n```$", re.M)
+# Fence lines anywhere in a reply. The old pattern (^```lang\n|\n```$) consumed the newline the closing fence
+# needed, so a fence-only reply ("```markdown\n```") came out as the literal "```" and replaced a section.
+_MD_FENCE = re.compile(r"^[ \t]*```[\w-]*[ \t]*$\n?", re.M)
 
 # Conversational lead-ins a stateful agent sometimes emits BEFORE the document
 # body despite being told "body only" (observed live: "Looking at the persona
@@ -118,6 +135,13 @@ class QaAuditFailed(Exception):
     def __init__(self, verdict: str):
         super().__init__("§6A audit did not PASS")
         self.verdict = verdict
+
+
+class LintUnresolved(Exception):
+    """Proven grammar problems survived every repair round and review parking is off."""
+
+    def __init__(self, sections: str):
+        super().__init__(f"grammar problems remain in {sections}")
 
 
 class BilingualGap(Exception):
@@ -175,22 +199,30 @@ def _bilingual_gaps(sections: list[dict]) -> list[str]:
 
 
 _VERDICT_LINE = re.compile(r"\bverdict\b[\s:*_`-]*\**\s*(PASS|FIX)\b", re.I)
-_BARE_VERDICT = re.compile(r"^[\s*#_`>-]*(PASS|FIX)\b", re.I)
+# The line the prompt asks for: "VERDICT: PASS" / "VERDICT: FIX" on its own, markup allowed.
+_FINAL_VERDICT = re.compile(r"^[\s*#_`>-]*verdict[\s:*_`-]*(PASS|FIX)[\s*_`.!]*$", re.I)
+# A bare verdict word only when it stands alone or opens "FIX: …" — never "Pass/fail criteria are missing".
+_BARE_VERDICT = re.compile(r"^[\s*#_`>-]*(PASS|FIX)(?:[\s*_`.!]*$|\s*:)", re.I)
 
 
 def _qa_verdict(text: str) -> str:
     """PASS, FIX or "" from the auditor's free text.
 
-    The verdict is the LAST "Verdict: X" in the reply, else the last line that opens with PASS or FIX.
+    1. The reply's last non-empty line, when it is the "VERDICT: X" line the prompt asks for.
+    2. Otherwise every "Verdict: X" in the text: FIX if any of them is FIX, else PASS.
+    3. Otherwise lines that are only PASS/FIX (or open with "FIX:"): FIX if any is FIX, else PASS.
     The first word is not the verdict: a live auditor opens with "I'll review the assembled document…"
-    and states "Verdict: FIX" further down. Judged on the first word, every reply — a clean PASS
-    included — read as not-PASS, so no document could ever reach the build (found 10.10.2026)."""
-    t = text or ""
-    found = _VERDICT_LINE.findall(t)
-    if found:
-        return found[-1].upper()
-    bare = [m.group(1) for ln in t.splitlines() if (m := _BARE_VERDICT.match(ln))]
-    return bare[-1].upper() if bare else ""
+    (found 10.10.2026). And a PASS must never be read out of prose: the old fallback took any line opening
+    with the word, so "- Pass/fail criteria are missing" was a PASS, and "Verdict: FIX … once fixed, the
+    verdict: PASS" was a PASS — either registered a FIX document as done with no person (review 14.10.2026)."""
+    lines = [ln for ln in (text or "").splitlines() if ln.strip()]
+    if lines and (m := _FINAL_VERDICT.match(lines[-1])):
+        return m.group(1).upper()
+    for found in ([v.upper() for v in _VERDICT_LINE.findall(text or "")],
+                  [m.group(1).upper() for ln in lines if (m := _BARE_VERDICT.match(ln))]):
+        if found:
+            return "FIX" if "FIX" in found else "PASS"
+    return ""
 
 
 def _qa_audit_passed(verdict: str) -> bool:
@@ -225,14 +257,18 @@ whose scope excludes this procedure (e.g. ICH Q7 covers active substances, not f
 _PIPE_TABLE = re.compile(r"^\s*\|.*\|\s*$")
 _H1 = re.compile(r"^#\s")
 _HNUM = re.compile(r"^#+\s*([0-9]+)(?:\.[0-9]+)*\.?\s")
+# Working notes, not procedure. "The brief visual inspection" and "the records section 7 lists" are procedure:
+# the bare "the brief" and mid-sentence "section N lists" flagged them and sent real text back for deletion
+# (review 14.10.2026). Section phrases count only where the line, or its English half, opens with them.
 _META = re.compile(
-    r"\b(the (content )?brief|i must|i will|i'll|i have|i've|let me|"
-    r"this section (covers|is|must|should|lists|names|contains)|"
-    r"section \d+(\.\d+)? (covers|is|must|should|lists|names|contains))\b", re.I)
+    r"\b(the content brief|i must|i will|i'll|i have|i've|let me)\b|"
+    r"(?:^|\|\|\|\s*)(?:this section|section \d+(?:\.\d+)?) (?:covers|is|must|should|lists|names|contains)\b",
+    re.I)
 _LETTERS = re.compile(r"[A-Za-zЀ-ӿ]")
 # Lines only our own prompts contain. Observed 13.10.2026 (transport run a142b9dd): a lint-repair reply came back as
 # the whole request, then the old section, then the new one, and all of it was inserted "verbatim" into 3.0.
-_ECHO = re.compile(r"Return ONLY the|^CURRENT SECTION\s*$|ENGINE MARKDOWN \(the only grammar|"
+# Anchored to our own sentences: "Return ONLY the signed copy to QA" is procedure (review 14.10.2026).
+_ECHO = re.compile(r"Return ONLY the (?:corrected|bilingual)|^CURRENT SECTION\s*$|ENGINE MARKDOWN \(the only grammar|"
                    r"^(?:Rewrite|REVISE|Draft ONLY) section \d", re.M)
 
 
@@ -244,15 +280,26 @@ _MIXED = re.compile(r"\b(?=\w*[Ѐ-ӿ])(?=\w*[A-Za-z])\w+\b")
 
 def _strip_own_heading(num: str, mk: str, en: str, content: str) -> str:
     """Drop single-# heading lines that repeat this section's own heading (the pipeline writes it).
-    Observed live: "# 2.0 ПОДРАЧЈЕ…|SCOPE", notes, then "# 2 ПОДРАЧЈЕ…|SCOPE" again inside section 2."""
+    Observed live: "# 2.0 ПОДРАЧЈЕ…|SCOPE", notes, then "# 2 ПОДРАЧЈЕ…|SCOPE" again inside section 2.
+
+    Only the section's OWN heading: numbered "N" or "N.0", or unnumbered and naming the section's title as a
+    whole word. A subsection an author wrote with one '#' ("# 6.3 Stage 2") is kept, so the linter can send it
+    back as '## 6.3'; it used to be deleted here, before the linter could see it. A title is matched as a word,
+    not a substring: "ЦЕЛ" is not "Целосна листа", and a heading is dropped only when it is nothing but the
+    title — "# Receipt procedure | Постапка за прием" in section 6 is content (review 14.10.2026)."""
     major = num.split(".")[0]
+    own_num = re.compile(rf"^#\s*{re.escape(major)}(?:\.0)?\.?(?:\s|$)")
+    any_num = re.compile(r"^#\s*[0-9]")
+    titles = {t.strip().lower() for t in (mk, en) if t.strip()}
     keep = []
     for ln in content.splitlines():
         s = ln.strip()
         if _H1.match(s):
-            m = _HNUM.match(s)
-            if (m and m.group(1) == major) or mk.lower() in s.lower() or en.lower() in s.lower():
+            if own_num.match(s):
                 continue
+            parts = {x.strip().lower() for x in s.lstrip("#").split("|") if x.strip()}
+            if not any_num.match(s) and parts and parts <= titles:
+                continue          # "# ПОСТАПКА | PROCEDURE" — not "# Receipt procedure | Постапка за прием"
         keep.append(ln)
     return "\n".join(keep).strip()
 
@@ -291,6 +338,9 @@ def _lint_section(content: str, sop: bool = True) -> list[str]:
         if not in_block and "|||" not in s and len(_LETTERS.findall(s)) >= 15:
             mono.append(s[:90])
     issues = []
+    if not _LETTERS.search(content):
+        # An empty reply passed every other check (the bilingual gate skips anything under 120 letters).
+        return ["the section is empty — write its content"]
     if not sop and re.search(r"(?im)^#{1,3}.*(За потврда|To be confirmed)", content):
         issues.append("a 'To be confirmed' section on an executable form — delete it; open points go to the requester, "
                       "not onto the form that will be filled in")
@@ -319,18 +369,43 @@ def _lint_section(content: str, sop: bool = True) -> list[str]:
     return issues
 
 
-_SEC_REF = re.compile(r"(?:§\s*|\b[Ss]ections?\s+|\b[Сс]екциј[аи]\s+)([1-9])(?:\.[0-9]+)*|\b([1-9])\.[0-9]+\b")
+_SEC_REF = re.compile(r"(?:§\s*|\b[Ss]ections?\s+|\b[Сс]екци(?:ја|и|ите)\s+)([1-9](?:\.[0-9]+)*"
+                      r"(?:\s*(?:,|and|&|и|/)\s*[1-9](?:\.[0-9]+)*)*)|\b([1-9])\.[0-9]+\b")
+# A clause of a regulation or of another document is not a section of this one. An auditor citing
+# "EU GMP Chapter 4.1", "Annex 15 §6", "ICH Q9 4.1" or "A04 2.1" used to send sections 4, 6 and 2 back
+# for a rewrite nobody asked for (found in review 14.10.2026). Those citations are removed first.
+_CLAUSE_CITE = re.compile(
+    r"(?i)(?:\b(?:annex|anhang|chapter|ch\.|part\s+[ivx]+|article|art\.|чл\.?|член|анекс|поглавје|"
+    r"gdp|gmp|ich\s+q\d+(?:\(r\d\))?|q\d+(?:\(r\d\))?|usp|ph\.\s*eur\.?|who\s+trs|trs|iso|version|ver\.|v\.|rev\.?)"
+    r"|\bA\d{2}\b|\b[a-z]{2,}[a-z0-9]*_[0-9a-z_]*[0-9])(?:\s+(?:of\s+)?(?:the\s+)?(?:eu\s+)?(?:gmp|gdp|guidelines?))?\s*(?:no\.?\s*)?(?:§\s*)?"
+    r"\d+(?:\.\d+)*"
+    r"(?:\s*§\s*\d+(?:\.\d+)*)?"                                         # "Annex 11 §4.8"
+    r"(?:\s*(?:and|or|vs\.?|to|–|-|и|или)\s*(?:§\s*)?\d+(?:\.\d+)*)*")    # "A04 2.1 vs 2.2"
 
 
 def _sections_named(audit: str, nums: list[str]) -> list[str]:
     """The sections a FIX verdict talks about; all of them when it names none."""
-    majors = {a or b for a, b in _SEC_REF.findall(audit or "")}
+    majors: set[str] = set()
+    for listed, bare in _SEC_REF.findall(_CLAUSE_CITE.sub(" ", audit or "")):
+        majors.update(re.findall(r"(?<![.\d])([1-9])(?:\.[0-9]+)*", listed) if listed else [bare])
     named = [n for n in nums if n.split(".")[0] in majors]
     return named or list(nums)
 
 
 def _strip_fences(text: str) -> str:
     return _MD_FENCE.sub("", text or "").strip()
+
+
+_HEAD_NOSPACE = re.compile(r"^(#{1,6})(?=[0-9A-Za-zЀ-ӿ])", re.M)
+_HEAD_TRIPLE = re.compile(r"^(#{1,6}\s.*?)\s*\|\|\|\s*", re.M)
+
+
+def _normalise_headings(text: str) -> str:
+    """Headings the engine would misprint. build_from_md splits a heading on its FIRST '|', so an author who
+    writes the prose form "## 6.1 Подготовка ||| Preparation" got "6.1 Подготовка | || Preparation"; and
+    "#6.2 …" without a space is not a heading to the parser but printed its '#' as text (review 14.10.2026)."""
+    text = _HEAD_NOSPACE.sub(r"\1 ", text)
+    return _HEAD_TRIPLE.sub(r"\1 | ", text)
 
 
 def _clean_section(text: str, structured: bool = False) -> str:
@@ -383,7 +458,9 @@ def _clean_section(text: str, structured: bool = False) -> str:
 def _brief(questionnaire_key: str, answers: dict, instructions: str = "", sources: list | None = None) -> str:
     lines = [f"Questionnaire: {questionnaire_key}"]
     for k, v in answers.items():
-        lines.append(f"- {k}: {', '.join(v) if isinstance(v, list) else v}")
+        if v in (None, "", []):
+            continue              # an unanswered question with no default: printing "None" invites the author to
+        lines.append(f"- {k}: {', '.join(map(str, v)) if isinstance(v, list) else v}")
     if (instructions or "").strip():
         lines += ["", "Requester's instructions:", instructions.strip()]
     srcs = [str(x).strip() for x in (sources or []) if str(x).strip()]
@@ -403,6 +480,10 @@ def assemble_markdown(meta: dict, sections: list[dict]) -> str:
         _v = meta.get(_k)
         if _v and "-->" in str(_v):
             raise ValueError(f"meta.{_k} may not contain '-->' (breaks the HEADERDATA block terminator)")
+        # One HEADERDATA line per field: a line break in a value writes a field of its own ("doctype: FORM"),
+        # which builder.build reads first and build_from_md reads last — the two disagree on the document.
+        if _v and ("\n" in str(_v) or "\r" in str(_v)):
+            raise ValueError(f"meta.{_k} may not contain a line break (it would write its own HEADERDATA line)")
     hd = (
         "<!--HEADERDATA\n"
         f"mk_title: {meta['title_mk']}\n"
@@ -461,7 +542,7 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
         finally:
             # Broad catch on purpose: cleanup of a throwaway clone must never abort the job —
             # delete_agent can also raise plain httpx transport errors, and an orphaned tmp agent
-            # is harmless (the next fleet audit sweeps _tmp_ leftovers) while a failed job isn't.
+            # is harmless (ensure_fleet sweeps clones older than fleet.TMP_MAX_AGE) while a failed job isn't.
             try:
                 await client.delete_agent(tmp_id)
             except Exception as e:  # noqa: BLE001
@@ -482,10 +563,13 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
         parent_code = (p.get("parent_sop") or "").strip()
         parent_md = ""
         if parent_code and doctype != "SOP":
-            full = await db.job_latest_markdown_by_code(parent_code)
-            if full:
-                parent_md = _parent_sections(full)
-                knowledge["parent_sop"] = parent_code
+            parent = await db.job_latest_markdown_by_code(parent_code)
+            if parent:
+                parent_md = _parent_sections(parent["markdown"])
+                knowledge["parent_sop"] = {"code": parent_code, "job_id": parent["job_id"], "status": parent["status"]}
+                if parent["status"] != "done":
+                    knowledge["notes"].append(f"parent SOP {parent_code} is not registered: read from job "
+                                              f"{parent['job_id'][:8]} ({parent['status']})")
             else:
                 knowledge["notes"].append(f"parent SOP {parent_code} not found; the form was drafted from the brief only")
         parent_note = (f"PARENT SOP {parent_code}, sections 6 and 7 — the form must hold a field for every item these "
@@ -502,12 +586,17 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
             return "gf_raci_specialist" if s["num"] == "3.0" else "gf_sop_author"
 
         def tidy(s: dict, text: str) -> str:
+            if not _LETTERS.search(_strip_fences(text)) and s.get("content"):
+                # An empty reply (seen from some models) is not a revision either: keep what the section had.
+                log.warning("job %s: empty reply for %s; kept the previous text", job_id, s["num"])
+                ctx.setdefault("empty_rejected", []).append(s["num"])
+                return s["content"]
             if _echoes_prompt(text) and s.get("content"):
                 # A reply that repeats the request is not a revision: keep what the section had.
                 log.warning("job %s: reply for %s echoed the prompt; kept the previous text", job_id, s["num"])
                 ctx.setdefault("echo_rejected", []).append(s["num"])
                 return s["content"]
-            body = _clean_section(text, structured=not sop)
+            body = _normalise_headings(_clean_section(text, structured=not sop))
             return _strip_own_heading(s["num"], s["mk"], s["en"], body) if sop else body
 
         def section_issues(s: dict) -> list[str]:
@@ -530,6 +619,8 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                 issues = section_issues(s)
             if issues:
                 ctx["lint"][s["num"]] = issues
+            else:
+                ctx["lint"].pop(s["num"], None)        # a later repair fixed what an earlier round recorded
 
         # ---- section generation ----
         sections: list[dict] = []
@@ -677,6 +768,16 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                 s["content"] = tidy(s, text)
                 await lint_and_repair(s)
 
+        # Grammar problems the linter proved and the repair rounds did not fix (an echoed prompt, a pipe table,
+        # an empty or monolingual section) used to be recorded and then registered as done on an auditor's PASS
+        # (review 14.10.2026). A person sees them first, or the job fails when review parking is off.
+        if ctx["lint"]:
+            left = ", ".join(sorted(ctx["lint"]))
+            if not settings.fix_to_review:
+                raise LintUnresolved(left)
+            ctx["review_reason"] = ((ctx.get("review_reason", "") + "; ") if ctx.get("review_reason") else "") + \
+                f"grammar problems remain in {left} after the repair rounds (see lint); a person decides"
+
         # ---- format + verify (hard gate — a review never skips it) ----
         await db.job_update(job_id, stage="format")
         # H14 — builder.build is fully synchronous (docx render + verify, tens of seconds); called bare
@@ -714,6 +815,9 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
         log.error("job %s §6A audit did not pass", job_id)
         await db.job_update(job_id, status="failed", error="§6A audit did not pass",
                             result={**ctx, "qa_audit": e.verdict, "qa_verdict": _qa_verdict(e.verdict) or "FIX"})
+    except LintUnresolved as e:
+        log.error("job %s: %s", job_id, e)
+        await db.job_update(job_id, status="failed", error=str(e), result=ctx)
     except BilingualGap as e:
         log.error("job %s bilingual gap: %s", job_id, e.gaps)
         await db.job_update(job_id, status="failed",

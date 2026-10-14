@@ -41,7 +41,10 @@ export interface Questionnaire { key: string; mk: string; en: string; doctype: s
 export type JobStatus = 'queued' | 'running' | 'awaiting_review' | 'done' | 'failed';
 export interface Job {
   id: string; kind: 'workflow' | 'build'; status: JobStatus; stage: string;
-  payload: { questionnaire: string; answers: Record<string, string | string[]>; meta: Record<string, string>; requested_by: string };
+  payload: {
+    questionnaire: string; answers: Record<string, string | string[]>; meta: Record<string, string>; requested_by: string;
+    instructions?: string; sources?: string[]; parent_sop?: string;
+  };
   result: Record<string, unknown>; error: string | null; created_by: string; created_at: string; updated_at: string;
 }
 export interface DocumentRow {

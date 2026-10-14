@@ -32,6 +32,10 @@ COOKIE = "ppdocwiz_session"
 _DERIVE_LABEL = b"ppdocwiz-session-v1"
 
 
+def _b(s: str) -> bytes:
+    return (s or "").encode("utf-8", "surrogateescape")
+
+
 def session_value(key: str) -> str:
     """Deterministic, non-reversible derivation of the cookie value from the key."""
     return hmac.new(key.encode(), _DERIVE_LABEL, hashlib.sha256).hexdigest()
@@ -42,9 +46,10 @@ async def require_api_key(x_api_key: str = Header(default=""),
     if not settings.api_key:
         # Unconfigured service refuses every call rather than running open.
         raise HTTPException(status_code=503, detail="PP Doc Wiz not configured")
-    if hmac.compare_digest(x_api_key, settings.api_key):
+    # Bytes, not str: compare_digest raises TypeError on a non-ASCII str, so a crafted header was a 500.
+    if hmac.compare_digest(_b(x_api_key), _b(settings.api_key)):
         return
     if ppdocwiz_session and hmac.compare_digest(
-            ppdocwiz_session, session_value(settings.api_key)):
+            _b(ppdocwiz_session), _b(session_value(settings.api_key))):
         return
     raise HTTPException(status_code=401, detail="bad api key")
