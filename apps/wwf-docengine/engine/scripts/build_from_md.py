@@ -56,6 +56,10 @@ def parse(md):
                 if ':' in ln:
                     k,v=ln.split(':',1); hd[k.strip()]=v.strip()
             md=md[m.end():]
+        elif hd_start is not None:
+            # No '-->' at all: the header fields used to be printed as SOP body text under an empty title,
+            # whatever doctype they named (review 14.10.2026). A controlled document never ships like that.
+            raise ValueError("HEADERDATA block is not closed: add a line '-->' after its last field")
     blocks=[]; lines=md.splitlines(); i=0
     while i<len(lines):
         s=lines[i].strip()
@@ -76,13 +80,17 @@ def parse(md):
             while i<len(lines):
                 t=lines[i].strip()
                 if t.startswith('[[/'): i+=1; break
-                if t.startswith('[[TABLE') or t.startswith('[[FORM') or t.startswith('#'): break
+                # Any block marker or heading ends a block whose [[/...]] is missing; [[PAGEBREAK]] and [[BOX]]
+                # used to be swallowed as table rows printing their own markers (review 14.10.2026).
+                if t.startswith(('[[TABLE', '[[FORM', '[[BOX', '[[PAGEBREAK', '[[NEWPAGE', '#')): break
                 if t: rows.append([c.strip() for c in lines[i].split('|||')])
                 i+=1
             blocks.append((kind, rows, mode)); continue
         hm=re.match(r'^(#+)\s+(.*)', s)
         if hm:
-            lvl=len(hm.group(1)); mk,en=(hm.group(2).split('|',1)+[''])[:2]; num=''
+            # 'MK ||| EN' (the prose form) is split on '|||' first: split on the first '|' it printed '| || EN'.
+            sep='|||' if '|||' in hm.group(2) else '|'
+            lvl=len(hm.group(1)); mk,en=(hm.group(2).split(sep,1)+[''])[:2]; num=''
             nm=re.match(r'^([0-9]+(?:\.[0-9]+)*\.?)\s+(.*)', mk.strip())
             if nm: num=nm.group(1); mk=nm.group(2)
             blocks.append(('h', lvl, num, mk.strip(), en.strip())); i+=1; continue
@@ -107,9 +115,14 @@ def as_options(rows):
        An option written with ☒ instead of ☐ is the selected one (filled records and examples);
        it is returned as OPTIONS.selected."""
     flat=[c for r in rows for c in r if c.strip()]
+    # Only a block that is NOTHING but options. A labelled field ("Статус на приемот ||| Receipt status ||| ☐ ...")
+    # or a table with a header row used to qualify too, and everything before the first ☐ (the label, a
+    # sibling field, the header) was discarded (review 14.10.2026: WHSOP_003_A01/A04/A05, QASOP_0XX_A04).
+    if not flat or any(not c.lstrip().startswith(('☐', '☒')) for c in flat):
+        return None
     joined=" ".join(flat)
     marks=joined.count('☐')+joined.count('☒')
-    if marks>=2 and len(rows)<=2 and '~~' not in joined and '|||' not in joined:
+    if marks>=2 and len(rows)<=2 and '~~' not in joined:
         found=[(m,o.strip()) for m,o in OPT.findall(joined) if o.strip()]
         if len(found)>=2:
             opts=_Opts(o for _,o in found)
@@ -180,8 +193,9 @@ def emit_form(d, rows, mode=None):
         # A two-cell row 'Label MK~~Label EN ||| value' (a grammar DocEngine once taught its authors)
         # means the same field as the three-cell 'Label MK ||| Label EN ||| value'.
         if len(rd)==2 and '~~' in rd[0]: rd=[*cs(rd[0]), rd[1]]
-        lmk=rd[0] if len(rd)>0 else ''; len_=rd[1] if len(rd)>1 else ''; val=rd[2] if len(rd)>2 else ''
-        val=val if (val and val.strip()!='_') else ''
+        lmk=rd[0] if len(rd)>0 else ''; len_=rd[1] if len(rd)>1 else ''
+        # Cells after the third are the value's other language (".. ||| Испорака ||| Delivery"), not dropped.
+        val=" | ".join(x.strip() for x in rd[2:] if x.strip() and x.strip()!='_')
         vlen=len(val.strip())
         kind='bulk' if vlen>110 else ('span' if vlen>20 else 'short')   # short = fits a half-page pair
         fields.append({'lmk':lmk,'en':len_,'val':val,'kind':kind})
@@ -376,14 +390,25 @@ def build_sop(hd, blocks, out):
             pf.sop_body_row(ensure(), b[1], b[2])
         elif b[0]=='bullet':
             pf.sop_body_row(ensure(), "•  "+b[1], "•  "+b[2])
+        elif b[0]=='pagebreak':
+            # Printed nothing in an SOP until 14.10.2026 (the annex path had it); likewise [[BOX]] below.
+            if t is not None: pf.sop_finalize(t); t=None
+            d.add_page_break(); gap_after=False
+        elif b[0]=='box':
+            if t is not None: pf.sop_finalize(t); t=None
+            pf.spacer(d, 6, keep=prev_heading); emit_box(d, b[1], b[2]); gap_after=True
         elif b[0] in ('table','form'):
             if t is not None: pf.sop_finalize(t); t=None      # close two-col table; table goes full width
             rows=b[1]
             if not rows: continue
             pf.spacer(d, 6, keep=prev_heading)                 # air above; also stops the tables fusing
             gap_after=True
-            headers=[cs(c) for c in rows[0]]; data=[[cs(c) for c in r] for r in rows[1:]]
+            headers=[cs(c) for c in rows[0]]
             ncol=len(headers)
+            # A row longer than the header crashed the build (IndexError, no document); its extra cells now
+            # join the last column so nothing is lost (review 14.10.2026).
+            rows=[r if len(r)<=ncol else r[:ncol-1]+[" | ".join(x for x in r[ncol-1:] if x.strip())] for r in rows]
+            data=[[cs(c) for c in r] for r in rows[1:]]
             bt=pf.sop_block_table(d, headers, data, [round(PAGE_W/ncol,2)]*ncol)
             pr.fixed(bt, mode='full')                          # full width, like the two-column body; repeat header
     if t is not None: pf.sop_finalize(t)

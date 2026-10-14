@@ -138,3 +138,43 @@ async def test_job_claim_moves_a_job_only_once(dbpool):
     assert await db.job_claim(jid, "awaiting_review", "running") is True
     assert await db.job_claim(jid, "awaiting_review", "running") is False
     assert await status_of(dbpool, jid) == "running"
+
+
+async def seed_doc_job(pool, *, code: str, status: str, age_minutes: int, error: str | None = None) -> str:
+    import json
+    jid = str(uuid.uuid4())
+    await pool.execute(
+        "INSERT INTO docengine.jobs (id, kind, status, error, payload, result, created_at)"
+        " VALUES ($1, 'workflow', $2, $3, $4::jsonb, $5::jsonb, now() - make_interval(mins => $6))",
+        jid, status, error, json.dumps({"meta": {"code": code}}),
+        json.dumps({"markdown": f"# 6.0 {status} {age_minutes}"}), age_minutes)
+    return jid
+
+
+async def test_parent_sop_prefers_the_registered_document_over_newer_drafts(dbpool):
+    """Review 14.10.2026: the newest job of ANY status used to be the parent an annex read, so a failed or
+    returned draft written after the approved SOP replaced it."""
+    done = await seed_doc_job(dbpool, code="WHSOP_003", status="done", age_minutes=600)
+    await seed_doc_job(dbpool, code="WHSOP_003", status="failed", age_minutes=10)
+    await seed_doc_job(dbpool, code="WHSOP_003", status="failed", age_minutes=5, error="returned for revision: §3")
+    await seed_doc_job(dbpool, code="OTHER", status="done", age_minutes=1)
+    got = await db.job_latest_markdown_by_code("WHSOP_003")
+    assert got["job_id"] == done and got["status"] == "done" and got["markdown"].startswith("# 6.0 done")
+
+
+async def test_parent_sop_never_reads_a_returned_draft(dbpool):
+    await seed_doc_job(dbpool, code="X", status="failed", age_minutes=5, error="returned for revision: no")
+    assert await db.job_latest_markdown_by_code("X") is None
+    review = await seed_doc_job(dbpool, code="X", status="awaiting_review", age_minutes=50)
+    await seed_doc_job(dbpool, code="X", status="failed", age_minutes=1, error="sections are not bilingual: 3.0")
+    assert (await db.job_latest_markdown_by_code("X"))["job_id"] == review
+
+
+async def test_the_document_list_tells_controlled_versions_from_copies(dbpool):
+    jid = await db.job_create("workflow", {"meta": {"code": "WHSOP_003"}})
+    base = {"code": "WHSOP_003", "doctype": "SOP", "path": "/x", "bytes": 1, "verify": "RESULT: PASS"}
+    await db.document_create(jid, base)
+    await db.document_create(None, base)
+    rows = await db.documents_list()
+    assert sorted(r["job_id"] is None for r in rows) == [False, True]
+    assert next(r for r in rows if r["job_id"])["job_id"] == jid

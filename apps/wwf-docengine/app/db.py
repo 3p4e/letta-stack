@@ -166,13 +166,15 @@ async def document_create(job_id: str | None, meta: dict) -> str:
 
 async def documents_list(limit: int = 100) -> list[dict]:
     rows = await pool().fetch(
-        "SELECT id, code, doctype, title_mk, title_en, version, bytes, created_at"
+        "SELECT id, job_id, code, doctype, title_mk, title_en, version, bytes, created_at"
         " FROM docengine.documents ORDER BY created_at DESC LIMIT $1", limit,
     )
     out = []
     for r in rows:
         d = dict(r)
         d["id"] = str(d["id"])
+        # The Library tells a controlled version (from a workflow job) from a format-only copy (POST /build).
+        d["job_id"] = str(d["job_id"]) if d["job_id"] else None
         d["created_at"] = d["created_at"].isoformat()
         out.append(d)
     return out
@@ -189,11 +191,18 @@ async def document_get(did: str) -> dict | None:
     return d
 
 
-async def job_latest_markdown_by_code(code: str) -> str | None:
-    """The newest job whose document code is `code` and that holds assembled Markdown — the parent SOP an
-    annex job reads (Head of QC, 13.10.2026: an annex form must capture what the SOP's §6 writes into it)."""
+async def job_latest_markdown_by_code(code: str) -> dict | None:
+    """The parent SOP an annex job reads (Head of QC, 13.10.2026: an annex form must capture what the SOP's
+    §6 writes into it): {markdown, job_id, status} of the best job whose document code is `code`.
+
+    A registered document (done) first, then one awaiting a person's review, then anything else that holds
+    assembled Markdown; newest first within each. A draft a reviewer returned for revision is never used.
+    It used to be simply the newest job of any status, so a failed or returned draft written after the
+    approved SOP became the source of every annex built from then on (review 14.10.2026)."""
     r = await pool().fetchrow(
-        "SELECT result->>'markdown' AS md FROM docengine.jobs"
+        "SELECT id, status, result->>'markdown' AS md FROM docengine.jobs"
         " WHERE payload->'meta'->>'code' = $1 AND result->>'markdown' IS NOT NULL"
-        " ORDER BY created_at DESC LIMIT 1", code)
-    return r["md"] if r else None
+        "   AND NOT (status = 'failed' AND COALESCE(error, '') LIKE 'returned for revision%')"
+        " ORDER BY CASE status WHEN 'done' THEN 0 WHEN 'awaiting_review' THEN 1 ELSE 2 END, created_at DESC"
+        " LIMIT 1", code)
+    return {"markdown": r["md"], "job_id": str(r["id"]), "status": r["status"]} if r else None

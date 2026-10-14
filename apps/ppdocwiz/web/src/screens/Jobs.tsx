@@ -48,7 +48,11 @@ export function Jobs() {
   const job = jobs?.find(j => j.id === jobSel) || jobs?.[0];
   const rerun = async () => {
     if (!job) return;
-    try { const r = await api.startWorkflow({ questionnaire: job.payload.questionnaire, answers: job.payload.answers, meta: job.payload.meta as never, requested_by: job.payload.requested_by }); set({ jobSel: r.job_id }); setIns(null); }
+    // Everything the first run had: an annex re-run without its brief and parent SOP is the generic form the
+    // 13.10.2026 review rejected (review 14.10.2026).
+    const p = job.payload;
+    try { const r = await api.startWorkflow({ questionnaire: p.questionnaire, answers: p.answers, meta: p.meta as never, requested_by: p.requested_by,
+                                              instructions: p.instructions || '', sources: p.sources || [], parent_sop: p.parent_sop || '' }); set({ jobSel: r.job_id }); setIns(null); }
     catch (e) { flash(`${(e as ApiError).status} · ${(e as Error).message}`); }
   };
   usePrimary(job?.status === 'failed' ? 'Re-run ▸' : 'Build ▸', () => job?.status === 'failed' ? rerun() : run(job?.payload.meta.code || 'WHSOP_002_A02', async () => ({ ok: true })));

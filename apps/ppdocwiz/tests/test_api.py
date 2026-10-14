@@ -77,8 +77,10 @@ def test_session_cookie_unlocks_and_is_httponly(client):
 def test_session_cookie_is_derived_not_the_key(client):
     r = client.post("/api/session", json={"key": KEY})
     value = r.cookies.get(security.COOKIE)
-    assert value and value != KEY, "the cookie must not be the API key itself"
-    assert value == security.session_value(KEY)
+    assert value and KEY not in value, "the cookie must not carry the API key"
+    assert security.session_id(value, KEY), "it is a signed session the server accepts"
+    other = client.post("/api/session", json={"key": KEY}).cookies.get(security.COOKIE)
+    assert other != value, "every sign-in is its own session" 
 
 
 def test_session_rejects_a_wrong_key(client):
@@ -224,3 +226,109 @@ def test_pdf_inline_for_preview(client):
     (Path(app_mod.OUT) / "D1.docx").write_bytes(b"x"); (Path(app_mod.OUT) / "D1.pdf").write_bytes(b"%PDF-1.4")
     assert client.get("/api/download/D1.pdf?inline=1", headers=H).headers["content-disposition"].startswith("inline")
     assert client.get("/api/download/D1.pdf", headers=H).headers["content-disposition"].startswith("attachment")
+
+
+# ---------------------------------------------------------------- review 14.10.2026
+def test_non_ascii_key_is_401_not_500(client):
+    """compare_digest raises TypeError on a non-ASCII str; the gate compares bytes now."""
+    r = client.get("/api/doctypes", headers={"X-API-Key": "ключ".encode()})
+    assert r.status_code == 401
+    assert client.post("/api/session", json={"key": "ключ"}).status_code == 401
+
+
+def test_builds_run_one_at_a_time(monkeypatch):
+    """Two sync build routes run on the thread pool together and share sys.argv and the engine's globals."""
+    held = []
+    monkeypatch.setattr(app_mod, "_build_locked", lambda md, base: held.append(app_mod._BUILD_LOCK.locked()) or (True, "", ""))
+    app_mod._build_from_markdown("x", "y")
+    assert held == [True] and not app_mod._BUILD_LOCK.locked()
+
+
+def test_a_bad_wizard_payload_is_422_not_500(client):
+    h = {"X-API-Key": KEY}
+    assert client.post("/api/wizard/preview", headers=h, json={"payload": {"mk_title": None, "sections": []}}).status_code == 422
+    assert client.post("/api/wizard/build", headers=h, json={"payload": {"sections": [{"level": "x"}]}}).status_code == 422
+
+
+def test_build_errors_do_not_return_a_traceback(client, monkeypatch):
+    def boom(md, base):
+        raise RuntimeError("engine broke")
+    monkeypatch.setattr(app_mod, "_build_locked", boom)
+    r = client.post("/api/wizard/build", headers={"X-API-Key": KEY}, json={"payload": {"code": "X", "sections": []}})
+    assert r.status_code == 422 and "Traceback" not in r.text and "RuntimeError: engine broke" in r.json()["error"]
+
+
+def test_raw_markdown_is_bounded(client):
+    r = client.post("/api/build", headers={"X-API-Key": KEY}, json={"markdown": "x" * 400_001})
+    assert r.status_code == 422
+
+
+def test_jobs_rerun_carries_the_brief_and_the_parent_sop():
+    """Re-run sent only questionnaire, answers and meta: an annex re-run lost its brief and parent SOP."""
+    src = (Path(__file__).resolve().parents[1] / "web" / "src" / "screens" / "Jobs.tsx").read_text(encoding="utf-8")
+    rerun = src[src.index("const rerun"):src.index("usePrimary(")]
+    for f in ("instructions:", "sources:", "parent_sop:"):
+        assert f in rerun, f
+
+
+# ---------------------------------------------------------------- session lifetime (review 14.10.2026)
+def test_the_old_fixed_cookie_value_is_no_longer_accepted(client):
+    client.cookies.set(security.COOKIE, security.session_value(KEY))
+    assert client.get("/api/doctypes").status_code == 401
+
+
+def test_an_expired_session_is_refused():
+    import time
+    old = security.issue_session(KEY, now=time.time() - security.SESSION_TTL - 120)
+    assert security.session_id(old, KEY) is None
+    assert security.session_id(security.issue_session(KEY), KEY)
+
+
+def test_a_tampered_session_is_refused():
+    v = security.issue_session(KEY)
+    head, iat, sid, mac = v.split(".")
+    assert security.session_id(f"{head}.{int(iat) + 3600}.{sid}.{mac}", KEY) is None    # extended by hand
+    assert security.session_id(v, "another-key") is None
+
+
+def test_sign_out_ends_the_session_on_the_server(client, monkeypatch, tmp_path):
+    monkeypatch.setattr(security, "REVOKED_FILE", str(tmp_path / "revoked.json"))
+    value = client.post("/api/session", json={"key": KEY}).cookies.get(security.COOKIE)
+    assert client.get("/api/doctypes").status_code == 200
+    r = client.post("/api/session/close", json={})
+    assert r.status_code == 200
+    client.cookies.set(security.COOKIE, value)            # a browser (or a thief) that kept the cookie
+    assert client.get("/api/doctypes").status_code == 401
+
+
+# ---------------------------------------------------------------- chat build links (review 14.10.2026)
+def _letta_turn(md):
+    import json as _j
+    return {"messages": [
+        {"message_type": "tool_call_message",
+         "tool_call": {"name": "build_pp_document", "arguments": _j.dumps({"markdown": md, "out_path": "/data/x.docx"})}},
+        {"message_type": "tool_return_message", "tool_return": _j.dumps({"ok": True, "out_path": "/data/x.docx"})},
+        {"message_type": "assistant_message", "content": "Built it."}]}
+
+
+def test_chat_rebuilds_the_agents_document_here_and_links_to_it(client, monkeypatch):
+    md = ("<!--HEADERDATA\nmk_title: Тест\nen_title: Test\ncode: QCSOP_014_A03\ndoctype: FORM\n-->\n"
+          "# 1 Идентификација | Identification\n[[FORM]]\nДатум ||| Date ||| _\n[[/FORM]]\n")
+    monkeypatch.setenv("LETTA_BASE_URL", "http://letta")
+
+    def fake_letta(method, path, body=None, timeout=90):
+        return [{"id": "a1", "name": "qms_docx_formatter"}] if method == "GET" else _letta_turn(md)
+
+    monkeypatch.setattr(app_mod, "_letta", fake_letta)
+    r = client.post("/api/chat", headers={"X-API-Key": KEY}, json={"message": "build it"})
+    b = r.json()["built"]
+    assert r.status_code == 200 and b["ok"] and b["doc_id"].startswith("QCSOP_014_A03_")
+    assert client.get(b["download_docx"], headers={"X-API-Key": KEY}).status_code == 200   # the file is here
+
+
+def test_chat_without_a_build_offers_no_links(client, monkeypatch):
+    monkeypatch.setenv("LETTA_BASE_URL", "http://letta")
+    monkeypatch.setattr(app_mod, "_letta", lambda m, p, body=None, timeout=90:
+                        [{"id": "a1", "name": "qms_docx_formatter"}] if m == "GET"
+                        else {"messages": [{"message_type": "assistant_message", "content": "hi"}]})
+    assert client.post("/api/chat", headers={"X-API-Key": KEY}, json={"message": "hi"}).json()["built"] is None

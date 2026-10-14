@@ -11,6 +11,8 @@
 from __future__ import annotations
 
 import logging
+import re
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import yaml
@@ -22,6 +24,30 @@ log = logging.getLogger("docengine.fleet")
 FLEET_FILE = Path(__file__).resolve().parents[1] / "agents" / "fleet.yaml"
 # Explicit block limit: the glossary is about 2.5k characters, and a server default could truncate it.
 GLOSSARY_LIMIT = 8000
+# Ephemeral clones (spawn_ephemeral) are deleted after their one exchange; a failed delete leaves one behind.
+# Pipeline comments promised that "the next fleet audit sweeps _tmp_ leftovers" — no such sweep existed, and
+# gf_sop_author_tmp_7abd699c_r1_70 was still on the server three days later (review 14.10.2026). ensure_fleet
+# now sweeps clones older than this. One exchange is bounded by the Letta read timeout (minutes), so a clone
+# this old belongs to no live job.
+TMP_AGENT = re.compile(r"^gf_[a-z0-9_]+_tmp_")
+TMP_MAX_AGE = timedelta(hours=6)
+
+
+def _stale_clones(agents: list[dict], now: datetime | None = None) -> list[dict]:
+    now = now or datetime.now(timezone.utc)
+    out = []
+    for a in agents:
+        if not TMP_AGENT.match(a.get("name") or ""):
+            continue
+        try:
+            created = datetime.fromisoformat(str(a.get("created_at")).replace("Z", "+00:00"))
+        except ValueError:
+            continue  # no readable age: leave it alone
+        if created.tzinfo is None:
+            created = created.replace(tzinfo=timezone.utc)
+        if now - created > TMP_MAX_AGE:
+            out.append(a)
+    return out
 
 
 def load_fleet() -> dict:
@@ -55,7 +81,17 @@ async def ensure_fleet(client: LettaClient | None = None) -> dict:
     client = client or LettaClient()
     spec = load_fleet()
     house_rules = spec["house_rules"].strip()
-    existing = {a.get("name"): a for a in await client.list_agents()}
+    listed = await client.list_agents()
+    stale = _stale_clones(listed)
+    for a in stale:
+        try:
+            await client.delete_agent(a["id"])
+            log.info("swept orphaned clone %s", a.get("name"))
+        except Exception as e:  # noqa: BLE001 — a leftover clone is harmless; the fleet must still come up
+            log.warning("could not sweep orphaned clone %s: %s", a.get("name"), e)
+    swept = {a.get("id") for a in stale}
+    listed = [a for a in listed if a.get("id") not in swept]
+    existing = {a.get("name"): a for a in listed}
     sources = {s.get("name"): s.get("id") for s in await client.list_sources()}
     model, embedding = _resolve_model(spec, list(existing.values()))
 

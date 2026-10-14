@@ -354,7 +354,7 @@ async def test_bilingual_sections_still_reach_the_build(monkeypatch):
                 return "PASS"
             if "Check this drafted section" in prompt:
                 return "NO-FINDING"
-            return f"{_MK}|{_EN}"
+            return f"{_MK} ||| {_EN}"
 
     await run_workflow("job-1", client=BilingualClient())
     assert updates[-1]["status"] == "done"
@@ -701,3 +701,209 @@ def test_questionnaire_label_uses_metod_not_metoda():
     from app.questionnaires import QUESTIONNAIRES
     import json
     assert "метода" not in json.dumps(QUESTIONNAIRES, ensure_ascii=False)
+
+
+# ---- review 14.10.2026 ----
+
+def test_sections_named_ignores_clause_numbers_of_regulations_and_annexes():
+    """'Chapter 4.1', 'Annex 15 §6.1', 'ICH Q9 4.1', 'A04 2.1 vs 2.2' are clauses of other documents: they used
+    to send sections 2 and 4 back for a rewrite the audit never asked for."""
+    nums = [f"{n}.0" for n in range(1, 10)]
+    audit = ("Section 6 misses the hand-over temperature. EU GMP Chapter 4.1 is cited correctly. Annex 15 §6.1 cited. "
+             "ICH Q9 4.1. A04 2.1 vs 2.2. Annex 11 §4.8. EU GMP Part I §4.11. чл. 63 ст. 1.\nVERDICT: FIX")
+    assert _sections_named(audit, nums) == ["6.0"]
+    assert _sections_named("- 5.2: GDP missing from 5.2\n- 8.0 lists WHSOP_002\nGDP 9.2 says so", nums) == ["5.0", "8.0"]
+
+
+def test_strip_own_heading_keeps_content_headings_and_misnumbered_subsections():
+    # 'ЦЕЛ' is the section title, not a substring to hunt for: "Целосна листа" is content.
+    assert _strip_own_heading("1.0", "ЦЕЛ", "PURPOSE", "# Целосна листа | Full list\nа ||| b").startswith("# Целосна")
+    body = "# 6.0 ПОСТАПКА|PROCEDURE\n# 6 ПОСТАПКА|PROCEDURE\n# 6.3 Фаза 2 | Stage 2\n# ПОСТАПКА | PROCEDURE\nа ||| b"
+    out = _strip_own_heading("6.0", "ПОСТАПКА", "PROCEDURE", body)
+    assert out == "# 6.3 Фаза 2 | Stage 2\nа ||| b"          # kept, so the linter sends it back as '## 6.3'
+    assert any("single-'#' heading" in i for i in _lint_section(out))
+
+
+def test_meta_with_a_line_break_cannot_write_its_own_headerdata_line():
+    import app.pipeline as p
+    with pytest.raises(ValueError, match="line break"):
+        p.assemble_markdown({"title_mk": "а\ndoctype: FORM", "title_en": "a", "code": "X", "doctype": "SOP"}, [])
+
+
+@pytest.mark.asyncio
+async def test_annex_job_records_which_parent_job_it_read(monkeypatch):
+    updates = _patch_common(monkeypatch)
+    monkeypatch.setattr(builder, "build", lambda *a, **k: _fake_build_result())
+
+    async def job_get(jid):
+        j = _job("annex_form")
+        j["payload"]["parent_sop"] = "WHSOP_003"
+        return j
+
+    async def latest(code):
+        assert code == "WHSOP_003"
+        return {"markdown": "# 6.0 ПОСТАПКА|PROCEDURE\nа ||| b\n# 7.0 ЗАПИСИ|RECORDS\nв ||| c\n",
+                "job_id": "abcdef12-0000-0000-0000-000000000000", "status": "awaiting_review"}
+
+    monkeypatch.setattr(db, "job_get", job_get)
+    monkeypatch.setattr(db, "job_latest_markdown_by_code", latest)
+    seen: list[str] = []
+
+    class Annex(FakeClient):
+        async def send_message(self, agent_id, prompt):
+            seen.append(prompt)
+            if "§6A" in prompt:
+                return "VERDICT: PASS"
+            if "Check this drafted section" in prompt:
+                return "NO-FINDING"
+            return "# 1 Идентификација | Identification\n[[FORM:grid]]\nUTID ||| UTID ||| \n[[/FORM]]"
+
+    await run_workflow("job-1", client=Annex())
+    res = updates[-1]["result"]
+    assert updates[-1]["status"] == "done"
+    assert res["knowledge"]["parent_sop"] == {"code": "WHSOP_003", "job_id": "abcdef12-0000-0000-0000-000000000000",
+                                               "status": "awaiting_review"}
+    assert any("not registered" in n for n in res["knowledge"]["notes"])
+    assert any("PARENT SOP WHSOP_003" in s for s in seen)
+
+
+def test_an_empty_section_is_a_lint_issue():
+    """An empty reply passed every check: no lint issue, and the bilingual gate skips short sections."""
+    assert _lint_section("") == ["the section is empty — write its content"]
+    assert _lint_section("   \n", sop=False) == ["the section is empty — write its content"]
+
+
+def test_a_pass_is_never_read_out_of_prose():
+    """An audit with no verdict line was a PASS when any bullet opened with the word ("- Pass/fail criteria
+    are missing"), and a later "the verdict: PASS" overrode a FIX — either registered a FIX document as done."""
+    assert _qa_verdict("Findings:\n- Section 6.3 lacks a step owner\n- Pass/fail criteria for the balance are missing") == ""
+    assert _qa_verdict("Verdict: FIX\n- missing owner in 7.1\nOnce fixed the verdict: PASS") == "FIX"
+    assert _qa_verdict("Earlier verdict: FIX, now resolved.\nVERDICT: PASS") == "PASS"   # the final line rules
+    assert _qa_verdict("PASS.") == "PASS" and _qa_verdict("fix the heading in 3.2") == ""
+
+
+def test_a_fence_only_reply_is_empty():
+    import app.pipeline as p
+    assert p._clean_section("```markdown\n```") == ""
+    assert p._clean_section("```markdown\nа ||| b\n```") == "а ||| b"
+    assert _lint_section("```") == ["the section is empty — write its content"]
+
+
+@pytest.mark.asyncio
+async def test_lint_left_after_the_repair_rounds_goes_to_a_person(monkeypatch):
+    """A pipe table, an echoed prompt or a monolingual line that survived the repair round was registered as
+    done on an auditor's PASS."""
+    updates = _patch_common(monkeypatch)
+    monkeypatch.setattr(builder, "build", lambda *a, **k: _fake_build_result())
+
+    class Stubborn(FakeClient):
+        async def send_message(self, agent_id, prompt):
+            if "§6A" in prompt:
+                return "VERDICT: PASS"
+            if "Check this drafted section" in prompt:
+                return "NO-FINDING"
+            return "[[FORM:grid]]\nUTID ||| UTID ||| \n[[/FORM]]\n| a | b |\n| c | d |"
+
+    await run_workflow("job-1", client=Stubborn())
+    last = updates[-1]
+    assert last["status"] == "awaiting_review" and "grammar problems remain in 1.0" in last["result"]["review_reason"]
+
+
+def test_parent_sections_keep_section_7_whole():
+    import app.pipeline as p
+    md = "# 6.0 ПОСТАПКА|PROCEDURE\n" + ("а ||| b\n" * 4000) + "# 7.0 ЗАПИСИ|RECORDS\nA04 ||| Манифест\n# 8.0 X|Y\nz ||| z\n"
+    part = p._parent_sections(md, limit=5000)
+    assert len(part) <= 5000 and part.endswith("A04 ||| Манифест") and "shortened" in part and "# 8.0" not in part
+
+
+def test_sections_named_reads_lists_and_skips_codes_and_versions():
+    nums = [f"{n}.0" for n in range(1, 10)]
+    assert _sections_named("Sections 3 and 6 lack EN.", nums) == ["3.0", "6.0"]
+    assert _sections_named("Sections 2, 5 and 8.1 repeat each other.", nums) == ["2.0", "5.0", "8.0"]
+    assert _sections_named("Section 4: bump to version 1.0; QASOP_011 5.2 and WHSOP_003 6.2 are cited.", nums) == ["4.0"]
+
+
+def test_headings_the_engine_would_misprint_are_normalised():
+    import app.pipeline as p
+    assert p._normalise_headings("## 6.1 Подготовка ||| Preparation\nа ||| b") == "## 6.1 Подготовка | Preparation\nа ||| b"
+    assert p._normalise_headings("#6.2 Чекор | Step") == "# 6.2 Чекор | Step"
+
+
+def test_procedure_english_is_not_working_notes():
+    assert _lint_section("Записите ||| The records section 7 lists are kept for 5 years.\n"
+                         "Краток ||| The brief visual inspection is recorded.") == []
+    assert any("working notes" in i for i in _lint_section("Белешка ||| This section covers the scope."))
+
+
+def test_an_unnumbered_heading_is_dropped_only_when_it_is_the_title():
+    assert _strip_own_heading("6.0", "ПОСТАПКА", "PROCEDURE", "# Receipt procedure | Постапка за прием\nА ||| B").startswith("# Receipt")
+    assert _strip_own_heading("6.0", "ПОСТАПКА", "PROCEDURE", "# ПОСТАПКА | PROCEDURE\nА ||| B") == "А ||| B"
+
+
+def test_procedure_text_is_not_an_echo():
+    import app.pipeline as p
+    assert not p._echoes_prompt("Вратете ја САМО потпишаната копија ||| Return ONLY the signed copy to QA")
+    assert p._echoes_prompt("Return ONLY the corrected section body — your reply is inserted verbatim.")
+
+
+def test_the_brief_never_says_none():
+    import app.pipeline as p
+    brief = p._brief("sop_qc", {"focus": None, "techniques": [], "records": ["CoA", 5]})
+    assert "None" not in brief and "techniques" not in brief and "- records: CoA, 5" in brief
+
+
+def test_glossary_lookbehinds_hold_across_a_line_break():
+    from app import glossary
+    assert glossary.term_issues("релативна стандардна\nдевијација") == []
+
+
+@pytest.mark.asyncio
+async def test_a_step_that_failed_transiently_repeats_on_a_fresh_clone(monkeypatch):
+    """A timed-out message is not re-sent to the same clone; the step runs again on a new one and the job
+    records the repeat (review 14.10.2026)."""
+    from app.letta import LettaError
+    updates = _patch_common(monkeypatch)
+    monkeypatch.setattr(builder, "build", lambda *a, **k: _fake_build_result())
+    clones, deleted = [], []
+
+    async def spawn(client, agent_name, suffix):
+        clones.append(suffix)
+        return f"tmp-{suffix}"
+
+    monkeypatch.setattr(fleet, "spawn_ephemeral", spawn)
+
+    class Flaky(FakeClient):
+        failed = False
+
+        async def send_message(self, agent_id, prompt):
+            if "Design the" in prompt and not Flaky.failed:
+                Flaky.failed = True
+                raise LettaError("POST /agents/x/messages -> ReadTimeout: slow", transient=True)
+            if "§6A" in prompt:
+                return "VERDICT: PASS"
+            if "Check this drafted section" in prompt:
+                return "NO-FINDING"
+            return "# 1 Идентификација | Identification\n[[FORM:grid]]\nUTID ||| UTID ||| \n[[/FORM]]"
+
+        async def delete_agent(self, agent_id):
+            deleted.append(agent_id)
+
+    await run_workflow("job-1", client=Flaky())
+    last = updates[-1]
+    assert last["status"] == "done"
+    assert last["result"]["retries"][0]["step"] == "10" and "ReadTimeout" in last["result"]["retries"][0]["error"]
+    assert "job-1_10" in clones and "job-1_10_x1" in clones
+    assert "tmp-job-1_10" in deleted and "tmp-job-1_10_x1" in deleted
+
+
+@pytest.mark.asyncio
+async def test_a_refusal_is_not_repeated(monkeypatch):
+    from app.letta import LettaError
+    updates = _patch_common(monkeypatch)
+
+    class Refuses(FakeClient):
+        async def send_message(self, agent_id, prompt):
+            raise LettaError("POST -> 422: bad", status=422)
+
+    await run_workflow("job-1", client=Refuses())
+    assert updates[-1]["status"] == "failed" and "422" in updates[-1]["error"]

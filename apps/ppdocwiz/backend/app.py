@@ -24,11 +24,11 @@ Config (env):
 Run: uvicorn app:app --host 0.0.0.0 --port 8770
 Publish on loopback only and route via Traefik; see docker-compose.yml.
 """
-import asyncio, threading, os, sys, io, re, json, uuid, hmac, tempfile, subprocess, contextlib, shutil, urllib.request, urllib.error, urllib.parse
+import asyncio, logging, threading, os, sys, io, re, json, uuid, hmac, tempfile, subprocess, contextlib, shutil, urllib.request, urllib.error, urllib.parse
 from fastapi import Depends, FastAPI, Request
 from fastapi.responses import FileResponse, JSONResponse, HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import wizard
 import security
 from config import settings
@@ -65,6 +65,7 @@ FRONTEND = os.path.join(HERE, "..", "frontend", "index.html")
 SUITE_UI = os.path.join(HERE, "..", "frontend", "suite")
 
 app = FastAPI(title="PP Doc Wiz", version="1.0")
+log = logging.getLogger("ppdocwiz")
 
 # Static bundle only: hashed JS/CSS, fonts and the logo — no data, no credential.
 # Same exposure as "/" itself, which is ungated because it is the sign-in page.
@@ -86,12 +87,35 @@ class SessionReq(BaseModel):
 
 
 class RawBuildReq(BaseModel):
-    markdown: str
+    # The same bound as DocEngine's POST /build: this is fed whole into the in-process engine.
+    markdown: str = Field(max_length=400_000)
     out_name: str | None = None
+
+
+def _compose(payload: dict):
+    """Wizard payload -> Markdown, or a 422. A null or non-text field (\"mk_title\": null, \"level\": \"x\")
+    raised inside compose_markdown and came back as a bare 500 (review 14.10.2026)."""
+    try:
+        return wizard.compose_markdown(payload), None
+    except (TypeError, ValueError, AttributeError) as e:
+        return None, JSONResponse({"ok": False, "error": f"invalid wizard payload: {type(e).__name__}"}, status_code=422)
+
+
+# One build at a time. /api/wizard/build and /api/build are sync routes, so FastAPI runs them on its thread
+# pool side by side, and a build swaps the process-wide sys.argv for pp_verify, reloads the engine modules and
+# sets the engine's page-width global. Two at once: build A's pp_verify could parse build B's argv and report
+# B's PASS for A, or a module reload could land mid-build (review 14.10.2026). DocEngine's builder has held
+# the same lock (_BUILD_LOCK) for the same reason since it was written.
+_BUILD_LOCK = threading.Lock()
 
 
 def _build_from_markdown(md: str, base: str):
     """Run the engine in-process: markdown -> .docx + verify. Returns (ok, verify, docx_path)."""
+    with _BUILD_LOCK:
+        return _build_locked(md, base)
+
+
+def _build_locked(md: str, base: str):
     out = os.path.join(OUT, base + ".docx")
     with tempfile.NamedTemporaryFile("w", suffix=".md", delete=False, encoding="utf-8") as f:
         f.write(md); src = f.name
@@ -136,12 +160,21 @@ def open_session(r: SessionReq):
     so an XSS in the frontend has no credential to steal."""
     if not settings.api_key:
         return JSONResponse({"ok": False, "error": "not configured"}, status_code=503)
-    if not hmac.compare_digest(r.key, settings.api_key):
+    if not hmac.compare_digest(r.key.encode("utf-8", "surrogateescape"), settings.api_key.encode()):
         return JSONResponse({"ok": False, "error": "bad key"}, status_code=401)
     resp = JSONResponse({"ok": True})
-    resp.set_cookie(security.COOKIE, security.session_value(settings.api_key),
+    resp.set_cookie(security.COOKIE, security.issue_session(settings.api_key),
                     httponly=True, samesite="strict",
-                    secure=settings.cookie_secure, max_age=8 * 3600, path="/")
+                    secure=settings.cookie_secure, max_age=security.SESSION_TTL, path="/")
+    return resp
+
+
+@app.post("/api/session/close", dependencies=[Depends(security.require_api_key)])
+def close_session(request: Request):
+    """Sign out: the session is refused from now on, on the server, even if the browser kept the cookie."""
+    security.revoke(request.cookies.get(security.COOKIE, ""), settings.api_key)
+    resp = JSONResponse({"ok": True})
+    resp.delete_cookie(security.COOKIE, path="/", httponly=True, samesite="strict", secure=settings.cookie_secure)
     return resp
 
 
@@ -157,12 +190,15 @@ def example():
 
 @app.post("/api/wizard/preview", dependencies=[Depends(security.require_api_key)])
 def preview(r: BuildReq):
-    return {"markdown": wizard.compose_markdown(r.payload)}
+    md, bad = _compose(r.payload)
+    return bad or {"markdown": md}
 
 
 @app.post("/api/wizard/build", dependencies=[Depends(security.require_api_key)])
 def build(r: BuildReq):
-    md = wizard.compose_markdown(r.payload)
+    md, bad = _compose(r.payload)
+    if bad:
+        return bad
     # _safe_name, not the old two .replace() calls: those stripped "/" and " "
     # but left quotes and angle brackets intact, and this value is returned as
     # download_docx and interpolated into an href="..." by the frontend. A code
@@ -172,8 +208,9 @@ def build(r: BuildReq):
     try:
         ok, verify, path = _build_from_markdown(md, doc_id)
     except Exception as e:
-        import traceback
-        return JSONResponse({"ok": False, "error": traceback.format_exc()[-900:], "markdown": md}, status_code=422)
+        # The traceback goes to the log, not to the client: it carried container paths and engine internals.
+        log.exception("wizard build failed")
+        return JSONResponse({"ok": False, "error": f"{type(e).__name__}: {str(e)[:300]}", "markdown": md}, status_code=422)
     if not ok:
         _discard(path)
     return {"ok": ok, "verify": verify, "doc_id": doc_id, "markdown": md,
@@ -249,7 +286,7 @@ def download(name: str, inline: int = 0):
                 with _RENDER_LOCK:
                     if not os.path.exists(pdf):
                         _render_pdf(docx, pdf)
-            except subprocess.TimeoutExpired:
+            except (subprocess.TimeoutExpired, pp_render.RenderTimeout):
                 return JSONResponse({"error": "PDF rendering timed out"}, status_code=504)
             except pp_render.RenderError as e:
                 return JSONResponse({"error": str(e)[:300]}, status_code=502)
@@ -270,6 +307,48 @@ def _letta(method, path, body=None, timeout=90):
     if tok: req.add_header("Authorization", "Bearer " + tok)
     raw = urllib.request.urlopen(req, timeout=timeout).read().decode()
     return json.JSONDecoder().raw_decode(raw)[0] if raw.strip() else {}
+
+
+def _chat_built_markdown(msgs: list) -> str | None:
+    """The Markdown the agent passed to its build tool in this turn (the last call), or None.
+
+    The agent's tool writes its .docx on the agent's own host; this container never has that file, so the links
+    the chat used to offer (/api/download/<agent's basename>) were always 404, and the in-process tool returns
+    `out_path`, not `path`, so the build card rarely even showed (review 14.10.2026)."""
+    found = None
+    for m in msgs:
+        if m.get("message_type") != "tool_call_message":
+            continue
+        calls = m.get("tool_calls") or ([m["tool_call"]] if m.get("tool_call") else [])
+        for c in calls:
+            fn = c.get("function") or c
+            if not str(fn.get("name", "")).startswith("build_pp_document"):
+                continue
+            args = fn.get("arguments") or {}
+            if isinstance(args, str):
+                try:
+                    args = json.loads(args)
+                except ValueError:
+                    continue
+            if isinstance(args, dict) and isinstance(args.get("markdown"), str) and args["markdown"].strip():
+                found = args["markdown"]
+    return found
+
+
+def _rebuild_chat_document(md: str) -> dict:
+    """Build the agent's Markdown here, with this container's engine and gate, so the links are real."""
+    code = ((re.search(r"^code:\s*(.+)$", md, re.M) or [None, ""])[1] or "chat").strip()
+    doc_id = _safe_name(code) + "_" + uuid.uuid4().hex[:8]
+    try:
+        ok, verify, path = _build_from_markdown(md, doc_id)
+    except Exception as e:  # noqa: BLE001 — the reply still reaches the user; the card says why there is no file
+        log.exception("chat rebuild failed")
+        return {"ok": False, "doc_id": doc_id, "verify": f"{type(e).__name__}: {str(e)[:300]}"}
+    if not ok:
+        _discard(path)
+        return {"ok": False, "doc_id": doc_id, "verify": verify}
+    return {"ok": True, "doc_id": doc_id, "verify": verify,
+            "download_docx": f"/api/download/{doc_id}.docx", "download_pdf": f"/api/download/{doc_id}.pdf"}
 
 
 @app.post("/api/chat", dependencies=[Depends(security.require_api_key)])
@@ -294,16 +373,12 @@ def chat(r: ChatReq):
             return JSONResponse({"ok": False, "error": f"agent '{name}' not found"}, status_code=404)
         run = _letta("POST", f"/v1/agents/{aid}/messages", {"messages": [{"role": "user", "content": r.message}]}, timeout=180)
         msgs = run.get("messages", run if isinstance(run, list) else [])
-        reply, built = "", None
+        reply = ""
         for m in msgs:
-            mt = m.get("message_type")
-            if mt == "assistant_message":
+            if m.get("message_type") == "assistant_message":
                 reply = m.get("content") if isinstance(m.get("content"), str) else reply
-            elif mt == "tool_return_message":
-                try:
-                    tr = json.loads(m.get("tool_return", "{}"))
-                    if tr.get("ok") and tr.get("path"): built = tr
-                except Exception: pass
+        md = _chat_built_markdown(msgs)
+        built = _rebuild_chat_document(md) if md else None
         return {"ok": True, "agent": name, "reply": reply or "(no assistant text)", "built": built}
     except urllib.error.HTTPError as e:
         return JSONResponse({"ok": False, "error": f"letta {e.code}: {e.read().decode()[:200]}"}, status_code=502)

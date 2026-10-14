@@ -6,13 +6,13 @@ import { Banner, Caps, Seg } from '../components/ui';
 import { SAMPLE_ANNEX, SAMPLE_SOP } from '../data/samples';
 import { diffLines } from '../lib/diff';
 import { usePrimary } from '../lib/usePrimary';
+import { controlled, rankVersions } from '../lib/registry';
 import { lineColor, nbsp } from '../lib/verify';
 import { useApp } from '../store/store';
 import { C, MONO, T } from '../theme';
 
 type Row = DocumentRow & { parent?: string; source?: string; supersedes?: string };
 const when = (iso: string) => { const d = new Date(iso), m = (Date.now() - +d) / 60000; return m < 2 ? 'just now' : m < 1440 && d.getDate() === new Date().getDate() ? 'today ' + d.toTimeString().slice(0, 5) : m < 2880 ? 'yesterday' : d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }); };
-const vnum = (v: string) => parseFloat(v.replace(',', '.')) || 0;
 const src = (r: Row) => r.source || (r.job_id ? 'job ' + r.job_id.slice(0, 8) : 'build');
 
 export function Library() {
@@ -29,7 +29,7 @@ export function Library() {
   const [cmpDocs, setCmpDocs] = useState<[Row, Row] | null>(null);
   useEffect(() => { api.documents().then(r => { setRows(r); setErr(''); }).catch((e: ApiError) => setErr(`${e.status} · ${e.message}`)); }, [api, dataRev]);
 
-  const byCode = useMemo(() => { const m: Record<string, Row[]> = {}; (rows || []).forEach(r => (m[r.code] ||= []).push(r)); Object.values(m).forEach(v => v.sort((a, b) => vnum(b.version) - vnum(a.version) || Date.parse(b.created_at) - Date.parse(a.created_at))); return m; }, [rows]);
+  const byCode = useMemo(() => { const m: Record<string, Row[]> = {}; (rows || []).forEach(r => (m[r.code] ||= []).push(r)); Object.keys(m).forEach(k => { m[k] = rankVersions(m[k]); }); return m; }, [rows]);
   const list = (rows || []).filter(r => allVersions || byCode[r.code][0].id === r.id)
     .filter(r => !q || (r.code + ' ' + r.title_mk + ' ' + r.title_en + ' ' + r.doctype).toLowerCase().includes(q.toLowerCase()));
   // an older version picked in the Versions tab is not in the 'latest' list: look it up in all rows
@@ -93,10 +93,10 @@ export function Library() {
             title="Gotenberg renders on demand: 503 when no renderer is configured, 502 when conversion fails" style={{ flex: 1, textAlign: 'center', border: `1px solid ${T.control}`, borderRadius: 6, padding: 9, color: missing ? T.faint : '#fff', textDecoration: 'none', pointerEvents: missing ? 'none' : undefined }}>PDF · Gotenberg</a></div>
         {r.job_id && <span onClick={() => go('jobs', { jobSel: r.job_id! })} style={{ textAlign: 'center', color: C.run, cursor: 'pointer', fontSize: 12.5 }}>Open source job {r.job_id.slice(0, 8)} →</span>}
       </> : <>
-        <div style={{ fontSize: 12, color: T.muted, lineHeight: 1.45 }}>The registry keys on <span style={{ fontFamily: MONO }}>code</span>: every passed build of {r.code} is kept. The newest approved row is effective; older rows are superseded, never deleted.</div>
+        <div style={{ fontSize: 12, color: T.muted, lineHeight: 1.45 }}>The registry keys on <span style={{ fontFamily: MONO }}>code</span>: every passed build of {r.code} is kept. The newest approved row is effective; older rows are superseded, never deleted. A Formatter build (no workflow job) is a format-only copy and never effective.</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>{versions.map((v, i) => <div key={v.id} style={{ display: 'grid', gridTemplateColumns: '14px 1fr auto', gap: 8, alignItems: 'start' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%' }}><span style={{ width: 10, height: 10, borderRadius: '50%', marginTop: 4, background: i === 0 ? C.ok : 'transparent', border: `2px solid ${i === 0 ? C.ok : T.faint}` }} />{i < versions.length - 1 && <span style={{ flex: 1, width: 2, background: T.control, minHeight: 26 }} />}</div>
-          <div onClick={() => set({ libSel: v.id })} style={{ cursor: 'pointer', paddingBottom: 10 }}><div style={{ fontFamily: MONO, fontSize: 12.5, color: v.id === r.id ? '#fff' : T.text, fontWeight: v.id === r.id ? 700 : 400 }}>v{v.version} <span style={{ color: i === 0 ? C.ok : T.muted, fontWeight: 400, fontSize: 11 }}>{i === 0 ? 'effective' : 'superseded by v' + versions[i - 1].version}</span></div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%' }}><span style={{ width: 10, height: 10, borderRadius: '50%', marginTop: 4, background: i === 0 && controlled(v) ? C.ok : 'transparent', border: `2px solid ${i === 0 && controlled(v) ? C.ok : T.faint}` }} />{i < versions.length - 1 && <span style={{ flex: 1, width: 2, background: T.control, minHeight: 26 }} />}</div>
+          <div onClick={() => set({ libSel: v.id })} style={{ cursor: 'pointer', paddingBottom: 10 }}><div style={{ fontFamily: MONO, fontSize: 12.5, color: v.id === r.id ? '#fff' : T.text, fontWeight: v.id === r.id ? 700 : 400 }}>v{v.version} <span style={{ color: i === 0 && controlled(v) ? C.ok : T.muted, fontWeight: 400, fontSize: 11 }}>{!controlled(v) ? 'format-only copy · not a controlled version' : i === 0 ? 'effective' : 'superseded by v' + versions[i - 1].version}</span></div>
             <div style={{ fontSize: 11.5, color: T.muted }}>{when(v.created_at)} · {nbsp(v.bytes)} B · {src(v)}{v.supersedes ? ' · supersedes ' + v.supersedes.split(' ').pop() : ''}</div></div>
           {i < versions.length - 1 ? <span onClick={() => setCmp([versions[i + 1].id, v.id])} style={{ fontSize: 11.5, color: C.run, cursor: 'pointer', whiteSpace: 'nowrap' }}>diff ← v{versions[i + 1].version}</span> : <span />}</div>)}</div>
         {cmpDocs && <><Caps>DIFF · v{cmpDocs[0].version} → v{cmpDocs[1].version}</Caps>

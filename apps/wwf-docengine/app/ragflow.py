@@ -66,9 +66,14 @@ class RagflowClient:
             raise RagflowError(f"RAGFlow unreachable: {e}") from e
         if r.status_code != 200:
             raise RagflowError(f"RAGFlow HTTP {r.status_code}: {r.text[:200]}")
-        j = r.json()
+        try:
+            j = r.json()
+        except ValueError as e:
+            raise RagflowError(f"RAGFlow returned non-JSON: {r.text[:120]!r}") from e
+        if not isinstance(j, dict):
+            raise RagflowError("RAGFlow returned an unexpected body")
         if j.get("code", 0) != 0:
-            raise RagflowError(f"RAGFlow error {j.get('code')}: {j.get('message', '')[:200]}")
+            raise RagflowError(f"RAGFlow error {j.get('code')}: {str(j.get('message') or '')[:200]}")
         out = []
         for ch in (j.get("data") or {}).get("chunks", []):
             pos = ch.get("positions") or []

@@ -13,7 +13,7 @@ import pp_render  # noqa: E402
 
 class _Stub(BaseHTTPRequestHandler):
     seen = {}
-    reply = b"%PDF-1.7 stub"
+    reply = b"%PDF-1.7 /BaseFont/AAAAAA+Calibri stub"
 
     def do_POST(self):
         n = int(self.headers["Content-Length"])
@@ -37,7 +37,9 @@ def gotenberg(monkeypatch):
 
 @pytest.fixture
 def docx(tmp_path):
-    p = tmp_path / "in.docx"; p.write_bytes(b"PK\x03\x04 fake docx"); return str(p)
+    from docx import Document          # a real document: the renderer now checks the fonts it declares
+    d = Document(); r = d.add_paragraph().add_run("Текст | Text"); r.font.name = "Calibri"
+    p = tmp_path / "in.docx"; d.save(p); return str(p)
 
 
 def test_gotenberg_request(gotenberg, docx, tmp_path, monkeypatch):
@@ -48,7 +50,7 @@ def test_gotenberg_request(gotenberg, docx, tmp_path, monkeypatch):
     assert s["path"] == "/forms/libreoffice/convert" and s["ctype"].startswith("multipart/form-data")
     assert b'name="updateIndexes"\r\n\r\ntrue' in s["body"] and b'filename="in.docx"' in s["body"]
     assert s["auth"] == "Basic cHA6cw=="          # pp:s
-    assert out.read_bytes() == b"%PDF-1.7 stub"
+    assert out.read_bytes() == b"%PDF-1.7 /BaseFont/AAAAAA+Calibri stub"
 
 
 def test_non_pdf_reply_is_an_error(gotenberg, docx, tmp_path, monkeypatch):
@@ -59,7 +61,10 @@ def test_non_pdf_reply_is_an_error(gotenberg, docx, tmp_path, monkeypatch):
 
 def test_auto_falls_back_to_local_when_gotenberg_unreachable(docx, tmp_path, monkeypatch):
     monkeypatch.setenv("GOTENBERG_URL", "http://127.0.0.1:9")
-    monkeypatch.setattr(pp_render, "render_local", lambda d, p: "local")
+    def local(d, p):
+        open(p, "wb").write(b"%PDF-1.7 /BaseFont/AAAAAA+Calibri-Bold")
+        return "local"
+    monkeypatch.setattr(pp_render, "render_local", local)
     assert pp_render.render_pdf(docx, str(tmp_path / "o.pdf")) == "local"
 
 
@@ -68,3 +73,31 @@ def test_no_renderer_names_both_reasons(docx, tmp_path, monkeypatch):
     monkeypatch.setattr(pp_render.shutil, "which", lambda name: None)
     with pytest.raises(pp_render.RenderError, match="no local LibreOffice"):
         pp_render.render_pdf(docx, str(tmp_path / "o.pdf"))
+
+
+def test_a_local_timeout_is_a_render_error_and_kills_the_group(docx, tmp_path, monkeypatch):
+    """A timeout escaped as subprocess.TimeoutExpired (outside the RenderError contract) and killed only the
+    soffice wrapper, leaving soffice.bin running on a deleted profile (review 14.10.2026)."""
+    import shutil
+    import subprocess
+    fake = tmp_path / "bin"
+    fake.mkdir()
+    (fake / "soffice").write_text("#!/bin/sh\nsleep 30 &\nwait\n")
+    (fake / "soffice").chmod(0o755)
+    monkeypatch.setenv("PATH", f"{fake}{os.pathsep}{os.environ['PATH']}")
+    assert shutil.which("soffice") == str(fake / "soffice")
+    with pytest.raises(pp_render.RenderTimeout):
+        pp_render.render_local(docx, str(tmp_path / "o.pdf"), timeout=1)
+    left = subprocess.run(["pgrep", "-f", "sleep 30"], capture_output=True, text=True).stdout.split()
+    assert not left, "the renderer's child process outlived the timeout"
+
+
+# ---------------------------------------------------------------- font substitution (review 14.10.2026)
+def test_a_pdf_printed_with_substitute_fonts_is_refused_and_removed(gotenberg, docx, tmp_path, monkeypatch):
+    """Every PDF rendered where Calibri and Arial Narrow are not installed carried Carlito and Inter instead,
+    against the 10.10.2026 ruling: never accept a substitute."""
+    monkeypatch.setattr(_Stub, "reply", b"%PDF-1.7 /BaseFont/AAAAAA+Carlito-Regular /BaseFont/BAAAAA+DejaVuSans")
+    out = tmp_path / "out.pdf"
+    with pytest.raises(pp_render.RenderError, match="substitute fonts.*Calibri"):
+        pp_render.render_pdf(docx, str(out))
+    assert not out.exists(), "a refused PDF is never left behind"

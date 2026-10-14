@@ -29,7 +29,8 @@ export interface BuildResult {
   ok: boolean; verify: string; doc_id: string; markdown: string;
   download_docx: string; download_pdf: string; error?: string;
 }
-export interface ChatBuilt { ok: boolean; path: string; [k: string]: unknown }
+/** The agent's document, rebuilt by PP Doc Wiz from the Markdown the agent sent to its build tool. */
+export interface ChatBuilt { ok: boolean; doc_id: string; verify: string; download_docx?: string; download_pdf?: string }
 export interface ChatResult { ok: boolean; agent: string; reply: string; built: ChatBuilt | null }
 
 // ---- docengine ----
@@ -41,7 +42,10 @@ export interface Questionnaire { key: string; mk: string; en: string; doctype: s
 export type JobStatus = 'queued' | 'running' | 'awaiting_review' | 'done' | 'failed';
 export interface Job {
   id: string; kind: 'workflow' | 'build'; status: JobStatus; stage: string;
-  payload: { questionnaire: string; answers: Record<string, string | string[]>; meta: Record<string, string>; requested_by: string };
+  payload: {
+    questionnaire: string; answers: Record<string, string | string[]>; meta: Record<string, string>; requested_by: string;
+    instructions?: string; sources?: string[]; parent_sop?: string;
+  };
   result: Record<string, unknown>; error: string | null; created_by: string; created_at: string; updated_at: string;
 }
 export interface DocumentRow {

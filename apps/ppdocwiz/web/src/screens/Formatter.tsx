@@ -5,14 +5,17 @@ import { ApiError } from '../api/types';
 import { PPPage } from '../components/PPPage';
 import { Banner, Caps, PaneHead, Seg, stamp, StampRail } from '../components/ui';
 import { SAMPLE_ANNEX } from '../data/samples';
-import { blocksToMd, docxBlocks, textBlocks, unzipEntry } from '../lib/docparse';
+import { blocksToMd, docxBlocks, headerMeta, textBlocks, unzipEntry } from '../lib/docparse';
+import { guessMeta, metaProblems, type RegMeta } from '../lib/registry';
 import { usePrimary } from '../lib/usePrimary';
 import { nbsp } from '../lib/verify';
 import { useApp } from '../store/store';
 import { C, MONO, T } from '../theme';
 
 type F = { name: string; size: number } & ReturnType<typeof blocksToMd>;
-const useF = create<{ file: F | null; err: string; paste: string; pasteOpen: boolean; out: string }>(() => ({ file: null, err: '', paste: '', pasteOpen: false, out: '' }));
+const NO_META: RegMeta = { code: '', title_mk: '', title_en: '', version: '01' };
+const useF = create<{ file: F | null; err: string; paste: string; pasteOpen: boolean; out: string; meta: RegMeta }>(() => ({ file: null, err: '', paste: '', pasteOpen: false, out: '', meta: NO_META }));
+const xmlText = (xml: string) => xml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
 const SAMPLE_MD: { t: string; lab?: string; c?: string; fw?: number; lc?: string; bg?: string }[] = [
   { t: '# 1 Пратка | Consignment', lab: 'heading · 0.97', c: C.run, fw: 700 }, { t: '[[FORM]]', lab: 'form · 0.92', c: T.purple },
   { t: 'MRN на царинска декларација ||| Customs declaration MRN ||| _' }, { t: 'Датум/време на пристигнување ||| Arrival date/time ||| _' }, { t: 'Температура при пристигнување ||| Arrival temperature ||| _' },
@@ -24,28 +27,37 @@ const Colored = ({ t }: { t: string }) => <>{t.split(/(\|\|\||~~)/).map((p, i) =
 
 export function Formatter() {
   const { fmt, set, run, api } = useApp();
-  const { file: F, err, paste, pasteOpen, out } = useF();
+  const { file: F, err, paste, pasteOpen, out, meta } = useF();
   const [drag, setDrag] = useState(false);
   const load = async (file?: File) => {
     if (!file) return;
     useF.setState({ err: '' });
     try {
-      let blocks;
-      if (/\.docx$/i.test(file.name)) blocks = docxBlocks(await unzipEntry(await file.arrayBuffer(), 'word/document.xml'));
-      else if (/\.(md|txt)$/i.test(file.name)) blocks = textBlocks(await file.text());
+      let blocks, header: Record<string, string> = {}, text = '';
+      if (/\.docx$/i.test(file.name)) {
+        const buf = await file.arrayBuffer(), doc = await unzipEntry(buf, 'word/document.xml');
+        blocks = docxBlocks(doc);
+        // The document code is printed in the page header of a controlled document; read it from there first.
+        for (const h of ['word/header1.xml', 'word/header2.xml', 'word/header3.xml']) { try { text += xmlText(await unzipEntry(buf, h)) + ' '; } catch { /* no such header */ } }
+        text += xmlText(doc);
+      } else if (/\.(md|txt)$/i.test(file.name)) { text = await file.text(); header = headerMeta(text); blocks = textBlocks(text.replace(/^<!--HEADERDATA[\s\S]*?^-->\s*/m, '')); }
       else throw new Error('Unsupported type — use .docx, .md or .txt');
       if (!blocks.length) throw new Error('No text found in ' + file.name);
-      useF.setState({ file: { name: file.name, size: file.size, ...blocksToMd(blocks) }, out: '' });
+      // Code, titles and version come from the document, never from the file name (review 14.10.2026).
+      useF.setState({ file: { name: file.name, size: file.size, ...blocksToMd(blocks) }, out: '', meta: guessMeta(header, text) });
     } catch (e) { useF.setState({ err: String((e as Error).message || e) }); }
   };
-  const stem = F ? F.name.replace(/\.[^.]+$/, '') : 'WHSOP_002_A02';
+  const stem = meta.code || 'Formatter';
   const build = () => run(stem, async () => {
     // Live mode never builds the on-screen sample: it would be registered in the real Library.
     if (api.mode === 'live' && !F && fmt === 'B') { useF.setState({ out: 'Nothing to build: load a .docx, .md or .txt, or paste text. The sample on screen is a layout example and is never built in live mode.' }); return { ok: false, failAt: 0, msg: 'no input' }; }
     if (fmt === 'C') { useF.setState({ out: api.mode === 'live' ? '501 · Mode C restyles a .docx in place (pp_format) and has no HTTP route yet; use the engine CLI.' : 'Restyled in place · every w:t preserved · RESULT: PASS' }); return api.mode === 'live' ? { ok: false, failAt: 1, msg: 'RESULT: FAIL · 501' } : { ok: true }; }
     if (F && /…EN|…МК/.test(F.markdown)) { useF.setState({ out: 'Not built: some headings or paragraphs have only one language (marked …EN / …МК). Add the missing half in the source, then build.' }); return { ok: false, failAt: 0, msg: 'bilingual gap' }; }
+    const need = metaProblems(meta);
+    if (need.length) { useF.setState({ out: 'Not built: a registered document needs ' + need.join(', ') + '. Fill them in under Input.' }); return { ok: false, failAt: 0, msg: 'document code or title missing' }; }
     const md = F ? F.markdown : SAMPLE_MD.filter(l => !l.bg && l.t !== '…').map(l => l.t).join('\n');
-    try { const r = await api.directBuild(`<!--HEADERDATA\ncode: ${stem}\ndoctype: ANNEX\n-->\n\n` + md, stem, { code: stem, source: 'build · Mode B' }); useF.setState({ out: r.verify.split('\n').pop() + ` · registered ${String(r.document_id).slice(0, 8)}` }); return { ok: true }; }
+    const hd = `<!--HEADERDATA\nmk_title: ${meta.title_mk.trim()}\nen_title: ${meta.title_en.trim()}\ncode: ${meta.code.trim()}\nversion: ${meta.version.trim()}\ndoctype: ANNEX\n-->\n\n`;
+    try { const r = await api.directBuild(hd + md, meta.code.trim(), { code: meta.code.trim(), title_mk: meta.title_mk.trim(), title_en: meta.title_en.trim(), version: meta.version.trim() }); useF.setState({ out: r.verify.split('\n').pop() + ` · registered ${String(r.document_id).slice(0, 8)}` }); return { ok: true }; }
     catch (e) { useF.setState({ out: `${(e as ApiError).status} · ${(e as Error).message}` }); return { ok: false, failAt: 2, msg: `RESULT: FAIL · ${(e as ApiError).status}` }; }
   });
   usePrimary('Build ▸', build);
@@ -68,6 +80,12 @@ export function Formatter() {
       {pasteOpen && <><textarea value={paste} onChange={e => useF.setState({ paste: e.target.value })} placeholder={'# Наслов | Title\nТекст ||| Text'} style={{ height: 110, background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 6, padding: 8, color: '#fff', font: `12px ${MONO}`, resize: 'none', outline: 'none' }} />
         <button onClick={() => { const t = paste.trim(); if (!t) return useF.setState({ err: 'Paste some text first' }); load(new File([t], 'pasted.md', { type: 'text/markdown' })); useF.setState({ pasteOpen: false }); }} style={{ background: T.navy, color: '#fff', border: 0, borderRadius: 6, padding: 7, font: 'inherit', fontWeight: 700, cursor: 'pointer' }}>Use pasted text</button></>}
       {err && <div style={{ fontSize: 12, color: C.bad }}>{err}</div>}
+      {fmt === 'B' && <div style={{ display: 'flex', flexDirection: 'column', gap: 5, fontSize: 12 }}>
+        <span style={{ color: T.muted }}>Registered as · from the document, never the file name</span>
+        {([['code', 'Code · WHSOP_003_A04'], ['title_mk', 'Наслов (МК)'], ['title_en', 'Title (EN)'], ['version', 'Version']] as const).map(([k, ph]) =>
+          <input key={k} data-field={'reg_' + k} value={meta[k]} placeholder={ph} onChange={e => useF.setState({ meta: { ...meta, [k]: e.target.value } })}
+            style={{ background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 6, padding: '5px 8px', color: '#fff', font: `12px ${MONO}` }} />)}
+      </div>}
     </div>
     <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
       <div style={{ height: 42, flex: 'none', display: 'flex', alignItems: 'center', gap: 10, padding: '0 14px', borderBottom: `1px solid ${T.hair}`, fontSize: 13 }}>

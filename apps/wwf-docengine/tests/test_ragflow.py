@@ -177,7 +177,9 @@ async def test_examples_reach_the_author_only_when_configured(monkeypatch):
 def test_document_pdf_asks_gotenberg_to_update_indexes(api, monkeypatch, tmp_path):
     from app import main
     client, h = api
-    f = tmp_path / "d.docx"; f.write_bytes(b"PK fake")
+    from docx import Document          # a real document: the route checks the fonts it declares
+    d = Document(); run = d.add_paragraph().add_run("Текст | Text"); run.font.name = "Calibri"
+    f = tmp_path / "d.docx"; d.save(f)
     async def doc(did):
         return {"path": str(f)}
     monkeypatch.setattr(main, "_doc_or_404", doc)
@@ -185,11 +187,42 @@ def test_document_pdf_asks_gotenberg_to_update_indexes(api, monkeypatch, tmp_pat
     monkeypatch.setattr(settings, "gotenberg_user", "pp"); monkeypatch.setattr(settings, "gotenberg_password", "s")
     seen = []
     def handler(req):
-        seen.append(req); return httpx.Response(200, content=b"%PDF-1.7")
+        seen.append(req); return httpx.Response(200, content=b"%PDF-1.7 /BaseFont/AAAAAA+Calibri")
     real = httpx.AsyncClient
     monkeypatch.setattr(main.httpx, "AsyncClient", lambda **kw: real(transport=httpx.MockTransport(handler), **kw))
     r = client.get("/documents/x/pdf", headers=h)
-    assert r.status_code == 200 and r.content == b"%PDF-1.7"
+    assert r.status_code == 200 and r.content == b"%PDF-1.7 /BaseFont/AAAAAA+Calibri"
     body = seen[0].content
     assert b'name="updateIndexes"' in body and b"true" in body
     assert seen[0].headers["authorization"] == "Basic cHA6cw=="
+
+
+def test_a_non_json_200_is_a_ragflow_error_so_the_check_falls_back():
+    """A proxy or maintenance page answers 200 with HTML; that raised JSONDecodeError, which the pipeline's
+    fallback (except RagflowError) did not catch, and the whole job failed (review 14.10.2026)."""
+    import asyncio
+    t = httpx.MockTransport(lambda req: httpx.Response(200, content=b"<html>maintenance</html>"))
+    with pytest.raises(RagflowError, match="non-JSON"):
+        asyncio.run(RagflowClient("http://r", "k", transport=t).retrieve("q", ["d"]))
+    t2 = httpx.MockTransport(lambda req: httpx.Response(200, json={"code": 102, "message": None}))
+    with pytest.raises(RagflowError, match="102"):
+        asyncio.run(RagflowClient("http://r", "k", transport=t2).retrieve("q", ["d"]))
+
+
+def test_document_pdf_refuses_substitute_fonts(api, monkeypatch, tmp_path):
+    """Head of QC, 10.10.2026: never a PDF printed with a substitute for a house font (review 14.10.2026)."""
+    from docx import Document
+    from app import main
+    client, h = api
+    d = Document(); run = d.add_paragraph().add_run("Текст | Text"); run.font.name = "Calibri"
+    f = tmp_path / "d.docx"; d.save(f)
+
+    async def doc(did):
+        return {"path": str(f)}
+    monkeypatch.setattr(main, "_doc_or_404", doc)
+    monkeypatch.setattr(settings, "gotenberg_url", "http://gotenberg:3000")
+    real = httpx.AsyncClient
+    monkeypatch.setattr(main.httpx, "AsyncClient", lambda **kw: real(transport=httpx.MockTransport(
+        lambda req: httpx.Response(200, content=b"%PDF-1.7 /BaseFont/AAAAAA+Carlito-Regular")), **kw))
+    r = client.get("/documents/x/pdf", headers=h)
+    assert r.status_code == 502 and "Calibri" in r.json()["detail"]

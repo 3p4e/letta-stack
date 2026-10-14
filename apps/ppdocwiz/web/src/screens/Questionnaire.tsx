@@ -1,5 +1,5 @@
 // Questionnaire → workflow (handoff §3). Banks come from GET /questionnaires/{key}.
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { create } from 'zustand';
 import { ApiError, type Questionnaire as Q } from '../api/types';
 import { Banner, DefTag, Seg } from '../components/ui';
@@ -30,13 +30,17 @@ export function Questionnaire() {
   useEffect(() => { setBank(null); setErr(''); api.questionnaire(qKey).then(setBank).catch((e: ApiError) => setErr(`${e.status} · ${e.message}`)); }, [api, qKey]);
   const ans = all[qKey] || {}, meta = metas[qKey] || { title_mk: '', title_en: '', code: '', version: '01', orient: 'portrait' as const };
   const missing = (['title_mk', 'title_en', 'code'] as const).filter(k => !(meta[k] || '').trim());
+  // One start per click: a double click or Enter used to start two full pipelines for one code (review 14.10.2026).
+  const starting = useRef(false);
   const start = async () => {
-    if (missing.length || busy) return;
+    if (missing.length || busy || starting.current) return;
+    starting.current = true;
     try {
       const sources = extra.sources.split('\n').map(x => x.trim()).filter(Boolean);
       const r = await api.startWorkflow({ questionnaire: qKey, answers: ans, meta, requested_by: api.mode === 'live' ? 'ppdocwiz-session' : 'darko.s', instructions: extra.instructions.trim(), sources, parent_sop: extra.parent_sop.trim() });
       go('jobs', { jobSel: r.job_id }); flash(`job ${r.job_id.slice(0, 8)} queued · polling every 1 s`);
     } catch (e) { setErr(`${(e as ApiError).status} · ${(e as Error).message}`); }
+    finally { starting.current = false; }
   };
   usePrimary(tr(lang, 'Start workflow ▸'), start, missing.length > 0);
   if (!bank) return <div style={{ padding: 22, color: err ? C.bad : T.muted, fontFamily: MONO, fontSize: 12 }}>{err ? `GET /questionnaires/${qKey} → ${err}` : 'loading…'}</div>;

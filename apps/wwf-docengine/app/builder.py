@@ -154,20 +154,12 @@ def build(markdown: str, out_dir: Path, out_name: str = "document") -> BuildResu
             src = f.name
         try:
             build_from_md.main(src, str(out))
+            passed, report = _verify_with_fidelity(out, markdown, require_bilingual)
+        except BaseException:
+            out.unlink(missing_ok=True)   # a crash in build or verify must not leave the unverified partial
+            raise
         finally:
             Path(src).unlink(missing_ok=True)
-        passed, report = run_verify(out, require_bilingual=require_bilingual)
-        # §5A no-impoverishment check: the produced .docx must not contain
-        # LESS content than the source markdown it was built from. Always
-        # run and always reported, even when already failing on font/
-        # bilingual, so a FAIL report names every reason at once.
-        src_words, src_chars = _source_word_char_counts(markdown)
-        r = pp_verify.analyse(str(out))
-        fid_ok = r["words"] >= src_words and r["chars"] >= src_chars
-        report += (f"\n   FIDELITY (§5A, markdown-source) output>=source:"
-                   f" words {r['words']}>={src_words}, chars {r['chars']}>={src_chars}"
-                   f"  [{'OK' if fid_ok else 'FAIL'}]")
-        passed = passed and fid_ok
     if not passed:
         out.unlink(missing_ok=True)
         raise VerifyFailed(report)
@@ -177,3 +169,20 @@ def build(markdown: str, out_dir: Path, out_name: str = "document") -> BuildResu
     return BuildResult(
         path=final, bytes=final.stat().st_size, verify_report=report, doctype=doctype
     )
+
+
+def _verify_with_fidelity(out: Path, markdown: str, require_bilingual: bool) -> tuple[bool, str]:
+    """pp_verify plus the §5A fidelity count; (passed, report)."""
+    passed, report = run_verify(out, require_bilingual=require_bilingual)
+    # §5A no-impoverishment check: the produced .docx must not contain
+    # LESS content than the source markdown it was built from. Always
+    # run and always reported, even when already failing on font/
+    # bilingual, so a FAIL report names every reason at once.
+    src_words, src_chars = _source_word_char_counts(markdown)
+    r = pp_verify.analyse(str(out))
+    fid_ok = r["words"] >= src_words and r["chars"] >= src_chars
+    report += (f"\n   FIDELITY (§5A, markdown-source) output>=source:"
+               f" words {r['words']}>={src_words}, chars {r['chars']}>={src_chars}"
+               f"  [{'OK' if fid_ok else 'FAIL'}]")
+    passed = passed and fid_ok
+    return passed, report
