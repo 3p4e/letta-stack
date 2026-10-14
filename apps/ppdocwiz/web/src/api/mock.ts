@@ -146,7 +146,7 @@ export function mockApi(onChange?: () => void): MockApi {
       if (faults.chatDisabled) throw new ApiError(503, 'chat disabled: set LETTA_BASE_URL');
       if (!ALLOWLIST.includes(agent)) throw new ApiError(400, `agent '${agent}' is not permitted by this deployment`);
       if (faults.letta) throw new ApiError(502, 'letta 503: upstream unavailable');
-      return { ok: true, agent, reply: /^\/verify/.test(message) ? 'Verified: RESULT: PASS · min font 7.0 pt · MK+EN OK.' : 'Done. Rebuilt, the gate passed, and the change is highlighted on the live page.', built: { ok: true, path: '/data/WHSOP_002_A02_' + hex(8) + '.docx' } };
+      return { ok: true, agent, reply: /^\/verify/.test(message) ? 'Verified: RESULT: PASS · min font 7.0 pt · MK+EN OK.' : 'Done. Rebuilt, the gate passed, and the change is highlighted on the live page.', built: { ok: true, doc_id: 'WHSOP_002_A02_' + hex(8), verify: 'RESULT: PASS' } };
     },
     downloadHref: (id, ext) => `#mock-download/${id}.${ext}`,
 

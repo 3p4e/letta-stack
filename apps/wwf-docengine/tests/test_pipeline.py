@@ -855,3 +855,55 @@ def test_the_brief_never_says_none():
 def test_glossary_lookbehinds_hold_across_a_line_break():
     from app import glossary
     assert glossary.term_issues("релативна стандардна\nдевијација") == []
+
+
+@pytest.mark.asyncio
+async def test_a_step_that_failed_transiently_repeats_on_a_fresh_clone(monkeypatch):
+    """A timed-out message is not re-sent to the same clone; the step runs again on a new one and the job
+    records the repeat (review 14.10.2026)."""
+    from app.letta import LettaError
+    updates = _patch_common(monkeypatch)
+    monkeypatch.setattr(builder, "build", lambda *a, **k: _fake_build_result())
+    clones, deleted = [], []
+
+    async def spawn(client, agent_name, suffix):
+        clones.append(suffix)
+        return f"tmp-{suffix}"
+
+    monkeypatch.setattr(fleet, "spawn_ephemeral", spawn)
+
+    class Flaky(FakeClient):
+        failed = False
+
+        async def send_message(self, agent_id, prompt):
+            if "Design the" in prompt and not Flaky.failed:
+                Flaky.failed = True
+                raise LettaError("POST /agents/x/messages -> ReadTimeout: slow", transient=True)
+            if "§6A" in prompt:
+                return "VERDICT: PASS"
+            if "Check this drafted section" in prompt:
+                return "NO-FINDING"
+            return "# 1 Идентификација | Identification\n[[FORM:grid]]\nUTID ||| UTID ||| \n[[/FORM]]"
+
+        async def delete_agent(self, agent_id):
+            deleted.append(agent_id)
+
+    await run_workflow("job-1", client=Flaky())
+    last = updates[-1]
+    assert last["status"] == "done"
+    assert last["result"]["retries"][0]["step"] == "10" and "ReadTimeout" in last["result"]["retries"][0]["error"]
+    assert "job-1_10" in clones and "job-1_10_x1" in clones
+    assert "tmp-job-1_10" in deleted and "tmp-job-1_10_x1" in deleted
+
+
+@pytest.mark.asyncio
+async def test_a_refusal_is_not_repeated(monkeypatch):
+    from app.letta import LettaError
+    updates = _patch_common(monkeypatch)
+
+    class Refuses(FakeClient):
+        async def send_message(self, agent_id, prompt):
+            raise LettaError("POST -> 422: bad", status=422)
+
+    await run_workflow("job-1", client=Refuses())
+    assert updates[-1]["status"] == "failed" and "422" in updates[-1]["error"]

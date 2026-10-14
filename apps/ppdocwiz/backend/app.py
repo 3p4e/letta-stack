@@ -163,9 +163,18 @@ def open_session(r: SessionReq):
     if not hmac.compare_digest(r.key.encode("utf-8", "surrogateescape"), settings.api_key.encode()):
         return JSONResponse({"ok": False, "error": "bad key"}, status_code=401)
     resp = JSONResponse({"ok": True})
-    resp.set_cookie(security.COOKIE, security.session_value(settings.api_key),
+    resp.set_cookie(security.COOKIE, security.issue_session(settings.api_key),
                     httponly=True, samesite="strict",
-                    secure=settings.cookie_secure, max_age=8 * 3600, path="/")
+                    secure=settings.cookie_secure, max_age=security.SESSION_TTL, path="/")
+    return resp
+
+
+@app.post("/api/session/close", dependencies=[Depends(security.require_api_key)])
+def close_session(request: Request):
+    """Sign out: the session is refused from now on, on the server, even if the browser kept the cookie."""
+    security.revoke(request.cookies.get(security.COOKIE, ""), settings.api_key)
+    resp = JSONResponse({"ok": True})
+    resp.delete_cookie(security.COOKIE, path="/", httponly=True, samesite="strict", secure=settings.cookie_secure)
     return resp
 
 
@@ -300,6 +309,48 @@ def _letta(method, path, body=None, timeout=90):
     return json.JSONDecoder().raw_decode(raw)[0] if raw.strip() else {}
 
 
+def _chat_built_markdown(msgs: list) -> str | None:
+    """The Markdown the agent passed to its build tool in this turn (the last call), or None.
+
+    The agent's tool writes its .docx on the agent's own host; this container never has that file, so the links
+    the chat used to offer (/api/download/<agent's basename>) were always 404, and the in-process tool returns
+    `out_path`, not `path`, so the build card rarely even showed (review 14.10.2026)."""
+    found = None
+    for m in msgs:
+        if m.get("message_type") != "tool_call_message":
+            continue
+        calls = m.get("tool_calls") or ([m["tool_call"]] if m.get("tool_call") else [])
+        for c in calls:
+            fn = c.get("function") or c
+            if not str(fn.get("name", "")).startswith("build_pp_document"):
+                continue
+            args = fn.get("arguments") or {}
+            if isinstance(args, str):
+                try:
+                    args = json.loads(args)
+                except ValueError:
+                    continue
+            if isinstance(args, dict) and isinstance(args.get("markdown"), str) and args["markdown"].strip():
+                found = args["markdown"]
+    return found
+
+
+def _rebuild_chat_document(md: str) -> dict:
+    """Build the agent's Markdown here, with this container's engine and gate, so the links are real."""
+    code = ((re.search(r"^code:\s*(.+)$", md, re.M) or [None, ""])[1] or "chat").strip()
+    doc_id = _safe_name(code) + "_" + uuid.uuid4().hex[:8]
+    try:
+        ok, verify, path = _build_from_markdown(md, doc_id)
+    except Exception as e:  # noqa: BLE001 — the reply still reaches the user; the card says why there is no file
+        log.exception("chat rebuild failed")
+        return {"ok": False, "doc_id": doc_id, "verify": f"{type(e).__name__}: {str(e)[:300]}"}
+    if not ok:
+        _discard(path)
+        return {"ok": False, "doc_id": doc_id, "verify": verify}
+    return {"ok": True, "doc_id": doc_id, "verify": verify,
+            "download_docx": f"/api/download/{doc_id}.docx", "download_pdf": f"/api/download/{doc_id}.pdf"}
+
+
 @app.post("/api/chat", dependencies=[Depends(security.require_api_key)])
 def chat(r: ChatReq):
     if not os.environ.get("LETTA_BASE_URL"):
@@ -322,16 +373,12 @@ def chat(r: ChatReq):
             return JSONResponse({"ok": False, "error": f"agent '{name}' not found"}, status_code=404)
         run = _letta("POST", f"/v1/agents/{aid}/messages", {"messages": [{"role": "user", "content": r.message}]}, timeout=180)
         msgs = run.get("messages", run if isinstance(run, list) else [])
-        reply, built = "", None
+        reply = ""
         for m in msgs:
-            mt = m.get("message_type")
-            if mt == "assistant_message":
+            if m.get("message_type") == "assistant_message":
                 reply = m.get("content") if isinstance(m.get("content"), str) else reply
-            elif mt == "tool_return_message":
-                try:
-                    tr = json.loads(m.get("tool_return", "{}"))
-                    if tr.get("ok") and tr.get("path"): built = tr
-                except Exception: pass
+        md = _chat_built_markdown(msgs)
+        built = _rebuild_chat_document(md) if md else None
         return {"ok": True, "agent": name, "reply": reply or "(no assistant text)", "built": built}
     except urllib.error.HTTPError as e:
         return JSONResponse({"ok": False, "error": f"letta {e.code}: {e.read().decode()[:200]}"}, status_code=502)

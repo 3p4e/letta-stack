@@ -168,3 +168,13 @@ async def test_parent_sop_never_reads_a_returned_draft(dbpool):
     review = await seed_doc_job(dbpool, code="X", status="awaiting_review", age_minutes=50)
     await seed_doc_job(dbpool, code="X", status="failed", age_minutes=1, error="sections are not bilingual: 3.0")
     assert (await db.job_latest_markdown_by_code("X"))["job_id"] == review
+
+
+async def test_the_document_list_tells_controlled_versions_from_copies(dbpool):
+    jid = await db.job_create("workflow", {"meta": {"code": "WHSOP_003"}})
+    base = {"code": "WHSOP_003", "doctype": "SOP", "path": "/x", "bytes": 1, "verify": "RESULT: PASS"}
+    await db.document_create(jid, base)
+    await db.document_create(None, base)
+    rows = await db.documents_list()
+    assert sorted(r["job_id"] is None for r in rows) == [False, True]
+    assert next(r for r in rows if r["job_id"])["job_id"] == jid

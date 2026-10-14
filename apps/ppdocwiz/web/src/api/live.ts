@@ -42,8 +42,8 @@ export function liveApi(): Api {
   return {
     mode: 'live',
     openSession: async key => { await post('/api/session', { key }); },
-    // There is no logout route; the cookie expires after 8 h. Clearing it needs the server.
-    closeSession: async () => { throw new ApiError(501, 'no logout route on ppdocwiz; the session cookie expires after 8 h'); },
+    // The server refuses the session from now on, even if the browser kept the cookie (review 14.10.2026).
+    closeSession: async () => { await post('/api/session/close', {}); },
     health: () => call('/api/health'),
     doctypes: async () => (await call<{ doctypes: never[] }>('/api/doctypes')).doctypes,
     example: () => call('/api/example'),

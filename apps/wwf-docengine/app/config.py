@@ -21,6 +21,11 @@ class Settings:
     # background job). Connect stays short so an unreachable server fails fast.
     letta_read_timeout: float = float(os.environ.get("LETTA_READ_TIMEOUT", "300"))
     letta_connect_timeout: float = float(os.environ.get("LETTA_CONNECT_TIMEOUT", "15"))
+    # Retries of one Letta call (letta.py), with exponential back-off from this base in seconds, and repeats
+    # of one pipeline step on a fresh clone when its message failed transiently (pipeline.ask).
+    letta_retries: int = int(os.environ.get("DOCENGINE_LETTA_RETRIES", "2"))
+    letta_retry_base: float = float(os.environ.get("DOCENGINE_LETTA_RETRY_BASE", "2"))
+    ask_retries: int = int(os.environ.get("DOCENGINE_ASK_RETRIES", "1"))
     # Workflow repair loops (pipeline.py). A section whose Markdown breaks the engine grammar goes back
     # to its author this many times; a §6A FIX verdict sends the named sections back this many rounds
     # before the job goes to review (or fails, see fix_to_review). 0 turns a loop off.

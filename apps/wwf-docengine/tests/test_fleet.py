@@ -107,12 +107,14 @@ def test_list_agents_asks_for_every_agent():
     assert seen["params"]["limit"] >= 1000
 
 
-def test_letta_transport_errors_are_letta_errors():
+def test_letta_transport_errors_are_letta_errors(monkeypatch):
     """A timeout between create and attach escaped spawn_ephemeral's `except LettaError` and lost the clone."""
     import asyncio
     import httpx
     import pytest
+    from app.config import settings
     from app.letta import LettaClient, LettaError
+    monkeypatch.setattr(settings, "letta_retry_base", 0.0)     # the retries themselves: tests/test_letta.py
 
     class C(LettaClient):
         def _client(self):

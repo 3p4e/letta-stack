@@ -110,9 +110,32 @@ def render_local(docx, pdf, timeout=300):
     return "local"
 
 
+def _check_fonts(docx, pdf):
+    """Refuse a PDF printed with substitute fonts (Head of QC, 10.10.2026: never accept a substitute)."""
+    try:
+        sys.path.insert(0, HERE)
+        import pp_assets
+    except ImportError:          # the suite's own module; absent only in a broken checkout
+        raise RenderError("font check unavailable: pp_assets not importable")
+    if not os.path.exists(pdf):
+        raise RenderError("the renderer produced no PDF")
+    subs = pp_assets.font_substitutions(docx, pdf)
+    if subs:
+        with contextlib.suppress(OSError):
+            os.unlink(pdf)
+        raise RenderError("rendered with substitute fonts — install them on the renderer, never accept a "
+                          "substitute: " + "; ".join(subs))
+
+
 def render_pdf(docx, pdf, mode=None):
     """Render and return the route used ('gotenberg' or 'local'). auto: Gotenberg if
     configured, local LibreOffice if Gotenberg is unset or unreachable."""
+    route = _render(docx, pdf, mode)
+    _check_fonts(docx, pdf)      # every route: a PDF with substitute fonts is never handed out
+    return route
+
+
+def _render(docx, pdf, mode=None):
     mode = (mode or os.environ.get("PP_RENDER", "auto")).lower()
     if mode == "gotenberg":
         return render_gotenberg(docx, pdf)

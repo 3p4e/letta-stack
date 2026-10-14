@@ -166,13 +166,15 @@ async def document_create(job_id: str | None, meta: dict) -> str:
 
 async def documents_list(limit: int = 100) -> list[dict]:
     rows = await pool().fetch(
-        "SELECT id, code, doctype, title_mk, title_en, version, bytes, created_at"
+        "SELECT id, job_id, code, doctype, title_mk, title_en, version, bytes, created_at"
         " FROM docengine.documents ORDER BY created_at DESC LIMIT $1", limit,
     )
     out = []
     for r in rows:
         d = dict(r)
         d["id"] = str(d["id"])
+        # The Library tells a controlled version (from a workflow job) from a format-only copy (POST /build).
+        d["job_id"] = str(d["job_id"]) if d["job_id"] else None
         d["created_at"] = d["created_at"].isoformat()
         out.append(d)
     return out

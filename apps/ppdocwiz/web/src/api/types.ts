@@ -29,7 +29,8 @@ export interface BuildResult {
   ok: boolean; verify: string; doc_id: string; markdown: string;
   download_docx: string; download_pdf: string; error?: string;
 }
-export interface ChatBuilt { ok: boolean; path: string; [k: string]: unknown }
+/** The agent's document, rebuilt by PP Doc Wiz from the Markdown the agent sent to its build tool. */
+export interface ChatBuilt { ok: boolean; doc_id: string; verify: string; download_docx?: string; download_pdf?: string }
 export interface ChatResult { ok: boolean; agent: string; reply: string; built: ChatBuilt | null }
 
 // ---- docengine ----

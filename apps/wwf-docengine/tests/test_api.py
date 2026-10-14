@@ -96,7 +96,7 @@ def test_direct_build_pass(client):
         "version: 1.0\ndoctype: FORM\norient: portrait\n-->\n"
         "# 1.0 ИНФОРМАЦИИ|INFORMATION\n[[FORM:grid]]\nДатум~~Date|||\n[[/FORM]]\n"
     )
-    r = client.post("/build", json={"markdown": md, "out_name": "t1"}, headers=h())
+    r = client.post("/build", json={"markdown": md, "out_name": "t1", "meta": {"code": "T-1"}}, headers=h())
     assert r.status_code == 200
     body = r.json()
     assert body["ok"] is True and "RESULT: PASS" in body["verify"]
@@ -110,7 +110,7 @@ def test_direct_build_fail_gated(client, monkeypatch):
         "version: 1.0\ndoctype: FORM\norient: portrait\n-->\n"
         "# 1.0 ИНФОРМАЦИИ|INFORMATION\nТекст.|Text.\n"
     )
-    r = client.post("/build", json={"markdown": md, "out_name": "t2"}, headers=h())
+    r = client.post("/build", json={"markdown": md, "out_name": "t2", "meta": {"code": "T-2"}}, headers=h())
     assert r.status_code == 422
     assert "FAIL" in r.json()["detail"]["verify"]
 
@@ -255,3 +255,10 @@ def test_workflow_meta_is_checked_before_any_generation(client, monkeypatch, met
     monkeypatch.setattr("app.main.run_workflow", lambda jid: started.append(jid))
     r = client.post("/workflows", headers=h(), json={"questionnaire": "sop_qc", "meta": meta})
     assert r.status_code == 400 and not started
+
+
+@pytest.mark.parametrize("meta,out_name", [({}, "labels_raw (final) v3"), ({"code": "whsop_003"}, "x"), ({"code": "pasted"}, "x")])
+def test_a_file_name_is_never_registered_as_a_document_code(client, meta, out_name):
+    md = "<!--HEADERDATA\nmk_title: Т\nen_title: T\ncode: X\ndoctype: FORM\n-->\n# 1 А | A\nтекст ||| text\n"
+    r = client.post("/build", json={"markdown": md, "out_name": out_name, "meta": meta}, headers=h())
+    assert r.status_code == 400 and "document code" in r.json()["detail"]

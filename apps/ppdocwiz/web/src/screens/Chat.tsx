@@ -50,8 +50,10 @@ export function Chat() {
     await run(live ? 'chat' : 'WHSOP_002_A02', async () => {
       try {
         const r = await api.chat(text, chatAgent);
-        if (!live) patch(idx, { st: 'ok', res: r.built ? 'built ' + r.built.path : 'no build in this turn', t: ((performance.now() - t0) / 1000).toFixed(2) + ' s' });
-        if (r.built) { const id = String(r.built.path).split('/').pop()!.replace(/\.docx$/, ''); push({ k: 'built', path: r.built.path, docx: api.downloadHref(id, 'docx'), pdf: api.downloadHref(id, 'pdf') }); }
+        if (!live) patch(idx, { st: 'ok', res: r.built ? 'built ' + r.built.doc_id : 'no build in this turn', t: ((performance.now() - t0) / 1000).toFixed(2) + ' s' });
+        // Rebuilt by PP Doc Wiz from the agent's Markdown: the links point at a file this server holds.
+        if (r.built?.ok) push({ k: 'built', path: r.built.doc_id + '.docx', docx: api.downloadHref(r.built.doc_id, 'docx'), pdf: api.downloadHref(r.built.doc_id, 'pdf') });
+        else if (r.built) push({ k: 'err', text: 'The agent built a document, but it did not pass the gate here: ' + (r.built.verify.split('\n').pop() || 'verify FAILED') });
         push({ k: 'agent', text: r.reply });
         return { ok: true };
       } catch (e) {

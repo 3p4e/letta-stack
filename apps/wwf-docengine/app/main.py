@@ -15,6 +15,7 @@
 import asyncio
 import contextlib
 import logging
+import re
 import uuid
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -290,9 +291,19 @@ class BuildIn(BaseModel):
     meta: dict = Field(default_factory=dict)
 
 
+# A registered code is a house code (WHSOP_003, QCSOP_025_A01, PP-QC-SOP-025): the Formatter registered upload
+# file names ("labels_raw (final) v3") as codes, which the Library then showed as that code's effective version
+# (review 14.10.2026). Same rule as the PP Doc Wiz client (web/src/lib/registry.ts).
+CODE_RE = re.compile(r"^[A-Z][A-Z0-9]{0,9}(?:[_-][A-Z0-9]{1,6}){1,4}$")
+
+
 @app.post("/build", dependencies=[Depends(require_api_key)])
 async def direct_build(body: BuildIn):
     _check_meta(body.meta)
+    code = (body.meta.get("code") or body.out_name).strip()
+    if not CODE_RE.match(code):
+        raise HTTPException(400, "a registered document needs a document code like WHSOP_003 or QCSOP_025_A01 "
+                                 f"(got {code[:40]!r}); send it as meta.code")
     try:
         result = await asyncio.to_thread(
             builder.build, body.markdown, settings.out_dir, body.out_name
@@ -305,7 +316,7 @@ async def direct_build(body: BuildIn):
         doc_id = await db.document_create(
             None,
             {
-                "code": body.meta.get("code", body.out_name),
+                "code": code,
                 "doctype": result.doctype,
                 "title_mk": body.meta.get("title_mk", ""),
                 "title_en": body.meta.get("title_en", ""),
@@ -393,6 +404,12 @@ async def document_pdf(did: str):
         raise HTTPException(502, "PDF conversion failed") from e
     if r.status_code != 200:
         raise HTTPException(502, "PDF conversion failed")
+    # Head of QC, 10.10.2026: never a PDF with substitute fonts; the renderer must carry the house fonts.
+    import pp_assets  # vendored engine (on sys.path via builder)
+    subs = await asyncio.to_thread(pp_assets.font_substitutions, d["path"], r.content)
+    if subs:
+        log.warning("PDF for document %s refused: %s", did, "; ".join(subs))
+        raise HTTPException(502, "the renderer printed substitute fonts: " + "; ".join(subs)[:400])
     return Response(
         content=r.content, media_type="application/pdf",
         headers={"Content-Disposition":

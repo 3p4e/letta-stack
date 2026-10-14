@@ -536,17 +536,29 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
         agent that already exists — and no exchange inherits another's conversation."""
         from .fleet import spawn_ephemeral  # late import: fleet needs live Letta (and is patched in tests)
 
-        tmp_id = await spawn_ephemeral(client, agent_name, f"{job_id[:8]}_{tag}")
-        try:
-            return await client.send_message(tmp_id, prompt)
-        finally:
-            # Broad catch on purpose: cleanup of a throwaway clone must never abort the job —
-            # delete_agent can also raise plain httpx transport errors, and an orphaned tmp agent
-            # is harmless (ensure_fleet sweeps clones older than fleet.TMP_MAX_AGE) while a failed job isn't.
+        # A message that failed transiently (a timeout: the agent may still be writing; a gateway error) is not
+        # re-sent to the same clone. The clone is deleted and the step repeats on a fresh one, which is safe
+        # because a clone carries nothing from any other exchange. Each repeat is recorded in the job's result.
+        for attempt in range(1 + max(0, settings.ask_retries)):
+            suffix = f"{job_id[:8]}_{tag}" + (f"_x{attempt}" if attempt else "")
+            tmp_id = await spawn_ephemeral(client, agent_name, suffix)
             try:
-                await client.delete_agent(tmp_id)
-            except Exception as e:  # noqa: BLE001
-                log.warning("failed to delete ephemeral %s: %s", tmp_id, e)
+                return await client.send_message(tmp_id, prompt)
+            except LettaError as e:
+                if not e.transient or attempt >= settings.ask_retries:
+                    raise
+                ctx.setdefault("retries", []).append({"step": tag, "agent": agent_name, "attempt": attempt + 1,
+                                                      "error": str(e)[:200]})
+                log.warning("job %s: %s step %s failed transiently (%s); repeating on a fresh clone",
+                            job_id, agent_name, tag, e)
+            finally:
+                # Broad catch on purpose: cleanup of a throwaway clone must never abort the job — an orphaned
+                # tmp agent is harmless (ensure_fleet sweeps clones older than fleet.TMP_MAX_AGE).
+                try:
+                    await client.delete_agent(tmp_id)
+                except Exception as e:  # noqa: BLE001
+                    log.warning("failed to delete ephemeral %s: %s", tmp_id, e)
+        raise LettaError(f"{agent_name} step {tag}: no attempt left")  # unreachable: the loop returns or raises
 
     try:
         job = await db.job_get(job_id)

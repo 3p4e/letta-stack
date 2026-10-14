@@ -77,8 +77,10 @@ def test_session_cookie_unlocks_and_is_httponly(client):
 def test_session_cookie_is_derived_not_the_key(client):
     r = client.post("/api/session", json={"key": KEY})
     value = r.cookies.get(security.COOKIE)
-    assert value and value != KEY, "the cookie must not be the API key itself"
-    assert value == security.session_value(KEY)
+    assert value and KEY not in value, "the cookie must not carry the API key"
+    assert security.session_id(value, KEY), "it is a signed session the server accepts"
+    other = client.post("/api/session", json={"key": KEY}).cookies.get(security.COOKIE)
+    assert other != value, "every sign-in is its own session" 
 
 
 def test_session_rejects_a_wrong_key(client):
@@ -267,3 +269,66 @@ def test_jobs_rerun_carries_the_brief_and_the_parent_sop():
     rerun = src[src.index("const rerun"):src.index("usePrimary(")]
     for f in ("instructions:", "sources:", "parent_sop:"):
         assert f in rerun, f
+
+
+# ---------------------------------------------------------------- session lifetime (review 14.10.2026)
+def test_the_old_fixed_cookie_value_is_no_longer_accepted(client):
+    client.cookies.set(security.COOKIE, security.session_value(KEY))
+    assert client.get("/api/doctypes").status_code == 401
+
+
+def test_an_expired_session_is_refused():
+    import time
+    old = security.issue_session(KEY, now=time.time() - security.SESSION_TTL - 120)
+    assert security.session_id(old, KEY) is None
+    assert security.session_id(security.issue_session(KEY), KEY)
+
+
+def test_a_tampered_session_is_refused():
+    v = security.issue_session(KEY)
+    head, iat, sid, mac = v.split(".")
+    assert security.session_id(f"{head}.{int(iat) + 3600}.{sid}.{mac}", KEY) is None    # extended by hand
+    assert security.session_id(v, "another-key") is None
+
+
+def test_sign_out_ends_the_session_on_the_server(client, monkeypatch, tmp_path):
+    monkeypatch.setattr(security, "REVOKED_FILE", str(tmp_path / "revoked.json"))
+    value = client.post("/api/session", json={"key": KEY}).cookies.get(security.COOKIE)
+    assert client.get("/api/doctypes").status_code == 200
+    r = client.post("/api/session/close", json={})
+    assert r.status_code == 200
+    client.cookies.set(security.COOKIE, value)            # a browser (or a thief) that kept the cookie
+    assert client.get("/api/doctypes").status_code == 401
+
+
+# ---------------------------------------------------------------- chat build links (review 14.10.2026)
+def _letta_turn(md):
+    import json as _j
+    return {"messages": [
+        {"message_type": "tool_call_message",
+         "tool_call": {"name": "build_pp_document", "arguments": _j.dumps({"markdown": md, "out_path": "/data/x.docx"})}},
+        {"message_type": "tool_return_message", "tool_return": _j.dumps({"ok": True, "out_path": "/data/x.docx"})},
+        {"message_type": "assistant_message", "content": "Built it."}]}
+
+
+def test_chat_rebuilds_the_agents_document_here_and_links_to_it(client, monkeypatch):
+    md = ("<!--HEADERDATA\nmk_title: Тест\nen_title: Test\ncode: QCSOP_014_A03\ndoctype: FORM\n-->\n"
+          "# 1 Идентификација | Identification\n[[FORM]]\nДатум ||| Date ||| _\n[[/FORM]]\n")
+    monkeypatch.setenv("LETTA_BASE_URL", "http://letta")
+
+    def fake_letta(method, path, body=None, timeout=90):
+        return [{"id": "a1", "name": "qms_docx_formatter"}] if method == "GET" else _letta_turn(md)
+
+    monkeypatch.setattr(app_mod, "_letta", fake_letta)
+    r = client.post("/api/chat", headers={"X-API-Key": KEY}, json={"message": "build it"})
+    b = r.json()["built"]
+    assert r.status_code == 200 and b["ok"] and b["doc_id"].startswith("QCSOP_014_A03_")
+    assert client.get(b["download_docx"], headers={"X-API-Key": KEY}).status_code == 200   # the file is here
+
+
+def test_chat_without_a_build_offers_no_links(client, monkeypatch):
+    monkeypatch.setenv("LETTA_BASE_URL", "http://letta")
+    monkeypatch.setattr(app_mod, "_letta", lambda m, p, body=None, timeout=90:
+                        [{"id": "a1", "name": "qms_docx_formatter"}] if m == "GET"
+                        else {"messages": [{"message_type": "assistant_message", "content": "hi"}]})
+    assert client.post("/api/chat", headers={"X-API-Key": KEY}, json={"message": "hi"}).json()["built"] is None
