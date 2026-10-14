@@ -56531,14 +56531,14 @@
     {
      "no": "8",
      "crit": "≤ 12.0%",
-     "res": "8.4",
-     "doc": "051-5-ГС/26",
-     "dd": "02.03.2026",
+     "res": "7.6",
+     "doc": "100-1-ГС/26",
+     "dd": "09.04.2026",
      "lab": "Farmahem",
      "fam": "Farmahem — loss on drying",
-     "st": "carried from the initial testing (the batch's initial CoQ (number assigned on issue)) — covered",
+     "st": "covered — Farmahem reanalysis 100-1-ГС/26 of 09.04.2026 (Head of QC, 14.10.2026)",
      "route": "",
-     "also": "7.6 (100-1-GS/26)"
+     "also": "8.4 (051-5-ГС/26, the release result on CoQ-PP_26-056); 10.3 (100-2-ГС/26, hand-trimmed); 10.3 (100-3-ГС/26, trimmed)"
     },
     {
      "no": "9.1",

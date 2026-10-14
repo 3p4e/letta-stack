@@ -175,7 +175,9 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
      `-143`, `-161` carry 1, 2, 7, 8 with the initial's CNP certificate (09.10.2026,
      `tracker/apply_cnp_retest_no_icoa_2026-10-09.py`). Loss on drying in Tranche 3
      is CNP's or Farmahem's (`-ГС`), in-house only for `-026`, and untested for `-021`, `-050`, `-068`,
-     `-073`. `T3_CoQ_Latest_*.pdf` is each lot's current certificate: the retest, or the initial where
+     `-073`. P060202's retest `-153` prints Farmahem's reanalysis `100-1-ГС/26` (7.6 %, 09.04.2026), its
+     initial `-056` the release `051-5-ГС/26` (8.4 %) (Head of QC, 14.10.2026). Awaiting his upload: `ППК25312` for
+     P050202 (`-026`, `-149`) and a loss-on-drying certificate for P060342 (`-073`, `-160`). `T3_CoQ_Latest_*.pdf` is each lot's current certificate: the retest, or the initial where
      there is no reissue. *"Where needed for the parameters that are not covered by other outsource
      laboratory an iCOA will be issued containing those parameters tested"* (Head of QC, 26.09.2026).
      **Identification C is never one of them.** It is discharged by the certificate that tested the
@@ -293,7 +295,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 222 corrections, 07.09.2026–08.10.2026, each quoted — is
+The full record — 223 corrections, 07.09.2026–08.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:
