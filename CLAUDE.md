@@ -173,7 +173,10 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
      in-house (`-026`, like HPA1024/OPM1024); where CNP tested 1, 2, 7 and 8 there is **no** internal
      certificate (`-075`, `-079`, `-080`, like the scans' `-092`, `-123`), and none for their retests either: `-144`,
      `-143`, `-161` carry 1, 2, 7, 8 with the initial's CNP certificate (09.10.2026,
-     `tracker/apply_cnp_retest_no_icoa_2026-10-09.py`). Loss on drying in Tranche 3
+     `tracker/apply_cnp_retest_no_icoa_2026-10-09.py`). Outside the tranches the same holds for `-081`, `-082`, `-083`, `-168`, `-169`, `-170`
+     (ППК26127/28/15/17/18/19; 16.10.2026, `tracker/apply_nontranche_review_2026-10-16.py`), which also holds `-081`'s foreign
+     matter `[pending]` (ППК26127 fails it: seeds, OI-16) and `-082`'s metals and pesticides `[pending]` (IPH 3925/2026 lacks
+     page 3, OI-59). Read the master's open items (OI-16, OI-59, OI-64) before re-deriving any of this. Loss on drying in Tranche 3
      is CNP's or Farmahem's (`-ГС`), in-house only for `-026`, and untested for `-021`, `-050`, `-068`,
      `-073`. P060202's retest `-153` prints Farmahem's reanalysis `100-1-ГС/26` (7.6 %, 09.04.2026), its
      initial `-056` the release `051-5-ГС/26` (8.4 %) (Head of QC, 14.10.2026). Awaiting his upload: `ППК25312` for
@@ -295,7 +298,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 223 corrections, 07.09.2026–08.10.2026, each quoted — is
+The full record — 224 corrections, 07.09.2026–08.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:
