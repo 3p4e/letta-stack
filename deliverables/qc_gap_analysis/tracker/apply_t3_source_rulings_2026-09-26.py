@@ -61,6 +61,8 @@ PAGE3 = ("awaiting the complete scan of IPH 1065/2026 — every copy holds pages
          "(heavy metals, total aflatoxins, the last three pesticides) is missing (Head of QC, %s)" % STAMP)
 NT_RELEASE = ("not tested at release — the IPH certificate reports total aflatoxins only; aflatoxin B1 and "
               "ochratoxin A are tested in the retest round, by Farmahem (Head of QC, %s)" % STAMP)
+# The complete scan of IPH 1065/2026 is on file since 08.10.2026 (apply_iph_intake_2026-10-08.py).
+PAGE3_RECEIVED = True
 NT_REQUEST = ("not tested — no certificate for this lot; requested from the laboratory "
               "(Head of QC, %s)" % STAMP)
 CNP_KEYS = {'1': 'identification_a_macroscopic', '2': 'identification_b_microscopic', '7': 'foreign_matter'}
@@ -142,9 +144,10 @@ def main(argv):
                 r['st'] = CAMPAIGN_NOTE
                 log['retest mycotoxin provenance corrected to the Farmahem campaign'].append((c['regcode'], r['no'], r['doc']))
 
-    # 2 · SJ102501: the IPH certificate exists, its page 3 does not
+    # 2 · SJ102501: the IPH certificate exists, its page 3 does not — until 08.10.2026, when the complete scan
+    # arrived and its values went onto -052 and -162 (apply_iph_intake_2026-10-08.py); a rerun leaves them
     for c in t3:
-        if not is_sj(c):
+        if not is_sj(c) or PAGE3_RECEIVED:
             continue
         for r in c['rows']:
             if r['no'] in ('11.1', '11.2', '11.3', '11.4') or (r['no'] == '10.2' and 'retest' not in c['t']):

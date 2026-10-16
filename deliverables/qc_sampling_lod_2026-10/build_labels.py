@@ -138,9 +138,15 @@ def fill_sampled(cell, lab):
     p = para(cell)
     run(p, lab["batch_lot"], 8, bold=True)
     p = para(cell, before=2)
-    run(p, lab["bag"], 13, bold=True)
-    run(p, "     Потпис | Signature: ", 6.5)
-    run(p, "__________", 7)
+    # a bag chosen at sampling (06.10.2026) is a write-in, K___B___, set smaller so the line still fits
+    if "_" in lab["bag"]:
+        run(p, lab["bag"], 10, bold=True)
+        run(p, "   Потпис | Signature: ", 6.5)
+        run(p, "_________", 7)
+    else:
+        run(p, lab["bag"], 13, bold=True)
+        run(p, "     Потпис | Signature: ", 6.5)
+        run(p, "__________", 7)
     p = para(cell, before=1, align=WD_ALIGN_PARAGRAPH.RIGHT)
     run(p, "QASOP_031_A05_v1 · %s" % lab["day"], 6, color=GREY)
 
@@ -201,7 +207,7 @@ def main():
     os.makedirs(OUT_S, exist_ok=True)
     lots, bags = bc.load()
     hv = harvest_dates()
-    for day in (1, 2):
+    for day in (1,):                 # one sampling day (Head of QC, 06.10.2026)
         for (d, n), stem in zip(build(day, lots, bags, hv), STEMS):
             bc.glyph_audit(d)
             path = os.path.join(OUT_S, (stem % (day, day)) + ".docx")

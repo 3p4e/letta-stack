@@ -2,16 +2,50 @@
 globalThis.CoQ = (function () {
 const RED = 'color:#B91C1C;font-weight:700', AMBER = 'color:#8F5B00;font-weight:700';
 const DETS = ['1','2','3','4','5','6','7','8','9.1','9.2','9.3','9.4','9.5','10.1','10.2','10.3','11.1','11.2','11.3','11.4','12'];
+// Head of QC, 07.10.2026: "on that CoQ for that batch, you draw the Microbiology panel analysis
+// results from a eCOA and you must include all parameters tested and present in the eCOA".
+// Pseudomonas aeruginosa (9.6) and Staphylococcus aureus (9.7) are tested only where the lot's
+// certificate was ordered against the manufacturer's specification; they print, after E. coli,
+// on a certificate whose record carries a result for them, and nowhere else. Name, method and
+// criterion are QCSP 001's own (specs/QCSP_001_v04/SHEETS, rows 9.6 and 9.7).
+const PANEL_EXTRA = ['9.6','9.7'];
+const EXTRA_ROWS = {
+  '9.6': '<tr class="sub-row"><td></td><td><span class="p-sub">Pseudomonas aeruginosa</span></td><td><span class="p-method">Ph. Eur. 2.6.13 cat. C</span></td><td><span class="p-spec">Absence / 1 g</span></td>@CELL@</tr>',
+  '9.7': '<tr class="sub-row"><td></td><td><span class="p-sub">Staphylococcus aureus</span></td><td><span class="p-method">Ph. Eur. 2.6.13 cat. C</span></td><td><span class="p-spec">Absence / 1 g</span></td>@CELL@</tr>'
+};
+function hasExtra(rec, d) {
+  const r = String((rec.res || {})[d] || '').trim(), st = String((rec.st || {})[d] || '');
+  if (!r || r === '—' || /upon request|not tested|to be performed|awaiting/i.test(r + ' ' + st)) return false;
+  return codeShaped((rec.doc || {})[d]) && !!canonLab((rec.lab || {})[d]);
+}
+const detsOf = rec => DETS.concat(PANEL_EXTRA.filter(d => hasExtra(rec, d)));
 const UNIT = {'4':' %','5':' %','6':' %','8':' %','9.1':' CFU/g','9.2':' CFU/g','9.3':' CFU/g',
   '10.1':' µg/kg','10.2':' µg/kg','10.3':' µg/kg','11.1':' mg/kg','11.2':' mg/kg','11.3':' mg/kg','11.4':' mg/kg','7':' %','12':' mg/kg'};
 // `ac` is the accreditation id, held apart from the EN name so it can print on the second
 // line beside the Macedonian text rather than running the first line long.
-const LABS = {
+const LABS_SENT = {
   PP:  {en:'Purely Plant QC Department · In-house', ac:'', mk:'Пјурли Плант — Сектор за КК · In-house', ad:'Kojlija 1043, Petrovec-Skopje, MK'},
   CNP: {en:'UKIM Faculty of Pharmacy — Center for Natural Products · ISO/IEC 17025:2017', ac:'LT-083 (IARM)', mk:'УКИМ ФФ — Центар за Природни Производи', ad:'Mother Theresa 47, 1000 Skopje, MK'},
   IPH: {en:'JZU Institute for Public Health (IPH Skopje) · ISO/IEC 17025:2017', ac:'LT-005 (IARM)', mk:'ЈЗУ Институт за јавно здравје (ИЈЗ Скопје)', ad:'50ta Divizija 6, 1000 Skopje, MK'},
   FHM: {en:'Farmahem DOOEL — Laboratory for Instrumental Analysis · ISO/IEC 17025:2017', ac:'LT-020 (IARM)', mk:'Фармахем ДООЕЛ — Лаборатoрија за инструментална анализа', ad:'Kisela Voda, 1000 Skopje, MK'},
   PHY: {en:'State Phytosanitary Laboratory · ISO/IEC 17025:2017', ac:'LT-034 (IARM)', mk:'Државна фитосанитарна лабораторија', ad:'Aleksandar Makedonski bb, 1000 Skopje, MK'},
+  // P050202: the release cannabinoids (Head of QC, 26.09.2026 — identification C goes with them)
+  NGP: {en:'New Garden Pharma — QC Laboratory', ac:'', mk:'Њу Гарден Фарма — Лабораторија за КК', ad:'Analysis test report · cannabinoids by HPLC (DAB)'}
+};
+// Head of QC, 07.10.2026: each laboratory's line is what the laboratory prints on its own
+// certificates (CLAUDE.md §6), read from the committed reads (ingestion/ecoa_runner/records_corpus.json,
+// the RAGflow page cache): Farmahem's 62 reports - potency -К, mycotoxins -М, loss on drying -ГС - all
+// come from "Фармахем Лабораторија за животна средина", ЛТ-017, ул. „Шар Планина" бр. 20, Скопје (the
+// 21.09.2026 line, "Laboratory for Instrumental Analysis · LT-020 · Kisela Voda", came from no
+// certificate); the State Phytosanitary Laboratory prints LT-036; UKIM "Mother Teresa St., No. 47";
+// IPH "ул. 50 Дивизија бр. 6". LABS_SENT keeps the lines exactly as the issued Tranche 1 and 2 pages
+// carry them (Head of QC, 26.09.2026: not touched); every other certificate prints LABS.
+const LABS = {
+  PP:  {en:'Purely Plant QC Department · In-house', ac:'', mk:'Пјурли Плант — Сектор за КК · In-house', ad:'Kojlija 1043, Petrovec-Skopje, MK'},
+  CNP: {en:'UKIM Faculty of Pharmacy — Center for Natural Products · ISO/IEC 17025:2017', ac:'LT-083 (IARM)', mk:'УКИМ ФФ — Центар за Природни Производи', ad:'Mother Teresa 47, 1000 Skopje, MK'},
+  IPH: {en:'JZU Institute for Public Health (IPH Skopje) · ISO/IEC 17025:2017', ac:'LT-005 (IARM)', mk:'ЈЗУ Институт за јавно здравје (ИЈЗ Скопје)', ad:'50 Divizija 6, 1000 Skopje, MK'},
+  FHM: {en:'Farmahem — Laboratory for the Environment · ISO/IEC 17025:2017', ac:'LT-017 (IARM)', mk:'Фармахем — Лабораторија за животна средина', ad:'Shar Planina 20, Skopje, MK'},
+  PHY: {en:'State Phytosanitary Laboratory · ISO/IEC 17025:2017', ac:'LT-036 (IARM)', mk:'Државна фитосанитарна лабораторија', ad:'Aleksandar Makedonski bb, 1000 Skopje, MK'},
   // P050202: the release cannabinoids (Head of QC, 26.09.2026 — identification C goes with them)
   NGP: {en:'New Garden Pharma — QC Laboratory', ac:'', mk:'Њу Гарден Фарма — Лабораторија за КК', ad:'Analysis test report · cannabinoids by HPLC (DAB)'}
 };
@@ -41,7 +75,7 @@ function collapseParams(ds, split) {
 // Which dotted families are shared by more than one laboratory on this certificate.
 function splitFamilies(rec) {
   const labsOf = {};
-  for (const d of DETS) {
+  for (const d of detsOf(rec)) {
     if (String(d).indexOf('.') < 0) continue;
     const lab = canonLab(rec.lab[d]), doc = (rec.doc[d] || '').trim();
     if (!lab || !codeShaped(doc)) continue;
@@ -163,7 +197,7 @@ function cell(det, res, status) {
 function section03(rec) {
   const split = splitFamilies(rec);
   const groups = {};
-  for (const d of DETS) {
+  for (const d of detsOf(rec)) {
     const lab = canonLab(rec.lab[d]), doc = (rec.doc[d] || '').trim(), iss = (rec.iss[d] || '').trim();
     if (!lab || !codeShaped(doc)) continue;
     const g = groups[lab] = groups[lab] || { certs: new Map(), params: [] };
@@ -174,7 +208,7 @@ function section03(rec) {
   const rows = [];
   for (const key of ORDER) {
     const g = groups[key]; if (!g) continue;
-    const L = LABS[key];
+    const L = (rec.frozen ? LABS_SENT : LABS)[key];
     const certs = [...g.certs.values()].map(c =>
       '<span class="cert"><b>' + esc(c.doc) + '</b> · ' + esc(c.iss || '—') +
       (c.note ? '<i class="cert-note">' + esc(c.note) + '</i>' : '') + '</span>').join('');
@@ -184,7 +218,7 @@ function section03(rec) {
       '</td><td class="lr-mono pcell">' + collapseParams(g.params, split).join(', ') + '</td></tr>');
   }
   // rule 10 — a result with no citable certificate goes to the Work Order row
-  const orphan = DETS.filter(d => {
+  const orphan = detsOf(rec).filter(d => {
     const r = (rec.res[d] || '').trim(), doc = (rec.doc[d] || '').trim();
     if (!r || r === '—' || /not tested|to be performed|upon request|^carried /i.test(r)) return false;
     if (/in-house CoA only|awaiting/i.test(rec.st[d] || '')) return false;
@@ -195,6 +229,23 @@ function section03(rec) {
     '">Сертификатот да се пронајде · Работен налог</span><small>result on file, no citable certificate</small></span></td><td class="lr-mono">' +
     red('[ — ]') + '</td><td class="lr-mono pcell">' + collapseParams(orphan, split).join(', ') + '</td></tr>');
   return '<tbody>\n' + rows.join('\n') + '\n</tbody>';
+}
+
+// The certificates of each section 03 row, in the order section03 prints rows and certificates, each with the
+// parameters it reports (Head of QC, 07.10.2026: "place all the numbers that are correlated to the corresponding
+// external certificate ... in the same line as the certificate"). build_v40.js lays them out on unissued pages.
+function section03Certs(rec) {
+  const split = splitFamilies(rec);
+  const groups = {};
+  for (const d of detsOf(rec)) {
+    const lab = canonLab(rec.lab[d]), doc = (rec.doc[d] || '').trim(), iss = (rec.iss[d] || '').trim();
+    if (!lab || !codeShaped(doc)) continue;
+    const g = groups[lab] = groups[lab] || new Map();
+    const k = docCode(doc) + '|' + iss;
+    if (!g.has(k)) g.set(k, []);
+    g.get(k).push(d);
+  }
+  return ORDER.filter(k => groups[k]).map(k => [...groups[k].values()].map(ds => collapseParams(ds, split)));
 }
 
 // ---- Section 01 ------------------------------------------------------------
@@ -210,6 +261,11 @@ function section01(rec) {
   if (dm) ratio = ' <span class="ratio" style="font-size:.86em;letter-spacing:.3px">' + dm[1].toUpperCase() +
     '<b style="color:#FFD98A;font-weight:800">' + dm[2] + '</b> : ' + dm[3].toUpperCase() +
     '<b style="color:#FFD98A;font-weight:800">' + dm[4] + '</b></span>';
+  // Head of QC, 07.10.2026, Tranche 3: a hybrid states which way it leans where that is known and the
+  // split is not; the split, where known, prints as above.
+  const dl = dom.match(/^(INDICA|SATIVA)-DOMINANT$/i);
+  if (!dm && dl && rec.t3) ratio = ' <span class="ratio" style="font-size:.86em;letter-spacing:.3px">· ' +
+    dl[1].toUpperCase() + ' <b style="color:#FFD98A;font-weight:800">DOMINANT</b></span>';
   const isH = ph === 'HYBRID', isI = ph === 'INDICA', isS = ph === 'SATIVA';
   const pheno = chip(isH, 'Hybrid', isH ? ratio : '') +
     '<span class="stack">' + chip(isI, 'Indica') + chip(isS, 'Sativa') + '</span>';
@@ -266,5 +322,5 @@ function section01(rec) {
 '  </div>\n' +
 '  <div class="goldrule"></div>\n\n  ';
 }
-return { RED, AMBER, DETS, UNIT, LABS, ORDER, canonLab, codeShaped, docCode, docNote, collapseParams, parseCSV, esc, mmyyyy, strip, red, cell, section03, section01, chip };
+return { RED, AMBER, DETS, LABS_SENT, PANEL_EXTRA, EXTRA_ROWS, hasExtra, detsOf, UNIT, LABS, ORDER, canonLab, codeShaped, docCode, docNote, collapseParams, parseCSV, esc, mmyyyy, strip, red, cell, section03, section03Certs, section01, chip };
 })();

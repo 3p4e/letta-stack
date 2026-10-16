@@ -68,6 +68,86 @@ ORBITRON_STACK = (("font-family:'Orbitron',sans-serif", "font-family:'Orbitron',
                   ("font-family:'Orbitron',monospace", "font-family:'Orbitron','Montserrat',monospace"))
 
 
+SIG_IMG = re.compile(r'<img class="ap-img[^"]*"[^>]*>')
+
+
+def unsigned(page):
+    """The internal certificate with no signature on it: each box keeps its line, to be signed in person.
+
+    Head of QC, 07.10.2026: *"remove the signatures from Christina and the QC Manager from the certificates of
+    quality and internal certificates of analysis, and the QA Manager's. We will sign them in person now."* The
+    Head of QC's iCoA base carries the analyst's and the QC Manager's hands (`ap-img handwritten`); they come off
+    every certificate not yet issued. The CoQ is built unsigned already (`build_v40.js`, no `PP_SIGNATURES`)."""
+    page, n = SIG_IMG.subn('', page)
+    if n != 2:
+        raise SystemExit('expected the two signatures of the iCoA base, found %d' % n)
+    if 'ap-img' in re.sub(r'<style[\s\S]*?</style>', '', page):
+        raise SystemExit('a signature image is still on the page')
+    return page
+
+
+def icoa_page(scope, f, c):
+    """The internal certificate as it goes out: built on the Head of QC's base, unsigned, its pill row the CoQ's and
+    drawn as the CoQ draws it, with the heading bars of the CoQ (`house_kit`, Head of QC 07.10.2026), and Montserrat
+    behind Orbitron."""
+    import house_kit
+    spc = c.get('spc') or {}
+    # the leaning on every certificate not yet issued — Tranche 3 and, "everywhere", the lots outside the tranches
+    row = house_kit.selrow(spc.get('pheno'), spc.get('dominance'), spc.get('chemo'), spc.get('proc'), True)
+    return house_stack(house_kit.apply(unsigned(own.build(scope, f)), row))
+
+
+FONT_FACE = re.compile(r'@font-face\s*\{[^}]*\}\s*')
+# Latin, Latin-1, the Macedonian Cyrillic and the punctuation the certificates set: cut once, not once per page
+# (24 s an iCoA). A page with a character outside it gets its own cut.
+BASE_CHARS = frozenset(chr(c) for c in list(range(0x20, 0x7F)) + list(range(0xA0, 0x100)) + list(range(0x400, 0x460)) +
+                       [0x490, 0x491, 0x301, 0x2013, 0x2014, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2026,
+                        0x2116, 0x2212, 0x2264, 0x2265])
+_FACES = {}
+
+
+def faces_for(chars):
+    key = BASE_CHARS if chars <= BASE_CHARS else frozenset(chars | BASE_CHARS)
+    if key not in _FACES:
+        _FACES[key] = house_fonts.font_face_css(''.join(sorted(key)), FAMILIES, SUBSETS)[0]
+    return _FACES[key]
+
+
+def print_copies(paths):
+    """Copies of the iCoA pages for the printer, each with `static_faces`. The delivered HTML keeps its own (variable)
+    faces: the static set is twice the size and took the HTML zip past what the app delivers."""
+    import tempfile
+    d = tempfile.mkdtemp(prefix='icoa_print_')
+    out = []
+    for p in paths:
+        q = os.path.join(d, os.path.basename(p))
+        open(q, 'w', encoding='utf-8').write(static_faces(open(p, encoding='utf-8').read()))
+        out.append(q)
+    return out
+
+
+def static_faces(page):
+    """The page's variable @font-face rules replaced by the static house faces the CoQ prints with, for the printer.
+
+    The Head of QC's iCoA base embeds Montserrat, Roboto Mono and Orbitron as variable fonts. Chromium prints a
+    variable face at any weight but its default as a Type 3 font, named "Montserrat-Thin" whatever the weight:
+    the letters print, but no Word converter, text tool or printer driver sees a real font (07.10.2026, found
+    making the Word copy). The static faces are Google's instances of the same fonts, so no glyph changes."""
+    n = len(FONT_FACE.findall(page))
+    if not n:
+        raise SystemExit('the iCoA base carries no @font-face to replace')
+    text = re.sub(r'<(script|style)[\s\S]*?</\1>', ' ', page)
+    chars = set(re.sub(r'<[^>]+>', ' ', text))
+    chars |= {c.upper() for c in chars} | {c.lower() for c in chars}   # text-transform asks for the other case
+    css = faces_for({c for c in chars if len(c) == 1})
+    if css.count('@font-face') < 3:
+        raise SystemExit('house fonts not built — refusing an iCoA in a substitute face')
+    page = FONT_FACE.sub('', page)
+    if '</head>' not in page:
+        raise SystemExit('no </head> to carry the house faces')
+    return page.replace('</head>', '<style id="__house-faces">\n' + css + '</style>\n</head>', 1)
+
+
 def house_stack(page):
     """The internal certificate with Montserrat behind Orbitron, for the letters Orbitron lacks.
 
@@ -103,6 +183,10 @@ def assert_house_fonts(pdf):
     """
     import pymupdf
     d = pymupdf.open(pdf)
+    t3 = sum(1 for p in d for f in p.get_fonts() if f[2] == 'Type3')
+    if t3:
+        raise SystemExit('%s printed %d Type 3 fonts: a variable @font-face reached the printer (see static_faces)'
+                         % (os.path.basename(pdf), t3))
     bad = {}
     for page in d:
         for b in page.get_text('dict')['blocks']:
@@ -122,7 +206,13 @@ LAYOUT_JS = """() => {
     const ys = [...r.getClientRects()].filter(x => x.width > 0.5).map(x => x.top + x.height / 2).sort((a, b) => a - b);
     let n = 0, last = -99; for (const y of ys) { if (y - last > 4) { n++; last = y; } } return n; };
   const page = document.querySelector('.page');
-  return { h: page ? page.scrollHeight : 0,
+  // section 03's parameter column: the header and every number line end on the right page margin (0.4 in)
+  let right = 0; const pg = page ? page.getBoundingClientRect() : null;
+  const th = document.querySelector('table.labref thead th:nth-child(3)');
+  if (pg && th) { const r = document.createRange(); r.selectNodeContents(th);
+    for (const b of [...r.getClientRects(), ...[...document.querySelectorAll('table.labref .pn')].map(e => e.getBoundingClientRect())])
+      right = Math.max(right, b.right - pg.left); }
+  return { h: page ? page.scrollHeight : 0, right: right, width: pg ? pg.width : 0,
            lab: [...document.querySelectorAll('table.labref tbody td .lr-lab')].map(lines) };
 }"""
 
@@ -134,6 +224,9 @@ def layout_probe(src, page):
     got = page.evaluate(LAYOUT_JS)
     if got['h'] > 1123:
         LAYOUT.append('%s: page is %d px, past A4 (1123)' % (os.path.basename(src), got['h']))
+    if got['right'] > got['width'] - 38.4 + 0.5:
+        LAYOUT.append('%s: section 03 parameter column ends %.1f px past the right margin' % (
+            os.path.basename(src), got['right'] - (got['width'] - 38.4)))
     if any(n > 2 for n in got['lab']):
         LAYOUT.append('%s: a laboratory entry runs to %d rows' % (os.path.basename(src), max(got['lab'])))
 
@@ -169,6 +262,23 @@ def split_of(dom):
     return '%s%s : %s%s' % m.groups() if m else ''
 
 
+_TM = []
+
+
+def leaning_of(c, dom):
+    """Head of QC, 07.10.2026, Tranche 3: a hybrid states which way it leans where that is known and its split
+    is not — `· Indica dominant`, as the certificate of quality prints it beside `Хибрид`. Lots outside
+    Tranche 3 keep the 24.09 rule (the split or nothing)."""
+    m = re.match(r'^\s*(INDICA|SATIVA)-DOMINANT\s*$', str(dom or ''), re.I)
+    if not m:
+        return ''
+    if not _TM:
+        _TM.append(tranche_map())
+    if not any(_TM[0].get(k) == 'T3' for k in (c.get('pp'), c.get('cb'), str(c.get('cb') or '').replace('＊', '')) if k):
+        return ''
+    return '· %s dominant' % m.group(1).capitalize()
+
+
 IN_PAGE = ('1', '2', '7', '8')          # what the internal-certificate page prints
 
 
@@ -202,7 +312,7 @@ def fields(c, gaps, scope=('1', '2', '7')):
         'issued': val('icoa_issue', 'internal-certificate issue date'),
         'headline': pp if has_p else cb,
         'strain': val('strain', 'strain'),
-        'pheno': pheno, 'split': split_of(spc.get('dominance')) if pheno else '',
+        'pheno': pheno, 'split': (split_of(spc.get('dominance')) or leaning_of(c, spc.get('dominance'))) if pheno else '',
         'pcode': val('pcode', 'product code', lambda v: v.replace(' : ', ':')),
         'spec': val('spec', 'specification reference'),
         'testdate': val('icoa_tested', 'test date'),
@@ -301,7 +411,7 @@ def main():
             f = fields(c, gaps, scope)
             check_pair(f, open(coq_html[c['regcode']], encoding='utf-8').read())
             dst = os.path.join(idir, name_of(f))
-            open(dst, 'w', encoding='utf-8').write(house_stack(own.build(f['scope'].split(','), f)))
+            open(dst, 'w', encoding='utf-8').write(icoa_page(f['scope'].split(','), f, c))
             docs.append(('iCoA %s' % s, name_of(f)[:-5], dst))
 
     # print every page, keep it, and merge in section order with a bookmark per certificate
@@ -312,7 +422,8 @@ def main():
         os.makedirs(pdir, exist_ok=True)
         srcs = [h for _, _, h in docs if os.path.dirname(h) == hdir]
         css = coq_css if os.sep + 'CoQ' + os.sep in hdir else ''
-        pdf_of.update(zip(srcs, render(srcs, pdir, None, css, layout_probe)))  # one browser session per folder
+        prints = srcs if css else print_copies(srcs)       # the iCoA prints in the static house faces
+        pdf_of.update(zip(srcs, render(prints, pdir, None, css, layout_probe)))  # one browser session per folder
     assert_layout()
     for pdf in pdf_of.values():
         assert_house_fonts(pdf)
