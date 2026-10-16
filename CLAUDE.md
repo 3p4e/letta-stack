@@ -177,10 +177,10 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
      (ППК26127/28/15/17/18/19; 16.10.2026, `tracker/apply_nontranche_review_2026-10-16.py`), which also holds `-081`'s foreign
      matter `[pending]` (ППК26127 fails it: seeds, OI-16) and `-082`'s metals and pesticides `[pending]` (IPH 3925/2026 lacks
      page 3, OI-59). Read the master's open items (OI-16, OI-59, OI-64) before re-deriving any of this. Loss on drying in Tranche 3
-     is CNP's or Farmahem's (`-ГС`), in-house only for `-026`, and untested for `-021`, `-050`, `-068`,
-     `-073`. P060202's retest `-153` prints Farmahem's reanalysis `100-1-ГС/26` (7.6 %, 09.04.2026), its
-     initial `-056` the release `051-5-ГС/26` (8.4 %) (Head of QC, 14.10.2026). Awaiting his upload: `ППК25312` for
-     P050202 (`-026`, `-149`) and a loss-on-drying certificate for P060342 (`-073`, `-160`). `T3_CoQ_Latest_*.pdf` is each lot's current certificate: the retest, or the initial where
+     is CNP's or Farmahem's (`-ГС`), in-house only for `-026`, and untested for `-021`, `-050`, `-068`. P060202's retest `-153` prints Farmahem's reanalysis `100-1-ГС/26` (7.6 %, 09.04.2026), its
+     initial `-056` the release `051-5-ГС/26` (8.4 %) (Head of QC, 14.10.2026). Since 16.10.2026 P050202 (`-026`, `-149`) prints
+     `ППК25312` (6.21 %) and P060342 (`-073`, `-160`) `ППК26093` (6.61 %), both filed 14.10.2026; their cannabinoids are with
+     the Head of QC (`tracker/apply_cnp_lod_p050202_p060342_2026-10-16.py`). `T3_CoQ_Latest_*.pdf` is each lot's current certificate: the retest, or the initial where
      there is no reissue. *"Where needed for the parameters that are not covered by other outsource
      laboratory an iCOA will be issued containing those parameters tested"* (Head of QC, 26.09.2026).
      **Identification C is never one of them.** It is discharged by the certificate that tested the
@@ -298,7 +298,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 224 corrections, 07.09.2026–08.10.2026, each quoted — is
+The full record — 225 corrections, 07.09.2026–08.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:

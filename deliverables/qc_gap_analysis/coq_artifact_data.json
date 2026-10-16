@@ -28488,14 +28488,14 @@
     {
      "no": "8",
      "crit": "≤ 12.0%",
-     "res": "8.19 (avg of 4 weighings 51-1,51-2,52-1,52-2)",
-     "doc": "iCoA-PP_26-026",
-     "dd": "03.06.2026",
-     "lab": "Purely Plant GmbH (in-house)",
-     "fam": "Purely Plant in-house",
-     "st": "covered",
+     "res": "6.21",
+     "doc": "ППК25312",
+     "dd": "13.10.2025",
+     "lab": "UKIM Faculty of Pharmacy — Center for Natural Products",
+     "fam": "UKIM CNP potency",
+     "st": "covered — CNP ППК25312, filed 14.10.2026, two reads (Head of QC, 16.10.2026)",
      "route": "",
-     "also": "5.83 (ППК26036); 5.38 (ППК26037); 6.85 (ППК26057); 6.60 (ППК26058)"
+     "also": "replaces 8.19 (avg of 4 weighings 51-1,51-2,52-1,52-2) (iCoA-PP_26-026)"
     },
     {
      "no": "9.1",
@@ -35186,12 +35186,12 @@
     {
      "no": "8",
      "crit": "≤ 12.0%",
-     "res": "—",
-     "doc": "—",
-     "dd": "",
-     "lab": "",
-     "fam": "",
-     "st": "not tested — no certificate for this lot; requested from the laboratory (Head of QC, 26.09.2026)",
+     "res": "6.61",
+     "doc": "ППК26093",
+     "dd": "05.06.2026",
+     "lab": "UKIM Faculty of Pharmacy — Center for Natural Products",
+     "fam": "UKIM CNP potency",
+     "st": "covered — CNP ППК26093, filed 14.10.2026, two reads (Head of QC, 16.10.2026)",
      "route": "",
      "also": ""
     },
@@ -57177,14 +57177,14 @@
     {
      "no": "8",
      "crit": "≤ 12.0%",
-     "res": "8.19 (avg of 4 weighings 51-1,51-2,52-1,52-2)",
-     "doc": "iCoA-PP_26-026",
-     "dd": "03.06.2026",
-     "lab": "Purely Plant GmbH (in-house)",
-     "fam": "Purely Plant in-house",
-     "st": "carried from the initial testing (the batch's initial CoQ (number assigned on issue)) — covered",
+     "res": "6.21",
+     "doc": "ППК25312",
+     "dd": "13.10.2025",
+     "lab": "UKIM Faculty of Pharmacy — Center for Natural Products",
+     "fam": "UKIM CNP potency",
+     "st": "carried from the initial testing (CoQ-PP_26-026) — covered",
      "route": "",
-     "also": "5.83 (ППК26036); 5.38 (ППК26037); 6.85 (ППК26057); 6.60 (ППК26058)"
+     "also": ""
     },
     {
      "no": "9.1",
@@ -62030,12 +62030,12 @@
     {
      "no": "8",
      "crit": "≤ 12.0%",
-     "res": "—",
-     "doc": "—",
-     "dd": "",
-     "lab": "",
-     "fam": "",
-     "st": "not tested — no certificate for this lot; requested from the laboratory (Head of QC, 26.09.2026)",
+     "res": "6.61",
+     "doc": "ППК26093",
+     "dd": "05.06.2026",
+     "lab": "UKIM Faculty of Pharmacy — Center for Natural Products",
+     "fam": "UKIM CNP potency",
+     "st": "carried from the initial testing (CoQ-PP_26-073) — covered",
      "route": "",
      "also": ""
     },
