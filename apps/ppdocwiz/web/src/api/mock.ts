@@ -208,6 +208,10 @@ export function mockApi(onChange?: () => void): MockApi {
       const eq = (spec.blocks as { t: string }[]).filter(b => b.t === 'calc' || b.t === 'eqn').length * 3, fig = (spec.blocks as { t: string }[]).filter(b => b.t === 'figure').length;
       return { ok: true, verify: verifyReport(`/data/${spec.code}.docx`, { paras: 96, tables: 7, words: 1840, chars: 11902, omath: eq, figures: fig }) };
     },
+    async nextCode(q) {
+      await wait(60);
+      return q.parent ? q.parent.replace(/[\s_-]/g, '').toUpperCase() + 'A02' : ({ QCSOP: 'QCSOP025', QCT: 'QCT017', QCLB: 'QCLB021' } as Record<string, string>)[q.family || ''] || (q.family || 'QCT') + '001';
+    },
     async engineEnv(): Promise<EngineEnv> {
       gate(); await wait(120);
       return {

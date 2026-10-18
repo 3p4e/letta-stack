@@ -1,7 +1,8 @@
 // ＋ Create two-level menu and the New-document sheet (handoff README · Create flow).
 import { useEffect, useState } from 'react';
 import type { Doctype } from '../api/types';
-import { codePattern, skeleton } from '../lib/newdoc';
+import { codePattern, DEFAULT_FAMILY, skeleton } from '../lib/newdoc';
+import { normalizeCode } from '../lib/registry';
 import { useApp, type AppState, type Screen, type Sheet } from '../store/store';
 import { C, DISPLAY, MONO, T } from '../theme';
 import { Caps } from './ui';
@@ -58,20 +59,34 @@ const LABEL: Record<Sheet['doctype'], string> = { SOP: 'SOP', ANNEX: 'annex', FO
 export function NewDocSheet() {
   const { sheet: sh, set, go, flash, api } = useApp();
   const [registered, setRegistered] = useState<string[]>([]);
-  useEffect(() => { if (sh) api.documents().then(d => setRegistered(d.map(x => x.code))).catch(() => setRegistered([])); }, [!!sh]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (sh) api.documents().then(d => setRegistered(d.map(x => normalizeCode(x.code) || x.code))).catch(() => setRegistered([])); }, [!!sh]); // eslint-disable-line react-hooks/exhaustive-deps
+  // The code comes from the register (Head of QC, 18.10.2026): the next free number of the family, or the next annex of
+  // the parent SOP. It is filled in until the user types a code of their own.
+  const [auto, setAuto] = useState(true), [codeNote, setCodeNote] = useState('');
+  useEffect(() => { if (sh) { setAuto(true); setCodeNote(''); } }, [!!sh]); // eslint-disable-line react-hooks/exhaustive-deps
+  const parentKey = sh ? normalizeCode(sh.parent) : '', dtKey = sh?.doctype || '';
+  useEffect(() => {
+    if (!sh || !auto) return;
+    const q = dtKey !== 'SOP' && dtKey !== 'REPORT' && parentKey ? { parent: parentKey } : DEFAULT_FAMILY[dtKey] ? { family: DEFAULT_FAMILY[dtKey] } : null;
+    if (!q) return;
+    let live = true;
+    api.nextCode(q).then(c => { if (live) { set(s => s.sheet ? { sheet: { ...s.sheet, code: c } } : {}); setCodeNote('next free in the register'); } })
+      .catch(() => { if (live) setCodeNote('register unreachable — type the code'); });
+    return () => { live = false; };
+  }, [!!sh, auto, parentKey, dtKey]); // eslint-disable-line react-hooks/exhaustive-deps
   if (!sh) return null;
   const upd = (k: keyof Sheet, v: string) => set(s => ({ sheet: { ...s.sheet!, [k]: v } }));
   const isSop = sh.doctype === 'SOP', isRep = sh.doctype === 'REPORT';
-  const codeOk = codePattern(sh.doctype as Doctype).test(sh.code.trim()), taken = registered.includes(sh.code.trim());
+  const house = normalizeCode(sh.code), codeOk = !!house && codePattern(sh.doctype as Doctype).test(house), taken = registered.includes(house);
   const arrow = (['code', 'title_mk', 'title_en', 'version', 'parent', 'supersedes'] as const).some(k => (sh[k] || '').includes('-->'));
   const cyr = /[Ѐ-ӿ]/.test(sh.title_mk), lat = /[A-Za-z]/.test(sh.title_en);
   const parentOk = isSop || isRep || !!sh.parent.trim();
   const ok = codeOk && cyr && lat && !arrow && parentOk;
   const FIELDS: [keyof Sheet, string, string, string, string][] = [
-    ['code', '*', isSop ? 'QCSOP_031' : 'QCSOP_031_A03', !sh.code ? (isSop ? 'Pattern DEPTSOP_NNN' : 'Pattern DEPTSOP_NNN_ANN') : codeOk ? (taken ? 'Exists in the registry → this becomes a new version' : 'Code format OK') : 'Does not match the code pattern', !sh.code ? T.muted : codeOk ? (taken ? C.warn : C.ok) : C.bad],
+    ['code', '*', isSop ? 'QCSOP025' : 'QCSOP011A02', !sh.code ? (isSop ? 'House form DEPTSOPnnn — filled from the register' : 'House form: parent SOP code + Ann, or QCT/QCLB/QCPL nnn') : codeOk ? (taken ? 'Exists in the registry → this becomes a new version' : house !== sh.code.trim() ? `Stored as ${house}` : (auto && codeNote) || 'Code format OK') : 'Not a house code (e.g. QCSOP025, QCSOP011A02, QCLB021)', !sh.code ? T.muted : codeOk ? (taken ? C.warn : C.ok) : C.bad],
     ['title_mk', '*', 'Наслов на македонски', sh.title_mk && !cyr ? 'Needs Cyrillic — Macedonian comes first' : 'Macedonian first', sh.title_mk && !cyr ? C.bad : T.muted],
     ['title_en', '*', 'English title', '', T.muted], ['version', '', '01', '', T.muted],
-    ['parent', isSop || isRep ? '' : '*', isSop ? '—' : 'QCSOP 031', isSop ? 'SOPs have no parent' : 'The SOP this ' + sh.doctype.toLowerCase() + ' belongs to', T.muted],
+    ['parent', isSop || isRep ? '' : '*', isSop ? '—' : 'QCSOP011', isSop ? 'SOPs have no parent' : 'The SOP this ' + sh.doctype.toLowerCase() + ' belongs to', T.muted],
     ['supersedes', '', '—', 'Rendered as Заменува | Supersedes under the title block', T.muted],
   ];
   const paths = PATHS[sh.doctype], pathLabel = (paths.find(p => p[0] === sh.path) || paths[0])[1];
@@ -80,8 +95,10 @@ export function NewDocSheet() {
   const checks: [boolean | null, string][] = [[codeOk, codeOk ? 'Code matches the house pattern' : 'Code pattern not met yet'], [cyr && lat, 'Title in both languages (MK Cyrillic, EN Latin)'], [!arrow, 'No "-->" in any field (it would end HEADERDATA early)'], [parentOk, isSop || isRep ? 'No parent needed' : 'Parent SOP given']];
   if (taken) checks.push([null, 'Code already registered; the old version stays effective until this one is approved']);
   const close = () => set({ sheet: null });
+  const sheet0 = sh;
   const create = () => {
     if (!ok) return;
+    const sh = { ...sheet0, code: house, parent: normalizeCode(sheet0.parent) || sheet0.parent };
     const path = paths.some(p => p[0] === sh.path) ? sh.path : paths[0][0];
     if (path === 'quest') { const qk = isSop ? 'sop_qc' : 'annex_form'; set(st => ({ sheet: null, qKey: qk, qRound: 0, metas: { ...st.metas, [qk]: { title_mk: sh.title_mk, title_en: sh.title_en, code: sh.code, version: sh.version, orient: sh.orient } } })); go('quest'); }
     else if (path === 'chat') { set({ sheet: null, chatDraft: `Draft ${sh.doctype} ${sh.code} "${sh.title_mk} | ${sh.title_en}"${sh.parent ? ', parent ' + sh.parent : ''}. Leave unknown values blank.` }); go('chat'); }
@@ -107,7 +124,7 @@ export function NewDocSheet() {
           {FIELDS.map(([k, req, ph, hint, hc]) => <label key={k} style={{ display: 'grid', gridTemplateColumns: '96px 1fr', gap: 10, alignItems: 'center' }}>
             <span style={mono}>{k}<span style={{ color: C.bad }}>{req}</span></span>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              <input value={String(sh[k] || '')} onChange={e => upd(k, e.target.value)} placeholder={ph} style={{ background: T.deeper, border: `1px solid ${hc === C.bad ? C.bad : T.control}`, borderRadius: 5, padding: '7px 9px', color: '#fff', outline: 'none', minWidth: 0 }} />
+              <input value={String(sh[k] || '')} onChange={e => { if (k === 'code') setAuto(false); upd(k, e.target.value); }} placeholder={ph} style={{ background: T.deeper, border: `1px solid ${hc === C.bad ? C.bad : T.control}`, borderRadius: 5, padding: '7px 9px', color: '#fff', outline: 'none', minWidth: 0 }} />
               {hint ? <span style={{ fontSize: 11.5, color: hc }}>{hint}</span> : null}
             </div></label>)}
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}><span style={{ ...mono, width: 96 }}>orient</span>

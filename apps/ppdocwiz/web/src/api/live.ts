@@ -71,5 +71,6 @@ export function liveApi(): Api {
     documentAvailable: async id => { try { const r = await fetch(`${de}/documents/${encodeURIComponent(id)}/download`, { method: 'HEAD', credentials: 'same-origin' }); return r.status; } catch { return 0; } },
     buildReport: async () => { throw new ApiError(501, 'no report route yet: pp_report.py is called from Python scripts, not exposed by ppdocwiz or DocEngine'); },
     engineEnv: () => call(de + '/engine/environment'),
+    nextCode: async q => (await call<{ code: string }>(de + '/register/next?' + new URLSearchParams(q.parent ? { parent: q.parent } : { family: q.family || '' }))).code,
   };
 }

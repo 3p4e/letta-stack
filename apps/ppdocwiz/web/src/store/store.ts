@@ -5,6 +5,7 @@ import { liveApi } from '../api/live';
 import { mockApi } from '../api/mock';
 import type { WizardPayload } from '../api/types';
 import { SAMPLE_ANNEX } from '../data/samples';
+import { skeleton } from '../lib/newdoc';
 import type { Status } from '../theme';
 
 export type Screen = 'builder' | 'chat' | 'quest' | 'format' | 'report' | 'library' | 'jobs' | 'verify' | 'preview' | 'fleet';
@@ -88,15 +89,18 @@ export const useApp = create<AppState>((set, get) => {
     pipeOk: true, busy: false, lastBuild: null,
     toast: '',
     createOpen: false, createCat: 'sop', menuX: 0, menuY: 0, sheet: null,
-    bdoc: structuredClone(SAMPLE_ANNEX), bdocIsSample: true, builderMode: 'src', hlLine: 0,
+    // Live mode opens on nothing: the sample annex (WHSOP_002_A02) used to be loaded as if it were the user's draft,
+    // and Build turned it into a real registered file (review 18.10.2026). Mock mode keeps the demo document.
+    bdoc: mode === 'mock' ? structuredClone(SAMPLE_ANNEX) : skeleton({ doctype: 'ANNEX', code: '', title_mk: '', title_en: '', version: '01', parent: '', supersedes: '', orient: 'portrait' }),
+    bdocIsSample: mode === 'mock', builderMode: 'src', hlLine: 0,
     chatDraft: '', chatAgent: 'qms_docx_formatter',
     lang: read(LS.lang) === 'mk' ? 'mk' : 'en',
     setLang: l => { write(LS.lang, l); set({ lang: l }); },
     qKey: 'sop_qc', qRound: 0,
     metas: {
-      sop_qc: { title_mk: 'Определување потентност', title_en: 'Potency determination', code: 'QCSOP_031', version: '01', orient: 'portrait' },
-      sop_transport: { title_mk: 'Внатрешен (копнен) транспорт на опојни дроги — медицински канабис', title_en: 'Inland Transport of Narcotic Drugs — Medical Cannabis', code: 'WHSOP_003', version: '01', orient: 'portrait' },
-      annex_form: { title_mk: 'Дневник на прием', title_en: 'Receipt log', code: 'WHSOP_002_A03', version: '01', orient: 'portrait' },
+      sop_qc: { title_mk: 'Определување потентност', title_en: 'Potency determination', code: '', version: '01', orient: 'portrait' },
+      sop_transport: { title_mk: 'Внатрешен (копнен) транспорт на опојни дроги — медицински канабис', title_en: 'Inland Transport of Narcotic Drugs — Medical Cannabis', code: 'WHSOP003', version: '01', orient: 'portrait' },
+      annex_form: { title_mk: 'Дневник на прием', title_en: 'Receipt log', code: '', version: '01', orient: 'portrait' },
     },
     jobSel: null, libSel: null, fmt: 'B', repMeta: null, repSel: 'b5',
     primary: null,

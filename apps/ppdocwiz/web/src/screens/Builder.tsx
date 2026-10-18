@@ -40,7 +40,7 @@ function applyEn(p: WizardPayload, l: Lint, en: string): WizardPayload {
 const parseAnchor = (a: string) => { const m = /^s(\d+)(?:b(\d+)(?:r(\d+)|(h))?)?/.exec(a); return m ? { s: +m[1], b: m[2] !== undefined ? +m[2] : -1, r: m[3] !== undefined ? +m[3] : m[4] ? -1 : -2 } : null; };
 
 export function Builder() {
-  const { bdoc: doc, bdocIsSample, builderMode: mode, hlLine, set, api, run, flash } = useApp();
+  const { bdoc: doc, bdocIsSample, builderMode: mode, hlLine, set, api, run, flash, go } = useApp();
   const setDoc = (d: WizardPayload) => set({ bdoc: d });
   const [sel, setSel] = useState(0);
   const [dismissed, setDismissed] = useState<number[]>([]);
@@ -104,9 +104,22 @@ export function Builder() {
     });
     if (ok) flash(`${code} built · RESULT: PASS`);
   };
-  usePrimary('Build ▸', build);
+  const nothingOpen = api.mode === 'live' && !doc.code.trim();
+  usePrimary('Build ▸', build, nothingOpen);
 
   const pick = (i: number, line: number) => { setSel(i); set({ hlLine: i === 0 ? 1 : line }); };
+
+  // No document open: say so, instead of showing a sample as if it were the user's work in progress.
+  if (nothingOpen) return <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ maxWidth: 460, display: 'flex', flexDirection: 'column', gap: 12, textAlign: 'center' }}>
+      <b style={{ color: '#fff', fontSize: 17 }}>No document open</b>
+      <span style={{ color: T.secondary, lineHeight: 1.5 }}>Start a new draft with <b>＋ Create</b> — the code is assigned from the register — or continue an open draft from Jobs.</span>
+      <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
+        <span onClick={() => set({ createOpen: true, menuX: 220, menuY: 60 })} style={{ cursor: 'pointer', color: '#fff', background: T.navy, borderRadius: 6, padding: '8px 14px', fontWeight: 700 }}>＋ Create</span>
+        <span onClick={() => go('jobs')} style={{ cursor: 'pointer', color: T.secondary, border: `1px solid ${T.control}`, borderRadius: 6, padding: '8px 14px' }}>Open from Jobs</span>
+      </div>
+    </div>
+  </div>;
 
   return <>
     {/* outline */}

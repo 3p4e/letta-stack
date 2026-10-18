@@ -206,10 +206,25 @@ async def job_latest_markdown_by_code(code: str) -> dict | None:
     assembled Markdown; newest first within each. A draft a reviewer returned for revision is never used.
     It used to be simply the newest job of any status, so a failed or returned draft written after the
     approved SOP became the source of every annex built from then on (review 14.10.2026)."""
+    from .house_codes import normalize
+    # Jobs written before the house code form (18.10.2026) hold "WHSOP_003"; compare with separators removed.
+    house = (normalize(code) or code).upper()
     r = await pool().fetchrow(
         "SELECT id, status, result->>'markdown' AS md FROM docengine.jobs"
-        " WHERE payload->'meta'->>'code' = $1 AND result->>'markdown' IS NOT NULL"
+        " WHERE (payload->'meta'->>'code' = $1"
+        "        OR upper(regexp_replace(payload->'meta'->>'code', '[[:space:]_./-]', '', 'g')) = $2)"
+        "   AND result->>'markdown' IS NOT NULL"
         "   AND NOT (status = 'failed' AND COALESCE(error, '') LIKE 'returned for revision%')"
         " ORDER BY CASE status WHEN 'done' THEN 0 WHEN 'awaiting_review' THEN 1 ELSE 2 END, created_at DESC"
-        " LIMIT 1", code)
+        " LIMIT 1", code, house)
     return {"markdown": r["md"], "job_id": str(r["id"]), "status": r["status"]} if r else None
+
+
+async def codes_in_use() -> set[str]:
+    """Document codes the engine itself holds: registered documents and every job not failed. A number an open
+    draft carries is taken, so two drafts are never given the same next free code."""
+    rows = await pool().fetch(
+        "SELECT code FROM docengine.documents"
+        " UNION SELECT payload->'meta'->>'code' FROM docengine.jobs"
+        "  WHERE status <> 'failed' AND payload->'meta'->>'code' IS NOT NULL")
+    return {r["code"] for r in rows if r["code"]}
