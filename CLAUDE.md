@@ -398,3 +398,15 @@ Head of QC, 10.10.2026: the renderer is **LibreOffice with the real house fonts*
 the SOPs; OnlyOffice did not. Fidelity comes from the fonts, so a renderer without them is not acceptable: a
 missing font is fixed by adding it to `/opt/fonts/pp` and rebuilding `pp-render`, never by accepting a substitute.
 The Microsoft fonts are licensed — they live on the server only, never in a repository.
+
+## 10. The DocEngine is a contained research and development environment
+
+Head of QC, 18.10.2026: *"nothing on the engine is part of the qms even if we feed it QMS information for research and
+developement exactly to PP needs"* and *"None of this is ever going to get or mixed up with the QMS."* Drafts that look
+like real QMS documents, with real data, are the point: they test the engine. A document reaches the QMS only through
+the QA channels.
+
+- Do not raise or push deviations, OOS/OOx handling, CAPA or any other QMS procedure from engine work; the paper-based
+  system covers them. Do not warn that a draft looks too real or ask for "draft" watermarks.
+- The engine's `register/*.yaml` files are working copies (QALI 001 for QC; `*_KNOWN.yaml` for the other departments,
+  from the files we have only, until their master lists arrive). They exist so the engine numbers drafts correctly.
