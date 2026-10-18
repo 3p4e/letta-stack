@@ -70,3 +70,9 @@ def test_other_departments_are_known_from_the_files_we_have():
     assert hc.next_code(family="WHSOP") == "WHSOP004"
     assert hc.next_code(parent="WHSOP003") == "WHSOP003A08"
     assert hc.next_code(family="EQSOP") == "EQSOP014"
+
+
+def test_qasop_99_is_a_placeholder_not_a_code():
+    # Head of QC, 18.10.2026: "QASOP_99 is not true, i just named it 99 instead of xxx".
+    assert "QASOP099" not in {r["code"] for r in hc.load_register()}
+    assert hc.next_code(family="QASOP") == "QASOP033"

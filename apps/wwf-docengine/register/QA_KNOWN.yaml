@@ -10,6 +10,8 @@
 department: QA
 review_years: 3
 
+# Not listed: "QASOP_99 - SOP for Creation of Equipment Use SOPs" (EQ_MAN). 99 is a placeholder name for a number not
+# yet given, not a code (Head of QC, 18.10.2026).
 documents:
   # --- SOPs and annexes ---
   - {code: QASOP003, title_en: "QA SOP 003 (title not in the file name)", status: known, note: "CCs: QASOP 003 v.02.pdf"}
@@ -34,7 +36,6 @@ documents:
   - {code: QASOP032, title_en: "HLVd decontamination campaign", status: known, note: "MB_MONIT/HLVd_Decontamination_FINAL"}
   - {code: QASOP032A01, parent: QASOP032, title_en: "Room cards", status: known, note: "MB_MONIT/HLVd_Decontamination_FINAL"}
   - {code: QASOP032A02, parent: QASOP032, title_en: "Teams, work packages, days and forms", status: known, note: "MB_MONIT/HLVd_Decontamination_FINAL"}
-  - {code: QASOP099, title_en: "SOP for Creation of Equipment Use SOPs", status: known, note: "EQ_MAN: QASOP_99"}
 
   # --- forms and templates ---
   - {code: QAT004, title_mk: "Барање за измена на документ", title_en: "Change Request", status: known, note: "CCs / IMG_WH / TRAIN_REC"}
