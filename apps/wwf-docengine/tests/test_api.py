@@ -92,11 +92,11 @@ def test_form_row_written_mk_tilde_en_renders_as_two_labels(tmp_path):
 
 def test_direct_build_pass(client):
     md = (
-        "<!--HEADERDATA\nmk_title: Тест\nen_title: Test\ncode: T-1\n"
+        "<!--HEADERDATA\nmk_title: Тест\nen_title: Test\ncode: QCT901\n"
         "version: 1.0\ndoctype: FORM\norient: portrait\n-->\n"
         "# 1.0 ИНФОРМАЦИИ|INFORMATION\n[[FORM:grid]]\nДатум~~Date|||\n[[/FORM]]\n"
     )
-    r = client.post("/build", json={"markdown": md, "out_name": "t1", "meta": {"code": "T-1"}}, headers=h())
+    r = client.post("/build", json={"markdown": md, "out_name": "t1", "meta": {"code": "QCT901"}}, headers=h())
     assert r.status_code == 200
     body = r.json()
     assert body["ok"] is True and "RESULT: PASS" in body["verify"]
@@ -106,11 +106,11 @@ def test_direct_build_fail_gated(client, monkeypatch):
     monkeypatch.setattr(builder, "run_verify",
                          lambda p, min_pt=6.0, require_bilingual=True: (False, "RESULT: FAIL"))
     md = (
-        "<!--HEADERDATA\nmk_title: Тест\nen_title: Test\ncode: T-2\n"
+        "<!--HEADERDATA\nmk_title: Тест\nen_title: Test\ncode: QCT902\n"
         "version: 1.0\ndoctype: FORM\norient: portrait\n-->\n"
         "# 1.0 ИНФОРМАЦИИ|INFORMATION\nТекст.|Text.\n"
     )
-    r = client.post("/build", json={"markdown": md, "out_name": "t2", "meta": {"code": "T-2"}}, headers=h())
+    r = client.post("/build", json={"markdown": md, "out_name": "t2", "meta": {"code": "QCT902"}}, headers=h())
     assert r.status_code == 422
     assert "FAIL" in r.json()["detail"]["verify"]
 
@@ -129,7 +129,7 @@ def test_workflow_degrades_without_db(client, monkeypatch):
     r = client.post(
         "/workflows", headers=h(),
         json={"questionnaire": "sop_qc", "answers": {},
-              "meta": {"title_mk": "а", "title_en": "a", "code": "X-1"}},
+              "meta": {"title_mk": "а", "title_en": "a", "code": "QCT903"}},
     )
     assert r.status_code == 503
     assert client.get("/documents", headers=h()).status_code == 503
@@ -257,8 +257,36 @@ def test_workflow_meta_is_checked_before_any_generation(client, monkeypatch, met
     assert r.status_code == 400 and not started
 
 
-@pytest.mark.parametrize("meta,out_name", [({}, "labels_raw (final) v3"), ({"code": "whsop_003"}, "x"), ({"code": "pasted"}, "x")])
+@pytest.mark.parametrize("meta,out_name", [({}, "labels_raw (final) v3"), ({"code": "QASOP_0XX"}, "x"), ({"code": "pasted"}, "x")])
 def test_a_file_name_is_never_registered_as_a_document_code(client, meta, out_name):
     md = "<!--HEADERDATA\nmk_title: Т\nen_title: T\ncode: X\ndoctype: FORM\n-->\n# 1 А | A\nтекст ||| text\n"
     r = client.post("/build", json={"markdown": md, "out_name": out_name, "meta": meta}, headers=h())
     assert r.status_code == 400 and "document code" in r.json()["detail"]
+
+
+def test_register_routes(client, monkeypatch):
+    assert client.get("/register").status_code == 401
+    rows = client.get("/register", headers=h(), params={"family": "QCSOP", "status": "effective"}).json()["documents"]
+    assert rows and all(r["code"].startswith("QCSOP") and r["status"] == "effective" for r in rows)
+    monkeypatch.setattr(db, "ready", lambda: False)
+    assert client.get("/register/next", headers=h(), params={"family": "QCSOP"}).json()["code"] == "QCSOP025"
+    assert client.get("/register/next", headers=h(), params={"parent": "QCSOP 011"}).json()["code"] == "QCSOP011A02"
+    assert client.get("/register/next", headers=h()).status_code == 400
+
+
+def test_codes_are_stored_in_house_form(client, monkeypatch):
+    seen = {}
+
+    async def fake_create(kind, payload, by=""):
+        seen.update(payload)
+        return "00000000-0000-0000-0000-000000000001"
+    monkeypatch.setattr(db, "ready", lambda: True)
+    monkeypatch.setattr(db, "job_create", fake_create)
+    monkeypatch.setattr("app.main.LettaClient", lambda: type("L", (), {"configured": True})())
+    async def no_run(jid):
+        return None
+    monkeypatch.setattr("app.main.run_workflow", no_run)
+    r = client.post("/workflows", headers=h(), json={"questionnaire": "annex_form", "parent_sop": "WHSOP_003",
+                                                     "meta": {"title_mk": "а", "title_en": "a", "code": "WHSOP_003_A08"}})
+    assert r.status_code == 200
+    assert seen["meta"]["code"] == "WHSOP003A08" and seen["parent_sop"] == "WHSOP003"

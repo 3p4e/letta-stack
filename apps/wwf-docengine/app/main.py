@@ -13,10 +13,11 @@
 #   GET  /documents/{id}/download         the .docx (only ever PASS docs)
 #   GET  /documents/{id}/pdf              Gotenberg-rendered PDF
 #   GET  /engine/environment              engine sync, renderer fonts, last verify results, fleet drift
+#   GET  /register                        controlled documents (register/*.yaml, from QALI 001)
+#   GET  /register/next                   next free code of a family, or next annex of a parent
 import asyncio
 import contextlib
 import logging
-import re
 import uuid
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -26,7 +27,7 @@ from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, Field
 
-from . import builder, db, engine_env, fleet, glossary
+from . import builder, db, engine_env, fleet, glossary, house_codes
 from .config import settings
 from .letta import LettaClient
 from .pipeline import run_workflow
@@ -206,6 +207,9 @@ async def start_workflow(body: WorkflowIn):
     if body.questionnaire not in QUESTIONNAIRES:
         raise HTTPException(400, "unknown questionnaire")
     _check_meta(body.meta, ("title_mk", "title_en", "code"))
+    body.meta["code"] = _house_code(body.meta["code"])
+    if body.parent_sop.strip():
+        body.parent_sop = _house_code(body.parent_sop, "parent_sop")
     if not db.ready():
         raise HTTPException(503, "DocEngine storage unavailable")
     if not LettaClient().configured:
@@ -292,19 +296,22 @@ class BuildIn(BaseModel):
     meta: dict = Field(default_factory=dict)
 
 
-# A registered code is a house code (WHSOP_003, QCSOP_025_A01, PP-QC-SOP-025): the Formatter registered upload
-# file names ("labels_raw (final) v3") as codes, which the Library then showed as that code's effective version
-# (review 14.10.2026). Same rule as the PP Doc Wiz client (web/src/lib/registry.ts).
-CODE_RE = re.compile(r"^[A-Z][A-Z0-9]{0,9}(?:[_-][A-Z0-9]{1,6}){1,4}$")
+def _house_code(raw: str, field: str = "code") -> str:
+    """A document code in the house form of QALI 001 (Head of QC, 18.10.2026): QCSOP011, QCT017, QCSOP011A01.
+    The forms in circulation are normalised ("QCSOP 011", "WHSOP_003_A01"); a file name or an unassigned
+    placeholder ("QASOP_0XX") is refused. The Formatter once registered upload file names as codes and the Library
+    showed them as effective versions (review 14.10.2026). Same rule as web/src/lib/registry.ts."""
+    code = house_codes.normalize(raw)
+    if not code:
+        raise HTTPException(400, f"{field} must be a document code in the house form, e.g. QCSOP011, QCT017 or "
+                                 f"QCSOP011A01 (got {str(raw)[:40]!r}); GET /register/next gives the next free one")
+    return code
 
 
 @app.post("/build", dependencies=[Depends(require_api_key)])
 async def direct_build(body: BuildIn):
     _check_meta(body.meta)
-    code = (body.meta.get("code") or body.out_name).strip()
-    if not CODE_RE.match(code):
-        raise HTTPException(400, "a registered document needs a document code like WHSOP_003 or QCSOP_025_A01 "
-                                 f"(got {code[:40]!r}); send it as meta.code")
+    code = _house_code((body.meta.get("code") or body.out_name).strip(), "meta.code")
     try:
         result = await asyncio.to_thread(
             builder.build, body.markdown, settings.out_dir, body.out_name
@@ -449,3 +456,26 @@ async def engine_environment():
         drift = [{"key": "Letta", "manifest": "fleet.yaml", "live": f"unreachable: {e}"[:120]}]
     return {"canon": engine_env.CANON, "version": f"synced copy · {h}", "synced": h == expected,
             "hash": h, "hashExpected": expected, "fonts": fonts, "glyphAudit": audit, "manifestDrift": drift}
+
+
+# ---------- register (codes in use, next free code) ----------
+@app.get("/register", dependencies=[Depends(require_api_key)])
+async def register(status: str = "", family: str = ""):
+    rows = house_codes.load_register()
+    if status:
+        rows = [r for r in rows if r.get("status") == status]
+    if family:
+        rows = [r for r in rows if house_codes.parts(r["code"])[0].upper() == family.upper()]
+    return {"documents": rows}
+
+
+@app.get("/register/next", dependencies=[Depends(require_api_key)])
+async def register_next(family: str = "", parent: str = ""):
+    """The code a new document takes: one above the highest the register, the registry or an open job holds."""
+    if not family and not parent:
+        raise HTTPException(400, "give family (e.g. QCSOP) or parent (e.g. QCSOP011)")
+    taken = await db.codes_in_use() if db.ready() else set()
+    try:
+        return {"code": house_codes.next_code(family=family, parent=parent, taken=taken), "engine_codes_checked": db.ready()}
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e

@@ -1,19 +1,31 @@
 // Registry rules shared by the Formatter and the Library (review 14.10.2026).
 //
-// A document code is a house code (WHSOP_003, QCSOP_025_A01, QCLB_021, PP-QC-SOP-025): upper case, parts joined
-// by "_" or "-". The Formatter used to register the uploaded file's name as the code ("labels_raw (final) v3"),
-// and the Library then showed that row as the effective version of the "code".
-export const CODE_RE = /^[A-Z][A-Z0-9]{0,9}(?:[_-][A-Z0-9]{1,6}){1,4}$/;
-const CODE_IN_TEXT = /\b[A-Z]{2,9}(?:[_-][A-Z0-9]{1,6}){1,4}\b/;
+// A document code is in the house form of QALI 001 (Head of QC, 18.10.2026): family letters, three digits, an
+// annex as "A" + two digits — QCSOP011, QCT017, QCLB021, QCCoA001, QCSOP011A01. Latin only, no separators.
+// The forms in circulation ("QCSOP 011", "WHSOP_003_A04", a Cyrillic "А") are normalised; a file name is not a code
+// (the Formatter once registered "labels_raw (final) v3", and the Library showed it as an effective version).
+// Same rule as DocEngine app/house_codes.py.
+export const CODE_RE = /^(?:[A-Z]{2,8}|[A-Z]{2}CoA)\d{3}(?:A\d{2})?$/;
+const LOOKALIKE: Record<string, string> = { А: 'A', В: 'B', С: 'C', Е: 'E', Н: 'H', І: 'I', Ј: 'J', К: 'K', М: 'M', О: 'O', Р: 'P', Т: 'T', Х: 'X', У: 'Y', а: 'a', е: 'e', с: 'c', о: 'o', р: 'p', х: 'x', у: 'y' };
+const LOOSE = /^([A-Z]{2,8}|[A-Z]{2}COA)(\d{1,3})(?:A(\d{1,2}))?$/;
+const CODE_IN_TEXT = /\b(?:[A-Z]{2,8}|[A-Z]{2}CoA)[ _-]?\d{3}(?:[ _-]?[AА]\d{2})?\b/;
+
+/** The house form of a typed code, or '' when it is not a document code. */
+export function normalizeCode(raw: string): string {
+  const s = [...(raw || '')].map(ch => LOOKALIKE[ch] || ch).join('').toUpperCase().replace(/[\s_\-./]/g, '');
+  const m = LOOSE.exec(s);
+  if (!m) return '';
+  const fam = m[1].endsWith('COA') ? m[1].slice(0, -3) + 'CoA' : m[1];
+  return fam + m[2].padStart(3, '0') + (m[3] ? 'A' + m[3].padStart(2, '0') : '');
+}
 
 export type RegMeta = { code: string; title_mk: string; title_en: string; version: string };
 
 /** Code, titles and version for a document about to be registered: its own HEADERDATA first, then the first
  *  house code that appears in its text. Never the file name. */
 export function guessMeta(header: Record<string, string>, text: string): RegMeta {
-  const code = (header.code || '').trim();
   return {
-    code: CODE_RE.test(code) ? code : ((text.match(CODE_IN_TEXT) || [''])[0]),
+    code: normalizeCode(header.code || '') || normalizeCode((text.match(CODE_IN_TEXT) || [''])[0]),
     title_mk: (header.mk_title || '').trim(),
     title_en: (header.en_title || '').trim(),
     version: (header.version || '01').trim(),
@@ -23,7 +35,7 @@ export function guessMeta(header: Record<string, string>, text: string): RegMeta
 /** What is missing before a document may be registered; empty when it may. */
 export function metaProblems(m: RegMeta): string[] {
   const out: string[] = [];
-  if (!CODE_RE.test(m.code.trim())) out.push('a document code like WHSOP_003 or QCSOP_025_A01');
+  if (!normalizeCode(m.code)) out.push('a document code in the house form, like QCSOP011 or QCSOP011A01');
   if (!m.title_mk.trim()) out.push('the Macedonian title');
   if (!m.title_en.trim()) out.push('the English title');
   if (!m.version.trim()) out.push('the version');

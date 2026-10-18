@@ -62,6 +62,8 @@ export interface Api {
   documentAvailable(id: string): Promise<number>;
   /** pp_report composer → .docx. pp_report is a Python library with no HTTP route yet. */
   buildReport(spec: { code: string; blocks: unknown[]; dataset?: { name: string; sha256: string } }): Promise<{ ok: boolean; verify: string }>;
+  /** DocEngine GET /register/next: the next free house code of a family (QCSOP → QCSOP025) or of a parent's annexes. */
+  nextCode(q: { family?: string; parent?: string }): Promise<string>;
   /** DocEngine GET /engine/environment: engine hash vs manifest, renderer font probe, last pp_verify results, fleet drift. */
   engineEnv(): Promise<EngineEnv>;
 }
