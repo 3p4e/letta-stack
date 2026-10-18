@@ -180,6 +180,13 @@ async def documents_list(limit: int = 100) -> list[dict]:
     return out
 
 
+async def documents_verify_recent(limit: int = 6) -> list[dict]:
+    """The newest registry rows with their pp_verify report (GET /engine/environment)."""
+    rows = await pool().fetch(
+        "SELECT code, verify, created_at FROM docengine.documents ORDER BY created_at DESC LIMIT $1", limit)
+    return [{"code": r["code"], "verify": r["verify"], "created_at": r["created_at"].isoformat()} for r in rows]
+
+
 async def document_get(did: str) -> dict | None:
     r = await pool().fetchrow("SELECT * FROM docengine.documents WHERE id = $1", did)
     if not r:

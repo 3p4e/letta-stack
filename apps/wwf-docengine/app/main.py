@@ -12,6 +12,7 @@
 #   GET  /documents/{id}                  registry row (verify report incl.)
 #   GET  /documents/{id}/download         the .docx (only ever PASS docs)
 #   GET  /documents/{id}/pdf              Gotenberg-rendered PDF
+#   GET  /engine/environment              engine sync, renderer fonts, last verify results, fleet drift
 import asyncio
 import contextlib
 import logging
@@ -25,7 +26,7 @@ from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, Field
 
-from . import builder, db
+from . import builder, db, engine_env, fleet, glossary
 from .config import settings
 from .letta import LettaClient
 from .pipeline import run_workflow
@@ -113,7 +114,7 @@ async def health():
         "letta": LettaClient().configured,
         # configured only: the compose healthcheck must not depend on another stack
         "ragflow": RagflowClient().configured,
-        "engine": "pp-document-suite (synced copy, canon revision 2026-10-09)",
+        "engine": f"pp-document-suite (synced copy, canon revision {engine_env.CANON})",
     }
 
 
@@ -415,3 +416,36 @@ async def document_pdf(did: str):
         headers={"Content-Disposition":
                  f'attachment; filename="{Path(d["path"]).stem}.pdf"'},
     )
+
+
+# ---------- engine environment (Fleet & health → Engine environment) ----------
+async def _gotenberg(blob: bytes, name: str = "probe.docx") -> bytes:
+    if not settings.gotenberg_url:
+        raise RuntimeError("PDF renderer not configured (GOTENBERG_URL unset)")
+    auth = (settings.gotenberg_user, settings.gotenberg_password) if settings.gotenberg_user else None
+    async with httpx.AsyncClient(timeout=60, auth=auth) as c:
+        r = await c.post(settings.gotenberg_url + "/forms/libreoffice/convert",
+                         files={"files": (name, blob,
+                                          "application/vnd.openxmlformats-officedocument.wordprocessingml.document")})
+    if r.status_code != 200:
+        raise RuntimeError(f"renderer answered {r.status_code}")
+    return r.content
+
+
+@app.get("/engine/environment", dependencies=[Depends(require_api_key)])
+async def engine_environment():
+    """Measured state of the engine this container runs: nothing here is sample data. A part that
+    cannot be measured says so in its own row instead of failing the whole report."""
+    h = await asyncio.to_thread(engine_env.engine_hash)
+    expected = engine_env.manifest_hash()
+    fonts = await engine_env.font_rows(_gotenberg)
+    try:
+        audit = engine_env.audit_rows(await db.documents_verify_recent(6))
+    except Exception as e:  # noqa: BLE001
+        audit = [{"run": "registry", "ok": False, "note": f"cannot read the document registry: {e}"[:200]}]
+    try:
+        drift = engine_env.drift_rows(fleet.load_fleet(), glossary.memory_text(), await LettaClient().list_agents())
+    except Exception as e:  # noqa: BLE001
+        drift = [{"key": "Letta", "manifest": "fleet.yaml", "live": f"unreachable: {e}"[:120]}]
+    return {"canon": engine_env.CANON, "version": f"synced copy · {h}", "synced": h == expected,
+            "hash": h, "hashExpected": expected, "fonts": fonts, "glyphAudit": audit, "manifestDrift": drift}

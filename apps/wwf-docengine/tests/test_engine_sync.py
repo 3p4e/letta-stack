@@ -26,3 +26,13 @@ def test_engine_matches_suite(sub):
     assert _files(ENGINE / sub) == suite, f"engine/{sub} file list differs from pp-document-suite/{sub}"
     differ = [str(f) for f in suite if not filecmp.cmp(SUITE / sub / f, ENGINE / sub / f, shallow=False)]
     assert not differ, f"run engine/sync_from_suite.sh — differs: {differ}"
+
+
+def test_manifest_records_the_engine_files():
+    """engine/MANIFEST is what GET /engine/environment compares the image's engine against; a stale
+    line would report every deployment as drifted (or hide a real drift)."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("engine_env", HERE / "app" / "engine_env.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    assert mod.manifest_hash() == mod.engine_hash(), "run engine/sync_from_suite.sh — engine/MANIFEST is stale"

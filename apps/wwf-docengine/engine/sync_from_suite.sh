@@ -11,4 +11,5 @@ mkdir -p "$HERE/scripts"
 cp "$SUITE"/scripts/*.py "$SUITE"/scripts/*.sh "$SUITE"/scripts/*.ps1 "$HERE/scripts/"
 cp -r "$SUITE/assets" "$HERE/assets"
 cp -r "$SUITE/references" "$HERE/references"
+python3 "$HERE/../app/engine_env.py" --write-manifest
 echo "engine synced from $SUITE"

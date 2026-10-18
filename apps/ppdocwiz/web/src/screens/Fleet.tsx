@@ -20,28 +20,32 @@ function FleetBody() {
   const [agSel, setAgSel] = useState('gf_sop_author');
   const [tab, setTab] = useState<'agent' | 'engine' | 'settings'>('agent');
   const [h, setH] = useState<{ pw?: Health; de?: DeHealth; err?: string; code: number }>({ code: 0 });
-  const [env, setEnv] = useState<EngineEnv | null>(null), [envErr, setEnvErr] = useState('');
+  const [env, setEnv] = useState<EngineEnv | null>(null), [envErr, setEnvErr] = useState(''), [rev, setRev] = useState(0);
   const [faults, setFaults] = useState<Faults | null>(api.mode === 'mock' ? { ...(api as MockApi).faults } : null);
   useEffect(() => {
     Promise.all([api.health().catch(() => undefined), api.deHealth().then(d => ({ d, code: 200 })).catch((e: ApiError) => ({ d: undefined, code: e.status, err: e.message }))])
       .then(([pw, r]) => setH({ pw, de: r.d, code: r.code, err: (r as { err?: string }).err }));
-  }, [api, dataRev]);
-  useEffect(() => { if (tab === 'engine') api.engineEnv().then(setEnv).catch((e: ApiError) => setEnvErr(`${e.status} · ${e.message}`)); }, [api, tab]);
-  usePrimary('Build ▸', () => run('WHSOP_002_A02', async () => ({ ok: true })));
+  }, [api, dataRev, rev]);
+  useEffect(() => { if (tab === 'engine') { setEnvErr(''); api.engineEnv().then(setEnv).catch((e: ApiError) => setEnvErr(`${e.status} · ${e.message}`)); } }, [api, tab, rev]);
+  // Live: this page measures, it builds nothing — the button re-reads health and the engine environment.
+  // (It used to run a placeholder that always printed "RESULT: PASS" for WHSOP_002_A02.)
+  usePrimary(api.mode === 'live' ? 'Refresh ▸' : 'Build ▸', () => api.mode === 'live' ? setRev(r => r + 1) : run('WHSOP_002_A02', async () => ({ ok: true })));
 
   const A = AGENTS.find(a => a.n === agSel) || AGENTS[1];
   const agv = (a: typeof AGENTS[number]) => <div key={a.n} onClick={() => { setAgSel(a.n); setTab('agent'); }} style={{ padding: '7px 9px', borderRadius: 6, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', gap: 6, alignItems: 'center', background: agSel === a.n ? T.selected : 'transparent' }}>
     <span style={{ fontFamily: MONO, fontSize: 12, color: agSel === a.n ? '#fff' : T.secondary, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.n}</span><span style={{ fontFamily: MONO, fontSize: 11, color: T.muted }}>{a.runs}</span></div>;
   const flip = (k: keyof Faults) => { const m = api as MockApi; m.setFaults({ [k]: !m.faults[k] }); setFaults({ ...m.faults }); };
   const de = h.de, deOk = h.code === 200;
-  const services: [string, string, string, string][] = [['letta', ':8283', de?.letta === false ? 'unavailable' : 'v0.16.8 · 11 agents', svc.letta], ['docengine', 'internal', deOk ? (de?.db ? 'db ok' : 'storage down') : `${h.code || 'unreachable'}`, svc.docengine], ['qms-api', ':8500', 'p95 1.9 s', 'ok'], ['gotenberg', ':3000', faults?.gotenberg ? 'PDF 502' : 'LibreOffice', faults?.gotenberg ? 'bad' : 'ok'], ['postgres', ':5432', de?.db === false ? 'not ready' : 'schema docengine', de?.db === false ? 'bad' : 'ok'], ['ppdocwiz', ':8770', h.pw ? `wizard + ${h.pw.letta ? 'chat' : 'no chat'}${h.pw.pdf ? '' : ' · no PDF'}` : '—', h.pw ? 'ok' : 'idle']];
+  const live = api.mode === 'live';
+  // Live cards show only what /api/health and DocEngine /health report; sample figures stay in mock mode.
+  const services: [string, string, string, string][] = [['letta', ':8283', de?.letta === false ? 'unavailable' : live ? (de?.letta ? 'configured' : '—') : 'v0.16.8 · 11 agents', svc.letta], ['docengine', 'internal', deOk ? (de?.db ? 'db ok' : 'storage down') : `${h.code || 'unreachable'}`, svc.docengine], ['qms-api', ':8500', live ? 'not monitored here' : 'p95 1.9 s', live ? 'idle' : 'ok'], ['gotenberg', ':3000', live ? (h.pw ? (h.pw.pdf ? 'pp-render · house fonts' : 'no PDF renderer') : '—') : faults?.gotenberg ? 'PDF 502' : 'LibreOffice', live ? (h.pw?.pdf ? 'ok' : 'bad') : faults?.gotenberg ? 'bad' : 'ok'], ['postgres', ':5432', de?.db === false ? 'not ready' : 'schema docengine', de?.db === false ? 'bad' : 'ok'], ['ppdocwiz', ':8770', h.pw ? `wizard + ${h.pw.letta ? 'chat' : 'no chat'}${h.pw.pdf ? '' : ' · no PDF'}` : '—', h.pw ? 'ok' : 'idle']];
   const hl = (v: unknown) => <span style={{ color: v === true ? C.ok : v === false ? C.bad : C.warn }}>{JSON.stringify(v)}</span>;
   return <>
     <div style={{ width: 250, flex: 'none', borderRight: `1px solid ${T.hair}`, background: T.pane, padding: '14px 10px', display: 'flex', flexDirection: 'column', gap: 3, overflow: 'auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '0 4px 6px' }}><b style={{ color: '#fff' }}>Agents</b><span style={{ fontFamily: MONO, fontSize: 11, color: T.faint }}>fleet.yaml</span></div>
       <Caps style={{ padding: '6px 6px 4px' }}>GF_* · MANAGED</Caps>{AGENTS.filter(a => !a.legacy).map(agv)}
       <Caps style={{ padding: '12px 6px 4px' }}>EXISTING · NEVER MODIFIED</Caps>{AGENTS.filter(a => a.legacy).map(agv)}
-      <Caps style={{ padding: '12px 6px 4px' }}>EPHEMERAL CLONES</Caps><div style={{ padding: '5px 9px', fontFamily: MONO, fontSize: 11, color: T.faint }}>none alive · last sweep 06:20</div>
+      <Caps style={{ padding: '12px 6px 4px' }}>EPHEMERAL CLONES</Caps><div style={{ padding: '5px 9px', fontFamily: MONO, fontSize: 11, color: T.faint }}>{live ? 'not reported yet' : 'none alive · last sweep 06:20'}</div>
       <Caps style={{ padding: '12px 6px 4px' }}>ADMIN</Caps>
       {([['engine', 'Engine environment'], ['settings', 'Settings & degraded states']] as const).map(([k, l]) => <div key={k} onClick={() => setTab(k)} style={{ padding: '7px 9px', borderRadius: 6, cursor: 'pointer', background: tab === k ? T.selected : 'transparent', color: tab === k ? '#fff' : T.secondary, fontSize: 12.5 }}>{l}</div>)}
     </div>
@@ -64,12 +68,12 @@ function FleetBody() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 10, fontSize: 12.5 }}>
             {([['engine', 'pp-document-suite ' + env.version, T.text], ['canon', env.canon, T.text], ['sync', env.synced && env.hash === env.hashExpected ? `hash ${env.hash} = manifest` : `hash ${env.hash} ≠ ${env.hashExpected}`, env.synced && env.hash === env.hashExpected ? C.ok : C.bad]] as const).map(([k, v, c]) =>
               <div key={k} style={{ background: T.surface, border: `1px solid ${T.control}`, borderRadius: 6, padding: '9px 11px' }}><div style={{ color: T.muted, fontSize: 11.5 }}>{k}</div><div style={{ fontFamily: MONO, color: c, fontSize: 12 }}>{v}</div></div>)}</div>
-          <Caps>FONTS · subset-webfont shadowing</Caps>
+          <Caps>FONTS · renderer probe, one document per house face</Caps>
           <div style={{ background: T.deeper, border: `1px solid ${T.hair}`, borderRadius: 6, padding: '9px 11px', fontFamily: MONO, fontSize: 11.5, display: 'flex', flexDirection: 'column', gap: 5 }}>{env.fonts.map(f => <div key={f.face} style={{ display: 'grid', gridTemplateColumns: '16px 150px 1fr', gap: 8 }}><span style={{ color: f.ok ? C.ok : C.bad }}>{f.ok ? '✓' : '✗'}</span><span style={{ color: '#fff' }}>{f.face}</span><span style={{ color: f.ok ? T.secondary : T.errText }}>{f.file}{f.missing ? ` · missing Macedonian letters: ${f.missing}` : ''}</span></div>)}</div>
-          {env.fonts.some(f => !f.ok) && <Banner kind="err">A cut-down font is shadowing the full face. Builds will pass on this machine's view but print boxes for the missing letters; pp_verify's render-environment check FAILs while this is present.</Banner>}
-          <Caps>GLYPH AUDIT · last runs</Caps>
+          {env.fonts.some(f => !f.ok) && <Banner kind="err">The renderer does not print every house face as asked. DocEngine refuses a PDF with a substitute font (Head of QC, 10.10.2026), so PDFs fail until the font is installed in pp-render.</Banner>}
+          <Caps>PP_VERIFY · last documents in the registry</Caps>
           <div style={{ background: T.deeper, border: `1px solid ${T.hair}`, borderRadius: 6, padding: '9px 11px', fontFamily: MONO, fontSize: 11.5, display: 'flex', flexDirection: 'column', gap: 5 }}>{env.glyphAudit.map(g => <div key={g.run} style={{ display: 'grid', gridTemplateColumns: '16px 170px 1fr', gap: 8 }}><span style={{ color: g.ok ? C.ok : C.warn }}>{g.ok ? '✓' : '!'}</span><span style={{ color: '#fff' }}>{g.run}</span><span style={{ color: g.ok ? T.secondary : C.warn }}>{g.note}</span></div>)}</div>
-          <Caps>MANIFEST DRIFT · live config vs committed manifest</Caps>
+          <Caps>FLEET DRIFT · persistent agents vs agents/fleet.yaml (pipeline clones are built from fleet.yaml; the chat uses the persistent agents)</Caps>
           <div style={{ border: `1px solid ${T.hair}`, borderRadius: 6, overflow: 'hidden', fontFamily: MONO, fontSize: 11.5 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 120px', gap: 8, padding: '6px 10px', background: T.pane, color: T.muted }}><span>key</span><span>manifest</span><span>live</span></div>
             {env.manifestDrift.map(d => <div key={d.key} style={{ display: 'grid', gridTemplateColumns: '1fr 120px 120px', gap: 8, padding: '6px 10px', borderTop: `1px solid ${T.hair}`, color: d.manifest === d.live ? T.secondary : C.warn }}><span>{d.key}</span><span>{d.manifest}</span><span>{d.live}{d.manifest !== d.live ? '  ≠' : ''}</span></div>)}</div>
@@ -95,7 +99,7 @@ function FleetBody() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>{services.map(([name, port, meta, st]) => <div key={name} style={{ background: T.surface, border: `1px solid ${T.control}`, borderRadius: 6, padding: '7px 9px' }}>
         <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}><Dot c={C[st as 'ok']} /><b style={{ color: '#fff', fontSize: 12 }}>{name}</b><span style={{ marginLeft: 'auto', fontFamily: MONO, fontSize: 10.5, color: T.muted }}>{port}</span></div>
         <div style={{ fontSize: 11, color: st === 'bad' ? C.bad : T.secondary, marginTop: 3 }}>{meta}</div></div>)}</div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}><b style={{ color: '#fff' }}>Log tail</b><span style={{ fontFamily: MONO, fontSize: 11.5, color: api.mode === 'mock' ? T.muted : C.ok }}>{api.mode === 'mock' ? 'sample' : '● live'}</span></div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}><b style={{ color: '#fff' }}>Log tail</b><span style={{ fontFamily: MONO, fontSize: 11.5, color: T.muted }}>sample · no endpoint yet</span></div>
       <div style={{ fontFamily: MONO, fontSize: 11, lineHeight: 1.7, color: T.secondary, overflow: 'hidden' }}>{LOG_LINES.map((t, i) => <div key={i} style={{ whiteSpace: 'pre', color: /FAIL|gap|FIX|reaped/.test(t) ? C.warn : /PASS|200/.test(t) ? T.secondary : T.muted }}>{t}</div>)}</div>
     </div>
   </>;

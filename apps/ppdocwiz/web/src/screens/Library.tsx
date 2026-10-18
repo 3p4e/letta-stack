@@ -40,7 +40,8 @@ export function Library() {
     api.documentAvailable(sel.id).then(setAvail);
   }, [api, sel?.id]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (!cmp) { setCmpDocs(null); return; } Promise.all(cmp.map(id => api.document(id))).then(d => setCmpDocs(d as [Row, Row])).catch(() => setCmpDocs(null)); }, [api, cmp]);
-  usePrimary('Build ▸', () => run(sel?.code || 'WHSOP_002_A02', async () => ({ ok: true })));
+  // Live mode has no rebuild route behind this button: it is off rather than reporting a PASS that never ran.
+  usePrimary('Build ▸', () => run(sel?.code || 'WHSOP_002_A02', async () => ({ ok: true })), api.mode === 'live');
 
   if (err) return <div style={{ flex: 1, padding: 22 }}><Banner kind="err">GET /documents → {err}. {err.startsWith('503') ? 'The registry lives in Postgres (docengine.documents); it is unavailable, so nothing can be listed or downloaded.' : 'DocEngine is not reachable from this page.'}</Banner></div>;
   if (!rows) return <div style={{ flex: 1, padding: 22, color: T.muted }}>loading…</div>;
