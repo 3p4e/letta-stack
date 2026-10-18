@@ -7,7 +7,8 @@
 # in any of the forms in circulation ("QCSOP 011", "QCSOP_011_A01", "WHSOP_003", "QCSOP011А01") are
 # normalised to it at the door; a code that cannot be (a file name, "QASOP_0XX") is refused.
 #
-# The register (register/*.yaml, reviewed in git like any controlled change) is the list of codes in use.
+# The register (register/*.yaml) is the engine's working copy of the codes in use. The engine is a research and
+# development tool outside the QMS (Head of QC, 18.10.2026): QALI 001 is the master, and where they differ QALI 001 wins.
 # The next free number of a family is one above the highest number the register, the document registry
 # or any open job holds; numbers are never reused (QCSOP020 was withdrawn, not freed) and gaps are not filled.
 import re

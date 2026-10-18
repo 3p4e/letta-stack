@@ -1,9 +1,11 @@
-# Register of controlled documents — Quality Control department.
+# Working copy of the register of controlled documents — Quality Control department.
 # Source: QALI 001 v01 "Мастер листа на QMS документи / Master list of QMS documents" (Drive file
 # 1r7VmPooExht7vGP4s-xaH0nnaZ1MKhhS, read 18.10.2026). Head of QC, 18.10.2026: QALI 001 is the master;
 # QAT 001 (SOPs), QAT 002 (WIs) and QAT 003 (forms, logbooks) are views of it.
 #
-# Changing a row is a controlled change: edit it here and merge it through a reviewed pull request.
+# Not a QMS record. The DocEngine is a research and development tool outside the QMS (Head of QC, 18.10.2026);
+# this file mirrors QALI 001 so the engine numbers drafts correctly. Where it differs from QALI 001, QALI 001 wins
+# and this file is corrected.
 # status:
 #   effective           approved and in use
 #   effective_revising  in use; the next version is being written (QALI note "под ревизија", "се чека нова верзија")

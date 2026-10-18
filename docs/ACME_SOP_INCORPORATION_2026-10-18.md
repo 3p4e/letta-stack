@@ -4,11 +4,17 @@ Source: the ACME_SOP Drive folder (`1MZYJOs9LKplBh_McrPj8YzSLCDP5VJhE`), invento
 3,224 files. The Drive connector's paging is defective, so some folder counts are lower bounds.
 Nothing in Drive was changed. `secrets.env` and `cookies.txt` at the root were not opened and must not be ingested.
 
+**Scope (Head of QC, 18.10.2026).** Nothing in the DocEngine is part of the QMS, even when it is fed QMS information
+for research and development to Purely Plant's needs. A draft made in the engine becomes a QMS document only through
+the QMS route: QA review, approval and signature, and registration in QALI 001. The engine's register is a working
+copy of QALI 001, used only so drafts are numbered correctly. The finding below on records made on draft forms concerns
+the facility's records, not the engine.
+
 ## The rule used to decide
 
 | bin | what | where it goes |
 |---|---|---|
-| 1 | a **controlled document** being written (SOP, annex, blank form/logbook template), newest copy only | DocEngine draft under its house code |
+| 1 | a **controlled-document draft** being written (SOP, annex, blank form/logbook template), newest copy only | DocEngine draft under its house code |
 | 2 | a **record**: anything carrying a batch, lot, date, result or signature (CoQ, CoA, iCoA, filled forms, label runs, execution sets, issued campaign documents) | not authored; stays where it is |
 | 3 | **reference input** (supplier specs and CoAs, equipment manuals, examples, master lists) | a reference dataset, never the approved-SOP dataset |
 | 4 | tooling, workspace, build output, copies, secrets | excluded |
