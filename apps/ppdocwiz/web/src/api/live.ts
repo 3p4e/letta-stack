@@ -70,6 +70,6 @@ export function liveApi(): Api {
     documentHref: (id, kind) => `${de}/documents/${encodeURIComponent(id)}/${kind}`,
     documentAvailable: async id => { try { const r = await fetch(`${de}/documents/${encodeURIComponent(id)}/download`, { method: 'HEAD', credentials: 'same-origin' }); return r.status; } catch { return 0; } },
     buildReport: async () => { throw new ApiError(501, 'no report route yet: pp_report.py is called from Python scripts, not exposed by ppdocwiz or DocEngine'); },
-    engineEnv: async () => { throw new ApiError(501, 'no engine-environment endpoint yet: pp_assets.check_environment runs inside pp_verify only'); },
+    engineEnv: () => call(de + '/engine/environment'),
   };
 }

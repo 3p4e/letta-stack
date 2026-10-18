@@ -62,6 +62,6 @@ export interface Api {
   documentAvailable(id: string): Promise<number>;
   /** pp_report composer → .docx. pp_report is a Python library with no HTTP route yet. */
   buildReport(spec: { code: string; blocks: unknown[]; dataset?: { name: string; sha256: string } }): Promise<{ ok: boolean; verify: string }>;
-  /** pp_assets.check_environment + canon/version sync + manifest drift. No endpoint yet. */
+  /** DocEngine GET /engine/environment: engine hash vs manifest, renderer font probe, last pp_verify results, fleet drift. */
   engineEnv(): Promise<EngineEnv>;
 }
