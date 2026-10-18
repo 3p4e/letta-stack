@@ -7,25 +7,30 @@
 # list arrives, it replaces this file.
 # status:
 #   known       a file carries this code; its status in the QMS is not recorded here
+#   unconfirmed a draft carries this EQSOP number, but the number is not confirmed
 department: EQ
 review_years: 3
 
+# Head of QC, 18.10.2026: "EQSOP document family is not approved as equipment sops yet".
+# GET /register/next gives EQSOPXXX for a new one; the number comes when it is confirmed.
+unconfirmed_families: [EQSOP]
+
 documents:
-  - {code: EQSOP001, title_en: "HMA MOC63u moisture analyser — equipment use SOP", status: known, note: "EQ_MAN/HMA_MOC63u: EQSOP_001_Ver01"}
-  - {code: EQSOP001A01, parent: EQSOP001, title_en: "EQSOP001 annex 01 (title not in the file name)", status: known, note: "EQ_MAN/HMA_MOC63u"}
-  - {code: EQSOP001A02, parent: EQSOP001, title_en: "EQSOP001 annex 02 (title not in the file name)", status: known, note: "EQ_MAN/HMA_MOC63u"}
-  - {code: EQSOP001A03, parent: EQSOP001, title_en: "EQSOP001 annex 03 (title not in the file name)", status: known, note: "EQ_MAN/HMA_MOC63u"}
-  - {code: EQSOP001A04, parent: EQSOP001, title_en: "EQSOP001 annex 04 (title not in the file name)", status: known, note: "EQ_MAN/HMA_MOC63u"}
-  - {code: EQSOP001A05, parent: EQSOP001, title_en: "EQSOP001 annex 05 (title not in the file name)", status: known, note: "EQ_MAN/HMA_MOC63u"}
-  - {code: EQSOP001A06, parent: EQSOP001, title_en: "EQSOP001 annex 06 (title not in the file name)", status: known, note: "EQ_MAN/HMA_MOC63u"}
-  - {code: EQSOP001A07, parent: EQSOP001, title_en: "EQSOP001 annex 07 (title not in the file name)", status: known, note: "EQ_MAN/HMA_MOC63u"}
-  - {code: EQSOP001A08, parent: EQSOP001, title_en: "EQSOP001 annex 08 (title not in the file name)", status: known, note: "EQ_MAN/HMA_MOC63u"}
-  - {code: EQSOP013, title_en: "Memmert ICH750L climate chamber — equipment use SOP", status: known, note: "EQ_MAN/Memmert ICH750L: EQSOP_013_Ver01_MainSOP"}
-  - {code: EQSOP013A01, parent: EQSOP013, title_en: "Daily Operating", status: known, note: "EQ_MAN/Memmert ICH750L"}
-  - {code: EQSOP013A02, parent: EQSOP013, title_en: "T/RH Calibration", status: known, note: "EQ_MAN/Memmert ICH750L"}
-  - {code: EQSOP013A03, parent: EQSOP013, title_en: "Light Calibration", status: known, note: "EQ_MAN/Memmert ICH750L"}
-  - {code: EQSOP013A04, parent: EQSOP013, title_en: "Troubleshooting", status: known, note: "EQ_MAN/Memmert ICH750L"}
-  - {code: EQSOP013A05, parent: EQSOP013, title_en: "Cleaning", status: known, note: "EQ_MAN/Memmert ICH750L"}
-  - {code: EQSOP013A06, parent: EQSOP013, title_en: "Verification Checklist", status: known, note: "EQ_MAN/Memmert ICH750L"}
-  - {code: EQSOP013A07, parent: EQSOP013, title_en: "PM Schedule", status: known, note: "EQ_MAN/Memmert ICH750L"}
-  - {code: EQSOP013A08, parent: EQSOP013, title_en: "Logbook", status: known, note: "EQ_MAN/Memmert ICH750L"}
+  - {code: EQSOP001, title_en: "HMA MOC63u moisture analyser — equipment use SOP", status: unconfirmed, note: "EQ_MAN/HMA_MOC63u: EQSOP_001_Ver01"}
+  - {code: EQSOP001A01, parent: EQSOP001, title_en: "EQSOP001 annex 01 (title not in the file name)", status: unconfirmed, note: "EQ_MAN/HMA_MOC63u"}
+  - {code: EQSOP001A02, parent: EQSOP001, title_en: "EQSOP001 annex 02 (title not in the file name)", status: unconfirmed, note: "EQ_MAN/HMA_MOC63u"}
+  - {code: EQSOP001A03, parent: EQSOP001, title_en: "EQSOP001 annex 03 (title not in the file name)", status: unconfirmed, note: "EQ_MAN/HMA_MOC63u"}
+  - {code: EQSOP001A04, parent: EQSOP001, title_en: "EQSOP001 annex 04 (title not in the file name)", status: unconfirmed, note: "EQ_MAN/HMA_MOC63u"}
+  - {code: EQSOP001A05, parent: EQSOP001, title_en: "EQSOP001 annex 05 (title not in the file name)", status: unconfirmed, note: "EQ_MAN/HMA_MOC63u"}
+  - {code: EQSOP001A06, parent: EQSOP001, title_en: "EQSOP001 annex 06 (title not in the file name)", status: unconfirmed, note: "EQ_MAN/HMA_MOC63u"}
+  - {code: EQSOP001A07, parent: EQSOP001, title_en: "EQSOP001 annex 07 (title not in the file name)", status: unconfirmed, note: "EQ_MAN/HMA_MOC63u"}
+  - {code: EQSOP001A08, parent: EQSOP001, title_en: "EQSOP001 annex 08 (title not in the file name)", status: unconfirmed, note: "EQ_MAN/HMA_MOC63u"}
+  - {code: EQSOP013, title_en: "Memmert ICH750L climate chamber — equipment use SOP", status: unconfirmed, note: "EQ_MAN/Memmert ICH750L: EQSOP_013_Ver01_MainSOP"}
+  - {code: EQSOP013A01, parent: EQSOP013, title_en: "Daily Operating", status: unconfirmed, note: "EQ_MAN/Memmert ICH750L"}
+  - {code: EQSOP013A02, parent: EQSOP013, title_en: "T/RH Calibration", status: unconfirmed, note: "EQ_MAN/Memmert ICH750L"}
+  - {code: EQSOP013A03, parent: EQSOP013, title_en: "Light Calibration", status: unconfirmed, note: "EQ_MAN/Memmert ICH750L"}
+  - {code: EQSOP013A04, parent: EQSOP013, title_en: "Troubleshooting", status: unconfirmed, note: "EQ_MAN/Memmert ICH750L"}
+  - {code: EQSOP013A05, parent: EQSOP013, title_en: "Cleaning", status: unconfirmed, note: "EQ_MAN/Memmert ICH750L"}
+  - {code: EQSOP013A06, parent: EQSOP013, title_en: "Verification Checklist", status: unconfirmed, note: "EQ_MAN/Memmert ICH750L"}
+  - {code: EQSOP013A07, parent: EQSOP013, title_en: "PM Schedule", status: unconfirmed, note: "EQ_MAN/Memmert ICH750L"}
+  - {code: EQSOP013A08, parent: EQSOP013, title_en: "Logbook", status: unconfirmed, note: "EQ_MAN/Memmert ICH750L"}

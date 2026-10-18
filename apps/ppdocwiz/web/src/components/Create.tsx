@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import type { Doctype } from '../api/types';
 import { codePattern, DEFAULT_FAMILY, skeleton } from '../lib/newdoc';
-import { normalizeCode } from '../lib/registry';
+import { isUnconfirmed, normalizeCode } from '../lib/registry';
 import { useApp, type AppState, type Screen, type Sheet } from '../store/store';
 import { C, DISPLAY, MONO, T } from '../theme';
 import { Caps } from './ui';
@@ -77,7 +77,7 @@ export function NewDocSheet() {
   if (!sh) return null;
   const upd = (k: keyof Sheet, v: string) => set(s => ({ sheet: { ...s.sheet!, [k]: v } }));
   const isSop = sh.doctype === 'SOP', isRep = sh.doctype === 'REPORT';
-  const house = normalizeCode(sh.code), codeOk = !!house && codePattern(sh.doctype as Doctype).test(house), taken = registered.includes(house);
+  const house = normalizeCode(sh.code), codeOk = !!house && codePattern(sh.doctype as Doctype).test(house), taken = registered.includes(house) && !isUnconfirmed(house);
   const arrow = (['code', 'title_mk', 'title_en', 'version', 'parent', 'supersedes'] as const).some(k => (sh[k] || '').includes('-->'));
   const cyr = /[Ѐ-ӿ]/.test(sh.title_mk), lat = /[A-Za-z]/.test(sh.title_en);
   const parentOk = isSop || isRep || !!sh.parent.trim();

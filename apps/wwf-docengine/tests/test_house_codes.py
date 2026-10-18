@@ -20,7 +20,7 @@ def test_forms_in_circulation_become_the_house_form(raw, house):
     assert hc.normalize(raw) == house
 
 
-@pytest.mark.parametrize("raw", ["labels_raw (final) v3", "pasted", "QASOP_0XX", "T-1", "", "123", "QCSOP"])
+@pytest.mark.parametrize("raw", ["labels_raw (final) v3", "pasted", "QASOP_0YY", "T-1", "", "123", "QCSOP"])
 def test_what_is_not_a_document_code_is_refused(raw):
     assert hc.normalize(raw) is None
 
@@ -66,13 +66,31 @@ def test_other_departments_are_known_from_the_files_we_have():
     rows = {r["code"]: r for r in hc.load_register()}
     for code, dept in (("WHSOP002A09", "WH"), ("WHSOP003A07", "WH"), ("EQSOP013A08", "EQ"), ("QASOP031A10", "QA"),
                        ("QAT053", "QA"), ("SPT004", "SP"), ("CULI001", "CU")):
-        assert rows[code]["department"] == dept and rows[code]["status"] == "known", code
+        assert rows[code]["department"] == dept and rows[code]["status"] in ("known", "unconfirmed"), code
     assert hc.next_code(family="WHSOP") == "WHSOP004"
     assert hc.next_code(parent="WHSOP003") == "WHSOP003A08"
-    assert hc.next_code(family="EQSOP") == "EQSOP014"
+    assert hc.next_code(family="EQSOP") == "EQSOPXXX"            # the EQSOP family is not yet approved
 
 
 def test_qasop_99_is_a_placeholder_not_a_code():
     # Head of QC, 18.10.2026: "QASOP_99 is not true, i just named it 99 instead of xxx".
     assert "QASOP099" not in {r["code"] for r in hc.load_register()}
-    assert hc.next_code(family="QASOP") == "QASOP033"
+    assert hc.next_code(family="QASOP") == "QASOPXXX"
+
+
+@pytest.mark.parametrize("raw,house", [("QASOP_0XX", "QASOPXXX"), ("qasop xxx", "QASOPXXX"), ("QASOP_0XX_A06", "QASOPXXXA06"),
+                                       ("EQSOP XXX A01", "EQSOPXXXA01")])
+def test_an_unconfirmed_number_is_written_xxx(raw, house):
+    # Head of QC, 18.10.2026: "all QA SOP drafts should be xxx unknown numbers actualy until not confirmed".
+    assert hc.normalize(raw) == house
+    assert hc.parts(house)[1] is None
+
+
+def test_unconfirmed_families_get_xxx_and_their_drafts_are_marked():
+    # QA SOP numbers are not confirmed; the EQSOP family is not yet approved (Head of QC, 18.10.2026).
+    assert {"QASOP", "EQSOP"} <= hc.unconfirmed_families()
+    rows = {r["code"]: r for r in hc.load_register()}
+    assert rows["QASOP031"]["status"] == rows["EQSOP013"]["status"] == "unconfirmed"
+    assert rows["QAT053"]["status"] == "known"                        # forms keep their numbers
+    assert hc.next_code(parent="QASOPXXX", taken={"QASOP_0XX_A06"}) == "QASOPXXXA07"
+    assert hc.next_code(family="QAT") == "QAT054" and hc.next_code(family="QCSOP") == "QCSOP026"

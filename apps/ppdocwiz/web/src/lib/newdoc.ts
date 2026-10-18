@@ -4,9 +4,9 @@ import { SOP_SEC } from '../data/samples';
 // House form of QALI 001 (Head of QC, 18.10.2026). An SOP is DEPTSOPnnn; an annex is its SOP's code + Ann, or a
 // controlled form of its own family (QCT, QCLB, QCPL, QCSP, QCSPW, QCCoA). Reports take any house code.
 export const CODE_PATTERN = {
-  SOP: /^[A-Z]{2}SOP\d{3}$/,
+  SOP: /^[A-Z]{2}SOP(?:\d{3}|XXX)$/,
   REPORT: /^(?:[A-Z]{2,8}|[A-Z]{2}CoA)\d{3}(?:A\d{2})?$/,
-  ANNEX: /^(?:[A-Z]{2}SOP\d{3}A\d{2}|[A-Z]{2}(?:T|LB|PL|SPW?|CoA|LI)\d{3})$/,
+  ANNEX: /^(?:[A-Z]{2}SOP(?:\d{3}|XXX)A\d{2}|[A-Z]{2}(?:T|LB|PL|SPW?|CoA|LI)\d{3})$/,
 };
 /** The family a new document of this doctype is numbered in when it has no parent SOP. */
 export const DEFAULT_FAMILY: Record<string, string> = { SOP: 'QCSOP', LOG: 'QCLB', FORM: 'QCT', CHECKLIST: 'QCT' };

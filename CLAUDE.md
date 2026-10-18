@@ -410,3 +410,7 @@ the QA channels.
   system covers them. Do not warn that a draft looks too real or ask for "draft" watermarks.
 - The engine's `register/*.yaml` files are working copies (QALI 001 for QC; `*_KNOWN.yaml` for the other departments,
   from the files we have only, until their master lists arrive). They exist so the engine numbers drafts correctly.
+- **Unconfirmed numbers are XXX** (Head of QC, 18.10.2026: *"all QA SOP drafts should be xxx unknown numbers actualy
+  until not confirmed"*; *"EQSOP document family is not approved as equipment sops yet"*). QASOP and EQSOP are
+  `unconfirmed_families`: a new draft is `QASOPXXX` / `EQSOPXXX` (annexes `QASOPXXXA01`…), and the numbers drafts already
+  carry are `unconfirmed`. A missing number never stops a draft.
