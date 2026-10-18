@@ -1,6 +1,7 @@
 # Codes the QC department's work in progress already uses, outside QALI 001 — Quality Control department.
 # Source: the ACME_SOP drafts folder (Drive 1MZYJOs9LKplBh_McrPj8YzSLCDP5VJhE), inventoried 18.10.2026.
 # Titles are the drafts' own file names; none of these documents is approved or in use.
+# Not a QMS record: the engine is a research and development tool outside the QMS (Head of QC, 18.10.2026).
 #
 # Why this file exists: GET /register/next gives one above the highest number the register holds. With
 # QALI 001 alone it gave QCSOP025, QCT017 and QCLB021, and drafts already carry all three, so the engine
