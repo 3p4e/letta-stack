@@ -83,7 +83,7 @@ export function NewDocSheet() {
   const parentOk = isSop || isRep || !!sh.parent.trim();
   const ok = codeOk && cyr && lat && !arrow && parentOk;
   const FIELDS: [keyof Sheet, string, string, string, string][] = [
-    ['code', '*', isSop ? 'QCSOP025' : 'QCSOP011A02', !sh.code ? (isSop ? 'House form DEPTSOPnnn — filled from the register' : 'House form: parent SOP code + Ann, or QCT/QCLB/QCPL nnn') : codeOk ? (taken ? 'Exists in the registry → this becomes a new version' : house !== sh.code.trim() ? `Stored as ${house}` : (auto && codeNote) || 'Code format OK') : 'Not a house code (e.g. QCSOP025, QCSOP011A02, QCLB021)', !sh.code ? T.muted : codeOk ? (taken ? C.warn : C.ok) : C.bad],
+    ['code', '*', isSop ? 'QCSOP026' : 'QCSOP011A10', !sh.code ? (isSop ? 'House form DEPTSOPnnn — filled from the register' : 'House form: parent SOP code + Ann, or QCT/QCLB/QCPL nnn') : codeOk ? (taken ? 'Exists in the registry → this becomes a new version' : house !== sh.code.trim() ? `Stored as ${house}` : (auto && codeNote) || 'Code format OK') : 'Not a house code (e.g. QCSOP025, QCSOP011A02, QCLB021)', !sh.code ? T.muted : codeOk ? (taken ? C.warn : C.ok) : C.bad],
     ['title_mk', '*', 'Наслов на македонски', sh.title_mk && !cyr ? 'Needs Cyrillic — Macedonian comes first' : 'Macedonian first', sh.title_mk && !cyr ? C.bad : T.muted],
     ['title_en', '*', 'English title', '', T.muted], ['version', '', '01', '', T.muted],
     ['parent', isSop || isRep ? '' : '*', isSop ? '—' : 'QCSOP011', isSop ? 'SOPs have no parent' : 'The SOP this ' + sh.doctype.toLowerCase() + ' belongs to', T.muted],

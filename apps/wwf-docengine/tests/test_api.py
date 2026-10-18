@@ -269,8 +269,8 @@ def test_register_routes(client, monkeypatch):
     rows = client.get("/register", headers=h(), params={"family": "QCSOP", "status": "effective"}).json()["documents"]
     assert rows and all(r["code"].startswith("QCSOP") and r["status"] == "effective" for r in rows)
     monkeypatch.setattr(db, "ready", lambda: False)
-    assert client.get("/register/next", headers=h(), params={"family": "QCSOP"}).json()["code"] == "QCSOP025"
-    assert client.get("/register/next", headers=h(), params={"parent": "QCSOP 011"}).json()["code"] == "QCSOP011A02"
+    assert client.get("/register/next", headers=h(), params={"family": "QCSOP"}).json()["code"] == "QCSOP026"
+    assert client.get("/register/next", headers=h(), params={"parent": "QCSOP 011"}).json()["code"] == "QCSOP011A10"
     assert client.get("/register/next", headers=h()).status_code == 400
 
 

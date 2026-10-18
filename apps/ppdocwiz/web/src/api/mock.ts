@@ -210,7 +210,7 @@ export function mockApi(onChange?: () => void): MockApi {
     },
     async nextCode(q) {
       await wait(60);
-      return q.parent ? q.parent.replace(/[\s_-]/g, '').toUpperCase() + 'A02' : ({ QCSOP: 'QCSOP025', QCT: 'QCT017', QCLB: 'QCLB021' } as Record<string, string>)[q.family || ''] || (q.family || 'QCT') + '001';
+      return q.parent ? q.parent.replace(/[\s_-]/g, '').toUpperCase() + 'A02' : ({ QCSOP: 'QCSOP026', QCT: 'QCT025', QCLB: 'QCLB022' } as Record<string, string>)[q.family || ''] || (q.family || 'QCT') + '001';
     },
     async engineEnv(): Promise<EngineEnv> {
       gate(); await wait(120);

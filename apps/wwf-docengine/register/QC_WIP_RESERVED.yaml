@@ -1,0 +1,66 @@
+# Codes the QC department's work in progress already uses, outside QALI 001 — Quality Control department.
+# Source: the ACME_SOP drafts folder (Drive 1MZYJOs9LKplBh_McrPj8YzSLCDP5VJhE), inventoried 18.10.2026.
+# Titles are the drafts' own file names; none of these documents is approved or in use.
+#
+# Why this file exists: GET /register/next gives one above the highest number the register holds. With
+# QALI 001 alone it gave QCSOP025, QCT017 and QCLB021, and drafts already carry all three, so the engine
+# would have issued a second document under a number a draft has. A reserved code counts as taken; it
+# becomes a QALI 001 row (with its own status) when the Head of QC registers the document, or is
+# withdrawn here (status withdrawn, the number is not reused).
+# status:
+#   reserved    a draft carries this code; not in QALI 001; not in use
+department: QC
+review_years: 3
+
+# Open for the Head of QC: two drafts claim one number, or a draft's number collides with QALI 001.
+conflicts:
+  - "QCT018: QCSOP012 v03 draft defines it as the External CoA Review Checklist; the QCSOP009 v01 package (00_INDEX_AM_CURRENT_DOCUMENTS_2026-10-08) prescribes QCT018-020 for analytical-method records. One of them must move."
+  - "QCSOP025: the sample-transport-to-outsourced-laboratory package (PP-QC-SOP-025) and its predecessors PP-QC-SOP-012 and PP-QC-SOP-022 in SP_TRAN_OUTS are one subject; reserved once, for the newest."
+  - "QCSOP003A01-A07: the PP_SOP_SS/Examples stability annexes carry QCSOP003, which QALI 001 gives to cleaning in QC. Not reserved; their content belongs to QCSOP018."
+  - "QCeCoA, QCCoQ: QCSOP012 v03 names record families that QALI 001 and QAT 003 do not have. Not reserved."
+
+documents:
+  # --- SOPs ---
+  - {code: QCSOP025, title_en: "Sample Transport to Outsourced Laboratory (bilingual)", status: reserved, note: "SP_TRAN_OUTS: PP-QC-SOP-025_v1.0"}
+  - {code: QCSOP025A01, parent: QCSOP025, title_en: "Request for Analysis, External Laboratory", status: reserved, note: "PP-QC-SOP-025-A01_v1.0"}
+  - {code: QCSOP025A02, parent: QCSOP025, title_en: "Transport Manifest and Cold-Chain Record", status: reserved, note: "named in the PP-QC-SOP-025 package index"}
+  - {code: QCSOP025A03, parent: QCSOP025, title_en: "Sample Consignment Record", status: reserved, note: "PP-QC-SOP-025-A03_v1.0"}
+
+  # --- annexes of registered SOPs ---
+  - {code: QCSOP009A02, parent: QCSOP009, title_en: "Analytical Methods Master Register", status: reserved, note: "AM_VALALL 02_LATEST_DRAFTS/F"}
+  - {code: QCSOP009A03, parent: QCSOP009, title_en: "Outsourced Correlation Matrix", status: reserved, note: "AM_VALALL 02_LATEST_DRAFTS/F"}
+  - {code: QCSOP009A04, parent: QCSOP009, title_en: "AM a02.2 Drying Oven - Loss on Drying", status: reserved, note: "AM_VALALL 02_LATEST_DRAFTS/B"}
+  - {code: QCSOP009A05, parent: QCSOP009, title_en: "Revalidation Trigger (template)", status: reserved, note: "AM_VALALL 02_LATEST_DRAFTS/F"}
+  - {code: QCSOP011A02, parent: QCSOP011, title_en: "Material Transfer, Handover and Return Record", status: reserved, note: "QCSOP011 v03 package 2026-06-30"}
+  - {code: QCSOP011A03, parent: QCSOP011, title_en: "Visual Inspection Form", status: reserved, note: "QCSOP011 v03 package 2026-06-30"}
+  - {code: QCSOP011A04, parent: QCSOP011, title_en: "Bulk and Intermediate-Bulk Sample Paths", status: reserved, note: "QCSOP011 v03 package 2026-06-30"}
+  - {code: QCSOP011A05, parent: QCSOP011, title_en: "Material Quantity Review", status: reserved, note: "QCSOP011 v03 package 2026-06-30"}
+  - {code: QCSOP011A06, parent: QCSOP011, title_en: "Sample Bag and Carton Labels", status: reserved, note: "QCSOP011 v03 package 2026-06-30"}
+  - {code: QCSOP011A07, parent: QCSOP011, title_en: "QC Sampling Logbook", status: reserved, note: "QCSOP011 v03 package 2026-06-30"}
+  - {code: QCSOP011A08, parent: QCSOP011, title_en: "Sample Logbook", status: reserved, note: "QCSOP011 v03 package 2026-06-30"}
+  - {code: QCSOP011A09, parent: QCSOP011, title_en: "Retention Reference Samples Logbook", status: reserved, note: "QCSOP011 v03 package 2026-06-30"}
+  - {code: QCSOP012A01, parent: QCSOP012, title_en: "Certificate Workflow Flowcharts (iCoA, eCoA, CoQ)", status: reserved, note: "QCSOP012 v03 draft"}
+  - {code: QCSOP018A01, parent: QCSOP018, title_en: "Long-Term Stability Study Protocol", status: reserved, note: "QCSOP_018_v2.0_Complete_Package"}
+  - {code: QCSOP018A02, parent: QCSOP018, title_en: "Accelerated Stability Study Protocol", status: reserved, note: "QCSOP_018_v2.0_Complete_Package"}
+  - {code: QCSOP018A03, parent: QCSOP018, title_en: "Intermediate Stability Study Protocol", status: reserved, note: "QCSOP_018_v2.0_Complete_Package"}
+  - {code: QCSOP018A04, parent: QCSOP018, title_en: "Long-Term Stability Study Report", status: reserved, note: "QCSOP_018_v2.0_Complete_Package"}
+  - {code: QCSOP018A05, parent: QCSOP018, title_en: "Accelerated Stability Study Report", status: reserved, note: "QCSOP_018_v2.0_Complete_Package"}
+  - {code: QCSOP018A06, parent: QCSOP018, title_en: "Intermediate Stability Study Report", status: reserved, note: "QCSOP_018_v2.0_Complete_Package"}
+  - {code: QCSOP018A07, parent: QCSOP018, title_en: "Stability Study Plan and Schedule", status: reserved, note: "QCSOP_018_v2.0_Complete_Package"}
+  - {code: QCSOP018A08, parent: QCSOP018, title_en: "Stability Withdrawal Detail Form", status: reserved, note: "QCSOP_018_v2.0_Complete_Package"}
+  - {code: QCSOP018A09, parent: QCSOP018, title_en: "Batch Stability Execution Record", status: reserved, note: "QCSOP_018_v2.0_Complete_Package"}
+  - {code: QCSOP018A10, parent: QCSOP018, title_en: "Annual Stability Programme Plan", status: reserved, note: "PP_SOP_SS (A10 is not in the v2.0 package)"}
+  - {code: QCSOP019A03, parent: QCSOP019, title_en: "OOx Register", status: reserved, note: "OOS_s, v02"}
+  - {code: QCSOP019A04, parent: QCSOP019, title_en: "OOx Notification Form (unified)", status: reserved, note: "OOS_s, v02"}
+
+  # --- forms / templates ---
+  - {code: QCT017, title_en: "Certificate Issuance Register", status: reserved, note: "defined in the QCSOP012 v03 draft"}
+  - {code: QCT018, title_en: "External CoA Review Checklist", status: reserved, note: "QCSOP012 v03 draft; also claimed by the QCSOP009 package (see conflicts)"}
+  - {code: QCT019, title_en: "Analytical-method record (QCSOP009 package)", status: reserved, note: "00_INDEX_AM_CURRENT_DOCUMENTS_2026-10-08"}
+  - {code: QCT020, title_en: "Analytical-method record (QCSOP009 package)", status: reserved, note: "00_INDEX_AM_CURRENT_DOCUMENTS_2026-10-08"}
+  - {code: QCT022, title_mk: "Интерен запис за истражување на ООХ", title_en: "Internal OOx Investigation Record", status: reserved, note: "OOS_s (QCSOP019)"}
+  - {code: QCT023, title_mk: "Истражување ООХ резултати од договорна лабораторија", title_en: "OOx Investigation, Contract Laboratory Results", status: reserved, note: "OOS_s (QCSOP019)"}
+  - {code: QCT024, title_en: "Material Transfer Record", status: reserved, note: "QC SAM sampling day packets (QCSOP011)"}
+
+  # --- logbooks ---
+  - {code: QCLB021, title_mk: "Лабораториски дневник", title_en: "Laboratory Logbook", status: reserved, note: "LAB_LIFE: fQCLB 021"}
