@@ -5,7 +5,12 @@
 #   QCSOP011   QCT017   QCLB021   QCSPW005   QCCoA001   QCSOP011A01   WHSOP003A04
 # Latin letters only (QALI 001 wrote one annex with a Cyrillic "А"), no space, no "_" or "-". Codes typed
 # in any of the forms in circulation ("QCSOP 011", "QCSOP_011_A01", "WHSOP_003", "QCSOP011А01") are
-# normalised to it at the door; a code that cannot be (a file name, "QASOP_0XX") is refused.
+# normalised to it at the door; a code that cannot be (a file name, "labels_raw (final) v3") is refused.
+#
+# A number not yet confirmed is written XXX (Head of QC, 18.10.2026: "all QA SOP drafts should be xxx unknown numbers
+# actualy until not confirmed"): QASOPXXX, QASOPXXXA06. "QASOP_0XX" and "qasop xxx" are read as QASOPXXX. A family the
+# register marks `unconfirmed_families` (QASOP; EQSOP, whose family itself is not yet approved) is given XXX by
+# next_code, never a guessed number.
 #
 # The register (register/*.yaml) is the engine's working copy of the codes in use. The engine is a research and
 # development tool outside the QMS (Head of QC, 18.10.2026): QALI 001 is the master, and where they differ QALI 001 wins.
@@ -21,7 +26,8 @@ REGISTER_DIR = Path(__file__).resolve().parents[1] / "register"
 
 # Cyrillic letters that look like Latin ones and turn up in typed codes.
 _LOOKALIKE = str.maketrans("АВСЕНІЈКМОРТХУаесорху", "ABCEHIJKMOPTXYaecopxy")
-_CODE = re.compile(r"^(?P<fam>[A-Z]{2,8}|[A-Z]{2}COA)(?P<num>\d{1,3})(?:A(?P<annex>\d{1,2}))?$")
+_CODE = re.compile(r"^(?P<fam>[A-Z]{2,8}?|[A-Z]{2}COA)(?P<num>\d{1,3}|0?XXX|0XX)(?:A(?P<annex>\d{1,2}))?$")
+XXX = "XXX"
 
 
 def normalize(raw: str) -> str | None:
@@ -32,19 +38,28 @@ def normalize(raw: str) -> str | None:
     if not m:
         return None
     fam = m["fam"].replace("COA", "CoA") if m["fam"].endswith("COA") else m["fam"]
-    out = f"{fam}{int(m['num']):03d}"
+    out = fam + (XXX if "X" in m["num"] else f"{int(m['num']):03d}")
     if m["annex"]:
         out += f"A{int(m['annex']):02d}"
     return out
 
 
-def parts(code: str) -> tuple[str, int, int | None]:
-    """(family, number, annex number or None) of a code already in house form."""
+def parts(code: str) -> tuple[str, int | None, int | None]:
+    """(family, number or None when it is XXX, annex number or None) of a code already in house form."""
     m = _CODE.match(code.upper())
     if not m:
         raise ValueError(f"not a house code: {code!r}")
     fam = code[: len(m["fam"])]
-    return fam, int(m["num"]), int(m["annex"]) if m["annex"] else None
+    num = None if "X" in m["num"] else int(m["num"])
+    return fam, num, int(m["annex"]) if m["annex"] else None
+
+
+def unconfirmed_families() -> set[str]:
+    """Families whose numbers are not yet confirmed (register key `unconfirmed_families`)."""
+    out = set()
+    for f in sorted(REGISTER_DIR.glob("*.yaml")):
+        out |= set((yaml.safe_load(f.read_text(encoding="utf-8")) or {}).get("unconfirmed_families") or [])
+    return out
 
 
 def load_register() -> list[dict]:
@@ -80,5 +95,7 @@ def next_code(family: str = "", parent: str = "", taken: set[str] = frozenset())
     fam = (family or "").translate(_LOOKALIKE).upper().replace("COA", "CoA")
     if not re.fullmatch(r"[A-Z]{2,8}|[A-Z]{2}CoA", fam):
         raise ValueError(f"not a code family: {family!r}")
-    used = [parts(c)[1] for c in codes if parts(c)[0] == fam and parts(c)[2] is None]
+    if fam in unconfirmed_families():
+        return fam + XXX
+    used = [parts(c)[1] for c in codes if parts(c)[0] == fam and parts(c)[2] is None and parts(c)[1] is not None]
     return f"{fam}{max(used, default=0) + 1:03d}"

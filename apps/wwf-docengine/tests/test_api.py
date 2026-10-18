@@ -257,7 +257,7 @@ def test_workflow_meta_is_checked_before_any_generation(client, monkeypatch, met
     assert r.status_code == 400 and not started
 
 
-@pytest.mark.parametrize("meta,out_name", [({}, "labels_raw (final) v3"), ({"code": "QASOP_0XX"}, "x"), ({"code": "pasted"}, "x")])
+@pytest.mark.parametrize("meta,out_name", [({}, "labels_raw (final) v3"), ({"code": "QASOP_0YY"}, "x"), ({"code": "pasted"}, "x")])
 def test_a_file_name_is_never_registered_as_a_document_code(client, meta, out_name):
     md = "<!--HEADERDATA\nmk_title: Т\nen_title: T\ncode: X\ndoctype: FORM\n-->\n# 1 А | A\nтекст ||| text\n"
     r = client.post("/build", json={"markdown": md, "out_name": out_name, "meta": meta}, headers=h())

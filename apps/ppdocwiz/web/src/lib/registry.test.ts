@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CODE_RE, guessMeta, metaProblems, normalizeCode, rankVersions } from './registry';
+import { CODE_RE, guessMeta, isUnconfirmed, metaProblems, normalizeCode, rankVersions } from './registry';
 import { CODE_PATTERN } from './newdoc';
 
 describe('registry rules', () => {
@@ -11,7 +11,7 @@ describe('registry rules', () => {
     const cases: [string, string][] = [['QCSOP 011', 'QCSOP011'], ['QCSOP_025_A01', 'QCSOP025A01'], ['WHSOP_003', 'WHSOP003'],
       ['QCSOP011А01', 'QCSOP011A01'], ['qclb 21', 'QCLB021'], ['QCCOA 001', 'QCCoA001'], ['SSP-001', 'SSP001']];
     for (const [raw, house] of cases) expect(normalizeCode(raw)).toBe(house);
-    for (const raw of ['labels_raw (final) v3', 'QASOP_0XX', 'T-1', '']) expect(normalizeCode(raw)).toBe('');
+    for (const raw of ['labels_raw (final) v3', 'T-1', '']) expect(normalizeCode(raw)).toBe('');
   });
   it('knows what each doctype may be called', () => {
     expect(CODE_PATTERN.SOP.test('QCSOP025')).toBe(true);
@@ -35,5 +35,12 @@ describe('registry rules', () => {
       { id: 'v01', job_id: 'j1', version: '01', created_at: '2026-10-10T09:00:00Z' },
     ];
     expect(rankVersions(rows).map(r => r.id)).toEqual(['v01', 'copy']);
+  });
+  it('writes an unconfirmed number as XXX (Head of QC, 18.10.2026)', () => {
+    expect(normalizeCode('QASOP_0XX')).toBe('QASOPXXX');
+    expect(normalizeCode('qasop xxx a06')).toBe('QASOPXXXA06');
+    for (const c of ['QASOPXXX', 'QASOPXXXA06', 'EQSOPXXX']) expect(CODE_RE.test(c)).toBe(true);
+    expect(isUnconfirmed('QASOPXXXA06')).toBe(true);
+    expect(isUnconfirmed('QCSOP011')).toBe(false);
   });
 });
