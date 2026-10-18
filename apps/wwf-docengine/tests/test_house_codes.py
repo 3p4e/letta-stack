@@ -34,20 +34,28 @@ def test_the_register_loads_in_house_form_with_review_dates():
 
 
 def test_next_free_code_never_reuses_or_fills_gaps():
-    assert hc.next_code(family="QCSOP") == "QCSOP025"                # QCSOP020 withdrawn, not freed
-    assert hc.next_code(family="QCT") == "QCT017"                    # QCT007/014/015 gaps stay empty
-    assert hc.next_code(family="QCLB") == "QCLB021"
+    assert hc.next_code(family="QCSOP") == "QCSOP026"                # QCSOP020 withdrawn, not freed; 025 reserved
+    assert hc.next_code(family="QCT") == "QCT025"                    # QCT007/014/015/021 gaps stay empty
+    assert hc.next_code(family="QCLB") == "QCLB022"
     assert hc.next_code(family="qcwi") == "QCWI023"
     assert hc.next_code(family="QCCoA") == "QCCoA002"
 
 
 def test_codes_held_by_open_drafts_are_taken():
-    assert hc.next_code(family="QCSOP", taken={"QCSOP_025", "QCSOP 026"}) == "QCSOP027"
+    assert hc.next_code(family="QCSOP", taken={"QCSOP_026", "QCSOP 027"}) == "QCSOP028"
+
+
+def test_codes_the_acme_drafts_carry_are_reserved():
+    # QALI 001 alone gave QCSOP025, QCT017 and QCLB021 — numbers drafts in ACME_SOP already carry.
+    rows = {r["code"]: r for r in hc.load_register()}
+    for code in ("QCSOP025", "QCT017", "QCT018", "QCT024", "QCLB021", "QCSOP011A09", "QCSOP018A10"):
+        assert rows[code]["status"] == "reserved", code
+    assert rows["QCSOP011"]["status"] == "effective_revising"         # a reservation never shadows a QALI row
 
 
 def test_next_annex_of_a_parent():
-    assert hc.next_code(parent="QCSOP011") == "QCSOP011A02"
-    assert hc.next_code(parent="QCSOP018") == "QCSOP018A01"
+    assert hc.next_code(parent="QCSOP011") == "QCSOP011A10"
+    assert hc.next_code(parent="QCSOP018") == "QCSOP018A11"
     assert hc.next_code(parent="WHSOP 003", taken={"WHSOP_003_A07"}) == "WHSOP003A08"
     with pytest.raises(ValueError):
         hc.next_code(parent="QCSOP011A01")
