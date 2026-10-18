@@ -6,9 +6,10 @@ Nothing in Drive was changed. `secrets.env` and `cookies.txt` at the root were n
 
 **Scope (Head of QC, 18.10.2026).** Nothing in the DocEngine is part of the QMS, even when it is fed QMS information
 for research and development to Purely Plant's needs. A draft made in the engine becomes a QMS document only through
-the QMS route: QA review, approval and signature, and registration in QALI 001. The engine's register is a working
-copy of QALI 001, used only so drafts are numbered correctly. The finding below on records made on draft forms concerns
-the facility's records, not the engine.
+the QMS route: QA review, approval and signature, and registration in QALI 001. Drafts that look like real QMS
+documents, with real data, are the point: they test the engine. Deviations, OOS results and every other QMS procedure
+are handled by the paper-based system, never raised from here. The engine's register is a working
+copy of QALI 001, used only so drafts are numbered correctly.
 
 ## The rule used to decide
 
@@ -35,7 +36,9 @@ the facility's records, not the engine.
 - The method validation and verification protocols and reports (PP-QC-AMVP/AMVR/MVP/MVR, a02.1 HMA, a02.2 oven, a04 foreign matter, HPLC 003).
 - The 106 raw-material specifications (QCSP-RMI-*, one per material under QCSP002).
 
-**Held: belongs to another department's register, which is not loaded.**
+**Other departments.** Their codes are now in the register as `known` (`register/WH_KNOWN.yaml`, `EQ_KNOWN.yaml`,
+`QA_KNOWN.yaml`, `SP_KNOWN.yaml`, `CU_KNOWN.yaml`), from the files we have only; their master lists are not held.
+Their drafts can be imported like the QC ones:
 - WH: WHSOP002 + A01–A09, WHT003, WHLB003.
 - EQ: EQSOP001 and EQSOP013 with their annexes.
 - QA: QASOP031 A05–A10 (labels) and QASOP032 (HLVd).
@@ -49,8 +52,6 @@ The HPLC 003 package is marked *ILLUSTRATIVE data*. Only its protocol may be imp
 - **Sampling records:** QCT024 filled sets (62 files), PP-QC-SER-001_26 (21 batches), DAY1 packets, EXECUTION_SET_*, QC_SAMP/Tranche 2.
 - **Labels:** SS Labels batch folders.
 - **Other records:** the QC_OUT RQS requests, the HLVd ISSUE set (95 documents issued 31.07.2026), filled training records, QAT004 change-request forms.
-
-**Finding.** The QCT024 sets, the execution records and the DAY1 packets were made on forms of a **draft** QCSOP011. A record made on an unapproved form is a documentation deviation. EudraLex Vol. 4 Ch. 4 requires documents to be approved, signed and dated by authorised persons (§4.3). Decide whether a deviation is raised or the forms were issued under an approved interim instruction.
 
 ## Bin 3: reference inputs
 

@@ -59,3 +59,14 @@ def test_next_annex_of_a_parent():
     assert hc.next_code(parent="WHSOP 003", taken={"WHSOP_003_A07"}) == "WHSOP003A08"
     with pytest.raises(ValueError):
         hc.next_code(parent="QCSOP011A01")
+
+
+def test_other_departments_are_known_from_the_files_we_have():
+    # Head of QC, 18.10.2026: add the other departments, only with the information we have so far.
+    rows = {r["code"]: r for r in hc.load_register()}
+    for code, dept in (("WHSOP002A09", "WH"), ("WHSOP003A07", "WH"), ("EQSOP013A08", "EQ"), ("QASOP031A10", "QA"),
+                       ("QAT053", "QA"), ("SPT004", "SP"), ("CULI001", "CU")):
+        assert rows[code]["department"] == dept and rows[code]["status"] == "known", code
+    assert hc.next_code(family="WHSOP") == "WHSOP004"
+    assert hc.next_code(parent="WHSOP003") == "WHSOP003A08"
+    assert hc.next_code(family="EQSOP") == "EQSOP014"
