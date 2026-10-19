@@ -420,3 +420,7 @@ the QA channels.
   the advisor whenever a document touches potency. No grade, window or tolerance comes from a pharmacopoeia, a house
   document or an older table, and no grade numeral is written that the service does not give. Unreadable service →
   "per the strain's current potency specification", never a number.
+- **The approved, in-use documents are a source, not a style sample** (Head of QC, 19.10.2026). `app/house.py`: the
+  authors follow DB3's practice and must not contradict it, cite house documents only from the in-use list (by code and
+  version), and an annex to an approved SOP reads that SOP; the regulatory checker also reports `CONFLICT [H#]` against
+  DB3. No batch, date, result, name or record value is copied from them.

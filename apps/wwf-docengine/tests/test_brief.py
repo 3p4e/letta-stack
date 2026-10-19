@@ -346,3 +346,31 @@ def test_package_route_lists_the_build_its_annexes_and_merges_them(api, monkeypa
     r = c.get(f"/briefs/{b['id']}/package.pdf", headers=h())
     assert r.status_code == 200 and r.headers["content-type"] == "application/pdf"
     assert rendered == ["QCSOP026", "QCSOP026A01"] and 'QCSOP026_package.pdf' in r.headers["content-disposition"]
+
+
+# ---------- the approved, in-use house documents are a source, not only a style sample (19.10.2026) ----------
+from app import house  # noqa: E402
+
+
+def test_the_in_use_list_keeps_the_newest_version_of_each_code(monkeypatch):
+    import asyncio
+    from app import db
+
+    async def refs(kind=""):
+        assert kind == "approved"
+        return [{"id": "1", "code": "QCSOP011", "version": "01", "title_en": "Sampling", "title_mk": "Земање мостри"},
+                {"id": "2", "code": "QCSOP011", "version": "02", "title_en": "Sampling", "title_mk": "Земање мостри"},
+                {"id": "3", "code": "QCT017", "version": "01", "title_en": "Sample log", "title_mk": ""}]
+
+    async def get(rid):
+        return {"markdown": f"text {rid}"}
+    monkeypatch.setattr(db, "ready", lambda: True)
+    monkeypatch.setattr(db, "reference_list", refs)
+    monkeypatch.setattr(db, "reference_get", get)
+    docs = asyncio.run(house.in_use_list())
+    assert [(d["code"], d["version"]) for d in docs] == [("QCSOP011", "02"), ("QCT017", "01")]
+    block = house.list_block(docs)
+    assert "never invent a code" in block and "- QCSOP011 v02 — Sampling | Земање мостри" in block
+    assert "- QCT017 v01 — Sample log" in block
+    assert asyncio.run(house.approved_text("QCSOP011")) == {"markdown": "text 2", "version": "02", "id": "2"}
+    assert asyncio.run(house.approved_text("QCSOP099")) is None
