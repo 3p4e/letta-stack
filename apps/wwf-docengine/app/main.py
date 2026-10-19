@@ -237,16 +237,18 @@ def _check_doctype(body: WorkflowIn) -> None:
     """An annex is never written with an SOP question set. On 19.10.2026 QCSOP001A01 was built as an SOP four
     times by Jobs → Re-run of a job that carried sop_qc: brief.fits() guarded the brief path only."""
     try:
-        annex = house_codes.parts(body.meta["code"])[2]
+        fam, _num, annex = house_codes.parts(body.meta["code"])
     except ValueError:
-        annex = None
+        fam, annex = "", None
     parent = body.parent_sop.strip()
     if QUESTIONNAIRES[body.questionnaire]["doctype"] == "SOP":
         if annex is not None or parent:
             raise HTTPException(422, f"{body.meta['code']} is an annex" + (f" of {parent}" if parent else "")
                                      + f": the SOP question set '{body.questionnaire}' writes an SOP. "
                                      "Use the annex question set (annex_form).")
-    elif parent and annex is None:
+    elif parent and annex is None and fam.upper().endswith("SOP"):
+        # A house form or logbook (QCT002, QCLB005) belongs to its SOP under its own family number (Head of QC,
+        # 19.10.2026: QCT002 is revised under QCSOP001); only an SOP-family code without an annex number is wrong here.
         # The other mismatch (review 19.10.2026): a form written to an SOP under an SOP's own number.
         raise HTTPException(422, f"{body.meta['code']} carries no annex number, yet it is written to {parent}: an annex "
                                  f"of an SOP is numbered under it ({parent}A01 …); GET /register/next?parent={parent} "
@@ -260,12 +262,12 @@ def _check_brief_codes(b: dict) -> None:
     if not code:
         return
     try:
-        annex = house_codes.parts(code)[2]
+        fam, _num, annex = house_codes.parts(code)
     except ValueError:
         return
     if b["package"] in ("sop", "sop_annexes") and annex is not None:
         raise HTTPException(422, f"{code} is an annex number: an SOP package takes an SOP code, or choose the annex package")
-    if b["package"] not in ("sop", "sop_annexes") and parent and annex is None:
+    if b["package"] not in ("sop", "sop_annexes") and parent and annex is None and fam.upper().endswith("SOP"):
         raise HTTPException(422, f"{code} carries no annex number, yet the brief names its SOP {parent}: an annex of an SOP "
                                  f"is numbered under it ({parent}A01 …); clear the code to take the next free one")
 
@@ -782,8 +784,13 @@ async def create_brief(body: BriefIn):
         seed = await db.reference_get(body.from_reference) if _valid_uuid(body.from_reference) else None
         if not seed:
             raise HTTPException(404, "no such reference document")
-        for k in ("title_mk", "title_en", "code", "version"):
+        for k in ("title_mk", "title_en", "code"):
             meta.setdefault(k, seed.get(k) or "")
+        # A revision of an approved document is the next version, not the one on file (Head of QC, 19.10.2026:
+        # QCT002 v02 is revised to v03); a continued draft keeps its own.
+        if "version" not in meta:
+            v = str(seed.get("version") or "")
+            meta["version"] = f"{int(v) + 1:0{len(v)}d}" if seed["kind"] == "approved" and v.isdigit() else v
     try:
         b = briefs.new_brief(body.package, _brief_meta(meta), body.questionnaire,
                              _house_code(body.parent_sop, "parent_sop") if body.parent_sop else (seed or {}).get("parent", ""))

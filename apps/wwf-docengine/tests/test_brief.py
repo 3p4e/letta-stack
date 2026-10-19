@@ -563,6 +563,10 @@ def test_a_brief_seeded_from_a_reference_is_guarded_too(api, monkeypatch):
     assert r.status_code == 422 and "QCSOP001A01" in r.json()["detail"]
     b = c.post("/briefs", json={"package": "annex", "from_reference": ref["id"]}, headers=h()).json()
     assert b["meta"]["code"] == "QCSOP001A01" and b["parent_sop"] == "QCSOP001" and b["sources"][0]["name"].startswith("QCSOP001A01")
+    # a revision of an approved document is the next version (Head of QC, 19.10.2026: QCT002 v02 → v03)
+    assert b["meta"]["version"] == "02"
+    ref["kind"] = "wip"
+    assert c.post("/briefs", json={"package": "annex", "from_reference": ref["id"]}, headers=h()).json()["meta"]["version"] == "01"
 
 
 def test_locking_a_suggestion_is_a_decision():
@@ -592,3 +596,14 @@ def test_wrong_types_in_meta_and_annexes_are_a_400_never_a_500(api):
         B.apply_patch(fresh(), {"rev": 0, "meta": {"department": ["QC"]}})
     with pytest.raises(B.BriefError):
         B.apply_patch(fresh(), {"rev": 0, "annexes": [{"title_mk": {"x": 1}}]})
+
+
+def test_a_house_form_may_belong_to_an_sop_under_its_own_number(api, monkeypatch):
+    """Head of QC, 19.10.2026: QCT002 (Request for analysis) is revised to v03 under QCSOP001 — a form or logbook of an
+    SOP keeps its own family number; only an SOP-family code without an annex number is refused with a parent."""
+    c, store, started = api
+    r = c.post("/briefs", json={"package": "form", "parent_sop": "QCSOP001",
+                                "meta": {"title_en": "Request for sampling and/or analysis", "code": "QCT002", "version": "03"}}, headers=h())
+    assert r.status_code == 200
+    r = c.post(f"/briefs/{r.json()['id']}/build", json={"rev": 0}, headers=h())
+    assert r.status_code == 200 and r.json()["code"] == "QCT002" and started[-1]["parent_sop"] == "QCSOP001"
