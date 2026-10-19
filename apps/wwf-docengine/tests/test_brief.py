@@ -466,3 +466,23 @@ def test_package_annexes_number_from_a01_on_a_rebuild_and_by_position_when_uncon
         await asyncio.sleep(0)
     asyncio.run(go())
     assert created == ["QCSOP026A01", "QCSOP026A02", "QASOPXXXA01", "QASOPXXXA02"]
+
+
+# ---------- 19.10.2026: an annex brief kept the SOP question set and was written as a nine-section SOP ----------
+def test_changing_the_package_takes_its_question_set_and_a_mismatch_is_never_built():
+    b = B.new_brief("sop_annexes", {"title_en": "Request for sampling"})
+    assert b["questionnaire"] == "sop_qc"
+    b, ev = B.apply_patch(b, {"rev": 0, "package": "annex", "parent_sop": "QCSOP001"})
+    assert b["package"] == "annex" and b["questionnaire"] == "annex_form"
+    assert {e["op"] for e in ev} >= {"package", "questionnaire"}
+    b, _ = B.apply_patch(b, {"rev": 1, "package": "form"})            # annex -> form: the form set already fits
+    assert b["questionnaire"] == "annex_form"
+    b, _ = B.apply_patch(b, {"rev": 2, "package": "sop"})
+    assert b["questionnaire"] == "sop_qc"
+    with pytest.raises(B.BriefError):
+        B.apply_patch(b, {"rev": 3, "questionnaire": "annex_form"})    # a form set on an SOP brief
+    with pytest.raises(B.BriefError):
+        B.new_brief("annex", questionnaire="sop_qc")
+    stuck = {**B.new_brief("sop_annexes", {"title_en": "x"}), "package": "annex"}   # a brief saved before the fix
+    with pytest.raises(B.BriefError, match="choose the package again"):
+        B.to_workflow(stuck, [])
