@@ -69,3 +69,14 @@ def test_reconcile_names_the_missing_and_the_unlisted():
     rec = library.reconcile(library.shelve(register, refs, [], {}))
     assert [e["code"] for e in rec["missing"]] == ["QCSOP011"]
     assert [(e["code"], e["status"]) for e in rec["unlisted"]] == [("QAT010", "not in the register")]
+
+
+def test_verdicts_on_one_line_are_all_read():
+    """The live checker of 19.10.2026 answered on one line; every verdict must still be read, with its own detail."""
+    reply = ("HOUSE QCSOP001: CONSISTENT | HOUSE QCCoA001: NOT RELEVANT | HOUSE QCT002: CONFLICT — draft: «QA signs» | "
+             "approved: «the requester signs» | HOUSE QCT003: CHANGES — adds sampling | HOUSE QCT010: CONSISTENT")
+    v = house.parse_verdicts(reply, ["QCSOP001", "QCCoA001", "QCT002", "QCT003", "QCT010"])
+    assert [v[c]["verdict"] for c in ["QCSOP001", "QCCoA001", "QCT002", "QCT003", "QCT010"]] == \
+        ["CONSISTENT", "NOT RELEVANT", "CONFLICT", "CHANGES", "CONSISTENT"]
+    assert v["QCT002"]["detail"] == "draft: «QA signs» | approved: «the requester signs»"
+    assert v["QCT003"]["detail"] == "adds sampling" and v["QCSOP001"]["detail"] == ""

@@ -188,8 +188,11 @@ def check_set(code: str, parent: str, markdown: str, title_en: str, title_mk: st
              or "", "id": by_code[c]["id"], "why": why} for c, why in list(out.items())[:MAX_CHECK]]
 
 
-_VERDICT = re.compile(r"^\W*HOUSE\s+([A-Za-z]{2,8}\s?\d{1,3}(?:\s?A\s?\d{1,2})?)\s*:\s*"
-                      r"(CONSISTENT|NOT RELEVANT|CHANGES|CONFLICT)\b\s*[—\-:]*\s*(.*)$", re.M | re.I)
+# A verdict wherever it stands: the live checker put all of them on one line, '… | HOUSE QCT002: CONSISTENT | …'
+# (19.10.2026), and a line-anchored pattern read the first and left the rest UNCHECKED.
+_CODE_RX = r"[A-Za-z]{2,8}\s?\d{1,3}(?:\s?A\s?\d{1,2})?"
+_VERDICT = re.compile(r"HOUSE\s+(" + _CODE_RX + r")\s*:\s*(CONSISTENT|NOT RELEVANT|CHANGES|CONFLICT)\b[\s—\-:]*(.*?)"
+                      r"(?=\s*\|?\s*HOUSE\s+" + _CODE_RX + r"\s*:|\Z)", re.I | re.S)
 
 
 def parse_verdicts(reply: str, expected: list[str]) -> dict[str, dict]:
