@@ -62,6 +62,7 @@ documents:
   - {code: QCT022, title_mk: "Интерен запис за истражување на ООХ", title_en: "Internal OOx Investigation Record", status: reserved, note: "OOS_s (QCSOP019)"}
   - {code: QCT023, title_mk: "Истражување ООХ резултати од договорна лабораторија", title_en: "OOx Investigation, Contract Laboratory Results", status: reserved, note: "OOS_s (QCSOP019)"}
   - {code: QCT024, title_en: "Material Transfer Record", status: reserved, note: "QC SAM sampling day packets (QCSOP011)"}
+  - {code: QCT025, title_en: "OOx record named in the QCSOP019 draft", status: reserved, note: "OOS_s: QCSOP019 lists its records as QCT 022-025 (read 19.10.2026)"}
 
   # --- logbooks ---
   - {code: QCLB021, title_mk: "Лабораториски дневник", title_en: "Laboratory Logbook", status: reserved, note: "LAB_LIFE: fQCLB 021"}

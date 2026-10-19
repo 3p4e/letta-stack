@@ -35,7 +35,7 @@ def test_the_register_loads_in_house_form_with_review_dates():
 
 def test_next_free_code_never_reuses_or_fills_gaps():
     assert hc.next_code(family="QCSOP") == "QCSOP026"                # QCSOP020 withdrawn, not freed; 025 reserved
-    assert hc.next_code(family="QCT") == "QCT025"                    # QCT007/014/015/021 gaps stay empty
+    assert hc.next_code(family="QCT") == "QCT026"                    # QCT007/014/015/021 gaps stay empty; 025 a draft's
     assert hc.next_code(family="QCLB") == "QCLB022"
     assert hc.next_code(family="qcwi") == "QCWI023"
     assert hc.next_code(family="QCCoA") == "QCCoA002"
