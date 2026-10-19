@@ -455,7 +455,8 @@ def _clean_section(text: str, structured: bool = False) -> str:
     return cleaned
 
 
-def _brief(questionnaire_key: str, answers: dict, instructions: str = "", sources: list | None = None) -> str:
+def _brief(questionnaire_key: str, answers: dict, instructions: str = "", sources: list | None = None,
+           source_texts: list | None = None) -> str:
     lines = [f"Questionnaire: {questionnaire_key}"]
     for k, v in answers.items():
         if v in (None, "", []):
@@ -466,6 +467,11 @@ def _brief(questionnaire_key: str, answers: dict, instructions: str = "", source
     srcs = [str(x).strip() for x in (sources or []) if str(x).strip()]
     if srcs:
         lines += ["", "Sources named by the requester (may be cited):"] + [f"- {x}" for x in srcs]
+    # Files uploaded to the Document Brief: their text, cited by file name. Facts come from here or from the brief;
+    # nothing is copied that the requester did not provide.
+    for st in source_texts or []:
+        if (st.get("text") or "").strip():
+            lines += ["", f"SOURCE FILE «{st['name']}» (cite it by this name):", st["text"].strip()]
     return "\n".join(lines)
 
 
@@ -504,6 +510,40 @@ def assemble_markdown(meta: dict, sections: list[dict]) -> str:
         body.append(content)
         body.append("")
     return hd + "\n".join(body)
+
+
+async def _start_package_annexes(sop_job: str, p: dict, meta: dict) -> list[dict]:
+    """SOP + annexes from one workflow (Head of QC, 18.10.2026): once the SOP is written, one annex job per annex of the
+    package, numbered from the register under the SOP's code, each reading the SOP's sections 6 and 7 (ANNEX_RULE)."""
+    from .house_codes import next_code
+    taken, out = set(await db.codes_in_use()), []
+    for a in p.get("package_annexes") or []:
+        code = next_code(parent=meta["code"], taken=taken)
+        taken.add(code)
+        title_en, title_mk = a.get("title_en") or a.get("title_mk"), a.get("title_mk") or a.get("title_en")
+        payload = {"questionnaire": "annex_form", "answers": {}, "parent_sop": meta["code"],
+                   "meta": {"title_mk": title_mk, "title_en": title_en, "code": code, "version": meta.get("version", "1.0")},
+                   "instructions": (p.get("instructions") or "")[:6000] + f"\n\nThis annex ({a.get('kind', 'form')}) is part of "
+                                   f"the {meta['code']} package.", "sources": p.get("sources") or [],
+                   "source_texts": p.get("source_texts") or [], "assumed": ["annex content (from the SOP)"],
+                   "brief_id": p.get("brief_id", ""), "package_of": sop_job, "requested_by": p.get("requested_by", "")}
+        jid = await db.job_create("workflow", payload, p.get("requested_by", ""))
+        asyncio.get_running_loop().create_task(run_workflow(jid))
+        out.append({"code": code, "job_id": jid, "title_en": title_en})
+    return out
+
+
+async def _package(job_id: str, p: dict, meta: dict, sop: bool) -> None:
+    """After an SOP of a package is saved (its Markdown is what the annexes read), start its annexes and record them."""
+    if not (sop and p.get("package_annexes")):
+        return
+    job = await db.job_get(job_id)
+    try:
+        extra = {"package_jobs": await _start_package_annexes(job_id, p, meta)}
+    except Exception as e:  # noqa: BLE001 — the SOP stands; the annexes that did not start are reported on it
+        log.exception("job %s: package annexes did not start", job_id)
+        extra = {"package_error": f"{type(e).__name__}: {e}"[:300]}
+    await db.job_update(job_id, result={**(job or {}).get("result", {}), **extra})
 
 
 async def run_workflow(job_id: str, client: LettaClient | None = None, rag: RagflowClient | None = None) -> None:
@@ -569,7 +609,9 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
         doctype = QUESTIONNAIRES[qkey]["doctype"]
         meta["doctype"] = doctype
         sop = doctype == "SOP"
-        brief = _brief(qkey, answers, p.get("instructions", ""), p.get("sources") or [])
+        brief = _brief(qkey, answers, p.get("instructions", ""), p.get("sources") or [], p.get("source_texts") or [])
+        if p.get("assumed"):
+            ctx["assumed"] = p["assumed"]          # what the requester did not decide: the review report lists it
         controls = controls_rule(qkey)
         # An annex job reads the SOP it serves (sections 6 and 7) so the form captures what that SOP records in it.
         parent_code = (p.get("parent_sop") or "").strip()
@@ -804,6 +846,7 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                 result={**ctx, "verify": result.verify_report, "bytes": result.bytes,
                         "artifact": {"path": str(result.path), "bytes": result.bytes}},
             )
+            await _package(job_id, p, meta, sop)
             return
         did = await db.document_create(
             job_id,
@@ -819,6 +862,7 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
             job_id, status="done", stage="done",
             result={**ctx, "document_id": did, "verify": result.verify_report, "bytes": result.bytes},
         )
+        await _package(job_id, p, meta, sop)
     except builder.VerifyFailed as e:
         log.error("job %s verify FAILED", job_id)
         await db.job_update(job_id, status="failed", error="verify FAILED",

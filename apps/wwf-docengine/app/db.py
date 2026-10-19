@@ -62,6 +62,37 @@ CREATE TABLE IF NOT EXISTS docengine.reference_docs (
   updated_at     timestamptz NOT NULL DEFAULT now(),
   UNIQUE (kind, code, version)
 );
+-- The Document Brief the single workflow edits (18.10.2026), its full change history and its uploaded sources.
+CREATE TABLE IF NOT EXISTS docengine.briefs (
+  id          uuid PRIMARY KEY,
+  rev         int  NOT NULL DEFAULT 0,
+  body        jsonb NOT NULL,                -- package, questionnaire, parent_sop, meta, fields, annexes, job_ids, status
+  created_by  text NOT NULL DEFAULT '',
+  created_at  timestamptz NOT NULL DEFAULT now(),
+  updated_at  timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS docengine.brief_events (
+  id        bigserial PRIMARY KEY,
+  brief_id  uuid NOT NULL REFERENCES docengine.briefs(id) ON DELETE CASCADE,
+  rev       int  NOT NULL,
+  at        timestamptz NOT NULL DEFAULT now(),
+  actor     text NOT NULL DEFAULT '',
+  op        text NOT NULL,
+  key       text NOT NULL DEFAULT '',
+  before    jsonb,
+  after     jsonb
+);
+CREATE TABLE IF NOT EXISTS docengine.brief_sources (
+  id         uuid PRIMARY KEY,
+  brief_id   uuid NOT NULL REFERENCES docengine.briefs(id) ON DELETE CASCADE,
+  name       text NOT NULL,
+  kind       text NOT NULL,
+  bytes      int  NOT NULL,
+  sha256     text NOT NULL,
+  text       text NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS de_brief_events ON docengine.brief_events(brief_id, rev);
 CREATE INDEX IF NOT EXISTS de_jobs_status ON docengine.jobs(status);
 CREATE INDEX IF NOT EXISTS de_docs_code ON docengine.documents(code);
 """
@@ -321,3 +352,96 @@ async def jobs_open_by_code() -> dict[str, list[dict]]:
         out.setdefault(code, []).append({"id": str(r["id"]), "status": r["status"], "stage": r["stage"],
                                          "title_en": r["title_en"] or "", "updated_at": r["updated_at"].isoformat()})
     return out
+
+
+# ---- Document Briefs ----
+def _brief_row(r) -> dict:
+    body = json.loads(r["body"]) if isinstance(r["body"], str) else r["body"]
+    return {**body, "id": str(r["id"]), "rev": r["rev"], "created_by": r["created_by"],
+            "created_at": r["created_at"].isoformat(), "updated_at": r["updated_at"].isoformat()}
+
+
+def _brief_body(b: dict) -> str:
+    return json.dumps({k: v for k, v in b.items() if k not in ("id", "rev", "created_by", "created_at", "updated_at",
+                                                                "sources")})
+
+
+async def brief_create(b: dict, created_by: str = "") -> str:
+    bid = str(uuid.uuid4())
+    await pool().execute("INSERT INTO docengine.briefs (id, rev, body, created_by) VALUES ($1,$2,$3,$4)",
+                         bid, b["rev"], _brief_body(b), created_by)
+    await pool().execute("INSERT INTO docengine.brief_events (brief_id, rev, actor, op, after) VALUES ($1,0,$2,'create',$3)",
+                         bid, created_by, json.dumps({"package": b["package"], "meta": b["meta"]}))
+    return bid
+
+
+async def brief_get(bid: str) -> dict | None:
+    r = await pool().fetchrow("SELECT * FROM docengine.briefs WHERE id=$1", bid)
+    if not r:
+        return None
+    b = _brief_row(r)
+    b["sources"] = await brief_sources(bid, with_text=False)
+    return b
+
+
+async def brief_save(b: dict, old_rev: int, events: list[dict]) -> bool:
+    """Write the brief and its events only if it is still at `old_rev`; False when another change won."""
+    async with pool().acquire() as c, c.transaction():
+        ok = await c.fetchval("UPDATE docengine.briefs SET rev=$2, body=$3, updated_at=now() WHERE id=$1 AND rev=$4"
+                              " RETURNING id", b["id"], b["rev"], _brief_body(b), old_rev)
+        if not ok:
+            return False
+        await c.executemany(
+            "INSERT INTO docengine.brief_events (brief_id, rev, actor, op, key, before, after) VALUES ($1,$2,$3,$4,$5,$6,$7)",
+            [(b["id"], b["rev"], e.get("actor", ""), e["op"], e.get("key", ""), json.dumps(e.get("before")),
+              json.dumps(e.get("after"))) for e in events])
+    return True
+
+
+async def brief_list(limit: int = 100) -> list[dict]:
+    rows = await pool().fetch("SELECT * FROM docengine.briefs ORDER BY updated_at DESC LIMIT $1", limit)
+    out = []
+    for r in rows:
+        b = _brief_row(r)
+        out.append({k: b.get(k) for k in ("id", "rev", "status", "package", "meta", "updated_at", "job_ids")})
+    return out
+
+
+async def brief_events(bid: str) -> list[dict]:
+    rows = await pool().fetch("SELECT rev, at, actor, op, key, before, after FROM docengine.brief_events"
+                              " WHERE brief_id=$1 ORDER BY id", bid)
+    return [{"rev": r["rev"], "at": r["at"].isoformat(), "actor": r["actor"], "op": r["op"], "key": r["key"],
+             "before": json.loads(r["before"]) if r["before"] else None,
+             "after": json.loads(r["after"]) if r["after"] else None} for r in rows]
+
+
+async def brief_source_add(bid: str, rev: int, actor: str, src: dict) -> str:
+    sid = str(uuid.uuid4())
+    async with pool().acquire() as c, c.transaction():
+        await c.execute("INSERT INTO docengine.brief_sources (id, brief_id, name, kind, bytes, sha256, text)"
+                        " VALUES ($1,$2,$3,$4,$5,$6,$7)", sid, bid, src["name"], src["kind"], src["bytes"],
+                        src["sha256"], src["text"])
+        await c.execute("UPDATE docengine.briefs SET rev=rev+1, updated_at=now() WHERE id=$1", bid)
+        await c.execute("INSERT INTO docengine.brief_events (brief_id, rev, actor, op, key, after)"
+                        " VALUES ($1,$2,$3,'source_add',$4,$5)", bid, rev + 1, actor, src["name"],
+                        json.dumps({"id": sid, "kind": src["kind"], "bytes": src["bytes"], "chars": len(src["text"])}))
+    return sid
+
+
+async def brief_source_remove(bid: str, sid: str, actor: str) -> bool:
+    async with pool().acquire() as c, c.transaction():
+        name = await c.fetchval("DELETE FROM docengine.brief_sources WHERE id=$1 AND brief_id=$2 RETURNING name", sid, bid)
+        if not name:
+            return False
+        rev = await c.fetchval("UPDATE docengine.briefs SET rev=rev+1, updated_at=now() WHERE id=$1 RETURNING rev", bid)
+        await c.execute("INSERT INTO docengine.brief_events (brief_id, rev, actor, op, key) VALUES ($1,$2,$3,'source_remove',$4)",
+                        bid, rev, actor, name)
+    return True
+
+
+async def brief_sources(bid: str, with_text: bool = True) -> list[dict]:
+    rows = await pool().fetch("SELECT id, name, kind, bytes, sha256, text, created_at FROM docengine.brief_sources"
+                              " WHERE brief_id=$1 ORDER BY created_at", bid)
+    return [{"id": str(r["id"]), "name": r["name"], "kind": r["kind"], "bytes": r["bytes"], "sha256": r["sha256"],
+             "chars": len(r["text"]), "created_at": r["created_at"].isoformat(),
+             **({"text": r["text"]} if with_text else {})} for r in rows]
