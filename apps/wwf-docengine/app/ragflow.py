@@ -6,8 +6,8 @@
 #                          exists for a batch. The dataset's own rule: never read a measured
 #                          value out of chunk text (it drops superscripts and truncates ranges);
 #                          values come from the typed, double-read extraction.
-#   examples    (to come)  approved house documents the authors consult for structure and
-#                          style. Empty until a dataset id is configured.
+#   examples    DB3_PP_CURRENT  the approved, in-use house documents (text of the Word file, one entry per code +
+#                          version) the authors consult for structure and style. PUT /reference indexes them here.
 #
 # One HTTP call: POST {RAGFLOW_BASE_URL}/api/v1/retrieval with the tenant API key.
 from __future__ import annotations
@@ -86,6 +86,32 @@ class RagflowClient:
                 "chunk_id": ch.get("id", ""),
             })
         return out
+
+    async def _json(self, r: httpx.Response) -> dict:
+        if r.status_code != 200:
+            raise RagflowError(f"RAGFlow HTTP {r.status_code}: {r.text[:200]}")
+        j = r.json()
+        if j.get("code", 0) != 0:
+            raise RagflowError(f"RAGFlow error {j.get('code')}: {str(j.get('message') or '')[:200]}")
+        return j
+
+    async def index_text(self, dataset_id: str, filename: str, text: str, replace_id: str = "") -> str:
+        """Upload `text` as one document of `dataset_id`, start its parsing, and return the new document id.
+        `replace_id`, the document an earlier version of the same text was, is deleted first."""
+        if not self.configured:
+            raise RagflowError("RAGFlow not configured: set RAGFLOW_BASE_URL and RAGFLOW_API_KEY")
+        async with self._client() as c:
+            if replace_id:
+                await self._json(await c.request("DELETE", f"/api/v1/datasets/{dataset_id}/documents",
+                                                 json={"ids": [replace_id]}))
+            j = await self._json(await c.post(f"/api/v1/datasets/{dataset_id}/documents",
+                                              files={"file": (filename, text.encode("utf-8"), "text/markdown")}))
+            data = j.get("data") or []
+            doc_id = (data[0] if isinstance(data, list) and data else data or {}).get("id", "")
+            if not doc_id:
+                raise RagflowError("RAGFlow upload returned no document id")
+            await self._json(await c.post(f"/api/v1/datasets/{dataset_id}/chunks", json={"document_ids": [doc_id]}))
+        return doc_id
 
     async def reachable(self) -> bool:
         if not self.configured:

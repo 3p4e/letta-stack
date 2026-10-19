@@ -10,7 +10,7 @@ const NAV: [Screen, string, 'c' | 'k'][] = [['builder', 'Builder', 'c'], ['chat'
 const CRUMB: Record<Screen, string> = { builder: '', chat: 'chat › allowlist › WHSOP_002_A02', quest: 'questionnaire › POST /workflows', format: 'formatter › labels_raw.docx → house style', library: 'library › docengine.documents', jobs: 'jobs › docengine.jobs', report: 'reports › QCSOP_031_A02 · pp_report', verify: 'verify › POST /build 422 · WHSOP_009_A01', preview: 'preview › QCSOP_031 · page 3 / 9', fleet: 'admin › gf_ fleet & health' };
 
 // CRUMB names the mock-mode sample documents; live mode must not show them as if they were real.
-const LIVE_CRUMB: Record<Screen, string> = { builder: '', chat: 'chat › POST /api/chat', quest: 'questionnaire › POST /workflows', format: 'formatter › Mode B · POST /build', library: 'library › docengine.documents', jobs: 'jobs › docengine.jobs', report: 'reports › not connected', verify: 'verify › last build in this session', preview: 'preview › last build in this session', fleet: 'fleet & health' };
+const LIVE_CRUMB: Record<Screen, string> = { builder: '', chat: 'chat › POST /api/chat', quest: 'questionnaire › POST /workflows', format: 'formatter › Mode B · POST /build', library: 'library › shelves · GET /library', jobs: 'jobs › docengine.jobs', report: 'reports › not connected', verify: 'verify › last build in this session', preview: 'preview › last build in this session', fleet: 'fleet & health' };
 
 function useViewport() {
   const [v, setV] = useState({ w: window.innerWidth, h: window.innerHeight });

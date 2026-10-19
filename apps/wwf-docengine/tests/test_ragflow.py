@@ -26,6 +26,12 @@ CHUNK = {
 }
 
 
+@pytest.fixture(autouse=True)
+def _no_examples_by_default(monkeypatch):
+    # DB3_PP_CURRENT is configured by default since 18.10.2026; a test that wants the examples corpus sets it itself.
+    monkeypatch.setattr(settings, "ragflow_example_datasets", ())
+
+
 def _transport(seen, payload=None, status=200):
     def handler(request: httpx.Request):
         seen.append(request)
