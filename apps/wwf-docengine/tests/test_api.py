@@ -296,3 +296,22 @@ def test_codes_are_stored_in_house_form(client, monkeypatch):
                                                      "meta": {"title_mk": "а", "title_en": "a", "code": "WHSOP_003_A08"}})
     assert r.status_code == 200
     assert seen["meta"]["code"] == "WHSOP003A08" and seen["parent_sop"] == "WHSOP003"
+
+
+@pytest.mark.parametrize("extra", [{"meta": {"title_mk": "б", "title_en": "Request for Sampling", "code": "QCSOP001A01"}},
+                                   {"meta": {"title_mk": "б", "title_en": "Request", "code": "QCSOP026"},
+                                    "parent_sop": "QCSOP001"}])
+def test_workflow_refuses_an_annex_with_the_sop_question_set(client, monkeypatch, extra):
+    """19.10.2026: Jobs → Re-run of a job carrying sop_qc built QCSOP001A01 as an SOP four times. The engine refuses
+    it before any job exists, whichever screen sends it."""
+    created = []
+
+    async def fake_create(kind, payload, by=""):
+        created.append(payload)
+        return "00000000-0000-0000-0000-000000000002"
+    monkeypatch.setattr(db, "ready", lambda: True)
+    monkeypatch.setattr(db, "job_create", fake_create)
+    monkeypatch.setattr("app.main.LettaClient", lambda: type("L", (), {"configured": True})())
+    r = client.post("/workflows", headers=h(), json={"questionnaire": "sop_qc", **extra})
+    assert r.status_code == 422 and "annex_form" in r.json()["detail"]
+    assert created == []
