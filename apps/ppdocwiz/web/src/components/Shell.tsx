@@ -1,9 +1,9 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { ApiError } from '../api/types';
 import { useApp, type Screen } from '../store/store';
 import { C, DISPLAY, G, MONO, T, UI } from '../theme';
 import { CreateMenu, NewDocSheet } from './Create';
-import { Dot, Seg } from './ui';
+import { Dot, Seg, press } from './ui';
 import { tr } from '../lib/i18n';
 
 const NAV: [Screen, string, 'c' | 'k'][] = [['flow', 'Workflow', 'c'], ['builder', 'Builder', 'c'], ['chat', 'Agent chat', 'c'], ['format', 'Formatter', 'c'], ['report', 'Reports', 'c'], ['library', 'Library', 'k'], ['jobs', 'Jobs', 'k'], ['verify', 'Verify', 'k'], ['preview', 'Preview', 'k'], ['fleet', 'Fleet & health', 'k'], ['users', 'Users', 'k']];
@@ -63,6 +63,8 @@ export function Shell({ children }: { children: ReactNode }) {
     <span style={{ fontSize: 15, lineHeight: 1, color: C.run }}>＋</span>{tr(s.lang, 'Create')}<span style={{ fontSize: 10, color: T.muted }}>{side ? '›' : '▾'}</span></button>;
   const dot = (label: string, st: keyof typeof s.svc & string) => <span title={s.svc.note[st] || (s.svc[st as 'letta'] === 'ok' ? 'ok' : 'probing…')} style={{ display: 'flex', gap: 5, alignItems: 'center' }}><Dot c={C[s.svc[st as 'letta']]} />{label}</span>;
   const pipeMsgC = s.busy ? C.run : s.pipeOk ? C.ok : C.bad;
+  // The brief and the job list this browser worked on are the person's, not the machine's: gone at sign-out (review 19.10.2026).
+  const signOut = () => s.api.closeSession().then(() => { try { localStorage.removeItem('ppsuite.brief'); localStorage.removeItem('ppsuite.jobs'); } catch { /* storage blocked */ } s.set({ authed: false, me: null }); }).catch(e => s.flash(String(e.message)));
   const STEPS = ['compose', 'build_from_md', 'pp_verify', 'gotenberg'];
   return (
     <div data-pp-root="1" style={{ width: vp.w / zoom, height: vp.h / zoom, zoom, overflow: 'hidden', position: 'relative', display: 'flex', flexDirection: 'column', background: T.bg, color: T.text, fontFamily: UI, fontSize: 14 }}>
@@ -83,12 +85,12 @@ export function Shell({ children }: { children: ReactNode }) {
           {s.tweaks.createPlacement === 'sidebar' && createBtn(true)}
           {(['c', 'k'] as const).map(g => <div key={g} style={{ display: 'contents' }}>
             <div style={{ fontFamily: MONO, fontSize: 10.5, letterSpacing: '.1em', color: T.faint, padding: g === 'c' ? '4px 10px 6px' : '16px 10px 6px' }}>{tr(s.lang, g === 'c' ? 'CREATE' : 'CONTROL')}</div>
-            {NAV.filter(n => n[2] === g && (n[0] !== 'users' || s.me?.role === 'admin')).map(([k, label]) => <div key={k} onClick={() => s.go(k)} className="pp-nav" style={{ padding: '8px 10px', borderRadius: 6, cursor: 'pointer', background: s.screen === k ? T.selected : 'transparent', color: s.screen === k ? '#fff' : T.secondary, fontWeight: s.screen === k ? 700 : 400 }}>{tr(s.lang, label)}</div>)}
+            {NAV.filter(n => n[2] === g && (n[0] !== 'users' || s.me?.role === 'admin')).map(([k, label]) => <div key={k} onClick={() => s.go(k)} {...press(() => s.go(k))} aria-current={s.screen === k ? 'page' : undefined} className="pp-nav" style={{ padding: '8px 10px', borderRadius: 6, cursor: 'pointer', background: s.screen === k ? T.selected : 'transparent', color: s.screen === k ? '#fff' : T.secondary, fontWeight: s.screen === k ? 700 : 400 }}>{tr(s.lang, label)}</div>)}
           </div>)}
           <div style={{ marginTop: 'auto', padding: 10, fontSize: 12, color: T.faint, lineHeight: 1.5 }}>{s.api.mode === 'mock' ? 'Engine 1.6.2' : engine ? `Engine · canon ${engine}` : 'Engine · not reachable'}<br />{s.me?.accounts ? <>{tr(s.lang, 'signed in as')} <b style={{ color: T.secondary }}>{s.me.user}</b>{s.me.role === 'admin' ? ' · admin' : ''}</> : s.api.mode === 'mock' ? 'darko.s · QA' : open ? 'open access · no sign-in' : 'session · cookie'}
-            {pwLogin && <div onClick={() => setChanging(true)} style={{ cursor: 'pointer', color: T.muted, marginTop: 4 }}>{tr(s.lang, 'Change password')}</div>}
+            {pwLogin && <div onClick={() => setChanging(true)} {...press(() => setChanging(true))} style={{ cursor: 'pointer', color: T.muted, marginTop: 4 }}>{tr(s.lang, 'Change password')}</div>}
             {changing && <ChangePassword onDone={() => setChanging(false)} />}
-            {!open && <div onClick={() => s.api.closeSession().then(() => s.set({ authed: false, me: null })).catch(e => s.flash(String(e.message)))} style={{ cursor: 'pointer', color: T.muted, marginTop: 4 }}>{tr(s.lang, 'Sign out')}</div>}</div>
+            {!open && <div onClick={signOut} {...press(signOut)} style={{ cursor: 'pointer', color: T.muted, marginTop: 4 }}>{tr(s.lang, 'Sign out')}</div>}</div>
         </nav>
         <main style={{ flex: 1, minWidth: 0, display: 'flex', minHeight: 0 }}>{children}</main>
       </div>
@@ -169,21 +171,30 @@ export function SignIn({ unconfigured }: { unconfigured?: boolean }) {
 /** Set your password: the current one, then a new one of at least 12 characters (stored on the server as a hash).
  *  `forced` after a sign-in with a temporary password. */
 export function ChangePassword({ forced, onDone }: { forced?: boolean; onDone: () => void }) {
-  const { api, flash, lang } = useApp();
+  const { api, flash, lang, set } = useApp();
   const [cur, setCur] = useState(''), [next, setNext] = useState(''), [again, setAgain] = useState('');
   const [err, setErr] = useState(''), [busy, setBusy] = useState(false);
+  const first = useRef<HTMLInputElement>(null);
+  // A dialog: focus lands on its first field, Escape closes it unless the change is forced (review 19.10.2026).
+  useEffect(() => { first.current?.focus(); }, []);
+  useEffect(() => { if (forced) return; const k = (e: globalThis.KeyboardEvent) => { if (e.key === 'Escape') onDone(); }; window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, [forced, onDone]);
   const problem = next && next.length < 12 ? tr(lang, 'At least 12 characters.') : again && next !== again ? tr(lang, 'The two new passwords differ.') : '';
   const ready = !problem && !!cur && !!next && next === again;
   const submit = async () => {
     if (!ready || busy) return;
     setBusy(true); setErr('');
-    try { await api.changePassword(cur, next); flash(tr(lang, 'Password changed')); onDone(); }
+    try {
+      await api.changePassword(cur, next); flash(tr(lang, 'Password changed'));
+      // After a forced change `me.must_change` is stale until re-read; otherwise the forced card can come back.
+      if (forced) await api.me().then(m => set({ me: m })).catch(() => {});
+      onDone();
+    }
     catch (e) { const st = (e as ApiError).status; setErr(st === 401 ? tr(lang, 'The current password is wrong.') : st === 429 ? tr(lang, 'Too many failed attempts. Wait 15 minutes.') : String((e as Error).message)); }
     finally { setBusy(false); }
   };
   const field = (label: string, v: string, on: (x: string) => void, auto: string, focus = false) =>
     <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}><span style={authLabel}>{tr(lang, label)}</span>
-      <input type="password" autoComplete={auto} autoFocus={focus} value={v} onChange={e => on(e.target.value)} style={authInput()} /></label>;
+      <input ref={focus ? first : undefined} type="password" autoComplete={auto} value={v} onChange={e => on(e.target.value)} style={authInput()} /></label>;
   const form = <>
     {forced && <div style={{ color: T.secondary, fontSize: 13, lineHeight: 1.5 }}>{tr(lang, 'forced_change')}</div>}
     {!forced && <span style={{ fontFamily: DISPLAY, fontWeight: 700, color: '#fff', fontSize: 15 }}>{tr(lang, 'Change password')}</span>}
@@ -199,6 +210,6 @@ export function ChangePassword({ forced, onDone }: { forced?: boolean; onDone: (
   if (forced) return <AuthCard><span style={{ fontWeight: 700, color: '#fff', fontSize: 15 }}>{tr(lang, 'Set your own password')}</span>{form}</AuthCard>;
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 80, background: 'rgba(0,0,0,.55)', display: 'grid', placeItems: 'center', padding: 16 }}>
-      <div style={{ width: '100%', maxWidth: 420, boxSizing: 'border-box', background: T.pane, border: `1px solid ${T.control}`, borderRadius: 12, boxShadow: '0 30px 70px rgba(0,0,0,.55)', padding: '24px 26px', display: 'flex', flexDirection: 'column', gap: 14, color: T.text, fontFamily: UI }}>{form}</div>
+      <div role="dialog" aria-modal="true" aria-label={tr(lang, 'Change password')} style={{ width: '100%', maxWidth: 420, boxSizing: 'border-box', background: T.pane, border: `1px solid ${T.control}`, borderRadius: 12, boxShadow: '0 30px 70px rgba(0,0,0,.55)', padding: '24px 26px', display: 'flex', flexDirection: 'column', gap: 14, color: T.text, fontFamily: UI }}>{form}</div>
     </div>);
 }

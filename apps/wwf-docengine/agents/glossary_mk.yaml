@@ -1,5 +1,6 @@
 # House Macedonian glossary — approved by the Head of QC on 11.10.2026; траса, уред за ладење/греење and
-# ID на логерот added on 13.10.2026; контра мостри (counter samples) on 13.10.2026.
+# ID на логерот added on 13.10.2026; контра мостри (counter samples) on 13.10.2026; мострирање, во процес and
+# мониторинг на околина on 19.10.2026.
 # Source: WHSOP_003 v01 §5.1 Definitions and §5.2 Abbreviations, its annexes, and the
 # Head of QC's standing wording rules. Every DocEngine agent clone carries it as the
 # gf_glossary_mk memory block (fleet.py); the section linter flags the `lint` patterns
@@ -63,6 +64,12 @@ terms:
   - {en: "SOP", mk: "СОП in the Macedonian text, SOP in the English text"}
   - {en: "Conforms", mk: "Одговара", avoid: "Усогласено as a result"}
   - {en: "Method", mk: "метод", avoid: "метода", lint: ['метода(?:та)?\b']}
+  # Head of QC, 19.10.2026 (review of QCSOP001A01): one word for sampling across the QC documents.
+  - {en: "Sampling / to sample", mk: "мострирање / мострира", avoid: "узорцирање, земање примероци (older documents)",
+     lint: ['узорц']}
+  - {en: "Sample", mk: "мостра", avoid: "примерок (older documents)"}
+  - {en: "In-process (sample or material)", mk: "во процес", avoid: "материјал во процес as the sample type"}
+  - {en: "Environmental monitoring (sample type)", mk: "мониторинг на околина", avoid: "Environmental alone in the English half"}
 
 rules:
   - "Decimals: comma in Macedonian (388,97 g), point in English (388.97 g)."

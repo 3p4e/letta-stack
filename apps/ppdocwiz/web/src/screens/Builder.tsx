@@ -1,5 +1,5 @@
 // Builder (handoff §1) + the wizard block editor (COVERAGE #2) + SOP/annex lifecycle (COVERAGE #4).
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { Block, Cell, DocStatus, Section, WizardPayload } from '../api/types';
 import { ApiError } from '../api/types';
 import { PPPage, type AnchorMap, type Highlight } from '../components/PPPage';
@@ -40,13 +40,15 @@ function applyEn(p: WizardPayload, l: Lint, en: string): WizardPayload {
 const parseAnchor = (a: string) => { const m = /^s(\d+)(?:b(\d+)(?:r(\d+)|(h))?)?/.exec(a); return m ? { s: +m[1], b: m[2] !== undefined ? +m[2] : -1, r: m[3] !== undefined ? +m[3] : m[4] ? -1 : -2 } : null; };
 
 export function Builder() {
-  const { bdoc: doc, bdocIsSample, builderMode: mode, hlLine, set, api, run, flash, go } = useApp();
+  const { bdoc: doc, bdocIsSample, builderMode: mode, hlLine, set, api, run, flash, go, builderRaw } = useApp();
   const setDoc = (d: WizardPayload) => set({ bdoc: d });
   const [sel, setSel] = useState(0);
   const [dismissed, setDismissed] = useState<number[]>([]);
   const [cellA, setCellA] = useState<string | null>(null);
   const [anchors, setAnchors] = useState<AnchorMap>({});
-  const [raw, setRaw] = useState<string | null>(null);
+  // Markdown another screen opened here (Jobs → "Open Markdown in Builder") starts the raw view; taken once (review 19.10.2026).
+  const [raw, setRaw] = useState<string | null>(builderRaw);
+  useEffect(() => { if (builderRaw !== null) { setRaw(builderRaw); set({ builderRaw: null }); } }, [builderRaw, set]);
   const [result, setResult] = useState<{ ok: boolean; verify: string; docx?: string; pdf?: string; err?: string } | null>(null);
 
   const lines = useMemo(() => composeLines(doc), [doc]);

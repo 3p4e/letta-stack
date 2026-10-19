@@ -1,9 +1,11 @@
 // Jobs (handoff §4) mirrors apps/wwf-docengine/app/pipeline.py; review gate = COVERAGE #3.
 import { useEffect, useRef, useState } from 'react';
+import type { JobList } from '../api/client';
 import { ApiError, type Job } from '../api/types';
 import { PPPage } from '../components/PPPage';
-import { Banner, Btn, Kv } from '../components/ui';
+import { Banner, Btn, Kv, press } from '../components/ui';
 import { ANX_SEC, SAMPLE_ANNEX, SAMPLE_SOP, SOP_SEC } from '../data/samples';
+import { pickJob, reviewLocks, stillRunning } from '../lib/jobview';
 import { readQa } from '../lib/qa';
 import { usePrimary } from '../lib/usePrimary';
 import { lineColor } from '../lib/verify';
@@ -29,41 +31,68 @@ function posOf(j: Job) {
 
 export function Jobs() {
   const { api, jobSel, set, go, dataRev, run, flash } = useApp();
-  const [jobs, setJobs] = useState<Job[] | null>(null);
+  const [jobs, setJobs] = useState<JobList | null>(null);
   const [err, setErr] = useState('');
+  // The selected job when the list does not hold it (opened from a brief, the Library or another browser): read by id,
+  // never replaced by jobs[0] without saying so (review 19.10.2026).
+  const [sel, setSel] = useState<{ id: string; job: Job | null; err: string } | null>(null);
   const [ins, setIns] = useState<string | null>(null);
   const [note, setNote] = useState('');
   const [reviewErr, setReviewErr] = useState('');
+  const [deciding, setDeciding] = useState(false);
   const [rerunning, setRerunning] = useState(false);
   const rerunLock = useRef(false);
-  const anyRunning = jobs?.some(j => j.status === 'running' || j.status === 'queued');
+  const all: Job[] | null = jobs && (sel?.job && sel.id === jobSel && !jobs.some(j => j.id === sel.id) ? [sel.job, ...jobs] : jobs);
+  const anyRunning = !!all && stillRunning(all);
   useEffect(() => {
     let live = true;
     // One round at a time: the next poll starts 1 s after the previous one finished, so slow
-    // rounds never overlap and an older list can never overwrite a newer one.
+    // rounds never overlap and an older list can never overwrite a newer one. Polled only while a job is queued or running.
     let t: number | undefined;
-    const load = () => api.jobs().then(j => { if (live) { setJobs(j); setErr(''); } }).catch((e: ApiError) => live && setErr(`${e.status} · ${e.message}`))
+    const load = () => api.jobs().then(j => { if (live) { setJobs(j); setErr(j.err || ''); } }).catch((e: ApiError) => live && setErr(`${e.status} · ${e.message}`))
       .finally(() => { if (live && anyRunning) t = window.setTimeout(load, 1000); });
     load();
     return () => { live = false; if (t) clearTimeout(t); };
   }, [api, dataRev, anyRunning]);
-  const job = jobs?.find(j => j.id === jobSel) || jobs?.[0];
+  const picked = all ? pickJob(all, jobSel, null) : null, want = picked?.fetch || null;
+  useEffect(() => {
+    if (!want || sel?.id === want) return;
+    let live = true; setSel({ id: want, job: null, err: '' });
+    api.job(want).then(j => live && setSel({ id: want, job: j, err: '' })).catch((e: ApiError) => live && setSel({ id: want, job: null, err: `${e.status} · ${e.message}` }));
+    return () => { live = false; };
+  }, [api, want, sel?.id]);
+  // The note and the error belong to the job they were typed for.
+  useEffect(() => { setNote(''); setReviewErr(''); }, [jobSel]);
+  const job = picked?.job || undefined;
   const rerun = async () => {
     // One press, one job: on 19.10.2026 four presses in 9 s started four jobs.
     if (!job || rerunLock.current) return;
     rerunLock.current = true; setRerunning(true);
-    // Everything the first run had: an annex re-run without its brief and parent SOP is the generic form the
-    // 13.10.2026 review rejected (review 14.10.2026).
-    const p = job.payload;
-    try { const r = await api.startWorkflow({ questionnaire: p.questionnaire, answers: p.answers, meta: p.meta as never, requested_by: p.requested_by,
-                                              instructions: p.instructions || '', sources: p.sources || [], parent_sop: p.parent_sop || '' }); set({ jobSel: r.job_id }); setIns(null); }
+    // The server copies the stored payload whole. The client-side copy of six fields dropped a brief-built job's
+    // source texts, package annexes and brief_id, so its re-run was the generic form again (review 19.10.2026).
+    try { const r = await api.rerunJob(job.id); set({ jobSel: r.job_id }); setIns(null); }
     catch (e) { flash(`${(e as ApiError).status} · ${(e as Error).message}`); }
     finally { rerunLock.current = false; setRerunning(false); }
   };
-  usePrimary(job?.status === 'failed' ? 'Re-run ▸' : 'Build ▸', () => job?.status === 'failed' ? rerun() : run(job?.payload.meta.code || 'WHSOP_002_A02', async () => ({ ok: true })));
+  // Live mode has no rebuild route behind "Build ▸": off, as in Library, rather than a fake pipeline run (review 19.10.2026).
+  usePrimary(job?.status === 'failed' ? 'Re-run ▸' : 'Build ▸', () => job?.status === 'failed' ? rerun() : run(job?.payload.meta.code || 'WHSOP_002_A02', async () => ({ ok: true })), api.mode === 'live' && job?.status !== 'failed');
 
   if (err && !jobs) return <div style={{ flex: 1, padding: 22 }}><Banner kind="err">GET /workflows → {err}. {err.startsWith('503') ? 'DocEngine storage (Postgres) is down; job state lives there, so nothing can be listed or polled until it is back.' : err.startsWith('404') || err.startsWith('0') ? 'DocEngine is not reachable from this page. Configure a same-origin proxy and set window.PP_SUITE_CONFIG.docengineBase.' : ''}</Banner></div>;
-  if (!jobs || !job) return <div style={{ flex: 1, padding: 22, color: T.muted }}>{jobs ? 'No jobs started from this browser yet. Start one from Questionnaire.' : 'loading…'}</div>;
+  if (!jobs || !all) return <div style={{ flex: 1, padding: 22, color: T.muted }}>loading…</div>;
+  const listPane = <div style={{ width: 260, flex: 'none', borderRight: `1px solid ${T.hair}`, background: T.pane, padding: '14px 10px', display: 'flex', flexDirection: 'column', gap: 6, overflow: 'auto' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '0 4px 6px' }}><b style={{ color: '#fff' }}>Jobs</b><span style={{ fontFamily: MONO, fontSize: 11, color: T.faint }}>docengine.jobs</span></div>
+      {err && <Banner kind="err" style={{ fontSize: 11.5 }}>GET /workflows → {err}{jobs.err ? ' · the rows shown are the last read' : ''}</Banner>}
+      {all.map(j => { const act = j.id === job?.id, c = stC(j.status), jp = posOf(j), js = secsOf(j), jn = js.length, open = () => { set({ jobSel: j.id }); setIns(null); };
+        const stg = j.status === 'done' ? 'done' : jp <= jn && jp > 0 ? 'generate ' + js[jp - 1][0] : jp > jn && jp <= 2 * jn ? 'reg-check ' + js[jp - jn - 1][0] : j.stage;
+        return <div key={j.id} onClick={open} {...press(open)} aria-current={act || undefined} style={{ padding: '9px 10px', borderRadius: 6, cursor: 'pointer', background: act ? T.selected : T.surface, border: `1px solid ${act ? T.focus : T.control}`, display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><b style={{ color: '#fff', fontFamily: MONO, fontSize: 12.5 }}>{j.payload.meta.code}</b><span style={{ fontFamily: MONO, fontSize: 10.5, padding: '1px 6px', borderRadius: 3, color: c, border: `1px solid ${c}` }}>{j.status}</span></div>
+          <div style={{ fontSize: 12, color: T.secondary, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{j.payload.meta.title_mk} | {j.payload.meta.title_en}</div>
+          <div style={{ fontFamily: MONO, fontSize: 11, color: T.muted, display: 'flex', justifyContent: 'space-between' }}><span>{j.id.slice(0, 8)} · {stg}</span><span>{ago(j.updated_at)}</span></div></div>; })}
+      <div style={{ marginTop: 'auto', fontSize: 11.5, color: T.faint, lineHeight: 1.5, padding: '6px 4px' }}>State lives in Postgres, so any worker can answer a poll. Jobs idle &gt; 60 min are reaped at startup.{api.mode === 'live' ? ' DocEngine has no list route: this list holds the jobs started or opened from this browser.' : ''}</div>
+    </div>;
+  if (!job) return <>{listPane}<div style={{ flex: 1, padding: 22, color: T.muted }}>
+    {!jobSel ? 'No jobs started from this browser yet. Start one from Questionnaire.'
+      : sel?.err ? <Banner kind="err">GET /workflows/{jobSel.slice(0, 8)}… → {sel.err}. Pick a job from the list.</Banner> : `loading job ${jobSel.slice(0, 8)}…`}</div></>;
 
   const secs = secsOf(job), n = secs.length, sop = n === 9, pos = posOf(job);
   const RG: Record<string, [number, number]> = { queued: [0, 0], generate: [1, n], reg: [n + 1, 2 * n], bil: [2 * n + 1, 2 * n + 1], qa: [2 * n + 2, 2 * n + 2], format: [2 * n + 3, 2 * n + 3], review: [2 * n + 3, 2 * n + 3], done: [2 * n + 4, 2 * n + 4] };
@@ -82,26 +111,20 @@ export function Jobs() {
   const INS: Record<string, [string, string]> = { queued: ['Queued', 'POST /workflows'], generate: ['Section drafts', '_clean_section() · preamble strip'], reg: ['Regulatory findings', 'cite only retrieved passages'], bil: ['Bilingual check, per section', '_bilingual_gaps()'], qa: ['§6A audit verdict', 'gf_qa_auditor'], format: ['Verify gate report', 'builder.build()'], review: ['Review before registry', 'status awaiting_review'], done: ['Registry row', 'docengine.documents'] };
   const notRecorded = <div style={{ color: T.muted, fontSize: 13 }}>Not recorded in the job row. DocEngine stores <span style={{ fontFamily: MONO }}>result.regulatory</span>, <span style={{ fontFamily: MONO }}>qa_audit</span> and <span style={{ fontFamily: MONO }}>verify</span>; per-section drafts and letter counts are not persisted.</div>;
   const decide = async (d: 'approve' | 'return') => {
-    setReviewErr('');
+    // Both buttons are off while one decision is in flight: a second press raced the first into a 409 (review 19.10.2026).
+    if (deciding) return;
+    setDeciding(true); setReviewErr('');
     try { await api.reviewJob(job.id, d, note); setNote(''); flash(d === 'approve' ? `${job.payload.meta.code} approved · registering` : `${job.payload.meta.code} returned for revision`); setJobs(await api.jobs()); }
     catch (e) { setReviewErr(`${(e as ApiError).status} · ${(e as Error).message}`); }
+    finally { setDeciding(false); }
   };
   const failHint = job.error?.includes('not bilingual') ? 'gf_sop_author drafted a section in one language only. A re-run regenerates the whole SOP; revisions are never patched.'
     : job.error?.includes('§6A') ? 'gf_qa_auditor returned FIX. Nothing was formatted or registered. Re-run, or open the Markdown in Builder and fix the issues.'
     : job.error?.includes('abandoned') ? 'The worker was killed mid-run (redeploy). The startup sweep marked the job failed instead of leaving it running forever.'
-    : job.error?.startsWith('returned') ? 'A reviewer sent this back. Re-run with the same answers after addressing the note, or open it in Builder.' : 'Re-run creates a new job with the same payload.';
+    : job.error?.startsWith('returned') ? 'A reviewer sent this back. Re-run with the same answers after addressing the note, or open it in Builder.' : 'Re-run creates a new job from the stored payload: the server copies it whole, sources and package included.';
 
   return <>
-    <div style={{ width: 260, flex: 'none', borderRight: `1px solid ${T.hair}`, background: T.pane, padding: '14px 10px', display: 'flex', flexDirection: 'column', gap: 6, overflow: 'auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '0 4px 6px' }}><b style={{ color: '#fff' }}>Jobs</b><span style={{ fontFamily: MONO, fontSize: 11, color: T.faint }}>docengine.jobs</span></div>
-      {jobs.map(j => { const act = j.id === job.id, c = stC(j.status), jp = posOf(j), js = secsOf(j), jn = js.length;
-        const stg = j.status === 'done' ? 'done' : jp <= jn && jp > 0 ? 'generate ' + js[jp - 1][0] : jp > jn && jp <= 2 * jn ? 'reg-check ' + js[jp - jn - 1][0] : j.stage;
-        return <div key={j.id} onClick={() => { set({ jobSel: j.id }); setIns(null); }} style={{ padding: '9px 10px', borderRadius: 6, cursor: 'pointer', background: act ? T.selected : T.surface, border: `1px solid ${act ? T.focus : T.control}`, display: 'flex', flexDirection: 'column', gap: 3 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><b style={{ color: '#fff', fontFamily: MONO, fontSize: 12.5 }}>{j.payload.meta.code}</b><span style={{ fontFamily: MONO, fontSize: 10.5, padding: '1px 6px', borderRadius: 3, color: c, border: `1px solid ${c}` }}>{j.status}</span></div>
-          <div style={{ fontSize: 12, color: T.secondary, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{j.payload.meta.title_mk} | {j.payload.meta.title_en}</div>
-          <div style={{ fontFamily: MONO, fontSize: 11, color: T.muted, display: 'flex', justifyContent: 'space-between' }}><span>{j.id.slice(0, 8)} · {stg}</span><span>{ago(j.updated_at)}</span></div></div>; })}
-      <div style={{ marginTop: 'auto', fontSize: 11.5, color: T.faint, lineHeight: 1.5, padding: '6px 4px' }}>State lives in Postgres, so any worker can answer a poll. Jobs idle &gt; 60 min are reaped at startup.{api.mode === 'live' ? ' DocEngine has no list route: this list holds the jobs started from this browser.' : ''}</div>
-    </div>
+    {listPane}
     <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
       <div style={{ padding: '16px 20px 12px', borderBottom: `1px solid ${T.hair}`, display: 'flex', flexDirection: 'column', gap: 6 }}>
         <div style={{ display: 'flex', gap: 10, alignItems: 'baseline', flexWrap: 'wrap' }}><span style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 17, color: '#fff' }}>{job.payload.meta.code}</span><span style={{ color: T.secondary }}>{job.payload.meta.title_mk} | {job.payload.meta.title_en}</span>
@@ -111,7 +134,7 @@ export function Jobs() {
       </div>
       <div style={{ padding: '12px 20px', display: 'flex', flexDirection: 'column', gap: 2 }}>
         {GROUPS.map(([k, label, who]) => { const st = stOf(k), subs = k === 'generate' || k === 'reg';
-          return <div key={k} onClick={() => setIns(k)} className="pp-hover-pane" style={{ display: 'grid', gridTemplateColumns: '20px 150px minmax(0,1fr)', gap: 10, padding: '8px 10px', borderRadius: 6, cursor: 'pointer', alignItems: 'start', background: cur === k ? T.surface : 'transparent', border: `1px solid ${cur === k ? T.control : 'transparent'}` }}>
+          return <div key={k} onClick={() => setIns(k)} {...press(() => setIns(k))} className="pp-hover-pane" style={{ display: 'grid', gridTemplateColumns: '20px 150px minmax(0,1fr)', gap: 10, padding: '8px 10px', borderRadius: 6, cursor: 'pointer', alignItems: 'start', background: cur === k ? T.surface : 'transparent', border: `1px solid ${cur === k ? T.control : 'transparent'}` }}>
             <span style={{ fontFamily: MONO, color: C[st], fontWeight: 700 }}>{G[st]}</span><span style={{ fontFamily: MONO, fontSize: 12.5, color: '#fff' }}>{label}</span>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0 }}><span style={{ fontSize: 12.5, color: T.secondary }}>{who}</span>
               {subs && <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>{secs.map((x, i) => { const ss = stAt(RG[k][0] + i); return <span key={i} style={{ fontFamily: MONO, fontSize: 10.5, padding: '2px 6px', borderRadius: 3, color: C[ss], border: `1px solid ${ss === 'idle' ? T.control : C[ss]}`, background: TINT[ss] }}>{x[0]}</span>; })}</div>}</div></div>; })}
@@ -144,7 +167,7 @@ export function Jobs() {
         ...(job.error ? [['error', job.error, C.bad]] as [string, string, string][] : []),
         ...(job.status === 'done' ? [['result.document_id', String(job.result.document_id).slice(0, 8) + '…', C.ok], ['result.bytes', String(job.result.bytes)], ['result.verify', (verify || '').match(/RESULT\s*:?\s*(PASS|FAIL)/)?.[0] || '(not stored)', /FAIL/.test(verify || '') ? C.bad : C.ok]] as [string, string, string?][] : [])]} />
       {job.status === 'done' && <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}><div style={{ flex: 'none' }}><PPPage doc={{ ...(sop ? SAMPLE_SOP : SAMPLE_ANNEX), code: job.payload.meta.code, mk_title: job.payload.meta.title_mk, en_title: job.payload.meta.title_en }} zoom={.14} /></div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, color: T.secondary, lineHeight: 1.4 }}>Registered in docengine.documents. The verify report is stored with the row.<span onClick={() => go('library', { libSel: String(job.result.document_id) })} style={{ color: C.run, cursor: 'pointer' }}>Open in Library →</span></div></div>}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, color: T.secondary, lineHeight: 1.4 }}>Registered in docengine.documents. The verify report is stored with the row.<span onClick={() => go('library', { libSel: String(job.result.document_id) })} {...press(() => go('library', { libSel: String(job.result.document_id) }))} style={{ color: C.run, cursor: 'pointer' }}>Open in Library →</span></div></div>}
       {(job.status === 'running' || job.status === 'queued') && <div style={{ color: C.run, fontFamily: MONO, fontSize: 12 }}>● polling every 1 s · stage {stageLabel}</div>}
       {review && <div style={{ display: 'flex', flexDirection: 'column', gap: 8, background: T.surface, border: `1px solid ${C.warn}`, borderRadius: 8, padding: 12 }}>
         <b style={{ color: C.warn, fontFamily: MONO, fontSize: 12 }}>awaiting_review</b>
@@ -152,8 +175,9 @@ export function Jobs() {
           ? `pp_verify passed, but the §6A auditor still returned FIX after ${job.result.qa_rounds ?? 0} repair round(s). Its remaining issues are under §6A audit verdict. Approve only if they are acceptable or corrected; nothing is registered until you approve.`
           : 'The gate passed. A person checks the Markdown and verify report before the row reaches the registry.'}</div>
         <textarea value={note} onChange={e => setNote(e.target.value)} placeholder="Reviewer note (required to return)" style={{ height: 70, background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 6, padding: 8, color: '#fff', resize: 'none', outline: 'none', fontSize: 12.5 }} />
-        <div style={{ display: 'flex', gap: 8 }}><Btn onClick={() => decide('approve')} style={{ flex: 1 }}>Approve & register</Btn><Btn primary={false} disabled={!note.trim()} onClick={() => decide('return')} style={{ flex: 1 }}>Return for revision</Btn></div>
-        <span onClick={() => { const md = String(job.result.markdown || ''); set({ builderMode: 'src' }); go('builder'); flash(md ? 'Markdown is in result.markdown; open it in Builder raw mode to edit' : 'no Markdown stored on this job'); }} style={{ color: C.run, cursor: 'pointer', textAlign: 'center' }}>Open Markdown in Builder →</span>
+        <div style={{ display: 'flex', gap: 8 }}><Btn onClick={() => decide('approve')} disabled={!reviewLocks(deciding, note).approve} style={{ flex: 1 }}>{deciding ? 'Deciding…' : 'Approve & register'}</Btn><Btn primary={false} disabled={!reviewLocks(deciding, note).ret} onClick={() => decide('return')} style={{ flex: 1 }}>Return for revision</Btn></div>
+        {(() => { const openMd = () => { const md = String(job.result.markdown || ''); set({ builderMode: 'src', builderRaw: md || null }); go('builder'); flash(md ? 'Markdown opened in the Builder raw view' : 'no Markdown stored on this job'); };
+          return <span onClick={openMd} {...press(openMd)} style={{ color: C.run, cursor: 'pointer', textAlign: 'center' }}>Open Markdown in Builder →</span>; })()}
         {reviewErr && <Banner kind="err">{reviewErr}</Banner>}
       </div>}
       {failed && <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}><div style={{ color: T.secondary, lineHeight: 1.45 }}>{failHint}</div><Btn onClick={rerun} disabled={rerunning} style={{ padding: 9 }}>{rerunning ? 'Starting…' : 'Re-run with same answers'}</Btn></div>}

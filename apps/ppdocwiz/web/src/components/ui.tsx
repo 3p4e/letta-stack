@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from 'react';
+import type { CSSProperties, KeyboardEvent, ReactNode } from 'react';
 import { C, DISPLAY, MONO, T, TINT, type Status } from '../theme';
 import { tr } from '../lib/i18n';
 import { useApp } from '../store/store';
@@ -40,11 +40,14 @@ export function spread(stamps: StampSpec[], gap: number): StampSpec[] {
 }
 
 // ---- controls ----
+/** Keyboard access for a clickable span or row: focusable, announced as a button, Enter and Space run it (review 19.10.2026). */
+export const press = (fn: () => void) => ({ role: 'button' as const, tabIndex: 0, onKeyDown: (e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fn(); } } });
+
 export function Seg<K extends string>({ items, value, onPick, size = 13, pad = '5px 12px', fill, style }: { items: [K, string][]; value: K; onPick: (k: K) => void; size?: number; pad?: string; fill?: boolean; style?: CSSProperties }) {
   return (
     <div style={{ display: 'flex', background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 6, padding: 2, fontSize: size, ...style }}>
       {items.map(([k, label]) => (
-        <span key={k} onClick={() => onPick(k)} style={{ flex: fill ? 1 : undefined, textAlign: 'center', whiteSpace: 'nowrap', padding: pad, borderRadius: 4, cursor: 'pointer', background: value === k ? T.navy : 'transparent', color: value === k ? '#fff' : T.secondary }}>{label}</span>))}
+        <span key={k} onClick={() => onPick(k)} {...press(() => onPick(k))} aria-pressed={value === k} style={{ flex: fill ? 1 : undefined, textAlign: 'center', whiteSpace: 'nowrap', padding: pad, borderRadius: 4, cursor: 'pointer', background: value === k ? T.navy : 'transparent', color: value === k ? '#fff' : T.secondary }}>{label}</span>))}
     </div>);
 }
 

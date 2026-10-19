@@ -301,3 +301,30 @@ async def test_an_annex_of_a_package_reads_its_own_sop_job_not_another_with_the_
     author = [p for p in c.prompts if p.startswith("Design the")][0]
     assert "operator signs the seal log" in author and "Another QASOPXXX" not in author
     assert updates[-1]["result"]["knowledge"]["parent_sop"]["job_id"] == "sop-mine"
+
+
+# ---- review 19.10.2026 ----
+
+@pytest.mark.asyncio
+async def test_index_text_treats_a_missing_old_entry_as_deleted_but_not_other_errors():
+    """The entry replace_id names may already be gone (deleted in RAGFlow, or a stale id from a failed upload)."""
+    def make(delete_reply):
+        seen = []
+
+        def handler(request: httpx.Request):
+            seen.append(request)
+            if request.method == "DELETE":
+                return httpx.Response(200, json=delete_reply)
+            if request.url.path.endswith("/documents"):
+                return httpx.Response(200, json={"code": 0, "data": [{"id": "new-doc"}]})
+            return httpx.Response(200, json={"code": 0})
+        return seen, httpx.MockTransport(handler)
+
+    seen, t = make({"code": 102, "message": "Documents not found: rf-old"})
+    rag = RagflowClient("http://ragflow:9380", "k", transport=t)
+    assert await rag.index_text("ds", "a.md", "text", replace_id="rf-old") == "new-doc"
+    assert [r.method for r in seen] == ["DELETE", "POST", "POST"]
+    seen, t = make({"code": 500, "message": "internal error"})
+    with pytest.raises(RagflowError, match="internal error"):
+        await RagflowClient("http://ragflow:9380", "k", transport=t).index_text("ds", "a.md", "text", replace_id="rf-old")
+    assert len(seen) == 1                                            # nothing uploaded over a live old entry

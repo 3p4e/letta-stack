@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CODE_RE, guessMeta, isUnconfirmed, metaProblems, normalizeCode, rankVersions } from './registry';
+import { CODE_RE, guessMeta, isUnconfirmed, metaProblems, normalizeCode, packageOf, rankVersions } from './registry';
 import { CODE_PATTERN } from './newdoc';
 
 describe('registry rules', () => {
@@ -42,5 +42,18 @@ describe('registry rules', () => {
     for (const c of ['QASOPXXX', 'QASOPXXXA06', 'EQSOPXXX']) expect(CODE_RE.test(c)).toBe(true);
     expect(isUnconfirmed('QASOPXXXA06')).toBe(true);
     expect(isUnconfirmed('QCSOP011')).toBe(false);
+  });
+});
+
+describe('packageOf (Workflow "Revise or continue", review 19.10.2026)', () => {
+  const row = (code: string, pkg?: string) => ({ code, approved: { package: pkg }, wip: [] });
+  it('takes the row\'s own package first, then reads the code: annex, SOP, or a standalone form', () => {
+    expect(packageOf(row('QCSOP011', 'sop_annexes'))).toBe('sop_annexes');
+    expect(packageOf({ code: 'QCSOP011', approved: null, wip: [{ package: 'report' }] })).toBe('report');
+    expect(packageOf(row('QCSOP011'))).toBe('sop');
+    expect(packageOf(row('QCSOP011A01'))).toBe('annex');
+    expect(packageOf(row('QCT024'))).toBe('form');
+    expect(packageOf(row('QCLB021'))).toBe('form');
+    expect(packageOf(row('QCCoA001'))).toBe('form');
   });
 });

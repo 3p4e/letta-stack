@@ -87,6 +87,12 @@ def render_local(docx, pdf, timeout=300):
     docx = os.path.abspath(docx)
     with tempfile.TemporaryDirectory(prefix="pp-render-") as tmp:
         part = os.path.join(tmp, "out.pdf")
+        if '"' in docx:
+            # The paths are spliced into a Basic macro call as "..." literals; a quote in the name ended the
+            # literal early and the macro failed or wrote elsewhere (review 19.10.2026). Work from a safe copy.
+            safe = os.path.join(tmp, "in.docx"); shutil.copyfile(docx, safe); docx = safe
+        if '"' in tmp:
+            raise RenderError(f"temporary directory {tmp!r} contains a double quote; set TMPDIR to a plain path")
         if os.path.isdir(LO_PROFILE):
             prof = os.path.join(tmp, "profile")
             shutil.copytree(LO_PROFILE, prof)

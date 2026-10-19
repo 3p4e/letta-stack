@@ -270,12 +270,12 @@ def test_raw_markdown_is_bounded(client):
     assert r.status_code == 422
 
 
-def test_jobs_rerun_carries_the_brief_and_the_parent_sop():
-    """Re-run sent only questionnaire, answers and meta: an annex re-run lost its brief and parent SOP."""
+def test_jobs_rerun_goes_through_the_engine():
+    """Re-run once rebuilt the payload client-side from six fields and lost the brief, the sources' text and the
+    package annexes (review 19.10.2026); the engine now copies the stored payload (POST /workflows/{id}/rerun)."""
     src = (Path(__file__).resolve().parents[1] / "web" / "src" / "screens" / "Jobs.tsx").read_text(encoding="utf-8")
     rerun = src[src.index("const rerun"):src.index("usePrimary(")]
-    for f in ("instructions:", "sources:", "parent_sop:"):
-        assert f in rerun, f
+    assert "api.rerunJob(" in rerun and "startWorkflow(" not in rerun
 
 
 # ---------------------------------------------------------------- session lifetime (review 14.10.2026)
@@ -464,9 +464,15 @@ def _sign_in(client, user, pw):
     return client.post("/api/session", json={"username": user, "key": pw})
 
 
-def test_the_shared_password_becomes_admin_and_admin_adds_people(client, monkeypatch):
-    monkeypatch.setattr(settings, "password_hash", security.hash_password("owner password 1"))
+def _owner_past_first_change():
+    """The owner's shared password, already changed once (the migrated admin inherits must_change otherwise, and
+    since the review of 19.10.2026 that is enforced on every route)."""
+    security.set_password("owner password 1")
     accounts.bootstrap()
+
+
+def test_the_shared_password_becomes_admin_and_admin_adds_people(client, monkeypatch):
+    _owner_past_first_change()
     assert accounts.listing()[0]["username"] == "admin" and client.get("/api/health").json()["login"] == "accounts"
     assert client.post("/api/session", json={"key": "owner password 1"}).status_code == 401      # a username is needed
     r = _sign_in(client, "admin", "owner password 1")
@@ -479,18 +485,18 @@ def test_the_shared_password_becomes_admin_and_admin_adds_people(client, monkeyp
     client.post("/api/users", json={"username": "c.cekic", "role": "user", "temporary_password": "temporary pw 34"})
     r = _sign_in(client, "c.cekic", "temporary pw 34")
     assert r.json()["must_change"] is True and client.get("/api/me").json()["must_change"] is True
-    assert client.get("/api/users").status_code == 403                                           # not an admin
     assert client.post("/api/password", json={"current": "temporary pw 34", "new": "her own password"}).status_code == 200
     assert client.get("/api/me").json() == {"user": "c.cekic", "role": "user", "must_change": False, "accounts": True}
+    assert client.get("/api/users").status_code == 403                                           # not an admin
     assert _sign_in(client, "c.cekic", "temporary pw 34").status_code == 401
     assert _sign_in(client, "c.cekic", "her own password").status_code == 200
 
 
 def test_disabling_an_account_ends_its_session_at_once_and_the_last_admin_stays(client, monkeypatch):
-    monkeypatch.setattr(settings, "password_hash", security.hash_password("owner password 1"))
-    accounts.bootstrap()
+    _owner_past_first_change()
     accounts.create("c.cekic", "user", "temporary pw 34", by="admin")
     _sign_in(client, "c.cekic", "temporary pw 34")
+    client.post("/api/password", json={"current": "temporary pw 34", "new": "her own password"})
     assert client.get("/api/doctypes").status_code == 200
     accounts.update("c.cekic", by="admin", disabled=True)
     assert client.get("/api/doctypes").status_code == 401                        # the same cookie, refused now
@@ -502,8 +508,7 @@ def test_disabling_an_account_ends_its_session_at_once_and_the_last_admin_stays(
 
 
 def test_every_sign_in_and_failure_is_logged_without_the_password(client, monkeypatch):
-    monkeypatch.setattr(settings, "password_hash", security.hash_password("owner password 1"))
-    accounts.bootstrap()
+    _owner_past_first_change()
     _sign_in(client, "admin", "wrong one")
     _sign_in(client, "admin", "owner password 1")
     events = client.get("/api/auth-log").json()["events"]
@@ -513,9 +518,8 @@ def test_every_sign_in_and_failure_is_logged_without_the_password(client, monkey
 
 
 def test_the_proxy_names_the_signed_in_person_and_the_browser_cannot(client, monkeypatch):
-    monkeypatch.setattr(settings, "password_hash", security.hash_password("owner password 1"))
     monkeypatch.setattr(settings, "docengine_url", "http://docengine:8000")
-    accounts.bootstrap()
+    _owner_past_first_change()
     sent = {}
 
     class Resp:
@@ -531,3 +535,132 @@ def test_the_proxy_names_the_signed_in_person_and_the_browser_cannot(client, mon
     _sign_in(client, "admin", "owner password 1")
     client.get("/api/docengine/briefs", headers={"X-Actor": "someone-else"})
     assert sent["x-actor"] == "admin"
+
+
+# ---------------------------------------------------------------- review 19.10.2026
+def _old_cookie(client, user, age=10):
+    """A session for `user` opened `age` seconds ago, as a browser that signed in earlier holds it."""
+    import time
+    client.cookies.clear()
+    client.cookies.set(security.COOKIE, security.issue_session(KEY, now=time.time() - age, user=user))
+
+
+def test_a_temporary_password_opens_only_the_change_routes(client):
+    """must_change was advice to the browser; a temporary password worked on every route (review 19.10.2026)."""
+    _owner_past_first_change()
+    accounts.create("c.cekic", "user", "temporary pw 34", by="admin")
+    assert _sign_in(client, "c.cekic", "temporary pw 34").json()["must_change"] is True
+    assert client.get("/api/me").status_code == 200 and client.get("/api/password").status_code == 200
+    r = client.get("/api/doctypes")
+    assert r.status_code == 403 and r.json()["detail"] == "password change required"
+    assert client.post("/api/wizard/preview", json={"payload": {"code": "X", "sections": []}}).status_code == 403
+    assert client.get("/api/docengine/health").status_code == 403
+    assert client.get("/api/health").status_code == 200 and client.get("/").status_code == 200   # the page and its probe
+    assert client.post("/api/password", json={"current": "temporary pw 34", "new": "her own password"}).status_code == 200
+    assert client.get("/api/doctypes").status_code == 200                                         # the UI's flow continues
+    accounts.create("d.mitrev", "user", "temporary pw 56", by="admin")
+    _sign_in(client, "d.mitrev", "temporary pw 56")
+    assert client.post("/api/session/close", json={}).status_code == 200                           # signing out is allowed
+    assert client.get("/api/doctypes", headers=H).status_code == 200                               # the key is never asked
+
+
+def test_an_administrators_reset_ends_the_persons_sessions(client):
+    _owner_past_first_change()
+    accounts.create("c.cekic", "user", "temporary pw 34", by="admin")
+    _old_cookie(client, "c.cekic")
+    assert client.get("/api/me").status_code == 200
+    accounts.update("c.cekic", by="admin", reset_password="new temporary 56")
+    assert client.get("/api/me").status_code == 401                        # the session from before the reset is dead
+    assert accounts.load()["c.cekic"]["pw_changed"] > 0
+    assert _sign_in(client, "c.cekic", "new temporary 56").status_code == 200
+
+
+def test_an_own_change_ends_every_other_session_and_keeps_this_one(client):
+    _owner_past_first_change()
+    accounts.create("c.cekic", "user", "temporary pw 34", by="admin")
+    other = TestClient(app_mod.app)
+    _old_cookie(client, "c.cekic"); _old_cookie(other, "c.cekic")
+    r = client.post("/api/password", json={"current": "temporary pw 34", "new": "her own password"})
+    assert r.status_code == 200 and security.COOKIE in r.headers.get("set-cookie", "")   # a fresh cookie for this browser
+    assert client.get("/api/doctypes").status_code == 200
+    assert other.get("/api/doctypes").status_code == 401                                  # the other browser is out
+    assert security.identity("", r.cookies[security.COOKIE]) == "c.cekic"
+
+
+def test_the_first_account_is_always_an_administrator(client):
+    """The API key could create a lone 'user' as the only account, with nobody left to administer (review 19.10.2026)."""
+    r = client.post("/api/users", json={"username": "c.cekic", "role": "user", "temporary_password": "temporary pw 34"}, headers=H)
+    assert r.status_code == 422 and "administrator" in r.json()["error"]
+    assert client.post("/api/users", json={"username": "b.nikolov", "role": "admin", "temporary_password": "temporary pw 12"}, headers=H).status_code == 200
+    assert client.post("/api/users", json={"username": "c.cekic", "role": "user", "temporary_password": "temporary pw 34"}, headers=H).status_code == 200
+    with pytest.raises(accounts.AccountError):
+        import os; os.unlink(accounts.USERS_FILE); accounts.create("x.y", "user", "temporary pw 34", by="api-key")
+    # With a shared password set, the API-key caller bootstraps 'admin' from it before the first named account.
+    security.set_password("owner password 1")
+    assert client.post("/api/users", json={"username": "c.cekic", "role": "user", "temporary_password": "temporary pw 34"}, headers=H).status_code == 200
+    assert [u["username"] for u in accounts.listing() if u["role"] == "admin"] == ["admin"]
+
+
+def _fake_docengine(monkeypatch):
+    seen = {}
+
+    class Resp:
+        status, headers = 200, {"content-type": "application/json"}
+        def read(self): return b"{}"
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+
+    def fake(req, timeout=0):
+        seen["n"] = len(req.data or b""); return Resp()
+    monkeypatch.setattr(settings, "docengine_url", "http://docengine:8000")
+    monkeypatch.setattr(app_mod.urllib.request, "urlopen", fake)
+    return seen
+
+
+def test_the_proxy_body_is_bounded_except_for_source_uploads(client, monkeypatch):
+    """request.body() buffered whatever was sent (review 19.10.2026)."""
+    seen = _fake_docengine(monkeypatch)
+    big = b"x" * (3 * 1024 * 1024)
+    assert client.post("/api/docengine/build", content=big, headers={**H, "content-type": "application/json"}).status_code == 413
+    assert "n" not in seen                                                   # nothing was forwarded
+    assert client.post("/api/docengine/build", content=b"{}", headers=H).status_code == 200 and seen["n"] == 2
+    assert client.post("/api/docengine/briefs/b1/sources", content=big, headers=H).status_code == 200 and seen["n"] == len(big)
+    assert client.post("/api/docengine/briefs/b1/sources", content=b"x" * (app_mod._DE_SOURCE_LIMIT + 1), headers=H).status_code == 413
+    # a body with no honest Content-Length is bounded while it streams
+    monkeypatch.setattr(app_mod, "_DE_BODY_LIMIT", 10)
+    assert client.post("/api/docengine/build", content=iter([b"x" * 8, b"x" * 8]), headers=H).status_code == 413
+
+
+def test_wizard_values_cannot_break_the_line_grammar():
+    """A newline in a form value became a second, broken row; '|||' a stray cell; a leading '#' a heading (review 19.10.2026)."""
+    import build_from_md as b
+    import wizard
+    p = {"code": "X\nY", "mk_title": "Тест\r\nдва", "en_title": "Test", "sections": [{"num": "1", "mk": "А", "en": "A", "blocks": [
+        {"type": "form", "rows": [{"label_mk": "Забелешка", "label_en": "Note", "value": "ред 1\nред 2 ||| ред 3"},
+                                  {"label_mk": "[[Поле", "label_en": "Field", "value": ""}]},
+        {"type": "text", "paras": [{"mk": "# 3 Напомена", "en": "- Note"}, {"mk": "- 20 °C", "en": "* x"}]},
+        {"type": "table", "cols": [{"mk": "#", "en": ""}, {"mk": "Параметар", "en": "Parameter"}],
+         "rows": [[{"mk": "- 1", "en": ""}, {"mk": "pH~~x", "en": ""}]]}]}]}
+    md = wizard.compose_markdown(p)
+    assert "code: X Y\n" in md and "mk_title: Тест два\n" in md
+    hd, blocks = b.parse(md)
+    assert hd["code"] == "X Y" and [x[0] for x in blocks] == ["h", "form", "p", "p", "table"]
+    assert blocks[1][1] == [["Забелешка", "Note", "ред 1 ред 2 | | | ред 3"], ["[[Поле", "Field", "_"]]
+    assert blocks[2][1:] == ("# 3 Напомена", "- Note") and blocks[3][1:] == ("- 20 °C", "* x")
+    assert blocks[4][1] == [["#", "Параметар~~Parameter"], ["- 1", "pH~ ~x"]]
+
+
+def test_a_monolingual_build_fails_the_gate_as_at_the_docengine(client, monkeypatch):
+    """pp_verify ran here without --require-bilingual, so a document the DocEngine refuses passed (review 19.10.2026).
+    The engine's own templates always print both languages (status band), so the builder is stubbed to make one that
+    does not."""
+    import importlib
+    import build_from_md
+    from docx import Document
+
+    def latin_only(src, out):
+        d = Document(); d.add_paragraph("English only"); d.save(out)
+    monkeypatch.setattr(importlib, "reload", lambda m: m)                 # keep the stub through _build_locked's reload
+    monkeypatch.setattr(build_from_md, "main", latin_only)
+    r = client.post("/api/build", json={"markdown": GOOD_MD}, headers=H)
+    assert r.status_code == 422 and "FAIL (missing a language)" in r.json()["verify"]

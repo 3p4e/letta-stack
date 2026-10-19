@@ -1,4 +1,4 @@
-import type { Api, WorkflowIn } from './client';
+import type { Api, JobList, WorkflowIn } from './client';
 import { normalizeQuestionnaire, type RawQuestionnaire } from './normalize';
 import { ApiError, type Job } from './types';
 
@@ -18,7 +18,10 @@ async function call<T>(url: string, init?: RequestInit): Promise<T> {
   try { body = text ? JSON.parse(text) : {}; } catch { /* plain text body */ }
   if (!r.ok) {
     const b = body as { error?: string; detail?: unknown };
-    const detail = typeof b?.detail === 'string' ? b.detail : (b?.detail as { error?: string })?.error;
+    // Pydantic validation puts a list in `detail`; without this it read "[object Object]" (review 19.10.2026).
+    const detail = typeof b?.detail === 'string' ? b.detail
+      : Array.isArray(b?.detail) ? (b.detail as { msg: string; loc?: (string | number)[] }[]).map(d => `${d.msg} at ${(d.loc || []).join('.')}`).join('; ')
+      : (b?.detail as { error?: string })?.error;
     throw new ApiError(r.status, b?.error || detail || r.statusText || 'HTTP ' + r.status, body);
   }
   return body as T;
@@ -35,6 +38,8 @@ function rememberJob(id: string) {
 function knownJobs(): string[] {
   try { return JSON.parse(localStorage.getItem(KNOWN_JOBS) || '[]'); } catch { return []; }
 }
+// The last row read for each job: a poll that fails for one id keeps showing what it last knew (review 19.10.2026).
+const lastRows = new Map<string, Job>();
 
 export function liveApi(): Api {
   // DocEngine is internal-only (no published port); the browser reaches it through a
@@ -65,12 +70,29 @@ export function liveApi(): Api {
     questionnaires: async () => (await call<{ questionnaires: never[] }>(de + '/questionnaires')).questionnaires,
     questionnaire: async key => normalizeQuestionnaire(key, await call<RawQuestionnaire>(de + '/questionnaires/' + encodeURIComponent(key))),
     startWorkflow: async (body: WorkflowIn) => { const r = await post<{ job_id: string; status: string }>(de + '/workflows', body); rememberJob(r.job_id); return r; },
-    job: id => call(de + '/workflows/' + encodeURIComponent(id)),
+    // A job opened by id (a brief's build, a package annex) joins the list this browser knows.
+    job: async id => { const j = await call<Job>(de + '/workflows/' + encodeURIComponent(id)); rememberJob(j.id); lastRows.set(j.id, j); return j; },
     jobs: async () => {
-      const out: Job[] = [];
-      for (const id of knownJobs()) { try { out.push(await call<Job>(de + '/workflows/' + id)); } catch (e) { if ((e as ApiError).status !== 404) throw e; } }
+      const out: JobList = []; let firstErr: ApiError | null = null;
+      const seen = new Set<string>(), queue = knownJobs();
+      // Per id, with its own catch: one 503 used to empty the whole list. Annex jobs a package started
+      // (result.package_jobs) are remembered too, so they appear beside their SOP (review 19.10.2026).
+      for (let i = 0; i < queue.length; i++) {
+        const id = queue[i]; if (seen.has(id)) continue; seen.add(id);
+        try {
+          const j = await call<Job>(de + '/workflows/' + encodeURIComponent(id)); lastRows.set(id, j); out.push(j);
+          for (const a of (j.result.package_jobs as { job_id?: string }[] | undefined) || []) if (a.job_id && !seen.has(a.job_id)) { rememberJob(a.job_id); queue.push(a.job_id); }
+        } catch (e) {
+          const a = e as ApiError;
+          if (a.status === 404) { lastRows.delete(id); continue; }
+          firstErr ||= a; const prev = lastRows.get(id); if (prev) out.push(prev);
+        }
+      }
+      if (firstErr && !out.length) throw firstErr;
+      if (firstErr) out.err = `${firstErr.status} · ${firstErr.message}`;
       return out;
     },
+    rerunJob: async id => { const r = await post<{ job_id: string; status: string }>(de + '/workflows/' + encodeURIComponent(id) + '/rerun', {}); rememberJob(r.job_id); return r; },
     reviewJob: (id, decision, note) => post(de + '/workflows/' + encodeURIComponent(id) + '/review', { decision, note }),
     directBuild: (markdown, out_name, meta) => post(de + '/build', { markdown, out_name, meta }),
     documents: async () => (await call<{ documents: never[] }>(de + '/documents')).documents,
@@ -85,7 +107,9 @@ export function liveApi(): Api {
     createBrief: b => post(de + '/briefs', b),
     patchBrief: (id, p) => send(de + '/briefs/' + encodeURIComponent(id), 'PATCH', p),
     briefEvents: async id => (await call<{ events: never[] }>(de + '/briefs/' + encodeURIComponent(id) + '/events')).events,
-    addBriefSource: (id, name, content_b64) => post(de + '/briefs/' + encodeURIComponent(id) + '/sources', { name, content_b64 }),
+    addBriefSource: (id, name, content_b64, role = 'content') => post(de + '/briefs/' + encodeURIComponent(id) + '/sources', { name, content_b64, actor: 'ppdocwiz-session', role }),
+    setSourceRole: (id, sid, role) => send(de + '/briefs/' + encodeURIComponent(id) + '/sources/' + encodeURIComponent(sid), 'PATCH', { role, actor: 'ppdocwiz-session' }),
+    houseRelated: code => call(de + '/house/related/' + encodeURIComponent(code)),
     removeBriefSource: (id, sid) => send(de + '/briefs/' + encodeURIComponent(id) + '/sources/' + encodeURIComponent(sid), 'DELETE'),
     suggestBrief: (id, rev, keys = []) => post(de + '/briefs/' + encodeURIComponent(id) + '/suggest', { rev, keys }),
     briefPackage: id => call(de + '/briefs/' + encodeURIComponent(id) + '/package'),

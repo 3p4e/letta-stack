@@ -248,6 +248,11 @@ def test_the_advisor_answer_is_kept_to_the_questions_asked():
     assert out["techniques"] == {"options": [{"value": "GC-MS", "why": "terpenes", "source": "E1"}], "pick": ["GC-MS"]}
     assert out["doc.purpose"]["pick"] == "" and out["doc.purpose"]["options"][0]["source"] == "house practice"
     assert advisor._first_json('Here: ```json\n{"proposals": []}\n```') == {"proposals": []}
+    # review 19.10.2026: the greedy match ran to the LAST brace, so an answer that mentioned another {…} was no JSON
+    assert advisor._first_json('Here: {"proposals": []} and also {"x": 1}') == {"proposals": []}
+    assert advisor._first_json('no object {here, then: {"proposals": [{"key": "a"}]} done') == {"proposals": [{"key": "a"}]}
+    with pytest.raises(ValueError):
+        advisor._first_json("nothing here")
     text = advisor.prompt(fresh(), asked, "[E1] house", "[R1] reg", [{"name": "a.md", "text": "src"}])
     assert "techniques: Techniques (several may be chosen)" in text and "SOURCE FILE «a.md»" in text
 
@@ -513,3 +518,77 @@ def test_changing_the_package_takes_its_question_set_and_a_mismatch_is_never_bui
     stuck = {**B.new_brief("sop_annexes", {"title_en": "x"}), "package": "annex"}   # a brief saved before the fix
     with pytest.raises(B.BriefError, match="choose the package again"):
         B.to_workflow(stuck, [])
+
+
+# ---------- review 19.10.2026: the brief path is guarded as POST /workflows is ----------
+def test_a_brief_whose_code_and_package_disagree_is_refused_before_a_job_exists(api, monkeypatch):
+    """repro 1 and 2: an SOP brief with the code QCSOP001A01 was built as an SOP (no _check_doctype on the brief path);
+    an annex brief for QCSOP001 numbered QCSOP026 was built as an annex of nothing."""
+    c, store, started = api
+    r = c.post("/briefs", json={"package": "sop", "meta": {"title_en": "Request for Sampling", "code": "QCSOP001A01"}}, headers=h())
+    assert r.status_code == 422 and "annex" in r.json()["detail"]
+    r = c.post("/briefs", json={"package": "annex", "parent_sop": "QCSOP001", "meta": {"title_en": "Form", "code": "QCSOP026"}}, headers=h())
+    assert r.status_code == 422 and "no annex number" in r.json()["detail"]
+    ok = c.post("/briefs", json={"package": "annex", "parent_sop": "QCSOP001", "meta": {"title_en": "Form", "code": "QCSOP001A01"}}, headers=h())
+    assert ok.status_code == 200
+    assert c.post("/briefs", json={"package": "form", "meta": {"title_en": "Form", "code": "QCT026"}}, headers=h()).status_code == 200
+    # a patch that makes them disagree
+    b = c.post("/briefs", json={"package": "sop", "meta": {"title_en": "S", "code": "QCSOP030"}}, headers=h()).json()
+    assert c.patch(f"/briefs/{b['id']}", json={"rev": 0, "meta": {"code": "QCSOP001A01"}}, headers=h()).status_code == 422
+    assert c.patch(f"/briefs/{b['id']}", json={"rev": 0, "package": "annex", "parent_sop": "QCSOP001"}, headers=h()).status_code == 422
+    assert store[b["id"]]["rev"] == 0                                               # nothing was saved
+    # the build path itself, for a brief saved before the guard existed
+    store[b["id"]]["meta"]["code"] = "QCSOP001A01"
+    r = c.post(f"/briefs/{b['id']}/build", json={"rev": 0}, headers=h())
+    assert r.status_code == 422 and "annex" in r.json()["detail"] and started == []
+    store[b["id"]]["meta"]["code"] = "QCSOP030"
+    store[b["id"]]["package"], store[b["id"]]["questionnaire"] = "annex", "annex_form"
+    store[b["id"]]["parent_sop"] = "QCSOP001"
+    r = c.post(f"/briefs/{b['id']}/build", json={"rev": 0}, headers=h())
+    assert r.status_code == 422 and "no annex number" in r.json()["detail"] and started == []
+    store[b["id"]]["meta"]["code"] = ""                                             # numbered under the SOP at build
+    r = c.post(f"/briefs/{b['id']}/build", json={"rev": 0}, headers=h())
+    assert r.status_code == 200 and r.json()["code"] == "QCSOP001A01" and started[-1]["questionnaire"] == "annex_form"
+
+
+def test_a_brief_seeded_from_a_reference_is_guarded_too(api, monkeypatch):
+    c, store, started = api
+    ref = {"id": "55555555-5555-5555-5555-555555555555", "kind": "approved", "code": "QCSOP001A01", "parent": "QCSOP001",
+           "version": "01", "title_en": "Request for sampling", "title_mk": "", "markdown": "x" * 30, "sha256": "s"}
+
+    async def get(rid):
+        return ref if rid == ref["id"] else None
+    monkeypatch.setattr(db, "reference_get", get)
+    r = c.post("/briefs", json={"package": "sop", "from_reference": ref["id"]}, headers=h())
+    assert r.status_code == 422 and "QCSOP001A01" in r.json()["detail"]
+    b = c.post("/briefs", json={"package": "annex", "from_reference": ref["id"]}, headers=h()).json()
+    assert b["meta"]["code"] == "QCSOP001A01" and b["parent_sop"] == "QCSOP001" and b["sources"][0]["name"].startswith("QCSOP001A01")
+
+
+def test_locking_a_suggestion_is_a_decision():
+    """repro 4: a locked field in state 'suggested' was hidden from `assumed` without anyone deciding it."""
+    b, ev = B.apply_patch(fresh(), {"rev": 0, "suggest": {"focus": "Potency"}, "lock": ["focus"]}, "b.nikolov")
+    assert [e["op"] for e in ev] == ["suggest", "set", "lock"]
+    assert b["fields"]["focus"] == {"value": "Potency", "state": "locked", "stale": False, "at": ev[1]["at"], "by": "b.nikolov"}
+    assert ev[1]["before"] == ev[1]["after"] == "Potency" and ev[1]["actor"] == "b.nikolov"
+    assert not any(a.startswith("focus") for a in B.to_workflow(b, [])["assumed"])
+    b2, _ = B.apply_patch(fresh(), {"rev": 0, "suggest": {"focus": "Potency"}})
+    assert "focus (suggested, not confirmed)" in B.to_workflow(b2, [])["assumed"]    # still open: still assumed
+
+
+def test_wrong_types_in_meta_and_annexes_are_a_400_never_a_500(api):
+    """repro 3: a non-string department was stored and crashed the numbering at build."""
+    c, store, started = api
+    assert c.post("/briefs", json={"package": "sop", "meta": {"title_en": "S", "department": 5}}, headers=h()).status_code == 400
+    b = c.post("/briefs", json={"package": "sop_annexes", "meta": {"title_en": "S"}}, headers=h()).json()
+    for bad in ({"meta": {"department": ["QC"]}}, {"meta": {"orient": "a\nb"}}, {"meta": {"version": 1}},
+                {"annexes": [{"title_en": ["Log"]}]}, {"annexes": [{"title_en": "Log", "kind": 3}]}):
+        r = c.patch(f"/briefs/{b['id']}", json={"rev": 0, **bad}, headers=h())
+        assert r.status_code == 400, bad
+    store[b["id"]]["meta"]["department"] = 5                                        # saved before the check existed
+    r = c.post(f"/briefs/{b['id']}/build", json={}, headers=h())
+    assert r.status_code == 400 and "department" in r.json()["detail"] and started == []
+    with pytest.raises(B.BriefError):
+        B.apply_patch(fresh(), {"rev": 0, "meta": {"department": ["QC"]}})
+    with pytest.raises(B.BriefError):
+        B.apply_patch(fresh(), {"rev": 0, "annexes": [{"title_mk": {"x": 1}}]})

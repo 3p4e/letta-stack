@@ -16,11 +16,15 @@
 # Not a QMS record (CLAUDE.md §10): QALI 001 and the paper system stay the authority.
 from __future__ import annotations
 
+from .house import relations
+from .house_codes import parts, version_key
+
 SHELVES = ("approved", "revision", "drafts", "numbers", "retired")
 _IN_USE = ("effective", "effective_revising")
 
 
-def shelve(register: list[dict], references: list[dict], builds: list[dict], jobs: dict[str, list[dict]]) -> dict:
+def shelve(register: list[dict], references: list[dict], builds: list[dict], jobs: dict[str, list[dict]],
+           listed: dict[str, list[str]] | None = None) -> dict:
     entries: dict[str, dict] = {}
 
     def entry(code: str) -> dict:
@@ -37,7 +41,7 @@ def shelve(register: list[dict], references: list[dict], builds: list[dict], job
         e = entry(ref["code"])
         brief = {k: ref.get(k) for k in ("id", "version", "title_en", "effective_date", "chars", "ragflow_doc_id", "package")}
         if ref["kind"] == "approved":
-            if e["approved"] is None or str(ref.get("version", "")) > str(e["approved"].get("version", "")):
+            if e["approved"] is None or version_key(ref.get("version", "")) > version_key(e["approved"].get("version", "")):
                 e["approved"] = brief
         else:
             e["wip"].append(brief)
@@ -69,4 +73,39 @@ def shelve(register: list[dict], references: list[dict], builds: list[dict], job
     shelves = {s: [] for s in SHELVES}
     for code in sorted(entries):
         shelves[entries[code]["shelf"]].append(entries[code])
-    return {"shelves": shelves, "counts": {s: len(v) for s, v in shelves.items()}}
+    pk = packages(entries, listed or {})
+    return {"shelves": shelves, "counts": {s: len(v) for s, v in shelves.items()}, **pk}
+
+
+def _is_sop(code: str) -> bool:
+    try:
+        fam, num, annex = parts(code)
+    except ValueError:
+        return False
+    return annex is None and fam.upper().endswith("SOP")
+
+
+def packages(entries: dict[str, dict], listed: dict[str, list[str]]) -> dict:
+    """The Library by document package (Head of QC, 19.10.2026): every SOP with its annexes and the documents tied
+    to it — by code (…A01), by the register's parent, or named in the approved SOP's text — in two groups, the
+    packages whose SOP is in use and the packages still being written; the documents under no SOP are listed loose."""
+    codes = sorted(entries)
+    parents = {c: entries[c].get("parent") or "" for c in codes}
+    in_pkg: set[str] = set()
+    pk = {"in_use": [], "drafts": []}
+    for c in codes:
+        if not _is_sop(c):
+            continue
+        members = []
+        for m, rel in relations(c, codes, parents, listed.get(c, [])):
+            members.append({**entries[m], "relation": rel})
+            in_pkg.add(m)
+        in_pkg.add(c)
+        group = "in_use" if entries[c]["shelf"] in ("approved", "revision") else "drafts"
+        pk[group].append({"sop": entries[c], "members": members})
+    loose = {"in_use": [], "drafts": []}
+    for c in codes:
+        if c in in_pkg:
+            continue
+        loose["in_use" if entries[c]["shelf"] in ("approved", "revision") else "drafts"].append(entries[c])
+    return {"packages": pk, "loose": loose}

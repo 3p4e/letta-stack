@@ -52,6 +52,8 @@ export interface AppState {
   createOpen: boolean; createCat: string; menuX: number; menuY: number; sheet: Sheet | null;
   // cross-screen document state
   bdoc: WizardPayload; bdocIsSample: boolean; builderMode: 'src' | 'page' | 'blocks'; hlLine: number;
+  /** Markdown handed to the Builder's raw view by another screen (Jobs "Open Markdown in Builder"); the Builder takes it once and clears it. */
+  builderRaw: string | null;
   chatDraft: string; chatAgent: string;
   /** Interface language; documents stay bilingual whatever it is. */
   lang: Lang; setLang: (l: Lang) => void;
@@ -95,7 +97,7 @@ export const useApp = create<AppState>((set, get) => {
     // Live mode opens on nothing: the sample annex (WHSOP_002_A02) used to be loaded as if it were the user's draft,
     // and Build turned it into a real registered file (review 18.10.2026). Mock mode keeps the demo document.
     bdoc: mode === 'mock' ? structuredClone(SAMPLE_ANNEX) : skeleton({ doctype: 'ANNEX', code: '', title_mk: '', title_en: '', version: '01', parent: '', supersedes: '', orient: 'portrait' }),
-    bdocIsSample: mode === 'mock', builderMode: 'src', hlLine: 0,
+    bdocIsSample: mode === 'mock', builderMode: 'src', hlLine: 0, builderRaw: null,
     chatDraft: '', chatAgent: 'qms_docx_formatter',
     lang: read(LS.lang) === 'mk' ? 'mk' : 'en',
     setLang: l => { write(LS.lang, l); set({ lang: l }); },

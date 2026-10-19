@@ -205,3 +205,18 @@ def test_a_crash_in_verify_leaves_no_partial(tmp_path, monkeypatch):
     with pytest.raises(RuntimeError):
         builder.build(md, tmp_path, "X")
     assert list(tmp_path.iterdir()) == []
+
+
+def test_bilingual_and_doctype_are_read_from_the_headerdata_block_only(tmp_path, monkeypatch):
+    """A body line "bilingual: no" (an author quoting the grammar, a form field) switched the gate off, and a body
+    "doctype: FORM" renamed the document (review 19.10.2026)."""
+    md = SOP_MD + "\nbilingual: no\ndoctype: FORM\n"
+    assert builder.build(md, tmp_path, "body_doctype").doctype == "SOP"            # the real engine: body lines are text
+    assert builder._headerdata(md) == {"mk_title": "Тест СОП за примерок", "en_title": "Test Sampling SOP", "code": "QCSOP-999",
+                                       "version": "1.0", "doctype": "SOP", "orient": "portrait"}
+    monkeypatch.setattr(builder.build_from_md, "main",
+                        _fake_engine_build("Only English content appears anywhere in this "
+                                           "document body, repeated for length. " * 20))
+    with pytest.raises(builder.VerifyFailed) as e:
+        builder.build(md, tmp_path, "body_optout")
+    assert "FAIL (missing a language)" in e.value.report

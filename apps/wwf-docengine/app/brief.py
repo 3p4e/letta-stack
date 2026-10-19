@@ -138,6 +138,11 @@ def apply_patch(brief: dict, patch: dict, actor: str = "", at: str | None = None
         f = b["fields"].get(key)
         if not f:
             raise BriefError(f"{key} has no value to lock")
+        if f["state"] == "suggested":
+            # Locking an open suggestion is the actor's decision on it: recorded as their set, so to_workflow stops
+            # listing it as assumed. It used to lock the field as "suggested, not confirmed" (review 19.10.2026).
+            ev("set", key, f["value"], f["value"])
+            f.update(state="chosen", stale=False, at=at, by=actor)
         if f["state"] != "locked":
             ev("lock", key, f["state"], "locked")
             f.update(state="locked", stale=False)
@@ -156,6 +161,8 @@ def apply_patch(brief: dict, patch: dict, actor: str = "", at: str | None = None
     for k, v in (patch.get("meta") or {}).items():
         if k not in META_KEYS:
             raise BriefError(f"meta.{k} is not a brief field")
+        if v is not None and (not isinstance(v, str) or "\n" in v or "\r" in v):
+            raise BriefError(f"meta.{k} must be one line of text")      # a list here crashed the build (review 19.10.2026)
         if b["meta"].get(k, "") != (v or ""):
             ev("meta", k, b["meta"].get(k, ""), v or "")
             b["meta"][k] = v or ""
@@ -176,6 +183,9 @@ def apply_patch(brief: dict, patch: dict, actor: str = "", at: str | None = None
             ev(k, k, b.get(k), patch[k])
             b[k] = patch[k]
     if "annexes" in patch:
+        for a in patch["annexes"] or []:
+            if not isinstance(a, dict) or any(not isinstance(a.get(k) or "", str) for k in ("title_en", "title_mk", "kind")):
+                raise BriefError("every annex is {title_en, title_mk, kind} as text")
         annexes = [{"title_en": (a.get("title_en") or "").strip(), "title_mk": (a.get("title_mk") or "").strip(),
                     "kind": a.get("kind") or "form"} for a in patch["annexes"] or []]
         if any(not (a["title_en"] or a["title_mk"]) for a in annexes):
@@ -230,7 +240,7 @@ def to_workflow(brief: dict, sources: list[dict]) -> dict:
             continue
         t = t[:MAX_SOURCES_CHARS - total]
         total += len(t)
-        texts.append({"name": s["name"], "text": t})
+        texts.append({"name": s["name"], "text": t, "role": s.get("role") or "content"})
     return {"questionnaire": q, "answers": answers, "meta": {k: v for k, v in meta.items() if k in META_KEYS},
             "instructions": "\n".join(lines)[:12000], "sources": [s["name"] for s in sources][:40],
             "source_texts": texts, "parent_sop": brief.get("parent_sop") or "", "assumed": assumed,

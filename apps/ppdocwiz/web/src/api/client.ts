@@ -1,6 +1,6 @@
 import type {
   BuildResult, ChatResult, DeHealth, DocumentRow, DoctypeInfo, Health, Job, Questionnaire,
-  Brief, BriefEvent, BriefPatch, BriefSuggestion, BriefPackage, Me, Account, AuthEvent, LibraryShelves, Package, QuestionnaireIndexRow, ReferenceDoc, WizardPayload,
+  Brief, BriefEvent, BriefPatch, BriefSuggestion, BriefPackage, HouseRelated, Me, Account, AuthEvent, LibraryShelves, Package, QuestionnaireIndexRow, ReferenceDoc, SourceRole, WizardPayload,
 } from './types';
 
 export interface WorkflowIn {
@@ -23,6 +23,9 @@ export interface EngineEnv {
 }
 
 export interface DataSet { name: string; columns: string[]; rows: Record<string, string>[] }
+
+/** The job list; `err` names the first failed read when the list is partial (live mode keeps the last row read for that job). */
+export type JobList = Job[] & { err?: string };
 
 /**
  * Everything the suite reads or writes. Two implementations:
@@ -57,8 +60,11 @@ export interface Api {
   questionnaire(key: string): Promise<Questionnaire>;
   startWorkflow(body: WorkflowIn): Promise<{ job_id: string; status: string }>;
   job(id: string): Promise<Job>;
-  /** DocEngine has no list endpoint; live mode lists the ids this browser started. */
-  jobs(): Promise<Job[]>;
+  /** DocEngine POST /workflows/{id}/rerun: a new job from the stored payload (sources' text, annexes, brief included).
+   *  409 if the job is not failed; 422 if an annex has an SOP question set. */
+  rerunJob(id: string): Promise<{ job_id: string; status: string }>;
+  /** DocEngine has no list endpoint; live mode lists the ids this browser started or opened. */
+  jobs(): Promise<JobList>;
   /** Not in DocEngine yet (status awaiting_review exists, no transition route). */
   reviewJob(id: string, decision: 'approve' | 'return', note: string): Promise<Job>;
   /** Builder Source view → ppdocwiz POST /api/build: the same engine as the wizard path; 422 on a FAIL. */
@@ -83,8 +89,13 @@ export interface Api {
   createBrief(b: { package: Package; meta?: Record<string, string>; questionnaire?: string; parent_sop?: string; from_reference?: string; requested_by?: string }): Promise<Brief>;
   patchBrief(id: string, p: BriefPatch): Promise<Brief>;
   briefEvents(id: string): Promise<BriefEvent[]>;
-  addBriefSource(id: string, name: string, content_b64: string): Promise<{ id: string; chars: number; note: string; brief: Brief }>;
+  /** A source with its role (default content); 409 when the brief already holds 20. */
+  addBriefSource(id: string, name: string, content_b64: string, role?: SourceRole): Promise<{ id: string; chars: number; note: string; brief: Brief }>;
+  /** PATCH /briefs/{id}/sources/{sid}: the role of a source already uploaded; returns the brief. */
+  setSourceRole(id: string, sourceId: string, role: SourceRole): Promise<Brief>;
   removeBriefSource(id: string, sourceId: string): Promise<Brief>;
+  /** DocEngine GET /house/related/{code}: the approved copy of a parent SOP and the documents in use under it. */
+  houseRelated(code: string): Promise<HouseRelated>;
   /** The advisor's options with reasons and sources for open questions (all of them when `keys` is empty). */
   suggestBrief(id: string, rev: number, keys?: string[]): Promise<BriefSuggestion>;
   /** The latest build of the brief as one package (SOP + annexes), and the link to it as one merged PDF. */

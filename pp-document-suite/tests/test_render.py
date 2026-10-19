@@ -101,3 +101,27 @@ def test_a_pdf_printed_with_substitute_fonts_is_refused_and_removed(gotenberg, d
     with pytest.raises(pp_render.RenderError, match="substitute fonts.*Calibri"):
         pp_render.render_pdf(docx, str(out))
     assert not out.exists(), "a refused PDF is never left behind"
+
+
+def test_a_quote_in_the_docx_path_never_reaches_the_macro(tmp_path, monkeypatch):
+    """The paths are spliced into a Basic call as "..." literals; a quote in the name ended the literal (review 19.10.2026)."""
+    import re
+    import shutil
+    seen = {}
+
+    class Popen:
+        def __init__(self, args, **kw):
+            seen["macro"] = args[-1]
+            m = re.fullmatch(r'macro:///Standard\.Module1\.ToPdf\("([^"]*)","([^"]*)"\)', args[-1])
+            assert m, args[-1]
+            seen["in"] = m.group(1)
+            open(m.group(2), "wb").write(b"%PDF-1.7 /BaseFont/AAAAAA+Calibri")
+        def wait(self, timeout=None): return 0
+    monkeypatch.setattr(pp_render.subprocess, "Popen", Popen)
+    monkeypatch.setattr(pp_render.shutil, "which", lambda name: "/usr/bin/soffice")
+    from docx import Document
+    d = Document(); d.add_paragraph().add_run("Текст | Text").font.name = "Calibri"
+    odd = tmp_path / 'say "hi".docx'; d.save(odd)
+    assert pp_render.render_local(str(odd), str(tmp_path / "o.pdf")) == "local"
+    assert '"' not in seen["in"] and seen["in"] != str(odd)          # a safe copy, not the quoted path
+    assert (tmp_path / "o.pdf").read_bytes().startswith(b"%PDF")

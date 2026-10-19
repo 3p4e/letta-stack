@@ -50,6 +50,9 @@ export interface Job {
   payload: {
     questionnaire: string; answers: Record<string, string | string[]>; meta: Record<string, string>; requested_by: string;
     instructions?: string; sources?: string[]; parent_sop?: string;
+    /** Set on a brief-built job: the server holds the sources' text and the annexes too, so only POST /workflows/{id}/rerun
+     *  can re-run it whole (review 19.10.2026). */
+    brief_id?: string; source_texts?: unknown[]; package_annexes?: unknown[]; rerun_of?: string;
   };
   result: Record<string, unknown>; error: string | null; created_by: string; created_at: string; updated_at: string;
 }
@@ -73,14 +76,31 @@ export interface ShelfEntry {
   builds: { id: string; version: string; doctype: string; created_at: string; job_id: string | null }[];
   jobs: { id: string; status: string; stage: string; title_en: string; updated_at: string }[]; notes: string[];
 }
-export interface LibraryShelves { shelves: Record<Shelf, ShelfEntry[]>; counts: Record<Shelf, number> }
+/** How a document hangs under an SOP (DocEngine GET /house/related, GET /library packages; Head of QC, 19.10.2026):
+ *  annex = code pattern …A##, child = register parent, listed = the approved SOP's own text names it. */
+export type Relation = 'annex' | 'child' | 'listed';
+/** An SOP with the documents that belong to it. In `in_use` when the SOP has an approved copy or is effective in the
+ *  register, else in `drafts`; `loose` holds what belongs to no package. */
+export interface LibraryPackage { sop: ShelfEntry; members: (ShelfEntry & { relation: Relation })[] }
+export interface LibraryShelves {
+  shelves: Record<Shelf, ShelfEntry[]>; counts: Record<Shelf, number>;
+  packages: { in_use: LibraryPackage[]; drafts: LibraryPackage[] };
+  loose: { in_use: ShelfEntry[]; drafts: ShelfEntry[] };
+}
+/** DocEngine GET /house/related/{code}: the approved copy of an SOP (found=false when none) and what is in use under it. */
+export interface RelatedDoc { code: string; version: string; title_en: string; title_mk: string; relation: Relation; chars: number }
+export interface HouseRelated { code: string; found: boolean; version: string; title_en: string; title_mk: string; related: RelatedDoc[] }
 export interface ReferenceDoc extends RefBrief { kind: 'approved' | 'wip'; code: string; parent: string; title_mk: string; department: string; source: Record<string, unknown>; markdown: string }
 
 /** DocEngine Document Brief (18.10.2026): the one saved draft the workflow edits. */
 export type Package = 'sop' | 'sop_annexes' | 'annex' | 'form' | 'report';
 export type FieldState = 'suggested' | 'chosen' | 'locked';
 export interface BriefField { value: string | string[]; state: FieldState; stale: boolean; at: string; by: string }
-export interface BriefSource { id: string; name: string; kind: string; bytes: number; chars: number; created_at: string }
+/** What a source is for (Head of QC, 19.10.2026): content = reference contents, facts may be taken and are cited by file
+ *  name; format = an example of document formatting, structure and layout only; example = an executed/filled example of
+ *  this kind of document, structure not values. */
+export type SourceRole = 'content' | 'format' | 'example';
+export interface BriefSource { id: string; name: string; kind: string; bytes: number; chars: number; created_at: string; role: SourceRole }
 export interface BriefAnnex { title_en: string; title_mk: string; kind: string }
 export interface Brief {
   id: string; rev: number; status: string; package: Package; questionnaire: string; parent_sop: string;

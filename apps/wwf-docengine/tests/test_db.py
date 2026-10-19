@@ -215,3 +215,71 @@ async def test_a_brief_keeps_every_change_and_refuses_a_stale_write(dbpool):
     ops = [e["op"] for e in await db.brief_events(bid)]
     assert ops == ["create", "set", "source_add", "source_remove"]
     assert [x["id"] for x in await db.brief_list()] == [bid]
+
+
+# ---- review 19.10.2026 ----
+
+async def test_the_schema_bootstrap_survives_several_workers_at_once(dbpool):
+    """Several uvicorn workers run init() in the same moment; two CREATE … IF NOT EXISTS on an empty database raced
+    to a unique violation on pg_type and a worker died at startup. The advisory lock serialises them."""
+    import asyncio
+
+    import asyncpg
+    from app.config import settings
+    for _ in range(3):
+        await dbpool.execute("DROP SCHEMA docengine CASCADE")
+
+        async def one():
+            c = await asyncpg.connect(settings.database_url)
+            try:
+                await db.create_schema(c)
+            finally:
+                await c.close()
+        await asyncio.gather(*(one() for _ in range(6)))              # raises on any worker's failure
+    c = await asyncpg.connect(settings.database_url)
+    try:
+        assert await c.fetchval("SELECT count(*) FROM docengine.jobs") == 0
+    finally:
+        await c.close()
+
+
+async def test_a_terminal_write_never_overwrites_a_job_the_reaper_failed(dbpool):
+    """A slow job that outlived the reaper came back and wrote 'done' over 'abandoned'; job_touch is what the
+    pipeline asks before every exchange."""
+    slow = await seed_job(dbpool, status="running", age_minutes=120)
+    live = await db.job_create("workflow", {})
+    before = await dbpool.fetchval("SELECT updated_at FROM docengine.jobs WHERE id = $1", live)
+    assert await db.reap_stale_jobs() == 1
+    assert await db.job_finish(slow, status="done", stage="done", result={"document_id": "x"}) is False
+    row = await dbpool.fetchrow("SELECT status, result FROM docengine.jobs WHERE id = $1", slow)
+    assert row["status"] == "failed" and "document_id" not in str(row["result"])
+    assert await db.job_touch(slow) == "failed"
+    assert await db.job_touch(live) == "queued"
+    assert await dbpool.fetchval("SELECT updated_at FROM docengine.jobs WHERE id = $1", live) >= before
+    assert await db.job_finish(live, status="awaiting_review", stage="format") is True
+    assert await status_of(dbpool, live) == "awaiting_review"
+    assert await db.job_touch("00000000-0000-0000-0000-000000000000") is None
+
+
+async def test_the_source_cap_holds_under_concurrent_uploads(dbpool):
+    """40 uploads sent at once each counted 0 sources and all went in; the brief row is locked first now."""
+    import asyncio
+    from app import brief as B
+    bid = await db.brief_create(B.new_brief("sop", {"title_en": "x"}), "t")
+    src = {"name": "a.md", "kind": "md", "bytes": 1, "sha256": "s", "text": "t"}
+    res = await asyncio.gather(*(db.brief_source_add(bid, 0, "t", src) for _ in range(40)))
+    assert sum(1 for r in res if r) == db.MAX_SOURCES == 20
+    assert await dbpool.fetchval("SELECT count(*) FROM docengine.brief_sources WHERE brief_id=$1", bid) == 20
+    assert (await db.brief_get(bid))["rev"] == 20
+
+
+async def test_codes_stored_before_the_house_form_are_found_and_counted_in_it(dbpool):
+    """A pre-18.10 job stored "QCSOP 11": SQL that only removed separators left "QCSOP11" unequal to "QCSOP011"."""
+    jid = await db.job_create("workflow", {"meta": {"code": "QCSOP 11"}, "brief_id": "b1"})
+    await db.job_update(jid, status="done", result={"markdown": "# 6.0 ПОСТАПКА|PROCEDURE\nх ||| x"})
+    got = await db.job_latest_markdown_by_code("QCSOP011")
+    assert got and got["job_id"] == jid and got["markdown"].startswith("# 6.0")
+    assert await db.job_latest_markdown_by_code("QCSOP012") is None
+    await db.document_create(None, {"code": "WHSOP_003", "doctype": "SOP", "path": "/x", "bytes": 1, "verify": "PASS"})
+    assert {"QCSOP011", "WHSOP003"} <= await db.codes_in_use()
+    assert await db.codes_of_brief("b1") == {"QCSOP011"}                # subtracts from codes_in_use on a rebuild

@@ -12,6 +12,8 @@
 # One HTTP call: POST {RAGFLOW_BASE_URL}/api/v1/retrieval with the tenant API key.
 from __future__ import annotations
 
+import re
+
 import httpx
 
 from .config import settings
@@ -24,6 +26,9 @@ EXAMPLES_NOTE = ("House examples for structure, wording style and layout only. N
 
 class RagflowError(RuntimeError):
     pass
+
+
+_NOT_FOUND = re.compile(r"HTTP 404|not found|not exist|doesn't exist|no such", re.I)
 
 
 def corpus_datasets(corpus: str) -> tuple:
@@ -102,8 +107,14 @@ class RagflowClient:
             raise RagflowError("RAGFlow not configured: set RAGFLOW_BASE_URL and RAGFLOW_API_KEY")
         async with self._client() as c:
             if replace_id:
-                await self._json(await c.request("DELETE", f"/api/v1/datasets/{dataset_id}/documents",
-                                                 json={"ids": [replace_id]}))
+                try:
+                    await self._json(await c.request("DELETE", f"/api/v1/datasets/{dataset_id}/documents",
+                                                     json={"ids": [replace_id]}))
+                except RagflowError as e:
+                    # The earlier entry is already gone (deleted in RAGFlow, or a failed upload left a stale id): the
+                    # point of the delete is met. Anything else (RAGFlow down) still fails (review 19.10.2026).
+                    if not _NOT_FOUND.search(str(e)):
+                        raise
             j = await self._json(await c.post(f"/api/v1/datasets/{dataset_id}/documents",
                                               files={"file": (filename, text.encode("utf-8"), "text/markdown")}))
             data = j.get("data") or []

@@ -124,6 +124,13 @@ def _patch_common(monkeypatch, qkey="annex_form"):
     async def fake_job_update(jid, **fields):
         updates.append(fields)
 
+    async def fake_job_finish(jid, **fields):       # the terminal write (review 19.10.2026): recorded like any update
+        updates.append(fields)
+        return True
+
+    async def fake_job_touch(jid):
+        return "running"
+
     async def fake_document_create(job_id, meta):
         return "doc-1"
 
@@ -135,6 +142,8 @@ def _patch_common(monkeypatch, qkey="annex_form"):
 
     monkeypatch.setattr(db, "job_get", fake_job_get)
     monkeypatch.setattr(db, "job_update", fake_job_update)
+    monkeypatch.setattr(db, "job_finish", fake_job_finish)
+    monkeypatch.setattr(db, "job_touch", fake_job_touch)
     monkeypatch.setattr(db, "document_create", fake_document_create)
     monkeypatch.setattr(fleet, "ensure_fleet", fake_ensure_fleet)
     monkeypatch.setattr(fleet, "spawn_ephemeral", fake_spawn_ephemeral)
@@ -590,6 +599,15 @@ def test_lint_flags_terms_outside_the_house_glossary():
     assert "девијација" in hit and "отстапување" in hit
 
 
+def test_lint_flags_the_older_word_for_sampling():
+    """Head of QC, 19.10.2026 (review of QCSOP001A01): one word for sampling in the QC documents — мострирање,
+    never узорцирање, which the older QCLB005 and QCSOP014 still carry."""
+    issues = _lint_section("Дневник за узорцирање во Сектор Контрола на квалитет ||| Sampling logbook of the QC Department")
+    hit = next(i for i in issues if "house glossary" in i)
+    assert "узорцирање" in hit and "мострирање" in hit
+    assert _lint_section("План за мострирање на мостри во процес ||| Sampling plan for in-process samples") == []
+
+
 def test_glossary_terms_and_their_legitimate_lookalikes_pass_the_lint():
     body = "\n".join([
         "Палетата се завиткува со стреч-фолија и термо-ќебе. ||| The pallet is wrapped in stretch film and a thermal blanket.",
@@ -907,3 +925,156 @@ async def test_a_refusal_is_not_repeated(monkeypatch):
 
     await run_workflow("job-1", client=Refuses())
     assert updates[-1]["status"] == "failed" and "422" in updates[-1]["error"]
+
+
+# ---- review 19.10.2026 ----
+
+def test_quantities_are_not_section_references():
+    nums = [f"{n}.0" for n in range(1, 10)]
+    assert _sections_named("Section 6 is fine. The limit is 2.5 kg and 0.5 % per 3.0 mL. VERDICT: FIX", nums) == ["6.0"]
+    assert _sections_named("The pH is 7.2 and the hold time 2.5 h; see 6.1 for the 5.0 mm sieve.", nums) == ["6.0"]
+    assert _sections_named("§4.2 and section 7.3 are fine; 2.5 kg is a quantity. VERDICT: FIX", nums) == ["4.0", "7.0"]
+    assert _sections_named("- 3.1: missing owner\n* 8.2 repeats 6\nSection 1 fine", nums) == ["1.0", "3.0", "8.0"]
+
+
+@pytest.mark.asyncio
+async def test_an_sop_parked_for_review_starts_no_annex_jobs(monkeypatch):
+    """Four annexes were written to an SOP the reviewer then returned: the package starts on done or approve only."""
+    updates = _patch_common(monkeypatch, qkey="sop_qc")
+    monkeypatch.setattr(builder, "build", lambda *a, **k: _fake_build_result())
+    created, merged = [], []
+
+    async def job_get(jid):
+        j = _job("sop_qc")
+        j["payload"]["package_annexes"] = [{"title_en": "Log"}]
+        j["payload"]["meta"]["code"] = "QCSOP026"
+        return j
+
+    async def job_create(kind, payload, by=""):
+        created.append(payload)
+        return "annex-1"
+
+    async def merge(jid, extra):
+        merged.append(extra)
+
+    async def taken(*a):
+        return set()
+    monkeypatch.setattr(db, "job_get", job_get)
+    monkeypatch.setattr(db, "job_create", job_create)
+    monkeypatch.setattr(db, "job_merge_result", merge)
+    monkeypatch.setattr(db, "codes_in_use", taken)
+    monkeypatch.setattr(db, "codes_of_brief", taken)
+
+    class AlwaysFix(FakeClient):
+        async def send_message(self, agent_id, prompt):
+            if "§6A" in prompt:
+                return _LIVE_FIX
+            if "Check this drafted section" in prompt:
+                return "NO-FINDING"
+            return "Текст на секцијата ||| Section text"
+
+    await run_workflow("job-1", client=AlwaysFix())
+    assert updates[-1]["status"] == "awaiting_review" and created == [] and merged == []
+    # …and a job that is registered as done starts them
+    updates.clear()
+    await run_workflow("job-1", client=FakeClient())
+    assert updates[-1]["status"] == "done" and [c["meta"]["code"] for c in created] == ["QCSOP026A01"]
+    assert merged[-1]["package_jobs"][0]["job_id"] == "annex-1"
+
+
+@pytest.mark.asyncio
+async def test_a_bilingual_gap_after_a_repair_round_is_parked_for_a_person(monkeypatch):
+    """A repair reply that dropped one language failed the whole job after the audit had been acted on; the first
+    draft's gap still fails it, and so does any gap when review parking is off."""
+    updates = _patch_common(monkeypatch, qkey="sop_qc")
+    built = []
+    monkeypatch.setattr(builder, "build", lambda *a, **k: built.append(1) or _fake_build_result())
+
+    class RepairDropsMK(FakeClient):
+        audits = 0
+
+        async def send_message(self, agent_id, prompt):
+            if "§6A" in prompt:
+                RepairDropsMK.audits += 1
+                return "Verdict: FIX\n- Section 4 duplicates its heading" if RepairDropsMK.audits == 1 else "VERDICT: PASS"
+            if "Check this drafted section" in prompt:
+                return "NO-FINDING"
+            if prompt.startswith(("REVISE section", "Rewrite section")):
+                return _EN * 3
+            return "Текст на секцијата ||| Section text"
+
+    monkeypatch.setattr(settings, "fix_to_review", True)
+    await run_workflow("job-1", client=RepairDropsMK())
+    last = updates[-1]
+    assert last["status"] == "awaiting_review" and built
+    assert last["result"]["bilingual_gaps"] == ["4.0 (no MK)"] and "not bilingual" in last["result"]["review_reason"]
+    assert "after repair round 1" in last["result"]["review_reason"]
+    RepairDropsMK.audits, built[:] = 0, []
+    monkeypatch.setattr(settings, "fix_to_review", False)
+    await run_workflow("job-1", client=RepairDropsMK())
+    assert updates[-1]["status"] == "failed" and "not bilingual" in updates[-1]["error"] and not built
+
+
+@pytest.mark.asyncio
+async def test_an_unconfirmed_parent_without_its_package_job_is_not_looked_up_by_code(monkeypatch):
+    """Every unconfirmed QASOPXXX shares the code: a lookup by code read another SOP's procedure into the form."""
+    from app import house
+    updates = _patch_common(monkeypatch)
+    monkeypatch.setattr(builder, "build", lambda *a, **k: _fake_build_result())
+
+    async def job_get(jid):
+        j = _job("annex_form")
+        j["payload"]["parent_sop"] = "QASOPXXX"
+        j["payload"]["meta"]["code"] = "QASOPXXXA01"
+        return j
+
+    async def never(*a, **k):
+        raise AssertionError("looked the unconfirmed parent up by code")
+    monkeypatch.setattr(db, "job_get", job_get)
+    monkeypatch.setattr(db, "job_latest_markdown_by_code", never)
+    monkeypatch.setattr(house, "approved_text", never)
+    seen = []
+
+    class Annex(FakeClient):
+        async def send_message(self, agent_id, prompt):
+            seen.append(prompt)
+            if "§6A" in prompt:
+                return "VERDICT: PASS"
+            if "Check this drafted section" in prompt:
+                return "NO-FINDING"
+            return "# 1 Идентификација | Identification\n[[FORM:grid]]\nUTID ||| UTID ||| \n[[/FORM]]"
+
+    await run_workflow("job-1", client=Annex())
+    res = updates[-1]["result"]
+    assert updates[-1]["status"] == "done" and "parent_sop" not in res["knowledge"]
+    assert "parent SOP QASOPXXX is unconfirmed: give the parent job, or confirm the number" in res["knowledge"]["notes"]
+    assert not any("PARENT SOP" in p for p in seen)
+
+
+@pytest.mark.asyncio
+async def test_a_job_the_reaper_failed_stops_and_writes_nothing_more(monkeypatch):
+    """The pipeline asks the row's status before every exchange; a reaper-failed row ends the run without a terminal
+    write (db.job_finish refuses one anyway)."""
+    updates = _patch_common(monkeypatch)
+    built = []
+    monkeypatch.setattr(builder, "build", lambda *a, **k: built.append(1) or _fake_build_result())
+    touches = []
+
+    async def touch(jid):
+        touches.append(jid)
+        return "failed" if len(touches) > 1 else "running"
+    monkeypatch.setattr(db, "job_touch", touch)
+    await run_workflow("job-1", client=FakeClient())
+    assert len(touches) == 2 and not built
+    assert [u["status"] for u in updates if "status" in u] == ["running"]
+
+
+def test_source_files_are_labelled_by_what_they_are_for():
+    """Head of QC, 19.10.2026: a formatting example lends its layout, an executed example its structure, never values."""
+    from app.pipeline import _brief
+    b = _brief("annex_form", {}, source_texts=[{"name": "ref.pdf", "text": "facts", "role": "content"},
+                                               {"name": "tpl.docx", "text": "layout", "role": "format"},
+                                               {"name": "filled.pdf", "text": "values", "role": "example"},
+                                               {"name": "old.md", "text": "x"}])
+    assert "«ref.pdf» — reference contents" in b and "«tpl.docx» — an example of document formatting" in b
+    assert "«filled.pdf» — an executed (filled-in) example" in b and "«old.md» — reference contents" in b
