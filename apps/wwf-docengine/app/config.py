@@ -76,6 +76,9 @@ class Settings:
     # PUT /reference indexes an approved document's text.
     ragflow_example_datasets: tuple = tuple(s.strip() for s in os.environ.get(
         "RAGFLOW_EXAMPLE_DATASETS", "880312c6cb1411f18ed047989fb7f345").split(",") if s.strip())
+    # The official potency specifications: grades and ranges per strain (Head of QC, 19.10.2026: "the specification
+    # grades and ranges actualy are officialy as in https://specs.srv1231216.hstgr.cloud"). Read-only. Empty = off.
+    potency_specs_url: str = os.environ.get("POTENCY_SPECS_URL", "https://specs.srv1231216.hstgr.cloud").rstrip("/")
     ragflow_top_n: int = int(os.environ.get("RAGFLOW_TOP_N", "6"))
 
 

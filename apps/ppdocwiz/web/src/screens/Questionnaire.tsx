@@ -12,7 +12,7 @@ type Ans = Record<string, string | string[]>;
 // The requester's own instructions and sources, per questionnaire, sent with the answers.
 type Extra = { instructions: string; sources: string; parent_sop: string };
 const useAns = create<{ ans: Record<string, Ans>; setAns: (k: string, a: Ans) => void; extra: Record<string, Extra>; setExtra: (k: string, e: Partial<Extra>) => void }>(set => ({
-  ans: { sop_qc: { focus: 'Potency', sample_types: ['Bulk', 'Finished product'], techniques: ['HPLC-DAD', 'LOD'], acceptance: ['Cannabinoid ±10 % (Ph. Eur. 3028)', 'LOD NMT 12 %'] }, annex_form: { purpose: 'Recording' } },
+  ans: { sop_qc: { focus: 'Potency', sample_types: ['Bulk', 'Finished product'], techniques: ['HPLC-DAD', 'LOD'], acceptance: ['Total THC within the strain\'s grade window (official potency specifications)', 'LOD NMT 12 %'] }, annex_form: { purpose: 'Recording' } },
   setAns: (k, a) => set(s => ({ ans: { ...s.ans, [k]: a } })),
   extra: {},
   setExtra: (k, e) => set(s => ({ extra: { ...s.extra, [k]: { ...{ instructions: '', sources: '', parent_sop: '' }, ...s.extra[k], ...e } } })),
