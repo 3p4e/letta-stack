@@ -784,8 +784,13 @@ async def create_brief(body: BriefIn):
         seed = await db.reference_get(body.from_reference) if _valid_uuid(body.from_reference) else None
         if not seed:
             raise HTTPException(404, "no such reference document")
-        for k in ("title_mk", "title_en", "code", "version"):
+        for k in ("title_mk", "title_en", "code"):
             meta.setdefault(k, seed.get(k) or "")
+        # A revision of an approved document is the next version, not the one on file (Head of QC, 19.10.2026:
+        # QCT002 v02 is revised to v03); a continued draft keeps its own.
+        if "version" not in meta:
+            v = str(seed.get("version") or "")
+            meta["version"] = f"{int(v) + 1:0{len(v)}d}" if seed["kind"] == "approved" and v.isdigit() else v
     try:
         b = briefs.new_brief(body.package, _brief_meta(meta), body.questionnaire,
                              _house_code(body.parent_sop, "parent_sop") if body.parent_sop else (seed or {}).get("parent", ""))

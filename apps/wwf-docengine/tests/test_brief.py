@@ -563,6 +563,10 @@ def test_a_brief_seeded_from_a_reference_is_guarded_too(api, monkeypatch):
     assert r.status_code == 422 and "QCSOP001A01" in r.json()["detail"]
     b = c.post("/briefs", json={"package": "annex", "from_reference": ref["id"]}, headers=h()).json()
     assert b["meta"]["code"] == "QCSOP001A01" and b["parent_sop"] == "QCSOP001" and b["sources"][0]["name"].startswith("QCSOP001A01")
+    # a revision of an approved document is the next version (Head of QC, 19.10.2026: QCT002 v02 → v03)
+    assert b["meta"]["version"] == "02"
+    ref["kind"] = "wip"
+    assert c.post("/briefs", json={"package": "annex", "from_reference": ref["id"]}, headers=h()).json()["meta"]["version"] == "01"
 
 
 def test_locking_a_suggestion_is_a_decision():
