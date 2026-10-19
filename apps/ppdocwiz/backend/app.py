@@ -389,11 +389,16 @@ def chat(r: ChatReq):
 # ---------------- DocEngine proxy (same-origin, for the suite) ----------------
 # The browser holds only the ppdocwiz session cookie; the DocEngine key never leaves
 # this process. Only the DocEngine's own public routes are forwarded.
-_DE_ROUTES = {"health", "questionnaires", "workflows", "build", "documents", "knowledge"}
+# Every DocEngine route the web client calls must be here (tests/test_api.py reads web/src/api/live.ts and checks):
+# library, register, engine and briefs were missing from 18.10.2026 until 19.10.2026, so the Library shelves, the
+# automatic code and the Fleet engine panel answered 404 in the browser while DocEngine itself answered 200.
+# PUT /reference (loading reference documents) is an operator route and stays out.
+_DE_ROUTES = {"health", "questionnaires", "workflows", "build", "documents", "knowledge", "library", "reference",
+              "register", "engine", "briefs"}
 _DE_PASS_HEADERS = ("content-type", "content-disposition", "content-length")
 
 
-@app.api_route("/api/docengine/{path:path}", methods=["GET", "POST", "HEAD"],
+@app.api_route("/api/docengine/{path:path}", methods=["GET", "POST", "PATCH", "DELETE", "HEAD"],
                dependencies=[Depends(security.require_api_key)])
 async def docengine_proxy(path: str, request: Request):
     if not settings.docengine_url:
@@ -404,7 +409,7 @@ async def docengine_proxy(path: str, request: Request):
     url = settings.docengine_url + "/" + "/".join(urllib.parse.quote(p, safe="") for p in parts)
     if request.url.query:
         url += "?" + request.url.query
-    body = await request.body() if request.method == "POST" else None
+    body = await request.body() if request.method in ("POST", "PATCH") else None
     # DocEngine routes are GET-only; a HEAD (the Library's availability probe) is
     # sent upstream as GET and answered without the body.
     hdrs = {"Content-Type": request.headers.get("content-type", "application/json"),

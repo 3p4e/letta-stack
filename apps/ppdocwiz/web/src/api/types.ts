@@ -70,3 +70,20 @@ export interface ShelfEntry {
 }
 export interface LibraryShelves { shelves: Record<Shelf, ShelfEntry[]>; counts: Record<Shelf, number> }
 export interface ReferenceDoc extends RefBrief { kind: 'approved' | 'wip'; code: string; parent: string; title_mk: string; department: string; source: Record<string, unknown>; markdown: string }
+
+/** DocEngine Document Brief (18.10.2026): the one saved draft the workflow edits. */
+export type Package = 'sop' | 'sop_annexes' | 'annex' | 'form' | 'report';
+export type FieldState = 'suggested' | 'chosen' | 'locked';
+export interface BriefField { value: string | string[]; state: FieldState; stale: boolean; at: string; by: string }
+export interface BriefSource { id: string; name: string; kind: string; bytes: number; chars: number; created_at: string }
+export interface BriefAnnex { title_en: string; title_mk: string; kind: string }
+export interface Brief {
+  id: string; rev: number; status: string; package: Package; questionnaire: string; parent_sop: string;
+  meta: Record<string, string>; fields: Record<string, BriefField>; annexes: BriefAnnex[]; job_ids: string[];
+  sources: BriefSource[]; updated_at: string;
+}
+export interface BriefPatch {
+  rev: number; actor?: string; set?: Record<string, unknown>; suggest?: Record<string, unknown>; lock?: string[]; unlock?: string[];
+  meta?: Record<string, string>; package?: Package; questionnaire?: string; parent_sop?: string; annexes?: BriefAnnex[];
+}
+export interface BriefEvent { rev: number; at: string; actor: string; op: string; key: string; before: unknown; after: unknown }

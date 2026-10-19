@@ -8,8 +8,8 @@ import { SAMPLE_ANNEX } from '../data/samples';
 import { skeleton } from '../lib/newdoc';
 import type { Status } from '../theme';
 
-export type Screen = 'builder' | 'chat' | 'quest' | 'format' | 'report' | 'library' | 'jobs' | 'verify' | 'preview' | 'fleet';
-export const SCREENS: Screen[] = ['builder', 'chat', 'quest', 'format', 'report', 'library', 'jobs', 'verify', 'preview', 'fleet'];
+export type Screen = 'flow' | 'builder' | 'chat' | 'quest' | 'format' | 'report' | 'library' | 'jobs' | 'verify' | 'preview' | 'fleet';
+export const SCREENS: Screen[] = ['flow', 'builder', 'chat', 'quest', 'format', 'report', 'library', 'jobs', 'verify', 'preview', 'fleet'];
 
 export interface Sheet {
   doctype: 'SOP' | 'ANNEX' | 'FORM' | 'LOG' | 'CHECKLIST' | 'REPORT';

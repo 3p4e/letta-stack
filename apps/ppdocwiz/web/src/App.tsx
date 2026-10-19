@@ -7,13 +7,14 @@ import { Fleet } from './screens/Fleet';
 import { Formatter } from './screens/Formatter';
 import { Jobs } from './screens/Jobs';
 import { Library } from './screens/Library';
+import { Workflow } from './screens/Workflow';
 import { Preview } from './screens/Preview';
 import { Questionnaire } from './screens/Questionnaire';
 import { Reports } from './screens/Reports';
 import { Verify } from './screens/Verify';
 import { useApp, type Screen } from './store/store';
 
-const SCREENS: Record<Screen, () => JSX.Element> = { builder: Builder, chat: Chat, quest: Questionnaire, format: Formatter, report: Reports, library: Library, jobs: Jobs, verify: Verify, preview: Preview, fleet: Fleet };
+const SCREENS: Record<Screen, () => JSX.Element> = { flow: Workflow, builder: Builder, chat: Chat, quest: Questionnaire, format: Formatter, report: Reports, library: Library, jobs: Jobs, verify: Verify, preview: Preview, fleet: Fleet };
 
 export function App() {
   const { authed, api, set, screen } = useApp();

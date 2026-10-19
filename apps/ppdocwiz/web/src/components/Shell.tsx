@@ -6,11 +6,11 @@ import { CreateMenu, NewDocSheet } from './Create';
 import { Dot, Seg } from './ui';
 import { tr } from '../lib/i18n';
 
-const NAV: [Screen, string, 'c' | 'k'][] = [['builder', 'Builder', 'c'], ['chat', 'Agent chat', 'c'], ['quest', 'Questionnaire', 'c'], ['format', 'Formatter', 'c'], ['report', 'Reports', 'c'], ['library', 'Library', 'k'], ['jobs', 'Jobs', 'k'], ['verify', 'Verify', 'k'], ['preview', 'Preview', 'k'], ['fleet', 'Fleet & health', 'k']];
-const CRUMB: Record<Screen, string> = { builder: '', chat: 'chat › allowlist › WHSOP_002_A02', quest: 'questionnaire › POST /workflows', format: 'formatter › labels_raw.docx → house style', library: 'library › docengine.documents', jobs: 'jobs › docengine.jobs', report: 'reports › QCSOP_031_A02 · pp_report', verify: 'verify › POST /build 422 · WHSOP_009_A01', preview: 'preview › QCSOP_031 · page 3 / 9', fleet: 'admin › gf_ fleet & health' };
+const NAV: [Screen, string, 'c' | 'k'][] = [['flow', 'Workflow', 'c'], ['builder', 'Builder', 'c'], ['chat', 'Agent chat', 'c'], ['format', 'Formatter', 'c'], ['report', 'Reports', 'c'], ['library', 'Library', 'k'], ['jobs', 'Jobs', 'k'], ['verify', 'Verify', 'k'], ['preview', 'Preview', 'k'], ['fleet', 'Fleet & health', 'k']];
+const CRUMB: Record<Screen, string> = { flow: 'workflow › document brief', builder: '', chat: 'chat › allowlist › WHSOP_002_A02', quest: 'questionnaire › POST /workflows', format: 'formatter › labels_raw.docx → house style', library: 'library › docengine.documents', jobs: 'jobs › docengine.jobs', report: 'reports › QCSOP_031_A02 · pp_report', verify: 'verify › POST /build 422 · WHSOP_009_A01', preview: 'preview › QCSOP_031 · page 3 / 9', fleet: 'admin › gf_ fleet & health' };
 
 // CRUMB names the mock-mode sample documents; live mode must not show them as if they were real.
-const LIVE_CRUMB: Record<Screen, string> = { builder: '', chat: 'chat › POST /api/chat', quest: 'questionnaire › POST /workflows', format: 'formatter › Mode B · POST /build', library: 'library › shelves · GET /library', jobs: 'jobs › docengine.jobs', report: 'reports › not connected', verify: 'verify › last build in this session', preview: 'preview › last build in this session', fleet: 'fleet & health' };
+const LIVE_CRUMB: Record<Screen, string> = { flow: 'workflow › /briefs', builder: '', chat: 'chat › POST /api/chat', quest: 'questionnaire › POST /workflows', format: 'formatter › Mode B · POST /build', library: 'library › shelves · GET /library', jobs: 'jobs › docengine.jobs', report: 'reports › not connected', verify: 'verify › last build in this session', preview: 'preview › last build in this session', fleet: 'fleet & health' };
 
 function useViewport() {
   const [v, setV] = useState({ w: window.innerWidth, h: window.innerHeight });
@@ -54,11 +54,8 @@ export function Shell({ children }: { children: ReactNode }) {
   const zoom = Math.min(1, vp.w / 1280, vp.h / 760);
   const crumb = s.screen === 'builder' ? `builder › ${s.bdoc.code || 'untitled'} · ${s.bdoc.status.replace('_', ' ')} v${s.bdoc.version}` : (s.api.mode === 'live' ? LIVE_CRUMB : CRUMB)[s.screen];
   const radius = s.tweaks.createStyle === 'pill' ? 999 : 6;
-  const toggleCreate = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const el = e.currentTarget, root = el.closest('[data-pp-root]') as HTMLElement, rr = root.getBoundingClientRect(), r = el.getBoundingClientRect(), k = rr.width / root.offsetWidth || 1;
-    const side = s.tweaks.createPlacement === 'sidebar';
-    s.set({ createOpen: !s.createOpen, menuX: ((side ? r.right + 8 : r.left) - rr.left) / k, menuY: ((side ? r.top : r.bottom + 6) - rr.top) / k });
-  };
+  // One workflow (Head of QC, 18.10.2026): New opens it; the package (SOP, SOP + annexes, annex, form, report) is its first page.
+  const toggleCreate = () => s.go('flow');
   const createBtn = (side: boolean) => <button onClick={toggleCreate} className="pp-create" style={{ display: 'flex', gap: 7, alignItems: 'center', justifyContent: side ? 'center' : undefined, width: side ? '100%' : undefined, marginBottom: side ? 10 : 0, background: T.surface, color: '#fff', border: `1px solid ${T.focus}`, borderRadius: radius, padding: side ? '8px 12px' : '6px 14px', font: 'inherit', fontSize: 13, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>
     <span style={{ fontSize: 15, lineHeight: 1, color: C.run }}>＋</span>{tr(s.lang, 'Create')}<span style={{ fontSize: 10, color: T.muted }}>{side ? '›' : '▾'}</span></button>;
   const dot = (label: string, st: keyof typeof s.svc & string) => <span title={s.svc.note[st] || (s.svc[st as 'letta'] === 'ok' ? 'ok' : 'probing…')} style={{ display: 'flex', gap: 5, alignItems: 'center' }}><Dot c={C[s.svc[st as 'letta']]} />{label}</span>;

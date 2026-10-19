@@ -1,6 +1,6 @@
 import type {
   BuildResult, ChatResult, DeHealth, DocumentRow, DoctypeInfo, Health, Job, Questionnaire,
-  LibraryShelves, QuestionnaireIndexRow, ReferenceDoc, WizardPayload,
+  Brief, BriefEvent, BriefPatch, LibraryShelves, Package, QuestionnaireIndexRow, ReferenceDoc, WizardPayload,
 } from './types';
 
 export interface WorkflowIn {
@@ -68,6 +68,15 @@ export interface Api {
   library(): Promise<LibraryShelves>;
   /** DocEngine GET /reference/{id}: an approved or work-in-progress document with its text. */
   reference(id: string): Promise<ReferenceDoc>;
+  /** DocEngine Document Brief: the one workflow. */
+  briefs(): Promise<Pick<Brief, 'id' | 'rev' | 'status' | 'package' | 'meta' | 'updated_at' | 'job_ids'>[]>;
+  brief(id: string): Promise<Brief>;
+  createBrief(b: { package: Package; meta?: Record<string, string>; questionnaire?: string; parent_sop?: string; from_reference?: string; requested_by?: string }): Promise<Brief>;
+  patchBrief(id: string, p: BriefPatch): Promise<Brief>;
+  briefEvents(id: string): Promise<BriefEvent[]>;
+  addBriefSource(id: string, name: string, content_b64: string): Promise<{ id: string; chars: number; note: string; brief: Brief }>;
+  removeBriefSource(id: string, sourceId: string): Promise<Brief>;
+  buildBrief(id: string, rev: number): Promise<{ job_id: string; status: string; code: string; assumed: string[] }>;
   /** DocEngine GET /engine/environment: engine hash vs manifest, renderer font probe, last pp_verify results, fleet drift. */
   engineEnv(): Promise<EngineEnv>;
 }

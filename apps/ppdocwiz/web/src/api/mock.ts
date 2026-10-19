@@ -3,7 +3,7 @@
 // switchable faults so every degraded state can be seen without breaking a server.
 import type { Api, EngineEnv, WorkflowIn } from './client';
 import { applyDefaults, normalizeQuestionnaire } from './normalize';
-import { ApiError, type DocumentRow, type Job, type LibraryShelves, type ReferenceDoc, type Shelf, type ShelfEntry, type WizardPayload } from './types';
+import { ApiError, type Brief, type BriefEvent, type DocumentRow, type Job, type LibraryShelves, type ReferenceDoc, type Shelf, type ShelfEntry, type WizardPayload } from './types';
 import { RAW_QUESTIONNAIRES } from '../data/questionnaires';
 import { ANX_SEC, CH, CH_A, CY, CY_A, FIND, FIND_A, QA_FIX, SAMPLE_ANNEX, SOP_SEC } from '../data/samples';
 import { composeMarkdown, lint } from '../lib/compose';
@@ -76,6 +76,9 @@ function seedDocs(): MockDoc[] {
 }
 
 export interface MockApi extends Api { faults: Faults; setFaults(f: Partial<Faults>): void }
+
+const mockBriefs: Record<string, Brief> = {};
+const mockEvents: Record<string, BriefEvent[]> = {};
 
 export function mockApi(onChange?: () => void): MockApi {
   const jobs = seedJobs();
@@ -224,6 +227,52 @@ export function mockApi(onChange?: () => void): MockApi {
         retired: [e('QCSOP020', 'retired', 'withdrawn', 'Trend analysis (OOT)')],
       } as Record<Shelf, ShelfEntry[]>;
       return { shelves, counts: Object.fromEntries(Object.entries(shelves).map(([k, v]) => [k, v.length])) as Record<Shelf, number> };
+    },
+    // Document Brief, in memory: the same rules as DocEngine app/brief.py (rev check, locks, scope → stale).
+    async briefs() { await wait(30); return Object.values(mockBriefs).map(({ id, rev, status, package: pk, meta, updated_at, job_ids }) => ({ id, rev, status, package: pk, meta, updated_at, job_ids })); },
+    async brief(id: string) { await wait(20); const b = mockBriefs[id]; if (!b) throw new ApiError(404, 'no such brief'); return structuredClone(b); },
+    async createBrief(b) {
+      await wait(40); const id = 'brief-' + (Object.keys(mockBriefs).length + 1);
+      mockBriefs[id] = { id, rev: 0, status: 'open', package: b.package, questionnaire: b.questionnaire || (b.package.startsWith('sop') ? 'sop_qc' : 'annex_form'), parent_sop: b.parent_sop || '', meta: { ...(b.meta || {}) }, fields: {}, annexes: [], job_ids: [], sources: [], updated_at: new Date().toISOString() };
+      mockEvents[id] = [{ rev: 0, at: new Date().toISOString(), actor: '', op: 'create', key: '', before: null, after: null }];
+      return structuredClone(mockBriefs[id]);
+    },
+    async patchBrief(id, p) {
+      await wait(30); const b = mockBriefs[id]; if (!b) throw new ApiError(404, 'no such brief');
+      if (p.rev !== b.rev) throw new ApiError(409, `the brief is at rev ${b.rev}`);
+      const at = new Date().toISOString(), ev = (op: string, key: string, before: unknown, after: unknown) => mockEvents[id].push({ rev: b.rev + 1, at, actor: '', op, key, before, after });
+      let n = mockEvents[id].length, core = false;
+      for (const k of p.unlock || []) if (b.fields[k]?.state === 'locked') { b.fields[k].state = 'chosen'; ev('unlock', k, 'locked', 'chosen'); }
+      for (const [k, v] of Object.entries(p.set || {})) {
+        if (b.fields[k]?.state === 'locked') throw new ApiError(409, `${k} is locked; unlock it first`);
+        if (v === '' || v == null || (Array.isArray(v) && !v.length)) { if (b.fields[k]) { delete b.fields[k]; ev('clear', k, null, null); } continue; }
+        b.fields[k] = { value: v as string, state: 'chosen', stale: false, at, by: '' }; ev('set', k, null, v); core ||= k.startsWith('doc.') && ['doc.purpose', 'doc.scope_in', 'doc.scope_out', 'doc.use'].includes(k);
+      }
+      for (const k of p.lock || []) if (b.fields[k]) { b.fields[k].state = 'locked'; b.fields[k].stale = false; ev('lock', k, null, 'locked'); }
+      if (core) for (const [k, f] of Object.entries(b.fields)) if (!k.startsWith('doc.') && !(k in (p.set || {})) && f.state === 'chosen') { f.stale = true; ev('stale', k, false, true); }
+      if (p.meta) { b.meta = { ...b.meta, ...p.meta }; ev('meta', 'meta', null, p.meta); }
+      if (p.package) { b.package = p.package; ev('package', 'package', null, p.package); }
+      if (p.questionnaire) { b.questionnaire = p.questionnaire; ev('questionnaire', 'questionnaire', null, p.questionnaire); }
+      if (p.parent_sop !== undefined) { b.parent_sop = p.parent_sop; ev('parent_sop', 'parent_sop', null, p.parent_sop); }
+      if (p.annexes) { b.annexes = p.annexes; ev('annexes', 'annexes', null, p.annexes); }
+      if (mockEvents[id].length > n) { b.rev += 1; b.updated_at = at; }
+      n = 0; return structuredClone(b);
+    },
+    async briefEvents(id: string): Promise<BriefEvent[]> { await wait(20); return structuredClone(mockEvents[id] || []); },
+    async addBriefSource(id, name, content_b64) {
+      await wait(60); const b = mockBriefs[id]; if (!/\.(docx|pdf|json|md|markdown|txt)$/i.test(name)) throw new ApiError(400, `${name}: only .docx, .pdf, .json and .md are accepted`);
+      const bytes = Math.floor(content_b64.length * 3 / 4);
+      b.sources.push({ id: 'src-' + (b.sources.length + 1), name, kind: name.split('.').pop() || 'md', bytes, chars: bytes, created_at: new Date().toISOString() }); b.rev += 1;
+      return { id: b.sources[b.sources.length - 1].id, chars: bytes, note: '', brief: structuredClone(b) };
+    },
+    async removeBriefSource(id, sid) { await wait(20); const b = mockBriefs[id]; b.sources = b.sources.filter(x => x.id !== sid); b.rev += 1; return structuredClone(b); },
+    async buildBrief(id, rev) {
+      await wait(80); const b = mockBriefs[id]; if (rev !== b.rev) throw new ApiError(409, `the brief is at rev ${b.rev}`);
+      if (!b.meta.title_en && !b.meta.title_mk) throw new ApiError(400, 'give the document a title before building');
+      const code = b.meta.code || (b.package === 'annex' ? (b.parent_sop || 'QCSOP011') + 'A10' : 'QCSOP026');
+      b.meta.code = code; b.job_ids.push('job-' + id); b.rev += 1;
+      const assumed = ['doc.purpose', 'doc.scope_in', 'doc.scope_out', 'doc.use'].filter(k => !b.fields[k]);
+      return { job_id: 'job-' + id, status: 'queued', code, assumed };
     },
     async reference(id: string): Promise<ReferenceDoc> {
       await wait(40);
