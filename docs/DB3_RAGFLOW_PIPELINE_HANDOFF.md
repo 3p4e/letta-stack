@@ -5,9 +5,12 @@ them and the ACME_SOP work in progress into the DocEngine. Rulings are the Head 
 
 ## 1. What DB3 is, and is not
 
-- **DB3_PP_CURRENT** holds the text of the approved, in-use documents, and only those. The authors read it for house
-  structure and wording; they never copy a value, batch, name, date or result from it into a new document
-  (`ragflow.EXAMPLES_NOTE`).
+- **DB3_PP_CURRENT** holds the text of the approved, in-use documents, and only those. Since 19.10.2026 it is a working
+  source, not only a style sample (`app/house.py`): the authors follow its practice (roles, procedures and forms in
+  use, terminology, cross-references) and must not contradict it; the regulatory checker also reads it and reports a
+  contradiction as `CONFLICT [H#]`; the authors get the list of in-use codes and cite house documents only from it; an
+  annex to an approved SOP the engine did not write reads that SOP's sections 6–7. They still never copy a value,
+  batch, name, date or result of a record from it.
 - **No draft goes into DB3.** A draft retrieved as "approved and in use" is the failure the dataset exists to prevent.
   The ACME_SOP work in progress is stored in the engine (`kind: wip`) and is never indexed.
 - **Not a QMS record** (CLAUDE.md §10). The approved originals, their signatures and QALI 001 stay the authority;

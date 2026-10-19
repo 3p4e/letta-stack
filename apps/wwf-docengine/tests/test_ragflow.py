@@ -176,7 +176,50 @@ async def test_examples_reach_the_author_only_when_configured(monkeypatch):
     c = RecordingClient()
     await run_workflow("job-1", client=c, rag=FakeRag())
     author = [p for p in c.prompts if p.startswith("Design the")][0]
-    assert "Never copy a value" in author and "[E1]" in author
+    assert "must not contradict them" in author and "Never copy a batch" in author and "[E1]" in author
+
+
+@pytest.mark.asyncio
+async def test_the_check_and_the_authors_work_from_the_in_use_house_documents(monkeypatch):
+    """19.10.2026: the checker flags a contradiction with an approved, in-use document ([H#]); the authors get the
+    list of in-use codes they may cite; an annex to an approved SOP the engine did not write reads that SOP."""
+    from app import db, house
+    updates = _patch_common(monkeypatch)
+    monkeypatch.setattr(builder, "build", lambda *a, **k: _fake_build_result())
+    monkeypatch.setattr(settings, "ragflow_example_datasets", ("ex1",))
+
+    async def in_use():
+        return [{"id": "r1", "code": "QCSOP011", "version": "02", "title_en": "Sampling", "title_mk": "Мострирање"}]
+
+    async def approved(code):
+        return {"markdown": "# 6.0 ПОСТАПКА|PROCEDURE\nThe analyst records the seal number.", "version": "02", "id": "r1"} \
+            if code == "QCSOP011" else None
+
+    async def no_job(code):
+        return None
+    monkeypatch.setattr(house, "in_use_list", in_use)
+    monkeypatch.setattr(house, "approved_text", approved)
+    monkeypatch.setattr(db, "job_latest_markdown_by_code", no_job, raising=False)
+    c = RecordingClient()
+    await run_workflow("job-1", client=c, rag=FakeRag())
+    check = [p for p in c.prompts if p.startswith("Check this drafted section")][0]
+    assert "CONFLICT [H#]" in check and "[H1] EU GDP 2013/C 343/01" in check
+    author = [p for p in c.prompts if p.startswith("Design the")][0]
+    assert "HOUSE DOCUMENTS IN USE" in author and "- QCSOP011 v02 — Sampling | Мострирање" in author
+    result = updates[-1]["result"]
+    assert result["house_sources"]["1.0"][0]["chunk_id"] == "69f4" and result["knowledge"]["house_documents"] == 1
+
+
+    # An annex to an approved SOP the engine did not write reads that SOP's sections 6 and 7.
+    async def annex_job(jid):
+        return {"id": "job-2", "payload": {"questionnaire": "annex_form", "answers": {}, "parent_sop": "QCSOP011",
+                                           "meta": {"title_mk": "Дневник", "title_en": "Log", "code": "QCSOP011A05"}}}
+    monkeypatch.setattr(db, "job_get", annex_job)
+    c = RecordingClient()
+    await run_workflow("job-2", client=c, rag=FakeRag())
+    author = [p for p in c.prompts if p.startswith("Design the")][0]
+    assert "PARENT SOP QCSOP011" in author and "records the seal number" in author
+    assert updates[-1]["result"]["knowledge"]["parent_sop"]["approved_version"] == "02"
 
 
 # ---- Gotenberg request from the Library PDF route --------------------------------------------
@@ -232,3 +275,29 @@ def test_document_pdf_refuses_substitute_fonts(api, monkeypatch, tmp_path):
         lambda req: httpx.Response(200, content=b"%PDF-1.7 /BaseFont/AAAAAA+Carlito-Regular")), **kw))
     r = client.get("/documents/x/pdf", headers=h)
     assert r.status_code == 502 and "Calibri" in r.json()["detail"]
+
+
+
+@pytest.mark.asyncio
+async def test_an_annex_of_a_package_reads_its_own_sop_job_not_another_with_the_code(monkeypatch):
+    from app import db
+    updates = _patch_common(monkeypatch)
+    monkeypatch.setattr(builder, "build", lambda *a, **k: _fake_build_result())
+    jobs = {"job-a": {"id": "job-a", "payload": {"questionnaire": "annex_form", "answers": {}, "parent_sop": "QASOPXXX",
+                                                 "package_of": "sop-mine",
+                                                 "meta": {"title_mk": "Дневник", "title_en": "Log", "code": "QASOPXXXA01"}}},
+            "sop-mine": {"id": "sop-mine", "status": "awaiting_review",
+                         "result": {"markdown": "# 6.0 ПОСТАПКА|PROCEDURE\nMine: the operator signs the seal log."}}}
+
+    async def job_get(jid):
+        return jobs.get(jid)
+
+    async def other(code):
+        return {"markdown": "# 6.0 ПОСТАПКА|PROCEDURE\nAnother QASOPXXX entirely.", "job_id": "other", "status": "done"}
+    monkeypatch.setattr(db, "job_get", job_get)
+    monkeypatch.setattr(db, "job_latest_markdown_by_code", other, raising=False)
+    c = RecordingClient()
+    await run_workflow("job-a", client=c, rag=FakeRag())
+    author = [p for p in c.prompts if p.startswith("Design the")][0]
+    assert "operator signs the seal log" in author and "Another QASOPXXX" not in author
+    assert updates[-1]["result"]["knowledge"]["parent_sop"]["job_id"] == "sop-mine"

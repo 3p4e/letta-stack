@@ -283,6 +283,21 @@ async def codes_in_use() -> set[str]:
     return {r["code"] for r in rows if r["code"]}
 
 
+async def codes_of_brief(brief_id: str) -> set[str]:
+    """Codes held by the jobs a brief started (its earlier builds and their annexes): a rebuild reuses them."""
+    if not brief_id:
+        return set()
+    rows = await pool().fetch("SELECT payload->'meta'->>'code' AS code FROM docengine.jobs WHERE payload->>'brief_id' = $1",
+                              brief_id)
+    return {r["code"] for r in rows if r["code"]}
+
+
+async def job_merge_result(jid: str, extra: dict) -> None:
+    """Add keys to a job's result in one statement, so a concurrent update of other keys is never lost."""
+    await pool().execute("UPDATE docengine.jobs SET result = COALESCE(result, '{}'::jsonb) || $2::jsonb, updated_at = now()"
+                         " WHERE id = $1", jid, json.dumps(extra))
+
+
 # ---- reference documents (approved and work in progress, not written by the engine) ----
 _REF_COLS = ("kind", "code", "parent", "version", "title_mk", "title_en", "effective_date", "department", "package")
 
@@ -415,22 +430,32 @@ async def brief_events(bid: str) -> list[dict]:
              "after": json.loads(r["after"]) if r["after"] else None} for r in rows]
 
 
-async def brief_source_add(bid: str, rev: int, actor: str, src: dict) -> str:
+MAX_SOURCES = 20
+
+
+async def brief_source_add(bid: str, rev: int, actor: str, src: dict) -> str | None:
+    """Add a source to an open brief; None when the brief is not open or already holds MAX_SOURCES."""
     sid = str(uuid.uuid4())
     async with pool().acquire() as c, c.transaction():
+        new_rev = await c.fetchval(
+            "UPDATE docengine.briefs SET rev=rev+1, updated_at=now() WHERE id=$1 AND body->>'status' = 'open'"
+            " AND (SELECT count(*) FROM docengine.brief_sources WHERE brief_id=$1) < $2 RETURNING rev", bid, MAX_SOURCES)
+        if new_rev is None:
+            return None
         await c.execute("INSERT INTO docengine.brief_sources (id, brief_id, name, kind, bytes, sha256, text)"
                         " VALUES ($1,$2,$3,$4,$5,$6,$7)", sid, bid, src["name"], src["kind"], src["bytes"],
                         src["sha256"], src["text"])
-        await c.execute("UPDATE docengine.briefs SET rev=rev+1, updated_at=now() WHERE id=$1", bid)
         await c.execute("INSERT INTO docengine.brief_events (brief_id, rev, actor, op, key, after)"
-                        " VALUES ($1,$2,$3,'source_add',$4,$5)", bid, rev + 1, actor, src["name"],
+                        " VALUES ($1,$2,$3,'source_add',$4,$5)", bid, new_rev, actor, src["name"],
                         json.dumps({"id": sid, "kind": src["kind"], "bytes": src["bytes"], "chars": len(src["text"])}))
     return sid
 
 
 async def brief_source_remove(bid: str, sid: str, actor: str) -> bool:
     async with pool().acquire() as c, c.transaction():
-        name = await c.fetchval("DELETE FROM docengine.brief_sources WHERE id=$1 AND brief_id=$2 RETURNING name", sid, bid)
+        name = await c.fetchval("DELETE FROM docengine.brief_sources s USING docengine.briefs b WHERE s.id=$1"
+                                " AND s.brief_id=$2 AND b.id=s.brief_id AND b.body->>'status' = 'open' RETURNING s.name",
+                                sid, bid)
         if not name:
             return False
         rev = await c.fetchval("UPDATE docengine.briefs SET rev=rev+1, updated_at=now() WHERE id=$1 RETURNING rev", bid)
@@ -440,8 +465,9 @@ async def brief_source_remove(bid: str, sid: str, actor: str) -> bool:
 
 
 async def brief_sources(bid: str, with_text: bool = True) -> list[dict]:
-    rows = await pool().fetch("SELECT id, name, kind, bytes, sha256, text, created_at FROM docengine.brief_sources"
-                              " WHERE brief_id=$1 ORDER BY created_at", bid)
+    text = "text" if with_text else "'' AS text"
+    rows = await pool().fetch(f"SELECT id, name, kind, bytes, sha256, {text}, length(text) AS chars, created_at"
+                              " FROM docengine.brief_sources WHERE brief_id=$1 ORDER BY created_at", bid)
     return [{"id": str(r["id"]), "name": r["name"], "kind": r["kind"], "bytes": r["bytes"], "sha256": r["sha256"],
-             "chars": len(r["text"]), "created_at": r["created_at"].isoformat(),
+             "chars": r["chars"], "created_at": r["created_at"].isoformat(),
              **({"text": r["text"]} if with_text else {})} for r in rows]

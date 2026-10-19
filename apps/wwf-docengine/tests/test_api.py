@@ -178,8 +178,13 @@ def _review_db(monkeypatch, tmp_path, status="awaiting_review", with_file=True):
         calls["docs"].append(meta)
         return "doc-1"
 
+    async def job_merge_result(jid, extra):
+        row["result"] = {**row["result"], **extra}
+        calls["updates"].append({"result": dict(row["result"])})
+
     monkeypatch.setattr(db, "ready", lambda: True)
-    for n, f in (("job_get", job_get), ("job_claim", job_claim), ("job_update", job_update), ("document_create", document_create)):
+    for n, f in (("job_get", job_get), ("job_claim", job_claim), ("job_update", job_update), ("document_create", document_create),
+                 ("job_merge_result", job_merge_result)):
         monkeypatch.setattr(db, n, f)
     return row, calls
 
@@ -189,7 +194,8 @@ def test_review_approve_registers_once(client, monkeypatch, tmp_path):
     r = client.post(f"/workflows/{JID}/review", headers=h(), json={"decision": "approve", "note": "ok", "reviewer": "QC Manager"})
     assert r.status_code == 200 and row["status"] == "done"
     assert len(calls["docs"]) == 1 and calls["docs"][0]["code"] == "TEST-1"
-    review = calls["updates"][-1]["result"]["review"]
+    review = row["result"]["review"]
+    assert row["result"]["document_id"] == "doc-1" and row["result"]["qa_verdict"] == "FIX"   # merged, nothing lost
     assert review["decision"] == "approve" and review["by"] == "QC Manager" and review["qa_verdict"] == "FIX"
     # a second approval finds the job no longer awaiting review
     assert client.post(f"/workflows/{JID}/review", headers=h(), json={"decision": "approve"}).status_code == 409
@@ -201,7 +207,7 @@ def test_review_return_requires_a_note_and_fails_the_job(client, monkeypatch, tm
     assert client.post(f"/workflows/{JID}/review", headers=h(), json={"decision": "return", "note": "  "}).status_code == 422
     r = client.post(f"/workflows/{JID}/review", headers=h(), json={"decision": "return", "note": "§3.2 RACI legend missing"})
     assert r.status_code == 200 and row["status"] == "failed" and not calls["docs"]
-    assert calls["updates"][-1]["error"] == "returned for revision: §3.2 RACI legend missing"
+    assert row["error"] == "returned for revision: §3.2 RACI legend missing" and row["result"]["review"]["decision"] == "return"
 
 
 def test_review_rejects_bad_input_and_wrong_state(client, monkeypatch, tmp_path):

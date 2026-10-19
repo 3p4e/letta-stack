@@ -34,22 +34,22 @@ def test_a_change_needs_the_current_rev_and_counts_one_rev():
 
 
 def test_a_locked_answer_is_never_overwritten_until_unlocked():
-    b, _ = B.apply_patch(fresh(), {"rev": 0, "set": {"process_type": "Finished product"}, "lock": ["process_type"]})
+    b, _ = B.apply_patch(fresh(), {"rev": 0, "set": {"sample_types": "Finished product"}, "lock": ["sample_types"]})
     with pytest.raises(B.BriefConflict):
-        B.apply_patch(b, {"rev": 1, "set": {"process_type": "Incoming"}})
-    b2, ev = B.apply_patch(b, {"rev": 1, "suggest": {"process_type": "Incoming"}})
-    assert b2["fields"]["process_type"]["value"] == "Finished product" and ev == []   # a suggestion never wins
-    b3, ev = B.apply_patch(b, {"rev": 1, "unlock": ["process_type"], "set": {"process_type": "Incoming"}})
-    assert [e["op"] for e in ev] == ["unlock", "set"] and b3["fields"]["process_type"]["state"] == "chosen"
+        B.apply_patch(b, {"rev": 1, "set": {"sample_types": "Incoming"}})
+    b2, ev = B.apply_patch(b, {"rev": 1, "suggest": {"sample_types": "Incoming"}})
+    assert b2["fields"]["sample_types"]["value"] == "Finished product" and ev == []   # a suggestion never wins
+    b3, ev = B.apply_patch(b, {"rev": 1, "unlock": ["sample_types"], "set": {"sample_types": "Incoming"}})
+    assert [e["op"] for e in ev] == ["unlock", "set"] and b3["fields"]["sample_types"]["state"] == "chosen"
 
 
 def test_a_scope_change_marks_decided_answers_stale_but_not_locked_ones():
-    b, _ = B.apply_patch(fresh(), {"rev": 0, "set": {"doc.scope_in": "FP", "a": 1, "c": 3}, "lock": ["c"]})
+    b, _ = B.apply_patch(fresh(), {"rev": 0, "set": {"doc.scope_in": "FP", "focus": "Potency", "retention": "Other (state in §7)"}, "lock": ["retention"]})
     b2, ev = B.apply_patch(b, {"rev": 1, "set": {"doc.scope_in": "FP and intermediates"}})
-    assert b2["fields"]["a"]["stale"] and not b2["fields"]["c"]["stale"] and not b2["fields"]["doc.scope_in"]["stale"]
-    assert {e["key"] for e in ev if e["op"] == "stale"} == {"a"}
-    b3, _ = B.apply_patch(b2, {"rev": 2, "set": {"a": 1}})                   # re-confirming clears it
-    assert not b3["fields"]["a"]["stale"]
+    assert b2["fields"]["focus"]["stale"] and not b2["fields"]["retention"]["stale"] and not b2["fields"]["doc.scope_in"]["stale"]
+    assert {e["key"] for e in ev if e["op"] == "stale"} == {"focus"}
+    b3, _ = B.apply_patch(b2, {"rev": 2, "set": {"focus": "Potency"}})                   # re-confirming clears it
+    assert not b3["fields"]["focus"]["stale"]
 
 
 def test_a_build_from_an_early_page_lists_what_was_not_decided():
@@ -112,6 +112,8 @@ def api(monkeypatch):
         return True
 
     async def add(bid, rev, actor, s):
+        if store[bid]["status"] != "open":
+            return None
         srcs[bid].append({**s, "id": "22222222-2222-2222-2222-22222222222" + str(len(srcs[bid])), "chars": len(s["text"])})
         store[bid]["rev"] += 1
         return srcs[bid][-1]["id"]
@@ -129,8 +131,16 @@ def api(monkeypatch):
     async def taken():
         return {"QCSOP026"}
 
+    async def of_brief(bid):
+        return set()
+
+    async def jupdate(jid, **f):
+        failed.append((jid, f))
+
+    failed = []
     for name, fn in (("brief_create", create), ("brief_get", get), ("brief_save", save), ("brief_source_add", add),
-                     ("brief_sources", lst), ("job_create", jcreate), ("codes_in_use", taken)):
+                     ("brief_sources", lst), ("job_create", jcreate), ("codes_in_use", taken),
+                     ("codes_of_brief", of_brief), ("job_update", jupdate)):
         monkeypatch.setattr(db, name, fn)
     monkeypatch.setattr(db, "ready", lambda: True)
     monkeypatch.setattr(main, "run_workflow", nothing)
@@ -264,3 +274,195 @@ def test_suggest_keeps_proposals_and_never_overwrites_a_decision(api, monkeypatc
     assert nb["fields"]["focus"] == {**b["fields"]["focus"]}
     assert nb["fields"]["techniques"]["state"] == "suggested" and nb["fields"]["techniques"]["value"] == ["HPLC-DAD"]
     assert nb["proposals"]["techniques"]["options"][0]["source"] == "E1" and nb["rev"] == 2
+
+
+# ---------- phase 4: one package view and one merged PDF ----------
+from app import package as PKG  # noqa: E402
+
+
+def _pdf(pages: int) -> bytes:
+    import io
+    from pypdf import PdfWriter
+    w = PdfWriter()
+    for _ in range(pages):
+        w.add_blank_page(width=595, height=842)
+    out = io.BytesIO()
+    w.write(out)
+    return out.getvalue()
+
+
+def test_the_package_merges_the_sop_then_its_annexes():
+    from pypdf import PdfReader
+    import io
+    assert len(PdfReader(io.BytesIO(PKG.merge([_pdf(3), _pdf(1), _pdf(2)]))).pages) == 6
+
+
+def test_a_package_is_complete_only_when_every_member_is_built(tmp_path):
+    f = tmp_path / "QCSOP026.docx"
+    f.write_bytes(b"x")
+    done = PKG.member({"status": "done", "payload": {"meta": {"code": "QCSOP026"}}, "result": {"document_id": "d"}},
+                      {"path": str(f)}, "j1")
+    review = PKG.member({"status": "awaiting_review", "payload": {"meta": {"code": "QCSOP026A01"}},
+                         "result": {"artifact": {"path": str(f)}, "review_reason": "§6A FIX"}}, None, "j2")
+    running = PKG.member({"status": "running", "stage": "generate", "payload": {"meta": {"code": "QCSOP026A02"}},
+                          "result": {}}, None, "j3")
+    assert done["file"] and review["file"] and not running["file"]
+    s = PKG.summary([done, review, running])
+    assert not s["complete"] and not s["pdf_ready"] and s["running"] == ["QCSOP026A02"]
+    assert s["awaiting_review"] == ["QCSOP026A01"]
+    assert PKG.summary([done, review])["pdf_ready"]
+    assert PKG.member(None, None, "gone")["status"] == "missing"
+    assert PKG.pending({"title_en": "Log"}, "")["status"] == "pending"
+
+
+def test_package_route_lists_the_build_its_annexes_and_merges_them(api, monkeypatch, tmp_path):
+    c, store, _ = api
+    from app import db, main
+    f = tmp_path / "x.docx"
+    f.write_bytes(b"x")
+    jobs = {
+        "33333333-3333-3333-3333-333333333333": {"status": "done", "payload": {"meta": {"code": "QCSOP026"},
+                                                  "package_annexes": [{"title_en": "Log"}, {"title_en": "Checklist"}]},
+                                                  "result": {"document_id": "44444444-4444-4444-4444-444444444444",
+                                                             "package_jobs": [{"code": "QCSOP026A01", "job_id": "a1"}]}},
+        "a1": {"status": "awaiting_review", "payload": {"meta": {"code": "QCSOP026A01", "title_en": "Log"}},
+               "result": {"artifact": {"path": str(f)}}}}
+
+    async def job_get(j):
+        return jobs.get(j)
+
+    async def doc_get(d):
+        return {"path": str(f)}
+
+    rendered = []
+
+    async def render(path, label):
+        rendered.append(label)
+        return _pdf(1)
+    monkeypatch.setattr(db, "job_get", job_get)
+    monkeypatch.setattr(db, "document_get", doc_get)
+    monkeypatch.setattr(main, "_render_pdf", render)
+    monkeypatch.setattr(main.settings, "gotenberg_url", "http://render")
+    b = c.post("/briefs", json={"package": "sop_annexes", "meta": {"title_en": "Sampling"}}, headers=h()).json()
+    assert c.get(f"/briefs/{b['id']}/package", headers=h()).json()["members"] == []
+    store[b["id"]]["job_ids"] = ["33333333-3333-3333-3333-333333333333"]
+    p = c.get(f"/briefs/{b['id']}/package", headers=h()).json()
+    assert [m["code"] or m["title_en"] for m in p["members"]] == ["QCSOP026", "QCSOP026A01", "Checklist"]
+    assert [m["status"] for m in p["members"]] == ["done", "awaiting_review", "pending"]
+    assert not p["complete"] and "file" not in p["members"][0] and p["members"][0]["has_file"]
+    r = c.get(f"/briefs/{b['id']}/package.pdf", headers=h())
+    assert r.status_code == 409 and "Checklist" in r.json()["detail"]
+    jobs["33333333-3333-3333-3333-333333333333"]["payload"]["package_annexes"] = [{"title_en": "Log"}]
+    r = c.get(f"/briefs/{b['id']}/package.pdf", headers=h())
+    assert r.status_code == 200 and r.headers["content-type"] == "application/pdf"
+    assert rendered == ["QCSOP026", "QCSOP026A01"] and 'QCSOP026_package.pdf' in r.headers["content-disposition"]
+
+
+# ---------- the approved, in-use house documents are a source, not only a style sample (19.10.2026) ----------
+from app import house  # noqa: E402
+
+
+def test_the_in_use_list_keeps_the_newest_version_of_each_code(monkeypatch):
+    import asyncio
+    from app import db
+
+    async def refs(kind=""):
+        assert kind == "approved"
+        return [{"id": "1", "code": "QCSOP011", "version": "01", "title_en": "Sampling", "title_mk": "Земање мостри"},
+                {"id": "2", "code": "QCSOP011", "version": "02", "title_en": "Sampling", "title_mk": "Земање мостри"},
+                {"id": "3", "code": "QCT017", "version": "01", "title_en": "Sample log", "title_mk": ""}]
+
+    async def get(rid):
+        return {"markdown": f"text {rid}"}
+    monkeypatch.setattr(db, "ready", lambda: True)
+    monkeypatch.setattr(db, "reference_list", refs)
+    monkeypatch.setattr(db, "reference_get", get)
+    docs = asyncio.run(house.in_use_list())
+    assert [(d["code"], d["version"]) for d in docs] == [("QCSOP011", "02"), ("QCT017", "01")]
+    block = house.list_block(docs)
+    assert "never invent a code" in block and "- QCSOP011 v02 — Sampling | Земање мостри" in block
+    assert "- QCT017 v01 — Sample log" in block
+    assert asyncio.run(house.approved_text("QCSOP011")) == {"markdown": "text 2", "version": "02", "id": "2"}
+    assert asyncio.run(house.approved_text("QCSOP099")) is None
+
+
+
+# ---------- the review of 19.10.2026: builds, suggestions and numbering under real use ----------
+def test_a_build_racing_an_edit_fails_its_job_instead_of_orphaning_it(api, monkeypatch):
+    c, store, started = api
+    from app import db
+    b = c.post("/briefs", json={"package": "sop", "meta": {"title_en": "Sampling"}}, headers=h()).json()
+    real_save = db.brief_save
+
+    async def lose(new, old, events):          # an edit commits between the build's read and its save
+        store[new["id"]]["rev"] += 1
+        return await real_save(new, old, events)
+    monkeypatch.setattr(db, "brief_save", lose)
+    r = c.post(f"/briefs/{b['id']}/build", json={"rev": 0}, headers=h())
+    assert r.status_code == 409 and "reload" in r.json()["detail"]
+    assert store[b["id"]]["job_ids"] == []
+
+
+def test_a_closed_brief_is_not_built_suggested_or_given_sources(api, monkeypatch):
+    c, store, _ = api
+    b = c.post("/briefs", json={"package": "sop", "meta": {"title_en": "Sampling"}}, headers=h()).json()
+    assert c.patch(f"/briefs/{b['id']}", json={"rev": 0, "status": "archived"}, headers=h()).status_code == 400
+    b = c.patch(f"/briefs/{b['id']}", json={"rev": 0, "status": "closed"}, headers=h()).json()
+    assert c.post(f"/briefs/{b['id']}/build", json={"rev": 1}, headers=h()).status_code == 409
+    assert c.post(f"/briefs/{b['id']}/suggest", json={"rev": 1}, headers=h()).status_code == 409
+    assert c.post(f"/briefs/{b['id']}/sources", json={"name": "a.md", "content_b64": "eA=="}, headers=h()).status_code == 409
+
+
+def test_an_unknown_department_is_a_400_not_a_500(api):
+    c, _, _ = api
+    b = c.post("/briefs", json={"package": "sop", "meta": {"title_en": "Sampling", "department": "Quality"}}, headers=h()).json()
+    r = c.post(f"/briefs/{b['id']}/build", json={"rev": 0}, headers=h())
+    assert r.status_code == 400 and "cannot number" in r.json()["detail"]
+
+
+def test_only_questions_of_the_brief_are_stored_and_answers_are_bounded():
+    with pytest.raises(B.BriefError):
+        B.apply_patch(fresh(), {"rev": 0, "set": {"made_up": "x"}})
+    with pytest.raises(B.BriefError):
+        B.apply_patch(fresh(), {"rev": 0, "set": {"doc.purpose": "x" * (B.MAX_VALUE_CHARS + 1)}})
+    b, _ = B.apply_patch(fresh(), {"rev": 0, "set": {"focus": "Potency"}})
+    b, _ = B.apply_patch(b, {"rev": 1, "questionnaire": "sop_transport"})
+    b, ev = B.apply_patch(b, {"rev": 2, "set": {"focus": None}})      # an answer of the old bank can still be cleared
+    assert "focus" not in b["fields"] and ev[0]["op"] == "clear"
+
+
+def test_the_not_decided_instruction_survives_a_long_brief():
+    b, _ = B.apply_patch(fresh(), {"rev": 0, "set": {k: "y" * 19_000 for k in B.TEXT_FIELDS}})
+    out = B.to_workflow(b, [])["instructions"]
+    assert out.startswith("Not decided by the requester") and len(out) <= 12_000
+
+
+def test_package_annexes_number_from_a01_on_a_rebuild_and_by_position_when_unconfirmed(monkeypatch):
+    import asyncio
+    from app import db, pipeline
+    created = []
+
+    async def in_use():
+        return {"QCSOP026", "QCSOP026A01", "QCSOP026A02", "QASOPXXXA01"}   # A01, A02: the first build's own
+
+    async def of_brief(bid):
+        return {"QCSOP026", "QCSOP026A01", "QCSOP026A02"} if bid == "brief-1" else set()
+
+    async def jcreate(kind, payload, by=""):
+        created.append(payload["meta"]["code"])
+        return f"j{len(created)}"
+
+    async def nothing(jid):
+        return None
+    monkeypatch.setattr(db, "codes_in_use", in_use)
+    monkeypatch.setattr(db, "codes_of_brief", of_brief)
+    monkeypatch.setattr(db, "job_create", jcreate)
+    monkeypatch.setattr(pipeline, "run_workflow", nothing)
+    p = {"package_annexes": [{"title_en": "Log"}, {"title_en": "Checklist"}], "brief_id": "brief-1"}
+
+    async def go():
+        await pipeline._start_package_annexes("sop", p, {"code": "QCSOP026"})
+        await pipeline._start_package_annexes("sop", {**p, "brief_id": "brief-2"}, {"code": "QASOPXXX"})
+        await asyncio.sleep(0)
+    asyncio.run(go())
+    assert created == ["QCSOP026A01", "QCSOP026A02", "QASOPXXXA01", "QASOPXXXA02"]

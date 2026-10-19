@@ -11,10 +11,10 @@ import asyncio
 import logging
 import re
 
-from . import builder, db, glossary, potency
+from . import builder, db, glossary, house, potency
 from .config import settings
 from .letta import LettaClient, LettaError
-from .ragflow import EXAMPLES_NOTE, RagflowClient, RagflowError, citations, format_passages
+from .ragflow import RagflowClient, RagflowError, citations, format_passages
 from .questionnaires import QUESTIONNAIRES, apply_defaults
 
 log = logging.getLogger("docengine.pipeline")
@@ -249,7 +249,8 @@ ENGINE_GRAMMAR = """ENGINE MARKDOWN (the only grammar the formatter reads):
 # supported (GLP, ICH Q7 — an API guideline — in a finished-product SOP, Annex 11 technical claims);
 # found by the auditor in live runs 10.10.2026.
 REFERENCE_RULE = """REFERENCES: name a regulation, guideline, standard or pharmacopoeia text ONLY if it is in the
-content brief or in a regulatory finding supplied to you. Any other reference you believe applies goes in the
+content brief or in a regulatory finding supplied to you; name a house SOP, annex or form ONLY from the list of house
+documents in use in the content brief, by code and version. Any other reference you believe applies goes in the
 section's LAST numbered subsection, '## N.M За потврда | To be confirmed', as 'MK ||| EN' bullets — never
 presented as a normative basis. Never cite a document
 whose scope excludes this procedure (e.g. ICH Q7 covers active substances, not finished product)."""
@@ -512,13 +513,20 @@ def assemble_markdown(meta: dict, sections: list[dict]) -> str:
     return hd + "\n".join(body)
 
 
+_annex_tasks: set = set()
+
+
 async def _start_package_annexes(sop_job: str, p: dict, meta: dict) -> list[dict]:
     """SOP + annexes from one workflow (Head of QC, 18.10.2026): once the SOP is written, one annex job per annex of the
     package, numbered from the register under the SOP's code, each reading the SOP's sections 6 and 7 (ANNEX_RULE)."""
-    from .house_codes import next_code
-    taken, out = set(await db.codes_in_use()), []
-    for a in p.get("package_annexes") or []:
-        code = next_code(parent=meta["code"], taken=taken)
+    from .house_codes import XXX, next_code
+    # A rebuild of the same brief reuses its own annex numbers (A01 … again, not A03 …), and an SOP whose number is
+    # not confirmed (…XXX) numbers its annexes by position: no other package shares its sequence.
+    unconfirmed = meta["code"].endswith(XXX)
+    taken = set() if unconfirmed else set(await db.codes_in_use()) - await db.codes_of_brief(p.get("brief_id", ""))
+    out = []
+    for i, a in enumerate(p.get("package_annexes") or [], 1):
+        code = f"{meta['code']}A{i:02d}" if unconfirmed else next_code(parent=meta["code"], taken=taken)
         taken.add(code)
         title_en, title_mk = a.get("title_en") or a.get("title_mk"), a.get("title_mk") or a.get("title_en")
         payload = {"questionnaire": "annex_form", "answers": {}, "parent_sop": meta["code"],
@@ -528,7 +536,9 @@ async def _start_package_annexes(sop_job: str, p: dict, meta: dict) -> list[dict
                    "source_texts": p.get("source_texts") or [], "assumed": ["annex content (from the SOP)"],
                    "brief_id": p.get("brief_id", ""), "package_of": sop_job, "requested_by": p.get("requested_by", "")}
         jid = await db.job_create("workflow", payload, p.get("requested_by", ""))
-        asyncio.get_running_loop().create_task(run_workflow(jid))
+        t = asyncio.get_running_loop().create_task(run_workflow(jid))
+        _annex_tasks.add(t)                      # a task with no reference can be collected mid-run
+        t.add_done_callback(_annex_tasks.discard)
         out.append({"code": code, "job_id": jid, "title_en": title_en})
     return out
 
@@ -537,13 +547,12 @@ async def _package(job_id: str, p: dict, meta: dict, sop: bool) -> None:
     """After an SOP of a package is saved (its Markdown is what the annexes read), start its annexes and record them."""
     if not (sop and p.get("package_annexes")):
         return
-    job = await db.job_get(job_id)
     try:
         extra = {"package_jobs": await _start_package_annexes(job_id, p, meta)}
     except Exception as e:  # noqa: BLE001 — the SOP stands; the annexes that did not start are reported on it
         log.exception("job %s: package annexes did not start", job_id)
         extra = {"package_error": f"{type(e).__name__}: {e}"[:300]}
-    await db.job_update(job_id, result={**(job or {}).get("result", {}), **extra})
+    await db.job_merge_result(job_id, extra)
 
 
 async def run_workflow(job_id: str, client: LettaClient | None = None, rag: RagflowClient | None = None) -> None:
@@ -566,7 +575,7 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
             knowledge["notes"].append(f"examples unavailable: {e}")
             return ""
         knowledge["examples_used"] += len(ex)
-        return ("\n\n" + EXAMPLES_NOTE + "\n" + format_passages(ex, tag="E", max_chars=1500)) if ex else ""
+        return ("\n\n" + house.NOTE + "\n" + format_passages(ex, tag="E", max_chars=1500)) if ex else ""
 
     async def ask(agent_name: str, tag: str, prompt: str) -> str:
         """One exchange on a fresh clone of a fleet agent, deleted afterwards.
@@ -610,6 +619,15 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
         meta["doctype"] = doctype
         sop = doctype == "SOP"
         brief = _brief(qkey, answers, p.get("instructions", ""), p.get("sources") or [], p.get("source_texts") or [])
+        # The approved, in-use house documents the new one may cite and must not contradict (19.10.2026).
+        try:
+            in_use = await house.in_use_list()
+        except Exception as e:  # noqa: BLE001 — the list helps the authors; its absence is noted, not fatal
+            in_use = []
+            knowledge["notes"].append(f"house document list unavailable: {e}"[:200])
+        if in_use:
+            brief += "\n\n" + house.list_block(in_use)
+            knowledge["house_documents"] = len(in_use)
         # The official potency specifications, when the document touches potency (Head of QC, 19.10.2026).
         specs = await potency.block(meta.get("title_en", ""), meta.get("title_mk", ""), brief)
         if specs:
@@ -623,7 +641,16 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
         parent_code = (p.get("parent_sop") or "").strip()
         parent_md = ""
         if parent_code and doctype != "SOP":
-            parent = await db.job_latest_markdown_by_code(parent_code)
+            parent = None
+            if p.get("package_of"):
+                # An annex of a package reads the very SOP job that started it, never another job with the same code
+                # (a revision being written, or another unconfirmed …XXX SOP).
+                own = await db.job_get(p["package_of"])
+                md = ((own or {}).get("result") or {}).get("markdown") or ""
+                if md:
+                    parent = {"markdown": md, "job_id": p["package_of"], "status": own["status"]}
+            if parent is None:
+                parent = await db.job_latest_markdown_by_code(parent_code)
             if parent:
                 parent_md = _parent_sections(parent["markdown"])
                 knowledge["parent_sop"] = {"code": parent_code, "job_id": parent["job_id"], "status": parent["status"]}
@@ -631,7 +658,17 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                     knowledge["notes"].append(f"parent SOP {parent_code} is not registered: read from job "
                                               f"{parent['job_id'][:8]} ({parent['status']})")
             else:
-                knowledge["notes"].append(f"parent SOP {parent_code} not found; the form was drafted from the brief only")
+                try:
+                    approved = await house.approved_text(parent_code)
+                except Exception as e:  # noqa: BLE001
+                    approved = None
+                    knowledge["notes"].append(f"approved parent SOP unavailable: {e}"[:200])
+                if approved:
+                    parent_md = _parent_sections(approved["markdown"]) or approved["markdown"][:12000]
+                    knowledge["parent_sop"] = {"code": parent_code, "approved_version": approved["version"],
+                                               "reference_id": approved["id"]}
+                else:
+                    knowledge["notes"].append(f"parent SOP {parent_code} not found; the form was drafted from the brief only")
         parent_note = (f"PARENT SOP {parent_code}, sections 6 and 7 — the form must hold a field for every item these "
                        f"sections write into this record, with the completers section 7 names:\n{parent_md}\n" if parent_md else "")
         await db.job_update(job_id, status="running", stage="generate")
@@ -721,6 +758,7 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
         # 13 of a 16-minute run (10.10.2026). The stage counts completed checks, so it only moves forward.
         await db.job_update(job_id, stage="regulatory-check")
         reg_sources: dict[str, list] = {}
+        house_sources: dict[str, list] = {}
         sem = asyncio.Semaphore(settings.reg_concurrency)
         done = 0
 
@@ -731,6 +769,19 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                 # keeps which passage each [R#] was. Without RAGFlow (or if it fails) the checker searches
                 # its attached Letta sources, and the job says so.
                 passages: list[dict] = []
+                own: list[dict] = []
+                if rag.configured and settings.ragflow_example_datasets:
+                    try:
+                        own = await rag.retrieve(f"{meta['title_en']} — {s['en']}: {s['content'][:800]}",
+                                                 settings.ragflow_example_datasets, top_n=4)
+                    except RagflowError as e:
+                        knowledge["notes"].append(f"[{s['num']}] house documents unavailable to the check: {e}")
+                house_part = ("\n\nAPPROVED, IN-USE HOUSE DOCUMENTS (cite as [H#]): also report, as CONFLICT [H#], "
+                              "anything in the section that contradicts them — a different role, step, limit, form or "
+                              "record for the same activity — unless the section says it changes that document.\n"
+                              + format_passages(own, tag="H", max_chars=900)) if own else ""
+                if own:
+                    house_sources.setdefault(s["num"], citations(own))
                 if rag.configured:
                     try:
                         passages = await rag.retrieve(
@@ -741,12 +792,12 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                     prompt = (f"Check this drafted section {s['num']} of {meta['code']} against the "
                               "regulatory passages below, retrieved from the RAGFlow DB01 library. Cite "
                               "only these passages, as [R#] with the document and clause; say NO-FINDING "
-                              f"if none applies.\n\nPASSAGES\n{format_passages(passages)}\n\nSECTION\n{s['content']}")
+                              f"if none applies.\n\nPASSAGES\n{format_passages(passages)}{house_part}\n\nSECTION\n{s['content']}")
                     reg_sources[s["num"]] = citations(passages)
                 else:
                     prompt = (f"Check this drafted section {s['num']} of {meta['code']} against the "
                               f"regulatory corpus ({', '.join(settings.reg_sources)}). Cite only "
-                              f"retrieved passages; say NO-FINDING if nothing applies.\n\n{s['content']}")
+                              f"retrieved passages; say NO-FINDING if nothing applies.{house_part}\n\n{s['content']}")
                 finding = await ask("gf_reg_checker", s["num"].replace(".", ""), prompt)
             done += 1
             await db.job_update(job_id, stage=f"regulatory-check {sections[done - 1]['num']}")
@@ -757,7 +808,7 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
             if isinstance(o, BaseException):
                 raise o
         reg_findings: list[str] = list(outcomes)
-        ctx.update(regulatory=reg_findings, regulatory_sources=reg_sources)
+        ctx.update(regulatory=reg_findings, regulatory_sources=reg_sources, house_sources=house_sources)
 
         # ---- bilingual gate + §6A audit, with repair rounds ----
         # The gate is per section and comes BEFORE the audit and the build: both of those see the
