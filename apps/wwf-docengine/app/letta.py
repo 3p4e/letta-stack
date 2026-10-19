@@ -147,6 +147,12 @@ class LettaClient:
                 return found[0]
             return await self._req("POST", "/agents/", json=spec)
 
+    async def get_block(self, agent_id: str, label: str) -> dict:
+        return await self._req("GET", f"/agents/{agent_id}/core-memory/blocks/{label}") or {}
+
+    async def update_block(self, agent_id: str, label: str, value: str) -> None:
+        await self._req("PATCH", f"/agents/{agent_id}/core-memory/blocks/{label}", json={"value": value})
+
     async def attach_source(self, agent_id: str, source_id: str) -> None:
         await self._req(
             "PATCH", f"/agents/{agent_id}/sources/attach/{source_id}"
