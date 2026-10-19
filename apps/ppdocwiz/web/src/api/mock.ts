@@ -305,7 +305,7 @@ export function mockApi(onChange?: () => void): MockApi {
       // The same grouping DocEngine makes (19.10.2026): an SOP with an approved copy or effective in the register is in use.
       return { shelves, counts: Object.fromEntries(Object.entries(shelves).map(([k, v]) => [k, v.length])) as Record<Shelf, number>, packages: structuredClone(LIB_PACKAGES), loose: { in_use: [LIB.QCSOP020], drafts: [LIB.QASOPXXX] },
         reconcile: { missing: [{ code: 'QCSOP016', title_en: 'Stability programme', title_mk: '', version: '01', status: 'effective' }],
-                     unlisted: [{ code: 'QAT010', title_en: 'Risk analysis', title_mk: 'Ризик анализа', version: '01', status: 'not in the register' }] } };
+                     register_behind: [{ code: 'QAT010', title_en: 'Risk analysis', title_mk: 'Ризик анализа', version: '01', status: 'not in the register' }] } };
     },
     async houseRelated(code): Promise<HouseRelated> {
       await wait(50); const c = code.replace(/[\s_-]/g, '').toUpperCase();

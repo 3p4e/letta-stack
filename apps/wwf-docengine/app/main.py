@@ -89,9 +89,9 @@ async def lifespan(app: FastAPI):
             if rec["missing"]:
                 log.warning("in use in the register, no approved copy in the library: %s",
                             ", ".join(e["code"] for e in rec["missing"]))
-            if rec["unlisted"]:
-                log.warning("approved copy held, not in use in the register: %s",
-                            ", ".join(e["code"] for e in rec["unlisted"]))
+            if rec["register_behind"]:
+                log.warning("in use in DB3_PP_CURRENT, the register says otherwise (register to be brought in line): %s",
+                            ", ".join(f"{e['code']} ({e['status']})" for e in rec["register_behind"]))
     except Exception:  # noqa: BLE001 — a report, never a reason not to start
         log.warning("register/library reconciliation failed at startup", exc_info=True)
     yield
