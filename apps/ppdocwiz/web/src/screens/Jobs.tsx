@@ -1,5 +1,5 @@
 // Jobs (handoff §4) mirrors apps/wwf-docengine/app/pipeline.py; review gate = COVERAGE #3.
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ApiError, type Job } from '../api/types';
 import { PPPage } from '../components/PPPage';
 import { Banner, Btn, Kv } from '../components/ui';
@@ -34,6 +34,8 @@ export function Jobs() {
   const [ins, setIns] = useState<string | null>(null);
   const [note, setNote] = useState('');
   const [reviewErr, setReviewErr] = useState('');
+  const [rerunning, setRerunning] = useState(false);
+  const rerunLock = useRef(false);
   const anyRunning = jobs?.some(j => j.status === 'running' || j.status === 'queued');
   useEffect(() => {
     let live = true;
@@ -47,13 +49,16 @@ export function Jobs() {
   }, [api, dataRev, anyRunning]);
   const job = jobs?.find(j => j.id === jobSel) || jobs?.[0];
   const rerun = async () => {
-    if (!job) return;
+    // One press, one job: on 19.10.2026 four presses in 9 s started four jobs.
+    if (!job || rerunLock.current) return;
+    rerunLock.current = true; setRerunning(true);
     // Everything the first run had: an annex re-run without its brief and parent SOP is the generic form the
     // 13.10.2026 review rejected (review 14.10.2026).
     const p = job.payload;
     try { const r = await api.startWorkflow({ questionnaire: p.questionnaire, answers: p.answers, meta: p.meta as never, requested_by: p.requested_by,
                                               instructions: p.instructions || '', sources: p.sources || [], parent_sop: p.parent_sop || '' }); set({ jobSel: r.job_id }); setIns(null); }
     catch (e) { flash(`${(e as ApiError).status} · ${(e as Error).message}`); }
+    finally { rerunLock.current = false; setRerunning(false); }
   };
   usePrimary(job?.status === 'failed' ? 'Re-run ▸' : 'Build ▸', () => job?.status === 'failed' ? rerun() : run(job?.payload.meta.code || 'WHSOP_002_A02', async () => ({ ok: true })));
 
@@ -151,7 +156,7 @@ export function Jobs() {
         <span onClick={() => { const md = String(job.result.markdown || ''); set({ builderMode: 'src' }); go('builder'); flash(md ? 'Markdown is in result.markdown; open it in Builder raw mode to edit' : 'no Markdown stored on this job'); }} style={{ color: C.run, cursor: 'pointer', textAlign: 'center' }}>Open Markdown in Builder →</span>
         {reviewErr && <Banner kind="err">{reviewErr}</Banner>}
       </div>}
-      {failed && <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}><div style={{ color: T.secondary, lineHeight: 1.45 }}>{failHint}</div><Btn onClick={rerun} style={{ padding: 9 }}>Re-run with same answers</Btn></div>}
+      {failed && <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}><div style={{ color: T.secondary, lineHeight: 1.45 }}>{failHint}</div><Btn onClick={rerun} disabled={rerunning} style={{ padding: 9 }}>{rerunning ? 'Starting…' : 'Re-run with same answers'}</Btn></div>}
     </div>
   </>;
 }

@@ -233,6 +233,22 @@ def _check_meta(meta: dict, required: tuple = ()) -> None:
             raise HTTPException(400, f"meta.{k} must be one line of at most 300 characters without '-->'")
 
 
+def _check_doctype(body: WorkflowIn) -> None:
+    """An annex is never written with an SOP question set. On 19.10.2026 QCSOP001A01 was built as an SOP four
+    times by Jobs → Re-run of a job that carried sop_qc: brief.fits() guarded the brief path only."""
+    if QUESTIONNAIRES[body.questionnaire]["doctype"] != "SOP":
+        return
+    try:
+        annex = house_codes.parts(body.meta["code"])[2]
+    except ValueError:
+        annex = None
+    if annex is not None or body.parent_sop.strip():
+        raise HTTPException(422, f"{body.meta['code']} is an annex"
+                                 + (f" of {body.parent_sop}" if body.parent_sop.strip() else "")
+                                 + f": the SOP question set '{body.questionnaire}' writes an SOP. "
+                                 "Use the annex question set (annex_form).")
+
+
 @app.post("/workflows", dependencies=[Depends(require_api_key)])
 async def start_workflow(body: WorkflowIn):
     if body.questionnaire not in QUESTIONNAIRES:
@@ -241,6 +257,7 @@ async def start_workflow(body: WorkflowIn):
     body.meta["code"] = _house_code(body.meta["code"])
     if body.parent_sop.strip():
         body.parent_sop = _house_code(body.parent_sop, "parent_sop")
+    _check_doctype(body)
     if not db.ready():
         raise HTTPException(503, "DocEngine storage unavailable")
     if not LettaClient().configured:
