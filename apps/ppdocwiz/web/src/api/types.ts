@@ -58,3 +58,15 @@ export interface DocumentRow {
 export class ApiError extends Error {
   constructor(public status: number, message: string, public body?: unknown) { super(message); }
 }
+
+/** DocEngine GET /library (18.10.2026): every document code on one shelf. */
+export type Shelf = 'approved' | 'revision' | 'drafts' | 'numbers' | 'retired';
+export interface RefBrief { id: string; version: string; title_en: string; effective_date: string; chars: number | null; ragflow_doc_id: string; package?: string }
+export interface ShelfEntry {
+  code: string; parent: string; department: string; title_mk: string; title_en: string; status: string; version: string;
+  effective_date: string; shelf: Shelf; approved: RefBrief | null; wip: RefBrief[];
+  builds: { id: string; version: string; doctype: string; created_at: string; job_id: string | null }[];
+  jobs: { id: string; status: string; stage: string; title_en: string; updated_at: string }[]; notes: string[];
+}
+export interface LibraryShelves { shelves: Record<Shelf, ShelfEntry[]>; counts: Record<Shelf, number> }
+export interface ReferenceDoc extends RefBrief { kind: 'approved' | 'wip'; code: string; parent: string; title_mk: string; department: string; source: Record<string, unknown>; markdown: string }

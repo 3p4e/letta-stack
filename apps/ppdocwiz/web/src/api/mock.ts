@@ -3,7 +3,7 @@
 // switchable faults so every degraded state can be seen without breaking a server.
 import type { Api, EngineEnv, WorkflowIn } from './client';
 import { applyDefaults, normalizeQuestionnaire } from './normalize';
-import { ApiError, type DocumentRow, type Job, type WizardPayload } from './types';
+import { ApiError, type DocumentRow, type Job, type LibraryShelves, type ReferenceDoc, type Shelf, type ShelfEntry, type WizardPayload } from './types';
 import { RAW_QUESTIONNAIRES } from '../data/questionnaires';
 import { ANX_SEC, CH, CH_A, CY, CY_A, FIND, FIND_A, QA_FIX, SAMPLE_ANNEX, SOP_SEC } from '../data/samples';
 import { composeMarkdown, lint } from '../lib/compose';
@@ -211,6 +211,23 @@ export function mockApi(onChange?: () => void): MockApi {
     async nextCode(q) {
       await wait(60);
       return q.parent ? q.parent.replace(/[\s_-]/g, '').toUpperCase() + 'A02' : ({ QCSOP: 'QCSOP026', QCT: 'QCT025', QCLB: 'QCLB022' } as Record<string, string>)[q.family || ''] || (q.family || 'QCT') + '001';
+    },
+    async library(): Promise<LibraryShelves> {
+      await wait(60);
+      const e = (code: string, shelf: Shelf, status: string, title_en: string, extra: Partial<ShelfEntry> = {}): ShelfEntry =>
+        ({ code, parent: '', department: 'QC', title_mk: '', title_en, status, version: '01', effective_date: '', shelf, approved: null, wip: [], builds: [], jobs: [], notes: [], ...extra });
+      const shelves = {
+        approved: [e('QCSOP022', 'approved', 'effective', 'Reception, storage and consumption of chemicals', { approved: { id: 'ref-1', version: '01', title_en: 'Chemicals', effective_date: '2025-01-31', chars: 18200, ragflow_doc_id: 'rf-1' } })],
+        revision: [e('QCSOP011', 'revision', 'effective_revising', 'Sampling', { wip: [{ id: 'ref-2', version: '03', title_en: 'QC Sampling, Handling and Documentation', effective_date: '', chars: 109000, ragflow_doc_id: '' }] })],
+        drafts: [e('QCSOP019', 'drafts', 'awaiting_signature', 'OOx investigation')],
+        numbers: [e('QCT024', 'numbers', 'reserved', 'Material Transfer Record')],
+        retired: [e('QCSOP020', 'retired', 'withdrawn', 'Trend analysis (OOT)')],
+      } as Record<Shelf, ShelfEntry[]>;
+      return { shelves, counts: Object.fromEntries(Object.entries(shelves).map(([k, v]) => [k, v.length])) as Record<Shelf, number> };
+    },
+    async reference(id: string): Promise<ReferenceDoc> {
+      await wait(40);
+      return { id, kind: id === 'ref-1' ? 'approved' : 'wip', code: id === 'ref-1' ? 'QCSOP022' : 'QCSOP011', parent: '', version: '01', title_mk: '', title_en: 'Sample', effective_date: '', department: 'QC', chars: 60, ragflow_doc_id: '', source: { name: 'sample.docx' }, markdown: '1.0 ЦЕЛ | PURPOSE\n\nSample text of a reference document.' };
     },
     async engineEnv(): Promise<EngineEnv> {
       gate(); await wait(120);

@@ -15,6 +15,9 @@
 #   GET  /engine/environment              engine sync, renderer fonts, last verify results, fleet drift
 #   GET  /register                        controlled documents (register/*.yaml, from QALI 001)
 #   GET  /register/next                   next free code of a family, or next annex of a parent
+#   PUT  /reference                       store an approved or work-in-progress document's text (approved: indexed in DB3)
+#   GET  /reference, /reference/{id}      those documents (list; one with its text)
+#   GET  /library                         every code on its shelf: approved, revision, drafts, numbers, retired
 import asyncio
 import contextlib
 import logging
@@ -27,7 +30,7 @@ from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, Field
 
-from . import builder, db, engine_env, fleet, glossary, house_codes
+from . import builder, db, engine_env, fleet, glossary, house_codes, library
 from .config import settings
 from .letta import LettaClient
 from .pipeline import run_workflow
@@ -479,3 +482,74 @@ async def register_next(family: str = "", parent: str = ""):
         return {"code": house_codes.next_code(family=family, parent=parent, taken=taken), "engine_codes_checked": db.ready()}
     except ValueError as e:
         raise HTTPException(400, str(e)) from e
+
+
+# ---------- reference documents and the Library (Head of QC, 18.10.2026) ----------
+class ReferenceIn(BaseModel):
+    kind: str = Field(pattern="^(approved|wip)$")
+    code: str
+    parent: str = ""
+    version: str = Field("", max_length=20)
+    title_mk: str = Field("", max_length=400)
+    title_en: str = Field("", max_length=400)
+    effective_date: str = Field("", max_length=20)
+    department: str = Field("", max_length=20)
+    package: str = ""
+    source: dict = {}
+    markdown: str = Field(min_length=20, max_length=2_000_000)
+    index: bool = True
+
+
+@app.put("/reference", dependencies=[Depends(require_api_key)])
+async def put_reference(body: ReferenceIn):
+    """One approved or work-in-progress document the engine did not write. An approved document's text is indexed in
+    the examples dataset (DB3_PP_CURRENT), one entry per code + version; a re-sent identical text changes nothing."""
+    import hashlib
+
+    from .ragflow import RagflowClient, RagflowError
+    if not db.ready():
+        raise HTTPException(503, "DocEngine storage unavailable")
+    doc = body.model_dump()
+    doc["code"] = _house_code(body.code)
+    doc["parent"] = _house_code(body.parent, "parent") if body.parent else ""
+    doc["package"] = _house_code(body.package, "package") if body.package else ""
+    sha = hashlib.sha256(body.markdown.encode("utf-8")).hexdigest()
+    rid, changed = await db.reference_upsert(doc, sha)
+    row = await db.reference_get(rid)
+    indexed, index_error = row["ragflow_doc_id"], ""
+    if body.kind == "approved" and body.index and settings.ragflow_example_datasets and (changed or not indexed):
+        title = f"{doc['code']} v{doc['version'] or '—'} — {doc['title_en'] or doc['title_mk']}"
+        text = f"# {title}\n\n{body.markdown}"
+        try:
+            indexed = await RagflowClient().index_text(settings.ragflow_example_datasets[0],
+                                                       f"{doc['code']}_v{doc['version'] or 'x'}.md", text,
+                                                       replace_id=row["ragflow_doc_id"])
+            await db.reference_set_ragflow(rid, indexed)
+        except RagflowError as e:
+            index_error = str(e)[:300]
+    return {"id": rid, "code": doc["code"], "changed": changed, "ragflow_doc_id": indexed, "index_error": index_error}
+
+
+@app.get("/reference", dependencies=[Depends(require_api_key)])
+async def list_reference(kind: str = ""):
+    if not db.ready():
+        raise HTTPException(503, "DocEngine storage unavailable")
+    return {"documents": await db.reference_list(kind)}
+
+
+@app.get("/reference/{rid}", dependencies=[Depends(require_api_key)])
+async def get_reference(rid: str):
+    if not db.ready():
+        raise HTTPException(503, "DocEngine storage unavailable")
+    row = await db.reference_get(rid) if _valid_uuid(rid) else None
+    if not row:
+        raise HTTPException(404, "no such reference document")
+    return row
+
+
+@app.get("/library", dependencies=[Depends(require_api_key)])
+async def get_library():
+    if not db.ready():
+        raise HTTPException(503, "DocEngine storage unavailable")
+    return library.shelve(house_codes.load_register(), await db.reference_list(), await db.documents_list(500),
+                          await db.jobs_open_by_code())

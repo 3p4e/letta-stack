@@ -72,9 +72,10 @@ class Settings:
         "RAGFLOW_REG_DATASETS", "a33b0812a3d411f1858cf58865604f65").split(",") if s.strip())
     ragflow_ecoa_datasets: tuple = tuple(s.strip() for s in os.environ.get(
         "RAGFLOW_ECOA_DATASETS", "dd3ea108a3fd11f1858cf58865604f65").split(",") if s.strip())
-    # Approved example documents the authors consult. Empty until that dataset exists.
+    # Approved, in-use house documents the authors consult (DB3_PP_CURRENT, 18.10.2026). The first id is also where
+    # PUT /reference indexes an approved document's text.
     ragflow_example_datasets: tuple = tuple(s.strip() for s in os.environ.get(
-        "RAGFLOW_EXAMPLE_DATASETS", "").split(",") if s.strip())
+        "RAGFLOW_EXAMPLE_DATASETS", "880312c6cb1411f18ed047989fb7f345").split(",") if s.strip())
     ragflow_top_n: int = int(os.environ.get("RAGFLOW_TOP_N", "6"))
 
 

@@ -1,6 +1,6 @@
 import type {
   BuildResult, ChatResult, DeHealth, DocumentRow, DoctypeInfo, Health, Job, Questionnaire,
-  QuestionnaireIndexRow, WizardPayload,
+  LibraryShelves, QuestionnaireIndexRow, ReferenceDoc, WizardPayload,
 } from './types';
 
 export interface WorkflowIn {
@@ -64,6 +64,10 @@ export interface Api {
   buildReport(spec: { code: string; blocks: unknown[]; dataset?: { name: string; sha256: string } }): Promise<{ ok: boolean; verify: string }>;
   /** DocEngine GET /register/next: the next free house code of a family (QCSOP → QCSOP026) or of a parent's annexes. */
   nextCode(q: { family?: string; parent?: string }): Promise<string>;
+  /** DocEngine GET /library: every code on its shelf (approved, revision, drafts, numbers, retired). */
+  library(): Promise<LibraryShelves>;
+  /** DocEngine GET /reference/{id}: an approved or work-in-progress document with its text. */
+  reference(id: string): Promise<ReferenceDoc>;
   /** DocEngine GET /engine/environment: engine hash vs manifest, renderer font probe, last pp_verify results, fleet drift. */
   engineEnv(): Promise<EngineEnv>;
 }

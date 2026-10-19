@@ -9,13 +9,14 @@ import { usePrimary } from '../lib/usePrimary';
 import { controlled, rankVersions } from '../lib/registry';
 import { lineColor, nbsp } from '../lib/verify';
 import { useApp } from '../store/store';
+import { Shelves } from './Shelves';
 import { C, MONO, T } from '../theme';
 
 type Row = DocumentRow & { parent?: string; source?: string; supersedes?: string };
 const when = (iso: string) => { const d = new Date(iso), m = (Date.now() - +d) / 60000; return m < 2 ? 'just now' : m < 1440 && d.getDate() === new Date().getDate() ? 'today ' + d.toTimeString().slice(0, 5) : m < 2880 ? 'yesterday' : d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }); };
 const src = (r: Row) => r.source || (r.job_id ? 'job ' + r.job_id.slice(0, 8) : 'build');
 
-export function Library() {
+function Builds() {
   const { api, libSel, set, go, dataRev, run } = useApp();
   const [rows, setRows] = useState<Row[] | null>(null);
   const [err, setErr] = useState('');
@@ -108,4 +109,13 @@ export function Library() {
       </>}
     </div>}
   </>;
+}
+
+/** The Library opens on its shelves (18.10.2026); the engine's own build registry is the second view. */
+export function Library() {
+  const [view, setView] = useState<'shelves' | 'builds'>('shelves');
+  return <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+    <div style={{ padding: '10px 20px 0' }}><Seg items={[['shelves', 'Shelves'], ['builds', 'Engine builds']]} value={view} onPick={setView} size={12} pad="4px 12px" /></div>
+    <div style={{ flex: 1, minHeight: 0, display: 'flex' }}>{view === 'shelves' ? <Shelves /> : <Builds />}</div>
+  </div>;
 }

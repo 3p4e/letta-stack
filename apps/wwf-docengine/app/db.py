@@ -40,6 +40,28 @@ CREATE TABLE IF NOT EXISTS docengine.documents (
   verify      text NOT NULL,                 -- full pp_verify PASS report
   created_at  timestamptz NOT NULL DEFAULT now()
 );
+-- Documents the engine did not write (Head of QC, 18.10.2026): the approved, in-use documents (kind 'approved',
+-- text of the Word file; the signed scan is referenced, never indexed) and the work in progress from the ACME_SOP
+-- drafts folder (kind 'wip'). One row per kind + code + version.
+CREATE TABLE IF NOT EXISTS docengine.reference_docs (
+  id             uuid PRIMARY KEY,
+  kind           text NOT NULL,                 -- 'approved' | 'wip'
+  code           text NOT NULL,
+  parent         text NOT NULL DEFAULT '',
+  version        text NOT NULL DEFAULT '',
+  title_mk       text NOT NULL DEFAULT '',
+  title_en       text NOT NULL DEFAULT '',
+  effective_date text NOT NULL DEFAULT '',
+  department     text NOT NULL DEFAULT '',
+  package        text NOT NULL DEFAULT '',
+  source         jsonb NOT NULL DEFAULT '{}'::jsonb, -- {name, drive_id, drive_scan_ids, folder}
+  markdown       text NOT NULL,
+  sha256         text NOT NULL,
+  ragflow_doc_id text NOT NULL DEFAULT '',
+  created_at     timestamptz NOT NULL DEFAULT now(),
+  updated_at     timestamptz NOT NULL DEFAULT now(),
+  UNIQUE (kind, code, version)
+);
 CREATE INDEX IF NOT EXISTS de_jobs_status ON docengine.jobs(status);
 CREATE INDEX IF NOT EXISTS de_docs_code ON docengine.documents(code);
 """
@@ -228,3 +250,74 @@ async def codes_in_use() -> set[str]:
         " UNION SELECT payload->'meta'->>'code' FROM docengine.jobs"
         "  WHERE status <> 'failed' AND payload->'meta'->>'code' IS NOT NULL")
     return {r["code"] for r in rows if r["code"]}
+
+
+# ---- reference documents (approved and work in progress, not written by the engine) ----
+_REF_COLS = ("kind", "code", "parent", "version", "title_mk", "title_en", "effective_date", "department", "package")
+
+
+def _ref_row(r, with_text: bool = False) -> dict:
+    d = {k: r[k] for k in _REF_COLS}
+    d.update(id=str(r["id"]), sha256=r["sha256"], ragflow_doc_id=r["ragflow_doc_id"],
+             source=json.loads(r["source"]) if isinstance(r["source"], str) else r["source"],
+             updated_at=r["updated_at"].isoformat(), chars=r["chars"] if "chars" in r.keys() else None)
+    if with_text:
+        d["markdown"] = r["markdown"]
+    return d
+
+
+async def reference_get_key(kind: str, code: str, version: str) -> dict | None:
+    r = await pool().fetchrow("SELECT *, length(markdown) AS chars FROM docengine.reference_docs"
+                              " WHERE kind=$1 AND code=$2 AND version=$3", kind, code, version)
+    return _ref_row(r) if r else None
+
+
+async def reference_upsert(doc: dict, sha: str) -> tuple[str, bool]:
+    """Insert or replace one reference document. Returns (id, changed): an identical text is not rewritten."""
+    old = await reference_get_key(doc["kind"], doc["code"], doc.get("version", ""))
+    if old and old["sha256"] == sha:
+        return old["id"], False
+    rid = old["id"] if old else str(uuid.uuid4())
+    vals = [doc.get(k, "") for k in _REF_COLS]
+    await pool().execute(
+        """INSERT INTO docengine.reference_docs (id, kind, code, parent, version, title_mk, title_en, effective_date,
+               department, package, source, markdown, sha256)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+           ON CONFLICT (kind, code, version) DO UPDATE SET parent=$4, title_mk=$6, title_en=$7, effective_date=$8,
+               department=$9, package=$10, source=$11, markdown=$12, sha256=$13, updated_at=now()""",
+        rid, *vals, json.dumps(doc.get("source") or {}), doc["markdown"], sha)
+    return rid, True
+
+
+async def reference_set_ragflow(rid: str, ragflow_doc_id: str) -> None:
+    await pool().execute("UPDATE docengine.reference_docs SET ragflow_doc_id=$2, updated_at=now() WHERE id=$1",
+                         rid, ragflow_doc_id)
+
+
+async def reference_list(kind: str = "") -> list[dict]:
+    rows = await pool().fetch(
+        "SELECT id, kind, code, parent, version, title_mk, title_en, effective_date, department, package, source,"
+        "       sha256, ragflow_doc_id, updated_at, length(markdown) AS chars, '' AS markdown"
+        " FROM docengine.reference_docs WHERE ($1 = '' OR kind = $1) ORDER BY code, version", kind)
+    return [_ref_row(r) for r in rows]
+
+
+async def reference_get(rid: str) -> dict | None:
+    r = await pool().fetchrow("SELECT *, length(markdown) AS chars FROM docengine.reference_docs WHERE id=$1", rid)
+    return _ref_row(r, with_text=True) if r else None
+
+
+async def jobs_open_by_code() -> dict[str, list[dict]]:
+    """Workflow jobs not failed, by house-normalised document code (the Library's draft shelf)."""
+    from .house_codes import normalize
+    rows = await pool().fetch(
+        "SELECT id, status, stage, payload->'meta'->>'code' AS code, payload->'meta'->>'title_en' AS title_en,"
+        "       updated_at FROM docengine.jobs"
+        " WHERE kind='workflow' AND status <> 'failed' AND payload->'meta'->>'code' IS NOT NULL"
+        " ORDER BY updated_at DESC")
+    out: dict[str, list[dict]] = {}
+    for r in rows:
+        code = normalize(r["code"]) or r["code"]
+        out.setdefault(code, []).append({"id": str(r["id"]), "status": r["status"], "stage": r["stage"],
+                                         "title_en": r["title_en"] or "", "updated_at": r["updated_at"].isoformat()})
+    return out

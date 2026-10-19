@@ -178,3 +178,20 @@ async def test_the_document_list_tells_controlled_versions_from_copies(dbpool):
     rows = await db.documents_list()
     assert sorted(r["job_id"] is None for r in rows) == [False, True]
     assert next(r for r in rows if r["job_id"])["job_id"] == jid
+
+
+async def test_a_reference_document_is_stored_once_per_kind_code_and_version(dbpool):
+    doc = {"kind": "approved", "code": "QCSOP022", "version": "01", "title_en": "Chemicals", "markdown": "text " * 10,
+           "source": {"name": "QCSOP 022.docx", "drive_id": "abc"}}
+    rid, changed = await db.reference_upsert(doc, "sha-1")
+    assert changed
+    assert await db.reference_upsert(doc, "sha-1") == (rid, False)        # the same text is not rewritten
+    rid2, changed = await db.reference_upsert({**doc, "markdown": "new " * 10}, "sha-2")
+    assert rid2 == rid and changed
+    await db.reference_set_ragflow(rid, "rf-1")
+    row = await db.reference_get(rid)
+    assert row["markdown"].startswith("new") and row["source"]["drive_id"] == "abc" and row["ragflow_doc_id"] == "rf-1"
+    wip, _ = await db.reference_upsert({**doc, "kind": "wip"}, "sha-1")
+    assert wip != rid
+    listed = await db.reference_list("approved")
+    assert [r["id"] for r in listed] == [rid] and "markdown" not in listed[0] and listed[0]["chars"] == 40
