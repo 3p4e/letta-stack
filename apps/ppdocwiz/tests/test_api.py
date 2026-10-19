@@ -371,3 +371,47 @@ def test_the_auth_switch_reads_only_off(monkeypatch):
         assert importlib.reload(config).Settings().auth_off is off
     monkeypatch.delenv("PPDOCWIZ_AUTH")
     importlib.reload(config)
+
+
+def test_the_shared_password_opens_a_session_and_the_key_still_works(client, monkeypatch):
+    """Head of QC, 19.10.2026: a shared password at the sign-in instead of the API key."""
+    monkeypatch.setattr(security, "_fails", {})
+    monkeypatch.setattr(settings, "password_hash", security.hash_password("correct horse battery"))
+    assert client.get("/api/health").json()["login"] == "password"
+    r = client.post("/api/session", json={"key": "correct horse battery"})
+    assert r.status_code == 200 and client.get("/api/doctypes").status_code == 200       # cookie set
+    client.cookies.clear()
+    assert client.post("/api/session", json={"key": "wrong one"}).json()["error"] == "wrong password"
+    assert client.post("/api/session", json={"key": KEY}).status_code == 200             # machines keep the key
+    assert "correct horse battery" not in settings.password_hash                          # only the hash is held
+
+
+def test_failed_sign_ins_are_limited_per_client_and_in_total(client, monkeypatch):
+    monkeypatch.setattr(security, "_fails", {})
+    monkeypatch.setattr(settings, "password_hash", security.hash_password("correct horse battery"))
+    for _ in range(security.FAIL_PER_CLIENT):
+        assert client.post("/api/session", json={"key": "guess"}, headers={"X-Forwarded-For": "6.6.6.6, 1.2.3.4"}).status_code == 401
+    # the limit follows the address Traefik saw (the last entry), not what the caller put in front of it
+    blocked = client.post("/api/session", json={"key": "correct horse battery"}, headers={"X-Forwarded-For": "9.9.9.9, 1.2.3.4"})
+    assert blocked.status_code == 429
+    assert client.post("/api/session", json={"key": "correct horse battery"},
+                       headers={"X-Forwarded-For": "1.2.3.5"}).status_code == 200
+    now = 1_000_000.0
+    monkeypatch.setattr(security, "_fails", {f"10.0.0.{i}": [now] * 9 for i in range(12)})
+    assert security.too_many_failures("10.9.9.9", now=now)                                # 108 in total
+    assert not security.too_many_failures("10.9.9.9", now=now + security.FAIL_WINDOW + 1)
+
+
+def test_the_hash_tool_and_check(monkeypatch):
+    import subprocess
+    import sys
+    from pathlib import Path
+    h = security.hash_password("a fine long password")
+    assert h.startswith("scrypt$") and security.check_password("a fine long password", h)
+    assert not security.check_password("a fine long passwordX", h) and not security.check_password("x", "garbage")
+    tool = Path(security.__file__)
+    out = subprocess.run([sys.executable, str(tool), "hash"], input="a fine long password\n", capture_output=True, text=True,
+                         cwd=tool.parent)
+    assert out.returncode == 0 and security.check_password("a fine long password", out.stdout.strip())
+    short = subprocess.run([sys.executable, str(tool), "hash"], input="short\n", capture_output=True, text=True, cwd=tool.parent)
+    assert short.returncode != 0

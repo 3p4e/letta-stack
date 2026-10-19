@@ -110,6 +110,50 @@ def revoke(value: str, key: str) -> bool:
     return True
 
 
+# ---- shared password (Head of QC, 19.10.2026) ----
+# Unlike a 32-byte random key, a password can be guessed, so failed sign-ins are limited: per client address and in
+# total, over a sliding window. Kept in memory (single worker); a restart forgets them, which only resets the window.
+_SCRYPT = {"n": 2 ** 15, "r": 8, "p": 1}
+FAIL_WINDOW, FAIL_PER_CLIENT, FAIL_TOTAL = 900, 10, 100
+_fails: dict[str, list[float]] = {}
+_FAIL_LOCK = threading.Lock()
+
+
+def hash_password(password: str, salt: bytes | None = None) -> str:
+    salt = salt or secrets.token_bytes(16)
+    d = hashlib.scrypt(password.encode("utf-8"), salt=salt, dklen=32, maxmem=64 * 1024 * 1024, **_SCRYPT)
+    return f"scrypt${_SCRYPT['n']}${_SCRYPT['r']}${_SCRYPT['p']}${salt.hex()}${d.hex()}"
+
+
+def check_password(password: str, stored: str) -> bool:
+    try:
+        kind, n, r, p, salt, digest = (stored or "").split("$")
+        if kind != "scrypt":
+            return False
+        d = hashlib.scrypt(password.encode("utf-8", "surrogateescape"), salt=bytes.fromhex(salt), n=int(n), r=int(r),
+                           p=int(p), dklen=32, maxmem=64 * 1024 * 1024)
+    except (ValueError, TypeError):
+        return False
+    return hmac.compare_digest(d.hex(), digest)
+
+
+def _recent(times: list[float], now: float) -> list[float]:
+    return [t for t in times if now - t < FAIL_WINDOW]
+
+
+def too_many_failures(client: str, now: float | None = None) -> bool:
+    now = now if now is not None else time.time()
+    with _FAIL_LOCK:
+        mine = _fails[client] = _recent(_fails.get(client, []), now)
+        total = sum(len(_recent(v, now)) for v in _fails.values())
+    return len(mine) >= FAIL_PER_CLIENT or total >= FAIL_TOTAL
+
+
+def note_failure(client: str, now: float | None = None) -> None:
+    with _FAIL_LOCK:
+        _fails.setdefault(client, []).append(now if now is not None else time.time())
+
+
 async def require_api_key(x_api_key: str = Header(default=""),
                           ppdocwiz_session: str = Cookie(default="")) -> None:
     if settings.auth_off:
@@ -123,3 +167,14 @@ async def require_api_key(x_api_key: str = Header(default=""),
     if ppdocwiz_session and session_id(ppdocwiz_session, settings.api_key):
         return
     raise HTTPException(status_code=401, detail="bad api key")
+
+
+if __name__ == "__main__":
+    # python3 backend/security.py hash   — reads the password (not echoed) and prints its PPDOCWIZ_PASSWORD_HASH value
+    import getpass
+    import sys
+    if sys.argv[1:] == ["hash"]:
+        pw = sys.stdin.readline().rstrip("\n") if not sys.stdin.isatty() else getpass.getpass("password: ")
+        if len(pw) < 12:
+            sys.exit("a password of at least 12 characters, please")
+        print(hash_password(pw))

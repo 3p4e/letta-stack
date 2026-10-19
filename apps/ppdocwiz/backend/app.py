@@ -83,7 +83,7 @@ class ChatReq(BaseModel):
 
 
 class SessionReq(BaseModel):
-    key: str
+    key: str = Field(max_length=512)      # the shared password or the API key
 
 
 class RawBuildReq(BaseModel):
@@ -146,12 +146,20 @@ def health():
     # The container filesystem path ("suite") used to be returned and is not:
     # this endpoint is reachable without a credential, and the frontend only
     # ever reads .letta and .pdf.
-    return {"ok": True, "auth": not settings.auth_off, "letta": bool(os.environ.get("LETTA_BASE_URL")),
+    return {"ok": True, "auth": not settings.auth_off,
+            "login": "off" if settings.auth_off else "password" if settings.password_hash else "key", "letta": bool(os.environ.get("LETTA_BASE_URL")),
             "pdf": bool(shutil.which("soffice") or os.environ.get("GOTENBERG_URL"))}
 
 
+def _client(request: Request) -> str:
+    """The caller's address as Traefik saw it: the LAST X-Forwarded-For entry is Traefik's own, the earlier ones are
+    whatever the caller sent."""
+    xff = [p.strip() for p in request.headers.get("x-forwarded-for", "").split(",") if p.strip()]
+    return xff[-1] if xff else (request.client.host if request.client else "?")
+
+
 @app.post("/api/session")
-def open_session(r: SessionReq):
+def open_session(r: SessionReq, request: Request):
     """Exchange the API key for an HttpOnly cookie.
 
     This is what lets the browser frontend authenticate at all: its download
@@ -160,8 +168,15 @@ def open_session(r: SessionReq):
     so an XSS in the frontend has no credential to steal."""
     if not settings.api_key:
         return JSONResponse({"ok": False, "error": "not configured"}, status_code=503)
-    if not hmac.compare_digest(r.key.encode("utf-8", "surrogateescape"), settings.api_key.encode()):
-        return JSONResponse({"ok": False, "error": "bad key"}, status_code=401)
+    who = _client(request)
+    if security.too_many_failures(who):
+        return JSONResponse({"ok": False, "error": "too many failed sign-ins; wait 15 minutes"}, status_code=429)
+    # The shared password (when one is set) or the key: either opens a session.
+    ok = bool(settings.password_hash) and security.check_password(r.key, settings.password_hash)
+    if not ok and not hmac.compare_digest(r.key.encode("utf-8", "surrogateescape"), settings.api_key.encode()):
+        security.note_failure(who)
+        return JSONResponse({"ok": False, "error": "wrong password" if settings.password_hash else "bad key"},
+                            status_code=401)
     resp = JSONResponse({"ok": True})
     resp.set_cookie(security.COOKIE, security.issue_session(settings.api_key),
                     httponly=True, samesite="strict",
