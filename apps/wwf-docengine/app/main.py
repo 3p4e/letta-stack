@@ -22,6 +22,7 @@
 #   PATCH /briefs/{id}                    change it: fields (chosen / suggested / locked), meta, package, annexes; rev-checked
 #   GET  /briefs/{id}/events              its full change history
 #   POST /briefs/{id}/sources, DELETE …   upload a .docx/.pdf/.json/.md source (text kept), or remove one
+#   POST /briefs/{id}/suggest             the advisor's options (why + source) for open questions; its pick as suggested
 #   POST /briefs/{id}/build               build from wherever the brief stands; undecided fields listed as assumed
 import asyncio
 import contextlib
@@ -37,7 +38,7 @@ from pydantic import BaseModel, Field
 
 from . import builder, db, engine_env, fleet, glossary, house_codes, library
 from .config import settings
-from .letta import LettaClient
+from .letta import LettaClient, LettaError
 from .pipeline import run_workflow
 from .questionnaires import QUESTIONNAIRES, questionnaire_index
 from .ragflow import ECOA_NOTE, EXAMPLES_NOTE, RagflowClient, RagflowError, corpus_datasets
@@ -563,6 +564,26 @@ async def get_library():
 # ---------- the Document Brief: one workflow (Head of QC, 18.10.2026) ----------
 from . import brief as briefs  # noqa: E402
 from . import sources as srcs  # noqa: E402
+from . import advisor  # noqa: E402
+from .question_rules import guide as _guide  # noqa: E402
+
+
+def _option_value(o) -> str:
+    return str(o["v"]) if isinstance(o, dict) else str(o)
+
+
+def _questions(qname: str) -> dict[str, dict]:
+    """{key: {label, multi, options}} of a question bank, options as their plain values."""
+    return {q["key"]: {"label": (q.get("label") or {}).get("en", q["key"]), "multi": bool(q.get("multi")),
+                       "options": [_option_value(o) for o in q.get("options") or []]}
+            for r in QUESTIONNAIRES[qname]["rounds"] for q in r["questions"]}
+
+
+def _guided(b: dict) -> dict:
+    """The brief as the workflow shows it: with what the answers so far recommend for each question."""
+    b.setdefault("proposals", {})
+    b["guide"] = _guide(b, {k: q["options"] for k, q in _questions(b["questionnaire"]).items()})
+    return b
 
 
 class BriefIn(BaseModel):
@@ -592,6 +613,12 @@ class BriefPatch(BaseModel):
 class SourceIn(BaseModel):
     name: str = Field(min_length=1, max_length=200)
     content_b64: str = Field(min_length=1, max_length=21_000_000)
+    actor: str = ""
+
+
+class SuggestIn(BaseModel):
+    rev: int
+    keys: list[str] = Field(default_factory=list, max_length=20)   # empty: every question not yet decided
     actor: str = ""
 
 
@@ -642,7 +669,7 @@ async def create_brief(body: BriefIn):
         await db.brief_source_add(bid, 0, body.requested_by, {
             "name": f"{seed['code']} v{seed['version'] or '—'} ({label})", "kind": "md", "bytes": len(text.encode()),
             "sha256": seed["sha256"], "text": text})
-    return await db.brief_get(bid)
+    return _guided(await db.brief_get(bid))
 
 
 @app.get("/briefs", dependencies=[Depends(require_api_key)])
@@ -653,7 +680,7 @@ async def list_briefs():
 
 @app.get("/briefs/{bid}", dependencies=[Depends(require_api_key)])
 async def get_brief(bid: str):
-    return await _brief_or_404(bid)
+    return _guided(await _brief_or_404(bid))
 
 
 @app.patch("/briefs/{bid}", dependencies=[Depends(require_api_key)])
@@ -671,7 +698,7 @@ async def patch_brief(bid: str, body: BriefPatch):
         raise HTTPException(e.status, str(e)) from e
     if events and not await db.brief_save(new, b["rev"], events):
         raise HTTPException(409, "the brief changed meanwhile; reload it")
-    return await db.brief_get(bid)
+    return _guided(await db.brief_get(bid))
 
 
 @app.get("/briefs/{bid}/events", dependencies=[Depends(require_api_key)])
@@ -695,7 +722,7 @@ async def add_brief_source(bid: str, body: SourceIn):
     sid = await db.brief_source_add(bid, b["rev"], body.actor, {"name": body.name, "kind": kind, "bytes": len(blob),
                                                                 "sha256": hashlib.sha256(blob).hexdigest(), "text": text})
     note = "" if text.strip() else "no text layer (a scan?): the authors cannot read it"
-    return {"id": sid, "chars": len(text), "note": note, "brief": await db.brief_get(bid)}
+    return {"id": sid, "chars": len(text), "note": note, "brief": _guided(await db.brief_get(bid))}
 
 
 @app.delete("/briefs/{bid}/sources/{sid}", dependencies=[Depends(require_api_key)])
@@ -703,7 +730,38 @@ async def remove_brief_source(bid: str, sid: str, actor: str = ""):
     await _brief_or_404(bid)
     if not _valid_uuid(sid) or not await db.brief_source_remove(bid, sid, actor):
         raise HTTPException(404, "no such source")
-    return await db.brief_get(bid)
+    return _guided(await db.brief_get(bid))
+
+
+@app.post("/briefs/{bid}/suggest", dependencies=[Depends(require_api_key)])
+async def suggest_brief(bid: str, body: SuggestIn):
+    """Ask the advisor for options with reasons and sources for questions of the brief. The options are kept as
+    `proposals`; the advisor's pick goes in as `suggested` only where nothing is decided. A decided or locked answer is
+    never touched."""
+    b = await _brief_or_404(bid)
+    if body.rev != b["rev"]:
+        raise HTTPException(409, f"the brief is at rev {b['rev']}, not {body.rev}; reload it")
+    if not LettaClient().configured:
+        raise HTTPException(503, "Letta unavailable")
+    bank = _questions(b["questionnaire"])
+    bank.update({k: {"label": briefs.TEXT_LABEL[k], "multi": False, "options": []} for k in briefs.TEXT_FIELDS})
+    unknown = [k for k in body.keys if k not in bank]
+    if unknown:
+        raise HTTPException(400, f"not a question of this brief: {', '.join(unknown)}")
+    open_ = {k for k in bank if b["fields"].get(k, {}).get("state", "suggested") == "suggested"}
+    keys = [k for k in (body.keys or bank) if k in open_]
+    if not keys:
+        return {"proposals": {}, "notes": ["every question asked about is already decided"], "brief": _guided(b)}
+    try:
+        res = await advisor.propose(b, {k: bank[k] for k in keys}, await db.brief_sources(bid))
+    except LettaError as e:
+        raise HTTPException(502, f"the advisor failed: {e}") from e
+    props = {k: {**v, "at": briefs.now()} for k, v in res["proposals"].items()}
+    picks = {k: v["pick"] for k, v in props.items() if v["pick"] not in ("", [])}
+    new, events = briefs.apply_patch(b, {"rev": b["rev"], "proposals": props, "suggest": picks}, body.actor or "advisor")
+    if events and not await db.brief_save(new, b["rev"], events):
+        raise HTTPException(409, "the brief changed meanwhile; reload it")
+    return {"proposals": props, "notes": res["notes"], "brief": _guided(await db.brief_get(bid))}
 
 
 _FAMILY_OF = {"sop": "QCSOP", "sop_annexes": "QCSOP", "form": "QCT", "report": "QCT"}

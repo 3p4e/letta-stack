@@ -266,6 +266,17 @@ export function mockApi(onChange?: () => void): MockApi {
       return { id: b.sources[b.sources.length - 1].id, chars: bytes, note: '', brief: structuredClone(b) };
     },
     async removeBriefSource(id, sid) { await wait(20); const b = mockBriefs[id]; b.sources = b.sources.filter(x => x.id !== sid); b.rev += 1; return structuredClone(b); },
+    async suggestBrief(id, rev, keys = []) {
+      await wait(120); const b = mockBriefs[id]; if (rev !== b.rev) throw new ApiError(409, `the brief is at rev ${b.rev}`);
+      const proposals: Record<string, { options: { value: string; why: string; source: string }[]; pick: string }> = {};
+      for (const k of keys.filter(k => !b.fields[k] || b.fields[k].state === 'suggested')) {
+        const value = k.startsWith('doc.') ? `Demo proposal for ${k.slice(4)}` : 'Demo option';
+        proposals[k] = { options: [{ value, why: 'demo mode: no advisor', source: 'house practice' }], pick: value };
+        b.fields[k] = { value, state: 'suggested', stale: false, at: new Date().toISOString(), by: 'advisor' };
+      }
+      b.proposals = { ...(b.proposals || {}), ...proposals }; b.rev += 1;
+      return { proposals, notes: ['demo mode'], brief: structuredClone(b) };
+    },
     async buildBrief(id, rev) {
       await wait(80); const b = mockBriefs[id]; if (rev !== b.rev) throw new ApiError(409, `the brief is at rev ${b.rev}`);
       if (!b.meta.title_en && !b.meta.title_mk) throw new ApiError(400, 'give the document a title before building');
