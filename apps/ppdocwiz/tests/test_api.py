@@ -350,3 +350,98 @@ def test_the_brief_routes_pass_patch_and_delete(client, monkeypatch):
     for method in ("patch", "delete"):
         assert getattr(client, method)("/api/docengine/briefs/x", headers=H).status_code == 502   # forwarded, not 404/405
     assert client.put("/api/docengine/reference", headers=H).status_code == 405                 # operator route stays out
+
+
+def test_auth_off_opens_every_route_and_says_so(client, monkeypatch):
+    """Head of QC, 19.10.2026: no key sign-in for now. PPDOCWIZ_AUTH=off is a switch; the default keeps the gate."""
+    assert client.get("/api/doctypes").status_code == 401            # default: the key is required
+    assert client.get("/api/health").json()["auth"] is True
+    monkeypatch.setattr(settings, "auth_off", True)
+    assert client.get("/api/doctypes").status_code == 200            # no key, no cookie
+    assert client.get("/api/health").json()["auth"] is False
+    monkeypatch.setattr(settings, "api_key", "")                     # even with no key configured
+    assert client.get("/api/doctypes").status_code == 200
+
+
+def test_the_auth_switch_reads_only_off(monkeypatch):
+    import importlib
+    import config
+    for raw, off in (("off", True), (" OFF ", True), ("on", False), ("", False), ("no", False)):
+        monkeypatch.setenv("PPDOCWIZ_AUTH", raw)
+        assert importlib.reload(config).Settings().auth_off is off
+    monkeypatch.delenv("PPDOCWIZ_AUTH")
+    importlib.reload(config)
+
+
+def test_the_shared_password_opens_a_session_and_the_key_still_works(client, monkeypatch):
+    """Head of QC, 19.10.2026: a shared password at the sign-in instead of the API key."""
+    monkeypatch.setattr(security, "_fails", {})
+    monkeypatch.setattr(settings, "password_hash", security.hash_password("correct horse battery"))
+    assert client.get("/api/health").json()["login"] == "password"
+    r = client.post("/api/session", json={"key": "correct horse battery"})
+    assert r.status_code == 200 and client.get("/api/doctypes").status_code == 200       # cookie set
+    client.cookies.clear()
+    assert client.post("/api/session", json={"key": "wrong one"}).json()["error"] == "wrong password"
+    assert client.post("/api/session", json={"key": KEY}).status_code == 200             # machines keep the key
+    assert "correct horse battery" not in settings.password_hash                          # only the hash is held
+
+
+def test_failed_sign_ins_are_limited_per_client_and_in_total(client, monkeypatch):
+    monkeypatch.setattr(security, "_fails", {})
+    monkeypatch.setattr(settings, "password_hash", security.hash_password("correct horse battery"))
+    for _ in range(security.FAIL_PER_CLIENT):
+        assert client.post("/api/session", json={"key": "guess"}, headers={"X-Forwarded-For": "6.6.6.6, 1.2.3.4"}).status_code == 401
+    # the limit follows the address Traefik saw (the last entry), not what the caller put in front of it
+    blocked = client.post("/api/session", json={"key": "correct horse battery"}, headers={"X-Forwarded-For": "9.9.9.9, 1.2.3.4"})
+    assert blocked.status_code == 429
+    assert client.post("/api/session", json={"key": "correct horse battery"},
+                       headers={"X-Forwarded-For": "1.2.3.5"}).status_code == 200
+    now = 1_000_000.0
+    monkeypatch.setattr(security, "_fails", {f"10.0.0.{i}": [now] * 9 for i in range(12)})
+    assert security.too_many_failures("10.9.9.9", now=now)                                # 108 in total
+    assert not security.too_many_failures("10.9.9.9", now=now + security.FAIL_WINDOW + 1)
+
+
+def test_the_hash_tool_and_check(monkeypatch):
+    import subprocess
+    import sys
+    from pathlib import Path
+    h = security.hash_password("a fine long password")
+    assert h.startswith("scrypt$") and security.check_password("a fine long password", h)
+    assert not security.check_password("a fine long passwordX", h) and not security.check_password("x", "garbage")
+    tool = Path(security.__file__)
+    out = subprocess.run([sys.executable, str(tool), "hash"], input="a fine long password\n", capture_output=True, text=True,
+                         cwd=tool.parent)
+    assert out.returncode == 0 and security.check_password("a fine long password", out.stdout.strip())
+    short = subprocess.run([sys.executable, str(tool), "hash"], input="short\n", capture_output=True, text=True, cwd=tool.parent)
+    assert short.returncode != 0
+
+
+def test_the_initial_password_is_changed_at_first_sign_in_and_then_replaced(client, monkeypatch, tmp_path):
+    """Head of QC, 19.10.2026: an initial password, changed at the first sign-in; the new one is kept as a hash."""
+    monkeypatch.setattr(security, "_fails", {})
+    monkeypatch.setattr(security, "PASSWORD_FILE", str(tmp_path / ".ppdocwiz_password"))
+    monkeypatch.setattr(settings, "password_hash", security.hash_password("initial-pass"))
+    r = client.post("/api/session", json={"key": "initial-pass"})
+    assert r.status_code == 200 and r.json()["must_change"] is True
+    assert client.get("/api/password").json() == {"enabled": True, "must_change": True}
+    assert client.post("/api/password", json={"current": "nope", "new": "a long new password"}).status_code == 401
+    assert client.post("/api/password", json={"current": "initial-pass", "new": "short"}).status_code == 422
+    assert client.post("/api/password", json={"current": "initial-pass", "new": "a long new password"}).status_code == 200
+    assert client.get("/api/password").json()["must_change"] is False
+    assert "a long new password" not in (tmp_path / ".ppdocwiz_password").read_text()
+    assert oct((tmp_path / ".ppdocwiz_password").stat().st_mode)[-3:] == "600"
+    client.cookies.clear()
+    assert client.post("/api/session", json={"key": "initial-pass"}).status_code == 401           # the initial one is gone
+    r = client.post("/api/session", json={"key": "a long new password"})
+    assert r.status_code == 200 and r.json()["must_change"] is False
+    client.cookies.clear()
+    assert client.post("/api/password", json={"current": "x", "new": "y" * 20}).status_code == 401  # needs a session
+
+
+def test_a_key_sign_in_is_never_asked_to_change_the_password(client, monkeypatch, tmp_path):
+    monkeypatch.setattr(security, "PASSWORD_FILE", str(tmp_path / ".ppdocwiz_password"))
+    monkeypatch.setattr(settings, "password_hash", "")
+    r = client.post("/api/session", json={"key": KEY})
+    assert r.status_code == 200 and r.json()["must_change"] is False
+    assert client.post("/api/password", json={"current": "a", "new": "b" * 12}).status_code == 409

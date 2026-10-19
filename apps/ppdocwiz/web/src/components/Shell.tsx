@@ -51,6 +51,9 @@ export function Shell({ children }: { children: ReactNode }) {
   // The engine the server reports, not a version number typed into the page.
   const [engine, setEngine] = useState('');
   useEffect(() => { s.api.deHealth().then(h => setEngine((h.engine.match(/canon revision ([\d-]+)/) || [])[1] || '')).catch(() => setEngine('')); }, [s.api]);
+  // No sign-in on this server (PPDOCWIZ_AUTH=off): nothing to sign out of.
+  const [open, setOpen] = useState(false), [pwLogin, setPwLogin] = useState(false), [changing, setChanging] = useState(false);
+  useEffect(() => { s.api.health().then(h => { setOpen(h.auth === false); setPwLogin(h.login === 'password'); }).catch(() => setOpen(false)); }, [s.api]);
   const zoom = Math.min(1, vp.w / 1280, vp.h / 760);
   const crumb = s.screen === 'builder' ? `builder › ${s.bdoc.code || 'untitled'} · ${s.bdoc.status.replace('_', ' ')} v${s.bdoc.version}` : (s.api.mode === 'live' ? LIVE_CRUMB : CRUMB)[s.screen];
   const radius = s.tweaks.createStyle === 'pill' ? 999 : 6;
@@ -82,8 +85,10 @@ export function Shell({ children }: { children: ReactNode }) {
             <div style={{ fontFamily: MONO, fontSize: 10.5, letterSpacing: '.1em', color: T.faint, padding: g === 'c' ? '4px 10px 6px' : '16px 10px 6px' }}>{tr(s.lang, g === 'c' ? 'CREATE' : 'CONTROL')}</div>
             {NAV.filter(n => n[2] === g).map(([k, label]) => <div key={k} onClick={() => s.go(k)} className="pp-nav" style={{ padding: '8px 10px', borderRadius: 6, cursor: 'pointer', background: s.screen === k ? T.selected : 'transparent', color: s.screen === k ? '#fff' : T.secondary, fontWeight: s.screen === k ? 700 : 400 }}>{tr(s.lang, label)}</div>)}
           </div>)}
-          <div style={{ marginTop: 'auto', padding: 10, fontSize: 12, color: T.faint, lineHeight: 1.5 }}>{s.api.mode === 'mock' ? 'Engine 1.6.2' : engine ? `Engine · canon ${engine}` : 'Engine · not reachable'}<br />{s.api.mode === 'mock' ? 'darko.s · QA' : 'session · cookie'}
-            <div onClick={() => s.api.closeSession().then(() => s.set({ authed: false })).catch(e => s.flash(String(e.message)))} style={{ cursor: 'pointer', color: T.muted, marginTop: 4 }}>{tr(s.lang, 'Sign out')}</div></div>
+          <div style={{ marginTop: 'auto', padding: 10, fontSize: 12, color: T.faint, lineHeight: 1.5 }}>{s.api.mode === 'mock' ? 'Engine 1.6.2' : engine ? `Engine · canon ${engine}` : 'Engine · not reachable'}<br />{s.api.mode === 'mock' ? 'darko.s · QA' : open ? 'open access · no sign-in' : 'session · cookie'}
+            {pwLogin && <div onClick={() => setChanging(true)} style={{ cursor: 'pointer', color: T.muted, marginTop: 4 }}>Change password</div>}
+            {changing && <ChangePassword onDone={() => setChanging(false)} />}
+            {!open && <div onClick={() => s.api.closeSession().then(() => s.set({ authed: false })).catch(e => s.flash(String(e.message)))} style={{ cursor: 'pointer', color: T.muted, marginTop: 4 }}>{tr(s.lang, 'Sign out')}</div>}</div>
         </nav>
         <main style={{ flex: 1, minWidth: 0, display: 'flex', minHeight: 0 }}>{children}</main>
       </div>
@@ -105,23 +110,65 @@ export function Shell({ children }: { children: ReactNode }) {
 export function SignIn({ unconfigured }: { unconfigured?: boolean }) {
   const { api, set } = useApp();
   const [key, setKey] = useState(''), [err, setErr] = useState(''), [busy, setBusy] = useState(false);
+  // The server says what it asks for: the shared password (Head of QC, 19.10.2026) or the deployment's API key.
+  const [pw, setPw] = useState(true);
+  useEffect(() => { api.health().then(h => setPw(h.login !== 'key')).catch(() => {}); }, [api]);
   const submit = async () => {
     setBusy(true); setErr('');
     try { await api.openSession(key); set({ authed: true }); }
-    catch (e) { const st = (e as ApiError).status; setErr(st === 401 ? '401 · bad key. The key is the PPDOCWIZ_API_KEY of this deployment.' : st === 503 ? '503 · PP Doc Wiz is not configured: PPDOCWIZ_API_KEY is unset on the server, so every route refuses.' : String((e as Error).message)); }
+    catch (e) {
+      const st = (e as ApiError).status;
+      setErr(st === 401 ? (pw ? 'Wrong password.' : '401 · bad key. The key is the PPDOCWIZ_API_KEY of this deployment.')
+        : st === 429 ? 'Too many failed sign-ins. Wait 15 minutes and try again.'
+        : st === 503 ? '503 · PP Doc Wiz is not configured: PPDOCWIZ_API_KEY is unset on the server, so every route refuses.' : String((e as Error).message));
+    }
     finally { setBusy(false); }
   };
   return (
     <div style={{ height: '100vh', background: T.bg, color: T.text, fontFamily: UI, display: 'grid', placeItems: 'center' }}>
       <div style={{ width: 420, background: T.pane, border: `1px solid ${T.control}`, borderRadius: 12, boxShadow: '0 30px 70px rgba(0,0,0,.55)', padding: '26px 28px', display: 'flex', flexDirection: 'column', gap: 14 }}>
         <span style={{ fontFamily: DISPLAY, fontWeight: 700, letterSpacing: '.06em', color: '#fff', fontSize: 15 }}>PP/SUITE</span>
-        <div style={{ color: T.secondary, fontSize: 13, lineHeight: 1.5 }}>Enter this deployment's API key. It is exchanged once for an HttpOnly session cookie (8 h); the key itself is never stored in the browser.</div>
+        <div style={{ color: T.secondary, fontSize: 13, lineHeight: 1.5 }}>{pw ? 'Enter the password. You stay signed in for 8 hours; the password is never stored in the browser.' : "Enter this deployment's API key. It is exchanged once for an HttpOnly session cookie (8 h); the key itself is never stored in the browser."}</div>
         {unconfigured && <div style={{ background: T.errSurface, border: `1px solid ${T.errBorder}`, borderRadius: 6, padding: '8px 12px', color: T.errText, fontSize: 12.5 }}>503 · server not configured. Set PPDOCWIZ_API_KEY in /opt/stacks/ppdocwiz/.env and restart; until then every gated route refuses.</div>}
-        <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}><span style={{ fontFamily: MONO, fontSize: 11.5, color: T.muted }}>PPDOCWIZ_API_KEY</span>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}><span style={{ fontFamily: MONO, fontSize: 11.5, color: T.muted }}>{pw ? 'Password' : 'PPDOCWIZ_API_KEY'}</span>
           <input type="password" autoFocus value={key} onChange={e => setKey(e.target.value)} onKeyDown={e => e.key === 'Enter' && submit()} style={{ background: T.deeper, border: `1px solid ${err ? C.bad : T.control}`, borderRadius: 6, padding: '9px 11px', color: '#fff', outline: 'none', fontFamily: MONO }} /></label>
         {err && <div style={{ fontFamily: MONO, fontSize: 12, color: C.bad, lineHeight: 1.45 }}>{err}</div>}
-        <button onClick={submit} disabled={busy || !key} style={{ background: key ? T.navy : T.control, color: '#fff', border: 0, borderRadius: 6, padding: 10, font: 'inherit', fontWeight: 700, cursor: 'pointer' }}>{busy ? 'Signing in…' : 'POST /api/session ▸'}</button>
+        <button onClick={submit} disabled={busy || !key} style={{ background: key ? T.navy : T.control, color: '#fff', border: 0, borderRadius: 6, padding: 10, font: 'inherit', fontWeight: 700, cursor: 'pointer' }}>{busy ? 'Signing in…' : pw ? 'Sign in ▸' : 'POST /api/session ▸'}</button>
         <div style={{ fontSize: 11.5, color: T.faint, textAlign: 'center' }}>{api.mode === 'mock' ? 'mock mode: any key works except "bad"' : 'loopback / Traefik only · SameSite=Strict cookie'}</div>
+      </div>
+    </div>);
+}
+
+
+/** Set the shared password: the current one, then a new one of at least 12 characters (stored on the server as a hash).
+ *  `forced` after the first sign-in with the initial password. */
+export function ChangePassword({ forced, onDone }: { forced?: boolean; onDone: () => void }) {
+  const { api, flash } = useApp();
+  const [cur, setCur] = useState(''), [next, setNext] = useState(''), [again, setAgain] = useState('');
+  const [err, setErr] = useState(''), [busy, setBusy] = useState(false);
+  const problem = next && next.length < 12 ? 'At least 12 characters.' : again && next !== again ? 'The two new passwords differ.' : '';
+  const submit = async () => {
+    if (problem || !cur || !next) return;
+    setBusy(true); setErr('');
+    try { await api.changePassword(cur, next); flash('Password changed'); onDone(); }
+    catch (e) { const st = (e as ApiError).status; setErr(st === 401 ? 'The current password is wrong.' : st === 429 ? 'Too many failed attempts. Wait 15 minutes.' : String((e as Error).message)); }
+    finally { setBusy(false); }
+  };
+  const field = (label: string, v: string, on: (x: string) => void, auto = false) =>
+    <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}><span style={{ fontFamily: MONO, fontSize: 11.5, color: T.muted }}>{label}</span>
+      <input type="password" autoFocus={auto} value={v} onChange={e => on(e.target.value)} onKeyDown={e => e.key === 'Enter' && submit()}
+        style={{ background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 6, padding: '9px 11px', color: '#fff', outline: 'none', fontFamily: MONO }} /></label>;
+  return (
+    <div style={{ position: forced ? 'static' : 'fixed', inset: 0, zIndex: 80, height: forced ? '100vh' : undefined, background: forced ? T.bg : 'rgba(0,0,0,.55)', color: T.text, fontFamily: UI, display: 'grid', placeItems: 'center' }}>
+      <div style={{ width: 420, background: T.pane, border: `1px solid ${T.control}`, borderRadius: 12, boxShadow: '0 30px 70px rgba(0,0,0,.55)', padding: '26px 28px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <span style={{ fontFamily: DISPLAY, fontWeight: 700, letterSpacing: '.06em', color: '#fff', fontSize: 15 }}>{forced ? 'Set your own password' : 'Change password'}</span>
+        {forced && <div style={{ color: T.secondary, fontSize: 13, lineHeight: 1.5 }}>You signed in with the initial password. Choose your own before continuing: at least 12 characters (a few unrelated words work well).</div>}
+        {field('Current password', cur, setCur, true)}
+        {field('New password', next, setNext)}
+        {field('New password again', again, setAgain)}
+        {(problem || err) && <div style={{ fontFamily: MONO, fontSize: 12, color: C.bad }}>{problem || err}</div>}
+        <button onClick={submit} disabled={busy || !!problem || !cur || !next || next !== again} style={{ background: T.navy, color: '#fff', border: 0, borderRadius: 6, padding: 10, font: 'inherit', fontWeight: 700, cursor: 'pointer' }}>{busy ? 'Saving…' : 'Set password ▸'}</button>
+        {!forced && <span onClick={onDone} style={{ cursor: 'pointer', color: T.muted, fontSize: 12, textAlign: 'center' }}>Cancel</span>}
       </div>
     </div>);
 }

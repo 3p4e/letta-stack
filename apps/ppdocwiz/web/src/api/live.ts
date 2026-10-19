@@ -43,6 +43,8 @@ export function liveApi(): Api {
   return {
     mode: 'live',
     openSession: async key => { await post('/api/session', { key }); },
+    passwordState: () => call('/api/password'),
+    changePassword: async (current, next) => { await post('/api/password', { current, new: next }); },
     // The server refuses the session from now on, even if the browser kept the cookie (review 14.10.2026).
     closeSession: async () => { await post('/api/session/close', {}); },
     health: () => call('/api/health'),

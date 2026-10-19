@@ -121,6 +121,8 @@ export function mockApi(onChange?: () => void): MockApi {
       authed = true;
     },
     async closeSession() { authed = false; },
+    async passwordState() { await wait(30); return { enabled: true, must_change: false }; },
+    async changePassword(current, next) { await wait(80); if (!current) throw new ApiError(401, 'the current password is wrong'); if (next.length < 12) throw new ApiError(422, 'at least 12 characters'); },
     async health() { await wait(60); return { ok: true, letta: !faults.chatDisabled, pdf: !faults.libreoffice }; },
     async doctypes() { gate(); return [
       { key: 'ANNEX', mk: 'Анекс', en: 'Annex', desc: 'Inline full-page bilingual annex (form / log / checklist / register).', default_orient: 'portrait' },

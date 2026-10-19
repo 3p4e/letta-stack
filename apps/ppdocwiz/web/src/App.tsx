@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ApiError } from './api/types';
-import { Shell, SignIn } from './components/Shell';
+import { ChangePassword, Shell, SignIn } from './components/Shell';
 import { Builder } from './screens/Builder';
 import { Chat } from './screens/Chat';
 import { Fleet } from './screens/Fleet';
@@ -19,6 +19,9 @@ const SCREENS: Record<Screen, () => JSX.Element> = { flow: Workflow, builder: Bu
 export function App() {
   const { authed, api, set, screen } = useApp();
   const [unconfigured, setUnconfigured] = useState(false);
+  // The initial password from the server is changed at the first sign-in (Head of QC, 19.10.2026).
+  const [mustChange, setMustChange] = useState(false);
+  useEffect(() => { if (authed) api.passwordState().then(p => setMustChange(p.must_change)).catch(() => {}); }, [authed, api]);
   useEffect(() => {
     if (authed !== null) return;
     // Probe a gated route: 200 → the cookie is valid; 401 → sign in; 503 → server has no key.
@@ -26,6 +29,7 @@ export function App() {
   }, [authed, api, set]);
   if (authed === null) return <div style={{ height: '100vh', background: '#0f1a26' }} />;
   if (!authed) return <SignIn unconfigured={unconfigured} />;
+  if (mustChange) return <ChangePassword forced onDone={() => setMustChange(false)} />;
   const S = SCREENS[screen];
   return <Shell><S /></Shell>;
 }

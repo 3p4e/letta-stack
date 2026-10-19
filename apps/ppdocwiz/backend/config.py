@@ -21,6 +21,15 @@ class Settings:
     # serving the Letta proxy to anyone who can reach the port.
     api_key: str = os.environ.get("PPDOCWIZ_API_KEY", "")
 
+    # Head of QC, 19.10.2026: no key sign-in for now ("i want a diferent kind of login"); the link alone gives access.
+    # PPDOCWIZ_AUTH=off opens every route; anything else (the default) keeps the key gate. A switch, not a deletion,
+    # so the gate returns — or the new login replaces it — by changing one setting.
+    # Head of QC, 19.10.2026: a shared password instead of the key at the sign-in screen. Stored only as a scrypt
+    # hash (security.hash_password; make it with `python3 backend/security.py hash`). The key still works for machines.
+    password_hash: str = os.environ.get("PPDOCWIZ_PASSWORD_HASH", "")
+
+    auth_off: bool = os.environ.get("PPDOCWIZ_AUTH", "on").strip().lower() == "off"
+
     # Which Letta agent(s) the chat proxy may talk to. This is an ALLOWLIST, not
     # a default: the agent name used to be taken from the request body, so a
     # caller could name any agent on the server and converse with it.
