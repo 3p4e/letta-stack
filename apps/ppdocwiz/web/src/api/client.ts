@@ -34,6 +34,9 @@ export interface Api {
   readonly mode: 'live' | 'mock';
   // ppdocwiz
   openSession(key: string): Promise<void>;
+  /** The shared password (Head of QC, 19.10.2026): whether the initial one is still in use, and changing it. */
+  passwordState(): Promise<{ enabled: boolean; must_change: boolean }>;
+  changePassword(current: string, next: string): Promise<void>;
   closeSession(): Promise<void>;
   health(): Promise<Health>;
   doctypes(): Promise<DoctypeInfo[]>;

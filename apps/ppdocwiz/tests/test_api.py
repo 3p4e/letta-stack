@@ -415,3 +415,33 @@ def test_the_hash_tool_and_check(monkeypatch):
     assert out.returncode == 0 and security.check_password("a fine long password", out.stdout.strip())
     short = subprocess.run([sys.executable, str(tool), "hash"], input="short\n", capture_output=True, text=True, cwd=tool.parent)
     assert short.returncode != 0
+
+
+def test_the_initial_password_is_changed_at_first_sign_in_and_then_replaced(client, monkeypatch, tmp_path):
+    """Head of QC, 19.10.2026: an initial password, changed at the first sign-in; the new one is kept as a hash."""
+    monkeypatch.setattr(security, "_fails", {})
+    monkeypatch.setattr(security, "PASSWORD_FILE", str(tmp_path / ".ppdocwiz_password"))
+    monkeypatch.setattr(settings, "password_hash", security.hash_password("initial-pass"))
+    r = client.post("/api/session", json={"key": "initial-pass"})
+    assert r.status_code == 200 and r.json()["must_change"] is True
+    assert client.get("/api/password").json() == {"enabled": True, "must_change": True}
+    assert client.post("/api/password", json={"current": "nope", "new": "a long new password"}).status_code == 401
+    assert client.post("/api/password", json={"current": "initial-pass", "new": "short"}).status_code == 422
+    assert client.post("/api/password", json={"current": "initial-pass", "new": "a long new password"}).status_code == 200
+    assert client.get("/api/password").json()["must_change"] is False
+    assert "a long new password" not in (tmp_path / ".ppdocwiz_password").read_text()
+    assert oct((tmp_path / ".ppdocwiz_password").stat().st_mode)[-3:] == "600"
+    client.cookies.clear()
+    assert client.post("/api/session", json={"key": "initial-pass"}).status_code == 401           # the initial one is gone
+    r = client.post("/api/session", json={"key": "a long new password"})
+    assert r.status_code == 200 and r.json()["must_change"] is False
+    client.cookies.clear()
+    assert client.post("/api/password", json={"current": "x", "new": "y" * 20}).status_code == 401  # needs a session
+
+
+def test_a_key_sign_in_is_never_asked_to_change_the_password(client, monkeypatch, tmp_path):
+    monkeypatch.setattr(security, "PASSWORD_FILE", str(tmp_path / ".ppdocwiz_password"))
+    monkeypatch.setattr(settings, "password_hash", "")
+    r = client.post("/api/session", json={"key": KEY})
+    assert r.status_code == 200 and r.json()["must_change"] is False
+    assert client.post("/api/password", json={"current": "a", "new": "b" * 12}).status_code == 409

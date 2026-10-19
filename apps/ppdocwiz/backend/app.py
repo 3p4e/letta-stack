@@ -147,7 +147,7 @@ def health():
     # this endpoint is reachable without a credential, and the frontend only
     # ever reads .letta and .pdf.
     return {"ok": True, "auth": not settings.auth_off,
-            "login": "off" if settings.auth_off else "password" if settings.password_hash else "key", "letta": bool(os.environ.get("LETTA_BASE_URL")),
+            "login": "off" if settings.auth_off else "password" if security.current_hash() else "key", "letta": bool(os.environ.get("LETTA_BASE_URL")),
             "pdf": bool(shutil.which("soffice") or os.environ.get("GOTENBERG_URL"))}
 
 
@@ -172,16 +172,48 @@ def open_session(r: SessionReq, request: Request):
     if security.too_many_failures(who):
         return JSONResponse({"ok": False, "error": "too many failed sign-ins; wait 15 minutes"}, status_code=429)
     # The shared password (when one is set) or the key: either opens a session.
-    ok = bool(settings.password_hash) and security.check_password(r.key, settings.password_hash)
+    stored = security.current_hash()
+    ok = bool(stored) and security.check_password(r.key, stored)
     if not ok and not hmac.compare_digest(r.key.encode("utf-8", "surrogateescape"), settings.api_key.encode()):
         security.note_failure(who)
-        return JSONResponse({"ok": False, "error": "wrong password" if settings.password_hash else "bad key"},
+        return JSONResponse({"ok": False, "error": "wrong password" if stored else "bad key"},
                             status_code=401)
-    resp = JSONResponse({"ok": True})
+    resp = JSONResponse({"ok": True, "must_change": ok and security.must_change()})
     resp.set_cookie(security.COOKIE, security.issue_session(settings.api_key),
                     httponly=True, samesite="strict",
                     secure=settings.cookie_secure, max_age=security.SESSION_TTL, path="/")
     return resp
+
+
+class PasswordReq(BaseModel):
+    current: str = Field(max_length=512)
+    new: str = Field(max_length=512)
+
+
+@app.get("/api/password", dependencies=[Depends(security.require_api_key)])
+def password_state():
+    """Whether the initial password is still the one in use (the app then asks for a new one)."""
+    return {"enabled": bool(security.current_hash()), "must_change": security.must_change()}
+
+
+@app.post("/api/password", dependencies=[Depends(security.require_api_key)])
+def change_password(r: PasswordReq, request: Request):
+    """Set the shared password: the current one, then a new one of at least 12 characters. Stored as a hash."""
+    stored = security.current_hash()
+    if not stored:
+        return JSONResponse({"ok": False, "error": "no password sign-in on this server"}, status_code=409)
+    who = _client(request)
+    if security.too_many_failures(who):
+        return JSONResponse({"ok": False, "error": "too many failed attempts; wait 15 minutes"}, status_code=429)
+    if not security.check_password(r.current, stored):
+        security.note_failure(who)
+        return JSONResponse({"ok": False, "error": "the current password is wrong"}, status_code=401)
+    if len(r.new) < security.MIN_PASSWORD:
+        return JSONResponse({"ok": False, "error": f"at least {security.MIN_PASSWORD} characters"}, status_code=422)
+    if r.new == r.current:
+        return JSONResponse({"ok": False, "error": "choose a password different from the current one"}, status_code=422)
+    security.set_password(r.new)
+    return {"ok": True}
 
 
 @app.post("/api/session/close", dependencies=[Depends(security.require_api_key)])

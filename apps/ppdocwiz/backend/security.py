@@ -137,6 +137,33 @@ def check_password(password: str, stored: str) -> bool:
     return hmac.compare_digest(d.hex(), digest)
 
 
+# The password the owner sets in the app replaces the initial one from the environment (Head of QC, 19.10.2026: "initial
+# pass that i will change on first login"). Its hash lives beside the revoked-sessions file, on the data volume.
+PASSWORD_FILE = os.path.join(os.path.dirname(REVOKED_FILE), ".ppdocwiz_password")
+MIN_PASSWORD = 12
+
+
+def current_hash() -> str:
+    try:
+        with open(PASSWORD_FILE, encoding="utf-8") as f:
+            return f.read().strip()
+    except OSError:
+        return settings.password_hash
+
+
+def must_change() -> bool:
+    """True while the initial password from the environment is the one in use."""
+    return bool(settings.password_hash) and not os.path.exists(PASSWORD_FILE)
+
+
+def set_password(new: str) -> None:
+    tmp = PASSWORD_FILE + ".part"
+    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, "w", encoding="utf-8") as f:
+        f.write(hash_password(new))
+    os.replace(tmp, PASSWORD_FILE)
+
+
 def _recent(times: list[float], now: float) -> list[float]:
     return [t for t in times if now - t < FAIL_WINDOW]
 
