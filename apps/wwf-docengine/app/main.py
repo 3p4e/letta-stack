@@ -23,6 +23,8 @@
 #   GET  /briefs/{id}/events              its full change history
 #   POST /briefs/{id}/sources, DELETE …   upload a .docx/.pdf/.json/.md source (text kept), or remove one
 #   POST /briefs/{id}/suggest             the advisor's options (why + source) for open questions; its pick as suggested
+#   GET  /briefs/{id}/package             the latest build and its annexes: status, review, assumed, files
+#   GET  /briefs/{id}/package.pdf         SOP + annexes as one PDF (409 until every member is built)
 #   POST /briefs/{id}/build               build from wherever the brief stands; undecided fields listed as assumed
 import asyncio
 import contextlib
@@ -396,15 +398,25 @@ async def document_pdf(did: str):
     d = await _doc_or_404(did)
     if not settings.gotenberg_url:
         raise HTTPException(503, "PDF renderer unavailable")
+    pdf = await _render_pdf(d["path"], did)
+    return Response(
+        content=pdf, media_type="application/pdf",
+        headers={"Content-Disposition":
+                 f'attachment; filename="{Path(d["path"]).stem}.pdf"'},
+    )
+
+
+async def _render_pdf(path: str, label: str) -> bytes:
+    """A .docx as PDF through the house renderer, refused if it printed substitute fonts (Head of QC, 10.10.2026)."""
     # Read off the event loop. Passing the open file handle to httpx made it
     # do blocking disk reads while streaming the upload, stalling every other
     # request this worker was serving for the duration of a multi-megabyte
     # .docx — the same defect H14 fixed for builder.build, on a path that is
     # hit far more often.
     try:
-        blob = await asyncio.to_thread(Path(d["path"]).read_bytes)
+        blob = await asyncio.to_thread(Path(path).read_bytes)
     except OSError as e:
-        log.warning("PDF conversion: cannot read document %s: %s", did, e)
+        log.warning("PDF conversion: cannot read %s: %s", label, e)
         raise HTTPException(404, "Document file missing") from e
     try:
         auth = (settings.gotenberg_user, settings.gotenberg_password) if settings.gotenberg_user else None
@@ -413,25 +425,20 @@ async def document_pdf(did: str):
                 settings.gotenberg_url + "/forms/libreoffice/convert",
                 # refresh the TOC and other indexes before export (same as pp_render)
                 data={"updateIndexes": "true"},
-                files={"files": (Path(d["path"]).name, blob,
+                files={"files": (Path(path).name, blob,
                                  "application/vnd.openxmlformats-officedocument.wordprocessingml.document")},
             )
     except httpx.HTTPError as e:
-        log.warning("Gotenberg PDF conversion failed for document %s: %s", did, e)
+        log.warning("Gotenberg PDF conversion failed for %s: %s", label, e)
         raise HTTPException(502, "PDF conversion failed") from e
     if r.status_code != 200:
         raise HTTPException(502, "PDF conversion failed")
-    # Head of QC, 10.10.2026: never a PDF with substitute fonts; the renderer must carry the house fonts.
     import pp_assets  # vendored engine (on sys.path via builder)
-    subs = await asyncio.to_thread(pp_assets.font_substitutions, d["path"], r.content)
+    subs = await asyncio.to_thread(pp_assets.font_substitutions, path, r.content)
     if subs:
-        log.warning("PDF for document %s refused: %s", did, "; ".join(subs))
+        log.warning("PDF for %s refused: %s", label, "; ".join(subs))
         raise HTTPException(502, "the renderer printed substitute fonts: " + "; ".join(subs)[:400])
-    return Response(
-        content=r.content, media_type="application/pdf",
-        headers={"Content-Disposition":
-                 f'attachment; filename="{Path(d["path"]).stem}.pdf"'},
-    )
+    return r.content
 
 
 # ---------- engine environment (Fleet & health → Engine environment) ----------
@@ -762,6 +769,65 @@ async def suggest_brief(bid: str, body: SuggestIn):
     if events and not await db.brief_save(new, b["rev"], events):
         raise HTTPException(409, "the brief changed meanwhile; reload it")
     return {"proposals": props, "notes": res["notes"], "brief": _guided(await db.brief_get(bid))}
+
+
+async def _package_members(b: dict) -> list[dict]:
+    from . import package as pkg
+    if not b.get("job_ids"):
+        return []
+    sop_id = b["job_ids"][-1]
+    sop = await db.job_get(sop_id)
+    out = [pkg.member(sop, await _job_doc(sop), sop_id)]
+    started = ((sop or {}).get("result") or {}).get("package_jobs") or []
+    for a in started:
+        j = await db.job_get(a["job_id"])
+        out.append(pkg.member(j, await _job_doc(j), a["job_id"], a.get("code", ""), a.get("title_en", "")))
+    # Annexes the build asked for that have not started yet (they start once the SOP is saved, or did not start).
+    for a in (((sop or {}).get("payload") or {}).get("package_annexes") or [])[len(started):]:
+        err = ((sop or {}).get("result") or {}).get("package_error", "") or \
+            ("the SOP did not finish, so its annexes were not started" if (sop or {}).get("status") in ("failed", None) else "")
+        out.append(pkg.pending(a, err))
+    return out
+
+
+async def _job_doc(job: dict | None) -> dict | None:
+    did = ((job or {}).get("result") or {}).get("document_id")
+    return await db.document_get(did) if did and _valid_uuid(did) else None
+
+
+@app.get("/briefs/{bid}/package", dependencies=[Depends(require_api_key)])
+async def brief_package(bid: str):
+    """The latest build of the brief as one package: the SOP (or the one document) and every annex it started."""
+    from . import package as pkg
+    b = await _brief_or_404(bid)
+    members = await _package_members(b)
+    return {"brief_id": bid, "package": b["package"], "members": [{k: v for k, v in m.items() if k != "file"} | {"has_file": bool(m["file"])}
+                                                                  for m in members], **pkg.summary(members)}
+
+
+@app.get("/briefs/{bid}/package.pdf", dependencies=[Depends(require_api_key)])
+async def brief_package_pdf(bid: str):
+    """The SOP and its annexes, in that order, as one PDF from the house renderer."""
+    from . import package as pkg
+    b = await _brief_or_404(bid)
+    members = await _package_members(b)
+    if not members:
+        raise HTTPException(404, "nothing has been built from this brief yet")
+    waiting = [m["code"] or m["title_en"] or m["job_id"] for m in members if not m["file"]]
+    if waiting:
+        raise HTTPException(409, "not built yet: " + ", ".join(waiting))
+    if not settings.gotenberg_url:
+        raise HTTPException(503, "PDF renderer unavailable")
+    sem = asyncio.Semaphore(3)
+
+    async def one(m):
+        async with sem:
+            return await _render_pdf(m["file"], m["code"])
+    head, annexes = members[0], sorted(members[1:], key=lambda m: m["code"])
+    pdfs = await asyncio.gather(*(one(m) for m in [head, *annexes]))
+    blob = await asyncio.to_thread(pkg.merge, list(pdfs))
+    name = f"{head['code'] or 'package'}_package.pdf"
+    return Response(content=blob, media_type="application/pdf", headers={"Content-Disposition": f'attachment; filename="{name}"'})
 
 
 _FAMILY_OF = {"sop": "QCSOP", "sop_annexes": "QCSOP", "form": "QCT", "report": "QCT"}

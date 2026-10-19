@@ -264,3 +264,85 @@ def test_suggest_keeps_proposals_and_never_overwrites_a_decision(api, monkeypatc
     assert nb["fields"]["focus"] == {**b["fields"]["focus"]}
     assert nb["fields"]["techniques"]["state"] == "suggested" and nb["fields"]["techniques"]["value"] == ["HPLC-DAD"]
     assert nb["proposals"]["techniques"]["options"][0]["source"] == "E1" and nb["rev"] == 2
+
+
+# ---------- phase 4: one package view and one merged PDF ----------
+from app import package as PKG  # noqa: E402
+
+
+def _pdf(pages: int) -> bytes:
+    import io
+    from pypdf import PdfWriter
+    w = PdfWriter()
+    for _ in range(pages):
+        w.add_blank_page(width=595, height=842)
+    out = io.BytesIO()
+    w.write(out)
+    return out.getvalue()
+
+
+def test_the_package_merges_the_sop_then_its_annexes():
+    from pypdf import PdfReader
+    import io
+    assert len(PdfReader(io.BytesIO(PKG.merge([_pdf(3), _pdf(1), _pdf(2)]))).pages) == 6
+
+
+def test_a_package_is_complete_only_when_every_member_is_built(tmp_path):
+    f = tmp_path / "QCSOP026.docx"
+    f.write_bytes(b"x")
+    done = PKG.member({"status": "done", "payload": {"meta": {"code": "QCSOP026"}}, "result": {"document_id": "d"}},
+                      {"path": str(f)}, "j1")
+    review = PKG.member({"status": "awaiting_review", "payload": {"meta": {"code": "QCSOP026A01"}},
+                         "result": {"artifact": {"path": str(f)}, "review_reason": "§6A FIX"}}, None, "j2")
+    running = PKG.member({"status": "running", "stage": "generate", "payload": {"meta": {"code": "QCSOP026A02"}},
+                          "result": {}}, None, "j3")
+    assert done["file"] and review["file"] and not running["file"]
+    s = PKG.summary([done, review, running])
+    assert not s["complete"] and not s["pdf_ready"] and s["running"] == ["QCSOP026A02"]
+    assert s["awaiting_review"] == ["QCSOP026A01"]
+    assert PKG.summary([done, review])["pdf_ready"]
+    assert PKG.member(None, None, "gone")["status"] == "missing"
+    assert PKG.pending({"title_en": "Log"}, "")["status"] == "pending"
+
+
+def test_package_route_lists_the_build_its_annexes_and_merges_them(api, monkeypatch, tmp_path):
+    c, store, _ = api
+    from app import db, main
+    f = tmp_path / "x.docx"
+    f.write_bytes(b"x")
+    jobs = {
+        "33333333-3333-3333-3333-333333333333": {"status": "done", "payload": {"meta": {"code": "QCSOP026"},
+                                                  "package_annexes": [{"title_en": "Log"}, {"title_en": "Checklist"}]},
+                                                  "result": {"document_id": "44444444-4444-4444-4444-444444444444",
+                                                             "package_jobs": [{"code": "QCSOP026A01", "job_id": "a1"}]}},
+        "a1": {"status": "awaiting_review", "payload": {"meta": {"code": "QCSOP026A01", "title_en": "Log"}},
+               "result": {"artifact": {"path": str(f)}}}}
+
+    async def job_get(j):
+        return jobs.get(j)
+
+    async def doc_get(d):
+        return {"path": str(f)}
+
+    rendered = []
+
+    async def render(path, label):
+        rendered.append(label)
+        return _pdf(1)
+    monkeypatch.setattr(db, "job_get", job_get)
+    monkeypatch.setattr(db, "document_get", doc_get)
+    monkeypatch.setattr(main, "_render_pdf", render)
+    monkeypatch.setattr(main.settings, "gotenberg_url", "http://render")
+    b = c.post("/briefs", json={"package": "sop_annexes", "meta": {"title_en": "Sampling"}}, headers=h()).json()
+    assert c.get(f"/briefs/{b['id']}/package", headers=h()).json()["members"] == []
+    store[b["id"]]["job_ids"] = ["33333333-3333-3333-3333-333333333333"]
+    p = c.get(f"/briefs/{b['id']}/package", headers=h()).json()
+    assert [m["code"] or m["title_en"] for m in p["members"]] == ["QCSOP026", "QCSOP026A01", "Checklist"]
+    assert [m["status"] for m in p["members"]] == ["done", "awaiting_review", "pending"]
+    assert not p["complete"] and "file" not in p["members"][0] and p["members"][0]["has_file"]
+    r = c.get(f"/briefs/{b['id']}/package.pdf", headers=h())
+    assert r.status_code == 409 and "Checklist" in r.json()["detail"]
+    jobs["33333333-3333-3333-3333-333333333333"]["payload"]["package_annexes"] = [{"title_en": "Log"}]
+    r = c.get(f"/briefs/{b['id']}/package.pdf", headers=h())
+    assert r.status_code == 200 and r.headers["content-type"] == "application/pdf"
+    assert rendered == ["QCSOP026", "QCSOP026A01"] and 'QCSOP026_package.pdf' in r.headers["content-disposition"]

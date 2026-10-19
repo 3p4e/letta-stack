@@ -277,6 +277,15 @@ export function mockApi(onChange?: () => void): MockApi {
       b.proposals = { ...(b.proposals || {}), ...proposals }; b.rev += 1;
       return { proposals, notes: ['demo mode'], brief: structuredClone(b) };
     },
+    async briefPackage(id) {
+      await wait(30); const b = mockBriefs[id];
+      const sop = b.job_ids.length ? [{ job_id: b.job_ids[b.job_ids.length - 1], code: b.meta.code || 'QCSOP026', title_en: b.meta.title_en || '', status: 'done', stage: 'done', document_id: 'doc-1', has_file: true, review_reason: '', assumed: [], error: '' }] : [];
+      const annexes = sop.length && b.package === 'sop_annexes' ? b.annexes.map((a, i) => ({ job_id: `job-a${i + 1}`, code: `${sop[0].code}A${String(i + 1).padStart(2, '0')}`, title_en: a.title_en, status: i === 0 ? 'awaiting_review' : 'running', stage: i === 0 ? 'format' : 'generate', document_id: null, has_file: i === 0, review_reason: i === 0 ? 'demo: a §6A FIX a person decides' : '', assumed: ['annex content (from the SOP)'], error: '' })) : [];
+      const members = [...sop, ...annexes];
+      return { brief_id: id, package: b.package, members, complete: members.length > 0 && members.every(m => m.has_file), pdf_ready: members.length > 0 && members.every(m => m.has_file),
+        failed: [], running: members.filter(m => m.status === 'running').map(m => m.code), awaiting_review: members.filter(m => m.status === 'awaiting_review').map(m => m.code) };
+    },
+    packagePdfHref: id => `#demo-package-${id}.pdf`,
     async buildBrief(id, rev) {
       await wait(80); const b = mockBriefs[id]; if (rev !== b.rev) throw new ApiError(409, `the brief is at rev ${b.rev}`);
       if (!b.meta.title_en && !b.meta.title_mk) throw new ApiError(400, 'give the document a title before building');

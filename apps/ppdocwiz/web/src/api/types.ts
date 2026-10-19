@@ -91,6 +91,15 @@ export interface BriefGuide {
   questions: Record<string, { recommended: { value: string; because: string[] }[]; depends_on: string[] }>;
   questionnaire_hint: string;
 }
+/** GET /briefs/{id}/package: the latest build of a brief and every annex it started (phase 4). */
+export interface PackageMember {
+  job_id: string; code: string; title_en: string; status: string; stage: string; document_id: string | null;
+  has_file: boolean; review_reason: string; assumed: string[]; error: string;
+}
+export interface BriefPackage {
+  brief_id: string; package: Package; members: PackageMember[]; complete: boolean; pdf_ready: boolean;
+  failed: string[]; running: string[]; awaiting_review: string[];
+}
 export interface BriefSuggestion { proposals: Record<string, BriefProposal>; notes: string[]; brief: Brief }
 export interface BriefPatch {
   rev: number; actor?: string; set?: Record<string, unknown>; suggest?: Record<string, unknown>; lock?: string[]; unlock?: string[];

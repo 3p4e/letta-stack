@@ -6,7 +6,7 @@
 // with a reason and a source for every open question of the page (its pick arrives as suggested, never chosen).
 // DocEngine app/brief.py and app/question_rules.py hold the rules; this screen only shows and edits the brief.
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ApiError, type Brief, type BriefField, type Package, type Questionnaire as Q, type ShelfEntry } from '../api/types';
+import { ApiError, type Brief, type BriefField, type BriefPackage, type Package, type Questionnaire as Q, type ShelfEntry } from '../api/types';
 import { Banner, Caps, Seg } from '../components/ui';
 import { pick } from '../lib/i18n';
 import { usePrimary } from '../lib/usePrimary';
@@ -48,6 +48,7 @@ export function Workflow() {
   const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
   const [suggesting, setSuggesting] = useState(false);
+  const [pkg, setPkg] = useState<BriefPackage | null>(null);
   const [built, setBuilt] = useState<{ job_id: string; code: string; assumed: string[] } | null>(null);
   const [open, setOpen] = useState<{ id: string; label: string }[]>([]);
   const [approved, setApproved] = useState<ShelfEntry[]>([]);
@@ -62,6 +63,16 @@ export function Workflow() {
     api.library().then(l => setApproved([...l.shelves.approved, ...l.shelves.revision].filter(e => e.approved || e.wip.length))).catch(() => {});
   }, [api]);
   useEffect(() => { if (!b) { setBank(null); return; } api.questionnaire(b.questionnaire).then(setBank).catch(() => setBank(null)); }, [api, b?.questionnaire]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // The package this brief built (phase 4): reloaded on the review page every 8 s until every member is built.
+  const builds = b?.job_ids.length || 0;
+  useEffect(() => {
+    if (!b || !builds || page !== 'review') { setPkg(null); return; }
+    let live = true, timer = 0;
+    const load = () => api.briefPackage(b.id).then(p => { if (!live) return; setPkg(p); if (!p.complete && !p.failed.length) timer = window.setTimeout(load, 8000); }).catch(() => {});
+    load();
+    return () => { live = false; window.clearTimeout(timer); };
+  }, [api, b?.id, builds, page]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const adopt = (x: Brief) => { setB(x); setErr(''); try { localStorage.setItem(LS_BRIEF, x.id); } catch { /* */ } };
   const fail = (e: unknown) => { const a = e as ApiError; setErr(`${a.status || ''} ${a.message}`.trim()); if (a.status === 409 && b) api.brief(b.id).then(setB).catch(() => {}); };
@@ -225,6 +236,23 @@ export function Workflow() {
           <span style={{ fontFamily: MONO, color: T.muted }}>{k}</span><span style={{ color: f ? '#fff' : T.faint, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{f ? (Array.isArray(f.value) ? f.value.join(', ') : f.value) : 'not decided → assumed'}</span><Badge f={f} /></div>;
       })}
     </div>
+    {pkg && pkg.members.length > 0 && <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+        <Caps>PACKAGE · {pkg.members.length} {pkg.members.length === 1 ? 'DOCUMENT' : 'DOCUMENTS'}</Caps>
+        <span style={{ fontSize: 12, color: pkg.failed.length ? C.bad : pkg.complete ? C.ok : T.muted }}>
+          {pkg.failed.length ? `failed: ${pkg.failed.join(', ')}` : pkg.complete ? (pkg.awaiting_review.length ? `built · ${pkg.awaiting_review.length} awaiting a person's review` : 'built and registered') : `writing: ${pkg.running.join(', ')}`}</span>
+        {pkg.pdf_ready ? <a href={api.packagePdfHref(pkg.brief_id)} download style={{ marginLeft: 'auto', color: C.run, fontSize: 13 }}>⤓ Package PDF (SOP + annexes)</a>
+          : <span style={{ marginLeft: 'auto', color: T.faint, fontSize: 12 }}>the package PDF is ready when every document is built</span>}
+      </div>
+      <div style={{ border: `1px solid ${T.hair}`, borderRadius: 8 }}>
+        {pkg.members.map((m, i) => <div key={m.job_id || i} style={{ display: 'grid', gridTemplateColumns: '130px minmax(0,1fr) 150px 90px', gap: 10, padding: '7px 12px', borderTop: i ? `1px solid ${T.hair}` : 'none', fontSize: 12.5, alignItems: 'baseline' }}>
+          <b style={{ fontFamily: MONO, color: '#fff' }}>{m.code || '—'}</b>
+          <span style={{ color: T.secondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={[m.review_reason, m.error].filter(Boolean).join(' · ')}>{m.title_en}{(m.review_reason || m.error) && <span style={{ color: m.error && m.status !== 'pending' ? C.bad : C.warn, fontSize: 11.5 }}> · {m.review_reason || m.error}</span>}</span>
+          <span style={{ fontFamily: MONO, fontSize: 11.5, color: m.status === 'done' ? C.ok : m.status === 'awaiting_review' ? C.warn : ['failed', 'missing'].includes(m.status) ? C.bad : T.muted }}>{m.status.replace('_', ' ')}{m.stage && !['done', 'awaiting_review', 'failed'].includes(m.status) ? ` · ${m.stage}` : ''}</span>
+          {m.job_id ? <span onClick={() => go('jobs', { jobSel: m.job_id })} style={{ cursor: 'pointer', color: C.run, fontSize: 12 }}>open job</span> : <span />}
+        </div>)}
+      </div>
+    </div>}
     {built && <Banner kind="ok">{built.code} · job {built.job_id.slice(0, 8)} queued. Assumed: {built.assumed.join(', ') || 'nothing'}. <span onClick={() => go('jobs', { jobSel: built.job_id })} style={{ cursor: 'pointer', textDecoration: 'underline' }}>Open in Jobs</span></Banner>}
   </div>;
 
