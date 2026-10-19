@@ -427,3 +427,22 @@ def test_house_related_route_and_source_roles(client, monkeypatch):
     assert r.status_code == 200 and seen == {"sid": sid, "role": "format", "actor": "c.cekic"}
     r = client.post(f"/briefs/{brief['id']}/sources", headers=h(), json={"name": "a.md", "content_b64": "YQ==", "role": "poem"})
     assert r.status_code == 422
+
+
+def test_a_form_under_an_sop_passes_the_workflow_guard(client, monkeypatch):
+    """Head of QC, 19.10.2026: QCT002 is written to QCSOP001 under its own number; QCSOP026 under QCSOP001 is not."""
+    async def fake_create(kind, payload, by=""):
+        return "00000000-0000-0000-0000-000000000003"
+    monkeypatch.setattr(db, "ready", lambda: True)
+    monkeypatch.setattr(db, "job_create", fake_create)
+    monkeypatch.setattr("app.main.LettaClient", lambda: type("L", (), {"configured": True})())
+
+    async def no_run(jid):
+        return None
+    monkeypatch.setattr("app.main.run_workflow", no_run)
+    ok = client.post("/workflows", headers=h(), json={"questionnaire": "annex_form", "parent_sop": "QCSOP001",
+                                                      "meta": {"title_mk": "б", "title_en": "Request", "code": "QCT002"}})
+    assert ok.status_code == 200
+    bad = client.post("/workflows", headers=h(), json={"questionnaire": "annex_form", "parent_sop": "QCSOP001",
+                                                       "meta": {"title_mk": "б", "title_en": "Request", "code": "QCSOP026"}})
+    assert bad.status_code == 422 and "no annex number" in bad.json()["detail"]

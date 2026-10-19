@@ -592,3 +592,14 @@ def test_wrong_types_in_meta_and_annexes_are_a_400_never_a_500(api):
         B.apply_patch(fresh(), {"rev": 0, "meta": {"department": ["QC"]}})
     with pytest.raises(B.BriefError):
         B.apply_patch(fresh(), {"rev": 0, "annexes": [{"title_mk": {"x": 1}}]})
+
+
+def test_a_house_form_may_belong_to_an_sop_under_its_own_number(api, monkeypatch):
+    """Head of QC, 19.10.2026: QCT002 (Request for analysis) is revised to v03 under QCSOP001 — a form or logbook of an
+    SOP keeps its own family number; only an SOP-family code without an annex number is refused with a parent."""
+    c, store, started = api
+    r = c.post("/briefs", json={"package": "form", "parent_sop": "QCSOP001",
+                                "meta": {"title_en": "Request for sampling and/or analysis", "code": "QCT002", "version": "03"}}, headers=h())
+    assert r.status_code == 200
+    r = c.post(f"/briefs/{r.json()['id']}/build", json={"rev": 0}, headers=h())
+    assert r.status_code == 200 and r.json()["code"] == "QCT002" and started[-1]["parent_sop"] == "QCSOP001"
