@@ -57,9 +57,20 @@ def new_brief(package: str, meta: dict | None = None, questionnaire: str = "", p
     q = questionnaire or DEFAULT_BANK[package]
     if q not in QUESTIONNAIRES:
         raise BriefError("unknown questionnaire")
+    if not fits(package, q):
+        raise BriefError(f"the {q} questions do not fit a {package} package")
     return {"rev": 0, "status": "open", "package": package, "questionnaire": q, "parent_sop": parent_sop,
             "meta": {k: v for k, v in (meta or {}).items() if k in META_KEYS and v}, "fields": {}, "annexes": [],
             "job_ids": [], "proposals": {}}
+
+
+def _is_sop(questionnaire: str) -> bool:
+    return QUESTIONNAIRES[questionnaire]["doctype"] == "SOP"
+
+
+def fits(package: str, questionnaire: str) -> bool:
+    """An SOP package takes an SOP question set; an annex, form or report takes a form one."""
+    return questionnaire in QUESTIONNAIRES and _is_sop(questionnaire) == (package in ("sop", "sop_annexes"))
 
 
 def question_keys(questionnaire: str) -> list[str]:
@@ -148,12 +159,20 @@ def apply_patch(brief: dict, patch: dict, actor: str = "", at: str | None = None
         if b["meta"].get(k, "") != (v or ""):
             ev("meta", k, b["meta"].get(k, ""), v or "")
             b["meta"][k] = v or ""
+    # A package and its question set go together (19.10.2026: an annex brief kept the SOP question set and was
+    # written as a nine-section SOP). Changing the package without naming a set takes that package's set.
+    if patch.get("package") and patch["package"] != b["package"] and "questionnaire" not in patch \
+            and not fits(patch["package"], b["questionnaire"]):
+        patch = {**patch, "questionnaire": DEFAULT_BANK[patch["package"]]}
     for k in ("package", "questionnaire", "parent_sop", "status"):
         if k in patch and patch[k] != b.get(k):
             if k == "package" and patch[k] not in PACKAGES:
                 raise BriefError(f"package must be one of {', '.join(PACKAGES)}")
             if k == "questionnaire" and patch[k] not in QUESTIONNAIRES:
                 raise BriefError("unknown questionnaire")
+            if k == "questionnaire" and not fits(patch.get("package") or b["package"], patch[k]):
+                raise BriefError(f"the {patch[k]} questions are for {'an SOP' if _is_sop(patch[k]) else 'a form'}, "
+                                 f"not for a {patch.get('package') or b['package']} package")
             ev(k, k, b.get(k), patch[k])
             b[k] = patch[k]
     if "annexes" in patch:
@@ -177,6 +196,9 @@ def apply_patch(brief: dict, patch: dict, actor: str = "", at: str | None = None
 def to_workflow(brief: dict, sources: list[dict]) -> dict:
     """The payload POST /workflows takes, from the brief as it stands, with `assumed` naming what was not decided."""
     q, f, meta = brief["questionnaire"], brief["fields"], dict(brief["meta"])
+    if not fits(brief["package"], q):
+        raise BriefError(f"this {brief['package']} brief has the {q} questions; choose the package again to take its "
+                         "own questions before building")
     assumed = []
     if not (meta.get("title_en") or meta.get("title_mk")):
         raise BriefError("give the document a title before building")
