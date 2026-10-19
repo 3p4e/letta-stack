@@ -5,9 +5,9 @@
 These are not style preferences. Each check corresponds to a decision that was
 made deliberately and that a future edit could silently undo:
 
-  1. Classical OCR is never used. The certificates are Macedonian Cyrillic mixed
-     with Latin chemical symbols — the case Tesseract handles worst. Reading is
-     done by the vision chain in AGENT_MODEL_POLICY.md.
+  1. (Lifted 10.10.2026 by the owner.) Any OCR engine may be used — classical or
+     neural, e.g. NVIDIA nemotron-ocr / table-structure / Nemotron Parse — as one
+     read among several. Values still need agreeing reads (ecoa_extraction_agent.json).
   2. Letta is not a RAG engine. No code in this repository may create a Letta
      source; retrieval belongs to RAGFlow.
   3. No credential is ever committed. Keys come from the environment.
@@ -75,29 +75,7 @@ def read(p):
         return ""
 
 
-# ── 1. classical OCR must never be invoked ───────────────────────────────
-# Prose that explains *why* Tesseract is not used is fine and expected; an
-# actual call is not. Match invocation, not mention.
-OCR_CALL = re.compile(
-    r"import\s+pytesseract|from\s+pytesseract\b|pytesseract\s*\.|"
-    r"['\"]tesseract['\"]|['\"]ocrmypdf['\"]|"
-    r"import\s+ocrmypdf|from\s+ocrmypdf\b|"
-    r"(?:subprocess|os\.system|check_output|run)\s*\([^)]*\b(?:tesseract|ocrmypdf)\b",
-    re.I)
-
-
 SELF = os.path.abspath(__file__)
-
-
-def check_no_classical_ocr():
-    for p in walk((".py", ".sh", ".yml", ".yaml", ".toml")):
-        if os.path.abspath(p) == SELF:
-            continue
-        for i, line in enumerate(read(p).splitlines(), 1):
-            if OCR_CALL.search(line):
-                FAIL.append(f"{rel(p)}:{i}: classical OCR invoked — the policy "
-                            f"chain is kimi-k2.6 -> moonshot-v1-128k-vision-preview "
-                            f"-> gpt-4o\n      {line.strip()[:100]}")
 
 
 # ── 2. no code may create a Letta source ─────────────────────────────────
@@ -280,7 +258,6 @@ def check_escaped_innerhtml():
 
 
 CHECKS = [
-    ("classical OCR never invoked", check_no_classical_ocr),
     ("no Letta source creation", check_no_letta_sources),
     ("no committed credentials", check_no_secrets),
     ("all Python parses", check_python_parses),
