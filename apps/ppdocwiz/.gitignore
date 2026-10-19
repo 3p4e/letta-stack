@@ -1,3 +1,6 @@
 # PP Suite frontend: dependencies and the Vite build output (built in the image, see Dockerfile)
 web/node_modules/
 frontend/suite/
+
+# browser-check screenshots never belong in the repository
+/*.png
