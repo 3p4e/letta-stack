@@ -27,6 +27,13 @@ def _configure(tmp_path, monkeypatch):
     # wrong reason.
     monkeypatch.setattr(settings, "cookie_secure", False)
     monkeypatch.setattr(app_mod, "OUT", str(tmp_path))
+    # Accounts, the password file and the sign-in log live in the test's own directory, never in the real data dir.
+    import accounts
+    monkeypatch.setattr(accounts, "USERS_FILE", str(tmp_path / ".ppdocwiz_users.json"))
+    monkeypatch.setattr(accounts, "AUTH_LOG", str(tmp_path / "ppdocwiz_auth.log"))
+    monkeypatch.setattr(security, "PASSWORD_FILE", str(tmp_path / ".ppdocwiz_password"))
+    monkeypatch.setattr(settings, "password_hash", "")
+    monkeypatch.setattr(security, "_fails", {})
 
 
 @pytest.fixture
@@ -286,8 +293,9 @@ def test_an_expired_session_is_refused():
 
 def test_a_tampered_session_is_refused():
     v = security.issue_session(KEY)
-    head, iat, sid, mac = v.split(".")
-    assert security.session_id(f"{head}.{int(iat) + 3600}.{sid}.{mac}", KEY) is None    # extended by hand
+    head, iat, sid, user, mac = v.split(".")
+    assert security.session_id(f"{head}.{int(iat) + 3600}.{sid}.{user}.{mac}", KEY) is None    # extended by hand
+    assert security.session_id(f"{head}.{iat}.{sid}.{'admin'.encode().hex()}.{mac}", KEY) is None  # another user
     assert security.session_id(v, "another-key") is None
 
 
@@ -445,3 +453,81 @@ def test_a_key_sign_in_is_never_asked_to_change_the_password(client, monkeypatch
     r = client.post("/api/session", json={"key": KEY})
     assert r.status_code == 200 and r.json()["must_change"] is False
     assert client.post("/api/password", json={"current": "a", "new": "b" * 12}).status_code == 409
+
+
+# ---------- phase 5: named accounts (Head of QC, 19.10.2026) ----------
+import accounts  # noqa: E402
+
+
+def _sign_in(client, user, pw):
+    client.cookies.clear()
+    return client.post("/api/session", json={"username": user, "key": pw})
+
+
+def test_the_shared_password_becomes_admin_and_admin_adds_people(client, monkeypatch):
+    monkeypatch.setattr(settings, "password_hash", security.hash_password("owner password 1"))
+    accounts.bootstrap()
+    assert accounts.listing()[0]["username"] == "admin" and client.get("/api/health").json()["login"] == "accounts"
+    assert client.post("/api/session", json={"key": "owner password 1"}).status_code == 401      # a username is needed
+    r = _sign_in(client, "admin", "owner password 1")
+    assert r.status_code == 200 and r.json()["user"] == "admin"
+    assert client.get("/api/me").json()["role"] == "admin"
+    r = client.post("/api/users", json={"username": "B.Nikolov", "role": "admin", "temporary_password": "temporary pw 12"})
+    assert r.status_code == 200 and r.json()["username"] == "b.nikolov" and r.json()["must_change"] is True
+    assert client.post("/api/users", json={"username": "b.nikolov", "temporary_password": "temporary pw 12"}).status_code == 422
+    assert client.post("/api/users", json={"username": "x", "temporary_password": "short"}).status_code == 422
+    client.post("/api/users", json={"username": "c.cekic", "role": "user", "temporary_password": "temporary pw 34"})
+    r = _sign_in(client, "c.cekic", "temporary pw 34")
+    assert r.json()["must_change"] is True and client.get("/api/me").json()["must_change"] is True
+    assert client.get("/api/users").status_code == 403                                           # not an admin
+    assert client.post("/api/password", json={"current": "temporary pw 34", "new": "her own password"}).status_code == 200
+    assert client.get("/api/me").json() == {"user": "c.cekic", "role": "user", "must_change": False, "accounts": True}
+    assert _sign_in(client, "c.cekic", "temporary pw 34").status_code == 401
+    assert _sign_in(client, "c.cekic", "her own password").status_code == 200
+
+
+def test_disabling_an_account_ends_its_session_at_once_and_the_last_admin_stays(client, monkeypatch):
+    monkeypatch.setattr(settings, "password_hash", security.hash_password("owner password 1"))
+    accounts.bootstrap()
+    accounts.create("c.cekic", "user", "temporary pw 34", by="admin")
+    _sign_in(client, "c.cekic", "temporary pw 34")
+    assert client.get("/api/doctypes").status_code == 200
+    accounts.update("c.cekic", by="admin", disabled=True)
+    assert client.get("/api/doctypes").status_code == 401                        # the same cookie, refused now
+    with pytest.raises(accounts.AccountError):
+        accounts.update("admin", by="admin", disabled=True)                       # never lock everyone out
+    accounts.update("c.cekic", by="admin", disabled=False, reset_password="new temporary 56")
+    r = _sign_in(client, "c.cekic", "new temporary 56")
+    assert r.status_code == 200 and r.json()["must_change"] is True
+
+
+def test_every_sign_in_and_failure_is_logged_without_the_password(client, monkeypatch):
+    monkeypatch.setattr(settings, "password_hash", security.hash_password("owner password 1"))
+    accounts.bootstrap()
+    _sign_in(client, "admin", "wrong one")
+    _sign_in(client, "admin", "owner password 1")
+    events = client.get("/api/auth-log").json()["events"]
+    assert [e["event"] for e in events[:3]] == ["signed_in", "sign_in_failed", "migrated"]
+    raw = open(accounts.AUTH_LOG, encoding="utf-8").read()
+    assert "owner password 1" not in raw and "wrong one" not in raw
+
+
+def test_the_proxy_names_the_signed_in_person_and_the_browser_cannot(client, monkeypatch):
+    monkeypatch.setattr(settings, "password_hash", security.hash_password("owner password 1"))
+    monkeypatch.setattr(settings, "docengine_url", "http://docengine:8000")
+    accounts.bootstrap()
+    sent = {}
+
+    class Resp:
+        status, headers = 200, {"content-type": "application/json"}
+        def read(self): return b"{}"
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+
+    def fake_urlopen(req, timeout=0):
+        sent.update({k.lower(): v for k, v in req.header_items()})
+        return Resp()
+    monkeypatch.setattr(app_mod.urllib.request, "urlopen", fake_urlopen)
+    _sign_in(client, "admin", "owner password 1")
+    client.get("/api/docengine/briefs", headers={"X-Actor": "someone-else"})
+    assert sent["x-actor"] == "admin"

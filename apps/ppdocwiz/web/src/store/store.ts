@@ -3,13 +3,13 @@ import { create } from 'zustand';
 import type { Api } from '../api/client';
 import { liveApi } from '../api/live';
 import { mockApi } from '../api/mock';
-import type { WizardPayload } from '../api/types';
+import type { Me, WizardPayload } from '../api/types';
 import { SAMPLE_ANNEX } from '../data/samples';
 import { skeleton } from '../lib/newdoc';
 import type { Status } from '../theme';
 
-export type Screen = 'flow' | 'builder' | 'chat' | 'quest' | 'format' | 'report' | 'library' | 'jobs' | 'verify' | 'preview' | 'fleet';
-export const SCREENS: Screen[] = ['flow', 'builder', 'chat', 'quest', 'format', 'report', 'library', 'jobs', 'verify', 'preview', 'fleet'];
+export type Screen = 'flow' | 'builder' | 'chat' | 'quest' | 'format' | 'report' | 'library' | 'jobs' | 'verify' | 'preview' | 'fleet' | 'users';
+export const SCREENS: Screen[] = ['flow', 'builder', 'chat', 'quest', 'format', 'report', 'library', 'jobs', 'verify', 'preview', 'fleet', 'users'];
 
 export interface Sheet {
   doctype: 'SOP' | 'ANNEX' | 'FORM' | 'LOG' | 'CHECKLIST' | 'REPORT';
@@ -40,6 +40,8 @@ export interface AppState {
   dataRev: number;
   screen: Screen;
   authed: boolean | null;
+  /** Who is signed in (named accounts, phase 5); null until known. */
+  me: Me | null;
   tweaks: Tweaks;
   /** The last real build in this session (Builder wizard or Source view). Verify and Preview show it in live mode. */
   lastBuild: LastBuild | null;
@@ -83,6 +85,7 @@ export const useApp = create<AppState>((set, get) => {
     dataRev: 0,
     screen: savedScreen && SCREENS.includes(savedScreen) ? savedScreen : 'jobs',
     authed: mode === 'mock' ? true : null,
+    me: null,
     tweaks,
     // mock opens on the prototype's last-run state; live starts idle until something actually builds
     ...(mode === 'mock' ? { pipe: ['ok', 'ok', 'ok', 'ok'] as Status[], pipeDoc: 'WHSOP_002_A02', pipeMsg: 'RESULT: PASS · 1.84 s' } : { pipe: ['idle', 'idle', 'idle', 'idle'] as Status[], pipeDoc: '—', pipeMsg: 'no build yet' }),

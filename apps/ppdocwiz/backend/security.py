@@ -30,7 +30,7 @@ import tempfile
 import threading
 import time
 
-from fastapi import Cookie, Header, HTTPException
+from fastapi import Cookie, Depends, Header, HTTPException
 
 from config import settings
 
@@ -61,9 +61,10 @@ def _mac(key: str, body: str) -> str:
     return hmac.new(key.encode(), _DERIVE_LABEL + b"|" + body.encode(), hashlib.sha256).hexdigest()
 
 
-def issue_session(key: str, now: float | None = None) -> str:
-    """v2.<issued-at>.<session id>.<signature>: nothing secret in it, and nothing usable without the key."""
-    body = f"v2.{int(now if now is not None else time.time())}.{secrets.token_hex(12)}"
+def issue_session(key: str, now: float | None = None, user: str = "") -> str:
+    """v3.<issued-at>.<session id>.<user, hex>.<signature>: who signed in, signed with the key; nothing secret in it.
+    (v2 had no user; since named accounts every session names one, so a v2 cookie signs in again.)"""
+    body = f"v3.{int(now if now is not None else time.time())}.{secrets.token_hex(12)}.{user.encode().hex()}"
     return f"{body}.{_mac(key, body)}"
 
 
@@ -75,12 +76,24 @@ def _revoked() -> dict:
         return {}
 
 
+def session_info(value: str, key: str, now: float | None = None) -> tuple[str, str] | None:
+    """(session id, user) of a valid, unexpired, not signed-out cookie; None otherwise."""
+    parts = (value or "").split(".")
+    if len(parts) != 5 or parts[0] != "v3":
+        return None
+    sid = session_id(value, key, now)
+    try:
+        return (sid, bytes.fromhex(parts[3]).decode()) if sid else None
+    except ValueError:
+        return None
+
+
 def session_id(value: str, key: str, now: float | None = None) -> str | None:
     """The session id of a valid, unexpired, not signed-out cookie; None otherwise."""
     parts = (value or "").split(".")
-    if len(parts) != 4 or parts[0] != "v2":
+    if len(parts) != 5 or parts[0] != "v3":
         return None
-    body, mac = ".".join(parts[:3]), parts[3]
+    body, mac = ".".join(parts[:4]), parts[4]
     if not hmac.compare_digest(_b(mac), _b(_mac(key, body))):
         return None
     try:
@@ -181,19 +194,42 @@ def note_failure(client: str, now: float | None = None) -> None:
         _fails.setdefault(client, []).append(now if now is not None else time.time())
 
 
-async def require_api_key(x_api_key: str = Header(default=""),
-                          ppdocwiz_session: str = Cookie(default="")) -> None:
+def identity(x_api_key: str, cookie: str) -> str | None:
+    """Who is calling: a named account (from the session), 'api-key' for a machine caller, 'anonymous' when the
+    sign-in is off; None when not signed in. A session whose account was disabled stops working at once."""
     if settings.auth_off:
-        return                       # PPDOCWIZ_AUTH=off: open access by the owner's choice (config.py)
-    if not settings.api_key:
+        return "anonymous"
+    if hmac.compare_digest(_b(x_api_key), _b(settings.api_key)):
+        return "api-key"
+    info = session_info(cookie, settings.api_key) if cookie else None
+    if not info:
+        return None
+    user = info[1]
+    import accounts                                  # late: accounts imports this module
+    if accounts.enabled() and user not in ("shared", "api-key") and not accounts.active(user):
+        return None
+    if accounts.enabled() and user in ("shared",):
+        return None                                  # the shared password ended when named accounts began
+    return user
+
+
+async def require_api_key(x_api_key: str = Header(default=""),
+                          ppdocwiz_session: str = Cookie(default="")) -> str:
+    if not settings.auth_off and not settings.api_key:
         # Unconfigured service refuses every call rather than running open.
         raise HTTPException(status_code=503, detail="PP Doc Wiz not configured")
-    # Bytes, not str: compare_digest raises TypeError on a non-ASCII str, so a crafted header was a 500.
-    if hmac.compare_digest(_b(x_api_key), _b(settings.api_key)):
-        return
-    if ppdocwiz_session and session_id(ppdocwiz_session, settings.api_key):
-        return
-    raise HTTPException(status_code=401, detail="bad api key")
+    who = identity(x_api_key, ppdocwiz_session)
+    if who is None:
+        raise HTTPException(status_code=401, detail="not signed in")
+    return who
+
+
+async def require_admin(who: str = Depends(require_api_key)) -> str:
+    import accounts
+    if who == "api-key" or (accounts.enabled() and (accounts.active(who) or {}).get("role") == "admin") \
+            or (not accounts.enabled() and who in ("shared", "anonymous")):
+        return who
+    raise HTTPException(status_code=403, detail="administrators only")
 
 
 if __name__ == "__main__":

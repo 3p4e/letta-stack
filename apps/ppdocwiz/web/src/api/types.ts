@@ -24,7 +24,11 @@ export interface WizardPayload {
 }
 
 /** `auth: false` when the server runs with PPDOCWIZ_AUTH=off (no sign-in, Head of QC 19.10.2026). */
-export interface Health { ok: boolean; letta: boolean; pdf: boolean; auth?: boolean; login?: 'password' | 'key' | 'off' }
+export interface Health { ok: boolean; letta: boolean; pdf: boolean; auth?: boolean; login?: 'accounts' | 'password' | 'key' | 'off' }
+/** Named accounts (phase 5, Head of QC 19.10.2026). */
+export interface Me { user: string; role: 'admin' | 'user'; must_change: boolean; accounts: boolean }
+export interface Account { username: string; role: 'admin' | 'user'; must_change: boolean; disabled: boolean; created: string; by: string }
+export interface AuthEvent { at: string; event: string; user: string; client: string; by?: string; role?: string; disabled?: boolean; password_reset?: boolean }
 export interface DoctypeInfo { key: string; mk: string; en: string; desc: string; default_orient: string }
 export interface BuildResult {
   ok: boolean; verify: string; doc_id: string; markdown: string;

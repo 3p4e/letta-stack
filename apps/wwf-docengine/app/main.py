@@ -92,6 +92,26 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="GrowFlow DocEngine", version="1.0.0", lifespan=lifespan)
 
+# The signed-in person, as the PP Suite proxy names them (named accounts, Head of QC 19.10.2026). Only a caller holding
+# DOCENGINE_API_KEY reaches these routes, and the proxy sets X-Actor itself from its own session — a browser cannot.
+# Recorded on every brief change, build, suggestion and review; a body's own actor field is used only without it.
+import contextvars  # noqa: E402
+
+_actor: contextvars.ContextVar[str] = contextvars.ContextVar("actor", default="")
+
+
+@app.middleware("http")
+async def _record_actor(request, call_next):
+    token = _actor.set((request.headers.get("x-actor") or "").strip()[:80])
+    try:
+        return await call_next(request)
+    finally:
+        _actor.reset(token)
+
+
+def who(fallback: str = "") -> str:
+    return _actor.get() or fallback
+
 # asyncio.create_task() only holds a WEAK reference to the task it returns —
 # without also keeping a strong reference somewhere, the task can be silently
 # garbage-collected mid-run before it completes (a documented asyncio footgun,
@@ -225,6 +245,7 @@ async def start_workflow(body: WorkflowIn):
         raise HTTPException(503, "DocEngine storage unavailable")
     if not LettaClient().configured:
         raise HTTPException(503, "Letta unavailable")
+    body.requested_by = who(body.requested_by)
     jid = await db.job_create("workflow", body.model_dump(), body.requested_by)
     _fire_and_forget(run_workflow(jid))
     return {"job_id": jid, "status": "queued"}
@@ -271,7 +292,7 @@ async def review_workflow(jid: str, body: ReviewIn):
     if job["status"] == "awaiting_review" and body.decision == "approve" and not (art.get("path") and Path(art["path"]).is_file()):
         raise HTTPException(410, "the built document is missing; return it for revision and re-run")
     from datetime import datetime, timezone
-    review = {"decision": body.decision, "note": body.note.strip(), "by": body.reviewer or job.get("created_by") or "reviewer",
+    review = {"decision": body.decision, "note": body.note.strip(), "by": who(body.reviewer) or job.get("created_by") or "reviewer",
               "at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "qa_verdict": res.get("qa_verdict", "")}
     # Atomic claim: of two simultaneous decisions only one moves the row out of awaiting_review.
     if not await db.job_claim(jid, "awaiting_review", "running" if body.decision == "approve" else "failed"):
@@ -671,6 +692,7 @@ async def create_brief(body: BriefIn):
                              _house_code(body.parent_sop, "parent_sop") if body.parent_sop else (seed or {}).get("parent", ""))
     except briefs.BriefError as e:
         raise HTTPException(e.status, str(e)) from e
+    body.requested_by = who(body.requested_by)
     bid = await db.brief_create(b, body.requested_by)
     if seed:
         text = seed["markdown"]
@@ -702,7 +724,7 @@ async def patch_brief(bid: str, body: BriefPatch):
     if body.parent_sop:
         patch["parent_sop"] = _house_code(body.parent_sop, "parent_sop")
     try:
-        new, events = briefs.apply_patch(b, patch, body.actor)
+        new, events = briefs.apply_patch(b, patch, who(body.actor))
     except briefs.BriefError as e:
         raise HTTPException(e.status, str(e)) from e
     if events and not await db.brief_save(new, b["rev"], events):
@@ -728,7 +750,7 @@ async def add_brief_source(bid: str, body: SourceIn):
         text = await asyncio.to_thread(srcs.extract, body.name, blob)
     except (binascii.Error, ValueError) as e:
         raise HTTPException(400, str(e) if isinstance(e, srcs.SourceError) else "content_b64 is not base64") from e
-    sid = await db.brief_source_add(bid, b["rev"], body.actor, {"name": body.name, "kind": kind, "bytes": len(blob),
+    sid = await db.brief_source_add(bid, b["rev"], who(body.actor), {"name": body.name, "kind": kind, "bytes": len(blob),
                                                                 "sha256": hashlib.sha256(blob).hexdigest(), "text": text})
     if sid is None:
         raise HTTPException(409, f"the brief is not open, or already holds {db.MAX_SOURCES} sources")
@@ -739,7 +761,7 @@ async def add_brief_source(bid: str, body: SourceIn):
 @app.delete("/briefs/{bid}/sources/{sid}", dependencies=[Depends(require_api_key)])
 async def remove_brief_source(bid: str, sid: str, actor: str = ""):
     await _brief_or_404(bid)
-    if not _valid_uuid(sid) or not await db.brief_source_remove(bid, sid, actor):
+    if not _valid_uuid(sid) or not await db.brief_source_remove(bid, sid, who(actor)):
         raise HTTPException(404, "no such source")
     return _guided(await db.brief_get(bid))
 
@@ -777,7 +799,7 @@ async def suggest_brief(bid: str, body: SuggestIn):
         cur = await _brief_or_404(bid)
         try:
             new, events = briefs.apply_patch(cur, {"rev": cur["rev"], "proposals": props, "suggest": picks},
-                                             body.actor or "advisor")
+                                             who(body.actor) or "advisor")
         except briefs.BriefError as e:
             raise HTTPException(e.status, str(e)) from e
         if not events or await db.brief_save(new, cur["rev"], events):
@@ -860,6 +882,7 @@ async def build_brief(bid: str, body: BuildBriefIn):
         raise HTTPException(503, "Letta unavailable")
     if b["status"] != "open":
         raise HTTPException(409, f"the brief is {b['status']}; reopen it to build")
+    body.actor = who(body.actor)
     taken = await db.codes_in_use() - await db.codes_of_brief(bid)     # a rebuild keeps its own number
     if not b["meta"].get("code"):
         try:

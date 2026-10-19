@@ -1,6 +1,6 @@
 import type {
   BuildResult, ChatResult, DeHealth, DocumentRow, DoctypeInfo, Health, Job, Questionnaire,
-  Brief, BriefEvent, BriefPatch, BriefSuggestion, BriefPackage, LibraryShelves, Package, QuestionnaireIndexRow, ReferenceDoc, WizardPayload,
+  Brief, BriefEvent, BriefPatch, BriefSuggestion, BriefPackage, Me, Account, AuthEvent, LibraryShelves, Package, QuestionnaireIndexRow, ReferenceDoc, WizardPayload,
 } from './types';
 
 export interface WorkflowIn {
@@ -33,7 +33,13 @@ export interface DataSet { name: string; columns: string[]; rows: Record<string,
 export interface Api {
   readonly mode: 'live' | 'mock';
   // ppdocwiz
-  openSession(key: string): Promise<void>;
+  openSession(key: string, username?: string): Promise<void>;
+  /** Named accounts: who is signed in; administration (admins only). */
+  me(): Promise<Me>;
+  users(): Promise<Account[]>;
+  addUser(u: { username: string; role: 'admin' | 'user'; temporary_password: string }): Promise<Account>;
+  changeUser(username: string, c: { role?: 'admin' | 'user'; disabled?: boolean; reset_password?: string }): Promise<Account>;
+  authLog(): Promise<AuthEvent[]>;
   /** The shared password (Head of QC, 19.10.2026): whether the initial one is still in use, and changing it. */
   passwordState(): Promise<{ enabled: boolean; must_change: boolean }>;
   changePassword(current: string, next: string): Promise<void>;
