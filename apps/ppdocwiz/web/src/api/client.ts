@@ -1,6 +1,6 @@
 import type {
   BuildResult, ChatResult, DeHealth, DocumentRow, DoctypeInfo, Health, Job, Questionnaire,
-  Brief, BriefEvent, BriefPatch, LibraryShelves, Package, QuestionnaireIndexRow, ReferenceDoc, WizardPayload,
+  Brief, BriefEvent, BriefPatch, BriefSuggestion, LibraryShelves, Package, QuestionnaireIndexRow, ReferenceDoc, WizardPayload,
 } from './types';
 
 export interface WorkflowIn {
@@ -76,6 +76,8 @@ export interface Api {
   briefEvents(id: string): Promise<BriefEvent[]>;
   addBriefSource(id: string, name: string, content_b64: string): Promise<{ id: string; chars: number; note: string; brief: Brief }>;
   removeBriefSource(id: string, sourceId: string): Promise<Brief>;
+  /** The advisor's options with reasons and sources for open questions (all of them when `keys` is empty). */
+  suggestBrief(id: string, rev: number, keys?: string[]): Promise<BriefSuggestion>;
   buildBrief(id: string, rev: number): Promise<{ job_id: string; status: string; code: string; assumed: string[] }>;
   /** DocEngine GET /engine/environment: engine hash vs manifest, renderer font probe, last pp_verify results, fleet drift. */
   engineEnv(): Promise<EngineEnv>;

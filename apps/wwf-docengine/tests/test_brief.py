@@ -195,3 +195,72 @@ def test_package_annexes_start_after_the_sop_and_number_under_it(monkeypatch):
     out = asyncio.run(go())
     assert [o["code"] for o in out] == ["QCSOP011A10", "QCSOP011A11"]     # A01–A09 held by the register and jobs
     assert made[0]["parent_sop"] == "QCSOP011" and made[1]["meta"]["title_en"] == "Дневник" and started == ["job-1", "job-2"]
+
+
+# ---------- phase 3: the questions react to the answers (question_rules) and the advisor proposes (advisor) ----------
+from app import advisor, question_rules as QR  # noqa: E402
+
+
+def test_an_answer_recommends_options_of_later_questions_and_says_why():
+    b, _ = B.apply_patch(fresh(), {"rev": 0, "set": {"focus": "Potency"}})
+    g = QR.guide(b, {"techniques": ["HPLC-DAD", "GC-MS"], "reference_standards": ["CRS", "SST", "Internal"]})
+    assert g["questions"]["techniques"]["recommended"] == [{"value": "HPLC-DAD", "because": ["focus: Potency"]}]
+    assert [r["value"] for r in g["questions"]["reference_standards"]["recommended"]] == ["CRS", "SST"]
+    assert g["questions"]["techniques"]["depends_on"] == ["focus", "sample_types"]
+
+
+def test_a_changed_answer_makes_only_its_dependents_stale_and_never_a_locked_one():
+    b, _ = B.apply_patch(fresh(), {"rev": 0, "set": {"focus": "Potency", "techniques": ["HPLC-DAD"],
+                                                       "acceptance": ["LOD NMT 12 %"], "performer": "QC Analyst"}})
+    b, _ = B.apply_patch(b, {"rev": 1, "lock": ["acceptance"]})
+    b, ev = B.apply_patch(b, {"rev": 2, "set": {"focus": "Contaminants"}})
+    assert b["fields"]["techniques"]["stale"] and not b["fields"]["performer"]["stale"]
+    assert b["fields"]["acceptance"]["state"] == "locked" and not b["fields"]["acceptance"]["stale"]
+    assert [e["key"] for e in ev if e["op"] == "stale"] == ["techniques"]
+
+
+def test_a_transport_title_points_to_the_transport_question_bank():
+    b = B.new_brief("sop", {"title_en": "Transport of bulk cannabis"})
+    assert QR.guide(b, {})["questionnaire_hint"] == "sop_transport"
+    assert QR.guide(B.new_brief("sop", {"title_en": "Sampling"}), {})["questionnaire_hint"] == ""
+
+
+def test_the_advisor_answer_is_kept_to_the_questions_asked():
+    asked = {"techniques": {"label": "Techniques", "multi": True, "options": ["HPLC-DAD"]},
+             "doc.purpose": {"label": "Purpose", "multi": False, "options": []}}
+    raw = {"proposals": [
+        {"key": "techniques", "options": [{"value": "GC-MS", "why": "terpenes", "source": "E1"}, {"value": ""}],
+         "pick": ["GC-MS", "invented"]},
+        {"key": "doc.purpose", "options": [{"value": "To define sampling", "why": "x"}], "pick": "not offered"},
+        {"key": "made_up", "options": [{"value": "x"}]}]}
+    out = advisor.clean(raw, asked)
+    assert set(out) == {"techniques", "doc.purpose"}
+    assert out["techniques"] == {"options": [{"value": "GC-MS", "why": "terpenes", "source": "E1"}], "pick": ["GC-MS"]}
+    assert out["doc.purpose"]["pick"] == "" and out["doc.purpose"]["options"][0]["source"] == "house practice"
+    assert advisor._first_json('Here: ```json\n{"proposals": []}\n```') == {"proposals": []}
+    text = advisor.prompt(fresh(), asked, "[E1] house", "[R1] reg", [{"name": "a.md", "text": "src"}])
+    assert "techniques: Techniques (several may be chosen)" in text and "SOURCE FILE «a.md»" in text
+
+
+def test_suggest_keeps_proposals_and_never_overwrites_a_decision(api, monkeypatch):
+    c, store, _ = api
+    seen = {}
+
+    async def fake(brief, asked, sources, client=None, rag=None):
+        seen["asked"] = set(asked)
+        return {"proposals": {k: {"options": [{"value": "HPLC-DAD", "why": "potency", "source": "E1"}],
+                                  "pick": ["HPLC-DAD"] if asked[k]["multi"] else "HPLC-DAD"} for k in asked},
+                "notes": []}
+    monkeypatch.setattr(advisor, "propose", fake)
+    b = c.post("/briefs", json={"package": "sop", "meta": {"title_en": "Potency"}}, headers=h()).json()
+    assert "guide" in b and b["proposals"] == {}
+    b = c.patch(f"/briefs/{b['id']}", json={"rev": 0, "set": {"focus": "Potency"}}, headers=h()).json()
+    assert b["guide"]["questions"]["techniques"]["recommended"][0]["value"] == "HPLC-DAD"
+    assert c.post(f"/briefs/{b['id']}/suggest", json={"rev": 0}, headers=h()).status_code == 409
+    assert c.post(f"/briefs/{b['id']}/suggest", json={"rev": 1, "keys": ["nope"]}, headers=h()).status_code == 400
+    r = c.post(f"/briefs/{b['id']}/suggest", json={"rev": 1, "keys": ["focus", "techniques"]}, headers=h()).json()
+    assert seen["asked"] == {"techniques"}                     # focus is decided: not asked about
+    nb = r["brief"]
+    assert nb["fields"]["focus"] == {**b["fields"]["focus"]}
+    assert nb["fields"]["techniques"]["state"] == "suggested" and nb["fields"]["techniques"]["value"] == ["HPLC-DAD"]
+    assert nb["proposals"]["techniques"]["options"][0]["source"] == "E1" and nb["rev"] == 2

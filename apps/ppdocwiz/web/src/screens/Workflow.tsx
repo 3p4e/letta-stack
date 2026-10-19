@@ -1,8 +1,11 @@
 // The one workflow (Head of QC, 18.10.2026): a Document Brief edited page by page, saved on every answer, with every
 // field suggested / chosen / locked, a scope change marking decided answers stale, sources uploaded on any page and
 // "Build now" on every page — the authors fill what is not decided and the job lists it as assumed.
-// DocEngine app/brief.py holds the rules; this screen only shows and edits the brief.
-import { useEffect, useMemo, useRef, useState } from 'react';
+// The questions react to the answers: an answer marks the options of later questions it recommends (and says which
+// answer led there), a changed answer makes its dependents stale, and "Suggest options" asks the advisor for options
+// with a reason and a source for every open question of the page (its pick arrives as suggested, never chosen).
+// DocEngine app/brief.py and app/question_rules.py hold the rules; this screen only shows and edits the brief.
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ApiError, type Brief, type BriefField, type Package, type Questionnaire as Q, type ShelfEntry } from '../api/types';
 import { Banner, Caps, Seg } from '../components/ui';
 import { pick } from '../lib/i18n';
@@ -44,6 +47,7 @@ export function Workflow() {
   const [bank, setBank] = useState<Q | null>(null);
   const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
+  const [suggesting, setSuggesting] = useState(false);
   const [built, setBuilt] = useState<{ job_id: string; code: string; assumed: string[] } | null>(null);
   const [open, setOpen] = useState<{ id: string; label: string }[]>([]);
   const [approved, setApproved] = useState<ShelfEntry[]>([]);
@@ -82,6 +86,12 @@ export function Workflow() {
       try { const r = await api.addBriefSource(b.id, f.name, await toB64(f)); adopt(r.brief); if (r.note) flash(`${f.name}: ${r.note}`); } catch (e) { fail(e); }
     }
   };
+  const suggest = async (keys: string[]) => {
+    if (!b || suggesting) return;
+    setSuggesting(true);
+    try { const r = await api.suggestBrief(b.id, b.rev, keys); adopt(r.brief); if (r.notes.length) flash(r.notes.join(' · ')); }
+    catch (e) { fail(e); } finally { setSuggesting(false); }
+  };
   usePrimary(busy ? 'Building…' : 'Build now ▸', build, !b || busy || !(b.meta.title_en || b.meta.title_mk));
 
   const rounds = bank?.rounds || [];
@@ -109,14 +119,24 @@ export function Workflow() {
     return <span onClick={() => patch(f.state === 'locked' ? { unlock: [key] } : { lock: [key] })} title={f.state === 'locked' ? 'unlock to change' : 'lock: nothing overwrites it'}
       style={{ cursor: 'pointer', fontSize: 11.5, color: f.state === 'locked' ? C.warn : T.muted, border: `1px solid ${T.control}`, borderRadius: 4, padding: '1px 7px' }}>{f.state === 'locked' ? '🔒 locked' : 'lock'}</span>;
   };
+  const acceptBtn = (key: string) => {
+    const f = b?.fields[key];
+    if (!f || f.state !== 'suggested') return null;
+    return <span onClick={() => patch({ set: { [key]: f.value } })} title={`suggested by ${f.by || 'an agent'}: accept it as your answer`} style={{ cursor: 'pointer', fontSize: 11.5, color: C.ok }}>accept</span>;
+  };
+  const why = (o: { why: string; source: string }) => `${o.why}${o.why ? ' — ' : ''}${o.source}`;
   const textField = ([key, label, ph]: [string, string, string]) => {
     const f = b?.fields[key], cur = drafts[key] ?? (f ? String(f.value) : ''), locked = f?.state === 'locked';
     const save = () => { if (drafts[key] === undefined) return; const v = drafts[key].trim(); setDrafts(d => { const n = { ...d }; delete n[key]; return n; }); if (v !== (f ? String(f.value) : '')) patch({ set: { [key]: v } }); };
     return <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
       <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}><span style={{ fontSize: 13, color: '#fff' }}>{label}</span><Badge f={f} />{lockBtn(key)}
+        {acceptBtn(key)}
         {f?.stale && <span onClick={() => patch({ set: { [key]: f.value } })} style={{ cursor: 'pointer', fontSize: 11.5, color: C.bad }}>re-confirm</span>}</div>
       <textarea value={cur} disabled={locked} placeholder={ph} onChange={e => setDrafts(d => ({ ...d, [key]: e.target.value }))} onBlur={save} rows={4}
         style={{ background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 6, padding: 10, color: locked ? T.muted : '#fff', fontSize: 13, resize: 'vertical', outline: 'none' }} />
+      {!locked && (b?.proposals?.[key]?.options || []).filter(o => o.value !== cur).map(o => <div key={o.value} style={{ display: 'flex', gap: 8, fontSize: 12, alignItems: 'baseline' }}>
+        <span onClick={() => patch({ set: { [key]: o.value } })} style={{ cursor: 'pointer', color: C.run, flex: 'none' }}>use</span>
+        <span style={{ color: T.secondary }}>{o.value}</span><span style={{ color: T.faint, fontSize: 11 }}>{why(o)}</span></div>)}
     </div>;
   };
 
@@ -159,11 +179,22 @@ export function Workflow() {
           const next = q.multi ? (Array.isArray(val) ? (val.includes(v) ? val.filter(x => x !== v) : [...val, v]) : [v]) : (val === v ? '' : v);
           patch({ set: { [q.key]: next } });
         };
+        const g = b.guide?.questions[q.key], rec = new Map((g?.recommended || []).map(r => [r.value, r.because]));
+        const offered = new Set(q.options.map(o => o.v));
+        const prop = new Map((b.proposals?.[q.key]?.options || []).map(o => [o.value, o]));
+        const extra = [...prop.values()].filter(o => !offered.has(o.value));
+        const chip = (v: string, note: React.ReactNode, title: string) => <span key={v} onClick={() => toggle(v)} title={title} style={{ cursor: locked ? 'not-allowed' : 'pointer', padding: '5px 10px', borderRadius: 5, fontSize: 12.5, border: `1px solid ${has(v) ? C.ok : rec.has(v) ? C.run : T.control}`, background: has(v) ? 'rgba(80,170,120,.14)' : 'transparent', color: has(v) ? '#fff' : T.secondary }}>{v}{note}</span>;
         return <div key={q.key} style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}><span style={{ fontSize: 13, color: '#fff' }}>{pick(lang, q)[0]}</span><span style={{ fontSize: 11.5, color: T.muted }}>{pick(lang, q)[1]}</span><Badge f={f} />{lockBtn(q.key)}
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}><span style={{ fontSize: 13, color: '#fff' }}>{pick(lang, q)[0]}</span><span style={{ fontSize: 11.5, color: T.muted }}>{pick(lang, q)[1]}</span><Badge f={f} />{lockBtn(q.key)}{acceptBtn(q.key)}
             {f?.stale && <span onClick={() => patch({ set: { [q.key]: f.value } })} style={{ cursor: 'pointer', fontSize: 11.5, color: C.bad }}>re-confirm</span>}</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>{q.options.map(o => <span key={o.v} onClick={() => toggle(o.v)} style={{ cursor: locked ? 'not-allowed' : 'pointer', padding: '5px 10px', borderRadius: 5, fontSize: 12.5, border: `1px solid ${has(o.v) ? C.ok : T.control}`, background: has(o.v) ? 'rgba(80,170,120,.14)' : 'transparent', color: has(o.v) ? '#fff' : T.secondary }}>
-            {o.v}{o.isDefault && !f && <span style={{ color: C.ok, fontSize: 10, marginLeft: 5 }}>default</span>}</span>)}</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>{q.options.map(o => chip(o.v, <>
+            {o.isDefault && !f && <span style={{ color: C.ok, fontSize: 10, marginLeft: 5 }}>default</span>}
+            {rec.has(o.v) && <span style={{ color: C.run, fontSize: 10, marginLeft: 5 }}>recommended</span>}
+            {prop.has(o.v) && <span style={{ color: C.warn, fontSize: 10, marginLeft: 5 }}>advisor</span>}</>,
+            [rec.has(o.v) ? `recommended because ${rec.get(o.v)!.join('; ')}` : '', prop.has(o.v) ? `advisor: ${why(prop.get(o.v)!)}` : ''].filter(Boolean).join('\n')))}
+            {extra.map(o => chip(o.value, <span style={{ color: C.warn, fontSize: 10, marginLeft: 5 }}>advisor</span>, `advisor: ${why(o)}`))}</div>
+          {extra.length > 0 && <div style={{ fontSize: 11, color: T.faint }}>{extra.map(o => `${o.value}: ${why(o)}`).join(' · ')}</div>}
+          {g && g.depends_on.length > 0 && <div style={{ fontSize: 11, color: T.faint }}>rests on {g.depends_on.join(', ')}: a change there asks you to re-confirm this</div>}
         </div>;
       })}
       <div style={{ fontSize: 12, color: T.faint }}>An unanswered question takes its default at build and is listed as assumed.</div>
@@ -211,6 +242,10 @@ export function Workflow() {
       {b && <div style={{ display: 'flex', gap: 12, alignItems: 'baseline', fontFamily: MONO, fontSize: 12, color: T.muted }}>
         <b style={{ color: '#fff' }}>{b.meta.code || 'code at build'}</b><span>{b.meta.title_en || b.meta.title_mk || 'untitled'}</span><span>· {b.package} · rev {b.rev}</span>
         <span onClick={() => { try { localStorage.removeItem(LS_BRIEF); } catch { /* */ } setB(null); setPage('start'); setBuilt(null); }} style={{ marginLeft: 'auto', cursor: 'pointer' }}>close brief</span></div>}
+      {b?.guide?.questionnaire_hint && b.guide.questionnaire_hint !== b.questionnaire && <Banner kind="info">The title or scope points to the <b>{b.guide.questionnaire_hint}</b> questions. <span onClick={() => patch({ questionnaire: b.guide!.questionnaire_hint })} style={{ cursor: 'pointer', textDecoration: 'underline' }}>Use them</span> (answers to the current ones stay in the history).</Banner>}
+      {b && fieldsOf(page).length > 0 && <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+        <span onClick={() => suggest(fieldsOf(page))} style={{ cursor: suggesting ? 'wait' : 'pointer', color: C.run, fontSize: 13 }}>{suggesting ? 'Asking the advisor…' : '✦ Suggest options for this page'}</span>
+        <span style={{ fontSize: 11.5, color: T.faint }}>from the approved house documents, the regulations and your sources; decided answers are left alone</span></div>}
       {body}
       {b && idx > 0 && <div style={{ display: 'flex', gap: 10, marginTop: 'auto', paddingTop: 10 }}>
         <span onClick={() => setPage(pages[idx - 1][0])} style={{ cursor: 'pointer', color: T.secondary, fontSize: 13 }}>‹ {pages[idx - 1][1]}</span>

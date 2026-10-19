@@ -80,6 +80,7 @@ export function liveApi(): Api {
     briefEvents: async id => (await call<{ events: never[] }>(de + '/briefs/' + encodeURIComponent(id) + '/events')).events,
     addBriefSource: (id, name, content_b64) => post(de + '/briefs/' + encodeURIComponent(id) + '/sources', { name, content_b64 }),
     removeBriefSource: (id, sid) => send(de + '/briefs/' + encodeURIComponent(id) + '/sources/' + encodeURIComponent(sid), 'DELETE'),
+    suggestBrief: (id, rev, keys = []) => post(de + '/briefs/' + encodeURIComponent(id) + '/suggest', { rev, keys }),
     buildBrief: async (id, rev) => { const r = await post<{ job_id: string; status: string; code: string; assumed: string[] }>(de + '/briefs/' + encodeURIComponent(id) + '/build', { rev }); rememberJob(r.job_id); return r; },
     reference: id => call(de + '/reference/' + encodeURIComponent(id)),
     nextCode: async q => (await call<{ code: string }>(de + '/register/next?' + new URLSearchParams(q.parent ? { parent: q.parent } : { family: q.family || '' }))).code,

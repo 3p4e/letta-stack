@@ -56,7 +56,7 @@ def new_brief(package: str, meta: dict | None = None, questionnaire: str = "", p
         raise BriefError("unknown questionnaire")
     return {"rev": 0, "status": "open", "package": package, "questionnaire": q, "parent_sop": parent_sop,
             "meta": {k: v for k, v in (meta or {}).items() if k in META_KEYS and v}, "fields": {}, "annexes": [],
-            "job_ids": []}
+            "job_ids": [], "proposals": {}}
 
 
 def question_keys(questionnaire: str) -> list[str]:
@@ -67,7 +67,8 @@ def apply_patch(brief: dict, patch: dict, actor: str = "", at: str | None = None
     """The brief after `patch`, and one event per change. Raises BriefConflict on an old rev or a locked field.
 
     patch: {rev, set: {key: value | None}, suggest: {key: value}, lock: [keys], unlock: [keys], meta: {..},
-            package, questionnaire, parent_sop, annexes: [{title_en, title_mk, kind}], status}"""
+            package, questionnaire, parent_sop, annexes: [{title_en, title_mk, kind}], status,
+            proposals: {key: {options: [{value, why, source}], pick}}}  (the advisor's, kept beside the fields)"""
     if brief["status"] != "open" and patch.get("status") != "open":
         raise BriefConflict(f"the brief is {brief['status']}; reopen it to change it")
     if patch.get("rev") != brief["rev"]:
@@ -83,7 +84,7 @@ def apply_patch(brief: dict, patch: dict, actor: str = "", at: str | None = None
         if f and f["state"] == "locked":
             f["state"] = "chosen"
             ev("unlock", key, "locked", "chosen")
-    core_changed = False
+    core_changed, changed = False, []
     for key, value in (patch.get("set") or {}).items():
         f = b["fields"].get(key)
         if f and f["state"] == "locked":
@@ -94,12 +95,15 @@ def apply_patch(brief: dict, patch: dict, actor: str = "", at: str | None = None
                 del b["fields"][key]
                 ev("clear", key, before, None)
                 core_changed |= key in CORE
+                changed.append(key)
             continue
         if f and f["value"] == value and f["state"] == "chosen" and not f.get("stale"):
             continue
         b["fields"][key] = {"value": value, "state": "chosen", "stale": False, "at": at, "by": actor}
         ev("set", key, before, value)
         core_changed |= key in CORE and before != value
+        if before != value:
+            changed.append(key)
     for key, value in (patch.get("suggest") or {}).items():
         f = b["fields"].get(key)
         if f and f["state"] != "suggested":
@@ -113,12 +117,18 @@ def apply_patch(brief: dict, patch: dict, actor: str = "", at: str | None = None
         if f["state"] != "locked":
             ev("lock", key, f["state"], "locked")
             f.update(state="locked", stale=False)
-    if core_changed:
-        just_set = set(patch.get("set") or {})
-        for key, f in b["fields"].items():
-            if key not in CORE and key not in just_set and f["state"] == "chosen" and not f.get("stale"):
-                f["stale"] = True
-                ev("stale", key, False, True)
+    # A decided answer rests on what was decided before it: a change to purpose, scope or use touches every one, a
+    # change to an answer touches the answers that depend on it (question_rules.DEPENDS). Locked ones are never touched.
+    from .question_rules import dependents
+    just_set = set(patch.get("set") or {})
+    touched = {k for k in b["fields"] if k not in CORE} if core_changed else set()
+    for k in changed:
+        touched |= set(dependents(b["questionnaire"], k))
+    for key in sorted(touched - just_set):
+        f = b["fields"].get(key)
+        if f and f["state"] == "chosen" and not f.get("stale"):
+            f["stale"] = True
+            ev("stale", key, False, True)
     for k, v in (patch.get("meta") or {}).items():
         if k not in META_KEYS:
             raise BriefError(f"meta.{k} is not a brief field")
@@ -141,6 +151,11 @@ def apply_patch(brief: dict, patch: dict, actor: str = "", at: str | None = None
         if annexes != b["annexes"]:
             ev("annexes", "annexes", b["annexes"], annexes)
             b["annexes"] = annexes
+    for key, p in (patch.get("proposals") or {}).items():
+        b.setdefault("proposals", {})
+        if b["proposals"].get(key) != p:
+            ev("propose", key, b["proposals"].get(key), p)
+            b["proposals"][key] = p
     if events:
         b["rev"] += 1
     return b, events

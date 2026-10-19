@@ -81,7 +81,17 @@ export interface Brief {
   id: string; rev: number; status: string; package: Package; questionnaire: string; parent_sop: string;
   meta: Record<string, string>; fields: Record<string, BriefField>; annexes: BriefAnnex[]; job_ids: string[];
   sources: BriefSource[]; updated_at: string;
+  /** The advisor's options, each with why and source (POST /briefs/{id}/suggest); never a decision. */
+  proposals?: Record<string, BriefProposal>;
+  /** What the answers so far recommend for each question (DocEngine app/question_rules.py). */
+  guide?: BriefGuide;
 }
+export interface BriefProposal { options: { value: string; why: string; source: string }[]; pick: string | string[]; at?: string }
+export interface BriefGuide {
+  questions: Record<string, { recommended: { value: string; because: string[] }[]; depends_on: string[] }>;
+  questionnaire_hint: string;
+}
+export interface BriefSuggestion { proposals: Record<string, BriefProposal>; notes: string[]; brief: Brief }
 export interface BriefPatch {
   rev: number; actor?: string; set?: Record<string, unknown>; suggest?: Record<string, unknown>; lock?: string[]; unlock?: string[];
   meta?: Record<string, string>; package?: Package; questionnaire?: string; parent_sop?: string; annexes?: BriefAnnex[];
