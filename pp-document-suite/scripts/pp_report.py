@@ -49,50 +49,110 @@ def _repeat_header(tbl, n=1):
         if trPr.find(qn('w:tblHeader')) is None:
             e=OxmlElement('w:tblHeader'); e.set(qn('w:val'),'true'); trPr.append(e)
 
+_TICK_HDR=re.compile(r'^(да|не|yes|no|n/?a|н/?п|ok|✓|✔|☐|☒|\+|−|-)$')
+_ORD_HDR=re.compile(r'^(№|no\.?|nr\.?|#|бр\.?|р\.\s?бр\.?|ред\.?\s?бр\.?|n|i)$')
+_SUM_ROW=re.compile(r'^\s*(вкупно|збир|просек|средна|total|sum|mean|average|σ|∑)\b', re.I)
+_BOX=re.compile(r'^[☐☒✓✔\s/]+$')
+_PLACEHOLDER=re.compile(r'^[\s\[\]_.…/\-—–]*$')
+_SHORT_CODE=re.compile(r'^[A-Za-zА-Яа-я]{0,3}[-_.]?\d{1,3}[a-z]?$')
+
+def _measure(t, chcm, pad):
+    """(preferred, minimum) cm of one cell's text. Preferred = the whole text on one line
+       (MK + separator + the smaller EN); minimum = its longest unbreakable word."""
+    ps=t.split(" | ")
+    L=(len(ps[0])+3+0.8*len(" | ".join(ps[1:]))) if len(ps)>1 else len(t)
+    toks=[(x, 1.0) for x in ps[0].split()]+[(x, 0.8) for x in " ".join(ps[1:]).split()]
+    word=max((len(x)*f for x,f in toks), default=1)
+    return L*chcm+pad, word*chcm+pad
+
+def _waterfill(widths, cols, extra):
+    """Raise the narrowest of `cols` first until `extra` cm is used: write-in space ends up
+       even across those columns, and none is lowered."""
+    if not cols or extra<=1e-9: return extra
+    cols=sorted(cols, key=lambda j: widths[j]); used=0.0
+    for k in range(len(cols)):
+        lvl=widths[cols[k]]; nxt=widths[cols[k+1]] if k+1<len(cols) else float('inf')
+        need=(nxt-lvl)*(k+1)
+        if used+need>=extra:
+            top=lvl+(extra-used)/(k+1)
+            for j in cols[:k+1]: widths[j]=top
+            return 0.0
+        used+=need
+    return 0.0
+
 def fixed(tbl, weights=None, min_cm=0.9, cap=34, mode=None, header_repeat=True):
-    """INTELLIGENT, use-aware column distribution (the skill's single table-layout brain).
-       It measures each column's real bilingual content and decides the table's *fit*:
-         • narrow 'label | value' SUMMARY tables (≤3 columns whose content fits) → COMPACT &
-           CENTERED at their natural width (no label stacked vertically, no value floating in a
-           vast empty column);
-         • wide DATA tables → fill the page width (never overflow);
-       ordinal/number columns collapse to just-enough; hand-written ENTRY columns
-       (Name/Date/Signature/Position) are purpose-sized even when blank; Role/Action take the
-       remainder. The first row is set to repeat on page breaks. Pass `weights` to force ratios,
-       or mode='compact'/'full' to override the auto fit."""
+    """INTELLIGENT, content-aware column distribution (the skill's single table-layout brain).
+       Each column is classed by what it holds and sized to it, the way a browser lays out an
+       auto table (min-content / max-content):
+         • ordinal columns (№, A1, C01) and tick columns (Да/Не/N/A, ☐) take exactly what their
+           content needs and never receive spare width;
+         • a total/summary row label ("Вкупно …") in column 0 may wrap; it does not widen it;
+         • hand-written ENTRY columns (Name/Date/Signature/Position) are purpose-sized;
+         • blank WRITE-IN columns get at least a writable width and their header on two lines;
+         • TEXT columns: when the content does not fit, every column starts at its longest word
+           and the remaining width goes to the columns in proportion to how much they would
+           otherwise wrap — the long-text column gets most of it, a short reference column almost
+           none. When everything fits, the spare width goes to the write-in and entry columns
+           (evenly, narrowest first), else to the text columns after the first.
+         • narrow 'label | value' SUMMARY tables (≤3 columns that fit) stay COMPACT & CENTERED.
+       The first row repeats on page breaks. Pass `weights` to force ratios, or
+       mode='compact'/'full' to override the auto fit."""
     grid=tbl._tbl.tblGrid.gridCol_lst; ncol=len(grid)
     if ncol==0: return tbl
     rows=[tr for tr in tbl._tbl.tr_lst if len(tr.tc_lst)==ncol]
     CHCM=0.176; PAD=0.42                              # ≈ cm per char (10 pt Calibri) + cell padding
     hdr=[_tctext(rows[0].tc_lst[j]).lower().strip() if rows else "" for j in range(ncol)]
     ent={}; forced=bool(weights and len(weights)==ncol)
-    # Per-column content measures (for use-aware sizing of compressed data tables):
-    #   data_cm = widest DATA cell — data must NEVER wrap, so this is a hard floor;
-    #   hdr_cm  = header's full inline width — its demand for space;
-    #   word_cm = header's longest single token — a header may wrap, but not below its longest word.
-    data_cm=[0.8]*ncol; hdr_cm=[0.8]*ncol; word_cm=[0.6]*ncol
+    word_cm=[0.6]*ncol; data_cm=[0.8]*ncol
     if forced:
         ideal=[float(w) for w in weights]
     else:
-        ideal=[0.8]*ncol
+        ideal=[0.8]*ncol                              # one-line content width, capped: decides COMPACT
+        lo=[min_cm]*ncol; hi=[min_cm]*ncol; filled=[0]*ncol; boxes=[0]*ncol; short=[0]*ncol
+        sum_lo=0.0; sum_hi=0.0
         for ri,tr in enumerate(rows):
+            summary = ri>0 and bool(_SUM_ROW.match(_tctext(tr.tc_lst[0]).strip()))
             for j,tc in enumerate(tr.tc_lst):
                 t=_tctext(tc).replace("\n"," ").strip()
                 if not t: continue
-                ps=t.split(" | ")
-                L=(len(ps[0])+3+0.8*len(ps[1])) if len(ps)==2 else len(t)   # TRUE inline bilingual width (MK + sep + smaller EN)
-                w=min(L,cap)*CHCM+PAD
-                ideal[j]=max(ideal[j], w)
-                if ri==0:
-                    hdr_cm[j]=w
-                    toks=t.replace(" | "," ").split()
-                    word_cm[j]=(max((len(x) for x in toks), default=1))*CHCM+PAD
+                pref,word=_measure(t, CHCM, PAD)
+                ideal[j]=max(ideal[j], min(pref, cap*CHCM+PAD))
+                if ri==0:                                 # header: may wrap MK over EN, never mid-word
+                    ps=t.split(" | ")
+                    two=max(len(ps[0]), 0.8*len(" | ".join(ps[1:])))*CHCM+PAD
+                    hi[j]=max(hi[j], min(two, pref, 4.5)); lo[j]=max(lo[j], word); word_cm[j]=word   # a long header wraps further
+                elif summary and j==0:                    # a total label wraps; it does not set the width
+                    ps=t.split(" | ")
+                    two=max(len(ps[0]), 0.8*len(" | ".join(ps[1:])))*CHCM+PAD
+                    sum_lo=max(sum_lo, word); sum_hi=max(sum_hi, min(two, 2.4))
                 else:
-                    data_cm[j]=max(data_cm[j], w)
+                    hi[j]=max(hi[j], min(pref, cap*CHCM*3)); lo[j]=max(lo[j], word)
+                    data_cm[j]=max(data_cm[j], pref)
+                    if _PLACEHOLDER.match(t): continue    # '[ ]', '___ / ___' — still a write-in
+                    filled[j]+=1
+                    if _BOX.match(t): boxes[j]+=1
+                    if _SHORT_CODE.match(t): short[j]+=1
         for j,h in enumerate(hdr):                    # purpose-size hand-written entry columns
+            if filled[j]: continue                    # printed content (C01…, a pallet 'position') is not hand-written
             for kws,cm in _ENTRY_TARGETS:             # match at a WORD boundary (prefix ok) so e.g. the
                 if any(re.search(r'\b'+re.escape(k), h) for k in kws):  # 'име' in 'примерок' is NOT a hit
                     ent[j]=cm; break
+        kind=[]
+        for j in range(ncol):
+            hmk=hdr[j].split(" | ")[0].strip()
+            if j in ent: kind.append('entry')
+            elif _TICK_HDR.match(hmk) or (filled[j] and boxes[j]==filled[j]): kind.append('tick')
+            elif _ORD_HDR.match(hmk) or (j==0 and filled[j] and short[j]==filled[j]): kind.append('ord')
+            elif not filled[j]: kind.append('write')
+            else: kind.append('text')
+        if kind[0] in ('ord','text','write') and sum_lo:
+            lo[0]=max(lo[0], sum_lo); hi[0]=max(hi[0], sum_hi)
+        for j,k in enumerate(kind):
+            if k=='entry': lo[j]=hi[j]=ent[j]
+            elif k=='tick': lo[j]=hi[j]=max(lo[j], hi[j], 1.1)    # room for a tick or a ✗
+            elif k=='ord': lo[j]=hi[j]=max(lo[j], hi[j])
+            elif k=='write': lo[j]=max(lo[j], 1.6); hi[j]=max(hi[j], 2.2)
+            hi[j]=max(hi[j], lo[j])
         for j,cm in ent.items(): ideal[j]=cm
     ideal_sum=sum(ideal) or 1.0
     if   mode=="full":    compact=False
@@ -100,28 +160,43 @@ def fixed(tbl, weights=None, min_cm=0.9, cap=34, mode=None, header_repeat=True):
     else: compact=(not forced) and ncol<=3 and ideal_sum<=0.86*PAGE_W and not ent
     if compact:
         widths=[max(w,min_cm) for w in ideal]
-    else:
-        if ent:
-            targ=sum(ent.values())
-            if targ>PAGE_W-2.0:
-                sc=(PAGE_W-2.0)/targ; ent={j:c*sc for j,c in ent.items()}; targ=sum(ent.values())
-            oth=[j for j in range(ncol) if j not in ent]; sw=sum(ideal[j] for j in oth) or 1.0; rem=PAGE_W-targ
-            widths=[(ent[j] if j in ent else ideal[j]/sw*rem) for j in range(ncol)]
+    elif forced:                                      # the caller decided (unchanged since 08.2026)
+        even=PAGE_W/ncol
+        if ncol>=4 and all(ideal[j]<=even+1e-6 for j in range(1,ncol)):
+            c0=max(ideal[0],min_cm); widths=[c0]+[(PAGE_W-c0)/(ncol-1)]*(ncol-1)
         else:
-            even=PAGE_W/ncol
-            if ncol>=4 and all(ideal[j]<=even+1e-6 for j in range(1,ncol)):  # labeled grid: data cols uniform & fit
-                c0=max(ideal[0],min_cm); rest=(PAGE_W-c0)/(ncol-1)            # col0 sized to its labels (single-line header),
-                widths=[c0]+[rest]*(ncol-1)                                   # columns 2..N split the remainder EVENLY
-            elif (not forced) and ideal_sum>PAGE_W:                           # table would OVERFLOW → intelligent compression:
-                base=[max(data_cm[j], word_cm[j]) for j in range(ncol)]       #   each column floored to its DATA (never wraps)
-                sb=sum(base)                                                  #   and its header's longest word (headers may wrap);
-                if sb>=PAGE_W:                                                #   if even the floors overflow, share proportionally,
-                    widths=[b/sb*PAGE_W for b in base]
-                else:                                                         #   else give the spare width to the LONGEST headers
-                    slack=PAGE_W-sb; hw=sum(hdr_cm) or 1.0                    #   so headers wrap least where they are longest.
-                    widths=[base[j]+slack*hdr_cm[j]/hw for j in range(ncol)]
-            else:
-                widths=[w/ideal_sum*PAGE_W for w in ideal]                    # else content-proportional
+            widths=[w/ideal_sum*PAGE_W for w in ideal]
+    else:
+        if sum(ent.values())>PAGE_W-2.0:              # entry columns alone would fill the page
+            sc=(PAGE_W-2.0)/sum(ent.values())
+            for j in ent: lo[j]=hi[j]=ent[j]*sc
+        slo=sum(lo); shi=sum(hi)
+        if slo>=PAGE_W:                               # even the words do not fit: share by need
+            widths=[x/slo*PAGE_W for x in lo]
+        elif shi>PAGE_W:                              # content wraps somewhere: give the width to
+            k=(PAGE_W-slo)/(shi-slo)                  # the columns that would wrap the most
+            widths=[lo[j]+(hi[j]-lo[j])*k for j in range(ncol)]
+        else:                                         # everything fits on one line
+            widths=list(hi); extra=PAGE_W-shi
+            grow=[j for j in range(ncol) if kind[j] in ('write','entry')]
+            if not grow:
+                txt=[j for j in range(ncol) if kind[j]=='text']
+                grow=[j for j in txt if j>0] or txt
+            if not grow: grow=[j for j in range(ncol) if kind[j]!='ord'] or list(range(ncol))
+            _waterfill(widths, grow, extra)
+        if True:                                      # never break a header WORD mid-word: lift a column
+            for _ in range(6):                        # to its longest header word, taking the width from
+                short=[j for j in range(ncol) if widths[j]<word_cm[j]-1e-6]   # columns with room to spare
+                if not short: break
+                need=sum(word_cm[j]-widths[j] for j in short)
+                floor=[max(word_cm[j],min_cm,min(data_cm[j],2.5)) for j in range(ncol)]
+                spare={j:widths[j]-floor[j] for j in range(ncol) if j not in short and widths[j]>floor[j]}
+                tot=sum(spare.values())
+                if tot<=1e-6: break
+                take=min(need,tot)
+                for j in short: widths[j]+= (word_cm[j]-widths[j])*take/need
+                for j,v in spare.items(): widths[j]-= v*take/tot
+    if not compact:
         for _ in range(6):                            # enforce a minimum, redistribute the rest
             below=[i for i,w in enumerate(widths) if w<min_cm-1e-6]
             if not below: break
@@ -162,19 +237,34 @@ def gap(d,pt=6):
     return p
 
 # ---- house type scale ----
+def keep_table(tbl, whole_max=8, head_rows=3):
+    """Page-break discipline for a table: no row ever splits; a table of up to `whole_max` rows
+       moves to the next page as a whole; a longer one keeps its header with its first rows.
+       Works in Word and LibreOffice (both chain keep-with-next through table rows)."""
+    rows=tbl.rows; n=len(rows)
+    chain = n-1 if n<=whole_max else min(head_rows, n-1)
+    for i,r in enumerate(rows):
+        trPr=r._tr.get_or_add_trPr()
+        if trPr.find(qn('w:cantSplit')) is None: trPr.append(OxmlElement('w:cantSplit'))
+        if i<chain:
+            for c in r.cells:
+                for par in c.paragraphs: par.paragraph_format.keep_with_next=True
+    return tbl
+
 def chapter(d,num,mk,en):                       # MK20 | EN16 ; space BEFORE and AFTER ; outline lvl 0 -> TOC
     p=d.add_paragraph(); sp(p,12,7)
     rin(p,f"{num}.  {mk}",20,NAVY,bold=True); rin(p,"  |  ",18,GREY); rin(p,en,16,GREY)
-    _outline(p,0); return p
+    _outline(p,0); p.paragraph_format.keep_with_next=True; return p
 def subsec(d,num,mk,en):                         # MK16 | EN12 ; space BEFORE and AFTER
     p=d.add_paragraph(); sp(p,8,4)
     rin(p,f"{num}  {mk}",16,NAVY,bold=True)
     if en: rin(p,"  |  ",14,GREY); rin(p,en,12,GREY)
-    _outline(p,1); return p
+    _outline(p,1); p.paragraph_format.keep_with_next=True; return p
 def minilabel(d,mk,en):                          # unnumbered bold lead-in above a table
     p=d.add_paragraph(); sp(p,7,3)
     rin(p,mk,13,NAVY,bold=True)
     if en: rin(p,"  |  ",11,GREY); rin(p,en,11,GREY,ital=True)
+    p.paragraph_format.keep_with_next=True
     return p
 def note(d,mk,en):                               # small note MK10 | EN8 ; justified
     p=d.add_paragraph(); sp(p,4.5,4.5); p.alignment=WD_ALIGN_PARAGRAPH.JUSTIFY
@@ -342,8 +432,27 @@ try:
         _OMML_XSLT=_etree.XSLT(_etree.parse(_XSLP)); _EQN_OK=True
 except Exception:
     _EQN_OK=False
+# No Office XSL (Linux/CI): pandoc writes the same native OMML from LaTeX.
+import shutil as _shutil
+_PANDOC=_shutil.which("pandoc")
+if not _EQN_OK and _PANDOC:
+    try:
+        from lxml import etree as _etree; _EQN_OK=True
+    except Exception: pass
+_OMML_CACHE={}
+def _pandoc_omml(latex):
+    if latex in _OMML_CACHE: return _etree.fromstring(_OMML_CACHE[latex])
+    import subprocess, tempfile, zipfile
+    with tempfile.TemporaryDirectory() as t:
+        out=_os.path.join(t,"m.docx")
+        subprocess.run([_PANDOC,"-f","latex","-o",out],input=("$"+latex+"$").encode("utf-8"),check=True,capture_output=True)
+        xml=zipfile.ZipFile(out).read("word/document.xml")
+    m=_etree.fromstring(xml).find(".//{http://schemas.openxmlformats.org/officeDocument/2006/math}oMath")
+    if m is None: raise ValueError("pandoc produced no math")
+    _OMML_CACHE[latex]=_etree.tostring(m); return _etree.fromstring(_OMML_CACHE[latex])
 
 def _to_omml(latex):
+    if _OMML_XSLT is None: return _pandoc_omml(latex)
     mml=_l2m.convert(latex)
     dom=_etree.fromstring(mml.encode("utf-8") if isinstance(mml,str) else mml)
     return _OMML_XSLT(dom).getroot()
@@ -439,6 +548,7 @@ def step_signoff(d, mk=None, en=None, sz=9):
         p=d.add_paragraph(); sp(p,3,1)
         rin(p,(mk or "Потпис за овој запис"),9,NAVY,bold=True,ital=True)
         if en: rin(p,"  |  ",8,GREY); rin(p,en,8,GREY,ital=True)
+        p.paragraph_format.keep_with_next=True
     h=["Улога | Role","Име | Name","Датум | Date","Потпис | Signature"]
     roles=["Извршил и внел сурови податоци (оператор/аналитичар) | Executed & entered raw data (Operator/Analyst)",
            "Проверил и одобрил овој запис (Раководител на КК) | Checked & approved this record (QC Department Manager)"]
@@ -447,7 +557,7 @@ def step_signoff(d, mk=None, en=None, sz=9):
     for i,role in enumerate(roles,start=1):
         cellfmt(t.cell(i,0),role,None,sz,BLACK,fill=LBL)
         for j in (1,2,3): cellfmt(t.cell(i,j),"",None,sz,BLACK)
-    fixed(t,[9.46,3.5,2.0,3.5]); borders(t); return t
+    fixed(t,[9.46,3.5,2.0,3.5]); borders(t); keep_table(t); return t
 
 def entry_table(d, headers, rows, widths, label_mk=None, label_en=None, sz=9, signoff=False, signoff_mk=None, signoff_en=None):
     """Blank data-ENTRY table. rows = int (all blank) or list of first-column labels.
@@ -459,7 +569,7 @@ def entry_table(d, headers, rows, widths, label_mk=None, label_en=None, sz=9, si
     for i,rl in enumerate(rowlabels,start=1):
         cellfmt(t.cell(i,0),(rl if rl else ""),None,sz,(NAVY if rl else BLACK),bold=bool(rl),fill=(LBL if rl else None))
         for j in range(1,len(headers)): cellfmt(t.cell(i,j),"",None,sz,BLACK)
-    fixed(t,widths); borders(t)
+    fixed(t,widths); borders(t); keep_table(t)
     if signoff: step_signoff(d, signoff_mk, signoff_en)
     return t
 
@@ -472,7 +582,7 @@ def execution_signoff(d, mk_exec="Извршил (КК) | Executed (QC)", en_exe
     for i,(a,n) in enumerate(rws,start=1):
         cellfmt(t.cell(i,0),a,None,10,BLACK); cellfmt(t.cell(i,1),n,None,10,BLACK)
         cellfmt(t.cell(i,2),"",None,10,BLACK); cellfmt(t.cell(i,3),"",None,10,BLACK)
-    fixed(t,[5.4,4.66,3.4,5.0]); borders(t); return t
+    fixed(t,[5.4,4.66,3.4,5.0]); borders(t); keep_table(t); return t
 
 def figure(d, png_path, mk=None, en=None, width_cm=15.5):
     """Embed a chart PNG (centered) with a bilingual MK | EN caption. Pair with pp_charts.py."""
@@ -548,8 +658,8 @@ def cover_page(d, title_mk, title_en, info_rows, kind_mk="", kind_en="", study_m
     _c=_tb.cell(0,0); cellfmt(_c,"%s | %s"%_lbl,None,11,(GREEN if _appr else RED),bold=True,fill=(GREENF if _appr else REDF))
     _p2=_c.add_paragraph(); _p2.alignment=WD_ALIGN_PARAGRAPH.CENTER
     rin(_p2,"Верзија | Version: %s     ·     Датум на важност | Effective date: %s"%(_hv,_eff),10,BLACK,bold=True)
-    fixed(_tb); borders(_tb)
-    d.add_paragraph()
+    fixed(_tb,[min(15.0,PAGE_W)]); borders(_tb)   # explicit width: content-sizing caps a line at
+    d.add_paragraph()                              # 34 chars and squeezed the band to ~6 cm
     minilabel(d,"Информации за документот | Document information",None)
     _info_table(d, info_rows)
     minilabel(d,"Одобрување | Approval",None)

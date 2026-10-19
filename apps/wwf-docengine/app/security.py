@@ -13,5 +13,6 @@ async def require_api_key(x_api_key: str = Header(default="")) -> None:
     if not settings.api_key:
         # unconfigured service refuses every call rather than running open
         raise HTTPException(status_code=503, detail="DocEngine not configured")
-    if not hmac.compare_digest(x_api_key, settings.api_key):
+    # Bytes, not str: compare_digest raises TypeError on a non-ASCII str, so a crafted header was a 500.
+    if not hmac.compare_digest(x_api_key.encode("utf-8", "surrogateescape"), settings.api_key.encode()):
         raise HTTPException(status_code=401, detail="bad api key")

@@ -1,0 +1,35 @@
+# Attach the canonical Letta container (letta-6ou3-letta-1) to the gateway network so it can reach
+# http://litellm:4000/v1 without the proxy being published anywhere.
+#
+# The live stack file is /opt/ai-stack/letta-6ou3-image-override.yml (NOT in this repo), so this is
+# the shape of the edit, to be applied to that file by hand on KVM4:
+#
+#   services:
+#     letta:                      # the service whose container is letta-6ou3-letta-1
+#       networks:
+#         - default               # keep the stack's own network - listing `networks:` on a service
+#         - llm-gateway           #   REPLACES the implicit default, so `default` must be spelled out
+#   networks:
+#     llm-gateway:
+#       external: true            # created once: docker network create llm-gateway
+#
+# then:  docker compose -f /opt/ai-stack/letta-6ou3-image-override.yml up -d letta
+#
+# Pre-flight on KVM4 (shows the real service/network names before editing anything):
+#   docker inspect letta-6ou3-letta-1 -f '{{index .Config.Labels "com.docker.compose.service"}} {{range $k,$v := .NetworkSettings.Networks}}{{$k}} {{end}}'
+#
+# Post-flight (from inside Letta; the image has python but may lack curl):
+#   docker exec letta-6ou3-letta-1 python3 -c "import urllib.request;print(urllib.request.urlopen('http://litellm:4000/health/liveliness').read())"
+#
+# Alternative with NO change to the Letta stack: add Letta's existing network to the litellm service
+# instead (replace `llm-gateway` in docker-compose.yml with the network name the inspect above prints,
+# declared `external: true`). Same isolation, but it couples the gateway's compose to Letta's network
+# name, so the dedicated `llm-gateway` network above is preferred.
+services:
+  letta:
+    networks:
+      - default
+      - llm-gateway
+networks:
+  llm-gateway:
+    external: true

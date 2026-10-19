@@ -33,8 +33,7 @@ def load_dataset(path):
 
 def provenance(path):
     """ALCOA+ data-provenance record to print in the document's data note."""
-    with open(path, "rb") as f:
-        b = f.read()
+    b = open(path, "rb").read()
     return {"file": os.path.basename(path),
             "sha256": hashlib.sha256(b).hexdigest()[:16],
             "bytes": len(b),

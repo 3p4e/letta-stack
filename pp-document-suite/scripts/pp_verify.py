@@ -27,13 +27,19 @@ try:
 except Exception:
     pp_assets = None
 
-def _text(path):
-    d = docx.Document(path)
-    parts = [p.text for p in d.paragraphs]
-    for t in d.tables:
+def _cells(tables, parts):
+    # Recursive: a table nested in a cell (SOP §7 records, forms in a box) was invisible to the word, character
+    # and bilingual counts — cell.text reads only the cell's own paragraphs (review 19.10.2026).
+    for t in tables:
         for row in t.rows:
             for c in row.cells:
                 parts.append(c.text)
+                _cells(c.tables, parts)
+
+def _text(path):
+    d = docx.Document(path)
+    parts = [p.text for p in d.paragraphs]
+    _cells(d.tables, parts)
     return d, "\n".join(parts)
 
 def _xml_parts(path):
@@ -64,14 +70,25 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("docx"); ap.add_argument("--source", action="append", default=[])
     ap.add_argument("--min-pt", type=float, default=6.0)
+    # From the DocEngine canon-2026-07 gate (09.10.2026): "true" makes a document missing a
+    # language FAIL instead of WARN. Default "false" keeps the suite's CLI behaviour;
+    # DocEngine's builder passes "true" (with a per-document opt-out).
+    ap.add_argument("--require-bilingual", choices=("true", "false"), default="false")
     a = ap.parse_args()
+    require_bl = a.require_bilingual == "true"
     r = analyse(a.docx); ok = True
     print(f"== VERIFY: {r['path']}")
     print(f"   paragraphs {r['paras']} · tables {r['tables']} · equations(oMath) {r['omath']} · figures {r['figures']}")
     print(f"   words {r['words']} · chars {r['chars']}")
     mnpt = (r['min_half']/2) if r['min_half'] else None
     floor_ok = (mnpt is None) or (mnpt >= a.min_pt)
-    print(f"   min font {mnpt} pt  [{'OK' if floor_ok else 'FAIL <%.0f pt'%a.min_pt}]"); ok &= floor_ok
+    if mnpt is None:
+        # No run or paragraph mark names a size: everything inherits from styles.xml, which this check does not
+        # read. It used to print "min font None pt [OK]" as if the floor had been checked (review 19.10.2026).
+        print("   min font: inherited (styles not checked)  [WARN]")
+    else:
+        print(f"   min font {mnpt} pt  [{'OK' if floor_ok else 'FAIL <%.0f pt'%a.min_pt}]")
+    ok &= floor_ok
     if pp_assets is not None:
         env = pp_assets.check_environment()
         bad = pp_assets.audit_docx(a.docx)
@@ -85,7 +102,8 @@ def main():
     else:
         print("   glyph coverage SKIPPED (pp_assets unavailable)")
     biling = r['cyr'] and r['lat']
-    print(f"   bilingual MK+EN {'OK' if biling else 'WARN (missing a language)'}")
+    print(f"   bilingual MK+EN {'OK' if biling else ('FAIL (missing a language)' if require_bl else 'WARN (missing a language)')}")
+    ok &= biling or not require_bl
     if a.source:
         sw = sc = 0
         for s in a.source:

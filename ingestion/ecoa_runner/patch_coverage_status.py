@@ -45,7 +45,8 @@ DATASETS = {
     "dd3ea108a3fd11f1858cf58865604f65": "eCOA_DB",
     "71b9c168b4a311f1a370a99b32e82467": "eCOA_INGEST",
 }
-COVERAGE = "/tmp/claude-0/ecoa_coverage_status_full.json"
+COVERAGE = os.environ.get("ECOA_COVERAGE_JSON") or os.path.join(
+    HERE, "..", "..", "deliverables", "qc_gap_analysis", "tracker", "ecoa_coverage_status_2026-09-20.json")
 CHECKED_DATE = time.strftime("%Y-%m-%d")
 
 

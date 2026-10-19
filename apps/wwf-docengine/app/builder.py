@@ -105,6 +105,24 @@ def _strip_headerdata(markdown: str) -> str:
     return markdown
 
 
+def _headerdata(markdown: str) -> dict:
+    """The HEADERDATA fields, read the way build_from_md reads them: between the "<!--HEADERDATA" line and the first
+    "-->" line. doctype and bilingual used to be taken from anywhere in the text, so a body line "bilingual: no"
+    switched the bilingual gate off (review 19.10.2026)."""
+    lines, out, inside = markdown.splitlines(), {}, False
+    for ln in lines:
+        if ln.strip() == "<!--HEADERDATA":
+            inside = True
+            continue
+        if inside:
+            if ln.strip() == "-->":
+                break
+            k, _, v = ln.partition(":")
+            if _:
+                out[k.strip().lower()] = v.strip()
+    return out
+
+
 def _source_word_char_counts(markdown: str) -> tuple[int, int]:
     """§5A fidelity source-side count: the ASSEMBLED markdown minus its own
     grammar tokens (HEADERDATA block, [[FORM/TABLE]] markers, heading
@@ -138,14 +156,9 @@ def build(markdown: str, out_dir: Path, out_name: str = "document") -> BuildResu
     stamp = uuid.uuid4().hex[:12]
     final = out_dir / f"{safe_name(out_name)}-{stamp}.docx"
     out = out_dir / f".{safe_name(out_name)}-{stamp}.partial.docx"
-    doctype = "SOP"
-    m = re.search(r"^doctype:\s*(\S+)", markdown, re.M)
-    if m:
-        doctype = m.group(1).upper()
-    require_bilingual = True
-    mbil = re.search(r"^bilingual:\s*(\S+)", markdown, re.M)
-    if mbil and mbil.group(1).strip().lower() in ("no", "false"):
-        require_bilingual = False
+    hd = _headerdata(markdown)
+    doctype = (hd.get("doctype") or "SOP").split()[0].upper()
+    require_bilingual = hd.get("bilingual", "").lower() not in ("no", "false")
     with _BUILD_LOCK:
         with tempfile.NamedTemporaryFile(
             "w", suffix=".md", delete=False, encoding="utf-8"
@@ -154,20 +167,12 @@ def build(markdown: str, out_dir: Path, out_name: str = "document") -> BuildResu
             src = f.name
         try:
             build_from_md.main(src, str(out))
+            passed, report = _verify_with_fidelity(out, markdown, require_bilingual)
+        except BaseException:
+            out.unlink(missing_ok=True)   # a crash in build or verify must not leave the unverified partial
+            raise
         finally:
             Path(src).unlink(missing_ok=True)
-        passed, report = run_verify(out, require_bilingual=require_bilingual)
-        # §5A no-impoverishment check: the produced .docx must not contain
-        # LESS content than the source markdown it was built from. Always
-        # run and always reported, even when already failing on font/
-        # bilingual, so a FAIL report names every reason at once.
-        src_words, src_chars = _source_word_char_counts(markdown)
-        r = pp_verify.analyse(str(out))
-        fid_ok = r["words"] >= src_words and r["chars"] >= src_chars
-        report += (f"\n   FIDELITY (§5A, markdown-source) output>=source:"
-                   f" words {r['words']}>={src_words}, chars {r['chars']}>={src_chars}"
-                   f"  [{'OK' if fid_ok else 'FAIL'}]")
-        passed = passed and fid_ok
     if not passed:
         out.unlink(missing_ok=True)
         raise VerifyFailed(report)
@@ -177,3 +182,20 @@ def build(markdown: str, out_dir: Path, out_name: str = "document") -> BuildResu
     return BuildResult(
         path=final, bytes=final.stat().st_size, verify_report=report, doctype=doctype
     )
+
+
+def _verify_with_fidelity(out: Path, markdown: str, require_bilingual: bool) -> tuple[bool, str]:
+    """pp_verify plus the §5A fidelity count; (passed, report)."""
+    passed, report = run_verify(out, require_bilingual=require_bilingual)
+    # §5A no-impoverishment check: the produced .docx must not contain
+    # LESS content than the source markdown it was built from. Always
+    # run and always reported, even when already failing on font/
+    # bilingual, so a FAIL report names every reason at once.
+    src_words, src_chars = _source_word_char_counts(markdown)
+    r = pp_verify.analyse(str(out))
+    fid_ok = r["words"] >= src_words and r["chars"] >= src_chars
+    report += (f"\n   FIDELITY (§5A, markdown-source) output>=source:"
+               f" words {r['words']}>={src_words}, chars {r['chars']}>={src_chars}"
+               f"  [{'OK' if fid_ok else 'FAIL'}]")
+    passed = passed and fid_ok
+    return passed, report

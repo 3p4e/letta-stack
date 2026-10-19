@@ -19,7 +19,7 @@
 
 ### Quality Control (QC)
 - **R1 Scope:** primary testing focus (Identity[Annex 8 §2 — ALL containers]/Potency/Purity/Contaminants/Micro/Water/Sample mgmt); sample types [multi]; batch-release vs monitoring; method source (Ph. Eur. preferred/USP/in-house/ISO/contract).
-- **R2 Technical:** techniques [HPLC-DAD/GC-MS/ICP-MS/LC-MS-MS/Microscopy/LOD/Karl Fischer/Micro]; acceptance criteria [cannabinoid ±10 % Ph.Eur 3028 / LOD NMT 12 % / foreign matter NMT 2 % / heavy metals / pesticides / mycotoxins / microbial]; external testing; reference standards [CRS/secondary/SST/internal].
+- **R2 Technical:** techniques [HPLC-DAD/GC-MS/ICP-MS/LC-MS-MS/Microscopy/LOD/Karl Fischer/Micro]; acceptance criteria [Total THC within the strain's grade window (official potency specifications, KVM4 potency builder — never a pharmacopoeial ±10 %) / LOD NMT 12 % / foreign matter NMT 2 % / heavy metals / pesticides / mycotoxins / microbial]; external testing; reference standards [CRS/secondary/SST/internal].
 - **R3 Responsibilities:** primary performer; review chain (single/two-tier/three-tier+QP/cross-functional); trigger; turnaround.
 - **R4 Records:** records generated [worksheets 6.17/printouts/sample-prep/SST/CoA/OOS]; retention; annexes needed.
 

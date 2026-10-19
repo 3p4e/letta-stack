@@ -514,3 +514,51 @@ container must be given headroom first — it writes the new pack **before** del
 objects, and on a full disk it exits 0 having reclaimed nothing and leaves
 `.git/objects/pack/tmp_pack_*` behind, which must then be deleted by hand. `git reflog expire
 --expire=now --all && git prune --expire=now` frees space without writing a pack, so it goes first.
+
+## 9. Rendering PDFs
+
+Head of QC, 09.10.2026: rendering must not depend on the device (phone, laptop with or without
+Word, cloud session). Render every DOCX with `pp-document-suite/scripts/pp_render.py`
+(`python3 pp_render.py in.docx out.pdf`): it uses the shared Gotenberg service on KVM4 when
+`GOTENBERG_URL` is set and local LibreOffice (field-updating macro, `assets/lo_profile`) otherwise;
+both fill an SOP's table of contents. Never a bare `soffice --convert-to pdf` — it leaves the TOC
+empty. Server setup: `server/runbooks/docengine_knowledge_and_render.md` §2.
+
+Head of QC, 10.10.2026: the renderer is **LibreOffice with the real house fonts** (`pp-render`, Gotenberg 8.37.0 +
+`/opt/fonts/pp` on KVM4; `server/render/`). Chosen over OnlyOffice by a side-by-side test against Word-made PDFs
+(Aspose was not tested: licence cost): with Calibri, Arial Narrow and the rest installed, LibreOffice matched Word on the label sheet and
+the SOPs; OnlyOffice did not. Fidelity comes from the fonts, so a renderer without them is not acceptable: a
+missing font is fixed by adding it to `/opt/fonts/pp` and rebuilding `pp-render`, never by accepting a substitute.
+The Microsoft fonts are licensed — they live on the server only, never in a repository.
+
+## 10. The DocEngine is a contained research and development environment
+
+Head of QC, 18.10.2026: *"nothing on the engine is part of the qms even if we feed it QMS information for research and
+developement exactly to PP needs"* and *"None of this is ever going to get or mixed up with the QMS."* Drafts that look
+like real QMS documents, with real data, are the point: they test the engine. A document reaches the QMS only through
+the QA channels.
+
+- Do not raise or push deviations, OOS/OOx handling, CAPA or any other QMS procedure from engine work; the paper-based
+  system covers them. Do not warn that a draft looks too real or ask for "draft" watermarks.
+- The engine's `register/*.yaml` files are working copies (QALI 001 for QC; `*_KNOWN.yaml` for the other departments,
+  from the files we have only, until their master lists arrive). They exist so the engine numbers drafts correctly.
+- **Unconfirmed numbers are XXX** (Head of QC, 18.10.2026: *"all QA SOP drafts should be xxx unknown numbers actualy
+  until not confirmed"*; *"EQSOP document family is not approved as equipment sops yet"*). QASOP and EQSOP are
+  `unconfirmed_families`: a new draft is `QASOPXXX` / `EQSOPXXX` (annexes `QASOPXXXA01`…), and the numbers drafts already
+  carry are `unconfirmed`. A missing number never stops a draft.
+- **Potency grades and ranges are the KVM4 potency builder's** (Head of QC, 19.10.2026: *"the specification grades and
+  ranges actualy are officialy as in https://specs.srv1231216.hstgr.cloud"*). The engine reads `GET /api/specs`
+  (`app/potency.py`, `POTENCY_SPECS_URL`) and gives the served grades — nominal ± tolerance, lo–hi — to the authors and
+  the advisor whenever a document touches potency. No grade, window or tolerance comes from a pharmacopoeia, a house
+  document or an older table, and no grade numeral is written that the service does not give. Unreadable service →
+  "per the strain's current potency specification", never a number.
+- **The approved, in-use documents are a source, not a style sample** (Head of QC, 19.10.2026). `app/house.py`: the
+  authors follow DB3's practice and must not contradict it, cite house documents only from the in-use list (by code and
+  version), and an annex to an approved SOP reads that SOP; the regulatory checker also reports `CONFLICT [H#]` against
+  DB3. No batch, date, result, name or record value is copied from them.
+- **Every draft is checked against the approved documents it touches** (Head of QC, 19.10.2026). After the §6A audit,
+  `gf_house_checker` reads the full text of a named set — the approved version it revises, its parent SOP and that SOP's
+  documents, the codes the draft names, approved documents with a similar title (`house.check_set`, ≤ 10) — and gives a
+  verdict per document. A CONFLICT, or a document left without a verdict, parks the job for review, and it is registered
+  only with the reviewer's written reason (`review.house_conflicts`). The Library reports, and the engine logs at start,
+  the register's in-use codes it holds no approved copy of and the codes where the register lags DB3. **Every document in DB3_PP_CURRENT is approved and in use** (Head of QC, 19.10.2026): an approved copy is in use whatever the register status says, and the register is the one to correct.

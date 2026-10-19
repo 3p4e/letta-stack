@@ -9,6 +9,7 @@ Payload shape (from the frontend):
 {
   "doctype": "ANNEX" | "SOP" | "FORM",
   "mk_title","en_title","code","version","parent","supersedes","orient",
+  "status" (draft | in_review | approved), "effective_date", "review_date",
   "sections": [
     { "num":"1","mk":"Опфат","en":"Scope","level":1,
       "blocks": [
@@ -20,6 +21,7 @@ Payload shape (from the frontend):
   ]
 }
 """
+import re
 
 DOCTYPES = [
     {"key": "ANNEX", "mk": "Анекс", "en": "Annex",
@@ -34,30 +36,55 @@ DOCTYPES = [
 ]
 
 
+# The line grammar (build_from_md.parse) reads a newline as a new line, '|||' as a cell separator, '~~' as the
+# MK/EN split inside a cell, and a leading '#', '- ', '* ' or '[[' as a heading, bullet or block marker. A value
+# typed into the wizard used to reach it unchanged: "ред 1\nред 2" in a form value became a second, broken row
+# (review 19.10.2026). Every value is flattened here; a line that would start a construct is written literal ('\').
+_LEAD = re.compile(r"^(#|\[\[|[-*]\s)")
+
+
+def _one(s):
+    """One line of text: newlines (and the whitespace around them) collapse to a space, no cell separator.
+    As strict as str.strip(): a None or a number raises, and _compose answers 422."""
+    return re.sub(r"\s*[\r\n]+\s*", " ", s).replace("|||", "| | |").strip()
+
+
+def _lit(line):
+    return ("\\" + line) if _LEAD.match(line) else line
+
+
 def _bil(mk, en):
-    mk = (mk or "").strip(); en = (en or "").strip()
+    mk = _one(mk or ""); en = _one(en or "")
     return mk + ((" ||| " + en) if en else "")
 
 
 def _cell(mk, en):
-    mk = (mk or "").strip(); en = (en or "").strip()
+    mk = _one(mk or "").replace("~~", "~ ~"); en = _one(en or "").replace("~~", "~ ~")
     return mk + (("~~" + en) if en else "")
 
 
 def compose_markdown(p: dict) -> str:
     """Turn a wizard payload into pp-document-suite bilingual Markdown. Pure/deterministic."""
-    hd = {
-        "mk_title": p.get("mk_title", "").strip(),
-        "en_title": p.get("en_title", "").strip(),
-        "code": p.get("code", "").strip(),
-        "version": (p.get("version") or "01").strip(),
-        "doctype": (p.get("doctype") or "ANNEX").strip().upper(),
-        "supersedes": p.get("supersedes", "").strip(),
-        "parent": p.get("parent", "").strip(),
-        "orient": (p.get("orient") or "portrait").strip(),
+    hd = {   # one line each: a newline in a title or code would end its HEADERDATA field and start another
+        "mk_title": _one(p.get("mk_title", "")),
+        "en_title": _one(p.get("en_title", "")),
+        "code": _one(p.get("code", "")),
+        "version": _one(p.get("version") or "01"),
+        "doctype": _one(p.get("doctype") or "ANNEX").upper(),
+        "supersedes": _one(p.get("supersedes", "")),
+        "parent": _one(p.get("parent", "")),
+        "orient": _one(p.get("orient") or "portrait"),
     }
+    # Document-control lifecycle (pp_format.status_band, read by build_from_md from
+    # HEADERDATA). A draft is the engine default, so it is not written; a controlled
+    # effective / review date exists only once the document is approved.
+    status = (p.get("status") or "draft").strip()
+    hd["status"] = "" if status == "draft" else status
+    hd["effective_date"] = (p.get("effective_date") or "").strip() if status == "approved" else ""
+    hd["review_date"] = (p.get("review_date") or "").strip() if status == "approved" else ""
     out = ["<!--HEADERDATA"]
-    for k in ("mk_title", "en_title", "code", "version", "doctype", "supersedes", "parent", "orient"):
+    for k in ("mk_title", "en_title", "code", "version", "doctype", "supersedes", "parent", "orient",
+              "status", "effective_date", "review_date"):
         if hd[k]:
             out.append(f"{k}: {hd[k]}")
     out.append("-->")
@@ -66,9 +93,9 @@ def compose_markdown(p: dict) -> str:
     for s in p.get("sections", []):
         lvl = int(s.get("level", 1) or 1)
         hashes = "#" * max(1, min(3, lvl))
-        num = (s.get("num") or "").strip()
-        head_mk = ((num + " ") if num else "") + (s.get("mk", "").strip())
-        head_en = s.get("en", "").strip()
+        num = _one(s.get("num") or "")
+        head_mk = ((num + " ") if num else "") + _one(s.get("mk", ""))
+        head_en = _one(s.get("en", ""))
         out.append(f"{hashes} {head_mk}" + ((" | " + head_en) if head_en else ""))
         for b in s.get("blocks", []):
             t = b.get("type")
@@ -76,7 +103,7 @@ def compose_markdown(p: dict) -> str:
                 for para in b.get("paras", []):
                     line = _bil(para.get("mk"), para.get("en"))
                     if line:
-                        out.append(line)
+                        out.append(_lit(line))
             elif t == "bullets":
                 for para in b.get("paras", []):
                     line = _bil(para.get("mk"), para.get("en"))
@@ -85,18 +112,17 @@ def compose_markdown(p: dict) -> str:
             elif t == "form":
                 out.append("[[FORM]]")
                 for r in b.get("rows", []):
-                    lbl = _cell(r.get("label_mk"), r.get("label_en")).replace("~~", "~~")
                     # form row: label_mk ||| label_en ||| value
-                    lm = (r.get("label_mk") or "").strip(); le = (r.get("label_en") or "").strip()
-                    val = (r.get("value") or "").strip() or "_"
-                    out.append(f"{lm} ||| {le} ||| {val}")
+                    lm = _one(r.get("label_mk") or ""); le = _one(r.get("label_en") or "")
+                    val = _one(r.get("value") or "") or "_"
+                    out.append(_lit(f"{lm} ||| {le} ||| {val}"))
                 out.append("[[/FORM]]")
             elif t == "table":
                 out.append("[[TABLE]]")
                 cols = b.get("cols", [])
-                out.append(" ||| ".join(_cell(c.get("mk"), c.get("en")) for c in cols))
+                out.append(_lit(" ||| ".join(_cell(c.get("mk"), c.get("en")) for c in cols)))
                 for row in b.get("rows", []):
-                    out.append(" ||| ".join(_cell(c.get("mk"), c.get("en")) for c in row))
+                    out.append(_lit(" ||| ".join(_cell(c.get("mk"), c.get("en")) for c in row)))
                 out.append("[[/TABLE]]")
         out.append("")
     return "\n".join(out).rstrip() + "\n"

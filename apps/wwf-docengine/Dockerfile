@@ -18,6 +18,7 @@ RUN useradd -u 1000 -m docengine \
 COPY --chown=docengine:docengine app ./app
 COPY --chown=docengine:docengine agents ./agents
 COPY --chown=docengine:docengine engine ./engine
+COPY --chown=docengine:docengine register ./register
 
 USER docengine
 

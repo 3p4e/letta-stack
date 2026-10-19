@@ -1,0 +1,17 @@
+{
+  "doctype": "ANNEX",
+  "mk_title": "Записник за ослободување — пропагационен материјал (клонови)",
+  "en_title": "Release Record — Propagation Material (Clones)",
+  "code": "WHSOP_002_A02", "version": "01", "parent": "WHSOP 002", "supersedes": "WHSOP_002_A02 v00", "orient": "portrait",
+  "status": "approved", "effective_date": "15.10.2026", "review_date": "15.10.2028",
+  "sections": [
+    {"num": "1", "mk": "Пратка", "en": "Consignment", "level": 1, "blocks": [
+      {"type": "form", "rows": [{"label_mk": "MRN на царинска декларација", "label_en": "Customs declaration MRN", "value": ""}, {"label_mk": "Температура", "label_en": "Temperature", "value": "2–8 °C"}]},
+      {"type": "text", "paras": [{"mk": "Белешка", "en": "Note"}, {"mk": "Само МК", "en": ""}]},
+      {"type": "bullets", "paras": [{"mk": "Прва", "en": "First"}]}
+    ]},
+    {"num": "2", "mk": "Проверки", "en": "", "level": 2, "blocks": [
+      {"type": "table", "cols": [{"mk": "№", "en": ""}, {"mk": "Проверка", "en": "Check"}], "rows": [[{"mk": "1", "en": ""}, {"mk": "SPL земање мостра", "en": "SPL sampling"}]]}
+    ]}
+  ]
+}

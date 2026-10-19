@@ -164,6 +164,13 @@ def check_environment():
     return problems
 
 
+def must_cover(ch):
+    """True for characters the declared face itself must render: everything except Unicode
+       symbols (category S*), which may fall back to a symbol font — "№" excepted."""
+    import unicodedata
+    return ch == "№" or not unicodedata.category(ch).startswith("S")
+
+
 def audit_docx(path):
     """Every run in a .docx checked against the font it declares.
        Returns a list of (font, offending characters, sample text)."""
@@ -182,11 +189,120 @@ def audit_docx(path):
                 text = "".join(re.findall(r"<w:t(?: [^>]*)?>(.*?)</w:t>", run, re.S))
                 if not text.strip():
                     continue
-                miss = missing_glyphs(face, text)
+                # House rule (CLAUDE.md, certificate fonts): a letter, digit or "№" the declared
+                # face cannot render is a defect; symbols the house faces lack (☐ ☒ ✎ ≤ ∑ Δ …)
+                # are rendered by the fallback font and are not.
+                miss = "".join(ch for ch in missing_glyphs(face, text) if must_cover(ch))
+                # A display face declared Latin-only must never carry Macedonian, whatever this machine resolves
+                # it to (fontconfig substitutes a face that has Cyrillic, so the cmap check alone passed it).
+                if face in LATIN_ONLY_DISPLAY:
+                    miss += "".join(ch for ch in text if "\u0400" <= ch <= "\u04FF" and ch not in miss)
                 if miss:
                     key = (face, miss)
                     bad.setdefault(key, text[:60])
     return [(f, m, s) for (f, m), s in bad.items()]
+
+
+# ---------------------------------------------------------------- font substitution in a rendered PDF
+#
+# Head of QC, 10.10.2026: fidelity comes from the real fonts, so "a missing font is fixed by adding it to
+# /opt/fonts/pp and rebuilding pp-render, never by accepting a substitute". The glyph guard above cannot see a
+# substitution: fontconfig always answers with the closest installed face, and an unresolvable face reported
+# nothing (review 14.10.2026). Every PDF rendered on a machine without Calibri and Arial Narrow carried Carlito
+# and Inter instead. The check is therefore made where the PDF is made: every face the document declares for
+# its text must be embedded in the PDF under its own name. Symbol fallbacks (☐ ☒ ✎ …) are extra fonts, allowed.
+
+def _norm(name):
+    return "".join(ch for ch in (name or "").lower() if ch.isalnum())
+
+
+def pdf_fonts(pdf):
+    """Base names of the fonts embedded in a PDF (subset prefix dropped). Reads the PDF's own objects, plain and
+       inside compressed object streams; no poppler needed, so it runs in every container."""
+    import re
+    import zlib
+    data = pdf if isinstance(pdf, (bytes, bytearray)) else open(pdf, "rb").read()
+    rx = re.compile(rb"/BaseFont\s*/(?:[A-Z]{6}\+)?([^\s/\[\]<>()]+)")
+    found = {m.group(1).decode("latin-1") for m in rx.finditer(data)}
+    for m in re.finditer(rb"/ObjStm.*?stream\r?\n", data, re.S):
+        end = data.find(b"endstream", m.end())
+        try:
+            found |= {x.group(1).decode("latin-1") for x in rx.finditer(zlib.decompress(data[m.end():end]))}
+        except zlib.error:
+            pass
+    return found
+
+
+def declared_faces(path):
+    """Fonts a .docx asks for text that has a letter or digit: the run's own w:rFonts, else its character style,
+       its paragraph style, the default paragraph style, then the document defaults (basedOn chains followed)."""
+    import re
+    import zipfile
+    with zipfile.ZipFile(path) as z:
+        names = z.namelist()
+        styles = z.read("word/styles.xml").decode("utf-8", "replace") if "word/styles.xml" in names else ""
+        theme = z.read("word/theme/theme1.xml").decode("utf-8", "replace") if "word/theme/theme1.xml" in names else ""
+        parts = [z.read(n).decode("utf-8", "replace") for n in names
+                 if n.startswith("word/") and n.endswith(".xml") and re.search(r"(document|header\d*|footer\d*)\.xml$", n)]
+    themes = {"minor": (re.search(r'<a:minorFont>\s*<a:latin typeface="([^"]*)"', theme) or [None, None])[1],
+              "major": (re.search(r'<a:majorFont>\s*<a:latin typeface="([^"]*)"', theme) or [None, None])[1]}
+
+    def face_of(rpr):
+        m = re.search(r"<w:rFonts\b[^>]*>", rpr or "")
+        if not m:
+            return None
+        tag = m.group(0)
+        f = re.search(r'w:(?:ascii|hAnsi)="([^"]+)"', tag)
+        if f:
+            return f.group(1)
+        t = re.search(r'w:(?:ascii|hAnsi)Theme="(minor|major)', tag)
+        return themes.get(t.group(1)) if t else None
+
+    sty, default_para = {}, None
+    for m in re.finditer(r"<w:style\b([^>]*)>(.*?)</w:style>", styles, re.S):
+        sid = (re.search(r'w:styleId="([^"]+)"', m.group(1)) or [None, None])[1]
+        based = (re.search(r'<w:basedOn w:val="([^"]+)"', m.group(2)) or [None, None])[1]
+        rpr = (re.search(r"<w:rPr>(.*?)</w:rPr>", m.group(2), re.S) or [None, ""])[1]
+        sty[sid] = (based, face_of(rpr))
+        if 'w:type="paragraph"' in m.group(1) and 'w:default="1"' in m.group(1):
+            default_para = sid
+    dd = re.search(r"<w:rPrDefault>(.*?)</w:rPrDefault>", styles, re.S)
+    doc_default = face_of(dd.group(1)) if dd else None
+
+    def chain(sid, seen=()):
+        while sid and sid in sty and sid not in seen:
+            seen += (sid,)
+            based, f = sty[sid]
+            if f:
+                return f
+            sid = based
+        return None
+
+    faces = set()
+    for xml in parts:
+        for p in re.finditer(r"<w:p[ >].*?</w:p>", xml, re.S):
+            pstyle = (re.search(r'<w:pStyle w:val="([^"]+)"', p.group(0)) or [None, None])[1]
+            for run in re.findall(r"<w:r[ >].*?</w:r>", p.group(0), re.S):
+                text = "".join(re.findall(r"<w:t(?: [^>]*)?>(.*?)</w:t>", run, re.S))
+                if not re.search(r"\w", text):
+                    continue
+                rpr = (re.search(r"<w:rPr>(.*?)</w:rPr>", run, re.S) or [None, ""])[1]
+                rstyle = (re.search(r'<w:rStyle w:val="([^"]+)"', rpr) or [None, None])[1]
+                f = face_of(rpr) or chain(rstyle) or chain(pstyle) or chain(default_para) or doc_default
+                if f:
+                    faces.add(f)
+    return faces
+
+
+def font_substitutions(docx, pdf):
+    """Faces the .docx declares for text that the rendered PDF does not embed: each a substitution. [] is clean."""
+    embedded = [_norm(f) for f in pdf_fonts(pdf)]
+    out = []
+    for face in sorted(declared_faces(docx)):
+        want = _norm(face)
+        if not any(e.startswith(want) for e in embedded):
+            out.append("%s is not in the PDF (embedded: %s)" % (face, ", ".join(sorted(pdf_fonts(pdf))) or "none"))
+    return out
 
 
 if __name__ == "__main__":
