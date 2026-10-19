@@ -493,6 +493,8 @@ def test_the_signed_in_person_is_recorded_on_every_change(api, monkeypatch):
     assert set(seen["actors"]) == {"b.nikolov"} and started[-1]["requested_by"] == "b.nikolov" and r["status"] == "queued"
     c.patch(f"/briefs/{b['id']}", json={"rev": 2, "actor": "direct-caller", "set": {"focus": "Purity"}}, headers=h())
     assert seen["actors"][-1] == "direct-caller"          # without the header, the body's own actor
+
+
 # ---------- 19.10.2026: an annex brief kept the SOP question set and was written as a nine-section SOP ----------
 def test_changing_the_package_takes_its_question_set_and_a_mismatch_is_never_built():
     b = B.new_brief("sop_annexes", {"title_en": "Request for sampling"})
