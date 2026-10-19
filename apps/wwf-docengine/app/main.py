@@ -82,6 +82,18 @@ async def lifespan(app: FastAPI):
         # Never block startup on the sweep — the service must come up.
         log.warning("stale-job sweep failed at startup", exc_info=True)
     reaper = asyncio.create_task(_reap_forever()) if db.ready() else None
+    # The register against the library at every start (Head of QC, 19.10.2026): said in the log, shown in the Library.
+    try:
+        if db.ready():
+            rec = library.reconcile(library.shelve(house_codes.load_register(), await db.reference_list("approved"), [], {}))
+            if rec["missing"]:
+                log.warning("in use in the register, no approved copy in the library: %s",
+                            ", ".join(e["code"] for e in rec["missing"]))
+            if rec["unlisted"]:
+                log.warning("approved copy held, not in use in the register: %s",
+                            ", ".join(e["code"] for e in rec["unlisted"]))
+    except Exception:  # noqa: BLE001 — a report, never a reason not to start
+        log.warning("register/library reconciliation failed at startup", exc_info=True)
     yield
     if reaper:
         reaper.cancel()
@@ -363,11 +375,19 @@ async def review_workflow(jid: str, body: ReviewIn):
         raise HTTPException(404, "no such job")
     res = job.get("result") or {}
     art = res.get("artifact") or {}
+    # A draft that conflicts with an approved, in-use document is registered only with the reason written down
+    # (Head of QC, 19.10.2026) — "this revises QCT002", say — and the reason stays with the registration.
+    hc = (res.get("house_check") or {}).get("verdicts") or {}
+    conflicts = sorted(c for c, v in hc.items() if v.get("verdict") in ("CONFLICT", "UNCHECKED"))
+    if body.decision == "approve" and conflicts and not body.note.strip():
+        raise HTTPException(422, f"this draft conflicts with, or was not checked against, approved {', '.join(conflicts)}: "
+                                 "give the reason to register it anyway, or return it for revision")
     if job["status"] == "awaiting_review" and body.decision == "approve" and not (art.get("path") and Path(art["path"]).is_file()):
         raise HTTPException(410, "the built document is missing; return it for revision and re-run")
     from datetime import datetime, timezone
     review = {"decision": body.decision, "note": body.note.strip(), "by": who(body.reviewer) or job.get("created_by") or "reviewer",
-              "at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "qa_verdict": res.get("qa_verdict", "")}
+              "at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "qa_verdict": res.get("qa_verdict", ""),
+              **({"house_conflicts": conflicts} if conflicts else {})}
     # Atomic claim: of two simultaneous decisions only one moves the row out of awaiting_review.
     if not await db.job_claim(jid, "awaiting_review", "running" if body.decision == "approve" else "failed"):
         raise HTTPException(409, "job is not awaiting review")
@@ -668,8 +688,9 @@ async def get_library():
     if not db.ready():
         raise HTTPException(503, "DocEngine storage unavailable")
     refs = await db.reference_list()
-    return library.shelve(house_codes.load_register(), refs, await db.documents_list(500), await db.jobs_open_by_code(),
-                          await house.listed_map(refs))
+    lib = library.shelve(house_codes.load_register(), refs, await db.documents_list(500), await db.jobs_open_by_code(),
+                         await house.listed_map(refs))
+    return {**lib, "reconcile": library.reconcile(lib)}
 
 
 @app.get("/house/related/{code}", dependencies=[Depends(require_api_key)])

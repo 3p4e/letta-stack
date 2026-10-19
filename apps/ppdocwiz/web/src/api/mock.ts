@@ -53,7 +53,10 @@ function seedJobs(): Job[] {
     mkJob({ id: '7b21d0aa-5f1c-4e0a-9d3e-1c2b3a4d5e6f', code: 'QCSOP_014', mk: 'Тестирање на стабилност', en: 'Stability testing', q: 'sop_qc', doctype: 'SOP', by: 'marija.k', minAgo: 32, status: 'failed', stage: 'bilingual-check', error: 'sections are not bilingual: 5.0 (no EN)', result: { bilingual_gaps: ['5.0 (no EN)'], telemetry: telemetry('SOP', '5.0'), regulatory: findings('SOP') } }),
     mkJob({ id: 'c04e88f3-2b7a-4c1d-8e9f-0a1b2c3d4e5f', code: 'WHSOP_011_A01', mk: 'Дневник на температура', en: 'Temperature log', q: 'annex_form', doctype: 'FORM', by: 'darko.s', minAgo: 53, status: 'failed', stage: 'qa-audit', error: '§6A audit did not pass', result: { qa_audit: ['Verdict: FIX', ...QA_FIX.slice(2)].join('\n'), qa_verdict: 'FIX', telemetry: telemetry('FORM'), regulatory: findings('FORM') } }),
     mkJob({ id: '19d5e7b0-8c4d-4f2e-b1a0-9e8d7c6b5a49', code: 'QCSOP_022', mk: 'Микробиолошко тестирање', en: 'Microbiological testing', q: 'sop_qc', doctype: 'SOP', by: 'ivana.p', minAgo: 162, status: 'failed', stage: 'regulatory-check 6.0', error: 'abandoned: no progress for 60 minutes (worker killed mid-run)', result: { telemetry: telemetry('SOP'), regulatory: findings('SOP').slice(0, 5) } }),
-    mkJob({ id: 'a3f19c22-6d5e-4b7a-8c9d-0e1f2a3b4c5d', code: 'QCSOP_033', mk: 'Контрола на влага во просторија', en: 'Room humidity control', q: 'sop_qc', doctype: 'SOP', by: 'darko.s', minAgo: 18, status: 'awaiting_review', stage: 'format', result: { verify: sopReport('QCSOP_033', true), regulatory: findings('SOP'), qa_audit: 'Verdict: PASS — no issues.', qa_verdict: 'PASS', telemetry: telemetry('SOP'), markdown: '<!--HEADERDATA\nmk_title: Контрола на влага во просторија\nen_title: Room humidity control\ncode: QCSOP_033\nversion: 01\ndoctype: SOP\n-->\n\n## 1.0 ЦЕЛ | PURPOSE\n…' } }),
+    mkJob({ id: 'a3f19c22-6d5e-4b7a-8c9d-0e1f2a3b4c5d', code: 'QCSOP_033', mk: 'Контрола на влага во просторија', en: 'Room humidity control', q: 'sop_qc', doctype: 'SOP', by: 'darko.s', minAgo: 18, status: 'awaiting_review', stage: 'format', result: { verify: sopReport('QCSOP_033', true), regulatory: findings('SOP'), qa_audit: 'Verdict: PASS — no issues.', qa_verdict: 'PASS', telemetry: telemetry('SOP'),
+      house_check: { checked: [{ code: 'QCSOP014', version: '01', title: 'Water sampling and quality control', why: 'a title like this draft\'s' }, { code: 'QCLB005', version: '01', title: 'Sampling logbook', why: 'named in the draft' }],
+                     verdicts: { QCSOP014: { verdict: 'CONFLICT', detail: 'draft: «QA records the reading» | approved: «the QC analyst records the reading»' }, QCLB005: { verdict: 'CONSISTENT', detail: '' } } },
+      markdown: '<!--HEADERDATA\nmk_title: Контрола на влага во просторија\nen_title: Room humidity control\ncode: QCSOP_033\nversion: 01\ndoctype: SOP\n-->\n\n## 1.0 ЦЕЛ | PURPOSE\n…' } }),
     mkJob({ id: 'e8812f4c-1a2b-4c3d-9e4f-5a6b7c8d9e0f', code: 'QCSOP_018', mk: 'Земање мостри', en: 'Sampling', q: 'sop_qc', doctype: 'SOP', by: 'darko.s', minAgo: 1440, status: 'done', stage: 'done', result: { document_id: '5d0c71e2-0000-4000-a000-000000000001', bytes: 212506, verify: sopReport('QCSOP_018', true), regulatory: findings('SOP'), qa_audit: 'Verdict: PASS — no issues.', qa_verdict: 'PASS', telemetry: telemetry('SOP') } }),
   ];
 }
@@ -300,7 +303,9 @@ export function mockApi(onChange?: () => void): MockApi {
         retired: [LIB.QCSOP020],
       } as Record<Shelf, ShelfEntry[]>;
       // The same grouping DocEngine makes (19.10.2026): an SOP with an approved copy or effective in the register is in use.
-      return { shelves, counts: Object.fromEntries(Object.entries(shelves).map(([k, v]) => [k, v.length])) as Record<Shelf, number>, packages: structuredClone(LIB_PACKAGES), loose: { in_use: [LIB.QCSOP020], drafts: [LIB.QASOPXXX] } };
+      return { shelves, counts: Object.fromEntries(Object.entries(shelves).map(([k, v]) => [k, v.length])) as Record<Shelf, number>, packages: structuredClone(LIB_PACKAGES), loose: { in_use: [LIB.QCSOP020], drafts: [LIB.QASOPXXX] },
+        reconcile: { missing: [{ code: 'QCSOP016', title_en: 'Stability programme', title_mk: '', version: '01', status: 'effective' }],
+                     unlisted: [{ code: 'QAT010', title_en: 'Risk analysis', title_mk: 'Ризик анализа', version: '01', status: 'not in the register' }] } };
     },
     async houseRelated(code): Promise<HouseRelated> {
       await wait(50); const c = code.replace(/[\s_-]/g, '').toUpperCase();

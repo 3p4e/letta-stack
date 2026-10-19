@@ -144,3 +144,90 @@ async def listed_map(refs: list[dict] | None = None) -> dict[str, list[str]]:
         full = await db.reference_get(d["id"])
         out[d["code"]] = listed_codes((full or {}).get("markdown") or "", known)
     return out
+
+
+# ---------- house consistency: which documents a draft is checked against (Head of QC, 19.10.2026) ----------
+# The regulatory checker sees the four passages most like each section, so an approved procedure that contradicts the
+# draft in other words could go unseen, and nothing said which documents were looked at. The house check reads the
+# full text of a named set, and the job keeps the set.
+MAX_CHECK, MAX_CHECK_DOC_CHARS, MAX_CHECK_BATCH_CHARS = 10, 15_000, 48_000
+_WORD = re.compile(r"[A-Za-zА-Яа-яЀ-ӿ]{4,}")
+_STOP = {"standard", "operating", "procedure", "стандардна", "оперативна", "процедура", "form", "образец", "record",
+         "запис", "list", "листа", "document", "документ", "with", "from", "this", "that", "and/or", "или", "за"}
+
+
+def _words(title: str) -> set[str]:
+    return {w.lower() for w in _WORD.findall(title or "") if w.lower() not in _STOP}
+
+
+def check_set(code: str, parent: str, markdown: str, title_en: str, title_mk: str, docs: list[dict],
+              parents: dict[str, str], listed_by: dict[str, list[str]]) -> list[dict]:
+    """The approved documents a draft is checked against, in priority order, each with why: the approved version the
+    draft revises, its parent SOP and the documents tied to that SOP, the documents the draft itself names, and the
+    approved documents whose title shares two or more significant words with the draft's."""
+    by_code = {d["code"]: d for d in docs}
+    out: dict[str, str] = {}
+
+    def add(c: str, why: str) -> None:
+        if c in by_code and c not in out:
+            out[c] = why
+    add(code, "the approved version this draft revises")
+    if parent:
+        add(parent, "the parent SOP")
+        for c, rel in relations(parent, list(by_code), parents, listed_by.get(parent, [])):
+            add(c, f"{rel} of the parent SOP {parent}")
+    for c in listed_codes(markdown, set(by_code)):
+        add(c, "named in the draft")
+    mine = _words(title_en) | _words(title_mk)
+    scored = sorted(((len(mine & (_words(d.get("title_en", "")) | _words(d.get("title_mk", "")))), d["code"])
+                     for d in docs), reverse=True)
+    for n, c in scored:
+        if n >= 2:
+            add(c, "a title like this draft's")
+    return [{"code": c, "version": by_code[c]["version"], "title": by_code[c].get("title_en") or by_code[c].get("title_mk")
+             or "", "id": by_code[c]["id"], "why": why} for c, why in list(out.items())[:MAX_CHECK]]
+
+
+_VERDICT = re.compile(r"^\W*HOUSE\s+([A-Za-z]{2,8}\s?\d{1,3}(?:\s?A\s?\d{1,2})?)\s*:\s*"
+                      r"(CONSISTENT|NOT RELEVANT|CHANGES|CONFLICT)\b\s*[—\-:]*\s*(.*)$", re.M | re.I)
+
+
+def parse_verdicts(reply: str, expected: list[str]) -> dict[str, dict]:
+    """code → {verdict, detail} from the checker's lines; a document it did not answer is 'UNCHECKED'."""
+    got: dict[str, dict] = {}
+    for m in _VERDICT.finditer(reply or ""):
+        c = normalize(m.group(1)) or m.group(1)
+        if c in expected and c not in got:
+            got[c] = {"verdict": m.group(2).upper(), "detail": m.group(3).strip()[:1200]}
+    return {c: got.get(c, {"verdict": "UNCHECKED", "detail": "the checker gave no verdict for it"}) for c in expected}
+
+
+async def checking_docs(code: str, parent: str, markdown: str, title_en: str, title_mk: str) -> list[dict]:
+    """check_set over the library, each document with its approved text (cut at MAX_CHECK_DOC_CHARS)."""
+    docs = await in_use_list()
+    if not docs:
+        return []
+    by_code = {d["code"]: d for d in docs}
+    listed_by: dict[str, list[str]] = {}
+    if parent in by_code:
+        full = await db.reference_get(by_code[parent]["id"])
+        listed_by[parent] = listed_codes((full or {}).get("markdown") or "", set(by_code))
+    chosen = check_set(code, parent, markdown, title_en, title_mk, docs,
+                       {d["code"]: d.get("parent") or "" for d in docs}, listed_by)
+    for d in chosen:
+        full = await db.reference_get(d["id"])
+        d["text"] = ((full or {}).get("markdown") or "")[:MAX_CHECK_DOC_CHARS]
+    return [d for d in chosen if d["text"].strip()]
+
+
+def batches(docs: list[dict]) -> list[list[dict]]:
+    """Documents grouped so one checker exchange stays within MAX_CHECK_BATCH_CHARS."""
+    out: list[list[dict]] = [[]]
+    size = 0
+    for d in docs:
+        if out[-1] and size + len(d["text"]) > MAX_CHECK_BATCH_CHARS:
+            out.append([])
+            size = 0
+        out[-1].append(d)
+        size += len(d["text"])
+    return [b for b in out if b]

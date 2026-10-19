@@ -424,3 +424,9 @@ the QA channels.
   authors follow DB3's practice and must not contradict it, cite house documents only from the in-use list (by code and
   version), and an annex to an approved SOP reads that SOP; the regulatory checker also reports `CONFLICT [H#]` against
   DB3. No batch, date, result, name or record value is copied from them.
+- **Every draft is checked against the approved documents it touches** (Head of QC, 19.10.2026). After the §6A audit,
+  `gf_house_checker` reads the full text of a named set — the approved version it revises, its parent SOP and that SOP's
+  documents, the codes the draft names, approved documents with a similar title (`house.check_set`, ≤ 10) — and gives a
+  verdict per document. A CONFLICT, or a document left without a verdict, parks the job for review, and it is registered
+  only with the reviewer's written reason (`review.house_conflicts`). The Library reports, and the engine logs at start,
+  the register's in-use codes it holds no approved copy of and the copies the register does not list as in use.
