@@ -6,8 +6,6 @@ QCWI001	1	ingested	1zjPAqwuO_dn3xNo7gNkKOWRrdn94x5w4	1bFEmG_PGsZrHHYSsc1uNlF4r0a
 QCPL001	1	ingested	1Noazm8vjqbyrh2h2Vm6azBfGHz_97WbZ	1gNujYi8LLLg6XZ_eDcIbE8PgALSNCI44,1WDLTza8nCIcb8H4HykI_Xt0Vf_RQ34uY	hygiene plan (QALI 001 QCPL001)
 QCPL002	1	ingested	1H8rm_VRMpljEAyX4KgUXhGurNca8tFUH	1W_SlC2yI69tm-qi8a84rbkTxbPI-DgH9,1dpWCqkEPrW2LA-_Ew8wvNvh9Q7Dnqt-W	microbiological monitoring plan; QALI 001 number per Head of QC 19.10.2026; its Word file and signed scan say QCPL 001 (paper correction pending)
 QCT013	1	ingested	1LX6OtdTJD2SVkPaagcu2VaI3o2AmmtLj		docx_only in the first run but never reached DB3
-QCLB014	?	scan_only		1WEtdhYJF_HhfLMDWs2F4xiXxUE-k6GDe,1c_jjY-OoYWl4XoHCkdtJ4NHrPRBu7m5U	docx files in its folder are filled cover pages
-QCWI014	?	scan_only		1-wSaotwiW5nin9W3ONathP_qsyU8tBfx	
 QCSOP016	?	absent			Drive DB3 folder empty
 QCSOP022	?	absent			Drive DB3 folder empty
 QCSP003	?	absent			not in Drive DB3
@@ -15,3 +13,5 @@ SSP001	?	absent			not in Drive DB3
 QCSOP001	2	not_ingested	1V095vqz5damQeFaIIp-Rv7zWOgHsGYRl		in Drive DB3 but QALI 001: v02 under revision; engine keeps v01
 QCSOP012	3	not_ingested	1EESfpFABKbYnLLxtoMf1B4Z9WJ6PpMag		in Drive DB3 but QALI 001: v03 to be signed; engine keeps v02
 MNLB001	-	not_ingested			filled logbook cover pages (records), not a form
+QCLB014	1	ingested_ocr		1WEtdhYJF_HhfLMDWs2F4xiXxUE-k6GDe	OCR of the signed scan (Drive text extraction), Head of QC 19.10.2026; effective date from QALI 001; 4 [illegible] in the signature block
+QCWI014	1	ingested_ocr		1-wSaotwiW5nin9W3ONathP_qsyU8tBfx	OCR of the signed scan, Head of QC 19.10.2026; effective date from QALI 001; 8 [illegible] (cover names/signatures), 36 display screenshots as [figure]
