@@ -18,6 +18,11 @@
 #   PUT  /reference                       store an approved or work-in-progress document's text (approved: indexed in DB3)
 #   GET  /reference, /reference/{id}      those documents (list; one with its text)
 #   GET  /library                         every code on its shelf: approved, revision, drafts, numbers, retired
+#   POST /briefs, GET /briefs[/{id}]      the Document Brief the single workflow edits (also from a reference document)
+#   PATCH /briefs/{id}                    change it: fields (chosen / suggested / locked), meta, package, annexes; rev-checked
+#   GET  /briefs/{id}/events              its full change history
+#   POST /briefs/{id}/sources, DELETE …   upload a .docx/.pdf/.json/.md source (text kept), or remove one
+#   POST /briefs/{id}/build               build from wherever the brief stands; undecided fields listed as assumed
 import asyncio
 import contextlib
 import logging
@@ -553,3 +558,190 @@ async def get_library():
         raise HTTPException(503, "DocEngine storage unavailable")
     return library.shelve(house_codes.load_register(), await db.reference_list(), await db.documents_list(500),
                           await db.jobs_open_by_code())
+
+
+# ---------- the Document Brief: one workflow (Head of QC, 18.10.2026) ----------
+from . import brief as briefs  # noqa: E402
+from . import sources as srcs  # noqa: E402
+
+
+class BriefIn(BaseModel):
+    package: str
+    meta: dict = Field(default_factory=dict)
+    questionnaire: str = ""
+    parent_sop: str = ""
+    from_reference: str = ""          # an approved or work-in-progress document to start from (Revise / Continue)
+    requested_by: str = ""
+
+
+class BriefPatch(BaseModel):
+    rev: int
+    actor: str = ""
+    set: dict = Field(default_factory=dict)
+    suggest: dict = Field(default_factory=dict)
+    lock: list[str] = Field(default_factory=list)
+    unlock: list[str] = Field(default_factory=list)
+    meta: dict = Field(default_factory=dict)
+    package: str | None = None
+    questionnaire: str | None = None
+    parent_sop: str | None = None
+    annexes: list[dict] | None = None
+    status: str | None = None
+
+
+class SourceIn(BaseModel):
+    name: str = Field(min_length=1, max_length=200)
+    content_b64: str = Field(min_length=1, max_length=21_000_000)
+    actor: str = ""
+
+
+class BuildBriefIn(BaseModel):
+    rev: int | None = None
+    actor: str = ""
+
+
+def _need_db() -> None:
+    if not db.ready():
+        raise HTTPException(503, "DocEngine storage unavailable")
+
+
+async def _brief_or_404(bid: str) -> dict:
+    _need_db()
+    b = await db.brief_get(bid) if _valid_uuid(bid) else None
+    if not b:
+        raise HTTPException(404, "no such brief")
+    return b
+
+
+def _brief_meta(meta: dict) -> dict:
+    _check_meta(meta)
+    if meta.get("code"):
+        meta = {**meta, "code": _house_code(meta["code"])}
+    return meta
+
+
+@app.post("/briefs", dependencies=[Depends(require_api_key)])
+async def create_brief(body: BriefIn):
+    _need_db()
+    meta, seed = dict(body.meta), None
+    if body.from_reference:
+        seed = await db.reference_get(body.from_reference) if _valid_uuid(body.from_reference) else None
+        if not seed:
+            raise HTTPException(404, "no such reference document")
+        for k in ("title_mk", "title_en", "code", "version"):
+            meta.setdefault(k, seed.get(k) or "")
+    try:
+        b = briefs.new_brief(body.package, _brief_meta(meta), body.questionnaire,
+                             _house_code(body.parent_sop, "parent_sop") if body.parent_sop else (seed or {}).get("parent", ""))
+    except briefs.BriefError as e:
+        raise HTTPException(e.status, str(e)) from e
+    bid = await db.brief_create(b, body.requested_by)
+    if seed:
+        text = seed["markdown"]
+        label = "approved text" if seed["kind"] == "approved" else "work in progress"
+        await db.brief_source_add(bid, 0, body.requested_by, {
+            "name": f"{seed['code']} v{seed['version'] or '—'} ({label})", "kind": "md", "bytes": len(text.encode()),
+            "sha256": seed["sha256"], "text": text})
+    return await db.brief_get(bid)
+
+
+@app.get("/briefs", dependencies=[Depends(require_api_key)])
+async def list_briefs():
+    _need_db()
+    return {"briefs": await db.brief_list()}
+
+
+@app.get("/briefs/{bid}", dependencies=[Depends(require_api_key)])
+async def get_brief(bid: str):
+    return await _brief_or_404(bid)
+
+
+@app.patch("/briefs/{bid}", dependencies=[Depends(require_api_key)])
+async def patch_brief(bid: str, body: BriefPatch):
+    b = await _brief_or_404(bid)
+    patch = body.model_dump(exclude_none=True)
+    if body.meta:
+        patch["meta"] = _brief_meta({**b["meta"], **body.meta})
+        patch["meta"] = {k: v for k, v in patch["meta"].items() if k in body.meta}
+    if body.parent_sop:
+        patch["parent_sop"] = _house_code(body.parent_sop, "parent_sop")
+    try:
+        new, events = briefs.apply_patch(b, patch, body.actor)
+    except briefs.BriefError as e:
+        raise HTTPException(e.status, str(e)) from e
+    if events and not await db.brief_save(new, b["rev"], events):
+        raise HTTPException(409, "the brief changed meanwhile; reload it")
+    return await db.brief_get(bid)
+
+
+@app.get("/briefs/{bid}/events", dependencies=[Depends(require_api_key)])
+async def brief_history(bid: str):
+    await _brief_or_404(bid)
+    return {"events": await db.brief_events(bid)}
+
+
+@app.post("/briefs/{bid}/sources", dependencies=[Depends(require_api_key)])
+async def add_brief_source(bid: str, body: SourceIn):
+    import base64
+    import binascii
+    import hashlib
+    b = await _brief_or_404(bid)
+    try:
+        blob = base64.b64decode(body.content_b64, validate=True)
+        kind = srcs.kind_of(body.name)
+        text = await asyncio.to_thread(srcs.extract, body.name, blob)
+    except (binascii.Error, ValueError) as e:
+        raise HTTPException(400, str(e) if isinstance(e, srcs.SourceError) else "content_b64 is not base64") from e
+    sid = await db.brief_source_add(bid, b["rev"], body.actor, {"name": body.name, "kind": kind, "bytes": len(blob),
+                                                                "sha256": hashlib.sha256(blob).hexdigest(), "text": text})
+    note = "" if text.strip() else "no text layer (a scan?): the authors cannot read it"
+    return {"id": sid, "chars": len(text), "note": note, "brief": await db.brief_get(bid)}
+
+
+@app.delete("/briefs/{bid}/sources/{sid}", dependencies=[Depends(require_api_key)])
+async def remove_brief_source(bid: str, sid: str, actor: str = ""):
+    await _brief_or_404(bid)
+    if not _valid_uuid(sid) or not await db.brief_source_remove(bid, sid, actor):
+        raise HTTPException(404, "no such source")
+    return await db.brief_get(bid)
+
+
+_FAMILY_OF = {"sop": "QCSOP", "sop_annexes": "QCSOP", "form": "QCT", "report": "QCT"}
+
+
+@app.post("/briefs/{bid}/build", dependencies=[Depends(require_api_key)])
+async def build_brief(bid: str, body: BuildBriefIn):
+    """Build from wherever the brief stands. A missing code is the register's next free one; everything the requester
+    has not decided goes to the authors and is listed as `assumed` in the job."""
+    b = await _brief_or_404(bid)
+    if body.rev is not None and body.rev != b["rev"]:
+        raise HTTPException(409, f"the brief is at rev {b['rev']}, not {body.rev}; reload it")
+    if not LettaClient().configured:
+        raise HTTPException(503, "Letta unavailable")
+    taken = await db.codes_in_use()
+    if not b["meta"].get("code"):
+        if b["package"] == "annex":
+            if not b.get("parent_sop"):
+                raise HTTPException(400, "an annex needs its SOP (parent_sop) before it can be numbered")
+            code = house_codes.next_code(parent=b["parent_sop"], taken=taken)
+        else:
+            dept = (b["meta"].get("department") or "QC").upper()
+            fam = _FAMILY_OF[b["package"]].replace("QC", dept, 1)
+            code = house_codes.next_code(family=fam, taken=taken)
+        b["meta"]["code"] = code
+    try:
+        payload = briefs.to_workflow(b, await db.brief_sources(bid))
+    except briefs.BriefError as e:
+        raise HTTPException(e.status, str(e)) from e
+    _check_meta(payload["meta"], ("title_mk", "title_en", "code"))
+    payload["requested_by"] = body.actor
+    jid = await db.job_create("workflow", payload, body.actor)
+    new, events = briefs.apply_patch(b, {"rev": b["rev"], "meta": {"code": b["meta"]["code"]}}, body.actor)
+    new["job_ids"] = [*b.get("job_ids", []), jid]
+    events.append({"op": "build", "key": jid, "before": None, "after": {"job_id": jid, "assumed": payload["assumed"]},
+                   "actor": body.actor})
+    if not new["rev"] > b["rev"]:
+        new["rev"] = b["rev"] + 1
+    await db.brief_save(new, b["rev"], events)
+    _fire_and_forget(run_workflow(jid))
+    return {"job_id": jid, "status": "queued", "code": b["meta"]["code"], "assumed": payload["assumed"]}

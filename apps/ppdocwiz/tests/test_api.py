@@ -332,3 +332,21 @@ def test_chat_without_a_build_offers_no_links(client, monkeypatch):
                         [{"id": "a1", "name": "qms_docx_formatter"}] if m == "GET"
                         else {"messages": [{"message_type": "assistant_message", "content": "hi"}]})
     assert client.post("/api/chat", headers={"X-API-Key": KEY}, json={"message": "hi"}).json()["built"] is None
+
+
+
+def test_every_docengine_route_the_web_client_calls_is_forwarded():
+    """The proxy allowlist and the web client drifted apart once (library, register, engine: 404 in the browser)."""
+    import re
+    from pathlib import Path
+
+    live = (Path(__file__).resolve().parents[1] / "web/src/api/live.ts").read_text(encoding="utf-8")
+    called = set(re.findall(r"de \+ '/([a-z_]+)", live)) | set(re.findall(r"\$\{de\}/([a-z_]+)", live))
+    assert called and called <= app_mod._DE_ROUTES, sorted(called - app_mod._DE_ROUTES)
+
+
+def test_the_brief_routes_pass_patch_and_delete(client, monkeypatch):
+    monkeypatch.setattr(settings, "docengine_url", "http://127.0.0.1:9")
+    for method in ("patch", "delete"):
+        assert getattr(client, method)("/api/docengine/briefs/x", headers=H).status_code == 502   # forwarded, not 404/405
+    assert client.put("/api/docengine/reference", headers=H).status_code == 405                 # operator route stays out

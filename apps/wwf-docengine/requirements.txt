@@ -18,3 +18,5 @@ PyYAML==6.0.2
 # The engine glyph guard (engine/scripts/pp_assets.py) reads font cmaps with fontTools;
 # without it the check silently skips and Macedonian can ship as tofu.
 fonttools==4.62.1
+# Source files uploaded to a Document Brief (18.10.2026): the text of a PDF is read with pypdf (pure Python).
+pypdf==6.20.1

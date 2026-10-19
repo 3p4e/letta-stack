@@ -24,6 +24,7 @@ async function call<T>(url: string, init?: RequestInit): Promise<T> {
   return body as T;
 }
 const post = <T,>(url: string, body: unknown) => call<T>(url, { method: 'POST', body: JSON.stringify(body) });
+const send = <T,>(url: string, method: string, body?: unknown) => call<T>(url, { method, body: body === undefined ? undefined : JSON.stringify(body) });
 
 function rememberJob(id: string) {
   try {
@@ -72,6 +73,14 @@ export function liveApi(): Api {
     buildReport: async () => { throw new ApiError(501, 'no report route yet: pp_report.py is called from Python scripts, not exposed by ppdocwiz or DocEngine'); },
     engineEnv: () => call(de + '/engine/environment'),
     library: () => call(de + '/library'),
+    briefs: async () => (await call<{ briefs: never[] }>(de + '/briefs')).briefs,
+    brief: id => call(de + '/briefs/' + encodeURIComponent(id)),
+    createBrief: b => post(de + '/briefs', b),
+    patchBrief: (id, p) => send(de + '/briefs/' + encodeURIComponent(id), 'PATCH', p),
+    briefEvents: async id => (await call<{ events: never[] }>(de + '/briefs/' + encodeURIComponent(id) + '/events')).events,
+    addBriefSource: (id, name, content_b64) => post(de + '/briefs/' + encodeURIComponent(id) + '/sources', { name, content_b64 }),
+    removeBriefSource: (id, sid) => send(de + '/briefs/' + encodeURIComponent(id) + '/sources/' + encodeURIComponent(sid), 'DELETE'),
+    buildBrief: async (id, rev) => { const r = await post<{ job_id: string; status: string; code: string; assumed: string[] }>(de + '/briefs/' + encodeURIComponent(id) + '/build', { rev }); rememberJob(r.job_id); return r; },
     reference: id => call(de + '/reference/' + encodeURIComponent(id)),
     nextCode: async q => (await call<{ code: string }>(de + '/register/next?' + new URLSearchParams(q.parent ? { parent: q.parent } : { family: q.family || '' }))).code,
   };

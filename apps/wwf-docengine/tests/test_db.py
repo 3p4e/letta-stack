@@ -195,3 +195,23 @@ async def test_a_reference_document_is_stored_once_per_kind_code_and_version(dbp
     assert wip != rid
     listed = await db.reference_list("approved")
     assert [r["id"] for r in listed] == [rid] and "markdown" not in listed[0] and listed[0]["chars"] == 40
+
+
+async def test_a_brief_keeps_every_change_and_refuses_a_stale_write(dbpool):
+    from app import brief as B
+    b = B.new_brief("sop", {"title_en": "Sampling"})
+    bid = await db.brief_create(b, "bn")
+    got = await db.brief_get(bid)
+    new, events = B.apply_patch(got, {"rev": 0, "set": {"doc.purpose": "Sample FP"}}, "bn")
+    assert await db.brief_save(new, 0, events)
+    assert not await db.brief_save(new, 0, events)                       # the second writer of rev 0 loses
+    sid = await db.brief_source_add(bid, 1, "bn", {"name": "old.docx", "kind": "docx", "bytes": 10, "sha256": "s",
+                                                   "text": "Old SOP"})
+    got = await db.brief_get(bid)
+    assert got["rev"] == 2 and got["fields"]["doc.purpose"]["value"] == "Sample FP"
+    assert got["sources"][0]["name"] == "old.docx" and "text" not in got["sources"][0]
+    assert (await db.brief_sources(bid))[0]["text"] == "Old SOP"
+    assert await db.brief_source_remove(bid, sid, "bn")
+    ops = [e["op"] for e in await db.brief_events(bid)]
+    assert ops == ["create", "set", "source_add", "source_remove"]
+    assert [x["id"] for x in await db.brief_list()] == [bid]
