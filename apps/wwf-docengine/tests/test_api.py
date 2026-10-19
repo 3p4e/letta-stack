@@ -446,3 +446,42 @@ def test_a_form_under_an_sop_passes_the_workflow_guard(client, monkeypatch):
     bad = client.post("/workflows", headers=h(), json={"questionnaire": "annex_form", "parent_sop": "QCSOP001",
                                                        "meta": {"title_mk": "б", "title_en": "Request", "code": "QCSOP026"}})
     assert bad.status_code == 422 and "no annex number" in bad.json()["detail"]
+
+
+def test_a_house_conflict_is_registered_only_with_a_reason(client, monkeypatch, tmp_path):
+    """Head of QC, 19.10.2026: a draft that conflicts with an approved document is never registered silently."""
+    art = tmp_path / "d.docx"; art.write_bytes(b"x")
+    job = {"id": "00000000-0000-0000-0000-0000000000c1", "kind": "workflow", "status": "awaiting_review", "created_by": "x",
+           "payload": {"questionnaire": "annex_form", "meta": {"code": "QCT002", "title_mk": "б", "title_en": "R", "version": "03"}},
+           "result": {"artifact": {"path": str(art), "bytes": 1}, "verify": "PASS",
+                      "house_check": {"verdicts": {"QCSOP001": {"verdict": "CONFLICT", "detail": "x"},
+                                                   "QCT002": {"verdict": "CHANGES", "detail": "v03"}}}}}
+    merged = {}
+
+    async def job_get(jid):
+        return job
+
+    async def job_claim(jid, a, b):
+        return True
+
+    async def document_create(jid, d):
+        return "doc-9"
+
+    async def job_merge_result(jid, extra):
+        merged.update(extra)
+
+    async def job_update(jid, **f):
+        return None
+
+    async def start_package(*a, **k):
+        return None
+    monkeypatch.setattr(db, "ready", lambda: True)
+    for name, fn in (("job_get", job_get), ("job_claim", job_claim), ("document_create", document_create),
+                     ("job_merge_result", job_merge_result), ("job_update", job_update)):
+        monkeypatch.setattr(db, name, fn)
+    monkeypatch.setattr("app.main.start_package", start_package, raising=False)
+    url = f"/workflows/{job['id']}/review"
+    r = client.post(url, headers=h(), json={"decision": "approve"})
+    assert r.status_code == 422 and "QCSOP001" in r.json()["detail"] and "QCT002" not in r.json()["detail"]
+    r = client.post(url, headers=h(), json={"decision": "approve", "note": "QCSOP001 §6 is revised with this form"})
+    assert r.status_code == 200 and merged["review"]["house_conflicts"] == ["QCSOP001"]

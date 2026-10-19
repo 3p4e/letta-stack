@@ -109,3 +109,13 @@ def packages(entries: dict[str, dict], listed: dict[str, list[str]]) -> dict:
             continue
         loose["in_use" if entries[c]["shelf"] in ("approved", "revision") else "drafts"].append(entries[c])
     return {"packages": pk, "loose": loose}
+
+
+def reconcile(lib: dict) -> dict:
+    """The register against the library (Head of QC, 19.10.2026): an in-use code the engine holds no approved copy of
+    cannot be checked against; an approved copy the register does not list as in use needs a ruling."""
+    every = [e for es in lib["shelves"].values() for e in es]
+    brief = lambda e: {"code": e["code"], "title_en": e["title_en"], "title_mk": e["title_mk"],  # noqa: E731
+                       "version": (e["approved"] or {}).get("version") or e["version"], "status": e["status"] or "not in the register"}
+    return {"missing": [brief(e) for e in every if e["status"] in _IN_USE and not e["approved"]],
+            "unlisted": [brief(e) for e in every if e["approved"] and e["status"] not in _IN_USE]}

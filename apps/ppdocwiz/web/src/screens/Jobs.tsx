@@ -5,7 +5,7 @@ import { ApiError, type Job } from '../api/types';
 import { PPPage } from '../components/PPPage';
 import { Banner, Btn, Kv, press } from '../components/ui';
 import { ANX_SEC, SAMPLE_ANNEX, SAMPLE_SOP, SOP_SEC } from '../data/samples';
-import { pickJob, reviewLocks, stillRunning } from '../lib/jobview';
+import { houseBlocking, pickJob, reviewLocks, stillRunning, type HouseCheck } from '../lib/jobview';
 import { readQa } from '../lib/qa';
 import { usePrimary } from '../lib/usePrimary';
 import { lineColor } from '../lib/verify';
@@ -107,6 +107,9 @@ export function Jobs() {
   const tel = (job.result.telemetry as Tel[] | undefined) || [];
   const regs = (job.result.regulatory as Finding[] | undefined) || [];
   const qa = readQa(job.result.qa_audit, job.result.qa_verdict, failed && !!job.error?.includes('§6A'));
+  // The house check (Head of QC, 19.10.2026): which approved documents were read, and each verdict.
+  const house = job.result.house_check as HouseCheck | undefined;
+  const blocking = houseBlocking(house);
   const verify = job.result.verify as string | undefined;
   const INS: Record<string, [string, string]> = { queued: ['Queued', 'POST /workflows'], generate: ['Section drafts', '_clean_section() · preamble strip'], reg: ['Regulatory findings', 'cite only retrieved passages'], bil: ['Bilingual check, per section', '_bilingual_gaps()'], qa: ['§6A audit verdict', 'gf_qa_auditor'], format: ['Verify gate report', 'builder.build()'], review: ['Review before registry', 'status awaiting_review'], done: ['Registry row', 'docengine.documents'] };
   const notRecorded = <div style={{ color: T.muted, fontSize: 13 }}>Not recorded in the job row. DocEngine stores <span style={{ fontFamily: MONO }}>result.regulatory</span>, <span style={{ fontFamily: MONO }}>qa_audit</span> and <span style={{ fontFamily: MONO }}>verify</span>; per-section drafts and letter counts are not persisted.</div>;
@@ -169,13 +172,26 @@ export function Jobs() {
       {job.status === 'done' && <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}><div style={{ flex: 'none' }}><PPPage doc={{ ...(sop ? SAMPLE_SOP : SAMPLE_ANNEX), code: job.payload.meta.code, mk_title: job.payload.meta.title_mk, en_title: job.payload.meta.title_en }} zoom={.14} /></div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, color: T.secondary, lineHeight: 1.4 }}>Registered in docengine.documents. The verify report is stored with the row.<span onClick={() => go('library', { libSel: String(job.result.document_id) })} {...press(() => go('library', { libSel: String(job.result.document_id) }))} style={{ color: C.run, cursor: 'pointer' }}>Open in Library →</span></div></div>}
       {(job.status === 'running' || job.status === 'queued') && <div style={{ color: C.run, fontFamily: MONO, fontSize: 12 }}>● polling every 1 s · stage {stageLabel}</div>}
+      {house && <div style={{ display: 'flex', flexDirection: 'column', gap: 6, background: T.surface, border: `1px solid ${T.hair}`, borderRadius: 8, padding: 12 }}>
+        <b style={{ fontFamily: MONO, fontSize: 12, color: blocking.length ? C.bad : C.ok }}>House check · {house.checked.length} approved document{house.checked.length === 1 ? '' : 's'} read in full</b>
+        {house.note && <span style={{ color: T.muted, fontSize: 12.5 }}>{house.note}</span>}
+        {house.error && <Banner kind="err">{house.error}</Banner>}
+        {house.checked.map(d => { const v = house.verdicts[d.code] || { verdict: 'UNCHECKED', detail: '' };
+          const col = v.verdict === 'CONFLICT' ? C.bad : v.verdict === 'UNCHECKED' ? C.warn : v.verdict === 'CHANGES' ? C.run : C.ok;
+          // Stacked, not a grid: the panel sits in the narrow right-hand column.
+          return <div key={d.code} style={{ display: 'flex', flexDirection: 'column', gap: 2, fontSize: 12.5, padding: '6px 0', borderTop: `1px solid ${T.hair}` }}>
+            <span style={{ display: 'flex', gap: 8, fontFamily: MONO }}><span style={{ color: '#fff' }}>{d.code} v{d.version}</span><span style={{ color: col, marginLeft: 'auto' }}>{v.verdict}</span></span>
+            <span style={{ color: T.secondary }}>{d.title} <span style={{ color: T.faint }}>· {d.why}</span></span>
+            {v.detail && <span style={{ color: col === C.ok ? T.secondary : col, lineHeight: 1.4 }}>{v.detail}</span>}</div>; })}
+      </div>}
       {review && <div style={{ display: 'flex', flexDirection: 'column', gap: 8, background: T.surface, border: `1px solid ${C.warn}`, borderRadius: 8, padding: 12 }}>
         <b style={{ color: C.warn, fontFamily: MONO, fontSize: 12 }}>awaiting_review</b>
         <div style={{ color: T.secondary, lineHeight: 1.45 }}>{qa?.verdict === 'FIX'
           ? `pp_verify passed, but the §6A auditor still returned FIX after ${job.result.qa_rounds ?? 0} repair round(s). Its remaining issues are under §6A audit verdict. Approve only if they are acceptable or corrected; nothing is registered until you approve.`
           : 'The gate passed. A person checks the Markdown and verify report before the row reaches the registry.'}</div>
-        <textarea value={note} onChange={e => setNote(e.target.value)} placeholder="Reviewer note (required to return)" style={{ height: 70, background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 6, padding: 8, color: '#fff', resize: 'none', outline: 'none', fontSize: 12.5 }} />
-        <div style={{ display: 'flex', gap: 8 }}><Btn onClick={() => decide('approve')} disabled={!reviewLocks(deciding, note).approve} style={{ flex: 1 }}>{deciding ? 'Deciding…' : 'Approve & register'}</Btn><Btn primary={false} disabled={!reviewLocks(deciding, note).ret} onClick={() => decide('return')} style={{ flex: 1 }}>Return for revision</Btn></div>
+        {blocking.length > 0 && <Banner kind="warn">This draft conflicts with, or was not checked against, approved {blocking.join(', ')} (see House check). Write the reason to register it anyway — e.g. which document it revises — or return it for revision.</Banner>}
+        <textarea value={note} onChange={e => setNote(e.target.value)} placeholder={blocking.length ? 'Reason to register despite the house check, or note to return' : 'Reviewer note (required to return)'} style={{ height: 70, background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 6, padding: 8, color: '#fff', resize: 'none', outline: 'none', fontSize: 12.5 }} />
+        <div style={{ display: 'flex', gap: 8 }}><Btn onClick={() => decide('approve')} disabled={!reviewLocks(deciding, note, blocking.length > 0).approve} style={{ flex: 1 }}>{deciding ? 'Deciding…' : 'Approve & register'}</Btn><Btn primary={false} disabled={!reviewLocks(deciding, note).ret} onClick={() => decide('return')} style={{ flex: 1 }}>Return for revision</Btn></div>
         {(() => { const openMd = () => { const md = String(job.result.markdown || ''); set({ builderMode: 'src', builderRaw: md || null }); go('builder'); flash(md ? 'Markdown opened in the Builder raw view' : 'no Markdown stored on this job'); };
           return <span onClick={openMd} {...press(openMd)} style={{ color: C.run, cursor: 'pointer', textAlign: 'center' }}>Open Markdown in Builder →</span>; })()}
         {reviewErr && <Banner kind="err">{reviewErr}</Banner>}

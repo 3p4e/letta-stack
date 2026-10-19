@@ -479,6 +479,34 @@ SOURCE_ROLE = {
 }
 
 
+async def _house_check(ask, meta: dict, markdown: str, parent_code: str, brief: str) -> dict:
+    """gf_house_checker over the documents house.checking_docs names: {checked: [{code, version, title, why}],
+    verdicts: {code: {verdict, detail}}, error?}. No approved document to check against is said, not skipped."""
+    try:
+        docs = await house.checking_docs(meta["code"], parent_code, markdown, meta.get("title_en", ""),
+                                         meta.get("title_mk", ""))
+    except Exception as e:  # noqa: BLE001 — the library being unreadable is recorded and goes to a person
+        return {"checked": [], "verdicts": {}, "error": f"library unavailable: {e}"[:200]}
+    out = {"checked": [{k: d[k] for k in ("code", "version", "title", "why")} for d in docs], "verdicts": {}}
+    if not docs:
+        out["note"] = "no approved, in-use document in the library relates to this draft"
+        return out
+    for i, group in enumerate(house.batches(docs)):
+        approved = "\n\n".join(f"=== {d['code']} v{d['version']} — {d['title']} ({d['why']}) ===\n{d['text']}" for d in group)
+        try:
+            reply = await ask("gf_house_checker", f"house{i}",
+                f"Check the DRAFT {meta['code']} '{meta.get('title_mk', '')} | {meta.get('title_en', '')}' against each "
+                f"approved, in-use document below. Answer one line per document, for exactly these codes: "
+                f"{', '.join(d['code'] for d in group)}.\n\nWhat the requester decided for this draft (a change the "
+                f"brief asks for is CHANGES, not CONFLICT):\n{brief[:6000]}\n\nAPPROVED DOCUMENTS\n{approved}\n\n"
+                f"DRAFT\n{markdown}")
+        except LettaError as e:
+            out["error"] = str(e)[:200]
+            reply = ""
+        out["verdicts"].update(house.parse_verdicts(reply, [d["code"] for d in group]))
+    return out
+
+
 def _brief(questionnaire_key: str, answers: dict, instructions: str = "", sources: list | None = None,
            source_texts: list | None = None) -> str:
     lines = [f"Questionnaire: {questionnaire_key}"]
@@ -950,6 +978,24 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                 raise LintUnresolved(left)
             ctx["review_reason"] = ((ctx.get("review_reason", "") + "; ") if ctx.get("review_reason") else "") + \
                 f"grammar problems remain in {left} after the repair rounds (see lint); a person decides"
+
+        # ---- house consistency (Head of QC, 19.10.2026) ----
+        # The finished draft against the full text of a named set of approved, in-use documents. A conflict is never
+        # registered silently: the job waits for a person, who must give the reason to register it anyway.
+        await db.job_update(job_id, stage="house-check")
+        ctx["house_check"] = await _house_check(ask, meta, ctx["markdown"], parent_code, brief)
+        conflicts = [c for c, v in ctx["house_check"]["verdicts"].items() if v["verdict"] == "CONFLICT"]
+        unchecked = [c for c, v in ctx["house_check"]["verdicts"].items() if v["verdict"] == "UNCHECKED"]
+        if conflicts or unchecked or ctx["house_check"].get("error"):
+            why = []
+            if conflicts:
+                why.append(f"conflicts with approved {', '.join(conflicts)}")
+            if unchecked:
+                why.append(f"no verdict for {', '.join(unchecked)}")
+            if ctx["house_check"].get("error"):
+                why.append(f"house check unavailable: {ctx['house_check']['error']}")
+            ctx["review_reason"] = ((ctx.get("review_reason", "") + "; ") if ctx.get("review_reason") else "") + \
+                "; ".join(why) + " — a person decides, and registering it needs a reason"
 
         # ---- format + verify (hard gate — a review never skips it) ----
         await db.job_update(job_id, stage="format")

@@ -15,7 +15,16 @@ export function pickJob(list: Job[], jobSel: string | null, fetched: Job | null)
 }
 
 /** A review in flight disables both decisions; Return also needs a note (the server returns 422 without one). */
-export const reviewLocks = (deciding: boolean, note: string) => ({ approve: !deciding, ret: !deciding && !!note.trim() });
+/** Approve waits for a reason when the draft conflicts with, or was not checked against, an approved document (Head of
+ *  QC, 19.10.2026); Return always needs a note. */
+export const reviewLocks = (deciding: boolean, note: string, houseBlocks = false) =>
+  ({ approve: !deciding && (!houseBlocks || !!note.trim()), ret: !deciding && !!note.trim() });
+
+export type HouseVerdict = { verdict: string; detail: string };
+export type HouseCheck = { checked: { code: string; version: string; title: string; why: string }[]; verdicts: Record<string, HouseVerdict>; note?: string; error?: string };
+/** The documents the house check names as conflicting or unchecked — the ones that hold the approval. */
+export const houseBlocking = (hc: HouseCheck | undefined) =>
+  hc ? Object.entries(hc.verdicts || {}).filter(([, v]) => v.verdict === 'CONFLICT' || v.verdict === 'UNCHECKED').map(([c]) => c).sort() : [];
 
 /** The list is polled only while a job can still change by itself. */
 export const stillRunning = (list: Job[]) => list.some(j => j.status === 'running' || j.status === 'queued');

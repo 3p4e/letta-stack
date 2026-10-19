@@ -86,7 +86,10 @@ export interface LibraryShelves {
   shelves: Record<Shelf, ShelfEntry[]>; counts: Record<Shelf, number>;
   packages: { in_use: LibraryPackage[]; drafts: LibraryPackage[] };
   loose: { in_use: ShelfEntry[]; drafts: ShelfEntry[] };
+  /** The register against the library (Head of QC, 19.10.2026): in use but no approved copy held; held but not in use. */
+  reconcile?: { missing: ReconcileRow[]; unlisted: ReconcileRow[] };
 }
+export interface ReconcileRow { code: string; title_en: string; title_mk: string; version: string; status: string }
 /** DocEngine GET /house/related/{code}: the approved copy of an SOP (found=false when none) and what is in use under it. */
 export interface RelatedDoc { code: string; version: string; title_en: string; title_mk: string; relation: Relation; chars: number }
 export interface HouseRelated { code: string; found: boolean; version: string; title_en: string; title_mk: string; related: RelatedDoc[] }
