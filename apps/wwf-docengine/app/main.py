@@ -277,8 +277,8 @@ async def review_workflow(jid: str, body: ReviewIn):
     if not await db.job_claim(jid, "awaiting_review", "running" if body.decision == "approve" else "failed"):
         raise HTTPException(409, "job is not awaiting review")
     if body.decision == "return":
-        await db.job_update(jid, status="failed", stage="format", error=f"returned for revision: {review['note']}"[:500],
-                            result={**res, "review": review})
+        await db.job_update(jid, status="failed", stage="format", error=f"returned for revision: {review['note']}"[:500])
+        await db.job_merge_result(jid, {"review": review})
     else:
         meta = job["payload"]["meta"]
         try:
@@ -292,7 +292,9 @@ async def review_workflow(jid: str, body: ReviewIn):
             # in progress until the reaper fails it an hour later; put it back so the reviewer can retry.
             await db.job_update(jid, status="awaiting_review")
             raise
-        await db.job_update(jid, status="done", stage="done", result={**res, "document_id": did, "review": review})
+        # Merged, not rewritten: the SOP's package annexes may record themselves on this row meanwhile.
+        await db.job_merge_result(jid, {"document_id": did, "review": review})
+        await db.job_update(jid, status="done", stage="done")
     return await db.job_get(jid)
 
 
@@ -728,6 +730,8 @@ async def add_brief_source(bid: str, body: SourceIn):
         raise HTTPException(400, str(e) if isinstance(e, srcs.SourceError) else "content_b64 is not base64") from e
     sid = await db.brief_source_add(bid, b["rev"], body.actor, {"name": body.name, "kind": kind, "bytes": len(blob),
                                                                 "sha256": hashlib.sha256(blob).hexdigest(), "text": text})
+    if sid is None:
+        raise HTTPException(409, f"the brief is not open, or already holds {db.MAX_SOURCES} sources")
     note = "" if text.strip() else "no text layer (a scan?): the authors cannot read it"
     return {"id": sid, "chars": len(text), "note": note, "brief": _guided(await db.brief_get(bid))}
 
@@ -748,6 +752,8 @@ async def suggest_brief(bid: str, body: SuggestIn):
     b = await _brief_or_404(bid)
     if body.rev != b["rev"]:
         raise HTTPException(409, f"the brief is at rev {b['rev']}, not {body.rev}; reload it")
+    if b["status"] != "open":
+        raise HTTPException(409, f"the brief is {b['status']}; reopen it to change it")
     if not LettaClient().configured:
         raise HTTPException(503, "Letta unavailable")
     bank = _questions(b["questionnaire"])
@@ -765,9 +771,19 @@ async def suggest_brief(bid: str, body: SuggestIn):
         raise HTTPException(502, f"the advisor failed: {e}") from e
     props = {k: {**v, "at": briefs.now()} for k, v in res["proposals"].items()}
     picks = {k: v["pick"] for k, v in props.items() if v["pick"] not in ("", [])}
-    new, events = briefs.apply_patch(b, {"rev": b["rev"], "proposals": props, "suggest": picks}, body.actor or "advisor")
-    if events and not await db.brief_save(new, b["rev"], events):
-        raise HTTPException(409, "the brief changed meanwhile; reload it")
+    # The advisor takes a while; the requester may have edited meanwhile. Its proposals go onto the brief as it is now
+    # (apply_patch never lets a suggestion overwrite a decided or locked answer), retried once if a change lands between.
+    for _ in range(3):
+        cur = await _brief_or_404(bid)
+        try:
+            new, events = briefs.apply_patch(cur, {"rev": cur["rev"], "proposals": props, "suggest": picks},
+                                             body.actor or "advisor")
+        except briefs.BriefError as e:
+            raise HTTPException(e.status, str(e)) from e
+        if not events or await db.brief_save(new, cur["rev"], events):
+            break
+    else:
+        raise HTTPException(409, "the brief kept changing while the advisor answered; ask again")
     return {"proposals": props, "notes": res["notes"], "brief": _guided(await db.brief_get(bid))}
 
 
@@ -842,30 +858,39 @@ async def build_brief(bid: str, body: BuildBriefIn):
         raise HTTPException(409, f"the brief is at rev {b['rev']}, not {body.rev}; reload it")
     if not LettaClient().configured:
         raise HTTPException(503, "Letta unavailable")
-    taken = await db.codes_in_use()
+    if b["status"] != "open":
+        raise HTTPException(409, f"the brief is {b['status']}; reopen it to build")
+    taken = await db.codes_in_use() - await db.codes_of_brief(bid)     # a rebuild keeps its own number
     if not b["meta"].get("code"):
-        if b["package"] == "annex":
-            if not b.get("parent_sop"):
-                raise HTTPException(400, "an annex needs its SOP (parent_sop) before it can be numbered")
-            code = house_codes.next_code(parent=b["parent_sop"], taken=taken)
-        else:
-            dept = (b["meta"].get("department") or "QC").upper()
-            fam = _FAMILY_OF[b["package"]].replace("QC", dept, 1)
-            code = house_codes.next_code(family=fam, taken=taken)
+        try:
+            if b["package"] == "annex":
+                if not b.get("parent_sop"):
+                    raise HTTPException(400, "an annex needs its SOP (parent_sop) before it can be numbered")
+                code = house_codes.next_code(parent=b["parent_sop"], taken=taken)
+            else:
+                dept = (b["meta"].get("department") or "QC").upper()
+                fam = _FAMILY_OF[b["package"]].replace("QC", dept, 1)
+                code = house_codes.next_code(family=fam, taken=taken)
+        except ValueError as e:
+            raise HTTPException(400, f"cannot number this document: {e}") from e
         b["meta"]["code"] = code
     try:
         payload = briefs.to_workflow(b, await db.brief_sources(bid))
+        new, events = briefs.apply_patch(b, {"rev": b["rev"], "meta": {"code": b["meta"]["code"]}}, body.actor)
     except briefs.BriefError as e:
         raise HTTPException(e.status, str(e)) from e
     _check_meta(payload["meta"], ("title_mk", "title_en", "code"))
     payload["requested_by"] = body.actor
+    # The job and the brief's record of it are one step: if the brief moved on meanwhile (an edit sent just before
+    # Build), the job is failed at once and the requester reloads — never a job the brief does not know about.
     jid = await db.job_create("workflow", payload, body.actor)
-    new, events = briefs.apply_patch(b, {"rev": b["rev"], "meta": {"code": b["meta"]["code"]}}, body.actor)
     new["job_ids"] = [*b.get("job_ids", []), jid]
     events.append({"op": "build", "key": jid, "before": None, "after": {"job_id": jid, "assumed": payload["assumed"]},
                    "actor": body.actor})
     if not new["rev"] > b["rev"]:
         new["rev"] = b["rev"] + 1
-    await db.brief_save(new, b["rev"], events)
+    if not await db.brief_save(new, b["rev"], events):
+        await db.job_update(jid, status="failed", error="the brief changed while the build started; not run")
+        raise HTTPException(409, "the brief changed meanwhile; reload it and build again")
     _fire_and_forget(run_workflow(jid))
     return {"job_id": jid, "status": "queued", "code": b["meta"]["code"], "assumed": payload["assumed"]}

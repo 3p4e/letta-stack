@@ -58,7 +58,7 @@ export function Workflow() {
   // Reopen the brief this browser was working on.
   useEffect(() => {
     let id = ''; try { id = localStorage.getItem(LS_BRIEF) || ''; } catch { /* storage blocked */ }
-    if (id) api.brief(id).then(x => { setB(x); setPage('identity'); }).catch(() => { try { localStorage.removeItem(LS_BRIEF); } catch { /* */ } });
+    if (id) api.brief(id).then(x => { cur.current = x; setB(x); setPage('identity'); }).catch(() => { try { localStorage.removeItem(LS_BRIEF); } catch { /* */ } });
     api.briefs().then(l => setOpen(l.filter(x => x.status === 'open').map(x => ({ id: x.id, label: `${x.meta.code || '(no code)'} · ${x.meta.title_en || x.meta.title_mk || 'untitled'} · ${x.package}` })))).catch(() => {});
     api.library().then(l => setApproved([...l.shelves.approved, ...l.shelves.revision].filter(e => e.approved || e.wip.length))).catch(() => {});
   }, [api]);
@@ -74,12 +74,18 @@ export function Workflow() {
     return () => { live = false; window.clearTimeout(timer); };
   }, [api, b?.id, builds, page]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const adopt = (x: Brief) => { setB(x); setErr(''); try { localStorage.setItem(LS_BRIEF, x.id); } catch { /* */ } };
-  const fail = (e: unknown) => { const a = e as ApiError; setErr(`${a.status || ''} ${a.message}`.trim()); if (a.status === 409 && b) api.brief(b.id).then(setB).catch(() => {}); };
-  const patch = async (p: Omit<Parameters<typeof api.patchBrief>[1], 'rev'>) => {
-    if (!b) return;
-    try { adopt(await api.patchBrief(b.id, { ...p, rev: b.rev })); } catch (e) { fail(e); }
-  };
+  // Every change goes out in order with the brief's current rev (not the rev of the render that made the click), so
+  // a blur-save and the click that caused it never race each other into a 409.
+  const cur = useRef<Brief | null>(null);
+  const queue = useRef<Promise<unknown>>(Promise.resolve());
+  const adopt = (x: Brief) => { cur.current = x; setB(x); setErr(''); try { localStorage.setItem(LS_BRIEF, x.id); } catch { /* */ } };
+  const fail = (e: unknown) => { const a = e as ApiError; setErr(`${a.status || ''} ${a.message}`.trim()); if (a.status === 409 && cur.current) api.brief(cur.current.id).then(adopt).catch(() => {}); };
+  const inOrder = <T,>(fn: () => Promise<T>): Promise<T> => { const next = queue.current.then(fn, fn); queue.current = next.catch(() => {}); return next; };
+  const patch = (p: Omit<Parameters<typeof api.patchBrief>[1], 'rev'>): Promise<boolean> => inOrder(async () => {
+    const x = cur.current;
+    if (!x) return false;
+    try { adopt(await api.patchBrief(x.id, { ...p, rev: x.rev })); return true; } catch (e) { fail(e); return false; }
+  });
   const start = async (pkg: Package, from_reference = '') => {
     setBusy(true); setBuilt(null);
     try { const x = await api.createBrief({ package: pkg, from_reference, requested_by: api.mode === 'live' ? 'ppdocwiz-session' : 'demo' }); adopt(x); setPage('identity'); }
@@ -88,19 +94,19 @@ export function Workflow() {
   const build = async () => {
     if (!b || busy) return;
     setBusy(true);
-    try { const r = await api.buildBrief(b.id, b.rev); setBuilt(r); flash(`${r.code} · job ${r.job_id.slice(0, 8)} queued`); adopt(await api.brief(b.id)); }
+    try { const r = await inOrder(() => api.buildBrief(cur.current!.id, cur.current!.rev)); setBuilt(r); flash(`${r.code} · job ${r.job_id.slice(0, 8)} queued`); adopt(await api.brief(b.id)); }
     catch (e) { fail(e); } finally { setBusy(false); }
   };
   const upload = async (files: FileList | null) => {
     if (!b || !files) return;
     for (const f of Array.from(files)) {
-      try { const r = await api.addBriefSource(b.id, f.name, await toB64(f)); adopt(r.brief); if (r.note) flash(`${f.name}: ${r.note}`); } catch (e) { fail(e); }
+      try { const data = await toB64(f); const r = await inOrder(() => api.addBriefSource(b.id, f.name, data)); adopt(r.brief); if (r.note) flash(`${f.name}: ${r.note}`); } catch (e) { fail(e); }
     }
   };
   const suggest = async (keys: string[]) => {
     if (!b || suggesting) return;
     setSuggesting(true);
-    try { const r = await api.suggestBrief(b.id, b.rev, keys); adopt(r.brief); if (r.notes.length) flash(r.notes.join(' · ')); }
+    try { const r = await inOrder(() => api.suggestBrief(cur.current!.id, cur.current!.rev, keys)); adopt(r.brief); if (r.notes.length) flash(r.notes.join(' · ')); }
     catch (e) { fail(e); } finally { setSuggesting(false); }
   };
   usePrimary(busy ? 'Building…' : 'Build now ▸', build, !b || busy || !(b.meta.title_en || b.meta.title_mk));
@@ -138,7 +144,8 @@ export function Workflow() {
   const why = (o: { why: string; source: string }) => `${o.why}${o.why ? ' — ' : ''}${o.source}`;
   const textField = ([key, label, ph]: [string, string, string]) => {
     const f = b?.fields[key], cur = drafts[key] ?? (f ? String(f.value) : ''), locked = f?.state === 'locked';
-    const save = () => { if (drafts[key] === undefined) return; const v = drafts[key].trim(); setDrafts(d => { const n = { ...d }; delete n[key]; return n; }); if (v !== (f ? String(f.value) : '')) patch({ set: { [key]: v } }); };
+    const drop = () => setDrafts(d => { const n = { ...d }; delete n[key]; return n; });
+    const save = () => { if (drafts[key] === undefined) return; const v = drafts[key].trim(); if (v === (f ? String(f.value) : '')) { drop(); return; } patch({ set: { [key]: v } }).then(ok => { if (ok) drop(); }); };
     return <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
       <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}><span style={{ fontSize: 13, color: '#fff' }}>{label}</span><Badge f={f} />{lockBtn(key)}
         {acceptBtn(key)}
@@ -220,8 +227,8 @@ export function Workflow() {
       <div style={{ fontSize: 12.5, color: T.secondary }}>Each annex is written after the SOP, from its sections 6–7, and numbered under its code (A01, A02 …).</div>
       {b.annexes.map((a, i) => <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
         <span style={{ fontFamily: MONO, color: T.muted, width: 36 }}>A{String(i + 1).padStart(2, '0')}</span>
-        <input defaultValue={a.title_en} key={b.rev + 'a' + i} placeholder="title EN" onBlur={e => { const n = [...b.annexes]; n[i] = { ...a, title_en: e.target.value.trim() }; if (n[i].title_en !== a.title_en) patch({ annexes: n }); }} style={{ flex: 1, background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 5, padding: '6px 8px', color: '#fff' }} />
-        <input defaultValue={a.title_mk} key={b.rev + 'm' + i} placeholder="наслов МК" onBlur={e => { const n = [...b.annexes]; n[i] = { ...a, title_mk: e.target.value.trim() }; if (n[i].title_mk !== a.title_mk) patch({ annexes: n }); }} style={{ flex: 1, background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 5, padding: '6px 8px', color: '#fff' }} />
+        <input defaultValue={a.title_en} key={b.id + 'a' + i + a.title_en} placeholder="title EN" onBlur={e => { const n = [...b.annexes]; n[i] = { ...a, title_en: e.target.value.trim() }; if (n[i].title_en !== a.title_en) patch({ annexes: n }); }} style={{ flex: 1, background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 5, padding: '6px 8px', color: '#fff' }} />
+        <input defaultValue={a.title_mk} key={b.id + 'm' + i + a.title_mk} placeholder="наслов МК" onBlur={e => { const n = [...b.annexes]; n[i] = { ...a, title_mk: e.target.value.trim() }; if (n[i].title_mk !== a.title_mk) patch({ annexes: n }); }} style={{ flex: 1, background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 5, padding: '6px 8px', color: '#fff' }} />
         <Seg items={[['form', 'form'], ['log', 'log'], ['checklist', 'checklist']]} value={a.kind as 'form'} onPick={k => { const n = [...b.annexes]; n[i] = { ...a, kind: k }; patch({ annexes: n }); }} size={11} pad="3px 7px" />
         <span onClick={() => patch({ annexes: b.annexes.filter((_, j) => j !== i) })} style={{ cursor: 'pointer', color: T.muted }}>×</span></div>)}
       <span onClick={() => patch({ annexes: [...b.annexes, { title_en: `Annex ${b.annexes.length + 1}`, title_mk: '', kind: 'form' }] })} style={{ cursor: 'pointer', color: C.run, fontSize: 13 }}>＋ add annex</span>
@@ -269,7 +276,7 @@ export function Workflow() {
       {err && <Banner kind="err">{err}</Banner>}
       {b && <div style={{ display: 'flex', gap: 12, alignItems: 'baseline', fontFamily: MONO, fontSize: 12, color: T.muted }}>
         <b style={{ color: '#fff' }}>{b.meta.code || 'code at build'}</b><span>{b.meta.title_en || b.meta.title_mk || 'untitled'}</span><span>· {b.package} · rev {b.rev}</span>
-        <span onClick={() => { try { localStorage.removeItem(LS_BRIEF); } catch { /* */ } setB(null); setPage('start'); setBuilt(null); }} style={{ marginLeft: 'auto', cursor: 'pointer' }}>close brief</span></div>}
+        <span onClick={() => { try { localStorage.removeItem(LS_BRIEF); } catch { /* */ } cur.current = null; setB(null); setPage('start'); setBuilt(null); }} style={{ marginLeft: 'auto', cursor: 'pointer' }}>close brief</span></div>}
       {b?.guide?.questionnaire_hint && b.guide.questionnaire_hint !== b.questionnaire && <Banner kind="info">The title or scope points to the <b>{b.guide.questionnaire_hint}</b> questions. <span onClick={() => patch({ questionnaire: b.guide!.questionnaire_hint })} style={{ cursor: 'pointer', textDecoration: 'underline' }}>Use them</span> (answers to the current ones stay in the history).</Banner>}
       {b && fieldsOf(page).length > 0 && <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
         <span onClick={() => suggest(fieldsOf(page))} style={{ cursor: suggesting ? 'wait' : 'pointer', color: C.run, fontSize: 13 }}>{suggesting ? 'Asking the advisor…' : '✦ Suggest options for this page'}</span>
@@ -288,7 +295,7 @@ export function Workflow() {
       {b.sources.map(s => <div key={s.id} style={{ display: 'flex', gap: 6, fontSize: 12, alignItems: 'center' }}>
         <span style={{ flex: 1, color: T.secondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={s.name}>{s.name}</span>
         <span style={{ color: s.chars ? T.muted : C.warn, fontFamily: MONO, fontSize: 11 }}>{s.chars ? `${Math.round(s.chars / 1000)}k` : 'no text'}</span>
-        <span onClick={() => api.removeBriefSource(b.id, s.id).then(adopt).catch(fail)} style={{ cursor: 'pointer', color: T.muted }}>×</span></div>)}
+        <span onClick={() => inOrder(() => api.removeBriefSource(b.id, s.id)).then(adopt).catch(fail)} style={{ cursor: 'pointer', color: T.muted }}>×</span></div>)}
       {b.job_ids.length > 0 && <><Caps>BUILDS · {b.job_ids.length}</Caps>{b.job_ids.map(j => <span key={j} onClick={() => go('jobs', { jobSel: j })} style={{ cursor: 'pointer', fontFamily: MONO, fontSize: 11.5, color: T.secondary }}>job {j.slice(0, 8)}</span>)}</>}
     </div>}
   </>;

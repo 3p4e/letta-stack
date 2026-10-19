@@ -513,13 +513,20 @@ def assemble_markdown(meta: dict, sections: list[dict]) -> str:
     return hd + "\n".join(body)
 
 
+_annex_tasks: set = set()
+
+
 async def _start_package_annexes(sop_job: str, p: dict, meta: dict) -> list[dict]:
     """SOP + annexes from one workflow (Head of QC, 18.10.2026): once the SOP is written, one annex job per annex of the
     package, numbered from the register under the SOP's code, each reading the SOP's sections 6 and 7 (ANNEX_RULE)."""
-    from .house_codes import next_code
-    taken, out = set(await db.codes_in_use()), []
-    for a in p.get("package_annexes") or []:
-        code = next_code(parent=meta["code"], taken=taken)
+    from .house_codes import XXX, next_code
+    # A rebuild of the same brief reuses its own annex numbers (A01 … again, not A03 …), and an SOP whose number is
+    # not confirmed (…XXX) numbers its annexes by position: no other package shares its sequence.
+    unconfirmed = meta["code"].endswith(XXX)
+    taken = set() if unconfirmed else set(await db.codes_in_use()) - await db.codes_of_brief(p.get("brief_id", ""))
+    out = []
+    for i, a in enumerate(p.get("package_annexes") or [], 1):
+        code = f"{meta['code']}A{i:02d}" if unconfirmed else next_code(parent=meta["code"], taken=taken)
         taken.add(code)
         title_en, title_mk = a.get("title_en") or a.get("title_mk"), a.get("title_mk") or a.get("title_en")
         payload = {"questionnaire": "annex_form", "answers": {}, "parent_sop": meta["code"],
@@ -529,7 +536,9 @@ async def _start_package_annexes(sop_job: str, p: dict, meta: dict) -> list[dict
                    "source_texts": p.get("source_texts") or [], "assumed": ["annex content (from the SOP)"],
                    "brief_id": p.get("brief_id", ""), "package_of": sop_job, "requested_by": p.get("requested_by", "")}
         jid = await db.job_create("workflow", payload, p.get("requested_by", ""))
-        asyncio.get_running_loop().create_task(run_workflow(jid))
+        t = asyncio.get_running_loop().create_task(run_workflow(jid))
+        _annex_tasks.add(t)                      # a task with no reference can be collected mid-run
+        t.add_done_callback(_annex_tasks.discard)
         out.append({"code": code, "job_id": jid, "title_en": title_en})
     return out
 
@@ -538,13 +547,12 @@ async def _package(job_id: str, p: dict, meta: dict, sop: bool) -> None:
     """After an SOP of a package is saved (its Markdown is what the annexes read), start its annexes and record them."""
     if not (sop and p.get("package_annexes")):
         return
-    job = await db.job_get(job_id)
     try:
         extra = {"package_jobs": await _start_package_annexes(job_id, p, meta)}
     except Exception as e:  # noqa: BLE001 — the SOP stands; the annexes that did not start are reported on it
         log.exception("job %s: package annexes did not start", job_id)
         extra = {"package_error": f"{type(e).__name__}: {e}"[:300]}
-    await db.job_update(job_id, result={**(job or {}).get("result", {}), **extra})
+    await db.job_merge_result(job_id, extra)
 
 
 async def run_workflow(job_id: str, client: LettaClient | None = None, rag: RagflowClient | None = None) -> None:
@@ -633,7 +641,16 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
         parent_code = (p.get("parent_sop") or "").strip()
         parent_md = ""
         if parent_code and doctype != "SOP":
-            parent = await db.job_latest_markdown_by_code(parent_code)
+            parent = None
+            if p.get("package_of"):
+                # An annex of a package reads the very SOP job that started it, never another job with the same code
+                # (a revision being written, or another unconfirmed …XXX SOP).
+                own = await db.job_get(p["package_of"])
+                md = ((own or {}).get("result") or {}).get("markdown") or ""
+                if md:
+                    parent = {"markdown": md, "job_id": p["package_of"], "status": own["status"]}
+            if parent is None:
+                parent = await db.job_latest_markdown_by_code(parent_code)
             if parent:
                 parent_md = _parent_sections(parent["markdown"])
                 knowledge["parent_sop"] = {"code": parent_code, "job_id": parent["job_id"], "status": parent["status"]}

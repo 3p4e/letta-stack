@@ -23,6 +23,7 @@ from .questionnaires import QUESTIONNAIRES
 
 PACKAGES = ("sop", "sop_annexes", "annex", "form", "report")
 STATES = ("suggested", "chosen", "locked")
+STATUSES = ("open", "closed")
 # The pages that define the document: a change to one of them makes every decided answer below it stale.
 # The brief's own pages are "doc.*", so they never collide with a questionnaire answer's key (sop_qc has "purpose").
 CORE = ("doc.purpose", "doc.scope_in", "doc.scope_out", "doc.use")
@@ -34,6 +35,8 @@ META_KEYS = ("title_mk", "title_en", "code", "version", "department", "orient")
 DEFAULT_BANK = {"sop": "sop_qc", "sop_annexes": "sop_qc", "annex": "annex_form", "form": "annex_form",
                 "report": "annex_form"}
 MAX_SOURCE_CHARS, MAX_SOURCES_CHARS = 12_000, 40_000
+MAX_FIELD_CHARS = 1_500         # one brief field in the authors' brief (7 fields stay inside its 12 000 characters)
+MAX_VALUE_CHARS = 20_000        # one stored answer
 
 
 class BriefError(ValueError):
@@ -75,6 +78,16 @@ def apply_patch(brief: dict, patch: dict, actor: str = "", at: str | None = None
         raise BriefConflict(f"the brief changed since rev {patch.get('rev')}; it is at rev {brief['rev']}")
     b, at = copy.deepcopy(brief), at or now()
     events: list[dict] = []
+    if "status" in patch and patch["status"] not in STATUSES:
+        raise BriefError(f"status must be one of {', '.join(STATUSES)}")
+    q_after = patch.get("questionnaire") or b["questionnaire"]
+    known = set(TEXT_FIELDS) | set(question_keys(q_after) if q_after in QUESTIONNAIRES else [])
+    for op in ("set", "suggest"):
+        for key, value in (patch.get(op) or {}).items():
+            if key not in known and not (op == "set" and value in (None, "", []) and key in b["fields"]):
+                raise BriefError(f"{key} is not a question of this brief")
+            if len(str(value)) > MAX_VALUE_CHARS:
+                raise BriefError(f"{key}: the answer is longer than {MAX_VALUE_CHARS} characters")
 
     def ev(op: str, key: str, before, after) -> None:
         events.append({"op": op, "key": key, "before": before, "after": after, "at": at, "actor": actor})
@@ -175,16 +188,19 @@ def to_workflow(brief: dict, sources: list[dict]) -> dict:
     assumed += [k for k in question_keys(q) if k not in f] + [k for k in TEXT_FIELDS if k not in f and k != "doc.notes"]
     assumed += [f"{k} (suggested, not confirmed)" for k, v in f.items() if v["state"] == "suggested"]
     assumed += [f"{k} (stale: decided before the scope changed)" for k, v in f.items() if v.get("stale")]
-    lines = ["DOCUMENT BRIEF (what the requester decided):"]
+    # What was not decided comes first: a long pasted purpose or scope is cut, never this instruction.
+    lines = []
+    if assumed:
+        lines += ["Not decided by the requester — fill these from the brief, the sources and house practice, and "
+                  "name the assumption in the text: " + ", ".join(assumed), ""]
+    lines.append("DOCUMENT BRIEF (what the requester decided):")
     for k in TEXT_FIELDS:
         if k in f:
             v = f[k]["value"]
-            lines.append(f"{TEXT_LABEL[k]}: {', '.join(map(str, v)) if isinstance(v, list) else v}")
+            text = ", ".join(map(str, v)) if isinstance(v, list) else str(v)
+            lines.append(f"{TEXT_LABEL[k]}: {text[:MAX_FIELD_CHARS]}" + (" […]" if len(text) > MAX_FIELD_CHARS else ""))
     if brief["package"] == "sop_annexes" and brief["annexes"]:
         lines.append("Annexes of this package: " + "; ".join(a["title_en"] or a["title_mk"] for a in brief["annexes"]))
-    if assumed:
-        lines += ["", "Not decided by the requester — fill these from the brief, the sources and house practice, and "
-                      "name the assumption in the text: " + ", ".join(assumed)]
     texts, total = [], 0
     for s in sources:
         t = (s.get("text") or "")[:MAX_SOURCE_CHARS]

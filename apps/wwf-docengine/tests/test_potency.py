@@ -53,3 +53,16 @@ def test_the_advisor_reads_the_specifications_before_the_house_documents():
                           [], "OFFICIAL POTENCY SPECIFICATIONS: WED …")
     assert text.index("OFFICIAL POTENCY SPECIFICATIONS") < text.index("APPROVED HOUSE DOCUMENTS")
     assert json.dumps(SPECS)  # fixture is valid JSON
+
+
+def test_a_changed_service_shape_falls_back_and_a_failure_is_remembered(monkeypatch):
+    monkeypatch.setattr(settings, "potency_specs_url", "https://specs.example")
+    calls = []
+
+    def handle(req):
+        calls.append(1)
+        return httpx.Response(200, json={"specs": [{"id": "X", "status": "finished", "ranges": [{"nominal": 1}]}]})
+    text = asyncio.run(potency.block("potency", transport=httpx.MockTransport(handle)))
+    assert "could not be read" in text
+    asyncio.run(potency.block("potency", transport=httpx.MockTransport(handle)))
+    assert len(calls) == 1                     # not asked again within FAIL_TTL

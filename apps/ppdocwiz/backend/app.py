@@ -420,7 +420,8 @@ async def docengine_proxy(path: str, request: Request):
 
     def fetch():
         try:
-            with urllib.request.urlopen(req, timeout=120) as r:
+            # The advisor (one Letta exchange) and a package PDF (one render per document) outlast the usual 120 s.
+            with urllib.request.urlopen(req, timeout=330 if path.endswith(("/suggest", "/package.pdf")) else 120) as r:
                 return r.status, r.headers, r.read()
         except urllib.error.HTTPError as e:
             return e.code, e.headers, e.read()

@@ -16,7 +16,7 @@ import httpx
 from .config import settings
 
 log = logging.getLogger("docengine.potency")
-TTL = 600
+TTL, FAIL_TTL = 600, 60
 _cache: dict = {"at": 0.0, "specs": None}
 # Words that put potency in a document's scope (EN / MK).
 WORDS = re.compile(r"potency|cannabinoid|thc|cbd|specification|grade|канабиноид|потентност|спецификаци|содржина на",
@@ -40,6 +40,8 @@ def fmt(n) -> str:
 def lines(specs: list[dict]) -> list[str]:
     """One line per finished strain: ABBR — Name: nominal ± tol (lo–hi %); … (in the service's order)."""
     out = []
+    if not isinstance(specs, list):
+        raise TypeError("specs is not a list")
     for s in specs:
         if s.get("status") != "finished" or not s.get("ranges"):
             continue
@@ -53,16 +55,18 @@ async def specs(transport: httpx.AsyncBaseTransport | None = None) -> list[dict]
     """The served specifications (cached TTL seconds); None when the service cannot be read."""
     if not settings.potency_specs_url:
         return None
-    if _cache["specs"] is not None and time.monotonic() - _cache["at"] < TTL:
-        return _cache["specs"]
+    age = time.monotonic() - _cache["at"]
+    if _cache["at"] and age < (TTL if _cache["specs"] is not None else FAIL_TTL):
+        return _cache["specs"]                 # a failure is remembered briefly too: no 20 s wait on every call
     try:
-        async with httpx.AsyncClient(timeout=20, transport=transport) as c:
+        async with httpx.AsyncClient(timeout=10, transport=transport) as c:
             r = await c.get(settings.potency_specs_url + "/api/specs")
             r.raise_for_status()
             data = r.json()["specs"]
-    except (httpx.HTTPError, KeyError, ValueError) as e:
+        lines(data)                            # the served shape is checked before it is trusted
+    except (httpx.HTTPError, KeyError, ValueError, TypeError, AttributeError) as e:
         log.warning("potency specifications unavailable: %s", e)
-        return None
+        data = None
     _cache.update(at=time.monotonic(), specs=data)
     return data
 

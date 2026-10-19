@@ -275,3 +275,29 @@ def test_document_pdf_refuses_substitute_fonts(api, monkeypatch, tmp_path):
         lambda req: httpx.Response(200, content=b"%PDF-1.7 /BaseFont/AAAAAA+Carlito-Regular")), **kw))
     r = client.get("/documents/x/pdf", headers=h)
     assert r.status_code == 502 and "Calibri" in r.json()["detail"]
+
+
+
+@pytest.mark.asyncio
+async def test_an_annex_of_a_package_reads_its_own_sop_job_not_another_with_the_code(monkeypatch):
+    from app import db
+    updates = _patch_common(monkeypatch)
+    monkeypatch.setattr(builder, "build", lambda *a, **k: _fake_build_result())
+    jobs = {"job-a": {"id": "job-a", "payload": {"questionnaire": "annex_form", "answers": {}, "parent_sop": "QASOPXXX",
+                                                 "package_of": "sop-mine",
+                                                 "meta": {"title_mk": "Дневник", "title_en": "Log", "code": "QASOPXXXA01"}}},
+            "sop-mine": {"id": "sop-mine", "status": "awaiting_review",
+                         "result": {"markdown": "# 6.0 ПОСТАПКА|PROCEDURE\nMine: the operator signs the seal log."}}}
+
+    async def job_get(jid):
+        return jobs.get(jid)
+
+    async def other(code):
+        return {"markdown": "# 6.0 ПОСТАПКА|PROCEDURE\nAnother QASOPXXX entirely.", "job_id": "other", "status": "done"}
+    monkeypatch.setattr(db, "job_get", job_get)
+    monkeypatch.setattr(db, "job_latest_markdown_by_code", other, raising=False)
+    c = RecordingClient()
+    await run_workflow("job-a", client=c, rag=FakeRag())
+    author = [p for p in c.prompts if p.startswith("Design the")][0]
+    assert "operator signs the seal log" in author and "Another QASOPXXX" not in author
+    assert updates[-1]["result"]["knowledge"]["parent_sop"]["job_id"] == "sop-mine"
