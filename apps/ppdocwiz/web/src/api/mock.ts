@@ -3,7 +3,7 @@
 // switchable faults so every degraded state can be seen without breaking a server.
 import type { Api, EngineEnv, WorkflowIn } from './client';
 import { applyDefaults, normalizeQuestionnaire } from './normalize';
-import { ApiError, type Brief, type BriefEvent, type DocumentRow, type Job, type LibraryShelves, type ReferenceDoc, type Shelf, type ShelfEntry, type WizardPayload } from './types';
+import { ApiError, type Account, type Brief, type BriefEvent, type DocumentRow, type Job, type LibraryShelves, type ReferenceDoc, type Shelf, type ShelfEntry, type WizardPayload } from './types';
 import { RAW_QUESTIONNAIRES } from '../data/questionnaires';
 import { ANX_SEC, CH, CH_A, CY, CY_A, FIND, FIND_A, QA_FIX, SAMPLE_ANNEX, SOP_SEC } from '../data/samples';
 import { composeMarkdown, lint } from '../lib/compose';
@@ -78,6 +78,10 @@ function seedDocs(): MockDoc[] {
 export interface MockApi extends Api { faults: Faults; setFaults(f: Partial<Faults>): void }
 
 const mockBriefs: Record<string, Brief> = {};
+const mockUsers: Account[] = [
+  { username: 'darko.s', role: 'admin', must_change: false, disabled: false, created: '2026-10-19T04:00:00+00:00', by: 'migration from the shared password' },
+  { username: 'c.cekic', role: 'user', must_change: true, disabled: false, created: '2026-10-19T05:00:00+00:00', by: 'darko.s' },
+];
 const mockEvents: Record<string, BriefEvent[]> = {};
 
 export function mockApi(onChange?: () => void): MockApi {
@@ -121,6 +125,21 @@ export function mockApi(onChange?: () => void): MockApi {
       authed = true;
     },
     async closeSession() { authed = false; },
+    async me() { await wait(20); return { user: 'darko.s', role: 'admin' as const, must_change: false, accounts: true }; },
+    async users() { await wait(40); return mockUsers.map(u => ({ ...u })); },
+    async addUser(u) {
+      await wait(60);
+      if (mockUsers.some(x => x.username === u.username.toLowerCase())) throw new ApiError(422, `${u.username} already exists`);
+      if (u.temporary_password.length < 12) throw new ApiError(422, 'a password needs at least 12 characters');
+      const a = { username: u.username.toLowerCase(), role: u.role, must_change: true, disabled: false, created: new Date().toISOString(), by: 'darko.s' };
+      mockUsers.push(a); return { ...a };
+    },
+    async changeUser(name, c) {
+      await wait(40); const a = mockUsers.find(x => x.username === name); if (!a) throw new ApiError(422, `no account ${name}`);
+      if (c.role) a.role = c.role; if (c.disabled !== undefined) a.disabled = c.disabled; if (c.reset_password) a.must_change = true;
+      return { ...a };
+    },
+    async authLog() { await wait(30); return [{ at: new Date().toISOString(), event: 'signed_in', user: 'darko.s', client: '10.0.0.1' }]; },
     async passwordState() { await wait(30); return { enabled: true, must_change: false }; },
     async changePassword(current, next) { await wait(80); if (!current) throw new ApiError(401, 'the current password is wrong'); if (next.length < 12) throw new ApiError(422, 'at least 12 characters'); },
     async health() { await wait(60); return { ok: true, letta: !faults.chatDisabled, pdf: !faults.libreoffice }; },

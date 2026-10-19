@@ -6,11 +6,11 @@ import { CreateMenu, NewDocSheet } from './Create';
 import { Dot, Seg } from './ui';
 import { tr } from '../lib/i18n';
 
-const NAV: [Screen, string, 'c' | 'k'][] = [['flow', 'Workflow', 'c'], ['builder', 'Builder', 'c'], ['chat', 'Agent chat', 'c'], ['format', 'Formatter', 'c'], ['report', 'Reports', 'c'], ['library', 'Library', 'k'], ['jobs', 'Jobs', 'k'], ['verify', 'Verify', 'k'], ['preview', 'Preview', 'k'], ['fleet', 'Fleet & health', 'k']];
-const CRUMB: Record<Screen, string> = { flow: 'workflow › document brief', builder: '', chat: 'chat › allowlist › WHSOP_002_A02', quest: 'questionnaire › POST /workflows', format: 'formatter › labels_raw.docx → house style', library: 'library › docengine.documents', jobs: 'jobs › docengine.jobs', report: 'reports › QCSOP_031_A02 · pp_report', verify: 'verify › POST /build 422 · WHSOP_009_A01', preview: 'preview › QCSOP_031 · page 3 / 9', fleet: 'admin › gf_ fleet & health' };
+const NAV: [Screen, string, 'c' | 'k'][] = [['flow', 'Workflow', 'c'], ['builder', 'Builder', 'c'], ['chat', 'Agent chat', 'c'], ['format', 'Formatter', 'c'], ['report', 'Reports', 'c'], ['library', 'Library', 'k'], ['jobs', 'Jobs', 'k'], ['verify', 'Verify', 'k'], ['preview', 'Preview', 'k'], ['fleet', 'Fleet & health', 'k'], ['users', 'Users', 'k']];
+const CRUMB: Record<Screen, string> = { flow: 'workflow › document brief', builder: '', chat: 'chat › allowlist › WHSOP_002_A02', quest: 'questionnaire › POST /workflows', format: 'formatter › labels_raw.docx → house style', library: 'library › docengine.documents', jobs: 'jobs › docengine.jobs', report: 'reports › QCSOP_031_A02 · pp_report', verify: 'verify › POST /build 422 · WHSOP_009_A01', preview: 'preview › QCSOP_031 · page 3 / 9', fleet: 'admin › gf_ fleet & health', users: 'admin › users' };
 
 // CRUMB names the mock-mode sample documents; live mode must not show them as if they were real.
-const LIVE_CRUMB: Record<Screen, string> = { flow: 'workflow › /briefs', builder: '', chat: 'chat › POST /api/chat', quest: 'questionnaire › POST /workflows', format: 'formatter › Mode B · POST /build', library: 'library › shelves · GET /library', jobs: 'jobs › docengine.jobs', report: 'reports › not connected', verify: 'verify › last build in this session', preview: 'preview › last build in this session', fleet: 'fleet & health' };
+const LIVE_CRUMB: Record<Screen, string> = { flow: 'workflow › /briefs', builder: '', chat: 'chat › POST /api/chat', quest: 'questionnaire › POST /workflows', format: 'formatter › Mode B · POST /build', library: 'library › shelves · GET /library', jobs: 'jobs › docengine.jobs', report: 'reports › not connected', verify: 'verify › last build in this session', preview: 'preview › last build in this session', fleet: 'fleet & health', users: 'users › /api/users' };
 
 function useViewport() {
   const [v, setV] = useState({ w: window.innerWidth, h: window.innerHeight });
@@ -53,7 +53,7 @@ export function Shell({ children }: { children: ReactNode }) {
   useEffect(() => { s.api.deHealth().then(h => setEngine((h.engine.match(/canon revision ([\d-]+)/) || [])[1] || '')).catch(() => setEngine('')); }, [s.api]);
   // No sign-in on this server (PPDOCWIZ_AUTH=off): nothing to sign out of.
   const [open, setOpen] = useState(false), [pwLogin, setPwLogin] = useState(false), [changing, setChanging] = useState(false);
-  useEffect(() => { s.api.health().then(h => { setOpen(h.auth === false); setPwLogin(h.login === 'password'); }).catch(() => setOpen(false)); }, [s.api]);
+  useEffect(() => { s.api.health().then(h => { setOpen(h.auth === false); setPwLogin(h.login === 'password' || h.login === 'accounts'); }).catch(() => setOpen(false)); }, [s.api]);
   const zoom = Math.min(1, vp.w / 1280, vp.h / 760);
   const crumb = s.screen === 'builder' ? `builder › ${s.bdoc.code || 'untitled'} · ${s.bdoc.status.replace('_', ' ')} v${s.bdoc.version}` : (s.api.mode === 'live' ? LIVE_CRUMB : CRUMB)[s.screen];
   const radius = s.tweaks.createStyle === 'pill' ? 999 : 6;
@@ -83,12 +83,12 @@ export function Shell({ children }: { children: ReactNode }) {
           {s.tweaks.createPlacement === 'sidebar' && createBtn(true)}
           {(['c', 'k'] as const).map(g => <div key={g} style={{ display: 'contents' }}>
             <div style={{ fontFamily: MONO, fontSize: 10.5, letterSpacing: '.1em', color: T.faint, padding: g === 'c' ? '4px 10px 6px' : '16px 10px 6px' }}>{tr(s.lang, g === 'c' ? 'CREATE' : 'CONTROL')}</div>
-            {NAV.filter(n => n[2] === g).map(([k, label]) => <div key={k} onClick={() => s.go(k)} className="pp-nav" style={{ padding: '8px 10px', borderRadius: 6, cursor: 'pointer', background: s.screen === k ? T.selected : 'transparent', color: s.screen === k ? '#fff' : T.secondary, fontWeight: s.screen === k ? 700 : 400 }}>{tr(s.lang, label)}</div>)}
+            {NAV.filter(n => n[2] === g && (n[0] !== 'users' || s.me?.role === 'admin')).map(([k, label]) => <div key={k} onClick={() => s.go(k)} className="pp-nav" style={{ padding: '8px 10px', borderRadius: 6, cursor: 'pointer', background: s.screen === k ? T.selected : 'transparent', color: s.screen === k ? '#fff' : T.secondary, fontWeight: s.screen === k ? 700 : 400 }}>{tr(s.lang, label)}</div>)}
           </div>)}
-          <div style={{ marginTop: 'auto', padding: 10, fontSize: 12, color: T.faint, lineHeight: 1.5 }}>{s.api.mode === 'mock' ? 'Engine 1.6.2' : engine ? `Engine · canon ${engine}` : 'Engine · not reachable'}<br />{s.api.mode === 'mock' ? 'darko.s · QA' : open ? 'open access · no sign-in' : 'session · cookie'}
+          <div style={{ marginTop: 'auto', padding: 10, fontSize: 12, color: T.faint, lineHeight: 1.5 }}>{s.api.mode === 'mock' ? 'Engine 1.6.2' : engine ? `Engine · canon ${engine}` : 'Engine · not reachable'}<br />{s.me?.accounts ? <>signed in as <b style={{ color: T.secondary }}>{s.me.user}</b>{s.me.role === 'admin' ? ' · admin' : ''}</> : s.api.mode === 'mock' ? 'darko.s · QA' : open ? 'open access · no sign-in' : 'session · cookie'}
             {pwLogin && <div onClick={() => setChanging(true)} style={{ cursor: 'pointer', color: T.muted, marginTop: 4 }}>Change password</div>}
             {changing && <ChangePassword onDone={() => setChanging(false)} />}
-            {!open && <div onClick={() => s.api.closeSession().then(() => s.set({ authed: false })).catch(e => s.flash(String(e.message)))} style={{ cursor: 'pointer', color: T.muted, marginTop: 4 }}>{tr(s.lang, 'Sign out')}</div>}</div>
+            {!open && <div onClick={() => s.api.closeSession().then(() => s.set({ authed: false, me: null })).catch(e => s.flash(String(e.message)))} style={{ cursor: 'pointer', color: T.muted, marginTop: 4 }}>{tr(s.lang, 'Sign out')}</div>}</div>
         </nav>
         <main style={{ flex: 1, minWidth: 0, display: 'flex', minHeight: 0 }}>{children}</main>
       </div>
@@ -111,14 +111,14 @@ export function SignIn({ unconfigured }: { unconfigured?: boolean }) {
   const { api, set } = useApp();
   const [key, setKey] = useState(''), [err, setErr] = useState(''), [busy, setBusy] = useState(false);
   // The server says what it asks for: the shared password (Head of QC, 19.10.2026) or the deployment's API key.
-  const [pw, setPw] = useState(true);
-  useEffect(() => { api.health().then(h => setPw(h.login !== 'key')).catch(() => {}); }, [api]);
+  const [pw, setPw] = useState(true), [named, setNamed] = useState(false), [user, setUser] = useState('');
+  useEffect(() => { api.health().then(h => { setPw(h.login !== 'key'); setNamed(h.login === 'accounts'); }).catch(() => {}); }, [api]);
   const submit = async () => {
     setBusy(true); setErr('');
-    try { await api.openSession(key); set({ authed: true }); }
+    try { await api.openSession(key, named ? user.trim() : ''); set({ authed: true }); }
     catch (e) {
       const st = (e as ApiError).status;
-      setErr(st === 401 ? (pw ? 'Wrong password.' : '401 · bad key. The key is the PPDOCWIZ_API_KEY of this deployment.')
+      setErr(st === 401 ? (named ? 'Wrong username or password.' : pw ? 'Wrong password.' : '401 · bad key. The key is the PPDOCWIZ_API_KEY of this deployment.')
         : st === 429 ? 'Too many failed sign-ins. Wait 15 minutes and try again.'
         : st === 503 ? '503 · PP Doc Wiz is not configured: PPDOCWIZ_API_KEY is unset on the server, so every route refuses.' : String((e as Error).message));
     }
@@ -128,12 +128,14 @@ export function SignIn({ unconfigured }: { unconfigured?: boolean }) {
     <div style={{ height: '100vh', background: T.bg, color: T.text, fontFamily: UI, display: 'grid', placeItems: 'center' }}>
       <div style={{ width: 420, background: T.pane, border: `1px solid ${T.control}`, borderRadius: 12, boxShadow: '0 30px 70px rgba(0,0,0,.55)', padding: '26px 28px', display: 'flex', flexDirection: 'column', gap: 14 }}>
         <span style={{ fontFamily: DISPLAY, fontWeight: 700, letterSpacing: '.06em', color: '#fff', fontSize: 15 }}>PP/SUITE</span>
-        <div style={{ color: T.secondary, fontSize: 13, lineHeight: 1.5 }}>{pw ? 'Enter the password. You stay signed in for 8 hours; the password is never stored in the browser.' : "Enter this deployment's API key. It is exchanged once for an HttpOnly session cookie (8 h); the key itself is never stored in the browser."}</div>
+        <div style={{ color: T.secondary, fontSize: 13, lineHeight: 1.5 }}>{named ? 'Sign in with your username and password. You stay signed in for 8 hours; everything you change is recorded under your name.' : pw ? 'Enter the password. You stay signed in for 8 hours; the password is never stored in the browser.' : "Enter this deployment's API key. It is exchanged once for an HttpOnly session cookie (8 h); the key itself is never stored in the browser."}</div>
         {unconfigured && <div style={{ background: T.errSurface, border: `1px solid ${T.errBorder}`, borderRadius: 6, padding: '8px 12px', color: T.errText, fontSize: 12.5 }}>503 · server not configured. Set PPDOCWIZ_API_KEY in /opt/stacks/ppdocwiz/.env and restart; until then every gated route refuses.</div>}
+        {named && <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}><span style={{ fontFamily: MONO, fontSize: 11.5, color: T.muted }}>Username</span>
+          <input autoFocus autoComplete="username" value={user} onChange={e => setUser(e.target.value)} onKeyDown={e => e.key === 'Enter' && submit()} style={{ background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 6, padding: '9px 11px', color: '#fff', outline: 'none', fontFamily: MONO }} /></label>}
         <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}><span style={{ fontFamily: MONO, fontSize: 11.5, color: T.muted }}>{pw ? 'Password' : 'PPDOCWIZ_API_KEY'}</span>
-          <input type="password" autoFocus value={key} onChange={e => setKey(e.target.value)} onKeyDown={e => e.key === 'Enter' && submit()} style={{ background: T.deeper, border: `1px solid ${err ? C.bad : T.control}`, borderRadius: 6, padding: '9px 11px', color: '#fff', outline: 'none', fontFamily: MONO }} /></label>
+          <input type="password" autoComplete="current-password" autoFocus={!named} value={key} onChange={e => setKey(e.target.value)} onKeyDown={e => e.key === 'Enter' && submit()} style={{ background: T.deeper, border: `1px solid ${err ? C.bad : T.control}`, borderRadius: 6, padding: '9px 11px', color: '#fff', outline: 'none', fontFamily: MONO }} /></label>
         {err && <div style={{ fontFamily: MONO, fontSize: 12, color: C.bad, lineHeight: 1.45 }}>{err}</div>}
-        <button onClick={submit} disabled={busy || !key} style={{ background: key ? T.navy : T.control, color: '#fff', border: 0, borderRadius: 6, padding: 10, font: 'inherit', fontWeight: 700, cursor: 'pointer' }}>{busy ? 'Signing in…' : pw ? 'Sign in ▸' : 'POST /api/session ▸'}</button>
+        <button onClick={submit} disabled={busy || !key || (named && !user.trim())} style={{ background: key ? T.navy : T.control, color: '#fff', border: 0, borderRadius: 6, padding: 10, font: 'inherit', fontWeight: 700, cursor: 'pointer' }}>{busy ? 'Signing in…' : pw ? 'Sign in ▸' : 'POST /api/session ▸'}</button>
         <div style={{ fontSize: 11.5, color: T.faint, textAlign: 'center' }}>{api.mode === 'mock' ? 'mock mode: any key works except "bad"' : 'loopback / Traefik only · SameSite=Strict cookie'}</div>
       </div>
     </div>);

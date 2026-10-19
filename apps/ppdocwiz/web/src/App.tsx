@@ -4,6 +4,7 @@ import { ChangePassword, Shell, SignIn } from './components/Shell';
 import { Builder } from './screens/Builder';
 import { Chat } from './screens/Chat';
 import { Fleet } from './screens/Fleet';
+import { Users } from './screens/Users';
 import { Formatter } from './screens/Formatter';
 import { Jobs } from './screens/Jobs';
 import { Library } from './screens/Library';
@@ -14,14 +15,14 @@ import { Reports } from './screens/Reports';
 import { Verify } from './screens/Verify';
 import { useApp, type Screen } from './store/store';
 
-const SCREENS: Record<Screen, () => JSX.Element> = { flow: Workflow, builder: Builder, chat: Chat, quest: Questionnaire, format: Formatter, report: Reports, library: Library, jobs: Jobs, verify: Verify, preview: Preview, fleet: Fleet };
+const SCREENS: Record<Screen, () => JSX.Element> = { flow: Workflow, builder: Builder, chat: Chat, quest: Questionnaire, format: Formatter, report: Reports, library: Library, jobs: Jobs, verify: Verify, preview: Preview, fleet: Fleet, users: Users };
 
 export function App() {
   const { authed, api, set, screen } = useApp();
   const [unconfigured, setUnconfigured] = useState(false);
   // The initial password from the server is changed at the first sign-in (Head of QC, 19.10.2026).
   const [mustChange, setMustChange] = useState(false);
-  useEffect(() => { if (authed) api.passwordState().then(p => setMustChange(p.must_change)).catch(() => {}); }, [authed, api]);
+  useEffect(() => { if (authed) api.me().then(m => { set({ me: m }); setMustChange(m.must_change); }).catch(() => {}); }, [authed, api, set]);
   useEffect(() => {
     if (authed !== null) return;
     // Probe a gated route: 200 → the cookie is valid; 401 → sign in; 503 → server has no key.

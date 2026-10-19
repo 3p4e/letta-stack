@@ -31,6 +31,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 import wizard
 import security
+import accounts
 from config import settings
 
 # Every caller-supplied string that becomes a path component goes through this.
@@ -83,7 +84,8 @@ class ChatReq(BaseModel):
 
 
 class SessionReq(BaseModel):
-    key: str = Field(max_length=512)      # the shared password or the API key
+    username: str = Field(default="", max_length=40)   # named accounts; empty: the shared password or the API key
+    key: str = Field(max_length=512)                   # the password, or the API key
 
 
 class RawBuildReq(BaseModel):
@@ -138,6 +140,13 @@ def _build_locked(md: str, base: str):
     return ok, verify, out
 
 
+# Phase 5: the shared password becomes the account "admin" at the first start with named accounts.
+try:
+    accounts.bootstrap()
+except OSError as _e:  # a read-only data directory must not stop the service; sign-in falls back to the shared password
+    logging.getLogger("ppdocwiz").warning("named accounts not initialised: %s", _e)
+
+
 @app.get("/api/health")
 def health():
     # DELIBERATELY UNGATED — the compose healthcheck calls this with no headers
@@ -147,7 +156,8 @@ def health():
     # this endpoint is reachable without a credential, and the frontend only
     # ever reads .letta and .pdf.
     return {"ok": True, "auth": not settings.auth_off,
-            "login": "off" if settings.auth_off else "password" if security.current_hash() else "key", "letta": bool(os.environ.get("LETTA_BASE_URL")),
+            "login": "off" if settings.auth_off else "accounts" if accounts.enabled() else
+            "password" if security.current_hash() else "key", "letta": bool(os.environ.get("LETTA_BASE_URL")),
             "pdf": bool(shutil.which("soffice") or os.environ.get("GOTENBERG_URL"))}
 
 
@@ -171,15 +181,27 @@ def open_session(r: SessionReq, request: Request):
     who = _client(request)
     if security.too_many_failures(who):
         return JSONResponse({"ok": False, "error": "too many failed sign-ins; wait 15 minutes"}, status_code=429)
-    # The shared password (when one is set) or the key: either opens a session.
-    stored = security.current_hash()
-    ok = bool(stored) and security.check_password(r.key, stored)
-    if not ok and not hmac.compare_digest(r.key.encode("utf-8", "surrogateescape"), settings.api_key.encode()):
+    # Named accounts (phase 5): a username and its password. Before any account exists, the shared password.
+    # The API key opens a session for machine callers and as the owner's way back in.
+    user, must = None, False
+    if accounts.enabled():
+        acc = accounts.authenticate(r.username, r.key) if r.username else None
+        if acc:
+            user, must = r.username.strip().lower(), acc.get("must_change", False)
+    else:
+        stored = security.current_hash()
+        if stored and security.check_password(r.key, stored):
+            user, must = "shared", security.must_change()
+    if user is None and hmac.compare_digest(r.key.encode("utf-8", "surrogateescape"), settings.api_key.encode()):
+        user = "api-key"
+    if user is None:
         security.note_failure(who)
-        return JSONResponse({"ok": False, "error": "wrong password" if stored else "bad key"},
-                            status_code=401)
-    resp = JSONResponse({"ok": True, "must_change": ok and security.must_change()})
-    resp.set_cookie(security.COOKIE, security.issue_session(settings.api_key),
+        accounts.log("sign_in_failed", (r.username or "").strip().lower()[:40], who)
+        return JSONResponse({"ok": False, "error": "wrong username or password" if accounts.enabled() else
+                             "wrong password" if security.current_hash() else "bad key"}, status_code=401)
+    accounts.log("signed_in", user, who)
+    resp = JSONResponse({"ok": True, "user": user, "must_change": must})
+    resp.set_cookie(security.COOKIE, security.issue_session(settings.api_key, user=user),
                     httponly=True, samesite="strict",
                     secure=settings.cookie_secure, max_age=security.SESSION_TTL, path="/")
     return resp
@@ -190,23 +212,41 @@ class PasswordReq(BaseModel):
     new: str = Field(max_length=512)
 
 
+@app.get("/api/me")
+def me(who: str = Depends(security.require_api_key)):
+    """Who is signed in, and whether their password must be changed before anything else."""
+    if accounts.enabled() and who not in ("api-key", "anonymous"):
+        u = accounts.active(who) or {}
+        return {"user": who, "role": u.get("role", "user"), "must_change": u.get("must_change", False), "accounts": True}
+    return {"user": who, "role": "admin", "must_change": who == "shared" and security.must_change(),
+            "accounts": accounts.enabled()}
+
+
 @app.get("/api/password", dependencies=[Depends(security.require_api_key)])
-def password_state():
-    """Whether the initial password is still the one in use (the app then asks for a new one)."""
-    return {"enabled": bool(security.current_hash()), "must_change": security.must_change()}
+def password_state(who: str = Depends(security.require_api_key)):
+    """Whether the signed-in password must still be changed (kept for the app of 19.10.2026)."""
+    return {"enabled": accounts.enabled() or bool(security.current_hash()), "must_change": me(who)["must_change"]}
 
 
-@app.post("/api/password", dependencies=[Depends(security.require_api_key)])
-def change_password(r: PasswordReq, request: Request):
-    """Set the shared password: the current one, then a new one of at least 12 characters. Stored as a hash."""
+@app.post("/api/password")
+def change_password(r: PasswordReq, request: Request, who: str = Depends(security.require_api_key)):
+    """Change your own password: the current one, then a new one of at least 12 characters. Stored as a hash."""
+    client = _client(request)
+    if security.too_many_failures(client):
+        return JSONResponse({"ok": False, "error": "too many failed attempts; wait 15 minutes"}, status_code=429)
+    if accounts.enabled() and who not in ("api-key", "anonymous"):
+        try:
+            accounts.change_own_password(who, r.current, r.new)
+        except accounts.AccountError as e:
+            if e.status == 401:
+                security.note_failure(client)
+            return JSONResponse({"ok": False, "error": str(e)}, status_code=e.status if e.status != 400 else 422)
+        return {"ok": True}
     stored = security.current_hash()
     if not stored:
         return JSONResponse({"ok": False, "error": "no password sign-in on this server"}, status_code=409)
-    who = _client(request)
-    if security.too_many_failures(who):
-        return JSONResponse({"ok": False, "error": "too many failed attempts; wait 15 minutes"}, status_code=429)
     if not security.check_password(r.current, stored):
-        security.note_failure(who)
+        security.note_failure(client)
         return JSONResponse({"ok": False, "error": "the current password is wrong"}, status_code=401)
     if len(r.new) < security.MIN_PASSWORD:
         return JSONResponse({"ok": False, "error": f"at least {security.MIN_PASSWORD} characters"}, status_code=422)
@@ -214,6 +254,52 @@ def change_password(r: PasswordReq, request: Request):
         return JSONResponse({"ok": False, "error": "choose a password different from the current one"}, status_code=422)
     security.set_password(r.new)
     return {"ok": True}
+
+
+# ---- named accounts: administration (phase 5) ----
+class UserNew(BaseModel):
+    username: str = Field(max_length=40)
+    role: str = "user"
+    temporary_password: str = Field(max_length=512)
+
+
+class UserChange(BaseModel):
+    role: str | None = None
+    disabled: bool | None = None
+    reset_password: str | None = Field(default=None, max_length=512)
+
+
+def _account_call(fn):
+    try:
+        return fn()
+    except accounts.AccountError as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=e.status if e.status != 400 else 422)
+
+
+@app.get("/api/users")
+def list_users(who: str = Depends(security.require_admin)):
+    return {"users": accounts.listing()}
+
+
+@app.post("/api/users")
+def add_user(r: UserNew, who: str = Depends(security.require_admin)):
+    """A new person, with a temporary password they change at their first sign-in."""
+    if not accounts.enabled() and who != "api-key":
+        accounts.bootstrap()        # the shared password becomes 'admin' before the first named account is added
+    return _account_call(lambda: accounts.create(r.username, r.role, r.temporary_password, by=who))
+
+
+@app.patch("/api/users/{username}")
+def change_user(username: str, r: UserChange, who: str = Depends(security.require_admin)):
+    """Disable or enable, change the role, or reset the password (a temporary one, changed at next sign-in)."""
+    return _account_call(lambda: accounts.update(username, by=who, disabled=r.disabled, role=r.role,
+                                                 reset_password=r.reset_password))
+
+
+@app.get("/api/auth-log")
+def auth_log(who: str = Depends(security.require_admin)):
+    """Sign-ins, failed attempts, password and account changes, newest first."""
+    return {"events": accounts.recent_log()}
 
 
 @app.post("/api/session/close", dependencies=[Depends(security.require_api_key)])
@@ -460,7 +546,10 @@ async def docengine_proxy(path: str, request: Request):
     # DocEngine routes are GET-only; a HEAD (the Library's availability probe) is
     # sent upstream as GET and answered without the body.
     hdrs = {"Content-Type": request.headers.get("content-type", "application/json"),
-            "X-API-Key": settings.docengine_api_key, "User-Agent": "ppdocwiz/1.0"}
+            "X-API-Key": settings.docengine_api_key, "User-Agent": "ppdocwiz/1.0",
+            # The signed-in person, recorded by the DocEngine on everything they change (set here, never by the browser).
+            "X-Actor": security.identity(request.headers.get("x-api-key", ""),
+                                         request.cookies.get(security.COOKIE, "")) or ""}
     if request.method == "HEAD":
         hdrs["Range"] = "bytes=0-0"          # availability probe: one byte, not the whole file
     req = urllib.request.Request(url, data=body, method="GET" if request.method == "HEAD" else request.method, headers=hdrs)

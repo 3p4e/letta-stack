@@ -466,3 +466,30 @@ def test_package_annexes_number_from_a01_on_a_rebuild_and_by_position_when_uncon
         await asyncio.sleep(0)
     asyncio.run(go())
     assert created == ["QCSOP026A01", "QCSOP026A02", "QASOPXXXA01", "QASOPXXXA02"]
+
+
+# ---------- phase 5: the signed-in person is recorded (X-Actor, set by the PP Suite proxy) ----------
+def test_the_signed_in_person_is_recorded_on_every_change(api, monkeypatch):
+    c, store, started = api
+    from app import db
+    seen = {}
+    real_create, real_save = db.brief_create, db.brief_save
+
+    async def create(b, by=""):
+        seen["created_by"] = by
+        return await real_create(b, by)
+
+    async def save(new, old, events):
+        seen.setdefault("actors", []).extend(e.get("actor") for e in events)
+        return await real_save(new, old, events)
+    monkeypatch.setattr(db, "brief_create", create)
+    monkeypatch.setattr(db, "brief_save", save)
+    hx = {**h(), "X-Actor": "b.nikolov"}
+    b = c.post("/briefs", json={"package": "sop", "meta": {"title_en": "Sampling"}, "requested_by": "ppdocwiz-session"},
+               headers=hx).json()
+    assert seen["created_by"] == "b.nikolov"
+    c.patch(f"/briefs/{b['id']}", json={"rev": 0, "actor": "someone-else", "set": {"focus": "Potency"}}, headers=hx)
+    r = c.post(f"/briefs/{b['id']}/build", json={"rev": 1}, headers=hx).json()
+    assert set(seen["actors"]) == {"b.nikolov"} and started[-1]["requested_by"] == "b.nikolov" and r["status"] == "queued"
+    c.patch(f"/briefs/{b['id']}", json={"rev": 2, "actor": "direct-caller", "set": {"focus": "Purity"}}, headers=h())
+    assert seen["actors"][-1] == "direct-caller"          # without the header, the body's own actor

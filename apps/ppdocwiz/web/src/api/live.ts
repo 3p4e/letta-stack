@@ -42,7 +42,12 @@ export function liveApi(): Api {
   const de = (window.PP_SUITE_CONFIG?.docengineBase || '/api/docengine').replace(/\/$/, '');
   return {
     mode: 'live',
-    openSession: async key => { await post('/api/session', { key }); },
+    openSession: async (key, username = '') => { await post('/api/session', { key, username }); },
+    me: () => call('/api/me'),
+    users: async () => (await call<{ users: never[] }>('/api/users')).users,
+    addUser: u => post('/api/users', u),
+    changeUser: (name, c) => send('/api/users/' + encodeURIComponent(name), 'PATCH', c),
+    authLog: async () => (await call<{ events: never[] }>('/api/auth-log')).events,
     passwordState: () => call('/api/password'),
     changePassword: async (current, next) => { await post('/api/password', { current, new: next }); },
     // The server refuses the session from now on, even if the browser kept the cookie (review 14.10.2026).
