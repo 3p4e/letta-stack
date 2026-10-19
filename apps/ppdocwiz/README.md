@@ -77,6 +77,7 @@ Without a build, `/` serves the legacy SPA.
 | `PPDOCWIZ_UI` | `legacy` serves the old single-file SPA at `/` even when the suite is built |
 | `GOTENBERG_URL` (+ `GOTENBERG_USERNAME`/`GOTENBERG_PASSWORD`) | the shared PDF renderer on KVM4 (`http://gotenberg:3000` in-stack). Unset ⇒ local LibreOffice. |
 | `DOCENGINE_URL`, `DOCENGINE_API_KEY` | internal DocEngine base and its key. `/api/docengine/*` forwards there for the Questionnaire, Jobs and Library screens; the browser never sees the DocEngine key. Unset ⇒ those routes 503. |
+| `PPDOCWIZ_AUTH` | `off` opens every route with no sign-in — the link alone gives access (Head of QC, 19.10.2026, until a new login replaces the key). Anything else, or unset, keeps the key gate. `/api/health` reports `auth`. |
 | `LETTA_AGENT` | **allowlist** of agents the chat proxy may reach, comma-separated (default `qms_docx_formatter`). Not a fallback: a request naming anything else is refused with 400. |
 
 ## API

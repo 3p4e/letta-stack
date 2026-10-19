@@ -350,3 +350,24 @@ def test_the_brief_routes_pass_patch_and_delete(client, monkeypatch):
     for method in ("patch", "delete"):
         assert getattr(client, method)("/api/docengine/briefs/x", headers=H).status_code == 502   # forwarded, not 404/405
     assert client.put("/api/docengine/reference", headers=H).status_code == 405                 # operator route stays out
+
+
+def test_auth_off_opens_every_route_and_says_so(client, monkeypatch):
+    """Head of QC, 19.10.2026: no key sign-in for now. PPDOCWIZ_AUTH=off is a switch; the default keeps the gate."""
+    assert client.get("/api/doctypes").status_code == 401            # default: the key is required
+    assert client.get("/api/health").json()["auth"] is True
+    monkeypatch.setattr(settings, "auth_off", True)
+    assert client.get("/api/doctypes").status_code == 200            # no key, no cookie
+    assert client.get("/api/health").json()["auth"] is False
+    monkeypatch.setattr(settings, "api_key", "")                     # even with no key configured
+    assert client.get("/api/doctypes").status_code == 200
+
+
+def test_the_auth_switch_reads_only_off(monkeypatch):
+    import importlib
+    import config
+    for raw, off in (("off", True), (" OFF ", True), ("on", False), ("", False), ("no", False)):
+        monkeypatch.setenv("PPDOCWIZ_AUTH", raw)
+        assert importlib.reload(config).Settings().auth_off is off
+    monkeypatch.delenv("PPDOCWIZ_AUTH")
+    importlib.reload(config)

@@ -51,6 +51,9 @@ export function Shell({ children }: { children: ReactNode }) {
   // The engine the server reports, not a version number typed into the page.
   const [engine, setEngine] = useState('');
   useEffect(() => { s.api.deHealth().then(h => setEngine((h.engine.match(/canon revision ([\d-]+)/) || [])[1] || '')).catch(() => setEngine('')); }, [s.api]);
+  // No sign-in on this server (PPDOCWIZ_AUTH=off): nothing to sign out of.
+  const [open, setOpen] = useState(false);
+  useEffect(() => { s.api.health().then(h => setOpen(h.auth === false)).catch(() => setOpen(false)); }, [s.api]);
   const zoom = Math.min(1, vp.w / 1280, vp.h / 760);
   const crumb = s.screen === 'builder' ? `builder › ${s.bdoc.code || 'untitled'} · ${s.bdoc.status.replace('_', ' ')} v${s.bdoc.version}` : (s.api.mode === 'live' ? LIVE_CRUMB : CRUMB)[s.screen];
   const radius = s.tweaks.createStyle === 'pill' ? 999 : 6;
@@ -82,8 +85,8 @@ export function Shell({ children }: { children: ReactNode }) {
             <div style={{ fontFamily: MONO, fontSize: 10.5, letterSpacing: '.1em', color: T.faint, padding: g === 'c' ? '4px 10px 6px' : '16px 10px 6px' }}>{tr(s.lang, g === 'c' ? 'CREATE' : 'CONTROL')}</div>
             {NAV.filter(n => n[2] === g).map(([k, label]) => <div key={k} onClick={() => s.go(k)} className="pp-nav" style={{ padding: '8px 10px', borderRadius: 6, cursor: 'pointer', background: s.screen === k ? T.selected : 'transparent', color: s.screen === k ? '#fff' : T.secondary, fontWeight: s.screen === k ? 700 : 400 }}>{tr(s.lang, label)}</div>)}
           </div>)}
-          <div style={{ marginTop: 'auto', padding: 10, fontSize: 12, color: T.faint, lineHeight: 1.5 }}>{s.api.mode === 'mock' ? 'Engine 1.6.2' : engine ? `Engine · canon ${engine}` : 'Engine · not reachable'}<br />{s.api.mode === 'mock' ? 'darko.s · QA' : 'session · cookie'}
-            <div onClick={() => s.api.closeSession().then(() => s.set({ authed: false })).catch(e => s.flash(String(e.message)))} style={{ cursor: 'pointer', color: T.muted, marginTop: 4 }}>{tr(s.lang, 'Sign out')}</div></div>
+          <div style={{ marginTop: 'auto', padding: 10, fontSize: 12, color: T.faint, lineHeight: 1.5 }}>{s.api.mode === 'mock' ? 'Engine 1.6.2' : engine ? `Engine · canon ${engine}` : 'Engine · not reachable'}<br />{s.api.mode === 'mock' ? 'darko.s · QA' : open ? 'open access · no sign-in' : 'session · cookie'}
+            {!open && <div onClick={() => s.api.closeSession().then(() => s.set({ authed: false })).catch(e => s.flash(String(e.message)))} style={{ cursor: 'pointer', color: T.muted, marginTop: 4 }}>{tr(s.lang, 'Sign out')}</div>}</div>
         </nav>
         <main style={{ flex: 1, minWidth: 0, display: 'flex', minHeight: 0 }}>{children}</main>
       </div>

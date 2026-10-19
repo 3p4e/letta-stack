@@ -146,7 +146,7 @@ def health():
     # The container filesystem path ("suite") used to be returned and is not:
     # this endpoint is reachable without a credential, and the frontend only
     # ever reads .letta and .pdf.
-    return {"ok": True, "letta": bool(os.environ.get("LETTA_BASE_URL")),
+    return {"ok": True, "auth": not settings.auth_off, "letta": bool(os.environ.get("LETTA_BASE_URL")),
             "pdf": bool(shutil.which("soffice") or os.environ.get("GOTENBERG_URL"))}
 
 

@@ -112,6 +112,8 @@ def revoke(value: str, key: str) -> bool:
 
 async def require_api_key(x_api_key: str = Header(default=""),
                           ppdocwiz_session: str = Cookie(default="")) -> None:
+    if settings.auth_off:
+        return                       # PPDOCWIZ_AUTH=off: open access by the owner's choice (config.py)
     if not settings.api_key:
         # Unconfigured service refuses every call rather than running open.
         raise HTTPException(status_code=503, detail="PP Doc Wiz not configured")
