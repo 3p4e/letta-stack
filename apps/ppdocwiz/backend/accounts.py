@@ -8,7 +8,8 @@ account keeps its name on everything it did. The signed-in person is passed to t
 request (X-Actor), so each brief change, build, suggestion and review records who made it.
 
 Stored on the data volume beside the revoked-sessions file:
-  .ppdocwiz_users.json   {username: {hash, role, must_change, disabled, created, by}}
+  .ppdocwiz_users.json   {username: {hash, role, must_change, disabled, created, by, pw_changed}}
+                         pw_changed: epoch seconds of the last reset or change; a session issued before it is dead
   ppdocwiz_auth.log      one JSON line per sign-in, failure, password change and account change (append only)
 
 The first start after this change turns the shared password (if one is set) into the account "admin",
@@ -19,6 +20,7 @@ import json
 import os
 import re
 import threading
+import time
 
 import security
 
@@ -103,6 +105,10 @@ def create(username: str, role: str, temporary: str, by: str) -> dict:
         users = load()
         if username in users:
             raise AccountError(f"{username} already exists")
+        if not users and role != "admin":
+            # The first account closes the shared password; a plain user as the first account left nobody able to
+            # administer (review 19.10.2026). app.add_user bootstraps 'admin' from the shared password first.
+            raise AccountError("the first account must be an administrator")
         users[username] = {"hash": security.hash_password(temporary), "role": role, "must_change": True,
                            "disabled": False, "created": _now(), "by": by}
         _save(users)
@@ -125,7 +131,7 @@ def update(username: str, by: str, disabled: bool | None = None, role: str | Non
             u["disabled"] = bool(disabled)
         if reset_password is not None:
             _check_password(reset_password)
-            u["hash"], u["must_change"] = security.hash_password(reset_password), True
+            u["hash"], u["must_change"], u["pw_changed"] = security.hash_password(reset_password), True, int(time.time())
         admins = [n for n, x in users.items() if x["role"] == "admin" and not x.get("disabled")]
         if not admins:
             raise AccountError("at least one administrator must stay enabled")
@@ -145,7 +151,7 @@ def change_own_password(username: str, current: str, new: str) -> None:
             e = AccountError("the current password is wrong")
             e.status = 401
             raise e
-        u["hash"], u["must_change"] = security.hash_password(new), False
+        u["hash"], u["must_change"], u["pw_changed"] = security.hash_password(new), False, int(time.time())
         _save(users)
     log("password_changed", username)
 

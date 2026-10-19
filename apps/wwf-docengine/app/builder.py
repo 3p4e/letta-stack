@@ -105,6 +105,24 @@ def _strip_headerdata(markdown: str) -> str:
     return markdown
 
 
+def _headerdata(markdown: str) -> dict:
+    """The HEADERDATA fields, read the way build_from_md reads them: between the "<!--HEADERDATA" line and the first
+    "-->" line. doctype and bilingual used to be taken from anywhere in the text, so a body line "bilingual: no"
+    switched the bilingual gate off (review 19.10.2026)."""
+    lines, out, inside = markdown.splitlines(), {}, False
+    for ln in lines:
+        if ln.strip() == "<!--HEADERDATA":
+            inside = True
+            continue
+        if inside:
+            if ln.strip() == "-->":
+                break
+            k, _, v = ln.partition(":")
+            if _:
+                out[k.strip().lower()] = v.strip()
+    return out
+
+
 def _source_word_char_counts(markdown: str) -> tuple[int, int]:
     """§5A fidelity source-side count: the ASSEMBLED markdown minus its own
     grammar tokens (HEADERDATA block, [[FORM/TABLE]] markers, heading
@@ -138,14 +156,9 @@ def build(markdown: str, out_dir: Path, out_name: str = "document") -> BuildResu
     stamp = uuid.uuid4().hex[:12]
     final = out_dir / f"{safe_name(out_name)}-{stamp}.docx"
     out = out_dir / f".{safe_name(out_name)}-{stamp}.partial.docx"
-    doctype = "SOP"
-    m = re.search(r"^doctype:\s*(\S+)", markdown, re.M)
-    if m:
-        doctype = m.group(1).upper()
-    require_bilingual = True
-    mbil = re.search(r"^bilingual:\s*(\S+)", markdown, re.M)
-    if mbil and mbil.group(1).strip().lower() in ("no", "false"):
-        require_bilingual = False
+    hd = _headerdata(markdown)
+    doctype = (hd.get("doctype") or "SOP").split()[0].upper()
+    require_bilingual = hd.get("bilingual", "").lower() not in ("no", "false")
     with _BUILD_LOCK:
         with tempfile.NamedTemporaryFile(
             "w", suffix=".md", delete=False, encoding="utf-8"

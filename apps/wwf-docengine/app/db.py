@@ -92,10 +92,25 @@ CREATE TABLE IF NOT EXISTS docengine.brief_sources (
   text       text NOT NULL,
   created_at timestamptz NOT NULL DEFAULT now()
 );
+-- What a source is for (Head of QC, 19.10.2026): reference contents, a formatting example, or an executed example.
+ALTER TABLE docengine.brief_sources ADD COLUMN IF NOT EXISTS role text NOT NULL DEFAULT 'content';
 CREATE INDEX IF NOT EXISTS de_brief_events ON docengine.brief_events(brief_id, rev);
 CREATE INDEX IF NOT EXISTS de_jobs_status ON docengine.jobs(status);
 CREATE INDEX IF NOT EXISTS de_docs_code ON docengine.documents(code);
 """
+
+
+# One fixed key for the schema bootstrap's advisory lock (any constant; only this service takes it).
+_SCHEMA_LOCK = 72640301
+
+
+async def create_schema(c: asyncpg.Connection) -> None:
+    """The DDL under one transaction-scoped advisory lock. Several uvicorn workers run init() at the same moment, and
+    two CREATE … IF NOT EXISTS racing on an empty database lose to each other with a unique violation on pg_type /
+    pg_class — a worker died at startup (review 19.10.2026). The lock serialises them; the second finds the schema."""
+    async with c.transaction():
+        await c.execute("SELECT pg_advisory_xact_lock($1)", _SCHEMA_LOCK)
+        await c.execute(_SCHEMA)
 
 
 async def init() -> None:
@@ -104,7 +119,7 @@ async def init() -> None:
         return  # tests / degraded mode: endpoints depending on DB 503
     _pool = await asyncpg.create_pool(settings.database_url, min_size=1, max_size=5)
     async with _pool.acquire() as c:
-        await c.execute(_SCHEMA)
+        await create_schema(c)
 
 
 async def close() -> None:
@@ -150,6 +165,29 @@ async def job_update(jid: str, **fields: Any) -> None:
     await pool().execute(
         f"UPDATE docengine.jobs SET {', '.join(sets)} WHERE id = ${len(vals)}", *vals  # nosec B608
     )
+
+
+async def job_finish(jid: str, **fields: Any) -> bool:
+    """A terminal write of the pipeline (done / awaiting_review / failed), refused on a row the reaper has already
+    failed: a slow job that outlived STALE_JOB_MINUTES used to come back and overwrite 'abandoned' with 'done', and
+    its annexes started on a job the Jobs screen had shown as failed (review 19.10.2026). True when written."""
+    sets, vals = ["updated_at = now()"], []
+    for k, v in fields.items():
+        if k in ("payload", "result"):
+            v = json.dumps(v)
+        vals.append(v)
+        sets.append(f"{k} = ${len(vals)}")
+    vals.append(jid)
+    r = await pool().fetchval(
+        f"UPDATE docengine.jobs SET {', '.join(sets)} WHERE id = ${len(vals)} AND status <> 'failed' RETURNING id",  # nosec B608
+        *vals)
+    return r is not None
+
+
+async def job_touch(jid: str) -> str | None:
+    """Bump updated_at (the reaper's only signal) and return the job's status; None when the row is gone. Called before
+    every exchange with an agent, so a job still working is never reaped and one the reaper failed stops working."""
+    return await pool().fetchval("UPDATE docengine.jobs SET updated_at = now() WHERE id = $1 RETURNING status", jid)
 
 
 # A job is only ever advanced by the worker that owns it, so a worker killed
@@ -260,36 +298,41 @@ async def job_latest_markdown_by_code(code: str) -> dict | None:
     It used to be simply the newest job of any status, so a failed or returned draft written after the
     approved SOP became the source of every annex built from then on (review 14.10.2026)."""
     from .house_codes import normalize
-    # Jobs written before the house code form (18.10.2026) hold "WHSOP_003"; compare with separators removed.
-    house = (normalize(code) or code).upper()
-    r = await pool().fetchrow(
-        "SELECT id, status, result->>'markdown' AS md FROM docengine.jobs"
-        " WHERE (payload->'meta'->>'code' = $1"
-        "        OR upper(regexp_replace(payload->'meta'->>'code', '[[:space:]_./-]', '', 'g')) = $2)"
-        "   AND result->>'markdown' IS NOT NULL"
+    # Jobs written before the house code form (18.10.2026) hold "WHSOP_003" or "QCSOP 11": the candidates are
+    # normalised in Python, as the register and the Library are — SQL that only removed separators left "QCSOP11"
+    # unequal to "QCSOP011" (review 19.10.2026).
+    house = normalize(code) or code
+    rows = await pool().fetch(
+        "SELECT id, status, payload->'meta'->>'code' AS code FROM docengine.jobs"
+        " WHERE result->>'markdown' IS NOT NULL"
         "   AND NOT (status = 'failed' AND COALESCE(error, '') LIKE 'returned for revision%')"
-        " ORDER BY CASE status WHEN 'done' THEN 0 WHEN 'awaiting_review' THEN 1 ELSE 2 END, created_at DESC"
-        " LIMIT 1", code, house)
-    return {"markdown": r["md"], "job_id": str(r["id"]), "status": r["status"]} if r else None
+        " ORDER BY CASE status WHEN 'done' THEN 0 WHEN 'awaiting_review' THEN 1 ELSE 2 END, created_at DESC")
+    for r in rows:
+        if r["code"] == code or (r["code"] and normalize(r["code"]) == house):
+            md = await pool().fetchval("SELECT result->>'markdown' FROM docengine.jobs WHERE id = $1", r["id"])
+            return {"markdown": md, "job_id": str(r["id"]), "status": r["status"]}
+    return None
 
 
 async def codes_in_use() -> set[str]:
     """Document codes the engine itself holds: registered documents and every job not failed. A number an open
     draft carries is taken, so two drafts are never given the same next free code."""
+    from .house_codes import normalize
     rows = await pool().fetch(
         "SELECT code FROM docengine.documents"
         " UNION SELECT payload->'meta'->>'code' FROM docengine.jobs"
         "  WHERE status <> 'failed' AND payload->'meta'->>'code' IS NOT NULL")
-    return {r["code"] for r in rows if r["code"]}
+    return {normalize(r["code"]) or r["code"] for r in rows if r["code"]}       # house form (review 19.10.2026)
 
 
 async def codes_of_brief(brief_id: str) -> set[str]:
     """Codes held by the jobs a brief started (its earlier builds and their annexes): a rebuild reuses them."""
     if not brief_id:
         return set()
+    from .house_codes import normalize
     rows = await pool().fetch("SELECT payload->'meta'->>'code' AS code FROM docengine.jobs WHERE payload->>'brief_id' = $1",
                               brief_id)
-    return {r["code"] for r in rows if r["code"]}
+    return {normalize(r["code"]) or r["code"] for r in rows if r["code"]}       # as codes_in_use, so they subtract
 
 
 async def job_merge_result(jid: str, extra: dict) -> None:
@@ -437,18 +480,38 @@ async def brief_source_add(bid: str, rev: int, actor: str, src: dict) -> str | N
     """Add a source to an open brief; None when the brief is not open or already holds MAX_SOURCES."""
     sid = str(uuid.uuid4())
     async with pool().acquire() as c, c.transaction():
-        new_rev = await c.fetchval(
-            "UPDATE docengine.briefs SET rev=rev+1, updated_at=now() WHERE id=$1 AND body->>'status' = 'open'"
-            " AND (SELECT count(*) FROM docengine.brief_sources WHERE brief_id=$1) < $2 RETURNING rev", bid, MAX_SOURCES)
-        if new_rev is None:
+        # The brief row is locked first, so the count below is read after every earlier add committed: 40 uploads
+        # sent at once each counted 0 and all 40 went in (review 19.10.2026).
+        status = await c.fetchval("SELECT body->>'status' FROM docengine.briefs WHERE id=$1 FOR UPDATE", bid)
+        if status != "open":
             return None
-        await c.execute("INSERT INTO docengine.brief_sources (id, brief_id, name, kind, bytes, sha256, text)"
-                        " VALUES ($1,$2,$3,$4,$5,$6,$7)", sid, bid, src["name"], src["kind"], src["bytes"],
-                        src["sha256"], src["text"])
+        if await c.fetchval("SELECT count(*) FROM docengine.brief_sources WHERE brief_id=$1", bid) >= MAX_SOURCES:
+            return None
+        new_rev = await c.fetchval("UPDATE docengine.briefs SET rev=rev+1, updated_at=now() WHERE id=$1 RETURNING rev", bid)
+        await c.execute("INSERT INTO docengine.brief_sources (id, brief_id, name, kind, bytes, sha256, text, role)"
+                        " VALUES ($1,$2,$3,$4,$5,$6,$7,$8)", sid, bid, src["name"], src["kind"], src["bytes"],
+                        src["sha256"], src["text"], src.get("role") or "content")
         await c.execute("INSERT INTO docengine.brief_events (brief_id, rev, actor, op, key, after)"
                         " VALUES ($1,$2,$3,'source_add',$4,$5)", bid, new_rev, actor, src["name"],
-                        json.dumps({"id": sid, "kind": src["kind"], "bytes": src["bytes"], "chars": len(src["text"])}))
+                        json.dumps({"id": sid, "kind": src["kind"], "bytes": src["bytes"], "chars": len(src["text"]),
+                                    "role": src.get("role") or "content"}))
     return sid
+
+
+async def brief_source_role(bid: str, sid: str, role: str, actor: str) -> bool:
+    """Change what a source is for; False when the brief is not open or the source is not its."""
+    async with pool().acquire() as c, c.transaction():
+        new_rev = await c.fetchval(
+            "UPDATE docengine.briefs SET rev=rev+1, updated_at=now() WHERE id=$1 AND body->>'status' = 'open'"
+            " AND EXISTS (SELECT 1 FROM docengine.brief_sources WHERE id=$2 AND brief_id=$1) RETURNING rev", bid, sid)
+        if new_rev is None:
+            return False
+        before = await c.fetchrow("SELECT name, role FROM docengine.brief_sources WHERE id=$1", sid)
+        await c.execute("UPDATE docengine.brief_sources SET role=$2 WHERE id=$1", sid, role)
+        await c.execute("INSERT INTO docengine.brief_events (brief_id, rev, actor, op, key, before, after)"
+                        " VALUES ($1,$2,$3,'source_role',$4,$5,$6)", bid, new_rev, actor, before["name"],
+                        json.dumps(before["role"]), json.dumps(role))
+    return True
 
 
 async def brief_source_remove(bid: str, sid: str, actor: str) -> bool:
@@ -466,8 +529,8 @@ async def brief_source_remove(bid: str, sid: str, actor: str) -> bool:
 
 async def brief_sources(bid: str, with_text: bool = True) -> list[dict]:
     text = "text" if with_text else "'' AS text"
-    rows = await pool().fetch(f"SELECT id, name, kind, bytes, sha256, {text}, length(text) AS chars, created_at"
+    rows = await pool().fetch(f"SELECT id, name, kind, bytes, sha256, {text}, length(text) AS chars, created_at, role"
                               " FROM docengine.brief_sources WHERE brief_id=$1 ORDER BY created_at", bid)
     return [{"id": str(r["id"]), "name": r["name"], "kind": r["kind"], "bytes": r["bytes"], "sha256": r["sha256"],
-             "chars": r["chars"], "created_at": r["created_at"].isoformat(),
+             "chars": r["chars"], "created_at": r["created_at"].isoformat(), "role": r["role"],
              **({"text": r["text"]} if with_text else {})} for r in rows]

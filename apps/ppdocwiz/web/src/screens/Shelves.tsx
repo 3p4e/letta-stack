@@ -2,22 +2,14 @@
 // drafts, numbers only, retired — from the register, the approved copies (DB3), the ACME_SOP work in progress and
 // what the engine itself built. A disagreement between them is shown as a note, never decided here.
 import { useEffect, useState } from 'react';
-import { ApiError, type LibraryShelves, type ReferenceDoc, type Shelf, type ShelfEntry } from '../api/types';
-import { Banner, Caps, Seg } from '../components/ui';
+import { ApiError, type LibraryShelves, type Shelf, type ShelfEntry } from '../api/types';
+import { EntryDetail, holds } from '../components/EntryDetail';
+import { Banner, Seg } from '../components/ui';
 import { useApp } from '../store/store';
 import { C, MONO, T } from '../theme';
 
 const LABEL: Record<Shelf, string> = { approved: 'Approved · in use', revision: 'Under revision', drafts: 'Drafts in progress', numbers: 'Numbers only', retired: 'Superseded · withdrawn' };
 const ORDER: Shelf[] = ['approved', 'revision', 'drafts', 'numbers', 'retired'];
-
-function holds(e: ShelfEntry): string {
-  const out: string[] = [];
-  if (e.approved) out.push(`approved copy v${e.approved.version}${e.approved.ragflow_doc_id ? ' · DB3' : ''}`);
-  if (e.wip.length) out.push(`${e.wip.length} draft${e.wip.length > 1 ? 's' : ''} (ACME)`);
-  if (e.jobs.length) out.push(`${e.jobs.length} engine job${e.jobs.length > 1 ? 's' : ''}`);
-  if (e.builds.length) out.push(`${e.builds.length} build${e.builds.length > 1 ? 's' : ''}`);
-  return out.join(' · ') || 'register only';
-}
 
 export function Shelves() {
   const { api, dataRev } = useApp();
@@ -26,13 +18,7 @@ export function Shelves() {
   const [shelf, setShelf] = useState<Shelf>('approved');
   const [q, setQ] = useState('');
   const [sel, setSel] = useState<ShelfEntry | null>(null);
-  const [doc, setDoc] = useState<ReferenceDoc | null>(null);
   useEffect(() => { api.library().then(l => { setLib(l); setErr(''); }).catch((e: ApiError) => setErr(`${e.status} · ${e.message}`)); }, [api, dataRev]);
-  useEffect(() => {
-    setDoc(null);
-    const id = sel?.approved?.id || sel?.wip[0]?.id;
-    if (id) api.reference(id).then(setDoc).catch(() => setDoc(null));
-  }, [api, sel]);
   if (err) return <div style={{ flex: 1, padding: 22 }}><Banner kind="err">GET /library → {err}</Banner></div>;
   if (!lib) return <div style={{ flex: 1, padding: 22, color: T.muted }}>loading…</div>;
   const rows = lib.shelves[shelf].filter(e => !q || (e.code + ' ' + e.title_mk + ' ' + e.title_en).toLowerCase().includes(q.toLowerCase()));
@@ -55,16 +41,6 @@ export function Shelves() {
       </div>
       <div style={{ fontSize: 12, color: T.faint }}>A working copy for drafting, outside the QMS: QALI 001 and the signed originals stay the authority.</div>
     </div>
-    {sel && <div style={{ width: 420, flex: 'none', borderLeft: `1px solid ${T.hair}`, background: T.pane, padding: 16, display: 'flex', flexDirection: 'column', gap: 10, fontSize: 13, overflow: 'auto' }}>
-      <div><div style={{ fontFamily: MONO, fontSize: 13, fontWeight: 700, color: '#fff' }}>{sel.code}{sel.version && ` · v${sel.version}`}</div><div style={{ color: T.secondary }}>{sel.title_mk}{sel.title_mk && sel.title_en && ' | '}{sel.title_en}</div></div>
-      <div style={{ display: 'grid', gridTemplateColumns: '84px 1fr', gap: '5px 8px', fontSize: 12 }}>
-        <span style={{ color: T.muted }}>register</span><span>{sel.status || 'not registered'}{sel.effective_date && ` · since ${sel.effective_date}`}</span>
-        <span style={{ color: T.muted }}>parent</span><span>{sel.parent || '—'}</span>
-        <span style={{ color: T.muted }}>held</span><span>{holds(sel)}</span></div>
-      {sel.notes.map(n => <Banner key={n} kind="warn">{n}</Banner>)}
-      {sel.jobs.length > 0 && <><Caps>ENGINE JOBS</Caps>{sel.jobs.map(j => <div key={j.id} style={{ fontFamily: MONO, fontSize: 11.5, color: T.secondary }}>{j.id.slice(0, 8)} · {j.status} · {j.stage}</div>)}</>}
-      {doc && <><Caps>{doc.kind === 'approved' ? 'APPROVED TEXT (WORD FILE)' : 'WORK IN PROGRESS (ACME_SOP)'} · {String(doc.source?.name || '')}</Caps>
-        <pre style={{ whiteSpace: 'pre-wrap', fontFamily: MONO, fontSize: 11, color: T.secondary, background: T.surface, borderRadius: 6, padding: 10, maxHeight: 520, overflow: 'auto', margin: 0 }}>{doc.markdown.slice(0, 20000)}{doc.markdown.length > 20000 && '\n…'}</pre></>}
-    </div>}
+    {sel && <EntryDetail sel={sel} />}
   </>;
 }

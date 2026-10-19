@@ -22,12 +22,25 @@ SHAPE = ('{"proposals": [{"key": "<question key>", "options": [{"value": "<short
          '"source": "<E1 | R2 | file name | house practice>"}], "pick": "<value, or list of values for a multi question>"}]}')
 
 
+_FENCE = re.compile(r"^[ \t]*```[\w-]*[ \t]*$\n?", re.M)
+
+
 def _first_json(text: str) -> dict:
-    """The first JSON object in an agent's answer (it may wrap it in prose or a code fence)."""
-    m = re.search(r"\{.*\}", text or "", re.S)
-    if not m:
-        raise ValueError("no JSON object in the answer")
-    return json.loads(m.group(0))
+    """The first JSON object in an agent's answer (it may wrap it in prose or a code fence). Decoded from each '{'
+    with raw_decode, which stops where the object ends: the greedy "\\{.*\\}" took everything up to the LAST brace, so an
+    answer that went on to mention another {…} was no JSON at all (review 19.10.2026)."""
+    t = _FENCE.sub("", text or "")
+    dec, i = json.JSONDecoder(), t.find("{")
+    while i >= 0:
+        try:
+            obj, _ = dec.raw_decode(t[i:])
+        except json.JSONDecodeError:
+            i = t.find("{", i + 1)
+            continue
+        if isinstance(obj, dict):
+            return obj
+        i = t.find("{", i + 1)
+    raise ValueError("no JSON object in the answer")
 
 
 def clean(raw: dict, asked: dict[str, dict]) -> dict[str, dict]:

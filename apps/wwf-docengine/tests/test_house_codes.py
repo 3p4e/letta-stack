@@ -94,3 +94,27 @@ def test_unconfirmed_families_get_xxx_and_their_drafts_are_marked():
     assert rows["QAT053"]["status"] == "known"                        # forms keep their numbers
     assert hc.next_code(parent="QASOPXXX", taken={"QASOP_0XX_A06"}) == "QASOPXXXA07"
     assert hc.next_code(family="QAT") == "QAT054" and hc.next_code(family="QCSOP") == "QCSOP026"
+
+
+# ---- review 19.10.2026 ----
+
+@pytest.mark.parametrize("raw", ["QC01", "AB001", "ABC001", "WHSOP00", "QCT000", "QCSOP000A01", "QCSOP011A00"])
+def test_a_short_unknown_family_or_a_zero_number_is_not_a_code(raw):
+    """"QC01", "AB001" and "WHSOP00" passed as codes; a family is four letters or one the register knows, a number is
+    1 or more (XXX allowed)."""
+    assert hc.normalize(raw) is None
+
+
+def test_three_letter_families_the_register_knows_still_pass():
+    assert hc.normalize("QCT 017") == "QCT017" and hc.normalize("SSP-001") == "SSP001"
+    assert hc.normalize("QAT053") == "QAT053" and hc.normalize("QCSOP011A01") == "QCSOP011A01"
+    assert hc.normalize("WHSOP003") == "WHSOP003" and hc.normalize("QASOPXXX") == "QASOPXXX"
+    assert hc.normalize("QCCoA001") == "QCCoA001" and hc.normalize("ABCD001") == "ABCD001"
+
+
+def test_versions_order_as_numbers_per_dot():
+    """house.py and library.py compared versions as text, so "1.9" beat "1.10"; one shared key now."""
+    k = hc.version_key
+    assert k("1.10") > k("1.9") > k("1.0") and k("01") == k("1") and k("2") > k("1.10")
+    assert k("1.0a") > k("1.0") and k("") < k("01")                         # text parts last; an empty version first
+    assert sorted(["1.10", "1.9", "2.0", "1.2"], key=k) == ["1.2", "1.9", "1.10", "2.0"]

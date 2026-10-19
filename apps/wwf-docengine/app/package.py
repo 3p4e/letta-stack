@@ -2,7 +2,7 @@
 # Annexes etc from the same workflow").
 #
 # A build of a brief is one job; an SOP + annexes build starts one annex job per annex once the SOP is saved
-# (pipeline._package, result.package_jobs). members() lists the latest build and its annexes, each with its status
+# (pipeline.start_package, result.package_jobs). members() lists the latest build and its annexes, each with its status
 # and the file a PDF is made from: the registered document (done) or the verified artifact awaiting a person's review.
 # The merged PDF is the SOP followed by its annexes in code order, each rendered by the house renderer. Not a QMS
 # record (CLAUDE.md §10).
@@ -32,10 +32,10 @@ def member(job: dict | None, doc: dict | None, job_id: str, code: str = "", titl
 
 
 def pending(annex: dict, error: str = "") -> dict:
-    """An annex of the package whose job has not started: it starts when the SOP is saved."""
+    """An annex of the package whose job has not started: it starts when the SOP is registered or approved."""
     return {"job_id": "", "code": "", "title_en": annex.get("title_en") or annex.get("title_mk") or "",
             "status": "failed" if error else "pending", "stage": "", "document_id": None, "file": "",
-            "review_reason": "", "assumed": [], "error": error or "starts when the SOP is saved"}
+            "review_reason": "", "assumed": [], "error": error or "starts when the SOP is registered or approved"}
 
 
 def summary(members: list[dict]) -> dict:

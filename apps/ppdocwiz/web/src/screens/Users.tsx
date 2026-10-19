@@ -3,7 +3,7 @@
 // account keeps its name on everything it did. The sign-in record lists sign-ins, failures and every account change.
 import { useEffect, useState } from 'react';
 import { ApiError, type Account, type AuthEvent } from '../api/types';
-import { Banner, Caps, Seg } from '../components/ui';
+import { Banner, Caps, Seg, press } from '../components/ui';
 import { useApp } from '../store/store';
 import { C, MONO, T } from '../theme';
 
@@ -11,11 +11,13 @@ const field = { background: T.deeper, border: `1px solid ${T.control}`, borderRa
 const EVENT: Record<string, string> = { signed_in: 'signed in', sign_in_failed: 'failed sign-in', password_changed: 'changed own password', account_created: 'account created', account_changed: 'account changed', migrated: 'admin created from the shared password' };
 
 export function Users() {
-  const { api, me, flash } = useApp();
+  const { api, me, flash, set } = useApp();
   const [users, setUsers] = useState<Account[]>([]), [log, setLog] = useState<AuthEvent[]>([]);
   const [tab, setTab] = useState<'people' | 'log'>('people');
   const [err, setErr] = useState('');
   const [name, setName] = useState(''), [role, setRole] = useState<'user' | 'admin'>('user'), [temp, setTemp] = useState('');
+  // The temporary password for a reset is typed into a password field in the row, not a window.prompt that shows it (review 19.10.2026).
+  const [resetting, setResetting] = useState<{ user: string; pw: string } | null>(null);
   const load = () => { api.users().then(setUsers).catch(e => setErr(String((e as Error).message))); api.authLog().then(setLog).catch(() => {}); };
   useEffect(load, [api]); // eslint-disable-line react-hooks/exhaustive-deps
   if (me && me.role !== 'admin') return <div style={{ padding: 24 }}><Banner kind="warn">Only administrators manage accounts.</Banner></div>;
@@ -27,12 +29,12 @@ export function Users() {
   };
   const change = async (u: Account, c: Parameters<typeof api.changeUser>[1], msg: string) => {
     setErr('');
-    try { await api.changeUser(u.username, c); flash(msg); load(); } catch (e) { fail(e); }
+    // Disabling or demoting yourself ends your own session or your access to this page: asked first.
+    if (u.username === me?.user && (c.disabled || c.role === 'user') && !window.confirm(c.disabled ? 'Disable your own account? You are signed out at once.' : 'Make yourself a user? You lose this page.')) return;
+    try { await api.changeUser(u.username, c); flash(msg); load(); if (u.username === me?.user) api.me().then(m => set({ me: m })).catch(() => {}); } catch (e) { fail(e); }
   };
-  const reset = (u: Account) => {
-    const t = window.prompt(`A temporary password for ${u.username} (at least 12 characters). They change it at their next sign-in.`);
-    if (t) change(u, { reset_password: t }, `${u.username}: password reset; they set their own at the next sign-in`);
-  };
+  const reset = (u: Account) => { if (resetting?.user !== u.username) setResetting({ user: u.username, pw: '' }); };
+  const confirmReset = (u: Account) => { if (!resetting || resetting.pw.length < 12) return; change(u, { reset_password: resetting.pw }, `${u.username}: password reset; they set their own at the next sign-in`); setResetting(null); };
   return <div style={{ flex: 1, minWidth: 0, padding: '18px 24px', display: 'flex', flexDirection: 'column', gap: 14, overflow: 'auto' }}>
     <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
       <span style={{ color: '#fff', fontSize: 16, fontWeight: 700 }}>Users</span>
@@ -46,10 +48,14 @@ export function Users() {
           <span style={{ color: u.role === 'admin' ? C.warn : T.secondary }}>{u.role}</span>
           <span style={{ color: u.disabled ? C.bad : u.must_change ? C.warn : C.ok, fontSize: 12 }}>{u.disabled ? 'disabled' : u.must_change ? 'temporary password' : 'active'}</span>
           <span style={{ color: T.faint, fontSize: 11.5 }}>added {u.created.slice(0, 10)} by {u.by}</span>
-          <span style={{ display: 'flex', gap: 10, fontSize: 12 }}>
-            <span onClick={() => reset(u)} style={{ cursor: 'pointer', color: C.run }}>reset password</span>
-            <span onClick={() => change(u, { role: u.role === 'admin' ? 'user' : 'admin' }, `${u.username} is now ${u.role === 'admin' ? 'a user' : 'an admin'}`)} style={{ cursor: 'pointer', color: C.run }}>{u.role === 'admin' ? 'make user' : 'make admin'}</span>
-            <span onClick={() => change(u, { disabled: !u.disabled }, `${u.username} ${u.disabled ? 'enabled' : 'disabled: signed out at once'}`)} style={{ cursor: 'pointer', color: u.disabled ? C.ok : C.bad }}>{u.disabled ? 'enable' : 'disable'}</span>
+          <span style={{ display: 'flex', gap: 10, fontSize: 12, alignItems: 'center' }}>
+            {resetting?.user === u.username ? <>
+              <input type="password" autoFocus value={resetting.pw} onChange={e => setResetting({ user: u.username, pw: e.target.value })} onKeyDown={e => { if (e.key === 'Enter') confirmReset(u); if (e.key === 'Escape') setResetting(null); }} placeholder="temporary password (12+)" aria-label={`temporary password for ${u.username}`} style={{ ...field, width: 190, padding: '4px 8px' }} />
+              <button onClick={() => confirmReset(u)} disabled={resetting.pw.length < 12} style={{ background: resetting.pw.length < 12 ? T.control : T.navy, color: '#fff', border: 0, borderRadius: 5, padding: '4px 10px', cursor: 'pointer', fontWeight: 700, fontSize: 12 }}>Reset ▸</button>
+              <span onClick={() => setResetting(null)} {...press(() => setResetting(null))} style={{ cursor: 'pointer', color: T.muted }}>cancel</span>
+            </> : <span onClick={() => reset(u)} {...press(() => reset(u))} style={{ cursor: 'pointer', color: C.run }}>reset password</span>}
+            {(() => { const f = () => change(u, { role: u.role === 'admin' ? 'user' : 'admin' }, `${u.username} is now ${u.role === 'admin' ? 'a user' : 'an admin'}`); return <span onClick={f} {...press(f)} style={{ cursor: 'pointer', color: C.run }}>{u.role === 'admin' ? 'make user' : 'make admin'}</span>; })()}
+            {(() => { const f = () => change(u, { disabled: !u.disabled }, `${u.username} ${u.disabled ? 'enabled' : 'disabled: signed out at once'}`); return <span onClick={f} {...press(f)} style={{ cursor: 'pointer', color: u.disabled ? C.ok : C.bad }}>{u.disabled ? 'enable' : 'disable'}</span>; })()}
           </span>
         </div>)}
       </div>

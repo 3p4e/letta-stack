@@ -67,3 +67,38 @@ def test_a_heading_written_with_the_prose_separator(tmp_path):
 def test_an_unclosed_headerdata_block_fails_loud():
     with pytest.raises(ValueError, match="not closed"):
         B.parse("<!--HEADERDATA\nmk_title: X\ndoctype: FORM\n# 1 A | B\n")
+
+
+# ---------------------------------------------------------------- review 19.10.2026
+def _tables(tmp_path, body, dt="FORM"):
+    import docx
+    src, out = tmp_path / "in.md", tmp_path / "out.docx"
+    src.write_text(HD.format(dt=dt) + body, encoding="utf-8")
+    B.main(str(src), str(out))
+    return [[[c.text for c in r.cells] for r in t.rows] for t in docx.Document(str(out)).tables]
+
+
+def test_a_hash_ordinal_header_is_a_row_not_a_heading(tmp_path):
+    """'# ||| Параметар~~Parameter' ended the table and printed as a heading; the rows became prose."""
+    _, blocks = B.parse(HD.format(dt="FORM") + "[[TABLE]]\n# ||| Параметар~~Parameter\n1 ||| pH\n[[/TABLE]]\nТекст ||| Text\n")
+    assert [x[0] for x in blocks] == ["table", "p"] and blocks[0][1] == [["#", "Параметар~~Parameter"], ["1", "pH"]]
+    assert B.HEADING.match("# 1 Опфат | Scope") and not B.HEADING.match("# ||| x") and not B.HEADING.match("#")
+    txt, _ = build(tmp_path, "[[TABLE]]\n# ||| Параметар~~Parameter\n1 ||| pH\n[[/TABLE]]\n")
+    assert "Parameter" in txt and "[[/TABLE]]" not in txt
+
+
+def test_a_literal_line_is_never_a_heading_bullet_or_marker(tmp_path):
+    _, blocks = B.parse(HD.format(dt="FORM") + "\\# 3 Напомена ||| Note\n\\- 20 °C\n[[TABLE]]\n\\[[x]] ||| y\n[[/TABLE]]\n")
+    assert blocks == [("p", "# 3 Напомена", "Note"), ("p", "- 20 °C", ""), ("table", [["[[x]]", "y"]], None)]
+
+
+def test_an_sop_form_is_a_label_value_form(tmp_path):
+    """In an SOP the first field became the navy header row and the '_' write-ins printed literally."""
+    tables = _tables(tmp_path, "# 7 Записи | Records\n[[FORM]]\nИме ||| Name ||| _\nДатум ||| Date ||| _\n[[/FORM]]\n", dt="SOP")
+    assert [["Име | Name", ""], ["Датум | Date", ""]] in tables
+    assert not any("_" in c for t in tables for r in t for c in r)
+
+
+def test_a_two_cell_row_with_a_cyrillic_value(tmp_path):
+    tables = _tables(tmp_path, "[[FORM]]\nИме ||| Петар\nДатум ||| 12.10.2026\nМесто ||| Place\n[[/FORM]]\n")
+    assert [["Име", "Петар"], ["Датум", "12.10.2026"], ["Место | Place", ""]] in tables

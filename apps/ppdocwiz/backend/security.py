@@ -30,7 +30,7 @@ import tempfile
 import threading
 import time
 
-from fastapi import Cookie, Depends, Header, HTTPException
+from fastapi import Cookie, Depends, Header, HTTPException, Request
 
 from config import settings
 
@@ -105,6 +105,14 @@ def session_id(value: str, key: str, now: float | None = None) -> str | None:
         return None
     sid = parts[2]
     return None if sid in _revoked() else sid
+
+
+def session_issued(value: str) -> int:
+    """When a (syntactically valid) cookie was issued, epoch seconds; 0 when unreadable."""
+    try:
+        return int((value or "").split(".")[1])
+    except (IndexError, ValueError):
+        return 0
 
 
 def revoke(value: str, key: str) -> bool:
@@ -206,14 +214,26 @@ def identity(x_api_key: str, cookie: str) -> str | None:
         return None
     user = info[1]
     import accounts                                  # late: accounts imports this module
-    if accounts.enabled() and user not in ("shared", "api-key") and not accounts.active(user):
-        return None
+    if accounts.enabled() and user not in ("shared", "api-key"):
+        acc = accounts.active(user)
+        if not acc:
+            return None
+        # A password reset by an administrator, or the person's own change, ends every session opened before it:
+        # a stolen or forgotten sign-in survived both until the review of 19.10.2026. The session that made the
+        # change gets a fresh cookie from the route itself.
+        if session_issued(cookie) < int(acc.get("pw_changed", 0)):
+            return None
     if accounts.enabled() and user in ("shared",):
         return None                                  # the shared password ended when named accounts began
     return user
 
 
-async def require_api_key(x_api_key: str = Header(default=""),
+# While an account's password must still be changed (a temporary one from an administrator), these are the only
+# routes it may use: who am I, change the password, sign out. /api/health and the page itself are not gated at all.
+MUST_CHANGE_ROUTES = ("/api/me", "/api/password", "/api/session/close")
+
+
+async def require_api_key(request: Request, x_api_key: str = Header(default=""),
                           ppdocwiz_session: str = Cookie(default="")) -> str:
     if not settings.auth_off and not settings.api_key:
         # Unconfigured service refuses every call rather than running open.
@@ -221,6 +241,12 @@ async def require_api_key(x_api_key: str = Header(default=""),
     who = identity(x_api_key, ppdocwiz_session)
     if who is None:
         raise HTTPException(status_code=401, detail="not signed in")
+    if who not in ("api-key", "anonymous", "shared") and request.url.path not in MUST_CHANGE_ROUTES:
+        import accounts
+        # must_change was only advice to the browser: a temporary password worked on every route for as long as its
+        # holder cared to ignore the change screen (review 19.10.2026). Enforced here, for every route.
+        if accounts.enabled() and (accounts.active(who) or {}).get("must_change"):
+            raise HTTPException(status_code=403, detail="password change required")
     return who
 
 

@@ -59,3 +59,13 @@ export function rankVersions<T extends Ranked>(rows: T[]): T[] {
   return [...rows].sort((a, b) => (+controlled(b) - +controlled(a)) || vnum(b.version) - vnum(a.version)
     || Date.parse(b.created_at) - Date.parse(a.created_at));
 }
+
+/** The package a library row is revised or continued as (Workflow "Revise or continue", review 19.10.2026): its own
+ *  `package` when the shelf says it; else from the code — an annex ends in A\d\d, an *SOP family is an SOP, and any
+ *  other family (QCT, QCLB, QCCoA …) is a standalone form. Until then every non-annex code opened as an SOP. */
+export function packageOf(e: { code: string; approved: { package?: string } | null; wip: { package?: string }[] }): 'sop' | 'sop_annexes' | 'annex' | 'form' | 'report' {
+  const own = (e.wip[0] || e.approved)?.package;
+  if (own === 'sop' || own === 'sop_annexes' || own === 'annex' || own === 'form' || own === 'report') return own;
+  if (/A\d\d$/.test(e.code)) return 'annex';
+  return /SOP/.test(e.code) ? 'sop' : 'form';
+}

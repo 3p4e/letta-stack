@@ -315,3 +315,115 @@ def test_workflow_refuses_an_annex_with_the_sop_question_set(client, monkeypatch
     r = client.post("/workflows", headers=h(), json={"questionnaire": "sop_qc", **extra})
     assert r.status_code == 422 and "annex_form" in r.json()["detail"]
     assert created == []
+
+
+def test_rerun_copies_the_stored_payload_and_records_it_on_the_brief(client, monkeypatch):
+    """Review 19.10.2026: Jobs > Re-run rebuilt the payload client-side from six fields, dropping the sources' text,
+    the package annexes and the brief link. The engine now re-runs from the stored payload."""
+    stored = {"questionnaire": "annex_form", "parent_sop": "QCSOP001", "source_texts": [{"name": "s.docx", "text": "t"}],
+              "package_annexes": [], "brief_id": "11111111-1111-1111-1111-111111111111", "requested_by": "c.cekic",
+              "meta": {"title_mk": "б", "title_en": "Form", "code": "QCSOP001A01"}}
+    jobs = {"00000000-0000-0000-0000-00000000000a": {"id": "00000000-0000-0000-0000-00000000000a", "kind": "workflow",
+                                                      "status": "failed", "payload": stored, "created_by": "c.cekic"}}
+    brief = {"id": stored["brief_id"], "rev": 3, "job_ids": ["00000000-0000-0000-0000-00000000000a"], "status": "open"}
+    created, saved = [], []
+
+    async def job_get(jid):
+        return jobs.get(jid)
+
+    async def job_create(kind, payload, by=""):
+        created.append((kind, payload, by))
+        return "00000000-0000-0000-0000-00000000000b"
+
+    async def brief_get(bid):
+        return brief
+
+    async def brief_save(b, old_rev, events):
+        saved.append((b, old_rev, events))
+        return True
+    monkeypatch.setattr(db, "ready", lambda: True)
+    monkeypatch.setattr(db, "job_get", job_get)
+    monkeypatch.setattr(db, "job_create", job_create)
+    monkeypatch.setattr(db, "brief_get", brief_get)
+    monkeypatch.setattr(db, "brief_save", brief_save)
+    monkeypatch.setattr("app.main.LettaClient", lambda: type("L", (), {"configured": True})())
+
+    async def no_run(jid):
+        return None
+    monkeypatch.setattr("app.main.run_workflow", no_run)
+    r = client.post("/workflows/00000000-0000-0000-0000-00000000000a/rerun", headers=h())
+    assert r.status_code == 200 and r.json()["job_id"].endswith("b")
+    kind, payload, by = created[0]
+    assert payload["source_texts"] == stored["source_texts"] and payload["brief_id"] == stored["brief_id"]
+    assert payload["rerun_of"].endswith("a") and by == "c.cekic"
+    assert saved[0][0]["job_ids"][-1].endswith("b") and saved[0][1] == 3 and saved[0][2][0]["op"] == "build"
+    # not failed → 409; an annex job that carried the SOP question set is refused like a new one
+    jobs["00000000-0000-0000-0000-00000000000a"]["status"] = "done"
+    assert client.post("/workflows/00000000-0000-0000-0000-00000000000a/rerun", headers=h()).status_code == 409
+    jobs["00000000-0000-0000-0000-00000000000a"]["status"] = "failed"
+    stored["questionnaire"] = "sop_qc"
+    assert client.post("/workflows/00000000-0000-0000-0000-00000000000a/rerun", headers=h()).status_code == 422
+
+
+def test_approving_an_sop_starts_its_package_annexes(client, monkeypatch, tmp_path):
+    """Review 19.10.2026: the annexes of a package used to start when the SOP was parked for review; now the approved
+    SOP is what they read."""
+    from app import pipeline
+    row, calls = _review_db(monkeypatch, tmp_path)
+    row["payload"]["meta"]["code"] = "QCSOP026"
+    row["payload"]["package_annexes"] = [{"title_en": "Log"}, {"title_mk": "Листа", "kind": "checklist"}]
+    created = []
+
+    async def job_create(kind, payload, by=""):
+        created.append(payload)
+        return f"annex-{len(created)}"
+
+    async def taken(*a):
+        return set()
+
+    async def no_run(jid):
+        return None
+    monkeypatch.setattr(db, "job_create", job_create)
+    monkeypatch.setattr(db, "codes_in_use", taken)
+    monkeypatch.setattr(db, "codes_of_brief", taken)
+    monkeypatch.setattr(pipeline, "run_workflow", no_run)
+    r = client.post(f"/workflows/{JID}/review", headers=h(), json={"decision": "approve", "note": "ok"})
+    assert r.status_code == 200 and row["status"] == "done"
+    assert [c["meta"]["code"] for c in created] == ["QCSOP026A01", "QCSOP026A02"]
+    assert all(c["package_of"] == JID and c["parent_sop"] == "QCSOP026" for c in created)
+    assert [j["job_id"] for j in row["result"]["package_jobs"]] == ["annex-1", "annex-2"]
+    assert row["result"]["document_id"] == "doc-1"                      # merged beside the registration, nothing lost
+
+
+def test_house_related_route_and_source_roles(client, monkeypatch):
+    """Head of QC, 19.10.2026: the Parent SOP page shows the SOP's own documents; a source says what it is for."""
+    async def related(code):
+        return {"code": code, "found": True, "version": "01", "title_en": "x", "title_mk": "", "related": []}
+    monkeypatch.setattr(db, "ready", lambda: True)
+    monkeypatch.setattr("app.main.house.related", related)
+    r = client.get("/house/related/qcsop_001", headers=h())
+    assert r.status_code == 200 and r.json()["code"] == "QCSOP001"
+    assert client.get("/house/related/not-a-code", headers=h()).status_code == 400
+    brief = {"id": "11111111-1111-1111-1111-111111111111", "rev": 1, "status": "open", "package": "annex",
+             "questionnaire": "annex_form", "meta": {}, "fields": {}, "annexes": [], "job_ids": [], "proposals": {},
+             "parent_sop": ""}
+    seen = {}
+
+    async def brief_get(bid):
+        return brief
+
+    async def brief_sources(bid, with_text=True):
+        return []
+
+    async def brief_source_role(bid, sid, role, actor):
+        seen.update(sid=sid, role=role, actor=actor)
+        return True
+    monkeypatch.setattr(db, "brief_get", brief_get)
+    monkeypatch.setattr(db, "brief_sources", brief_sources)
+    monkeypatch.setattr(db, "brief_source_role", brief_source_role)
+    sid = "22222222-2222-2222-2222-222222222222"
+    assert client.patch(f"/briefs/{brief['id']}/sources/{sid}", headers=h(), json={"role": "poem"}).status_code == 422
+    r = client.patch(f"/briefs/{brief['id']}/sources/{sid}", headers=h(), json={"role": "format", "actor": "c.cekic"})
+    assert r.status_code == 200 and seen == {"sid": sid, "role": "format", "actor": "c.cekic"}
+    r = client.post(f"/briefs/{brief['id']}/sources", headers=h(), json={"name": "a.md", "content_b64": "YQ==", "role": "poem"})
+    assert r.status_code == 422

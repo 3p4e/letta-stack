@@ -19,7 +19,7 @@ version are stamped by apply_pp_header(), the body is cleared by wipe_body(), an
 the section <w:sectPr> last so the header/footer/page-geometry apply document-wide. See formatting_specs.md.
 """
 from docx import Document
-from docx.shared import Pt, RGBColor, Cm
+from docx.shared import Pt, RGBColor, Cm, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
 from docx.enum.section import WD_ORIENT
@@ -204,6 +204,43 @@ def wipe_body(d):
     d._pp_sectpr = sect
     return sect
 
+def seat_logo(d, width_in=1.08):
+    """Make the header logo one picture. The template floats two crops of the same brand image: the leaf, anchored
+    in the first header cell, and the wordmark, anchored to the empty paragraph after the header table and
+    offset upwards into the cell. Where the wordmark lands depends on the table's height, and LibreOffice with
+    the real Calibri lays the row out a little shorter than Word does, so on every engine document the leaf's
+    white box covered the middle of PURELYPLANT (Head of QC, 19.10.2026). The leaf's own anchor sits in the
+    same place in both renderers, so it is kept and widened to show the whole, uncropped image; the wordmark
+    anchor goes. The header's text is untouched."""
+    try:
+        hdr = d.sections[0].header
+        cell = hdr.tables[0].cell(0, 0)
+    except (IndexError, AttributeError):
+        return False
+    in_cell = [a for a in cell._tc.iter(qn('wp:anchor'))]
+    if not in_cell:
+        return False
+    keep = in_cell[0]
+    for a in list(hdr._element.iter(qn('wp:anchor'))):
+        if a is not keep:                                  # the wordmark, after the table
+            run = a.getparent().getparent()
+            run.getparent().remove(run)
+    for rect in list(keep.iter(qn('a:srcRect'))):          # uncropped: leaf, wordmark and tagline
+        rect.getparent().remove(rect)
+    cx = int(Inches(width_in)); cy = int(cx * 194 / 400)  # pp_logo_header.jpg is 400 x 194 px
+    for ext in list(keep.iter(qn('wp:extent'))) + list(keep.iter(qn('a:ext'))):
+        ext.set('cx', str(cx)); ext.set('cy', str(cy))
+    for ph in keep.iter(qn('wp:positionH')):
+        off = ph.find(qn('wp:posOffset'))
+        if off is not None:
+            off.text = str(-int(Inches(0.136)))             # where the template's wordmark stood
+    for pv in keep.iter(qn('wp:positionV')):
+        off = pv.find(qn('wp:posOffset'))
+        if off is not None:
+            off.text = '0'
+    return True
+
+
 def apply_pp_header(d, mk_name, code, en_name, version="1.0", status="draft"):
     """Stamp the base-template running header: bilingual Document name, Code of document, Version.
     Header is a 2x3 table: [leaf logo+wordmark] | [Document name MK/EN] | [Code of document / Ver].
@@ -214,6 +251,7 @@ def apply_pp_header(d, mk_name, code, en_name, version="1.0", status="draft"):
         h = d.sections[0].header.tables[0]
     except (IndexError, AttributeError):
         return False
+    seat_logo(d)
     def setrun(runs, i, t):
         if i < len(runs):
             runs[i].text = t

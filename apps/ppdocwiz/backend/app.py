@@ -128,7 +128,9 @@ def _build_locked(md: str, base: str):
     verify = ""
     try:
         import pp_verify, importlib; importlib.reload(pp_verify)
-        buf = io.StringIO(); oa = sys.argv; sys.argv = ["pp_verify", out]
+        # The same gate as the DocEngine's (builder.run_verify): a document missing one language FAILs. Without it a
+        # monolingual build passed here and failed there (review 19.10.2026).
+        buf = io.StringIO(); oa = sys.argv; sys.argv = ["pp_verify", out, "--require-bilingual", "true"]
         try:
             with contextlib.redirect_stdout(buf): pp_verify.main()
         except SystemExit: pass
@@ -241,7 +243,12 @@ def change_password(r: PasswordReq, request: Request, who: str = Depends(securit
             if e.status == 401:
                 security.note_failure(client)
             return JSONResponse({"ok": False, "error": str(e)}, status_code=e.status if e.status != 400 else 422)
-        return {"ok": True}
+        # The change ends every session opened before it (security.identity), this one included: a fresh cookie
+        # keeps the person who made the change signed in.
+        resp = JSONResponse({"ok": True})
+        resp.set_cookie(security.COOKIE, security.issue_session(settings.api_key, user=who), httponly=True,
+                        samesite="strict", secure=settings.cookie_secure, max_age=security.SESSION_TTL, path="/")
+        return resp
     stored = security.current_hash()
     if not stored:
         return JSONResponse({"ok": False, "error": "no password sign-in on this server"}, status_code=409)
@@ -284,8 +291,10 @@ def list_users(who: str = Depends(security.require_admin)):
 @app.post("/api/users")
 def add_user(r: UserNew, who: str = Depends(security.require_admin)):
     """A new person, with a temporary password they change at their first sign-in."""
-    if not accounts.enabled() and who != "api-key":
-        accounts.bootstrap()        # the shared password becomes 'admin' before the first named account is added
+    if not accounts.enabled():
+        # The shared password becomes 'admin' before the first named account is added — for the API-key caller
+        # too: it used to skip this and could make a lone 'user' the only account (review 19.10.2026).
+        accounts.bootstrap()
     return _account_call(lambda: accounts.create(r.username, r.role, r.temporary_password, by=who))
 
 
@@ -526,9 +535,31 @@ def chat(r: ChatReq):
 # library, register, engine and briefs were missing from 18.10.2026 until 19.10.2026, so the Library shelves, the
 # automatic code and the Fleet engine panel answered 404 in the browser while DocEngine itself answered 200.
 # PUT /reference (loading reference documents) is an operator route and stays out.
-_DE_ROUTES = {"health", "questionnaires", "workflows", "build", "documents", "knowledge", "library", "reference",
+_DE_ROUTES = {"health", "questionnaires", "workflows", "build", "documents", "knowledge", "library", "reference", "house",
               "register", "engine", "briefs"}
 _DE_PASS_HEADERS = ("content-type", "content-disposition", "content-length")
+# The forwarded body is bounded like /api/build's (400 kB); the brief source upload (POST /briefs/{id}/sources,
+# content_b64 up to 21 MB at the DocEngine) is the one route that legitimately carries more. request.body() used to
+# buffer whatever was sent (review 19.10.2026).
+_DE_BODY_LIMIT, _DE_SOURCE_LIMIT = 400_000, 24_000_000
+
+
+def _de_body_limit(parts: list[str]) -> int:
+    return _DE_SOURCE_LIMIT if len(parts) == 3 and parts[0] == "briefs" and parts[2] == "sources" else _DE_BODY_LIMIT
+
+
+async def _read_bounded(request: Request, limit: int) -> bytes | None:
+    """The request body, or None when it is over the limit (checked on Content-Length, then while streaming)."""
+    declared = request.headers.get("content-length", "")
+    if declared.isdigit() and int(declared) > limit:
+        return None
+    chunks, n = [], 0
+    async for c in request.stream():
+        n += len(c)
+        if n > limit:
+            return None
+        chunks.append(c)
+    return b"".join(chunks)
 
 
 @app.api_route("/api/docengine/{path:path}", methods=["GET", "POST", "PATCH", "DELETE", "HEAD"],
@@ -542,7 +573,11 @@ async def docengine_proxy(path: str, request: Request):
     url = settings.docengine_url + "/" + "/".join(urllib.parse.quote(p, safe="") for p in parts)
     if request.url.query:
         url += "?" + request.url.query
-    body = await request.body() if request.method in ("POST", "PATCH") else None
+    body = None
+    if request.method in ("POST", "PATCH"):
+        body = await _read_bounded(request, _de_body_limit(parts))
+        if body is None:
+            return JSONResponse({"error": f"request body over {_de_body_limit(parts)} bytes"}, status_code=413)
     # DocEngine routes are GET-only; a HEAD (the Library's availability probe) is
     # sent upstream as GET and answered without the body.
     hdrs = {"Content-Type": request.headers.get("content-type", "application/json"),

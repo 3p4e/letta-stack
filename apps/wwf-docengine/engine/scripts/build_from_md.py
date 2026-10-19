@@ -15,6 +15,16 @@ USING THE pp-document-suite ENGINE, with the skill's INTELLIGENT table layout.
                   data; Name/Date/Signature entry columns purpose-sized; ordinal columns minimal).
 
 Markdown convention: PP_UNIFIED_DOCX_GUIDE.md. Usage: python3 scripts/build_from_md.py <src.md> <out.docx>
+
+Line grammar notes (review 19.10.2026):
+  * A heading is '#'+ followed by text; a table/form row whose first cell is '#' ("# ||| Параметар~~Parameter")
+    is a row, not a heading, and never ends the block.
+  * A line, or a table/form row, that begins with a backslash is LITERAL: the backslash is dropped and the rest
+    is never read as a heading, bullet or [[marker]]. The wizard writes it in front of a value that would
+    otherwise be one ("# 3 Напомена", "- 20 °C", "[[x]]").
+  * A two-cell form row is 'Label MK ||| Label EN' (an empty write-in) — except when the first cell is Cyrillic
+    and the second holds no Latin letter ("Име ||| Петар", "Датум ||| 12.10.2026"): then the second cell is the
+    VALUE and there is no English label.
 """
 import sys, os, re
 # Locate the engine modules (pp_format/pp_report/...). Inside the packaged skill they are siblings
@@ -29,6 +39,9 @@ import pp_report as pr
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 PAGE_W = pr.PAGE_W  # 18.46 cm text width (base-template 1.27 cm margins)
+# '#'+, whitespace, then text that is not a cell separator: "# ||| Параметар~~Parameter" (a table row with an
+# ordinal column headed '#') ended the table and printed as a heading (review 19.10.2026).
+HEADING = re.compile(r'^(#+)\s+(?!\|\|\|)(\S.*)')
 
 def parse(md):
     hd={}
@@ -64,6 +77,9 @@ def parse(md):
     while i<len(lines):
         s=lines[i].strip()
         if not s: i+=1; continue
+        if s.startswith('\\'):                            # literal line: plain paragraph, whatever it starts with
+            mk,en=(s[1:].split('|||',1)+[''])[:2]
+            blocks.append(('p', mk.strip(), en.strip())); i+=1; continue
         if s.startswith('[[PAGEBREAK]]') or s.startswith('[[NEWPAGE]]'):
             blocks.append(('pagebreak',)); i+=1; continue
         if s.startswith('[[BOX'):                       # marked space: [[BOX:<min height cm>]] caption / content [[/BOX]]
@@ -79,14 +95,15 @@ def parse(md):
             i+=1
             while i<len(lines):
                 t=lines[i].strip()
-                if t.startswith('[[/'): i+=1; break
+                if t.startswith('\\'): t=t[1:]                   # literal row (see the module docstring)
+                elif t.startswith('[[/'): i+=1; break
                 # Any block marker or heading ends a block whose [[/...]] is missing; [[PAGEBREAK]] and [[BOX]]
                 # used to be swallowed as table rows printing their own markers (review 14.10.2026).
-                if t.startswith(('[[TABLE', '[[FORM', '[[BOX', '[[PAGEBREAK', '[[NEWPAGE', '#')): break
-                if t: rows.append([c.strip() for c in lines[i].split('|||')])
+                elif t.startswith(('[[TABLE', '[[FORM', '[[BOX', '[[PAGEBREAK', '[[NEWPAGE')) or HEADING.match(t): break
+                if t: rows.append([c.strip() for c in t.split('|||')])
                 i+=1
             blocks.append((kind, rows, mode)); continue
-        hm=re.match(r'^(#+)\s+(.*)', s)
+        hm=HEADING.match(s)
         if hm:
             # 'MK ||| EN' (the prose form) is split on '|||' first: split on the first '|' it printed '| || EN'.
             sep='|||' if '|||' in hm.group(2) else '|'
@@ -193,6 +210,9 @@ def emit_form(d, rows, mode=None):
         # A two-cell row 'Label MK~~Label EN ||| value' (a grammar DocEngine once taught its authors)
         # means the same field as the three-cell 'Label MK ||| Label EN ||| value'.
         if len(rd)==2 and '~~' in rd[0]: rd=[*cs(rd[0]), rd[1]]
+        # 'Име ||| Петар': a Cyrillic label and a second cell with no Latin letter is a filled value, not an
+        # English label (review 19.10.2026). 'Име ||| Name' and 'Датум ||| Date' stay label pairs.
+        elif len(rd)==2 and re.search(r'[Ѐ-ӿ]', rd[0]) and not re.search(r'[A-Za-z]', rd[1]): rd=[rd[0], '', rd[1]]
         lmk=rd[0] if len(rd)>0 else ''; len_=rd[1] if len(rd)>1 else ''
         # Cells after the third are the value's other language (".. ||| Испорака ||| Delivery"), not dropped.
         val=" | ".join(x.strip() for x in rd[2:] if x.strip() and x.strip()!='_')
@@ -320,13 +340,12 @@ def build_annex(hd, blocks, out):
     # ≈ 27.16 cm (both at the base-template 1.27 cm margins). The whole layout brain keys off this.
     PAGE_W = 27.16 if land else 18.46
     pr.PAGE_W = PAGE_W
-    status=hd.get('status','draft'); eff=hd.get('effective_date')
+    status=hd.get('status','draft')
     d=pf.new_annex(code=hd.get('code',''), version=hd.get('version','01'),
                    mk_title=hd.get('mk_title',''), en_title=hd.get('en_title',''),
                    orient='landscape' if land else 'portrait', status=status)
-    pf.annex_title_block(d, hd.get('code',''), hd.get('mk_title',''), hd.get('en_title',''),
-                         hd.get('parent', hd.get('code','')),
-                         status=status, version=hd.get('version','01'), effective_date=eff)
+    # No title block in the body (Head of QC, 19.10.2026): the running header already carries the title, the code
+    # and the version/status, so the code, title, "(code)" and DRAFT lines under it said it all twice.
     if hd.get('supersedes'):
         pr.note(d, "Заменува: "+hd['supersedes'], "Supersedes: "+hd['supersedes'])
     TABLEISH=('h','form','table')
@@ -403,6 +422,11 @@ def build_sop(hd, blocks, out):
             if not rows: continue
             pf.spacer(d, 6, keep=prev_heading)                 # air above; also stops the tables fusing
             gap_after=True
+            if b[0]=='form':
+                # A [[FORM]] in an SOP (a record template in §7) was drawn as a data table: its first field became
+                # the navy header row and the '_' write-ins printed literally (review 19.10.2026). Same label | value
+                # form as the annex path; the SOP page has the same 18.46 cm text width.
+                emit_form(d, rows, mode=(b[2] if len(b)>2 else None)); continue
             headers=[cs(c) for c in rows[0]]
             ncol=len(headers)
             # A row longer than the header crashed the build (IndexError, no document); its extra cells now

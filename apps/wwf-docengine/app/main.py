@@ -38,10 +38,10 @@ from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, Field
 
-from . import builder, db, engine_env, fleet, glossary, house_codes, library
+from . import builder, db, engine_env, fleet, glossary, house, house_codes, library
 from .config import settings
 from .letta import LettaClient, LettaError
-from .pipeline import run_workflow
+from .pipeline import run_workflow, start_package
 from .questionnaires import QUESTIONNAIRES, questionnaire_index
 from .ragflow import ECOA_NOTE, EXAMPLES_NOTE, RagflowClient, RagflowError, corpus_datasets
 from .security import require_api_key
@@ -213,7 +213,7 @@ class WorkflowIn(BaseModel):
     parent_sop: str = Field("", max_length=80)
 
 
-_META_FIELDS = ("title_mk", "title_en", "code", "version", "doctype", "orient")
+_META_FIELDS = ("title_mk", "title_en", "code", "version", "doctype", "orient", "department")
 
 
 def _check_meta(meta: dict, required: tuple = ()) -> None:
@@ -236,17 +236,38 @@ def _check_meta(meta: dict, required: tuple = ()) -> None:
 def _check_doctype(body: WorkflowIn) -> None:
     """An annex is never written with an SOP question set. On 19.10.2026 QCSOP001A01 was built as an SOP four
     times by Jobs → Re-run of a job that carried sop_qc: brief.fits() guarded the brief path only."""
-    if QUESTIONNAIRES[body.questionnaire]["doctype"] != "SOP":
-        return
     try:
         annex = house_codes.parts(body.meta["code"])[2]
     except ValueError:
         annex = None
-    if annex is not None or body.parent_sop.strip():
-        raise HTTPException(422, f"{body.meta['code']} is an annex"
-                                 + (f" of {body.parent_sop}" if body.parent_sop.strip() else "")
-                                 + f": the SOP question set '{body.questionnaire}' writes an SOP. "
-                                 "Use the annex question set (annex_form).")
+    parent = body.parent_sop.strip()
+    if QUESTIONNAIRES[body.questionnaire]["doctype"] == "SOP":
+        if annex is not None or parent:
+            raise HTTPException(422, f"{body.meta['code']} is an annex" + (f" of {parent}" if parent else "")
+                                     + f": the SOP question set '{body.questionnaire}' writes an SOP. "
+                                     "Use the annex question set (annex_form).")
+    elif parent and annex is None:
+        # The other mismatch (review 19.10.2026): a form written to an SOP under an SOP's own number.
+        raise HTTPException(422, f"{body.meta['code']} carries no annex number, yet it is written to {parent}: an annex "
+                                 f"of an SOP is numbered under it ({parent}A01 …); GET /register/next?parent={parent} "
+                                 "gives the next free one")
+
+
+def _check_brief_codes(b: dict) -> None:
+    """A brief's package, code and parent SOP agree before a job exists. build_brief had no such guard, so an SOP brief
+    carrying the code QCSOP001A01 was built as an SOP (review 19.10.2026). A brief without a code is numbered at build."""
+    code, parent = b["meta"].get("code") or "", (b.get("parent_sop") or "").strip()
+    if not code:
+        return
+    try:
+        annex = house_codes.parts(code)[2]
+    except ValueError:
+        return
+    if b["package"] in ("sop", "sop_annexes") and annex is not None:
+        raise HTTPException(422, f"{code} is an annex number: an SOP package takes an SOP code, or choose the annex package")
+    if b["package"] not in ("sop", "sop_annexes") and parent and annex is None:
+        raise HTTPException(422, f"{code} carries no annex number, yet the brief names its SOP {parent}: an annex of an SOP "
+                                 f"is numbered under it ({parent}A01 …); clear the code to take the next free one")
 
 
 @app.post("/workflows", dependencies=[Depends(require_api_key)])
@@ -278,6 +299,40 @@ async def get_workflow(jid: str):
     if not job:
         raise HTTPException(404, "no such job")
     return job
+
+
+@app.post("/workflows/{jid}/rerun", dependencies=[Depends(require_api_key)])
+async def rerun_workflow(jid: str):
+    """A new job from the stored payload of a failed one: sources' text, package annexes, the brief and what was
+    assumed included. The Jobs screen used to rebuild the payload client-side from six fields, so a brief-built job
+    re-run from there lost its uploaded sources and its annexes and never reached its brief (review 19.10.2026)."""
+    if not _valid_uuid(jid):
+        raise HTTPException(404, "no such job")
+    if not db.ready():
+        raise HTTPException(503, "DocEngine storage unavailable")
+    job = await db.job_get(jid)
+    if not job:
+        raise HTTPException(404, "no such job")
+    if job["kind"] != "workflow" or job["status"] != "failed":
+        raise HTTPException(409, "only a failed workflow job can be re-run")
+    if not LettaClient().configured:
+        raise HTTPException(503, "Letta unavailable")
+    payload = dict(job["payload"])
+    _check_doctype(WorkflowIn(**{k: payload[k] for k in WorkflowIn.model_fields if k in payload}))
+    actor = who(payload.get("requested_by") or job.get("created_by") or "")
+    payload["requested_by"], payload["rerun_of"] = actor, jid
+    new = await db.job_create("workflow", payload, actor)
+    bid = payload.get("brief_id")
+    if bid and _valid_uuid(bid):
+        b = await db.brief_get(bid)
+        if b:                           # the brief records the re-run as it records a build
+            nb = {**b, "job_ids": [*b.get("job_ids", []), new], "rev": b["rev"] + 1}
+            ev = [{"op": "build", "key": new, "before": None, "after": {"job_id": new, "rerun_of": jid}, "actor": actor}]
+            if not await db.brief_save(nb, b["rev"], ev):
+                await db.job_update(new, status="failed", error="the brief changed while the re-run started; not run")
+                raise HTTPException(409, "the brief changed meanwhile; reload it and build again")
+    _fire_and_forget(run_workflow(new))
+    return {"job_id": new, "status": "queued"}
 
 
 class ReviewIn(BaseModel):
@@ -330,9 +385,12 @@ async def review_workflow(jid: str, body: ReviewIn):
             # in progress until the reaper fails it an hour later; put it back so the reviewer can retry.
             await db.job_update(jid, status="awaiting_review")
             raise
-        # Merged, not rewritten: the SOP's package annexes may record themselves on this row meanwhile.
+        # Merged, not rewritten: the SOP's package annexes record themselves on this row.
         await db.job_merge_result(jid, {"document_id": did, "review": review})
         await db.job_update(jid, status="done", stage="done")
+        # Only now do the package's annexes start (review 19.10.2026): the SOP they read is the approved one.
+        await start_package(jid, job["payload"], meta, (meta.get("doctype") or
+                            QUESTIONNAIRES[job["payload"]["questionnaire"]]["doctype"]) == "SOP")
     return await db.job_get(jid)
 
 
@@ -579,7 +637,10 @@ async def put_reference(body: ReferenceIn):
                                                        replace_id=row["ragflow_doc_id"])
             await db.reference_set_ragflow(rid, indexed)
         except RagflowError as e:
-            index_error = str(e)[:300]
+            # The old entry's id no longer stands for this text; left in place, "changed or not indexed" was false on
+            # the next PUT of the same text and the document was never indexed (review 19.10.2026).
+            index_error, indexed = str(e)[:300], ""
+            await db.reference_set_ragflow(rid, "")
     return {"id": rid, "code": doc["code"], "changed": changed, "ragflow_doc_id": indexed, "index_error": index_error}
 
 
@@ -604,8 +665,18 @@ async def get_reference(rid: str):
 async def get_library():
     if not db.ready():
         raise HTTPException(503, "DocEngine storage unavailable")
-    return library.shelve(house_codes.load_register(), await db.reference_list(), await db.documents_list(500),
-                          await db.jobs_open_by_code())
+    refs = await db.reference_list()
+    return library.shelve(house_codes.load_register(), refs, await db.documents_list(500), await db.jobs_open_by_code(),
+                          await house.listed_map(refs))
+
+
+@app.get("/house/related/{code}", dependencies=[Depends(require_api_key)])
+async def house_related(code: str):
+    """An approved SOP and the in-use documents tied to it (Head of QC, 19.10.2026): what the Parent SOP page shows
+    before an annex is built, and what the authors receive beside the SOP."""
+    if not db.ready():
+        raise HTTPException(503, "DocEngine storage unavailable")
+    return await house.related(_house_code(code))
 
 
 # ---------- the Document Brief: one workflow (Head of QC, 18.10.2026) ----------
@@ -657,9 +728,18 @@ class BriefPatch(BaseModel):
     status: str | None = None
 
 
+SOURCE_ROLES = ("content", "format", "example")   # what a source is for (Head of QC, 19.10.2026)
+
+
 class SourceIn(BaseModel):
     name: str = Field(min_length=1, max_length=200)
     content_b64: str = Field(min_length=1, max_length=21_000_000)
+    actor: str = ""
+    role: str = "content"
+
+
+class SourceRoleIn(BaseModel):
+    role: str
     actor: str = ""
 
 
@@ -709,6 +789,7 @@ async def create_brief(body: BriefIn):
                              _house_code(body.parent_sop, "parent_sop") if body.parent_sop else (seed or {}).get("parent", ""))
     except briefs.BriefError as e:
         raise HTTPException(e.status, str(e)) from e
+    _check_brief_codes(b)
     body.requested_by = who(body.requested_by)
     bid = await db.brief_create(b, body.requested_by)
     if seed:
@@ -744,6 +825,7 @@ async def patch_brief(bid: str, body: BriefPatch):
         new, events = briefs.apply_patch(b, patch, who(body.actor))
     except briefs.BriefError as e:
         raise HTTPException(e.status, str(e)) from e
+    _check_brief_codes(new)
     if events and not await db.brief_save(new, b["rev"], events):
         raise HTTPException(409, "the brief changed meanwhile; reload it")
     return _guided(await db.brief_get(bid))
@@ -761,6 +843,8 @@ async def add_brief_source(bid: str, body: SourceIn):
     import binascii
     import hashlib
     b = await _brief_or_404(bid)
+    if body.role not in SOURCE_ROLES:
+        raise HTTPException(422, f"role must be one of {', '.join(SOURCE_ROLES)}")
     try:
         blob = base64.b64decode(body.content_b64, validate=True)
         kind = srcs.kind_of(body.name)
@@ -768,11 +852,22 @@ async def add_brief_source(bid: str, body: SourceIn):
     except (binascii.Error, ValueError) as e:
         raise HTTPException(400, str(e) if isinstance(e, srcs.SourceError) else "content_b64 is not base64") from e
     sid = await db.brief_source_add(bid, b["rev"], who(body.actor), {"name": body.name, "kind": kind, "bytes": len(blob),
-                                                                "sha256": hashlib.sha256(blob).hexdigest(), "text": text})
+                                                                "sha256": hashlib.sha256(blob).hexdigest(), "text": text,
+                                                                "role": body.role})
     if sid is None:
         raise HTTPException(409, f"the brief is not open, or already holds {db.MAX_SOURCES} sources")
     note = "" if text.strip() else "no text layer (a scan?): the authors cannot read it"
     return {"id": sid, "chars": len(text), "note": note, "brief": _guided(await db.brief_get(bid))}
+
+
+@app.patch("/briefs/{bid}/sources/{sid}", dependencies=[Depends(require_api_key)])
+async def set_brief_source_role(bid: str, sid: str, body: SourceRoleIn):
+    await _brief_or_404(bid)
+    if body.role not in SOURCE_ROLES:
+        raise HTTPException(422, f"role must be one of {', '.join(SOURCE_ROLES)}")
+    if not _valid_uuid(sid) or not await db.brief_source_role(bid, sid, body.role, who(body.actor)):
+        raise HTTPException(404, "no such source, or the brief is not open")
+    return _guided(await db.brief_get(bid))
 
 
 @app.delete("/briefs/{bid}/sources/{sid}", dependencies=[Depends(require_api_key)])
@@ -837,7 +932,7 @@ async def _package_members(b: dict) -> list[dict]:
     for a in started:
         j = await db.job_get(a["job_id"])
         out.append(pkg.member(j, await _job_doc(j), a["job_id"], a.get("code", ""), a.get("title_en", "")))
-    # Annexes the build asked for that have not started yet (they start once the SOP is saved, or did not start).
+    # Annexes the build asked for that have not started yet (they start once the SOP is done or approved, or did not start).
     for a in (((sop or {}).get("payload") or {}).get("package_annexes") or [])[len(started):]:
         err = ((sop or {}).get("result") or {}).get("package_error", "") or \
             ("the SOP did not finish, so its annexes were not started" if (sop or {}).get("status") in ("failed", None) else "")
@@ -900,6 +995,7 @@ async def build_brief(bid: str, body: BuildBriefIn):
     if b["status"] != "open":
         raise HTTPException(409, f"the brief is {b['status']}; reopen it to build")
     body.actor = who(body.actor)
+    _check_meta(b["meta"])              # a brief saved with a non-string department crashed the numbering below (19.10.2026)
     taken = await db.codes_in_use() - await db.codes_of_brief(bid)     # a rebuild keeps its own number
     if not b["meta"].get("code"):
         try:
@@ -914,12 +1010,15 @@ async def build_brief(bid: str, body: BuildBriefIn):
         except ValueError as e:
             raise HTTPException(400, f"cannot number this document: {e}") from e
         b["meta"]["code"] = code
+    _check_brief_codes(b)
     try:
         payload = briefs.to_workflow(b, await db.brief_sources(bid))
         new, events = briefs.apply_patch(b, {"rev": b["rev"], "meta": {"code": b["meta"]["code"]}}, body.actor)
     except briefs.BriefError as e:
         raise HTTPException(e.status, str(e)) from e
     _check_meta(payload["meta"], ("title_mk", "title_en", "code"))
+    # The same guard POST /workflows applies: an SOP question set never writes an annex code (review 19.10.2026).
+    _check_doctype(WorkflowIn(**{k: payload[k] for k in WorkflowIn.model_fields if k in payload}))
     payload["requested_by"] = body.actor
     # The job and the brief's record of it are one step: if the brief moved on meanwhile (an edit sent just before
     # Build), the job is failed at once and the requester reloads — never a job the brief does not know about.

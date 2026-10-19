@@ -3,7 +3,7 @@
 // switchable faults so every degraded state can be seen without breaking a server.
 import type { Api, EngineEnv, WorkflowIn } from './client';
 import { applyDefaults, normalizeQuestionnaire } from './normalize';
-import { ApiError, type Account, type Brief, type BriefEvent, type DocumentRow, type Job, type LibraryShelves, type ReferenceDoc, type Shelf, type ShelfEntry, type WizardPayload } from './types';
+import { ApiError, type Account, type Brief, type BriefEvent, type DocumentRow, type Job, type HouseRelated, type LibraryPackage, type LibraryShelves, type Package, type ReferenceDoc, type Shelf, type ShelfEntry, type SourceRole, type WizardPayload } from './types';
 import { RAW_QUESTIONNAIRES } from '../data/questionnaires';
 import { ANX_SEC, CH, CH_A, CY, CY_A, FIND, FIND_A, QA_FIX, SAMPLE_ANNEX, SOP_SEC } from '../data/samples';
 import { composeMarkdown, lint } from '../lib/compose';
@@ -13,6 +13,9 @@ export interface Faults { storage: boolean; letta: boolean; chatDisabled: boolea
 export const NO_FAULTS: Faults = { storage: false, letta: false, chatDisabled: false, gotenberg: false, libreoffice: false, badKey: false };
 
 const ALLOWLIST = ['qms_docx_formatter', 'gf_annex_author'];
+// Brief sources (19.10.2026): the same limit and roles as DocEngine app/brief.py.
+const MAX_SOURCES = 20;
+const SOURCE_ROLES: SourceRole[] = ['content', 'format', 'example'];
 const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
 const hex = (n: number) => Array.from({ length: n }, () => Math.floor(Math.random() * 16).toString(16)).join('');
 const uuid = () => `${hex(8)}-${hex(4)}-4${hex(3)}-a${hex(3)}-${hex(12)}`;
@@ -77,12 +80,47 @@ function seedDocs(): MockDoc[] {
 
 export interface MockApi extends Api { faults: Faults; setFaults(f: Partial<Faults>): void }
 
+// The same rules as DocEngine app/brief.py (19.10.2026): a package and its question set go together, a brief holds
+// only its own questions and the doc.* pages, meta has fixed keys. Until then the mock accepted anything.
+export const DEFAULT_BANK: Record<Package, string> = { sop: 'sop_qc', sop_annexes: 'sop_qc', annex: 'annex_form', form: 'annex_form', report: 'annex_form' };
+const TEXT_FIELDS = ['doc.purpose', 'doc.scope_in', 'doc.scope_out', 'doc.use', 'doc.responsibilities', 'doc.references', 'doc.notes'];
+const META_KEYS = ['title_mk', 'title_en', 'code', 'version', 'department', 'orient'];
+const isSop = (q: string) => RAW_QUESTIONNAIRES[q]?.doctype === 'SOP';
+export const fits = (pkg: Package, q: string) => q in RAW_QUESTIONNAIRES && isSop(q) === (pkg === 'sop' || pkg === 'sop_annexes');
+const questionKeys = (q: string) => q in RAW_QUESTIONNAIRES ? normalizeQuestionnaire(q, RAW_QUESTIONNAIRES[q]).rounds.flatMap(r => r.questions.map(x => x.key)) : [];
+
 const mockBriefs: Record<string, Brief> = {};
 const mockUsers: Account[] = [
   { username: 'darko.s', role: 'admin', must_change: false, disabled: false, created: '2026-10-19T04:00:00+00:00', by: 'migration from the shared password' },
   { username: 'c.cekic', role: 'user', must_change: true, disabled: false, created: '2026-10-19T05:00:00+00:00', by: 'darko.s' },
 ];
 const mockEvents: Record<string, BriefEvent[]> = {};
+
+// Library sample (19.10.2026): the shelves and, grouped, the SOP packages the Packages view and the parent-SOP page show.
+const shelfEntry = (code: string, shelf: Shelf, status: string, title_en: string, extra: Partial<ShelfEntry> = {}): ShelfEntry =>
+  ({ code, parent: '', department: code.startsWith('QA') ? 'QA' : 'QC', title_mk: '', title_en, status, version: '01', effective_date: '', shelf, approved: null, wip: [], builds: [], jobs: [], notes: [], ...extra });
+const approvedRef = (id: string, title_en: string, chars: number, version = '01') => ({ id, version, title_en, effective_date: '2025-01-31', chars, ragflow_doc_id: 'rf-' + id });
+const LIB = {
+  QCSOP001: shelfEntry('QCSOP001', 'approved', 'effective', 'Sampling of raw materials and finished products', { title_mk: 'Земање мостри од суровини и готови производи', version: '02', effective_date: '2025-03-01', approved: approvedRef('ref-sop001', 'Sampling', 24100, '02') }),
+  QCT002: shelfEntry('QCT002', 'approved', 'effective', 'Sampling record', { title_mk: 'Запис за земање мостри', parent: 'QCSOP001', approved: approvedRef('ref-t002', 'Sampling record', 2100) }),
+  QCT003: shelfEntry('QCT003', 'approved', 'effective', 'Sample label', { title_mk: 'Етикета за мостра', parent: 'QCSOP001', approved: approvedRef('ref-t003', 'Sample label', 900) }),
+  QCLB001: shelfEntry('QCLB001', 'approved', 'effective', 'Sample reception logbook', { title_mk: 'Дневник за прием на мостри', parent: 'QCSOP001', approved: approvedRef('ref-lb001', 'Sample reception logbook', 1800) }),
+  QCSOP022: shelfEntry('QCSOP022', 'approved', 'effective', 'Reception, storage and consumption of chemicals', { approved: approvedRef('ref-1', 'Chemicals', 18200) }),
+  QCSOP011: shelfEntry('QCSOP011', 'revision', 'effective_revising', 'Sampling', { wip: [{ id: 'ref-2', version: '03', title_en: 'QC Sampling, Handling and Documentation', effective_date: '', chars: 109000, ragflow_doc_id: '' }] }),
+  QCSOP019: shelfEntry('QCSOP019', 'drafts', 'awaiting_signature', 'OOx investigation'),
+  QCSOP019A01: shelfEntry('QCSOP019A01', 'drafts', 'draft', 'OOx investigation form', { parent: 'QCSOP019' }),
+  QCT024: shelfEntry('QCT024', 'numbers', 'reserved', 'Material Transfer Record', { parent: 'QCSOP011' }),
+  QASOPXXX: shelfEntry('QASOPXXX', 'drafts', 'unconfirmed', 'Document control (number not confirmed)'),
+  QCSOP020: shelfEntry('QCSOP020', 'retired', 'withdrawn', 'Trend analysis (OOT)'),
+};
+const LIB_PACKAGES: { in_use: LibraryPackage[]; drafts: LibraryPackage[] } = {
+  in_use: [
+    { sop: LIB.QCSOP001, members: [{ ...LIB.QCT002, relation: 'listed' }, { ...LIB.QCT003, relation: 'listed' }, { ...LIB.QCLB001, relation: 'listed' }] },
+    { sop: LIB.QCSOP011, members: [{ ...LIB.QCT024, relation: 'child' }] },
+    { sop: LIB.QCSOP022, members: [] },
+  ],
+  drafts: [{ sop: LIB.QCSOP019, members: [{ ...LIB.QCSOP019A01, relation: 'annex' }] }],
+};
 
 export function mockApi(onChange?: () => void): MockApi {
   const jobs = seedJobs();
@@ -193,10 +231,26 @@ export function mockApi(onChange?: () => void): MockApi {
     },
     async job(id) { store(); const j = jobs.find(x => x.id === id); if (!j) throw new ApiError(404, 'no such job'); return structuredClone(j); },
     async jobs() { store(); return structuredClone(jobs); },
+    async rerunJob(id) {
+      store(); await wait(80);
+      const old = jobs.find(x => x.id === id);
+      if (!old) throw new ApiError(404, 'no such job');
+      if (old.status !== 'failed') throw new ApiError(409, 'only a failed workflow job can be re-run');
+      if (faults.letta) throw new ApiError(503, 'Letta unavailable');
+      // The server copies the stored payload whole (sources' text, annexes, brief); so does the mock.
+      const m = old.payload.meta, nid = uuid();
+      const job = mkJob({ id: nid, code: m.code, mk: m.title_mk, en: m.title_en, q: old.payload.questionnaire, doctype: m.doctype, by: old.payload.requested_by, minAgo: 0 });
+      job.payload = { ...structuredClone(old.payload), rerun_of: id };
+      job.result = { telemetry: telemetry(m.doctype || 'SOP') };
+      jobs.unshift(job); run(job); onChange?.();
+      return { job_id: nid, status: 'queued' };
+    },
     async reviewJob(id, decision, note) {
       store(); await wait(300);
+      if (decision === 'return' && !note.trim()) throw new ApiError(422, 'a note is required to return a document for revision');
       const j = jobs.find(x => x.id === id);
-      if (!j || j.status !== 'awaiting_review') throw new ApiError(409, 'job is not awaiting review');
+      if (!j) throw new ApiError(404, 'no such job');
+      if (j.status !== 'awaiting_review') throw new ApiError(409, 'job is not awaiting review');
       if (decision === 'approve') { j.stage = 'format'; j.status = 'running'; advance(j); j.result = { ...j.result, review: { decision, note, by: 'darko.s' } }; }
       else Object.assign(j, { status: 'failed', error: 'returned for revision: ' + (note || 'no reason given'), result: { ...j.result, review: { decision, note, by: 'darko.s' } }, updated_at: new Date().toISOString() });
       onChange?.();
@@ -238,29 +292,47 @@ export function mockApi(onChange?: () => void): MockApi {
     },
     async library(): Promise<LibraryShelves> {
       await wait(60);
-      const e = (code: string, shelf: Shelf, status: string, title_en: string, extra: Partial<ShelfEntry> = {}): ShelfEntry =>
-        ({ code, parent: '', department: 'QC', title_mk: '', title_en, status, version: '01', effective_date: '', shelf, approved: null, wip: [], builds: [], jobs: [], notes: [], ...extra });
       const shelves = {
-        approved: [e('QCSOP022', 'approved', 'effective', 'Reception, storage and consumption of chemicals', { approved: { id: 'ref-1', version: '01', title_en: 'Chemicals', effective_date: '2025-01-31', chars: 18200, ragflow_doc_id: 'rf-1' } })],
-        revision: [e('QCSOP011', 'revision', 'effective_revising', 'Sampling', { wip: [{ id: 'ref-2', version: '03', title_en: 'QC Sampling, Handling and Documentation', effective_date: '', chars: 109000, ragflow_doc_id: '' }] })],
-        drafts: [e('QCSOP019', 'drafts', 'awaiting_signature', 'OOx investigation')],
-        numbers: [e('QCT024', 'numbers', 'reserved', 'Material Transfer Record')],
-        retired: [e('QCSOP020', 'retired', 'withdrawn', 'Trend analysis (OOT)')],
+        approved: [LIB.QCSOP001, LIB.QCSOP022, LIB.QCT002, LIB.QCT003, LIB.QCLB001],
+        revision: [LIB.QCSOP011],
+        drafts: [LIB.QCSOP019, LIB.QCSOP019A01, LIB.QCT024, LIB.QASOPXXX],
+        numbers: [LIB.QCT024],
+        retired: [LIB.QCSOP020],
       } as Record<Shelf, ShelfEntry[]>;
-      return { shelves, counts: Object.fromEntries(Object.entries(shelves).map(([k, v]) => [k, v.length])) as Record<Shelf, number> };
+      // The same grouping DocEngine makes (19.10.2026): an SOP with an approved copy or effective in the register is in use.
+      return { shelves, counts: Object.fromEntries(Object.entries(shelves).map(([k, v]) => [k, v.length])) as Record<Shelf, number>, packages: structuredClone(LIB_PACKAGES), loose: { in_use: [LIB.QCSOP020], drafts: [LIB.QASOPXXX] } };
+    },
+    async houseRelated(code): Promise<HouseRelated> {
+      await wait(50); const c = code.replace(/[\s_-]/g, '').toUpperCase();
+      const pk = [...LIB_PACKAGES.in_use, ...LIB_PACKAGES.drafts].find(p => p.sop.code === c);
+      const sop = pk?.sop, found = !!sop?.approved;
+      return { code: c, found, version: found ? sop!.approved!.version : '', title_en: found ? sop!.title_en : '', title_mk: found ? sop!.title_mk : '',
+        related: found ? pk!.members.map(m => ({ code: m.code, version: m.version, title_en: m.title_en, title_mk: m.title_mk, relation: m.relation, chars: m.approved?.chars || 0 })) : [] };
     },
     // Document Brief, in memory: the same rules as DocEngine app/brief.py (rev check, locks, scope → stale).
     async briefs() { await wait(30); return Object.values(mockBriefs).map(({ id, rev, status, package: pk, meta, updated_at, job_ids }) => ({ id, rev, status, package: pk, meta, updated_at, job_ids })); },
     async brief(id: string) { await wait(20); const b = mockBriefs[id]; if (!b) throw new ApiError(404, 'no such brief'); return structuredClone(b); },
     async createBrief(b) {
       await wait(40); const id = 'brief-' + (Object.keys(mockBriefs).length + 1);
-      mockBriefs[id] = { id, rev: 0, status: 'open', package: b.package, questionnaire: b.questionnaire || (b.package.startsWith('sop') ? 'sop_qc' : 'annex_form'), parent_sop: b.parent_sop || '', meta: { ...(b.meta || {}) }, fields: {}, annexes: [], job_ids: [], sources: [], updated_at: new Date().toISOString() };
+      if (!(b.package in DEFAULT_BANK)) throw new ApiError(400, `package must be one of ${Object.keys(DEFAULT_BANK).join(', ')}`);
+      const q = b.questionnaire || DEFAULT_BANK[b.package]; if (!fits(b.package, q)) throw new ApiError(400, `the ${q} questions do not fit a ${b.package} package`);
+      mockBriefs[id] = { id, rev: 0, status: 'open', package: b.package, questionnaire: q, parent_sop: b.parent_sop || '', meta: { ...(b.meta || {}) }, fields: {}, annexes: [], job_ids: [], sources: [], updated_at: new Date().toISOString() };
       mockEvents[id] = [{ rev: 0, at: new Date().toISOString(), actor: '', op: 'create', key: '', before: null, after: null }];
       return structuredClone(mockBriefs[id]);
     },
     async patchBrief(id, p) {
       await wait(30); const b = mockBriefs[id]; if (!b) throw new ApiError(404, 'no such brief');
+      if (b.status !== 'open') throw new ApiError(409, `the brief is ${b.status}; reopen it to change it`);
       if (p.rev !== b.rev) throw new ApiError(409, `the brief is at rev ${b.rev}`);
+      // A package change without a question set takes the package's set; a set that does not fit the package is refused.
+      if (p.package && !(p.package in DEFAULT_BANK)) throw new ApiError(400, `package must be one of ${Object.keys(DEFAULT_BANK).join(', ')}`);
+      if (p.package && p.package !== b.package && !p.questionnaire && !fits(p.package, b.questionnaire)) p = { ...p, questionnaire: DEFAULT_BANK[p.package] };
+      if (p.questionnaire && !(p.questionnaire in RAW_QUESTIONNAIRES)) throw new ApiError(400, 'unknown questionnaire');
+      if (p.questionnaire && !fits(p.package || b.package, p.questionnaire)) throw new ApiError(400, `the ${p.questionnaire} questions are for ${isSop(p.questionnaire) ? 'an SOP' : 'a form'}, not for a ${p.package || b.package} package`);
+      const known = new Set([...TEXT_FIELDS, ...questionKeys(p.questionnaire || b.questionnaire)]);
+      for (const [k, v] of Object.entries(p.set || {})) if (!known.has(k) && !((v === '' || v == null || (Array.isArray(v) && !v.length)) && k in b.fields)) throw new ApiError(400, `${k} is not a question of this brief`);
+      for (const k of Object.keys(p.meta || {})) if (!META_KEYS.includes(k)) throw new ApiError(400, `meta.${k} is not a brief field`);
+      if (p.annexes?.some(a => !(a.title_en || '').trim() && !(a.title_mk || '').trim())) throw new ApiError(400, 'every annex needs a title');
       const at = new Date().toISOString(), ev = (op: string, key: string, before: unknown, after: unknown) => mockEvents[id].push({ rev: b.rev + 1, at, actor: '', op, key, before, after });
       let n = mockEvents[id].length, core = false;
       for (const k of p.unlock || []) if (b.fields[k]?.state === 'locked') { b.fields[k].state = 'chosen'; ev('unlock', k, 'locked', 'chosen'); }
@@ -272,19 +344,29 @@ export function mockApi(onChange?: () => void): MockApi {
       for (const k of p.lock || []) if (b.fields[k]) { b.fields[k].state = 'locked'; b.fields[k].stale = false; ev('lock', k, null, 'locked'); }
       if (core) for (const [k, f] of Object.entries(b.fields)) if (!k.startsWith('doc.') && !(k in (p.set || {})) && f.state === 'chosen') { f.stale = true; ev('stale', k, false, true); }
       if (p.meta) { b.meta = { ...b.meta, ...p.meta }; ev('meta', 'meta', null, p.meta); }
-      if (p.package) { b.package = p.package; ev('package', 'package', null, p.package); }
-      if (p.questionnaire) { b.questionnaire = p.questionnaire; ev('questionnaire', 'questionnaire', null, p.questionnaire); }
+      if (p.package && p.package !== b.package) { ev('package', 'package', b.package, p.package); b.package = p.package; }
+      if (p.questionnaire && p.questionnaire !== b.questionnaire) { ev('questionnaire', 'questionnaire', b.questionnaire, p.questionnaire); b.questionnaire = p.questionnaire; }
       if (p.parent_sop !== undefined) { b.parent_sop = p.parent_sop; ev('parent_sop', 'parent_sop', null, p.parent_sop); }
       if (p.annexes) { b.annexes = p.annexes; ev('annexes', 'annexes', null, p.annexes); }
       if (mockEvents[id].length > n) { b.rev += 1; b.updated_at = at; }
       n = 0; return structuredClone(b);
     },
     async briefEvents(id: string): Promise<BriefEvent[]> { await wait(20); return structuredClone(mockEvents[id] || []); },
-    async addBriefSource(id, name, content_b64) {
-      await wait(60); const b = mockBriefs[id]; if (!/\.(docx|pdf|json|md|markdown|txt)$/i.test(name)) throw new ApiError(400, `${name}: only .docx, .pdf, .json and .md are accepted`);
+    async addBriefSource(id, name, content_b64, role = 'content') {
+      await wait(60); const b = mockBriefs[id]; if (!b) throw new ApiError(404, 'no such brief');
+      if (!/\.(docx|pdf|json|md|markdown|txt)$/i.test(name)) throw new ApiError(400, `${name}: only .docx, .pdf, .json and .md are accepted`);
+      if (b.sources.length >= MAX_SOURCES) throw new ApiError(409, `the brief already holds ${MAX_SOURCES} sources; remove one first`);
+      if (!SOURCE_ROLES.includes(role)) throw new ApiError(400, `role must be one of ${SOURCE_ROLES.join(', ')}`);
       const bytes = Math.floor(content_b64.length * 3 / 4);
-      b.sources.push({ id: 'src-' + (b.sources.length + 1), name, kind: name.split('.').pop() || 'md', bytes, chars: bytes, created_at: new Date().toISOString() }); b.rev += 1;
+      b.sources.push({ id: 'src-' + (b.sources.length + 1), name, kind: name.split('.').pop() || 'md', bytes, chars: bytes, created_at: new Date().toISOString(), role }); b.rev += 1;
       return { id: b.sources[b.sources.length - 1].id, chars: bytes, note: '', brief: structuredClone(b) };
+    },
+    async setSourceRole(id, sid, role) {
+      await wait(20); const b = mockBriefs[id]; if (!b) throw new ApiError(404, 'no such brief');
+      const src = b.sources.find(x => x.id === sid); if (!src) throw new ApiError(404, 'no such source');
+      if (!SOURCE_ROLES.includes(role)) throw new ApiError(400, `role must be one of ${SOURCE_ROLES.join(', ')}`);
+      if (src.role !== role) { src.role = role; b.rev += 1; b.updated_at = new Date().toISOString(); }
+      return structuredClone(b);
     },
     async removeBriefSource(id, sid) { await wait(20); const b = mockBriefs[id]; b.sources = b.sources.filter(x => x.id !== sid); b.rev += 1; return structuredClone(b); },
     async suggestBrief(id, rev, keys = []) {
@@ -308,7 +390,10 @@ export function mockApi(onChange?: () => void): MockApi {
     },
     packagePdfHref: id => `#demo-package-${id}.pdf`,
     async buildBrief(id, rev) {
-      await wait(80); const b = mockBriefs[id]; if (rev !== b.rev) throw new ApiError(409, `the brief is at rev ${b.rev}`);
+      await wait(80); const b = mockBriefs[id]; if (!b) throw new ApiError(404, 'no such brief');
+      if (b.status !== 'open') throw new ApiError(409, `the brief is ${b.status}; reopen it to build`);
+      if (rev !== b.rev) throw new ApiError(409, `the brief is at rev ${b.rev}`);
+      if (!fits(b.package, b.questionnaire)) throw new ApiError(400, `this ${b.package} brief has the ${b.questionnaire} questions; choose the package again to take its own questions before building`);
       if (!b.meta.title_en && !b.meta.title_mk) throw new ApiError(400, 'give the document a title before building');
       const code = b.meta.code || (b.package === 'annex' ? (b.parent_sop || 'QCSOP011') + 'A10' : 'QCSOP026');
       b.meta.code = code; b.job_ids.push('job-' + id); b.rev += 1;

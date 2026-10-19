@@ -13,6 +13,7 @@ import re
 
 from . import builder, db, glossary, house, potency
 from .config import settings
+from .house_codes import XXX
 from .letta import LettaClient, LettaError
 from .ragflow import RagflowClient, RagflowError, citations, format_passages
 from .questionnaires import QUESTIONNAIRES, apply_defaults
@@ -135,6 +136,10 @@ class QaAuditFailed(Exception):
     def __init__(self, verdict: str):
         super().__init__("§6A audit did not PASS")
         self.verdict = verdict
+
+
+class JobAborted(Exception):
+    """The row was failed by the stale-job reaper while this worker was still running it: nothing more is written."""
 
 
 class LintUnresolved(Exception):
@@ -371,7 +376,12 @@ def _lint_section(content: str, sop: bool = True) -> list[str]:
 
 
 _SEC_REF = re.compile(r"(?:§\s*|\b[Ss]ections?\s+|\b[Сс]екци(?:ја|и|ите)\s+)([1-9](?:\.[0-9]+)*"
-                      r"(?:\s*(?:,|and|&|и|/)\s*[1-9](?:\.[0-9]+)*)*)|\b([1-9])\.[0-9]+\b")
+                      r"(?:\s*(?:,|and|&|и|/)\s*[1-9](?:\.[0-9]+)*)*)")
+# A bare "N.M" is a section only where the text points at one: opening a line or a bullet ("- 5.2: …", the auditor's
+# per-section list) or after see / in / at / under. A decimal followed by a unit is a quantity. "The limit is 2.5 kg
+# and 0.5 % per 3.0 mL" sent sections 2 and 3 back for a rewrite (review 19.10.2026).
+_UNIT = r"(?!\s*(?:%|kg|g|mg|µg|mL|ml|L|°C|mm|cm|m|h|hours?|hrs?|min|minutes?|s|sec|seconds?|days?)\b)"
+_BARE_REF = re.compile(r"(?:^|[-*•]\s+|\b(?:see|in|at|under|види|во)\s+)\s*([1-9])\.[0-9]+(?!\.?\d)" + _UNIT, re.I | re.M)
 # A clause of a regulation or of another document is not a section of this one. An auditor citing
 # "EU GMP Chapter 4.1", "Annex 15 §6", "ICH Q9 4.1" or "A04 2.1" used to send sections 4, 6 and 2 back
 # for a rewrite nobody asked for (found in review 14.10.2026). Those citations are removed first.
@@ -386,9 +396,11 @@ _CLAUSE_CITE = re.compile(
 
 def _sections_named(audit: str, nums: list[str]) -> list[str]:
     """The sections a FIX verdict talks about; all of them when it names none."""
+    text = _CLAUSE_CITE.sub(" ", audit or "")
     majors: set[str] = set()
-    for listed, bare in _SEC_REF.findall(_CLAUSE_CITE.sub(" ", audit or "")):
-        majors.update(re.findall(r"(?<![.\d])([1-9])(?:\.[0-9]+)*", listed) if listed else [bare])
+    for listed in _SEC_REF.findall(text):
+        majors.update(re.findall(r"(?<![.\d])([1-9])(?:\.[0-9]+)*", listed))
+    majors.update(m.group(1) for m in _BARE_REF.finditer(text))
     named = [n for n in nums if n.split(".")[0] in majors]
     return named or list(nums)
 
@@ -456,6 +468,17 @@ def _clean_section(text: str, structured: bool = False) -> str:
     return cleaned
 
 
+# What an uploaded source is for (Head of QC, 19.10.2026): the authors are told, so a formatting example lends its
+# layout and never its facts, and an executed example lends its structure and never its values.
+SOURCE_ROLE = {
+    "content": "reference contents: facts may be taken from it; cite it by this file name.",
+    "format": "an example of document formatting: follow its structure, section order and layout; take no fact or "
+              "value from it and do not cite it.",
+    "example": "an executed (filled-in) example of this kind of document: it shows which fields are completed and "
+               "how; take its structure, never its values, names, dates or results, and do not cite it.",
+}
+
+
 def _brief(questionnaire_key: str, answers: dict, instructions: str = "", sources: list | None = None,
            source_texts: list | None = None) -> str:
     lines = [f"Questionnaire: {questionnaire_key}"]
@@ -472,7 +495,8 @@ def _brief(questionnaire_key: str, answers: dict, instructions: str = "", source
     # nothing is copied that the requester did not provide.
     for st in source_texts or []:
         if (st.get("text") or "").strip():
-            lines += ["", f"SOURCE FILE «{st['name']}» (cite it by this name):", st["text"].strip()]
+            lines += ["", f"SOURCE FILE «{st['name']}» — {SOURCE_ROLE.get(st.get('role') or 'content', SOURCE_ROLE['content'])}",
+                      st["text"].strip()]
     return "\n".join(lines)
 
 
@@ -519,7 +543,7 @@ _annex_tasks: set = set()
 async def _start_package_annexes(sop_job: str, p: dict, meta: dict) -> list[dict]:
     """SOP + annexes from one workflow (Head of QC, 18.10.2026): once the SOP is written, one annex job per annex of the
     package, numbered from the register under the SOP's code, each reading the SOP's sections 6 and 7 (ANNEX_RULE)."""
-    from .house_codes import XXX, next_code
+    from .house_codes import next_code
     # A rebuild of the same brief reuses its own annex numbers (A01 … again, not A03 …), and an SOP whose number is
     # not confirmed (…XXX) numbers its annexes by position: no other package shares its sequence.
     unconfirmed = meta["code"].endswith(XXX)
@@ -543,8 +567,10 @@ async def _start_package_annexes(sop_job: str, p: dict, meta: dict) -> list[dict
     return out
 
 
-async def _package(job_id: str, p: dict, meta: dict, sop: bool) -> None:
-    """After an SOP of a package is saved (its Markdown is what the annexes read), start its annexes and record them."""
+async def start_package(job_id: str, p: dict, meta: dict, sop: bool) -> None:
+    """Once an SOP of a package stands — registered as done here, or approved by a person in review_workflow — start
+    its annexes (they read its Markdown) and record them on it. Not on awaiting_review: four annexes were written to
+    an SOP the reviewer then returned (review 19.10.2026)."""
     if not (sop and p.get("package_annexes")):
         return
     try:
@@ -577,6 +603,14 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
         knowledge["examples_used"] += len(ex)
         return ("\n\n" + house.NOTE + "\n" + format_passages(ex, tag="E", max_chars=1500)) if ex else ""
 
+    async def finish(**fields) -> bool:
+        """The job's terminal write; False (and a log line) when the reaper failed the row meanwhile (review 19.10.2026)."""
+        ok = await db.job_finish(job_id, **fields)
+        if not ok:
+            log.warning("job %s was failed by the stale-job reaper meanwhile; its late %s is not written",
+                        job_id, fields.get("status"))
+        return ok
+
     async def ask(agent_name: str, tag: str, prompt: str) -> str:
         """One exchange on a fresh clone of a fleet agent, deleted afterwards.
 
@@ -585,6 +619,10 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
         agent that already exists — and no exchange inherits another's conversation."""
         from .fleet import spawn_ephemeral  # late import: fleet needs live Letta (and is patched in tests)
 
+        # Progress is told by updated_at alone: a long exchange (one section can take minutes) must bump it, or the
+        # reaper reads a working job as abandoned; and a row the reaper did fail is left alone (review 19.10.2026).
+        if await db.job_touch(job_id) == "failed":
+            raise JobAborted(job_id)
         # A message that failed transiently (a timeout: the agent may still be writing; a gateway error) is not
         # re-sent to the same clone. The clone is deleted and the step repeats on a fresh one, which is safe
         # because a clone carries nothing from any other exchange. Each repeat is recorded in the job's result.
@@ -639,7 +677,7 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
         controls = controls_rule(qkey)
         # An annex job reads the SOP it serves (sections 6 and 7) so the form captures what that SOP records in it.
         parent_code = (p.get("parent_sop") or "").strip()
-        parent_md = ""
+        parent_md, related_md = "", ""
         if parent_code and doctype != "SOP":
             parent = None
             if p.get("package_of"):
@@ -649,7 +687,13 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                 md = ((own or {}).get("result") or {}).get("markdown") or ""
                 if md:
                     parent = {"markdown": md, "job_id": p["package_of"], "status": own["status"]}
-            if parent is None:
+            unconfirmed = parent is None and parent_code.endswith(XXX)
+            if unconfirmed:
+                # Every unconfirmed QASOPXXX shares the code: a lookup by code would read another SOP's procedure
+                # into this form (review 19.10.2026). The package job is the only safe source; without it, the brief.
+                knowledge["notes"].append(f"parent SOP {parent_code} is unconfirmed: give the parent job, or confirm "
+                                          "the number")
+            elif parent is None:
                 parent = await db.job_latest_markdown_by_code(parent_code)
             if parent:
                 parent_md = _parent_sections(parent["markdown"])
@@ -657,20 +701,31 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                 if parent["status"] != "done":
                     knowledge["notes"].append(f"parent SOP {parent_code} is not registered: read from job "
                                               f"{parent['job_id'][:8]} ({parent['status']})")
-            else:
+            elif not unconfirmed:
                 try:
                     approved = await house.approved_text(parent_code)
                 except Exception as e:  # noqa: BLE001
                     approved = None
                     knowledge["notes"].append(f"approved parent SOP unavailable: {e}"[:200])
                 if approved:
-                    parent_md = _parent_sections(approved["markdown"]) or approved["markdown"][:12000]
+                    # The approved copies are the Word files' text, not engine Markdown: no "# 6.0" headings to cut
+                    # at, so the SOP goes whole (12 000 characters once dropped the records section of a 14 000 SOP).
+                    parent_md = _parent_sections(approved["markdown"]) or approved["markdown"][:30000]
                     knowledge["parent_sop"] = {"code": parent_code, "approved_version": approved["version"],
                                                "reference_id": approved["id"]}
+                    try:          # the SOP's own forms and annexes (Head of QC, 19.10.2026): written beside, not over
+                        related_md, related_codes = await house.related_block(parent_code)
+                    except Exception as e:  # noqa: BLE001
+                        related_md, related_codes = "", []
+                        knowledge["notes"].append(f"related documents of {parent_code} unavailable: {e}"[:200])
+                    if related_codes:
+                        knowledge["parent_sop"]["related"] = related_codes
                 else:
                     knowledge["notes"].append(f"parent SOP {parent_code} not found; the form was drafted from the brief only")
         parent_note = (f"PARENT SOP {parent_code}, sections 6 and 7 — the form must hold a field for every item these "
                        f"sections write into this record, with the completers section 7 names:\n{parent_md}\n" if parent_md else "")
+        if related_md:
+            parent_note += "\n" + related_md + "\n"
         await db.job_update(job_id, status="running", stage="generate")
 
         from .fleet import ensure_fleet  # late import: fleet needs live Letta
@@ -821,7 +876,14 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
             gaps = _bilingual_gaps(sections)
             if gaps:
                 ctx["markdown"] = assemble_markdown(meta, sections)
-                raise BilingualGap(gaps)
+                if rnd == 0 or not settings.fix_to_review:
+                    raise BilingualGap(gaps)
+                # A repair reply that dropped one language, after an audit that was otherwise acted on: the draft
+                # and the audit are kept and a person decides, as with a remaining FIX (review 19.10.2026).
+                ctx["bilingual_gaps"] = gaps
+                ctx["review_reason"] = ((ctx.get("review_reason", "") + "; ") if ctx.get("review_reason") else "") + \
+                    f"after repair round {rnd} sections are not bilingual: {', '.join(gaps)}; a person decides"
+                break
             await db.job_update(job_id, stage="qa-audit" if rnd == 0 else f"qa-audit repair-{rnd}")
             markdown = assemble_markdown(meta, sections)
             ctx["markdown"] = markdown
@@ -898,12 +960,9 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
         )
         if ctx.get("review_reason"):
             # Built and verified, NOT registered: POST /workflows/{id}/review approves (registers) or returns it.
-            await db.job_update(
-                job_id, status="awaiting_review", stage="format",
-                result={**ctx, "verify": result.verify_report, "bytes": result.bytes,
-                        "artifact": {"path": str(result.path), "bytes": result.bytes}},
-            )
-            await _package(job_id, p, meta, sop)
+            await finish(status="awaiting_review", stage="format",
+                         result={**ctx, "verify": result.verify_report, "bytes": result.bytes,
+                                 "artifact": {"path": str(result.path), "bytes": result.bytes}})
             return
         did = await db.document_create(
             job_id,
@@ -915,33 +974,31 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                 "verify": result.verify_report,
             },
         )
-        await db.job_update(
-            job_id, status="done", stage="done",
-            result={**ctx, "document_id": did, "verify": result.verify_report, "bytes": result.bytes},
-        )
-        await _package(job_id, p, meta, sop)
+        if await finish(status="done", stage="done",
+                        result={**ctx, "document_id": did, "verify": result.verify_report, "bytes": result.bytes}):
+            await start_package(job_id, p, meta, sop)
+    except JobAborted:
+        log.warning("job %s: failed by the stale-job reaper while running; stopped, nothing written", job_id)
     except builder.VerifyFailed as e:
         log.error("job %s verify FAILED", job_id)
-        await db.job_update(job_id, status="failed", error="verify FAILED",
-                            result={**ctx, "verify": e.report})
+        await finish(status="failed", error="verify FAILED", result={**ctx, "verify": e.report})
     except QaAuditFailed as e:
         log.error("job %s §6A audit did not pass", job_id)
-        await db.job_update(job_id, status="failed", error="§6A audit did not pass",
-                            result={**ctx, "qa_audit": e.verdict, "qa_verdict": _qa_verdict(e.verdict) or "FIX"})
+        await finish(status="failed", error="§6A audit did not pass",
+                     result={**ctx, "qa_audit": e.verdict, "qa_verdict": _qa_verdict(e.verdict) or "FIX"})
     except LintUnresolved as e:
         log.error("job %s: %s", job_id, e)
-        await db.job_update(job_id, status="failed", error=str(e), result=ctx)
+        await finish(status="failed", error=str(e), result=ctx)
     except BilingualGap as e:
         log.error("job %s bilingual gap: %s", job_id, e.gaps)
-        await db.job_update(job_id, status="failed",
-                            error="sections are not bilingual: " + ", ".join(e.gaps),
-                            result={**ctx, "bilingual_gaps": e.gaps})
+        await finish(status="failed", error="sections are not bilingual: " + ", ".join(e.gaps),
+                     result={**ctx, "bilingual_gaps": e.gaps})
     except LettaError as e:
         log.error("job %s letta error: %s", job_id, e)
-        await db.job_update(job_id, status="failed", error=f"letta: {e}", result=ctx)
+        await finish(status="failed", error=f"letta: {e}", result=ctx)
     except Exception as e:  # noqa: BLE001 — job must record any failure
         log.exception("job %s failed", job_id)
         # Some exceptions (notably httpx.ReadTimeout) stringify to "" — always
         # record the type name so the job row never shows a blank error.
         detail = str(e).strip() or repr(e)
-        await db.job_update(job_id, status="failed", error=f"{type(e).__name__}: {detail}"[:500], result=ctx)
+        await finish(status="failed", error=f"{type(e).__name__}: {detail}"[:500], result=ctx)

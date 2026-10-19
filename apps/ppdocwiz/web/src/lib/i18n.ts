@@ -3,7 +3,7 @@
 export type Lang = 'en' | 'mk';
 
 const MK: Record<string, string> = {
-  'Builder': 'Уредувач', 'Agent chat': 'Разговор со агент', 'Questionnaire': 'Прашалник', 'Formatter': 'Форматирање',
+  'Workflow': 'Работен тек', 'Users': 'Корисници', 'Builder': 'Уредувач', 'Agent chat': 'Разговор со агент', 'Questionnaire': 'Прашалник', 'Formatter': 'Форматирање',
   'Reports': 'Извештаи', 'Library': 'Библиотека', 'Jobs': 'Задачи', 'Verify': 'Верификација', 'Preview': 'Преглед',
   'Fleet & health': 'Агенти и состојба', 'CREATE': 'КРЕИРАЈ', 'CONTROL': 'КОНТРОЛА', 'Sign out': 'Одјава', 'Create': 'Креирај',
   'Document meta': 'Податоци за документот', 'Content brief': 'Содржина на барањето',
@@ -11,6 +11,7 @@ const MK: Record<string, string> = {
   'Instructions': 'Упатства', 'your prompt to the authors': 'вашето барање до авторите',
   'Sources': 'Извори', 'one per line; the authors may cite them': 'по еден во ред; авторите смеат да ги цитираат',
   'Creates a job and opens it in Jobs': 'Создава задача и ја отвора во Задачи',
+  'the SOP this form serves — DocEngine reads its sections 6 and 7': 'СОП-от на кој му служи овој образец — DocEngine ги чита неговите делови 6 и 7',
   'answered': 'одговорено', 'selected': 'избрано', 'unanswered → default:': 'неодговорено → стандардно:',
   'unanswered → no default exists; stays open in the brief': 'неодговорено → нема стандардна опција; останува отворено',
   'by default': 'стандардно', 'open': 'отворено', 'default': 'стандардно', 'Start workflow ▸': 'Започни работен тек ▸',

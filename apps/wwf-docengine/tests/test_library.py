@@ -78,3 +78,49 @@ def test_an_approved_document_is_indexed_once_in_db3(monkeypatch):
         assert indexed[1][2] == "rf-1" and r["ragflow_doc_id"] == "rf-2"   # a new text replaces the old entry
         wip = c.put("/reference", json={**body, "kind": "wip", "markdown": "z" * 50}, headers={"X-API-Key": "k"}).json()
         assert len(indexed) == 2 and wip["changed"]                         # work in progress is never indexed
+
+
+# ---- review 19.10.2026 ----
+
+def test_the_library_keeps_the_newest_approved_version_by_number_not_text():
+    refs = [{"kind": "approved", "code": "QCSOP022", "version": "1.9", "id": "old"},
+            {"kind": "approved", "code": "QCSOP022", "version": "1.10", "id": "new"}]
+    out = library.shelve([], refs, [], {})
+    assert out["shelves"]["approved"][0]["approved"]["id"] == "new"
+
+
+def test_a_failed_index_clears_the_stale_id_so_the_next_put_retries(monkeypatch):
+    """A RAGFlow failure left the old ragflow_doc_id on the row, so the next PUT of the same text saw "unchanged and
+    indexed" and the new text was never indexed."""
+    from app.ragflow import RagflowError
+    monkeypatch.setattr(settings, "api_key", "k")
+    store, calls = {"rf": "rf-old", "sha": "x"}, {"index": 0, "set": []}
+
+    async def upsert(doc, sha):
+        changed = store.get("sha") != sha
+        store.update(sha=sha)
+        return "11111111-1111-1111-1111-111111111111", changed
+
+    async def get(rid):
+        return {"ragflow_doc_id": store.get("rf", "")}
+
+    async def set_rf(rid, rf):
+        store["rf"] = rf
+        calls["set"].append(rf)
+
+    async def index_text(self, ds, name, text, replace_id=""):
+        calls["index"] += 1
+        if calls["index"] == 1:
+            raise RagflowError("RAGFlow unreachable: timeout")
+        return "rf-new"
+    monkeypatch.setattr(db, "ready", lambda: True)
+    monkeypatch.setattr(db, "reference_upsert", upsert)
+    monkeypatch.setattr(db, "reference_get", get)
+    monkeypatch.setattr(db, "reference_set_ragflow", set_rf)
+    monkeypatch.setattr("app.ragflow.RagflowClient.index_text", index_text)
+    body = {"kind": "approved", "code": "QCSOP 022", "version": "01", "markdown": "y" * 50}
+    with TestClient(app) as c:
+        r = c.put("/reference", json=body, headers={"X-API-Key": "k"}).json()
+        assert r["index_error"].startswith("RAGFlow unreachable") and r["ragflow_doc_id"] == "" and calls["set"] == [""]
+        r = c.put("/reference", json=body, headers={"X-API-Key": "k"}).json()         # same text: retried, not skipped
+        assert not r["changed"] and r["ragflow_doc_id"] == "rf-new" and calls["index"] == 2

@@ -9,6 +9,7 @@ import { usePrimary } from '../lib/usePrimary';
 import { controlled, rankVersions } from '../lib/registry';
 import { lineColor, nbsp } from '../lib/verify';
 import { useApp } from '../store/store';
+import { Packages } from './Packages';
 import { Shelves } from './Shelves';
 import { C, MONO, T } from '../theme';
 
@@ -79,7 +80,7 @@ function Builds() {
             <span style={{ color: T.muted }}>doctype</span><span>{r.doctype}</span><span style={{ color: T.muted }}>parent</span><span>{r.parent || '—'}</span><span style={{ color: T.muted }}>bytes</span><span>{nbsp(r.bytes)}</span>
             <span style={{ color: T.muted }}>created</span><span>{when(r.created_at)}</span><span style={{ color: T.muted }}>source</span><span>{src(r)}</span>{r.supersedes && <><span style={{ color: T.muted }}>supers.</span><span>{r.supersedes}</span></>}</div></div>
         <Caps>STORED VERIFY REPORT</Caps>
-        <div style={{ background: T.deeper, border: `1px solid ${T.hair}`, borderRadius: 6, padding: '9px 10px', fontFamily: MONO, fontSize: 10.5, lineHeight: 1.6 }}>{report.length ? report.map((l, i) => <div key={i} style={{ whiteSpace: 'pre', overflow: 'hidden', textOverflow: 'ellipsis', color: lineColor(l) }}>{l}</div>) : <span style={{ color: T.muted }}>loading…</span>}</div>
+        <div style={{ background: T.deeper, border: `1px solid ${T.hair}`, borderRadius: 6, padding: '9px 10px', fontFamily: MONO, fontSize: 10.5, lineHeight: 1.6 }}>{detail === null ? <span style={{ color: T.muted }}>loading…</span> : report.length ? report.map((l, i) => <div key={i} style={{ whiteSpace: 'pre', overflow: 'hidden', textOverflow: 'ellipsis', color: lineColor(l) }}>{l}</div>) : <span style={{ color: T.muted }}>no verify report stored on this row</span>}</div>
         {missing && <Banner kind="err">410 · document artifact missing. The registry row exists, but the .docx is gone from disk. Rebuild from the source Markdown.</Banner>}
         {avail === 503 && <Banner kind="err">503 · DocEngine storage unavailable</Banner>}
         {pdfErr && <Banner kind="err">PDF → {pdfErr}</Banner>}
@@ -111,11 +112,12 @@ function Builds() {
   </>;
 }
 
-/** The Library opens on its shelves (18.10.2026); the engine's own build registry is the second view. */
+/** The Library opens on its SOP packages (Head of QC, 19.10.2026); the shelves (18.10.2026) and the engine's own build
+ *  registry are the other two views. */
 export function Library() {
-  const [view, setView] = useState<'shelves' | 'builds'>('shelves');
+  const [view, setView] = useState<'packages' | 'shelves' | 'builds'>('packages');
   return <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-    <div style={{ padding: '10px 20px 0' }}><Seg items={[['shelves', 'Shelves'], ['builds', 'Engine builds']]} value={view} onPick={setView} size={12} pad="4px 12px" /></div>
-    <div style={{ flex: 1, minHeight: 0, display: 'flex' }}>{view === 'shelves' ? <Shelves /> : <Builds />}</div>
+    <div style={{ padding: '10px 20px 0' }}><Seg items={[['packages', 'Packages'], ['shelves', 'Shelves'], ['builds', 'Engine builds']]} value={view} onPick={setView} size={12} pad="4px 12px" /></div>
+    <div style={{ flex: 1, minHeight: 0, display: 'flex' }}>{view === 'packages' ? <Packages /> : view === 'shelves' ? <Shelves /> : <Builds />}</div>
   </div>;
 }

@@ -16,6 +16,7 @@
 # development tool outside the QMS (Head of QC, 18.10.2026): QALI 001 is the master, and where they differ QALI 001 wins.
 # The next free number of a family is one above the highest number the register, the document registry
 # or any open job holds; numbers are never reused (QCSOP020 was withdrawn, not freed) and gaps are not filled.
+import functools
 import re
 from datetime import date
 from pathlib import Path
@@ -30,18 +31,52 @@ _CODE = re.compile(r"^(?P<fam>[A-Z]{2,8}?|[A-Z]{2}COA)(?P<num>\d{1,3}|0?XXX|0XX)
 XXX = "XXX"
 
 
-def normalize(raw: str) -> str | None:
-    """The house form of a typed code, or None when it is not a document code."""
+def _match(raw: str) -> re.Match | None:
     s = (raw or "").translate(_LOOKALIKE).upper()
-    s = re.sub(r"[\s_\-./]", "", s)
-    m = _CODE.match(s)
+    return _CODE.match(re.sub(r"[\s_\-./]", "", s))
+
+
+@functools.lru_cache(maxsize=1)
+def _register_families() -> frozenset[str]:
+    """The family letters of every code a register file holds, read without normalize (which asks this)."""
+    fams = set()
+    for f in sorted(REGISTER_DIR.glob("*.yaml")):
+        for r in (yaml.safe_load(f.read_text(encoding="utf-8")) or {}).get("documents", []):
+            m = _match(str(r.get("code", "")))
+            if m:
+                fams.add(m["fam"])
+    return frozenset(fams)
+
+
+def normalize(raw: str) -> str | None:
+    """The house form of a typed code, or None when it is not a document code.
+
+    A family is four letters or more, or one the register knows (QCT, QAT, SSP …); the number is 1 or more, or XXX.
+    "QC01", "AB001" and "WHSOP00" passed as codes until the review of 19.10.2026."""
+    m = _match(raw)
     if not m:
+        return None
+    if len(m["fam"]) < 4 and m["fam"] not in _register_families():
+        return None
+    if "X" not in m["num"] and int(m["num"]) < 1:
+        return None
+    if m["annex"] and int(m["annex"]) < 1:
         return None
     fam = m["fam"].replace("COA", "CoA") if m["fam"].endswith("COA") else m["fam"]
     out = fam + (XXX if "X" in m["num"] else f"{int(m['num']):03d}")
     if m["annex"]:
         out += f"A{int(m['annex']):02d}"
     return out
+
+
+def version_key(v) -> tuple:
+    """Order document versions as numbers per dot: "1.10" after "1.9", "01" as 1; a part that is not a number sorts
+    after every number; an empty version first. One rule for house.py and library.py (review 19.10.2026: both compared
+    text, so "1.9" was the newest of "1.9" and "1.10")."""
+    s = str(v if v is not None else "").strip()
+    if not s:
+        return ()
+    return tuple((0, int(p)) if p.strip().isdigit() else (1, p.strip()) for p in s.split("."))
 
 
 def parts(code: str) -> tuple[str, int | None, int | None]:
