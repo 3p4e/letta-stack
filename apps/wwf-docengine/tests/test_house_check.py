@@ -61,14 +61,24 @@ async def test_the_pipeline_step_checks_the_named_documents(monkeypatch):
     assert out["verdicts"] == {} and "no approved" in out["note"] and len(seen) == 1
 
 
-def test_reconcile_names_the_missing_and_the_unlisted():
+def test_reconcile_names_the_missing_and_where_the_register_lags():
+    """Everything in DB3_PP_CURRENT is approved and in use (Head of QC, 19.10.2026): an approved copy is in use whatever
+    the register says — even 'superseded' — and the register is the one to correct."""
     register = [{"code": "QCSOP011", "title_en": "Sampling", "status": "effective"},
-                {"code": "QCSOP001", "title_en": "QC", "status": "effective"}]
+                {"code": "QCSOP001", "title_en": "QC", "status": "effective"},
+                {"code": "QCT011", "title_en": "Specification", "status": "superseded"}]
     refs = [{"kind": "approved", "code": "QCSOP001", "version": "01", "title_en": "QC"},
-            {"kind": "approved", "code": "QAT010", "version": "01", "title_en": "Risk analysis"}]
-    rec = library.reconcile(library.shelve(register, refs, [], {}))
+            {"kind": "approved", "code": "QAT010", "version": "01", "title_en": "Risk analysis"},
+            {"kind": "approved", "code": "QCT011", "version": "01", "title_en": "Specification"}]
+    lib = library.shelve(register, refs, [], {})
+    rec = library.reconcile(lib)
     assert [e["code"] for e in rec["missing"]] == ["QCSOP011"]
-    assert [(e["code"], e["status"]) for e in rec["unlisted"]] == [("QAT010", "not in the register")]
+    assert [(e["code"], e["status"]) for e in rec["register_behind"]] == [("QAT010", "not in the register"),
+                                                                          ("QCT011", "superseded")]
+    assert {e["code"] for e in lib["shelves"]["approved"]} == {"QCSOP001", "QCSOP011", "QAT010", "QCT011"}
+    assert not lib["shelves"]["retired"]
+    qct011 = next(e for e in lib["shelves"]["approved"] if e["code"] == "QCT011")
+    assert any("DB3_PP_CURRENT" in n and "superseded" in n for n in qct011["notes"])
 
 
 def test_verdicts_on_one_line_are_all_read():

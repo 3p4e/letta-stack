@@ -36,9 +36,9 @@ export function Packages() {
     {extra}</div>;
   return <>
     <div style={{ flex: 1, minWidth: 0, padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 14, overflow: 'auto' }}>
-      {lib.reconcile && (lib.reconcile.missing.length > 0 || lib.reconcile.unlisted.length > 0) && <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      {lib.reconcile && (lib.reconcile.missing.length > 0 || lib.reconcile.register_behind.length > 0) && <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         {lib.reconcile.missing.length > 0 && <Banner kind="warn"><b>In use in the register, no approved copy in the library · {lib.reconcile.missing.length}</b> — nothing can be checked against them until their Word files are loaded: {lib.reconcile.missing.map(e => `${e.code}${e.title_en ? ' ' + e.title_en : ''}`).join(' · ')}</Banner>}
-        {lib.reconcile.unlisted.length > 0 && <Banner kind="info"><b>Approved copy held, not in use in the register · {lib.reconcile.unlisted.length}</b> — each needs a ruling (in use, or not): {lib.reconcile.unlisted.map(e => `${e.code} v${e.version}`).join(' · ')}</Banner>}
+        {lib.reconcile.register_behind.length > 0 && <Banner kind="info"><b>In use (DB3_PP_CURRENT), the register says otherwise · {lib.reconcile.register_behind.length}</b> — the register is to be brought in line: {lib.reconcile.register_behind.map(e => `${e.code} v${e.version} (${e.status})`).join(' · ')}</Banner>}
       </div>}
       <input value={q} onChange={e => setQ(e.target.value)} placeholder="⌕ code or title — SOPs, their documents and the loose ones" style={{ background: T.surface, border: `1px solid ${T.control}`, borderRadius: 6, padding: '7px 12px', fontFamily: MONO, fontSize: 12, color: '#fff', outline: 'none' }} />
       {view.map(group => <div key={group.g} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

@@ -429,4 +429,4 @@ the QA channels.
   documents, the codes the draft names, approved documents with a similar title (`house.check_set`, ≤ 10) — and gives a
   verdict per document. A CONFLICT, or a document left without a verdict, parks the job for review, and it is registered
   only with the reviewer's written reason (`review.house_conflicts`). The Library reports, and the engine logs at start,
-  the register's in-use codes it holds no approved copy of and the copies the register does not list as in use.
+  the register's in-use codes it holds no approved copy of and the codes where the register lags DB3. **Every document in DB3_PP_CURRENT is approved and in use** (Head of QC, 19.10.2026): an approved copy is in use whatever the register status says, and the register is the one to correct.

@@ -31,7 +31,7 @@ def test_every_code_lands_on_one_shelf():
     assert where == {"QCSOP022": "approved", "QCSOP011": "revision", "QCSOP023": "revision", "QCSOP019": "approved",
                      "QCSOP020": "retired", "QCT024": "numbers", "QCSOP013": "drafts", "WHSOP003": "drafts"}
     e19 = next(e for e in out["shelves"]["approved"] if e["code"] == "QCSOP019")
-    assert "register says awaiting_signature" in e19["notes"][0]          # a disagreement is shown, not decided
+    assert "register says awaiting_signature" in e19["notes"][0]          # in use per DB3; the register lag is shown
     assert sum(out["counts"].values()) == 8
 
 

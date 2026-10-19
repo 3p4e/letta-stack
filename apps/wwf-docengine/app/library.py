@@ -7,8 +7,10 @@
 #   engine builds   docengine.documents — what the engine itself built and registered
 #   open jobs       workflow jobs not failed — drafts the engine is writing or holding for review
 #
+# Every document in DB3_PP_CURRENT is approved and in use (Head of QC, 19.10.2026), so an approved copy puts the
+# code in use whatever the register says; the register's status is then a note that the register lags DB3.
 # Shelves, first match wins:
-#   retired         superseded or withdrawn
+#   retired         superseded or withdrawn (and no approved copy held)
 #   revision        in use, and a new version is being written (QALI "под ревизија", or a draft exists for it)
 #   approved        approved and in use
 #   drafts          being written: a work-in-progress document, an engine draft, or a register draft
@@ -55,11 +57,11 @@ def shelve(register: list[dict], references: list[dict], builds: list[dict], job
 
     for e in entries.values():
         st, has_draft = e["status"], bool(e["wip"] or e["jobs"])
-        if e["approved"] and e["status"] and e["status"] not in _IN_USE:
-            e["notes"].append(f"an approved copy is held, but the register says {e['status']}")
+        if e["approved"] and e["status"] not in _IN_USE:
+            e["notes"].append(f"in use (DB3_PP_CURRENT); the register says {e['status'] or 'nothing'}")
         if e["approved"] and e["version"] and e["approved"]["version"] and e["approved"]["version"] != e["version"]:
             e["notes"].append(f"approved copy is v{e['approved']['version']}, the register says v{e['version']}")
-        if st in ("superseded", "withdrawn"):
+        if st in ("superseded", "withdrawn") and not e["approved"]:
             e["shelf"] = "retired"
         elif st == "effective_revising" or ((st == "effective" or e["approved"]) and has_draft):
             e["shelf"] = "revision"
@@ -113,9 +115,10 @@ def packages(entries: dict[str, dict], listed: dict[str, list[str]]) -> dict:
 
 def reconcile(lib: dict) -> dict:
     """The register against the library (Head of QC, 19.10.2026): an in-use code the engine holds no approved copy of
-    cannot be checked against; an approved copy the register does not list as in use needs a ruling."""
+    cannot be checked against; an approved copy is in use (DB3_PP_CURRENT), and where the register says otherwise the
+    register lags and is to be brought in line."""
     every = [e for es in lib["shelves"].values() for e in es]
     brief = lambda e: {"code": e["code"], "title_en": e["title_en"], "title_mk": e["title_mk"],  # noqa: E731
                        "version": (e["approved"] or {}).get("version") or e["version"], "status": e["status"] or "not in the register"}
     return {"missing": [brief(e) for e in every if e["status"] in _IN_USE and not e["approved"]],
-            "unlisted": [brief(e) for e in every if e["approved"] and e["status"] not in _IN_USE]}
+            "register_behind": [brief(e) for e in every if e["approved"] and e["status"] not in _IN_USE]}
