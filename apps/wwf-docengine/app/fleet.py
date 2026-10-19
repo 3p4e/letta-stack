@@ -96,10 +96,20 @@ async def ensure_fleet(client: LettaClient | None = None) -> dict:
     model, embedding = _resolve_model(spec, list(existing.values()))
 
     out: dict[str, str] = {}
+    glossary_text = glossary.memory_text()
     for ag in spec["agents"]:
         name = ag["name"]
         if name in existing:
             out[name] = existing[name]["id"]
+            # The glossary is seeded at creation; a ruling that changes it (мострирање, 19.10.2026) reached no
+            # existing agent until this refresh — the clones copy their memory from these base agents.
+            try:
+                held = (await client.get_block(existing[name]["id"], "gf_glossary_mk")).get("value", "")
+                if held != glossary_text:
+                    await client.update_block(existing[name]["id"], "gf_glossary_mk", glossary_text)
+                    log.info("refreshed gf_glossary_mk on %s", name)
+            except Exception as e:  # noqa: BLE001 — the linter still holds the glossary; the fleet must come up
+                log.warning("could not refresh the glossary on %s: %s", name, e)
             continue
         body = {
             "name": name,

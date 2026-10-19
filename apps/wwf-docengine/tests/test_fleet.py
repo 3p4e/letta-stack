@@ -126,3 +126,42 @@ def test_letta_transport_errors_are_letta_errors(monkeypatch):
 
     with pytest.raises(LettaError, match="ReadTimeout"):
         asyncio.run(C(base="http://x", key="k").list_sources())
+
+
+def test_ensure_fleet_refreshes_a_changed_glossary_on_existing_agents():
+    """Head of QC, 19.10.2026: the glossary was seeded at creation only, so a new ruling (мострирање) reached no
+    existing agent, and the clones copy their memory from them."""
+    import asyncio
+    from app import fleet, glossary
+
+    spec = fleet.load_fleet()
+    existing = [{"id": f"id-{a['name']}", "name": a["name"], "created_at": "2026-01-01T00:00:00Z"} for a in spec["agents"]]
+    fresh = glossary.memory_text()
+
+    class Client:
+        updated: list = []
+        held = {existing[0]["id"]: fresh}            # one agent already current, the rest stale
+
+        async def list_agents(self):
+            return existing
+
+        async def list_sources(self):
+            return []
+
+        async def delete_agent(self, aid):
+            raise AssertionError("nothing to sweep")
+
+        async def create_agent(self, spec):  # pragma: no cover
+            raise AssertionError("must not create")
+
+        async def get_block(self, aid, label):
+            return {"label": label, "value": self.held.get(aid, "old glossary")}
+
+        async def update_block(self, aid, label, value):
+            self.updated.append((aid, label))
+            self.held[aid] = value
+
+    c = Client()
+    asyncio.run(fleet.ensure_fleet(c))
+    assert len(c.updated) == len(existing) - 1 and all(lbl == "gf_glossary_mk" for _, lbl in c.updated)
+    assert all(v == fresh for v in c.held.values())
