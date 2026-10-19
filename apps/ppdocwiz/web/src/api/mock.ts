@@ -142,7 +142,7 @@ export function mockApi(onChange?: () => void): MockApi {
     async authLog() { await wait(30); return [{ at: new Date().toISOString(), event: 'signed_in', user: 'darko.s', client: '10.0.0.1' }]; },
     async passwordState() { await wait(30); return { enabled: true, must_change: false }; },
     async changePassword(current, next) { await wait(80); if (!current) throw new ApiError(401, 'the current password is wrong'); if (next.length < 12) throw new ApiError(422, 'at least 12 characters'); },
-    async health() { await wait(60); return { ok: true, letta: !faults.chatDisabled, pdf: !faults.libreoffice }; },
+    async health() { await wait(60); return { ok: true, letta: !faults.chatDisabled, pdf: !faults.libreoffice, auth: true, login: 'accounts' as const }; },
     async doctypes() { gate(); return [
       { key: 'ANNEX', mk: 'Анекс', en: 'Annex', desc: 'Inline full-page bilingual annex (form / log / checklist / register).', default_orient: 'portrait' },
       { key: 'SOP', mk: 'СОП', en: 'SOP', desc: 'Two-column MK|EN Standard Operating Procedure (9-section).', default_orient: 'portrait' },

@@ -67,7 +67,7 @@ export function Shell({ children }: { children: ReactNode }) {
   return (
     <div data-pp-root="1" style={{ width: vp.w / zoom, height: vp.h / zoom, zoom, overflow: 'hidden', position: 'relative', display: 'flex', flexDirection: 'column', background: T.bg, color: T.text, fontFamily: UI, fontSize: 14 }}>
       <div style={{ height: 48, flex: 'none', display: 'flex', alignItems: 'center', gap: 14, padding: '0 16px', borderBottom: `1px solid ${T.hair}` }}>
-        <span style={{ fontFamily: DISPLAY, fontWeight: 700, letterSpacing: '.06em', color: '#fff', fontSize: 13 }}>PP/SUITE</span>
+        <span style={{ fontFamily: DISPLAY, fontWeight: 700, letterSpacing: '.04em', color: '#fff', fontSize: 13, whiteSpace: 'nowrap' }}>PP · Document Engine</span>
         {s.tweaks.createPlacement === 'topbar' && createBtn(false)}
         <span style={{ fontFamily: MONO, fontSize: 12, color: T.muted, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{crumb}</span>
         <span style={{ marginLeft: 12, background: T.surface, border: `1px solid ${T.control}`, borderRadius: 6, padding: '6px 12px', width: 300, flex: 'none', color: T.muted, fontFamily: MONO, fontSize: 12, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>⌘K  build · verify · open … · ask agent</span>
@@ -85,8 +85,8 @@ export function Shell({ children }: { children: ReactNode }) {
             <div style={{ fontFamily: MONO, fontSize: 10.5, letterSpacing: '.1em', color: T.faint, padding: g === 'c' ? '4px 10px 6px' : '16px 10px 6px' }}>{tr(s.lang, g === 'c' ? 'CREATE' : 'CONTROL')}</div>
             {NAV.filter(n => n[2] === g && (n[0] !== 'users' || s.me?.role === 'admin')).map(([k, label]) => <div key={k} onClick={() => s.go(k)} className="pp-nav" style={{ padding: '8px 10px', borderRadius: 6, cursor: 'pointer', background: s.screen === k ? T.selected : 'transparent', color: s.screen === k ? '#fff' : T.secondary, fontWeight: s.screen === k ? 700 : 400 }}>{tr(s.lang, label)}</div>)}
           </div>)}
-          <div style={{ marginTop: 'auto', padding: 10, fontSize: 12, color: T.faint, lineHeight: 1.5 }}>{s.api.mode === 'mock' ? 'Engine 1.6.2' : engine ? `Engine · canon ${engine}` : 'Engine · not reachable'}<br />{s.me?.accounts ? <>signed in as <b style={{ color: T.secondary }}>{s.me.user}</b>{s.me.role === 'admin' ? ' · admin' : ''}</> : s.api.mode === 'mock' ? 'darko.s · QA' : open ? 'open access · no sign-in' : 'session · cookie'}
-            {pwLogin && <div onClick={() => setChanging(true)} style={{ cursor: 'pointer', color: T.muted, marginTop: 4 }}>Change password</div>}
+          <div style={{ marginTop: 'auto', padding: 10, fontSize: 12, color: T.faint, lineHeight: 1.5 }}>{s.api.mode === 'mock' ? 'Engine 1.6.2' : engine ? `Engine · canon ${engine}` : 'Engine · not reachable'}<br />{s.me?.accounts ? <>{tr(s.lang, 'signed in as')} <b style={{ color: T.secondary }}>{s.me.user}</b>{s.me.role === 'admin' ? ' · admin' : ''}</> : s.api.mode === 'mock' ? 'darko.s · QA' : open ? 'open access · no sign-in' : 'session · cookie'}
+            {pwLogin && <div onClick={() => setChanging(true)} style={{ cursor: 'pointer', color: T.muted, marginTop: 4 }}>{tr(s.lang, 'Change password')}</div>}
             {changing && <ChangePassword onDone={() => setChanging(false)} />}
             {!open && <div onClick={() => s.api.closeSession().then(() => s.set({ authed: false, me: null })).catch(e => s.flash(String(e.message)))} style={{ cursor: 'pointer', color: T.muted, marginTop: 4 }}>{tr(s.lang, 'Sign out')}</div>}</div>
         </nav>
@@ -106,71 +106,99 @@ export function Shell({ children }: { children: ReactNode }) {
     </div>);
 }
 
-/** COVERAGE #1 — POST /api/session exchanges the key for an HttpOnly cookie; 401 bad key, 503 not configured. */
-export function SignIn({ unconfigured }: { unconfigured?: boolean }) {
-  const { api, set } = useApp();
-  const [key, setKey] = useState(''), [err, setErr] = useState(''), [busy, setBusy] = useState(false);
-  // The server says what it asks for: the shared password (Head of QC, 19.10.2026) or the deployment's API key.
-  const [pw, setPw] = useState(true), [named, setNamed] = useState(false), [user, setUser] = useState('');
-  useEffect(() => { api.health().then(h => { setPw(h.login !== 'key'); setNamed(h.login === 'accounts'); }).catch(() => {}); }, [api]);
-  const submit = async () => {
-    setBusy(true); setErr('');
-    try { await api.openSession(key, named ? user.trim() : ''); set({ authed: true }); }
-    catch (e) {
-      const st = (e as ApiError).status;
-      setErr(st === 401 ? (named ? 'Wrong username or password.' : pw ? 'Wrong password.' : '401 · bad key. The key is the PPDOCWIZ_API_KEY of this deployment.')
-        : st === 429 ? 'Too many failed sign-ins. Wait 15 minutes and try again.'
-        : st === 503 ? '503 · PP Doc Wiz is not configured: PPDOCWIZ_API_KEY is unset on the server, so every route refuses.' : String((e as Error).message));
-    }
-    finally { setBusy(false); }
-  };
+/** The Document Engine's own sign-in (19.10.2026): the house logo and name, EN | MK, a phone-width card. POST
+ *  /api/session exchanges the username and password (or, before named accounts, the password or the key) for an
+ *  HttpOnly session cookie; nothing secret is kept in the browser. */
+function AuthCard({ children }: { children: ReactNode }) {
+  const { lang, setLang } = useApp();
   return (
-    <div style={{ height: '100vh', background: T.bg, color: T.text, fontFamily: UI, display: 'grid', placeItems: 'center' }}>
-      <div style={{ width: 420, background: T.pane, border: `1px solid ${T.control}`, borderRadius: 12, boxShadow: '0 30px 70px rgba(0,0,0,.55)', padding: '26px 28px', display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <span style={{ fontFamily: DISPLAY, fontWeight: 700, letterSpacing: '.06em', color: '#fff', fontSize: 15 }}>PP/SUITE</span>
-        <div style={{ color: T.secondary, fontSize: 13, lineHeight: 1.5 }}>{named ? 'Sign in with your username and password. You stay signed in for 8 hours; everything you change is recorded under your name.' : pw ? 'Enter the password. You stay signed in for 8 hours; the password is never stored in the browser.' : "Enter this deployment's API key. It is exchanged once for an HttpOnly session cookie (8 h); the key itself is never stored in the browser."}</div>
-        {unconfigured && <div style={{ background: T.errSurface, border: `1px solid ${T.errBorder}`, borderRadius: 6, padding: '8px 12px', color: T.errText, fontSize: 12.5 }}>503 · server not configured. Set PPDOCWIZ_API_KEY in /opt/stacks/ppdocwiz/.env and restart; until then every gated route refuses.</div>}
-        {named && <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}><span style={{ fontFamily: MONO, fontSize: 11.5, color: T.muted }}>Username</span>
-          <input autoFocus autoComplete="username" value={user} onChange={e => setUser(e.target.value)} onKeyDown={e => e.key === 'Enter' && submit()} style={{ background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 6, padding: '9px 11px', color: '#fff', outline: 'none', fontFamily: MONO }} /></label>}
-        <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}><span style={{ fontFamily: MONO, fontSize: 11.5, color: T.muted }}>{pw ? 'Password' : 'PPDOCWIZ_API_KEY'}</span>
-          <input type="password" autoComplete="current-password" autoFocus={!named} value={key} onChange={e => setKey(e.target.value)} onKeyDown={e => e.key === 'Enter' && submit()} style={{ background: T.deeper, border: `1px solid ${err ? C.bad : T.control}`, borderRadius: 6, padding: '9px 11px', color: '#fff', outline: 'none', fontFamily: MONO }} /></label>
-        {err && <div style={{ fontFamily: MONO, fontSize: 12, color: C.bad, lineHeight: 1.45 }}>{err}</div>}
-        <button onClick={submit} disabled={busy || !key || (named && !user.trim())} style={{ background: key ? T.navy : T.control, color: '#fff', border: 0, borderRadius: 6, padding: 10, font: 'inherit', fontWeight: 700, cursor: 'pointer' }}>{busy ? 'Signing in…' : pw ? 'Sign in ▸' : 'POST /api/session ▸'}</button>
-        <div style={{ fontSize: 11.5, color: T.faint, textAlign: 'center' }}>{api.mode === 'mock' ? 'mock mode: any key works except "bad"' : 'loopback / Traefik only · SameSite=Strict cookie'}</div>
+    <div style={{ minHeight: '100vh', background: T.bg, color: T.text, fontFamily: UI, display: 'grid', placeItems: 'center', padding: 16, boxSizing: 'border-box' }}>
+      <div style={{ width: '100%', maxWidth: 420, boxSizing: 'border-box', background: T.pane, border: `1px solid ${T.control}`, borderRadius: 12, boxShadow: '0 30px 70px rgba(0,0,0,.55)', padding: '24px 26px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', rowGap: 10, minWidth: 0 }}>
+          <span style={{ background: '#fff', borderRadius: 8, padding: '6px 8px', display: 'flex', flex: 'none' }}><img src="/assets/brand/pp_logo_header.jpg" alt="Purely Plant" style={{ height: 'clamp(26px, 7vw, 34px)', display: 'block' }} /></span>
+          <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+            <span style={{ fontFamily: DISPLAY, fontWeight: 700, letterSpacing: '.04em', color: '#fff', fontSize: 'clamp(14px, 4.2vw, 17px)', whiteSpace: 'nowrap' }}>Document Engine</span>
+            <span style={{ fontSize: 11.5, color: T.muted }}>Purely Plant · Пјурли Плант</span>
+          </div>
+          <span style={{ marginLeft: 'auto' }}><Seg items={[['en', 'EN'], ['mk', 'MK']]} value={lang} onPick={setLang} size={11} pad="2px 8px" /></span>
+        </div>
+        <div style={{ fontSize: 12, color: T.faint, lineHeight: 1.45 }}>{tr(lang, 'tagline')}</div>
+        {children}
       </div>
     </div>);
 }
 
+const authInput = (bad = false) => ({ background: T.deeper, border: `1px solid ${bad ? C.bad : T.control}`, borderRadius: 6, padding: '10px 11px', color: '#fff', outline: 'none', fontFamily: MONO, fontSize: 14, width: '100%', boxSizing: 'border-box' as const });
+const authLabel = { fontSize: 12, color: T.muted };
 
-/** Set the shared password: the current one, then a new one of at least 12 characters (stored on the server as a hash).
- *  `forced` after the first sign-in with the initial password. */
-export function ChangePassword({ forced, onDone }: { forced?: boolean; onDone: () => void }) {
-  const { api, flash } = useApp();
-  const [cur, setCur] = useState(''), [next, setNext] = useState(''), [again, setAgain] = useState('');
-  const [err, setErr] = useState(''), [busy, setBusy] = useState(false);
-  const problem = next && next.length < 12 ? 'At least 12 characters.' : again && next !== again ? 'The two new passwords differ.' : '';
+export function SignIn({ unconfigured }: { unconfigured?: boolean }) {
+  const { api, set, lang } = useApp();
+  const [key, setKey] = useState(''), [err, setErr] = useState(''), [busy, setBusy] = useState(false);
+  // The server says what it asks for: named accounts, the shared password, or the deployment's API key.
+  const [pw, setPw] = useState(true), [named, setNamed] = useState(false), [user, setUser] = useState('');
+  useEffect(() => { api.health().then(h => { setPw(h.login !== 'key'); setNamed(h.login === 'accounts'); }).catch(() => {}); }, [api]);
+  const ready = !!key && (!named || !!user.trim());
   const submit = async () => {
-    if (problem || !cur || !next) return;
+    if (!ready || busy) return;
     setBusy(true); setErr('');
-    try { await api.changePassword(cur, next); flash('Password changed'); onDone(); }
-    catch (e) { const st = (e as ApiError).status; setErr(st === 401 ? 'The current password is wrong.' : st === 429 ? 'Too many failed attempts. Wait 15 minutes.' : String((e as Error).message)); }
+    try { await api.openSession(key, named ? user.trim() : ''); set({ authed: true }); }
+    catch (e) {
+      const st = (e as ApiError).status;
+      setErr(st === 401 ? tr(lang, named ? 'Wrong username or password.' : pw ? 'Wrong password.' : '401 · bad key. The key is the PPDOCWIZ_API_KEY of this deployment.')
+        : st === 429 ? tr(lang, 'Too many failed sign-ins. Wait 15 minutes and try again.')
+        : st === 503 ? '503 · the server is not configured (PPDOCWIZ_API_KEY is unset).' : String((e as Error).message));
+    }
     finally { setBusy(false); }
   };
-  const field = (label: string, v: string, on: (x: string) => void, auto = false) =>
-    <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}><span style={{ fontFamily: MONO, fontSize: 11.5, color: T.muted }}>{label}</span>
-      <input type="password" autoFocus={auto} value={v} onChange={e => on(e.target.value)} onKeyDown={e => e.key === 'Enter' && submit()}
-        style={{ background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 6, padding: '9px 11px', color: '#fff', outline: 'none', fontFamily: MONO }} /></label>;
   return (
-    <div style={{ position: forced ? 'static' : 'fixed', inset: 0, zIndex: 80, height: forced ? '100vh' : undefined, background: forced ? T.bg : 'rgba(0,0,0,.55)', color: T.text, fontFamily: UI, display: 'grid', placeItems: 'center' }}>
-      <div style={{ width: 420, background: T.pane, border: `1px solid ${T.control}`, borderRadius: 12, boxShadow: '0 30px 70px rgba(0,0,0,.55)', padding: '26px 28px', display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <span style={{ fontFamily: DISPLAY, fontWeight: 700, letterSpacing: '.06em', color: '#fff', fontSize: 15 }}>{forced ? 'Set your own password' : 'Change password'}</span>
-        {forced && <div style={{ color: T.secondary, fontSize: 13, lineHeight: 1.5 }}>You signed in with the initial password. Choose your own before continuing: at least 12 characters (a few unrelated words work well).</div>}
-        {field('Current password', cur, setCur, true)}
-        {field('New password', next, setNext)}
-        {field('New password again', again, setAgain)}
-        {(problem || err) && <div style={{ fontFamily: MONO, fontSize: 12, color: C.bad }}>{problem || err}</div>}
-        <button onClick={submit} disabled={busy || !!problem || !cur || !next || next !== again} style={{ background: T.navy, color: '#fff', border: 0, borderRadius: 6, padding: 10, font: 'inherit', fontWeight: 700, cursor: 'pointer' }}>{busy ? 'Saving…' : 'Set password ▸'}</button>
-        {!forced && <span onClick={onDone} style={{ cursor: 'pointer', color: T.muted, fontSize: 12, textAlign: 'center' }}>Cancel</span>}
-      </div>
+    <AuthCard>
+      <div style={{ color: T.secondary, fontSize: 13, lineHeight: 1.5 }}>{tr(lang, named ? 'signin_intro' : 'signin_intro_pw')}</div>
+      {unconfigured && <div style={{ background: T.errSurface, border: `1px solid ${T.errBorder}`, borderRadius: 6, padding: '8px 12px', color: T.errText, fontSize: 12.5 }}>503 · server not configured. Set PPDOCWIZ_API_KEY in /opt/stacks/ppdocwiz and restart.</div>}
+      <form onSubmit={e => { e.preventDefault(); submit(); }} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {named && <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}><span style={authLabel}>{tr(lang, 'Username')}</span>
+          <input name="username" autoFocus autoComplete="username" autoCapitalize="none" spellCheck={false} value={user} onChange={e => setUser(e.target.value)} style={authInput()} /></label>}
+        <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}><span style={authLabel}>{pw ? tr(lang, 'Password') : 'PPDOCWIZ_API_KEY'}</span>
+          <input name="password" type="password" autoComplete="current-password" autoFocus={!named} value={key} onChange={e => setKey(e.target.value)} style={authInput(!!err)} /></label>
+        {err && <div role="alert" style={{ fontSize: 12.5, color: C.bad, lineHeight: 1.45 }}>{err}</div>}
+        <button type="submit" disabled={busy || !ready} style={{ background: ready ? T.navy : T.control, color: '#fff', border: 0, borderRadius: 6, padding: 11, font: 'inherit', fontWeight: 700, cursor: ready ? 'pointer' : 'default' }}>{busy ? tr(lang, 'Signing in…') : tr(lang, 'Sign in ▸')}</button>
+      </form>
+      {api.mode === 'mock' && <div style={{ fontSize: 11.5, color: T.faint, textAlign: 'center' }}>demo mode: any password works except "bad"</div>}
+    </AuthCard>);
+}
+
+/** Set your password: the current one, then a new one of at least 12 characters (stored on the server as a hash).
+ *  `forced` after a sign-in with a temporary password. */
+export function ChangePassword({ forced, onDone }: { forced?: boolean; onDone: () => void }) {
+  const { api, flash, lang } = useApp();
+  const [cur, setCur] = useState(''), [next, setNext] = useState(''), [again, setAgain] = useState('');
+  const [err, setErr] = useState(''), [busy, setBusy] = useState(false);
+  const problem = next && next.length < 12 ? tr(lang, 'At least 12 characters.') : again && next !== again ? tr(lang, 'The two new passwords differ.') : '';
+  const ready = !problem && !!cur && !!next && next === again;
+  const submit = async () => {
+    if (!ready || busy) return;
+    setBusy(true); setErr('');
+    try { await api.changePassword(cur, next); flash(tr(lang, 'Password changed')); onDone(); }
+    catch (e) { const st = (e as ApiError).status; setErr(st === 401 ? tr(lang, 'The current password is wrong.') : st === 429 ? tr(lang, 'Too many failed attempts. Wait 15 minutes.') : String((e as Error).message)); }
+    finally { setBusy(false); }
+  };
+  const field = (label: string, v: string, on: (x: string) => void, auto: string, focus = false) =>
+    <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}><span style={authLabel}>{tr(lang, label)}</span>
+      <input type="password" autoComplete={auto} autoFocus={focus} value={v} onChange={e => on(e.target.value)} style={authInput()} /></label>;
+  const form = <>
+    {forced && <div style={{ color: T.secondary, fontSize: 13, lineHeight: 1.5 }}>{tr(lang, 'forced_change')}</div>}
+    {!forced && <span style={{ fontFamily: DISPLAY, fontWeight: 700, color: '#fff', fontSize: 15 }}>{tr(lang, 'Change password')}</span>}
+    <form onSubmit={e => { e.preventDefault(); submit(); }} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {field('Current password', cur, setCur, 'current-password', true)}
+      {field('New password', next, setNext, 'new-password')}
+      {field('New password again', again, setAgain, 'new-password')}
+      {(problem || err) && <div role="alert" style={{ fontSize: 12.5, color: C.bad }}>{problem || err}</div>}
+      <button type="submit" disabled={busy || !ready} style={{ background: ready ? T.navy : T.control, color: '#fff', border: 0, borderRadius: 6, padding: 11, font: 'inherit', fontWeight: 700, cursor: ready ? 'pointer' : 'default' }}>{busy ? tr(lang, 'Saving…') : tr(lang, 'Set password ▸')}</button>
+    </form>
+    {!forced && <span onClick={onDone} style={{ cursor: 'pointer', color: T.muted, fontSize: 12, textAlign: 'center' }}>{tr(lang, 'Cancel')}</span>}
+  </>;
+  if (forced) return <AuthCard><span style={{ fontWeight: 700, color: '#fff', fontSize: 15 }}>{tr(lang, 'Set your own password')}</span>{form}</AuthCard>;
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 80, background: 'rgba(0,0,0,.55)', display: 'grid', placeItems: 'center', padding: 16 }}>
+      <div style={{ width: '100%', maxWidth: 420, boxSizing: 'border-box', background: T.pane, border: `1px solid ${T.control}`, borderRadius: 12, boxShadow: '0 30px 70px rgba(0,0,0,.55)', padding: '24px 26px', display: 'flex', flexDirection: 'column', gap: 14, color: T.text, fontFamily: UI }}>{form}</div>
     </div>);
 }
