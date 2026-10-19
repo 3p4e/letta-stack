@@ -123,7 +123,8 @@ def build_rows(src=None, instances=None, codes=None):
         byno = collections.defaultdict(list)
         for r in c['rows']:
             n = int(str(r['no']).split('.')[0])
-            if n == 9 and r['no'] in ('9.6', '9.7'): continue   # upon-request organisms, not release determinations
+            # upon-request organisms: listed only where the lot's certificate reports them (Head of QC, 07.10.2026)
+            if n == 9 and r['no'] in ('9.6', '9.7') and str(r.get('res') or '').strip() in ('', '—'): continue
             byno[n].append(r)
         b = c['pp'] or c['cb']
         row = {'CoQ': code, 'Batch': b if (not c['cb'] or c['cb'] == b) else f"{b} ({c['cb']})", 'Series': series(c['t']), 'Issue': sd(c['issue']) or '—',

@@ -369,7 +369,8 @@ def potency_sheet(sh):
         r += 1
     note = ('Head of QC, 15.09.2026: the potency grades per strain as the potency specification prints them, '
             'corrected to Potency_specifications_25.pdf of 17.09.2026, with the grades set since on the KVM4 potency '
-            'builder (WED-II, 26.09.2026) and by the Head of QC (GRC-IV, 7.00 ± 0.70, 27.09.2026). The window is '
+            'builder (WED-II, 26.09.2026) and by the Head of QC (GRC-IV, 7.00 ± 0.70, 27.09.2026; GRC-III, which held '
+            'no result, removed under "no empty potency ranges", 07.10.2026). The window is '
             'nominal ± tolerance; a lot\'s grade is the window its Total Δ9-THC result falls in. Source: '
             'potency_grades_2026-09-15.csv. Rebuilt for v57 on %s.' % BUILT)
     sh.merge_cells(start_row=r + 1, start_column=1, end_row=r + 1, end_column=len(hdr))

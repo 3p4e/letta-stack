@@ -3,9 +3,12 @@
 """Package PP-QC-SP-002/26 as three separate document packages (Head of QC, 06.10.2026):
 
   1  PLAN                      the sampling plan and execution protocol
-  2  SAMPLING EXECUTION        per sampling day: QCT 024 receipt, QCSOP 011_A03, QCT 021, the
-                               QASOP_031 label sheets, QCT 024 return, QCT 024 samples -> QC lab
-  3  LOD ANALYSIS EXECUTION    one loss-on-drying execution record per group analysed together
+  2  SAMPLING EXECUTION        the one sampling day (one bag per batch, 06.10.2026): QCT 024 receipt,
+                               QCSOP 011_A03, QCT 021, the QASOP_031 label sheets, QCT 024 return,
+                               QCT 024 samples -> QC lab
+  3  LOD ANALYSIS EXECUTION    one loss-on-drying execution record, all 46 batches in one oven run, with its
+                               Attachment 1 (weighings on two balances), deviation DEV-01 and the repeat
+                               LOD-01R (all 46 on the AUW220D)
 
 Each package is a folder under out/ holding every DOCX and PDF, a merged packet PDF with a bookmark
 per document (label sheets excluded: they print on perforated stock), and a zip of the folder.
@@ -54,12 +57,16 @@ PACKAGES = [
         ("PP-QC-SP-002/26 — план за земање примероци и губиток при сушење | sampling plan and loss on drying",
          "PP-QC-SP-002_26_Sampling_Plan_LoD_T1_T2", True)]),
     ("2_SAMPLING_EXECUTION", "PP-QC-SP-002_26_PACKAGE-2_SAMPLING_EXECUTION",
-     [("0. Содржина на пакетот | Package index", "S0_Package_Index_Sampling_Execution", True)] + day_docs(1) + day_docs(2)),
+     [("0. Содржина на пакетот | Package index", "S0_Package_Index_Sampling_Execution", True)] + day_docs(1)),
     ("3_LOD_ANALYSIS_EXECUTION", "PP-QC-SP-002_26_PACKAGE-3_LOD_ANALYSIS_EXECUTION", [
-        ("PP-QC-SP-002/26-LOD-01 — губиток при сушење, примероци од Ден 1 | loss on drying, Day-1 samples",
-         "PP-QC-SP-002_26-LOD-01_LoD_Execution_Record_Day1_Samples", True),
-        ("PP-QC-SP-002/26-LOD-02 — губиток при сушење, примероци од Ден 2 | loss on drying, Day-2 samples",
-         "PP-QC-SP-002_26-LOD-02_LoD_Execution_Record_Day2_Samples", True)]),
+        ("PP-QC-SP-002/26-LOD-01 — губиток при сушење, сите 46 серии | loss on drying, all 46 batches",
+         "PP-QC-SP-002_26-LOD-01_LoD_Execution_Record_T1_T2", True),
+        ("PP-QC-SP-002/26-LOD-01 Прилог 1 — мерења на две ваги | Attachment 1 — weighings on two balances",
+         "PP-QC-SP-002_26-LOD-01_Attachment-1_Two_Balance_Weighings", True),
+        ("PP-QC-SP-002/26-DEV-01 — отстапување, мерења пред сушење на прецизна вага | deviation, pre-drying weighings on a precision balance",
+         "PP-QC-SP-002_26-DEV-01_Deviation_Precision_Balance_LOD-01", True),
+        ("PP-QC-SP-002/26-LOD-01R — повторување, сите 46 серии на AUW220D | repeat, all 46 batches on the AUW220D",
+         "PP-QC-SP-002_26-LOD-01R_LoD_Repeat_AUW220D_T1_T2", True)]),
 ]
 
 

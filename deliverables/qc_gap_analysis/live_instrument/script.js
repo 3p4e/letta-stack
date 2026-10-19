@@ -2118,15 +2118,15 @@ function tplDoc(id){
 function serializeDoc(doc){ return "<!DOCTYPE html>\n" + doc.documentElement.outerHTML; }
 var LAB_META = {
   "Purely": ['Purely Plant QC Department · In-house',
-             'Пјурли Плант — Сектор за КК · In-house · МК ДПП сертифицирана',
+             'Пјурли Плант — Сектор за КК · In-house',
              'Kojlija 1043, Petrovec-Skopje, MK'],
   "UKIM":   ['UKIM Faculty of Pharmacy — Center for Natural Products · ISO/IEC 17025:2017 · LT-083 (IARM)',
-             'УКИМ ФФ — Центар за Природни Производи', 'Mother Theresa 47, 1000 Skopje, MK'],
+             'УКИМ ФФ — Центар за Природни Производи', 'Mother Teresa 47, 1000 Skopje, MK'],
   "IPH":    ['JZU Institute for Public Health (IPH Skopje) · ISO/IEC 17025:2017 · LT-005 (IARM)',
-             'ЈЗУ Институт за јавно здравје (ИЈЗ Скопје)', '50ta Divizija 6, 1000 Skopje, MK'],
-  "Farmahem": ['Farmahem — Laboratorija za zivotna sredina · ISO/IEC 17025:2017',
-             'Фармахем — Лабораторија за животна средина', 'Skopje, MK'],
-  "State":  ['State Phytosanitary Laboratory', 'Државна фитосанитарна лабораторија', 'Skopje, MK'],
+             'ЈЗУ Институт за јавно здравје (ИЈЗ Скопје)', '50 Divizija 6, 1000 Skopje, MK'],
+  "Farmahem": ['Farmahem — Laboratory for the Environment · ISO/IEC 17025:2017 · LT-017 (IARM)',
+             'Фармахем — Лабораторија за животна средина', 'Shar Planina 20, Skopje, MK'],
+  "State":  ['State Phytosanitary Laboratory · ISO/IEC 17025:2017 · LT-036 (IARM)', 'Државна фитосанитарна лабораторија', 'Aleksandar Makedonski bb, 1000 Skopje, MK'],
   /* The desk files a certificate under the laboratory's SHORT code, and section
      03 looks the laboratory up by whatever string the citation carries. Without
      these keys CNP fell through to the bare abbreviation on 17 of the 22 drafts
@@ -2135,18 +2135,18 @@ var LAB_META = {
      identities, one of them looking unaccredited. The mapping is
      tracker_data.LABNAME's. */
   "CNP":    ['UKIM Faculty of Pharmacy — Center for Natural Products · ISO/IEC 17025:2017 · LT-083 (IARM)',
-             'УКИМ ФФ — Центар за Природни Производи', 'Mother Theresa 47, 1000 Skopje, MK'],
+             'УКИМ ФФ — Центар за Природни Производи', 'Mother Teresa 47, 1000 Skopje, MK'],
   "IJZ":    ['JZU Institute for Public Health (IPH Skopje) · ISO/IEC 17025:2017 · LT-005 (IARM)',
-             'ЈЗУ Институт за јавно здравје (ИЈЗ Скопје)', '50ta Divizija 6, 1000 Skopje, MK'],
-  "FHM":    ['Farmahem — Laboratorija za zivotna sredina · ISO/IEC 17025:2017',
-             'Фармахем — Лабораторија за животна средина', 'Skopje, MK'],
-  "NGP":    ['Purely Plant QC Department · In-house',
-             'Пјурли Плант — Сектор за КК · In-house · МК ДПП сертифицирана',
-             'Kojlija 1043, Petrovec-Skopje, MK'],
+             'ЈЗУ Институт за јавно здравје (ИЈЗ Скопје)', '50 Divizija 6, 1000 Skopje, MK'],
+  "FHM":    ['Farmahem — Laboratory for the Environment · ISO/IEC 17025:2017 · LT-017 (IARM)',
+             'Фармахем — Лабораторија за животна средина', 'Shar Planina 20, Skopje, MK'],
+  "NGP":    ['New Garden Pharma — QC Laboratory',
+             'Њу Гарден Фарма — Лабораторија за КК',
+             'Analysis test report · cannabinoids by HPLC (DAB)'],
   "PP":     ['Purely Plant QC Department · In-house',
-             'Пјурли Плант — Сектор за КК · In-house · МК ДПП сертифицирана',
+             'Пјурли Плант — Сектор за КК · In-house',
              'Kojlija 1043, Petrovec-Skopje, MK'],
-  "DFL":    ['State Phytosanitary Laboratory', 'Државна фитосанитарна лабораторија', 'Skopje, MK']
+  "DFL":    ['State Phytosanitary Laboratory · ISO/IEC 17025:2017 · LT-036 (IARM)', 'Државна фитосанитарна лабораторија', 'Aleksandar Makedonski bb, 1000 Skopje, MK']
 };
 function labMeta(lab){
   for (var k in LAB_META) if (lab.indexOf(k) === 0) return LAB_META[k];

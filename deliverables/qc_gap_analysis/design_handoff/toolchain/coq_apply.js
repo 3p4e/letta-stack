@@ -7,6 +7,15 @@ function resultsTbody(rec) {
   let i = 0;
   let tb = skeleton.replace(/@CELL@/g, () => cells[i++]);
   if (i !== 21) throw new Error('expected 21 cells, filled ' + i);
+  // 9.6 / 9.7 follow E. coli only where the lot's certificate reports them (coq_build.js PANEL_EXTRA)
+  const extra = CoQ.PANEL_EXTRA.filter(d => CoQ.hasExtra(rec, d))
+    .map(d => CoQ.EXTRA_ROWS[d].replace('@CELL@', () => CoQ.cell(d, rec.res[d], rec.st[d])));
+  if (extra.length) {
+    const at = tb.indexOf('<span class="p-sub">Escherichia coli');
+    const end = at < 0 ? -1 : tb.indexOf('</tr>', at);
+    if (end < 0) throw new Error('E. coli row anchor not found');
+    tb = tb.slice(0, end + 5) + '\n        ' + extra.join('\n        ') + tb.slice(end + 5);
+  }
   const hasWin = rec.window && rec.window !== '—';
   const withWin = '<td><span class="p-spec">Per Section 01 <i class="bisep">|</i> <span class="mk" style="display:inline">Согласно Погл. 01</span></span></td>';
   const noWin = '<td><span class="p-spec" style="' + CoQ.RED + '">[ — ]</span></td>';

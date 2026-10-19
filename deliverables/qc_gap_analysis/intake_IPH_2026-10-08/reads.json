@@ -1,0 +1,3509 @@
+{
+ "read1:IPH_1065-2026_P060162": {
+  "certificate_number": "1065/2026 (header \"Број: 1065/2026\" on every page; also \"Лаб. број: 1065/2026\" on page 1)",
+  "issue_date": "11.03.2026 (header \"Датум: 11.03.2026\" on every page; page 1 also \"Датум на печатење: 11.03.2026\")",
+  "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија, Ул. „50 Дивизија\" бр.6 1000 Скопје, Телефон: (02) 3125-044, 3226-510; Факс: 3223-354, www.iph.mk. Document title: ИЗВЕШТАЈ ОД ТЕСТИРАЊЕ; report heading on page 1: ЗДРАВСТВЕНА БЕЗБЕДНОСТ НА ПРИМЕРОК",
+  "accreditation": "Certificate ЛТ-005, MKS EN ISO/IEC 17025 : 2018. Printed text: \"ЈЗУ Институтот за јавно здравје на Република Северна Македонија - Скопје е акредитиран од ИАРМ со сертификат бр. ЛТ-005, според барањата од стандардот MKS EN ISO/IEC 17025 : 2018, за хемиско, микробиолошко и радиолошко тестирање на храна, вода, предмети за општа употреба, фармацевтски производи, аеросоли, почва и градежни материјали.\" Accreditation mark top right: \"Тестирање МКС EN ISO/IEC 17025 ЛТ – 005 Testing\"",
+  "pages_total": "4",
+  "sample_name_as_printed": "SLEEPY JOY-сув цвет од медицински канабис",
+  "sample_batch_or_lot_as_printed": "Сериски број: SJ102501 (the only batch/lot/serial identifier printed for the sample; no P-lot number such as P060162 appears anywhere on the 4 pages)",
+  "client_as_printed": "До ПЈУРЕЛИ ПЛАНТ ДООЕЛ, УЛ.9 БР.9 С.КОЈЛИЈА-СКОПЈЕ, СКОПЈЕ. Примерокот го доставува: ПЈУРЕЛИ ПЛАНТ ДООЕЛ СКОПЈЕ. Странка за наплата: ПЈУРЕЛИ ПЛАНТ ДООЕЛ",
+  "sample_received_date": "23.02.2026 (Датум на прием)",
+  "sampling_info": "Датум на земање: 23.02.2026; Примерокот е земен од: ПЈУРЕЛИ ПЛАНТ ДООЕЛ; Со писмо: 054/2026; Тип на пакување: Рефус; Количина: 27,5 г; Датум на завршување на тестирањата: 11.03.2026. Left blank: Производител, Произведен на, Употреблив до, Употреба описно, Увозник, Земја на потекло, Шпедитер, ЗАБЕЛЕШКИ, ИДЕНТИФИКАЦИЈА НА ПЛАН ЗА ЗЕМАЊЕ ПРИМЕРОЦИ, ОПИС НА КВАЛИТЕТ (page 2).",
+  "sections": [
+   {
+    "section": "ПЕСТИЦИДИ",
+    "page": 2,
+    "completion_date": "27.02.2026",
+    "conformity_statement_verbatim": "Изјава за сообразност : Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph.Eur 2.8.13",
+    "conformity_reference": "Ph.Eur 2.8.13",
+    "residue_count": 29
+   },
+   {
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "page": 3,
+    "completion_date": "11.03.2026",
+    "conformity_statement_verbatim": "Изјава за сообразност : Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph. Eur. 2. 4. 27",
+    "conformity_reference": "Ph. Eur. 2. 4. 27",
+    "residue_count": 4
+   },
+   {
+    "section": "МИКОТОКСИНИ",
+    "page": 3,
+    "completion_date": "26.02.2026",
+    "conformity_statement_verbatim": "Изјава за сообразност : Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph. Eur. 2.8.18",
+    "conformity_reference": "Ph. Eur. 2.8.18",
+    "residue_count": 1
+   }
+  ],
+  "results": [
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Lindan ( Gama HCH )",
+    "parameter_english": "Lindane (gamma-HCH)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,6",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Aldrin",
+    "parameter_english": "Aldrin",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Dieldrin и Aldrin (expressed as Dieldrin)",
+    "parameter_english": "Dieldrin and Aldrin (expressed as Dieldrin)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "HCB",
+    "parameter_english": "Hexachlorobenzene (HCB)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "4,4 ' DDE",
+    "parameter_english": "4,4'-DDE",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "4,4 ' DDD",
+    "parameter_english": "4,4'-DDD",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "4,4 ' DDT",
+    "parameter_english": "4,4'-DDT",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "vkupno DDT",
+    "parameter_english": "Total DDT",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "delta HCH",
+    "parameter_english": "delta-HCH",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "alpha HCH",
+    "parameter_english": "alpha-HCH",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "beta HCH",
+    "parameter_english": "beta-HCH",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endrin",
+    "parameter_english": "Endrin",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Chlorpyrifos-methyl",
+    "parameter_english": "Chlorpyrifos-methyl",
+    "result_as_printed": "н.д.",
+    "unit": "mg/Kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Chlorpyrifos",
+    "parameter_english": "Chlorpyrifos",
+    "result_as_printed": "н.д.",
+    "unit": "mg/Kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,2",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+    "parameter_english": "Heptachlor (sum of heptachlor + heptachlor epoxide)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endosulfan (alpha, beta and endosulfan sulfat)",
+    "parameter_english": "Endosulfan (alpha, beta and endosulfan sulfate)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Deltamethrin",
+    "parameter_english": "Deltamethrin",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,5",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Chlordane (sum of cis- and trans-chlordane)",
+    "parameter_english": "Chlordane (sum of cis- and trans-chlordane)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Metoxychlor",
+    "parameter_english": "Methoxychlor",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Heptachlor epoxide",
+    "parameter_english": "Heptachlor epoxide",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endrin aldehyde",
+    "parameter_english": "Endrin aldehyde",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "alpha Endosulfan",
+    "parameter_english": "alpha-Endosulfan",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "beta Endosulfan",
+    "parameter_english": "beta-Endosulfan",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endrin keton",
+    "parameter_english": "Endrin ketone",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "trans- Chlordane",
+    "parameter_english": "trans-Chlordane",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "cis-Chlordane",
+    "parameter_english": "cis-Chlordane",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Dieldrin",
+    "parameter_english": "Dieldrin",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Heptachlor",
+    "parameter_english": "Heptachlor",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endosulfan sulfate",
+    "parameter_english": "Endosulfan sulfate",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "parameter_as_printed": "олово",
+    "parameter_english": "Lead",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg(l)",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,5",
+    "method": "EN 14084 (14083)",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "parameter_as_printed": "жива",
+    "parameter_english": "Mercury",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg(l)",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,1",
+    "method": "EN 13806:2002",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "parameter_as_printed": "арсен",
+    "parameter_english": "Arsenic",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg(l)",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,2",
+    "method": "EN 14627",
+    "non_accredited_mark": true
+   },
+   {
+    "page": 3,
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "parameter_as_printed": "кадмиум",
+    "parameter_english": "Cadmium",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg(l)",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,3",
+    "method": "EN 14084 (14083)",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "МИКОТОКСИНИ",
+    "parameter_as_printed": "Вкупни афлатоксини (во сув цвет од канабис)",
+    "parameter_english": "Total aflatoxins (in dried cannabis flower)",
+    "result_as_printed": "2,6",
+    "unit": "µg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "4",
+    "method": "AflaTest Флуорометриски метод",
+    "non_accredited_mark": false
+   }
+  ],
+  "footnotes_verbatim": [
+   "Со * се означени резултати од тестирање добиени со неакредитирани методи (printed under each of the three result tables: p3 after pesticides, p3 after metals, p4 after mycotoxins)",
+   "Напомена: Резултатите во извештајот се однесуваат исклучиво на анализираниот примерок, како што е доставен во лабораторијата. Извештајот може да се репродуцира исклучиво во целина. Не смее да се употребува во рекламни цели. (footer, pages 1-4)",
+   "Забелешка: Кога лабораторијата дава изјава за сообразност, доколку корисникот нема свое барање за правило за донесување одлука, тогаш се применува Правилото за едноставно прифаќање (Simple acceptance decision rule), согласно документот РУ 7.8 01. (page 4)",
+   "Изјава за доверливост и непристрасност: ЈЗУ ИЈЗ се обврзува на непристрасност во процесот на лабораториското тестирање и доверливост во однос на податоците, освен во случаи децидно пропишани со закон. Во континуитет се спроведуваат мерки за спречување конфликт на интереси, како и спречување притисоци и влијанија од трети лица во однос на резултатите од тестирањето. Резултатите наведени во овој извештај се базираат на целосна објективност, согласно референтни стандарди и документи. (page 1)",
+   "ОБ 7.8.3 01 Верз. 1 (form code, footer pages 1-4)",
+   "Страна 1 од 4 / Страна 2 од 4 / Страна 3 од 4 / Страна 4 од 4",
+   "Signatures, pesticides (p3): Изработил: (blank); Раководител на Одделение за контаминенти и еко-токсикологија, м-р сци. Анита Најденкоска дипл.инг. спец (signed)",
+   "Signatures, metals (p3): Изработил: (blank); Раководител на Одделение за испитување на метали (signed, blue stamp: М-р Александра Ацинка Митков, спец. по медицинска нуклеарна физика; partly obscured)",
+   "Signatures, mycotoxins (p4): Изработил: м-р Бобан Георгиевски; Раководител на Одделение за контаминенти и еко-токсикологија, м-р сци. Анита Најденкоска дипл.инг. спец (signed, round blue institutional seal)"
+  ],
+  "illegible_or_uncertain": [
+   "p1 b1/b2: the first letter of 'Датум на прием' is covered by a punch hole; read as 'Датум на прием: 23.02.2026'. The date itself is clear.",
+   "p3 b2 (metals unit): printed 'mg/kg(l)'. The character in brackets could be a lowercase 'l' or a capital 'I'; read as 'l'.",
+   "p2 b4 / p3 b1: the cis-Chlordane method breaks across the page, 'МКС EN' on page 2 and '15662:2020' at the top of page 3; joined as 'МКС EN 15662:2020'.",
+   "p3 b4 / p4 b1: the total aflatoxins method breaks across the page, 'AflaTest' on page 3 and 'Флуорометриски метод' at the top of page 4; joined as 'AflaTest Флуорометриски метод'. The mycotoxin conformity statement (Ph. Eur. 2.8.18) and the signatures are also on page 4.",
+   "p3 b3: the name on the blue stamp under 'Раководител на Одделение за испитување на метали' is partly covered by the signature; read as 'М-р Александра Ацинка Митков' with the middle letters uncertain. It is not a result value.",
+   "p4 b2: in the Забелешка, the words 'барање за правило' are partly overprinted by the round seal; read as given.",
+   "p3 b2: the second '* ...неакредитирани методи' footnote on page 3 starts under a punch hole, so 'Со' is partly hidden; the text matches the other two instances.",
+   "No row marks a non-accredited method except арсен (p3, metals), where the * is clearly printed. No * is visible in the left margin of any pesticide row or of the mycotoxin row.",
+   "U and MinDK are blank on every result row.",
+   "The certificate prints no P-lot number. P060162 does not appear; the only sample identifier is 'Сериски број: SJ102501'.",
+   "In each case b3 and b4 of pages 1, 2, 3 and 4 show the same image, so no extra rows were missed or duplicated."
+  ]
+ },
+ "read2:IPH_1065-2026_P060162": {
+  "certificate_number": "1065/2026",
+  "issue_date": "11.03.2026",
+  "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија, Ул. „50 Дивизија\" бр.6 1000 Скопје; Телефон: (02) 3125-044, 3226-510; Факс: 3223-354; www.iph.mk. Document title: ИЗВЕШТАЈ ОД ТЕСТИРАЊЕ; report heading: ЗДРАВСТВЕНА БЕЗБЕДНОСТ НА ПРИМЕРОК",
+  "accreditation": "ЛТ-005, MKS EN ISO/IEC 17025 : 2018. As printed: \"ЈЗУ Институтот за јавно здравје на Република Северна Македонија - Скопје е акредитиран од ИАРМ со сертификат бр. ЛТ-005, според барањата од стандардот MKS EN ISO/IEC 17025 : 2018, за хемиско, микробиолошко и радиолошко тестирање на храна, вода, предмети за општа употреба, фармацевтски производи, аеросоли, почва и градежни материјали.\" The accreditation mark top right reads \"Тестирање / МКС EN ISO/IEC 17025 / ЛТ-005 / Testing\".",
+  "pages_total": "4",
+  "sample_name_as_printed": "SLEEPY JOY-сув цвет од медицински канабис",
+  "sample_batch_or_lot_as_printed": "Сериски број: SJ102501 (the only batch, lot or serial identifier printed; Лаб. број: 1065/2026; Со писмо: 054/2026)",
+  "client_as_printed": "До: ПЈУРЕЛИ ПЛАНТ ДООЕЛ, УЛ.9 БР.9 С.КОЈЛИЈА-СКОПЈЕ, СКОПЈЕ. Примерокот го доставува: ПЈУРЕЛИ ПЛАНТ ДООЕЛ СКОПЈЕ. Странка за наплата: ПЈУРЕЛИ ПЛАНТ ДООЕЛ",
+  "sample_received_date": "23.02.2026",
+  "sampling_info": "Датум на земање: 23.02.2026. Примерокот е земен од: ПЈУРЕЛИ ПЛАНТ ДООЕЛ. Примерокот го доставува: ПЈУРЕЛИ ПЛАНТ ДООЕЛ СКОПЈЕ. Со писмо: 054/2026. Тип на пакување: Рефус. Количина: 27,5 г. Датум на печатење: 11.03.2026. Датум на завршување на тестирањата: 11.03.2026. These fields are printed blank: Производител, Произведен на, Употреблив до, Употреба описно, Увозник, Земја на потекло, Шпедитер. Also blank: ЗАБЕЛЕШКИ, ИДЕНТИФИКАЦИЈА НА ПЛАН ЗА ЗЕМАЊЕ ПРИМЕРОЦИ, and ОПИС НА КВАЛИТЕТ (p2).",
+  "sections": [
+   {
+    "section": "ПЕСТИЦИДИ",
+    "page": 2,
+    "completion_date": "27.02.2026",
+    "conformity_statement_verbatim": "Изјава за сообразност : Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph.Eur 2.8.13",
+    "conformity_reference": "Ph.Eur 2.8.13",
+    "residue_count": 29
+   },
+   {
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "page": 3,
+    "completion_date": "11.03.2026",
+    "conformity_statement_verbatim": "Изјава за сообразност : Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph. Eur. 2. 4. 27",
+    "conformity_reference": "Ph. Eur. 2. 4. 27",
+    "residue_count": 4
+   },
+   {
+    "section": "МИКОТОКСИНИ",
+    "page": 3,
+    "completion_date": "26.02.2026",
+    "conformity_statement_verbatim": "Изјава за сообразност : Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph. Eur. 2.8.18",
+    "conformity_reference": "Ph. Eur. 2.8.18",
+    "residue_count": 1
+   }
+  ],
+  "results": [
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Lindan ( Gama HCH )",
+    "parameter_english": "Lindane (gamma-HCH)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,6",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Aldrin",
+    "parameter_english": "Aldrin",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Dieldrin и Aldrin (expressed as Dieldrin)",
+    "parameter_english": "Dieldrin and Aldrin (expressed as Dieldrin)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "HCB",
+    "parameter_english": "Hexachlorobenzene (HCB)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "4,4 ' DDE",
+    "parameter_english": "4,4'-DDE",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "4,4 ' DDD",
+    "parameter_english": "4,4'-DDD",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "4,4 ' DDT",
+    "parameter_english": "4,4'-DDT",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "vkupno DDT",
+    "parameter_english": "Total DDT",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "delta HCH",
+    "parameter_english": "delta-HCH",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "alpha HCH",
+    "parameter_english": "alpha-HCH",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "beta HCH",
+    "parameter_english": "beta-HCH",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endrin",
+    "parameter_english": "Endrin",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Chlorpyrifos-methyl",
+    "parameter_english": "Chlorpyrifos-methyl",
+    "result_as_printed": "н.д.",
+    "unit": "mg/Kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Chlorpyrifos",
+    "parameter_english": "Chlorpyrifos",
+    "result_as_printed": "н.д.",
+    "unit": "mg/Kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,2",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+    "parameter_english": "Heptachlor (sum of heptachlor + heptachlor epoxide)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endosulfan (alpha, beta and endosulfan sulfat)",
+    "parameter_english": "Endosulfan (alpha, beta and endosulfan sulfate)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Deltamethrin",
+    "parameter_english": "Deltamethrin",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,5",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Chlordane (sum of cis- and trans-chlordane)",
+    "parameter_english": "Chlordane (sum of cis- and trans-chlordane)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Metoxychlor",
+    "parameter_english": "Methoxychlor",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Heptachlor epoxide",
+    "parameter_english": "Heptachlor epoxide",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endrin aldehyde",
+    "parameter_english": "Endrin aldehyde",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "alpha Endosulfan",
+    "parameter_english": "alpha-Endosulfan",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "beta Endosulfan",
+    "parameter_english": "beta-Endosulfan",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endrin keton",
+    "parameter_english": "Endrin ketone",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "trans- Chlordane",
+    "parameter_english": "trans-Chlordane",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "cis-Chlordane",
+    "parameter_english": "cis-Chlordane",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020 (\"МКС EN\" printed on p2, \"15662:2020\" in the continuation cell at the top of p3)",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Dieldrin",
+    "parameter_english": "Dieldrin",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Heptachlor",
+    "parameter_english": "Heptachlor",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endosulfan sulfate",
+    "parameter_english": "Endosulfan sulfate",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "parameter_as_printed": "олово",
+    "parameter_english": "Lead (Pb)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg(l)",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,5",
+    "method": "EN 14084 (14083)",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "parameter_as_printed": "жива",
+    "parameter_english": "Mercury (Hg)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg(l)",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,1",
+    "method": "EN 13806:2002",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "parameter_as_printed": "арсен",
+    "parameter_english": "Arsenic (As)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg(l)",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,2",
+    "method": "EN 14627",
+    "non_accredited_mark": true
+   },
+   {
+    "page": 3,
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "parameter_as_printed": "кадмиум",
+    "parameter_english": "Cadmium (Cd)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg(l)",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,3",
+    "method": "EN 14084 (14083)",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "МИКОТОКСИНИ",
+    "parameter_as_printed": "Вкупни афлатоксини (во сув цвет од канабис)",
+    "parameter_english": "Total aflatoxins (in dried cannabis flower)",
+    "result_as_printed": "2,6",
+    "unit": "µg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "4",
+    "method": "AflaTest Флуорометриски метод (\"AflaTest\" printed on p3, \"Флуорометриски метод\" in the continuation cell at the top of p4)",
+    "non_accredited_mark": false
+   }
+  ],
+  "footnotes_verbatim": [
+   "Со * се означени резултати од тестирање  добиени со неакредитирани методи (printed below the pesticides table on p3, below the metals table on p3, and below the mycotoxins table on p4)",
+   "Напомена: Резултатите во извештајот се однесуваат исклучиво на анализираниот примерок, како што е доставен во лабораторијата. Извештајот може да се репродуцира исклучиво во целина. Не смее да се употребува во рекламни цели. (footer of every page)",
+   "Забелешка: Кога лабораторијата дава изјава за сообразност, доколку корисникот нема свое барање за правило за донесување одлука, тогаш се применува Правилото за едноставно прифаќање (Simple acceptance decision rule), согласно документот РУ 7.8 01. (p4)",
+   "Изјава за доверливост и непристрасност: ЈЗУ ИЈЗ  се обврзува на непристрасност во процесот на лабораториското тестирање и доверливост во однос на податоците, освен во случаи децидно пропишани со закон. Во континуитет се спроведуваат мерки за спречување конфликт на интереси, како и спречување притисоци и влијанија  од трети лица во однос на резултатите од тестирањето. Резултатите наведени во овој извештај се базираат на целосна објективност, согласно референтни стандарди и документи. (p1)",
+   "ОБ 7.8.3 01 Верз. 1 (footer form code, every page); Страна 1 од 4 / Страна 2 од 4 / Страна 3 од 4 / Страна 4 од 4",
+   "Signatories: Pesticides (p3): Изработил: (no name printed); Раководител на Одделение за контаминенти и еко-токсикологија, м-р сци. Анита Најденкоска, дипл.инг. спец (signed). Metals (p3): Изработил: (no name printed); Раководител на Одделение за испитување на метали (signed over a blue name stamp, partly legible, see uncertain). Mycotoxins (p4): Изработил: м-р Бобан Георгиевски; Раководител на Одделение за контаминенти и еко-токсикологија, м-р сци. Анита Најденкоска, дипл.инг. спец (signed, with the round blue institutional stamp)."
+  ],
+  "illegible_or_uncertain": [
+   "p3, b2–b3, metals signatory: the blue name stamp under 'Раководител на Одделение за испитување на метали' is partly covered by the signature. Legible: 'М-р Александра ... Митков, спец. по медицинска нуклеарна физика'. The middle name or surname, which looks like 'Аџиска' or 'Ациска', cannot be read with certainty.",
+   "p3, b2, metals unit: printed 'mg/kg(l)'. The character in the parentheses looks like a lowercase l but could be an uppercase I.",
+   "p1, b1–b2: the first letter of 'Датум на прием' is covered by a punch-hole shadow. The date 23.02.2026 is clear.",
+   "p3, b2–b3: the start of the metals footnote is covered by a punch-hole shadow ('…о * се означени…'). It is taken to be the same 'Со * се означени…' line as the other two.",
+   "p4, b1–b2: the round blue stamp overlaps 'барање за правило' in the Забелешка line and the 'м-р сци. Анита Најденкоска / дипл.инг. спец' block. The words are still readable through it.",
+   "p2→p3: the cis-Chlordane method runs across the page break: 'МКС EN' on p2 and '15662:2020' alone in the first, otherwise empty row cell on p3. I read them as one method.",
+   "p3→p4: the total aflatoxins method runs across the page break: 'AflaTest' on p3 and 'Флуорометриски метод' alone in the first, otherwise empty row cell on p4. I read them as one method.",
+   "On all 34 rows the U and MinDK columns are printed empty. This is an observation, not an uncertainty.",
+   "On every page, band b4 is the same image as band b3. There is no coverage gap: b2 and b3 overlap on every page, and every row was seen at least once."
+  ]
+ },
+ "read1:IPH_3160-2026_P060342": {
+  "certificate_number": "3160/2026",
+  "issue_date": "01.06.2026",
+  "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија, Ул. „50 Дивизија“ бр.6 1000 Скопје, Телефон: (02) 3125-044, 3226-510; Факс: 3223-354, www.iph.mk. Document title: ИЗВЕШТАЈ ОД ТЕСТИРАЊЕ. Page-1 heading: ЗДРАВСТВЕНА БЕЗБЕДНОСТ НА ПРИМЕРОК",
+  "accreditation": "ЛТ-005, ИАРМ, MKS EN ISO/IEC 17025 : 2018. The line as printed: \"ЈЗУ Институтот за јавно здравје на Република Северна Македонија - Скопје е акредитиран од ИАРМ со сертификат бр. ЛТ-005, според барањата од стандардот MKS EN ISO/IEC 17025 : 2018, за хемиско, микробиолошко и радиолошко тестирање на храна, вода, предмети за општа употреба, фармацевтски производи, аеросоли, почва и градежни материјали.\" The accreditation mark in the header reads \"Тестирање МКС EN ISO/IEC 17025 ЛТ – 005 Testing\".",
+  "pages_total": "4",
+  "sample_name_as_printed": "SCRAMBLER-сув цвет од медицински канабис",
+  "sample_batch_or_lot_as_printed": "Сериски број: SCR012601* (the only batch/lot/serial identifier printed; Лаб. број: 3160/2026; Со писмо: 139/2026)",
+  "client_as_printed": "До: ПЈУРЕЛИ ПЛАНТ ДООЕЛ, УЛ.9 БР.9 С.КОЈЛИЈА-СКОПЈЕ, СКОПЈЕ. Примерокот го доставува: ПЈУРЕЛИ ПЛАНТ ДООЕЛ СКОПЈЕ. Странка за наплата: ПЈУРЕЛИ ПЛАНТ ДООЕЛ",
+  "sample_received_date": "21.05.2026",
+  "sampling_info": "Примерокот е земен од: ПЈУРЕЛИ ПЛАНТ ДООЕЛ. Датум на земање: 21.05.2026. Датум на прием: 21.05.2026. Со писмо: 139/2026. Тип на пакување: Рефус. Количина: 38 г. Датум на печатење: 01.06.2026. Датум на завршување на тестирањата: 01.06.2026. These fields are printed empty: Производител, Произведен на, Употреблив до, Употреба описно, Увозник, Земја на потекло, Шпедитер. The ЗАБЕЛЕШКИ, ИДЕНТИФИКАЦИЈА НА ПЛАН ЗА ЗЕМАЊЕ ПРИМЕРОЦИ and ОПИС НА КВАЛИТЕТ boxes are also empty.",
+  "sections": [
+   {
+    "section": "ПЕСТИЦИДИ",
+    "page": 2,
+    "completion_date": "26.05.2026",
+    "conformity_statement_verbatim": "Изјава за сообразност : Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на: Ph.Eur 2.8.13",
+    "conformity_reference": "Ph.Eur 2.8.13",
+    "residue_count": 29
+   },
+   {
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "page": 3,
+    "completion_date": "01.06.2026",
+    "conformity_statement_verbatim": "Изјава за сообразност : Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на: Ph. Eur. 2. 4. 27",
+    "conformity_reference": "Ph. Eur. 2. 4. 27",
+    "residue_count": 4
+   },
+   {
+    "section": "МИКОТОКСИНИ",
+    "page": 3,
+    "completion_date": "26.05.2026",
+    "conformity_statement_verbatim": "Изјава за сообразност : Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на: Ph. Eur. 2.8.18",
+    "conformity_reference": "Ph. Eur. 2.8.18",
+    "residue_count": 1
+   }
+  ],
+  "results": [
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Lindan ( Gama HCH )",
+    "parameter_english": "Lindane (gamma-HCH)",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,6",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Aldrin",
+    "parameter_english": "Aldrin",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Dieldrin и Aldrin (expressed as Dieldrin)",
+    "parameter_english": "Dieldrin and Aldrin (expressed as Dieldrin)",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "HCB",
+    "parameter_english": "Hexachlorobenzene (HCB)",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "4,4 ' DDE",
+    "parameter_english": "4,4'-DDE",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "4,4 ' DDD",
+    "parameter_english": "4,4'-DDD",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "4,4 ' DDT",
+    "parameter_english": "4,4'-DDT",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "vkupno DDT",
+    "parameter_english": "Total DDT",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "delta HCH",
+    "parameter_english": "delta-HCH",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "alpha HCH",
+    "parameter_english": "alpha-HCH",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "beta HCH",
+    "parameter_english": "beta-HCH",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endrin",
+    "parameter_english": "Endrin",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Chlorpyrifos-methyl",
+    "parameter_english": "Chlorpyrifos-methyl",
+    "result_as_printed": "0",
+    "unit": "mg/Kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Chlorpyrifos",
+    "parameter_english": "Chlorpyrifos",
+    "result_as_printed": "0",
+    "unit": "mg/Kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,2",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+    "parameter_english": "Heptachlor (sum of heptachlor + heptachlor epoxide)",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endosulfan (alpha, beta and endosulfan sulfat)",
+    "parameter_english": "Endosulfan (sum of alpha, beta and endosulfan sulfate)",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Deltamethrin",
+    "parameter_english": "Deltamethrin",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,5",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Chlordane (sum of cis- and trans-chlordane)",
+    "parameter_english": "Chlordane (sum of cis- and trans-chlordane)",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Methoxychlor",
+    "parameter_english": "Methoxychlor",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Heptachlor epoxide",
+    "parameter_english": "Heptachlor epoxide",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endrin aldehyde",
+    "parameter_english": "Endrin aldehyde",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "alpha Endosulfan",
+    "parameter_english": "alpha-Endosulfan",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "beta Endosulfan",
+    "parameter_english": "beta-Endosulfan",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endrin keton",
+    "parameter_english": "Endrin ketone",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "trans- Chlordane",
+    "parameter_english": "trans-Chlordane",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "cis-Chlordane",
+    "parameter_english": "cis-Chlordane",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Dieldrin",
+    "parameter_english": "Dieldrin",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Heptachlor",
+    "parameter_english": "Heptachlor",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endosulfan sulfate",
+    "parameter_english": "Endosulfan sulfate",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "parameter_as_printed": "олово",
+    "parameter_english": "Lead",
+    "result_as_printed": "0,006",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,5",
+    "method": "МКС EN 17851:2023",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "parameter_as_printed": "кадмиум",
+    "parameter_english": "Cadmium",
+    "result_as_printed": "0,007",
+    "unit": "mg/kg(l)",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,3",
+    "method": "МКС EN 17851:2023",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "parameter_as_printed": "арсен",
+    "parameter_english": "Arsenic",
+    "result_as_printed": "0,006",
+    "unit": "mg/kg(l)",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,2",
+    "method": "МКС EN 17851:2023",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "parameter_as_printed": "жива",
+    "parameter_english": "Mercury",
+    "result_as_printed": "0,001",
+    "unit": "mg/kg(l)",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,1",
+    "method": "МКС EN 17851:2023",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 4,
+    "section": "МИКОТОКСИНИ",
+    "parameter_as_printed": "Вкупни афлатоксини (во сув цвет од канабис)",
+    "parameter_english": "Total aflatoxins (in dry cannabis flower)",
+    "result_as_printed": "< 2",
+    "unit": "µg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "4",
+    "method": "AflaTest Флуорометриски метод",
+    "non_accredited_mark": false
+   }
+  ],
+  "footnotes_verbatim": [
+   "Забелешка: Резултатите во извештајот се однесуваат исклучиво на анализираниот примерок, како што е доставен во лабораторијата. Во случај кога примерокот го доставува клиентот, лабораторијата не презема одговорност за земањето на примерокот. Лабораторијата се оградува од точноста на податоците за примерокот добиени од клиентот. Извештајот може да се репродуцира исклучиво во целина. Не смее да се употребува во рекламни цели. (printed at the foot of pages 1–4)",
+   "Со * се означени резултати од тестирање  добиени со неакредитирани методи (printed under each table: pesticides p3, metals p3, mycotoxins p4. No result row carries a *)",
+   "Забелешка: Кога лабораторијата дава изјава за сообразност, доколку корисникот нема свое барање за правило за донесување одлука, тогаш се применува  Правилото за едноставно прифаќање (Simple acceptance decision rule), согласно документот РУ 7.8 01. Изјавата за сообразност наведена во овој извештај  се однесува само на акредитираните параметри. (p4)",
+   "Изјава за доверливост и непристрасност: ЈЗУ ИЈЗ  се обврзува на непристрасност во процесот на лабораториското тестирање и доверливост во однос на податоците, освен во случаи децидно пропишани со закон. Во континуитет се спроведуваат мерки за спречување конфликт на интереси, како и спречување притисоци и влијанија  од трети лица во однос на резултатите од тестирањето. Резултатите наведени во овој извештај се базираат на целосна објективност, согласно референтни стандарди и документи. (p1)",
+   "ОБ 7.8.3 01 Верз. 2 (form code, foot of every page)",
+   "Страна 1 од 4 / Страна 2 од 4 / Страна 3 од 4 / Страна 4 од 4",
+   "Signatories: pesticides (p3): Раководител на Одделение за контаминенти и еко-токсикологија, м-р сци. Анита Најденкоска, дипл.инг. спец (handwritten signature). Metals (p3): Раководител на Одделение за испитување на метали, дипл.хем. Сандра Зиноски, спец.сан.хем. (blue handwritten signature). Mycotoxins (p4): Изработил: м-р Бобан Георгиевски; Раководител на Одделение за контаминенти и еко-токсикологија, м-р сци. Анита Најденкоска, дипл.инг. спец (handwritten signature, blue round stamp ЈЗУ ИЈЗРСМ / ISHPRMV Skopje / Shkup)."
+  ],
+  "illegible_or_uncertain": [
+   "All pages, all pesticide rows (p2 b1–b3, p3 b1): the result is printed as the digit \"0\", not \"н.д.\". The reading is certain; it is noted only because the expected form was н.д.",
+   "All method cells (p2–p3): \"МКС EN 15662:2020\" and \"МКС EN 17851:2023\". In the scan the first word cannot be told apart between Cyrillic \"МКС\" and Latin \"MKC\". It is transcribed as Cyrillic МКС, the Macedonian standard prefix also used in the header mark.",
+   "p2 b3 / p3 b1: the cis-Chlordane method cell is split across the page break. Page 2 prints \"МКС EN\" and page 3 prints \"15662:2020\" at the top in an otherwise empty continuation row. They are recorded as one row with one method.",
+   "p3 b2: the metals units for кадмиум, арсен and жива are printed \"mg/kg(l)\". The character inside the parentheses could be a lowercase L or a capital I. олово is printed \"mg/kg\" with no suffix.",
+   "p2 b2: the Chlorpyrifos-methyl and Chlorpyrifos units are printed \"mg/Kg\" with a capital K. All other pesticide rows read \"mg/kg\".",
+   "p2 b1/b2: the apostrophe spacing in \"4,4 ' DDE / DDD / DDT\" is transcribed as seen (a space either side of the apostrophe).",
+   "p4 b1: the mycotoxin unit is read as \"µg/kg\". The micro sign is legible but small.",
+   "p4 b2: the blue stamp partly covers the decision-rule footnote, around \"корисникот нема свое барање\" and \"(Simple acceptance decision rule)\". The words are still readable and transcribed with high but not full certainty.",
+   "U and MinDK are printed blank in every result row of every table. They are recorded as empty strings, not omitted.",
+   "The mycotoxin section's header and completion date (26.05.2026) are printed at the foot of page 3. Its single result row is on page 4.",
+   "Section page: pesticides starts on page 2 and ends on page 3 (Dieldrin, Heptachlor, Endosulfan sulfate). Its conformity statement and signature are on page 3."
+  ]
+ },
+ "read2:IPH_3160-2026_P060342": {
+  "certificate_number": "3160/2026",
+  "issue_date": "01.06.2026",
+  "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија, Ул. „50 Дивизија“ бр.6 1000 Скопје; Телефон: (02) 3125-044, 3226-510; Факс: 3223-354; www.iph.mk. Document title: ИЗВЕШТАЈ ОД ТЕСТИРАЊЕ. Лаб. број: 3160/2026; Датум на печатење: 01.06.2026. Form code in the footer: ОБ 7.8.3 01 Верз. 2",
+  "accreditation": "ЈЗУ Институтот за јавно здравје на Република Северна Македонија - Скопје е акредитиран од ИАРМ со сертификат бр. ЛТ-005, според барањата од стандардот MKS EN ISO/IEC 17025 : 2018, за хемиско, микробиолошко и радиолошко тестирање на храна, вода, предмети за општа употреба, фармацевтски производи, аеросоли, почва и градежни материјали. (The accreditation logo reads: Тестирање / МКС EN ISO/IEC 17025 / ЛТ-005 / Testing)",
+  "pages_total": "4",
+  "sample_name_as_printed": "SCRAMBLER-сув цвет од медицински канабис",
+  "sample_batch_or_lot_as_printed": "Сериски број: SCR012601* (this is the only batch, lot or serial identifier printed on the certificate. No P lot number appears anywhere on the four pages. The asterisk is part of the printed serial number, not a row mark.)",
+  "client_as_printed": "До ПЈУРЕЛИ ПЛАНТ ДООЕЛ, УЛ.9 БР.9 С.КОЈЛИЈА-СКОПЈЕ, СКОПЈЕ. Примерокот го доставува: ПЈУРЕЛИ ПЛАНТ ДООЕЛ СКОПЈЕ. Странка за наплата: ПЈУРЕЛИ ПЛАНТ ДООЕЛ",
+  "sample_received_date": "21.05.2026",
+  "sampling_info": "Датум на земање: 21.05.2026; Примерокот е земен од: ПЈУРЕЛИ ПЛАНТ ДООЕЛ; Примерокот го доставува: ПЈУРЕЛИ ПЛАНТ ДООЕЛ СКОПЈЕ; Со писмо: 139/2026 (request letter number); Тип на пакување: Рефус; Количина: 38 г; Датум на завршување на тестирањата: 01.06.2026. Blank fields: Производител, Произведен на, Употреблив до, Употреба описно, Увозник, Земја на потекло, Шпедитер. Blank sections: ЗАБЕЛЕШКИ, ИДЕНТИФИКАЦИЈА НА ПЛАН ЗА ЗЕМАЊЕ ПРИМЕРОЦИ, ОПИС НА КВАЛИТЕТ. Page 1 heading: ЗДРАВСТВЕНА БЕЗБЕДНОСТ НА ПРИМЕРОК.",
+  "sections": [
+   {
+    "section": "ПЕСТИЦИДИ",
+    "page": 2,
+    "completion_date": "26.05.2026",
+    "conformity_statement_verbatim": "Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на: Ph.Eur 2.8.13",
+    "conformity_reference": "Ph.Eur 2.8.13",
+    "residue_count": 29
+   },
+   {
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "page": 3,
+    "completion_date": "01.06.2026",
+    "conformity_statement_verbatim": "Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на: Ph. Eur. 2. 4. 27",
+    "conformity_reference": "Ph. Eur. 2. 4. 27",
+    "residue_count": 4
+   },
+   {
+    "section": "МИКОТОКСИНИ",
+    "page": 3,
+    "completion_date": "26.05.2026",
+    "conformity_statement_verbatim": "Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на: Ph. Eur. 2.8.18",
+    "conformity_reference": "Ph. Eur. 2.8.18",
+    "residue_count": 1
+   }
+  ],
+  "results": [
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Lindan ( Gama HCH )",
+    "parameter_english": "Lindane (gamma-HCH)",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,6",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Aldrin",
+    "parameter_english": "Aldrin",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Dieldrin и Aldrin (expressed as Dieldrin)",
+    "parameter_english": "Dieldrin and Aldrin (expressed as Dieldrin)",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "HCB",
+    "parameter_english": "Hexachlorobenzene (HCB)",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "4,4 ' DDE",
+    "parameter_english": "4,4'-DDE",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "4,4 ' DDD",
+    "parameter_english": "4,4'-DDD",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "4,4 ' DDT",
+    "parameter_english": "4,4'-DDT",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "vkupno DDT",
+    "parameter_english": "Total DDT",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "delta HCH",
+    "parameter_english": "delta-HCH",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "alpha HCH",
+    "parameter_english": "alpha-HCH",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "beta HCH",
+    "parameter_english": "beta-HCH",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endrin",
+    "parameter_english": "Endrin",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Chlorpyrifos-methyl",
+    "parameter_english": "Chlorpyrifos-methyl",
+    "result_as_printed": "0",
+    "unit": "mg/Kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Chlorpyrifos",
+    "parameter_english": "Chlorpyrifos",
+    "result_as_printed": "0",
+    "unit": "mg/Kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,2",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+    "parameter_english": "Heptachlor (sum of heptachlor + heptachlor epoxide)",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endosulfan (alpha, beta and endosulfan sulfat)",
+    "parameter_english": "Endosulfan (sum of alpha, beta and endosulfan sulfate)",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Deltamethrin",
+    "parameter_english": "Deltamethrin",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,5",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Chlordane (sum of cis- and trans-chlordane)",
+    "parameter_english": "Chlordane (sum of cis- and trans-chlordane)",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Methoxychlor",
+    "parameter_english": "Methoxychlor",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Heptachlor epoxide",
+    "parameter_english": "Heptachlor epoxide",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endrin aldehyde",
+    "parameter_english": "Endrin aldehyde",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "alpha Endosulfan",
+    "parameter_english": "alpha-Endosulfan",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "beta Endosulfan",
+    "parameter_english": "beta-Endosulfan",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endrin keton",
+    "parameter_english": "Endrin ketone",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "trans- Chlordane",
+    "parameter_english": "trans-Chlordane",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "cis-Chlordane",
+    "parameter_english": "cis-Chlordane",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Dieldrin",
+    "parameter_english": "Dieldrin",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Heptachlor",
+    "parameter_english": "Heptachlor",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endosulfan sulfate",
+    "parameter_english": "Endosulfan sulfate",
+    "result_as_printed": "0",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "parameter_as_printed": "олово",
+    "parameter_english": "Lead (Pb)",
+    "result_as_printed": "0,006",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,5",
+    "method": "МКС EN 17851:2023",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "parameter_as_printed": "кадмиум",
+    "parameter_english": "Cadmium (Cd)",
+    "result_as_printed": "0,007",
+    "unit": "mg/kg(l)",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,3",
+    "method": "МКС EN 17851:2023",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "parameter_as_printed": "арсен",
+    "parameter_english": "Arsenic (As)",
+    "result_as_printed": "0,006",
+    "unit": "mg/kg(l)",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,2",
+    "method": "МКС EN 17851:2023",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "parameter_as_printed": "жива",
+    "parameter_english": "Mercury (Hg)",
+    "result_as_printed": "0,001",
+    "unit": "mg/kg(l)",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,1",
+    "method": "МКС EN 17851:2023",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 4,
+    "section": "МИКОТОКСИНИ",
+    "parameter_as_printed": "Вкупни афлатоксини (во сув цвет од канабис)",
+    "parameter_english": "Total aflatoxins (in dried cannabis flower)",
+    "result_as_printed": "< 2",
+    "unit": "µg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "4",
+    "method": "AflaTest Флуорометриски метод",
+    "non_accredited_mark": false
+   }
+  ],
+  "footnotes_verbatim": [
+   "Со * се означени резултати од тестирање  добиени со неакредитирани методи (printed below each of the three tables: pesticides on p3, metals on p3, mycotoxins on p4. No result row carries a *.)",
+   "Забелешка: Резултатите во извештајот се однесуваат исклучиво на анализираниот примерок, како што е доставен во лабораторијата. Во случај кога примерокот го доставува клиентот, лабораторијата не презема одговорност за земањето на примерокот. Лабораторијата се оградува од точноста на податоците за примерокот добиени од клиентот. Извештајот може да се репродуцира исклучиво во целина. Не смее да се употребува во рекламни цели. (footer of every page)",
+   "Забелешка: Кога лабораторијата дава изјава за сообразност, доколку корисникот нема свое барање за правило за донесување одлука, тогаш се применува  Правилото за едноставно прифаќање (Simple acceptance decision rule), согласно документот РУ 7.8 01. Изјавата за сообразност наведена во овој извештај  се однесува само на акредитираните параметри. (p4)",
+   "Изјава за доверливост и непристрасност: ЈЗУ ИЈЗ  се обврзува на непристрасност во процесот на лабораториското тестирање и доверливост во однос на податоците, освен во случаи децидно пропишани со закон. Во континуитет се спроведуваат мерки за спречување конфликт на интереси, како и спречување притисоци и влијанија  од трети лица во однос на резултатите од тестирањето. Резултатите наведени во овој извештај се базираат на целосна објективност, согласно референтни стандарди и документи. (p1)",
+   "ОБ 7.8.3 01 Верз. 2 (form code, footer of every page); Страна 1 од 4 … Страна 4 од 4",
+   "Signatories: pesticides (p3): Раководител на Одделение за контаминенти и еко-токсикологија, м-р сци. Анита Најденкоска, дипл.инг. спец (signed). Metals (p3): Раководител на Одделение за испитување на метали, дипл.хем. Сандра Зиноски, спец.сан.хем. (signed in blue). Mycotoxins (p4): Изработил: м-р Бобан Георгиевски; Раководител на Одделение за контаминенти и еко-токсикологија, м-р сци. Анита Најденкоска, дипл.инг. спец (signed, with the blue round stamp of Ј.З.У. ИЈЗРСМ Скопје / I.SH.P. ISHPRMV Shkup)"
+  ],
+  "illegible_or_uncertain": [
+   "All 29 pesticide results print as \"0\" (the digit zero), not \"н.д.\" or \"< LOQ\". This is transcribed exactly as printed, pages 2–3.",
+   "Page 2/3, cis-Chlordane: the method cell is split across the page break. Page 2 b3 shows \"МКС EN\" and page 3 b1 continues \"15662:2020\" in an otherwise empty row at the top of the table. I recorded it as МКС EN 15662:2020 on the cis-Chlordane row and did not count it as a separate row.",
+   "Methods are printed as \"МКС EN\" with a Cyrillic МКС and a Latin EN. The accreditation line prints \"MKS EN ISO/IEC 17025 : 2018\" in Latin.",
+   "Units: Chlorpyrifos-methyl and Chlorpyrifos print \"mg/Kg\" (capital K). Every other pesticide prints \"mg/kg\". Cadmium, arsenic and mercury print \"mg/kg(l)\". Lead prints \"mg/kg\" (p3). The aflatoxin unit is printed with the micro sign µg/kg (p4).",
+   "Client name is printed \"ПЈУРЕЛИ ПЛАНТ ДООЕЛ\" (ПЈУРЕЛИ, not ПЈУРЛИ). Address is printed \"УЛ.9 БР.9 С.КОЈЛИЈА-СКОПЈЕ\" (p1).",
+   "Page 3 b3, metals signatory name: \"Сандра Зиноски\" is partly overwritten by the blue signature. The name was read with reasonable but not full certainty.",
+   "Page 4 b2: the stamp partly overlies the words \"корисникот нема свое барање\" and \"decision rule\" in the decision-rule note. Both remain legible.",
+   "U and MinDK are blank on every result row in all three tables.",
+   "No P lot or production batch number is printed anywhere. The only identifier is \"SCR012601*\", and the asterisk is part of the printed serial. Filing this certificate as P060342 is not supported by anything printed on it.",
+   "Band coverage: on every page b4 is an exact duplicate of b3. b1–b3 already reach each page's footer (\"Страна x од 4\"), and adjacent bands overlap, so no part of any page appears to be missing."
+  ]
+ },
+ "read2:IPH_328-2026_P060182": {
+  "certificate_number": "328/2026",
+  "issue_date": "11.02.2026",
+  "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија, Ул. „50 Дивизија“ бр.6 1000 Скопје, Телефон: (02) 3125-044, 3226-510; Факс: 3223-354, www.iph.mk. Document title: ИЗВЕШТАЈ ОД ТЕСТИРАЊЕ. Лаб. број: 328/2026; Датум на печатење: 11.02.2026",
+  "accreditation": "ЈЗУ Институтот за јавно здравје на Република Северна Македонија - Скопје е акредитиран од ИАРМ со сертификат бр. ЛТ-005, според барањата од стандардот MKS EN ISO/IEC 17025 : 2018, за хемиско, микробиолошко и радиолошко тестирање на храна, вода, предмети за општа употреба, фармацевтски производи, аеросоли, почва и градежни материјали. (Header logo box: \"Тестирање МКС EN ISO/IEC 17025 ... ЛТ-005 Testing\")",
+  "pages_total": "4",
+  "sample_name_as_printed": "GRAPS & CREME-сув цвет од медицински канабис",
+  "sample_batch_or_lot_as_printed": "Сериски број: GRC102501 (the only batch/lot/serial identifier printed; no P number appears anywhere on the certificate)",
+  "client_as_printed": "До ПЈУРЕЛИ ПЛАНТ ДООЕЛ УЛ.9 БР.9 С.КОЈЛИЈА-СКОПЈЕ СКОПЈЕ; Странка за наплата: ПЈУРЕЛИ ПЛАНТ ДООЕЛ",
+  "sample_received_date": "30.01.2026",
+  "sampling_info": "Датум на земање: 30.01.2026; Примерокот е земен од: ПЈУРЕЛИ ПЛАНТ ДООЕЛ; Примерокот го доставува: ПЈУРЕЛИ ПЛАНТ ДООЕЛ СКОПЈЕ; Со писмо: 037/2026; Тип на пакување: Рефус; Количина: 30 г; Производител: (blank); Произведен на: (blank); Употреблив до: (blank); Употреба описно: (blank); Увозник: (blank); Земја на потекло: (blank); Шпедитер: (blank); Датум на завршување на тестирањата: 11.02.2026; ЗАБЕЛЕШКИ: (blank); ИДЕНТИФИКАЦИЈА НА ПЛАН ЗА ЗЕМАЊЕ ПРИМЕРОЦИ: (blank); ОПИС НА КВАЛИТЕТ (p2): (blank)",
+  "sections": [
+   {
+    "section": "ПЕСТИЦИДИ",
+    "page": 2,
+    "completion_date": "09.02.2026",
+    "conformity_statement_verbatim": "Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph.Eur 2.8.13",
+    "conformity_reference": "Ph.Eur 2.8.13",
+    "residue_count": 29
+   },
+   {
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "page": 3,
+    "completion_date": "11.02.2026",
+    "conformity_statement_verbatim": "Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph. Eur. 2. 4. 27",
+    "conformity_reference": "Ph. Eur. 2. 4. 27",
+    "residue_count": 4
+   },
+   {
+    "section": "МИКОТОКСИНИ",
+    "page": 3,
+    "completion_date": "03.02.2026",
+    "conformity_statement_verbatim": "Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph. Eur. 2.8.18",
+    "conformity_reference": "Ph. Eur. 2.8.18",
+    "residue_count": 1
+   }
+  ],
+  "results": [
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Lindan ( Gama HCH )",
+    "parameter_english": "Lindane (gamma-HCH)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,6",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Aldrin",
+    "parameter_english": "Aldrin",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Dieldrin и Aldrin (expressed as Dieldrin)",
+    "parameter_english": "Dieldrin and Aldrin (expressed as Dieldrin)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "HCB",
+    "parameter_english": "Hexachlorobenzene (HCB)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "4,4 ' DDE",
+    "parameter_english": "4,4'-DDE",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "4,4 ' DDD",
+    "parameter_english": "4,4'-DDD",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "4,4 ' DDT",
+    "parameter_english": "4,4'-DDT",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "vkupno DDT",
+    "parameter_english": "Total DDT",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "delta HCH",
+    "parameter_english": "delta-HCH",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "alpha HCH",
+    "parameter_english": "alpha-HCH",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "beta HCH",
+    "parameter_english": "beta-HCH",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endrin",
+    "parameter_english": "Endrin",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Chlorpyrifos-methyl",
+    "parameter_english": "Chlorpyrifos-methyl",
+    "result_as_printed": "н.д.",
+    "unit": "mg/Kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Chlorpyrifos",
+    "parameter_english": "Chlorpyrifos",
+    "result_as_printed": "н.д.",
+    "unit": "mg/Kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,2",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+    "parameter_english": "Heptachlor (sum of heptachlor and heptachlor epoxide)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endosulfan (alpha, beta and endosulfan sulfat)",
+    "parameter_english": "Endosulfan (sum of alpha, beta and endosulfan sulfate)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Deltamethrin",
+    "parameter_english": "Deltamethrin",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,5",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Chlordane (sum of cis- and trans-chlordane)",
+    "parameter_english": "Chlordane (sum of cis- and trans-chlordane)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Metoxychlor",
+    "parameter_english": "Methoxychlor",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Heptachlor epoxide",
+    "parameter_english": "Heptachlor epoxide",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endrin aldehyde",
+    "parameter_english": "Endrin aldehyde",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "alpha Endosulfan",
+    "parameter_english": "alpha-Endosulfan",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "beta Endosulfan",
+    "parameter_english": "beta-Endosulfan",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endrin keton",
+    "parameter_english": "Endrin ketone",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "trans- Chlordane",
+    "parameter_english": "trans-Chlordane",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "cis-Chlordane",
+    "parameter_english": "cis-Chlordane",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020 (\"МКС EN\" on p2, \"15662:2020\" continues on p3)",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Dieldrin",
+    "parameter_english": "Dieldrin",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Heptachlor",
+    "parameter_english": "Heptachlor",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endosulfan sulfate",
+    "parameter_english": "Endosulfan sulfate",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "parameter_as_printed": "олово",
+    "parameter_english": "Lead (Pb)",
+    "result_as_printed": "0,084",
+    "unit": "mg/kg(l)",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,5",
+    "method": "EN 14084 (14083)",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "parameter_as_printed": "жива",
+    "parameter_english": "Mercury (Hg)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg(l)",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,1",
+    "method": "EN 13806:2002",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "parameter_as_printed": "арсен",
+    "parameter_english": "Arsenic (As)",
+    "result_as_printed": "0,095",
+    "unit": "mg/kg(l)",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,2",
+    "method": "EN 14627",
+    "non_accredited_mark": true
+   },
+   {
+    "page": 3,
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "parameter_as_printed": "кадмиум",
+    "parameter_english": "Cadmium (Cd)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg(l)",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,3",
+    "method": "EN 14084 (14083)",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "МИКОТОКСИНИ",
+    "parameter_as_printed": "Вкупни афлатоксини (во сув цвет од канабис)",
+    "parameter_english": "Total aflatoxins (in dried cannabis flower)",
+    "result_as_printed": "2,2",
+    "unit": "µg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "4",
+    "method": "AflaTest Флуорометриски метод (\"AflaTest\" on p3, \"Флуорометриски метод\" continues on p4)",
+    "non_accredited_mark": false
+   }
+  ],
+  "footnotes_verbatim": [
+   "Со * се означени резултати од тестирање  добиени со неакредитирани методи (printed under the pesticides table p3, under the metals table p3, and under the mycotoxins table p4)",
+   "Напомена: Резултатите во извештајот се однесуваат исклучиво на анализираниот примерок, како што е доставен во лабораторијата. Извештајот може да се репродуцира исклучиво во целина. Не смее да се употребува во рекламни цели. (page footer, every page)",
+   "ОБ 7.8.3 01 Верз. 1 (page footer, every page)",
+   "Страна 1 од 4 / Страна 2 од 4 / Страна 3 од 4 / Страна 4 од 4",
+   "Изјава за доверливост и непристрасност: ЈЗУ ИЈЗ  се обврзува на непристрасност во процесот на лабораториското тестирање и доверливост во однос на податоците, освен во случаи децидно пропишани со закон. Во континуитет се спроведуваат мерки за спречување конфликт на интереси, како и спречување притисоци и влијанија  од трети лица во однос на резултатите од тестирањето. Резултатите наведени во овој извештај се базираат на целосна објективност, согласно референтни стандарди и документи. (p1)",
+   "Забелешка: Кога лабораторијата дава изјава за сообразност, доколку корисникот нема свое барање за правило за донесување одлука, тогаш се применува Правилото за едноставно прифаќање (Simple acceptance decision rule), согласно документот РУ 7.8 01. (p4)",
+   "Signatures - pesticides (p3): Изработил: (no name printed); Раководител на Одделение за контаминенти и еко-токсикологија м-р сци. Анита Најденкоска дипл.инг. спец (signed). Metals (p3): Изработил: (no name printed); Раководител на Одделение за испитување на метали (initialled in blue, no name printed). Mycotoxins (p4): Изработил: м-р Бобан Георгиевски; Раководител на Одделение за контаминенти и еко-токсикологија м-р сци. Анита Најденкоска дипл.инг. спец (signed, round blue stamp)."
+  ],
+  "illegible_or_uncertain": [
+   "p3 band b2, metals: the * sits in the left gutter cell at the level of the арсен row; I read it as marking арсен only (non-accredited), but the gutter is one cell for all four metal rows, so it could be read as covering the group. Every other row in every table has no *.",
+   "p3 band b2, metals unit: printed 'mg/kg(l)'. The character in the brackets reads as a lowercase L, but at this resolution it could be a capital I.",
+   "p1 band b1/b2, sample name: printed 'GRAPS & CREME' (not 'GRAPES'). There is a small speck over/after the S, which I take to be scan noise and not a character.",
+   "p1 header: the batch printed is the parent code 'GRC102501' (Сериски број). Neither P060182 nor a sub-lot suffix (/1, /2) appears anywhere on the certificate. The filing as P060182 cannot be confirmed from the scan.",
+   "p2 band b2/b3: Chlorpyrifos-methyl and Chlorpyrifos print their unit as 'mg/Kg' (capital K). Every other pesticide row prints 'mg/kg'.",
+   "p2/p3: the cis-Chlordane method cell is split across the page break ('МКС EN' at the foot of p2, '15662:2020' in a continuation row at the top of p3). It is one row, recorded once.",
+   "p3/p4: the mycotoxin method cell is split across the page break ('AflaTest' on p3, 'Флуорометриски метод' in a continuation row at the top of p4). The section's conformity statement (Ph. Eur. 2.8.18) is on p4.",
+   "p4 band b1: the mycotoxins conformity reference prints 'Ph. Eur. 2.8.18'. A speck after 'Eur' makes it look like 'Eur:'. I read it as a full stop.",
+   "p3, pesticides conformity reference: printed 'Ph.Eur 2.8.13' with no space and no full stop after Eur. The metals reference is printed with spaces: 'Ph. Eur. 2. 4. 27'.",
+   "Header logo box (every page): the small text inside the accreditation mark ('Тестирање', 'МКС EN ISO/IEC 17025', 'ЛТ-005', 'Testing') is only partly legible. The printed accreditation sentence below it is fully legible.",
+   "Pesticide count: 26 rows on p2 plus 3 on p3 (Dieldrin, Heptachlor, Endosulfan sulfate), 29 in total. U and MinDK are blank on every row of every table."
+  ]
+ },
+ "read1:IPH_328-2026_P060182": {
+  "certificate_number": "328/2026",
+  "issue_date": "11.02.2026",
+  "laboratory": "ЈЗУ Институт за јавно здравје на Република Северна Македонија, Ул. „50 Дивизија\" бр.6 1000 Скопје, Телефон: (02) 3125-044, 3226-510; Факс: 3223-354, www.iph.mk",
+  "accreditation": "ЛТ-005, MKS EN ISO/IEC 17025 : 2018 — \"ЈЗУ Институтот за јавно здравје на Република Северна Македонија - Скопје е акредитиран од ИАРМ со сертификат бр. ЛТ-005, според барањата од стандардот MKS EN ISO/IEC 17025 : 2018, за хемиско, микробиолошко и радиолошко тестирање на храна, вода, предмети за општа употреба, фармацевтски производи, аеросоли, почва и градежни материјали.\" (accreditation mark in header: Тестирање МКС EN ISO/IEC 17025, ЛТ-005, Testing)",
+  "pages_total": "4",
+  "sample_name_as_printed": "GRAPS & CREME-сув цвет од медицински канабис",
+  "sample_batch_or_lot_as_printed": "Сериски број: GRC102501 (the only batch/lot/serial identifier printed; P060182 does not appear anywhere on the certificate). Лаб. број: 328/2026; Со писмо: 037/2026",
+  "client_as_printed": "До ПЈУРЕЛИ ПЛАНТ ДООЕЛ, УЛ.9 БР.9 С.КОЈЛИЈА-СКОПЈЕ, СКОПЈЕ (Примерокот го доставува: ПЈУРЕЛИ ПЛАНТ ДООЕЛ СКОПЈЕ; Странка за наплата: ПЈУРЕЛИ ПЛАНТ ДООЕЛ)",
+  "sample_received_date": "30.01.2026",
+  "sampling_info": "Датум на земање: 30.01.2026; Примерокот е земен од: ПЈУРЕЛИ ПЛАНТ ДООЕЛ; Примерокот го доставува: ПЈУРЕЛИ ПЛАНТ ДООЕЛ СКОПЈЕ; Тип на пакување: Рефус; Количина: 30 г; Со писмо: 037/2026 (request letter); Датум на прием: 30.01.2026; Датум на завршување на тестирањата: 11.02.2026; Датум на печатење: 11.02.2026. Blank fields: Производител, Произведен на, Употреблив до, Употреба описно, Увозник, Земја на потекло, Шпедитер, ЗАБЕЛЕШКИ, ИДЕНТИФИКАЦИЈА НА ПЛАН ЗА ЗЕМАЊЕ ПРИМЕРОЦИ. Report title: ИЗВЕШТАЈ ОД ТЕСТИРАЊЕ — ЗДРАВСТВЕНА БЕЗБЕДНОСТ НА ПРИМЕРОК.",
+  "sections": [
+   {
+    "section": "ПЕСТИЦИДИ",
+    "page": 2,
+    "completion_date": "09.02.2026",
+    "conformity_statement_verbatim": "Изјава за сообразност : Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph.Eur 2.8.13",
+    "conformity_reference": "Ph.Eur 2.8.13",
+    "residue_count": 29
+   },
+   {
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "page": 3,
+    "completion_date": "11.02.2026",
+    "conformity_statement_verbatim": "Изјава за сообразност : Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph. Eur. 2. 4. 27",
+    "conformity_reference": "Ph. Eur. 2. 4. 27",
+    "residue_count": 4
+   },
+   {
+    "section": "МИКОТОКСИНИ",
+    "page": 3,
+    "completion_date": "03.02.2026",
+    "conformity_statement_verbatim": "Изјава за сообразност : Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph. Eur. 2.8.18",
+    "conformity_reference": "Ph. Eur. 2.8.18",
+    "residue_count": 1
+   }
+  ],
+  "results": [
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Lindan ( Gama HCH )",
+    "parameter_english": "Lindane (gamma-HCH)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,6",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Aldrin",
+    "parameter_english": "Aldrin",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Dieldrin и Aldrin (expressed as Dieldrin)",
+    "parameter_english": "Dieldrin and Aldrin (expressed as Dieldrin)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "HCB",
+    "parameter_english": "Hexachlorobenzene (HCB)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "4,4 ' DDE",
+    "parameter_english": "4,4'-DDE",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "4,4 ' DDD",
+    "parameter_english": "4,4'-DDD",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "4,4 ' DDT",
+    "parameter_english": "4,4'-DDT",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "vkupno DDT",
+    "parameter_english": "Total DDT",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "delta HCH",
+    "parameter_english": "delta-HCH",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "alpha HCH",
+    "parameter_english": "alpha-HCH",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "beta HCH",
+    "parameter_english": "beta-HCH",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endrin",
+    "parameter_english": "Endrin",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Chlorpyrifos-methyl",
+    "parameter_english": "Chlorpyrifos-methyl",
+    "result_as_printed": "н.д.",
+    "unit": "mg/Kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,1",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Chlorpyrifos",
+    "parameter_english": "Chlorpyrifos",
+    "result_as_printed": "н.д.",
+    "unit": "mg/Kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,2",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Heptachlor(sum of Heptachlor+ Heptachlor epoxide)",
+    "parameter_english": "Heptachlor (sum of heptachlor + heptachlor epoxide)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endosulfan (alpha, beta and endosulfan sulfat)",
+    "parameter_english": "Endosulfan (alpha, beta and endosulfan sulfate)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Deltamethrin",
+    "parameter_english": "Deltamethrin",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,5",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Chlordane (sum of cis- and trans-chlordane)",
+    "parameter_english": "Chlordane (sum of cis- and trans-chlordane)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Metoxychlor",
+    "parameter_english": "Methoxychlor",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Heptachlor epoxide",
+    "parameter_english": "Heptachlor epoxide",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endrin aldehyde",
+    "parameter_english": "Endrin aldehyde",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "alpha Endosulfan",
+    "parameter_english": "alpha-Endosulfan",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "beta Endosulfan",
+    "parameter_english": "beta-Endosulfan",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endrin keton",
+    "parameter_english": "Endrin ketone",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "trans- Chlordane",
+    "parameter_english": "trans-Chlordane",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 2,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "cis-Chlordane",
+    "parameter_english": "cis-Chlordane",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Dieldrin",
+    "parameter_english": "Dieldrin",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Heptachlor",
+    "parameter_english": "Heptachlor",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,05",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "ПЕСТИЦИДИ",
+    "parameter_as_printed": "Endosulfan sulfate",
+    "parameter_english": "Endosulfan sulfate",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "3",
+    "method": "МКС EN 15662:2020",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "parameter_as_printed": "олово",
+    "parameter_english": "Lead (Pb)",
+    "result_as_printed": "0,084",
+    "unit": "mg/kg(l)",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,5",
+    "method": "EN 14084 (14083)",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "parameter_as_printed": "жива",
+    "parameter_english": "Mercury (Hg)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg(l)",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,1",
+    "method": "EN 13806:2002",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "parameter_as_printed": "арсен",
+    "parameter_english": "Arsenic (As)",
+    "result_as_printed": "0,095",
+    "unit": "mg/kg(l)",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,2",
+    "method": "EN 14627",
+    "non_accredited_mark": true
+   },
+   {
+    "page": 3,
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "parameter_as_printed": "кадмиум",
+    "parameter_english": "Cadmium (Cd)",
+    "result_as_printed": "н.д.",
+    "unit": "mg/kg(l)",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "0,3",
+    "method": "EN 14084 (14083)",
+    "non_accredited_mark": false
+   },
+   {
+    "page": 3,
+    "section": "МИКОТОКСИНИ",
+    "parameter_as_printed": "Вкупни афлатоксини (во сув цвет од канабис)",
+    "parameter_english": "Total aflatoxins (in dried cannabis flower)",
+    "result_as_printed": "2,2",
+    "unit": "μg/kg",
+    "U": "",
+    "MinDK": "",
+    "MaxDK": "4",
+    "method": "AflaTest Флуорометриски метод",
+    "non_accredited_mark": false
+   }
+  ],
+  "footnotes_verbatim": [
+   "Со * се означени резултати од тестирање  добиени со неакредитирани методи (printed after the pesticide table p3, after the metals table p3, and after the mycotoxin table p4)",
+   "Напомена: Резултатите во извештајот се однесуваат исклучиво на анализираниот примерок, како што е доставен во лабораторијата. Извештајот може да се репродуцира исклучиво во целина. Не смее да се употребува во рекламни цели. (every page)",
+   "Забелешка: Кога лабораторијата дава изјава за сообразност, доколку корисникот нема свое барање за правило за донесување одлука, тогаш се применува Правилото за едноставно прифаќање (Simple acceptance decision rule), согласно документот РУ 7.8 01. (p4)",
+   "Изјава за доверливост и непристрасност: ЈЗУ ИЈЗ  се обврзува на непристрасност во процесот на лабораториското тестирање и доверливост во однос на податоците, освен во случаи децидно пропишани со закон. Во континуитет се спроведуваат мерки за спречување конфликт на интереси, како и спречување притисоци и влијанија  од трети лица во однос на резултатите од тестирањето. Резултатите наведени во овој извештај се базираат на целосна објективност, согласно референтни стандарди и документи. (p1)",
+   "ОБ 7.8.3 01 Верз. 1 (form code, every page)",
+   "Страна 1 од 4 / Страна 2 од 4 / Страна 3 од 4 / Страна 4 од 4",
+   "Signatories — Pesticides (p3): Изработил: (no name printed); Раководител на Одделение за контаминенти и еко-токсикологија м-р сци. Анита Најденкоска дипл.инг. спец (signed). Metals (p3): Изработил: (no name printed); Раководител на Одделение за испитување на метали (signed, no name printed). Mycotoxins (p4): Изработил: м-р Бобан Георгиевски; Раководител на Одделение за контаминенти и еко-токсикологија м-р сци. Анита Најденкоска дипл.инг. спец (signed, round blue stamp)."
+  ],
+  "illegible_or_uncertain": [
+   "p3 b2, metals table: the * sits in the narrow left margin column, level with the арсен row (not the row's own cell). I read it as marking арсен only. If that left column is one merged cell for all four metal rows, the mark could belong to the whole block, but its vertical position matches арсен, not the block's centre.",
+   "p3 b2, metals results 0,084 (олово) and 0,095 (арсен): legible at band resolution. Zoom verification was not possible because no image tool (PIL/ImageMagick) is installed.",
+   "p3 b2, metals unit printed 'mg/kg(l)': the character in brackets reads as lowercase l. It could be a capital I.",
+   "p1 b1/b2, sample name printed 'GRAPS & CREME' (not 'GRAPES'); there is a scan speck above the S. Transcribed as printed.",
+   "p2 b4 / p3 b1: the cis-Chlordane method cell is split across the page break ('МКС EN' on p2, '15662:2020' on p3). Recorded once as МКС EN 15662:2020 on p2.",
+   "p3 b3 / p4 b1: the mycotoxin method cell is split across the page break ('AflaTest' on p3, 'Флуорометриски метод' on p4). Recorded once as one row on p3.",
+   "p4 b1: conformity reference printed 'Ph. Eur. 2.8.18' with a scan speck after 'Eur'. Read as 2.8.18.",
+   "p3 b1/b2: the pesticide conformity reference is printed 'Ph.Eur 2.8.13' (no space or dot after Eur), and the metals reference is printed 'Ph. Eur. 2. 4. 27' with spaces. Both kept as printed.",
+   "All sections: the U and MinDK columns are blank on every row (recorded as empty strings, not omitted).",
+   "The pesticide table has 29 rows (26 on p2 plus Dieldrin, Heptachlor and Endosulfan sulfate on p3), not 26.",
+   "No P-number (P060182) is printed anywhere on the certificate. The only lot identifier is 'Сериски број: GRC102501', the parent code with no sub-lot suffix.",
+   "p3 b2, the metals section signatory under 'Раководител на Одделение за испитување на метали' is a blue signature with no printed name. Nothing is printed under 'Изработил:' for the pesticide and metals sections.",
+   "Bands p1_b3/b4, p2_b3/b4, p3_b3/b4 and p4_b3/b4 are identical pairs (bottom of page clamped). Each was read; nothing was double-counted."
+  ]
+ },
+ "arbiter:IPH_1065-2026_P060162": {
+  "verdicts": [
+   {
+    "item": "1. header certificate_number",
+    "value_as_printed": "Број: 1065/2026",
+    "page": 1,
+    "band": "p1_b1 (also the header of p2_b1, p3_b1 and p4_b1; p1_b1 also has 'Лаб. број: 1065/2026')",
+    "reader_correct": "both",
+    "note": "Both readers give 1065/2026. Reader 1 adds that it is printed in every page header and as 'Лаб. број: 1065/2026' on page 1. That is correct, and I confirmed it on all four pages."
+   },
+   {
+    "item": "2. header issue_date",
+    "value_as_printed": "Датум: 11.03.2026",
+    "page": 1,
+    "band": "p1_b1 (also the header of p2_b1, p3_b1 and p4_b1; p1_b1 also has 'Датум на печатење: 11.03.2026')",
+    "reader_correct": "both",
+    "note": "Both give 11.03.2026. Reader 1's extra detail is accurate: the date is in every page header, and page 1 also prints 'Датум на печатење: 11.03.2026'. Page 1 also has 'Датум на завршување на тестирањата: 11.03.2026'."
+   },
+   {
+    "item": "3. header sample_batch_or_lot_as_printed",
+    "value_as_printed": "Сериски број: SJ102501",
+    "page": 1,
+    "band": "p1_b2",
+    "reader_correct": "both",
+    "note": "SJ102501 is the only batch or serial identifier on the report, and no P-lot number (P060162) appears on any of the 4 pages. That bears out reader 1's remark. Reader 2's extra fields are also printed as given: 'Лаб. број: 1065/2026' (p1_b1) and 'Со писмо: 054/2026' (p1_b2). Sample: 'SLEEPY JOY-сув цвет од медицински канабис', 27,5 г, Рефус."
+   },
+   {
+    "item": "4. header sample_received_date",
+    "value_as_printed": "Датум на прием: 23.02.2026",
+    "page": 1,
+    "band": "p1_b1 / p1_b2",
+    "reader_correct": "both",
+    "note": "Both give 23.02.2026, which is the 'Датум на прием' field. The next line, 'Датум на земање', is also 23.02.2026."
+   },
+   {
+    "item": "5. page 2 cis-Chlordane method",
+    "value_as_printed": "МКС EN 15662:2020",
+    "page": 2,
+    "band": "p2_b3 ('МКС EN') + p3_b1 (continuation cell '15662:2020')",
+    "reader_correct": "both",
+    "note": "The value is the same for both readers. The row on page 2 shows only 'МКС EN' (with Cyrillic МКС). '15662:2020' is in the continuation row at the top of page 3, above Dieldrin. Reader 2's note on where it is printed is accurate. The result is н.д. mg/kg, MaxDK 0,05."
+   },
+   {
+    "item": "6. page 3 Вкупни афлатоксини (во сув цвет од канабис) method",
+    "value_as_printed": "AflaTest Флуорометриски метод",
+    "page": 3,
+    "band": "p3_b3 ('AflaTest') + p4_b1 (continuation cell 'Флуорометриски метод')",
+    "reader_correct": "both",
+    "note": "The value is the same for both readers. Page 3 prints 'AflaTest', and 'Флуорометриски метод' is in the continuation cell at the top of page 4. Reader 2's location detail is accurate. The row reads: result 2,6 µg/kg, MaxDK 4, completed 26.02.2026, conformity Ph. Eur. 2.8.18. This scan does contain page 3 ('Страна 3 од 4'), which CLAUDE.md §5 rulings 4 and 8 say is missing from every copy. Page 3 holds: pesticides Dieldrin, Heptachlor and Endosulfan sulfate (all н.д.; pesticide conformity Ph.Eur 2.8.13, signed by Најденкоска); metals олово, жива, арсен* and кадмиум (all н.д., completed 11.03.2026, Ph. Eur. 2. 4. 27); total aflatoxins 2,6 µg/kg. The §5 [pending] cells for -052 and -162 can be reviewed against it."
+   }
+  ]
+ },
+ "arbiter:IPH_3160-2026_P060342": {
+  "verdicts": [
+   {
+    "item": "header sample_batch_or_lot_as_printed",
+    "value_as_printed": "Сериски број: SCR012601*",
+    "page": 1,
+    "band": "p1_b2 (ПОДАТОЦИ ЗА ПРИМЕРОКОТ table, row between 'Тип на пакување: Рефус | Количина: 38 г' and 'Увозник:')",
+    "reader_correct": "both",
+    "note": "Both readers give the same value, and it is correct: 'Сериски број: SCR012601*', with the asterisk straight after the code and no space. They differ only in the notes they added, and every note checks out. Reader 1's context is right: 'Лаб. број: 3160/2026' (p1_b1), 'Со писмо: 139/2026' (p1_b1/b2) and 'Број: 3160/2026, Датум: 01.06.2026' in the header. None of these is a batch, lot or serial number. Reader 2 says no P lot number appears anywhere. I read all 16 bands (4 pages; page 4 is the aflatoxin row, the signatures and the stamp, then blank) and that is true: SCR012601* is the only batch identifier on the certificate. Reader 2 also says the asterisk is not a row mark. That holds as well. The footnote 'Со * се означени резултати од тестирање добиени со неакредитирани методи' (p3_b1, p3_b2, p4_b1) uses * only for test results from non-accredited methods. No result row in the pesticides, metals or mycotoxins tables has an asterisk, so the * after the serial is printed as part of the client-supplied identifier. The register also uses batch codes written with a star. P060342 is in the filename only, not on the certificate. The register's link SCR012601 -> P060342 (icoa_register_2026-09-10.csv, issuance_schedule_2026-09-10.csv) is register-sourced and was not read from this certificate. Sample: 'SCRAMBLER-сув цвет од медицински канабис'."
+   }
+  ]
+ },
+ "arbiter:IPH_328-2026_P060182": {
+  "verdicts": [
+   {
+    "item": "header sample_batch_or_lot_as_printed",
+    "value_as_printed": "Сериски број: GRC102501",
+    "page": 1,
+    "band": "p1_b2 (Лаб. број: 328/2026 and Со писмо: 037/2026 also on p1_b1/b2)",
+    "reader_correct": "both",
+    "note": "Page 1 prints the serial number as 'Сериски број: GRC102501'. That is the only batch or lot identifier on the certificate. I read all four pages and none of them carries a P number (P060182 or any other). Both readers give the same identifier. Reader 1 also lists 'Лаб. број: 328/2026' and 'Со писмо: 037/2026'. Those fields are printed correctly, but they are the lab number and the letter reference, not the sample batch. The two readers agree on substance."
+   },
+   {
+    "item": "page 2 \"cis-Chlordane\" method",
+    "value_as_printed": "МКС EN 15662:2020",
+    "page": 2,
+    "band": "p2_b3/b4 (last row: 'МКС EN') + p3_b1 (top carry-over row: '15662:2020')",
+    "reader_correct": "both",
+    "note": "cis-Chlordane is the last row of the page 2 table. Its method cell there shows only 'МКС EN'. The rest of the cell, '15662:2020', is printed on a separate carry-over row at the top of page 3, just above Dieldrin. The full method is 'МКС EN 15662:2020', the same as every other pesticide row. Both readers give the same value. Reader 2's note about where the page break falls is accurate."
+   },
+   {
+    "item": "page 3 \"Вкупни афлатоксини (во сув цвет од канабис)\" unit",
+    "value_as_printed": "µg/kg",
+    "page": 3,
+    "band": "p3_b3/b4 (МИКОТОКСИНИ table, Ед. мерка column; result 2,2, MaxDK 4)",
+    "reader_correct": "both",
+    "note": "The printed unit is micro-g/kg. Greek mu (U+03BC, which reader 1 used) and the micro sign (U+00B5, which reader 2 used) look identical in a scanned image, so the page cannot tell them apart. This is a transcription difference only, not a disagreement about what is printed."
+   },
+   {
+    "item": "page 3 \"Вкупни афлатоксини (во сув цвет од канабис)\" method",
+    "value_as_printed": "AflaTest Флуорометриски метод",
+    "page": 3,
+    "band": "p3_b3/b4 (method cell: 'AflaTest') + p4_b1 (top carry-over row: 'Флуорометриски' / 'метод' on two lines)",
+    "reader_correct": "both",
+    "note": "The total aflatoxins row is the last row on page 3, and its method cell shows only 'AflaTest'. The rest of the cell continues on a carry-over row at the top of page 4, printed over two lines as 'Флуорометриски' and 'метод'. The full method is 'AflaTest Флуорометриски метод'. Both readers give the same value. Reader 2's note about the page break is accurate."
+   }
+  ]
+ },
+ "critic:IPH_1065-2026_P060162": {
+  "missed": [
+   {
+    "page": 1,
+    "what": "Header: report number and date (top-right box, repeated on every page)",
+    "value_as_printed": "Број: 1065/2026 · Датум: 11.03.2026"
+   },
+   {
+    "page": 1,
+    "what": "Header: laboratory number and print date",
+    "value_as_printed": "Лаб. број: 1065/2026 · Датум на печатење: 11.03.2026"
+   },
+   {
+    "page": 1,
+    "what": "Header: addressee",
+    "value_as_printed": "До ПЈУРЕЛИ ПЛАНТ ДООЕЛ, УЛ.9 БР.9 С.КОЈЛИЈА-СКОПЈЕ, СКОПЈЕ"
+   },
+   {
+    "page": 1,
+    "what": "Header: report title",
+    "value_as_printed": "ЗДРАВСТВЕНА БЕЗБЕДНОСТ НА ПРИМЕРОК"
+   },
+   {
+    "page": 1,
+    "what": "Accreditation statement (repeated on every page)",
+    "value_as_printed": "акредитиран од ИАРМ со сертификат бр. ЛТ-005, според барањата од стандардот MKS EN ISO/IEC 17025 : 2018"
+   },
+   {
+    "page": 1,
+    "what": "Sample field: sample name",
+    "value_as_printed": "Примерок: SLEEPY JOY-сув цвет од медицински канабис"
+   },
+   {
+    "page": 1,
+    "what": "Sample field: date received",
+    "value_as_printed": "Датум на прием: 23.02.2026"
+   },
+   {
+    "page": 1,
+    "what": "Sample field: date sampled",
+    "value_as_printed": "Датум на земање: 23.02.2026"
+   },
+   {
+    "page": 1,
+    "what": "Sample field: covering letter",
+    "value_as_printed": "Со писмо: 054/2026"
+   },
+   {
+    "page": 1,
+    "what": "Sample field: delivered by",
+    "value_as_printed": "Примерокот го доставува: ПЈУРЕЛИ ПЛАНТ ДООЕЛ СКОПЈЕ"
+   },
+   {
+    "page": 1,
+    "what": "Sample field: sampled by",
+    "value_as_printed": "Примерокот е земен од: ПЈУРЕЛИ ПЛАНТ ДООЕЛ"
+   },
+   {
+    "page": 1,
+    "what": "Sample field: packaging type",
+    "value_as_printed": "Тип на пакување: Рефус"
+   },
+   {
+    "page": 1,
+    "what": "Sample field: quantity",
+    "value_as_printed": "Количина: 27,5 г"
+   },
+   {
+    "page": 1,
+    "what": "Sample field: serial/batch number",
+    "value_as_printed": "Сериски број: SJ102501"
+   },
+   {
+    "page": 1,
+    "what": "Sample field: billing party",
+    "value_as_printed": "Странка за наплата: ПЈУРЕЛИ ПЛАНТ ДООЕЛ"
+   },
+   {
+    "page": 1,
+    "what": "Overall completion date of testing",
+    "value_as_printed": "Датум на завршување на тестирањата: 11.03.2026"
+   },
+   {
+    "page": 1,
+    "what": "Sample fields printed blank (no value): manufacturer, produced on, use-by, use description, importer, country of origin, forwarder; ЗАБЕЛЕШКИ and ИДЕНТИФИКАЦИЈА НА ПЛАН ЗА ЗЕМАЊЕ ПРИМЕРОЦИ boxes empty",
+    "value_as_printed": "Производител: / Произведен на: / Употреблив до: / Употреба описно: / Увозник: / Земја на потекло: / Шпедитер: (all blank)"
+   },
+   {
+    "page": 1,
+    "what": "Form code and page count (footer, every page)",
+    "value_as_printed": "ОБ 7.8.3 01 Верз. 1 · Страна 1 од 4"
+   },
+   {
+    "page": 2,
+    "what": "Pesticides section completion date",
+    "value_as_printed": "ПЕСТИЦИДИ — Датум на завршување 27.02.2026"
+   },
+   {
+    "page": 2,
+    "what": "Pesticides method column (all 29 rows, p2–p3)",
+    "value_as_printed": "МКС EN 15662:2020"
+   },
+   {
+    "page": 2,
+    "what": "ОПИС НА КВАЛИТЕТ box printed empty",
+    "value_as_printed": "ОПИС НА КВАЛИТЕТ (blank)"
+   },
+   {
+    "page": 3,
+    "what": "Pesticides conformity statement",
+    "value_as_printed": "Изјава за сообразност: Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph.Eur 2.8.13"
+   },
+   {
+    "page": 3,
+    "what": "Pesticides signatory",
+    "value_as_printed": "Раководител на Одделение за контаминенти и еко-токсикологија — м-р сци. Анита Најденкоска дипл.инг. спец (signed); Изработил: (blank)"
+   },
+   {
+    "page": 3,
+    "what": "Metals section completion date",
+    "value_as_printed": "МЕТАЛИ — Датум на завршување 11.03.2026"
+   },
+   {
+    "page": 3,
+    "what": "Metals methods",
+    "value_as_printed": "олово EN 14084 (14083); жива EN 13806:2002; арсен EN 14627; кадмиум EN 14084 (14083)"
+   },
+   {
+    "page": 3,
+    "what": "Arsenic row flagged with * = result obtained by a non-accredited method, with footnote",
+    "value_as_printed": "* арсен … Со * се означени резултати од тестирање добиени со неакредитирани методи"
+   },
+   {
+    "page": 3,
+    "what": "Heavy metals conformity statement",
+    "value_as_printed": "Изјава за сообразност: Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph. Eur. 2.4.27"
+   },
+   {
+    "page": 3,
+    "what": "Metals signatory (stamp partly overwritten by signature)",
+    "value_as_printed": "Раководител на Одделение за испитување на метали — М-р Александра А…ка Митков, спец. по медицинска нуклеарна физика (signed); Изработил: (blank)"
+   },
+   {
+    "page": 3,
+    "what": "Mycotoxins section completion date",
+    "value_as_printed": "МИКОТОКСИНИ — Датум на завршување 26.02.2026"
+   },
+   {
+    "page": 4,
+    "what": "Mycotoxins method (row continues from p3 onto p4)",
+    "value_as_printed": "AflaTest Флуорометриски метод"
+   },
+   {
+    "page": 4,
+    "what": "Mycotoxins conformity statement",
+    "value_as_printed": "Изјава за сообразност: Според испитуваните параметри, примерокот ОДГОВАРА НА: Ph. Eur. 2.8.18"
+   },
+   {
+    "page": 4,
+    "what": "Mycotoxins signatories and IPH stamp",
+    "value_as_printed": "Изработил: м-р Бобан Георгиевски · Раководител на Одделение за контаминенти и еко-токсикологија: м-р сци. Анита Најденкоска дипл.инг. спец (signed, ЈЗУ ИЈЗ stamp)"
+   },
+   {
+    "page": 4,
+    "what": "Decision-rule note",
+    "value_as_printed": "Забелешка: Кога лабораторијата дава изјава за сообразност, доколку корисникот нема свое барање за правило за донесување одлука, тогаш се применува Правилото за едноставно прифаќање (Simple acceptance decision rule), согласно документот РУ 7.8 01."
+   }
+  ],
+  "rows_per_section_counted": [
+   {
+    "section": "Page 1: sample data (header only, no result rows)",
+    "page_range": "1",
+    "rows": 0
+   },
+   {
+    "section": "ПЕСТИЦИДИ",
+    "page_range": "2",
+    "rows": 26
+   },
+   {
+    "section": "ПЕСТИЦИДИ (continued: Dieldrin, Heptachlor, Endosulfan sulfate)",
+    "page_range": "3",
+    "rows": 3
+   },
+   {
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "page_range": "3",
+    "rows": 4
+   },
+   {
+    "section": "МИКОТОКСИНИ",
+    "page_range": "3-4",
+    "rows": 1
+   }
+  ],
+  "complete": false
+ },
+ "critic:IPH_3160-2026_P060342": {
+  "missed": [
+   {
+    "page": 1,
+    "what": "Header: report number (Број)",
+    "value_as_printed": "Број: 3160/2026"
+   },
+   {
+    "page": 1,
+    "what": "Header: report date (Датум)",
+    "value_as_printed": "Датум: 01.06.2026"
+   },
+   {
+    "page": 1,
+    "what": "Header: lab number",
+    "value_as_printed": "Лаб. број: 3160/2026"
+   },
+   {
+    "page": 1,
+    "what": "Header: print date",
+    "value_as_printed": "Датум на печатење: 01.06.2026"
+   },
+   {
+    "page": 1,
+    "what": "Header: addressee (До)",
+    "value_as_printed": "ПЈУРЕЛИ ПЛАНТ ДООЕЛ, УЛ.9 БР.9 С.КОЈЛИЈА-СКОПЈЕ, СКОПЈЕ"
+   },
+   {
+    "page": 1,
+    "what": "Header: sample description (Примерок)",
+    "value_as_printed": "SCRAMBLER-сув цвет од медицински канабис"
+   },
+   {
+    "page": 1,
+    "what": "Header: date received",
+    "value_as_printed": "Датум на прием: 21.05.2026"
+   },
+   {
+    "page": 1,
+    "what": "Header: sampling date",
+    "value_as_printed": "Датум на земање: 21.05.2026"
+   },
+   {
+    "page": 1,
+    "what": "Header: covering letter",
+    "value_as_printed": "Со писмо: 139/2026"
+   },
+   {
+    "page": 1,
+    "what": "Header: sample delivered by",
+    "value_as_printed": "Примерокот го доставува: ПЈУРЕЛИ ПЛАНТ ДООЕЛ СКОПЈЕ"
+   },
+   {
+    "page": 1,
+    "what": "Header: sample taken by",
+    "value_as_printed": "Примерокот е земен од: ПЈУРЕЛИ ПЛАНТ ДООЕЛ"
+   },
+   {
+    "page": 1,
+    "what": "Header: packaging type",
+    "value_as_printed": "Тип на пакување: Рефус"
+   },
+   {
+    "page": 1,
+    "what": "Header: quantity",
+    "value_as_printed": "Количина: 38 г"
+   },
+   {
+    "page": 1,
+    "what": "Header: serial/batch number. It carries an asterisk, and no P number is printed anywhere on the certificate",
+    "value_as_printed": "Сериски број: SCR012601*"
+   },
+   {
+    "page": 1,
+    "what": "Header: billing party",
+    "value_as_printed": "Странка за наплата: ПЈУРЕЛИ ПЛАНТ ДООЕЛ"
+   },
+   {
+    "page": 1,
+    "what": "Header: overall testing completion date",
+    "value_as_printed": "Датум на завршување на тестирањата: 01.06.2026"
+   },
+   {
+    "page": 1,
+    "what": "Header: fields printed empty (Производител, Произведен на, Употреблив до, Употреба описно, Увозник, Земја на потекло, Шпедитер; ЗАБЕЛЕШКИ and ИДЕНТИФИКАЦИЈА НА ПЛАН ЗА ЗЕМАЊЕ ПРИМЕРОЦИ boxes empty)",
+    "value_as_printed": "(blank)"
+   },
+   {
+    "page": 1,
+    "what": "Accreditation statement (every page)",
+    "value_as_printed": "акредитиран од ИАРМ со сертификат бр. ЛТ-005, според барањата од стандардот MKS EN ISO/IEC 17025 : 2018"
+   },
+   {
+    "page": 2,
+    "what": "Pesticides table completion date",
+    "value_as_printed": "ПЕСТИЦИДИ — Датум на завршување 26.05.2026"
+   },
+   {
+    "page": 2,
+    "what": "Pesticides method (all 29 rows, p2–p3)",
+    "value_as_printed": "МКС EN 15662:2020"
+   },
+   {
+    "page": 3,
+    "what": "Footnote under each table (no result on the certificate carries *)",
+    "value_as_printed": "Со * се означени резултати од тестирање добиени со неакредитирани методи"
+   },
+   {
+    "page": 3,
+    "what": "Conformity statement, pesticides",
+    "value_as_printed": "Изјава за сообразност: Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на: Ph.Eur 2.8.13"
+   },
+   {
+    "page": 3,
+    "what": "Signatory, pesticides",
+    "value_as_printed": "Раководител на Одделение за контаминенти и еко-токсикологија, м-р сци. Анита Најденкоска дипл.инг. спец (signed)"
+   },
+   {
+    "page": 3,
+    "what": "Metals table completion date",
+    "value_as_printed": "МЕТАЛИ — Датум на завршување 01.06.2026"
+   },
+   {
+    "page": 3,
+    "what": "Metals method (all 4 rows)",
+    "value_as_printed": "МКС EN 17851:2023"
+   },
+   {
+    "page": 3,
+    "what": "Conformity statement, heavy metals",
+    "value_as_printed": "Изјава за сообразност: Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на: Ph. Eur. 2. 4. 27"
+   },
+   {
+    "page": 3,
+    "what": "Signatory, metals",
+    "value_as_printed": "Раководител на Одделение за испитување на метали, дипл.хем. Сандра Зиноски спец.сан.хем. (signed)"
+   },
+   {
+    "page": 3,
+    "what": "Mycotoxins table completion date (table header on p3, its single result row on p4)",
+    "value_as_printed": "МИКОТОКСИНИ — Датум на завршување 26.05.2026"
+   },
+   {
+    "page": 4,
+    "what": "Mycotoxins method",
+    "value_as_printed": "AflaTest Флуорометриски метод"
+   },
+   {
+    "page": 4,
+    "what": "Conformity statement, mycotoxins",
+    "value_as_printed": "Изјава за сообразност: Резултатите од испитуваните параметри СЕ ВО СОГЛАСНОСТ со барањата на: Ph. Eur. 2.8.18"
+   },
+   {
+    "page": 4,
+    "what": "Prepared by / signatory, mycotoxins",
+    "value_as_printed": "Изработил: м-р Бобан Георгиевски; Раководител на Одделение за контаминенти и еко-токсикологија м-р сци. Анита Најденкоска дипл.инг. спец (signed, ИЈЗ РСМ stamp)"
+   },
+   {
+    "page": 4,
+    "what": "Decision-rule note",
+    "value_as_printed": "Забелешка: ... се применува Правилото за едноставно прифаќање (Simple acceptance decision rule), согласно документот РУ 7.8 01. Изјавата за сообразност наведена во овој извештај се однесува само на акредитираните параметри."
+   },
+   {
+    "page": 4,
+    "what": "Form code and pagination (every page)",
+    "value_as_printed": "ОБ 7.8.3 01 Верз. 2; Страна 1 од 4 … Страна 4 од 4"
+   }
+  ],
+  "rows_per_section_counted": [
+   {
+    "section": "ПЕСТИЦИДИ",
+    "page_range": "2-3",
+    "rows": 29
+   },
+   {
+    "section": "МЕТАЛИ / ТЕШКИ МЕТАЛИ",
+    "page_range": "3",
+    "rows": 4
+   },
+   {
+    "section": "МИКОТОКСИНИ",
+    "page_range": "3-4",
+    "rows": 1
+   }
+  ],
+  "complete": false
+ }
+}

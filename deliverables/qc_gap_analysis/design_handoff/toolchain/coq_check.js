@@ -69,7 +69,15 @@ function check(file, html, rec) {
   // -- results cells
   const rt = html.slice(html.indexOf('<table class="results">'), html.indexOf('</table>', html.indexOf('<table class="results">')));
   const rows = [...rt.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/g)].map(m => m[1]).filter(r => /r-cell/.test(r));
-  if (rows.length !== 21) F.push('A-cells expected 21 result rows, found ' + rows.length);
+  // 9.6 / 9.7 print after E. coli where the lot's certificate reports them (coq_build.js PANEL_EXTRA)
+  const EXTRA_NAMES = { 'Pseudomonas aeruginosa': '9.6', 'Staphylococcus aureus': '9.7' };
+  const extraHere = rows.map(r => txtOf((r.match(/<span class="p-sub">([\s\S]*?)<\/span><\/td>/) || [,''])[1]))
+    .filter(n => n in EXTRA_NAMES).map(n => EXTRA_NAMES[n]);
+  if (rows.length !== 21 + extraHere.length) F.push('A-cells expected ' + (21 + extraHere.length) + ' result rows, found ' + rows.length);
+  if (rec) for (const d of ['9.6', '9.7']) {
+    const has = typeof CoQ !== 'undefined' && CoQ.hasExtra ? CoQ.hasExtra(rec, d) : extraHere.includes(d);
+    if (has !== extraHere.includes(d)) F.push('A-cells #' + d + (has ? ' has a result but no row' : ' prints a row with no result'));
+  }
   const cells = rows.map(r => {
     const spc = (r.match(/<span class="p-spec"[^>]*>([\s\S]*?)<\/span>(?=<\/td>|<\/span><\/td>)/) || r.match(/<td><span class="p-spec"[^>]*>([\s\S]*?)<\/td>/) || [,''])[1];
     const cell = (r.match(/<td class="r-cell[^"]*">([\s\S]*?)<\/td>/) || [,''])[1];
@@ -92,7 +100,7 @@ function check(file, html, rec) {
   }
 
   // -- 11 grammar whitelist + length
-  const DETS_ORDER = ['1','2','3','4','5','6','7','8','9.1','9.2','9.3','9.4','9.5','10.1','10.2','10.3','11.1','11.2','11.3','11.4','12'];
+  const DETS_ORDER = ['1','2','3','4','5','6','7','8','9.1','9.2','9.3','9.4','9.5'].concat(extraHere, ['10.1','10.2','10.3','11.1','11.2','11.3','11.4','12']);
   // Owner, 21.09.2026: "there will be no empty space ... all parameter results must be
   // filled in". A result cell is therefore NEVER blank — it carries a value or it
   // carries the token that states what is absent. Three assertions, strongest first.
