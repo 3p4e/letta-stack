@@ -15,7 +15,7 @@ export const RAW_QUESTIONNAIRES: Record<string, RawQuestionnaire> = {
       ] },
       { key: 'r2_technical', title: { en: 'R2 — Technical', mk: 'Р2 — Технички' }, questions: [
         { key: 'techniques', multi: true, label: { en: 'Techniques', mk: 'Техники' }, options: ['HPLC-DAD', 'GC-MS', 'ICP-MS', 'LC-MS/MS', 'Microscopy', 'LOD', 'Karl Fischer', 'Microbiological'] },
-        { key: 'acceptance', multi: true, label: { en: 'Acceptance criteria', mk: 'Критериуми за прифатливост' }, options: ['Cannabinoid ±10 % (Ph. Eur. 3028)', 'LOD NMT 12 %', 'Foreign matter NMT 2 %', 'Heavy metals', 'Pesticides (Ph. Eur. 2.8.13)', 'Mycotoxins', 'Microbial limits'] },
+        { key: 'acceptance', multi: true, label: { en: 'Acceptance criteria', mk: 'Критериуми за прифатливост' }, options: ['Total THC within the strain\'s grade window (official potency specifications)', 'LOD NMT 12 %', 'Foreign matter NMT 2 %', 'Heavy metals', 'Pesticides (Ph. Eur. 2.8.13)', 'Mycotoxins', 'Microbial limits'] },
         { key: 'reference_standards', multi: true, label: { en: 'Reference standards', mk: 'Референтни стандарди' }, options: ['CRS', 'Secondary standard', 'SST', 'Internal'] },
       ] },
       { key: 'r3_responsibilities', title: { en: 'R3 — Responsibilities', mk: 'Р3 — Одговорности' }, questions: [

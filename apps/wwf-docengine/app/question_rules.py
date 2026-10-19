@@ -38,7 +38,7 @@ RECOMMEND: dict[str, dict[str, dict[str, dict[str, list[str]]]]] = {
         "focus": {
             "Identity": {"techniques": ["Microscopy", "HPLC-DAD"], "acceptance": ["Foreign matter"],
                          "reference_standards": ["CRS"]},
-            "Potency": {"techniques": ["HPLC-DAD"], "acceptance": ["Cannabinoid"], "reference_standards": ["CRS", "SST"]},
+            "Potency": {"techniques": ["HPLC-DAD"], "acceptance": ["Total THC"], "reference_standards": ["CRS", "SST"]},
             "Purity": {"techniques": ["Microscopy", "LOD", "Karl Fischer"], "acceptance": ["LOD", "Foreign matter"]},
             "Contaminants": {"techniques": ["GC-MS", "ICP-MS", "LC-MS/MS"],
                              "acceptance": ["Heavy metals", "Pesticides", "Mycotoxins"], "reference_standards": ["CRS"]},

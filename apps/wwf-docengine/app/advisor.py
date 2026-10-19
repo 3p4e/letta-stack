@@ -54,7 +54,8 @@ def clean(raw: dict, asked: dict[str, dict]) -> dict[str, dict]:
     return out
 
 
-def prompt(brief: dict, asked: dict[str, dict], examples: str, regulatory: str, sources: list[dict]) -> str:
+def prompt(brief: dict, asked: dict[str, dict], examples: str, regulatory: str, sources: list[dict],
+           potency_specs: str = "") -> str:
     decided = {k: f["value"] for k, f in brief["fields"].items() if f["state"] in ("chosen", "locked")}
     lines = [f"DOCUMENT: {brief['meta'].get('code') or '(code at build)'} — {brief['meta'].get('title_en', '')} | "
              f"{brief['meta'].get('title_mk', '')}; package {brief['package']}; question bank {brief['questionnaire']}.",
@@ -63,6 +64,8 @@ def prompt(brief: dict, asked: dict[str, dict], examples: str, regulatory: str, 
     for key, q in asked.items():
         lines.append(f"- {key}: {q.get('label', key)}" + (" (several may be chosen)" if q.get("multi") else "")
                      + (f"; options already offered: {'; '.join(q['options'])}" if q.get("options") else "; free text"))
+    if potency_specs:
+        lines += ["", potency_specs]
     if examples:
         lines += ["", "APPROVED HOUSE DOCUMENTS (structure and practice only):", examples]
     if regulatory:
@@ -93,7 +96,10 @@ async def propose(brief: dict, asked: dict[str, dict], sources: list[dict], clie
                                          tag="R", max_chars=700)
         except RagflowError as e:
             notes.append(f"knowledge bases unavailable: {e}")
-    text = prompt(brief, asked, examples, regulatory, sources)
+    from . import potency
+    specs = await potency.block(query, *(q.get("label", "") for q in asked.values()),
+                                *(" ".join(q.get("options") or []) for q in asked.values()))
+    text = prompt(brief, asked, examples, regulatory, sources, specs)
     tmp = await spawn_ephemeral(client, "gf_brief_advisor", f"brief_{brief['id'][:8]}")
     try:
         answer = await client.send_message(tmp, text)

@@ -11,7 +11,7 @@ import asyncio
 import logging
 import re
 
-from . import builder, db, glossary
+from . import builder, db, glossary, potency
 from .config import settings
 from .letta import LettaClient, LettaError
 from .ragflow import EXAMPLES_NOTE, RagflowClient, RagflowError, citations, format_passages
@@ -610,6 +610,12 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
         meta["doctype"] = doctype
         sop = doctype == "SOP"
         brief = _brief(qkey, answers, p.get("instructions", ""), p.get("sources") or [], p.get("source_texts") or [])
+        # The official potency specifications, when the document touches potency (Head of QC, 19.10.2026).
+        specs = await potency.block(meta.get("title_en", ""), meta.get("title_mk", ""), brief)
+        if specs:
+            brief += "\n\n" + specs
+            knowledge["notes"].append("potency specifications: " + ("read from the KVM4 potency builder"
+                                                                    if "could not be read" not in specs else "unavailable"))
         if p.get("assumed"):
             ctx["assumed"] = p["assumed"]          # what the requester did not decide: the review report lists it
         controls = controls_rule(qkey)

@@ -41,3 +41,11 @@ async def dbpool():
         yield db.pool()
     finally:
         await db.close()
+
+
+@pytest.fixture(autouse=True)
+def _no_potency_service(monkeypatch):
+    """No test reaches the live potency builder; test_potency.py sets its own URL and transport."""
+    from app import potency
+    monkeypatch.setattr(settings, "potency_specs_url", "")
+    potency._cache.update(at=0.0, specs=None)

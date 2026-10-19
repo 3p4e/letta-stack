@@ -414,3 +414,9 @@ the QA channels.
   until not confirmed"*; *"EQSOP document family is not approved as equipment sops yet"*). QASOP and EQSOP are
   `unconfirmed_families`: a new draft is `QASOPXXX` / `EQSOPXXX` (annexes `QASOPXXXA01`…), and the numbers drafts already
   carry are `unconfirmed`. A missing number never stops a draft.
+- **Potency grades and ranges are the KVM4 potency builder's** (Head of QC, 19.10.2026: *"the specification grades and
+  ranges actualy are officialy as in https://specs.srv1231216.hstgr.cloud"*). The engine reads `GET /api/specs`
+  (`app/potency.py`, `POTENCY_SPECS_URL`) and gives the served grades — nominal ± tolerance, lo–hi — to the authors and
+  the advisor whenever a document touches potency. No grade, window or tolerance comes from a pharmacopoeia, a house
+  document or an older table, and no grade numeral is written that the service does not give. Unreadable service →
+  "per the strain's current potency specification", never a number.
