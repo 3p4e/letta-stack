@@ -27,15 +27,15 @@ export function CreateMenu() {
   };
   return <>
     <div onClick={() => set({ createOpen: false })} style={{ position: 'fixed', inset: 0, zIndex: 50 }} />
-    <div style={{ position: 'absolute', zIndex: 51, left: menuX, top: menuY, display: 'flex', background: T.pane, border: `1px solid ${T.control}`, borderRadius: 10, boxShadow: '0 20px 50px rgba(15,31,51,.18)', overflow: 'hidden' }}>
-      <div style={{ width: 270, padding: 6, borderRight: `1px solid ${T.hair}`, display: 'flex', flexDirection: 'column', gap: 2 }}>
+    <div className="pp-create-menu" style={{ position: 'absolute', zIndex: 51, left: menuX, top: menuY, display: 'flex', background: T.pane, border: `1px solid ${T.control}`, borderRadius: 10, boxShadow: '0 20px 50px rgba(15,31,51,.18)', overflow: 'hidden' }}>
+      <div className="pp-create-col" style={{ width: 270, padding: 6, borderRight: `1px solid ${T.hair}`, display: 'flex', flexDirection: 'column', gap: 2 }}>
         <Caps style={{ padding: '6px 10px 4px' }}>WHAT TO CREATE</Caps>
-        {CATS.map(c => <div key={c.k} onClick={() => set({ createCat: c.k })} onMouseEnter={() => tweaks.submenuOpenOn === 'hover' && set({ createCat: c.k })}
+        {CATS.map(c => <div key={c.k} onClick={() => { set({ createCat: c.k }); if (window.innerWidth <= 900) setTimeout(() => document.querySelector('.pp-create-items')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 30); }} onMouseEnter={() => tweaks.submenuOpenOn === 'hover' && set({ createCat: c.k })}
           style={{ padding: '8px 10px', borderRadius: 6, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, background: c.k === cat.k ? T.selected : 'transparent' }}>
           <div style={{ minWidth: 0 }}><div style={{ color: T.strong, fontWeight: 700 }}>{c.label}</div><div style={{ fontSize: 11.5, color: T.muted, whiteSpace: 'nowrap' }}>{c.sub}</div></div><span style={{ color: T.muted }}>›</span>
         </div>)}
       </div>
-      <div style={{ width: 340, padding: 6, display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <div className="pp-create-col pp-create-items" style={{ width: 340, padding: 6, display: 'flex', flexDirection: 'column', gap: 2 }}>
         <Caps style={{ padding: '6px 10px 4px' }}>{cat.label.toUpperCase()} · START FROM</Caps>
         {cat.items.map(([label, desc, screen, extra]) => <div key={label} className="pp-hover-sel" onClick={() => {
           if (screen === 'format') go('format', { ...(extra || {}) }); else openSheet(screen, extra);
@@ -110,13 +110,13 @@ export function NewDocSheet() {
   const mono = { fontFamily: MONO, fontSize: 11.5, color: T.muted } as const;
   return <>
     <div onClick={close} style={{ position: 'fixed', inset: 0, zIndex: 60, background: 'rgba(15,31,51,.35)' }} />
-    <div style={{ position: 'fixed', zIndex: 61, left: '50%', top: '50%', transform: 'translate(-50%,-50%)', width: 900, maxWidth: 'calc(100vw - 40px)', maxHeight: 'calc(100vh - 40px)', overflow: 'hidden', background: T.pane, border: `1px solid ${T.control}`, borderRadius: 12, boxShadow: '0 30px 70px rgba(15,31,51,.35)', display: 'flex', flexDirection: 'column' }}>
+    <div className="pp-newdoc" style={{ position: 'fixed', zIndex: 61, left: '50%', top: '50%', transform: 'translate(-50%,-50%)', width: 900, maxWidth: 'calc(100vw - 40px)', maxHeight: 'calc(100vh - 40px)', overflow: 'hidden', background: T.pane, border: `1px solid ${T.control}`, borderRadius: 12, boxShadow: '0 30px 70px rgba(15,31,51,.35)', display: 'flex', flexDirection: 'column' }}>
       <div style={{ flex: 'none', padding: '16px 20px', borderBottom: `1px solid ${T.hair}`, display: 'flex', alignItems: 'baseline', gap: 12 }}>
         <span style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 17, color: T.strong, whiteSpace: 'nowrap' }}>New {LABEL[sh.doctype]}</span>
         <span style={{ fontSize: 13, color: T.secondary, whiteSpace: 'nowrap' }}>starts in {pathLabel}</span>
         <span onClick={close} style={{ marginLeft: 'auto', cursor: 'pointer', color: T.muted, fontSize: 18 }}>×</span>
       </div>
-      <div style={{ display: 'flex', flex: '1 1 auto', minHeight: 0, overflow: 'auto' }}>
+      <div className="pp-newdoc-body" style={{ display: 'flex', flex: '1 1 auto', minHeight: 0, overflow: 'auto' }}>
         <div style={{ flex: 1, minWidth: 0, padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}><span style={{ ...mono, width: 96 }}>doctype</span>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, fontSize: 12 }}>{(['SOP', 'ANNEX', 'FORM', 'LOG', 'CHECKLIST', 'REPORT'] as const).map(d =>
@@ -134,7 +134,7 @@ export function NewDocSheet() {
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, fontSize: 12.5 }}>{paths.map(([k, label]) =>
               <span key={k} onClick={() => upd('path', k)} style={{ padding: '5px 11px', borderRadius: 999, cursor: 'pointer', border: `1px solid ${sh.path === k ? T.focus : T.control}`, background: sh.path === k ? T.selected : 'transparent', color: sh.path === k ? T.strong : T.secondary }}>{label}</span>)}</div></div>
         </div>
-        <div style={{ width: 330, flex: 'none', borderLeft: `1px solid ${T.hair}`, background: T.bg, padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div className="pp-newdoc-side" style={{ width: 330, flex: 'none', borderLeft: `1px solid ${T.hair}`, background: T.bg, padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
           <Caps>HEADERDATA PREVIEW</Caps>
           <div style={{ background: T.deeper, border: `1px solid ${T.hair}`, borderRadius: 6, padding: '10px 12px', fontFamily: MONO, fontSize: 11.5, lineHeight: 1.7 }}>
             <div style={{ color: T.comment }}>&lt;!--HEADERDATA</div>
@@ -146,7 +146,7 @@ export function NewDocSheet() {
             <div key={i} style={{ display: 'grid', gridTemplateColumns: '16px 1fr', gap: 8, lineHeight: 1.35 }}><span style={{ color: v === null ? C.warn : v ? C.ok : T.faint, fontWeight: 700 }}>{v === null ? '!' : v ? '✓' : '○'}</span><span style={{ color: T.text }}>{t}</span></div>)}</div>
         </div>
       </div>
-      <div style={{ flex: 'none', padding: '12px 20px', borderTop: `1px solid ${T.hair}`, display: 'flex', gap: 10, alignItems: 'center' }}>
+      <div className="pp-newdoc-foot" style={{ flex: 'none', padding: '12px 20px', borderTop: `1px solid ${T.hair}`, display: 'flex', gap: 10, alignItems: 'center' }}>
         <span style={{ fontSize: 12, color: T.muted }}>Status starts as draft. Version and effective date become controlled only on approval.</span>
         <span onClick={close} style={{ marginLeft: 'auto', color: T.secondary, cursor: 'pointer', padding: '8px 12px' }}>Cancel</span>
         <button onClick={create} style={{ background: ok ? T.navy : T.control, color: T.onAccent, border: 0, borderRadius: 6, padding: '9px 18px', font: 'inherit', fontWeight: 700, cursor: ok ? 'pointer' : 'not-allowed' }}>Create draft →</button>

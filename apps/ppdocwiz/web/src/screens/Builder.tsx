@@ -117,7 +117,7 @@ export function Builder() {
       <b style={{ color: T.strong, fontSize: 17 }}>No document open</b>
       <span style={{ color: T.secondary, lineHeight: 1.5 }}>Start a new draft with <b>＋ Create</b> — the code is assigned from the register — or continue an open draft from Jobs.</span>
       <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
-        <span onClick={() => set({ createOpen: true, menuX: 220, menuY: 60 })} style={{ cursor: 'pointer', color: T.onAccent, background: T.navy, borderRadius: 6, padding: '8px 14px', fontWeight: 700 }}>＋ Create</span>
+        <span onClick={() => go('flow')} style={{ cursor: 'pointer', color: T.onAccent, background: T.navy, borderRadius: 6, padding: '8px 14px', fontWeight: 700 }}>＋ Create</span>
         <span onClick={() => go('jobs')} style={{ cursor: 'pointer', color: T.secondary, border: `1px solid ${T.control}`, borderRadius: 6, padding: '8px 14px' }}>Open from Jobs</span>
       </div>
     </div>
