@@ -106,3 +106,27 @@ describe('live sources and related documents', () => {
     await expect(liveApi().addBriefSource('b1', 'x.md', 'aGVsbG8=')).rejects.toMatchObject({ status: 409, message: 'the brief already holds 20 sources' });
   });
 });
+
+// 20.10.2026: Stop a running job, and revise a draft from the canvas.
+describe('live stop and revise', () => {
+  afterEach(() => { vi.unstubAllGlobals(); });
+
+  it('stops through POST /workflows/{id}/stop', async () => {
+    vi.stubGlobal('window', {});
+    const fetchMock = vi.fn(async () => json(job('j1', 'failed')));
+    vi.stubGlobal('fetch', fetchMock);
+    expect((await liveApi().stopJob('j1')).status).toBe('failed');
+    expect(fetchMock).toHaveBeenCalledWith('/api/docengine/workflows/j1/stop', expect.objectContaining({ method: 'POST' }));
+  });
+
+  it('revises through POST /workflows/{id}/revise with the canvas text and section', async () => {
+    vi.stubGlobal('window', {});
+    const out = { markdown: 'x', section: 2, title: 't', gaps: [], agent: 'gf_sop_author' };
+    const fetchMock = vi.fn(async (_u: string, _i?: RequestInit) => json(out));
+    vi.stubGlobal('fetch', fetchMock);
+    expect(await liveApi().reviseJob('j1', { instruction: 'shorter', markdown: 'md', section: 2 })).toEqual(out);
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(url).toBe('/api/docengine/workflows/j1/revise');
+    expect(JSON.parse(String(init?.body))).toEqual({ instruction: 'shorter', markdown: 'md', section: 2 });
+  });
+});

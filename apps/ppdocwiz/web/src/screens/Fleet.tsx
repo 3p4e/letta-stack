@@ -33,7 +33,7 @@ function FleetBody() {
 
   const A = AGENTS.find(a => a.n === agSel) || AGENTS[1];
   const agv = (a: typeof AGENTS[number]) => <div key={a.n} onClick={() => { setAgSel(a.n); setTab('agent'); }} style={{ padding: '7px 9px', borderRadius: 6, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', gap: 6, alignItems: 'center', background: agSel === a.n ? T.selected : 'transparent' }}>
-    <span style={{ fontFamily: MONO, fontSize: 12, color: agSel === a.n ? '#fff' : T.secondary, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.n}</span><span style={{ fontFamily: MONO, fontSize: 11, color: T.muted }}>{a.runs}</span></div>;
+    <span style={{ fontFamily: MONO, fontSize: 12, color: agSel === a.n ? T.strong : T.secondary, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.n}</span><span style={{ fontFamily: MONO, fontSize: 11, color: T.muted }}>{a.runs}</span></div>;
   const flip = (k: keyof Faults) => { const m = api as MockApi; m.setFaults({ [k]: !m.faults[k] }); setFaults({ ...m.faults }); };
   const de = h.de, deOk = h.code === 200;
   const live = api.mode === 'live';
@@ -42,37 +42,37 @@ function FleetBody() {
   const hl = (v: unknown) => <span style={{ color: v === true ? C.ok : v === false ? C.bad : C.warn }}>{JSON.stringify(v)}</span>;
   return <>
     <div style={{ width: 250, flex: 'none', borderRight: `1px solid ${T.hair}`, background: T.pane, padding: '14px 10px', display: 'flex', flexDirection: 'column', gap: 3, overflow: 'auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '0 4px 6px' }}><b style={{ color: '#fff' }}>Agents</b><span style={{ fontFamily: MONO, fontSize: 11, color: T.faint }}>fleet.yaml</span></div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '0 4px 6px' }}><b style={{ color: T.strong }}>Agents</b><span style={{ fontFamily: MONO, fontSize: 11, color: T.faint }}>fleet.yaml</span></div>
       <Caps style={{ padding: '6px 6px 4px' }}>GF_* · MANAGED</Caps>{AGENTS.filter(a => !a.legacy).map(agv)}
       <Caps style={{ padding: '12px 6px 4px' }}>EXISTING · NEVER MODIFIED</Caps>{AGENTS.filter(a => a.legacy).map(agv)}
       <Caps style={{ padding: '12px 6px 4px' }}>EPHEMERAL CLONES</Caps><div style={{ padding: '5px 9px', fontFamily: MONO, fontSize: 11, color: T.faint }}>{live ? 'not reported yet' : 'none alive · last sweep 06:20'}</div>
       <Caps style={{ padding: '12px 6px 4px' }}>ADMIN</Caps>
-      {([['engine', 'Engine environment'], ['settings', 'Settings & degraded states']] as const).map(([k, l]) => <div key={k} onClick={() => setTab(k)} style={{ padding: '7px 9px', borderRadius: 6, cursor: 'pointer', background: tab === k ? T.selected : 'transparent', color: tab === k ? '#fff' : T.secondary, fontSize: 12.5 }}>{l}</div>)}
+      {([['engine', 'Engine environment'], ['settings', 'Settings & degraded states']] as const).map(([k, l]) => <div key={k} onClick={() => setTab(k)} style={{ padding: '7px 9px', borderRadius: 6, cursor: 'pointer', background: tab === k ? T.selected : 'transparent', color: tab === k ? T.strong : T.secondary, fontSize: 12.5 }}>{l}</div>)}
     </div>
     <div style={{ flex: 1, minWidth: 0, padding: '18px 22px', display: 'flex', flexDirection: 'column', gap: 14, overflow: 'auto' }}>
       {tab === 'agent' && <>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}><div style={{ display: 'flex', gap: 10, alignItems: 'baseline', flexWrap: 'wrap' }}><span style={{ fontFamily: MONO, fontWeight: 700, fontSize: 16, color: '#fff' }}>{A.n}</span><Tag c={A.legacy ? T.secondary : C.ok}>{A.legacy ? 'existing · skipped by ensure_fleet' : 'managed · create-if-missing'}</Tag></div><div style={{ color: T.secondary }}>{A.d}</div></div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}><div style={{ display: 'flex', gap: 10, alignItems: 'baseline', flexWrap: 'wrap' }}><span style={{ fontFamily: MONO, fontWeight: 700, fontSize: 16, color: T.strong }}>{A.n}</span><Tag c={A.legacy ? T.secondary : C.ok}>{A.legacy ? 'existing · skipped by ensure_fleet' : 'managed · create-if-missing'}</Tag></div><div style={{ color: T.secondary }}>{A.d}</div></div>
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1.1fr) minmax(0,1.5fr) minmax(0,.6fr)', gap: 10, fontSize: 12.5 }}>
-          <div style={{ background: T.surface, border: `1px solid ${T.control}`, borderRadius: 6, padding: '9px 11px' }}><div style={{ color: T.muted, fontSize: 11.5 }}>model</div><div style={{ fontFamily: MONO, color: '#fff', fontSize: 12, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>openai/gpt-4o-mini</div><div style={{ fontSize: 11, color: T.muted }}>{A.legacy ? 'own config, untouched' : 'adopted from the server, not fleet.yaml'}</div></div>
-          <div style={{ background: T.surface, border: `1px solid ${T.control}`, borderRadius: 6, padding: '9px 11px' }}><div style={{ color: T.muted, fontSize: 11.5 }}>sources</div><div style={{ fontFamily: MONO, color: '#fff', fontSize: 12, wordBreak: 'break-word' }}>{A.src.length ? A.src.join(', ') : '—'}</div></div>
-          <div style={{ background: T.surface, border: `1px solid ${T.control}`, borderRadius: 6, padding: '9px 11px' }}><div style={{ color: T.muted, fontSize: 11.5 }}>runs · 24 h</div><div style={{ fontFamily: MONO, color: '#fff', fontSize: 12 }}>{A.runs}</div></div></div>
+          <div style={{ background: T.surface, border: `1px solid ${T.control}`, borderRadius: 6, padding: '9px 11px' }}><div style={{ color: T.muted, fontSize: 11.5 }}>model</div><div style={{ fontFamily: MONO, color: T.strong, fontSize: 12, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>openai/gpt-4o-mini</div><div style={{ fontSize: 11, color: T.muted }}>{A.legacy ? 'own config, untouched' : 'adopted from the server, not fleet.yaml'}</div></div>
+          <div style={{ background: T.surface, border: `1px solid ${T.control}`, borderRadius: 6, padding: '9px 11px' }}><div style={{ color: T.muted, fontSize: 11.5 }}>sources</div><div style={{ fontFamily: MONO, color: T.strong, fontSize: 12, wordBreak: 'break-word' }}>{A.src.length ? A.src.join(', ') : '—'}</div></div>
+          <div style={{ background: T.surface, border: `1px solid ${T.control}`, borderRadius: 6, padding: '9px 11px' }}><div style={{ color: T.muted, fontSize: 11.5 }}>runs · 24 h</div><div style={{ fontFamily: MONO, color: T.strong, fontSize: 12 }}>{A.runs}</div></div></div>
         <Caps>CORE MEMORY · persona</Caps>
         <div style={{ background: T.surface, border: `1px solid ${T.control}`, borderRadius: 6, padding: '11px 13px', lineHeight: 1.55, fontSize: 13 }}>{A.p}</div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}><Caps style={{ whiteSpace: 'nowrap' }}>CORE MEMORY · gf_house_rules · shared</Caps><span style={{ fontSize: 11.5, color: T.muted, whiteSpace: 'nowrap' }}>{A.legacy ? 'uses its own pp_house_rules block' : 'seeded at create time'}</span></div>
         <div style={{ background: T.deeper, border: `1px solid ${T.hair}`, borderRadius: 6, padding: '11px 13px', display: 'flex', flexDirection: 'column', gap: 5, fontSize: 12.5, lineHeight: 1.45 }}>{HOUSE_RULES.map((r, i) => <div key={i} style={{ display: 'grid', gridTemplateColumns: '12px 1fr', gap: 6, color: T.text }}><span style={{ color: T.faint }}>–</span><span>{r}</span></div>)}</div>
       </>}
       {tab === 'engine' && <>
-        <div style={{ display: 'flex', gap: 10, alignItems: 'baseline' }}><b style={{ color: '#fff', fontSize: 16 }}>Engine environment</b><span style={{ fontFamily: MONO, fontSize: 11.5, color: T.faint }}>pp_assets.check_environment · canon sync · manifest</span></div>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'baseline' }}><b style={{ color: T.strong, fontSize: 16 }}>Engine environment</b><span style={{ fontFamily: MONO, fontSize: 11.5, color: T.faint }}>pp_assets.check_environment · canon sync · manifest</span></div>
         {envErr && <Banner kind="warn">{envErr}. Until a route exists, run <span style={{ fontFamily: MONO }}>python3 -c "import pp_assets; print(pp_assets.check_environment())"</span> in the container.</Banner>}
         {env && <>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 10, fontSize: 12.5 }}>
             {([['engine', 'pp-document-suite ' + env.version, T.text], ['canon', env.canon, T.text], ['sync', env.synced && env.hash === env.hashExpected ? `hash ${env.hash} = manifest` : `hash ${env.hash} ≠ ${env.hashExpected}`, env.synced && env.hash === env.hashExpected ? C.ok : C.bad]] as const).map(([k, v, c]) =>
               <div key={k} style={{ background: T.surface, border: `1px solid ${T.control}`, borderRadius: 6, padding: '9px 11px' }}><div style={{ color: T.muted, fontSize: 11.5 }}>{k}</div><div style={{ fontFamily: MONO, color: c, fontSize: 12 }}>{v}</div></div>)}</div>
           <Caps>FONTS · renderer probe, one document per house face</Caps>
-          <div style={{ background: T.deeper, border: `1px solid ${T.hair}`, borderRadius: 6, padding: '9px 11px', fontFamily: MONO, fontSize: 11.5, display: 'flex', flexDirection: 'column', gap: 5 }}>{env.fonts.map(f => <div key={f.face} style={{ display: 'grid', gridTemplateColumns: '16px 150px 1fr', gap: 8 }}><span style={{ color: f.ok ? C.ok : C.bad }}>{f.ok ? '✓' : '✗'}</span><span style={{ color: '#fff' }}>{f.face}</span><span style={{ color: f.ok ? T.secondary : T.errText }}>{f.file}{f.missing ? ` · missing Macedonian letters: ${f.missing}` : ''}</span></div>)}</div>
+          <div style={{ background: T.deeper, border: `1px solid ${T.hair}`, borderRadius: 6, padding: '9px 11px', fontFamily: MONO, fontSize: 11.5, display: 'flex', flexDirection: 'column', gap: 5 }}>{env.fonts.map(f => <div key={f.face} style={{ display: 'grid', gridTemplateColumns: '16px 150px 1fr', gap: 8 }}><span style={{ color: f.ok ? C.ok : C.bad }}>{f.ok ? '✓' : '✗'}</span><span style={{ color: T.strong }}>{f.face}</span><span style={{ color: f.ok ? T.secondary : T.errText }}>{f.file}{f.missing ? ` · missing Macedonian letters: ${f.missing}` : ''}</span></div>)}</div>
           {env.fonts.some(f => !f.ok) && <Banner kind="err">The renderer does not print every house face as asked. DocEngine refuses a PDF with a substitute font (Head of QC, 10.10.2026), so PDFs fail until the font is installed in pp-render.</Banner>}
           <Caps>PP_VERIFY · last documents in the registry</Caps>
-          <div style={{ background: T.deeper, border: `1px solid ${T.hair}`, borderRadius: 6, padding: '9px 11px', fontFamily: MONO, fontSize: 11.5, display: 'flex', flexDirection: 'column', gap: 5 }}>{env.glyphAudit.map(g => <div key={g.run} style={{ display: 'grid', gridTemplateColumns: '16px 170px 1fr', gap: 8 }}><span style={{ color: g.ok ? C.ok : C.warn }}>{g.ok ? '✓' : '!'}</span><span style={{ color: '#fff' }}>{g.run}</span><span style={{ color: g.ok ? T.secondary : C.warn }}>{g.note}</span></div>)}</div>
+          <div style={{ background: T.deeper, border: `1px solid ${T.hair}`, borderRadius: 6, padding: '9px 11px', fontFamily: MONO, fontSize: 11.5, display: 'flex', flexDirection: 'column', gap: 5 }}>{env.glyphAudit.map(g => <div key={g.run} style={{ display: 'grid', gridTemplateColumns: '16px 170px 1fr', gap: 8 }}><span style={{ color: g.ok ? C.ok : C.warn }}>{g.ok ? '✓' : '!'}</span><span style={{ color: T.strong }}>{g.run}</span><span style={{ color: g.ok ? T.secondary : C.warn }}>{g.note}</span></div>)}</div>
           <Caps>FLEET DRIFT · persistent agents vs agents/fleet.yaml (pipeline clones are built from fleet.yaml; the chat uses the persistent agents)</Caps>
           <div style={{ border: `1px solid ${T.hair}`, borderRadius: 6, overflow: 'hidden', fontFamily: MONO, fontSize: 11.5 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 120px', gap: 8, padding: '6px 10px', background: T.pane, color: T.muted }}><span>key</span><span>manifest</span><span>live</span></div>
@@ -80,7 +80,7 @@ function FleetBody() {
         </>}
       </>}
       {tab === 'settings' && <>
-        <b style={{ color: '#fff', fontSize: 16 }}>Settings</b>
+        <b style={{ color: T.strong, fontSize: 16 }}>Settings</b>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}><span style={{ width: 160, fontFamily: MONO, fontSize: 11.5, color: T.muted }}>API</span><Seg items={[['live', 'live · ppdocwiz + DocEngine'], ['mock', 'mock · sample data']]} value={api.mode} onPick={m => m !== api.mode && setMode(m)} size={12.5} /></div>
         <div style={{ fontSize: 12, color: T.muted, lineHeight: 1.5, paddingLeft: 172 }}>Live calls /api/* on this origin and DocEngine at <span style={{ fontFamily: MONO }}>{window.PP_SUITE_CONFIG?.docengineBase || '/api/docengine'}</span> (set window.PP_SUITE_CONFIG.docengineBase; DocEngine has no public port, so it needs a same-origin proxy).</div>
         <Caps style={{ marginTop: 6 }}>TWEAKS · Create menu</Caps>
@@ -93,13 +93,13 @@ function FleetBody() {
       </>}
     </div>
     <div style={{ width: 380, flex: 'none', borderLeft: `1px solid ${T.hair}`, background: T.deeper, padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}><b style={{ color: '#fff' }}>GET /health</b><span style={{ fontFamily: MONO, fontSize: 11.5, color: deOk ? C.ok : C.bad }}>{h.code || '…'}</span></div>
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}><b style={{ color: T.strong }}>GET /health</b><span style={{ fontFamily: MONO, fontSize: 11.5, color: deOk ? C.ok : C.bad }}>{h.code || '…'}</span></div>
       <div style={{ fontFamily: MONO, fontSize: 11.5, lineHeight: 1.6, color: T.secondary, background: T.bg, border: `1px solid ${T.hair}`, borderRadius: 6, padding: '9px 11px' }}>
         {de ? <><div>{'{'}</div><div>  "ok": {hl(de.ok)}, "db": {hl(de.db)},</div><div>  "letta": {hl(de.letta)},</div><div>  "engine": <span style={{ color: C.warn }}>"{de.engine}"</span></div><div>{'}'}</div></> : <span style={{ color: C.bad }}>{h.err || 'unreachable'}</span>}</div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>{services.map(([name, port, meta, st]) => <div key={name} style={{ background: T.surface, border: `1px solid ${T.control}`, borderRadius: 6, padding: '7px 9px' }}>
-        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}><Dot c={C[st as 'ok']} /><b style={{ color: '#fff', fontSize: 12 }}>{name}</b><span style={{ marginLeft: 'auto', fontFamily: MONO, fontSize: 10.5, color: T.muted }}>{port}</span></div>
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}><Dot c={C[st as 'ok']} /><b style={{ color: T.strong, fontSize: 12 }}>{name}</b><span style={{ marginLeft: 'auto', fontFamily: MONO, fontSize: 10.5, color: T.muted }}>{port}</span></div>
         <div style={{ fontSize: 11, color: st === 'bad' ? C.bad : T.secondary, marginTop: 3 }}>{meta}</div></div>)}</div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}><b style={{ color: '#fff' }}>Log tail</b><span style={{ fontFamily: MONO, fontSize: 11.5, color: T.muted }}>sample · no endpoint yet</span></div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}><b style={{ color: T.strong }}>Log tail</b><span style={{ fontFamily: MONO, fontSize: 11.5, color: T.muted }}>sample · no endpoint yet</span></div>
       <div style={{ fontFamily: MONO, fontSize: 11, lineHeight: 1.7, color: T.secondary, overflow: 'hidden' }}>{LOG_LINES.map((t, i) => <div key={i} style={{ whiteSpace: 'pre', color: /FAIL|gap|FIX|reaped/.test(t) ? C.warn : /PASS|200/.test(t) ? T.secondary : T.muted }}>{t}</div>)}</div>
     </div>
   </>;

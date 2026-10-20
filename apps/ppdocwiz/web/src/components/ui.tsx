@@ -47,7 +47,7 @@ export function Seg<K extends string>({ items, value, onPick, size = 13, pad = '
   return (
     <div style={{ display: 'flex', background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 6, padding: 2, fontSize: size, ...style }}>
       {items.map(([k, label]) => (
-        <span key={k} onClick={() => onPick(k)} {...press(() => onPick(k))} aria-pressed={value === k} style={{ flex: fill ? 1 : undefined, textAlign: 'center', whiteSpace: 'nowrap', padding: pad, borderRadius: 4, cursor: 'pointer', background: value === k ? T.navy : 'transparent', color: value === k ? '#fff' : T.secondary }}>{label}</span>))}
+        <span key={k} onClick={() => onPick(k)} {...press(() => onPick(k))} aria-pressed={value === k} style={{ flex: fill ? 1 : undefined, textAlign: 'center', whiteSpace: 'nowrap', padding: pad, borderRadius: 4, cursor: 'pointer', background: value === k ? T.navy : 'transparent', color: value === k ? T.onAccent : T.secondary }}>{label}</span>))}
     </div>);
 }
 
@@ -59,13 +59,13 @@ export const Sep = () => <span style={{ color: C.warn, fontFamily: MONO }}>|||</
 export function PaneHead({ title, right }: { title: ReactNode; right?: ReactNode }) {
   return (
     <div style={{ height: 42, flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 14px', fontSize: 12, color: T.muted, borderBottom: `1px solid ${T.hair}` }}>
-      <b style={{ color: '#fff', fontSize: 13 }}>{title}</b><span>{right}</span>
+      <b style={{ color: T.strong, fontSize: 13 }}>{title}</b><span>{right}</span>
     </div>);
 }
 
 export function Btn({ children, onClick, primary = true, disabled, style, title }: { children: ReactNode; onClick?: () => void; primary?: boolean; disabled?: boolean; style?: CSSProperties; title?: string }) {
   return <button title={title} disabled={disabled} onClick={disabled ? undefined : onClick} className={primary ? 'pp-btn' : 'pp-btn-ghost'} style={{
-    background: disabled ? T.control : primary ? T.navy : 'transparent', color: primary ? '#fff' : T.text, border: primary ? 0 : `1px solid ${T.control}`,
+    background: disabled ? T.control : primary ? T.navy : 'transparent', color: primary ? T.onAccent : T.text, border: primary ? 0 : `1px solid ${T.control}`,
     borderRadius: 6, padding: '8px 14px', font: 'inherit', fontWeight: primary ? 700 : 400, cursor: disabled ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap', ...style,
   }}>{children}</button>;
 }
@@ -76,12 +76,12 @@ export const Tag = ({ children, c = T.secondary, style }: { children: ReactNode;
 export const DefTag = () => <span style={{ fontSize: 10, color: C.ok, border: `1px solid ${T.okBorder}`, borderRadius: 3, padding: '0 4px' }}>{tr(useApp(s => s.lang), 'default')}</span>;
 
 export function Banner({ kind, children, style }: { kind: 'err' | 'ok' | 'warn' | 'info'; children: ReactNode; style?: CSSProperties }) {
-  const k = { err: [T.errSurface, T.errBorder, T.errText], ok: [T.okSurface, T.okBorder, T.okText], warn: [T.warnSurface, '#6b5326', '#f5d6a1'], info: [T.surface, T.control, T.secondary] }[kind];
+  const k = { err: [T.errSurface, T.errBorder, T.errText], ok: [T.okSurface, T.okBorder, T.okText], warn: [T.warnSurface, T.warnBorder, T.warnText], info: [T.surface, T.control, T.secondary] }[kind];
   return <div style={{ background: k[0], border: `1px solid ${k[1]}`, borderRadius: 6, padding: '8px 12px', color: k[2], fontSize: 12.5, lineHeight: 1.45, ...style }}>{children}</div>;
 }
 
 export function Input({ value, onChange, placeholder, bad, style, mono, onKeyDown }: { value: string; onChange: (v: string) => void; placeholder?: string; bad?: boolean; style?: CSSProperties; mono?: boolean; onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void }) {
-  return <input value={value} placeholder={placeholder} onKeyDown={onKeyDown} onChange={e => onChange(e.target.value)} style={{ background: T.deeper, border: `1px solid ${bad ? C.bad : T.control}`, borderRadius: 5, padding: '6px 8px', color: '#fff', outline: 'none', minWidth: 0, fontFamily: mono ? MONO : undefined, ...style }} />;
+  return <input value={value} placeholder={placeholder} onKeyDown={onKeyDown} onChange={e => onChange(e.target.value)} style={{ background: T.deeper, border: `1px solid ${bad ? C.bad : T.control}`, borderRadius: 5, padding: '6px 8px', color: T.strong, outline: 'none', minWidth: 0, fontFamily: mono ? MONO : undefined, ...style }} />;
 }
 
 export const Kv = ({ rows, cols = '110px minmax(0,1fr)' }: { rows: [string, ReactNode, string?][]; cols?: string }) => (
@@ -90,7 +90,7 @@ export const Kv = ({ rows, cols = '110px minmax(0,1fr)' }: { rows: [string, Reac
   </div>);
 
 export function Avatar({ size = 28, filled = true }: { size?: number; filled?: boolean }) {
-  return <span style={{ width: size, height: size, borderRadius: '50%', background: filled ? T.navy : T.surface, border: filled ? 0 : `1px solid ${T.focus}`, color: filled ? '#fff' : C.run, display: 'grid', placeItems: 'center', fontFamily: DISPLAY, fontWeight: 700, fontSize: size > 26 ? 11 : 10, flex: 'none' }}>gf</span>;
+  return <span style={{ width: size, height: size, borderRadius: '50%', background: filled ? T.navy : T.surface, border: filled ? 0 : `1px solid ${T.focus}`, color: filled ? T.onAccent : C.run, display: 'grid', placeItems: 'center', fontFamily: DISPLAY, fontWeight: 700, fontSize: size > 26 ? 11 : 10, flex: 'none' }}>gf</span>;
 }
 
 // ---- Markdown syntax colouring (handoff README · Builder · Source mode) ----

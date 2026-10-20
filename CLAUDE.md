@@ -562,3 +562,11 @@ the QA channels.
   verdict per document. A CONFLICT, or a document left without a verdict, parks the job for review, and it is registered
   only with the reviewer's written reason (`review.house_conflicts`). The Library reports, and the engine logs at start,
   the register's in-use codes it holds no approved copy of and the codes where the register lags DB3. **Every document in DB3_PP_CURRENT is approved and in use** (Head of QC, 19.10.2026): an approved copy is in use whatever the register status says, and the register is the one to correct.
+- **The canvas after generation is editable and takes commands** (Head of QC, 20.10.2026). Jobs → *Open in canvas*: the
+  draft by section (read MK | EN side by side, or edit the Markdown), an instruction to the author that wrote it
+  (`POST /workflows/{id}/revise`, `app/revise.py`: one section or the whole body, the HEADERDATA block never sent, the
+  change shown as a diff to accept or discard), and *Rebuild* through the gate (`POST /build`, a new registered
+  document). Sections are the draft's level-1 headings, or its level-2 ones where it has a single `#` title (a form).
+- **A running job can be stopped** (Head of QC, 20.10.2026), by mistake or not: `POST /workflows/{id}/stop` fails the
+  row at once (`stopped by …`); the worker stops before its next agent exchange and registers nothing (`job_touch`,
+  `job_finish`, and a check right before the document is registered). Re-run starts it again from the same answers.

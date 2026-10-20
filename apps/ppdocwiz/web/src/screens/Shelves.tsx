@@ -27,12 +27,12 @@ export function Shelves() {
     <div style={{ flex: 1, minWidth: 0, padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 12, overflow: 'auto' }}>
       <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
         <Seg items={ORDER.map(s => [s, `${LABEL[s]} · ${lib.counts[s]}`] as [Shelf, string])} value={shelf} onPick={s => { setShelf(s); setSel(null); }} size={12} pad="4px 10px" />
-        <input value={q} onChange={e => setQ(e.target.value)} placeholder="⌕ code or title" style={{ flex: 1, minWidth: 160, background: T.surface, border: `1px solid ${T.control}`, borderRadius: 6, padding: '7px 12px', fontFamily: MONO, fontSize: 12, color: '#fff', outline: 'none' }} />
+        <input value={q} onChange={e => setQ(e.target.value)} placeholder="⌕ code or title" style={{ flex: 1, minWidth: 160, background: T.surface, border: `1px solid ${T.control}`, borderRadius: 6, padding: '7px 12px', fontFamily: MONO, fontSize: 12, color: T.strong, outline: 'none' }} />
       </div>
-      <div style={{ border: `1px solid ${T.hair}`, borderRadius: 8, overflow: 'hidden' }}>
+      <div className="pp-table" style={{ border: `1px solid ${T.hair}`, borderRadius: 8, overflow: 'hidden' }}>
         <div style={{ display: 'grid', gridTemplateColumns: cols, gap: 10, padding: '9px 14px', background: T.pane, fontSize: 11, color: T.muted, fontFamily: MONO }}><span>CODE</span><span>TITLE</span><span>VER</span><span>REGISTER</span><span>HELD</span></div>
         {rows.map(e => <div key={e.code} onClick={() => setSel(e)} className="pp-hover-row" style={{ display: 'grid', gridTemplateColumns: cols, gap: 10, padding: '10px 14px', borderTop: `1px solid ${T.hair}`, alignItems: 'center', cursor: 'pointer', background: e.code === sel?.code ? T.selected : 'transparent' }}>
-          <b style={{ color: '#fff', fontFamily: MONO, fontSize: 12.5 }}>{e.code}</b>
+          <b style={{ color: T.strong, fontFamily: MONO, fontSize: 12.5 }}>{e.code}</b>
           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{e.title_mk || e.title_en}{e.title_mk && e.title_en && <span style={{ color: T.secondary }}> | {e.title_en}</span>}</span>
           <span>{e.version || '—'}</span>
           <span style={{ fontFamily: MONO, fontSize: 11.5, color: T.secondary }}>{e.status || 'not registered'}{e.notes.length > 0 && <span style={{ color: C.warn }}> · !</span>}</span>

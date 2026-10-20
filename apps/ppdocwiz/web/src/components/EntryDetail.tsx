@@ -24,7 +24,7 @@ export function EntryDetail({ sel }: { sel: ShelfEntry }) {
     if (id) api.reference(id).then(setDoc).catch(() => setDoc(null));
   }, [api, sel]);
   return <div style={{ width: 420, flex: 'none', borderLeft: `1px solid ${T.hair}`, background: T.pane, padding: 16, display: 'flex', flexDirection: 'column', gap: 10, fontSize: 13, overflow: 'auto' }}>
-    <div><div style={{ fontFamily: MONO, fontSize: 13, fontWeight: 700, color: '#fff' }}>{sel.code}{sel.version && ` · v${sel.version}`}</div><div style={{ color: T.secondary }}>{sel.title_mk}{sel.title_mk && sel.title_en && ' | '}{sel.title_en}</div></div>
+    <div><div style={{ fontFamily: MONO, fontSize: 13, fontWeight: 700, color: T.strong }}>{sel.code}{sel.version && ` · v${sel.version}`}</div><div style={{ color: T.secondary }}>{sel.title_mk}{sel.title_mk && sel.title_en && ' | '}{sel.title_en}</div></div>
     <div style={{ display: 'grid', gridTemplateColumns: '84px 1fr', gap: '5px 8px', fontSize: 12 }}>
       <span style={{ color: T.muted }}>register</span><span>{sel.status || 'not registered'}{sel.effective_date && ` · since ${sel.effective_date}`}</span>
       <span style={{ color: T.muted }}>parent</span><span>{sel.parent || '—'}</span>

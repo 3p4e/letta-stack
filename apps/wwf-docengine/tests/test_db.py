@@ -283,3 +283,17 @@ async def test_codes_stored_before_the_house_form_are_found_and_counted_in_it(db
     await db.document_create(None, {"code": "WHSOP_003", "doctype": "SOP", "path": "/x", "bytes": 1, "verify": "PASS"})
     assert {"QCSOP011", "WHSOP003"} <= await db.codes_in_use()
     assert await db.codes_of_brief("b1") == {"QCSOP011"}                # subtracts from codes_in_use on a rebuild
+
+
+async def test_a_running_job_is_stopped_once_and_never_finished_afterwards(dbpool):
+    """Stop (Head of QC, 20.10.2026): the row is failed at once with who stopped it; the worker's next touch sees it,
+    its terminal write is refused, and a job that is no longer running cannot be stopped."""
+    jid = await db.job_create("workflow", {"questionnaire": "sop_qc"}, created_by="tester")
+    await db.job_update(jid, status="running", stage="generate 3.0")
+    assert await db.job_stop(jid, "blagoj") is True
+    j = await db.job_get(jid)
+    assert j["status"] == "failed" and j["error"] == "stopped by blagoj"
+    assert await db.job_touch(jid) == "failed"
+    assert await db.job_finish(jid, status="done", stage="done") is False
+    assert (await db.job_get(jid))["status"] == "failed"
+    assert await db.job_stop(jid, "blagoj") is False

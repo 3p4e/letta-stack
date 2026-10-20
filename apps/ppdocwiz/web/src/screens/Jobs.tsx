@@ -2,9 +2,8 @@
 import { useEffect, useRef, useState } from 'react';
 import type { JobList } from '../api/client';
 import { ApiError, type Job } from '../api/types';
-import { PPPage } from '../components/PPPage';
 import { Banner, Btn, Kv, press } from '../components/ui';
-import { ANX_SEC, SAMPLE_ANNEX, SAMPLE_SOP, SOP_SEC } from '../data/samples';
+import { ANX_SEC, SOP_SEC } from '../data/samples';
 import { houseBlocking, pickJob, reviewLocks, stillRunning, type HouseCheck } from '../lib/jobview';
 import { readQa } from '../lib/qa';
 import { usePrimary } from '../lib/usePrimary';
@@ -41,6 +40,8 @@ export function Jobs() {
   const [reviewErr, setReviewErr] = useState('');
   const [deciding, setDeciding] = useState(false);
   const [rerunning, setRerunning] = useState(false);
+  // Stop (Head of QC, 20.10.2026): a second press confirms, so a stray tap never kills a job.
+  const [stopArm, setStopArm] = useState(false), [stopping, setStopping] = useState(false);
   const rerunLock = useRef(false);
   const all: Job[] | null = jobs && (sel?.job && sel.id === jobSel && !jobs.some(j => j.id === sel.id) ? [sel.job, ...jobs] : jobs);
   const anyRunning = !!all && stillRunning(all);
@@ -62,7 +63,7 @@ export function Jobs() {
     return () => { live = false; };
   }, [api, want, sel?.id]);
   // The note and the error belong to the job they were typed for.
-  useEffect(() => { setNote(''); setReviewErr(''); }, [jobSel]);
+  useEffect(() => { setNote(''); setReviewErr(''); setStopArm(false); }, [jobSel]);
   const job = picked?.job || undefined;
   const rerun = async () => {
     // One press, one job: on 19.10.2026 four presses in 9 s started four jobs.
@@ -74,18 +75,26 @@ export function Jobs() {
     catch (e) { flash(`${(e as ApiError).status} · ${(e as Error).message}`); }
     finally { rerunLock.current = false; setRerunning(false); }
   };
+  const stop = async () => {
+    if (!job || stopping) return;
+    if (!stopArm) { setStopArm(true); return; }
+    setStopping(true);
+    try { await api.stopJob(job.id); flash(`${job.payload.meta.code} stopped · nothing from this run is registered`); setJobs(await api.jobs()); setSel(null); }
+    catch (e) { flash(`stop → ${(e as ApiError).status} · ${(e as Error).message}`); }
+    finally { setStopping(false); setStopArm(false); }
+  };
   // Live mode has no rebuild route behind "Build ▸": off, as in Library, rather than a fake pipeline run (review 19.10.2026).
   usePrimary(job?.status === 'failed' ? 'Re-run ▸' : 'Build ▸', () => job?.status === 'failed' ? rerun() : run(job?.payload.meta.code || 'WHSOP_002_A02', async () => ({ ok: true })), api.mode === 'live' && job?.status !== 'failed');
 
   if (err && !jobs) return <div style={{ flex: 1, padding: 22 }}><Banner kind="err">GET /workflows → {err}. {err.startsWith('503') ? 'DocEngine storage (Postgres) is down; job state lives there, so nothing can be listed or polled until it is back.' : err.startsWith('404') || err.startsWith('0') ? 'DocEngine is not reachable from this page. Configure a same-origin proxy and set window.PP_SUITE_CONFIG.docengineBase.' : ''}</Banner></div>;
   if (!jobs || !all) return <div style={{ flex: 1, padding: 22, color: T.muted }}>loading…</div>;
   const listPane = <div style={{ width: 260, flex: 'none', borderRight: `1px solid ${T.hair}`, background: T.pane, padding: '14px 10px', display: 'flex', flexDirection: 'column', gap: 6, overflow: 'auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '0 4px 6px' }}><b style={{ color: '#fff' }}>Jobs</b><span style={{ fontFamily: MONO, fontSize: 11, color: T.faint }}>docengine.jobs</span></div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '0 4px 6px' }}><b style={{ color: T.strong }}>Jobs</b><span style={{ fontFamily: MONO, fontSize: 11, color: T.faint }}>docengine.jobs</span></div>
       {err && <Banner kind="err" style={{ fontSize: 11.5 }}>GET /workflows → {err}{jobs.err ? ' · the rows shown are the last read' : ''}</Banner>}
       {all.map(j => { const act = j.id === job?.id, c = stC(j.status), jp = posOf(j), js = secsOf(j), jn = js.length, open = () => { set({ jobSel: j.id }); setIns(null); };
         const stg = j.status === 'done' ? 'done' : jp <= jn && jp > 0 ? 'generate ' + js[jp - 1][0] : jp > jn && jp <= 2 * jn ? 'reg-check ' + js[jp - jn - 1][0] : j.stage;
         return <div key={j.id} onClick={open} {...press(open)} aria-current={act || undefined} style={{ padding: '9px 10px', borderRadius: 6, cursor: 'pointer', background: act ? T.selected : T.surface, border: `1px solid ${act ? T.focus : T.control}`, display: 'flex', flexDirection: 'column', gap: 3 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><b style={{ color: '#fff', fontFamily: MONO, fontSize: 12.5 }}>{j.payload.meta.code}</b><span style={{ fontFamily: MONO, fontSize: 10.5, padding: '1px 6px', borderRadius: 3, color: c, border: `1px solid ${c}` }}>{j.status}</span></div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><b style={{ color: T.strong, fontFamily: MONO, fontSize: 12.5 }}>{j.payload.meta.code}</b><span style={{ fontFamily: MONO, fontSize: 10.5, padding: '1px 6px', borderRadius: 3, color: c, border: `1px solid ${c}` }}>{j.status}</span></div>
           <div style={{ fontSize: 12, color: T.secondary, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{j.payload.meta.title_mk} | {j.payload.meta.title_en}</div>
           <div style={{ fontFamily: MONO, fontSize: 11, color: T.muted, display: 'flex', justifyContent: 'space-between' }}><span>{j.id.slice(0, 8)} · {stg}</span><span>{ago(j.updated_at)}</span></div></div>; })}
       <div style={{ marginTop: 'auto', fontSize: 11.5, color: T.faint, lineHeight: 1.5, padding: '6px 4px' }}>State lives in Postgres, so any worker can answer a poll. Jobs idle &gt; 60 min are reaped at startup.{api.mode === 'live' ? ' DocEngine has no list route: this list holds the jobs started or opened from this browser.' : ''}</div>
@@ -124,13 +133,14 @@ export function Jobs() {
   const failHint = job.error?.includes('not bilingual') ? 'gf_sop_author drafted a section in one language only. A re-run regenerates the whole SOP; revisions are never patched.'
     : job.error?.includes('§6A') ? 'gf_qa_auditor returned FIX. Nothing was formatted or registered. Re-run, or open the Markdown in Builder and fix the issues.'
     : job.error?.includes('abandoned') ? 'The worker was killed mid-run (redeploy). The startup sweep marked the job failed instead of leaving it running forever.'
+    : job.error?.startsWith('stopped by') ? 'Stopped on request before it finished; nothing from this run was registered. Re-run starts it again from the same answers.'
     : job.error?.startsWith('returned') ? 'A reviewer sent this back. Re-run with the same answers after addressing the note, or open it in Builder.' : 'Re-run creates a new job from the stored payload: the server copies it whole, sources and package included.';
 
   return <>
     {listPane}
     <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
       <div style={{ padding: '16px 20px 12px', borderBottom: `1px solid ${T.hair}`, display: 'flex', flexDirection: 'column', gap: 6 }}>
-        <div style={{ display: 'flex', gap: 10, alignItems: 'baseline', flexWrap: 'wrap' }}><span style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 17, color: '#fff' }}>{job.payload.meta.code}</span><span style={{ color: T.secondary }}>{job.payload.meta.title_mk} | {job.payload.meta.title_en}</span>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'baseline', flexWrap: 'wrap' }}><span style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 17, color: T.strong }}>{job.payload.meta.code}</span><span style={{ color: T.secondary }}>{job.payload.meta.title_mk} | {job.payload.meta.title_en}</span>
           <span style={{ marginLeft: 'auto', fontFamily: MONO, fontSize: 11.5, padding: '2px 8px', borderRadius: 3, color: stC(job.status), border: `1px solid ${stC(job.status)}` }}>{job.status}</span></div>
         <div style={{ fontFamily: MONO, fontSize: 11.5, color: T.muted }}>job {job.id.slice(0, 8)}… · {job.kind} · {job.payload.questionnaire} · requested by {job.payload.requested_by || job.created_by}</div>
         {failed && <div style={{ background: T.errSurface, border: `1px solid ${T.errBorder}`, borderRadius: 6, padding: '8px 12px', color: T.errText, fontFamily: MONO, fontSize: 12 }}>error: {job.error}</div>}
@@ -138,15 +148,15 @@ export function Jobs() {
       <div style={{ padding: '12px 20px', display: 'flex', flexDirection: 'column', gap: 2 }}>
         {GROUPS.map(([k, label, who]) => { const st = stOf(k), subs = k === 'generate' || k === 'reg';
           return <div key={k} onClick={() => setIns(k)} {...press(() => setIns(k))} className="pp-hover-pane" style={{ display: 'grid', gridTemplateColumns: '20px 150px minmax(0,1fr)', gap: 10, padding: '8px 10px', borderRadius: 6, cursor: 'pointer', alignItems: 'start', background: cur === k ? T.surface : 'transparent', border: `1px solid ${cur === k ? T.control : 'transparent'}` }}>
-            <span style={{ fontFamily: MONO, color: C[st], fontWeight: 700 }}>{G[st]}</span><span style={{ fontFamily: MONO, fontSize: 12.5, color: '#fff' }}>{label}</span>
+            <span style={{ fontFamily: MONO, color: C[st], fontWeight: 700 }}>{G[st]}</span><span style={{ fontFamily: MONO, fontSize: 12.5, color: T.strong }}>{label}</span>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0 }}><span style={{ fontSize: 12.5, color: T.secondary }}>{who}</span>
               {subs && <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>{secs.map((x, i) => { const ss = stAt(RG[k][0] + i); return <span key={i} style={{ fontFamily: MONO, fontSize: 10.5, padding: '2px 6px', borderRadius: 3, color: C[ss], border: `1px solid ${ss === 'idle' ? T.control : C[ss]}`, background: TINT[ss] }}>{x[0]}</span>; })}</div>}</div></div>; })}
       </div>
       <div style={{ margin: '0 20px 20px', background: T.deeper, border: `1px solid ${T.hair}`, borderRadius: 8, padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}><b style={{ color: '#fff' }}>{INS[cur][0]}</b><span style={{ fontFamily: MONO, fontSize: 11, color: T.faint }}>{INS[cur][1]}</span></div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}><b style={{ color: T.strong }}>{INS[cur][0]}</b><span style={{ fontFamily: MONO, fontSize: 11, color: T.faint }}>{INS[cur][1]}</span></div>
         {(!reached || cur === 'queued' || cur === 'done') && cur !== 'review' && <div style={{ color: T.muted, fontSize: 13 }}>{cur === 'done' && job.status === 'done' ? `document ${String(job.result.document_id).slice(0, 8)}… · ${job.result.bytes} bytes` : 'Not reached yet.'}</div>}
         {reached && cur === 'generate' && (tel.length ? <div style={{ display: 'flex', flexDirection: 'column', fontSize: 12.5 }}>{tel.map((r, i) => { const hit = stAt(1 + i) !== 'idle';
-          return <div key={i} style={{ display: 'grid', gridTemplateColumns: '38px minmax(0,1fr) 150px 60px', gap: 10, padding: '5px 0', borderTop: `1px solid ${T.surface}` }}><span style={{ fontFamily: MONO, color: C.run }}>{r.num}</span><span><span style={{ color: '#fff' }}>{r.title}</span>{hit && r.note && <span style={{ display: 'block', fontSize: 11.5, color: C.warn }}>{r.note}</span>}</span><span style={{ fontFamily: MONO, fontSize: 11.5, color: T.secondary }}>{r.author}</span><span style={{ fontFamily: MONO, fontSize: 11.5, color: T.muted, textAlign: 'right' }}>{hit ? r.chars + ' ch' : '—'}</span></div>; })}</div> : notRecorded)}
+          return <div key={i} style={{ display: 'grid', gridTemplateColumns: '38px minmax(0,1fr) 150px 60px', gap: 10, padding: '5px 0', borderTop: `1px solid ${T.surface}` }}><span style={{ fontFamily: MONO, color: C.run }}>{r.num}</span><span><span style={{ color: T.strong }}>{r.title}</span>{hit && r.note && <span style={{ display: 'block', fontSize: 11.5, color: C.warn }}>{r.note}</span>}</span><span style={{ fontFamily: MONO, fontSize: 11.5, color: T.secondary }}>{r.author}</span><span style={{ fontFamily: MONO, fontSize: 11.5, color: T.muted, textAlign: 'right' }}>{hit ? r.chars + ' ch' : '—'}</span></div>; })}</div> : notRecorded)}
         {reached && cur === 'reg' && <div style={{ display: 'flex', flexDirection: 'column', fontSize: 12.5 }}>{secs.map((x, i) => { const ss = stAt(n + 1 + i), f = regs.find(r => r.section === x[0]);
           const [v, cite, nt, c] = ss === 'idle' ? ['—', '', '', T.faint] : ss === 'run' ? ['checking…', `gf_reg_checker_tmp_${job.id.slice(0, 8)}_${x[0].replace('.', '')}`, '', C.run] : ss === 'bad' ? ['NO REPLY', 'worker killed during this exchange', 'orphan clone swept by the next fleet audit', C.bad] : f ? [f.verdict, f.citation, f.note, f.verdict === 'OK' ? C.ok : f.verdict === 'GAP' ? C.warn : f.verdict === 'CONFLICT' ? C.bad : T.secondary] : ['—', 'not in result.regulatory', '', T.faint];
           return <div key={i} style={{ display: 'grid', gridTemplateColumns: '38px 96px minmax(0,1fr)', gap: 10, padding: '5px 0', borderTop: `1px solid ${T.surface}` }}><span style={{ fontFamily: MONO, color: C.run }}>{x[0]}</span><span style={{ fontFamily: MONO, fontSize: 11.5, fontWeight: 700, color: c }}>{v}</span><span><span style={{ color: T.text }}>{cite}</span>{nt && <span style={{ display: 'block', fontSize: 11.5, color: T.secondary }}>{nt}</span>}</span></div>; })}</div>}
@@ -165,13 +175,20 @@ export function Jobs() {
       </div>
     </div>
     <div style={{ width: 320, flex: 'none', borderLeft: `1px solid ${T.hair}`, background: T.pane, padding: 16, display: 'flex', flexDirection: 'column', gap: 10, fontSize: 12.5, overflow: 'auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}><b style={{ color: '#fff', fontSize: 14 }}>Job row</b><span style={{ fontFamily: MONO, fontSize: 11, color: T.faint }}>GET /workflows/{'{id}'}</span></div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}><b style={{ color: T.strong, fontSize: 14 }}>Job row</b><span style={{ fontFamily: MONO, fontSize: 11, color: T.faint }}>GET /workflows/{'{id}'}</span></div>
       <Kv rows={[['job_id', job.id.slice(0, 8) + '…'], ['kind', job.kind], ['questionnaire', job.payload.questionnaire], ['status', job.status, stC(job.status)], ['stage', stageLabel], ['requested_by', job.payload.requested_by], ['updated_at', ago(job.updated_at)],
         ...(job.error ? [['error', job.error, C.bad]] as [string, string, string][] : []),
         ...(job.status === 'done' ? [['result.document_id', String(job.result.document_id).slice(0, 8) + '…', C.ok], ['result.bytes', String(job.result.bytes)], ['result.verify', (verify || '').match(/RESULT\s*:?\s*(PASS|FAIL)/)?.[0] || '(not stored)', /FAIL/.test(verify || '') ? C.bad : C.ok]] as [string, string, string?][] : [])]} />
-      {job.status === 'done' && <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}><div style={{ flex: 'none' }}><PPPage doc={{ ...(sop ? SAMPLE_SOP : SAMPLE_ANNEX), code: job.payload.meta.code, mk_title: job.payload.meta.title_mk, en_title: job.payload.meta.title_en }} zoom={.14} /></div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, color: T.secondary, lineHeight: 1.4 }}>Registered in docengine.documents. The verify report is stored with the row.<span onClick={() => go('library', { libSel: String(job.result.document_id) })} {...press(() => go('library', { libSel: String(job.result.document_id) }))} style={{ color: C.run, cursor: 'pointer' }}>Open in Library →</span></div></div>}
-      {(job.status === 'running' || job.status === 'queued') && <div style={{ color: C.run, fontFamily: MONO, fontSize: 12 }}>● polling every 1 s · stage {stageLabel}</div>}
+      {/* The real document, not a sample page with this job's title on it (20.10.2026). */}
+      {(job.status === 'done' || review) && !!job.result.markdown && <Btn onClick={() => go('canvas', { canvasJob: job.id })} style={{ padding: 10 }}>Open in canvas · edit, instruct, rebuild</Btn>}
+      {job.status === 'done' && <div style={{ display: 'flex', flexDirection: 'column', gap: 6, color: T.secondary, lineHeight: 1.45 }}>Registered in docengine.documents with its verify report.
+        {!!job.result.document_id && <span style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}><a href={api.documentHref(String(job.result.document_id), 'pdf')} target="_blank" rel="noreferrer">PDF</a><a href={api.documentHref(String(job.result.document_id), 'download')}>.docx</a>
+          <span onClick={() => go('library', { libSel: String(job.result.document_id) })} {...press(() => go('library', { libSel: String(job.result.document_id) }))} style={{ color: C.run, cursor: 'pointer' }}>Open in Library →</span></span>}</div>}
+      {(job.status === 'running' || job.status === 'queued') && <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div style={{ color: C.run, fontFamily: MONO, fontSize: 12 }}>● polling every 1 s · stage {stageLabel}</div>
+        <Btn primary={false} onClick={stop} disabled={stopping} style={{ padding: 9, borderColor: C.bad, color: C.bad, fontWeight: 700 }}>{stopping ? 'Stopping…' : stopArm ? 'Press again to stop this job' : '■ Stop job'}</Btn>
+        {stopArm && <div style={{ fontSize: 12, color: T.secondary, lineHeight: 1.45 }}>The job stops before its next step; nothing from this run is registered. <span onClick={() => setStopArm(false)} {...press(() => setStopArm(false))} style={{ color: C.run, cursor: 'pointer' }}>Keep it running</span> · Re-run starts it again with the same answers.</div>}
+      </div>}
       {house && <div style={{ display: 'flex', flexDirection: 'column', gap: 6, background: T.surface, border: `1px solid ${T.hair}`, borderRadius: 8, padding: 12 }}>
         <b style={{ fontFamily: MONO, fontSize: 12, color: blocking.length ? C.bad : C.ok }}>House check · {house.checked.length} approved document{house.checked.length === 1 ? '' : 's'} read in full</b>
         {house.note && <span style={{ color: T.muted, fontSize: 12.5 }}>{house.note}</span>}
@@ -180,7 +197,7 @@ export function Jobs() {
           const col = v.verdict === 'CONFLICT' ? C.bad : v.verdict === 'UNCHECKED' ? C.warn : v.verdict === 'CHANGES' ? C.run : C.ok;
           // Stacked, not a grid: the panel sits in the narrow right-hand column.
           return <div key={d.code} style={{ display: 'flex', flexDirection: 'column', gap: 2, fontSize: 12.5, padding: '6px 0', borderTop: `1px solid ${T.hair}` }}>
-            <span style={{ display: 'flex', gap: 8, fontFamily: MONO }}><span style={{ color: '#fff' }}>{d.code} v{d.version}</span><span style={{ color: col, marginLeft: 'auto' }}>{v.verdict}</span></span>
+            <span style={{ display: 'flex', gap: 8, fontFamily: MONO }}><span style={{ color: T.strong }}>{d.code} v{d.version}</span><span style={{ color: col, marginLeft: 'auto' }}>{v.verdict}</span></span>
             <span style={{ color: T.secondary }}>{d.title} <span style={{ color: T.faint }}>· {d.why}</span></span>
             {v.detail && <span style={{ color: col === C.ok ? T.secondary : col, lineHeight: 1.4 }}>{v.detail}</span>}</div>; })}
       </div>}
@@ -190,7 +207,7 @@ export function Jobs() {
           ? `pp_verify passed, but the §6A auditor still returned FIX after ${job.result.qa_rounds ?? 0} repair round(s). Its remaining issues are under §6A audit verdict. Approve only if they are acceptable or corrected; nothing is registered until you approve.`
           : 'The gate passed. A person checks the Markdown and verify report before the row reaches the registry.'}</div>
         {blocking.length > 0 && <Banner kind="warn">This draft conflicts with, or was not checked against, approved {blocking.join(', ')} (see House check). Write the reason to register it anyway — e.g. which document it revises — or return it for revision.</Banner>}
-        <textarea value={note} onChange={e => setNote(e.target.value)} placeholder={blocking.length ? 'Reason to register despite the house check, or note to return' : 'Reviewer note (required to return)'} style={{ height: 70, background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 6, padding: 8, color: '#fff', resize: 'none', outline: 'none', fontSize: 12.5 }} />
+        <textarea value={note} onChange={e => setNote(e.target.value)} placeholder={blocking.length ? 'Reason to register despite the house check, or note to return' : 'Reviewer note (required to return)'} style={{ height: 70, background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 6, padding: 8, color: T.strong, resize: 'none', outline: 'none', fontSize: 12.5 }} />
         <div style={{ display: 'flex', gap: 8 }}><Btn onClick={() => decide('approve')} disabled={!reviewLocks(deciding, note, blocking.length > 0).approve} style={{ flex: 1 }}>{deciding ? 'Deciding…' : 'Approve & register'}</Btn><Btn primary={false} disabled={!reviewLocks(deciding, note).ret} onClick={() => decide('return')} style={{ flex: 1 }}>Return for revision</Btn></div>
         {(() => { const openMd = () => { const md = String(job.result.markdown || ''); set({ builderMode: 'src', builderRaw: md || null }); go('builder'); flash(md ? 'Markdown opened in the Builder raw view' : 'no Markdown stored on this job'); };
           return <span onClick={openMd} {...press(openMd)} style={{ color: C.run, cursor: 'pointer', textAlign: 'center' }}>Open Markdown in Builder →</span>; })()}

@@ -27,12 +27,12 @@ export function CreateMenu() {
   };
   return <>
     <div onClick={() => set({ createOpen: false })} style={{ position: 'fixed', inset: 0, zIndex: 50 }} />
-    <div style={{ position: 'absolute', zIndex: 51, left: menuX, top: menuY, display: 'flex', background: T.pane, border: `1px solid ${T.control}`, borderRadius: 10, boxShadow: '0 20px 50px rgba(0,0,0,.5)', overflow: 'hidden' }}>
+    <div style={{ position: 'absolute', zIndex: 51, left: menuX, top: menuY, display: 'flex', background: T.pane, border: `1px solid ${T.control}`, borderRadius: 10, boxShadow: '0 20px 50px rgba(15,31,51,.18)', overflow: 'hidden' }}>
       <div style={{ width: 270, padding: 6, borderRight: `1px solid ${T.hair}`, display: 'flex', flexDirection: 'column', gap: 2 }}>
         <Caps style={{ padding: '6px 10px 4px' }}>WHAT TO CREATE</Caps>
         {CATS.map(c => <div key={c.k} onClick={() => set({ createCat: c.k })} onMouseEnter={() => tweaks.submenuOpenOn === 'hover' && set({ createCat: c.k })}
           style={{ padding: '8px 10px', borderRadius: 6, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, background: c.k === cat.k ? T.selected : 'transparent' }}>
-          <div style={{ minWidth: 0 }}><div style={{ color: '#fff', fontWeight: 700 }}>{c.label}</div><div style={{ fontSize: 11.5, color: T.muted, whiteSpace: 'nowrap' }}>{c.sub}</div></div><span style={{ color: T.muted }}>›</span>
+          <div style={{ minWidth: 0 }}><div style={{ color: T.strong, fontWeight: 700 }}>{c.label}</div><div style={{ fontSize: 11.5, color: T.muted, whiteSpace: 'nowrap' }}>{c.sub}</div></div><span style={{ color: T.muted }}>›</span>
         </div>)}
       </div>
       <div style={{ width: 340, padding: 6, display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -41,7 +41,7 @@ export function CreateMenu() {
           if (screen === 'format') go('format', { ...(extra || {}) }); else openSheet(screen, extra);
           if (cat.k === 'log') set(s => s.sheet ? { sheet: { ...s.sheet, doctype: label === 'Checklist' ? 'CHECKLIST' : 'LOG' } } : {});
         }} style={{ padding: '9px 10px', borderRadius: 6, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', gap: 10, alignItems: 'center' }}>
-          <div style={{ minWidth: 0 }}><div style={{ color: '#fff' }}>{label}</div><div style={{ fontSize: 11.5, color: T.muted }}>{desc}</div></div>
+          <div style={{ minWidth: 0 }}><div style={{ color: T.strong }}>{label}</div><div style={{ fontSize: 11.5, color: T.muted }}>{desc}</div></div>
           <span style={{ fontFamily: MONO, fontSize: 10.5, color: T.faint, whiteSpace: 'nowrap' }}>{WHERE[screen]}</span>
         </div>)}
       </div>
@@ -109,10 +109,10 @@ export function NewDocSheet() {
   const pickDt = (d: Sheet['doctype']) => set(st => { const keep = PATHS[d].map(p => p[0]); return { sheet: { ...st.sheet!, doctype: d, path: keep.includes(st.sheet!.path) ? st.sheet!.path : keep[0] } }; });
   const mono = { fontFamily: MONO, fontSize: 11.5, color: T.muted } as const;
   return <>
-    <div onClick={close} style={{ position: 'fixed', inset: 0, zIndex: 60, background: 'rgba(5,10,16,.6)' }} />
-    <div style={{ position: 'fixed', zIndex: 61, left: '50%', top: '50%', transform: 'translate(-50%,-50%)', width: 900, maxWidth: 'calc(100vw - 40px)', maxHeight: 'calc(100vh - 40px)', overflow: 'hidden', background: T.pane, border: `1px solid ${T.control}`, borderRadius: 12, boxShadow: '0 30px 70px rgba(0,0,0,.55)', display: 'flex', flexDirection: 'column' }}>
+    <div onClick={close} style={{ position: 'fixed', inset: 0, zIndex: 60, background: 'rgba(15,31,51,.35)' }} />
+    <div style={{ position: 'fixed', zIndex: 61, left: '50%', top: '50%', transform: 'translate(-50%,-50%)', width: 900, maxWidth: 'calc(100vw - 40px)', maxHeight: 'calc(100vh - 40px)', overflow: 'hidden', background: T.pane, border: `1px solid ${T.control}`, borderRadius: 12, boxShadow: '0 30px 70px rgba(15,31,51,.35)', display: 'flex', flexDirection: 'column' }}>
       <div style={{ flex: 'none', padding: '16px 20px', borderBottom: `1px solid ${T.hair}`, display: 'flex', alignItems: 'baseline', gap: 12 }}>
-        <span style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 17, color: '#fff', whiteSpace: 'nowrap' }}>New {LABEL[sh.doctype]}</span>
+        <span style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 17, color: T.strong, whiteSpace: 'nowrap' }}>New {LABEL[sh.doctype]}</span>
         <span style={{ fontSize: 13, color: T.secondary, whiteSpace: 'nowrap' }}>starts in {pathLabel}</span>
         <span onClick={close} style={{ marginLeft: 'auto', cursor: 'pointer', color: T.muted, fontSize: 18 }}>×</span>
       </div>
@@ -120,19 +120,19 @@ export function NewDocSheet() {
         <div style={{ flex: 1, minWidth: 0, padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}><span style={{ ...mono, width: 96 }}>doctype</span>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, fontSize: 12 }}>{(['SOP', 'ANNEX', 'FORM', 'LOG', 'CHECKLIST', 'REPORT'] as const).map(d =>
-              <span key={d} onClick={() => pickDt(d)} style={{ padding: '5px 10px', borderRadius: 4, border: `1px solid ${T.control}`, cursor: 'pointer', whiteSpace: 'nowrap', background: sh.doctype === d ? T.navy : 'transparent', color: sh.doctype === d ? '#fff' : T.secondary }}>{d}</span>)}</div></div>
+              <span key={d} onClick={() => pickDt(d)} style={{ padding: '5px 10px', borderRadius: 4, border: `1px solid ${T.control}`, cursor: 'pointer', whiteSpace: 'nowrap', background: sh.doctype === d ? T.navy : 'transparent', color: sh.doctype === d ? T.onAccent : T.secondary }}>{d}</span>)}</div></div>
           {FIELDS.map(([k, req, ph, hint, hc]) => <label key={k} style={{ display: 'grid', gridTemplateColumns: '96px 1fr', gap: 10, alignItems: 'center' }}>
             <span style={mono}>{k}<span style={{ color: C.bad }}>{req}</span></span>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              <input value={String(sh[k] || '')} onChange={e => { if (k === 'code') setAuto(false); upd(k, e.target.value); }} placeholder={ph} style={{ background: T.deeper, border: `1px solid ${hc === C.bad ? C.bad : T.control}`, borderRadius: 5, padding: '7px 9px', color: '#fff', outline: 'none', minWidth: 0 }} />
+              <input value={String(sh[k] || '')} onChange={e => { if (k === 'code') setAuto(false); upd(k, e.target.value); }} placeholder={ph} style={{ background: T.deeper, border: `1px solid ${hc === C.bad ? C.bad : T.control}`, borderRadius: 5, padding: '7px 9px', color: T.strong, outline: 'none', minWidth: 0 }} />
               {hint ? <span style={{ fontSize: 11.5, color: hc }}>{hint}</span> : null}
             </div></label>)}
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}><span style={{ ...mono, width: 96 }}>orient</span>
             <div style={{ display: 'flex', background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 5, padding: 2, fontSize: 12 }}>{(['portrait', 'landscape'] as const).map(o =>
-              <span key={o} onClick={() => upd('orient', o)} style={{ padding: '5px 12px', borderRadius: 3, cursor: 'pointer', background: sh.orient === o ? T.navy : 'transparent', color: sh.orient === o ? '#fff' : T.secondary }}>{o}</span>)}</div></div>
+              <span key={o} onClick={() => upd('orient', o)} style={{ padding: '5px 12px', borderRadius: 3, cursor: 'pointer', background: sh.orient === o ? T.navy : 'transparent', color: sh.orient === o ? T.onAccent : T.secondary }}>{o}</span>)}</div></div>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}><span style={{ ...mono, width: 96 }}>start in</span>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, fontSize: 12.5 }}>{paths.map(([k, label]) =>
-              <span key={k} onClick={() => upd('path', k)} style={{ padding: '5px 11px', borderRadius: 999, cursor: 'pointer', border: `1px solid ${sh.path === k ? T.focus : T.control}`, background: sh.path === k ? T.selected : 'transparent', color: sh.path === k ? '#fff' : T.secondary }}>{label}</span>)}</div></div>
+              <span key={k} onClick={() => upd('path', k)} style={{ padding: '5px 11px', borderRadius: 999, cursor: 'pointer', border: `1px solid ${sh.path === k ? T.focus : T.control}`, background: sh.path === k ? T.selected : 'transparent', color: sh.path === k ? T.strong : T.secondary }}>{label}</span>)}</div></div>
         </div>
         <div style={{ width: 330, flex: 'none', borderLeft: `1px solid ${T.hair}`, background: T.bg, padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
           <Caps>HEADERDATA PREVIEW</Caps>
@@ -149,7 +149,7 @@ export function NewDocSheet() {
       <div style={{ flex: 'none', padding: '12px 20px', borderTop: `1px solid ${T.hair}`, display: 'flex', gap: 10, alignItems: 'center' }}>
         <span style={{ fontSize: 12, color: T.muted }}>Status starts as draft. Version and effective date become controlled only on approval.</span>
         <span onClick={close} style={{ marginLeft: 'auto', color: T.secondary, cursor: 'pointer', padding: '8px 12px' }}>Cancel</span>
-        <button onClick={create} style={{ background: ok ? T.navy : T.control, color: '#fff', border: 0, borderRadius: 6, padding: '9px 18px', font: 'inherit', fontWeight: 700, cursor: ok ? 'pointer' : 'not-allowed' }}>Create draft →</button>
+        <button onClick={create} style={{ background: ok ? T.navy : T.control, color: T.onAccent, border: 0, borderRadius: 6, padding: '9px 18px', font: 'inherit', fontWeight: 700, cursor: ok ? 'pointer' : 'not-allowed' }}>Create draft →</button>
       </div>
     </div>
   </>;

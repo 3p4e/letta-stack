@@ -90,8 +90,8 @@ function ReportsBody() {
   const mono = { width: 110, fontFamily: MONO, fontSize: 11.5, color: T.muted } as const;
   const card = (children: ReactNode, extra: CSSProperties = {}) => <div style={{ background: T.surface, border: `1px solid ${T.control}`, borderRadius: 8, padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 12, fontSize: 13, ...extra }}>{children}</div>;
   const textEditor = <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-    <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}><span style={{ fontSize: 12, color: T.secondary }}>МК</span><textarea value={cur.mkText || ''} onChange={e => edit({ mkText: e.target.value })} style={{ height: 70, background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 5, padding: 8, color: '#fff', resize: 'vertical', outline: 'none' }} /></label>
-    <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}><span style={{ fontSize: 12, color: T.secondary }}>EN</span><textarea value={cur.enText || ''} onChange={e => edit({ enText: e.target.value })} style={{ height: 70, background: T.deeper, border: `1px solid ${!cur.enText && cur.mkText ? C.warn : T.control}`, borderRadius: 5, padding: 8, color: '#fff', resize: 'vertical', outline: 'none' }} /></label></div>;
+    <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}><span style={{ fontSize: 12, color: T.secondary }}>МК</span><textarea value={cur.mkText || ''} onChange={e => edit({ mkText: e.target.value })} style={{ height: 70, background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 5, padding: 8, color: T.strong, resize: 'vertical', outline: 'none' }} /></label>
+    <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}><span style={{ fontSize: 12, color: T.secondary }}>EN</span><textarea value={cur.enText || ''} onChange={e => edit({ enText: e.target.value })} style={{ height: 70, background: T.deeper, border: `1px solid ${!cur.enText && cur.mkText ? C.warn : T.control}`, borderRadius: 5, padding: 8, color: T.strong, resize: 'vertical', outline: 'none' }} /></label></div>;
 
   const stamps: StampSpec[] = cur.t === 'cover' ? [stamp(appr ? 'APPROVED' : 'NOT FOR USE', appr ? 'controlled v' + rep.ver : 'no effective date', appr ? 'ok' : 'warn', 0, '-2deg'), stamp('NO PAGE NO.', 'cover is unnumbered', 'run', 0, '1deg')]
     : cur.t === 'calc' || cur.t === 'eqn' ? [stamp('OMML', '3 native equations', 'ok', 0, '-2deg'), stamp('DECIMAL ,', 'MK uses commas', 'ok', 0, '1.5deg'), stamp('LINUX', 'falls back to text', 'warn', 0, '-1deg')]
@@ -102,15 +102,15 @@ function ReportsBody() {
 
   return <>
     <div style={{ width: 236, flex: 'none', borderRight: `1px solid ${T.hair}`, background: T.pane, padding: '14px 10px', display: 'flex', flexDirection: 'column', gap: 4, overflow: 'auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '0 4px 6px' }}><b style={{ color: '#fff' }}>Report outline</b><span style={{ fontFamily: MONO, fontSize: 11, color: T.faint }}>pp_report</span></div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '0 4px 6px' }}><b style={{ color: T.strong }}>Report outline</b><span style={{ fontFamily: MONO, fontSize: 11, color: T.faint }}>pp_report</span></div>
       {blocks.map(b => <div key={b.id} onClick={() => set({ repSel: b.id })} style={{ padding: '7px 9px', borderRadius: 6, cursor: 'pointer', background: b.id === cur.id ? T.selected : T.surface, border: `1px solid ${b.id === cur.id ? T.focus : T.control}`, marginLeft: b.sub ? 12 : 0 }}>
-        <div style={{ fontFamily: MONO, fontSize: 10.5, color: C.run }}>{b.fn}</div><div style={{ color: '#fff', fontSize: 13 }}>{b.mk}</div><div style={{ fontSize: 11.5, color: T.secondary }}>{b.en}</div></div>)}
+        <div style={{ fontFamily: MONO, fontSize: 10.5, color: C.run }}>{b.fn}</div><div style={{ color: T.strong, fontSize: 13 }}>{b.mk}</div><div style={{ fontSize: 11.5, color: T.secondary }}>{b.en}</div></div>)}
       <Caps style={{ padding: '12px 4px 4px' }}>ADD BLOCK</Caps>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>{PAL.map(([fn, t, extra]) => <span key={fn} className="pp-chip" onClick={() => { const id = 'x' + Date.now(); useR.setState(s => ({ extra: [...s.extra, { id, t, fn, mk: 'Нов блок', en: 'New ' + fn, help: 'added block', mkText: 'Текст на македонски.', enText: 'English text.', ...extra }] })); set({ repSel: id }); }}
         style={{ fontFamily: MONO, fontSize: 11, border: `1px dashed ${T.control}`, borderRadius: 4, padding: '3px 7px', color: T.secondary, cursor: 'pointer' }}>+ {fn}</span>)}</div>
       <Caps style={{ padding: '12px 4px 4px' }}>DATA · pp_data</Caps>
       <label onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); onFile(e.dataTransfer.files[0]); }} style={{ border: `1px dashed ${T.control}`, borderRadius: 6, padding: 8, textAlign: 'center', color: T.secondary, fontSize: 12, cursor: 'pointer' }}>
-        {R.data ? <span style={{ color: '#fff', fontFamily: MONO }}>{R.data.name}</span> : 'Drop .json / .csv / .tsv'}<div style={{ fontSize: 11, color: C.run }}>or click to browse</div>
+        {R.data ? <span style={{ color: T.strong, fontFamily: MONO }}>{R.data.name}</span> : 'Drop .json / .csv / .tsv'}<div style={{ fontSize: 11, color: C.run }}>or click to browse</div>
         <input type="file" accept=".json,.csv,.tsv" onChange={e => { onFile(e.target.files?.[0]); e.target.value = ''; }} style={{ display: 'none' }} /></label>
       <div style={{ display: 'flex', fontSize: 11.5 }}><span onClick={loadSample} style={{ color: C.run, cursor: 'pointer' }}>Load sample dataset</span>{R.data && <span onClick={() => up({ data: null })} style={{ marginLeft: 'auto', color: T.muted, cursor: 'pointer' }}>Remove</span>}</div>
       {R.dataErr && <div style={{ fontSize: 11.5, color: C.bad }}>{R.dataErr}</div>}
@@ -118,7 +118,7 @@ function ReportsBody() {
 
     <div style={{ flex: 1, minWidth: 0, padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 14, overflow: 'auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 10 }}><div><span style={{ fontFamily: MONO, fontSize: 12, color: C.run }}>{cur.fn}()</span>
-        <div style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 17, color: '#fff', display: 'flex', flexWrap: 'wrap', columnGap: 8, alignItems: 'baseline' }}><span>{cur.mk}</span><span style={{ fontFamily: 'Carlito', fontWeight: 400, fontSize: 14, color: T.secondary, whiteSpace: 'nowrap' }}>| {cur.en}</span></div></div>
+        <div style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 17, color: T.strong, display: 'flex', flexWrap: 'wrap', columnGap: 8, alignItems: 'baseline' }}><span>{cur.mk}</span><span style={{ fontFamily: 'Carlito', fontWeight: 400, fontSize: 14, color: T.secondary, whiteSpace: 'nowrap' }}>| {cur.en}</span></div></div>
         <span style={{ fontSize: 12, color: T.muted, textAlign: 'right' }}>{cur.help}</span></div>
       {buildMsg && <Banner kind={buildMsg.ok ? 'ok' : 'err'}>{buildMsg.text}</Banner>}
       {inconsistent && <Banner kind="err"><b>assert_consistent · FAIL</b> — printed mean LOD {R.reported} % vs recomputed {recomputed.toFixed(2)} % from {R.data!.name}. Build is blocked until they agree.</Banner>}
@@ -139,7 +139,7 @@ function ReportsBody() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 10 }}>{([['m0', 'm₀ · empty dish (g)'], ['m1', 'm₁ · dish + sample (g)'], ['m2', 'm₂ · after drying (g)']] as const).map(([k, label]) =>
           <label key={k} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}><span style={{ fontSize: 12, color: T.secondary }}>{label}</span><Input mono value={R.m[k]} onChange={v => up({ m: { ...R.m, [k]: v } })} style={{ padding: '7px 9px' }} /></label>)}</div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 12px', alignItems: 'center', background: T.deeper, borderLeft: `3px solid ${C.run}`, borderRadius: 4, padding: '10px 12px' }}>
-          <span style={{ whiteSpace: 'nowrap', fontFamily: "'Cambria Math',Cambria,serif", fontStyle: 'italic', color: '#fff', fontSize: 16 }}>LOD = {lodEn} %</span>
+          <span style={{ whiteSpace: 'nowrap', fontFamily: "'Cambria Math',Cambria,serif", fontStyle: 'italic', color: T.strong, fontSize: 16 }}>LOD = {lodEn} %</span>
           <span style={{ whiteSpace: 'nowrap', fontFamily: MONO, fontSize: 12, fontWeight: 700, color: !valid ? C.warn : pass ? C.ok : C.bad }}>{!valid ? 'check inputs' : pass ? '✓ ≤ NMT 12 %' : '✗ > NMT 12 %'}</span>
           <span style={{ marginLeft: 'auto', fontSize: 12, color: T.muted, whiteSpace: 'nowrap' }}>MK shows {lodMk} % (decimal comma)</span></div>
         <label style={{ display: 'flex', gap: 8, alignItems: 'center', cursor: 'pointer' }}><input type="checkbox" checked={R.stepSign} onChange={() => up({ stepSign: !R.stepSign })} />Add step_signoff after this step (Operator + QC Department Manager)</label>
@@ -150,14 +150,14 @@ function ReportsBody() {
         <div style={{ fontSize: 12, color: T.muted }}>eqn_result() renders the equation in the navy emphasised result box. Same OMML platform note as calc_step applies.</div></>)}
       {cur.t === 'entry' && card(<>
         <Caps>HEADERS · navy row, repeats on page break</Caps>
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>{['Реплика | Replicate', 'm₀ (g)', 'm₁ (g)', 'm₂ (g)', 'Потпис | Signature'].map(c => <span key={c} style={{ background: T.navy, color: '#fff', borderRadius: 4, padding: '4px 9px', fontSize: 12 }}>{c}</span>)}</div>
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}><span style={mono}>rows</span><span onClick={() => up({ rows: Math.max(1, R.rows - 1) })} style={{ width: 28, height: 28, border: `1px solid ${T.control}`, borderRadius: 5, display: 'grid', placeItems: 'center', cursor: 'pointer' }}>−</span><b style={{ color: '#fff', width: 24, textAlign: 'center' }}>{R.rows}</b><span onClick={() => up({ rows: Math.min(20, R.rows + 1) })} style={{ width: 28, height: 28, border: `1px solid ${T.control}`, borderRadius: 5, display: 'grid', placeItems: 'center', cursor: 'pointer' }}>+</span><span style={{ color: T.muted, fontSize: 12 }}>blank write-in rows · first column labelled</span></div>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>{['Реплика | Replicate', 'm₀ (g)', 'm₁ (g)', 'm₂ (g)', 'Потпис | Signature'].map(c => <span key={c} style={{ background: T.navy, color: T.onAccent, borderRadius: 4, padding: '4px 9px', fontSize: 12 }}>{c}</span>)}</div>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}><span style={mono}>rows</span><span onClick={() => up({ rows: Math.max(1, R.rows - 1) })} style={{ width: 28, height: 28, border: `1px solid ${T.control}`, borderRadius: 5, display: 'grid', placeItems: 'center', cursor: 'pointer' }}>−</span><b style={{ color: T.strong, width: 24, textAlign: 'center' }}>{R.rows}</b><span onClick={() => up({ rows: Math.min(20, R.rows + 1) })} style={{ width: 28, height: 28, border: `1px solid ${T.control}`, borderRadius: 5, display: 'grid', placeItems: 'center', cursor: 'pointer' }}>+</span><span style={{ color: T.muted, fontSize: 12 }}>blank write-in rows · first column labelled</span></div>
         <label style={{ display: 'flex', gap: 8, alignItems: 'center', cursor: 'pointer' }}><input type="checkbox" checked={R.sign} onChange={() => up({ sign: !R.sign })} />signoff=True · append the two-role step sign-off</label>
         <div style={{ fontSize: 12, color: T.muted }}>Name, Date and Signature columns are sized for handwriting even when empty (fixed() entry targets 5.2 / 2.6 / 3.8 cm).</div></>)}
       {cur.t === 'figure' && card(<>
         <Caps>CHART · pp_charts.py</Caps>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,minmax(0,1fr))', gap: 8 }}>{CHARTS.map(([k, label, d]) => <div key={k} onClick={() => edit({ chart: k })} style={{ border: `1px solid ${cur.chart === k ? T.focus : T.control}`, background: cur.chart === k ? T.selected : T.deeper, borderRadius: 6, padding: 6, cursor: 'pointer' }}>
-          <Chart kind={k} values={lods.length ? lods : []} width={130} height={70} /><div style={{ fontFamily: MONO, fontSize: 10.5, color: cur.chart === k ? '#fff' : T.secondary, marginTop: 4 }}>{k}</div><div style={{ fontSize: 10.5, color: T.muted }}>{label} · {d}</div></div>)}</div>
+          <Chart kind={k} values={lods.length ? lods : []} width={130} height={70} /><div style={{ fontFamily: MONO, fontSize: 10.5, color: cur.chart === k ? T.strong : T.secondary, marginTop: 4 }}>{k}</div><div style={{ fontSize: 10.5, color: T.muted }}>{label} · {d}</div></div>)}</div>
         <div style={{ fontSize: 12, color: R.data ? T.secondary : C.warn }}>{R.data ? `Bound to ${R.data.name}: ${lods.length} LOD values (computed per row from m0, m1, m2).` : 'No dataset bound: the preview uses placeholder values. Upload the raw data in DATA so the figure and the printed statistics come from the same file.'}</div>
         {textEditor}</>)}
       {cur.t === 'exec' && card(<>
@@ -182,7 +182,7 @@ function ReportsBody() {
       {R.data && card(<>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}><Caps>DATASET · {R.data.name}</Caps><span style={{ fontFamily: MONO, fontSize: 11, color: T.muted }}>sha256 {R.data.sha256} · {R.data.bytes} B · {R.data.modified}</span></div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,minmax(0,1fr))', gap: 8, fontSize: 12 }}>{([['n', String(lods.length)], ['mean LOD', recomputed.toFixed(2) + ' %'], ['SD', sd(lods).toFixed(3)], ['RSD', rsd(lods).toFixed(2) + ' %'], ['CI95', lods.length > 1 ? ci95(lods).map(x => x.toFixed(2)).join(' – ') : '—']] as const).map(([k, v]) =>
-          <div key={k} style={{ background: T.deeper, border: `1px solid ${T.hair}`, borderRadius: 5, padding: '6px 8px' }}><div style={{ color: T.muted, fontSize: 11 }}>{k}</div><b style={{ color: '#fff', fontFamily: MONO, fontSize: 12 }}>{v}</b></div>)}</div>
+          <div key={k} style={{ background: T.deeper, border: `1px solid ${T.hair}`, borderRadius: 5, padding: '6px 8px' }}><div style={{ color: T.muted, fontSize: 11 }}>{k}</div><b style={{ color: T.strong, fontFamily: MONO, fontSize: 12 }}>{v}</b></div>)}</div>
         <label style={{ display: 'flex', gap: 10, alignItems: 'center' }}><span style={{ fontSize: 12, color: T.secondary }}>Printed mean LOD in the summary (%)</span><Input mono value={R.reported} onChange={v => up({ reported: v })} bad={!!inconsistent} style={{ width: 90 }} />
           <span style={{ fontFamily: MONO, fontSize: 12, color: inconsistent ? C.bad : C.ok }}>{inconsistent ? '✗ ≠ ' + recomputed.toFixed(2) : '✓ assert_consistent'}</span></label></>, { borderColor: inconsistent ? C.bad : T.control })}
       <div style={{ fontSize: 12, color: T.faint }}>Build → pp_report renders native Word equations (OMML) and charts → pp_verify counts equations and figures in the gate report.</div>
@@ -191,7 +191,7 @@ function ReportsBody() {
     <div style={{ width: 400, flex: 'none', borderLeft: `1px solid ${T.hair}`, background: T.deep, display: 'flex', flexDirection: 'column' }}>
       <PaneHead title="Live page" right={cur.t === 'cover' ? 'Page 1 · unnumbered' : `Page ${pg} / 7 · 35 %`} />
       <div style={{ flex: 1, position: 'relative', padding: '16px 0 0 20px', overflow: 'hidden' }}>
-        <div style={{ width: 278, height: 393, overflow: 'hidden', boxShadow: '0 8px 28px rgba(0,0,0,.4)' }}>
+        <div style={{ width: 278, height: 393, overflow: 'hidden', boxShadow: '0 8px 28px rgba(15,31,51,.16)' }}>
           <div style={{ transform: 'scale(.35)', transformOrigin: '0 0', width: 794, height: 1123, background: '#fff', fontFamily: 'Calibri,Carlito,sans-serif', color: '#000', padding: '36px 48px', boxSizing: 'border-box', position: 'relative' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', borderTop: `2px solid ${PAGE.rule}`, borderBottom: `2px solid ${PAGE.rule}`, fontSize: 11 }}><tbody><tr>
               <td rowSpan={2} style={{ width: 150, padding: '4px 8px', borderRight: `1px solid ${PAGE.ruleLight}` }}><img src="/assets/brand/pp_logo_header.jpg" alt="" style={{ width: 130, display: 'block' }} /></td>

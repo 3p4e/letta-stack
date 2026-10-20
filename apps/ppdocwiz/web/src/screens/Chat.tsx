@@ -69,13 +69,13 @@ export function Chat() {
 
   return <>
     <div style={{ width: 236, flex: 'none', borderRight: `1px solid ${T.hair}`, background: T.pane, padding: '14px 12px', display: 'flex', flexDirection: 'column', gap: 10, fontSize: 12.5 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}><b style={{ color: '#fff', fontSize: 14 }}>Agent</b><span style={{ fontFamily: MONO, fontSize: 10.5, color: T.faint, whiteSpace: 'nowrap' }}>allowlist</span></div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}><b style={{ color: T.strong, fontSize: 14 }}>Agent</b><span style={{ fontFamily: MONO, fontSize: 10.5, color: T.faint, whiteSpace: 'nowrap' }}>allowlist</span></div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>{AGENTS.map(n => { const ok = !denied.includes(n), act = n === chatAgent;
         return <div key={n} onClick={() => ok ? set({ chatAgent: n }) : push({ k: 'err', text: `POST /api/chat → 400 · agent '${n}' is not permitted by this deployment` })}
           style={{ borderRadius: 6, padding: '7px 9px', cursor: 'pointer', background: act ? T.selected : 'transparent', border: `1px solid ${act ? T.focus : T.control}` }}>
-          <div style={{ fontFamily: MONO, fontSize: 12, color: ok ? '#fff' : T.faint }}>{n}</div><div style={{ fontSize: 11, color: ok ? T.muted : C.bad }}>{ok ? (act ? 'active' : 'allowed') : 'not in allowlist'}</div></div>; })}</div>
+          <div style={{ fontFamily: MONO, fontSize: 12, color: ok ? T.strong : T.faint }}>{n}</div><div style={{ fontSize: 11, color: ok ? T.muted : C.bad }}>{ok ? (act ? 'active' : 'allowed') : 'not in allowlist'}</div></div>; })}</div>
       <Caps style={{ marginTop: 6 }}>CORE MEMORY</Caps>
-      <div style={{ background: T.surface, border: `1px solid ${T.control}`, borderRadius: 6, padding: '9px 10px' }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><b style={{ color: '#fff' }}>pp_house_rules</b><span style={{ color: T.muted, whiteSpace: 'nowrap' }}>1 963 / 5k</span></div>
+      <div style={{ background: T.surface, border: `1px solid ${T.control}`, borderRadius: 6, padding: '9px 10px' }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><b style={{ color: T.strong }}>pp_house_rules</b><span style={{ color: T.muted, whiteSpace: 'nowrap' }}>1 963 / 5k</span></div>
         <div style={{ height: 4, background: T.deeper, borderRadius: 2, margin: '7px 0' }}><div style={{ width: '39%', height: 4, background: C.run, borderRadius: 2 }} /></div>
         <div style={{ color: T.secondary, fontFamily: MONO, fontSize: 11, lineHeight: 1.5 }}>MK-first · navy #2B547E · floor 6 pt · never fabricate data…</div></div>
       <Caps style={{ marginTop: 6 }}>SOURCES</Caps>
@@ -88,15 +88,15 @@ export function Chat() {
       {disabled && <div style={{ margin: '12px 22px 0' }}><Banner kind="err">503 · chat disabled: LETTA_BASE_URL is not set on ppdocwiz. The wizard path still builds without Letta.</Banner></div>}
       <div style={{ flex: 1, minHeight: 0, overflow: 'auto', padding: '18px 22px', display: 'flex', flexDirection: 'column', gap: 12, fontSize: 14, lineHeight: 1.5 }}>
         {msgs.map((m, i) => {
-          if (m.k === 'you') return <div key={i} style={{ alignSelf: 'flex-end', maxWidth: '76%', background: T.navy, color: '#fff', borderRadius: '10px 10px 2px 10px', padding: '9px 13px' }}>{m.text}</div>;
+          if (m.k === 'you') return <div key={i} style={{ alignSelf: 'flex-end', maxWidth: '76%', background: T.navy, color: T.onAccent, borderRadius: '10px 10px 2px 10px', padding: '9px 13px' }}>{m.text}</div>;
           if (m.k === 'trace') return <div key={i} style={{ fontFamily: MONO, fontSize: 12, color: T.muted }}>↳ {m.text}</div>;
           if (m.k === 'tool') return <div key={i} style={{ background: T.deeper, border: `1px solid ${T.hair}`, borderLeft: `3px solid ${C[m.st]}`, borderRadius: 6, padding: '9px 12px', fontFamily: MONO, fontSize: 12, lineHeight: 1.6 }}>
             <div><span style={{ color: C.run }}>tool</span> build_pp_document<span style={{ color: T.muted }}>{m.args}</span></div><div style={{ color: T.secondary }}>{m.res}</div>
             <div style={{ color: C[m.st], fontWeight: 700 }}>{m.st === 'run' ? '● running…' : m.st === 'bad' ? 'RESULT: FAIL' : 'RESULT: PASS  ' + m.t}</div></div>;
           if (m.k === 'agent') return <div key={i} style={{ maxWidth: '80%', display: 'flex', gap: 10 }}><Avatar size={26} filled={false} /><div style={{ background: T.surface, border: `1px solid ${T.control}`, borderRadius: '2px 10px 10px 10px', padding: '9px 13px' }}>{m.text}</div></div>;
           if (m.k === 'built') return <div key={i} style={{ marginLeft: 36, maxWidth: '70%', background: T.okSurface, border: `1px solid ${T.okBorder}`, borderRadius: 8, padding: '10px 12px', display: 'flex', gap: 12, alignItems: 'center' }}>
-            <div style={{ flex: 1, minWidth: 0 }}><div style={{ fontFamily: MONO, fontSize: 11, color: C.ok }}>tool_return · ok: true</div><div style={{ fontFamily: MONO, fontSize: 12, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.path}</div></div>
-            <a href={m.docx || '#'} style={{ background: T.navy, color: '#fff', borderRadius: 5, padding: '6px 10px', fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap', textDecoration: 'none' }}>.docx</a>
+            <div style={{ flex: 1, minWidth: 0 }}><div style={{ fontFamily: MONO, fontSize: 11, color: C.ok }}>tool_return · ok: true</div><div style={{ fontFamily: MONO, fontSize: 12, color: T.strong, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.path}</div></div>
+            <a href={m.docx || '#'} style={{ background: T.navy, color: T.onAccent, borderRadius: 5, padding: '6px 10px', fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap', textDecoration: 'none' }}>.docx</a>
             <a href={m.pdf || '#'} style={{ border: `1px solid ${T.okBorder}`, color: T.okText, borderRadius: 5, padding: '6px 10px', fontSize: 12, whiteSpace: 'nowrap', textDecoration: 'none' }}>.pdf</a></div>;
           return <div key={i} style={{ background: T.errSurface, border: `1px solid ${T.errBorder}`, borderRadius: 6, padding: '8px 12px', color: T.errText, fontFamily: MONO, fontSize: 12 }}>{m.text}</div>;
         })}
@@ -105,8 +105,8 @@ export function Chat() {
       <div style={{ flex: 'none', padding: '12px 22px 16px', borderTop: `1px solid ${T.hair}`, display: 'flex', flexDirection: 'column', gap: 8 }}>
         <div style={{ display: 'flex', gap: 6, fontSize: 12 }}>{['Translate row 3 to EN', 'Add a “received by” row', '/verify'].map(c => <span key={c} className="pp-chip" onClick={() => send(c)} style={{ border: `1px solid ${T.control}`, borderRadius: 999, padding: '4px 11px', color: T.secondary, cursor: 'pointer' }}>{c}</span>)}</div>
         <div style={{ display: 'flex', gap: 8 }}>
-          <input value={draft} onChange={e => set({ chatDraft: e.target.value })} onKeyDown={e => e.key === 'Enter' && send(draft)} placeholder={`Message ${chatAgent}, or /build /verify /diff`} style={{ flex: 1, background: T.surface, border: `1px solid ${T.control}`, borderRadius: 6, padding: '9px 12px', color: '#fff', outline: 'none' }} />
-          <button onClick={() => send(draft)} style={{ background: T.navy, color: '#fff', border: 0, borderRadius: 6, padding: '0 16px', font: 'inherit', fontWeight: 700, cursor: 'pointer' }}>Send</button>
+          <input value={draft} onChange={e => set({ chatDraft: e.target.value })} onKeyDown={e => e.key === 'Enter' && send(draft)} placeholder={`Message ${chatAgent}, or /build /verify /diff`} style={{ flex: 1, background: T.surface, border: `1px solid ${T.control}`, borderRadius: 6, padding: '9px 12px', color: T.strong, outline: 'none' }} />
+          <button onClick={() => send(draft)} style={{ background: T.navy, color: T.onAccent, border: 0, borderRadius: 6, padding: '0 16px', font: 'inherit', fontWeight: 700, cursor: 'pointer' }}>Send</button>
         </div>
       </div>
     </div>
