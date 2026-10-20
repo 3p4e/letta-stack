@@ -125,7 +125,7 @@ export function Canvas() {
         <div style={{ fontFamily: MONO, fontSize: 11, color: T.muted, marginTop: 4 }}>{doctype} · v{headField(draft.head, 'version') || '—'} · {edited ? <span style={{ color: C.warn }}>edited</span> : 'as generated'}</div>
       </div>
       <div className="pp-canvas-seclist">
-        <SecItem on={sel === null} onPick={() => setSel(null)} label="Whole document" sub={`${draft.sections.length} sections`} />
+        <SecItem on={sel === null} onPick={() => setSel(null)} label="Whole document" sub={`${draft.sections.length} section${draft.sections.length === 1 ? "" : "s"}`} />
         {draft.sections.map((s, i) => <SecItem key={i} on={sel === i} onPick={() => setSel(i)} label={sectionTitle(s)} sub={`${s.split('\n').length} lines`} />)}
       </div>
     </aside>
@@ -202,18 +202,48 @@ function SecItem({ on, onPick, label, sub }: { on: boolean; onPick: () => void; 
     <div style={{ fontFamily: MONO, fontSize: 10.5, color: T.muted }}>{sub}</div></div>;
 }
 
-/** The section as it reads: headings, then each 'MK ||| EN' line as two columns; markers and tables as they are. */
+/** A cell as it reads: 'MK~~EN' stacked, the English under the Macedonian. */
+function Cell({ text, head }: { text: string; head?: boolean }) {
+  const [mk, en] = text.split('~~');
+  return <><div style={{ fontWeight: head ? 700 : 400 }}>{mk.trim()}</div>{en !== undefined && <div style={{ color: head ? 'rgba(255,255,255,.82)' : T.secondary, fontSize: 11.5 }}>{en.trim()}</div>}</>;
+}
+
+/** A [[TABLE]] or [[FORM]] block drawn as the document draws it: a table's first row is its navy header; a form row is
+ *  'label MK ||| label EN ||| value', the value left blank for a person to fill in. */
+function Block({ kind, rows }: { kind: 'TABLE' | 'FORM'; rows: string[] }) {
+  const cells = rows.map(r => r.split('|||').map(c => c.trim()));
+  const width = Math.max(...cells.map(r => r.length));
+  return <div style={{ overflowX: 'auto', border: `1px solid ${T.control}`, borderRadius: 6 }}>
+    <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 12.5, lineHeight: 1.35 }}><tbody>
+      {cells.map((r, i) => {
+        const head = kind === 'TABLE' && i === 0;
+        if (kind === 'FORM' && r.length === 3) return <tr key={i}><td style={{ padding: '6px 8px', borderTop: `1px solid ${T.hair}`, width: '38%', background: T.surface }}><Cell text={`${r[0]}~~${r[1]}`} /></td><td style={{ padding: '6px 8px', borderTop: `1px solid ${T.hair}`, color: T.muted }}>{r[2] || '…'}</td></tr>;
+        const row = r.length < width && r.every(c => !c) ? new Array<string>(width).fill('') : r;
+        return <tr key={i}>{row.map((c, j) => <td key={j} style={{ padding: '6px 8px', verticalAlign: 'top', minWidth: 90, borderTop: i ? `1px solid ${T.hair}` : undefined, borderLeft: j ? `1px solid ${T.hair}` : undefined, background: head ? T.navy : undefined, color: head ? T.onAccent : T.text }}>{c ? <Cell text={c} head={head} /> : <span style={{ color: T.faint }}>&nbsp;</span>}</td>)}</tr>;
+      })}
+    </tbody></table></div>;
+}
+
+/** The section as it reads: headings, each 'MK ||| EN' line as two columns, tables and forms as tables. */
 function ReadView({ text }: { text: string }) {
-  return <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxWidth: 1100 }}>
-    {text.split('\n').map((l, i) => {
-      if (!l.trim()) return <div key={i} style={{ height: 4 }} />;
-      const h = /^(#{1,3})\s+(.*)$/.exec(l);
-      if (h) return <div key={i} style={{ marginTop: h[1].length === 1 ? 12 : 6, padding: h[1].length === 1 ? '7px 12px' : '4px 0', borderRadius: 6, background: h[1].length === 1 ? T.navy : 'transparent', color: h[1].length === 1 ? T.onAccent : T.strong, fontWeight: 700, fontSize: h[1].length === 1 ? 14 : 13.5 }}>{h[2]}</div>;
-      if (/^\s*(\[\[|\|)/.test(l)) return <div key={i} style={{ fontFamily: MONO, fontSize: 12, color: T.secondary, background: T.surface, borderRadius: 4, padding: '2px 8px', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{l}</div>;
-      const b = bilingual(l);
-      if (!b) return <div key={i} style={{ fontSize: 13.5, lineHeight: 1.55, color: T.text }}>{l}</div>;
-      return <div key={i} className="pp-bi" style={{ fontSize: 13.5, lineHeight: 1.55 }}>
-        <span style={{ color: T.text }}>{b[0]}</span><span style={{ color: T.secondary }}>{b[1]}</span></div>;
-    })}
-  </div>;
+  const out: JSX.Element[] = [];
+  const lines = text.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    const l = lines[i];
+    const open = /^\s*\[\[(TABLE|FORM)[^\]]*\]\]\s*$/.exec(l);
+    if (open) {
+      const kind = open[1] as 'TABLE' | 'FORM', rows: string[] = [];
+      while (++i < lines.length && !/^\s*\[\[\/(TABLE|FORM)\]\]\s*$/.test(lines[i])) if (lines[i].trim()) rows.push(lines[i]);
+      out.push(<Block key={i} kind={kind} rows={rows} />);
+      continue;
+    }
+    if (!l.trim()) { out.push(<div key={i} style={{ height: 4 }} />); continue; }
+    const h = /^(#{1,3})\s+(.*)$/.exec(l);
+    if (h) { out.push(<div key={i} style={{ marginTop: h[1].length === 1 ? 12 : 6, padding: h[1].length === 1 ? '7px 12px' : '4px 0', borderRadius: 6, background: h[1].length === 1 ? T.navy : 'transparent', color: h[1].length === 1 ? T.onAccent : T.strong, fontWeight: 700, fontSize: h[1].length === 1 ? 14 : 13.5 }}>{h[2]}</div>); continue; }
+    if (/^\s*(\[\[|\|)/.test(l)) { out.push(<div key={i} style={{ fontFamily: MONO, fontSize: 12, color: T.secondary, background: T.surface, borderRadius: 4, padding: '2px 8px', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{l}</div>); continue; }
+    const b = bilingual(l);
+    out.push(b ? <div key={i} className="pp-bi" style={{ fontSize: 13.5, lineHeight: 1.55 }}><span style={{ color: T.text }}>{b[0]}</span><span style={{ color: T.secondary }}>{b[1]}</span></div>
+      : <div key={i} style={{ fontSize: 13.5, lineHeight: 1.55, color: T.text }}>{l}</div>);
+  }
+  return <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxWidth: 1100 }}>{out}</div>;
 }
