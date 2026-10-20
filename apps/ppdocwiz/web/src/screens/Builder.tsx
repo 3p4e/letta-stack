@@ -106,7 +106,8 @@ export function Builder() {
     });
     if (ok) flash(`${code} built · RESULT: PASS`);
   };
-  const nothingOpen = api.mode === 'live' && !doc.code.trim();
+  // Markdown handed over from Jobs ("Open Markdown in Builder") is an open document: the raw view shows it (20.10.2026).
+  const nothingOpen = api.mode === 'live' && !doc.code.trim() && raw === null;
   usePrimary('Build ▸', build, nothingOpen);
 
   const pick = (i: number, line: number) => { setSel(i); set({ hlLine: i === 0 ? 1 : line }); };
