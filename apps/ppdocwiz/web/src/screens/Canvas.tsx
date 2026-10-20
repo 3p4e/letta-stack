@@ -9,7 +9,7 @@ import type { ReviseResult } from '../api/client';
 import { ApiError, type Job } from '../api/types';
 import { EmptyState } from '../components/LiveViews';
 import { Banner, Btn, Seg, press } from '../components/ui';
-import { bilingual, headField, joinDraft, lineDiff, sectionTitle, splitDraft } from '../lib/draft';
+import { bilingual, columnChanges, headField, joinDraft, lineDiff, sectionTitle, splitDraft } from '../lib/draft';
 import { usePrimary } from '../lib/usePrimary';
 import { lineColor } from '../lib/verify';
 import { useApp } from '../store/store';
@@ -178,9 +178,14 @@ export function Canvas() {
       {proposal && <div style={{ display: 'flex', flexDirection: 'column', gap: 8, border: `1px solid ${T.focus}`, borderRadius: 8, padding: 10, background: T.surface }}>
         <b style={{ fontSize: 13, color: T.strong }}>Proposed change · {proposal.section === null ? 'whole document' : proposal.title}</b>
         {proposal.gaps.length > 0 && <Banner kind="warn">One language only in {proposal.gaps.join(', ')}. Discard, or accept and fix by hand.</Banner>}
+        {(() => { const cc = columnChanges(diff); const show = (l: string) => l.split('~~').map(x => x.trim()).join(' · ');
+          return (cc.added.length > 0 || cc.removed.length > 0) && <div style={{ fontSize: 12.5, lineHeight: 1.45, display: 'flex', flexDirection: 'column', gap: 3 }}>
+            {cc.added.map(c => <div key={'+' + c} style={{ color: C.ok }}><b>+ column</b> {show(c)}</div>)}
+            {cc.removed.map(c => <div key={'-' + c} style={{ color: C.bad }}><b>− column</b> {show(c)}</div>)}
+          </div>; })()}
         <div style={{ maxHeight: 320, overflow: 'auto', fontFamily: MONO, fontSize: 11.5, lineHeight: 1.6, borderRadius: 6, border: `1px solid ${T.hair}` }}>
           {diff.filter(([k]) => k !== '=').length === 0 ? <div style={{ padding: 8, color: T.muted }}>No line changed.</div>
-            : diff.map(([k, l], i) => k === '=' ? null : <div key={i} style={{ padding: '1px 8px', whiteSpace: 'pre-wrap', wordBreak: 'break-word', background: k === '+' ? 'rgba(46,139,87,.12)' : 'rgba(192,57,43,.10)', color: k === '+' ? C.ok : C.bad }}>{k} {l}</div>)}
+            : diff.map(([k, l], i) => k === '=' || /^[\s|]*$/.test(l) ? null : <div key={i} style={{ padding: '1px 8px', whiteSpace: 'pre-wrap', wordBreak: 'break-word', background: k === '+' ? 'rgba(46,139,87,.12)' : 'rgba(192,57,43,.10)', color: k === '+' ? C.ok : C.bad }}>{k} {l}</div>)}
         </div>
         <div style={{ display: 'flex', gap: 8 }}><Btn onClick={() => decide(true)} style={{ flex: 1 }}>Accept</Btn><Btn primary={false} onClick={() => decide(false)} style={{ flex: 1 }}>Discard</Btn></div>
       </div>}
@@ -211,14 +216,25 @@ function Cell({ text, head }: { text: string; head?: boolean }) {
 /** A [[TABLE]] or [[FORM]] block drawn as the document draws it: a table's first row is its navy header; a form row is
  *  'label MK ||| label EN ||| value', the value left blank for a person to fill in. */
 function Block({ kind, rows }: { kind: 'TABLE' | 'FORM'; rows: string[] }) {
-  const cells = rows.map(r => r.split('|||').map(c => c.trim()));
+  // A row of pipes only is an empty entry row, whatever its pipe count.
+  const cells = rows.map(r => /^[\s|]*$/.test(r) ? [] : r.split('|||').map(c => c.trim()));
   const width = Math.max(...cells.map(r => r.length));
+  const entries = cells.length - 1;
+  // A wide log (header + empty rows) cannot be read clipped: list its columns instead.
+  if (kind === 'TABLE' && width > 7 && cells.slice(1).every(r => r.every(c => !c)))
+    return <div style={{ border: `1px solid ${T.control}`, borderRadius: 6, overflow: 'hidden' }}>
+      <div style={{ background: T.navy, color: T.onAccent, padding: '6px 10px', fontSize: 12.5, fontWeight: 700 }}>
+        Log table · {width} columns · {entries} empty entry {entries === 1 ? 'row' : 'rows'}</div>
+      {cells[0].map((c, j) => <div key={j} style={{ display: 'grid', gridTemplateColumns: '34px 1fr', borderTop: j ? `1px solid ${T.hair}` : undefined, fontSize: 12.5, lineHeight: 1.35 }}>
+        <span style={{ padding: '6px 8px', color: T.faint, fontFamily: MONO, textAlign: 'right' }}>{j + 1}</span>
+        <span style={{ padding: '6px 8px' }}><Cell text={c} /></span></div>)}
+    </div>;
   return <div style={{ overflowX: 'auto', border: `1px solid ${T.control}`, borderRadius: 6 }}>
     <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 12.5, lineHeight: 1.35 }}><tbody>
       {cells.map((r, i) => {
         const head = kind === 'TABLE' && i === 0;
         if (kind === 'FORM' && r.length === 3) return <tr key={i}><td style={{ padding: '6px 8px', borderTop: `1px solid ${T.hair}`, width: '38%', background: T.surface }}><Cell text={`${r[0]}~~${r[1]}`} /></td><td style={{ padding: '6px 8px', borderTop: `1px solid ${T.hair}`, color: T.muted }}>{r[2] || '…'}</td></tr>;
-        const row = r.length < width && r.every(c => !c) ? new Array<string>(width).fill('') : r;
+        const row = r.every(c => !c) ? new Array<string>(width).fill('') : r;
         return <tr key={i}>{row.map((c, j) => <td key={j} style={{ padding: '6px 8px', verticalAlign: 'top', minWidth: 90, borderTop: i ? `1px solid ${T.hair}` : undefined, borderLeft: j ? `1px solid ${T.hair}` : undefined, background: head ? T.navy : undefined, color: head ? T.onAccent : T.text }}>{c ? <Cell text={c} head={head} /> : <span style={{ color: T.faint }}>&nbsp;</span>}</td>)}</tr>;
       })}
     </tbody></table></div>;

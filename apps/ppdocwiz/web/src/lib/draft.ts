@@ -54,3 +54,12 @@ export function lineDiff(a: string, b: string): ['=' | '-' | '+', string][] {
   while (j < m) out.push(['+', y[j++]]);
   return out;
 }
+
+/** Columns a revision added or removed, read from each changed table row ('A ||| B ||| C') paired with the row it replaced. */
+export function columnChanges(diff: ['=' | '-' | '+', string][]): { added: string[]; removed: string[] } {
+  const isRow = (l: string) => l.includes('|||') && !/^[\s|]*$/.test(l);
+  const cells = (l: string) => l.split('|||').map(c => c.trim()).filter(Boolean);
+  const gone = diff.filter(([k, l]) => k === '-' && isRow(l)).flatMap(([, l]) => cells(l));
+  const come = diff.filter(([k, l]) => k === '+' && isRow(l)).flatMap(([, l]) => cells(l));
+  return { added: come.filter(c => !gone.includes(c)), removed: gone.filter(c => !come.includes(c)) };
+}
