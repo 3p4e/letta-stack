@@ -102,3 +102,22 @@ def test_an_sop_form_is_a_label_value_form(tmp_path):
 def test_a_two_cell_row_with_a_cyrillic_value(tmp_path):
     tables = _tables(tmp_path, "[[FORM]]\nИме ||| Петар\nДатум ||| 12.10.2026\nМесто ||| Place\n[[/FORM]]\n")
     assert [["Име", "Петар"], ["Датум", "12.10.2026"], ["Место | Place", ""]] in tables
+
+
+def _wide(n):
+    return "[[TABLE]]\n" + " ||| ".join(f"Колона {i}~~Column {i}" for i in range(n)) + "\n" + "|" * 17 + "\n[[/TABLE]]\n"
+
+
+def test_a_pipe_only_row_is_an_empty_entry_row(tmp_path):
+    """QCT026 (20.10.2026): an entry row of 17 pipes printed a stray '||' in one cell."""
+    txt, _ = build(tmp_path, _wide(5))
+    assert "||" not in txt and "Column 4" in txt
+
+
+@pytest.mark.parametrize("n,land", [(10, False), (11, True)])
+def test_a_form_wider_than_ten_columns_is_landscape(tmp_path, n, land):
+    """15 columns on portrait A4 broke every header word mid-syllable (QCT026, 20.10.2026)."""
+    out = tmp_path / "out.docx"
+    build(tmp_path, _wide(n))
+    xml = zipfile.ZipFile(out).read("word/document.xml").decode("utf-8")
+    assert ('w:orient="landscape"' in xml) is land
