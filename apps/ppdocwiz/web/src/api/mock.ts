@@ -5,9 +5,10 @@ import type { Api, EngineEnv, WorkflowIn } from './client';
 import { applyDefaults, normalizeQuestionnaire } from './normalize';
 import { ApiError, type Account, type Brief, type BriefEvent, type DocumentRow, type Job, type HouseRelated, type LibraryPackage, type LibraryShelves, type Package, type ReferenceDoc, type Shelf, type ShelfEntry, type SourceRole, type WizardPayload } from './types';
 import { RAW_QUESTIONNAIRES } from '../data/questionnaires';
-import { ANX_SEC, CH, CH_A, CY, CY_A, FIND, FIND_A, QA_FIX, SAMPLE_ANNEX, SOP_SEC } from '../data/samples';
+import { ANX_SEC, CH, CH_A, CY, CY_A, FIND, FIND_A, QA_FIX, SAMPLE_ANNEX, SAMPLE_SOP, SOP_SEC } from '../data/samples';
 import { composeMarkdown, lint } from '../lib/compose';
 import { verifyReport } from '../lib/verify';
+import { joinDraft, splitDraft } from '../lib/draft';
 
 export interface Faults { storage: boolean; letta: boolean; chatDisabled: boolean; gotenberg: boolean; libreoffice: boolean; badKey: boolean }
 export const NO_FAULTS: Faults = { storage: false, letta: false, chatDisabled: false, gotenberg: false, libreoffice: false, badKey: false };
@@ -48,8 +49,17 @@ function mkJob(p: Partial<Job> & { id: string; code: string; mk: string; en: str
   };
 }
 
+/** Finished and parked jobs carry their draft, as the engine's do. */
+const withDrafts = (js: Job[]) => js.map(j => (j.status === 'done' || j.status === 'awaiting_review') && !j.result.markdown ? { ...j, result: { ...j.result, markdown: draftOf(j) } } : j);
+
+/** A draft for a mock job, from the sample document under the job's own code and titles. */
+function draftOf(j: Job): string {
+  const m = j.payload.meta, sop = (m.doctype || 'SOP') === 'SOP';
+  return composeMarkdown({ ...structuredClone(sop ? SAMPLE_SOP : SAMPLE_ANNEX), code: m.code, mk_title: m.title_mk, en_title: m.title_en });
+}
+
 function seedJobs(): Job[] {
-  return [
+  return withDrafts([
     mkJob({ id: '7b21d0aa-5f1c-4e0a-9d3e-1c2b3a4d5e6f', code: 'QCSOP_014', mk: 'Тестирање на стабилност', en: 'Stability testing', q: 'sop_qc', doctype: 'SOP', by: 'marija.k', minAgo: 32, status: 'failed', stage: 'bilingual-check', error: 'sections are not bilingual: 5.0 (no EN)', result: { bilingual_gaps: ['5.0 (no EN)'], telemetry: telemetry('SOP', '5.0'), regulatory: findings('SOP') } }),
     mkJob({ id: 'c04e88f3-2b7a-4c1d-8e9f-0a1b2c3d4e5f', code: 'WHSOP_011_A01', mk: 'Дневник на температура', en: 'Temperature log', q: 'annex_form', doctype: 'FORM', by: 'darko.s', minAgo: 53, status: 'failed', stage: 'qa-audit', error: '§6A audit did not pass', result: { qa_audit: ['Verdict: FIX', ...QA_FIX.slice(2)].join('\n'), qa_verdict: 'FIX', telemetry: telemetry('FORM'), regulatory: findings('FORM') } }),
     mkJob({ id: '19d5e7b0-8c4d-4f2e-b1a0-9e8d7c6b5a49', code: 'QCSOP_022', mk: 'Микробиолошко тестирање', en: 'Microbiological testing', q: 'sop_qc', doctype: 'SOP', by: 'ivana.p', minAgo: 162, status: 'failed', stage: 'regulatory-check 6.0', error: 'abandoned: no progress for 60 minutes (worker killed mid-run)', result: { telemetry: telemetry('SOP'), regulatory: findings('SOP').slice(0, 5) } }),
@@ -58,7 +68,7 @@ function seedJobs(): Job[] {
                      verdicts: { QCSOP014: { verdict: 'CONFLICT', detail: 'draft: «QA records the reading» | approved: «the QC analyst records the reading»' }, QCLB005: { verdict: 'CONSISTENT', detail: '' } } },
       markdown: '<!--HEADERDATA\nmk_title: Контрола на влага во просторија\nen_title: Room humidity control\ncode: QCSOP_033\nversion: 01\ndoctype: SOP\n-->\n\n## 1.0 ЦЕЛ | PURPOSE\n…' } }),
     mkJob({ id: 'e8812f4c-1a2b-4c3d-9e4f-5a6b7c8d9e0f', code: 'QCSOP_018', mk: 'Земање мостри', en: 'Sampling', q: 'sop_qc', doctype: 'SOP', by: 'darko.s', minAgo: 1440, status: 'done', stage: 'done', result: { document_id: '5d0c71e2-0000-4000-a000-000000000001', bytes: 212506, verify: sopReport('QCSOP_018', true), regulatory: findings('SOP'), qa_audit: 'Verdict: PASS — no issues.', qa_verdict: 'PASS', telemetry: telemetry('SOP') } }),
-  ];
+  ]);
 }
 
 type MockDoc = DocumentRow & { parent?: string; source?: string; supersedes?: string; missing?: boolean };
@@ -144,7 +154,7 @@ export function mockApi(onChange?: () => void): MockApi {
       const sop = job.payload.meta.doctype === 'SOP', id = uuid(), m = job.payload.meta;
       const verify = sopReport(m.code, sop);
       docs.unshift({ id, code: m.code, doctype: sop ? 'SOP' : String(m.doctype || 'FORM'), title_mk: m.title_mk, title_en: m.title_en, version: m.version || '01', bytes: sop ? 204118 : 44902, created_at: new Date().toISOString(), verify, job_id: job.id, source: 'job ' + job.id.slice(0, 8), parent: '—' });
-      Object.assign(job, { status: 'done', stage: 'done', result: { ...job.result, document_id: id, bytes: sop ? 204118 : 44902, verify, regulatory: findings(sop ? 'SOP' : 'FORM'), qa_audit: 'Verdict: PASS — no issues.', qa_verdict: 'PASS' } });
+      Object.assign(job, { status: 'done', stage: 'done', result: { ...job.result, markdown: job.result.markdown || draftOf(job), document_id: id, bytes: sop ? 204118 : 44902, verify, regulatory: findings(sop ? 'SOP' : 'FORM'), qa_audit: 'Verdict: PASS — no issues.', qa_verdict: 'PASS' } });
       clearInterval(timers.get(job.id)); timers.delete(job.id);
     } else {
       job.status = 'running'; job.stage = next;
@@ -247,6 +257,30 @@ export function mockApi(onChange?: () => void): MockApi {
       job.result = { telemetry: telemetry(m.doctype || 'SOP') };
       jobs.unshift(job); run(job); onChange?.();
       return { job_id: nid, status: 'queued' };
+    },
+    async stopJob(id) {
+      store(); await wait(150);
+      const j = jobs.find(x => x.id === id);
+      if (!j) throw new ApiError(404, 'no such job');
+      if (j.status !== 'queued' && j.status !== 'running') throw new ApiError(409, `the job is ${j.status}; only a queued or running job can be stopped`);
+      const t = timers.get(id); if (t !== undefined) { clearInterval(t); timers.delete(id); }
+      Object.assign(j, { status: 'failed', error: 'stopped by darko.s', updated_at: new Date().toISOString() });
+      onChange?.();
+      return structuredClone(j);
+    },
+    async reviseJob(id, body) {
+      store(); await wait(700);
+      const j = jobs.find(x => x.id === id);
+      if (!j) throw new ApiError(404, 'no such job');
+      if (faults.letta) throw new ApiError(503, 'Letta unavailable');
+      const md = body.markdown || String(j.result.markdown || '');
+      if (!md) throw new ApiError(409, 'this job holds no draft to revise yet');
+      const { head, sections } = splitDraft(md);
+      if (body.section !== null && !sections[body.section]) throw new ApiError(400, `section ${body.section} does not exist`);
+      const note = `Ревидирано по инструкцијата: ${body.instruction} ||| Revised by the instruction: ${body.instruction}`;
+      const idx = body.section ?? sections.length - 1;
+      sections[idx] = sections[idx].trimEnd() + '\n' + note;
+      return { markdown: joinDraft(head, sections), section: body.section, title: sections[idx].split('\n')[0].replace(/^# /, ''), gaps: [], agent: (j.payload.meta.doctype || 'SOP') === 'SOP' ? 'gf_sop_author' : 'gf_annex_author' };
     },
     async reviewJob(id, decision, note) {
       store(); await wait(300);

@@ -10,7 +10,7 @@ import { Banner, PaneHead } from './ui';
 export function EmptyState({ title, children }: { title: string; children: ReactNode }) {
   return <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 40 }}>
     <div style={{ maxWidth: 520, background: T.surface, border: `1px solid ${T.control}`, borderRadius: 10, padding: '22px 26px', lineHeight: 1.55 }}>
-      <div style={{ fontWeight: 700, color: '#fff', fontSize: 16, marginBottom: 8 }}>{title}</div>
+      <div style={{ fontWeight: 700, color: T.strong, fontSize: 16, marginBottom: 8 }}>{title}</div>
       <div style={{ color: T.secondary, fontSize: 13.5 }}>{children}</div>
     </div>
   </div>;
@@ -39,8 +39,8 @@ export function VerifyLive() {
   const lines = b.verify.split('\n').filter(Boolean);
   return <>
     <div style={{ width: 236, flex: 'none', borderRight: `1px solid ${T.hair}`, background: T.pane, padding: '14px 10px', display: 'flex', flexDirection: 'column', gap: 4, fontSize: 13 }}>
-      <div style={{ padding: '0 6px 8px' }}><b style={{ color: '#fff' }}>Gate checks</b><div style={{ fontSize: 12, color: T.muted }}>{b.code} · built {b.at}</div></div>
-      {CHECKS.map(([label, f]) => { const ok = b.verify ? f(b.verify) : false; return <div key={label} style={{ padding: '8px 10px', borderRadius: 6, display: 'grid', gridTemplateColumns: '16px 1fr auto', gap: 8, background: ok ? 'transparent' : 'rgba(224,122,111,.12)' }}>
+      <div style={{ padding: '0 6px 8px' }}><b style={{ color: T.strong }}>Gate checks</b><div style={{ fontSize: 12, color: T.muted }}>{b.code} · built {b.at}</div></div>
+      {CHECKS.map(([label, f]) => { const ok = b.verify ? f(b.verify) : false; return <div key={label} style={{ padding: '8px 10px', borderRadius: 6, display: 'grid', gridTemplateColumns: '16px 1fr auto', gap: 8, background: ok ? 'transparent' : 'rgba(192,57,43,.12)' }}>
         <span style={{ color: ok ? C.ok : C.bad, fontWeight: 700 }}>{ok ? G.ok : G.bad}</span><span>{label}</span><span style={{ color: ok ? C.ok : C.bad, fontFamily: MONO, fontSize: 11 }}>{ok ? 'OK' : 'FAIL'}</span></div>; })}
     </div>
     <div style={{ flex: 1, minWidth: 0, padding: '18px 22px', display: 'flex', flexDirection: 'column', gap: 14, overflow: 'auto' }}>

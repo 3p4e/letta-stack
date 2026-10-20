@@ -30,7 +30,7 @@ export function Packages() {
   const isOpen = (p: LibraryPackage, group: { all: LibraryPackage[]; opened: string[] }) => open[p.sop.code] ?? (group.opened.includes(p.sop.code) || openByDefault(group.all.length));
   const row = (e: ShelfEntry, extra: ReactNode, indent = 0, bold = false) => <div key={e.code} onClick={() => setSel(e)} {...press(() => setSel(e))} className="pp-hover-row"
     style={{ display: 'grid', gridTemplateColumns: cols, gap: 10, padding: `8px 14px 8px ${14 + indent}px`, borderTop: `1px solid ${T.hair}`, alignItems: 'center', cursor: 'pointer', fontSize: 12.5, background: e.code === sel?.code ? T.selected : 'transparent' }}>
-    <b style={{ color: bold ? '#fff' : T.text, fontFamily: MONO, fontSize: 12.5, fontWeight: bold ? 700 : 400 }}>{e.code}</b>
+    <b style={{ color: bold ? T.strong : T.text, fontFamily: MONO, fontSize: 12.5, fontWeight: bold ? 700 : 400 }}>{e.code}</b>
     {title(e)}<span>{e.version || '—'}</span>
     <span style={{ fontFamily: MONO, fontSize: 11.5, color: T.secondary }}>{e.status || 'not registered'}{e.notes.length > 0 && <span style={{ color: C.warn }}> · !</span>}</span>
     {extra}</div>;
@@ -40,10 +40,10 @@ export function Packages() {
         {lib.reconcile.missing.length > 0 && <Banner kind="warn"><b>In use in the register, no approved copy in the library · {lib.reconcile.missing.length}</b> — nothing can be checked against them until their Word files are loaded: {lib.reconcile.missing.map(e => `${e.code}${e.title_en ? ' ' + e.title_en : ''}`).join(' · ')}</Banner>}
         {lib.reconcile.register_behind.length > 0 && <Banner kind="info"><b>In use (DB3_PP_CURRENT), the register says otherwise · {lib.reconcile.register_behind.length}</b> — the register is to be brought in line: {lib.reconcile.register_behind.map(e => `${e.code} v${e.version} (${e.status})`).join(' · ')}</Banner>}
       </div>}
-      <input value={q} onChange={e => setQ(e.target.value)} placeholder="⌕ code or title — SOPs, their documents and the loose ones" style={{ background: T.surface, border: `1px solid ${T.control}`, borderRadius: 6, padding: '7px 12px', fontFamily: MONO, fontSize: 12, color: '#fff', outline: 'none' }} />
+      <input value={q} onChange={e => setQ(e.target.value)} placeholder="⌕ code or title — SOPs, their documents and the loose ones" style={{ background: T.surface, border: `1px solid ${T.control}`, borderRadius: 6, padding: '7px 12px', fontFamily: MONO, fontSize: 12, color: T.strong, outline: 'none' }} />
       {view.map(group => <div key={group.g} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         <Caps>{group.label.toUpperCase()} · {group.kept.length} {group.kept.length === 1 ? 'PACKAGE' : 'PACKAGES'} · {group.kept.reduce((n, p) => n + p.members.length, 0)} UNDER THEM · {group.loose.length} LOOSE</Caps>
-        <div style={{ border: `1px solid ${T.hair}`, borderRadius: 8, overflow: 'hidden' }}>
+        <div className="pp-table" style={{ border: `1px solid ${T.hair}`, borderRadius: 8, overflow: 'hidden' }}>
           <div style={{ display: 'grid', gridTemplateColumns: cols, gap: 10, padding: '9px 14px', background: T.pane, fontSize: 11, color: T.muted, fontFamily: MONO }}><span>CODE</span><span>TITLE · MK | EN</span><span>VER</span><span>REGISTER</span><span /></div>
           {group.kept.map(p => {
             const o = isOpen(p, group), toggle = () => setOpen(s => ({ ...s, [p.sop.code]: !o }));
@@ -59,7 +59,7 @@ export function Packages() {
         </div>
         {group.loose.length > 0 && <>
           <Caps style={{ marginTop: 4 }}>NOT UNDER AN SOP · {group.loose.length}</Caps>
-          <div style={{ border: `1px solid ${T.hair}`, borderRadius: 8, overflow: 'hidden' }}>
+          <div className="pp-table" style={{ border: `1px solid ${T.hair}`, borderRadius: 8, overflow: 'hidden' }}>
             {byFamily(group.loose).map(([fam, es]) => <div key={fam}>
               <div style={{ padding: '7px 14px', background: T.pane, fontFamily: MONO, fontSize: 11, color: T.muted }}>{fam} · {es.length}</div>
               {es.map(e => row(e, <span />, 22))}

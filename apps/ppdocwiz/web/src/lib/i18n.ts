@@ -4,7 +4,7 @@ export type Lang = 'en' | 'mk';
 
 const MK: Record<string, string> = {
   'Workflow': 'Работен тек', 'Users': 'Корисници', 'Builder': 'Уредувач', 'Agent chat': 'Разговор со агент', 'Questionnaire': 'Прашалник', 'Formatter': 'Форматирање',
-  'Reports': 'Извештаи', 'Library': 'Библиотека', 'Jobs': 'Задачи', 'Verify': 'Верификација', 'Preview': 'Преглед',
+  'Reports': 'Извештаи', 'Library': 'Библиотека', 'Jobs': 'Задачи', 'Canvas': 'Уредувач', 'Verify': 'Верификација', 'Preview': 'Преглед',
   'Fleet & health': 'Агенти и состојба', 'CREATE': 'КРЕИРАЈ', 'CONTROL': 'КОНТРОЛА', 'Sign out': 'Одјава', 'Create': 'Креирај',
   'Document meta': 'Податоци за документот', 'Content brief': 'Содржина на барањето',
   '← Previous round': '← Претходен круг', 'Next round →': 'Следен круг →',

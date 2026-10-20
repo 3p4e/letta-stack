@@ -1010,6 +1010,9 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                          result={**ctx, "verify": result.verify_report, "bytes": result.bytes,
                                  "artifact": {"path": str(result.path), "bytes": result.bytes}})
             return
+        # Stopped while formatting (POST /workflows/{id}/stop): nothing is registered (20.10.2026).
+        if await db.job_touch(job_id) == "failed":
+            raise JobAborted(job_id)
         did = await db.document_create(
             job_id,
             {
@@ -1024,7 +1027,7 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                         result={**ctx, "document_id": did, "verify": result.verify_report, "bytes": result.bytes}):
             await start_package(job_id, p, meta, sop)
     except JobAborted:
-        log.warning("job %s: failed by the stale-job reaper while running; stopped, nothing written", job_id)
+        log.warning("job %s: stopped (by a user or the stale-job reaper) while running; nothing written", job_id)
     except builder.VerifyFailed as e:
         log.error("job %s verify FAILED", job_id)
         await finish(status="failed", error="verify FAILED", result={**ctx, "verify": e.report})

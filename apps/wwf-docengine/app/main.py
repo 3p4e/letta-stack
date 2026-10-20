@@ -349,6 +349,62 @@ async def rerun_workflow(jid: str):
     return {"job_id": new, "status": "queued"}
 
 
+class StopIn(BaseModel):
+    actor: str = ""
+
+
+@app.post("/workflows/{jid}/stop", dependencies=[Depends(require_api_key)])
+async def stop_workflow(jid: str, body: StopIn | None = None):
+    """Stop a queued or running job. The worker stops before its next agent exchange; nothing it was writing is
+    registered. Re-run starts it again from the same answers."""
+    if not _valid_uuid(jid):
+        raise HTTPException(404, "no such job")
+    if not db.ready():
+        raise HTTPException(503, "DocEngine storage unavailable")
+    job = await db.job_get(jid)
+    if not job:
+        raise HTTPException(404, "no such job")
+    by = who((body.actor if body else "") or "")
+    if not await db.job_stop(jid, by):
+        raise HTTPException(409, f"the job is {job['status']}; only a queued or running job can be stopped")
+    return await db.job_get(jid)
+
+
+class ReviseIn(BaseModel):
+    instruction: str = Field(min_length=1, max_length=4000)
+    # The text as the canvas holds it (with the user's own edits); the job's stored draft when empty.
+    markdown: str = Field("", max_length=400_000)
+    section: int | None = Field(None, ge=0, le=200)   # index of the level-1 section; None = the whole body
+
+
+@app.post("/workflows/{jid}/revise", dependencies=[Depends(require_api_key)])
+async def revise_workflow(jid: str, body: ReviseIn):
+    """Revise a generated draft by an instruction (Head of QC, 20.10.2026: the canvas after the first generation must be
+    editable and take commands). The author that wrote it rewrites one section or the whole body; the HEADERDATA block
+    never changes. Nothing is stored: the canvas shows the result and rebuilds it with POST /build."""
+    from . import revise
+    if not _valid_uuid(jid):
+        raise HTTPException(404, "no such job")
+    if not db.ready():
+        raise HTTPException(503, "DocEngine storage unavailable")
+    job = await db.job_get(jid)
+    if not job:
+        raise HTTPException(404, "no such job")
+    md = body.markdown or ((job.get("result") or {}).get("markdown") or "")
+    if not md:
+        raise HTTPException(409, "this job holds no draft to revise yet")
+    if not LettaClient().configured:
+        raise HTTPException(503, "Letta unavailable")
+    qkey = (job.get("payload") or {}).get("questionnaire", "")
+    doctype = (QUESTIONNAIRES.get(qkey) or {}).get("doctype") or ("SOP" if qkey.startswith("sop_") else "FORM")
+    try:
+        return await revise.revise(md, body.instruction, body.section, doctype, tag=f"{jid[:8]}_rev")
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+    except LettaError as e:
+        raise HTTPException(502, f"the author failed: {e}") from e
+
+
 class ReviewIn(BaseModel):
     decision: str            # approve | return
     note: str = ""

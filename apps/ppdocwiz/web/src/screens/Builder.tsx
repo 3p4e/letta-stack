@@ -114,10 +114,10 @@ export function Builder() {
   // No document open: say so, instead of showing a sample as if it were the user's work in progress.
   if (nothingOpen) return <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
     <div style={{ maxWidth: 460, display: 'flex', flexDirection: 'column', gap: 12, textAlign: 'center' }}>
-      <b style={{ color: '#fff', fontSize: 17 }}>No document open</b>
+      <b style={{ color: T.strong, fontSize: 17 }}>No document open</b>
       <span style={{ color: T.secondary, lineHeight: 1.5 }}>Start a new draft with <b>＋ Create</b> — the code is assigned from the register — or continue an open draft from Jobs.</span>
       <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
-        <span onClick={() => set({ createOpen: true, menuX: 220, menuY: 60 })} style={{ cursor: 'pointer', color: '#fff', background: T.navy, borderRadius: 6, padding: '8px 14px', fontWeight: 700 }}>＋ Create</span>
+        <span onClick={() => set({ createOpen: true, menuX: 220, menuY: 60 })} style={{ cursor: 'pointer', color: T.onAccent, background: T.navy, borderRadius: 6, padding: '8px 14px', fontWeight: 700 }}>＋ Create</span>
         <span onClick={() => go('jobs')} style={{ cursor: 'pointer', color: T.secondary, border: `1px solid ${T.control}`, borderRadius: 6, padding: '8px 14px' }}>Open from Jobs</span>
       </div>
     </div>
@@ -126,9 +126,9 @@ export function Builder() {
   return <>
     {/* outline */}
     <div style={{ width: 208, flex: 'none', borderRight: `1px solid ${T.hair}`, background: T.pane, padding: '14px 10px', display: 'flex', flexDirection: 'column', gap: 6, overflow: 'auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '0 4px 6px' }}><b style={{ color: '#fff' }}>Outline</b><span style={{ fontSize: 12, color: T.muted }}>{doc.doctype === 'SOP' ? 'SOP' : 'Annex'} · A4 {doc.orient}</span></div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '0 4px 6px' }}><b style={{ color: T.strong }}>Outline</b><span style={{ fontSize: 12, color: T.muted }}>{doc.doctype === 'SOP' ? 'SOP' : 'Annex'} · A4 {doc.orient}</span></div>
       {outline.map((o, i) => <div key={i} onClick={() => pick(i, o.line)} style={{ padding: '8px 10px', borderRadius: 6, cursor: 'pointer', background: sel === i ? T.selected : T.surface, border: `1px solid ${sel === i ? T.focus : T.control}` }}>
-        <div style={{ fontSize: 11, color: T.muted, fontFamily: MONO }}>{o.tag}</div><div style={{ fontWeight: 700, color: '#fff' }}>{o.mk}</div><div style={{ fontSize: 12, color: o.en.includes('!') ? C.warn : T.secondary }}>{o.en}</div></div>)}
+        <div style={{ fontSize: 11, color: T.muted, fontFamily: MONO }}>{o.tag}</div><div style={{ fontWeight: 700, color: T.strong }}>{o.mk}</div><div style={{ fontSize: 12, color: o.en.includes('!') ? C.warn : T.secondary }}>{o.en}</div></div>)}
       <div onClick={() => { const q = clone(doc); q.sections.push({ num: String(q.sections.length + 1), mk: '', en: '', level: doc.doctype === 'SOP' ? 2 : 1, blocks: [{ type: 'text', paras: [{ mk: '', en: '' }] }] }); setDoc(q); set({ builderMode: 'blocks' }); }} style={{ padding: '8px 10px', borderRadius: 6, border: `1px dashed ${T.control}`, color: T.muted, textAlign: 'center', cursor: 'pointer' }}>＋ Section</div>
       <MetaBox doc={doc} setDoc={setDoc} />
     </div>
@@ -156,7 +156,7 @@ export function Builder() {
         {raw === null && firstLint && sug && <div style={{ flex: 'none', background: T.surface, border: `1px solid ${T.control}`, borderRadius: 8, padding: '12px 14px', display: 'flex', gap: 14, alignItems: 'center' }}>
           <Avatar />
           <div style={{ flex: 1, minWidth: 0 }}><div style={{ fontFamily: MONO, fontSize: 11.5, color: T.muted }}>{api.mode === 'mock' ? 'gf_annex_author' : 'glossary'} · suggestion · line {firstLint.line}</div>
-            <div style={{ marginTop: 2 }}>Fill the missing EN half: <span style={{ fontFamily: MONO, color: C.warn }}>~~</span><b style={{ color: '#fff' }}>{sug.en}</b> (term from DB3_PP_CURRENT_unified)</div></div>
+            <div style={{ marginTop: 2 }}>Fill the missing EN half: <span style={{ fontFamily: MONO, color: C.warn }}>~~</span><b style={{ color: T.strong }}>{sug.en}</b> (term from DB3_PP_CURRENT_unified)</div></div>
           <Btn onClick={() => setDoc(applyEn(doc, firstLint, sug.en))} style={{ padding: '7px 14px' }}>Accept</Btn>
           <span onClick={() => setDismissed([...dismissed, firstLint.line])} style={{ color: T.muted, fontSize: 13, cursor: 'pointer' }}>Dismiss</span>
         </div>}
@@ -183,7 +183,7 @@ function MetaBox({ doc, setDoc }: { doc: WizardPayload; setDoc: (d: WizardPayloa
   const up = (p: Partial<WizardPayload>) => setDoc({ ...doc, ...p });
   const lab = { color: T.muted } as const;
   return <div style={{ marginTop: 'auto', background: T.surface, border: `1px solid ${T.control}`, borderRadius: 6, padding: 10, display: 'grid', gridTemplateColumns: '56px 1fr', gap: '6px 8px', fontSize: 12.5 }}>
-    <span style={lab}>Code</span><b style={{ color: '#fff', wordBreak: 'break-all' }}>{doc.code}</b>
+    <span style={lab}>Code</span><b style={{ color: T.strong, wordBreak: 'break-all' }}>{doc.code}</b>
     <span style={lab}>Ver.</span><span>{doc.version} · {st.replace('_', ' ')}</span>
     <span style={lab}>Parent</span><span>{doc.parent || '—'}</span>
     <span style={lab}>Supers.</span><span>{doc.supersedes || '—'}</span>
@@ -233,11 +233,11 @@ function PageEdit({ doc, setDoc, cellA, setCellA, highlights, stamps, onLayout }
   return <div style={{ flex: 1, minHeight: 0, position: 'relative', overflow: 'auto', background: T.deep }}>
     <div style={{ position: 'absolute', left: '50%', top: 22, marginLeft: -238, width: 476 }}>
       <PPPage doc={doc} zoom={.6} highlights={highlights} onLayout={m => { setBoxes(m); onLayout(m); }} onPick={a => { if (cellText(doc, a) !== null) setCellA(a); }} />
-      {txt !== null && cellA && <div style={{ position: 'absolute', left: 150, top, width: 380, background: T.surface, border: `1px solid ${T.focus}`, borderRadius: 10, boxShadow: '0 18px 40px rgba(0,0,0,.45)', padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13, zIndex: 5 }}>
+      {txt !== null && cellA && <div style={{ position: 'absolute', left: 150, top, width: 380, background: T.surface, border: `1px solid ${T.focus}`, borderRadius: 10, boxShadow: '0 18px 40px rgba(15,31,51,.16)', padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13, zIndex: 5 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: T.muted }}><b style={{ color: C.run }}>{b?.type === 'form' ? 'Form' : b?.type === 'table' ? 'Table' : 'Text'} row {p!.r + 1 || 'header'}</b><span>{b?.type === 'form' ? 'label МК ||| label EN ||| value' : b?.type === 'table' ? 'МК~~EN ||| …' : 'МК ||| EN'}<span onClick={() => setCellA(null)} style={{ marginLeft: 10, cursor: 'pointer' }}>×</span></span></div>
         <input autoFocus value={txt} onChange={e => setDoc(setCellText(doc, cellA, e.target.value))}
           onKeyDown={e => { if (e.key === 'Tab') { e.preventDefault(); const el = e.currentTarget, i = el.selectionStart ?? txt.length; setDoc(setCellText(doc, cellA, txt.slice(0, i) + ' ||| ' + txt.slice(i))); } if (e.key === 'Escape') setCellA(null); }}
-          style={{ border: `1.5px solid ${C.run}`, borderRadius: 6, padding: '8px 10px', fontFamily: MONO, fontSize: 12, background: T.deeper, color: '#fff', outline: 'none' }} />
+          style={{ border: `1.5px solid ${C.run}`, borderRadius: 6, padding: '8px 10px', fontFamily: MONO, fontSize: 12, background: T.deeper, color: T.strong, outline: 'none' }} />
         <div style={{ display: 'flex', gap: 6, fontSize: 12, flexWrap: 'wrap' }}>
           <span className="pp-chip" onClick={addRow} style={{ border: `1px solid ${T.control}`, borderRadius: 999, padding: '4px 10px', cursor: 'pointer' }}>＋ Row below</span>
           {b?.type === 'form' && <span className="pp-chip" onClick={toTable} style={{ border: `1px solid ${T.control}`, borderRadius: 999, padding: '4px 10px', cursor: 'pointer' }}>Convert to table</span>}
@@ -281,7 +281,7 @@ function BlockEditor({ doc, setDoc, lints }: { doc: WizardPayload; setDoc: (d: W
       <span style={{ ...mini, alignSelf: 'flex-start' }} onClick={() => upB(bb => { (bb as { rows: unknown[] }).rows.push({ label_mk: '', label_en: '', value: '' }); })}>＋ row</span></div>;
     else body = <div style={{ overflowX: 'auto' }}><table style={{ borderCollapse: 'separate', borderSpacing: 4 }}><tbody>
       <tr>{b.cols.map((c, ci) => <td key={ci} style={{ minWidth: 130 }}>
-        <div style={{ display: 'flex', gap: 3, marginBottom: 3 }}><span style={{ ...mini, background: T.navy, color: '#fff', border: 0 }}>col {ci + 1}</span>
+        <div style={{ display: 'flex', gap: 3, marginBottom: 3 }}><span style={{ ...mini, background: T.navy, color: T.onAccent, border: 0 }}>col {ci + 1}</span>
           <span style={mini} onClick={() => upB(bb => { const t = bb as Extract<Block, { type: 'table' }>; move(t.cols, ci, -1); t.rows.forEach(r => move(r, ci, -1)); })}>←</span>
           <span style={mini} onClick={() => upB(bb => { const t = bb as Extract<Block, { type: 'table' }>; t.cols.splice(ci, 1); t.rows.forEach(r => r.splice(ci, 1)); })}>×</span></div>
         <BI v={c.mk} on={v => upB(bb => { (bb as Extract<Block, { type: 'table' }>).cols[ci].mk = v; })} ph="МК" />

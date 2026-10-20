@@ -63,6 +63,12 @@ export interface Api {
   /** DocEngine POST /workflows/{id}/rerun: a new job from the stored payload (sources' text, annexes, brief included).
    *  409 if the job is not failed; 422 if an annex has an SOP question set. */
   rerunJob(id: string): Promise<{ job_id: string; status: string }>;
+  /** DocEngine POST /workflows/{id}/stop (20.10.2026): a queued or running job is failed at once and its worker stops
+   *  before the next agent exchange; 409 when the job is not queued or running. */
+  stopJob(id: string): Promise<Job>;
+  /** DocEngine POST /workflows/{id}/revise (Head of QC, 20.10.2026): the author rewrites one section (or the whole body)
+   *  of the draft by an instruction. Nothing is stored; the canvas rebuilds with directBuild. */
+  reviseJob(id: string, body: { instruction: string; markdown: string; section: number | null }): Promise<ReviseResult>;
   /** DocEngine has no list endpoint; live mode lists the ids this browser started or opened. */
   jobs(): Promise<JobList>;
   /** Not in DocEngine yet (status awaiting_review exists, no transition route). */
@@ -105,3 +111,6 @@ export interface Api {
   /** DocEngine GET /engine/environment: engine hash vs manifest, renderer font probe, last pp_verify results, fleet drift. */
   engineEnv(): Promise<EngineEnv>;
 }
+
+/** The author's revision of a draft: the whole Markdown with the section replaced, and any one-language section. */
+export type ReviseResult = { markdown: string; section: number | null; title: string; gaps: string[]; agent: string };
