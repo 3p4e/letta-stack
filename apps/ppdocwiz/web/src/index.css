@@ -53,3 +53,19 @@ select{background:#fff;border:1px solid #c9d4e1;border-radius:5px;padding:5px 7p
 }
 @media (min-width:901px){.pp-mobile-only{display:none!important}}
 .pp-chip{display:inline-flex;align-items:center}
+
+/* Create menu and New-document sheet on a phone (20.10.2026): one column, inside the screen. The two-column menu put
+   its choices off the right edge, so a tap on a category seemed to do nothing. */
+@media (max-width: 900px) {
+  .pp-create-menu { position: fixed !important; left: 8px !important; right: 8px !important; top: 64px !important;
+    flex-direction: column !important; max-height: calc(100vh - 80px); overflow-y: auto !important; }
+  .pp-create-col { width: auto !important; border-right: 0 !important; }
+  .pp-create-items { border-top: 1px solid var(--pp-hair, #e1e7ef); }
+  .pp-create-col div { white-space: normal !important; }
+  .pp-newdoc { width: auto !important; left: 8px !important; right: 8px !important; top: 8px !important; bottom: 8px !important;
+    transform: none !important; max-width: none !important; max-height: none !important; }
+  .pp-newdoc-body { flex-direction: column !important; }
+  .pp-newdoc-side { width: auto !important; border-left: 0 !important; }
+  .pp-newdoc-foot { flex-wrap: wrap; }
+  .pp-newdoc label { grid-template-columns: 80px 1fr !important; }
+}
