@@ -244,6 +244,9 @@ def test_document_pdf_asks_gotenberg_to_update_indexes(api, monkeypatch, tmp_pat
     body = seen[0].content
     assert b'name="updateIndexes"' in body and b"true" in body
     assert seen[0].headers["authorization"] == "Basic cHA6cw=="
+    assert r.headers["content-disposition"].startswith("attachment")
+    # The canvas frames the rebuilt PDF: ?inline=1 must not turn into a download (blank frame, 20.10.2026).
+    assert client.get("/documents/x/pdf?inline=1", headers=h).headers["content-disposition"].startswith("inline")
 
 
 def test_a_non_json_200_is_a_ragflow_error_so_the_check_falls_back():

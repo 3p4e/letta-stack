@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { bilingual, headField, joinDraft, lineDiff, sectionTitle, splitDraft } from './draft';
+import { bilingual, columnChanges, headField, joinDraft, lineDiff, sectionTitle, splitDraft } from './draft';
 
 const MD = '<!--HEADERDATA\nmk_title: Барање\nen_title: Request\ncode: QCT002\nversion: 03\ndoctype: FORM\n-->\n'
   + '# 1. ЦЕЛ | PURPOSE\nЦел. ||| Purpose.\n\n# 2. ПОДАТОЦИ | DATA\nПодатоци. ||| Data.\n## 2.1 Под | Sub\nа ||| b\n';
@@ -24,5 +24,12 @@ describe('draft', () => {
   });
   it('diffs lines', () => {
     expect(lineDiff('a\nb\nc', 'a\nx\nc')).toEqual([['=', 'a'], ['-', 'b'], ['+', 'x'], ['=', 'c']]);
+  });
+});
+
+describe('columnChanges', () => {
+  it('names the columns a revision added and keeps the rest out', () => {
+    const a = 'A~~a ||| B~~b ||| C~~c\n|||||||||', b = 'A~~a ||| B~~b ||| L~~logger ||| C~~c\n||||||||||||';
+    expect(columnChanges(lineDiff(a, b))).toEqual({ added: ['L~~logger'], removed: [] });
   });
 });

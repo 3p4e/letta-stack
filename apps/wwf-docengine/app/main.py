@@ -570,15 +570,16 @@ async def download_document(did: str):
 
 
 @app.get("/documents/{did}/pdf", dependencies=[Depends(require_api_key)])
-async def document_pdf(did: str):
+async def document_pdf(did: str, inline: int = 0):
     d = await _doc_or_404(did)
     if not settings.gotenberg_url:
         raise HTTPException(503, "PDF renderer unavailable")
     pdf = await _render_pdf(d["path"], did)
+    # ?inline=1 lets the canvas show the PDF in a frame instead of downloading it.
     return Response(
         content=pdf, media_type="application/pdf",
         headers={"Content-Disposition":
-                 f'attachment; filename="{Path(d["path"]).stem}.pdf"'},
+                 f'{"inline" if inline else "attachment"}; filename="{Path(d["path"]).stem}.pdf"'},
     )
 
 

@@ -100,7 +100,10 @@ def parse(md):
                 # Any block marker or heading ends a block whose [[/...]] is missing; [[PAGEBREAK]] and [[BOX]]
                 # used to be swallowed as table rows printing their own markers (review 14.10.2026).
                 elif t.startswith(('[[TABLE', '[[FORM', '[[BOX', '[[PAGEBREAK', '[[NEWPAGE')) or HEADING.match(t): break
-                if t: rows.append([c.strip() for c in t.split('|||')])
+                # A row of pipes only is an empty entry row, whatever its pipe count: split on '|||' it printed
+                # a stray '||' in a cell (QCT026, 20.10.2026).
+                if t and re.fullmatch(r'[|\s]*', t): rows.append([''])
+                elif t: rows.append([c.strip() for c in t.split('|||')])
                 i+=1
             blocks.append((kind, rows, mode)); continue
         hm=HEADING.match(s)
@@ -333,9 +336,14 @@ def emit_table(d, rows):
     pr.borders(t)
     pr.keep_table(t)
 
+WIDE_COLS = 10
+
 def build_annex(hd, blocks, out):
     global PAGE_W
-    land = hd.get('orient')=='landscape'
+    # More than WIDE_COLS columns cannot be read on portrait A4 (about 1.2 cm a column at 15: words broke mid-syllable,
+    # QCT026 20.10.2026), so such a form is laid out landscape whatever the header asked for.
+    widest = max((max(len(r) for r in b[1]) for b in blocks if b[0] in ('table', 'form') and b[1]), default=0)
+    land = hd.get('orient')=='landscape' or widest > WIDE_COLS
     # Fit tables/forms to the ACTUAL text width of the page: A4 portrait ≈ 18.46 cm, A4 landscape
     # ≈ 27.16 cm (both at the base-template 1.27 cm margins). The whole layout brain keys off this.
     PAGE_W = 27.16 if land else 18.46
