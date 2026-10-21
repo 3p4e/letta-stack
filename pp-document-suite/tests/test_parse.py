@@ -121,3 +121,16 @@ def test_a_form_wider_than_ten_columns_is_landscape(tmp_path, n, land):
     build(tmp_path, _wide(n))
     xml = zipfile.ZipFile(out).read("word/document.xml").decode("utf-8")
     assert ('w:orient="landscape"' in xml) is land
+
+
+def test_sop_cover_takes_signatories_from_the_header(tmp_path):
+    """A QA SOP printed the QC chain as its signatories (21.10.2026); '—' leaves the line blank."""
+    body = "# 1.0 ЦЕЛ|PURPOSE\nЦел на постапката за тест. ||| Purpose of the test procedure.\n"
+    txt, _ = build(tmp_path, body, dt="SOP")
+    assert "Romevska" in txt                      # default kept for SOPs that name nobody
+    src, out = tmp_path / "q.md", tmp_path / "q.docx"
+    src.write_text("<!--HEADERDATA\nmk_title: Тест\nen_title: Test\ncode: QASOPXXX\ndoctype: SOP\nprepared_by: —\n"
+                   "reviewed_by: —\napproved_by: —\n-->\n" + body, encoding="utf-8")
+    B.main(str(src), str(out))
+    xml = zipfile.ZipFile(out).read("word/document.xml").decode("utf-8")
+    assert "Romevska" not in xml and "Petrova" not in xml and "Nikolov" not in xml
