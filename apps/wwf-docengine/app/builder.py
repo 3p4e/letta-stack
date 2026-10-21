@@ -131,7 +131,9 @@ def _source_word_char_counts(markdown: str) -> tuple[int, int]:
     the produced .docx) — the source markdown itself is the ground truth
     for a no-impoverishment check."""
     body = _strip_headerdata(markdown)
-    body = re.sub(r"^\[\[/?(?:FORM|TABLE)[^\]]*\]\]\s*$", "", body, flags=re.M)
+    # Every block marker is grammar, not text: [[BOX]] and the page breaks were counted as source characters, so a
+    # form with a stamp or writing box failed fidelity although nothing was lost (QASOPXXXA01, 21.10.2026).
+    body = re.sub(r"^\[\[/?(?:FORM|TABLE|BOX|PAGEBREAK|NEWPAGE)[^\]]*\]\]\s*$", "", body, flags=re.M)
     body = re.sub(r"^#{1,6}\s+", "", body, flags=re.M)
     body = body.replace("|||", " ").replace("~~", " ").replace("|", " ")
     words = len(re.findall(r"\S+", body))
