@@ -312,8 +312,11 @@ def status_band(d, status="draft", version="1.0", effective_date=None, review_da
     fixed_widths(t, [18.0]); table_borders(t, 4, "B0BEC5")
     return st
 
+SOP_SIGNATORIES = ("B. Nikolov, M.Pharm.", "J. Romevska", "S. Petrova")   # the QC chain, the default
+
+
 def sop_titlepage(d, code, mk_title, en_title, status="draft", version="1.0",
-                  effective_date=None, review_date=None):
+                  effective_date=None, review_date=None, signatories=None):
     for txt, sz, col, bold in [("СТАНДАРДНА ОПЕРАТИВНА ПРОЦЕДУРА", 24, NAVY, True),
                                ("STANDARD OPERATING PROCEDURE", 14, GREY, False),
                                (code, 18, NAVY, True)]:
@@ -327,9 +330,11 @@ def sop_titlepage(d, code, mk_title, en_title, status="draft", version="1.0",
     hdr = [("Дејство", "Action"), ("Позиција", "Position"), ("Име", "Name"), ("Датум/Потпис", "Date/Sign")]
     for j, (mk, en) in enumerate(hdr):
         c = t.cell(0, j); shade(c, SOP_BLUE); c.paragraphs[0].text = ''; bilingual(c.paragraphs[0], mk, en, 11, 7, bold=True)
-    rows = [("Подготвил | Prepared by", "B. Nikolov, M.Pharm."),
-            ("Проверил | Reviewed by", "J. Romevska"),
-            ("Одобрил | Approved by", "S. Petrova")]
+    # The QC chain printed on every SOP, a QA SOP included (21.10.2026): the HEADERDATA may name them instead,
+    # and "—" leaves a line blank for a person to fill in.
+    names = signatories or SOP_SIGNATORIES
+    rows = list(zip(("Подготвил | Prepared by", "Проверил | Reviewed by", "Одобрил | Approved by"),
+                    ("" if n.strip() in ("—", "-") else n for n in names)))
     for i, (act, name) in enumerate(rows, 1):
         t.cell(i, 0).paragraphs[0].text = ''; run(t.cell(i, 0).paragraphs[0], act, 10)
         run(t.cell(i, 2).paragraphs[0], name, 10)

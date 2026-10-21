@@ -387,6 +387,13 @@ def build_annex(hd, blocks, out):
     pf.save(d, out)
 
 # =========================== SOP ===========================
+def _signatories(hd):
+    """prepared_by / reviewed_by / approved_by from the HEADERDATA; None keeps the house default (the QC chain)."""
+    keys = ("prepared_by", "reviewed_by", "approved_by")
+    if not any(k in hd for k in keys):
+        return None
+    return tuple(hd.get(k, "—") or "—" for k in keys)
+
 def build_sop(hd, blocks, out):
     status=hd.get('status','draft'); ver=hd.get('version','01')
     eff=hd.get('effective_date'); rev=hd.get('review_date')
@@ -395,7 +402,8 @@ def build_sop(hd, blocks, out):
     # Title-page code line carries a controlled 'vNN' only once approved (see pf.header_version).
     pf.sop_titlepage(d, hd.get('code','')+" · "+pf.header_version(status, ver),
                      hd.get('mk_title',''), hd.get('en_title',''),
-                     status=status, version=ver, effective_date=eff, review_date=rev)
+                     status=status, version=ver, effective_date=eff, review_date=rev,
+                     signatories=_signatories(hd))
     pf.sop_toc(d)
     t=None
     gap_after=False

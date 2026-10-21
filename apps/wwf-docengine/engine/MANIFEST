@@ -1,3 +1,3 @@
 # Written by engine/sync_from_suite.sh: hash of scripts/, assets/ and references/.
 # GET /engine/environment compares the image's engine with this line.
-sha256 e5c59ec92e86
+sha256 6b0bf17b70c0
