@@ -147,6 +147,10 @@ JD032601 (P060472) is a production lot and gets a CoQ (Head of QC, 22.10.2026): 
 - **Dates**: on or after the last result the initial cites (ruling 1 below), at the desk's usual
   seven days (`audit_empty_results.initial_issue`), never after the lot's own retest.
 
+**Every CoQ from 22.10.2026 on follows `deliverables/qc_gap_analysis/workflow/COQ_VERSION_WORKFLOW.md`** (Head of QC, #230):
+version 1 = the complete testing before packaging; a later accredited test of any specification parameter makes a new CoQ
+version (new code, supersedes the last), never a change to an approved one. Approved CoQs stay as sent or signed.
+
 **How a CoQ is compiled** (Head of QC, 22.10.2026, #226): by standard practice — one result per specification
 parameter, taken from the valid external certificate for that issue, *"even if a parameter is tested for multiple
 times only one result can be taken"*. The 20.09 *"Not tested … is allowed during the initial testing"* (#119) applied
@@ -326,7 +330,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 229 corrections, 07.09.2026–22.10.2026, each quoted — is
+The full record — 230 corrections, 07.09.2026–22.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:
