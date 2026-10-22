@@ -19,7 +19,7 @@ version are stamped by apply_pp_header(), the body is cleared by wipe_body(), an
 the section <w:sectPr> last so the header/footer/page-geometry apply document-wide. See formatting_specs.md.
 """
 from docx import Document
-from docx.shared import Pt, RGBColor, Cm
+from docx.shared import Pt, RGBColor, Cm, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
 from docx.enum.section import WD_ORIENT
@@ -95,6 +95,42 @@ def sp(p, before=0, after=0, line=None):
     pf = p.paragraph_format; pf.space_before = Pt(before); pf.space_after = Pt(after)
     if line: pf.line_spacing = line
 
+# ---- Vertical rhythm between blocks -------------------------------------------------------
+# Adjacent tables with nothing between them fuse into one table in Word and LibreOffice, and a
+# heading row inside a table carries no space of its own. These helpers give every block its
+# breathing room and keep a heading on the same page as what it introduces.
+def spacer(d, pt=8, keep=False):
+    """Empty paragraph exactly `pt` points high between two blocks (stops tables fusing).
+    keep=True binds the gap to the block below — only where the block above must travel with it
+    (a heading or lead-in text above a table). Everywhere else it stays unbound: LibreOffice treats
+    a kept-together table as keep-with-next, and a bound gap would chain whole sections together."""
+    from docx.enum.text import WD_LINE_SPACING
+    p = d.add_paragraph(); sp(p, 0, 0)
+    p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.EXACTLY
+    p.paragraph_format.line_spacing = Pt(pt)
+    p.paragraph_format.keep_with_next = keep
+    return p
+
+def keep_row(row, with_next=True):
+    """A row never splits across pages and (by default) stays on the page of the next row."""
+    trPr = row._tr.get_or_add_trPr()
+    if trPr.find(qn('w:cantSplit')) is None:
+        trPr.append(OxmlElement('w:cantSplit'))
+    if with_next:
+        for c in row.cells:
+            for par in c.paragraphs:
+                par.paragraph_format.keep_with_next = True
+
+def sop_spacer_row(t, pt=9):
+    """Two-column SOP gap row: no fill, the vertical divider continues through it."""
+    L, R = t.add_row().cells
+    cell_borders(L, ('right',)); cell_borders(R, ('left',))
+    trPr = t.rows[-1]._tr.get_or_add_trPr()
+    h = OxmlElement('w:trHeight'); h.set(qn('w:val'), str(int(pt * 20))); h.set(qn('w:hRule'), 'exact')
+    trPr.append(h)
+    for c in (L, R):
+        sp(c.paragraphs[0], 0, 0)
+
 def shade(cell, fill):
     """Cell fill — ALWAYS w:val='clear' (never 'solid')."""
     tcPr = cell._tc.get_or_add_tcPr(); sh = OxmlElement('w:shd')
@@ -138,7 +174,10 @@ def cell_margins(cell, top=29, bottom=29, left=58, right=58):
 def bilingual(p, mk, en, mk_sz=11, en_sz=7, bold=False, color=BLACK):
     """Inline 'MK | EN' run group (annex + table style)."""
     run(p, mk, mk_sz, color, bold=bold)
-    run(p, " | ", en_sz, color)
+    # The separator only joins two halves: a cell holding a code, a number or a RACI letter has no
+    # EN half, and a dangling " | " after it reads as a defect on the printed page.
+    if (mk or "").strip() and (en or "").strip():
+        run(p, " | ", en_sz, color)
     run(p, en, en_sz, color, bold=bold)
 
 def _page(doc, orient="portrait", margin_cm=1.27):
@@ -165,6 +204,43 @@ def wipe_body(d):
     d._pp_sectpr = sect
     return sect
 
+def seat_logo(d, width_in=1.08):
+    """Make the header logo one picture. The template floats two crops of the same brand image: the leaf, anchored
+    in the first header cell, and the wordmark, anchored to the empty paragraph after the header table and
+    offset upwards into the cell. Where the wordmark lands depends on the table's height, and LibreOffice with
+    the real Calibri lays the row out a little shorter than Word does, so on every engine document the leaf's
+    white box covered the middle of PURELYPLANT (Head of QC, 19.10.2026). The leaf's own anchor sits in the
+    same place in both renderers, so it is kept and widened to show the whole, uncropped image; the wordmark
+    anchor goes. The header's text is untouched."""
+    try:
+        hdr = d.sections[0].header
+        cell = hdr.tables[0].cell(0, 0)
+    except (IndexError, AttributeError):
+        return False
+    in_cell = [a for a in cell._tc.iter(qn('wp:anchor'))]
+    if not in_cell:
+        return False
+    keep = in_cell[0]
+    for a in list(hdr._element.iter(qn('wp:anchor'))):
+        if a is not keep:                                  # the wordmark, after the table
+            run = a.getparent().getparent()
+            run.getparent().remove(run)
+    for rect in list(keep.iter(qn('a:srcRect'))):          # uncropped: leaf, wordmark and tagline
+        rect.getparent().remove(rect)
+    cx = int(Inches(width_in)); cy = int(cx * 194 / 400)  # pp_logo_header.jpg is 400 x 194 px
+    for ext in list(keep.iter(qn('wp:extent'))) + list(keep.iter(qn('a:ext'))):
+        ext.set('cx', str(cx)); ext.set('cy', str(cy))
+    for ph in keep.iter(qn('wp:positionH')):
+        off = ph.find(qn('wp:posOffset'))
+        if off is not None:
+            off.text = str(-int(Inches(0.136)))             # where the template's wordmark stood
+    for pv in keep.iter(qn('wp:positionV')):
+        off = pv.find(qn('wp:posOffset'))
+        if off is not None:
+            off.text = '0'
+    return True
+
+
 def apply_pp_header(d, mk_name, code, en_name, version="1.0", status="draft"):
     """Stamp the base-template running header: bilingual Document name, Code of document, Version.
     Header is a 2x3 table: [leaf logo+wordmark] | [Document name MK/EN] | [Code of document / Ver].
@@ -175,6 +251,7 @@ def apply_pp_header(d, mk_name, code, en_name, version="1.0", status="draft"):
         h = d.sections[0].header.tables[0]
     except (IndexError, AttributeError):
         return False
+    seat_logo(d)
     def setrun(runs, i, t):
         if i < len(runs):
             runs[i].text = t
@@ -185,6 +262,10 @@ def apply_pp_header(d, mk_name, code, en_name, version="1.0", status="draft"):
     setrun(nm, 0, mk_name); setrun(nm, 2, ""); setrun(nm, 3, ""); setrun(nm, 4, ""); setrun(nm, 5, en_name)
     cd = h.cell(0, 2).paragraphs[2].runs
     setrun(cd, 0, code); setrun(cd, 2, ""); setrun(cd, 3, "")
+    # The code cell is narrow and an underscore code has no break point, so a 13-character annex
+    # code (WHSOP_003_A01, QASOP_031_A10) wrapped its last digit onto a second line at 11 pt.
+    if cd and len(code or "") > 11:
+        cd[0].font.size = Pt(9.5 if len(code) <= 14 else 8.5)
     vr = h.cell(1, 2).paragraphs[0].runs
     if vr:
         vr[-1].text = header_version(status, version)
@@ -271,8 +352,17 @@ def set_update_fields_on_open(d):
 
 def sop_toc(d):
     p = d.add_paragraph(); run(p, "СОДРЖИНА | TABLE OF CONTENTS", 14, NAVY, bold=True)
-    par = d.add_paragraph(); fld = OxmlElement('w:fldSimple')
-    fld.set(qn('w:instr'), r'TOC \o "1-3" \h \z \u'); par._p.append(fld)
+    # Complex field (begin/instr/separate/end): Word and LibreOffice both read it as a TOC index;
+    # LibreOffice ignores a w:fldSimple TOC, so the SOP's contents page rendered empty.
+    par = d.add_paragraph(); r = par.add_run()
+    for kind in ("begin", "instr", "separate"):
+        if kind == "instr":
+            it = OxmlElement('w:instrText'); it.set(qn('xml:space'), 'preserve')
+            it.text = ' TOC \\o "1-3" \\h \\z \\u '; r._r.append(it)
+        else:
+            fc = OxmlElement('w:fldChar'); fc.set(qn('w:fldCharType'), kind); r._r.append(fc)
+    par.add_run(" ")
+    fe = OxmlElement('w:fldChar'); fe.set(qn('w:fldCharType'), 'end'); par.add_run()._r.append(fe)
     note = d.add_paragraph(); run(note, "(TOC updates automatically on open; or right-click → Update Field)", 8, GREY, ital=True)
     set_update_fields_on_open(d)
     d.add_page_break()
@@ -295,6 +385,8 @@ def sop_section_row(t, num, mk, en, level=1):
     visual weight: level 1 (main X.0 sections) is a 12 pt bold gray band; level >= 2 sub-sections
     are the lighter 11 pt bold style with NO fill, so a nested SOP does not become a wall of gray
     bands. All levels keep a Heading style so the native TOC field still populates."""
+    if len(t.rows) and level <= 1:
+        sop_spacer_row(t, 10)                 # a main section never butts against the text above
     L, R = t.add_row().cells
     size = 12 if level <= 1 else 11
     if level <= 1:
@@ -303,6 +395,29 @@ def sop_section_row(t, num, mk, en, level=1):
     cell_borders(L, ('right',)); cell_borders(R, ('left',))
     L.paragraphs[0].text = ''; _set_heading(L.paragraphs[0], level); run(L.paragraphs[0], f"{num} {mk}", size, BLACK, bold=True)
     R.paragraphs[0].text = ''; run(R.paragraphs[0], f"{num} {en}", size, GREY, bold=True)
+    for c in (L, R):                          # band: air above/below the title; sub-heading: gap above
+        sp(c.paragraphs[0], *((3, 3) if level <= 1 else (6, 2)))
+    keep_row(t.rows[-1])                      # heading stays with its first paragraph
+
+def sop_heading_par(d, num, mk, en, level=1):
+    """The same two-column section heading, as a PARAGRAPH (MK left, EN at the column tab), for a
+    heading that introduces a full-width table: a paragraph's keep-with-next is honoured by Word
+    and LibreOffice, so the heading is never left alone at the foot of a page above its table."""
+    from docx.enum.text import WD_TAB_ALIGNMENT
+    spacer(d, 10 if level <= 1 else 6)
+    p = d.add_paragraph(); _set_heading(p, level); sp(p, 3, 3)
+    pf_ = p.paragraph_format
+    pf_.left_indent = Cm(0.23); pf_.right_indent = Cm(0.23)   # aligned with the centred 18 cm table
+    pf_.tab_stops.add_tab_stop(Cm(9.23), WD_TAB_ALIGNMENT.LEFT)
+    pf_.keep_with_next = True
+    if level <= 1:
+        pPr = p._p.get_or_add_pPr(); shd = OxmlElement('w:shd')
+        shd.set(qn('w:val'), 'clear'); shd.set(qn('w:color'), 'auto'); shd.set(qn('w:fill'), SOP_GRAY)
+        pPr.append(shd)
+    size = 12 if level <= 1 else 11
+    run(p, f"{num} {mk}", size, BLACK, bold=True); run(p, "\t", size, BLACK)
+    run(p, f"{num} {en}", size, GREY, bold=True)
+    return p
 
 def sop_body_row(t, mk, en, bold=False):
     L, R = t.add_row().cells
@@ -314,17 +429,57 @@ def sop_body_row(t, mk, en, bold=False):
 def sop_finalize(t):
     fixed_widths(t, [9.0, 9.0])   # two equal columns within ~18.46 cm usable
 
+# Ported from the DocEngine canon-2026-07 engine (09.10.2026) so the suite is a strict superset of it.
+def sop_nested_table(t, headers, rows, widths_cm=None, mode=None, header_bg=SOP_BLUE):
+    """Full-width table NESTED inside a merged SOP body row (SKILL.md / formatting_specs.md:
+    'Tables nested in a full-width merged row; no divider; table text MK 11pt | EN 7pt').
+    headers, and each row, are lists of (mk, en) pairs — one per nested-table column.
+    Use for in-body tables (RACI matrices, abbreviation lists, colour-code legends, retention
+    registers, revision history) that must live INSIDE the running two-column SOP body, not as
+    a separate top-level table. Distinct from sop_block_table(), which builds a standalone
+    top-level table for §7/§8/§9 (outside the two-column flow).
+    Column widths are AUTO-DECIDED by fixed() — the skill's single use-aware table-layout brain
+    (formatting_specs.md): a 2-column abbreviation list gets a COMPACT centred fit, a wide RACI
+    matrix gets its label column sized to content with role columns split evenly, etc. Pass
+    widths_cm to force explicit ratios, or mode='compact'|'full' to override the auto fit —
+    do not hand-compute an even split; that is exactly the anti-pattern fixed() exists to avoid."""
+    outer_row = t.add_row()
+    L, R = outer_row.cells
+    merged = L.merge(R)
+    cell_borders(merged, ())  # no divider across a merged/nested-table row
+    merged.paragraphs[0].text = ''
+    ncol = len(headers)
+    nt = merged.add_table(rows=1 + len(rows), cols=ncol)
+    nt.alignment = WD_TABLE_ALIGNMENT.CENTER
+    for j, (mk, en) in enumerate(headers):
+        c = nt.cell(0, j); shade(c, header_bg); c.paragraphs[0].text = ''
+        bilingual(c.paragraphs[0], mk, en, 11, 7, bold=True)
+    for i, row in enumerate(rows, 1):
+        for j, (mk, en) in enumerate(row):
+            if j >= ncol:
+                break
+            c = nt.cell(i, j); c.paragraphs[0].text = ''; bilingual(c.paragraphs[0], mk, en, 11, 7)
+    from pp_report import fixed   # the suite's one table-layout brain lives in pp_report
+    fixed(nt, weights=widths_cm, mode=mode)
+    table_borders(nt, 4, BORDER_GRAY)
+    return nt
+
 def sop_block_table(d, headers, rows, widths_cm, header_bg=SOP_BLUE):
     """Full-width multi-column bilingual table for SOP §7 Records / §8 Related Documents / §9 Revision.
     headers, and each row, are lists of (mk, en) tuples (one per column)."""
     t = d.add_table(rows=1 + len(rows), cols=len(headers)); t.alignment = WD_TABLE_ALIGNMENT.CENTER
+    n = len(headers)                          # dense tables step the type down so words do not break
+    mk_sz, en_sz = (11, 7) if n <= 4 else ((10, 7) if n <= 6 else (9, 7))
     for j, (mk, en) in enumerate(headers):
         c = t.cell(0, j); shade(c, header_bg); c.paragraphs[0].text = ''
-        bilingual(c.paragraphs[0], mk, en, 11, 7, bold=True)
+        bilingual(c.paragraphs[0], mk, en, mk_sz, en_sz, bold=True)
     for i, row in enumerate(rows, 1):
         for j, (mk, en) in enumerate(row):
-            c = t.cell(i, j); c.paragraphs[0].text = ''; bilingual(c.paragraphs[0], mk, en, 11, 7)
-    fixed_widths(t, widths_cm); table_borders(t, 4, "000000"); return t
+            c = t.cell(i, j); c.paragraphs[0].text = ''; bilingual(c.paragraphs[0], mk, en, mk_sz, en_sz)
+    fixed_widths(t, widths_cm); table_borders(t, 4, "000000")
+    from pp_report import keep_table          # small tables whole; long ones keep header + first rows
+    keep_table(t)
+    return t
 
 # ============================ Annex (inline) ============================
 def new_annex(orient="portrait", from_template=True, code=None,
@@ -404,6 +559,77 @@ def annex_signoff(d, roles=(("Изготвил (КК)", "Prepared (QC)"), ("Пр
     return t
 
 # ============================ save ============================
+# Ported from the DocEngine canon-2026-07 engine (09.10.2026).
+# Intelligent compact layout for annex/form metadata blocks (Head-of-QC corrections 2026-06-30):
+#   * VALUE cells sized to the EXPECTED HAND-ENTRY, never maximised (a Date/Batch needs ~2.6 cm).
+#   * LABEL ("action") cells minimal width.
+#   * Multiple label|value pairs PACK per row (default 6-col grid); long values SPAN.
+#   * Line spacing 0.8, NO space before/after in every cell (incl. label cells).
+#   * Related sections (e.g. Transfer information + Material description) merge into ONE table.
+# These are first-class pf primitives; pp_format_layout_addons.py re-exports them. See SKILL.md §6D.
+
+def cell08(cell, mk, en, mk_sz=9, en_sz=7, bold=False, bg=None, white=False, left=True):
+    """House cell, COMPACT form variant: 0.8 line spacing, zero space before/after, bilingual MK | EN.
+    Distinct from annex_cell() (centered, 11|7, 0.85 spacing) — use cell08 for packed metadata grids."""
+    if bg:
+        shade(cell, bg)
+    cell_margins(cell); cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+    p = cell.paragraphs[0]; p.text = ''
+    p.alignment = WD_ALIGN_PARAGRAPH.LEFT if left else WD_ALIGN_PARAGRAPH.CENTER
+    fmt = p.paragraph_format; fmt.line_spacing = 0.8; fmt.space_before = Pt(0); fmt.space_after = Pt(0)
+    col = WHITE if white else BLACK
+    if mk:
+        run(p, mk, mk_sz, col, bold=bold)
+    if en:
+        if mk:
+            run(p, " | ", en_sz, col)
+        run(p, en, en_sz, col, bold=False)
+
+def _merge(row, a, b):
+    """Merge cells a..b (inclusive) of a row; return the merged cell."""
+    c = row.cells[a]
+    for k in range(a + 1, b + 1):
+        c = c.merge(row.cells[k])
+    return c
+
+def value_span(input_chars, ncol=6):
+    """Map expected hand-entry length -> a sensible value-column count (1..ncol-1).
+    <=12 chars -> 1 value col (input-sized); grows for longer/checkbox values."""
+    if input_chars <= 12:
+        return 1
+    if input_chars <= 28:
+        return 2
+    if input_chars <= 48:
+        return 3
+    return ncol - 1  # full-width span (checkbox rows, long boilerplate)
+
+def kv_block(d, sections, ncol=6, label_cm=1.9, value_cm=2.6):
+    """Compact merged label|value block — the reusable metadata-layout primitive (SKILL.md §6D).
+
+    sections: list of (banner_mk, banner_en, fields);
+      fields: list of (label_mk, label_en, value_mk, value_en, input_chars).
+    Builds ONE centred table; value cells are input-sized (via value_span); short fields PACK
+    multiple pairs per row; long values SPAN; every cell uses line spacing 0.8 / no space
+    before-after. Related sections are stacked into the SAME table. Returns the table."""
+    widths = [(label_cm if i % 2 == 0 else value_cm) for i in range(ncol)]
+    t = annex_table(d, widths)
+    for bmk, ben, fields in sections:
+        r = t.add_row()
+        cell08(_merge(r, 0, ncol - 1), bmk, ben, 10, 8, bold=True, bg=A_SECTION, white=True, left=False)
+        col, r = ncol, None  # force a new row on the first field
+        for lmk, len_, vmk, ven, ichars in fields:
+            span = value_span(ichars, ncol); need = 1 + span
+            if r is None or col + need > ncol:
+                r = t.add_row(); col = 0
+            cell08(r.cells[col], lmk, len_, 9, 7, bold=True, bg=A_LABEL)
+            v = _merge(r, col + 1, col + span) if span > 1 else r.cells[col + 1]
+            cell08(v, vmk, ven, 9, 7)
+            col += need
+        if r is not None and col < ncol:  # blank-fill the tail of the last row
+            cell08(_merge(r, col, ncol - 1), "", "")
+    annex_finalize(t)
+    return t
+
 def save(d, path):
     sect = getattr(d, "_pp_sectpr", None)
     if sect is not None:

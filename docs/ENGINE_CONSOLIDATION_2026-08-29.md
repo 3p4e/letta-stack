@@ -1,6 +1,13 @@
 # PP document engine — two diverged lines, and how to pick one (2026-08-29)
 
 Decision record and bake-off design. **No engine wiring changes in this batch.**
+
+> **Decided 09.10.2026 (Head of QC): the root `pp-document-suite` wins.** The DocEngine's vendored
+> engine is now an exact, CI-checked copy of it, after the vendored line's unique helpers, the
+> `--require-bilingual` gate and the line-anchored HEADERDATA parser were ported into root. The
+> regression pass used the 13 issued inland-transport documents. See the revision note in
+> `docs/wwf_DOCENGINE-CANON-2026-07.md`. The Letta volume (`server/runbooks/engine_sync.md`) is a
+> separate consumer and is not changed by this decision.
 Repointing the engine changes rendered output for *controlled documents*, which needs
 its own regression pass against previously issued documents; mixing that into a
 security batch risks neither landing cleanly.

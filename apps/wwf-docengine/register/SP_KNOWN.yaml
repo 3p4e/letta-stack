@@ -1,0 +1,18 @@
+# Codes known from files — Procurement department.
+# Not a QMS record: the DocEngine is a research and development tool outside the QMS (Head of QC, 18.10.2026).
+# This department's master list is not held (Head of QC, 18.10.2026: "only with the information that you have so far").
+# Each row is a code seen in a file — the ACME_SOP drafts folder (Drive 1MZYJOs9LKplBh_McrPj8YzSLCDP5VJhE, inventoried
+# 18.10.2026) or the engine's own drafts. Titles are the files' own names; versions and statuses are not recorded.
+# It is here so GET /register/next does not hand out a number a file already carries. When the department's master
+# list arrives, it replaces this file.
+# status:
+#   known       a file carries this code; its status in the QMS is not recorded here
+department: SP
+review_years: 3
+
+documents:
+  - {code: SPSOP001, title_mk: "Набавка на влезни материјали", title_en: "Procurement of Incoming Materials", status: known, note: "PROC_OR"}
+  - {code: SPT001, title_mk: "Барање за набавка", title_en: "Purchase Request", status: known, note: "PROC_OR / HLVd 06_PROCUREMENT"}
+  - {code: SPT002, title_mk: "Нарачка до добавувач", title_en: "Purchase Order to Supplier", status: known, note: "PROC_OR / HLVd 06_PROCUREMENT"}
+  - {code: SPT003, title_en: "Procurement Plan", status: known, note: "PROC_OR / HLVd 06_PROCUREMENT"}
+  - {code: SPT004, title_en: "Procurement template 004 (title not in the file name)", status: known, note: "PROC_OR / HLVd 06_PROCUREMENT"}

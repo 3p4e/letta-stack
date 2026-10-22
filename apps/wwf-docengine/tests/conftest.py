@@ -36,8 +36,16 @@ async def dbpool():
     assert db.ready(), "db.init() did not open a pool despite a DSN being set"
     # documents references jobs, so truncate together. No RESTART IDENTITY:
     # both tables key on uuids, so there is no sequence to restart.
-    await db.pool().execute("TRUNCATE docengine.documents, docengine.jobs CASCADE")
+    await db.pool().execute("TRUNCATE docengine.documents, docengine.jobs, docengine.reference_docs, docengine.briefs CASCADE")
     try:
         yield db.pool()
     finally:
         await db.close()
+
+
+@pytest.fixture(autouse=True)
+def _no_potency_service(monkeypatch):
+    """No test reaches the live potency builder; test_potency.py sets its own URL and transport."""
+    from app import potency
+    monkeypatch.setattr(settings, "potency_specs_url", "")
+    potency._cache.update(at=0.0, specs=None)

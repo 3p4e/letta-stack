@@ -21,7 +21,7 @@ QUESTIONNAIRES: dict[str, dict] = {
                      "options": ["Raw material", "In-process", "Bulk", "Finished product", "Water", "Environmental", "Stability"]},
                     {"key": "purpose", "multi": False, "label": {"en": "Batch-release vs monitoring", "mk": "Пуштање на серија или мониторинг"},
                      "options": [{"v": "Internal QC / IPQC / trending (release stays with accredited lab)", "default": True}, "Monitoring only"]},
-                    {"key": "method_source", "multi": False, "label": {"en": "Method source", "mk": "Извор на метода"},
+                    {"key": "method_source", "multi": False, "label": {"en": "Method source", "mk": "Извор на метод"},
                      "options": [{"v": "Ph. Eur. (preferred)", "default": True}, "USP", "In-house", "ISO", "Contract lab"]},
                 ],
             },
@@ -32,7 +32,7 @@ QUESTIONNAIRES: dict[str, dict] = {
                     {"key": "techniques", "multi": True, "label": {"en": "Techniques", "mk": "Техники"},
                      "options": ["HPLC-DAD", "GC-MS", "ICP-MS", "LC-MS/MS", "Microscopy", "LOD", "Karl Fischer", "Microbiological"]},
                     {"key": "acceptance", "multi": True, "label": {"en": "Acceptance criteria", "mk": "Критериуми за прифатливост"},
-                     "options": ["Cannabinoid ±10 % (Ph. Eur. 3028)", "LOD NMT 12 %", "Foreign matter NMT 2 %", "Heavy metals", "Pesticides (Ph. Eur. 2.8.13)", "Mycotoxins", "Microbial limits"]},
+                     "options": ["Total THC within the strain's grade window (official potency specifications)", "LOD NMT 12 %", "Foreign matter NMT 2 %", "Heavy metals", "Pesticides (Ph. Eur. 2.8.13)", "Mycotoxins", "Microbial limits"]},
                     {"key": "reference_standards", "multi": True, "label": {"en": "Reference standards", "mk": "Референтни стандарди"},
                      "options": ["CRS", "Secondary standard", "SST", "Internal"]},
                 ],
@@ -55,6 +55,120 @@ QUESTIONNAIRES: dict[str, dict] = {
                      "options": ["Worksheets (EU GMP 6.17)", "Instrument printouts", "Sample-prep records", "SST records", "CoA", "OOS records"]},
                     {"key": "retention", "multi": False, "label": {"en": "Retention", "mk": "Чување"},
                      "options": [{"v": "Batch docs: 1 y after expiry / min 5 y (EU GMP 4.11)", "default": True}, "Other (state in §7)"]},
+                ],
+            },
+        ],
+    },
+    # Inland transport of narcotic drugs. Every option and default is taken from the approved
+    # WHSOP_003 v01 (deliverables/inland_transport_2026-10/md/WHSOP_003.md; section noted per question),
+    # so the questionnaire offers nothing the facility's own SOP and its references do not support.
+    "sop_transport": {
+        "title": {"en": "Transport SOP questionnaire", "mk": "Прашалник за СОП — Транспорт"},
+        "doctype": "SOP",
+        # Controls every inland-transport SOP must contain. Head of QC, 13.10.2026, after the review of five
+        # DocEngine runs (r1-r5): each run dropped the same controls while inventing nothing — the authors had
+        # no model of what a narcotics transport must control. Each control goes into the section it belongs
+        # to; the §6A audit treats a missing one as FIX.
+        "controls": [
+            "Reconciliation after delivery: pallets, cartons and bags counted and dispatched net mass compared with "
+            "received net mass; retention samples counted separately and included in the totals reported to the MoIA; "
+            "any difference is a deviation.",
+            "Escort failure: if the written MoIA confirmation is missing or the escort does not arrive, the transport "
+            "does not start — who postpones, who informs the MoIA, QA and the QP, what happens to the staged consignment. "
+            "In transit: the vehicle is never left unattended, stops only as approved, check-in calls recorded, incident "
+            "reporting chain with a time.",
+            "Loggers are never placed inside sealed cartons or containers: they sit where the consignee removes them "
+            "without breaking a seal; positions come from the lane qualification (QASOP_0XX); the serial of each is recorded "
+            "per pallet.",
+            "Every logger is calibrated with a valid certificate on file; the SOP names who downloads the data and with "
+            "what software, and keeps the source files unaltered; an excursion is assessed against product stability "
+            "data (MKT as supporting evidence only) and the material is not used before that assessment.",
+            "One owner per record: the role text in section 3, the RACI matrix and the steps in section 6 name the same "
+            "role for preparing, approving and submitting each record listed in 7.1 (risk assessment, MoIA request, MoH "
+            "notification, manifest, checklist, disposition).",
+            "Identifier scheme: a unique transport identifier and pallet, carton and sample-carton identifiers with their "
+            "format (or a marked blank for the format), so that labels and records can be produced from the SOP.",
+            "A lane is used only with QUALIFIED status for the vehicle, the pallet configuration and the season; cite EU GMP "
+            "Annex 15 section 6 (verification of transportation) together with GDP 2013/C 343/01 Chapter 9.",
+            "Temperature read and recorded at every hand-over (logger or vehicle display), and a return-leg rule for a "
+            "consignment rejected at receipt: it travels back under a new or extended MoIA notification and escort.",
+        ],
+        "rounds": [
+            {
+                "key": "r1_scope",
+                "title": {"en": "R1 — Scope", "mk": "Р1 — Опсег"},
+                "questions": [
+                    # WHSOP_003 §2.1 (1)-(4)
+                    {"key": "movements", "multi": True, "label": {"en": "Movements covered", "mk": "Опфатени движења"},
+                     "options": [{"v": "Intermediate (bulk in bags) and finished product to licensed domestic consignees", "default": True},
+                                 {"v": "Propagation material (clones, seeds) between sites", "default": True},
+                                 {"v": "Final leg after customs clearance to the site", "default": True},
+                                 {"v": "Cannabis waste to an authorised destruction site", "default": True}]},
+                    # §2.1, §6.1 (c)
+                    {"key": "carrier", "multi": False, "label": {"en": "Who transports", "mk": "Кој превезува"},
+                     "options": [{"v": "Contracted, qualified and licensed carrier under a Quality Agreement", "default": True}]},
+                    # §1.0 (d), §2.3
+                    {"key": "records_system", "multi": False, "label": {"en": "Record system", "mk": "Систем на записи"},
+                     "options": [{"v": "Paper-based", "default": True}, "Electronic tracking system (after change control, §2.3)"]},
+                ],
+            },
+            {
+                "key": "r2_security",
+                "title": {"en": "R2 — Security and authorities", "mk": "Р2 — Безбедност и органи"},
+                "questions": [
+                    # §6.3, §6.8, §4.1
+                    {"key": "authorities", "multi": True, "label": {"en": "Authority steps", "mk": "Чекори кон органите"},
+                     "options": [{"v": "Police escort requested from the MoIA at least 24 h before dispatch (Law on Control of Narcotic Drugs, Off. Gazette 37/16)", "default": True},
+                                 {"v": "Written MoIA confirmation mandatory before dispatch", "default": True},
+                                 {"v": "Post-transport notification to the Ministry of Health", "default": True}]},
+                    # §6.1 (a), §6.2.2
+                    {"key": "lane", "multi": False, "label": {"en": "Lane status before dispatch", "mk": "Статус на рутата пред отпрема"},
+                     "options": [{"v": "Lane QUALIFIED per QASOP_0XX, same vehicle and pallet configuration", "default": True}]},
+                    # §4.2
+                    {"key": "references", "multi": True, "label": {"en": "GMP / GDP references", "mk": "GMP / GDP референци"},
+                     "options": [{"v": "EU GDP 2013/C 343/01 Ch. 7 and Ch. 9", "default": True},
+                                 {"v": "EudraLex Vol. 4 Part I Ch. 4, Ch. 5 §5.10, Ch. 7", "default": True},
+                                 {"v": "WHO TRS 961 Annex 9", "default": True},
+                                 {"v": "ICH Q9(R1)", "default": True}]},
+                ],
+            },
+            {
+                "key": "r3_conditions",
+                "title": {"en": "R3 — Packaging and conditions", "mk": "Р3 — Пакување и услови"},
+                "questions": [
+                    # §6.1 condition matrix
+                    {"key": "packaging", "multi": True, "label": {"en": "Packaging", "mk": "Пакување"},
+                     "options": [{"v": "10 bags/carton; pallet L 8 or S 4 cartons; stretch film and thermal blanket", "default": True},
+                                 {"v": "Qualified cool box (propagation material)", "default": True},
+                                 {"v": "Airtight container", "default": True},
+                                 {"v": "Sealed sacks with a record (waste)", "default": True}]},
+                    # §6.4 (pallet label conditions), §6.6
+                    {"key": "conditions", "multi": True, "label": {"en": "Conditions and monitoring", "mk": "Услови и следење"},
+                     "options": [{"v": "15–25 °C, RH ≤ 60 %, protect from moisture", "default": True},
+                                 {"v": "Data loggers placed per the QA-approved plan", "default": True}]},
+                ],
+            },
+            {
+                "key": "r4_records",
+                "title": {"en": "R4 — Responsibilities and records", "mk": "Р4 — Одговорности и записи"},
+                "questions": [
+                    # §3.0 RACI columns
+                    {"key": "roles", "multi": True, "label": {"en": "Roles in the RACI", "mk": "Улоги во RACI"},
+                     "options": [{"v": "QC", "default": True}, {"v": "QA", "default": True}, {"v": "Security", "default": True},
+                                 {"v": "Logistics", "default": True}, {"v": "Carrier (driver)", "default": True},
+                                 {"v": "Consignee", "default": True}, {"v": "QP", "default": True}]},
+                    # §7.0 annex register
+                    {"key": "records", "multi": True, "label": {"en": "Records (annexes)", "mk": "Записи (анекси)"},
+                     "options": [{"v": "Transport Risk Assessment (TRA)", "default": True},
+                                 {"v": "Request for police escort and notification to the MoIA", "default": True},
+                                 {"v": "Pallet and carton labels and packing lists", "default": True},
+                                 {"v": "Transport manifest and chain of custody", "default": True},
+                                 {"v": "Pre-dispatch and receipt checklist", "default": True},
+                                 {"v": "Post-transport notification to the Ministry of Health", "default": True},
+                                 {"v": "Transport file review and disposition", "default": True}]},
+                    # §6.8 / EU GMP 4.11
+                    {"key": "retention", "multi": False, "label": {"en": "Retention", "mk": "Чување"},
+                     "options": [{"v": "At least 5 y or 1 y after batch expiry, whichever is longer (EU GMP 4.11)", "default": True}]},
                 ],
             },
         ],

@@ -10,6 +10,20 @@ Where sources conflict, the "winner" column below is authoritative and the
 reason (date / content) is given. Stage 1 vendors exactly the merged engine
 described here.
 
+> **Canon revision 09.10.2026 — engine line replaced (Head of QC).** On the owner's instruction
+> ("update the DocEngine engine to the current suite") the vendored engine is now an exact copy
+> of the repository's `pp-document-suite/` — scripts, assets and references — refreshed with
+> `apps/wwf-docengine/engine/sync_from_suite.sh` and held identical by
+> `apps/wwf-docengine/tests/test_engine_sync.py` (CI). The "Canonical engine" table below is
+> **superseded**; the house-style rules (§3 onward) are unchanged. Before the switch the suite
+> was made a strict superset of this line: `kv_block`, `cell08`, `value_span`, `_merge`,
+> `sop_nested_table`, the `pp_format_layout_addons.py` shim, `pp_verify --require-bilingual`
+> and the line-anchored HEADERDATA parser were ported into it. Regression: the 13 issued
+> inland-transport documents (WHSOP_003, QASOP_0XX and annexes) build through the new engine
+> with the issued page counts and identical text; the old line printed `[[BOX]]` markers
+> verbatim and lost pages on six annexes while still passing its gate. Evidence:
+> `deliverables/frontend_test_2026-10-09/TEST_REPORT.md` and PR description.
+
 > **GxP guardrail (overrides everything):** never fabricate pharmaceutical
 > data. If a value is not in the source, the field stays **blank** for a human
 > to fill — never guessed. A document is shipped **only** when `pp_verify.py`
@@ -63,7 +77,7 @@ therefore a **per-component merge**, not a pick.
 | **Deployed Docker engine (E)** | **SUPERSEDED** | repo@≈Jul-10: no `kv_block`, pre-grid-packing. The DocEngine is strictly ahead of what's live. |
 | **Agent workflow SHAPE** (questionnaire → section authors → regulatory check → assemble) | **F (`qms-creator/`)** — shape kept, texts superseded | its pipeline topology is sound; its instruction *texts* are older and yield to A/B where they conflict. |
 
-### Canonical engine (what Stage 1 vendors)
+### Canonical engine (what Stage 1 vendored — superseded 09.10.2026, see the revision note at the top)
 
 ```
 docengine/engine/            ← vendored, provenance-stamped

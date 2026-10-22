@@ -27,6 +27,13 @@ def _configure(tmp_path, monkeypatch):
     # wrong reason.
     monkeypatch.setattr(settings, "cookie_secure", False)
     monkeypatch.setattr(app_mod, "OUT", str(tmp_path))
+    # Accounts, the password file and the sign-in log live in the test's own directory, never in the real data dir.
+    import accounts
+    monkeypatch.setattr(accounts, "USERS_FILE", str(tmp_path / ".ppdocwiz_users.json"))
+    monkeypatch.setattr(accounts, "AUTH_LOG", str(tmp_path / "ppdocwiz_auth.log"))
+    monkeypatch.setattr(security, "PASSWORD_FILE", str(tmp_path / ".ppdocwiz_password"))
+    monkeypatch.setattr(settings, "password_hash", "")
+    monkeypatch.setattr(security, "_fails", {})
 
 
 @pytest.fixture
@@ -77,8 +84,10 @@ def test_session_cookie_unlocks_and_is_httponly(client):
 def test_session_cookie_is_derived_not_the_key(client):
     r = client.post("/api/session", json={"key": KEY})
     value = r.cookies.get(security.COOKIE)
-    assert value and value != KEY, "the cookie must not be the API key itself"
-    assert value == security.session_value(KEY)
+    assert value and KEY not in value, "the cookie must not carry the API key"
+    assert security.session_id(value, KEY), "it is a signed session the server accepts"
+    other = client.post("/api/session", json={"key": KEY}).cookies.get(security.COOKIE)
+    assert other != value, "every sign-in is its own session" 
 
 
 def test_session_rejects_a_wrong_key(client):
@@ -154,3 +163,504 @@ def test_frontend_escapes_every_interpolation():
     html = (Path(__file__).resolve().parents[1] / "frontend" / "index.html").read_text(encoding="utf-8")
     unescaped = [m.group(1) for m in re.finditer(r"\$\{([^}]*)\}", html) if "esc(" not in m.group(1)]
     assert not unescaped, f"unescaped interpolations: {unescaped}"
+
+
+# ---- raw-Markdown build (Builder Source view) -------------------------------------------
+GOOD_MD = """<!--HEADERDATA
+mk_title: Тест
+en_title: Test
+code: WHSOP_999_A01
+version: 01
+doctype: FORM
+orient: portrait
+-->
+
+# 1 Општо | General
+[[FORM]]
+Датум ||| Date ||| _
+[[/FORM]]
+"""
+H = {"X-API-Key": KEY}
+
+
+def test_raw_build_uses_the_pasted_code_and_offers_downloads(client):
+    r = client.post("/api/build", json={"markdown": GOOD_MD, "out_name": "something_else"}, headers=H)
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["ok"] and "RESULT: PASS" in body["verify"]
+    assert body["doc_id"].startswith("WHSOP_999_A01_")          # HEADERDATA code, not out_name
+    assert client.get(body["download_docx"], headers=H).status_code == 200
+
+
+def test_raw_build_failure_is_422_and_leaves_nothing_downloadable(client, monkeypatch):
+    def failing(md, base):
+        path = Path(app_mod.OUT) / (base + ".docx"); path.write_bytes(b"x")
+        return False, "RESULT: FAIL", str(path)
+    monkeypatch.setattr(app_mod, "_build_from_markdown", failing)
+    r = client.post("/api/build", json={"markdown": GOOD_MD}, headers=H)
+    assert r.status_code == 422 and r.json()["verify"] == "RESULT: FAIL"
+    assert not list(Path(app_mod.OUT).glob("WHSOP_999_A01_*.docx"))
+
+
+def test_raw_build_requires_a_credential(client):
+    assert client.post("/api/build", json={"markdown": GOOD_MD}).status_code == 401
+
+
+# ---- DocEngine same-origin proxy ---------------------------------------------------------
+def test_docengine_proxy_refuses_when_unconfigured(client, monkeypatch):
+    monkeypatch.setattr(settings, "docengine_url", "")
+    assert client.get("/api/docengine/health", headers=H).status_code == 503
+
+
+@pytest.mark.parametrize("path", ["admin", "documents/../../etc", "", "health/../admin"])
+def test_docengine_proxy_forwards_only_docengine_routes(client, monkeypatch, path):
+    monkeypatch.setattr(settings, "docengine_url", "http://127.0.0.1:9")
+    assert client.get(f"/api/docengine/{path}", headers=H).status_code == 404
+
+
+def test_docengine_proxy_requires_a_credential(client, monkeypatch):
+    monkeypatch.setattr(settings, "docengine_url", "http://127.0.0.1:9")
+    assert client.get("/api/docengine/health").status_code == 401
+
+
+def test_docengine_proxy_reports_unreachable_as_502(client, monkeypatch):
+    monkeypatch.setattr(settings, "docengine_url", "http://127.0.0.1:9")
+    assert client.get("/api/docengine/health", headers=H).status_code == 502
+
+
+# ---- PDF download -------------------------------------------------------------------------
+def test_pdf_inline_for_preview(client):
+    (Path(app_mod.OUT) / "D1.docx").write_bytes(b"x"); (Path(app_mod.OUT) / "D1.pdf").write_bytes(b"%PDF-1.4")
+    assert client.get("/api/download/D1.pdf?inline=1", headers=H).headers["content-disposition"].startswith("inline")
+    assert client.get("/api/download/D1.pdf", headers=H).headers["content-disposition"].startswith("attachment")
+
+
+# ---------------------------------------------------------------- review 14.10.2026
+def test_non_ascii_key_is_401_not_500(client):
+    """compare_digest raises TypeError on a non-ASCII str; the gate compares bytes now."""
+    r = client.get("/api/doctypes", headers={"X-API-Key": "ключ".encode()})
+    assert r.status_code == 401
+    assert client.post("/api/session", json={"key": "ключ"}).status_code == 401
+
+
+def test_builds_run_one_at_a_time(monkeypatch):
+    """Two sync build routes run on the thread pool together and share sys.argv and the engine's globals."""
+    held = []
+    monkeypatch.setattr(app_mod, "_build_locked", lambda md, base: held.append(app_mod._BUILD_LOCK.locked()) or (True, "", ""))
+    app_mod._build_from_markdown("x", "y")
+    assert held == [True] and not app_mod._BUILD_LOCK.locked()
+
+
+def test_a_bad_wizard_payload_is_422_not_500(client):
+    h = {"X-API-Key": KEY}
+    assert client.post("/api/wizard/preview", headers=h, json={"payload": {"mk_title": None, "sections": []}}).status_code == 422
+    assert client.post("/api/wizard/build", headers=h, json={"payload": {"sections": [{"level": "x"}]}}).status_code == 422
+
+
+def test_build_errors_do_not_return_a_traceback(client, monkeypatch):
+    def boom(md, base):
+        raise RuntimeError("engine broke")
+    monkeypatch.setattr(app_mod, "_build_locked", boom)
+    r = client.post("/api/wizard/build", headers={"X-API-Key": KEY}, json={"payload": {"code": "X", "sections": []}})
+    assert r.status_code == 422 and "Traceback" not in r.text and "RuntimeError: engine broke" in r.json()["error"]
+
+
+def test_raw_markdown_is_bounded(client):
+    r = client.post("/api/build", headers={"X-API-Key": KEY}, json={"markdown": "x" * 400_001})
+    assert r.status_code == 422
+
+
+def test_jobs_rerun_goes_through_the_engine():
+    """Re-run once rebuilt the payload client-side from six fields and lost the brief, the sources' text and the
+    package annexes (review 19.10.2026); the engine now copies the stored payload (POST /workflows/{id}/rerun)."""
+    src = (Path(__file__).resolve().parents[1] / "web" / "src" / "screens" / "Jobs.tsx").read_text(encoding="utf-8")
+    rerun = src[src.index("const rerun"):src.index("usePrimary(")]
+    assert "api.rerunJob(" in rerun and "startWorkflow(" not in rerun
+
+
+# ---------------------------------------------------------------- session lifetime (review 14.10.2026)
+def test_the_old_fixed_cookie_value_is_no_longer_accepted(client):
+    client.cookies.set(security.COOKIE, security.session_value(KEY))
+    assert client.get("/api/doctypes").status_code == 401
+
+
+def test_an_expired_session_is_refused():
+    import time
+    old = security.issue_session(KEY, now=time.time() - security.SESSION_TTL - 120)
+    assert security.session_id(old, KEY) is None
+    assert security.session_id(security.issue_session(KEY), KEY)
+
+
+def test_a_tampered_session_is_refused():
+    v = security.issue_session(KEY)
+    head, iat, sid, user, mac = v.split(".")
+    assert security.session_id(f"{head}.{int(iat) + 3600}.{sid}.{user}.{mac}", KEY) is None    # extended by hand
+    assert security.session_id(f"{head}.{iat}.{sid}.{'admin'.encode().hex()}.{mac}", KEY) is None  # another user
+    assert security.session_id(v, "another-key") is None
+
+
+def test_sign_out_ends_the_session_on_the_server(client, monkeypatch, tmp_path):
+    monkeypatch.setattr(security, "REVOKED_FILE", str(tmp_path / "revoked.json"))
+    value = client.post("/api/session", json={"key": KEY}).cookies.get(security.COOKIE)
+    assert client.get("/api/doctypes").status_code == 200
+    r = client.post("/api/session/close", json={})
+    assert r.status_code == 200
+    client.cookies.set(security.COOKIE, value)            # a browser (or a thief) that kept the cookie
+    assert client.get("/api/doctypes").status_code == 401
+
+
+# ---------------------------------------------------------------- chat build links (review 14.10.2026)
+def _letta_turn(md):
+    import json as _j
+    return {"messages": [
+        {"message_type": "tool_call_message",
+         "tool_call": {"name": "build_pp_document", "arguments": _j.dumps({"markdown": md, "out_path": "/data/x.docx"})}},
+        {"message_type": "tool_return_message", "tool_return": _j.dumps({"ok": True, "out_path": "/data/x.docx"})},
+        {"message_type": "assistant_message", "content": "Built it."}]}
+
+
+def test_chat_rebuilds_the_agents_document_here_and_links_to_it(client, monkeypatch):
+    md = ("<!--HEADERDATA\nmk_title: Тест\nen_title: Test\ncode: QCSOP_014_A03\ndoctype: FORM\n-->\n"
+          "# 1 Идентификација | Identification\n[[FORM]]\nДатум ||| Date ||| _\n[[/FORM]]\n")
+    monkeypatch.setenv("LETTA_BASE_URL", "http://letta")
+
+    def fake_letta(method, path, body=None, timeout=90):
+        return [{"id": "a1", "name": "qms_docx_formatter"}] if method == "GET" else _letta_turn(md)
+
+    monkeypatch.setattr(app_mod, "_letta", fake_letta)
+    r = client.post("/api/chat", headers={"X-API-Key": KEY}, json={"message": "build it"})
+    b = r.json()["built"]
+    assert r.status_code == 200 and b["ok"] and b["doc_id"].startswith("QCSOP_014_A03_")
+    assert client.get(b["download_docx"], headers={"X-API-Key": KEY}).status_code == 200   # the file is here
+
+
+def test_chat_without_a_build_offers_no_links(client, monkeypatch):
+    monkeypatch.setenv("LETTA_BASE_URL", "http://letta")
+    monkeypatch.setattr(app_mod, "_letta", lambda m, p, body=None, timeout=90:
+                        [{"id": "a1", "name": "qms_docx_formatter"}] if m == "GET"
+                        else {"messages": [{"message_type": "assistant_message", "content": "hi"}]})
+    assert client.post("/api/chat", headers={"X-API-Key": KEY}, json={"message": "hi"}).json()["built"] is None
+
+
+
+def test_every_docengine_route_the_web_client_calls_is_forwarded():
+    """The proxy allowlist and the web client drifted apart once (library, register, engine: 404 in the browser)."""
+    import re
+    from pathlib import Path
+
+    live = (Path(__file__).resolve().parents[1] / "web/src/api/live.ts").read_text(encoding="utf-8")
+    called = set(re.findall(r"de \+ '/([a-z_]+)", live)) | set(re.findall(r"\$\{de\}/([a-z_]+)", live))
+    assert called and called <= app_mod._DE_ROUTES, sorted(called - app_mod._DE_ROUTES)
+
+
+def test_the_brief_routes_pass_patch_and_delete(client, monkeypatch):
+    monkeypatch.setattr(settings, "docengine_url", "http://127.0.0.1:9")
+    for method in ("patch", "delete"):
+        assert getattr(client, method)("/api/docengine/briefs/x", headers=H).status_code == 502   # forwarded, not 404/405
+    assert client.put("/api/docengine/reference", headers=H).status_code == 405                 # operator route stays out
+
+
+def test_auth_off_opens_every_route_and_says_so(client, monkeypatch):
+    """Head of QC, 19.10.2026: no key sign-in for now. PPDOCWIZ_AUTH=off is a switch; the default keeps the gate."""
+    assert client.get("/api/doctypes").status_code == 401            # default: the key is required
+    assert client.get("/api/health").json()["auth"] is True
+    monkeypatch.setattr(settings, "auth_off", True)
+    assert client.get("/api/doctypes").status_code == 200            # no key, no cookie
+    assert client.get("/api/health").json()["auth"] is False
+    monkeypatch.setattr(settings, "api_key", "")                     # even with no key configured
+    assert client.get("/api/doctypes").status_code == 200
+
+
+def test_the_auth_switch_reads_only_off(monkeypatch):
+    import importlib
+    import config
+    for raw, off in (("off", True), (" OFF ", True), ("on", False), ("", False), ("no", False)):
+        monkeypatch.setenv("PPDOCWIZ_AUTH", raw)
+        assert importlib.reload(config).Settings().auth_off is off
+    monkeypatch.delenv("PPDOCWIZ_AUTH")
+    importlib.reload(config)
+
+
+def test_the_shared_password_opens_a_session_and_the_key_still_works(client, monkeypatch):
+    """Head of QC, 19.10.2026: a shared password at the sign-in instead of the API key."""
+    monkeypatch.setattr(security, "_fails", {})
+    monkeypatch.setattr(settings, "password_hash", security.hash_password("correct horse battery"))
+    assert client.get("/api/health").json()["login"] == "password"
+    r = client.post("/api/session", json={"key": "correct horse battery"})
+    assert r.status_code == 200 and client.get("/api/doctypes").status_code == 200       # cookie set
+    client.cookies.clear()
+    assert client.post("/api/session", json={"key": "wrong one"}).json()["error"] == "wrong password"
+    assert client.post("/api/session", json={"key": KEY}).status_code == 200             # machines keep the key
+    assert "correct horse battery" not in settings.password_hash                          # only the hash is held
+
+
+def test_failed_sign_ins_are_limited_per_client_and_in_total(client, monkeypatch):
+    monkeypatch.setattr(security, "_fails", {})
+    monkeypatch.setattr(settings, "password_hash", security.hash_password("correct horse battery"))
+    for _ in range(security.FAIL_PER_CLIENT):
+        assert client.post("/api/session", json={"key": "guess"}, headers={"X-Forwarded-For": "6.6.6.6, 1.2.3.4"}).status_code == 401
+    # the limit follows the address Traefik saw (the last entry), not what the caller put in front of it
+    blocked = client.post("/api/session", json={"key": "correct horse battery"}, headers={"X-Forwarded-For": "9.9.9.9, 1.2.3.4"})
+    assert blocked.status_code == 429
+    assert client.post("/api/session", json={"key": "correct horse battery"},
+                       headers={"X-Forwarded-For": "1.2.3.5"}).status_code == 200
+    now = 1_000_000.0
+    monkeypatch.setattr(security, "_fails", {f"10.0.0.{i}": [now] * 9 for i in range(12)})
+    assert security.too_many_failures("10.9.9.9", now=now)                                # 108 in total
+    assert not security.too_many_failures("10.9.9.9", now=now + security.FAIL_WINDOW + 1)
+
+
+def test_the_hash_tool_and_check(monkeypatch):
+    import subprocess
+    import sys
+    from pathlib import Path
+    h = security.hash_password("a fine long password")
+    assert h.startswith("scrypt$") and security.check_password("a fine long password", h)
+    assert not security.check_password("a fine long passwordX", h) and not security.check_password("x", "garbage")
+    tool = Path(security.__file__)
+    out = subprocess.run([sys.executable, str(tool), "hash"], input="a fine long password\n", capture_output=True, text=True,
+                         cwd=tool.parent)
+    assert out.returncode == 0 and security.check_password("a fine long password", out.stdout.strip())
+    short = subprocess.run([sys.executable, str(tool), "hash"], input="short\n", capture_output=True, text=True, cwd=tool.parent)
+    assert short.returncode != 0
+
+
+def test_the_initial_password_is_changed_at_first_sign_in_and_then_replaced(client, monkeypatch, tmp_path):
+    """Head of QC, 19.10.2026: an initial password, changed at the first sign-in; the new one is kept as a hash."""
+    monkeypatch.setattr(security, "_fails", {})
+    monkeypatch.setattr(security, "PASSWORD_FILE", str(tmp_path / ".ppdocwiz_password"))
+    monkeypatch.setattr(settings, "password_hash", security.hash_password("initial-pass"))
+    r = client.post("/api/session", json={"key": "initial-pass"})
+    assert r.status_code == 200 and r.json()["must_change"] is True
+    assert client.get("/api/password").json() == {"enabled": True, "must_change": True}
+    assert client.post("/api/password", json={"current": "nope", "new": "a long new password"}).status_code == 401
+    assert client.post("/api/password", json={"current": "initial-pass", "new": "short"}).status_code == 422
+    assert client.post("/api/password", json={"current": "initial-pass", "new": "a long new password"}).status_code == 200
+    assert client.get("/api/password").json()["must_change"] is False
+    assert "a long new password" not in (tmp_path / ".ppdocwiz_password").read_text()
+    assert oct((tmp_path / ".ppdocwiz_password").stat().st_mode)[-3:] == "600"
+    client.cookies.clear()
+    assert client.post("/api/session", json={"key": "initial-pass"}).status_code == 401           # the initial one is gone
+    r = client.post("/api/session", json={"key": "a long new password"})
+    assert r.status_code == 200 and r.json()["must_change"] is False
+    client.cookies.clear()
+    assert client.post("/api/password", json={"current": "x", "new": "y" * 20}).status_code == 401  # needs a session
+
+
+def test_a_key_sign_in_is_never_asked_to_change_the_password(client, monkeypatch, tmp_path):
+    monkeypatch.setattr(security, "PASSWORD_FILE", str(tmp_path / ".ppdocwiz_password"))
+    monkeypatch.setattr(settings, "password_hash", "")
+    r = client.post("/api/session", json={"key": KEY})
+    assert r.status_code == 200 and r.json()["must_change"] is False
+    assert client.post("/api/password", json={"current": "a", "new": "b" * 12}).status_code == 409
+
+
+# ---------- phase 5: named accounts (Head of QC, 19.10.2026) ----------
+import accounts  # noqa: E402
+
+
+def _sign_in(client, user, pw):
+    client.cookies.clear()
+    return client.post("/api/session", json={"username": user, "key": pw})
+
+
+def _owner_past_first_change():
+    """The owner's shared password, already changed once (the migrated admin inherits must_change otherwise, and
+    since the review of 19.10.2026 that is enforced on every route)."""
+    security.set_password("owner password 1")
+    accounts.bootstrap()
+
+
+def test_the_shared_password_becomes_admin_and_admin_adds_people(client, monkeypatch):
+    _owner_past_first_change()
+    assert accounts.listing()[0]["username"] == "admin" and client.get("/api/health").json()["login"] == "accounts"
+    assert client.post("/api/session", json={"key": "owner password 1"}).status_code == 401      # a username is needed
+    r = _sign_in(client, "admin", "owner password 1")
+    assert r.status_code == 200 and r.json()["user"] == "admin"
+    assert client.get("/api/me").json()["role"] == "admin"
+    r = client.post("/api/users", json={"username": "B.Nikolov", "role": "admin", "temporary_password": "temporary pw 12"})
+    assert r.status_code == 200 and r.json()["username"] == "b.nikolov" and r.json()["must_change"] is True
+    assert client.post("/api/users", json={"username": "b.nikolov", "temporary_password": "temporary pw 12"}).status_code == 422
+    assert client.post("/api/users", json={"username": "x", "temporary_password": "short"}).status_code == 422
+    client.post("/api/users", json={"username": "c.cekic", "role": "user", "temporary_password": "temporary pw 34"})
+    r = _sign_in(client, "c.cekic", "temporary pw 34")
+    assert r.json()["must_change"] is True and client.get("/api/me").json()["must_change"] is True
+    assert client.post("/api/password", json={"current": "temporary pw 34", "new": "her own password"}).status_code == 200
+    assert client.get("/api/me").json() == {"user": "c.cekic", "role": "user", "must_change": False, "accounts": True}
+    assert client.get("/api/users").status_code == 403                                           # not an admin
+    assert _sign_in(client, "c.cekic", "temporary pw 34").status_code == 401
+    assert _sign_in(client, "c.cekic", "her own password").status_code == 200
+
+
+def test_disabling_an_account_ends_its_session_at_once_and_the_last_admin_stays(client, monkeypatch):
+    _owner_past_first_change()
+    accounts.create("c.cekic", "user", "temporary pw 34", by="admin")
+    _sign_in(client, "c.cekic", "temporary pw 34")
+    client.post("/api/password", json={"current": "temporary pw 34", "new": "her own password"})
+    assert client.get("/api/doctypes").status_code == 200
+    accounts.update("c.cekic", by="admin", disabled=True)
+    assert client.get("/api/doctypes").status_code == 401                        # the same cookie, refused now
+    with pytest.raises(accounts.AccountError):
+        accounts.update("admin", by="admin", disabled=True)                       # never lock everyone out
+    accounts.update("c.cekic", by="admin", disabled=False, reset_password="new temporary 56")
+    r = _sign_in(client, "c.cekic", "new temporary 56")
+    assert r.status_code == 200 and r.json()["must_change"] is True
+
+
+def test_every_sign_in_and_failure_is_logged_without_the_password(client, monkeypatch):
+    _owner_past_first_change()
+    _sign_in(client, "admin", "wrong one")
+    _sign_in(client, "admin", "owner password 1")
+    events = client.get("/api/auth-log").json()["events"]
+    assert [e["event"] for e in events[:3]] == ["signed_in", "sign_in_failed", "migrated"]
+    raw = open(accounts.AUTH_LOG, encoding="utf-8").read()
+    assert "owner password 1" not in raw and "wrong one" not in raw
+
+
+def test_the_proxy_names_the_signed_in_person_and_the_browser_cannot(client, monkeypatch):
+    monkeypatch.setattr(settings, "docengine_url", "http://docengine:8000")
+    _owner_past_first_change()
+    sent = {}
+
+    class Resp:
+        status, headers = 200, {"content-type": "application/json"}
+        def read(self): return b"{}"
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+
+    def fake_urlopen(req, timeout=0):
+        sent.update({k.lower(): v for k, v in req.header_items()})
+        return Resp()
+    monkeypatch.setattr(app_mod.urllib.request, "urlopen", fake_urlopen)
+    _sign_in(client, "admin", "owner password 1")
+    client.get("/api/docengine/briefs", headers={"X-Actor": "someone-else"})
+    assert sent["x-actor"] == "admin"
+
+
+# ---------------------------------------------------------------- review 19.10.2026
+def _old_cookie(client, user, age=10):
+    """A session for `user` opened `age` seconds ago, as a browser that signed in earlier holds it."""
+    import time
+    client.cookies.clear()
+    client.cookies.set(security.COOKIE, security.issue_session(KEY, now=time.time() - age, user=user))
+
+
+def test_a_temporary_password_opens_only_the_change_routes(client):
+    """must_change was advice to the browser; a temporary password worked on every route (review 19.10.2026)."""
+    _owner_past_first_change()
+    accounts.create("c.cekic", "user", "temporary pw 34", by="admin")
+    assert _sign_in(client, "c.cekic", "temporary pw 34").json()["must_change"] is True
+    assert client.get("/api/me").status_code == 200 and client.get("/api/password").status_code == 200
+    r = client.get("/api/doctypes")
+    assert r.status_code == 403 and r.json()["detail"] == "password change required"
+    assert client.post("/api/wizard/preview", json={"payload": {"code": "X", "sections": []}}).status_code == 403
+    assert client.get("/api/docengine/health").status_code == 403
+    assert client.get("/api/health").status_code == 200 and client.get("/").status_code == 200   # the page and its probe
+    assert client.post("/api/password", json={"current": "temporary pw 34", "new": "her own password"}).status_code == 200
+    assert client.get("/api/doctypes").status_code == 200                                         # the UI's flow continues
+    accounts.create("d.mitrev", "user", "temporary pw 56", by="admin")
+    _sign_in(client, "d.mitrev", "temporary pw 56")
+    assert client.post("/api/session/close", json={}).status_code == 200                           # signing out is allowed
+    assert client.get("/api/doctypes", headers=H).status_code == 200                               # the key is never asked
+
+
+def test_an_administrators_reset_ends_the_persons_sessions(client):
+    _owner_past_first_change()
+    accounts.create("c.cekic", "user", "temporary pw 34", by="admin")
+    _old_cookie(client, "c.cekic")
+    assert client.get("/api/me").status_code == 200
+    accounts.update("c.cekic", by="admin", reset_password="new temporary 56")
+    assert client.get("/api/me").status_code == 401                        # the session from before the reset is dead
+    assert accounts.load()["c.cekic"]["pw_changed"] > 0
+    assert _sign_in(client, "c.cekic", "new temporary 56").status_code == 200
+
+
+def test_an_own_change_ends_every_other_session_and_keeps_this_one(client):
+    _owner_past_first_change()
+    accounts.create("c.cekic", "user", "temporary pw 34", by="admin")
+    other = TestClient(app_mod.app)
+    _old_cookie(client, "c.cekic"); _old_cookie(other, "c.cekic")
+    r = client.post("/api/password", json={"current": "temporary pw 34", "new": "her own password"})
+    assert r.status_code == 200 and security.COOKIE in r.headers.get("set-cookie", "")   # a fresh cookie for this browser
+    assert client.get("/api/doctypes").status_code == 200
+    assert other.get("/api/doctypes").status_code == 401                                  # the other browser is out
+    assert security.identity("", r.cookies[security.COOKIE]) == "c.cekic"
+
+
+def test_the_first_account_is_always_an_administrator(client):
+    """The API key could create a lone 'user' as the only account, with nobody left to administer (review 19.10.2026)."""
+    r = client.post("/api/users", json={"username": "c.cekic", "role": "user", "temporary_password": "temporary pw 34"}, headers=H)
+    assert r.status_code == 422 and "administrator" in r.json()["error"]
+    assert client.post("/api/users", json={"username": "b.nikolov", "role": "admin", "temporary_password": "temporary pw 12"}, headers=H).status_code == 200
+    assert client.post("/api/users", json={"username": "c.cekic", "role": "user", "temporary_password": "temporary pw 34"}, headers=H).status_code == 200
+    with pytest.raises(accounts.AccountError):
+        import os; os.unlink(accounts.USERS_FILE); accounts.create("x.y", "user", "temporary pw 34", by="api-key")
+    # With a shared password set, the API-key caller bootstraps 'admin' from it before the first named account.
+    security.set_password("owner password 1")
+    assert client.post("/api/users", json={"username": "c.cekic", "role": "user", "temporary_password": "temporary pw 34"}, headers=H).status_code == 200
+    assert [u["username"] for u in accounts.listing() if u["role"] == "admin"] == ["admin"]
+
+
+def _fake_docengine(monkeypatch):
+    seen = {}
+
+    class Resp:
+        status, headers = 200, {"content-type": "application/json"}
+        def read(self): return b"{}"
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+
+    def fake(req, timeout=0):
+        seen["n"] = len(req.data or b""); return Resp()
+    monkeypatch.setattr(settings, "docengine_url", "http://docengine:8000")
+    monkeypatch.setattr(app_mod.urllib.request, "urlopen", fake)
+    return seen
+
+
+def test_the_proxy_body_is_bounded_except_for_source_uploads(client, monkeypatch):
+    """request.body() buffered whatever was sent (review 19.10.2026)."""
+    seen = _fake_docengine(monkeypatch)
+    big = b"x" * (3 * 1024 * 1024)
+    assert client.post("/api/docengine/build", content=big, headers={**H, "content-type": "application/json"}).status_code == 413
+    assert "n" not in seen                                                   # nothing was forwarded
+    assert client.post("/api/docengine/build", content=b"{}", headers=H).status_code == 200 and seen["n"] == 2
+    assert client.post("/api/docengine/briefs/b1/sources", content=big, headers=H).status_code == 200 and seen["n"] == len(big)
+    assert client.post("/api/docengine/briefs/b1/sources", content=b"x" * (app_mod._DE_SOURCE_LIMIT + 1), headers=H).status_code == 413
+    # a body with no honest Content-Length is bounded while it streams
+    monkeypatch.setattr(app_mod, "_DE_BODY_LIMIT", 10)
+    assert client.post("/api/docengine/build", content=iter([b"x" * 8, b"x" * 8]), headers=H).status_code == 413
+
+
+def test_wizard_values_cannot_break_the_line_grammar():
+    """A newline in a form value became a second, broken row; '|||' a stray cell; a leading '#' a heading (review 19.10.2026)."""
+    import build_from_md as b
+    import wizard
+    p = {"code": "X\nY", "mk_title": "Тест\r\nдва", "en_title": "Test", "sections": [{"num": "1", "mk": "А", "en": "A", "blocks": [
+        {"type": "form", "rows": [{"label_mk": "Забелешка", "label_en": "Note", "value": "ред 1\nред 2 ||| ред 3"},
+                                  {"label_mk": "[[Поле", "label_en": "Field", "value": ""}]},
+        {"type": "text", "paras": [{"mk": "# 3 Напомена", "en": "- Note"}, {"mk": "- 20 °C", "en": "* x"}]},
+        {"type": "table", "cols": [{"mk": "#", "en": ""}, {"mk": "Параметар", "en": "Parameter"}],
+         "rows": [[{"mk": "- 1", "en": ""}, {"mk": "pH~~x", "en": ""}]]}]}]}
+    md = wizard.compose_markdown(p)
+    assert "code: X Y\n" in md and "mk_title: Тест два\n" in md
+    hd, blocks = b.parse(md)
+    assert hd["code"] == "X Y" and [x[0] for x in blocks] == ["h", "form", "p", "p", "table"]
+    assert blocks[1][1] == [["Забелешка", "Note", "ред 1 ред 2 | | | ред 3"], ["[[Поле", "Field", "_"]]
+    assert blocks[2][1:] == ("# 3 Напомена", "- Note") and blocks[3][1:] == ("- 20 °C", "* x")
+    assert blocks[4][1] == [["#", "Параметар~~Parameter"], ["- 1", "pH~ ~x"]]
+
+
+def test_a_monolingual_build_fails_the_gate_as_at_the_docengine(client, monkeypatch):
+    """pp_verify ran here without --require-bilingual, so a document the DocEngine refuses passed (review 19.10.2026).
+    The engine's own templates always print both languages (status band), so the builder is stubbed to make one that
+    does not."""
+    import importlib
+    import build_from_md
+    from docx import Document
+
+    def latin_only(src, out):
+        d = Document(); d.add_paragraph("English only"); d.save(out)
+    monkeypatch.setattr(importlib, "reload", lambda m: m)                 # keep the stub through _build_locked's reload
+    monkeypatch.setattr(build_from_md, "main", latin_only)
+    r = client.post("/api/build", json={"markdown": GOOD_MD}, headers=H)
+    assert r.status_code == 422 and "FAIL (missing a language)" in r.json()["verify"]

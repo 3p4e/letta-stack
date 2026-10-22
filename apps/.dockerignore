@@ -1,0 +1,5 @@
+# Build context is apps/ (see ppdocwiz/Dockerfile). The web bundle is rebuilt in the
+# image's node stage; never ship a developer's node_modules or a stale local build.
+**/node_modules
+ppdocwiz/frontend/suite
+**/__pycache__

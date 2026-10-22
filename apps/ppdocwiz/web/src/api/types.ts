@@ -1,0 +1,136 @@
+// Wire types for the two backends this UI talks to.
+//   ppdocwiz  (apps/ppdocwiz/backend/app.py)      — /api/*
+//   docengine (apps/wwf-docengine/app/main.py)    — reached through `docengineBase`
+
+export type DocStatus = 'draft' | 'in_review' | 'approved';
+export type Doctype = 'SOP' | 'ANNEX' | 'FORM' | 'LOG' | 'CHECKLIST' | 'REPORT';
+
+// ---- wizard payload (wizard.py docstring) ----
+export interface Para { mk: string; en: string }
+export interface FormRow { label_mk: string; label_en: string; value: string }
+export interface Cell { mk: string; en: string }
+export type Block =
+  | { type: 'text'; paras: Para[] }
+  | { type: 'bullets'; paras: Para[] }
+  | { type: 'form'; rows: FormRow[] }
+  | { type: 'table'; cols: Cell[]; rows: Cell[][] };
+export interface Section { num: string; mk: string; en: string; level: 1 | 2 | 3; blocks: Block[] }
+export interface WizardPayload {
+  doctype: Doctype;
+  mk_title: string; en_title: string; code: string; version: string;
+  parent: string; supersedes: string; orient: 'portrait' | 'landscape';
+  status: DocStatus; effective_date: string; review_date: string;
+  sections: Section[];
+}
+
+/** `auth: false` when the server runs with PPDOCWIZ_AUTH=off (no sign-in, Head of QC 19.10.2026). */
+export interface Health { ok: boolean; letta: boolean; pdf: boolean; auth?: boolean; login?: 'accounts' | 'password' | 'key' | 'off' }
+/** Named accounts (phase 5, Head of QC 19.10.2026). */
+export interface Me { user: string; role: 'admin' | 'user'; must_change: boolean; accounts: boolean }
+export interface Account { username: string; role: 'admin' | 'user'; must_change: boolean; disabled: boolean; created: string; by: string }
+export interface AuthEvent { at: string; event: string; user: string; client: string; by?: string; role?: string; disabled?: boolean; password_reset?: boolean }
+export interface DoctypeInfo { key: string; mk: string; en: string; desc: string; default_orient: string }
+export interface BuildResult {
+  ok: boolean; verify: string; doc_id: string; markdown: string;
+  download_docx: string; download_pdf: string; error?: string;
+}
+/** The agent's document, rebuilt by PP Doc Wiz from the Markdown the agent sent to its build tool. */
+export interface ChatBuilt { ok: boolean; doc_id: string; verify: string; download_docx?: string; download_pdf?: string }
+export interface ChatResult { ok: boolean; agent: string; reply: string; built: ChatBuilt | null }
+
+// ---- docengine ----
+export interface DeHealth { ok: boolean; db: boolean; letta: boolean; engine: string }
+export interface QuestionnaireIndexRow { key: string; title: string; doctype: string; rounds: number }
+export interface Question { key: string; multi: boolean; mk: string; en: string; options: { v: string; isDefault: boolean }[] }
+export interface Round { mk: string; en: string; questions: Question[] }
+export interface Questionnaire { key: string; mk: string; en: string; doctype: string; rounds: Round[] }
+export type JobStatus = 'queued' | 'running' | 'awaiting_review' | 'done' | 'failed';
+export interface Job {
+  id: string; kind: 'workflow' | 'build'; status: JobStatus; stage: string;
+  payload: {
+    questionnaire: string; answers: Record<string, string | string[]>; meta: Record<string, string>; requested_by: string;
+    instructions?: string; sources?: string[]; parent_sop?: string;
+    /** Set on a brief-built job: the server holds the sources' text and the annexes too, so only POST /workflows/{id}/rerun
+     *  can re-run it whole (review 19.10.2026). */
+    brief_id?: string; source_texts?: unknown[]; package_annexes?: unknown[]; rerun_of?: string;
+  };
+  result: Record<string, unknown>; error: string | null; created_by: string; created_at: string; updated_at: string;
+}
+export interface DocumentRow {
+  id: string; code: string; doctype: string; title_mk: string; title_en: string;
+  version: string; bytes: number; created_at: string;
+  job_id?: string | null; verify?: string; path?: string;
+}
+
+/** An HTTP failure surfaced to the UI with its status, so screens can render 401/410/422/503 states. */
+export class ApiError extends Error {
+  constructor(public status: number, message: string, public body?: unknown) { super(message); }
+}
+
+/** DocEngine GET /library (18.10.2026): every document code on one shelf. */
+export type Shelf = 'approved' | 'revision' | 'drafts' | 'numbers' | 'retired';
+export interface RefBrief { id: string; version: string; title_en: string; effective_date: string; chars: number | null; ragflow_doc_id: string; package?: string }
+export interface ShelfEntry {
+  code: string; parent: string; department: string; title_mk: string; title_en: string; status: string; version: string;
+  effective_date: string; shelf: Shelf; approved: RefBrief | null; wip: RefBrief[];
+  builds: { id: string; version: string; doctype: string; created_at: string; job_id: string | null }[];
+  jobs: { id: string; status: string; stage: string; title_en: string; updated_at: string }[]; notes: string[];
+}
+/** How a document hangs under an SOP (DocEngine GET /house/related, GET /library packages; Head of QC, 19.10.2026):
+ *  annex = code pattern …A##, child = register parent, listed = the approved SOP's own text names it. */
+export type Relation = 'annex' | 'child' | 'listed';
+/** An SOP with the documents that belong to it. In `in_use` when the SOP has an approved copy or is effective in the
+ *  register, else in `drafts`; `loose` holds what belongs to no package. */
+export interface LibraryPackage { sop: ShelfEntry; members: (ShelfEntry & { relation: Relation })[] }
+export interface LibraryShelves {
+  shelves: Record<Shelf, ShelfEntry[]>; counts: Record<Shelf, number>;
+  packages: { in_use: LibraryPackage[]; drafts: LibraryPackage[] };
+  loose: { in_use: ShelfEntry[]; drafts: ShelfEntry[] };
+  /** The register against the library (Head of QC, 19.10.2026): in use but no approved copy held; held but not in use. */
+  reconcile?: { missing: ReconcileRow[]; register_behind: ReconcileRow[] };
+}
+export interface ReconcileRow { code: string; title_en: string; title_mk: string; version: string; status: string }
+/** DocEngine GET /house/related/{code}: the approved copy of an SOP (found=false when none) and what is in use under it. */
+export interface RelatedDoc { code: string; version: string; title_en: string; title_mk: string; relation: Relation; chars: number }
+export interface HouseRelated { code: string; found: boolean; version: string; title_en: string; title_mk: string; related: RelatedDoc[] }
+export interface ReferenceDoc extends RefBrief { kind: 'approved' | 'wip'; code: string; parent: string; title_mk: string; department: string; source: Record<string, unknown>; markdown: string }
+
+/** DocEngine Document Brief (18.10.2026): the one saved draft the workflow edits. */
+export type Package = 'sop' | 'sop_annexes' | 'annex' | 'form' | 'report';
+export type FieldState = 'suggested' | 'chosen' | 'locked';
+export interface BriefField { value: string | string[]; state: FieldState; stale: boolean; at: string; by: string }
+/** What a source is for (Head of QC, 19.10.2026): content = reference contents, facts may be taken and are cited by file
+ *  name; format = an example of document formatting, structure and layout only; example = an executed/filled example of
+ *  this kind of document, structure not values. */
+export type SourceRole = 'content' | 'format' | 'example';
+export interface BriefSource { id: string; name: string; kind: string; bytes: number; chars: number; created_at: string; role: SourceRole }
+export interface BriefAnnex { title_en: string; title_mk: string; kind: string }
+export interface Brief {
+  id: string; rev: number; status: string; package: Package; questionnaire: string; parent_sop: string;
+  meta: Record<string, string>; fields: Record<string, BriefField>; annexes: BriefAnnex[]; job_ids: string[];
+  sources: BriefSource[]; updated_at: string;
+  /** The advisor's options, each with why and source (POST /briefs/{id}/suggest); never a decision. */
+  proposals?: Record<string, BriefProposal>;
+  /** What the answers so far recommend for each question (DocEngine app/question_rules.py). */
+  guide?: BriefGuide;
+}
+export interface BriefProposal { options: { value: string; why: string; source: string }[]; pick: string | string[]; at?: string }
+export interface BriefGuide {
+  questions: Record<string, { recommended: { value: string; because: string[] }[]; depends_on: string[] }>;
+  questionnaire_hint: string;
+}
+/** GET /briefs/{id}/package: the latest build of a brief and every annex it started (phase 4). */
+export interface PackageMember {
+  job_id: string; code: string; title_en: string; status: string; stage: string; document_id: string | null;
+  has_file: boolean; review_reason: string; assumed: string[]; error: string;
+}
+export interface BriefPackage {
+  brief_id: string; package: Package; members: PackageMember[]; complete: boolean; pdf_ready: boolean;
+  failed: string[]; running: string[]; awaiting_review: string[];
+}
+export interface BriefSuggestion { proposals: Record<string, BriefProposal>; notes: string[]; brief: Brief }
+export interface BriefPatch {
+  rev: number; actor?: string; set?: Record<string, unknown>; suggest?: Record<string, unknown>; lock?: string[]; unlock?: string[];
+  meta?: Record<string, string>; package?: Package; questionnaire?: string; parent_sop?: string; annexes?: BriefAnnex[];
+}
+export interface BriefEvent { rev: number; at: string; actor: string; op: string; key: string; before: unknown; after: unknown }

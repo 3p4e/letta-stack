@@ -126,3 +126,68 @@ def test_real_entry_columns_still_match(header, other):
     tight = widths([[header, other], ["", ""]])
     loose = widths([["Опис | Description", other], ["", ""]])
     assert tight[0] != pytest.approx(loose[0], abs=0.01), f"{header} lost its entry sizing"
+
+
+# ------------------------------------- content-aware sizing (Head of QC, 14.10.2026)
+# The transport annexes of 13.10.2026 showed both the good and the bad case side by side:
+# spare width was shared in proportion to each column's natural width, so an empty Yes/No
+# column and a short reference column stretched while the long item text wrapped into tall
+# rows, and a "Вкупно" label made the № column the widest on the page.
+
+CHECKLIST = [
+    ["№", "Ставка | Item", "Да | Yes", "Не | No", "N/A", "Референца | Reference"],
+    ["A1", "Барањето до МВР поднесено пред поаѓањето, доказ за поднесување на досие | "
+           "MoIA request submitted before departure, proof of submission on file", "", "", "", "A02"],
+    ["A4", "Рутата е QUALIFIED за ова возило, конфигурација на палети и сезона | "
+           "Lane QUALIFIED for this vehicle, pallet configuration and season", "", "", "", "QASOP_0XX_A06"],
+]
+
+
+def test_long_text_column_takes_the_spare_width():
+    w = widths(CHECKLIST, mode="full")
+    assert sum(w) == pytest.approx(R.PAGE_W, abs=0.05)
+    assert w[1] == max(w), "the item text must be the widest column"
+    assert w[1] > 0.55 * R.PAGE_W
+    for j in (2, 3, 4):
+        assert w[j] < 1.6, f"tick column {j} stretched to {w[j]:.2f} cm"
+    assert w[5] < 3.5, "a short reference column must not take the width the text needs"
+    assert w[0] < 1.5, "an ordinal column takes only what A1…A22 needs"
+
+
+def test_a_total_row_does_not_widen_the_ordinal_column():
+    rows = [["№", "Број на кеса | Bag No.", "Нето маса (g) | Net mass (g)",
+             "Кесата е цела и затворена | Bag intact and sealed"]]
+    rows += [[str(i), "", "", ""] for i in range(1, 13)]
+    rows += [["Вкупно кеси / нето маса | Total bags / net mass", "", "", ""]]
+    w = widths(rows, mode="full")
+    assert w[0] == min(w), "the № column became wider than a write-in column"
+    assert w[0] <= 2.5
+
+
+def test_write_in_columns_share_the_spare_width_evenly():
+    rows = [["Позиција | Position", "Кеси | Bags", "Нето маса (g) | Net mass (g)",
+             "Бруто маса (g) | Gross mass (g)"],
+            ["C01", "", "", ""], ["C02", "", "", ""]]
+    w = widths(rows, mode="full")
+    assert sum(w) == pytest.approx(R.PAGE_W, abs=0.05)
+    assert max(w[1:]) - min(w[1:]) < 0.05, f"write-in columns are uneven: {w[1:]}"
+    assert w[0] < w[1]
+
+
+def test_signoff_role_column_takes_the_remainder():
+    rows = [["Улога | Role", "Име | Name", "Датум/време | Date/time", "Потпис | Signature"],
+            ["Независно проверил (кеси, серија, маса, етикета) | "
+             "Independently verified (bags, batch, mass, label)", "", "", ""]]
+    w = widths(rows, mode="full")
+    assert w[1] == pytest.approx(5.2, abs=0.05)
+    assert w[3] == pytest.approx(3.8, abs=0.05)
+    assert w[2] == pytest.approx(2.6, abs=0.05)
+    assert w[0] == pytest.approx(R.PAGE_W - 11.6, abs=0.05)
+
+
+def test_placeholder_cells_are_still_write_in():
+    """'[ ]' and '___' mark where a person writes; they are not printed content."""
+    rows = [["Улога | Role", "Име | Name", "Датум | Date", "Потпис | Signature"],
+            ["Одобрил и потпишал (QP) | Approved and signed (QP)", "[ ]", "[ ]", "[ ]"]]
+    w = widths(rows, mode="full")
+    assert w[1] == pytest.approx(5.2, abs=0.05) and w[3] == pytest.approx(3.8, abs=0.05)
