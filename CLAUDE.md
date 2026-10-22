@@ -44,6 +44,13 @@ session inherits it. Never a sweep of all 46.
 If a field is genuinely absent from the index, add it by listing the batches that need it and reading
 only those.
 
+**The signed Tranche 3 scans (scanned 16.10.2026) are a second set, not in the index above.** Drive folder
+`T3 SCANN BUNDLE` (`1Qj46MLgh3I2yS_9tfbb-d6K-Dvab8stX`), manifest `_T3_SCAN_BUNDLE_MANIFEST.xlsx`: 24 retest bundles
+(CoQ + iCoA + eCoAs, `…_SCAN.pdf`) cut from the raw scans `2026101615xxxx.pdf` in `scann/t3 scan`, plus the signed iCoAs of
+`20260924183229.pdf`, `20260924183321.pdf` and `20261009180750.pdf`. **Not scanned:** the retest CoQs -145, -148, -150, -151, -161
+(their iCoAs -145, -097, -094, -151 are, `20261009180750.pdf` pp. 7, 10, 12, 13), iCoA-144 and -101, and every Tranche 3 initial
+(P060332 has only -068). Check this folder before saying a Tranche 3 certificate has no scan.
+
 ## 3. The certificate package in Drive
 
 `https://drive.google.com/drive/folders/1Ju37BR51Q0XTbYOfOZyGB4aE8YoF1LRu`
