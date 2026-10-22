@@ -134,7 +134,7 @@ JD032601 (P060472) is a production lot and gets a CoQ (Head of QC, 22.10.2026): 
   tested again well after the first: *"the second certificate for microbiology is going to enter the
   CoQ, and if the initial testing was way before, then it is definitely a retest and the reissuing
   of the CoQ"* — `-160` (P060342: IPH 539/1070/26 of 31.08 after 362/0692/26 of 01.06) is kept, and
-  carries the Farmahem cannabinoids as carried from `-073`. Since 08.10.2026 IPH `3160/2026` of 01.06.2026
+  carries the Farmahem cannabinoids `227-8-К/26` as its retest result (since 22.10.2026 `-073` prints CNP `ППК26093`). Since 08.10.2026 IPH `3160/2026` of 01.06.2026
   (SCR012601*) is on file. It is the lot's release testing for total aflatoxins, metals and pesticides, so
   `-073` prints it, with B1/OTA n/t, and `-160`'s Farmahem 227-8-М is its retest panel (ruling 3)
   (`intake_IPH_2026-10-08/`).
@@ -199,17 +199,18 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
      page 3, OI-59). Read the master's open items (OI-16, OI-59, OI-64) before re-deriving any of this. Loss on drying in Tranche 3
      is CNP's or Farmahem's (`-ГС`), in-house only for `-026`, and untested for `-021`, `-050`, `-068`. P060202's retest `-153` prints Farmahem's reanalysis `100-1-ГС/26` (7.6 %, 09.04.2026), its
      initial `-056` the release `051-5-ГС/26` (8.4 %) (Head of QC, 14.10.2026). Since 16.10.2026 P050202 (`-026`, `-149`) prints
-     `ППК25312` (6.21 %) and P060342 (`-073`, `-160`) `ППК26093` (6.61 %), both filed 14.10.2026; their cannabinoids are with
-     the Head of QC (`tracker/apply_cnp_lod_p050202_p060342_2026-10-16.py`). `T3_CoQ_Latest_*.pdf` is each lot's current certificate: the retest, or the initial where
+     `ППК25312` (6.21 %) and P060342 (`-073`, `-160`) `ППК26093` (6.61 %), both filed 14.10.2026 (`tracker/apply_cnp_lod_p050202_p060342_2026-10-16.py`). **The earlier
+     CoQ cites CNP's cannabinoids, the reissue the later retest** (Head of QC, 22.10.2026, #228;
+     `tracker/apply_cnp_initial_cannabinoids_2026-10-22.py`): `-026` prints `ППК25312` (22.89 / 0.05 / 0.03 %), `-073` `ППК26093`
+     (16.99 / 0.05 / < LOQ %, now SCR-II, dated 12.06.2026); `-149` and `-160` print Farmahem `227-18-К`, `227-8-К` as their retest. `T3_CoQ_Latest_*.pdf` is each lot's current certificate: the retest, or the initial where
      there is no reissue. *"Where needed for the parameters that are not covered by other outsource
      laboratory an iCOA will be issued containing those parameters tested"* (Head of QC, 26.09.2026).
      **Identification C is never one of them.** It is discharged by the certificate that tested the
      cannabinoids and cites the same certificate as the Total THC row — the owner's ruling of
      02.09.2026 (`README.md`, "Identification C"), which has not changed; on 26.09 the desk put it on
-     `-026`'s iCoA as in-house and was corrected. `-026` (P050202): its release cannabinoids were tested
-     by **New Garden Pharma**, an external laboratory — analysis test report `NGP/QCG/SOP-024 F3` of
-     28.11.2025 (Total THC 24.89 %, CBD 0.17 %, LoD 8.19 %, read from the page) — so rows 3, 4, 5 cite
-     it; NGP is not in-house, whatever older tables call it. Its loss on drying stays on the iCoA, as
+     `-026`'s iCoA as in-house and was corrected. `-026` (P050202): New Garden Pharma's analysis test report `NGP/QCG/SOP-024 F3` of
+     28.11.2025 (Total THC 24.89 %, CBD 0.17 %, LoD 8.19 %) is an external laboratory's, not in-house; since 22.10.2026 it
+     is on no CoQ — CNP `ППК25312` (13.10.2025) is the earlier release testing and Farmahem `227-18-К/26` the retest (#228). Its loss on drying stays on the iCoA, as
      the approved scan of `-107` credits the sister NGP lot's. CNP's `ППК26036/37/57/58` for P050202
      are **stability time points**, never release results. Head of QC, 26.09.2026: New Garden Pharma
      is cited for **nothing else**. The certificates it obtained from external laboratories (IPH
@@ -319,7 +320,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 227 corrections, 07.09.2026–22.10.2026, each quoted — is
+The full record — 228 corrections, 07.09.2026–22.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:
