@@ -334,7 +334,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 231 corrections, 07.09.2026–22.10.2026, each quoted — is
+The full record — 232 corrections, 07.09.2026–22.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:
@@ -527,6 +527,8 @@ Standing rules the corrections produced (message numbers are in the record):
 - **Heading bars, CoQ and iCoA** (Head of QC, 07.10.2026: *"way too intensive in color … more white … without
   having to increase the color intensity"*): near-white with its shading, held by a top and a deeper foot hairline
   (`build_v40.js` `SEC_LABEL_BEVEL_LAYER`, unissued only; the iCoA through the house kit).
+- **Acceptance criteria come from the specification** (#232): read every criterion from the lot's own QCSP 001 sheet
+  (`specs/QCSP_001_ImB/`, the code on its CoQ) and name the sheet; pharmacopoeial knowledge is a cross-check only, said to be one.
 - **Nothing invented.** No category, statement or reason that no ruling or document supports (there
   is no "12-month reissue"; only a retest reissues a CoQ).
 - **Working.** Fix a defect instead of listing it; nothing from memory, check every value; explain a
