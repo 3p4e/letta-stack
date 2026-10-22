@@ -74,6 +74,10 @@ NOT_YET_IN_MASTER = {
     # source for THC (Head of QC, 07.10.2026: it may not carry the retest values)
     'CoQ-PP_26-050': ('7.05', '031-1-К/26', 'intake_GRC102501_2026-09-27, two reads of the certificate; the tracker '
                                            'sheet\'s GRC102501 block has 11.53, 9.80, 7.50 only'),
+    # CNP release cannabinoids on the initial (Head of QC, 22.10.2026, #228); two reads each in
+    # intake_CNP_LoD_2026-10-16/two_reads.tsv — the owner's tracker sheet predates their filing (14.10.2026)
+    'CoQ-PP_26-026': ('22.89', 'ППК25312', 'intake_CNP_LoD_2026-10-16, two reads; filed 14.10.2026, after the tracker sheet'),
+    'CoQ-PP_26-073': ('16.99', 'ППК26093', 'intake_CNP_LoD_2026-10-16, two reads; filed 14.10.2026, after the tracker sheet'),
 }
 MASTER = os.path.join(HERE, 'CoQ_Analysis_Master_v57.xlsx')
 STAMP = '2026-10-07'
