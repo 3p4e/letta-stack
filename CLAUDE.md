@@ -151,6 +151,9 @@ JD032601 (P060472) is a production lot and gets a CoQ (Head of QC, 22.10.2026): 
 **Every CoQ from 22.10.2026 on follows `deliverables/qc_gap_analysis/workflow/COQ_VERSION_WORKFLOW.md`** (Head of QC, #230):
 version 1 = the complete testing before packaging; a later accredited test of any specification parameter makes a new CoQ
 version (new code, supersedes the last), never a change to an approved one. Approved CoQs stay as sent or signed.
+"Initial" and "retest" are labels only (#231): every CoQ is a release CoQ of its batch, and a batch sent for additional
+testing gets a new CoQ dated when issued. A batch with one testing campaign has one CoQ — P060332 (`-068`; `-087` withdrawn):
+IPH-MB 361/0691/26 (01.06.2026) and Farmahem 197-6-К/М/26 (07./10.08.2026) are all it has.
 
 **How a CoQ is compiled** (Head of QC, 22.10.2026, #226): by standard practice — one result per specification
 parameter, taken from the valid external certificate for that issue, *"even if a parameter is tested for multiple
@@ -331,7 +334,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 230 corrections, 07.09.2026–22.10.2026, each quoted — is
+The full record — 231 corrections, 07.09.2026–22.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:
