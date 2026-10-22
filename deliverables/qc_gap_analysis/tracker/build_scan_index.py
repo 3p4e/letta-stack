@@ -16,6 +16,7 @@ be opened again:
     ICOA_LIST_2026-09-24.tsv                the cited internal certificate and its scope
     COQ_SCAN_PHENOTYPE_2026-09-24.tsv       phenotype and split as the scan spells it
     COQ_DISTRIBUTED_READINGS_2026-09-24.tsv the figures the scan prints
+    COQ_SCAN_MYCOTOXINS_2026-10-22.tsv      mycotoxins and any n/t cell, for the scans read for it
 
 plus the Drive file id per batch, so any row can be traced back to the scan it came from.
 
@@ -37,6 +38,7 @@ COLUMNS = [
     'parameters_referenced_named', 'icoa_per_register', 'register_agrees',
     'pheno', 'pheno_split',
     'total_thc_pct', 'loss_on_drying_pct', 'TAMC', 'TYMC', 'Pb', 'Cd', 'As', 'Hg',
+    'B1', 'aflatoxins_total', 'OTA', 'mycotoxin_cert', 'not_tested_cells',
     'drive_file_id', 'drive_title', 'drive_bytes', 'note',
 ]
 
@@ -57,6 +59,7 @@ def main():
     icoa = load_tsv(os.path.join(HERE, 'ICOA_LIST_2026-09-24.tsv'))
     pheno = load_tsv(os.path.join(HERE, 'COQ_SCAN_PHENOTYPE_2026-09-24.tsv'))
     read = load_tsv(os.path.join(HERE, 'COQ_DISTRIBUTED_READINGS_2026-09-24.tsv'))
+    myco = load_tsv(os.path.join(HERE, 'COQ_SCAN_MYCOTOXINS_2026-10-22.tsv'))   # read only where asked
 
     drive = {}
     raw = os.path.join(SCRATCH, 'drive_raw.tsv') if SCRATCH else ''
@@ -103,6 +106,7 @@ def main():
             'TAMC': R.get('TAMC', ''), 'TYMC': R.get('TYMC', ''),
             'Pb': R.get('Pb', ''), 'Cd': R.get('Cd', ''),
             'As': R.get('As', ''), 'Hg': R.get('Hg', ''),
+            **{k: myco.get(b, {}).get(k, '') for k in ('B1', 'aflatoxins_total', 'OTA', 'mycotoxin_cert', 'not_tested_cells')},
             'drive_file_id': fid, 'drive_title': title, 'drive_bytes': size,
             'note': L.get('note', ''),
         })
