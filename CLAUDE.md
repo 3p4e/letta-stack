@@ -141,6 +141,12 @@ JD032601 (P060472) is a production lot and gets a CoQ (Head of QC, 22.10.2026): 
 - **Dates**: on or after the last result the initial cites (ruling 1 below), at the desk's usual
   seven days (`audit_empty_results.initial_issue`), never after the lot's own retest.
 
+**How a CoQ is compiled** (Head of QC, 22.10.2026, #226): by standard practice — one result per specification
+parameter, taken from the valid external certificate for that issue, *"even if a parameter is tested for multiple
+times only one result can be taken"*. The 20.09 *"Not tested … is allowed during the initial testing"* (#119) applied
+only to those cases and is no rule. A Tranche 1/2 CoQ asked for is the sent scan (its values are the frozen register
+row); a Tranche 3 one is its signed per-batch scan bundle (§2). Nothing to ask about either.
+
 Head of QC, 26.09.2026: *"they're missing values for many of the parameters and there must not be
 a case like that."* A result cell printed `[ — ]` for weeks without anyone saying why.
 
@@ -257,7 +263,8 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
   The status is read first now; keep it that way.
 - Search the register row's own `also` field first — it holds results the desk found and did not
   print — then the same lot's retest record, then every intake's two-read file, then RAGflow
-  `eCOA_DB` by P lot and batch. **The eCoA corpus alone is not proof of "untested"**: it lacks many
+  `eCOA_INGEST` (`71b9c168…`, the complete re-ingestion of the eCoA database, 480 documents, 11.10.2026) by P lot and
+  batch, and `PP_COQs` (the 46 approved scans). `eCOA_DB` (283) is the retired set — not proof of anything (#227). **The eCoA corpus alone is not proof of "untested"**: it lacks many
   UKIM `ППК` certificates and the `227-М` series, and holds some with a blank batch.
 - Known fact, so it is not rediscovered: IPH contaminant certificates (AflaTest) report **total
   aflatoxins only**.
@@ -312,7 +319,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 225 corrections, 07.09.2026–08.10.2026, each quoted — is
+The full record — 227 corrections, 07.09.2026–22.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:
@@ -320,7 +327,7 @@ ruling governs (§5). The most repeated, in order:
 1. **It is on file.** Never report a result, certificate or eCoA as missing, not found or "not
    available" before searching the eCoA database folder and its Excel indexes, the latest master
    workbook, every intake's two-read file, the parent code and the sister sub-lot's Drive folder, and
-   RAGflow `eCOA_DB` (said 14 times).
+   RAGflow `eCOA_INGEST` (said 15 times).
 2. **Apply the rulings already given.** Read them here first; do not reopen, forget or reach back past
    them (13 times).
 3. **Carry every change into every deliverable** and every sheet of the latest master; a version
