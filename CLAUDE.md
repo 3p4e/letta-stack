@@ -44,6 +44,10 @@ session inherits it. Never a sweep of all 46.
 If a field is genuinely absent from the index, add it by listing the batches that need it and reading
 only those.
 
+The index is not the only committed reading: **every value a sent T1/T2 page prints is in the register**
+(`coq_artifact_data.json`, held to the sent state by `FROZEN_T1_T2_2026-09-26.json`). Read the register row before
+opening a scan for a field the index lacks (22.10.2026: two scans were re-read for mycotoxins the register already held).
+
 **The signed Tranche 3 scans (scanned 16.10.2026) are a second set, not in the index above.** Drive folder
 `T3 SCANN BUNDLE` (`1Qj46MLgh3I2yS_9tfbb-d6K-Dvab8stX`), manifest `_T3_SCAN_BUNDLE_MANIFEST.xlsx`: 24 retest bundles
 (CoQ + iCoA + eCoAs, `…_SCAN.pdf`) cut from the raw scans `2026101615xxxx.pdf` in `scann/t3 scan`, plus the signed iCoAs of
