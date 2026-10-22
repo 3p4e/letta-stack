@@ -94,6 +94,9 @@ tranche moves are already recorded — `tracker/TRANCHE_ASSIGNMENT_2026-09-18.md
 `tranche_assignment_2026-09-18.csv` (P060332 moved T1 → T3; CLE072501, OPM092501, SJ092501,
 JD042601, FB042601, CC042601 out of the tranches) — read them before asking. Not on the sale list:
 BSS1024_01/2 (P050142), CC012601/1 (P060332).
+JD032601 (P060472) is a production lot and gets a CoQ (Head of QC, 22.10.2026): only IPH `477/0929/26` and
+`4374/2026` are on file, no potency or loss on drying anywhere, so it waits for CNP potency
+(`tracker/LAB_REQUESTS_JD032601_2026-10-22.tsv`); `CoQ-PP_26-173` / `iCoA-PP_26-173` are reserved for it, nothing built yet.
 
 **Tranche 3: where Farmahem is the only testing on record, it is the release testing** (Head of QC,
 26.09.2026 — *"I'm not sure about all of the T3 initial release CoQs"*). Applied by
