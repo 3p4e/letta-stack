@@ -436,6 +436,11 @@ jobs:
       - name: Tranches 1 and 2 are unchanged
         run: |
           python3 deliverables/qc_gap_analysis/tracker/check_frozen_records.py
+      # Head of QC, 22.10.2026: approved versions are not rebuilt; a copy must print exactly what was
+      # signed. The 24 Tranche 3 retest CoQs signed on 16.10.2026 are held field by field.
+      - name: Signed Tranche 3 certificates are unchanged
+        run: |
+          python3 deliverables/qc_gap_analysis/tracker/check_signed_t3.py
       # Head of QC, 27.09.2026: certificates are issued chronologically. The list of numbers
       # out of date order is with him; it is regenerated from the register, so it cannot go
       # stale behind a re-dating or a withdrawal.

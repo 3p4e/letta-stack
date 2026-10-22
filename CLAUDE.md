@@ -55,6 +55,12 @@ opening a scan for a field the index lacks (22.10.2026: two scans were re-read f
 (their iCoAs -145, -097, -094, -151 are, `20261009180750.pdf` pp. 7, 10, 12, 13), iCoA-144 and -101, and every Tranche 3 initial
 (P060332 has only -068). Check this folder before saying a Tranche 3 certificate has no scan.
 
+**Approved versions are never rebuilt with new content** (Head of QC, 22.10.2026, #229: *"The last and approved versions if
+you are building them should be exactly the same with exactly the same content parameters cited"*). Tranches 1/2 are held by
+`check_frozen_records.py`; the 24 signed Tranche 3 retest CoQs field by field by `tracker/check_signed_t3.py`
+(`SIGNED_T3_2026-10-16.json`, CI). A change to an unsigned certificate that would alter a signed one — a supersedes line,
+a carried value — is refused; a new result on a signed certificate's lot goes on a new CoQ, never into the signed one.
+
 ## 3. The certificate package in Drive
 
 `https://drive.google.com/drive/folders/1Ju37BR51Q0XTbYOfOZyGB4aE8YoF1LRu`
@@ -202,7 +208,7 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
      `ППК25312` (6.21 %) and P060342 (`-073`, `-160`) `ППК26093` (6.61 %), both filed 14.10.2026 (`tracker/apply_cnp_lod_p050202_p060342_2026-10-16.py`). **The earlier
      CoQ cites CNP's cannabinoids, the reissue the later retest** (Head of QC, 22.10.2026, #228;
      `tracker/apply_cnp_initial_cannabinoids_2026-10-22.py`): `-026` prints `ППК25312` (22.89 / 0.05 / 0.03 %), `-073` `ППК26093`
-     (16.99 / 0.05 / < LOQ %, now SCR-II, dated 12.06.2026); `-149` and `-160` print Farmahem `227-18-К`, `227-8-К` as their retest. `T3_CoQ_Latest_*.pdf` is each lot's current certificate: the retest, or the initial where
+     (16.99 / 0.05 / < LOQ %, now SCR-II; still dated 18.09.2026, the date the signed -160 supersedes); `-149` and `-160` print Farmahem `227-18-К`, `227-8-К` as their retest. `T3_CoQ_Latest_*.pdf` is each lot's current certificate: the retest, or the initial where
      there is no reissue. *"Where needed for the parameters that are not covered by other outsource
      laboratory an iCOA will be issued containing those parameters tested"* (Head of QC, 26.09.2026).
      **Identification C is never one of them.** It is discharged by the certificate that tested the
@@ -320,7 +326,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 228 corrections, 07.09.2026–22.10.2026, each quoted — is
+The full record — 229 corrections, 07.09.2026–22.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:

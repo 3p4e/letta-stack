@@ -35081,7 +35081,7 @@
    "n": "(assigned on issue)",
    "t": "initial release — predicted",
    "basis": "25.05.2026",
-   "issue": "12.06.2026",
+   "issue": "18.09.2026",
    "pp": "P060342",
    "cb": "SCR012601",
    "strain": "Scrambler",
@@ -35393,7 +35393,8 @@
     "dom": "",
     "pack": "Triplex Alu Bag | Триплекс Aлу Kеса, PET 12 · ALU 7 · PE 80, 300 × 500 mm, net. 400.0 g ±3%"
    },
-   "last_external": "05.06.2026"
+   "last_external": "05.06.2026",
+   "issue_before_redating": "06.06.2026"
   },
   {
    "n": "(assigned on issue)",
@@ -62225,7 +62226,7 @@
    "reg_dated": true,
    "supersedes": {
     "code": "CoQ-PP_26-073",
-    "date": "12.06.2026",
+    "date": "18.09.2026",
     "issued": true
    },
    "spc": {
