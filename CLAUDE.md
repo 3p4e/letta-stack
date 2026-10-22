@@ -263,7 +263,7 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
   The status is read first now; keep it that way.
 - Search the register row's own `also` field first — it holds results the desk found and did not
   print — then the same lot's retest record, then every intake's two-read file, then RAGflow
-  `eCOA_INGEST` (`71b9c168…`, the complete re-ingestion of the eCoA database, 480 documents, 11.10.2026) by P lot and
+  `eCOA_INGEST` (`71b9c168…`, the complete re-ingestion of the eCoA database, 482 documents, 11.10.2026) by P lot and
   batch, and `PP_COQs` (the 46 approved scans). `eCOA_DB` (283) is the retired set — not proof of anything (#227). **The eCoA corpus alone is not proof of "untested"**: it lacks many
   UKIM `ППК` certificates and the `227-М` series, and holds some with a blank batch.
 - Known fact, so it is not rediscovered: IPH contaminant certificates (AflaTest) report **total

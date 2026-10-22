@@ -88,7 +88,7 @@ MK = {'олово': 'lead', 'кадмиум': 'cadmium', 'арсен': 'arsenic'
 
 INHOUSE = 'in-house record, no certificate'
 CACHE = os.path.join(ROOT, 'ingestion', 'ragflow', 'cache', 'all_cert_texts_2026-08-30.json')
-# RAGflow eCOA_INGEST (480 documents, 11.10.2026), the complete re-ingestion; eCOA_DB above is the retired set (#227).
+# RAGflow eCOA_INGEST (482 documents, 11.10.2026), the complete re-ingestion; eCOA_DB above is the retired set (#227).
 # Its documents carry no lab/cert metadata, so the file name gives them (P lot (batch)_LAB_CODE_DD.MM.YYYY.pdf).
 CACHE_INGEST = os.path.join(ROOT, 'ingestion', 'ragflow', 'cache', 'all_cert_texts_2026-10-22.json')
 # CNP stability time points (RAGflow eCOA_SS) — never release results

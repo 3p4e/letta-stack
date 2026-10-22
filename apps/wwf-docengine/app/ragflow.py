@@ -2,7 +2,7 @@
 #
 #   regulatory  DB01_REG   EudraLex Vol. 4, EU GDP, ICH, WHO, MK law, Ph. Eur. — the corpus a
 #                          drafted section is checked against; findings cite these passages.
-#   ecoa        eCOA_INGEST certificates of analysis (480; eCOA_DB is retired) — LOOKUP ONLY: which certificate
+#   ecoa        eCOA_INGEST certificates of analysis (482; eCOA_DB is retired) — LOOKUP ONLY: which certificate
 #                          exists for a batch. The dataset's own rule: never read a measured
 #                          value out of chunk text (it drops superscripts and truncates ranges);
 #                          values come from the typed, double-read extraction.

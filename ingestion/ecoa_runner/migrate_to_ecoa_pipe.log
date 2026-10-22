@@ -1094,3 +1094,8 @@
 08:33:10   NOT COVERED by the renamed corpus: P050252_556-1087-26, 01.09.2026_IJZ-MB.pdf
 08:33:10   NOT COVERED by the renamed corpus: P050202_557-1088-26, 01.09.2026_IJZ-MB.pdf
 08:33:10   ... and 263 more
+08:33:19 uploaded P050202 (GP062501)_CNP_PPK25312_13.10.2025.pdf -> 3ad69522cdf311f1b9c50bf9e4ec9cae
+08:33:21 uploaded P060342 (SCR012601＊)_CNP_PPK26093_05.06.2026.pdf -> 3cfb3d6ccdf311f1b9c50bf9e4ec9cae
+08:33:22 ingest queued 2 doc(s) -> {'code': 0, 'data': True, 'message': 'success'}
+08:34:37 GATE-OK  P060342 (SCR012601＊)_CNP_PPK26093_05.06.2026.pdf ok (1 chunk(s)) | 16:34:26 Page(1~100000001): Indexing done (0.68s). Task done (54.29s)
+08:34:37 GATE-OK  P050202 (GP062501)_CNP_PPK25312_13.10.2025.pdf   ok (1 chunk(s)) | 16:34:26 Page(1~100000001): Indexing done (0.80s). Task done (61.61s)

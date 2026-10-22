@@ -68,7 +68,7 @@ class Settings:
     ragflow_base: str = os.environ.get("RAGFLOW_BASE_URL", "").rstrip("/")
     ragflow_key: str = os.environ.get("RAGFLOW_API_KEY", "")
     # Dataset ids (not secrets). Defaults are the KVM4 instance's DB01_REG and eCOA_INGEST
-    # (the complete eCoA re-ingestion, 480 documents, 11.10.2026; eCOA_DB is retired — Head of QC, 22.10.2026).
+    # (the complete eCoA re-ingestion, 482 documents, 11.10.2026; eCOA_DB is retired — Head of QC, 22.10.2026).
     ragflow_reg_datasets: tuple = tuple(s.strip() for s in os.environ.get(
         "RAGFLOW_REG_DATASETS", "a33b0812a3d411f1858cf58865604f65").split(",") if s.strip())
     ragflow_ecoa_datasets: tuple = tuple(s.strip() for s in os.environ.get(
