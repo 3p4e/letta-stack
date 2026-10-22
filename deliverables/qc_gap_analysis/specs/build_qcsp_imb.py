@@ -285,12 +285,23 @@ def phenotype_ruling(recs):
         raise SystemExit("the phenotype ruling names sheets the table no longer holds: %s" % sorted(missing, key=str))
 
 
+def micro_max(tpl):
+    """Head of QC, 22.10.2026 (#233): TAMC and TYMC state the maximum acceptable count of the approved QCSP001_v02
+    (Ph. Eur. 5.1.8 cat. C: "< 10^5, max 500 000 CFU/g", "< 10^4, max 50 000 CFU/g"), as the CoQs not yet issued do."""
+    for mk, pw, mx in (("Вкупен аеробен микробен број", "5", "500 000"), ("Вкупен број квасци/мувли", "4", "50 000")):
+        pat = re.compile("(" + mk + r'[\s\S]{0,200}?<span class="p-spec">≤ 10<sup>' + pw + "</sup>) CFU/g(</span>)")
+        tpl, n = pat.subn(r'\1, max ' + mx + r' CFU/g\2', tpl, count=1)
+        if n != 1:
+            raise SystemExit("microbial criterion not found once in the template: " + mk)
+    return tpl
+
+
 def main(argv):
     ap = argparse.ArgumentParser()
     ap.add_argument("--check", action="store_true", help="build nothing, report only")
     a = ap.parse_args(argv[1:])
 
-    tpl = open(TEMPLATE, encoding="utf-8").read()
+    tpl = micro_max(open(TEMPLATE, encoding="utf-8").read())
     recs = records()
     phenotype_ruling(recs)
     if not a.check:

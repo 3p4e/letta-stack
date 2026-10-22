@@ -334,7 +334,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 232 corrections, 07.09.2026–22.10.2026, each quoted — is
+The full record — 233 corrections, 07.09.2026–22.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:
@@ -529,6 +529,8 @@ Standing rules the corrections produced (message numbers are in the record):
   (`build_v40.js` `SEC_LABEL_BEVEL_LAYER`, unissued only; the iCoA through the house kit).
 - **Acceptance criteria come from the specification** (#232): read every criterion from the lot's own QCSP 001 sheet
   (`specs/QCSP_001_ImB/`, the code on its CoQ) and name the sheet; pharmacopoeial knowledge is a cross-check only, said to be one.
+  Microbiology (#233): the approved QCSP001_v02 (RAGflow DB3) states Ph. Eur. 5.1.8 cat. C with maxima — TAMC ≤ 10⁵, max 500 000;
+  TYMC ≤ 10⁴, max 50 000 CFU/g. Both print on every CoQ and sheet not yet issued; TYMC is judged against 50 000, not 5.1.4's 2 × 10ⁿ.
 - **Nothing invented.** No category, statement or reason that no ruling or document supports (there
   is no "12-month reissue"; only a retest reissues a CoQ).
 - **Working.** Fix a defect instead of listing it; nothing from memory, check every value; explain a

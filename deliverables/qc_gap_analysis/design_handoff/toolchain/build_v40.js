@@ -10,6 +10,8 @@ for (const f of ['coq_build.js', 'coq_apply.js', 'coq_check.js']) eval(fs.readFi
 const skeleton = fs.readFileSync(path.join(HERE, 'tbody_skeleton.txt'), 'utf8');
 const base = fs.readFileSync(path.join(HANDOFF, 'base', 'CoQ-PP_26-013_P050072_GP_Grape_Pie_Grade_II.html'), 'utf8');
 const data = JSON.parse(fs.readFileSync(path.join(GAP, 'coq_artifact_data.json'), 'utf8'));
+// the 24 Tranche 3 retest CoQs signed and scanned on 16.10.2026 (tracker/check_signed_t3.py): printed as signed
+const SIGNED_T3 = JSON.parse(fs.readFileSync(path.join(GAP, 'tracker', 'SIGNED_T3_2026-10-16.json'), 'utf8'));
 const OUT = path.join(HANDOFF, 'out');
 const SIGN = require(path.join(GAP, 'sign_block.js'));
 
@@ -671,6 +673,17 @@ const S01_BAND_LAYER = '<style id="__owner-s01-band">\n' +
   if (!FROZEN_LOT(c)) {
     if (htmlOut.split('Ешерихиџа').length !== 2) throw new Error('E. coli Macedonian name not found once: ' + c.regcode);
     htmlOut = htmlOut.replace('Ешерихиџа', 'Ешерихија');
+  }
+  // Head of QC, 22.10.2026 (#233): TAMC and TYMC carry the maximum acceptable count his approved specification
+  // QCSP001_v02 states for Ph. Eur. 5.1.8 cat. C ("< 10^5, max 500 000 CFU/g"; "< 10^4, max 50 000 CFU/g"), on every
+  // certificate not yet issued. Tranches 1/2 as sent; the 24 Tranche 3 CoQs signed on 16.10.2026 as signed (#229).
+  // One line, in QCSP001_v02's own words, so the row keeps its height (a second line put four pages past A4).
+  if (!FROZEN_LOT(c) && !(String(c.regcode || '').slice(0, 13) in SIGNED_T3)) {
+    for (const [mk, pow, max] of [['Вкупен аеробен микробен број', '5', '500 000'], ['Вкупен број квасци/мувли', '4', '50 000']]) {
+      const re = new RegExp('(' + mk + '[\\s\\S]{0,200}?<span class="p-spec">≤ 10<sup>' + pow + '</sup>) CFU/g(</span>)');
+      if (!re.test(htmlOut)) throw new Error('microbial criterion not found: ' + mk + ' ' + c.regcode);
+      htmlOut = htmlOut.replace(re, '$1, max ' + max + ' CFU/g$2');
+    }
   }
   const dir = r.series === 'reissue' ? path.join(OUT, 'REISSUE', tranche[r.lot] ? 'T' + String(tranche[r.lot]).replace(/\D/g, '') : 'T3') : path.join(OUT, 'ISSUE_COQ');
   fs.mkdirSync(dir, { recursive: true });
