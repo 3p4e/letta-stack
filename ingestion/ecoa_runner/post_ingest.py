@@ -15,6 +15,9 @@ import os, sys, json, re, time, urllib.request
 HERE = os.path.dirname(os.path.abspath(__file__))
 B = os.environ['RAGFLOW_API_SERVER'].rstrip('/'); K = os.environ['RAGFLOW_API_KEY']
 DS = 'dd3ea108a3fd11f1858cf58865604f65'
+if os.environ.get('ECOA_DB_LEGACY') != '1':   # Head of QC, 22.10.2026 (#227): eCOA_DB is retired
+    raise SystemExit('eCOA_DB is retired; new certificates go to eCOA_INGEST through migrate_to_ecoa_pipe.py '
+                     '(eCOA_PIPE). Set ECOA_DB_LEGACY=1 only to touch the old set on purpose.')
 AID = 'c83609aea3fd11f1858cf58865604f65'
 PO = re.compile(r'\bPO(\d{5})(?=\D|$)')
 RULE = ("\n\nP-NUMBERS: a packaged-lot number is the letter P followed by six digits (P060052). "

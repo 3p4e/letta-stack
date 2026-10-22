@@ -67,11 +67,12 @@ class Settings:
     # (Avatar › API). Unset => the regulatory check falls back to the Letta sources above.
     ragflow_base: str = os.environ.get("RAGFLOW_BASE_URL", "").rstrip("/")
     ragflow_key: str = os.environ.get("RAGFLOW_API_KEY", "")
-    # Dataset ids (not secrets). Defaults are the KVM4 instance's DB01_REG and eCOA_DB.
+    # Dataset ids (not secrets). Defaults are the KVM4 instance's DB01_REG and eCOA_INGEST
+    # (the complete eCoA re-ingestion, 480 documents, 11.10.2026; eCOA_DB is retired — Head of QC, 22.10.2026).
     ragflow_reg_datasets: tuple = tuple(s.strip() for s in os.environ.get(
         "RAGFLOW_REG_DATASETS", "a33b0812a3d411f1858cf58865604f65").split(",") if s.strip())
     ragflow_ecoa_datasets: tuple = tuple(s.strip() for s in os.environ.get(
-        "RAGFLOW_ECOA_DATASETS", "dd3ea108a3fd11f1858cf58865604f65").split(",") if s.strip())
+        "RAGFLOW_ECOA_DATASETS", "71b9c168b4a311f1a370a99b32e82467").split(",") if s.strip())
     # Approved, in-use house documents the authors consult (DB3_PP_CURRENT, 18.10.2026). The first id is also where
     # PUT /reference indexes an approved document's text.
     ragflow_example_datasets: tuple = tuple(s.strip() for s in os.environ.get(

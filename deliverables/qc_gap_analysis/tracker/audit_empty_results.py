@@ -88,6 +88,12 @@ MK = {'олово': 'lead', 'кадмиум': 'cadmium', 'арсен': 'arsenic'
 
 INHOUSE = 'in-house record, no certificate'
 CACHE = os.path.join(ROOT, 'ingestion', 'ragflow', 'cache', 'all_cert_texts_2026-08-30.json')
+# RAGflow eCOA_INGEST (480 documents, 11.10.2026), the complete re-ingestion; eCOA_DB above is the retired set (#227).
+# Its documents carry no lab/cert metadata, so the file name gives them (P lot (batch)_LAB_CODE_DD.MM.YYYY.pdf).
+CACHE_INGEST = os.path.join(ROOT, 'ingestion', 'ragflow', 'cache', 'all_cert_texts_2026-10-22.json')
+# CNP stability time points (RAGflow eCOA_SS) — never release results
+STABILITY = {'ППК260%s' % n for n in ('32', '33', '34', '35', '36', '37', '57', '58', '59', '60')}
+INGEST_NAME = re.compile(r'^(P\d{6}|[^ _]+)(?: \(([^)]*)\))?_CNP_PPK(\d+)_(\d{2}\.\d{2}\.\d{4})\.pdf$')
 # the CNP cannabinoid table: "Вкупно Δ9-THC | / | 18.67", "Содржина на CBN | ≤ 1.00 | 0.03"
 CNP_LINES = {'total_thc': r'Вкупно\s*Δ9-THC\**\s*\|[^|\n]*\|\s*([^\n|]+)',
              'total_cbd': r'Вкупно\s*CBD\**\s*\|[^|\n]*\|\s*([^\n|]+)',
@@ -159,6 +165,19 @@ def certificates():
                 vals[key] = hit.group(1).strip()
         if vals:
             out.append(({N(m.get('batch_canonical'))}, m.get('cert_code'), m.get('date_of_issue'), vals))
+    have = {c for _, c, _, _ in out}
+    for x in json.load(open(CACHE_INGEST, encoding='utf-8')) if os.path.exists(CACHE_INGEST) else []:
+        g = INGEST_NAME.match(x.get('name') or '')
+        code = g and 'ППК' + g.group(3)
+        if not g or code in have or code in STABILITY:
+            continue
+        vals = {}
+        for key, pat in CNP_LINES.items():
+            hit = re.search(pat, x.get('text') or '')
+            if hit:
+                vals[key] = hit.group(1).strip()
+        if vals:
+            out.append(({N(g.group(1))} | ({N(g.group(2))} if g.group(2) else set()), code, g.group(4), vals))
     return out
 
 

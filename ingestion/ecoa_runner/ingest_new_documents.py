@@ -11,6 +11,9 @@ import os, sys, json, time, urllib.request, importlib.util
 HERE = os.path.dirname(os.path.abspath(__file__))
 B = os.environ['RAGFLOW_API_SERVER'].rstrip('/'); K = os.environ['RAGFLOW_API_KEY']
 DS = 'dd3ea108a3fd11f1858cf58865604f65'
+if os.environ.get('ECOA_DB_LEGACY') != '1':   # Head of QC, 22.10.2026 (#227): eCOA_DB is retired
+    raise SystemExit('eCOA_DB is retired; new certificates go to eCOA_INGEST through migrate_to_ecoa_pipe.py '
+                     '(eCOA_PIPE). Set ECOA_DB_LEGACY=1 only to touch the old set on purpose.')
 AID = 'c83609aea3fd11f1858cf58865604f65'
 VLM = 'claude-haiku-5-5@CLAUDE_GW_VIS@OpenAI-API-Compatible'  # 11.10.2026: Haiku 5.5 on the Max-plan API credits via the KVM4 LiteLLM; 21/21 hand-verified pages exact; DeepDOC reads Cyrillic as Latin
 QMODEL = 'claude-haiku-5-5@CLAUDE_GW_CHAT@OpenAI-API-Compatible'  # 11.10.2026: Haiku 5.5, $0.0022/certificate for both extractors

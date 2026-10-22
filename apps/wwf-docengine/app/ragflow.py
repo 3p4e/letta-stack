@@ -2,7 +2,7 @@
 #
 #   regulatory  DB01_REG   EudraLex Vol. 4, EU GDP, ICH, WHO, MK law, Ph. Eur. — the corpus a
 #                          drafted section is checked against; findings cite these passages.
-#   ecoa        eCOA_DB    certificates of analysis (283) — LOOKUP ONLY: which certificate
+#   ecoa        eCOA_INGEST certificates of analysis (480; eCOA_DB is retired) — LOOKUP ONLY: which certificate
 #                          exists for a batch. The dataset's own rule: never read a measured
 #                          value out of chunk text (it drops superscripts and truncates ranges);
 #                          values come from the typed, double-read extraction.
@@ -18,7 +18,7 @@ import httpx
 
 from .config import settings
 
-ECOA_NOTE = ("eCOA_DB passages identify certificates; they are not a source of values. Take any "
+ECOA_NOTE = ("eCOA_INGEST passages identify certificates; they are not a source of values. Take any "
              "measured value from the typed extraction (two independent reads), never from chunk text.")
 EXAMPLES_NOTE = ("House examples for structure, wording style and layout only. Never copy a value, "
                  "batch, name, date or result from them into the new document.")

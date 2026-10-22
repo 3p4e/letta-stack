@@ -34,7 +34,7 @@ in the letta stack although `GOTENBERG_URL=http://gotenberg:3000` is configured 
    RAGFLOW_API_KEY=<the key from step 1>
    # defaults, override only if the datasets are recreated:
    # RAGFLOW_REG_DATASETS=a33b0812a3d411f1858cf58865604f65    # DB01_REG
-   # RAGFLOW_ECOA_DATASETS=dd3ea108a3fd11f1858cf58865604f65   # eCOA_DB
+   # RAGFLOW_ECOA_DATASETS=71b9c168b4a311f1a370a99b32e82467   # eCOA_INGEST (eCOA_DB dd3ea108… is retired, 22.10.2026)
    # RAGFLOW_EXAMPLE_DATASETS=                                 # §3
    ```
 3. In-stack address: join the DocEngine service to RAGFlow's network in its compose
