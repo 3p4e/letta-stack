@@ -23,9 +23,11 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 GAP = os.path.dirname(HERE)
 SNAP = os.path.join(HERE, 'SIGNED_T3_2026-10-16.json')
-# T3 SCANN BUNDLE manifest of 19.10.2026: the 24 signed retest CoQs
+# T3 SCANN BUNDLE manifest of 19.10.2026: the 24 signed retest CoQs. -163 left the set on 27.10.2026: the Head of QC
+# changed its microbiology to 130/0227/26 (#234, tracker/apply_sj112501_micro_130_2026-10-27.py), so its signed copy no
+# longer stands and it is printed and signed again; add it back, with --snapshot, once it is.
 SIGNED_COQ = ('136', '137', '139', '140', '141', '142', '143', '144', '146', '147', '149', '152', '153', '154', '155',
-              '156', '157', '158', '159', '160', '162', '163', '164', '165')
+              '156', '157', '158', '159', '160', '162', '164', '165')
 HEAD = ('pp', 'cb', 'strain', 'issue', 'supersedes', 'grade', 'thc', 'spec', 'pcode', 'md', 'pk', 'icoa_code', 'icoa_issue',
         'icoa_tested')
 

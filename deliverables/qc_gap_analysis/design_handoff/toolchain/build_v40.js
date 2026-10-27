@@ -10,7 +10,7 @@ for (const f of ['coq_build.js', 'coq_apply.js', 'coq_check.js']) eval(fs.readFi
 const skeleton = fs.readFileSync(path.join(HERE, 'tbody_skeleton.txt'), 'utf8');
 const base = fs.readFileSync(path.join(HANDOFF, 'base', 'CoQ-PP_26-013_P050072_GP_Grape_Pie_Grade_II.html'), 'utf8');
 const data = JSON.parse(fs.readFileSync(path.join(GAP, 'coq_artifact_data.json'), 'utf8'));
-// the 24 Tranche 3 retest CoQs signed and scanned on 16.10.2026 (tracker/check_signed_t3.py): printed as signed
+// the Tranche 3 retest CoQs signed and scanned on 16.10.2026 and still standing (tracker/check_signed_t3.py): printed as signed
 const SIGNED_T3 = JSON.parse(fs.readFileSync(path.join(GAP, 'tracker', 'SIGNED_T3_2026-10-16.json'), 'utf8'));
 const OUT = path.join(HANDOFF, 'out');
 const SIGN = require(path.join(GAP, 'sign_block.js'));

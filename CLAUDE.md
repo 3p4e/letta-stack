@@ -58,7 +58,8 @@ opening a scan for a field the index lacks (22.10.2026: two scans were re-read f
 
 **Approved versions are never rebuilt with new content** (Head of QC, 22.10.2026, #229: *"The last and approved versions if
 you are building them should be exactly the same with exactly the same content parameters cited"*). Tranches 1/2 are held by
-`check_frozen_records.py`; the 24 signed Tranche 3 retest CoQs field by field by `tracker/check_signed_t3.py`
+`check_frozen_records.py`; the signed Tranche 3 retest CoQs field by field by `tracker/check_signed_t3.py` (23 since
+27.10.2026: -163 changed by #234 and is to be signed again)
 (`SIGNED_T3_2026-10-16.json`, CI). A change to an unsigned certificate that would alter a signed one — a supersedes line,
 a carried value — is refused; a new result on a signed certificate's lot goes on a new CoQ, never into the signed one.
 
@@ -334,7 +335,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 233 corrections, 07.09.2026–22.10.2026, each quoted — is
+The full record — 234 corrections, 07.09.2026–27.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:
@@ -432,8 +433,9 @@ Standing rules the corrections produced (message numbers are in the record):
   *S. aureus*; #9.6 and #9.7 then print from it (`tracker/apply_micro_panel_ruling_2026-10-07.py`, 32
   Tranche 3 CoQs). A certificate that does not report them adds no row. *"You will not use analysis
   results from one batch to fill in for another batch and strain"*: `548/1079/26` (OI-37) stayed out until 08.10.2026, when the Head of QC filed it as P060192's (*"the
-  P060192 has full MB panel"*; its "Серија" prints P060192): it is -163's retest microbiology, 9.1–9.7
-  (`tracker/apply_mb_548_P060192_2026-10-08.py`). The
+  P060192 has full MB panel"*; its "Серија" prints P060192) and was -163's retest microbiology, 9.1–9.7
+  (`tracker/apply_mb_548_P060192_2026-10-08.py`), until 27.10.2026: for this batch only, -163 cites the release
+  microbiology `130/0227/26`, as -055 does, 9.1–9.5, no 9.6/9.7 (Head of QC, #234; `tracker/apply_sj112501_micro_130_2026-10-27.py`). The
   two rows fit one A4 page through `build_v40.js` `PANEL_FIT_LAYER`, written only on those pages.
 - **E. coli in Macedonian is 'Ешерихија коли'** (the Head of QC's base; the design skeleton's 'Ешерихиџа' is
   corrected on every certificate not yet issued, 08.10.2026). 9.6/9.7 print their Latin names only, as his
