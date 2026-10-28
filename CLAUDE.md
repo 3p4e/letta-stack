@@ -155,6 +155,8 @@ version (new code, supersedes the last), never a change to an approved one. Appr
 "Initial" and "retest" are labels only (#231): every CoQ is a release CoQ of its batch, and a batch sent for additional
 testing gets a new CoQ dated when issued. A batch with one testing campaign has one CoQ — P060332 (`-068`; `-087` withdrawn):
 IPH-MB 361/0691/26 (01.06.2026) and Farmahem 197-6-К/М/26 (07./10.08.2026) are all it has.
+A version 1 keeps `n/t` for what its first testing campaign did not cover (B1/OTA where IPH tested the total only; -068's
+loss on drying, metals, pesticides), and CoQs keep the issue dates the register holds, not the signing date (Head of QC, 28.10.2026, #235).
 
 **How a CoQ is compiled** (Head of QC, 22.10.2026, #226): by standard practice — one result per specification
 parameter, taken from the valid external certificate for that issue, *"even if a parameter is tested for multiple
@@ -335,7 +337,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 234 corrections, 07.09.2026–27.10.2026, each quoted — is
+The full record — 235 corrections, 07.09.2026–28.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:
