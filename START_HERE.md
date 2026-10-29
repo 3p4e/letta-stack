@@ -21,9 +21,8 @@ GitHub: https://github.com/3p4e/letta-stack · this Drive folder is the human/re
 
 | Path | What it is |
 |---|---|
-| `pp-document-suite/` | **Engine line A** — the deployed master (= live Letta volume, hashes verified 2026-08-08) |
-| `apps/wwf-docengine/` | **Engine line B** — the WWF fork (§6D kv-primitives) + its declarative `gf_*` Letta fleet app |
-| `apps/ppdocwiz/` | wizard/chat front-end for line A |
+| `pp-document-suite/` | **Engine line A** — copy kept for the builders here and the Letta volume; the source is `3p4e/DOC_ENGINE` since 29.10.2026 |
+| `3p4e/DOC_ENGINE` | the engine service (`pp-docengine`), PP Doc Wiz and the renderer — moved out of this repository on 29.10.2026 |
 | `server/` | live-server governance: sanitized compose, dated config manifests, runbooks |
 | `ingestion/` | corpus ingestion + QC gates (CoA_TRACK tooling; QMS-Creator lineage incl. the DB1/DB2 ingesters and 11-agent definitions) |
 | `docs/` | system handover, Letta OpenAPI v0.16.8, key WWF platform/Letta docs |
