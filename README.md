@@ -14,8 +14,9 @@ GitHub repo: https://github.com/3p4e/letta-stack — this Drive folder is its hu
 | **The pp-document-suite engine — MASTER as of 2026-08-08** (`pp-document-suite/`; owner-directed cutover from ACME_SOP, see below) | **Secrets** — env-var NAMES only, values never |
 | Compose files, deployment Dockerfiles, tool-registration scripts (`infra/`) | Postgres/pgvector **database dumps** — schedule `pg_dump` on the VPS with local rotation; dumps are too large and too sensitive for git |
 | **Versioned manifests of live config** — agents, sources, blocks, tools (`manifests/<date>/`) | QC/QMS document CONTENT (SOPs, CoAs, specs) — that stays in the project repos (CoA_TRACK, ACME_SOP); this repo holds the machinery, not the paperwork |
-| Runbooks: engine sync, access quirks, render routes, verifications (`runbooks/`) · the handover + Letta OpenAPI (`docs/`) | |
-| The PP Doc Wiz app (`apps/ppdocwiz/`) · ingestion & QC-gate tooling from the CoA_TRACK thread (`ingestion/`) · the export tool (`scripts/`) | |
+| Runbooks: engine sync, access quirks, verifications (`runbooks/`) · the handover + Letta OpenAPI (`docs/`) | |
+| Ingestion & QC-gate tooling from the CoA_TRACK thread (`ingestion/`) · the export tool (`scripts/`) | |
+| | The document engine, PP Doc Wiz and the renderer — `3p4e/DOC_ENGINE` since 29.10.2026 |
 
 ## Engine master cutover — 2026-08-08
 
