@@ -184,7 +184,7 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
   2. **Never another lot's certificate — sub-lots included.** *"They are separate lots."* `BSS1024`
      is not `BSS1024_01/2`; `GRC102501/2` is not `GRC102501/1`. A record that holds its P number where
      the cultivation batch belongs takes the cultivation batch from the owner's workbook
-     (`batch_dates_2026-09-10.csv`): P060332 is `CC012601/1` (`-068`, `-087`), not `CC012603` (P060372).
+     (`batch_dates_2026-09-10.csv`): P060332 is `CC012601/1`, also written `CC012601_01` (the same batch; Head of QC, 30.10.2026) (`-068`, `-087`), not `CC012603` (P060372).
   3. **Mycotoxins are the same case in every tranche.** Where IPH tested total aflatoxins at release,
      the **initial** prints the IPH total and B1/OTA `n/t`, and the **retest** prints all three from
      **Farmahem** (`197-М`, `220-М`, `227-М`) — every T1, T2 and T3 retest has the full Farmahem panel.
