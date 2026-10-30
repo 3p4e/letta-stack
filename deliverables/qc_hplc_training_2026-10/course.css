@@ -1,0 +1,61 @@
+:root{--ink:#111827;--mute:#4b5563;--line:#d1d5db;--brand:#0f5132;--brand2:#e7f2ec;
+--gmp:#1d4ed8;--gmpbg:#eef3ff;--lab:#0f5132;--labbg:#e9f5ee;--warn:#b45309;--warnbg:#fff6e8;--tip:#6d28d9;--tipbg:#f4efff}
+*{box-sizing:border-box}
+body{font-family:Inter,'DejaVu Sans',sans-serif;color:var(--ink);font-size:9.6pt;line-height:1.45;margin:0;background:#fff}
+h1{font-size:30pt;line-height:1.1;margin:18px 0 10px;color:var(--brand);letter-spacing:-.5px}
+h2{font-size:16pt;margin:4px 0 8px;color:var(--ink);letter-spacing:-.2px}
+h3{font-size:11.5pt;margin:18px 0 6px;color:var(--brand);border-bottom:1px solid var(--line);padding-bottom:3px;break-after:avoid}
+p{margin:6px 0}
+code{font-family:'JetBrains Mono','DejaVu Sans Mono',monospace;font-size:8.2pt;background:#f3f4f6;padding:0 3px;border-radius:3px}
+.cover{break-after:page;padding-top:30px}
+.covertop{font-size:8.5pt;letter-spacing:2px;color:var(--mute);font-weight:600}
+.cover .sub{font-size:12pt;color:var(--mute);max-width:80%}
+.coverimg{display:block;width:34%;margin:26px auto 22px}
+table.meta{width:100%;border-collapse:collapse;font-size:9pt}
+table.meta td{border-top:1px solid var(--line);padding:6px 8px;vertical-align:top}
+table.meta td:first-child{width:22%;color:var(--mute);font-weight:600}
+.front{break-after:page}
+ol.toc{padding-left:0;list-style:none}
+ol.toc li{padding:4px 0;border-bottom:1px dotted var(--line)}
+ol.toc span{display:inline-block;width:86px;color:var(--brand);font-weight:700}
+.module{break-before:page}
+.modhead{background:var(--brand2);border-left:5px solid var(--brand);padding:10px 14px;margin-bottom:10px;border-radius:0 6px 6px 0}
+.modno{font-size:8.5pt;font-weight:700;letter-spacing:1.5px;color:var(--brand);text-transform:uppercase}
+.goal{font-size:9.2pt;color:var(--mute)}
+table{width:100%;border-collapse:collapse;margin:8px 0 10px;font-size:8.6pt;break-inside:auto}
+th{background:#f3f4f6;text-align:left;padding:5px 6px;border-bottom:1.5px solid #9ca3af;font-weight:700}
+td{padding:4px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+tr{break-inside:avoid}
+ol.steps{list-style:none;padding:0;margin:6px 0 2px}
+ol.steps li{display:flex;gap:10px;margin:0 0 9px;break-inside:avoid}
+.stepno{flex:0 0 22px;height:22px;border-radius:50%;background:var(--brand);color:#fff;font-weight:700;font-size:9pt;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.steptext{flex:1}
+.stepsrc{font-size:7.6pt;color:var(--mute);margin:0 0 8px 32px;font-style:italic}
+figure{margin:6px 0 4px;break-inside:avoid}
+figure img{width:100%;border:1px solid var(--line);border-radius:3px;display:block}
+figcaption{font-size:7.8pt;color:var(--mute);margin-top:3px}
+figcaption .src{font-style:italic;color:#6b7280}
+.module > figure{margin-left:auto;margin-right:auto}
+.box{border-radius:6px;margin:10px 0;padding:8px 11px;break-inside:avoid;border:1px solid}
+.boxhead{font-weight:700;margin-bottom:3px}
+.boxbody ul,.boxbody ol{margin:4px 0;padding-left:18px}
+.tag{display:inline-block;font-size:7pt;font-weight:800;letter-spacing:1px;padding:1px 6px;border-radius:3px;margin-right:7px;color:#fff;vertical-align:1px}
+.gmp{background:var(--gmpbg);border-color:#c7d6fb}.gmp .tag,.gmpt{background:var(--gmp)}
+.lab{background:var(--labbg);border-color:#bfe0cc}.lab .tag,.labt{background:var(--lab)}
+.warn{background:var(--warnbg);border-color:#f6d7a7}.warn .tag,.warnt{background:var(--warn)}
+.tip{background:var(--tipbg);border-color:#dccffc}.tip .tag,.tipt{background:var(--tip)}
+p .tag{color:#fff}
+ol.quiz li{margin:0 0 12px}
+.ansline{border-bottom:1px solid var(--line);height:26px}
+ol.key li,ol.refs li{margin:0 0 5px;font-size:8.8pt}
+table.record td{height:26px}
+table.sign td{width:50%;border:1px solid var(--line);height:48px}
+.small{font-size:7.6pt;color:var(--mute)}
+
+ol.steps li.two .steptext{flex:0 0 40%}
+ol.steps li.two .stepfig{flex:1;min-width:0}
+ol.steps li.two figure{margin-top:0}
+.figrow{display:flex;gap:10px;break-inside:avoid;margin:8px 0}
+.figrow .cell{flex:1;min-width:0}
+.figrow figure img{max-height:118mm;object-fit:contain;background:#f9fafb}
+figure img{max-height:150mm;object-fit:contain}
