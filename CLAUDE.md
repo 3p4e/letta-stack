@@ -156,7 +156,7 @@ version (new code, supersedes the last), never a change to an approved one. Appr
 testing gets a new CoQ dated when issued. A batch with one testing campaign has one CoQ — P060332 (`-068`; `-087` withdrawn):
 IPH-MB 361/0691/26 (01.06.2026) and Farmahem 197-6-К/М/26 (07./10.08.2026) are all it has.
 A version 1 keeps `n/t` for what its first testing campaign did not cover (B1/OTA where IPH tested the total only; -068's
-loss on drying, metals, pesticides), and CoQs keep the issue dates the register holds, not the signing date (Head of QC, 28.10.2026, #235).
+metals and pesticides printed since 02.11.2026 from IPH 3161/2026 and loss on drying from CNP ППК26092, LoD only, #236), and CoQs keep the issue dates the register holds, not the signing date (Head of QC, 28.10.2026, #235).
 
 **How a CoQ is compiled** (Head of QC, 22.10.2026, #226): by standard practice — one result per specification
 parameter, taken from the valid external certificate for that issue, *"even if a parameter is tested for multiple
@@ -214,7 +214,7 @@ a case like that."* A result cell printed `[ — ]` for weeks without anyone say
      (ППК26127/28/15/17/18/19; 16.10.2026, `tracker/apply_nontranche_review_2026-10-16.py`), which also holds `-081`'s foreign
      matter `[pending]` (ППК26127 fails it: seeds, OI-16) and `-082`'s metals and pesticides `[pending]` (IPH 3925/2026 lacks
      page 3, OI-59). Read the master's open items (OI-16, OI-59, OI-64) before re-deriving any of this. Loss on drying in Tranche 3
-     is CNP's or Farmahem's (`-ГС`), in-house only for `-026`, and untested for `-021`, `-050`, `-068`. P060202's retest `-153` prints Farmahem's reanalysis `100-1-ГС/26` (7.6 %, 09.04.2026), its
+     is CNP's or Farmahem's (`-ГС`), in-house only for `-026`, and untested for `-021`, `-050`. P060202's retest `-153` prints Farmahem's reanalysis `100-1-ГС/26` (7.6 %, 09.04.2026), its
      initial `-056` the release `051-5-ГС/26` (8.4 %) (Head of QC, 14.10.2026). Since 16.10.2026 P050202 (`-026`, `-149`) prints
      `ППК25312` (6.21 %) and P060342 (`-073`, `-160`) `ППК26093` (6.61 %), both filed 14.10.2026 (`tracker/apply_cnp_lod_p050202_p060342_2026-10-16.py`). **The earlier
      CoQ cites CNP's cannabinoids, the reissue the later retest** (Head of QC, 22.10.2026, #228;
@@ -337,7 +337,7 @@ credited, date order, and no number a scan gives another lot.
 
 ## 7. What the Head of QC has had to say more than once
 
-The full record — 235 corrections, 07.09.2026–28.10.2026, each quoted — is
+The full record — 236 corrections, 07.09.2026–30.10.2026, each quoted — is
 `deliverables/qc_gap_analysis/tracker/DESK_CORRECTIONS.md`, and the same is in Open Brain
 (`open_brain`, `thoughts`, `metadata.source = claude-code-desk`). Where two of these meet, the newer
 ruling governs (§5). The most repeated, in order:
