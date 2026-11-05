@@ -35367,14 +35367,15 @@
     {
      "no": "12",
      "crit": "≤ LOQ as per Ph. Eur. 2.8.13 · ≤ LOQ as per CUMCS Equivalency",
-     "res": "0 mg/kg — all 29 residues",
+     "res": "ND — all 29 residues",
      "doc": "3160/2026",
      "dd": "01.06.2026",
      "lab": "IPH — Institute of Public Health",
      "fam": "",
      "st": "covered — IPH 3160/2026, the lot's release testing (received 08.10.2026)",
      "route": "",
-     "also": ""
+     "also": "",
+     "ruling": "Head of QC, 05.11.2026: \"a result of 0 mg/kg is not correct\" — ND"
     }
    ],
    "regcode": "CoQ-PP_26-073",
