@@ -18,7 +18,7 @@ IPH = dict(doc='3161/2026', dd='01.06.2026', lab='IPH — Institute of Public He
            st="covered — IPH 3161/2026, the lot's release testing (scan of 30.10.2026)")
 CNP = dict(doc='ППК26092', dd='05.06.2026', lab='UKIM Faculty of Pharmacy — Center for Natural Products', fam='UKIM CNP potency',
            route='', st="covered — CNP ППК26092, loss on drying only (Head of QC, 30.10.2026)")
-SET = {'8': dict(CNP, res='5.50'), '11.1': dict(IPH, res='0.006'), '11.2': dict(IPH, res='0.009'),
+SET = {'8': dict(CNP, res='6.50'), '11.1': dict(IPH, res='0.006'), '11.2': dict(IPH, res='0.009'),
        '11.3': dict(IPH, res='0.006'), '11.4': dict(IPH, res='< 0.0008'),
        '12': dict(IPH, res='ND — all 29 residues')}
 ALSO = {'4': 'CNP ППК26092 Total Δ9-THC 15.33 % — not cited, Farmahem 197-6-К/26 is newer (Head of QC, 30.10.2026)',

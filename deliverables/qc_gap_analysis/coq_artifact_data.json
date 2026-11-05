@@ -33280,14 +33280,15 @@
     {
      "no": "8",
      "crit": "≤ 12.0%",
-     "res": "5.50",
+     "res": "6.50",
      "doc": "ППК26092",
      "dd": "05.06.2026",
      "lab": "UKIM Faculty of Pharmacy — Center for Natural Products",
      "fam": "UKIM CNP potency",
      "st": "covered — CNP ППК26092, loss on drying only (Head of QC, 30.10.2026)",
      "route": "",
-     "also": ""
+     "also": "",
+     "ruling": "Head of QC, 05.11.2026: ППК26092 reports 6.50 %, misread as 5.50 % on 02.11.2026"
     },
     {
      "no": "9.1",
