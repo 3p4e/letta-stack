@@ -20,7 +20,7 @@ CNP = dict(doc='ППК26092', dd='05.06.2026', lab='UKIM Faculty of Pharmacy —
            route='', st="covered — CNP ППК26092, loss on drying only (Head of QC, 30.10.2026)")
 SET = {'8': dict(CNP, res='5.50'), '11.1': dict(IPH, res='0.006'), '11.2': dict(IPH, res='0.009'),
        '11.3': dict(IPH, res='0.006'), '11.4': dict(IPH, res='< 0.0008'),
-       '12': dict(IPH, res='0 mg/kg — all 29 residues')}
+       '12': dict(IPH, res='ND — all 29 residues')}
 ALSO = {'4': 'CNP ППК26092 Total Δ9-THC 15.33 % — not cited, Farmahem 197-6-К/26 is newer (Head of QC, 30.10.2026)',
         '10.2': 'IPH 3161/2026 total aflatoxins < 2 µg/kg — not cited, Farmahem 197-6-М/26 is newer'}
 
