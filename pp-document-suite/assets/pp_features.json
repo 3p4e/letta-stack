@@ -1,0 +1,7 @@
+{
+  "_doc": "Feature switches for build_from_md.py. Override per document in HEADERDATA: 'features: limit_bars=off, figures=on'. Override per run: PP_FEATURES=/path/to/file.json. Edit with assets/pp_features_dashboard.html.",
+  "limit_bars": {"on": true, "label": "Limit bars", "help": "[[LIMITS]] blocks: value + colour bar against its acceptance limit in each cell"},
+  "limit_bars_legend": {"on": true, "label": "Limit bar legend", "help": "Print the bilingual legend under a [[LIMITS]] table"},
+  "limit_bars_amber_at": {"value": 0.75, "label": "Amber threshold", "help": "Fraction of the limit (bar length) above which a bar turns amber"},
+  "figures": {"on": true, "label": "Figures", "help": "[[FIGURE:path|width_mm]] places an image (chart, scan) in the document"}
+}

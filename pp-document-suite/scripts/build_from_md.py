@@ -26,6 +26,7 @@ Line grammar notes (review 19.10.2026):
     and the second holds no Latin letter ("Име ||| Петар", "Датум ||| 12.10.2026"): then the second cell is the
     VALUE and there is no English label.
 """
+import json, os
 import sys, os, re
 # Locate the engine modules (pp_format/pp_report/...). Inside the packaged skill they are siblings
 # of this file; in the ACME_SOP repo layout they live under ../pp-document-suite/scripts. Try both.
@@ -89,6 +90,15 @@ def parse(md):
                 if lines[i].strip(): rows.append([c.strip() for c in lines[i].split('|||')])
                 i+=1
             blocks.append(('box', rows, h)); i+=1; continue
+        if s.startswith('[[LIMITS'):                    # limit bars: see pp_limitbars.py
+            i+=1; rows=[]
+            while i<len(lines) and not lines[i].strip().startswith('[[/LIMITS'):
+                rows.append(lines[i]); i+=1
+            blocks.append(('limits', rows)); i+=1; continue
+        if s.startswith('[[FIGURE:'):                   # [[FIGURE:path|width_mm]]
+            mo=re.match(r'\[\[FIGURE:([^|\]]+)(?:\|\s*([0-9.]+))?\]\]', s)
+            if mo: blocks.append(('figure', mo.group(1).strip(), float(mo.group(2) or 170)))
+            i+=1; continue
         if s.startswith('[[TABLE') or s.startswith('[[FORM'):
             kind='form' if s.startswith('[[FORM') else 'table'; rows=[]
             mo=re.match(r'\[\[(?:FORM|TABLE):([^\]]+)\]\]', s); mode=mo.group(1).strip() if mo else None
@@ -355,6 +365,8 @@ def build_annex(hd, blocks, out):
         # get a small one (otherwise they fuse into one table); text before a table stays with it.
         if b[0]=='h' and prev not in (None,'pagebreak'):
             pf.spacer(d, 12 if b[1]==1 else 8)
+        elif b[0] in ('limits','figure') and prev not in (None,'pagebreak'):
+            pf.spacer(d, 4, keep=(prev in ('p','h')))
         elif b[0] in ('form','table','box') and prev in ('form','table','box'):
             pf.spacer(d, 6)
         elif b[0] in ('form','table','box') and prev in ('p','bullet'):
@@ -374,6 +386,12 @@ def build_annex(hd, blocks, out):
         elif b[0]=='form': emit_form(d, b[1], mode=(b[2] if len(b)>2 else None))
         elif b[0]=='table': emit_table(d, b[1])
         elif b[0]=='box': emit_box(d, b[1], b[2])
+        elif b[0]=='limits':
+            import pp_limitbars; pp_limitbars.emit(d, b[1], PAGE_W, FEAT)
+        elif b[0]=='figure' and FEAT.get('figures', True):
+            from docx.shared import Mm
+            src=os.path.join(SRC_DIR, b[1]) if not os.path.isabs(b[1]) else b[1]
+            p=d.add_paragraph(); p.alignment=1; p.add_run().add_picture(src, width=Mm(b[2]))
         elif b[0]=='pagebreak': d.add_page_break()
     PAGE_W = pr.PAGE_W = 18.46            # restore default for any subsequent build in-process
     pf.save(d, out)
@@ -438,8 +456,24 @@ def build_sop(hd, blocks, out):
     if t is not None: pf.sop_finalize(t)
     pf.save(d, out)
 
+FEAT={}; SRC_DIR='.'
+def load_features(hd):
+    """assets/pp_features.json, then $PP_FEATURES, then HEADERDATA 'features: a=on, b=off, c=0.8'."""
+    here=os.path.dirname(os.path.abspath(__file__)); f={}
+    for path in (os.path.join(here,'..','assets','pp_features.json'), os.environ.get('PP_FEATURES','')):
+        if path and os.path.exists(path):
+            for k,v in json.load(open(path,encoding='utf-8')).items():
+                if isinstance(v,dict): f[k]=v.get('value', v.get('on'))
+    for kv in (hd.get('features','') or '').split(','):
+        if '=' in kv:
+            k,v=(x.strip() for x in kv.split('=',1))
+            f[k]= {'on':True,'off':False,'true':True,'false':False}.get(v.lower(), float(v) if re.match(r'^[0-9.]+$',v) else v)
+    return f
+
 def main(src,out):
+    global FEAT, SRC_DIR
     hd,blocks=parse(open(src,encoding='utf-8').read())
+    FEAT=load_features(hd); SRC_DIR=os.path.dirname(os.path.abspath(src))
     dt=hd.get('doctype','SOP').upper()
     (build_sop if dt=='SOP' else build_annex)(hd, blocks, out)
     print("WROTE", out, "("+dt+")")

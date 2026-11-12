@@ -368,3 +368,15 @@ only; the sanctioned accents (mint/cream/rose/amber) are reserved for semantic r
 
 ---
 **Purely Plant Document Suite v1.7.0** — covers the FULL QCSOP 009 record family (AMRRF · AMVP · AMVR · QCSOP009_A04 · AMSF · QCSOP009_A02 register · QCSOP009_A03 outsourced matrix · QCSOP009_A05 trigger form; §6C). Unifies pp-content-developer + pp-template-formatter + pp-annex-content-creator + pp-annex-formatter, and absorbs the method-validation report engine (`pp_report.py`: native equations, worked calculations, execution forms, charts, `eqn_cell` in-cell formulas, **cover page + TOC + per-step two-role sign-off**) for use by all QMS teams. House rules: cover (unnumbered, keeps the running header; number suppressed only on p.1) → TOC (p.2, **only where applicable** — SOPs/reports/protocols/long annexes; omitted on status forms & short checklists) → content; body justified, **no inter-paragraph space within a logical chunk** (space only at boundaries — titles, tables, chunk breaks via `gap()`), table cells centered; body MK 11 / EN 8, tables MK ≤10 / EN ≤8 (auto-split); **intelligent, use-aware column distribution** via `fixed()` (compact-centered for "label | value" summaries, full-width for data tables; ordinals minimal; Name/Date/Signature entry columns purpose-sized; **first row repeats on page breaks**); merged single-label summary rows via `hmerge()`; per-step two-role sign-off in protocols; **table design by information role** (conclusions→`databox`/`status_grid`; headline→prominent; supporting→compact; transitory→inline) with `status_grid()` compact checkbox grids; **native math in headers/results** (`mathcell` white-on-navy header equations, `eqn_result` emphasised conclusion equations); and a MANDATORY post-generation review (§6A) before delivery; **data-driven documents are built from a bound dataset as the single source of truth** — compute → inject → assert via `pp_data` (§6B), so reported figures can never drift from the data. Engines: `pp_format` · `pp_report` · `pp_data` · `pp_charts` · `pp_theme` · `pp_verify` (python-docx). Output: bilingual MK|EN controlled .docx + PDF.
+
+## Limit bars, figures and feature switches (12.11.2026)
+
+- **`[[LIMITS]] … [[/LIMITS]]`** (annex/report documents): a results table where every value cell shows the value
+  and, under it, a native Word colour bar against the acceptance limit (full cell = limit; green ≤ 75 %, amber up to
+  the limit, red above / detected). Use it when values must be read against their criteria. Syntax and value forms:
+  `scripts/pp_limitbars.py` docstring. Rows `@group` (block header), plain rows, `@ext` (another laboratory, tinted);
+  `-` prints "not reported" — never invent a value for a cell the source does not report.
+- **`[[FIGURE:path|width_mm]]`**: places an image (path relative to the .md).
+- **Feature switches**: `assets/pp_features.json` (defaults), `$PP_FEATURES` (per run), or HEADERDATA
+  `features: limit_bars=off, figures=on, limit_bars_amber_at=0.8` (per document). Edit the JSON with
+  `assets/pp_features_dashboard.html` (open in a browser, toggle, Save).
