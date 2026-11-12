@@ -17,6 +17,19 @@ LabCore (лабораторија на Versa) на 12.11.2026 пријави OOS
 [[/TABLE]]
 # 3. НАШИ РЕЗУЛТАТИ — МИКРОБИОЛОГИЈА ПО СЕРИЈА | OUR RESULTS — MICROBIOLOGY BY BATCH
 Извори: регистар, Google Drive и RAGflow eCOA_INGEST (пребарано по одгледувачка серија и P-број, 12.11.2026); нема други микробиолошки сертификати за овие серии. ||| Sources: register, Google Drive and RAGflow eCOA_INGEST (searched by cultivation batch and P number, 12.11.2026); no other microbiology certificates exist for these batches.
+[[TABLE]]
+Серија / сертификат ~~ Batch / certificate ||| Датум ~~ Date ||| TAMC, CFU/g ||| TYMC, CFU/g ||| BTGN /g ||| E. coli /1 g ||| Salmonella /25 g
+Критериум ~~ Criterion ||| QCSP 001 ||| ≤ 10⁵ (max 500 000) ||| ≤ 10⁴ (max 50 000) ||| ≤ 10⁴ ||| Отсутна ~~ Absent ||| Отсутна ~~ Absent
+P050182 — IPH 948/1686/25 ||| 17.09.2025 ||| 2.7 × 10⁴ ||| 2.6 × 10⁴ ||| < 10 ||| Отсутна ~~ Absent ||| Отсутна ~~ Absent
+P050182 — LabCore ||| 12.11.2026 ||| не е пријавено ~~ not reported ||| не е пријавено ~~ not reported ||| не е пријавено ~~ not reported ||| Најдена во 1 g ~~ Detected in 1 g (OOS) ||| не е пријавено ~~ not reported
+P050222 — IPH 1217/2168/25 ||| 01.12.2025 ||| < 10 ||| 20 ||| < 10 ||| Отсутна ~~ Absent ||| Отсутна ~~ Absent
+P050222 — IPH 535/1066/26 ||| 31.08.2026 ||| 4.2 × 10³ ||| < 10 ||| > 10³, < 10⁴ ||| Отсутна ~~ Absent ||| Отсутна ~~ Absent
+P050222 — LabCore ||| 12.11.2026 ||| не е пријавено ~~ not reported ||| не е пријавено ~~ not reported ||| > 10 000 MPN/g (OOS) ||| не е пријавено ~~ not reported ||| не е пријавено ~~ not reported
+P050212 — IPH 1032/1851/25 ||| 17.10.2025 ||| 2.2 × 10⁴ ||| 4.9 × 10⁴ ||| > 10³, < 10⁴ ||| Отсутна ~~ Absent ||| Отсутна ~~ Absent
+P050212 — IPH 534/1065/26 ||| 31.08.2026 ||| 6.2 × 10³ ||| 2.3 × 10² ||| > 10³, < 10⁴ ||| Отсутна ~~ Absent ||| Отсутна ~~ Absent
+P050212 — LabCore ||| 12.11.2026 ||| не е пријавено ~~ not reported ||| не е пријавено ~~ not reported ||| > 10 000 MPN/g (OOS) ||| не е пријавено ~~ not reported ||| не е пријавено ~~ not reported
+[[/TABLE]]
+LabCore во е-поштата од 12.11.2026 го пријави само параметарот надвор од спецификација; останатите резултати ќе бидат внесени по добивање на нивниот извештај (13.11.2026). ||| LabCore's e-mail of 12.11.2026 reports only the out-of-specification parameter; its other results will be entered when its report arrives (13.11.2026).
 Слика 1: должина на лентата = log10(резултат) ÷ log10(граница); целата ќелија е максимално прифатливиот број. Зелено ≤ 75 %, жолто 75–100 %, црвено над границата / детектирано. ||| Figure 1: bar length = log10(result) ÷ log10(limit); the full cell is the maximum acceptable count. Green ≤ 75 %, amber 75–100 %, red above the limit / detected.
 FIGURE1PLACEHOLDER
 P. aeruginosa и S. aureus не се тестирани. ||| P. aeruginosa and S. aureus were not tested.
