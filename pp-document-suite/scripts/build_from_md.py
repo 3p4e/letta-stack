@@ -212,7 +212,7 @@ def _lbl_cell(cell, lmk, len_):
 
 def emit_form(d, rows, mode=None):
     # single-select? -> status_grid
-    opts=as_options(rows)
+    opts=as_options(rows) if FEAT.get('option_grid', True) else None
     if opts:
         pr.status_grid(d, opts, selected=opts.selected, ncols=min(2, len(opts))); return
     fields=[]
@@ -337,11 +337,11 @@ def emit_table(d, rows):
             if ri==0:
                 pr.cellfmt(t.cell(ri,ci), mk, en, sz=9, col=pr.WHITE, bold=True, fill=pr.NAVYF)
             else:
-                fill=pr.LBL if (ci==0 and mk) else ("F7FAFC" if ri%2==0 else None)
+                fill=pr.LBL if (ci==0 and mk and FEAT.get('label_column', True)) else ("F7FAFC" if ri%2==0 and FEAT.get('zebra_rows', True) else None)
                 pr.cellfmt(t.cell(ri,ci), mk, en, sz=9, col=pr.BLACK, fill=fill)
-    pr.fixed(t, mode='full')   # annex forms: every data table spans the full width, like the bars
+    pr.fixed(t, mode='full', header_repeat=FEAT.get('header_repeat', True))   # annex forms: every data table spans the full width, like the bars
     pr.borders(t)
-    pr.keep_table(t)
+    if FEAT.get('keep_tables', True): pr.keep_table(t)
 
 def build_annex(hd, blocks, out):
     global PAGE_W

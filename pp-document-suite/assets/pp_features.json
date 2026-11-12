@@ -1,7 +1,57 @@
 {
-  "_doc": "Feature switches for build_from_md.py. Override per document in HEADERDATA: 'features: limit_bars=off, figures=on'. Override per run: PP_FEATURES=/path/to/file.json. Edit with assets/pp_features_dashboard.html.",
-  "limit_bars": {"on": true, "label": "Limit bars", "help": "[[LIMITS]] blocks: value + colour bar against its acceptance limit in each cell"},
-  "limit_bars_legend": {"on": true, "label": "Limit bar legend", "help": "Print the bilingual legend under a [[LIMITS]] table"},
-  "limit_bars_amber_at": {"value": 0.75, "label": "Amber threshold", "help": "Fraction of the limit (bar length) above which a bar turns amber"},
-  "figures": {"on": true, "label": "Figures", "help": "[[FIGURE:path|width_mm]] places an image (chart, scan) in the document"}
+ "_doc": "Feature switches for build_from_md.py. Per document: HEADERDATA 'features: a=on, b=off, c=0.8'. Per run: PP_FEATURES=/path.json. Edit with pp_features_dashboard.html.",
+ "limit_bars": {
+  "on": true,
+  "group": "Results",
+  "label": "Limit bars",
+  "help": "[[LIMITS]] tables: value + colour bar against its acceptance limit in every cell"
+ },
+ "limit_bars_legend": {
+  "on": true,
+  "group": "Results",
+  "label": "Limit bar legend",
+  "help": "Bilingual legend under a [[LIMITS]] table"
+ },
+ "limit_bars_amber_at": {
+  "value": 0.75,
+  "group": "Results",
+  "label": "Amber threshold",
+  "help": "Bar length (fraction of the limit) above which a bar turns amber"
+ },
+ "figures": {
+  "on": true,
+  "group": "Content",
+  "label": "Figures",
+  "help": "[[FIGURE:path|width_mm]] places an image (chart, scan)"
+ },
+ "option_grid": {
+  "on": true,
+  "group": "Tables",
+  "label": "Option grids",
+  "help": "A table whose cells are ☐/☒ options is drawn as a tick-box grid"
+ },
+ "zebra_rows": {
+  "on": true,
+  "group": "Tables",
+  "label": "Zebra rows",
+  "help": "Alternate row shading in data tables"
+ },
+ "label_column": {
+  "on": true,
+  "group": "Tables",
+  "label": "Label column",
+  "help": "First column of a data table shaded as a label column"
+ },
+ "header_repeat": {
+  "on": true,
+  "group": "Tables",
+  "label": "Repeat header row",
+  "help": "A table's header row repeats on every page it crosses"
+ },
+ "keep_tables": {
+  "on": true,
+  "group": "Layout",
+  "label": "Keep tables together",
+  "help": "Short tables are kept on one page with their lead-in text"
+ }
 }
