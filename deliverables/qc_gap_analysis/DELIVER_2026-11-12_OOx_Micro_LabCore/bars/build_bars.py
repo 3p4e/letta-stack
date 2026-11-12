@@ -16,14 +16,6 @@ B=[
    row('1032/1851/25','17.10.2025',N(2.2e4,'2.2 × 10⁴'),N(4.9e4,'4.9 × 10⁴'),N(1e4,'10³–10⁴'),'A','A'),
    row('534/1065/26','31.08.2026',N(6.2e3,'6.2 × 10³'),N(2.3e2,'2.3 × 10²'),N(1e4,'10³–10⁴'),'A','A'),
    row('LabCore','12.11.2026',None,None,N(1e5,'> 10⁴ MPN'),None,None,'LC')]),
- ('P060402 · GG012603 · GG4 16','Potency OOS (LabCore)',[row('404/0787/26','24.06.2026',N(5e3,'5 × 10³'),N(4.1e3,'4.1 × 10³'),N(10,'< 10'),'A','A')]),
- ('P060182 · GRC102501/2 · PT 10','Potency OOS (LabCore)',[row('76/0119/26 ¹','09.02.2026',N(90,'9 × 10¹'),N(100,'1 × 10²'),N(10,'< 10'),'A','A'),row('136/0233/26','06.03.2026',N(230,'2.3 × 10²'),N(130,'1.3 × 10²'),N(10,'< 10'),'A','A')]),
- ('P060412 · JD012603/02 · JD 14 ²','Potency OOS (LabCore)',[row('405/0788/26','24.06.2026',N(6.3e3,'6.3 × 10³'),N(4.4e3,'4.4 × 10³'),N(10,'< 10'),'A','A')]),
- ('P060422 · JD012603/02V · JD 14 ²','Potency OOS (LabCore)',[row('406/0789/26','24.06.2026',N(5.1e3,'5.1 × 10³'),N(4.7e3,'4.7 × 10³'),N(10,'< 10'),'A','A')]),
- ('P060062 · PM092501 · F1 12 ³','Potency OOS (LabCore)',[row('6/0009/26','20.01.2026',N(2e3,'2 × 10³'),N(2.2e3,'2.2 × 10³'),N(10,'< 10'),'A','A')]),
- ('P050272 · PM072501 · F1 12 ³','Potency OOS (LabCore)',[row('1220/2171/25','01.12.2025',N(110,'110'),N(200,'200'),N(10,'< 10'),'A','A'),row('554/1085/26','01.09.2026',N(10,'< 10'),N(10,'< 10'),N(10,'< 10'),'A','A')]),
- ('P060122 · ACC102501 · ACC 12','Potency OOS (LabCore)',[row('77/0120/26','09.02.2026',N(1e3,'1 × 10³'),N(1.6e3,'1.6 × 10³'),N(10,'< 10'),'A','A')]),
- ('P060372 · CC012603 · PDY 14','Potency OOS (LabCore)',[row('363/0693/26','01.06.2026',N(2.7e3,'2.7 × 10³'),N(16,'1.6 × 10¹'),N(10,'< 10'),'A','A')]),
 ]
 def col(p): return '#2e9e5b' if p<=75 else ('#e0a100' if p<=100 else '#d0342c')
 def bar(k,v):
@@ -57,7 +49,7 @@ tr.lc td{{background:#fff4f2}}
 .b span{{position:relative;padding-left:3pt;line-height:13pt;font-size:8pt;font-weight:600}} .b span.w{{color:#fff}}
 .leg{{margin-top:6pt;font-size:7.8pt;color:#333}} .sw{{display:inline-block;width:10pt;height:7pt;margin:0 3pt 0 8pt;vertical-align:middle}}
 </style></head><body>
-<h1>OOS batches — microbiology results, all testing on file</h1>
+<h1>Microbiology OOS batches — all microbiology results on file</h1>
 <p class="sub">Purely Plant · QC · 12.11.2026 · Sources: IPH certificates (register, Google Drive, RAGflow eCOA_INGEST); LabCore e-mail of 12.11.2026</p>
 <table><colgroup><col style="width:17%"><col><col><col><col style="width:13%"><col style="width:13%"></colgroup>
 <tr><th>Certificate / date</th><th>TAMC, CFU/g<br><small>10⁵, max 500 000</small></th><th>TYMC, CFU/g<br><small>10⁴, max 50 000</small></th><th>BTGN /g<br><small>limit ≤ 10⁴</small></th><th><i>E. coli</i><br><small>absent /1 g</small></th><th><i>Salmonella</i><br><small>absent /25 g</small></th></tr>
@@ -65,6 +57,6 @@ tr.lc td{{background:#fff4f2}}
 <div class="leg"><b>Bars:</b> length = log₁₀(result) ÷ log₁₀(limit); the full cell width is the maximum acceptable count (QCSP 001 / Ph. Eur. 5.1.8 cat. C: TAMC 500 000, TYMC 50 000, BTGN 10⁴). “&lt; 10” is drawn at 10; a range “10³–10⁴” at its upper bound.
 <span class="sw" style="background:#2e9e5b"></span>≤ 75 % of the limit (log)<span class="sw" style="background:#e0a100"></span>75–100 % — near the limit<span class="sw" style="background:#d0342c"></span>above the limit / detected.
 Pink rows: LabCore (Versa) results. <i>P. aeruginosa</i> and <i>S. aureus</i> not tested.<br>
-¹ Filed under the parent code GRC102501 (before the split). ² JD 14 could be either P060412 or P060422. ³ F1 12 could be either P060062 or P050272.</div>
+</div>
 </body></html>'''
 open('OOS_Micro_Bars_2026-11-12.html','w').write(H)
