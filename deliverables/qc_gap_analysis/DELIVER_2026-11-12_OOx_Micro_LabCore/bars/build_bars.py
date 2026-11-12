@@ -30,7 +30,7 @@ def qual(v):
     return '<td><div class="b"><i style="width:100%;background:#d0342c"></i><span class="w">Detected</span></div></td>'
 rows=''
 for name,why,rs in B:
-    rows+=f'<tr class="g"><td colspan="7"><b>{name}</b> <em>{why}</em></td></tr>'
+    rows+=f'<tr class="g"><td colspan="6"><b>{name}</b> <em>{why}</em></td></tr>'
     for r in rs:
         cls=' class="lc"' if r['src']=='LC' else ''
         rows+=f'<tr{cls}><td class="c">{r["cert"]}<br><small>{r["date"]}</small></td>'+bar('TAMC',r['TAMC'])+bar('TYMC',r['TYMC'])+bar('BTGN',r['BTGN'])+qual(r['EC'])+qual(r['SAL'])+'</tr>'
