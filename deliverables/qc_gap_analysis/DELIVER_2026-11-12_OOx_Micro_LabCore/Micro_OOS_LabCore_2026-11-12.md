@@ -15,15 +15,36 @@ LabCore (лабораторија на Versa) на 12.11.2026 пријави OOS
 26-OGB-022 ||| STEADY OGB 24/1 ||| P050222 CJ062501/1 (T2) ||| CoQ-PP_26-110 ||| BTGN ||| > 10 000 MPN/g ||| ≤ 10⁴ /g
 26-OGB-049 ||| STEADY OGB 18/1 ||| P050212 CJ062501-2 (T1) ||| CoQ-PP_26-089 ||| BTGN ||| > 10 000 MPN/g ||| ≤ 10⁴ /g
 [[/TABLE]]
-# 3. НАШИ РЕЗУЛТАТИ — МИКРОБИОЛОГИЈА | OUR RESULTS — MICROBIOLOGY
+# 3. НАШИ РЕЗУЛТАТИ — МИКРОБИОЛОГИЈА ПО СЕРИЈА | OUR RESULTS — MICROBIOLOGY BY BATCH
+Извори: регистар, Google Drive и RAGflow eCOA_INGEST (пребарано по одгледувачка серија и P-број, 12.11.2026); нема други микробиолошки сертификати за овие серии. ||| Sources: register, Google Drive and RAGflow eCOA_INGEST (searched by cultivation batch and P number, 12.11.2026); no other microbiology certificates exist for these batches.
+## 3.1 P050182 — HPA052501 — 26-HD-035
 [[TABLE]]
-Серија ~~ Batch ||| Сертификат ~~ Certificate ||| Датум ~~ Date ||| TAMC, CFU/g ||| TYMC, CFU/g ||| BTGN /g ||| E. coli ||| Salmonella
-P050182 ||| IPH 948/1686/25 (пуштање ~~ release) ||| 17.09.2025 ||| 2.7 × 10⁴ ||| 2.6 × 10⁴ ||| < 10 ||| Отсутна ~~ Absent ||| Отсутна ~~ Absent
-P050222 ||| IPH 1217/2168/25 (пуштање ~~ release) ||| 01.12.2025 ||| < 10 ||| 20 ||| < 10 ||| Отсутна ~~ Absent ||| Отсутна ~~ Absent
-P050222 ||| IPH 535/1066/26 (ретест ~~ retest) ||| 31.08.2026 ||| 4.2 × 10³ ||| < 10 ||| > 10³, < 10⁴ ||| Отсутна ~~ Absent ||| Отсутна ~~ Absent
-P050212 ||| IPH 1032/1851/25 (пуштање ~~ release) ||| 17.10.2025 ||| 2.2 × 10⁴ ||| 4.9 × 10⁴ ||| > 10³, < 10⁴ ||| Отсутна ~~ Absent ||| Отсутна ~~ Absent
-P050212 ||| IPH 534/1065/26 (ретест ~~ retest) ||| 31.08.2026 ||| 6.2 × 10³ ||| 2.3 × 10² ||| > 10³, < 10⁴ ||| Отсутна ~~ Absent ||| Отсутна ~~ Absent
+Тест ~~ Test ||| IPH 948/1686/25 (17.09.2025) ||| LabCore (12.11.2026)
+TAMC, CFU/g ||| 2.7 × 10⁴ ||| —
+TYMC, CFU/g ||| 2.6 × 10⁴ ||| —
+BTGN /g ||| < 10 ||| —
+E. coli /1 g ||| Отсутна ~~ Absent ||| Најдена ~~ Detected (OOS)
+Salmonella /25 g ||| Отсутна ~~ Absent ||| —
 [[/TABLE]]
+## 3.2 P050222 — CJ062501/1 — 26-OGB-022
+[[TABLE]]
+Тест ~~ Test ||| IPH 1217/2168/25 (01.12.2025) ||| IPH 535/1066/26 (31.08.2026) ||| LabCore (12.11.2026)
+TAMC, CFU/g ||| < 10 ||| 4.2 × 10³ ||| —
+TYMC, CFU/g ||| 20 ||| < 10 ||| —
+BTGN /g ||| < 10 ||| > 10³, < 10⁴ ||| > 10 000 MPN/g (OOS)
+E. coli /1 g ||| Отсутна ~~ Absent ||| Отсутна ~~ Absent ||| —
+Salmonella /25 g ||| Отсутна ~~ Absent ||| Отсутна ~~ Absent ||| —
+[[/TABLE]]
+## 3.3 P050212 — CJ062501/2 — 26-OGB-049
+[[TABLE]]
+Тест ~~ Test ||| IPH 1032/1851/25 (17.10.2025) ||| IPH 534/1065/26 (31.08.2026) ||| LabCore (12.11.2026)
+TAMC, CFU/g ||| 2.2 × 10⁴ ||| 6.2 × 10³ ||| —
+TYMC, CFU/g ||| 4.9 × 10⁴ ||| 2.3 × 10² ||| —
+BTGN /g ||| > 10³, < 10⁴ ||| > 10³, < 10⁴ ||| > 10 000 MPN/g (OOS)
+E. coli /1 g ||| Отсутна ~~ Absent ||| Отсутна ~~ Absent ||| —
+Salmonella /25 g ||| Отсутна ~~ Absent ||| Отсутна ~~ Absent ||| —
+[[/TABLE]]
+P. aeruginosa и S. aureus не се тестирани. ||| P. aeruginosa and S. aureus were not tested.
 # 4. ОСТАНАТИ ПАРАМЕТРИ | OTHER PARAMETERS
 [[TABLE]]
 Серија ~~ Batch ||| Микотоксини ~~ Mycotoxins ||| Тешки метали Pb/Cd/Hg/As, mg/kg ~~ Heavy metals Pb/Cd/Hg/As, mg/kg ||| Пестициди ~~ Pesticides ||| THC
