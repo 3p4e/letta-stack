@@ -57,6 +57,7 @@ SUITE = _find_suite()
 sys.path.insert(0, os.path.join(SUITE, "scripts"))
 for extra in ("/root/.letta/pp-libs",):          # persistent deps location on the Letta host
     if os.path.isdir(extra): sys.path.insert(0, extra)
+import equations   # LaTeX formulas: check + preview (imports pp_math / pp_report from the suite on the path above)
 
 OUT = os.environ.get("PP_OUT_DIR") or ("/data" if os.path.isdir("/data") else tempfile.gettempdir())
 os.makedirs(OUT, exist_ok=True)
@@ -149,6 +150,15 @@ except OSError as _e:  # a read-only data directory must not stop the service; s
     logging.getLogger("ppdocwiz").warning("named accounts not initialised: %s", _e)
 
 
+def _equations_ok():
+    """LaTeX formulas -> native Word equations (pp_math / pandoc): False means documents with formulas cannot be built."""
+    try:
+        import pp_math
+        return bool(pp_math.status()["ok"])
+    except Exception:  # noqa: BLE001
+        return False
+
+
 @app.get("/api/health")
 def health():
     # DELIBERATELY UNGATED — the compose healthcheck calls this with no headers
@@ -160,7 +170,8 @@ def health():
     return {"ok": True, "auth": not settings.auth_off,
             "login": "off" if settings.auth_off else "accounts" if accounts.enabled() else
             "password" if security.current_hash() else "key", "letta": bool(os.environ.get("LETTA_BASE_URL")),
-            "pdf": bool(shutil.which("soffice") or os.environ.get("GOTENBERG_URL"))}
+            "pdf": bool(shutil.which("soffice") or os.environ.get("GOTENBERG_URL")),
+            "equations": _equations_ok()}
 
 
 def _client(request: Request) -> str:
@@ -398,6 +409,38 @@ def _render_pdf(docx: str, pdf: str):
     pp_render.render_pdf(docx, pdf)
 
 
+class EqCheckReq(BaseModel):
+    text: str = Field(max_length=equations.MAX_TEXT)
+
+
+class EqPreviewReq(BaseModel):
+    latex: str = Field(min_length=1, max_length=equations.MAX_FORMULA)
+    display: bool = False
+
+
+@app.post("/api/equations/check", dependencies=[Depends(security.require_api_key)])
+def equations_check(r: EqCheckReq):
+    """Every $…$ / $$…$$ of a text, each converted exactly as the build converts it (pp_math / pandoc)."""
+    return equations.check_text(r.text)
+
+
+@app.post("/api/equations/preview", dependencies=[Depends(security.require_api_key)])
+def equations_preview(r: EqPreviewReq):
+    """One formula as it prints: {png: base64}. 422 when the formula does not convert, 503 without a renderer."""
+    bad = equations.check_text("$$" + r.latex + "$$" if r.display else "$" + r.latex + "$")["formulas"]
+    if not bad or not bad[0]["ok"]:
+        return JSONResponse({"ok": False, "error": (bad[0]["error"] if bad else "not a formula")}, status_code=422)
+    if not (shutil.which("soffice") or os.environ.get("GOTENBERG_URL")):
+        return JSONResponse({"ok": False, "error": "no renderer for the preview (set GOTENBERG_URL or install LibreOffice)"}, status_code=503)
+    try:
+        with _RENDER_LOCK:
+            png = equations.preview_b64(r.latex, r.display, _render_pdf)
+    except Exception as e:  # noqa: BLE001
+        log.exception("equation preview failed")
+        return JSONResponse({"ok": False, "error": "preview failed: " + str(e)[:200]}, status_code=503)
+    return {"ok": True, "png": png}
+
+
 @app.get("/api/download/{name}", dependencies=[Depends(security.require_api_key)])
 def download(name: str, inline: int = 0):
     base, ext = os.path.splitext(name)
@@ -592,7 +635,7 @@ async def docengine_proxy(path: str, request: Request):
     def fetch():
         try:
             # The advisor (one Letta exchange) and a package PDF (one render per document) outlast the usual 120 s.
-            with urllib.request.urlopen(req, timeout=330 if path.endswith(("/suggest", "/package.pdf")) else 120) as r:
+            with urllib.request.urlopen(req, timeout=330 if path.endswith(("/suggest", "/package.pdf", "/revise")) else 120) as r:
                 return r.status, r.headers, r.read()
         except urllib.error.HTTPError as e:
             return e.code, e.headers, e.read()

@@ -14,7 +14,9 @@ from docx.oxml import OxmlElement
 
 NAVY=RGBColor(0x2B,0x54,0x7E); GREY=RGBColor(0x59,0x59,0x59); BLACK=RGBColor(0,0,0)
 WHITE=RGBColor(0xFF,0xFF,0xFF); GREEN=RGBColor(0x37,0x56,0x23); RED=RGBColor(0xC0,0,0); AMBER=RGBColor(0xC5,0x5A,0x11)
-LBL="F2F2F2"; BORDER="2B547E"; NAVYF="2B547E"; GREENF="E2EFDA"; REDF="FCE4D6"; AMBERF="FFF2CC"
+import pp_theme as T
+LBL="F2F2F2"; BORDER=T.GRID_HEX; NAVYF="2B547E"; GREENF="E2EFDA"; REDF="FCE4D6"; AMBERF="FFF2CC"
+HEADF=T.HEAD_HEX   # table header rows: pale blue, navy text (04.11.2026); NAVYF stays for white-on-navy maths only
 PAGE_W=18.46   # A4 text width (cm) at 1.27 cm L/R margins — every table is fitted to this
 
 def shade(cell,hexf):
@@ -223,8 +225,20 @@ def fixed(tbl, weights=None, min_cm=0.9, cap=34, mode=None, header_repeat=True):
                 spn=_gridspan(tc); _settcw_dxa(tc, sum(widths[gi:gi+spn]) or min_cm); gi+=spn
     if header_repeat: _repeat_header(tbl)
     return tbl
+def _fmt_run(r,sz,col,bold=False,ital=False):
+    f=r.font; f.name='Calibri'; f.size=Pt(sz); f.color.rgb=col; r.bold=bold; r.italic=ital; return r
 def rin(p,t,sz,col,bold=False,ital=False):
-    r=p.add_run(t); f=r.font; f.name='Calibri'; f.size=Pt(sz); f.color.rgb=col; r.bold=bold; r.italic=ital; return r
+    """One run in the house face, never below the 7 pt body floor. [[EX:…]] and [[FILL:…]] in t become their own runs
+       (pp_theme.split_tokens): an example value red in brackets, a write-in a grey hint on a dotted line. $…$ and
+       $$…$$ become native Word equations (pp_math)."""
+    sz=max(sz,T.BODY_FLOOR_PT); r=None
+    for kind,val in (T.split_tokens(t) if T.has_tokens(t) else [("plain",t)]):
+        if kind=="plain" and PM.has_math(val):
+            r=add_text_with_math(p,val,sz,col,bold,ital)
+            continue
+        r=p.add_run(T.token_text(kind,val)); _fmt_run(r,sz,col,bold,ital)
+        if kind!="plain": T.style_run(r,kind,sz)
+    return r if r is not None else p.add_run("")
 def sp(p,bef=0,aft=0,line=None):
     pf=p.paragraph_format; pf.space_before=Pt(bef); pf.space_after=Pt(aft)
     if line: pf.line_spacing=line
@@ -274,6 +288,7 @@ def note(d,mk,en):                               # small note MK10 | EN8 ; justi
         rin(p,en,8,GREY,ital=True)
     return p
 def body(d,mk,en):                               # prose MK11 | EN8 ; justified ; NO inter-paragraph space (same style)
+    if en and mk and T.same_in_both(mk,en): en=''
     p=d.add_paragraph(); sp(p,0,0,line=1.04); p.alignment=WD_ALIGN_PARAGRAPH.JUSTIFY
     if mk: rin(p,mk,11,BLACK)
     if en:
@@ -281,6 +296,7 @@ def body(d,mk,en):                               # prose MK11 | EN8 ; justified 
         rin(p,en,8,GREY,ital=True)
     return p
 def bullet(d,mk,en):                             # bullet MK11 | EN8 ; justified ; tight within the list
+    if en and mk and T.same_in_both(mk,en): en=''
     p=d.add_paragraph(); sp(p,0,1); p.paragraph_format.left_indent=Cm(0.5); p.alignment=WD_ALIGN_PARAGRAPH.JUSTIFY
     rin(p,"•  ",11,NAVY,bold=True); rin(p,mk,11,BLACK)
     if en: rin(p,"  |  ",8,GREY); rin(p,en,8,GREY,ital=True)
@@ -299,11 +315,69 @@ def cellfmt(cell,mk,en,sz=10,col=BLACK,bold=False,enital=True,fill=None):   # ta
     ensz=max(sz-2,7)
     if en is None and isinstance(mk,str) and " | " in mk:
         mk,en = mk.split(" | ",1)     # auto-split combined "MK | EN" so EN renders smaller
+    if en and mk and T.same_in_both(mk,en): en=None   # "CBD~~CBD", "1,097~~1.097": the same in both languages prints once
     if mk: rin(p,mk,sz,col,bold=bold)
     if en:
         if mk: rin(p," | ",ensz,col)
         rin(p,en,ensz,col,bold=bold and enital==False,ital=enital and not bold)
     return cell
+
+def head_cell(cell,mk,en,sz=9):
+    """A table header cell: pale blue, the Macedonian bold navy, the English after it in small grey italic
+       (no pipe), as on the HPLC method validation draft (04.11.2026)."""
+    shade(cell,HEADF)
+    try: cell.vertical_alignment=WD_ALIGN_VERTICAL.CENTER
+    except Exception: pass
+    p=cell.paragraphs[0]; p.text=''; p.alignment=WD_ALIGN_PARAGRAPH.CENTER; sp(p,1,1)
+    if en is None and isinstance(mk,str) and " | " in mk: mk,en=mk.split(" | ",1)
+    if en and mk and T.same_in_both(mk,en): en=None
+    if mk: rin(p,mk,sz,NAVY,bold=True)
+    if en:
+        if mk: rin(p," ",sz,NAVY)
+        rin(p,en,max(sz-2,7),GREY,ital=True)
+    return cell
+
+# Result cells that carry a verdict are tinted (mint / rose / cream) wherever they are; a risk priority number (RPN)
+# column is tinted by its score. Only short cells: a prose cell that happens to open with "Pass" is not a verdict.
+import re as _re
+_FAIL=_re.compile(r"^(FAIL|Fail|Не одговара|Does not conform|Неусогласен|Non-?compliant|OOS|Одбиено|Rejected|Невалидиран|Not validated)\b")
+_PASS=_re.compile(r"^(PASS|Pass|Одговара|Conforms|Complies|Усогласен|Compliant|Прифатено|Accepted|Валидиран|Validated)\b")
+_COND=_re.compile(r"^(CONDITIONAL|Conditional|Условно|УСЛОВНО|Pending|\[pending\]|Во тек)\b")
+def verdict_tone(text):
+    t=(text or "").strip()
+    if not t or len(t)>40: return None
+    if _FAIL.match(t): return "fail"
+    if _PASS.match(t): return "pass"
+    if _COND.match(t): return "caution"
+    return None
+TONE_FILL={"pass":GREENF,"fail":REDF,"caution":AMBERF}
+
+def reshade(cell,hexf):
+    tcPr=cell._tc.get_or_add_tcPr()
+    for old in tcPr.findall(qn('w:shd')): tcPr.remove(old)
+    shade(cell,hexf)
+
+def tint_table(tbl, rpn=(50,100), head_rows=1):
+    """Tint verdict cells and RPN scores in a built table. rpn=(lo,hi): below lo mint, lo..hi cream, above hi rose."""
+    rows=tbl.rows
+    if not len(rows): return tbl
+    heads=[c.text for c in rows[0].cells]
+    rpn_cols={j for j,h in enumerate(heads) if _re.search(r"\bRPN\b",h)}
+    for r in list(rows)[head_rows:]:
+        for j,c in enumerate(r.cells):
+            txt=c.text.split(" | ")[0].strip()
+            if j in rpn_cols:
+                m=_re.match(r"^\s*([0-9]+(?:[.,][0-9]+)?)\s*$",txt)
+                if m:
+                    v=float(m.group(1).replace(",","."))
+                    reshade(c, GREENF if v<rpn[0] else (AMBERF if v<=rpn[1] else REDF))
+                continue
+            tone=verdict_tone(txt)
+            if tone:
+                reshade(c,TONE_FILL[tone])
+                for p in c.paragraphs:
+                    for run in p.runs: run.bold=True
+    return tbl
 
 def eqn_cell(cell, latex, fill=None, before=1, after=1):
     """Render a PURE formula inside a table cell as a NATIVE Word equation (OMML).
@@ -413,84 +487,50 @@ def wipe_body(d):
     return bodyel,sectPr
 
 # =====================================================================
-# Native Word math via LaTeX -> MathML (latex2mathml) -> OMML (Office MML2OMML.XSL).
+# Native Word math: LaTeX -> OMML through pp_math (pandoc), one converter, no silent fallback (04.11.2026).
 # =====================================================================
-import os as _os
-_EQN_OK=False; _OMML_XSLT=None; _l2m=None
-try:
-    import latex2mathml.converter as _l2m
-    from lxml import etree as _etree
-    _XSL_CANDIDATES=[
-        _os.environ.get("PP_MML2OMML_XSL",""),
-        r"C:\Program Files (x86)\Microsoft Office\root\Office16\MML2OMML.XSL",
-        r"C:\Program Files\Microsoft Office\root\Office16\MML2OMML.XSL",
-        r"C:\Program Files (x86)\Microsoft Office\Office16\MML2OMML.XSL",
-        r"C:\Program Files\Microsoft Office\Office16\MML2OMML.XSL",
-    ]
-    _XSLP=next((p for p in _XSL_CANDIDATES if p and _os.path.exists(p)),None)
-    if _XSLP:
-        _OMML_XSLT=_etree.XSLT(_etree.parse(_XSLP)); _EQN_OK=True
-except Exception:
-    _EQN_OK=False
-# No Office XSL (Linux/CI): pandoc writes the same native OMML from LaTeX.
-import shutil as _shutil
-_PANDOC=_shutil.which("pandoc")
-if not _EQN_OK and _PANDOC:
-    try:
-        from lxml import etree as _etree; _EQN_OK=True
-    except Exception: pass
-_OMML_CACHE={}
-def _pandoc_omml(latex):
-    if latex in _OMML_CACHE: return _etree.fromstring(_OMML_CACHE[latex])
-    import subprocess, tempfile, zipfile
-    with tempfile.TemporaryDirectory() as t:
-        out=_os.path.join(t,"m.docx")
-        subprocess.run([_PANDOC,"-f","latex","-o",out],input=("$"+latex+"$").encode("utf-8"),check=True,capture_output=True)
-        xml=zipfile.ZipFile(out).read("word/document.xml")
-    m=_etree.fromstring(xml).find(".//{http://schemas.openxmlformats.org/officeDocument/2006/math}oMath")
-    if m is None: raise ValueError("pandoc produced no math")
-    _OMML_CACHE[latex]=_etree.tostring(m); return _etree.fromstring(_OMML_CACHE[latex])
+import pp_math as PM
+from pp_math import MathError   # noqa: F401  (re-exported: callers catch it)
 
-def _to_omml(latex):
-    if _OMML_XSLT is None: return _pandoc_omml(latex)
-    mml=_l2m.convert(latex)
-    dom=_etree.fromstring(mml.encode("utf-8") if isinstance(mml,str) else mml)
-    return _OMML_XSLT(dom).getroot()
+def _color_hex(col):
+    return None if col is None else "%02X%02X%02X" % (col[0], col[1], col[2])
+
+def _math_or_text(p, latex, display, color_hex=None, bold=False, size_pt=None):
+    """Append one formula to paragraph p. A formula that cannot be converted raises MathError (the build stops);
+       PP_MATH_FALLBACK=text prints it as text instead, for a developer machine without pandoc."""
+    try:
+        root=PM.to_omml(latex, display=display)
+    except MathError:
+        if not PM.fallback_text_allowed(): raise
+        rin(p,latex,size_pt or 11,BLACK); return p
+    if color_hex or bold or size_pt: PM.format_omml(root,color_hex,bold,size_pt)
+    p._p.append(root); return p
+
+def add_text_with_math(p, text, sz, col, bold=False, ital=False, kind_style=None):
+    """Runs and equations for one piece of text: $…$ inline, $$…$$ display (only when the text is nothing else)."""
+    whole=PM.whole_formula(text)
+    if whole and whole[1] and not p.runs:
+        # a display formula alone in its paragraph: centred, in display style (m:oMathPara)
+        p.alignment=WD_ALIGN_PARAGRAPH.CENTER
+        return _math_or_text(p, whole[0], True, _color_hex(col), bold, sz)
+    last=None
+    for kind,val in PM.pieces(text):
+        if kind=="text":
+            if val: last=p.add_run(val); _fmt_run(last,sz,col,bold,ital)
+        else:
+            last=_math_or_text(p, val, False, _color_hex(col), bold, sz)
+    return last
 
 def eqn(d, latex, center=True, before=3, after=3):
-    """Display equation as native, editable Word math (OMML). Falls back to text if engine unavailable."""
+    """Display equation as native, editable Word math (OMML)."""
     p=d.add_paragraph(); sp(p,before,after)
     if center: p.alignment=WD_ALIGN_PARAGRAPH.CENTER
-    if _EQN_OK:
-        try: p._p.append(_to_omml(latex)); return p
-        except Exception: pass
-    rin(p,latex,11,BLACK); return p
-
-_M_NS="http://schemas.openxmlformats.org/officeDocument/2006/math"
-def _omml_fmt(root, color_hex=None, bold=False):
-    """Apply run colour/bold to every math run (m:r) of an OMML tree — lets native equations be
-       WHITE on a navy header cell, or NAVY+bold for an emphasised result."""
-    for r in list(root.iter('{%s}r'%_M_NS)):
-        mrpr=r.find('{%s}rPr'%_M_NS)
-        wrpr=OxmlElement('w:rPr')
-        if color_hex is not None:
-            c=OxmlElement('w:color'); c.set(qn('w:val'),color_hex); wrpr.append(c)
-        if bold:
-            b=OxmlElement('w:b'); wrpr.append(b)
-        r.insert((list(r).index(mrpr)+1) if mrpr is not None else 0, wrpr)
-    return root
+    return _math_or_text(p, latex, True) and p
 
 def eqn_in(p, latex, white=False, color_hex=None, bold=False):
-    """Insert an inline native equation into an existing paragraph. white=True (or color_hex/bold)
-       formats the math (e.g. white on a navy header)."""
-    if _EQN_OK:
-        try:
-            root=_to_omml(latex)
-            if white: color_hex="FFFFFF"
-            if color_hex is not None or bold: _omml_fmt(root,color_hex,bold)
-            p._p.append(root); return p
-        except Exception: pass
-    rin(p,latex,11,(WHITE if white else BLACK)); return p
+    """Insert an inline native equation into an existing paragraph (white=True: white maths, for a navy cell)."""
+    if white: color_hex="FFFFFF"
+    _math_or_text(p, latex, False, color_hex, bold, None); return p
 
 def mathcell(cell, latex, fill=NAVYF, white=True, before=1, after=1):
     """Render a NATIVE equation as a table HEADER (or any) cell. On a navy fill the math is white
@@ -553,7 +593,7 @@ def step_signoff(d, mk=None, en=None, sz=9):
     roles=["Извршил и внел сурови податоци (оператор/аналитичар) | Executed & entered raw data (Operator/Analyst)",
            "Проверил и одобрил овој запис (Раководител на КК) | Checked & approved this record (QC Department Manager)"]
     t=d.add_table(rows=3,cols=4); t.alignment=WD_TABLE_ALIGNMENT.CENTER
-    for j,x in enumerate(h): cellfmt(t.cell(0,j),x,None,sz,WHITE,bold=True,fill=NAVYF)
+    for j,x in enumerate(h): head_cell(t.cell(0,j),x,None,sz)
     for i,role in enumerate(roles,start=1):
         cellfmt(t.cell(i,0),role,None,sz,BLACK,fill=LBL)
         for j in (1,2,3): cellfmt(t.cell(i,j),"",None,sz,BLACK)
@@ -565,7 +605,7 @@ def entry_table(d, headers, rows, widths, label_mk=None, label_en=None, sz=9, si
     if label_mk or label_en: minilabel(d, label_mk, label_en)
     rowlabels = rows if isinstance(rows,(list,tuple)) else [None]*int(rows)
     t=d.add_table(rows=len(rowlabels)+1,cols=len(headers)); t.alignment=WD_TABLE_ALIGNMENT.CENTER
-    for j,h in enumerate(headers): cellfmt(t.cell(0,j),h,None,sz,WHITE,bold=True,fill=NAVYF)
+    for j,h in enumerate(headers): head_cell(t.cell(0,j),h,None,sz)
     for i,rl in enumerate(rowlabels,start=1):
         cellfmt(t.cell(i,0),(rl if rl else ""),None,sz,(NAVY if rl else BLACK),bold=bool(rl),fill=(LBL if rl else None))
         for j in range(1,len(headers)): cellfmt(t.cell(i,j),"",None,sz,BLACK)
@@ -578,7 +618,7 @@ def execution_signoff(d, mk_exec="Извршил (КК) | Executed (QC)", en_exe
     h=["Дејство | Action","Име | Name","Датум | Date","Потпис | Signature"]
     rws=[(mk_exec,"____________________"),("Прегледал (QA) | Reviewed (QA)",reviewer),("Одобрил (Раководител КК) | Approved (QC Manager)",approver)]
     t=d.add_table(rows=4,cols=4); t.alignment=WD_TABLE_ALIGNMENT.CENTER
-    for j,x in enumerate(h): cellfmt(t.cell(0,j),x,None,10,WHITE,bold=True,fill=NAVYF)
+    for j,x in enumerate(h): head_cell(t.cell(0,j),x,None,10)
     for i,(a,n) in enumerate(rws,start=1):
         cellfmt(t.cell(i,0),a,None,10,BLACK); cellfmt(t.cell(i,1),n,None,10,BLACK)
         cellfmt(t.cell(i,2),"",None,10,BLACK); cellfmt(t.cell(i,3),"",None,10,BLACK)
@@ -668,7 +708,7 @@ def cover_page(d, title_mk, title_en, info_rows, kind_mk="", kind_en="", study_m
                            (approval_qp, approval_qp_name)]
     h=["Дејство | Action","Име/Позиција | Name/Position","Датум | Date","Потпис | Signature"]
     t=d.add_table(rows=len(rows)+1,cols=4); t.alignment=WD_TABLE_ALIGNMENT.CENTER
-    for j,x in enumerate(h): cellfmt(t.cell(0,j),x,None,10,WHITE,bold=True,fill=NAVYF)
+    for j,x in enumerate(h): head_cell(t.cell(0,j),x,None,10)
     for i,(a,n) in enumerate(rows,start=1):
         cellfmt(t.cell(i,0),a,None,10,BLACK); cellfmt(t.cell(i,1),n,None,10,BLACK)
         cellfmt(t.cell(i,2),"",None,10,BLACK); cellfmt(t.cell(i,3),"",None,10,BLACK)

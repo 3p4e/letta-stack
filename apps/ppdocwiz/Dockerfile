@@ -13,9 +13,10 @@ RUN npm run typecheck && npm test && npm run build
 
 FROM python:3.11-slim
 
-# LibreOffice + Calibri-compatible fonts for DOCX->PDF; poppler for rasterisation.
+# LibreOffice (+ Math: without it a PDF drops the equations) + Calibri-compatible fonts for DOCX->PDF; poppler for
+# rasterisation; pandoc turns LaTeX formulas into native Word equations (pp_math, 04.11.2026).
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        libreoffice-writer fonts-crosextra-carlito fonts-liberation poppler-utils \
+        libreoffice-writer libreoffice-math fonts-crosextra-carlito fonts-liberation poppler-utils pandoc \
     && rm -rf /var/lib/apt/lists/*
 
 # Requirements BEFORE the source trees: the pip layer then caches across source
@@ -25,6 +26,7 @@ COPY ppdocwiz/requirements.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
 COPY pp-document-suite /opt/pp-document-suite
+RUN python3 /opt/pp-document-suite/scripts/pp_math.py --selftest
 COPY ppdocwiz /app
 COPY --from=web /src/frontend/suite /app/frontend/suite
 

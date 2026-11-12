@@ -70,8 +70,14 @@ terms:
   - {en: "Sample", mk: "мостра", avoid: "примерок (older documents)"}
   - {en: "In-process (sample or material)", mk: "во процес", avoid: "материјал во процес as the sample type"}
   - {en: "Environmental monitoring (sample type)", mk: "мониторинг на околина", avoid: "Environmental alone in the English half"}
+  # Head of QC, 04.11.2026: "terms like these will never be translated they will be only used in english".
+  - {en: "Cannabinoid abbreviations (THC, THCA, Δ9-THC, CBD, CBDA, CBN, CBNA, CBG, CBGA, CBC)",
+     mk: "not translated: the Latin abbreviation is written once, in English only (never \"HPLC | HPLC\")", avoid: "ТХЦ, Δ⁹-ТХЦ, ТХЦА, ЦБД, ЦБДА, ЦБН, ЦБГ, ЦБЦ",
+     lint: ['Δ\S{0,3}ТХЦ', 'ТХЦ', 'ЦБ[ДНГЦ]']}
 
 rules:
-  - "Decimals: comma in Macedonian (388,97 g), point in English (388.97 g)."
+  - "Decimals: comma in Macedonian (388,97 g), point in English (388.97 g) — in running text that has both halves."
+  - "A value that is the SAME in both languages is written ONCE and printed once (Head of QC, 04.11.2026): a number, a formula, a unit, a code, a dash, an abbreviation. Write 1,097 — never 1,097~~1.097 or 1,097 ||| 1.097 — with the decimal comma. This overrides 'convert the decimal separator' for such values. Only an entry whose words differ in the two languages (1,000 (реф.) / 1.000 (ref.)) stays bilingual."
   - "Abbreviations are not translated: GMP, GDP, QA, QC, QP, CAPA, MKT, RH, CoA, TRA, UTID."
+  - "Cannabinoid abbreviations and HPLC are written once, in English only: THC, THCA, Δ9-THC, CBD, CBDA, CBN, CBNA, CBG, CBGA, CBC, HPLC — never ТХЦ, ЦБД, never repeated as \"THC | THC\"."
   - "One term per concept in the whole document, in both halves; a defined term is used exactly as defined."

@@ -12,7 +12,10 @@ house_rules: |
   PURELY PLANT HOUSE RULES (binding, from DOCENGINE-CANON-2026-07):
   - Bilingual Macedonian-first (MK | EN inline); decimal commas in MK;
     abbreviations untranslated.
-  - One house navy #2B547E; Calibri; font floor 6 pt; shading always 'clear'.
+  - House navy #2B547E is the accent (text, rules); section bars and table headers are pale blue (04.11.2026);
+    Calibri; body font floor 7 pt; shading always 'clear'.
+  - A value that is the same in both languages (a number, formula, unit, code, abbreviation) is written once and
+    printed once — 1,097, never 1,097 | 1.097; an English-only term (THC, CBD, HPLC) is never translated.
   - SOP = mandatory 9 sections (1 ЦЕЛ/PURPOSE, 2 ПОДРАЧЈЕ/SCOPE, 3
     ОДГОВОРНОСТИ/RESPONSIBILITIES, 4 РЕФЕРЕНТНИ/REFERENCES, 5 ДЕФИНИЦИИ/
     DEFINITIONS, 6 ПОСТАПКА/PROCEDURE, 7 ЗАПИСИ/RECORDS, 8 ПОВРЗАНИ/RELATED,
@@ -83,7 +86,8 @@ agents:
       You are the Macedonian<->English parity checker/translator for Purely
       Plant documents. Macedonian is primary. Use the terms of the
       gf_glossary_mk block exactly; do not translate abbreviations; use decimal commas in
-      Macedonian numbers. Return corrected bilingual Markdown only.
+      Macedonian numbers. A value that is the same in both languages is written once (1,097), not as a pair.
+      Return corrected bilingual Markdown only.
   - name: gf_reg_checker
     description: Verifies drafted sections against the regulatory corpus; cites real passages.
     persona: >

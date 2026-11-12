@@ -69,22 +69,22 @@ export function Formatter() {
   const lines = F ? F.md : SAMPLE_MD.map(l => ({ t: l.t, lab: l.lab || '', c: l.c || T.text, fw: l.fw || 400, lc: l.lc || C.ok, bg: l.bg || 'transparent' }));
   return <>
     <div style={{ width: 260, flex: 'none', borderRight: `1px solid ${T.hair}`, background: T.pane, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}><b style={{ color: '#fff' }}>Input</b><span style={{ fontSize: 12, color: T.muted, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 170 }}>{fIn.label}</span></div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}><b style={{ color: T.strong }}>Input</b><span style={{ fontSize: 12, color: T.muted, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 170 }}>{fIn.label}</span></div>
       {!F ? <div style={{ borderRadius: 2, overflow: 'hidden' }}><PPPage raw zoom={.29} /></div>
         : <div style={{ width: 230, height: 326, overflow: 'hidden', borderRadius: 2, background: '#fff', color: '#222', padding: 14, fontFamily: 'Calibri,Carlito,sans-serif', fontSize: 8, lineHeight: 1.35, display: 'flex', flexDirection: 'column', gap: 3 }}>{F.prev.map((p, i) => <div key={i} style={{ fontWeight: p.fw, fontSize: p.fs, color: p.c, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.t}</div>)}</div>}
       <label onDragOver={e => { e.preventDefault(); setDrag(true); }} onDragLeave={() => setDrag(false)} onDrop={e => { e.preventDefault(); setDrag(false); load(e.dataTransfer.files[0]); }}
-        style={{ border: `1px dashed ${drag ? C.run : T.control}`, background: drag ? 'rgba(127,178,229,.08)' : 'transparent', borderRadius: 6, padding: 10, textAlign: 'center', color: T.secondary, fontSize: 12.5, cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 2 }}>
+        style={{ border: `1px dashed ${drag ? C.run : T.control}`, background: drag ? 'rgba(43,108,176,.08)' : 'transparent', borderRadius: 6, padding: 10, textAlign: 'center', color: T.secondary, fontSize: 12.5, cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 2 }}>
         <span>Drop .docx / .md / .txt</span><span style={{ fontSize: 11.5, color: C.run }}>or click to browse</span>
         <input type="file" accept=".docx,.md,.txt" onChange={e => { load(e.target.files?.[0]); e.target.value = ''; }} style={{ display: 'none' }} /></label>
       <div style={{ display: 'flex', gap: 8, fontSize: 12 }}><span onClick={() => useF.setState({ pasteOpen: !pasteOpen })} style={{ color: C.run, cursor: 'pointer' }}>{pasteOpen ? 'Hide paste box' : 'Paste text instead'}</span>{F && <span onClick={() => useF.setState({ file: null, err: '', out: '' })} style={{ marginLeft: 'auto', color: T.muted, cursor: 'pointer' }}>Reset to sample</span>}</div>
-      {pasteOpen && <><textarea value={paste} onChange={e => useF.setState({ paste: e.target.value })} placeholder={'# Наслов | Title\nТекст ||| Text'} style={{ height: 110, background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 6, padding: 8, color: '#fff', font: `12px ${MONO}`, resize: 'none', outline: 'none' }} />
-        <button onClick={() => { const t = paste.trim(); if (!t) return useF.setState({ err: 'Paste some text first' }); load(new File([t], 'pasted.md', { type: 'text/markdown' })); useF.setState({ pasteOpen: false }); }} style={{ background: T.navy, color: '#fff', border: 0, borderRadius: 6, padding: 7, font: 'inherit', fontWeight: 700, cursor: 'pointer' }}>Use pasted text</button></>}
+      {pasteOpen && <><textarea value={paste} onChange={e => useF.setState({ paste: e.target.value })} placeholder={'# Наслов | Title\nТекст ||| Text'} style={{ height: 110, background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 6, padding: 8, color: T.strong, font: `12px ${MONO}`, resize: 'none', outline: 'none' }} />
+        <button onClick={() => { const t = paste.trim(); if (!t) return useF.setState({ err: 'Paste some text first' }); load(new File([t], 'pasted.md', { type: 'text/markdown' })); useF.setState({ pasteOpen: false }); }} style={{ background: T.navy, color: T.onAccent, border: 0, borderRadius: 6, padding: 7, font: 'inherit', fontWeight: 700, cursor: 'pointer' }}>Use pasted text</button></>}
       {err && <div style={{ fontSize: 12, color: C.bad }}>{err}</div>}
       {fmt === 'B' && <div style={{ display: 'flex', flexDirection: 'column', gap: 5, fontSize: 12 }}>
         <span style={{ color: T.muted }}>Registered as · from the document, never the file name</span>
         {([['code', 'Code · WHSOP_003_A04'], ['title_mk', 'Наслов (МК)'], ['title_en', 'Title (EN)'], ['version', 'Version']] as const).map(([k, ph]) =>
           <input key={k} data-field={'reg_' + k} value={meta[k]} placeholder={ph} onChange={e => useF.setState({ meta: { ...meta, [k]: e.target.value } })}
-            style={{ background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 6, padding: '5px 8px', color: '#fff', font: `12px ${MONO}` }} />)}
+            style={{ background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 6, padding: '5px 8px', color: T.strong, font: `12px ${MONO}` }} />)}
       </div>}
     </div>
     <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
@@ -96,11 +96,11 @@ export function Formatter() {
         <Caps>DETECTED STRUCTURE → MARKDOWN<span style={{ float: 'right', letterSpacing: 0, color: T.muted }}>{fIn.counts}</span></Caps>
         <div style={{ flex: 1, minHeight: 0, background: T.surface, border: `1px solid ${T.hair}`, borderRadius: 6, padding: '12px 14px', fontFamily: MONO, fontSize: 12.5, lineHeight: 1.8, overflow: 'auto' }}>
           {lines.map((l, i) => <div key={i} style={{ display: 'flex', gap: 16, minHeight: '1.7em' }}>
-            <span style={{ whiteSpace: 'pre', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0, paddingRight: 2, color: l.c, fontWeight: l.fw }}><span style={{ background: l.bg }}>{l.c === T.text || l.c === '#d6e2f0' ? <Colored t={l.t} /> : l.t}</span></span>
+            <span style={{ whiteSpace: 'pre', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0, paddingRight: 2, color: l.c, fontWeight: l.fw }}><span style={{ background: l.bg }}>{l.c === T.text || l.c === '#1f2d3d' ? <Colored t={l.t} /> : l.t}</span></span>
             {l.lab && <span style={{ marginLeft: 'auto', flex: 'none', whiteSpace: 'nowrap', color: l.lc }}>{l.lab}</span>}</div>)}
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 10, fontSize: 12.5 }}>
-          {([['Words in → out', fIn.words, '#fff'], ['Fidelity §5A', 'output ≥ source', C.ok], ['Needs review', fIn.rev, fIn.revC]] as const).map(([k, v, c]) =>
+          {([['Words in → out', fIn.words, T.strong], ['Fidelity §5A', 'output ≥ source', C.ok], ['Needs review', fIn.rev, fIn.revC]] as const).map(([k, v, c]) =>
             <div key={k} style={{ background: T.surface, border: `1px solid ${T.control}`, borderRadius: 6, padding: '9px 11px' }}><div style={{ color: T.muted, fontSize: 11.5 }}>{k}</div><b style={{ color: c }}>{v}</b></div>)}
         </div>
       </div>

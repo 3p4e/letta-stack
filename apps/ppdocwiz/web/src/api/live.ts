@@ -1,4 +1,4 @@
-import type { Api, JobList, WorkflowIn } from './client';
+import type { Api, JobList, ReviseResult, WorkflowIn } from './client';
 import { normalizeQuestionnaire, type RawQuestionnaire } from './normalize';
 import { ApiError, type Job } from './types';
 
@@ -47,6 +47,8 @@ export function liveApi(): Api {
   const de = (window.PP_SUITE_CONFIG?.docengineBase || '/api/docengine').replace(/\/$/, '');
   return {
     mode: 'live',
+    checkEquations: text => post('/api/equations/check', { text }),
+    previewEquation: async (latex, display) => (await post<{ png: string }>('/api/equations/preview', { latex, display })).png,
     openSession: async (key, username = '') => { await post('/api/session', { key, username }); },
     me: () => call('/api/me'),
     users: async () => (await call<{ users: never[] }>('/api/users')).users,
@@ -92,6 +94,8 @@ export function liveApi(): Api {
       if (firstErr) out.err = `${firstErr.status} · ${firstErr.message}`;
       return out;
     },
+    stopJob: id => post<Job>(de + '/workflows/' + encodeURIComponent(id) + '/stop', {}),
+    reviseJob: (id, body) => post<ReviseResult>(de + '/workflows/' + encodeURIComponent(id) + '/revise', body),
     rerunJob: async id => { const r = await post<{ job_id: string; status: string }>(de + '/workflows/' + encodeURIComponent(id) + '/rerun', {}); rememberJob(r.job_id); return r; },
     reviewJob: (id, decision, note) => post(de + '/workflows/' + encodeURIComponent(id) + '/review', { decision, note }),
     directBuild: (markdown, out_name, meta) => post(de + '/build', { markdown, out_name, meta }),

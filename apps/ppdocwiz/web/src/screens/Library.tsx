@@ -54,7 +54,7 @@ function Builds() {
   return <>
     <div style={{ flex: 1, minWidth: 0, padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 12, overflow: 'auto' }}>
       <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-        <input value={q} onChange={e => setQ(e.target.value)} placeholder="doctype:any · ⌕ code, title МК or EN" style={{ flex: 1, background: T.surface, border: `1px solid ${T.control}`, borderRadius: 6, padding: '8px 12px', fontFamily: MONO, fontSize: 12, color: '#fff', outline: 'none' }} />
+        <input value={q} onChange={e => setQ(e.target.value)} placeholder="doctype:any · ⌕ code, title МК or EN" style={{ flex: 1, background: T.surface, border: `1px solid ${T.control}`, borderRadius: 6, padding: '8px 12px', fontFamily: MONO, fontSize: 12, color: T.strong, outline: 'none' }} />
         <Seg items={[['latest', 'latest'], ['all', 'all versions']]} value={allVersions ? 'all' : 'latest'} onPick={k => setAllVersions(k === 'all')} size={12} pad="4px 10px" />
         <span style={{ fontSize: 12, color: T.muted, whiteSpace: 'nowrap' }}>{list.length} documents · every row passed the gate</span>
       </div>
@@ -62,7 +62,7 @@ function Builds() {
         <div style={{ display: 'grid', gridTemplateColumns: cols, gap: 10, padding: '9px 14px', background: T.pane, fontSize: 11, color: T.muted, fontFamily: MONO, letterSpacing: '.04em' }}><span>CODE</span><span>TITLE МК ||| EN</span><span>DOCTYPE</span><span>VER</span><span>BYTES</span><span>SOURCE</span></div>
         {list.map(x => { const nv = byCode[x.code].length, gone = (x as { missing?: boolean }).missing;
           return <div key={x.id} onClick={() => set({ libSel: x.id })} className="pp-hover-row" style={{ display: 'grid', gridTemplateColumns: cols, gap: 10, padding: '11px 14px', borderTop: `1px solid ${T.hair}`, alignItems: 'center', cursor: 'pointer', background: x.id === sel?.id ? T.selected : 'transparent' }}>
-            <b style={{ color: '#fff', fontFamily: MONO, fontSize: 12.5 }}>{x.code}</b>
+            <b style={{ color: T.strong, fontFamily: MONO, fontSize: 12.5 }}>{x.code}</b>
             <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{x.title_mk} <span style={{ color: C.warn, fontFamily: MONO, fontSize: 11 }}>|||</span> <span style={{ color: T.secondary }}>{x.title_en}</span></span>
             <span style={{ color: T.secondary, fontFamily: MONO, fontSize: 11.5 }}>{x.doctype}</span>
             <span>{x.version}{!allVersions && nv > 1 && <span style={{ fontSize: 10.5, color: T.muted }}> · {nv}</span>}</span>
@@ -72,7 +72,7 @@ function Builds() {
       <div style={{ fontSize: 12, color: T.faint }}>A FAIL build is written as .partial, deleted, and never registered. It shows up in Verify or Jobs, never here.</div>
     </div>
     {r && <div style={{ width: 380, flex: 'none', borderLeft: `1px solid ${T.hair}`, background: T.pane, padding: 16, display: 'flex', flexDirection: 'column', gap: 12, fontSize: 13, overflow: 'auto' }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}><div style={{ flex: 1 }}><div style={{ fontFamily: MONO, fontSize: 13, fontWeight: 700, color: '#fff' }}>{r.code} · v{r.version}</div><div style={{ color: T.secondary }}>{r.title_mk} | {r.title_en}</div></div>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}><div style={{ flex: 1 }}><div style={{ fontFamily: MONO, fontSize: 13, fontWeight: 700, color: T.strong }}>{r.code} · v{r.version}</div><div style={{ color: T.secondary }}>{r.title_mk} | {r.title_en}</div></div>
         <Seg items={[['detail', 'detail'], ['versions', `versions · ${versions.length}`]]} value={tab} onPick={setTab} size={11.5} pad="3px 8px" /></div>
       {tab === 'detail' ? <>
         <div style={{ display: 'flex', gap: 14 }}><PPPage doc={{ ...(r.doctype === 'SOP' ? SAMPLE_SOP : SAMPLE_ANNEX), code: r.code, mk_title: r.title_mk, en_title: r.title_en, version: r.version, parent: r.parent || '', status: 'approved' }} zoom={.16} />
@@ -85,7 +85,7 @@ function Builds() {
         {avail === 503 && <Banner kind="err">503 · DocEngine storage unavailable</Banner>}
         {pdfErr && <Banner kind="err">PDF → {pdfErr}</Banner>}
         <div style={{ marginTop: 'auto', display: 'flex', gap: 8 }}>
-          <a href={missing ? undefined : api.documentHref(r.id, 'download')} style={{ flex: 1, textAlign: 'center', borderRadius: 6, padding: 9, fontWeight: 700, background: missing ? T.surface : T.navy, color: missing ? T.faint : '#fff', textDecoration: 'none', pointerEvents: missing ? 'none' : undefined }}>Download .docx</a>
+          <a href={missing ? undefined : api.documentHref(r.id, 'download')} style={{ flex: 1, textAlign: 'center', borderRadius: 6, padding: 9, fontWeight: 700, background: missing ? T.surface : T.navy, color: missing ? T.faint : T.onAccent, textDecoration: 'none', pointerEvents: missing ? 'none' : undefined }}>Download .docx</a>
           <a href={missing ? undefined : api.documentHref(r.id, 'pdf')} onClick={async e => {
             // Probe first: on 502/503 a plain navigation would leave the app for a bare JSON error page.
             if (api.mode !== 'live') return; e.preventDefault(); setPdfErr('');
@@ -93,19 +93,19 @@ function Builds() {
               if (!res.ok) { const j = await res.json().catch(() => ({})); setPdfErr(`${res.status} · ${(j as { detail?: string }).detail || res.statusText}`); return; }
               const a = document.createElement('a'); a.href = URL.createObjectURL(await res.blob()); a.download = `${r.code}.pdf`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 30000);
             } catch (x) { setPdfErr(String((x as Error).message || x)); } }}
-            title="Gotenberg renders on demand: 503 when no renderer is configured, 502 when conversion fails" style={{ flex: 1, textAlign: 'center', border: `1px solid ${T.control}`, borderRadius: 6, padding: 9, color: missing ? T.faint : '#fff', textDecoration: 'none', pointerEvents: missing ? 'none' : undefined }}>PDF · Gotenberg</a></div>
+            title="Gotenberg renders on demand: 503 when no renderer is configured, 502 when conversion fails" style={{ flex: 1, textAlign: 'center', border: `1px solid ${T.control}`, borderRadius: 6, padding: 9, color: missing ? T.faint : T.strong, textDecoration: 'none', pointerEvents: missing ? 'none' : undefined }}>PDF · Gotenberg</a></div>
         {r.job_id && <span onClick={() => go('jobs', { jobSel: r.job_id! })} style={{ textAlign: 'center', color: C.run, cursor: 'pointer', fontSize: 12.5 }}>Open source job {r.job_id.slice(0, 8)} →</span>}
       </> : <>
         <div style={{ fontSize: 12, color: T.muted, lineHeight: 1.45 }}>The registry keys on <span style={{ fontFamily: MONO }}>code</span>: every passed build of {r.code} is kept. The newest approved row is effective; older rows are superseded, never deleted. A Formatter build (no workflow job) is a format-only copy and never effective.</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>{versions.map((v, i) => <div key={v.id} style={{ display: 'grid', gridTemplateColumns: '14px 1fr auto', gap: 8, alignItems: 'start' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%' }}><span style={{ width: 10, height: 10, borderRadius: '50%', marginTop: 4, background: i === 0 && controlled(v) ? C.ok : 'transparent', border: `2px solid ${i === 0 && controlled(v) ? C.ok : T.faint}` }} />{i < versions.length - 1 && <span style={{ flex: 1, width: 2, background: T.control, minHeight: 26 }} />}</div>
-          <div onClick={() => set({ libSel: v.id })} style={{ cursor: 'pointer', paddingBottom: 10 }}><div style={{ fontFamily: MONO, fontSize: 12.5, color: v.id === r.id ? '#fff' : T.text, fontWeight: v.id === r.id ? 700 : 400 }}>v{v.version} <span style={{ color: i === 0 && controlled(v) ? C.ok : T.muted, fontWeight: 400, fontSize: 11 }}>{!controlled(v) ? 'format-only copy · not a controlled version' : i === 0 ? 'effective' : 'superseded by v' + versions[i - 1].version}</span></div>
+          <div onClick={() => set({ libSel: v.id })} style={{ cursor: 'pointer', paddingBottom: 10 }}><div style={{ fontFamily: MONO, fontSize: 12.5, color: v.id === r.id ? T.strong : T.text, fontWeight: v.id === r.id ? 700 : 400 }}>v{v.version} <span style={{ color: i === 0 && controlled(v) ? C.ok : T.muted, fontWeight: 400, fontSize: 11 }}>{!controlled(v) ? 'format-only copy · not a controlled version' : i === 0 ? 'effective' : 'superseded by v' + versions[i - 1].version}</span></div>
             <div style={{ fontSize: 11.5, color: T.muted }}>{when(v.created_at)} · {nbsp(v.bytes)} B · {src(v)}{v.supersedes ? ' · supersedes ' + v.supersedes.split(' ').pop() : ''}</div></div>
           {i < versions.length - 1 ? <span onClick={() => setCmp([versions[i + 1].id, v.id])} style={{ fontSize: 11.5, color: C.run, cursor: 'pointer', whiteSpace: 'nowrap' }}>diff ← v{versions[i + 1].version}</span> : <span />}</div>)}</div>
         {cmpDocs && <><Caps>DIFF · v{cmpDocs[0].version} → v{cmpDocs[1].version}</Caps>
           <div style={{ background: T.deeper, border: `1px solid ${T.hair}`, borderRadius: 6, padding: '9px 10px', fontFamily: MONO, fontSize: 10.5, lineHeight: 1.6, overflow: 'auto' }}>
             {diffLines(...(cmpDocs.map(d => [`title_mk: ${d.title_mk}`, `title_en: ${d.title_en}`, `version: ${d.version}`, `bytes: ${d.bytes}`, ...(d.verify || '').split('\n').filter(Boolean)]) as [string[], string[]])).map((l, i) =>
-              <div key={i} style={{ whiteSpace: 'pre', color: l.op === '+' ? C.ok : l.op === '-' ? C.bad : T.muted, background: l.op === '+' ? 'rgba(111,208,140,.08)' : l.op === '-' ? 'rgba(224,122,111,.08)' : undefined }}>{l.op} {l.t}</div>)}</div>
+              <div key={i} style={{ whiteSpace: 'pre', color: l.op === '+' ? C.ok : l.op === '-' ? C.bad : T.muted, background: l.op === '+' ? 'rgba(46,139,87,.08)' : l.op === '-' ? 'rgba(192,57,43,.08)' : undefined }}>{l.op} {l.t}</div>)}</div>
           <div style={{ fontSize: 11.5, color: T.faint }}>Registry rows carry metadata and the verify report, not the Markdown. For a content diff, open both source jobs (result.markdown).</div></>}
       </>}
     </div>}

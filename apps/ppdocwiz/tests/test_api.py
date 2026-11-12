@@ -664,3 +664,33 @@ def test_a_monolingual_build_fails_the_gate_as_at_the_docengine(client, monkeypa
     monkeypatch.setattr(build_from_md, "main", latin_only)
     r = client.post("/api/build", json={"markdown": GOOD_MD}, headers=H)
     assert r.status_code == 422 and "FAIL (missing a language)" in r.json()["verify"]
+
+
+# ---- LaTeX formulas (04.11.2026): the UI's check and preview ----
+def test_equations_check_reports_each_formula_as_the_build_converts_it(client):
+    r = client.post("/api/equations/check", json={"text": "Total $a_1+b$ and bad $\\frobnicate{x}$ and $$\\frac{a}{b}$$ and 5 $ vs 6 $"}, headers=H)
+    assert r.status_code == 200
+    b = r.json()
+    assert [f["ok"] for f in b["formulas"]] == [True, False, True] and b["ok"] is False
+    assert b["formulas"][2]["display"] is True and "frobnicate" in b["formulas"][1]["error"]
+    assert b["engine"]["ok"] is True
+
+
+def test_equations_check_needs_the_key(client):
+    assert client.post("/api/equations/check", json={"text": "$a$"}).status_code in (401, 403)
+
+
+def test_equations_preview_refuses_a_bad_formula_and_renders_a_good_one(client):
+    bad = client.post("/api/equations/preview", json={"latex": "\\frobnicate{x}"}, headers=H)
+    assert bad.status_code == 422 and bad.json()["ok"] is False
+    import shutil
+    if not shutil.which("soffice"):
+        pytest.skip("no LibreOffice here; CI runs the check and the 422 only")
+    ok = client.post("/api/equations/preview", json={"latex": "u_c=\\sqrt{\\sum_i u_i^2}", "display": True}, headers=H)
+    assert ok.status_code == 200
+    import base64
+    assert base64.b64decode(ok.json()["png"])[:8] == b"\x89PNG\r\n\x1a\n"
+
+
+def test_health_reports_the_equation_engine(client):
+    assert client.get("/api/health").json()["equations"] is True

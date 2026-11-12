@@ -174,11 +174,11 @@ export function Workflow() {
     const drop = () => setDrafts(d => { const n = { ...d }; delete n[key]; return n; });
     const save = () => { if (drafts[key] === undefined) return; const v = drafts[key].trim(); if (v === (f ? String(f.value) : '')) { drop(); return; } patch({ set: { [key]: v } }).then(ok => { if (ok) drop(); }); };
     return <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-      <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}><span style={{ fontSize: 13, color: '#fff' }}>{label}</span><Badge f={f} />{lockBtn(key)}
+      <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}><span style={{ fontSize: 13, color: T.strong }}>{label}</span><Badge f={f} />{lockBtn(key)}
         {acceptBtn(key)}
         {f?.stale && <span onClick={() => patch({ set: { [key]: f.value } })} {...press(() => patch({ set: { [key]: f.value } }))} style={{ cursor: 'pointer', fontSize: 11.5, color: C.bad }}>re-confirm</span>}</div>
       <textarea value={cur} disabled={locked} placeholder={ph} onChange={e => setDrafts(d => ({ ...d, [key]: e.target.value }))} onBlur={save} rows={4}
-        style={{ background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 6, padding: 10, color: locked ? T.muted : '#fff', fontSize: 13, resize: 'vertical', outline: 'none' }} />
+        style={{ background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 6, padding: 10, color: locked ? T.muted : T.strong, fontSize: 13, resize: 'vertical', outline: 'none' }} />
       {!locked && (b?.proposals?.[key]?.options || []).filter(o => o.value !== cur).map(o => <div key={o.value} style={{ display: 'flex', gap: 8, fontSize: 12, alignItems: 'baseline' }}>
         <span onClick={() => patch({ set: { [key]: o.value } })} {...press(() => patch({ set: { [key]: o.value } }))} style={{ cursor: 'pointer', color: C.run, flex: 'none' }}>use</span>
         <span style={{ color: T.secondary }}>{o.value}</span><span style={{ color: T.faint, fontSize: 11 }}>{why(o)}</span></div>)}
@@ -186,18 +186,18 @@ export function Workflow() {
   };
 
   const startPage = <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 820 }}>
-    <div style={{ fontFamily: DISPLAY, fontSize: 18, color: '#fff', fontWeight: 700 }}>One workflow for every document</div>
+    <div style={{ fontFamily: DISPLAY, fontSize: 18, color: T.strong, fontWeight: 700 }}>One workflow for every document</div>
     <Caps>NEW</Caps>
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: 8 }}>
       {PACKAGES.map(([k, l, sub]) => <div key={k} onClick={() => !busy && start(k)} {...press(() => !busy && start(k))} className="pp-hover-row" style={{ cursor: 'pointer', border: `1px solid ${T.control}`, borderRadius: 8, padding: '10px 12px' }}>
-        <div style={{ color: '#fff', fontSize: 13.5 }}>{l}</div><div style={{ color: T.muted, fontSize: 12 }}>{sub}</div></div>)}
+        <div style={{ color: T.strong, fontSize: 13.5 }}>{l}</div><div style={{ color: T.muted, fontSize: 12 }}>{sub}</div></div>)}
     </div>
     {approved.length > 0 && <><Caps>REVISE OR CONTINUE A DOCUMENT FROM THE LIBRARY</Caps>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4, maxHeight: 260, overflow: 'auto' }}>{approved.map(e => {
         const ref = e.wip[0] || e.approved!;
         const open = () => !busy && start(packageOf(e), ref.id);
         return <div key={e.code} onClick={open} {...press(open)} className="pp-hover-row" style={{ cursor: 'pointer', display: 'flex', gap: 10, padding: '6px 10px', borderRadius: 6, fontSize: 12.5 }}>
-          <b style={{ fontFamily: MONO, color: '#fff', width: 110 }}>{e.code}</b><span style={{ color: T.secondary, flex: 1 }}>{e.title_mk || e.title_en}</span>
+          <b style={{ fontFamily: MONO, color: T.strong, width: 110 }}>{e.code}</b><span style={{ color: T.secondary, flex: 1 }}>{e.title_mk || e.title_en}</span>
           <span style={{ color: T.muted, fontSize: 11.5 }}>{e.wip.length ? `continue draft v${e.wip[0].version}` : `revise v${e.approved!.version}`}</span></div>; })}</div></>}
     {open.length > 0 && <><Caps>CONTINUE A BRIEF</Caps>
       {open.map(o => { const f = () => api.brief(o.id).then(x => { adopt(x); setPage('identity'); }).catch(fail); return <div key={o.id} onClick={f} {...press(f)} className="pp-hover-row" style={{ cursor: 'pointer', padding: '6px 10px', borderRadius: 6, fontSize: 12.5, color: T.secondary, fontFamily: MONO }}>{o.label}</div>; })}</>}
@@ -209,7 +209,7 @@ export function Workflow() {
     {([['title_mk', 'title МК', 'Наслов на македонски'], ['title_en', 'title EN', 'Title in English'], ['code', 'code', 'empty: the next free code at build'], ['version', 'version', '01'], ['department', 'department', 'QC · QA · WH · EQ · SP · CU']] as const).map(([k, l, ph]) =>
       <label key={k} style={{ display: 'grid', gridTemplateColumns: '96px 1fr', gap: 10, alignItems: 'center' }}><span style={{ fontSize: 12, color: T.muted, fontFamily: MONO }}>{l}</span>
         <input defaultValue={b.meta[k] || ''} placeholder={ph} key={b.id + k + (b.meta[k] || '')} onBlur={e => { const v = e.target.value.trim(); if (v !== (b.meta[k] || '')) patch({ meta: { [k]: v } }); }}
-          style={{ background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 5, padding: '7px 9px', color: '#fff', outline: 'none', fontFamily: k === 'code' ? MONO : undefined }} /></label>)}
+          style={{ background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 5, padding: '7px 9px', color: T.strong, outline: 'none', fontFamily: k === 'code' ? MONO : undefined }} /></label>)}
     <div style={{ fontSize: 12, color: T.faint }}>A number not yet confirmed is written XXX (QASOPXXX). Leave the code empty and the build takes the register's next free one.</div>
   </div>;
 
@@ -229,9 +229,9 @@ export function Workflow() {
         const offered = new Set(q.options.map(o => o.v));
         const prop = new Map((b.proposals?.[q.key]?.options || []).map(o => [o.value, o]));
         const extra = [...prop.values()].filter(o => !offered.has(o.value));
-        const chip = (v: string, note: React.ReactNode, title: string) => <span key={v} onClick={() => toggle(v)} {...press(() => toggle(v))} aria-pressed={has(v)} title={title} style={{ cursor: locked ? 'not-allowed' : 'pointer', padding: '5px 10px', borderRadius: 5, fontSize: 12.5, border: `1px solid ${has(v) ? C.ok : rec.has(v) ? C.run : T.control}`, background: has(v) ? 'rgba(80,170,120,.14)' : 'transparent', color: has(v) ? '#fff' : T.secondary }}>{v}{note}</span>;
+        const chip = (v: string, note: React.ReactNode, title: string) => <span key={v} onClick={() => toggle(v)} {...press(() => toggle(v))} aria-pressed={has(v)} title={title} style={{ cursor: locked ? 'not-allowed' : 'pointer', padding: '5px 10px', borderRadius: 5, fontSize: 12.5, border: `1px solid ${has(v) ? C.ok : rec.has(v) ? C.run : T.control}`, background: has(v) ? 'rgba(46,139,87,.14)' : 'transparent', color: has(v) ? T.strong : T.secondary }}>{v}{note}</span>;
         return <div key={q.key} style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}><span style={{ fontSize: 13, color: '#fff' }}>{pick(lang, q)[0]}</span><span style={{ fontSize: 11.5, color: T.muted }}>{pick(lang, q)[1]}</span><Badge f={f} />{lockBtn(q.key)}{acceptBtn(q.key)}
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}><span style={{ fontSize: 13, color: T.strong }}>{pick(lang, q)[0]}</span><span style={{ fontSize: 11.5, color: T.muted }}>{pick(lang, q)[1]}</span><Badge f={f} />{lockBtn(q.key)}{acceptBtn(q.key)}
             {f?.stale && <span onClick={() => patch({ set: { [q.key]: f.value } })} {...press(() => patch({ set: { [q.key]: f.value } }))} style={{ cursor: 'pointer', fontSize: 11.5, color: C.bad }}>re-confirm</span>}</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>{q.options.map(o => chip(o.v, <>
             {o.isDefault && !f && <span style={{ color: C.ok, fontSize: 10, marginLeft: 5 }}>default</span>}
@@ -252,15 +252,15 @@ export function Workflow() {
     ? <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 760 }}>
       <label style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: 10, alignItems: 'center', maxWidth: 600 }}><span style={{ fontSize: 12, color: T.muted, fontFamily: MONO }}>parent SOP</span>
         <input defaultValue={b.parent_sop} key={b.id + b.parent_sop} placeholder="e.g. QCSOP011" onBlur={e => { const v = e.target.value.trim(); if (v !== b.parent_sop) patch({ parent_sop: v }); }}
-          style={{ background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 5, padding: '7px 9px', color: '#fff', outline: 'none', fontFamily: MONO }} /></label>
+          style={{ background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 5, padding: '7px 9px', color: T.strong, outline: 'none', fontFamily: MONO }} /></label>
       {relErr && <Banner kind="err">GET /house/related/{parentCode} → {relErr}</Banner>}
       {related && (related.found
-        ? <div style={{ fontSize: 13, color: '#fff' }}>Approved <b style={{ fontFamily: MONO }}>{related.code}</b> v{related.version} — {related.title_en || related.title_mk}{related.title_en && related.title_mk && <span style={{ color: T.secondary }}> | {related.title_mk}</span>}</div>
+        ? <div style={{ fontSize: 13, color: T.strong }}>Approved <b style={{ fontFamily: MONO }}>{related.code}</b> v{related.version} — {related.title_en || related.title_mk}{related.title_en && related.title_mk && <span style={{ color: T.secondary }}> | {related.title_mk}</span>}</div>
         : <div style={{ fontSize: 13, color: C.warn }}><b style={{ fontFamily: MONO }}>{related.code}</b> is not in the library as an approved document</div>)}
       {similar.map(r => <Banner key={r.code} kind="warn"><b style={{ fontFamily: MONO }}>{r.code}</b> {r.title_en || r.title_mk} v{r.version} is already in use under this SOP — check it is not the same form</Banner>)}
       {related && related.related.length > 0 && <div style={{ border: `1px solid ${T.hair}`, borderRadius: 8 }}>
         {related.related.map((r, i) => <div key={r.code} style={{ display: 'grid', gridTemplateColumns: '130px minmax(0,1fr) 40px 130px', gap: 10, padding: '7px 12px', borderTop: i ? `1px solid ${T.hair}` : 'none', fontSize: 12.5, alignItems: 'baseline' }}>
-          <b style={{ fontFamily: MONO, color: '#fff' }}>{r.code}</b>
+          <b style={{ fontFamily: MONO, color: T.strong }}>{r.code}</b>
           <span style={{ color: T.secondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.title_mk || r.title_en}{r.title_mk && r.title_en && ` | ${r.title_en}`}</span>
           <span style={{ color: T.muted }}>v{r.version}</span>
           <span style={{ fontFamily: MONO, fontSize: 11, color: r.relation === 'annex' ? C.run : r.relation === 'child' ? C.ok : C.warn }}>{RELATION_LABEL[r.relation]}</span></div>)}
@@ -272,8 +272,8 @@ export function Workflow() {
       <div style={{ fontSize: 12.5, color: T.secondary }}>Each annex is written after the SOP, from its sections 6–7, and numbered under its code (A01, A02 …).</div>
       {b.annexes.map((a, i) => <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
         <span style={{ fontFamily: MONO, color: T.muted, width: 36 }}>A{String(i + 1).padStart(2, '0')}</span>
-        <input defaultValue={a.title_en} key={b.id + 'a' + i + a.title_en} placeholder="title EN" onBlur={e => { const n = [...b.annexes]; n[i] = { ...a, title_en: e.target.value.trim() }; if (n[i].title_en !== a.title_en) patch({ annexes: n }); }} style={{ flex: 1, background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 5, padding: '6px 8px', color: '#fff' }} />
-        <input defaultValue={a.title_mk} key={b.id + 'm' + i + a.title_mk} placeholder="наслов МК" onBlur={e => { const n = [...b.annexes]; n[i] = { ...a, title_mk: e.target.value.trim() }; if (n[i].title_mk !== a.title_mk) patch({ annexes: n }); }} style={{ flex: 1, background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 5, padding: '6px 8px', color: '#fff' }} />
+        <input defaultValue={a.title_en} key={b.id + 'a' + i + a.title_en} placeholder="title EN" onBlur={e => { const n = [...b.annexes]; n[i] = { ...a, title_en: e.target.value.trim() }; if (n[i].title_en !== a.title_en) patch({ annexes: n }); }} style={{ flex: 1, background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 5, padding: '6px 8px', color: T.strong }} />
+        <input defaultValue={a.title_mk} key={b.id + 'm' + i + a.title_mk} placeholder="наслов МК" onBlur={e => { const n = [...b.annexes]; n[i] = { ...a, title_mk: e.target.value.trim() }; if (n[i].title_mk !== a.title_mk) patch({ annexes: n }); }} style={{ flex: 1, background: T.deeper, border: `1px solid ${T.control}`, borderRadius: 5, padding: '6px 8px', color: T.strong }} />
         <Seg items={[['form', 'form'], ['log', 'log'], ['checklist', 'checklist']]} value={a.kind as 'form'} onPick={k => { const n = [...b.annexes]; n[i] = { ...a, kind: k }; patch({ annexes: n }); }} size={11} pad="3px 7px" />
         {(() => { const rm = () => patch({ annexes: b.annexes.filter((_, j) => j !== i) }); return <span onClick={rm} {...press(rm)} aria-label={`remove annex A${String(i + 1).padStart(2, '0')}`} style={{ cursor: 'pointer', color: T.muted }}>×</span>; })()}</div>)}
       {(() => { const add = () => patch({ annexes: [...b.annexes, { title_en: `Annex ${b.annexes.length + 1}`, title_mk: '', kind: 'form' }] }); return <span onClick={add} {...press(add)} style={{ cursor: 'pointer', color: C.run, fontSize: 13 }}>＋ add annex</span>; })()}
@@ -288,13 +288,13 @@ export function Workflow() {
       <span style={{ fontSize: 11.5, color: T.faint }}>{ROLES.find(r => r[0] === role)?.[2]}</span></div>
     <div onDragOver={e => { e.preventDefault(); setDragOver(true); }} onDragLeave={() => setDragOver(false)} onDrop={e => { e.preventDefault(); setDragOver(false); upload(e.dataTransfer.files); }}
       onClick={() => fileRef.current?.click()} {...press(() => fileRef.current?.click())} aria-label="drop or choose source files"
-      style={{ border: `2px dashed ${dragOver ? C.run : T.control}`, borderRadius: 8, padding: '26px 16px', textAlign: 'center', color: dragOver ? '#fff' : T.secondary, fontSize: 13, cursor: 'pointer', background: dragOver ? T.selected : 'transparent' }}>
+      style={{ border: `2px dashed ${dragOver ? C.run : T.control}`, borderRadius: 8, padding: '26px 16px', textAlign: 'center', color: dragOver ? T.strong : T.secondary, fontSize: 13, cursor: 'pointer', background: dragOver ? T.selected : 'transparent' }}>
       Drop .pdf · .docx · .md · .json here, or <span style={{ color: C.run, textDecoration: 'underline' }}>choose files</span>
       <div style={{ fontSize: 11.5, color: T.faint, marginTop: 4 }}>{b.sources.length} of {MAX_SOURCES} · uploaded as <b>{role}</b></div></div>
     {b.sources.length >= MAX_SOURCES && <Banner kind="warn">The brief holds {MAX_SOURCES} sources, the most it can; remove one before adding another.</Banner>}
     {b.sources.length > 0 && <div style={{ border: `1px solid ${T.hair}`, borderRadius: 8 }}>
       {b.sources.map((s, i) => <div key={s.id} style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 50px 120px auto 20px', gap: 10, padding: '7px 12px', borderTop: i ? `1px solid ${T.hair}` : 'none', fontSize: 12.5, alignItems: 'center' }}>
-        <span style={{ color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={s.name}>{s.name}</span>
+        <span style={{ color: T.strong, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={s.name}>{s.name}</span>
         <span style={{ fontFamily: MONO, fontSize: 11, color: T.muted }}>{s.kind}</span>
         <span style={{ fontFamily: MONO, fontSize: 11, color: s.chars ? T.muted : C.warn }}>{sizeOf(s)}</span>
         <Seg items={ROLES.map(([k, l]) => [k, l] as [SourceRole, string])} value={s.role || 'content'} onPick={r => setSrcRole(s.id, r)} size={11} pad="3px 8px" />
@@ -309,7 +309,7 @@ export function Workflow() {
       {[...TEXT_PAGES.flatMap(t => t.fields.map(f => f[0])), ...rounds.flatMap(r => r.questions.map(q => q.key))].map(k => {
         const f = b.fields[k];
         return <div key={k} style={{ display: 'grid', gridTemplateColumns: '200px minmax(0,1fr) 140px', gap: 10, padding: '7px 12px', borderTop: `1px solid ${T.hair}`, fontSize: 12.5 }}>
-          <span style={{ fontFamily: MONO, color: T.muted }}>{k}</span><span style={{ color: f ? '#fff' : T.faint, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{f ? (Array.isArray(f.value) ? f.value.join(', ') : f.value) : 'not decided → assumed'}</span><Badge f={f} /></div>;
+          <span style={{ fontFamily: MONO, color: T.muted }}>{k}</span><span style={{ color: f ? T.strong : T.faint, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{f ? (Array.isArray(f.value) ? f.value.join(', ') : f.value) : 'not decided → assumed'}</span><Badge f={f} /></div>;
       })}
     </div>
     {pkg && pkg.members.length > 0 && <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -329,7 +329,7 @@ export function Workflow() {
       {pdfErr && <Banner kind="err">Package PDF → {pdfErr}</Banner>}
       <div style={{ border: `1px solid ${T.hair}`, borderRadius: 8 }}>
         {pkg.members.map((m, i) => <div key={m.job_id || i} style={{ display: 'grid', gridTemplateColumns: '130px minmax(0,1fr) 150px 90px', gap: 10, padding: '7px 12px', borderTop: i ? `1px solid ${T.hair}` : 'none', fontSize: 12.5, alignItems: 'baseline' }}>
-          <b style={{ fontFamily: MONO, color: '#fff' }}>{m.code || '—'}</b>
+          <b style={{ fontFamily: MONO, color: T.strong }}>{m.code || '—'}</b>
           <span style={{ color: T.secondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={[m.review_reason, m.error].filter(Boolean).join(' · ')}>{m.title_en}{(m.review_reason || m.error) && <span style={{ color: m.error && m.status !== 'pending' ? C.bad : C.warn, fontSize: 11.5 }}> · {m.review_reason || m.error}</span>}</span>
           <span style={{ fontFamily: MONO, fontSize: 11.5, color: m.status === 'done' ? C.ok : m.status === 'awaiting_review' ? C.warn : ['failed', 'missing'].includes(m.status) ? C.bad : T.muted }}>{m.status.replace('_', ' ')}{m.stage && !['done', 'awaiting_review', 'failed'].includes(m.status) ? ` · ${m.stage}` : ''}</span>
           {m.job_id ? <span onClick={() => go('jobs', { jobSel: m.job_id })} {...press(() => go('jobs', { jobSel: m.job_id }))} style={{ cursor: 'pointer', color: C.run, fontSize: 12 }}>open job</span> : <span />}
@@ -345,13 +345,13 @@ export function Workflow() {
 
   return <>
     <div style={{ width: 190, flex: 'none', borderRight: `1px solid ${T.hair}`, background: T.pane, padding: '14px 10px', display: 'flex', flexDirection: 'column', gap: 2, overflow: 'auto' }}>
-      {pages.map(([k, l]) => <div key={k} onClick={() => (b || k === 'start') && setPage(k)} {...press(() => (b || k === 'start') && setPage(k))} aria-current={page === k ? 'page' : undefined} style={{ display: 'flex', gap: 8, padding: '7px 10px', borderRadius: 6, fontSize: 13, cursor: b || k === 'start' ? 'pointer' : 'default', color: page === k ? '#fff' : b || k === 'start' ? T.secondary : T.faint, background: page === k ? T.selected : 'transparent' }}>
+      {pages.map(([k, l]) => <div key={k} onClick={() => (b || k === 'start') && setPage(k)} {...press(() => (b || k === 'start') && setPage(k))} aria-current={page === k ? 'page' : undefined} style={{ display: 'flex', gap: 8, padding: '7px 10px', borderRadius: 6, fontSize: 13, cursor: b || k === 'start' ? 'pointer' : 'default', color: page === k ? T.strong : b || k === 'start' ? T.secondary : T.faint, background: page === k ? T.selected : 'transparent' }}>
         <span style={{ flex: 1 }}>{l}</span><span style={{ fontSize: 11, color: pageMark(k) === '!' ? C.bad : C.ok }}>{pageMark(k)}</span></div>)}
     </div>
     <div style={{ flex: 1, minWidth: 0, padding: '18px 24px', display: 'flex', flexDirection: 'column', gap: 14, overflow: 'auto' }}>
       {err && <Banner kind="err">{err}</Banner>}
       {b && <div style={{ display: 'flex', gap: 12, alignItems: 'baseline', fontFamily: MONO, fontSize: 12, color: T.muted }}>
-        <b style={{ color: '#fff' }}>{b.meta.code || 'code at build'}</b><span>{b.meta.title_en || b.meta.title_mk || 'untitled'}</span><span>· {b.package} · rev {b.rev}</span>
+        <b style={{ color: T.strong }}>{b.meta.code || 'code at build'}</b><span>{b.meta.title_en || b.meta.title_mk || 'untitled'}</span><span>· {b.package} · rev {b.rev}</span>
         {(() => { const close = () => { try { localStorage.removeItem(LS_BRIEF); } catch { /* */ } cur.current = null; setB(null); setPage('start'); setBuilt(null); setDrafts({}); setPdfErr(''); };
           return <span onClick={close} {...press(close)} aria-label="close brief" style={{ marginLeft: 'auto', cursor: 'pointer' }}>close brief</span>; })()}</div>}
       {b?.guide?.questionnaire_hint && b.guide.questionnaire_hint !== b.questionnaire && <Banner kind="info">The title or scope points to the <b>{b.guide.questionnaire_hint}</b> questions. <span onClick={() => patch({ questionnaire: b.guide!.questionnaire_hint })} {...press(() => patch({ questionnaire: b.guide!.questionnaire_hint }))} style={{ cursor: 'pointer', textDecoration: 'underline' }}>Use them</span> (answers to the current ones stay in the history).</Banner>}
@@ -364,7 +364,7 @@ export function Workflow() {
         {idx < pages.length - 1 && <span onClick={() => setPage(pages[idx + 1][0])} {...press(() => setPage(pages[idx + 1][0]))} style={{ cursor: 'pointer', color: C.run, fontSize: 13, marginLeft: 'auto' }}>{pages[idx + 1][1]} ›</span>}</div>}
     </div>
     {b && <div style={{ width: 280, flex: 'none', borderLeft: `1px solid ${T.hair}`, background: T.pane, padding: 14, display: 'flex', flexDirection: 'column', gap: 10, overflow: 'auto' }}>
-      <button onClick={build} disabled={busy || !(b.meta.title_en || b.meta.title_mk)} style={{ background: T.navy, color: '#fff', border: 'none', borderRadius: 6, padding: '9px 12px', fontSize: 13.5, cursor: 'pointer' }}>{busy ? 'Building…' : 'Build now ▸'}</button>
+      <button onClick={build} disabled={busy || !(b.meta.title_en || b.meta.title_mk)} style={{ background: T.navy, color: T.onAccent, border: 'none', borderRadius: 6, padding: '9px 12px', fontSize: 13.5, cursor: 'pointer' }}>{busy ? 'Building…' : 'Build now ▸'}</button>
       <div style={{ fontSize: 11.5, color: T.faint }}>Builds from this page: the authors write the rest.</div>
       <Caps>SOURCES · {b.sources.length}</Caps>
       <input ref={fileRef} type="file" multiple accept={ACCEPT} style={{ display: 'none' }} onChange={e => { upload(e.target.files); e.target.value = ''; }} />

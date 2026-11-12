@@ -1,7 +1,7 @@
 import { C } from '../theme';
 
 /** Colour a pp_verify output line the way the prototype does (FAIL red, PASS/[OK] green). */
-export const lineColor = (t: string) => /FAIL/.test(t) ? C.bad : /RESULT: PASS|\[OK\]| OK$/.test(t) ? C.ok : '#9fb6cc';
+export const lineColor = (t: string) => /FAIL/.test(t) ? C.bad : /RESULT: PASS|\[OK\]| OK$/.test(t) ? C.ok : '#4a5d72';
 
 /** A pp_verify report in the exact line format pp_verify.main() prints. */
 export function verifyReport(file: string, o: { paras: number; tables: number; words: number; chars: number; srcWords?: number; minFont?: number; bilingual?: boolean; omath?: number; figures?: number }): string {

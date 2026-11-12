@@ -61,21 +61,21 @@ export interface MdLine { t: string; lab: string; c: string; fw: number; lc: str
 export function blocksToMd(blocks: RawBlock[]) {
   const md: MdLine[] = [], prev: { t: string; fw: number; fs: string; c: string }[] = [], src: string[] = [];
   let words = 0, rev = 0, heads = 0, tables = 0, n = 0;
-  const L = (t: string, lab = '', o: Partial<MdLine> = {}) => { md.push({ t, lab, c: o.c || '#d6e2f0', fw: o.fw || 400, lc: o.lc || '#6fd08c', bg: o.bg || 'transparent' }); if (!o.bg) src.push(t); };
+  const L = (t: string, lab = '', o: Partial<MdLine> = {}) => { md.push({ t, lab, c: o.c || '#1f2d3d', fw: o.fw || 400, lc: o.lc || '#2e8b57', bg: o.bg || 'transparent' }); if (!o.bg) src.push(t); };
   for (const b of blocks) {
     if (b.k === 'head') { heads++; words += wc(b.t); const num = ++n, both = hasCyr(b.t) && hasLat(b.t);
-      L('# ' + num + ' ' + (b.t.includes('|') ? b.t : b.t + (both ? '' : ' | ' + (hasCyr(b.t) ? '…EN' : '…МК'))), 'heading · ' + (both ? '0.96' : '0.71'), { c: '#7fb2e5', fw: 700, lc: both ? '#6fd08c' : '#f0b45a' });
+      L('# ' + num + ' ' + (b.t.includes('|') ? b.t : b.t + (both ? '' : ' | ' + (hasCyr(b.t) ? '…EN' : '…МК'))), 'heading · ' + (both ? '0.96' : '0.71'), { c: '#2b6cb0', fw: 700, lc: both ? '#2e8b57' : '#b7791f' });
       if (!both) rev++; prev.push({ t: b.t, fw: 700, fs: '10px', c: '#1f3b5a' }); }
     else if (b.k === 'para') { words += wc(b.t);
-      if (/\(check!*\)|TODO|\?\?|xxx/i.test(b.t)) { rev++; L('  "' + b.t.slice(0, 40) + '" → editing note?', 'review · 0.41', { c: '#f0b45a', lc: '#f0b45a', bg: '#3a2a12' }); }
+      if (/\(check!*\)|TODO|\?\?|xxx/i.test(b.t)) { rev++; L('  "' + b.t.slice(0, 40) + '" → editing note?', 'review · 0.41', { c: '#b7791f', lc: '#b7791f', bg: '#fff6e5' }); }
       else { const split = b.t.includes('|||') ? b.t : (hasCyr(b.t) && !hasLat(b.t) ? b.t + ' ||| …EN' : b.t);
-        L(split, hasCyr(b.t) && hasLat(b.t) ? '' : hasCyr(b.t) ? 'EN missing' : 'MK missing', { lc: '#f0b45a' }); if (!(hasCyr(b.t) && hasLat(b.t))) rev++; }
+        L(split, hasCyr(b.t) && hasLat(b.t) ? '' : hasCyr(b.t) ? 'EN missing' : 'MK missing', { lc: '#b7791f' }); if (!(hasCyr(b.t) && hasLat(b.t))) rev++; }
       prev.push({ t: b.t, fw: 400, fs: '8px', c: '#333' }); }
     else if (b.k === 'table') { tables++; const r0 = b.rows[0] || [], kind = b.rows.length <= 8 && r0.length === 2 ? 'form' : 'table';
-      L(kind === 'form' ? '[[FORM]]' : '[[TABLE]]', kind + ' · ' + (b.rows.length > 1 ? '0.9' + Math.min(4, b.rows.length) : '0.62'), { c: '#c59fe0', lc: b.rows.length > 1 ? '#6fd08c' : '#f0b45a' });
+      L(kind === 'form' ? '[[FORM]]' : '[[TABLE]]', kind + ' · ' + (b.rows.length > 1 ? '0.9' + Math.min(4, b.rows.length) : '0.62'), { c: '#7b4fa6', lc: b.rows.length > 1 ? '#2e8b57' : '#b7791f' });
       b.rows.forEach((r, i) => { r.forEach(c => words += wc(c)); const line = r.map(c => c.trim() || '_').join(' ||| '); if (i < 6) L(line); else src.push(line); });
-      if (b.rows.length > 6) md.push({ t: '… ' + (b.rows.length - 6) + ' more rows', lab: '', c: '#7f93a8', fw: 400, lc: '#6fd08c', bg: 'transparent' });
-      L(kind === 'form' ? '[[/FORM]]' : '[[/TABLE]]', '', { c: '#c59fe0' });
+      if (b.rows.length > 6) md.push({ t: '… ' + (b.rows.length - 6) + ' more rows', lab: '', c: '#66788d', fw: 400, lc: '#2e8b57', bg: 'transparent' });
+      L(kind === 'form' ? '[[/FORM]]' : '[[/TABLE]]', '', { c: '#7b4fa6' });
       prev.push({ t: '▦ table ' + b.rows.length + '×' + r0.length, fw: 700, fs: '8px', c: '#2B547E' }); }
   }
   return { md, prev: prev.slice(0, 22), words, rev, heads, tables, markdown: src.join('\n') };

@@ -24,7 +24,9 @@ export interface WizardPayload {
 }
 
 /** `auth: false` when the server runs with PPDOCWIZ_AUTH=off (no sign-in, Head of QC 19.10.2026). */
-export interface Health { ok: boolean; letta: boolean; pdf: boolean; auth?: boolean; login?: 'accounts' | 'password' | 'key' | 'off' }
+export interface Health { ok: boolean; letta: boolean; pdf: boolean; auth?: boolean; login?: 'accounts' | 'password' | 'key' | 'off'; /** LaTeX → Word equations (pandoc) works */ equations?: boolean }
+/** POST /api/equations/check: each $…$ / $$…$$ of a text, converted exactly as the build converts it. */
+export interface EquationCheck { ok: boolean; engine: { ok: boolean; backend: string }; formulas: { latex: string; display: boolean; ok: boolean; error: string }[] }
 /** Named accounts (phase 5, Head of QC 19.10.2026). */
 export interface Me { user: string; role: 'admin' | 'user'; must_change: boolean; accounts: boolean }
 export interface Account { username: string; role: 'admin' | 'user'; must_change: boolean; disabled: boolean; created: string; by: string }

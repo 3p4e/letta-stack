@@ -19,4 +19,5 @@ PyYAML==6.0.2
 # without it the check silently skips and Macedonian can ship as tofu.
 fonttools==4.62.1
 # Source files uploaded to a Document Brief (18.10.2026): the text of a PDF is read with pypdf (pure Python).
-pypdf==6.20.1
+# 6.20.1 carried 7 advisories (CVE-2026-113786/89/90/91, 115572/80/85); 6.21.4 is the fixed line (CVE-2026-119203..119209, 04.11.2026).
+pypdf==6.21.4

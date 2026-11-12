@@ -33,7 +33,7 @@ BLACK = RGBColor(0, 0, 0)
 WHITE = RGBColor(0xFF, 0xFF, 0xFF)
 SOP_GRAY = "E8E8E8"      # SOP section-header fill
 SOP_BLUE = "D9E2F3"      # SOP approval-table header
-A_SECTION = "2B547E"     # annex section header (white text)
+A_SECTION = "DCE6F2"     # annex section header: pale blue, navy text (was navy with white text until 04.11.2026)
 A_LABEL   = "EDF2F7"     # annex label cell
 A_ALT     = "F7FAFC"     # annex alternating row
 A_WARM    = "FEF9E7"; A_ROSE = "FDEDEC"; A_MINT = "EAFAF1"
@@ -87,9 +87,20 @@ PP_TEMPLATE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "as
 
 # ---------- low-level helpers ----------
 def run(p, t, sz, color=BLACK, bold=False, ital=False, font=FONT):
-    r = p.add_run(t); f = r.font
-    f.name = font; f.size = Pt(sz); f.color.rgb = color; r.bold = bold; r.italic = ital
-    return r
+    """One run, never below the 7 pt body floor; [[EX:…]] / [[FILL:…]] become their own runs (pp_theme)."""
+    import pp_theme as T
+    sz = max(sz, T.BODY_FLOOR_PT); r = None
+    for kind, val in (T.split_tokens(t) if T.has_tokens(t) else [("plain", t)]):
+        if kind == "plain":
+            import pp_math as PM
+            if PM.has_math(val):                       # $…$ / $$…$$: native Word equations
+                import pp_report as _pr
+                r = _pr.add_text_with_math(p, val, sz, color, bold, ital); continue
+        r = p.add_run(T.token_text(kind, val)); f = r.font
+        f.name = font; f.size = Pt(sz); f.color.rgb = color; r.bold = bold; r.italic = ital
+        if kind != "plain":
+            T.style_run(r, kind, sz)
+    return r if r is not None else p.add_run("")
 
 def sp(p, before=0, after=0, line=None):
     pf = p.paragraph_format; pf.space_before = Pt(before); pf.space_after = Pt(after)
@@ -173,6 +184,9 @@ def cell_margins(cell, top=29, bottom=29, left=58, right=58):
 
 def bilingual(p, mk, en, mk_sz=11, en_sz=7, bold=False, color=BLACK):
     """Inline 'MK | EN' run group (annex + table style)."""
+    import pp_theme as _T
+    if _T.same_in_both(mk, en):
+        en = ""                                    # "CBD | CBD", "1,097 | 1.097": the same in both languages prints once (04.11.2026)
     run(p, mk, mk_sz, color, bold=bold)
     # The separator only joins two halves: a cell holding a code, a number or a RACI letter has no
     # EN half, and a dangling " | " after it reads as a defect on the printed page.
@@ -312,8 +326,11 @@ def status_band(d, status="draft", version="1.0", effective_date=None, review_da
     fixed_widths(t, [18.0]); table_borders(t, 4, "B0BEC5")
     return st
 
+SOP_SIGNATORIES = ("B. Nikolov, M.Pharm.", "J. Romevska", "S. Petrova")   # the QC chain, the default
+
+
 def sop_titlepage(d, code, mk_title, en_title, status="draft", version="1.0",
-                  effective_date=None, review_date=None):
+                  effective_date=None, review_date=None, signatories=None):
     for txt, sz, col, bold in [("СТАНДАРДНА ОПЕРАТИВНА ПРОЦЕДУРА", 24, NAVY, True),
                                ("STANDARD OPERATING PROCEDURE", 14, GREY, False),
                                (code, 18, NAVY, True)]:
@@ -327,9 +344,11 @@ def sop_titlepage(d, code, mk_title, en_title, status="draft", version="1.0",
     hdr = [("Дејство", "Action"), ("Позиција", "Position"), ("Име", "Name"), ("Датум/Потпис", "Date/Sign")]
     for j, (mk, en) in enumerate(hdr):
         c = t.cell(0, j); shade(c, SOP_BLUE); c.paragraphs[0].text = ''; bilingual(c.paragraphs[0], mk, en, 11, 7, bold=True)
-    rows = [("Подготвил | Prepared by", "B. Nikolov, M.Pharm."),
-            ("Проверил | Reviewed by", "J. Romevska"),
-            ("Одобрил | Approved by", "S. Petrova")]
+    # The QC chain printed on every SOP, a QA SOP included (21.10.2026): the HEADERDATA may name them instead,
+    # and "—" leaves a line blank for a person to fill in.
+    names = signatories or SOP_SIGNATORIES
+    rows = list(zip(("Подготвил | Prepared by", "Проверил | Reviewed by", "Одобрил | Approved by"),
+                    ("" if n.strip() in ("—", "-") else n for n in names)))
     for i, (act, name) in enumerate(rows, 1):
         t.cell(i, 0).paragraphs[0].text = ''; run(t.cell(i, 0).paragraphs[0], act, 10)
         run(t.cell(i, 2).paragraphs[0], name, 10)
@@ -524,13 +543,13 @@ def annex_table(d, widths_cm):
 def annex_cell(cell, mk, en, bold=False, bg=None):
     if bg:
         shade(cell, bg)
-    color = WHITE if bg == A_SECTION else BLACK
+    color = NAVY if bg == A_SECTION else BLACK
     cell_margins(cell); cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
     p = cell.paragraphs[0]; p.text = ''; p.alignment = WD_ALIGN_PARAGRAPH.CENTER; sp(p, 1, 1, line=0.85)
     bilingual(p, mk, en, 11, 7, bold=bold, color=color)
 
 def annex_section_header(t, mk, en):
-    """Full-width navy banner row (white text). Call after rows exist; merges the row."""
+    """Full-width section banner row (pale blue, navy text). Call after rows exist; merges the row."""
     row = t.add_row(); first = row.cells[0]
     if len(row.cells) > 1:
         first = first.merge(row.cells[-1])
@@ -553,7 +572,7 @@ def annex_signoff(d, roles=(("Изготвил (КК)", "Prepared (QC)"), ("Пр
     for c in t.rows[0].cells:
         shade(c, A_SECTION)
         for r in c.paragraphs[0].runs:
-            r.font.color.rgb = WHITE; r.font.bold = True
+            r.font.color.rgb = NAVY; r.font.bold = True
     t.add_row()  # blank signature row
     annex_finalize(t)
     return t
@@ -577,7 +596,7 @@ def cell08(cell, mk, en, mk_sz=9, en_sz=7, bold=False, bg=None, white=False, lef
     p = cell.paragraphs[0]; p.text = ''
     p.alignment = WD_ALIGN_PARAGRAPH.LEFT if left else WD_ALIGN_PARAGRAPH.CENTER
     fmt = p.paragraph_format; fmt.line_spacing = 0.8; fmt.space_before = Pt(0); fmt.space_after = Pt(0)
-    col = WHITE if white else BLACK
+    col = WHITE if white else (NAVY if bg == A_SECTION else BLACK)
     if mk:
         run(p, mk, mk_sz, col, bold=bold)
     if en:
@@ -615,7 +634,7 @@ def kv_block(d, sections, ncol=6, label_cm=1.9, value_cm=2.6):
     t = annex_table(d, widths)
     for bmk, ben, fields in sections:
         r = t.add_row()
-        cell08(_merge(r, 0, ncol - 1), bmk, ben, 10, 8, bold=True, bg=A_SECTION, white=True, left=False)
+        cell08(_merge(r, 0, ncol - 1), bmk, ben, 10, 8, bold=True, bg=A_SECTION, white=False, left=False)
         col, r = ncol, None  # force a new row on the first field
         for lmk, len_, vmk, ven, ichars in fields:
             span = value_span(ichars, ncol); need = 1 + span
@@ -630,6 +649,54 @@ def kv_block(d, sections, ncol=6, label_cm=1.9, value_cm=2.6):
     annex_finalize(t)
     return t
 
+# Child order Word requires inside these containers (ECMA-376 Part 1). The builders append properties as they
+# go — a cell's width after its shading and alignment, a table's look before its width — and LibreOffice and
+# python-docx accept that, but Microsoft Word refuses to open the file ("Word experienced an error trying to
+# open the file", PP-QC-SOP-025 annexes, 30.10.2026). Every document is put in order once, here, at save.
+SCHEMA_ORDER = {
+    "pPr": "pStyle keepNext keepLines pageBreakBefore framePr widowControl numPr suppressLineNumbers pBdr shd tabs "
+           "suppressAutoHyphens kinsoku wordWrap overflowPunct topLinePunct autoSpaceDE autoSpaceDN bidi "
+           "adjustRightInd snapToGrid spacing ind contextualSpacing mirrorIndents suppressOverlap jc textDirection "
+           "textAlignment textboxTightWrap outlineLvl divId cnfStyle rPr sectPr pPrChange",
+    "rPr": "rStyle rFonts b bCs i iCs caps smallCaps strike dstrike outline shadow emboss imprint noProof snapToGrid "
+           "vanish webHidden color spacing w kern position sz szCs highlight u effect bdr shd fitText vertAlign rtl "
+           "cs em lang eastAsianLayout specVanish oMath",
+    "tcPr": "cnfStyle tcW gridSpan hMerge vMerge tcBorders shd noWrap tcMar textDirection tcFitText vAlign hideMark",
+    "tblPr": "tblStyle tblpPr tblOverlap bidiVisual tblStyleRowBandSize tblStyleColBandSize tblW jc tblCellSpacing "
+             "tblInd tblBorders shd tblLayout tblCellMar tblLook tblCaption tblDescription",
+    "sectPr": "headerReference footerReference footnotePr endnotePr type pgSz pgMar paperSrc pgBorders lnNumType "
+              "pgNumType cols formProt vAlign noEndnote titlePg textDirection bidi rtlGutter docGrid printerSettings",
+    "tcBorders": "top start left bottom end right insideH insideV tl2br tr2bl",
+    "tblBorders": "top start left bottom end right insideH insideV",
+    "pBdr": "top left bottom right between bar",
+}
+REPEATABLE = {"headerReference", "footerReference"}
+
+def schema_order(root):
+    """Sort the known children of each container into Word's order; a repeated child keeps its last value.
+       Children this table does not name keep their place after the known ones. Returns the containers fixed."""
+    W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+    fixed = 0
+    for name, seq in SCHEMA_ORDER.items():
+        rank = {k: i for i, k in enumerate(seq.split())}
+        for el in root.iter(W + name):
+            known = [c for c in el if c.tag.startswith(W) and c.tag[len(W):] in rank]
+            last = {}
+            for c in known:                     # header/footer references repeat by design (first, even, default)
+                last[c if c.tag[len(W):] in REPEATABLE else c.tag] = c
+            want = sorted(last.values(), key=lambda c: rank[c.tag[len(W):]])
+            if [id(c) for c in known] == [id(c) for c in want]:
+                continue
+            for c in known:
+                el.remove(c)
+            rest = list(el)
+            for c in rest:
+                el.remove(c)
+            for c in want + rest:
+                el.append(c)
+            fixed += 1
+    return fixed
+
 def save(d, path):
     sect = getattr(d, "_pp_sectpr", None)
     if sect is not None:
@@ -638,6 +705,10 @@ def save(d, path):
             body.remove(sect); body.append(sect)
         except ValueError:
             pass
+    for part in d.part.package.iter_parts():          # body, headers, footers, footnotes, styles
+        el = getattr(part, "_element", None)
+        if el is not None:
+            schema_order(el)
     d.save(path); return path
 
 def figure(d, png_path, mk=None, en=None, width_cm=15.5):

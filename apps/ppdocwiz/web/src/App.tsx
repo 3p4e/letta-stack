@@ -13,9 +13,10 @@ import { Preview } from './screens/Preview';
 import { Questionnaire } from './screens/Questionnaire';
 import { Reports } from './screens/Reports';
 import { Verify } from './screens/Verify';
+import { Canvas } from './screens/Canvas';
 import { useApp, type Screen } from './store/store';
 
-const SCREENS: Record<Screen, () => JSX.Element> = { flow: Workflow, builder: Builder, chat: Chat, quest: Questionnaire, format: Formatter, report: Reports, library: Library, jobs: Jobs, verify: Verify, preview: Preview, fleet: Fleet, users: Users };
+const SCREENS: Record<Screen, () => JSX.Element> = { flow: Workflow, builder: Builder, chat: Chat, quest: Questionnaire, format: Formatter, report: Reports, library: Library, jobs: Jobs, canvas: Canvas, verify: Verify, preview: Preview, fleet: Fleet, users: Users };
 
 export function App() {
   const { authed, api, set, screen, dataRev, flash } = useApp();
@@ -31,7 +32,7 @@ export function App() {
     // password first — /api/me is allowed through and the forced-change card follows from must_change.
     api.doctypes().then(() => set({ authed: true })).catch((e: ApiError) => { setUnconfigured(e.status === 503); set({ authed: e.status === 403 }); });
   }, [authed, api, set]);
-  if (authed === null) return <div style={{ height: '100vh', background: '#0f1a26' }} />;
+  if (authed === null) return <div style={{ height: '100vh', background: '#f4f7fb' }} />;
   if (!authed) return <SignIn unconfigured={unconfigured} />;
   if (mustChange) return <ChangePassword forced onDone={() => setMustChange(false)} />;
   const S = SCREENS[screen];

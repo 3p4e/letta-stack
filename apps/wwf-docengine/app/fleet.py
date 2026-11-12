@@ -103,13 +103,16 @@ async def ensure_fleet(client: LettaClient | None = None) -> dict:
             out[name] = existing[name]["id"]
             # The glossary is seeded at creation; a ruling that changes it (мострирање, 19.10.2026) reached no
             # existing agent until this refresh — the clones copy their memory from these base agents.
-            try:
-                held = (await client.get_block(existing[name]["id"], "gf_glossary_mk")).get("value", "")
-                if held != glossary_text:
-                    await client.update_block(existing[name]["id"], "gf_glossary_mk", glossary_text)
-                    log.info("refreshed gf_glossary_mk on %s", name)
-            except Exception as e:  # noqa: BLE001 — the linter still holds the glossary; the fleet must come up
-                log.warning("could not refresh the glossary on %s: %s", name, e)
+            # The house rules the same way (04.11.2026): a ruling that changes them (pale-blue bars, the 7 pt floor, a value
+            # that is the same in both languages printed once) is a change to fleet.yaml, and reached no existing agent.
+            for label, want in (("gf_glossary_mk", glossary_text), ("gf_house_rules", house_rules)):
+                try:
+                    held = (await client.get_block(existing[name]["id"], label)).get("value", "")
+                    if held != want:
+                        await client.update_block(existing[name]["id"], label, want)
+                        log.info("refreshed %s on %s", label, name)
+                except Exception as e:  # noqa: BLE001 — the linter still holds the glossary; the fleet must come up
+                    log.warning("could not refresh %s on %s: %s", label, name, e)
             continue
         body = {
             "name": name,

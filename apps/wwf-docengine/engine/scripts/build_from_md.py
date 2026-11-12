@@ -25,6 +25,21 @@ Line grammar notes (review 19.10.2026):
   * A two-cell form row is 'Label MK ||| Label EN' (an empty write-in) — except when the first cell is Cyrillic
     and the second holds no Latin letter ("Име ||| Петар", "Датум ||| 12.10.2026"): then the second cell is the
     VALUE and there is no English label.
+
+Blocks added 04.11.2026 (from the HPLC method validation draft; Head of QC accepted all, with lighter colours):
+  [[SIGN]] Role MK ||| Role EN        one line: a Name | Signature | Date | Time sign-off strip; [[SIGN:peer]] and
+                                      [[SIGN:approver]] tint it as the second and third tier of an approval cascade.
+  [[DECISION]] … [[/DECISION]]        one row per option: ☐ Option MK ||| Option EN ||| rule MK~~rule EN [||| tone]
+                                      (tone pass|fail|caution|info, else read from the option's words); ☒ = chosen.
+  [[EQ]] … [[/EQ]]                    a formula panel: formula lines, then an optional 'каде ||| where' line and
+                                      'symbol ||| meaning MK ||| meaning EN' legend lines. A formula line written
+                                      $ LaTeX $ is a native, editable Word equation (pp_math); anything else is typed text.
+  Formulas anywhere (prose, bullets, cells, headings, legends): $x_i^2$ inline, $$ … $$ display, \\$ a dollar sign.
+  A formula that cannot be converted stops the build (MathError); it is never printed as LaTeX text.
+  [[CHECKLIST]] … [[/CHECKLIST]]      one item per line (MK ||| EN): # | ☐ item | Date | Initials | Note.
+  Inline [[EX:value]] = example value (red, in brackets); [[FILL:hint]] = write-in (grey hint, dotted line).
+  HEADERDATA "build: execution" prints every [[EX:…]] as an empty write-in and leaves the verdicts of those rows
+  blank; "end_mark: no" drops the END OF DOCUMENT line.
 """
 import sys, os, re
 # Locate the engine modules (pp_format/pp_report/...). Inside the packaged skill they are siblings
@@ -36,12 +51,16 @@ for _cand in (_here, os.path.join(_here, "..", "pp-document-suite", "scripts")):
 sys.path.insert(0, _here)
 import pp_format as pf
 import pp_report as pr
+import pp_theme as T
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 PAGE_W = pr.PAGE_W  # 18.46 cm text width (base-template 1.27 cm margins)
 # '#'+, whitespace, then text that is not a cell separator: "# ||| Параметар~~Parameter" (a table row with an
 # ordinal column headed '#') ended the table and printed as a heading (review 19.10.2026).
-HEADING = re.compile(r'^(#+)\s+(?!\|\|\|)(\S.*)')
+# A row whose first cell is '#' is a row, not a heading, whatever follows: '# ||| …', '# ~~ # | …', '# | …' (04.11.2026).
+HEADING = re.compile(r'^(#+)\s+(?!\|\|\||~~|\|)(\S.*)')
+# Any of these at the start of a line opens a block, and so ends a block whose [[/...]] is missing.
+BLOCK_START = ('[[TABLE', '[[FORM', '[[BOX', '[[PAGEBREAK', '[[NEWPAGE', '[[SIGN', '[[DECISION', '[[EQ', '[[CHECKLIST')
 
 def parse(md):
     hd={}
@@ -89,19 +108,49 @@ def parse(md):
                 if lines[i].strip(): rows.append([c.strip() for c in lines[i].split('|||')])
                 i+=1
             blocks.append(('box', rows, h)); i+=1; continue
+        if s.startswith('[[SIGN'):                      # one-line sign-off strip: [[SIGN(:tier)]] Role MK ||| Role EN
+            mo=re.match(r'\[\[SIGN(?::\s*(\w+))?\]\]\s*(.*)', s)
+            tier=(mo.group(1) or 'analyst').lower() if mo else 'analyst'
+            mk,en=((mo.group(2) if mo else '').split('|||',1)+[''])[:2]
+            blocks.append(('sign', tier, mk.strip(), en.strip())); i+=1; continue
+        if s.startswith(('[[DECISION', '[[EQ', '[[CHECKLIST')):
+            kind=re.match(r'\[\[(DECISION|EQ|CHECKLIST)', s).group(1).lower(); rows=[]
+            i+=1
+            while i<len(lines):
+                t=lines[i].strip()
+                if t.startswith('\\'): t=t[1:]
+                elif t.startswith('[[/'): i+=1; break
+                elif t.startswith(BLOCK_START) or HEADING.match(t): break
+                if t: rows.append([c.strip() for c in t.split('|||')])
+                i+=1
+            blocks.append((kind, rows)); continue
         if s.startswith('[[TABLE') or s.startswith('[[FORM'):
             kind='form' if s.startswith('[[FORM') else 'table'; rows=[]
             mo=re.match(r'\[\[(?:FORM|TABLE):([^\]]+)\]\]', s); mode=mo.group(1).strip() if mo else None
             i+=1
             while i<len(lines):
-                t=lines[i].strip()
+                t=lines[i].strip(); closed=False
                 if t.startswith('\\'): t=t[1:]                   # literal row (see the module docstring)
                 elif t.startswith('[[/'): i+=1; break
                 # Any block marker or heading ends a block whose [[/...]] is missing; [[PAGEBREAK]] and [[BOX]]
                 # used to be swallowed as table rows printing their own markers (review 14.10.2026).
-                elif t.startswith(('[[TABLE', '[[FORM', '[[BOX', '[[PAGEBREAK', '[[NEWPAGE')) or HEADING.match(t): break
-                if t: rows.append([c.strip() for c in t.split('|||')])
+                elif t.startswith(BLOCK_START) or HEADING.match(t): break
+                else:
+                    # The closing marker written at the end of the last row ("… | | | [[/TABLE]]") closes the block;
+                    # it printed as text in a delivered document (04.11.2026).
+                    m=re.search(r'\s*\[\[/(?:TABLE|FORM)\]\]\s*$', t)
+                    if m: t=t[:m.start()].strip(); closed=True
+                # A row of pipes only is an empty entry row, whatever its pipe count: split on '|||' it printed
+                # a stray '||' in a cell (QCT026, 20.10.2026).
+                if t and re.fullmatch(r'[|\s]*', t): rows.append([''])
+                elif t: rows.append([c.strip() for c in t.split('|||')])
                 i+=1
+                if closed: break
+            if kind=='table':
+                rows=pipe_rows(rows)
+                # A cell that is only '_' is an empty write-in (the same mark a [[FORM]] value takes); it printed a literal
+                # underscore in a delivered record (minutes of meeting, 06.11.2026).
+                rows=[['' if c.strip()=='_' else c for c in r] for r in rows]
             blocks.append((kind, rows, mode)); continue
         hm=HEADING.match(s)
         if hm:
@@ -118,6 +167,36 @@ def parse(md):
         mk,en=(s.split('|||',1)+[''])[:2]
         blocks.append(('p', mk.strip(), en.strip())); i+=1
     return hd, blocks
+
+_CYR=re.compile(r'[Ѐ-ӿ]'); _LAT=re.compile(r'[A-Za-z]')
+def pipe_rows(rows):
+    """Tolerant reading of a table written with single pipes between cells (`a | b | c`, MK~~EN inside a cell) instead of
+    `|||`: every row was ONE cell, so the document printed `~~`, `|`, a trail of empty `| | |` and the closing marker as
+    text (Head of QC, 04.11.2026). The header row fixes the column count; a data row with more cells than the header
+    wrote its first cell as a `MK | EN` pair (`Аналитичар 1 | Analyst 1`, `L1 | L1`), which is merged back into one
+    cell; a short row is padded. Only a table whose rows all have no `|||` and whose header holds a ` | ` is read so."""
+    if len(rows)<2 or any(len(r)>1 for r in rows): return rows
+    split=lambda c: re.split(r'\s*\|\s*', c.strip())
+    head=split(rows[0][0])
+    if len(head)<2: return rows
+    ncol=len(head); out=[head]
+    for r in rows[1:]:
+        t=split(r[0])
+        while len(t)>ncol:
+            for i in range(len(t)-1):
+                a,b=t[i],t[i+1]
+                if '~~' in a or '~~' in b or not a or not b: continue
+                if T.same_in_both(a,b) or (_CYR.search(a) and not _CYR.search(b) and _LAT.search(b)):
+                    t[i:i+2]=[a+'~~'+b]; break
+            else:
+                t[ncol-1:]=[' | '.join(x for x in t[ncol-1:] if x)]; break      # no pair to merge: the rest joins the last cell
+        # A leading MK|EN pair followed only by empty cells ('1 | 1 | | | | | |', 'Mean | Mean | | | |') is one entry, not two
+        # cells: the second half must not land in the first data column.
+        if len(t)>=2 and not any(t[2:]) and '~~' not in t[0] and '~~' not in t[1] and t[0] and t[1] and (
+                T.same_in_both(t[0],t[1]) or (_CYR.search(t[0]) and not _CYR.search(t[1]) and _LAT.search(t[1]))):
+            t[0:2]=[t[0]+'~~'+t[1]]
+        t+=['']*(ncol-len(t)); out.append(t)
+    return out
 
 def cs(raw):
     mk,en=(raw.split('~~',1)+[''])[:2]; return mk.strip(), en.strip()
@@ -151,40 +230,48 @@ class _Opts(list):
     selected=None
 
 # =========================== ANNEX ===========================
-def _bar(d, num, mk, en, sz, col, fill):
-    """Section bar as a SHADED PARAGRAPH, not a one-row table: Word and LibreOffice both honour
-       keep-with-next on a paragraph, so a bar is never stranded at the foot of a page (a one-row
-       table's keep-with-next is ignored by LibreOffice). Same fill, border and type as before."""
+def _bar(d, num, mk, en, level=1):
+    """Section bar as a SHADED PARAGRAPH, not a one-row table: Word and LibreOffice both honour keep-with-next on a
+       paragraph, so a bar is never stranded at the foot of a page. Since 04.11.2026 (Head of QC: lighter, not the
+       dark navy strip) a level-1 bar is pale blue under a navy rule and a sub-bar a paler band with a navy edge;
+       the Macedonian is bold navy and the English follows as a small grey italic caption, without a pipe."""
     from docx.oxml import OxmlElement
     from docx.oxml.ns import qn
-    p=d.add_paragraph(); p.alignment=WD_ALIGN_PARAGRAPH.CENTER; pr.sp(p,0,0)
+    p=d.add_paragraph(); p.alignment=WD_ALIGN_PARAGRAPH.LEFT; pr.sp(p,0,0)
     pPr=p._p.get_or_add_pPr()
     bdr=OxmlElement('w:pBdr')
-    for e in ('top','left','bottom','right'):
-        el=OxmlElement('w:'+e); el.set(qn('w:val'),'single'); el.set(qn('w:sz'),'4')
-        el.set(qn('w:space'),'2' if e in ('top','bottom') else '4'); el.set(qn('w:color'),pr.BORDER); bdr.append(el)
+    if level<=1:
+        edges=(('top','12','3',T.NAVY_HEX),('left','4','4',T.BAR_HEX),('bottom','4','3',T.GRID_HEX),('right','4','4',T.BAR_HEX))
+    else:
+        edges=(('top','4','2',T.SUBBAR_HEX),('left','18','4',T.NAVY_HEX),('bottom','4','2',T.SUBBAR_HEX),('right','4','4',T.SUBBAR_HEX))
+    for e,sz,space,colr in edges:
+        el=OxmlElement('w:'+e); el.set(qn('w:val'),'single'); el.set(qn('w:sz'),sz)
+        el.set(qn('w:space'),space); el.set(qn('w:color'),colr); bdr.append(el)
     pPr.append(bdr)
-    shd=OxmlElement('w:shd'); shd.set(qn('w:val'),'clear'); shd.set(qn('w:color'),'auto'); shd.set(qn('w:fill'),fill)
+    shd=OxmlElement('w:shd'); shd.set(qn('w:val'),'clear'); shd.set(qn('w:color'),'auto')
+    shd.set(qn('w:fill'),T.BAR_HEX if level<=1 else T.SUBBAR_HEX)
     pPr.append(shd)
     p.paragraph_format.keep_with_next=True
-    mk=(num+" "+mk).strip()
-    if mk: pr.rin(p,mk,sz,col,bold=True)
+    if en and T.same_in_both(mk, en): en=''              # the same in both languages (HPLC, 1,097) prints once
+    mk=(num+" "+mk).strip(); sz=11 if level<=1 else 10
+    if mk: pr.rin(p,mk,sz,pr.NAVY,bold=True)
     if en:
-        if mk: pr.rin(p," | ",max(sz-2,7),col)
-        pr.rin(p,en,max(sz-2,7),col)
+        if mk: pr.rin(p,"   ",8,pr.GREY)
+        pr.rin(p,en,8,pr.GREY,ital=True)
     return p
 
 def emit_banner(d, num, mk, en):
-    _bar(d, num, mk, en, 11, pr.WHITE, pr.NAVYF)
+    _bar(d, num, mk, en, 1)
 
 def emit_subbar(d, num, mk, en):
-    _bar(d, num, mk, en, 10, pr.NAVY, pr.LBL)
+    _bar(d, num, mk, en, 2)
 
 def _form_bulk(cell, lmk, len_, val):
     """Render a bulk-text field as a full-width stacked block: bold label heading, then the value
        as a justified paragraph spanning the whole cell."""
     pr.shade(cell, pr.LBL)
     p=cell.paragraphs[0]; p.text=''; p.alignment=WD_ALIGN_PARAGRAPH.LEFT; pr.sp(p,2,2)
+    if len_ and T.same_in_both(lmk, len_): len_=''
     if lmk: pr.rin(p, lmk, 10, pr.BLACK, bold=True)
     if len_:
         if lmk: pr.rin(p, " | ", 8, pr.BLACK)
@@ -197,6 +284,7 @@ def _form_bulk(cell, lmk, len_, val):
         pr.rin(pv, ven.strip(), 8, pr.BLACK, ital=True)
 
 def _lbl_cell(cell, lmk, len_):
+    if len_ and T.same_in_both(lmk, len_): len_=''
     c=pr.cellfmt(cell, lmk, len_, sz=10, col=pr.BLACK, bold=True, fill=pr.LBL)
     c.paragraphs[0].alignment=WD_ALIGN_PARAGRAPH.LEFT
 
@@ -215,7 +303,9 @@ def emit_form(d, rows, mode=None):
         elif len(rd)==2 and re.search(r'[Ѐ-ӿ]', rd[0]) and not re.search(r'[A-Za-z]', rd[1]): rd=[rd[0], '', rd[1]]
         lmk=rd[0] if len(rd)>0 else ''; len_=rd[1] if len(rd)>1 else ''
         # Cells after the third are the value's other language (".. ||| Испорака ||| Delivery"), not dropped.
-        val=" | ".join(x.strip() for x in rd[2:] if x.strip() and x.strip()!='_')
+        vals=[x.strip() for x in rd[2:] if x.strip() and x.strip()!='_']
+        if len(vals)==2 and T.same_in_both(vals[0], vals[1]): vals=vals[:1]   # the same in both languages: once
+        val=" | ".join(vals)
         vlen=len(val.strip())
         kind='bulk' if vlen>110 else ('span' if vlen>20 else 'short')   # short = fits a half-page pair
         fields.append({'lmk':lmk,'en':len_,'val':val,'kind':kind})
@@ -314,28 +404,222 @@ def emit_box(d, rows, h_cm):
     hh=OxmlElement('w:trHeight'); hh.set(qn('w:val'),str(int(h_cm*567))); hh.set(qn('w:hRule'),'atLeast'); trPr.append(hh)
     pr.keep_table(t)
 
-def emit_table(d, rows):
+def rpn_limits(mode):
+    """[[TABLE:rpn=lo,hi]] sets the RPN bands; default below 50 low, 50–100 medium, above 100 high."""
+    mo=re.search(r'rpn\s*=\s*([0-9.]+)\s*,\s*([0-9.]+)', mode or '')
+    return (float(mo.group(1)), float(mo.group(2))) if mo else (50, 100)
+
+def exec_rows(rows):
+    """In an execution build a row that held example values keeps no verdict: the analyst writes it."""
+    if T.MODE['build']!='execution': return rows
+    out=[]
+    for r in rows:
+        if any(T.has_tokens(c) for c in r) and any('[[EX:' in c for c in r):
+            r=[('[[FILL:]]' if pr.verdict_tone(T.plain(cs(c)[0])) else c) for c in r]
+        out.append(r)
+    return out
+
+def emit_table(d, rows, mode=None):
     if not rows: return
     opts=as_options(rows)
     if opts:
         pr.status_grid(d, opts, selected=opts.selected, ncols=min(2, len(opts))); return
+    rows=[rows[0]]+exec_rows(rows[1:])
     ncol=max(len(r) for r in rows)
     t=d.add_table(rows=len(rows), cols=ncol); t.alignment=pr.WD_TABLE_ALIGNMENT.CENTER
     for ri,rd in enumerate(rows):
         for ci in range(ncol):
             mk,en=cs(rd[ci]) if ci<len(rd) else ('','')
             if ri==0:
-                pr.cellfmt(t.cell(ri,ci), mk, en, sz=9, col=pr.WHITE, bold=True, fill=pr.NAVYF)
+                pr.head_cell(t.cell(ri,ci), mk, en, sz=9)
             else:
                 fill=pr.LBL if (ci==0 and mk) else ("F7FAFC" if ri%2==0 else None)
                 pr.cellfmt(t.cell(ri,ci), mk, en, sz=9, col=pr.BLACK, fill=fill)
     pr.fixed(t, mode='full')   # annex forms: every data table spans the full width, like the bars
     pr.borders(t)
+    pr.tint_table(t, rpn=rpn_limits(mode))
     pr.keep_table(t)
+
+# ---- blocks added 04.11.2026 ----
+def _shade_par(p, fill):
+    from docx.oxml import OxmlElement
+    from docx.oxml.ns import qn
+    shd=OxmlElement('w:shd'); shd.set(qn('w:val'),'clear'); shd.set(qn('w:color'),'auto'); shd.set(qn('w:fill'),fill)
+    p._p.get_or_add_pPr().append(shd)
+
+def _row_height(t, ri, cm):
+    from docx.oxml import OxmlElement
+    from docx.oxml.ns import qn
+    trPr=t.rows[ri]._tr.get_or_add_trPr()
+    hh=OxmlElement('w:trHeight'); hh.set(qn('w:val'),str(int(cm*567))); hh.set(qn('w:hRule'),'atLeast'); trPr.append(hh)
+
+def _label(cell, mk, en, hint=None, sz=9, fill=None, align=WD_ALIGN_PARAGRAPH.LEFT):
+    if fill: pr.shade(cell, fill)
+    p=cell.paragraphs[0]; p.text=''; p.alignment=align; pr.sp(p,1,0)
+    if mk: pr.rin(p,mk,sz,pr.BLACK,bold=True)
+    if en and not T.same_in_both(mk, en):
+        if mk: pr.rin(p,"  ",sz,pr.BLACK)
+        pr.rin(p,en,7,pr.GREY,ital=True)
+    if hint:
+        q=cell.add_paragraph(); q.alignment=align; pr.sp(q,0,1); pr.rin(q,hint,7,pr.GREY,ital=True)
+    return cell
+
+SIGN_FIELDS=(("Име и презиме","Full name",None),("Потпис","Signature",None),("Датум","Date","dd/mm/yyyy"),("Време","Time","hh:mm"))
+def emit_sign(d, tier, mk, en):
+    """A sign-off strip: the role as a lead-in, then Name | Signature | Date | Time over one empty writing row.
+       The tier (analyst / peer / approver) tints the label row, so a cascade reads at a glance."""
+    fill=T.TIER_HEX.get(tier, T.TIER_HEX['analyst'])
+    if mk or en:
+        p=d.add_paragraph(); pr.sp(p,4,2); p.paragraph_format.keep_with_next=True
+        if mk: pr.rin(p,mk,10,pr.NAVY,bold=True)
+        if en and not T.same_in_both(mk, en):
+            if mk: pr.rin(p,"   ",8,pr.GREY)
+            pr.rin(p,en,8,pr.GREY,ital=True)
+    t=d.add_table(rows=2, cols=4); t.alignment=pr.WD_TABLE_ALIGNMENT.CENTER
+    for j,(fm,fe,hint) in enumerate(SIGN_FIELDS):
+        _label(t.cell(0,j), fm, fe, hint, sz=9, fill=fill)
+        t.cell(1,j).paragraphs[0].text=''
+    _row_height(t, 1, 0.9)
+    w=PAGE_W; pr._apply_widths(t, [w*0.30, w*0.28, w*0.24, w*0.18]); pr.keep_table(t)
+    for c in t.rows[0].cells:
+        for par in c.paragraphs: par.paragraph_format.keep_with_next=True
+
+TONES=('pass','fail','caution','info')
+def emit_decision(d, rows):
+    """One decision, its options side by side: ☐ option (MK, EN) over the rule that selects it, each in its colour
+       (pass mint, fail rose, caution cream, info pale blue). A ☒ option is the chosen one."""
+    rows=[r for r in rows if any(c.strip() for c in r)]
+    if not rows: return
+    t=d.add_table(rows=1, cols=len(rows)); t.alignment=pr.WD_TABLE_ALIGNMENT.CENTER
+    fills={'pass':pr.GREENF,'fail':pr.REDF,'caution':pr.AMBERF,'info':T.BAR_HEX}
+    for j,r in enumerate(rows):
+        cells=list(r)
+        tone=cells.pop().strip().lower() if len(cells)>1 and cells[-1].strip().lower() in TONES else None
+        opt=cells[0] if cells else ''
+        chosen=opt.lstrip().startswith('☒')
+        mk=opt.lstrip().lstrip('☐☒').strip(); en=cells[1] if len(cells)>1 else ''
+        if '~~' in mk and not en: mk,en=cs(mk)
+        rule_mk,rule_en=cs(cells[2]) if len(cells)>2 else ('','')
+        tone=tone or pr.verdict_tone(mk) or pr.verdict_tone(en) or ('pass','fail','caution')[min(j,2)]
+        c=t.cell(0,j); pr.shade(c, fills[tone])
+        try: c.vertical_alignment=pr.WD_ALIGN_VERTICAL.CENTER
+        except Exception: pass
+        p=c.paragraphs[0]; p.text=''; p.alignment=WD_ALIGN_PARAGRAPH.CENTER; pr.sp(p,3,0)
+        pr.rin(p,('☒ ' if chosen else '☐ ')+mk,10,pr.BLACK,bold=True)
+        if en and not T.same_in_both(mk, en):
+            q=c.add_paragraph(); q.alignment=WD_ALIGN_PARAGRAPH.CENTER; pr.sp(q,0,0); pr.rin(q,en,8,pr.GREY,ital=True)
+        if rule_mk or rule_en:
+            q=c.add_paragraph(); q.alignment=WD_ALIGN_PARAGRAPH.CENTER; pr.sp(q,1,3)
+            if rule_mk: pr.rin(q,rule_mk,7,pr.BLACK)
+            if rule_en and rule_en!=rule_mk:
+                if rule_mk: pr.rin(q,"  ",7,pr.GREY)
+                pr.rin(q,rule_en,7,pr.GREY,ital=True)
+    pr._apply_widths(t, [PAGE_W/len(rows)]*len(rows)); pr.keep_table(t)
+
+WHERE=re.compile(r'^(каде|where)\b', re.I)
+def emit_eq(d, rows):
+    """A formula panel: the formulas centred in bold navy, then 'каде | where' and one line per symbol. Formulas are
+       typed (Unicode ×, √, ², subscripts), so they print the same on every renderer and stay editable."""
+    rows=[r for r in rows if any(c.strip() for c in r)]
+    if not rows: return
+    from docx.oxml import OxmlElement
+    from docx.oxml.ns import qn
+    t=d.add_table(rows=1, cols=1); t.alignment=pr.WD_TABLE_ALIGNMENT.CENTER
+    c=t.cell(0,0); pr.shade(c, T.SUBBAR_HEX); first=True; legend=False
+    for r in rows:
+        if not legend and WHERE.match(r[0]):
+            legend=True
+            p=c.paragraphs[0] if first else c.add_paragraph(); first=False
+            pr.sp(p,4,1); pr.rin(p,r[0].rstrip(':')+":",9,pr.GREY,ital=True)
+            if len(r)>1 and r[1] and r[1]!=r[0]: pr.rin(p,"  "+r[1].rstrip(':')+":",8,pr.GREY,ital=True)
+            continue
+        p=c.paragraphs[0] if first else c.add_paragraph(); first=False
+        if not legend:
+            p.alignment=WD_ALIGN_PARAGRAPH.CENTER; pr.sp(p,3,3)
+            whole=pr.PM.whole_formula(r[0])
+            if whole:                                  # LaTeX: a native Word equation, display style, navy
+                pr._math_or_text(p, whole[0], True, T.NAVY_HEX, True, 12)
+            else:
+                pr.rin(p,r[0],12,pr.NAVY,bold=True)
+            if len(r)>1 and r[1] and r[1]!=r[0]:
+                q=c.add_paragraph(); q.alignment=WD_ALIGN_PARAGRAPH.CENTER; pr.sp(q,0,3); pr.rin(q,r[1],8,pr.GREY,ital=True)
+        else:
+            p.alignment=WD_ALIGN_PARAGRAPH.LEFT; pr.sp(p,0,1); p.paragraph_format.left_indent=pr.Cm(0.6)
+            if len(r)>=3:
+                pr.rin(p,r[0],10,pr.NAVY,bold=True); pr.rin(p," = ",10,pr.BLACK); pr.rin(p,r[1],10,pr.BLACK)
+                if r[2] and r[2]!=r[1]: pr.rin(p,"  "+r[2],8,pr.GREY,ital=True)
+            else:
+                pr.rin(p,r[0],10,pr.BLACK)
+                if len(r)>1 and r[1] and r[1]!=r[0]: pr.rin(p,"  "+r[1],8,pr.GREY,ital=True)
+    pr._apply_widths(t,[PAGE_W])
+    tblPr=t._tbl.tblPr
+    for old in tblPr.findall(qn('w:tblBorders')): tblPr.remove(old)
+    b=OxmlElement('w:tblBorders')
+    for e in ('top','left','bottom','right'):
+        el=OxmlElement('w:'+e); el.set(qn('w:val'),'single'); el.set(qn('w:sz'),'8'); el.set(qn('w:space'),'0'); el.set(qn('w:color'),T.NAVY_HEX); b.append(el)
+    tblPr.append(b); pr.keep_table(t)
+
+CHECK_HEAD=(("#",""),("Ставка","Item"),("Датум","Date"),("Иниц.","Initials"),("Бел.","Note"))
+def emit_checklist(d, rows):
+    """A prerequisite checklist: # | ☐ item (MK, EN) | Date | Initials | Note, a writing row per item."""
+    rows=[r for r in rows if any(c.strip() for c in r)]
+    if not rows: return
+    t=d.add_table(rows=1+len(rows), cols=5); t.alignment=pr.WD_TABLE_ALIGNMENT.CENTER
+    for j,(mk,en) in enumerate(CHECK_HEAD): pr.head_cell(t.cell(0,j), mk, en or None, sz=9)
+    for i,r in enumerate(rows,1):
+        mk,en=(cs(r[0]) if '~~' in r[0] else (r[0], r[1] if len(r)>1 else ''))
+        mk=mk.lstrip('☐☒ ').strip()
+        pr.cellfmt(t.cell(i,0), str(i), None, sz=9, col=pr.BLACK, fill=pr.LBL)
+        c=t.cell(i,1); p=c.paragraphs[0]; p.text=''; p.alignment=WD_ALIGN_PARAGRAPH.LEFT; pr.sp(p,2,2)
+        pr.rin(p,"☐  "+mk,9,pr.BLACK)
+        if en and not T.same_in_both(mk, en): pr.rin(p,"  "+en,7,pr.GREY,ital=True)
+        for j in (2,3,4): t.cell(i,j).paragraphs[0].text=''
+    w=PAGE_W; pr._apply_widths(t,[0.9, w-0.9-2.6-2.0-2.6, 2.6, 2.0, 2.6]); pr._repeat_header(t)
+    pr.keep_table(t, whole_max=8)
+
+def emit_key(d, src):
+    """One line under the header naming the two value markups, printed only where the document uses them."""
+    ex='[[EX:' in src and T.MODE['build']!='execution'; fill='[[FILL:' in src or ('[[EX:' in src and not ex)
+    if not (ex or fill): return
+    p=d.add_paragraph(); pr.sp(p,0,4); p.alignment=WD_ALIGN_PARAGRAPH.LEFT
+    pr.rin(p,"Клуч  ",7,pr.GREY,bold=True); pr.rin(p,"Key:  ",7,pr.GREY,ital=True)
+    if ex:
+        pr.rin(p,"[[EX:…]]",7,pr.BLACK); pr.rin(p," пример вредност ",7,pr.GREY); pr.rin(p,"example value",7,pr.GREY,ital=True)
+        if fill: pr.rin(p,"   ·   ",7,pr.GREY)
+    if fill:
+        pr.rin(p,"[[FILL:впиши]]",7,pr.BLACK); pr.rin(p," внеси вредност ",7,pr.GREY); pr.rin(p,"enter value",7,pr.GREY,ital=True)
+
+def emit_end(d, hd):
+    """— КРАЈ НА ДОКУМЕНТ — END OF DOCUMENT, chained to the block before it so it never stands alone on a page."""
+    if (hd.get('end_mark') or '').strip().lower() in ('no','false','0'): return
+    from docx.oxml.ns import qn
+    body=d.element.body
+    last=[e for e in body if e.tag in (qn('w:p'), qn('w:tbl'))]
+    if last:
+        e=last[-1]
+        pars=(e.findall('.//'+qn('w:tr'))[-1].findall('.//'+qn('w:p')) if e.tag==qn('w:tbl') and e.findall('.//'+qn('w:tr')) else [e])
+        from docx.text.paragraph import Paragraph
+        for x in pars: Paragraph(x, d).paragraph_format.keep_with_next=True
+    p=d.add_paragraph(); p.alignment=WD_ALIGN_PARAGRAPH.CENTER; pr.sp(p,10,0)
+    pr.rin(p,"— КРАЈ НА ДОКУМЕНТ —",10,pr.NAVY,bold=True); pr.rin(p,"   END OF DOCUMENT",8,pr.GREY,ital=True)
+
+def emit_new(d, b):
+    """Dispatch for the 04.11.2026 blocks (both the annex and the SOP path)."""
+    if b[0]=='sign': emit_sign(d, b[1], b[2], b[3])
+    elif b[0]=='decision': emit_decision(d, b[1])
+    elif b[0]=='eq': emit_eq(d, b[1])
+    elif b[0]=='checklist': emit_checklist(d, b[1])
+NEW_BLOCKS=('sign','decision','eq','checklist')
+
+WIDE_COLS = 10
+BLOCKISH = ('form','table','box') + NEW_BLOCKS
 
 def build_annex(hd, blocks, out):
     global PAGE_W
-    land = hd.get('orient')=='landscape'
+    # More than WIDE_COLS columns cannot be read on portrait A4 (about 1.2 cm a column at 15: words broke mid-syllable,
+    # QCT026 20.10.2026), so such a form is laid out landscape whatever the header asked for.
+    widest = max((max(len(r) for r in b[1]) for b in blocks if b[0] in ('table', 'form') and b[1]), default=0)
+    land = hd.get('orient')=='landscape' or widest > WIDE_COLS
     # Fit tables/forms to the ACTUAL text width of the page: A4 portrait ≈ 18.46 cm, A4 landscape
     # ≈ 27.16 cm (both at the base-template 1.27 cm margins). The whole layout brain keys off this.
     PAGE_W = 27.16 if land else 18.46
@@ -348,6 +632,7 @@ def build_annex(hd, blocks, out):
     # and the version/status, so the code, title, "(code)" and DRAFT lines under it said it all twice.
     if hd.get('supersedes'):
         pr.note(d, "Заменува: "+hd['supersedes'], "Supersedes: "+hd['supersedes'])
+    emit_key(d, hd.get('_src',''))
     TABLEISH=('h','form','table')
     prev=None
     for i,b in enumerate(blocks):
@@ -355,30 +640,39 @@ def build_annex(hd, blocks, out):
         # get a small one (otherwise they fuse into one table); text before a table stays with it.
         if b[0]=='h' and prev not in (None,'pagebreak'):
             pf.spacer(d, 12 if b[1]==1 else 8)
-        elif b[0] in ('form','table','box') and prev in ('form','table','box'):
+        elif b[0] in BLOCKISH and prev in BLOCKISH:
             pf.spacer(d, 6)
-        elif b[0] in ('form','table','box') and prev in ('p','bullet'):
+        elif b[0] in BLOCKISH and prev in ('p','bullet'):
             pf.spacer(d, 6, keep=True)                 # lead-in text stays with its table
-        elif b[0] in ('form','table','box') and prev=='h':
+        elif b[0] in BLOCKISH and prev=='h':
             pf.spacer(d, 2, keep=True)                 # a bar stays with its table
-        elif b[0] in ('p','bullet') and prev in ('form','table','box'):
+        elif b[0] in ('p','bullet') and prev in BLOCKISH:
             pf.spacer(d, 4)
         prev=b[0]
         if b[0]=='h':
             (emit_banner if b[1]==1 else emit_subbar)(d, b[2], b[3], b[4])
         elif b[0]=='p':
             p=pr.body(d, b[1], b[2])
-            if i+1<len(blocks) and blocks[i+1][0] in ('form','table','box'):
+            if i+1<len(blocks) and blocks[i+1][0] in BLOCKISH:
                 p.paragraph_format.keep_with_next=True
         elif b[0]=='bullet': pr.bullet(d, b[1], b[2])
         elif b[0]=='form': emit_form(d, b[1], mode=(b[2] if len(b)>2 else None))
-        elif b[0]=='table': emit_table(d, b[1])
+        elif b[0]=='table': emit_table(d, b[1], (b[2] if len(b)>2 else None))
         elif b[0]=='box': emit_box(d, b[1], b[2])
+        elif b[0] in NEW_BLOCKS: emit_new(d, b)
         elif b[0]=='pagebreak': d.add_page_break()
+    emit_end(d, hd)
     PAGE_W = pr.PAGE_W = 18.46            # restore default for any subsequent build in-process
     pf.save(d, out)
 
 # =========================== SOP ===========================
+def _signatories(hd):
+    """prepared_by / reviewed_by / approved_by from the HEADERDATA; None keeps the house default (the QC chain)."""
+    keys = ("prepared_by", "reviewed_by", "approved_by")
+    if not any(k in hd for k in keys):
+        return None
+    return tuple(hd.get(k, "—") or "—" for k in keys)
+
 def build_sop(hd, blocks, out):
     status=hd.get('status','draft'); ver=hd.get('version','01')
     eff=hd.get('effective_date'); rev=hd.get('review_date')
@@ -387,8 +681,10 @@ def build_sop(hd, blocks, out):
     # Title-page code line carries a controlled 'vNN' only once approved (see pf.header_version).
     pf.sop_titlepage(d, hd.get('code','')+" · "+pf.header_version(status, ver),
                      hd.get('mk_title',''), hd.get('en_title',''),
-                     status=status, version=ver, effective_date=eff, review_date=rev)
+                     status=status, version=ver, effective_date=eff, review_date=rev,
+                     signatories=_signatories(hd))
     pf.sop_toc(d)
+    emit_key(d, hd.get('_src',''))
     t=None
     gap_after=False
     def ensure():
@@ -416,6 +712,9 @@ def build_sop(hd, blocks, out):
         elif b[0]=='box':
             if t is not None: pf.sop_finalize(t); t=None
             pf.spacer(d, 6, keep=prev_heading); emit_box(d, b[1], b[2]); gap_after=True
+        elif b[0] in NEW_BLOCKS:
+            if t is not None: pf.sop_finalize(t); t=None
+            pf.spacer(d, 6, keep=prev_heading); emit_new(d, b); gap_after=True
         elif b[0] in ('table','form'):
             if t is not None: pf.sop_finalize(t); t=None      # close two-col table; table goes full width
             rows=b[1]
@@ -432,16 +731,25 @@ def build_sop(hd, blocks, out):
             # A row longer than the header crashed the build (IndexError, no document); its extra cells now
             # join the last column so nothing is lost (review 14.10.2026).
             rows=[r if len(r)<=ncol else r[:ncol-1]+[" | ".join(x for x in r[ncol-1:] if x.strip())] for r in rows]
-            data=[[cs(c) for c in r] for r in rows[1:]]
+            data=[[cs(c) for c in r] for r in exec_rows(rows[1:])]
             bt=pf.sop_block_table(d, headers, data, [round(PAGE_W/ncol,2)]*ncol)
             pr.fixed(bt, mode='full')                          # full width, like the two-column body; repeat header
+            pr.tint_table(bt, rpn=rpn_limits(b[2] if len(b)>2 else None))
     if t is not None: pf.sop_finalize(t)
+    emit_end(d, hd)
     pf.save(d, out)
 
 def main(src,out):
-    hd,blocks=parse(open(src,encoding='utf-8').read())
+    md=open(src,encoding='utf-8').read()
+    hd,blocks=parse(md)
+    hd['_src']=md
     dt=hd.get('doctype','SOP').upper()
-    (build_sop if dt=='SOP' else build_annex)(hd, blocks, out)
+    # "build: execution" -> the copy that goes to the bench: example values become write-ins (pp_theme.MODE).
+    T.MODE['build']='execution' if (hd.get('build') or '').strip().lower()=='execution' else 'simulation'
+    try:
+        (build_sop if dt=='SOP' else build_annex)(hd, blocks, out)
+    finally:
+        T.MODE['build']='simulation'
     print("WROTE", out, "("+dt+")")
 
 if __name__=='__main__':

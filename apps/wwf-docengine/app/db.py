@@ -184,6 +184,16 @@ async def job_finish(jid: str, **fields: Any) -> bool:
     return r is not None
 
 
+async def job_stop(jid: str, by: str) -> bool:
+    """Stop a queued or running job (Head of QC, 20.10.2026: "an option to pause or stop a job that is currently running,
+    even if it's by mistake"). The row is failed at once; the worker sees it at its next exchange (job_touch) and stops,
+    and job_finish never writes over it. True when the job was stopped."""
+    r = await pool().fetchval(
+        "UPDATE docengine.jobs SET status='failed', updated_at=now(), error=$2 "
+        "WHERE id=$1 AND status IN ('queued','running') RETURNING id", jid, f"stopped by {by or 'a user'}")
+    return r is not None
+
+
 async def job_touch(jid: str) -> str | None:
     """Bump updated_at (the reaper's only signal) and return the job's status; None when the row is gone. Called before
     every exchange with an agent, so a job still working is never reaped and one the reaper failed stops working."""

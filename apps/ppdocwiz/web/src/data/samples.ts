@@ -76,7 +76,8 @@ export const AGENTS = [
 
 export const HOUSE_RULES = [
   'Bilingual Macedonian-first (MK | EN inline); decimal commas in MK; abbreviations untranslated.',
-  "One house navy #2B547E; Calibri; font floor 6 pt; shading always 'clear'.",
+  "House navy #2B547E is the accent; bars and table headers are pale blue; Calibri; body font floor 7 pt; shading always 'clear'.",
+  'A value that is the same in both languages (number, formula, unit, code, abbreviation) is written once and printed once: 1,097.',
   'SOP = mandatory 9 sections, two-column; Annex/Form = inline full-page, navy banners, packed label|value metadata (§6D).',
   'NEVER fabricate pharmaceutical data: unknown values stay blank. Never invent regulation citations — cite only retrieved passages.',
   "Formatter input = bilingual Markdown: '#' headings 'MK|EN', [[TABLE]]/[[FORM]]/[[FORM:grid]], '|||' columns, '~~' inside a cell, <!--HEADERDATA--> front block.",

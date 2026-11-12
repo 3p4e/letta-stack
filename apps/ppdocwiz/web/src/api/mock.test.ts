@@ -113,3 +113,14 @@ describe('mock sources, related documents and packages (19.10.2026)', () => {
     expect(lib.counts.approved).toBe(lib.shelves.approved.length);
   });
 });
+
+describe('mock equations (04.11.2026)', () => {
+  it('checks every formula of a text with the shared grammar, and has no renderer for the picture', async () => {
+    const api = mockApi();
+    const r = await api.checkEquations('Total $a_1+b$ and bad $\\frac{a}{b$ and $$x^2$$ and 5 $ vs 6 $');
+    expect(r.formulas.map(f => f.ok)).toEqual([true, false, true]);
+    expect(r.ok).toBe(false);
+    expect(await api.previewEquation('x', true)).toBeNull();
+    expect((await api.health()).equations).toBe(true);
+  });
+});

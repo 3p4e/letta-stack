@@ -82,3 +82,34 @@ mk_title / en_title / code / version / doctype (SOP|ANNEX|FORM|LOG|CHECKLIST) / 
 - ❌ Do not invent colours. The only navy is `#2B547E` (`pp_theme.NAVY`).
 - ❌ Do not drop the base-template header/footer/logo, or render below 6 pt, or use `_` placeholders.
 - ❌ Do not guess the look — render and compare, every time.
+
+## Blocks and markup added 04.11.2026
+
+Colours: section bars and table headers are pale blue with navy text (`pp_theme.BAR_HEX`, `HEAD_HEX`); navy is the
+accent, never a fill. The English half of a heading or header cell is a small grey italic caption.
+
+| Markup | Prints |
+| --- | --- |
+| `[[SIGN]] Role MK ‖ Role EN` | Name / Signature / Date *dd/mm/yyyy* / Time *hh:mm* strip; `[[SIGN:peer]]`, `[[SIGN:approver]]` tint it per approval tier |
+| `[[DECISION]] … [[/DECISION]]` | options side by side: `☐ MK ‖ EN ‖ rule MK~~rule EN [‖ pass\|fail\|caution\|info]` |
+| `[[EQ]] … [[/EQ]]` | formula panel: formula lines, then `каде ‖ where`, then `symbol ‖ meaning MK ‖ meaning EN` |
+| `[[CHECKLIST]] … [[/CHECKLIST]]` | `# \| ☐ item \| Date \| Initials \| Note`, one row per `MK ‖ EN` line |
+| `[[TABLE:rpn=50,100]]` | sets the RPN bands; a column headed RPN is tinted mint / cream / rose |
+| `[[EX:value]]` | example (simulated) value: red, in brackets |
+| `[[FILL:hint]]` | write-in: grey hint on a dotted line (never red) |
+
+Verdict cells (PASS, FAIL, Одговара, Не одговара, Conditional …) are tinted automatically. HEADERDATA `build: execution`
+prints every `[[EX:…]]` as an empty write-in and leaves the verdict of those rows blank — the copy that goes to the
+bench. `end_mark: no` drops the END OF DOCUMENT line. Body text is never below 7 pt. A term used in English in both
+halves is not repeated: write an English-only term (THC, CBD, CBN, HPLC …) ONCE and it prints once — in a heading
+(`# 2.0 HPLC`), a prose line (`HPLC`), a table cell (`CBD`), a form label (`HPLC ||| ||| value`, empty second cell).
+Never `HPLC ||| HPLC` or `CBD~~CBD`; they are collapsed to one, but they are not the way to write it. It is never
+translated (glossary, 04.11.2026).
+
+## A value that is the same in both languages is written once (04.11.2026)
+
+A number, a formula, a unit, a code, a dash, an abbreviation or an English-only term is NOT a Macedonian/English pair:
+write `1,097`, `0,691 × 0,877`, `HPLC` once, with the decimal comma. Not `1,097~~1.097`, not `1,097 ||| 1.097`. The engine
+also collapses a repeated pair (equal halves, or halves that differ only by the decimal separator) to the Macedonian form,
+in cells, headings, form labels and values, prose and bullets — as a safety net, not as the way to write it. An entry whose
+words differ stays a pair: `1,000 (реф.)~~1.000 (ref.)`.

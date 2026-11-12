@@ -247,6 +247,14 @@ ENGINE_GRAMMAR = """ENGINE MARKDOWN (the only grammar the formatter reads):
   (| a | b |) and never separator rows (|---|).
 - Forms (write-in fields): [[FORM]] … [[/FORM]], one field per line, three cells:
   Label MK ||| Label EN ||| value  (the value stays blank for a human; no ~~ in a form row).
+- A value that is the same in both languages — a number, a formula, a unit, a code, a dash, an abbreviation or an
+  English-only term (THC, CBD, HPLC) — is written ONCE, with the decimal comma: 1,097, never 1,097~~1.097 and never
+  1,097 ||| 1.097. Only an entry whose words differ in the two languages is a Macedonian/English pair.
+- Formulas are LaTeX between dollar signs and become native Word equations: $x_i^2$ inside a line,
+  $$ … $$ alone on a line for a display formula; a table cell or a bullet may hold one. Use \\text{THC} or
+  \\mathrm{RSD} for names, \\frac{a}{b}, \\sqrt{x}, \\sum_i, \\times, \\cdot, \\bar{x}, decimal comma {,} in Macedonian
+  text. A formula that does not parse stops the build. Never write a formula as plain text, and write a dollar
+  amount as \\$.
 - Only document content: no notes to yourself, no restating of the brief, no explanation of what the
   section does or what you are about to do."""
 
@@ -312,7 +320,7 @@ def _strip_own_heading(num: str, mk: str, en: str, content: str) -> str:
 
 def _lint_section(content: str, sop: bool = True) -> list[str]:
     """Grammar problems a parser-level reading can prove, as instructions an author can act on."""
-    pipe = h1 = 0
+    pipe = h1 = single_pipe_rows = 0
     mixed = sorted(set(_MIXED.findall(content)))
     mono: list[str] = []
     meta: list[str] = []
@@ -329,6 +337,8 @@ def _lint_section(content: str, sop: bool = True) -> list[str]:
             continue
         if s.startswith(("[[PAGEBREAK", "[[NEWPAGE")):
             continue
+        if in_block and "|||" not in s and re.search(r"\s\|\s|\s\|$", s):
+            single_pipe_rows += 1                      # cells separated by a single pipe: the whole row is read as one cell
         if _PIPE_TABLE.match(s) and "|||" not in s:
             pipe += 1
             continue
@@ -344,6 +354,9 @@ def _lint_section(content: str, sop: bool = True) -> list[str]:
         if not in_block and "|||" not in s and len(_LETTERS.findall(s)) >= 15:
             mono.append(s[:90])
     issues = []
+    for bad in builder.build_from_md.pr.PM.check(content)[:3]:
+        issues.append("a formula cannot be rendered as a Word equation — " + bad
+                      + " (LaTeX between $…$ or $$…$$: \\text{}, \\frac{}{}, \\sqrt{}, \\times, \\sum; fix the formula)")
     if not _LETTERS.search(content):
         # An empty reply passed every other check (the bilingual gate skips anything under 120 letters).
         return ["the section is empty — write its content"]
@@ -358,6 +371,10 @@ def _lint_section(content: str, sop: bool = True) -> list[str]:
     if pipe:
         issues.append(f"{pipe} line(s) are Markdown pipe tables (| a | b |) — rewrite them as "
                       "[[TABLE]] … [[/TABLE]] (or [[FORM]] for write-in fields) with ||| between cells")
+    if single_pipe_rows:
+        issues.append(f"{single_pipe_rows} table row(s) separate their cells with a single pipe — inside [[TABLE]] the cells are "
+                      "separated by ||| (three pipes) and a Macedonian/English pair inside a cell is written MK~~EN; a value "
+                      "that is the same in both languages is written once")
     if h1:
         issues.append(f"{h1} single-'#' heading(s) — do not write the section heading; subsections use '## N.M MK | EN'")
     if mono:
@@ -1010,6 +1027,9 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                          result={**ctx, "verify": result.verify_report, "bytes": result.bytes,
                                  "artifact": {"path": str(result.path), "bytes": result.bytes}})
             return
+        # Stopped while formatting (POST /workflows/{id}/stop): nothing is registered (20.10.2026).
+        if await db.job_touch(job_id) == "failed":
+            raise JobAborted(job_id)
         did = await db.document_create(
             job_id,
             {
@@ -1024,7 +1044,7 @@ async def run_workflow(job_id: str, client: LettaClient | None = None, rag: Ragf
                         result={**ctx, "document_id": did, "verify": result.verify_report, "bytes": result.bytes}):
             await start_package(job_id, p, meta, sop)
     except JobAborted:
-        log.warning("job %s: failed by the stale-job reaper while running; stopped, nothing written", job_id)
+        log.warning("job %s: stopped (by a user or the stale-job reaper) while running; nothing written", job_id)
     except builder.VerifyFailed as e:
         log.error("job %s verify FAILED", job_id)
         await finish(status="failed", error="verify FAILED", result={**ctx, "verify": e.report})

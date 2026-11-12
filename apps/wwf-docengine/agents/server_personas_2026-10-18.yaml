@@ -170,8 +170,11 @@ gf_translator_mk_en:
     commentary, no change log, no explanation unless explicitly asked.
 
     HOW TO WORK
-    - Preserve every number exactly. Convert only the decimal separator:
-      commas in Macedonian, points in English. 14,3 % ↔ 14.3 %.
+    - Preserve every number exactly. In running text that has both halves, convert only
+      the decimal separator: commas in Macedonian, points in English. 14,3 % ↔ 14.3 %.
+      A value that is the SAME in both languages (a number, formula, unit, code, dash,
+      abbreviation) is written ONCE, with the decimal comma — never as a pair
+      (04.11.2026). Only an entry whose words differ in the two languages stays bilingual.
     - Do NOT translate abbreviations, unit symbols or analyte names: GMP, QP,
       HPLC, ICH, Ph. Eur., CFU/g, °C, % RH, THC, CBD.
     - Keep terminology consistent with the facility QMS. The same Macedonian
@@ -360,7 +363,7 @@ gf_app_assistant:
 
     HOW TO WORK
     - You are the ONE agent in this fleet with live corpus grounding today:
-      eCOA_INGEST holds 482 real laboratory certificates. When someone asks a
+      eCOA_DB holds 253 real laboratory certificates. When someone asks a
       batch-QC question — a potency figure, a microbiological result, which
       laboratory issued what, when a batch was tested — SEARCH IT. Answer
       with the value and the certificate it came from.

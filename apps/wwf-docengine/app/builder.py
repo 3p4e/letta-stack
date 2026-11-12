@@ -123,6 +123,46 @@ def _headerdata(markdown: str) -> dict:
     return out
 
 
+def _collapse_same_in_both(body: str) -> str:
+    """Source side of "a value that is the same in both languages prints once" (Head of QC, 04.11.2026): the English
+    half of a `MK~~EN` cell, of a prose / bullet / heading `MK ||| EN`, and of a form's label and value pairs is dropped
+    when it only repeats the Macedonian (build_from_md.T.same_in_both), because the document prints it once. Table
+    columns are columns, not language pairs: only their `~~` halves collapse."""
+    same = build_from_md.T.same_in_both
+    out: list[str] = []
+    block = None
+    for ln in body.splitlines():
+        t = ln.strip()
+        m = re.match(r"\[\[(TABLE|FORM)", t)
+        if m:
+            block = m.group(1); out.append(ln); continue
+        if t.startswith("[[/"):
+            block = None; out.append(ln); continue
+        if t.startswith("#") and "|" in t and "|||" not in t:
+            a, _, b = t.partition("|")
+            out.append(a if same(re.sub(r"^#+\s*(?:[0-9.]+\s+)?", "", a), b) else ln); continue
+        if "|||" not in t and "~~" not in t:
+            out.append(ln); continue
+        cells = []
+        for c in ln.split("|||"):
+            if "~~" in c:
+                x, y = c.split("~~", 1)
+                c = x if same(x, y) else c
+            cells.append(c)
+        if block == "FORM":
+            res, i = [], 0
+            while i < len(cells):
+                if i + 1 < len(cells) and i in (0, 2) and same(cells[i], cells[i + 1]):
+                    res.append(cells[i]); i += 2
+                else:
+                    res.append(cells[i]); i += 1
+            cells = res
+        elif block is None and len(cells) == 2 and same(cells[0].strip().lstrip("-* ").strip(), cells[1]):
+            cells = cells[:1]
+        out.append("|||".join(cells))
+    return "\n".join(out)
+
+
 def _source_word_char_counts(markdown: str) -> tuple[int, int]:
     """§5A fidelity source-side count: the ASSEMBLED markdown minus its own
     grammar tokens (HEADERDATA block, [[FORM/TABLE]] markers, heading
@@ -131,7 +171,23 @@ def _source_word_char_counts(markdown: str) -> tuple[int, int]:
     the produced .docx) — the source markdown itself is the ground truth
     for a no-impoverishment check."""
     body = _strip_headerdata(markdown)
-    body = re.sub(r"^\[\[/?(?:FORM|TABLE)[^\]]*\]\]\s*$", "", body, flags=re.M)
+    body = _collapse_same_in_both(body)
+    body = re.sub(r"(?m)(^|\|\|\|)[ \t]*_[ \t]*(?=\|\|\||$)", r"\1", body)       # a lone '_' cell is an empty write-in, not text
+    if (_headerdata(markdown).get("build") or "").strip().lower() == "execution":
+        # An execution copy prints every [[EX:…]] as an empty write-in and leaves the verdict of such a row blank, so
+        # neither is source text the output can be held to (04.11.2026).
+        def _drop_verdicts(m):
+            cells = [c for c in m.group(0).split("|||")
+                     if not build_from_md.pr.verdict_tone(c.strip().split("~~")[0])]
+            return "|||".join(cells)
+        body = "\n".join(_drop_verdicts(re.match(r".*", ln)) if "[[EX:" in ln else ln for ln in body.splitlines())
+        body = re.sub(r"\[\[EX:[^\]]*\]\]", "", body)
+    body = re.sub(r"\[\[(?:EX|FILL):([^\]]*)\]\]", r"\1", body)
+    body = build_from_md.pr.PM.strip_formulas(body)       # $…$ / $$…$$ are native Word equations, not counted text
+    # Every block marker is grammar, not text: [[BOX]] and the page breaks were counted as source characters, so a
+    # form with a stamp or writing box failed fidelity although nothing was lost (QASOPXXXA01, 21.10.2026).
+    body = re.sub(r"^\[\[/?(?:FORM|TABLE|BOX|PAGEBREAK|NEWPAGE|DECISION|EQ|CHECKLIST)[^\]]*\]\]\s*$", "", body, flags=re.M)
+    body = re.sub(r"^\[\[SIGN[^\]]*\]\]", "", body, flags=re.M)
     body = re.sub(r"^#{1,6}\s+", "", body, flags=re.M)
     body = body.replace("|||", " ").replace("~~", " ").replace("|", " ")
     words = len(re.findall(r"\S+", body))
@@ -166,8 +222,16 @@ def build(markdown: str, out_dir: Path, out_name: str = "document") -> BuildResu
             f.write(markdown)
             src = f.name
         try:
-            build_from_md.main(src, str(out))
+            try:
+                build_from_md.main(src, str(out))
+            except build_from_md.pr.MathError as e:
+                # A formula the engine cannot render stops the build: it is reported as a gate failure (422 / failed
+                # job), never printed on a page as LaTeX source (04.11.2026).
+                out.unlink(missing_ok=True)
+                raise VerifyFailed("== VERIFY: equations FAILED\n   " + str(e) + "\nRESULT: FAIL")
             passed, report = _verify_with_fidelity(out, markdown, require_bilingual)
+        except VerifyFailed:
+            raise
         except BaseException:
             out.unlink(missing_ok=True)   # a crash in build or verify must not leave the unverified partial
             raise

@@ -58,13 +58,13 @@ function VerifySample() {
   const tableA = doc.sections[2].blocks.length > 1 ? 's2b1' : 's2b0';
   return <>
     <div style={{ width: 236, flex: 'none', borderRight: `1px solid ${T.hair}`, background: T.pane, padding: '14px 10px', display: 'flex', flexDirection: 'column', gap: 4, fontSize: 13 }}>
-      <div style={{ padding: '0 6px 8px' }}><b style={{ color: '#fff' }}>Gate checks</b><div style={{ fontSize: 12, color: T.muted }}>{doc.code} · v{doc.version}</div></div>
-      {checks.map(([label, ok]) => <div key={label} style={{ padding: '8px 10px', borderRadius: 6, display: 'grid', gridTemplateColumns: '16px 1fr auto', gap: 8, background: ok ? 'transparent' : 'rgba(224,122,111,.12)' }}>
+      <div style={{ padding: '0 6px 8px' }}><b style={{ color: T.strong }}>Gate checks</b><div style={{ fontSize: 12, color: T.muted }}>{doc.code} · v{doc.version}</div></div>
+      {checks.map(([label, ok]) => <div key={label} style={{ padding: '8px 10px', borderRadius: 6, display: 'grid', gridTemplateColumns: '16px 1fr auto', gap: 8, background: ok ? 'transparent' : 'rgba(192,57,43,.12)' }}>
         <span style={{ color: ok ? C.ok : C.bad, fontWeight: 700 }}>{ok ? G.ok : G.bad}</span><span>{label}</span><span style={{ color: ok ? C.ok : C.bad, fontFamily: MONO, fontSize: 11 }}>{ok ? 'OK' : 'FAIL'}</span></div>)}
       <div style={{ marginTop: 'auto', fontFamily: MONO, fontSize: 11.5, color: T.muted, lineHeight: 1.6 }}>Pass rate 24 h: 83 %<br />Top cause: font floor</div>
     </div>
     <div style={{ flex: 1, minWidth: 0, padding: '18px 22px', display: 'flex', flexDirection: 'column', gap: 14, overflow: 'auto' }}>
-      {fail ? <div style={{ background: T.errSurface, border: `1px solid ${T.errBorder}`, borderRadius: 8, padding: '11px 14px', color: T.errText, lineHeight: 1.45 }}>Rejected and <b style={{ color: '#fff' }}>not saved</b> to the library. Nothing reaches a user unless the gate prints RESULT: PASS.</div>
+      {fail ? <div style={{ background: T.errSurface, border: `1px solid ${T.errBorder}`, borderRadius: 8, padding: '11px 14px', color: T.errText, lineHeight: 1.45 }}>Rejected and <b style={{ color: T.strong }}>not saved</b> to the library. Nothing reaches a user unless the gate prints RESULT: PASS.</div>
         : <Banner kind="ok" style={{ borderRadius: 8, padding: '11px 14px', fontSize: 14 }}>Rebuilt {how === 'split' ? 'with table 3 split in two' : 'in landscape'}. Gate passed; v{doc.version} registered and the PDF renders on demand.</Banner>}
       <div style={{ background: T.deeper, border: `1px solid ${T.hair}`, borderRadius: 8, padding: '14px 16px', fontFamily: MONO, fontSize: 12.5, lineHeight: 1.75, color: T.secondary, overflow: 'auto' }}>
         <div style={{ whiteSpace: 'pre' }}>$ python3 pp_verify.py /data/{doc.code}.docx</div>
@@ -84,7 +84,7 @@ function VerifySample() {
       <div style={{ flex: 1, position: 'relative', padding: '16px 0 0 14px' }}>
         <div style={{ position: 'relative', width: 270 }}>
           <PPPage doc={doc} zoom={.34} highlights={[{ anchor: tableA, kind: fail ? 'bad' : 'ok' }]} />
-          <div style={{ position: 'absolute', left: 26, top: 100, border: `4px solid ${vc}`, color: vc, background: 'rgba(15,26,38,.82)', fontFamily: DISPLAY, fontWeight: 700, fontSize: 24, letterSpacing: '.08em', padding: '6px 16px', transform: 'rotate(-9deg)', borderRadius: 5, textAlign: 'center', lineHeight: 1 }}>
+          <div style={{ position: 'absolute', left: 26, top: 100, border: `4px solid ${vc}`, color: vc, background: 'rgba(255,255,255,.92)', fontFamily: DISPLAY, fontWeight: 700, fontSize: 24, letterSpacing: '.08em', padding: '6px 16px', transform: 'rotate(-9deg)', borderRadius: 5, textAlign: 'center', lineHeight: 1 }}>
             {fail ? 'REJECTED' : 'PASSED'}<div style={{ fontSize: 10, letterSpacing: '.18em', marginTop: 5 }}>{fail ? 'НЕ Е ОДОБРЕНО · GATE 422' : `ОДОБРЕНО · REGISTERED v${doc.version}`}</div></div>
           <div style={{ position: 'absolute', left: '100%', top: 155, display: 'flex', alignItems: 'center' }}><span style={{ width: 10, height: 1.5, background: vc }} />
             <div style={{ border: `1.5px solid ${vc}`, color: vc, borderRadius: 4, padding: '4px 6px', width: 100, transform: 'rotate(-1.5deg)' }}><div style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 9.5, letterSpacing: '.05em' }}>FONT FLOOR</div><div style={{ fontSize: 11, lineHeight: 1.25 }}>{fail ? '5.5 pt EN halves, 9 columns' : '6.5 pt after ' + how}</div></div></div>

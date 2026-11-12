@@ -8,8 +8,8 @@ import { SAMPLE_ANNEX } from '../data/samples';
 import { skeleton } from '../lib/newdoc';
 import type { Status } from '../theme';
 
-export type Screen = 'flow' | 'builder' | 'chat' | 'quest' | 'format' | 'report' | 'library' | 'jobs' | 'verify' | 'preview' | 'fleet' | 'users';
-export const SCREENS: Screen[] = ['flow', 'builder', 'chat', 'quest', 'format', 'report', 'library', 'jobs', 'verify', 'preview', 'fleet', 'users'];
+export type Screen = 'flow' | 'builder' | 'chat' | 'quest' | 'format' | 'report' | 'library' | 'jobs' | 'canvas' | 'verify' | 'preview' | 'fleet' | 'users';
+export const SCREENS: Screen[] = ['flow', 'builder', 'chat', 'quest', 'format', 'report', 'library', 'jobs', 'canvas', 'verify', 'preview', 'fleet', 'users'];
 
 export interface Sheet {
   doctype: 'SOP' | 'ANNEX' | 'FORM' | 'LOG' | 'CHECKLIST' | 'REPORT';
@@ -59,6 +59,8 @@ export interface AppState {
   lang: Lang; setLang: (l: Lang) => void;
   qKey: string; qRound: number; metas: Record<string, { title_mk: string; title_en: string; code: string; version: string; orient: 'portrait' | 'landscape' }>;
   jobSel: string | null; libSel: string | null;
+  /** The job whose draft the canvas holds (20.10.2026). */
+  canvasJob: string | null;
   fmt: 'B' | 'C';
   repMeta: { code: string; mk: string; en: string; ver: string } | null; repSel: string;
   /** The top-bar primary button: each screen registers its own label and action. */
@@ -107,11 +109,11 @@ export const useApp = create<AppState>((set, get) => {
       sop_transport: { title_mk: 'Внатрешен (копнен) транспорт на опојни дроги — медицински канабис', title_en: 'Inland Transport of Narcotic Drugs — Medical Cannabis', code: 'WHSOP003', version: '01', orient: 'portrait' },
       annex_form: { title_mk: 'Дневник на прием', title_en: 'Receipt log', code: '', version: '01', orient: 'portrait' },
     },
-    jobSel: null, libSel: null, fmt: 'B', repMeta: null, repSel: 'b5',
+    jobSel: null, libSel: null, canvasJob: read('ppsuite.canvas') || null, fmt: 'B', repMeta: null, repSel: 'b5',
     primary: null,
     svc: { letta: 'idle', docengine: 'idle', pdf: 'idle', note: {} },
     set: p => set(p as never),
-    go: (screen, extra) => { write(LS.screen, screen); set({ screen, createOpen: false, ...(extra || {}) }); },
+    go: (screen, extra) => { write(LS.screen, screen); if (extra?.canvasJob) write('ppsuite.canvas', extra.canvasJob); set({ screen, createOpen: false, ...(extra || {}) }); },
     setMode: m => { write(LS.api, m); location.reload(); },
     setTweaks: t => { const next = { ...get().tweaks, ...t }; write(LS.tweaks, JSON.stringify(next)); set({ tweaks: next }); },
     flash: t => { clearTimeout(toastTimer); set({ toast: t }); toastTimer = window.setTimeout(() => set({ toast: '' }), 3200); },
