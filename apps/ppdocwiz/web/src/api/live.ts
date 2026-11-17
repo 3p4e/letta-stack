@@ -75,6 +75,8 @@ export function liveApi(): Api {
     // A job opened by id (a brief's build, a package annex) joins the list this browser knows.
     job: async id => { const j = await call<Job>(de + '/workflows/' + encodeURIComponent(id)); rememberJob(j.id); lastRows.set(j.id, j); return j; },
     jobs: async () => {
+      // Every job from the server first (GET /workflows, 17.11.2026); the ids this browser remembers are the fallback.
+      try { const l = await call<{ jobs: { id: string }[] }>(de + '/workflows?limit=40'); for (const j of [...l.jobs].reverse()) rememberJob(j.id); } catch { /* older engine */ }
       const out: JobList = []; let firstErr: ApiError | null = null;
       const seen = new Set<string>(), queue = knownJobs();
       // Per id, with its own catch: one 503 used to empty the whole list. Annex jobs a package started
@@ -98,6 +100,14 @@ export function liveApi(): Api {
     reviseJob: (id, body) => post<ReviseResult>(de + '/workflows/' + encodeURIComponent(id) + '/revise', body),
     rerunJob: async id => { const r = await post<{ job_id: string; status: string }>(de + '/workflows/' + encodeURIComponent(id) + '/rerun', {}); rememberJob(r.job_id); return r; },
     reviewJob: (id, decision, note) => post(de + '/workflows/' + encodeURIComponent(id) + '/review', { decision, note }),
+    canvasList: async () => (await call<{ drafts: never[] }>(de + '/canvas')).drafts,
+    canvasOpen: b => post(de + '/canvas', b),
+    canvasGet: id => call(de + '/canvas/' + encodeURIComponent(id)),
+    canvasSave: (id, b) => send(de + '/canvas/' + encodeURIComponent(id), 'PUT', b),
+    canvasRevise: (id, b) => post(de + '/canvas/' + encodeURIComponent(id) + '/revise', b),
+    canvasRevisions: async id => (await call<{ revisions: never[] }>(de + '/canvas/' + encodeURIComponent(id) + '/revisions')).revisions,
+    canvasRevision: async (id, rev) => (await call<{ markdown: string }>(de + '/canvas/' + encodeURIComponent(id) + '/revisions/' + rev)).markdown,
+    canvasDelete: async id => { await send(de + '/canvas/' + encodeURIComponent(id), 'DELETE'); },
     directBuild: (markdown, out_name, meta) => post(de + '/build', { markdown, out_name, meta }),
     documents: async () => (await call<{ documents: never[] }>(de + '/documents')).documents,
     document: id => call(de + '/documents/' + encodeURIComponent(id)),

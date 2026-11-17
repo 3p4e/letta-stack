@@ -124,6 +124,15 @@ def parse(md):
                 if t: rows.append([c.strip() for c in t.split('|||')])
                 i+=1
             blocks.append((kind, rows)); continue
+        if s.startswith('[[LIMITS'):                    # limit bars: see pp_limitbars.py (12.11.2026)
+            i+=1; rows=[]
+            while i<len(lines) and not lines[i].strip().startswith('[[/LIMITS'):
+                rows.append(lines[i]); i+=1
+            blocks.append(('limits', rows)); i+=1; continue
+        if s.startswith('[[FIGURE:'):                   # [[FIGURE:path|width_mm]]
+            mo=re.match(r'\[\[FIGURE:([^|\]]+)(?:\|\s*([0-9.]+))?\]\]', s)
+            if mo: blocks.append(('figure', mo.group(1).strip(), float(mo.group(2) or 170)))
+            i+=1; continue
         if s.startswith('[[TABLE') or s.startswith('[[FORM'):
             kind='form' if s.startswith('[[FORM') else 'table'; rows=[]
             mo=re.match(r'\[\[(?:FORM|TABLE):([^\]]+)\]\]', s); mode=mo.group(1).strip() if mo else None
@@ -421,7 +430,7 @@ def exec_rows(rows):
 
 def emit_table(d, rows, mode=None):
     if not rows: return
-    opts=as_options(rows)
+    opts=as_options(rows) if FEAT.get('option_grid', True) else None
     if opts:
         pr.status_grid(d, opts, selected=opts.selected, ncols=min(2, len(opts))); return
     rows=[rows[0]]+exec_rows(rows[1:])
@@ -433,12 +442,12 @@ def emit_table(d, rows, mode=None):
             if ri==0:
                 pr.head_cell(t.cell(ri,ci), mk, en, sz=9)
             else:
-                fill=pr.LBL if (ci==0 and mk) else ("F7FAFC" if ri%2==0 else None)
+                fill=pr.LBL if (ci==0 and mk and FEAT.get('label_column', True)) else ("F7FAFC" if ri%2==0 and FEAT.get('zebra_rows', True) else None)
                 pr.cellfmt(t.cell(ri,ci), mk, en, sz=9, col=pr.BLACK, fill=fill)
-    pr.fixed(t, mode='full')   # annex forms: every data table spans the full width, like the bars
+    pr.fixed(t, mode='full', header_repeat=FEAT.get('header_repeat', True))   # annex forms: every data table spans the full width
     pr.borders(t)
     pr.tint_table(t, rpn=rpn_limits(mode))
-    pr.keep_table(t)
+    if FEAT.get('keep_tables', True): pr.keep_table(t)
 
 # ---- blocks added 04.11.2026 ----
 def _shade_par(p, fill):
@@ -612,7 +621,7 @@ def emit_new(d, b):
 NEW_BLOCKS=('sign','decision','eq','checklist')
 
 WIDE_COLS = 10
-BLOCKISH = ('form','table','box') + NEW_BLOCKS
+BLOCKISH = ('form','table','box','limits','figure') + NEW_BLOCKS
 
 def build_annex(hd, blocks, out):
     global PAGE_W
@@ -660,6 +669,14 @@ def build_annex(hd, blocks, out):
         elif b[0]=='table': emit_table(d, b[1], (b[2] if len(b)>2 else None))
         elif b[0]=='box': emit_box(d, b[1], b[2])
         elif b[0] in NEW_BLOCKS: emit_new(d, b)
+        elif b[0]=='limits':
+            import pp_limitbars; pp_limitbars.emit(d, b[1], PAGE_W, FEAT)
+        elif b[0]=='figure':
+            if FEAT.get('figures', True):
+                from docx.shared import Mm
+                src=b[1] if os.path.isabs(b[1]) else os.path.join(SRC_DIR, b[1])
+                if os.path.exists(src):
+                    p=d.add_paragraph(); p.alignment=1; p.add_run().add_picture(src, width=Mm(b[2]))
         elif b[0]=='pagebreak': d.add_page_break()
     emit_end(d, hd)
     PAGE_W = pr.PAGE_W = 18.46            # restore default for any subsequent build in-process
@@ -739,9 +756,27 @@ def build_sop(hd, blocks, out):
     emit_end(d, hd)
     pf.save(d, out)
 
+FEAT={}; SRC_DIR='.'
+def load_features(hd):
+    """Feature switches (12.11.2026): assets/pp_features.json, then $PP_FEATURES, then HEADERDATA
+    'features: a=on, b=off, c=0.8'. Edited with assets/pp_features_dashboard.html."""
+    import json
+    here=os.path.dirname(os.path.abspath(__file__)); f={}
+    for path in (os.path.join(here,'..','assets','pp_features.json'), os.environ.get('PP_FEATURES','')):
+        if path and os.path.exists(path):
+            for k,v in json.load(open(path,encoding='utf-8')).items():
+                if isinstance(v,dict): f[k]=v.get('value', v.get('on'))
+    for kv in (hd.get('features','') or '').split(','):
+        if '=' in kv:
+            k,v=(x.strip() for x in kv.split('=',1))
+            f[k]={'on':True,'off':False,'true':True,'false':False}.get(v.lower(), float(v) if re.match(r'^[0-9.]+$',v) else v)
+    return f
+
 def main(src,out):
+    global FEAT, SRC_DIR
     md=open(src,encoding='utf-8').read()
     hd,blocks=parse(md)
+    FEAT=load_features(hd); SRC_DIR=os.path.dirname(os.path.abspath(src))
     hd['_src']=md
     dt=hd.get('doctype','SOP').upper()
     # "build: execution" -> the copy that goes to the bench: example values become write-ins (pp_theme.MODE).

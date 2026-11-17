@@ -54,6 +54,19 @@ def _min_font(parts):
                 v = int(m); mn = v if mn is None else min(mn, v)
     return mn
 
+def _min_body_font(parts):
+    """Smallest size in the document body only: the fixed template header carries a 6 pt line; the body floor is 7 pt."""
+    sizes = [int(m) for m in re.findall(r'w:sz w:val="(\d+)"', parts.get("word/document.xml", ""))]
+    return min(sizes) if sizes else None
+
+# LaTeX that reached the page as plain text: a $…$ pair holding a backslash command, or a bare \frac{ \sqrt{ \text{ …
+# (04.11.2026: a formula is a native Word equation or the build fails; it is never printed as source).
+_LATEX_LEAK = re.compile(r"\$[^$\n]*\\[A-Za-z]+[^$\n]*\$|\\(?:frac|sqrt|text|times|cdot|sum|mathrm|left|right|bar|sigma|Delta)\b")
+
+# The engine's own grammar that reached the page as text: a `~~` pair, a `|||` separator or a [[MARKER]] (a table written with
+# single pipes printed all three, 04.11.2026). A document that shows its own markup is never delivered.
+_GRAMMAR_LEAK = re.compile(r"~~|\|\|\||\[\[/?[A-Z]+")
+
 def analyse(path):
     d, txt = _text(path)
     parts = _xml_parts(path)
@@ -62,14 +75,18 @@ def analyse(path):
     return dict(
         path=path, words=words, chars=chars, paras=len(d.paragraphs), tables=len(d.tables),
         omath=doc.count("<m:oMath"), figures=doc.count("<w:drawing"),
-        min_half=_min_font(parts),
+        min_half=_min_font(parts), min_body_half=_min_body_font(parts),
         cyr=bool(re.search(r"[Ѐ-ӿ]", txt)), lat=bool(re.search(r"[A-Za-z]", txt)),
+        grammar_leak=(_GRAMMAR_LEAK.search(txt).group(0) if _GRAMMAR_LEAK.search(txt) else None),
+        latex_leak=(_LATEX_LEAK.search(txt).group(0) if _LATEX_LEAK.search(txt) else None),
     )
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("docx"); ap.add_argument("--source", action="append", default=[])
     ap.add_argument("--min-pt", type=float, default=6.0)
+    # Body text floor (04.11.2026): 6 pt English did not survive print and scan; the template header keeps its 6 pt line.
+    ap.add_argument("--body-min-pt", type=float, default=7.0)
     # From the DocEngine canon-2026-07 gate (09.10.2026): "true" makes a document missing a
     # language FAIL instead of WARN. Default "false" keeps the suite's CLI behaviour;
     # DocEngine's builder passes "true" (with a per-document opt-out).
@@ -89,6 +106,11 @@ def main():
     else:
         print(f"   min font {mnpt} pt  [{'OK' if floor_ok else 'FAIL <%.0f pt'%a.min_pt}]")
     ok &= floor_ok
+    bmn = (r['min_body_half']/2) if r['min_body_half'] else None
+    if bmn is not None:
+        bok = bmn >= a.body_min_pt
+        print(f"   min body font {bmn} pt  [{'OK' if bok else 'FAIL <%.0f pt' % a.body_min_pt}]")
+        ok &= bok
     if pp_assets is not None:
         env = pp_assets.check_environment()
         bad = pp_assets.audit_docx(a.docx)
@@ -101,6 +123,12 @@ def main():
         ok &= (not env) and (not bad)
     else:
         print("   glyph coverage SKIPPED (pp_assets unavailable)")
+    if r['grammar_leak']:
+        print(f"   grammar: the engine's markup printed as text, e.g. {r['grammar_leak']!r}  [FAIL]")
+        ok = False
+    if r['latex_leak']:
+        print(f"   equations: LaTeX printed as text, e.g. {r['latex_leak'][:50]!r}  [FAIL]")
+        ok = False
     biling = r['cyr'] and r['lat']
     print(f"   bilingual MK+EN {'OK' if biling else ('FAIL (missing a language)' if require_bl else 'WARN (missing a language)')}")
     ok &= biling or not require_bl

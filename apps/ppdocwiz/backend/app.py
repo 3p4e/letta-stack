@@ -579,7 +579,7 @@ def chat(r: ChatReq):
 # automatic code and the Fleet engine panel answered 404 in the browser while DocEngine itself answered 200.
 # PUT /reference (loading reference documents) is an operator route and stays out.
 _DE_ROUTES = {"health", "questionnaires", "workflows", "build", "documents", "knowledge", "library", "reference", "house",
-              "register", "engine", "briefs"}
+              "register", "engine", "briefs", "canvas"}
 _DE_PASS_HEADERS = ("content-type", "content-disposition", "content-length")
 # The forwarded body is bounded like /api/build's (400 kB); the brief source upload (POST /briefs/{id}/sources,
 # content_b64 up to 21 MB at the DocEngine) is the one route that legitimately carries more. request.body() used to
@@ -605,7 +605,7 @@ async def _read_bounded(request: Request, limit: int) -> bytes | None:
     return b"".join(chunks)
 
 
-@app.api_route("/api/docengine/{path:path}", methods=["GET", "POST", "PATCH", "DELETE", "HEAD"],
+@app.api_route("/api/docengine/{path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"],
                dependencies=[Depends(security.require_api_key)])
 async def docengine_proxy(path: str, request: Request):
     if not settings.docengine_url:
@@ -617,7 +617,7 @@ async def docengine_proxy(path: str, request: Request):
     if request.url.query:
         url += "?" + request.url.query
     body = None
-    if request.method in ("POST", "PATCH"):
+    if request.method in ("POST", "PUT", "PATCH"):
         body = await _read_bounded(request, _de_body_limit(parts))
         if body is None:
             return JSONResponse({"error": f"request body over {_de_body_limit(parts)} bytes"}, status_code=413)

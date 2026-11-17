@@ -27,6 +27,7 @@
 #   GET  /briefs/{id}/package.pdf         SOP + annexes as one PDF (409 until every member is built)
 #   POST /briefs/{id}/build               build from wherever the brief stands; undecided fields listed as assumed
 import asyncio
+import re
 import contextlib
 import logging
 import uuid
@@ -310,6 +311,15 @@ async def start_workflow(body: WorkflowIn):
     return {"job_id": jid, "status": "queued"}
 
 
+@app.get("/workflows", dependencies=[Depends(require_api_key)])
+async def list_workflows(limit: int = 100):
+    """Every job, newest first (17.11.2026: Jobs listed only what one browser had started, so the Canvas could not be
+    reached from another device)."""
+    if not db.ready():
+        raise HTTPException(503, "DocEngine storage unavailable")
+    return {"jobs": await db.jobs_list(max(1, min(limit, 500)))}
+
+
 @app.get("/workflows/{jid}", dependencies=[Depends(require_api_key)])
 async def get_workflow(jid: str):
     if not _valid_uuid(jid):
@@ -527,6 +537,7 @@ async def direct_build(body: BuildIn):
                 "verify": result.verify_report,
             },
         )
+        await db.document_set_markdown(doc_id, body.markdown)   # so the Canvas can reopen it (17.11.2026)
     return {
         "ok": True, "document_id": doc_id, "bytes": result.bytes,
         "verify": result.verify_report,
@@ -1125,3 +1136,148 @@ async def build_brief(bid: str, body: BuildBriefIn):
         raise HTTPException(409, "the brief changed meanwhile; reload it and build again")
     _fire_and_forget(run_workflow(jid))
     return {"job_id": jid, "status": "queued", "code": b["meta"]["code"], "assumed": payload["assumed"]}
+
+
+# ---------- canvas (17.11.2026) ----------
+# Head of QC, 12.11.2026: the canvas "has zero functionality". A draft is now held on the server: it opens from a job,
+# a Library document, an uploaded Markdown file or a blank page, is saved with a revision history, revised by the author
+# on instruction and rebuilt through the same gate (POST /build).
+BLANK = """<!--HEADERDATA
+mk_title: Нов документ
+en_title: New document
+code: {code}
+version: 01
+doctype: {doctype}
+-->
+# 1. ПРЕДМЕТ | SCOPE
+Текст. ||| Text.
+"""
+
+
+class CanvasIn(BaseModel):
+    source: str = Field(default="blank", pattern="^(blank|job|document|upload)$")
+    source_id: str = Field(default="", max_length=64)
+    markdown: str = Field(default="", max_length=400_000)
+    code: str = Field(default="", max_length=60)
+    doctype: str = Field(default="ANNEX", max_length=20)
+    title_mk: str = Field(default="", max_length=300)
+    title_en: str = Field(default="", max_length=300)
+
+
+class CanvasSave(BaseModel):
+    markdown: str = Field(min_length=1, max_length=400_000)
+    rev: int
+    note: str = Field(default="", max_length=300)
+    document_id: str | None = None
+
+
+class CanvasRevise(BaseModel):
+    instruction: str = Field(min_length=3, max_length=4000)
+    markdown: str = Field(default="", max_length=400_000)
+    section: int | None = None
+
+
+def _head(md: str, key: str) -> str:
+    m = re.search(r"^\s*" + key + r"\s*:\s*(.+)$", md.split("-->", 1)[0], re.M)
+    return m.group(1).strip() if m else ""
+
+
+async def _canvas_or_404(cid: str) -> dict:
+    if not _valid_uuid(cid):
+        raise HTTPException(404, "no such draft")
+    if not db.ready():
+        raise HTTPException(503, "DocEngine storage unavailable")
+    d = await db.canvas_get(cid)
+    if not d:
+        raise HTTPException(404, "no such draft")
+    return d
+
+
+@app.get("/canvas", dependencies=[Depends(require_api_key)])
+async def canvas_list():
+    if not db.ready():
+        raise HTTPException(503, "DocEngine storage unavailable")
+    return {"drafts": await db.canvas_list()}
+
+
+@app.post("/canvas", dependencies=[Depends(require_api_key)])
+async def canvas_open(body: CanvasIn):
+    if not db.ready():
+        raise HTTPException(503, "DocEngine storage unavailable")
+    d = body.model_dump()
+    if body.source == "job":
+        if not _valid_uuid(body.source_id): raise HTTPException(404, "no such job")
+        job = await db.job_get(body.source_id)
+        if not job: raise HTTPException(404, "no such job")
+        d["markdown"] = (job.get("result") or {}).get("markdown") or ""
+        if not d["markdown"]: raise HTTPException(409, "this job holds no draft yet")
+        m = (job.get("payload") or {}).get("meta") or {}
+        d.update(code=m.get("code", ""), title_mk=m.get("title_mk", ""), title_en=m.get("title_en", ""))
+    elif body.source == "document":
+        doc = await _doc_or_404(body.source_id)
+        d["markdown"] = await db.document_markdown(body.source_id)
+        if not d["markdown"]:
+            raise HTTPException(409, "this document was registered before the canvas kept its text; open its job instead")
+        d.update(code=doc["code"], doctype=doc["doctype"], title_mk=doc["title_mk"], title_en=doc["title_en"])
+    elif body.source == "blank":
+        d["markdown"] = BLANK.format(code=body.code or "XXX", doctype=body.doctype or "ANNEX")
+    elif not body.markdown.strip():
+        raise HTTPException(400, "the uploaded file is empty")
+    md = d["markdown"]
+    d["code"] = d.get("code") or _head(md, "code"); d["doctype"] = _head(md, "doctype") or d.get("doctype") or "ANNEX"
+    d["title_mk"] = d.get("title_mk") or _head(md, "mk_title"); d["title_en"] = d.get("title_en") or _head(md, "en_title")
+    cid = await db.canvas_create(d, who())
+    return await db.canvas_get(cid)
+
+
+@app.get("/canvas/{cid}", dependencies=[Depends(require_api_key)])
+async def canvas_get(cid: str):
+    return await _canvas_or_404(cid)
+
+
+@app.put("/canvas/{cid}", dependencies=[Depends(require_api_key)])
+async def canvas_save(cid: str, body: CanvasSave):
+    await _canvas_or_404(cid)
+    if body.document_id and not _valid_uuid(body.document_id):
+        raise HTTPException(400, "bad document_id")
+    rev = await db.canvas_save(cid, body.markdown, body.rev, body.note, who(), body.document_id)
+    if rev is None:
+        raise HTTPException(409, "someone saved this draft since you opened it: reload it")
+    return {"rev": rev}
+
+
+@app.get("/canvas/{cid}/revisions", dependencies=[Depends(require_api_key)])
+async def canvas_revs(cid: str):
+    await _canvas_or_404(cid)
+    return {"revisions": await db.canvas_revisions(cid)}
+
+
+@app.get("/canvas/{cid}/revisions/{rev}", dependencies=[Depends(require_api_key)])
+async def canvas_rev(cid: str, rev: int):
+    await _canvas_or_404(cid)
+    md = await db.canvas_revision(cid, rev)
+    if md is None: raise HTTPException(404, "no such revision")
+    return {"rev": rev, "markdown": md}
+
+
+@app.delete("/canvas/{cid}", dependencies=[Depends(require_api_key)])
+async def canvas_delete(cid: str):
+    await _canvas_or_404(cid)
+    await db.canvas_delete(cid)
+    return {"deleted": cid}
+
+
+@app.post("/canvas/{cid}/revise", dependencies=[Depends(require_api_key)])
+async def canvas_revise(cid: str, body: CanvasRevise):
+    from . import revise
+    d = await _canvas_or_404(cid)
+    if not LettaClient().configured:
+        raise HTTPException(503, "Letta unavailable")
+    md = body.markdown or d["markdown"]
+    try:
+        return await revise.revise(md, body.instruction, body.section, "SOP" if d["doctype"].upper() == "SOP" else "FORM",
+                                   tag=f"{cid[:8]}_cv")
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+    except LettaError as e:
+        raise HTTPException(502, f"the author failed: {e}") from e

@@ -94,6 +94,7 @@ function Builds() {
               const a = document.createElement('a'); a.href = URL.createObjectURL(await res.blob()); a.download = `${r.code}.pdf`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 30000);
             } catch (x) { setPdfErr(String((x as Error).message || x)); } }}
             title="Gotenberg renders on demand: 503 when no renderer is configured, 502 when conversion fails" style={{ flex: 1, textAlign: 'center', border: `1px solid ${T.control}`, borderRadius: 6, padding: 9, color: missing ? T.faint : T.strong, textDecoration: 'none', pointerEvents: missing ? 'none' : undefined }}>PDF · Gotenberg</a></div>
+        <span onClick={() => go('canvas', { canvasReq: { source: 'document', source_id: r.id } })} style={{ textAlign: 'center', color: C.run, cursor: 'pointer', fontSize: 12.5 }}>Open in canvas · edit, instruct, rebuild →</span>
         {r.job_id && <span onClick={() => go('jobs', { jobSel: r.job_id! })} style={{ textAlign: 'center', color: C.run, cursor: 'pointer', fontSize: 12.5 }}>Open source job {r.job_id.slice(0, 8)} →</span>}
       </> : <>
         <div style={{ fontSize: 12, color: T.muted, lineHeight: 1.45 }}>The registry keys on <span style={{ fontFamily: MONO }}>code</span>: every passed build of {r.code} is kept. The newest approved row is effective; older rows are superseded, never deleted. A Formatter build (no workflow job) is a format-only copy and never effective.</div>

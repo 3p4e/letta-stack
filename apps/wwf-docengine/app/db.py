@@ -96,6 +96,33 @@ CREATE TABLE IF NOT EXISTS docengine.brief_sources (
 ALTER TABLE docengine.brief_sources ADD COLUMN IF NOT EXISTS role text NOT NULL DEFAULT 'content';
 CREATE INDEX IF NOT EXISTS de_brief_events ON docengine.brief_events(brief_id, rev);
 CREATE INDEX IF NOT EXISTS de_jobs_status ON docengine.jobs(status);
+-- Canvas (17.11.2026): a draft is held on the server, so it opens on any device and survives the browser.
+ALTER TABLE docengine.documents ADD COLUMN IF NOT EXISTS markdown text;
+CREATE TABLE IF NOT EXISTS docengine.canvas_drafts (
+  id          uuid PRIMARY KEY,
+  source      text NOT NULL DEFAULT 'blank',  -- blank | job | document | upload
+  source_id   text NOT NULL DEFAULT '',
+  code        text NOT NULL DEFAULT '',
+  doctype     text NOT NULL DEFAULT 'ANNEX',
+  title_mk    text NOT NULL DEFAULT '',
+  title_en    text NOT NULL DEFAULT '',
+  markdown    text NOT NULL DEFAULT '',
+  base        text NOT NULL DEFAULT '',
+  rev         int  NOT NULL DEFAULT 1,
+  document_id uuid,
+  updated_by  text NOT NULL DEFAULT '',
+  created_at  timestamptz NOT NULL DEFAULT now(),
+  updated_at  timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS docengine.canvas_revisions (
+  draft_id uuid NOT NULL REFERENCES docengine.canvas_drafts(id) ON DELETE CASCADE,
+  rev      int  NOT NULL,
+  markdown text NOT NULL,
+  note     text NOT NULL DEFAULT '',
+  actor    text NOT NULL DEFAULT '',
+  at       timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY (draft_id, rev)
+);
 CREATE INDEX IF NOT EXISTS de_docs_code ON docengine.documents(code);
 """
 
@@ -544,3 +571,91 @@ async def brief_sources(bid: str, with_text: bool = True) -> list[dict]:
     return [{"id": str(r["id"]), "name": r["name"], "kind": r["kind"], "bytes": r["bytes"], "sha256": r["sha256"],
              "chars": r["chars"], "created_at": r["created_at"].isoformat(), "role": r["role"],
              **({"text": r["text"]} if with_text else {})} for r in rows]
+
+
+# ---------- jobs list, canvas drafts (17.11.2026) ----------
+def _iso(d: dict) -> dict:
+    for k, v in list(d.items()):
+        if hasattr(v, "isoformat"): d[k] = v.isoformat()
+        elif isinstance(v, uuid.UUID): d[k] = str(v)
+    return d
+
+
+async def jobs_list(limit: int = 100) -> list[dict]:
+    """Every job, newest first, without the bulky result (Jobs and the Canvas list them on any device)."""
+    rows = await pool().fetch(
+        "SELECT id, kind, status, stage, created_by, created_at, updated_at,"
+        " payload->'meta' AS meta, payload->>'questionnaire' AS questionnaire,"
+        " (result ? 'markdown') AS has_draft, result->>'document_id' AS document_id"
+        " FROM docengine.jobs ORDER BY created_at DESC LIMIT $1", limit)
+    out = []
+    for r in rows:
+        d = _iso(dict(r))
+        if isinstance(d.get("meta"), str): d["meta"] = json.loads(d["meta"])
+        out.append(d)
+    return out
+
+
+async def document_set_markdown(did: str, md: str) -> None:
+    await pool().execute("UPDATE docengine.documents SET markdown = $2 WHERE id = $1", did, md)
+
+
+async def document_markdown(did: str) -> str:
+    r = await pool().fetchrow(
+        "SELECT d.markdown, j.result->>'markdown' AS jmd FROM docengine.documents d"
+        " LEFT JOIN docengine.jobs j ON j.id = d.job_id WHERE d.id = $1", did)
+    return (r and (r["markdown"] or r["jmd"])) or ""
+
+
+_CANVAS_COLS = "id, source, source_id, code, doctype, title_mk, title_en, rev, document_id, updated_by, created_at, updated_at"
+
+
+async def canvas_create(d: dict, actor: str) -> str:
+    cid = str(uuid.uuid4())
+    async with pool().acquire() as c, c.transaction():
+        await c.execute(
+            "INSERT INTO docengine.canvas_drafts (id, source, source_id, code, doctype, title_mk, title_en, markdown, base,"
+            " updated_by) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$8,$9)",
+            cid, d.get("source", "blank"), d.get("source_id", ""), d.get("code", ""), d.get("doctype", "ANNEX"),
+            d.get("title_mk", ""), d.get("title_en", ""), d.get("markdown", ""), actor)
+        await c.execute("INSERT INTO docengine.canvas_revisions (draft_id, rev, markdown, note, actor) VALUES ($1,1,$2,$3,$4)",
+                        cid, d.get("markdown", ""), "opened from " + d.get("source", "blank"), actor)
+    return cid
+
+
+async def canvas_list(limit: int = 100) -> list[dict]:
+    rows = await pool().fetch(f"SELECT {_CANVAS_COLS} FROM docengine.canvas_drafts ORDER BY updated_at DESC LIMIT $1", limit)
+    return [_iso(dict(r)) for r in rows]
+
+
+async def canvas_get(cid: str) -> dict | None:
+    r = await pool().fetchrow(f"SELECT {_CANVAS_COLS}, markdown, base FROM docengine.canvas_drafts WHERE id = $1", cid)
+    return _iso(dict(r)) if r else None
+
+
+async def canvas_save(cid: str, md: str, old_rev: int, note: str, actor: str, document_id: str | None = None) -> int | None:
+    """Optimistic save: only if nobody saved since `old_rev`. Returns the new rev, or None on a conflict."""
+    async with pool().acquire() as c, c.transaction():
+        new = await c.fetchval(
+            "UPDATE docengine.canvas_drafts SET markdown = $2, rev = rev + 1, updated_by = $4, updated_at = now(),"
+            " document_id = COALESCE($5::uuid, document_id) WHERE id = $1 AND rev = $3 RETURNING rev",
+            cid, md, old_rev, actor, document_id)
+        if new is None:
+            return None
+        await c.execute("INSERT INTO docengine.canvas_revisions (draft_id, rev, markdown, note, actor) VALUES ($1,$2,$3,$4,$5)",
+                        cid, new, md, note, actor)
+    return new
+
+
+async def canvas_revisions(cid: str) -> list[dict]:
+    rows = await pool().fetch("SELECT rev, note, actor, at, length(markdown) AS chars FROM docengine.canvas_revisions"
+                              " WHERE draft_id = $1 ORDER BY rev DESC", cid)
+    return [_iso(dict(r)) for r in rows]
+
+
+async def canvas_revision(cid: str, rev: int) -> str | None:
+    return await pool().fetchval("SELECT markdown FROM docengine.canvas_revisions WHERE draft_id = $1 AND rev = $2", cid, rev)
+
+
+async def canvas_delete(cid: str) -> bool:
+    return (await pool().execute("DELETE FROM docengine.canvas_drafts WHERE id = $1", cid)).endswith("1")

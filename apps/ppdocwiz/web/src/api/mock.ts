@@ -1,7 +1,7 @@
 // In-browser stand-in for ppdocwiz + DocEngine. Same response shapes as the
 // real services (see live.ts), sample data from the Hybrid v2 prototype, and
 // switchable faults so every degraded state can be seen without breaking a server.
-import type { Api, EngineEnv, WorkflowIn } from './client';
+import type { Api, EngineEnv, WorkflowIn , CanvasDraft, CanvasRevision } from './client';
 import { applyDefaults, normalizeQuestionnaire } from './normalize';
 import { localProblems, pieces } from '../lib/latex';
 import { ApiError, type Account, type Brief, type BriefEvent, type DocumentRow, type Job, type HouseRelated, type LibraryPackage, type LibraryShelves, type Package, type ReferenceDoc, type Shelf, type ShelfEntry, type SourceRole, type WizardPayload } from './types';
@@ -138,6 +138,8 @@ const LIB_PACKAGES: { in_use: LibraryPackage[]; drafts: LibraryPackage[] } = {
 
 export function mockApi(onChange?: () => void): MockApi {
   const jobs = seedJobs();
+  const canvas: CanvasDraft[] = [];
+  const canvasRevs = new Map<string, (CanvasRevision & { md: string })[]>();
   const docs = seedDocs();
   const timers = new Map<string, number>();
   let authed = true;
@@ -275,6 +277,36 @@ export function mockApi(onChange?: () => void): MockApi {
       onChange?.();
       return structuredClone(j);
     },
+    async canvasList() { return canvas.map(c => { const { markdown: _m, base: _b, ...row } = c; return structuredClone(row); }); },
+    async canvasOpen(b) {
+      await wait(60); let md = b.markdown || '', code = b.code || '', doctype = b.doctype || 'ANNEX';
+      if (b.source === 'job') { const j = jobs.find(x => x.id === b.source_id); if (!j) throw new ApiError(404, 'no such job'); md = String(j.result.markdown || ''); code = j.payload.meta.code; doctype = j.payload.meta.doctype || 'SOP'; if (!md) throw new ApiError(409, 'this job holds no draft yet'); }
+      if (b.source === 'document') throw new ApiError(409, 'sample mode: open a job instead');
+      if (b.source === 'blank') md = `<!--HEADERDATA\nmk_title: Нов документ\nen_title: New document\ncode: ${code || 'XXX'}\nversion: 01\ndoctype: ${doctype}\n-->\n# 1. ПРЕДМЕТ | SCOPE\nТекст. ||| Text.\n`;
+      const now = new Date().toISOString();
+      const c: CanvasDraft = { id: uuid(), source: b.source, source_id: b.source_id || '', code, doctype, title_mk: '', title_en: '', rev: 1, document_id: null, updated_by: 'sample', created_at: now, updated_at: now, markdown: md, base: md };
+      canvas.unshift(c); canvasRevs.set(c.id, [{ rev: 1, note: 'opened from ' + b.source, actor: 'sample', at: now, chars: md.length, md }]);
+      return structuredClone(c);
+    },
+    async canvasGet(id) { const c = canvas.find(x => x.id === id); if (!c) throw new ApiError(404, 'no such draft'); return structuredClone(c); },
+    async canvasSave(id, b) {
+      const c = canvas.find(x => x.id === id); if (!c) throw new ApiError(404, 'no such draft');
+      if (c.rev !== b.rev) throw new ApiError(409, 'someone saved this draft since you opened it: reload it');
+      c.rev++; c.markdown = b.markdown; c.updated_at = new Date().toISOString(); if (b.document_id) c.document_id = b.document_id;
+      canvasRevs.get(id)!.unshift({ rev: c.rev, note: b.note || '', actor: 'sample', at: c.updated_at, chars: b.markdown.length, md: b.markdown });
+      return { rev: c.rev };
+    },
+    async canvasRevise(id, body) {
+      await wait(500); const c = canvas.find(x => x.id === id); if (!c) throw new ApiError(404, 'no such draft');
+      const { head, sections } = splitDraft(body.markdown || c.markdown || '');
+      const idx = body.section ?? sections.length - 1;
+      if (!sections[idx]) throw new ApiError(400, `section ${idx} does not exist`);
+      sections[idx] = sections[idx].trimEnd() + `\nРевидирано: ${body.instruction} ||| Revised: ${body.instruction}`;
+      return { markdown: joinDraft(head, sections), section: body.section, title: sections[idx].split('\n')[0].replace(/^#+ /, ''), gaps: [], agent: c.doctype === 'SOP' ? 'gf_sop_author' : 'gf_annex_author' };
+    },
+    async canvasRevisions(id) { return (canvasRevs.get(id) || []).map(({ md: _m, ...r }) => r); },
+    async canvasRevision(id, rev) { const r = (canvasRevs.get(id) || []).find(x => x.rev === rev); if (!r) throw new ApiError(404, 'no such revision'); return r.md; },
+    async canvasDelete(id) { const i = canvas.findIndex(x => x.id === id); if (i >= 0) canvas.splice(i, 1); canvasRevs.delete(id); },
     async reviseJob(id, body) {
       store(); await wait(700);
       const j = jobs.find(x => x.id === id);

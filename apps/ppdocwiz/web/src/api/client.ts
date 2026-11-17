@@ -73,8 +73,17 @@ export interface Api {
   /** DocEngine POST /workflows/{id}/revise (Head of QC, 20.10.2026): the author rewrites one section (or the whole body)
    *  of the draft by an instruction. Nothing is stored; the canvas rebuilds with directBuild. */
   reviseJob(id: string, body: { instruction: string; markdown: string; section: number | null }): Promise<ReviseResult>;
-  /** DocEngine has no list endpoint; live mode lists the ids this browser started or opened. */
+  /** DocEngine GET /workflows (17.11.2026): every job, from any device. */
   jobs(): Promise<JobList>;
+  // Canvas (17.11.2026): drafts held on the server, with revisions.
+  canvasList(): Promise<CanvasDraft[]>;
+  canvasOpen(b: { source: CanvasDraft['source']; source_id?: string; markdown?: string; code?: string; doctype?: string }): Promise<CanvasDraft>;
+  canvasGet(id: string): Promise<CanvasDraft>;
+  canvasSave(id: string, b: { markdown: string; rev: number; note?: string; document_id?: string | null }): Promise<{ rev: number }>;
+  canvasRevise(id: string, b: { instruction: string; markdown: string; section: number | null }): Promise<ReviseResult>;
+  canvasRevisions(id: string): Promise<CanvasRevision[]>;
+  canvasRevision(id: string, rev: number): Promise<string>;
+  canvasDelete(id: string): Promise<void>;
   /** Not in DocEngine yet (status awaiting_review exists, no transition route). */
   reviewJob(id: string, decision: 'approve' | 'return', note: string): Promise<Job>;
   /** Builder Source view → ppdocwiz POST /api/build: the same engine as the wizard path; 422 on a FAIL. */
@@ -117,4 +126,11 @@ export interface Api {
 }
 
 /** The author's revision of a draft: the whole Markdown with the section replaced, and any one-language section. */
+/** A canvas draft held on the server (17.11.2026). */
+export interface CanvasDraft {
+  id: string; source: 'blank' | 'job' | 'document' | 'upload'; source_id: string; code: string; doctype: string;
+  title_mk: string; title_en: string; rev: number; document_id: string | null; updated_by: string; created_at: string; updated_at: string;
+  markdown?: string; base?: string;
+}
+export interface CanvasRevision { rev: number; note: string; actor: string; at: string; chars: number }
 export type ReviseResult = { markdown: string; section: number | null; title: string; gaps: string[]; agent: string };

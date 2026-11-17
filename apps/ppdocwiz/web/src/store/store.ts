@@ -61,6 +61,9 @@ export interface AppState {
   jobSel: string | null; libSel: string | null;
   /** The job whose draft the canvas holds (20.10.2026). */
   canvasJob: string | null;
+  /** The server-held canvas draft open now (17.11.2026), and a request to open one from a job or a Library document. */
+  canvasDraft: string | null;
+  canvasReq: { source: 'job' | 'document'; source_id: string } | null;
   fmt: 'B' | 'C';
   repMeta: { code: string; mk: string; en: string; ver: string } | null; repSel: string;
   /** The top-bar primary button: each screen registers its own label and action. */
@@ -109,11 +112,12 @@ export const useApp = create<AppState>((set, get) => {
       sop_transport: { title_mk: 'Внатрешен (копнен) транспорт на опојни дроги — медицински канабис', title_en: 'Inland Transport of Narcotic Drugs — Medical Cannabis', code: 'WHSOP003', version: '01', orient: 'portrait' },
       annex_form: { title_mk: 'Дневник на прием', title_en: 'Receipt log', code: '', version: '01', orient: 'portrait' },
     },
-    jobSel: null, libSel: null, canvasJob: read('ppsuite.canvas') || null, fmt: 'B', repMeta: null, repSel: 'b5',
+    jobSel: null, libSel: null, canvasJob: null, canvasDraft: read('ppsuite.canvasDraft') || null, canvasReq: null, fmt: 'B', repMeta: null, repSel: 'b5',
     primary: null,
     svc: { letta: 'idle', docengine: 'idle', pdf: 'idle', note: {} },
     set: p => set(p as never),
-    go: (screen, extra) => { write(LS.screen, screen); if (extra?.canvasJob) write('ppsuite.canvas', extra.canvasJob); set({ screen, createOpen: false, ...(extra || {}) }); },
+    go: (screen, extra) => { write(LS.screen, screen); if (extra?.canvasJob) extra = { ...extra, canvasReq: { source: 'job', source_id: extra.canvasJob }, canvasJob: null };
+      if (extra?.canvasDraft) write('ppsuite.canvasDraft', extra.canvasDraft); set({ screen, createOpen: false, ...(extra || {}) }); },
     setMode: m => { write(LS.api, m); location.reload(); },
     setTweaks: t => { const next = { ...get().tweaks, ...t }; write(LS.tweaks, JSON.stringify(next)); set({ tweaks: next }); },
     flash: t => { clearTimeout(toastTimer); set({ toast: t }); toastTimer = window.setTimeout(() => set({ toast: '' }), 3200); },

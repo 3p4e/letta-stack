@@ -1,0 +1,54 @@
+[
+ [
+  "Section bars",
+  "# / ## headings → navy banner / sub-bar, numbered, bilingual"
+ ],
+ [
+  "Bilingual text",
+  "MK ||| EN on every line; EN smaller and italic"
+ ],
+ [
+  "Tables",
+  "[[TABLE]] … [[/TABLE]]; cells MK ~~ EN; first row navy header"
+ ],
+ [
+  "Forms",
+  "[[FORM]] / [[FORM:mode]]: label | value rows for records to fill in"
+ ],
+ [
+  "Boxes",
+  "[[BOX:cm]]: marked space with a minimum height (signatures, sketches)"
+ ],
+ [
+  "Page break",
+  "[[PAGEBREAK]] / [[NEWPAGE]]"
+ ],
+ [
+  "Limit bars",
+  "[[LIMITS]]: values against acceptance limits (12.11.2026)"
+ ],
+ [
+  "Figures",
+  "[[FIGURE:path|mm]] (12.11.2026)"
+ ],
+ [
+  "Header block",
+  "HEADERDATA: code, version, titles, doctype SOP/ANNEX, orient portrait/landscape, status, supersedes, features"
+ ],
+ [
+  "Running header/footer",
+  "Logo, title, code, version/status, page X of Y — from the base template"
+ ],
+ [
+  "Gate (pp_verify)",
+  "Fonts, glyph coverage, bilingual, min font size, layout — a FAIL blocks the build"
+ ],
+ [
+  "Rendering",
+  "LibreOffice with the house fonts (Gotenberg on KVM4) via pp_render.py"
+ ],
+ [
+  "Reports API (pp_report)",
+  "Native Word equations (OMML), worked calculations, charts (pp_charts), status grids — Python API, not in Markdown"
+ ]
+]
