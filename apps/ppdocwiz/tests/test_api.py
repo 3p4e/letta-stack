@@ -694,3 +694,10 @@ def test_equations_preview_refuses_a_bad_formula_and_renders_a_good_one(client):
 
 def test_health_reports_the_equation_engine(client):
     assert client.get("/api/health").json()["equations"] is True
+
+
+def test_put_is_forwarded_for_canvas_only(client, monkeypatch):
+    monkeypatch.setattr(settings, "docengine_url", "http://127.0.0.1:9")
+    assert client.put("/api/docengine/canvas/x", headers=H).status_code == 502      # forwarded (upstream unreachable)
+    assert client.put("/api/docengine/reference", headers=H).status_code == 405     # operator route stays out
+    assert client.put("/api/docengine/workflows/x", headers=H).status_code == 405

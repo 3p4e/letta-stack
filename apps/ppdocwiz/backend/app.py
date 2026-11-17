@@ -613,6 +613,9 @@ async def docengine_proxy(path: str, request: Request):
     parts = [p for p in path.split("/") if p]
     if not parts or parts[0] not in _DE_ROUTES or any(p in (".", "..") for p in parts):
         return JSONResponse({"error": "not found"}, status_code=404)
+    # PUT is for the canvas draft save only: the operator routes (PUT /reference) stay out of this proxy.
+    if request.method == "PUT" and parts[0] != "canvas":
+        return JSONResponse({"error": "method not allowed"}, status_code=405)
     url = settings.docengine_url + "/" + "/".join(urllib.parse.quote(p, safe="") for p in parts)
     if request.url.query:
         url += "?" + request.url.query
