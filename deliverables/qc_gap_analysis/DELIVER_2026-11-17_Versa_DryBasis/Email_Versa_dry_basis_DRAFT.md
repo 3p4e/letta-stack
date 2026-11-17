@@ -1,4 +1,5 @@
 # DRAFT for Blagoj to review and send — not sent
+(Revised 17.11.2026 after Farmahem's written reply of 09.11.2026.)
 
 **To:** Sabina Suljaković <sabina.suljakovic@versapharma.eu>
 **Cc:** Hristina Cekikj; CEO; Jovana Romevska; Sofija Petrova
@@ -6,14 +7,15 @@
 
 Dear Sabina,
 
-As you asked, I confirm in writing how the THC results on the Certificates of Quality of the shipped batches were obtained.
+As you asked, I confirm in writing how the THC results on the Certificates of Quality of the shipped batches were obtained, and I must correct the assumption in your comment.
 
-1. **Source of the printed Total THC.** Every shipped Tranche 1 and Tranche 2 CoQ prints the Total Δ9-THC from the Farmahem report for that batch (Tranche 1: 197-x-К/26; Tranche 2: 220-x-К/26, accredited method, HPLC/DAD, Ph. Eur. Cannabis flower 3028, result in % w/w).
-2. **Basis.** [**TO CONFIRM BEFORE SENDING — see note 1:** the Total THC of these batches is calculated on the dried basis (dry mass), i.e. corrected for loss on drying.]
-3. **Labelled assay.** The labelled THC of each batch (the grade in the product name, e.g. "24 % w/w THC") is the specification grade whose range contains that printed Total THC. It was therefore set from the same dry-basis value. [**TO CONFIRM — see note 2**]
-4. The earlier release testing of the same batches by the UKIM Centre for Natural Products (ППК certificates) is stated on those certificates as calculated on dry mass with correction for loss on drying.
+1. **Source.** Every shipped Tranche 1 and Tranche 2 CoQ prints the Total Δ9-THC from the Farmahem cannabinoid report of the batch (Tranche 1: 197-x-К/26; Tranche 2: 220-x-К/26; accredited HPLC/DAD method, Ph. Eur. 3028, result in % w/w).
+2. **Basis: "as is", not dry basis.** Farmahem has confirmed to us in writing (9 November 2026) that it reports total THC, total CBD and total CBN **"as is", without correction for loss on drying**, in accordance with the calculation approach of Ph. Eur. 3028 Cannabis flos. The Total THC on the shipped CoQs is therefore **not calculated on dry basis**.
+3. **Labelled assay.** The labelled THC of each batch (the grade in the product name, e.g. "24 % w/w THC") is the specification grade whose range contains the Total THC printed on the CoQ, i.e. the as-is value.
+4. **Dry-weight values.** A dry-basis value can be obtained from the as-is result with the loss on drying of the sample. Where you need dry-basis values for specific batches, tell us which, and we will provide them with the loss-on-drying value used and its source.
+5. For information: the earlier release testing of these batches by the UKIM Centre for Natural Products states on its certificates that cannabinoid contents are calculated on dry mass with correction for loss on drying. Those values are not the ones printed on the shipped CoQs.
 
-Please tell us which batches/groups your comment refers to, so that we confirm exactly those.
+Please also tell us which batches/groups your comment refers to ("groups 2 and 3"), so that we confirm exactly those.
 
 Kind regards,
 Blagoj Nikolov
@@ -22,22 +24,21 @@ Purely Plant QC
 ---
 ## Notes for Blagoj — do not send
 
-1. **Basis is documented only for UKIM (CNP).** Their certificates say: *"The content of CBDA, CBD, CBN, Δ9-THC and Δ9-THCA is calculated on dry mass (including correction for loss on drying)"* (e.g. ППК25321: loss on drying 10.00 %, Total Δ9-THC 21.51 %). The **Farmahem** certificates (e.g. 220-3-К/26) state no basis and no loss-on-drying correction; they only give "Total Δ9-THC … % w/w", method "Ph. Eur. Cannabis flower (3028)". All 46 shipped Tranche 1/2 CoQs print the Farmahem value, not the CNP one. Point 2 may therefore be written only after Farmahem confirms the basis in writing (request below). If Farmahem says "as received", the email must say that instead — do not send the bracketed sentence unconfirmed.
-2. The grade rule is ours (the printed Total THC decides the grade window: potency grades on the KVM4 builder). Whether Versa's own "labelled assay" used a different figure is for Versa to say.
-3. Sabina wrote "grupe 2 i 3". The shipped batches are Tranches 1 and 2; "groups 2 and 3" may mean Versa's potency groups (G2/G3 in the Bags & Exp. Dates sheet) or Tranches 2 and 3. Confirm which before sending.
+- **This contradicts Sabina's request.** She asked you to write that groups 2 and 3 were calculated on dry basis and the labelled assay computed with that. Our records and Farmahem's own statement say the printed THC is as-is. Writing her version would be a false statement to the customer. Point 2 above states what is documented.
+- Source of the Farmahem statement: Dimitar Gusheski, Environmental Laboratory, e-mail of Monday 9 November 2026, "Reporting of Total THC, Total CBD and Total CBN Results". Our check of all 98 Farmahem cannabinoid reports in RAGflow found no basis statement on any of them, consistent with this.
+- Possible consequence for the Versa OOS results: if LabCore reports on dry weight, its THC is higher than our as-is figure by roughly the loss on drying (about 6–10 % relative; CNP measured 10.00 % on P050222, 6.50 % on P060332). That explains the "high" cases but not the "low" ones (PT 10, F1 12, PDY 14), so it cannot be offered as the full explanation. Not written into the email.
+- A caution if dry-basis values are requested: the loss on drying on file is from different dates and laboratories than the Farmahem THC (e.g. P050222: CNP 10.00 % in Oct 2025, Farmahem THC Aug 2026). Converting mixes them; a current loss on drying per batch would be needed for a defensible dry-basis value.
+- "Groups 2 and 3": may mean Tranches 2 and 3, or Versa's potency groups G2/G3. Confirm with Sabina.
 
 ---
-# DRAFT 2 — request to Farmahem (send first)
+# DRAFT 2 (optional) — reply to LabCore's grinder question (their mail of 10.11.2026)
 
-**To:** Farmahem Laboratory for the Environment (ekolab@farmahem.com.mk)
-**Subject:** Reports 197-x-К/26 and 220-x-К/26 — basis of the cannabinoid results
+**To:** Jaka Štirn <jaka.stirn@labcore.eu>  **Cc:** Sabina Suljaković; Hristina Cekikj
+**Subject:** RE: Grinder for cannabis flower
 
-Dear colleagues,
+Dear Jaka,
 
-Please confirm in writing, for the cannabinoid reports 197-1…197-9-К/26 and 220-1…220-30-К/26 (cannabis flower, HPLC/DAD, IR 7.2.1-47K v.1):
-1. Are the results (Total Δ9-THC, Total CBD, Total CBN, % w/w) calculated on the dried basis (with reference to the dried drug, as in Ph. Eur. 3028), or as received?
-2. If dried basis: which loss-on-drying (or moisture) value was used for each report?
-3. If as received: can you also report the dried-basis value?
+Our external laboratory for cannabinoid analysis (Farmahem) confirmed on 10 November 2026 that it grinds cannabis flower with an **IKA Tube Mill Control (model TUBE MILL C S000)** with **disposable grinding chambers** (IKA MT 40.100). **One chamber takes up to 5 g of flower per grinding cycle.** A larger sample (e.g. 15 g) is ground in consecutive 5 g portions in the same chamber, when it is to be homogenised as one lot.
 
 Kind regards,
-Purely Plant QC
+Blagoj Nikolov
