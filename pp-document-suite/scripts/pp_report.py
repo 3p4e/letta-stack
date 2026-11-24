@@ -551,7 +551,7 @@ def step_signoff(d, mk=None, en=None, sz=9):
         p.paragraph_format.keep_with_next=True
     h=["Улога | Role","Име | Name","Датум | Date","Потпис | Signature"]
     roles=["Извршил и внел сурови податоци (оператор/аналитичар) | Executed & entered raw data (Operator/Analyst)",
-           "Проверил и одобрил овој запис (Раководител на КК) | Checked & approved this record (QC Department Manager)"]
+           "Проверил и одобрил овој запис (Менаџер на Сектор Контрола на Квалитет) | Checked & approved this record (QC Department Manager)"]
     t=d.add_table(rows=3,cols=4); t.alignment=WD_TABLE_ALIGNMENT.CENTER
     for j,x in enumerate(h): cellfmt(t.cell(0,j),x,None,sz,WHITE,bold=True,fill=NAVYF)
     for i,role in enumerate(roles,start=1):
@@ -573,10 +573,10 @@ def entry_table(d, headers, rows, widths, label_mk=None, label_en=None, sz=9, si
     if signoff: step_signoff(d, signoff_mk, signoff_en)
     return t
 
-def execution_signoff(d, mk_exec="Извршил (КК) | Executed (QC)", en_exec=None, reviewer="J. Romevska", approver="B. Nikolov, M.Pharm. (Раководител КК | QC Manager)"):
-    """Overall protocol-level sign-off cascade: Executed (analyst) -> Reviewed (QA) -> Approved (QC Manager)."""
+def execution_signoff(d, mk_exec="Извршил (КК) | Executed (QC)", en_exec=None, reviewer="J. Romevska", approver="B. Nikolov, M.Pharm. (Менаџер на Сектор Контрола на Квалитет | QC Department Manager)"):
+    """Overall protocol-level sign-off cascade: Executed (analyst) -> Reviewed (QA) -> Approved (QC Department Manager)."""
     h=["Дејство | Action","Име | Name","Датум | Date","Потпис | Signature"]
-    rws=[(mk_exec,"____________________"),("Прегледал (QA) | Reviewed (QA)",reviewer),("Одобрил (Раководител КК) | Approved (QC Manager)",approver)]
+    rws=[(mk_exec,"____________________"),("Прегледал (QA) | Reviewed (QA)",reviewer),("Одобрил (Менаџер на Сектор Контрола на Квалитет) | Approved (QC Department Manager)",approver)]
     t=d.add_table(rows=4,cols=4); t.alignment=WD_TABLE_ALIGNMENT.CENTER
     for j,x in enumerate(h): cellfmt(t.cell(0,j),x,None,10,WHITE,bold=True,fill=NAVYF)
     for i,(a,n) in enumerate(rws,start=1):
@@ -626,7 +626,7 @@ def _cover_header_footer(sec):
         if fr.get(qn('w:type'))=='first': sectPr.remove(fr)
 
 def cover_page(d, title_mk, title_en, info_rows, kind_mk="", kind_en="", study_mk=None, study_en=None,
-               approval_rows=None, approval_qp="Одобрил (Раководител КК) | Approved (QC Manager)",
+               approval_rows=None, approval_qp="Одобрил (Менаџер на Сектор Контрола на Квалитет) | Approved (QC Department Manager)",
                approval_qp_name="B. Nikolov, M.Pharm.",
                status="draft", version="1.0", effective_date=None):
     """Distinct, UNNUMBERED cover page (different-first-page): wordmark + big bilingual title +
@@ -663,7 +663,7 @@ def cover_page(d, title_mk, title_en, info_rows, kind_mk="", kind_en="", study_m
     minilabel(d,"Информации за документот | Document information",None)
     _info_table(d, info_rows)
     minilabel(d,"Одобрување | Approval",None)
-    rows=approval_rows or [("Изготвил | Prepared (QC Head)","B. Nikolov, M.Pharm."),
+    rows=approval_rows or [("Изготвил (Менаџер на Сектор Контрола на Квалитет) | Prepared (QC Department Manager)","B. Nikolov, M.Pharm."),
                            ("Прегледал | Reviewed (QA)","J. Romevska"),
                            (approval_qp, approval_qp_name)]
     h=["Дејство | Action","Име/Позиција | Name/Position","Датум | Date","Потпис | Signature"]
