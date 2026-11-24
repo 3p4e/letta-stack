@@ -14,7 +14,12 @@ Environment:
     GOTENBERG_URL                 e.g. http://gotenberg:3000 (in-stack) or
                                   https://render.srv1231216.hstgr.cloud (any device)
     GOTENBERG_USERNAME/_PASSWORD  basic auth, when the service is exposed publicly
-    PP_RENDER                     auto (default) | gotenberg | local
+    RUNNER_URL/RUNNER_TOKEN       the kvm4-runner (POST /shell, /file/write, /file/read): reaches the same
+                                  Gotenberg container from inside KVM4 when the public route is closed to this
+                                  device (no basic-auth password, proxy). PP_RENDER_CONTAINER, default gotenberg.
+    PP_RENDER                     auto (default) | gotenberg | runner | local
+Auto order: Gotenberg (GOTENBERG_URL) -> runner -> local LibreOffice. The local route is last because a machine
+without the licensed house fonts renders with substitutes, which _check_fonts refuses.
 No third-party packages: standard library only.
 """
 import base64
@@ -80,6 +85,54 @@ def render_gotenberg(docx, pdf, url=None, timeout=180):
     return "gotenberg"
 
 
+def _runner_call(path, body, timeout):
+    import json
+    url, tok = os.environ.get("RUNNER_URL", "").rstrip("/"), os.environ.get("RUNNER_TOKEN", "")
+    req = urllib.request.Request(url + path, data=json.dumps(body).encode(), method="POST",
+                                 headers={"Authorization": "Bearer " + tok, "Content-Type": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            return json.load(r)
+    except urllib.error.HTTPError as e:
+        raise RenderError(f"runner HTTP {e.code}: {e.read()[:200]!r}") from e
+    except (urllib.error.URLError, OSError, ValueError) as e:
+        raise RenderError(f"runner unreachable: {e}") from e
+
+
+def render_runner(docx, pdf, timeout=240):
+    """Render on KVM4's Gotenberg container through the kvm4-runner (Open Brain, 09.10.2026: RUNNER_URL/RUNNER_TOKEN;
+    KVM4_RUNNER_TOKEN is stale). The DOCX is copied into the container and converted by its own curl on localhost:3000,
+    so no Gotenberg password is needed and the licensed fonts are the container's."""
+    if not (os.environ.get("RUNNER_URL") and os.environ.get("RUNNER_TOKEN")):
+        raise RenderError("RUNNER_URL/RUNNER_TOKEN are not set")
+    box = os.environ.get("PP_RENDER_CONTAINER", "gotenberg")
+    k = uuid.uuid4().hex[:12]
+    host = f"/tmp/pprender_{k}"
+    with open(docx, "rb") as f:
+        data = f.read()
+    try:
+        _runner_call("/shell", {"cmd": f"mkdir -p {host}"}, 60)
+        _runner_call("/file/write", {"path": f"{host}/in.docx", "content_b64": base64.b64encode(data).decode(),
+                                     "mode": 0o644}, 120)
+        cmd = (f"docker cp {host}/in.docx {box}:/tmp/{k}.docx && "
+               f"docker exec {box} curl -sf --max-time {timeout - 20} -F updateIndexes=true "
+               f"-F files=@/tmp/{k}.docx http://localhost:3000/forms/libreoffice/convert -o /tmp/{k}.pdf && "
+               f"docker cp {box}:/tmp/{k}.pdf {host}/out.pdf")
+        r = _runner_call("/shell", {"cmd": cmd, "timeout": timeout}, timeout + 30)
+        if r.get("exit_code") not in (0, None):
+            raise RenderError("runner render failed: " + str(r.get("output", ""))[-300:])
+        out = base64.b64decode(_runner_call("/file/read", {"path": f"{host}/out.pdf", "max_bytes": 60_000_000},
+                                            120)["content_b64"])
+    finally:
+        with contextlib.suppress(RenderError):
+            _runner_call("/shell", {"cmd": f"docker exec -u root {box} rm -f /tmp/{k}.docx /tmp/{k}.pdf; "
+                                           f"rm -rf {host}"}, 60)
+    if not out.startswith(b"%PDF"):
+        raise RenderError("runner returned something that is not a PDF")
+    _write_atomic(pdf, out)
+    return "runner"
+
+
 def render_local(docx, pdf, timeout=300):
     """LibreOffice with a throw-away copy of the bundled macro profile (fields and indexes refreshed)."""
     if not shutil.which("soffice"):
@@ -134,8 +187,8 @@ def _check_fonts(docx, pdf):
 
 
 def render_pdf(docx, pdf, mode=None):
-    """Render and return the route used ('gotenberg' or 'local'). auto: Gotenberg if
-    configured, local LibreOffice if Gotenberg is unset or unreachable."""
+    """Render and return the route used ('gotenberg', 'runner' or 'local'). auto: Gotenberg if
+    configured, then the kvm4-runner, then local LibreOffice."""
     route = _render(docx, pdf, mode)
     _check_fonts(docx, pdf)      # every route: a PDF with substitute fonts is never handed out
     return route
@@ -145,12 +198,19 @@ def _render(docx, pdf, mode=None):
     mode = (mode or os.environ.get("PP_RENDER", "auto")).lower()
     if mode == "gotenberg":
         return render_gotenberg(docx, pdf)
+    if mode == "runner":
+        return render_runner(docx, pdf)
     if mode == "local":
         return render_local(docx, pdf)
     errors = []
     if os.environ.get("GOTENBERG_URL"):
         try:
             return render_gotenberg(docx, pdf)
+        except RenderError as e:
+            errors.append(str(e))
+    if os.environ.get("RUNNER_URL") and os.environ.get("RUNNER_TOKEN"):
+        try:
+            return render_runner(docx, pdf)
         except RenderError as e:
             errors.append(str(e))
     try:

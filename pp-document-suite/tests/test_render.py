@@ -26,6 +26,13 @@ class _Stub(BaseHTTPRequestHandler):
         pass
 
 
+@pytest.fixture(autouse=True)
+def _no_runner(monkeypatch):
+    """A session with the kvm4-runner configured must not leak it into the routing tests."""
+    monkeypatch.delenv("RUNNER_URL", raising=False)
+    monkeypatch.delenv("RUNNER_TOKEN", raising=False)
+
+
 @pytest.fixture
 def gotenberg(monkeypatch):
     srv = HTTPServer(("127.0.0.1", 0), _Stub)
@@ -125,3 +132,20 @@ def test_a_quote_in_the_docx_path_never_reaches_the_macro(tmp_path, monkeypatch)
     assert pp_render.render_local(str(odd), str(tmp_path / "o.pdf")) == "local"
     assert '"' not in seen["in"] and seen["in"] != str(odd)          # a safe copy, not the quoted path
     assert (tmp_path / "o.pdf").read_bytes().startswith(b"%PDF")
+
+
+def test_auto_tries_the_runner_after_gotenberg_and_before_local(docx, tmp_path, monkeypatch):
+    monkeypatch.setenv("GOTENBERG_URL", "http://127.0.0.1:9")
+    monkeypatch.setenv("RUNNER_URL", "https://runner.invalid"); monkeypatch.setenv("RUNNER_TOKEN", "t")
+    calls = []
+    def runner(d, p, timeout=240):
+        calls.append("runner"); open(p, "wb").write(b"%PDF-1.7"); return "runner"
+    monkeypatch.setattr(pp_render, "render_runner", runner)
+    monkeypatch.setattr(pp_render, "render_local", lambda d, p, timeout=300: calls.append("local") or "local")
+    assert pp_render._render(docx, str(tmp_path / "o.pdf")) == "runner"
+    assert calls == ["runner"]
+
+
+def test_runner_without_credentials_is_a_render_error(docx, tmp_path):
+    with pytest.raises(pp_render.RenderError, match="RUNNER_URL"):
+        pp_render.render_runner(docx, str(tmp_path / "o.pdf"))
