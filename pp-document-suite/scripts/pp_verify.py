@@ -54,6 +54,12 @@ def _min_font(parts):
                 v = int(m); mn = v if mn is None else min(mn, v)
     return mn
 
+# The QC department head's title (24.11.2026): "QC Department Manager" | "Менаџер на Сектор Контрола за Квалитет" in all
+# instances. The earlier forms (Head of QC, QC Manager, QC Head, Раководител (на) КК, Раководител на Сектор за контрола на
+# квалитет) are refused on a delivered document.
+_OLD_QC_TITLE = re.compile(r"Head of (?:QC|Quality Control)|\bQC Manager\b|\bQC Head\b|"
+                           r"Раководител(?:от|от на|от на Секторот)?(?: на)?(?: Секторот| Сектор)?(?: за)? (?:КК|контрола на квалитет)")
+
 def analyse(path):
     d, txt = _text(path)
     parts = _xml_parts(path)
@@ -64,6 +70,7 @@ def analyse(path):
         omath=doc.count("<m:oMath"), figures=doc.count("<w:drawing"),
         min_half=_min_font(parts),
         cyr=bool(re.search(r"[Ѐ-ӿ]", txt)), lat=bool(re.search(r"[A-Za-z]", txt)),
+        old_title=(_OLD_QC_TITLE.search(txt).group(0) if _OLD_QC_TITLE.search(txt) else None),
     )
 
 def main():
@@ -101,6 +108,9 @@ def main():
         ok &= (not env) and (not bad)
     else:
         print("   glyph coverage SKIPPED (pp_assets unavailable)")
+    if r['old_title']:
+        print(f"   QC title: {r['old_title']!r} — write 'QC Department Manager' | 'Менаџер на Сектор Контрола за Квалитет'  [FAIL]")
+        ok = False
     biling = r['cyr'] and r['lat']
     print(f"   bilingual MK+EN {'OK' if biling else ('FAIL (missing a language)' if require_bl else 'WARN (missing a language)')}")
     ok &= biling or not require_bl
