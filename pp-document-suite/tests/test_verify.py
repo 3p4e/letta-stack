@@ -46,16 +46,16 @@ def test_an_inherited_font_size_is_a_warning_not_a_silent_pass(tmp_path):
 
 
 @pytest.mark.parametrize("old", ["Head of QC", "QC Manager", "QC Head", "Раководител КК", "Раководител на КК",
-                                 "Раководител на Сектор за контрола на квалитет", "Одлука на Раководителот на КК"])
+                                 "Раководител на Сектор за контрола на квалитет", "Одлука на Раководителот на КК", "Менаџер на Сектор Контрола за Квалитет"])
 def test_old_qc_title_fails(tmp_path, old):
-    """24.11.2026: the title is 'QC Department Manager' | 'Менаџер на Сектор Контрола за Квалитет' in all instances."""
+    """24.11.2026: the title is 'QC Department Manager' | 'Менаџер на Сектор Контрола на Квалитет' in all instances."""
     d = Document(); d.add_paragraph("Одобрил (%s) | Approved" % old); p = tmp_path / "t.docx"; d.save(p)
     code, out = _run(p)
     assert code == 1 and "QC title" in out
 
 
 def test_new_qc_title_passes(tmp_path):
-    d = Document(); d.add_paragraph("Одобрил (Менаџер на Сектор Контрола за Квалитет) | Approved (QC Department Manager)")
+    d = Document(); d.add_paragraph("Одобрил (Менаџер на Сектор Контрола на Квалитет) | Approved (QC Department Manager)")
     p = tmp_path / "t.docx"; d.save(p)
     code, out = _run(p)
     assert "QC title" not in out

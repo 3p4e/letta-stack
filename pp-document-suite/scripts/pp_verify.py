@@ -54,10 +54,10 @@ def _min_font(parts):
                 v = int(m); mn = v if mn is None else min(mn, v)
     return mn
 
-# The QC department head's title (24.11.2026): "QC Department Manager" | "Менаџер на Сектор Контрола за Квалитет" in all
-# instances. The earlier forms (Head of QC, QC Manager, QC Head, Раководител (на) КК, Раководител на Сектор за контрола на
-# квалитет) are refused on a delivered document.
-_OLD_QC_TITLE = re.compile(r"Head of (?:QC|Quality Control)|\bQC Manager\b|\bQC Head\b|"
+# The QC department head's title (24.11.2026): "QC Department Manager" | "Менаџер на Сектор Контрола на Квалитет" in all
+# instances ("на", not "за": QC Department Manager, 24.11.2026). The earlier forms (Head of QC, QC Manager, QC Head,
+# Раководител (на) КК, Раководител на Сектор за контрола на квалитет, Сектор Контрола за Квалитет) are refused.
+_OLD_QC_TITLE = re.compile(r"Head of (?:QC|Quality Control)|\bQC Manager\b|\bQC Head\b|Сектор Контрола за Квалитет|"
                            r"Раководител(?:от|от на|от на Секторот)?(?: на)?(?: Секторот| Сектор)?(?: за)? (?:КК|контрола на квалитет)")
 
 def analyse(path):
@@ -109,7 +109,7 @@ def main():
     else:
         print("   glyph coverage SKIPPED (pp_assets unavailable)")
     if r['old_title']:
-        print(f"   QC title: {r['old_title']!r} — write 'QC Department Manager' | 'Менаџер на Сектор Контрола за Квалитет'  [FAIL]")
+        print(f"   QC title: {r['old_title']!r} — write 'QC Department Manager' | 'Менаџер на Сектор Контрола на Квалитет'  [FAIL]")
         ok = False
     biling = r['cyr'] and r['lat']
     print(f"   bilingual MK+EN {'OK' if biling else ('FAIL (missing a language)' if require_bl else 'WARN (missing a language)')}")
