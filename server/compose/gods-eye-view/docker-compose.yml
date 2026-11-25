@@ -1,0 +1,48 @@
+# God's Eye View (github.com/bilawalsidhu/gods-eye-view) on KVM4, deployed through the Hostinger
+# VPS Docker API. That runner did not start a container from a remote git build context, so there is
+# no image build: the official node:24 image (has git) clones upstream into a named volume on first
+# start, runs `npm ci`, then upstream's own launcher (scripts/docker-start.mjs, what its Dockerfile runs).
+# Traefik pattern as potency-spec-service (host-network Traefik, certresolver letsencrypt). Variables come
+# from the project environment. No host port; basic auth, because the server brokers any provider keys.
+name: gods-eye-view
+services:
+  gods-eye-view:
+    image: node:24
+    container_name: gods-eye-view
+    restart: unless-stopped
+    user: root                       # only to chown the volume; the app runs as node (below)
+    working_dir: /home/node
+    environment:
+      - HOME=/home/node
+      - HOST=0.0.0.0
+      - PORT=4173
+      - PUPPETEER_SKIP_DOWNLOAD=1
+      - GEV_ALLOWED_HOSTS=${GEV_HOST}
+      - GEV_KEY_SETUP_TRUSTED_PEERS=none   # Provider Settings UI off behind a proxy; keys via env
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - AISSTREAM_API_KEY=${AISSTREAM_API_KEY:-}
+    volumes:
+      - gev_app:/home/node/app
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        mkdir -p /home/node/app && chown node:node /home/node/app
+        exec setpriv --reuid=1000 --regid=1000 --init-groups sh -c '
+          set -e
+          cd /home/node
+          if [ ! -d app/.git ]; then git clone --depth 1 https://github.com/bilawalsidhu/gods-eye-view.git app; fi
+          cd app && (git pull --ff-only || true)
+          npm ci
+          exec node scripts/docker-start.mjs'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gev.rule=Host(`${GEV_HOST}`)"
+      - "traefik.http.routers.gev.entrypoints=websecure"
+      - "traefik.http.routers.gev.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.gev.middlewares=gev-auth"
+      - "traefik.http.middlewares.gev-auth.basicauth.users=${GEV_BASICAUTH}"
+      - "traefik.http.services.gev.loadbalancer.server.port=4173"
+volumes:
+  gev_app:
