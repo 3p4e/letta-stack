@@ -1,6 +1,5 @@
 # God's Eye View on KVM4
-Upstream: https://github.com/bilawalsidhu/gods-eye-view (Node 24 Vite app, Dockerfile + compose.yaml, port 4173, MIT-style licence in repo).
-Deploy: copy `docker-compose.yml` and `deploy.sh` to KVM4 (kvm4-runner `/file/write`), run `bash deploy.sh`.
-URL: `https://gev.srv1231216.hstgr.cloud` (override with `GEV_HOST`), Traefik basic auth user `gev`.
-Keys: add to `/opt/stacks/gods-eye-view/src/.env` (see upstream `.env.example`), then `docker compose up -d --force-recreate`.
-No key is needed for the globe and most keyless layers (OpenSky anon, GTFS-RT, USGS, etc.).
+Upstream: https://github.com/bilawalsidhu/gods-eye-view (Node 24 Vite app, port 4173), pinned by commit in the compose.
+Deployed via the Hostinger VPS Docker API as project `gods-eye-view` (host-network Traefik, `letsencrypt`).
+URL `https://gev.srv1231216.hstgr.cloud`, basic-auth user `gev` (password held by the Head of QC, not in the repo).
+Keys: set `OPENAI_API_KEY`, `AISSTREAM_API_KEY` (others per upstream `.env.example`) in the project environment and redeploy.
