@@ -625,9 +625,39 @@ def _cover_header_footer(sec):
     for fr in list(sectPr.findall(qn('w:footerReference'))):     # no first-page footer -> cover unnumbered
         if fr.get(qn('w:type'))=='first': sectPr.remove(fr)
 
+_COVER_PREPARED=("Изготвил (Менаџер на Сектор Контрола на Квалитет) | Prepared (QC Department Manager)","B. Nikolov, M.Pharm.")
+_COVER_REVIEWED=("Прегледал | Reviewed (QA)","J. Romevska")
+_COVER_APPROVER=("Одобрил (Менаџер на Сектор Контрола на Квалитет) | Approved (QC Department Manager)","B. Nikolov, M.Pharm.")
+
+def _approval_label_key(label):
+    """Compare approval-row labels ignoring case and runs of whitespace."""
+    return " ".join(str(label or "").split()).casefold()
+
+def _approval_rows(approval_rows=None, approval_qp=None, approval_qp_name=None):
+    """Rows of the cover's "Одобрување | Approval" table.
+
+    No approval_rows: the house default (prepared, reviewed, approver), the approver taken
+    from approval_qp / approval_qp_name when given.
+
+    approval_rows given: they are kept as passed, and the approver row (approval_qp,
+    approval_qp_name) is appended when the caller passed either of them, unless a row with
+    the same label is already there. Until 25.11.2026 custom rows silently dropped the
+    approver (HPLC verification protocol, QCWI 023, AMVR template, resource plan).
+    A caller that passes custom rows and no approver keeps its rows unchanged: several
+    builders put their own approver row (QA, QP) under another label, and appending the
+    default one would add a signatory nobody chose (CLAUDE.md §4)."""
+    asked=approval_qp is not None or approval_qp_name is not None
+    qp=(_COVER_APPROVER[0] if approval_qp is None else approval_qp,
+        _COVER_APPROVER[1] if approval_qp_name is None else approval_qp_name)
+    if not approval_rows:
+        return [_COVER_PREPARED,_COVER_REVIEWED,qp]
+    rows=[tuple(r) for r in approval_rows]
+    if asked and _approval_label_key(qp[0]) not in {_approval_label_key(r[0]) for r in rows}:
+        rows.append(qp)
+    return rows
+
 def cover_page(d, title_mk, title_en, info_rows, kind_mk="", kind_en="", study_mk=None, study_en=None,
-               approval_rows=None, approval_qp="Одобрил (Менаџер на Сектор Контрола на Квалитет) | Approved (QC Department Manager)",
-               approval_qp_name="B. Nikolov, M.Pharm.",
+               approval_rows=None, approval_qp=None, approval_qp_name=None,
                status="draft", version="1.0", effective_date=None):
     """Distinct, UNNUMBERED cover page (different-first-page): wordmark + big bilingual title +
        method INFORMATION block + APPROVAL block. Followed by a page break (TOC goes on page 2).
@@ -663,9 +693,7 @@ def cover_page(d, title_mk, title_en, info_rows, kind_mk="", kind_en="", study_m
     minilabel(d,"Информации за документот | Document information",None)
     _info_table(d, info_rows)
     minilabel(d,"Одобрување | Approval",None)
-    rows=approval_rows or [("Изготвил (Менаџер на Сектор Контрола на Квалитет) | Prepared (QC Department Manager)","B. Nikolov, M.Pharm."),
-                           ("Прегледал | Reviewed (QA)","J. Romevska"),
-                           (approval_qp, approval_qp_name)]
+    rows=_approval_rows(approval_rows, approval_qp, approval_qp_name)
     h=["Дејство | Action","Име/Позиција | Name/Position","Датум | Date","Потпис | Signature"]
     t=d.add_table(rows=len(rows)+1,cols=4); t.alignment=WD_TABLE_ALIGNMENT.CENTER
     for j,x in enumerate(h): cellfmt(t.cell(0,j),x,None,10,WHITE,bold=True,fill=NAVYF)
